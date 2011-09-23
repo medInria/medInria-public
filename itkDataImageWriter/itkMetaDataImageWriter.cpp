@@ -33,6 +33,7 @@ QStringList itkMetaDataImageWriter::s_handled(void)
             << "itkDataImageULong3" << "itkDataImageULong4"
             << "itkDataImageFloat3" << "itkDataImageFloat4"
             << "itkDataImageDouble3" << "itkDataImageDouble4"
+            << "itkDataImageVectorUChar3" << "itkDataImageVectorFloat3"
             << "itkDataImageRGB3" << "itkDataImageRGBA3";
 }
 

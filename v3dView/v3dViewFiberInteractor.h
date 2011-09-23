@@ -19,6 +19,7 @@ public:
     virtual ~v3dViewFiberInteractor();
 
     virtual QString description(void) const;
+    virtual QString identifier(void) const;
     virtual QStringList handled(void) const;
 
     static bool registered(void);

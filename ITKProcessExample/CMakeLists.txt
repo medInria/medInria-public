@@ -4,14 +4,14 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(itkProcessRegistrationDiffeomorphicDemonsPlugin)
+project(ITKProcessExamplePlugin)
 
 ## #################################################################
 ## Setup version numbering
 ## #################################################################
 
 set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "${PROJECT_NAME} major version number.")
-set(${PROJECT_NAME}_VERSION_MINOR 3 CACHE STRING "${PROJECT_NAME} minor version number.")
+set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING "${PROJECT_NAME} minor version number.")
 set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "${PROJECT_NAME} build version number.")
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
@@ -32,16 +32,13 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
+# ITK
+find_package(ITK REQUIRED)
+include(${ITK_USE_FILE})
+
+# medinria
 find_package(medinria REQUIRED)
 include(${medinria_USE_FILE})
-
-find_package(ITK REQUIRED)
-if(ITK_FOUND)
-   include(${ITK_USE_FILE})
-endif(ITK_FOUND)
-
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
 
 
 ## #################################################################
@@ -49,15 +46,14 @@ include(${RPI_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkProcessRegistrationDiffeomorphicDemonsPlugin.h
-  itkProcessRegistrationDiffeomorphicDemonsToolBox.h
-  itkProcessRegistrationDiffeomorphicDemons.h)
+  ITKProcessExamplePlugin.h
+  ITKProcessExampleToolBox.h
+  ITKProcessExample.h)
 
 set(${PROJECT_NAME}_SOURCES
-  itkProcessRegistrationDiffeomorphicDemonsPlugin.cpp
-  itkProcessRegistrationDiffeomorphicDemonsToolBox.cpp
-  itkProcessRegistrationDiffeomorphicDemons.cpp
-  )
+  ITKProcessExamplePlugin.cpp
+  ITKProcessExampleToolBox.cpp
+  ITKProcessExample.cpp)
 
 ## #################################################################
 ## Build rules
@@ -66,23 +62,28 @@ set(${PROJECT_NAME}_SOURCES
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC}
+  ${${PROJECT_NAME}_SOURCES_MOC} 
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-  itkProcessRegistration
   ${QT_LIBRARIES}
+  ${ITK_LIBRARIES}
   dtkCore
   medCore
   medGui
-  ITKCommon
-  ITKIO
-  ITKStatistics
-  ITKNumerics
-  ITKAlgorithms
+#  ITKReview  
+  )
+
+#dtk_build_doc(ITKProcessExamplePlugin)
+
+add_executable(${PROJECT_NAME}Testing
+  ITKProcessExampleTestingApp.cpp
 )
 
-dtk_build_doc(${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME}Testing
+  ${PROJECT_NAME}
+)
+
 ## #################################################################
 ## Install rules
 ## #################################################################
@@ -90,4 +91,4 @@ dtk_build_doc(${PROJECT_NAME})
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION plugins
   LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION lib)
+  ARCHIVE DESTINATION plugins)

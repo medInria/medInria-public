@@ -1,6 +1,7 @@
-#include "itkDataImageReaderBase.h"
+#include <itkDataImageReaderBase.h>
 
 #include <medAbstractDataImage.h>
+#include <medMetaDataKeys.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -155,13 +156,15 @@ void itkDataImageReaderBase::readInformation (const QString& path)
             }
         }
         else if (this->io->GetPixelType()==itk::ImageIOBase::VECTOR) { //   Added by Theo.
-
+            qDebug() << "this->io->GetPixelType()" << this->io->GetComponentType(); 
             switch (this->io->GetComponentType()) {
 
                 case itk::ImageIOBase::UCHAR:
-                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVector3");
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVectorUChar3");
                     break;
-            
+                case itk::ImageIOBase::FLOAT:
+                    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVectorFloat3");
+                    break;
                 default:
                     qDebug() << "Unrecognized component type";
                     return;
@@ -204,20 +207,20 @@ void itkDataImageReaderBase::readInformation (const QString& path)
       for (unsigned int i=0; i<this->io->GetOrderedFileNames().size(); i++ )
       filePaths << this->io->GetOrderedFileNames()[i].c_str();
 
-      if (!dtkdata->hasMetaData ( tr ("PatientName") ))
-      dtkdata->addMetaData ( "PatientName", patientName );
+      if (!dtkdata->hasMetaData ( medMetaDataKeys::PatientName.key()) ))
+      dtkdata->addMetaData ( medMetaDataKeys::PatientName.key(), patientName );
       else
-      dtkdata->setMetaData ( "PatientName", patientName );
+      dtkdata->setMetaData ( medMetaDataKeys::PatientName.key(), patientName );
 
-      if (!dtkdata->hasMetaData ( tr ("StudyDescription") ))
-      dtkdata->addMetaData ( "StudyDescription", studyName );
+      if (!dtkdata->hasMetaData (medMetaDataKeys::StudyDescription.key()))
+      dtkdata->addMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
       else
-      dtkdata->setMetaData ( "StudyDescription", studyName );
+      dtkdata->setMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
 
-      if (!dtkdata->hasMetaData ( tr ("SeriesDescription") ))
-      dtkdata->addMetaData ( "SeriesDescription", seriesName );
+      if (!dtkdata->hasMetaData (medMetaDataKeys::SeriesDescription.key() ))
+      dtkdata->addMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
       else
-      dtkdata->setMetaData ( "SeriesDescription", seriesName );
+      dtkdata->setMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
     */
         dtkdata->addMetaData ("FilePath", QStringList() << path);
 
@@ -296,7 +299,8 @@ bool itkDataImageReaderBase::read(const QString& path)
               read_image<4,float>(path,"itkDataImageFloat4")           ||
               read_image<3,double>(path,"itkDataImageDouble3")         ||
               read_image<4,double>(path,"itkDataImageDouble4")         ||
-              read_image<3,itk::Vector<unsigned char,3> >(path,"itkDataImageVector3") ||  //  Added by Theo.
+              read_image<3,itk::Vector<unsigned char,3> >(path,"itkDataImageVectorUChar3") ||  //  Added by Theo.
+              read_image<3,itk::Vector<float,3> >(path,"itkDataImageVectorFloat3") ||
               read_image<3,itk::RGBAPixel<unsigned char> >(path,"itkDataImageRGBA3") ||
               read_image<3,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB3")))
         {

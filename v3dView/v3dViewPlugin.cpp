@@ -19,7 +19,7 @@
 // v3dViewPluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class v3dViewPluginPrivate 
+class v3dViewPluginPrivate
 {
 public:
     // Class variables go here.
@@ -56,7 +56,7 @@ bool v3dViewPlugin::initialize(void)
 #ifndef DISABLE_TTK_DEPENDENT_CODE
     if (!v3dViewTensorInteractor::registered()) dtkWarning() << "Unable to register v3dViewTensorInteractor type";
 #endif
-      
+
     return true;
 }
 
