@@ -24,8 +24,11 @@
 #include "medToolBoxHeader.h"
 #include "medToolBoxBody.h"
 #include "medToolBoxTab.h"
+#include <medButton.h>
 
 #include <dtkCore/dtkGlobal.h>
+#include <dtkCore/dtkPlugin>
+#include <dtkGui/dtkAboutPlugin.h>
 
 class medToolBoxPrivate
 {
@@ -36,6 +39,9 @@ public:
 
     QStringList validDataTypes;
     bool isContextVisible;
+    bool aboutPluginVisibility;
+    dtkPlugin* plugin;
+
 public:
     QBoxLayout *layout;
 };
@@ -47,6 +53,9 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     d->header = new medToolBoxHeader(this);
     d->body = new medToolBoxBody(this);
     d->isContextVisible = false;
+    d->aboutPluginVisibility = false;
+    d->plugin= NULL;
+
 
     d->layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
     d->layout->setContentsMargins(0, 0, 0, 0);
@@ -215,4 +224,42 @@ void medToolBox::setContextVisibility(
     }
     //JGG qDebug()<<"visibility" << d->isContextVisible ;
     this->setVisible(d->isContextVisible);
+}
+
+void medToolBox::enableAboutPluginButton(bool enable)
+{
+    d->aboutPluginVisibility = enable;
+    d->header->showAboutButton(enable);
+}
+
+bool medToolBox::aboutPluginButtonVisibility()
+{
+    return d->aboutPluginVisibility;
+}
+
+void medToolBox::setAboutPluginButton(dtkPlugin *plugin)
+{
+    qDebug() << "setting about plugin" << plugin;
+    medButton* aboutButton = d->header->aboutButton();
+    if (aboutButton)
+    {
+        aboutButton->disconnect();
+        connect(aboutButton,SIGNAL(triggered()),this,SLOT(onAboutButtonClicked()));
+        d->plugin = plugin;
+    }
+    else
+    {
+        qWarning() << "no aboutButton found for toolbox" << d->header->title();
+    }
+}
+
+void medToolBox::onAboutButtonClicked()
+{
+    qDebug()<<__FUNCTION__;
+    if(d->plugin)
+    {
+        qDebug() << "about plugin" << d->plugin->name();
+        dtkAboutPlugin * apWidget = new dtkAboutPlugin(d->plugin);
+        apWidget->show();
+    }
 }

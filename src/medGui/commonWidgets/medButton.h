@@ -25,7 +25,7 @@ public:
      * @param toolTip
     */
     medButton(QWidget *parent, QString resourceLocation, QString toolTip);
-    
+
     /**
      * @brief Instantiates the button from an existing pixmap.
      *
@@ -34,7 +34,7 @@ public:
      * @param toolTip
     */
     medButton(QWidget *parent, QPixmap pixmap, QString toolTip);
-    
+
     /**
      * @brief Destroys the button
      *
@@ -49,14 +49,14 @@ public:
      * @return QSize
     */
     QSize sizeHint(void) const;
-    
+
     /**
      * @brief Sets a new existing pixmap as an icon.
      *
      * @param icon
     */
     void setIcon(QPixmap icon);
-    
+
 signals:
     /**
      * @brief Emitted when the button is clicked.
@@ -72,7 +72,7 @@ protected:
      * @param event
     */
     void mousePressEvent(QMouseEvent *event);
-    
+
 private:
     medButtonPrivate * d;
 };

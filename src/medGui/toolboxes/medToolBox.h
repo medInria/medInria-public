@@ -31,7 +31,7 @@ class medToolBoxTab;
 class medToolBoxPrivate;
 class medToolBoxBody;
 class medToolBoxHeader;
-
+class dtkPlugin;
 
 
 /**
@@ -132,6 +132,11 @@ public:
      * @param buttonGroup
     */
     virtual void uncheckButtons( const QString & buttonGroup ) {}
+
+
+    void enableAboutPluginButton(bool enable);
+    bool aboutPluginButtonVisibility(void);
+    void setAboutPluginButton(dtkPlugin * plugin);
 
 signals:
     /**
@@ -256,6 +261,10 @@ public slots:
      * @param void
     */
     void show(void);
+
+
+protected slots:
+    void onAboutButtonClicked();
 
 private:
     medToolBoxPrivate *d;
