@@ -21,7 +21,7 @@ class MEDTESTCOMMON_EXPORT medQtDataImage : public medAbstractDataImage
 public:
     medQtDataImage();
     virtual ~medQtDataImage();
-    virtual QString description(void) const;
+    virtual QString identifier(void) const;
 
     static QString s_description();
     static bool registered();

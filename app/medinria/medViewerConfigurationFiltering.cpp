@@ -120,8 +120,11 @@ void medViewerConfigurationFiltering::onOutputImported ( const medDataIndex& dat
     }
 }
 
-QString medViewerConfigurationFiltering::description(void) const
-{
+QString medViewerConfigurationFiltering::identifier() const {
+    return "Filtering";
+}
+
+QString medViewerConfigurationFiltering::description() const {
     return "Filtering";
 }
 

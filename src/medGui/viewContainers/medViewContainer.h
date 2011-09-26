@@ -293,7 +293,7 @@ public:
     */
     QString info(void);
 
-    virtual QString description() {return "";}
+    virtual QString identifier() {return "";}
     
 signals:
     /**

@@ -267,9 +267,9 @@ void medBrowserArea::onExportData(const medDataIndex &index)
     QFileInfo fileInfo(fileName);
     if(fileInfo.suffix().isEmpty())
     {
-        qDebug() << "determining suffix for type" << data->description();
-        if (data->description().contains("vtk") ||
-                data->description().contains("v3d"))
+        qDebug() << "determining suffix for type" << data->identifier();
+        if (data->identifier().contains("vtk") ||
+                data->identifier().contains("v3d"))
             fileName.append(".vtk");
         else
             fileName.append(".nii.gz");

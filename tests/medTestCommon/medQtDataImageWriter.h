@@ -20,8 +20,9 @@ public:
     medQtDataImageWriter();
     virtual ~medQtDataImageWriter();
 
-    virtual QString description(void) const;
-    virtual QStringList handled(void) const;
+    virtual QString identifier()  const;
+    virtual QString description() const;
+    virtual QStringList handled() const;
 
     static QString s_description();
     static QStringList s_handled();

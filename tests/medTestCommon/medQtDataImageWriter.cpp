@@ -50,24 +50,27 @@ medQtDataImageWriter::~medQtDataImageWriter()
 
 }
 
-QString medQtDataImageWriter::description( void ) const
-{
+QString medQtDataImageWriter::identifier() const {
     return s_description();
 }
 
-QStringList medQtDataImageWriter::handled( void ) const
+QString medQtDataImageWriter::description() const {
+    return s_description();
+}
+
+QStringList medQtDataImageWriter::handled() const
 {
     return s_handled();
 }
 
-QStringList medQtDataImageWriter::supportedFileExtensions( void ) const
+QStringList medQtDataImageWriter::supportedFileExtensions() const
 {
     dtkAbstractData * dtkdata = const_cast<medQtDataImageWriter*>(this)->data();
 
     if ( !const_cast<medQtDataImageWriter*>(this)->data() ) {
         return QStringList();
     }
-    if ( dtkdata->description() != medQtDataImage::s_description() ) {
+    if ( dtkdata->identifier() != medQtDataImage::s_description() ) {
         return QStringList();
     }
     QStringList extensions;
@@ -87,7 +90,7 @@ QStringList medQtDataImageWriter::supportedFileExtensions( void ) const
     return extensions;
 }
 
-bool medQtDataImageWriter::registered( void )
+bool medQtDataImageWriter::registered()
 {
     return dtkAbstractDataFactory::instance()->registerDataWriterType( s_description(), s_handled(), createMedQtDataImageWriter );
 }
@@ -108,7 +111,7 @@ bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= tru
     if ( !dtkdata )
         return false;
 
-    if (dtkdata->description() != medQtDataImage::s_description() ) {
+    if (dtkdata->identifier() != medQtDataImage::s_description() ) {
         return false;
     }
 

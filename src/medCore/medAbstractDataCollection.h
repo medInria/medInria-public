@@ -22,7 +22,7 @@ public:
 
     // satisfying medAbstractData
 
-    virtual QString description(void) const;
+    virtual QString identifier() const;
 
     virtual void draw(void);
 

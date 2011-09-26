@@ -265,15 +265,15 @@ void medDatabaseWriter::run(void)
     {
         dtkSmartPointer<dtkAbstractDataWriter> dataWriter;
         dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
-        qDebug() << "trying " << dataWriter->description();
+        qDebug() << "trying " << dataWriter->identifier();
 
-        if (!dataWriter->handled().contains(d->data->description()))
+        if (!dataWriter->handled().contains(d->data->identifier()))
         {
-            qDebug() << "failed with " << dataWriter->description();
+            qDebug() << "failed with " << dataWriter->identifier();
 	    continue;
         }
 
-        qDebug() << "success with " << dataWriter->description();
+        qDebug() << "success with " << dataWriter->identifier();
 	dataWriter->setData (d->data);
 
         QStringList extensions = dataWriter->supportedFileExtensions();

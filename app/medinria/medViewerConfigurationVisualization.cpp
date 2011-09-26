@@ -93,8 +93,11 @@ medViewerConfigurationVisualization::~medViewerConfigurationVisualization(void)
     d = NULL;
 }
 
-QString medViewerConfigurationVisualization::description(void) const
-{
+QString medViewerConfigurationVisualization::identifier() const {
+    return "Visualization";
+}
+
+QString medViewerConfigurationVisualization::description() const {
     return "Visualization";
 }
 

@@ -261,7 +261,7 @@ QString medQtDataImage::s_description()
     return description;
 }
 
-QString medQtDataImage::description( void ) const
+QString medQtDataImage::identifier( void ) const
 {
     return s_description();
 }
