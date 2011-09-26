@@ -6,28 +6,26 @@
 #define ITKDCMTKIMAGEDATAREADER_H
 
 #include <dtkCore/dtkAbstractDataReader.h>
-
-#include "itkDCMTKDataImageReaderPluginExport.h"
+#include <itkDCMTKDataImageReaderPluginExport.h>
 
 class itkDCMTKDataImageReaderPrivate;
 
-namespace itk
-{
+namespace itk {
     class SliceReadCommand;
 }
 
-class ITKDCMTKDATAIMAGEREADERPLUGIN_EXPORT itkDCMTKDataImageReader : public dtkAbstractDataReader
-{
+class ITKDCMTKDATAIMAGEREADERPLUGIN_EXPORT itkDCMTKDataImageReader: public dtkAbstractDataReader {
     Q_OBJECT
 
 public:
-             itkDCMTKDataImageReader(void);
-    virtual ~itkDCMTKDataImageReader(void);
+             itkDCMTKDataImageReader();
+    virtual ~itkDCMTKDataImageReader();
 
-    virtual QString description(void) const;
+    virtual QString identifier()  const;
+    virtual QString description() const;
 
-    virtual QStringList handled(void) const;
-    static bool registered(void);
+    virtual QStringList handled() const;
+    static bool registered();
 
     friend class itk::SliceReadCommand;
     
@@ -44,9 +42,12 @@ public slots:
     void setProgress (int value);
     
 private:
+
     itkDCMTKDataImageReaderPrivate *d;
+
+    static const char ID[];
 };
 
-dtkAbstractDataReader *createItkDCMTKDataImageReader(void);
+dtkAbstractDataReader *createItkDCMTKDataImageReader();
 
 #endif

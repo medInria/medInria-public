@@ -1,28 +1,23 @@
-#include "itkTIFFDataImageReader.h"
+#include <itkTIFFDataImageReader.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkTIFFImageIO.h>
 
+const char itkTIFFDataImageReader::ID[] = "itkTIFFDataImageReader";
 
-itkTIFFDataImageReader::itkTIFFDataImageReader(void) : itkDataImageReaderBase()
-{
+itkTIFFDataImageReader::itkTIFFDataImageReader(): itkDataImageReaderBase() {
     this->io = itk::TIFFImageIO::New();
 }
 
+itkTIFFDataImageReader::~itkTIFFDataImageReader() { }
 
-itkTIFFDataImageReader::~itkTIFFDataImageReader(void)
-{
-}
-
-QStringList itkTIFFDataImageReader::handled(void) const
-{
+QStringList itkTIFFDataImageReader::handled() const {
     return s_handled();
 }
 
-QStringList itkTIFFDataImageReader::s_handled(void)
-{
+QStringList itkTIFFDataImageReader::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,23 @@ QStringList itkTIFFDataImageReader::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGB3";
 }
 
-bool itkTIFFDataImageReader::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkTIFFDataImageReader", s_handled(),
-                                                                      createItkTIFFDataImageReader);
+bool itkTIFFDataImageReader::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkTIFFDataImageReader);
 }
 
+QString itkTIFFDataImageReader::identifier() const {
+    return ID;
+}
 
-QString itkTIFFDataImageReader::description(void) const
-{
-    return "itkTIFFDataImageReader";
+QString itkTIFFDataImageReader::description() const {
+    return "Reader for TIFF images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkTIFFDataImageReader(void)
-{
+dtkAbstractDataReader *createItkTIFFDataImageReader() {
     return new itkTIFFDataImageReader;
 }
 

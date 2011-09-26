@@ -92,7 +92,7 @@ void v3dViewFiberInteractor::setData(dtkAbstractData *data)
     if (!data)
         return;
 
-    if (data->description()=="v3dDataFibers") {
+    if (data->identifier()=="v3dDataFibers") {
         if (vtkFiberDataSet *dataset = static_cast<vtkFiberDataSet *>(data->data())) {
             d->dataset = dataset;
             d->manager->SetInput (d->dataset);
@@ -415,7 +415,7 @@ void v3dViewFiberInteractor::setROI(dtkAbstractData *data)
     if (!data)
         return;
 
-    if (data->description()!="itkDataImageUChar3")
+    if (data->identifier()!="itkDataImageUChar3")
         return;
 
     typedef itk::Image<unsigned char, 3> ROIType;

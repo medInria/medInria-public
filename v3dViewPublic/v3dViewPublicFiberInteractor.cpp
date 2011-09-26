@@ -83,7 +83,7 @@ void v3dViewPublicFiberInteractor::setData(dtkAbstractData *data)
     if (!data)
         return;
   
-    if (data->description()=="v3dDataFibers") {
+    if (data->identifier()=="v3dDataFibers") {
         if (vtkFiberDataSet *dataset = static_cast<vtkFiberDataSet *>(data->data())) {
             d->dataset = dataset;
             d->manager->SetInput (d->dataset);

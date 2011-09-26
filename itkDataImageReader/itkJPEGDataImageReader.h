@@ -1,27 +1,30 @@
 #ifndef ITKJPEGDATAIMAGEREADER_H
 #define ITKJPEGDATAIMAGEREADER_H
 
-#include "itkDataImageReaderBase.h"
+#include <itkDataImageReaderBase.h>
+#include <itkDataImageReaderPluginExport.h>
 
-#include "itkDataImageReaderPluginExport.h"
-
-class ITKDATAIMAGEREADERPLUGIN_EXPORT itkJPEGDataImageReader : public itkDataImageReaderBase
-{
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkJPEGDataImageReader: public itkDataImageReaderBase {
     Q_OBJECT
 
 public:
-    itkJPEGDataImageReader(void);
-    virtual ~itkJPEGDataImageReader(void);
+    itkJPEGDataImageReader();
+    virtual ~itkJPEGDataImageReader();
 
-    virtual QString description(void) const;
+    virtual QString identifier()  const;
+    virtual QString description() const;
 
-    QStringList handled(void) const;
+    QStringList handled() const;
 
-    static QStringList s_handled (void);
+    static QStringList s_handled();
 
-    static bool registered(void);	
+    static bool registered();	
+
+private:
+
+    static const char ID[];
 };
 
-dtkAbstractDataReader *createItkJPEGDataImageReader(void);
+dtkAbstractDataReader *createItkJPEGDataImageReader();
 
 #endif

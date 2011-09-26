@@ -35,37 +35,41 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractDataMesh
   Q_OBJECT
     
  public:
-    vtkDataMesh4D(void);
-    ~vtkDataMesh4D(void);
-    virtual QString description(void) const;
-    static bool registered(void);
+    vtkDataMesh4D();
+    ~vtkDataMesh4D();
 
-    virtual QImage        &thumbnail  (void) const;
-    virtual QList<QImage> &thumbnails (void) const;
+    virtual QString identifier()  const;
+    virtual QString description() const;
+
+    static bool registered();
+
+    virtual QImage        &thumbnail()  const;
+    virtual QList<QImage> &thumbnails() const;
 
  public slots:
     // derived from dtkAbstractData
     
-    void *output(void);
-    void *data(void);
+    void *output();
+    void *data();
     void setData(void* data);
-    void update(void);
+    void update();
 
     void onMetaDataSet(const QString& key, const QString& value);
     void onPropertySet(const QString& key, const QString& value);
 
-    int countVertices(void);
-    int countEdges(void);
+    int countVertices();
+    int countEdges();
     
  public:
     // derived from medAbstractDataImage
     
  private:
 
+    static const char ID[];
     vtkDataMesh4DPrivate* d;
   
 };
 
-dtkAbstractData* createVtkDataMesh4D (void);
+dtkAbstractData* createVtkDataMesh4D();
 
 #endif

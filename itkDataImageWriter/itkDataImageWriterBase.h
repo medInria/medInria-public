@@ -3,14 +3,14 @@
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
-#include "itkDataImageWriterPluginExport.h"
-#include "itkImageIOBase.h"
+#include <itkDataImageWriterPluginExport.h>
+#include <itkImageIOBase.h>
 
-class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkDataImageWriterBase : public dtkAbstractDataWriter
-{
+class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkDataImageWriterBase: public dtkAbstractDataWriter {
     Q_OBJECT
 
 public:
+
     itkDataImageWriterBase(void);
     virtual ~itkDataImageWriterBase(void);
 
@@ -20,10 +20,12 @@ public:
     virtual QStringList supportedFileExtensions(void) const;
 
 public slots:
+
     bool write    (const QString& path);
     bool canWrite (const QString& path);
 
 protected:
+
     itk::ImageIOBase::Pointer io;
     
 private:

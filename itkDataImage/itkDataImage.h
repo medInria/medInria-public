@@ -555,7 +555,8 @@ public:
         d = 0;
     }
 
-    virtual QString description() const { return ID; }
+    virtual QString description() const { return ID; } //   TODO: make a real description when we are sure it is no longer used as an identifier.
+    virtual QString identifier()  const { return ID; }
 
     static bool registered() {
         return dtkAbstractDataFactory::instance()->registerDataType(ID,createItkDataImage<DIM,T,ID>);

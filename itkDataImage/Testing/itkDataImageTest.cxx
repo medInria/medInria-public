@@ -100,7 +100,7 @@ int testRunner<TPixel,VDimension>::run() {
         return EXIT_FAILURE;
     }
 
-    if ( dataInDtk->description() != this->m_dataTypeName ) {
+    if ( dataInDtk->identifier() != this->m_dataTypeName ) {
         dtkDebug() << "Bad data description";
         return EXIT_FAILURE;
     }

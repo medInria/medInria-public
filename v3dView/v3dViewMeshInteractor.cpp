@@ -102,7 +102,7 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         return;
     }
     
-    if(data->description() == "vtkDataMesh4D")
+    if(data->identifier() == "vtkDataMesh4D")
     {
         //vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
         //vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet());
@@ -161,7 +161,7 @@ void v3dViewMeshInteractor::setView(dtkAbstractView *view)
 
 bool v3dViewMeshInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 {
-    if ( data->description() == "vtkDataMesh" ) {
+    if ( data->identifier() == "vtkDataMesh" ) {
 
         this->enable ();
         return true;

@@ -1,27 +1,32 @@
 #ifndef ITKNRRDDATAIMAGEREADER_H
 #define ITKNRRDDATAIMAGEREADER_H
 
-#include "itkDataImageReaderBase.h"
+#include <itkDataImageReaderBase.h>
+#include <itkDataImageReaderPluginExport.h>
 
-#include "itkDataImageReaderPluginExport.h"
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkNrrdDataImageReader: public itkDataImageReaderBase {
 
-class ITKDATAIMAGEREADERPLUGIN_EXPORT itkNrrdDataImageReader : public itkDataImageReaderBase
-{
     Q_OBJECT
 
 public:
-    itkNrrdDataImageReader(void);
-    virtual ~itkNrrdDataImageReader(void);
 
-    virtual QString description(void) const;
+    itkNrrdDataImageReader();
+    virtual ~itkNrrdDataImageReader();
 
-    QStringList handled(void) const;
+    virtual QString identifier()  const;
+    virtual QString description() const;
 
-    static QStringList s_handled (void);
+    QStringList handled() const;
 
-    static bool registered(void);	
+    static QStringList s_handled();
+
+    static bool registered();	
+
+private:
+
+    static const char ID[];
 };
 
-dtkAbstractDataReader *createItkNrrdDataImageReader(void);
+dtkAbstractDataReader *createItkNrrdDataImageReader();
 
 #endif

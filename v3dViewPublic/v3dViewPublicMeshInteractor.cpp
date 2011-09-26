@@ -86,7 +86,7 @@ void v3dViewPublicMeshInteractor::setView(dtkAbstractView *view)
 
 bool v3dViewPublicMeshInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 {
-    if ( data->description() == "vtkDataMesh" ) {
+    if ( data->identifier() == "vtkDataMesh" ) {
 
         this->enable ();
         return true;

@@ -1,136 +1,116 @@
-#include "vtkDataMeshReader.h"
+#include <vtkDataMeshReader.h>
 
-#include "vtkDataSetReader.h"
-#include "vtkSmartPointer.h"
+#include <vtkDataSetReader.h>
+#include <vtkSmartPointer.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-vtkDataMeshReader::vtkDataMeshReader(void) : dtkAbstractDataReader()
-{
-  this->reader = vtkDataSetReader::New();
+const char vtkDataMeshReader::ID[] = "vtkDataMeshReader";
+
+vtkDataMeshReader::vtkDataMeshReader(): dtkAbstractDataReader() {
+    reader = vtkDataSetReader::New();
 }
 
-
-vtkDataMeshReader::~vtkDataMeshReader(void)
-{
-  this->reader->Delete();
+vtkDataMeshReader::~vtkDataMeshReader() {
+    reader->Delete();
 }
 
-
-QStringList vtkDataMeshReader::handled(void) const
-{
-  return QStringList() << "vtkDataMesh";
+QStringList vtkDataMeshReader::handled() const {
+    return QStringList() << "vtkDataMesh";
 }
 
-QStringList vtkDataMeshReader::s_handled(void)
-{
-  return QStringList() << "vtkDataMesh";
+QStringList vtkDataMeshReader::s_handled() {
+    return QStringList() << "vtkDataMesh";
 }
 
-bool vtkDataMeshReader::canRead (const QString& path)
-{
-  this->reader->SetFileName (path.toAscii().constData());
+bool vtkDataMeshReader::canRead(const QString& path) {
+    reader->SetFileName(path.toAscii().constData());
 
-  if (this->reader->IsFilePolyData() ||
-      this->reader->IsFileUnstructuredGrid() ||
-      this->reader->IsFileStructuredGrid()   ||
-      this->reader->IsFileRectilinearGrid()   )
-  {
+    return reader->IsFilePolyData()         ||
+           reader->IsFileUnstructuredGrid() ||
+           reader->IsFileStructuredGrid()   ||
+           reader->IsFileRectilinearGrid();
+}
+
+bool vtkDataMeshReader::canRead(const QStringList& paths) {
+    if (!paths.count())
+        return false;
+    return canRead(paths[0].toAscii().constData());
+}
+
+void vtkDataMeshReader::readInformation(const QString& path) {
+
+    dtkSmartPointer<dtkAbstractData> dtkdata = data();
+    reader->SetFileName(path.toAscii().constData());
+
+    if (!dtkdata) {
+        dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer("vtkDataMesh");
+        if (dtkdata)
+            setData(dtkdata);
+    }
+
+
+    dtkdata->addMetaData("FilePath", QStringList() << path);
+    dtkdata->identifier() = "vtkDataMesh";  //  Strange !!
+}
+
+void vtkDataMeshReader::readInformation(const QStringList& paths) {
+    if (!paths.count())
+        return;
+    readInformation(paths[0].toAscii().constData());
+}
+
+bool vtkDataMeshReader::read(const QString& path) {
+    setProgress(0);
+    readInformation(path);
+    setProgress(50);
+
+    qDebug() << "Can read with: " << description();
+
+    if (dtkAbstractData *dtkdata = data()) {
+
+        if (!(dtkdata->identifier()=="vtkDataMesh"))
+            return false;
+
+        reader->SetFileName(path.toAscii().constData());
+        reader->Update();
+        dtkdata->setData(reader->GetOutput());
+    }
+
+    setProgress(100);
     return true;
-  }
-  return false;
 }
 
-bool vtkDataMeshReader::canRead (const QStringList& paths)
-{
-  if (!paths.count())
-    return false;
-  return this->canRead ( paths[0].toAscii().constData() );
+bool vtkDataMeshReader::read(const QStringList& paths) {
+    if (!paths.count())
+        return false;
+    return read(paths[0].toAscii().constData());
 }
 
-void vtkDataMeshReader::readInformation (const QString& path)
-{
-  
-  dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
-  this->reader->SetFileName (path.toAscii().constData());
-  
-  if (!dtkdata)
-  {
-    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("vtkDataMesh");
-    if (dtkdata)
-      this->setData ( dtkdata );
-  }
-
-
-  dtkdata->addMetaData ("FilePath", QStringList() << path);
-  dtkdata->description() = "vtkDataMesh";
+void vtkDataMeshReader::setProgress(int value) {
+    emit progressed(value);
 }
 
-void vtkDataMeshReader::readInformation (const QStringList& paths)
-{
-  if (!paths.count())
-    return;
-  this->readInformation ( paths[0].toAscii().constData() );
+bool vtkDataMeshReader::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,
+                                    vtkDataMeshReader::s_handled(),
+                                    createVtkDataMeshReader);
 }
 
-bool vtkDataMeshReader::read (const QString& path)
-{
-  this->setProgress (0);
-  
-  this->readInformation ( path );
-
-  this->setProgress (50);
-  
-  qDebug() << "Can read with: " << this->description();
-  
-  if (dtkAbstractData *dtkdata = this->data() )
-  {
-    
-    if (!(dtkdata->description()=="vtkDataMesh"))
-      return false;
-
-    this->reader->SetFileName (path.toAscii().constData());
-    this->reader->Update();
-    dtkdata->setData (this->reader->GetOutput() );
-  }
-
-  this->setProgress (100);
-  return true;
-  
+QString vtkDataMeshReader::identifier() const {
+    return ID;
 }
 
-bool vtkDataMeshReader::read (const QStringList& paths)
-{
-  if (!paths.count())
-    return false;
-  return this->read ( paths[0].toAscii().constData() );
-}
-
-void vtkDataMeshReader::setProgress (int value)
-{
-  emit progressed (value);
-}
-
-bool vtkDataMeshReader::registered(void)
-{
-  return dtkAbstractDataFactory::instance()->registerDataReaderType(
-          "vtkDataMeshReader",
-          vtkDataMeshReader::s_handled(),
-          createVtkDataMeshReader);
-}
-
-QString vtkDataMeshReader::description(void) const
-{
-    return "vtkDataMeshReader";
+QString vtkDataMeshReader::description() const {
+    return "Reader for vtk meshes";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createVtkDataMeshReader(void)
-{
-  return new vtkDataMeshReader;
+dtkAbstractDataReader *createVtkDataMeshReader() {
+    return new vtkDataMeshReader;
 }
 

@@ -1,28 +1,23 @@
-#include "itkNiftiDataImageWriter.h"
+#include <itkNiftiDataImageWriter.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkNiftiImageIO.h>
 
+const char itkNiftiDataImageWriter::ID[] = "itkNiftiDataImageWriter";
 
-itkNiftiDataImageWriter::itkNiftiDataImageWriter(void) : itkDataImageWriterBase()
-{
+itkNiftiDataImageWriter::itkNiftiDataImageWriter(): itkDataImageWriterBase() {
     this->io = itk::NiftiImageIO::New();
 }
 
+itkNiftiDataImageWriter::~itkNiftiDataImageWriter() { }
 
-itkNiftiDataImageWriter::~itkNiftiDataImageWriter(void)
-{
-}
-
-QStringList itkNiftiDataImageWriter::handled(void) const
-{
+QStringList itkNiftiDataImageWriter::handled() const {
     return s_handled();
 }
 
-QStringList itkNiftiDataImageWriter::s_handled(void)
-{
+QStringList itkNiftiDataImageWriter::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,23 @@ QStringList itkNiftiDataImageWriter::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGBA3";
 }
 
-bool itkNiftiDataImageWriter::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataWriterType("itkNiftiDataImageWriter", s_handled(),
-                                                                      createItkNiftiDataImageWriter);
+bool itkNiftiDataImageWriter::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataWriterType(ID,s_handled(),createItkNiftiDataImageWriter);
 }
 
+QString itkNiftiDataImageWriter::identifier() const {
+    return ID;
+}
 
-QString itkNiftiDataImageWriter::description(void) const
-{
-    return "itkNiftiDataImageWriter";
+QString itkNiftiDataImageWriter::description() const {
+    return "Writer for Nifti images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkNiftiDataImageWriter(void)
-{
+dtkAbstractDataWriter *createItkNiftiDataImageWriter() {
     return new itkNiftiDataImageWriter;
 }
 

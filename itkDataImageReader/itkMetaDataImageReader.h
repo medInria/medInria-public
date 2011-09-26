@@ -1,27 +1,30 @@
 #ifndef ITKMETADATAIMAGEREADER_H
 #define ITKMETADATAIMAGEREADER_H
 
-#include "itkDataImageReaderBase.h"
+#include <itkDataImageReaderBase.h>
+#include <itkDataImageReaderPluginExport.h>
 
-#include "itkDataImageReaderPluginExport.h"
-
-class ITKDATAIMAGEREADERPLUGIN_EXPORT itkMetaDataImageReader : public itkDataImageReaderBase
-{
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkMetaDataImageReader: public itkDataImageReaderBase {
     Q_OBJECT
 
 public:
-    itkMetaDataImageReader(void);
-    virtual ~itkMetaDataImageReader(void);
+    itkMetaDataImageReader();
+    virtual ~itkMetaDataImageReader();
 
-    virtual QString description(void) const;
+    virtual QString identifier()  const;
+    virtual QString description() const;
 
-    QStringList handled(void) const;
+    QStringList handled() const;
 
-    static QStringList s_handled (void);
+    static QStringList s_handled();
 
-    static bool registered(void);	
+    static bool registered();	
+
+private:
+
+    static const char ID[];
 };
 
-dtkAbstractDataReader *createItkMetaDataImageReader(void);
+dtkAbstractDataReader *createItkMetaDataImageReader();
 
 #endif

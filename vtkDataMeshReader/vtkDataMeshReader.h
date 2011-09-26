@@ -2,47 +2,50 @@
 #define VTKDATAMESHREADER_H
 
 #include <dtkCore/dtkAbstractDataReader.h>
-
-#include "vtkDataMeshReaderPluginExport.h"
+#include <vtkDataMeshReaderPluginExport.h>
 
 class vtkDataSetReader;
 
-class VTKDATAMESHREADERPLUGIN_EXPORT vtkDataMeshReader : public dtkAbstractDataReader
-{
-  Q_OBJECT
-    
+class VTKDATAMESHREADERPLUGIN_EXPORT vtkDataMeshReader: public dtkAbstractDataReader {
+    Q_OBJECT
+
 public:
-  vtkDataMeshReader(void);
-  virtual ~vtkDataMeshReader(void);
-  
-  virtual QStringList handled(void) const;
-  
-  static QStringList s_handled (void);
-  
+    vtkDataMeshReader();
+    virtual ~vtkDataMeshReader();
+
+    virtual QStringList handled() const;
+
+    static QStringList s_handled();
+
 public slots:
-  virtual bool canRead (const QString& path);
-  virtual bool canRead (const QStringList& paths);
-  
-  virtual void readInformation (const QString& path);
-  virtual void readInformation (const QStringList& paths);
-  
-  virtual bool read (const QString& path);
-  virtual bool read (const QStringList& paths);
-  
-  virtual void setProgress (int value);
 
-  virtual QString description(void) const;
-  
-  static bool registered(void);	
+    virtual bool canRead(const QString& path);
+    virtual bool canRead(const QStringList& paths);
 
-    
+    virtual void readInformation(const QString& path);
+    virtual void readInformation(const QStringList& paths);
+
+    virtual bool read(const QString& path);
+    virtual bool read(const QStringList& paths);
+
+    virtual void setProgress(int value);
+
+    virtual QString identifier()  const;
+    virtual QString description() const;
+
+    static bool registered();	
+
 protected:
 
-  vtkDataSetReader* reader;
+    vtkDataSetReader* reader;
+
+private:
+
+    static const char ID[];
 };
 
 
-dtkAbstractDataReader *createVtkDataMeshReader(void);
+dtkAbstractDataReader *createVtkDataMeshReader();
 
 
 #endif

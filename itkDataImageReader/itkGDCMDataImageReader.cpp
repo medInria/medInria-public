@@ -24,6 +24,8 @@
 
 #include <map>
 
+static const char itkGDCMDataImageReader::ID[] = "itkGDCMDataImageReader";;
+
 template<typename TYPE>
 void Read3DImage(dtkAbstractData* dtkdata,itk::GDCMImageIO::Pointer io,const itkGDCMDataImageReader::FileList& filelist) {
     typename itk::ImageSeriesReader<itk::Image<TYPE,3> >::Pointer reader = itk::ImageSeriesReader<itk::Image<TYPE,3> >::New();
@@ -34,7 +36,7 @@ void Read3DImage(dtkAbstractData* dtkdata,itk::GDCMImageIO::Pointer io,const itk
 }
 
 template <typename TYPE>
-void Read4DImage(dtkAbstractData* dtkdata, itk::GDCMImageIO::Pointer io, itkGDCMDataImageReader::FileListMapType map) {
+void Read4DImage(dtkAbstractData* dtkdata,itk::GDCMImageIO::Pointer io,itkGDCMDataImageReader::FileListMapType map) {
     typedef itk::Image<TYPE,4>                   ImageType;
     typedef itk::Image<TYPE,3>                   SubImageType;
     typedef itk::ImageSeriesReader<SubImageType> SeriesReaderType;
@@ -114,50 +116,44 @@ void Read4DImage(dtkAbstractData* dtkdata, itk::GDCMImageIO::Pointer io, itkGDCM
     dtkdata->setData(image);
 }
 
-class itkGDCMDataImageReaderPrivate
-{
+class itkGDCMDataImageReaderPrivate {
 public:
-  itkGDCMDataImageReaderPrivate();
-  ~itkGDCMDataImageReaderPrivate(){};
-  
-  itk::GDCMImageIO::Pointer io;
+    itkGDCMDataImageReaderPrivate();
+    ~itkGDCMDataImageReaderPrivate(){};
+
+    itk::GDCMImageIO::Pointer io;
 };
 
-itkGDCMDataImageReaderPrivate::itkGDCMDataImageReaderPrivate()
-{
-  io = itk::GDCMImageIO::New();
+itkGDCMDataImageReaderPrivate::itkGDCMDataImageReaderPrivate() {
+    io = itk::GDCMImageIO::New();
 }
 
-itkGDCMDataImageReader::itkGDCMDataImageReader(void) : dtkAbstractDataReader(), d(new itkGDCMDataImageReaderPrivate)
-{
-  this->m_Scanner.AddTag( gdcm::Tag(0x0010,0x0010) );
-  this->m_Scanner.AddTag( gdcm::Tag(0x0008,0x0130) );
-  this->m_Scanner.AddTag( gdcm::Tag(0x0008,0x103e) );
-  this->m_Scanner.AddTag( gdcm::Tag(0x0020,0x000d) );
-  this->m_Scanner.AddTag( gdcm::Tag(0x0020,0x000e) );
-  this->m_Scanner.AddTag( gdcm::Tag(0x0020,0x0037) );
-  this->m_Scanner.AddTag( gdcm::Tag(0x0020,0x0011) );
-  this->m_Scanner.AddTag( gdcm::Tag(0x0018,0x0024) );
-  this->m_Scanner.AddTag( gdcm::Tag(0x0018,0x0050) );
-  this->m_Scanner.AddTag( gdcm::Tag(0x0028,0x0010) );
-  this->m_Scanner.AddTag( gdcm::Tag(0x0028,0x0011) );
+itkGDCMDataImageReader::itkGDCMDataImageReader(): dtkAbstractDataReader(),d(new itkGDCMDataImageReaderPrivate) {
+    this->m_Scanner.AddTag(gdcm::Tag(0x0010,0x0010));
+    this->m_Scanner.AddTag(gdcm::Tag(0x0008,0x0130));
+    this->m_Scanner.AddTag(gdcm::Tag(0x0008,0x103e));
+    this->m_Scanner.AddTag(gdcm::Tag(0x0020,0x000d));
+    this->m_Scanner.AddTag(gdcm::Tag(0x0020,0x000e));
+    this->m_Scanner.AddTag(gdcm::Tag(0x0020,0x0037));
+    this->m_Scanner.AddTag(gdcm::Tag(0x0020,0x0011));
+    this->m_Scanner.AddTag(gdcm::Tag(0x0018,0x0024));
+    this->m_Scanner.AddTag(gdcm::Tag(0x0018,0x0050));
+    this->m_Scanner.AddTag(gdcm::Tag(0x0028,0x0010));
+    this->m_Scanner.AddTag(gdcm::Tag(0x0028,0x0011));
 
-  this->m_Scanner.AddTag( gdcm::Tag(0x0020,0x0032) );
-  this->m_Scanner.AddTag( gdcm::Tag(0x0020,0x0037) );
-  
-}
+    this->m_Scanner.AddTag(gdcm::Tag(0x0020,0x0032));
+    this->m_Scanner.AddTag(gdcm::Tag(0x0020,0x0037));
+    }
 
 
-itkGDCMDataImageReader::~itkGDCMDataImageReader(void)
-{
-  delete d;
-  d = 0;
+itkGDCMDataImageReader::~itkGDCMDataImageReader() {
+    delete d;
+    d = 0;
 }
 
 
-bool itkGDCMDataImageReader::registered(void)
-{
-  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkGDCMDataImageReader",
+bool itkGDCMDataImageReader::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkGDCMDataImageReader",
 								    QStringList()
 								    << "itkDataImageDouble3"
 								    << "itkDataImageFloat3"
@@ -182,9 +178,8 @@ bool itkGDCMDataImageReader::registered(void)
 }
 
 
-QStringList itkGDCMDataImageReader::handled(void) const
-{
-  return QStringList() << "itkDataImageDouble3"
+QStringList itkGDCMDataImageReader::handled() const {
+    return QStringList() << "itkDataImageDouble3"
 		       << "itkDataImageFloat3"
 		       << "itkDataImageULong3"
 		       << "itkDataImageLong3"
@@ -205,50 +200,50 @@ QStringList itkGDCMDataImageReader::handled(void) const
 		       << "itkDataImageRGB3";
 }
 
-QString itkGDCMDataImageReader::description(void) const
-{
-  return "itkGDCMDataImageReader";
+QString itkGDCMDataImageReader::identifier() const {
+    return ID;
 }
 
-bool itkGDCMDataImageReader::canRead (QString path)
-{
-  return d->io->CanReadFile ( path.toAscii().constData() );
+QString itkGDCMDataImageReader::description() const {
+    return "itkGDCMDataImageReader";
 }
 
-bool itkGDCMDataImageReader::canRead (QStringList paths)
-{
-  for (int i=0; i<paths.size(); i++)
-    if (!d->io->CanReadFile ( paths[i].toAscii().constData() ))
-      return false;
-  return true;
+bool itkGDCMDataImageReader::canRead(QString path) {
+    return d->io->CanReadFile(path.toAscii().constData());
 }
 
-void itkGDCMDataImageReader::readInformation (QString path)
-{
-  QStringList paths;
-  paths << path;
-  readInformation ( paths );  
+bool itkGDCMDataImageReader::canRead(QStringList paths) {
+    for (int i=0; i<paths.size(); i++)
+        if (!d->io->CanReadFile(paths[i].toAscii().constData()))
+            return false;
+    return true;
 }
 
-void itkGDCMDataImageReader::readInformation (QStringList paths)
+void itkGDCMDataImageReader::readInformation(QString path) {
+    QStringList paths;
+    paths << path;
+    readInformation(paths);  
+}
+
+void itkGDCMDataImageReader::readInformation(QStringList paths)
 {
   if (paths.size()==0)
     return;
 
   FileList filenames;
   for (int i=0; i<paths.size(); i++)
-    filenames.push_back ( paths[i].toAscii().constData() );
+    filenames.push_back(paths[i].toAscii().constData());
 
-  FileListMapType map = this->sort (filenames);
+  FileListMapType map = this->sort(filenames);
   
   std::string firstfilename = (*map.begin()).second[0];
   
-  d->io->SetFileName ( firstfilename.c_str() );
+  d->io->SetFileName(firstfilename.c_str());
   try
   {
     d->io->ReadImageInformation();
   }
-  catch (itk::ExceptionObject &e)
+  catch(itk::ExceptionObject &e)
   {
     qDebug() << e.GetDescription();
     return;
@@ -269,7 +264,7 @@ void itkGDCMDataImageReader::readInformation (QStringList paths)
     std::ostringstream imagetypestring;
     imagetypestring << "itkDataImage";
   
-    if (d->io->GetPixelType() != itk::ImageIOBase::SCALAR )
+    if (d->io->GetPixelType() != itk::ImageIOBase::SCALAR)
     {
       qDebug() << "Unsupported pixel type";
       return;
@@ -326,9 +321,9 @@ void itkGDCMDataImageReader::readInformation (QStringList paths)
     if (imagedimension == 4)
       std::cout<<"image type given :\t "<<imagetypestring.str().c_str()<<std::endl;
     
-    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (imagetypestring.str().c_str());
+    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer(imagetypestring.str().c_str());
     if (dtkdata)
-      this->setData ( dtkdata );
+      this->setData(dtkdata);
   }
 
   if (dtkdata)
@@ -346,62 +341,63 @@ void itkGDCMDataImageReader::readInformation (QStringList paths)
     QStringList columns;
     QStringList filePaths;
     
-    patientName    << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0010,0x0010));
-    studyName      << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0008,0x0130));
-    seriesName     << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0008,0x103e));
-    studyId        << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0020,0x000d));
-    seriesId       << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0020,0x000e));
-    orientation    << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0020,0x0037));
-    seriesNumber   << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0020,0x0011)); 
-    sequenceName   << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0018,0x0024));
-    sliceThickness << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0018,0x0050));
-    rows           << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0028,0x0010));
-    columns        << this->m_Scanner.GetValue(firstfilename.c_str(), gdcm::Tag(0x0028,0x0011));
+    patientName    << this->m_Scanner.GetValue(firstfilename.c_str(),gdcm::Tag(0x0010,0x0010));
+    studyName      << this->m_Scanner.GetValue(firstfilename.c_str(),gdcm::Tag(0x0008,0x0130));
+    seriesName     << this->m_Scanner.GetValue(firstfilename.c_str(),gdcm::Tag(0x0008,0x103e));
+    studyId        << this->m_Scanner.GetValue(firstfilename.c_str(),gdcm::Tag(0x0020,0x000d));
+    seriesId       << this->m_Scanner.GetValue(firstfilename.c_str(),gdcm::Tag(0x0020,0x000e));
+    orientation    << this->m_Scanner.GetValue(firstfilename.c_str(),gdcm::Tag(0x0020,0x0037));
+    seriesNumber   << this->m_Scanner.GetValue(firstfilename.c_str(),gdcm::Tag(0x0020,0x0011)); 
+    sequenceName   << this->m_Scanner.GetValue(firstfilename.c_str(),gdcm::Tag(0x0018,0x0024));
+    sliceThickness << this->m_Scanner.GetValue(firstfilename.c_str(),gdcm::Tag(0x0018,0x0050));
+    rows           << this->m_Scanner.GetValue(firstfilename.c_str(),gdcm::Tag(0x0028,0x0010));
+    columns        << this->m_Scanner.GetValue(firstfilename.c_str(),gdcm::Tag(0x0028,0x0011));
       
-    if (!dtkdata->hasMetaData (medMetaDataKeys::PatientName.key()))
-      dtkdata->addMetaData ( medMetaDataKeys::PatientName.key(), patientName );
+    //  TODO: Use the medMetaDataKeys iteration scheme...
+ 
+    if (!dtkdata->hasMetaData(medMetaDataKeys::PatientName.key()))
+      dtkdata->addMetaData(medMetaDataKeys::PatientName.key(),patientName);
     else
-      dtkdata->setMetaData ( medMetaDataKeys::PatientName.key(), patientName );
+      dtkdata->setMetaData(medMetaDataKeys::PatientName.key(),patientName);
 
-    if (!dtkdata->hasMetaData (medMetaDataKeys::StudyDescription.key()))
-      dtkdata->addMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
+    if (!dtkdata->hasMetaData(medMetaDataKeys::StudyDescription.key()))
+      dtkdata->addMetaData(medMetaDataKeys::StudyDescription.key(),studyName);
     else
-      dtkdata->setMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
+      dtkdata->setMetaData(medMetaDataKeys::StudyDescription.key(),studyName);
 
-    if (!dtkdata->hasMetaData (medMetaDataKeys::SeriesDescription.key()))
-      dtkdata->addMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
+    if (!dtkdata->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+      dtkdata->addMetaData(medMetaDataKeys::SeriesDescription.key(),seriesName);
     else
-      dtkdata->setMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
+      dtkdata->setMetaData(medMetaDataKeys::SeriesDescription.key(),seriesName);
 
-    dtkdata->setMetaData(medMetaDataKeys::StudyID.key(), studyId);
-    dtkdata->setMetaData(medMetaDataKeys::SeriesID.key(), seriesId);
-    dtkdata->setMetaData(medMetaDataKeys::Orientation.key(), orientation);
-    dtkdata->setMetaData(medMetaDataKeys::SeriesNumber.key(), seriesNumber);
-    dtkdata->setMetaData(medMetaDataKeys::SequenceName.key(), sequenceName);
-    dtkdata->setMetaData(medMetaDataKeys::SliceThickness.key(), sliceThickness);
-    dtkdata->setMetaData(medMetaDataKeys::Rows.key(), rows);
-    dtkdata->setMetaData(medMetaDataKeys::Columns.key(), columns);
+    dtkdata->setMetaData(medMetaDataKeys::StudyID.key(),studyId);
+    dtkdata->setMetaData(medMetaDataKeys::SeriesID.key(),seriesId);
+    dtkdata->setMetaData(medMetaDataKeys::Orientation.key(),orientation);
+    dtkdata->setMetaData(medMetaDataKeys::SeriesNumber.key(),seriesNumber);
+    dtkdata->setMetaData(medMetaDataKeys::SequenceName.key(),sequenceName);
+    dtkdata->setMetaData(medMetaDataKeys::SliceThickness.key(),sliceThickness);
+    dtkdata->setMetaData(medMetaDataKeys::Rows.key(),rows);
+    dtkdata->setMetaData(medMetaDataKeys::Columns.key(),columns);
 
-    FileList orderedfilelist = this->unfoldMap (map);
-    for (unsigned int i=0; i<orderedfilelist.size(); i++ )
+    FileList orderedfilelist = this->unfoldMap(map);
+    for (unsigned int i=0; i<orderedfilelist.size(); i++)
       filePaths << orderedfilelist[i].c_str();
 
-    dtkdata->addMetaData (medMetaDataKeys::FilePaths.key(), filePaths);
+    dtkdata->addMetaData(medMetaDataKeys::FilePaths.key(),filePaths);
 	
   }
 }
 
-bool itkGDCMDataImageReader::read (QString path)
-{
-  QStringList paths;
-  paths << path;
-  return read ( paths );
+bool itkGDCMDataImageReader::read(QString path) {
+    QStringList paths;
+    paths << path;
+    return read(paths);
 }
 
 bool itkGDCMDataImageReader::read(QStringList paths) {
 
     if (paths.size()==0)
-      return false;
+        return false;
 
     this->readInformation(paths);
 
@@ -426,29 +422,29 @@ bool itkGDCMDataImageReader::read(QStringList paths) {
         for (int i=0;i<qfilelist.size();i++)
           filelist.push_back(qfilelist[i].toAscii().constData());
         
-        std::cout << "reading : "    << dtkdata->description().toAscii().constData() << std::endl;
+        std::cout << "reading : "    << dtkdata->identifier().toAscii().constData() << std::endl;
         std::cout << "containing : " << map.size() << " volumes" << std::endl;
 
         try {
-            if      (dtkdata->description()=="itkDataImageUChar3")  { Read3DImage<unsigned char>(dtkdata,d->io,filelist);  }
-            else if (dtkdata->description()=="itkDataImageChar3")   { Read3DImage<char>(dtkdata,d->io,filelist);           }
-            else if (dtkdata->description()=="itkDataImageUShort3") { Read3DImage<unsigned short>(dtkdata,d->io,filelist); }
-            else if (dtkdata->description()=="itkDataImageShort3")  { Read3DImage<short>(dtkdata,d->io,filelist);          }
-            else if (dtkdata->description()=="itkDataImageUInt3")   { Read3DImage<unsigned int>(dtkdata,d->io,filelist);   }
-            else if (dtkdata->description()=="itkDataImageInt3")    { Read3DImage<int>(dtkdata,d->io,filelist);            }
-            else if (dtkdata->description()=="itkDataImageULong3")  { Read3DImage<unsigned long>(dtkdata,d->io,filelist);  }
-            else if (dtkdata->description()=="itkDataImageLong3")   { Read3DImage<long>(dtkdata,d->io,filelist);           }
-            else if (dtkdata->description()=="itkDataImageFloat3")  { Read3DImage<float>(dtkdata,d->io,filelist);          }
-            else if (dtkdata->description()=="itkDataImageDouble3") { Read3DImage<double>(dtkdata,d->io,filelist);         }
-            else if (dtkdata->description()=="itkDataImageUChar4")  { Read4DImage<unsigned char>(dtkdata,d->io,map);          }
-            else if (dtkdata->description()=="itkDataImageUShort4") { Read4DImage<unsigned short>(dtkdata,d->io,map);         }
-            else if (dtkdata->description()=="itkDataImageShort4")  { Read4DImage<short>(dtkdata,d->io,map);                  }
-            else if (dtkdata->description()=="itkDataImageUInt4")   { Read4DImage<unsigned int>(dtkdata,d->io,map);           }
-            else if (dtkdata->description()=="itkDataImageULong4")  { Read4DImage<unsigned long>(dtkdata,d->io,map);          }
-            else if (dtkdata->description()=="itkDataImageInt4")    { Read4DImage<int>(dtkdata,d->io,map);                    }
-            else if (dtkdata->description()=="itkDataImageLong4")   { Read4DImage<long>(dtkdata,d->io,map);                   }
-            else if (dtkdata->description()=="itkDataImageChar4")   { Read4DImage<char>(dtkdata,d->io,map);                   }
-            else if (dtkdata->description()=="itkDataImageDouble4") {
+            if      (dtkdata->identifier()=="itkDataImageUChar3")  { Read3DImage<unsigned char>(dtkdata,d->io,filelist);  }
+            else if (dtkdata->identifier()=="itkDataImageChar3")   { Read3DImage<char>(dtkdata,d->io,filelist);           }
+            else if (dtkdata->identifier()=="itkDataImageUShort3") { Read3DImage<unsigned short>(dtkdata,d->io,filelist); }
+            else if (dtkdata->identifier()=="itkDataImageShort3")  { Read3DImage<short>(dtkdata,d->io,filelist);          }
+            else if (dtkdata->identifier()=="itkDataImageUInt3")   { Read3DImage<unsigned int>(dtkdata,d->io,filelist);   }
+            else if (dtkdata->identifier()=="itkDataImageInt3")    { Read3DImage<int>(dtkdata,d->io,filelist);            }
+            else if (dtkdata->identifier()=="itkDataImageULong3")  { Read3DImage<unsigned long>(dtkdata,d->io,filelist);  }
+            else if (dtkdata->identifier()=="itkDataImageLong3")   { Read3DImage<long>(dtkdata,d->io,filelist);           }
+            else if (dtkdata->identifier()=="itkDataImageFloat3")  { Read3DImage<float>(dtkdata,d->io,filelist);          }
+            else if (dtkdata->identifier()=="itkDataImageDouble3") { Read3DImage<double>(dtkdata,d->io,filelist);         }
+            else if (dtkdata->identifier()=="itkDataImageUChar4")  { Read4DImage<unsigned char>(dtkdata,d->io,map);          }
+            else if (dtkdata->identifier()=="itkDataImageUShort4") { Read4DImage<unsigned short>(dtkdata,d->io,map);         }
+            else if (dtkdata->identifier()=="itkDataImageShort4")  { Read4DImage<short>(dtkdata,d->io,map);                  }
+            else if (dtkdata->identifier()=="itkDataImageUInt4")   { Read4DImage<unsigned int>(dtkdata,d->io,map);           }
+            else if (dtkdata->identifier()=="itkDataImageULong4")  { Read4DImage<unsigned long>(dtkdata,d->io,map);          }
+            else if (dtkdata->identifier()=="itkDataImageInt4")    { Read4DImage<int>(dtkdata,d->io,map);                    }
+            else if (dtkdata->identifier()=="itkDataImageLong4")   { Read4DImage<long>(dtkdata,d->io,map);                   }
+            else if (dtkdata->identifier()=="itkDataImageChar4")   { Read4DImage<char>(dtkdata,d->io,map);                   }
+            else if (dtkdata->identifier()=="itkDataImageDouble4") {
                 /**
                 @todo Handle properly double pixel values.
                 For the moment it is only handled in 3D, not in 4D, and it is very
@@ -458,7 +454,7 @@ bool itkGDCMDataImageReader::read(QStringList paths) {
                  */
                 Read4DImage<short>(dtkdata,d->io,map);
             } else {
-                qDebug() << "Unhandled dtkdata description : " << dtkdata->description();
+                qDebug() << "Unhandled dtkdata type : " << dtkdata->identifier();
                 return false;
             }
         } catch (itk::ExceptionObject &e) {
@@ -478,21 +474,20 @@ bool itkGDCMDataImageReader::read(QStringList paths) {
             if (MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>(it->second.GetPointer())) {
                 const StringVectorType &values = metaData->GetMetaDataObjectValue();
                     for (unsigned int i=0;i<values.size();i++)
-                        dtkdata->addMetaData( it->first.c_str(), values[i].c_str());
+                        dtkdata->addMetaData(it->first.c_str(),values[i].c_str());
             }
             ++it;
         }
     }
     
-    d->io->RemoveAllObservers ();
+    d->io->RemoveAllObservers();
     
     return true;
 }
 
-itkGDCMDataImageReader::FileListMapType itkGDCMDataImageReader::sort (FileList filelist)
-{
+itkGDCMDataImageReader::FileListMapType itkGDCMDataImageReader::sort(FileList filelist) {
   
-  this->m_Scanner.Scan (filelist);
+  this->m_Scanner.Scan(filelist);
   FileListMapType ret;
 
   if (!filelist.size())
@@ -503,22 +498,22 @@ itkGDCMDataImageReader::FileListMapType itkGDCMDataImageReader::sort (FileList f
   if (filelist.size() == 1)
   {
     FileListMapType::value_type newpair("unique_file",filelist);
-    ret.insert (newpair);
+    ret.insert(newpair);
     return ret;
   }
   
-  const gdcm::Tag orientationtag (0x20,0x37);
+  const gdcm::Tag orientationtag(0x20,0x37);
 
   gdcm::Scanner::ValuesType orientations = this->m_Scanner.GetValues(orientationtag);
-  if( orientations.size() != 1 )
+  if (orientations.size() != 1)
   {
     qDebug() <<"More than one Orientation in filenames (or no Orientation)";
     return ret;
   }
   
   gdcm::Scanner::TagToValue const &t2v = this->m_Scanner.GetMapping(reference);
-  gdcm::Scanner::TagToValue::const_iterator firstit = t2v.find( orientationtag );
-  if( (*firstit).first != orientationtag )
+  gdcm::Scanner::TagToValue::const_iterator firstit = t2v.find(orientationtag);
+  if ((*firstit).first != orientationtag)
   {
     qDebug() <<"Could not find any orientation information in the header of the reference file";
     return ret;
@@ -526,10 +521,10 @@ itkGDCMDataImageReader::FileListMapType itkGDCMDataImageReader::sort (FileList f
   
   const char *dircos = (*firstit).second;
   std::stringstream ss;
-  ss.str( dircos );
+  ss.str(dircos);
   
   gdcm::Element<gdcm::VR::DS,gdcm::VM::VM6> cosines;
-  cosines.Read( ss );
+  cosines.Read(ss);
   
   // http://www.itk.org/pipermail/insight-users/2003-September/004762.html
   // Compute normal:
@@ -548,15 +543,15 @@ itkGDCMDataImageReader::FileListMapType itkGDCMDataImageReader::sort (FileList f
   {
     const char *filename = (*it).c_str();
     bool iskey = this->m_Scanner.IsKey(filename);
-    if( iskey )
+    if (iskey)
     {
-      const char *value = this->m_Scanner.GetValue(filename, gdcm::Tag(0x20,0x32));
-      if( value )
+      const char *value = this->m_Scanner.GetValue(filename,gdcm::Tag(0x20,0x32));
+      if (value)
       {
 	gdcm::Element<gdcm::VR::DS,gdcm::VM::VM3> ipp;
 	std::stringstream ss;
-	ss.str( value );
-	ipp.Read( ss );
+	ss.str(value);
+	ipp.Read(ss);
 	double dist = 0;
 	for (int i = 0; i < 3; ++i)
 	  dist += normal[i]*ipp[i];
@@ -564,21 +559,21 @@ itkGDCMDataImageReader::FileListMapType itkGDCMDataImageReader::sort (FileList f
 	bool found = 0;
 	SortedMapType::iterator finder;
 	for (finder = sorted.begin(); finder != sorted.end(); ++finder)
-	  if ( std::abs ( (*finder).first - dist ) < itk::NumericTraits<double>::min() )
+	  if (std::abs((*finder).first - dist) < itk::NumericTraits<double>::min())
 	  {
 	    found = 1;
 	    break;
 	  }
 	
-	if( !found )
+	if (!found)
 	{
 	  FileList newlist;
-	  newlist.push_back (filename);
+	  newlist.push_back(filename);
 	  SortedMapType::value_type newpair(dist,newlist);
-	  sorted.insert( newpair );
+	  sorted.insert(newpair);
 	}
 	else
-	  (*finder).second.push_back (filename);
+	  (*finder).second.push_back(filename);
       }
     }
     else
@@ -619,18 +614,17 @@ itkGDCMDataImageReader::FileListMapType itkGDCMDataImageReader::sort (FileList f
     
     for (toinsert = sorted.begin(); toinsert != sorted.end(); ++toinsert)
     {
-      newfilelist.push_back ((*toinsert).second[i]);
+      newfilelist.push_back((*toinsert).second[i]);
     }
     
     FileListMapType::value_type newpair(os.str(),newfilelist);
-    ret.insert (newpair);
+    ret.insert(newpair);
   }  
   
   return ret;
 }
 
-itkGDCMDataImageReader::FileList itkGDCMDataImageReader::unfoldMap (FileListMapType map)
-{  
+itkGDCMDataImageReader::FileList itkGDCMDataImageReader::unfoldMap(FileListMapType map) {  
   FileList ret;
 
   FileListMapType::const_iterator it;
@@ -638,24 +632,22 @@ itkGDCMDataImageReader::FileList itkGDCMDataImageReader::unfoldMap (FileListMapT
   {
     FileList filelist = (*it).second;
     for (unsigned int i=0; i<filelist.size(); i++)
-      ret.push_back (filelist[i]);
+      ret.push_back(filelist[i]);
   }
   
   return ret;
 }
 
 
-void itkGDCMDataImageReader::setProgress (int value)
-{
-    emit progressed (value);
+void itkGDCMDataImageReader::setProgress(int value) {
+    emit progressed(value);
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkGDCMDataImageReader(void)
-{
+dtkAbstractDataReader *createItkGDCMDataImageReader() {
   return new itkGDCMDataImageReader;
 }
 

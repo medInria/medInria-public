@@ -5,24 +5,20 @@
 
 #include <itkNrrdImageIO.h>
 
+const char itkNrrdDataImageWriter::ID[] = "itkNrrdDataImageWriter";
 
-itkNrrdDataImageWriter::itkNrrdDataImageWriter(void) : itkDataImageWriterBase()
-{
+itkNrrdDataImageWriter::itkNrrdDataImageWriter(): itkDataImageWriterBase() {
     this->io = itk::NrrdImageIO::New();
 }
 
-
-itkNrrdDataImageWriter::~itkNrrdDataImageWriter(void)
-{
+itkNrrdDataImageWriter::~itkNrrdDataImageWriter() {
 }
 
-QStringList itkNrrdDataImageWriter::handled(void) const
-{
+QStringList itkNrrdDataImageWriter::handled() const {
     return s_handled();
 }
 
-QStringList itkNrrdDataImageWriter::s_handled(void)
-{
+QStringList itkNrrdDataImageWriter::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +32,23 @@ QStringList itkNrrdDataImageWriter::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGBA3";
 }
 
-bool itkNrrdDataImageWriter::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataWriterType("itkNrrdDataImageWriter", s_handled(),
-                                                                      createItkNrrdDataImageWriter);
+bool itkNrrdDataImageWriter::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataWriterType(ID,s_handled(),createItkNrrdDataImageWriter);
 }
 
+QString itkNrrdDataImageWriter::identifier() const {
+    return ID;
+}
 
-QString itkNrrdDataImageWriter::description(void) const
-{
-    return "itkNrrdDataImageWriter";
+QString itkNrrdDataImageWriter::description() const {
+    return "Writer for Nrrd images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkNrrdDataImageWriter(void)
-{
+dtkAbstractDataWriter *createItkNrrdDataImageWriter() {
     return new itkNrrdDataImageWriter;
 }
 

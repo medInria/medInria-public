@@ -22,6 +22,8 @@ public:
   QList<QImage>          thumbnails;
 };
 
+const char vtkDataMesh::ID[] = "vtkDataMesh";
+
 vtkDataMesh::vtkDataMesh(): medAbstractDataMesh(), d (new vtkDataMeshPrivate)
 {
   d->mesh = 0;
@@ -34,12 +36,15 @@ vtkDataMesh::~vtkDataMesh()
 
 bool vtkDataMesh::registered()				
 {
-  return dtkAbstractDataFactory::instance()->registerDataType("vtkDataMesh", createVtkDataMesh);
+  return dtkAbstractDataFactory::instance()->registerDataType(ID,createVtkDataMesh);
 }
 
-QString vtkDataMesh::description() const
-{
-  return "vtkDataMesh";
+QString vtkDataMesh::identifier() const {
+    return ID;
+}
+
+QString vtkDataMesh::description() const {
+    return "vtkDataMesh";
 }
 
 void vtkDataMesh::setData(void *data)			
