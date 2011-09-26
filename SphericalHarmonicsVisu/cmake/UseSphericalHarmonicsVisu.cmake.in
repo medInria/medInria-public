@@ -1,0 +1,29 @@
+#
+# This file sets up include directories and link directories for a project 
+# to use SphericalHarmonicsVisu
+# It should not be included directly, but rather through the 
+# SphericalHarmonicsVisu_USE_FILE setting obtained from SphericalHarmonicsVisuConfig.cmake.
+#
+#
+# Both SphericalHarmonicsVisu_INCLUDE_DIRS and SphericalHarmonicsVisu_LIBRARY_DIRS 
+# are defined in SphericalHarmonicsVisuConfig.cmake file
+#
+
+# Load the compiler settings used for SphericalHarmonicsVisu.
+IF(SphericalHarmonicsVisu_BUILD_SETTINGS_FILE)
+  INCLUDE(${CMAKE_ROOT}/Modules/CMakeImportBuildSettings.cmake)
+  CMAKE_IMPORT_BUILD_SETTINGS(${SphericalHarmonicsVisu_BUILD_SETTINGS_FILE})
+ENDIF(SphericalHarmonicsVisu_BUILD_SETTINGS_FILE)
+
+# Add compiler flags needed to use SphericalHarmonicsVisu.
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SphericalHarmonicsVisu_REQUIRED_C_FLAGS}")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SphericalHarmonicsVisu_REQUIRED_CXX_FLAGS}")
+
+# Add include directories needed to use SphericalHarmonicsVisu.
+INCLUDE_DIRECTORIES(${SphericalHarmonicsVisu_INCLUDE_DIR})
+
+# Add link directories needed to use SphericalHarmonicsVisu.
+LINK_DIRECTORIES(${SphericalHarmonicsVisu_LIBRARY_DIRS})
+
+FIND_LIBRARY(SphericalHarmonicsVisu_LIB SphericalHarmonicsVisu ${SphericalHarmonicsVisu_LIBRARY_DIRS})
+

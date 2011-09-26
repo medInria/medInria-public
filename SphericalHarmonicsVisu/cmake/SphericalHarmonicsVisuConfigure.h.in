@@ -1,0 +1,28 @@
+#ifndef _SphericalHarmonicsVisu_Configure_h_
+#define _SphericalHarmonicsVisu_Configure_h_
+
+/* Whether we are building shared libraries.  */
+#cmakedefine VTK_BUILD_SHARED_LIBS
+
+#cmakedefine VTK_TCL_SUPPORT_LIBRARY_PATH
+#cmakedefine VTK_TK_SUPPORT_LIBRARY_PATH
+
+#define SphericalHarmonicsVisu_VERSION_MAJOR @SphericalHarmonicsVisu_VERSION_MAJOR@
+#define SphericalHarmonicsVisu_VERSION_MINOR @SphericalHarmonicsVisu_VERSION_MINOR@
+#define SphericalHarmonicsVisu_VERSION_BUILD @SphericalHarmonicsVisu_VERSION_BUILD@
+#define SphericalHarmonicsVisu_VERSION "@SphericalHarmonicsVisu_VERSION@"
+
+
+#if defined (WIN32) && defined (VTK_BUILD_SHARED_LIBS)
+
+ #if defined (sphericalFunctionSHVisualization_EXPORTS)
+  #define SPHERICALFUNCTIONSHVISUALIZATION_EXPORT __declspec( dllexport )
+ #else
+  #define SPHERICALFUNCTIONSHVISUALIZATION_EXPORT __declspec( dllimport )
+ #endif
+
+#else
+
+ #define SPHERICALFUNCTIONSHVISUALIZATION_EXPORT
+
+#endif

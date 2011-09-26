@@ -1,0 +1,46 @@
+#-----------------------------------------------------------------------------
+#
+# SphericalHarmonicsVisuConfig.cmake - SphericalHarmonicsVisu CMake configuration file for external projects.
+#
+# This file is configured by SphericalHarmonicsVisu and used by the UseSphericalHarmonicsVisu.cmake module
+# to load SphericalHarmonicsVisu's settings for an external project.
+
+# This file is configured by SphericalHarmonicsVisu and used by the UseSphericalHarmonicsVisu.cmake module
+# to load SphericalHarmonicsVisu's settings for an external project.
+
+# The SphericalHarmonicsVisu source tree.
+SET(SphericalHarmonicsVisu_SOURCE_DIR "@SphericalHarmonicsVisu_SOURCE_DIR@")
+
+# The SphericalHarmonicsVisu include file directories.
+SET(SphericalHarmonicsVisu_INCLUDE_DIR "@SphericalHarmonicsVisu_INCLUDE_DIRS_CONFIG@")
+
+# The SphericalHarmonicsVisu library directories.
+# Includes SphericalHarmonicsVisu libs directory and OTHER libs directories
+SET(SphericalHarmonicsVisu_LIBRARY_DIRS "@SphericalHarmonicsVisu_LIBRARY_DIRS_CONFIG@")
+
+# This includes all libraries that SphericalHarmonicsVisu generates.
+SET(SphericalHarmonicsVisu_LIBRARIES "@SphericalHarmonicsVisu_LIBRARIES_CONFIG@")
+
+#JGG
+# The C and C++ flags added by SphericalHarmonicsVisu to the cmake-configured flags.
+SET(SphericalHarmonicsVisu_REQUIRED_C_FLAGS   "@SphericalHarmonicsVisu_REQUIRED_C_FLAGS@")
+SET(SphericalHarmonicsVisu_REQUIRED_CXX_FLAGS "@SphericalHarmonicsVisu_REQUIRED_CXX_FLAGS@")
+
+# The SphericalHarmonicsVisu version number
+SET(SphericalHarmonicsVisu_VERSION_MAJOR "@SphericalHarmonicsVisu_VERSION_MAJOR@")
+SET(SphericalHarmonicsVisu_VERSION_MINOR "@SphericalHarmonicsVisu_VERSION_MINOR@")
+#endJGG
+
+# The location of the UseSphericalHarmonicsVisu.cmake file.
+SET(SphericalHarmonicsVisu_USE_FILE "@SphericalHarmonicsVisu_USE_FILE@")
+
+#JGG
+# The build settings file.
+SET(SphericalHarmonicsVisu_BUILD_SETTINGS_FILE "@SphericalHarmonicsVisu_BUILD_SETTINGS_FILE@")
+
+# Whether SphericalHarmonicsVisu was built with shared libraries.
+SET(SphericalHarmonicsVisu_LIBS_STYLE       "@SphericalHarmonicsVisu_LIBS_STYLE@")
+
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${SphericalHarmonicsVisu_SOURCE_DIR}/CMakeModules")
+#endJGG
+

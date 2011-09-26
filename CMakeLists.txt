@@ -233,8 +233,9 @@ ENDIF( vtkINRIA3D_USE_HWSHADING )
 OPTION (vtkINRIA3D_USE_SPHERICALHARMONICS "If ON, compile the SPHERICAL HARMONICS extension of vtkINRIA3D." OFF)
 
 IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
-    FIND_PACKAGE(SphericalHarmonicsVisu)
-    INCLUDE(${SphericalHarmonicsVisu_USE_FILE})
+  IF( NOT vtkINRIA3D_USE_ITK )
+    MESSAGE(FATAL_ERROR " ITK is needed ON to use the Spherical Harmonics Functions Visualization")
+  ENDIF( NOT vtkINRIA3D_USE_ITK )
 ENDIF( vtkINRIA3D_USE_SPHERICALHARMONICS )
 
 
@@ -345,7 +346,7 @@ endif(NOT ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
 
 SET(vtkINRIA3D_DIR "${PROJECT_BINARY_DIR}" CACHE INTERNAL "")
 
-
+add_subdirectory(SphericalHarmonicsVisu)
 add_subdirectory(vtkDataManagement)
 add_subdirectory(vtkImageView)
 add_subdirectory(vtkRenderingAddOn)
