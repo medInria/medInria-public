@@ -55,13 +55,24 @@ set(medinria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 enable_testing()
 OPTION(BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
 
-mark_as_advanced(DART_ROOT)
+#configure ctest variables
+option(BUILD_REPORTING "Build Reporting")
+if(BUILD_REPORTING)
+  include(dtkReporting)
+endif(BUILD_REPORTING)
 
-include(Dart)
+if (BUILD_TESTING)
+  add_subdirectory(tests)
+endif (BUILD_TESTING)
 
 ## #################################################################
 ## Input
 ## #################################################################
+if(MSVC)
+  #Macros that enable precompiled headers to be added, defined by dtk.
+  include(dtkPch)
+  option(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
+endif(MSVC)
 
 set(DEPENDS_ON_DTK 1)
 
@@ -136,12 +147,6 @@ if (MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
     add_subdirectory(exampleProcessImageFilter)
 endif()
 
-if(MSVC)
-  #Macros that enable precompiled headers to be added, defined by dtk.
-  include(dtkPch)
-  option(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
-endif(MSVC)
-
 if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_V3DDATA_PLUGIN OR
     MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN OR
@@ -183,9 +188,7 @@ if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
 
-if (BUILD_TESTING)
-  add_subdirectory(tests)
-endif (BUILD_TESTING)
+
 
 include(${PROJECT_NAME}Pack)
 
