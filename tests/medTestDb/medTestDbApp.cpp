@@ -105,7 +105,7 @@ void medTestDbApp::run()
     // Test import of new data
     dataManager->importNonPersistent( testData );
 
-    //  Wait untill the data is actually imported.
+    //  Wait until the data is actually imported.
 }
 
 void medTestDbApp::handleNonPersistentDataImported()
@@ -183,7 +183,7 @@ void medTestDbApp::handlePersistentDataImported()
     CHECK_TEST_RESULT(patients.size() == 0);
 
     //close db?
-
+    medDatabaseController::instance()->closeConnection();
     testResult = DTK_SUCCEED;
     exit();
 }

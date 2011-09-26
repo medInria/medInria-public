@@ -74,7 +74,7 @@ void medRunnableProcess::onFailure (void)
 
 void medRunnableProcess::onProgressed (int value)
 {
-    emit progressed (this, value);
+    emit progress (this, value);
 }
 
 void medRunnableProcess::onCancel (QObject *sender)

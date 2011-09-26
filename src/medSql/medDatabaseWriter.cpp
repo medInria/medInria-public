@@ -60,7 +60,7 @@ void medDatabaseWriter::run(void)
 
     if(!d->data->hasMetaData(medMetaDataKeys::SeriesDescription.key())) {
         qDebug() << "Critical: data has no SeriesDescription, cannot save it";
-	emit failure (this);
+    emit failure (this);
     return;
     }
 
@@ -195,41 +195,41 @@ void medDatabaseWriter::run(void)
     if(query.first()) {
         id = query.value(0);
 
-	query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :studyID");
-	query.bindValue(":id", id);
-	query.bindValue(":name", studyName);
-	query.bindValue(":studyID", studyId);
-	if(!query.exec())
-	    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+    query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :studyID");
+    query.bindValue(":id", id);
+    query.bindValue(":name", studyName);
+    query.bindValue(":studyID", studyId);
+    if(!query.exec())
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
-	if(query.first()) {
-	    id = query.value(0);
+    if(query.first()) {
+        id = query.value(0);
 
-	    query.prepare("SELECT id FROM series WHERE study = :id AND name = :name AND uid = :seriesID AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
-	    query.bindValue(":id",             id);
-	    query.bindValue(":name",           seriesName);
-	    query.bindValue(":seriesID",       seriesId);
-	    query.bindValue(":orientation",    orientation);
-	    query.bindValue(":seriesNumber",   seriesNumber);
-	    query.bindValue(":sequenceName",   sequenceName);
-	    query.bindValue(":sliceThickness", sliceThickness);
-	    query.bindValue(":rows",           rows);
-	    query.bindValue(":columns",        columns);
+        query.prepare("SELECT id FROM series WHERE study = :id AND name = :name AND uid = :seriesID AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
+        query.bindValue(":id",             id);
+        query.bindValue(":name",           seriesName);
+        query.bindValue(":seriesID",       seriesId);
+        query.bindValue(":orientation",    orientation);
+        query.bindValue(":seriesNumber",   seriesNumber);
+        query.bindValue(":sequenceName",   sequenceName);
+        query.bindValue(":sliceThickness", sliceThickness);
+        query.bindValue(":rows",           rows);
+        query.bindValue(":columns",        columns);
 
-	    if(!query.exec())
-	        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        if(!query.exec())
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
-	    if(query.first()) {
-	        id = query.value(0);
+        if(query.first()) {
+            id = query.value(0);
 
-		dataExists = true;
-	    }
-	}
+        dataExists = true;
+        }
+    }
     }
 
     if (dataExists) {
         qDebug() << "data is already in the database, skipping";
-	emit failure (this);
+    emit failure (this);
     return;
     }
 
@@ -267,14 +267,13 @@ void medDatabaseWriter::run(void)
         dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
         qDebug() << "trying " << dataWriter->identifier();
 
-        if (!dataWriter->handled().contains(d->data->identifier()))
-        {
+        if (!dataWriter->handled().contains(d->data->identifier())) {
             qDebug() << "failed with " << dataWriter->identifier();
-	    continue;
+            continue;
         }
 
         qDebug() << "success with " << dataWriter->identifier();
-	dataWriter->setData (d->data);
+        dataWriter->setData (d->data);
 
         QStringList extensions = dataWriter->supportedFileExtensions();
         QString extension;
@@ -296,7 +295,7 @@ void medDatabaseWriter::run(void)
     }
 
     if (!writeSuccess) {
-	emit failure (this);
+    emit failure (this);
     return;
     }
 
@@ -316,7 +315,7 @@ void medDatabaseWriter::run(void)
 
     if (thumbnails.count())
         if (!medStorage::mkpath (medStorage::dataLocation() + thumb_dir))
-	    qDebug() << "Cannot create directory: " << thumb_dir;
+        qDebug() << "Cannot create directory: " << thumb_dir;
 
     for (int j=0; j<thumbnails.count(); j++) {
         QString thumb_name = thumb_dir + QString().setNum (j) + ".jpg";
@@ -347,13 +346,13 @@ void medDatabaseWriter::run(void)
     }
     else {
         query.prepare("INSERT INTO patient (name, thumbnail, birthdate, gender) VALUES (:name, :thumbnail, :birthdate, :gender)");
-	query.bindValue(":name",      patientName);
+    query.bindValue(":name",      patientName);
         query.bindValue(":thumbnail", thumbPath );
         query.bindValue(":birthdate", birthdate );
         query.bindValue(":gender",    gender );
-	query.exec();
-	id = query.lastInsertId();
-	index.setPatientId (id.toInt());
+    query.exec();
+    id = query.lastInsertId();
+    index.setPatientId (id.toInt());
     }
 
     ////////////////////////////////////////////////////////////////// STUDY
@@ -371,13 +370,13 @@ void medDatabaseWriter::run(void)
     }
     else {
         query.prepare("INSERT INTO study (patient, name, uid, thumbnail) VALUES (:patient, :study, :studyID, :thumbnail)");
-	query.bindValue(":patient",   id);
-	query.bindValue(":study",     studyName);
+    query.bindValue(":patient",   id);
+    query.bindValue(":study",     studyName);
         query.bindValue(":studyID",   studyId);
         query.bindValue(":thumbnail", thumbPath );
-	query.exec();
-	id = query.lastInsertId();
-	index.setStudyId (id.toInt());
+    query.exec();
+    id = query.lastInsertId();
+    index.setStudyId (id.toInt());
     }
 
     ///////////////////////////////////////////////////////////////// SERIES
@@ -430,7 +429,7 @@ void medDatabaseWriter::run(void)
         if(!query.exec())
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
-	id = query.lastInsertId();
+    id = query.lastInsertId();
         index.setSeriesId (id.toInt());
     }
 
@@ -442,60 +441,60 @@ void medDatabaseWriter::run(void)
         for (int j=0; j<thumbPaths.count(); j++)
         {
             query.prepare("SELECT id FROM image WHERE series = :id AND name = :name");
-	    query.bindValue(":id", id);
-	    query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));
+        query.bindValue(":id", id);
+        query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));
 
-	    if(!query.exec())
-	        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        if(!query.exec())
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
-	    if(query.first()) {
-	        ; //qDebug() << "Image" << file << "already in database";
-	    }
-	    else {
-	    query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
-		query.bindValue(":series", id);
-		query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));
-		query.bindValue(":path", fileInfo.filePath());
-		query.bindValue(":instance_path", seriesPath);
-		query.bindValue(":thumbnail", thumbPaths[j]);
+        if(query.first()) {
+            ; //qDebug() << "Image" << file << "already in database";
+        }
+        else {
+        query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
+        query.bindValue(":series", id);
+        query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));
+        query.bindValue(":path", fileInfo.filePath());
+        query.bindValue(":instance_path", seriesPath);
+        query.bindValue(":thumbnail", thumbPaths[j]);
 
-		if(!query.exec())
-		    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-	    }
+        if(!query.exec())
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        }
         }
     }
     else {
         for (int j=0; j<filePaths.count(); j++) {
             QFileInfo fileInfo( filePaths[j] );
 
-	    query.prepare  ("SELECT id FROM image WHERE series = :id AND name = :name");
-	    query.bindValue(":id",   id);
-	    query.bindValue(":name", fileInfo.fileName());
+        query.prepare  ("SELECT id FROM image WHERE series = :id AND name = :name");
+        query.bindValue(":id",   id);
+        query.bindValue(":name", fileInfo.fileName());
 
-	    if(!query.exec())
-	        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        if(!query.exec())
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
-	    if(query.first()) {
-	        ; //qDebug() << "Image" << file << "already in database";
-	    }
-	    else {
-	        query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
-		query.bindValue(":series", id);
-		query.bindValue(":name", fileInfo.fileName());
-		query.bindValue(":path", fileInfo.filePath());
-		query.bindValue(":instance_path", seriesPath);
-		if (j<thumbPaths.count())
-		    query.bindValue(":thumbnail", thumbPaths[j]);
-		else
-		    query.bindValue(":thumbnail", "");
+        if(query.first()) {
+            ; //qDebug() << "Image" << file << "already in database";
+        }
+        else {
+            query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
+        query.bindValue(":series", id);
+        query.bindValue(":name", fileInfo.fileName());
+        query.bindValue(":path", fileInfo.filePath());
+        query.bindValue(":instance_path", seriesPath);
+        if (j<thumbPaths.count())
+            query.bindValue(":thumbnail", thumbPaths[j]);
+        else
+            query.bindValue(":thumbnail", "");
 
-		if(!query.exec())
-		    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-	    }
+        if(!query.exec())
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        }
         }
     }
 
-    emit progressed(100);
+    emit progress(this, 100);
     emit success(this);
     emit addedIndex(index);
 }
