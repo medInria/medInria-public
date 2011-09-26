@@ -1,4 +1,4 @@
-#include "vtkSphericalHarmonicManager.h"
+#include <vtkSphericalHarmonicManager.h>
 
 #include <vtkObjectFactory.h>
 

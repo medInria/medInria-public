@@ -1,10 +1,10 @@
-#include "vtkSphericalHarmonicVisuManager.h"
+#include <vtkSphericalHarmonicVisuManager.h>
 
-#include "vtkSphericalHarmonicGlyph.h"
-#include "vtkPolyDataNormals.h"
-#include "vtkExtractVOI.h"
-#include "vtkPolyDataMapper.h"
-#include "vtkActor.h"
+#include <vtkSphericalHarmonicGlyph.h>
+#include <vtkPolyDataNormals.h>
+#include <vtkExtractVOI.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
 
 #include <vtkStructuredPoints.h>
 #include <vtkLookupTable.h>

@@ -10,7 +10,7 @@
 #include <vtkStructuredPoints.h>
 #include <vtkLookupTable.h>
 
-#include "vtkSphericalHarmonicVisuManager.h"
+#include <vtkSphericalHarmonicVisuManager.h>
 
 class vtkSphericalHarmonicManager: public vtkObject
 {

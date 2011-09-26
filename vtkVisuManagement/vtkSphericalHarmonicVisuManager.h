@@ -1,7 +1,7 @@
 #ifndef _vtk_SPHERICALHARMONICVisuManager_h_
 #define _vtk_SPHERICALHARMONICVisuManager_h_
 
-#include "vtkSphericalHarmonicSource.h"
+#include <vtkSphericalHarmonicSource.h>
 
 class vtkSphericalHarmonicSource;
 class vtkSphericalHarmonicGlyph;
