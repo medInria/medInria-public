@@ -6,8 +6,7 @@
 #include "itkDataImageReaderPluginExport.h"
 #include "itkImageIOBase.h"
 
-class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageReaderBase : public dtkAbstractDataReader
-{
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageReaderBase: public dtkAbstractDataReader {
     Q_OBJECT
 
 public:

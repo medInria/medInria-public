@@ -5,8 +5,6 @@
 #include <itkDataImageReaderPluginExport.h>
 
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkGiplDataImageReader: public itkDataImageReaderBase {
-    Q_OBJECT
-
 public:
     itkGiplDataImageReader();
     virtual ~itkGiplDataImageReader();

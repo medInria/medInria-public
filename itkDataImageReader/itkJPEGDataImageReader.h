@@ -5,8 +5,6 @@
 #include <itkDataImageReaderPluginExport.h>
 
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkJPEGDataImageReader: public itkDataImageReaderBase {
-    Q_OBJECT
-
 public:
     itkJPEGDataImageReader();
     virtual ~itkJPEGDataImageReader();

@@ -5,8 +5,6 @@
 #include <itkDataImageReaderPluginExport.h>
 
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkAnalyzeDataImageReader: public itkDataImageReaderBase {
-    Q_OBJECT
-
 public:
     itkAnalyzeDataImageReader();
     virtual ~itkAnalyzeDataImageReader();
