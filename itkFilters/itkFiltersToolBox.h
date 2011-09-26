@@ -30,19 +30,22 @@ class itkFiltersToolBox : public medToolBoxFilteringCustom
     Q_OBJECT
 
 public:
-     itkFiltersToolBox(QWidget *parent = 0);
+    itkFiltersToolBox(QWidget *parent = 0);
     ~itkFiltersToolBox(void);
 
 public:
     static bool registered(void);
     dtkAbstractData* processOutput();
-    void updateWidgets();
+//     void updateWidgets();
 
 signals:
     void success(void);
     void failure(void);
 
 public slots:
+
+    void clear(void);
+    void update(dtkAbstractView *view);
 
     void run(void);
 
