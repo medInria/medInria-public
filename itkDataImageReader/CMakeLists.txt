@@ -61,7 +61,10 @@ include(${medinria-plugins_USE_FILE})
 ## Input
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC itkDataImageReaderPlugin.h)
+set(${PROJECT_NAME}_HEADERS_MOC
+  itkDataImageReaderBase.h
+  itkDataImageReaderPlugin.h
+)
 
 if(ITK_USE_SYSTEM_GDCM)
   set(${PROJECT_NAME}_HEADERS_MOC
@@ -69,7 +72,7 @@ if(ITK_USE_SYSTEM_GDCM)
     itkGDCMDataImageReader.h
     )
 endif(ITK_USE_SYSTEM_GDCM)
-  
+
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})
 
@@ -103,7 +106,7 @@ endif(ITK_USE_SYSTEM_GDCM)
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../src/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC})
@@ -111,8 +114,8 @@ endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_HEADERS}
-  ${${PROJECT_NAME}_SOURCES_MOC} 
-  ${${PROJECT_NAME}_SOURCES_PCH} 
+  ${${PROJECT_NAME}_SOURCES_MOC}
+  ${${PROJECT_NAME}_SOURCES_PCH}
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
