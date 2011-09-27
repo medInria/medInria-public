@@ -346,7 +346,6 @@ endif(NOT ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
 
 SET(vtkINRIA3D_DIR "${PROJECT_BINARY_DIR}" CACHE INTERNAL "")
 
-add_subdirectory(SphericalHarmonicsVisu)
 add_subdirectory(vtkDataManagement)
 add_subdirectory(vtkImageView)
 add_subdirectory(vtkRenderingAddOn)
@@ -378,6 +377,10 @@ IF(vtkINRIA3D_BUILD_EXAMPLES)
   endif(vtkINRIA3D_USE_WXWINDOWS)
 ENDIF(vtkINRIA3D_BUILD_EXAMPLES)
 
+
+IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
+  add_subdirectory(vtkSphericalHarmonicsVisu)
+ENDIF( vtkINRIA3D_USE_SPHERICALHARMONICS )
 
 
 #-----------------------------------------------------------------------------

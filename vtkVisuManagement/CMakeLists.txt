@@ -52,27 +52,27 @@ SET(vtkLandmarkManagement_LIBS
 )
 
 IF( vtkINRIA3D_USE_HWSHADING )
-SET(vtkVisuManagement_LIBS
-${vtkVisuManagement_LIBS}
-vtkHWShading
-)
-SET(vtkLandmarkManagement_LIBS
-${vtkLandmarkManagement_LIBS}
-vtkHWShading
-)
-ENDIF (vtkINRIA3D_USE_HWSHADING )
+  SET(vtkVisuManagement_LIBS
+    ${vtkVisuManagement_LIBS}
+    vtkHWShading
+    )
+  SET(vtkLandmarkManagement_LIBS
+    ${vtkLandmarkManagement_LIBS}
+    vtkHWShading
+    )
+ENDIF(vtkINRIA3D_USE_HWSHADING )
 
 IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
     SET(vtkVisuManagement_LIBS
         ${vtkVisuManagement_LIBS}
-        ${SphericalHarmonicsVisu_LIB}
+        vtkSphericalHarmonicsVisu
        )
     SET(vtkVisuManagement_SRCS
         ${vtkVisuManagement_SRCS}
         vtkSphericalHarmonicVisuManager.cxx
         vtkSphericalHarmonicManager.cxx
         )
-ENDIF (vtkINRIA3D_USE_SPHERICALHARMONICS )
+ENDIF(vtkINRIA3D_USE_SPHERICALHARMONICS )
 
 if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(vtkVisuManagement_SOURCES_PCH 
@@ -83,42 +83,40 @@ endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
 
 # C++ library for the InterfaceManagers
 ADD_LIBRARY(vtkVisuManagement ${vtkINRIA3D_LIBS_STYLE}
- ${vtkVisuManagement_SOURCES_PCH}
- ${vtkVisuManagement_SRCS}
+  ${vtkVisuManagement_SOURCES_PCH}
+  ${vtkVisuManagement_SRCS}
 )
   
 # C++ library for the InterfaceManagers
 ADD_LIBRARY(vtkLandmarkManagement ${vtkINRIA3D_LIBS_STYLE}
- ${vtkLandmarkManagement_SRCS}
+  ${vtkLandmarkManagement_SRCS}
 )
   
 TARGET_LINK_LIBRARIES(vtkVisuManagement  
- ${vtkVisuManagement_LIBS}
+  ${vtkVisuManagement_LIBS}
 )
 
   
 TARGET_LINK_LIBRARIES(vtkLandmarkManagement  
- ${vtkLandmarkManagement_LIBS}
+  ${vtkLandmarkManagement_LIBS}
 )
 
-  IF (VTK_WRAP_TCL)
-   
-    
-    SET_SOURCE_FILES_PROPERTIES(
+IF(VTK_WRAP_TCL)
+  SET_SOURCE_FILES_PROPERTIES(
      vtkLandmarkManagerCallback.cxx
      WRAP_EXCLUDE
     )
     
-    VTK_WRAP_TCL3( vtkVisuManagementLib
+  VTK_WRAP_TCL3( vtkVisuManagementLib
       vtkVisuManagementTCL_SRCS
       "${vtkVisuManagement_SRCS}"
       ""
       "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
     )
-    ADD_LIBRARY(vtkVisuManagementTCL ${vtkINRIA3D_LIBS_STYLE}
+  ADD_LIBRARY(vtkVisuManagementTCL ${vtkINRIA3D_LIBS_STYLE}
     ${vtkVisuManagementTCL_SRCS}
     )
-    TARGET_LINK_LIBRARIES(vtkVisuManagementTCL
+  TARGET_LINK_LIBRARIES(vtkVisuManagementTCL
     vtkVisuManagement
     vtkCommonTCL
     vtkRenderingTCL
@@ -128,18 +126,18 @@ TARGET_LINK_LIBRARIES(vtkLandmarkManagement
     vtkImagingTCL
     )
  
-    INSTALL_TARGETS(/lib vtkVisuManagementTCL)
+  INSTALL_TARGETS(/lib vtkVisuManagementTCL)
 
-    VTK_WRAP_TCL3( vtkLandmarkManagementLib
+  VTK_WRAP_TCL3( vtkLandmarkManagementLib
       vtkLandmarkManagementTCL_SRCS
       "${vtkLandmarkManagement_SRCS}"
       ""
       "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
     )
-    ADD_LIBRARY(vtkLandmarkManagementTCL ${vtkINRIA3D_LIBS_STYLE}
+  ADD_LIBRARY(vtkLandmarkManagementTCL ${vtkINRIA3D_LIBS_STYLE}
     ${vtkLandmarkManagementTCL_SRCS}
     )
-    TARGET_LINK_LIBRARIES(vtkLandmarkManagementTCL
+  TARGET_LINK_LIBRARIES(vtkLandmarkManagementTCL
     vtkLandmarkManagement
     vtkCommonTCL
     vtkRenderingTCL
@@ -149,9 +147,8 @@ TARGET_LINK_LIBRARIES(vtkLandmarkManagement
     vtkImagingTCL
     )
  
-    INSTALL_TARGETS(/lib vtkLandmarkManagementTCL)
-
-  ENDIF(VTK_WRAP_TCL)
+  INSTALL_TARGETS(/lib vtkLandmarkManagementTCL)
+ENDIF(VTK_WRAP_TCL)
 
 if(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
   install(TARGETS vtkVisuManagement
