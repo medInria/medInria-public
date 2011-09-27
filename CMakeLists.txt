@@ -379,7 +379,7 @@ ENDIF(vtkINRIA3D_BUILD_EXAMPLES)
 
 
 IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
-  add_subdirectory(vtkSphericalHarmonicsVisu)
+  add_subdirectory(SphericalHarmonicsVisu)
 ENDIF( vtkINRIA3D_USE_SPHERICALHARMONICS )
 
 

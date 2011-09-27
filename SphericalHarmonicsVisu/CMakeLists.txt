@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 2.6)
 
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
-PROJECT(vtkSphericalHarmonicsVisu)
+PROJECT(SphericalHarmonicsVisu)
 
-  SET(vtkSphericalHarmonicsVisu_SRCS
+  SET(SphericalHarmonicsVisu_SRCS
 vtkSphereTesselator.cpp
 vtkSphericalHarmonicSource.cpp
 vtkSphericalHarmonicGlyph.cpp
@@ -12,18 +12,18 @@ itkSphericalHarmonicITKToVTKFilter.cxx
   )
 
 if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(vtkSphericalHarmonicsVisu_SOURCES_PCH
+  add_precompiled_header(SphericalHarmonicsVisu_SOURCES_PCH
     "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp"
-    ${vtkSphericalHarmonicsVisu_SRCS})
+    ${SphericalHarmonicsVisu_SRCS})
 endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
 
   # C++ library for the InterfaceManagers
-  ADD_LIBRARY(vtkSphericalHarmonicsVisu ${vtkINRIA3D_LIBS_STYLE}
-  ${vtkSphericalHarmonicsVisu_SOURCES_PCH}
-  ${vtkSphericalHarmonicsVisu_SRCS}
+  ADD_LIBRARY(SphericalHarmonicsVisu ${vtkINRIA3D_LIBS_STYLE}
+  ${SphericalHarmonicsVisu_SOURCES_PCH}
+  ${SphericalHarmonicsVisu_SRCS}
   )
 
-  SET(vtkSphericalHarmonicsVisu_LIBS
+  SET(SphericalHarmonicsVisu_LIBS
     vtkCommon
     vtkRendering
     vtkGraphics
@@ -31,12 +31,12 @@ endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
     vtkHybrid
   )
 
-  TARGET_LINK_LIBRARIES(vtkSphericalHarmonicsVisu
-  ${vtkSphericalHarmonicsVisu_LIBS}
+  TARGET_LINK_LIBRARIES(SphericalHarmonicsVisu
+  ${SphericalHarmonicsVisu_LIBS}
   )
 
   if(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
-    install(TARGETS vtkSphericalHarmonicsVisu
+    install(TARGETS SphericalHarmonicsVisu
     LIBRARY DESTINATION ${vtkINRIA3D_INSTALL_LIB_DIR}
     RUNTIME DESTINATION ${vtkINRIA3D_INSTALL_BIN_DIR}
     ARCHIVE DESTINATION ${vtkINRIA3D_INSTALL_LIB_DIR}

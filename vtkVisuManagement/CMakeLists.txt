@@ -65,7 +65,7 @@ ENDIF(vtkINRIA3D_USE_HWSHADING )
 IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
     SET(vtkVisuManagement_LIBS
         ${vtkVisuManagement_LIBS}
-        vtkSphericalHarmonicsVisu
+        SphericalHarmonicsVisu
        )
     SET(vtkVisuManagement_SRCS
         ${vtkVisuManagement_SRCS}
