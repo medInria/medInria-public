@@ -284,52 +284,52 @@ dtkAbstractData* itkFiltersToolBox::processOutput ( void )
 // {
 //     if ( !this->parent()->data() )
 //         return;
-// 
+//
 //     QString descr = this->parent()->data()->description();
-// 
+//
 //     if ( descr == "itkDataImageChar3" )
 //     {
 //         d->dataTypeValue->setText ( "Char" );
 //         d->addFiltersValue->setMaximum ( std::numeric_limits<char>::max() );
 //         d->subtractFiltersValue->setMaximum ( std::numeric_limits<char>::max() );
-// 
+//
 //         d->intensityMinimumValue->setMinimum ( std::numeric_limits<char>::min() );
 //         d->intensityMinimumValue->setMaximum ( std::numeric_limits<char>::max() );
 //         d->intensityMinimumValue->setValue ( std::numeric_limits<char>::min() );
-// 
+//
 //         d->intensityMaximumValue->setMinimum ( std::numeric_limits<char>::min() );
 //         d->intensityMaximumValue->setMaximum ( std::numeric_limits<char>::max() );
 //         d->intensityMaximumValue->setValue ( std::numeric_limits<char>::max() );
-// 
-// 
+//
+//
 //         d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<char>::min() );
 //         d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<char>::max() );
 //         d->intensityOutputMinimumValue->setValue ( std::numeric_limits<char>::min() );
-// 
+//
 //         d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<char>::min() );
 //         d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<char>::max() );
 //         d->intensityOutputMaximumValue->setValue ( std::numeric_limits<char>::max() );
-// 
+//
 //     }
 //     else if ( descr == "itkDataImageUChar3" )
 //     {
 //         d->dataTypeValue->setText ( "Unsigned char" );
 //         d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
 //         d->subtractFiltersValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
-// 
-// 
+//
+//
 //         d->intensityMinimumValue->setMinimum ( std::numeric_limits<unsigned char>::min() );
 //         d->intensityMinimumValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
 //         d->intensityMinimumValue->setValue ( std::numeric_limits<unsigned char>::min() );
-// 
+//
 //         d->intensityMaximumValue->setMinimum ( std::numeric_limits<unsigned char>::min() );
 //         d->intensityMaximumValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
 //         d->intensityMaximumValue->setValue ( std::numeric_limits<unsigned char>::max() );
-// 
+//
 //         d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<unsigned char>::min() );
 //         d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
 //         d->intensityOutputMinimumValue->setValue ( std::numeric_limits<unsigned char>::min() );
-// 
+//
 //         d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<unsigned char>::min() );
 //         d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
 //         d->intensityOutputMaximumValue->setValue ( std::numeric_limits<unsigned char>::max() );
@@ -339,19 +339,19 @@ dtkAbstractData* itkFiltersToolBox::processOutput ( void )
 //         d->dataTypeValue->setText ( "Short" );
 //         d->addFiltersValue->setMaximum ( std::numeric_limits<short>::max() );
 //         d->subtractFiltersValue->setMaximum ( std::numeric_limits<short>::max() );
-// 
+//
 //         d->intensityMinimumValue->setMinimum ( std::numeric_limits<short>::min() );
 //         d->intensityMinimumValue->setMaximum ( std::numeric_limits<short>::max() );
 //         d->intensityMinimumValue->setValue ( std::numeric_limits<short>::min() );
-// 
+//
 //         d->intensityMaximumValue->setMinimum ( std::numeric_limits<short>::min() );
 //         d->intensityMaximumValue->setMaximum ( std::numeric_limits<short>::max() );
 //         d->intensityMaximumValue->setValue ( std::numeric_limits<short>::max() );
-// 
+//
 //         d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<short>::min() );
 //         d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<short>::max() );
 //         d->intensityOutputMinimumValue->setValue ( std::numeric_limits<short>::min() );
-// 
+//
 //         d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<short>::min() );
 //         d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<short>::max() );
 //         d->intensityOutputMaximumValue->setValue ( std::numeric_limits<short>::max() );
@@ -361,19 +361,19 @@ dtkAbstractData* itkFiltersToolBox::processOutput ( void )
 //         d->dataTypeValue->setText ( "Unsigned short" );
 //         d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
 //         d->subtractFiltersValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
-// 
+//
 //         d->intensityMinimumValue->setMinimum ( std::numeric_limits<unsigned short>::min() );
 //         d->intensityMinimumValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
 //         d->intensityMinimumValue->setValue ( std::numeric_limits<unsigned short>::min() );
-// 
+//
 //         d->intensityMaximumValue->setMinimum ( std::numeric_limits<unsigned short>::min() );
 //         d->intensityMaximumValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
 //         d->intensityMaximumValue->setValue ( std::numeric_limits<unsigned short>::max() );
-// 
+//
 //         d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<unsigned short>::min() );
 //         d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
 //         d->intensityOutputMinimumValue->setValue ( std::numeric_limits<unsigned short>::min() );
-// 
+//
 //         d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<unsigned short>::min() );
 //         d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
 //         d->intensityOutputMaximumValue->setValue ( std::numeric_limits<unsigned short>::max() );
@@ -383,19 +383,19 @@ dtkAbstractData* itkFiltersToolBox::processOutput ( void )
 //         d->dataTypeValue->setText ( "Int" );
 //         d->addFiltersValue->setMaximum ( std::numeric_limits<int>::max() );
 //         d->subtractFiltersValue->setMaximum ( std::numeric_limits<int>::max() );
-// 
+//
 //         d->intensityMinimumValue->setMinimum ( std::numeric_limits<int>::min() );
 //         d->intensityMinimumValue->setMaximum ( std::numeric_limits<int>::max() );
 //         d->intensityMinimumValue->setValue ( std::numeric_limits<int>::min() );
-// 
+//
 //         d->intensityMaximumValue->setMinimum ( std::numeric_limits<int>::min() );
 //         d->intensityMaximumValue->setMaximum ( std::numeric_limits<int>::max() );
 //         d->intensityMaximumValue->setValue ( std::numeric_limits<int>::max() );
-// 
+//
 //         d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<int>::min() );
 //         d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<int>::max() );
 //         d->intensityOutputMinimumValue->setValue ( std::numeric_limits<int>::min() );
-// 
+//
 //         d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<int>::min() );
 //         d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<int>::max() );
 //         d->intensityOutputMaximumValue->setValue ( std::numeric_limits<int>::max() );
@@ -405,19 +405,19 @@ dtkAbstractData* itkFiltersToolBox::processOutput ( void )
 //         d->dataTypeValue->setText ( "Unsigned int" );
 //         d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
 //         d->subtractFiltersValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
-// 
+//
 //         d->intensityMinimumValue->setMinimum ( std::numeric_limits<unsigned int>::min() );
 //         d->intensityMinimumValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
 //         d->intensityMinimumValue->setValue ( std::numeric_limits<unsigned int>::min() );
-// 
+//
 //         d->intensityMaximumValue->setMinimum ( std::numeric_limits<unsigned int>::min() );
 //         d->intensityMaximumValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
 //         d->intensityMaximumValue->setValue ( std::numeric_limits<unsigned int>::max() );
-// 
+//
 //         d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<unsigned int>::min() );
 //         d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
 //         d->intensityOutputMinimumValue->setValue ( std::numeric_limits<unsigned int>::min() );
-// 
+//
 //         d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<unsigned int>::min() );
 //         d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
 //         d->intensityOutputMaximumValue->setValue ( std::numeric_limits<unsigned int>::max() );
@@ -427,19 +427,19 @@ dtkAbstractData* itkFiltersToolBox::processOutput ( void )
 //         d->dataTypeValue->setText ( "Long" );
 //         d->addFiltersValue->setMaximum ( std::numeric_limits<long>::max() );
 //         d->subtractFiltersValue->setValue ( std::numeric_limits<long>::max() );
-// 
+//
 //         d->intensityMinimumValue->setMinimum ( std::numeric_limits<long>::min() );
 //         d->intensityMinimumValue->setMaximum ( std::numeric_limits<long>::max() );
 //         d->intensityMinimumValue->setValue ( std::numeric_limits<long>::min() );
-// 
+//
 //         d->intensityMaximumValue->setMinimum ( std::numeric_limits<long>::min() );
 //         d->intensityMaximumValue->setMaximum ( std::numeric_limits<long>::max() );
 //         d->intensityMaximumValue->setValue ( std::numeric_limits<long>::max() );
-// 
+//
 //         d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<long>::min() );
 //         d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<long>::max() );
 //         d->intensityOutputMinimumValue->setValue ( std::numeric_limits<long>::min() );
-// 
+//
 //         d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<long>::min() );
 //         d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<long>::max() );
 //         d->intensityOutputMaximumValue->setValue ( std::numeric_limits<long>::max() );
@@ -449,19 +449,19 @@ dtkAbstractData* itkFiltersToolBox::processOutput ( void )
 //         d->dataTypeValue->setText ( "Unsigned long" );
 //         d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
 //         d->subtractFiltersValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
-// 
+//
 //         d->intensityMinimumValue->setMinimum ( std::numeric_limits<unsigned long>::min() );
 //         d->intensityMinimumValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
 //         d->intensityMinimumValue->setValue ( std::numeric_limits<unsigned long>::min() );
-// 
+//
 //         d->intensityMaximumValue->setMinimum ( std::numeric_limits<unsigned long>::min() );
 //         d->intensityMaximumValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
 //         d->intensityMaximumValue->setValue ( std::numeric_limits<unsigned long>::max() );
-// 
+//
 //         d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<unsigned long>::min() );
 //         d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
 //         d->intensityOutputMinimumValue->setValue ( std::numeric_limits<unsigned long>::min() );
-// 
+//
 //         d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<unsigned long>::min() );
 //         d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
 //         d->intensityOutputMaximumValue->setValue ( std::numeric_limits<unsigned long>::max() );
@@ -471,19 +471,19 @@ dtkAbstractData* itkFiltersToolBox::processOutput ( void )
 //         d->dataTypeValue->setText ( "Float" );
 //         d->addFiltersValue->setMaximum ( std::numeric_limits<float>::max() );
 //         d->subtractFiltersValue->setMaximum ( std::numeric_limits<float>::max() );
-// 
+//
 //         d->intensityMinimumValue->setMinimum ( std::numeric_limits<float>::min() );
 //         d->intensityMinimumValue->setMaximum ( std::numeric_limits<float>::max() );
 //         d->intensityMinimumValue->setValue ( std::numeric_limits<float>::min() );
-// 
+//
 //         d->intensityMaximumValue->setMinimum ( std::numeric_limits<float>::min() );
 //         d->intensityMaximumValue->setMaximum ( std::numeric_limits<float>::max() );
 //         d->intensityMaximumValue->setValue ( std::numeric_limits<float>::max() );
-// 
+//
 //         d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<float>::min() );
 //         d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<float>::max() );
 //         d->intensityOutputMinimumValue->setValue ( std::numeric_limits<float>::min() );
-// 
+//
 //         d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<float>::min() );
 //         d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<float>::max() );
 //         d->intensityOutputMaximumValue->setValue ( std::numeric_limits<float>::max() );
@@ -493,19 +493,19 @@ dtkAbstractData* itkFiltersToolBox::processOutput ( void )
 //         d->dataTypeValue->setText ( "Double" );
 //         d->addFiltersValue->setMaximum ( std::numeric_limits<double>::max() );
 //         d->subtractFiltersValue->setMaximum ( std::numeric_limits<double>::max() );
-// 
+//
 //         d->intensityMinimumValue->setMinimum ( std::numeric_limits<double>::min() );
 //         d->intensityMinimumValue->setMaximum ( std::numeric_limits<double>::max() );
 //         d->intensityMinimumValue->setValue ( std::numeric_limits<double>::min() );
-// 
+//
 //         d->intensityMaximumValue->setMinimum ( std::numeric_limits<double>::min() );
 //         d->intensityMaximumValue->setMaximum ( std::numeric_limits<double>::max() );
 //         d->intensityMaximumValue->setValue ( std::numeric_limits<double>::max() );
-// 
+//
 //         d->intensityOutputMinimumValue->setMinimum ( std::numeric_limits<double>::min() );
 //         d->intensityOutputMinimumValue->setMaximum ( std::numeric_limits<double>::max() );
 //         d->intensityOutputMinimumValue->setValue ( std::numeric_limits<double>::min() );
-// 
+//
 //         d->intensityOutputMaximumValue->setMinimum ( std::numeric_limits<double>::min() );
 //         d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<double>::max() );
 //         d->intensityOutputMaximumValue->setValue ( std::numeric_limits<double>::max() );
@@ -520,7 +520,9 @@ dtkAbstractData* itkFiltersToolBox::processOutput ( void )
 
 void itkFiltersToolBox::clear ( void )
 {
-    medToolBox::clear();
+//     medToolBox::clear();
+
+    qDebug() << "Clear itk filters toolbox";
 
     d->dataTypeValue->setText ( "Unknown" );
     d->addFiltersValue->setMaximum ( 100.0 );
@@ -545,7 +547,9 @@ void itkFiltersToolBox::clear ( void )
 
 void itkFiltersToolBox::update ( dtkAbstractView* view )
 {
-    medToolBox::update ( view );
+//     medToolBox::update ( view );
+
+    qDebug() << "Update itk filters toolbox";
 
     if ( !view )
         clear();
