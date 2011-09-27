@@ -132,7 +132,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	
     this->readInformation ( path );
 	
-    qDebug() << "Read with: " << this->description();
+    qDebug() << "Read with: " << this->identifier();
 
     if (dtkAbstractData *dtkdata = this->data() ) {
       

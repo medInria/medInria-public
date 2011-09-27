@@ -66,7 +66,7 @@ bool vtkDataMeshReader::read(const QString& path) {
     readInformation(path);
     setProgress(50);
 
-    qDebug() << "Can read with: " << description();
+    qDebug() << "Can read with: " << identifier();
 
     if (dtkAbstractData *dtkdata = data()) {
 
