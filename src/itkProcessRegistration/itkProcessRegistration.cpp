@@ -76,12 +76,12 @@ itkProcessRegistration::~itkProcessRegistration(void)
     d = 0;
 }
 
-//bool itkProcessRegistration::registered(void)
+//bool itkProcessRegistration::registered()
 //{
 //    return dtkAbstractProcessFactory::instance()->registerProcessType("itkProcessRegistration", createItkProcessRegistration);
 //}
 
-//QString itkProcessRegistration::description(void) const
+//QString itkProcessRegistration::identifier() const
 //{
 //    return "itkProcessRegistration";
 //}
@@ -212,8 +212,8 @@ void itkProcessRegistration::setInput(dtkAbstractData *data, int channel)
     if (!data)
         return;
 
-    QString descr = QString (data->identifier());
-    QString::iterator last_charac = descr.end() - 1;
+    QString id = QString (data->identifier());
+    QString::iterator last_charac = id.end() - 1;
     if (*last_charac == '3'){
         d->dimensions = 3;
     }
@@ -222,42 +222,42 @@ void itkProcessRegistration::setInput(dtkAbstractData *data, int channel)
     }
     else{
         qDebug() << "Unable to handle the number of dimensions " \
-                << "for an image of identifier: "<< data->identifier();
+                << "for an image of description: "<< data->identifier();
     }
 
     *last_charac = '3';
     if (channel==0)
-        d->output = dtkAbstractDataFactory::instance()->create (descr);
-    if (descr =="itkDataImageChar3") {
+        d->output = dtkAbstractDataFactory::instance()->create (id);
+    if (id =="itkDataImageChar3") {
         d->setInput<char>(data,channel);
     }
-    else if (descr =="itkDataImageUChar3") {
+    else if (id =="itkDataImageUChar3") {
         d->setInput<unsigned char>(data,channel);
     }
-    else if (descr =="itkDataImageShort3") {
+    else if (id =="itkDataImageShort3") {
         d->setInput<short>(data,channel);
     }
-    else if (descr =="itkDataImageUShort3") {
+    else if (id =="itkDataImageUShort3") {
         d->setInput<unsigned short>(data,channel);
     }
 
-    else if (descr =="itkDataImageInt3") {
+    else if (id =="itkDataImageInt3") {
         d->setInput<int>(data,channel);
     }
-    else if (descr =="itkDataImageUInt3") {
+    else if (id =="itkDataImageUInt3") {
         d->setInput<unsigned int>(data,channel);
     }
 
-    else if (descr =="itkDataImageLong3") {
+    else if (id =="itkDataImageLong3") {
         d->setInput<long>(data,channel);
     }
-    else if (descr=="itkDataImageULong3") {
+    else if (id=="itkDataImageULong3") {
         d->setInput<unsigned long>(data,channel);
     }
-    else if (descr =="itkDataImageFloat3") {
+    else if (id =="itkDataImageFloat3") {
         d->setInput<float>(data,channel);
     }
-    else if (descr =="itkDataImageDouble3") {
+    else if (id =="itkDataImageDouble3") {
         d->setInput<double>(data,channel);
     }
 
@@ -352,15 +352,15 @@ bool itkProcessRegistration::write(const QString& file)
     for (int i=0; i<writers.size(); i++)
     {
         dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
-        qDebug() << "trying " << dataWriter->description();
+        qDebug() << "trying " << dataWriter->identifier();
 
         if (! dataWriter->handled().contains(out->identifier()))
         {
-          qDebug() << "failed with " << dataWriter->description();
+          qDebug() << "failed with " << dataWriter->identifier();
           continue;
         }
 
-        qDebug() << "success with " << dataWriter->description();
+        qDebug() << "success with " << dataWriter->identifier();
         dataWriter->setData (out);
 
         qDebug() << "trying to write in file : "<<file;

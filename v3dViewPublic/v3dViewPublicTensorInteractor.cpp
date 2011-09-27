@@ -83,9 +83,9 @@ void v3dViewPublicTensorInteractor::setData(dtkAbstractData *data)
     if (!data)
         return;
 
-    QString description = data->identifier();
+    const QString& identifier = data->identifier();
 
-    if (description.compare("itkDataTensorImageFloat3") == 0) {
+    if (identifier.compare("itkDataTensorImageFloat3") == 0) {
 		if (TensorImageTypeFloat *dataset = static_cast<TensorImageTypeFloat *>(data->data())) {
 
 			d->datasetFloat = dataset;
@@ -110,7 +110,7 @@ void v3dViewPublicTensorInteractor::setData(dtkAbstractData *data)
 
 			d->data = data;
 		}
-    } else if (description.compare("itkDataTensorImageDouble3") == 0) {
+    } else if (identifier.compare("itkDataTensorImageDouble3") == 0) {
 		if (TensorImageTypeDouble *dataset = static_cast<TensorImageTypeDouble *>(data->data())) {
 
 			d->datasetDouble = dataset;
@@ -136,7 +136,7 @@ void v3dViewPublicTensorInteractor::setData(dtkAbstractData *data)
 			d->data = data;
 		}
     } else {
-    	qDebug() << "Unrecognized tensor data type: " << description;
+    	qDebug() << "Unrecognized tensor data type: " << identifier;
     }
 }
 

@@ -62,11 +62,13 @@ bool v3dDataFibersWriter::write(const QString& path)
   return true;
 }
 
-QString v3dDataFibersWriter::description(void) const
-{
+QString v3dDataFibersWriter::identifier() const {
     return "v3dDataFibersWriter";
 }
 
+QString v3dDataFibersWriter::description() const {
+    return "v3dDataFibersWriter";
+}
 
 bool v3dDataFibersWriter::registered(void)
 {

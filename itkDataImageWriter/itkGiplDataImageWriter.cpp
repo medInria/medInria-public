@@ -1,28 +1,23 @@
-#include "itkGiplDataImageWriter.h"
+#include <itkGiplDataImageWriter.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkGiplImageIO.h>
 
+const char itkGiplDataImageWriter::ID[] = "itkGiplDataImageWriter";
 
-itkGiplDataImageWriter::itkGiplDataImageWriter(void) : itkDataImageWriterBase()
-{
+itkGiplDataImageWriter::itkGiplDataImageWriter(): itkDataImageWriterBase() {
     this->io = itk::GiplImageIO::New();
 }
 
+itkGiplDataImageWriter::~itkGiplDataImageWriter() { }
 
-itkGiplDataImageWriter::~itkGiplDataImageWriter(void)
-{
-}
-
-QStringList itkGiplDataImageWriter::handled(void) const
-{
+QStringList itkGiplDataImageWriter::handled() const {
     return s_handled();
 }
 
-QStringList itkGiplDataImageWriter::s_handled(void)
-{
+QStringList itkGiplDataImageWriter::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,23 @@ QStringList itkGiplDataImageWriter::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGBA3";
 }
 
-bool itkGiplDataImageWriter::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataWriterType("itkGiplDataImageWriter", s_handled(),
-                                                                      createItkGiplDataImageWriter);
+bool itkGiplDataImageWriter::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataWriterType(ID,s_handled(),createItkGiplDataImageWriter);
 }
 
+QString itkGiplDataImageWriter::identifier() const {
+    return ID;
+}
 
-QString itkGiplDataImageWriter::description(void) const
-{
-    return "itkGiplDataImageWriter";
+QString itkGiplDataImageWriter::description() const {
+    return "Writer for Gipl images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkGiplDataImageWriter(void)
-{
+dtkAbstractDataWriter *createItkGiplDataImageWriter() {
     return new itkGiplDataImageWriter;
 }
 

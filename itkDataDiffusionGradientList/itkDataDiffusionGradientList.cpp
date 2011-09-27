@@ -192,6 +192,8 @@ bool itkDataDiffusionGradientList::read (const QString& filename)
     }
    */
 
+    this->setNumberOfChannels (output.size());
+
     d->gradients = output;
 
     return true;    

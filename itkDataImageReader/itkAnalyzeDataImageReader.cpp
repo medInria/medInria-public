@@ -1,28 +1,23 @@
-#include "itkAnalyzeDataImageReader.h"
+#include <itkAnalyzeDataImageReader.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkAnalyzeImageIO.h>
 
+const char itkAnalyzeDataImageReader::ID[] = "itkAnalyzeDataImageReader";
 
-itkAnalyzeDataImageReader::itkAnalyzeDataImageReader(void) : itkDataImageReaderBase()
-{
+itkAnalyzeDataImageReader::itkAnalyzeDataImageReader(): itkDataImageReaderBase() {
     this->io = itk::AnalyzeImageIO::New();
 }
 
+itkAnalyzeDataImageReader::~itkAnalyzeDataImageReader() { }
 
-itkAnalyzeDataImageReader::~itkAnalyzeDataImageReader(void)
-{
-}
-
-QStringList itkAnalyzeDataImageReader::handled(void) const
-{
+QStringList itkAnalyzeDataImageReader::handled() const {
     return s_handled();
 }
 
-QStringList itkAnalyzeDataImageReader::s_handled(void)
-{
+QStringList itkAnalyzeDataImageReader::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,22 @@ QStringList itkAnalyzeDataImageReader::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGB3";
 }
 
-bool itkAnalyzeDataImageReader::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkAnalyzeDataImageReader", s_handled(),
-                                                                      createItkAnalyzeDataImageReader);
+bool itkAnalyzeDataImageReader::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkAnalyzeDataImageReader);
 }
 
+QString itkAnalyzeDataImageReader::identifier() const {
+    return ID;
+}
 
-QString itkAnalyzeDataImageReader::description(void) const
-{
-    return "itkAnalyzeDataImageReader";
+QString itkAnalyzeDataImageReader::description() const {
+    return "Reader for analyze images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkAnalyzeDataImageReader(void)
-{
+dtkAbstractDataReader *createItkAnalyzeDataImageReader() {
     return new itkAnalyzeDataImageReader;
 }
-

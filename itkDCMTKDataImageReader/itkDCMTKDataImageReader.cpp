@@ -19,77 +19,67 @@
 #include <itkCommand.h>
 
 // implement an observer
-namespace itk
-{
-  class DCMTKDataImageReaderCommand : public Command
-  {
+namespace itk {
 
-  public:
+    class DCMTKDataImageReaderCommand : public Command {
 
-    typedef DCMTKDataImageReaderCommand     Self;
-    typedef Command                        Superclass;
-    typedef itk::SmartPointer<Self>        Pointer;
-    typedef itk::SmartPointer<const Self>  ConstPointer;
+    public:
 
-    itkTypeMacro(DCMTKDataImageReaderCommand, Command );
-    itkNewMacro (Self);
+        typedef DCMTKDataImageReaderCommand     Self;
+        typedef Command                        Superclass;
+        typedef itk::SmartPointer<Self>        Pointer;
+        typedef itk::SmartPointer<const Self>  ConstPointer;
 
-    void Execute(Object *caller, const EventObject &event);
-    void Execute(const Object *caller, const EventObject &event);
+        itkTypeMacro(DCMTKDataImageReaderCommand,Command);
+        itkNewMacro(Self);
 
-    void SetDataImageReader (dtkAbstractDataReader* reader)
-    { m_Reader = reader; }
+        void Execute(Object *caller,const EventObject &event);
+        void Execute(const Object *caller,const EventObject &event);
 
-  protected:
-    DCMTKDataImageReaderCommand(){ m_Reader = 0; };
-    virtual ~DCMTKDataImageReaderCommand(){};
+        void SetDataImageReader(dtkAbstractDataReader* reader) { m_Reader = reader; }
 
-  private:
-    dtkAbstractDataReader* m_Reader;
-  };
+    protected:
+        DCMTKDataImageReaderCommand(){ m_Reader = 0; };
+        virtual ~DCMTKDataImageReaderCommand(){};
 
-  void DCMTKDataImageReaderCommand::Execute (Object *caller, const EventObject &event)
-  {
-      ImageIOBase *po = dynamic_cast<ImageIOBase *>(caller);
+    private:
+        dtkAbstractDataReader* m_Reader;
+    };
 
-      if (!po)
-	  return;
+    void DCMTKDataImageReaderCommand::Execute(Object *caller,const EventObject &event)
+    {
+        ImageIOBase *po = dynamic_cast<ImageIOBase *>(caller);
 
-      if(typeid(event) == typeid(itk::ProgressEvent))
-      {
-	  if (m_Reader)
-	      m_Reader->setProgress((int)(po->GetProgress()*100.0));
-      }
-  }
+        if (!po)
+            return;
 
-  void DCMTKDataImageReaderCommand::Execute (const Object *caller, const EventObject &event)
-  {
-      ImageIOBase *po = dynamic_cast<ImageIOBase *>(const_cast<Object *>(caller) );
-      if (! po)
-	  return;
+        if(typeid(event) == typeid(itk::ProgressEvent)) {
+            if (m_Reader)
+                m_Reader->setProgress((int)(po->GetProgress()*100.0));
+        }
+    }
 
-      if( typeid(event) == typeid ( itk::ProgressEvent  )  )
-      {
-	  if (m_Reader)
-	      m_Reader->setProgress ( (int)(po->GetProgress()*100.0) );
-      }
-  }
+    void DCMTKDataImageReaderCommand::Execute(const Object *caller,const EventObject &event) {
+        ImageIOBase *po = dynamic_cast<ImageIOBase*>(const_cast<Object *>(caller));
+        if (!po)
+            return;
+
+        if (typeid(event)==typeid(itk::ProgressEvent)) {
+            if (m_Reader)
+                m_Reader->setProgress((int)(po->GetProgress()*100.0));
+        }
+    }
 }
 
 
-#define ReadImageMacro(type, dimension)					\
-  itk::ImageFileReader< itk::Image<type, dimension> >::Pointer Reader = itk::ImageFileReader< itk::Image<type, dimension> >::New(); \
-  Reader->SetImageIO ( d->io );						\
-  Reader->SetFileName ( paths[0].toAscii().constData() );		\
-  dtkdata->setData ( Reader->GetOutput() );				\
-  try									\
-  {									\
-    Reader->Update();							\
-  }									\
-  catch (itk::ExceptionObject &e) {					\
-    qDebug() << e.GetDescription();					\
-    return false;							\
-  }
+template <typename TYPE,unsigned DIM>
+void ReadImage(dtkAbstractData* dtkdata,itk::DCMTKImageIO::Pointer io,const QStringList& paths) {
+    typename itk::ImageFileReader<itk::Image<TYPE,DIM> >::Pointer Reader = itk::ImageFileReader<itk::Image<TYPE,DIM> >::New();
+    Reader->SetImageIO(io);
+    Reader->SetFileName(paths[0].toAscii().constData());
+    dtkdata->setData(Reader->GetOutput());
+    Reader->Update();
+}
 
 // /////////////////////////////////////////////////////////////////
 // itkDCMTKDataImageReaderPrivate
@@ -114,10 +104,9 @@ itkDCMTKDataImageReaderPrivate::itkDCMTKDataImageReaderPrivate()
 // itkDCMTKDataImageReader
 // /////////////////////////////////////////////////////////////////
 
+const char itkDCMTKDataImageReader::ID[] = "itkDCMTKDataImageReader";
 
-itkDCMTKDataImageReader::itkDCMTKDataImageReader(void) : dtkAbstractDataReader(), d(new itkDCMTKDataImageReaderPrivate)
-{
-}
+itkDCMTKDataImageReader::itkDCMTKDataImageReader(): dtkAbstractDataReader(),d(new itkDCMTKDataImageReaderPrivate) { }
 
 
 itkDCMTKDataImageReader::~itkDCMTKDataImageReader(void)
@@ -175,20 +164,21 @@ QStringList itkDCMTKDataImageReader::handled(void) const
 		       << "itkDataImageRGB3";
 }
 
-QString itkDCMTKDataImageReader::description(void) const
-{
-  return "itkDCMTKDataImageReader";
+QString itkDCMTKDataImageReader::identifier() const {
+    return ID;
 }
 
-bool itkDCMTKDataImageReader::canRead (const QString& path)
-{
-  return d->io->CanReadFile ( path.toAscii().constData() );
+QString itkDCMTKDataImageReader::description() const {
+    return "Reader for DCMTK images";
 }
 
-bool itkDCMTKDataImageReader::canRead (const QStringList& paths)
-{
+bool itkDCMTKDataImageReader::canRead(const QString& path) {
+    return d->io->CanReadFile(path.toAscii().constData());
+}
+
+bool itkDCMTKDataImageReader::canRead(const QStringList& paths) {
   for (int i=0; i<paths.size(); i++)
-    if (!d->io->CanReadFile ( paths[i].toAscii().constData() ))
+    if (!d->io->CanReadFile(paths[i].toAscii().constData()))
       return false;
   return true;
 }
@@ -207,9 +197,9 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
 
   std::vector< std::string > filenames;
   for (int i=0; i<paths.size(); i++)
-    filenames.push_back ( paths[i].toAscii().constData() );
+    filenames.push_back(paths[i].toAscii().constData());
 
-  d->io->SetFileNames ( filenames );
+  d->io->SetFileNames(filenames);
   try {
     d->io->ReadImageInformation();
   }
@@ -226,7 +216,7 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     imagetypestring << "itkDataImage";
 
 
-    if (d->io->GetPixelType() == itk::ImageIOBase::SCALAR ) {
+    if (d->io->GetPixelType() == itk::ImageIOBase::SCALAR) {
 
       switch (d->io->GetComponentType())
       {
@@ -266,19 +256,19 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
       }
 
       imagetypestring << d->io->GetNumberOfDimensions();
-      dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer (imagetypestring.str().c_str());
+      dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer(imagetypestring.str().c_str());
       if (dtkdata)
-	this->setData ( dtkdata );
+	this->setData(dtkdata);
     }
-    else if ( d->io->GetPixelType()==itk::ImageIOBase::RGB ) {
+    else if (d->io->GetPixelType()==itk::ImageIOBase::RGB) {
 
       switch (d->io->GetComponentType()) {
 
 	  case itk::ImageIOBase::UCHAR:
-	    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageRGB3");
+	    dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageRGB3");
 
 	    if (dtkdata)
-	      this->setData ( dtkdata );
+	      this->setData(dtkdata);
 	    break;
 
 	  default:
@@ -350,45 +340,47 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     status         << d->io->GetPatientStatus().c_str();
     report << "";
 
-    for (unsigned int i=0; i<d->io->GetOrderedFileNames().size(); i++ )
+    for (unsigned int i=0; i<d->io->GetOrderedFileNames().size(); i++)
       filePaths << d->io->GetOrderedFileNames()[i].c_str();
 
-    if (!dtkdata->hasMetaData(medMetaDataKeys::PatientName.key() ))
-      dtkdata->addMetaData(medMetaDataKeys::PatientName.key(), patientName );
-    else
-      dtkdata->setMetaData(medMetaDataKeys::PatientName.key(), patientName );
+    //  TODO: Use th medMetaDataKeys iterators.
 
-    if (!dtkdata->hasMetaData(medMetaDataKeys::StudyDescription.key() ))
-      dtkdata->addMetaData(medMetaDataKeys::StudyDescription.key(), studyName );
+    if (!dtkdata->hasMetaData(medMetaDataKeys::PatientName.key()))
+      dtkdata->addMetaData(medMetaDataKeys::PatientName.key(),patientName);
     else
-      dtkdata->setMetaData(medMetaDataKeys::StudyDescription.key(), studyName );
+      dtkdata->setMetaData(medMetaDataKeys::PatientName.key(),patientName);
 
-    if (!dtkdata->hasMetaData (medMetaDataKeys::SeriesDescription.key() ))
-      dtkdata->addMetaData(medMetaDataKeys::SeriesDescription.key(), seriesName );
+    if (!dtkdata->hasMetaData(medMetaDataKeys::StudyDescription.key()))
+      dtkdata->addMetaData(medMetaDataKeys::StudyDescription.key(),studyName);
     else
-      dtkdata->setMetaData(medMetaDataKeys::SeriesDescription.key(), seriesName );
+      dtkdata->setMetaData(medMetaDataKeys::StudyDescription.key(),studyName);
 
-    dtkdata->setMetaData(medMetaDataKeys::StudyID.key(),         studyId);
-    dtkdata->setMetaData(medMetaDataKeys::SeriesID.key(),        seriesId);
-    dtkdata->setMetaData(medMetaDataKeys::Orientation.key(),     orientation);
-    dtkdata->setMetaData(medMetaDataKeys::SeriesNumber.key(),    seriesNumber);
-    dtkdata->setMetaData(medMetaDataKeys::SequenceName.key(),    sequenceName);
-    dtkdata->setMetaData(medMetaDataKeys::SliceThickness.key(),  sliceThickness);
-    dtkdata->setMetaData(medMetaDataKeys::Rows.key(),            rows);
-    dtkdata->setMetaData(medMetaDataKeys::Columns.key(),         columns);
-    dtkdata->setMetaData(medMetaDataKeys::Age.key(),             age);
-    dtkdata->setMetaData(medMetaDataKeys::BirthDate.key(),       birthdate);
-    dtkdata->setMetaData(medMetaDataKeys::Gender.key(),          gender);
-    dtkdata->setMetaData(medMetaDataKeys::Description.key(),     desc);
-    dtkdata->setMetaData(medMetaDataKeys::Modality.key(),        modality);
-    dtkdata->setMetaData(medMetaDataKeys::AcquisitionDate.key(), acqdate);
-    dtkdata->setMetaData(medMetaDataKeys::Referee.key(),         referee);
-    dtkdata->setMetaData(medMetaDataKeys::Performer.key(),       performer);
-    dtkdata->setMetaData(medMetaDataKeys::Institution.key(),     institution);
-    dtkdata->setMetaData(medMetaDataKeys::Report.key(),          report);
-    dtkdata->setMetaData(medMetaDataKeys::Protocol.key(),        protocol);
-    dtkdata->setMetaData(medMetaDataKeys::Comments.key(),        comments);
-    dtkdata->setMetaData(medMetaDataKeys::Status.key(),          status);
+    if (!dtkdata->hasMetaData (medMetaDataKeys::SeriesDescription.key()))
+      dtkdata->addMetaData(medMetaDataKeys::SeriesDescription.key(),seriesName);
+    else
+      dtkdata->setMetaData(medMetaDataKeys::SeriesDescription.key(),seriesName);
+
+    dtkdata->setMetaData(medMetaDataKeys::StudyID.key(),        studyId);
+    dtkdata->setMetaData(medMetaDataKeys::SeriesID.key(),       seriesId);
+    dtkdata->setMetaData(medMetaDataKeys::Orientation.key(),    orientation);
+    dtkdata->setMetaData(medMetaDataKeys::SeriesNumber.key(),   seriesNumber);
+    dtkdata->setMetaData(medMetaDataKeys::SequenceName.key(),   sequenceName);
+    dtkdata->setMetaData(medMetaDataKeys::SliceThickness.key(), sliceThickness);
+    dtkdata->setMetaData(medMetaDataKeys::Rows.key(),           rows);
+    dtkdata->setMetaData(medMetaDataKeys::Columns.key(),        columns);
+    dtkdata->setMetaData(medMetaDataKeys::Age.key(),            age);
+    dtkdata->setMetaData(medMetaDataKeys::BirthDate.key(),      birthdate);
+    dtkdata->setMetaData(medMetaDataKeys::Gender.key(),         gender);
+    dtkdata->setMetaData(medMetaDataKeys::Description.key(),    desc);
+    dtkdata->setMetaData(medMetaDataKeys::Modality.key(),       modality);
+    dtkdata->setMetaData(medMetaDataKeys::AcquisitionDate.key(),acqdate);
+    dtkdata->setMetaData(medMetaDataKeys::Referee.key(),        referee);
+    dtkdata->setMetaData(medMetaDataKeys::Performer.key(),      performer);
+    dtkdata->setMetaData(medMetaDataKeys::Institution.key(),    institution);
+    dtkdata->setMetaData(medMetaDataKeys::Report.key(),         report);
+    dtkdata->setMetaData(medMetaDataKeys::Protocol.key(),       protocol);
+    dtkdata->setMetaData(medMetaDataKeys::Comments.key(),       comments);
+    dtkdata->setMetaData(medMetaDataKeys::Status.key(),         status);
 
     dtkdata->addMetaData(medMetaDataKeys::FilePaths.key(),      filePaths);
 
@@ -400,96 +392,80 @@ bool itkDCMTKDataImageReader::read (const QString& path)
 {
   QStringList paths;
   paths << path;
-  return read ( paths );
+  return read(paths);
 }
 
 
-bool itkDCMTKDataImageReader::read (const QStringList& paths)
+bool itkDCMTKDataImageReader::read(const QStringList& paths)
 {
-  if (paths.size()==0)
-    return false;
 
-  this->readInformation ( paths );
+    if (paths.size()==0)
+        return false;
 
-  /*
-    if (d->io->GetNumberOfDimensions() != 3) {
-    qWarning() << "Only 3D images are supported for now (required: " << d->io->GetNumberOfDimensions() << ")";
-    return false;
-    }
-  */
+    this->readInformation(paths);
 
-  itk::DCMTKDataImageReaderCommand::Pointer command = itk::DCMTKDataImageReaderCommand::New();
-  command->SetDataImageReader ( this );
-  d->io->AddObserver ( itk::ProgressEvent(), command);
-
-
-  if (dtkAbstractData *dtkdata = this->data() ) {
-
-    if (dtkdata->identifier()=="itkDataImageUChar3")
-    { ReadImageMacro (unsigned char, 3); }
-    else if (dtkdata->identifier()=="itkDataImageChar3")
-    { ReadImageMacro (char, 3); }
-    else if (dtkdata->identifier()=="itkDataImageUShort3")
-    { ReadImageMacro (unsigned short, 3); }
-    else if (dtkdata->identifier()=="itkDataImageShort3")
-    { ReadImageMacro (short, 3); }
-    else if (dtkdata->identifier()=="itkDataImageUInt3")
-    { ReadImageMacro (unsigned int, 3); }
-    else if (dtkdata->identifier()=="itkDataImageInt3")
-    { ReadImageMacro (int, 3); }
-    else if (dtkdata->identifier()=="itkDataImageInt4")
-    { ReadImageMacro (int, 4); }
-    else if (dtkdata->identifier()=="itkDataImageLong4")
-    { ReadImageMacro (long, 4); }
-    else if (dtkdata->identifier()=="itkDataImageUInt4")
-    { ReadImageMacro (unsigned int, 4); }
-    else if (dtkdata->identifier()=="itkDataImageULong4")
-    { ReadImageMacro (unsigned long, 4); }
-    else if (dtkdata->identifier()=="itkDataImageULong3")
-    { ReadImageMacro (unsigned long, 3); }
-    else if (dtkdata->identifier()=="itkDataImageLong3")
-    { ReadImageMacro (long, 3); }
-    else if (dtkdata->identifier()=="itkDataImageFloat3")
-    { ReadImageMacro (float, 3); }
-    else if (dtkdata->identifier()=="itkDataImageDouble3")
-    { ReadImageMacro (double, 3); }
-    else if (dtkdata->identifier()=="itkDataImageRGB3")
-    { ReadImageMacro (itk::RGBPixel<unsigned char>, 3); }
-    else if (dtkdata->identifier()=="itkDataImageUShort4")
-    { ReadImageMacro (unsigned short, 4); }
-    else if (dtkdata->identifier()=="itkDataImageUChar4")
-    { ReadImageMacro (unsigned char, 4); }
-    else if (dtkdata->identifier()=="itkDataImageShort4")
-    { ReadImageMacro (short, 4); }
-    else if (dtkdata->identifier()=="itkDataImageChar4")
-        { ReadImageMacro (char, 4); }
-    else
-    {
-      qWarning() << "Unrecognized pixel type";
+    /*
+      if (d->io->GetNumberOfDimensions() != 3) {
+      qWarning() << "Only 3D images are supported for now (required: " << d->io->GetNumberOfDimensions() << ")";
       return false;
-    }
-
-    // copy over the dicom dictionary into metadata
-    typedef itk::DCMTKImageIO::MetaDataVectorStringType MetaDataVectorStringType;
-    typedef itk::DCMTKImageIO::StringVectorType         StringVectorType;
-
-    const itk::MetaDataDictionary& dictionary = d->io->GetMetaDataDictionary();
-    itk::MetaDataDictionary::ConstIterator it = dictionary.Begin();
-    while(it!=dictionary.End()) {
-      if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) ) {
-	const StringVectorType &values = metaData->GetMetaDataObjectValue();
-	for (unsigned int i=0; i<values.size(); i++) {
-	  dtkdata->addMetaData( it->first.c_str(), values[i].c_str());
-	}
       }
-      ++it;
+    */
+
+    itk::DCMTKDataImageReaderCommand::Pointer command = itk::DCMTKDataImageReaderCommand::New();
+    command->SetDataImageReader(this);
+    d->io->AddObserver(itk::ProgressEvent(),command);
+
+    if (dtkAbstractData *dtkdata = this->data()) {
+
+        try {
+            if      (dtkdata->identifier()=="itkDataImageUChar3")  { ReadImage<unsigned char,3>(dtkdata,d->io,paths);                }
+            else if (dtkdata->identifier()=="itkDataImageChar3")   { ReadImage<char,3>(dtkdata,d->io,paths);                         }
+            else if (dtkdata->identifier()=="itkDataImageUShort3") { ReadImage<unsigned short,3>(dtkdata,d->io,paths);               }
+            else if (dtkdata->identifier()=="itkDataImageShort3")  { ReadImage<short,3>(dtkdata,d->io,paths);                        }
+            else if (dtkdata->identifier()=="itkDataImageUInt3")   { ReadImage<unsigned int,3>(dtkdata,d->io,paths);                 }
+            else if (dtkdata->identifier()=="itkDataImageInt3")    { ReadImage<int,3>(dtkdata,d->io,paths);                          }
+            else if (dtkdata->identifier()=="itkDataImageInt4")    { ReadImage<int,4>(dtkdata,d->io,paths);                          }
+            else if (dtkdata->identifier()=="itkDataImageLong4")   { ReadImage<long,4>(dtkdata,d->io,paths);                         }
+            else if (dtkdata->identifier()=="itkDataImageUInt4")   { ReadImage<unsigned int,4>(dtkdata,d->io,paths);                 }
+            else if (dtkdata->identifier()=="itkDataImageULong4")  { ReadImage<unsigned long,4>(dtkdata,d->io,paths);                }
+            else if (dtkdata->identifier()=="itkDataImageULong3")  { ReadImage<unsigned long,3>(dtkdata,d->io,paths);                }
+            else if (dtkdata->identifier()=="itkDataImageLong3")   { ReadImage<long,3>(dtkdata,d->io,paths);                         }
+            else if (dtkdata->identifier()=="itkDataImageFloat3")  { ReadImage<float,3>(dtkdata,d->io,paths);                        }
+            else if (dtkdata->identifier()=="itkDataImageDouble3") { ReadImage<double,3>(dtkdata,d->io,paths);                       }
+            else if (dtkdata->identifier()=="itkDataImageRGB3")    { ReadImage<itk::RGBPixel<unsigned char>,3>(dtkdata,d->io,paths); }
+            else if (dtkdata->identifier()=="itkDataImageUShort4") { ReadImage<unsigned short,4>(dtkdata,d->io,paths);               }
+            else if (dtkdata->identifier()=="itkDataImageUChar4")  { ReadImage<unsigned char,4>(dtkdata,d->io,paths);                }
+            else if (dtkdata->identifier()=="itkDataImageShort4")  { ReadImage<short,4>(dtkdata,d->io,paths);                        }
+            else if (dtkdata->identifier()=="itkDataImageChar4")   { ReadImage<char,4>(dtkdata,d->io,paths);                         }
+            else {
+                qWarning() << "Unrecognized pixel type";
+                return false;
+            }
+        } catch (itk::ExceptionObject &e) {
+            qDebug() << e.GetDescription();
+            return false;
+        }
+
+        // copy over the dicom dictionary into metadata
+        typedef itk::DCMTKImageIO::MetaDataVectorStringType MetaDataVectorStringType;
+        typedef itk::DCMTKImageIO::StringVectorType         StringVectorType;
+
+        const itk::MetaDataDictionary& dictionary = d->io->GetMetaDataDictionary();
+        itk::MetaDataDictionary::ConstIterator it = dictionary.Begin();
+        while(it!=dictionary.End()) {
+          if (MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>(it->second.GetPointer())) {
+        const StringVectorType &values = metaData->GetMetaDataObjectValue();
+        for (unsigned int i=0; i<values.size(); i++) {
+          dtkdata->addMetaData(it->first.c_str(),values[i].c_str());
+        }
+          }
+          ++it;
+        }
     }
-  }
 
-  d->io->RemoveAllObservers ();
+    d->io->RemoveAllObservers();
 
-  return true;
-
+    return true;
 }
 
 

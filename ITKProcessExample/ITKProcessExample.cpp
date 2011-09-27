@@ -80,7 +80,7 @@ void ITKProcessExample::setInput(dtkAbstractData *data)
     if (!data)
         return;
 
-    QString identifier = data->identifier();
+    const QString& identifier = data->identifier();
 
     d->output = dtkAbstractDataFactory::instance()->create (identifier);
 
@@ -110,42 +110,42 @@ int ITKProcessExample::update (void)
             return -1;
 	}
 
-    QString descr = d->input->identifier();
+    const QString& id = d->input->identifier();
 
-    if (descr == "itkDataImageChar3") {
+    if (id == "itkDataImageChar3") {
         d->update<char>();
      }
-    else if (descr == "itkDataImageUChar3") {
+    else if (id == "itkDataImageUChar3") {
         d->update<unsigned char>();
      }
-    else if (descr == "itkDataImageShort3") {
+    else if (id == "itkDataImageShort3") {
         d->update<short>();
      }
-    else if (descr == "itkDataImageUShort3") {
+    else if (id == "itkDataImageUShort3") {
         d->update<unsigned short>();
      }
-    else if (descr == "itkDataImageInt3") {
+    else if (id == "itkDataImageInt3") {
         d->update<int>();
      }
-    else if (descr == "itkDataImageUInt3") {
+    else if (id == "itkDataImageUInt3") {
         d->update<unsigned int>();
      }
-    else if (descr == "itkDataImageLong3") {
+    else if (id == "itkDataImageLong3") {
         d->update<long>();
      }
-    else if (descr== "itkDataImageULong3") {
+    else if (id== "itkDataImageULong3") {
         d->update<unsigned long>();
      }
-    else if (descr == "itkDataImageFloat3") {
+    else if (id == "itkDataImageFloat3") {
         d->update<float>();
      }
-    else if (descr == "itkDataImageDouble3") {
+    else if (id == "itkDataImageDouble3") {
         d->update<double>();
      }
     else
     {
         qDebug() << "Error : pixel type not yet implemented ("
-                 << descr
+                 << id
                  << ")";
         return -1;
     }

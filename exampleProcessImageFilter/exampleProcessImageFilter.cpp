@@ -126,7 +126,6 @@ dtkAbstractData *exampleProcessImageFilter::output(void)
 
 int exampleProcessImageFilter::update(void)
 {
-    qDebug("Holas");
     typedef unsigned short PixelType;
     const unsigned int Dimension = 3;
     typedef itk::Image< PixelType, Dimension > ImageType;

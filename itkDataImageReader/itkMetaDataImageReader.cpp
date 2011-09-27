@@ -5,23 +5,19 @@
 
 #include <itkMetaImageIO.h>
 
-itkMetaDataImageReader::itkMetaDataImageReader(void) : itkDataImageReaderBase()
-{
+const char itkMetaDataImageReader::ID[] = "itkMetaDataImageReader";
+
+itkMetaDataImageReader::itkMetaDataImageReader(): itkDataImageReaderBase() {
     this->io = itk::MetaImageIO::New();
 }
 
-itkMetaDataImageReader::~itkMetaDataImageReader(void)
-{
+itkMetaDataImageReader::~itkMetaDataImageReader() { }
 
-}
-
-QStringList itkMetaDataImageReader::handled(void) const
-{
+QStringList itkMetaDataImageReader::handled() const {
     return s_handled();
 }
 
-QStringList itkMetaDataImageReader::s_handled(void)
-{
+QStringList itkMetaDataImageReader::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -35,21 +31,22 @@ QStringList itkMetaDataImageReader::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGB3";
 }
 
-bool itkMetaDataImageReader::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkMetaDataImageReader", s_handled(), createItkMetaDataImageReader);
+bool itkMetaDataImageReader::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkMetaDataImageReader);
 }
 
-QString itkMetaDataImageReader::description(void) const
-{
-    return "itkMetaDataImageReader";
+QString itkMetaDataImageReader::identifier() const {
+    return ID;
+}
+
+QString itkMetaDataImageReader::description() const {
+    return "Reader for itk meta data";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkMetaDataImageReader(void)
-{
+dtkAbstractDataReader *createItkMetaDataImageReader() {
     return new itkMetaDataImageReader;
 }

@@ -23,6 +23,8 @@ public:
   QList<QImage>                           thumbnails;
 };
 
+const char vtkDataMesh4D::ID[] = "vtkDataMesh4D";
+
 vtkDataMesh4D::vtkDataMesh4D(): medAbstractDataMesh(), d (new vtkDataMesh4DPrivate)
 {
   d->meshsequence = 0;
@@ -33,23 +35,20 @@ vtkDataMesh4D::~vtkDataMesh4D()
   d = 0;
 }
 
-bool vtkDataMesh4D::registered()
+bool vtkDataMesh4D::registered()				
 {
-  return dtkAbstractDataFactory::instance()->registerDataType("vtkDataMesh4D", createVtkDataMesh4D);
+  return dtkAbstractDataFactory::instance()->registerDataType(ID, createVtkDataMesh4D);
 }
 
-QString vtkDataMesh4D::description() const
-{
-    return tr("vtk temporal sequence mesh data");
+QString vtkDataMesh4D::identifier() const {
+    return ID;
 }
 
-
-QString vtkDataMesh4D::identifier() const
-{
+QString vtkDataMesh4D::description() const {
     return "vtkDataMesh4D";
 }
 
-void vtkDataMesh4D::setData(void *data)
+void vtkDataMesh4D::setData(void *data)			
 {
   vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast( (vtkObject*) data );
   if (!sequence)
@@ -161,4 +160,3 @@ int vtkDataMesh4D::countEdges(void)
 {
     return 0;
 }
-

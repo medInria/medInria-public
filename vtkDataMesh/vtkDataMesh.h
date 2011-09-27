@@ -63,8 +63,10 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public medAbstractDataMesh
 
  private:
 
-    vtkDataMeshPrivate* d;
+    static const char ID[];
 
+    vtkDataMeshPrivate* d;
+  
 };
 
 dtkAbstractData* createVtkDataMesh (void);

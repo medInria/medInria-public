@@ -1,28 +1,23 @@
-#include "itkTIFFDataImageWriter.h"
+#include <itkTIFFDataImageWriter.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkTIFFImageIO.h>
 
+const char itkTIFFDataImageWriter::ID[] = "itkTIFFDataImageWriter";
 
-itkTIFFDataImageWriter::itkTIFFDataImageWriter(void) : itkDataImageWriterBase()
-{
+itkTIFFDataImageWriter::itkTIFFDataImageWriter(): itkDataImageWriterBase() {
     this->io = itk::TIFFImageIO::New();
 }
 
+itkTIFFDataImageWriter::~itkTIFFDataImageWriter() { }
 
-itkTIFFDataImageWriter::~itkTIFFDataImageWriter(void)
-{
-}
-
-QStringList itkTIFFDataImageWriter::handled(void) const
-{
+QStringList itkTIFFDataImageWriter::handled() const {
     return s_handled();
 }
 
-QStringList itkTIFFDataImageWriter::s_handled(void)
-{
+QStringList itkTIFFDataImageWriter::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,23 @@ QStringList itkTIFFDataImageWriter::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGBA3";
 }
 
-bool itkTIFFDataImageWriter::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataWriterType("itkTIFFDataImageWriter", s_handled(),
-                                                                      createItkTIFFDataImageWriter);
+bool itkTIFFDataImageWriter::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataWriterType(ID,s_handled(),createItkTIFFDataImageWriter);
 }
 
+QString itkTIFFDataImageWriter::identifier() const {
+    return ID;
+}
 
-QString itkTIFFDataImageWriter::description(void) const
-{
-    return "itkTIFFDataImageWriter";
+QString itkTIFFDataImageWriter::description() const {
+    return "Writer for TIFF images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkTIFFDataImageWriter(void)
-{
+dtkAbstractDataWriter *createItkTIFFDataImageWriter() {
     return new itkTIFFDataImageWriter;
 }
 

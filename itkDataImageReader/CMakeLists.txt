@@ -61,20 +61,8 @@ include(${medinria-plugins_USE_FILE})
 ## Input
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  itkDataImageReaderPlugin.h
-  itkDataImageReaderBase.h
-  itkMetaDataImageReader.h
-  itkAnalyzeDataImageReader.h
-  itkPNGDataImageReader.h
-  itkBMPDataImageReader.h
-  itkJPEGDataImageReader.h
-  itkTIFFDataImageReader.h
-  itkNiftiDataImageReader.h
-  itkNrrdDataImageReader.h
-  itkGiplDataImageReader.h
-  itkVTKDataImageReader.h
-  )
+set(${PROJECT_NAME}_HEADERS_MOC itkDataImageReaderPlugin.h)
+
 if(ITK_USE_SYSTEM_GDCM)
   set(${PROJECT_NAME}_HEADERS_MOC
     ${${PROJECT_NAME}_HEADERS_MOC}
