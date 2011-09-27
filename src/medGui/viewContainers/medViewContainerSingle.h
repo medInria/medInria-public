@@ -50,7 +50,7 @@ public:
     */
     virtual bool isLeaf(void) const;
     
-    virtual QString description() {return "Single";}
+    virtual QString identifier() {return "Single";}
 
 public slots:
     virtual void onViewClosing (void);

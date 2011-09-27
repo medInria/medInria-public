@@ -50,17 +50,20 @@ medQtDataImageWriter::~medQtDataImageWriter()
 
 }
 
-QString medQtDataImageWriter::description( void ) const
-{
+QString medQtDataImageWriter::identifier() const {
+    return s_identifier();
+}
+
+QString medQtDataImageWriter::description() const {
     return s_description();
 }
 
-QStringList medQtDataImageWriter::handled( void ) const
+QStringList medQtDataImageWriter::handled() const
 {
     return s_handled();
 }
 
-QStringList medQtDataImageWriter::supportedFileExtensions( void ) const
+QStringList medQtDataImageWriter::supportedFileExtensions() const
 {
     dtkAbstractData * dtkdata = const_cast<medQtDataImageWriter*>(this)->data();
 
@@ -87,7 +90,7 @@ QStringList medQtDataImageWriter::supportedFileExtensions( void ) const
     return extensions;
 }
 
-bool medQtDataImageWriter::registered( void )
+bool medQtDataImageWriter::registered()
 {
     return dtkAbstractDataFactory::instance()->registerDataWriterType( s_description(), s_handled(), createMedQtDataImageWriter );
 }
@@ -176,22 +179,13 @@ QStringList medQtDataImageWriter::s_handled()
 
 QString medQtDataImageWriter::s_description()
 {
-    static const QString description = "medQtDataImageWriter";
+    static const QString description = "Dummy writer for the medQtDataImage type";
     return description;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+QString medQtDataImageWriter::s_identifier()
+{
+    static const QString identifier = "medQtDataImageWriter";
+    return identifier;
+}
 

@@ -79,14 +79,14 @@ medAttachedData* medAbstractDataCollection::attachedData()
 //-----------------------------------------------------------------------------------
 
 
-QString medAbstractDataCollection::description( void ) const
-{
-    return (*d->dataIterator)->description();
-}
-
 QString medAbstractDataCollection::identifier( void ) const
 {
     return (*d->dataIterator)->identifier();
+}
+
+QString medAbstractDataCollection::description( void ) const
+{
+    return (*d->dataIterator)->description();
 }
 
 

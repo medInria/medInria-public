@@ -52,8 +52,10 @@ void medPluginManager::readSettings(void)
     plugins_dir = qApp->applicationDirPath() + "/../plugins";
 #endif
     defaultPath = plugins_dir.absolutePath();
+
     const char PLUGIN_PATH_VAR_NAME[] = "MEDINRIA_PLUGIN_PATH";
-    QByteArray pluginVarArray = qgetenv ( PLUGIN_PATH_VAR_NAME );
+    QByteArray pluginVarArray = qgetenv(PLUGIN_PATH_VAR_NAME);
+
     if ( !pluginVarArray.isEmpty() ) {
         setPath( QString(pluginVarArray.constData()));
     }

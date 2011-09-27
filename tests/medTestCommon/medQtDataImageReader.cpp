@@ -43,12 +43,15 @@ bool medQtDataImageReader::registered(void)
         createMedQtDataImageReader);
 }
 
-QString medQtDataImageReader::description( void ) const
-{
+QString medQtDataImageReader::identifier() const {
     return s_description();
 }
 
-QStringList medQtDataImageReader::handled( void ) const
+QString medQtDataImageReader::description() const {
+    return s_description();
+}
+
+QStringList medQtDataImageReader::handled() const
 {
     return s_handled();
 }

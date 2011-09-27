@@ -50,8 +50,11 @@ medViewerConfigurationRegistration::~medViewerConfigurationRegistration(void)
     d = NULL;
 }
 
-QString medViewerConfigurationRegistration::description(void) const
-{
+QString medViewerConfigurationRegistration::identifier() const {
+    return "Registration";
+}
+
+QString medViewerConfigurationRegistration::description() const {
     return "Registration";
 }
 

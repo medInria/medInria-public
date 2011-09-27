@@ -851,8 +851,7 @@ dtkSmartPointer<dtkAbstractDataReader> medDatabaseImporter::getSuitableReader( Q
     dtkSmartPointer<dtkAbstractDataReader> dataReader;
     for (int i=0; i<readers.size(); i++) {
         dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
-        if (d->lastSuccessfulReaderDescription == dataReader->description() && dataReader->canRead( filename ))
-        {
+        if (d->lastSuccessfulReaderDescription == dataReader->identifier() && dataReader->canRead(filename)) {
             dataReader->enableDeferredDeletion(false);
             return dataReader;
         }
@@ -860,12 +859,10 @@ dtkSmartPointer<dtkAbstractDataReader> medDatabaseImporter::getSuitableReader( Q
 
     for (int i=0; i<readers.size(); i++) {
         dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
-        if (dataReader->canRead( filename )){
-            d->lastSuccessfulReaderDescription = dataReader->description();
-            {
-                dataReader->enableDeferredDeletion(false);
-                return dataReader;
-            }
+        if (dataReader->canRead(filename)) {
+            d->lastSuccessfulReaderDescription = dataReader->identifier();
+            dataReader->enableDeferredDeletion(false);
+            return dataReader;
         }
     }
 
@@ -875,7 +872,7 @@ dtkSmartPointer<dtkAbstractDataReader> medDatabaseImporter::getSuitableReader( Q
 
 //-----------------------------------------------------------------------------------------------------------
 
-dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter( QString filename, dtkAbstractData* dtkData )
+dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter(QString filename,dtkAbstractData* dtkData)
 {
     if (!dtkData)
         return NULL;
@@ -885,11 +882,10 @@ dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter( Q
     // first try with the last
     for (int i=0; i<writers.size(); i++) {
         dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
-        if (d->lastSuccessfulWriterDescription==dataWriter->description()) {
-            if ( dataWriter->handled().contains(dtkData->identifier()) &&
-                 dataWriter->canWrite( filename ) ) {
+        if (d->lastSuccessfulWriterDescription==dataWriter->identifier()) {
+            if (dataWriter->handled().contains(dtkData->identifier()) && dataWriter->canWrite(filename)) {
 
-                d->lastSuccessfulWriterDescription = dataWriter->description();
+                d->lastSuccessfulWriterDescription = dataWriter->identifier();
                 dataWriter->enableDeferredDeletion(false);
                 return dataWriter;
             }
@@ -900,10 +896,10 @@ dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter( Q
     for (int i=0; i<writers.size(); i++) {
         dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
 
-        if ( dataWriter->handled().contains(dtkData->identifier()) &&
+        if (dataWriter->handled().contains(dtkData->identifier()) &&
              dataWriter->canWrite( filename ) ) {
 
-            d->lastSuccessfulWriterDescription = dataWriter->description();
+            d->lastSuccessfulWriterDescription = dataWriter->identifier();
             dataWriter->enableDeferredDeletion(false);
             return dataWriter;
         }
