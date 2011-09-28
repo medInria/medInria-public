@@ -59,7 +59,12 @@ bool itkFiltersPlugin::uninitialize ( void )
 
 QString itkFiltersPlugin::description ( void ) const
 {
-    return "ITK Basic Filters";
+  QString description;
+  description = "This plugin implements some basic filters of ITK:      \
+                 add constant, subtract constant, multiply by constant, \
+                 divide by constant, gaussian filter, normalize filter, \
+                 median filter, invert filter, shrink filter and intensity filter";
+  return description;
 }
 
 QString itkFiltersPlugin::name ( void ) const
@@ -76,6 +81,22 @@ QString itkFiltersPlugin::version(void) const
 {
     return PLUGIN_VERSION;
 }
+
+QStringList itkFiltersPlugin::authors ( void ) const
+{
+    return QStringList() << "Alexandre Abadie <Alexandre.Abadie@inria.fr>";
+}
+
+QStringList itkFiltersPlugin::contributors ( void ) const
+{
+    return QStringList() << QString::fromUtf8("Benoit Bleuzé <Benoit.Bleuze@inria.fr>");
+}
+
+QStringList itkFiltersPlugin::dependencies ( void ) const
+{
+    return dtkPlugin::dependencies();
+}
+
 
 QStringList itkFiltersPlugin::tags ( void ) const
 {

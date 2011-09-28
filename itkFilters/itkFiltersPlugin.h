@@ -33,7 +33,7 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersPlugin : public dtkPlugin
     Q_INTERFACES(dtkPlugin)
 
 public:
-     itkFiltersPlugin(QObject *parent = 0);
+    itkFiltersPlugin(QObject *parent = 0);
     ~itkFiltersPlugin(void);
 
     virtual bool initialize(void);
@@ -43,12 +43,15 @@ public:
     virtual QString description(void) const;
     virtual QString name(void) const;
     virtual QString version(void) const;
+    virtual QStringList authors(void) const;
+    virtual QStringList contributors(void) const;
+    virtual QStringList dependencies(void) const;
 
     virtual QStringList tags(void) const;
     virtual QStringList types(void) const;
 
 private:
-     itkFiltersPluginPrivate *d;
+    itkFiltersPluginPrivate *d;
 };
 
 #endif // ITKFILTERSPLUGIN_H
