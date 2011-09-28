@@ -5,6 +5,7 @@
 #include "ITKProcessExample.h"
 #include "ITKProcessExamplePlugin.h"
 #include "ITKProcessExampleToolBox.h"
+#include "ITKProcessExampleDefinitions.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -12,7 +13,7 @@
 // ITKProcessExamplePluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class ITKProcessExamplePluginPrivate 
+class ITKProcessExamplePluginPrivate
 {
 public:
     // Class variables go here.
@@ -38,7 +39,7 @@ bool ITKProcessExamplePlugin::initialize(void)
 {
     if(!ITKProcessExample::registered())
 	dtkWarning() << "Unable to register ITKProcessExample type";
-    
+
     if(!ITKProcessExampleToolBox::registered())
 	dtkWarning() << "Unable to register ITKProcessExample toolbox";
 
@@ -53,6 +54,16 @@ bool ITKProcessExamplePlugin::uninitialize(void)
 QString ITKProcessExamplePlugin::name(void) const
 {
     return "ITKProcessExamplePlugin";
+}
+
+QString ITKProcessExamplePlugin::contact(void) const
+{
+    return QString::fromUtf8("Clément Philipot clement.philipot@inria.fr");
+}
+
+QString ITKProcessExamplePlugin::version(void) const
+{
+    return PLUGIN_VERSION;
 }
 
 QString ITKProcessExamplePlugin::description(void) const
