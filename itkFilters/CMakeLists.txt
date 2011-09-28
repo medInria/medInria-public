@@ -59,6 +59,12 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
+
+configure_file(
+      ${CMAKE_CURRENT_SOURCE_DIR}/itkFiltersDefinitions.h.in
+      ${CMAKE_CURRENT_BINARY_DIR}/itkFiltersDefinitions.h
+      )
+
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED

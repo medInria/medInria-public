@@ -20,6 +20,7 @@
 #include "itkFilters.h"
 #include "itkFiltersPlugin.h"
 #include "itkFiltersToolBox.h"
+#include "itkFiltersDefinitions.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -64,6 +65,16 @@ QString itkFiltersPlugin::description ( void ) const
 QString itkFiltersPlugin::name ( void ) const
 {
     return "itkFiltersPlugin";
+}
+
+QString itkFiltersPlugin::contact(void) const
+{
+    return QString::fromUtf8("Alexandre Abadie <Alexandre.Abadie@inria.fr>");
+}
+
+QString itkFiltersPlugin::version(void) const
+{
+    return PLUGIN_VERSION;
 }
 
 QStringList itkFiltersPlugin::tags ( void ) const

@@ -36,6 +36,7 @@
 
 #include <medRunnableProcess.h>
 #include <medJobManager.h>
+#include <medPluginManager.h>
 
 #include <medToolBoxFactory.h>
 #include <medToolBoxFiltering.h>
@@ -254,6 +255,12 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     // Main toolbox:
     this->setTitle ( "ITK Basic Filters" );
     this->addWidget ( widget );
+
+    // Add about plugin
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin("itkFiltersPlugin");
+    setAboutPluginButton(plugin);
+    enableAboutPluginButton(true);
 
     connect ( runButton, SIGNAL ( clicked() ), this, SLOT ( run() ) );
 

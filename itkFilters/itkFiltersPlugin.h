@@ -39,8 +39,10 @@ public:
     virtual bool initialize(void);
     virtual bool uninitialize(void);
 
-    virtual QString name(void) const;
+    virtual QString contact(void) const;
     virtual QString description(void) const;
+    virtual QString name(void) const;
+    virtual QString version(void) const;
 
     virtual QStringList tags(void) const;
     virtual QStringList types(void) const;
