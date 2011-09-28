@@ -260,6 +260,27 @@ void medToolBox::onAboutButtonClicked()
     {
         qDebug() << "about plugin" << d->plugin->name();
         dtkAboutPlugin * apWidget = new dtkAboutPlugin(d->plugin);
-        apWidget->show();
+//         apWidget->show();
+
+        QDialog * dial = new QDialog(this);
+        dial->setStyleSheet("background: #313131;");
+        
+        QVBoxLayout * layout = new QVBoxLayout;
+
+        QPushButton * okBut = new QPushButton;
+        okBut->setText("Ok");
+        okBut->setFocusPolicy(Qt::NoFocus);
+        QObject::connect(okBut, SIGNAL(clicked()), dial, SLOT(close()));
+
+        QHBoxLayout * butLayout = new QHBoxLayout;
+        butLayout->addStretch();
+        butLayout->addWidget(okBut);
+        butLayout->addStretch();
+
+        layout->addWidget(apWidget);
+        layout->addLayout(butLayout);
+        
+        dial->setLayout(layout);
+        dial->exec();
     }
 }
