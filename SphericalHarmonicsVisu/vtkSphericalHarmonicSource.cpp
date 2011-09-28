@@ -412,7 +412,7 @@ ComputeSHMatrix2(const int rank,vtkPolyData *shell,const bool FlipX,const bool F
         PhiThetaDirections(i,0) = phi;
         PhiThetaDirections(i,1) = theta;
         const double factor  = std::sqrt(2.0);
-
+#if 0
         for (int l=0,j=0;l<=order;l+=2) {
             for(int m=-l;m<0;++m,++j){
                 testA = std::tr1::sph_legendre(l,-m,theta)*cos(m*phi)*factor;
@@ -442,8 +442,7 @@ ComputeSHMatrix2(const int rank,vtkPolyData *shell,const bool FlipX,const bool F
                 B(j,i)=testA;
             }
         }
-
-#if 0
+        #endif
         //  It is even nicer to compute the SH once (for m>0 and for m<0).
         //  The central term is given by the suite u_n
         //  TO
@@ -452,9 +451,9 @@ ComputeSHMatrix2(const int rank,vtkPolyData *shell,const bool FlipX,const bool F
             testA = std::tr1::sph_legendre(l,0,theta);
             testB = real(GetSH(l,0,theta,phi));
 
-            if((testA-testB)!=0)
+            if(std::abs(testA-testB)>=0.0001)
                 std::cout << "error "<< testA-testB << std::endl;
-            else
+
             B(j,i)=testB;
 
             for(int m=1,j1=j-1,j2=j+1;m<=l;++m,--j1,++j2) {
@@ -464,22 +463,21 @@ ComputeSHMatrix2(const int rank,vtkPolyData *shell,const bool FlipX,const bool F
 
                 testA = value*cos(m*phi);
                 testB = real(cplx);
-
-                if((testA-testB)!=0)
+                if(std::abs(testA-testB)>=0.0001)
                     std::cout << "error "<< testA-testB << std::endl;
-                else
+
                 B(j1,i)=testB;
 
                 testA = value*sin(m*phi);
                 testB = imag(cplx);
 
-                if((testA-testB)!=0)
+                if(std::abs(testA-testB)>=0.0001)
                     std::cout << "error "<< testA-testB << std::endl;
                 else
                 B(j2,i) =testB;
             }
         }
-        #endif
+
 
 
     }
