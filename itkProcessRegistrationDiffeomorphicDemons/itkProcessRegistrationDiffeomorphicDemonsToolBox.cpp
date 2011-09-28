@@ -124,7 +124,7 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     dtkPlugin* plugin = pm->plugin(
                 "itkProcessRegistrationDiffeomorphicDemonsPlugin");
     setAboutPluginButton(plugin);
-    enableAboutPluginButton(true);
+    setAboutPluginVisibility(true);
 
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 }

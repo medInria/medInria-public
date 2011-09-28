@@ -69,7 +69,7 @@ ITKProcessExampleToolBox::ITKProcessExampleToolBox(QWidget *parent) : medToolBox
     dtkPlugin* plugin = pm->plugin(
                 "ITKProcessExamplePlugin");
     setAboutPluginButton(plugin);
-    enableAboutPluginButton(true);
+    setAboutPluginVisibility(true);
 
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 
