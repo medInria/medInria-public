@@ -15,7 +15,7 @@
 
 int main (int narg, char* arg[])
 {
-  
+
   if( narg<2 )
   {
     std::cerr << "Usage: " << arg[0] << " input\n";
@@ -58,7 +58,7 @@ int main (int narg, char* arg[])
     spacing[0] *= (double)(size[0])/(double)(newSize[0]);
     spacing[1] *= (double)(size[1])/(double)(newSize[1]);
 
-    
+
     typedef itk::RecursiveGaussianImageFilter<ImageType, ImageType> FilterType;
     FilterType::Pointer filter = FilterType::New();
     filter->SetInput (image);
@@ -74,7 +74,7 @@ int main (int narg, char* arg[])
     }
     image = filter->GetOutput();
 
-    
+
     typedef itk::LinearInterpolateImageFunction<ImageType, double>  InterpolatorType;
     InterpolatorType::Pointer interpolator = InterpolatorType::New();
 
@@ -85,7 +85,7 @@ int main (int narg, char* arg[])
     resampler->SetOutputSpacing( spacing );
     resampler->SetOutputOrigin( image->GetOrigin() );
     resampler->SetOutputDirection ( image->GetDirection() );
-    
+
     try
     {
       resampler->Update();
@@ -116,7 +116,7 @@ int main (int narg, char* arg[])
     sfactor[0] = size[0]/newSize[0];
     sfactor[1] = size[1]/newSize[1];
     sfactor[2] = size[2]/newSize[2];
-    
+
     typedef itk::ShrinkImageFilter< ImageType, ImageType > FilterType;
     FilterType::Pointer filter = FilterType::New();
     filter->SetInput ( image );
@@ -132,7 +132,7 @@ int main (int narg, char* arg[])
     }
     image = filter->GetOutput();
   }
-  
+
   // min / max
   double imMin = 0.0;
   double imMax = 0.0;
@@ -141,17 +141,16 @@ int main (int narg, char* arg[])
     typedef itk::ExtractImageFilter<ImageType, Image2DType> ExtractFilterType;
     ExtractFilterType::Pointer extractor = ExtractFilterType::New();
     extractor->SetInput ( image );
-    ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize();
     ImageType::RegionType region = image->GetLargestPossibleRegion();
     ImageType::IndexType index = region.GetIndex();
     ImageType::SizeType ssize = region.GetSize();
-    
+
     index[2] /= 2;
     ssize[2]  = 0;
 
     region.SetIndex ( index );
     region.SetSize ( ssize );
-    
+
     extractor->SetExtractionRegion (region);
     try
     {
@@ -162,10 +161,10 @@ int main (int narg, char* arg[])
       std::cerr << e;
       return -1;
     }
-    
-    
-    typedef itk::MinimumMaximumImageCalculator<Image2DType> MinMaxCalculatorType; 
-    MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New(); 
+
+
+    typedef itk::MinimumMaximumImageCalculator<Image2DType> MinMaxCalculatorType;
+    MinMaxCalculatorType::Pointer calculator = MinMaxCalculatorType::New();
     calculator->SetImage ( extractor->GetOutput() );
     try
     {
@@ -179,7 +178,7 @@ int main (int narg, char* arg[])
     imMin = calculator->GetMinimum();
     imMax = calculator->GetMaximum();
 
-    
+
     typedef itk::Statistics::ScalarImageToHistogramGenerator< Image2DType > HistogramGeneratorType;
     HistogramGeneratorType::Pointer histogramGenerator = HistogramGeneratorType::New();
     histogramGenerator->SetInput( extractor->GetOutput() );
@@ -195,22 +194,22 @@ int main (int narg, char* arg[])
     {
       std::cerr << e;
       return -1;
-    }					
+    }
     typedef HistogramGeneratorType::HistogramType  HistogramType;
-    
-    
+
+
     HistogramType::Pointer histogram = const_cast<HistogramType*>( histogramGenerator->GetOutput() );
-    
+
     double totalFreq = histogram->GetTotalFrequency();
     std::cout << "Total freq: " << totalFreq << std::endl;
-    
+
     int ind_min = 0;
     int ind_max = histogram->Size()-1;
     double freq_min = histogram->GetFrequency (ind_min)/totalFreq;
     double freq_max = histogram->GetFrequency (ind_max)/totalFreq;
-    
+
     std::cout << freq_min/totalFreq << " " << freq_max/totalFreq << std::endl;
-    
+
     while ( freq_min<0.01 ) {
       ind_min++;
       imMin++;
@@ -221,11 +220,11 @@ int main (int narg, char* arg[])
       imMax--;
       freq_max += histogram->GetFrequency (ind_max) / totalFreq;
     }
-    
+
     std::cout << imMin << " " << imMax << std::endl;
   }
-  
-  
+
+
   // color
   typedef itk::RGBPixel<unsigned char>    RGBPixelType;
   typedef itk::Image<RGBPixelType, 3>     RGBImageType;
@@ -247,28 +246,28 @@ int main (int narg, char* arg[])
     std::cerr << e;
     return -1;
   }
-  
 
-  typedef itk::Image<RGBPixelType, 2>                           RGBImage2DType;  
+
+  typedef itk::Image<RGBPixelType, 2>                           RGBImage2DType;
   typedef itk::ExtractImageFilter<RGBImageType, RGBImage2DType> RGBExtractFilterType;
   RGBExtractFilterType::Pointer extractor = RGBExtractFilterType::New();
   extractor->SetInput ( rgbfilter->GetOutput() );
   ImageType::SizeType size = rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize();
   typedef itk::ImageFileWriter<RGBImage2DType> WriterType;
   WriterType::Pointer writer = WriterType::New();
-  
+
   for( unsigned int i=0; i<size[2]; i++ )
   {
     RGBImageType::RegionType region = rgbfilter->GetOutput()->GetLargestPossibleRegion();
     RGBImageType::IndexType index = region.GetIndex();
     RGBImageType::SizeType ssize = region.GetSize();
-    
+
     index[2] = i;
     ssize[2] = 0;
-    
+
     region.SetIndex ( index );
     region.SetSize ( ssize );
-    
+
     extractor->SetExtractionRegion (region);
     try
     {
@@ -278,17 +277,17 @@ int main (int narg, char* arg[])
     {
       std::cerr << e;
       return -1;
-    } 
-    
-    
+    }
+
+
     char filename[256];
     sprintf ( filename, "tmb/tumbnail%.2d.jpg", i);
     writer->SetFileName( filename );
     writer->SetInput( extractor->GetOutput() );
     writer->Update();
-    
+
   }
-  
+
   return 0;
-  
+
 }

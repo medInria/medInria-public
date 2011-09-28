@@ -64,6 +64,11 @@ QString itkDataDiffusionGradientListPlugin::name(void) const
 
 QString itkDataDiffusionGradientListPlugin::description(void) const
 {
+    return tr("List of gradients for Diffusion Weighted Images");
+}
+
+QString itkDataDiffusionGradientListPlugin::identifier(void) const
+{
     return "itkDataDiffusionGradientListPlugin";
 }
 

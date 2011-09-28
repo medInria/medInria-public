@@ -26,7 +26,7 @@ public:
   typedef itk::Image<PixelType, 3> ImageType;
   typedef itk::WeightedAddImageFilter<ImageType, ImageType, ImageType>  BlendFilterType;
   typedef itk::CheckerBoardImageFilter<ImageType>                       CheckerboardFilterType;
-  
+
   dtkSmartPointer<medAbstractDataImage> data1;
   dtkSmartPointer<medAbstractDataImage> data2;
 
@@ -36,10 +36,10 @@ public:
 
   double alpha;
   int    pattern;
-  
+
   BlendFilterType::Pointer        blender;
   CheckerboardFilterType::Pointer checkerboarder;
-  
+
 };
 
 v3dViewFuseInteractor::v3dViewFuseInteractor(): dtkAbstractViewInteractor(), d(new v3dViewFuseInteractorPrivate)
@@ -49,10 +49,10 @@ v3dViewFuseInteractor::v3dViewFuseInteractor(): dtkAbstractViewInteractor(), d(n
     d->view = 0;
     d->alpha = 0.5;
     d->pattern = 50;
-    
-    d->blender        = 0; 
+
+    d->blender        = 0;
     d->checkerboarder = 0;
-    
+
     d->output = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageShort3");
 
     this->addProperty ("FusionStyle", QStringList() << "blend" << "checkerboard");
@@ -69,6 +69,11 @@ v3dViewFuseInteractor::~v3dViewFuseInteractor()
 
 QString v3dViewFuseInteractor::description(void) const
 {
+    return tr("Interactor used to fuse 2 views together");
+}
+
+QString v3dViewFuseInteractor::identifier() const
+{
     return "v3dViewFuseInteractor";
 }
 
@@ -79,7 +84,8 @@ QStringList v3dViewFuseInteractor::handled(void) const
 
 bool v3dViewFuseInteractor::registered(void)
 {
-    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewFuseInteractor", QStringList() << "v3dView", createV3dViewFuseInteractor);
+    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewFuseInteractor",
+                                                                          QStringList() << "v3dView", createV3dViewFuseInteractor);
 }
 
 void v3dViewFuseInteractor::onPropertySet (const QString& key, const QString& value)
@@ -100,7 +106,7 @@ void v3dViewFuseInteractor::onFusionStylePropertySet (const QString& value)
     if (value=="checkerboard")
         if (!d->checkerboarder.IsNull())
 	    d->output->setData( d->checkerboarder->GetOutput() );
-      
+
      if (d->view && d->data1 && d->data1->data() &&
 	 d->data2 && d->data2->data() )
          d->view->setData ( d->output );
@@ -126,24 +132,24 @@ void v3dViewFuseInteractor::onCheckerboardDivisionCountValueSet (int value)
     if (d->data1) {
       if ( value>d->data1->xDimension() )
 	value = d->data1->xDimension();
-      
+
       if ( value>d->data1->yDimension() )
 	value = d->data1->yDimension();
-      
+
       if ( value>d->data1->zDimension() )
-	value = d->data1->zDimension();  
+	value = d->data1->zDimension();
     }
 
     d->pattern = value;
 
     if (!d->checkerboarder.IsNull()) {
-      
+
         v3dViewFuseInteractorPrivate::CheckerboardFilterType::PatternArrayType array;
 	for (int i=0; i<3; i++)
 	    array[i] = value;
 
 	d->checkerboarder->SetCheckerPattern (array);
-    
+
 	if (d->view)
 	    d->view->update();
     }
@@ -158,7 +164,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 {
     if (!data || channel<0 || channel>1 || !data->data())
         return;
-        
+
     if (data->description()=="itkDataImageChar3") {
       typedef char ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
@@ -216,8 +222,8 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       catch (itk::ExceptionObject &e) {
 	qDebug() << e.GetDescription();
 	return;
-      }      
-      
+      }
+
       if (channel==0)
           d->data1->setData ( caster->GetOutput() );
       else if (channel==1)
@@ -239,7 +245,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 	qDebug() << e.GetDescription();
 	return;
       }
-      
+
       if (channel==0)
           d->data1->setData ( caster->GetOutput() );
       else if (channel==1)
@@ -261,7 +267,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 	qDebug() << e.GetDescription();
 	return;
       }
-      
+
       if (channel==0)
           d->data1->setData ( caster->GetOutput() );
       else if (channel==1)
@@ -283,7 +289,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 	qDebug() << e.GetDescription();
 	return;
       }
-      
+
       if (channel==0)
           d->data1->setData ( caster->GetOutput() );
       else if (channel==1)
@@ -305,7 +311,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 	qDebug() << e.GetDescription();
 	return;
       }
-      
+
       if (channel==0)
           d->data1->setData ( caster->GetOutput() );
       else if (channel==1)
@@ -327,7 +333,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 	qDebug() << e.GetDescription();
 	return;
       }
-      
+
       if (channel==0)
           d->data1->setData ( caster->GetOutput() );
       else if (channel==1)
@@ -349,7 +355,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 	qDebug() << e.GetDescription();
 	return;
       }
-      
+
       if (channel==0)
           d->data1->setData ( caster->GetOutput() );
       else if (channel==1)
@@ -371,7 +377,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 	qDebug() << e.GetDescription();
 	return;
       }
-      
+
       if (channel==0)
           d->data1->setData ( caster->GetOutput() );
       else if (channel==1)
@@ -380,7 +386,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
     else if (data->description()=="v3dDataImage") {
       typedef itk::VTKImageToImageFilter<v3dViewFuseInteractorPrivate::ImageType> ConverterType;
       ConverterType::Pointer converter = ConverterType::New();
-      
+
       converter->SetInput ( dynamic_cast<vtkImageData*>( (vtkObject*)(data->data()) ) );
       try {
 	converter->Update();
@@ -389,7 +395,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 	qDebug() << e.GetDescription();
 	return;
       }
-      
+
       if (channel==0)
           d->data1->setData ( converter->GetOutput() );
       else if (channel==1)
@@ -400,7 +406,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
         return;
     }
 
-    
+
     if (d->data1 && d->data1->data() &&
 	d->data2 && d->data2->data() &&
 	d->view) {
@@ -418,19 +424,19 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 
 	d->blender = v3dViewFuseInteractorPrivate::BlendFilterType::New();
 	d->checkerboarder = v3dViewFuseInteractorPrivate::CheckerboardFilterType::New();
-	
+
         d->blender->SetInput1 ( input1 );
 	d->blender->SetInput2 ( input2 );
-	
+
 	d->checkerboarder->SetInput1 ( input1 );
 	d->checkerboarder->SetInput2 ( input2 );
 
 	d->blender->SetAlpha ( d->alpha );
-	
+
 	v3dViewFuseInteractorPrivate::CheckerboardFilterType::PatternArrayType pattern;
 	for (int i=0; i<3; i++)
 	  pattern[i] = d->pattern;
-	
+
 	if ((int)pattern[0]>d->data1->xDimension() )
 	    pattern[0] = d->data1->xDimension();
 	if ((int)pattern[1]>d->data1->yDimension() )
@@ -449,7 +455,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 	  qDebug() << e.GetDescription();
 	  return;
 	}
-	
+
 	if (d->data1->hasMetaData (medMetaDataKeys::PatientName.key()) && d->data2->hasMetaData (medMetaDataKeys::PatientName.key()))
 	    d->output->addMetaData (medMetaDataKeys::PatientName.key(),
 				    tr("Fusion - ") +
@@ -460,7 +466,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
 	    d->output->setData ( d->blender->GetOutput());
 	else
 	    d->output->setData ( d->checkerboarder->GetOutput());
-	
+
         d->view->setData ( d->output );
     }
 }
@@ -476,7 +482,7 @@ void v3dViewFuseInteractor::enable(void)
 {
     if (this->enabled())
         return;
-	
+
     if (d->view &&
 	d->data1 && d->data1->data() &&
 	d->data2 && d->data2->data()) {

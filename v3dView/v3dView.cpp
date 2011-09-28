@@ -701,6 +701,12 @@ bool v3dView::registered(void)
 
 QString v3dView::description(void) const
 {
+    return tr("A view based on vtkInria3d");
+}
+
+
+QString v3dView::identifier() const
+{
     return "v3dView";
 }
 
@@ -814,7 +820,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
 
     if(layer == 0 && data->description().contains("vtkDataMesh"))
     {
-        //medMessageControllerMessageError msg(this, "Select image first");
+        medMessageController::instance()->showError(this, tr("Select image first"), 5000);
         return;
     }
 #ifdef vtkINRIA3D_USE_ITK
@@ -893,8 +899,14 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             d->view3d->SetITKInput(image, layer);
         }
     }
-    else if (data->description()=="itkDataImageVector3") {
+    else if (data->description()=="itkDataImageVectorUChar3") {
         if( itk::Image<itk::Vector<unsigned char, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<unsigned char, 3>, 3>*>( (itk::Object*)( data->data() ) ) ) {
+            d->view2d->SetITKInput(image, layer);
+            d->view3d->SetITKInput(image, layer);
+        }
+    }
+    else if (data->description()=="itkDataImageVectorFloat3") {
+        if( itk::Image<itk::Vector<float, 3>, 3> *image = dynamic_cast<itk::Image<itk::Vector<float, 3>, 3>*>( (itk::Object*)( data->data() ) ) ) {
             d->view2d->SetITKInput(image, layer);
             d->view3d->SetITKInput(image, layer);
         }
@@ -1002,8 +1014,9 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         }
 	else if ( data->description() == "vtkDataMesh4D" ) {
 	    this->enableInteractor ( "v3dViewMeshInteractor" );
-	    this->enableInteractor ( "v3dView4DInteractor" );
+	    
         // This will add the data to the interactor.
+
 	    dtkAbstractView::setData(data);
 	}
 	else if ( data->description() == "v3dDataFibers" ) {
@@ -1692,7 +1705,7 @@ void v3dView::onMenuAxialTriggered (void)
 
     this->setProperty("Orientation", "Axial");
     d->view2d->Render();
-
+     emit TwoDTriggered(this);
 }
 
 
@@ -1703,6 +1716,7 @@ void v3dView::onMenuCoronalTriggered (void)
 
     this->setProperty("Orientation", "Coronal");
     d->view2d->Render();
+    emit TwoDTriggered(this);
 }
 
 
@@ -2310,3 +2324,4 @@ void v3dView::widgetDestroyed(void)
 {
     d->widget = NULL;
 }
+

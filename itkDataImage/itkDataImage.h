@@ -22,10 +22,6 @@
 template<typename T,int DIM>
 std::vector <bool> DeterminePermutationsAndFlips(typename itk::Image<T,DIM>::DirectionType &directionMatrix)
 {
-    qDebug() << directionMatrix(0,0) << directionMatrix(0,1) << directionMatrix(0,2);
-    qDebug() << directionMatrix(1,0) << directionMatrix(1,1) << directionMatrix(1,2);
-    qDebug() << directionMatrix(2,0) << directionMatrix(2,1) << directionMatrix(2,2);
-    
     std::vector <bool> mirrorThumbs(2,false);
     std::vector <unsigned int> axesPermutation(3,false);
     std::vector <bool> maxValueNegative(3,false);
@@ -35,7 +31,7 @@ std::vector <bool> DeterminePermutationsAndFlips(typename itk::Image<T,DIM>::Dir
     {
         axesPermutation[i] = i;
         double maxAbsValue = directionMatrix(i,i);
-        
+
         for (unsigned int j = 0;j < DIM;++j)
         {
             if (fabs(maxAbsValue) < fabs(directionMatrix(j,i)))
@@ -104,7 +100,7 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
 
         index.Fill(0);
         index[2] = size[2]/2;
-        typename ImageType::RegionType region = img->GetLargestPossibleRegion(); 
+        typename ImageType::RegionType region = img->GetLargestPossibleRegion();
         region.SetIndex(index);
         region.SetSize(newSize);
 
@@ -204,9 +200,9 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
     rgbfilter->UseInputImageExtremaForScalingOn ();
 
     typename ImageType::DirectionType directionMatrix = image->GetDirection();
-    
+
     std::vector <bool> mirrorThumbs = DeterminePermutationsAndFlips<T,DIM>(directionMatrix);
-    
+
     if (DIM==3) {
 
         for (unsigned int slice=0;slice<size[2];slice++) {
