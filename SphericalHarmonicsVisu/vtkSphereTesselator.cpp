@@ -60,6 +60,10 @@ vtkSphereTesselator<T>::vtkSphereTesselator(const p_solid& ip) {
 
 template<typename T>
 vtkSphereTesselator<T>::~vtkSphereTesselator() {
+    if( m_vertices )
+        m_vertices->Delete();
+    if( m_triangles )
+        m_triangles->Delete();
 }
 
 template<typename T>

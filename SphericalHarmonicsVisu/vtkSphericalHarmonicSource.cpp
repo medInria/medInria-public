@@ -29,16 +29,18 @@
 
 
 #include <boost/algorithm/minmax_element.hpp>
-#include <boost/math/special_functions/legendre.hpp>
+#include <boost/math/special_functions/legendre.hpp> //JGGBOOST
+#include <tr1/cmath>
 
 using namespace Visualization;
 using Utils::direction;
 
-static std::complex<double> GetSH(int _l,int _m,double theta,double phi);
 static direction Cartesian2Spherical(direction v);
 
+static std::complex<double> GetSH(int _l,int _m,double theta,double phi); //JGGBOOST
 static matrix<double> ComputeSHMatrix (const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
 static matrix<double> ComputeSHMatrix2(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
+static matrix<double> computeSHmatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
 static void           TranslateAndDeformShell(vtkPolyData* shell,vtkPoints* outPts,double center[3],bool deform,vtkMatrix4x4* transform=0);
 
 vtkCxxRevisionMacro(vtkSphericalHarmonicSource,"$Revision: 0 $");
@@ -278,8 +280,11 @@ GetSH(const int l,const int m,const double theta,const double phi) {
     std::complex<double> retval(0.0,phi*absm);
     retval = std::exp(retval);
 
-    const double factor = sqrt(((double)(2*l+1)/(4.0*M_PI))*(Factorial(l-absm) 
+    const double factor = sqrt(((double)(2*l+1)/(4.0*M_PI))*(Factorial(l-absm)
                                                              /Factorial(l+absm)))*boost::math::legendre_p(l,absm,cos(theta));
+
+    double leg= std::tr1::sph_legendre(l,absm,cos(theta));
+    leg = boost::math::legendre_p(l,absm,cos(theta));
 
     retval *= factor;
 
@@ -288,6 +293,9 @@ GetSH(const int l,const int m,const double theta,const double phi) {
 
     return retval;
 }
+
+
+
 
 direction
 Cartesian2Spherical(const direction v) {
@@ -346,39 +354,26 @@ ComputeSHMatrix(const int rank,vtkPolyData* shell,const bool FlipX,const bool Fl
         PhiThetaDirections(i,0) = phi;
         PhiThetaDirections(i,1) = theta;
 
+        const double factor = std::sqrt(2.0)/2;
+        const double cos_phi = factor*cos(phi);
+        const double sin_phi = factor*sin(phi);
+
         for (int l=0,j=0;l<=order;l+=2) {
 
             //  Handle the case m=0.
-
             const std::complex<double> cplx_1 = GetSH(l,0,theta,phi);
-            if (fabs(imag(cplx_1))>0.0001) {
-                std::cerr << "Modified spherical harmonic basis must be REAL!!!\n" << std::endl;
-                exit(0);
-            }
-
             B(j,i) = real(cplx_1);
+            B(j,i) = std::tr1::sph_legendre(l,0,theta);
 
-            for(int m=1;m<=l;++m,++j) {
+            for(int m=1,s=-1;m<=l;++m,++j,s=-s) {
 
                 // Get the corresponding spherical harmonic
 
-                const std::complex<double> cplx_1 = GetSH(l, m,theta,phi);
-                const std::complex<double> cplx_2 = GetSH(l,-m,theta,phi);
+                const double c1 = std::tr1::sph_legendre(l, m,theta);
+                const double c2 = std::tr1::sph_legendre(l,-m,theta);
 
-                const std::complex<double> cvals[] = { cplx_2-cplx_1, cplx_2+cplx_1 };
-
-                const std::complex<double> cplx   =                         (std::sqrt(2.0)/2)*((m%2==1) ? cvals[0] : cvals[1]);
-                const std::complex<double> cplx_3 = std::complex<double>(0.0,std::sqrt(2.0)/2)*((m%2==1) ? cvals[1] : cvals[0]);
-
-                //  There is an inconsistency in this code !!!
-
-                if (fabs(imag(cplx))>0.0001 || fabs(imag(cplx_3))>0.0001) {
-                    std::cerr <<  "Modified spherical harmonic basis must be REAL!!!\n" << std::endl;
-                    exit(0);
-                }
-
-                B(j,i)   = real(cplx_1);
-                B(++j,i) = real(cplx_3);
+                B(j,i)   = (s*c1+c2)*cos_phi;
+                B(++j,i) = (s*c1-c2)*sin_phi;
             }
         }
     }
@@ -412,31 +407,80 @@ ComputeSHMatrix2(const int rank,vtkPolyData *shell,const bool FlipX,const bool F
         
         const double phi   = v.y;
         const double theta = v.z;
+        double testA=0, testB=0;
 
         PhiThetaDirections(i,0) = phi;
         PhiThetaDirections(i,1) = theta;
-#if 0
-        for (int l=0,j=0;l<=order;l+=2) {
-            for(int m=-l;m<0;++m,++j)
-                B(j,i) = std::sqrt(2.0)*real(GetSH(l,-m,theta,phi));
-            B(j++,i) = real(GetSH(l,0,theta,phi));
-            for(int m=1;m<=l;++m,++j)
-                B(j,i) = std::sqrt(2.0)*imag(GetSH(l, m,theta,phi));
-        }
-#endif
+        const double factor  = std::sqrt(2.0);
 
+        for (int l=0,j=0;l<=order;l+=2) {
+            for(int m=-l;m<0;++m,++j){
+                testA = std::tr1::sph_legendre(l,-m,theta)*cos(m*phi)*factor;
+                testB = std::sqrt(2.0)*real(GetSH(l,-m,theta,phi));
+
+                if((testA-testB)!=0)
+                    std::cout << "error "<< testA-testB << std::endl;
+
+                B(j,i)=testA;
+            }
+
+            testA = std::tr1::sph_legendre(l,0,theta);
+            testB = real(GetSH(l,0,theta,phi));
+
+            if((testA-testB)!=0)
+                std::cout << "error "<< testA-testB << std::endl;
+
+            B(j++,i)=testA;
+
+            for(int m=1;m<=l;++m,++j){
+                testA = std::tr1::sph_legendre(l, m,theta)*sin(m*phi)*factor;
+                testB = std::sqrt(2.0)*imag(GetSH(l,m,theta,phi));
+
+                if((testA-testB)!=0)
+                    std::cout << "error "<< testA-testB << std::endl;
+
+                B(j,i)=testA;
+            }
+        }
+
+#if 0
         //  It is even nicer to compute the SH once (for m>0 and for m<0).
         //  The central term is given by the suite u_n
         //  TO
 
         for (int l=0,j=0;l<=order;l+=2,j+=2*l-1) {
-            B(j,i) = real(GetSH(l,0,theta,phi));
+            testA = std::tr1::sph_legendre(l,0,theta);
+            testB = real(GetSH(l,0,theta,phi));
+
+            if((testA-testB)!=0)
+                std::cout << "error "<< testA-testB << std::endl;
+            else
+            B(j,i)=testB;
+
             for(int m=1,j1=j-1,j2=j+1;m<=l;++m,--j1,++j2) {
+
+                const double value = std::sqrt(2.0)*std::tr1::sph_legendre(l,m,theta);
                 const std::complex<double> cplx = std::sqrt(2.0)*GetSH(l,m,theta,phi);
-                B(j1,i) = real(cplx);
-                B(j2,i) = imag(cplx);
+
+                testA = value*cos(m*phi);
+                testB = real(cplx);
+
+                if((testA-testB)!=0)
+                    std::cout << "error "<< testA-testB << std::endl;
+                else
+                B(j1,i)=testB;
+
+                testA = value*sin(m*phi);
+                testB = imag(cplx);
+
+                if((testA-testB)!=0)
+                    std::cout << "error "<< testA-testB << std::endl;
+                else
+                B(j2,i) =testB;
             }
         }
+        #endif
+
 
     }
 
@@ -479,14 +523,18 @@ computeSHmatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const
         PhiThetaDirections(i,0) = phi;
         PhiThetaDirections(i,1) = theta;
         int j = 0;
+        const double factor  = std::sqrt(2.0);
+        const double cos_phi = factor*cos(phi);
+//        const double sin_phi = factor*sin(phi);
+
         //counter for the j dimension of B
         //get spherical component of the direction vector
 
         for(int l = 0; l <= order; l+=2)
             for(int m = -l; m <= l; m++) {
                 /* positive "m" SH */
-
-                cplx_1 = GetSH(l,m,theta,phi);
+                //cplx_1 = GetSH(l,m,theta,phi);
+                cplx_1 = std::tr1::sph_legendre(l,m,theta)*cos_phi;
                 if(m >= 0) {
                     B(j,i) = real(cplx_1);
                 }
