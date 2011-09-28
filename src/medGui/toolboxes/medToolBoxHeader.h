@@ -80,7 +80,18 @@ public:
     */
     void setTitleOffset(const QPoint & titleOffset);
 
-    void showAboutButton(bool visible);
+    /**
+     * @brief
+     *
+     * @param visible
+     */
+    void setAboutButtonVisibility(bool visible);
+
+
+    /**
+     * @brief Returns a pointer to the aboutButton.
+     *
+     */
     medButton* aboutButton();
 
 

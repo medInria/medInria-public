@@ -134,8 +134,24 @@ public:
     virtual void uncheckButtons( const QString & buttonGroup ) {}
 
 
-    void enableAboutPluginButton(bool enable);
-    bool aboutPluginButtonVisibility(void);
+    /**
+     * @brief Enables or disable the aboutPlugin button.
+     *
+     * @param enable true to display the button.
+     */
+    void setAboutPluginVisibility(bool enable);
+
+    /**
+     * @brief Returns the aboutPlugin button visibility.
+     *
+     */
+    bool aboutPluginVisibility(void);
+
+    /**
+     * @brief Sets up the plugin this button is refering to.
+     *
+     * @param plugin The dtkPlugin this button will give info about.
+     */
     void setAboutPluginButton(dtkPlugin * plugin);
 
 signals:
@@ -145,7 +161,7 @@ signals:
      *
      * @param toolbox
     */
-    void    addToolBox(medToolBox *toolbox);
+    void addToolBox(medToolBox *toolbox);
 
     /**
      * @brief Tells the world to remove a toolbox from the medToolBoxContainer.
@@ -264,6 +280,10 @@ public slots:
 
 
 protected slots:
+    /**
+     * @brief Raises a dtkAboutPlugin dialog.
+     *
+     */
     void onAboutButtonClicked();
 
 private:

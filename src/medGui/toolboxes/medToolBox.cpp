@@ -226,20 +226,19 @@ void medToolBox::setContextVisibility(
     this->setVisible(d->isContextVisible);
 }
 
-void medToolBox::enableAboutPluginButton(bool enable)
+void medToolBox::setAboutPluginVisibility(bool enable)
 {
     d->aboutPluginVisibility = enable;
-    d->header->showAboutButton(enable);
+    d->header->setAboutButtonVisibility(enable);
 }
 
-bool medToolBox::aboutPluginButtonVisibility()
+bool medToolBox::aboutPluginVisibility()
 {
     return d->aboutPluginVisibility;
 }
 
 void medToolBox::setAboutPluginButton(dtkPlugin *plugin)
 {
-    qDebug() << "setting about plugin" << plugin;
     medButton* aboutButton = d->header->aboutButton();
     if (aboutButton)
     {
@@ -255,7 +254,6 @@ void medToolBox::setAboutPluginButton(dtkPlugin *plugin)
 
 void medToolBox::onAboutButtonClicked()
 {
-    qDebug()<<__FUNCTION__;
     if(d->plugin)
     {
         qDebug() << "about plugin" << d->plugin->name();
@@ -280,5 +278,9 @@ void medToolBox::onAboutButtonClicked()
 
         dial->setLayout(layout);
         dial->exec();
+    }
+    else
+    {
+        qWarning() << "No plugin set for toolbox" << d->header->title();
     }
 }
