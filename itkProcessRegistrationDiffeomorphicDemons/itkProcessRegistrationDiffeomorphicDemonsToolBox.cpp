@@ -112,8 +112,8 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
 
     // progression stack
     d->progression_stack = new medProgressionStack(widget);
-    QHBoxLayout *progressStackLayout = new QHBoxLayout;
-    progressStackLayout->addWidget(d->progression_stack);
+//    QHBoxLayout *progressStackLayout = new QHBoxLayout;
+//    progressStackLayout->addWidget(d->progression_stack);
 
     this->addWidget(widget);
     this->addWidget(runButton);
@@ -124,7 +124,7 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     dtkPlugin* plugin = pm->plugin(
                 "itkProcessRegistrationDiffeomorphicDemonsPlugin");
     setAboutPluginButton(plugin);
-    enableAboutPluginButton(true);
+    setAboutPluginVisibility(true);
 
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 }
