@@ -83,8 +83,8 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     d->filtersStack = new QStackedWidget;
     QObject::connect ( d->filters, SIGNAL ( activated ( int ) ), d->filtersStack, SLOT ( setCurrentIndex ( int ) ) );
 
-    QLabel * dataTypeLabel = new QLabel ( "Data type :" );
-    d->dataTypeValue = new QLabel ( "Unknown" );
+    QLabel * dataTypeLabel = new QLabel ( tr("Data type :") );
+    d->dataTypeValue = new QLabel ( tr("Unknown") );
 
     QHBoxLayout * dataTypeLayout = new QHBoxLayout;
     dataTypeLayout->addWidget ( dataTypeLabel );
@@ -96,7 +96,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     d->addFiltersValue = new QDoubleSpinBox;
     d->addFiltersValue->setMaximum ( 1000000000 );
     d->addFiltersValue->setValue ( 100.0 );
-    QLabel * addFilterLabel = new QLabel ( "Constant value:" );
+    QLabel * addFilterLabel = new QLabel ( tr("Constant value:") );
     QHBoxLayout * addFilterLayout = new QHBoxLayout;
     addFilterLayout->addWidget ( addFilterLabel );
     addFilterLayout->addWidget ( d->addFiltersValue );
@@ -108,7 +108,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     d->subtractFiltersValue = new QDoubleSpinBox;
     d->subtractFiltersValue->setMaximum ( 1000000000 );
     d->subtractFiltersValue->setValue ( 100.0 );
-    QLabel * subtractFilterLabel = new QLabel ( "Constant value:" );
+    QLabel * subtractFilterLabel = new QLabel ( tr("Constant value:") );
     QHBoxLayout * subtractFilterLayout = new QHBoxLayout;
     subtractFilterLayout->addWidget ( subtractFilterLabel );
     subtractFilterLayout->addWidget ( d->subtractFiltersValue );
@@ -120,7 +120,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     d->multiplyFiltersValue = new QDoubleSpinBox;
     d->multiplyFiltersValue->setValue ( 2.0 );
     d->multiplyFiltersValue->setMaximum ( 1000000000 );
-    QLabel * multiplyFilterLabel = new QLabel ( "Constant value:" );
+    QLabel * multiplyFilterLabel = new QLabel ( tr("Constant value:") );
     QHBoxLayout * multiplyFilterLayout = new QHBoxLayout;
     multiplyFilterLayout->addWidget ( multiplyFilterLabel );
     multiplyFilterLayout->addWidget ( d->multiplyFiltersValue );
@@ -132,7 +132,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     d->divideFiltersValue = new QDoubleSpinBox;
     d->divideFiltersValue->setValue ( 2.0 );
     d->divideFiltersValue->setMaximum ( 1000000000 );
-    QLabel * divideFilterLabel = new QLabel ( "Constant value:" );
+    QLabel * divideFilterLabel = new QLabel ( tr("Constant value:") );
     QHBoxLayout * divideFilterLayout = new QHBoxLayout;
     divideFilterLayout->addWidget ( divideFilterLabel );
     divideFilterLayout->addWidget ( d->divideFiltersValue );
@@ -144,7 +144,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     d->gaussianFiltersValue = new QDoubleSpinBox;
     d->gaussianFiltersValue->setValue ( 1.0 );
     d->gaussianFiltersValue->setMaximum ( 10.0 );
-    QLabel * gaussianFilterLabel = new QLabel ( "Sigma value:" );
+    QLabel * gaussianFilterLabel = new QLabel ( tr("Sigma value:") );
     QHBoxLayout * gaussianFilterLayout = new QHBoxLayout;
     gaussianFilterLayout->addWidget ( gaussianFilterLabel );
     gaussianFilterLayout->addWidget ( d->gaussianFiltersValue );
@@ -169,13 +169,15 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     d->shrink2Value->setValue ( 1 );
     d->shrink2Value->setMaximum ( 10 );
 
-    QLabel * shrinkFilterLabel = new QLabel ( "Shrink factors (X,Y,Z):" );
-    QHBoxLayout * shrinkFilterLayout = new QHBoxLayout;
-    shrinkFilterLayout->addWidget ( shrinkFilterLabel );
-    shrinkFilterLayout->addWidget ( d->shrink0Value );
-    shrinkFilterLayout->addWidget ( d->shrink1Value );
-    shrinkFilterLayout->addWidget ( d->shrink2Value );
-    shrinkFilterLayout->addStretch ( 1 );
+    QLabel * shrinkFilterLabel = new QLabel ( tr("Shrink factors (X,Y,Z):") );
+    QFormLayout * shrinkFilterLayout = new QFormLayout;
+
+    QVBoxLayout * shrinkFilterValueLayout = new QVBoxLayout;
+    shrinkFilterValueLayout->addWidget ( d->shrink0Value );
+    shrinkFilterValueLayout->addWidget ( d->shrink1Value );
+    shrinkFilterValueLayout->addWidget ( d->shrink2Value );
+    shrinkFilterValueLayout->addStretch ( 1 );
+    shrinkFilterLayout->addRow ( shrinkFilterLabel, shrinkFilterValueLayout );
     shrinkFilterWidget->setLayout ( shrinkFilterLayout );
 
     //Intensity windowing filter widget
@@ -193,22 +195,22 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     d->intensityOutputMaximumValue->setMaximum ( 255 );
     d->intensityOutputMaximumValue->setValue ( 255 );
 
-    QLabel * intensityMinimumLabel = new QLabel ( "Minimum:" );
+    QLabel * intensityMinimumLabel = new QLabel ( tr("Minimum:") );
     QHBoxLayout * intensityMinimumLayout = new QHBoxLayout;
     intensityMinimumLayout->addWidget ( intensityMinimumLabel );
     intensityMinimumLayout->addWidget ( d->intensityMinimumValue );
 
-    QLabel * intensityMaximumLabel = new QLabel ( "Maximum:" );
+    QLabel * intensityMaximumLabel = new QLabel ( tr("Maximum:") );
     QHBoxLayout * intensityMaximumLayout = new QHBoxLayout;
     intensityMaximumLayout->addWidget ( intensityMaximumLabel );
     intensityMaximumLayout->addWidget ( d->intensityMaximumValue );
 
-    QLabel * intensityOutputMinimumLabel = new QLabel ( "Output minimum:" );
+    QLabel * intensityOutputMinimumLabel = new QLabel ( tr("Output minimum:") );
     QHBoxLayout * intensityOutputMinimumLayout = new QHBoxLayout;
     intensityOutputMinimumLayout->addWidget ( intensityOutputMinimumLabel );
     intensityOutputMinimumLayout->addWidget ( d->intensityOutputMinimumValue );
 
-    QLabel * intensityOutputMaximumLabel = new QLabel ( "Output maximum:" );
+    QLabel * intensityOutputMaximumLabel = new QLabel ( tr("Output maximum:") );
     QHBoxLayout * intensityOutputMaximumLayout = new QHBoxLayout;
     intensityOutputMaximumLayout->addWidget ( intensityOutputMaximumLabel );
     intensityOutputMaximumLayout->addWidget ( d->intensityOutputMaximumValue );
@@ -253,7 +255,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     widget->setLayout ( layout );
 
     // Main toolbox:
-    this->setTitle ( "ITK Basic Filters" );
+    this->setTitle ( tr("ITK Basic Filters") );
     this->addWidget ( widget );
 
     // Add about plugin
@@ -633,6 +635,7 @@ void itkFiltersToolBox::run ( void )
     runProcess->setProcess ( d->process );
 
     d->progression_stack->addJobItem ( runProcess, tr ( "Progress:" ) );
+    d->progression_stack->setActive(runProcess,true);
 
     connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
     connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );
