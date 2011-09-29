@@ -234,11 +234,11 @@ public:
 
     QWidget    *widget;
     QSlider    *slider;
-    QComboBox  *dimensionBox;
+//     QComboBox  *dimensionBox;
     QPushButton *anchorButton;
     QPushButton *linkButton;
     QPushButton *linkWLButton;
-    QPushButton *registerButton;
+//     QPushButton *registerButton;
     QPushButton *playButton;
     QPushButton *closeButton;
     QPushButton *fullScreenButton;
@@ -354,14 +354,14 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     d->slider->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->slider->setFocusPolicy(Qt::NoFocus);
 
-    d->dimensionBox = new QComboBox(d->widget);
-    d->dimensionBox->setFocusPolicy(Qt::NoFocus);
-    d->dimensionBox->addItem( tr("Space") );
-    d->dimensionBox->addItem( tr("Time") );
-    d->dimensionBox->setCurrentIndex( 0 );
-    d->dimensionBox->setMaximumHeight(16);
-    d->dimensionBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    d->dimensionBox->setMaximumWidth(64);
+//     d->dimensionBox = new QComboBox(d->widget);
+//     d->dimensionBox->setFocusPolicy(Qt::NoFocus);
+//     d->dimensionBox->addItem( tr("Space") );
+//     d->dimensionBox->addItem( tr("Time") );
+//     d->dimensionBox->setCurrentIndex( 0 );
+//     d->dimensionBox->setMaximumHeight(16);
+//     d->dimensionBox->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+//     d->dimensionBox->setMaximumWidth(64);
 
     d->anchorButton = new QPushButton(d->widget);
     d->anchorButton->setIcon (QIcon(":/icons/anchor.png"));
@@ -412,17 +412,17 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
 
     connect(d->fullScreenButton, SIGNAL(clicked(bool)), this, SIGNAL(fullScreen(bool)));
 
-    d->registerButton = new QPushButton(d->widget);
-    d->registerButton->setIcon (QIcon(":/icons/cog.png"));
-    //d->registerButton->setText("r");
-    d->registerButton->setCheckable(true);
-    d->registerButton->setMaximumHeight(16);
-    d->registerButton->setMaximumWidth(16);
-    d->registerButton->setFocusPolicy(Qt::NoFocus);
-    d->registerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    d->registerButton->setObjectName("tool");
-
-    connect(d->registerButton, SIGNAL(clicked(bool)), this, SIGNAL(reg(bool)));
+//     d->registerButton = new QPushButton(d->widget);
+//     d->registerButton->setIcon (QIcon(":/icons/cog.png"));
+//     //d->registerButton->setText("r");
+//     d->registerButton->setCheckable(true);
+//     d->registerButton->setMaximumHeight(16);
+//     d->registerButton->setMaximumWidth(16);
+//     d->registerButton->setFocusPolicy(Qt::NoFocus);
+//     d->registerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+//     d->registerButton->setObjectName("tool");
+// 
+//     connect(d->registerButton, SIGNAL(clicked(bool)), this, SIGNAL(reg(bool)));
 
     d->playButton = new QPushButton(d->widget);
     d->playButton->setText(">");
@@ -466,13 +466,13 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     QHBoxLayout *toolsLayout = new QHBoxLayout;
     toolsLayout->setContentsMargins(0, 0, 0, 0);
     toolsLayout->setSpacing(0);
-    toolsLayout->addWidget(d->dimensionBox);
+//     toolsLayout->addWidget(d->dimensionBox);
     toolsLayout->addWidget(d->playButton);
     toolsLayout->addWidget(d->slider);
     toolsLayout->addWidget(d->anchorButton);
     toolsLayout->addWidget(d->linkButton);
     toolsLayout->addWidget(d->linkWLButton);
-    toolsLayout->addWidget(d->registerButton);
+//     toolsLayout->addWidget(d->registerButton);
     toolsLayout->addWidget(d->fullScreenButton);
     toolsLayout->addWidget(d->closeButton);
 
@@ -643,7 +643,7 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
 
     connect(d->vtkWidget,    SIGNAL(mouseEvent(QMouseEvent*)),     this, SLOT(onMousePressEvent(QMouseEvent*)));
     connect(d->slider,       SIGNAL(valueChanged(int)),            this, SLOT(onZSliderValueChanged(int)));
-    connect(d->dimensionBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onDimensionBoxChanged(QString)));
+//     connect(d->dimensionBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onDimensionBoxChanged(QString)));
 
     connect(d->widget, SIGNAL(destroyed()), this, SLOT(widgetDestroyed()));
 }
@@ -1085,7 +1085,7 @@ void v3dView::setData(dtkAbstractData *data, int layer)
             }
 
             QSignalBlocker blocker (d->slider );
-            if (d->dimensionBox->currentText()==tr("Space")) {
+//             if (d->dimensionBox->currentText()==tr("Space")) {
                 if( d->orientation=="Axial") {
                     d->slider->setRange(0, d->imageData->zDimension()-1);
                 }
@@ -1095,10 +1095,10 @@ void v3dView::setData(dtkAbstractData *data, int layer)
                 else if( d->orientation=="Coronal") {
                     d->slider->setRange(0, d->imageData->yDimension()-1);
                 }
-            }
-            else if (d->dimensionBox->currentText()==tr("Time")) {
-                d->slider->setRange(0, d->imageData->tDimension()-1);
-            }
+//             }
+//             else if (d->dimensionBox->currentText()==tr("Time")) {
+//                 d->slider->setRange(0, d->imageData->tDimension()-1);
+//             }
         }
     }
 
@@ -1205,7 +1205,8 @@ void v3dView::onOrientationPropertySet(const QString &value)
     if (value == "Axial"   ||
         value == "Coronal" ||
         value == "Sagittal") {
-        if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
+//         if (d->dimensionBox->currentText()==tr("Space") && d->imageData) {
+        if (d->imageData) {
             // slice orientation may differ from view orientation. Adapt slider range accordingly.
             int orientationId = d->view2d->GetSliceOrientation();
             if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
@@ -1218,9 +1219,9 @@ void v3dView::onOrientationPropertySet(const QString &value)
 
     }
 
-    if (d->dimensionBox->currentText()==tr("Time") && d->imageData) {
-        d->slider->setRange(0, d->imageData->tDimension()-1);
-    }
+//     if (d->dimensionBox->currentText()==tr("Time") && d->imageData) {
+//         d->slider->setRange(0, d->imageData->tDimension()-1);
+//     }
 
     if (!d->currentView) {
         d->slider->blockSignals (false);
@@ -1251,15 +1252,15 @@ void v3dView::onOrientationPropertySet(const QString &value)
     d->currentView->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL); // seems not needed anymore
 
     // update slider position
-    if (d->dimensionBox->currentText()==tr("Space")) {
+//     if (d->dimensionBox->currentText()==tr("Space")) {
         if (vtkImageView2D *view2d = vtkImageView2D::SafeDownCast (d->currentView)) {
             unsigned int zslice = view2d->GetSlice();
             d->slider->setValue (zslice);
         }
-    }
-    else if (d->dimensionBox->currentText()==tr("Time")) {
-        d->slider->setValue(d->currentView->GetTimeIndex());
-    }
+//     }
+//     else if (d->dimensionBox->currentText()==tr("Time")) {
+//         d->slider->setValue(d->currentView->GetTimeIndex());
+//     }
 
 }
 
@@ -1608,7 +1609,7 @@ void v3dView::onZSliderValueChanged (int value)
     if (!d->currentView)
         return;
 
-    if (d->dimensionBox->currentText()==tr("Space")) {
+//     if (d->dimensionBox->currentText()==tr("Space")) {
         if( vtkImageView2D *view = vtkImageView2D::SafeDownCast(d->currentView) ) {
             d->observer->lock();
             view->SetSlice (value);
@@ -1619,13 +1620,13 @@ void v3dView::onZSliderValueChanged (int value)
             QVector3D position (pos[0], pos[1], pos[2]);
             emit positionChanged(position, this->positionLinked());
         }
-    }
-    else if (d->dimensionBox->currentText()==tr("Time")) {
-        if( d->currentView ) {
-            d->currentView->SetTimeIndex (value);
-            d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::TimeChangeEvent);
-        }
-    }
+//     }
+//     else if (d->dimensionBox->currentText()==tr("Time")) {
+//         if( d->currentView ) {
+//             d->currentView->SetTimeIndex (value);
+//             d->currentView->GetInteractorStyle()->InvokeEvent(vtkImageView2DCommand::TimeChangeEvent);
+//         }
+//     }
 
     //qApp->processEvents();
     d->currentView->Render();
@@ -1635,7 +1636,7 @@ void v3dView::onZSliderValueChanged (int value)
 void v3dView::onDaddyPropertySet (const QString &value)
 {
     QSignalBlocker anchorBlocker(d->anchorButton);
-    QSignalBlocker registerBlocker(d->registerButton);
+//     QSignalBlocker registerBlocker(d->registerButton);
 
 
     bool boolValue = false;
@@ -1645,8 +1646,8 @@ void v3dView::onDaddyPropertySet (const QString &value)
     }
 
     d->anchorButton->setChecked (boolValue);
-    if (boolValue) d->registerButton->setChecked (false);// going to disappear anyway
-    d->registerButton->setEnabled(!boolValue);
+//     if (boolValue) d->registerButton->setChecked (false);// going to disappear anyway
+//     d->registerButton->setEnabled(!boolValue);
     emit (changeDaddy(boolValue));
 }
 
