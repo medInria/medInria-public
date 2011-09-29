@@ -25,7 +25,7 @@ public:
     QPushButton *saveInDatabaseButton;
 //    QPushButton *saveToDiskButton;
     medToolBoxFilteringCustom *customToolBox;
-    dtkAbstractView *inputView;
+    medAbstractView *inputView;
     dtkAbstractData *inputData;
     medDataIndex index;
 };
@@ -116,7 +116,7 @@ void medToolBoxFiltering::onInputSelected ( const medDataIndex& index )
 
     if ( !d->inputData )
         return;
-
+    
     d->inputView = dynamic_cast<medAbstractView*> ( medViewManager::instance()->views ( index ).first() );
 
     if ( !d->inputView )

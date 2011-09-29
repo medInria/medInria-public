@@ -60,6 +60,8 @@ void medViewerConfigurationFiltering::setupViewContainerStack()
     {
         medViewContainerFiltering *filteringContainer = new medViewContainerFiltering(this->stackedViewContainers());
 
+
+        
         connect(filteringContainer,SIGNAL(droppedInput(medDataIndex)), d->filteringToolBox,SLOT(onInputSelected(medDataIndex)));
         connect(this,SIGNAL(outputDataChanged(dtkAbstractData *)),filteringContainer,SLOT(updateOutput(dtkAbstractData *)));
 

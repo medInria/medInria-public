@@ -376,6 +376,8 @@ public slots:
     */
     virtual void onContainerClicked (void);
 
+//     void clear (void);
+
 
 protected:
     /**

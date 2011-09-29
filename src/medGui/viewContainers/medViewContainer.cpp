@@ -26,37 +26,39 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <medDataIndex.h>
 
-medViewContainer::medViewContainer(QWidget *parent)
-    : QFrame(parent)
-    , d(new medViewContainerPrivate)
+medViewContainer::medViewContainer ( QWidget *parent )
+        : QFrame ( parent )
+        , d ( new medViewContainerPrivate )
 {
-    d->layout = new QGridLayout(this);
-    d->layout->setContentsMargins(0, 0, 0, 0);
-    d->layout->setSpacing(3);
+    d->layout = new QGridLayout ( this );
+    d->layout->setContentsMargins ( 0, 0, 0, 0 );
+    d->layout->setSpacing ( 3 );
 
     d->view = NULL;
     d->current = this;
     d->clicked = false;
 
-    d->pool = new medViewPool (this);
+    d->pool = new medViewPool ( this );
 
-    medViewContainer *container = dynamic_cast<medViewContainer *>(parent);
-    if ( container != NULL ) {
-        connect(this,      SIGNAL(dropped(const medDataIndex&)),
-                container, SIGNAL(dropped(const medDataIndex&)));
-        connect(this,      SIGNAL(focused(dtkAbstractView*)),
-                container, SIGNAL(focused(dtkAbstractView*)));
+    medViewContainer *container = dynamic_cast<medViewContainer *> ( parent );
+    if ( container != NULL )
+    {
+        connect ( this,      SIGNAL ( dropped ( const medDataIndex& ) ),
+                  container, SIGNAL ( dropped ( const medDataIndex& ) ) );
+        connect ( this,      SIGNAL ( focused ( dtkAbstractView* ) ),
+                  container, SIGNAL ( focused ( dtkAbstractView* ) ) );
     }
 
-    this->setAcceptDrops(true);
-    this->setFocusPolicy(Qt::ClickFocus);
-    this->setMouseTracking(true);
-    this->setSizePolicy (QSizePolicy::Expanding,QSizePolicy::Expanding);
+    this->setAcceptDrops ( true );
+    this->setFocusPolicy ( Qt::ClickFocus );
+    this->setMouseTracking ( true );
+    this->setSizePolicy ( QSizePolicy::Expanding,QSizePolicy::Expanding );
 }
 
-medViewContainer::~medViewContainer(void)
+medViewContainer::~medViewContainer ( void )
 {
-    if (d->view) {
+    if ( d->view )
+    {
         d->view->close();
     }
 
@@ -66,7 +68,7 @@ medViewContainer::~medViewContainer(void)
 }
 
 
-const medViewContainer *medViewContainer::current(void) const
+const medViewContainer *medViewContainer::current ( void ) const
 {
     const medViewContainer * root = this->root();
     if ( root != this )
@@ -75,7 +77,7 @@ const medViewContainer *medViewContainer::current(void) const
     return d->current;
 }
 
-medViewContainer *medViewContainer::current(void)
+medViewContainer *medViewContainer::current ( void )
 {
     medViewContainer * root = this->root();
     if ( root != this )
@@ -84,41 +86,41 @@ medViewContainer *medViewContainer::current(void)
     return d->current;
 }
 
-bool medViewContainer::isClicked (void) const
+bool medViewContainer::isClicked ( void ) const
 {
     return d->clicked;
 }
 
-bool medViewContainer::isCurrent(void) const
+bool medViewContainer::isCurrent ( void ) const
 {
-    return const_cast< medViewContainer * >( this )->current() == this;
+    return const_cast< medViewContainer * > ( this )->current() == this;
 }
 
-bool medViewContainer::isRoot(void) const
+bool medViewContainer::isRoot ( void ) const
 {
     return this->parentContainer() == NULL;
 }
 
-bool medViewContainer::isLeaf(void) const
+bool medViewContainer::isLeaf ( void ) const
 {
     return false;
 }
 
-bool medViewContainer::isEmpty(void) const
+bool medViewContainer::isEmpty ( void ) const
 {
     return ( this->view() == NULL &&
              this->childContainers().count() == 0 );
 }
 
-bool medViewContainer::isDaddy(void) const
+bool medViewContainer::isDaddy ( void ) const
 {
     return ( this->view() != NULL &&
-             this->view()->property( "Daddy" ) == "true" );
+             this->view()->property ( "Daddy" ) == "true" );
 }
 
 medViewContainer * medViewContainer::parentContainer() const
 {
-    return dynamic_cast< medViewContainer * >( this->parentWidget() );
+    return dynamic_cast< medViewContainer * > ( this->parentWidget() );
 }
 
 const medViewContainer * medViewContainer::root() const
@@ -136,9 +138,11 @@ medViewContainer * medViewContainer::root()
 QList< medViewContainer * > medViewContainer::childContainers() const
 {
     QList< medViewContainer * > containers;
-    foreach ( QObject * child, this->children() ) {
-        medViewContainer * c = dynamic_cast<medViewContainer *>( child );
-        if ( c != NULL ) {
+    foreach ( QObject * child, this->children() )
+    {
+        medViewContainer * c = dynamic_cast<medViewContainer *> ( child );
+        if ( c != NULL )
+        {
             containers << c;
             containers << c->childContainers();
         }
@@ -147,98 +151,106 @@ QList< medViewContainer * > medViewContainer::childContainers() const
     return containers;
 }
 
-QList< medViewContainer * > medViewContainer::leaves( bool excludeEmpty )
+QList< medViewContainer * > medViewContainer::leaves ( bool excludeEmpty )
 {
     QList< medViewContainer * > leaves;
-    if ( this->isLeaf() ) {
-        if ( !( excludeEmpty && this->isEmpty() ) )
+    if ( this->isLeaf() )
+    {
+        if ( ! ( excludeEmpty && this->isEmpty() ) )
             leaves << this;
     }
     else                   // a leaf doesn't contain another container
         foreach ( medViewContainer * child, this->childContainers() )
-            leaves << child->leaves( excludeEmpty );
+        leaves << child->leaves ( excludeEmpty );
 
     return leaves;
 }
 
-void medViewContainer::split(int rows, int cols)
+void medViewContainer::split ( int rows, int cols )
 {
-    Q_UNUSED(rows);
-    Q_UNUSED(cols);
+    Q_UNUSED ( rows );
+    Q_UNUSED ( cols );
 }
 
-dtkAbstractView *medViewContainer::view(void) const
+dtkAbstractView *medViewContainer::view ( void ) const
 {
     return d->view;
 }
 
-QList<dtkAbstractView *> medViewContainer::views(void) const
+QList<dtkAbstractView *> medViewContainer::views ( void ) const
 {
     QList<dtkAbstractView *> views;
-    if (d->view)
+    if ( d->view )
         views << d->view;
 
     return views;
 }
 
-medViewPool *medViewContainer::pool (void)
+medViewPool *medViewContainer::pool ( void )
 {
     return d->pool;
 }
 
-void medViewContainer::setView(dtkAbstractView *view)
+void medViewContainer::setView ( dtkAbstractView *view )
 {
-    if (view==d->view)
+    if ( view==d->view )
         return;
 
     // clear connection of previous view
-    if (d->view) {
-        disconnect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
+    if ( d->view )
+    {
+        disconnect ( view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
         d->view->close();
         d->view = 0;
     }
 
     d->view = view;
-    
-    if (d->view) {
+
+    if ( d->view )
+    {
+        //Modification for the filtering config bug
+        this->onViewFocused(true);
+
+        
         // pass properties to the view
         QHash<QString,QString>::iterator it = d->viewProperties.begin();
-        while (it!=d->viewProperties.end()) {
-            view->setProperty (it.key(), it.value());
+        while ( it!=d->viewProperties.end() )
+        {
+            view->setProperty ( it.key(), it.value() );
             ++it;
         }
-        
-        connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
+
+        connect ( view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
         this->recomputeStyleSheet();
-    }        
+    }
 }
 
-void medViewContainer::onViewFocused( bool value )
+void medViewContainer::onViewFocused ( bool value )
 {
     if ( !value )
         return;
 
     if ( !this->isEmpty() )
-        this->setCurrent( this );
+        this->setCurrent ( this );
 
-    if (dtkAbstractView *view = this->view())
-        emit focused(view);
+    if ( dtkAbstractView *view = this->view() )
+        emit focused ( view );
 
     this->update();
 }
 
-void medViewContainer::onContainerClicked (void)
+void medViewContainer::onContainerClicked ( void )
 {
     d->clicked = false;
     this->recomputeStyleSheet();
 }
 
-void medViewContainer::setCurrent(medViewContainer *container)
+void medViewContainer::setCurrent ( medViewContainer *container )
 {
     medViewContainer * parent =
-        dynamic_cast<medViewContainer *>( this->parentWidget() );
+        dynamic_cast<medViewContainer *> ( this->parentWidget() );
     if ( parent != NULL )
-        parent->setCurrent(container);
+        parent->setCurrent ( container );
     else
         d->current = container;
 
@@ -247,64 +259,65 @@ void medViewContainer::setCurrent(medViewContainer *container)
 
 void medViewContainer::recomputeStyleSheet()
 {
-    this->setStyleSheet( qApp->styleSheet() );
+    this->setStyleSheet ( qApp->styleSheet() );
 }
 
-void medViewContainer::dragEnterEvent(QDragEnterEvent *event)
+void medViewContainer::dragEnterEvent ( QDragEnterEvent *event )
 {
     event->acceptProposedAction();
 }
 
-void medViewContainer::dragMoveEvent(QDragMoveEvent *event)
+void medViewContainer::dragMoveEvent ( QDragMoveEvent *event )
 {
     event->acceptProposedAction();
 }
 
-void medViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
+void medViewContainer::dragLeaveEvent ( QDragLeaveEvent *event )
 {
     event->accept();
 }
 
-void medViewContainer::dropEvent(QDropEvent *event)
+void medViewContainer::dropEvent ( QDropEvent *event )
 {
     const QMimeData *mimeData = event->mimeData();
 
-    medDataIndex index = medDataIndex::readMimeData( mimeData );
-    if (index.isValid()) {
-        emit dropped(index);
+    medDataIndex index = medDataIndex::readMimeData ( mimeData );
+    if ( index.isValid() )
+    {
+        emit dropped ( index );
     }
 
     event->acceptProposedAction();
 }
 
-void medViewContainer::focusInEvent(QFocusEvent *event)
+void medViewContainer::focusInEvent ( QFocusEvent *event )
 {
-    Q_UNUSED(event);
+    Q_UNUSED ( event );
 
     medViewContainer * former = this->current();
 
     d->clicked = true;
 
-    this->onViewFocused( true );
+    this->onViewFocused ( true );
 
     this->recomputeStyleSheet();
 
-    if (former)
+    if ( former )
         former->update();
 
     emit clicked();
 }
 
-void medViewContainer::focusOutEvent(QFocusEvent *event)
+void medViewContainer::focusOutEvent ( QFocusEvent *event )
 {
     //d->clicked = false;
 
     //this->recomputeStyleSheet();
 }
 
-void medViewContainer::paintEvent(QPaintEvent *event)
+void medViewContainer::paintEvent ( QPaintEvent *event )
 {
-    if(this->layout()->count() > 1)
+    if ( this->layout()->count() > 1 )
         return;
 
     // QFrame::paintEvent(event);
@@ -316,7 +329,7 @@ void medViewContainer::paintEvent(QPaintEvent *event)
     // qreal borderWidth = 1;
 
     QPainter painter;
-    painter.begin(this);
+    painter.begin ( this );
 
     // painter.setPen( QPen( borderColor, borderWidth ) );
     // // painter.setBrush(QColor(0x38, 0x38, 0x38));
@@ -332,54 +345,78 @@ void medViewContainer::paintEvent(QPaintEvent *event)
     //     painter.drawRect( this->rect().adjusted( 0, 0, -1, -1 ) );
     // }
 
-    if (!this->view() && (d->viewProperties.count() ||
-                          !d->viewInfo.isEmpty()) )
+    if ( !this->view() && ( d->viewProperties.count() ||
+                            !d->viewInfo.isEmpty() ) )
     {
-        painter.setPen(Qt::white);
+        painter.setPen ( Qt::white );
         QFont font = painter.font();
-        font.setPointSize (18);
-        painter.setFont (font);
+        font.setPointSize ( 18 );
+        painter.setFont ( font );
         QString text;
 
         //Add View Info:
-        if (!d->viewInfo.isEmpty())
+        if ( !d->viewInfo.isEmpty() )
             //    Debug()<< "viewInfo" << d->viewInfo;
             text += d->viewInfo + "\n";
 
         QList<QString> keys = d->viewProperties.keys();
-        foreach (QString key, keys)
-            text += d->viewProperties[key] + "\n";
-        painter.drawText (event->rect(), Qt::AlignCenter, text);
+        foreach ( QString key, keys )
+        text += d->viewProperties[key] + "\n";
+        painter.drawText ( event->rect(), Qt::AlignCenter, text );
     }
 
     painter.end();
 }
 
-void medViewContainer::setViewProperty (const QString &key, const QString &value)
+void medViewContainer::setViewProperty ( const QString &key, const QString &value )
 {
     d->viewProperties[key] = value;
 }
 
-QString medViewContainer::viewProperty (const QString &key) const
+QString medViewContainer::viewProperty ( const QString &key ) const
 {
-    if (d->viewProperties.contains (key))
+    if ( d->viewProperties.contains ( key ) )
         return d->viewProperties[key];
 
     return QString();
 }
 
-void medViewContainer::onViewFullScreen (bool value)
+void medViewContainer::onViewFullScreen ( bool value )
 {
-    Q_UNUSED (value);
+    Q_UNUSED ( value );
 }
 
-void medViewContainer::onDaddyChanged( bool state )
+void medViewContainer::onDaddyChanged ( bool state )
 {
-    Q_UNUSED(state);
+    Q_UNUSED ( state );
     this->recomputeStyleSheet();
 }
 
-void medViewContainer::setInfo(const QString& info)
+// void medViewContainer::clear ( void )
+// {
+//     if ( d->view )
+//     {
+// // //         this->fu( false, d->view ); // in case view is full screen
+//         d->layout->removeWidget ( d->view->widget() );
+// // // //         this->desynchronize_2 ( d->view );
+// //         disconnect ( d->view, SIGNAL ( closing() ),         this, SLOT ( onViewClosing() ) );
+// // //         disconnect ( d->view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
+// // //         disconnect ( d->view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
+// // 
+//         emit viewRemoved ( d->view );
+// // 
+//         d->view->close();
+//         d->view = NULL;
+//     }
+// 
+//     foreach ( medViewContainer *container, this->childContainers() )
+//     {
+//         d->layout->removeWidget ( container );
+//         container->deleteLater(); // safer than delete container
+//     }
+// }
+
+void medViewContainer::setInfo ( const QString& info )
 {
     d->viewInfo = info;
 }
