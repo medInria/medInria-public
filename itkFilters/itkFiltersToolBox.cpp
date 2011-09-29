@@ -260,7 +260,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     medPluginManager* pm = medPluginManager::instance();
     dtkPlugin* plugin = pm->plugin("itkFiltersPlugin");
     setAboutPluginButton(plugin);
-    enableAboutPluginButton(true);
+    setAboutPluginVisibility(true);
 
     connect ( runButton, SIGNAL ( clicked() ), this, SLOT ( run() ) );
 
