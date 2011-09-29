@@ -619,7 +619,8 @@ v3dView::v3dView(void) : medAbstractView(), d(new v3dViewPrivate)
     this->setProperty ("ShowAnnotations",       "true");
     this->setProperty ("LookupTable",           "Default");
     this->setProperty ("MouseInteraction",      "Zooming");
-    this->setProperty ("3DMode",                "VR");
+//     this->setProperty ("3DMode",                "VR");
+    this->setProperty ("3DMode",                "MPR");
 #ifdef __APPLE__
     this->setProperty ("Renderer", "Ray Cast");
 #else
