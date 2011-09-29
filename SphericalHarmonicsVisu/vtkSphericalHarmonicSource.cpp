@@ -38,9 +38,14 @@ using Utils::direction;
 static direction Cartesian2Spherical(direction v);
 
 static std::complex<double> GetSH(int _l,int _m,double theta,double phi); //JGGBOOST
+
 static matrix<double> ComputeSHMatrix (const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
 static matrix<double> ComputeSHMatrixMaxThesis(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
+
 static matrix<double> computeSHmatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
+static matrix<double> computeSHmatrixRshBasis3(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
+
+
 static void           TranslateAndDeformShell(vtkPolyData* shell,vtkPoints* outPts,double center[3],bool deform,vtkMatrix4x4* transform=0);
 
 vtkCxxRevisionMacro(vtkSphericalHarmonicSource,"$Revision: 0 $");
@@ -570,6 +575,81 @@ computeSHmatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const
     }
 
     return B;
+}
+
+matrix<double>
+computeSHmatrixRshBasis3(const int rank,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
+
+    const int n_s   = shell->GetNumberOfPoints();
+    const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is probably wrong !!!
+
+    matrix<double> B(rank,n_s);
+
+    vtkPoints* vertices = shell->GetPoints();
+
+    for (int i=0;i<n_s;++i) {
+
+        // Get spherical component of the point direction and transform them in spherical coordinates.
+
+        double p[3];
+        vertices->GetPoint(i,p);
+
+        direction d;
+
+        d.x = (FlipX) ? -p[0] : p[0];
+        d.y = (FlipY) ? -p[1] : p[1];
+        d.z = (FlipZ) ? -p[2] : p[2];
+
+        const direction v = Cartesian2Spherical(d);
+
+        const double phi   = v.y;
+        const double theta = v.z;
+        double test1=0, test=0, test3=0, test2=0;
+        PhiThetaDirections(i,0) = phi;
+        PhiThetaDirections(i,1) = theta;
+
+        const double factor = std::sqrt(2.0)/2;
+
+        for (int l=0,j=0;l<=order;l+=2) {
+
+            //  Handle the case m=0.
+            const std::complex<double> cplx = GetSH(l,0,theta,phi);
+            test3 = real(cplx);
+            test2 = std::tr1::sph_legendre(l,0,theta);
+            B(j,i)=test3;
+
+            for(int m=1,s=-1;m<=l;++m,++j,s=-s) {
+
+                // Get the corresponding spherical harmonic
+                const std::complex<double> cplx_1 = GetSH(l,m,theta,phi);
+                const std::complex<double> cplx_2 = GetSH(l,-m,theta,phi);
+                std::complex<double> sign(s, 0.0);
+                std::complex<double> imaginario(0.0, 1.0);
+
+                const std::complex<double> cplxA2 =cplx_1 + sign*cplx_2;
+                const std::complex<double> cplxB2 =imaginario*(-cplx_1 + sign*cplx_2);
+
+                const double c1 = std::tr1::sph_legendre(l, m,theta)*std::sqrt(2.0);
+                //-m Real
+                test1 = c1*(cos(m*phi));//like RshBasis.pdf eq 1.2 but math simplified and with tr1
+                test2 = factor*real(cplxA2);//like RshBasis.pdf eq 1.2
+
+                if(std::abs(test1-test2)>=0.0000000000001)
+                    std::cout << "error "<< test1-test2 << std::endl;
+
+                B(j,i)   = test2;
+                //+m Imag
+                test1 = c1*(sin(m*phi));
+                test2 = factor*real(cplxB2);//+m
+
+                if(std::abs(test1-test2)>=0.0000000000001)
+                    std::cout << "error "<< test1-test2 << std::endl;
+
+                B(++j,i) = test2;
+            }
+        }
+    }
+
 }
 
 void
