@@ -1049,7 +1049,23 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         if (medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> (data)) {
             d->data = data;
             d->imageData = imageData;
-
+            
+            if (d->view2d)
+            {
+                switch (d->view2d->GetViewOrientation())
+                {
+                    case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
+                        d->orientation = "Sagittal";
+                        break;
+                    case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
+                        d->orientation = "Coronal";
+                        break;
+                    case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
+                        d->orientation = "Axial";
+                        break;
+                }
+            }
+            
             if (data->hasMetaData(medMetaDataKeys::PatientName.key())){
                 const QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
                 d->view2d->SetPatientName (patientName.toAscii().constData());
