@@ -194,10 +194,11 @@ void medDatabaseRemover::removeSeries( int patientId, int studyId, int seriesId 
     QSqlDatabase & db( *d->db );
     QSqlQuery query(db);
 
-    query.prepare("SELECT thumbnail, path, name  FROM " + d->T_SERIES + " WHERE id = :seriesId ");
+    query.prepare("SELECT thumbnail, path, name, uid  FROM " + d->T_SERIES + " WHERE id = :seriesId ");
     query.bindValue(":seriesId", seriesId);
     EXEC_QUERY(query);
     QString seriesName;
+    QString seriesUid;
     QString thumbnail;
     if ( query.next()) {
         thumbnail = query.value(0).toString();
@@ -209,8 +210,11 @@ void medDatabaseRemover::removeSeries( int patientId, int studyId, int seriesId 
             this->removeDataFile( medDataIndex::makeSeriesIndex(d->index.dataSourceId(), patientId, studyId, seriesId) , path );
 
         seriesName = query.value(2).toString();
+        seriesUid = query.value(3).toString();
     }
     removeTableRow( d->T_SERIES, seriesId );
+
+    qDebug() << "Series Uid: " << seriesUid;
 
     // we want to remove the directory if empty
     QFileInfo seriesFi(medStorage::dataLocation() + thumbnail);
@@ -235,26 +239,36 @@ void medDatabaseRemover::removeStudy( int patientId, int studyId )
     QSqlQuery query(db);
 
     QString studyName;
+    QString studyUid;
 
-    query.prepare("SELECT thumbnail, name FROM " + d->T_STUDY + " WHERE id = :studyId ");
+    query.prepare("SELECT thumbnail, name, uid FROM " + d->T_STUDY + " WHERE id = :studyId ");
     query.bindValue(":studyId", studyId);
     EXEC_QUERY(query);
     if ( query.next()) {
         QString thumbnail = query.value(0).toString();
         this->removeFile( thumbnail );
         studyName = query.value(1).toString();
+        studyUid = query.value(2).toString();
     }
     removeTableRow( d->T_STUDY, studyId );
 
-    query.prepare("SELECT name  FROM " + d->T_PATIENT + " WHERE id = :patientId ");
+    query.prepare("SELECT name, birthdate  FROM " + d->T_PATIENT + " WHERE id = :patientId ");
     query.bindValue(":patientId", patientId);
     EXEC_QUERY(query);
     QString patientName;
-    if ( query.next() ) 
+    QString patientBirthdate;
+    if ( query.next() )
+    {
         patientName = query.value(0).toString();
+        patientBirthdate = query.value(1).toString();
+    }
+
+    qDebug() << "patientID:" << patientName << patientBirthdate;
+    qDebug() << "studyUid: " << studyUid;
 
     medDatabaseControllerImpl* dbi = medDatabaseController::instance();
-    QDir studyDir(medStorage::dataLocation() + "/" + dbi->stringForPath(patientName) + "/" + dbi->stringForPath(studyName));
+//     QDir studyDir(medStorage::dataLocation() + "/" + dbi->stringForPath(patientName) + "/" + dbi->stringForPath(studyName));
+    QDir studyDir(medStorage::dataLocation() + "/" + dbi->stringForPath(patientName + patientBirthdate) + "/" + dbi->stringForPath(studyUid));
     if (studyDir.exists())
         studyDir.rmdir(studyDir.path()); // only removes if empty
 }
@@ -276,18 +290,22 @@ void medDatabaseRemover::removePatient( int patientId )
     QSqlQuery query(db);
 
     QString patientName;
-    query.prepare("SELECT thumbnail,name  FROM " + d->T_PATIENT + " WHERE id = :patientId ");
+    QString patientBirthdate;
+    query.prepare("SELECT thumbnail,name,birthdate  FROM " + d->T_PATIENT + " WHERE id = :patientId ");
     query.bindValue(":patientId", patientId);
     EXEC_QUERY(query);
     if ( query.next()) {
         QString thumbnail = query.value(0).toString();
         this->removeFile( thumbnail );
         patientName = query.value(1).toString();
+        patientBirthdate = query.value(2).toString();
     }
     removeTableRow( d->T_PATIENT, patientId );
 
     medDatabaseControllerImpl * dbi = medDatabaseController::instance();
-    QDir patientDir(medStorage::dataLocation() + "/" + dbi->stringForPath(patientName));
+//     QDir patientDir(medStorage::dataLocation() + "/" + dbi->stringForPath(patientName));
+    QDir patientDir(medStorage::dataLocation() + "/" + dbi->stringForPath(patientName+patientBirthdate));
+    
     if (patientDir.exists())
         patientDir.rmdir(patientDir.path()); // only removes if empty
 }
