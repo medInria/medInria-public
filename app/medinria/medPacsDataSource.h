@@ -8,7 +8,7 @@ class medPacsDataSourcePrivate;
 class medToolBox;
 
 /**
- * @class Pacs connection datasource that comes with treeview, 
+ * @class Pacs connection datasource that comes with treeview,
  * searchpanel and source selector (DICOM-nodes)
  */
 class medPacsDataSource : public medAbstractDataSource
@@ -22,9 +22,9 @@ public:
     QWidget* mainViewWidget();
 
     QWidget* sourceSelectorWidget();
-    
+
     QString tabName();
-    
+
     QList<medToolBox*> getToolboxes();
 
 private slots:

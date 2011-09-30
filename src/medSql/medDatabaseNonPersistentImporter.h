@@ -43,7 +43,8 @@ class medDatabaseNonPersistentImporter : public medJobItem
     Q_OBJECT
 
 public:
-     medDatabaseNonPersistentImporter(dtkAbstractData *data);
+     medDatabaseNonPersistentImporter(dtkAbstractData *data,
+                                      const QString& callerUuid);
     ~medDatabaseNonPersistentImporter(void);
 
     void run(void);
@@ -52,10 +53,7 @@ public slots:
     void onCancel(QObject*);
 
 signals:
-    void success(QObject *);
-    void failure(QObject *);
-    void progressed(int);
-    void nonPersistentImported(const medDataIndex &);
+    void nonPersistentImported(const medDataIndex &, QString);
 
 
 private:

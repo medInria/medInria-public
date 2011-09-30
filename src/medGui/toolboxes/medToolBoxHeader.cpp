@@ -18,6 +18,7 @@
  */
 
 #include "medToolBoxHeader.h"
+#include <medButton.h>
 
 #include <dtkCore/dtkGlobal.h>
 
@@ -26,14 +27,30 @@ class medToolBoxHeaderPrivate
 public:
     QString title;
     QPoint titleOffset;
+    medButton* about;
+    static QPixmap* png;
+    static const QString tooltip;
 };
+
+
+const QString medToolBoxHeaderPrivate::tooltip = QObject::tr("About this plugin");
+QPixmap * medToolBoxHeaderPrivate::png = NULL;
 
 medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medToolBoxHeaderPrivate)
 {
+    if (!d->png)  d->png = new QPixmap(":icons/information.png");
     d->title = "Untitled";
     d->titleOffset = QPoint( 0, 0 );
+//    d->about = NULL;
+    QBoxLayout* layout = new QBoxLayout(QBoxLayout::LeftToRight,this);
+    layout->setMargin(0);
 
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    d->about = new medButton(this,*(d->png),
+                             medToolBoxHeaderPrivate::tooltip);
+    layout->addStretch();
+    layout->addWidget(d->about);
+    d->about->hide();
+
 }
 
 medToolBoxHeader::~medToolBoxHeader(void)
@@ -77,7 +94,17 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
     painter.end();
 }
 
+void medToolBoxHeader::setAboutButtonVisibility(bool visible)
+{
+    d->about->setVisible(visible);
+}
+
 void medToolBoxHeader::mousePressEvent( QMouseEvent *event )
 {
     emit triggered();
+}
+
+medButton * medToolBoxHeader::aboutButton()
+{
+    return d->about;
 }

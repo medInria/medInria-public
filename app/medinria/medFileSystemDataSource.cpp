@@ -15,16 +15,19 @@ public:
 
 medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
 {
-    d->finder = new dtkFinder(parent);
-    d->finder->setPath(QDir::homePath());
+    d->filesystem_widget = new QWidget(parent);
 
-    d->path = new dtkFinderPathBar(parent);
+    d->finder = new dtkFinder (d->filesystem_widget);
+    d->finder->setPath(QDir::homePath());
+    d->finder->allowFileBookmarking(false);
+
+    d->path = new dtkFinderPathBar (d->filesystem_widget);
     d->path->setPath(QDir::homePath());
 
-    d->toolbar = new dtkFinderToolBar (parent);
+    d->toolbar = new dtkFinderToolBar (d->filesystem_widget);
     d->toolbar->setPath(QDir::currentPath());
 
-    d->side = new dtkFinderSideView(parent);
+    d->side = new dtkFinderSideView;
     d->side->setStyleSheet(
         "dtkFinderSideView {"
         "    color: #b2b2b2;"
@@ -79,8 +82,6 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     connect(indexAction, SIGNAL(triggered()),  this, SLOT(onFileSystemIndexClicked()));
     connect(  loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadClicked()));
     connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewClicked()));
-
-    d->filesystem_widget = new QWidget(parent);
 
     QHBoxLayout *toolbar_layout = new QHBoxLayout;
     toolbar_layout->setContentsMargins(0, 0, 0, 0);

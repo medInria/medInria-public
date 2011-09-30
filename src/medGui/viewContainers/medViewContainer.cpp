@@ -56,8 +56,6 @@ medViewContainer::medViewContainer(QWidget *parent)
 
 medViewContainer::~medViewContainer(void)
 {
-    //d->pool->deleteLater();
-
     if (d->view) {
         d->view->close();
     }

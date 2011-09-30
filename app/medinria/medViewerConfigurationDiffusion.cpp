@@ -1,5 +1,6 @@
 #include "medViewerConfigurationDiffusion.h"
 
+#include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -9,7 +10,6 @@
 
 #include "medToolBoxDiffusionTensorView.h"
 #include "medToolBoxDiffusion.h"
-#include "medViewerToolBoxView.h"
 #include "medToolBoxDiffusionFiberView.h"
 #include "medToolBoxDiffusionFiberBundling.h"
 #include <medViewContainer.h>
@@ -19,25 +19,24 @@
 class medViewerConfigurationDiffusionPrivate
 {
 public:
-    medViewerToolBoxView                *viewToolBox;
+   
     medToolBoxDiffusionFiberView        *fiberViewToolBox;
     medToolBoxDiffusionFiberBundling    *fiberBundlingToolBox;
     medToolBoxDiffusion                 *diffusionToolBox;
     medToolBoxDiffusionTensorView       *tensorViewToolBox;
-    
-    QList<dtkAbstractView *> views;
+
+    QList<dtkSmartPointer<dtkAbstractView> > views;
+
+    QString uuid;
 };
 
 medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationDiffusionPrivate)
 {
-    // -- View toolbox --
-
-    d->viewToolBox = new medViewerToolBoxView(parent);
-
+    
     // -- Bundling  toolbox --
-    
+
     d->fiberBundlingToolBox = new medToolBoxDiffusionFiberBundling(parent);
-    
+
     // -- Diffusion toolbox --
 
     d->diffusionToolBox = new medToolBoxDiffusion(parent);
@@ -46,7 +45,7 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
             this, SLOT(addToolBox(medToolBox *)));
     connect(d->diffusionToolBox, SIGNAL(removeToolBox(medToolBox *)),
             this, SLOT(removeToolBox(medToolBox *)));
-    
+
     // -- Tensor tb --
     d->tensorViewToolBox = new medToolBoxDiffusionTensorView(parent);
 
@@ -63,12 +62,12 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
     connect(d->fiberViewToolBox, SIGNAL(lineModeSelected(bool)),     this, SLOT(onLineModeSelected(bool)));
     connect(d->fiberViewToolBox, SIGNAL(ribbonModeSelected(bool)),   this, SLOT(onRibbonModeSelected(bool)));
     connect(d->fiberViewToolBox, SIGNAL(tubeModeSelected(bool)),     this, SLOT(onTubeModeSelected(bool)));
-    
+
     connect(d->fiberBundlingToolBox, SIGNAL(fiberSelectionValidated(const QString&, const QColor&)), this, SLOT(refreshInteractors()));
-    
+
     connect(d->diffusionToolBox, SIGNAL(success()),                  this, SLOT(onTBDiffusionSuccess()));
 
-    this->addToolBox( d->viewToolBox );
+    
     this->addToolBox( d->tensorViewToolBox );
     this->addToolBox( d->fiberViewToolBox );
     this->addToolBox( d->diffusionToolBox );
@@ -88,28 +87,36 @@ QString medViewerConfigurationDiffusion::description(void) const
 
 void medViewerConfigurationDiffusion::setupViewContainerStack()
 {
-    qDebug() << "ConfigurationDiffusionSetupViewContainerStack";
-    
     d->views.clear();
-    medViewContainer * diffusionContainer;
+    medViewContainer * diffusionContainer = NULL;
+
     //the stack has been instantiated in constructor
     if (!this->stackedViewContainers()->count())
     {
         medViewContainerSingle *single = new medViewContainerSingle ();
         connect (single, SIGNAL (viewAdded (dtkAbstractView*)),   this, SLOT (onViewAdded (dtkAbstractView*)));
         connect (single, SIGNAL (viewRemoved (dtkAbstractView*)), this, SLOT (onViewRemoved (dtkAbstractView*)));
+
         //ownership of single is transferred to the stackedWidget.
         this->stackedViewContainers()->addContainer (description(), single);
+
         diffusionContainer = single;
-        this->stackedViewContainers()->unlockTabs();
+
+        this->stackedViewContainers()->lockTabs();
+        this->stackedViewContainers()->hideTabBar();
     }
     else
     {
         diffusionContainer = this->stackedViewContainers()->container(description());
         //TODO: maybe clear views here too?
     }
-    
-    d->views << diffusionContainer->views();
+
+    if (!diffusionContainer)
+        return;
+
+    foreach(dtkAbstractView *view, diffusionContainer->views())
+        d->views << view;
+
     //this->stackedViewContainers()->setContainer (description());
 }
 
@@ -129,7 +136,7 @@ void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
 
     if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
         connect(d->fiberViewToolBox, SIGNAL(fiberRadiusSet(int)), interactor, SLOT(onRadiusSet(int)));
-    
+
     if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor"))
     {
         connect(d->tensorViewToolBox, SIGNAL(sampleRateChanged(int)), interactor, SLOT(onSampleRatePropertySet(int)));
@@ -226,7 +233,7 @@ void medViewerConfigurationDiffusion::onFiberColorModeChanged(int index)
                 interactor->setProperty("ColorMode","global");
             if (index==2)
                 interactor->setProperty("ColorMode","fa");
-            
+
             view->update();
         }
     }
@@ -240,7 +247,7 @@ void medViewerConfigurationDiffusion::onGPUActivated (bool value)
                 interactor->setProperty ("GPUMode", "true");
             else
                 interactor->setProperty ("GPUMode", "false");
-            
+
             view->update();
         }
     }
@@ -289,11 +296,11 @@ void medViewerConfigurationDiffusion::onTBDiffusionSuccess(void)
         view->reset();
         view->update();
     }
-    
+
     if (d->diffusionToolBox->output()->description()=="v3dDataFibers")
         d->fiberBundlingToolBox->setData( d->diffusionToolBox->output() );
 
-    medDataManager::instance()->importNonPersistent ( d->diffusionToolBox->output() );
+    medDataManager::instance()->importNonPersistent ( d->diffusionToolBox->output(), d->uuid);
 }
 
 // tensor interaction related methods
@@ -383,7 +390,7 @@ void medViewerConfigurationDiffusion::onAddTabClicked()
     this->stackedViewContainers()->setContainer(realName);
 }
 
-medViewerConfiguration *createMedViewerConfigurationDiffusion(void)
+medViewerConfiguration *createMedViewerConfigurationDiffusion(QWidget* parent)
 {
-    return new medViewerConfigurationDiffusion;
+    return new medViewerConfigurationDiffusion(parent);
 }

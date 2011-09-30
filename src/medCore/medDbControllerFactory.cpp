@@ -43,10 +43,15 @@ medAbstractDbController * medDbControllerFactory::createDbController( QString ty
         // return the first element of the hash
 //       return d->dbController_creators.begin().value()();
     }
-        
+
     medAbstractDbController *controller = d->dbController_creators[type]();
 
     return controller;
+}
+
+QList <QString> medDbControllerFactory::controllers()
+{
+    return d->dbController_creators.keys();
 }
 
 
@@ -62,3 +67,5 @@ medDbControllerFactory::~medDbControllerFactory( void )
 }
 
 medDbControllerFactory *medDbControllerFactory::s_instance = NULL;
+
+

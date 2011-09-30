@@ -13,7 +13,8 @@ namespace medMetaDataKeys {
     * It allows compile-time verification that the keyword is correct.
     */
 
-    class MEDCORE_EXPORT Key {
+    class MEDCORE_EXPORT Key : public QObject{
+      Q_OBJECT
     public:
 
         typedef std::vector<const Key*> Registery;
@@ -27,7 +28,7 @@ namespace medMetaDataKeys {
 
         const QStringList getValues(const dtkAbstractData *d) const { return d->metaDataValues(KEY); }
 
-        const QString& getFirstValue(const dtkAbstractData *d,const QString defaultValue=QString()) const {
+        const QString getFirstValue(const dtkAbstractData *d,const QString defaultValue=QString()) const {
             return  d->hasMetaData(KEY) ? d->metaDataValues(KEY)[0] : defaultValue;
         }
 
@@ -111,3 +112,4 @@ namespace medMetaDataKeys {
 };
 
 #endif // MEDMETADATAHELPER_H
+

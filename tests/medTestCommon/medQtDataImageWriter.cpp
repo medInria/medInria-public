@@ -16,11 +16,11 @@ namespace {
     // Used to sort formats in order of priority, highest first.
     class CompareReversePriority {
     public:
-        bool operator() ( const medQtDataImageWriter::FormatInfoList::const_iterator & r, 
+        bool operator() ( const medQtDataImageWriter::FormatInfoList::const_iterator & r,
             const medQtDataImageWriter::FormatInfoList::const_iterator & l ) const
         { if ( r->priority != l->priority )
             return r->priority > l->priority;
-        else 
+        else
             return r->fileExtension > l->fileExtension;
         }
     };
@@ -71,8 +71,9 @@ QStringList medQtDataImageWriter::supportedFileExtensions( void ) const
         return QStringList();
     }
     QStringList extensions;
+#if QT_VERSION > 0x0406FF
     extensions.reserve( m_supportedExtensionList.size());
-
+#endif
     QList< FormatInfoList::const_iterator > sortedFormats;
     for(  FormatInfoList::const_iterator it( m_supportedExtensionList.begin() ); it != m_supportedExtensionList.end(); ++it ) {
         sortedFormats.push_back(it);
@@ -104,7 +105,7 @@ bool medQtDataImageWriter::canWrite( const QString& path )
 bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= true*/ )
 {
     dtkAbstractData * dtkdata = this->data();
-    if ( !dtkdata ) 
+    if ( !dtkdata )
         return false;
 
     if (dtkdata->description() != medQtDataImage::s_description() ) {
@@ -151,15 +152,15 @@ bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= tru
             QString filename = filetemplate + QString::number(i) + suffix;
             writer->setFileName(filename);
             QImage * image = reinterpret_cast<QImage *>(dtkdataIm->data( i ));
-            bool success = 
+            bool success =
                 dryRun ? writer->canWrite() : writer->write( *image );
-            if ( success ) 
+            if ( success )
                 ++numWritten;
         }
     } else if ( numImage == 1 ) {
         QImage * image = reinterpret_cast<QImage *>(dtkdataIm->data());
         bool success = dryRun ? writer->canWrite() : writer->write( *image );
-        if ( success ) 
+        if ( success )
             ++numWritten;
     } else {
 

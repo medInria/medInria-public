@@ -30,6 +30,7 @@ public:
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
     medToolBoxFiltering *filteringToolBox;
     dtkAbstractData *filterOutput;
+    QString importUuid;
 };
 
 medViewerConfigurationFiltering::medViewerConfigurationFiltering(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationFilteringPrivate)
@@ -83,22 +84,40 @@ void medViewerConfigurationFiltering::onProcessSuccess()
     if(!d->filterOutput)
             return;
 
+    dtkAbstractData *inputData = d->filteringToolBox->data();
+
+    foreach(QString metaData, inputData->metaDataList())
+        d->filterOutput->addMetaData(metaData,inputData->metaDataValues(metaData));
+
+    foreach(QString property, inputData->propertyList())
+        d->filterOutput->addProperty(property,inputData->propertyValues(property));
+
     QString newSeriesDescription = d->filterOutput->metadata(medMetaDataKeys::SeriesDescription.key());
     newSeriesDescription += " filtered";
 
-    medMetaDataKeys::SeriesDescription.set(d->filterOutput,newSeriesDescription);
+    d->filterOutput->setMetaData(medMetaDataKeys::SeriesDescription.key(), newSeriesDescription);
 
-//     d->filteringToolBox->setDataIndex(medDataManager::instance()->importNonPersistent(d->filterOutput));
+    //     d->filteringToolBox->setDataIndex(medDataManager::instance()->importNonPersistent(d->filterOutput));
 
-    QObject::connect( medDatabaseNonPersistentController::instance(), SIGNAL(updated(medDataIndex)), this, SLOT(onOutputImported(medDataIndex)));
-    medDatabaseNonPersistentController::instance()->import(d->filterOutput);
+    QObject::connect( medDatabaseNonPersistentController::instance(),
+                      SIGNAL(updated(const medDataIndex&,const QString&)),
+                      this, SLOT(onOutputImported(const medDataIndex&,const QString&)));
+
+    //Create a uniqueId for the request.
+    d->importUuid = QUuid::createUuid().toString();
+    medDataManager::instance()->importNonPersistent (d->filterOutput, d->importUuid);
 
     emit outputDataChanged(d->filterOutput);
 }
 
-void medViewerConfigurationFiltering::onOutputImported ( const medDataIndex& dataIndex)
+void medViewerConfigurationFiltering::onOutputImported ( const medDataIndex& dataIndex,
+                                                         const QString& uuid)
 {
-  d->filteringToolBox->setDataIndex(dataIndex);
+    if (!uuid.isEmpty() && uuid == d->importUuid)
+    {
+        d->filteringToolBox->setDataIndex(dataIndex);
+        d->importUuid = QString();
+    }
 }
 
 QString medViewerConfigurationFiltering::description(void) const
@@ -106,7 +125,7 @@ QString medViewerConfigurationFiltering::description(void) const
     return "Filtering";
 }
 
-medViewerConfiguration *createMedViewerConfigurationFiltering(void)
+medViewerConfiguration *createMedViewerConfigurationFiltering(QWidget* parent)
 {
-    return new medViewerConfigurationFiltering;
+    return new medViewerConfigurationFiltering(parent);
 }

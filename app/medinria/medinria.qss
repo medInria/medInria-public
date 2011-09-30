@@ -71,6 +71,15 @@ QTextEdit {
 }
 
 /**
+ *  QDateEdit
+ */
+QDateEdit{
+    color:#CCCCCC;
+    background: #6b6b6b;
+    spacing: 5px;
+}
+
+/**
  * QSpinBox
  *
  */
@@ -91,7 +100,6 @@ QDoubleSpinBox{
     background: #6b6b6b;
     spacing: 5px;
 }
-
 
 /**
  * QCheckBox
@@ -1128,6 +1136,13 @@ QMessageBox {
     background-color: #2b2b2b;
 }
 
+/**
+ * QDialog
+ *
+ */
+QDialog {
+    background: #313131;
+}
 
 /**
  * QFileDialog

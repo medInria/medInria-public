@@ -9,24 +9,19 @@
 #include <medViewContainerSingle.h>
 #include <medViewContainerCompare.h>
 #include <medTabbedViewContainers.h>
-#include <medViewerToolBoxView.h>
 #include <medToolBoxRegistration.h>
 
 class medViewerConfigurationRegistrationPrivate
 {
 public:
-    medViewerToolBoxView   *viewToolBox;
     medToolBoxRegistration * registrationToolBox;
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
 };
 
 medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationRegistrationPrivate)
 {
-    // -- View toolbox --
+   
 
-    d->viewToolBox = new medViewerToolBoxView(parent);
-    this->addToolBox( d->viewToolBox );
-    
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
     this->addToolBox(d->viewPropertiesToolBox);
 
@@ -36,7 +31,7 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
 
     connect(d->registrationToolBox, SIGNAL(setupLayoutCompare()), this, SLOT(onSetupLayoutCompare()));
     connect(d->registrationToolBox, SIGNAL(setupLayoutFuse()),    this, SLOT(onSetupLayoutFuse()));
-    
+
     connect(d->registrationToolBox, SIGNAL(addToolBox(medToolBox *)),
             this, SLOT(addToolBox(medToolBox *)));
     connect(d->registrationToolBox, SIGNAL(removeToolBox(medToolBox *)),
@@ -44,7 +39,7 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
 
     this->addToolBox( d->registrationToolBox );
 
-    
+
     //this->setLayoutType(medViewerConfiguration::TopDbBottomTb);
     this->setLayoutType(medViewerConfiguration::LeftDbRightTb);
 }
@@ -71,7 +66,7 @@ void medViewerConfigurationRegistration::onSetupLayoutFuse (void)
 }
 
 void medViewerConfigurationRegistration::setupViewContainerStack()
-{   
+{
     //the stack has been instantiated in constructor
     if (!this->stackedViewContainers()->count())
     {
@@ -83,7 +78,7 @@ void medViewerConfigurationRegistration::setupViewContainerStack()
             fuseContainer->setView (view);
             d->registrationToolBox->setFuseView (view);
         }
-        
+
         //create the compare container
         medViewContainerCompare * compareContainer = new medViewContainerCompare(
                 this->stackedViewContainers());
@@ -91,11 +86,11 @@ void medViewerConfigurationRegistration::setupViewContainerStack()
                 d->registrationToolBox,SLOT(onFixedImageDropped(medDataIndex)));
         connect(compareContainer,SIGNAL(droppedMoving(medDataIndex)),
                 d->registrationToolBox,SLOT(onMovingImageDropped(medDataIndex)));
-        
+
         this->stackedViewContainers()->addContainer("Compare",compareContainer);
         this->stackedViewContainers()->addContainer("Fuse",fuseContainer);
         this->stackedViewContainers()->lockTabs();
-        setCurrentViewContainer("Compare");   
+        setCurrentViewContainer("Compare");
     }
 }
 
@@ -104,8 +99,8 @@ void medViewerConfigurationRegistration::patientChanged(int patientId)
     d->registrationToolBox->clear();
 }
 
-medViewerConfiguration *createMedViewerConfigurationRegistration(void)
+medViewerConfiguration *createMedViewerConfigurationRegistration(QWidget* parent)
 {
-    return new medViewerConfigurationRegistration;
+    return new medViewerConfigurationRegistration(parent);
 }
 

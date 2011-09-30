@@ -179,7 +179,17 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
     }
 
     if (!dtkdata)
+    {
         qWarning() << "unable to open images with index:" << index.asString();
+
+        // sometimes signals are blocked before calling this functions, like in medViewerArea...
+        //medViewerArea doesn't block these signals any more... until we find why
+        //it was needed, we won't be doing any black magic signal blocking where not needed.
+//        bool prevState = this->signalsBlocked();
+//        this->blockSignals(false);
+        emit failedToOpen(index);
+//        this->blockSignals(prevState);
+    }
 
     return dtkdata;
 }
@@ -420,6 +430,12 @@ size_t medDataManager::getUpperMemoryThreshold()
 
 void medDataManager::importNonPersistent( dtkAbstractData *data )
 {
+    QString uuid = QUuid::createUuid().toString();
+    this->importNonPersistent (data, uuid);
+}
+
+void medDataManager::importNonPersistent( dtkAbstractData *data, QString uuid)
+{
     if (!data)
         return;
 
@@ -438,18 +454,20 @@ void medDataManager::importNonPersistent( dtkAbstractData *data )
     }
 
     medAbstractDbController* npDb = d->getNonPersDbController();
-    connect(npDb,SIGNAL(updated(const medDataIndex &)),this,SLOT(onNonPersistentDataImported(const medDataIndex &)));
 
     if(npDb)
     {
-        npDb->import(data);
+        connect(npDb, SIGNAL(updated(const medDataIndex &, QString )), this,
+            SLOT(onNonPersistentDataImported(const medDataIndex &, QString)));
+        npDb->import(data, uuid);
     }
 }
 
-void medDataManager::onNonPersistentDataImported(const medDataIndex &index)
+void medDataManager::onNonPersistentDataImported(const medDataIndex &index, QString uuid)
 {
     if (!index.isValid()) {
         qWarning() << "index is not valid";
+        emit importFailed(index, uuid);
         return;
     }
 
@@ -458,24 +476,37 @@ void medDataManager::onNonPersistentDataImported(const medDataIndex &index)
         return;
     }
 
-    dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(index);
+    medAbstractDbController* npDb = d->getNonPersDbController();
+    dtkSmartPointer<dtkAbstractData> data = npDb->read(index);
 
     if (!data.isNull())
     {
         d->volatileDataCache[index] = data;
         emit dataAdded (index);
     }
+    else
+    {
+        emit(failedToOpen(index));
+    }
 }
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::importNonPersistent( QString file )
+void medDataManager::importNonPersistent(QString file)
+{
+    QString uuid = QUuid::createUuid().toString();
+    this->importNonPersistent (file, uuid);
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+void medDataManager::importNonPersistent( QString file, const QString &uuid )
 {
     medAbstractDbController* npDb = d->getNonPersDbController();
     if(npDb)
     {
-        connect(npDb,SIGNAL(updated(const medDataIndex &)),this,SLOT(onNonPersistentDataImported(const medDataIndex &)));
-        npDb->import(file);
+        connect(npDb, SIGNAL(updated(const medDataIndex &,QString)), this, SLOT(onNonPersistentDataImported(const medDataIndex &,QString)));
+        npDb->import(file, uuid);
     }
 }
 
@@ -498,11 +529,14 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
         dtkSmartPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
 
         medAbstractDbController* db = d->getDbController();
-        connect(db,SIGNAL(updated(const medDataIndex &)),this,SLOT(onSingleNonPersistentDataStored(const medDataIndex &)));
+        connect(db, SIGNAL(updated(const medDataIndex &)), this, SLOT(onSingleNonPersistentDataStored(const medDataIndex &)));
+
         if(db)
             db->import(dtkdata.data());
     }
 }
+
+//-------------------------------------------------------------------------------------------------------
 
 void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index )
 {
@@ -514,7 +548,6 @@ void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index 
 
     foreach(medDataIndex npIndex, d->volatileDataCache.keys())
     {
-        qDebug() << npIndex << " " << index;
         if (npIndex.imageId() == index.imageId())
         {
             npDb->remove(npIndex);
@@ -591,6 +624,8 @@ void medDataManager::import( dtkSmartPointer<dtkAbstractData> &data )
     if(db)
         db->import(data.data());
 }
+
+//-------------------------------------------------------------------------------------------------------
 
 void medDataManager::onPersistentDataImported(const medDataIndex &index)
 {

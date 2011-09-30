@@ -1,5 +1,5 @@
 /* medTabbedViewContainers.cpp ---
- * 
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 12:39:09 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 8
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include <QtCore>
@@ -31,7 +31,7 @@ class medTabbedViewContainersPrivate
 public:
    QHash<QString, medViewContainer*> containers;
    QString currentName;
-    
+
    QPushButton *addButton;
 };
 
@@ -39,14 +39,14 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
 {
     this->setTabsClosable(true);
     this->setMovable(true);
-    
+
     connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(deleteContainerClicked(int)));
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(onCurrentContainerChanged(int)));
 
     d->addButton = new QPushButton();
     d->addButton->setStyleSheet("background-image: url(:medGui/pixmaps/plus_button.png);background-position: center;background-repeat: no-repeat;");
     this->setCornerWidget(d->addButton);
-    
+
     connect(d->addButton,SIGNAL(clicked()),this,SIGNAL(addTabButtonClicked()));
 }
 
@@ -104,7 +104,7 @@ void medTabbedViewContainers::addContainer(const QString &name, medViewContainer
         return;
 
     d->containers[name] = container;
-    
+
     connect( container, SIGNAL( focused( dtkAbstractView * ) ),
              this,      SIGNAL( focused( dtkAbstractView * ) ) );
     connect( container, SIGNAL( dropped( const medDataIndex & ) ),
@@ -113,9 +113,10 @@ void medTabbedViewContainers::addContainer(const QString &name, medViewContainer
              this,      SIGNAL( viewAdded( dtkAbstractView * ) ) );
     connect( container, SIGNAL( viewRemoved( dtkAbstractView * ) ),
              this,      SIGNAL( viewRemoved( dtkAbstractView * ) ) );
-    
+
     if (!this->count())
         d->currentName = name;
+
     this->addTab(container, name);
 }
 
@@ -138,6 +139,7 @@ void medTabbedViewContainers::insertContainer(int index, const QString &name, me
 
     if (!this->count())
         d->currentName = name;
+
     this->insertTab(index,container, name);
 }
 
@@ -192,7 +194,7 @@ medViewContainer* medTabbedViewContainers::container(const QString &name) const
 {
     if (!d->containers.contains(name))
         return NULL;
-    
+
     return d->containers[name];
 }
 
@@ -209,14 +211,14 @@ void medTabbedViewContainers::setContainer(const QString &name)
         qWarning()<<"container does not contain any container of name:" << name;
         return;
     }
-    
+
     d->currentName = name;
     this->setCurrentWidget(d->containers[name]);
 }
 
 medViewContainer *medTabbedViewContainers::current(void) const
 {
-    return dynamic_cast<medViewContainer*> (currentWidget());
+    return qobject_cast<medViewContainer*> (currentWidget());
 }
 
 QString medTabbedViewContainers::currentName(void) const
@@ -235,8 +237,12 @@ void medTabbedViewContainers::removeContainer(const QString& name)
     {
         medViewContainer* container = d->containers[name];
         //removeWidget(container);
-        delete container;
+        container->deleteLater();
         d->containers.remove(name);
+
+        this->blockSignals(true); // to prevent emission of currentChanged (int)
+        this->removeTab( this->indexOf(container) );
+        this->blockSignals(false);
     }
 }
 

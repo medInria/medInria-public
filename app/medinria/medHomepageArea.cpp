@@ -302,7 +302,7 @@ void medHomepageArea::onShowBrowser ( void )
 
 void medHomepageArea::onShowConfiguration ( QString configuration )
 {
-    emit showViewer();
+//     emit showViewer();
     emit showConfiguration ( configuration );
 }
 

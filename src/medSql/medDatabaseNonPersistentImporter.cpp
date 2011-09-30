@@ -35,11 +35,16 @@
 class medDatabaseNonPersistentImporterPrivate
 {
 public:
+    medDatabaseNonPersistentImporterPrivate(const QString& uuid):
+        callerUuid(uuid){}
     dtkAbstractData *data;
+    QString callerUuid;
     bool isCancelled;
 };
 
-medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter(dtkAbstractData *data) : medJobItem(), d(new medDatabaseNonPersistentImporterPrivate)
+medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter(dtkAbstractData *data,
+                                                                   const QString& callerUuid)
+    : medJobItem(), d(new medDatabaseNonPersistentImporterPrivate(callerUuid))
 {
     d->data = data;
     d->isCancelled = false;
@@ -60,15 +65,15 @@ void medDatabaseNonPersistentImporter::run(void)
     dtkAbstractData *data = d->data;
     if (!data) {
         emit failure (this);
-    return;
+        return;
     }
 
     if (!data->hasMetaData(medMetaDataKeys::PatientName.key()) ||
-	!data->hasMetaData(medMetaDataKeys::StudyDescription.key()) ||
-	!data->hasMetaData(medMetaDataKeys::SeriesDescription.key()) ) {
+            !data->hasMetaData(medMetaDataKeys::StudyDescription.key()) ||
+            !data->hasMetaData(medMetaDataKeys::SeriesDescription.key()) ) {
         qDebug() << "metaData PatientName or StudyDescription or SeriesDescription are missing, cannot proceed";
-	emit failure (this);
-    return;
+        emit failure (this);
+        return;
     }
 
     QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
@@ -76,19 +81,18 @@ void medDatabaseNonPersistentImporter::run(void)
     int patientId = -1;
     QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
 
-
     // check if patient is already in the persistent database
     medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient (patientName);
     if (databaseIndex.isValid()) {
-        qDebug() << "Patient exists in the database, I reuse his Id";
-	patientId = databaseIndex.patientId();
+        qDebug() << "Patient exists in the database, I reuse her Id";
+    patientId = databaseIndex.patientId();
     }
     else {
         for (int i=0; i<items.count(); i++)
-	    if (items[i]->name()==patientName) {
-            patientId = items[i]->index().patientId();
-            break;
-        }
+            if (items[i]->name()==patientName) {
+                patientId = items[i]->index().patientId();
+                break;
+            }
     }
 
     if (patientId==-1)
@@ -99,15 +103,15 @@ void medDatabaseNonPersistentImporter::run(void)
 
     databaseIndex = medDatabaseController::instance()->indexForStudy (patientName, studyName);
     if (databaseIndex.isValid()) {
-        qDebug() << "Study exists in the database, I reuse his Id";
-	studyId = databaseIndex.studyId();
+        qDebug() << "Study exists in the database, I reuse its Id";
+    studyId = databaseIndex.studyId();
     }
     else {
         for (int i=0; i<items.count(); i++)
-	    if (items[i]->name()==patientName && items[i]->studyName()==studyName) {
-            studyId = items[i]->index().studyId();
-            break;
-        }
+        if (items[i]->name()==patientName && items[i]->studyName()==studyName) {
+                studyId = items[i]->index().studyId();
+                break;
+            }
     }
 
     if (studyId==-1)
@@ -133,9 +137,9 @@ void medDatabaseNonPersistentImporter::run(void)
 
     medDatabaseNonPersistentController::instance()->insert(index, item);
 
-    emit progressed(100);
+    emit progress(this, 100);
     emit success(this);
-    emit nonPersistentImported(index);
+    emit nonPersistentImported(index, d->callerUuid);
 }
 
 void medDatabaseNonPersistentImporter::onCancel( QObject* )

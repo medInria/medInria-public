@@ -41,7 +41,7 @@ public:
 
 };
 
-medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(), d(new medViewerConfigurationPrivate)
+medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(parent), d(new medViewerConfigurationPrivate)
 {
     d->parent = parent;
 
@@ -103,6 +103,9 @@ void medViewerConfiguration::setCurrentViewContainer(const QString& name)
 
 void medViewerConfiguration::onContainerChanged(const QString &name)
 {
+    if (!d->viewContainerStack->container(name))
+        return;
+
     QString containerType = d->viewContainerStack->container(name)->description();
     emit setLayoutTab(containerType);
 }
@@ -192,7 +195,7 @@ void medViewerConfiguration::clear()
 {
     //medViewContainer* container;
     QList<QString> names = d->viewContainerStack->keys();
-    foreach(QString name ,names)
+    foreach(QString name, names)
     {
         d->viewContainerStack->removeContainer(name);
     }

@@ -26,9 +26,9 @@ project(medCore)
 set(${PROJECT_NAME}_HEADERS_MOC
   medDataManager.h
   medMessageController.h
+  medMetaDataKeys.h
   medViewManager.h
   medPluginManager.h
-  medProgressFilter.h
   medAbstractView.h
   medAbstractViewCollection.h
   med4DAbstractViewInteractor.h
@@ -45,6 +45,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractViewFiberInteractor.h
   medAbstractData.h
   medAbstractDataCollection.h
+  medAbstractDataImage.h
   medAbstractDataImage2D.h
   medAbstractDataImage3D.h
   medAbstractDataImage4D.h
@@ -54,13 +55,12 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
-  medAbstractDataImage.h
+  medCoreExport.h
+  medDataIndex.h
   medAbstractDataTypedImage.h
   medAbstractDataTypedImage2D.h
   medAbstractDataTypedImage3D.h
   medAbstractDataTypedImage4D.h
-  medCoreExport.h
-  medDataIndex.h
   medAbstractDatabaseItem.h
 )
 
@@ -72,7 +72,6 @@ set(${PROJECT_NAME}_SOURCES
   medMetaDataKeys.cpp
   medViewManager.cpp
   medPluginManager.cpp
-  medProgressFilter.cpp
   medAbstractView.cpp
   medAbstractViewCollection.cpp
   medStorage.cpp
@@ -125,8 +124,8 @@ add_definitions(-DQT_NO_DEBUG)
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 if(MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
-    "medPch.h" "../medPch/medPch.cpp" 
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
+    "medPch.h" "../medPch/medPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES_WRAP})

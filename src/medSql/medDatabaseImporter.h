@@ -99,8 +99,9 @@ private:
     * Populates database tables and generates thumbnails.
     * @param dtkData - a @dtkAbstractData object created from the original image
     * @param pathToStoreThumbnails - path where the thumbnails will be stored
+    * @return medDataIndex the new medDataIndex associated with this imported series.
     **/
-    void populateDatabaseAndGenerateThumbnails(dtkAbstractData* dtkData, QString pathToStoreThumbnails);
+    medDataIndex populateDatabaseAndGenerateThumbnails(dtkAbstractData* dtkData, QString pathToStoreThumbnails);
 
     /**
     * Tries to find a @dtkAbstractDataReader able to read input file/s.

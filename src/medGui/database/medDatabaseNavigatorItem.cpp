@@ -1,5 +1,5 @@
-/* medDatabaseNavigatorItem.cpp --- 
- * 
+/* medDatabaseNavigatorItem.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:39:35 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 25
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabaseNavigatorItem.h"
@@ -43,7 +43,7 @@ class medDatabaseNavigatorItemPrivate
 {
 public:
     medDataIndex index;
-
+    bool persistent;
     QString text;
 };
 
@@ -54,7 +54,9 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
     QString thumbpath = dbc->metaData(index,medMetaDataKeys::ThumbnailPath);
 
+    d->persistent = dbc->isPersistent();
     d->text = dbc->metaData(index,medMetaDataKeys::SeriesDescription);
+
 
     bool shouldSkipLoading = false;
     if ( thumbpath.isEmpty() ) {
@@ -65,7 +67,7 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
             this->setImage( thumbImage );
             shouldSkipLoading = true;
         }
-    } 
+    }
 
     if (!shouldSkipLoading) {
         medImageFileLoader *loader = new medImageFileLoader(thumbpath);
@@ -133,8 +135,16 @@ void medDatabaseNavigatorItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void medDatabaseNavigatorItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    if(d->persistent)
+        painter->setBrush(Qt::darkGray);
+    else
+        painter->setBrush(QColor(129, 143, 164));
+    painter->setPen(Qt::NoPen);
+    painter->drawRoundedRect(option->rect.adjusted(-8,-8, 8, 8),5,5);
+
     QGraphicsPixmapItem::paint (painter, option, widget);
 
     painter->setPen(Qt::white);
     painter->drawText(option->rect.adjusted(5, 5, -5, option->rect.height()-5), Qt::AlignRight | Qt::TextSingleLine, d->text);
+
 }
