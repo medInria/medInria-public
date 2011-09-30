@@ -314,10 +314,11 @@ void vtkImageView::Render()
 {
   if (this->RenderWindow)
   {
+      /*
     if ( this->GetColorWindow () == VTK_DOUBLE_MAX ) {
       
       this->ResetWindowLevel();
-    }
+    }*/
     
     if (!this->RenderWindow->GetNeverRendered())
     {
@@ -1255,8 +1256,8 @@ double vtkImageView::GetCameraParallelScale (void) const
 void vtkImageView::Reset (void)
 {
   this->ResetCurrentPoint();
-  //  this->ResetWindowLevel();
-  this->SetColorWindow (VTK_DOUBLE_MAX); // NT: ?? --> when i press reset I would like the windowlevels to be "reset" ?
+  this->ResetWindowLevel();
+  // this->SetColorWindow (VTK_DOUBLE_MAX); // NT: ?? --> when i press reset I would like the windowlevels to be "reset" ?
   this->ResetCamera();	
 }
 
