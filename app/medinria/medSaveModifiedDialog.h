@@ -23,9 +23,10 @@ public:
 
 public slots:
 
-    void onSelectAll();
+    //void onSelectAll();
     void Save();
-    void Delete();
+    //void Delete();
+    void updateTree(const medDataIndex &);
 
 private:
   
