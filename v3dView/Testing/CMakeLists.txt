@@ -14,7 +14,9 @@ ADD_EXECUTABLE(${PLUGIN_NAME}CxxTests
   )
 
 TARGET_LINK_LIBRARIES(${PLUGIN_NAME}CxxTests
-  dtkCore
+  medGui
+  medCore
+  dtkCore  
   ${ITK_LIBRARIES}
   vtkImageView
   vtkHybrid

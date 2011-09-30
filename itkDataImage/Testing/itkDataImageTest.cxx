@@ -131,7 +131,7 @@ int itkDataImageTest (int argc, char* argv[])
         // Construct and fill test container with instances of the test runner.
         testsForEachType.push_back( new testRunner< RGBAPixelType, 3>("itkDataImageRGBA3") );
         testsForEachType.push_back( new testRunner< RGBPixelType, 3>("itkDataImageRGB3") );
-        testsForEachType.push_back( new testRunner< UCharVectorType, 3>("itkDataImageVector3") );
+        testsForEachType.push_back( new testRunner< UCharVectorType, 3>("itkDataImageVectorUChar3") );
         testsForEachType.push_back( new testRunner< char, 3>("itkDataImageChar3") );
         testsForEachType.push_back( new testRunner< char, 4>("itkDataImageChar4") );
         testsForEachType.push_back( new testRunner< double, 3>("itkDataImageDouble3") );
