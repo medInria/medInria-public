@@ -48,9 +48,18 @@
 class itkFiltersToolBoxPrivate
 {
 public:
-    QStackedWidget * filtersStack;
-
     QLabel * dataTypeValue;
+
+    QWidget * addFilterWidget;
+    QWidget * subtractFilterWidget;
+    QWidget * multiplyFilterWidget;
+    QWidget * divideFilterWidget;
+    QWidget * gaussianFilterWidget;
+    QWidget * normalizeFilterWidget;
+    QWidget * medianFilterWidget;
+    QWidget * invertFilterWidget;
+    QWidget * shrinkFilterWidget;
+    QWidget * intensityFilterWidget;
 
     QDoubleSpinBox * addFiltersValue;
     QDoubleSpinBox * subtractFiltersValue;
@@ -73,6 +82,8 @@ public:
 
 itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCustom ( parent ), d ( new itkFiltersToolBoxPrivate )
 {
+    qDebug() << "itkFiltersToolBox";
+    //Filters selection combobox
     d->filters = new QComboBox;
     QStringList filtersList;
     filtersList << "Add Constant to Image" << "Substract Constant from Image" << "Multiply image by constant" << "Divide image by constant"
@@ -80,11 +91,10 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     << "Shrink image filter" << "Intensity windowing filter";
     d->filters->addItems ( filtersList );
 
-    d->filtersStack = new QStackedWidget;
-    QObject::connect ( d->filters, SIGNAL ( activated ( int ) ), d->filtersStack, SLOT ( setCurrentIndex ( int ) ) );
+    QObject::connect ( d->filters, SIGNAL ( activated ( int ) ), this, SLOT ( onFiltersActivated ( int ) ) );
 
-    QLabel * dataTypeLabel = new QLabel ( tr("Data type :") );
-    d->dataTypeValue = new QLabel ( tr("Unknown") );
+    QLabel * dataTypeLabel = new QLabel ( tr ( "Data type :" ) );
+    d->dataTypeValue = new QLabel ( tr ( "Unknown" ) );
 
     QHBoxLayout * dataTypeLayout = new QHBoxLayout;
     dataTypeLayout->addWidget ( dataTypeLabel );
@@ -92,71 +102,71 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
 
     //Initialise filters widget (probably need to find a dynamic way of doing this, Factory ?)
     //Add filter widgets
-    QWidget * addFilterWidget = new QWidget;
+    d->addFilterWidget = new QWidget;
     d->addFiltersValue = new QDoubleSpinBox;
     d->addFiltersValue->setMaximum ( 1000000000 );
     d->addFiltersValue->setValue ( 100.0 );
-    QLabel * addFilterLabel = new QLabel ( tr("Constant value:") );
+    QLabel * addFilterLabel = new QLabel ( tr ( "Constant value:" ) );
     QHBoxLayout * addFilterLayout = new QHBoxLayout;
     addFilterLayout->addWidget ( addFilterLabel );
     addFilterLayout->addWidget ( d->addFiltersValue );
     addFilterLayout->addStretch ( 1 );
-    addFilterWidget->setLayout ( addFilterLayout );
+    d->addFilterWidget->setLayout ( addFilterLayout );
 
     //Add filter widgets
-    QWidget * subtractFilterWidget = new QWidget;
+    d->subtractFilterWidget = new QWidget;
     d->subtractFiltersValue = new QDoubleSpinBox;
     d->subtractFiltersValue->setMaximum ( 1000000000 );
     d->subtractFiltersValue->setValue ( 100.0 );
-    QLabel * subtractFilterLabel = new QLabel ( tr("Constant value:") );
+    QLabel * subtractFilterLabel = new QLabel ( tr ( "Constant value:" ) );
     QHBoxLayout * subtractFilterLayout = new QHBoxLayout;
     subtractFilterLayout->addWidget ( subtractFilterLabel );
     subtractFilterLayout->addWidget ( d->subtractFiltersValue );
     subtractFilterLayout->addStretch ( 1 );
-    subtractFilterWidget->setLayout ( subtractFilterLayout );
+    d->subtractFilterWidget->setLayout ( subtractFilterLayout );
 
     //Multiply filter widgets
-    QWidget * multiplyFilterWidget = new QWidget;
+    d->multiplyFilterWidget = new QWidget;
     d->multiplyFiltersValue = new QDoubleSpinBox;
     d->multiplyFiltersValue->setValue ( 2.0 );
     d->multiplyFiltersValue->setMaximum ( 1000000000 );
-    QLabel * multiplyFilterLabel = new QLabel ( tr("Constant value:") );
+    QLabel * multiplyFilterLabel = new QLabel ( tr ( "Constant value:" ) );
     QHBoxLayout * multiplyFilterLayout = new QHBoxLayout;
     multiplyFilterLayout->addWidget ( multiplyFilterLabel );
     multiplyFilterLayout->addWidget ( d->multiplyFiltersValue );
     multiplyFilterLayout->addStretch ( 1 );
-    multiplyFilterWidget->setLayout ( multiplyFilterLayout );
+    d->multiplyFilterWidget->setLayout ( multiplyFilterLayout );
 
     //Divide filter widgets
-    QWidget * divideFilterWidget = new QWidget;
+    d->divideFilterWidget = new QWidget;
     d->divideFiltersValue = new QDoubleSpinBox;
     d->divideFiltersValue->setValue ( 2.0 );
     d->divideFiltersValue->setMaximum ( 1000000000 );
-    QLabel * divideFilterLabel = new QLabel ( tr("Constant value:") );
+    QLabel * divideFilterLabel = new QLabel ( tr ( "Constant value:" ) );
     QHBoxLayout * divideFilterLayout = new QHBoxLayout;
     divideFilterLayout->addWidget ( divideFilterLabel );
     divideFilterLayout->addWidget ( d->divideFiltersValue );
     divideFilterLayout->addStretch ( 1 );
-    divideFilterWidget->setLayout ( divideFilterLayout );
+    d->divideFilterWidget->setLayout ( divideFilterLayout );
 
     //Gaussian filter widgets
-    QWidget * gaussianFilterWidget = new QWidget;
+    d->gaussianFilterWidget = new QWidget;
     d->gaussianFiltersValue = new QDoubleSpinBox;
     d->gaussianFiltersValue->setValue ( 1.0 );
     d->gaussianFiltersValue->setMaximum ( 10.0 );
-    QLabel * gaussianFilterLabel = new QLabel ( tr("Sigma value:") );
+    QLabel * gaussianFilterLabel = new QLabel ( tr ( "Sigma value:" ) );
     QHBoxLayout * gaussianFilterLayout = new QHBoxLayout;
     gaussianFilterLayout->addWidget ( gaussianFilterLabel );
     gaussianFilterLayout->addWidget ( d->gaussianFiltersValue );
     gaussianFilterLayout->addStretch ( 1 );
-    gaussianFilterWidget->setLayout ( gaussianFilterLayout );
+    d->gaussianFilterWidget->setLayout ( gaussianFilterLayout );
 
-    QWidget * normalizeFilterWidget = new QWidget;
-    QWidget * medianFilterWidget = new QWidget;
-    QWidget * invertFilterWidget = new QWidget;
+    d->normalizeFilterWidget = new QWidget;
+    d->medianFilterWidget = new QWidget;
+    d->invertFilterWidget = new QWidget;
 
     //Shrink filter widgets
-    QWidget * shrinkFilterWidget = new QWidget;
+    d->shrinkFilterWidget = new QWidget;
     d->shrink0Value = new QSpinBox;
     d->shrink0Value->setValue ( 1 );
     d->shrink0Value->setMaximum ( 10 );
@@ -169,7 +179,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     d->shrink2Value->setValue ( 1 );
     d->shrink2Value->setMaximum ( 10 );
 
-    QLabel * shrinkFilterLabel = new QLabel ( tr("Shrink factors (X,Y,Z):") );
+    QLabel * shrinkFilterLabel = new QLabel ( tr ( "Shrink factors (X,Y,Z):" ) );
     QFormLayout * shrinkFilterLayout = new QFormLayout;
 
     QVBoxLayout * shrinkFilterValueLayout = new QVBoxLayout;
@@ -178,10 +188,10 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     shrinkFilterValueLayout->addWidget ( d->shrink2Value );
     shrinkFilterValueLayout->addStretch ( 1 );
     shrinkFilterLayout->addRow ( shrinkFilterLabel, shrinkFilterValueLayout );
-    shrinkFilterWidget->setLayout ( shrinkFilterLayout );
+    d->shrinkFilterWidget->setLayout ( shrinkFilterLayout );
 
     //Intensity windowing filter widget
-    QWidget * intensityFilterWidget = new QWidget;
+    d->intensityFilterWidget = new QWidget;
     d->intensityMinimumValue = new QDoubleSpinBox;
     d->intensityMinimumValue->setMaximum ( 255 );
     d->intensityMinimumValue->setValue ( 0 );
@@ -195,22 +205,22 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     d->intensityOutputMaximumValue->setMaximum ( 255 );
     d->intensityOutputMaximumValue->setValue ( 255 );
 
-    QLabel * intensityMinimumLabel = new QLabel ( tr("Minimum:") );
+    QLabel * intensityMinimumLabel = new QLabel ( tr ( "Minimum:" ) );
     QHBoxLayout * intensityMinimumLayout = new QHBoxLayout;
     intensityMinimumLayout->addWidget ( intensityMinimumLabel );
     intensityMinimumLayout->addWidget ( d->intensityMinimumValue );
 
-    QLabel * intensityMaximumLabel = new QLabel ( tr("Maximum:") );
+    QLabel * intensityMaximumLabel = new QLabel ( tr ( "Maximum:" ) );
     QHBoxLayout * intensityMaximumLayout = new QHBoxLayout;
     intensityMaximumLayout->addWidget ( intensityMaximumLabel );
     intensityMaximumLayout->addWidget ( d->intensityMaximumValue );
 
-    QLabel * intensityOutputMinimumLabel = new QLabel ( tr("Output minimum:") );
+    QLabel * intensityOutputMinimumLabel = new QLabel ( tr ( "Output minimum:" ) );
     QHBoxLayout * intensityOutputMinimumLayout = new QHBoxLayout;
     intensityOutputMinimumLayout->addWidget ( intensityOutputMinimumLabel );
     intensityOutputMinimumLayout->addWidget ( d->intensityOutputMinimumValue );
 
-    QLabel * intensityOutputMaximumLabel = new QLabel ( tr("Output maximum:") );
+    QLabel * intensityOutputMaximumLabel = new QLabel ( tr ( "Output maximum:" ) );
     QHBoxLayout * intensityOutputMaximumLayout = new QHBoxLayout;
     intensityOutputMaximumLayout->addWidget ( intensityOutputMaximumLabel );
     intensityOutputMaximumLayout->addWidget ( d->intensityOutputMaximumValue );
@@ -220,21 +230,9 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     intensityFilterLayout->addLayout ( intensityMaximumLayout );
     intensityFilterLayout->addLayout ( intensityOutputMinimumLayout );
     intensityFilterLayout->addLayout ( intensityOutputMaximumLayout );
-    intensityFilterLayout->addStretch ( 1 );
+    intensityFilterLayout->addStretch ( 0 );
 
-    intensityFilterWidget->setLayout ( intensityFilterLayout );
-
-    //Add filters widget to the QStacked widget
-    d->filtersStack->addWidget ( addFilterWidget );
-    d->filtersStack->addWidget ( subtractFilterWidget );
-    d->filtersStack->addWidget ( multiplyFilterWidget );
-    d->filtersStack->addWidget ( divideFilterWidget );
-    d->filtersStack->addWidget ( gaussianFilterWidget );
-    d->filtersStack->addWidget ( normalizeFilterWidget );
-    d->filtersStack->addWidget ( medianFilterWidget );
-    d->filtersStack->addWidget ( invertFilterWidget );
-    d->filtersStack->addWidget ( shrinkFilterWidget );
-    d->filtersStack->addWidget ( intensityFilterWidget );
+    d->intensityFilterWidget->setLayout ( intensityFilterLayout );
 
     // Run button:
     QPushButton *runButton = new QPushButton ( tr ( "Run" ) );
@@ -248,21 +246,34 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget ( d->filters );
     layout->addLayout ( dataTypeLayout );
-    layout->addWidget ( d->filtersStack );
+    layout->addWidget ( d->addFilterWidget );
+    layout->addWidget ( d->subtractFilterWidget );
+    layout->addWidget ( d->multiplyFilterWidget );
+    layout->addWidget ( d->divideFilterWidget );
+    layout->addWidget ( d->gaussianFilterWidget );
+    layout->addWidget ( d->normalizeFilterWidget );
+    layout->addWidget ( d->medianFilterWidget );
+    layout->addWidget ( d->invertFilterWidget );
+    layout->addWidget ( d->shrinkFilterWidget );
+    layout->addWidget ( d->intensityFilterWidget );
     layout->addWidget ( runButton );
     layout->addWidget ( d->progression_stack );
+    layout->addStretch ( 1 );
+
+    this->onFiltersActivated ( 0 );
+//     d->addFilterWidget->show();
 
     widget->setLayout ( layout );
 
     // Main toolbox:
-    this->setTitle ( tr("ITK Basic Filters") );
+    this->setTitle ( tr ( "ITK Basic Filters" ) );
     this->addWidget ( widget );
 
     // Add about plugin
     medPluginManager* pm = medPluginManager::instance();
-    dtkPlugin* plugin = pm->plugin("itkFiltersPlugin");
-    setAboutPluginButton(plugin);
-    setAboutPluginVisibility(true);
+    dtkPlugin* plugin = pm->plugin ( "itkFiltersPlugin" );
+    setAboutPluginButton ( plugin );
+    setAboutPluginVisibility ( true );
 
     connect ( runButton, SIGNAL ( clicked() ), this, SLOT ( run() ) );
 
@@ -316,19 +327,14 @@ void itkFiltersToolBox::clear ( void )
 
 void itkFiltersToolBox::update ( dtkAbstractView* view )
 {
-    qDebug() << "Update itk filters toolbox";
-
     if ( !view )
     {
-      qDebug() << "No view !";
         clear();
     }
     else
     {
-      qDebug() << "A view !";
         if ( !this->parent()->data() )
         {
-            qDebug() << "No data";
             return;
         }
 
@@ -635,7 +641,7 @@ void itkFiltersToolBox::run ( void )
     runProcess->setProcess ( d->process );
 
     d->progression_stack->addJobItem ( runProcess, tr ( "Progress:" ) );
-    d->progression_stack->setActive(runProcess,true);
+    d->progression_stack->setActive ( runProcess,true );
 
     connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
     connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );
@@ -644,6 +650,58 @@ void itkFiltersToolBox::run ( void )
     QThreadPool::globalInstance()->start ( dynamic_cast<QRunnable*> ( runProcess ) );
 
 }
+
+
+void itkFiltersToolBox::onFiltersActivated ( int index )
+{
+    d->addFilterWidget->hide();
+    d->subtractFilterWidget->hide();
+    d->multiplyFilterWidget->hide();
+    d->divideFilterWidget->hide();
+    d->gaussianFilterWidget->hide();
+    d->normalizeFilterWidget->hide();
+    d->medianFilterWidget->hide();
+    d->invertFilterWidget->hide();
+    d->shrinkFilterWidget->hide();
+    d->intensityFilterWidget->hide();
+    
+    switch ( index )
+    {
+    case 0:
+        d->addFilterWidget->show();
+        break;
+    case 1:
+        d->subtractFilterWidget->show();
+        break;
+    case 2:
+        d->multiplyFilterWidget->show();
+        break;
+    case 3:
+        d->divideFilterWidget->show();
+        break;
+    case 4:
+        d->gaussianFilterWidget->show();
+        break;
+    case 5:
+        d->normalizeFilterWidget->show();
+        break;
+    case 6:
+        d->medianFilterWidget->show();
+        break;
+    case 7:
+        d->invertFilterWidget->show();
+        break;
+    case 8:
+        d->shrinkFilterWidget->show();
+        break;
+    case 9:
+        d->intensityFilterWidget->show();
+        break;
+    default:
+        d->addFilterWidget->show();
+    }
+}
+
 
 medToolBoxFilteringCustom *createitkFiltersToolBox ( QWidget *parent )
 {

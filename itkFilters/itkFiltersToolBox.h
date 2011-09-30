@@ -36,7 +36,6 @@ public:
 public:
     static bool registered(void);
     dtkAbstractData* processOutput();
-//     void updateWidgets();
 
 signals:
     void success(void);
@@ -44,6 +43,8 @@ signals:
 
 public slots:
 
+    void onFiltersActivated(int index);
+  
     void clear(void);
     void update(dtkAbstractView *view);
 
