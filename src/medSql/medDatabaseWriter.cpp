@@ -239,10 +239,6 @@ void medDatabaseWriter::run ( void )
         return;
     }
 
-    //define a unique key based on the future patient id/study id/serie id in the database
-
-
-
     // define a unique key string to identify which volume an image belongs to.
     // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
     QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
