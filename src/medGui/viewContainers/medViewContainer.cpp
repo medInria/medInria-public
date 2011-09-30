@@ -199,7 +199,7 @@ void medViewContainer::setView(dtkAbstractView *view)
     }
 
     d->view = view;
-    
+
     if (d->view) {
         // pass properties to the view
         QHash<QString,QString>::iterator it = d->viewProperties.begin();
@@ -207,22 +207,25 @@ void medViewContainer::setView(dtkAbstractView *view)
             view->setProperty (it.key(), it.value());
             ++it;
         }
-        
         connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
         this->recomputeStyleSheet();
-    }        
+    }
+    setFocus(Qt::MouseFocusReason);
 }
 
 void medViewContainer::onViewFocused( bool value )
 {
+//    qDebug()<<"medViewerContainer::onViewFocused";
     if ( !value )
         return;
 
     if ( !this->isEmpty() )
         this->setCurrent( this );
 
-    if (dtkAbstractView *view = this->view())
+    if (dtkAbstractView *view = current()->view())
+    {
         emit focused(view);
+    }
 
     this->update();
 }
@@ -284,7 +287,7 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
     medViewContainer * former = this->current();
 
     d->clicked = true;
-
+//    qDebug()<< "focusInEvent";
     this->onViewFocused( true );
 
     this->recomputeStyleSheet();

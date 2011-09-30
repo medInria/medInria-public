@@ -1,5 +1,5 @@
-/* medViewContainerCustom.cpp --- 
- * 
+/* medViewContainerCustom.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 11:01:46 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 69
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medViewContainer_p.h"
@@ -54,9 +54,9 @@ void medViewContainerCustom::split(int rows, int cols)
 {
     if (d->view)
         return;
-    
+
     this->clear();
-    
+
     for(int i = 0 ; i < rows ; i++) {
         d->layout->setRowStretch(i, 0);
         for(int j = 0 ; j < cols ; j++) {
@@ -67,7 +67,7 @@ void medViewContainerCustom::split(int rows, int cols)
             d->layout->setColumnStretch(j, 0);
         }
     }
-    
+
     // in split, the preset is no valid anymore
     d2->preset = 0;
 
@@ -80,7 +80,7 @@ void medViewContainerCustom::setPreset(int preset)
         return;
 
     d2->preset = preset;
-  
+
     this->clear();
 
     medViewContainerCustom *custom1 = NULL;
@@ -95,7 +95,7 @@ void medViewContainerCustom::setPreset(int preset)
         d->layout->addWidget(custom1, 0, 0);
         d->layout->addWidget(custom2, 1, 0);
 	    d->layout->setRowStretch(0, 0);
-	    d->layout->setRowStretch(1, 0);						
+	    d->layout->setRowStretch(1, 0);
         break;
 
     case C:
@@ -134,11 +134,11 @@ void medViewContainerCustom::setPreset(int preset)
 	    d->layout->addWidget(custom3, 1, 0);
 	    d->layout->addWidget(custom4, 1, 1);
 	    d->layout->setColumnStretch(0, 0);
-	    d->layout->setColumnStretch(1, 0);			
+	    d->layout->setColumnStretch(1, 0);
 	    d->layout->setRowStretch(0, 0);
 	    d->layout->setRowStretch(1, 0);
         break;
-	
+
     case A:
 	default:
         custom1 = new medViewContainerCustom(this);
@@ -146,7 +146,7 @@ void medViewContainerCustom::setPreset(int preset)
         d->layout->addWidget(custom1, 0, 0);
         d->layout->addWidget(custom2, 0, 1);
 	    d->layout->setColumnStretch(0, 0);
-	    d->layout->setColumnStretch(1, 0);			
+	    d->layout->setColumnStretch(1, 0);
         break;
 
     }
@@ -166,9 +166,9 @@ void medViewContainerCustom::setPreset(int preset)
 }
 
 void medViewContainerCustom::setView(dtkAbstractView *view)
-{ 
+{
     if ( this->isLeaf() ) {
-        
+
         if (view!=d->view) {
 
 	        if (d->layout->count())
@@ -179,9 +179,9 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
 
 	        medViewContainer::setView (view);
 
-	        d->layout->setContentsMargins(0, 0, 0, 0);    
+	        d->layout->setContentsMargins(0, 0, 0, 0);
 	        d->layout->addWidget(view->widget(), 0, 0);
-	
+
 	        //d->view = view; // already called in medViewContainer::setView()
 	        // d->view->reset();
 
@@ -197,9 +197,9 @@ void medViewContainerCustom::setView(dtkAbstractView *view)
                     }
                 }
             }
-	
+
 	        this->synchronize_2 (view);
-	
+
 	        connect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
 	        connect (view, SIGNAL (fullScreen(bool)),  this, SLOT (onViewFullScreen(bool)));
             connect (view, SIGNAL (changeDaddy(bool)), this, SLOT (onDaddyChanged(bool)));
@@ -266,7 +266,7 @@ void medViewContainerCustom::desynchronize_2 (dtkAbstractView *view)
         if (medAbstractView *medView = qobject_cast<medAbstractView*> (view) ) {
             d->pool->removeView (medView);
             disconnect (view, SIGNAL (becomeDaddy(bool)), this, SLOT (repaint()));
-        }	    
+        }
     }
 }
 
@@ -281,7 +281,7 @@ void medViewContainerCustom::onViewClosing (void)
         disconnect (d->view, SIGNAL (changeDaddy(bool)), this, SLOT (onDaddyChanged(bool)));
 
 	    emit viewRemoved (d->view);
-	
+
         d->view->close();
         d->view = NULL;
     }
@@ -373,21 +373,12 @@ void medViewContainerCustom::dropEvent(QDropEvent *event)
     medViewContainer::dropEvent(event);
 }
 
-void medViewContainerCustom::focusInEvent(QFocusEvent *event)
-{
-    medViewContainer::focusInEvent(event);
-}
-
-void medViewContainerCustom::focusOutEvent(QFocusEvent *event)
-{
-    medViewContainer::focusOutEvent(event);
-}
 
 void medViewContainerCustom::clear (void)
 {
     if (d->view)
         this->onViewClosing();
-  
+
     foreach (medViewContainer *container, this->childContainers()) {
         medViewContainerCustom * custom =
             dynamic_cast< medViewContainerCustom * >( container );
@@ -399,7 +390,7 @@ void medViewContainerCustom::clear (void)
 
     for(int i=0; i<d2->rowMax; i++)
         d->layout->setRowStretch (i, 0);
-    
+
     for(int i=0; i<d2->columnMax; i++)
         d->layout->setColumnStretch (i, 0);
 }

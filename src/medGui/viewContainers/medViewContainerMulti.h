@@ -1,5 +1,5 @@
-/* medViewContainerMulti.h --- 
- * 
+/* medViewContainerMulti.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 10:58:53 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 9
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDVIEWCONTAINERMULTI_H
@@ -32,7 +32,7 @@ class MEDGUI_EXPORT medViewContainerSingle2 : public medViewContainerSingle
 public:
      medViewContainerSingle2(QWidget *parent = 0) : medViewContainerSingle(parent) {}
     ~medViewContainerSingle2();
-    
+
     void setView(dtkAbstractView *view);
 
     /**
@@ -72,6 +72,13 @@ public:
 
     QList<dtkAbstractView*> views (void) const;
 
+    /**
+     * @brief Overrides medViewContainer::setView.
+     *
+     * Tells a new container add the view to itslef and adds it to its layout.
+     *
+     * @param view
+     */
     void setView(dtkAbstractView *view);
 
     void layout (QList<QWidget *> content);
@@ -81,17 +88,18 @@ public:
 public slots:
     void onViewClosing    (void);
     void onViewFullScreen (bool value);
-   
+
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
 
-    void focusInEvent(QFocusEvent *event);
-    void focusOutEvent(QFocusEvent *event);
-
     medViewContainerMultiPrivate *d2;
+
+    //Needed to access the setCurrent protected method
+    //from within medViewContainerSingle2
+    friend void medViewContainerSingle2::onViewFocused(bool);
 };
 
 #endif

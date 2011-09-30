@@ -1,5 +1,5 @@
-/* medViewContainerCustom.h --- 
- * 
+/* medViewContainerCustom.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 10:59:36 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 15
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDVIEWCONTAINERCUSTOM_H
@@ -75,9 +75,6 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
-
-    void focusInEvent(QFocusEvent *event);
-    void focusOutEvent(QFocusEvent *event);
 
     void synchronize_2 (dtkAbstractView *view);
     void desynchronize_2 (dtkAbstractView *view);
