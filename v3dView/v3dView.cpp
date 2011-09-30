@@ -1084,17 +1084,16 @@ void v3dView::setData(dtkAbstractData *data, int layer)
                 d->view3d->SetSeriesName (seriesName.toAscii().constData());
             }
 
-            QSignalBlocker blocker (d->slider );
+            QSignalBlocker blocker (d->slider);
             if (d->dimensionBox->currentText()==tr("Space")) {
-                if( d->orientation=="Axial") {
-                    d->slider->setRange(0, d->imageData->zDimension()-1);
-                }
-                else if( d->orientation=="Sagittal") {
-                    d->slider->setRange(0, d->imageData->xDimension()-1);
-                }
-                else if( d->orientation=="Coronal") {
-                    d->slider->setRange(0, d->imageData->yDimension()-1);
-                }
+                // slice orientation may differ from view orientation. Adapt slider range accordingly.
+                int orientationId = d->view2d->GetSliceOrientation();
+                if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
+                    d->slider->setRange (0, d->imageData->zDimension()-1);
+                else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
+                    d->slider->setRange (0, d->imageData->yDimension()-1);
+                else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
+                    d->slider->setRange (0, d->imageData->xDimension()-1);
             }
             else if (d->dimensionBox->currentText()==tr("Time")) {
                 d->slider->setRange(0, d->imageData->tDimension()-1);
