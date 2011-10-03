@@ -80,11 +80,12 @@ void medDatabaseNonPersistentImporter::run(void)
 
     int patientId = -1;
     QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
+    QString birthdate = data->metaDataValues(medMetaDataKeys::BirthDate.key())[0];
 
     // check if patient is already in the persistent database
     medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient (patientName);
     if (databaseIndex.isValid()) {
-        qDebug() << "Patient exists in the database, I reuse her Id";
+        qDebug() << "Patient exists in the database, I reuse his Id";
     patientId = databaseIndex.patientId();
     }
     else {
@@ -100,6 +101,7 @@ void medDatabaseNonPersistentImporter::run(void)
 
     int     studyId   = -1;
     QString studyName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
+    QString studyUid = data->metaDataValues(medMetaDataKeys::StudyID.key())[0];
 
     databaseIndex = medDatabaseController::instance()->indexForStudy (patientName, studyName);
     if (databaseIndex.isValid()) {
@@ -120,6 +122,7 @@ void medDatabaseNonPersistentImporter::run(void)
     index = medDataIndex (medDatabaseNonPersistentController::instance()->dataSourceId(), patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
 
     QString seriesName = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
+    QString seriesUid = data->metaDataValues(medMetaDataKeys::SeriesID.key())[0];
 
     medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
 
@@ -128,8 +131,11 @@ void medDatabaseNonPersistentImporter::run(void)
     else
         item->d->name = "John Doe";
 
+    item->d->birthdate = birthdate;
     item->d->studyName  = studyName;
+    item->d->studyId    = studyUid;
     item->d->seriesName = seriesName;
+    item->d->seriesId   = seriesUid;
     item->d->file       = "";
     item->d->thumb      = data->thumbnail();
     item->d->index      = index;

@@ -9,6 +9,7 @@
 
 #include <medDatabaseNonPersistentController.h>
 #include <medMetaDataKeys.h>
+#include <medStorage.h>
 
 #include <medViewerToolBoxViewProperties.h>
 #include <medToolBoxFiltering.h>
@@ -94,8 +95,12 @@ void medViewerConfigurationFiltering::onProcessSuccess()
 
     QString newSeriesDescription = d->filterOutput->metadata(medMetaDataKeys::SeriesDescription.key());
     newSeriesDescription += " filtered";
-
+    
     d->filterOutput->setMetaData(medMetaDataKeys::SeriesDescription.key(), newSeriesDescription);
+
+    QString generatedID;
+    generatedID = QDate::currentDate().toString ( "yyyyMMdd" ) + QTime::currentTime().toString ( "HHmmsszzzt" );
+    d->filterOutput->setMetaData(medMetaDataKeys::SeriesID.key(), generatedID);
 
     //     d->filteringToolBox->setDataIndex(medDataManager::instance()->importNonPersistent(d->filterOutput));
 

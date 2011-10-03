@@ -40,9 +40,12 @@ public:
     ~medDatabaseNonPersistentItem(void);
 
     const QString& name(void) const;
+    const QString& birthdate(void) const;
     const QString& studyName(void) const;
     const QString& seriesName(void) const;
     const QString& file(void) const;
+    const QString& studyId(void) const;
+    const QString& seriesId(void) const;
     const QImage& thumb(void) const;
 
     const medDataIndex& index(void) const;

@@ -78,10 +78,13 @@ void medDatabaseWriter::run ( void )
     // d->data->addMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList() << fileInfo.baseName());
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
-        d->data->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "" );
+        d->data->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
 
+    QString generatedID;
+    generatedID = QDate::currentDate().toString ( "yyyyMMdd" ) + QTime::currentTime().toString ( "HHmmsszzzt" );
+    
     if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
-        d->data->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << "" );
+        d->data->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedID );
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::Orientation.key() ) )
         d->data->addMetaData ( medMetaDataKeys::Orientation.key(), QStringList() << "" );
@@ -247,11 +250,21 @@ void medDatabaseWriter::run ( void )
     QString s_studyName   = dbi->stringForPath ( studyName );
     QString s_seriesName  = dbi->stringForPath ( seriesName );
 
+    QString patientID = patientName.simplified() + birthdate;
+
+//     QString subDirName = "/" +
+//                          s_patientName + "/" +
+//                          s_studyName;
+//                          
+//     QString imageFileNameBase =  subDirName + "/" +
+//                                  s_seriesName; //  + ".mha";
+
     QString subDirName = "/" +
-                         s_patientName + "/" +
-                         s_studyName;
+                         patientID + "/" +
+                         studyId;
+
     QString imageFileNameBase =  subDirName + "/" +
-                                 s_seriesName; //  + ".mha";
+                                 seriesId; //  + ".mha";
 
     QDir dir ( medStorage::dataLocation() + subDirName );
     if ( !dir.exists() )

@@ -58,29 +58,41 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
     QSqlQuery query((*(medDatabaseController::instance()->database())));
 
     QString patientName;
+    QString birthdate;
     QString studyName;
+    QString studyUid;
     QString seriesName;
+    QString seriesUid;
 
-    query.prepare("SELECT name FROM patient WHERE id = :id");
+    query.prepare("SELECT name, birthdate FROM patient WHERE id = :id");
     query.bindValue(":id", patientId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if (query.first())
+    {
         patientName = query.value(0).toString();
+        birthdate = query.value(1).toString();
+    }
 
-    query.prepare("SELECT name FROM study WHERE id = :id");
+    query.prepare("SELECT name, uid FROM study WHERE id = :id");
     query.bindValue(":id", studyId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if (query.first())
+    {
         studyName = query.value(0).toString();
+        studyUid = query.value(1).toString();
+    }
 
-    query.prepare("SELECT name FROM series WHERE id = :id");
+    query.prepare("SELECT name, uid FROM series WHERE id = :id");
     query.bindValue(":id", seriesId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if (query.first())
+    {
         seriesName = query.value(0).toString();
+        seriesUid = query.value(1).toString();
+    }
 
     query.prepare("SELECT name, id, path, instance_path, isIndexed FROM image WHERE series = :series");
     query.bindValue(":series", seriesId);
@@ -146,14 +158,13 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
             qWarning() << "Thumbnailpath not found";
         }
 
-
-
         medMetaDataKeys::PatientName.add(dtkdata, patientName);
+        medMetaDataKeys::BirthDate.add(dtkdata, birthdate);
         medMetaDataKeys::StudyDescription.add(dtkdata, studyName);
         medMetaDataKeys::SeriesDescription.add(dtkdata, seriesName);
         medMetaDataKeys::PatientID.add(dtkdata, patientId.toString());
-        medMetaDataKeys::StudyID.add(dtkdata, studyId.toString());
-        medMetaDataKeys::SeriesID.add(dtkdata, seriesId.toString());
+        medMetaDataKeys::StudyID.add(dtkdata, studyUid);
+        medMetaDataKeys::SeriesID.add(dtkdata, seriesUid);
         //medMetaDataKeys::ImageID.add(data, imageId.toString());
 
         emit success(this);
