@@ -17,52 +17,54 @@ vtkStandardNewMacro(vtkSphericalHarmonicVisuManager);
 vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager()
 {
 
-  this->SHSource = vtkSphericalHarmonicSource::New();
-  this->SHGlyph  = vtkSphericalHarmonicGlyph::New();
-  this->Normals  = vtkPolyDataNormals::New();
-  this->VOI    = vtkExtractVOI::New();
-  this->Mapper = vtkPolyDataMapper::New();
-  this->Actor  = vtkActor::New();
+    this->SHSource = vtkSphericalHarmonicSource::New();
+    this->SHGlyph  = vtkSphericalHarmonicGlyph::New();
+    this->Normals  = vtkPolyDataNormals::New();
+    this->VOI    = vtkExtractVOI::New();
+    this->Mapper = vtkPolyDataMapper::New();
+    this->Actor  = vtkActor::New();
 
 
-  this->SHSource->SetTesselationType( vtkSphericalHarmonicSource::Icosahedron );
-  this->SHSource->SetTesselation( 3 );
-  this->SHSource->UpdateSphericalHarmonicSource();
+    this->SHSource->SetTesselationType( vtkSphericalHarmonicSource::Icosahedron );
+    this->SHSource->SetTesselationBasis( vtkSphericalHarmonicSource::SHMatrix );
 
-  
-  this->SHGlyph->SetSource ( this->SHSource->GetOutput() );
-  this->SHGlyph->SetScaleFactor( 1.0 );
-  this->SHGlyph->SetSphericalHarmonicSource( this->SHSource );
-  this->SHGlyph->SetColorModeToDirections();
-  this->SHGlyph->GetOutput()->GetPointData()->SetActiveScalars(vtkSphericalHarmonicGlyph::GetRGBArrayName());
-  
-  this->VOI->ReleaseDataFlagOn();
+    this->SHSource->SetTesselation( 3 );
+    this->SHSource->UpdateSphericalHarmonicSource();
 
-  this->SHGlyph->SetInput( this->VOI->GetOutput() );
-  
-  this->Normals->SetInput( this->SHGlyph->GetOutput() );
 
-  vtkLookupTable *lut = vtkLookupTable::New();
-  //lut->SetHueRange(0.667, 0.0);
-  lut->SetHueRange(0.0, 1.0);
-  lut->SetRange(0.0, 1.0);
-  lut->Build();
+    this->SHGlyph->SetSource ( this->SHSource->GetOutput() );
+    this->SHGlyph->SetScaleFactor( 1.0 );
+    this->SHGlyph->SetSphericalHarmonicSource( this->SHSource );
+    this->SHGlyph->SetColorModeToDirections();
+    this->SHGlyph->GetOutput()->GetPointData()->SetActiveScalars(vtkSphericalHarmonicGlyph::GetRGBArrayName());
 
-  this->Mapper->SetInput( this->Normals->GetOutput() );
-  this->Mapper->ScalarVisibilityOn();
-  this->Mapper->SetColorModeToMapScalars();
-  this->Mapper->SetScalarModeToUsePointData();
-  this->Mapper->SetLookupTable(lut);
+    this->VOI->ReleaseDataFlagOn();
 
-  this->Mapper->SetScalarRange (0.0, 256);
+    this->SHGlyph->SetInput( this->VOI->GetOutput() );
+
+    this->Normals->SetInput( this->SHGlyph->GetOutput() );
+
+    vtkLookupTable *lut = vtkLookupTable::New();
+    //lut->SetHueRange(0.667, 0.0);
+    lut->SetHueRange(0.0, 1.0);
+    lut->SetRange(0.0, 1.0);
+    lut->Build();
+
+    this->Mapper->SetInput( this->Normals->GetOutput() );
+    this->Mapper->ScalarVisibilityOn();
+    this->Mapper->SetColorModeToMapScalars();
+    this->Mapper->SetScalarModeToUsePointData();
+    this->Mapper->SetLookupTable(lut);
+
+    this->Mapper->SetScalarRange (0.0, 256);
     
-  lut->Delete();
-  
-  this->Actor->SetMapper( this->Mapper );
-  this->Actor->GetProperty()->SetSpecular(0.7);
-  this->Actor->GetProperty()->SetSpecularPower(10.0);
-  this->Actor->GetProperty()->SetInterpolationToGouraud();
-  this->Actor->GetProperty()->SetOpacity(1);
+    lut->Delete();
+
+    this->Actor->SetMapper( this->Mapper );
+    this->Actor->GetProperty()->SetSpecular(0.7);
+    this->Actor->GetProperty()->SetSpecularPower(10.0);
+    this->Actor->GetProperty()->SetInterpolationToGouraud();
+    this->Actor->GetProperty()->SetOpacity(1);
     
 }
 
@@ -116,6 +118,11 @@ void vtkSphericalHarmonicVisuManager::SetTesselationType (const int& type)
     this->SHSource->UpdateSphericalHarmonicSource();
 }
 
+void vtkSphericalHarmonicVisuManager::SetTesselationBasis (const int& type)
+{
+    this->SHSource->SetTesselationBasis(type);
+    this->SHSource->UpdateSphericalHarmonicSource();
+}
 
 void vtkSphericalHarmonicVisuManager::SetGlyphResolution (const int& res)
 {

@@ -28,6 +28,14 @@ class vtkSphericalHarmonicVisuManager : public vtkObject
   int GetTesselationType (void) const
   { return this->SHSource->GetTesselationType(); }
 
+  /** Get the spherical harmonics basis to be used*/
+  void SetTesselationBasis (const int& type);
+
+  /** Set the spherical harmonics basis to be used */
+  int GetTesselationBasis (void) const
+  { return this->SHSource->GetTesselationBasis(); }
+
+
 //  void SetTesselation (const int& type)
 //  { this->SHSource->SetTesselation (type); }
   

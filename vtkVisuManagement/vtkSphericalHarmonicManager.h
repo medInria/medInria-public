@@ -46,6 +46,9 @@ class vtkSphericalHarmonicManager: public vtkObject
   /** Set the Polyhedron type to be tesselated */
   void SetTesselationType (const int& type);
   
+  /** Set the spherical harmonics basis to be used */
+  void SetTesselationBasis (const int& type);
+
   /** Set the scalar range for the LUT */
   //void SetScalarRange(const float&, const float&);
 

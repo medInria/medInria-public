@@ -30,7 +30,7 @@ vtkSphericalHarmonicManager::~vtkSphericalHarmonicManager()
 {
 
   this->Initialize();
-  
+
   if( this->RenderWindowInteractor )
   {
     this->RenderWindowInteractor->Delete();
@@ -266,6 +266,13 @@ void vtkSphericalHarmonicManager::SetTesselationType (const int& type)
   this->SHVisuManagerAxial   ->SetTesselationType(type);
   this->SHVisuManagerSagittal->SetTesselationType(type);
   this->SHVisuManagerCoronal ->SetTesselationType(type);
+}
+
+void vtkSphericalHarmonicManager::SetTesselationBasis (const int& type)
+{
+  this->SHVisuManagerAxial   ->SetTesselationBasis(type);
+  this->SHVisuManagerSagittal->SetTesselationBasis(type);
+  this->SHVisuManagerCoronal ->SetTesselationBasis(type);
 }
 
 

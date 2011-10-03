@@ -46,15 +46,26 @@ public:
     vtkSetMacro(TesselationType,int);
     vtkGetMacro(TesselationType,int);     
 
+    vtkSetMacro(TesselationBasis,int);
+    vtkGetMacro(TesselationBasis,int);
+
+
     //BTX
     enum {
         Cube=0,    
-        Dodecahedron=1,
-        Icosahedron=2,
-        Octahedron=3,
-        Tetrahedron=4
+        Dodecahedron = 1,
+        Icosahedron = 2,
+        Octahedron = 3,
+        Tetrahedron = 4
     };
     //ETX
+
+    enum {
+        SHMatrix = 0,
+        SHMatrixMaxThesis = 1,
+        SHMatrixTournier = 2,
+        SHMatrixRshBasis = 3
+    };
 
     void    SetSphericalHarmonics(double* coeff);
     double* GetSphericalHaarmonics() { return SphericalHarmonics; }
@@ -147,6 +158,11 @@ protected:
     // determines the angular sampling scheme
 
     int TesselationType;
+
+    // Type of basis : SHMatrix=0, SHMatrixMaxThesis=1, SHMatrixTournier=2, SHMatrixRshBasis=3,
+    // determines the Spherical harmonics basis to be used
+
+    int TesselationBasis;
 
     // Tesselation order, determines the angular sampling
 

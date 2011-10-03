@@ -42,8 +42,8 @@ static std::complex<double> GetSH(int _l,int _m,double theta,double phi); //JGGB
 static matrix<double> ComputeSHMatrix (const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
 static matrix<double> ComputeSHMatrixMaxThesis(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
 
-static matrix<double> computeSHmatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
-static matrix<double> computeSHmatrixRshBasis3(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
+static matrix<double> ComputeSHmatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
+static matrix<double> ComputeSHmatrixRshBasis(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
 
 
 static void           TranslateAndDeformShell(vtkPolyData* shell,vtkPoints* outPts,double center[3],bool deform,vtkMatrix4x4* transform=0);
@@ -69,6 +69,7 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(int tess) {
     this->MaxThesisFuncOff();
 
     TesselationType = icosahedron;
+    TesselationBasis = SHMatrix;
     Tesselation = tess;
     shell = 0;
     SphericalHarmonics = 0;
@@ -243,6 +244,8 @@ vtkSphericalHarmonicSource::PrintSelf(ostream& os,vtkIndent indent) {
     
     os << indent << "Tessellation Order: " << Tesselation << std::endl;
     os << indent << "Tessellation Type: " << TesselationType << std::endl;
+    os << indent << "Tessellation Basis: " << TesselationBasis << std::endl;
+
     os << indent << "SH Basis Order: " << Order << std::endl;
     os << indent << "Length of SH coefficient vector: " << NumberOfSphericalHarmonics << std::endl;
     os << indent << "SH Basis: " << NumberOfSphericalHarmonics << "x" << shell->GetNumberOfPoints() << std::endl;
@@ -342,7 +345,6 @@ ComputeSHMatrix(const int rank,vtkPolyData* shell,const bool FlipX,const bool Fl
     vtkPoints* vertices = shell->GetPoints();
 
     for (int i=0;i<n_s;++i) {
-
         // Get spherical component of the point direction and transform them in spherical coordinates.
 
         double p[3];
@@ -505,7 +507,7 @@ ComputeSHMatrixMaxThesis(const int rank,vtkPolyData *shell,const bool FlipX,cons
 }
 
 matrix<double>
-computeSHmatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
+ComputeSHMatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
 
     const int n_s   = shell->GetNumberOfPoints();
     const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is wrong !!!
@@ -578,7 +580,7 @@ computeSHmatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const
 }
 
 matrix<double>
-computeSHmatrixRshBasis3(const int rank,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
+ComputeSHMatrixRshBasis(const int rank,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
 
     const int n_s   = shell->GetNumberOfPoints();
     const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is probably wrong !!!
@@ -631,7 +633,7 @@ computeSHmatrixRshBasis3(const int rank,vtkPolyData* shell,const bool FlipX,cons
 
                 const double c1 = std::tr1::sph_legendre(l, m,theta)*std::sqrt(2.0);
                 //-m Real
-                test1 = c1*(cos(m*phi));//like RshBasis.pdf eq 1.2 but math simplified and with tr1
+                test1 = c1*(cos(m*phi));//like RshBasis.pdf Luke Bloy eq 1.2 but math simplified and with tr1
                 test2 = factor*real(cplxA2);//like RshBasis.pdf eq 1.2
 
                 if(std::abs(test1-test2)>=0.0000000000001)
@@ -649,7 +651,7 @@ computeSHmatrixRshBasis3(const int rank,vtkPolyData* shell,const bool FlipX,cons
             }
         }
     }
-
+    return B;
 }
 
 void
@@ -682,8 +684,12 @@ vtkSphericalHarmonicSource::UpdateSphericalHarmonicSource() {
 
     matrix<double> PhiThetaDirection(shell->GetNumberOfPoints(),2);
 
-    BasisFunction = (MaxThesisFunc) ? ComputeSHMatrixMaxThesis(NumberOfSphericalHarmonics,shell,FlipX,FlipY,FlipZ,PhiThetaDirection) :
-                                      computeSHmatrixTournier(NumberOfSphericalHarmonics,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);
+    switch (TesselationBasis) {
+    case SHMatrix:          { BasisFunction = ComputeSHMatrix(NumberOfSphericalHarmonics,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);         break; }
+    case SHMatrixMaxThesis: { BasisFunction = ComputeSHMatrixMaxThesis(NumberOfSphericalHarmonics,shell,FlipX,FlipY,FlipZ,PhiThetaDirection); break; }
+    case SHMatrixTournier:  { BasisFunction = ComputeSHMatrixTournier(NumberOfSphericalHarmonics,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);  break; }
+    case SHMatrixRshBasis:  { BasisFunction = ComputeSHMatrixRshBasis(NumberOfSphericalHarmonics,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);   break; }
+    }
 
     PhiThetaShellDirections = PhiThetaDirection;
 }
