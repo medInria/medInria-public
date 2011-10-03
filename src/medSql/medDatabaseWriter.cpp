@@ -82,7 +82,7 @@ void medDatabaseWriter::run ( void )
 
     QString generatedID;
     generatedID = QDate::currentDate().toString ( "yyyyMMdd" ) + QTime::currentTime().toString ( "HHmmsszzzt" );
-    
+
     if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedID );
 
@@ -255,7 +255,7 @@ void medDatabaseWriter::run ( void )
 //     QString subDirName = "/" +
 //                          s_patientName + "/" +
 //                          s_studyName;
-//                          
+//
 //     QString imageFileNameBase =  subDirName + "/" +
 //                                  s_seriesName; //  + ".mha";
 
