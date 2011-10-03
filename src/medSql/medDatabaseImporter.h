@@ -52,14 +52,14 @@ class MEDSQL_EXPORT medDatabaseImporter : public medJobItem
     Q_OBJECT
 
 public:
-    medDatabaseImporter(const QString& file, bool indexWithoutImporting);
-    ~medDatabaseImporter(void);
+    medDatabaseImporter ( const QString& file, bool indexWithoutImporting );
+    ~medDatabaseImporter ( void );
 
     /**
     * Runs the import process based on the input file
     * or directory given in the constructor
     **/
-    void run(void);
+    void run ( void );
 
 signals:
     /*
@@ -68,13 +68,13 @@ signals:
      * tried to import, in 2 separate steps, images belonging
      * to the same volume.
      */
-    void partialImportAttempted(const QString& message);
+    void partialImportAttempted ( const QString& message );
 
 public slots:
-    void onCancel(QObject*);
+    void onCancel ( QObject* );
 
 signals:
-    void addedIndex(const medDataIndex &);
+    void addedIndex ( const medDataIndex & );
 
 private:
     /**
@@ -83,7 +83,7 @@ private:
     * @param dtkData - the object whose missing metadata will be filled
     * @param seriesDescription - string used to fill SeriesDescription field if not present
     **/
-    void populateMissingMetadata(dtkAbstractData* dtkData, const QString seriesDescription);
+    void populateMissingMetadata ( dtkAbstractData* dtkData, const QString seriesDescription );
 
 
     /**
@@ -93,7 +93,7 @@ private:
     * @param imageName - the name of the image we are looking for
     * @return true if already exists, false otherwise
     **/
-    bool checkIfExists(dtkAbstractData* dtkdata, QString imageName);
+    bool checkIfExists ( dtkAbstractData* dtkdata, QString imageName );
 
     /**
     * Populates database tables and generates thumbnails.
@@ -101,14 +101,14 @@ private:
     * @param pathToStoreThumbnails - path where the thumbnails will be stored
     * @return medDataIndex the new medDataIndex associated with this imported series.
     **/
-    medDataIndex populateDatabaseAndGenerateThumbnails(dtkAbstractData* dtkData, QString pathToStoreThumbnails);
+    medDataIndex populateDatabaseAndGenerateThumbnails ( dtkAbstractData* dtkData, QString pathToStoreThumbnails );
 
     /**
     * Tries to find a @dtkAbstractDataReader able to read input file/s.
     * @param filename - Input file/s we would like to find a reader for
     * @return a proper reader if found, NULL otherwise
     **/
-    dtkSmartPointer<dtkAbstractDataReader> getSuitableReader(QStringList filename);
+    dtkSmartPointer<dtkAbstractDataReader> getSuitableReader ( QStringList filename );
 
     /**
     * Tries to find a @dtkAbstractDataWriter able to write input file/s.
@@ -116,14 +116,14 @@ private:
     * @param dtkData - the @dtkAbstractData object we want to write
     * @return a proper writer if found, NULL otherwise
     **/
-    dtkSmartPointer<dtkAbstractDataWriter> getSuitableWriter(QString filename, dtkAbstractData* dtkData);
+    dtkSmartPointer<dtkAbstractDataWriter> getSuitableWriter ( QString filename, dtkAbstractData* dtkData );
 
     /**
     * Walks through the whole directory tree and returns a list of every file found.
     * @param fileOrDirectory - File or directory to search
     * @return a list containing all files found
     **/
-    QStringList getAllFilesToBeProcessed(QString fileOrDirectory);
+    QStringList getAllFilesToBeProcessed ( QString fileOrDirectory );
 
     /**
     * Tries to read the file/s indicated by filesPath.
@@ -132,7 +132,7 @@ private:
     * @param readOnlyImageInformation - if true only image header is read, otherwise the full image
     * @return a @dtkAbstractData containing the read data
     **/
-    dtkSmartPointer<dtkAbstractData> tryReadImages(const QStringList& filesPath,const bool readOnlyImageInformation);
+    dtkSmartPointer<dtkAbstractData> tryReadImages ( const QStringList& filesPath,const bool readOnlyImageInformation );
 
     /**
     * Determines the filename where the dtkData object will be written (if importing).
@@ -140,7 +140,7 @@ private:
     * @param volumeNumber - the volume number
     * @return a string with the new filename
     **/
-    QString determineFutureImageFileName(const dtkAbstractData* dtkData, int volumeNumber);
+    QString determineFutureImageFileName ( const dtkAbstractData* dtkData, int volumeNumber );
 //     QString determineFutureImageFileName(const dtkAbstractData* dtkData, int volumeNumber);
 
     /**
@@ -149,7 +149,7 @@ private:
     * @param dtkData - the @dtkAbstractData that will be written
     * @return a string with the desired extension if found, and empty string otherwise
     **/
-    QString determineFutureImageExtensionByDataType(const dtkAbstractData* dtkData);
+    QString determineFutureImageExtensionByDataType ( const dtkAbstractData* dtkData );
 
     /**
     * Tries writing the dtkData object in filePath.
@@ -157,7 +157,7 @@ private:
     * @param dtkData - @dtkAbstractData object to be written
     * @return true is writing was successful, false otherwise
     **/
-    bool tryWriteImage(QString filePath, dtkAbstractData* dtkData);
+    bool tryWriteImage ( QString filePath, dtkAbstractData* dtkData );
 
     /**
     * Adds some additional metadata (e.g. Size, FilePaths
@@ -166,14 +166,14 @@ private:
     * @param fileName - file name where the object will be written to
     * @param filePaths - if the file is aggregating more than one file, all of them will be listed here
     **/
-    void addAdditionalMetaData(dtkAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths);
+    void addAdditionalMetaData ( dtkAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths );
 
     /**
     * Generates an Id intended to be unique for each volume
     * @param dtkData - @dtkAbstractData object whose id will be generate
     * @return the volume id of the dtkData object
     **/
-    QString generateUniqueVolumeId(const dtkAbstractData* dtkData);
+    QString generateUniqueVolumeId ( const dtkAbstractData* dtkData );
 
     /**
     * Generates and saves the thumbnails for images in @dtkAbstractData.
@@ -183,37 +183,37 @@ private:
     * @param pathToStoreThumbnails - path where the thumbnails will be stored
     * @return a list of the thumbnails paths
     **/
-    QStringList generateThumbnails(dtkAbstractData* dtkData, QString pathToStoreThumbnails);
+    QStringList generateThumbnails ( dtkAbstractData* dtkData, QString pathToStoreThumbnails );
 
     /**
      * Retrieves the patient id of the existent (or newly created)
      * patient record in the patient table.
      */
-    int getOrCreatePatient(const dtkAbstractData* dtkData, QSqlDatabase db);
+    int getOrCreatePatient ( const dtkAbstractData* dtkData, QSqlDatabase db );
 
     /**
      * Retrieves the study id of the existent (or newly created)
      * study record in the study table.
      */
-    int getOrCreateStudy(const dtkAbstractData* dtkData, QSqlDatabase db, int patientId);
+    int getOrCreateStudy ( const dtkAbstractData* dtkData, QSqlDatabase db, int patientId );
 
     /**
      * Retrieves the series id of the existent (or newly created)
      * series record in the series table.
      */
-    int getOrCreateSeries(const dtkAbstractData* dtkData, QSqlDatabase db, int studyId);
+    int getOrCreateSeries ( const dtkAbstractData* dtkData, QSqlDatabase db, int studyId );
 
     /**
      * Creates records in the image table for the files we are importing/indexing.
      */
-    void createMissingImages(dtkAbstractData* dtkData, QSqlDatabase db, int seriesId, QStringList thumbPaths);
+    void createMissingImages ( dtkAbstractData* dtkData, QSqlDatabase db, int seriesId, QStringList thumbPaths );
 
     /**
      * Checks if the user is trying to perform a partial import
      * (that is, trying to import files belonging to the same volume
      * in 2 different steps).
      */
-    bool isPartialImportAttempt(dtkAbstractData* dtkData);
+    bool isPartialImportAttempt ( dtkAbstractData* dtkData );
 
     medDatabaseImporterPrivate *d;
 
