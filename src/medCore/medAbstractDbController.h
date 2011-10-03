@@ -96,7 +96,7 @@ public slots:
     * @param importUuid a string representation of a unique token (QUuid recommended),
     * If omited, an empty string will be used. It allows for actions specific to the caller of the importation. Only the caller should react to particular requests.
     */
-    virtual void import(const QString& file, const QString& importUuid=QString()) = 0;
+    virtual void import(const QString& file, QString importUuid=QString()) = 0;
 
     /**
     * @brief Imports a data into the db.
@@ -106,7 +106,7 @@ public slots:
     * @param data a pointer to some data to import.
     * @param importUuid the caller's identifier.
     */
-    virtual void import(dtkAbstractData *data, const QString& importUuid=QString()) = 0;
+    virtual void import(dtkAbstractData *data, QString importUuid=QString()) = 0;
 
     /**
      * This method allows importing data from other databases

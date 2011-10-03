@@ -29,7 +29,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medMetaDataKeys.h
   medViewManager.h
   medPluginManager.h
-  medProgressFilter.h
   medAbstractView.h
   medAbstractViewScene.h
   medAbstractViewCollection.h
@@ -77,7 +76,6 @@ set(${PROJECT_NAME}_SOURCES
   medMetaDataKeys.cpp
   medViewManager.cpp
   medPluginManager.cpp
-  medProgressFilter.cpp
   medAbstractView.cpp
   medAbstractViewScene.cpp
   medAbstractViewCollection.cpp
@@ -134,8 +132,8 @@ add_definitions(-DQT_NO_DEBUG)
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 if(MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
-    "medPch.h" "../medPch/medPch.cpp" 
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
+    "medPch.h" "../medPch/medPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES_WRAP})

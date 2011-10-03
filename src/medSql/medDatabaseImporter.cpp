@@ -111,7 +111,7 @@ void medDatabaseImporter::run(void)
         if (d->isCancelled) // check if user cancelled the process
             break;
 
-        emit progressed(this,((qreal)currentFileNumber/(qreal)fileList.count())*50.0); //TODO: reading and filtering represents 50% of the importing process?
+        emit progress(this,((qreal)currentFileNumber/(qreal)fileList.count())*50.0); //TODO: reading and filtering represents 50% of the importing process?
 
         currentFileNumber++;
 
@@ -204,7 +204,7 @@ void medDatabaseImporter::run(void)
     // final loop: re-read, re-populate and write to db
     for (; it != imagesGroupedByVolume.end(); it++)
     {
-        emit progressed(this,((qreal)currentImageIndex/(qreal)imagesCount)*50.0 + 50.0); // 50? I do not think that reading all the headers is half the job...
+        emit progress(this,((qreal)currentImageIndex/(qreal)imagesCount)*50.0 + 50.0); // 50? I do not think that reading all the headers is half the job...
 
         currentImageIndex++;
 
@@ -282,7 +282,7 @@ void medDatabaseImporter::run(void)
         emit partialImportAttempted(msg);
     }
 
-    emit progressed(this,100);
+    emit progress(this,100);
     emit success(this);
     emit addedIndex(index);
 }

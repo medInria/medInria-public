@@ -384,18 +384,32 @@ void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
 
 void medAbstractView::onDataAdded( int layer, dtkAbstractData* data)
 {
-    if ( medAbstractData * mdata = qobject_cast<medAbstractData *>(data) ) 
+    if ( layer == 0 ) 
     {
-        connect( mdata, SIGNAL(attachedDataAdded(medAttachedData*)), this,  SLOT(onAttachedDataAdded(medAttachedData*)) );
-        connect( mdata, SIGNAL(attachedDataRemoved(medAttachedData*)), this,  SLOT(onAttachedDataRemoved(medAttachedData*)) );
-    }
+        medAbstractData * mdata = qobject_cast<medAbstractData *>(data);
+        if (mdata)
+        {
+            connect( mdata, SIGNAL(attachedDataAdded(medAttachedData*)), this,  SLOT(onAttachedDataAdded(medAttachedData*)) );
+            connect( mdata, SIGNAL(attachedDataRemoved(medAttachedData*)), this,  SLOT(onAttachedDataRemoved(medAttachedData*)) );
+
+            // Add any existing annotations on the data to our list.
+            QList<medAttachedData*> attached = mdata->attachedData();
+            foreach( medAttachedData* item,  attached ) {
+                medAnnotationData *annItem = qobject_cast<medAnnotationData*>(item);
+                if (annItem) {
+                    this->onAttachedDataAdded(annItem);
+                }
+            }
+        } // if mdata
+    } // layer == 0
 }
 
 void medAbstractView::onDataRemoved( int layer, dtkAbstractData* data)
 {
-    if ( d->dataList.values().count(data) <= 2 ) {
+    if ( (layer == 0 ) && ( d->dataList.values().count(data) <= 2 ) ) {
         QList< dtkSmartPointer<medAnnotationData> > keys = d->installedAnnotations.keys();
 
+        // Remove annotations
         foreach( dtkSmartPointer<medAnnotationData> key, keys ) {
             if ( key->parentData() == data ) {
                 this->removeAnnotation( key );
