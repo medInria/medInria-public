@@ -59,10 +59,15 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
+CONFIGURE_FILE(
+      ${CMAKE_CURRENT_SOURCE_DIR}/ITKProcessExampleDefinitions.h.in
+      ${CMAKE_CURRENT_BINARY_DIR}/ITKProcessExampleDefinitions.h
+      )
+
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC} 
+  ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
@@ -71,7 +76,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   medCore
   medGui
-#  ITKReview  
+#  ITKReview
   )
 
 #dtk_build_doc(ITKProcessExamplePlugin)

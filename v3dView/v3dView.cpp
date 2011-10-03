@@ -1066,7 +1066,23 @@ void v3dView::setData(dtkAbstractData *data, int layer)
         if (medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> (data)) {
             d->data = data;
             d->imageData = imageData;
-
+            
+            if (d->view2d)
+            {
+                switch (d->view2d->GetViewOrientation())
+                {
+                    case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
+                        d->orientation = "Sagittal";
+                        break;
+                    case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
+                        d->orientation = "Coronal";
+                        break;
+                    case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
+                        d->orientation = "Axial";
+                        break;
+                }
+            }
+            
             if (data->hasMetaData(medMetaDataKeys::PatientName.key())){
                 const QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
                 d->view2d->SetPatientName (patientName.toAscii().constData());
@@ -1087,15 +1103,14 @@ void v3dView::setData(dtkAbstractData *data, int layer)
 
             dtkSignalBlocker blocker (d->slider );
             if (d->dimensionBox->currentText()==tr("Space")) {
-                if( d->orientation=="Axial") {
-                    d->slider->setRange(0, d->imageData->zDimension()-1);
-                }
-                else if( d->orientation=="Sagittal") {
-                    d->slider->setRange(0, d->imageData->xDimension()-1);
-                }
-                else if( d->orientation=="Coronal") {
-                    d->slider->setRange(0, d->imageData->yDimension()-1);
-                }
+                // slice orientation may differ from view orientation. Adapt slider range accordingly.
+                int orientationId = d->view2d->GetSliceOrientation();
+                if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
+                    d->slider->setRange (0, d->imageData->zDimension()-1);
+                else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
+                    d->slider->setRange (0, d->imageData->yDimension()-1);
+                else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
+                    d->slider->setRange (0, d->imageData->xDimension()-1);
             }
             else if (d->dimensionBox->currentText()==tr("Time")) {
                 d->slider->setRange(0, d->imageData->tDimension()-1);

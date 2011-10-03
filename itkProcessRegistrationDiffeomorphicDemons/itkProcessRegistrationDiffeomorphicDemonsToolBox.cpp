@@ -33,6 +33,7 @@
 #include <medAbstractView.h>
 #include <medRunnableProcess.h>
 #include <medJobManager.h>
+#include <medPluginManager.h>
 
 #include <medToolBoxFactory.h>
 #include <medToolBoxRegistration.h>
@@ -111,12 +112,19 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
 
     // progression stack
     d->progression_stack = new medProgressionStack(widget);
-    QHBoxLayout *progressStackLayout = new QHBoxLayout;
-    progressStackLayout->addWidget(d->progression_stack);
+//    QHBoxLayout *progressStackLayout = new QHBoxLayout;
+//    progressStackLayout->addWidget(d->progression_stack);
 
     this->addWidget(widget);
     this->addWidget(runButton);
     this->addWidget(d->progression_stack);
+
+    //enable about plugin. Construtor called after the plugin has been registered, go ahead call it.
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin(
+                "itkProcessRegistrationDiffeomorphicDemonsPlugin");
+    setAboutPluginButton(plugin);
+    setAboutPluginVisibility(true);
 
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 }
@@ -197,7 +205,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
     medRunnableProcess *runProcess = new medRunnableProcess;
     runProcess->setProcess (process);
 
-    d->progression_stack->addJobItem(runProcess, "Progress:");
+    d->progression_stack->addJobItem(runProcess, tr("Progress:"));
     d->progression_stack->setActive(runProcess,true);
     connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
     connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
