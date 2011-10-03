@@ -397,9 +397,8 @@ void medDatabaseImporter::populateMissingMetadata ( dtkAbstractData* dtkData, co
         dtkData->addMetaData ( medMetaDataKeys::SeriesDescription.key(), QStringList() << seriesDescription );
 
     QString generatedID;
-    generatedID = QDate::currentDate().toString("yyyyMMdd") + QTime::currentTime().toString("HHmmsszzzt");
-    qDebug() << "Generated study UID: " << generatedID;
-    
+    generatedID = QDate::currentDate().toString ( "yyyyMMdd" ) + QTime::currentTime().toString ( "HHmmsszzzt" );
+
     if ( !dtkData->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
         dtkData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
 
