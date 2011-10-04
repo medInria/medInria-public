@@ -98,8 +98,8 @@ void medViewerConfigurationFiltering::onProcessSuccess()
 
     d->filterOutput->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 
-    QString generatedID;
-    generatedID = QDate::currentDate().toString ( "yyyyMMdd" ) + QTime::currentTime().toString ( "HHmmsszzzt" );
+    QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
+    
     d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
     //     d->filteringToolBox->setDataIndex(medDataManager::instance()->importNonPersistent(d->filterOutput));
