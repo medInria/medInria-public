@@ -57,14 +57,14 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run ( void )
 
     QSqlQuery query ( ( * ( medDatabaseController::instance()->database() ) ) );
 
-    QString patientName;
-    QString birthdate;
-    QString studyName;
-    QString studyUid;
-    QString seriesName;
-    QString seriesUid;
+    QString patientName, birthdate, age, gender;
+    QString studyName, studyUid;
+    QString seriesName, seriesUid, orientation, seriesNumber, sequenceName,
+            sliceThickness, rows, columns, refThumbPath, description, protocol,
+            comments, status, acquisitiondate, importationdate, referee,
+            institution, report, modality;
 
-    query.prepare ( "SELECT name, birthdate FROM patient WHERE id = :id" );
+    query.prepare ( "SELECT name, birthdate, gender FROM patient WHERE id = :id" );
     query.bindValue ( ":id", patientId );
     if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
@@ -72,6 +72,7 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run ( void )
     {
         patientName = query.value ( 0 ).toString();
         birthdate = query.value ( 1 ).toString();
+        gender = query.value ( 2 ).toString();
     }
 
     query.prepare ( "SELECT name, uid FROM study WHERE id = :id" );
@@ -84,7 +85,11 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run ( void )
         studyUid = query.value ( 1 ).toString();
     }
 
-    query.prepare ( "SELECT name, uid FROM series WHERE id = :id" );
+    query.prepare ( "SELECT name, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, \
+                     description, protocol, comments, status, acquisitiondate, importationdate, referee,       \
+                     institution, report, modality \
+                     FROM series WHERE id = :id" );
+    
     query.bindValue ( ":id", seriesId );
     if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
@@ -92,6 +97,22 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run ( void )
     {
         seriesName = query.value ( 0 ).toString();
         seriesUid = query.value ( 1 ).toString();
+        orientation = query.value ( 2 ).toString();
+        seriesNumber = query.value ( 3 ).toString();
+        sequenceName = query.value ( 4 ).toString();
+        sliceThickness = query.value ( 5 ).toString();
+        rows = query.value ( 6 ).toString();
+        columns = query.value ( 7 ).toString();
+        description = query.value ( 8 ).toString();
+        protocol = query.value ( 9 ).toString();
+        comments = query.value ( 10 ).toString();
+        status = query.value ( 11 ).toString();
+        acquisitiondate = query.value ( 12 ).toString();
+        importationdate = query.value ( 13 ).toString();
+        referee = query.value ( 14 ).toString();
+        institution = query.value ( 15 ).toString();
+        report = query.value ( 16 ).toString();
+        modality = query.value ( 17 ).toString();
     }
 
     query.prepare ( "SELECT name, id, path, instance_path, isIndexed FROM image WHERE series = :series" );
@@ -154,20 +175,36 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run ( void )
 
             QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
             medMetaDataKeys::SeriesThumbnail.add ( dtkdata, thumbPath );
-
         }
         else
         {
             qWarning() << "Thumbnailpath not found";
         }
 
+        medMetaDataKeys::PatientID.add ( dtkdata, patientId.toString() );
         medMetaDataKeys::PatientName.add ( dtkdata, patientName );
         medMetaDataKeys::BirthDate.add ( dtkdata, birthdate );
+        medMetaDataKeys::Gender.add ( dtkdata, gender );
         medMetaDataKeys::StudyDescription.add ( dtkdata, studyName );
-        medMetaDataKeys::SeriesDescription.add ( dtkdata, seriesName );
-        medMetaDataKeys::PatientID.add ( dtkdata, patientId.toString() );
         medMetaDataKeys::StudyID.add ( dtkdata, studyUid );
+        medMetaDataKeys::SeriesDescription.add ( dtkdata, seriesName );
         medMetaDataKeys::SeriesID.add ( dtkdata, seriesUid );
+        medMetaDataKeys::Orientation.add ( dtkdata, orientation );
+        medMetaDataKeys::Columns.add ( dtkdata, columns );
+        medMetaDataKeys::Rows.add ( dtkdata, rows );
+        medMetaDataKeys::AcquisitionDate.add ( dtkdata, acquisitiondate );
+        medMetaDataKeys::Comments.add ( dtkdata, comments );
+        medMetaDataKeys::Description.add ( dtkdata, description );
+        medMetaDataKeys::ImportationDate.add ( dtkdata, importationdate );
+        medMetaDataKeys::Modality.add ( dtkdata, modality );
+        medMetaDataKeys::Protocol.add ( dtkdata, protocol );
+        medMetaDataKeys::Referee.add ( dtkdata, referee );
+        medMetaDataKeys::Institution.add ( dtkdata, institution );
+        medMetaDataKeys::Report.add ( dtkdata, report );
+        medMetaDataKeys::Status.add ( dtkdata, status );
+        medMetaDataKeys::SequenceName.add ( dtkdata, sequenceName );
+        medMetaDataKeys::SliceThickness.add ( dtkdata, sliceThickness );
+        medMetaDataKeys::SeriesNumber.add(dtkdata, seriesNumber);
         //medMetaDataKeys::ImageID.add(data, imageId.toString());
 
         emit success ( this );
