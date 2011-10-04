@@ -233,7 +233,7 @@ void medDatabaseRemover::removeSeries ( int patientId, int studyId, int seriesId
     }
     removeTableRow ( d->T_SERIES, seriesId );
 
-    qDebug() << "Series Uid: " << seriesUid;
+//     qDebug() << "Series Uid: " << seriesUid;
 
     // we want to remove the directory if empty
     QFileInfo seriesFi ( medStorage::dataLocation() + thumbnail );
@@ -272,25 +272,25 @@ void medDatabaseRemover::removeStudy ( int patientId, int studyId )
     }
     removeTableRow ( d->T_STUDY, studyId );
 
-    query.prepare ( "SELECT name, birthdate  FROM " + d->T_PATIENT + " WHERE id = :patientId " );
-    query.bindValue ( ":patientId", patientId );
-    EXEC_QUERY ( query );
-    QString patientName;
-    QString patientBirthdate;
-    if ( query.next() )
-    {
-        patientName = query.value ( 0 ).toString();
-        patientBirthdate = query.value ( 1 ).toString();
-    }
+//     query.prepare ( "SELECT name, birthdate  FROM " + d->T_PATIENT + " WHERE id = :patientId " );
+//     query.bindValue ( ":patientId", patientId );
+//     EXEC_QUERY ( query );
+//     QString patientName;
+//     QString patientBirthdate;
+//     if ( query.next() )
+//     {
+//         patientName = query.value ( 0 ).toString();
+//         patientBirthdate = query.value ( 1 ).toString();
+//     }
 
-    qDebug() << "patientID:" << patientName << patientBirthdate;
-    qDebug() << "studyUid: " << studyUid;
+//     qDebug() << "patientID:" << patientName << patientBirthdate;
+//     qDebug() << "studyUid: " << studyUid;
 
-    medDatabaseControllerImpl* dbi = medDatabaseController::instance();
+//     medDatabaseControllerImpl* dbi = medDatabaseController::instance();
 //     QDir studyDir(medStorage::dataLocation() + "/" + dbi->stringForPath(patientName) + "/" + dbi->stringForPath(studyName));
-    QDir studyDir ( medStorage::dataLocation() + "/" + dbi->stringForPath ( patientName + patientBirthdate ) + "/" + dbi->stringForPath ( studyUid ) );
-    if ( studyDir.exists() )
-        studyDir.rmdir ( studyDir.path() ); // only removes if empty
+//     QDir studyDir ( medStorage::dataLocation() + "/" + dbi->stringForPath ( patientName + patientBirthdate ) + "/" + dbi->stringForPath ( studyUid ) );
+//     if ( studyDir.exists() )
+//         studyDir.rmdir ( studyDir.path() ); // only removes if empty
 }
 
 bool medDatabaseRemover::isPatientEmpty ( int patientId )

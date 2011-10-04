@@ -1001,7 +1001,7 @@ QString medDatabaseImporter::determineFutureImageFileName ( const dtkAbstractDat
     QString patientID = s_patientName + patientBirthDate;
 
     QString imageFileName = QDir::separator() + QString ( patientID )
-                            + QDir::separator() + QString ( studyID )
+                            //+ QDir::separator() + QString ( studyID ).mid(22)
                             + QDir::separator() + QString ( seriesID ) + s_volumeNumber;
 
     return imageFileName;

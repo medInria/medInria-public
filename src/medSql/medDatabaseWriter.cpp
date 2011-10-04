@@ -260,8 +260,8 @@ void medDatabaseWriter::run ( void )
 //                                  s_seriesName; //  + ".mha";
 
     QString subDirName = "/" +
-                         patientID + "/" +
-                         studyId;
+                         patientID;// + "/" +
+                         //studyId.mid(22);
 
     QString imageFileNameBase =  subDirName + "/" +
                                  seriesId; //  + ".mha";
