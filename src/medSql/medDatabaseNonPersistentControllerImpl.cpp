@@ -96,6 +96,7 @@ void medDatabaseNonPersistentControllerImpl::insert(medDataIndex index, medDatab
 
 void medDatabaseNonPersistentControllerImpl::import(const QString& file,const QString& importUuid)
 {
+    qDebug() << "DEBUG : entering medDatabaseNonPersistentControllerImpl::import(const QString& file,const QString& importUuid)";
     medDatabaseNonPersistentReader *reader =
             new medDatabaseNonPersistentReader(file,importUuid);
 
@@ -164,6 +165,8 @@ bool medDatabaseNonPersistentControllerImpl::isConnected() const
 void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
                                                     const QString& callerUuid)
 {
+    qDebug() << "DEBUG : entering medDatabaseNonPersistentControllerImpl::import";
+
     medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data,callerUuid);
 
     connect(importer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));

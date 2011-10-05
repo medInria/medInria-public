@@ -391,6 +391,8 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
 
 void medDatabaseControllerImpl::import( dtkAbstractData *data,const QString& importUuid)
 {
+    qDebug() << "DEBUG : medDatabaseControllerImpl::import";
+
     medDatabaseWriter *writer = new medDatabaseWriter(data);
     //if we want to add importUuid support to permanent db,
     //we need to change the importer and its addedIndex signal to suppot importUuid

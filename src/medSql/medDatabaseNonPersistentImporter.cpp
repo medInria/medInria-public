@@ -46,6 +46,7 @@ medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter(dtkAbstractDa
                                                                    const QString& callerUuid)
     : medJobItem(), d(new medDatabaseNonPersistentImporterPrivate(callerUuid))
 {
+    qDebug() << "DEBUG : entering medDatabaseNonPersistentImporter constructor";
     d->data = data;
     d->isCancelled = false;
     qDebug() << d->data;

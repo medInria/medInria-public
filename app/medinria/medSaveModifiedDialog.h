@@ -21,12 +21,17 @@ public:
     medSaveModifiedDialog(QWidget *parent);
     virtual ~medSaveModifiedDialog();
 
+signals :
+
+    void updateTree();
+
 public slots:
 
     //void onSelectAll();
     void Save();
-    //void Delete();
-    void updateTree(const medDataIndex &);
+    void updateCounter();
+    //void updateTree(const medDataIndex &);
+    void onUpdateTree();
 
 private:
   
