@@ -234,6 +234,9 @@ void medViewContainer::setView ( dtkAbstractView *view )
 void medViewContainer::onViewFocused ( bool value )
 {
 //    qDebug()<<"medViewerContainer::onViewFocused";
+    if (!d->view)
+      return;
+
     if ( !value )
         return;
 
