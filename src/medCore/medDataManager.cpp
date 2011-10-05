@@ -557,6 +557,7 @@ void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index,
 
     npDb->remove(d->npDataIndexBeingSaved[uuid]);
     d->volatileDataCache.remove(d->npDataIndexBeingSaved[uuid]);
+    d->npDataIndexBeingSaved.remove(uuid);
 
     emit dataAdded(index);
 }

@@ -1,7 +1,4 @@
-#include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
-#include <medDatabaseModel.h>
-#include <medDatabaseItem.h>
 #include <medDatabaseNonPersistentItem.h>
 #include <medDataIndex.h>
 
@@ -14,8 +11,6 @@ class medSaveModifiedDialogPrivate
 public:
 
     QTreeWidget *treeWidget;
-    QTreeWidgetItem *image;
-    QTreeWidgetItem *root;
     QPushButton *saveButton;
     QPushButton *doneButton;
     unsigned int counter;
@@ -54,7 +49,7 @@ class medSaveModifiedDialogCheckListItem : public QTreeWidgetItem
 
 /***********************************************/
 
-//TODO : when importing non-persistent data to the database medDataIndex changes  !
+//TODO : warning ! when importing non-persistent data to the database medDataIndex changes  !
 medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent), d (new medSaveModifiedDialogPrivate)
 {
     d->counter = 0;
@@ -74,8 +69,6 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
 
     d->treeWidget->setHeaderLabels(headers);
 
-//    d->root = d->treeWidget->invisibleRootItem();
-
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addWidget(d->saveButton);
     hlayout->addWidget(d->doneButton);
@@ -94,14 +87,12 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
         QString file(item->file());
 
         medSaveModifiedDialogCheckListItem * itemtmp = new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), name, studyName, seriesName, file);
-
-//        d->treeWidget->addTopLevelItem(new medSaveModifiedDialogCheckListItem(d->root, item->index(), name, studyName, seriesName, file));
     }
 
     d->treeWidget->resizeColumnToContents(0);
 
     connect (d->saveButton, SIGNAL(clicked()), this, SLOT(Save()));
-//connect (d->selectAllButton, SIGNAL(clicked()), this, SLOT(onSelectAll()));
+//    connect (d->selectAllButton, SIGNAL(clicked()), this, SLOT(onSelectAll()));
     connect (d->doneButton,SIGNAL(clicked()), this, SLOT(close()));
     connect (medDataManager::instance(), SIGNAL(dataAdded(const medDataIndex &)),this, SLOT(updateCounter()) );
     connect (this, SIGNAL(updateTree()), this, SLOT(onUpdateTree()));
@@ -132,11 +123,7 @@ void medSaveModifiedDialog::Save( )
     }
 
     foreach(medDataIndex index, list)
-        {
-            //qDebug() << "DEBUG : entering method Save()" << " index = " << checkListItem->getIndex() << "counter = " << d->counter;
             medDataManager::instance()->storeNonPersistentSingleDataToDatabase(index);
-        }
-    //this->close();
 }
 
 void medSaveModifiedDialog::updateCounter()
@@ -149,56 +136,23 @@ void medSaveModifiedDialog::updateCounter()
 
 void medSaveModifiedDialog::onUpdateTree()
 {
-        qDebug() << "size db :" << medDatabaseNonPersistentController::instance()->items().size();
         d->treeWidget->clear();
-        qDebug() << "size db :" << medDatabaseNonPersistentController::instance()->items().size();
 
         foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items())
         {
+            qDebug() << "DEBUG updateTree() name" << item->name() << "studyName" << item->studyName() << "seriesName" << item->seriesName() << "file" << item->file();
+
             QString name(item->name());
             QString studyName(item->studyName());
             QString seriesName(item->seriesName());
             QString file(item->file());
 
-            //d->treeWidget->addTopLevelItem(new medSaveModifiedDialogCheckListItem(item->index(), name, studyName, seriesName, file));
-            d->treeWidget->insertTopLevelItem(0,new medSaveModifiedDialogCheckListItem(d->root, item->index(), name, studyName, seriesName, file));
-
-            qDebug() << "DEBUG : onUpdateTree(), after addTopLevelItem";
+            d->treeWidget->insertTopLevelItem(0,new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), name, studyName, seriesName, file));
         }
         d->treeWidget->update();
         d->treeWidget->resizeColumnToContents(0);
         d->treeWidget->showMaximized();
 }
-
-
-//void medSaveModifiedDialog::updateTree(const medDataIndex & index)
-//{
-//    qDebug() << "DEBUG : entering method updateTree(..)";
-//
-//    for (int i = 0; i < d->treeWidget->topLevelItemCount(); ++i)
-//    {
-//        qDebug() << "i" << i;
-//
-//        medSaveModifiedDialogCheckListItem * checkListItem = dynamic_cast<medSaveModifiedDialogCheckListItem*> (d->treeWidget->topLevelItem(i));
-//
-//        qDebug() << "checkListItem = " << checkListItem;
-//
-//        qDebug() << "checkListItem->getIndex() : " << checkListItem->getIndex() << " index : " << index;
-//
-//        if (checkListItem->getIndex() == index)
-//        {
-//            qDebug() << "IF ?";
-//            QTreeWidgetItem *parent = checkListItem->parent();
-//
-//            int index = d->treeWidget->indexOfTopLevelItem(checkListItem);
-//            delete d->treeWidget->takeTopLevelItem(index);
-//
-//            //d->treeWidget->removeItemWidget(d->treeWidget->topLevelItem(i),0);
-//        }
-//    }
-//
-//    qDebug() << "DEBUG : finish";
-//}
 
 //void medSaveModifiedDialog::onSelectAll()
 //{

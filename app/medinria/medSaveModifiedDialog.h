@@ -27,11 +27,10 @@ signals :
 
 public slots:
 
-    //void onSelectAll();
     void Save();
     void updateCounter();
-    //void updateTree(const medDataIndex &);
     void onUpdateTree();
+//    void onSelectAll();
 
 private:
   
