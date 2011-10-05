@@ -55,6 +55,7 @@ public slots:
     virtual void onMenuViewClicked(void);
     virtual void onMenuExportClicked(void);
     virtual void onMenuRemoveClicked(void);
+    virtual void onMenuSaveClicked(void);
     virtual void selectionChanged(const QModelIndex&, const QModelIndex&);
     void onOpeningFailed(const medDataIndex& index);
 
