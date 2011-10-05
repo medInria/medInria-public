@@ -413,19 +413,19 @@ ComputeSHMatrix(const int rank,vtkPolyData* shell,const bool FlipX,const bool Fl
                 test  = s*c1*(cos(m*phi));//like t3 at hardi.cpp but math simplified and with tr1
                 test1 = c1*(cos(m*phi));//like RshBasis.pdf eq 1.2 but math simplified and with tr1
                 test2 = factor*real(cplxA2);//like RshBasis.pdf eq 1.2
-                test3 = factor*real(cplxB3);//like t3 at hardi.cpp
+                test3 = factor*real(cplxA3);//like t3 at hardi.cpp
 
 //                if(std::abs(test-test3)>=0.0000000000001)
 //                    std::cout << "error "<< test-test3 << std::endl;
 //                if(std::abs(test1-test2)>=0.0000000000001)
 //                    std::cout << "error "<< test1-test2 << std::endl;
 
-                B(j,i)   = test;
+                B(j,i)   = test3;
                 //+m Imag
                 test  = c1*(sin(s*m*phi));//like t3 at hardi.cpp but math simplified and with tr1
                 test1 = c1*(sin(m*phi));
                 test2 = factor*real(cplxB2);//+m
-                test3 = factor*real(cplxA3);
+                test3 = factor*real(cplxB3);
 
 //                cout << "l " << l << " m " << m << "\t";
 //                cout << "Y_"<<j<<"("<<theta<<", "<< phi<<"): "<<"\t";
@@ -436,7 +436,7 @@ ComputeSHMatrix(const int rank,vtkPolyData* shell,const bool FlipX,const bool Fl
 //                if(std::abs(test1-test2)>=0.0000000000001)
 //                    std::cout << "error "<< test1-test2 << std::endl;
 
-                B(++j,i) = test;
+                B(++j,i) = test3;
 
 //                cout << "Y_"<<j<<"("<<theta<<", "<< phi<<"): "<<"\t";
 //                cout <<cplxA3 << std::endl;
