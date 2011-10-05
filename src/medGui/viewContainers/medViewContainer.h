@@ -1,5 +1,5 @@
-/* medViewContainer.h --- 
- * 
+/* medViewContainer.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:53:58 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 32
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDVIEWCONTAINER_H
@@ -33,7 +33,7 @@ class medViewContainerPrivate;
 /**
  * @brief A viewContainer is a QWidget hosting one or several dtkAbstractViews.
  *
- * 
+ *
  *
 */
 class MEDGUI_EXPORT medViewContainer : public QFrame
@@ -81,25 +81,25 @@ class MEDGUI_EXPORT medViewContainer : public QFrame
     Q_PROPERTY( bool isDaddy READ isDaddy );
 
 public:
-   
+
      /**
       * @brief Creates a new container.
       *
-      * Sets a few default values: it accepts drops, 
+      * Sets a few default values: it accepts drops,
       * gets focus on click (Qt::ClickFocus).
       *
       * @param parent
      */
      medViewContainer(QWidget *parent = 0);
-     
+
     /**
-     * @brief 
+     * @brief
      *
      * @param void
     */
     ~medViewContainer(void);
 
-    
+
 
     /**
      * @brief Gets the current container.
@@ -241,21 +241,37 @@ public:
 
     /**
      * @brief Sets the view of this container.
-     * Also passes the viewProperties to the view.
      *
+     * Also passes the viewProperties to the view.
+     * This method is meant to be overloaded in inherited classes with the specific behaviour.
+     *
+     * It is the responsibility of this method to give focus to the container.
+     * Method overriding this MUST call setFocus(Qt::MouseFocusReason);
+     * and NOT onFocused()
+     * since this method doesn't deal with changing from the old container
+     * to the new one if needed.
+     *
+     * If the container is not a leaf, and therefore doesn't have a view,
+     * this method is in charge of setting the view of the current container.
      *
      * @param view
     */
     virtual void setView(dtkAbstractView *view);
-    
+
     /**
      * @brief Gets the view associated with the container.
      *
+     * If the container is not a leaf, returns a pointer to an editable view
+     * in the current child container.
+     * If the container is multi for instance, it will return NULL to this request, there is no editable view in Multi.
+
+     * Use this method to get a pointer to a view in which to drop some data
+     *
      * @param void
-     * @return dtkAbstractView *
+     * @return dtkAbstractView * or NULL if there is no editable view attached to this container, or its current leaf.
     */
     virtual dtkAbstractView         *view  (void) const;
-    
+
     /**
      * @brief Gets the views contained here.
      *
@@ -274,17 +290,17 @@ public:
      * @return QString
     */
     virtual QString viewProperty (const QString &key) const;
-    
+
     /**
      * @brief Sets an information string to the container.
      *
-     * This string is then displayed in the container's background 
+     * This string is then displayed in the container's background
      * when there is no view.
      *
      * @param info
     */
     void setInfo(const QString& info);
-    
+
     /**
      * @brief Gets the info string.
      *
@@ -294,7 +310,7 @@ public:
     QString info(void);
 
     virtual QString description() {return "";}
-    
+
 signals:
     /**
      * @brief A new medDataIndex has been dropped onto the container.
@@ -302,7 +318,7 @@ signals:
      * @param index
     */
     void dropped(const medDataIndex& index);
-    
+
     /**
      * @brief The focus has been placed on the view this container is hosting.
      *
@@ -314,14 +330,14 @@ signals:
      * @brief The container has been clicked.
     */
     void clicked (void);
-    
+
     /**
      * @brief A view has been added to the container.
-     * 
+     *
      * @param view
     */
     void viewAdded   (dtkAbstractView *view);
-    
+
     /**
      * @brief A view has been added from the container.
      *
@@ -331,40 +347,40 @@ signals:
 
 public slots:
     /**
-     * @brief 
+     * @brief
      *
      * @param rows
      * @param cols
     */
     virtual void split(int rows, int cols);
-    
+
     /**
      * @brief Sets a view property.
-     * 
-     * Properties are set to new views, 
+     *
+     * Properties are set to new views,
      * and displayed in the Container's background when no view are set.
      *
      * @param key
      * @param value
     */
     virtual void setViewProperty (const QString &key, const QString &value);
-    
+
     /**
-     * @brief 
+     * @brief
      *
      * @param value
     */
     virtual void onViewFullScreen (bool value);
 
     /**
-     * @brief 
+     * @brief
      *
      * @param value
     */
     virtual void onDaddyChanged( bool state );
 
     /**
-     * @brief 
+     * @brief
      *
      * @param value
     */
@@ -383,8 +399,9 @@ protected:
     /**
      * @brief Sets the currently selected Container.
      *
-     * sets it to the parent Container if there is a parent. 
-     * If the container has no parent, then the current container is set concretely. 
+     * Set to the container that has focus currently. When Focus is changed
+     * it is the responsibililty of the leaf container to change the current
+     * container of its parent to the new one.
      *
      * @param container
     */
@@ -406,51 +423,52 @@ protected:
 
 protected:
     /**
-     * @brief 
+     * @brief
      *
      * @param event
     */
     void dragEnterEvent(QDragEnterEvent *event);
-    
+
     /**
-     * @brief 
+     * @brief
      *
      * @param event
     */
     void dragMoveEvent(QDragMoveEvent *event);
-    
+
     /**
-     * @brief 
+     * @brief
      *
      * @param event
     */
     void dragLeaveEvent(QDragLeaveEvent *event);
-    
+
     /**
      * @brief Parses a drop event, translating it into a medDataIndex.
      *
      * @param event
     */
     void dropEvent(QDropEvent *event);
-    
+
     /**
      * @brief Container got Focus.
      *
-     * Sets it as current, focuses the view if it exists, 
+     * Sets it as current, focuses the view if it exists,
      * updates the previous current Container and the new current one.
+     * @todo should not update the previous current container: should be done in focusOutEvent();
      * @param event
     */
     void focusInEvent(QFocusEvent *event);
-    
+
     /**
      * @brief Container lost focus.
      *
      * @param event
     */
     void focusOutEvent(QFocusEvent *event);
-    
+
     /**
-     * @brief 
+     * @brief
      *
      * @param event
     */

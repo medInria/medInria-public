@@ -120,7 +120,7 @@ bool medViewContainer::isDaddy ( void ) const
 
 medViewContainer * medViewContainer::parentContainer() const
 {
-    return dynamic_cast< medViewContainer * > ( this->parentWidget() );
+    return qobject_cast< medViewContainer * >( this->parentWidget() );
 }
 
 const medViewContainer * medViewContainer::root() const
@@ -193,7 +193,13 @@ medViewPool *medViewContainer::pool ( void )
 
 void medViewContainer::setView ( dtkAbstractView *view )
 {
-    if ( view==d->view )
+    if (!isLeaf())
+    {
+        //go down to the actual currently selected container to set the view.
+        current()->setView(view);
+        return;
+    }
+    if (view==d->view)
         return;
 
     // clear connection of previous view
@@ -219,22 +225,25 @@ void medViewContainer::setView ( dtkAbstractView *view )
             view->setProperty ( it.key(), it.value() );
             ++it;
         }
-
-        connect ( view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
+        connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
         this->recomputeStyleSheet();
     }
+    setFocus(Qt::MouseFocusReason);
 }
 
 void medViewContainer::onViewFocused ( bool value )
 {
+//    qDebug()<<"medViewerContainer::onViewFocused";
     if ( !value )
         return;
 
     if ( !this->isEmpty() )
         this->setCurrent ( this );
 
-    if ( dtkAbstractView *view = this->view() )
-        emit focused ( view );
+    if (dtkAbstractView *view = current()->view())
+    {
+        emit focused(view);
+    }
 
     this->update();
 }
@@ -297,8 +306,8 @@ void medViewContainer::focusInEvent ( QFocusEvent *event )
     medViewContainer * former = this->current();
 
     d->clicked = true;
-
-    this->onViewFocused ( true );
+//    qDebug()<< "focusInEvent";
+    this->onViewFocused( true );
 
     this->recomputeStyleSheet();
 
@@ -310,6 +319,7 @@ void medViewContainer::focusInEvent ( QFocusEvent *event )
 
 void medViewContainer::focusOutEvent ( QFocusEvent *event )
 {
+    Q_UNUSED(event);
     //d->clicked = false;
 
     //this->recomputeStyleSheet();
