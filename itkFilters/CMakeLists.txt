@@ -4,14 +4,14 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(itkProcessRegistrationDiffeomorphicDemonsPlugin)
+project(itkFiltersPlugin)
 
 ## #################################################################
 ## Setup version numbering
 ## #################################################################
 
 set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "${PROJECT_NAME} major version number.")
-set(${PROJECT_NAME}_VERSION_MINOR 3 CACHE STRING "${PROJECT_NAME} minor version number.")
+set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING "${PROJECT_NAME} minor version number.")
 set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "${PROJECT_NAME} build version number.")
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
@@ -32,16 +32,13 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
+# ITK
+find_package(ITK REQUIRED)
+include(${ITK_USE_FILE})
+
+# medinria
 find_package(medinria REQUIRED)
 include(${medinria_USE_FILE})
-
-find_package(ITK REQUIRED)
-if(ITK_FOUND)
-   include(${ITK_USE_FILE})
-endif(ITK_FOUND)
-
-find_package(RPI REQUIRED)
-include(${RPI_USE_FILE})
 
 
 ## #################################################################
@@ -49,23 +46,23 @@ include(${RPI_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkProcessRegistrationDiffeomorphicDemonsPlugin.h
-  itkProcessRegistrationDiffeomorphicDemonsToolBox.h
-  itkProcessRegistrationDiffeomorphicDemons.h)
+  itkFiltersPlugin.h
+  itkFiltersToolBox.h
+  itkFilters.h)
 
 set(${PROJECT_NAME}_SOURCES
-  itkProcessRegistrationDiffeomorphicDemonsPlugin.cpp
-  itkProcessRegistrationDiffeomorphicDemonsToolBox.cpp
-  itkProcessRegistrationDiffeomorphicDemons.cpp
-  )
+  itkFiltersPlugin.cpp
+  itkFiltersToolBox.cpp
+  itkFilters.cpp)
 
 ## #################################################################
 ## Build rules
 ## #################################################################
 
-CONFIGURE_FILE( 
-      ${CMAKE_CURRENT_SOURCE_DIR}/itkProcessRegistrationDiffeomorphicDemonsDefinitions.h.in
-      ${CMAKE_CURRENT_BINARY_DIR}/itkProcessRegistrationDiffeomorphicDemonsDefinitions.h
+
+configure_file(
+      ${CMAKE_CURRENT_SOURCE_DIR}/itkFiltersDefinitions.h.in
+      ${CMAKE_CURRENT_BINARY_DIR}/itkFiltersDefinitions.h
       )
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
@@ -75,21 +72,23 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-  itkProcessRegistration
   ${QT_LIBRARIES}
+  ${ITK_LIBRARIES}
   dtkCore
   medCore
   medGui
-  ITKCommon
-  ITKIO
-  ITKStatistics
-  ITKNumerics
-  ITKAlgorithms
-)
+#  ITKReview
+  )
 
-dtk_build_doc(${PROJECT_NAME})
+#dtk_build_doc(itkAddConstantToImageFilterPlugin)
 
-
+# add_executable(${PROJECT_NAME}Testing
+#   itkAddConstantToImageFilterTestingApp.cpp
+# )
+#
+# target_link_libraries(${PROJECT_NAME}Testing
+#   ${PROJECT_NAME}
+# )
 
 ## #################################################################
 ## Install rules
@@ -98,4 +97,5 @@ dtk_build_doc(${PROJECT_NAME})
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION plugins
   LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION lib)
+  ARCHIVE DESTINATION plugins)
+

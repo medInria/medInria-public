@@ -15,6 +15,7 @@
 
 #include <medRunnableProcess.h>
 #include <medJobManager.h>
+#include <medPluginManager.h>
 
 #include <medToolBoxFactory.h>
 #include <medToolBoxFiltering.h>
@@ -26,44 +27,51 @@
 class ITKProcessExampleToolBoxPrivate
 {
 public:
-        QLineEdit *variance;
-        dtkAbstractProcess *process;
-        medProgressionStack * progression_stack;
+    QLineEdit *variance;
+    dtkAbstractProcess *process;
+    medProgressionStack * progression_stack;
 };
 
 ITKProcessExampleToolBox::ITKProcessExampleToolBox(QWidget *parent) : medToolBoxFilteringCustom(parent), d(new ITKProcessExampleToolBoxPrivate)
 {
-      // Parameters:
+    // Parameters:
 
-      QLabel *varianceLabel = new QLabel("Sigma : ");
-      d->variance = new QLineEdit("1.0");
+    QLabel *varianceLabel = new QLabel("Sigma : ");
+    d->variance = new QLineEdit("1.0");
 
-      QHBoxLayout *varianceLayout = new QHBoxLayout();
-      varianceLayout->addWidget(varianceLabel);
-      varianceLayout->addWidget(d->variance);
+    QHBoxLayout *varianceLayout = new QHBoxLayout();
+    varianceLayout->addWidget(varianceLabel);
+    varianceLayout->addWidget(d->variance);
 
-      // Run button:
+    // Run button:
 
-      QPushButton *runButton = new QPushButton(tr("Run"));
+    QPushButton *runButton = new QPushButton(tr("Run"));
 
-      // Principal layout:
+    // Principal layout:
 
-      QWidget *widget = new QWidget(this);
+    QWidget *widget = new QWidget(this);
 
-      d->progression_stack = new medProgressionStack(widget);
+    d->progression_stack = new medProgressionStack(widget);
 
-      QVBoxLayout *layprinc = new QVBoxLayout();
-      layprinc->addLayout(varianceLayout);
-      layprinc->addWidget(runButton);
-      layprinc->addWidget(d->progression_stack);
+    QVBoxLayout *layprinc = new QVBoxLayout();
+    layprinc->addLayout(varianceLayout);
+    layprinc->addWidget(runButton);
+    layprinc->addWidget(d->progression_stack);
 
-      widget->setLayout(layprinc);
+    widget->setLayout(layprinc);
 
-      // Main toolbox:
-      this->setTitle("ITK Gaussian Smoothing");
-      this->addWidget(widget);
+    // Main toolbox:
+    this->setTitle("ITK Gaussian Smoothing");
+    this->addWidget(widget);
 
-      connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
+    //enable about plugin. Construtor called after the plugin has been registered, go ahead call it.
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin(
+                "ITKProcessExamplePlugin");
+    setAboutPluginButton(plugin);
+    setAboutPluginVisibility(true);
+
+    connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 
 }
 
@@ -83,10 +91,10 @@ bool ITKProcessExampleToolBox::registered(void)
 
 dtkAbstractData* ITKProcessExampleToolBox::processOutput(void)
 {
-        if(!d->process)
-            return NULL;
+    if(!d->process)
+        return NULL;
 
-        return d->process->output();
+    return d->process->output();
 }
 
 
