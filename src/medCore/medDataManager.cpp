@@ -57,6 +57,8 @@ public:
     typedef QHash<medDataIndex, dtkSmartPointer<dtkAbstractData> > DataCacheContainerType;
     DataCacheContainerType dataCache;
     DataCacheContainerType volatileDataCache;
+    
+    QHash<QString, medDataIndex > npDataIndexBeingSaved;
 
     medAbstractDbController* getDbController()
     {
@@ -524,16 +526,18 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
     if (d->volatileDataCache.count(index) > 0)
     {
         dtkSmartPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
-
+        QUuid tmpUid = QUuid::createUuid().toString();
+        d->npDataIndexBeingSaved[tmpUid] = index;
+        
         medAbstractDbController* db = d->getDbController();
-        connect(db,SIGNAL(updated(const medDataIndex &)),this,SLOT(onSingleNonPersistentDataStored(const medDataIndex &)));
+        connect(db,SIGNAL(updated(const medDataIndex &, const QString &)),this,SLOT(onSingleNonPersistentDataStored(const medDataIndex &, const QString &)));
 
         if(db)
-            db->import(dtkdata.data());
+            db->import(dtkdata.data(),tmpUid);
     }
 }
 
-void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index )
+void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index, const QString &uuid )
 {
     medAbstractDbController* db = d->getDbController();
     medAbstractDbController* npDb = d->getNonPersDbController();
@@ -541,14 +545,8 @@ void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index 
     if ((!db)||(!npDb))
         return;
 
-    foreach(medDataIndex npIndex, d->volatileDataCache.keys())
-    {
-        if (npIndex.imageId() == index.imageId())
-        {
-            npDb->remove(npIndex);
-            d->volatileDataCache.remove(npIndex);
-        }
-    }
+    npDb->remove(d->npDataIndexBeingSaved[uuid]);
+    d->volatileDataCache.remove(d->npDataIndexBeingSaved[uuid]);
 
     emit dataAdded(index);
 }

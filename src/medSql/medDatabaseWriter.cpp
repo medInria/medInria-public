@@ -35,12 +35,14 @@ class medDatabaseWriterPrivate
 {
 public:
     dtkAbstractData *data;
+    QString callerUuid;
     bool isCancelled;
 };
 
-medDatabaseWriter::medDatabaseWriter(dtkAbstractData *data) : medJobItem(), d(new medDatabaseWriterPrivate)
+medDatabaseWriter::medDatabaseWriter(dtkAbstractData *data, const QString &callerUuid) : medJobItem(), d(new medDatabaseWriterPrivate)
 {
     d->data = data;
+    d->callerUuid = callerUuid;
     d->isCancelled = false;
 }
 
@@ -497,7 +499,11 @@ void medDatabaseWriter::run(void)
 
     emit progressed(100);
     emit success(this);
-    emit addedIndex(index);
+    
+    if (d->callerUuid == "")
+        emit addedIndex(index);
+    else
+        emit addedIndex(index,d->callerUuid);
 }
 
 void medDatabaseWriter::onCancel( QObject* )

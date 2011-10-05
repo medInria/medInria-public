@@ -44,7 +44,7 @@ class medDatabaseWriter : public medJobItem
     Q_OBJECT
 
 public:
-     medDatabaseWriter(dtkAbstractData *data);
+     medDatabaseWriter(dtkAbstractData *data, const QString& callerUuid = QString());
     ~medDatabaseWriter(void);
 
     void run(void);
@@ -56,6 +56,7 @@ signals:
     void success(QObject *);
     void failure(QObject *);
     void progressed(int);
+    void addedIndex(const medDataIndex &, const QString &);
     void addedIndex(const medDataIndex &);
 
 private:
