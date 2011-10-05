@@ -29,7 +29,7 @@ vtkSphericalHarmonicManager::vtkSphericalHarmonicManager()
 vtkSphericalHarmonicManager::~vtkSphericalHarmonicManager()
 {
 
-  this->Initialize();
+//  this->Initialize();
 
   if( this->RenderWindowInteractor )
   {

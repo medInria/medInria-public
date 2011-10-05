@@ -114,8 +114,8 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(int tess) {
 vtkSphericalHarmonicSource::~vtkSphericalHarmonicSource() {
     if (shell)
         shell->Delete();
-    if (SphericalHarmonics)
-        delete[] SphericalHarmonics;
+//    if (SphericalHarmonics)
+//        delete[] SphericalHarmonics;
     SphericalHarmonics = 0;
     shell = 0;
 }
@@ -295,6 +295,20 @@ std::complex<double> GetSH(int _l, int _m, double theta, double phi) {
   double factor = sqrt(((double)(2*_l+1) / (4.0*M_PI))*(Factorial(_l - absm)
                                                         / Factorial(_l + absm)))*boost::math::legendre_p (_l, absm, cos(theta));
 
+//  if(0) {
+//    std::cout << "(l,m): " << _l << "," << _m  << std::endl;
+//    std::cout << "legendre: " <<
+//      boost::math::legendre_p (_l, absm, cos(theta))  << std::endl;
+//    std::cout << "factorial: _factorial(l - m) " << Factorial(_l - absm)   << std::endl;
+//    std::cout << "factorial: _factorial(l + m) " << Factorial(_l + absm)   << std::endl;
+//    std::cout << "norm: " << ((double)(2*_l+1) / (4.0*M_PI))  << std::endl;
+//    std::cout << "f: " <<
+//      (sign*sqrt(((double)(2*_l+1) / (4.0*M_PI)) *
+//                 (Factorial(_l - absm) / Factorial(_l + absm))))  << std::endl;
+//    std::cout << "fact: " << factor  << std::endl;
+//    std::cout << "exponential: " << retval  << std::endl;
+//  }
+
   retval = factor*retval;
 
   if (_m<0) {
@@ -303,6 +317,8 @@ std::complex<double> GetSH(int _l, int _m, double theta, double phi) {
   }
 
   return retval;
+
+
 }
 
 
@@ -372,7 +388,11 @@ ComputeSHMatrix(const int rank,vtkPolyData* shell,const bool FlipX,const bool Fl
             const std::complex<double> cplx = GetSH(l,0,theta,phi);
             test3 = real(cplx);
             test2 = std::tr1::sph_legendre(l,0,theta);
-            B(j,i)=test3;
+//            cout << "l " << l << " m " << "0" << "\t";
+//            cout << "Y_"<<j<<"("<<theta<<", "<< phi<<"): "<<"\t";
+//            cout <<cplx << std::endl;
+
+            B(j,i)=test3;j=j+1;
 
             for(int m=1,s=-1;m<=l;++m,++j,s=-s) {
 
@@ -393,26 +413,34 @@ ComputeSHMatrix(const int rank,vtkPolyData* shell,const bool FlipX,const bool Fl
                 test  = s*c1*(cos(m*phi));//like t3 at hardi.cpp but math simplified and with tr1
                 test1 = c1*(cos(m*phi));//like RshBasis.pdf eq 1.2 but math simplified and with tr1
                 test2 = factor*real(cplxA2);//like RshBasis.pdf eq 1.2
-                test3 = factor*real(cplxA3);//like t3 at hardi.cpp
+                test3 = factor*real(cplxB3);//like t3 at hardi.cpp
 
-                if(std::abs(test-test3)>=0.0000000000001)
-                    std::cout << "error "<< test-test3 << std::endl;
-                if(std::abs(test1-test2)>=0.0000000000001)
-                    std::cout << "error "<< test1-test2 << std::endl;
+//                if(std::abs(test-test3)>=0.0000000000001)
+//                    std::cout << "error "<< test-test3 << std::endl;
+//                if(std::abs(test1-test2)>=0.0000000000001)
+//                    std::cout << "error "<< test1-test2 << std::endl;
 
-                B(j,i)   = test3;
+                B(j,i)   = test;
                 //+m Imag
                 test  = c1*(sin(s*m*phi));//like t3 at hardi.cpp but math simplified and with tr1
                 test1 = c1*(sin(m*phi));
                 test2 = factor*real(cplxB2);//+m
-                test3 = factor*real(cplxB3);
+                test3 = factor*real(cplxA3);
 
-                if(std::abs(test-test3)>=0.0000000000001)
-                    std::cout << "error "<< test-test3 << std::endl;
-                if(std::abs(test1-test2)>=0.0000000000001)
-                    std::cout << "error "<< test1-test2 << std::endl;
+//                cout << "l " << l << " m " << m << "\t";
+//                cout << "Y_"<<j<<"("<<theta<<", "<< phi<<"): "<<"\t";
+//                cout <<cplxB3 << std::endl;;
 
-                B(++j,i) = test3;
+//                if(std::abs(test-test3)>=0.0000000000001)
+//                    std::cout << "error "<< test-test3 << std::endl;
+//                if(std::abs(test1-test2)>=0.0000000000001)
+//                    std::cout << "error "<< test1-test2 << std::endl;
+
+                B(++j,i) = test;
+
+//                cout << "Y_"<<j<<"("<<theta<<", "<< phi<<"): "<<"\t";
+//                cout <<cplxA3 << std::endl;
+
             }
         }
     }
@@ -618,7 +646,7 @@ ComputeSHMatrixRshBasis(const int rank,vtkPolyData* shell,const bool FlipX,const
             const std::complex<double> cplx = GetSH(l,0,theta,phi);
             test3 = real(cplx);
             test2 = std::tr1::sph_legendre(l,0,theta);
-            B(j,i)=test3;
+            B(j,i)=test3; j=j+1;
 
             for(int m=1,s=-1;m<=l;++m,++j,s=-s) {
 
