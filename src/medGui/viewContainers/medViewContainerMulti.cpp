@@ -103,7 +103,6 @@ void medViewContainerSingle2::onViewFocused (bool value)
 
     if (dtkAbstractView *view = d->view)
     {
-        qDebug() << "yop2";
         emit focused(view);
     }
 
@@ -127,7 +126,10 @@ medViewContainerMulti::medViewContainerMulti (QWidget *parent) : medViewContaine
 
 medViewContainerMulti::~medViewContainerMulti()
 {
-    medViewContainer::setView(0);
+    foreach ( QObject* obj, d->layout->children())
+    {
+        obj->deleteLater();
+    }
 
     delete d2;
     d2 = NULL;
