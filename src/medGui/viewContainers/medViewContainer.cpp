@@ -118,7 +118,7 @@ bool medViewContainer::isDaddy(void) const
 
 medViewContainer * medViewContainer::parentContainer() const
 {
-    return dynamic_cast< medViewContainer * >( this->parentWidget() );
+    return qobject_cast< medViewContainer * >( this->parentWidget() );
 }
 
 const medViewContainer * medViewContainer::root() const
@@ -188,6 +188,12 @@ medViewPool *medViewContainer::pool (void)
 
 void medViewContainer::setView(dtkAbstractView *view)
 {
+    if (!isLeaf())
+    {
+        //go down to the actual currently selected container to set the view.
+        current()->setView(view);
+        return;
+    }
     if (view==d->view)
         return;
 
@@ -300,6 +306,7 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 
 void medViewContainer::focusOutEvent(QFocusEvent *event)
 {
+    Q_UNUSED(event);
     //d->clicked = false;
 
     //this->recomputeStyleSheet();

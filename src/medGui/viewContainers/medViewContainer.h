@@ -246,9 +246,13 @@ public:
      * This method is meant to be overloaded in inherited classes with the specific behaviour.
      *
      * It is the responsibility of this method to give focus to the container.
-     * Method overriding this MUST call setFocus(Qt::MouseFocusReason); and NOT onFocused()
+     * Method overriding this MUST call setFocus(Qt::MouseFocusReason);
+     * and NOT onFocused()
      * since this method doesn't deal with changing from the old container
      * to the new one if needed.
+     *
+     * If the container is not a leaf, and therefore doesn't have a view,
+     * this method is in charge of setting the view of the current container.
      *
      * @param view
     */
@@ -257,8 +261,14 @@ public:
     /**
      * @brief Gets the view associated with the container.
      *
+     * If the container is not a leaf, returns a pointer to an editable view
+     * in the current child container.
+     * If the container is multi for instance, it will return NULL to this request, there is no editable view in Multi.
+
+     * Use this method to get a pointer to a view in which to drop some data
+     *
      * @param void
-     * @return dtkAbstractView *
+     * @return dtkAbstractView * or NULL if there is no editable view attached to this container, or its current leaf.
     */
     virtual dtkAbstractView         *view  (void) const;
 

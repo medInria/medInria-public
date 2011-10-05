@@ -30,7 +30,8 @@ class MEDGUI_EXPORT medViewContainerSingle2 : public medViewContainerSingle
     Q_OBJECT
 
 public:
-     medViewContainerSingle2(QWidget *parent = 0) : medViewContainerSingle(parent) {}
+     medViewContainerSingle2(QWidget *parent = 0) :
+         medViewContainerSingle(parent) {}
     ~medViewContainerSingle2();
 
     void setView(dtkAbstractView *view);
@@ -89,12 +90,7 @@ public slots:
     void onViewClosing    (void);
     void onViewFullScreen (bool value);
 
-protected:
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dragMoveEvent(QDragMoveEvent *event);
-    void dragLeaveEvent(QDragLeaveEvent *event);
-    void dropEvent(QDropEvent *event);
-
+private:
     medViewContainerMultiPrivate *d2;
 
     //Needed to access the setCurrent protected method

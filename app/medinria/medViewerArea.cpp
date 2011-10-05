@@ -253,26 +253,30 @@ bool medViewerArea::open(const medDataIndex& index)
 //        medDataManager::instance()->blockSignals (false);
         if ( data.isNull() )
         {
-
             return false;
         }
 
-        medViewContainer * current = this->currentContainerFocused();
-        if ( current != NULL )
-            view = qobject_cast<medAbstractView*>(current->view());
+        //get the root container, to see if there is an available view to dump our data in.
+        medViewContainer * root = this->currentRootContainer();
+        if ( root != NULL )
+        {
+            view = qobject_cast<medAbstractView*>(root->view());
+        }
 
-        if( view.isNull() ) {
+        if( view.isNull() )
+        {
+            //container empty, or multi with no extendable view
             view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"));
             connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
             connect (view, SIGNAL(dataRemoved(int )), this, SLOT(onDataRemoved(int )));
         }
 
         if( view.isNull() ) {
-            qDebug() << "Unable to create a v3dView";
+            qWarning() << "Unable to create a v3dView";
             return false;
         }
 
-        // another hash?!
+        // add the view to the viewManager. Not much used nowadays
         medViewManager::instance()->insert(index, view);
 
         // set the data to the view
@@ -280,23 +284,13 @@ bool medViewerArea::open(const medDataIndex& index)
 
         // call update
         QMutexLocker ( &d->mutex );
-        if ( current != NULL )  // implies root != NULL
+        if ( root != NULL )
         {
-            medViewContainer * root = this->currentRootContainer();
-//            root->setUpdatesEnabled (false);
-//            root->setDisabled (true);
-
-            current->setView(view);
+            //set the view to the current container
+            root->setView(view);
             view->reset();
             view->update();
-
-//            root->setDisabled (false);
-//            root->setUpdatesEnabled (true);
-            qDebug() <<  QApplication::focusWidget();
-            qDebug()<< current;
-            qDebug() <<  root;
-//            current->setFocus(Qt::MouseFocusReason);
-            qDebug() <<  QApplication::focusWidget();
+//            qDebug() <<  QApplication::focusWidget();
         }
         return true;
     }

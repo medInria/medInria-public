@@ -33,13 +33,28 @@ medViewContainerSingle2::~medViewContainerSingle2()
 
 void medViewContainerSingle2::setView (dtkAbstractView *view)
 {
-    if (d->view==view)
+//    Never replace an existing view: we are in multi, we always add a new one.
+//    if (d->view==view)
+//        return;
+//
+//    if (d->view) {
+//        this->onViewClosing();
+//    }
+
+    if (d->view)
+    //if we already have a view, we should transfer the request to the root.
+    {
+        if (medViewContainerMulti* container =
+                qobject_cast<medViewContainerMulti*>(parentContainer()))
+        {
+            qDebug() << "let set the parent's container" << container;
+            container->setView( view );
+            return;
+        }
+        qWarning() << "should find parent container, we're in a multi... ";
         return;
-
-    if (d->view) {
-        this->onViewClosing();
     }
-
+//    qDebug() << "setting the view" << view << "in container" << this;
     d->view = view;
 
     if (view) {
@@ -83,10 +98,10 @@ void medViewContainerSingle2::onViewFocused (bool value)
 
     if ( !this->isEmpty() )
     {
-        dynamic_cast<medViewContainerMulti*>(parentContainer())->setCurrent( this );
+        dynamic_cast<medViewContainerMulti*>( parentContainer() )->setCurrent( this );
     }
 
-    if (dtkAbstractView *view = this->view())
+    if (dtkAbstractView *view = d->view)
     {
         qDebug() << "yop2";
         emit focused(view);
@@ -94,6 +109,11 @@ void medViewContainerSingle2::onViewFocused (bool value)
 
     this->update();
 }
+
+//dtkAbstractView * medViewContainerSingle2::view() const
+//{
+//    return NULL;
+//}
 
 class medViewContainerMultiPrivate
 {
@@ -139,9 +159,10 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     if (!view)
         return;
 
-    if (d2->views.contains (view))
-        return;
+//    if (d2->views.contains (view))
+//        return;
 
+    qDebug() << "setting the view" << view << "from multi container" << this;
     QList<QWidget *> content;
     for(int i = 0; i < d->layout->rowCount() ; i++) {
         for(int j = 0; j < d->layout->columnCount() ; j++) {
@@ -335,35 +356,4 @@ void medViewContainerMulti::onViewFullScreen (bool value)
             }
       }
   }
-}
-
-void medViewContainerMulti::dragEnterEvent(QDragEnterEvent *event)
-{
-    medViewContainer::dragEnterEvent(event);
-}
-
-void medViewContainerMulti::dragMoveEvent(QDragMoveEvent *event)
-{
-    medViewContainer::dragMoveEvent(event);
-}
-
-void medViewContainerMulti::dragLeaveEvent(QDragLeaveEvent *event)
-{
-    medViewContainer::dragLeaveEvent(event);
-}
-
-void medViewContainerMulti::dropEvent(QDropEvent *event)
-{
-    //We need to set the current container to the parent if we want to drop
-    //not within the singleView, but add a new container to the multi
-    if(medViewContainerMulti *container = dynamic_cast<medViewContainerMulti *>(this->parentWidget())) {
-//        qDebug()<<"reset current";
-        this->setCurrent(container);
-    }
-    else {
-//        qDebug()<<"current is ourself";
-        this->setCurrent(this);
-    }
-
-    medViewContainer::dropEvent(event);
 }
