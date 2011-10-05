@@ -326,6 +326,8 @@ void medDatabaseNonPersistentReader::run(void)
 	item->d->index = index;
 	item->d->data = data;
 
+	qDebug() << "in medDatabaseNonPersistentReader.cpp, medDataIndex = " << index;
+
         medDatabaseNonPersistentController::instance()->insert(index, item);
     }
 

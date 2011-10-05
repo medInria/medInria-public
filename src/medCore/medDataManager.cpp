@@ -501,10 +501,14 @@ void medDataManager::importNonPersistent(QString file)
 
 void medDataManager::importNonPersistent( QString file, const QString &uuid )
 {
+    qDebug() << "DEBUG : entering medDataManager::importNonPersistent(QString file, const QString &uuid)";
     medAbstractDbController* npDb = d->getNonPersDbController();
     if(npDb)
     {
-        connect(npDb,SIGNAL(updated(const medDataIndex &)),this,SLOT(onNonPersistentDataImported(const medDataIndex &)));
+        qDebug() << "DEBUG : medDataManager::importNonPersistent entering IF";
+        //connect(npDb,SIGNAL(updated(const medDataIndex &)),this,SLOT(onNonPersistentDataImported(const medDataIndex &)));
+        connect(npDb,SIGNAL(updated(const medDataIndex &, const QString&)),this,SLOT(onNonPersistentDataImported(const medDataIndex &,const QString&)));
+        qDebug() << "DEBUG : medDataManager::importNonPersistent / IF, after strange connect";
         npDb->import(file, uuid);
     }
 }
@@ -523,8 +527,11 @@ void medDataManager::storeNonPersistentDataToDatabase( void )
 
 void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex &index )
 {
+    qDebug() << "DEBUG : medDataManager::storeNonPersistentSingleDataToDatabase";
+    qDebug() << "d->volatileDataCache.count(index) = " << d->volatileDataCache.count(index);
     if (d->volatileDataCache.count(index) > 0)
     {
+        qDebug() << "method storeNonPersistentSingleDataToDatabase, IF";
         dtkSmartPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
         QUuid tmpUid = QUuid::createUuid().toString();
         d->npDataIndexBeingSaved[tmpUid] = index;
@@ -539,6 +546,9 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
 
 void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index, const QString &uuid )
 {
+    qDebug() << "DEBUG : entering method onSingleNonPersistentDataStored";
+    qDebug() << "index = " << index;
+
     medAbstractDbController* db = d->getDbController();
     medAbstractDbController* npDb = d->getNonPersDbController();
 
