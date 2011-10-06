@@ -40,7 +40,7 @@ medViewContainer::medViewContainer(QWidget *parent)
 
     d->pool = new medViewPool (this);
 
-    medViewContainer *container = dynamic_cast<medViewContainer *>(parent);
+    medViewContainer *container = qobject_cast<medViewContainer *>(parent);
     if ( container != NULL ) {
         connect(this,      SIGNAL(dropped(const medDataIndex&)),
                 container, SIGNAL(dropped(const medDataIndex&)));
@@ -107,7 +107,7 @@ bool medViewContainer::isLeaf(void) const
 bool medViewContainer::isEmpty(void) const
 {
     return ( this->view() == NULL &&
-             this->childContainers().count() == 0 );
+             this->childContainers().isEmpty());
 }
 
 bool medViewContainer::isDaddy(void) const
@@ -137,7 +137,7 @@ QList< medViewContainer * > medViewContainer::childContainers() const
 {
     QList< medViewContainer * > containers;
     foreach ( QObject * child, this->children() ) {
-        medViewContainer * c = dynamic_cast<medViewContainer *>( child );
+        medViewContainer * c = qobject_cast<medViewContainer *>( child );
         if ( c != NULL ) {
             containers << c;
             containers << c->childContainers();
@@ -252,7 +252,7 @@ void medViewContainer::onContainerClicked (void)
 void medViewContainer::setCurrent(medViewContainer *container)
 {
     medViewContainer * parent =
-        dynamic_cast<medViewContainer *>( this->parentWidget() );
+        qobject_cast<medViewContainer *>( this->parentWidget() );
     if ( parent != NULL )
         parent->setCurrent(container);
     else
@@ -302,7 +302,7 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
     d->clicked = true;
 //    qDebug()<< "focusInEvent";
     this->onViewFocused( true );
-
+//    qDebug()<< this->isDaddy() << isEmpty() << isLeaf() << isClicked();
     this->recomputeStyleSheet();
 
     if (former)

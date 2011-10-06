@@ -309,17 +309,17 @@ void medViewContainerCustom::onViewClosing (void)
 
 void medViewContainerCustom::onViewFullScreen (bool value)
 {
-    if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
-        parent->onViewFullScreen2 (value, dynamic_cast<dtkAbstractView *>(this->sender()) );
+    if (medViewContainerCustom *parent = qobject_cast<medViewContainerCustom*>(this->parent())) {
+        parent->onViewFullScreen2 (value, qobject_cast<dtkAbstractView *>(this->sender()) );
     }
     else { // top level medViewContainerCustom
-        this->fullScreen (value, dynamic_cast<dtkAbstractView *>(this->sender()));
+        this->fullScreen (value, qobject_cast<dtkAbstractView *>(this->sender()));
     }
 }
 
 void medViewContainerCustom::onViewFullScreen2 (bool value, dtkAbstractView *view)
 {
-    if (medViewContainerCustom *parent = dynamic_cast<medViewContainerCustom*>(this->parent())) {
+    if (medViewContainerCustom *parent = qobject_cast<medViewContainerCustom*>(this->parent())) {
         parent->onViewFullScreen2 (value, view );
     }
     else { // top level medViewContainerCustom
@@ -340,7 +340,7 @@ void medViewContainerCustom::fullScreen (bool value, dtkAbstractView *view)
   else {
       foreach (medViewContainer *container, this->childContainers()) {
           medViewContainerCustom * custom =
-              dynamic_cast< medViewContainerCustom * >( container );
+              qobject_cast< medViewContainerCustom * >( container );
           if ( custom != NULL )
               custom->fullScreen (value, view);
       }
@@ -380,7 +380,7 @@ void medViewContainerCustom::clear (void)
 
     foreach (medViewContainer *container, this->childContainers()) {
         medViewContainerCustom * custom =
-            dynamic_cast< medViewContainerCustom * >( container );
+            qobject_cast< medViewContainerCustom * >( container );
         if ( custom != NULL )
         {
             custom->clear();
