@@ -249,5 +249,11 @@ void medTabbedViewContainers::removeContainer(const QString& name)
 void medTabbedViewContainers::onCurrentContainerChanged(int index)
 {
     QString name = this->tabText(index);
+    if (d->containers.contains(name) &&
+            d->containers[name]->current())
+    {
+        d->containers[name]->current()->setFocus(Qt::MouseFocusReason);
+        qDebug() << "giving focus to:"<< d->containers[name]->current();
+    }
     emit currentChanged(name);
 }

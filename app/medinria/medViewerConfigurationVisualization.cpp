@@ -55,7 +55,7 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
     d->timeToolBox           = new medViewerToolBoxTime(parent);
 
-    
+
     this->addToolBox( d->viewPropertiesToolBox );
     this->addToolBox( d->timeToolBox );
 

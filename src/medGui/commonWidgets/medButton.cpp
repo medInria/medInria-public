@@ -40,7 +40,7 @@ medButton::~medButton( void )
 
 QSize medButton::sizeHint( void ) const
 {
-    return d->icon->size();
+    return d->icon->sizeHint();
 }
 
 void medButton::setIcon(QPixmap icon)
@@ -51,5 +51,6 @@ void medButton::setIcon(QPixmap icon)
 
 void medButton::mousePressEvent( QMouseEvent *event )
 {
+    Q_UNUSED(event)
     emit triggered();
 }

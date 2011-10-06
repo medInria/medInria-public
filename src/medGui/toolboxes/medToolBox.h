@@ -31,7 +31,7 @@ class medToolBoxTab;
 class medToolBoxPrivate;
 class medToolBoxBody;
 class medToolBoxHeader;
-
+class dtkPlugin;
 
 
 /**
@@ -133,6 +133,27 @@ public:
     */
     virtual void uncheckButtons( const QString & buttonGroup ) {}
 
+
+    /**
+     * @brief Enables or disable the aboutPlugin button.
+     *
+     * @param enable true to display the button.
+     */
+    void setAboutPluginVisibility(bool enable);
+
+    /**
+     * @brief Returns the aboutPlugin button visibility.
+     *
+     */
+    bool aboutPluginVisibility(void);
+
+    /**
+     * @brief Sets up the plugin this button is refering to.
+     *
+     * @param plugin The dtkPlugin this button will give info about.
+     */
+    void setAboutPluginButton(dtkPlugin * plugin);
+
 signals:
     /**
      * @brief Tells the world to add a new toolbox to the medToolboxContainer.
@@ -140,7 +161,7 @@ signals:
      *
      * @param toolbox
     */
-    void    addToolBox(medToolBox *toolbox);
+    void addToolBox(medToolBox *toolbox);
 
     /**
      * @brief Tells the world to remove a toolbox from the medToolBoxContainer.
@@ -256,6 +277,14 @@ public slots:
      * @param void
     */
     void show(void);
+
+
+protected slots:
+    /**
+     * @brief Raises a dtkAboutPlugin dialog.
+     *
+     */
+    void onAboutButtonClicked();
 
 private:
     medToolBoxPrivate *d;

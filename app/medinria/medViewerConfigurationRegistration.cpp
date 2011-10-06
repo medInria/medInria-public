@@ -20,7 +20,7 @@ public:
 
 medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationRegistrationPrivate)
 {
-   
+
 
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
     this->addToolBox(d->viewPropertiesToolBox);
