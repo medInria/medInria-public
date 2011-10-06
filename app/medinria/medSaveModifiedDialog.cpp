@@ -13,7 +13,9 @@ public:
     QTreeWidget *treeWidget;
     QPushButton *saveButton;
     QPushButton *doneButton;
+
     unsigned int counter;
+    QMutex mutex;
 };
 
 /*********************************/
@@ -51,8 +53,6 @@ class medSaveModifiedDialogCheckListItem : public QTreeWidgetItem
 
 medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent), d (new medSaveModifiedDialogPrivate)
 {
-    d->counter = 0;
-
     QLabel *label = new QLabel(this);
     label->setText(tr("The following data has been created. Do you want save them ?"));
 
@@ -84,7 +84,6 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     connect (d->saveButton, SIGNAL(clicked()), this, SLOT(Save()));
     connect (d->doneButton,SIGNAL(clicked()), this, SLOT(close()));
     connect (medDataManager::instance(), SIGNAL(dataAdded(const medDataIndex &)),this, SLOT(updateCounter()) );
-    connect (this, SIGNAL(updateTree()), this, SLOT(onUpdateTree()));
 
     this->setLayout(layout);
     setModal(true);
@@ -99,6 +98,7 @@ medSaveModifiedDialog::~medSaveModifiedDialog()
 void medSaveModifiedDialog::Save( )
 {
     QList<medDataIndex> list;
+    d->counter = 0;
 
     for (int i = 0; i < d->treeWidget->topLevelItemCount(); ++i)
     {
@@ -111,16 +111,21 @@ void medSaveModifiedDialog::Save( )
         }
     }
 
+    qDebug() << "list" << list;
+
     foreach(medDataIndex index, list)
             medDataManager::instance()->storeNonPersistentSingleDataToDatabase(index);
 }
 
 void medSaveModifiedDialog::updateCounter()
 {
+        qDebug() << "DEUBG  d->counter" << d->counter;
+        d->mutex.lock();
         d->counter--;
+        d->mutex.unlock();
 
         if(d->counter == 0)
-            emit updateTree();
+            onUpdateTree();
 }
 
 void medSaveModifiedDialog::onUpdateTree()

@@ -21,10 +21,6 @@ public:
     medSaveModifiedDialog(QWidget *parent);
     virtual ~medSaveModifiedDialog();
 
-signals :
-
-    void updateTree();
-
 public slots:
 
     void Save();
