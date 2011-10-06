@@ -53,9 +53,6 @@ public slots:
     void onCancel(QObject*);
 
 signals:
-    void success(QObject *);
-    void failure(QObject *);
-    void progressed(int);
     void addedIndex(const medDataIndex &, const QString &);
     void addedIndex(const medDataIndex &);
 

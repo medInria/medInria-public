@@ -504,7 +504,6 @@ void medDataManager::importNonPersistent(QString file)
 
 void medDataManager::importNonPersistent( QString file, const QString &uuid )
 {
-    qDebug() << "DEBUG : entering medDataManager::importNonPersistent(QString file, const QString &uuid)";
     medAbstractDbController* npDb = d->getNonPersDbController();
     if(npDb)
     {
@@ -527,8 +526,6 @@ void medDataManager::storeNonPersistentDataToDatabase( void )
 
 void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex &index )
 {
-    qDebug() << "DEBUG : medDataManager::storeNonPersistentSingleDataToDatabase";
-    qDebug() << "d->volatileDataCache.count(index) = " << d->volatileDataCache.count(index);
     if (d->volatileDataCache.count(index) > 0)
     {
         qDebug() << "method storeNonPersistentSingleDataToDatabase, IF";
@@ -546,9 +543,6 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
 
 void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index, const QString &uuid )
 {
-    qDebug() << "DEBUG : entering method onSingleNonPersistentDataStored";
-    qDebug() << "index = " << index;
-
     medAbstractDbController* db = d->getDbController();
     medAbstractDbController* npDb = d->getNonPersDbController();
 
