@@ -97,18 +97,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 
     // Layout section
 
-    QPushButton *layoutButtonCompare = new QPushButton("Compare", this);
-    layoutButtonCompare->setCheckable(true);
-    layoutButtonCompare->setChecked(true);
-
-    QPushButton *layoutButtonFuse = new QPushButton("Fuse", this);
-    layoutButtonFuse->setCheckable(true);
-    layoutButtonFuse->setChecked(false);
-
-    QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
-    layoutButtonGroup->addButton(layoutButtonCompare);
-    layoutButtonGroup->addButton(layoutButtonFuse);
-    layoutButtonGroup->setExclusive(true);
+   
 
 //    d->layoutFuseSlider = new QSlider(Qt::Horizontal, this);
 //    d->layoutFuseSlider->setRange(1, 100);
@@ -127,19 +116,10 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 //    radioGroupLayout->addWidget(d->blendRadio);
 //    radioGroupLayout->addWidget(d->checkerboardRadio);
 
-    QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
-    layoutButtonLayout->addWidget(layoutButtonCompare);
-    layoutButtonLayout->addWidget(layoutButtonFuse);
 
-    QVBoxLayout *layoutLayout = new QVBoxLayout;
-    layoutLayout->addLayout(layoutButtonLayout);
 //    layoutLayout->addLayout(radioGroupLayout);
 //    layoutLayout->addWidget(d->layoutFuseSlider);
-    QWidget * layoutSection = new QWidget(this);
-    layoutSection->setLayout(layoutLayout);
 
-    connect(layoutButtonCompare, SIGNAL(clicked()), this, SIGNAL(setupLayoutCompare()));
-    connect(layoutButtonFuse, SIGNAL(clicked()), this, SIGNAL(setupLayoutFuse()));
 
 //    connect(d->blendRadio, SIGNAL(toggled(bool)), this, SLOT(onBlendModeSet(bool)));
 //    connect(d->checkerboardRadio, SIGNAL(toggled(bool)), this, SLOT(onCheckerboardModeSet(bool)));
@@ -151,10 +131,25 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 
 
     // ---
-    addWidget(layoutSection);
+    QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
+    layoutButtonGroup->addButton(d->saveImageButton);
+    layoutButtonGroup->addButton(d->saveTransButton);
+    
+    QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
+    layoutButtonLayout->addWidget(d->saveImageButton);
+    layoutButtonLayout->addWidget(d->saveTransButton);
+
+    QVBoxLayout *layoutLayout = new QVBoxLayout;
+    layoutLayout->addLayout(layoutButtonLayout);
+
+    QWidget * layoutSection = new QWidget(this);
+    layoutSection->setLayout(layoutLayout);
+
+    
     addWidget(d->toolboxes);
-    addWidget(d->saveImageButton);
-    addWidget(d->saveTransButton);
+    addWidget(layoutSection);
+    //addWidget(d->saveImageButton);
+    //addWidget(d->saveTransButton);
 
 
     this->setTitle(tr("Registration"));

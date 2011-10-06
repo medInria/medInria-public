@@ -93,7 +93,7 @@ void medDropSite::dropEvent(QDropEvent *event)
 
     event->acceptProposedAction();
     
-    emit objectDropped();
+    emit objectDropped(d->index);
 }
 
 void medDropSite::clear(){

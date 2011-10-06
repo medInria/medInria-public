@@ -1136,6 +1136,13 @@ QMessageBox {
     background-color: #2b2b2b;
 }
 
+/**
+ * QDialog
+ *
+ */
+QDialog {
+    background: #313131;
+}
 
 /**
  * QFileDialog

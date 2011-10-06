@@ -52,9 +52,7 @@ public:
     void run(void);
 
 signals:
-    void success(QObject *);
-    void failure(QObject *);
-    void progressed(int);
+
     /**
     * @brief Signal emitted when the reading is complete (or has failed).
     *

@@ -25,6 +25,7 @@
 #include <QtGui>
 
 class medToolBoxHeaderPrivate;
+class medButton;
 
 /**
  * @brief Contains the header of a medToolBox.
@@ -71,13 +72,28 @@ public:
      * @return const QString
      */
     QString title() const;
-     
-    /** 
+
+    /**
      * @brief Sets the offset of the header's title from upper left corner.
      *
      * @param titleOffset
     */
     void setTitleOffset(const QPoint & titleOffset);
+
+    /**
+     * @brief
+     *
+     * @param visible
+     */
+    void setAboutButtonVisibility(bool visible);
+
+
+    /**
+     * @brief Returns a pointer to the aboutButton.
+     *
+     */
+    medButton* aboutButton();
+
 
 protected:
     /**

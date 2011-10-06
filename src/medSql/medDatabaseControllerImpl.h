@@ -120,13 +120,13 @@ public slots:
      * Calls import(const QString& file,bool indexWithoutCopying) with indexWithoutCopying = false.
      *
     */
-    void import(const QString& file,const QString& importUuid=QString());
+    void import(const QString& file, QString importUuid=QString());
 
     /**
     * Import data into the db read from memory
     * @params dtkAbstractData * data dataObject
     */
-    void import(dtkAbstractData *data,const QString& importUuid=QString());
+    void import(dtkAbstractData *data, QString importUuid=QString());
 
     /** override base class */
     virtual void remove(const medDataIndex& index);

@@ -86,7 +86,7 @@ void medDatabaseNonPersistentImporter::run(void)
     medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient (patientName);
     if (databaseIndex.isValid()) {
         qDebug() << "Patient exists in the database, I reuse her Id";
-	patientId = databaseIndex.patientId();
+    patientId = databaseIndex.patientId();
     }
     else {
         for (int i=0; i<items.count(); i++)
@@ -105,11 +105,11 @@ void medDatabaseNonPersistentImporter::run(void)
     databaseIndex = medDatabaseController::instance()->indexForStudy (patientName, studyName);
     if (databaseIndex.isValid()) {
         qDebug() << "Study exists in the database, I reuse its Id";
-	studyId = databaseIndex.studyId();
+    studyId = databaseIndex.studyId();
     }
     else {
         for (int i=0; i<items.count(); i++)
-	    if (items[i]->name()==patientName && items[i]->studyName()==studyName) {
+        if (items[i]->name()==patientName && items[i]->studyName()==studyName) {
                 studyId = items[i]->index().studyId();
                 break;
             }
@@ -138,7 +138,7 @@ void medDatabaseNonPersistentImporter::run(void)
 
     medDatabaseNonPersistentController::instance()->insert(index, item);
 
-    emit progressed(100);
+    emit progress(this, 100);
     emit success(this);
     emit nonPersistentImported(index, d->callerUuid);
 }

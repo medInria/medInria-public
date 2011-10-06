@@ -68,7 +68,7 @@ public:
     * @params const dtkAbstractData & data
     */
     void importNonPersistent(dtkAbstractData *data);
-    void importNonPersistent(dtkAbstractData *data, const QString &uuid);
+    void importNonPersistent(dtkAbstractData *data, QString uuid);
 
 
     /**
@@ -178,10 +178,10 @@ signals:
      * @param index the @medDataIndex of the image
      * @param uuid the identifier linked to this import request
     */
-    void importFailed(const medDataIndex& index,QString uuid);
+    void importFailed(const medDataIndex& index, QString uuid);
 
 public slots:
-    void onNonPersistentDataImported(const medDataIndex &index,const QString& uuid);
+    void onNonPersistentDataImported(const medDataIndex &index, QString uuid);
     void onPersistentDataImported(const medDataIndex &index);
     void onSingleNonPersistentDataStored(const medDataIndex &index, const QString &uuid);
 

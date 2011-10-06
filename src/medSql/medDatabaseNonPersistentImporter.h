@@ -53,10 +53,7 @@ public slots:
     void onCancel(QObject*);
 
 signals:
-    void success(QObject *);
-    void failure(QObject *);
-    void progressed(int);
-    void nonPersistentImported(const medDataIndex &, const QString &);
+    void nonPersistentImported(const medDataIndex &, QString);
 
 
 private:

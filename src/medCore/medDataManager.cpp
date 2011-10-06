@@ -436,7 +436,7 @@ void medDataManager::importNonPersistent( dtkAbstractData *data )
     this->importNonPersistent (data, uuid);
 }
 
-void medDataManager::importNonPersistent( dtkAbstractData *data, const QString &uuid)
+void medDataManager::importNonPersistent( dtkAbstractData *data, QString uuid)
 {
     if (!data)
         return;
@@ -459,16 +459,17 @@ void medDataManager::importNonPersistent( dtkAbstractData *data, const QString &
 
     if(npDb)
     {
-        connect(npDb,SIGNAL(updated(const medDataIndex &,const QString &)),this,SLOT(onNonPersistentDataImported(const medDataIndex &,const QString&)));
+        connect(npDb, SIGNAL(updated(const medDataIndex &, QString )), this,
+            SLOT(onNonPersistentDataImported(const medDataIndex &, QString)));
         npDb->import(data, uuid);
     }
 }
 
-void medDataManager::onNonPersistentDataImported(const medDataIndex &index,const QString& uuid)
+void medDataManager::onNonPersistentDataImported(const medDataIndex &index, QString uuid)
 {
     if (!index.isValid()) {
         qWarning() << "index is not valid";
-        emit importFailed(index,uuid);
+        emit importFailed(index, uuid);
         return;
     }
 
@@ -499,16 +500,15 @@ void medDataManager::importNonPersistent(QString file)
     this->importNonPersistent (file, uuid);
 }
 
+//-------------------------------------------------------------------------------------------------------
+
 void medDataManager::importNonPersistent( QString file, const QString &uuid )
 {
     qDebug() << "DEBUG : entering medDataManager::importNonPersistent(QString file, const QString &uuid)";
     medAbstractDbController* npDb = d->getNonPersDbController();
     if(npDb)
     {
-        qDebug() << "DEBUG : medDataManager::importNonPersistent entering IF";
-        //connect(npDb,SIGNAL(updated(const medDataIndex &)),this,SLOT(onNonPersistentDataImported(const medDataIndex &)));
-        connect(npDb,SIGNAL(updated(const medDataIndex &, const QString&)),this,SLOT(onNonPersistentDataImported(const medDataIndex &,const QString&)));
-        qDebug() << "DEBUG : medDataManager::importNonPersistent / IF, after strange connect";
+        connect(npDb, SIGNAL(updated(const medDataIndex &,QString)), this, SLOT(onNonPersistentDataImported(const medDataIndex &,QString)));
         npDb->import(file, uuid);
     }
 }
@@ -628,6 +628,8 @@ void medDataManager::import( dtkSmartPointer<dtkAbstractData> &data )
     if(db)
         db->import(data.data());
 }
+
+//-------------------------------------------------------------------------------------------------------
 
 void medDataManager::onPersistentDataImported(const medDataIndex &index)
 {

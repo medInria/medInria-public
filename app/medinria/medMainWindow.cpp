@@ -682,7 +682,7 @@ void medMainWindow::registerToFactories()
     medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
     medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
     medViewerConfigurationFactory::instance()->registerConfiguration("Filtering",     createMedViewerConfigurationFiltering);
-
+    
     //Register settingsWidgets
     medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
     medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);

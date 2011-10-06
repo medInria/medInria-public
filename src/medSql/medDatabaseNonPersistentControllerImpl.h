@@ -119,14 +119,14 @@ public slots:
     * @param data data to be stored
     * @param callerUuid
     */
-    void import(dtkAbstractData *data,const QString& callerUuid);
+    void import(dtkAbstractData *data, QString callerUuid);
 
     /**
      * Stores data temporarily referenced by temp index
      * @param file data stored at file path.
      * @param callerUuid caller's identifier.
      */
-    void import(const QString& file,const QString& callerUuid);
+    void import(const QString& file, QString callerUuid);
 
     /**
      * Remove data referenced by index from temporary database
@@ -142,8 +142,6 @@ public slots:
     /** true if the given data index matches one in our db*/
     bool contains( const medDataIndex& index) const;
 
-signals:
-    void updated(const medDataIndex&, const QString&);
 
 private:
     medDatabaseNonPersistentControllerImplPrivate *d;

@@ -21,6 +21,10 @@ public:
     dtkSmartPointer<dtkAbstractData> CreateTestData( );
     int getTestResult()const {return testResult;}
 
+    /**
+     * Overloads parent class method to catch all exceptions thrown in slots.
+     *
+     */
     bool notify(QObject *rec, QEvent *ev) {
         try {
             return QCoreApplication::notify(rec, ev);
@@ -33,7 +37,9 @@ public:
         catch (...) {
             dtkDebug() << "Exception caught : " << "[Unknown exception type]";
             testResult = DTK_FAILURE;
+            exit();
         }
+        return false;
     }
 
 public slots:

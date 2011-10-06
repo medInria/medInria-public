@@ -93,7 +93,7 @@ void medDatabaseNonPersistentReader::run(void)
 
     foreach (QString file, fileList) {
 
-        emit progressed((int)(((qreal)fileIndex/(qreal)fileCount)*50.0));
+        emit progress(this, (int)(((qreal)fileIndex/(qreal)fileCount)*50.0));
 
         fileIndex++;
 
@@ -186,7 +186,7 @@ void medDatabaseNonPersistentReader::run(void)
 
     for (it; it!=imagesToWriteMap.end(); it++) {
 
-        emit progressed((int)(((qreal)imageIndex/(qreal)imagesCount)*50.0 + 50.0));
+        emit progress(this, (int)(((qreal)imageIndex/(qreal)imagesCount)*50.0 + 50.0));
 
         imageIndex++;
 
@@ -265,73 +265,73 @@ void medDatabaseNonPersistentReader::run(void)
 
         dtkAbstractData *data = dtkDataList[i];
 
-	QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
+    QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
 
-	int     patientId   = -1;
-	QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
+    int     patientId   = -1;
+    QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
 
-	// check if patient is already in the persistent database
-	medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient (patientName);
-	if (databaseIndex.isValid()) {
-	    qDebug() << "Patient exists in the database, I reuse her Id";
-	    patientId = databaseIndex.patientId();
-	}
-	else {
-	    for (int i=0; i<items.count(); i++)
-	        if (items[i]->name()==patientName) {
-		    patientId = items[i]->index().patientId();
-		    break;
-		}
-	}
+    // check if patient is already in the persistent database
+    medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient (patientName);
+    if (databaseIndex.isValid()) {
+        qDebug() << "Patient exists in the database, I reuse her Id";
+        patientId = databaseIndex.patientId();
+    }
+    else {
+        for (int i=0; i<items.count(); i++)
+            if (items[i]->name()==patientName) {
+            patientId = items[i]->index().patientId();
+            break;
+        }
+    }
 
-	if (patientId==-1)
-	    patientId = medDatabaseNonPersistentController::instance()->patientId(true);
+    if (patientId==-1)
+        patientId = medDatabaseNonPersistentController::instance()->patientId(true);
 
-	int     studyId   = -1;
-	QString studyName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
+    int     studyId   = -1;
+    QString studyName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
 
-	databaseIndex = medDatabaseController::instance()->indexForStudy (patientName, studyName);
-	if (databaseIndex.isValid()) {
-	    qDebug() << "Study exists in the database, I reuse its Id";
-	    studyId = databaseIndex.studyId();
-	}
-	else {
-	    for (int i=0; i<items.count(); i++)
-	        if (items[i]->name()==patientName && items[i]->studyName()==studyName) {
-		    studyId = items[i]->index().studyId();
-		    break;
-		}
-	}
+    databaseIndex = medDatabaseController::instance()->indexForStudy (patientName, studyName);
+    if (databaseIndex.isValid()) {
+        qDebug() << "Study exists in the database, I reuse its Id";
+        studyId = databaseIndex.studyId();
+    }
+    else {
+        for (int i=0; i<items.count(); i++)
+            if (items[i]->name()==patientName && items[i]->studyName()==studyName) {
+            studyId = items[i]->index().studyId();
+            break;
+        }
+    }
 
-	if (studyId==-1)
-	    studyId = medDatabaseNonPersistentController::instance()->studyId(true);
+    if (studyId==-1)
+        studyId = medDatabaseNonPersistentController::instance()->studyId(true);
 
-	index = medDataIndex (medDatabaseNonPersistentController::instance()->dataSourceId(), patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
+    index = medDataIndex (medDatabaseNonPersistentController::instance()->dataSourceId(), patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
 
-	QString seriesName = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
+    QString seriesName = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
 
         QFileInfo info(d->file);
 
-	medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
+    medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
 
         if(!patientName.isEmpty())
             item->d->name = patientName;
         else
             item->d->name = info.baseName();
 
-	item->d->studyName = studyName;
-	item->d->seriesName = seriesName;
-	item->d->file = d->file;
-	item->d->thumb = data->thumbnail();
-	item->d->index = index;
-	item->d->data = data;
+    item->d->studyName = studyName;
+    item->d->seriesName = seriesName;
+    item->d->file = d->file;
+    item->d->thumb = data->thumbnail();
+    item->d->index = index;
+    item->d->data = data;
 
 	qDebug() << "in medDatabaseNonPersistentReader.cpp, medDataIndex = " << index;
 
         medDatabaseNonPersistentController::instance()->insert(index, item);
     }
 
-    emit progressed(100);
+    emit progress(this, 100);
     emit success(this);
 //    qDebug() << "uuid value before signal"<< d->callerUuid;
     emit nonPersistentRead(index,d->callerUuid);

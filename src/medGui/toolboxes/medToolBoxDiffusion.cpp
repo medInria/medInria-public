@@ -4,9 +4,9 @@
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
  * Version: $Id$
- * Last-Updated: Wed Nov 10 11:02:58 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 126
+ * Last-Updated: Wed Mar  2 16:57:02 2011 (+0100)
+ *           By: Jaime Garcia_Guevara
+ *     Update #: 133
  */
 
 /* Commentary:
@@ -89,7 +89,6 @@ medToolBoxDiffusion::~medToolBoxDiffusion(void)
     delete d;
     d = NULL;
 }
-
 
 void medToolBoxDiffusion::onToolBoxChosen(const QString & id)
 {

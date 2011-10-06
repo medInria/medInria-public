@@ -363,7 +363,7 @@ medDataIndex medDatabaseControllerImpl::indexForImage(const QString &patientName
     return medDataIndex();
 }
 
-void medDatabaseControllerImpl::import(const QString& file,const QString& importUuid)
+void medDatabaseControllerImpl::import(const QString& file, QString importUuid)
 {
     //No one does anything with this importUuid for the permanent db yet.
     //Just override the import(file,indexWithoutcopying method to enable this).
@@ -376,11 +376,9 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
     QFileInfo info(file);
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(),indexWithoutCopying);
     //if we want to add importUuid support to permanent db,
-    //we need to change the importer and its addedIndex signal to suppot importUuid
+    //we need to change the importer and its addedIndex signal to support importUuid
     //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
     connect(importer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
-    connect(importer, SIGNAL(success(QObject *)), importer, SLOT(deleteLater()));
-    connect(importer, SIGNAL(failure(QObject *)), importer, SLOT(deleteLater()));
     //connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
 
     emit(displayJobItem(importer, info.baseName()));
@@ -389,7 +387,7 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
     QThreadPool::globalInstance()->start(importer);
 }
 
-void medDatabaseControllerImpl::import( dtkAbstractData *data,const QString& importUuid)
+void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUuid)
 {
     medDatabaseWriter *writer = new medDatabaseWriter(data, importUuid);
     //if we want to add importUuid support to permanent db,
@@ -405,8 +403,6 @@ void medDatabaseControllerImpl::import( dtkAbstractData *data,const QString& imp
 
     connect(writer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(writer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(writer, SIGNAL(success(QObject *)), writer, SLOT(deleteLater()));
-    connect(writer, SIGNAL(failure(QObject *)), writer, SLOT(deleteLater()));
 
     medMessageController::instance()->showProgress(writer, "Saving database item");
 
@@ -421,8 +417,8 @@ dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIn
     connect(reader.data(), SIGNAL(progressed(int)), medMessageController::instance(), SLOT(setProgress(int)));
     connect(reader.data(), SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(reader.data(), SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(reader.data(), SIGNAL(success(QObject *)), reader.data(), SLOT(deleteLater()));
-    connect(reader.data(), SIGNAL(failure(QObject *)), reader.data(), SLOT(deleteLater()));
+    //connect(reader.data(), SIGNAL(success(QObject *)), reader.data(), SLOT(deleteLater()));
+    //connect(reader.data(), SIGNAL(failure(QObject *)), reader.data(), SLOT(deleteLater()));
 
     connect(reader.data(), SIGNAL(failure(QObject *)), this, SLOT(showOpeningError(QObject *)));
 
@@ -622,11 +618,9 @@ void medDatabaseControllerImpl::remove( const medDataIndex& index )
 {
     medDatabaseRemover *remover = new medDatabaseRemover(index);
 
-    connect(remover, SIGNAL(progress(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(remover, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
     connect(remover, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(remover, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(remover, SIGNAL(success(QObject *)), remover, SLOT(deleteLater()));
-    connect(remover, SIGNAL(failure(QObject *)), remover, SLOT(deleteLater()));
     connect(remover, SIGNAL(removed(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
 
     medMessageController::instance()->showProgress(remover, "Removing item");
@@ -747,7 +741,9 @@ QList<medDataIndex> medDatabaseControllerImpl::patients() const
     QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
     query.prepare("SELECT id FROM patient");
     EXEC_QUERY(query);
+#if QT_VERSION > 0x0406FF
     ret.reserve( query.size() );
+#endif
     while( query.next() ){
         ret.push_back( medDataIndex::makePatientIndex(this->dataSourceId(), query.value(0).toInt()));
     }
@@ -768,7 +764,9 @@ QList<medDataIndex> medDatabaseControllerImpl::studies( const medDataIndex& inde
     query.prepare("SELECT id FROM study WHERE patient = :patientId");
     query.bindValue(":patientId", index.patientId());
     EXEC_QUERY(query);
+#if QT_VERSION > 0x0406FF
     ret.reserve( query.size() );
+#endif
     while( query.next() ){
         ret.push_back( medDataIndex::makeStudyIndex(this->dataSourceId(), index.patientId(), query.value(0).toInt()));
     }
@@ -789,7 +787,9 @@ QList<medDataIndex> medDatabaseControllerImpl::series( const medDataIndex& index
     query.prepare("SELECT id FROM series WHERE study = :studyId");
     query.bindValue(":studyId", index.studyId());
     EXEC_QUERY(query);
+#if QT_VERSION > 0x0406FF
     ret.reserve( query.size() );
+#endif
     while( query.next() ){
         ret.push_back( medDataIndex::makeSeriesIndex(this->dataSourceId(), index.patientId(), index.studyId(), query.value(0).toInt()));
     }
@@ -810,7 +810,9 @@ QList<medDataIndex> medDatabaseControllerImpl::images( const medDataIndex& index
     query.prepare("SELECT id FROM image WHERE series = :seriesId");
     query.bindValue(":seriesId", index.seriesId());
     EXEC_QUERY(query);
+#if QT_VERSION > 0x0406FF
     ret.reserve( query.size() );
+#endif
     while( query.next() ){
         ret.push_back( medDataIndex(this->dataSourceId(), index.patientId(), index.studyId(), index.seriesId(), query.value(0).toInt()));
     }
