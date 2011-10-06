@@ -98,7 +98,7 @@ void medViewContainerSingle2::onViewFocused (bool value)
 
     if ( !this->isEmpty() )
     {
-        dynamic_cast<medViewContainerMulti*>( parentContainer() )->setCurrent( this );
+        qobject_cast<medViewContainerMulti*>( parentContainer() )->setCurrent( this );
     }
 
     if (dtkAbstractView *view = d->view)
@@ -108,11 +108,6 @@ void medViewContainerSingle2::onViewFocused (bool value)
 
     this->update();
 }
-
-//dtkAbstractView * medViewContainerSingle2::view() const
-//{
-//    return NULL;
-//}
 
 class medViewContainerMultiPrivate
 {
@@ -195,7 +190,7 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
 
     d2->views << view;
 
-    if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
+    if (medAbstractView *medView = qobject_cast<medAbstractView*> (view))
         d->pool->appendView (medView);
 
     connect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
@@ -252,7 +247,7 @@ void medViewContainerMulti::onViewClosing (void)
 {
 //    qDebug()<<"containerMulti closing a view";
     if (dtkAbstractView *view =
-        dynamic_cast<dtkAbstractView *>(this->sender())) {
+        qobject_cast<dtkAbstractView *>(this->sender())) {
 
         // needed for selecting another container as current afterwards
         QWidget * predContainer   = NULL;
@@ -260,7 +255,7 @@ void medViewContainerMulti::onViewClosing (void)
         bool      closedItemFound = false;
 
         QWidget * closedContainer =
-            dynamic_cast< QWidget * >( view->widget()->parent() );
+            qobject_cast< QWidget * >( view->widget()->parent() );
         QList<QWidget *> content;
         for (int i = 0; i < d->layout->rowCount(); i++) {
             for (int j = 0; j < d->layout->columnCount(); j++) {
@@ -297,7 +292,7 @@ void medViewContainerMulti::onViewClosing (void)
         disconnect (view, SIGNAL (changeDaddy(bool)),
                     this, SLOT (onDaddyChanged(bool)));
 
-        if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
+        if (medAbstractView *medView = qobject_cast<medAbstractView*> (view))
             d->pool->removeView (medView);
 
         d2->views.removeOne (view);
@@ -306,14 +301,16 @@ void medViewContainerMulti::onViewClosing (void)
 
         // view->close(); // the container will close the view once deleted
 
-        closedContainer->deleteLater();
+        //tests showed it's safe to call directly delete here: deleteLater
+        //doesn't work: container is still a child of "this" for some time afterward.
+        delete closedContainer;
 
         this->layout (content);
         //Choose the new current container based on who is next or previous
         medViewContainer * current =
-            dynamic_cast< medViewContainer * >( succContainer );
+            qobject_cast< medViewContainer * >( succContainer );
         if ( current == NULL )
-            current = dynamic_cast< medViewContainer * >( predContainer );
+            current = qobject_cast< medViewContainer * >( predContainer );
         if ( current == NULL )
             current = this;
 //        qDebug() << "multi:"<< this;
@@ -321,7 +318,6 @@ void medViewContainerMulti::onViewClosing (void)
 //        qDebug() << "succ" << succContainer;
 //        qDebug() << "new current" << current;
         this->setCurrent(current);
-
         current->setFocus();
 
         this->update();
@@ -336,7 +332,7 @@ void medViewContainerMulti::onViewClosing (void)
 
 void medViewContainerMulti::onViewFullScreen (bool value)
 {
-    if (dtkAbstractView *view = dynamic_cast<dtkAbstractView *>(this->sender())) {
+    if (dtkAbstractView *view = qobject_cast<dtkAbstractView *>(this->sender())) {
         if (value) {
             for(int i = 0; i < d->layout->rowCount() ; i++) {
                 for(int j = 0; j < d->layout->columnCount() ; j++) {
