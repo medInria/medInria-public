@@ -222,8 +222,6 @@ void medViewContainer::setView(dtkAbstractView *view)
 void medViewContainer::onViewFocused( bool value )
 {
 //    qDebug()<<"medViewerContainer::onViewFocused";
-    if (!d->view)
-      return;
 
     if ( !value )
         return;
@@ -231,11 +229,17 @@ void medViewContainer::onViewFocused( bool value )
     if ( !this->isEmpty() )
         this->setCurrent( this );
 
+    if (!current() || !current()->view())
+    { //focusing on an empty container, reset the toolboxes.
+//        qDebug()<< "focusing on empty container";
+        emit focused(NULL);
+        return;
+    }
     if (dtkAbstractView *view = current()->view())
     {
+//        qDebug() << "focusing on view"<<view;
         emit focused(view);
     }
-
     this->update();
 }
 
