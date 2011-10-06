@@ -14,7 +14,6 @@ public:
     QPushButton *saveButton;
     QPushButton *doneButton;
     unsigned int counter;
-//QPushButton *selectAllButton;
 };
 
 /*********************************/
@@ -22,16 +21,17 @@ public:
 class medSaveModifiedDialogCheckListItem : public QTreeWidgetItem
 {
     public :
-        medSaveModifiedDialogCheckListItem(QTreeWidgetItem *root, const medDataIndex &index, QString &name, QString &studyName, QString &seriesName, QString &file)
+        medSaveModifiedDialogCheckListItem(QTreeWidgetItem *root, const medDataIndex &index, const QString &name, const QString &studyName, const QString &seriesName, const QString &file, const QImage &thumb)
         : QTreeWidgetItem(), medIndex(index)
         {
             root->addChild(this);
 
             setFlags(flags() | Qt::ItemIsUserCheckable);
-            setText(1, name);
-            setText(2, studyName);
-            setText(3, seriesName);
-            setText(4, file);
+            setIcon(1, QIcon(QPixmap::fromImage(thumb)));
+            setText(2, name);
+            setText(3, studyName);
+            setText(4, seriesName);
+            setText(5, file);
             setCheckState(0, Qt::Unchecked);
         }
 
@@ -49,7 +49,6 @@ class medSaveModifiedDialogCheckListItem : public QTreeWidgetItem
 
 /***********************************************/
 
-//TODO : warning ! when importing non-persistent data to the database medDataIndex changes  !
 medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent), d (new medSaveModifiedDialogPrivate)
 {
     d->counter = 0;
@@ -59,10 +58,9 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
 
     d->saveButton = new QPushButton(tr("Save"),this);
     d->doneButton = new QPushButton(tr("Done"),this);
-//    d->selectAllButton = new QPushButton(tr("Select All"),this);
 
     d->treeWidget = new QTreeWidget(this);
-    d->treeWidget->setColumnCount(5);
+    d->treeWidget->setColumnCount(6);
 
     QStringList headers;
     headers << tr("Thumbnail") << tr("Name") << tr("Study") << tr("Series") << tr("File");
@@ -72,7 +70,6 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addWidget(d->saveButton);
     hlayout->addWidget(d->doneButton);
-//    hlayout->addWidget(d->selectAllButton);
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(label);
@@ -80,19 +77,11 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     layout->addLayout(hlayout);
 
     foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items())
-    {
-        QString name(item->name());
-        QString studyName(item->studyName());
-        QString seriesName(item->seriesName());
-        QString file(item->file());
-
-        medSaveModifiedDialogCheckListItem * itemtmp = new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), name, studyName, seriesName, file);
-    }
+        medSaveModifiedDialogCheckListItem * checkListItem = new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), item->name(), item->studyName(), item->seriesName(), item->file(), item->thumb());
 
     d->treeWidget->resizeColumnToContents(0);
 
     connect (d->saveButton, SIGNAL(clicked()), this, SLOT(Save()));
-//    connect (d->selectAllButton, SIGNAL(clicked()), this, SLOT(onSelectAll()));
     connect (d->doneButton,SIGNAL(clicked()), this, SLOT(close()));
     connect (medDataManager::instance(), SIGNAL(dataAdded(const medDataIndex &)),this, SLOT(updateCounter()) );
     connect (this, SIGNAL(updateTree()), this, SLOT(onUpdateTree()));
@@ -139,16 +128,8 @@ void medSaveModifiedDialog::onUpdateTree()
         d->treeWidget->clear();
 
         foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items())
-        {
-            qDebug() << "DEBUG updateTree() name" << item->name() << "studyName" << item->studyName() << "seriesName" << item->seriesName() << "file" << item->file();
+            d->treeWidget->insertTopLevelItem(0,new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), item->name(), item->studyName(), item->seriesName(), item->file(), item->thumb()));
 
-            QString name(item->name());
-            QString studyName(item->studyName());
-            QString seriesName(item->seriesName());
-            QString file(item->file());
-
-            d->treeWidget->insertTopLevelItem(0,new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), name, studyName, seriesName, file));
-        }
         d->treeWidget->update();
         d->treeWidget->resizeColumnToContents(0);
         d->treeWidget->showMaximized();

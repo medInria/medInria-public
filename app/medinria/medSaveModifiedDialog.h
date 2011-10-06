@@ -30,7 +30,6 @@ public slots:
     void Save();
     void updateCounter();
     void onUpdateTree();
-//    void onSelectAll();
 
 private:
   
