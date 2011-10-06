@@ -525,34 +525,41 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
 {
     // set head recognizer
     qDebug() << "medViewerAreaOnViewFocused";
-    static dtkVrHeadRecognizer *head_recognizer = NULL;
+    if (view)
+    { //Note to Julien from Ben: not sure the head recognizer works for view==NULL, so I put it inside this iftake it out if needed.
+        static dtkVrHeadRecognizer *head_recognizer = NULL;
 
-    if(dtkApplicationArgumentsContain(qApp, "--tracker")) {
+        if(dtkApplicationArgumentsContain(qApp, "--tracker")) {
 
-        if(!head_recognizer) {
-            head_recognizer = new dtkVrHeadRecognizer;
-            head_recognizer->startConnection(QUrl(dtkApplicationArgumentsValue(qApp, "--tracker")));
+            if(!head_recognizer) {
+                head_recognizer = new dtkVrHeadRecognizer;
+                head_recognizer->startConnection(QUrl(dtkApplicationArgumentsValue(qApp, "--tracker")));
+            }
+
+            if(view->property("Orientation") == "3D")
+                head_recognizer->setView(view);
+            else
+                head_recognizer->setView(NULL);
         }
 
-        if(view->property("Orientation") == "3D")
-            head_recognizer->setView(view);
-        else
-            head_recognizer->setView(NULL);
-    }
+        // set gesture recognizer
 
-    // set gesture recognizer
+        static dtkVrGestureRecognizer *gesture_recognizer = NULL;
 
-    static dtkVrGestureRecognizer *gesture_recognizer = NULL;
+        if(dtkApplicationArgumentsContain(qApp, "--tracker")) {
 
-    if(dtkApplicationArgumentsContain(qApp, "--tracker")) {
+            if(!gesture_recognizer) {
+                gesture_recognizer = new dtkVrGestureRecognizer;
+                gesture_recognizer->startConnection(QUrl(dtkApplicationArgumentsValue(qApp, "--tracker")));
+            }
 
-        if(!gesture_recognizer) {
-            gesture_recognizer = new dtkVrGestureRecognizer;
-            gesture_recognizer->startConnection(QUrl(dtkApplicationArgumentsValue(qApp, "--tracker")));
+            gesture_recognizer->setView(view);
+            gesture_recognizer->setReceiver(static_cast<medAbstractView *>(view)->receiverWidget());
         }
-
-        gesture_recognizer->setView(view);
-        gesture_recognizer->setReceiver(static_cast<medAbstractView *>(view)->receiverWidget());
+        //update tranfer function.
+        connect (view, SIGNAL(lutChanged()),
+                 this, SLOT(updateTransferFunction()), Qt::UniqueConnection);
+        this->updateTransferFunction();
     }
 
     // Update toolboxes
@@ -561,10 +568,6 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
     {
         tb->update(view);
     }
-
-    connect (view, SIGNAL(lutChanged()), this, SLOT(updateTransferFunction()), Qt::UniqueConnection);
-
-    this->updateTransferFunction();
 }
 
 medViewContainer *medViewerArea::currentRootContainer(void)
