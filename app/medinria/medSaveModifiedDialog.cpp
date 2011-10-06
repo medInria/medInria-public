@@ -63,7 +63,7 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     d->treeWidget->setColumnCount(6);
 
     QStringList headers;
-    headers << tr("Thumbnail") << tr("Name") << tr("Study") << tr("Series") << tr("File");
+    headers << tr("Select") <<tr("Thumbnail") << tr("Name") << tr("Study") << tr("Series") << tr("File");
 
     d->treeWidget->setHeaderLabels(headers);
 
