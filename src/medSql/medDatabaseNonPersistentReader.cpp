@@ -240,7 +240,7 @@ void medDatabaseNonPersistentReader::run(void)
                         if(!imData->hasMetaData(medMetaDataKeys::Columns.key()))
                             imData->addMetaData(medMetaDataKeys::Columns.key(), QStringList() << "");
 
-                        imData->addMetaData ("FileName", it.key() );
+                        //imData->addMetaData ("FileName", it.key() );
 
                         break;
                     }
@@ -325,7 +325,7 @@ void medDatabaseNonPersistentReader::run(void)
     item->d->thumb = data->thumbnail();
     item->d->index = index;
     item->d->data = data;
-
+        
 	qDebug() << "in medDatabaseNonPersistentReader.cpp, medDataIndex = " << index;
 
         medDatabaseNonPersistentController::instance()->insert(index, item);
