@@ -10,8 +10,6 @@
 class medViewContainerFilteringPrivate
 {
 public:
-//     medViewContainer* inputViewContainer;
-//     medViewContainer* outputViewContainer;
     medViewContainerCustom* inputViewContainer;
     medViewContainerCustom* outputViewContainer;
     dtkAbstractData * inputData;
@@ -26,9 +24,6 @@ medViewContainerFiltering::medViewContainerFiltering(QWidget * parent):
 
     d3->inputViewContainer = dynamic_cast<medViewContainerCustom*> (this->childContainers()[0]);
     d3->outputViewContainer = dynamic_cast<medViewContainerCustom*> (this->childContainers()[1]);
-
-//     d3->inputViewContainer = this->childContainers()[0];
-//     d3->outputViewContainer = this->childContainers()[1];
 
     //Set cues for the user:
     d3->inputViewContainer->setInfo(tr("Input to be filtered"));
@@ -52,14 +47,12 @@ void medViewContainerFiltering::updateInput (const medDataIndex& index)
 {
     if (!index.isValid())
         return;
-    
-    qDebug() << "update input";
 
     d3->inputData = medDataManager::instance()->data (index).data();
 
     if (!d3->inputData)
         return;
-
+    
     d3->inputView =  dynamic_cast<medAbstractView*> (dtkAbstractViewFactory::instance()->create("v3dView"));
     d3->inputView->setData(d3->inputData,0);
     d3->inputView->reset();
