@@ -174,7 +174,6 @@ public slots:
 public slots:
     void onMousePressEvent                  (QMouseEvent *event);
     void onZSliderValueChanged              (int value);
-    void onDimensionBoxChanged              (const QString &value);
     void onMetaDataSet         (const QString &key, const QString &value);
 
 public slots: // Menu interface

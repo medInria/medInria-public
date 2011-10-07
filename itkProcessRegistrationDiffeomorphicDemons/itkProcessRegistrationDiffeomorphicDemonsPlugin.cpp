@@ -5,6 +5,7 @@
 #include "itkProcessRegistrationDiffeomorphicDemons.h"
 #include "itkProcessRegistrationDiffeomorphicDemonsPlugin.h"
 #include "itkProcessRegistrationDiffeomorphicDemonsToolBox.h"
+#include "itkProcessRegistrationDiffeomorphicDemonsDefinitions.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -55,15 +56,29 @@ QString itkProcessRegistrationDiffeomorphicDemonsPlugin::name(void) const
     return "itkProcessRegistrationDiffeomorphicDemonsPlugin";
 }
 
+QString itkProcessRegistrationDiffeomorphicDemonsPlugin::contact(void) const
+{
+    return QString::fromUtf8("Benoît Bleuzé benoit.bleuze@inria.fr");
+}
+
 QString itkProcessRegistrationDiffeomorphicDemonsPlugin::description(void) const
 {
-    return "";
+    return "Applies the diffeomorphic demons as they can be found in itk. Converts any type of image to float before applying the change, since the diffeomorphic demons only work on float images <br/> see: <a href=\"http://www.insight-journal.org/browse/publication/154\" > http://www.insight-journal.org/browse/publication/154 </a>";
 }
+
+
+QString itkProcessRegistrationDiffeomorphicDemonsPlugin::version(void) const
+{
+    return PLUGIN_VERSION;
+}
+
+
 
 QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::tags(void) const
 {
     return QStringList();
 }
+
 
 QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::types(void) const
 {

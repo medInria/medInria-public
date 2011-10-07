@@ -100,7 +100,7 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
         zipfile.close();
         descname = tmpdir+dname;
     }
-        
+
     basedir = QFileInfo(descname).dir().path();
 
     //  Assume a simple text file.
