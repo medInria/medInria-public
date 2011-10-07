@@ -59,10 +59,12 @@ void medViewerConfigurationFiltering::setupViewContainerStack()
     if (!this->stackedViewContainers()->count())
     {
         medViewContainerFiltering *filteringContainer = new medViewContainerFiltering(this->stackedViewContainers());
-        
+
         connect(filteringContainer,SIGNAL(droppedInput(medDataIndex)), d->filteringToolBox,SLOT(onInputSelected(medDataIndex)));
-        connect(this,SIGNAL(outputDataChanged(dtkAbstractData *)),filteringContainer,SLOT(updateOutput(dtkAbstractData *)));
-        connect(filteringContainer, SIGNAL(viewRemoved(dtkAbstractView*)), this, SLOT(onViewRemoved(dtkAbstractView*)));
+        connect(this,SIGNAL(outputDataChanged(dtkAbstractData *)),
+                filteringContainer,SLOT(updateOutput(dtkAbstractData *)));
+        connect(filteringContainer, SIGNAL(inputViewRemoved()),
+                this, SLOT(onViewRemoved()));
 
         this->stackedViewContainers()->addContainer("Filtering",filteringContainer);
 
@@ -120,10 +122,9 @@ void medViewerConfigurationFiltering::onOutputImported ( const medDataIndex& dat
     }
 }
 
-void medViewerConfigurationFiltering::onViewRemoved ( dtkAbstractView* view )
+void medViewerConfigurationFiltering::onViewRemoved ()
 {
-  d->viewPropertiesToolBox->clear();
-  d->filteringToolBox->clear();
+    d->filteringToolBox->clear();
 }
 
 

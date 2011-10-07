@@ -116,7 +116,7 @@ void medToolBoxFiltering::onInputSelected ( const medDataIndex& index )
 
     if ( !d->inputData )
         return;
-    
+
     d->inputView = dynamic_cast<medAbstractView*> ( medViewManager::instance()->views ( index ).first() );
 
     if ( !d->inputView )
@@ -137,8 +137,10 @@ void medToolBoxFiltering::clear ( void )
         d->customToolBox->clear();
 
     d->inputData = NULL;
+    d->inputView = NULL;
     d->index = medDataIndex();
 }
+
 
 void medToolBoxFiltering::setDataIndex ( medDataIndex index )
 {
