@@ -13,6 +13,7 @@
 class medViewerConfigurationFilteringPrivate;
 class medViewContainerStack;
 class dtkAbstractData;
+class dtkAbstractView;
 
 /**
  * @brief Configuration providing a comparative display of the input and output of image-to-image filtering process plugins
@@ -68,6 +69,13 @@ public slots:
      * @param uuid The identifier of the caller.
      */
     void onOutputImported(const medDataIndex & dataIndex, const QString& uuid);
+
+    /**
+     * @brief Clear the filtering toolboxes when the input view is closed
+     *
+     * @param view The pointer to the closing view
+     */
+    void onViewRemoved(dtkAbstractView * view);
 
 private:
     medViewerConfigurationFilteringPrivate *d;
