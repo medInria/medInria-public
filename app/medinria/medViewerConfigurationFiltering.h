@@ -73,9 +73,8 @@ public slots:
     /**
      * @brief Clear the filtering toolboxes when the input view is closed
      *
-     * @param view The pointer to the closing view
      */
-    void onViewRemoved(dtkAbstractView * view);
+    void onViewRemoved();
 
 private:
     medViewerConfigurationFilteringPrivate *d;
