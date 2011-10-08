@@ -183,6 +183,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->view3dLODSlider->setTracking( false );
 
     d->croppingPushButton = new QPushButton ("", this);
+    d->croppingPushButton->setFocusPolicy(Qt::NoFocus);
     d->croppingPushButton->setIcon (QIcon (":/icons/cropping.png"));
     d->croppingPushButton->setCheckable (true);
     d->croppingPushButton->setMinimumWidth ( 20 );
