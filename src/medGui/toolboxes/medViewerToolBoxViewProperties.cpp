@@ -899,10 +899,11 @@ void medViewerToolBoxViewProperties::onContextTreeMenu( const QPoint point )
     item->setSelected(true);
 
     QMenu * menu = new QMenu(d->propertiesTree);
+    menu->setFocusPolicy(Qt::NoFocus);
     QAction * deleteLayer = new QAction(this);
+    deleteLayer->setIcon(QIcon(":icons/cross.png"));
     deleteLayer->setIconVisibleInMenu(true);
     deleteLayer->setText(tr("Delete"));
-    deleteLayer->setIcon(QIcon(":icons/cross.png"));
     QObject::connect(deleteLayer, SIGNAL(triggered()), this, SLOT(onDeleteLayer()));
     menu->addAction(deleteLayer);
 
