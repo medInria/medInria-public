@@ -45,7 +45,9 @@ medDatabaseSearchPanel::medDatabaseSearchPanel( QWidget *parent /*= 0*/ ) : medT
     d->columnBox = new QComboBox();
 
     d->addButton = new QPushButton("+");
+    d->addButton->setFocusPolicy(Qt::NoFocus);
     d->removeButton = new QPushButton("-");
+    d->removeButton->setFocusPolicy(Qt::NoFocus);
 
     QHBoxLayout *vlayout = new QHBoxLayout();
     vlayout->addWidget(d->columnBox);
