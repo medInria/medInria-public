@@ -298,8 +298,8 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     QStringList studyName;
     QStringList seriesName;
 
-    QStringList studyId;
-    QStringList seriesId;
+    QStringList studyDicomId;
+    QStringList seriesDicomId;
     QStringList orientation;
     QStringList seriesNumber;
     QStringList sequenceName;
@@ -328,8 +328,9 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     studyName   << d->io->GetStudyDescription().c_str();
     seriesName  << d->io->GetSeriesDescription().c_str();
 
-    studyId        << d->io->GetStudyID().c_str();
-    seriesId       << d->io->GetSeriesID().c_str();
+    studyDicomId        << d->io->GetStudyID().c_str();
+    seriesDicomId       << d->io->GetSeriesID().c_str();
+    
     orientation    << d->io->GetOrientation().c_str();
     seriesNumber   << d->io->GetSeriesNumber().c_str();
     sequenceName   << d->io->GetSequenceName().c_str();
@@ -368,8 +369,8 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     else
       dtkdata->setMetaData(medMetaDataKeys::SeriesDescription.key(), seriesName );
 
-    dtkdata->setMetaData(medMetaDataKeys::StudyID.key(),         studyId);
-    dtkdata->setMetaData(medMetaDataKeys::SeriesID.key(),        seriesId);
+    dtkdata->setMetaData(medMetaDataKeys::StudyDicomID.key(),         studyDicomId);
+    dtkdata->setMetaData(medMetaDataKeys::SeriesDicomID.key(),        seriesDicomId);
     dtkdata->setMetaData(medMetaDataKeys::Orientation.key(),     orientation);
     dtkdata->setMetaData(medMetaDataKeys::SeriesNumber.key(),    seriesNumber);
     dtkdata->setMetaData(medMetaDataKeys::SequenceName.key(),    sequenceName);
