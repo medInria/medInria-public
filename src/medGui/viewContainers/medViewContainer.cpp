@@ -37,6 +37,7 @@ medViewContainer::medViewContainer ( QWidget *parent )
     d->view = NULL;
     d->current = this;
     d->clicked = false;
+    d->multiLayer = true;
 
     d->pool = new medViewPool ( this );
 
@@ -214,7 +215,7 @@ void medViewContainer::setView ( dtkAbstractView *view )
         //Modification for the filtering config bug
         this->onViewFocused(true);
 
-        
+
         // pass properties to the view
         QHash<QString,QString>::iterator it = d->viewProperties.begin();
         while ( it!=d->viewProperties.end() )
@@ -416,13 +417,13 @@ void medViewContainer::onDaddyChanged ( bool state )
 // //         disconnect ( d->view, SIGNAL ( closing() ),         this, SLOT ( onViewClosing() ) );
 // // //         disconnect ( d->view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
 // // //         disconnect ( d->view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
-// // 
+// //
 //         emit viewRemoved ( d->view );
-// // 
+// //
 //         d->view->close();
 //         d->view = NULL;
 //     }
-// 
+//
 //     foreach ( medViewContainer *container, this->childContainers() )
 //     {
 //         d->layout->removeWidget ( container );
@@ -438,4 +439,14 @@ void medViewContainer::setInfo ( const QString& info )
 QString medViewContainer::info()
 {
     return d->viewInfo;
+}
+
+void medViewContainer::setMultiLayer(bool enable)
+{
+    d->multiLayer = enable;
+}
+
+bool medViewContainer::multiLayer( void )
+{
+    return d->multiLayer;
 }

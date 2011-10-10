@@ -309,7 +309,10 @@ public:
     */
     QString info(void);
 
-    virtual QString description() {return "";}
+    virtual QString description() { return ""; }
+
+    void setMultiLayer( bool enable = true);
+    virtual bool multiLayer ( void );
 
 signals:
     /**

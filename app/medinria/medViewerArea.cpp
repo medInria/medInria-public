@@ -263,7 +263,7 @@ bool medViewerArea::open(const medDataIndex& index)
             view = qobject_cast<medAbstractView*>(root->view());
         }
 
-        if( view.isNull() )
+        if( view.isNull())
         {
             //container empty, or multi with no extendable view
             view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"));
@@ -280,7 +280,15 @@ bool medViewerArea::open(const medDataIndex& index)
         medViewManager::instance()->insert(index, view);
 
         // set the data to the view
-        view->setSharedDataPointer(data);
+        if (!root->multiLayer())
+        {
+            view->removeOverlay(0);
+            view->setSharedDataPointer(data,0);
+        }
+        else
+        {
+            view->setSharedDataPointer(data);
+        }
 
         // call update
         QMutexLocker ( &d->mutex );

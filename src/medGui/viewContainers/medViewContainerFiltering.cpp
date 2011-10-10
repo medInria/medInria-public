@@ -19,6 +19,7 @@ medViewContainerFiltering::medViewContainerFiltering(QWidget * parent):
         medViewContainerCustom(parent), d3(new medViewContainerFilteringPrivate)
 {
     split(1, 2);
+    setMultiLayer(false);
     d3->inputViewContainer = this->childContainers()[0];
     d3->outputViewContainer = this->childContainers()[1];
 

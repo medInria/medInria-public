@@ -520,6 +520,16 @@ void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> dat
     this->setData(data);
 }
 
+void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> data,
+                                            int layer)
+{
+    // set a reference to our view that gets destroyed when the view terminates
+    //d->sharedData = data;
+
+    //dtkAbstractData *dtkdata = d->sharedData.data();
+    this->setData(data,layer);
+}
+
 medAbstractView::~medAbstractView( void )
 {
     delete d;
