@@ -39,9 +39,6 @@ public:
 
     void updateQuickAccessMenu(void);
     void resizeEvent( QResizeEvent * event );
-
-protected:
-    void mousePressEvent(QMouseEvent * event);
     
 public slots:
     void setWallScreen(bool full);
