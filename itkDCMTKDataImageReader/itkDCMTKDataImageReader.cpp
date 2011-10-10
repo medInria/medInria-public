@@ -369,8 +369,8 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     else
       dtkdata->setMetaData(medMetaDataKeys::SeriesDescription.key(), seriesName );
 
-    dtkdata->setMetaData(medMetaDataKeys::StudyDicomID.key(),         studyDicomId);
-    dtkdata->setMetaData(medMetaDataKeys::SeriesDicomID.key(),        seriesDicomId);
+    dtkdata->setMetaData(medMetaDataKeys::StudyDicomID.key(),    studyDicomId);
+    dtkdata->setMetaData(medMetaDataKeys::SeriesDicomID.key(),   seriesDicomId);
     dtkdata->setMetaData(medMetaDataKeys::Orientation.key(),     orientation);
     dtkdata->setMetaData(medMetaDataKeys::SeriesNumber.key(),    seriesNumber);
     dtkdata->setMetaData(medMetaDataKeys::SequenceName.key(),    sequenceName);
