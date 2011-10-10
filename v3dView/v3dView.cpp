@@ -444,38 +444,6 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     d->vtkWidget = new v3dViewGraphicsView(d->widget);
     d->vtkWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     d->vtkWidget->setFocusPolicy(Qt::NoFocus);
-=======
-    d->fullScreenButton->setText ( "M" );
-    d->fullScreenButton->setCheckable ( true );
-    d->fullScreenButton->setMaximumHeight ( 16 );
-    d->fullScreenButton->setMaximumWidth ( 16 );
-    d->fullScreenButton->setFocusPolicy ( Qt::NoFocus );
-    d->fullScreenButton->setSizePolicy ( QSizePolicy::Fixed, QSizePolicy::Fixed );
-    d->fullScreenButton->setObjectName ( "tool" );
-
-    connect ( d->fullScreenButton, SIGNAL ( clicked ( bool ) ), this, SIGNAL ( fullScreen ( bool ) ) );
-
-    d->playButton = new QPushButton ( d->widget );
-    d->playButton->setText ( ">" );
-    d->playButton->setCheckable ( true );
-    d->playButton->setMaximumHeight ( 16 );
-    d->playButton->setMaximumWidth ( 16 );
-    d->playButton->setFocusPolicy ( Qt::NoFocus );
-    d->playButton->setSizePolicy ( QSizePolicy::Fixed, QSizePolicy::Fixed );
-    d->playButton->setObjectName ( "tool" );
-
-    connect ( d->playButton, SIGNAL ( clicked ( bool ) ), this, SLOT ( play ( bool ) ) );
-
-    d->closeButton = new QPushButton ( d->widget );
-    d->closeButton->setText ( "x" );
-    d->closeButton->setCheckable ( false );
-    d->closeButton->setMaximumHeight ( 16 );
-    d->closeButton->setMaximumWidth ( 16 );
-    d->closeButton->setFocusPolicy ( Qt::NoFocus );
-    d->closeButton->setSizePolicy ( QSizePolicy::Fixed, QSizePolicy::Fixed );
-    d->closeButton->setObjectName ( "tool" );
-
-    connect ( d->closeButton, SIGNAL ( clicked() ), this, SIGNAL ( closing() ) );
 
     QButtonGroup *toolButtonGroup = new QButtonGroup ( d->widget );
     toolButtonGroup->addButton ( d->anchorButton );
@@ -503,9 +471,6 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     // set the interactor as well
     d->view2d->SetRenderWindowInteractor( d->renwin2d->GetInteractor() );
     d->view2d->SetRenderWindow( d->renwin2d );
-=======
-    d->vtkWidget->SetRenderWindow ( d->renWin );
->>>>>>> 31ae52c9b0ff0f4ab08c0c47db66058932de65dd
 
     QHBoxLayout *toolsLayout = new QHBoxLayout;
     toolsLayout->setContentsMargins ( 0, 0, 0, 0 );
@@ -525,20 +490,12 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     layout->addWidget ( d->vtkWidget );
 
     //d->view3d->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-<<<<<<< HEAD
     //d->view3d->SetRenderWindowInteractor(d->renWin->GetInteractor());
     //d->view3d->SetRenderWindow(d->renWin);
     //d->view3d->UnInstallInteractor();
     //d->renWin->RemoveRenderer(d->renderer3d);
 
     //d->view2d->SetRenderWindow(d->renWin); // set the interactor as well
-=======
-    d->view3d->SetRenderWindowInteractor ( d->renWin->GetInteractor() );
-    d->view3d->SetRenderWindow ( d->renWin );
-    d->view3d->UnInstallInteractor();
-    d->renWin->RemoveRenderer ( d->renderer3d );
-
-    d->view2d->SetRenderWindow ( d->renWin ); // set the interactor as well
     //d->view2d->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
 
     d->collection = vtkImageViewCollection::New();
