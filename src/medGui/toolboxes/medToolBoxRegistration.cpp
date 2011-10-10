@@ -90,14 +90,17 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     d->toolboxes->addItem("Choose algorithm");
 
     foreach(QString toolbox, medToolBoxFactory::instance()->registrationToolBoxes())
+    {
+
         d->toolboxes->addItem(toolbox, toolbox);
+    }
 
     connect(d->toolboxes, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
 
 
     // Layout section
 
-   
+
 
 //    d->layoutFuseSlider = new QSlider(Qt::Horizontal, this);
 //    d->layoutFuseSlider->setRange(1, 100);
@@ -134,7 +137,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
     layoutButtonGroup->addButton(d->saveImageButton);
     layoutButtonGroup->addButton(d->saveTransButton);
-    
+
     QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
     layoutButtonLayout->addWidget(d->saveImageButton);
     layoutButtonLayout->addWidget(d->saveTransButton);
@@ -145,7 +148,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     QWidget * layoutSection = new QWidget(this);
     layoutSection->setLayout(layoutLayout);
 
-    
+
     addWidget(d->toolboxes);
     addWidget(layoutSection);
     //addWidget(d->saveImageButton);
@@ -305,7 +308,7 @@ void medToolBoxRegistration::onToolBoxChosen(const QString& id)
     medToolBoxRegistrationCustom *toolbox = medToolBoxFactory::instance()->createCustomRegistrationToolBox(id);
 
     if(!toolbox) {
-        qDebug() << "Unable to instanciate" << id << "toolbox";
+        qWarning() << "Unable to instanciate" << id << "toolbox";
         return;
     }
 
