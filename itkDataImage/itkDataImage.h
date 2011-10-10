@@ -19,15 +19,19 @@
 #include <medAbstractDataTypedImage.h>
 #include <itkDataImagePluginExport.h>
 
-#include "itkSpatialOrientationAdapter.h"
-
 template<typename T,int DIM>
 std::vector <bool> DeterminePermutationsAndFlips(typename itk::Image<T,DIM>::DirectionType &directionMatrix)
 {
+    qDebug() << directionMatrix(0,0) << directionMatrix(0,1) << directionMatrix(0,2);
+    qDebug() << directionMatrix(1,0) << directionMatrix(1,1) << directionMatrix(1,2);
+    qDebug() << directionMatrix(2,0) << directionMatrix(2,1) << directionMatrix(2,2);
+    
     std::vector <bool> mirrorThumbs(2,false);
-
-    std::vector <unsigned int> axesPermutation(2);
-    for (unsigned int i = 0;i < 2;++i)
+    std::vector <unsigned int> axesPermutation(3,false);
+    std::vector <bool> maxValueNegative(3,false);
+    
+    // Determine permutations, used to see if we have axial, sagittal or coronal main direction (z-direction)
+    for (unsigned int i = 0;i < 3;++i)
     {
         axesPermutation[i] = i;
         double maxAbsValue = directionMatrix(i,i);
@@ -40,26 +44,33 @@ std::vector <bool> DeterminePermutationsAndFlips(typename itk::Image<T,DIM>::Dir
                 maxAbsValue = directionMatrix(j,i);
             }
         }
-
-        if (i == axesPermutation[i])
-            mirrorThumbs[i] = maxAbsValue < 0;
-        else
-        {
-            maxAbsValue = 0;
-            unsigned int maxIndex = 0;
-            for (unsigned int j = 0;j < DIM;++j)
-            {
-                if (fabs(maxAbsValue) < fabs(directionMatrix(j,axesPermutation[i])))
-                {
-                    maxIndex = j;
-                    maxAbsValue = directionMatrix(j,axesPermutation[i]);
-                }
-            }
-
-            mirrorThumbs[i] = maxAbsValue < 0;
-        }
+        if (maxAbsValue < 0)
+            maxValueNegative[i] = true;
     }
-
+    
+    // Modify flips according to main orientation and directions, as well as QImage inversion of y axis
+    if ((axesPermutation[2] > axesPermutation[0])&&(axesPermutation[2] > axesPermutation[1]))
+    {
+        // Axial        
+        qDebug() << "Axial first";
+        mirrorThumbs[0] = maxValueNegative[0];
+        mirrorThumbs[1] = maxValueNegative[1];
+    }
+    else if ((axesPermutation[2] < axesPermutation[0])&&(axesPermutation[2] < axesPermutation[1]))
+    {
+        // Sagittal
+        qDebug() << "Sagittal first";
+        mirrorThumbs[0] = !maxValueNegative[0];
+        mirrorThumbs[1] = !maxValueNegative[1];
+    }
+    else
+    {
+        // Coronal
+        qDebug() << "Coronal first";
+        mirrorThumbs[0] = !maxValueNegative[0];
+        mirrorThumbs[1] = !maxValueNegative[1];
+    }
+    
     return mirrorThumbs;
 }
 
@@ -248,7 +259,6 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
                 ++it;
             }
 
-            // the y direction for QImages is inversed with respect to the image convention, explaining the !mirrorThumbs[1]
             thumbnails.push_back(qimage->mirrored(mirrorThumbs[0],mirrorThumbs[1]));
             delete qimage;
         }
@@ -307,7 +317,6 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
                     ++it;
                 }
 
-                // the y direction for QImages is inversed with respect to the image convention, explaining the !mirrorThumbs[1]
                 thumbnails.push_back(qimage->mirrored(mirrorThumbs[0],mirrorThumbs[1]));
                 delete qimage;
             }
