@@ -457,13 +457,13 @@ void medToolBoxRegistration::onSuccess()
 
     medDataManager::instance()->importNonPersistent(output);
 
-	if(output)
+    if(output)
     {
-	    d->movingView->setData(output,0);
-	    d->fixedView->unlink (d->movingView);
-	    d->fixedView->link (d->movingView);
-	    d->movingView->update();
-	    d->fuseView->setData(output,1);
+        d->movingView->setData(output,0);
+        d->fixedView->unlink (d->movingView);
+        d->fixedView->link (d->movingView);
+        d->movingView->update();
+        d->fuseView->setData(output,1);
         d->fuseView->update();
 
     }

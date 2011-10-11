@@ -312,6 +312,9 @@ public:
     virtual QString identifier() {return "";}
     virtual QString description() {return "";}
 
+    void setMultiLayer( bool enable = true);
+    virtual bool multiLayer ( void );
+
 signals:
     /**
      * @brief A new medDataIndex has been dropped onto the container.

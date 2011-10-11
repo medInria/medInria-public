@@ -45,7 +45,6 @@ public slots:
      *
      * @param name the container name
     */
-
     virtual void connectToolboxesToCurrentContainer(const QString &name);
 
 private:
