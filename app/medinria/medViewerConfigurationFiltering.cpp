@@ -42,11 +42,11 @@ medViewerConfigurationFiltering::medViewerConfigurationFiltering ( QWidget *pare
 
     d->filteringToolBox = new medToolBoxFiltering ( parent );
 
-    this->addToolBox ( d->filteringToolBox );
+    connect(d->filteringToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
+    connect(d->filteringToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
+    connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
 
-    connect ( d->filteringToolBox, SIGNAL ( addToolBox ( medToolBox * ) ), this, SLOT ( addToolBox ( medToolBox * ) ) );
-    connect ( d->filteringToolBox, SIGNAL ( removeToolBox ( medToolBox * ) ), this, SLOT ( removeToolBox ( medToolBox * ) ) );
-    connect ( d->filteringToolBox,SIGNAL ( processFinished() ),this,SLOT ( onProcessSuccess() ) );
+    this->addToolBox( d->filteringToolBox );
 }
 
 medViewerConfigurationFiltering::~medViewerConfigurationFiltering ( void )
@@ -61,9 +61,11 @@ void medViewerConfigurationFiltering::setupViewContainerStack()
     {
         medViewContainerFiltering *filteringContainer = new medViewContainerFiltering ( this->stackedViewContainers() );
 
-        connect ( filteringContainer,SIGNAL ( droppedInput ( medDataIndex ) ), d->filteringToolBox,SLOT ( onInputSelected ( medDataIndex ) ) );
-
-        connect ( this,SIGNAL ( outputDataChanged ( dtkAbstractData * ) ),filteringContainer,SLOT ( updateOutput ( dtkAbstractData * ) ) );
+        connect(filteringContainer,SIGNAL(droppedInput(medDataIndex)), d->filteringToolBox,SLOT(onInputSelected(medDataIndex)));
+        connect(this,SIGNAL(outputDataChanged(dtkAbstractData *)),
+                filteringContainer,SLOT(updateOutput(dtkAbstractData *)));
+        connect(filteringContainer, SIGNAL(inputViewRemoved()),
+                this, SLOT(onViewRemoved()));
 
         this->stackedViewContainers()->addContainer ( "Filtering",filteringContainer );
 
@@ -125,7 +127,13 @@ void medViewerConfigurationFiltering::onOutputImported ( const medDataIndex& dat
     }
 }
 
-QString medViewerConfigurationFiltering::description ( void ) const
+void medViewerConfigurationFiltering::onViewRemoved ()
+{
+    d->filteringToolBox->clear();
+}
+
+
+QString medViewerConfigurationFiltering::description(void) const
 {
     return "Filtering";
 }

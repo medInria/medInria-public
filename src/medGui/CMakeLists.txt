@@ -66,6 +66,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   commonWidgets/medProgressionStack.h
   commonWidgets/medFlicker.h
   commonWidgets/medStatusBar.h
+  commonWidgets/medQuickAccessMenu.h
 
   # factories
   factories/medSettingsWidgetFactory.h
@@ -150,6 +151,7 @@ set(${PROJECT_NAME}_SOURCES
   commonWidgets/medProgressionStack.cpp
   commonWidgets/medFlicker.cpp
   commonWidgets/medStatusBar.cpp
+  commonWidgets/medQuickAccessMenu.cpp
 
   # db related items
   database/medDatabaseSearchPanel.cpp
