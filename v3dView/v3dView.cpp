@@ -13,6 +13,7 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCore/dtkSignalBlocker.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 #include <medMessageController.h>
@@ -42,41 +43,15 @@
 #include <vtkImageViewCollection.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkPiecewiseFunction.h>
-#include <QVTKWidget.h>
+#include <vtkQtOpenGLRenderWindow.h>
 
 #include <QtGui>
 #include <QMenu>
 #include <QMouseEvent>
 
-//=============================================================================
-// QSignalBlocker : Blocks signals to a given object as long it remains instantiated.
-// The purpose is to increase exception-safety and to ensure that objects are
-// not still unintentionally blocked what ever the return path from a function.
-class QSignalBlocker
-{
-public:
-    explicit QSignalBlocker ( QObject * o ) : m_object ( o )
-    {
-        m_object->blockSignals ( true );
-    }
+#include "v3dViewGraphicsView.h"
+#include "v3dViewGraphicsScene.h"
 
-    ~QSignalBlocker()
-    {
-        m_object->blockSignals ( false );
-    }
-
-    // Allow early unblocking : before object goes out of scope.
-    void blockSignals ( bool v )
-    {
-        m_object->blockSignals ( v );
-    }
-
-private:
-    QObject * m_object;
-private:
-    QSignalBlocker ( const QSignalBlocker & ); // Copy constructor not implemented.
-    QSignalBlocker & operator= ( const QSignalBlocker & ); // Assignment operator not implemented.
-};
 //=============================================================================
 // Construct a QVector3d from pointer-to-double
 inline QVector3D doubleToQtVector3D ( const double * v )
@@ -166,7 +141,7 @@ void v3dViewObserver::Execute ( vtkObject *caller, unsigned long event, void *ca
     case vtkImageView::CurrentPointChangedEvent:
     {
         {
-            QSignalBlocker blocker ( this->slider );
+            dtkSignalBlocker blocker ( this->slider );
             unsigned int zslice = this->view->view2d()->GetSlice();
             this->slider->setValue ( zslice );
             this->slider->update();
@@ -227,6 +202,9 @@ void v3dViewObserver::Execute ( vtkObject *caller, unsigned long event, void *ca
 class v3dViewPrivate
 {
 public:
+    vtkQtOpenGLRenderWindow * renwin2d;
+    vtkQtOpenGLRenderWindow * renwin3d;
+
     // Utility to determine if a given orientation is 2D
     inline bool is2dOrientation ( const QString & name ) const
     {
@@ -252,6 +230,8 @@ public:
     vtkRenderWindow *renWin;
 
     QWidget    *widget;
+    v3dViewGraphicsView  * vtkWidget;
+    v3dViewGraphicsScene * scene;
     QSlider    *slider;
     QPushButton *anchorButton;
     QPushButton *linkButton;
@@ -259,7 +239,6 @@ public:
     QPushButton *playButton;
     QPushButton *closeButton;
     QPushButton *fullScreenButton;
-    QVTKWidget *vtkWidget;
     QMenu      *menu;
     QString orientation;
 
@@ -365,8 +344,11 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
     d->view3d->SetInteractorStyle ( interactorStyle );
     interactorStyle->Delete();
+    
+    QMainWindow * mainWindow = dynamic_cast< QMainWindow * >(
+        qApp->property( "MainWindow" ).value< QObject * >() );
 
-    d->widget = new QWidget;
+    d->widget = new QWidget( mainWindow );
 
     d->slider = new QSlider ( Qt::Horizontal, d->widget );
     d->slider->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Fixed );
@@ -448,17 +430,37 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     toolButtonGroup->addButton ( d->linkButton );
     toolButtonGroup->setExclusive ( false );
 
-    d->vtkWidget = new QVTKWidget ( d->widget );
-    d->vtkWidget->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Minimum );
-    d->vtkWidget->setFocusPolicy ( Qt::NoFocus );
+    d->renwin2d = vtkQtOpenGLRenderWindow::New();
+    d->renwin3d = vtkQtOpenGLRenderWindow::New();
+    d->renwin2d->StereoCapableWindowOn();
+    d->renwin2d->SetStereoTypeToCrystalEyes();
+    d->renwin3d->StereoCapableWindowOn();
+    d->renwin3d->SetStereoTypeToCrystalEyes();
+    // if (qApp->arguments().contains("--stereo")) {
+    //     renwin2d->SetStereoRender(1);
+    //     renwin3d->SetStereoRender(1);
+    // }
 
-    d->renWin = vtkRenderWindow::New();
-    d->renWin->StereoCapableWindowOn();
-    d->renWin->SetStereoTypeToCrystalEyes();
-    // if(qApp->arguments().contains("--stereo"))
-    //     renwin->SetStereoRender(1);
+    d->vtkWidget = new v3dViewGraphicsView(d->widget);
+    d->vtkWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    d->vtkWidget->setFocusPolicy(Qt::NoFocus);
+    d->vtkWidget->setRenderWindow( d->renwin2d );
 
-    d->vtkWidget->SetRenderWindow ( d->renWin );
+    d->scene = new v3dViewGraphicsScene( this, d->vtkWidget );
+    d->vtkWidget->setScene( d->scene );
+    //scene->setImageView( d->view2d );
+
+    // d->view3d->SetRenderWindowInteractor(
+    //     d->vtkWidget->getRenderWindow()->GetInteractor());
+    // d->view3d->SetRenderWindow(d->vtkWidget->getRenderWindow());
+    // d->view3d->UnInstallInteractor();
+    // d->vtkWidget->getRenderWindow()->RemoveRenderer(d->renderer3d);
+    d->view3d->SetRenderWindowInteractor( d->renwin3d->GetInteractor() );
+    d->view3d->SetRenderWindow( d->renwin3d );
+    
+    // set the interactor as well
+    d->view2d->SetRenderWindowInteractor( d->renwin2d->GetInteractor() );
+    d->view2d->SetRenderWindow( d->renwin2d );
 
     QHBoxLayout *toolsLayout = new QHBoxLayout;
     toolsLayout->setContentsMargins ( 0, 0, 0, 0 );
@@ -478,12 +480,12 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     layout->addWidget ( d->vtkWidget );
 
     //d->view3d->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    d->view3d->SetRenderWindowInteractor ( d->renWin->GetInteractor() );
-    d->view3d->SetRenderWindow ( d->renWin );
-    d->view3d->UnInstallInteractor();
-    d->renWin->RemoveRenderer ( d->renderer3d );
+    //d->view3d->SetRenderWindowInteractor(d->renWin->GetInteractor());
+    //d->view3d->SetRenderWindow(d->renWin);
+    //d->view3d->UnInstallInteractor();
+    //d->renWin->RemoveRenderer(d->renderer3d);
 
-    d->view2d->SetRenderWindow ( d->renWin ); // set the interactor as well
+    //d->view2d->SetRenderWindow(d->renWin); // set the interactor as well
     //d->view2d->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
 
     d->collection = vtkImageViewCollection::New();
@@ -648,6 +650,19 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
 
 v3dView::~v3dView ( void )
 {
+    if ( d->renderer2d)
+        d->renderer2d->SetRenderWindow(NULL);
+    if ( d->renderer3d)
+        d->renderer3d->SetRenderWindow(NULL);
+    d->renwin2d->RemoveRenderer(d->renderer2d);
+    d->renwin3d->RemoveRenderer(d->renderer3d);
+    
+    /*
+     d->view2D->SetRenderWindow(0);
+     d->view2D->SetRenderWindowInteractor(0);
+     d->view3D->SetRenderWindow(0);
+     d->view3D->SetRenderWindowInteractor(0);
+     */
     foreach ( dtkAbstractViewInteractor *interactor, this->interactors() )
     {
         interactor->disable();
@@ -657,16 +672,15 @@ v3dView::~v3dView ( void )
     d->renderer2d->SetRenderWindow ( NULL );
     d->renderer3d->SetRenderWindow ( NULL );
 
-    d->renWin->RemoveRenderer ( d->renderer2d );
-    d->renWin->RemoveRenderer ( d->renderer3d );
-
     d->view2d->SetRenderWindow ( NULL );
     d->view2d->SetRenderWindowInteractor ( NULL );
     d->view3d->SetRenderWindow ( NULL );
     d->view3d->SetRenderWindowInteractor ( NULL );
 
-    d->renWin->Delete();
 
+    d->renwin2d->Delete();
+    d->renwin3d->Delete();
+    
     d->view2d->Delete();
     d->renderer2d->Delete();
     d->view3d->UnInstallInteractor();
@@ -764,7 +778,7 @@ vtkImageView *v3dView::currentView ( void )
 
 vtkRenderWindowInteractor *v3dView::interactor ( void )
 {
-    return d->renWin->GetInteractor();
+    return d->vtkWidget->getRenderWindow()->GetInteractor();
 }
 
 vtkRenderer *v3dView::renderer2d ( void )
@@ -1155,7 +1169,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
                 d->view3d->SetSeriesName ( seriesName.toAscii().constData() );
             }
 
-            QSignalBlocker blocker (d->slider);
+            dtkSignalBlocker blocker (d->slider );
             // slice orientation may differ from view orientation. Adapt slider range accordingly.
             int orientationId = d->view2d->GetSliceOrientation();
             if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
@@ -1221,7 +1235,7 @@ void v3dView::onOrientationPropertySet ( const QString &value )
     if ( value==d->orientation )
         return;
 
-    QSignalBlocker thisBlocker ( this );
+    dtkSignalBlocker thisBlocker ( this );
 
     double pos[3], window = 0.0, level = 0.0;
     int timeIndex = 0;
@@ -1231,12 +1245,13 @@ void v3dView::onOrientationPropertySet ( const QString &value )
         window = d->currentView->GetColorWindow();
         level  = d->currentView->GetColorLevel();
         timeIndex = d->currentView->GetTimeIndex();
-
-        d->currentView->UnInstallInteractor();
-        d->currentView->SetRenderWindow ( 0 );
-
-        // d->currentView->GetInteractorStyle()->RemoveObserver(d->observer);
-        d->renWin->RemoveRenderer ( d->currentView->GetRenderer() );
+        
+        // d->currentView->UnInstallInteractor();
+        // d->currentView->SetRenderWindow( 0 );
+        
+        // // d->currentView->GetInteractorStyle()->RemoveObserver(d->observer);
+        // d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->currentView->GetRenderer());
+        // d->renWin->RemoveRenderer ( d->currentView->GetRenderer() );
     }
 
     if ( value=="3D" )
@@ -1247,7 +1262,7 @@ void v3dView::onOrientationPropertySet ( const QString &value )
 
     // in case the max range becomes smaller than the actual value, a signal is emitted and
     // we don't want it
-    QSignalBlocker sliderBlocker ( d->slider );
+    dtkSignalBlocker sliderBlocker ( d->slider );
 
     if ( value == "Axial" )
     {
@@ -1295,7 +1310,8 @@ void v3dView::onOrientationPropertySet ( const QString &value )
         return;
     }
 
-    d->currentView->SetRenderWindow ( d->renWin );
+    d->vtkWidget->setRenderWindow( dynamic_cast< vtkQtOpenGLRenderWindow * >(
+                                       d->currentView->GetRenderWindow() ) );
 
     //d->currentView->InstallInteractor();
     //d->currentView->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
@@ -1723,7 +1739,7 @@ void v3dView::onZSliderValueChanged ( int value )
 
 void v3dView::onDaddyPropertySet ( const QString &value )
 {
-    QSignalBlocker anchorBlocker ( d->anchorButton );
+    dtkSignalBlocker anchorBlocker( d->anchorButton );
 
     bool boolValue = false;
     if ( value == "true" )
@@ -1773,7 +1789,7 @@ void v3dView::onMetaDataSet ( const QString &key, const QString &value )
 void v3dView::onMenuAxialTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 0 );
+        d->vtkWidget->getRenderWindow()->SetStereoRender(0);
 
     this->setProperty ( "Orientation", "Axial" );
     d->view2d->Render();
@@ -1784,7 +1800,7 @@ void v3dView::onMenuAxialTriggered ( void )
 void v3dView::onMenuCoronalTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 0 );
+        d->vtkWidget->getRenderWindow()->SetStereoRender(0);
 
     this->setProperty ( "Orientation", "Coronal" );
     d->view2d->Render();
@@ -1795,7 +1811,7 @@ void v3dView::onMenuCoronalTriggered ( void )
 void v3dView::onMenuSagittalTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 0 );
+        d->vtkWidget->getRenderWindow()->SetStereoRender(0);
 
     this->setProperty ( "Orientation", "Sagittal" );
     d->view2d->Render();
@@ -1813,7 +1829,7 @@ void v3dView::onMenu3DTriggered ( void )
 void v3dView::onMenu3DVRTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 1 );
+        d->vtkWidget->getRenderWindow()->SetStereoRender(1);
 
     this->setProperty ( "3DMode", "VR" );
     this->setProperty ( "Orientation", "3D" );
@@ -1823,7 +1839,7 @@ void v3dView::onMenu3DVRTriggered ( void )
 void v3dView::onMenu3DMPRTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 1 );
+        d->vtkWidget->getRenderWindow()->SetStereoRender(1);
 
     this->setProperty ( "3DMode",      "MPR" );
     this->setProperty ( "Orientation", "3D" );
@@ -1833,7 +1849,7 @@ void v3dView::onMenu3DMPRTriggered ( void )
 void v3dView::onMenu3DMaxIPTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 1 );
+        d->vtkWidget->getRenderWindow()->SetStereoRender(1);
 
     this->setProperty ( "3DMode", "MIP - Maximum" );
     this->setProperty ( "Orientation", "3D" );
@@ -1843,7 +1859,7 @@ void v3dView::onMenu3DMaxIPTriggered ( void )
 void v3dView::onMenu3DMinIPTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 1 );
+        d->vtkWidget->getRenderWindow()->SetStereoRender(1);
 
     this->setProperty ( "3DMode", "MIP - Minimum" );
     this->setProperty ( "Orientation", "3D" );
@@ -1853,7 +1869,7 @@ void v3dView::onMenu3DMinIPTriggered ( void )
 void v3dView::onMenu3DOffTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 1 );
+        d->vtkWidget->getRenderWindow()->SetStereoRender(1);
 
     this->setProperty ( "3DMode", "Off" );
     d->view3d->Render();
@@ -2337,8 +2353,8 @@ void v3dView::onPositionChanged ( const QVector3D &position )
     if ( vtkImageView2D *view2d = vtkImageView2D::SafeDownCast ( d->currentView ) )
     {
         unsigned int zslice = view2d->GetSlice();
-        QSignalBlocker sliderBlocker ( d->slider );
-        d->slider->setValue ( zslice );
+        dtkSignalBlocker sliderBlocker( d->slider );
+        d->slider->setValue (zslice);
     }
 }
 

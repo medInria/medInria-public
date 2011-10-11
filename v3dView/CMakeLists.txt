@@ -58,6 +58,8 @@ if (NOT VTK_USE_QT)
   message(WARNING "VTK has to be compiled with the option VTK_USE_QT:ON in order to compile this project. Please consider setting correctly your VTK.")
 endif(NOT VTK_USE_QT)
 
+find_package(OpenGL REQUIRED)
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -84,6 +86,10 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewFuseInteractor.h
   v3dViewMeshInteractor.h
   v3dView4DInteractor.h
+  QVtkGraphicsView.h
+  v3dViewGraphicsScene.h
+  v3dViewGraphicsView.h
+  v3dViewCircleAnnotation.h
   ${${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC}
   )
 
@@ -97,11 +103,13 @@ set(${PROJECT_NAME}_SOURCES
   v3dViewMeshInteractor.cpp
   v3dView4DInteractor.cpp
   v3dFiberBundle.cpp
+  QVtkGraphicsView.cpp
+  v3dViewGraphicsScene.cpp
+  v3dViewGraphicsView.cpp
+  v3dViewCircleAnnotation.cpp
+  vtkQtOpenGLRenderWindow.cxx  
   ${${PROJECT_NAME}_TTK_DEPENDENT_SOURCES}
   )
-
-# Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 
 ## #################################################################
 ## Build rules
@@ -124,6 +132,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  ${OPENGL_LIBRARIES}
   ${${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES}
   dtkCore
   medCore
@@ -147,6 +156,10 @@ endif (vtkINRIA3D_USE_HWSHADING)
 if (BUILD_TESTING)
   add_subdirectory(Testing)
 endif (BUILD_TESTING)
+
+# Include header files for Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules
