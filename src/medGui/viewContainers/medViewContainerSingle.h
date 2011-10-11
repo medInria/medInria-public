@@ -1,5 +1,5 @@
-/* medViewContainerSingle.h --- 
- * 
+/* medViewContainerSingle.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 10:55:32 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 10
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDVIEWCONTAINERSINGLE_H
@@ -40,8 +40,8 @@ public:
     /**
      * @brief Is this a leaf container?
      *
-     * This method is useful in the case of a custom or multi
-     * container.  Returns true if this object is supposed to contain
+     * This method is useful in the case of a custom container.
+     * Returns true if this object is supposed to contain
      * only views and no other containers (like
      * medViewContainerSingle)
      *
@@ -49,7 +49,7 @@ public:
      * @return bool
     */
     virtual bool isLeaf(void) const;
-    
+
     virtual QString description() {return "Single";}
 
 public slots:
