@@ -288,7 +288,11 @@ itkFiltersToolBox::~itkFiltersToolBox ( void )
 
 bool itkFiltersToolBox::registered ( void )
 {
-    return medToolBoxFactory::instance()->registerCustomFilteringToolBox ( "ITK Basic Filters", createitkFiltersToolBox );
+    return medToolBoxFactory::instance()->registerCustomFilteringToolBox (
+                "itkBasicFilters",
+                "ITK Basic Filters",
+                "ITK filters, processing examples",
+                createitkFiltersToolBox );
 }
 
 
@@ -565,7 +569,7 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
         }
         else
         {
-            qDebug() << "Error : pixel type not yet implemented ("
+            qWarning() << "Error : pixel type not yet implemented ("
             << identifier
             << ")";
         }
