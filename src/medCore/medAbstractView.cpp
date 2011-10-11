@@ -354,7 +354,6 @@ void medAbstractView::removeOverlay(int layer)
         emit (dataRemoved(layer));
         d->dataList.remove(layer);
     }
-    DTK_DEFAULT_IMPLEMENTATION;
 }
 
 void medAbstractView::onSliceChanged (int slice)
@@ -518,6 +517,12 @@ void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> dat
 
     //dtkAbstractData *dtkdata = d->sharedData.data();
     this->setData(data);
+}
+
+void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> data,
+                                            int layer)
+{
+    this->setData(data,layer);
 }
 
 medAbstractView::~medAbstractView( void )

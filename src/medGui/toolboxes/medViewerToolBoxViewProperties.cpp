@@ -277,7 +277,7 @@ void
         clear();
     }
 
-    //qDebug() << "update 1";
+//    qDebug() << "update 1";
     if (medAbstractView *medView = dynamic_cast<medAbstractView *> (view))
     {
 
@@ -286,19 +286,19 @@ void
             return;
         }
         d->view = medView;
-
+        d->propertiesTree->clear();
         //decide whether to show the 2 layers slider
         raiseSlider(d->view->layerCount() == 2);
 
-        //qDebug() << "update 2";
+//        qDebug() << "update 2";
         if(d->view->meshLayerCount()!=0)
             if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
             {
                 d->currentInteractor = d->interactors.indexOf(interactor);
             }
 
-        //qDebug() << "update 3";
-           
+//        qDebug() << "update 3";
+
         for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
         {
             if(d->view->dataInList(i) && d->view->dataInList(i)->description().contains("vtkDataMesh"))
@@ -308,7 +308,7 @@ void
             }
             else
             {
-                //qDebug() << "update 4" << imageNumber;
+//                qDebug() << "update 4" << imageNumber;
                 this->constructImageLayer(d->view->dataInList(i), imageNumber);
                 imageNumber++;
             }
@@ -343,6 +343,16 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
         return;
     QString layerItemString = QString::number(imageLayer);
     d->thumbLocation = ":icons/layer.png";
+
+    //Check the layer does not already exists, in which case we remove it.
+    foreach (QTreeWidgetItem* item,
+             d->propertiesTree->findItems(layerItemString,
+                                          Qt::MatchExactly | Qt::MatchWrap,0))
+    {
+//        qDebug() << "Found item" << item->text(0);
+        int index = d->propertiesTree->indexOfTopLevelItem(item);
+        d->propertiesTree->takeTopLevelItem(index);
+    }
 
     if (data)
     {
@@ -450,6 +460,16 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
    // if(d->view->layerCount() > 1 || d->view->meshLayerCount() > 0 )
     //    if(data)
     QString layerItemString = "Mesh " + QString::number(meshLayer);
+
+    //Check the layer does not already exists, in which case we remove it.
+    foreach (QTreeWidgetItem* item,
+             d->propertiesTree->findItems(layerItemString,
+                                          Qt::MatchExactly | Qt::MatchWrap,0))
+    {
+//        qDebug() << "Found item" << item->text(0);
+        int index = d->propertiesTree->indexOfTopLevelItem(item);
+        d->propertiesTree->takeTopLevelItem(index);
+    }
 
     d->thumbLocation = ":icons/layer.png";
 
