@@ -449,6 +449,16 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     //    if(data)
     QString layerItemString = "Mesh " + QString::number(meshLayer);
 
+    //Check the layer does not already exists, in which case we remove it.
+    foreach (QTreeWidgetItem* item,
+             d->propertiesTree->findItems(layerItemString,
+                                          Qt::MatchExactly | Qt::MatchWrap,0))
+    {
+//        qDebug() << "Found item" << item->text(0);
+        int index = d->propertiesTree->indexOfTopLevelItem(item);
+        d->propertiesTree->takeTopLevelItem(index);
+    }
+
     d->thumbLocation = ":icons/layer.png";
 
 
