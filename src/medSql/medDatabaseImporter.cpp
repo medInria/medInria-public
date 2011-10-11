@@ -90,6 +90,8 @@ void medDatabaseImporter::run ( void )
     // by volume in this map and will be written in the db after.
     // the key will be the name of the aggregated file with the volume
     QMap<QString, QStringList> imagesGroupedByVolume;
+    QMap<QString, QString> imagesGroupedByPatient;
+    QMap<QString, QString> imagesGroupedBySeriesId;
 
     int currentFileNumber = 0; // this variable will be used only for calculating progress
 
@@ -112,8 +114,8 @@ void medDatabaseImporter::run ( void )
     QString patientID;
 
     QString tmpSeriesUid;
-    QString currentSeriesUid = "";
-    QString generatedSeriesId;
+    QString currentSeriesUid = "-1";
+    QString currentSeriesId = "";
     
     foreach ( QString file, fileList )
     {
@@ -121,7 +123,7 @@ void medDatabaseImporter::run ( void )
         if ( d->isCancelled ) // check if user cancelled the process
             break;
 
-        emit progress ( this, ( ( qreal ) currentFileNumber/ ( qreal ) fileList.count() ) *50.0 ); //TODO: reading and filtering represents 50% of the importing process?
+        emit progress ( this, ( ( qreal ) currentFileNumber/ ( qreal ) fileList.count() ) * 50.0 ); //TODO: reading and filtering represents 50% of the importing process?
 
         currentFileNumber++;
 
@@ -146,8 +148,6 @@ void medDatabaseImporter::run ( void )
         QString birthDate = dtkData->metaDataValues ( medMetaDataKeys::BirthDate.key() ) [0];
         tmpPatientId = patientName + birthDate;
 
-        qDebug() << "Tmp patient Id: " << tmpPatientId;
-
         if(tmpPatientId != currentPatientId)
         {
           currentPatientId = tmpPatientId;
@@ -164,31 +164,22 @@ void medDatabaseImporter::run ( void )
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
           if ( query.first() )
-          {
-            qDebug() << "Patient allready in db";
             patientID = query.value ( 0 ).toString();
-            qDebug() << patientID;
-          }
           else
-          {
-              qDebug() << "Generate new patient ID";
-              patientID = QUuid::createUuid().toString().replace("{","").replace("}","");
-          }
+            patientID = QUuid::createUuid().toString().replace("{","").replace("}","");
         }
-          
-        dtkData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientID );
 
+        dtkData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientID );
         
         tmpSeriesUid = dtkData->metaDataValues(medMetaDataKeys::SeriesDicomID.key())[0];
+        
         if (tmpSeriesUid != currentSeriesUid)
         {
           currentSeriesUid = tmpSeriesUid;
-          generatedSeriesId = QUuid::createUuid().toString().replace("{","").replace("}","");
-
-          qDebug() << "generated patient id: " << patientID;
-          qDebug() << "generated series id: " << generatedSeriesId;
+          currentSeriesId = dtkData->metaDataValues ( medMetaDataKeys::SeriesID.key() ) [0];
         }
-        dtkData->setMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesId );
+        else
+          dtkData->setMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << currentSeriesId );
 
         // 2.3) Generate an unique id for each volume
         // all images of the same volume should share the same id
@@ -228,7 +219,11 @@ void medDatabaseImporter::run ( void )
         // First check if patient/study/series/image path already exists in the database
         // Should we emit a message otherwise ??? TO
         if ( !checkIfExists ( dtkData, fileInfo.fileName() ) )
+        {
             imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
+            imagesGroupedByPatient[imageFileName] = patientID;
+            imagesGroupedBySeriesId[imageFileName] = currentSeriesId;
+        }
     }
 
     // some checks to see if the user cancelled or something failed
@@ -242,13 +237,12 @@ void medDatabaseImporter::run ( void )
     // from now on the process cannot be cancelled
     emit disableCancel ( this );
 
-
-//     currentPatientId = "";
-
     // 3) Re-read selected files and re-populate them with missing metadata
     //    then write them to medinria db and populate db tables
 
     QMap<QString, QStringList>::const_iterator it = imagesGroupedByVolume.begin();
+    QMap<QString, QString>::const_iterator  itPat = imagesGroupedByPatient.begin();
+    QMap<QString, QString>::const_iterator  itSer = imagesGroupedBySeriesId.begin();
 
     // 3.1) first check is after the filtering we have something to import
     // maybe we had problems with all the files, or they were already in the database
@@ -270,12 +264,14 @@ void medDatabaseImporter::run ( void )
     // final loop: re-read, re-populate and write to db
     for ( ; it != imagesGroupedByVolume.end(); it++ )
     {
-        emit progress ( this, ( ( qreal ) currentImageIndex/ ( qreal ) imagesCount ) *50.0 + 50.0 ); // 50? I do not think that reading all the headers is half the job...
+        emit progress ( this, ( ( qreal ) currentImageIndex/ ( qreal ) imagesCount ) * 50.0 + 50.0 ); // 50? I do not think that reading all the headers is half the job...
 
         currentImageIndex++;
 
         QString aggregatedFileName = it.key(); // note that this file might be aggregating more than one input files
-        QStringList filesPaths = it.value(); // input files being aggregated, might be only one or many
+        QStringList filesPaths = it.value();   // input files being aggregated, might be only one or many
+        patientID = itPat.value();
+        QString seriesID = itSer.value();
 
         //qDebug() << currentImageIndex << ": " << aggregatedFileName << "with " << filesPaths.size() << " files";
 
@@ -291,45 +287,9 @@ void medDatabaseImporter::run ( void )
         {
             // 3.3) a) re-populate missing metadata
             // as files might be aggregated we use the aggregated file name as SeriesDescription (if not provided, of course)
-//             QString generatedSeriesID = QUuid::createUuid().toString().replace("{","").replace("}","");
-//             populateMissingMetadata ( imageDtkData, generatedSeriesID );
             populateMissingMetadata ( imageDtkData, imagefileInfo.baseName() );
-
-//             QString patientNameImage = imageDtkData->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0].simplified();
-//             QString birthDateImage = imageDtkData->metaDataValues ( medMetaDataKeys::BirthDate.key() ) [0];
-//             tmpPatientId = patientNameImage + birthDateImage;
-// 
-//             qDebug() << "Tmp patient Id: " << tmpPatientId;
-// 
-//             if(tmpPatientId != currentPatientId)
-//             {
-//               currentPatientId = tmpPatientId;
-// 
-//               //Let's see if the patient is already in the db
-//               QSqlDatabase db = * ( medDatabaseController::instance()->database() );
-//               QSqlQuery query ( db );
-// 
-//               query.prepare ( "SELECT patientId FROM patient WHERE name = :name AND birthdate = :birthdate" );
-//               query.bindValue ( ":name", patientNameImage );
-//               query.bindValue ( ":birthdate", birthDateImage );
-// 
-//               if ( !query.exec() )
-//                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-// 
-//               if ( query.first() )
-//               {
-//                 qDebug() << "Patient allready in db";
-//                 patientID = query.value ( 0 ).toString();
-//                 qDebug() << patientID;
-//               }
-//               else
-//               {
-//                 qDebug() << "Generate new patient ID";
-//                 patientID = QUuid::createUuid().toString().replace("{","").replace("}","");
-//               }
-//             }
-// 
-//             imageDtkData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientID );
+            imageDtkData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientID );
+            imageDtkData->setMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << seriesID );
 
             // 3.3) b) now we are able to add some more metadata
             addAdditionalMetaData ( imageDtkData, aggregatedFileName, filesPaths );
@@ -369,6 +329,9 @@ void medDatabaseImporter::run ( void )
         QFileInfo aggregatedFileNameFileInfo ( aggregatedFileName );
         QString pathToStoreThumbnails = aggregatedFileNameFileInfo.dir().path() + "/" + aggregatedFileNameFileInfo.completeBaseName() + "/";
         index = this->populateDatabaseAndGenerateThumbnails ( imageDtkData, pathToStoreThumbnails );
+        
+        itPat++;
+        itSer++;
     } // end of the final loop
 
 
@@ -486,6 +449,9 @@ void medDatabaseImporter::populateMissingMetadata ( dtkAbstractData* dtkData, co
     if ( !dtkData->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
         dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << "John Doe" );
 
+    if (!dtkData->hasMetaData ( medMetaDataKeys::PatientID.key() ) )
+      dtkData->addMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << "0" );
+
     if ( !dtkData->hasMetaData ( medMetaDataKeys::StudyDescription.key() ) )
         dtkData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << "EmptyStudy" );
 
@@ -497,10 +463,12 @@ void medDatabaseImporter::populateMissingMetadata ( dtkAbstractData* dtkData, co
 
     if ( !dtkData->hasMetaData ( medMetaDataKeys::StudyDicomID.key() ) )
         dtkData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
+
+    QString generatedSeriesId = QUuid::createUuid().toString().replace("{","").replace("}","");
     
     if ( !dtkData->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
-      dtkData->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << "0");
-
+      dtkData->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesId);
+    
     if ( !dtkData->hasMetaData ( medMetaDataKeys::SeriesDicomID.key() ) )
         dtkData->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << "" );
 
@@ -563,13 +531,6 @@ void medDatabaseImporter::populateMissingMetadata ( dtkAbstractData* dtkData, co
 
     if ( !dtkData->hasMetaData ( medMetaDataKeys::Report.key() ) )
         dtkData->addMetaData ( medMetaDataKeys::Report.key(), QStringList() << "" );
-
-//     QString patientID;
-//     patientID = dtkData->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0].simplified();
-//     patientID += dtkData->metaDataValues ( medMetaDataKeys::BirthDate.key() ) [0];
-
-    if (!dtkData->hasMetaData ( medMetaDataKeys::PatientID.key() ) )
-      dtkData->addMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << "0" );
 }
 
 //-----------------------------------------------------------------------------------------------------------

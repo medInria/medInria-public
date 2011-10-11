@@ -200,7 +200,7 @@ void medDatabaseWriter::run ( void )
 
     bool dataExists = false;
 
-    query.prepare ( "SELECT id FROM patient WHERE name = :name AND birthdate = :birthdate" );
+    query.prepare ( "SELECT id, patientId FROM patient WHERE name = :name AND birthdate = :birthdate" );
     query.bindValue ( ":name", patientName );
     query.bindValue ( ":birthdate", birthdate );
 
@@ -210,6 +210,7 @@ void medDatabaseWriter::run ( void )
     if ( query.first() )
     {
         id = query.value ( 0 );
+        patientId = query.value ( 0 ).toString();
 
         query.prepare ( "SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :uid" );
         query.bindValue ( ":id", id );
@@ -222,7 +223,7 @@ void medDatabaseWriter::run ( void )
         {
             id = query.value ( 0 );
 
-            query.prepare ( "SELECT id FROM series WHERE study = :id AND name = :name AND uid = :uid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns" );
+            query.prepare ( "SELECT id, seriesId FROM series WHERE study = :id AND name = :name AND uid = :uid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns" );
             query.bindValue ( ":id",             id );
             query.bindValue ( ":name",           seriesName );
             query.bindValue ( ":uid",            seriesUid );
@@ -239,6 +240,7 @@ void medDatabaseWriter::run ( void )
             if ( query.first() )
             {
                 id = query.value ( 0 );
+                seriesId = query.value ( 1 ).toString();
 
                 dataExists = true;
             }
@@ -388,7 +390,7 @@ void medDatabaseWriter::run ( void )
         query.bindValue ( ":thumbnail", thumbPath );
         query.bindValue ( ":birthdate", birthdate );
         query.bindValue ( ":gender",    gender );
-        query.bindValue ( ":patientId",    patientId );
+        query.bindValue ( ":patientId",  patientId );
         query.exec();
         id = query.lastInsertId();
         index.setPatientId ( id.toInt() );
@@ -399,7 +401,7 @@ void medDatabaseWriter::run ( void )
     query.prepare ( "SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :uid" );
     query.bindValue ( ":id",      id );
     query.bindValue ( ":name",    studyName );
-    query.bindValue ( ":uid", studyUid );
+    query.bindValue ( ":uid",     studyUid );
     if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
