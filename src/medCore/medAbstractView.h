@@ -158,6 +158,8 @@ public:
      * Setting data using a dtkSmartPointer
      */
     virtual void setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data);
+    virtual void setSharedDataPointer( dtkSmartPointer<dtkAbstractData> data,
+                                                int layer);
 
     void setCurrentMeshLayer(int meshLayer);
     virtual int currentMeshLayer(void) const;

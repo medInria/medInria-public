@@ -1,7 +1,7 @@
-/* medViewerToolBoxFiltering.h --- 
- * 
+/* medViewerToolBoxFiltering.h ---
+ *
  * @author Clément Philipot <clement.philipot@inria.fr>
- * 
+ *
  */
 
 #ifndef MEDTOOLBOXFILTERING_H
@@ -22,58 +22,58 @@ class medToolBoxFilteringCustom;
  */
 class MEDGUI_EXPORT medToolBoxFiltering : public medToolBox
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	medToolBoxFiltering(QWidget *parent);
-	~medToolBoxFiltering();
-	
-	/**
-	 * @brief returns input data
-	 */
-	dtkAbstractData* data(void);
+    medToolBoxFiltering(QWidget *parent);
+    ~medToolBoxFiltering();
 
-	/**
-	 * @brief returns current selected toolbox
-	 */
-	medToolBoxFilteringCustom* customToolbox(void);
+    /**
+     * @brief returns input data
+     */
+    dtkAbstractData* data(void);
 
-	/**
-	 * @brief set data index
-	 * @param index
-	 */
-	void setDataIndex(medDataIndex index);
+    /**
+     * @brief returns current selected toolbox
+     */
+    medToolBoxFilteringCustom* customToolbox(void);
+
+    /**
+     * @brief set data index
+     * @param index
+     */
+    void setDataIndex(medDataIndex index);
 
 signals:
-        /**
-         * @brief signals emitted whenever a filtering process is successful
-         */
-	void processFinished();
- 
+    /**
+     * @brief signals emitted whenever a filtering process is successful
+     */
+    void processFinished();
+
 public slots:
-    
-        /**
-         * @brief instantiates the right process toolbox according to its description
-         */
-	void onToolBoxChosen(const QString&);
-	/**
-	 * @brief clear input data and the current process toolbox
-	 */
-	void clear(void);
 
-	/**
-	 * @brief stores output image to the persistent database
-	 */
-	void onSavedImage(void);
+    /**
+     * @brief instantiates the right process toolbox according to its description
+     */
+    void onToolBoxChosen(const QString&);
+    /**
+     * @brief clear input data and the current process toolbox
+     */
+    void clear(void);
 
-	/**
-	 * @brief retrieve data from the selected input image index
-	 * @param index
-	 */
-	void onInputSelected(const medDataIndex& index);
+    /**
+     * @brief stores output image to the persistent database
+     */
+    void onSavedImage(void);
 
-    
+    /**
+     * @brief retrieve data from the selected input image index
+     * @param index
+     */
+    void onInputSelected(const medDataIndex& index);
+
+
 protected:
-	medToolBoxFilteringPrivate *d;
+    medToolBoxFilteringPrivate *d;
 };
 
 #endif
