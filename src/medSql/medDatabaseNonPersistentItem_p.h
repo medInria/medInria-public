@@ -35,10 +35,13 @@ class medDatabaseNonPersistentItemPrivate
 public:
     QString name;
     QString birthdate;
+    QString patientId;
     QString studyName;
     QString studyId;
+    QString studyUid;
     QString seriesName;
     QString seriesId;
+    QString seriesUid;
     QString file;
     QImage thumb;
 

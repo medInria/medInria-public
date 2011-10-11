@@ -42,6 +42,11 @@ const QString& medDatabaseNonPersistentItem::birthdate ( void ) const
     return d->birthdate;
 }
 
+const QString& medDatabaseNonPersistentItem::patientId ( void ) const
+{
+  return d->patientId;
+}
+
 const QString& medDatabaseNonPersistentItem::studyName(void) const
 {
     return d->studyName;
@@ -52,6 +57,12 @@ const QString& medDatabaseNonPersistentItem::studyId ( void ) const
   return d->studyId;
 }
 
+const QString& medDatabaseNonPersistentItem::studyUid ( void ) const
+{
+  return d->studyUid;
+}
+
+
 const QString& medDatabaseNonPersistentItem::seriesName(void) const
 {
     return d->seriesName;
@@ -60,6 +71,11 @@ const QString& medDatabaseNonPersistentItem::seriesName(void) const
 const QString& medDatabaseNonPersistentItem::seriesId ( void ) const
 {
     return d->seriesId;
+}
+
+const QString& medDatabaseNonPersistentItem::seriesUid ( void ) const
+{
+  return d->seriesUid;
 }
 
 const QString& medDatabaseNonPersistentItem::file(void) const
