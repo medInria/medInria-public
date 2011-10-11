@@ -115,7 +115,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->userWidget->setLayout ( userButtonsLayout );
 
     // Info widget : medinria logo, medinria description, etc. QtWebkit ?
-    QVBoxLayout * infoLayout = new QVBoxLayout;
+    QVBoxLayout * infoLayout = new QVBoxLayout(this);
     QLabel * medinriaLabel = new QLabel ( this );
     medinriaLabel->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ) );
     QLabel * textLabel = new QLabel;
