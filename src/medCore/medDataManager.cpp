@@ -528,7 +528,7 @@ void medDataManager::storeNonPersistentDataToDatabase( void )
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::storeNonPersitentMultipleDataToDatabase( const medDataIndex &index )
+void medDataManager::storeNonPersistentMultipleDataToDatabase( const medDataIndex &index )
 {
     typedef medDataManagerPrivate::DataCacheContainerType DataHashMapType;
     typedef QList<medDataIndex> medDataIndexList;
@@ -540,8 +540,8 @@ void medDataManager::storeNonPersitentMultipleDataToDatabase( const medDataIndex
         }
     }
 
-    foreach(medDataIndex index, indexesToStore)
-        this->storeNonPersistentSingleDataToDatabase(index);
+    foreach(medDataIndex tmpIndex, indexesToStore)
+        this->storeNonPersistentSingleDataToDatabase(tmpIndex);
 }
 
 void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex &index )

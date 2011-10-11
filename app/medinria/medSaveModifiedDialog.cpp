@@ -111,8 +111,6 @@ void medSaveModifiedDialog::Save( )
         }
     }
 
-    qDebug() << "list" << list;
-
     foreach(medDataIndex index, list)
             medDataManager::instance()->storeNonPersistentSingleDataToDatabase(index);
 }
