@@ -282,6 +282,7 @@ bool medViewerArea::open(const medDataIndex& index)
         // set the data to the view
         if (!root->multiLayer())
         {
+            //TODO: move the whole opening of indices to the medViewContainer itself one day.
             view->removeOverlay(0);
             view->setSharedDataPointer(data,0);
         }
