@@ -1,9 +1,11 @@
 #ifndef MEDQUICKACCESSMENU_H
 #define MEDQUICKACCESSMENU_H
 
+#include "medGuiExport.h"
+
 #include <QtGui>
 
-class medQuickAccessMenu : public QWidget
+class MEDGUI_EXPORT medQuickAccessMenu : public QWidget
 {
   Q_OBJECT
 public:
