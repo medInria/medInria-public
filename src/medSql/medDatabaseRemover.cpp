@@ -96,19 +96,19 @@ void medDatabaseRemover::run ( void )
         if ( d->isCancelled )
             break;
 
-        int patientId = ptQuery.value ( 0 ).toInt();
+        int patientDbId = ptQuery.value ( 0 ).toInt();
         QSqlQuery stQuery ( db );
 
         if ( index.isValidForStudy() )
         {
-            stQuery.prepare ( "SELECT id FROM " + d->T_STUDY + " WHERE id = :id AND patient = :patientId" );
+            stQuery.prepare ( "SELECT id FROM " + d->T_STUDY + " WHERE id = :id AND patient = :patient" );
             stQuery.bindValue ( ":id", index.studyId() );
         }
         else
         {
-            stQuery.prepare ( "SELECT id FROM " + d->T_STUDY + " WHERE patient = :patientId" );
+            stQuery.prepare ( "SELECT id FROM " + d->T_STUDY + " WHERE patient = :patient" );
         }
-        stQuery.bindValue ( ":patientId", patientId );
+        stQuery.bindValue ( ":patient", patientDbId );
 
         EXEC_QUERY ( stQuery );
         while ( stQuery.next() )
@@ -116,19 +116,19 @@ void medDatabaseRemover::run ( void )
             if ( d->isCancelled )
                 break;
 
-            int studyId = stQuery.value ( 0 ).toInt();
+            int studyDbId = stQuery.value ( 0 ).toInt();
             QSqlQuery seQuery ( db );
 
             if ( index.isValidForSeries() )
             {
-                seQuery.prepare ( "SELECT id FROM " + d->T_SERIES + " WHERE id = :id AND study = :studyId" );
+                seQuery.prepare ( "SELECT id FROM " + d->T_SERIES + " WHERE id = :id AND study = :study" );
                 seQuery.bindValue ( ":id", index.seriesId() );
             }
             else
             {
-                seQuery.prepare ( "SELECT id FROM " + d->T_SERIES + " WHERE study = :studyId" );
+                seQuery.prepare ( "SELECT id FROM " + d->T_SERIES + " WHERE study = :study" );
             }
-            seQuery.bindValue ( ":studyId", studyId );
+            seQuery.bindValue ( ":study", studyDbId );
 
             EXEC_QUERY ( seQuery );
             while ( seQuery.next() )
@@ -136,7 +136,7 @@ void medDatabaseRemover::run ( void )
                 if ( d->isCancelled )
                     break;
 
-                int seriesId = seQuery.value ( 0 ).toInt();
+                int seriesDbId = seQuery.value ( 0 ).toInt();
                 QSqlQuery imQuery ( db );
 
                 if ( index.isValidForImage() )
@@ -146,26 +146,26 @@ void medDatabaseRemover::run ( void )
                 }
                 else
                 {
-                    imQuery.prepare ( "SELECT id FROM " + d->T_IMAGE + " WHERE series = :seriesId" );
+                    imQuery.prepare ( "SELECT id FROM " + d->T_IMAGE + " WHERE series = :series" );
                 }
-                imQuery.bindValue ( ":seriesId", seriesId );
+                imQuery.bindValue ( ":series", seriesDbId );
 
                 EXEC_QUERY ( imQuery );
                 while ( imQuery.next() )
                 {
                     int imageId = imQuery.value ( 0 ).toInt();
-                    this->removeImage ( patientId, studyId, seriesId, imageId );
+                    this->removeImage ( patientDbId, studyDbId, seriesDbId, imageId );
                 }
-                if ( this->isSeriesEmpty ( seriesId ) )
-                    this->removeSeries ( patientId, studyId, seriesId );
+                if ( this->isSeriesEmpty ( seriesDbId ) )
+                    this->removeSeries ( patientDbId, studyDbId, seriesDbId );
 
             } // seQuery.next
-            if ( this->isStudyEmpty ( studyId ) )
-                this->removeStudy ( patientId, studyId );
+            if ( this->isStudyEmpty ( studyDbId ) )
+                this->removeStudy ( patientDbId, studyDbId );
 
         } // stQuery.next
-        if ( this->isPatientEmpty ( patientId ) )
-            this->removePatient ( patientId );
+        if ( this->isPatientEmpty ( patientDbId ) )
+            this->removePatient ( patientDbId );
 
     } // ptQuery.next
 
@@ -180,7 +180,7 @@ void medDatabaseRemover::run ( void )
     return;
 }
 
-void medDatabaseRemover::removeImage ( int patientId, int studyId, int seriesId, int imageId )
+void medDatabaseRemover::removeImage ( int patientDbId, int studyDbId, int seriesDbId, int imageId )
 {
     QSqlDatabase & db ( *d->db );
     QSqlQuery query ( db );
@@ -196,27 +196,26 @@ void medDatabaseRemover::removeImage ( int patientId, int studyId, int seriesId,
     removeTableRow ( d->T_IMAGE, imageId );
 }
 
-bool medDatabaseRemover::isSeriesEmpty ( int seriesId )
+bool medDatabaseRemover::isSeriesEmpty ( int seriesDbId )
 {
     QSqlDatabase & db ( *d->db );
     QSqlQuery query ( db );
 
-    query.prepare ( "SELECT id FROM " + d->T_IMAGE + " WHERE series = :seriesId " );
-    query.bindValue ( ":seriesId", seriesId );
+    query.prepare ( "SELECT id FROM " + d->T_IMAGE + " WHERE series = :series " );
+    query.bindValue ( ":series", seriesDbId );
     EXEC_QUERY ( query );
     return !query.next();
 }
 
-void medDatabaseRemover::removeSeries ( int patientId, int studyId, int seriesId )
+void medDatabaseRemover::removeSeries ( int patientDbId, int studyDbId, int seriesDbId )
 {
     QSqlDatabase & db ( *d->db );
     QSqlQuery query ( db );
 
-    query.prepare ( "SELECT thumbnail, path, name, uid  FROM " + d->T_SERIES + " WHERE id = :seriesId " );
-    query.bindValue ( ":seriesId", seriesId );
+    query.prepare ( "SELECT thumbnail, path, name  FROM " + d->T_SERIES + " WHERE id = :series " );
+    query.bindValue ( ":series", seriesDbId );
     EXEC_QUERY ( query );
-    QString seriesName;
-    QString seriesUid;
+    
     QString thumbnail;
     if ( query.next() )
     {
@@ -226,14 +225,9 @@ void medDatabaseRemover::removeSeries ( int patientId, int studyId, int seriesId
 
         // if path is empty then it was an indexed series
         if ( !path.isNull() && !path.isEmpty() )
-            this->removeDataFile ( medDataIndex::makeSeriesIndex ( d->index.dataSourceId(), patientId, studyId, seriesId ) , path );
-
-        seriesName = query.value ( 2 ).toString();
-        seriesUid = query.value ( 3 ).toString();
+            this->removeDataFile ( medDataIndex::makeSeriesIndex ( d->index.dataSourceId(), patientDbId, studyDbId, seriesDbId ) , path );
     }
-    removeTableRow ( d->T_SERIES, seriesId );
-
-//     qDebug() << "Series Uid: " << seriesUid;
+    removeTableRow ( d->T_SERIES, seriesDbId );
 
     // we want to remove the directory if empty
     QFileInfo seriesFi ( medStorage::dataLocation() + thumbnail );
@@ -241,91 +235,66 @@ void medDatabaseRemover::removeSeries ( int patientId, int studyId, int seriesId
         seriesFi.dir().rmdir ( seriesFi.absolutePath() ); // only removes if empty
 }
 
-bool medDatabaseRemover::isStudyEmpty ( int studyId )
+bool medDatabaseRemover::isStudyEmpty ( int studyDbId )
 {
     QSqlDatabase & db ( *d->db );
     QSqlQuery query ( db );
 
-    query.prepare ( "SELECT id FROM " + d->T_SERIES + " WHERE study = :studyId " );
-    query.bindValue ( ":studyId", studyId );
+    query.prepare ( "SELECT id FROM " + d->T_SERIES + " WHERE study = :study " );
+    query.bindValue ( ":study", studyDbId );
     EXEC_QUERY ( query );
     return !query.next();
 }
 
-void medDatabaseRemover::removeStudy ( int patientId, int studyId )
+void medDatabaseRemover::removeStudy ( int patientDbId, int studyDbId )
 {
     QSqlDatabase & db ( *d->db );
     QSqlQuery query ( db );
 
-    QString studyName;
-    QString studyUid;
-
-    query.prepare ( "SELECT thumbnail, name, uid FROM " + d->T_STUDY + " WHERE id = :studyId " );
-    query.bindValue ( ":studyId", studyId );
+    query.prepare ( "SELECT thumbnail, name, uid FROM " + d->T_STUDY + " WHERE id = :id " );
+    query.bindValue ( ":id", studyDbId );
     EXEC_QUERY ( query );
     if ( query.next() )
     {
         QString thumbnail = query.value ( 0 ).toString();
         this->removeFile ( thumbnail );
-        studyName = query.value ( 1 ).toString();
-        studyUid = query.value ( 2 ).toString();
     }
-    removeTableRow ( d->T_STUDY, studyId );
-
-//     query.prepare ( "SELECT name, birthdate  FROM " + d->T_PATIENT + " WHERE id = :patientId " );
-//     query.bindValue ( ":patientId", patientId );
-//     EXEC_QUERY ( query );
-//     QString patientName;
-//     QString patientBirthdate;
-//     if ( query.next() )
-//     {
-//         patientName = query.value ( 0 ).toString();
-//         patientBirthdate = query.value ( 1 ).toString();
-//     }
-
-//     qDebug() << "patientID:" << patientName << patientBirthdate;
-//     qDebug() << "studyUid: " << studyUid;
-
-//     medDatabaseControllerImpl* dbi = medDatabaseController::instance();
-//     QDir studyDir(medStorage::dataLocation() + "/" + dbi->stringForPath(patientName) + "/" + dbi->stringForPath(studyName));
-//     QDir studyDir ( medStorage::dataLocation() + "/" + dbi->stringForPath ( patientName + patientBirthdate ) + "/" + dbi->stringForPath ( studyUid ) );
-//     if ( studyDir.exists() )
-//         studyDir.rmdir ( studyDir.path() ); // only removes if empty
+    removeTableRow ( d->T_STUDY, studyDbId );
 }
 
-bool medDatabaseRemover::isPatientEmpty ( int patientId )
+bool medDatabaseRemover::isPatientEmpty ( int patientDbId )
 {
     QSqlDatabase & db ( *d->db );
     QSqlQuery query ( db );
 
-    query.prepare ( "SELECT id FROM " + d->T_STUDY + " WHERE patient = :patientId " );
-    query.bindValue ( ":patientId", patientId );
+    query.prepare ( "SELECT id FROM " + d->T_STUDY + " WHERE patient = :patient " );
+    query.bindValue ( ":patient", patientDbId );
     EXEC_QUERY ( query );
     return !query.next();
 }
 
-void medDatabaseRemover::removePatient ( int patientId )
+void medDatabaseRemover::removePatient ( int patientDbId )
 {
     QSqlDatabase & db ( *d->db );
     QSqlQuery query ( db );
 
     QString patientName;
     QString patientBirthdate;
-    query.prepare ( "SELECT thumbnail,name,birthdate  FROM " + d->T_PATIENT + " WHERE id = :patientId " );
-    query.bindValue ( ":patientId", patientId );
+    QString patientId;
+    
+    query.prepare ( "SELECT thumbnail, patientId  FROM " + d->T_PATIENT + " WHERE id = :patient " );
+    query.bindValue ( ":patient", patientDbId );
     EXEC_QUERY ( query );
     if ( query.next() )
     {
         QString thumbnail = query.value ( 0 ).toString();
         this->removeFile ( thumbnail );
-        patientName = query.value ( 1 ).toString();
-        patientBirthdate = query.value ( 2 ).toString();
+        patientId = query.value ( 1 ).toString();
     }
-    removeTableRow ( d->T_PATIENT, patientId );
+    removeTableRow ( d->T_PATIENT, patientDbId );
 
     medDatabaseControllerImpl * dbi = medDatabaseController::instance();
-//     QDir patientDir(medStorage::dataLocation() + "/" + dbi->stringForPath(patientName));
-    QDir patientDir ( medStorage::dataLocation() + "/" + dbi->stringForPath ( patientName+patientBirthdate ) );
+    QDir patientDir ( medStorage::dataLocation() + "/" + dbi->stringForPath ( patientId ) );
 
     if ( patientDir.exists() )
         patientDir.rmdir ( patientDir.path() ); // only removes if empty

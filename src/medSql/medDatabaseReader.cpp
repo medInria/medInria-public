@@ -50,22 +50,22 @@ medDatabaseReader::~medDatabaseReader ( void )
 
 dtkSmartPointer<dtkAbstractData> medDatabaseReader::run ( void )
 {
-    QVariant patientId = d->index.patientId();
-    QVariant   studyId = d->index.studyId();
-    QVariant  seriesId = d->index.seriesId();
-    QVariant   imageId = d->index.imageId();
+    QVariant patientDbId = d->index.patientId();
+    QVariant   studyDbId = d->index.studyId();
+    QVariant  seriesDbId = d->index.seriesId();
+    QVariant   imageDbId = d->index.imageId();
 
     QSqlQuery query ( ( * ( medDatabaseController::instance()->database() ) ) );
 
-    QString patientName, birthdate, age, gender;
-    QString studyName, studyUid;
+    QString patientName, birthdate, age, gender, patientId;
+    QString studyName, studyUid, studyId;
     QString seriesName, seriesUid, orientation, seriesNumber, sequenceName,
             sliceThickness, rows, columns, refThumbPath, description, protocol,
             comments, status, acquisitiondate, importationdate, referee,
-            institution, report, modality;
+            institution, report, modality, seriesId;
 
-    query.prepare ( "SELECT name, birthdate, gender FROM patient WHERE id = :id" );
-    query.bindValue ( ":id", patientId );
+    query.prepare ( "SELECT name, birthdate, gender, patientId FROM patient WHERE id = :id" );
+    query.bindValue ( ":id", patientDbId );
     if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if ( query.first() )
@@ -73,24 +73,26 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run ( void )
         patientName = query.value ( 0 ).toString();
         birthdate = query.value ( 1 ).toString();
         gender = query.value ( 2 ).toString();
+        patientId = query.value ( 3 ).toString();
     }
 
-    query.prepare ( "SELECT name, uid FROM study WHERE id = :id" );
-    query.bindValue ( ":id", studyId );
+    query.prepare ( "SELECT name, uid, studyId FROM study WHERE id = :id" );
+    query.bindValue ( ":id", studyDbId );
     if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if ( query.first() )
     {
         studyName = query.value ( 0 ).toString();
         studyUid = query.value ( 1 ).toString();
+        studyId = query.value ( 2 ).toString();
     }
 
     query.prepare ( "SELECT name, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, \
                      description, protocol, comments, status, acquisitiondate, importationdate, referee,       \
-                     institution, report, modality \
+                     institution, report, modality, seriesId \
                      FROM series WHERE id = :id" );
     
-    query.bindValue ( ":id", seriesId );
+    query.bindValue ( ":id", seriesDbId );
     if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
     if ( query.first() )
@@ -113,10 +115,11 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run ( void )
         institution = query.value ( 15 ).toString();
         report = query.value ( 16 ).toString();
         modality = query.value ( 17 ).toString();
+        seriesId = query.value ( 18 ).toString();
     }
 
     query.prepare ( "SELECT name, id, path, instance_path, isIndexed FROM image WHERE series = :series" );
-    query.bindValue ( ":series", seriesId );
+    query.bindValue ( ":series", seriesDbId );
     if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
@@ -164,8 +167,8 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run ( void )
         QSqlQuery seriesQuery ( * ( medDatabaseController::instance()->database() ) );
         QVariant seriesThumbnail;
 
-        seriesQuery.prepare ( "SELECT thumbnail FROM series WHERE id = :seriesId" );
-        seriesQuery.bindValue ( ":seriesId", seriesId );
+        seriesQuery.prepare ( "SELECT thumbnail FROM series WHERE id = :id" );
+        seriesQuery.bindValue ( ":id", seriesDbId );
         if ( !seriesQuery.exec() )
             qDebug() << DTK_COLOR_FG_RED << seriesQuery.lastError() << DTK_NO_COLOR;
 
@@ -181,14 +184,16 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run ( void )
             qWarning() << "Thumbnailpath not found";
         }
 
-        medMetaDataKeys::PatientID.add ( dtkdata, patientId.toString() );
+        medMetaDataKeys::PatientID.add ( dtkdata, patientId );
         medMetaDataKeys::PatientName.add ( dtkdata, patientName );
         medMetaDataKeys::BirthDate.add ( dtkdata, birthdate );
         medMetaDataKeys::Gender.add ( dtkdata, gender );
         medMetaDataKeys::StudyDescription.add ( dtkdata, studyName );
-        medMetaDataKeys::StudyID.add ( dtkdata, studyUid );
+        medMetaDataKeys::StudyID.add ( dtkdata, studyId );
+        medMetaDataKeys::StudyDicomID.add ( dtkdata, studyUid );
         medMetaDataKeys::SeriesDescription.add ( dtkdata, seriesName );
-        medMetaDataKeys::SeriesID.add ( dtkdata, seriesUid );
+        medMetaDataKeys::SeriesID.add ( dtkdata, seriesId );
+        medMetaDataKeys::SeriesDicomID.add ( dtkdata, seriesUid );
         medMetaDataKeys::Orientation.add ( dtkdata, orientation );
         medMetaDataKeys::Columns.add ( dtkdata, columns );
         medMetaDataKeys::Rows.add ( dtkdata, rows );
@@ -205,7 +210,6 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run ( void )
         medMetaDataKeys::SequenceName.add ( dtkdata, sequenceName );
         medMetaDataKeys::SliceThickness.add ( dtkdata, sliceThickness );
         medMetaDataKeys::SeriesNumber.add(dtkdata, seriesNumber);
-        //medMetaDataKeys::ImageID.add(data, imageId.toString());
 
         emit success ( this );
     }
@@ -228,17 +232,17 @@ qint64 medDatabaseReader::getDataSize()
 
 QString medDatabaseReader::getFilePath()
 {
-    QVariant patientId = d->index.patientId();
-    QVariant   studyId = d->index.studyId();
-    QVariant  seriesId = d->index.seriesId();
-    QVariant   imageId = d->index.imageId();
+    QVariant patientDbId = d->index.patientId();
+    QVariant   studyDbId = d->index.studyId();
+    QVariant  seriesDbId = d->index.seriesId();
+    QVariant   imageDbId = d->index.imageId();
 
     QSqlQuery query ( ( * ( medDatabaseController::instance()->database() ) ) );
 
     QString filename;
 
     query.prepare ( "SELECT path, instance_path, isIndexed FROM image WHERE series = :series" );
-    query.bindValue ( ":series", seriesId );
+    query.bindValue ( ":series", seriesDbId );
 
     if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
