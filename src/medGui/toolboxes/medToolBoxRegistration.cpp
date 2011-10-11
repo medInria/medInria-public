@@ -97,7 +97,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 
     // Layout section
 
-   
+
 
 //    d->layoutFuseSlider = new QSlider(Qt::Horizontal, this);
 //    d->layoutFuseSlider->setRange(1, 100);
@@ -134,7 +134,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
     layoutButtonGroup->addButton(d->saveImageButton);
     layoutButtonGroup->addButton(d->saveTransButton);
-    
+
     QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
     layoutButtonLayout->addWidget(d->saveImageButton);
     layoutButtonLayout->addWidget(d->saveTransButton);
@@ -145,7 +145,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     QWidget * layoutSection = new QWidget(this);
     layoutSection->setLayout(layoutLayout);
 
-    
+
     addWidget(d->toolboxes);
     addWidget(layoutSection);
     //addWidget(d->saveImageButton);
@@ -454,13 +454,13 @@ void medToolBoxRegistration::onSuccess()
 
     medDataManager::instance()->importNonPersistent(output);
 
-	if(output)
+    if(output)
     {
-	    d->movingView->setData(output,0);
-	    d->fixedView->unlink (d->movingView);
-	    d->fixedView->link (d->movingView);
-	    d->movingView->update();
-	    d->fuseView->setData(output,1);
+        d->movingView->setData(output,0);
+        d->fixedView->unlink (d->movingView);
+        d->fixedView->link (d->movingView);
+        d->movingView->update();
+        d->fuseView->setData(output,1);
         d->fuseView->update();
 
     }

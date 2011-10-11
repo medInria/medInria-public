@@ -40,6 +40,7 @@
 #include <medDataManager.h>
 
 #include <medButton.h>
+#include <medQuickAccessMenu.h>
 #include <medWorkspaceShifter.h>
 
 #include <medDatabaseController.h>
@@ -103,7 +104,8 @@ public:
     QHBoxLayout * statusBarLayout;
 
     medStatusBar * statusBar;
-    QWidget * quickAccessWidget;
+//     QWidget * quickAccessWidget;
+    medQuickAccessMenu * quickAccessWidget;
     bool quickAccessVisible;
 
     medQuickAccessPushButton * quickAccessButton;
@@ -183,10 +185,12 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
     d->quickAccessButton->setText ( "Workspaces access menu" );
     connect ( d->quickAccessButton,  SIGNAL ( clicked() ), this, SLOT ( onShowQuickAccess() ) );
-
-    d->quickAccessWidget = new QWidget ( this );
+    
+    d->quickAccessWidget = new medQuickAccessMenu( this );
+    d->quickAccessWidget->setFocusPolicy(Qt::ClickFocus);
     d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, -500 ) );
     d->quickAccessWidget->setMinimumWidth(180);
+    connect(d->quickAccessWidget, SIGNAL(hideMenu()), this, SLOT(onHideQuickAccess()));
 
     d->quickAccessVisible = false;
     d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos",this );
@@ -480,6 +484,7 @@ void medMainWindow::onShowQuickAccess ( void )
         this->onHideQuickAccess();
         return;
     }
+    d->quickAccessWidget->setFocus();
     d->quickAccessVisible = true;
     d->quickAccessAnimation->setDuration ( 100 );
     d->quickAccessAnimation->setStartValue ( QPoint ( 0,this->height() - 30 ) );

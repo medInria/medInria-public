@@ -73,8 +73,19 @@ void medViewerConfigurationVisualization::setupViewContainerStack()
     {
         //Default container:
         addMultiContainer("Visualization");
+        this->connectToolboxesToCurrentContainer("Visualization");
     }
     this->stackedViewContainers()->unlockTabs();
+}
+
+void medViewerConfigurationVisualization::connectToolboxesToCurrentContainer(const QString &name)
+{
+    connect(stackedViewContainers()->container(name),
+            SIGNAL(viewAdded(dtkAbstractView*)),
+            d->timeToolBox, SLOT(onViewAdded(dtkAbstractView*)));
+    connect(stackedViewContainers()->container(name),
+            SIGNAL(viewRemoved(dtkAbstractView*)),
+            d->timeToolBox, SLOT(onViewRemoved(dtkAbstractView*)));
 }
 
 medViewerConfigurationVisualization::~medViewerConfigurationVisualization(void)

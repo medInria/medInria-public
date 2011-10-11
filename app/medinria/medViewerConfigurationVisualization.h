@@ -37,6 +37,13 @@ public:
     virtual void setupViewContainerStack();
     virtual QString description(void) const;
 
+public slots:
+    /**
+     * @brief Connects toolboxes to the current container
+     *
+     * @param name the container name
+    */
+    virtual void connectToolboxesToCurrentContainer(const QString &name);
 
 private:
     medViewerConfigurationVisualizationPrivate *d;
