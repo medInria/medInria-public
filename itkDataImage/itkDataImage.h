@@ -242,15 +242,26 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
             }
 
             QImage *qimage = new QImage (newSize[0],newSize[1],QImage::Format_ARGB32);
+            qimage->fill(0);
             uchar  *qImageBuffer = qimage->bits();
-            itk::ImageRegionIterator<RGBImage2DType> it (rgbfilter->GetOutput(),
+            
+            unsigned int baseX = 0;
+            unsigned int baseY = 0;
+            
+            if (newSize[0] > rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[0])
+                baseX = (newSize[0] - rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[0]) / 2;
+            if (newSize[1] > rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[1])
+                baseY = (newSize[1] - rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[1]) / 2;
+            
+            itk::ImageRegionIteratorWithIndex<RGBImage2DType> it (rgbfilter->GetOutput(),
                                                          rgbfilter->GetOutput()->GetLargestPossibleRegion());
 
             while (!it.IsAtEnd()) {
-                *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetRed());
-                *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetGreen());
-                *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetBlue());
-                *qImageBuffer++ = 0xFF;
+                RGBImage2DType::IndexType tmpIndex = it.GetIndex();
+                qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0])] = static_cast<unsigned char>(it.Value().GetRed());
+                qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 1] = static_cast<unsigned char>(it.Value().GetGreen());
+                qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 2] = static_cast<unsigned char>(it.Value().GetBlue());
+                qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 3] = 0xFF;
 
                 ++it;
             }
@@ -301,18 +312,28 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
 
                 QImage *qimage = new QImage (newSize[0],newSize[1],QImage::Format_ARGB32);
                 uchar  *qImageBuffer = qimage->bits();
-                itk::ImageRegionIterator<RGBImage2DType> it (rgbfilter->GetOutput(),
-                                                             rgbfilter->GetOutput()->GetLargestPossibleRegion());
 
+                unsigned int baseX = 0;
+                unsigned int baseY = 0;
+                
+                if (newSize[0] > rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[0])
+                    baseX = (newSize[0] - rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[0]) / 2;
+                if (newSize[1] > rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[1])
+                    baseY = (newSize[1] - rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[1]) / 2;
+                
+                itk::ImageRegionIteratorWithIndex<RGBImage2DType> it (rgbfilter->GetOutput(),
+                                                                      rgbfilter->GetOutput()->GetLargestPossibleRegion());
+                
                 while (!it.IsAtEnd()) {
-                    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetRed());
-                    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetGreen());
-                    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetBlue());
-                    *qImageBuffer++ = 0xFF;
-
+                    RGBImage2DType::IndexType tmpIndex = it.GetIndex();
+                    qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0])] = static_cast<unsigned char>(it.Value().GetRed());
+                    qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 1] = static_cast<unsigned char>(it.Value().GetGreen());
+                    qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 2] = static_cast<unsigned char>(it.Value().GetBlue());
+                    qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 3] = 0xFF;
+                    
                     ++it;
                 }
-
+                
                 thumbnails.push_back(qimage->mirrored(mirrorThumbs[0],mirrorThumbs[1]));
                 delete qimage;
             }
