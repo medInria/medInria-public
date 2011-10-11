@@ -87,45 +87,24 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     // --- Setting up custom toolboxes list ---
 
     d->toolboxes = new QComboBox(this);
-    d->toolboxes->addItem("Choose algorithm");
-
-    foreach(QString toolbox, medToolBoxFactory::instance()->registrationToolBoxes())
+    d->toolboxes->addItem(tr("Choose algorithm"));
+    medToolBoxFactory* tbFactory =medToolBoxFactory::instance();
+    int i=1;
+    foreach(QString toolbox, tbFactory->registrationToolBoxes())
     {
-
-        d->toolboxes->addItem(toolbox, toolbox);
+        QPair<const QString&, const QString&> pair =
+                tbFactory->registrationToolBoxDetailsFromId(toolbox);
+        QString name = pair.first;
+        QString description = pair.second;
+        qDebug() << "Added registration toolbox" << name;
+        d->toolboxes->addItem(name, toolbox);
+        d->toolboxes->setItemData(i,
+                                  description,
+                                  Qt::ToolTipRole);
+        i++;
     }
 
-    connect(d->toolboxes, SIGNAL(activated(const QString&)), this, SLOT(onToolBoxChosen(const QString&)));
-
-
-    // Layout section
-
-
-
-//    d->layoutFuseSlider = new QSlider(Qt::Horizontal, this);
-//    d->layoutFuseSlider->setRange(1, 100);
-//    d->layoutFuseSlider->setValue(50);
-
-//    d->blendRadio = new QRadioButton("Blend", this);
-//    d->checkerboardRadio = new QRadioButton("Checkerboard", this);
-//    d->blendRadio->setChecked(true);
-
-//    QButtonGroup *radioGroup = new QButtonGroup(this);
-//    radioGroup->addButton(d->blendRadio);
-//    radioGroup->addButton(d->checkerboardRadio);
-//    radioGroup->setExclusive(true);
-
-//    QHBoxLayout *radioGroupLayout = new QHBoxLayout;
-//    radioGroupLayout->addWidget(d->blendRadio);
-//    radioGroupLayout->addWidget(d->checkerboardRadio);
-
-
-//    layoutLayout->addLayout(radioGroupLayout);
-//    layoutLayout->addWidget(d->layoutFuseSlider);
-
-
-//    connect(d->blendRadio, SIGNAL(toggled(bool)), this, SLOT(onBlendModeSet(bool)));
-//    connect(d->checkerboardRadio, SIGNAL(toggled(bool)), this, SLOT(onCheckerboardModeSet(bool)));
+    connect(d->toolboxes, SIGNAL(activated(int)), this, SLOT(onToolBoxChosen(int)));
 
 
     // /////////////////////////////////////////////////////////////////
@@ -279,16 +258,6 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
         d->movingView->update();
     }
 
-//    if (d->fuseView) {
-//        if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-//            if (d->fixedData) {
-//                interactor->setData(d->fixedData,   0);
-//                interactor->setData(d->movingData,  1);
-//                d->fuseView->reset();
-//                d->fuseView->update();
-//            }
-//        }
-//    }
     if (d->fixedView)
     {
         //already one layer present
@@ -303,9 +272,13 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
     d->fuseView->update();
 }
 
-void medToolBoxRegistration::onToolBoxChosen(const QString& id)
+void medToolBoxRegistration::onToolBoxChosen(int index)
 {
+    //get identifier for toolbox.
+    QString id = d->toolboxes->itemData(index).toString();
+
     medToolBoxRegistrationCustom *toolbox = medToolBoxFactory::instance()->createCustomRegistrationToolBox(id);
+
 
     if(!toolbox) {
         qWarning() << "Unable to instanciate" << id << "toolbox";

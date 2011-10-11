@@ -70,10 +70,17 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     // --- Setting up custom toolboxes list ---
     d->tractographyMethodCombo->addItem( tr( "Choose..." ) );
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
+    int i=1;
     foreach(QString toolbox, tbFactory->diffusionToolBoxes())
     {
         QPair<const QString&, const QString&> pair = tbFactory->diffusionToolBoxDetailsFromId(toolbox);
-        d->tractographyMethodCombo->addItem(pair.first, toolbox);
+        QString name = pair.first;
+        QString descr = pair.second;
+        d->tractographyMethodCombo->addItem(name, toolbox);
+        d->tractographyMethodCombo->setItemData(i,
+                                  descr,
+                                  Qt::ToolTipRole);
+        i++;
     }
 
     connect(d->tractographyMethodCombo, SIGNAL(activated(int)), this, SLOT(onToolBoxChosen(int)));

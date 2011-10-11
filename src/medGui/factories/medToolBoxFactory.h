@@ -71,6 +71,12 @@ public:
 
     QPair<const QString&, const QString&> diffusionToolBoxDetailsFromId (
             const QString& id );
+    QPair<const QString&, const QString&> registrationToolBoxDetailsFromId (
+            const QString& id );
+    QPair<const QString&, const QString&> filteringToolBoxDetailsFromId (
+            const QString& id );
+    QPair<const QString&, const QString&> compositeToolBoxDetailsFromId (
+            const QString& id );
 
 public slots:
     medToolBoxRegistrationCustom *createCustomRegistrationToolBox(QString identifier, QWidget *parent=0);
