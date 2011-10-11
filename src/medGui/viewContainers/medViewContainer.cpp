@@ -40,7 +40,7 @@ medViewContainer::medViewContainer(QWidget *parent)
 
     d->pool = new medViewPool (this);
 
-    medViewContainer *container = dynamic_cast<medViewContainer *>(parent);
+    medViewContainer *container = qobject_cast<medViewContainer *>(parent);
     if ( container != NULL ) {
         connect(this,      SIGNAL(dropped(const medDataIndex&)),
                 container, SIGNAL(dropped(const medDataIndex&)));
@@ -107,7 +107,7 @@ bool medViewContainer::isLeaf(void) const
 bool medViewContainer::isEmpty(void) const
 {
     return ( this->view() == NULL &&
-             this->childContainers().count() == 0 );
+             this->childContainers().isEmpty());
 }
 
 bool medViewContainer::isDaddy(void) const
@@ -118,7 +118,7 @@ bool medViewContainer::isDaddy(void) const
 
 medViewContainer * medViewContainer::parentContainer() const
 {
-    return dynamic_cast< medViewContainer * >( this->parentWidget() );
+    return qobject_cast< medViewContainer * >( this->parentWidget() );
 }
 
 const medViewContainer * medViewContainer::root() const
@@ -137,7 +137,7 @@ QList< medViewContainer * > medViewContainer::childContainers() const
 {
     QList< medViewContainer * > containers;
     foreach ( QObject * child, this->children() ) {
-        medViewContainer * c = dynamic_cast<medViewContainer *>( child );
+        medViewContainer * c = qobject_cast<medViewContainer *>( child );
         if ( c != NULL ) {
             containers << c;
             containers << c->childContainers();
@@ -188,6 +188,12 @@ medViewPool *medViewContainer::pool (void)
 
 void medViewContainer::setView(dtkAbstractView *view)
 {
+    if (!isLeaf())
+    {
+        //go down to the actual currently selected container to set the view.
+        current()->setView(view);
+        return;
+    }
     if (view==d->view)
         return;
 
@@ -199,7 +205,7 @@ void medViewContainer::setView(dtkAbstractView *view)
     }
 
     d->view = view;
-    
+
     if (d->view) {
         // pass properties to the view
         QHash<QString,QString>::iterator it = d->viewProperties.begin();
@@ -207,23 +213,33 @@ void medViewContainer::setView(dtkAbstractView *view)
             view->setProperty (it.key(), it.value());
             ++it;
         }
-        
         connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
         this->recomputeStyleSheet();
-    }        
+    }
+    setFocus(Qt::MouseFocusReason);
 }
 
 void medViewContainer::onViewFocused( bool value )
 {
+//    qDebug()<<"medViewerContainer::onViewFocused";
+
     if ( !value )
         return;
 
     if ( !this->isEmpty() )
         this->setCurrent( this );
 
-    if (dtkAbstractView *view = this->view())
+    if (!current() || !current()->view())
+    { //focusing on an empty container, reset the toolboxes.
+//        qDebug()<< "focusing on empty container";
+        emit focused(NULL);
+        return;
+    }
+    if (dtkAbstractView *view = current()->view())
+    {
+//        qDebug() << "focusing on view"<<view;
         emit focused(view);
-
+    }
     this->update();
 }
 
@@ -236,7 +252,7 @@ void medViewContainer::onContainerClicked (void)
 void medViewContainer::setCurrent(medViewContainer *container)
 {
     medViewContainer * parent =
-        dynamic_cast<medViewContainer *>( this->parentWidget() );
+        qobject_cast<medViewContainer *>( this->parentWidget() );
     if ( parent != NULL )
         parent->setCurrent(container);
     else
@@ -284,9 +300,9 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
     medViewContainer * former = this->current();
 
     d->clicked = true;
-
+//    qDebug()<< "focusInEvent";
     this->onViewFocused( true );
-
+//    qDebug()<< this->isDaddy() << isEmpty() << isLeaf() << isClicked();
     this->recomputeStyleSheet();
 
     if (former)
@@ -297,6 +313,7 @@ void medViewContainer::focusInEvent(QFocusEvent *event)
 
 void medViewContainer::focusOutEvent(QFocusEvent *event)
 {
+    Q_UNUSED(event);
     //d->clicked = false;
 
     //this->recomputeStyleSheet();
