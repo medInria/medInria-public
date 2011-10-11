@@ -86,6 +86,9 @@ public:
     */
     void storeNonPersistentDataToDatabase (void);
 
+
+    void storeNonPersitentMultipleDataToDatabase( const medDataIndex &index );
+
     /**
      * Use this function to save one non-persistent data to the sql database.
      * The data is specified by ots medDataIndex , it is then removed from the non persistent database

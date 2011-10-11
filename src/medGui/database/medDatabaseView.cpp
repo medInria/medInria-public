@@ -156,6 +156,8 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
         else if (item->dataIndex().isValidForPatient())
         {
             menu.addAction(tr("Remove"), this, SLOT(onMenuRemoveClicked()));
+            if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
+                                        menu.addAction(tr("Save"), this, SLOT(onMenuSaveClicked()));
             menu.exec(mapToGlobal(point));
         }
     }
@@ -295,7 +297,7 @@ void medDatabaseView::onMenuSaveClicked(void)
         {
             // Copy the data index, because the data item may cease to be valid.
             medDataIndex index = item->dataIndex();
-            medDataManager::instance()->storeNonPersistentSingleDataToDatabase(index);
+            medDataManager::instance()->storeNonPersitentMultipleDataToDatabase(index);
             qDebug() << "DEBUG : onMenuSaveClicked() after storeNonPersistentSingleDataToDatabase";
             qDebug() << "DEBUG : index" << index;
         }

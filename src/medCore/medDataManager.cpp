@@ -528,6 +528,22 @@ void medDataManager::storeNonPersistentDataToDatabase( void )
 
 //-------------------------------------------------------------------------------------------------------
 
+void medDataManager::storeNonPersitentMultipleDataToDatabase( const medDataIndex &index )
+{
+    typedef medDataManagerPrivate::DataCacheContainerType DataHashMapType;
+    typedef QList<medDataIndex> medDataIndexList;
+    medDataIndexList indexesToStore;
+
+    for (DataHashMapType::const_iterator it(d->volatileDataCache.begin()); it != d->volatileDataCache.end(); ++it ) {
+        if (medDataIndex::isMatch( it.key(), index)) {
+            indexesToStore.push_back(it.key());
+        }
+    }
+
+    foreach(medDataIndex index, indexesToStore)
+        this->storeNonPersistentSingleDataToDatabase(index);
+}
+
 void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex &index )
 {
     if (d->volatileDataCache.count(index) > 0)

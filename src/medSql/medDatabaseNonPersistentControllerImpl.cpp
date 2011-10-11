@@ -202,6 +202,8 @@ void medDatabaseNonPersistentControllerImpl::remove(const medDataIndex &index)
     for (DataHashMapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it ) {
         if (medDataIndex::isMatch( it.key(), index)) {
             indexesToRemove.push_back(it.key());
+            qDebug() << "DEBUG : indexesToRemove.size() = " << indexesToRemove.size();
+            qDebug() << "it.key() = " << it.key();
         }
     }
 
