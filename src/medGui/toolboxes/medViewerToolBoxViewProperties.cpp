@@ -82,6 +82,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     //lutBox = new QComboBox();
 
     d->propertiesTree = new QTreeWidget(this);
+    d->propertiesTree->setFocusPolicy(Qt::NoFocus);
 
     d->propertiesTree->setColumnCount(3);
     d->propertiesTree->setColumnWidth(0,50);
@@ -102,16 +103,20 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->propertiesView = new QWidget;
 
     d->windowingPushButton = new QPushButton("", this);
+    d->windowingPushButton->setFocusPolicy(Qt::NoFocus);
     d->windowingPushButton->setIcon (QIcon (":/icons/wlww.png"));
     d->windowingPushButton->setCheckable (true);
     d->windowingPushButton->setMinimumWidth ( 20 );
     d->zoomingPushButton   = new QPushButton("", this);
+    d->zoomingPushButton->setFocusPolicy(Qt::NoFocus);
     d->zoomingPushButton->setIcon (QIcon (":/icons/magnify.png"));
     d->zoomingPushButton->setCheckable (true);
     d->slicingPushButton   = new QPushButton("", this);
+    d->slicingPushButton->setFocusPolicy(Qt::NoFocus);
     d->slicingPushButton->setIcon (QIcon (":/icons/stack.png"));
     d->slicingPushButton->setCheckable (true);
     d->measuringPushButton = new QPushButton("", this);
+    d->measuringPushButton->setFocusPolicy(Qt::NoFocus);
     d->measuringPushButton->setIcon (QIcon (":/icons/length.png"));
     d->measuringPushButton->setCheckable (true);
 
@@ -126,9 +131,13 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     QHBoxLayout * propLayout = new QHBoxLayout;
 
     d->scalarBarVisibilityCheckBox = new QCheckBox();
+    d->scalarBarVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
     d->axisVisibilityCheckBox = new QCheckBox();
+    d->axisVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
     d->rulerVisibilityCheckBox = new QCheckBox();
+    d->rulerVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
     d->annotationsVisibilityCheckBox = new QCheckBox();
+    d->annotationsVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
 
     propLayout->addWidget(d->scalarBarVisibilityCheckBox);
     propLayout->addWidget(d->annotationsVisibilityCheckBox);
@@ -178,11 +187,13 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
 
     d->view3dLODSlider = new QSlider (Qt::Horizontal, this);
+    d->view3dLODSlider->setFocusPolicy(Qt::NoFocus);
     d->view3dLODSlider->setRange (0, 100);
     d->view3dLODSlider->setValue (100);
     d->view3dLODSlider->setTracking( false );
 
     d->croppingPushButton = new QPushButton ("", this);
+    d->croppingPushButton->setFocusPolicy(Qt::NoFocus);
     d->croppingPushButton->setIcon (QIcon (":/icons/cropping.png"));
     d->croppingPushButton->setCheckable (true);
     d->croppingPushButton->setMinimumWidth ( 20 );
@@ -208,6 +219,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->twoLayersWidget->setLayout(twoLayersLayout);
 
     d->slider = new QSlider(Qt::Horizontal,this);
+    d->slider->setFocusPolicy(Qt::NoFocus);
     d->slider->setRange(0,100);
     d->slider->setValue(50);
     QObject::connect(d->slider, SIGNAL(valueChanged(int)), this, SLOT(on2LayersOpacitySliderSet(int)));
@@ -887,10 +899,11 @@ void medViewerToolBoxViewProperties::onContextTreeMenu( const QPoint point )
     item->setSelected(true);
 
     QMenu * menu = new QMenu(d->propertiesTree);
+    menu->setFocusPolicy(Qt::NoFocus);
     QAction * deleteLayer = new QAction(this);
+    deleteLayer->setIcon(QIcon(":icons/cross.png"));
     deleteLayer->setIconVisibleInMenu(true);
     deleteLayer->setText(tr("Delete"));
-    deleteLayer->setIcon(QIcon(":icons/cross.png"));
     QObject::connect(deleteLayer, SIGNAL(triggered()), this, SLOT(onDeleteLayer()));
     menu->addAction(deleteLayer);
 
