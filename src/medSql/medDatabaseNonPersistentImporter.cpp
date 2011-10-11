@@ -69,8 +69,8 @@ void medDatabaseNonPersistentImporter::run(void)
     }
 
     if (!data->hasMetaData(medMetaDataKeys::PatientName.key()) ||
-            !data->hasMetaData(medMetaDataKeys::StudyDescription.key()) ||
-            !data->hasMetaData(medMetaDataKeys::SeriesDescription.key()) ) {
+        !data->hasMetaData(medMetaDataKeys::StudyDescription.key()) ||
+        !data->hasMetaData(medMetaDataKeys::SeriesDescription.key()) ) {
         qDebug() << "metaData PatientName or StudyDescription or SeriesDescription are missing, cannot proceed";
         emit failure (this);
         return;
@@ -78,51 +78,54 @@ void medDatabaseNonPersistentImporter::run(void)
 
     QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
 
-    int patientId = -1;
+    int patientDbId = -1;
     QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
     QString birthdate = data->metaDataValues(medMetaDataKeys::BirthDate.key())[0];
+    QString patientId = data->metaDataValues(medMetaDataKeys::PatientID.key())[0];
 
     // check if patient is already in the persistent database
     medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient (patientName);
     if (databaseIndex.isValid()) {
         qDebug() << "Patient exists in the database, I reuse his Id";
-    patientId = databaseIndex.patientId();
+    patientDbId = databaseIndex.patientId();
     }
     else {
         for (int i=0; i<items.count(); i++)
             if (items[i]->name()==patientName) {
-                patientId = items[i]->index().patientId();
+                patientDbId = items[i]->index().patientId();
                 break;
             }
     }
 
-    if (patientId==-1)
-        patientId = medDatabaseNonPersistentController::instance()->patientId(true);
+    if (patientDbId==-1)
+        patientDbId = medDatabaseNonPersistentController::instance()->patientId(true);
 
-    int     studyId   = -1;
+    int     studyDbId   = -1;
     QString studyName = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
-    QString studyUid = data->metaDataValues(medMetaDataKeys::StudyID.key())[0];
+    QString studyUid = data->metaDataValues(medMetaDataKeys::StudyDicomID.key())[0];
+    QString studyId = data->metaDataValues(medMetaDataKeys::StudyID.key())[0];
 
     databaseIndex = medDatabaseController::instance()->indexForStudy (patientName, studyName);
     if (databaseIndex.isValid()) {
         qDebug() << "Study exists in the database, I reuse its Id";
-    studyId = databaseIndex.studyId();
+    studyDbId = databaseIndex.studyId();
     }
     else {
         for (int i=0; i<items.count(); i++)
         if (items[i]->name()==patientName && items[i]->studyName()==studyName) {
-                studyId = items[i]->index().studyId();
+                studyDbId = items[i]->index().studyId();
                 break;
             }
     }
 
-    if (studyId==-1)
-        studyId = medDatabaseNonPersistentController::instance()->studyId(true);
+    if (studyDbId==-1)
+        studyDbId = medDatabaseNonPersistentController::instance()->studyId(true);
 
-    index = medDataIndex (medDatabaseNonPersistentController::instance()->dataSourceId(), patientId, studyId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
+    index = medDataIndex (medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, studyDbId, medDatabaseNonPersistentController::instance()->seriesId(true), -1);
 
     QString seriesName = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
-    QString seriesUid = data->metaDataValues(medMetaDataKeys::SeriesID.key())[0];
+    QString seriesUid = data->metaDataValues(medMetaDataKeys::SeriesDicomID.key())[0];
+    QString seriesId = data->metaDataValues(medMetaDataKeys::SeriesID.key())[0];
 
     medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
 
@@ -131,11 +134,14 @@ void medDatabaseNonPersistentImporter::run(void)
     else
         item->d->name = "John Doe";
 
-    item->d->birthdate = birthdate;
+    item->d->birthdate  = birthdate;
+    item->d->patientId  = patientId;
     item->d->studyName  = studyName;
-    item->d->studyId    = studyUid;
+    item->d->studyId    = studyId;
+    item->d->studyUid    = studyUid;
     item->d->seriesName = seriesName;
-    item->d->seriesId   = seriesUid;
+    item->d->seriesId   = seriesId;
+    item->d->seriesUid   = seriesUid;
     item->d->file       = "";
     item->d->thumb      = data->thumbnail();
     item->d->index      = index;
