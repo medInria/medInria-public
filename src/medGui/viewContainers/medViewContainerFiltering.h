@@ -39,7 +39,7 @@ signals:
      * @brief signals emitted whenever an image has been dropped in the input view container
      */
     void droppedInput (const medDataIndex& index);
-
+    void inputViewRemoved( void );
 public slots:
 
     /**

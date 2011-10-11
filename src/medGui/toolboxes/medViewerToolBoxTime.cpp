@@ -147,7 +147,7 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
     connect(d->spinBox, SIGNAL(valueChanged(int)),this, SLOT(onSpinBoxChanged(int)));
     connect(d->stopButton, SIGNAL(triggered()),this, SLOT(onStopButton()));
 
-    this->setTitle("Time Management");
+    this->setTitle(tr("Time Management"));
     box->setLayout (boxlayout);
     this->addWidget (box);
 
@@ -280,11 +280,11 @@ void medViewerToolBoxTime::onPreviousFrame ()
 
 void medViewerToolBoxTime::onTimeChanged (int val)
 {
-	double time = this->getTimeFromSliderValue (val);
-	for (int i=0; i<d->interactors.size(); i++)
-	{
-		d->interactors[i]->setCurrentTime (time);
-	}
+    double time = this->getTimeFromSliderValue (val);
+    for (int i=0; i<d->interactors.size(); i++)
+    {
+        d->interactors[i]->setCurrentTime (time);
+    }
 
     d->labelcurr->setText( DoubleToQString(( time ) / (d->spinBox->value()/100.0)) + QString(" sec") );
 }
@@ -355,7 +355,8 @@ void medViewerToolBoxTime::mouseReleaseEvent ( QMouseEvent *  mouseEvent)
     {
         QMenu *menu = new QMenu(this);
 
-        QAction *actionNotify = new QAction("Set Speed Increment : ",this);
+        QAction *actionNotify = new QAction(tr("Set Speed Increment : "),
+                                            this);
         actionNotify->setDisabled(true);
 
         menu->addAction(actionNotify);

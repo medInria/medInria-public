@@ -285,7 +285,7 @@ protected slots:
      *
      */
     void onAboutButtonClicked();
-
+    
 private:
     medToolBoxPrivate *d;
 };

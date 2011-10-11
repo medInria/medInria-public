@@ -39,7 +39,7 @@ public:
 
     void updateQuickAccessMenu(void);
     void resizeEvent( QResizeEvent * event );
-
+    
 public slots:
     void setWallScreen(bool full);
     void setFullScreen(bool full);
