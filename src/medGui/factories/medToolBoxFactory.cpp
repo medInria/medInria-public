@@ -192,6 +192,18 @@ medToolBoxFilteringCustom *medToolBoxFactory::createCustomFilteringToolBox(QStri
     return toolbox;
 }
 
+QPair<const QString&,const QString &>
+medToolBoxFactory::diffusionToolBoxDetailsFromId (
+        const QString& id )
+{
+    if (d->custom_diffusion_creators.contains(id))
+    {
+        medHelperStrings helper  = d->custom_diffusion_creators[id].second;
+        return QPair<const QString&,const QString&>(helper.name,helper.description);
+    }
+}
+
+
 medToolBoxFactory::medToolBoxFactory(void) : dtkAbstractFactory(), d(new medToolBoxFactoryPrivate)
 {
 

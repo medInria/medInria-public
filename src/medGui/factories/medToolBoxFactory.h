@@ -69,6 +69,9 @@ public:
     QList<QString> filteringToolBoxes(void);
     QList<QString> compositeDataSetImporterToolBoxes(void);
 
+    QPair<const QString&, const QString&> diffusionToolBoxDetailsFromId (
+            const QString& id );
+
 public slots:
     medToolBoxRegistrationCustom *createCustomRegistrationToolBox(QString identifier, QWidget *parent=0);
     medToolBoxDiffusionCustom *createCustomDiffusionToolBox(QString identifier, QWidget *parent=0);
