@@ -297,7 +297,7 @@ void medDatabaseView::onMenuSaveClicked(void)
         {
             // Copy the data index, because the data item may cease to be valid.
             medDataIndex index = item->dataIndex();
-            medDataManager::instance()->storeNonPersitentMultipleDataToDatabase(index);
+            medDataManager::instance()->storeNonPersistentMultipleDataToDatabase(index);
             qDebug() << "DEBUG : onMenuSaveClicked() after storeNonPersistentSingleDataToDatabase";
             qDebug() << "DEBUG : index" << index;
         }
