@@ -1,5 +1,5 @@
-/* medViewContainerSingle.cpp --- 
- * 
+/* medViewContainerSingle.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 11:01:46 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 71
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medViewContainer_p.h"
@@ -47,17 +47,17 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     }
 
     medViewContainer::setView (view);
-    
+
     //d->view = view; // already called in medViewContainer::setView()
 
     if (d->view) {
-        d->layout->setContentsMargins(0, 0, 0, 0);    
+        d->layout->setContentsMargins(0, 0, 0, 0);
         d->layout->addWidget(view->widget(), 0, 0);
 
         // set the view properties
-        if (medAbstractView *medView = dynamic_cast<medAbstractView*> (view))
+        if (medAbstractView *medView = qobject_cast<medAbstractView*> (view))
             d->pool->appendView (medView);
-            
+
         connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
         connect (view, SIGNAL (changeDaddy(bool)),
                  this, SLOT (onDaddyChanged(bool)));
@@ -88,7 +88,7 @@ void medViewContainerSingle::onViewClosing (void)
             d->pool->removeView (medView);
 
 	    emit viewRemoved (d->view);
-	
+
         d->view->close();
         d->view = NULL;
 
