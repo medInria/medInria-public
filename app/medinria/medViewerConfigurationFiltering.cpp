@@ -90,10 +90,10 @@ void medViewerConfigurationFiltering::onProcessSuccess()
     dtkAbstractData *inputData = d->filteringToolBox->data();
 
     foreach ( QString metaData, inputData->metaDataList() )
-    d->filterOutput->addMetaData ( metaData,inputData->metaDataValues ( metaData ) );
+      d->filterOutput->addMetaData ( metaData,inputData->metaDataValues ( metaData ) );
 
     foreach ( QString property, inputData->propertyList() )
-    d->filterOutput->addProperty ( property,inputData->propertyValues ( property ) );
+      d->filterOutput->addProperty ( property,inputData->propertyValues ( property ) );
 
     QString newSeriesDescription = d->filterOutput->metadata ( medMetaDataKeys::SeriesDescription.key() );
     newSeriesDescription += " filtered";
@@ -101,7 +101,6 @@ void medViewerConfigurationFiltering::onProcessSuccess()
     d->filterOutput->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
-    
     d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
     //     d->filteringToolBox->setDataIndex(medDataManager::instance()->importNonPersistent(d->filterOutput));

@@ -85,6 +85,8 @@ void medDatabaseNonPersistentImporter::run ( void )
     QString birthdate = data->metaDataValues ( medMetaDataKeys::BirthDate.key() ) [0];
     QString patientId = data->metaDataValues ( medMetaDataKeys::PatientID.key() ) [0];
 
+    qDebug() << "in database non persistent importer: " << patientId;
+
     // check if patient is already in the persistent database
     medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient ( patientName );
     if ( databaseIndex.isValid() )

@@ -158,7 +158,6 @@ void medDatabaseWriter::run ( void )
         size = QString::number ( imagedata->zDimension() );
     d->data->addMetaData ( medMetaDataKeys::Size.key(), size );
 
-
     QString patientName = d->data->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
     QString patientId   = d->data->metaDataValues ( medMetaDataKeys::PatientID.key() ) [0];
     QString studyName   = d->data->metaDataValues ( medMetaDataKeys::StudyDescription.key() ) [0];
