@@ -119,7 +119,6 @@ void medDatabaseImporter::run ( void )
     
     foreach ( QString file, fileList )
     {
-        qDebug() << file;
         if ( d->isCancelled ) // check if user cancelled the process
             break;
 
