@@ -35,12 +35,14 @@ class medDatabaseWriterPrivate
 {
 public:
     dtkAbstractData *data;
+    QString callerUuid;
     bool isCancelled;
 };
 
-medDatabaseWriter::medDatabaseWriter ( dtkAbstractData *data ) : medJobItem(), d ( new medDatabaseWriterPrivate )
+medDatabaseWriter::medDatabaseWriter(dtkAbstractData *data, const QString &callerUuid) : medJobItem(), d(new medDatabaseWriterPrivate)
 {
     d->data = data;
+    d->callerUuid = callerUuid;
     d->isCancelled = false;
 }
 
@@ -329,7 +331,6 @@ void medDatabaseWriter::run ( void )
     QStringList filePaths  = d->data->metaDataValues ( medMetaDataKeys::FilePaths.key() );
     QString     seriesPath = d->data->metaDataValues ( "FileName" ) [0];
 
-
     // generate and save the thumbnails
     QList<QImage> &thumbnails = d->data->thumbnails();
 
@@ -513,31 +514,35 @@ void medDatabaseWriter::run ( void )
             if ( !query.exec() )
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
-            if ( query.first() )
-            {
-                ; //qDebug() << "Image" << file << "already in database";
-            }
-            else
-            {
-                query.prepare ( "INSERT INTO image (series, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)" );
-                query.bindValue ( ":series", id );
-                query.bindValue ( ":name", fileInfo.fileName() );
-                query.bindValue ( ":path", fileInfo.filePath() );
-                query.bindValue ( ":instance_path", seriesPath );
-                if ( j<thumbPaths.count() )
-                    query.bindValue ( ":thumbnail", thumbPaths[j] );
-                else
-                    query.bindValue ( ":thumbnail", "" );
-
-                if ( !query.exec() )
-                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-            }
+        if(query.first()) {
+            ; //qDebug() << "Image" << file << "already in database";
+        }
+        else {
+            query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail, isIndexed) VALUES (:series, :name, :path, :instance_path, :thumbnail, :isIndexed)");
+        query.bindValue(":series", id);
+        query.bindValue(":name", fileInfo.fileName());
+        query.bindValue(":path", fileInfo.filePath());
+        query.bindValue(":instance_path", seriesPath);
+        if (j<thumbPaths.count())
+            query.bindValue(":thumbnail", thumbPaths[j]);
+        else
+            query.bindValue(":thumbnail", "");
+            
+            query.bindValue(":isIndexed", false);
+            
+        if(!query.exec())
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        }
         }
     }
 
-    emit progress ( this, 100 );
-    emit success ( this );
-    emit addedIndex ( index );
+    emit progress(this, 100);
+    emit success(this);
+    
+    if (d->callerUuid == "")
+        emit addedIndex(index);
+    else
+        emit addedIndex(index,d->callerUuid);
 }
 
 void medDatabaseWriter::onCancel ( QObject* )

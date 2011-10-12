@@ -40,6 +40,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medPacsDataSource.h 
   medFileSystemDataSource.h  
   medDatabaseDataSource.h
+  medSaveModifiedDialog.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -65,6 +66,7 @@ set(${PROJECT_NAME}_SOURCES
   medPacsDataSource.cpp  
   medFileSystemDataSource.cpp
   medDatabaseDataSource.cpp
+  medSaveModifiedDialog.cpp
   )
 
 set(${PROJECT_NAME}_RESOURCES medinria.qrc)
