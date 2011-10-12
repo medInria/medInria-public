@@ -40,7 +40,6 @@
 #include <medDataManager.h>
 
 #include <medButton.h>
-#include <medQuickAccessMenu.h>
 #include <medWorkspaceShifter.h>
 
 #include <medDatabaseController.h>
@@ -59,9 +58,12 @@
 #include "medViewerConfigurationVisualization.h"
 #include "medViewerConfigurationRegistration.h"
 #include "medViewerConfigurationDiffusion.h"
-#include "medViewerConfigurationFiltering.h"
+<<<<<<< HEAD
 
 #include "medSaveModifiedDialog.h"
+=======
+#include "medViewerConfigurationFiltering.h"
+>>>>>>> master
 
 #include <QtGui>
 
@@ -104,8 +106,7 @@ public:
     QHBoxLayout * statusBarLayout;
 
     medStatusBar * statusBar;
-//     QWidget * quickAccessWidget;
-    medQuickAccessMenu * quickAccessWidget;
+    QWidget * quickAccessWidget;
     bool quickAccessVisible;
 
     medQuickAccessPushButton * quickAccessButton;
@@ -114,6 +115,8 @@ public:
     QWidget * quitMessage;
 
     medButton *quitButton;
+
+    QPushButton *saveModifiedButton;
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -185,12 +188,10 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
     d->quickAccessButton->setText ( "Workspaces access menu" );
     connect ( d->quickAccessButton,  SIGNAL ( clicked() ), this, SLOT ( onShowQuickAccess() ) );
-    
-    d->quickAccessWidget = new medQuickAccessMenu( this );
-    d->quickAccessWidget->setFocusPolicy(Qt::ClickFocus);
+
+    d->quickAccessWidget = new QWidget ( this );
     d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, -500 ) );
     d->quickAccessWidget->setMinimumWidth(180);
-    connect(d->quickAccessWidget, SIGNAL(hideMenu()), this, SLOT(onHideQuickAccess()));
 
     d->quickAccessVisible = false;
     d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos",this );
@@ -198,7 +199,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     //Add quit button
     d->quitButton = new medButton ( this,":/icons/quit.png", tr ( "Quit Application" ) );
     connect ( d->quitButton, SIGNAL ( triggered() ), this, SLOT ( onQuit() ) );
-    connect(d->quitButton, SIGNAL( triggered()), this, SLOT (onSaveModified()));
     d->quitButton->setMaximumWidth ( 31 );
 
     //Setup quit message
@@ -226,6 +226,10 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     d->quitMessage->setLayout ( quitLayout );
 
+    d->saveModifiedButton = new QPushButton("Save",this);
+    connect(d->saveModifiedButton, SIGNAL(clicked()),this,SLOT(onSaveModified()));
+
+    d->statusBarLayout->addWidget(d->saveModifiedButton);
     d->statusBarLayout->addWidget ( d->quickAccessButton );
     d->statusBarLayout->addStretch();
     d->statusBarLayout->addWidget ( d->quitMessage );
@@ -484,7 +488,6 @@ void medMainWindow::onShowQuickAccess ( void )
         this->onHideQuickAccess();
         return;
     }
-    d->quickAccessWidget->setFocus();
     d->quickAccessVisible = true;
     d->quickAccessAnimation->setDuration ( 100 );
     d->quickAccessAnimation->setStartValue ( QPoint ( 0,this->height() - 30 ) );
@@ -523,14 +526,10 @@ void medMainWindow::onQuit ( void )
 
 void medMainWindow::onSaveModified( void )
 {
-    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-
-    if(!indexes.isEmpty())
-    {
-        medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
-        saveDialog->show();
-    }
+    medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
+    saveDialog->show();
 }
+
 
 void medMainWindow::onEditSettings()
 {
@@ -686,7 +685,7 @@ void medMainWindow::registerToFactories()
     medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
     medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
     medViewerConfigurationFactory::instance()->registerConfiguration("Filtering",     createMedViewerConfigurationFiltering);
-    
+
     //Register settingsWidgets
     medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
     medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);
