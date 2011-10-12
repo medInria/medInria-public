@@ -1,22 +1,21 @@
-#include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
-#include <medDatabaseModel.h>
-#include <medDatabaseItem.h>
 #include <medDatabaseNonPersistentItem.h>
+#include <medDataIndex.h>
 
 #include <QtGui>
 
 #include "medSaveModifiedDialog.h"
 
 class medSaveModifiedDialogPrivate
-{   
-public:  
+{
+public:
 
     QTreeWidget *treeWidget;
-    QTreeWidgetItem *image;    
     QPushButton *saveButton;
-    QPushButton *deleteButton;
-    QPushButton *selectAllButton;
+    QPushButton *doneButton;
+
+    unsigned int counter;
+    QMutex mutex;
 };
 
 /*********************************/
@@ -24,58 +23,53 @@ public:
 class medSaveModifiedDialogCheckListItem : public QTreeWidgetItem
 {
     public :
-        medSaveModifiedDialogCheckListItem(medDatabaseNonPersistentItem *item) : QTreeWidgetItem(), medItem(item)
+        medSaveModifiedDialogCheckListItem(QTreeWidgetItem *root, const medDataIndex &index, const QString &name, const QString &studyName, const QString &seriesName, const QString &file, const QImage &thumb)
+        : QTreeWidgetItem(), medIndex(index)
         {
+            root->addChild(this);
+
             setFlags(flags() | Qt::ItemIsUserCheckable);
-            setText(0, item->name());
-            setText(1, item->studyName());
-            setText(2, item->seriesName());
-            setText(3, item->file());
+            setIcon(1, QIcon(QPixmap::fromImage(thumb)));
+            setText(2, name);
+            setText(3, studyName);
+            setText(4, seriesName);
+            setText(5, file);
             setCheckState(0, Qt::Unchecked);
         }
 
-        medDatabaseNonPersistentItem* getMedItem() const
+        const medDataIndex& getIndex() const
         {
-            return medItem;
-        }
-
-        void setItemState(Qt::CheckState state)
-        {
-             setCheckState(0, state);
+            return medIndex;
         }
 
         ~medSaveModifiedDialogCheckListItem()
         {}
 
     private:
-        medDatabaseNonPersistentItem *medItem;
+        medDataIndex medIndex;
 };
 
 /***********************************************/
 
 medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent), d (new medSaveModifiedDialogPrivate)
 {
-    QWidget *widget = new QWidget(this);
-
     QLabel *label = new QLabel(this);
-    label->setText("The following data has been created. Do you want save them before closing?");
+    label->setText(tr("The following data has been created. Do you want save them ?"));
 
     d->saveButton = new QPushButton(tr("Save"),this);
-    d->deleteButton = new QPushButton(tr("Delete"),this);
-    d->selectAllButton = new QPushButton(tr("Select All"),this);
-    
+    d->doneButton = new QPushButton(tr("Done"),this);
+
     d->treeWidget = new QTreeWidget(this);
-    d->treeWidget->setColumnCount(4);
+    d->treeWidget->setColumnCount(6);
 
     QStringList headers;
-    headers << tr("Name") << tr("Study") << tr("Series") << tr("File");
+    headers << tr("Select") <<tr("Thumbnail") << tr("Name") << tr("Study") << tr("Series") << tr("File");
 
     d->treeWidget->setHeaderLabels(headers);
 
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->addWidget(d->saveButton);
-    hlayout->addWidget(d->deleteButton);
-    hlayout->addWidget(d->selectAllButton);
+    hlayout->addWidget(d->doneButton);
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(label);
@@ -83,58 +77,73 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     layout->addLayout(hlayout);
 
     foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items())
-        d->treeWidget->addTopLevelItem(new medSaveModifiedDialogCheckListItem(item));
+        medSaveModifiedDialogCheckListItem * checkListItem = new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), item->name(), item->studyName(), item->seriesName(), item->file(), item->thumb());
 
     d->treeWidget->resizeColumnToContents(0);
 
     connect (d->saveButton, SIGNAL(clicked()), this, SLOT(Save()));
-    connect (d->deleteButton, SIGNAL(clicked()), this, SLOT(Delete()));
-    connect (d->selectAllButton, SIGNAL(clicked()), this, SLOT(onSelectAll()));
-    connect (d->treeWidget,SIGNAL(itemClicked(QTreeWidgetItem *, int)),this,SLOT(onItemActivated(QTreeWidgetItem *,int)));
+    connect (d->doneButton,SIGNAL(clicked()), this, SLOT(close()));
+    connect (medDataManager::instance(), SIGNAL(dataAdded(const medDataIndex &)),this, SLOT(updateCounter()) );
 
     this->setLayout(layout);
+    setModal(true);
 }
 
 medSaveModifiedDialog::~medSaveModifiedDialog()
 {
     delete d;
-    d = NULL;  
+    d = NULL;
 }
 
 void medSaveModifiedDialog::Save( )
 {
+    QList<medDataIndex> list;
+    d->counter = 0;
+
     for (int i = 0; i < d->treeWidget->topLevelItemCount(); ++i)
     {
-        medSaveModifiedDialogCheckListItem * checkListItem = (medSaveModifiedDialogCheckListItem*)d->treeWidget->topLevelItem(i);
+        medSaveModifiedDialogCheckListItem * checkListItem = dynamic_cast<medSaveModifiedDialogCheckListItem*> (d->treeWidget->topLevelItem(i));
 
         if (checkListItem->checkState(0) == Qt::Checked)
         {
-            medDataManager::instance()->storeNonPersistentSingleDataToDatabase(checkListItem->getMedItem()->index());
+            d->counter++;
+            list.append(checkListItem->getIndex());
         }
     }
-    this->close();
+
+    foreach(medDataIndex index, list)
+            medDataManager::instance()->storeNonPersistentSingleDataToDatabase(index);
 }
 
-void medSaveModifiedDialog::Delete( )
+void medSaveModifiedDialog::updateCounter()
 {
-    for (int i = 0; i < d->treeWidget->topLevelItemCount(); ++i)
-    {
-        medSaveModifiedDialogCheckListItem * checkListItem = (medSaveModifiedDialogCheckListItem*)d->treeWidget->topLevelItem(i);
+        qDebug() << "DEUBG  d->counter" << d->counter;
+        d->mutex.lock();
+        d->counter--;
+        d->mutex.unlock();
 
-        if (checkListItem->checkState(0) == Qt::Checked)
-        {
-            medDataManager::instance()->removeData(checkListItem->getMedItem()->index());
-        }
-    }
-    this->close();
+        if(d->counter == 0)
+            onUpdateTree();
 }
 
-void medSaveModifiedDialog::onSelectAll()
+void medSaveModifiedDialog::onUpdateTree()
 {
-    for (int i = 0; i < d->treeWidget->topLevelItemCount(); ++i)
-        {
-            medSaveModifiedDialogCheckListItem * checkListItem = (medSaveModifiedDialogCheckListItem*)d->treeWidget->topLevelItem(i);
+        d->treeWidget->clear();
 
-            checkListItem->setItemState( Qt::Checked );
-        }
+        foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items())
+            d->treeWidget->insertTopLevelItem(0,new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), item->name(), item->studyName(), item->seriesName(), item->file(), item->thumb()));
+
+        d->treeWidget->update();
+        d->treeWidget->resizeColumnToContents(0);
+        d->treeWidget->showMaximized();
 }
+
+//void medSaveModifiedDialog::onSelectAll()
+//{
+//    for (int i = 0; i < d->treeWidget->topLevelItemCount(); ++i)
+//        {
+//            medSaveModifiedDialogCheckListItem * checkListItem = (medSaveModifiedDialogCheckListItem*)d->treeWidget->topLevelItem(i);
+//
+//            checkListItem->setItemState( Qt::Checked );
+//        }
+//}

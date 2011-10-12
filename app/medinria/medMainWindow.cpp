@@ -594,6 +594,7 @@ void medMainWindow::onOpenFile(const medDataIndex & index,const QString& importU
 
 void medMainWindow::load(const QString& file)
 {
+    qDebug() << "DEBUG : entering medMainWindow::load";
     medDataManager::instance()->importNonPersistent (file);
 }
 
