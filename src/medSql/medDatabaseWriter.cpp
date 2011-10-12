@@ -70,12 +70,12 @@ void medDatabaseWriter::run ( void )
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
         d->data->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << "John Doe" );
-    
+
     if ( !d->data->hasMetaData ( medMetaDataKeys::BirthDate.key() ) )
         d->data->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << "" );
 
-    QString generatedPatientID = QUuid::createUuid().toString().replace("{","").replace("}","");
-    
+    QString generatedPatientID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
+
     if ( !d->data->hasMetaData ( medMetaDataKeys::PatientID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << generatedPatientID );
 
@@ -85,8 +85,8 @@ void medDatabaseWriter::run ( void )
     if ( !d->data->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
 
-    QString generatedSeriesID = QUuid::createUuid().toString().replace("{","").replace("}","");
-    
+    QString generatedSeriesID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
+
     if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesID );
 
@@ -189,10 +189,13 @@ void medDatabaseWriter::run ( void )
     QString institution    = d->data->metaDataValues ( medMetaDataKeys::Institution.key() ) [0];
     QString report         = d->data->metaDataValues ( medMetaDataKeys::Report.key() ) [0];
 
+    foreach ( QString metadata, d->data->metaDataList() )
+      qDebug() << d->data->metaDataValues ( metadata );
+
 
     medDatabaseControllerImpl * dbi = medDatabaseController::instance();
     QSqlQuery query ( * ( dbi->database() ) );
-    
+
     QVariant id;
 
     // Check if PATIENT/STUDY/SERIES already exists in the database
@@ -209,7 +212,7 @@ void medDatabaseWriter::run ( void )
     if ( query.first() )
     {
         id = query.value ( 0 );
-        patientId = query.value ( 0 ).toString();
+        patientId = query.value ( 1 ).toString();
 
         query.prepare ( "SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :uid" );
         query.bindValue ( ":id", id );
@@ -241,6 +244,8 @@ void medDatabaseWriter::run ( void )
                 id = query.value ( 0 );
                 seriesId = query.value ( 1 ).toString();
 
+                qDebug() << "Series ID: " << seriesId;
+                
                 dataExists = true;
             }
         }
@@ -256,26 +261,9 @@ void medDatabaseWriter::run ( void )
     // define a unique key string to identify which volume an image belongs to.
     // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
     QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
-
-    QString s_patientName = dbi->stringForPath ( patientName );
-    QString s_studyName   = dbi->stringForPath ( studyName );
-    QString s_seriesName  = dbi->stringForPath ( seriesName );
-
-//     QString patientID = patientName.simplified() + birthdate;
-
-//     QString subDirName = "/" +
-//                          s_patientName + "/" +
-//                          s_studyName;
-//
-//     QString imageFileNameBase =  subDirName + "/" +
-//                                  s_seriesName; //  + ".mha";
-
+    
     QString subDirName = "/" + patientId;
-//                          patientID;// + "/" +
-                         //studyId.mid(22);
-
-    QString imageFileNameBase =  subDirName + "/" +
-                                 seriesId; //  + ".mha";
+    QString imageFileNameBase =  subDirName + "/" +  seriesId;
 
     QDir dir ( medStorage::dataLocation() + subDirName );
     if ( !dir.exists() )
@@ -368,12 +356,13 @@ void medDatabaseWriter::run ( void )
     // Now, populate the database
     medDataIndex index ( medDatabaseController::instance()->dataSourceId(), medDataIndex::NOT_VALID,
                          medDataIndex::NOT_VALID, medDataIndex::NOT_VALID, medDataIndex::NOT_VALID );
-
-    ////////////////////////////////////////////////////////////////// PATIENT
-    query.prepare ( "SELECT id FROM patient WHERE name = :name AND birthdate =: birthdate" );
-    query.bindValue ( ":name", patientName );
-    query.bindValue ( ":birthdate", birthdate);
     
+    ////////////////////////////////////////////////////////////////// PATIENT
+    query.prepare ( "SELECT id FROM patient WHERE name = :name AND birthdate = :birthdate AND patientId = :patientId");
+    query.bindValue ( ":name", patientName );
+    query.bindValue ( ":birthdate", birthdate );
+    query.bindValue ( ":patientId", patientId );
+
     if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
@@ -416,7 +405,7 @@ void medDatabaseWriter::run ( void )
         query.bindValue ( ":study",     studyName );
         query.bindValue ( ":uid",       studyUid );
         query.bindValue ( ":thumbnail", thumbPath );
-        query.bindValue ( ":studyId", studyId);
+        query.bindValue ( ":studyId", studyId );
         query.exec();
         id = query.lastInsertId();
         index.setStudyId ( id.toInt() );
