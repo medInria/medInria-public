@@ -33,7 +33,7 @@ public:
 
 
 medSettingsEditor::medSettingsEditor(QWidget *parent, bool useAdvancedWidget) :
-    QWidget(parent),d(new medSettingsEditorPrivate())
+    QDialog(parent),d(new medSettingsEditorPrivate())
 {
     d->isInitialized = false;
     d->isUsingAdvancedWidget = useAdvancedWidget;
@@ -51,13 +51,15 @@ void medSettingsEditor::onSaveClicked()
 {
     if (this->save())
     {
-        emit finished();
+      this->close();
+//         emit finished();
     }
 }
 
 void medSettingsEditor::onCancelClicked()
 {
-    emit finished();
+  this->close();
+//     emit finished();
 }
 
 void medSettingsEditor::onResetClicked()
@@ -94,6 +96,7 @@ void medSettingsEditor::initialize()
         return;
 
     QVBoxLayout * vLayout = new QVBoxLayout();
+    vLayout->setMargin(2);
     d->stack = new QStackedWidget();
     d->tabWidget = new QTabWidget ();
     d->tabWidget->setTabPosition(QTabWidget::West);

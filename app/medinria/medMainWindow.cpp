@@ -534,11 +534,11 @@ void medMainWindow::onSaveModified( void )
 
 void medMainWindow::onEditSettings()
 {
-    if ( d->settingsEditor )
-    {
-        d->settingsEditor->show();
-        return;
-    }
+//     if ( d->settingsEditor )
+//     {
+//         d->settingsEditor->show();
+//         return;
+//     }
 
     d->settingsEditor = new medSettingsEditor ( this, true );
     d->settingsEditor->setGeometry ( 100,100, 500, 500 );
@@ -546,9 +546,10 @@ void medMainWindow::onEditSettings()
     d->settingsEditor->initialize();
     d->settingsEditor->queryWidgets();
 
-    connect ( d->settingsEditor, SIGNAL ( finished() ), d->settingsEditor, SLOT ( close() ) );
+//     connect ( d->settingsEditor, SIGNAL ( finished() ), d->settingsEditor, SLOT ( close() ) );
 
-    d->settingsEditor->show();
+//     d->settingsEditor->show();
+    d->settingsEditor->exec();
 }
 
 void medMainWindow::open ( const medDataIndex& index )

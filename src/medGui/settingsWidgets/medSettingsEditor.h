@@ -3,6 +3,7 @@
 
 #include "medGuiExport.h"
 #include <QWidget>
+#include <QDialog>
 
 class medSettingsEditorPrivate;
 
@@ -15,7 +16,8 @@ class medSettingsEditorPrivate;
  * There is also an alternative advanced tree listing all the sections and keys from the application qSetting.
  *
 */
-class MEDGUI_EXPORT medSettingsEditor : public QWidget
+// class MEDGUI_EXPORT medSettingsEditor : public QWidget
+class MEDGUI_EXPORT medSettingsEditor : public QDialog
 {
     Q_OBJECT
 public:
@@ -62,7 +64,7 @@ signals:
     /**
     * Emitted if the dialog should disappear
     */
-    void finished(void);
+//     void finished(void);
 
 public slots:
     /**
