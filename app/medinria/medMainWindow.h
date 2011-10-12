@@ -86,6 +86,9 @@ public slots:
     **/
     void load(const QString& path);
 
+    // TODO delete this, it's just for testing
+    void openImageSelectionWidget();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
