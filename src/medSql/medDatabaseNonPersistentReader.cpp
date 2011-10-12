@@ -124,6 +124,9 @@ void medDatabaseNonPersistentReader::run ( void )
         if ( !dtkdata->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
             dtkdata->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << fileInfo.baseName() );
 
+        if ( !dtkdata->hasMetaData ( medMetaDataKeys::BirthDate.key() ) )
+            dtkdata->addMetaData ( medMetaDataKeys::BirthDate.key(), "" );
+
         QString generatedPatientID = QUuid::createUuid().toString().replace("{","").replace("}","");
         
         if ( !dtkdata->hasMetaData ( medMetaDataKeys::PatientID.key() ) )
@@ -169,12 +172,15 @@ void medDatabaseNonPersistentReader::run ( void )
 
 
         QString patientName = dtkdata->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
+        QString birthdate   = dtkdata->metaDataValues ( medMetaDataKeys::BirthDate.key() ) [0];
         QString patientID   = dtkdata->metaDataValues ( medMetaDataKeys::PatientID.key() ) [0];
         QString studyName   = dtkdata->metaDataValues ( medMetaDataKeys::StudyDescription.key() ) [0];
         QString seriesName  = dtkdata->metaDataValues ( medMetaDataKeys::SeriesDescription.key() ) [0];
 
         QString studyId = dtkdata->metaDataValues ( medMetaDataKeys::StudyID.key() ) [0];
         QString seriesId = dtkdata->metaDataValues ( medMetaDataKeys::SeriesID.key() ) [0];
+        QString studyUid = dtkdata->metaDataValues ( medMetaDataKeys::StudyDicomID.key() ) [0];
+        QString seriesUid = dtkdata->metaDataValues ( medMetaDataKeys::SeriesDicomID.key() ) [0];
         QString orientation = dtkdata->metaDataValues ( medMetaDataKeys::Orientation.key() ) [0];
         QString seriesNumber = dtkdata->metaDataValues ( medMetaDataKeys::SeriesNumber.key() ) [0];
         QString sequenceName = dtkdata->metaDataValues ( medMetaDataKeys::SequenceName.key() ) [0];
@@ -184,7 +190,7 @@ void medDatabaseNonPersistentReader::run ( void )
 
         // define a unique key string to identify which volume an image belongs to.
         // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
-        QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
+        QString key = patientName+studyUid+seriesUid+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
         if ( !keyToInt.contains ( key ) )
         {
             keyToInt[key] = currentIndex;
@@ -237,6 +243,9 @@ void medDatabaseNonPersistentReader::run ( void )
                         if ( !imData->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
                             imData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << QFileInfo ( it.value() [0] ).baseName() );
 
+                        if ( !imData->hasMetaData ( medMetaDataKeys::BirthDate.key() ) )
+                            imData->addMetaData ( medMetaDataKeys::BirthDate.key(), "" );
+
                         if ( !imData->hasMetaData ( medMetaDataKeys::PatientID.key() ) )
                             imData->addMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << itPat.value() );
 
@@ -249,8 +258,14 @@ void medDatabaseNonPersistentReader::run ( void )
                         if ( !imData->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
                             imData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << itSer.value() );
 
+                        if ( !imData->hasMetaData ( medMetaDataKeys::StudyDicomID.key() ) )
+                            imData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "0" );
+
                         if ( !imData->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
                             imData->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << "" );
+
+                        if ( !imData->hasMetaData ( medMetaDataKeys::SeriesDicomID.key() ) )
+                            imData->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << "0" );
 
                         if ( !imData->hasMetaData ( medMetaDataKeys::Orientation.key() ) )
                             imData->addMetaData ( medMetaDataKeys::Orientation.key(), QStringList() << "" );
@@ -353,7 +368,6 @@ void medDatabaseNonPersistentReader::run ( void )
 
         QString seriesName = data->metaDataValues ( medMetaDataKeys::SeriesDescription.key() ) [0];
         QString seriesId = data->metaDataValues ( medMetaDataKeys::SeriesID.key() ) [0];
-        QString seriesUid = data->metaDataValues ( medMetaDataKeys::SeriesDicomID.key() ) [0];
 
         QFileInfo info ( d->file );
 
@@ -368,7 +382,6 @@ void medDatabaseNonPersistentReader::run ( void )
         item->d->studyName = studyName;
         item->d->seriesName = seriesName;
         item->d->seriesId = seriesId;
-        item->d->seriesUid = seriesUid;
         item->d->file = d->file;
         item->d->thumb = data->thumbnail();
         item->d->index = index;

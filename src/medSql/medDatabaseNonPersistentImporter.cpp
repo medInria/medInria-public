@@ -71,8 +71,8 @@ void medDatabaseNonPersistentImporter::run ( void )
     }
 
     if ( !data->hasMetaData ( medMetaDataKeys::PatientName.key() ) ||
-            !data->hasMetaData ( medMetaDataKeys::StudyDescription.key() ) ||
-            !data->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) )
+         !data->hasMetaData ( medMetaDataKeys::StudyDescription.key() ) ||
+         !data->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) )
     {
         qDebug() << "metaData PatientName or StudyDescription or SeriesDescription are missing, cannot proceed";
         emit failure ( this );
