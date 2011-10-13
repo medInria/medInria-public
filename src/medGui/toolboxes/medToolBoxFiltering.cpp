@@ -37,6 +37,7 @@ medToolBoxFiltering::medToolBoxFiltering ( QWidget *parent ) : medToolBox ( pare
     QWidget *displayWidget = new QWidget ( this );
 
     d->saveInDatabaseButton = new QPushButton ( tr ( "Store in Database" ),this );
+    d->saveInDatabaseButton->setFocusPolicy(Qt::NoFocus);
 
 //    d->saveToDiskButton = new QPushButton(tr("Save to Disk"),this);
 

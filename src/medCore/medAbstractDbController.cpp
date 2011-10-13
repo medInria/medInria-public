@@ -4,6 +4,7 @@
 
 void medAbstractDbController::import( const medDataIndex& index, const medAbstractDbController& controller )
 {
+    qDebug() << "DEBUG : entering medAbstractDbController::import(const medDataIndex& index, const medAbstractDbController& controller )";
     dtkSmartPointer<dtkAbstractData> data( controller.read(index) );
     import(data);
 }

@@ -62,6 +62,8 @@
 #include "medViewerConfigurationFiltering.h"
 #include "medViewerConfigurationSegmentation.h"
 
+#include "medSaveModifiedDialog.h"
+
 #include <QtGui>
 
 // /////////////////////////////////////////////////////////////////
@@ -197,6 +199,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     //Add quit button
     d->quitButton = new medButton ( this,":/icons/quit.png", tr ( "Quit Application" ) );
     connect ( d->quitButton, SIGNAL ( triggered() ), this, SLOT ( onQuit() ) );
+    connect(d->quitButton, SIGNAL( triggered()), this, SLOT (onSaveModified()));
     d->quitButton->setMaximumWidth ( 31 );
 
     //Setup quit message
@@ -519,6 +522,17 @@ void medMainWindow::onQuit ( void )
     d->quitButton->hide();
 }
 
+void medMainWindow::onSaveModified( void )
+{
+    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
+
+    if(!indexes.isEmpty())
+    {
+        medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
+        saveDialog->show();
+    }
+}
+
 void medMainWindow::onEditSettings()
 {
     if ( d->settingsEditor )
@@ -581,6 +595,7 @@ void medMainWindow::onOpenFile(const medDataIndex & index,const QString& importU
 
 void medMainWindow::load(const QString& file)
 {
+    qDebug() << "DEBUG : entering medMainWindow::load";
     medDataManager::instance()->importNonPersistent (file);
 }
 
