@@ -73,7 +73,7 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(int tess) {
     Tesselation = tess;
     shell = 0;
     SphericalHarmonics = 0;
-    
+    Order = 4;
     this->SetNumberOfSphericalHarmonics (15);
 
 #if 0
@@ -94,12 +94,13 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(int tess) {
     sMesh.tesselate(Tesselation);
     sMesh.getvtkTesselation(1,shell); 
     
-    NumberOfSphericalHarmonics = 15;
     SphericalHarmonics = new double[NumberOfSphericalHarmonics];
     SphericalHarmonics[0] = 1.0;
     for(int i = 1; i < NumberOfSphericalHarmonics; i++)
         SphericalHarmonics[i] = 0.0;    
-    Order = (int)(-3/2 + std::sqrt((float)(9/4 - 2*(1 - NumberOfSphericalHarmonics))));
+    Order = 4;//(int)(-3/2 + std::sqrt((float)(9/4 - 2*(1 - NumberOfSphericalHarmonics))));
+    NumberOfSphericalHarmonics = (Order+1)*(Order+2)/2;
+
 
     matrix<double> PhiThetaDirection (shell->GetNumberOfPoints(),2);
     
@@ -130,7 +131,7 @@ vtkSphericalHarmonicSource::SetNumberOfSphericalHarmonics(const int number) {
     SphericalHarmonics[0] = 1.0;
     for(int i=1;i<NumberOfSphericalHarmonics;++i)
         SphericalHarmonics[i] = 0.0;    
-    Order = (int)(-3/2+std::sqrt((float)(9/4-2*(1-NumberOfSphericalHarmonics)))); //    Wrong and redundant !!!
+//    Order = (int)(-3/2+std::sqrt((float)(9/4-2*(1-NumberOfSphericalHarmonics)))); //    Wrong and redundant !!!
     
     this->UpdateSphericalHarmonicSource();
     this->Modified();
@@ -351,11 +352,12 @@ Cartesian2Spherical(const direction v) {
 }
 
 matrix<double>
-ComputeSHMatrix(const int rank,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
+ComputeSHMatrix(const int order,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
     
     const int n_s   = shell->GetNumberOfPoints();
-    const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is probably wrong !!!
-    
+    //const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is probably wrong !!!
+    const int rank =  (order+1)*(order+2)/2;
+
     matrix<double> B(rank,n_s);
 
     vtkPoints* vertices = shell->GetPoints();
@@ -449,11 +451,12 @@ ComputeSHMatrix(const int rank,vtkPolyData* shell,const bool FlipX,const bool Fl
 }
 
 matrix<double>
-ComputeSHMatrixMaxThesis(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
+ComputeSHMatrixMaxThesis(const int order,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
 
     const int n_s   = shell->GetNumberOfPoints();
-    const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is wrong !!!
-    
+//    const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is wrong !!!
+    const int rank =  (order+1)*(order+2)/2;
+
     matrix<double> B(rank,n_s);
 
     vtkPoints* vertices = shell->GetPoints();
@@ -535,10 +538,12 @@ ComputeSHMatrixMaxThesis(const int rank,vtkPolyData *shell,const bool FlipX,cons
 }
 
 matrix<double>
-ComputeSHMatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
+ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
 
     const int n_s   = shell->GetNumberOfPoints();
-    const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is wrong !!!
+    const int rank =  (order+1)*(order+2)/2;
+
+//    const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is wrong !!!
 
     /*
       We declare the Bmatrix of sixe n_s x n_b.
@@ -608,10 +613,12 @@ ComputeSHMatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const
 }
 
 matrix<double>
-ComputeSHMatrixRshBasis(const int rank,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
+ComputeSHMatrixRshBasis(const int order,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
 
     const int n_s   = shell->GetNumberOfPoints();
-    const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is probably wrong !!!
+    const int rank =  (order+1)*(order+2)/2;
+
+//    const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is probably wrong !!!
 
     matrix<double> B(rank,n_s);
 
@@ -713,10 +720,10 @@ vtkSphericalHarmonicSource::UpdateSphericalHarmonicSource() {
     matrix<double> PhiThetaDirection(shell->GetNumberOfPoints(),2);
 
     switch (TesselationBasis) {
-    case SHMatrix:          { BasisFunction = ComputeSHMatrix(NumberOfSphericalHarmonics,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);         break; }
-    case SHMatrixMaxThesis: { BasisFunction = ComputeSHMatrixMaxThesis(NumberOfSphericalHarmonics,shell,FlipX,FlipY,FlipZ,PhiThetaDirection); break; }
-    case SHMatrixTournier:  { BasisFunction = ComputeSHMatrixTournier(NumberOfSphericalHarmonics,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);  break; }
-    case SHMatrixRshBasis:  { BasisFunction = ComputeSHMatrixRshBasis(NumberOfSphericalHarmonics,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);   break; }
+    case SHMatrix:          { BasisFunction = ComputeSHMatrix(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);         break; }
+    case SHMatrixMaxThesis: { BasisFunction = ComputeSHMatrixMaxThesis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection); break; }
+    case SHMatrixTournier:  { BasisFunction = ComputeSHMatrixTournier(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);  break; }
+    case SHMatrixRshBasis:  { BasisFunction = ComputeSHMatrixRshBasis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);   break; }
     }
 
     PhiThetaShellDirections = PhiThetaDirection;

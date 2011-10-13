@@ -130,6 +130,11 @@ void vtkSphericalHarmonicVisuManager::SetGlyphResolution (const int& res)
   this->SHSource->UpdateSphericalHarmonicSource();
 }
 
+void vtkSphericalHarmonicVisuManager::SetOrder (const int& order)
+{
+    this->SHSource->SetOrder(order);
+    this->SHSource->UpdateSphericalHarmonicSource();
+}
 
 void vtkSphericalHarmonicVisuManager::SetSampleRate (const int& n1,const int& n2, const int& n3)
 {

@@ -75,6 +75,8 @@ public:
     double GetSphericalHarmonicComponent(int i) { return SphericalHarmonics[i]; }
     
     vtkGetMacro(Order,int);
+    vtkSetMacro(Order,int);
+
     vtkGetMacro(NumberOfSphericalHarmonics,int);
     void SetNumberOfSphericalHarmonics(const int);
     

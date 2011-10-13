@@ -43,7 +43,7 @@ class vtkSphericalHarmonicVisuManager : public vtkObject
 //  { return this->SHSource->GetTesselation(); }
 
   void SetGlyphResolution (const int&);
-
+  void SetOrder (const int&);
 
   void SetSampleRate (const int&,const int&, const int&);
 

@@ -275,6 +275,12 @@ void vtkSphericalHarmonicManager::SetTesselationBasis (const int& type)
   this->SHVisuManagerCoronal ->SetTesselationBasis(type);
 }
 
+void vtkSphericalHarmonicManager::SetOrder (int order)
+{
+  this->SHVisuManagerAxial   ->SetOrder(order);
+  this->SHVisuManagerSagittal->SetOrder(order);
+  this->SHVisuManagerCoronal ->SetOrder(order);
+}
 
 
     /*
