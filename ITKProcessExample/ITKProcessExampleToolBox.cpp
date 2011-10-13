@@ -84,8 +84,11 @@ ITKProcessExampleToolBox::~ITKProcessExampleToolBox(void)
 
 bool ITKProcessExampleToolBox::registered(void)
 {
-    return medToolBoxFactory::instance()->registerCustomFilteringToolBox("ITK GaussianBlur Filter Example",
-                                                                           createITKProcessExampleToolBox);
+    return medToolBoxFactory::instance()->registerCustomFilteringToolBox(
+                "itkGaussianBlurExample",
+                "ITK Gaussian Blur Filter Example",
+                "Applis Gaussian Blur to a view",
+                createITKProcessExampleToolBox);
 }
 
 

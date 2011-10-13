@@ -126,17 +126,16 @@ dtkAbstractData *exampleProcessImageFilter::output(void)
 
 int exampleProcessImageFilter::update(void)
 {
-    qDebug("Holas");
     typedef unsigned short PixelType;
     const unsigned int Dimension = 3;
     typedef itk::Image< PixelType, Dimension > ImageType;
 
-    qDebug() << d->inputA->description();
+    qDebug() << d->inputA->identifier();
 
     if (d->option == optionA)
     {
 
-        if (d->inputA->description()=="itkDataImageUShort3" && d->inputB->description()=="itkDataImageUShort3")
+        if (d->inputA->identifier()=="itkDataImageUShort3" && d->inputB->identifier()=="itkDataImageUShort3")
         {
             typedef itk::MaskImageFilter< ImageType,ImageType,ImageType >    MaskFilterType;
             MaskFilterType::Pointer maskFilter = MaskFilterType::New();
@@ -154,7 +153,7 @@ int exampleProcessImageFilter::update(void)
             d->output->setData(maskFilter->GetOutput());
 
         }
-        else if(d->inputA->description()=="itkDataImageDouble4" && d->inputB->description()=="itkDataImageDouble4")
+        else if(d->inputA->identifier()=="itkDataImageDouble4" && d->inputB->identifier()=="itkDataImageDouble4")
         {
             typedef double PixelType4;
             const unsigned int Dimension4 = 4;
@@ -188,7 +187,7 @@ int exampleProcessImageFilter::update(void)
     else if (d->option == optionB)
     {
 
-        if (d->inputA->description()=="itkDataImageUShort3" && d->inputB->description()=="itkDataImageUShort3")
+        if (d->inputA->identifier()=="itkDataImageUShort3" && d->inputB->identifier()=="itkDataImageUShort3")
         {
             typedef itk::AddImageFilter< ImageType,ImageType,ImageType >    AddFilterType;
             AddFilterType::Pointer AddFilter = AddFilterType::New();
@@ -208,7 +207,7 @@ int exampleProcessImageFilter::update(void)
 
     else if (d->option == optionC)
     {
-        if (d->inputA->description()=="itkDataImageUShort3" && d->inputB->description()=="itkDataImageUShort3")
+        if (d->inputA->identifier()=="itkDataImageUShort3" && d->inputB->identifier()=="itkDataImageUShort3")
         {
             typedef itk::ConnectedThresholdImageFilter< ImageType, ImageType > ConnectedFilterType;
             ConnectedFilterType::Pointer connectedThreshold = ConnectedFilterType::New();

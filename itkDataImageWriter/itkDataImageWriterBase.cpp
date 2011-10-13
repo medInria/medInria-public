@@ -32,7 +32,7 @@ bool itkDataImageWriterBase::canWrite(const QString& path)
 template <unsigned DIM,typename T>
 bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
     dtkAbstractData* dtkdata = this->data();
-    if (dtkdata && dtkdata->description()!=type)
+    if (dtkdata && dtkdata->identifier()!=type)
         return false;
 
     typedef itk::Image<T,DIM> Image;

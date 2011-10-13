@@ -5,24 +5,19 @@
 
 #include <itkNrrdImageIO.h>
 
+const char itkNrrdDataImageReader::ID[] = "itkNrrdDataImageReader";
 
-itkNrrdDataImageReader::itkNrrdDataImageReader(void) : itkDataImageReaderBase()
-{
+itkNrrdDataImageReader::itkNrrdDataImageReader(): itkDataImageReaderBase() {
     this->io = itk::NrrdImageIO::New();
 }
 
+itkNrrdDataImageReader::~itkNrrdDataImageReader() { }
 
-itkNrrdDataImageReader::~itkNrrdDataImageReader(void)
-{
-}
-
-QStringList itkNrrdDataImageReader::handled(void) const
-{
+QStringList itkNrrdDataImageReader::handled() const {
     return s_handled();
 }
 
-QStringList itkNrrdDataImageReader::s_handled(void)
-{
+QStringList itkNrrdDataImageReader::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,23 @@ QStringList itkNrrdDataImageReader::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGB3";
 }
 
-bool itkNrrdDataImageReader::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkNrrdDataImageReader", s_handled(),
-                                                                      createItkNrrdDataImageReader);
+bool itkNrrdDataImageReader::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkNrrdDataImageReader);
 }
 
+QString itkNrrdDataImageReader::identifier() const {
+    return ID;
+}
 
-QString itkNrrdDataImageReader::description(void) const
-{
-    return "itkNrrdDataImageReader";
+QString itkNrrdDataImageReader::description() const {
+    return "Reader for itk Nrrd images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkNrrdDataImageReader(void)
-{
+dtkAbstractDataReader *createItkNrrdDataImageReader() {
     return new itkNrrdDataImageReader;
 }
 

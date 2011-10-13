@@ -39,11 +39,11 @@ bool vtkDataMeshWriter::write(const QString& path)
   if (!this->data())
     return false;
   
-  qDebug() << "Can write with: " << this->description();
+  qDebug() << "Can write with: " << this->identifier();
   
   dtkAbstractData *dtkdata = this->data();
 
-  if(dtkdata->description()!="vtkDataMesh")
+  if(dtkdata->identifier()!="vtkDataMesh")
   {
     return false;
   }

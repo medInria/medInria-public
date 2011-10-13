@@ -1,28 +1,23 @@
-#include "itkJPEGDataImageReader.h"
+#include <itkJPEGDataImageReader.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkJPEGImageIO.h>
 
+const char itkJPEGDataImageReader::ID[] = "itkJPEGDataImageReader";
 
-itkJPEGDataImageReader::itkJPEGDataImageReader(void) : itkDataImageReaderBase()
-{
+itkJPEGDataImageReader::itkJPEGDataImageReader(): itkDataImageReaderBase() {
     this->io = itk::JPEGImageIO::New();
 }
 
+itkJPEGDataImageReader::~itkJPEGDataImageReader() { }
 
-itkJPEGDataImageReader::~itkJPEGDataImageReader(void)
-{
-}
-
-QStringList itkJPEGDataImageReader::handled(void) const
-{
+QStringList itkJPEGDataImageReader::handled() const {
     return s_handled();
 }
 
-QStringList itkJPEGDataImageReader::s_handled(void)
-{
+QStringList itkJPEGDataImageReader::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,22 @@ QStringList itkJPEGDataImageReader::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGB3";
 }
 
-bool itkJPEGDataImageReader::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkJPEGDataImageReader", s_handled(),
-                                                                      createItkJPEGDataImageReader);
+bool itkJPEGDataImageReader::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkJPEGDataImageReader);
 }
 
+QString itkJPEGDataImageReader::identifier() const {
+    return ID;
+}
 
-QString itkJPEGDataImageReader::description(void) const
-{
-    return "itkJPEGDataImageReader";
+QString itkJPEGDataImageReader::description() const {
+    return "Reader for JPEG images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkJPEGDataImageReader(void)
-{
+dtkAbstractDataReader *createItkJPEGDataImageReader() {
     return new itkJPEGDataImageReader;
 }
-

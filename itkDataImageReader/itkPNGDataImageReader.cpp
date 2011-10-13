@@ -1,28 +1,23 @@
-#include "itkPNGDataImageReader.h"
+#include <itkPNGDataImageReader.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkPNGImageIO.h>
 
+const char itkPNGDataImageReader::ID[] = "itkPNGDataImageReader";
 
-itkPNGDataImageReader::itkPNGDataImageReader(void) : itkDataImageReaderBase()
-{
+itkPNGDataImageReader::itkPNGDataImageReader(): itkDataImageReaderBase() {
     this->io = itk::PNGImageIO::New();
 }
 
+itkPNGDataImageReader::~itkPNGDataImageReader() { }
 
-itkPNGDataImageReader::~itkPNGDataImageReader(void)
-{
-}
-
-QStringList itkPNGDataImageReader::handled(void) const
-{
+QStringList itkPNGDataImageReader::handled() const {
     return s_handled();
 }
 
-QStringList itkPNGDataImageReader::s_handled(void)
-{
+QStringList itkPNGDataImageReader::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,22 @@ QStringList itkPNGDataImageReader::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGB3";
 }
 
-bool itkPNGDataImageReader::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkPNGDataImageReader", s_handled(),
-                                                                      createItkPNGDataImageReader);
+bool itkPNGDataImageReader::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkPNGDataImageReader);
 }
 
+QString itkPNGDataImageReader::identifier() const {
+    return ID;
+}
 
-QString itkPNGDataImageReader::description(void) const
-{
-    return "itkPNGDataImageReader";
+QString itkPNGDataImageReader::description() const {
+    return "Reader for PNG images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkPNGDataImageReader(void)
-{
+dtkAbstractDataReader *createItkPNGDataImageReader() {
     return new itkPNGDataImageReader;
 }
-

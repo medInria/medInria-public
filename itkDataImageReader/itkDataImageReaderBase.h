@@ -6,8 +6,7 @@
 #include "itkDataImageReaderPluginExport.h"
 #include "itkImageIOBase.h"
 
-class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageReaderBase : public dtkAbstractDataReader
-{
+class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageReaderBase: public dtkAbstractDataReader {
     Q_OBJECT
 
 public:
@@ -21,15 +20,15 @@ public slots:
 
     virtual bool canRead (const QString& path);
     virtual bool canRead (const QStringList& paths);
-    
+
     virtual void readInformation (const QString& path);
     virtual void readInformation (const QStringList& paths);
-    
+
     virtual bool read (const QString& path);
     virtual bool read (const QStringList& paths);
 
     virtual void setProgress (int value);
-    
+
 protected:
 
     itk::ImageIOBase::Pointer io;

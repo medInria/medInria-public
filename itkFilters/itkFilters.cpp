@@ -77,14 +77,14 @@ public:
 // {
 //     itkFiltersPrivate * source = static_cast<itkFiltersPrivate *> ( clientData );
 //     itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
-// 
+//
 //     float progress = 0.0;
-// 
+//
 //     if ( caller )
 //         std::cout << "caller existe" << std::endl;
 //     else
 //         std::cout << "no existe" << std::endl;
-//     
+//
 //     if ( processObject )
 //     {
 //         std::cout << "processObject existe" << std::endl;
@@ -93,13 +93,13 @@ public:
 //     }
 //     else
 //         std::cout << "no processObject" << std::endl;
-// 
-// 
-// 
+//
+//
+//
 //     std::cout << "progress = " << progress << std::endl;
-// 
+//
 // //     qDebug() << processObject->GetProgress();
-// 
+//
 //     if ( !source )
 //         qDebug() << "Source est null";
 // //   emit source->progress(processObject->GetProgress());
@@ -253,7 +253,7 @@ template <class PixelType> void itkFiltersPrivate::medianFilter ( void )
 //         qDebug() << "callback existe";
 //     else
 //         qDebug() << "callback n'existe pas";
-// 
+//
 //     qDebug() << "Avant add observer";
 
 //     medianFilter->AddObserver ( itk::ProgressEvent(), callback );
@@ -347,17 +347,18 @@ bool itkFilters::registered ( void )
 
 QString itkFilters::description ( void ) const
 {
-    return "itkFilters";
+    return tr("Simple itk filters, operating on a single volume");
 }
+
 
 void itkFilters::setInput ( dtkAbstractData *data )
 {
     if ( !data )
         return;
 
-    QString description = data->description();
+    QString identifier = data->identifier();
 
-    d->output = dtkAbstractDataFactory::instance()->create ( description );
+    d->output = dtkAbstractDataFactory::instance()->create ( identifier );
 
     d->input = data;
 }
@@ -459,54 +460,54 @@ int itkFilters::update ( void )
     if ( !d->input )
         return -1;
 
-    QString descr = d->input->description();
+    QString id = d->input->identifier();
 
-    qDebug() << "itkFilters, update : " << descr;
+    qDebug() << "itkFilters, update : " << id;
 
-    if ( descr == "itkDataImageChar3" )
+    if ( id == "itkDataImageChar3" )
     {
         d->update<char>();
     }
-    else if ( descr == "itkDataImageUChar3" )
+    else if ( id == "itkDataImageUChar3" )
     {
         d->update<unsigned char>();
     }
-    else if ( descr == "itkDataImageShort3" )
+    else if ( id == "itkDataImageShort3" )
     {
         d->update<short>();
     }
-    else if ( descr == "itkDataImageUShort3" )
+    else if ( id == "itkDataImageUShort3" )
     {
         d->update<unsigned short>();
     }
-    else if ( descr == "itkDataImageInt3" )
+    else if ( id == "itkDataImageInt3" )
     {
         d->update<int>();
     }
-    else if ( descr == "itkDataImageUInt3" )
+    else if ( id == "itkDataImageUInt3" )
     {
         d->update<unsigned int>();
     }
-    else if ( descr == "itkDataImageLong3" )
+    else if ( id == "itkDataImageLong3" )
     {
         d->update<long>();
     }
-    else if ( descr== "itkDataImageULong3" )
+    else if ( id== "itkDataImageULong3" )
     {
         d->update<unsigned long>();
     }
-    else if ( descr == "itkDataImageFloat3" )
+    else if ( id == "itkDataImageFloat3" )
     {
         d->update<float>();
     }
-    else if ( descr == "itkDataImageDouble3" )
+    else if ( id == "itkDataImageDouble3" )
     {
         d->update<double>();
     }
     else
     {
         qDebug() << "Error : pixel type not yet implemented ("
-        << descr
+        << id
         << ")";
         return -1;
     }

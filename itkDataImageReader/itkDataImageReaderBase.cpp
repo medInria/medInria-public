@@ -238,7 +238,7 @@ void itkDataImageReaderBase::readInformation (const QStringList& paths)
 template <unsigned DIM,typename T>
 bool itkDataImageReaderBase::read_image(const QString& path,const char* type) {
     dtkAbstractData* dtkdata = this->data();
-    if (dtkdata && dtkdata->description()!=type)
+    if (dtkdata && dtkdata->identifier()!=type)
         return false;
 
     typedef itk::Image<T,DIM> Image;

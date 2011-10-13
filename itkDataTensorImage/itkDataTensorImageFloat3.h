@@ -20,21 +20,22 @@ public:
     virtual ~itkDataTensorImageFloat3(void);
 
     virtual QString description(void) const;
+    virtual QString identifier(void) const;
     static bool registered(void);
 
-    
+
 public slots:
     // derived from dtkAbstractData
     void *output(void);
     void *data(void);
     void setData(void* data);
-    
+
 public:
     // derived from medAbstractDataImage
     int xDimension(void);
     int yDimension(void);
     int zDimension(void);
- 
+
     /** TODO the image which is being returned right now is JUST A STUB to allow drag and drop */
     virtual QImage        &thumbnail  (void) const;
     virtual QList<QImage> &thumbnails (void) const;

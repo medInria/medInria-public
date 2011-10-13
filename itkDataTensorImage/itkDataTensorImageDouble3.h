@@ -20,15 +20,17 @@ public:
     virtual ~itkDataTensorImageDouble3(void);
 
     virtual QString description(void) const;
+    virtual QString identifier(void) const;
+
     static bool registered(void);
 
-    
+
 public slots:
     // derived from dtkAbstractData
     void *output(void);
     void *data(void);
     void setData(void* data);
-    
+
 public:
     // derived from medAbstractDataImage
     int xDimension(void);

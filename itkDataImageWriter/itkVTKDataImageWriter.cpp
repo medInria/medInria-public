@@ -1,28 +1,23 @@
-#include "itkVTKDataImageWriter.h"
+#include <itkVTKDataImageWriter.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkVTKImageIO.h>
 
+const char itkVTKDataImageWriter::ID[] = "itkVTKDataImageWriter";
 
-itkVTKDataImageWriter::itkVTKDataImageWriter(void) : itkDataImageWriterBase()
-{
+itkVTKDataImageWriter::itkVTKDataImageWriter(): itkDataImageWriterBase() {
     this->io = itk::VTKImageIO::New();
 }
 
+itkVTKDataImageWriter::~itkVTKDataImageWriter() { }
 
-itkVTKDataImageWriter::~itkVTKDataImageWriter(void)
-{
-}
-
-QStringList itkVTKDataImageWriter::handled(void) const
-{
+QStringList itkVTKDataImageWriter::handled() const {
     return s_handled();
 }
 
-QStringList itkVTKDataImageWriter::s_handled(void)
-{
+QStringList itkVTKDataImageWriter::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,23 @@ QStringList itkVTKDataImageWriter::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGBA3";
 }
 
-bool itkVTKDataImageWriter::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataWriterType("itkVTKDataImageWriter", s_handled(),
-                                                                      createItkVTKDataImageWriter);
+bool itkVTKDataImageWriter::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataWriterType(ID,s_handled(),createItkVTKDataImageWriter);
 }
 
+QString itkVTKDataImageWriter::identifier() const {
+    return ID;
+}
 
-QString itkVTKDataImageWriter::description(void) const
-{
-    return "itkVTKDataImageWriter";
+QString itkVTKDataImageWriter::description() const {
+    return "Writer VTK images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkVTKDataImageWriter(void)
-{
+dtkAbstractDataWriter *createItkVTKDataImageWriter() {
     return new itkVTKDataImageWriter;
 }
 

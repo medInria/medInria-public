@@ -1,28 +1,23 @@
-#include "itkAnalyzeDataImageWriter.h"
+#include <itkAnalyzeDataImageWriter.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkAnalyzeImageIO.h>
 
+const char itkAnalyzeDataImageWriter::ID[] = "itkAnalyzeDataImageWriter";
 
-itkAnalyzeDataImageWriter::itkAnalyzeDataImageWriter(void) : itkDataImageWriterBase()
-{
+itkAnalyzeDataImageWriter::itkAnalyzeDataImageWriter(): itkDataImageWriterBase() {
     this->io = itk::AnalyzeImageIO::New();
 }
 
+itkAnalyzeDataImageWriter::~itkAnalyzeDataImageWriter() { }
 
-itkAnalyzeDataImageWriter::~itkAnalyzeDataImageWriter(void)
-{
-}
-
-QStringList itkAnalyzeDataImageWriter::handled(void) const
-{
+QStringList itkAnalyzeDataImageWriter::handled() const {
   return s_handled();
 }
 
-QStringList itkAnalyzeDataImageWriter::s_handled(void)
-{
+QStringList itkAnalyzeDataImageWriter::s_handled() {
   return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
 						<< "itkDataImageUChar3" << "itkDataImageUChar4"
 						<< "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,23 @@ QStringList itkAnalyzeDataImageWriter::s_handled(void)
                                                 << "itkDataImageRGB3" << "itkDataImageRGBA3";
 }
 
-bool itkAnalyzeDataImageWriter::registered(void)
-{
-  return dtkAbstractDataFactory::instance()->registerDataWriterType("itkAnalyzeDataImageWriter", s_handled(),
-								    createItkAnalyzeDataImageWriter);
+bool itkAnalyzeDataImageWriter::registered() {
+  return dtkAbstractDataFactory::instance()->registerDataWriterType(ID,s_handled(),createItkAnalyzeDataImageWriter);
 }
 
+QString itkAnalyzeDataImageWriter::identifier() const {
+    return ID;
+}
 
-QString itkAnalyzeDataImageWriter::description(void) const
-{
-    return "itkAnalyzeDataImageWriter";
+QString itkAnalyzeDataImageWriter::description() const {
+    return "Writer for analyze images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkAnalyzeDataImageWriter(void)
-{
+dtkAbstractDataWriter *createItkAnalyzeDataImageWriter() {
     return new itkAnalyzeDataImageWriter;
 }
 

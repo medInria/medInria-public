@@ -288,7 +288,11 @@ itkFiltersToolBox::~itkFiltersToolBox ( void )
 
 bool itkFiltersToolBox::registered ( void )
 {
-    return medToolBoxFactory::instance()->registerCustomFilteringToolBox ( "ITK Basic Filters", createitkFiltersToolBox );
+    return medToolBoxFactory::instance()->registerCustomFilteringToolBox (
+                "itkBasicFilters",
+                "ITK Basic Filters",
+                "ITK filters, processing examples",
+                createitkFiltersToolBox );
 }
 
 
@@ -338,9 +342,9 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
             return;
         }
 
-        QString descr = this->parent()->data()->description();
+        QString identifier = this->parent()->data()->identifier();
 
-        if ( descr == "itkDataImageChar3" )
+        if ( identifier == "itkDataImageChar3" )
         {
             d->dataTypeValue->setText ( "Char" );
             d->addFiltersValue->setMaximum ( std::numeric_limits<char>::max() );
@@ -364,7 +368,7 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
             d->intensityOutputMaximumValue->setValue ( std::numeric_limits<char>::max() );
 
         }
-        else if ( descr == "itkDataImageUChar3" )
+        else if ( identifier == "itkDataImageUChar3" )
         {
             d->dataTypeValue->setText ( "Unsigned char" );
             d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
@@ -387,7 +391,7 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
             d->intensityOutputMaximumValue->setValue ( std::numeric_limits<unsigned char>::max() );
         }
-        else if ( descr == "itkDataImageShort3" )
+        else if ( identifier == "itkDataImageShort3" )
         {
             d->dataTypeValue->setText ( "Short" );
             d->addFiltersValue->setMaximum ( std::numeric_limits<short>::max() );
@@ -409,7 +413,7 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<short>::max() );
             d->intensityOutputMaximumValue->setValue ( std::numeric_limits<short>::max() );
         }
-        else if ( descr == "itkDataImageUShort3" )
+        else if ( identifier == "itkDataImageUShort3" )
         {
             d->dataTypeValue->setText ( "Unsigned short" );
             d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
@@ -431,7 +435,7 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
             d->intensityOutputMaximumValue->setValue ( std::numeric_limits<unsigned short>::max() );
         }
-        else if ( descr == "itkDataImageInt3" )
+        else if ( identifier == "itkDataImageInt3" )
         {
             d->dataTypeValue->setText ( "Int" );
             d->addFiltersValue->setMaximum ( std::numeric_limits<int>::max() );
@@ -453,7 +457,7 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<int>::max() );
             d->intensityOutputMaximumValue->setValue ( std::numeric_limits<int>::max() );
         }
-        else if ( descr == "itkDataImageUInt3" )
+        else if ( identifier == "itkDataImageUInt3" )
         {
             d->dataTypeValue->setText ( "Unsigned int" );
             d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
@@ -475,7 +479,7 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
             d->intensityOutputMaximumValue->setValue ( std::numeric_limits<unsigned int>::max() );
         }
-        else if ( descr == "itkDataImageLong3" )
+        else if ( identifier == "itkDataImageLong3" )
         {
             d->dataTypeValue->setText ( "Long" );
             d->addFiltersValue->setMaximum ( std::numeric_limits<long>::max() );
@@ -497,7 +501,7 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<long>::max() );
             d->intensityOutputMaximumValue->setValue ( std::numeric_limits<long>::max() );
         }
-        else if ( descr== "itkDataImageULong3" )
+        else if ( identifier== "itkDataImageULong3" )
         {
             d->dataTypeValue->setText ( "Unsigned long" );
             d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
@@ -519,7 +523,7 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
             d->intensityOutputMaximumValue->setValue ( std::numeric_limits<unsigned long>::max() );
         }
-        else if ( descr == "itkDataImageFloat3" )
+        else if ( identifier == "itkDataImageFloat3" )
         {
             d->dataTypeValue->setText ( "Float" );
             d->addFiltersValue->setMaximum ( std::numeric_limits<float>::max() );
@@ -541,7 +545,7 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
             d->intensityOutputMaximumValue->setMaximum ( std::numeric_limits<float>::max() );
             d->intensityOutputMaximumValue->setValue ( std::numeric_limits<float>::max() );
         }
-        else if ( descr == "itkDataImageDouble3" )
+        else if ( identifier == "itkDataImageDouble3" )
         {
             d->dataTypeValue->setText ( "Double" );
             d->addFiltersValue->setMaximum ( std::numeric_limits<double>::max() );
@@ -565,8 +569,8 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
         }
         else
         {
-            qDebug() << "Error : pixel type not yet implemented ("
-            << descr
+            qWarning() << "Error : pixel type not yet implemented ("
+            << identifier
             << ")";
         }
     }
@@ -664,7 +668,7 @@ void itkFiltersToolBox::onFiltersActivated ( int index )
     d->invertFilterWidget->hide();
     d->shrinkFilterWidget->hide();
     d->intensityFilterWidget->hide();
-    
+
     switch ( index )
     {
     case 0:

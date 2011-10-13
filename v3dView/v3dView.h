@@ -211,6 +211,13 @@ protected slots:
     void widgetDestroyed(void);
 
 private:
+
+    template <typename IMAGE>
+    bool SetViewInput(const char* type,dtkAbstractData* data,const int layer);
+    bool SetView(const char* type,dtkAbstractData* data);
+    template <typename IMAGE>
+    bool SetViewInputWithConversion(const char* type,const char* newtype,dtkAbstractData* data,const int layer);
+
     v3dViewPrivate *d;
 
     friend class v3dViewObserver;

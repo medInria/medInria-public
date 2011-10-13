@@ -24,7 +24,7 @@ class itkDataTensorImageDouble3Private
 public:
     typedef itk::Tensor<double, 3>    TensorType;
     typedef itk::Image<TensorType, 3> TensorImageType;
-  
+
     TensorImageType::Pointer tensors;
 
     QImage        thumbnail;
@@ -54,6 +54,12 @@ bool itkDataTensorImageDouble3::registered(void)
 }
 
 QString itkDataTensorImageDouble3::description(void) const
+{
+    return tr("itk tensor 3d image data (double)");
+}
+
+
+QString itkDataTensorImageDouble3::identifier() const
 {
     return "itkDataTensorImageDouble3";
 }
@@ -119,3 +125,4 @@ dtkAbstractData *createItkDataTensorImageDouble3(void)
 {
     return new itkDataTensorImageDouble3;
 }
+
