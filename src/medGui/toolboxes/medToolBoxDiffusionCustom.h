@@ -28,6 +28,7 @@ class medToolBoxDiffusion;
 class medToolBoxDiffusionCustomPrivate;
 class dtkAbstractProcess;
 class dtkAbstractData;
+class dtkPlugin;
 
 class MEDGUI_EXPORT medToolBoxDiffusionCustom : public medToolBox
 {
@@ -42,7 +43,8 @@ public:
     virtual QString description (void) const = 0;
 
     virtual dtkAbstractData *output (void) const;
-    
+    virtual dtkPlugin *plugin( void )const = 0;
+
 protected:
     medToolBoxDiffusion *parent(void);
 

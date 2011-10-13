@@ -1,5 +1,5 @@
-/* medToolBoxContainer.cpp --- 
- * 
+/* medToolBoxContainer.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Oct 26 21:51:08 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 16
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medToolBoxContainer.h"
@@ -72,18 +72,18 @@ void medToolBoxContainer::addToolBox(medToolBox *toolBox)
 
     if (!d->toolboxes.contains(toolBox)) {
         d->toolboxes.append(toolBox);
-	toolBox->setParent (d->container);
+        toolBox->setParent (d->container);
 
-	if (d->layoutOrientation==Qt::Vertical) {
-	  d->layout->setRowStretch (d->layout->count(), 0);
-	  d->layout->addWidget(toolBox, d->layout->count(), 0, Qt::AlignTop);
-	  d->layout->setRowStretch (d->layout->count(), 1);
-	}
-	else {
-	  d->layout->setColumnStretch (d->layout->count(), 0);
-	  d->layout->addWidget(toolBox, 0, d->layout->count(), Qt::AlignTop);
-	  d->layout->setColumnStretch (d->layout->count(), 1);
-	}
+        if (d->layoutOrientation==Qt::Vertical) {
+            d->layout->setRowStretch (d->layout->count(), 0);
+            d->layout->addWidget(toolBox, d->layout->count(), 0, Qt::AlignTop);
+            d->layout->setRowStretch (d->layout->count(), 1);
+        }
+        else {
+            d->layout->setColumnStretch (d->layout->count(), 0);
+            d->layout->addWidget(toolBox, 0, d->layout->count(), Qt::AlignTop);
+            d->layout->setColumnStretch (d->layout->count(), 1);
+        }
     }
 }
 

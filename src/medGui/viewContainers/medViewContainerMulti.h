@@ -84,7 +84,7 @@ public:
 
     void layout (QList<QWidget *> content);
 
-    virtual QString description() {return "Multi";}
+    virtual QString identifier() {return "Multi";}
 
 public slots:
     void onViewClosing    (void);

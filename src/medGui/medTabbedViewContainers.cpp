@@ -145,10 +145,10 @@ void medTabbedViewContainers::insertContainer(int index, const QString &name, me
 
 void medTabbedViewContainers::changeCurrentContainerType(const QString &name)
 {
-    //qDebug() << "Changing container type to " << name << " from " << this->current()->description();
+    //qDebug() << "Changing container type to " << name << " from " << this->current()->identifier();
     //qDebug() << "Current index is " << this->currentIndex() << " and tab name " << this->tabText(this->currentIndex());
 
-    if ((!this->current()->views().isEmpty()) && (name != this->current()->description()))
+    if ((!this->current()->views().isEmpty()) && (name != this->current()->identifier()))
     {
         QMessageBox msgBox ( this );
         msgBox.setIcon ( QMessageBox::Warning );
@@ -165,7 +165,7 @@ void medTabbedViewContainers::changeCurrentContainerType(const QString &name)
         }
     }
 
-    if (name != this->current()->description())
+    if (name != this->current()->identifier())
     {
         medViewContainer *newTab = NULL;
         if (name == "Single")

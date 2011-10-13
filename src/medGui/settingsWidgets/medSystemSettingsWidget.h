@@ -13,6 +13,7 @@ class MEDGUI_EXPORT medSystemSettingsWidget : public medSettingsWidget
 public:
     medSystemSettingsWidget(QWidget *parent = 0);
 
+    QString identifier()  const;
     QString description() const;
 
 signals:

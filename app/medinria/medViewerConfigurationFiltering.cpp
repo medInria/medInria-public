@@ -126,6 +126,10 @@ void medViewerConfigurationFiltering::onOutputImported ( const medDataIndex& dat
     }
 }
 
+QString medViewerConfigurationFiltering::identifier() const {
+    return "Filtering";
+}
+
 void medViewerConfigurationFiltering::onViewRemoved ()
 {
     d->filteringToolBox->clear();

@@ -61,7 +61,7 @@ void medDatabaseExporter::run(void)
     {
         dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
 
-        if (! dataWriter->handled().contains(d->data->description()))
+        if (! dataWriter->handled().contains(d->data->identifier()))
             continue;
 
         dataWriter->setData (d->data);

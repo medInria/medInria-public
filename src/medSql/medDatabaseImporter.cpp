@@ -205,9 +205,8 @@ void medDatabaseImporter::run ( void )
         QString futureExtension  = determineFutureImageExtensionByDataType ( dtkData );
 
         // we care whether we can write the image or not if we are importing
-        if ( !d->indexWithoutImporting && futureExtension.isEmpty() )
-        {
-            emit showError ( this, tr ( "Could not save file due to unhandled data type: " ) + dtkData->description(), 5000 );
+        if (!d->indexWithoutImporting && futureExtension.isEmpty()) {
+            emit showError(this, tr("Could not save file due to unhandled data type: ") + dtkData->identifier(), 5000);
             continue;
         }
 
@@ -942,26 +941,20 @@ dtkSmartPointer<dtkAbstractDataReader> medDatabaseImporter::getSuitableReader ( 
 
     // cycle through readers to see if the last used reader can handle the file
     dtkSmartPointer<dtkAbstractDataReader> dataReader;
-    for ( int i=0; i<readers.size(); i++ )
-    {
-        dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer ( readers[i] );
-        if ( d->lastSuccessfulReaderDescription == dataReader->description() && dataReader->canRead ( filename ) )
-        {
-            dataReader->enableDeferredDeletion ( false );
+    for (int i=0; i<readers.size(); i++) {
+        dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
+        if (d->lastSuccessfulReaderDescription == dataReader->identifier() && dataReader->canRead(filename)) {
+            dataReader->enableDeferredDeletion(false);
             return dataReader;
         }
     }
 
-    for ( int i=0; i<readers.size(); i++ )
-    {
-        dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer ( readers[i] );
-        if ( dataReader->canRead ( filename ) )
-        {
-            d->lastSuccessfulReaderDescription = dataReader->description();
-            {
-                dataReader->enableDeferredDeletion ( false );
-                return dataReader;
-            }
+    for (int i=0; i<readers.size(); i++) {
+        dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
+        if (dataReader->canRead(filename)) {
+            d->lastSuccessfulReaderDescription = dataReader->identifier();
+            dataReader->enableDeferredDeletion(false);
+            return dataReader;
         }
     }
 
@@ -971,7 +964,7 @@ dtkSmartPointer<dtkAbstractDataReader> medDatabaseImporter::getSuitableReader ( 
 
 //-----------------------------------------------------------------------------------------------------------
 
-dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter ( QString filename, dtkAbstractData* dtkData )
+dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter(QString filename,dtkAbstractData* dtkData)
 {
     if ( !dtkData )
         return NULL;
@@ -979,17 +972,13 @@ dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter ( 
     QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
     dtkSmartPointer<dtkAbstractDataWriter> dataWriter;
     // first try with the last
-    for ( int i=0; i<writers.size(); i++ )
-    {
-        dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer ( writers[i] );
-        if ( d->lastSuccessfulWriterDescription==dataWriter->description() )
-        {
-            if ( dataWriter->handled().contains ( dtkData->description() ) &&
-                    dataWriter->canWrite ( filename ) )
-            {
+    for (int i=0; i<writers.size(); i++) {
+        dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
+        if (d->lastSuccessfulWriterDescription==dataWriter->identifier()) {
+            if (dataWriter->handled().contains(dtkData->identifier()) && dataWriter->canWrite(filename)) {
 
-                d->lastSuccessfulWriterDescription = dataWriter->description();
-                dataWriter->enableDeferredDeletion ( false );
+                d->lastSuccessfulWriterDescription = dataWriter->identifier();
+                dataWriter->enableDeferredDeletion(false);
                 return dataWriter;
             }
         }
@@ -1000,12 +989,11 @@ dtkSmartPointer<dtkAbstractDataWriter> medDatabaseImporter::getSuitableWriter ( 
     {
         dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer ( writers[i] );
 
-        if ( dataWriter->handled().contains ( dtkData->description() ) &&
-                dataWriter->canWrite ( filename ) )
-        {
+        if (dataWriter->handled().contains(dtkData->identifier()) &&
+             dataWriter->canWrite( filename ) ) {
 
-            d->lastSuccessfulWriterDescription = dataWriter->description();
-            dataWriter->enableDeferredDeletion ( false );
+            d->lastSuccessfulWriterDescription = dataWriter->identifier();
+            dataWriter->enableDeferredDeletion(false);
             return dataWriter;
         }
     }
@@ -1081,41 +1069,30 @@ QString medDatabaseImporter::determineFutureImageFileName ( const dtkAbstractDat
 
 QString medDatabaseImporter::determineFutureImageExtensionByDataType ( const dtkAbstractData* dtkdata )
 {
-    QString description = dtkdata->description();
+    QString identifier = dtkdata->identifier();
     QString extension = "";
 
-    // Determine the appropriate extension to use according to the type of data.
-    // TODO: The image and CompositeDatasets types are weakly recognized (contains("Image/CompositeData")). to be improved
-    if ( description == "vtkDataMesh" )
-    {
-        extension = ".vtk";
-        qDebug() << "vtkDataMesh";
-    }
-    else if ( description == "vtkDataMesh4D" )
-    {
-        extension = ".v4d";
-        qDebug() << "vtkDataMesh4D";
-    }
-    else if ( description == "v3dDataFibers" )
-    {
-        extension = ".xml";
-        qDebug() << "vtkDataMesh4D";
-    }
-    else if ( description.contains ( "vistal" ) )
-    {
-        extension = ".dim";
-        qDebug() << "Vistal Image";
-    }
-    else if ( description.contains ( "CompositeData" ) )
-    {
+     // Determine the appropriate extension to use according to the type of data.
+     // TODO: The image and CompositeDatasets types are weakly recognized (contains("Image/CompositeData")). to be improved
+     if (identifier == "vtkDataMesh") {
+         extension = ".vtk";
+         qDebug() << "vtkDataMesh";
+     } else if (identifier == "vtkDataMesh4D") {
+         extension = ".v4d";
+         qDebug() << "vtkDataMesh4D";
+     } else if (identifier == "v3dDataFibers") {
+         extension = ".xml";
+         qDebug() << "vtkDataMesh4D";
+     } else if (identifier.contains("vistal")) {
+         extension = ".dim";
+         qDebug() << "Vistal Image";
+     } else if (identifier.contains ("CompositeData")) {
         extension = ".cds";
         qDebug() << "composite Dataset";
-    }
-    else if ( description.contains ( "Image" ) )
-    {
-        extension = ".mha";
-        //qDebug() << description;
-    }
+     } else if (identifier.contains ("Image")) {
+         extension = ".mha";
+         //qDebug() << identifier;
+     }
 
     return extension;
 }
