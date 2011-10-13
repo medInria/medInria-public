@@ -91,7 +91,31 @@ void medTabbedViewContainers::addNewTabContainer()
 
 void medTabbedViewContainers::deleteContainerClicked(int index)
 {
-    if (this->count() > 1)
+    if (this->count() == 1)
+    {
+        QString name = this->current()->description();
+        
+        medViewContainer *newTab = NULL;
+        if (name == "Single")
+            newTab = new medViewContainerSingle();
+        else if (name == "Custom")
+            newTab = new medViewContainerCustom();
+        else if (name == "Multi")
+            newTab = new medViewContainerMulti();
+        
+        if (newTab != NULL)
+        {
+            this->blockSignals(true);
+            QString tabName = this->tabText(index);
+            this->removeTab(index);
+            this->insertContainer(index,tabName,newTab);
+            this->setCurrentIndex(index);
+            this->blockSignals(false);
+            
+            this->onCurrentContainerChanged(index);
+        }
+    }
+    else
     {
         d->containers.remove(this->tabText(index));
         this->removeTab(index);
