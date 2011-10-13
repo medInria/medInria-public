@@ -44,13 +44,6 @@
 class medToolBoxRegistrationPrivate
 {
 public:
-//    medDropSite *processDropSiteFixed;
-//    medDropSite *processDropSiteMoving;
-
-//    QRadioButton *blendRadio;
-//    QRadioButton *checkerboardRadio;
-//    QSlider *layoutFuseSlider;
-
     QPushButton * saveImageButton;
     QPushButton * saveTransButton;
 
@@ -96,7 +89,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
                 tbFactory->registrationToolBoxDetailsFromId(toolbox);
         QString name = pair.first;
         QString description = pair.second;
-        qDebug() << "Added registration toolbox" << name;
+//        qDebug() << "Added registration toolbox" << name;
         d->toolboxes->addItem(name, toolbox);
         d->toolboxes->setItemData(i,
                                   description,
@@ -176,25 +169,6 @@ medAbstractDataImage *medToolBoxRegistration::movingData(void)
     return d->movingData;
 }
 
-//void medToolBoxRegistration::onBlendModeSet(bool value)
-//{
-//    if (value)
-//        if (d->fuseView)
-//            if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-//                interactor->setProperty("FusionStyle", "blend");
-//                d->fuseView->update();
-//            }
-//}
-
-//void medToolBoxRegistration::onCheckerboardModeSet(bool value)
-//{
-//    if (value)
-//        if (d->fuseView)
-//            if (dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor")) {
-//                interactor->setProperty("FusionStyle", "checkerboard");
-//                d->fuseView->update();
-//            }
-//}
 
 void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
 {
@@ -281,7 +255,7 @@ void medToolBoxRegistration::onToolBoxChosen(int index)
 
 
     if(!toolbox) {
-        qWarning() << "Unable to instanciate" << id << "toolbox";
+        qWarning() << "Unable to instantiate" << id << "toolbox";
         return;
     }
 
@@ -306,13 +280,6 @@ void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
         return;
 
     d->fuseView = dynamic_cast <medAbstractView*> (view);
-//    d->fuseView->enableInteractor("v3dViewFuseInteractor");
-//    dtkAbstractViewInteractor *interactor = d->fuseView->interactor("v3dViewFuseInteractor");
-
-//    connect(d->layoutFuseSlider, SIGNAL(valueChanged(int)), interactor,
-//            SLOT(onBlendAlphaValueSet(int)));
-//    connect(d->layoutFuseSlider, SIGNAL(valueChanged(int)), interactor,
-//            SLOT(onCheckerboardDivisionCountValueSet(int)));
 }
 
 void medToolBoxRegistration::clear(void)
