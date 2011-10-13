@@ -60,6 +60,7 @@
 #include "medViewerConfigurationRegistration.h"
 #include "medViewerConfigurationDiffusion.h"
 #include "medViewerConfigurationFiltering.h"
+#include "medViewerConfigurationSegmentation.h"
 
 #include <QtGui>
 
@@ -672,7 +673,8 @@ void medMainWindow::registerToFactories()
     medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
     medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
     medViewerConfigurationFactory::instance()->registerConfiguration("Filtering",     createMedViewerConfigurationFiltering);
-    
+    medViewerConfigurationSegmentation::registerWithViewerConfigurationFactory();
+
     //Register settingsWidgets
     medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
     medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);

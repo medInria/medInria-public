@@ -27,6 +27,7 @@ public:
     medToolBoxFactory::medToolBoxDiffusionCustomCreatorHash custom_diffusion_creators;
     medToolBoxFactory::medToolBoxCompositeDataSetImporterCustomCreatorHash custom_compositedatasetimporter_creators;
     medToolBoxFactory::medToolBoxFilteringCustomCreatorHash custom_filtering_creators;
+    medToolBoxFactory::medToolBoxSegmentationCustomCreatorHash custom_segmentation_creators;
 };
 
 medToolBoxFactory *medToolBoxFactory::instance(void)
@@ -94,6 +95,30 @@ bool medToolBoxFactory::registerCustomCompositeDataSetImporterToolBox(QString ty
         return true;
     }
     return false;
+}
+
+bool medToolBoxFactory::registerCustomSegmentationToolBox(QString type, medToolBoxSegmentationCustomCreator func)
+{
+    if(!d->custom_segmentation_creators.contains(type)) {
+        d->custom_segmentation_creators.insert(type, func);
+        return true;
+    }
+    return false;
+}
+
+QList<QString> medToolBoxFactory::segmentationToolBoxes(void)
+{
+    return d->custom_segmentation_creators.keys();
+}
+
+medToolBoxSegmentationCustom *medToolBoxFactory::createCustomSegmentationToolBox(QString type, QWidget *parent)
+{
+    if(!d->custom_segmentation_creators.contains(type))
+        return NULL;
+
+    medToolBoxSegmentationCustom *toolbox = d->custom_segmentation_creators[type](parent);
+
+    return toolbox;
 }
 
 bool medToolBoxFactory::registerCustomFilteringToolBox(QString type, medToolBoxFilteringCustomCreator func)
