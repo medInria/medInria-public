@@ -328,7 +328,8 @@ void vtkSphericalHarmonicManager::SetLookupTable (vtkLookupTable* lut)
 
 void vtkSphericalHarmonicManager::GetSphericalHarmonicDimensions (int * dims)
 {
-    this->Input->GetDimensions(dims);
+    if (this->Input!=0)
+        this->Input->GetDimensions(dims);
 }
 
 void vtkSphericalHarmonicManager::SetAxialSliceVisibility (int i)

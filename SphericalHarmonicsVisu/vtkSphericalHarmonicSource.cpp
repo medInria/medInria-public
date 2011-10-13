@@ -121,9 +121,9 @@ vtkSphericalHarmonicSource::~vtkSphericalHarmonicSource() {
 }
 
 void
-vtkSphericalHarmonicSource::SetNumberOfSphericalHarmonics(const int order) {
+vtkSphericalHarmonicSource::SetNumberOfSphericalHarmonics(const int number) {
 
-    NumberOfSphericalHarmonics = order;
+    NumberOfSphericalHarmonics = number;
     if (SphericalHarmonics)
         delete[] SphericalHarmonics;
     SphericalHarmonics = new double[NumberOfSphericalHarmonics];
