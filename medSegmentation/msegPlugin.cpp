@@ -4,7 +4,8 @@
 
 #include "msegPlugin.h"
 
-#include "msegConfiguration.h"
+#include "msegAlgorithmInitializer.h"
+#include "msegAnnotationInitializer.h"
 
 #include <dtkCore/dtkLog.h>
 namespace mseg {
@@ -29,7 +30,8 @@ const char * PluginPrivate::s_Type = "Process";
 
 Plugin::Plugin(QObject *parent) : dtkPlugin(parent), d(new PluginPrivate)
 {
-
+    AlgorithmInitializer::initialize();
+    AnnotationInitializer::initialize();
 }
 
 Plugin::~Plugin(void)
@@ -40,10 +42,6 @@ Plugin::~Plugin(void)
 
 bool Plugin::initialize(void)
 {
-    if(!Configuration::registerWithViewerConfigurationFactory()) {
-        dtkWarning() << "Unable to register View type";
-        return false;
-    } 
 
     return true;
 }

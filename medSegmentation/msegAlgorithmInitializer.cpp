@@ -8,9 +8,9 @@
 #include "msegAlgorithmInitializer.h"
 
 #include "msegAlgorithmConnectedThreshold.h"
-#include "msegAlgorithmConnectedThresholdParametersWidget.h"
+#include "msegAlgorithmConnectedThresholdToolbox.h"
+#include <medToolBoxFactory.h>
 
-#include "msegParametersWidgetFactory.h"
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 namespace mseg {
@@ -45,11 +45,11 @@ bool AlgorithmInitializer::initializeProcesses()
 bool AlgorithmInitializer::initializeWidgets()
 {
     bool ret (true);
-    ParametersWidgetFactory * factory = ParametersWidgetFactory::instance();
+    medToolBoxFactory * factory = medToolBoxFactory::instance();
 
-    ret &= factory->registerWidget(AlgorithmConnectedThresholdParametersWidget::s_description(),
-        AlgorithmConnectedThresholdParametersWidget::s_localizedName(),
-        AlgorithmConnectedThresholdParametersWidget::createAlgorithmParametersWidget);
+    ret &= factory->registerCustomSegmentationToolBox(
+        AlgorithmConnectedThresholdToolbox::s_description(),
+        AlgorithmConnectedThresholdToolbox::createInstance);
 
     return ret;
 }

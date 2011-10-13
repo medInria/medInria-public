@@ -3,8 +3,6 @@
 #include <itkEventObject.h>
 #include <itkProcessObject.h>
 
-#include "msegController.h"
-
 namespace itk
 {
     void MsegProgressObserverCommand::Execute (Object *caller, const EventObject &event)

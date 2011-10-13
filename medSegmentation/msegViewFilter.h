@@ -10,22 +10,19 @@
 #include "msegPluginExport.h"
 
 //Forward declarations
-namespace mseg {
-    class Controller;
-}
-
 class medAbstractView;
 class medAbstractViewScene;
+class medToolBoxSegmentation;
 
 namespace mseg {
 
-class MEDVIEWSEGMENTATIONPLUGIN_EXPORT View : public dtkAbstractView
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT ViewFilter : public dtkAbstractView
 {
     Q_OBJECT
 
 public:
-             View( Controller * controller);
-    virtual ~View(void);
+             ViewFilter( medToolBoxSegmentation * controllerToolbox);
+    virtual ~ViewFilter(void);
 
     virtual QString description(void) const;
 
@@ -48,7 +45,7 @@ protected:
 private:
     static QString s_description();
 
-    Controller * m_segmentationController;
+    medToolBoxSegmentation * m_segmentationController;
     QSet<medAbstractView *> m_views;
 
 };

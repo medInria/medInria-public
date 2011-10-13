@@ -1,8 +1,5 @@
 #include "msegAlgorithmConnectedThreshold.h"
 
-#include "msegAlgorithmConnectedThresholdParametersWidget.h"
-#include "msegController.h"
-
 #include "itkMsegProgressObserverCommand.h"
 
 #include <itkConnectedThresholdImageFilter.h>

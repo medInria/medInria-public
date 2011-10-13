@@ -1,7 +1,6 @@
 #include "msegAlgorithmGeneric.h"
 
 // Temporary fudge:
-#include "msegAlgorithmConnectedThresholdParametersWidget.h"
 
 #include <medMetaDataKeys.h>
 

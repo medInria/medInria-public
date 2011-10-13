@@ -1,14 +1,16 @@
-#include "msegAlgorithmConnectedThresholdParametersWidget.h"
-#include "msegController.h"
-#include "msegView.h"
+#include "msegAlgorithmConnectedThresholdToolbox.h"
+
+#include "msegViewFilter.h"
 #include "msegAlgorithmConnectedThreshold.h"
 #include "msegSeedPointAnnotationData.h"
 
 #include <medAbstractViewScene.h>
 
-#include <medCore/medAbstractView.h>
-#include <medCore/medAbstractData.h>
-#include <medCore/medDataIndex.h>
+#include <medAbstractView.h>
+#include <medAbstractData.h>
+#include <medDataIndex.h>
+#include <medToolBoxSegmentation.h>
+#include <medMetaDataKeys.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -24,17 +26,13 @@
 
 namespace mseg {
 
-    static const QString MED_METADATA_PATIENT_NAME = "PatientName";
-    static const QString MED_METADATA_STUDY_DESCRIPTION = "StudyDescription";
-    static const QString MED_METADATA_SERIES_DESCRIPTION = "SeriesDescription";
-
     static const QString SEED_POINT_ANNOTATION_DATA_NAME = SeedPointAnnotationData::s_description();
 
-class SingleClickEventFilter : public View 
+class SingleClickEventFilter : public ViewFilter 
 {
 public:
-    SingleClickEventFilter( Controller * controller, AlgorithmConnectedThresholdParametersWidget *cb ) : 
-        View(controller), 
+    SingleClickEventFilter(medToolBoxSegmentation * controller, AlgorithmConnectedThresholdToolbox *cb ) : 
+        ViewFilter(controller), 
         m_cb(cb) 
         {}
 
@@ -52,7 +50,7 @@ public:
 
             QVector3D posImage = vscene->sceneToWorld( mouseEvent->scenePos() );
             //Project vector onto plane
-            dtkAbstractData * viewData = Controller::viewData( view );
+            dtkAbstractData * viewData = medToolBoxSegmentation::viewData( view );
             m_cb->onViewMousePress( view, posImage );
 
             this->removeFromAllViews();
@@ -60,16 +58,21 @@ public:
         return mouseEvent->isAccepted();
     }
 private :
-    AlgorithmConnectedThresholdParametersWidget *m_cb;
+    AlgorithmConnectedThresholdToolbox *m_cb;
 
 };
 
-AlgorithmConnectedThresholdParametersWidget::AlgorithmConnectedThresholdParametersWidget( Controller *controller, QWidget *parent ) :
-    AlgorithmParametersWidget( controller, parent),
+AlgorithmConnectedThresholdToolbox::AlgorithmConnectedThresholdToolbox(QWidget *parent ) :
+    medToolBoxSegmentationCustom( parent),
     m_viewState(ViewState_None),
     m_noDataText( tr("[No input data]") )
 {
-    QVBoxLayout * layout = new QVBoxLayout(this);
+    QWidget *displayWidget = new QWidget(this);
+    this->addWidget(displayWidget);
+
+    this->setTitle(this->s_localizedName(this));
+
+    QVBoxLayout * layout = new QVBoxLayout(displayWidget);
 
     QHBoxLayout * highLowLayout = new QHBoxLayout();
 
@@ -84,14 +87,14 @@ AlgorithmConnectedThresholdParametersWidget::AlgorithmConnectedThresholdParamete
     highLowLayout->addWidget( m_highThresh );
 
     layout->addLayout( highLowLayout );
-    m_seedPointTable = new QTableWidget(this);
+    m_seedPointTable = new QTableWidget(displayWidget);
     layout->addWidget(m_seedPointTable);
 
     m_seedPointTable->setColumnCount(2);
     m_seedPointTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_seedPointTable->setHorizontalHeaderLabels( QStringList() << tr("Index") << tr("Location") );
-    m_addSeedPointButton = new QPushButton( tr("Add") , this);
-    m_removeSeedPointButton = new QPushButton( tr("Remove") , this);
+    m_addSeedPointButton = new QPushButton( tr("Add") , displayWidget);
+    m_removeSeedPointButton = new QPushButton( tr("Remove") , displayWidget);
 
     QHBoxLayout * addRemoveButtonLayout = new QHBoxLayout();
     addRemoveButtonLayout->addWidget( m_addSeedPointButton );
@@ -108,7 +111,7 @@ AlgorithmConnectedThresholdParametersWidget::AlgorithmConnectedThresholdParamete
     }
     layout->addWidget( m_dataText );
 
-    m_applyButton = new QPushButton( tr("Apply") , this);
+    m_applyButton = new QPushButton( tr("Apply") , displayWidget);
     layout->addWidget( m_applyButton );
 
     connect (m_addSeedPointButton,     SIGNAL(pressed()),
@@ -121,22 +124,22 @@ AlgorithmConnectedThresholdParametersWidget::AlgorithmConnectedThresholdParamete
         this, SLOT(onSeedPointTableSelectionChanged()));
 }
 
-AlgorithmConnectedThresholdParametersWidget::~AlgorithmConnectedThresholdParametersWidget()
+AlgorithmConnectedThresholdToolbox::~AlgorithmConnectedThresholdToolbox()
 {
     foreach( const SeedPoint & seed, m_seedPoints ) {
         seed.annotationData->parentData()->removeAttachedData(seed.annotationData);
     }
 }
 
-void AlgorithmConnectedThresholdParametersWidget::onAddSeedPointPressed()
+void AlgorithmConnectedThresholdToolbox::onAddSeedPointPressed()
 {
-    m_viewFilter.takePointer( new SingleClickEventFilter(controller(), this ) );
+    m_viewFilter.takePointer( new SingleClickEventFilter(this->segmentationToolBox(), this ) );
 
     m_viewState = ViewState_PickingSeedPoint;
-    controller()->addViewEventFilter( m_viewFilter );
+    this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
 }
 
-void AlgorithmConnectedThresholdParametersWidget::onRemoveSeedPointPressed()
+void AlgorithmConnectedThresholdToolbox::onRemoveSeedPointPressed()
 {
     if ( m_seedPoints.isEmpty() ) 
         return;
@@ -160,7 +163,7 @@ void AlgorithmConnectedThresholdParametersWidget::onRemoveSeedPointPressed()
     }
 }
 
-void AlgorithmConnectedThresholdParametersWidget::onApplyButtonPressed()
+void AlgorithmConnectedThresholdToolbox::onApplyButtonPressed()
 {
     dtkAbstractProcessFactory *factory = dtkAbstractProcessFactory::instance();
 
@@ -175,10 +178,10 @@ void AlgorithmConnectedThresholdParametersWidget::onApplyButtonPressed()
         alg->addSeedPoint( seed.annotationData->centerWorld() );
     }
 
-    controller()->run( alg );
+    this->segmentationToolBox()->run( alg );
 
 }
-void AlgorithmConnectedThresholdParametersWidget::setData( dtkAbstractData *dtkdata )
+void AlgorithmConnectedThresholdToolbox::setData( dtkAbstractData *dtkdata )
 {   
     m_data = dtkSmartPointer<dtkAbstractData>(dtkdata);
 
@@ -188,14 +191,14 @@ void AlgorithmConnectedThresholdParametersWidget::setData( dtkAbstractData *dtkd
         QString studyName;
         QString seriesName;
 
-        if ( m_data->hasMetaData( MED_METADATA_PATIENT_NAME ) ){
-            patientName = dtkdata->metaDataValues(MED_METADATA_PATIENT_NAME)[0];
+        if ( m_data->hasMetaData( medMetaDataKeys::PatientName.key() ) ){
+            patientName = dtkdata->metaDataValues(medMetaDataKeys::PatientName.key())[0];
         }
-        if ( m_data->hasMetaData( MED_METADATA_STUDY_DESCRIPTION ) ){
-            studyName = dtkdata->metaDataValues(MED_METADATA_STUDY_DESCRIPTION)[0];
+        if ( m_data->hasMetaData( medMetaDataKeys::StudyDescription.key() ) ){
+            studyName = dtkdata->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
         }
-        if ( m_data->hasMetaData( MED_METADATA_SERIES_DESCRIPTION ) ){
-            seriesName = dtkdata->metaDataValues(MED_METADATA_SERIES_DESCRIPTION)[0];
+        if ( m_data->hasMetaData( medMetaDataKeys::SeriesDescription.key() ) ){
+            seriesName = dtkdata->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
         }
 
         dataText = patientName + '/' + studyName + '/' +seriesName;
@@ -206,10 +209,10 @@ void AlgorithmConnectedThresholdParametersWidget::setData( dtkAbstractData *dtkd
     m_dataText->setText( dataText );
 }
 
-void AlgorithmConnectedThresholdParametersWidget::addSeedPoint( medAbstractView *view, const QVector3D &vec )
+void AlgorithmConnectedThresholdToolbox::addSeedPoint( medAbstractView *view, const QVector3D &vec )
 {
     if (m_seedPoints.size() == 0 ) {
-        setData( Controller::viewData(view) );
+        setData( medToolBoxSegmentation::viewData(view) );
     }
     SeedPoint newSeed;
     newSeed.annotationData =
@@ -237,31 +240,30 @@ void AlgorithmConnectedThresholdParametersWidget::addSeedPoint( medAbstractView 
     this->m_data->addAttachedData(newSeed.annotationData);
 }
 
-void AlgorithmConnectedThresholdParametersWidget::onViewMousePress( medAbstractView *view, const QVector3D &vec )
+void AlgorithmConnectedThresholdToolbox::onViewMousePress( medAbstractView *view, const QVector3D &vec )
 {
     if ( ViewState_PickingSeedPoint == m_viewState ) {
 
         this->addSeedPoint( view, vec );
-        controller()->removeViewEventFilter( m_viewFilter );
+        this->segmentationToolBox()->removeViewEventFilter( m_viewFilter );
         m_viewState = ViewState_None;
     }
 }
 
 //static 
-AlgorithmParametersWidget * 
-    AlgorithmConnectedThresholdParametersWidget::createAlgorithmParametersWidget( 
-        Controller *controller, QWidget *parent )
+medToolBoxSegmentationCustom * 
+    AlgorithmConnectedThresholdToolbox::createInstance(QWidget *parent )
 {
-    return new AlgorithmConnectedThresholdParametersWidget( controller, parent );
+    return new AlgorithmConnectedThresholdToolbox( parent );
 }
 
-QString AlgorithmConnectedThresholdParametersWidget::s_description()
+QString AlgorithmConnectedThresholdToolbox::s_description()
 {
-    static const QString desc = "mseg::AlgorithmConnectedThresholdParametersWidget";
+    static const QString desc = "mseg::AlgorithmConnectedThresholdToolbox";
     return desc;
 }
 
-QString AlgorithmConnectedThresholdParametersWidget::s_localizedName(const QObject * trObj)
+QString AlgorithmConnectedThresholdToolbox::s_localizedName(const QObject * trObj)
 {
     if (!trObj) 
         trObj = qApp;
@@ -269,7 +271,7 @@ QString AlgorithmConnectedThresholdParametersWidget::s_localizedName(const QObje
     return trObj->tr( "Connected Threshold" );
 }
 
-void AlgorithmConnectedThresholdParametersWidget::onSeedPointTableSelectionChanged()
+void AlgorithmConnectedThresholdToolbox::onSeedPointTableSelectionChanged()
 {
     QList<QTableWidgetItem *> selection = m_seedPointTable->selectedItems();
     typedef QSet<int> IntVector;

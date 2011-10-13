@@ -1,12 +1,12 @@
-#ifndef MSEGALGORITHMCONNECTEDTHRESHOLDPARAMETERSWIDGET_H
-#define MSEGALGORITHMCONNECTEDTHRESHOLDPARAMETERSWIDGET_H
+#ifndef MSEGALGORITHMCONNECTEDTHRESHOLDTOOLBOX_H
+#define MSEGALGORITHMCONNECTEDTHRESHOLDTOOLBOX_H
 
+#include "medToolBoxSegmentationCustom.h"
 
 #include "msegPluginExport.h"
 
-#include "msegAlgorithmParametersWidget.h"
 #include "msegAlgorithmGeneric.h"
-#include "msegView.h"
+#include "msegViewFilter.h"
 
 #include <dtkCore/dtkAbstractData.h>
 
@@ -24,14 +24,14 @@ namespace mseg {
     class SeedPointAnnotationData;
 
 
-class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmConnectedThresholdParametersWidget : public AlgorithmParametersWidget
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmConnectedThresholdToolbox : public medToolBoxSegmentationCustom
 {
     Q_OBJECT;
 public:
-    AlgorithmConnectedThresholdParametersWidget( Controller *controller, QWidget *parent );
-    ~AlgorithmConnectedThresholdParametersWidget();
+    AlgorithmConnectedThresholdToolbox( QWidget *parent );
+    ~AlgorithmConnectedThresholdToolbox();
 
-    static AlgorithmParametersWidget * createAlgorithmParametersWidget( Controller *controller, QWidget *parent );
+    static medToolBoxSegmentationCustom * createInstance( QWidget *parent );
 
     /** Get name to use for this when registering with a factory.*/
     static QString s_description();
@@ -66,7 +66,7 @@ private:
     QTextEdit *m_dataText;
 
     QVector< SeedPoint > m_seedPoints;
-    dtkSmartPointer< View > m_viewFilter;
+    dtkSmartPointer< ViewFilter > m_viewFilter;
 
     enum ViewState { ViewState_None, ViewState_PickingSeedPoint };
     ViewState m_viewState;
@@ -78,4 +78,4 @@ private:
 
 } // namespace mseg
 
-#endif // MSEGALGORITHMCONNECTEDTHRESHOLDPARAMETERSWIDGET_H
+#endif // MSEGALGORITHMCONNECTEDTHRESHOLDTOOLBOX_H
