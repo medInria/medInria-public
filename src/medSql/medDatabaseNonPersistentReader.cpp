@@ -285,7 +285,7 @@ void medDatabaseNonPersistentReader::run ( void )
                         if ( !imData->hasMetaData ( medMetaDataKeys::Columns.key() ) )
                             imData->addMetaData ( medMetaDataKeys::Columns.key(), QStringList() << "" );
 
-                        imData->addMetaData ( "FileName", it.key() );
+//                         imData->addMetaData ( "FileName", it.key() );
 
                         break;
                     }
