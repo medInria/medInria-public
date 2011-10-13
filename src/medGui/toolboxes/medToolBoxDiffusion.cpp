@@ -73,7 +73,7 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     int i=1;
     foreach(QString toolbox, tbFactory->diffusionToolBoxes())
     {
-        QPair<const QString&, const QString&> pair = tbFactory->diffusionToolBoxDetailsFromId(toolbox);
+        QPair<QString, QString> pair = tbFactory->diffusionToolBoxDetailsFromId(toolbox);
         QString name = pair.first;
         QString descr = pair.second;
         d->tractographyMethodCombo->addItem(name, toolbox);
