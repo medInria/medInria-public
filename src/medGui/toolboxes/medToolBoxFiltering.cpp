@@ -102,7 +102,7 @@ void medToolBoxFiltering::onToolBoxChosen ( int index )
 
     if ( !toolbox )
     {
-        qDebug() << "Unable to instanciate" << id << "toolbox";
+        qWarning() << "Unable to instantiate" << id << "toolbox";
         return;
     }
 
