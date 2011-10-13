@@ -93,8 +93,8 @@ void medTabbedViewContainers::deleteContainerClicked(int index)
 {
     if (this->count() == 1)
     {
-        QString name = this->current()->description();
-        
+        QString name = this->current()->identifier();
+
         medViewContainer *newTab = NULL;
         if (name == "Single")
             newTab = new medViewContainerSingle();
@@ -102,7 +102,7 @@ void medTabbedViewContainers::deleteContainerClicked(int index)
             newTab = new medViewContainerCustom();
         else if (name == "Multi")
             newTab = new medViewContainerMulti();
-        
+
         if (newTab != NULL)
         {
             this->blockSignals(true);
@@ -111,7 +111,7 @@ void medTabbedViewContainers::deleteContainerClicked(int index)
             this->insertContainer(index,tabName,newTab);
             this->setCurrentIndex(index);
             this->blockSignals(false);
-            
+
             this->onCurrentContainerChanged(index);
         }
     }
