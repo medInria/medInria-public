@@ -35,12 +35,14 @@ class medDatabaseWriterPrivate
 {
 public:
     dtkAbstractData *data;
+    QString callerUuid;
     bool isCancelled;
 };
 
-medDatabaseWriter::medDatabaseWriter(dtkAbstractData *data) : medJobItem(), d(new medDatabaseWriterPrivate)
+medDatabaseWriter::medDatabaseWriter(dtkAbstractData *data, const QString &callerUuid) : medJobItem(), d(new medDatabaseWriterPrivate)
 {
     d->data = data;
+    d->callerUuid = callerUuid;
     d->isCancelled = false;
 }
 
@@ -242,10 +244,10 @@ void medDatabaseWriter::run(void)
     QString s_studyName   = dbi->stringForPath( studyName );
     QString s_seriesName  = dbi->stringForPath( seriesName );
 
-    QString subDirName = "/" +
-        s_patientName + "/" +
-        s_studyName;
-    QString imageFileNameBase =  subDirName + "/" +
+    QString subDirName = QDir::separator() +
+        s_patientName + QDir::separator() +
+        s_studyName + QDir::separator() ;
+    QString imageFileNameBase =  subDirName +
                             s_seriesName; //  + ".mha";
 
     QDir dir( medStorage::dataLocation() + subDirName );
@@ -305,14 +307,13 @@ void medDatabaseWriter::run(void)
     QStringList filePaths  = d->data->metaDataValues(medMetaDataKeys::FilePaths.key());
     QString     seriesPath = d->data->metaDataValues("FileName")[0];
 
-
     // generate and save the thumbnails
     QList<QImage> &thumbnails = d->data->thumbnails();
 
     QFileInfo   seriesInfo (seriesPath);
-    QString     thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.completeBaseName() + "/";
+    QString     thumb_dir = seriesInfo.dir().path() + QDir::separator() + seriesInfo.completeBaseName() + QDir::separator();
     QStringList thumbPaths;
-
+    
     if (thumbnails.count())
         if (!medStorage::mkpath (medStorage::dataLocation() + thumb_dir))
         qDebug() << "Cannot create directory: " << thumb_dir;
@@ -357,10 +358,10 @@ void medDatabaseWriter::run(void)
 
     ////////////////////////////////////////////////////////////////// STUDY
 
-    query.prepare("SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :studyID");
-    query.bindValue(":id",      id);
-    query.bindValue(":name",    studyName);
-    query.bindValue(":studyID", studyId);
+    query.prepare("SELECT id FROM study WHERE patient = :patientId AND name = :studyName AND uid = :studyUid");
+    query.bindValue(":patientId",      id);
+    query.bindValue(":studyName",    studyName);
+    query.bindValue(":studyUid", studyId);
     if(!query.exec())
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
@@ -369,10 +370,10 @@ void medDatabaseWriter::run(void)
         index.setStudyId (id.toInt());
     }
     else {
-        query.prepare("INSERT INTO study (patient, name, uid, thumbnail) VALUES (:patient, :study, :studyID, :thumbnail)");
-    query.bindValue(":patient",   id);
-    query.bindValue(":study",     studyName);
-        query.bindValue(":studyID",   studyId);
+        query.prepare("INSERT INTO study (patient, name, uid, thumbnail) VALUES (:patientId, :studyName, :studyUid, :thumbnail)");
+    query.bindValue(":patientId",   id);
+    query.bindValue(":studyName",     studyName);
+        query.bindValue(":studyUid",   studyId);
         query.bindValue(":thumbnail", thumbPath );
     query.exec();
     id = query.lastInsertId();
@@ -381,10 +382,10 @@ void medDatabaseWriter::run(void)
 
     ///////////////////////////////////////////////////////////////// SERIES
 
-    query.prepare("SELECT * FROM series WHERE study = :id AND name = :name AND uid = :seriesID AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
-    query.bindValue(":id",             id);
-    query.bindValue(":name",           seriesName);
-    query.bindValue(":seriesID",       seriesId);
+    query.prepare("SELECT * FROM series WHERE study = :studyId AND name = :seriesName AND uid = :seriesUid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns");
+    query.bindValue(":studyId",             id);
+    query.bindValue(":seriesName",           seriesName);
+    query.bindValue(":seriesUid",       seriesId);
     query.bindValue(":orientation",    orientation);
     query.bindValue(":seriesNumber",   seriesNumber);
     query.bindValue(":sequenceName",   sequenceName);
@@ -400,12 +401,12 @@ void medDatabaseWriter::run(void)
         index.setSeriesId (id.toInt());
     }
     else {
-        query.prepare("INSERT INTO series (study, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age, description, modality, protocol, comments, status, acquisitiondate, importationdate, referee, performer, institution, report) VALUES (:study, :size, :name, :path, :seriesID, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :thumbnail, :age, :description, :modality, :protocol, :comments, :status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report)");
+        query.prepare("INSERT INTO series (study, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age, description, modality, protocol, comments, status, acquisitiondate, importationdate, referee, performer, institution, report) VALUES (:study, :size, :seriesName, :seriesPath, :seriesUid, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :refThumbPath, :age, :description, :modality, :protocol, :comments, :status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report)");
         query.bindValue(":study",          id);
         query.bindValue(":size",           size);
-        query.bindValue(":name",           seriesName);
-        query.bindValue(":path",           seriesPath);
-        query.bindValue(":seriesID",       seriesId);
+        query.bindValue(":seriesName",           seriesName);
+        query.bindValue(":seriesPath",           seriesPath);
+        query.bindValue(":seriesUid",       seriesId);
         query.bindValue(":orientation",    orientation);
         query.bindValue(":seriesNumber",   seriesNumber);
         query.bindValue(":sequenceName",   sequenceName);
@@ -440,8 +441,8 @@ void medDatabaseWriter::run(void)
         QFileInfo fileInfo( filePaths[0] );
         for (int j=0; j<thumbPaths.count(); j++)
         {
-            query.prepare("SELECT id FROM image WHERE series = :id AND name = :name");
-        query.bindValue(":id", id);
+            query.prepare("SELECT id FROM image WHERE series = :seriesId AND name = :name");
+        query.bindValue(":seriesId", id);
         query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));
 
         if(!query.exec())
@@ -451,13 +452,14 @@ void medDatabaseWriter::run(void)
             ; //qDebug() << "Image" << file << "already in database";
         }
         else {
-        query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
+            query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail, isIndexed) VALUES (:series, :name, :path, :instance_path, :thumbnail, :isIndexed)");
         query.bindValue(":series", id);
         query.bindValue(":name", fileInfo.fileName()+QString().setNum (j));
         query.bindValue(":path", fileInfo.filePath());
         query.bindValue(":instance_path", seriesPath);
         query.bindValue(":thumbnail", thumbPaths[j]);
-
+            query.bindValue(":isIndexed", false);
+            
         if(!query.exec())
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
         }
@@ -478,7 +480,7 @@ void medDatabaseWriter::run(void)
             ; //qDebug() << "Image" << file << "already in database";
         }
         else {
-            query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail) VALUES (:series, :name, :path, :instance_path, :thumbnail)");
+            query.prepare("INSERT INTO image (series, name, path, instance_path, thumbnail, isIndexed) VALUES (:series, :name, :path, :instance_path, :thumbnail, :isIndexed)");
         query.bindValue(":series", id);
         query.bindValue(":name", fileInfo.fileName());
         query.bindValue(":path", fileInfo.filePath());
@@ -487,7 +489,9 @@ void medDatabaseWriter::run(void)
             query.bindValue(":thumbnail", thumbPaths[j]);
         else
             query.bindValue(":thumbnail", "");
-
+            
+            query.bindValue(":isIndexed", false);
+            
         if(!query.exec())
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
         }
@@ -496,7 +500,11 @@ void medDatabaseWriter::run(void)
 
     emit progress(this, 100);
     emit success(this);
-    emit addedIndex(index);
+    
+    if (d->callerUuid == "")
+        emit addedIndex(index);
+    else
+        emit addedIndex(index,d->callerUuid);
 }
 
 void medDatabaseWriter::onCancel( QObject* )
