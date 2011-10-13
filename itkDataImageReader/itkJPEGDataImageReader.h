@@ -16,7 +16,7 @@ public:
 
     static QStringList s_handled();
 
-    static bool registered();	
+    static bool registered();
 
 private:
 
