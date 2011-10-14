@@ -90,6 +90,8 @@ public slots:
 protected:
     void closeEvent(QCloseEvent *event);
 
+    void mousePressEvent(QMouseEvent * event);
+
     /**
      * all initial registering should be done here
      */
