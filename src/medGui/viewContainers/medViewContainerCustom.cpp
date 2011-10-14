@@ -226,9 +226,11 @@ void medViewContainerCustom::setView ( dtkAbstractView *view )
 
 dtkAbstractView *medViewContainerCustom::view ( void ) const
 {
-    if ( !isLeaf() && current() != NULL )
+    const medViewContainerCustom* currentContainer =
+            qobject_cast<const medViewContainerCustom*> ( current() );
+    if ( !isLeaf() && currentContainer != NULL )
     {
-        return current()->view();
+        return currentContainer->view();
     }
     return d->view;
 }

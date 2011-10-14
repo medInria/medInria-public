@@ -43,12 +43,15 @@ bool medQtDataImageReader::registered(void)
         createMedQtDataImageReader);
 }
 
-QString medQtDataImageReader::description( void ) const
-{
+QString medQtDataImageReader::identifier() const {
     return s_description();
 }
 
-QStringList medQtDataImageReader::handled( void ) const
+QString medQtDataImageReader::description() const {
+    return s_description();
+}
+
+QStringList medQtDataImageReader::handled() const
 {
     return s_handled();
 }
@@ -145,7 +148,7 @@ int medQtDataImageReader::readStartingFrom( const QString& path, int iStart )
         return 0;
 
 
-    this->setData( dtkAbstractDataFactory::instance()->createSmartPointer(medQtDataImage::s_description()) );
+    this->setData( dtkAbstractDataFactory::instance()->createSmartPointer(medQtDataImage::s_identifier()) );
 
     this->setMetaDataFromImageReader();
 
@@ -186,7 +189,7 @@ QString medQtDataImageReader::s_description()
 
 QStringList medQtDataImageReader::s_handled()
 {
-    const QStringList handled = QStringList() << medQtDataImage::s_description();
+    const QStringList handled = QStringList() << medQtDataImage::s_identifier();
     return handled;
 }
 

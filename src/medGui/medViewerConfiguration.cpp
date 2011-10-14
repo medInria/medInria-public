@@ -106,7 +106,7 @@ void medViewerConfiguration::onContainerChanged(const QString &name)
     if (!d->viewContainerStack->container(name))
         return;
 
-    QString containerType = d->viewContainerStack->container(name)->description();
+    QString containerType = d->viewContainerStack->container(name)->identifier();
     emit setLayoutTab(containerType);
 }
 
@@ -233,7 +233,7 @@ void medViewerConfiguration::clearToolBoxes()
 
 void medViewerConfiguration::onAddTabClicked()
 {
-    QString name = this->description();
+    QString name = this->identifier();
     QString realName = name;
 
     unsigned int suppTag = 0;

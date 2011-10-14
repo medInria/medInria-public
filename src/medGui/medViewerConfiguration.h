@@ -62,12 +62,13 @@ public:
     
     /**
      * @brief Identifies a configuration in the factory.
-     * @todo split this description with a human readable one.
      *
      * @param void
      * @return QString
     */
-    virtual QString description(void) const = 0;
+    virtual QString identifier() const = 0;
+
+    virtual QString description() const = 0;
     
     /**
      * @brief Describes the layout of the workspace. 

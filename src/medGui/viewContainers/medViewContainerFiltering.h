@@ -53,6 +53,7 @@ public slots:
      */
     void updateOutput(dtkAbstractData *data);
 
+    void dropEvent ( QDropEvent *event );
 private:
     medViewContainerFilteringPrivate *d3;
 };

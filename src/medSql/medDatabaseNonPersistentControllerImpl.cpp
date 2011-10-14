@@ -96,6 +96,7 @@ void medDatabaseNonPersistentControllerImpl::insert(medDataIndex index, medDatab
 
 void medDatabaseNonPersistentControllerImpl::import(const QString& file,QString importUuid)
 {
+    qDebug() << "DEBUG : entering medDatabaseNonPersistentControllerImpl::import(const QString& file,const QString& importUuid)";
     medDatabaseNonPersistentReader *reader =
             new medDatabaseNonPersistentReader(file,importUuid);
 
@@ -162,6 +163,8 @@ bool medDatabaseNonPersistentControllerImpl::isConnected() const
 void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
                                                     QString callerUuid)
 {
+    qDebug() << "DEBUG : entering medDatabaseNonPersistentControllerImpl::import";
+
     medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data,callerUuid);
 
     connect(importer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
@@ -199,6 +202,8 @@ void medDatabaseNonPersistentControllerImpl::remove(const medDataIndex &index)
     for (DataHashMapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it ) {
         if (medDataIndex::isMatch( it.key(), index)) {
             indexesToRemove.push_back(it.key());
+            qDebug() << "DEBUG : indexesToRemove.size() = " << indexesToRemove.size();
+            qDebug() << "it.key() = " << it.key();
         }
     }
 
@@ -208,6 +213,8 @@ void medDatabaseNonPersistentControllerImpl::remove(const medDataIndex &index)
         delete itemIt.value();
         d->items.erase(itemIt);
     }
+
+    emit medAbstractDbController::updated(index);
 }
 
 qint64 medDatabaseNonPersistentControllerImpl::getEstimatedSize( const medDataIndex& index ) const

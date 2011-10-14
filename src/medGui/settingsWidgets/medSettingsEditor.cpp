@@ -51,12 +51,14 @@ void medSettingsEditor::onSaveClicked()
 {
     if (this->save())
     {
+//       this->close();
         emit finished();
     }
 }
 
 void medSettingsEditor::onCancelClicked()
 {
+//   this->close();
     emit finished();
 }
 
@@ -95,7 +97,9 @@ void medSettingsEditor::initialize()
 
     QVBoxLayout * vLayout = new QVBoxLayout();
     d->stack = new QStackedWidget();
+    d->stack->setFocusPolicy(Qt::NoFocus);
     d->tabWidget = new QTabWidget ();
+    d->tabWidget->setFocusPolicy(Qt::NoFocus);
     d->tabWidget->setTabPosition(QTabWidget::West);
     d->tabWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
@@ -176,6 +180,7 @@ void medSettingsEditor::queryWidgets()
         {
             setWid = settingsFactory->createSettingsWidget(widgetStyle,d->tabWidget);
             scroll = new QScrollArea(this);
+            scroll->setFocusPolicy(Qt::NoFocus);
             // we need to call this otherwise the scroll-
             // area limits the widgets to their minimum sizes
             scroll->setWidgetResizable(true); 

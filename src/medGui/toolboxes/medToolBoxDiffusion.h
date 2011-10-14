@@ -37,13 +37,13 @@ public:
     ~medToolBoxDiffusion(void);
 
     dtkAbstractData *output(void) const;
-    
+
 public slots:
     // void run (void);
     void clear(void);
 
-    void onToolBoxChosen(const QString&);
-    
+    void onToolBoxChosen(int id);
+
 private:
     medToolBoxDiffusionPrivate *d;
 

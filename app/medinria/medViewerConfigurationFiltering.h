@@ -29,9 +29,10 @@ public:
      * @param parent
      */
     medViewerConfigurationFiltering(QWidget *parent = 0);
-    ~medViewerConfigurationFiltering(void);
+    ~medViewerConfigurationFiltering();
 
-    virtual QString description(void) const;
+    virtual QString identifier()  const;
+    virtual QString description() const;
 
     /**
      * @brief sets up all the signal/slot connections when Viewer is switched to this configuration

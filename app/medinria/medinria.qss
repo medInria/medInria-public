@@ -695,30 +695,96 @@ medToolBoxTabBar::tab:selected, medToolBoxTabBar::tab:hover {
 medSettingsEditor {
   alternate-background-color: #505050;
 
-    border-image: url(:/pixmaps/treeview-frame.png) 16 16 16 16;
-    border-top-width: 16px;
-    border-left-width: 16px;
-    border-right-width: 16px;
-    border-bottom-width: 16px;
+  border-image: url(:/pixmaps/treeview-frame.png) 16 16 16 16;
+  border-top-width: 16px;
+  border-left-width: 16px;
+  border-right-width: 16px;
+  border-bottom-width: 16px;
 
-    padding-top: -7px;
-    padding-left: -4px;
-    padding-right: -5px;
+  padding-top: -7px;
+  padding-left: -4px;
+  padding-right: -5px;
+
+  color: #b2b8b2;
+
+  background: #313131;
+}
+
+dtkSettingsEditor QTreeWidget {
+    alternate-background-color: #505050;
+
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+
+    font-size: 10px;
 
     color: #b2b8b2;
 
     background: #313131;
 }
 
-medSettingsEditor QTabBar::tab:selected, QTabBar::tab:hover {
-   background:  qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #505050, stop: 1.0 #5c5c5c);
+dtkSettingsEditor QTreeWidget::branch:has-siblings:!adjoins-item {
+    image: none;
+}
+
+dtkSettingsEditor QTreeWidget::branch:has-siblings:adjoins-item {
+    image: none;
+}
+
+dtkSettingsEditor QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
+    image: none;
+}
+
+dtkSettingsEditor QTreeWidget::branch:has-children:!has-siblings:closed,
+dtkSettingsEditor QTreeWidget::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-closed.png);
+}
+
+dtkSettingsEditor QTreeWidget::branch:open:has-children:!has-siblings,
+QTreeWidget::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-open.png);
+}
+
+medSettingsEditor QTabWidget::pane {
+    background: none;
+    border: none;
+    border-image: none;
+}
+
+medSettingsEditor QTabWidget::tab-bar {
+    top: 1px;
+    left: 0px;
+}
+
+medSettingsEditor QTabBar::tab:selected, medSettingsEditor QTabBar::tab:hover {
+    color: #CCCCCC;
+    border: 1px solid #2c2c2e;
+    border-top: none;
+    border-left: none;
+    border-radius: 0;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);
+    min-height: 70px;
+    width: 30px;
 }
 
 medSettingsEditor QTabBar::tab {
-    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #505050, stop: 1.0 #494949);
-    color: #b2b8b2;
-    /*font-size: 10pt;
-    padding: 10px;*/
+    color: #CCCCCC;
+    border: 1px solid #2c2c2e;
+    border-top: none;
+    border-left: none;
+    border-radius: 0;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);
+    min-height: 70px;
+    width: 30px;
 }
 
 /**

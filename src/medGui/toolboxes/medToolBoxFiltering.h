@@ -54,7 +54,7 @@ public slots:
     /**
      * @brief instantiates the right process toolbox according to its description
      */
-    void onToolBoxChosen(const QString&);
+    void onToolBoxChosen(int index);
     /**
      * @brief clear input data and the current process toolbox
      */
