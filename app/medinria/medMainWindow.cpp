@@ -288,6 +288,12 @@ medMainWindow::~medMainWindow ( void )
     d = NULL;
 }
 
+void medMainWindow::mousePressEvent ( QMouseEvent* event )
+{
+    QWidget::mousePressEvent ( event );
+    this->onHideQuickAccess();
+}
+
 void medMainWindow::readSettings ( void )
 {
     // if the user configured a default area we need to show it
