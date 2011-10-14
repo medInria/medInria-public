@@ -53,7 +53,7 @@ medToolBoxFiltering::medToolBoxFiltering ( QWidget *parent ) : medToolBox ( pare
     int i = 1; //account for the choose Filter item
     foreach ( QString toolbox, tbFactory->filteringToolBoxes() )
     {
-        QPair<const QString&, const QString&> pair =
+        QPair<QString, QString> pair =
                 tbFactory->filteringToolBoxDetailsFromId( toolbox );
         QString name = pair.first;
         QString description = pair.second;

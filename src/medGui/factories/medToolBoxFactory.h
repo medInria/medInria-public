@@ -69,13 +69,13 @@ public:
     QList<QString> filteringToolBoxes(void);
     QList<QString> compositeDataSetImporterToolBoxes(void);
 
-    QPair<const QString&, const QString&> diffusionToolBoxDetailsFromId (
+    QPair<QString, QString> diffusionToolBoxDetailsFromId (
             const QString& id );
-    QPair<const QString&, const QString&> registrationToolBoxDetailsFromId (
+    QPair<QString, QString> registrationToolBoxDetailsFromId (
             const QString& id );
-    QPair<const QString&, const QString&> filteringToolBoxDetailsFromId (
+    QPair<QString, QString> filteringToolBoxDetailsFromId (
             const QString& id );
-    QPair<const QString&, const QString&> compositeToolBoxDetailsFromId (
+    QPair<QString, QString> compositeToolBoxDetailsFromId (
             const QString& id );
 
 public slots:
