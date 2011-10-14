@@ -85,7 +85,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     int i=1;
     foreach(QString toolbox, tbFactory->registrationToolBoxes())
     {
-        QPair<const QString&, const QString&> pair =
+        QPair<QString, QString> pair =
                 tbFactory->registrationToolBoxDetailsFromId(toolbox);
         QString name = pair.first;
         QString description = pair.second;
