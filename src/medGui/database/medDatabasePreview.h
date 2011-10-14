@@ -46,7 +46,8 @@ signals:
 
 public slots:
     void onPatientClicked(const medDataIndex& id);
-    void  onSeriesClicked(const medDataIndex& id);
+    void onStudyClicked(const medDataIndex& id);
+    void onSeriesClicked(const medDataIndex& id);
 
 protected slots:
     void onSlideUp(void);

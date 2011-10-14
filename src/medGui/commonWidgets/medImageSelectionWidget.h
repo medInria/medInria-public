@@ -24,6 +24,8 @@ public slots:
 
 signals:
 
+private:
+
 protected:
 
 private:

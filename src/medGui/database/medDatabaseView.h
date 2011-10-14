@@ -42,6 +42,7 @@ public:
 
 signals:
     void patientClicked(const medDataIndex &index);
+    void studyClicked(const medDataIndex &index);
     void seriesClicked(const medDataIndex &index);
 
     void patientDoubleClicked(const medDataIndex &index);

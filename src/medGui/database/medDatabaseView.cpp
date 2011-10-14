@@ -181,6 +181,14 @@ void medDatabaseView::onItemClicked(const QModelIndex& index)
         this->setExpanded(index, true);
         emit seriesClicked(item->dataIndex ());
     }
+    else if (item->dataIndex().isValidForStudy())
+    {
+        this->collapseAll();
+        this->setExpanded(index.parent().parent(), true);
+        this->setExpanded(index.parent(), true);
+        this->setExpanded(index, true);
+        emit studyClicked(item->dataIndex ());
+    }
     else if (item->dataIndex().isValidForPatient())
     {
         this->collapseAll();
