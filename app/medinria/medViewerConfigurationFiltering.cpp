@@ -9,6 +9,7 @@
 
 #include <medDatabaseNonPersistentController.h>
 #include <medMetaDataKeys.h>
+#include <medStorage.h>
 
 #include <medViewerToolBoxViewProperties.h>
 #include <medToolBoxFiltering.h>
@@ -88,16 +89,28 @@ void medViewerConfigurationFiltering::onProcessSuccess()
 
     dtkAbstractData *inputData = d->filteringToolBox->data();
 
-    foreach(QString metaData, inputData->metaDataList())
-        d->filterOutput->addMetaData(metaData,inputData->metaDataValues(metaData));
+
+    if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
+      {
+        QString newSeriesDescription = inputData->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        newSeriesDescription += " filtered";
+        d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+      }
+    
+    foreach ( QString metaData, inputData->metaDataList() )
+      if (!d->filterOutput->hasMetaData(metaData))
+        d->filterOutput->addMetaData ( metaData, inputData->metaDataValues ( metaData ) );
 
     foreach(QString property, inputData->propertyList())
         d->filterOutput->addProperty(property,inputData->propertyValues(property));
 
-    QString newSeriesDescription = d->filterOutput->metadata(medMetaDataKeys::SeriesDescription.key());
-    newSeriesDescription += " filtered";
+//     QString newSeriesDescription = d->filterOutput->metadata ( medMetaDataKeys::SeriesDescription.key() );
+//     newSeriesDescription += " filtered";
 
-    d->filterOutput->setMetaData(medMetaDataKeys::SeriesDescription.key(), newSeriesDescription);
+//     d->filterOutput->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+
+    QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
+    d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
     //     d->filteringToolBox->setDataIndex(medDataManager::instance()->importNonPersistent(d->filterOutput));
 
