@@ -3,8 +3,8 @@
 
 #include <QtGui>
 
-#include <medAbstractViewScene.h>
 #include <medAnnotationGraphicsObject.h>
+#include <medAbstractViewCoordinates.h>
 
 #include "v3dViewPluginExport.h"
 
@@ -13,9 +13,9 @@ class vtkImageView2D;
 class v3dView;
 class v3dViewGraphicsScenePrivate;
 
-class v3dViewGraphicsScene : public medAbstractViewScene
+class v3dViewGraphicsScene : public QGraphicsScene, public medAbstractViewCoordinates
 {
-    typedef medAbstractViewScene BaseClass;
+    typedef QGraphicsScene BaseClass;
 
     Q_OBJECT;
 
@@ -76,21 +76,26 @@ public slots:
 
     void onOrientationChanged( const QString & name );
 
+    //! Access the view.
+    medAbstractView * view();
+
 protected:
     void showItems();
     void hideItems();
     void setItemsVisible( bool state );
 
+    //! Override base class : do not accept drag events by default.
+    void dragEnterEvent ( QGraphicsSceneDragDropEvent * event );
 
     // Implement medAbstractViewScene
-    virtual QPointF worldToScene( const QVector3D & worldVec ) const;
-    virtual QVector3D sceneToWorld( const QPointF & sceneVec ) const;
+    virtual QPointF worldToDisplay( const QVector3D & worldVec ) const;
+    virtual QVector3D displayToWorld( const QPointF & sceneVec ) const;
     virtual QVector3D viewPlaneNormal() const;
     virtual QVector3D viewUp() const;
-    virtual bool isScene2D() const;
+    virtual bool is2D() const;
     virtual QVector3D viewCenter() const;
     virtual qreal sliceThickness() const;
-
+    virtual qreal scale() const;
     void sendItemChanged( medAnnotationGraphicsObject::AnnotationGraphicsItemChange change, const QVariant & value = QVariant() );
 
 private:

@@ -48,7 +48,7 @@ bool AlgorithmInitializer::initializeWidgets()
     medToolBoxFactory * factory = medToolBoxFactory::instance();
 
     ret &= factory->registerCustomSegmentationToolBox(
-        AlgorithmConnectedThresholdToolbox::s_description(),
+        AlgorithmConnectedThresholdToolbox::s_identifier(),
         AlgorithmConnectedThresholdToolbox::createInstance);
 
     return ret;

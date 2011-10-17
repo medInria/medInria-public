@@ -1,16 +1,14 @@
 #include "msegAlgorithmConnectedThresholdToolbox.h"
 
-#include "msegViewFilter.h"
 #include "msegAlgorithmConnectedThreshold.h"
 #include "msegSeedPointAnnotationData.h"
-
-#include <medAbstractViewScene.h>
 
 #include <medAbstractView.h>
 #include <medAbstractData.h>
 #include <medDataIndex.h>
 #include <medToolBoxSegmentation.h>
 #include <medMetaDataKeys.h>
+#include <medAbstractViewCoordinates.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -28,27 +26,27 @@ namespace mseg {
 
     static const QString SEED_POINT_ANNOTATION_DATA_NAME = SeedPointAnnotationData::s_description();
 
-class SingleClickEventFilter : public ViewFilter 
+class SingleClickEventFilter : public medViewEventFilter 
 {
 public:
     SingleClickEventFilter(medToolBoxSegmentation * controller, AlgorithmConnectedThresholdToolbox *cb ) : 
-        ViewFilter(controller), 
+        medViewEventFilter(), 
         m_cb(cb) 
         {}
 
-    virtual bool mousePressEvent( medAbstractViewScene *vscene, QGraphicsSceneMouseEvent *mouseEvent ) MED_OVERRIDE
+    virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent ) MED_OVERRIDE
     {
 
-        Q_ASSERT( vscene );
+        Q_ASSERT( view );
 
-        medAbstractView * view = vscene->view();
+        medAbstractViewCoordinates * coords = view->coordinates();
 
         mouseEvent->accept();
 
-        if (vscene->isScene2D()) {
+        if (coords->is2D()) {
             // Convert mouse click to a 3D point in the image.
 
-            QVector3D posImage = vscene->sceneToWorld( mouseEvent->scenePos() );
+            QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
             //Project vector onto plane
             dtkAbstractData * viewData = medToolBoxSegmentation::viewData( view );
             m_cb->onViewMousePress( view, posImage );
@@ -133,7 +131,7 @@ AlgorithmConnectedThresholdToolbox::~AlgorithmConnectedThresholdToolbox()
 
 void AlgorithmConnectedThresholdToolbox::onAddSeedPointPressed()
 {
-    m_viewFilter.takePointer( new SingleClickEventFilter(this->segmentationToolBox(), this ) );
+    m_viewFilter = ( new SingleClickEventFilter(this->segmentationToolBox(), this ) );
 
     m_viewState = ViewState_PickingSeedPoint;
     this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
@@ -263,6 +261,12 @@ QString AlgorithmConnectedThresholdToolbox::s_description()
     return desc;
 }
 
+QString AlgorithmConnectedThresholdToolbox::s_identifier()
+{
+    static const QString id = "mseg::AlgorithmConnectedThresholdToolbox";
+    return id;
+}
+
 QString AlgorithmConnectedThresholdToolbox::s_localizedName(const QObject * trObj)
 {
     if (!trObj) 
@@ -289,6 +293,8 @@ void AlgorithmConnectedThresholdToolbox::onSeedPointTableSelectionChanged()
         }
     }
 }
+
+
 
 
 

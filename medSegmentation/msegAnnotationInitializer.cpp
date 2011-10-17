@@ -44,8 +44,9 @@ bool AnnotationInitializer::initializeAnnotations()
 {
     medAnnotationFactory * factory = medAnnotationFactory::instance();
 
-    bool ret = factory->registerAnnotation( SeedPointAnnotation::s_description(), 
-        SeedPointAnnotationData::s_description(), 
+    bool ret = factory->registerAnnotation( SeedPointAnnotation::s_identifier(), 
+        SeedPointAnnotationData::s_identifier(),
+        "v3dView",
         SeedPointAnnotation::s_create );
 
     return ret;
@@ -54,7 +55,7 @@ bool AnnotationInitializer::initializeAnnotations()
 bool AnnotationInitializer::initializeAnnotationData()
 {
     dtkAbstractDataFactory * factory = dtkAbstractDataFactory::instance();
-    bool ret = factory->registerDataType( SeedPointAnnotationData::s_description(), dtkAbstractDataCreateFunc<SeedPointAnnotationData> );
+    bool ret = factory->registerDataType( SeedPointAnnotationData::s_identifier(), dtkAbstractDataCreateFunc<SeedPointAnnotationData> );
     return ret;
 }
 

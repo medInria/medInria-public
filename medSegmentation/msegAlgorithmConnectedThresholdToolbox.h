@@ -6,11 +6,11 @@
 #include "msegPluginExport.h"
 
 #include "msegAlgorithmGeneric.h"
-#include "msegViewFilter.h"
 
 #include <dtkCore/dtkAbstractData.h>
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
+#include <medViewEventFilter.h>
 
 #include <QVector3D>
 #include <QTextEdit>
@@ -33,8 +33,10 @@ public:
 
     static medToolBoxSegmentationCustom * createInstance( QWidget *parent );
 
-    /** Get name to use for this when registering with a factory.*/
     static QString s_description();
+
+    /** Get name to use for this when registering with a factory.*/
+    static QString s_identifier();
 
     //! Get a human readable name for this widget.
     /** \param trObj : Provide an object for the tr() function. If NULL qApp will be used. */
@@ -66,7 +68,7 @@ private:
     QTextEdit *m_dataText;
 
     QVector< SeedPoint > m_seedPoints;
-    dtkSmartPointer< ViewFilter > m_viewFilter;
+    dtkSmartPointer< medViewEventFilter > m_viewFilter;
 
     enum ViewState { ViewState_None, ViewState_PickingSeedPoint };
     ViewState m_viewState;

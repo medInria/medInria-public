@@ -8,6 +8,7 @@
 #include <medAbstractView.h>
 
 #include "v3dViewPublicPluginExport.h"
+#include "medAbstractViewCoordinates.h"
 
 class v3dViewPublicPrivate;
 class vtkViewImage2D;
@@ -15,7 +16,7 @@ class vtkViewImage3D;
 class vtkRenderer;
 class vtkRenderWindowInteractor;
 
-class V3DVIEWPUBLICPLUGIN_EXPORT v3dViewPublic : public medAbstractView
+class V3DVIEWPUBLICPLUGIN_EXPORT v3dViewPublic : public medAbstractView, public medAbstractViewCoordinates
 {
     Q_OBJECT
 
@@ -53,7 +54,24 @@ public:
     vtkRenderer    *renderer3D (void);
     vtkRenderWindowInteractor *interactor2D (void);
     vtkRenderWindowInteractor *interactor3D (void);
-	
+public :
+    // Satisfy medAbstractViewCoordinates API
+    //! Convert from world coordinates to scene coordinates.
+    virtual QPointF worldToDisplay( const QVector3D & worldVec ) const;
+    //! Convert from scene coordinates to world coordinates.
+    virtual QVector3D displayToWorld( const QPointF & scenePoint ) const;
+    //! Get the view center vector in world space, the center of the slice for 2d views.
+    virtual QVector3D viewCenter() const;
+    //! Get the view plane normal vector in world space.
+    virtual QVector3D viewPlaneNormal() const;
+    //! Get the view plane up vector in world space.
+    virtual QVector3D viewUp() const;
+    //! Is the scene 2D (true) or 3D (false)
+    virtual bool is2D() const;
+    //! What is the thickness of the current slice (2D)
+    virtual qreal sliceThickness() const;
+    virtual qreal scale() const;
+
 public slots:
     void onPropertySet         (const QString &key, const QString &value);
     void onOrientationPropertySet           (const QString &value);
@@ -90,6 +108,7 @@ public slots:
     void onPlayButtonClicked (bool value);
     void onDimensionBoxChanged (const QString &value);
     
+    medAbstractViewCoordinates * coordinates() { return this; }
 
 private:
     v3dViewPublicPrivate *d;

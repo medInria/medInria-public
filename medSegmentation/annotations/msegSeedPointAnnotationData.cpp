@@ -65,6 +65,17 @@ QString SeedPointAnnotationData::description( void ) const
     return SeedPointAnnotationData::s_description();
 }
 
+QString SeedPointAnnotationData::s_identifier()
+{
+    static const QString id = "mseg::SeedPointAnnotationData";
+    return id;
+}
+
+QString SeedPointAnnotationData::identifier( void ) const 
+{
+    return SeedPointAnnotationData::s_identifier();
+}
+
 void SeedPointAnnotationData::setSelected( bool value )
 {
     if ( m_isSelected != value ) {

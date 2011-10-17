@@ -1531,6 +1531,95 @@ void v3dViewPublic::close(void)
     medAbstractView::close();
 }
 
+QPointF v3dViewPublic::worldToDisplay( const QVector3D & worldVec ) const
+{
+    vtkRenderer * ren = d->currentView->GetRenderer();
+    ren->SetWorldPoint(worldVec.x(), worldVec.y(), worldVec.z(), 1);
+    ren->WorldToDisplay();
+    double point[3];
+    ren->GetDisplayPoint(point);
+    return QPointF( point[0], point[1] );
+}
+
+QVector3D v3dViewPublic::displayToWorld( const QPointF & scenePoint ) const
+{
+    vtkRenderer * ren = d->currentView->GetRenderer();
+    double zpos = 0;
+    ren->SetDisplayPoint(scenePoint.x(), scenePoint.y(), zpos);
+    ren->DisplayToWorld();
+    double point[4];
+    ren->GetWorldPoint(point);
+    return QVector3D( point[0], point[1], point[2] );
+
+}
+
+QVector3D v3dViewPublic::viewCenter() const
+{
+    vtkRenderer * ren = d->currentView->GetRenderer();
+    double fp[3];
+    ren->GetActiveCamera()->GetFocalPoint( fp);
+    return QVector3D( fp[0], fp[1], fp[2] );
+}
+
+QVector3D v3dViewPublic::viewPlaneNormal() const
+{
+    double vpn[3];
+    vtkRenderer * ren = d->currentView->GetRenderer();
+    ren->GetActiveCamera()->GetViewPlaneNormal(vpn);
+    return QVector3D( vpn[0], vpn[1], vpn[2] );
+}
+
+QVector3D v3dViewPublic::viewUp() const
+{
+    double vup[3];
+    vtkRenderer * ren = d->currentView->GetRenderer();
+    ren->GetActiveCamera()->GetViewUp(vup);
+    return QVector3D( vup[0], vup[1], vup[2] );
+}
+
+bool v3dViewPublic::is2D() const
+{
+    return d->currentView == d->view2D;
+}
+
+qreal v3dViewPublic::sliceThickness() const
+{
+    double cr[2] = { 0,0 };
+    d->renderer2D->GetActiveCamera()->GetClippingRange(cr);
+    return std::fabs(cr[1] - cr[0]);
+}
+
+qreal v3dViewPublic::scale() const
+{
+    double scale;
+    if ( this->is2D() ) {
+        // The height of the viewport in world coordinates
+        double camScale = d->currentView->GetRenderer()->GetActiveCamera()->GetParallelScale();
+        double heightInPx = d->currentView->GetRenderWindow()->GetSize()[1];
+        // return pixels per world coord.
+        scale = heightInPx / camScale;
+    } else {
+        // Return scale at fp.
+        double vup[4], fp[4];
+        d->currentView->GetRenderer()->GetActiveCamera()->GetViewUp(vup);
+        vup[3] = 0;  //intentionally zero and not one.
+        double MVup[4];
+        d->currentView->GetRenderer()->GetActiveCamera()->GetViewTransformMatrix()->MultiplyPoint(vup, MVup);
+        double lScale = vtkMath::Norm(MVup) / vtkMath::Norm(vup);
+        //We now have the scale in viewport coords. (normalised).
+        double heightInPx = d->currentView->GetRenderWindow()->GetSize()[1];
+        scale = heightInPx *lScale;
+    }
+
+    if ( scale < 0 ) 
+        scale *= -1;
+    return scale;
+}
+
+
+
+
+
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////

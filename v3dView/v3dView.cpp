@@ -19,6 +19,8 @@
 #include <medMessageController.h>
 #include <medAbstractDataImage.h>
 #include <medMetaDataKeys.h>
+#include <medAbstractAnnotationRepresentation.h>
+#include <medAnnotationFactory.h>
 
 #include <vtkCamera.h>
 #include <vtkCommand.h>
@@ -2435,4 +2437,39 @@ void v3dView::widgetDestroyed ( void )
 {
     d->widget = NULL;
 }
+
+bool v3dView::onAddAnnotation(  medAnnotationData * annData )
+{
+    QObject * annItem =
+        medAnnotationFactory::instance()->createAnnotationForData( annData, this->identifier() );
+    if ( !annItem ) 
+        return false;
+
+    medAnnotationGraphicsObject * obj = qobject_cast< medAnnotationGraphicsObject *>(annItem);
+    if ( obj ) {
+        obj->setAnnotationData(annData);
+        d->scene->addItem(obj);
+        return true;
+    }
+
+    return false;
+}
+
+void v3dView::onRemoveAnnotation( medAnnotationData * annData )
+{
+    foreach( QGraphicsItem * item, d->scene->items() ) {
+        medAnnotationGraphicsObject * obj = dynamic_cast< medAnnotationGraphicsObject * >(item);
+        if ( obj && obj->annotationData() == annData ) {
+            d->scene->removeItem(item);
+        }
+    }
+}
+
+medAbstractViewCoordinates * v3dView::coordinates()
+{
+    return d->scene;
+}
+
+
+
 

@@ -61,6 +61,11 @@ QString Plugin::description(void) const
     return PluginPrivate::s_Name;
 }
 
+QString Plugin::identifier(void) const
+{
+    return PluginPrivate::s_Name;
+}
+
 QStringList Plugin::tags(void) const
 {
     return QStringList();

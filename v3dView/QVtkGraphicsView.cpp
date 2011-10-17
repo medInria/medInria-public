@@ -268,7 +268,7 @@ void QVtkGraphicsView::paintEvent(QPaintEvent* e )
 
 void QVtkGraphicsView::drawBackground(QPainter *painter, const QRectF& rect )
 {
-    dtkDebug() << _LINK_TEXT << "QVtkGraphicsView::drawBackground";
+    // dtkDebug() << _LINK_TEXT << "QVtkGraphicsView::drawBackground";
 
     bool reRender = !mCacheVtkBackground;
 
@@ -292,7 +292,7 @@ void QVtkGraphicsView::drawBackground(QPainter *painter, const QRectF& rect )
     const bool isLightingEnabled    = glIsEnabled( GL_LIGHTING );
 
     if ( reRender ) {
-        dtkDebug() << _LINK_TEXT << "QVtkGraphicsView::drawBackground - reRender (mCacheVtkBackground = " << mCacheVtkBackground << ")" ;
+        // dtkDebug() << _LINK_TEXT << "QVtkGraphicsView::drawBackground - reRender (mCacheVtkBackground = " << mCacheVtkBackground << ")" ;
 
         if (mCacheVtkBackground) {
 
@@ -335,7 +335,7 @@ void QVtkGraphicsView::drawBackground(QPainter *painter, const QRectF& rect )
         vtkRenderWindow * renWin = this->getRenderWindow();
         // Render VTK
         if ( renWin ) {
-            dtkDebug() << _LINK_TEXT << "QVtkGraphicsView::drawBackground - reRender - renWin->GetInteractor()->Render()";
+            // dtkDebug() << _LINK_TEXT << "QVtkGraphicsView::drawBackground - reRender - renWin->GetInteractor()->Render()";
             renWin->GetInteractor()->Render() ;
                 // qDebug() << "Rendering vtk";
 

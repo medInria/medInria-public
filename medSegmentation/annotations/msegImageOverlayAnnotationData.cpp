@@ -30,6 +30,19 @@ QString ImageOverlayAnnotationData::description( void ) const
     return ImageOverlayAnnotationData::s_description();
 }
 
+QString ImageOverlayAnnotationData::s_identifier()
+{
+    static const QString desc = "mseg::ImageOverlayAnnotationData";
+    return desc;
+}
+
+QString ImageOverlayAnnotationData::identifier( void ) const
+{
+    return ImageOverlayAnnotationData::s_identifier();
+}
+
+
+
 
 
 

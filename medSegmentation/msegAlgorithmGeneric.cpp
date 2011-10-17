@@ -52,20 +52,20 @@ int AlgorithmGeneric::callHandler( dtkAbstractData * data )
         return DTK_FAILURE;
     }
 
-    const QString dataDescription( data->description() );
+    const QString dataId( data->identifier() );
 
-    AlgorithmGenericPrivate::HandlerContainerType::const_iterator it( d->handlers.find( dataDescription ) );
+    AlgorithmGenericPrivate::HandlerContainerType::const_iterator it( d->handlers.find( dataId ) );
     if ( it == d->handlers.end() ) {
-        dtkWarning() << "Unknown data type encountered " << dataDescription;
+        dtkWarning() << "Unknown data type encountered " << dataId;
         return DTK_FAILURE;
     }
 
     return (*it)->run(data);
 }
 
-bool AlgorithmGeneric::isHandled( const QString & dataDescription ) const
+bool AlgorithmGeneric::isHandled( const QString & dataId ) const
 {
-    AlgorithmGenericPrivate::HandlerContainerType::const_iterator it( d->handlers.find( dataDescription ) );
+    AlgorithmGenericPrivate::HandlerContainerType::const_iterator it( d->handlers.find( dataId ) );
     return ( it != d->handlers.end() );
 }
 

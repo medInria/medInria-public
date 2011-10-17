@@ -24,7 +24,13 @@ public:
     QRectF boundingRect(void) const MED_OVERRIDE;
 
     static medAnnotationGraphicsObject * s_create( );
+    /** Get name to use for this when registering with a factory.*/
+    static QString s_identifier();
+
     static QString s_description();
+
+    QString description(void) const;
+    QString identifier(void) const;
 
 
 protected:

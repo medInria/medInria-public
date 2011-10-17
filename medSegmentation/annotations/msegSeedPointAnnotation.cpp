@@ -79,7 +79,13 @@ QString SeedPointAnnotation::s_description()
     return desc;
 }
 
-medAnnotationGraphicsObject * SeedPointAnnotation::s_create()
+QString SeedPointAnnotation::s_identifier()
+{
+    static const QString id = "mseg::SeedPointAnnotation";
+    return id;
+}
+
+QObject * SeedPointAnnotation::s_create()
 {
     return new SeedPointAnnotation;
 }

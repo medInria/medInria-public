@@ -25,8 +25,9 @@ public:
     void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 ) MED_OVERRIDE;
     QRectF boundingRect(void) const MED_OVERRIDE;
 
-    static medAnnotationGraphicsObject * s_create( );
+    static QObject * s_create( );
     static QString s_description();
+    static QString s_identifier();
 
 
 protected:

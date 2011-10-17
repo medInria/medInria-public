@@ -73,5 +73,16 @@ void ImageOverlayAnnotation::onSceneOrientationChanged()
     this->onSceneChanged( this->scene() );
 }
 
+QString ImageOverlayAnnotation::s_identifier()
+{
+    static const QString desc = "mseg::ImageOverlayAnnotation";
+    return desc;
+}
+
+QString ImageOverlayAnnotation::identifier() const
+{
+    return ImageOverlayAnnotation::s_identifier();
+}
+
 
 } // namespace mseg

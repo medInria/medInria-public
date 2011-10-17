@@ -23,6 +23,7 @@ public:
     virtual ~SeedPointAnnotationData();
 
     QString description(void) const MED_OVERRIDE;
+    QString identifier(void) const MED_OVERRIDE;
 
     qreal radiusScene() const { return m_radiusScene; }
     void setRadiusScene(qreal val);
@@ -37,6 +38,7 @@ public:
     void setCenterWorld(QVector3D val);
 
     static QString s_description();
+    static QString s_identifier();
 
     virtual void setSelected(bool value);
     bool isSelected() const { return m_isSelected; }

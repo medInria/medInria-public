@@ -61,7 +61,7 @@ protected:
     void addHandler( const QString & typeName, HandlerFunc * func );
 
     int callHandler( dtkAbstractData * data );
-    virtual bool isHandled( const QString & dataDescription ) const;
+    virtual bool isHandled( const QString & dataId ) const;
 
     void setOutput( dtkAbstractData * data);
 

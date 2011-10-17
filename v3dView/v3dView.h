@@ -138,6 +138,9 @@ public:
    // using dtkAbstractObject::property;
     QString getLUT(int layer) const;
     QString getPreset(int layer) const;
+
+    medAbstractViewCoordinates * coordinates();
+
 public slots:
     // inherited from medAbstractView
     void onPositionChanged  (const  QVector3D &position);
@@ -209,6 +212,11 @@ public:
 
 protected slots:
     void widgetDestroyed(void);
+
+protected:
+    // Override base class
+    virtual bool onAddAnnotation( medAnnotationData * annItem );
+    virtual void onRemoveAnnotation( medAnnotationData * annItem );
 
 private:
     v3dViewPrivate *d;

@@ -11,6 +11,7 @@
 
 #include <vtkImageView.h>
 #include <vtkImageView2D.h>
+#include <vtkMath.h>
 
 #include "QVtkGraphicsView.h"
 #include "v3dView.h"
@@ -25,7 +26,7 @@ class v3dViewGraphicsScenePrivate
 };
 
 v3dViewGraphicsScene::v3dViewGraphicsScene( v3dView * view, QWidget * parent )
-  : BaseClass( view, parent )
+  : BaseClass( parent )
   , d( new v3dViewGraphicsScenePrivate )
 {
     // view
@@ -148,7 +149,7 @@ void v3dViewGraphicsScene::setItemsVisible( bool state )
     d->itemsVisible = state;
 }
 
-QPointF v3dViewGraphicsScene::worldToScene( const QVector3D & worldVec ) const
+QPointF v3dViewGraphicsScene::worldToDisplay( const QVector3D & worldVec ) const
 {
     // The following code is implemented without calling ren->SetWorldPoint, 
     // because that generates an unnecessary modified event.
@@ -188,7 +189,7 @@ QPointF v3dViewGraphicsScene::worldToScene( const QVector3D & worldVec ) const
     return QPointF( dx, sizey - 1 - dy );
 }
 
-QVector3D v3dViewGraphicsScene::sceneToWorld( const QPointF & sceneVec) const
+QVector3D v3dViewGraphicsScene::displayToWorld( const QPointF & sceneVec) const
 {
     // The following code is implemented without calling ren->SetWorldPoint, 
     // because that generates an unnecessary modified event.
@@ -222,7 +223,7 @@ QVector3D v3dViewGraphicsScene::sceneToWorld( const QPointF & sceneVec) const
             (sizey*(viewport[3]-viewport[1])) - 1.0;
     double vz = 0.;
 
-    if (this->isScene2D() ) {
+    if (this->is2D() ) {
         // Project the point into the view plane.
         vtkCamera * cam = ren->GetActiveCamera();
         double pointInDisplayPlane[3];
@@ -257,7 +258,7 @@ QVector3D v3dViewGraphicsScene::viewUp() const
     return QVector3D( vup[0], vup[1], vup[2] );
 }
 
-bool v3dViewGraphicsScene::isScene2D() const
+bool v3dViewGraphicsScene::is2D() const
 {
     return (d->view->currentView() == d->view->view2d() );
 }
@@ -288,6 +289,49 @@ qreal v3dViewGraphicsScene::sliceThickness() const
     val = val <0 ? -val : val;  // ensure positive. 
     return val;
 }
+
+medAbstractView * v3dViewGraphicsScene::view()
+{
+    return d->view;
+}
+
+void v3dViewGraphicsScene::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
+{
+    event->setAccepted(false);
+}
+
+qreal v3dViewGraphicsScene::scale() const
+{
+    vtkRenderer * ren = d->view->currentView()->GetRenderer();
+    vtkRenderWindow * renwin = d->view->currentView()->GetRenderWindow();
+    double scale;
+    if ( this->is2D() ) {
+        // The height of the viewport in world coordinates
+        double camScale = ren->GetActiveCamera()->GetParallelScale();
+        double heightInPx = renwin->GetSize()[1];
+        // return pixels per world coord.
+        scale = heightInPx / camScale;
+    } else {
+        // Return scale at fp.
+        double vup[4];
+        ren->GetActiveCamera()->GetViewUp(vup);
+        vup[3] = 0;  //intentionally zero and not one.
+        double MVup[4];
+        ren->GetActiveCamera()->GetViewTransformMatrix()->MultiplyPoint(vup, MVup);
+        double lScale = vtkMath::Norm(MVup) / vtkMath::Norm(vup);
+        //We now have the scale in viewport coords. (normalised).
+        double heightInPx = renwin->GetSize()[1];
+        scale = heightInPx *lScale;
+    }
+
+    if ( scale < 0 ) 
+        scale *= -1;
+    return scale;
+
+}
+
+
+
 
 
 
