@@ -57,7 +57,7 @@ public:
     typedef QHash<medDataIndex, dtkSmartPointer<dtkAbstractData> > DataCacheContainerType;
     DataCacheContainerType dataCache;
     DataCacheContainerType volatileDataCache;
-    
+
     QHash<QString, medDataIndex > npDataIndexBeingSaved;
 
     medAbstractDbController* getDbController()
@@ -200,13 +200,17 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
 
 medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
 {
-        medAbstractDbController* db = d->getDbController();
-        medAbstractDbController* npDb = d->getNonPersDbController();
+    medAbstractDbController* db = d->getDbController();
+    medAbstractDbController* npDb = d->getNonPersDbController();
 
-        connect(npDb, SIGNAL(updated(const medDataIndex &,QString)), this, SLOT(onNonPersistentDataImported(const medDataIndex &,QString)));
-        connect(db,SIGNAL(updated(const medDataIndex &, const QString &)),this, SLOT(onSingleNonPersistentDataStored(const medDataIndex &, const QString &)));
-        connect(npDb, SIGNAL(updated(const medDataIndex &, QString )), this, SLOT(onNonPersistentDataImported(const medDataIndex &, QString)));
-        connect(db,SIGNAL(updated(const medDataIndex &)),this, SLOT(onPersistentDataImported(const medDataIndex &)));
+    connect(npDb, SIGNAL(updated(const medDataIndex &,QString)),
+            this, SLOT(onNonPersistentDataImported(const medDataIndex &,QString)));
+    connect(db,SIGNAL(updated(const medDataIndex &, const QString &)),
+            this, SLOT(onSingleNonPersistentDataStored(const medDataIndex &, const QString &)));
+//    connect(npDb, SIGNAL(updated(const medDataIndex &, QString )),
+//            this, SLOT(onNonPersistentDataImported(const medDataIndex &, QString)));
+//    connect(db,SIGNAL(updated(const medDataIndex &)),this,
+//            SLOT(onPersistentDataImported(const medDataIndex &)));
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -552,7 +556,7 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
         dtkSmartPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
         QUuid tmpUid = QUuid::createUuid().toString();
         d->npDataIndexBeingSaved[tmpUid] = index;
-        
+
         medAbstractDbController* db = d->getDbController();
 
         if(db)
