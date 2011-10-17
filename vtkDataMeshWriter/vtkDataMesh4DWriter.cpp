@@ -9,6 +9,8 @@
 #include "vtkMetaDataSetSequence.h"
 
 
+const char vtkDataMesh4DWriter::ID[] = "vtkDataMesh4DWriter";
+
 vtkDataMesh4DWriter::vtkDataMesh4DWriter()
 {
   this->writer = vtkDataManagerWriter::New();
@@ -38,38 +40,42 @@ bool vtkDataMesh4DWriter::write(const QString& path)
 {
   if (!this->data())
     return false;
-  
+
   qDebug() << "Can write with: " << this->identifier();
-  
+
   dtkAbstractData *dtkdata = this->data();
 
   if(dtkdata->identifier()!="vtkDataMesh4D")
   {
     return false;
   }
-  
+
   vtkMetaDataSetSequence* sequence = dynamic_cast< vtkMetaDataSetSequence* >( (vtkObject*)(this->data()->output()));
   if (!sequence)
     return false;
 
   vtkDataManager* manager = vtkDataManager::New();
   manager->AddMetaDataSet (sequence);
-  
+
   this->writer->SetFileName(path.toAscii().constData());
   this->writer->SetInput (manager);
   // this->writer->SetFileTypeToBinary();
   this->writer->Update();
 
   manager->Delete();
-  
+
   return true;
 }
 
-QString vtkDataMesh4DWriter::description(void) const
+QString vtkDataMesh4DWriter::description( void ) const
 {
-    return "vtkDataMesh4DWriter";
+    return tr( "VTK 4D Mesh Writer" );
 }
 
+QString vtkDataMesh4DWriter::identifier( void ) const
+{
+    return ID;
+}
 
 bool vtkDataMesh4DWriter::registered(void)
 {

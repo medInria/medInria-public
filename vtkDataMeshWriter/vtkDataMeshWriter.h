@@ -17,17 +17,20 @@ public:
     virtual QStringList handled(void) const;
     static  QStringList s_handled (void);
 
-    
+
     virtual QString description(void) const;
-	
+    virtual QString identifier(void) const;
+
     static bool registered(void);
-    
+
 public slots:
     bool write    (const QString& path);
     bool canWrite (const QString& path);
 
- protected:
+protected:
     vtkDataSetWriter* writer;
+private:
+    static const char ID[];
 };
 
 

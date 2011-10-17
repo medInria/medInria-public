@@ -8,6 +8,7 @@
 #include <vtkPolyData.h>
 #include <vtkUnstructuredGrid.h>
 
+const char vtkDataMeshWriter::ID[] = "vtkDataMeshWriter";
 
 vtkDataMeshWriter::vtkDataMeshWriter()
 {
@@ -38,16 +39,16 @@ bool vtkDataMeshWriter::write(const QString& path)
 {
   if (!this->data())
     return false;
-  
+
   qDebug() << "Can write with: " << this->identifier();
-  
+
   dtkAbstractData *dtkdata = this->data();
 
   if(dtkdata->identifier()!="vtkDataMesh")
   {
     return false;
   }
-  
+
   vtkPointSet* pointset = dynamic_cast< vtkPointSet* >( (vtkObject*)(this->data()->output()));
   if (!pointset)
     return false;
@@ -62,9 +63,13 @@ bool vtkDataMeshWriter::write(const QString& path)
 
 QString vtkDataMeshWriter::description(void) const
 {
-    return "vtkDataMeshWriter";
+    return tr( "VTK Mesh Writer" );
 }
 
+QString vtkDataMeshWriter::identifier(void) const
+{
+    return ID;
+}
 
 bool vtkDataMeshWriter::registered(void)
 {
