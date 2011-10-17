@@ -23,6 +23,8 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
+#include <medMetaDataKeys.h>
+
 #include "itkImage.h"
 #include "itkCommand.h"
 #include "itkIntensityWindowingImageFilter.h"
@@ -175,6 +177,12 @@ template <class PixelType> void itkFiltersPrivate::addFilter ( void )
     addFilter->SetConstant ( addValue );
     addFilter->Update();
     output->setData ( addFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " add filter (" + QString::number(addValue) + ")";
+
+    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 }
 
 template <class PixelType> void itkFiltersPrivate::subtractFilter ( void )
@@ -189,6 +197,12 @@ template <class PixelType> void itkFiltersPrivate::subtractFilter ( void )
     subtractFilter->SetConstant ( subtractValue );
     subtractFilter->Update();
     output->setData ( subtractFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " subtract filter (" + QString::number(subtractValue) + ")";
+
+    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 }
 
 template <class PixelType> void itkFiltersPrivate::multiplyFilter ( void )
@@ -201,6 +215,12 @@ template <class PixelType> void itkFiltersPrivate::multiplyFilter ( void )
     multiplyFilter->SetConstant ( multiplyValue );
     multiplyFilter->Update();
     output->setData ( multiplyFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " multiply filter (" + QString::number(multiplyValue) + ")";
+
+    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 }
 
 template <class PixelType> void itkFiltersPrivate::divideFilter ( void )
@@ -213,6 +233,12 @@ template <class PixelType> void itkFiltersPrivate::divideFilter ( void )
     divideFilter->SetConstant ( divideValue );
     divideFilter->Update();
     output->setData ( divideFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " divide filter (" + QString::number(divideValue) + ")";
+
+    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 }
 
 template <class PixelType> void itkFiltersPrivate::gaussianFilter ( void )
@@ -230,6 +256,12 @@ template <class PixelType> void itkFiltersPrivate::gaussianFilter ( void )
 
     gaussianFilter->Update();
     output->setData ( gaussianFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " gaussian filter (Sigma=" + QString::number(sigmaValue) + ")";
+
+    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 }
 
 template <class PixelType> void itkFiltersPrivate::normalizeFilter ( void )
@@ -241,6 +273,12 @@ template <class PixelType> void itkFiltersPrivate::normalizeFilter ( void )
     normalizeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
     normalizeFilter->Update();
     output->setData ( normalizeFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " normalize filter";
+
+    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 }
 
 template <class PixelType> void itkFiltersPrivate::medianFilter ( void )
@@ -261,6 +299,12 @@ template <class PixelType> void itkFiltersPrivate::medianFilter ( void )
     medianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
     medianFilter->Update();
     output->setData ( medianFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " median filter";
+
+    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 }
 
 template <class PixelType> void itkFiltersPrivate::invertFilter ( void )
@@ -272,6 +316,12 @@ template <class PixelType> void itkFiltersPrivate::invertFilter ( void )
     invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
     invertFilter->Update();
     output->setData ( invertFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " invert filter";
+
+    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 }
 
 template <class PixelType> void itkFiltersPrivate::shrinkFilter ( void )
@@ -284,6 +334,12 @@ template <class PixelType> void itkFiltersPrivate::shrinkFilter ( void )
     shrinkFilter->SetShrinkFactors ( shrinkFactors );
     shrinkFilter->Update();
     output->setData ( shrinkFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " shrink filter (" + QString::number(shrinkFactors[0]) + "," + QString::number(shrinkFactors[1]) + "," + QString::number(shrinkFactors[2]) + ")";
+
+    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 }
 
 template <class PixelType> void itkFiltersPrivate::intensityFilter ( void )
@@ -301,6 +357,12 @@ template <class PixelType> void itkFiltersPrivate::intensityFilter ( void )
 
     intensityFilter->Update();
     output->setData ( intensityFilter->GetOutput() );
+
+    //Set output description metadata
+    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
+    newSeriesDescription += " intensity filter";
+
+    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
 }
 
 itkFilters::itkFilters ( void ) : dtkAbstractProcess(), d ( new itkFiltersPrivate )
