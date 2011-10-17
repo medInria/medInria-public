@@ -395,6 +395,9 @@ void medToolBoxRegistration::onSuccess()
     newDescription += " registered";
     output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
 
+    QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
+    output->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
+
     medDataManager::instance()->importNonPersistent(output);
 
     if(output)
