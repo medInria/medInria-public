@@ -57,7 +57,7 @@ class vtkSphericalHarmonicVisuManager : public vtkObject
   void SetVOI(const int&,const int&,const int&,const int&,const int&,const int&);
 
   void SetInput (vtkStructuredPoints*);
-  
+
   vtkGetObjectMacro (SHSource, vtkSphericalHarmonicSource);
   vtkGetObjectMacro (SHGlyph,  vtkSphericalHarmonicGlyph);
   vtkGetObjectMacro (Normals,  vtkPolyDataNormals);
@@ -65,6 +65,8 @@ class vtkSphericalHarmonicVisuManager : public vtkObject
   vtkGetObjectMacro (Mapper,   vtkPolyDataMapper);
   vtkGetObjectMacro (Actor,    vtkActor);
   
+  vtkSetObjectMacro (MatrixV, vtkMatrix4x4);
+  vtkGetObjectMacro (MatrixV, vtkMatrix4x4);
   
  protected:
   vtkSphericalHarmonicVisuManager();
@@ -79,6 +81,9 @@ class vtkSphericalHarmonicVisuManager : public vtkObject
   vtkExtractVOI*              VOI;
   vtkPolyDataMapper*          Mapper;
   vtkActor*                   Actor;
+
+  vtkMatrix4x4* MatrixV;
+
   
   
 };

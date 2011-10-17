@@ -60,6 +60,8 @@ vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager()
     
     lut->Delete();
 
+    this->MatrixV=0;
+
     this->Actor->SetMapper( this->Mapper );
     this->Actor->GetProperty()->SetSpecular(0.7);
     this->Actor->GetProperty()->SetSpecularPower(10.0);
@@ -92,7 +94,8 @@ void vtkSphericalHarmonicVisuManager::SetInput (vtkStructuredPoints* vtkSH)
 
   int number = vtkSH->GetPointData()->GetArray (vtkSphericalHarmonicGlyph::GetSphericalHarmonicCoefficientsArrayName())->GetNumberOfComponents();
   this->SHSource->SetNumberOfSphericalHarmonics ( number );
-  
+//  this->SHSource->SetRotationMatrix(this->MatrixV);
+
   this->VOI->SetInput ( vtkSH );
   
   

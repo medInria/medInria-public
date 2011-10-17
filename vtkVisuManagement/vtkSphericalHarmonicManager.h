@@ -27,17 +27,20 @@ class vtkSphericalHarmonicManager: public vtkObject
   vtkSetObjectMacro (Input, vtkStructuredPoints);
   vtkGetObjectMacro (Input, vtkStructuredPoints);
 
+  vtkSetObjectMacro (MatrixT, vtkMatrix4x4);
+  vtkGetObjectMacro (MatrixT, vtkMatrix4x4);
+
 
   vtkGetObjectMacro (SHVisuManagerAxial,    vtkSphericalHarmonicVisuManager);
   vtkGetObjectMacro (SHVisuManagerSagittal, vtkSphericalHarmonicVisuManager);
   vtkGetObjectMacro (SHVisuManagerCoronal,  vtkSphericalHarmonicVisuManager);
 
 
-  /** Set a scaling factor for the glyhs. */
+  /** Set a scaling factor for the glyphs. */
   void SetGlyphScale(const float& f);
   
-  /** Set the sample rate. 1 over n Spherical Harmonic's will be
-      displaid.*/
+  /** Set the sample rate 1 over n Spherical Harmonic's will be
+      displayed.*/
   void SetSampleRate(const int&,const int&,const int&);
   
   /** Set the glyph resolution */
@@ -125,6 +128,7 @@ class vtkSphericalHarmonicManager: public vtkObject
   vtkRenderWindowInteractor* RenderWindowInteractor;
   
   vtkStructuredPoints* Input;
+  vtkMatrix4x4* MatrixT;
 
   vtkRenderer* Renderer;
 

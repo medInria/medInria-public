@@ -228,6 +228,10 @@ vtkSphericalHarmonicSource::RequestData(vtkInformation *vtkNotUsed(request),vtkI
 
     output->DeepCopy(shell);
     output->GetPoints()->Reset();
+
+//    for (int l=0; l<4;l++)
+//        std::cout << RotationMatrix->GetElement(l,0) << RotationMatrix->GetElement(l,1) << RotationMatrix->GetElement(l,2) << RotationMatrix->GetElement(l,3)<<std::endl;
+
     TranslateAndDeformShell(shell,output->GetPoints(),this->Center,Deform,RotationMatrix);
 
     /* This is not copying enough!!! */
@@ -752,6 +756,9 @@ TranslateAndDeformShell(vtkPolyData *shell,vtkPoints* outPts,double center[3],bo
             point[2] = ((val-range[0])/rangeDiff)*point[2];
         } 
         point[3] = 1.0;
+
+
+
 
         const double* pointOut = (transform!=0) ? transform->MultiplyDoublePoint(point) : &point[0];
         outPts->InsertNextPoint(pointOut[0]+center[0],pointOut[1]+center[1],pointOut[2]+center[2]);

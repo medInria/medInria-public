@@ -7,21 +7,22 @@ vtkStandardNewMacro(vtkSphericalHarmonicManager);
 
 vtkSphericalHarmonicManager::vtkSphericalHarmonicManager()
 {
-  this->RenderWindowInteractor = 0;
+    this->RenderWindowInteractor = 0;
 
-  this->Input = 0;
+    this->Input = 0;
+    this->MatrixT = 0;
 
-  this->Renderer = 0;
+    this->Renderer = 0;
 
-  this->SHVisuManagerAxial    = vtkSphericalHarmonicVisuManager::New();
-  this->SHVisuManagerSagittal = vtkSphericalHarmonicVisuManager::New();
-  this->SHVisuManagerCoronal  = vtkSphericalHarmonicVisuManager::New();
-  
-  for( int i=0; i<3; i++)
-  {
-    this->CurrentPosition[i] = 0;
-  }
-  
+    this->SHVisuManagerAxial    = vtkSphericalHarmonicVisuManager::New();
+    this->SHVisuManagerSagittal = vtkSphericalHarmonicVisuManager::New();
+    this->SHVisuManagerCoronal  = vtkSphericalHarmonicVisuManager::New();
+
+    for( int i=0; i<3; i++)
+    {
+        this->CurrentPosition[i] = 0;
+    }
+
 }
 
 
@@ -29,22 +30,32 @@ vtkSphericalHarmonicManager::vtkSphericalHarmonicManager()
 vtkSphericalHarmonicManager::~vtkSphericalHarmonicManager()
 {
 
-//  this->Initialize();
+    //  this->Initialize();
 
-  if( this->RenderWindowInteractor )
-  {
-    this->RenderWindowInteractor->Delete();
-  }
+    if( this->RenderWindowInteractor )
+    {
+        this->RenderWindowInteractor->Delete();
+    }
 
 
-  if( this->Input )
-  {
-    this->Input->Delete();
-  }
+    if( this->Input )
+    {
+        this->Input->Delete();
+    }
 
-  this->SHVisuManagerAxial->Delete();
-  this->SHVisuManagerSagittal->Delete();
-  this->SHVisuManagerCoronal->Delete();
+    if( this->MatrixT )
+    {
+        this->MatrixT->Delete();
+    }
+
+    if(this->SHVisuManagerAxial)
+        this->SHVisuManagerAxial->Delete();
+
+    if(this->SHVisuManagerSagittal)
+        this->SHVisuManagerSagittal->Delete();
+
+    if(this->SHVisuManagerCoronal)
+        this->SHVisuManagerCoronal->Delete();
   
 }
 
@@ -150,6 +161,10 @@ void vtkSphericalHarmonicManager::Update()
   X = X>(dims[0]-1)?(dims[0]-1):X;
   Y = Y>(dims[1]-1)?(dims[1]-1):Y;
   Z = Z>(dims[2]-1)?(dims[2]-1):Z;
+
+  this->SHVisuManagerAxial->SetMatrixV(this->MatrixT);
+  this->SHVisuManagerSagittal->SetMatrixV(this->MatrixT);
+  this->SHVisuManagerCoronal->SetMatrixV(this->MatrixT);
   
   // synchronize with VOI
   this->SHVisuManagerSagittal->SetVOI (X, X, 0, dims[1]-1, 0, dims[2]-1);
@@ -181,6 +196,17 @@ void vtkSphericalHarmonicManager::Update()
 //    this->Renderer = vtkRenderer::New();
 //    this->Renderer->SetLayer ( numLayers );
 //    this->Renderer->SetActiveCamera ( first_renderer->GetActiveCamera() );
+
+//      vtkMatrix4x4* MatrixTA = this->SHVisuManagerAxial->GetActor()->GetUserMatrix();
+//      for (int l=0; l<4;l++)
+//          std::cout << MatrixTA->GetElement(l,0) << MatrixTA->GetElement(l,2) << MatrixTA->GetElement(l,3) << MatrixTA->GetElement(l,4)<<std::endl;
+
+
+
+
+this->SHVisuManagerAxial->GetActor()->SetUserMatrix(this->MatrixT);
+this->SHVisuManagerSagittal->GetActor()->SetUserMatrix(this->MatrixT);
+this->SHVisuManagerCoronal->GetActor()->SetUserMatrix(this->MatrixT);
     this->Renderer->AddActor ( this->SHVisuManagerAxial->GetActor() );
     this->Renderer->AddActor ( this->SHVisuManagerSagittal->GetActor() );
     this->Renderer->AddActor ( this->SHVisuManagerCoronal->GetActor() );
