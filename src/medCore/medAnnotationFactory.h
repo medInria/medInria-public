@@ -11,6 +11,7 @@
 
 #include <dtkCore/dtkAbstractFactory.h>
 
+#include "medAbstractAnnotationRepresentation.h"
 #include <QString>
 
 #include <memory>
@@ -22,19 +23,19 @@ class medAnnotationGraphicsObject;
 class MEDCORE_EXPORT medAnnotationFactory : public dtkAbstractFactory {
     Q_OBJECT;
 public:
-    typedef medAnnotationGraphicsObject *(*CreatorFunc)(void);
+    typedef QObject * (*CreatorFunc)(void);
 
 public:
     medAnnotationFactory();
     virtual ~medAnnotationFactory();
 
-    bool registerAnnotation(const QString &annotationName, const QStringList & dataNames, CreatorFunc func );
-    bool registerAnnotation(const QString &annotationName, const QString & dataName, CreatorFunc func );
+    bool registerAnnotation(const QString &annotationName, const QStringList & dataNames, const QStringList & viewNames, CreatorFunc func );
+    bool registerAnnotation(const QString &annotationName, const QString & dataName, const QString & viewName, CreatorFunc func );
 
-    std::auto_ptr<medAnnotationGraphicsObject> create( const QString &annotationName);
-    std::auto_ptr<medAnnotationGraphicsObject> createAnnotationForData( const medAnnotationData * annData);
+    QObject * create( const QString &annotationName);
+    QObject * createAnnotationForData( const medAnnotationData * annData, const QString & viewName);
 
-    QString annotationForData( const QString & dataName );
+    QString annotationForData( const QString & dataName, const QString & viewName );
 
     static medAnnotationFactory* instance();
     static void destroy();

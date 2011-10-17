@@ -8,7 +8,7 @@
 #include "medAnnotationFactory.h"
 
 #include "medAnnotationData.h"
-#include "medAnnotationGraphicsObject.h"
+#include "medAbstractAnnotationRepresentation.h"
 
 
 class medAnnotationFactoryPrivate
@@ -17,9 +17,10 @@ public:
     struct AnnotationInfo {
         medAnnotationFactory::CreatorFunc m_func;
         QStringList m_dataNames;
+        QStringList m_viewNames;
     };
     typedef QHash< QString , AnnotationInfo > CreatorHashType;
-    typedef QHash< QString , QString > DataNameToAnnotationType;
+    typedef QHash< QString , QStringList > DataNameToAnnotationType;
 
     CreatorHashType creators;
     DataNameToAnnotationType dataNameMap;
@@ -41,7 +42,7 @@ medAnnotationFactory::~medAnnotationFactory()
     d = NULL;
 }
 
-bool medAnnotationFactory::registerAnnotation( const QString &annotationName, const QStringList & dataNames, CreatorFunc func )
+bool medAnnotationFactory::registerAnnotation( const QString &annotationName, const QStringList & dataNames, const QStringList & viewNames, CreatorFunc func )
 {
     if ( d->creators.contains( annotationName ) ) {
         return false;
@@ -49,24 +50,27 @@ bool medAnnotationFactory::registerAnnotation( const QString &annotationName, co
 
     d->creators[annotationName].m_func = func;
     d->creators[annotationName].m_dataNames = dataNames;
+    d->creators[annotationName].m_viewNames = viewNames;
     foreach( const QString name, dataNames ) {
-        d->dataNameMap[name] = annotationName;
+        d->dataNameMap[name] << annotationName;
     }
     return true;
 }
 
-bool medAnnotationFactory::registerAnnotation( const QString &annotationName, const QString & dataName, CreatorFunc func )
+bool medAnnotationFactory::registerAnnotation( const QString &annotationName, const QString & dataName, const QString & viewName, CreatorFunc func )
 {
-    return registerAnnotation(annotationName, QStringList() << dataName, func );
+    return registerAnnotation(annotationName, 
+        QStringList() << dataName, 
+        QStringList() << viewName, func );
 }
 
-std::auto_ptr<medAnnotationGraphicsObject> medAnnotationFactory::create( const QString &annotationName )
+QObject * medAnnotationFactory::create( const QString &annotationName )
 {
-    std::auto_ptr<medAnnotationGraphicsObject> ret;
+    QObject * ret;
     medAnnotationFactoryPrivate::CreatorHashType::const_iterator it( d->creators.find(annotationName));
     if ( it != d->creators.end() ) {
         CreatorFunc func (it->m_func);
-        ret.reset(func());
+        ret = func();
     }
     return ret;
 }
@@ -87,24 +91,33 @@ void medAnnotationFactory::destroy()
     medAnnotationFactoryPrivate::instance = NULL;
 }
 
-QString medAnnotationFactory::annotationForData( const QString & dataName )
+QString medAnnotationFactory::annotationForData( const QString & dataName, const QString & viewName )
 {
-    if (d->dataNameMap.contains( dataName ) )
-        return d->dataNameMap.find(dataName).value();
-    else 
-        return QString();
+    QString ret;
+    if (d->dataNameMap.contains( dataName ) ) {
+
+        foreach ( const QString & annotationName, d->dataNameMap.find(dataName).value() ) 
+        {
+            if ( d->creators.find(annotationName)->m_viewNames.contains(viewName) ) 
+            {
+                ret = annotationName;
+                break;
+            }
+        }
+    }
+    return ret;
 }
 
-std::auto_ptr<medAnnotationGraphicsObject> medAnnotationFactory::createAnnotationForData( const medAnnotationData * annData )
+QObject * medAnnotationFactory::createAnnotationForData( const medAnnotationData * annData, const QString & viewName )
 {
-    std::auto_ptr<medAnnotationGraphicsObject> ret;
+    QObject * ret = NULL;
     if ( !annData ) {
         return ret;
     }
-    ret = this->create(annotationForData(annData->description()));
-    if ( !ret.get() )
-        return ret;
-    ret->setAnnotationData(annData);
+    ret = this->create(annotationForData(annData->description(), viewName));
+    //if ( ret.isNull() )
+    //    return ret;
+//    ret->setAnnotationData(annData);
     return ret;
 }
 

@@ -1,8 +1,9 @@
 #include "medAnnotationGraphicsObject.h"
 
+
+#include <medAbstractViewCoordinates.h>
 #include <medCore/medAbstractView.h>
 
-#include "medAbstractViewScene.h"
 #include "medAnnotationData.h"
 
 #include <dtkCore/dtkSmartPointer.h>
@@ -50,20 +51,17 @@ bool medAnnotationGraphicsObject::showIn3dView() const
 
 QPointF medAnnotationGraphicsObject::worldToScene( const QVector3D & worldVec ) const
 {
-    medAbstractViewScene * scene = qobject_cast< medAbstractViewScene *>( this->scene() );
-    return scene->worldToScene( worldVec );
+    return this->coordinates()->worldToDisplay( worldVec );
 }
 
 QVector3D medAnnotationGraphicsObject::sceneToWorld( const QPointF & sceneVec ) const
 {
-    medAbstractViewScene * scene = qobject_cast< medAbstractViewScene *>( this->scene() );
-    return scene->sceneToWorld( sceneVec );
+    return this->coordinates()->displayToWorld( sceneVec );
 }
 
 QVector3D medAnnotationGraphicsObject::viewUp() const
 {
-    medAbstractViewScene * scene = qobject_cast< medAbstractViewScene *>( this->scene() );
-    return scene->viewUp( );
+    return this->coordinates()->viewUp( );
 }
 
 bool medAnnotationGraphicsObject::isInSlice( const QVector3D & slicePoint, const QVector3D & sliceNormal, qreal thickness ) const
@@ -82,8 +80,8 @@ bool medAnnotationGraphicsObject::isPointInSlice( const QVector3D & testPoint, c
 
 bool medAnnotationGraphicsObject::isPointInCurrentSlice( const QVector3D & testPoint ) const
 {
-    medAbstractViewScene * scene = qobject_cast< medAbstractViewScene *>( this->scene() );
-    return this->isPointInSlice( testPoint, scene->viewCenter(), scene->viewPlaneNormal(), 0.5*scene->sliceThickness() );
+    medAbstractViewCoordinates * coords = this->coordinates();
+    return this->isPointInSlice( testPoint, coords->viewCenter(), coords->viewPlaneNormal(), 0.5*coords->sliceThickness() );
 }
 
 QList<medAbstractView *> medAnnotationGraphicsObject::views() const
@@ -185,6 +183,12 @@ void medAnnotationGraphicsObject::onDataModified()
 {
     this->scene()->update( this->boundingRect() );
 }
+
+medAbstractViewCoordinates * medAnnotationGraphicsObject::coordinates() const
+{
+    return dynamic_cast< medAbstractViewCoordinates * >( this->scene() );
+}
+
 
 
 

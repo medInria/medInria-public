@@ -26,11 +26,12 @@
 class dtkAbstractView;
 class dtkAbstractProcess;
 class medAbstractDataImage;
-class medAbstractViewScene;
+class medAbstractViewCoordinates;
 class medDataIndex;
 class medProgressionStack;
 class medToolBoxSegmentationPrivate;
 class medViewerConfiguration;
+class medViewEventFilter;
 
 class MEDGUI_EXPORT medToolBoxSegmentation : public medToolBox
 {
@@ -49,13 +50,13 @@ public:
     bool canUndo() const;
     void undo();
 
-    static medAbstractViewScene * viewScene( dtkAbstractView * view );
+    static medAbstractViewCoordinates * viewCoordinates( dtkAbstractView * view );
     static dtkAbstractData * viewData( dtkAbstractView * view );
 
     QString localizedNameForAlgorithm( const QString & algName ) const;
 
-    void addViewEventFilter(QObject * filter);
-    void removeViewEventFilter(QObject * filter);
+    void addViewEventFilter(medViewEventFilter * filter);
+    void removeViewEventFilter(medViewEventFilter * filter);
 
 signals:
     void toolBoxChosen(const QByteArray & algName);

@@ -30,7 +30,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewManager.h
   medPluginManager.h
   medAbstractView.h
-  medAbstractViewScene.h
+  medAbstractViewCoordinates.h
   medAbstractViewCollection.h
   med4DAbstractViewInteractor.h
   medMeshAbstractViewInteractor.h
@@ -54,7 +54,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAttachedData.h
   medAnnotationData.h
   medAnnotationFactory.h
+  medAbstractAnnotationRepresentation.h
   medAnnotationGraphicsObject.h
+  medViewEventFilter.h
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -77,7 +79,7 @@ set(${PROJECT_NAME}_SOURCES
   medViewManager.cpp
   medPluginManager.cpp
   medAbstractView.cpp
-  medAbstractViewScene.cpp
+  medAbstractViewCoordinates.cpp
   medAbstractViewCollection.cpp
   medStorage.cpp
   medJobItem.cpp
@@ -100,7 +102,9 @@ set(${PROJECT_NAME}_SOURCES
   medAbstractDatabaseItem.cpp
   medAnnotationData.cpp
   medAnnotationFactory.cpp
+  medAbstractAnnotationRepresentation.cpp
   medAnnotationGraphicsObject.cpp
+  medViewEventFilter.cpp
 )
 
 ## #################################################################

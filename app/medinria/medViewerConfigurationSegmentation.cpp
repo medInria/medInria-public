@@ -6,8 +6,6 @@
 
 #include "medToolBoxSegmentation.h"
 
-#include "medAbstractViewScene.h"
-
 #include <medCore/medAbstractView.h>
 
 #include <medProgressionStack.h>

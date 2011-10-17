@@ -27,9 +27,10 @@
 
 class medAbstractViewPrivate;
 
-class medAbstractViewScene;
+class medAbstractViewCoordinates;
 class medAttachedData;
 class medAnnotationData;
+class medAbstractAnnotationRepresentation;
 
 class QColor;
 
@@ -183,9 +184,8 @@ public:
     virtual QString getLUT(int layer) const;
     virtual QString getPreset(int layer) const;
 
-    //! Get the QGraphicsScene
-    virtual medAbstractViewScene * scene();
-
+    //! Get the coordinates helper
+    virtual medAbstractViewCoordinates * coordinates() = 0;
 
 signals:
     /**
@@ -367,8 +367,11 @@ protected:
     // Emitted whenever the plane color changes.
     void emitColorChangedEvent();
 
-    virtual void addAnnotation( medAnnotationData * annData );
-    virtual void removeAnnotation( medAnnotationData * annData );
+    void addAnnotation( medAnnotationData * annData );
+    void removeAnnotation( medAnnotationData * annData );
+
+    virtual bool onAddAnnotation( medAnnotationData * annItem );
+    virtual void onRemoveAnnotation( medAnnotationData * annItem );
 
 private:
     medAbstractViewPrivate *d;

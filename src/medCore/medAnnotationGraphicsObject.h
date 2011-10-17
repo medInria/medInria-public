@@ -1,8 +1,11 @@
-#ifndef MEDANNOTATIONGRAPHICSOBJECT_H
-#define MEDANNOTATIONGRAPHICSOBJECT_H
+#ifndef MEDANNOTATIONREPRESENTATION_H
+#define MEDANNOTATIONREPRESENTATION_H
+
 
 
 #include "medCoreExport.h"
+
+#include <medAbstractAnnotationRepresentation.h>
 
 #include <QGraphicsObject>
 
@@ -11,7 +14,7 @@ class QVector3D;
 class medAbstractView;
 
 class medAnnotationData;
-
+class medAbstractViewCoordinates;
 /**
  * Base class for view annotations.
  * 
@@ -67,11 +70,12 @@ protected:
     virtual void onSceneCameraChanged();
     virtual void onSceneOrientationChanged();
 
+    virtual medAbstractViewCoordinates * coordinates() const;
 private:
 
     class medAbstractViewAnnotationPrivate;
     medAbstractViewAnnotationPrivate * d;
 };
 
-#endif // MEDANNOTATIONGRAPHICSOBJECT_H
 
+#endif // MEDANNOTATIONREPRESENTATION_H

@@ -2,10 +2,10 @@
 
 #include <dtkCore/dtkAbstractData.h>
 
-#include <medAbstractViewScene.h>
+#include <medAbstractViewCoordinates.h>
 #include <medAnnotationData.h>
 #include <medAnnotationFactory.h>
-#include <medAnnotationGraphicsObject.h>
+#include <medAbstractAnnotationRepresentation.h>
 
 class medAbstractViewPrivate
 {
@@ -37,7 +37,7 @@ public:
     QHash<QString, unsigned int> DataTypes;
 
     // Which annotations are installed for which data.
-    typedef QHash< dtkSmartPointer<medAnnotationData> , QList<medAnnotationGraphicsObject *> > AnnotationHash;
+    typedef QSet< dtkSmartPointer<medAnnotationData> > AnnotationHash;
     AnnotationHash installedAnnotations;
 };
 
@@ -406,10 +406,9 @@ void medAbstractView::onDataAdded( int layer, dtkAbstractData* data)
 void medAbstractView::onDataRemoved( int layer, dtkAbstractData* data)
 {
     if ( (layer == 0 ) && ( d->dataList.values().count(data) <= 2 ) ) {
-        QList< dtkSmartPointer<medAnnotationData> > keys = d->installedAnnotations.keys();
 
         // Remove annotations
-        foreach( dtkSmartPointer<medAnnotationData> key, keys ) {
+        foreach( dtkSmartPointer<medAnnotationData> key,  d->installedAnnotations ) {
             if ( key->parentData() == data ) {
                 this->removeAnnotation( key );
             }
@@ -633,44 +632,23 @@ void medAbstractView::addAnnotation( medAnnotationData * annData )
         return;
     }
 
-    d->installedAnnotations.insert( annData, QList< medAnnotationGraphicsObject* >() );
+    bool isAdded = this->onAddAnnotation(annData);
 
-    medAbstractViewScene *mScene = this->scene();
-    if ( mScene ) {
-        std::auto_ptr<medAnnotationGraphicsObject> annItem = medAnnotationFactory::instance()->createAnnotationForData( annData );
-        if ( !annItem.get() ) 
-            return;
-        mScene->addItem( annItem.get() );
-        bool isAdded = mScene->items().contains(annItem.get());
-        if ( isAdded ) {
-            d->installedAnnotations[annData] << annItem.get();
-            annItem.release();
-        }
+    if ( isAdded ) {
+        d->installedAnnotations.insert( annData );
     }
 }
 
 void medAbstractView::removeAnnotation( medAnnotationData * annData )
 {
-    medAbstractViewPrivate::AnnotationHash::iterator it( d->installedAnnotations.find(annData) );
-    if ( it != d->installedAnnotations.end() ) {
-
-        const QList< medAnnotationGraphicsObject *> & grpObjs (it.value());
-        foreach( medAnnotationGraphicsObject * grphObj, grpObjs ) {
-            grphObj->scene()->removeItem(grphObj);
-        }
-        d->installedAnnotations.erase(it);
-
-    } else {
-
-    }
 
 }
 
-medAbstractViewScene * medAbstractView::scene()
+bool medAbstractView::onAddAnnotation( medAnnotationData *  annItem )
 {
-    QGraphicsView * qview = qobject_cast < QGraphicsView * >( this->receiverWidget() );
-    if ( qview ) 
-        return qobject_cast < medAbstractViewScene * >( qview->scene() );
-    else
-        return NULL;
+    return false;
+}
+
+void medAbstractView::onRemoveAnnotation( medAnnotationData *  annItem )
+{
 }

@@ -28,7 +28,6 @@
 
 #include <medAbstractDataImage.h>
 #include <medAbstractView.h>
-#include <medAbstractViewScene.h>
 #include <medDataManager.h>
 #include <medJobManager.h>
 #include <medMessageController.h>
@@ -40,6 +39,7 @@
 #include <medToolBoxSegmentationCustom.h>
 #include <medViewManager.h>
 #include <medViewerConfiguration.h>
+#include <medViewEventFilter.h>
 
 #include <QtGui>
 
@@ -194,7 +194,7 @@ void medToolBoxSegmentation::setProcess(dtkAbstractProcess* proc)
     d->process = proc;
 }
 
-medAbstractViewScene * medToolBoxSegmentation::viewScene( dtkAbstractView * view )
+medAbstractViewCoordinates * medToolBoxSegmentation::viewCoordinates( dtkAbstractView * view )
 {
     medAbstractView * mview = qobject_cast< medAbstractView * >( view );
     if ( ! mview ) {
@@ -202,8 +202,7 @@ medAbstractViewScene * medToolBoxSegmentation::viewScene( dtkAbstractView * view
         return NULL;
     }
 
-    medAbstractViewScene * ret  = mview->scene();
-    return ret;
+    return mview->coordinates();
 }
 
 dtkAbstractData * medToolBoxSegmentation::viewData( dtkAbstractView * view )
@@ -300,21 +299,21 @@ QString medToolBoxSegmentation::localizedNameForAlgorithm( const QString & algNa
 }
 
 
-void medToolBoxSegmentation::addViewEventFilter( QObject * filter )
+void medToolBoxSegmentation::addViewEventFilter( medViewEventFilter * filter )
 {
     QList< dtkAbstractView *> views = d->configuration->currentViewContainer()->views();
     foreach( dtkAbstractView * view, views ) {
-        medAbstractViewScene *vscene = medToolBoxSegmentation::viewScene(view);
-        vscene->installEventFilter( filter );
+        medAbstractView * mview = qobject_cast<medAbstractView *>(view);
+        filter->installOnView(mview);
     }
 }
 
-void medToolBoxSegmentation::removeViewEventFilter( QObject * filter )
+void medToolBoxSegmentation::removeViewEventFilter( medViewEventFilter * filter )
 {
     QList< dtkAbstractView *> views = d->configuration->currentViewContainer()->views();
     foreach( dtkAbstractView * view, views ) {
-        medAbstractViewScene *vscene = medToolBoxSegmentation::viewScene(view);
-        vscene->removeEventFilter( filter );
+        medAbstractView * mview = qobject_cast<medAbstractView *>(view);
+        filter->removeFromView(mview);
     }
 }
 
