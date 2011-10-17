@@ -2,11 +2,9 @@
 
 class dtkAbstractDataReader;
 
-namespace itk
-{
-  class DataImageReaderCommand : public Command
-  {
-    
+namespace itk {
+
+  class DataImageReaderCommand: public Command {
   public:
 
     typedef DataImageReaderCommand         Self;

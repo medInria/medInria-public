@@ -50,13 +50,13 @@ bool itkDataTensorImageWriterBase::write(const QString& path)
 
 	if (dtkAbstractData *dtkdata = this->data() ) {
 
-		if(dtkdata->description()=="itkDataTensorImageFloat3") {
+		if(dtkdata->identifier()=="itkDataTensorImageFloat3") {
 
 		    float dummy = 0;
 		    write(path, dummy);
 		}
 
-		else if(dtkdata->description()=="itkDataTensorImageDouble3") {
+		else if(dtkdata->identifier()=="itkDataTensorImageDouble3") {
 
 		    double dummy = 0;
 		    write(path, dummy);

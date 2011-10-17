@@ -49,17 +49,7 @@ include(${medinria-plugins_USE_FILE})
 
 set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImageWriterPlugin.h
-  itkDataImageWriterBase.h
-  itkMetaDataImageWriter.h
-  itkAnalyzeDataImageWriter.h
-  itkBMPDataImageWriter.h
-  itkPNGDataImageWriter.h
-  itkJPEGDataImageWriter.h
-  itkTIFFDataImageWriter.h
-  itkNiftiDataImageWriter.h
-  itkNrrdDataImageWriter.h
-  itkGiplDataImageWriter.h
-  itkVTKDataImageWriter.h)
+  itkDataImageWriterBase.h)
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})

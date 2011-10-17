@@ -1,28 +1,23 @@
-#include "itkPNGDataImageWriter.h"
+#include <itkPNGDataImageWriter.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkPNGImageIO.h>
 
+const char itkPNGDataImageWriter::ID[] = "itkPNGDataImageWriter";
 
-itkPNGDataImageWriter::itkPNGDataImageWriter(void) : itkDataImageWriterBase()
-{
+itkPNGDataImageWriter::itkPNGDataImageWriter(): itkDataImageWriterBase() {
     this->io = itk::PNGImageIO::New();
 }
 
+itkPNGDataImageWriter::~itkPNGDataImageWriter() { }
 
-itkPNGDataImageWriter::~itkPNGDataImageWriter(void)
-{
-}
-
-QStringList itkPNGDataImageWriter::handled(void) const
-{
+QStringList itkPNGDataImageWriter::handled() const {
     return s_handled();
 }
 
-QStringList itkPNGDataImageWriter::s_handled(void)
-{
+QStringList itkPNGDataImageWriter::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,23 @@ QStringList itkPNGDataImageWriter::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGBA3";
 }
 
-bool itkPNGDataImageWriter::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataWriterType("itkPNGDataImageWriter", s_handled(),
-                                                                      createItkPNGDataImageWriter);
+bool itkPNGDataImageWriter::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataWriterType(ID,s_handled(),createItkPNGDataImageWriter);
 }
 
+QString itkPNGDataImageWriter::identifier() const {
+    return ID;
+}
 
-QString itkPNGDataImageWriter::description(void) const
-{
-    return "itkPNGDataImageWriter";
+QString itkPNGDataImageWriter::description() const {
+    return "Writer for PNG images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkPNGDataImageWriter(void)
-{
+dtkAbstractDataWriter *createItkPNGDataImageWriter() {
     return new itkPNGDataImageWriter;
 }
 

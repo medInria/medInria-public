@@ -1,28 +1,23 @@
-#include "itkNiftiDataImageReader.h"
+#include <itkNiftiDataImageReader.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkNiftiImageIO.h>
 
+const char itkNiftiDataImageReader::ID[] = "itkNiftiDataImageReader";
 
-itkNiftiDataImageReader::itkNiftiDataImageReader(void) : itkDataImageReaderBase()
-{
+itkNiftiDataImageReader::itkNiftiDataImageReader(): itkDataImageReaderBase() {
     this->io = itk::NiftiImageIO::New();
 }
 
+itkNiftiDataImageReader::~itkNiftiDataImageReader() { }
 
-itkNiftiDataImageReader::~itkNiftiDataImageReader(void)
-{
-}
-
-QStringList itkNiftiDataImageReader::handled(void) const
-{
+QStringList itkNiftiDataImageReader::handled() const {
     return s_handled();
 }
 
-QStringList itkNiftiDataImageReader::s_handled(void)
-{
+QStringList itkNiftiDataImageReader::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,22 @@ QStringList itkNiftiDataImageReader::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGB3";
 }
 
-bool itkNiftiDataImageReader::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkNiftiDataImageReader", s_handled(),
-                                                                      createItkNiftiDataImageReader);
+bool itkNiftiDataImageReader::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkNiftiDataImageReader);
 }
 
+QString itkNiftiDataImageReader::identifier() const {
+    return ID;
+}
 
-QString itkNiftiDataImageReader::description(void) const
-{
-    return "itkNiftiDataImageReader";
+QString itkNiftiDataImageReader::description() const {
+    return "Reader for nifti images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkNiftiDataImageReader(void)
-{
+dtkAbstractDataReader *createItkNiftiDataImageReader() {
     return new itkNiftiDataImageReader;
 }
-

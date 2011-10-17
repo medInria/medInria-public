@@ -1,28 +1,23 @@
-#include "itkBMPDataImageReader.h"
+#include <itkBMPDataImageReader.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkBMPImageIO.h>
 
+const char itkBMPDataImageReader::ID[] = "itkBMPDataImageReader";
 
-itkBMPDataImageReader::itkBMPDataImageReader(void) : itkDataImageReaderBase()
-{
+itkBMPDataImageReader::itkBMPDataImageReader(): itkDataImageReaderBase() {
     this->io = itk::BMPImageIO::New();
 }
 
+itkBMPDataImageReader::~itkBMPDataImageReader() { }
 
-itkBMPDataImageReader::~itkBMPDataImageReader(void)
-{
-}
-
-QStringList itkBMPDataImageReader::handled(void) const
-{
+QStringList itkBMPDataImageReader::handled() const {
     return s_handled();
 }
 
-QStringList itkBMPDataImageReader::s_handled(void)
-{
+QStringList itkBMPDataImageReader::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,22 @@ QStringList itkBMPDataImageReader::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGBA3";
 }
 
-bool itkBMPDataImageReader::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkBMPDataImageReader", s_handled(),
-                                                                      createItkBMPDataImageReader);
+bool itkBMPDataImageReader::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkBMPDataImageReader);
 }
 
+QString itkBMPDataImageReader::identifier() const {
+    return ID;
+}
 
-QString itkBMPDataImageReader::description(void) const
-{
-    return "itkBMPDataImageReader";
+QString itkBMPDataImageReader::description() const {
+    return "Reader for BMP images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkBMPDataImageReader(void)
-{
+dtkAbstractDataReader *createItkBMPDataImageReader() {
     return new itkBMPDataImageReader;
 }
-

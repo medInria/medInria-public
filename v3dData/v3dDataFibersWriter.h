@@ -17,6 +17,7 @@ public:
 
     virtual QStringList handled(void) const;
     
+    virtual QString identifier(void)  const;
     virtual QString description(void) const;
 
     static bool registered(void);

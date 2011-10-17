@@ -160,7 +160,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
     if (!data || channel<0 || channel>1 || !data->data())
         return;
         
-    if (data->description()=="itkDataImageChar3") {
+    if (data->identifier()=="itkDataImageChar3") {
       typedef char ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -181,7 +181,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
       else if (channel==1)
           d->data2->setData ( caster->GetOutput() );
     }
-    else if (data->description()=="itkDataImageUChar3") {
+    else if (data->identifier()=="itkDataImageUChar3") {
       typedef unsigned char ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -203,7 +203,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()=="itkDataImageShort3") {
+    else if (data->identifier()=="itkDataImageShort3") {
       typedef short ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -225,7 +225,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()=="itkDataImageUShort3") {
+    else if (data->identifier()=="itkDataImageUShort3") {
       typedef unsigned short ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -247,7 +247,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()=="itkDataImageInt3") {
+    else if (data->identifier()=="itkDataImageInt3") {
       typedef int ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -269,7 +269,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()=="itkDataImageUInt3") {
+    else if (data->identifier()=="itkDataImageUInt3") {
       typedef unsigned int ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -291,7 +291,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()=="itkDataImageLong3") {
+    else if (data->identifier()=="itkDataImageLong3") {
       typedef long ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -313,7 +313,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()=="itkDataImageULong3") {
+    else if (data->identifier()=="itkDataImageULong3") {
       typedef unsigned long ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -335,7 +335,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()=="itkDataImageFloat3") {
+    else if (data->identifier()=="itkDataImageFloat3") {
       typedef float ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -357,7 +357,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()=="itkDataImageDouble3") {
+    else if (data->identifier()=="itkDataImageDouble3") {
       typedef double ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -378,7 +378,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
       else if (channel==1)
           d->data2->setData ( caster->GetOutput() );
     }
-    else if (data->description()=="v3dDataImage") {
+    else if (data->identifier()=="v3dDataImage") {
       typedef itk::VTKImageToImageFilter<v3dViewPublicFuseInteractorPrivate::ImageType> ConverterType;
       ConverterType::Pointer converter = ConverterType::New();
       
@@ -397,7 +397,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( converter->GetOutput() );
     }
     else {
-        qDebug() << "Unsupported image type for fusion: type=" << data->description();
+        qDebug() << "Unsupported image type for fusion: type=" << data->identifier();
         return;
     }
 

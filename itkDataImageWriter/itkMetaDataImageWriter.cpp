@@ -1,28 +1,23 @@
-#include "itkMetaDataImageWriter.h"
+#include <itkMetaDataImageWriter.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkMetaImageIO.h>
 
+const char itkMetaDataImageWriter::ID[] = "itkMetaDataImageWriter";
 
-itkMetaDataImageWriter::itkMetaDataImageWriter(void) : itkDataImageWriterBase()
-{
+itkMetaDataImageWriter::itkMetaDataImageWriter(): itkDataImageWriterBase() {
     this->io = itk::MetaImageIO::New();
 }
 
+itkMetaDataImageWriter::~itkMetaDataImageWriter() { }
 
-itkMetaDataImageWriter::~itkMetaDataImageWriter(void)
-{
-}
-
-QStringList itkMetaDataImageWriter::handled(void) const
-{
+QStringList itkMetaDataImageWriter::handled() const {
     return s_handled();
 }
 
-QStringList itkMetaDataImageWriter::s_handled(void)
-{
+QStringList itkMetaDataImageWriter::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -37,15 +32,15 @@ QStringList itkMetaDataImageWriter::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGBA3";
 }
 
-bool itkMetaDataImageWriter::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataWriterType("itkMetaDataImageWriter", s_handled(),
-                                                                      createItkMetaDataImageWriter);
+bool itkMetaDataImageWriter::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataWriterType(ID,s_handled(),createItkMetaDataImageWriter);
 }
 
+QString itkMetaDataImageWriter::identifier() const {
+    return ID;
+}
 
-QString itkMetaDataImageWriter::description(void) const
-{
+QString itkMetaDataImageWriter::description() const {
     return "itkMetaDataImageWriter";
 }
 
@@ -53,8 +48,7 @@ QString itkMetaDataImageWriter::description(void) const
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkMetaDataImageWriter(void)
-{
+dtkAbstractDataWriter *createItkMetaDataImageWriter() {
     return new itkMetaDataImageWriter;
 }
 

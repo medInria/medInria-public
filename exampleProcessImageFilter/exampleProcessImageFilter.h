@@ -17,7 +17,7 @@ class exampleProcessImageFilterPrivate;
 * last filter can be specified by the spin boxes of the exampleProcessImageFilterToolBox.h
 **/
 
-class EXAMPLEPROCESSIMAGEFILTERPLUGIN_EXPORT exampleProcessImageFilter : public dtkAbstractProcess
+class EXAMPLEPROCESSIMAGEFILTERPLUGIN_EXPORT exampleProcessImageFilter: public dtkAbstractProcess
 {
     Q_OBJECT
 

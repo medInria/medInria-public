@@ -68,7 +68,7 @@ AlgorithmConnectedThresholdToolbox::AlgorithmConnectedThresholdToolbox(QWidget *
     QWidget *displayWidget = new QWidget(this);
     this->addWidget(displayWidget);
 
-    this->setTitle(this->s_localizedName(this));
+    this->setTitle(this->s_name(this));
 
     QVBoxLayout * layout = new QVBoxLayout(displayWidget);
 
@@ -267,7 +267,7 @@ QString AlgorithmConnectedThresholdToolbox::s_identifier()
     return id;
 }
 
-QString AlgorithmConnectedThresholdToolbox::s_localizedName(const QObject * trObj)
+QString AlgorithmConnectedThresholdToolbox::s_name(const QObject * trObj)
 {
     if (!trObj) 
         trObj = qApp;

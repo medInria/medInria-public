@@ -132,11 +132,11 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	
     this->readInformation ( path );
 	
-    qDebug() << "Read with: " << this->description();
+    qDebug() << "Read with: " << this->identifier();
 
     if (dtkAbstractData *dtkdata = this->data() ) {
       
-        if (dtkdata->description()=="itkDataTensorImageDouble3") {
+        if (dtkdata->identifier()=="itkDataTensorImageDouble3") {
 
 	  if (this->io->GetNumberOfComponents()==6) {
 
@@ -269,7 +269,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	  } 
 	}
 
-	else if (dtkdata->description()=="itkDataTensorImageFloat3") {
+	else if (dtkdata->identifier()=="itkDataTensorImageFloat3") {
 
 	  if (this->io->GetNumberOfComponents()==6) {
 

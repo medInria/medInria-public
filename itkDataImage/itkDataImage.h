@@ -581,8 +581,8 @@ public:
         d = 0;
     }
 
-    virtual QString description() const { return ID; }
-
+    virtual QString description() const { return "itk image data" ; }
+    virtual QString identifier() const { return ID; }
     static bool registered() {
         return dtkAbstractDataFactory::instance()->registerDataType(ID,createItkDataImage<DIM,T,ID>);
     }

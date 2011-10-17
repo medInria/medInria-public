@@ -49,6 +49,8 @@ bool AlgorithmInitializer::initializeWidgets()
 
     ret &= factory->registerCustomSegmentationToolBox(
         AlgorithmConnectedThresholdToolbox::s_identifier(),
+        AlgorithmConnectedThresholdToolbox::s_name(),
+        AlgorithmConnectedThresholdToolbox::s_description(),
         AlgorithmConnectedThresholdToolbox::createInstance);
 
     return ret;

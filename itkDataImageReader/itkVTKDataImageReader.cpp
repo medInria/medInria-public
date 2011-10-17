@@ -5,6 +5,7 @@
 
 #include <itkVTKImageIO.h>
 
+const char itkVTKDataImageReader::ID[] = "itkVTKDataImageReader";
 
 itkVTKDataImageReader::itkVTKDataImageReader(void) : itkDataImageReaderBase()
 {
@@ -38,15 +39,21 @@ QStringList itkVTKDataImageReader::s_handled(void)
 
 bool itkVTKDataImageReader::registered(void)
 {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkVTKDataImageReader", s_handled(),
+    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID, s_handled(),
                                                                       createItkVTKDataImageReader);
 }
 
+QString itkVTKDataImageReader::identifier(void) const
+{
+    return ID;
+}
 
 QString itkVTKDataImageReader::description(void) const
 {
-    return "itkVTKDataImageReader";
+    return "Reader for VTK images";
 }
+
+
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation

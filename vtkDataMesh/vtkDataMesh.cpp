@@ -22,6 +22,8 @@ public:
   QList<QImage>          thumbnails;
 };
 
+const char vtkDataMesh::ID[] = "vtkDataMesh";
+
 vtkDataMesh::vtkDataMesh(): medAbstractDataMesh(), d (new vtkDataMeshPrivate)
 {
   d->mesh = 0;
@@ -32,30 +34,33 @@ vtkDataMesh::~vtkDataMesh()
   d = 0;
 }
 
-bool vtkDataMesh::registered()				
+bool vtkDataMesh::registered()
 {
-  return dtkAbstractDataFactory::instance()->registerDataType("vtkDataMesh", createVtkDataMesh);
+  return dtkAbstractDataFactory::instance()->registerDataType(ID,createVtkDataMesh);
 }
 
 QString vtkDataMesh::description() const
 {
-  return "vtkDataMesh";
+    return tr("vtk mesh data");
+}
+QString vtkDataMesh::identifier() const {
+    return ID;
 }
 
-void vtkDataMesh::setData(void *data)			
+void vtkDataMesh::setData(void *data)
 {
   vtkPointSet* mesh = vtkPointSet::SafeDownCast( (vtkObject*) data );
-  
+
   if (!mesh)
   {
     qDebug() << "Cannot cast data to correct data type";
-    return;		
+    return;
   }
-  
+
   d->mesh = mesh;
 }
 
-void *vtkDataMesh::output(void)				
+void *vtkDataMesh::output(void)
 {
   return d->mesh;
 }
@@ -65,7 +70,7 @@ void *vtkDataMesh::data(void)
   return d->mesh;
 }
 
-void vtkDataMesh::update(void)				
+void vtkDataMesh::update(void)
 {
 
 }
@@ -79,7 +84,7 @@ QImage & vtkDataMesh::thumbnail (void) const
 {
   if (!d->thumbnails.size())
     return medAbstractDataMesh::thumbnail();
-  
+
   return (d->thumbnails[0]);
 }
 
@@ -89,7 +94,7 @@ QList<QImage> & vtkDataMesh::thumbnails (void) const
 
   if (!d->mesh->GetNumberOfPoints())
     return d->thumbnails;
-  
+
   vtkDataSetSurfaceFilter* geometryextractor = vtkDataSetSurfaceFilter::New();
   vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
   vtkActor* actor = vtkActor::New();
@@ -99,7 +104,7 @@ QList<QImage> & vtkDataMesh::thumbnails (void) const
   geometryextractor->SetInput (d->mesh);
   mapper->SetInput (geometryextractor->GetOutput());
   actor->SetMapper (mapper);
-  actor->SetProperty (prop);  
+  actor->SetProperty (prop);
   renderer->AddViewProp(actor);
   window->SetSize (128,128);
   window->AddRenderer (renderer);
@@ -109,7 +114,7 @@ QList<QImage> & vtkDataMesh::thumbnails (void) const
   unsigned int w=128, h=128;
 
   QImage img(w, h, QImage::Format_RGB32);
-  
+
   vtkUnsignedCharArray* pixels = vtkUnsignedCharArray::New();
   pixels->SetArray(img.bits(), w*h*4, 1);
   window->GetRGBACharPixelData(0, 0, w-1, h-1, 1, pixels);
@@ -122,17 +127,17 @@ QList<QImage> & vtkDataMesh::thumbnails (void) const
   window->Delete();
 
   d->thumbnails.push_back (img);
-  
+
   return d->thumbnails;
 }
 
 void vtkDataMesh::onMetaDataSet(const QString& key, const QString& value)
-{  
+{
   Q_UNUSED(key);
   Q_UNUSED(value);
 }
 void vtkDataMesh::onPropertySet(const QString& key, const QString& value)
-{ 
+{
   Q_UNUSED(key);
   Q_UNUSED(value);
 }
@@ -144,5 +149,5 @@ int vtkDataMesh::countVertices(void)
 
 int vtkDataMesh::countEdges(void)
 {
-  return 0;
+    return 0;
 }
