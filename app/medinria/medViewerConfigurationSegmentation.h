@@ -26,6 +26,8 @@ public:
 
     //! Overrides base class.
     QString description(void) const;
+    //! Implement base class
+    QString identifier(void) const;
 
     //! Implement abstract method in base class.
     void setupViewContainerStack();

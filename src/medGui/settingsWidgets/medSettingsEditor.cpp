@@ -51,12 +51,14 @@ void medSettingsEditor::onSaveClicked()
 {
     if (this->save())
     {
+//       this->close();
         emit finished();
     }
 }
 
 void medSettingsEditor::onCancelClicked()
 {
+//   this->close();
     emit finished();
 }
 
@@ -95,7 +97,9 @@ void medSettingsEditor::initialize()
 
     QVBoxLayout * vLayout = new QVBoxLayout();
     d->stack = new QStackedWidget();
+    d->stack->setFocusPolicy(Qt::NoFocus);
     d->tabWidget = new QTabWidget ();
+    d->tabWidget->setFocusPolicy(Qt::NoFocus);
     d->tabWidget->setTabPosition(QTabWidget::West);
     d->tabWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
@@ -118,6 +122,7 @@ void medSettingsEditor::initialize()
     if(d->isUsingAdvancedWidget)
     {
         d->advanced = new QPushButton (tr("Advanced"),this);
+        d->advanced->setFocusPolicy(Qt::NoFocus);
         d->advanced->setMaximumWidth(buttonWidth);
         connect(d->advanced,SIGNAL(clicked()),
             this,SLOT(onAdvancedClicked()));
@@ -125,18 +130,21 @@ void medSettingsEditor::initialize()
 
     //save button
     d->save = new QPushButton (tr("Save"),this);
+    d->save->setFocusPolicy(Qt::NoFocus);
     d->save->setMaximumWidth(buttonWidth);
     connect(d->save,SIGNAL(clicked()),
         this,SLOT(onSaveClicked()));
 
     //cancel button
     d->cancel = new QPushButton (tr("Cancel"),this);
+    d->cancel->setFocusPolicy(Qt::NoFocus);
     d->cancel->setMaximumWidth(buttonWidth);
     connect(d->cancel,SIGNAL(clicked()),
         this,SLOT(onCancelClicked()));
 
     //reset button
     d->reset = new QPushButton (tr("Reset"), this);
+    d->reset->setFocusPolicy(Qt::NoFocus);
     d->reset->setMaximumWidth(buttonWidth);
     connect(d->reset,SIGNAL(clicked()),
         this,SLOT(onResetClicked()));
@@ -176,6 +184,7 @@ void medSettingsEditor::queryWidgets()
         {
             setWid = settingsFactory->createSettingsWidget(widgetStyle,d->tabWidget);
             scroll = new QScrollArea(this);
+            scroll->setFocusPolicy(Qt::NoFocus);
             // we need to call this otherwise the scroll-
             // area limits the widgets to their minimum sizes
             scroll->setWidgetResizable(true); 

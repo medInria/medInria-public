@@ -49,10 +49,23 @@ medToolBoxFiltering::medToolBoxFiltering ( QWidget *parent ) : medToolBox ( pare
 //    filterLayout->addWidget(d->saveToDiskButton);
     filterLayout->addWidget ( d->chooseFilter );
 
-    foreach ( QString toolbox, medToolBoxFactory::instance()->filteringToolBoxes() )
-    d->chooseFilter->addItem ( toolbox, toolbox );
+    medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
+    int i = 1; //account for the choose Filter item
+    foreach ( QString toolbox, tbFactory->filteringToolBoxes() )
+    {
+        QPair<QString, QString> pair =
+                tbFactory->filteringToolBoxDetailsFromId( toolbox );
+        QString name = pair.first;
+        QString description = pair.second;
+//        qDebug() << "Added registration toolbox" << name;
+        d->chooseFilter->addItem( name, toolbox );
+        d->chooseFilter->setItemData( i,
+                                  description,
+                                  Qt::ToolTipRole);
+        i++;
+    }
 
-    connect ( d->chooseFilter, SIGNAL ( activated ( const QString& ) ), this, SLOT ( onToolBoxChosen ( const QString& ) ) );
+    connect ( d->chooseFilter, SIGNAL ( activated ( int ) ), this, SLOT ( onToolBoxChosen ( int ) ) );
     connect ( d->saveInDatabaseButton,SIGNAL ( clicked() ), this, SLOT ( onSavedImage() ) );
 
 
@@ -80,13 +93,16 @@ dtkAbstractData*  medToolBoxFiltering::data()
     return d->inputData;
 }
 
-void medToolBoxFiltering::onToolBoxChosen ( const QString& id )
+void medToolBoxFiltering::onToolBoxChosen ( int index )
 {
+    //get identifier for toolbox.
+    QString id = d->chooseFilter->itemData( index ).toString();
+
     medToolBoxFilteringCustom *toolbox = medToolBoxFactory::instance()->createCustomFilteringToolBox ( id );
 
     if ( !toolbox )
     {
-        qDebug() << "Unable to instanciate" << id << "toolbox";
+        qWarning() << "Unable to instantiate" << id << "toolbox";
         return;
     }
 

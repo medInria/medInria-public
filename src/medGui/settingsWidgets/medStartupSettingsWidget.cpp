@@ -79,7 +79,10 @@ bool medStartupSettingsWidget::write()
     return true;
 }
 
-QString medStartupSettingsWidget::description() const
-{
+QString medStartupSettingsWidget::identifier() const {
+    return "startup";
+}
+
+QString medStartupSettingsWidget::description() const {
     return "startup";
 }

@@ -65,3 +65,14 @@ void medViewContainerFiltering::updateOutput(dtkAbstractData *data)
     outputView->reset();
     outputView->update();
 }
+
+void medViewContainerFiltering::dropEvent ( QDropEvent *event )
+{
+    //This drop should never read any image, we are not in a leaf,
+    //if we end up here, it is only because the output container doesn't accept
+    //drop events.
+    //we need to re-anable the updates in the widget, and accept the event to
+    // stop propagation.
+    this->setAttribute ( Qt::WA_UpdatesDisabled, false );
+    event->acceptProposedAction();
+}

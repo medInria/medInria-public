@@ -120,7 +120,7 @@ void medViewerConfigurationSegmentation::setupViewContainerStack()
 //static
 QString medViewerConfigurationSegmentation::description( void ) const
 {
-    static QString descString( "msegConfiguration" );
+    static QString descString( "Segmentation Configuration" );
     return descString;
 }
 
@@ -167,4 +167,11 @@ void medViewerConfigurationSegmentation::connectToolboxesToCurrentContainer(cons
     connect(stackedViewContainers()->container(name),SIGNAL(viewRemoved(dtkAbstractView*)),
         this,SLOT(onViewRemoved(dtkAbstractView*)));
 }
+
+QString medViewerConfigurationSegmentation::identifier( void ) const
+{
+    static QString id( "msegConfiguration" );
+    return id;
+}
+
 

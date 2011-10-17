@@ -358,7 +358,7 @@ void medAbstractView::removeOverlay(int layer)
     if (d->dataList.contains (layer))
     {
         dtkAbstractData * oldData = d->dataList[layer];
-        medAbstractView::removeDataType(oldData->description());
+        medAbstractView::removeDataType(oldData->identifier());
         if ( !oldData ) {
             this->onDataRemoved(layer, oldData);
         }
@@ -378,7 +378,7 @@ void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
     d->dataList[layer] = data;
     this->onDataAdded( layer, data );
 
-    medAbstractView::addDataType(data->description());
+    medAbstractView::addDataType(data->identifier());
 }
 
 void medAbstractView::onDataAdded( int layer, dtkAbstractData* data)
@@ -442,7 +442,7 @@ void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
     dtkAbstractData * oldData = NULL;
     if (d->dataList.contains(layer)) {
         oldData = d->dataList[layer];
-        removeDataType(oldData->description());
+        removeDataType(oldData->identifier());
     }
 
     if ( !oldData ) {
@@ -450,7 +450,7 @@ void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
     }
     d->dataList[layer] = data;
 
-    addDataType(data->description());
+    addDataType(data->identifier());
 }
 
 void medAbstractView::addDataType(const QString & dataDescription)

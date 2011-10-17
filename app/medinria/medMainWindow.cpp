@@ -289,6 +289,12 @@ medMainWindow::~medMainWindow ( void )
     d = NULL;
 }
 
+void medMainWindow::mousePressEvent ( QMouseEvent* event )
+{
+    QWidget::mousePressEvent ( event );
+    this->onHideQuickAccess();
+}
+
 void medMainWindow::readSettings ( void )
 {
     // if the user configured a default area we need to show it
@@ -535,11 +541,14 @@ void medMainWindow::onSaveModified( void )
 
 void medMainWindow::onEditSettings()
 {
-    if ( d->settingsEditor )
-    {
-        d->settingsEditor->show();
-        return;
-    }
+    QDialog * dialog = new QDialog(this);
+    dialog->setMinimumHeight(400);
+    dialog->setMinimumWidth(500);
+    dialog->setMaximumHeight(400);
+    dialog->setMaximumWidth(500);
+
+    QVBoxLayout * layout = new QVBoxLayout(dialog);
+    layout->setContentsMargins(0,0,0,0);;
 
     d->settingsEditor = new medSettingsEditor ( this, true );
     d->settingsEditor->setGeometry ( 100,100, 500, 500 );
@@ -547,9 +556,12 @@ void medMainWindow::onEditSettings()
     d->settingsEditor->initialize();
     d->settingsEditor->queryWidgets();
 
-    connect ( d->settingsEditor, SIGNAL ( finished() ), d->settingsEditor, SLOT ( close() ) );
+    layout->addWidget(d->settingsEditor);
+    dialog->setLayout(layout);
+    
+    connect ( d->settingsEditor, SIGNAL ( finished() ), dialog, SLOT ( close() ) );
 
-    d->settingsEditor->show();
+    dialog->exec();
 }
 
 void medMainWindow::open ( const medDataIndex& index )
