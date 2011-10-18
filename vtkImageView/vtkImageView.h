@@ -187,6 +187,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   // image map and interactor instances.
   vtkGetObjectMacro(RenderWindow,    vtkRenderWindow);
   vtkGetObjectMacro(Renderer,        vtkRenderer); // LAYER
+  vtkGetObjectMacro(OverlayRenderer, vtkRenderer);
   vtkGetObjectMacro(WindowLevel,     vtkImageMapToColors); // LAYER
   vtkGetObjectMacro(InteractorStyle, vtkInteractorStyle);
   vtkGetObjectMacro(Interactor,      vtkRenderWindowInteractor);
@@ -195,6 +196,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   // Set your own renderwindow and renderer
   virtual void SetRenderWindow (vtkRenderWindow *arg);
   virtual void SetRenderer     (vtkRenderer *arg); // LAYER
+  virtual void SetOverlayRenderer (vtkRenderer *arg);
 
   // Description:
   // Attach an interactor for the internal render window.
@@ -726,6 +728,7 @@ protected:
   int IsInteractorInstalled;
 
   vtkRenderer*                    Renderer;
+  vtkRenderer*                    OverlayRenderer;  // Same camera as the Renderer, but higher layer.
   vtkRenderWindow*                RenderWindow;
   vtkRenderWindowInteractor*      Interactor;
   vtkInteractorStyle*             InteractorStyle;

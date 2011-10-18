@@ -22,6 +22,8 @@
 #include "vtkImageView.h"
 #include "vtkInteractorStyleImageView2D.h"
 
+#include <vtkSmartPointer.h>
+
 #include <vector>
 #include <map>
 
@@ -629,6 +631,10 @@ protected:
    */  
   vtkImageView2DCommand* Command;  
 
+  // Get layer specific renderer.
+  vtkImage2DDisplay * GetImage2DDisplayForLayer(int layer) const;
+  vtkRenderer * GetRendererForLayer(int layer) const;
+
   //BTX
   std::list<vtkDataSet2DWidget*>::iterator FindDataSetWidget(vtkPointSet* arg);
   //ETX
@@ -658,8 +664,12 @@ protected:
 	
   std::list<vtkDataSet2DWidget*> DataSetWidgets;
   
-  std::map<int, vtkImage2DDisplay *> ImageDisplayMap;
-  std::map<int, vtkRenderer *>       RendererMap;
+  struct LayerInfo {
+      vtkSmartPointer<vtkImage2DDisplay> ImageDisplay;
+      vtkSmartPointer<vtkRenderer> Renderer;
+  };
+  typedef std::map<int, LayerInfo > LayerInfoMapType;
+  LayerInfoMapType LayerInfoMap;
   
 private:
   vtkImageView2D(const vtkImageView2D&);  // Not implemented.

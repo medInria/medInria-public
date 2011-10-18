@@ -135,6 +135,7 @@ vtkImageView::vtkImageView()
   this->ScalarBar               = vtkScalarBarActor::New();
   
   this->Renderer               = 0;
+  this->OverlayRenderer        = 0;
   this->RenderWindow           = 0;
   this->Interactor             = 0;
   this->Input                  = 0;
@@ -227,8 +228,13 @@ vtkImageView::~vtkImageView()
   }
   if( this->Renderer )
   {
-    this->Renderer->Delete();
-    this->Renderer = 0;
+      this->Renderer->Delete();
+      this->Renderer = 0;
+  }
+  if( this->OverlayRenderer )
+  {
+      this->OverlayRenderer->Delete();
+      this->OverlayRenderer = 0;
   }
   if( this->Interactor )
   {
@@ -1776,4 +1782,15 @@ void vtkImageView::PrintSelf(ostream& os, vtkIndent indent)
     os << indent << "InteractorStyle:\n";
     this->InteractorStyle->PrintSelf(os,indent.GetNextIndent());
   }
+}
+
+void vtkImageView::SetOverlayRenderer( vtkRenderer *arg )
+{
+    vtkSetObjectBodyMacro( OverlayRenderer, vtkRenderer, arg); 
+    if ( arg ) {
+        arg->SetLayer(this->GetNumberOfLayers());
+        if ( this->GetRenderer() ) {
+            arg->SetActiveCamera(this->GetRenderer()->GetActiveCamera());
+        }
+    }
 }
