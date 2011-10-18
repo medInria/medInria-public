@@ -779,41 +779,44 @@ vtkRenderer *v3dView::renderer3d ( void )
 
 void v3dView::setSharedDataPointer ( dtkSmartPointer<dtkAbstractData> data )
 {
-    int layer = 0;
-    while ( d->view2d->GetImageInput ( layer ) )
-    {
-        layer++;
-    }
+    if ( !data )
+        return;
+     int layer = 0;
+     while ( medAbstractView::dataInList( layer ) )
+     {
+         layer++;
+     }
 
-    d->sharedData[layer] = data;
+     d->sharedData[layer] = data;
+ 
+     this->setData ( data.data(), layer );
 
-    this->setData ( data.data(), layer );
 }
 
 void v3dView::setData ( dtkAbstractData *data )
 {
-    if ( !data )
-        return;
+    //if ( !data )
+    //    return;
 
-    /*
-    if(medAbstractView::isInList(data)) // called in setData(data, layer) !
-        return;
-    */
+    ///*
+    //if(medAbstractView::isInList(data)) // called in setData(data, layer) !
+    //    return;
+    //*/
 
-    int layer = 0;
-    while ( d->view2d->GetImageInput ( layer ) )
-    {
-        layer++;
-    }
+    //int layer = 0;
+    //while ( d->view2d->GetImageInput ( layer ) )
+    //{
+    //    layer++;
+    //}
 
-    if ( data->identifier().contains ( "vtkDataMesh" ) && layer )
-    {
-        layer--;
-    }
+    //if ( data->identifier().contains ( "vtkDataMesh" ) && layer )
+    //{
+    //    layer--;
+    //}
 
-    this->setData ( data, layer );
+    //this->setData ( data, layer );
 
-    // this->update(); // update is not the role of the plugin, but of the app
+    //// this->update(); // update is not the role of the plugin, but of the app
 }
 
 //  TO: TODO
