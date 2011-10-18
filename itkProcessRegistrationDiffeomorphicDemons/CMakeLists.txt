@@ -63,6 +63,11 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
+CONFIGURE_FILE( 
+      ${CMAKE_CURRENT_SOURCE_DIR}/itkProcessRegistrationDiffeomorphicDemonsDefinitions.h.in
+      ${CMAKE_CURRENT_BINARY_DIR}/itkProcessRegistrationDiffeomorphicDemonsDefinitions.h
+      )
+
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
@@ -70,7 +75,6 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-  RPIDiffeomorphicDemons
   itkProcessRegistration
   ${QT_LIBRARIES}
   dtkCore
@@ -80,10 +84,13 @@ target_link_libraries(${PROJECT_NAME}
   ITKIO
   ITKStatistics
   ITKNumerics
-  ITKAlgorithms  
+  ITKAlgorithms
 )
 
 dtk_build_doc(${PROJECT_NAME})
+
+
+
 ## #################################################################
 ## Install rules
 ## #################################################################

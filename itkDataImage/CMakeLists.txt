@@ -41,6 +41,9 @@ find_package(ITK REQUIRED)
   endif(NOT ITK_USE_REVIEW_STATISTICS)
 include(${ITK_USE_FILE})
 
+find_package(medinria REQUIRED)
+include(${medinria_USE_FILE})
+
 #include_directories(../dtkItkLogForwarder)
 find_package(medinria-plugins REQUIRED)
 include(${medinria-plugins_USE_FILE})
@@ -53,6 +56,7 @@ include(${medinria-plugins_USE_FILE})
 set(${PROJECT_NAME}_HEADERS_MOC itkDataImagePlugin.h)
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
+  itkDataImage.h
   itkDataImageChar3.h
   itkDataImageChar4.h
   itkDataImageUChar4.h
@@ -72,7 +76,8 @@ set(${PROJECT_NAME}_HEADERS
   itkDataImageFloat4.h
   itkDataImageDouble4.h
   itkDataImageDouble3.h
-  itkDataImageVector3.h
+  itkDataImageVectorUChar3.h
+  itkDataImageVectorFloat3.h
   itkDataImageRGB3.h
   itkDataImageRGBA3.h
   itkDataImageShort4.h
@@ -86,14 +91,23 @@ set(${PROJECT_NAME}_SOURCES itkDataImagePlugin.cpp)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
+if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
+    "medPluginsPch.h" "../src/medPluginsPch/medPluginsItkPch.cpp"
+    ${${PROJECT_NAME}_SOURCES}
+    ${${PROJECT_NAME}_SOURCES_MOC})
+endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC} 
-  ${${PROJECT_NAME}_HEADERS} 
+  ${${PROJECT_NAME}_SOURCES_MOC}
+  ${${PROJECT_NAME}_SOURCES_PCH}
+  ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
+  medCore
   dtkItkLogForwarder
   ${ITK_LIBRARIES})
 
@@ -114,6 +128,13 @@ if (MSVC)
     else (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
         set_source_files_properties(${bigobjFile} PROPERTIES COMPILE_FLAGS "${bigobjFile_COMPILE_FLAGS} /bigobj")
     endif (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
+endif (MSVC)
+
+#Prevent compiler warnings about valid std::copy.
+if (MSVC)
+    add_definitions(
+        -D_SCL_SECURE_NO_WARNINGS
+    )
 endif (MSVC)
 
 ## #################################################################

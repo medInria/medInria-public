@@ -14,8 +14,12 @@ public:
     virtual ~itkMetaDataTensorImageWriter(void);
 
     virtual QString description(void) const;
+    virtual QString identifier(void) const;
 
     static bool registered(void);
+
+private:
+    static const char ID[];
 };
 
 dtkAbstractDataWriter *createItkMetaDataTensorImageWriter(void);

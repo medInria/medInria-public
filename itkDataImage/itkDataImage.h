@@ -16,8 +16,60 @@
 #include <itkRecursiveGaussianImageFilter.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractDataTypedImage.h>
+#include <medAbstractDataTypedImage.h>
 #include <itkDataImagePluginExport.h>
+
+template<typename T,int DIM>
+std::vector <bool> DeterminePermutationsAndFlips(typename itk::Image<T,DIM>::DirectionType &directionMatrix)
+{
+    std::vector <bool> mirrorThumbs(2,false);
+    std::vector <unsigned int> axesPermutation(3,false);
+    std::vector <bool> maxValueNegative(3,false);
+    
+    // Determine permutations, used to see if we have axial, sagittal or coronal main direction (z-direction)
+    for (unsigned int i = 0;i < 3;++i)
+    {
+        axesPermutation[i] = i;
+        double maxAbsValue = directionMatrix(i,i);
+
+        for (unsigned int j = 0;j < DIM;++j)
+        {
+            if (fabs(maxAbsValue) < fabs(directionMatrix(j,i)))
+            {
+                axesPermutation[i] = j;
+                maxAbsValue = directionMatrix(j,i);
+            }
+        }
+        if (maxAbsValue < 0)
+            maxValueNegative[i] = true;
+    }
+    
+    // Modify flips according to main orientation and directions, as well as QImage inversion of y axis
+    if ((axesPermutation[2] > axesPermutation[0])&&(axesPermutation[2] > axesPermutation[1]))
+    {
+        // Axial        
+        qDebug() << "Axial first";
+        mirrorThumbs[0] = maxValueNegative[0];
+        mirrorThumbs[1] = maxValueNegative[1];
+    }
+    else if ((axesPermutation[2] < axesPermutation[0])&&(axesPermutation[2] < axesPermutation[1]))
+    {
+        // Sagittal
+        qDebug() << "Sagittal first";
+        mirrorThumbs[0] = !maxValueNegative[0];
+        mirrorThumbs[1] = !maxValueNegative[1];
+    }
+    else
+    {
+        // Coronal
+        qDebug() << "Coronal first";
+        mirrorThumbs[0] = !maxValueNegative[0];
+        mirrorThumbs[1] = !maxValueNegative[1];
+    }
+    
+    return mirrorThumbs;
+}
+
 
 template<typename T,int DIM>
 void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez,QList<QImage>& thumbnails) {
@@ -48,7 +100,7 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
 
         index.Fill(0);
         index[2] = size[2]/2;
-        typename ImageType::RegionType region = img->GetLargestPossibleRegion(); 
+        typename ImageType::RegionType region = img->GetLargestPossibleRegion();
         region.SetIndex(index);
         region.SetSize(newSize);
 
@@ -147,6 +199,10 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
     rgbfilter->GetColormap()->SetMaximumRGBComponentValue (255);
     rgbfilter->UseInputImageExtremaForScalingOn ();
 
+    typename ImageType::DirectionType directionMatrix = image->GetDirection();
+
+    std::vector <bool> mirrorThumbs = DeterminePermutationsAndFlips<T,DIM>(directionMatrix);
+
     if (DIM==3) {
 
         for (unsigned int slice=0;slice<size[2];slice++) {
@@ -186,20 +242,31 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
             }
 
             QImage *qimage = new QImage (newSize[0],newSize[1],QImage::Format_ARGB32);
+            qimage->fill(0);
             uchar  *qImageBuffer = qimage->bits();
-            itk::ImageRegionIterator<RGBImage2DType> it (rgbfilter->GetOutput(),
+            
+            unsigned int baseX = 0;
+            unsigned int baseY = 0;
+            
+            if (newSize[0] > rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[0])
+                baseX = (newSize[0] - rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[0]) / 2;
+            if (newSize[1] > rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[1])
+                baseY = (newSize[1] - rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[1]) / 2;
+            
+            itk::ImageRegionIteratorWithIndex<RGBImage2DType> it (rgbfilter->GetOutput(),
                                                          rgbfilter->GetOutput()->GetLargestPossibleRegion());
 
             while (!it.IsAtEnd()) {
-                *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetRed());
-                *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetGreen());
-                *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetBlue());
-                *qImageBuffer++ = 0xFF;
+                RGBImage2DType::IndexType tmpIndex = it.GetIndex();
+                qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0])] = static_cast<unsigned char>(it.Value().GetRed());
+                qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 1] = static_cast<unsigned char>(it.Value().GetGreen());
+                qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 2] = static_cast<unsigned char>(it.Value().GetBlue());
+                qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 3] = 0xFF;
 
                 ++it;
             }
 
-            thumbnails.push_back (qimage->mirrored(img2d->GetDirection()(0,0)==-1.0,img2d->GetDirection()(1,1)==-1.0));
+            thumbnails.push_back(qimage->mirrored(mirrorThumbs[0],mirrorThumbs[1]));
             delete qimage;
         }
     } else if (DIM==4) {
@@ -245,19 +312,29 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
 
                 QImage *qimage = new QImage (newSize[0],newSize[1],QImage::Format_ARGB32);
                 uchar  *qImageBuffer = qimage->bits();
-                itk::ImageRegionIterator<RGBImage2DType> it (rgbfilter->GetOutput(),
-                                                             rgbfilter->GetOutput()->GetLargestPossibleRegion());
 
+                unsigned int baseX = 0;
+                unsigned int baseY = 0;
+                
+                if (newSize[0] > rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[0])
+                    baseX = (newSize[0] - rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[0]) / 2;
+                if (newSize[1] > rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[1])
+                    baseY = (newSize[1] - rgbfilter->GetOutput()->GetLargestPossibleRegion().GetSize()[1]) / 2;
+                
+                itk::ImageRegionIteratorWithIndex<RGBImage2DType> it (rgbfilter->GetOutput(),
+                                                                      rgbfilter->GetOutput()->GetLargestPossibleRegion());
+                
                 while (!it.IsAtEnd()) {
-                    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetRed());
-                    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetGreen());
-                    *qImageBuffer++ = static_cast<unsigned char>(it.Value().GetBlue());
-                    *qImageBuffer++ = 0xFF;
-
+                    RGBImage2DType::IndexType tmpIndex = it.GetIndex();
+                    qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0])] = static_cast<unsigned char>(it.Value().GetRed());
+                    qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 1] = static_cast<unsigned char>(it.Value().GetGreen());
+                    qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 2] = static_cast<unsigned char>(it.Value().GetBlue());
+                    qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 3] = 0xFF;
+                    
                     ++it;
                 }
-
-                thumbnails.push_back(qimage->mirrored(img2d->GetDirection()(0,0)==-1.0,img2d->GetDirection()(1,1)==-1.0));
+                
+                thumbnails.push_back(qimage->mirrored(mirrorThumbs[0],mirrorThumbs[1]));
                 delete qimage;
             }
         }
@@ -491,21 +568,21 @@ QList<QImage>& itkDataImagePrivate<DIM,T,1>::make_thumbnails(const int sz,const 
 template <unsigned DIM,typename T,const char* ID> dtkAbstractData* createItkDataImage();
 
 template <unsigned DIM,typename T,const char* ID>
-class ITKDATAIMAGEPLUGIN_EXPORT itkDataImage: public dtkAbstractDataTypedImage<DIM,T> {
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImage: public medAbstractDataTypedImage<DIM,T> {
 
     typedef itkDataImagePrivate<DIM,T,ImageTypeIndex<T>::Index> PrivateMember;
 
 public:
 
-    itkDataImage(): dtkAbstractDataTypedImage<DIM,T>(),d(new PrivateMember) { }
+    itkDataImage(): medAbstractDataTypedImage<DIM,T>(),d(new PrivateMember) { }
 
     ~itkDataImage() {
         delete d;
         d = 0;
     }
 
-    virtual QString description() const { return ID; }
-
+    virtual QString description() const { return "itk image data" ; }
+    virtual QString identifier() const { return ID; }
     static bool registered() {
         return dtkAbstractDataFactory::instance()->registerDataType(ID,createItkDataImage<DIM,T,ID>);
     }
@@ -542,7 +619,7 @@ public:
         Q_UNUSED(value);
     }
 
-    // derived from dtkAbstractDataImage
+    // derived from medAbstractDataImage
 
     int xDimension() {
         if (d->image.IsNull())
@@ -591,7 +668,7 @@ dtkAbstractData* createItkDataImage() {
 template <unsigned DIM,typename T,const char* ID>
 QImage& itkDataImage<DIM,T,ID>::thumbnail() const {
     if (d->image.IsNull())
-        return dtkAbstractDataImage::thumbnail();
+        return medAbstractDataImage::thumbnail();
 
     const int xydim = 128;
     if (d->thumbnails.isEmpty()          ||
@@ -611,7 +688,7 @@ QImage& itkDataImage<DIM,T,ID>::thumbnail() const {
     else if (d->thumbnails.size()>0)
         return d->thumbnails[0];
     else
-        return dtkAbstractDataImage::thumbnail();
+        return medAbstractDataImage::thumbnail();
 }
 
 #endif

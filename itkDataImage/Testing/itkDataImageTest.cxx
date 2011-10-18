@@ -1,9 +1,11 @@
+#include "medAbstractDataImage.h"
+
 #include "dtkCore/dtkPluginManager.h"
 #include "dtkCore/dtkAbstractDataFactory.h"
 #include <dtkCore/dtkAbstractDataReader.h>
 #include "dtkCore/dtkAbstractData.h"
-#include "dtkCore/dtkAbstractDataImage.h"
 #include <dtkCore/dtkLog.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <itkImage.h>
 #include <itkRGBAPixel.h>
@@ -60,7 +62,7 @@ int testRunner<TPixel,VDimension>::run() {
     image->SetRegions (region);
     image->Allocate();
 
-    dtkAbstractDataImage *dataInDtk = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create (this->m_dataTypeName) );
+    dtkSmartPointer<medAbstractDataImage> dataInDtk = dtkAbstractDataFactory::instance()->createSmartPointer(this->m_dataTypeName);
     if (!dataInDtk) {
         dtkDebug() << "Cannot create data object from plugin";
         return EXIT_FAILURE;
@@ -98,8 +100,8 @@ int testRunner<TPixel,VDimension>::run() {
         return EXIT_FAILURE;
     }
 
-    if ( dataInDtk->description() != this->m_dataTypeName ) {
-        dtkDebug() << "Bad data description";
+    if ( dataInDtk->identifier() != this->m_dataTypeName ) {
+        dtkDebug() << "Bad data identifier";
         return EXIT_FAILURE;
     }
 
@@ -129,7 +131,7 @@ int itkDataImageTest (int argc, char* argv[])
         // Construct and fill test container with instances of the test runner.
         testsForEachType.push_back( new testRunner< RGBAPixelType, 3>("itkDataImageRGBA3") );
         testsForEachType.push_back( new testRunner< RGBPixelType, 3>("itkDataImageRGB3") );
-        testsForEachType.push_back( new testRunner< UCharVectorType, 3>("itkDataImageVector3") );
+        testsForEachType.push_back( new testRunner< UCharVectorType, 3>("itkDataImageVectorUChar3") );
         testsForEachType.push_back( new testRunner< char, 3>("itkDataImageChar3") );
         testsForEachType.push_back( new testRunner< char, 4>("itkDataImageChar4") );
         testsForEachType.push_back( new testRunner< double, 3>("itkDataImageDouble3") );

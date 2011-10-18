@@ -27,7 +27,7 @@ public:
 // v3dDataImage
 // /////////////////////////////////////////////////////////////////
 
-v3dDataImage::v3dDataImage(void) : dtkAbstractDataImage(), d(new v3dDataImagePrivate)
+v3dDataImage::v3dDataImage(void) : medAbstractDataImage(), d(new v3dDataImagePrivate)
 {
     d->image = NULL;
 }
@@ -45,11 +45,16 @@ bool v3dDataImage::registered(void)
 
 QString v3dDataImage::description(void) const
 {
+    return tr("vtk 3d image data");
+}
+
+QString v3dDataImage::identifier() const
+{
     return "v3dDataImage";
 }
 
 // /////////////////////////////////////////////////////////////////
-// 
+//
 // /////////////////////////////////////////////////////////////////
 
 bool v3dDataImage::read(const QString& file)

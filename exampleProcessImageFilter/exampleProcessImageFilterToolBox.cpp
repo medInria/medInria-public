@@ -17,31 +17,28 @@
  * 
  */
 
-#include "exampleProcessImageFilter.h"
-#include "exampleProcessImageFilterToolBox.h"
+#include <exampleProcessImageFilter.h>
+#include <exampleProcessImageFilterToolBox.h>
 
-#include "v3dView.h"
-#include "vtkImageView2D.h"
+#include <v3dView.h>
+#include <vtkImageView2D.h>
 
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 #include <dtkCore/dtkGlobal.h>
 
-#include <medCore/medDataIndex.h>
-#include <medCore/medDataManager.h>
-#include <medCore/medViewManager.h>
-#include <medCore/medAbstractView.h>
+#include <medDataIndex.h>
+#include <medDataManager.h>
+#include <medViewManager.h>
+#include <medAbstractView.h>
 
-#include <medGui/medDropSite.h>
-#include <medGui/medToolBoxDiffusion.h>
+#include <medDropSite.h>
+#include <medToolBoxDiffusion.h>
 
-#include <medGui/medProgressionStack.h>
-#include <medCore/medRunnableProcess.h>
-#include <medCore/medJobManager.h>
-
-
-
+#include <medProgressionStack.h>
+#include <medRunnableProcess.h>
+#include <medJobManager.h>
 
 class exampleProcessImageFilterToolBoxPrivate
 {
@@ -287,16 +284,13 @@ dtkAbstractData * exampleProcessImageFilterToolBox::output (void) const
     if (d->process && d->process->output()) {
         // fill out Pateint/Study/Series for proper inclusion in the database
 //        if (d->data) {
-//	    if (d->data->hasMetaData ("PatientName"))
-//	        d->process->output()->setMetaData ("PatientName", d2->data->metaDataValues ("PatientName")[0]);
-//	    if (d->data->hasMetaData ("StudyDescription"))
-//	        d->process->output()->setMetaData ("StudyDescription", d2->data->metaDataValues ("StudyDescription")[0]);
-//	    d->process->output()->setMetaData ("SeriesDescription", d2->process->property ("RequiredOutput"));
+//	    if (d->data->hasMetaData (medMetaDataKeys::PatientName.key()))
+//	        d->process->output()->setMetaData (medMetaDataKeys::PatientName.key(), d2->data->metaDataValues (medMetaDataKeys::PatientName.key())[0]);
+//	    if (d->data->hasMetaData (medMetaDataKeys::StudyDescription.key()))
+//	        d->process->output()->setMetaData (medMetaDataKeys::StudyDescription.key(), d2->data->metaDataValues (medMetaDataKeys::StudyDescription.key())[0]);
+//	    d->process->output()->setMetaData (medMetaDataKeys::SeriesDescription.key(), d2->process->property ("RequiredOutput"));
 //	}
         return d->process->output();
     }
     return NULL;
 }
-
-
-

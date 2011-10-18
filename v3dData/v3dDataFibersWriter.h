@@ -17,10 +17,14 @@ public:
 
     virtual QStringList handled(void) const;
     
+    virtual QString identifier(void)  const;
     virtual QString description(void) const;
-	
+
     static bool registered(void);
-    
+
+    /** Override base class */
+    virtual QStringList supportedFileExtensions(void) const;
+
 public slots:
     bool write    (const QString& path);
     bool canWrite (const QString& path);

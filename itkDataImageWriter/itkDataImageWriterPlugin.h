@@ -7,12 +7,11 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "itkDataImageWriterPluginExport.h"
+#include <itkDataImageWriterPluginExport.h>
 
 class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkDataImageWriterPluginPrivate;
 
-class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkDataImageWriterPlugin : public dtkPlugin
-{
+class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkDataImageWriterPlugin: public dtkPlugin {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
 

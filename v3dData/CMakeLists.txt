@@ -35,6 +35,9 @@ include(dtkPlugin)
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
+find_package(medinria REQUIRED)
+include(${medinria_USE_FILE})
+
 find_package(medinria-plugins REQUIRED)
 include(${medinria-plugins_USE_FILE})
 
@@ -68,8 +71,17 @@ set(${PROJECT_NAME}_RESOURCES v3dData.qrc)
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
+if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
+    "medPluginsPch.h" "../src/medPluginsPch/medPluginsVtkPch.cpp"
+    ${${PROJECT_NAME}_SOURCES_MOC}
+    ${${PROJECT_NAME}_SOURCES_QRC} 
+    ${${PROJECT_NAME}_SOURCES})
+endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
+  ${${PROJECT_NAME}_SOURCES_PCH} 
   ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_SOURCES_QRC})
@@ -78,6 +90,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   dtkItkLogForwarder
   dtkVtkLogForwarder
+  medCore
   vtkDataManagement
   QVTK
   vtkCommon

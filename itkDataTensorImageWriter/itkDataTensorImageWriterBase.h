@@ -11,7 +11,7 @@ class ITKDATATENSORIMAGEWRITERPLUGIN_EXPORT itkDataTensorImageWriterBase : publi
     Q_OBJECT
 
 public:
-			itkDataTensorImageWriterBase(void);
+    itkDataTensorImageWriterBase(void);
     virtual ~itkDataTensorImageWriterBase(void);
 
     virtual QStringList handled(void) const;
@@ -19,12 +19,12 @@ public:
     static QStringList s_handled (void);
 
 public slots:
-	bool write    (const QString& path);
-	bool canWrite (const QString& path);
+    bool write    (const QString& path);
+    bool canWrite (const QString& path);
 
 private:
-	template <class PixelType>
-	bool write(const QString& path, PixelType dummyArgument);
+    template <class PixelType>
+    bool write(const QString& path, PixelType dummyArgument);
 
 protected:
     itk::ImageIOBase::Pointer io;

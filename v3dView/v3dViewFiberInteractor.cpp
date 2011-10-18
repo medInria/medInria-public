@@ -52,7 +52,7 @@ v3dViewFiberInteractor::v3dViewFiberInteractor(): medAbstractViewFiberInteractor
     vtkLookupTable* lut = vtkLookupTableManager::GetSpectrumLookupTable();
     d->manager->SetLookupTable(lut);
     lut->Delete();
-    
+
     // addProperty here
     this->addProperty("Visibility",    QStringList() << "true" << "false");
     this->addProperty("BoxVisibility", QStringList() << "true" << "false");
@@ -74,6 +74,11 @@ v3dViewFiberInteractor::~v3dViewFiberInteractor()
 
 QString v3dViewFiberInteractor::description(void) const
 {
+    return tr("Interactor to help visualising Fibers");
+}
+
+QString v3dViewFiberInteractor::identifier() const
+{
     return "v3dViewFiberInteractor";
 }
 
@@ -92,7 +97,7 @@ void v3dViewFiberInteractor::setData(dtkAbstractData *data)
     if (!data)
         return;
 
-    if (data->description()=="v3dDataFibers") {
+    if (data->identifier()=="v3dDataFibers") {
         if (vtkFiberDataSet *dataset = static_cast<vtkFiberDataSet *>(data->data())) {
             d->dataset = dataset;
             d->manager->SetInput (d->dataset);
@@ -126,7 +131,7 @@ dtkAbstractData *v3dViewFiberInteractor::data (void)
 
 void v3dViewFiberInteractor::setView(dtkAbstractView *view)
 {
-    if (v3dView *v3dview = dynamic_cast<v3dView*>(view) ) {
+    if (v3dView *v3dview = qobject_cast<v3dView*>(view) ) {
         d->view = v3dview;
         d->manager->SetRenderer( d->view->renderer3d() );
         d->manager->SetRenderWindowInteractor( d->view->interactor() );
@@ -160,7 +165,7 @@ void v3dViewFiberInteractor::enable(void)
             }
         }
     }
-    
+
     dtkAbstractViewInteractor::enable();
 }
 
@@ -184,7 +189,7 @@ void v3dViewFiberInteractor::disable(void)
             }
         }
     }
-    
+
     dtkAbstractViewInteractor::disable();
 }
 
@@ -282,7 +287,7 @@ void v3dViewFiberInteractor::onBoxBooleanOperationPropertySet (const QString& va
 {
     if (value=="plus")
         d->manager->GetVOILimiter()->SetBooleanOperationToAND();
-    
+
     if (value=="minus")
         d->manager->GetVOILimiter()->SetBooleanOperationToNOT();
 
@@ -415,7 +420,7 @@ void v3dViewFiberInteractor::setROI(dtkAbstractData *data)
     if (!data)
         return;
 
-    if (data->description()!="itkDataImageUChar3")
+    if (data->identifier()!="itkDataImageUChar3")
         return;
 
     typedef itk::Image<unsigned char, 3> ROIType;
@@ -516,3 +521,4 @@ dtkAbstractViewInteractor *createV3dViewFiberInteractor(void)
 {
     return new v3dViewFiberInteractor;
 }
+

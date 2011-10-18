@@ -2,7 +2,7 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 #include <dtkCore/dtkLog.h>
 
 #include <itkImage.h>
@@ -32,16 +32,16 @@ bool itkDataImageWriterBase::canWrite(const QString& path)
 template <unsigned DIM,typename T>
 bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
     dtkAbstractData* dtkdata = this->data();
-    if (dtkdata && dtkdata->description()!=type)
+    if (dtkdata && dtkdata->identifier()!=type)
         return false;
 
     typedef itk::Image<T,DIM> Image;
     typename Image::Pointer image = dynamic_cast<Image*>((itk::Object*)(this->data()->output()));
     if (image.IsNull())
         return false;
-    if (dtkdata->hasMetaData(dtkAbstractDataImage::PixelMeaningMetaData)) {
+    if (dtkdata->hasMetaData(medAbstractDataImage::PixelMeaningMetaData)) {
         itk::MetaDataDictionary& dict = image->GetMetaDataDictionary();
-        itk::EncapsulateMetaData(dict,"intent_name",dtkdata->metadata(dtkAbstractDataImage::PixelMeaningMetaData));
+        itk::EncapsulateMetaData(dict,"intent_name",dtkdata->metadata(medAbstractDataImage::PixelMeaningMetaData));
     }
     typename itk::ImageFileWriter<Image>::Pointer writer = itk::ImageFileWriter <Image>::New();
     writer->SetImageIO (this->io);
@@ -82,7 +82,8 @@ bool itkDataImageWriterBase::write(const QString& path)
               write_image<4,float>(path,"itkDataImageFloat4")           ||
               write_image<3,double>(path,"itkDataImageDouble3")         ||
               write_image<4,double>(path,"itkDataImageDouble4")         ||
-              write_image<3,itk::Vector<unsigned char,3> >(path,"itkDataImageVector3") || //    Added by Theo.
+              write_image<3,itk::Vector<unsigned char,3> >(path,"itkDataImageVectorUChar3") || //    Added by Theo.
+              write_image<3,itk::Vector<float,3> >(path,"itkDataImageVectorFloat3") ||
               write_image<3,itk::RGBAPixel<unsigned char> >(path,"itkDataImageRGBA3") ||
               write_image<3,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB3")))
         {
@@ -97,4 +98,20 @@ bool itkDataImageWriterBase::write(const QString& path)
     
     
     return true;
+}
+
+QStringList itkDataImageWriterBase::supportedFileExtensions( void ) const
+{
+    QStringList ret;
+
+    if (this->io) {
+        typedef itk::ImageIOBase::ArrayOfExtensionsType ArrayOfExtensionsType;
+        const ArrayOfExtensionsType & extensions = this->io->GetSupportedWriteExtensions();
+        for( ArrayOfExtensionsType::const_iterator it(extensions.begin()); 
+            it != extensions.end(); ++it ) 
+        {
+            ret << it->c_str();
+        }
+    }
+    return ret;
 }

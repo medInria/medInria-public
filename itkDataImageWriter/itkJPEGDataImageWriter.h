@@ -1,27 +1,29 @@
 #ifndef ITKJPEGDATAIMAGEWRITER_H
 #define ITKJPEGDATAIMAGEWRITER_H
 
-#include "itkDataImageWriterBase.h"
+#include <itkDataImageWriterBase.h>
+#include <itkDataImageWriterPluginExport.h>
 
-#include "itkDataImageWriterPluginExport.h"
-
-class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkJPEGDataImageWriter : public itkDataImageWriterBase
-{
-    Q_OBJECT
-
+class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkJPEGDataImageWriter: public itkDataImageWriterBase {
 public:
-    itkJPEGDataImageWriter(void);
-    virtual ~itkJPEGDataImageWriter(void);
 
-    virtual QString description(void) const;
+    itkJPEGDataImageWriter();
+    virtual ~itkJPEGDataImageWriter();
 
-    QStringList handled(void) const;
+    virtual QString identifier()  const;
+    virtual QString description() const;
 
-    static QStringList s_handled (void);
+    QStringList handled() const;
 
-    static bool registered(void);	
+    static QStringList s_handled ();
+
+    static bool registered();	
+
+private:
+    
+    static const char ID[];
 };
 
-dtkAbstractDataWriter *createItkJPEGDataImageWriter(void);
+dtkAbstractDataWriter *createItkJPEGDataImageWriter();
 
 #endif

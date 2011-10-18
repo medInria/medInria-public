@@ -38,6 +38,9 @@ include(${TTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+find_package(medinria REQUIRED)
+include(${medinria_USE_FILE})
+
 find_package(medinria-plugins REQUIRED)
 include(${medinria-plugins_USE_FILE})
 
@@ -64,8 +67,17 @@ set(${PROJECT_NAME}_RESOURCES itkDataTensorImage.qrc)
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
+if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
+    "medPluginsPch.h" "../src/medPluginsPch/medPluginsItkPch.cpp"
+    ${${PROJECT_NAME}_SOURCES_MOC} 
+    ${${PROJECT_NAME}_SOURCES}
+    ${${PROJECT_NAME}_SOURCES_QRC})
+endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
+  ${${PROJECT_NAME}_SOURCES_PCH} 
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_SOURCES_QRC})
 
@@ -73,7 +85,8 @@ target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
   dtkItkLogForwarder
-  dtkCore)
+  dtkCore
+  medCore)
 
 # Group common files together in Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)

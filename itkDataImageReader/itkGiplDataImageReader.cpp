@@ -1,28 +1,23 @@
-#include "itkGiplDataImageReader.h"
+#include <itkGiplDataImageReader.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkGiplImageIO.h>
 
+const char itkGiplDataImageReader::ID[] = "itkGiplDataImageReader";
 
-itkGiplDataImageReader::itkGiplDataImageReader(void) : itkDataImageReaderBase()
-{
+itkGiplDataImageReader::itkGiplDataImageReader(): itkDataImageReaderBase() {
     this->io = itk::GiplImageIO::New();
 }
 
+itkGiplDataImageReader::~itkGiplDataImageReader() { }
 
-itkGiplDataImageReader::~itkGiplDataImageReader(void)
-{
-}
-
-QStringList itkGiplDataImageReader::handled(void) const
-{
+QStringList itkGiplDataImageReader::handled() const {
     return s_handled();
 }
 
-QStringList itkGiplDataImageReader::s_handled(void)
-{
+QStringList itkGiplDataImageReader::s_handled() {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
             << "itkDataImageShort3" << "itkDataImageShort4"
@@ -36,24 +31,23 @@ QStringList itkGiplDataImageReader::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGBA3";
 }
 
-bool itkGiplDataImageReader::registered(void)
-{
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkGiplDataImageReader", s_handled(),
-                                                                      createItkGiplDataImageReader);
+bool itkGiplDataImageReader::registered() {
+    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkGiplDataImageReader);
 }
 
+QString itkGiplDataImageReader::identifier() const {
+    return ID;
+}
 
-QString itkGiplDataImageReader::description(void) const
-{
-    return "itkGiplDataImageReader";
+QString itkGiplDataImageReader::description() const {
+    return "Reader for Gipl images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkGiplDataImageReader(void)
-{
+dtkAbstractDataReader *createItkGiplDataImageReader() {
     return new itkGiplDataImageReader;
 }
 

@@ -27,7 +27,7 @@ project(medinria-plugins)
 
 set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "${PROJECT_NAME} major
 version number.")
-set(${PROJECT_NAME}_VERSION_MINOR 333 CACHE STRING "${PROJECT_NAME} minor
+set(${PROJECT_NAME}_VERSION_MINOR 4 CACHE STRING "${PROJECT_NAME} minor
 version number.")
 set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "${PROJECT_NAME} build
 version number.")
@@ -43,6 +43,8 @@ include(medinria-pluginsMacros)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
+
+
 # Export medinriq-plugins_DIR variable so that internal project can automatically find i
 set(medinria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 
@@ -51,15 +53,26 @@ set(medinria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 ## #################################################################
 
 enable_testing()
-OPTION(BUILD_EXAMPLES "Enable this if you want to build the exmples" OFF)
+OPTION(BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
 
-mark_as_advanced(DART_ROOT)
+#configure ctest variables
+option(BUILD_REPORTING "Build Reporting")
+if(BUILD_REPORTING)
+  include(dtkReporting)
+endif(BUILD_REPORTING)
 
-include(Dart)
+if (BUILD_TESTING)
+  add_subdirectory(tests)
+endif (BUILD_TESTING)
 
 ## #################################################################
 ## Input
 ## #################################################################
+if(MSVC)
+  #Macros that enable precompiled headers to be added, defined by dtk.
+  include(dtkPch)
+  option(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
+endif(MSVC)
 
 set(DEPENDS_ON_DTK 1)
 
@@ -67,11 +80,11 @@ option(MEDINRIA_BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individ
 
 ## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
 set(PLUGIN_LIST
-  v3dData                        ON 
+  v3dData                        ON
   v3dViewPublic                  ON
   v3dView                        ON
-  itkDataImage                   ON 
-  itkDataImageReader             ON 
+  itkDataImage                   ON
+  itkDataImageReader             ON
   itkDataImageWriter             ON
   itkDCMTKDataImageReader        ON
   vtkDataMesh                    ON
@@ -81,6 +94,9 @@ set(PLUGIN_LIST
   itkDataTensorImage             ON
   itkDataTensorImageWriter       ON
   itkDataTensorImageReader       ON
+#  medCompositeDataSets           ON
+  ITKProcessExample              ON
+  itkFilters                     ON
   )
 
 #MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
@@ -129,7 +145,7 @@ endwhile()
 endif()
 
 if (MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
-    subdirs(exampleProcessImageFilter)
+    add_subdirectory(exampleProcessImageFilter)
 endif()
 
 if (MEDINRIA_BUILD_ALL_PLUGINS OR
@@ -153,11 +169,13 @@ if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN OR
     MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
     MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN OR
-    MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
+    MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN OR
+    MEDINRIA_BUILD_ITKPROCESSEXAMPLE_PLUGIN OR
+    MEDINRIA_BUILD_ITKFILTERS_PLUGIN)
     set(MEDINRIA_REQUIRES_ITK TRUE)
 endif()
 
-## Needs MEDINRIA_REQUIRES_ITK and MEDINRIA_REQUIRES_VTK 
+## Needs MEDINRIA_REQUIRES_ITK and MEDINRIA_REQUIRES_VTK
 ## to be set before  being included.
 add_subdirectory(src)
 
@@ -170,6 +188,8 @@ option(BUILD_DOCUMENTATION "Build documentation"    true)
 if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(BUILD_DOCUMENTATION)
+
+
 
 include(${PROJECT_NAME}Pack)
 
@@ -194,7 +214,8 @@ if(WIN32)
             -D_CRT_TIME_FUNCTIONS_NO_DEPRECATE
             -D_CRT_VCCLRIT_NO_DEPRECATE
             -D_SCL_SECURE_NO_DEPRECATE
-            )
+            -D_SCL_SECURE_NO_WARNINGS
+          )
         endif(NOT ITK_ENABLE_VISUAL_STUDIO_DEPRECATED_C_WARNINGS)
       endif(NOT MINGW)
     endif(NOT CYGWIN)

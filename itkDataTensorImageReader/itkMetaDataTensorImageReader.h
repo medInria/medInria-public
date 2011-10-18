@@ -1,23 +1,26 @@
 #ifndef ITKMETADATATENSORIMAGEREADER_H
 #define ITKMETADATATENSORIMAGEREADER_H
 
-#include "itkDataTensorImageReaderBase.h"
+#include <itkDataTensorImageReaderBase.h>
+#include <itkDataTensorImageReaderPluginExport.h>
 
-#include "itkDataTensorImageReaderPluginExport.h"
-
-class ITKDATATENSORIMAGEREADERPLUGIN_EXPORT itkMetaDataTensorImageReader : public itkDataTensorImageReaderBase
-{
+class ITKDATATENSORIMAGEREADERPLUGIN_EXPORT itkMetaDataTensorImageReader: public itkDataTensorImageReaderBase {
     Q_OBJECT
-	
+
 public:
-    itkMetaDataTensorImageReader(void);
-    virtual ~itkMetaDataTensorImageReader(void);
-	
-    virtual QString description(void) const;
-	
-    static bool registered(void);	
+    itkMetaDataTensorImageReader();
+    virtual ~itkMetaDataTensorImageReader();
+
+    virtual QString identifier()  const;
+    virtual QString description() const;
+
+    static bool registered();
+
+private:
+
+    static const char ID[];
 };
 
-dtkAbstractDataReader *createItkMetaDataTensorImageReader(void);
+dtkAbstractDataReader *createItkMetaDataTensorImageReader();
 
 #endif

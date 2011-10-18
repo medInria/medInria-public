@@ -70,6 +70,11 @@ v3dViewTensorInteractor::~v3dViewTensorInteractor()
 
 QString v3dViewTensorInteractor::description(void) const
 {
+    return tr("Interactor helping display Tensors");
+}
+
+QString v3dViewTensorInteractor::identifier() const
+{
     return "v3dViewTensorInteractor";
 }
 
@@ -88,11 +93,11 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
     if (!data)
         return;
 
-    QString description = data->description();
+    QString identifier = data->identifier();
 
     // up to the moment 2 itk tensor image formats are supported
     // we need to convert them to vtkStructuredPoints so it's understood by the tensor manager
-    if (description.compare("itkDataTensorImageFloat3") == 0) {
+    if (identifier.compare("itkDataTensorImageFloat3") == 0) {
         if (TensorImageTypeFloat *dataset = static_cast<TensorImageTypeFloat *>(data->data())) {
 
             d->datasetFloat = dataset;
@@ -117,9 +122,16 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
 
             d->manager->Update();
 
+            if (d->view) {
+                d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
+                d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
+                d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerCoronal()->GetActor());
+            }
+
             d->data = data;
         }
-    } else if (description.compare("itkDataTensorImageDouble3") == 0) {
+    }
+    else if (identifier.compare("itkDataTensorImageDouble3") == 0) {
         if (TensorImageTypeDouble *dataset = static_cast<TensorImageTypeDouble *>(data->data())) {
 
             d->datasetDouble = dataset;
@@ -144,10 +156,16 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
 
             d->manager->Update();
 
+            if (d->view) {
+                d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
+                d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
+                d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerCoronal()->GetActor());
+            }
+
             d->data = data;
         }
     } else {
-        qDebug() << "Unrecognized tensor data type: " << description;
+        qDebug() << "Unrecognized tensor data type: " << identifier;
     }
 }
 
@@ -158,14 +176,11 @@ dtkAbstractData *v3dViewTensorInteractor::data (void)
 
 void v3dViewTensorInteractor::setView(dtkAbstractView *view)
 {
-    if (v3dView *v3dview = dynamic_cast<v3dView*>(view) ) {
+    if (v3dView *v3dview = qobject_cast<v3dView*>(view) ) {
         d->view = v3dview;
         // be careful not to forget setting the same renderer for the interactor and the view
         // otherwise a new renderer is created
         d->manager->SetRenderWindowInteractor( d->view->interactor(), d->view->renderer3d() );
-        d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
-        d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
-        d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerCoronal()->GetActor());
     }
 }
 

@@ -1,40 +1,36 @@
-#include "itkMetaDataTensorImageReader.h"
+#include <itkMetaDataTensorImageReader.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkMetaImageIO.h>
 
+const char itkMetaDataTensorImageReader::ID[] = "itkMetaDataTensorImageReader";
 
-itkMetaDataTensorImageReader::itkMetaDataTensorImageReader(void) : itkDataTensorImageReaderBase()
-{
+itkMetaDataTensorImageReader::itkMetaDataTensorImageReader(): itkDataTensorImageReaderBase() {
     this->io = itk::MetaImageIO::New();
 }
 
+itkMetaDataTensorImageReader::~itkMetaDataTensorImageReader() { }
 
-itkMetaDataTensorImageReader::~itkMetaDataTensorImageReader(void)
-{
-}
-
-
-bool itkMetaDataTensorImageReader::registered(void)
-{
-  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkMetaDataTensorImageReader", itkDataTensorImageReaderBase::s_handled(),
+bool itkMetaDataTensorImageReader::registered() {
+  return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,itkDataTensorImageReaderBase::s_handled(),
 								    createItkMetaDataTensorImageReader);
 }
 
+QString itkMetaDataTensorImageReader::identifier() const {
+    return ID;
+}
 
-QString itkMetaDataTensorImageReader::description(void) const
-{
-    return "itkMetaDataTensorImageReader";
+QString itkMetaDataTensorImageReader::description() const {
+    return "Reader for meta data tensor images";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkMetaDataTensorImageReader(void)
-{
+dtkAbstractDataReader *createItkMetaDataTensorImageReader() {
     return new itkMetaDataTensorImageReader;
 }
 

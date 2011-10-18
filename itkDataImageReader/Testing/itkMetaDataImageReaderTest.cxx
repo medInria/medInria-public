@@ -3,6 +3,7 @@
 #include "dtkCore/dtkAbstractDataFactory.h"
 #include <dtkCore/dtkAbstractDataReader.h>
 #include "dtkCore/dtkAbstractData.h"
+#include "dtkCore/dtkSmartPointer.h"
 
 int itkMetaDataImageReaderTest (int argc, char* argv[])
 {
@@ -17,7 +18,7 @@ int itkMetaDataImageReaderTest (int argc, char* argv[])
   dtkPluginManager::instance()->initialize();
 
   // first method to read data
-  dtkAbstractData *data1 = dtkAbstractDataFactory::instance()->create ("itkDataImageDouble3");
+  dtkSmartPointer<dtkAbstractData> data1 = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageDouble3");
 
   if (!data1)
       return EXIT_FAILURE;
@@ -33,7 +34,7 @@ int itkMetaDataImageReaderTest (int argc, char* argv[])
 
   QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
   for (int i=0; i<readers.size(); i++) {            
-      QScopedPointer<dtkAbstractDataReader> dataReader( dtkAbstractDataFactory::instance()->reader(readers[i]) );
+      dtkSmartPointer<dtkAbstractDataReader> dataReader( dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]) );
       if (dataReader->canRead( filepath )) {
           dataReader->read( filepath );
           data2 = dataReader->data();

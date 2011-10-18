@@ -21,9 +21,29 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkLog.h>
 
-#include <medCore/medMessageController.h>
+#include <medMessageController.h>
 
 #include "v3dView.h"
+
+template <typename TYPE>
+bool AppendImageSequence(dtkAbstractData* data,v3dView* view,vtkCollection* sequenceList,QList<dtkAbstractData*> dataList) {
+    if (itk::Image<TYPE,4>* image = dynamic_cast<itk::Image<TYPE,4>*>(static_cast<itk::Object*>(data->data()))) {
+        unsigned int layer = view->layerCount();
+        if (layer==1 && !view->view2d()->GetInput())
+            layer = 0;
+        vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::New();
+        sequence->SetITKDataSet<TYPE>(image);
+        sequenceList->AddItem(sequence);
+        vtkMetaImageData* metaimage = vtkMetaImageData::SafeDownCast(sequence->GetMetaDataSet(0U));
+        vtkImageData*     vtkimage  = vtkImageData::SafeDownCast(sequence->GetDataSet());
+        view->view2d()->SetInput(vtkimage,metaimage->GetOrientationMatrix(),layer);
+        view->view3d()->SetInput(vtkimage,metaimage->GetOrientationMatrix(),layer);
+        sequence->Delete();
+        dataList.push_back(data);
+        return true;
+    }
+    return false;
+}
 
 class v3dView4DInteractorPrivate
 {
@@ -54,7 +74,13 @@ v3dView4DInteractor::~v3dView4DInteractor()
 
 QString v3dView4DInteractor::description(void) const
 {
-  return "v3dView4DInteractor";
+    return tr("Interactor displaying 4d images (temporal sequence)");
+}
+
+
+QString v3dView4DInteractor::identifier() const
+{
+    return "v3dView4DInteractor";
 }
 
 QStringList v3dView4DInteractor::handled(void) const
@@ -76,7 +102,7 @@ void v3dView4DInteractor::appendData(dtkAbstractData *data)
 {
   if (d->dataList.contains (data))
     return;
-  if (data->description() == "vtkDataMesh4D" )
+  if (data->identifier() == "vtkDataMesh4D" )
   {
     vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
     //vtkProperty *prop = vtkProperty::New();
@@ -100,41 +126,20 @@ void v3dView4DInteractor::appendData(dtkAbstractData *data)
 	  break;
     }
   }
-  else if ( data->description().contains ("Image") &&
-	    data->description().contains ("4"))
-  {
-    if (itk::Image<char, 4>* image = dynamic_cast< itk::Image<char, 4>* > ( (itk::Object*)( data->data() ) ) )
-    {
-      AppendImageSequenceMacro (char);
-    }
-    else if (itk::Image<unsigned char, 4>* image = dynamic_cast< itk::Image<unsigned char, 4>* > ( (itk::Object*)( data->data() ) ) )
-    {
-      AppendImageSequenceMacro (unsigned char);
-    }
-    else if (itk::Image<short, 4>* image = dynamic_cast< itk::Image<short, 4>* > ( (itk::Object*)( data->data() ) ) )
-    {
-      AppendImageSequenceMacro (short);
-    }
-    else if (itk::Image<unsigned short, 4>* image = dynamic_cast< itk::Image<unsigned short, 4>* > ( (itk::Object*)( data->data() ) ) )
-    {
-      AppendImageSequenceMacro (unsigned short);
-    }
-    else if (itk::Image<float, 4>* image = dynamic_cast< itk::Image<float, 4>* > ( (itk::Object*)( data->data() ) ) )
-    {
-      AppendImageSequenceMacro (float);
-    }
-    else if (itk::Image<double, 4>* image = dynamic_cast< itk::Image<double, 4>* > ( (itk::Object*)( data->data() ) ) )
-    {
-      AppendImageSequenceMacro (double);
-    }
-    else
-    {
-      // emit showError(this, tr ("cannot append data to 4D interactor (unhandled type: ") + data->description(), 5000);
+  else if (data->identifier().contains("Image") && data->identifier().contains ("4")) {
+
+    if (!(AppendImageSequence<char>(data,d->view,d->sequenceList,d->dataList)           ||
+          AppendImageSequence<unsigned char>(data,d->view,d->sequenceList,d->dataList)  ||
+          AppendImageSequence<short>(data,d->view,d->sequenceList,d->dataList)          ||
+          AppendImageSequence<unsigned short>(data,d->view,d->sequenceList,d->dataList) ||
+          AppendImageSequence<float>(data,d->view,d->sequenceList,d->dataList)          ||
+          AppendImageSequence<double>(data,d->view,d->sequenceList,d->dataList))) {
+        // emit showError(this, tr ("cannot append data to 4D interactor (unhandled type: ") + data->identifier(), 5000);
     }
   }
   else
   {
-    // emit showError(this, tr ("cannot append data to 4D interactor (unhandled type: ") + data->description(), 5000);
+    // emit showError(this, tr ("cannot append data to 4D interactor (unhandled type: ") + data->identifier(), 5000);
   }
 
 }
@@ -158,9 +163,9 @@ void v3dView4DInteractor::onDataAdded(dtkAbstractData *data)
 bool v3dView4DInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 {
 
-  if ( ( data->description() == "vtkDataMesh4D" ) ||
-       ( data->description().contains ("Image") &&
-	 data->description().contains ("4") ) )
+  if ( ( data->identifier() == "vtkDataMesh4D" ) ||
+       ( data->identifier().contains ("Image") &&
+	 data->identifier().contains ("4") ) )
   {
     this->appendData(data);
     this->enable ();

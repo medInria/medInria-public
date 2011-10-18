@@ -5,6 +5,7 @@
 
 #include <vtkPolyData.h>
 #include <vtkCellArray.h>
+#include <vtkSmartPointer.h>
 #include <vtkXMLFiberDataSetWriter.h>
 #include "vtkFiberDataSet.h"
 
@@ -41,7 +42,7 @@ bool v3dDataFibersWriter::write(const QString& path)
   if (!this->data())
       return false;
 
-  if (this->data()->description()!="v3dDataFibers")
+  if (this->data()->identifier()!="v3dDataFibers")
       return false;
 
   vtkFiberDataSet *dataset = static_cast<vtkFiberDataSet*>(this->data()->data());
@@ -61,11 +62,13 @@ bool v3dDataFibersWriter::write(const QString& path)
   return true;
 }
 
-QString v3dDataFibersWriter::description(void) const
-{
+QString v3dDataFibersWriter::identifier() const {
     return "v3dDataFibersWriter";
 }
 
+QString v3dDataFibersWriter::description() const {
+    return "v3dDataFibersWriter";
+}
 
 bool v3dDataFibersWriter::registered(void)
 {
@@ -73,6 +76,16 @@ bool v3dDataFibersWriter::registered(void)
 								    QStringList() << "v3dDataFibers",
 								    createV3dDataFibersWriter);
 }
+
+QStringList v3dDataFibersWriter::supportedFileExtensions( void ) const
+{
+    QStringList ret;
+    vtkSmartPointer<vtkXMLFiberDataSetWriter> writer = vtkSmartPointer<vtkXMLFiberDataSetWriter>::New();
+    QString extensionWithDot = QString(".%1").arg(writer->GetDefaultFileExtension()); 
+    ret << extensionWithDot;
+    return ret;
+}
+
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation

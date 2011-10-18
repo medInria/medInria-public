@@ -1,19 +1,22 @@
-#include "v3dViewPublicFuseInteractor.h"
+#include <v3dViewPublicFuseInteractor.h>
 
 #include <dtkCore/dtkLog.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractDataImage.h>
+
+#include <medAbstractDataImage.h>
+#include <medMetaDataKeys.h>
+
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 
-#include "v3dViewPublic.h"
+#include <v3dViewPublic.h>
 
-#include "itkVTKImageToImageFilter.h"
-#include "itkImage.h"
-#include "itkCheckerBoardImageFilter.h"
-#include "itkWeightedAddImageFilter.h"
-#include "itkCastImageFilter.h"
+#include <itkVTKImageToImageFilter.h>
+#include <itkImage.h>
+#include <itkCheckerBoardImageFilter.h>
+#include <itkWeightedAddImageFilter.h>
+#include <itkCastImageFilter.h>
 
 class v3dViewPublicFuseInteractorPrivate
 {
@@ -24,10 +27,10 @@ public:
   typedef itk::WeightedAddImageFilter<ImageType, ImageType, ImageType>  BlendFilterType;
   typedef itk::CheckerBoardImageFilter<ImageType>                       CheckerboardFilterType;
   
-  dtkAbstractDataImage *data1;
-  dtkAbstractDataImage *data2;
+  dtkSmartPointer<medAbstractDataImage> data1;
+  dtkSmartPointer<medAbstractDataImage> data2;
 
-  dtkAbstractData *output;
+  dtkSmartPointer<dtkAbstractData> output;
 
   v3dViewPublic *view;
 
@@ -41,8 +44,8 @@ public:
 
 v3dViewPublicFuseInteractor::v3dViewPublicFuseInteractor(): dtkAbstractViewInteractor(), d(new v3dViewPublicFuseInteractorPrivate)
 {
-    d->data1 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create("itkDataImageShort3") );
-    d->data2 = dynamic_cast<dtkAbstractDataImage*>( dtkAbstractDataFactory::instance()->create("itkDataImageShort3") );
+    d->data1 = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageShort3");
+    d->data2 = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageShort3");
     d->view = 0;
 
     d->alpha = 0.5;
@@ -51,7 +54,7 @@ v3dViewPublicFuseInteractor::v3dViewPublicFuseInteractor(): dtkAbstractViewInter
     d->blender        = 0; 
     d->checkerboarder = 0;
     
-    d->output = dtkAbstractDataFactory::instance()->create("itkDataImageShort3");
+    d->output = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageShort3");
 
     this->addProperty ("FusionStyle", QStringList() << "blend" << "checkerboard");
     this->setProperty ("FusionStyle", "blend");
@@ -157,7 +160,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
     if (!data || channel<0 || channel>1 || !data->data())
         return;
         
-    if (data->description()==tr("itkDataImageChar3")) {
+    if (data->identifier()=="itkDataImageChar3") {
       typedef char ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -178,7 +181,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
       else if (channel==1)
           d->data2->setData ( caster->GetOutput() );
     }
-    else if (data->description()==tr("itkDataImageUChar3")) {
+    else if (data->identifier()=="itkDataImageUChar3") {
       typedef unsigned char ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -200,7 +203,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()==tr("itkDataImageShort3")) {
+    else if (data->identifier()=="itkDataImageShort3") {
       typedef short ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -222,7 +225,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()==tr("itkDataImageUShort3")) {
+    else if (data->identifier()=="itkDataImageUShort3") {
       typedef unsigned short ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -244,7 +247,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()==tr("itkDataImageInt3")) {
+    else if (data->identifier()=="itkDataImageInt3") {
       typedef int ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -266,7 +269,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()==tr("itkDataImageUInt3")) {
+    else if (data->identifier()=="itkDataImageUInt3") {
       typedef unsigned int ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -288,7 +291,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()==tr("itkDataImageLong3")) {
+    else if (data->identifier()=="itkDataImageLong3") {
       typedef long ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -310,7 +313,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()==tr("itkDataImageULong3")) {
+    else if (data->identifier()=="itkDataImageULong3") {
       typedef unsigned long ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -332,7 +335,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()==tr("itkDataImageFloat3")) {
+    else if (data->identifier()=="itkDataImageFloat3") {
       typedef float ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -354,7 +357,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( caster->GetOutput() );
     }
 
-    else if (data->description()==tr("itkDataImageDouble3")) {
+    else if (data->identifier()=="itkDataImageDouble3") {
       typedef double ScalarType;
       typedef itk::Image<ScalarType, 3> ImageType;
 
@@ -375,7 +378,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
       else if (channel==1)
           d->data2->setData ( caster->GetOutput() );
     }
-    else if (data->description()==tr("v3dDataImage")) {
+    else if (data->identifier()=="v3dDataImage") {
       typedef itk::VTKImageToImageFilter<v3dViewPublicFuseInteractorPrivate::ImageType> ConverterType;
       ConverterType::Pointer converter = ConverterType::New();
       
@@ -394,7 +397,7 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
           d->data2->setData ( converter->GetOutput() );
     }
     else {
-        qDebug() << "Unsupported image type for fusion: type=" << data->description();
+        qDebug() << "Unsupported image type for fusion: type=" << data->identifier();
         return;
     }
 
@@ -448,11 +451,11 @@ void v3dViewPublicFuseInteractor::setData(dtkAbstractData *data, int channel)
 	  return;
 	}
 	
-	if (d->data1->hasMetaData ("PatientName") && d->data2->hasMetaData ("PatientName"))
-	    d->output->addMetaData ("PatientName",
+	if (d->data1->hasMetaData (medMetaDataKeys::PatientName.key()) && d->data2->hasMetaData (medMetaDataKeys::PatientName.key()))
+	    d->output->addMetaData (medMetaDataKeys::PatientName.key(),
 				    tr("Fusion - ") +
-				    d->data1->metaDataValues("PatientName")[0] + "\n" +
-				    d->data2->metaDataValues("PatientName")[0]);
+				    d->data1->metaDataValues(medMetaDataKeys::PatientName.key())[0] + "\n" +
+				    d->data2->metaDataValues(medMetaDataKeys::PatientName.key())[0]);
 
 	if (this->property ("FusionStyle")=="blend")
 	    d->output->setData ( d->blender->GetOutput());

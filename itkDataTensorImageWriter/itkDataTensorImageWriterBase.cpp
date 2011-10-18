@@ -23,13 +23,13 @@ itkDataTensorImageWriterBase::~itkDataTensorImageWriterBase(void)
 QStringList itkDataTensorImageWriterBase::handled(void) const
 {
     return QStringList() << "itkDataTensorImageDouble3"
-						 << "itkDataTensorImageFloat3";
+                         << "itkDataTensorImageFloat3";
 }
 
 QStringList itkDataTensorImageWriterBase::s_handled(void)
 {
     return QStringList() << "itkDataTensorImageDouble3"
-						 << "itkDataTensorImageFloat3";
+                         << "itkDataTensorImageFloat3";
 }
 
 bool itkDataTensorImageWriterBase::canWrite(const QString& path)
@@ -42,33 +42,33 @@ bool itkDataTensorImageWriterBase::canWrite(const QString& path)
 
 bool itkDataTensorImageWriterBase::write(const QString& path)
 {
-	 if (!this->data())
-		 return false;
+    if (!this->data())
+        return false;
 
-	 if (this->io.IsNull())
-		 return false;
+    if (this->io.IsNull())
+        return false;
 
-	if (dtkAbstractData *dtkdata = this->data() ) {
+    if (dtkAbstractData *dtkdata = this->data() ) {
 
-		if(dtkdata->description()=="itkDataTensorImageFloat3") {
+        if(dtkdata->identifier()=="itkDataTensorImageFloat3") {
 
-		    float dummy = 0;
-		    write(path, dummy);
-		}
+            float dummy = 0;
+            write(path, dummy);
+        }
 
-		else if(dtkdata->description()=="itkDataTensorImageDouble3") {
+        else if(dtkdata->identifier()=="itkDataTensorImageDouble3") {
 
-		    double dummy = 0;
-		    write(path, dummy);
-		}
+            double dummy = 0;
+            write(path, dummy);
+        }
 
-		else {
-			qWarning() << "Unrecognized pixel type";
-			return false;
-		}
-	}
+        else {
+            qWarning() << "Unrecognized pixel type";
+            return false;
+        }
+    }
 
-	return true;
+    return true;
 }
 
 template <class PixelType>
