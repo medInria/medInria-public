@@ -55,6 +55,8 @@ medDatabaseWriter::~medDatabaseWriter ( void )
 
 void medDatabaseWriter::run ( void )
 {
+    qDebug() << "Is data ok ?" << (d->data == NULL);
+    
     if ( !d->data )
     {
         emit failure ( this );
@@ -300,7 +302,10 @@ void medDatabaseWriter::run ( void )
         QString extension;
         if ( extensions.isEmpty() )
         {
-            extension = ".mha";
+            if (d->data->identifier().contains("Mesh"))
+                extension = ".vtk";
+            else
+                extension = ".mha";
         }
         else
         {
