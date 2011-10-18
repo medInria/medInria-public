@@ -25,6 +25,7 @@
 #include "medViewerConfigurator.h"
 
 #include <dtkCore/dtkGlobal.h>
+#include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkScript/dtkScriptInterpreter.h>
 #include <dtkScript/dtkScriptInterpreterPool.h>
 #include <dtkScript/dtkScriptInterpreterPython.h>
@@ -56,6 +57,8 @@
 #include <medDatabaseSettingsWidget.h>
 #include <medSettingsEditor.h>
 
+#include "medSeedPointAnnotationData.h"
+
 #include "medViewerConfigurationVisualization.h"
 #include "medViewerConfigurationRegistration.h"
 #include "medViewerConfigurationDiffusion.h"
@@ -65,6 +68,12 @@
 #include "medSaveModifiedDialog.h"
 
 #include <QtGui>
+
+// Simple new function used for factories.
+namespace  {
+    template< class T > 
+    dtkAbstractData * dtkAbstractDataCreateFunc() { return new T; }
+}
 
 // /////////////////////////////////////////////////////////////////
 // medMainWindowStyle
@@ -696,14 +705,20 @@ void medMainWindow::registerToFactories()
 #endif
 
     // Registering different configurations
-    medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
-    medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
-    medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
-    medViewerConfigurationFactory::instance()->registerConfiguration("Filtering",     createMedViewerConfigurationFiltering);
+    medViewerConfigurationFactory * viewerConfigFactory = medViewerConfigurationFactory::instance();
+    viewerConfigFactory->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
+    viewerConfigFactory->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
+    viewerConfigFactory->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
+    viewerConfigFactory->registerConfiguration("Filtering",     createMedViewerConfigurationFiltering);
     medViewerConfigurationSegmentation::registerWithViewerConfigurationFactory();
 
     //Register settingsWidgets
-    medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
-    medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);
-    medSettingsWidgetFactory::instance()->registerSettingsWidget("Database", createDatabaseSettingsWidget);
+    medSettingsWidgetFactory * settingsWidgetFactory = medSettingsWidgetFactory::instance();
+    settingsWidgetFactory->registerSettingsWidget("System", createSystemSettingsWidget);
+    settingsWidgetFactory->registerSettingsWidget("Startup", createStartupSettingsWidget);
+    settingsWidgetFactory->registerSettingsWidget("Database", createDatabaseSettingsWidget);
+
+    //Register annotations
+    dtkAbstractDataFactory * datafactory = dtkAbstractDataFactory::instance();
+    datafactory->registerDataType( medSeedPointAnnotationData::s_identifier(), dtkAbstractDataCreateFunc<medSeedPointAnnotationData> );
 }

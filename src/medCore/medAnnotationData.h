@@ -25,7 +25,7 @@ public:
 
 signals :
     /** Emitted when the data is changed */
-    void dataModified();
+    void dataModified(medAnnotationData*);
 
 public slots:
 protected:

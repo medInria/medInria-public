@@ -53,10 +53,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAbstractDataMesh.h
   medAttachedData.h
   medAnnotationData.h
-  medAnnotationFactory.h
-  medAbstractAnnotationRepresentation.h
-  medAnnotationGraphicsObject.h
+  medAbstractAnnotationViewInteractor.h
   medViewEventFilter.h
+  annotationData/medSeedPointAnnotationData.h
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -101,10 +100,9 @@ set(${PROJECT_NAME}_SOURCES
   medAttachedData.cpp
   medAbstractDatabaseItem.cpp
   medAnnotationData.cpp
-  medAnnotationFactory.cpp
-  medAbstractAnnotationRepresentation.cpp
-  medAnnotationGraphicsObject.cpp
+  medAbstractAnnotationViewInteractor.cpp
   medViewEventFilter.cpp
+  annotationData/medSeedPointAnnotationData.cpp
 )
 
 ## #################################################################

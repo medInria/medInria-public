@@ -239,6 +239,7 @@ medToolBoxFactory::diffusionToolBoxDetailsFromId (
         medHelperStrings helper  = d->custom_diffusion_creators[id].second;
         return QPair<QString, QString>(helper.name,helper.description);
     }
+    return QPair<QString, QString>();
 }
 
 QPair<QString, QString>
@@ -250,6 +251,7 @@ medToolBoxFactory::registrationToolBoxDetailsFromId (
         medHelperStrings helper  = d->custom_registration_creators[id].second;
         return QPair<QString, QString>(helper.name,helper.description);
     }
+    return QPair<QString, QString>();
 }
 
 QPair<QString, QString>
@@ -261,6 +263,7 @@ medToolBoxFactory::filteringToolBoxDetailsFromId (
         medHelperStrings helper  = d->custom_filtering_creators[id].second;
         return QPair<QString, QString>(helper.name,helper.description);
     }
+    return QPair<QString, QString>();
 }
 
 QPair<QString, QString>
@@ -272,6 +275,7 @@ medToolBoxFactory::compositeToolBoxDetailsFromId (
         medHelperStrings helper  = d->custom_compositedatasetimporter_creators[id].second;
         return QPair<QString, QString>(helper.name,helper.description);
     }
+    return QPair<QString, QString>();
 }
 
 QPair<QString, QString>
@@ -283,6 +287,7 @@ medToolBoxFactory::segmentationToolBoxDetailsFromId (
         medHelperStrings helper  = d->custom_segmentation_creators[id].second;
         return QPair<QString, QString>(helper.name,helper.description);
     }
+    return QPair<QString, QString>();
 }
 
 medToolBoxFactory::medToolBoxFactory(void) : dtkAbstractFactory(), d(new medToolBoxFactoryPrivate)

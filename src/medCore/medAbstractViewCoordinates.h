@@ -36,6 +36,14 @@ public:
     //! The scale (number of pixels on screen per mm)
     virtual qreal scale() const = 0;
 
+    static QVector3D doubleToQtVector3d( const double * v ) { return QVector3D( v[0], v[1], v[2] ); }
+    static QVector2D doubleToQtVector2d( const double * v ) { return QVector2D( v[0], v[1] ); }
+    static QPointF   doubleToQtPointF( const double * v ) { return QPointF( v[0], v[1] ); }
+    static void qtVector3dToDouble( const QVector3D & v, double * out ) { out[0] = v.x();  out[1] = v.y(); out[2] = v.z();}
+    static void qtVector2dToDouble( const QVector2D & v, double * out ) { out[0] = v.x();  out[1] = v.y(); }
+    static void qtPointFToDouble( const QPointF   & v, double * out ) { out[0] = v.x();  out[1] = v.y(); }
+    static void qtColorToDouble ( const QColor & color, double * cv )    {  cv[0] = color.redF();   cv[1] = color.greenF();    cv[2] = color.blueF();    }
+
 protected :
     medAbstractViewCoordinates() {}
 private:

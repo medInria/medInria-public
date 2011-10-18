@@ -28,9 +28,6 @@
 class medAbstractViewPrivate;
 
 class medAbstractViewCoordinates;
-class medAttachedData;
-class medAnnotationData;
-class medAbstractAnnotationRepresentation;
 
 class QColor;
 
@@ -345,10 +342,6 @@ public slots:
 
     void setFullScreen( bool state );
 
-    // Respond to add / removal of attached data to data items viewed.
-    virtual void onAttachedDataAdded(medAttachedData* data);
-    virtual void onAttachedDataRemoved(medAttachedData* data);
-
     virtual void onDataRemoved( int layer, dtkAbstractData* data);
     virtual void onDataAdded( int layer, dtkAbstractData* data);
 
@@ -367,11 +360,6 @@ protected:
     // Emitted whenever the plane color changes.
     void emitColorChangedEvent();
 
-    void addAnnotation( medAnnotationData * annData );
-    void removeAnnotation( medAnnotationData * annData );
-
-    virtual bool onAddAnnotation( medAnnotationData * annItem );
-    virtual void onRemoveAnnotation( medAnnotationData * annItem );
 
 private:
     medAbstractViewPrivate *d;

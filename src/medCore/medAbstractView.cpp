@@ -3,9 +3,6 @@
 #include <dtkCore/dtkAbstractData.h>
 
 #include <medAbstractViewCoordinates.h>
-#include <medAnnotationData.h>
-#include <medAnnotationFactory.h>
-#include <medAbstractAnnotationRepresentation.h>
 
 class medAbstractViewPrivate
 {
@@ -36,9 +33,6 @@ public:
 
     QHash<QString, unsigned int> DataTypes;
 
-    // Which annotations are installed for which data.
-    typedef QSet< dtkSmartPointer<medAnnotationData> > AnnotationHash;
-    AnnotationHash installedAnnotations;
 };
 
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
@@ -385,21 +379,6 @@ void medAbstractView::onDataAdded( int layer, dtkAbstractData* data)
 {
     if ( layer == 0 ) 
     {
-        medAbstractData * mdata = qobject_cast<medAbstractData *>(data);
-        if (mdata)
-        {
-            connect( mdata, SIGNAL(attachedDataAdded(medAttachedData*)), this,  SLOT(onAttachedDataAdded(medAttachedData*)) );
-            connect( mdata, SIGNAL(attachedDataRemoved(medAttachedData*)), this,  SLOT(onAttachedDataRemoved(medAttachedData*)) );
-
-            // Add any existing annotations on the data to our list.
-            QList<medAttachedData*> attached = mdata->attachedData();
-            foreach( medAttachedData* item,  attached ) {
-                medAnnotationData *annItem = qobject_cast<medAnnotationData*>(item);
-                if (annItem) {
-                    this->onAttachedDataAdded(annItem);
-                }
-            }
-        } // if mdata
     } // layer == 0
 }
 
@@ -407,12 +386,7 @@ void medAbstractView::onDataRemoved( int layer, dtkAbstractData* data)
 {
     if ( (layer == 0 ) && ( d->dataList.values().count(data) <= 2 ) ) {
 
-        // Remove annotations
-        foreach( dtkSmartPointer<medAnnotationData> key,  d->installedAnnotations ) {
-            if ( key->parentData() == data ) {
-                this->removeAnnotation( key );
-            }
-        }
+
     }
 }
 
@@ -610,45 +584,3 @@ void medAbstractView::setFullScreen( bool state )
     emit fullScreen( state );
 }
 
-void medAbstractView::onAttachedDataAdded( medAttachedData* data )
-{
-    medAnnotationData * annData = qobject_cast<medAnnotationData *>(data);
-    if ( annData ) {
-        this->addAnnotation(annData);
-    }
-}
-
-void medAbstractView::onAttachedDataRemoved( medAttachedData* data )
-{
-    medAnnotationData * annData = qobject_cast<medAnnotationData *>(data);
-    if ( annData ) {
-        this->removeAnnotation(annData);
-    }
-}
-
-void medAbstractView::addAnnotation( medAnnotationData * annData )
-{
-    if ( d->installedAnnotations.contains(annData) ) {
-        return;
-    }
-
-    bool isAdded = this->onAddAnnotation(annData);
-
-    if ( isAdded ) {
-        d->installedAnnotations.insert( annData );
-    }
-}
-
-void medAbstractView::removeAnnotation( medAnnotationData * annData )
-{
-
-}
-
-bool medAbstractView::onAddAnnotation( medAnnotationData *  annItem )
-{
-    return false;
-}
-
-void medAbstractView::onRemoveAnnotation( medAnnotationData *  annItem )
-{
-}
