@@ -654,7 +654,7 @@ void
     }
     else
     {
-        this->constructImageLayer(data, layer);
+        this->constructImageLayer(data, d->view->layerCount()-1);
     }
 
     //decide whether to show the 2 layers slider:
