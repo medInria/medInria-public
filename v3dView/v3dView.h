@@ -9,6 +9,7 @@
 #include <dtkCore/dtkAbstractView.h>
 
 #include <medAbstractView.h>
+#include <medAbstractViewCoordinates.h>
 
 #include "v3dViewPluginExport.h"
 
@@ -32,7 +33,7 @@ class vtkRenderWindowInteractor;
  * be set per layer. In 3D, only VR is supported.
  **/
 
-class V3DVIEWPLUGIN_EXPORT v3dView : public medAbstractView
+class V3DVIEWPLUGIN_EXPORT v3dView : public medAbstractView, public medAbstractViewCoordinates
 {
     Q_OBJECT
 
@@ -44,6 +45,7 @@ public:
     virtual QString identifier(void) const;
 
     static bool registered(void);
+    static QString s_identifier();
 
 public:
     // inherited from medAbstractView
@@ -210,13 +212,28 @@ public:
     double cameraViewAngle(void);
     double cameraZoom(void);
 
+public :
+    // Satisfy medAbstractViewCoordinates API
+    //! Convert from world coordinates to scene coordinates.
+    virtual QPointF worldToDisplay( const QVector3D & worldVec ) const;
+    //! Convert from scene coordinates to world coordinates.
+    virtual QVector3D displayToWorld( const QPointF & scenePoint ) const;
+    //! Get the view center vector in world space, the center of the slice for 2d views.
+    virtual QVector3D viewCenter() const;
+    //! Get the view plane normal vector in world space.
+    virtual QVector3D viewPlaneNormal() const;
+    //! Get the view plane up vector in world space.
+    virtual QVector3D viewUp() const;
+    //! Is the scene 2D (true) or 3D (false)
+    virtual bool is2D() const;
+    //! What is the thickness of the current slice (2D)
+    virtual qreal sliceThickness() const;
+    virtual qreal scale() const;
+
 protected slots:
     void widgetDestroyed(void);
 
 protected:
-    // Override base class
-    virtual bool onAddAnnotation( medAnnotationData * annItem );
-    virtual void onRemoveAnnotation( medAnnotationData * annItem );
 
 private:
 

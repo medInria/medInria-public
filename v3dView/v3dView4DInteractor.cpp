@@ -85,12 +85,12 @@ QString v3dView4DInteractor::identifier() const
 
 QStringList v3dView4DInteractor::handled(void) const
 {
-  return QStringList () << "v3dView";
+  return QStringList () << v3dView::s_identifier();
 }
 
 bool v3dView4DInteractor::registered(void)
 {
-  return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dView4DInteractor", QStringList() << "v3dView", createV3dView4DInteractor);
+  return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dView4DInteractor", QStringList() << v3dView::s_identifier(), createV3dView4DInteractor);
 }
 
 void v3dView4DInteractor::setData(dtkAbstractData *data)

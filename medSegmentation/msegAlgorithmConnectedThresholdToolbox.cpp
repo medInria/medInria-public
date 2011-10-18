@@ -1,7 +1,7 @@
 #include "msegAlgorithmConnectedThresholdToolbox.h"
 
 #include "msegAlgorithmConnectedThreshold.h"
-#include "msegSeedPointAnnotationData.h"
+#include "medSeedPointAnnotationData.h"
 
 #include <medAbstractView.h>
 #include <medAbstractData.h>
@@ -24,7 +24,7 @@
 
 namespace mseg {
 
-    static const QString SEED_POINT_ANNOTATION_DATA_NAME = SeedPointAnnotationData::s_description();
+    static const QString SEED_POINT_ANNOTATION_DATA_NAME = medSeedPointAnnotationData::s_description();
 
 class SingleClickEventFilter : public medViewEventFilter 
 {
@@ -125,7 +125,7 @@ AlgorithmConnectedThresholdToolbox::AlgorithmConnectedThresholdToolbox(QWidget *
 AlgorithmConnectedThresholdToolbox::~AlgorithmConnectedThresholdToolbox()
 {
     foreach( const SeedPoint & seed, m_seedPoints ) {
-        seed.annotationData->parentData()->removeAttachedData(seed.annotationData);
+        seed->parentData()->removeAttachedData(seed);
     }
 }
 
@@ -139,15 +139,20 @@ void AlgorithmConnectedThresholdToolbox::onAddSeedPointPressed()
 
 void AlgorithmConnectedThresholdToolbox::onRemoveSeedPointPressed()
 {
-    if ( m_seedPoints.isEmpty() ) 
+    if ( m_seedPoints.size() == 0 ) 
         return;
 
     QList<QTableWidgetItem *> selection = m_seedPointTable->selectedItems();
+    if ( selection.size() == 0 )
+        return;
+
     typedef std::vector<int> IntVector;
     IntVector rowsToDelete;
     foreach( QTableWidgetItem * item, selection ) {
         rowsToDelete.push_back( item->row() );
     }
+    std::sort( rowsToDelete.begin(), rowsToDelete.end() );
+
     IntVector::iterator newEnd = std::unique( rowsToDelete.begin(), rowsToDelete.end());
     IntVector::size_type newLength = newEnd - rowsToDelete.begin();
     rowsToDelete.resize( newLength );
@@ -155,9 +160,13 @@ void AlgorithmConnectedThresholdToolbox::onRemoveSeedPointPressed()
     // Delete from the end so that indices are untouched.
     for( IntVector::const_reverse_iterator rit( rowsToDelete.rbegin() ); rit != rowsToDelete.rend(); ++rit ){
         m_seedPointTable->removeRow( (*rit) );
-        medAnnotationData * annData = m_seedPoints.at(*rit).annotationData;
+        medAnnotationData * annData = m_seedPoints.at(*rit);
         annData->parentData()->removeAttachedData(annData);
-        m_seedPoints.remove( *rit );
+        m_seedPoints.erase( m_seedPoints.begin() + (*rit) );
+    }
+
+    for ( int i(*rowsToDelete.begin()); i<m_seedPoints.size(); ++i) {
+        this->updateTableRow(i);
     }
 }
 
@@ -173,7 +182,7 @@ void AlgorithmConnectedThresholdToolbox::onApplyButtonPressed()
 
     alg->setInput(this->m_data);
     foreach( const SeedPoint & seed, m_seedPoints ) {
-        alg->addSeedPoint( seed.annotationData->centerWorld() );
+        alg->addSeedPoint( seed->centerWorld() );
     }
 
     this->segmentationToolBox()->run( alg );
@@ -181,6 +190,15 @@ void AlgorithmConnectedThresholdToolbox::onApplyButtonPressed()
 }
 void AlgorithmConnectedThresholdToolbox::setData( dtkAbstractData *dtkdata )
 {   
+    // disconnect existing
+    if ( m_data ) {
+        foreach( medAttachedData * mdata, m_data->attachedData() ) {
+            if ( qobject_cast< medSeedPointAnnotationData * >(mdata) ) {
+                disconnect(mdata, SIGNAL(dataModified(medAttachedData*)), this, SLOT(onDataModified(medAttachedData*)));
+            }
+        }
+    }
+
     m_data = dtkSmartPointer<dtkAbstractData>(dtkdata);
 
     QString dataText;
@@ -213,29 +231,29 @@ void AlgorithmConnectedThresholdToolbox::addSeedPoint( medAbstractView *view, co
         setData( medToolBoxSegmentation::viewData(view) );
     }
     SeedPoint newSeed;
-    newSeed.annotationData =
+    newSeed =
         dtkAbstractDataFactory::instance()->createSmartPointer( SEED_POINT_ANNOTATION_DATA_NAME );
 
-    if ( !newSeed.annotationData ) {
+    if ( !newSeed ) {
         dtkDebug() << DTK_PRETTY_FUNCTION << "Failed to create annotation data";
         return;
     }
     
-    newSeed.annotationData->setParentData( this->m_data.data() );
+    newSeed->setParentData( this->m_data.data() );
 
-    newSeed.annotationData->setCenterWorld(vec);
-    newSeed.annotationData->setSelectedColor( Qt::red );
-    newSeed.annotationData->setColor( Qt::cyan );
-    m_seedPoints.append( newSeed );
+    newSeed->setCenterWorld(vec);
+    newSeed->setSelectedColor( Qt::red );
+    newSeed->setColor( Qt::cyan );
+    m_seedPoints.push_back( newSeed );
 
     int newRow = m_seedPointTable->rowCount();
     m_seedPointTable->insertRow( newRow );
-    m_seedPointTable->setItem( newRow, 0, new QTableWidgetItem( QString("%1").arg(newRow) ));
+    updateTableRow(newRow);
 
-    QString vecString = QString("%1,%2,%3").arg( vec.x() , 5 ).arg( vec.y() , 5 ).arg( vec.z() , 5 );
-    m_seedPointTable->setItem( newRow, 1, new QTableWidgetItem( vecString )) ;
+    Q_ASSERT( m_seedPointTable->rowCount() ==  m_seedPoints.size() ) ;
 
-    this->m_data->addAttachedData(newSeed.annotationData);
+    this->m_data->addAttachedData(newSeed);
+    connect(this->m_data, SIGNAL(dataModified(medAttachedData*)), this, SLOT(onDataModified(medAttachedData*)));
 }
 
 void AlgorithmConnectedThresholdToolbox::onViewMousePress( medAbstractView *view, const QVector3D &vec )
@@ -287,12 +305,35 @@ void AlgorithmConnectedThresholdToolbox::onSeedPointTableSelectionChanged()
     for ( int i(0); i<m_seedPoints.size(); ++i) {
 
         if ( selectedRows.contains(i) ) {
-            m_seedPoints[i].annotationData->setSelected(true);
+            m_seedPoints[i]->setSelected(true);
         } else {
-            m_seedPoints[i].annotationData->setSelected(false);
+            m_seedPoints[i]->setSelected(false);
         }
     }
 }
+
+void AlgorithmConnectedThresholdToolbox::onDataModified( medAttachedData * attached )
+{
+    medSeedPointAnnotationData * spad = qobject_cast<medSeedPointAnnotationData*>(attached);
+    std::vector< SeedPoint >::iterator it = std::find( m_seedPoints.begin(), m_seedPoints.end(), spad );
+    if ( it == m_seedPoints.end() ) {
+        return;
+    }
+    int row = it - m_seedPoints.begin();
+    this->updateTableRow( row );
+}
+
+void AlgorithmConnectedThresholdToolbox::updateTableRow( int row )
+{
+    QVector3D vec = m_seedPoints[row]->centerWorld();
+
+    m_seedPointTable->setItem( row, 0, new QTableWidgetItem( QString("%1").arg(row) ));
+
+    QString vecString = QString("%1,%2,%3").arg( vec.x() , 5 ).arg( vec.y() , 5 ).arg( vec.z() , 5 );
+    m_seedPointTable->setItem( row, 1, new QTableWidgetItem( vecString )) ;
+}
+
+
 
 
 

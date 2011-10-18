@@ -58,8 +58,6 @@ if (NOT VTK_USE_QT)
   message(WARNING "VTK has to be compiled with the option VTK_USE_QT:ON in order to compile this project. Please consider setting correctly your VTK.")
 endif(NOT VTK_USE_QT)
 
-find_package(OpenGL REQUIRED)
-
 ## #################################################################
 ## Input
 ## #################################################################
@@ -86,15 +84,14 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewFuseInteractor.h
   v3dViewMeshInteractor.h
   v3dView4DInteractor.h
-  QVtkGraphicsView.h
-  v3dViewGraphicsScene.h
-  v3dViewGraphicsView.h
-  v3dViewCircleAnnotation.h
+  v3dViewAnnotationInteractor.h
   ${${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC}
   )
 
 set(${PROJECT_NAME}_HEADERS
-  ${${PROJECT_NAME}_HEADERS_MOC})
+  ${${PROJECT_NAME}_HEADERS_MOC}
+  annotations/vtkSeedPointActor2D.h
+  )
 
 set(${PROJECT_NAME}_SOURCES
   v3dViewPlugin.cpp
@@ -103,11 +100,8 @@ set(${PROJECT_NAME}_SOURCES
   v3dViewMeshInteractor.cpp
   v3dView4DInteractor.cpp
   v3dFiberBundle.cpp
-  QVtkGraphicsView.cpp
-  v3dViewGraphicsScene.cpp
-  v3dViewGraphicsView.cpp
-  v3dViewCircleAnnotation.cpp
-  vtkQtOpenGLRenderWindow.cxx  
+  v3dViewAnnotationInteractor.cpp
+  annotations/vtkSeedPointActor2D.cpp
   ${${PROJECT_NAME}_TTK_DEPENDENT_SOURCES}
   )
 
@@ -124,6 +118,8 @@ if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
     ${${PROJECT_NAME}_SOURCES})
 endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
 
+include_directories(annotations)
+
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
   ${${PROJECT_NAME}_SOURCES_PCH}
@@ -132,7 +128,6 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  ${OPENGL_LIBRARIES}
   ${${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES}
   dtkCore
   medCore

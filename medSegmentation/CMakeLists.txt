@@ -40,14 +40,12 @@ include(${medinria_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/annotations)
-
 ## #################################################################
 ## Input
 ## #################################################################
 
-file(GLOB ${PROJECT_NAME}_HEADERS *.h   annotations/*.h  )
-file(GLOB ${PROJECT_NAME}_SOURCES *.cpp annotations/*.cpp)
+file(GLOB ${PROJECT_NAME}_HEADERS *.h   )
+file(GLOB ${PROJECT_NAME}_SOURCES *.cpp )
 
 #Determine files to MOC as those containing Q_OBJECT.
 foreach(fileIt ${${PROJECT_NAME}_HEADERS})

@@ -10,6 +10,8 @@
 
 #include <v3dView.h>
 
+#include "v3dViewAnnotationInteractor.h"
+
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -19,8 +21,7 @@
 #include <medMessageController.h>
 #include <medAbstractDataImage.h>
 #include <medMetaDataKeys.h>
-#include <medAbstractAnnotationRepresentation.h>
-#include <medAnnotationFactory.h>
+#include <medAbstractAnnotationViewInteractor.h>
 
 #include <vtkCamera.h>
 #include <vtkCommand.h>
@@ -45,14 +46,11 @@
 #include <vtkImageViewCollection.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkPiecewiseFunction.h>
-#include <vtkQtOpenGLRenderWindow.h>
+#include <QVTKWidget.h>
 
 #include <QtGui>
 #include <QMenu>
 #include <QMouseEvent>
-
-#include "v3dViewGraphicsView.h"
-#include "v3dViewGraphicsScene.h"
 
 //=============================================================================
 // Construct a QVector3d from pointer-to-double
@@ -204,9 +202,6 @@ void v3dViewObserver::Execute ( vtkObject *caller, unsigned long event, void *ca
 class v3dViewPrivate
 {
 public:
-    vtkQtOpenGLRenderWindow * renwin2d;
-    vtkQtOpenGLRenderWindow * renwin3d;
-
     // Utility to determine if a given orientation is 2D
     inline bool is2dOrientation ( const QString & name ) const
     {
@@ -220,6 +215,7 @@ public:
 
     vtkRenderer *renderer2d;
     vtkRenderer *renderer3d;
+    vtkSmartPointer<vtkRenderer> overlayRenderer2d;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
 
@@ -232,8 +228,6 @@ public:
     vtkRenderWindow *renWin;
 
     QWidget    *widget;
-    v3dViewGraphicsView  * vtkWidget;
-    v3dViewGraphicsScene * scene;
     QSlider    *slider;
     QPushButton *anchorButton;
     QPushButton *linkButton;
@@ -241,6 +235,7 @@ public:
     QPushButton *playButton;
     QPushButton *closeButton;
     QPushButton *fullScreenButton;
+    QVTKWidget *vtkWidget;
     QMenu      *menu;
     QString orientation;
 
@@ -326,6 +321,8 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     d->view2d->ShowImageAxisOff();
     d->view2d->ShowScalarBarOff();
     d->view2d->ShowRulerWidgetOn();
+    d->overlayRenderer2d = vtkSmartPointer<vtkRenderer>::New();
+    d->view2d->SetOverlayRenderer(d->overlayRenderer2d);
 
     // Setting up 3D view
     d->renderer3d = vtkRenderer::New();
@@ -432,37 +429,17 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     toolButtonGroup->addButton ( d->linkButton );
     toolButtonGroup->setExclusive ( false );
 
-    d->renwin2d = vtkQtOpenGLRenderWindow::New();
-    d->renwin3d = vtkQtOpenGLRenderWindow::New();
-    d->renwin2d->StereoCapableWindowOn();
-    d->renwin2d->SetStereoTypeToCrystalEyes();
-    d->renwin3d->StereoCapableWindowOn();
-    d->renwin3d->SetStereoTypeToCrystalEyes();
-    // if (qApp->arguments().contains("--stereo")) {
-    //     renwin2d->SetStereoRender(1);
-    //     renwin3d->SetStereoRender(1);
-    // }
+    d->vtkWidget = new QVTKWidget ( d->widget );
+    d->vtkWidget->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Minimum );
+    d->vtkWidget->setFocusPolicy ( Qt::NoFocus );
 
-    d->vtkWidget = new v3dViewGraphicsView(d->widget);
-    d->vtkWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    d->vtkWidget->setFocusPolicy(Qt::NoFocus);
-    d->vtkWidget->setRenderWindow( d->renwin2d );
+    d->renWin = vtkRenderWindow::New();
+    d->renWin->StereoCapableWindowOn();
+    d->renWin->SetStereoTypeToCrystalEyes();
+    // if(qApp->arguments().contains("--stereo"))
+    //     renwin->SetStereoRender(1);
 
-    d->scene = new v3dViewGraphicsScene( this, d->vtkWidget );
-    d->vtkWidget->setScene( d->scene );
-    //scene->setImageView( d->view2d );
-
-    // d->view3d->SetRenderWindowInteractor(
-    //     d->vtkWidget->getRenderWindow()->GetInteractor());
-    // d->view3d->SetRenderWindow(d->vtkWidget->getRenderWindow());
-    // d->view3d->UnInstallInteractor();
-    // d->vtkWidget->getRenderWindow()->RemoveRenderer(d->renderer3d);
-    d->view3d->SetRenderWindowInteractor( d->renwin3d->GetInteractor() );
-    d->view3d->SetRenderWindow( d->renwin3d );
-    
-    // set the interactor as well
-    d->view2d->SetRenderWindowInteractor( d->renwin2d->GetInteractor() );
-    d->view2d->SetRenderWindow( d->renwin2d );
+    d->vtkWidget->SetRenderWindow ( d->renWin );
 
     QHBoxLayout *toolsLayout = new QHBoxLayout;
     toolsLayout->setContentsMargins ( 0, 0, 0, 0 );
@@ -482,12 +459,12 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     layout->addWidget ( d->vtkWidget );
 
     //d->view3d->SetRenderWindow(d->vtkWidget->GetRenderWindow());
-    //d->view3d->SetRenderWindowInteractor(d->renWin->GetInteractor());
-    //d->view3d->SetRenderWindow(d->renWin);
-    //d->view3d->UnInstallInteractor();
-    //d->renWin->RemoveRenderer(d->renderer3d);
+    d->view3d->SetRenderWindowInteractor ( d->renWin->GetInteractor() );
+    d->view3d->SetRenderWindow ( d->renWin );
+    d->view3d->UnInstallInteractor();
+    d->renWin->RemoveRenderer ( d->renderer3d );
 
-    //d->view2d->SetRenderWindow(d->renWin); // set the interactor as well
+    d->view2d->SetRenderWindow ( d->renWin ); // set the interactor as well
     //d->view2d->SetRenderWindowInteractor(d->vtkWidget->GetRenderWindow()->GetInteractor());
 
     d->collection = vtkImageViewCollection::New();
@@ -644,7 +621,7 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     }
     this->setColor ( d->presetColors.at ( colorIndex ) );
 
-    connect ( d->vtkWidget,    SIGNAL ( mousePressed ( QMouseEvent* ) ),     this, SLOT ( onMousePressEvent ( QMouseEvent* ) ) );
+    connect ( d->vtkWidget,    SIGNAL ( mouseEvent ( QMouseEvent* ) ),     this, SLOT ( onMousePressEvent ( QMouseEvent* ) ) );
     connect ( d->slider,       SIGNAL ( valueChanged ( int ) ),            this, SLOT ( onZSliderValueChanged ( int ) ) );
 
     connect ( d->widget, SIGNAL ( destroyed() ), this, SLOT ( widgetDestroyed() ) );
@@ -652,19 +629,6 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
 
 v3dView::~v3dView ( void )
 {
-    if ( d->renderer2d)
-        d->renderer2d->SetRenderWindow(NULL);
-    if ( d->renderer3d)
-        d->renderer3d->SetRenderWindow(NULL);
-    d->renwin2d->RemoveRenderer(d->renderer2d);
-    d->renwin3d->RemoveRenderer(d->renderer3d);
-    
-    /*
-     d->view2D->SetRenderWindow(0);
-     d->view2D->SetRenderWindowInteractor(0);
-     d->view3D->SetRenderWindow(0);
-     d->view3D->SetRenderWindowInteractor(0);
-     */
     foreach ( dtkAbstractViewInteractor *interactor, this->interactors() )
     {
         interactor->disable();
@@ -674,15 +638,16 @@ v3dView::~v3dView ( void )
     d->renderer2d->SetRenderWindow ( NULL );
     d->renderer3d->SetRenderWindow ( NULL );
 
+    d->renWin->RemoveRenderer ( d->renderer2d );
+    d->renWin->RemoveRenderer ( d->renderer3d );
+
     d->view2d->SetRenderWindow ( NULL );
     d->view2d->SetRenderWindowInteractor ( NULL );
     d->view3d->SetRenderWindow ( NULL );
     d->view3d->SetRenderWindowInteractor ( NULL );
 
+    d->renWin->Delete();
 
-    d->renwin2d->Delete();
-    d->renwin3d->Delete();
-    
     d->view2d->Delete();
     d->renderer2d->Delete();
     d->view3d->UnInstallInteractor();
@@ -714,7 +679,7 @@ v3dView::~v3dView ( void )
 
 bool v3dView::registered ( void )
 {
-    return dtkAbstractViewFactory::instance()->registerViewType ( "v3dView", createV3dView );
+    return dtkAbstractViewFactory::instance()->registerViewType ( v3dView::s_identifier(), createV3dView );
 }
 
 QString v3dView::description ( void ) const
@@ -725,7 +690,7 @@ QString v3dView::description ( void ) const
 
 QString v3dView::identifier() const
 {
-    return "v3dView";
+    return v3dView::s_identifier();
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -780,7 +745,7 @@ vtkImageView *v3dView::currentView ( void )
 
 vtkRenderWindowInteractor *v3dView::interactor ( void )
 {
-    return d->vtkWidget->getRenderWindow()->GetInteractor();
+    return d->vtkWidget->GetRenderWindow()->GetInteractor();
 }
 
 vtkRenderer *v3dView::renderer2d ( void )
@@ -845,6 +810,7 @@ bool v3dView::SetViewInput(const char* type,dtkAbstractData* data,const int laye
         d->view2d->SetITKInput(image,layer);
         d->view3d->SetITKInput(image,layer);
     }
+    dtkAbstractView::setData(data);
     return true;
 }
 
@@ -868,6 +834,7 @@ bool v3dView::SetViewInputWithConversion(const char* type,const char* newtype,dt
         d->view2d->SetITKInput(image,layer);
         d->view3d->SetITKInput(image,layer);
     }
+    dtkAbstractView::setData(data);
     return true;
 }
 
@@ -884,6 +851,11 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         medMessageController::instance()->showError ( this, tr ( "Select image first" ), 5000 );
         return;
     }
+
+    if ( layer == 0 ) {
+        this->enableInteractor(v3dViewAnnotationInteractor::s_identifier());
+    }
+
 #ifdef vtkINRIA3D_USE_ITK
     if (SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
         SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3",data,layer) ||
@@ -1030,6 +1002,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
                 d->slider->setRange (0, d->imageData->xDimension()-1);
         }
+
     }
 
     this->addDataInList ( data, layer );
@@ -1096,13 +1069,12 @@ void v3dView::onOrientationPropertySet ( const QString &value )
         window = d->currentView->GetColorWindow();
         level  = d->currentView->GetColorLevel();
         timeIndex = d->currentView->GetTimeIndex();
-        
-        // d->currentView->UnInstallInteractor();
-        // d->currentView->SetRenderWindow( 0 );
-        
-        // // d->currentView->GetInteractorStyle()->RemoveObserver(d->observer);
-        // d->vtkWidget->GetRenderWindow()->RemoveRenderer(d->currentView->GetRenderer());
-        // d->renWin->RemoveRenderer ( d->currentView->GetRenderer() );
+
+        d->currentView->UnInstallInteractor();
+        d->currentView->SetRenderWindow ( 0 );
+
+        // d->currentView->GetInteractorStyle()->RemoveObserver(d->observer);
+        d->renWin->RemoveRenderer ( d->currentView->GetRenderer() );
     }
 
     if ( value=="3D" )
@@ -1161,8 +1133,7 @@ void v3dView::onOrientationPropertySet ( const QString &value )
         return;
     }
 
-    d->vtkWidget->setRenderWindow( dynamic_cast< vtkQtOpenGLRenderWindow * >(
-                                       d->currentView->GetRenderWindow() ) );
+    d->currentView->SetRenderWindow ( d->renWin );
 
     //d->currentView->InstallInteractor();
     //d->currentView->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 15);
@@ -1640,7 +1611,7 @@ void v3dView::onMetaDataSet ( const QString &key, const QString &value )
 void v3dView::onMenuAxialTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->vtkWidget->getRenderWindow()->SetStereoRender(0);
+        d->renWin->SetStereoRender ( 0 );
 
     this->setProperty ( "Orientation", "Axial" );
     d->view2d->Render();
@@ -1651,7 +1622,7 @@ void v3dView::onMenuAxialTriggered ( void )
 void v3dView::onMenuCoronalTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->vtkWidget->getRenderWindow()->SetStereoRender(0);
+        d->renWin->SetStereoRender ( 0 );
 
     this->setProperty ( "Orientation", "Coronal" );
     d->view2d->Render();
@@ -1662,7 +1633,7 @@ void v3dView::onMenuCoronalTriggered ( void )
 void v3dView::onMenuSagittalTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->vtkWidget->getRenderWindow()->SetStereoRender(0);
+        d->renWin->SetStereoRender ( 0 );
 
     this->setProperty ( "Orientation", "Sagittal" );
     d->view2d->Render();
@@ -1680,7 +1651,7 @@ void v3dView::onMenu3DTriggered ( void )
 void v3dView::onMenu3DVRTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->vtkWidget->getRenderWindow()->SetStereoRender(1);
+        d->renWin->SetStereoRender ( 1 );
 
     this->setProperty ( "3DMode", "VR" );
     this->setProperty ( "Orientation", "3D" );
@@ -1690,7 +1661,7 @@ void v3dView::onMenu3DVRTriggered ( void )
 void v3dView::onMenu3DMPRTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->vtkWidget->getRenderWindow()->SetStereoRender(1);
+        d->renWin->SetStereoRender ( 1 );
 
     this->setProperty ( "3DMode",      "MPR" );
     this->setProperty ( "Orientation", "3D" );
@@ -1700,7 +1671,7 @@ void v3dView::onMenu3DMPRTriggered ( void )
 void v3dView::onMenu3DMaxIPTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->vtkWidget->getRenderWindow()->SetStereoRender(1);
+        d->renWin->SetStereoRender ( 1 );
 
     this->setProperty ( "3DMode", "MIP - Maximum" );
     this->setProperty ( "Orientation", "3D" );
@@ -1710,7 +1681,7 @@ void v3dView::onMenu3DMaxIPTriggered ( void )
 void v3dView::onMenu3DMinIPTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->vtkWidget->getRenderWindow()->SetStereoRender(1);
+        d->renWin->SetStereoRender ( 1 );
 
     this->setProperty ( "3DMode", "MIP - Minimum" );
     this->setProperty ( "Orientation", "3D" );
@@ -1720,7 +1691,7 @@ void v3dView::onMenu3DMinIPTriggered ( void )
 void v3dView::onMenu3DOffTriggered ( void )
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
-        d->vtkWidget->getRenderWindow()->SetStereoRender(1);
+        d->renWin->SetStereoRender ( 1 );
 
     this->setProperty ( "3DMode", "Off" );
     d->view3d->Render();
@@ -2205,7 +2176,7 @@ void v3dView::onPositionChanged ( const QVector3D &position )
     {
         unsigned int zslice = view2d->GetSlice();
         dtkSignalBlocker sliderBlocker( d->slider );
-        d->slider->setValue (zslice);
+        d->slider->setValue ( zslice );
     }
 }
 
@@ -2287,35 +2258,167 @@ void v3dView::widgetDestroyed ( void )
     d->widget = NULL;
 }
 
-bool v3dView::onAddAnnotation(  medAnnotationData * annData )
-{
-    QObject * annItem =
-        medAnnotationFactory::instance()->createAnnotationForData( annData, this->identifier() );
-    if ( !annItem ) 
-        return false;
-
-    medAnnotationGraphicsObject * obj = qobject_cast< medAnnotationGraphicsObject *>(annItem);
-    if ( obj ) {
-        obj->setAnnotationData(annData);
-        d->scene->addItem(obj);
-        return true;
-    }
-
-    return false;
-}
-
-void v3dView::onRemoveAnnotation( medAnnotationData * annData )
-{
-    foreach( QGraphicsItem * item, d->scene->items() ) {
-        medAnnotationGraphicsObject * obj = dynamic_cast< medAnnotationGraphicsObject * >(item);
-        if ( obj && obj->annotationData() == annData ) {
-            d->scene->removeItem(item);
-        }
-    }
-}
-
 medAbstractViewCoordinates * v3dView::coordinates()
 {
-    return d->scene;
+    return this;
 }
 
+QPointF v3dView::worldToDisplay( const QVector3D & worldVec ) const
+{
+    // The following code is implemented without calling ren->SetWorldPoint, 
+    // because that generates an unnecessary modified event.
+    //ren->SetWorldPoint( d->view->currentView()->GetCurrentPoint() );
+    //ren->WorldToDisplay();
+    //ren->GetDisplayPoint( posDisplay );
+
+    vtkRenderer * ren = d->currentView->GetRenderer();
+
+    // Get window for dimensions
+    vtkWindow * win = ren->GetVTKWindow();
+
+    if ( !win )
+        return QPointF();
+
+    double wx = worldVec.x();
+    double wy = worldVec.y();
+    double wz = worldVec.z();
+
+    ren->WorldToView( wx, wy, wz );
+
+    // get physical window dimensions
+    const int * size = win->GetSize();
+    int sizex = size[0];
+    int sizey = size[1];
+
+    const double * viewport = ren->GetViewport( );
+
+    double dx = (wx + 1.0) *
+        (sizex*(viewport[2]-viewport[0])) / 2.0 +
+        sizex*viewport[0];
+    double dy = (wy + 1.0) *
+        (sizey*(viewport[3]-viewport[1])) / 2.0 +
+        sizey*viewport[1];
+
+    // Convert VTK display coordinates to Qt (flipped in Y)
+    return QPointF( dx, sizey - 1 - dy );
+}
+
+QVector3D v3dView::displayToWorld( const QPointF & scenePoint ) const
+{
+    // The following code is implemented without calling ren->SetWorldPoint, 
+    // because that generates an unnecessary modified event.
+    //ren->SetWorldPoint( minWorld );
+    //ren->WorldToDisplay();
+    //ren->GetDisplayPoint( minDisplay );
+    //ren->SetWorldPoint( maxWorld );
+    //ren->WorldToDisplay();
+    //ren->GetDisplayPoint( maxDisplay );
+    vtkRenderer * ren = d->currentView->GetRenderer();
+
+    /* get physical window dimensions */
+    vtkWindow * win = ren->GetVTKWindow();
+
+    if ( !win )
+        return QVector3D();
+
+    const int * size = win->GetSize();
+    int sizex = size[0];
+    int sizey = size[1];
+
+    const double * viewport = ren->GetViewport( );
+
+    // Convert Qt display coordinates to VTK (flipped in Y)
+    const double dx = scenePoint.x();
+    const double dy = sizey - 1 - scenePoint.y();
+
+    double vx = 2.0 * (dx - sizex*viewport[0])/
+        (sizex*(viewport[2]-viewport[0])) - 1.0;
+    double vy = 2.0 * (dy - sizey*viewport[1])/
+        (sizey*(viewport[3]-viewport[1])) - 1.0;
+    double vz = 0.;
+
+    if (this->is2D() ) {
+        // Project the point into the view plane.
+        vtkCamera * cam = ren->GetActiveCamera();
+        double pointInDisplayPlane[3];
+        if (cam) {
+            cam->GetFocalPoint(pointInDisplayPlane);
+        } else {
+            d->currentView->GetCurrentPoint(pointInDisplayPlane);
+        }
+        ren->WorldToView(pointInDisplayPlane[0],pointInDisplayPlane[1],pointInDisplayPlane[2]);
+        vz = pointInDisplayPlane[2];
+    }
+
+    ren->ViewToWorld(vx,vy,vz);
+
+    return QVector3D( vx, vy, vz );
+}
+
+QVector3D v3dView::viewCenter() const
+{
+    vtkRenderer * ren = d->currentView->GetRenderer();
+    double fp[3];
+    ren->GetActiveCamera()->GetFocalPoint( fp);
+    return QVector3D( fp[0], fp[1], fp[2] );
+}
+
+QVector3D v3dView::viewPlaneNormal() const
+{
+    double vpn[3];
+    vtkRenderer * ren = d->currentView->GetRenderer();
+    ren->GetActiveCamera()->GetViewPlaneNormal(vpn);
+    return QVector3D( vpn[0], vpn[1], vpn[2] );
+}
+
+QVector3D v3dView::viewUp() const
+{
+    double vup[3];
+    vtkRenderer * ren = d->currentView->GetRenderer();
+    ren->GetActiveCamera()->GetViewUp(vup);
+    return QVector3D( vup[0], vup[1], vup[2] );
+}
+
+bool v3dView::is2D() const
+{
+    return d->currentView == d->view2d;
+}
+
+qreal v3dView::sliceThickness() const
+{
+    double cr[2] = { 0,0 };
+    d->renderer2d->GetActiveCamera()->GetClippingRange(cr);
+    return std::fabs(cr[1] - cr[0]);
+}
+
+qreal v3dView::scale() const
+{
+    double scale;
+    if ( this->is2D() ) {
+        // The height of the viewport in world coordinates
+        double camScale = d->currentView->GetRenderer()->GetActiveCamera()->GetParallelScale();
+        double heightInPx = d->currentView->GetRenderWindow()->GetSize()[1];
+        // return pixels per world coord.
+        scale = heightInPx / camScale;
+    } else {
+        // Return scale at fp.
+        double vup[4];
+        d->currentView->GetRenderer()->GetActiveCamera()->GetViewUp(vup);
+        vup[3] = 0;  //intentionally zero and not one.
+        double MVup[4];
+        d->currentView->GetRenderer()->GetActiveCamera()->GetViewTransformMatrix()->MultiplyPoint(vup, MVup);
+        double lScale = vtkMath::Norm(MVup) / vtkMath::Norm(vup);
+        //We now have the scale in viewport coords. (normalised).
+        double heightInPx = d->currentView->GetRenderWindow()->GetSize()[1];
+        scale = heightInPx *lScale;
+    }
+
+    if ( scale < 0 ) 
+        scale *= -1;
+    return scale;
+}
+
+QString v3dView::s_identifier()
+{
+    return "v3dView";
+}

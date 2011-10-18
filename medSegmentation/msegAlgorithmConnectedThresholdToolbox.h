@@ -15,13 +15,16 @@
 #include <QVector3D>
 #include <QTextEdit>
 
+#include <vector>
+
 class medAbstractData;
 class medAbstractView;
+class medAttachedData;
 
 class dtkAbstractProcessFactory;
+class medSeedPointAnnotationData;
 
 namespace mseg {
-    class SeedPointAnnotationData;
 
 
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmConnectedThresholdToolbox : public medToolBoxSegmentationCustom
@@ -51,14 +54,16 @@ public slots:
 
     void onSeedPointTableSelectionChanged();
 
+    void onDataModified(medAttachedData * attached);
+
 protected:
     void addSeedPoint( medAbstractView *view, const QVector3D &vec );
     void setData( dtkAbstractData *data );
 
+    // update with seed point data.
+    void updateTableRow(int row);
 private:
-    struct SeedPoint { 
-        dtkSmartPointer<SeedPointAnnotationData> annotationData;
-    };
+    typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
 
     QDoubleSpinBox *m_lowThresh;
     QDoubleSpinBox *m_highThresh;
@@ -68,7 +73,7 @@ private:
     QPushButton *m_applyButton;
     QTextEdit *m_dataText;
 
-    QVector< SeedPoint > m_seedPoints;
+    std::vector< SeedPoint > m_seedPoints;
     dtkSmartPointer< medViewEventFilter > m_viewFilter;
 
     enum ViewState { ViewState_None, ViewState_PickingSeedPoint };

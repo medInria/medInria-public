@@ -5,7 +5,7 @@
 
 namespace mseg {
 
-SeedPointAnnotation::SeedPointAnnotation(QGraphicsItem * parent /* = 0 */) :
+SeedPointAnnotation::SeedPointAnnotation(QObject * parent /* = 0 */) :
     medAnnotationGraphicsObject( parent),
     m_isInitialized(false)
 {

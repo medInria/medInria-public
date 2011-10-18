@@ -79,13 +79,13 @@ QString v3dViewFuseInteractor::identifier() const
 
 QStringList v3dViewFuseInteractor::handled(void) const
 {
-    return QStringList () << "v3dView";
+    return QStringList () << v3dView::s_identifier();
 }
 
 bool v3dViewFuseInteractor::registered(void)
 {
     return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewFuseInteractor",
-                                                                          QStringList() << "v3dView", createV3dViewFuseInteractor);
+                                                                          QStringList() << v3dView::s_identifier(), createV3dViewFuseInteractor);
 }
 
 void v3dViewFuseInteractor::onPropertySet (const QString& key, const QString& value)

@@ -1533,24 +1533,94 @@ void v3dViewPublic::close(void)
 
 QPointF v3dViewPublic::worldToDisplay( const QVector3D & worldVec ) const
 {
+    // The following code is implemented without calling ren->SetWorldPoint, 
+    // because that generates an unnecessary modified event.
+    //ren->SetWorldPoint( d->view->currentView()->GetCurrentPoint() );
+    //ren->WorldToDisplay();
+    //ren->GetDisplayPoint( posDisplay );
+
     vtkRenderer * ren = d->currentView->GetRenderer();
-    ren->SetWorldPoint(worldVec.x(), worldVec.y(), worldVec.z(), 1);
-    ren->WorldToDisplay();
-    double point[3];
-    ren->GetDisplayPoint(point);
-    return QPointF( point[0], point[1] );
+
+    // Get window for dimensions
+    vtkWindow * win = ren->GetVTKWindow();
+
+    if ( !win )
+        return QPointF();
+
+    double wx = worldVec.x();
+    double wy = worldVec.y();
+    double wz = worldVec.z();
+
+    ren->WorldToView( wx, wy, wz );
+
+    // get physical window dimensions
+    const int * size = win->GetSize();
+    int sizex = size[0];
+    int sizey = size[1];
+
+    const double * viewport = ren->GetViewport( );
+
+    double dx = (wx + 1.0) *
+        (sizex*(viewport[2]-viewport[0])) / 2.0 +
+        sizex*viewport[0];
+    double dy = (wy + 1.0) *
+        (sizey*(viewport[3]-viewport[1])) / 2.0 +
+        sizey*viewport[1];
+
+    // Convert VTK display coordinates to Qt (flipped in Y)
+    return QPointF( dx, sizey - 1 - dy );
 }
 
 QVector3D v3dViewPublic::displayToWorld( const QPointF & scenePoint ) const
 {
+    // The following code is implemented without calling ren->SetWorldPoint, 
+    // because that generates an unnecessary modified event.
+    //ren->SetWorldPoint( minWorld );
+    //ren->WorldToDisplay();
+    //ren->GetDisplayPoint( minDisplay );
+    //ren->SetWorldPoint( maxWorld );
+    //ren->WorldToDisplay();
+    //ren->GetDisplayPoint( maxDisplay );
     vtkRenderer * ren = d->currentView->GetRenderer();
-    double zpos = 0;
-    ren->SetDisplayPoint(scenePoint.x(), scenePoint.y(), zpos);
-    ren->DisplayToWorld();
-    double point[4];
-    ren->GetWorldPoint(point);
-    return QVector3D( point[0], point[1], point[2] );
 
+    /* get physical window dimensions */
+    vtkWindow * win = ren->GetVTKWindow();
+
+    if ( !win )
+        return QVector3D();
+
+    const int * size = win->GetSize();
+    int sizex = size[0];
+    int sizey = size[1];
+
+    const double * viewport = ren->GetViewport( );
+
+    // Convert Qt display coordinates to VTK (flipped in Y)
+    const double dx = scenePoint.x();
+    const double dy = sizey - 1 - scenePoint.y();
+
+    double vx = 2.0 * (dx - sizex*viewport[0])/
+        (sizex*(viewport[2]-viewport[0])) - 1.0;
+    double vy = 2.0 * (dy - sizey*viewport[1])/
+        (sizey*(viewport[3]-viewport[1])) - 1.0;
+    double vz = 0.;
+
+    if (this->is2D() ) {
+        // Project the point into the view plane.
+        vtkCamera * cam = ren->GetActiveCamera();
+        double pointInDisplayPlane[3];
+        if (cam) {
+            cam->GetFocalPoint(pointInDisplayPlane);
+        } else {
+            d->currentView->GetCurrentPoint(pointInDisplayPlane);
+        }
+        ren->WorldToView(pointInDisplayPlane[0],pointInDisplayPlane[1],pointInDisplayPlane[2]);
+        vz = pointInDisplayPlane[2];
+    }
+
+    ren->ViewToWorld(vx,vy,vz);
+
+    return QVector3D( vx, vy, vz );
 }
 
 QVector3D v3dViewPublic::viewCenter() const
@@ -1600,7 +1670,7 @@ qreal v3dViewPublic::scale() const
         scale = heightInPx / camScale;
     } else {
         // Return scale at fp.
-        double vup[4], fp[4];
+        double vup[4];
         d->currentView->GetRenderer()->GetActiveCamera()->GetViewUp(vup);
         vup[3] = 0;  //intentionally zero and not one.
         double MVup[4];
@@ -1615,10 +1685,6 @@ qreal v3dViewPublic::scale() const
         scale *= -1;
     return scale;
 }
-
-
-
-
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
