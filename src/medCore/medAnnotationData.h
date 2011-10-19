@@ -23,7 +23,7 @@ public:
     medAbstractData * parentData() const;
     void setParentData( medAbstractData * mdata );
 
-signals :
+signals:
     /** Emitted when the data is changed */
     void dataModified(medAnnotationData*);
 

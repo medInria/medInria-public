@@ -27,26 +27,34 @@ public:
     void setRadiusScene(qreal val);
 
     QColor selectedColor() const { return m_selectedColor; }
-    void setSelectedColor(QColor val);
+    void setSelectedColor(const QColor & val);
 
     QColor color() const { return m_color; }
     void setColor(QColor val);
 
-    QVector3D centerWorld() const { return m_centerWorld; }
-    void setCenterWorld(QVector3D val);
+    // The setter will increase the number of seeds of hte given num is larger than the current number of seeds.
+    QVector3D centerWorld(int num) const { return m_centerWorld[num]; }
+    void setCenterWorld(int num, const QVector3D & val);
 
+    int selectedSeed(){ return m_selectedSeed; }
+    virtual void setSelectedSeed(int num);
+
+    bool isSelected(int num) const { return m_selectedSeed == num; }
+
+    int getNumberOfSeeds() const { return m_centerWorld.size(); }
+    void setNumberOfSeeds(int num);
+
+    void removeSeed(int i);
+// static methods
     static QString s_description();
     static QString s_identifier();
-
-    virtual void setSelected(bool value);
-    bool isSelected() const { return m_isSelected; }
 
 protected:
     qreal m_radiusScene;
     QColor m_selectedColor;
     QColor m_color;
-    QVector3D m_centerWorld;
-    bool m_isSelected;
+    QVector<QVector3D> m_centerWorld;
+    int m_selectedSeed;
 };
 
 #endif /* MSEGSEEDPOINTANNOTATIONDATA_H_ */

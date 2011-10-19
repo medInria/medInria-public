@@ -11,26 +11,25 @@ medSeedPointAnnotationData::medSeedPointAnnotationData() :
     m_selectedColor(Qt::red),
     m_color(Qt::cyan),
     m_radiusScene(10),
-    m_isSelected(false)
+    m_selectedSeed(-1)
 {
-    // TODO Auto-generated constructor stub
-
 }
 
 medSeedPointAnnotationData::~medSeedPointAnnotationData()
 {
-    // TODO Auto-generated destructor stub
 }
 
-void medSeedPointAnnotationData::setCenterWorld( QVector3D val )
+void medSeedPointAnnotationData::setCenterWorld( int num, const QVector3D & val )
 {
-    if ( m_centerWorld == val )
+    if ( num >= m_centerWorld.size() ) {
+        this->setNumberOfSeeds(num+1);
+    } else if ( m_centerWorld[num] == val )
         return;
-    m_centerWorld = val;
+    m_centerWorld[num] = val;
     emit dataModified(this);
 }
 
-void medSeedPointAnnotationData::setSelectedColor( QColor val )
+void medSeedPointAnnotationData::setSelectedColor( const QColor & val )
 {
     if ( m_selectedColor == val )
         return;
@@ -76,11 +75,27 @@ QString medSeedPointAnnotationData::identifier( void ) const
     return medSeedPointAnnotationData::s_identifier();
 }
 
-void medSeedPointAnnotationData::setSelected( bool value )
+void medSeedPointAnnotationData::setSelectedSeed( int num )
 {
-    if ( m_isSelected != value ) {
-        m_isSelected = value;
+    if ( m_selectedSeed != num ) {
+        m_selectedSeed = num;
         emit dataModified(this);
     }
 }
+
+void medSeedPointAnnotationData::removeSeed( int i )
+{
+    m_centerWorld.remove(i);
+    emit dataModified(this);
+}
+
+void medSeedPointAnnotationData::setNumberOfSeeds( int num )
+{
+    if ( m_centerWorld.size() != num ) {
+        m_centerWorld.resize(num);
+        emit dataModified(this);
+    }
+}
+
+
 

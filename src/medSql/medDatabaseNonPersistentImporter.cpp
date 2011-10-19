@@ -82,9 +82,11 @@ void medDatabaseNonPersistentImporter::run ( void )
     QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
 
     int patientDbId = -1;
-    QString patientName = data->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
-    QString birthdate = data->metaDataValues ( medMetaDataKeys::BirthDate.key() ) [0];
-    QString patientId = data->metaDataValues ( medMetaDataKeys::PatientID.key() ) [0];
+    QString patientName = medMetaDataKeys::PatientName.getFirstValue(data);
+
+    // These metadata may be missing, in which case you get an empty QString.
+    QString birthdate = medMetaDataKeys::BirthDate.getFirstValue(data);
+    QString patientId = medMetaDataKeys::PatientID.getFirstValue(data);
 
     qDebug() << "in database non persistent importer: " << patientId;
 
@@ -110,8 +112,9 @@ void medDatabaseNonPersistentImporter::run ( void )
 
     int     studyDbId   = -1;
     QString studyName = data->metaDataValues ( medMetaDataKeys::StudyDescription.key() ) [0];
-    QString studyUid = data->metaDataValues ( medMetaDataKeys::StudyDicomID.key() ) [0];
-    QString studyId = data->metaDataValues ( medMetaDataKeys::StudyID.key() ) [0];
+    // Optional, will use empty string otherwise.
+    QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(data);
+    QString studyId = medMetaDataKeys::StudyID.getFirstValue(data);
 
     databaseIndex = medDatabaseController::instance()->indexForStudy ( patientName, studyName );
     if ( databaseIndex.isValid() )
@@ -135,8 +138,8 @@ void medDatabaseNonPersistentImporter::run ( void )
     index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, studyDbId, medDatabaseNonPersistentController::instance()->seriesId ( true ), -1 );
 
     QString seriesName = data->metaDataValues ( medMetaDataKeys::SeriesDescription.key() ) [0];
-    QString seriesUid = data->metaDataValues ( medMetaDataKeys::SeriesDicomID.key() ) [0];
-    QString seriesId = data->metaDataValues ( medMetaDataKeys::SeriesID.key() ) [0];
+    QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(data);
+    QString seriesId = medMetaDataKeys::SeriesID.getFirstValue(data);
 
     medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
 
