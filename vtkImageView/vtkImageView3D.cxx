@@ -176,17 +176,8 @@ vtkImageView3D::vtkImageView3D()
 //----------------------------------------------------------------------------
 vtkImageView3D::~vtkImageView3D()
 {
-  // delete all vtk objects
-  std::map<int, vtkImage3DDisplay*>::iterator it = this->ImageDisplayMap.begin();
-  while (it!=this->ImageDisplayMap.end())
-  {
-    if (it->second)
-    {
-      it->second->Delete();
-    }
-    ++it;
-  }
-  this->ImageDisplayMap.clear();
+  // delete all vtk objects  
+  this->LayerInfoVec.clear();  // Delete handled by smartpointer
   
   this->VolumeMapper->Delete();
   this->VolumeProperty->Delete();
@@ -533,7 +524,7 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
     
     this->AddLayer (layer);
     
-    this->ImageDisplayMap.at(layer)->SetInput (reslicedImage);
+    this->GetImage3DDisplayForLayer(layer)->SetInput (reslicedImage);
 
     // set default display properties
     this->VolumeProperty->SetShade(layer, 1);
@@ -566,7 +557,7 @@ void vtkImageView3D::InternalUpdate (void)
 
   bool multiLayers = false;
 
-  if (this->ImageDisplayMap.size()>0)
+  if (this->LayerInfoVec.size()>0)
   {
     multiLayers = true;
     
@@ -574,11 +565,10 @@ void vtkImageView3D::InternalUpdate (void)
     vtkImageAppendComponents *appender = vtkImageAppendComponents::New();
     appender->SetInput (0, this->GetInput());
     
-    std::map<int, vtkImage3DDisplay*>::const_iterator it = this->ImageDisplayMap.begin();
-    while (it!=this->ImageDisplayMap.end())
+    for( LayerInfoVecType::const_iterator it = this->LayerInfoVec.begin();
+         it!=this->LayerInfoVec.end(); ++it)
     {
-      appender->AddInput (it->second->GetInput());
-      ++it;
+      appender->AddInput (it->ImageDisplay->GetInput());
     }
     
     appender->Update();
@@ -675,7 +665,7 @@ void vtkImageView3D::SetTransferFunctions (vtkColorTransferFunction * color,
   }
   else if (this->HasLayer (layer))
   {
-    double *range = this->ImageDisplayMap.at(layer)->GetInput()->GetScalarRange();
+    double *range = this->GetImage3DDisplayForLayer(layer)->GetInput()->GetScalarRange();
     this->SetTransferFunctionRangeFromWindowSettings(color, opacity, range[0], range[1]);
     this->VolumeProperty->SetColor(layer, color );
     this->VolumeProperty->SetScalarOpacity(layer, opacity );
@@ -690,10 +680,10 @@ void vtkImageView3D::SetOpacity (double opacity, int layer)
     this->Opacity = opacity;
     this->VolumeProperty->SetComponentWeight(0, opacity);
   }
-  else if (layer <= (int)this->ImageDisplayMap.size()) 
+  else if (this->HasLayer(layer)) 
   {
     this->VolumeProperty->SetComponentWeight(layer, opacity);
-    this->ImageDisplayMap[layer]->SetOpacity(opacity);
+    this->GetImage3DDisplayForLayer(layer)->SetOpacity(opacity);
   }
 }
 
@@ -702,8 +692,8 @@ double vtkImageView3D::GetOpacity(int layer) const
 {
   if (layer==0)
     return this->Opacity;
-  else if (layer <= (int)this->ImageDisplayMap.size())
-    return this->ImageDisplayMap.at(layer)->GetOpacity();
+  else if (this->HasLayer(layer))
+    return this->GetImage3DDisplayForLayer(layer)->GetOpacity();
   
   return 0.0;
 }
@@ -732,7 +722,7 @@ void vtkImageView3D::SetVisibility (int visibility, int layer)
     this->Visibility = visibility;
     
   }
-  else if (layer <= (int)this->ImageDisplayMap.size()) 
+  else if (this->HasLayer(layer)) 
   {
     if (visibility)
     {
@@ -742,7 +732,7 @@ void vtkImageView3D::SetVisibility (int visibility, int layer)
     {
       this->VolumeProperty->SetComponentWeight(layer, 0);
     }
-    this->ImageDisplayMap[layer]->SetVisibility(visibility);
+    this->GetImage3DDisplayForLayer(layer)->SetVisibility(visibility);
   }
 }
 
@@ -752,8 +742,8 @@ int vtkImageView3D::GetVisibility (int layer) const
   if (layer==0)
     return this->Visibility;
   
-  else if (layer <= (int)this->ImageDisplayMap.size())
-    return this->ImageDisplayMap.at(layer)->GetVisibility();
+  else if (this->HasLayer(layer))
+    return this->GetImage3DDisplayForLayer(layer)->GetVisibility();
   
   return 0;
 }
@@ -1064,7 +1054,10 @@ void vtkImageView3D::AddLayer (int layer)
   {
     return;
   }
-  this->ImageDisplayMap.insert (std::pair<int, vtkImage3DDisplay*>(layer, vtkImage3DDisplay::New()));
+  if ( layer > this->LayerInfoVec.size() ) {
+      this->LayerInfoVec.resize(layer);
+  }
+  this->LayerInfoVec[layer - 1].ImageDisplay = vtkSmartPointer<vtkImage3DDisplay>::New();
   this->VolumeProperty->SetShade(layer, 1);
   this->VolumeProperty->SetComponentWeight(layer, 1.0);
 
@@ -1073,14 +1066,7 @@ void vtkImageView3D::AddLayer (int layer)
 //----------------------------------------------------------------------------
 bool vtkImageView3D::HasLayer (int layer) const
 {
-  std::map<int, vtkImage3DDisplay*>::const_iterator it = this->ImageDisplayMap.begin();
-  while (it!=this->ImageDisplayMap.end())
-  {
-    if ((*it).first==layer)
-      return true;
-    ++it;
-  }
-  return false;
+    return ( layer <= this->LayerInfoVec.size() ) && ( layer > 0 );
 }
 
 //----------------------------------------------------------------------------
@@ -1091,8 +1077,7 @@ void vtkImageView3D::RemoveLayer (int layer)
     return;
   }
 
-  this->ImageDisplayMap.at (layer)->Delete();
-  this->ImageDisplayMap.erase (layer);
+  this->LayerInfoVec.erase (this->LayerInfoVec.begin() + layer - 1);
 
   this->InternalUpdate();
 }
@@ -1100,12 +1085,9 @@ void vtkImageView3D::RemoveLayer (int layer)
 //----------------------------------------------------------------------------
 void vtkImageView3D::RemoveAllLayers (void)
 {
-  std::map<int, vtkImage3DDisplay*> displayMap = this->ImageDisplayMap;
-  std::map<int, vtkImage3DDisplay*>::iterator it = displayMap.begin();
-  while (it!=displayMap.end())
+  while (this->LayerInfoVec.size() != 0)
   {
-    this->RemoveLayer (it->first);
-    ++it;
+    this->RemoveLayer (this->LayerInfoVec.size());
   }
 }
 
@@ -1226,4 +1208,9 @@ void vtkImageView3D::RemoveExtraPlane (vtkImageActor* input)
     item = this->ExtraPlaneCollection->GetNextProp3D();
     iteminput = this->ExtraPlaneCollection->GetNextProp3D();
   }
+}
+
+vtkImage3DDisplay * vtkImageView3D::GetImage3DDisplayForLayer( int layer ) const
+{
+    return this->LayerInfoVec.at(layer - 1).ImageDisplay;
 }

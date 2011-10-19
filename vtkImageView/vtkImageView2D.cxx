@@ -166,7 +166,8 @@ vtkImageView2D::vtkImageView2D()
   this->Command             = vtkImageView2DCommand::New();
   this->OrientationAnnotation = vtkOrientationAnnotation::New();
   
-  this->LayerInfoMap[0].ImageDisplay = vtkSmartPointer<vtkImage2DDisplay>::New();
+  this->LayerInfoVec.resize(1);
+  this->LayerInfoVec[0].ImageDisplay = vtkSmartPointer<vtkImage2DDisplay>::New();
   
   this->SliceOrientation = vtkImageView2D::SLICE_ORIENTATION_XY;
   
@@ -226,7 +227,7 @@ vtkImageView2D::vtkImageView2D()
 vtkImageView2D::~vtkImageView2D()
 {
 // Deletion of objects in the LayerInfoMap is handled by the SmartPointers.
-  this->LayerInfoMap.clear();
+  this->LayerInfoVec.clear();
 
   this->Axes2DWidget->Delete();
   this->RulerWidget->Delete();
@@ -477,7 +478,7 @@ void vtkImageView2D::UpdateOrientation()
 //----------------------------------------------------------------------------
 void vtkImageView2D::UpdateDisplayExtent()
 {
-  if (this->LayerInfoMap.empty())
+  if (this->LayerInfoVec.empty())
     return;
   
   vtkImageData * input = this->GetImage2DDisplayForLayer(0)->GetInput();
@@ -501,9 +502,9 @@ void vtkImageView2D::UpdateDisplayExtent()
     // vtkWarningMacro (<<"WARNING: asking to display an out of bound extent"<<endl);
   }
   
-  for (LayerInfoMapType::iterator it = this->LayerInfoMap.begin(); it != this->LayerInfoMap.end(); it++)
+  for (LayerInfoVecType::iterator it = this->LayerInfoVec.begin(); it != this->LayerInfoVec.end(); it++)
   {
-    vtkImage2DDisplay * imageDisplay = it->second.ImageDisplay;
+    vtkImage2DDisplay * imageDisplay = it->ImageDisplay;
     vtkImageData *imageInput = imageDisplay->GetInput();
     switch (this->SliceOrientation)
     {
@@ -1271,9 +1272,9 @@ void vtkImageView2D::InstallInteractor()
   
   if (this->RenderWindow)
   {
-    for (LayerInfoMapType::iterator it = this->LayerInfoMap.begin(); it!=this->LayerInfoMap.end(); ++it) 
+    for (LayerInfoVecType::iterator it = this->LayerInfoVec.begin(); it!=this->LayerInfoVec.end(); ++it) 
     {
-      if (vtkRenderer *renderer = it->second.Renderer)
+      if (vtkRenderer *renderer = it->Renderer)
       {
         this->RenderWindow->AddRenderer(renderer);
       }
@@ -1319,9 +1320,9 @@ void vtkImageView2D::UnInstallInteractor()
   
   if (this->RenderWindow)
    {
-     for (LayerInfoMapType::iterator it = this->LayerInfoMap.begin(); it!=this->LayerInfoMap.end(); ++it) 
+     for (LayerInfoVecType::iterator it = this->LayerInfoVec.begin(); it!=this->LayerInfoVec.end(); ++it) 
      {
-      if (vtkRenderer *renderer = it->second.Renderer)
+      if (vtkRenderer *renderer = it->Renderer)
        {
         this->RenderWindow->RemoveRenderer(renderer);
        }
@@ -1689,8 +1690,11 @@ void vtkImageView2D::AddLayer(int layer)
   if (this->HasLayer(layer))
     return;
 
-  this->LayerInfoMap[layer].Renderer = vtkSmartPointer<vtkRenderer>::New();
-  this->LayerInfoMap[layer].ImageDisplay = vtkSmartPointer<vtkImage2DDisplay>::New();
+  if ( layer >= this->LayerInfoVec.size() ) {
+      this->LayerInfoVec.resize(layer + 1);
+  }
+  this->LayerInfoVec[layer].Renderer = vtkSmartPointer<vtkRenderer>::New();
+  this->LayerInfoVec[layer].ImageDisplay = vtkSmartPointer<vtkImage2DDisplay>::New();
   
   vtkRenderer *renderer = this->GetRendererForLayer(layer);
   renderer->SetLayer(layer);
@@ -1729,53 +1733,42 @@ void vtkImageView2D::RemoveLayer(int layer)
   }
 
   // Delete is handled by SmartPointers.
-  this->LayerInfoMap.erase(layer);
+  this->LayerInfoVec.erase(this->LayerInfoVec.begin() + layer);
   
   // Make contiguous
-  LayerInfoMapType newMap;
-  int i(0);
-  for ( LayerInfoMapType::const_iterator it( LayerInfoMap.begin() );
-      it != LayerInfoMap.end() ; ++it, ++i ) 
+  for ( int i(layer); i<this->LayerInfoVec.size(); ++i ) 
   {
-      newMap[i].Renderer = it->second.Renderer;
-      newMap[i].ImageDisplay = it->second.ImageDisplay;
-      newMap[i].Renderer->SetLayer(i);
+      this->LayerInfoVec[i].Renderer->SetLayer(i);
   }
-  this->LayerInfoMap.swap(newMap);
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView2D::RemoveAllLayers (void)
 {
-  while (! this->LayerInfoMap.empty() )
+  while (! this->LayerInfoVec.empty() )
   {
-    int layer = this->LayerInfoMap.rbegin()->first;
-    this->RemoveLayer (layer);
+    this->RemoveLayer ( this->LayerInfoVec.size() - 1);
   }
 }
 
 //----------------------------------------------------------------------------
 bool vtkImageView2D::HasLayer(int layer) const
 {
-  return (this->LayerInfoMap.find(layer) != this->LayerInfoMap.end() );
+  return ( (layer < this->LayerInfoVec.size()) && (layer >= 0) );
 }
 
 //----------------------------------------------------------------------------
 int vtkImageView2D::GetNumberOfLayers(void) const
 {
-  if ( this->LayerInfoMap.empty() ) 
-     return 0;
-
-  int largestLayer = this->LayerInfoMap.rbegin()->first;
-  return largestLayer + 1;
+  return this->LayerInfoVec.size();
 }
 
 vtkImage2DDisplay * vtkImageView2D::GetImage2DDisplayForLayer( int layer ) const
 {
-    return this->LayerInfoMap.at(layer).ImageDisplay;
+    return this->LayerInfoVec.at(layer).ImageDisplay;
 }
 
 vtkRenderer * vtkImageView2D::GetRendererForLayer( int layer ) const
 {
-    return this->LayerInfoMap.at(layer).Renderer;
+    return this->LayerInfoVec.at(layer).Renderer;
 }

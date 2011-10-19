@@ -25,7 +25,6 @@
 #include <vtkSmartPointer.h>
 
 #include <vector>
-#include <map>
 
 class vtkImageActor;
 class vtkAxes2DWidget;
@@ -668,8 +667,8 @@ protected:
       vtkSmartPointer<vtkImage2DDisplay> ImageDisplay;
       vtkSmartPointer<vtkRenderer> Renderer;
   };
-  typedef std::map<int, LayerInfo > LayerInfoMapType;
-  LayerInfoMapType LayerInfoMap;
+  typedef std::vector<LayerInfo > LayerInfoVecType;
+  LayerInfoVecType LayerInfoVec;
   
 private:
   vtkImageView2D(const vtkImageView2D&);  // Not implemented.
