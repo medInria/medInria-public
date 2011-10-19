@@ -298,16 +298,20 @@ void
             }
 
 //        qDebug() << "update 3";
-
+        qDebug() << "d->view->layerCount() : " << d->view->layerCount();     
+        qDebug() << "d->view->meshLayerCount() : " << d->view->meshLayerCount();
         for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
         {
+            
             if(d->view->dataInList(i) && d->view->dataInList(i)->identifier().contains("vtkDataMesh"))
             {
+                qDebug() << "d->view->dataInList("<<i<<")->identifier() : " << d->view->dataInList(i)->identifier();
                 this->constructMeshLayer(d->view->dataInList(i), meshNumber);
                 meshNumber++;
             }
-            else
+            else if (d->view->dataInList(i))
             {
+                qDebug() << "d->view->dataInList("<<i<<")->identifier() : " << d->view->dataInList(i)->identifier();
 //                qDebug() << "update 4" << imageNumber;
                 this->constructImageLayer(d->view->dataInList(i), imageNumber);
                 imageNumber++;
@@ -933,7 +937,31 @@ void medViewerToolBoxViewProperties::onContextTreeMenu( const QPoint point )
 
 void medViewerToolBoxViewProperties::onDeleteLayer()
 {
-    d->view->removeOverlay(d->currentLayer);
+    qDebug() << "medViewerToolBoxViewProperties::onDeleteLayer";
+    //calculate somehow the number of meshes before the image
+    int meshNumber = 0, imageNumber = 0;
+    for (int i = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
+        {
+            if(d->view->dataInList(i) && d->view->dataInList(i)->identifier().contains("vtkDataMesh"))
+            {
+                meshNumber++;
+            }
+            else if(d->view->dataInList(i))
+            {
+                imageNumber++;
+            }
+            if(imageNumber - 1 == d->currentLayer )
+                break;
+        }
+    d->view->removeOverlay(meshNumber + imageNumber - 1);
+    //d->view->removeOverlay(d->currentLayer);
+
+
+
+
+
+
+    qDebug() << "d->currentLayer : " << meshNumber + imageNumber - 1;
     d->view->update();
 
     if (d->currentLayer != 0)
