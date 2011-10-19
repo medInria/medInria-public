@@ -55,8 +55,6 @@ medDatabaseWriter::~medDatabaseWriter ( void )
 
 void medDatabaseWriter::run ( void )
 {
-    qDebug() << "Is data ok ?" << (d->data == NULL);
-    
     if ( !d->data )
     {
         emit failure ( this );
@@ -88,12 +86,18 @@ void medDatabaseWriter::run ( void )
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
-
+    
+    if ( !d->data->hasMetaData ( medMetaDataKeys::StudyDicomID.key() ) )
+        d->data->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "0" );
+    
     QString generatedSeriesID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesID );
-
+    
+    if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesDicomID.key() ) )
+        d->data->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << generatedSeriesID );
+    
     if ( !d->data->hasMetaData ( medMetaDataKeys::Orientation.key() ) )
         d->data->addMetaData ( medMetaDataKeys::Orientation.key(), QStringList() << "" );
 
@@ -192,9 +196,9 @@ void medDatabaseWriter::run ( void )
     QString performer      = d->data->metaDataValues ( medMetaDataKeys::Performer.key() ) [0];
     QString institution    = d->data->metaDataValues ( medMetaDataKeys::Institution.key() ) [0];
     QString report         = d->data->metaDataValues ( medMetaDataKeys::Report.key() ) [0];
-
-    foreach ( QString metadata, d->data->metaDataList() )
-      qDebug() << d->data->metaDataValues ( metadata );
+    
+    //foreach ( QString metadata, d->data->metaDataList() )
+    //  qDebug() << d->data->metaDataValues ( metadata );
 
 
     medDatabaseControllerImpl * dbi = medDatabaseController::instance();
