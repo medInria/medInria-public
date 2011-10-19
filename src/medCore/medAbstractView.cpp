@@ -22,8 +22,8 @@ public:
     int currentLayer;
     int currentMeshLayer;
     int meshLayerCount;
-    //QList<dtkAbstractData *> dataList;
-    QMap <int, dtkSmartPointer<dtkAbstractData> > dataList;
+    QList<dtkSmartPointer<dtkAbstractData>> dataList;
+    //QMap <int, dtkSmartPointer<dtkAbstractData> > dataList;
 
     // dtkSmartPointer<dtkAbstractData> sharedData;
 
@@ -348,12 +348,12 @@ void medAbstractView::removeOverlay(int layer)
 {
     //JGG qDebug()<<"ViewDataListSize"<<d->dataList.size();
 
-    if (d->dataList.contains (layer))
+    if (layer >= 0 && layer < d->dataList.size())
     {
         medAbstractView::removeDataType(d->dataList[layer]->identifier());
         emit (dataRemoved(d->dataList[layer], layer));
         emit (dataRemoved(layer));
-        d->dataList.remove(layer);
+        d->dataList.removeAt(layer);
         
     }
 }
@@ -365,13 +365,16 @@ void medAbstractView::onSliceChanged (int slice)
 
 void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
 {
-    d->dataList[layer] = data;
+    if(layer >=0 &&  layer < d->dataList.size() )
+        d->dataList[layer] = data;
+    else 
+        d->dataList.append(data);
     medAbstractView::addDataType(data->identifier());
 }
 
 dtkAbstractData * medAbstractView::dataInList(int layer)
 {
-    if (d->dataList.contains(layer))
+    if (layer >=0 &&  layer < d->dataList.size())
         return d->dataList[layer];
 
     return NULL;
@@ -380,7 +383,7 @@ dtkAbstractData * medAbstractView::dataInList(int layer)
 bool medAbstractView::isInList(dtkAbstractData * data, int layer)
 {
 
-    if (d->dataList.contains(layer) && d->dataList[layer]==data)
+    if (d->dataList.contains(data) && d->dataList[layer]==data)
     {
 //        qDebug() << "data is in list,layer:" << layer;
         return true;
@@ -392,7 +395,7 @@ bool medAbstractView::isInList(dtkAbstractData * data, int layer)
 void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
 {
     // start by removing the data type if layer already exists
-    if (d->dataList.contains(layer)) {
+    if (layer >=0 &&  layer < d->dataList.size()) {
         removeDataType(d->dataList[layer]->identifier());
     }
 

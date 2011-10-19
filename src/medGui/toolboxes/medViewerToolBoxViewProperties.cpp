@@ -290,29 +290,27 @@ void
         //decide whether to show the 2 layers slider
         raiseSlider(d->view->layerCount() == 2);
 
-//        qDebug() << "update 2";
+
         if(d->view->meshLayerCount()!=0)
             if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
             {
                 d->currentInteractor = d->interactors.indexOf(interactor);
             }
 
-//        qDebug() << "update 3";
-        qDebug() << "d->view->layerCount() : " << d->view->layerCount();     
-        qDebug() << "d->view->meshLayerCount() : " << d->view->meshLayerCount();
+
         for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
         {
             
             if(d->view->dataInList(i) && d->view->dataInList(i)->identifier().contains("vtkDataMesh"))
             {
-                qDebug() << "d->view->dataInList("<<i<<")->identifier() : " << d->view->dataInList(i)->identifier();
+              //  qDebug() << "d->view->dataInList("<<i<<")->identifier() : " << d->view->dataInList(i)->identifier();
                 this->constructMeshLayer(d->view->dataInList(i), meshNumber);
                 meshNumber++;
             }
             else if (d->view->dataInList(i))
             {
-                qDebug() << "d->view->dataInList("<<i<<")->identifier() : " << d->view->dataInList(i)->identifier();
-//                qDebug() << "update 4" << imageNumber;
+              //  qDebug() << "d->view->dataInList("<<i<<")->identifier() : " << d->view->dataInList(i)->identifier();
+
                 this->constructImageLayer(d->view->dataInList(i), imageNumber);
                 imageNumber++;
             }
@@ -337,7 +335,7 @@ void
         d->view3dModeComboBox->blockSignals(true);
         d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("3DMode")));
         d->view3dModeComboBox->blockSignals(false);
-        //qDebug() << "update 5";
+
     }
 }
 
@@ -937,7 +935,7 @@ void medViewerToolBoxViewProperties::onContextTreeMenu( const QPoint point )
 
 void medViewerToolBoxViewProperties::onDeleteLayer()
 {
-    qDebug() << "medViewerToolBoxViewProperties::onDeleteLayer";
+
     //calculate somehow the number of meshes before the image
     int meshNumber = 0, imageNumber = 0;
     for (int i = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
@@ -956,12 +954,6 @@ void medViewerToolBoxViewProperties::onDeleteLayer()
     d->view->removeOverlay(meshNumber + imageNumber - 1);
     //d->view->removeOverlay(d->currentLayer);
 
-
-
-
-
-
-    qDebug() << "d->currentLayer : " << meshNumber + imageNumber - 1;
     d->view->update();
 
     if (d->currentLayer != 0)
