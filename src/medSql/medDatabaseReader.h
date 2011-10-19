@@ -32,7 +32,7 @@ class medDatabaseReader : public QObject
     Q_OBJECT
 
 public:
-     medDatabaseReader(const medDataIndex& index);
+    medDatabaseReader(const medDataIndex& index);
     ~medDatabaseReader(void);
 
     dtkSmartPointer<dtkAbstractData> run(void);

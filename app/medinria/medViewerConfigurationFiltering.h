@@ -47,7 +47,7 @@ signals:
      * This is a connection between the medToolBoxFiltering and the medViewContainerFiltering which displays input/output images
      *
      */
-    void outputDataChanged(dtkAbstractData *);
+    void outputDataChanged ( dtkAbstractData * );
 
 public slots:
 
@@ -56,12 +56,12 @@ public slots:
      *
      * @param patientId
      */
-    void patientChanged(int patientId);
+    void patientChanged ( int patientId );
 
     /**
      * @brief adds metadata to the output and emits a signal outputDataChanged(dtkAbstractData *)
      */
-    void onProcessSuccess(void);
+    void onProcessSuccess ( void );
 
     /**
      * @brief Imports output data in non persistent database
@@ -69,7 +69,7 @@ public slots:
      * @param dataIndex The index that was imported.
      * @param uuid The identifier of the caller.
      */
-    void onOutputImported(const medDataIndex & dataIndex, const QString& uuid);
+    void onOutputImported ( const medDataIndex & dataIndex, const QString& uuid );
 
     /**
      * @brief Clear the filtering toolboxes when the input view is closed
@@ -81,6 +81,6 @@ private:
     medViewerConfigurationFilteringPrivate *d;
 };
 
-medViewerConfiguration *createMedViewerConfigurationFiltering(QWidget* parent);
+medViewerConfiguration *createMedViewerConfigurationFiltering ( QWidget* parent );
 
 #endif

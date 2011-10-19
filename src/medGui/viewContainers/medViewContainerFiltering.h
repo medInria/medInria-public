@@ -30,7 +30,7 @@ public:
      * @brief
      * @param parent
      */
-    medViewContainerFiltering(QWidget * parent = 0);
+    medViewContainerFiltering ( QWidget * parent = 0 );
     ~medViewContainerFiltering();
 
 signals:
@@ -46,12 +46,12 @@ public slots:
      * @brief refresh input view according to the data index given in parameter
      * @param index
      */
-    void updateInput(const medDataIndex& index);
+    void updateInput ( const medDataIndex& index );
     /**
      * @brief update output view according to the data in parameter
      * @param data
      */
-    void updateOutput(dtkAbstractData *data);
+    void updateOutput ( dtkAbstractData *data );
 
     void dropEvent ( QDropEvent *event );
 private:

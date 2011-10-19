@@ -75,11 +75,16 @@ void medDatabaseControllerImplPrivate::buildMetaDataLookup()
         TableEntryList() << TableEntry(T_patient, "gender") );
     metaDataLookup.insert(medMetaDataKeys::BirthDate.key(),
         TableEntryList() << TableEntry(T_patient, "birthdate") );
+    metaDataLookup.insert(medMetaDataKeys::PatientID.key(),
+        TableEntryList() << TableEntry(T_patient, "patientId") );
+    
 //Study Data
     metaDataLookup.insert(medMetaDataKeys::StudyDescription.key(),
         TableEntryList() << TableEntry(T_study, "name") );
-    metaDataLookup.insert(medMetaDataKeys::StudyID.key(),
+    metaDataLookup.insert(medMetaDataKeys::StudyDicomID.key(),
         TableEntryList() << TableEntry(T_study, "uid") );
+    metaDataLookup.insert(medMetaDataKeys::StudyID.key(),
+        TableEntryList() << TableEntry(T_study, "studyId") );
 //Series Data
     metaDataLookup.insert(medMetaDataKeys::Size.key(),
         TableEntryList() << TableEntry(T_series, "size") );
@@ -87,8 +92,10 @@ void medDatabaseControllerImplPrivate::buildMetaDataLookup()
         TableEntryList() << TableEntry(T_series, "name") );
     metaDataLookup.insert(medMetaDataKeys::Size.key(),
         TableEntryList() << TableEntry(T_series, "size") );
-    metaDataLookup.insert(medMetaDataKeys::SeriesID.key(),
+    metaDataLookup.insert(medMetaDataKeys::SeriesDicomID.key(),
         TableEntryList() << TableEntry(T_series, "uid") );
+    metaDataLookup.insert(medMetaDataKeys::SeriesID.key(),
+        TableEntryList() << TableEntry(T_series, "seriesId") );
     metaDataLookup.insert(medMetaDataKeys::Orientation.key(),
         TableEntryList() << TableEntry(T_series, "orientation") );
     metaDataLookup.insert(medMetaDataKeys::SeriesNumber.key(),
@@ -443,7 +450,8 @@ void medDatabaseControllerImpl::createPatientTable(void)
             " name        TEXT,"
             " thumbnail   TEXT,"
             " birthdate   TEXT,"
-            " gender      TEXT"
+            " gender      TEXT,"
+            " patientId   TEXT"
             ");"
             );
 }
@@ -458,7 +466,8 @@ void medDatabaseControllerImpl::createStudyTable(void)
             " patient   INTEGER," // FOREIGN KEY
             " name         TEXT,"
             " uid          TEXT,"
-            " thumbnail    TEXT"
+            " thumbnail    TEXT,"
+            " studyId      TEXT"
             ");"
             );
 }
@@ -474,6 +483,7 @@ void medDatabaseControllerImpl::createSeriesTable(void)
             " name            TEXT,"
             " path            TEXT,"
             " uid             TEXT,"
+            " seriesId        TEXT,"
             " orientation     TEXT,"
             " seriesNumber    TEXT,"
             " sequenceName    TEXT,"

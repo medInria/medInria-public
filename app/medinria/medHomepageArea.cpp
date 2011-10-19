@@ -77,7 +77,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->aboutWidget->hide();
 
     //User widget content with settings, about and help buttons
-    QHBoxLayout * userButtonsLayout = new QHBoxLayout(this);
+    QHBoxLayout * userButtonsLayout = new QHBoxLayout(d->userWidget);
     medHomepageButton * helpButton = new medHomepageButton ( this );
     helpButton->setText ( "Help" );
     helpButton->setMinimumHeight ( 30 );
@@ -111,11 +111,11 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 0, settingsButton );
     userButtonsLayout->insertWidget ( 1, aboutButton );
     userButtonsLayout->insertWidget ( 2, helpButton );
-
-    d->userWidget->setLayout ( userButtonsLayout );
+    //no need to set the layout the userWidget is the parent of the layout already.
+//    d->userWidget->setLayout ( userButtonsLayout );
 
     // Info widget : medinria logo, medinria description, etc. QtWebkit ?
-    QVBoxLayout * infoLayout = new QVBoxLayout(this);
+    QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
     QLabel * medinriaLabel = new QLabel ( this );
     medinriaLabel->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ) );
 //     QLabel * textLabel = new QLabel;
@@ -132,11 +132,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     infoLayout->insertWidget ( 1, textEdit );
     infoLayout->addStretch();
 
-    d->infoWidget->setLayout ( infoLayout );
+    //no need to set the layout, the infoWidget is the parent of the layout already.
+//    d->infoWidget->setLayout ( infoLayout );
     d->infoWidget->setMaximumHeight ( medinriaLabel->height() + textEdit->height() );
 
     //About widget
-    QVBoxLayout * aboutLayout = new QVBoxLayout(this);
+    QVBoxLayout * aboutLayout = new QVBoxLayout(d->aboutWidget);
     d->aboutTabWidget = new QTabWidget(this);
 
     QLabel * medinriaLabel2 = new QLabel ( this );
@@ -160,7 +161,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutLicenseTextEdit->setText ( licenseContent );
     aboutLicenseTextEdit->setFocusPolicy ( Qt::NoFocus );
 
-    QHBoxLayout * aboutButtonLayout = new QHBoxLayout(this);
+    //no parent, this layout is added to an other layout.
+    QHBoxLayout * aboutButtonLayout = new QHBoxLayout();
     QPushButton * hideAboutButton = new QPushButton ( this );
     hideAboutButton->setText ( "Hide" );
     hideAboutButton->setFocusPolicy ( Qt::NoFocus );
@@ -178,7 +180,9 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutLayout->addWidget ( d->aboutTabWidget );
     aboutLayout->addLayout ( aboutButtonLayout );
     aboutLayout->addStretch();
-    d->aboutWidget->setLayout ( aboutLayout );
+
+    //no need to set the layout, the aboutWidget is the parent of the layout already.
+//    d->aboutWidget->setLayout ( aboutLayout );
 
     //Set the position of the widgets
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
