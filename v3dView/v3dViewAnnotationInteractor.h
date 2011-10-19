@@ -5,12 +5,13 @@
 
 #include "v3dViewPluginExport.h"
 
+#include <vtkAbstractWidget.h>
 
 class v3dViewAnnotationInteractorPrivate;
 
 class dtkAbstractData;
 class dtkAbstractView;
-class medSeedPointAnnotationData;
+class v3dViewAnnIntSeedPointHelper;
 
 class v3dView;
 
@@ -59,10 +60,22 @@ public slots:
     virtual void onRemoveAnnotation( medAnnotationData * annItem );
 
 protected:
-    bool addSeedPointAnnotation( medSeedPointAnnotationData * annData );
-    void removeSeedPointAnnotation( medSeedPointAnnotationData * annData );
-    void seedPointModified( medSeedPointAnnotationData * annData );
+    typedef vtkSmartPointer <vtkAbstractWidget>  WidgetSmartPointer;
+    enum EAnnotation { SeedPoint };
+    struct ActorInfo {
+        WidgetSmartPointer actor2d;
+        WidgetSmartPointer actor3d;
+        EAnnotation AnnotationId;
+    };
 
+    typedef std::map< medAnnotationData*, ActorInfo> ActorMap;
+
+    friend class v3dViewAnnotationInteractorPrivate;
+    friend class v3dViewAnnIntSeedPointHelper;
+
+    ActorMap & getActorMap();
+
+    bool findActorMapForWidget(vtkAbstractWidget * w, ActorMap::iterator & it);
 private:
     v3dViewAnnotationInteractorPrivate *d;
 

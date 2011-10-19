@@ -19,7 +19,7 @@
 
 class medAbstractData;
 class medAbstractView;
-class medAttachedData;
+class medAnnotationData;
 
 class dtkAbstractProcessFactory;
 class medSeedPointAnnotationData;
@@ -54,7 +54,7 @@ public slots:
 
     void onSeedPointTableSelectionChanged();
 
-    void onDataModified(medAttachedData * attached);
+    void onDataModified(medAnnotationData* attached);
 
 protected:
     void addSeedPoint( medAbstractView *view, const QVector3D &vec );
@@ -73,9 +73,9 @@ private:
     QPushButton *m_applyButton;
     QTextEdit *m_dataText;
 
-    std::vector< SeedPoint > m_seedPoints;
+    SeedPoint m_seedPoints;
     dtkSmartPointer< medViewEventFilter > m_viewFilter;
-
+     
     enum ViewState { ViewState_None, ViewState_PickingSeedPoint };
     ViewState m_viewState;
 

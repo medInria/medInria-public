@@ -745,7 +745,7 @@ vtkImageView *v3dView::currentView ( void )
 
 vtkRenderWindowInteractor *v3dView::interactor ( void )
 {
-    return d->vtkWidget->GetRenderWindow()->GetInteractor();
+    return d->renWin->GetInteractor();
 }
 
 vtkRenderer *v3dView::renderer2d ( void )
@@ -1002,7 +1002,6 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
                 d->slider->setRange (0, d->imageData->xDimension()-1);
         }
-
     }
 
     this->addDataInList ( data, layer );
