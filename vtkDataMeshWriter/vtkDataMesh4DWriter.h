@@ -18,8 +18,8 @@ class vtkDataManagerWriter;
 
     The default extension (and the only extension currently wrote) is
     *.v4d. The xml-based file lists a series of vtk files where time
-    tags have to be populated (file paths are relative). 
-    
+    tags have to be populated (file paths are relative).
+
     \see vtkDataMesh4D vtkDataManagerWriter vtkMetaDataSetSequence
     \author Nicolas Toussaint
 */
@@ -36,17 +36,21 @@ public:
     virtual QStringList handled(void) const;
     static  QStringList s_handled (void);
 
-    
+
     virtual QString description(void) const;
-	
+    virtual QString identifier(void) const;
+
     static bool registered(void);
-    
+
 public slots:
     bool write    (const QString& path);
     bool canWrite (const QString& path);
 
  protected:
     vtkDataManagerWriter* writer;
+
+private:
+        static const char ID[];
 };
 
 
