@@ -22,7 +22,7 @@ public:
     int currentLayer;
     int currentMeshLayer;
     int meshLayerCount;
-    QList<dtkSmartPointer<dtkAbstractData>> dataList;
+    QList< dtkSmartPointer <dtkAbstractData> > dataList;
     //QMap <int, dtkSmartPointer<dtkAbstractData> > dataList;
 
     // dtkSmartPointer<dtkAbstractData> sharedData;
