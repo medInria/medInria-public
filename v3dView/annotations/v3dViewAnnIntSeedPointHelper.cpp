@@ -17,6 +17,7 @@
 #include "vtkImageView2D.h"
 
 #include <vtkCommand.h>
+#include <vtkHandleWidget.h>
 #include <vtkProperty2D.h>
 #include <vtkRenderer.h>
 #include <vtkSeedWidget.h>
@@ -24,15 +25,44 @@
 #include <vtkSphereHandleRepresentation.h>
 #include <vtkSmartPointer.h>
 
+class vtkCommandWithDisable : public vtkCommand 
+{
+public:
+    bool isEnabled() const { return m_disabledCount == 0; }
+    void enable()   { --m_disabledCount; }
+    void disable()  { ++m_disabledCount; }
+protected:
+    vtkCommandWithDisable() : vtkCommand(), m_disabledCount(0) {}
+    unsigned int m_disabledCount;
+
+};
+
+class vtkScopedCommandDisabler {
+public:
+    vtkScopedCommandDisabler( vtkCommandWithDisable * cmd ) : m_cmd(cmd) 
+    {
+        m_cmd->disable();
+    }
+
+    ~vtkScopedCommandDisabler()
+    {
+        m_cmd->enable();
+    }
+private:
+    vtkCommandWithDisable * m_cmd;
+};
 
 // This callback is responsible for setting the seed label.
-class vtkSeedCallback : public vtkCommand
+class vtkSeedCallback : public vtkCommandWithDisable
 {
 public:
     static vtkSeedCallback *New() 
     { return new vtkSeedCallback; }
     virtual void Execute(vtkObject*obj, unsigned long event, void *calldata)
     {
+        if ( !this->isEnabled() ) 
+            return;
+
         if (event == vtkCommand::PlacePointEvent)
         {
         }
@@ -47,7 +77,7 @@ public:
     }
     v3dViewAnnIntSeedPointHelper * helper;
 protected:
-    vtkSeedCallback() {}
+    vtkSeedCallback() : vtkCommandWithDisable() {}
 };
 
 
@@ -60,7 +90,7 @@ v3dViewAnnIntSeedPointHelper::v3dViewAnnIntSeedPointHelper(v3dViewAnnotationInte
     : m_v3dViewAnnInt(annInt) ,
     d(new v3dViewAnnIntSeedPointHelperPrivate)
 {
-
+    d->spCbk = vtkSmartPointer<vtkSeedCallback>::New();
 }
 
 v3dViewAnnIntSeedPointHelper::~v3dViewAnnIntSeedPointHelper()
@@ -80,18 +110,20 @@ bool v3dViewAnnIntSeedPointHelper::addSeedPointAnnotation( medSeedPointAnnotatio
     seedActor2d->SetCurrentRenderer(view->renderer2d());
     seedActor2d->SetInteractor(view->renderer2d()->GetRenderWindow()->GetInteractor());
     seedActor2d->SetEnabled(1);
-    seedActor2d->CreateDefaultRepresentation();
     seedActor2d->GetSeedRepresentation()->SetHandleRepresentation( handleRep );
+    seedActor2d->CreateDefaultRepresentation();
+    seedActor2d->CompleteInteraction();
 
-    view->renderer2d()->AddActor(seedActor2d->GetRepresentation());
+   // view->renderer2d()->AddActor(seedActor2d->GetRepresentation());
 
     vtkSmartPointer<vtkSeedWidget> seedActor3d = vtkSmartPointer<vtkSeedWidget>::New();
     seedActor3d->SetCurrentRenderer(view->renderer3d());
     seedActor3d->SetInteractor(view->renderer3d()->GetRenderWindow()->GetInteractor());
     seedActor3d->SetEnabled(1);
-    seedActor3d->CreateDefaultRepresentation();
     seedActor3d->GetSeedRepresentation()->SetHandleRepresentation( handleRep );
-    view->renderer3d()->AddActor(seedActor3d->GetRepresentation());
+    seedActor3d->CreateDefaultRepresentation();
+    seedActor3d->CompleteInteraction();
+    //view->renderer3d()->AddActor(seedActor3d->GetRepresentation());
 
     v3dViewAnnotationInteractor::ActorInfo & actorInfo(m_v3dViewAnnInt->getActorMap()[annData]);
     actorInfo.actor2d = seedActor2d;
@@ -100,7 +132,6 @@ bool v3dViewAnnIntSeedPointHelper::addSeedPointAnnotation( medSeedPointAnnotatio
 
     this->seedPointModified(annData);
 
-    d->spCbk = vtkSmartPointer<vtkSeedCallback>::New();
     d->spCbk->helper = this;
 //    widget->AddObserver(vtkCommand::PlacePointEvent,scbk);
     seedActor2d->AddObserver(vtkCommand::EndInteractionEvent,d->spCbk);
@@ -123,6 +154,8 @@ void v3dViewAnnIntSeedPointHelper::removeSeedPointAnnotation( medSeedPointAnnota
 
 void v3dViewAnnIntSeedPointHelper::seedPointModified( medSeedPointAnnotationData * annData )
 {
+    vtkScopedCommandDisabler disabler( d->spCbk );
+
     v3dViewAnnotationInteractor::ActorInfo & actorInfo(m_v3dViewAnnInt->getActorMap()[annData]);
     vtkSeedWidget * seedActor2d =  vtkSeedWidget::SafeDownCast(actorInfo.actor2d);
     vtkSeedWidget * seedActor3d =  vtkSeedWidget::SafeDownCast(actorInfo.actor3d);
@@ -131,29 +164,45 @@ void v3dViewAnnIntSeedPointHelper::seedPointModified( medSeedPointAnnotationData
 
     const int numSeeds = annData->getNumberOfSeeds();
 
+    // Delete excess seeds, and add new seeds.
     vtkSeedRepresentation * rep2d = seedActor2d->GetSeedRepresentation();
     while ( rep2d->GetNumberOfSeeds() > numSeeds ) {
         seedActor2d->DeleteSeed(rep2d->GetNumberOfSeeds() - 1);
+    }
+    while ( rep2d->GetNumberOfSeeds() < numSeeds ) {
+        int iSeed = rep2d->GetNumberOfSeeds();
+        seedActor2d->CreateNewHandle()->EnabledOn();
+        seedActor2d->GetCurrentRenderer()->AddActor( rep2d->GetHandleRepresentation(iSeed) );
     }
 
     vtkSeedRepresentation * rep3d = seedActor3d->GetSeedRepresentation();
     while ( rep3d->GetNumberOfSeeds() > numSeeds ) {
         seedActor3d->DeleteSeed(rep3d->GetNumberOfSeeds() - 1);
     }
-
-    for ( int iSeed(0); iSeed<numSeeds; ++iSeed) {
-        medAbstractViewCoordinates::qtVector3dToDouble(annData->centerWorld(iSeed), p);
-        //rep2d->GetHandleRepresentation(iSeed)->SetWorldPosition(p);
-        //rep3d->GetHandleRepresentation(iSeed)->SetWorldPosition(p);
-        seedActor2d->GetSeed(iSeed)->SetWorldPosition(p);
-        seedActor3d->GetSeed(iSeed)->SetWorldPosition(p);
+    while ( rep3d->GetNumberOfSeeds() < numSeeds ) {
+        int iSeed = rep3d->GetNumberOfSeeds();
+        seedActor3d->CreateNewHandle()->EnabledOn();
+        seedActor3d->GetCurrentRenderer()->AddActor( rep3d->GetHandleRepresentation(iSeed) );
     }
 
-    //if ( annData->isSelected() ) {
-    //    seedActor2d->GetProperty()->SetColor(1,0,0);
-    //} else {
-    //    seedActor2d->GetProperty()->SetColor(0,1,1);
-    //}
+    const int selectedSeed = annData->selectedSeed();
+    for ( int iSeed(0); iSeed<numSeeds; ++iSeed) {
+        medAbstractViewCoordinates::qtVector3dToDouble(annData->centerWorld(iSeed), p);
+        rep2d->GetHandleRepresentation(iSeed)->SetWorldPosition(p);
+        rep3d->GetHandleRepresentation(iSeed)->SetWorldPosition(p);
+
+        int isHighlighted = ( iSeed == selectedSeed ) ? 1 : 0;
+        rep2d->GetHandleRepresentation(iSeed)->Highlight(isHighlighted);
+        rep3d->GetHandleRepresentation(iSeed)->Highlight(isHighlighted);
+    }
+
+    if ( selectedSeed >= 0 ) {
+        seedActor2d->RestartInteraction();
+        seedActor3d->RestartInteraction();
+    } else {
+        seedActor2d->CompleteInteraction();
+        seedActor3d->CompleteInteraction();
+    }
     m_v3dViewAnnInt->getV3dView()->update();
     return;
 }
