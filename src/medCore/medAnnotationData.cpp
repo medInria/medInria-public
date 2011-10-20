@@ -7,7 +7,6 @@
 class medAnnotationData::medAnnotationDataPrivate
 {
 public:
-    dtkSmartPointer<medAbstractData> parentData;
 };
 
 medAnnotationData::medAnnotationData()
@@ -22,15 +21,9 @@ medAnnotationData::~medAnnotationData()
     d = NULL;
 }
 
-medAbstractData * medAnnotationData::parentData() const
-{
-    return d->parentData;
-}
 
-void medAnnotationData::setParentData( medAbstractData * mdata )
-{
-    d->parentData = mdata;
-}
+
+
 
 
 

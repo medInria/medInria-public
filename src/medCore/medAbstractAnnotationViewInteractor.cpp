@@ -35,7 +35,7 @@ medAbstractAnnotationViewInteractor::~medAbstractAnnotationViewInteractor()
 void medAbstractAnnotationViewInteractor::setData(dtkAbstractData *data)
 {
     if ( this->data() ) {
-        disconnect(this->data(), SIGNAL(dataModified(medAnnotationData*)), this, SLOT(onDataModified(medAnnotationData*)) );
+        disconnect(this->data(), SIGNAL(dataModified(medAbstractData*)), this, SLOT(onDataModified(medAbstractData*)) );
         // Remove annotations
         foreach( dtkSmartPointer<medAnnotationData> key,  d->installedAnnotations ) {
             if ( key->parentData() == data ) {
@@ -77,7 +77,7 @@ void medAbstractAnnotationViewInteractor::setView( dtkAbstractView *view )
     }
 }
 
-void medAbstractAnnotationViewInteractor::onDataModified( medAnnotationData*data )
+void medAbstractAnnotationViewInteractor::onDataModified( medAbstractData*data )
 {
 
 }
@@ -184,7 +184,7 @@ void medAbstractAnnotationViewInteractor::addAnnotation( medAnnotationData * ann
     if ( isAdded ) {
         d->installedAnnotations.insert( annData );
 
-        connect(annData, SIGNAL(dataModified(medAnnotationData*)), this, SLOT(onDataModified(medAnnotationData*)) );
+        connect(annData, SIGNAL(dataModified(medAbstractData*)), this, SLOT(onDataModified(medAbstractData*)) );
     }
 }
 

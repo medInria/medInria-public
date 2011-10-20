@@ -55,6 +55,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medAnnotationData.h
   medAbstractAnnotationViewInteractor.h
   medViewEventFilter.h
+  annotationData/medImageMaskAnnotationData.h
   annotationData/medSeedPointAnnotationData.h
 )
 
@@ -102,6 +103,7 @@ set(${PROJECT_NAME}_SOURCES
   medAnnotationData.cpp
   medAbstractAnnotationViewInteractor.cpp
   medViewEventFilter.cpp
+  annotationData/medImageMaskAnnotationData.cpp
   annotationData/medSeedPointAnnotationData.cpp
 )
 

@@ -49,7 +49,7 @@ public slots:
     virtual void onAttachedDataRemoved(medAttachedData* data);
 
     //! Called when the annotation data is altered.
-    virtual void onDataModified(medAnnotationData*data);
+    virtual void onDataModified(medAbstractData* data);
 
 protected:
     virtual QPointF worldToScene( const QVector3D & worldVec ) const;
