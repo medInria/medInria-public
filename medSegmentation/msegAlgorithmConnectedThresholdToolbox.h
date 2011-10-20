@@ -54,7 +54,7 @@ public slots:
 
     void onSeedPointTableSelectionChanged();
 
-    void onDataModified(medAnnotationData* attached);
+    void onDataModified(medAbstractData* attached);
 
 protected:
     void addSeedPoint( medAbstractView *view, const QVector3D &vec );

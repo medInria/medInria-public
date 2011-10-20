@@ -8,12 +8,21 @@
 #include <vtkAbstractWidget.h>
 
 class v3dViewAnnotationInteractorPrivate;
-
-class dtkAbstractData;
-class dtkAbstractView;
-class v3dViewAnnIntSeedPointHelper;
-
 class v3dView;
+class v3dViewAnnotationInteractor;
+
+// Helper class
+class V3DVIEWPLUGIN_EXPORT v3dViewAnnIntHelper {
+public :
+    v3dViewAnnIntHelper(v3dViewAnnotationInteractor * annInt);
+    virtual ~v3dViewAnnIntHelper();
+    virtual bool addAnnotation( medAnnotationData* annData ) = 0;
+    virtual void removeAnnotation( medAnnotationData * annData ) = 0;
+    virtual void annotationModified( medAnnotationData* annData ) = 0;
+protected:
+    v3dView * getV3dView();
+    v3dViewAnnotationInteractor * m_v3dViewAnnInt; 
+};
 
 class V3DVIEWPLUGIN_EXPORT v3dViewAnnotationInteractor: public medAbstractAnnotationViewInteractor
 {
@@ -50,7 +59,7 @@ protected:
     void initialize(medAbstractView * view, medAbstractData* data);
 
 public slots:
-    virtual void onDataModified(medAnnotationData* data);
+    virtual void onDataModified(medAbstractData* data);
 
 signals:
 
@@ -60,25 +69,20 @@ public slots:
     virtual void onRemoveAnnotation( medAnnotationData * annItem );
 
 protected:
-    typedef vtkSmartPointer <vtkAbstractWidget>  WidgetSmartPointer;
-    enum EAnnotation { SeedPoint };
-    struct ActorInfo {
-        WidgetSmartPointer actor2d;
-        WidgetSmartPointer actor3d;
-        EAnnotation AnnotationId;
-    };
-
-    typedef std::map< medAnnotationData*, ActorInfo> ActorMap;
-
     friend class v3dViewAnnotationInteractorPrivate;
-    friend class v3dViewAnnIntSeedPointHelper;
+    friend class v3dViewAnnIntHelper;
 
-    ActorMap & getActorMap();
-
-    bool findActorMapForWidget(vtkAbstractWidget * w, ActorMap::iterator & it);
 private:
     v3dViewAnnotationInteractorPrivate *d;
 
 
 };
+
+
+// Inline this for speed.
+inline v3dView * v3dViewAnnIntHelper::getV3dView()
+{
+    return m_v3dViewAnnInt->getV3dView();
+}
+
 #endif // V3DVIEWANNOTATIONINTERACTOR_H

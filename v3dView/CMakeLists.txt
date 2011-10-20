@@ -85,6 +85,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewMeshInteractor.h
   v3dView4DInteractor.h
   v3dViewAnnotationInteractor.h
+  annotations/v3dViewAnnIntImageMaskHelper.h
   annotations/v3dViewAnnIntSeedPointHelper.h
   ${${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC}
   )
@@ -102,8 +103,9 @@ set(${PROJECT_NAME}_SOURCES
   v3dView4DInteractor.cpp
   v3dFiberBundle.cpp
   v3dViewAnnotationInteractor.cpp
-  annotations/vtkSeedPointHandle.cpp
+  annotations/v3dViewAnnIntImageMaskHelper.cpp
   annotations/v3dViewAnnIntSeedPointHelper.cpp
+  annotations/vtkSeedPointHandle.cpp
   ${${PROJECT_NAME}_TTK_DEPENDENT_SOURCES}
   )
 

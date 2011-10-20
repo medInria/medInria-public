@@ -5,11 +5,13 @@
 
 #include "medAnnotationData.h"
 #include "medSeedPointAnnotationData.h"
+#include "medImageMaskAnnotationData.h"
 
 #include "v3dView.h"
 
 //
 #include "v3dViewAnnIntSeedPointHelper.h"
+#include "v3dViewAnnIntImageMaskHelper.h"
 
 #include <vtkProperty2D.h>
 #include <vtkRenderer.h>
@@ -30,9 +32,11 @@ dtkAbstractViewInteractor *createV3dViewAnnotationInteractor(void)
 class v3dViewAnnotationInteractorPrivate
 {
 public:
-    v3dViewAnnotationInteractor::ActorMap  actors;
+    typedef QVector<v3dViewAnnIntHelper *> HelperVecType;
+    HelperVecType helpers;
 
-    QScopedPointer<v3dViewAnnIntSeedPointHelper> seedPointHelper;
+    typedef std::map< medAnnotationData*, HelperVecType::size_type> HelperMap;
+    HelperMap  dataToHelperIdMap;
 };
 
 // Implementation
@@ -40,20 +44,21 @@ v3dViewAnnotationInteractor::v3dViewAnnotationInteractor(): medAbstractAnnotatio
 {
     // addProperty here
 //    this->addProperty("Visibility", QStringList() << "true" << "false");
-    d->seedPointHelper.reset(new v3dViewAnnIntSeedPointHelper(this));
+    d->helpers.push_back(new v3dViewAnnIntSeedPointHelper(this));
+    d->helpers.push_back(new v3dViewAnnIntImageMaskHelper(this));
 }
 
 v3dViewAnnotationInteractor::~v3dViewAnnotationInteractor()
 {
     this->disable();
-
+    qDeleteAll(d->helpers);
     delete d;
     d = NULL;
 }
 
 QString v3dViewAnnotationInteractor::description(void) const
 {
-    return tr("Interactor displaying Meshes");
+    return tr("Interactor displaying annotations");
 }
 
 QString v3dViewAnnotationInteractor::identifier() const
@@ -138,58 +143,62 @@ void v3dViewAnnotationInteractor::initialize( medAbstractView * view, medAbstrac
     BaseClass::initialize(view,data);
 }
 
-void v3dViewAnnotationInteractor::onDataModified( medAnnotationData* data )
+void v3dViewAnnotationInteractor::onDataModified( medAbstractData* data )
 {
-    ActorMap::iterator it = d->actors.find(data);
-
-    if ( it == d->actors.end() )
+    medAnnotationData * annData = qobject_cast<medAnnotationData*>(data);
+    if (!annData) 
         return;
 
-    switch( it->second.AnnotationId ) {
-    case SeedPoint:
-        d->seedPointHelper->seedPointModified(qobject_cast<medSeedPointAnnotationData*>(data));
-        break;
-    }
+    v3dViewAnnotationInteractorPrivate::HelperMap::iterator it = d->dataToHelperIdMap.find(annData);
+
+    if ( it == d->dataToHelperIdMap.end() )
+        return;
+
+    v3dViewAnnIntHelper * helper = d->helpers.at( it->second );
+    helper->annotationModified(annData);
 }
 
 bool v3dViewAnnotationInteractor::onAddAnnotation( medAnnotationData * annItem )
 {
+    typedef v3dViewAnnotationInteractorPrivate::HelperVecType::size_type IndexType;
     bool isAdded = false;
-    if ( medSeedPointAnnotationData * spad = qobject_cast<medSeedPointAnnotationData*>(annItem) ) {
-        isAdded =  d->seedPointHelper->addSeedPointAnnotation( spad );
+    for (IndexType i(0), end(d->helpers.size()); i<end; ++i){
+        v3dViewAnnIntHelper * helper = d->helpers[i];
+        if ( helper->addAnnotation(annItem) ) {
+            isAdded = true;
+            d->dataToHelperIdMap[annItem] = i;
+            break;
+        }
     }
     return isAdded;
 }
 
 void v3dViewAnnotationInteractor::onRemoveAnnotation( medAnnotationData * annData )
 {
-    ActorMap::iterator it = d->actors.find(annData);
-    if ( it == d->actors.end() )
+    v3dViewAnnotationInteractorPrivate::HelperMap::iterator it = d->dataToHelperIdMap.find(annData);
+    if ( it == d->dataToHelperIdMap.end() )
         return;
 
-    if ( medSeedPointAnnotationData * spad = qobject_cast<medSeedPointAnnotationData*>(annData) ) {
-         d->seedPointHelper->removeSeedPointAnnotation( spad );
-    }
+    typedef v3dViewAnnotationInteractorPrivate::HelperVecType::size_type IndexType;
+    IndexType iHelper = it->second;
 
-    d->actors.erase(annData);
+    d->helpers[iHelper]->removeAnnotation( annData );
+    d->dataToHelperIdMap.erase(annData);
 }
 
-v3dViewAnnotationInteractor::ActorMap & v3dViewAnnotationInteractor::getActorMap()
+
+
+
+
+v3dViewAnnIntHelper::v3dViewAnnIntHelper( v3dViewAnnotationInteractor * annInt)
+    : m_v3dViewAnnInt( annInt )
 {
-    return d->actors;
+
 }
 
-bool v3dViewAnnotationInteractor::findActorMapForWidget(vtkAbstractWidget * w, ActorMap::iterator & it)
+v3dViewAnnIntHelper::~v3dViewAnnIntHelper()
 {
-    for( it = d->actors.begin(); it != d->actors.end(); ++it ) {
-        if ( ( it->second.actor2d == w ) ||
-             ( it->second.actor3d == w ) ) 
-        {
-            return true;
-        }
-    }
-    return false;
-}
 
+}
 
 

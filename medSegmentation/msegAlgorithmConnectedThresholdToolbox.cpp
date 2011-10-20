@@ -192,7 +192,7 @@ void AlgorithmConnectedThresholdToolbox::setData( dtkAbstractData *dtkdata )
     if ( m_data ) {
         foreach( medAttachedData * mdata, m_data->attachedData() ) {
             if ( qobject_cast< medSeedPointAnnotationData * >(mdata) ) {
-                disconnect(mdata, SIGNAL(dataModified(medAnnotationData*)), this, SLOT(onDataModified(medAnnotationData*)));
+                disconnect(mdata, SIGNAL(dataModified(medAbstractData*)), this, SLOT(medAbstractData(medAnnotationData*)));
             }
         }
     }
@@ -235,7 +235,7 @@ void AlgorithmConnectedThresholdToolbox::setData( dtkAbstractData *dtkdata )
     m_seedPoints->setColor( Qt::cyan );
 
     this->m_data->addAttachedData(m_seedPoints);
-    connect(m_seedPoints, SIGNAL(dataModified(medAnnotationData*)), this, SLOT(onDataModified(medAnnotationData*)));
+    connect(m_seedPoints, SIGNAL(dataModified(medAbstractData*)), this, SLOT(onDataModified(medAbstractData*)));
 
 }
 
@@ -306,7 +306,7 @@ void AlgorithmConnectedThresholdToolbox::onSeedPointTableSelectionChanged()
         m_seedPoints->setSelectedSeed( *(selectedRows.begin()) );
 }
 
-void AlgorithmConnectedThresholdToolbox::onDataModified(medAnnotationData* attached )
+void AlgorithmConnectedThresholdToolbox::onDataModified(medAbstractData* attached )
 {
     medSeedPointAnnotationData * spad = qobject_cast<medSeedPointAnnotationData*>(attached);
     const int numSeeds = (m_seedPoints ? m_seedPoints->getNumberOfSeeds() : 0 );
