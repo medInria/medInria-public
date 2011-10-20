@@ -20,17 +20,18 @@
 
 const medDiffusionSequenceCompositeData medDiffusionSequenceCompositeData::proto;
 
+const char medDiffusionSequenceCompositeData::ID[] = "medDiffusionSequenceCompositeData";
 const char medDiffusionSequenceCompositeData::Tag[] = "DWI";
 const char medDiffusionSequenceCompositeData::ImagesString[] = "Images:";
 const char medDiffusionSequenceCompositeData::MetaDataString[] = "MetaData:";
 
 bool medDiffusionSequenceCompositeData::registered() const {
-    return dtkAbstractDataFactory::instance()->registerDataType("medDiffusionSequenceCompositeData",createDiffusionSequenceCompositeData) &&
+    return dtkAbstractDataFactory::instance()->registerDataType(ID,createDiffusionSequenceCompositeData) &&
            medDiffusionSequenceCompositeDataToolBox::registered();
 }
 
 QString medDiffusionSequenceCompositeData::description() const {
-    return "medDiffusionSequenceCompositeData";
+    return "Composite dataset for diffusion sequence";
 }
 
 bool medDiffusionSequenceCompositeData::read_description(const QByteArray& buf) {
@@ -107,16 +108,16 @@ void medDiffusionSequenceCompositeData::readVolumes(const QString& dirname,const
 
         //  To be changed (and the push_back above might be moved after the checks).
 
-        QString description = volume->description();
-        if (!description.contains("Image")) {
+        QString identifier = volume->identifier();
+        if (!identifier.contains("Image")) {
             // emit medToolBoxCompositeDataSetImporter::showError(this,tr("file does not describe any known image type"),3000);
             continue;
         }
-        if (description.contains ("Image4D")) {
+        if (identifier.contains ("Image4D")) {
             // emit medToolBoxCompositeDataSetImporter::showError(this,tr("4D image is not supported yet"),3000);
             continue;
         }
-        if (!description.contains ("Image3D")) {
+        if (!identifier.contains ("Image3D")) {
             // emit medToolBoxCompositeDataSetImporter::showError(this,tr("image should be 3D"),3000);
             continue;
         }

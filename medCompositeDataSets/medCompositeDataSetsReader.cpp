@@ -4,9 +4,7 @@
 #include <IOUtils.H>
 #include <dirTools.h>
 
-#include <dtkZip/dtkZip.h>
-#include <dtkZip/dtkZipFile.h>
-
+#include <dtkZip/dtkZipReader.h>
 #include <medCompositeDataSetsReader.h>
 
 bool medCompositeDataSetsReader::canRead(const QString& path) {
@@ -17,88 +15,32 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
         cleanup();
     }
 
+    QString descname(path);
+
     //  Check if the file is a zip file.
 
-    dtkZip zipfile;
+    dtkZipReader zip(path,QIODevice::ReadOnly);
+    if (zip.status()==dtkZipReader::NoError) {
 
-    zipfile.setZipName(path);
-    const QString dname = zip_dirname(path)+"/Description.txt";
+        //  Check that the file Description.txt exists.
 
-    QString descname(path);
-    if (zipfile.open(dtkZip::mdUnzip) && zipfile.setCurrentFile(dname)) {
-
-        //  OK this is a zip archive and the file Description.txt is in the zip archive.
-        //  Uncompress the archive in a temporary directory.
-
-        dtkZipFile file(&zipfile);
-        tmpdir = QString(mkdtemp((QDir::tempPath()+"/"+"medcdsXXXXXXX").toAscii().data()))+"/";
-        is_zip_file = true;
-        for (bool more=zipfile.goToFirstFile();more;more=zipfile.goToNextFile()) {
-
-            if (!file.open(QIODevice::ReadOnly)) {
-                qWarning("medCompositeDataSets: file.open(): %d",file.getZipError());
-                cleanup();
-                return false;
+        const QString dname = zip_dirname(path)+"/Description.txt";
+        const QList<dtkZipReader::FileInfo>& files = zip.fileInfoList();
+        bool found = false;
+        for (QList<dtkZipReader::FileInfo>::const_iterator i=files.begin();i!=files.end();++i)
+            if (i->filePath==dname) {
+                found = true;
+                break;
             }
+        if (!found)
+            return false;
 
-            QString name = file.getActualFileName();
-
-            if (file.getZipError()!=UNZ_OK) {
-                qWarning("medCompositeDataSets: file.getFileName(): %d",file.getZipError());
-                cleanup();
-                return false;
-            }
-
-            const QString& dirn = tmpdir+name;
-
-            if (name.contains('/'))
-                QDir().mkpath(QFileInfo(dirn).dir().path());
-
-            QFile out;
-            out.setFileName(dirn);
-            out.open(QIODevice::WriteOnly);
-
-            char buf[4096];
-            int len = 0;
-
-            char c;
-            while (file.getChar(&c)) {
-                buf[len++] = c;
-
-                if (len >= 4096) {
-                    out.write(buf,len);
-                    len = 0;
-                }
-            }
-
-            if (len>0)
-                out.write(buf,len);
-
-            out.close();
-
-            if (file.getZipError()!=UNZ_OK) {
-                qWarning("medCompositeDataSets: file.getFileName(): %d", file.getZipError());
-                cleanup();
-                return false;
-            }
-
-            if(!file.atEnd()) {
-                qWarning("medCompositeDataSets: read all but not EOF");
-                cleanup();
-                return false;
-            }
-
-            file.close();
-
-            if(file.getZipError()!=UNZ_OK) {
-                qWarning("medCompositeDataSets: file.close(): %d", file.getZipError());
-                cleanup();
-                return false;
-            }
-        }
-
-        zipfile.close();
+        tmpdir = QString(mkdtemp((QDir::tempPath()+"/"+"medcdsXXXXXX").toAscii().data()))+"/";
         descname = tmpdir+dname;
+        zip.extractAll(tmpdir);
+        is_zip_file = true;
+    } else {
+        descname += "/Description.txt";
     }
 
     basedir = QFileInfo(descname).dir().path();
@@ -127,7 +69,6 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
     //  Verify that there is a manager form this type and version.
 
     reader = MedInria::medCompositeDataSetsBase::known(type,major,minor);
-
     setData(reader);
 
     return reader!=0;

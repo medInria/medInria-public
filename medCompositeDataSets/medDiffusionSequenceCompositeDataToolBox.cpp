@@ -65,18 +65,20 @@ medDiffusionSequenceCompositeDataToolBox::~medDiffusionSequenceCompositeDataTool
 bool medDiffusionSequenceCompositeDataToolBox::registered(void)
 {
     qDebug() << "diffusion gradient toolbox registered ";
-    return medToolBoxFactory::instance()->
-            registerCustomCompositeDataSetImporterToolBox("medDiffusionSequenceCompositeDataToolBox",
-                                 createMedDiffusionCompositeDataToolBox);
+    return medToolBoxFactory::instance()->registerCustomCompositeDataSetImporterToolBox(
+                "medDiffusionSequenceCompositeDataToolBox",
+                "Diffusion Sequence Importer",
+                "Diffusion Sequence Composite Dataset Importer",
+                createMedDiffusionCompositeDataToolBox);
 }
 
-QString medDiffusionSequenceCompositeDataToolBox::description (void) const
+QString medDiffusionSequenceCompositeDataToolBox::description(void) const
 {
     return QString("Composite Data");
 }
 
 
-medToolBoxCompositeDataSetImporterCustom *createMedDiffusionCompositeDataToolBox(QWidget *parent)
+medToolBoxCompositeDataSetImporterCustom* createMedDiffusionCompositeDataToolBox(QWidget *parent)
 {
     return new medDiffusionSequenceCompositeDataToolBox (parent);
 }

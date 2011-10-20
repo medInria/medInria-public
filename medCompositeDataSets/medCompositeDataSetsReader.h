@@ -25,7 +25,6 @@ public:
         if (!reader)
             delete reader;
         reader = 0;
-        qDebug() << "Cleaning: " << tmpdir;
         if (is_zip_file)
             RemoveDirectory(QDir(tmpdir));
     }
