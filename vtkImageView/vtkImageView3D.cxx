@@ -1050,11 +1050,11 @@ void vtkImageView3D::RemoveDataSet(vtkPointSet* arg)
 //----------------------------------------------------------------------------
 void vtkImageView3D::AddLayer (int layer)
 {
-  if (this->HasLayer(layer))
+  if (this->HasLayer(layer) || (layer <=0) )
   {
     return;
   }
-  if ( layer > this->LayerInfoVec.size() ) {
+  if ( static_cast<size_t>(layer) > this->LayerInfoVec.size() ) {
       this->LayerInfoVec.resize(layer);
   }
   this->LayerInfoVec[layer - 1].ImageDisplay = vtkSmartPointer<vtkImage3DDisplay>::New();
@@ -1066,7 +1066,7 @@ void vtkImageView3D::AddLayer (int layer)
 //----------------------------------------------------------------------------
 bool vtkImageView3D::HasLayer (int layer) const
 {
-    return ( layer <= this->LayerInfoVec.size() ) && ( layer > 0 );
+    return ( layer > 0 ) && ( static_cast<size_t>(layer) <= this->LayerInfoVec.size() );
 }
 
 //----------------------------------------------------------------------------

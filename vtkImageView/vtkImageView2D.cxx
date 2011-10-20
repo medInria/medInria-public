@@ -1690,7 +1690,7 @@ void vtkImageView2D::AddLayer(int layer)
   if (this->HasLayer(layer))
     return;
 
-  if ( layer >= this->LayerInfoVec.size() ) {
+  if ( layer >= (int)this->LayerInfoVec.size() ) {
       this->LayerInfoVec.resize(layer + 1);
   }
   this->LayerInfoVec[layer].Renderer = vtkSmartPointer<vtkRenderer>::New();
@@ -1721,7 +1721,7 @@ void vtkImageView2D::RemoveLayer(int layer)
   if (!this->HasLayer(layer))
     return;
   
-  if (layer==0) // do not remove layer 0
+  if (layer<=0) // do not remove layer 0
     return;
   
   vtkRenderer       *renderer = this->GetRendererForLayer(layer);
@@ -1736,7 +1736,7 @@ void vtkImageView2D::RemoveLayer(int layer)
   this->LayerInfoVec.erase(this->LayerInfoVec.begin() + layer);
   
   // Make contiguous
-  for ( int i(layer); i<this->LayerInfoVec.size(); ++i ) 
+  for ( size_t i(layer); i<this->LayerInfoVec.size(); ++i ) 
   {
       this->LayerInfoVec[i].Renderer->SetLayer(i);
   }
@@ -1754,7 +1754,7 @@ void vtkImageView2D::RemoveAllLayers (void)
 //----------------------------------------------------------------------------
 bool vtkImageView2D::HasLayer(int layer) const
 {
-  return ( (layer < this->LayerInfoVec.size()) && (layer >= 0) );
+  return ( (layer >= 0) && (layer < this->GetNumberOfLayers() ) );
 }
 
 //----------------------------------------------------------------------------
