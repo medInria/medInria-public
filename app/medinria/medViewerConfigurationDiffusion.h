@@ -19,11 +19,12 @@ class medViewerConfigurationDiffusion : public medViewerConfiguration
 
 public:
      medViewerConfigurationDiffusion(QWidget *parent = 0);
-    ~medViewerConfigurationDiffusion(void);
+    ~medViewerConfigurationDiffusion();
 
-    virtual QString description(void) const;
+    virtual QString identifier()  const;
+    virtual QString description() const;
 
-    void setupViewContainerStack ();
+    void setupViewContainerStack();
 
 public slots:
 

@@ -1,5 +1,5 @@
-/* medToolBoxRegistration.h --- 
- * 
+/* medToolBoxRegistration.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:02:09 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 47
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDTOOLBOXREGISTRATION_H
@@ -36,13 +36,13 @@ class MEDGUI_EXPORT medToolBoxRegistration : public medToolBox
 public:
      medToolBoxRegistration(QWidget *parent = 0);
     ~medToolBoxRegistration(void);
-	
+
     dtkAbstractView *fixedView(void);
     dtkAbstractView *movingView(void);
 
     medAbstractDataImage *fixedData(void);
     medAbstractDataImage *movingData(void);
-    
+
     void setFuseView(dtkAbstractView *view);
     dtkAbstractView *fuseView(void);
 
@@ -58,11 +58,11 @@ signals:
 public slots:
     void onMovingImageDropped(const medDataIndex& index);
     void onFixedImageDropped(const medDataIndex& index);
-    
+
 //    void onBlendModeSet(bool value);
 //    void onCheckerboardModeSet(bool value);
 
-    void onToolBoxChosen(const QString&);
+    void onToolBoxChosen(int index);
     void clear(void);
     void onSaveImage(void);
     void onSaveTrans(void);

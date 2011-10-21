@@ -17,7 +17,8 @@ public:
      medViewerConfigurationRegistration(QWidget *parent = 0);
     ~medViewerConfigurationRegistration(void);
 
-    virtual QString description(void) const;
+    virtual QString identifier()  const;
+    virtual QString description() const;
 
     void setupViewContainerStack ();
 

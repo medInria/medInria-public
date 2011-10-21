@@ -90,11 +90,14 @@ void medDatabaseSettingsWidget::read()
 bool medDatabaseSettingsWidget::write()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
-    mnger->setValue(this->description(),"new_database_location", d->dbPath->text());
+    mnger->setValue(this->identifier(),"new_database_location", d->dbPath->text());
     return true;
 }
 
-QString medDatabaseSettingsWidget::description() const
-{
+QString medDatabaseSettingsWidget::identifier() const {
+    return "medDatabaseSettingsWidget";
+}
+
+QString medDatabaseSettingsWidget::description() const {
     return "medDatabaseSettingsWidget";
 }

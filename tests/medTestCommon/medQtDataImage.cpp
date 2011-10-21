@@ -46,7 +46,7 @@ void medQtDataImage::setData( void* data )
     d->images.clear();
     d->thumbnailValid = false;
 
-    if ( !data ) 
+    if ( !data )
         return;
 
     QImage image = *( reinterpret_cast< QImage *>( data ) );
@@ -60,7 +60,7 @@ void medQtDataImage::setData( void* data )
 void medQtDataImage::setData( void* data, int channel )
 {
     d->thumbnailValid = false;
-    if ( !data || (channel < 0) ) 
+    if ( !data || (channel < 0) )
         return;
 
     QImage image = *( reinterpret_cast< QImage *>( data ) );
@@ -74,7 +74,7 @@ void medQtDataImage::setData( void* data, int channel )
     if ( image.width() != d->sizeX ||
         image.height() != d->sizeY ||
         image.format() != d->imageFormat ) {
-        
+
             dtkDebug() << "Image not correct size or type";
             return;
     }
@@ -82,7 +82,7 @@ void medQtDataImage::setData( void* data, int channel )
     if ( channel >= d->images.size() ) {
         d->images.resize( channel + 1);
     }
-    
+
     d->images[channel] = image;
 }
 
@@ -104,7 +104,7 @@ void * medQtDataImage::data( int channel )
 
 QImage & medQtDataImage::thumbnail( void ) const
 {
-    if ( !d->thumbnailValid ) 
+    if ( !d->thumbnailValid )
         this->generateThumbnails();
 
     return this->medAbstractDataImage::thumbnails()[0];
@@ -112,7 +112,7 @@ QImage & medQtDataImage::thumbnail( void ) const
 
 QList<QImage>& medQtDataImage::thumbnails( void ) const
 {
-    if ( !d->thumbnailValid ) 
+    if ( !d->thumbnailValid )
         this->generateThumbnails();
 
     return this->medAbstractDataImage::thumbnails();
@@ -145,7 +145,7 @@ void medQtDataImage::generateThumbnails() const
 
 bool medQtDataImage::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataType(s_description(), createMedQtDataImage);
+    return dtkAbstractDataFactory::instance()->registerDataType(s_identifier(), createMedQtDataImage);
 }
 
 void * medQtDataImage::output( void )
@@ -227,7 +227,7 @@ const medQtDataImage::PixId& medQtDataImage::PixelType( void ) const
         return typeid(void);
 
     }
-    return typeid(void); 
+    return typeid(void);
 }
 
 int medQtDataImage::minRangeValue( void )
@@ -255,7 +255,7 @@ int medQtDataImage::scalarValueMaxCount( void )
     return 0;
 }
 
-QString medQtDataImage::s_description()
+QString medQtDataImage::s_description( void )
 {
     static const QString description = "medQtDataImage";
     return description;
@@ -264,6 +264,18 @@ QString medQtDataImage::s_description()
 QString medQtDataImage::description( void ) const
 {
     return s_description();
+}
+
+
+QString medQtDataImage::s_identifier( void )
+{
+    static const QString identifier = "medQtDataImage";
+    return identifier;
+}
+
+QString medQtDataImage::identifier( void ) const
+{
+    return s_identifier();
 }
 
 

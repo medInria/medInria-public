@@ -40,6 +40,7 @@
 #include <medDataManager.h>
 
 #include <medButton.h>
+#include <medQuickAccessMenu.h>
 #include <medWorkspaceShifter.h>
 
 #include <medDatabaseController.h>
@@ -59,6 +60,8 @@
 #include "medViewerConfigurationRegistration.h"
 #include "medViewerConfigurationDiffusion.h"
 #include "medViewerConfigurationFiltering.h"
+
+#include "medSaveModifiedDialog.h"
 
 #include <QtGui>
 
@@ -101,7 +104,8 @@ public:
     QHBoxLayout * statusBarLayout;
 
     medStatusBar * statusBar;
-    QWidget * quickAccessWidget;
+//     QWidget * quickAccessWidget;
+    medQuickAccessMenu * quickAccessWidget;
     bool quickAccessVisible;
 
     medQuickAccessPushButton * quickAccessButton;
@@ -181,10 +185,12 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
     d->quickAccessButton->setText ( "Workspaces access menu" );
     connect ( d->quickAccessButton,  SIGNAL ( clicked() ), this, SLOT ( onShowQuickAccess() ) );
-
-    d->quickAccessWidget = new QWidget ( this );
+    
+    d->quickAccessWidget = new medQuickAccessMenu( this );
+    d->quickAccessWidget->setFocusPolicy(Qt::ClickFocus);
     d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, -500 ) );
     d->quickAccessWidget->setMinimumWidth(180);
+    connect(d->quickAccessWidget, SIGNAL(hideMenu()), this, SLOT(onHideQuickAccess()));
 
     d->quickAccessVisible = false;
     d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos",this );
@@ -192,6 +198,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     //Add quit button
     d->quitButton = new medButton ( this,":/icons/quit.png", tr ( "Quit Application" ) );
     connect ( d->quitButton, SIGNAL ( triggered() ), this, SLOT ( onQuit() ) );
+    connect(d->quitButton, SIGNAL( triggered()), this, SLOT (onSaveModified()));
     d->quitButton->setMaximumWidth ( 31 );
 
     //Setup quit message
@@ -279,6 +286,12 @@ medMainWindow::~medMainWindow ( void )
     delete d;
 
     d = NULL;
+}
+
+void medMainWindow::mousePressEvent ( QMouseEvent* event )
+{
+    QWidget::mousePressEvent ( event );
+    this->onHideQuickAccess();
 }
 
 void medMainWindow::readSettings ( void )
@@ -477,6 +490,7 @@ void medMainWindow::onShowQuickAccess ( void )
         this->onHideQuickAccess();
         return;
     }
+    d->quickAccessWidget->setFocus();
     d->quickAccessVisible = true;
     d->quickAccessAnimation->setDuration ( 100 );
     d->quickAccessAnimation->setStartValue ( QPoint ( 0,this->height() - 30 ) );
@@ -513,13 +527,27 @@ void medMainWindow::onQuit ( void )
     d->quitButton->hide();
 }
 
+void medMainWindow::onSaveModified( void )
+{
+    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
+
+    if(!indexes.isEmpty())
+    {
+        medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
+        saveDialog->show();
+    }
+}
+
 void medMainWindow::onEditSettings()
 {
-    if ( d->settingsEditor )
-    {
-        d->settingsEditor->show();
-        return;
-    }
+    QDialog * dialog = new QDialog(this);
+    dialog->setMinimumHeight(400);
+    dialog->setMinimumWidth(500);
+    dialog->setMaximumHeight(400);
+    dialog->setMaximumWidth(500);
+
+    QVBoxLayout * layout = new QVBoxLayout(dialog);
+    layout->setContentsMargins(0,0,0,0);;
 
     d->settingsEditor = new medSettingsEditor ( this, true );
     d->settingsEditor->setGeometry ( 100,100, 500, 500 );
@@ -527,9 +555,12 @@ void medMainWindow::onEditSettings()
     d->settingsEditor->initialize();
     d->settingsEditor->queryWidgets();
 
-    connect ( d->settingsEditor, SIGNAL ( finished() ), d->settingsEditor, SLOT ( close() ) );
+    layout->addWidget(d->settingsEditor);
+    dialog->setLayout(layout);
+    
+    connect ( d->settingsEditor, SIGNAL ( finished() ), dialog, SLOT ( close() ) );
 
-    d->settingsEditor->show();
+    dialog->exec();
 }
 
 void medMainWindow::open ( const medDataIndex& index )
@@ -575,6 +606,7 @@ void medMainWindow::onOpenFile(const medDataIndex & index,const QString& importU
 
 void medMainWindow::load(const QString& file)
 {
+    qDebug() << "DEBUG : entering medMainWindow::load";
     medDataManager::instance()->importNonPersistent (file);
 }
 

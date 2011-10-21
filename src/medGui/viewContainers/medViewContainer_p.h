@@ -1,5 +1,5 @@
-/* medViewContainer_p.h --- 
- * 
+/* medViewContainer_p.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar 17 14:44:12 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 5
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDVIEWCONTAINER_P_H
@@ -47,7 +47,7 @@ public:
 
     QHash<QString, QString> viewProperties;
     QString viewInfo;
-
+    bool multiLayer;
     bool clicked;
 };
 

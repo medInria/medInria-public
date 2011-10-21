@@ -349,12 +349,11 @@ void medAbstractView::removeOverlay(int layer)
     //JGG qDebug()<<"ViewDataListSize"<<d->dataList.size();
     if (d->dataList.contains (layer))
     {
-        medAbstractView::removeDataType(d->dataList[layer]->description());
+        medAbstractView::removeDataType(d->dataList[layer]->identifier());
         emit (dataRemoved(d->dataList[layer], layer));
         emit (dataRemoved(layer));
         d->dataList.remove(layer);
     }
-    DTK_DEFAULT_IMPLEMENTATION;
 }
 
 void medAbstractView::onSliceChanged (int slice)
@@ -365,7 +364,7 @@ void medAbstractView::onSliceChanged (int slice)
 void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
 {
     d->dataList[layer] = data;
-    medAbstractView::addDataType(data->description());
+    medAbstractView::addDataType(data->identifier());
 }
 
 dtkAbstractData * medAbstractView::dataInList(int layer)
@@ -392,12 +391,12 @@ void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
 {
     // start by removing the data type if layer already exists
     if (d->dataList.contains(layer)) {
-        removeDataType(d->dataList[layer]->description());
+        removeDataType(d->dataList[layer]->identifier());
     }
 
     d->dataList[layer] = data;
 
-    addDataType(data->description());
+    addDataType(data->identifier());
 }
 
 void medAbstractView::addDataType(const QString & dataDescription)
@@ -518,6 +517,12 @@ void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> dat
 
     //dtkAbstractData *dtkdata = d->sharedData.data();
     this->setData(data);
+}
+
+void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> data,
+                                            int layer)
+{
+    this->setData(data,layer);
 }
 
 medAbstractView::~medAbstractView( void )

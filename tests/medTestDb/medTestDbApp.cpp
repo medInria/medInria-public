@@ -168,7 +168,7 @@ void medTestDbApp::handlePersistentDataImported()
 
     // Check data in db matches original.
     dtkSmartPointer<dtkAbstractData> testDataFromDb = dataManager->data( persImportedIndex );
-    CHECK_TEST_RESULT(testDataFromDb->description() == testData->description());
+    CHECK_TEST_RESULT(testDataFromDb->identifier() == testData->identifier());
     CHECK_TEST_RESULT(medMetaDataKeys::PatientName.getFirstValue(testDataFromDb) ==
                       medMetaDataKeys::PatientName.getFirstValue(testData));
 

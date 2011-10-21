@@ -35,8 +35,17 @@ public:
      medViewerConfigurationVisualization(QWidget *parent = 0);
     ~medViewerConfigurationVisualization(void);
     virtual void setupViewContainerStack();
-    virtual QString description(void) const;
 
+    virtual QString identifier()  const;
+    virtual QString description() const;
+
+public slots:
+    /**
+     * @brief Connects toolboxes to the current container
+     *
+     * @param name the container name
+    */
+    virtual void connectToolboxesToCurrentContainer(const QString &name);
 
 private:
     medViewerConfigurationVisualizationPrivate *d;

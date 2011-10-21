@@ -142,7 +142,7 @@ void medToolBoxDiffusionFiberBundling::setData(dtkAbstractData *data)
     if (!data)
         return;
     
-    if (data->description()!="v3dDataFibers") {
+    if (data->identifier()!="v3dDataFibers") {
         return;
     }
     

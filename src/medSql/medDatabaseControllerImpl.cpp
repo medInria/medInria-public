@@ -75,11 +75,16 @@ void medDatabaseControllerImplPrivate::buildMetaDataLookup()
         TableEntryList() << TableEntry(T_patient, "gender") );
     metaDataLookup.insert(medMetaDataKeys::BirthDate.key(),
         TableEntryList() << TableEntry(T_patient, "birthdate") );
+    metaDataLookup.insert(medMetaDataKeys::PatientID.key(),
+        TableEntryList() << TableEntry(T_patient, "patientId") );
+    
 //Study Data
     metaDataLookup.insert(medMetaDataKeys::StudyDescription.key(),
         TableEntryList() << TableEntry(T_study, "name") );
-    metaDataLookup.insert(medMetaDataKeys::StudyID.key(),
+    metaDataLookup.insert(medMetaDataKeys::StudyDicomID.key(),
         TableEntryList() << TableEntry(T_study, "uid") );
+    metaDataLookup.insert(medMetaDataKeys::StudyID.key(),
+        TableEntryList() << TableEntry(T_study, "studyId") );
 //Series Data
     metaDataLookup.insert(medMetaDataKeys::Size.key(),
         TableEntryList() << TableEntry(T_series, "size") );
@@ -87,8 +92,10 @@ void medDatabaseControllerImplPrivate::buildMetaDataLookup()
         TableEntryList() << TableEntry(T_series, "name") );
     metaDataLookup.insert(medMetaDataKeys::Size.key(),
         TableEntryList() << TableEntry(T_series, "size") );
-    metaDataLookup.insert(medMetaDataKeys::SeriesID.key(),
+    metaDataLookup.insert(medMetaDataKeys::SeriesDicomID.key(),
         TableEntryList() << TableEntry(T_series, "uid") );
+    metaDataLookup.insert(medMetaDataKeys::SeriesID.key(),
+        TableEntryList() << TableEntry(T_series, "seriesId") );
     metaDataLookup.insert(medMetaDataKeys::Orientation.key(),
         TableEntryList() << TableEntry(T_series, "orientation") );
     metaDataLookup.insert(medMetaDataKeys::SeriesNumber.key(),
@@ -389,13 +396,18 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
 
 void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUuid)
 {
-    medDatabaseWriter *writer = new medDatabaseWriter(data);
+    medDatabaseWriter *writer = new medDatabaseWriter(data, importUuid);
     //if we want to add importUuid support to permanent db,
     //we need to change the importer and its addedIndex signal to suppot importUuid
     //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
-    Q_UNUSED(importUuid)
+
     connect(writer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
-    connect(writer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
+    
+    if (importUuid == "")
+        connect(writer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
+    else
+        connect(writer, SIGNAL(addedIndex(const medDataIndex &, const QString &)), this, SIGNAL(updated(const medDataIndex &, const QString &)));
+
     connect(writer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(writer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
 
@@ -438,7 +450,8 @@ void medDatabaseControllerImpl::createPatientTable(void)
             " name        TEXT,"
             " thumbnail   TEXT,"
             " birthdate   TEXT,"
-            " gender      TEXT"
+            " gender      TEXT,"
+            " patientId   TEXT"
             ");"
             );
 }
@@ -453,7 +466,8 @@ void medDatabaseControllerImpl::createStudyTable(void)
             " patient   INTEGER," // FOREIGN KEY
             " name         TEXT,"
             " uid          TEXT,"
-            " thumbnail    TEXT"
+            " thumbnail    TEXT,"
+            " studyId      TEXT"
             ");"
             );
 }
@@ -469,6 +483,7 @@ void medDatabaseControllerImpl::createSeriesTable(void)
             " name            TEXT,"
             " path            TEXT,"
             " uid             TEXT,"
+            " seriesId        TEXT,"
             " orientation     TEXT,"
             " seriesNumber    TEXT,"
             " sequenceName    TEXT,"

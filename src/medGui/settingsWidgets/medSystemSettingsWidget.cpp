@@ -111,9 +111,10 @@ bool medSystemSettingsWidget::write()
     return true;
 }
 
-QString medSystemSettingsWidget::description() const
-{
+QString medSystemSettingsWidget::identifier() const {
     return "System";
 }
 
-
+QString medSystemSettingsWidget::description() const {
+    return "System";
+}
