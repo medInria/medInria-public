@@ -297,7 +297,7 @@ void
                 d->currentInteractor = d->interactors.indexOf(interactor);
             }
 
-
+            
         for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
         {
             
@@ -307,7 +307,7 @@ void
                 this->constructMeshLayer(d->view->dataInList(i), meshNumber);
                 meshNumber++;
             }
-            else if (d->view->dataInList(i))
+            else //if (d->view->dataInList(i))
             {
               //  qDebug() << "d->view->dataInList("<<i<<")->identifier() : " << d->view->dataInList(i)->identifier();
 
@@ -633,6 +633,7 @@ void medViewerToolBoxViewProperties::onDataAdded( int layer)
 void
     medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data, int layer)
 {
+   
     if(!data)
         return;
     if (!d->view)
@@ -653,6 +654,7 @@ void
             }
         this->constructMeshLayer(data, d->view->meshLayerCount());
         d->view->setMeshLayerCount(d->view->meshLayerCount()+1);
+      
     }
     else
     {

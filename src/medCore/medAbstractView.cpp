@@ -372,6 +372,12 @@ void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
     medAbstractView::addDataType(data->identifier());
 }
 
+void medAbstractView::addDataInList(dtkAbstractData * data)
+{
+    
+        d->dataList.append(data);
+    medAbstractView::addDataType(data->identifier());
+}
 dtkAbstractData * medAbstractView::dataInList(int layer)
 {
     if (layer >=0 &&  layer < d->dataList.size())
