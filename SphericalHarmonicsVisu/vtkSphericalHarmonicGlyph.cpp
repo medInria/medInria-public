@@ -30,6 +30,7 @@ vtkSphericalHarmonicGlyph::vtkSphericalHarmonicGlyph() {
     this->ColorMode = COLOR_BY_SCALARS;
     this->SetNumberOfInputPorts(2);
     this->SphericalHarmonicSource = 0;
+        this->TMatrix = 0;
 }
 
 #if 0
@@ -41,6 +42,7 @@ vtkSphericalHarmonicGlyph::~vtkSphericalHarmonicGlyph()
     */
 }
 #endif
+
 
 int
 vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** inputVector,vtkInformationVector* outputVector) {
@@ -191,6 +193,7 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
         vtkPoints*    deformPts       = this->SphericalHarmonicSource->GetOutput()->GetPoints();
         
         trans->Identity();
+        trans->SetMatrix(this->TMatrix);
         
         // translate Source to Input point
 

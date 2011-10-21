@@ -71,6 +71,9 @@ public:
 	vtkGetMacro(ColorGlyphs,int);
 	vtkBooleanMacro(ColorGlyphs,int);
 
+        vtkSetObjectMacro(TMatrix,vtkMatrix4x4);
+        vtkGetObjectMacro(TMatrix,vtkMatrix4x4);
+
 	// Set the color mode to be used for the glyphs. This can be set to use the input scalars (default) or to use the directions at the
 	// point.  If ThreeGlyphs is set and the eigenvalues are chosen for coloring then each glyph is colored by the corresponding
 	// directions and if not set the color corresponding to the largest direction is chosen.  The recognized values are:
@@ -102,6 +105,8 @@ public:
 
  	int ColorMode; 
 	vtkSphericalHarmonicSource* SphericalHarmonicSource; 
+        vtkMatrix4x4*  TMatrix;
+
 
 private:
 

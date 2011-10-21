@@ -148,7 +148,6 @@ void vtkSphericalHarmonicManager::Update()
     return;
   }
   
-  
   this->Initialize();
   
   int* dims = this->Input->GetDimensions();
@@ -170,7 +169,6 @@ void vtkSphericalHarmonicManager::Update()
   this->SHVisuManagerSagittal->SetVOI (X, X, 0, dims[1]-1, 0, dims[2]-1);
   this->SHVisuManagerCoronal ->SetVOI (0, dims[0]-1, Y, Y, 0, dims[2]-1);
   this->SHVisuManagerAxial   ->SetVOI (0, dims[0]-1, 0, dims[1]-1, Z, Z);
-  
 
   // finally set the data
   this->SHVisuManagerAxial->SetInput( this->Input );
@@ -201,12 +199,6 @@ void vtkSphericalHarmonicManager::Update()
 //      for (int l=0; l<4;l++)
 //          std::cout << MatrixTA->GetElement(l,0) << MatrixTA->GetElement(l,2) << MatrixTA->GetElement(l,3) << MatrixTA->GetElement(l,4)<<std::endl;
 
-
-
-
-this->SHVisuManagerAxial->GetActor()->SetUserMatrix(this->MatrixT);
-this->SHVisuManagerSagittal->GetActor()->SetUserMatrix(this->MatrixT);
-this->SHVisuManagerCoronal->GetActor()->SetUserMatrix(this->MatrixT);
     this->Renderer->AddActor ( this->SHVisuManagerAxial->GetActor() );
     this->Renderer->AddActor ( this->SHVisuManagerSagittal->GetActor() );
     this->Renderer->AddActor ( this->SHVisuManagerCoronal->GetActor() );
