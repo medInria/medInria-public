@@ -39,11 +39,11 @@ static direction Cartesian2Spherical(direction v);
 
 static std::complex<double> GetSH(int _l,int _m,double theta,double phi); //JGGBOOST
 
-static matrix<double> ComputeSHMatrix (const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
-static matrix<double> ComputeSHMatrixMaxThesis(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
+static matrix<double> ComputeSHMatrix (const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections, std::ofstream & testfile);
+static matrix<double> ComputeSHMatrixMaxThesis(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections, std::ofstream & testfile);
 
-static matrix<double> ComputeSHmatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
-static matrix<double> ComputeSHmatrixRshBasis(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
+static matrix<double> ComputeSHmatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections, std::ofstream & testfile);
+static matrix<double> ComputeSHmatrixRshBasis(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections, std::ofstream & testfile);
 
 
 static void           TranslateAndDeformShell(vtkPolyData* shell,vtkPoints* outPts,double center[3],bool deform,vtkMatrix4x4* transform=0);
@@ -356,8 +356,10 @@ Cartesian2Spherical(const direction v) {
 }
 
 matrix<double>
-ComputeSHMatrix(const int order,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
-    
+ComputeSHMatrix(const int order,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections, std::ofstream & testfile) {
+
+    const double minTest =0;//0.000000001
+
     const int n_s   = shell->GetNumberOfPoints();
     //const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is probably wrong !!!
     const int rank =  (order+1)*(order+2)/2;
@@ -388,15 +390,17 @@ ComputeSHMatrix(const int order,vtkPolyData* shell,const bool FlipX,const bool F
 
         const double factor = std::sqrt(2.0)/2;
 
+
         for (int l=0,j=0;l<=order;l+=2) {
 
             //  Handle the case m=0.
             const std::complex<double> cplx = GetSH(l,0,theta,phi);
             test3 = real(cplx);
-            test2 = std::tr1::sph_legendre(l,0,theta);
-            //            cout << "l " << l << " m " << "0" << "\t";
-            //            cout << "Y_"<<j<<"("<<theta<<", "<< phi<<"): "<<"\t";
-            //            cout <<cplx << std::endl;
+            test = std::tr1::sph_legendre(l,0,theta);
+
+            //boost and tr1 are almost the same
+//            if (std::abs(test-test3)>=minTest)
+                testfile  << "l " << l << " m " << "0" << " "<< "Y_"<< j << "_" << i << "(" << theta << ", " << phi << "): " << test << " T-T3" << test3-test << endl;
 
             B(j,i)=test3;j=j+1;
 
@@ -415,38 +419,25 @@ ComputeSHMatrix(const int order,vtkPolyData* shell,const bool FlipX,const bool F
                 const std::complex<double> cplxB3 =imaginario*(-(sign*cplx_1) + cplx_2);
 
                 const double c1 = std::tr1::sph_legendre(l, m,theta)*std::sqrt(2.0);
+
                 //-m Real
                 test  = s*c1*(cos(m*phi));//like t3 at hardi.cpp but math simplified and with tr1
                 test1 = c1*(cos(m*phi));//like RshBasis.pdf eq 1.2 but math simplified and with tr1
                 test2 = factor*real(cplxA2);//like RshBasis.pdf eq 1.2
                 test3 = factor*real(cplxA3);//like t3 at hardi.cpp
-
-                //                if(std::abs(test-test3)>=0.0000000000001)
-                //                    std::cout << "error "<< test-test3 << std::endl;
-                //                if(std::abs(test1-test2)>=0.0000000000001)
-                //                    std::cout << "error "<< test1-test2 << std::endl;
-
+                //boost and tr1 are almost the same
+//                if (std::abs(test-test3)>=minTest)
+                    testfile  << "l " << l << " m " << -m << " "<< "Y_"<< j << "_" << i << "(" << theta << ", " << phi << "): " << test << " T-T3" << test3-test << endl;
                 B(j,i)   = test3;
+
                 //+m Imag
                 test  = c1*(sin(s*m*phi));//like t3 at hardi.cpp but math simplified and with tr1
                 test1 = c1*(sin(m*phi));
                 test2 = factor*real(cplxB2);//+m
                 test3 = factor*real(cplxB3);
-
-                //                cout << "l " << l << " m " << m << "\t";
-                //                cout << "Y_"<<j<<"("<<theta<<", "<< phi<<"): "<<"\t";
-                //                cout <<cplxB3 << std::endl;;
-
-                //                if(std::abs(test-test3)>=0.0000000000001)
-                //                    std::cout << "error "<< test-test3 << std::endl;
-                //                if(std::abs(test1-test2)>=0.0000000000001)
-                //                    std::cout << "error "<< test1-test2 << std::endl;
-
+//                if (std::abs(test-test3)>=minTest)
+                    testfile  << "l " << l << " m " << m << " "<< "Y_"<< j << "_" << i << "(" << theta << ", " << phi << "): " << test << " T-T3" << test3-test << endl;
                 B(++j,i) = test3;
-
-                //                cout << "Y_"<<j<<"("<<theta<<", "<< phi<<"): "<<"\t";
-                //                cout <<cplxA3 << std::endl;
-
             }
         }
     }
@@ -455,7 +446,8 @@ ComputeSHMatrix(const int order,vtkPolyData* shell,const bool FlipX,const bool F
 }
 
 matrix<double>
-ComputeSHMatrixMaxThesis(const int order,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
+ComputeSHMatrixMaxThesis(const int order,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections, std::ofstream & testfile) {
+    const double minTest =0;//0.000000001
 
     const int n_s   = shell->GetNumberOfPoints();
     //    const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is wrong !!!
@@ -484,10 +476,11 @@ ComputeSHMatrixMaxThesis(const int order,vtkPolyData *shell,const bool FlipX,con
 
         PhiThetaDirections(i,0) = phi;
         PhiThetaDirections(i,1) = theta;
-        double testA=0, testB=0, test2=0;
 
 
 #if 0
+        double testA=0, testB=0, test2=0;
+
         for (int l=0,j=0;l<=order;l+=2) {
             for(int m=-l;m<0;++m,++j){
 
@@ -530,10 +523,16 @@ ComputeSHMatrixMaxThesis(const int order,vtkPolyData *shell,const bool FlipX,con
         //  TO
         for (int l=0,j=0;l<=order;l+=2,j+=2*l-1) {
             B(j,i)= std::tr1::sph_legendre(l,0,theta);
+            testfile  << "l " << l << " m " << "0" << " "<< "Y_"<< j << "_" << i << "(" << theta << ", " << phi << "): " << B(j,i) << endl;
+
             for(int m=1,j1=j-1,j2=j+1;m<=l;++m,--j1,++j2) {
                 const double value = std::sqrt(2.0)*std::tr1::sph_legendre(l,m,theta);
                 B(j1,i)=value*cos(m*phi);
+                testfile  << "l " << l << " m " << m << " "<< "Y_"<< j << "_" << i << "(" << theta << ", " << phi << "): " << B(j1,i)<< endl;
+
                 B(j2,i) = value*sin(m*phi);
+                testfile  << "l " << l << " m " << -m << " "<< "Y_"<< j << "_" << i << "(" << theta << ", " << phi << "): " << B(j2,i)<< endl;
+
             }
         }
     }
@@ -542,7 +541,8 @@ ComputeSHMatrixMaxThesis(const int order,vtkPolyData *shell,const bool FlipX,con
 }
 
 matrix<double>
-ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
+ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections, std::ofstream & testfile) {
+    const double minTest =0;//0.000000001
 
     const int n_s   = shell->GetNumberOfPoints();
     const int rank =  (order+1)*(order+2)/2;
@@ -580,7 +580,7 @@ ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool FlipX,cons
         PhiThetaDirections(i,1) = theta;
         int j = 0;
         const double factor  = std::sqrt(2.0);
-        const double cos_phi = factor*cos(phi);
+//        const double cos_phi = factor*cos(phi);
         //        const double sin_phi = factor*sin(phi);
 
         //counter for the j dimension of B
@@ -595,16 +595,19 @@ ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool FlipX,cons
 
                     testA = real(cplx_1);
                     testB = test*cos(m*phi);
-                    if(std::abs(testA-testB)>=0.0000001)
-                        std::cout << "error "<< testA-testB << std::endl;
+
+//                    if (std::abs(testA-testB)>=minTest)
+                        testfile  << "l " << l << " m " << m << " "<< "Y_"<< j << "_" << i << "(" << theta << ", " << phi << "): " << testA << " TA-TB" << testA-testB << endl;
 
                     B(j,i) = testA;
+
                 }
                 else { /* negative "m" SH  */
                     testA = imag(cplx_1);
                     testB = s*test*sin(m*phi);
-                    if(std::abs(testA-testB)>=0.0000001)
-                        std::cout << "error "<< testA-testB << std::endl;
+
+//                    if (std::abs(testA-testB)>=minTest)
+                        testfile  << "l " << l << " m " << m << " "<< "Y_"<< j << "_" << i << "(" << theta << ", " << phi << "): " << testA << " TA-TB" << testA-testB << endl;
 
                     B(j,i) = testA;
                 }
@@ -617,7 +620,8 @@ ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool FlipX,cons
 }
 
 matrix<double>
-ComputeSHMatrixRshBasis(const int order,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
+ComputeSHMatrixRshBasis(const int order,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections, std::ofstream & testfile) {
+    const double minTest =0;//0.000000001
 
     const int n_s   = shell->GetNumberOfPoints();
     const int rank =  (order+1)*(order+2)/2;
@@ -645,7 +649,7 @@ ComputeSHMatrixRshBasis(const int order,vtkPolyData* shell,const bool FlipX,cons
 
         const double phi   = v.y;
         const double theta = v.z;
-        double test1=0, test=0, test3=0, test2=0;
+        double test3=0, test2=0;
         PhiThetaDirections(i,0) = phi;
         PhiThetaDirections(i,1) = theta;
 
@@ -657,7 +661,11 @@ ComputeSHMatrixRshBasis(const int order,vtkPolyData* shell,const bool FlipX,cons
             const std::complex<double> cplx = GetSH(l,0,theta,phi);
             test3 = real(cplx);
             test2 = std::tr1::sph_legendre(l,0,theta);
-            B(j,i)=test3; j=j+1;
+
+//            if (std::abs(test2-test3)>=minTest)
+                testfile  << "l " << l << " m " << "0" << " "<< "Y_"<< j << "_" << i << "(" << theta << ", " << phi << "): " << test2 << " T2-T3" << test2-test3 << endl;
+
+            B(j,i)=test2; j=j+1;
 
             for(int m=1,s=-1;m<=l;++m,++j,s=-s) {
 
@@ -672,19 +680,19 @@ ComputeSHMatrixRshBasis(const int order,vtkPolyData* shell,const bool FlipX,cons
 
                 const double c1 = std::tr1::sph_legendre(l, m,theta)*std::sqrt(2.0);
                 //-m Real
-                test1 = c1*(cos(m*phi));//like RshBasis.pdf Luke Bloy eq 1.2 but math simplified and with tr1
-                test2 = factor*real(cplxA2);//like RshBasis.pdf eq 1.2
+                test3 = factor*real(cplxA2);//like RshBasis.pdf eq 1.2
+                test2 = c1*(cos(m*phi));//like RshBasis.pdf Luke Bloy eq 1.2 but math simplified and with tr1
 
-                if(std::abs(test1-test2)>=0.0000000000001)
-                    std::cout << "error "<< test1-test2 << std::endl;
+//                if (std::abs(test2-test3)>=minTest)
+                    testfile  << "l " << l << " m " << -m << " "<< "Y_"<< j << "_" << i << "(" << theta << ", " << phi << "): " << test2 << " T2-T3" << test2-test3 << endl;
 
                 B(j,i)   = test2;
                 //+m Imag
-                test1 = c1*(sin(m*phi));
-                test2 = factor*real(cplxB2);//+m
+                test2 = c1*(sin(m*phi));
+                test3 = factor*real(cplxB2);//+m
 
-                if(std::abs(test1-test2)>=0.0000000000001)
-                    std::cout << "error "<< test1-test2 << std::endl;
+//                if (std::abs(test2-test3)>=minTest)
+                    testfile  << "l " << l << " m " << m << " "<< "Y_"<< j << "_" << i << "(" << theta << ", " << phi << "): " << test2 << " T2-T3" << test2-test3 << endl;
 
                 B(++j,i) = test2;
             }
@@ -724,12 +732,35 @@ vtkSphericalHarmonicSource::UpdateSphericalHarmonicSource() {
     matrix<double> PhiThetaDirection(shell->GetNumberOfPoints(),2);
 
     switch (TesselationBasis) {
-    case SHMatrix:          { BasisFunction = ComputeSHMatrix(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);         break; }
-    case SHMatrixMaxThesis: { BasisFunction = ComputeSHMatrixMaxThesis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection); break; }
-    case SHMatrixTournier:  { BasisFunction = ComputeSHMatrixTournier(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);  break; }
-    case SHMatrixRshBasis:  { BasisFunction = ComputeSHMatrixRshBasis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);   break; }
-    }
+    case SHMatrix:
+    {
+        std::ofstream testfile ("/user/jgarciag/home/tests/ComputeSHMatrixTR1_BOOST.txt");
+        BasisFunction = ComputeSHMatrix(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection, testfile); break;
+        testfile.close();
 
+    }
+    case SHMatrixMaxThesis:
+    {
+        std::ofstream testfile ("/user/jgarciag/home/tests/ComputeSHMatrixMaxThesis.txt");
+        BasisFunction = ComputeSHMatrixMaxThesis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection, testfile); break;
+        testfile.close();
+
+    }
+    case SHMatrixTournier:
+    {
+        std::ofstream testfile ("/user/jgarciag/home/tests/ComputeSHMatrixTourinerTR1_BOOST.txt");
+        BasisFunction = ComputeSHMatrixTournier(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection, testfile); break;
+        testfile.close();
+
+    }
+    case SHMatrixRshBasis:
+    {
+        std::ofstream testfile ("/user/jgarciag/home/tests/ComputeSHMatrixRshBasisTR1_BOOST.txt");
+        BasisFunction = ComputeSHMatrixRshBasis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection, testfile); break;
+        testfile.close();
+
+    }
+    }
     PhiThetaShellDirections = PhiThetaDirection;
 }
 
