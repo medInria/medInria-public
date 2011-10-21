@@ -781,15 +781,21 @@ void v3dView::setSharedDataPointer ( dtkSmartPointer<dtkAbstractData> data )
 {
     if ( !data )
         return;
-     int layer = 0;
-     while ( medAbstractView::dataInList( layer ) )
+     int layer = 0, imageLayer = 0;
+     dtkAbstractData * dataInLayer;
+     while ( dataInLayer = medAbstractView::dataInList( layer ) )
      {
+         if(!dataInLayer->identifier().contains ( "vtkDataMesh" ))
+             imageLayer++;
+         
          layer++;
+         
      }
 
+     //qDebug() << "this->layerCount() : " << this->layerCount();
      d->sharedData[layer] = data;
  
-     this->setData ( data.data(), layer );
+     this->setData ( data.data(), imageLayer );
 
 }
 
@@ -860,13 +866,15 @@ bool v3dView::SetViewInputWithConversion(const char* type,const char* newtype,dt
 
 void v3dView::setData ( dtkAbstractData *data, int layer )
 {
+    
+
     if ( !data )
         return;
 
     if ( medAbstractView::isInList ( data, layer ) )
         return;
 
-    if ( layer == 0 && data->identifier().contains ( "vtkDataMesh" ) )
+    if ( layer == 0 && data->identifier().contains ( "vtkDataMesh" ) && medAbstractView::dataInList(layer) == NULL)
     {
         medMessageController::instance()->showError ( this, tr ( "Select image first" ), 5000 );
         return;
@@ -1019,7 +1027,8 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         }
     }
 
-    this->addDataInList ( data, layer );
+    //this->addDataInList ( data, layer );
+    this->addDataInList ( data);
     emit dataAdded ( data );
     emit dataAdded ( data, layer );
 }
