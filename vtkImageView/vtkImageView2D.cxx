@@ -1720,10 +1720,10 @@ void vtkImageView2D::RemoveLayer(int layer)
 {
   if (!this->HasLayer(layer))
     return;
-  
+
   if (layer<=0) // do not remove layer 0
     return;
-  
+
   vtkRenderer       *renderer = this->GetRendererForLayer(layer);
   
   if (this->GetRenderWindow())
@@ -1745,7 +1745,7 @@ void vtkImageView2D::RemoveLayer(int layer)
 //----------------------------------------------------------------------------
 void vtkImageView2D::RemoveAllLayers (void)
 {
-  while (! this->LayerInfoVec.empty() )
+  while ( this->LayerInfoVec.size()>1 )
   {
     this->RemoveLayer ( this->LayerInfoVec.size() - 1);
   }
