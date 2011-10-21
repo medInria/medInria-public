@@ -23,10 +23,10 @@ signals:
 
 public:
 
-    /* Return the selected fiber radius. */
+    /* Returns the selected fiber radius. */
     int fiberRadius();
 
-    /* Return the selected fiber color mode. */
+    /* Returns the selected fiber color mode. */
     int fiberColorMode();
 
     /* Returns whether the GPU acceleration is activated. */
