@@ -32,11 +32,11 @@
 namespace Visualization {
 
 /*! http://davidf.faricy.net/polyhedra/Platonic_Solids.html */
-  enum p_solid { cube,          // 0
-		 dodecahedron,  // 1 
-		 icosahedron,   // 2
-		 octahedron,    // 3
-                 tetrahedron }; // 4
+enum p_solid { cube,          // 0
+               dodecahedron,  // 1
+               icosahedron,   // 2
+               octahedron,    // 3
+               tetrahedron }; // 4
 
 /*! Perform tesselation of the unit sphere from a given platonic solid */
 template<typename T>
@@ -69,7 +69,7 @@ private:
     /** Initialize by using the m_initPolyhedra the polyhedron that it is gong to be tesselated  */
     void m_initializeTesselation();
 
-//    void m_flipOrientation(tesselation<T>* t);
+    //    void m_flipOrientation(tesselation<T>* t);
     bool m_verbose;
 };
 }

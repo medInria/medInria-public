@@ -14,78 +14,78 @@ class vtkStructuredPoints;
 class vtkSphericalHarmonicVisuManager : public vtkObject
 {
 
- public:
-  static vtkSphericalHarmonicVisuManager *New();
-  vtkTypeRevisionMacro(vtkSphericalHarmonicVisuManager, vtkObject);
+public:
+    static vtkSphericalHarmonicVisuManager *New();
+    vtkTypeRevisionMacro(vtkSphericalHarmonicVisuManager, vtkObject);
 
 
-  void SetGlyphScale (const float& scale);
+    void SetGlyphScale (const float& scale);
 
-  /** Get the Polyhedron type to be tesselated */
-  void SetTesselationType (const int& type);
+    /** Get the Polyhedron type to be tesselated */
+    void SetTesselationType (const int& type);
 
-  /** Set the Polyhedron type to be tesselated */
-  int GetTesselationType (void) const
-  { return this->SHSource->GetTesselationType(); }
+    /** Set the Polyhedron type to be tesselated */
+    int GetTesselationType (void) const
+    { return this->SHSource->GetTesselationType(); }
 
-  /** Get the spherical harmonics basis to be used*/
-  void SetTesselationBasis (const int& type);
+    /** Get the spherical harmonics basis to be used*/
+    void SetTesselationBasis (const int& type);
 
-  /** Set the spherical harmonics basis to be used */
-  int GetTesselationBasis (void) const
-  { return this->SHSource->GetTesselationBasis(); }
+    /** Set the spherical harmonics basis to be used */
+    int GetTesselationBasis (void) const
+    { return this->SHSource->GetTesselationBasis(); }
 
 
-//  void SetTesselation (const int& type)
-//  { this->SHSource->SetTesselation (type); }
-  
-//  int GetTesselation (void) const
-//  { return this->SHSource->GetTesselation(); }
+    //  void SetTesselation (const int& type)
+    //  { this->SHSource->SetTesselation (type); }
 
-  void SetGlyphResolution (const int&);
-  void SetOrder (const int&);
+    //  int GetTesselation (void) const
+    //  { return this->SHSource->GetTesselation(); }
 
-  void SetSampleRate (const int&,const int&, const int&);
+    void SetGlyphResolution (const int&);
+    void SetOrder (const int&);
 
-  void FlipX (const int&);
-  void FlipY (const int&);
-  void FlipZ (const int&);
-  void MaxThesisFunc (const int&);
-  
-  /** Set the Volume Of Interest (VOI). Consists in
+    void SetSampleRate (const int&,const int&, const int&);
+
+    void FlipX (const int&);
+    void FlipY (const int&);
+    void FlipZ (const int&);
+    void MaxThesisFunc (const int&);
+
+    /** Set the Volume Of Interest (VOI). Consists in
       6 integers: xmin, xmax, ymin, ymax, zmin, zmax.*/
-  void SetVOI(const int&,const int&,const int&,const int&,const int&,const int&);
+    void SetVOI(const int&,const int&,const int&,const int&,const int&,const int&);
 
-  void SetInput (vtkStructuredPoints*);
+    void SetInput (vtkStructuredPoints*);
 
-  vtkGetObjectMacro (SHSource, vtkSphericalHarmonicSource);
-  vtkGetObjectMacro (SHGlyph,  vtkSphericalHarmonicGlyph);
-  vtkGetObjectMacro (Normals,  vtkPolyDataNormals);
-  vtkGetObjectMacro (VOI,      vtkExtractVOI);
-  vtkGetObjectMacro (Mapper,   vtkPolyDataMapper);
-  vtkGetObjectMacro (Actor,    vtkActor);
-  
-  vtkSetObjectMacro (MatrixV, vtkMatrix4x4);
-  vtkGetObjectMacro (MatrixV, vtkMatrix4x4);
-  
- protected:
-  vtkSphericalHarmonicVisuManager();
-  ~vtkSphericalHarmonicVisuManager();
+    vtkGetObjectMacro (SHSource, vtkSphericalHarmonicSource);
+    vtkGetObjectMacro (SHGlyph,  vtkSphericalHarmonicGlyph);
+    vtkGetObjectMacro (Normals,  vtkPolyDataNormals);
+    vtkGetObjectMacro (VOI,      vtkExtractVOI);
+    vtkGetObjectMacro (Mapper,   vtkPolyDataMapper);
+    vtkGetObjectMacro (Actor,    vtkActor);
 
-  
- private:
+    vtkSetObjectMacro (MatrixV, vtkMatrix4x4);
+    vtkGetObjectMacro (MatrixV, vtkMatrix4x4);
 
-  vtkSphericalHarmonicSource* SHSource;
-  vtkSphericalHarmonicGlyph*  SHGlyph;
-  vtkPolyDataNormals *        Normals;
-  vtkExtractVOI*              VOI;
-  vtkPolyDataMapper*          Mapper;
-  vtkActor*                   Actor;
+protected:
+    vtkSphericalHarmonicVisuManager();
+    ~vtkSphericalHarmonicVisuManager();
 
-  vtkMatrix4x4* MatrixV;
 
-  
-  
+private:
+
+    vtkSphericalHarmonicSource* SHSource;
+    vtkSphericalHarmonicGlyph*  SHGlyph;
+    vtkPolyDataNormals *        Normals;
+    vtkExtractVOI*              VOI;
+    vtkPolyDataMapper*          Mapper;
+    vtkActor*                   Actor;
+
+    vtkMatrix4x4* MatrixV;
+
+
+
 };
 
 

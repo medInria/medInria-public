@@ -30,7 +30,7 @@ vtkSphericalHarmonicGlyph::vtkSphericalHarmonicGlyph() {
     this->ColorMode = COLOR_BY_SCALARS;
     this->SetNumberOfInputPorts(2);
     this->SphericalHarmonicSource = 0;
-        this->TMatrix = 0;
+    this->TMatrix = 0;
 }
 
 #if 0

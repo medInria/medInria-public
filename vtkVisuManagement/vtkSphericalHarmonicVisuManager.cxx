@@ -72,13 +72,13 @@ vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager()
 
 vtkSphericalHarmonicVisuManager::~vtkSphericalHarmonicVisuManager()
 {
-  this->SHGlyph->Delete();
-  this->SHSource->Delete();
-  this->Normals->Delete();
-  this->VOI->Delete();
-  this->Mapper->Delete();
-  this->Actor->Delete();
-  
+    this->SHGlyph->Delete();
+    this->SHSource->Delete();
+    this->Normals->Delete();
+    this->VOI->Delete();
+    this->Mapper->Delete();
+    this->Actor->Delete();
+
 }
 
 
@@ -87,31 +87,31 @@ void vtkSphericalHarmonicVisuManager::SetInput (vtkStructuredPoints* vtkSH)
 {
     this->SHGlyph->SetTMatrix(MatrixV);
 
-  if( !vtkSH )
-  {
-    return;
-  }
+    if( !vtkSH )
+    {
+        return;
+    }
 
-  int number = vtkSH->GetPointData()->GetArray (vtkSphericalHarmonicGlyph::GetSphericalHarmonicCoefficientsArrayName())->GetNumberOfComponents();
-  this->SHSource->SetNumberOfSphericalHarmonics ( number );
+    int number = vtkSH->GetPointData()->GetArray (vtkSphericalHarmonicGlyph::GetSphericalHarmonicCoefficientsArrayName())->GetNumberOfComponents();
+    this->SHSource->SetNumberOfSphericalHarmonics ( number );
 
-  this->VOI->SetInput ( vtkSH );
+    this->VOI->SetInput ( vtkSH );
 
-  
+
 }
 
 
 void vtkSphericalHarmonicVisuManager::SetVOI(const int& imin, const int& imax,
-			       const int& jmin, const int& jmax,
-			       const int& kmin, const int& kmax)
+                                             const int& jmin, const int& jmax,
+                                             const int& kmin, const int& kmax)
 {
-  this->VOI->SetVOI(imin,imax,jmin,jmax,kmin,kmax);
+    this->VOI->SetVOI(imin,imax,jmin,jmax,kmin,kmax);
 }
 
 
 void vtkSphericalHarmonicVisuManager::SetGlyphScale (const float& scale)
 {
-  this->SHGlyph->SetScaleFactor(scale);
+    this->SHGlyph->SetScaleFactor(scale);
 }
 
 void vtkSphericalHarmonicVisuManager::SetTesselationType (const int& type)
@@ -128,8 +128,8 @@ void vtkSphericalHarmonicVisuManager::SetTesselationBasis (const int& type)
 
 void vtkSphericalHarmonicVisuManager::SetGlyphResolution (const int& res)
 {
-  this->SHSource->SetTesselation( res/2 );
-  this->SHSource->UpdateSphericalHarmonicSource();
+    this->SHSource->SetTesselation( res/2 );
+    this->SHSource->UpdateSphericalHarmonicSource();
 }
 
 void vtkSphericalHarmonicVisuManager::SetOrder (const int& order)
@@ -140,44 +140,44 @@ void vtkSphericalHarmonicVisuManager::SetOrder (const int& order)
 
 void vtkSphericalHarmonicVisuManager::SetSampleRate (const int& n1,const int& n2, const int& n3)
 {
-  this->VOI->SetSampleRate(n1, n2, n3);
+    this->VOI->SetSampleRate(n1, n2, n3);
 }
 
 
 void vtkSphericalHarmonicVisuManager::FlipX (const int& a)
 {
-  if (a) 
-    this->SHSource->FlipXOn();
-  else
-    this->SHSource->FlipXOff();
-  this->SHSource->UpdateSphericalHarmonicSource();
+    if (a)
+        this->SHSource->FlipXOn();
+    else
+        this->SHSource->FlipXOff();
+    this->SHSource->UpdateSphericalHarmonicSource();
 }
 
 
 void vtkSphericalHarmonicVisuManager::FlipY (const int& a)
 {
-  if (a)
-    this->SHSource->FlipYOn();
-  else
-    this->SHSource->FlipYOff();
-  this->SHSource->UpdateSphericalHarmonicSource();
+    if (a)
+        this->SHSource->FlipYOn();
+    else
+        this->SHSource->FlipYOff();
+    this->SHSource->UpdateSphericalHarmonicSource();
 }
 
 
 void vtkSphericalHarmonicVisuManager::FlipZ (const int& a)
 {
-  if( a )
-    this->SHSource->FlipZOn();
-  else
-    this->SHSource->FlipZOff();
-  this->SHSource->UpdateSphericalHarmonicSource();
+    if( a )
+        this->SHSource->FlipZOn();
+    else
+        this->SHSource->FlipZOff();
+    this->SHSource->UpdateSphericalHarmonicSource();
 }
 
 void vtkSphericalHarmonicVisuManager::MaxThesisFunc (const int& a)
 {
-  if( a )
-    this->SHSource->MaxThesisFuncOn();
-  else
-    this->SHSource->MaxThesisFuncOff();
-  this->SHSource->UpdateSphericalHarmonicSource();
+    if( a )
+        this->SHSource->MaxThesisFuncOn();
+    else
+        this->SHSource->MaxThesisFuncOff();
+    this->SHSource->UpdateSphericalHarmonicSource();
 }
