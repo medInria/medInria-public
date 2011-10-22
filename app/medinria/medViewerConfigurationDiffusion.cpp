@@ -80,8 +80,11 @@ medViewerConfigurationDiffusion::~medViewerConfigurationDiffusion(void)
     d = NULL;
 }
 
-QString medViewerConfigurationDiffusion::description(void) const
-{
+QString medViewerConfigurationDiffusion::identifier() const {
+    return "Diffusion";
+}
+
+QString medViewerConfigurationDiffusion::description() const {
     return "Diffusion";
 }
 
@@ -98,7 +101,7 @@ void medViewerConfigurationDiffusion::setupViewContainerStack()
         connect (single, SIGNAL (viewRemoved (dtkAbstractView*)), this, SLOT (onViewRemoved (dtkAbstractView*)));
 
         //ownership of single is transferred to the stackedWidget.
-        this->stackedViewContainers()->addContainer (description(), single);
+        this->stackedViewContainers()->addContainer (identifier(), single);
 
         diffusionContainer = single;
 
@@ -107,7 +110,7 @@ void medViewerConfigurationDiffusion::setupViewContainerStack()
     }
     else
     {
-        diffusionContainer = this->stackedViewContainers()->container(description());
+        diffusionContainer = this->stackedViewContainers()->container(identifier());
         //TODO: maybe clear views here too?
     }
 
@@ -117,7 +120,7 @@ void medViewerConfigurationDiffusion::setupViewContainerStack()
     foreach(dtkAbstractView *view, diffusionContainer->views())
         d->views << view;
 
-    //this->stackedViewContainers()->setContainer (description());
+    //this->stackedViewContainers()->setContainer (identifier());
 }
 
 
@@ -297,7 +300,7 @@ void medViewerConfigurationDiffusion::onTBDiffusionSuccess(void)
         view->update();
     }
 
-    if (d->diffusionToolBox->output()->description()=="v3dDataFibers")
+    if (d->diffusionToolBox->output()->identifier()=="v3dDataFibers")
         d->fiberBundlingToolBox->setData( d->diffusionToolBox->output() );
 
     medDataManager::instance()->importNonPersistent ( d->diffusionToolBox->output(), d->uuid);
@@ -375,7 +378,7 @@ void medViewerConfigurationDiffusion::refreshInteractors (void)
 
 void medViewerConfigurationDiffusion::onAddTabClicked()
 {
-    QString name = this->description();
+    QString name = this->identifier();
     QString realName = name;
 
     unsigned int suppTag = 0;

@@ -309,7 +309,8 @@ public:
     */
     QString info(void);
 
-    virtual QString description() { return ""; }
+    virtual QString identifier() {return "";}
+    virtual QString description() {return "";}
 
     void setMultiLayer( bool enable = true);
     virtual bool multiLayer ( void );
@@ -394,8 +395,6 @@ public slots:
      * The current container changes its "clicked" property to false.
     */
     virtual void onContainerClicked (void);
-
-//     void clear (void);
 
 
 protected:

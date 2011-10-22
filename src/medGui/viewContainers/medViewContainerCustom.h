@@ -63,7 +63,7 @@ public:
     */
     virtual bool isLeaf(void) const;
 
-    virtual QString description() {return "Custom";}
+    virtual QString identifier() {return "Custom";}
 
 public slots:
     void onViewClosing  (void);

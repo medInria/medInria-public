@@ -18,6 +18,7 @@ namespace medMetaDataKeys {
 
     // STUDY
     MEDCORE_EXPORT const Key StudyID("StudyID");
+    MEDCORE_EXPORT const Key StudyDicomID("StudyDicomID");
     MEDCORE_EXPORT const Key StudyDescription("StudyDescription");
     MEDCORE_EXPORT const Key Institution("Institution");
     MEDCORE_EXPORT const Key Referee("Referee");
@@ -26,6 +27,7 @@ namespace medMetaDataKeys {
 
     // SERIES
     MEDCORE_EXPORT const Key SeriesID("SeriesID");
+    MEDCORE_EXPORT const Key SeriesDicomID("SeriesDicomID");
     MEDCORE_EXPORT const Key SeriesNumber("SeriesNumber");
     MEDCORE_EXPORT const Key Modality("Modality");
     MEDCORE_EXPORT const Key Performer("Performer");

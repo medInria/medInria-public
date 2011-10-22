@@ -89,7 +89,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : d(new medDatabaseViewPrivate
     this->setAttribute(Qt::WA_MacShowFocusRect, false);
     this->setUniformRowHeights(true);
     this->setAlternatingRowColors(true);
-    this->setAnimated(false);
+    this->setAnimated(true);
     this->setSortingEnabled(true);
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -149,15 +149,18 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
             menu.addAction(tr("View"), this, SLOT(onMenuViewClicked()));
             menu.addAction(tr("Export"), this, SLOT(onMenuExportClicked()));
             menu.addAction(tr("Remove"), this, SLOT(onMenuRemoveClicked()));
+            if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
+                            menu.addAction(tr("Save"), this, SLOT(onMenuSaveClicked()));
             menu.exec(mapToGlobal(point));
         }
         else if (item->dataIndex().isValidForPatient())
         {
             menu.addAction(tr("Remove"), this, SLOT(onMenuRemoveClicked()));
+            if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
+                                        menu.addAction(tr("Save"), this, SLOT(onMenuSaveClicked()));
             menu.exec(mapToGlobal(point));
         }
     }
-
 }
 
 void medDatabaseView::onItemClicked(const QModelIndex& index)
@@ -283,6 +286,29 @@ void medDatabaseView::onMenuRemoveClicked( void )
             medDataManager::instance()->removeData(index);
         }
     }
+}
+
+void medDatabaseView::onMenuSaveClicked(void)
+{
+        QModelIndexList indexes = this->selectedIndexes();
+        if(!indexes.count())
+            return;
+
+        QModelIndex index = indexes.at(0);
+
+        medAbstractDatabaseItem *item = NULL;
+
+        if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+            item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+
+        if (item)
+        {
+            // Copy the data index, because the data item may cease to be valid.
+            medDataIndex index = item->dataIndex();
+            medDataManager::instance()->storeNonPersistentMultipleDataToDatabase(index);
+            qDebug() << "DEBUG : onMenuSaveClicked() after storeNonPersistentSingleDataToDatabase";
+            qDebug() << "DEBUG : index" << index;
+        }
 }
 
 void medDatabaseView::onOpeningFailed(const medDataIndex& index)

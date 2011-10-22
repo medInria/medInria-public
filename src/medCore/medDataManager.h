@@ -87,6 +87,12 @@ public:
     void storeNonPersistentDataToDatabase (void);
 
     /**
+     * Use this function to save a set of non-persistent data (e.g. from the same patient, study or series) to the sql database.
+     * The data is specified by its medDataIndex , it is then removed from the non persistent database
+     */
+    void storeNonPersistentMultipleDataToDatabase( const medDataIndex &index );
+
+    /**
      * Use this function to save one non-persistent data to the sql database.
      * The data is specified by ots medDataIndex , it is then removed from the non persistent database
      */
@@ -183,7 +189,7 @@ signals:
 public slots:
     void onNonPersistentDataImported(const medDataIndex &index, QString uuid);
     void onPersistentDataImported(const medDataIndex &index);
-    void onSingleNonPersistentDataStored(const medDataIndex &index);
+    void onSingleNonPersistentDataStored(const medDataIndex &index, const QString &uuid);
 
 protected:
      medDataManager(void);

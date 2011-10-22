@@ -46,6 +46,7 @@ medToolBoxDiffusion *medToolBoxDiffusionCustom::parent(void)
     return d->parent;
 }
 
+
 dtkAbstractData *medToolBoxDiffusionCustom::output (void) const
 {
     DTK_DEFAULT_IMPLEMENTATION;

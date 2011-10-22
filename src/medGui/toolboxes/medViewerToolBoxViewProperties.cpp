@@ -301,7 +301,7 @@ void
 
         for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
         {
-            if(d->view->dataInList(i) && d->view->dataInList(i)->description().contains("vtkDataMesh"))
+            if(d->view->dataInList(i) && d->view->dataInList(i)->identifier().contains("vtkDataMesh"))
             {
                 this->constructMeshLayer(d->view->dataInList(i), meshNumber);
                 meshNumber++;
@@ -637,7 +637,7 @@ void
         return;
 
     //JGG qDebug() << "1";
-    if(data->description().contains("vtkDataMesh"))
+    if(data->identifier().contains("vtkDataMesh"))
     {
         if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
             if (!d->interactors.contains (interactor))

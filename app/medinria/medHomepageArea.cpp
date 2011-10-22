@@ -77,7 +77,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->aboutWidget->hide();
 
     //User widget content with settings, about and help buttons
-    QHBoxLayout * userButtonsLayout = new QHBoxLayout;
+    QHBoxLayout * userButtonsLayout = new QHBoxLayout(d->userWidget);
     medHomepageButton * helpButton = new medHomepageButton ( this );
     helpButton->setText ( "Help" );
     helpButton->setMinimumHeight ( 30 );
@@ -111,16 +111,16 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     userButtonsLayout->insertWidget ( 0, settingsButton );
     userButtonsLayout->insertWidget ( 1, aboutButton );
     userButtonsLayout->insertWidget ( 2, helpButton );
-
-    d->userWidget->setLayout ( userButtonsLayout );
+    //no need to set the layout the userWidget is the parent of the layout already.
+//    d->userWidget->setLayout ( userButtonsLayout );
 
     // Info widget : medinria logo, medinria description, etc. QtWebkit ?
-    QVBoxLayout * infoLayout = new QVBoxLayout;
+    QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
     QLabel * medinriaLabel = new QLabel ( this );
     medinriaLabel->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ) );
-    QLabel * textLabel = new QLabel;
+//     QLabel * textLabel = new QLabel;
 
-    QTextEdit * textEdit = new QTextEdit;
+    QTextEdit * textEdit = new QTextEdit(this);
     textEdit->setHtml ( "<b>medINRIA</b> is a multi-platform medical image processing and visualization software,\
                       and it's <b>free</b>. Through an intuitive user interface, <b>medINRIA</b> offers from standard \
                       to cutting-edge processing functionalities for your medical images such as 2D/3D/4D image visualization, \
@@ -132,27 +132,28 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     infoLayout->insertWidget ( 1, textEdit );
     infoLayout->addStretch();
 
-    d->infoWidget->setLayout ( infoLayout );
+    //no need to set the layout, the infoWidget is the parent of the layout already.
+//    d->infoWidget->setLayout ( infoLayout );
     d->infoWidget->setMaximumHeight ( medinriaLabel->height() + textEdit->height() );
 
     //About widget
-    QVBoxLayout * aboutLayout = new QVBoxLayout;
-    d->aboutTabWidget = new QTabWidget();
+    QVBoxLayout * aboutLayout = new QVBoxLayout(d->aboutWidget);
+    d->aboutTabWidget = new QTabWidget(this);
 
     QLabel * medinriaLabel2 = new QLabel ( this );
     medinriaLabel2->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ) );
 
-    QTextEdit * aboutTextEdit = new QTextEdit;
+    QTextEdit * aboutTextEdit = new QTextEdit(this);
     aboutTextEdit->setHtml ( "<br/><br/>\
                               medINRIA is the medical imaging platform developed at INRIA<br/><br/>\
                               <center>INRIA, Copyright 2011</center><br/><br/><br/>" );
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
-    QTextBrowser * aboutAuthorTextBrowser = new QTextBrowser;
+    QTextBrowser * aboutAuthorTextBrowser = new QTextBrowser(this);
     aboutAuthorTextBrowser->setSource(QUrl("qrc:authors.html" ));
     aboutAuthorTextBrowser->setFocusPolicy ( Qt::NoFocus );
 
-    QTextEdit * aboutLicenseTextEdit = new QTextEdit;
+    QTextEdit * aboutLicenseTextEdit = new QTextEdit(this);
     QFile license ( ":LICENSE.txt" );
     license.open ( QIODevice::ReadOnly | QIODevice::Text );
     QString licenseContent = license.readAll();
@@ -160,7 +161,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutLicenseTextEdit->setText ( licenseContent );
     aboutLicenseTextEdit->setFocusPolicy ( Qt::NoFocus );
 
-    QHBoxLayout * aboutButtonLayout = new QHBoxLayout;
+    //no parent, this layout is added to an other layout.
+    QHBoxLayout * aboutButtonLayout = new QHBoxLayout();
     QPushButton * hideAboutButton = new QPushButton ( this );
     hideAboutButton->setText ( "Hide" );
     hideAboutButton->setFocusPolicy ( Qt::NoFocus );
@@ -178,7 +180,9 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutLayout->addWidget ( d->aboutTabWidget );
     aboutLayout->addLayout ( aboutButtonLayout );
     aboutLayout->addStretch();
-    d->aboutWidget->setLayout ( aboutLayout );
+
+    //no need to set the layout, the aboutWidget is the parent of the layout already.
+//    d->aboutWidget->setLayout ( aboutLayout );
 
     //Set the position of the widgets
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
@@ -302,7 +306,6 @@ void medHomepageArea::onShowBrowser ( void )
 
 void medHomepageArea::onShowConfiguration ( QString configuration )
 {
-//     emit showViewer();
     emit showConfiguration ( configuration );
 }
 
@@ -310,21 +313,23 @@ void medHomepageArea::onShowAbout ( void )
 {
     d->infoWidget->hide();
     d->aboutWidget->show();
+    d->aboutWidget->setFocus();
 }
 
 void medHomepageArea::onHideAbout()
 {
     d->aboutWidget->hide();
     d->infoWidget->show();
+    d->infoWidget->setFocus();
 }
 
 void medHomepageArea::onShowHelp ( void )
 {
-    QMessageBox * msgBox = new QMessageBox ( QApplication::activeWindow() );
-    msgBox->setIcon ( QMessageBox::Information );
-    msgBox->setText ( "Help ! Help !" );
-    msgBox->exec();
-    delete msgBox;
+//     QMessageBox * msgBox = new QMessageBox ( QApplication::activeWindow() );
+//     msgBox->setIcon ( QMessageBox::Information );
+//     msgBox->setText ( "Help ! Help !" );
+//     msgBox->exec();
+//     delete msgBox;
 }
 
 void medHomepageArea::onShowSettings ( void )

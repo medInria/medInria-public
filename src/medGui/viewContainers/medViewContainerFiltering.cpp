@@ -15,8 +15,8 @@ public:
     dtkAbstractData * inputData;
 };
 
-medViewContainerFiltering::medViewContainerFiltering(QWidget * parent):
-        medViewContainerCustom(parent), d3(new medViewContainerFilteringPrivate)
+medViewContainerFiltering::medViewContainerFiltering ( QWidget * parent ) :
+        medViewContainerCustom ( parent ), d3 ( new medViewContainerFilteringPrivate )
 {
     split(1, 2);
     setMultiLayer(false);
@@ -24,8 +24,8 @@ medViewContainerFiltering::medViewContainerFiltering(QWidget * parent):
     d3->outputViewContainer = this->childContainers()[1];
 
     //Set cues for the user:
-    d3->inputViewContainer->setInfo(tr("Input to be filtered"));
-    d3->outputViewContainer->setInfo(tr("Result of filtering"));
+    d3->inputViewContainer->setInfo ( tr ( "Input to be filtered" ) );
+    d3->outputViewContainer->setInfo ( tr ( "Result of filtering" ) );
 
     d3->outputViewContainer->setAcceptDrops(false);
 
@@ -41,16 +41,16 @@ medViewContainerFiltering::~medViewContainerFiltering()
     d3 = NULL;
 }
 
-void medViewContainerFiltering::updateInput (const medDataIndex& index)
+void medViewContainerFiltering::updateInput ( const medDataIndex& index )
 {
-    if (!index.isValid())
+    if ( !index.isValid() )
         return;
     emit droppedInput(index);
 }
 
-void medViewContainerFiltering::updateOutput(dtkAbstractData *data)
+void medViewContainerFiltering::updateOutput ( dtkAbstractData *data )
 {
-    if(!data)
+    if ( !data )
         return;
     medAbstractView* outputView = dynamic_cast<medAbstractView*>
             (d3->outputViewContainer->view());
@@ -64,4 +64,15 @@ void medViewContainerFiltering::updateOutput(dtkAbstractData *data)
     outputView->setData(data,0);
     outputView->reset();
     outputView->update();
+}
+
+void medViewContainerFiltering::dropEvent ( QDropEvent *event )
+{
+    //This drop should never read any image, we are not in a leaf,
+    //if we end up here, it is only because the output container doesn't accept
+    //drop events.
+    //we need to re-anable the updates in the widget, and accept the event to
+    // stop propagation.
+    this->setAttribute ( Qt::WA_UpdatesDisabled, false );
+    event->acceptProposedAction();
 }

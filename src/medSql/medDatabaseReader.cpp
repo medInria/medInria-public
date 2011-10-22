@@ -36,55 +36,91 @@ public:
     medDataIndex index;
 };
 
-medDatabaseReader::medDatabaseReader(const medDataIndex& index) : QObject(), d(new medDatabaseReaderPrivate)
+medDatabaseReader::medDatabaseReader ( const medDataIndex& index ) : QObject(), d ( new medDatabaseReaderPrivate )
 {
     d->index = index;
 }
 
-medDatabaseReader::~medDatabaseReader(void)
+medDatabaseReader::~medDatabaseReader ( void )
 {
     delete d;
 
     d = NULL;
 }
 
-dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
+dtkSmartPointer<dtkAbstractData> medDatabaseReader::run ( void )
 {
-    QVariant patientId = d->index.patientId();
-    QVariant   studyId = d->index.studyId();
-    QVariant  seriesId = d->index.seriesId();
-    QVariant   imageId = d->index.imageId();
+    QVariant patientDbId = d->index.patientId();
+    QVariant   studyDbId = d->index.studyId();
+    QVariant  seriesDbId = d->index.seriesId();
+    QVariant   imageDbId = d->index.imageId();
 
-    QSqlQuery query((*(medDatabaseController::instance()->database())));
+    QSqlQuery query ( ( * ( medDatabaseController::instance()->database() ) ) );
 
-    QString patientName;
-    QString studyName;
-    QString seriesName;
+    QString patientName, birthdate, age, gender, patientId;
+    QString studyName, studyUid, studyId;
+    QString seriesName, seriesUid, orientation, seriesNumber, sequenceName,
+            sliceThickness, rows, columns, refThumbPath, description, protocol,
+            comments, status, acquisitiondate, importationdate, referee,
+            institution, report, modality, seriesId;
 
-    query.prepare("SELECT name FROM patient WHERE id = :id");
-    query.bindValue(":id", patientId);
-    if(!query.exec())
+    query.prepare ( "SELECT name, birthdate, gender, patientId FROM patient WHERE id = :id" );
+    query.bindValue ( ":id", patientDbId );
+    if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    if (query.first())
-        patientName = query.value(0).toString();
+    if ( query.first() )
+    {
+        patientName = query.value ( 0 ).toString();
+        birthdate = query.value ( 1 ).toString();
+        gender = query.value ( 2 ).toString();
+        patientId = query.value ( 3 ).toString();
+    }
 
-    query.prepare("SELECT name FROM study WHERE id = :id");
-    query.bindValue(":id", studyId);
-    if(!query.exec())
+    query.prepare ( "SELECT name, uid, studyId FROM study WHERE id = :id" );
+    query.bindValue ( ":id", studyDbId );
+    if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    if (query.first())
-        studyName = query.value(0).toString();
+    if ( query.first() )
+    {
+        studyName = query.value ( 0 ).toString();
+        studyUid = query.value ( 1 ).toString();
+        studyId = query.value ( 2 ).toString();
+    }
 
-    query.prepare("SELECT name FROM series WHERE id = :id");
-    query.bindValue(":id", seriesId);
-    if(!query.exec())
+    query.prepare ( "SELECT name, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, \
+                     description, protocol, comments, status, acquisitiondate, importationdate, referee,       \
+                     institution, report, modality, seriesId \
+                     FROM series WHERE id = :id" );
+    
+    query.bindValue ( ":id", seriesDbId );
+    if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-    if (query.first())
-        seriesName = query.value(0).toString();
+    if ( query.first() )
+    {
+        seriesName = query.value ( 0 ).toString();
+        seriesUid = query.value ( 1 ).toString();
+        orientation = query.value ( 2 ).toString();
+        seriesNumber = query.value ( 3 ).toString();
+        sequenceName = query.value ( 4 ).toString();
+        sliceThickness = query.value ( 5 ).toString();
+        rows = query.value ( 6 ).toString();
+        columns = query.value ( 7 ).toString();
+        description = query.value ( 8 ).toString();
+        protocol = query.value ( 9 ).toString();
+        comments = query.value ( 10 ).toString();
+        status = query.value ( 11 ).toString();
+        acquisitiondate = query.value ( 12 ).toString();
+        importationdate = query.value ( 13 ).toString();
+        referee = query.value ( 14 ).toString();
+        institution = query.value ( 15 ).toString();
+        report = query.value ( 16 ).toString();
+        modality = query.value ( 17 ).toString();
+        seriesId = query.value ( 18 ).toString();
+    }
 
-    query.prepare("SELECT name, id, path, instance_path, isIndexed FROM image WHERE series = :series");
-    query.bindValue(":series", seriesId);
-    if(!query.exec())
+    query.prepare ( "SELECT name, id, path, instance_path, isIndexed FROM image WHERE series = :series" );
+    query.bindValue ( ":series", seriesDbId );
+    if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     // now we might have both indexed and imported images in the same series
@@ -93,21 +129,21 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
     // aggregated file (which is in instance_path)
 
     QStringList filenames;
-    while(query.next())
+    while ( query.next() )
     {
-        bool isIndexed = query.value(4).toBool();
+        bool isIndexed = query.value ( 4 ).toBool();
 
-        if (isIndexed)
+        if ( isIndexed )
         {
-            QString filename = query.value(2).toString();
+            QString filename = query.value ( 2 ).toString();
 
             // if the file is indexed the chanced that is not there anymore are higher
             // so we check for existence and return null if they are not there anymore
-            QFileInfo fileinfo(filename);
+            QFileInfo fileinfo ( filename );
 
-            if(!fileinfo.exists())
+            if ( !fileinfo.exists() )
             {
-                emit failure(this);
+                emit failure ( this );
                 return NULL;
             }
 
@@ -115,52 +151,73 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
         }
         else
         {
-            filenames << medStorage::dataLocation() + query.value(3).toString();
+            filenames << medStorage::dataLocation() + query.value ( 3 ).toString();
         }
     }
     // we remove all the duplicate entries, as imported files
     // might have introduced duplicates
     filenames.removeDuplicates();
 
-    dtkSmartPointer <dtkAbstractData> dtkdata =  this->readFile(filenames);
+    dtkSmartPointer <dtkAbstractData> dtkdata =  this->readFile ( filenames );
 
 
-    if ( (!dtkdata.isNull()) && dtkdata.data() ) {
+    if ( ( !dtkdata.isNull() ) && dtkdata.data() )
+    {
 
-       QSqlQuery seriesQuery(*(medDatabaseController::instance()->database()));
-       QVariant seriesThumbnail;
+        QSqlQuery seriesQuery ( * ( medDatabaseController::instance()->database() ) );
+        QVariant seriesThumbnail;
 
-        seriesQuery.prepare("SELECT thumbnail FROM series WHERE id = :seriesId");
-        seriesQuery.bindValue(":seriesId", seriesId);
-        if(!seriesQuery.exec())
+        seriesQuery.prepare ( "SELECT thumbnail FROM series WHERE id = :id" );
+        seriesQuery.bindValue ( ":id", seriesDbId );
+        if ( !seriesQuery.exec() )
             qDebug() << DTK_COLOR_FG_RED << seriesQuery.lastError() << DTK_NO_COLOR;
 
-        if(seriesQuery.first()) {
-            seriesThumbnail = seriesQuery.value(0);
+        if ( seriesQuery.first() )
+        {
+            seriesThumbnail = seriesQuery.value ( 0 );
 
             QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
-            medMetaDataKeys::SeriesThumbnail.add(dtkdata, thumbPath);
-
+            medMetaDataKeys::SeriesThumbnail.add ( dtkdata, thumbPath );
         }
-        else {
+        else
+        {
             qWarning() << "Thumbnailpath not found";
         }
 
+        medMetaDataKeys::PatientID.add ( dtkdata, patientId );
+        medMetaDataKeys::PatientName.add ( dtkdata, patientName );
+        medMetaDataKeys::BirthDate.add ( dtkdata, birthdate );
+        medMetaDataKeys::Gender.add ( dtkdata, gender );
+        medMetaDataKeys::StudyDescription.add ( dtkdata, studyName );
+        medMetaDataKeys::StudyID.add ( dtkdata, studyId );
+        medMetaDataKeys::StudyDicomID.add ( dtkdata, studyUid );
+        medMetaDataKeys::SeriesDescription.add ( dtkdata, seriesName );
+        medMetaDataKeys::SeriesID.add ( dtkdata, seriesId );
+        medMetaDataKeys::SeriesDicomID.add ( dtkdata, seriesUid );
+        medMetaDataKeys::Orientation.add ( dtkdata, orientation );
+        medMetaDataKeys::Columns.add ( dtkdata, columns );
+        medMetaDataKeys::Rows.add ( dtkdata, rows );
+        medMetaDataKeys::AcquisitionDate.add ( dtkdata, acquisitiondate );
+        medMetaDataKeys::Comments.add ( dtkdata, comments );
+        medMetaDataKeys::Description.add ( dtkdata, description );
+        medMetaDataKeys::ImportationDate.add ( dtkdata, importationdate );
+        medMetaDataKeys::Modality.add ( dtkdata, modality );
+        medMetaDataKeys::Protocol.add ( dtkdata, protocol );
+        medMetaDataKeys::Referee.add ( dtkdata, referee );
+        medMetaDataKeys::Institution.add ( dtkdata, institution );
+        medMetaDataKeys::Report.add ( dtkdata, report );
+        medMetaDataKeys::Status.add ( dtkdata, status );
+        medMetaDataKeys::SequenceName.add ( dtkdata, sequenceName );
+        medMetaDataKeys::SliceThickness.add ( dtkdata, sliceThickness );
+        medMetaDataKeys::SeriesNumber.add(dtkdata, seriesNumber);
 
-
-        medMetaDataKeys::PatientName.add(dtkdata, patientName);
-        medMetaDataKeys::StudyDescription.add(dtkdata, studyName);
-        medMetaDataKeys::SeriesDescription.add(dtkdata, seriesName);
-        medMetaDataKeys::PatientID.add(dtkdata, patientId.toString());
-        medMetaDataKeys::StudyID.add(dtkdata, studyId.toString());
-        medMetaDataKeys::SeriesID.add(dtkdata, seriesId.toString());
-        //medMetaDataKeys::ImageID.add(data, imageId.toString());
-
-        emit success(this);
-    } else {
-        emit failure(this);
+        emit success ( this );
     }
-    if (dtkdata.refCount() != 1)
+    else
+    {
+        emit failure ( this );
+    }
+    if ( dtkdata.refCount() != 1 )
         qWarning() << "(Run:Exit) RefCount should be 1 here: " << dtkdata.refCount();
     return dtkdata;
 
@@ -169,68 +226,74 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run(void)
 qint64 medDatabaseReader::getDataSize()
 {
     QString filename = getFilePath();
-    QFileInfo info(filename);
+    QFileInfo info ( filename );
     return info.size();
 }
 
 QString medDatabaseReader::getFilePath()
 {
-    QVariant patientId = d->index.patientId();
-    QVariant   studyId = d->index.studyId();
-    QVariant  seriesId = d->index.seriesId();
-    QVariant   imageId = d->index.imageId();
+    QVariant patientDbId = d->index.patientId();
+    QVariant   studyDbId = d->index.studyId();
+    QVariant  seriesDbId = d->index.seriesId();
+    QVariant   imageDbId = d->index.imageId();
 
-    QSqlQuery query((*(medDatabaseController::instance()->database())));
+    QSqlQuery query ( ( * ( medDatabaseController::instance()->database() ) ) );
 
     QString filename;
 
-    query.prepare("SELECT path, instance_path, isIndexed FROM image WHERE series = :series");
-    query.bindValue(":series", seriesId);
+    query.prepare ( "SELECT path, instance_path, isIndexed FROM image WHERE series = :series" );
+    query.bindValue ( ":series", seriesDbId );
 
-    if(!query.exec())
+    if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
     // indexed files have an empty string in 'instance_path' column
     // and imported files have the relative path of the (aggregated) file
 
-    while(query.next()) {
-        bool isIndexed = query.value(2).toBool();
+    while ( query.next() )
+    {
+        bool isIndexed = query.value ( 2 ).toBool();
 
-        if (isIndexed) {
-            filename = query.value(0).toString();
-        } else {
-            filename = medStorage::dataLocation() + query.value(2).toString();
+        if ( isIndexed )
+        {
+            filename = query.value ( 0 ).toString();
+        }
+        else
+        {
+            filename = medStorage::dataLocation() + query.value ( 2 ).toString();
         }
     }
 
     return filename;
 }
 
-dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile( QString filename )
+dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile ( QString filename )
 {
     QStringList filenames;
     filenames << filename;
-    return this->readFile(filenames);
+    return this->readFile ( filenames );
 }
 
 
-dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile(const QStringList filenames )
+dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile ( const QStringList filenames )
 {
     dtkSmartPointer<dtkAbstractData> dtkdata;
 
     QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
 
-    for (int i = 0; i < readers.size(); i++) {
+    for ( int i = 0; i < readers.size(); i++ )
+    {
 
         dtkSmartPointer<dtkAbstractDataReader> dataReader;
-        dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
+        dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer ( readers[i] );
 
-        connect(dataReader, SIGNAL(progressed(int)), this, SIGNAL(progressed(int)));
-        if (dataReader->canRead(filenames)) {
-            dataReader->read(filenames);
-            dataReader->enableDeferredDeletion(false);
+        connect ( dataReader, SIGNAL ( progressed ( int ) ), this, SIGNAL ( progressed ( int ) ) );
+        if ( dataReader->canRead ( filenames ) )
+        {
+            dataReader->read ( filenames );
+            dataReader->enableDeferredDeletion ( false );
             dtkdata = dataReader->data();
-            if (dtkdata.refCount() != 2)
+            if ( dtkdata.refCount() != 2 )
                 qWarning() << "(ReaderLoop) RefCount should be 2 here: " << dtkdata.refCount();
             break;
         }

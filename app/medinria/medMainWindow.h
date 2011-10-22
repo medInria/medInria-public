@@ -53,6 +53,7 @@ public slots:
     void onHideQuickAccess(void);
     void onConfigurationTriggered(QAction *action);
     void onQuit(void);
+    void onSaveModified(void);
     void onNoQuit(void);
     void onEditSettings(void);
 
@@ -91,6 +92,8 @@ public slots:
 
 protected:
     void closeEvent(QCloseEvent *event);
+
+    void mousePressEvent(QMouseEvent * event);
 
     /**
      * all initial registering should be done here
