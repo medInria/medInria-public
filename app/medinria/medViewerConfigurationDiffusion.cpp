@@ -8,6 +8,7 @@
 
 #include <medDataManager.h>
 
+#include "medViewerToolBoxViewProperties.h"
 #include "medToolBoxDiffusionTensorView.h"
 #include "medToolBoxDiffusion.h"
 #include "medToolBoxDiffusionFiberView.h"
@@ -19,7 +20,8 @@
 class medViewerConfigurationDiffusionPrivate
 {
 public:
-   
+
+    medViewerToolBoxViewProperties      *viewPropertiesToolBox;
     medToolBoxDiffusionFiberView        *fiberViewToolBox;
     medToolBoxDiffusionFiberBundling    *fiberBundlingToolBox;
     medToolBoxDiffusion                 *diffusionToolBox;
@@ -32,13 +34,12 @@ public:
 
 medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationDiffusionPrivate)
 {
-    
-    // -- Bundling  toolbox --
+    d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
 
+    // -- Bundling  toolbox --
     d->fiberBundlingToolBox = new medToolBoxDiffusionFiberBundling(parent);
 
     // -- Diffusion toolbox --
-
     d->diffusionToolBox = new medToolBoxDiffusion(parent);
 
     connect(d->diffusionToolBox, SIGNAL(addToolBox(medToolBox *)),
@@ -68,9 +69,10 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
     connect(d->diffusionToolBox, SIGNAL(success()),                  this, SLOT(onTBDiffusionSuccess()));
 
     
-    this->addToolBox( d->tensorViewToolBox );
-    this->addToolBox( d->fiberViewToolBox );
     this->addToolBox( d->diffusionToolBox );
+    this->addToolBox( d->viewPropertiesToolBox );
+    this->addToolBox( d->tensorViewToolBox );
+    this->addToolBox( d->fiberViewToolBox );    
     this->addToolBox( d->fiberBundlingToolBox );
 }
 
