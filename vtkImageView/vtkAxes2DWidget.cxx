@@ -41,17 +41,14 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkMath.h>
 #include <vtkRenderer.h>
 
-
-
 vtkCxxRevisionMacro(vtkAxes2DWidget, "$Revision: 1.9 $");
 vtkStandardNewMacro(vtkAxes2DWidget);
-
-
 
 //----------------------------------------------------------------------------------
 vtkAxes2DWidget::vtkAxes2DWidget()
 {
   this->ImageView = 0;
+  this->RenderWindow = 0;
 
   this->PlaneXmin = vtkPlane::New();
   this->PlaneXmax = vtkPlane::New();
@@ -116,9 +113,6 @@ vtkAxes2DWidget::vtkAxes2DWidget()
   
   this->Enabled = 0;
   this->Radius = 2;
-  
-
-  
 }
 
 //----------------------------------------------------------------------------------
@@ -131,14 +125,13 @@ vtkAxes2DWidget::~vtkAxes2DWidget()
   this->Source->Delete();
   this->Points->Delete();
   this->Mapper->Delete();
-  this->Actor->Delete();
+  this->Actor->Delete();  
   this->Renderer->Delete();
-  
   this->Command->Delete();
   this->ColorArray->Delete();
-  
+  if (this->RenderWindow)
+    this->RenderWindow->Delete();
 }
-
 
 //----------------------------------------------------------------------
 void vtkAxes2DWidget::SetImageView(vtkImageView2D* arg)
@@ -146,10 +139,8 @@ void vtkAxes2DWidget::SetImageView(vtkImageView2D* arg)
   if (this->ImageView && arg != this->ImageView)
   {
     this->ImageView->RemoveObserver (this->Command);
-    if (this->ImageView->GetRenderWindow())
-      this->ImageView->GetRenderWindow()->RemoveRenderer (this->Renderer);
   }
-  
+
   this->ImageView = arg;
   
   if (this->ImageView)
@@ -158,6 +149,16 @@ void vtkAxes2DWidget::SetImageView(vtkImageView2D* arg)
   }
 }
 
+//----------------------------------------------------------------------
+void vtkAxes2DWidget::SetRenderWindow(vtkRenderWindow *arg)
+{
+    if (this->RenderWindow && arg!=this->RenderWindow) {
+        this->RenderWindow->RemoveRenderer(this->Renderer);
+        this->Renderer->SetRenderWindow(NULL);
+    }
+
+    vtkSetObjectBodyMacro (RenderWindow, vtkRenderWindow, arg);
+}
 
 //----------------------------------------------------------------------
 void vtkAxes2DWidget::SetEnabled(int enabling)
@@ -166,13 +167,13 @@ void vtkAxes2DWidget::SetEnabled(int enabling)
   this->Enabled = enabling;
 
   if( !this->ImageView ||
-      (this->ImageView && !this->ImageView->GetRenderWindow()) )
+      (this->ImageView && !this->RenderWindow) )
   {
     vtkErrorMacro ( << "Please set Render Window before enabling the widget");
     return;
   }
 
-  if (this->ImageView->GetRenderWindow()->GetNeverRendered())
+  if (this->RenderWindow->GetNeverRendered())
     return;
   
   if (this->ImageView)
@@ -181,13 +182,14 @@ void vtkAxes2DWidget::SetEnabled(int enabling)
     { 
       if (!this->ImageView->HasObserver (vtkImageView2D::CurrentPointChangedEvent, this->Command))
       {  
-	this->ImageView->AddObserver (vtkImageView2D::CurrentPointChangedEvent, this->Command, 20.0);
-	this->ImageView->AddObserver (vtkImageView2D::OrientationChangedEvent, this->Command, 20.0);
+        this->ImageView->AddObserver (vtkImageView2D::CurrentPointChangedEvent, this->Command, 20.0);
+        this->ImageView->AddObserver (vtkImageView2D::OrientationChangedEvent, this->Command, 20.0);
       }
       
-      if (this->ImageView->GetRenderWindow()->GetNumberOfLayers() < 2)
-	this->ImageView->GetRenderWindow()->SetNumberOfLayers( 2 );
-      this->ImageView->GetRenderWindow()->AddRenderer (this->Renderer);
+      if (this->RenderWindow->GetNumberOfLayers() < 2)
+        this->RenderWindow->SetNumberOfLayers( 2 );
+
+      this->RenderWindow->AddRenderer (this->Renderer);
 
       this->Renderer->SetActiveCamera (this->ImageView->GetRenderer()->GetActiveCamera());
 
@@ -196,20 +198,15 @@ void vtkAxes2DWidget::SetEnabled(int enabling)
     else
     {
       this->ImageView->RemoveObserver (this->Command);
-      if( this->ImageView->GetRenderWindow() )
-	this->ImageView->GetRenderWindow()->RemoveRenderer (this->Renderer);
+      if( this->RenderWindow )
+        this->RenderWindow->RemoveRenderer (this->Renderer);
     }
-  }
-  
-    
+  }    
 }
-
-
 
 //----------------------------------------------------------------------
 void vtkAxes2DWidget::ComputePlanes(void)
 {
-
   if (!this->ImageView || !this->ImageView->GetRenderer() || !this->ImageView->GetImageActor())
     return;
 
@@ -280,7 +277,6 @@ void vtkAxes2DWidget::ComputePlanes(void)
   this->PlaneYmin->SetOrigin (d1[1] < d2[1] ? p1 : p2);
   this->PlaneYmax->SetOrigin (d1[1] < d2[1] ? p2 : p1);
 }
-
 
 //----------------------------------------------------------------------
 void vtkAxes2DWidget::ComputeLyingPoints(double* pos)
@@ -361,22 +357,18 @@ void vtkAxes2DWidget::ComputeLyingPoints(double* pos)
   this->Source->Modified();
 }
 
-
 //----------------------------------------------------------------------------------
 void vtkAxes2DWidget::PrintSelf(ostream& os, vtkIndent indent)
 {
   //Superclass typedef defined in vtkTypeMacro() found in vtkSetGet.h
   this->Superclass::PrintSelf(os,indent);
-
 }
-
 
 //----------------------------------------------------------------------------------
 void vtkAxes2DWidgetCommand::Execute(vtkObject *caller,
 				     unsigned long event,
 				     void *callData)
 {
-
   if (event == vtkImageView2D::CurrentPointChangedEvent)
   {
     
@@ -404,5 +396,4 @@ void vtkAxes2DWidgetCommand::Execute(vtkObject *caller,
     this->Widget->ComputePlanes();
     this->Widget->ComputeLyingPoints (pos);
   }
-  
 }

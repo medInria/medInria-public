@@ -31,6 +31,7 @@ class vtkPolyData;
 class vtkPlane;
 class vtkPoints;
 class vtkRenderer;
+class vtkRenderWindow;
 
 
 class VTK_IMAGEVIEW_EXPORT vtkAxes2DWidget : public vtkObject
@@ -61,6 +62,9 @@ public:
   void SetImageView (vtkImageView2D* arg);
   vtkGetObjectMacro (ImageView, vtkImageView2D);
 
+  void SetRenderWindow (vtkRenderWindow *arg);
+  vtkGetObjectMacro (RenderWindow, vtkRenderWindow);
+
   vtkGetObjectMacro (ColorArray, vtkUnsignedCharArray);
   void ComputeLyingPoints (double* pos);
   void ComputePlanes (void);
@@ -74,6 +78,7 @@ protected:
   ~vtkAxes2DWidget();
     
   vtkImageView2D* ImageView;
+  vtkRenderWindow *RenderWindow;
   vtkAxes2DWidgetCommand* Command;
   vtkPlane* PlaneXmin;
   vtkPlane* PlaneXmax;

@@ -229,6 +229,8 @@ vtkImageView2D::~vtkImageView2D()
 // Deletion of objects in the LayerInfoMap is handled by the SmartPointers.
   this->LayerInfoVec.clear();
 
+  this->Axes2DWidget->SetImageView(NULL);
+
   this->Axes2DWidget->Delete();
   this->RulerWidget->Delete();
   this->DistanceWidget->Delete();
@@ -1280,7 +1282,10 @@ void vtkImageView2D::InstallInteractor()
       }
     }
   }
-  
+
+  this->Axes2DWidget->SetImageView (this);
+  this->Axes2DWidget->SetRenderWindow(this->RenderWindow);
+
   if ( this->RulerWidget->GetInteractor() && this->ShowRulerWidget)
     this->RulerWidget->On();
   
@@ -1289,8 +1294,7 @@ void vtkImageView2D::InstallInteractor()
   
   if ( this->AngleWidget->GetInteractor() && this->ShowAngleWidget)
     this->AngleWidget->On();
-  
-  this->Axes2DWidget->SetImageView (this);
+
   if( this->ShowImageAxis && this->RenderWindow && this->Renderer)
     this->Axes2DWidget->On();
   
