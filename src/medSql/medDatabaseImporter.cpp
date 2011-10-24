@@ -43,6 +43,8 @@ public:
 
     // example of item in the list: ["patient", "study", "series"]
     QList<QStringList> partialAttemptsInfo;
+
+    QMap<int, QString> volumeIdToImageFile;
 };
 
 QMutex medDatabaseImporterPrivate::mutex;
@@ -117,6 +119,8 @@ void medDatabaseImporter::run ( void )
     QString currentSeriesUid = "-1";
     QString currentSeriesId = "";
     
+    d->volumeIdToImageFile.clear();
+
     foreach ( QString file, fileList )
     {
         if ( d->isCancelled ) // check if user cancelled the process
@@ -1053,7 +1057,18 @@ dtkSmartPointer<dtkAbstractData> medDatabaseImporter::tryReadImages ( const QStr
 
 // QString medDatabaseImporter::determineFutureImageFileName(const dtkAbstractData* dtkdata, int volumeNumber)
 QString medDatabaseImporter::determineFutureImageFileName ( const dtkAbstractData* dtkdata, int volumeNumber )
-{
+{    
+    // we cache the generated file name corresponding to volume number
+    // because:
+    // 1. it ensures that all data belonging to the same volume will have the
+    //    same file name
+    // 2. if data belonging to the same volume do not have the metaData SeriesId,
+    //    one unique Id will be generated in populateMissingData(), creating a new
+    //    file name in the rest of this code, leading to point 1.
+
+    if (!d->volumeIdToImageFile[volumeNumber].isEmpty())
+        return d->volumeIdToImageFile[volumeNumber];
+
     // we append the uniqueID at the end of the filename to have unique filenames for each volume
     QString s_volumeNumber;
     s_volumeNumber.setNum ( volumeNumber );
@@ -1063,6 +1078,8 @@ QString medDatabaseImporter::determineFutureImageFileName ( const dtkAbstractDat
 
     QString imageFileName = QDir::separator() + QString ( patientID )
                           + QDir::separator() + QString ( seriesID ) + s_volumeNumber;
+
+    d->volumeIdToImageFile[volumeNumber] = imageFileName;
 
     return imageFileName;
 }
