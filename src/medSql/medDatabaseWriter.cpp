@@ -86,12 +86,18 @@ void medDatabaseWriter::run ( void )
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
-
+    
+    if ( !d->data->hasMetaData ( medMetaDataKeys::StudyDicomID.key() ) )
+        d->data->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "0" );
+    
     QString generatedSeriesID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesID );
-
+    
+    if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesDicomID.key() ) )
+        d->data->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << generatedSeriesID );
+    
     if ( !d->data->hasMetaData ( medMetaDataKeys::Orientation.key() ) )
         d->data->addMetaData ( medMetaDataKeys::Orientation.key(), QStringList() << "" );
 
@@ -191,8 +197,8 @@ void medDatabaseWriter::run ( void )
     QString institution    = medMetaDataKeys::Institution.getFirstValue(d->data);
     QString report         = medMetaDataKeys::Report.getFirstValue(d->data);
 
-    foreach ( QString metadata, d->data->metaDataList() )
-      qDebug() << d->data->metaDataValues ( metadata );
+    //foreach ( QString metadata, d->data->metaDataList() )
+    //  qDebug() << d->data->metaDataValues ( metadata );
 
 
     medDatabaseControllerImpl * dbi = medDatabaseController::instance();
@@ -300,7 +306,10 @@ void medDatabaseWriter::run ( void )
         QString extension;
         if ( extensions.isEmpty() )
         {
-            extension = ".mha";
+            if (d->data->identifier().contains("Mesh"))
+                extension = ".vtk";
+            else
+                extension = ".mha";
         }
         else
         {
