@@ -171,22 +171,22 @@ void medDatabaseNonPersistentReader::run ( void )
             dtkdata->addMetaData ( medMetaDataKeys::Columns.key(), QStringList() << "" );
 
 
-        QString patientName = dtkdata->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
-        QString birthdate   = dtkdata->metaDataValues ( medMetaDataKeys::BirthDate.key() ) [0];
-        QString patientID   = dtkdata->metaDataValues ( medMetaDataKeys::PatientID.key() ) [0];
-        QString studyName   = dtkdata->metaDataValues ( medMetaDataKeys::StudyDescription.key() ) [0];
-        QString seriesName  = dtkdata->metaDataValues ( medMetaDataKeys::SeriesDescription.key() ) [0];
+        QString patientName = medMetaDataKeys::PatientName.getFirstValue(dtkdata);
+        QString birthdate   = medMetaDataKeys::BirthDate.getFirstValue(dtkdata);
+        QString patientID   = medMetaDataKeys::PatientID.getFirstValue(dtkdata);
+        QString studyName   = medMetaDataKeys::StudyDescription.getFirstValue(dtkdata);
+        QString seriesName  = medMetaDataKeys::SeriesDescription.getFirstValue(dtkdata);
 
-        QString studyId = dtkdata->metaDataValues ( medMetaDataKeys::StudyID.key() ) [0];
-        QString seriesId = dtkdata->metaDataValues ( medMetaDataKeys::SeriesID.key() ) [0];
-        QString studyUid = dtkdata->metaDataValues ( medMetaDataKeys::StudyDicomID.key() ) [0];
-        QString seriesUid = dtkdata->metaDataValues ( medMetaDataKeys::SeriesDicomID.key() ) [0];
-        QString orientation = dtkdata->metaDataValues ( medMetaDataKeys::Orientation.key() ) [0];
-        QString seriesNumber = dtkdata->metaDataValues ( medMetaDataKeys::SeriesNumber.key() ) [0];
-        QString sequenceName = dtkdata->metaDataValues ( medMetaDataKeys::SequenceName.key() ) [0];
-        QString sliceThickness = dtkdata->metaDataValues ( medMetaDataKeys::SliceThickness.key() ) [0];
-        QString rows = dtkdata->metaDataValues ( medMetaDataKeys::Rows.key() ) [0];
-        QString columns = dtkdata->metaDataValues ( medMetaDataKeys::Columns.key() ) [0];
+        QString studyId = medMetaDataKeys::StudyID.getFirstValue(dtkdata);
+        QString seriesId = medMetaDataKeys::SeriesID.getFirstValue(dtkdata);
+        QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(dtkdata);
+        QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(dtkdata);
+        QString orientation = medMetaDataKeys::Orientation.getFirstValue(dtkdata);
+        QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(dtkdata);
+        QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(dtkdata);
+        QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(dtkdata);
+        QString rows = medMetaDataKeys::Rows.getFirstValue(dtkdata);
+        QString columns = medMetaDataKeys::Columns.getFirstValue(dtkdata);
 
         // define a unique key string to identify which volume an image belongs to.
         // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
@@ -318,8 +318,8 @@ void medDatabaseNonPersistentReader::run ( void )
         QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
 
         int     patientDbId   = -1;
-        QString patientName = data->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
-        QString patientId = data->metaDataValues ( medMetaDataKeys::PatientID.key() ) [0];
+        QString patientName = medMetaDataKeys::PatientName.getFirstValue(data);
+        QString patientId = medMetaDataKeys::PatientID.getFirstValue(data);
 
         // check if patient is already in the persistent database
         medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient ( patientName );
@@ -342,8 +342,8 @@ void medDatabaseNonPersistentReader::run ( void )
             patientDbId = medDatabaseNonPersistentController::instance()->patientId ( true );
 
         int     studyDbId   = -1;
-        QString studyName = data->metaDataValues ( medMetaDataKeys::StudyDescription.key() ) [0];
-        QString studyId = data->metaDataValues ( medMetaDataKeys::StudyID.key() ) [0];
+        QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(data);
+        QString studyId = medMetaDataKeys::StudyID.getFirstValue(data);
 
         databaseIndex = medDatabaseController::instance()->indexForStudy ( patientName, studyName );
         if ( databaseIndex.isValid() )
@@ -366,8 +366,8 @@ void medDatabaseNonPersistentReader::run ( void )
 
         index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, studyDbId, medDatabaseNonPersistentController::instance()->seriesId ( true ), -1 );
 
-        QString seriesName = data->metaDataValues ( medMetaDataKeys::SeriesDescription.key() ) [0];
-        QString seriesId = data->metaDataValues ( medMetaDataKeys::SeriesID.key() ) [0];
+        QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
+        QString seriesId = medMetaDataKeys::SeriesID.getFirstValue(data);
 
         QFileInfo info ( d->file );
 
