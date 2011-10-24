@@ -290,25 +290,27 @@ void
         //decide whether to show the 2 layers slider
         raiseSlider(d->view->layerCount() == 2);
 
-//        qDebug() << "update 2";
+
         if(d->view->meshLayerCount()!=0)
             if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
             {
                 d->currentInteractor = d->interactors.indexOf(interactor);
             }
 
-//        qDebug() << "update 3";
-
+            
         for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
         {
+            
             if(d->view->dataInList(i) && d->view->dataInList(i)->identifier().contains("vtkDataMesh"))
             {
+              //  qDebug() << "d->view->dataInList("<<i<<")->identifier() : " << d->view->dataInList(i)->identifier();
                 this->constructMeshLayer(d->view->dataInList(i), meshNumber);
                 meshNumber++;
             }
-            else
+            else //if (d->view->dataInList(i))
             {
-//                qDebug() << "update 4" << imageNumber;
+              //  qDebug() << "d->view->dataInList("<<i<<")->identifier() : " << d->view->dataInList(i)->identifier();
+
                 this->constructImageLayer(d->view->dataInList(i), imageNumber);
                 imageNumber++;
             }
@@ -333,7 +335,7 @@ void
         d->view3dModeComboBox->blockSignals(true);
         d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("3DMode")));
         d->view3dModeComboBox->blockSignals(false);
-        //qDebug() << "update 5";
+
     }
 }
 
@@ -631,6 +633,7 @@ void medViewerToolBoxViewProperties::onDataAdded( int layer)
 void
     medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data, int layer)
 {
+   
     if(!data)
         return;
     if (!d->view)
@@ -651,10 +654,11 @@ void
             }
         this->constructMeshLayer(data, d->view->meshLayerCount());
         d->view->setMeshLayerCount(d->view->meshLayerCount()+1);
+      
     }
     else
     {
-        this->constructImageLayer(data, layer);
+        this->constructImageLayer(data, d->view->layerCount()-1);
     }
 
     //decide whether to show the 2 layers slider:
@@ -933,7 +937,25 @@ void medViewerToolBoxViewProperties::onContextTreeMenu( const QPoint point )
 
 void medViewerToolBoxViewProperties::onDeleteLayer()
 {
-    d->view->removeOverlay(d->currentLayer);
+
+    //calculate somehow the number of meshes before the image
+    int meshNumber = 0, imageNumber = 0;
+    for (int i = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
+        {
+            if(d->view->dataInList(i) && d->view->dataInList(i)->identifier().contains("vtkDataMesh"))
+            {
+                meshNumber++;
+            }
+            else if(d->view->dataInList(i))
+            {
+                imageNumber++;
+            }
+            if(imageNumber - 1 == d->currentLayer )
+                break;
+        }
+    d->view->removeOverlay(meshNumber + imageNumber - 1);
+    //d->view->removeOverlay(d->currentLayer);
+
     d->view->update();
 
     if (d->currentLayer != 0)
