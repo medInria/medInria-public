@@ -164,7 +164,7 @@ public:
 
     bool isInList(dtkAbstractData * data, int layer);
     void addDataInList(dtkAbstractData * data, int layer);
-
+    void addDataInList(dtkAbstractData * data);
     dtkAbstractData* dataInList(int layer);
     void setDataInList(dtkAbstractData * data, int layer);
 

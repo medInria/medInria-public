@@ -80,6 +80,36 @@ medToolBoxDiffusionFiberView::~medToolBoxDiffusionFiberView()
     d = NULL;
 }
 
-void medToolBoxDiffusionFiberView::update (dtkAbstractView *view)
+int medToolBoxDiffusionFiberView::fiberRadius()
+{
+    return d->radiusSlider->value();
+}
+
+int medToolBoxDiffusionFiberView::fiberColorMode()
+{
+    return d->colorCombo->currentIndex();
+}
+
+bool medToolBoxDiffusionFiberView::isGPUActivated()
+{
+    return d->displayCheckBox->isChecked();
+}
+
+bool medToolBoxDiffusionFiberView::isLineModeSelected()
+{
+    return d->displayRadioPolylines->isChecked();
+}
+
+bool medToolBoxDiffusionFiberView::isRibbonModeSelected()
+{
+    return d->displayRadioRibbons->isChecked();
+}
+
+bool medToolBoxDiffusionFiberView::isTubesModeSelected()
+{
+    return d->displayRadioTubes->isChecked();
+}
+
+void medToolBoxDiffusionFiberView::medToolBoxDiffusionFiberView::update (dtkAbstractView *view)
 {
 }

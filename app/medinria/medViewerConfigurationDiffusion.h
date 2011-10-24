@@ -6,6 +6,7 @@
 
 #include <medViewerConfiguration.h>
 #include <medToolBoxDiffusionTensorView.h>
+#include <medToolBoxDiffusionFiberView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 
@@ -63,8 +64,11 @@ public slots:
 private:
     medViewerConfigurationDiffusionPrivate *d;
 
-    /** Updates the controls in the tensor toolbox with the current values of the interactor. */
+    /** Updates the tensor interactor with the current values in the tensor toolbox. */
     void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionTensorView* tensorViewToolBox);
+
+    /** Updates the fiber interactor with the current values in the fiber toolbox. */
+    void updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionFiberView* fiberViewToolBox);
 };
 
 medViewerConfiguration *createMedViewerConfigurationDiffusion(QWidget*);
