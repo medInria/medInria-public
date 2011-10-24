@@ -1,5 +1,5 @@
-/* medDataIndex.h --- 
- * 
+/* medDataIndex.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Dec 21 09:29:10 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 23
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDDATAINDEX_H
@@ -27,15 +27,15 @@
 class medDataIndexPrivate;
 class QMimeData;
 
-/** class medDataIndex 
+/** class medDataIndex
  *  \brief  A small class to uniquely identify data stored in the medinria datasources.
  *  The class contains 5 integer values :
  *  dataSourceId : Identifies the data source (see @medDataManager)
  *  patientId, studyId, seriesId,imageId identify the data within the source.
- *  
+ *
  *  The integer value NOT_VALID is reserved to indicate unset or invalid data.
  *  */
-class MEDCORE_EXPORT medDataIndex 
+class MEDCORE_EXPORT medDataIndex
 {
 public:
     enum {NOT_VALID = -1 };
@@ -59,7 +59,7 @@ public:
     void setStudyId   (int id) { m_studyId = id; }
     void setSeriesId  (int id) { m_seriesId = id; }
     void setImageId   (int id) { m_imageId = id; }
-    
+
     int dataSourceId(void) const { return m_dataSourceId; }
     int patientId(void) const { return m_patientId; }
     int   studyId(void) const { return m_studyId; }
@@ -75,10 +75,10 @@ public:
 
     friend MEDCORE_EXPORT bool operator==(const medDataIndex& index1, const medDataIndex& index2);
     friend MEDCORE_EXPORT bool operator!=(const medDataIndex& index1, const medDataIndex& index2);
-	
-	/** The less than operator can be used with STL maps.
+
+    /** The less than operator can be used with STL maps.
      *  Ordering is by patientId, then studyId, then seriesId, then imageId.
-     */  
+     */
     friend MEDCORE_EXPORT bool operator<(const medDataIndex& index1, const medDataIndex& index2);
     friend MEDCORE_EXPORT QDebug operator<<(QDebug debug, const medDataIndex& index);
     friend MEDCORE_EXPORT QDebug operator<<(QDebug debug,       medDataIndex *index);

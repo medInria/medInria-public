@@ -1,5 +1,5 @@
-/* medDatabaseNavigatorScene.cpp --- 
- * 
+/* medDatabaseNavigatorScene.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:40:46 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 41
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabaseNavigatorController.h"
@@ -47,14 +47,15 @@ medDatabaseNavigatorScene::~medDatabaseNavigatorScene(void)
 
 void medDatabaseNavigatorScene::addGroup(medDatabaseNavigatorItemGroup *group)
 {
-    qreal group_width   = medDatabaseNavigatorController::instance()->groupWidth();
-    qreal group_height  = medDatabaseNavigatorController::instance()->groupHeight();
+//    qreal group_width   = medDatabaseNavigatorController::instance()->groupWidth();
+//    qreal group_height  = medDatabaseNavigatorController::instance()->groupHeight();
     qreal group_spacing = medDatabaseNavigatorController::instance()->groupSpacing();
 
     this->addItem(group);
 
     d->groups << group;
 
+//    qDebug()<<"position of new group:" << d->position;
     d->orientation == Qt::Horizontal
         ? group->setPos(d->position + QPointF(10,  0))
         : group->setPos(d->position + QPointF( 0, 10));
@@ -62,7 +63,7 @@ void medDatabaseNavigatorScene::addGroup(medDatabaseNavigatorItemGroup *group)
     d->orientation == Qt::Horizontal
         ? d->position = group->pos() + group->boundingRect().topRight() + QPointF(group_spacing, 0)
         : d->position = group->pos() + group->boundingRect().bottomLeft() + QPointF(0, group_spacing);
-
+//    qDebug()<<"group position: " << d->position;
     d->orientation == Qt::Horizontal
         ? this->setSceneRect(QRectF(0, 20, d->position.x(), 128))
         : this->setSceneRect(QRectF(20, 0, 128, d->position.y()));
@@ -87,11 +88,11 @@ void medDatabaseNavigatorScene::setOrientation (Qt::Orientation orientation)
 {
     if (d->orientation == orientation)
         return;
-  
+
     d->orientation = orientation;
     d->position = QPointF (0,0);
     this->setSceneRect(0, 0, 0, 0);
-    
+
     QList<medDatabaseNavigatorItemGroup *> groups = d->groups;
     d->groups.clear();
     foreach (medDatabaseNavigatorItemGroup *group, groups) {

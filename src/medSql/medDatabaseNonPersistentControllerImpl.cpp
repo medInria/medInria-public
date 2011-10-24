@@ -230,7 +230,24 @@ QList<medDataIndex> medDatabaseNonPersistentControllerImpl::availableItems() con
 
 bool medDatabaseNonPersistentControllerImpl::contains( const medDataIndex& index ) const
 {
-    return index.patientId() >= this->nonPersistentDataStartingIndex();
+    //does not work since we can share patient Id with the persistent one.
+    //return index.patientId() >= this->nonPersistentDataStartingIndex();
+    if (d->items.contains(index))
+        return true;
+    //we may not have a complete match, but we may contain it
+    if (index.isValid() && index.dataSourceId() == dataSourceId())
+    {
+        //index is valid and comes from this dataSource
+        typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
+        // Cannot find an exact match for the given index.
+        // Find first data that may match
+        // using ordered map, and scan while index matches.
+        MapType::const_iterator it = d->items.lowerBound( index );
+        if (it != d->items.end() && medDataIndex::isMatch(it.key() , index ) ) {
+            return true;
+        }
+    }
+    return false;
 }
 
 QImage medDatabaseNonPersistentControllerImpl::thumbnail( const medDataIndex &index ) const

@@ -147,9 +147,18 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     connect (d->toolboxPatient,          SIGNAL (patientIndexChanged(const medDataIndex&)),
         this, SLOT(switchToPatient(const medDataIndex&)));
-    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator,
-        SLOT (updateNavigator (const medDataIndex&)));
+
+    //Avoid double triggering between update and dataAdded/Removed.
+    //And dataRemoved is triggered too early: the data has not been actually removed yet.
+//    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator,
+//        SLOT (updateNavigator (const medDataIndex&)));
+//    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->navigator,
+//        SLOT (updateNavigator (const medDataIndex&)));
+
+    //connect the updated signals of the 2 controllers.
     connect (medDatabaseController::instance(), SIGNAL (updated (const medDataIndex&)), d->navigator,
+        SLOT (updateNavigator (const medDataIndex&)));
+    connect (medDatabaseNonPersistentController::instance(), SIGNAL (updated (const medDataIndex&)), d->navigator,
         SLOT (updateNavigator (const medDataIndex&)));
 
 /*
@@ -232,7 +241,7 @@ bool medViewerArea::open(const medDataIndex& index)
     if(!((medDataIndex)index).isValid())
         return false;
 
-    this->switchToPatient(index);
+
 
     if(((medDataIndex)index).isValidForSeries())
     {
@@ -301,6 +310,7 @@ bool medViewerArea::open(const medDataIndex& index)
             view->update();
 //            qDebug() <<  QApplication::focusWidget();
         }
+        this->switchToPatient(index);
         return true;
     }
 
@@ -434,23 +444,30 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
 
     if (d->navigator) {
         d->navigator->onItemClicked(d->current_patient);
-        QRect endGeometry = d->navigator->geometry();
-        QRect startGeometry = endGeometry;
-        if (d->navigator->orientation()==Qt::Vertical)
-            startGeometry.setY (endGeometry.y()+1000);
-        else
-            startGeometry.setX (endGeometry.x()+1000);
+        // We can't use the animation here:
+        // if a volume is opened from the browser
+        // and the viewerArea has never been shown, the navigator goes outside
+        // of the screen.
+//        QRect endGeometry = d->navigator->geometry();
+//        QRect startGeometry = endGeometry;
 
-        d->navigator_animation->setStartValue(startGeometry);
-        d->navigator_animation->setEndValue(endGeometry);
-        d->navigator_animation->start();
+//        if (d->navigator->orientation()==Qt::Vertical)
+//            startGeometry.setY (endGeometry.y()+1000);
+//        else
+//            startGeometry.setX (endGeometry.x()+1000);
+//        qDebug()<<"startGeometry:" << startGeometry;
+//        qDebug()<<"endGeometry"<< endGeometry;
+//        d->navigator_animation->setStartValue(startGeometry);
+//        d->navigator_animation->setEndValue(endGeometry);
+//        d->navigator_animation->start();
     }
 
     // Setup patient toolbox
     d->toolboxPatient->blockSignals (true);
-    d->toolboxPatient->setPatientIndex (id);
+    d->toolboxPatient->setPatientIndex (
+                medDataIndex::makePatientIndex(id.dataSourceId(),
+                                               id.patientId()));
     d->toolboxPatient->blockSignals (false);
-
 }
 
 void medViewerArea::switchToStackedViewContainers(medTabbedViewContainers* stack)

@@ -122,7 +122,7 @@ void medDatabaseNonPersistentReader::run ( void )
 
         if ( !dtkdata )
             continue;
-        
+
         if ( !dtkdata->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
             dtkdata->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << fileInfo.baseName() );
 
@@ -130,7 +130,7 @@ void medDatabaseNonPersistentReader::run ( void )
             dtkdata->addMetaData ( medMetaDataKeys::BirthDate.key(), "" );
 
         QString generatedPatientID = QUuid::createUuid().toString().replace("{","").replace("}","");
-        
+
         if ( !dtkdata->hasMetaData ( medMetaDataKeys::PatientID.key() ) )
             dtkdata->addMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << generatedPatientID );
 
@@ -147,7 +147,7 @@ void medDatabaseNonPersistentReader::run ( void )
             dtkdata->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "0" );
 
         QString generatedSeriesID = QUuid::createUuid().toString().replace("{","").replace("}","");
-        
+
         if ( !dtkdata->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
             dtkdata->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesID );
 
@@ -307,17 +307,19 @@ void medDatabaseNonPersistentReader::run ( void )
 
         itPat++;
         itSer++;
-        
+
     }
 
     medDataIndex index;
+    QPointer<medDatabaseNonPersistentControllerImpl> npdc =
+            medDatabaseNonPersistentController::instance();
 
     for ( int i=0; i<dtkDataList.count(); i++ )
     {
 
         dtkAbstractData *data = dtkDataList[i];
 
-        QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
+        QList<medDatabaseNonPersistentItem*> items = npdc->items();
 
         int     patientDbId   = -1;
         QString patientName = medMetaDataKeys::PatientName.getFirstValue(data);
@@ -341,7 +343,7 @@ void medDatabaseNonPersistentReader::run ( void )
         }
 
         if ( patientDbId==-1 )
-            patientDbId = medDatabaseNonPersistentController::instance()->patientId ( true );
+            patientDbId = npdc->patientId ( true );
 
         int     studyDbId   = -1;
         QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(data);
@@ -364,9 +366,9 @@ void medDatabaseNonPersistentReader::run ( void )
         }
 
         if ( studyDbId==-1 )
-            studyDbId = medDatabaseNonPersistentController::instance()->studyId ( true );
+            studyDbId = npdc->studyId ( true );
 
-        index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, studyDbId, medDatabaseNonPersistentController::instance()->seriesId ( true ), -1 );
+        index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, npdc->seriesId ( true ), -1 );
 
         QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
         QString seriesId = medMetaDataKeys::SeriesID.getFirstValue(data);
@@ -389,7 +391,7 @@ void medDatabaseNonPersistentReader::run ( void )
         item->d->index = index;
         item->d->data = data;
 
-        medDatabaseNonPersistentController::instance()->insert ( index, item );
+        npdc->insert ( index, item );
     }
 
     d->index = index;
