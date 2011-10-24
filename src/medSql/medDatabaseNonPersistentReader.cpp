@@ -40,6 +40,7 @@ public:
     QString file;
     bool isCancelled;
     const QString callerUuid;
+    medDataIndex index;
 };
 
 
@@ -104,12 +105,13 @@ void medDatabaseNonPersistentReader::run ( void )
 
         QFileInfo fileInfo ( file );
 
-        dtkSmartPointer<dtkAbstractData> dtkdata;
+        dtkSmartPointer<dtkAbstractData> dtkdata;        
 
         for ( int i=0; i<readers.size(); i++ )
-        {
+        {            
             dtkSmartPointer<dtkAbstractDataReader> dataReader;
             dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer ( readers[i] );
+
             if ( dataReader->canRead ( fileInfo.filePath() ) )
             {
                 dataReader->readInformation ( fileInfo.filePath() );
@@ -390,10 +392,17 @@ void medDatabaseNonPersistentReader::run ( void )
         medDatabaseNonPersistentController::instance()->insert ( index, item );
     }
 
+    d->index = index;
+
     emit progress ( this, 100 );
     emit success ( this );
 //    qDebug() << "uuid value before signal"<< d->callerUuid;
     emit nonPersistentRead ( index,d->callerUuid );
+}
+
+medDataIndex medDatabaseNonPersistentReader::index() const
+{
+    return d->index;
 }
 
 void medDatabaseNonPersistentReader::onCancel ( QObject* )
