@@ -1,3 +1,3 @@
 add_subdirectory(medSqlTests)
 
-add_test(medSqlTests_medDatabaseImporterTest ${CMAKE_BINARY_DIR}/bin/medSqlTests_medDatabaseImporterTest)
+# add_test(medSqlTests_medDatabaseImporterTest ${CMAKE_BINARY_DIR}/bin/medSqlTests_medDatabaseImporterTest)

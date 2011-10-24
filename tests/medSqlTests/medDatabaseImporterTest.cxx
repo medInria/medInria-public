@@ -168,6 +168,16 @@ void medDatabaseImporterTest::import_data()
     volumes["T1 TSE COR RT."] = 12;
     fileOrDirToImport = QDir::separator() + QString("OSIRIX") + QDir::separator()+ QString("WRIX");
     QTest::newRow("WRIX") << fileOrDirToImport << "WRIX" << "WRIST^RIGHT" << volumes << &getOriginalFileName;
+
+    // test dicoms with 4D volume (diffusion MRI)
+    volumes.clear();
+    volumes["e.t2/2mm/C"] = 35;
+    volumes["e.t2/2mm/S"] = 17;
+    volumes["e.t2/2mm/A"] = 35;
+    volumes["DTI_TENSOR"] = 60;
+    volumes["T1/3D/6.5ML GADOVIST"] = 85;
+    fileOrDirToImport = QDir::separator() + QString("dicom3");
+    QTest::newRow("dicom3") << fileOrDirToImport << "001" << "MR Gehirnschädel" << volumes;
 }
 
 void medDatabaseImporterTest::import()
