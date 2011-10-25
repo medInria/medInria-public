@@ -13,6 +13,8 @@
 #include <medCore/medStorage.h>
 #include <medCore/medDataIndex.h>
 
+#undef QT_GUI_LIB
+
 // we need these lines to be able to use the types
 // for injecting data in the tests
 
@@ -385,5 +387,5 @@ void medDatabaseImporterTest::partialImportOrIndex()
     QVERIFY2(1 == spy.count(), "No error signal emitted.");
 }
 
-QTEST_MAIN(medDatabaseImporterTest)
+QTEST_APPLESS_MAIN(medDatabaseImporterTest)
 #include "moc_medDatabaseImporterTest.cxx"

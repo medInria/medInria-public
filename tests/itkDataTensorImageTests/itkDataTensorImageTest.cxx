@@ -179,7 +179,8 @@ int itkDataTensorImageTest::checkTensorPositivity(itk::Image<itk::Tensor<ScalarT
 
     return 0;
 }
-
-QTEST_MAIN(itkDataTensorImageTest)
+//we don't need graphical ties, no X needed
+QTEST_APPLESS_MAIN(itkDataTensorImageTest)
+//QTEST_MAIN(itkDataTensorImageTest)
 #include "moc_itkDataTensorImageTest.cxx"
 

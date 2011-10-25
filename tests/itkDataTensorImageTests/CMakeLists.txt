@@ -25,7 +25,7 @@ else()
 
    SET(MEDINRIA_PLUGINS_PATH "${medinria-plugins_DIR}/plugins")
 
-    # configure file with defines for MEDINRIA_TEST_DATA_ROOT 
+    # configure file with defines for MEDINRIA_TEST_DATA_ROOT
     CONFIGURE_FILE( itkDataTensorImageTestConfig.h.in itkDataTensorImageTestConfig.h )
 
     ## #################################################################
@@ -54,7 +54,6 @@ else()
     TARGET_LINK_LIBRARIES(${PROJECT_NAME}_itkDataTensorImageTest
         ${QT_QTCORE_LIBRARY}
         ${QT_QTTEST_LIBRARY}
-        ${QT_QTGUI_LIBRARY} 
         ${QT_QTLOCATION_LIBRARY}
         ${QT_LIBRARIES}
         medSql

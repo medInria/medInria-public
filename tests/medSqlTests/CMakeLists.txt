@@ -16,7 +16,7 @@ else()
     SET(MEDINRIA_PLUGINS_PATH ${CMAKE_BINARY_DIR}/plugins)
     SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 
-    # configure file with defines for MEDINRIA_TEST_DATA_ROOT 
+    # configure file with defines for MEDINRIA_TEST_DATA_ROOT
     CONFIGURE_FILE( medSqlTest.config.h.cmake.in medSqlTest.config.h )
 
     find_package(medinria REQUIRED)
@@ -48,7 +48,6 @@ else()
     TARGET_LINK_LIBRARIES(${PROJECT_NAME}_medDatabaseImporterTest
         ${QT_QTCORE_LIBRARY}
         ${QT_QTTEST_LIBRARY}
-        ${QT_QTGUI_LIBRARY} 
         ${QT_QTLOCATION_LIBRARY}
         ${QT_LIBRARIES}
         medSql
