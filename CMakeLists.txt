@@ -40,7 +40,7 @@ ENDIF(WIN32)
 SET(vtkINRIA3D_VERSION_MAJOR 1)
 SET(vtkINRIA3D_VERSION_MINOR 0)
 SET(vtkINRIA3D_VERSION_BUILD 0)
-SET(vtkINRIA3D_VERSION 
+SET(vtkINRIA3D_VERSION
   "${vtkINRIA3D_VERSION_MAJOR}.${vtkINRIA3D_VERSION_MINOR}.${vtkINRIA3D_VERSION_BUILD}")
 
 
@@ -116,6 +116,11 @@ IF("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" EQUAL "5.0")
   ENDIF(VTK_INSTALL_PREFIX)
 ENDIF("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" EQUAL "5.0")
 
+# with vtk > 5.7 (true for 5.8.0) VTK does not include all you need when having TCL bindings
+# does not compile on ubuntu in that case (fedora is fine...)
+if(VTK_TCL_INCLUDE_DIR)
+    include_directories("${VTK_TCL_INCLUDE_DIR}" "${VTK_TK_INCLUDE_DIR}")
+endif(VTK_TCL_INCLUDE_DIR)
 
 # -----------------------------------------------------------------------------
 # SHARED LIBRARY
@@ -137,7 +142,7 @@ ENDIF( VTK_BUILD_SHARED_LIBS )
 OPTION(vtkINRIA3D_USE_ITK "If ON, Compile ITK extensions, like itkAddOn" OFF)
 IF(vtkINRIA3D_USE_ITK)
   FIND_PACKAGE(ITK REQUIRED)
-  INCLUDE(${ITK_USE_FILE})		
+  INCLUDE(${ITK_USE_FILE})
 
   IF( ITK_BUILD_SHARED )
     SET( ITK_LIBS_STYLE "SHARED" )
@@ -153,13 +158,13 @@ ENDIF(vtkINRIA3D_USE_ITK)
 # -----------------------------------------------------------------------------
 OPTION(vtkINRIA3D_USE_WXWINDOWS "If ON, Build the wxVtk extension and the wxSamples (requires ITK too)" OFF)
 IF(vtkINRIA3D_USE_WXWINDOWS)
-      
+
   IF(WIN32)
     SET(wxWidgets_USE_LIBS adv aui xrc xml html core base)
   ELSE(WIN32)
     SET(wxWidgets_USE_LIBS adv aui xrc xml html gl core base)
   ENDIF(WIN32)
-   
+
   FIND_PACKAGE(wxWidgets2 REQUIRED) # use the version provided by vtkINRIA3D -> to find the aui
                                     # library (advanced user interface)
   INCLUDE(${wxWidgets_USE_FILE})
@@ -173,15 +178,15 @@ IF(vtkINRIA3D_USE_WXWINDOWS)
   ENDIF( WIN32 )
 
   IF( wxWidgets_SHARED )
-    SET( wxWidgets_BUILD_SHARED_LIBS "ON" )      
-    SET( wxWidgets_LIBS_STYLE "SHARED")	  
+    SET( wxWidgets_BUILD_SHARED_LIBS "ON" )
+    SET( wxWidgets_LIBS_STYLE "SHARED")
   ELSE ( wxWidgets_SHARED )
-    SET( wxWidgets_BUILD_SHARED_LIBS "OFF")      
-    SET( wxWidgets_LIBS_STYLE "STATIC")      
+    SET( wxWidgets_BUILD_SHARED_LIBS "OFF")
+    SET( wxWidgets_LIBS_STYLE "STATIC")
   ENDIF( wxWidgets_SHARED )
 
   IF(UNIX AND NOT APPLE) # our UNIX version depends on GTK-2, so find GTK-2 as well
-    FIND_PACKAGE(GTK-2 REQUIRED)     
+    FIND_PACKAGE(GTK-2 REQUIRED)
     LINK_DIRECTORIES(
     ${GTK_LINK_DIRS}
     )
@@ -409,7 +414,7 @@ IF (DOXYGEN)
     ${DOXYGEN}
     ${MY_DOXYGEN_BUILD_DIR}/doxygen.config
   )
-ENDIF(DOXYGEN) 
+ENDIF(DOXYGEN)
 
 
 
