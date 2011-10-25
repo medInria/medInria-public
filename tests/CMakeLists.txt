@@ -1,3 +1,4 @@
 add_subdirectory(medSqlTests)
+add_subdirectory(itkDataTensorImageTests)
 
 # add_test(medSqlTests_medDatabaseImporterTest ${CMAKE_BINARY_DIR}/bin/medSqlTests_medDatabaseImporterTest)
