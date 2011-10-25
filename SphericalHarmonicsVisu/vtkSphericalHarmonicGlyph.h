@@ -67,9 +67,9 @@ public:
     // Turn on/off coloring of glyph with input scalar data or directions. If false, or input scalar data not present, then the
     // scalars from the source object are passed through the filter.
 
-    vtkSetMacro(ColorGlyphs,int);
-    vtkGetMacro(ColorGlyphs,int);
-    vtkBooleanMacro(ColorGlyphs,int);
+    vtkSetMacro(ColorGlyphs,bool);
+    vtkGetMacro(ColorGlyphs,bool);
+    vtkBooleanMacro(ColorGlyphs,bool);
 
     vtkSetObjectMacro(TMatrix,vtkMatrix4x4);
     vtkGetObjectMacro(TMatrix,vtkMatrix4x4);
@@ -99,7 +99,7 @@ protected:
 
     // Boolean controls coloring with input scalar data
 
-    int ColorGlyphs;
+    bool ColorGlyphs;
 
     // The coloring mode to use for the glyphs.
 

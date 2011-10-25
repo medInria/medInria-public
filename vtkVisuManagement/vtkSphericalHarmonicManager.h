@@ -67,8 +67,9 @@ public:
     /** Flip Spherical Harmonic's along the Z axis */
     void FlipZ (bool a);
 
-    /** Select in between different Spherical Harmonics basis default or Maxime Descoteaux thesis*/
-    void MaxThesisFunc (bool a);
+    /** Turn on/off coloring of glyph with input scalar data or directions. If false, or input scalar data not present, then the
+    scalars from the source object are passed through the filter.*/
+    void ColorGlyphs (bool a);
 
     /** get the image size it is used to set med gui slider appropiate size*/
     void GetSphericalHarmonicDimensions (int * dims);
@@ -76,34 +77,27 @@ public:
     /** Set a user-defined LUT. */
     //void SetLookupTable (vtkLookupTable* lut);
 
-
     /** Generate the glyph and add them to the RenderWindowInteractor */
     void Update (void);
-
 
     /** Remove the actors from the renderer. */
     void Initialize (void);
 
-
     /** Set the current position in voxel coordinates. */
     void SetCurrentPosition (const int&, const int&, const int&);
-
 
     /** Set the current position in voxel coordinates. */
     void SetCurrentPosition (int pos[3]);
 
-
     /** Get the current position. */
     const int* GetCurrentPosition (void) const
     { return this->CurrentPosition; }
-
 
     /** Get the current position. */
     void GetCurrentPosition (int pos[3]) const
     { for( int i=0; i<3; i++)
             pos[i] = this->CurrentPosition[i];
     }
-
 
     /** Reset the position to the center of the dataset. */
     void ResetPosition (void);
@@ -117,11 +111,9 @@ public:
     /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
     void SetCoronalSliceVisibility (int);
 
-
 protected:
     vtkSphericalHarmonicManager();
     ~vtkSphericalHarmonicManager();
-
 
 private:
 

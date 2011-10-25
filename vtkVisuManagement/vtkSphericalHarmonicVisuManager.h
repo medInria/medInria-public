@@ -50,7 +50,7 @@ public:
     void FlipX (const int&);
     void FlipY (const int&);
     void FlipZ (const int&);
-    void MaxThesisFunc (const int&);
+    void ColorGlyphs (const int&);
 
     /** Set the Volume Of Interest (VOI). Consists in
       6 integers: xmin, xmax, ymin, ymax, zmin, zmax.*/

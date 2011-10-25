@@ -13,7 +13,6 @@
 vtkCxxRevisionMacro(vtkSphericalHarmonicVisuManager, "$Revision: 0 $");
 vtkStandardNewMacro(vtkSphericalHarmonicVisuManager);
 
-
 vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager()
 {
 
@@ -24,13 +23,11 @@ vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager()
     this->Mapper = vtkPolyDataMapper::New();
     this->Actor  = vtkActor::New();
 
-
     this->SHSource->SetTesselationType( vtkSphericalHarmonicSource::Icosahedron );
     this->SHSource->SetTesselationBasis( vtkSphericalHarmonicSource::SHMatrix );
 
     this->SHSource->SetTesselation( 3 );
     this->SHSource->UpdateSphericalHarmonicSource();
-
 
     this->SHGlyph->SetSource ( this->SHSource->GetOutput() );
     this->SHGlyph->SetScaleFactor( 1.0 );
@@ -69,7 +66,6 @@ vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager()
     this->Actor->GetProperty()->SetOpacity(1);
 }
 
-
 vtkSphericalHarmonicVisuManager::~vtkSphericalHarmonicVisuManager()
 {
     this->SHGlyph->Delete();
@@ -78,10 +74,7 @@ vtkSphericalHarmonicVisuManager::~vtkSphericalHarmonicVisuManager()
     this->VOI->Delete();
     this->Mapper->Delete();
     this->Actor->Delete();
-
 }
-
-
 
 void vtkSphericalHarmonicVisuManager::SetInput (vtkStructuredPoints* vtkSH)
 {
@@ -96,8 +89,6 @@ void vtkSphericalHarmonicVisuManager::SetInput (vtkStructuredPoints* vtkSH)
     this->SHSource->SetNumberOfSphericalHarmonics ( number );
 
     this->VOI->SetInput ( vtkSH );
-
-
 }
 
 
@@ -107,7 +98,6 @@ void vtkSphericalHarmonicVisuManager::SetVOI(const int& imin, const int& imax,
 {
     this->VOI->SetVOI(imin,imax,jmin,jmax,kmin,kmax);
 }
-
 
 void vtkSphericalHarmonicVisuManager::SetGlyphScale (const float& scale)
 {
@@ -143,7 +133,6 @@ void vtkSphericalHarmonicVisuManager::SetSampleRate (const int& n1,const int& n2
     this->VOI->SetSampleRate(n1, n2, n3);
 }
 
-
 void vtkSphericalHarmonicVisuManager::FlipX (const int& a)
 {
     if (a)
@@ -152,7 +141,6 @@ void vtkSphericalHarmonicVisuManager::FlipX (const int& a)
         this->SHSource->FlipXOff();
     this->SHSource->UpdateSphericalHarmonicSource();
 }
-
 
 void vtkSphericalHarmonicVisuManager::FlipY (const int& a)
 {
@@ -163,7 +151,6 @@ void vtkSphericalHarmonicVisuManager::FlipY (const int& a)
     this->SHSource->UpdateSphericalHarmonicSource();
 }
 
-
 void vtkSphericalHarmonicVisuManager::FlipZ (const int& a)
 {
     if( a )
@@ -173,11 +160,11 @@ void vtkSphericalHarmonicVisuManager::FlipZ (const int& a)
     this->SHSource->UpdateSphericalHarmonicSource();
 }
 
-void vtkSphericalHarmonicVisuManager::MaxThesisFunc (const int& a)
+void vtkSphericalHarmonicVisuManager::ColorGlyphs (const int& a)
 {
     if( a )
-        this->SHSource->MaxThesisFuncOn();
+        this->SHGlyph->SetColorGlyphs(true);
     else
-        this->SHSource->MaxThesisFuncOff();
+        this->SHGlyph->SetColorGlyphs(false);
     this->SHSource->UpdateSphericalHarmonicSource();
 }

@@ -136,10 +136,6 @@ void vtkSphericalHarmonicManager::Initialize()
 
 }
 
-
-
-
-
 void vtkSphericalHarmonicManager::Update()
 {
 
@@ -237,14 +233,10 @@ void vtkSphericalHarmonicManager::SetCurrentPosition (const int& X, const int& Y
 
 }
 
-
-
 void vtkSphericalHarmonicManager::SetCurrentPosition (int pos[3])
 {
     this->SetCurrentPosition (pos[0], pos[1], pos[2]);
 }
-
-
 
 void vtkSphericalHarmonicManager::ResetPosition()
 {
@@ -262,15 +254,12 @@ void vtkSphericalHarmonicManager::ResetPosition()
     this->SetCurrentPosition (X,Y,Z);
 }
 
-
-
 void vtkSphericalHarmonicManager::SetSampleRate (const int& n1,const int& n2, const int& n3)
 {
     this->SHVisuManagerAxial   ->SetSampleRate (n1, n2, n3);
     this->SHVisuManagerSagittal->SetSampleRate (n1, n2, n3);
     this->SHVisuManagerCoronal ->SetSampleRate (n1, n2, n3);
 }
-
 
 void vtkSphericalHarmonicManager::SetGlyphResolution (int res)
 {
@@ -317,14 +306,12 @@ void vtkSphericalHarmonicManager::FlipX (bool a)
     this->SHVisuManagerCoronal ->FlipX (a);
 }
 
-
 void vtkSphericalHarmonicManager::FlipY (bool a)
 {
     this->SHVisuManagerAxial   ->FlipY (a);
     this->SHVisuManagerSagittal->FlipY (a);
     this->SHVisuManagerCoronal ->FlipY (a);
 }
-
 
 void vtkSphericalHarmonicManager::FlipZ (bool a)
 {
@@ -333,11 +320,11 @@ void vtkSphericalHarmonicManager::FlipZ (bool a)
     this->SHVisuManagerCoronal ->FlipZ (a);
 }
 
-void vtkSphericalHarmonicManager::MaxThesisFunc (bool a)
+void vtkSphericalHarmonicManager::ColorGlyphs (bool a)
 {
-    this->SHVisuManagerAxial   ->MaxThesisFunc (a);
-    this->SHVisuManagerSagittal->MaxThesisFunc (a);
-    this->SHVisuManagerCoronal ->MaxThesisFunc (a);
+    this->SHVisuManagerAxial   ->ColorGlyphs (a);
+    this->SHVisuManagerSagittal->ColorGlyphs (a);
+    this->SHVisuManagerCoronal ->ColorGlyphs (a);
 }
 
 /*
@@ -361,18 +348,15 @@ void vtkSphericalHarmonicManager::SetAxialSliceVisibility (int i)
     this->SHVisuManagerAxial->GetActor ()->SetVisibility (i);
 }
 
-
 void vtkSphericalHarmonicManager::SetSagittalSliceVisibility (int i)
 {
     this->SHVisuManagerSagittal->GetActor ()->SetVisibility (i);
 }
 
-
 void vtkSphericalHarmonicManager::SetCoronalSliceVisibility (int i)
 {
     this->SHVisuManagerCoronal->GetActor ()->SetVisibility (i);
 }
-
 
 void vtkSphericalHarmonicManager::SetGlyphScale (const float& scale)
 {
