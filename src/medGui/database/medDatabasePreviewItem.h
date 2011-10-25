@@ -20,6 +20,7 @@
 #ifndef MEDDATABASEPREVIEWITEM_H
 #define MEDDATABASEPREVIEWITEM_H
 
+#include <QtGui>
 #include <QtGui/QGraphicsPixmapItem>
 
 class medDataIndex;
@@ -45,6 +46,9 @@ signals:
 
 protected slots:
     void setImage(const QImage& image);
+
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void  mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     medDatabasePreviewItemPrivate *d;

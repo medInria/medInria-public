@@ -79,3 +79,24 @@ void medDatabasePreviewItem::setImage(const QImage& image)
 {
     this->setPixmap(QPixmap::fromImage(image));
 }
+
+void medDatabasePreviewItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    Q_UNUSED(event);
+}
+
+void medDatabasePreviewItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    QMimeData *data = d->index.createMimeData();
+    data->setImageData(this->pixmap());
+
+    QDrag *drag = new QDrag(this->scene()->views().first());
+    drag->setMimeData(data);
+#if WIN32
+    drag->setPixmap(this->pixmap().scaled(64,64));
+#else
+    drag->setPixmap(this->pixmap());
+#endif
+    drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()/2));
+    drag->start();
+}

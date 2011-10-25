@@ -23,6 +23,8 @@
 #include "medDatabasePreviewView.h"
 #include "medDatabasePreviewTooltip.h"
 
+#include "medDataIndex.h"
+
 class medDatabasePreviewViewPrivate
 {
 public:
@@ -81,4 +83,70 @@ void medDatabasePreviewView::mouseMoveEvent(QMouseEvent *event)
 void medDatabasePreviewView::wheelEvent(QWheelEvent *event)
 {
     Q_UNUSED(event);
+}
+
+
+void medDatabasePreviewView::dragEnterEvent(QDragEnterEvent *event)
+{
+    setBackgroundRole(QPalette::Highlight);
+
+    event->acceptProposedAction();
+}
+
+void medDatabasePreviewView::dragMoveEvent(QDragMoveEvent *event)
+{
+    qDebug() << "dragMoveEvent";
+
+    event->acceptProposedAction();
+}
+
+void medDatabasePreviewView::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    qDebug() << "dragLeaveEvent";
+
+    setBackgroundRole(QPalette::Base);
+
+    event->accept();
+}
+
+void medDatabasePreviewView::dropEvent(QDropEvent *event)
+{
+    qDebug() << "dropEvent";
+
+    const QMimeData *mimeData = event->mimeData();
+
+    if (mimeData->hasImage()) {
+//        setPixmap(qvariant_cast<QPixmap>(mimeData->imageData()));
+    }
+
+    medDataIndex index( medDataIndex::readMimeData(mimeData) );
+    if (index.isValid()) {
+//        d->index = index;
+    }
+
+    setBackgroundRole(QPalette::Base);
+
+
+
+    event->acceptProposedAction();
+
+    emit objectDropped(index);
+}
+
+void medDatabasePreviewView::paintEvent(QPaintEvent *event)
+{
+    qDebug() << "paintEvent";
+
+    QGraphicsView::paintEvent(event);
+
+//    // Optionally draw something (e.g. a tag) over the label in case it is a pixmap
+
+//    if(!this->pixmap())
+//        return;
+//
+//    QPainter painter;
+//    painter.begin(this);
+//    painter.setPen(Qt::white);
+//    painter.drawText(event->rect(), "Overlay", QTextOption(Qt::AlignHCenter | Qt::AlignCenter));
+//    painter.end();
 }

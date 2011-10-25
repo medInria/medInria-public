@@ -9,6 +9,9 @@
 #include <medDatabaseModel.h>
 #include <medDatabaseExporter.h>
 
+#include <medDropSite.h>
+#include <medThumbnailContainer.h>
+
 
 class medImageSelectionWidgetPrivate
 {
@@ -19,6 +22,8 @@ public:
     medDatabaseModel *model;
     medDatabaseView *view;
     medDatabaseProxyModel *proxy;
+
+    medThumbnailContainer *selected;
 
 //    QTreeView* treeView;
 };
@@ -33,11 +38,15 @@ medImageSelectionWidget::medImageSelectionWidget(QWidget *parent) : d(new medIma
     d->proxy->setSourceModel(d->model);
     d->preview = new medDatabasePreview(displayWidget);
 
+    d->selected = new medThumbnailContainer(displayWidget);
+
     QSizePolicy* policy = new QSizePolicy();
 //    policy->setHorizontalStretch(10);
     policy->setHorizontalPolicy(QSizePolicy::Expanding);
     d->preview->setSizePolicy(*policy);
     d->preview->setMinimumSize(QSize(600, 400));
+
+    d->selected->setMinimumSize(QSize(600 + 100, 300));
 
     d->view    = new medDatabaseView(displayWidget);
     d->view->setModel(d->proxy);
@@ -49,17 +58,18 @@ medImageSelectionWidget::medImageSelectionWidget(QWidget *parent) : d(new medIma
     hlayout->addWidget(d->view);
     hlayout->addWidget(d->preview);
 
-    d->selectedSeriesWidget = new QWidget(displayWidget);
+
 
     QVBoxLayout* vlayout = new QVBoxLayout(displayWidget);
     vlayout->addLayout(hlayout);
-    vlayout->addWidget(d->selectedSeriesWidget);
+    vlayout->addWidget(d->selected);
+//    vlayout->addWidget(new medDropSite());
 
     connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->preview, SLOT(onPatientClicked(const medDataIndex&)));
     connect(d->view, SIGNAL(studyClicked(const medDataIndex&)), d->preview, SLOT(onStudyClicked(const medDataIndex&)));
     connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(onSeriesClicked(const medDataIndex&)));
 
-    QLabel* label = new QLabel("PLACEHOLDER", d->selectedSeriesWidget);
+//    connect(d->view, SIGNAL(studyClicked(const medDataIndex&)), d->selected, SLOT(onStudyClicked(const medDataIndex&)));
 
     // for the moment we just need patient and study
     for (int var = 2; var < d->proxy->columnCount(); ++var) {

@@ -24,6 +24,7 @@
 #include <QtGui>
 
 class medDatabasePreviewItem;
+class medDataIndex;
 class medDatabasePreviewViewPrivate;
 class medDatabasePreviewTooltip;
 
@@ -48,6 +49,17 @@ protected:
     void keyPressEvent(QKeyEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
+
+
+signals:
+    void objectDropped (const medDataIndex& index);
+
+protected:
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dragMoveEvent(QDragMoveEvent *event);
+    void dragLeaveEvent(QDragLeaveEvent *event);
+    void dropEvent(QDropEvent *event);
+    void paintEvent(QPaintEvent *event);
 
 private:
     medDatabasePreviewViewPrivate *d;

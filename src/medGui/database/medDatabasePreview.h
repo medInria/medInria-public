@@ -58,7 +58,7 @@ protected slots:
     void onMoveDw(void);
     void onMoveBg(void);
     void onHovered(medDatabasePreviewItem *item);
-    
+
 protected:
     void moveToItem(medDatabasePreviewItem *target);
 
