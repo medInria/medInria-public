@@ -18,6 +18,7 @@
 
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkLog.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <med4DAbstractViewInteractor.h>
 #include <medToolBoxTab.h>
@@ -36,7 +37,7 @@ public:
     medButton *stopButton;
 
     QList <QAction*> actionlist;
-    QList<dtkAbstractView*> views;
+    QList< dtkSmartPointer<dtkAbstractView> > views;
     QList<med4DAbstractViewInteractor*> interactors;
     QTimeLine *timeLine;
     QSpinBox *spinBox;
