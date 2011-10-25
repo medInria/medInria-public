@@ -203,6 +203,9 @@ void medViewerToolBoxTime::onViewRemoved (dtkAbstractView *view)
     if (!view)
         return;
 
+    if (!d->views.contains(view))
+        return;
+
     if (med4DAbstractViewInteractor *interactor = dynamic_cast<med4DAbstractViewInteractor*>(view->interactor ("v3dView4DInteractor")))
     {
         d->views.removeOne (view);
