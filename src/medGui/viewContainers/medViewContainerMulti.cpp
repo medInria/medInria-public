@@ -112,7 +112,7 @@ void medViewContainerSingle2::onViewFocused (bool value)
 class medViewContainerMultiPrivate
 {
 public:
-    QList< dtkAbstractView* >  views;
+    QList< dtkSmartPointer<dtkAbstractView> >  views;
 };
 
 medViewContainerMulti::medViewContainerMulti (QWidget *parent) : medViewContainer (parent), d2 (new medViewContainerMultiPrivate)
@@ -148,7 +148,11 @@ dtkAbstractView *medViewContainerMulti::view(void) const
 
 QList<dtkAbstractView*> medViewContainerMulti::views (void) const
 {
-    return d2->views;
+    QList<dtkAbstractView *> views;
+    foreach(dtkAbstractView *view, d2->views)
+        views.append(view);
+
+    return views;
 }
 
 void medViewContainerMulti::setView(dtkAbstractView *view)
@@ -295,9 +299,11 @@ void medViewContainerMulti::onViewClosing (void)
         if (medAbstractView *medView = qobject_cast<medAbstractView*> (view))
             d->pool->removeView (medView);
 
-        d2->views.removeOne (view);
-
+        // it is safer to emit view removed now, because the next
+        // line may trigger the deletion of the view
         emit viewRemoved (view);
+
+        d2->views.removeOne (view);       
 
         // view->close(); // the container will close the view once deleted
 
