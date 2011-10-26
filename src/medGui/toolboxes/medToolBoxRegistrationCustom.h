@@ -1,5 +1,5 @@
-/* medToolBoxRegistrationCustom.h --- 
- * 
+/* medToolBoxRegistrationCustom.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 14:16:25 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 23
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDTOOLBOXREGISTRATIONCUSTOM_H
@@ -31,13 +31,13 @@ class MEDGUI_EXPORT medToolBoxRegistrationCustom : public medToolBox
     Q_OBJECT
 
 public:
-             medToolBoxRegistrationCustom(QWidget *parent = 0);
+             medToolBoxRegistrationCustom(QWidget *parentToolBox = 0);
     virtual ~medToolBoxRegistrationCustom(void);
 
     void setRegistrationToolBox(medToolBoxRegistration *toolbox);
 
 protected:
-    medToolBoxRegistration *parent(void);
+    medToolBoxRegistration *parentToolBox(void);
 
 private:
     medToolBoxRegistrationCustomPrivate *d;

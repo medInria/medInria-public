@@ -30,20 +30,28 @@ class dtkAbstractProcess;
 class dtkAbstractData;
 class dtkPlugin;
 
-class MEDGUI_EXPORT medToolBoxDiffusionCustom: public medToolBox {
+class MEDGUI_EXPORT medToolBoxDiffusionCustom : public medToolBox
+{
 public:
-             medToolBoxDiffusionCustom(QWidget *parent = 0);
-    virtual ~medToolBoxDiffusionCustom();
+             medToolBoxDiffusionCustom(QWidget *parentToolBox = 0);
+    virtual ~medToolBoxDiffusionCustom(void);
 
     virtual void setDiffusionToolBox(medToolBoxDiffusion *toolbox);
 
-    virtual QString description() const = 0;
+    virtual QString description (void) const = 0;
 
-    virtual dtkAbstractData *output() const;
+    virtual dtkAbstractData *output (void) const;
+
+    /**
+     * @brief Returns the plugin this custom Toolbox comes from.
+     *
+     * Used to fill the aboutPlugin button in the parent toolbox.
+     *
+     */
+    virtual dtkPlugin *plugin( void )const = 0;
 
 protected:
-
-    medToolBoxDiffusion *parent();
+    medToolBoxDiffusion *parentToolBox(void);
 
     medToolBoxDiffusionCustomPrivate *d;
 };
