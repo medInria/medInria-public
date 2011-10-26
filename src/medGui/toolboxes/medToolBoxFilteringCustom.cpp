@@ -43,7 +43,7 @@ void medToolBoxFilteringCustom::setFilteringToolBox(medToolBoxFiltering *toolbox
     d->parent = toolbox;
 }
 
-medToolBoxFiltering *medToolBoxFilteringCustom::parent(void)
+medToolBoxFiltering *medToolBoxFilteringCustom::parentToolBox(void)
 {
     return d->parent;
 }

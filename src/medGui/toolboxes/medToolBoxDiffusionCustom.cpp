@@ -41,7 +41,7 @@ void medToolBoxDiffusionCustom::setDiffusionToolBox(medToolBoxDiffusion *toolbox
     d->parent = toolbox;
 }
 
-medToolBoxDiffusion *medToolBoxDiffusionCustom::parent(void)
+medToolBoxDiffusion *medToolBoxDiffusionCustom::parentToolBox(void)
 {
     return d->parent;
 }
