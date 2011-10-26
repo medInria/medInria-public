@@ -233,25 +233,19 @@ void vtkTensorManager::SetCurrentPosition (const double& X, const double& Y, con
   }
 
   double *spacing = this->Input->GetSpacing();
+  double *origin  = this->Input->GetOrigin();
 
   double pos[4]={X, Y, Z, 1.0};
 
-  vtkMatrix4x4 *aux = vtkMatrix4x4::New();
-  aux->DeepCopy(this->PhysicalToVoxelCoordinatesTransformMatrix);
-
-  for (int i=0; i<3; i++)
-      aux->SetElement(i, i, aux->GetElement(i, i)/spacing[i]);
-
-  aux->MultiplyPoint(pos, pos);
+  this->PhysicalToVoxelCoordinatesTransformMatrix->MultiplyPoint(pos, pos);
 
   int vox_pos[3];
   for (int i=0; i<3; i++)
-      vox_pos[i] = vtkMath::Round(pos[i]);
+      vox_pos[i] = vtkMath::Round( (pos[i]-origin[i])/spacing[i] );
 
   this->SetCurrentPosition(vox_pos[0], vox_pos[1], vox_pos[2]);
-
-  aux->Delete();
 }
+
 
 void vtkTensorManager::SetCurrentPosition (double pos[3])
 {
