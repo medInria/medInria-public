@@ -30,25 +30,21 @@ class dtkAbstractProcess;
 class dtkAbstractData;
 class dtkPlugin;
 
-class MEDGUI_EXPORT medToolBoxDiffusionCustom : public medToolBox
-{
-    Q_OBJECT
-
+class MEDGUI_EXPORT medToolBoxDiffusionCustom: public medToolBox {
 public:
              medToolBoxDiffusionCustom(QWidget *parent = 0);
-    virtual ~medToolBoxDiffusionCustom(void);
+    virtual ~medToolBoxDiffusionCustom();
 
     virtual void setDiffusionToolBox(medToolBoxDiffusion *toolbox);
 
-    virtual QString description (void) const = 0;
+    virtual QString description() const = 0;
 
-    virtual dtkAbstractData *output (void) const;
-    virtual dtkPlugin *plugin( void )const = 0;
-
-protected:
-    medToolBoxDiffusion *parent(void);
+    virtual dtkAbstractData *output() const;
 
 protected:
+
+    medToolBoxDiffusion *parent();
+
     medToolBoxDiffusionCustomPrivate *d;
 };
 

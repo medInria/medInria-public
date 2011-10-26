@@ -136,7 +136,9 @@ void medToolBoxDiffusion::onToolBoxChosen(int id)
     }
 
     //set the aboutPlugin button.
-    dtkPlugin* plugin = toolbox->plugin();
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin(toolbox->description());
+
     this->setAboutPluginButton(plugin);
     this->setAboutPluginVisibility(true);
 
