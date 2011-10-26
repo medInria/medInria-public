@@ -73,6 +73,8 @@
 #include <vtkColorTransferFunction.h>
 #include <vtkImageReslice.h>
 
+#include <vtkTextActor3D.h>
+
 #include <vector>
 #include <string>
 #include <sstream>
@@ -164,8 +166,8 @@ vtkImageView2D::vtkImageView2D()
   this->Command             = vtkImageView2DCommand::New();
   this->OrientationAnnotation = vtkOrientationAnnotation::New();
   
-  this->ImageDisplayMap.insert (std::pair<int, vtkImage2DDisplay *> (0, vtkImage2DDisplay::New()));
-  this->RendererMap.insert     (std::pair<int, vtkRenderer*>        (0, (vtkRenderer*)NULL));
+  this->LayerInfoVec.resize(1);
+  this->LayerInfoVec[0].ImageDisplay = vtkSmartPointer<vtkImage2DDisplay>::New();
   
   this->SliceOrientation = vtkImageView2D::SLICE_ORIENTATION_XY;
   
@@ -224,27 +226,10 @@ vtkImageView2D::vtkImageView2D()
 //----------------------------------------------------------------------------
 vtkImageView2D::~vtkImageView2D()
 {
-  std::map<int, vtkImage2DDisplay*>::iterator it = this->ImageDisplayMap.begin();
-  while (it!=this->ImageDisplayMap.end())
-  {
-    if (it->second)
-    {
-      it->second->Delete();
-    }
-    ++it;
-  }
-  this->ImageDisplayMap.clear();
+// Deletion of objects in the LayerInfoMap is handled by the SmartPointers.
+  this->LayerInfoVec.clear();
 
-  std::map<int, vtkRenderer*>::iterator it2 = this->RendererMap.begin();
-  while (it2!=this->RendererMap.end())
-  {
-    if (vtkRenderer *renderer = it2->second)
-    {
-      renderer->Delete();
-    }
-    ++it2;
-  }
-  this->RendererMap.clear();
+  this->Axes2DWidget->SetImageView(NULL);
 
   this->Axes2DWidget->Delete();
   this->RulerWidget->Delete();
@@ -255,11 +240,11 @@ vtkImageView2D::~vtkImageView2D()
   this->Command->Delete();
   this->OrientationAnnotation->Delete();
   
-  std::list<vtkDataSet2DWidget*>::iterator it3 = this->DataSetWidgets.begin();
-  while (it3!=this->DataSetWidgets.end())
+  
+  for (std::list<vtkDataSet2DWidget*>::iterator it3 = this->DataSetWidgets.begin(); 
+      it3!=this->DataSetWidgets.end(); ++it3)
   {
     (*it3)->Delete();
-    ++it3;
   }
 }
 
@@ -268,7 +253,7 @@ void vtkImageView2D::SetVisibility(int visible, int layer)
 {
   if (this->HasLayer(layer))
   {
-    this->ImageDisplayMap.at(layer)->GetImageActor()->SetVisibility(visible);
+    this->GetImage2DDisplayForLayer(layer)->GetImageActor()->SetVisibility(visible);
     this->Modified();
   }
 }
@@ -278,7 +263,7 @@ int vtkImageView2D::GetVisibility(int layer)
 {
   if (this->HasLayer(layer))
   {
-    return this->ImageDisplayMap.at(layer)->GetImageActor()->GetVisibility();
+    this->GetImage2DDisplayForLayer(layer)->GetImageActor()->GetVisibility();
   }
   
   return 0;
@@ -289,7 +274,7 @@ void vtkImageView2D::SetOpacity(double opacity, int layer)
 {
   if (this->HasLayer(layer))
   {
-    this->ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(opacity);
+   this->GetImage2DDisplayForLayer(layer)->GetImageActor()->SetOpacity(opacity);
     this->Modified();
   }
 }
@@ -299,7 +284,7 @@ double vtkImageView2D::GetOpacity(int layer)
 {
   if (this->HasLayer(layer))
   {
-    return this->ImageDisplayMap.at(layer)->GetImageActor()->GetOpacity();
+   this->GetImage2DDisplayForLayer(layer)->GetImageActor()->GetOpacity();
   }
   
   return 0.0;
@@ -495,10 +480,10 @@ void vtkImageView2D::UpdateOrientation()
 //----------------------------------------------------------------------------
 void vtkImageView2D::UpdateDisplayExtent()
 {
-  if (this->ImageDisplayMap.size()==0)
+  if (this->LayerInfoVec.empty())
     return;
   
-  vtkImageData * input = this->ImageDisplayMap.at(0)->GetInput();
+  vtkImageData * input = this->GetImage2DDisplayForLayer(0)->GetInput();
   if (!input)
     return;
   
@@ -519,29 +504,29 @@ void vtkImageView2D::UpdateDisplayExtent()
     // vtkWarningMacro (<<"WARNING: asking to display an out of bound extent"<<endl);
   }
   
-  std::map<int,vtkImage2DDisplay *>::iterator it;
-  for (it = this->ImageDisplayMap.begin(); it != this->ImageDisplayMap.end(); it++)
+  for (LayerInfoVecType::iterator it = this->LayerInfoVec.begin(); it != this->LayerInfoVec.end(); it++)
   {
-    vtkImageData *imageInput = (*it).second->GetInput();
+    vtkImage2DDisplay * imageDisplay = it->ImageDisplay;
+    vtkImageData *imageInput = imageDisplay->GetInput();
     switch (this->SliceOrientation)
     {
       case vtkImageView2D::SLICE_ORIENTATION_XY:
-        (*it).second->GetImageActor()->SetDisplayExtent(w_ext[0], w_ext[1], w_ext[2], w_ext[3], slice, slice);
+        imageDisplay->GetImageActor()->SetDisplayExtent(w_ext[0], w_ext[1], w_ext[2], w_ext[3], slice, slice);
         break;
         
       case vtkImageView2D::SLICE_ORIENTATION_XZ:
-        (*it).second->GetImageActor()->SetDisplayExtent(w_ext[0], w_ext[1], slice, slice, w_ext[4], w_ext[5]);
+        imageDisplay->GetImageActor()->SetDisplayExtent(w_ext[0], w_ext[1], slice, slice, w_ext[4], w_ext[5]);
         break;
         
       case vtkImageView2D::SLICE_ORIENTATION_YZ:
       default:
-        (*it).second->GetImageActor()->SetDisplayExtent(slice, slice, w_ext[2], w_ext[3], w_ext[4], w_ext[5]);
+        imageDisplay->GetImageActor()->SetDisplayExtent(slice, slice, w_ext[2], w_ext[3], w_ext[4], w_ext[5]);
         break;
     }
     
-    if ( ! this->Compare ( imageInput->GetUpdateExtent (), (*it).second->GetImageActor()->GetDisplayExtent (), 6 ) ) {
+    if ( ! this->Compare ( imageInput->GetUpdateExtent (), imageDisplay->GetImageActor()->GetDisplayExtent (), 6 ) ) {
       
-      imageInput->SetUpdateExtent((*it).second->GetImageActor()->GetDisplayExtent ());
+      imageInput->SetUpdateExtent(imageDisplay->GetImageActor()->GetDisplayExtent ());
       
       // SetUpdateExtent does not call modified. There is a comment relating to this in
       // vtkDataObject::SetUpdateExtent
@@ -647,7 +632,7 @@ void vtkImageView2D::SetViewOrientation(int orientation)
 void vtkImageView2D::SetOrientationMatrix (vtkMatrix4x4* matrix)
 {
   this->Superclass::SetOrientationMatrix (matrix);
-  this->ImageDisplayMap.at(0)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+  this->GetImage2DDisplayForLayer(0)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
   this->UpdateOrientation();
   
   // The slice might have changed in the process
@@ -1289,17 +1274,18 @@ void vtkImageView2D::InstallInteractor()
   
   if (this->RenderWindow)
   {
-    std::map<int, vtkRenderer*>::iterator it = this->RendererMap.begin();
-    while (it!=this->RendererMap.end()) 
+    for (LayerInfoVecType::iterator it = this->LayerInfoVec.begin(); it!=this->LayerInfoVec.end(); ++it) 
     {
-      if (vtkRenderer *renderer = it->second)
+      if (vtkRenderer *renderer = it->Renderer)
       {
         this->RenderWindow->AddRenderer(renderer);
       }
-      ++it;
     }
   }
-  
+
+  this->Axes2DWidget->SetImageView (this);
+  this->Axes2DWidget->SetRenderWindow(this->RenderWindow);
+
   if ( this->RulerWidget->GetInteractor() && this->ShowRulerWidget)
     this->RulerWidget->On();
   
@@ -1308,17 +1294,15 @@ void vtkImageView2D::InstallInteractor()
   
   if ( this->AngleWidget->GetInteractor() && this->ShowAngleWidget)
     this->AngleWidget->On();
-  
-  this->Axes2DWidget->SetImageView (this);
+
   if( this->ShowImageAxis && this->RenderWindow && this->Renderer)
     this->Axes2DWidget->On();
-
-  std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
-  while (it!=this->DataSetWidgets.end())
+  
+  for (std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
+      it!=this->DataSetWidgets.end(); ++it)
   {
     (*it)->SetImageView(this);
     (*it)->On();
-    ++it;
   }
 	
   this->IsInteractorInstalled = 1;
@@ -1340,23 +1324,21 @@ void vtkImageView2D::UnInstallInteractor()
   
   if (this->RenderWindow)
    {
-    std::map<int, vtkRenderer*>::iterator it = this->RendererMap.begin();
-    while (it!=this->RendererMap.end())
+     for (LayerInfoVecType::iterator it = this->LayerInfoVec.begin(); it!=this->LayerInfoVec.end(); ++it) 
      {
-      if (vtkRenderer *renderer = it->second)
+      if (vtkRenderer *renderer = it->Renderer)
        {
         this->RenderWindow->RemoveRenderer(renderer);
        }
-       ++it;
      } 
    }
 
-  std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
-  while (it!=this->DataSetWidgets.end())
+  
+  for (std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
+      it!=this->DataSetWidgets.end(); ++it )
   {
     (*it)->SetImageView(0);
     (*it)->Off();
-    ++it;
   }
 	
   this->IsInteractorInstalled = 0;
@@ -1368,7 +1350,7 @@ void vtkImageView2D::SetInterpolate(int val, int layer)
   if (!this->HasLayer (layer))
     return;
 
-  this->ImageDisplayMap.at(layer)->GetImageActor()->SetInterpolate (val);
+  this->GetImage2DDisplayForLayer(layer)->GetImageActor()->SetInterpolate (val);
   this->Modified();
 }
 
@@ -1376,7 +1358,7 @@ void vtkImageView2D::SetInterpolate(int val, int layer)
 int vtkImageView2D::GetInterpolate(int layer)
 {
   if (this->HasLayer (layer))
-    return this->ImageDisplayMap.at(layer)->GetImageActor()->GetInterpolate();
+    return this->GetImage2DDisplayForLayer(layer)->GetImageActor()->GetInterpolate();
   
   return 0;
 }
@@ -1393,13 +1375,13 @@ void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPi
   if (layer==0)
   {
     this->Superclass::SetTransferFunctions(color, opacity);
-    this->ImageDisplayMap.at(0)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());
+    this->GetImage2DDisplayForLayer(0)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());
   }
   else if (color && this->HasLayer(layer))
   {
-    double *range = this->ImageDisplayMap.at(layer)->GetInput()->GetScalarRange();
+    double *range = this->GetImage2DDisplayForLayer(layer)->GetInput()->GetScalarRange();
     this->SetTransferFunctionRangeFromWindowSettings(color, 0, range[0], range[1]);
-    this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(color);
+    this->GetImage2DDisplayForLayer(layer)->GetWindowLevel()->SetLookupTable(color);
     this->Modified();
   }
 }
@@ -1410,14 +1392,14 @@ void vtkImageView2D::SetLookupTable(vtkLookupTable* lut, int layer)
   if (layer==0)
   {
     this->Superclass::SetLookupTable(lut);
-    this->ImageDisplayMap.at(0)->GetWindowLevel()->SetLookupTable(lut);
+    this->GetImage2DDisplayForLayer(0)->GetWindowLevel()->SetLookupTable(lut);
   }
   else if (lut && this->HasLayer(layer))
   {
-    // this->ImageDisplayMap.at(layer)->GetInput()->Update();
-    double *range = this->ImageDisplayMap.at(layer)->GetInput()->GetScalarRange();
+    // this->GetImage2DDisplayForLayer(layer)->GetInput()->Update();
+    double *range = this->GetImage2DDisplayForLayer(layer)->GetInput()->GetScalarRange();
     lut->SetTableRange(range[0], range[1]);
-    this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable(lut);
+    this->GetImage2DDisplayForLayer(layer)->GetWindowLevel()->SetLookupTable(lut);
     this->Modified();
   }
 }
@@ -1434,7 +1416,7 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
     {
       this->RemoveAllLayers();
     }
-    this->ImageDisplayMap.at(0)->SetInput(image);
+    this->GetImage2DDisplayForLayer(0)->SetInput(image);
     this->Superclass::SetInput (image, matrix, layer);
   }
   
@@ -1461,7 +1443,7 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
     this->AddLayer(layer);
 
     // AddLayer must have created the proper vtkRenderer
-    renderer = this->RendererMap.at(layer);
+    renderer = this->GetRendererForLayer(layer);
 
     // determine the scalar range. Copy the update extent to match the input's one
     double range[2];
@@ -1474,11 +1456,11 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
     lut->SetTableRange (range[0], range[1]);
     // lut->SetAlphaRange (1.0, 1.0);
     
-    this->ImageDisplayMap.at(layer)->SetInput (reslicedImage);
-    this->ImageDisplayMap.at(layer)->GetWindowLevel()->SetLookupTable (lut);
-    this->ImageDisplayMap.at(layer)->GetImageActor()->SetOpacity(1.0);
-    this->ImageDisplayMap.at(layer)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
-    // this->ImageDisplayMap.at(layer)->GetInput()->UpdateInformation();
+    this->GetImage2DDisplayForLayer(layer)->SetInput (reslicedImage);
+    this->GetImage2DDisplayForLayer(layer)->GetWindowLevel()->SetLookupTable (lut);
+    this->GetImage2DDisplayForLayer(layer)->GetImageActor()->SetOpacity(1.0);
+    this->GetImage2DDisplayForLayer(layer)->GetImageActor()->SetUserMatrix (this->OrientationMatrix);
+    // this->GetImage2DDisplayForLayer(layer)->GetInput()->UpdateInformation();
     
     reslicedImage->Delete();
     lut->Delete();
@@ -1487,7 +1469,7 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
   if (!renderer)
     return;
   
-  renderer->AddViewProp (this->ImageDisplayMap.at(layer)->GetImageActor());
+  renderer->AddViewProp (this->GetImage2DDisplayForLayer(layer)->GetImageActor());
   
   this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
   this->UpdateDisplayExtent();
@@ -1519,7 +1501,7 @@ vtkImageActor *vtkImageView2D::GetImageActor(int layer) const
   if (!this->HasLayer(layer))
     return NULL;
   
-  return this->ImageDisplayMap.at(layer)->GetImageActor();
+  return this->GetImage2DDisplayForLayer(layer)->GetImageActor();
 }
 
 //----------------------------------------------------------------------------
@@ -1528,7 +1510,7 @@ vtkImageData *vtkImageView2D::GetImageInput(int layer) const
   if (!this->HasLayer(layer))
     return NULL;
   
-  return this->ImageDisplayMap.at(layer)->GetInput();
+  return this->GetImage2DDisplayForLayer(layer)->GetInput();
 }
 
 //----------------------------------------------------------------------------
@@ -1654,8 +1636,8 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
       // Find bounds of all input data.
       for ( WidgetListType::const_iterator it( this->DataSetWidgets.begin() );
           it != this->DataSetWidgets.end();
-          ++it ) {
-          
+          ++it ) 
+      {          
           box.AddBounds( widget->GetSource()->GetBounds() );
       }
 
@@ -1675,9 +1657,9 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
 void vtkImageView2D::RemoveDataSet (vtkPointSet *arg)
 {
   this->Superclass::RemoveDataSet (arg);
-  
-  std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
-  while (it!=this->DataSetWidgets.end())
+    
+  for (std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
+      it != this->DataSetWidgets.end(); ++it)
   {
     if ((*it)->GetSource()==arg)
     {
@@ -1688,21 +1670,19 @@ void vtkImageView2D::RemoveDataSet (vtkPointSet *arg)
       this->Modified();
       break;
     }
-    ++it;
   }
 }
 
 //----------------------------------------------------------------------------
 std::list<vtkDataSet2DWidget*>::iterator vtkImageView2D::FindDataSetWidget(vtkPointSet* arg)
 {
-  std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
   
-  while (it != this->DataSetWidgets.end())
+    for (  std::list<vtkDataSet2DWidget*>::iterator it = this->DataSetWidgets.begin();
+            it != this->DataSetWidgets.end(); ++it)
   {
     vtkDataSet2DWidget* widget = (*it);
     if (widget->GetSource() == arg)
       return it;
-    ++it;
   }
   
   return this->DataSetWidgets.end();
@@ -1714,14 +1694,24 @@ void vtkImageView2D::AddLayer(int layer)
   if (this->HasLayer(layer))
     return;
 
-  this->ImageDisplayMap.insert(std::pair<int, vtkImage2DDisplay*>(layer, vtkImage2DDisplay::New()));
-  this->RendererMap.insert(std::pair<int, vtkRenderer*>(layer, vtkRenderer::New()));
+  if ( layer >= (int)this->LayerInfoVec.size() ) {
+      this->LayerInfoVec.resize(layer + 1);
+  }
+  this->LayerInfoVec[layer].Renderer = vtkSmartPointer<vtkRenderer>::New();
+  this->LayerInfoVec[layer].ImageDisplay = vtkSmartPointer<vtkImage2DDisplay>::New();
   
-  vtkRenderer *renderer = this->RendererMap.at(layer);
+  vtkRenderer *renderer = this->GetRendererForLayer(layer);
   renderer->SetLayer(layer);
   if (this->GetRenderWindow())
   {
-    this->GetRenderWindow()->SetNumberOfLayers (this->GetNumberOfLayers());
+    // Additional layer for the overlay
+    int numLayers = this->GetNumberOfLayers();
+    if ( this->OverlayRenderer ) 
+    {
+        this->OverlayRenderer->SetLayer(numLayers);
+        ++numLayers;
+    }
+    this->GetRenderWindow()->SetNumberOfLayers (numLayers);
     this->GetRenderWindow()->AddRenderer(renderer);
   }
   
@@ -1734,53 +1724,55 @@ void vtkImageView2D::RemoveLayer(int layer)
 {
   if (!this->HasLayer(layer))
     return;
-  
-  if (layer==0) // do not remove layer 0
+
+  if (layer<=0) // do not remove layer 0
     return;
-  
-  vtkRenderer       *renderer = this->RendererMap.at(layer);
-  vtkImage2DDisplay *display  = this->ImageDisplayMap.at(layer);
+
+  vtkRenderer       *renderer = this->GetRendererForLayer(layer);
   
   if (this->GetRenderWindow())
   {
     this->GetRenderWindow()->RemoveRenderer(renderer);
     this->Modified();
   }
+
+  // Delete is handled by SmartPointers.
+  this->LayerInfoVec.erase(this->LayerInfoVec.begin() + layer);
   
-  renderer->Delete();
-  display->Delete();
-  
-  this->RendererMap.erase(layer);
-  this->ImageDisplayMap.erase(layer);
+  // Make contiguous
+  for ( size_t i(layer); i<this->LayerInfoVec.size(); ++i ) 
+  {
+      this->LayerInfoVec[i].Renderer->SetLayer(i);
+  }
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView2D::RemoveAllLayers (void)
 {
-  std::map<int, vtkRenderer*> rendererMap = this->RendererMap;
-  std::map<int, vtkRenderer*>::iterator it = rendererMap.begin();
-  while (it!=rendererMap.end())
+  while ( this->LayerInfoVec.size()>1 )
   {
-    this->RemoveLayer (it->first);
-    ++it;
+    this->RemoveLayer ( this->LayerInfoVec.size() - 1);
   }
 }
 
 //----------------------------------------------------------------------------
 bool vtkImageView2D::HasLayer(int layer) const
 {
-  std::map<int, vtkRenderer*>::const_iterator it = this->RendererMap.begin();
-  while (it!=this->RendererMap.end())
-   {
-    if ((*it).first==layer)
-      return true;
-    ++it;
-   }
-  return false;
+  return ( (layer >= 0) && (layer < this->GetNumberOfLayers() ) );
 }
 
 //----------------------------------------------------------------------------
 int vtkImageView2D::GetNumberOfLayers(void) const
 {
-  return int(this->RendererMap.size());
+  return this->LayerInfoVec.size();
+}
+
+vtkImage2DDisplay * vtkImageView2D::GetImage2DDisplayForLayer( int layer ) const
+{
+    return this->LayerInfoVec.at(layer).ImageDisplay;
+}
+
+vtkRenderer * vtkImageView2D::GetRendererForLayer( int layer ) const
+{
+    return this->LayerInfoVec.at(layer).Renderer;
 }

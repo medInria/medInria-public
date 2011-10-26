@@ -29,6 +29,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkImageView3DCroppingBoxCallback.h>
 #include <vtkOrientationMarkerWidget.h>
 #include <vtkVolumeProperty.h>
+#include <vtkSmartPointer.h>
 
 class vtkVolume;
 class vtkPiecewiseFunction;
@@ -290,6 +291,9 @@ protected:
 
   virtual void InternalUpdate (void);
 
+  //! Get layer specific info
+  vtkImage3DDisplay * GetImage3DDisplayForLayer(int layer) const;
+
   // plane actors
   vtkImageActor* ActorX;
   vtkImageActor* ActorY;
@@ -347,7 +351,13 @@ protected:
   double Opacity;
   int Visibility;
     
-  std::map<int, vtkImage3DDisplay*> ImageDisplayMap;
+  struct LayerInfo {
+      vtkSmartPointer<vtkImage3DDisplay> ImageDisplay;
+  };
+
+  // Layer indices start from 1, so the entries are at [layer - 1]
+  typedef std::vector<LayerInfo > LayerInfoVecType;
+  LayerInfoVecType LayerInfoVec;
   
 private:
   vtkImageView3D(const vtkImageView3D&);  // Not implemented.

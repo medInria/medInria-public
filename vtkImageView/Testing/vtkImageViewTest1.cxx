@@ -130,6 +130,14 @@ int vtkImageViewTest1(int argc, char *argv[])
   view->GetCornerAnnotation()->SetText (3, "Add layers");
   view->Render();
 
+
+  // image axis
+  view->SetShowImageAxis(1);
+  view->Render();
+
+  view->SetShowImageAxis(0);
+  view->Render();
+
   // change transfer functions
   vtkColorTransferFunction *rgb1   = vtkColorTransferFunction::New();
   vtkPiecewiseFunction     *alpha1 = vtkPiecewiseFunction::New();
@@ -256,7 +264,6 @@ int vtkImageViewTest1(int argc, char *argv[])
   
   view->SetSlice(1000);  // dummy value
   view->Render();
-
 
   view->Delete();
   iren->Delete();

@@ -28,7 +28,7 @@ class vtkImageViewCollection;
 class vtkLandmark;
 class vtkLandmarkManager;
 
-class VTK_VISUMANAGEMENT_EXPORT vtkLandmarkManagerCallback : public vtkCommand
+class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmarkManagerCallback : public vtkCommand
 {    
  public:
   
