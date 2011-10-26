@@ -95,14 +95,14 @@ void medDatabasePreviewView::dragEnterEvent(QDragEnterEvent *event)
 
 void medDatabasePreviewView::dragMoveEvent(QDragMoveEvent *event)
 {
-    qDebug() << "dragMoveEvent";
+//    qDebug() << "dragMoveEvent";
 
     event->acceptProposedAction();
 }
 
 void medDatabasePreviewView::dragLeaveEvent(QDragLeaveEvent *event)
 {
-    qDebug() << "dragLeaveEvent";
+//    qDebug() << "dragLeaveEvent";
 
     setBackgroundRole(QPalette::Base);
 
@@ -126,8 +126,6 @@ void medDatabasePreviewView::dropEvent(QDropEvent *event)
 
     setBackgroundRole(QPalette::Base);
 
-
-
     event->acceptProposedAction();
 
     emit objectDropped(index);
@@ -135,7 +133,7 @@ void medDatabasePreviewView::dropEvent(QDropEvent *event)
 
 void medDatabasePreviewView::paintEvent(QPaintEvent *event)
 {
-    qDebug() << "paintEvent";
+//    qDebug() << "paintEvent";
 
     QGraphicsView::paintEvent(event);
 

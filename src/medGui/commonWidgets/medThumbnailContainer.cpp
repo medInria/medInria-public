@@ -10,6 +10,7 @@
 #include <medAbstractDbController.h>
 #include <medDataManager.h>
 #include <medMetaDataKeys.h>
+#include <medDataIndex.h>
 #include <medStorage.h>
 
 #include <QtCore>
@@ -99,6 +100,8 @@ medThumbnailContainer::medThumbnailContainer(QWidget *parent) : QFrame(parent), 
 
 //    setAcceptDrops(true);
     d->view->setAcceptDrops(true);
+
+    connect(d->view, SIGNAL(objectDropped (const medDataIndex&)), this, SLOT(onObjectDropped (const medDataIndex&)));
 
     this->init();
 }
@@ -510,5 +513,37 @@ void medThumbnailContainer::onHovered(medDatabasePreviewItem *item)
 }
 
 
+void medThumbnailContainer::onObjectDropped (const medDataIndex& index)
+{
+//        d->series_group->clear();
+//        d->image_group->clear();
 
+        if (!index.isValidForSeries())
+            return;
+
+//        int firstSeId = -1;
+//        medAbstractDbController * db =  medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+//        if ( db ) {
+//
+//            QList<medDataIndex> series = db->series(index);
+//                for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
+//
+//                    if ( firstSeId < 0)
+//                        firstSeId = (*seriesIt).seriesId();
+//
+//                    d->series_group->addItem(new medDatabasePreviewItem(
+//                        medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
+//                }
+//        }
+
+        d->series_group->addItem(new medDatabasePreviewItem(
+                                medDataIndex::makeSeriesIndex(index.dataSourceId(), index.patientId(), index.studyId(), index.seriesId()) ) );
+
+        d->scene->setSceneRect(d->series_group->boundingRect());
+
+        if(d->level)
+            this->onSlideDw();
+        else
+            moveToItem( d->series_group->item(index.seriesId()) );
+}
 

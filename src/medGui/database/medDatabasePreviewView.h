@@ -45,14 +45,12 @@ signals:
     void moveLt(void);
     void hovered(medDatabasePreviewItem *item);
 
+    void objectDropped (const medDataIndex& index);
+
 protected:
     void keyPressEvent(QKeyEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *event);
-
-
-signals:
-    void objectDropped (const medDataIndex& index);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);

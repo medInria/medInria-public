@@ -40,6 +40,8 @@ protected slots:
     void onMoveBg(void);
     void onHovered(medDatabasePreviewItem *item);
 
+    void onObjectDropped (const medDataIndex& index);
+
 protected:
     void moveToItem(medDatabasePreviewItem *target);
 
