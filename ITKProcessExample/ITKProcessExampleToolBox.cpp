@@ -103,15 +103,15 @@ dtkAbstractData* ITKProcessExampleToolBox::processOutput(void)
 
 void ITKProcessExampleToolBox::run(void)
 {
-    if(!this->parent())
+    if(!this->parentToolBox())
         return;
 
     d->process = dtkAbstractProcessFactory::instance()->create("ITKProcessExampleGaussianBlur");
 
-    if(!this->parent()->data())
+    if(!this->parentToolBox()->data())
         return;
 
-    d->process->setInput(this->parent()->data());
+    d->process->setInput(this->parentToolBox()->data());
 
     d->process->setParameter(d->variance->text().toDouble(),0);
 

@@ -114,7 +114,7 @@ int testRunner<TPixel,VDimension>::run() {
  * */
 int itkDataImageTest (int argc, char* argv[])
 {
-    QApplication testApp( argc, argv );
+    QCoreApplication testApp( argc, argv );
 
     // Test container
     QVector<testRunBase *> testsForEachType;
@@ -166,7 +166,7 @@ int itkDataImageTest (int argc, char* argv[])
             }
         }
         ret = EXIT_SUCCESS;
-    } 
+    }
     catch ( std::runtime_error & e) {
         dtkError() << e.what();
     }

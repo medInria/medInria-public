@@ -3,6 +3,8 @@
 // /////////////////////////////////////////////////////////////////
 
 #include "itkMetaDataTensorImageWriter.h"
+#include "itkNiftiDataTensorImageWriter.h"
+#include "itkNrrdDataTensorImageWriter.h"
 #include "itkDataTensorImageWriterPlugin.h"
 
 #include <dtkCore/dtkLog.h>
@@ -37,6 +39,10 @@ bool itkDataTensorImageWriterPlugin::initialize(void)
 {
     if(!itkMetaDataTensorImageWriter::registered())
     	dtkWarning() << "Unable to register itkMetaDataTensorImageWriter type";
+    if(!itkNiftiDataTensorImageWriter::registered())
+        dtkWarning() << "Unable to register itkNiftiDataTensorImageWriter type";
+    if(!itkNrrdDataTensorImageWriter::registered())
+        dtkWarning() << "Unable to register itkNrrdDataTensorImageWriter type";
 
     return true;
 }
@@ -63,7 +69,9 @@ QStringList itkDataTensorImageWriterPlugin::tags(void) const
 
 QStringList itkDataTensorImageWriterPlugin::types(void) const
 {
-    return QStringList() << "itkMetaDataTensorImageWriter";
+    return QStringList() << "itkMetaDataTensorImageWriter"
+                         << "itkNiftiDataTensorImageWriter"
+                         << "itkNrrdDataTensorImageWriter";
 }
 
 Q_EXPORT_PLUGIN2(itkDataTensorImageWriterPlugin, itkDataTensorImageWriterPlugin)

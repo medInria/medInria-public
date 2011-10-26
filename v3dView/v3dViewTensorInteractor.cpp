@@ -4,6 +4,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <vtkTensorManager.h>
 #include <vtkStructuredPoints.h>
@@ -25,9 +26,9 @@ typedef TensorImageTypeDouble::Pointer TensorImagePointerDouble;
 class v3dViewTensorInteractorPrivate
 {
 public:
-    dtkAbstractData        *data;
-    v3dView                *view;
-    vtkTensorManager       *manager;
+    dtkSmartPointer<dtkAbstractData> data;
+    dtkSmartPointer<v3dView>         view;
+    vtkTensorManager                *manager;
 
     // the filters will convert from itk tensor image format to vtkStructuredPoint (format handled by the tensor manager)
     itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeFloat>::Pointer filterFloat;
@@ -39,8 +40,6 @@ public:
 
 v3dViewTensorInteractor::v3dViewTensorInteractor(): dtkAbstractViewInteractor(), d(new v3dViewTensorInteractorPrivate)
 {
-    d->data    = 0;
-    d->view    = 0;
     d->manager = vtkTensorManager::New();
 
     d->datasetFloat = 0;
@@ -176,11 +175,21 @@ dtkAbstractData *v3dViewTensorInteractor::data (void)
 
 void v3dViewTensorInteractor::setView(dtkAbstractView *view)
 {
+    if (d->view) {
+        disconnect(d->view, SIGNAL(positionChanged(const QVector3D&,bool)),
+                   this,    SLOT(onPositionChanged(const QVector3D&,bool)));
+        d->view = 0;
+    }
+
+
     if (v3dView *v3dview = qobject_cast<v3dView*>(view) ) {
         d->view = v3dview;
         // be careful not to forget setting the same renderer for the interactor and the view
         // otherwise a new renderer is created
         d->manager->SetRenderWindowInteractor( d->view->interactor(), d->view->renderer3d() );
+
+        connect(d->view, SIGNAL(positionChanged(const QVector3D&,bool)),
+                this,    SLOT(onPositionChanged(const QVector3D&,bool)));
     }
 }
 

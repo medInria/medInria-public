@@ -1,5 +1,5 @@
 /* itkProcessRegistrationDiffeomorphicDemonsToolBox.h ---
- * 
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 15:39:43 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 22
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSTOOLBOX_H
@@ -29,7 +29,7 @@ class itkProcessRegistrationDiffeomorphicDemonsToolBox : public medToolBoxRegist
     Q_OBJECT
 
 public:
-     itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent = 0);
+     itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parentToolBox = 0);
     ~itkProcessRegistrationDiffeomorphicDemonsToolBox(void);
 
 public:
