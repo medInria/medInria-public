@@ -30,7 +30,7 @@ class itkFiltersToolBox : public medToolBoxFilteringCustom
     Q_OBJECT
 
 public:
-    itkFiltersToolBox(QWidget *parent = 0);
+    itkFiltersToolBox(QWidget *parentToolBox = 0);
     ~itkFiltersToolBox(void);
 
 public:

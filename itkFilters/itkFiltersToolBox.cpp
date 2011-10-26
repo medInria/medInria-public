@@ -337,12 +337,12 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
     }
     else
     {
-        if ( !this->parent()->data() )
+        if ( !this->parentToolBox()->data() )
         {
             return;
         }
 
-        QString identifier = this->parent()->data()->identifier();
+        QString identifier = this->parentToolBox()->data()->identifier();
 
         if ( identifier == "itkDataImageChar3" )
         {
@@ -580,15 +580,15 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
 
 void itkFiltersToolBox::run ( void )
 {
-    if ( !this->parent() )
+    if ( !this->parentToolBox() )
         return;
 
     d->process = dtkAbstractProcessFactory::instance()->create ( "itkFilters" );
 
-    if ( !this->parent()->data() )
+    if ( !this->parentToolBox()->data() )
         return;
 
-    d->process->setInput ( this->parent()->data() );
+    d->process->setInput ( this->parentToolBox()->data() );
 
     //Set parameters :
     //   channel 0 : filter type
