@@ -484,8 +484,9 @@ void vtkImageView2D::UpdateDisplayExtent()
     return;
   
   vtkImageData * input = this->GetImage2DDisplayForLayer(0)->GetInput();
-  if (!input)
+  if (!input) {
     return;
+  }
   
   input->UpdateInformation();
   
@@ -508,6 +509,11 @@ void vtkImageView2D::UpdateDisplayExtent()
   {
     vtkImage2DDisplay * imageDisplay = it->ImageDisplay;
     vtkImageData *imageInput = imageDisplay->GetInput();
+    if (!imageInput)
+    {
+        continue;
+    }
+
     switch (this->SliceOrientation)
     {
       case vtkImageView2D::SLICE_ORIENTATION_XY:
@@ -1379,6 +1385,9 @@ void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPi
   }
   else if (color && this->HasLayer(layer))
   {
+    if (!this->GetImage2DDisplayForLayer(layer)->GetInput())
+      return;
+
     double *range = this->GetImage2DDisplayForLayer(layer)->GetInput()->GetScalarRange();
     this->SetTransferFunctionRangeFromWindowSettings(color, 0, range[0], range[1]);
     this->GetImage2DDisplayForLayer(layer)->GetWindowLevel()->SetLookupTable(color);
@@ -1397,6 +1406,9 @@ void vtkImageView2D::SetLookupTable(vtkLookupTable* lut, int layer)
   else if (lut && this->HasLayer(layer))
   {
     // this->GetImage2DDisplayForLayer(layer)->GetInput()->Update();
+    if (!this->GetImage2DDisplayForLayer(layer)->GetInput())
+      return;
+
     double *range = this->GetImage2DDisplayForLayer(layer)->GetInput()->GetScalarRange();
     lut->SetTableRange(range[0], range[1]);
     this->GetImage2DDisplayForLayer(layer)->GetWindowLevel()->SetLookupTable(lut);
@@ -1697,8 +1709,16 @@ void vtkImageView2D::AddLayer(int layer)
   if ( layer >= (int)this->LayerInfoVec.size() ) {
       this->LayerInfoVec.resize(layer + 1);
   }
-  this->LayerInfoVec[layer].Renderer = vtkSmartPointer<vtkRenderer>::New();
-  this->LayerInfoVec[layer].ImageDisplay = vtkSmartPointer<vtkImage2DDisplay>::New();
+
+  // needs to instanciate objects for layers being created
+  for ( size_t i(0); i<this->LayerInfoVec.size(); ++i )
+  {
+      if (!this->LayerInfoVec[i].ImageDisplay)
+      {
+          this->LayerInfoVec[i].Renderer = vtkSmartPointer<vtkRenderer>::New();
+          this->LayerInfoVec[i].ImageDisplay = vtkSmartPointer<vtkImage2DDisplay>::New();
+      }
+  }
   
   vtkRenderer *renderer = this->GetRendererForLayer(layer);
   renderer->SetLayer(layer);

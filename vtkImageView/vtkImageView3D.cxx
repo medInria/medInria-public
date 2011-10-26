@@ -568,6 +568,9 @@ void vtkImageView3D::InternalUpdate (void)
     for( LayerInfoVecType::const_iterator it = this->LayerInfoVec.begin();
          it!=this->LayerInfoVec.end(); ++it)
     {
+      if (!it->ImageDisplay->GetInput())
+        continue;
+
       appender->AddInput (it->ImageDisplay->GetInput());
     }
     
@@ -665,6 +668,9 @@ void vtkImageView3D::SetTransferFunctions (vtkColorTransferFunction * color,
   }
   else if (this->HasLayer (layer))
   {
+    if (!this->GetImage3DDisplayForLayer(layer)->GetInput())
+      return;
+
     double *range = this->GetImage3DDisplayForLayer(layer)->GetInput()->GetScalarRange();
     this->SetTransferFunctionRangeFromWindowSettings(color, opacity, range[0], range[1]);
     this->VolumeProperty->SetColor(layer, color );
@@ -1057,10 +1063,17 @@ void vtkImageView3D::AddLayer (int layer)
   if ( static_cast<size_t>(layer) > this->LayerInfoVec.size() ) {
       this->LayerInfoVec.resize(layer);
   }
-  this->LayerInfoVec[layer - 1].ImageDisplay = vtkSmartPointer<vtkImage3DDisplay>::New();
+
+  // needs to instanciate objects for layers being created
+  for ( size_t i(0); i<this->LayerInfoVec.size(); ++i )
+  {
+      if (!this->LayerInfoVec[i].ImageDisplay)
+      {
+          this->LayerInfoVec[i].ImageDisplay = vtkSmartPointer<vtkImage3DDisplay>::New();
+      }
+  }
   this->VolumeProperty->SetShade(layer, 1);
   this->VolumeProperty->SetComponentWeight(layer, 1.0);
-
 }
 
 //----------------------------------------------------------------------------

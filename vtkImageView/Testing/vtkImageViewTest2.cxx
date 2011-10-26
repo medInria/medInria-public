@@ -136,6 +136,14 @@ int vtkImageViewTest2(int argc, char *argv[])
   view->GetCornerAnnotation()->SetText (3, "Add layers");
   view->Render();
 
+  view->RemoveAllLayers();
+
+  // skip one layer
+  view->SetInput (image, mat1, 0);
+  view->Render();
+  view->SetInput (image2, mat2, 2);
+  view->Render();
+
   // change transfer functions
   vtkColorTransferFunction *rgb1   = vtkColorTransferFunction::New();
   vtkPiecewiseFunction     *alpha1 = vtkPiecewiseFunction::New();

@@ -124,9 +124,30 @@ int vtkImageViewTest1(int argc, char *argv[])
   view->Render();
 
   // add layers
+  view->SetInput (image2, mat2, 0);
+  view->Render();
+
   view->SetInput (image2, mat2, 1);
+  view->Render();
+
+  view->SetInput (image3, mat3, 2);
+  view->Render();
+
+  view->RemoveAllLayers();
+
+  // add layers by skipping one
+  view->SetInput(image2, mat2, 0);
+  view->Render();
+
+  view->SetInput(image3, mat3, 2);
+  view->Render();
+
+  /*
+view->SetInput (image2, mat2, 1);
   view->SetInput (image3, mat3, 2);
   view->SetSlice (31);
+  */
+
   view->GetCornerAnnotation()->SetText (3, "Add layers");
   view->Render();
 
