@@ -24,7 +24,9 @@ bool medCompositeDataSetsWriter::write(const QString& path) {
 
     const QString& zipdirn = zip_dirname(path);
     QDir systemTmpDir = QDir::temp();
-    const QString& tmpDirn = "medcdsXXXXXX/";
+    QString uuid = QUuid::createUuid().toString().replace(
+                "{","").replace("}","");
+    const QString& tmpDirn = "medcds"+uuid;
     const QString& tmpDirPath =QDir::cleanPath(
             systemTmpDir.absolutePath()+"/"+tmpDirn);
     const QString& zipDirPath = tmpDirPath+"/"+zipdirn;

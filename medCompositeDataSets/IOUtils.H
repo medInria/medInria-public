@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <limits>
+#include <locale>
 
 //  Various stream manipulators to handle various kinds of token
 //  in the input stream (comments, strings, white spaces,
@@ -121,7 +122,7 @@ namespace io_utils {
         }
         return is;
     }
-        
+
 	inline imanip<const unsigned char>
 	skip_comments(const unsigned char c) {
 		return imanip<const unsigned char>(skip_lines_internal,c);
@@ -207,12 +208,12 @@ namespace io_utils {
 
 	inline imanip<const char*>
 	match(const char* str) {
-		return imanip<const char*>(match_internal,str);	
+		return imanip<const char*>(match_internal,str);
 	}
 
     inline imanip<const char*>
 	match(const std::string& str) {
-		return imanip<const char*>(match_internal,str.c_str());	
+		return imanip<const char*>(match_internal,str.c_str());
 	}
 
     inline imanip<const char>
@@ -263,25 +264,25 @@ namespace io_utils {
         return is;
     }
 
-	inline imanip2<const char*,bool&>
-	match_optional(const char* str,bool& res) {
-		return imanip2<const char*,bool&>(match_string_internal,str,res);	
-	}
+    inline imanip2<const char*,bool&>
+    match_optional(const char* str,bool& res) {
+        return imanip2<const char*,bool&>(match_string_internal,str,res);
+    }
 
-	inline imanip2<const char*,bool&>
-	match_optional(const std::string& str,bool& res) {
-		return imanip2<const char*,bool&>(match_string_internal,str.c_str(),res);	
-	}
+    inline imanip2<const char*,bool&>
+    match_optional(const std::string& str,bool& res) {
+        return imanip2<const char*,bool&>(match_string_internal,str.c_str(),res);
+    }
 
-	//	Eat the given string if present on an input stream.
-	//	Example: To parse lines such as "x=156 y=34".
-	//		cin >> eat("x=") >> x >> eat("y=") >> y;
-	//	The difference with match is that it will silently
-	//	ignore the strings if they are not on the stream
-	//	and the stream will remain in the good state.
-	//	So 156 34 will also be accepted as an input line.
-	//	Note that x156 34 or any other variation will not
-	//	be accepted.
+    //	Eat the given string if present on an input stream.
+    //	Example: To parse lines such as "x=156 y=34".
+    //		cin >> eat("x=") >> x >> eat("y=") >> y;
+    //	The difference with match is that it will silently
+    //	ignore the strings if they are not on the stream
+    //	and the stream will remain in the good state.
+    //	So 156 34 will also be accepted as an input line.
+    //	Note that x156 34 or any other variation will not
+    //	be accepted.
 
 
     inline std::istream&
@@ -295,15 +296,15 @@ namespace io_utils {
         return is;
     }
 
-	inline imanip<const char*>
-	eat(const char* str) {
-		return imanip<const char*>(eat_string_internal,str);
-	}
+    inline imanip<const char*>
+    eat(const char* str) {
+        return imanip<const char*>(eat_string_internal,str);
+    }
 
-	inline imanip<const char*>
-	eat(const std::string& str) {
-		return imanip<const char*>(eat_string_internal,str.c_str());
-	}
+    inline imanip<const char*>
+    eat(const std::string& str) {
+        return imanip<const char*>(eat_string_internal,str.c_str());
+    }
 
     //	Skip everything until string s is found on the stream.
 
@@ -323,15 +324,15 @@ namespace io_utils {
         return is;
     }
 
-	inline imanip<const char*>
-	skip_to(const char* str) {
-		return imanip<const char*>(skip_to_internal,str);	
-	}
+    inline imanip<const char*>
+    skip_to(const char* str) {
+        return imanip<const char*>(skip_to_internal,str);
+    }
 
-	inline imanip<const char*>
-	skip_to(const std::string& str) {
-		return imanip<const char*>(skip_to_internal,str.c_str());	
-	}
+    inline imanip<const char*>
+    skip_to(const std::string& str) {
+        return imanip<const char*>(skip_to_internal,str.c_str());
+    }
 
     //  An optional input is a field eventually put before the
     //  end of the line.
@@ -367,7 +368,7 @@ namespace io_utils {
         t = static_cast<char>(i);
         return is;
     }
-    
+
     inline std::istream&
     numeric_internal(std::istream& is,unsigned char& t) {
         unsigned i;
@@ -402,13 +403,13 @@ namespace io_utils {
             is.get(c);
             delimiter_seen = true;
         }
-            
+
         //  Read the string content.
 
         while (is.get(c) && c!=delimiter) {
             if (delimiter_seen && c==delimiter)
                 break;
-            if (!delimiter_seen && isspace(c,is.getloc()))
+            if (!delimiter_seen && std::isspace(c,is.getloc()))
                 break;
             filename += c;
         }
