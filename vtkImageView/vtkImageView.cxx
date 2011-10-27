@@ -16,7 +16,6 @@
  
  =========================================================================*/
 #include "vtkImageView.h"
-
 #include "vtkObjectFactory.h"
 #include "vtkMath.h"
 #include "vtkMatrix4x4.h"
@@ -78,6 +77,7 @@ namespace {
     IMAGE_VIEW_UCHARVECTOR3TYPE,
     IMAGE_VIEW_FLOATVECTOR3TYPE  };
 }
+
 
 // pIMPL class for vtkImageView
 class vtkImageView::vtkImageViewImplementation {
@@ -145,7 +145,7 @@ vtkImageView::vtkImageView()
   
 #ifdef vtkINRIA3D_USE_ITK
   this->Impl = new vtkImageViewImplementation;
-  this->ITKInput  = 0;
+  //this->ITKInput  = 0;
   this->ITKInput4 = 0;
 #endif
   
@@ -438,6 +438,7 @@ vtkImageData *vtkImageView::ResliceImageToInput(vtkImageData *image, vtkMatrix4x
 //----------------------------------------------------------------------------
 void vtkImageView::SetInput(vtkImageData *arg, vtkMatrix4x4 *matrix, int layer) 
 {
+  
   vtkSetObjectBodyMacro (Input, vtkImageData, arg);
   if (layer==0)
   {
@@ -1519,19 +1520,23 @@ break ;					\
 //----------------------------------------------------------------------------
 template < class T >
 inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkImage, int layer)
-{									
+{			
+
   if( itkImage.IsNull() )
   {
     return;
   }
+
   itkImage->UpdateOutputInformation();
-  if (this->ITKInput==itkImage)
+ /* if (this->ITKInput==itkImage)
+    return;*/
+  if (layer < this->ITKInputVector.size() && (this->ITKInputVector[layer]==itkImage) )
     return;
+
   typedef itk::ImageToVTKImageFilter< itk::Image<T, 3> > ConverterType;
   typename ConverterType::Pointer myConverter = ConverterType::New();
   myConverter->SetInput ( itkImage );
   myConverter->UpdateOutputInformation();
-
   /**
      The origin in ITK pipeline is taken into account in a different
      way than in the VTK equivalent.
@@ -1563,8 +1568,13 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
   */
   this->SetInput ( myConverter->GetOutput(), matrix, layer);
   this->Impl->ImageConverter[layer] = myConverter;
-  if (layer==0)
-    this->ITKInput = itkImage;
+
+ /* if (layer==0)
+    this->ITKInput = itkImage;*/
+  if(this->ITKInputVector.size() <= layer)
+      this->ITKInputVector.push_back((itk::ImageBase<3>::Pointer)itkImage);
+  else
+    this->ITKInputVector[layer] = itkImage;
   this->Modified();
   matrix->Delete();
 }
@@ -1633,9 +1643,11 @@ vtkImplementSetITKInputMacro (RGBPixelType);
 vtkImplementSetITKInputMacro (RGBAPixelType);
 vtkImplementSetITKInputMacro (UCharVector3Type);
 vtkImplementSetITKInputMacro (FloatVector3Type);
-itk::ImageBase<3>* vtkImageView::GetITKInput (void) const
+//itk::ImageBase<3>* vtkImageView::GetITKInput (void) const
+std::vector< itk::ImageBase<3>::Pointer>  vtkImageView::GetITKInput (void) const
 {
-  return this->ITKInput;
+ // return this->ITKInput;
+  return this->ITKInputVector;
 }
 
 #define vtkImplementSetITKInput4Macro(type)				\
