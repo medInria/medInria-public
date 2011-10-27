@@ -1,0 +1,35 @@
+on run
+	do shell script ("rm -f @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg @CMAKE_INSTALL_PREFIX@/MedINRIA.dmg")
+	do shell script ("hdiutil create -srcfolder \"@CMAKE_INSTALL_PREFIX@/bin/medinria.app\" -volname \"MedINRIA v2.0\" -fs HFS+ -fsargs \"-c c=64,a=16,e=16\" -format UDRW -size 270M @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg")
+	set device to do shell script ("hdiutil attach -readwrite -noverify -noautoopen \"@CMAKE_INSTALL_PREFIX@/TmpPackage.dmg\" | egrep '^/dev/' | sed 1q | awk '{print $1}' ")
+	
+	do shell script ("mkdir -p /Volumes/\"MedINRIA v2.0\"/.background")
+	do shell script ("cp -p @PROJECT_SOURCE_DIR@/app/medinria/pixmaps/medinria-logo.png /Volumes/\"MedINRIA v2.0\"/.background")
+	
+	tell application "Finder"
+		tell disk "MedINRIA v2.0"
+			open
+			set current view of container window to icon view
+			set toolbar visible of container window to false
+			set statusbar visible of container window to false
+			set bounds of container window to {400, 100, 1060, 490}
+			set theViewOptions to the icon view options of container window
+			set arrangement of theViewOptions to not arranged
+			set icon size of theViewOptions to 72
+			set background picture of theViewOptions to file ".background:medinria-logo.png"
+			make new alias file at container window to POSIX file "/Applications" with properties {name:"Applications"}
+			set position of item "medinria" of container window to {100, 300}
+			set position of item "Applications" of container window to {550, 300}
+			close
+			open
+			update without registering applications
+			delay 5
+		end tell
+	end tell
+	
+	do shell script ("sync")
+	do shell script ("sync")
+	do shell script "hdiutil detach " & device
+	do shell script ("hdiutil convert \"@CMAKE_INSTALL_PREFIX@/TmpPackage.dmg\" -format UDZO -imagekey zlib-level=9 -o \"@CMAKE_INSTALL_PREFIX@/MedINRIA.dmg\"")
+	do shell script ("rm -f @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg")
+end run
