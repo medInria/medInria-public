@@ -157,6 +157,7 @@ vtkStandardNewMacro(vtkImageView2D);
 //----------------------------------------------------------------------------
 vtkImageView2D::vtkImageView2D()
 {
+  
   this->Axes2DWidget        = vtkAxes2DWidget::New();
   this->RulerWidget         = vtkRulerWidget::New();
   this->DistanceWidget      = vtkDistanceWidget::New();
