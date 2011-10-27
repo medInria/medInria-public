@@ -341,6 +341,7 @@ void
 
 void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, int imageLayer)
 {
+    
     if(!data)
         return;
     QString layerItemString = QString::number(imageLayer);
@@ -633,7 +634,7 @@ void medViewerToolBoxViewProperties::onDataAdded( int layer)
 void
     medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data, int layer)
 {
-   
+  
     if(!data)
         return;
     if (!d->view)

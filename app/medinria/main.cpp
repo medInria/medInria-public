@@ -37,6 +37,7 @@
 
 int main(int argc, char *argv[])
 {
+
     qRegisterMetaType<medDataIndex>("medDataIndex");
     medApplication application(argc, argv);
 
