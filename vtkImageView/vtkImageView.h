@@ -533,7 +533,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual void SetITKInput (itk::Image<RGBAPixelType, 3>::Pointer input, int layer=0);
   virtual void SetITKInput (itk::Image<UCharVector3Type, 3>::Pointer input, int layer=0);
   virtual void SetITKInput (itk::Image<FloatVector3Type, 3>::Pointer input, int layer=0);
-  std::vector< itk::ImageBase<3>::Pointer>  GetITKInput (void) const;
+  itk::ImageBase<3>*  GetITKInput (int layer = 0) const;
 
   /**
      NT: 
@@ -757,7 +757,6 @@ private:
   class vtkImageViewImplementation;
   vtkImageViewImplementation * Impl;
 
-  itk::ImageBase<3>::Pointer  ITKInput;
   std::vector< itk::ImageBase<3>::Pointer> ITKInputVector;
   itk::ImageBase<4>::Pointer  ITKInput4;
 

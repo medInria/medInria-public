@@ -1569,10 +1569,10 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
   this->SetInput ( myConverter->GetOutput(), matrix, layer);
   this->Impl->ImageConverter[layer] = myConverter;
 
- /* if (layer==0)
-    this->ITKInput = itkImage;*/
-  if(this->ITKInputVector.size() <= layer)
-      this->ITKInputVector.push_back((itk::ImageBase<3>::Pointer)itkImage);
+  if(this->ITKInputVector.size() <= layer) {
+      this->ITKInputVector.resize (layer+1);
+      this->ITKInputVector[layer] = itkImage;
+  }
   else
     this->ITKInputVector[layer] = itkImage;
   this->Modified();
@@ -1643,11 +1643,12 @@ vtkImplementSetITKInputMacro (RGBPixelType);
 vtkImplementSetITKInputMacro (RGBAPixelType);
 vtkImplementSetITKInputMacro (UCharVector3Type);
 vtkImplementSetITKInputMacro (FloatVector3Type);
-//itk::ImageBase<3>* vtkImageView::GetITKInput (void) const
-std::vector< itk::ImageBase<3>::Pointer>  vtkImageView::GetITKInput (void) const
+
+itk::ImageBase<3>* vtkImageView::GetITKInput (int layer) const
 {
- // return this->ITKInput;
-  return this->ITKInputVector;
+  if (layer < this->ITKInputVector.size())
+    return this->ITKInputVector[layer];
+  return NULL;
 }
 
 #define vtkImplementSetITKInput4Macro(type)				\
