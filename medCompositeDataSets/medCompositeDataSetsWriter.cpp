@@ -11,7 +11,7 @@
 #include <dtkZip/dtkZipWriter.h>
 
 #include <medCompositeDataSetsBase.h>
-#include <dirTools.h>
+#include<dirTools.h>
 
 static bool error(const QString& dirname) {
     RemoveDirectory(QDir(dirname));
@@ -22,19 +22,25 @@ bool medCompositeDataSetsWriter::write(const QString& path) {
 
     //  Write the data in a temporary directory.
 
-    const QString& dirn   = zip_dirname(path);
-    const QString& tmpnam = mkdtemp((QDir::tempPath()+"/"+"medcdsXXXXXX").toAscii().data());
-    const QString& tmpdir = tmpnam+"/"+dirn;
-    if (mkdir(tmpdir.toAscii().data(),0700)) {
-        qWarning() << tr("medCompositeDataSets: cannot create directory ") << tmpdir.toLocal8Bit().constData();
-        return error(tmpnam);
+    const QString& zipdirn = zip_dirname(path);
+    QDir systemTmpDir = QDir::temp();
+    const QString& tmpDirn = "medcdsXXXXXX/";
+    const QString& tmpDirPath =QDir::cleanPath(
+            systemTmpDir.absolutePath()+"/"+tmpDirn);
+    const QString& zipDirPath = tmpDirPath+"/"+zipdirn;
+
+    if (!systemTmpDir.mkpath(zipDirPath))
+    {
+        qWarning() << tr("medCompositeDataSets: cannot create directory ")
+                      << zipDirPath;
+        return error(tmpDirPath);
     }
 
-    const QString descname(tmpdir+"/Description.txt");
+    const QString descname(zipDirPath+"/Description.txt");
     QFile desc(descname);
     if (!desc.open(QIODevice::WriteOnly)) {
         qWarning() << tr("medCompositeDataSets: cannot open file ") << descname.toLocal8Bit().constData();
-        return error(tmpnam);
+        return error(tmpDirPath);
     }
     QTextStream out(&desc);
 
@@ -42,7 +48,7 @@ bool medCompositeDataSetsWriter::write(const QString& path) {
     if (!writer) {
         //emit showError(this, tr ("Could not write this data type: ")+data()->description(), 5000);
         qWarning() << tr ("Could not write this data type: ")+data()->identifier();
-        return error(tmpnam);
+        return error(tmpDirPath);
     }
 
     out << "# MEDINRIA COMPOSITE DATA: " << writer->tag() << ' ' << writer->version() << '\n';
@@ -50,7 +56,7 @@ bool medCompositeDataSetsWriter::write(const QString& path) {
     writer->write_description(out);
     out.flush();
     desc.close();
-    writer->write_data(tmpdir);
+    writer->write_data(zipDirPath);
 
     //  Zip the temporary directory.
 
@@ -58,22 +64,22 @@ bool medCompositeDataSetsWriter::write(const QString& path) {
     if (zip.status()!=dtkZipWriter::NoError)
         return false;
 
-    foreach(QFileInfo file,QDir(tmpdir).entryInfoList()) {
+    foreach(QFileInfo file,QDir(zipDirPath).entryInfoList()) {
 
         if (!file.isFile())
             continue;
 
-        QFile inFile(tmpdir+"/"+file.fileName());
+        QFile inFile(zipDirPath+"/"+file.fileName());
         if(!inFile.open(QIODevice::ReadOnly)) {
             qWarning("medCompositeDataSets: inFile.open(): %s",inFile.errorString().toLocal8Bit().constData());
-            return error(tmpnam);
+            return error(tmpDirPath);
         }
 
-        zip.addFile(dirn+"/"+file.fileName(),&inFile);
+        zip.addFile(zipdirn+"/"+file.fileName(),&inFile);
         inFile.close();
     }
     zip.close();
 
-    RemoveDirectory(QDir(tmpnam));
+    RemoveDirectory(QDir(tmpDirPath));
     return true;
 }
