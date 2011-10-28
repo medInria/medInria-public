@@ -11,32 +11,32 @@
 
 int main(int argc, char **argv)
 {
-	QApplication application(argc, argv);
-	application.setApplicationName("ITKProcessExampleTesting");
-	application.setApplicationVersion("0.0.1");
-	application.setOrganizationName("INRIA");
-	application.setOrganizationDomain("FR");
-	
-	dtkPluginManager::instance()->initialize();
-		
-	dtkAbstractData *inputImage = dynamic_cast <dtkAbstractData *>(dtkAbstractDataFactory::instance()->create("itkDataImageFloat3"));
-	inputImage->enableReader("itkNrrdDataImageReader");
-	inputImage->read(argv[1]);
-	
-	dtkAbstractProcess *worker = dynamic_cast <dtkAbstractProcess *>(dtkAbstractProcessFactory::instance()->create("ITKProcessExampleGaussianBlur"));
+    QCoreApplication application(argc, argv);
+    application.setApplicationName("ITKProcessExampleTesting");
+    application.setApplicationVersion("0.0.1");
+    application.setOrganizationName("INRIA");
+    application.setOrganizationDomain("FR");
 
-	worker->setInput(inputImage);
-	worker->setParameter(2.0,0);
-	
-	qDebug() << "in main, calling worker->update...";
-	worker->update();
+    dtkPluginManager::instance()->initialize();
 
-	worker->output()->enableWriter("itkNrrdDataImageWriter");
-	worker->output()->write(argv[2]);
-	
-	qDebug() << "in main, after writing result image";
+    dtkAbstractData *inputImage = dynamic_cast <dtkAbstractData *>(dtkAbstractDataFactory::instance()->create("itkDataImageFloat3"));
+    inputImage->enableReader("itkNrrdDataImageReader");
+    inputImage->read(argv[1]);
 
-	dtkPluginManager::instance()->uninitialize();
-	
-	return DTK_SUCCEED;
+    dtkAbstractProcess *worker = dynamic_cast <dtkAbstractProcess *>(dtkAbstractProcessFactory::instance()->create("ITKProcessExampleGaussianBlur"));
+
+    worker->setInput(inputImage);
+    worker->setParameter(2.0,0);
+
+    qDebug() << "in main, calling worker->update...";
+    worker->update();
+
+    worker->output()->enableWriter("itkNrrdDataImageWriter");
+    worker->output()->write(argv[2]);
+
+    qDebug() << "in main, after writing result image";
+
+    dtkPluginManager::instance()->uninitialize();
+
+    return DTK_SUCCEED;
 }

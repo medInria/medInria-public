@@ -149,22 +149,22 @@ bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered(void)
 void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
 {
 
-    if(!this->parent())
+    if(!this->parentToolBox())
         return;
     dtkAbstractProcess * process;
 
-    if (this->parent()->process())
+    if (this->parentToolBox()->process())
     {
-        process = this->parent()->process();
+        process = this->parentToolBox()->process();
 
     }
     else
     {
         process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons");
-        this->parent()->setProcess(process);
+        this->parentToolBox()->setProcess(process);
     }
-    dtkAbstractData *fixedData = this->parent()->fixedData();
-    dtkAbstractData *movingData = this->parent()->movingData();
+    dtkAbstractData *fixedData = this->parentToolBox()->fixedData();
+    dtkAbstractData *movingData = this->parentToolBox()->movingData();
 
 
     if (!fixedData || !movingData)

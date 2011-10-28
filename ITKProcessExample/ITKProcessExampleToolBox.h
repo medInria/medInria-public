@@ -11,7 +11,7 @@ class ITKProcessExampleToolBox : public medToolBoxFilteringCustom
     Q_OBJECT
 
 public:
-     ITKProcessExampleToolBox(QWidget *parent = 0);
+     ITKProcessExampleToolBox(QWidget *parentToolBox = 0);
     ~ITKProcessExampleToolBox(void);
 
 public:

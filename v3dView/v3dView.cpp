@@ -760,41 +760,50 @@ vtkRenderer *v3dView::renderer3d ( void )
 
 void v3dView::setSharedDataPointer ( dtkSmartPointer<dtkAbstractData> data )
 {
-    int layer = 0;
-    while ( d->view2d->GetImageInput ( layer ) )
-    {
-        layer++;
-    }
+    if ( !data )
+        return;
+     int layer = 0, imageLayer = 0;
+     dtkAbstractData * dataInLayer;
+     while ( dataInLayer = medAbstractView::dataInList( layer ) )
+     {
+         if(!dataInLayer->identifier().contains ( "vtkDataMesh" ))
+             imageLayer++;
+         
+         layer++;
+         
+     }
 
-    d->sharedData[layer] = data;
+     //qDebug() << "this->layerCount() : " << this->layerCount();
+     d->sharedData[layer] = data;
+ 
+     this->setData ( data.data(), imageLayer );
 
-    this->setData ( data.data(), layer );
 }
 
 void v3dView::setData ( dtkAbstractData *data )
 {
-    if ( !data )
-        return;
+    //if ( !data )
+    //    return;
 
-    /*
-    if(medAbstractView::isInList(data)) // called in setData(data, layer) !
-        return;
-    */
+    ///*
+    //if(medAbstractView::isInList(data)) // called in setData(data, layer) !
+    //    return;
+    //*/
 
-    int layer = 0;
-    while ( d->view2d->GetImageInput ( layer ) )
-    {
-        layer++;
-    }
+    //int layer = 0;
+    //while ( d->view2d->GetImageInput ( layer ) )
+    //{
+    //    layer++;
+    //}
 
-    if ( data->identifier().contains ( "vtkDataMesh" ) && layer )
-    {
-        layer--;
-    }
+    //if ( data->identifier().contains ( "vtkDataMesh" ) && layer )
+    //{
+    //    layer--;
+    //}
 
-    this->setData ( data, layer );
+    //this->setData ( data, layer );
 
-    // this->update(); // update is not the role of the plugin, but of the app
+    //// this->update(); // update is not the role of the plugin, but of the app
 }
 
 //  TO: TODO
@@ -840,13 +849,15 @@ bool v3dView::SetViewInputWithConversion(const char* type,const char* newtype,dt
 
 void v3dView::setData ( dtkAbstractData *data, int layer )
 {
+    
+
     if ( !data )
         return;
 
     if ( medAbstractView::isInList ( data, layer ) )
         return;
 
-    if ( layer == 0 && data->identifier().contains ( "vtkDataMesh" ) )
+    if ( layer == 0 && data->identifier().contains ( "vtkDataMesh" ) && medAbstractView::dataInList(layer) == NULL)
     {
         medMessageController::instance()->showError ( this, tr ( "Select image first" ), 5000 );
         return;
@@ -1004,7 +1015,8 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         }
     }
 
-    this->addDataInList ( data, layer );
+    //this->addDataInList ( data, layer );
+    this->addDataInList ( data);
     emit dataAdded ( data );
     emit dataAdded ( data, layer );
 }
@@ -1636,7 +1648,9 @@ void v3dView::onMenuSagittalTriggered ( void )
 
     this->setProperty ( "Orientation", "Sagittal" );
     d->view2d->Render();
+
     emit TwoDTriggered ( this );
+
 }
 
 void v3dView::onMenu3DTriggered ( void )

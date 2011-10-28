@@ -51,15 +51,18 @@ int v3dViewTest(int argc, char *argv[])
 
     medViewPool *pool = new medViewPool;
 
-    medAbstractView *view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create ("v3dView"));
+    dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"));
     if (!view) {
         qDebug() << "Cannot create view object from plugin";
         return EXIT_FAILURE;
     }
 
-    medAbstractView *view2 = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create ("v3dView"));
-    medAbstractView *view3 = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create ("v3dView"));
-    medAbstractView *view4 = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create ("v3dView"));
+    dtkSmartPointer<medAbstractView> view2 =
+            qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer ("v3dView"));
+    dtkSmartPointer<medAbstractView> view3 =
+            qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer ("v3dView"));
+    dtkSmartPointer<medAbstractView> view4 =
+            qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer ("v3dView"));
 
 
     view->widget()->move(20,20);
@@ -343,6 +346,11 @@ int v3dViewTest(int argc, char *argv[])
   view->setProperty ("ShowAxis" ,"true"); view->update();
   view->setProperty ("ShowAxis" ,"false"); view->update();
  */
+
+    view->close();
+    view2->close();
+    view3->close();
+    view4->close();
 
     clock_t t2 = clock();
 

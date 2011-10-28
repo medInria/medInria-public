@@ -46,7 +46,9 @@ include(${ITK_USE_FILE})
 set(${PROJECT_NAME}_HEADERS_MOC
   itkDataTensorImageWriterPlugin.h
   itkDataTensorImageWriterBase.h
-  itkMetaDataTensorImageWriter.h)
+  itkMetaDataTensorImageWriter.h
+  itkNiftiDataTensorImageWriter.h
+  itkNrrdDataTensorImageWriter.h)
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})
@@ -54,7 +56,9 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   itkDataTensorImageWriterPlugin.cpp
   itkDataTensorImageWriterBase.cpp
-  itkMetaDataTensorImageWriter.cpp)
+  itkMetaDataTensorImageWriter.cpp
+  itkNiftiDataTensorImageWriter.cpp
+  itkNrrdDataTensorImageWriter.cpp)
 
 ## #################################################################
 ## Build rules
