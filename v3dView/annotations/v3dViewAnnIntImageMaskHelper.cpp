@@ -96,8 +96,6 @@ void v3dViewAnnIntImageMaskHelper::annotationModified( medAnnotationData * annDa
     if ( layer < 0 )
         return;
 
-    view->setData(imad, layer);
-    view->setData(imad->maskData(), layer);
     view->update();
 }
 
