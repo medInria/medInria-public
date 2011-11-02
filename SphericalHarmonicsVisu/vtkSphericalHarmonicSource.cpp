@@ -574,31 +574,22 @@ vtkSphericalHarmonicSource::UpdateSphericalHarmonicSource() {
     switch (TesselationBasis) {
     case SHMatrix:
     {
-        std::ofstream testfile ("/user/jgarciag/home/tests/ComputeSHMatrixTR1_BOOST.txt");
         BasisFunction = ComputeSHMatrix(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection); break;
-        testfile.close();
 
     }
     case SHMatrixMaxThesis:
     {
-        std::ofstream testfile ("/user/jgarciag/home/tests/ComputeSHMatrixMaxThesis.txt");
         BasisFunction = ComputeSHMatrixMaxThesis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection); break;
-        testfile.close();
 
     }
     case SHMatrixTournier:
     {
-        std::ofstream testfile ("/user/jgarciag/home/tests/ComputeSHMatrixTourinerTR1_BOOST.txt");
         BasisFunction = ComputeSHMatrixTournier(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection); break;
-        testfile.close();
 
     }
     case SHMatrixRshBasis:
     {
-        std::ofstream testfile ("/user/jgarciag/home/tests/ComputeSHMatrixRshBasisTR1_BOOST.txt");
         BasisFunction = ComputeSHMatrixRshBasis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection); break;
-        testfile.close();
-
     }
     }
     PhiThetaShellDirections = PhiThetaDirection;
