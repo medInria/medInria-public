@@ -51,6 +51,12 @@ public:
 
     void run(void);
 
+    /**
+      Returns the index of the data which has been read. Index is not
+      valid if reading was not successful.
+    */
+    medDataIndex index(void) const;
+
 signals:
 
     /**

@@ -69,4 +69,6 @@ private:
     medViewerConfigurationSegmentationPrivate *d;
 };
 
+medViewerConfiguration *createMedViewerConfigurationSegmentation(QWidget* parent);
+
 #endif // MEDVIEWERCONFIGURATIONSEGMENTATION_H

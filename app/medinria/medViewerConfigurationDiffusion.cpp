@@ -8,6 +8,7 @@
 
 #include <medDataManager.h>
 
+#include "medViewerToolBoxViewProperties.h"
 #include "medToolBoxDiffusionTensorView.h"
 #include "medToolBoxDiffusion.h"
 #include "medToolBoxDiffusionFiberView.h"
@@ -19,7 +20,8 @@
 class medViewerConfigurationDiffusionPrivate
 {
 public:
-   
+
+    medViewerToolBoxViewProperties      *viewPropertiesToolBox;
     medToolBoxDiffusionFiberView        *fiberViewToolBox;
     medToolBoxDiffusionFiberBundling    *fiberBundlingToolBox;
     medToolBoxDiffusion                 *diffusionToolBox;
@@ -32,13 +34,12 @@ public:
 
 medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationDiffusionPrivate)
 {
-    
-    // -- Bundling  toolbox --
+    d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
 
+    // -- Bundling  toolbox --
     d->fiberBundlingToolBox = new medToolBoxDiffusionFiberBundling(parent);
 
     // -- Diffusion toolbox --
-
     d->diffusionToolBox = new medToolBoxDiffusion(parent);
 
     connect(d->diffusionToolBox, SIGNAL(addToolBox(medToolBox *)),
@@ -68,9 +69,10 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
     connect(d->diffusionToolBox, SIGNAL(success()),                  this, SLOT(onTBDiffusionSuccess()));
 
     
-    this->addToolBox( d->tensorViewToolBox );
-    this->addToolBox( d->fiberViewToolBox );
     this->addToolBox( d->diffusionToolBox );
+    this->addToolBox( d->viewPropertiesToolBox );
+    this->addToolBox( d->tensorViewToolBox );
+    this->addToolBox( d->fiberViewToolBox );    
     this->addToolBox( d->fiberBundlingToolBox );
 }
 
@@ -138,7 +140,11 @@ void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
     view->enableInteractor ("v3dViewTensorInteractor");
 
     if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
+    {
         connect(d->fiberViewToolBox, SIGNAL(fiberRadiusSet(int)), interactor, SLOT(onRadiusSet(int)));
+
+        updateFiberInteractorWithToolboxValues(interactor, d->fiberViewToolBox);
+    }
 
     if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor"))
     {
@@ -163,8 +169,6 @@ void medViewerConfigurationDiffusion::onViewAdded (dtkAbstractView *view)
         connect(d->tensorViewToolBox, SIGNAL(hideShowAxial(bool)), view, SLOT(update(void)));
         connect(d->tensorViewToolBox, SIGNAL(hideShowCoronal(bool)), view, SLOT(update(void)));
         connect(d->tensorViewToolBox, SIGNAL(hideShowSagittal(bool)), view, SLOT(update(void)));
-
-        connect(view, SIGNAL(positionChanged(const QVector3D&,bool)), interactor, SLOT(onPositionChanged(const QVector3D&,bool)));
 
         updateTensorInteractorWithToolboxValues(interactor, d->tensorViewToolBox);
     }
@@ -209,6 +213,43 @@ void medViewerConfigurationDiffusion::updateTensorInteractorWithToolboxValues(dt
 
     bool isShowSagittal = tensorViewToolBox->isShowSagittal();
     QMetaObject::invokeMethod( interactor, "onHideShowSagittalPropertySet", Qt::QueuedConnection, Q_ARG( bool, isShowSagittal ) );
+}
+
+void medViewerConfigurationDiffusion::updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionFiberView* fiberViewToolBox)
+{
+    // we are temporary using Qt's reflection in this function to call the slots in the interactor
+    // without casting to a specific type (which is in a plugin)
+    // this code will be modified once a refactor in dtk property system is done
+    // (we might switch to QVariant instead of strings)
+    // TODO refactor this...
+
+    int fiberRadius = d->fiberViewToolBox->fiberRadius();
+    QMetaObject::invokeMethod( interactor, "onRadiusSet", Qt::QueuedConnection, Q_ARG( int, fiberRadius ) );
+
+    int fiberColorMode = d->fiberViewToolBox->fiberColorMode();
+
+    if (fiberColorMode==0)
+        interactor->setProperty("ColorMode","local");
+    if (fiberColorMode==1)
+        interactor->setProperty("ColorMode","global");
+    if (fiberColorMode==2)
+        interactor->setProperty("ColorMode","fa");
+
+
+    bool isGPUActivated = d->fiberViewToolBox->isGPUActivated();
+    interactor->setProperty ("GPUMode", isGPUActivated ? "true" : "false");
+
+    bool isLineModeSelected = d->fiberViewToolBox->isLineModeSelected();
+    if (isLineModeSelected)
+        interactor->setProperty ("RenderingMode", "lines");
+
+    bool isRibbonModeSelected = d->fiberViewToolBox->isRibbonModeSelected();
+    if (isRibbonModeSelected)
+        interactor->setProperty ("RenderingMode", "ribbons");
+
+    bool isTubesModeSelected = d->fiberViewToolBox->isTubesModeSelected();
+    if (isTubesModeSelected)
+        interactor->setProperty ("RenderingMode", "tubes");
 }
 
 void medViewerConfigurationDiffusion::onViewRemoved (dtkAbstractView *view)

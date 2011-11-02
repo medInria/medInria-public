@@ -166,7 +166,7 @@ public:
 
     bool isInList(dtkAbstractData * data, int layer);
     void addDataInList(dtkAbstractData * data, int layer);
-
+    void addDataInList(dtkAbstractData * data);
     dtkAbstractData* dataInList(int layer);
     void setDataInList(dtkAbstractData * data, int layer);
 
@@ -341,9 +341,6 @@ public slots:
 
 
     void setFullScreen( bool state );
-
-    virtual void onDataRemoved( int layer, dtkAbstractData* data);
-    virtual void onDataAdded( int layer, dtkAbstractData* data);
 
 protected:
     void emitViewSliceChangedEvent    (int slice);

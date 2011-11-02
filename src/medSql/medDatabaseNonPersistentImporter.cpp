@@ -111,8 +111,9 @@ void medDatabaseNonPersistentImporter::run ( void )
         patientDbId = medDatabaseNonPersistentController::instance()->patientId ( true );
 
     int     studyDbId   = -1;
-    QString studyName = data->metaDataValues ( medMetaDataKeys::StudyDescription.key() ) [0];
+
     // Optional, will use empty string otherwise.
+    QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(data);
     QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(data);
     QString studyId = medMetaDataKeys::StudyID.getFirstValue(data);
 
@@ -137,7 +138,7 @@ void medDatabaseNonPersistentImporter::run ( void )
 
     index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, studyDbId, medDatabaseNonPersistentController::instance()->seriesId ( true ), -1 );
 
-    QString seriesName = data->metaDataValues ( medMetaDataKeys::SeriesDescription.key() ) [0];
+    QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
     QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(data);
     QString seriesId = medMetaDataKeys::SeriesID.getFirstValue(data);
 

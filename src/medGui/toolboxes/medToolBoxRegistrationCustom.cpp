@@ -43,7 +43,7 @@ void medToolBoxRegistrationCustom::setRegistrationToolBox(medToolBoxRegistration
     d->parent = toolbox;
 }
 
-medToolBoxRegistration *medToolBoxRegistrationCustom::parent(void)
+medToolBoxRegistration *medToolBoxRegistrationCustom::parentToolBox(void)
 {
     return d->parent;
 }

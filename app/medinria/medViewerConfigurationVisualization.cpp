@@ -31,7 +31,6 @@ public:
     medViewerToolBoxLayout              *layoutToolBox;
     medViewerToolBoxTime                *timeToolBox;
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
-
 };
 
 medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationVisualizationPrivate)

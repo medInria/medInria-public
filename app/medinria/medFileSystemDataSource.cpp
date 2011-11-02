@@ -98,6 +98,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     connect(d->finder, SIGNAL(changed(QString)), d->path, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(changed(QString)), d->toolbar, SLOT(setPath(QString)));
+    connect(d->finder, SIGNAL(fileDoubleClicked(const QString&)), this, SLOT(onFileDoubleClicked(const QString&)));
 
     connect(d->path, SIGNAL(changed(QString)), d->finder, SLOT(setPath(QString)));
     connect(d->path, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
@@ -164,4 +165,11 @@ void medFileSystemDataSource::onFileSystemViewClicked()
 {
     QFileInfo info(d->finder->selectedPath());
     emit open(info.absoluteFilePath());
+}
+
+void medFileSystemDataSource::onFileDoubleClicked(const QString& filename)
+{
+    QFileInfo info(filename);
+    if (info.isFile())
+        emit open(info.absoluteFilePath());
 }

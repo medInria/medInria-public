@@ -86,12 +86,18 @@ void medDatabaseWriter::run ( void )
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
-
+    
+    if ( !d->data->hasMetaData ( medMetaDataKeys::StudyDicomID.key() ) )
+        d->data->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "0" );
+    
     QString generatedSeriesID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesID );
-
+    
+    if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesDicomID.key() ) )
+        d->data->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << generatedSeriesID );
+    
     if ( !d->data->hasMetaData ( medMetaDataKeys::Orientation.key() ) )
         d->data->addMetaData ( medMetaDataKeys::Orientation.key(), QStringList() << "" );
 
@@ -160,39 +166,39 @@ void medDatabaseWriter::run ( void )
         size = QString::number ( imagedata->zDimension() );
     d->data->addMetaData ( medMetaDataKeys::Size.key(), size );
 
-    QString patientName = d->data->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
-    QString patientId   = d->data->metaDataValues ( medMetaDataKeys::PatientID.key() ) [0];
-    QString studyName   = d->data->metaDataValues ( medMetaDataKeys::StudyDescription.key() ) [0];
-    QString seriesName  = d->data->metaDataValues ( medMetaDataKeys::SeriesDescription.key() ) [0];
+    QString patientName = medMetaDataKeys::PatientName.getFirstValue(d->data);
+    QString patientId   = medMetaDataKeys::PatientID.getFirstValue(d->data);
+    QString studyName   = medMetaDataKeys::StudyDescription.getFirstValue(d->data);
+    QString seriesName  = medMetaDataKeys::SeriesDescription.getFirstValue(d->data);
 
-    QString studyId        = d->data->metaDataValues ( medMetaDataKeys::StudyID.key() ) [0];
-    QString studyUid       = d->data->metaDataValues ( medMetaDataKeys::StudyDicomID.key() ) [0];
+    QString studyId        = medMetaDataKeys::StudyID.getFirstValue(d->data);
+    QString studyUid       = medMetaDataKeys::StudyDicomID.getFirstValue(d->data);
 
-    QString seriesId       = d->data->metaDataValues ( medMetaDataKeys::SeriesID.key() ) [0];
-    QString seriesUid      = d->data->metaDataValues ( medMetaDataKeys::SeriesDicomID.key() ) [0];
-    QString orientation    = d->data->metaDataValues ( medMetaDataKeys::Orientation.key() ) [0];
-    QString seriesNumber   = d->data->metaDataValues ( medMetaDataKeys::SeriesNumber.key() ) [0];
-    QString sequenceName   = d->data->metaDataValues ( medMetaDataKeys::SequenceName.key() ) [0];
-    QString sliceThickness = d->data->metaDataValues ( medMetaDataKeys::SliceThickness.key() ) [0];
-    QString rows           = d->data->metaDataValues ( medMetaDataKeys::Rows.key() ) [0];
-    QString columns        = d->data->metaDataValues ( medMetaDataKeys::Columns.key() ) [0];
-    QString age            = d->data->metaDataValues ( medMetaDataKeys::Age.key() ) [0];
-    QString birthdate      = d->data->metaDataValues ( medMetaDataKeys::BirthDate.key() ) [0];
-    QString gender         = d->data->metaDataValues ( medMetaDataKeys::Gender.key() ) [0];
-    QString description    = d->data->metaDataValues ( medMetaDataKeys::Description.key() ) [0];
-    QString modality       = d->data->metaDataValues ( medMetaDataKeys::Modality.key() ) [0];
-    QString protocol       = d->data->metaDataValues ( medMetaDataKeys::Protocol.key() ) [0];
-    QString comments       = d->data->metaDataValues ( medMetaDataKeys::Comments.key() ) [0];
-    QString status         = d->data->metaDataValues ( medMetaDataKeys::Status.key() ) [0];
-    QString acqdate        = d->data->metaDataValues ( medMetaDataKeys::AcquisitionDate.key() ) [0];
-    QString importdate     = d->data->metaDataValues ( medMetaDataKeys::ImportationDate.key() ) [0];
-    QString referee        = d->data->metaDataValues ( medMetaDataKeys::Referee.key() ) [0];
-    QString performer      = d->data->metaDataValues ( medMetaDataKeys::Performer.key() ) [0];
-    QString institution    = d->data->metaDataValues ( medMetaDataKeys::Institution.key() ) [0];
-    QString report         = d->data->metaDataValues ( medMetaDataKeys::Report.key() ) [0];
+    QString seriesId       = medMetaDataKeys::SeriesID.getFirstValue(d->data);
+    QString seriesUid      = medMetaDataKeys::SeriesDicomID.getFirstValue(d->data);
+    QString orientation    = medMetaDataKeys::Orientation.getFirstValue(d->data);
+    QString seriesNumber   = medMetaDataKeys::SeriesNumber.getFirstValue(d->data);
+    QString sequenceName   = medMetaDataKeys::SequenceName.getFirstValue(d->data);
+    QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(d->data);
+    QString rows           = medMetaDataKeys::Rows.getFirstValue(d->data);
+    QString columns        = medMetaDataKeys::Columns.getFirstValue(d->data);
+    QString age            = medMetaDataKeys::Age.getFirstValue(d->data);
+    QString birthdate      = medMetaDataKeys::BirthDate.getFirstValue(d->data);
+    QString gender         = medMetaDataKeys::Gender.getFirstValue(d->data);
+    QString description    = medMetaDataKeys::Description.getFirstValue(d->data);
+    QString modality       = medMetaDataKeys::Modality.getFirstValue(d->data);
+    QString protocol       = medMetaDataKeys::Protocol.getFirstValue(d->data);
+    QString comments       = medMetaDataKeys::Comments.getFirstValue(d->data);
+    QString status         = medMetaDataKeys::Status.getFirstValue(d->data);
+    QString acqdate        = medMetaDataKeys::AcquisitionDate.getFirstValue(d->data);
+    QString importdate     = medMetaDataKeys::ImportationDate.getFirstValue(d->data);
+    QString referee        = medMetaDataKeys::Referee.getFirstValue(d->data);
+    QString performer      = medMetaDataKeys::Performer.getFirstValue(d->data);
+    QString institution    = medMetaDataKeys::Institution.getFirstValue(d->data);
+    QString report         = medMetaDataKeys::Report.getFirstValue(d->data);
 
-    foreach ( QString metadata, d->data->metaDataList() )
-      qDebug() << d->data->metaDataValues ( metadata );
+    //foreach ( QString metadata, d->data->metaDataList() )
+    //  qDebug() << d->data->metaDataValues ( metadata );
 
 
     medDatabaseControllerImpl * dbi = medDatabaseController::instance();
@@ -247,7 +253,7 @@ void medDatabaseWriter::run ( void )
                 seriesId = query.value ( 1 ).toString();
 
                 qDebug() << "Series ID: " << seriesId;
-                
+
                 dataExists = true;
             }
         }
@@ -263,7 +269,7 @@ void medDatabaseWriter::run ( void )
     // define a unique key string to identify which volume an image belongs to.
     // we use: patientName, studyID, seriesID, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns. All images of the same volume should share similar values of these parameters
     QString key = patientName+studyId+seriesId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
-    
+
     QString subDirName = "/" + patientId;
     QString imageFileNameBase =  subDirName + "/" +  seriesId;
 
@@ -300,7 +306,10 @@ void medDatabaseWriter::run ( void )
         QString extension;
         if ( extensions.isEmpty() )
         {
-            extension = ".mha";
+            if (d->data->identifier().contains("Mesh"))
+                extension = ".vtk";
+            else
+                extension = ".mha";
         }
         else
         {
@@ -356,7 +365,7 @@ void medDatabaseWriter::run ( void )
     // Now, populate the database
     medDataIndex index ( medDatabaseController::instance()->dataSourceId(), medDataIndex::NOT_VALID,
                          medDataIndex::NOT_VALID, medDataIndex::NOT_VALID, medDataIndex::NOT_VALID );
-    
+
     ////////////////////////////////////////////////////////////////// PATIENT
     query.prepare ( "SELECT id FROM patient WHERE name = :name AND birthdate = :birthdate AND patientId = :patientId");
     query.bindValue ( ":name", patientName );
@@ -526,9 +535,9 @@ void medDatabaseWriter::run ( void )
             query.bindValue(":thumbnail", thumbPaths[j]);
         else
             query.bindValue(":thumbnail", "");
-            
+
             query.bindValue(":isIndexed", false);
-            
+
         if(!query.exec())
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
         }
@@ -537,7 +546,7 @@ void medDatabaseWriter::run ( void )
 
     emit progress(this, 100);
     emit success(this);
-    
+
     if (d->callerUuid == "")
         emit addedIndex(index);
     else

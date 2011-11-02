@@ -77,7 +77,7 @@ void medDatabaseControllerImplPrivate::buildMetaDataLookup()
         TableEntryList() << TableEntry(T_patient, "birthdate") );
     metaDataLookup.insert(medMetaDataKeys::PatientID.key(),
         TableEntryList() << TableEntry(T_patient, "patientId") );
-    
+
 //Study Data
     metaDataLookup.insert(medMetaDataKeys::StudyDescription.key(),
         TableEntryList() << TableEntry(T_study, "name") );
@@ -402,7 +402,7 @@ void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUui
     //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
 
     connect(writer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
-    
+
     if (importUuid == "")
         connect(writer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
     else

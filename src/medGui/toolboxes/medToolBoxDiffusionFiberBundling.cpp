@@ -4,11 +4,13 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <medDataManager.h>
 #include <medAbstractDbController.h>
 #include <medDbControllerFactory.h>
 #include <medAbstractViewFiberInteractor.h>
+#include <medMessageController.h>
 
 #include <medDatabaseNonPersistentController.h>
 
@@ -29,15 +31,12 @@ public:
     QRadioButton *notButton;
     QRadioButton *nullButton;
     
-    dtkAbstractView *view;
-    dtkAbstractData *data;
+    dtkSmartPointer<dtkAbstractView> view;
+    dtkSmartPointer<dtkAbstractData> data;
 };
 
 medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionFiberBundlingPrivate)
-{
-    d->view = 0;
-    d->data = 0;
-    
+{    
     QWidget *bundlingPage = new QWidget(this);
 
     QPushButton *openRoiButton = new QPushButton("Open ROI", bundlingPage);
@@ -85,7 +84,7 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     
     d->bundlingModel = new QStandardItemModel(0, 1, bundlingPage);
     d->bundlingModel->setHeaderData(0, Qt::Horizontal, tr("Fiber bundles"));
-            
+
     // QItemSelectionModel *selectionModel = new QItemSelectionModel(d->bundlingModel);
     
     d->bundlingList = new QTreeView(bundlingPage);
@@ -113,7 +112,7 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     connect (d->bundlingButtonVdt,     SIGNAL(clicked(void)),            this, SLOT (onBundlingButtonVdtClicked (void)));
     connect (d->bundleBoxCheckBox,     SIGNAL(toggled(bool)),            this, SLOT (onBundleBoxCheckBoxToggled (bool)));
     connect (d->bundlingButtonAdd,     SIGNAL(toggled(bool)),            this, SLOT (onBundlingButtonAndToggled(bool)));
-	
+
     connect (d->bundlingShowCheckBox,  SIGNAL(toggled(bool)),            this, SLOT (onBundlingShowCheckBoxToggled (bool)));
     connect (d->bundlingButtonTag,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionTagged(void)));
     connect (d->bundlingButtonRst,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionReset(void)));
@@ -126,7 +125,7 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     connect (d->andButton,   SIGNAL(toggled(bool)),            this, SLOT(onAddButtonToggled(bool)));
     connect (d->notButton,   SIGNAL(toggled(bool)),            this, SLOT(onNotButtonToggled(bool)));
     connect (d->nullButton,  SIGNAL(toggled(bool)),            this, SLOT(onNullButtonToggled(bool)));
- 
+
     this->setTitle("Fiber Bundling");
     this->addWidget(bundlingPage);
 }
@@ -154,7 +153,7 @@ void medToolBoxDiffusionFiberBundling::setData(dtkAbstractData *data)
     //d->bundlingList->clear();
     //d->bundlingModel->clear();
     d->bundlingModel->removeRows(0, d->bundlingModel->rowCount(QModelIndex()), QModelIndex());
-        
+
     if (data->hasMetaData("BundleList") && data->hasMetaData("BundleColorList")) {
         
         QStringList bundleNames  = data->metaDataValues("BundleList");
@@ -173,29 +172,29 @@ void medToolBoxDiffusionFiberBundling::onBundlingButtonVdtClicked (void)
 
     // bool ok;
     //QString text = QInputDialog::getText(this, tr("Enter bundle name"),
-      //                                   tr(""), QLineEdit::Normal, tr(""), &ok);
+    //                                   tr(""), QLineEdit::Normal, tr(""), &ok);
     QString text = tr("Fiber bundle #") + QString::number(d->bundlingModel->rowCount()+1);
     
     //if (ok && !text.isEmpty()) {
-        // if (!d->bundlingList->contains (name)) // should popup a warning
-        QColor color = QColor::fromHsv(qrand()%360, 255, 210);
-        
-        emit fiberSelectionValidated (text, color);
-        this->addBundle (text, color);
+    // if (!d->bundlingList->contains (name)) // should popup a warning
+    QColor color = QColor::fromHsv(qrand()%360, 255, 210);
+
+    emit fiberSelectionValidated (text, color);
+    this->addBundle (text, color);
     //}
 }
 
 void medToolBoxDiffusionFiberBundling::onBundleBoxCheckBoxToggled (bool value)
 {
     if (!d->view)
-        return;
+        return;    
 
     if (dtkAbstractViewInteractor *interactor = d->view->interactor ("v3dViewFiberInteractor")) {
         if (value)
-	    interactor->setProperty ("BoxVisibility", "true");
+            interactor->setProperty ("BoxVisibility", "true");
         else
             interactor->setProperty ("BoxVisibility", "false");
-                
+
         d->view->update();
     } 
 }
@@ -231,7 +230,7 @@ void medToolBoxDiffusionFiberBundling::addBundle (const QString &name, const QCo
     double varLength  = 0.0;
 
     if (d->view) {
-        if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
+        if (medAbstractViewFiberInteractor *interactor = qobject_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
             interactor->bundleFAStatistics(name, meanFA, minFA, maxFA, varFA);
             interactor->bundleADCStatistics(name, meanADC, minADC, maxADC, varADC);
             interactor->bundleLengthStatistics(name, meanLength, minLength, maxLength, varLength);
@@ -267,8 +266,8 @@ void medToolBoxDiffusionFiberBundling::addBundle (const QString &name, const QCo
     
     //d->bundlingModel->addItem (name);
     
-//    d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
-  //                            name);
+    //    d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
+    //                            name);
     
     d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
                               true, Qt::CheckStateRole);
@@ -308,7 +307,7 @@ void medToolBoxDiffusionFiberBundling::onRoiImported(const medDataIndex &index)
     if (!data)
         return;
 
-    if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
+    if (medAbstractViewFiberInteractor *interactor = qobject_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
         interactor->setROI(data);
         d->view->update();
     }
@@ -321,7 +320,7 @@ void medToolBoxDiffusionFiberBundling::onClearRoiButtonClicked(void)
 
     // create dummy mask image
     dtkAbstractData *data = dtkAbstractDataFactory::instance()->create("itkDataImageUChar3");
-    if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
+    if (medAbstractViewFiberInteractor *interactor = qobject_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
         interactor->setROI(data);
         d->view->update();
     }
@@ -333,7 +332,7 @@ void medToolBoxDiffusionFiberBundling::onRoiComboIndexChanged (int value)
     if (!d->view)
         return;
 
-    if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
+    if (medAbstractViewFiberInteractor *interactor = qobject_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
         int boolean = interactor->roiBoolean (value);
         switch (boolean) {
         case 2:
@@ -365,7 +364,7 @@ void medToolBoxDiffusionFiberBundling::onAddButtonToggled (bool value)
     if (!d->view)
         return;
 
-    if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
+    if (medAbstractViewFiberInteractor *interactor = qobject_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
         int roi = d->roiComboBox->currentIndex();
         if (value)
             interactor->setRoiBoolean(roi+1, 2);
@@ -379,7 +378,7 @@ void medToolBoxDiffusionFiberBundling::onNotButtonToggled (bool value)
     if (!d->view)
         return;
 
-    if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
+    if (medAbstractViewFiberInteractor *interactor = qobject_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
         int roi = d->roiComboBox->currentIndex();
         if (value)
             interactor->setRoiBoolean(roi+1, 1);
@@ -393,7 +392,7 @@ void medToolBoxDiffusionFiberBundling::onNullButtonToggled (bool value)
     if (!d->view)
         return;
 
-    if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
+    if (medAbstractViewFiberInteractor *interactor = qobject_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
         int roi = d->roiComboBox->currentIndex();
         if (value)
             interactor->setRoiBoolean(roi+1, 0);
@@ -438,12 +437,14 @@ void medToolBoxDiffusionFiberBundling::update(dtkAbstractView *view)
         return;
     }
     
+    /*
     if (view->property ("Orientation")!="3D") { // only interaction with 3D views is authorized
         d->view = 0;
         d->data = 0;
         return;
     }
-    
+    */
+
     d->view = view;
     
     if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
@@ -465,7 +466,7 @@ void medToolBoxDiffusionFiberBundling::update(dtkAbstractView *view)
 void medToolBoxDiffusionFiberBundling::onBundlingItemChanged(QStandardItem *item)
 {
     if (d->view) {
-        if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor")))
+        if (medAbstractViewFiberInteractor *interactor = qobject_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor")))
             interactor->setBundleVisibility(item->text(), item->checkState());
         d->view->update();
     }
@@ -474,7 +475,7 @@ void medToolBoxDiffusionFiberBundling::onBundlingItemChanged(QStandardItem *item
 void medToolBoxDiffusionFiberBundling::onBundlingShowCheckBoxToggled(bool value)
 {
     if (d->view) {
-        if (medAbstractViewFiberInteractor *interactor = dynamic_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor")))
+        if (medAbstractViewFiberInteractor *interactor = qobject_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor")))
             interactor->setBundleVisibility(value);
         d->view->update();
     }
@@ -486,6 +487,7 @@ void medToolBoxDiffusionFiberBundling::onBundlingButtonAndToggled(bool value)
         emit bundlingBoxBooleanOperatorChanged (0);
     else
         emit bundlingBoxBooleanOperatorChanged (1);
+
     if (d->view)
         d->view->update();
 }

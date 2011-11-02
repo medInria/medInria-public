@@ -117,6 +117,7 @@ void medDatabaseNavigator::updateNavigator(const medDataIndex& index)
 
 void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 {
+//    qDebug()<< "resetting Navigator";
     this->reset();
 
     if  (!index.isValidForPatient()) {
@@ -173,7 +174,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
                 medDatabaseNavigatorItemGroup *group = NULL;
 //                qDebug() << "groups";
                 if ( groupMap.contains(studyKey) ) {
-//                    qDebug() << "group contains" << studyKey.name;
+                    qDebug() << "group contains" << studyKey.name;
                     group = groupMap.find(studyKey).value();
                 } else {
 //                    qDebug() << "new group";
@@ -185,21 +186,24 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 
                 IndexList seriesForSource = dbc->series(study);
 
-                foreach (const medDataIndex& serie, seriesForSource ) {
+                foreach (const medDataIndex& series, seriesForSource )
+                {
+//                    qDebug() << "Creating new item for series:" << series;
+                    medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem( medDataIndex(series) );
 
-                    medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem( medDataIndex(serie) );
-
-                    connect(item, SIGNAL(itemClicked(const medDataIndex&)), this, SIGNAL(itemClicked(const medDataIndex&)));
-
+                    connect(item, SIGNAL(itemClicked(const medDataIndex&)),
+                            this, SIGNAL(itemClicked(const medDataIndex&)));
                     group->addItem(item);
-
                 }
             }
         }
     }
 
     foreach(medDatabaseNavigatorItemGroup *group, groupMap)
+    {
+//        qDebug() << "add group to groupMap";
         d->scene->addGroup(group);
+    }
 }
 
 void medDatabaseNavigator::onStudyClicked(const medDataIndex& id)

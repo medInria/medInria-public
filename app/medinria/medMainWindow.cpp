@@ -195,7 +195,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
     d->quickAccessButton->setText ( "Workspaces access menu" );
     connect ( d->quickAccessButton,  SIGNAL ( clicked() ), this, SLOT ( onShowQuickAccess() ) );
-    
+
     d->quickAccessWidget = new medQuickAccessMenu( this );
     d->quickAccessWidget->setFocusPolicy(Qt::ClickFocus);
     d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, -500 ) );
@@ -256,7 +256,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->statusBar->addPermanentWidget ( statusBarWidget, 1 );
 
     this->setStatusBar(d->statusBar);
-    
+
 //     this->statusBar()->setSizeGripEnabled ( false );
 //     this->statusBar()->setContentsMargins ( 5, 0, 5, 0 );
 //     this->statusBar()->setFixedHeight ( 31 );
@@ -567,7 +567,7 @@ void medMainWindow::onEditSettings()
 
     layout->addWidget(d->settingsEditor);
     dialog->setLayout(layout);
-    
+
     connect ( d->settingsEditor, SIGNAL ( finished() ), dialog, SLOT ( close() ) );
 
     dialog->exec();
@@ -600,10 +600,10 @@ void medMainWindow::onOpenFile(const medDataIndex & index,const QString& importU
     {
         if (index.isValid())
         {
+            this->switchToViewerArea();
             d->viewerArea->openInTab(index);
             d->quickAccessButton->setText("Workspace: Visualization");
             d->quickAccessButton->setMinimumWidth(170);
-            this->switchToViewerArea();
         }
         else
         {
@@ -710,7 +710,7 @@ void medMainWindow::registerToFactories()
     viewerConfigFactory->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
     viewerConfigFactory->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
     viewerConfigFactory->registerConfiguration("Filtering",     createMedViewerConfigurationFiltering);
-    medViewerConfigurationSegmentation::registerWithViewerConfigurationFactory();
+    viewerConfigFactory->registerConfiguration("Segmentation",     createMedViewerConfigurationSegmentation);
 
     //Register settingsWidgets
     medSettingsWidgetFactory * settingsWidgetFactory = medSettingsWidgetFactory::instance();

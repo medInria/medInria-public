@@ -174,4 +174,7 @@ QString medViewerConfigurationSegmentation::identifier( void ) const
     return id;
 }
 
-
+medViewerConfiguration *createMedViewerConfigurationSegmentation(QWidget* parent)
+{
+    return new medViewerConfigurationSegmentation(parent);
+}

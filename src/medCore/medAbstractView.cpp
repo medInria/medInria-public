@@ -24,8 +24,8 @@ public:
     int currentLayer;
     int currentMeshLayer;
     int meshLayerCount;
-    //QList<dtkAbstractData *> dataList;
-    QMap <int, dtkSmartPointer<dtkAbstractData> > dataList;
+    QList< dtkSmartPointer <dtkAbstractData> > dataList;
+    //QMap <int, dtkSmartPointer<dtkAbstractData> > dataList;
 
     // dtkSmartPointer<dtkAbstractData> sharedData;
 
@@ -349,16 +349,15 @@ int medAbstractView::meshLayerCount(void) const
 void medAbstractView::removeOverlay(int layer)
 {
     //JGG qDebug()<<"ViewDataListSize"<<d->dataList.size();
-    if (d->dataList.contains (layer))
+
+    if (layer >= 0 && layer < d->dataList.size())
     {
         dtkAbstractData * oldData = d->dataList[layer];
         medAbstractView::removeDataType(oldData->identifier());
-        if ( !oldData ) {
-            this->onDataRemoved(layer, oldData);
-        }
         emit (dataRemoved(oldData, layer));
         emit (dataRemoved(layer));
-        d->dataList.remove(layer);
+        d->dataList.removeAt(layer);
+        
     }
 }
 
@@ -369,30 +368,23 @@ void medAbstractView::onSliceChanged (int slice)
 
 void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
 {
-    d->dataList[layer] = data;
-    this->onDataAdded( layer, data );
-
+    if(layer >=0 &&  layer < d->dataList.size() )
+        d->dataList[layer] = data;
+    else
+        d->dataList.append(data);
     medAbstractView::addDataType(data->identifier());
 }
 
-void medAbstractView::onDataAdded( int layer, dtkAbstractData* data)
+void medAbstractView::addDataInList(dtkAbstractData * data)
 {
-    if ( layer == 0 ) 
-    {
-    } // layer == 0
-}
 
-void medAbstractView::onDataRemoved( int layer, dtkAbstractData* data)
-{
-    if ( (layer == 0 ) && ( d->dataList.values().count(data) <= 2 ) ) {
-
-
-    }
+    d->dataList.append(data);
+    medAbstractView::addDataType(data->identifier());
 }
 
 dtkAbstractData * medAbstractView::dataInList(int layer)
 {
-    if (d->dataList.contains(layer))
+    if (layer >=0 &&  layer < d->dataList.size())
         return d->dataList[layer];
 
     return NULL;
@@ -401,7 +393,8 @@ dtkAbstractData * medAbstractView::dataInList(int layer)
 bool medAbstractView::isInList(dtkAbstractData * data, int layer)
 {
 
-    if (d->dataList.contains(layer) && d->dataList[layer]==data)
+    if (d->dataList.contains(data) &&
+            (d->dataList.count()<layer && d->dataList[layer]==data))
     {
 //        qDebug() << "data is in list,layer:" << layer;
         return true;
@@ -414,13 +407,14 @@ void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
 {
     // start by removing the data type if layer already exists
     dtkAbstractData * oldData = NULL;
-    if (d->dataList.contains(layer)) {
+
+    if (layer >=0 &&  layer < d->dataList.size()) {
         oldData = d->dataList[layer];
-        removeDataType(oldData->identifier());
+        removeDataType(d->dataList[layer]->identifier());
     }
 
-    if ( !oldData ) {
-        this->onDataRemoved(layer, data);
+    if ( oldData && ( data != oldData ) ) {
+        emit dataRemoved(oldData,layer);
     }
     d->dataList[layer] = data;
 

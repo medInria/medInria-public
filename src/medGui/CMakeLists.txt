@@ -27,15 +27,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medLayoutChooser.h
   medPacsSelector.h
   medToolBoxContainer.h
-  
-  # specific toolbox classes
-  toolboxes/medToolBoxDiffusion.h
-  toolboxes/medToolBoxDiffusionCustom.h
-  toolboxes/medToolBoxDiffusionFiberView.h   
-  toolboxes/medToolBoxDiffusionFiberBundling.h
-  toolboxes/medToolBoxRegistration.h
-  toolboxes/medToolBoxRegistrationCustom.h
-  toolboxes/medToolBoxDiffusionTensorView.h
 
   # viewer stuff
   medPacsSelector.h
@@ -93,7 +84,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
   # specific toolbox classes
   toolboxes/medToolBoxDiffusion.h
-  toolboxes/medToolBoxDiffusionCustom.h
   toolboxes/medToolBoxDiffusionFiberView.h
   toolboxes/medToolBoxDiffusionFiberBundling.h
   toolboxes/medToolBoxRegistration.h
@@ -141,7 +131,7 @@ set(${PROJECT_NAME}_SOURCES
   medToolBoxContainer.cpp
   medTabbedViewContainers.cpp
   medViewerConfiguration.cpp
-  
+
   medPacsSelector.cpp
   medViewPool.cpp
   medImageFileLoader.cpp
@@ -245,8 +235,8 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
 if(MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
-    "medPch.h" "../medPch/medPch.cpp" 
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
+    "medPch.h" "../medPch/medPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES_WRAP})
