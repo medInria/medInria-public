@@ -1520,12 +1520,9 @@ break ;					\
 //----------------------------------------------------------------------------
 template < class T >
 inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkImage, int layer)
-{			
-
-  if( itkImage.IsNull() )
-  {
+{									
+  if(itkImage.IsNull())
     return;
-  }
 
   itkImage->UpdateOutputInformation();
  /* if (this->ITKInput==itkImage)
@@ -1549,8 +1546,8 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
      ITK one. And, we need to correct for this misbehaviour through a hack
      in the OrientationMatrix 4th column, a sort of corrected origin.
   */
-  typename itk::Image<T, 3>::DirectionType directions = itkImage->GetDirection();
-  typename itk::Image<T, 3>::PointType origin = itkImage->GetOrigin();
+  typename itk::ImageBase<3>::DirectionType directions = itkImage->GetDirection();
+  typename itk::ImageBase<3>::PointType origin = itkImage->GetOrigin();
   vtkMatrix4x4 *matrix = vtkMatrix4x4::New();
   matrix->Identity();
   for (int i=0; i<3; i++)
