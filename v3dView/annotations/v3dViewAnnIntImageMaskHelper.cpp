@@ -15,8 +15,10 @@
 #include "vtkImageView2D.h"
 
 #include <vtkCommand.h>
+#include <vtkImageMapToColors.h>
 #include <vtkProperty2D.h>
 #include <vtkRenderer.h>
+#include <vtkScalarsToColors.h>
 #include <vtkSmartPointer.h>
 
 
@@ -44,8 +46,8 @@ bool v3dViewAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
     medAbstractDataImage * dataImage = imad->maskData();
     v3dView * view = this->getV3dView();
 
-    int numLayers = view->layerCount();
-    view->setData(dataImage, numLayers);
+    int maskLayer = view->layerCount();
+    view->setData(dataImage, maskLayer);
 
     QList<double> scalars;
     QList<QColor> colors;
@@ -57,8 +59,11 @@ bool v3dViewAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
     }
         
     int oldLayer = view->currentLayer();
-    view->setCurrentLayer(numLayers);
+    view->setCurrentLayer(maskLayer);
     view->setColorLookupTable(scalars,colors);
+    view->view2d()->GetWindowLevel(maskLayer)->GetLookupTable()->SetRange(
+        scalars.first() - 1, // v3dView pads the data by one.
+        scalars.back()  + 1);
     view->setCurrentLayer(oldLayer);
 
     this->annotationModified(annData);
@@ -96,6 +101,7 @@ void v3dViewAnnIntImageMaskHelper::annotationModified( medAnnotationData * annDa
     if ( layer < 0 )
         return;
 
+    view->currentView()->Modified();
     view->update();
 }
 

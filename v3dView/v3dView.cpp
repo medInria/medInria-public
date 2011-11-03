@@ -1859,6 +1859,7 @@ void v3dView::setColorLookupTable ( QList<double> scalars, QList<QColor> colors 
     double min = scalars.first();
     double max = scalars.last();
     int n = static_cast< int > ( max - min ) + 1;
+    n = std::max(n, size);
     double * table = new double[3*n];
     double * alphaTable = new double[n];
     ctf->GetTable ( min, max, n, table );
@@ -1876,7 +1877,11 @@ void v3dView::setColorLookupTable ( QList<double> scalars, QList<QColor> colors 
         lut->SetTableValue ( i+1, table[j], table[j+1], table[j+2], alphaTable[i] );
     lut->SetTableValue ( n + 1, 0.0, 0.0, 0.0, 0.0 );
 
-    d->currentView->SetLookupTable ( lut );
+    if ( d->currentView == d->view2d ) {
+        d->view2d->SetLookupTable( lut , this->currentLayer() );
+    } else {
+        d->currentView->SetLookupTable ( lut );
+    }
     d->currentView->Render();
     lut->Delete();
     delete [] table;
