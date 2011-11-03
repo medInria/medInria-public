@@ -188,7 +188,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   vtkGetObjectMacro(RenderWindow,    vtkRenderWindow);
   vtkGetObjectMacro(Renderer,        vtkRenderer); // LAYER
   vtkGetObjectMacro(OverlayRenderer, vtkRenderer);
-  vtkGetObjectMacro(WindowLevel,     vtkImageMapToColors); // LAYER
+  virtual vtkImageMapToColors *GetWindowLevel(int layer=0);
   vtkGetObjectMacro(InteractorStyle, vtkInteractorStyle);
   vtkGetObjectMacro(Interactor,      vtkRenderWindowInteractor);
 

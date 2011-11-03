@@ -1808,3 +1808,8 @@ vtkRenderer * vtkImageView2D::GetRendererForLayer( int layer ) const
 {
     return this->LayerInfoVec.at(layer).Renderer;
 }
+
+vtkImageMapToColors * vtkImageView2D::GetWindowLevel( int layer/*=0*/ )
+{
+    return this->GetImage2DDisplayForLayer(layer)->GetWindowLevel();
+}

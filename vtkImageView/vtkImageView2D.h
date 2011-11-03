@@ -309,6 +309,9 @@ public:
    */
   virtual void GetWorldCoordinatesFromDisplayPosition (int xy[2], double* position);
   
+  //! Get the WindowLevel for given layer. Overrides Superclass.
+  virtual vtkImageMapToColors *GetWindowLevel(int layer=0);
+
   //BTX
   /**
    Access to the command of the viewer.
