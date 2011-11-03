@@ -322,6 +322,26 @@ void medToolBoxSegmentation::update( dtkAbstractView *view )
     medToolBox::update(view);
 }
 
+void medToolBoxSegmentation::setOutputMetadata(const dtkAbstractData * inputData, dtkAbstractData * outputData)
+{
+    Q_ASSERT(outputData && inputData);
 
+    QStringList metaDataToCopy;
+    metaDataToCopy // These are just copied from input to output. More can easily be added here.
+        << medMetaDataKeys::PatientName.key()
+        << medMetaDataKeys::StudyDescription.key();
+
+    foreach( const QString & key, metaDataToCopy ) {
+        if ( ! outputData->hasMetaData(key) )
+            outputData->setMetaData(key, inputData->metadatas(key));
+    }
+
+    if ( ! medMetaDataKeys::SeriesDescription.is_set_in(outputData) ) {
+        QString seriesDesc;
+        seriesDesc = tr("Segmented from ") + medMetaDataKeys::SeriesDescription.getFirstValue( inputData );
+
+        medMetaDataKeys::SeriesDescription.set(outputData,seriesDesc);
+    }
+}
 
 

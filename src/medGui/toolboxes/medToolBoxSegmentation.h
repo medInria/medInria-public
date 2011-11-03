@@ -83,6 +83,9 @@ protected:
     void initializeAnnotations();
     void activateViews( bool isActivate = true );
 
+    //! Add the minimum metadata to the output if not present
+    void setOutputMetadata(const dtkAbstractData * inputData, dtkAbstractData * outputData);
+
 public:
     void setAlgorithmParameterWidget( QWidget * widget );
 
