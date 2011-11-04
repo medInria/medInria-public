@@ -105,6 +105,7 @@ TARGET_LINK_LIBRARIES(vtkLandmarkManagement
 IF(VTK_WRAP_TCL)
   SET_SOURCE_FILES_PROPERTIES(
      vtkLandmarkManagerCallback.cxx
+vtkLandmark.cxx
      WRAP_EXCLUDE
     )
     
