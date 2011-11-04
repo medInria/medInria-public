@@ -11,7 +11,7 @@ class vtkPolyDataMapper;
 class vtkActor;
 class vtkStructuredPoints;
 
-class vtkSphericalHarmonicVisuManager : public vtkObject
+class VTK_VISUMANAGEMENT_EXPORT vtkSphericalHarmonicVisuManager : public vtkObject
 {
 
 public:

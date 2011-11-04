@@ -4,12 +4,6 @@ SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
 PROJECT(SphericalHarmonicsVisu)
 
-  SET(SphericalHarmonicsVisu_SRCS
-vtkSphereTesselator.cpp
-vtkSphericalHarmonicSource.cpp
-vtkSphericalHarmonicGlyph.cpp
-itkSphericalHarmonicITKToVTKFilter.cxx
-  )
 
 if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(SphericalHarmonicsVisu_SOURCES_PCH
