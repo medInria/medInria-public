@@ -109,7 +109,8 @@ public:
   /** Set the box widget visibility */
   void SetShowBoxWidget (int a)
   {
-    if (this->Interactor)
+      std::cout << this->Interactor << "finteracgtor" << std::endl;
+if (this->Interactor)
       this->BoxWidget->SetEnabled (a);
   }
   bool GetShowBoxWidget (void)
