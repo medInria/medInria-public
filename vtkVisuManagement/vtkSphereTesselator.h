@@ -7,11 +7,11 @@
 //   Copyright (c) 2007-2011, INRIA Sophia Antipolis, France, groups Odyssee, Athena.
 //   Please see the copyright notice included in this distribution for full details.
 
-#ifndef vtkSphereTesselator_HPP
-#define vtkSphereTesselator_HPP
+#ifndef vtkSphereTesselator_H
+#define vtkSphereTesselator_H
 
 #include <defs.hpp>
-#include <SphericalFunctionSHVisualizationExport.h>
+#include "vtkINRIA3DConfigure.h"
 
 #include <vtkPoints.h>
 #include <vtkCellArray.h>
@@ -29,7 +29,7 @@ enum p_solid { cube,          // 0
 
 /*! Perform tesselation of the unit sphere from a given platonic solid */
 template<typename T>
-class SPHERICALFUNCTIONSHVISUALIZATION_EXPORT vtkSphereTesselator {
+class VTK_VISUMANAGEMENT_EXPORT vtkSphereTesselator {
 public:
 
     vtkSphereTesselator();

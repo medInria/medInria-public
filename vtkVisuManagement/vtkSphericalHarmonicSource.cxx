@@ -25,7 +25,7 @@
 #include <vtkPolyData.h>
 #include <vtkMatrix4x4.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
-#include <vtkSphereTesselator.hpp>
+#include <vtkSphereTesselator.h>
 
 
 #include <boost/algorithm/minmax_element.hpp>

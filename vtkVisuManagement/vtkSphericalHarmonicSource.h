@@ -17,11 +17,9 @@
 #define VTKSPHERICALHARMONICSOURCE_HPP
 
 #include <vtkPolyDataAlgorithm.h>
-#include <vtkSphereTesselator.hpp>
+#include <vtkSphereTesselator.h>
 
 #include <vtkMatrix4x4.h>
-
-#include <SphericalFunctionSHVisualizationExport.h>
 
 #include <boost/numeric/ublas/matrix.hpp>
 
@@ -29,7 +27,7 @@ using namespace boost::numeric::ublas;
 
 class vtkMatrix4x4;
 
-class SPHERICALFUNCTIONSHVISUALIZATION_EXPORT vtkSphericalHarmonicSource: public vtkPolyDataAlgorithm {
+class VTK_VISUMANAGEMENT_EXPORT vtkSphericalHarmonicSource: public vtkPolyDataAlgorithm {
 public:
 
     vtkTypeRevisionMacro(vtkSphericalHarmonicSource,vtkPolyDataAlgorithm);

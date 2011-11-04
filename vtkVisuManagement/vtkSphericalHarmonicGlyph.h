@@ -16,11 +16,10 @@
 
 #include <vtkSphericalHarmonicSource.h>
 
+
 enum { COLOR_BY_SCALARS, COLOR_BY_DIRECTIONS };
 
-#include "SphericalFunctionSHVisualizationExport.h"
-
-class SPHERICALFUNCTIONSHVISUALIZATION_EXPORT vtkSphericalHarmonicGlyph: public vtkPolyDataAlgorithm {
+class VTK_VISUMANAGEMENT_EXPORT vtkSphericalHarmonicGlyph: public vtkPolyDataAlgorithm {
 public:
 
     vtkTypeRevisionMacro(vtkSphericalHarmonicGlyph,vtkPolyDataAlgorithm);

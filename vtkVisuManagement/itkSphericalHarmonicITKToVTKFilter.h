@@ -20,7 +20,7 @@
 
 #include "itkImage.h"
 #include "itkImageToImageFilter.h"
-#include "SphericalFunctionSHVisualizationExport.h"
+#include "vtkINRIA3DConfigure.h"
 
 class vtkStructuredPoints;
 class vtkMatrix4x4;
@@ -34,7 +34,7 @@ namespace itk
  * \ingroup   ImageFilter
  */
 template < class TSHImage >
-class SPHERICALFUNCTIONSHVISUALIZATION_EXPORT SphericalHarmonicITKToVTKFilter : public ImageToImageFilter< TSHImage, TSHImage >
+class VTK_VISUMANAGEMENT_EXPORT SphericalHarmonicITKToVTKFilter : public ImageToImageFilter< TSHImage, TSHImage >
 {
 public:
     /** Some typedefs. */

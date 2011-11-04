@@ -7,7 +7,7 @@
 //   Copyright (c) 2007-2011, INRIA Sophia Antipolis, France, groups Odyssee, Athena.
 //   Please see the copyright notice included in this distribution for full details.
 
-#include <vtkSphereTesselator.hpp>
+#include <vtkSphereTesselator.h>
 
 #ifdef WIN32
 #pragma warning(disable:4661)

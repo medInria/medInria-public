@@ -12,7 +12,7 @@
 
 #include <vtkSphericalHarmonicVisuManager.h>
 
-class vtkSphericalHarmonicManager: public vtkObject
+class VTK_VISUMANAGEMENT_EXPORT vtkSphericalHarmonicManager: public vtkObject
 {
 
 public:
