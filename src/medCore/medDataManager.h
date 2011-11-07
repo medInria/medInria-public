@@ -147,7 +147,7 @@ public:
     * If this threshold is crossed the manager will not
     * allocate memory to ensure system stability
     */
-    static size_t getUpperMemoryThreshold();
+    static quint64 getUpperMemoryThreshold();
 
     /**
     * Return the memory limit where the system should try to stay

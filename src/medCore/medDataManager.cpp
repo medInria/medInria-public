@@ -303,11 +303,11 @@ bool medDataManager::tryFreeMemory(size_t memoryLimit)
 bool medDataManager::manageMemoryUsage(const medDataIndex& index, medAbstractDbController* controller)
 {
     bool res = true;
-    qint64 processMem = getProcessMemoryUsage();
-    qint64 estMem = controller->getEstimatedSize(index);
-    qint64 requiredMem = processMem + estMem;
-    qint64 optimalMem = getOptimalMemoryThreshold();
-    qint64 maxMem = getUpperMemoryThreshold();
+    quint64 processMem = getProcessMemoryUsage();
+    quint64 estMem = controller->getEstimatedSize(index);
+    quint64 requiredMem = processMem + estMem;
+    quint64 optimalMem = getOptimalMemoryThreshold();
+    quint64 maxMem = getUpperMemoryThreshold();
 
     printMemoryStatus(estMem);
 
@@ -421,7 +421,7 @@ int medDataManager::ReadStatmFromProcFS( int* size, int* res, int* shared, int* 
 
 //-------------------------------------------------------------------------------------------------------
 
-size_t medDataManager::getUpperMemoryThreshold()
+quint64 medDataManager::getUpperMemoryThreshold()
 {
     if ( is32Bit() )
     {
@@ -430,11 +430,7 @@ size_t medDataManager::getUpperMemoryThreshold()
     else
     {
         // max virtual address space for 64bit varies on platforms (1TB for Windows)
-#ifndef _Wp64
-        return 4200000000; // to avoid compiler warnings
-#else
-        return 500000000000;
-#endif
+        return 500000000000ULL;
     }
 }
 
@@ -613,7 +609,7 @@ size_t medDataManager::getOptimalMemoryThreshold()
 {
     size_t optimalValue;
     size_t physicalValue = getTotalSizeOfPhysicalRam();
-    size_t upperValue = getUpperMemoryThreshold();
+    quint64 upperValue = getUpperMemoryThreshold();
 
     if ( is32Bit() )
     {
@@ -763,9 +759,9 @@ QList<int> medDataManager::dataSourceIds() const
 
 void medDataManager::printMemoryStatus(size_t requiredMemoryInKb)
 {
-    qint64 processMem = getProcessMemoryUsage();
-    qint64 maxMem = getUpperMemoryThreshold();
-    qint64 availableMem = (maxMem - processMem) / divider;
+    quint64 processMem = getProcessMemoryUsage();
+    quint64 maxMem = getUpperMemoryThreshold();
+    quint64 availableMem = (maxMem - processMem) / divider;
     if (availableMem < 0)
         availableMem = 0;
 
