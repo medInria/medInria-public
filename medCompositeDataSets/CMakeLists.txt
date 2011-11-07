@@ -84,7 +84,8 @@ target_link_libraries(${PROJECT_NAME}
   dtkZip
   medCore
   medGui
-  ITKTensor)
+  ITKTensor
+  ITKCommon)
 #not useful if plugin in the medinria-plugins directory
 dtk_build_doc(medCompositeDataSetsPlugin)
 
