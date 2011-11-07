@@ -28,6 +28,7 @@ public:
     virtual ~medDiffusionSequenceCompositeData() { }
 
     virtual QString description() const;
+    virtual QString identifier()  const { return ID; }
 
     virtual bool has_version(const unsigned major,const unsigned minor) const { return major==defaultMajorVersion; }
 
@@ -70,6 +71,8 @@ private:
     unsigned         meta_data_index;
 
     static const medDiffusionSequenceCompositeData proto;
+
+    static const char     ID[];
 
     static const char     Tag[];
     static const char     ImagesString[];

@@ -15,6 +15,7 @@ namespace MedInria {
     public:
 
         virtual bool    registered()  const = 0;
+        virtual QString identifier()  const = 0;
         virtual QString description() const = 0;
 
         //  Verification that there is a handler for this specific type and version (major,minor) of the format.
@@ -28,9 +29,9 @@ namespace MedInria {
         }
 
         static medCompositeDataSetsBase* find(dtkAbstractData* data) {
-            const QString& desc = data->description();
+            const QString& desc = data->identifier();
             for (Registery::const_iterator i=registery().begin();i!=registery().end();++i)
-                if (i->second->description()==desc)
+                if (i->second->identifier()==desc)
                     return dynamic_cast<medCompositeDataSetsBase*>(data);
             return 0;
         }
@@ -62,7 +63,7 @@ namespace MedInria {
         static QStringList initialize() {
             QStringList& ql = known_types();
             for (Registery::const_iterator i=registery().begin();i!=registery().end();++i) {
-                const QString desc = i->second->description();
+                const QString desc = i->second->identifier();
                 if (!(i->second->registered()))
                     dtkWarning() << "Unable to register " << desc << " type";
                 ql << desc;

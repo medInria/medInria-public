@@ -14,14 +14,14 @@ class medDiffusionSequenceCompositeDataToolBox: public medToolBoxCompositeDataSe
 
 public:
 
-     medDiffusionSequenceCompositeDataToolBox (QWidget *parent = 0);
-    ~medDiffusionSequenceCompositeDataToolBox (void);
+     medDiffusionSequenceCompositeDataToolBox(QWidget *parent = 0);
+    ~medDiffusionSequenceCompositeDataToolBox();
 
 public:
 
     static bool registered(void);
 
-    QString description (void) const;
+    QString description() const;
 
     typedef medDiffusionSequenceCompositeData::GradientReaderType GradientReaderType;
     typedef medDiffusionSequenceCompositeData::GradientType       GradientType;
@@ -30,9 +30,9 @@ public:
 
 public slots:
 
-    bool import (void);
-    void reset (void);
-    void cancel (void);
+    bool import();
+    void reset();
+    void cancel();
 
     void onItemClicked (QTreeWidgetItem *, int);
     void onContextTreeMenu (QPoint);
@@ -46,9 +46,9 @@ private:
 
     void readVolumes (QStringList paths);
     void readGradients (QString filepath);
-    bool writeInDataBase (void);
+    bool writeInDataBase();
 };
 
-medToolBoxCompositeDataSetImporterCustom *createMedDiffusionCompositeDataToolBox(QWidget *parent);
+medToolBoxCompositeDataSetImporterCustom* createMedDiffusionCompositeDataToolBox(QWidget *parent);
 
 #endif
