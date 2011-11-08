@@ -10,7 +10,9 @@
 #ifndef vtkSphereTesselator_H
 #define vtkSphereTesselator_H
 
-#include <defs.hpp>
+#include <cstdlib>
+#include <cmath>
+
 #include "vtkINRIA3DConfigure.h"
 
 #include <vtkPoints.h>

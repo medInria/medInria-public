@@ -30,9 +30,8 @@
 #include <tr1/cmath>
 
 using namespace Visualization;
-using Utils::direction;
 
-static direction Cartesian2Spherical(direction v, itk::Vector<double, 3> vITK );
+static itk::Vector<double, 3> Cartesian2Spherical(const itk::Vector<double, 3> vITK );
 
 static itk::VariableSizeMatrix<double> ComputeSHMatrixMaxThesis(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,itk::VariableSizeMatrix<double>& PhiThetaDirections);
 
@@ -97,9 +96,7 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(int tess) {
     Order = 4;//(int)(-3/2 + std::sqrt((float)(9/4 - 2*(1 - NumberOfSphericalHarmonics))));
     NumberOfSphericalHarmonics = (Order+1)*(Order+2)/2;
 
-
     matrix<double> PhiThetaDirection (shell->GetNumberOfPoints(),2);
-    
     
     BasisFunction = ComputeSHMatrix2(NumberOfSphericalHarmonics,shell,
                                      FlipX,FlipY,FlipZ,PhiThetaDirection);
@@ -268,42 +265,19 @@ vtkSphericalHarmonicSource::RequestInformation(vtkInformation*,vtkInformationVec
     return 1;
 }
 
-direction
-Cartesian2Spherical(const direction v, itk::Vector<double, 3> vITK) {
+itk::Vector<double, 3>
+Cartesian2Spherical(const itk::Vector<double, 3> vITK) {
 
-    const double r = v.norm();
-    double rITK = vITK.GetSquaredNorm();
-    rITK = vITK.GetNorm();
-
-
-    // theta computation.
+    const double r =vITK.GetNorm();
 
     if (r==0) {
         std::cerr << "Cannot have a 0 radius in spherical coordinates!\n" << std::endl;
         exit(1);
     }
+    // r, phi [0, PI), theta [0, PI) computation
+    const double spherical [3] = { vITK.GetNorm(), atan2(vITK[1],vITK[0]), acos(vITK[2]/r)};
 
-    const double theta = acos(v.z/r);  /*this value is between 0 and PI*/
-    const double thetaITK = acos(vITK[2]/r);  /*this value is between 0 and PI*/
-
-
-    // phi computation.
-
-    // atan2 is the same as atan(y/x) but looks at the sign of x and y to determine the quadrant of the answer.
-    // It returns a value between -PI and PI.
-
-    const double phi = atan2(v.y,v.x);  // This value is between 0 and PI.
-    const double phiITK = atan2(vITK[1],vITK[0]);  // This value is between 0 and PI.
-
-
-    const direction s = { r, phi, theta};
-    if (rITK != r )
-        std::cerr << "Not same!\n" << std::endl;
-    if ( phi != phiITK )
-        std::cerr << "Not same!\n" << std::endl;
-    if (theta != thetaITK)
-        std::cerr << "Not same!\n" << std::endl;
-
+    const itk::Vector<double, 3> s (spherical);
 
     return s;
 }
@@ -324,20 +298,15 @@ ComputeSHMatrix(const int order,vtkPolyData* shell,const bool FlipX,const bool F
         double p[3];
         vertices->GetPoint(i,p);
 
-        direction d;
-        d.x = (FlipX) ? -p[0] : p[0];
-        d.y = (FlipY) ? -p[1] : p[1];
-        d.z = (FlipZ) ? -p[2] : p[2];
-
         itk::Vector<double, 3> dITK;
         dITK[0] = (FlipX) ? -p[0] : p[0];
         dITK[1] = (FlipY) ? -p[1] : p[1];
         dITK[2] = (FlipZ) ? -p[2] : p[2];
 
-        const direction v = Cartesian2Spherical(d,dITK);
+        const itk::Vector<double, 3> v = Cartesian2Spherical(dITK);
 
-        const double phi   = v.y;
-        const double theta = v.z;
+        const double phi   = v[1];
+        const double theta = v[2];
         double temp=0;
         PhiThetaDirections(i,0) = phi;
         PhiThetaDirections(i,1) = theta;
@@ -379,22 +348,16 @@ ComputeSHMatrixMaxThesis(const int order,vtkPolyData *shell,const bool FlipX,con
         double p[3];
         vertices->GetPoint(i,p);
         
-        direction d;
-        
-        d.x = (FlipX) ? -p[0] : p[0]; 
-        d.y = (FlipY) ? -p[1] : p[1]; 
-        d.z = (FlipZ) ? -p[2] : p[2];
-
         itk::Vector<double, 3> dITK;
         dITK[0] = (FlipX) ? -p[0] : p[0];
         dITK[1] = (FlipY) ? -p[1] : p[1];
         dITK[2] = (FlipZ) ? -p[2] : p[2];
 
-        const direction v = Cartesian2Spherical(d,dITK);
+        const itk::Vector<double, 3> v = Cartesian2Spherical(dITK);
 //        const direction v = Cartesian2Spherical(d);
         
-        const double phi   = v.y;
-        const double theta = v.z;
+        const double phi   = v[1];// v.y;
+        const double theta = v[2];//v.z;
 
         PhiThetaDirections(i,0) = phi;
         PhiThetaDirections(i,1) = theta;
@@ -479,22 +442,16 @@ ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool FlipX,cons
         double p[3];
         vertices->GetPoint(i,p);
 
-        direction d;
-
-        d.x = (FlipX) ? -p[0] : p[0];
-        d.y = (FlipY) ? -p[1] : p[1];
-        d.z = (FlipZ) ? -p[2] : p[2];
-
         itk::Vector<double, 3> dITK;
         dITK[0] = (FlipX) ? -p[0] : p[0];
         dITK[1] = (FlipY) ? -p[1] : p[1];
         dITK[2] = (FlipZ) ? -p[2] : p[2];
 
-        const direction v = Cartesian2Spherical(d,dITK);
+        const itk::Vector<double, 3> v = Cartesian2Spherical(dITK);
 //        const direction v = Cartesian2Spherical(d);
 
-        const double phi   = v.y;
-        const double theta = v.z;
+        const double phi   = v[1]; //v.y;
+        const double theta = v[2]; //v.z;
 
         PhiThetaDirections(i,0) = phi;
         PhiThetaDirections(i,1) = theta;
@@ -538,22 +495,16 @@ ComputeSHMatrixRshBasis(const int order,vtkPolyData* shell,const bool FlipX,cons
         double p[3];
         vertices->GetPoint(i,p);
 
-        direction d;
-
-        d.x = (FlipX) ? -p[0] : p[0];
-        d.y = (FlipY) ? -p[1] : p[1];
-        d.z = (FlipZ) ? -p[2] : p[2];
-
         itk::Vector<double, 3> dITK;
         dITK[0] = (FlipX) ? -p[0] : p[0];
         dITK[1] = (FlipY) ? -p[1] : p[1];
         dITK[2] = (FlipZ) ? -p[2] : p[2];
 
-        const direction v = Cartesian2Spherical(d,dITK);
+        const itk::Vector<double, 3> v = Cartesian2Spherical(dITK);
 //        const direction v = Cartesian2Spherical(d);
 
-        const double phi   = v.y;
-        const double theta = v.z;
+        const double phi   = v[1]; //v.y;
+        const double theta = v[2]; // v.z;
         PhiThetaDirections(i,0) = phi;
         PhiThetaDirections(i,1) = theta;
         double temp=0;
