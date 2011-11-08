@@ -68,10 +68,10 @@ IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
         ${vtkVisuManagement_SRCS}
         vtkSphericalHarmonicVisuManager.cxx
         vtkSphericalHarmonicManager.cxx
-vtkSphereTesselator.cxx
-vtkSphericalHarmonicSource.cxx
-vtkSphericalHarmonicGlyph.cxx
-itkSphericalHarmonicITKToVTKFilter.cxx
+        vtkSphereTesselator.cxx
+        vtkSphericalHarmonicSource.cxx
+        vtkSphericalHarmonicGlyph.cxx
+        itkSphericalHarmonicITKToVTKFilter.cxx
         )
 ENDIF(vtkINRIA3D_USE_SPHERICALHARMONICS )
 
@@ -101,15 +101,14 @@ TARGET_LINK_LIBRARIES(vtkVisuManagement
 TARGET_LINK_LIBRARIES(vtkLandmarkManagement  
   ${vtkLandmarkManagement_LIBS}
 )
-message(${VTK_WRAP_TCL} " HOLA tcl")
 IF(VTK_WRAP_TCL)
   SET_SOURCE_FILES_PROPERTIES(
      vtkLandmarkManagerCallback.cxx
-vtkLandmark.cxx
-vtkSphereTesselator.cxx
-vtkSphericalHarmonicSource.cxx
-vtkSphericalHarmonicGlyph.cxx
-itkSphericalHarmonicITKToVTKFilter.cxx
+     vtkLandmark.cxx
+     vtkSphereTesselator.cxx
+     vtkSphericalHarmonicSource.cxx
+     vtkSphericalHarmonicGlyph.cxx
+     itkSphericalHarmonicITKToVTKFilter.cxx
      WRAP_EXCLUDE
     )
     

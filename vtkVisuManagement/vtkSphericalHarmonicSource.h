@@ -22,6 +22,7 @@
 #include <vtkMatrix4x4.h>
 
 #include <itkVariableSizeMatrix.h>
+#include <itkVector.h>
 
 
 class vtkMatrix4x4;
