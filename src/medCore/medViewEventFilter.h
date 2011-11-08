@@ -45,6 +45,10 @@ protected:
 
     // Which object to actually filter given the input view.
     static QObject * objectToFilter( medAbstractView * view );
+
+protected slots:
+    void onViewDestroyed(QObject*);
+
 private:
     static QString s_description();
 

@@ -135,6 +135,11 @@ bool medViewEventFilter::eventFilter( QObject *obj, QEvent *event )
 
 void medViewEventFilter::installOnView( medAbstractView * view )
 {
+    if ( !view ) {
+        dtkWarning() << "medViewEventFilter::installOnView : View is NULL";
+        return;
+    }
+
     if (m_views.contains(view)) {
         dtkWarning() << "Installing View when it has already been installed";
         return;
@@ -146,6 +151,8 @@ void medViewEventFilter::installOnView( medAbstractView * view )
     m_filterObjToView[filterObj] = view;
 
     filterObj->installEventFilter( this );
+
+    connect(view, SIGNAL(destroyed(QObject*)), this, SLOT(onViewDestroyed(QObject*)));
 }
 
 void medViewEventFilter::removeFromView(medAbstractView * view)
@@ -154,16 +161,15 @@ void medViewEventFilter::removeFromView(medAbstractView * view)
         QObject * filterObj = medViewEventFilter::objectToFilter(view);
         filterObj->removeEventFilter( this );
         m_views.remove(view);
+        disconnect(view, SIGNAL(destroyed(QObject*)), this, SLOT(onViewDestroyed(QObject*)));
     }
 }
 
 void medViewEventFilter::removeFromAllViews()
 {
-    foreach(medAbstractView * view, m_views) {
-        QObject * filterObj = medViewEventFilter::objectToFilter(view);
-        filterObj->removeEventFilter( this );
+    while( !m_views.isEmpty() ) {
+        this->removeFromView(*(m_views.begin()) );
     }
-    m_views.clear();
 }
 
 
@@ -172,5 +178,11 @@ QObject * medViewEventFilter::objectToFilter( medAbstractView * view )
 {
     return view->receiverWidget();
 }
+
+void medViewEventFilter::onViewDestroyed( QObject* obj)
+{
+    this->removeFromView(qobject_cast<medAbstractView*>(obj));
+}
+
 
 
