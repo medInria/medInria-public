@@ -2359,11 +2359,11 @@ QVector3D v3dView::displayToWorld( const QPointF & scenePoint ) const
         // Project the point into the view plane.
         vtkCamera * cam = ren->GetActiveCamera();
         double pointInDisplayPlane[3];
-        if (cam) {
-            cam->GetFocalPoint(pointInDisplayPlane);
-        } else {
+        //if (cam) {
+        //    cam->GetFocalPoint(pointInDisplayPlane);
+        //} else {
             d->currentView->GetCurrentPoint(pointInDisplayPlane);
-        }
+        //}
         ren->WorldToView(pointInDisplayPlane[0],pointInDisplayPlane[1],pointInDisplayPlane[2]);
         vz = pointInDisplayPlane[2];
     }
