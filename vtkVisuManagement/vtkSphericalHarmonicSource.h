@@ -142,7 +142,7 @@ protected:
 
     // Spherical harmonic basis function
 
-    itk::VariableSizeMatrix<double> BasisFunctionItk;
+    itk::VariableSizeMatrix<double> BasisFunction;
 
     // Order of the spherical harmonic basis
 

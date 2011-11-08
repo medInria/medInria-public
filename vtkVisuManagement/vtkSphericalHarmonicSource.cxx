@@ -39,7 +39,7 @@ static itk::VariableSizeMatrix<double> ComputeSHMatrixMaxThesis(const int rank,v
 static itk::VariableSizeMatrix<double> ComputeSHmatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,itk::VariableSizeMatrix<double>& PhiThetaDirections);
 static itk::VariableSizeMatrix<double> ComputeSHmatrixRshBasis(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,itk::VariableSizeMatrix<double>& PhiThetaDirections);
 
-itk::VariableSizeMatrix<double> ComputeSHMatrixItk (const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ, itk::VariableSizeMatrix<double>& PhiThetaDirections);
+itk::VariableSizeMatrix<double> ComputeSHMatrix (const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ, itk::VariableSizeMatrix<double>& PhiThetaDirections);
 
 
 static void           TranslateAndDeformShell(vtkPolyData* shell,vtkPoints* outPts,double center[3],bool deform,vtkMatrix4x4* transform=0);
@@ -180,47 +180,40 @@ vtkSphericalHarmonicSource::RequestData(vtkInformation *vtkNotUsed(request),vtkI
     */
     int N = shell->GetNumberOfPoints();
     
-    itk::VariableSizeMatrix<double> CItk(1,NumberOfSphericalHarmonics);
+    itk::VariableSizeMatrix<double> C(1,NumberOfSphericalHarmonics);
 
     for (int i=0;i<NumberOfSphericalHarmonics;++i){
-        CItk(0,i) = SphericalHarmonics[i];
+        C(0,i) = SphericalHarmonics[i];
     }
 
-    std::cout<< "tmanan" << BasisFunctionItk.GetVnlMatrix().size() << std::endl;
-
-    itk::VariableSizeMatrix<double> SItk/*(1,BasisFunctionItk.GetVnlMatrix().size())*/;
-    SItk=CItk*BasisFunctionItk;
-
-    std::cout<< "hola" << SItk(0,0) << SItk(0,5) << SItk(0,10) << std::endl;
-//        std::cout<< "hola" << CItk << std::endl;
-
-
+    itk::VariableSizeMatrix<double> S/*(1,BasisFunction.GetVnlMatrix().size())*/;
+    S = C*BasisFunction;
 
     if (Normalize) {
 
-        double min = SItk.GetVnlMatrix().min_value();// *(result.first);
-        double max = SItk.GetVnlMatrix().max_value();//*(result.second);
+        double min = S.GetVnlMatrix().min_value();
+        double max = S.GetVnlMatrix().max_value();
 
         if (max!=min) {
-            for (unsigned i=0;i<SItk.Rows();++i)
-                for (unsigned j=0;j<SItk.Cols();++j)
-                    SItk(i,j) -= min;
-            SItk /= (max-min);
+            for (unsigned i=0; i<S.Rows(); ++i)
+                for (unsigned j=0; j<S.Cols(); ++j)
+                    S(i,j) -= min;
+            S /= (max-min);
         } else {
-            for (unsigned i=0;i<SItk.Rows();++i)
-                for (unsigned j=0;j<SItk.Cols();++j)
-                    SItk(i,j) = 1.0;
+            for (unsigned i=0; i<S.Rows(); ++i)
+                for (unsigned j=0; j<S.Cols(); ++j)
+                    S(i,j) = 1.0;
         }
     }
-    SItk *= this->Radius;
+    S *= this->Radius;
     
-    for(int i=0;i<N;++i) {
+    for(int i=0; i<N; ++i) {
         if  (i%10000==0) {
             this->UpdateProgress ((vtkFloatingPointType)i/N);
             if (this->GetAbortExecute())
                 break;
         }
-        sValues->SetTuple1(i,SItk(0,i));
+        sValues->SetTuple1(i,S(0,i));
     }
 
     shell->GetPointData()->SetScalars(sValues);
@@ -302,7 +295,7 @@ Cartesian2Spherical(const direction v) {
 }
 
 itk::VariableSizeMatrix<double>
-ComputeSHMatrixItk(const int order,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ, itk::VariableSizeMatrix<double>& PhiThetaDirections) {
+ComputeSHMatrix(const int order,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ, itk::VariableSizeMatrix<double>& PhiThetaDirections) {
     const int n_s   = shell->GetNumberOfPoints();
     //const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is probably wrong !!!
     const int rank =  (order+1)*(order+2)/2;
@@ -573,28 +566,27 @@ vtkSphericalHarmonicSource::UpdateSphericalHarmonicSource() {
     sMesh.tesselate(Tesselation);
     sMesh.getvtkTesselation(shell);
 
-    itk::VariableSizeMatrix<double>  PhiThetaDirectionItk(shell->GetNumberOfPoints(),2);
-
+    itk::VariableSizeMatrix<double>  PhiThetaDirection(shell->GetNumberOfPoints(),2);
 
     switch (TesselationBasis) {
     case SHMatrix:
     {
-        BasisFunctionItk = ComputeSHMatrixItk(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirectionItk); break;
+        BasisFunction = ComputeSHMatrix(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection); break;
     }
     case SHMatrixMaxThesis:
     {
-        BasisFunctionItk = ComputeSHMatrixMaxThesis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirectionItk); break;
+        BasisFunction = ComputeSHMatrixMaxThesis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection); break;
     }
     case SHMatrixTournier:
     {
-        BasisFunctionItk = ComputeSHMatrixTournier(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirectionItk); break;
+        BasisFunction = ComputeSHMatrixTournier(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection); break;
     }
     case SHMatrixRshBasis:
     {
-        BasisFunctionItk = ComputeSHMatrixRshBasis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirectionItk); break;
+        BasisFunction = ComputeSHMatrixRshBasis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection); break;
     }
     }
-    PhiThetaShellDirections = PhiThetaDirectionItk;
+    PhiThetaShellDirections = PhiThetaDirection;
 }
 
 void
@@ -620,9 +612,6 @@ TranslateAndDeformShell(vtkPolyData *shell,vtkPoints* outPts,double center[3],bo
             point[2] = ((val-range[0])/rangeDiff)*point[2];
         } 
         point[3] = 1.0;
-
-
-
 
         const double* pointOut = (transform!=0) ? transform->MultiplyDoublePoint(point) : &point[0];
         outPts->InsertNextPoint(pointOut[0]+center[0],pointOut[1]+center[1],pointOut[2]+center[2]);
