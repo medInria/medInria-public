@@ -27,10 +27,6 @@
 #include <vtkStreamingDemandDrivenPipeline.h>
 #include <vtkSphereTesselator.h>
 
-#include <itkMatrix.h>
-
-#include <boost/algorithm/minmax_element.hpp>
-#include <boost/math/special_functions/legendre.hpp> //JGGBOOST
 #include <tr1/cmath>
 
 using namespace Visualization;
@@ -38,7 +34,6 @@ using Utils::direction;
 
 static direction Cartesian2Spherical(direction v);
 
-static matrix<double> ComputeSHMatrix (const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections);
 static itk::VariableSizeMatrix<double> ComputeSHMatrixMaxThesis(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,itk::VariableSizeMatrix<double>& PhiThetaDirections);
 
 static itk::VariableSizeMatrix<double> ComputeSHmatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,const bool FlipZ,itk::VariableSizeMatrix<double>& PhiThetaDirections);
@@ -185,15 +180,11 @@ vtkSphericalHarmonicSource::RequestData(vtkInformation *vtkNotUsed(request),vtkI
     */
     int N = shell->GetNumberOfPoints();
     
-    matrix<double> C(1,NumberOfSphericalHarmonics);
     itk::VariableSizeMatrix<double> CItk(1,NumberOfSphericalHarmonics);
 
     for (int i=0;i<NumberOfSphericalHarmonics;++i){
-        C(0,i) = SphericalHarmonics[i];
         CItk(0,i) = SphericalHarmonics[i];
     }
-
-    matrix<double> S = prod(C,BasisFunction);
 
     std::cout<< "tmanan" << BasisFunctionItk.GetVnlMatrix().size() << std::endl;
 
@@ -204,26 +195,11 @@ vtkSphericalHarmonicSource::RequestData(vtkInformation *vtkNotUsed(request),vtkI
 //        std::cout<< "hola" << CItk << std::endl;
 
 
-    std::cout<< "holas" << S(0,0) << S(0,5) << S(0,10) << std::endl;
 
     if (Normalize) {
 
-        typedef matrix<double>::array_type::const_iterator iterator;
-        std::pair<iterator,iterator> result = boost::minmax_element(S.data().begin(),S.data().end());
-
-        double min = *(result.first);
-        double max = *(result.second);
-     if (max==SItk.GetVnlMatrix().max_value()&&min==   SItk.GetVnlMatrix().min_value()){
-         min = SItk.GetVnlMatrix().min_value();
-         max = SItk.GetVnlMatrix().max_value();
-     }
-     unsigned int col=0;
-     col=SItk.GetVnlMatrix().cols();
-     col=SItk.GetVnlMatrix().columns();
-     col=SItk.Cols();
-     col=SItk.Rows();
-     col=S.size1();
-     col=S.size2();
+        double min = SItk.GetVnlMatrix().min_value();// *(result.first);
+        double max = SItk.GetVnlMatrix().max_value();//*(result.second);
 
         if (max!=min) {
             for (unsigned i=0;i<SItk.Rows();++i)
@@ -323,57 +299,6 @@ Cartesian2Spherical(const direction v) {
     const direction s = { r, phi, theta};
 
     return s;
-}
-
-matrix<double>
-ComputeSHMatrix(const int order,vtkPolyData* shell,const bool FlipX,const bool FlipY,const bool FlipZ,matrix<double>& PhiThetaDirections) {
-    const int n_s   = shell->GetNumberOfPoints();
-    //const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //  This is probably wrong !!!
-    const int rank =  (order+1)*(order+2)/2;
-
-    matrix<double> B(rank,n_s);
-
-    vtkPoints* vertices = shell->GetPoints();
-
-    for (int i=0;i<n_s;++i) {
-        // Get spherical component of the point direction and transform them in spherical coordinates.
-
-        double p[3];
-        vertices->GetPoint(i,p);
-        
-        direction d;
-        
-        d.x = (FlipX) ? -p[0] : p[0]; 
-        d.y = (FlipY) ? -p[1] : p[1]; 
-        d.z = (FlipZ) ? -p[2] : p[2];
-        
-        const direction v = Cartesian2Spherical(d);
-        
-        const double phi   = v.y;
-        const double theta = v.z;
-        double temp=0;
-        PhiThetaDirections(i,0) = phi;
-        PhiThetaDirections(i,1) = theta;
-
-        for (int l=0,j=0;l<=order;l+=2) {
-
-            //  Handle the case m=0
-            B(j,i) = std::tr1::sph_legendre(l,0,theta);
-            j = j+1;
-
-            for(int m=1,s=-1;m<=l;++m,++j,s=-s) {
-                temp = std::tr1::sph_legendre(l, m,theta)*std::sqrt(2.0);
-
-                //-m Real
-                B(j,i) = s*temp*(cos(m*phi));//like t3 at hardi.cpp but math simplified and with tr1
-
-                //+m Imag
-                B(++j,i) = temp*(sin(s*m*phi));//like t3 at hardi.cpp but math simplified and with tr1
-            }
-        }
-    }
-    
-    return B;
 }
 
 itk::VariableSizeMatrix<double>
@@ -648,26 +573,21 @@ vtkSphericalHarmonicSource::UpdateSphericalHarmonicSource() {
     sMesh.tesselate(Tesselation);
     sMesh.getvtkTesselation(shell);
 
-    matrix<double> PhiThetaDirection(shell->GetNumberOfPoints(),2);
     itk::VariableSizeMatrix<double>  PhiThetaDirectionItk(shell->GetNumberOfPoints(),2);
 
 
     switch (TesselationBasis) {
     case SHMatrix:
     {
-        BasisFunction = ComputeSHMatrix(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection); /*break;*/
         BasisFunctionItk = ComputeSHMatrixItk(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirectionItk); break;
-
     }
     case SHMatrixMaxThesis:
     {
         BasisFunctionItk = ComputeSHMatrixMaxThesis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirectionItk); break;
-
     }
     case SHMatrixTournier:
     {
         BasisFunctionItk = ComputeSHMatrixTournier(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirectionItk); break;
-
     }
     case SHMatrixRshBasis:
     {

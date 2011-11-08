@@ -21,10 +21,8 @@
 
 #include <vtkMatrix4x4.h>
 
-#include <boost/numeric/ublas/matrix.hpp>
 #include <itkVariableSizeMatrix.h>
 
-using namespace boost::numeric::ublas;
 
 class vtkMatrix4x4;
 
@@ -144,7 +142,6 @@ protected:
 
     // Spherical harmonic basis function
 
-    matrix<double> BasisFunction;
     itk::VariableSizeMatrix<double> BasisFunctionItk;
 
     // Order of the spherical harmonic basis
