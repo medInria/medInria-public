@@ -97,9 +97,18 @@ medToolBoxSegmentation::medToolBoxSegmentation( medViewerConfiguration * configu
     d->toolboxes = new QComboBox(this);
     d->toolboxes->addItem("Choose algorithm");
 
-    foreach(QString toolboxName, medToolBoxFactory::instance()->segmentationToolBoxes()) {
-        QByteArray toolboxId( toolboxName.toAscii() );
-        d->toolboxes->addItem(toolboxName, QVariant(toolboxId));
+    medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
+    foreach(QString toolbox, tbFactory->segmentationToolBoxes()) {
+        QPair<QString, QString> pair =
+            tbFactory->segmentationToolBoxDetailsFromId(toolbox);
+        QString name = pair.first;
+        QString description = pair.second;
+
+        QByteArray toolboxIdBA( toolbox.toAscii() );
+        d->toolboxes->addItem(name, QVariant(toolboxIdBA));
+        d->toolboxes->setItemData(d->toolboxes->count() - 1,
+            description,
+            Qt::ToolTipRole);
     }
 
     connect( d->toolboxes, SIGNAL( currentIndexChanged(int) ), this, SLOT( onToolBoxChosen( int )) );
