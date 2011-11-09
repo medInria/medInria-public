@@ -368,10 +368,14 @@ void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
 
             medImageMaskAnnotationData::ColorMapType colorMap;
             typedef medImageMaskAnnotationData::ColorMapType::value_type PairType;
-            colorMap.push_back( PairType(   0  , QColor(Qt::red) ) );
-            colorMap.push_back( PairType(   1  , QColor(0,0,0,0.1) ) );
-            colorMap.push_back( PairType( 254  , QColor(0,0,0,0.1) ) );
-            colorMap.push_back( PairType( 255  , QColor(Qt::green) ) );
+            const qreal fgVal = medToolBoxSegmentation::MaskPixelValues::Foreground;
+            const qreal bgVal = medToolBoxSegmentation::MaskPixelValues::Background;
+            colorMap.push_back( PairType( fgVal - 0.4, QColor(0,0,0,0.1) ) );
+            colorMap.push_back( PairType( fgVal      , QColor(Qt::green) ) );
+            colorMap.push_back( PairType( fgVal + 0.4, QColor(0,0,0,0.1) ) );
+            colorMap.push_back( PairType( bgVal - 0.4, QColor(0,0,0,0.1) ) );
+            colorMap.push_back( PairType( bgVal      , QColor(Qt::red) ) );
+            colorMap.push_back( PairType( bgVal + 0.4, QColor(0,0,0,0.1) ) );
             m_maskAnnotationData->setColorMap( colorMap );
 
             m_imageData->addAttachedData(m_maskAnnotationData);
