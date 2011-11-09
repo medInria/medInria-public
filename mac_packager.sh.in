@@ -35,8 +35,8 @@ done
 
 # copy sqlite drivers and svg reader since they are not explicitely linked by medinria
 
-cp -p /Developer/Applications/Qt/plugins/sqldrivers/libqsqlite.dylib @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks
-cp -p /Developer/Applications/Qt/plugins/imageformats/libqsvg.dylib @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks
+cp -p @QT_PLUGINS_DIR@/sqldrivers/libqsqlite.dylib @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks
+cp -p @QT_PLUGINS_DIR@/imageformats/libqsvg.dylib @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks
 
 cd @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/;
 
@@ -54,7 +54,13 @@ for i in $(ls PlugIns | grep -E 'dylib' ); do
 		for j in $( otool -L PlugIns/$i | grep -E '.framework' | cut -d " " -f 1 ); do
 			if [ ! `echo $j | grep '@executable_path'` ]; then
 				echo "    Updating $j"
-				install_name_tool -change $j @executable_path/../Frameworks/$j PlugIns/$i
+				#Depending on Qt SDK, paths may be relative or not
+				if [ ! `echo $j | grep '@QT_LIBRARY_DIR@'` ]; then
+					install_name_tool -change $j @executable_path/../Frameworks/$j PlugIns/$i
+				else
+					tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
+					install_name_tool -change $j @executable_path/../Frameworks/$tmpVal PlugIns/$i
+				fi
 			fi
 		done;
 done; 
@@ -73,7 +79,13 @@ for i in $( ls Frameworks | grep -E 'dylib' ); do
 		
 		for j in $( otool -L Frameworks/$i | grep -E '.framework' | cut -d " " -f 1 ); do
 			if [ ! `echo $j | grep '@executable_path'` ]; then
-				install_name_tool -change $j @executable_path/../Frameworks/$j Frameworks/$i
+				#Depending on Qt SDK, paths may be relative or not
+				if [ ! `echo $j | grep '@QT_LIBRARY_DIR@'` ]; then
+					install_name_tool -change $j @executable_path/../Frameworks/$j Frameworks/$i
+				else
+					tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
+					install_name_tool -change $j @executable_path/../Frameworks/$tmpVal Frameworks/$i
+				fi
 			fi
         done;
 done; 
