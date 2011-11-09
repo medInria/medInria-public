@@ -173,7 +173,7 @@ void AlgorithmConnectedThresholdToolbox::onApplyButtonPressed()
     dtkAbstractProcessFactory *factory = dtkAbstractProcessFactory::instance();
 
     dtkSmartPointer <mseg::AlgorithmConnectedThreshold> alg =
-            factory->createSmartPointer( AlgorithmConnectedThreshold::s_typeName() );
+            factory->createSmartPointer( AlgorithmConnectedThreshold::s_identifier() );
 
     alg->setHighThreshold( this->m_highThresh->value() );
     alg->setLowThreshold( this->m_lowThresh->value() );
@@ -273,7 +273,7 @@ medToolBoxSegmentationCustom *
 
 QString AlgorithmConnectedThresholdToolbox::s_description()
 {
-    static const QString desc = "mseg::AlgorithmConnectedThresholdToolbox";
+    static const QString desc = "Connected Threshold Tool";
     return desc;
 }
 

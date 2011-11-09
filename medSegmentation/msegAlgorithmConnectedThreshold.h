@@ -38,7 +38,7 @@ public:
     static dtkAbstractProcess * create();
 
     /** Get name to use for this when registering with a factory.*/
-    static QString s_typeName();
+    static QString s_identifier();
 
     //! Get a human readable name for this widget.
     /** \param trObj : Provide an object for the tr() function. If NULL qApp will be used. */

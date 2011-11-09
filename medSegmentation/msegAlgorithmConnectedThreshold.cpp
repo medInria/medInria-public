@@ -38,7 +38,7 @@ void AlgorithmConnectedThreshold::run()
     this->callHandler(this->input() );
 }
 
-QString AlgorithmConnectedThreshold::s_typeName()
+QString AlgorithmConnectedThreshold::s_identifier()
 {
     return AlgorithmConnectedThreshold::staticMetaObject.className();
 }

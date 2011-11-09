@@ -9,6 +9,8 @@
 
 #include "msegAlgorithmConnectedThreshold.h"
 #include "msegAlgorithmConnectedThresholdToolbox.h"
+#include "medProcessPaintSegm.h"
+#include "msegAlgorithmPaintToolbox.h"
 #include <medToolBoxFactory.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -35,8 +37,12 @@ bool AlgorithmInitializer::initializeProcesses()
     dtkAbstractProcessFactory *factory = dtkAbstractProcessFactory::instance();
 
     bool ret (true);
-    if (! factory->registerProcessType( AlgorithmConnectedThreshold::s_typeName(),
+    if (! factory->registerProcessType( AlgorithmConnectedThreshold::s_identifier(),
         AlgorithmConnectedThreshold::create, AlgorithmGeneric::ms_interfaceName ) ) {
+        ret = false;
+    }
+    if (! factory->registerProcessType( medProcessPaintSegm::s_identifier(),
+            medProcessPaintSegm::create, AlgorithmGeneric::ms_interfaceName ) ) {
         ret = false;
     }
     return ret;
@@ -52,6 +58,12 @@ bool AlgorithmInitializer::initializeWidgets()
         AlgorithmConnectedThresholdToolbox::s_name(),
         AlgorithmConnectedThresholdToolbox::s_description(),
         AlgorithmConnectedThresholdToolbox::createInstance);
+
+    ret &= factory->registerCustomSegmentationToolBox(
+        AlgorithmPaintToolbox::s_identifier(),
+        AlgorithmPaintToolbox::s_name(),
+        AlgorithmPaintToolbox::s_description(),
+        AlgorithmPaintToolbox::createInstance);
 
     return ret;
 }
