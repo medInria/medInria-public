@@ -71,7 +71,10 @@ IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
         vtkSphereTesselator.cxx
         vtkSphericalHarmonicSource.cxx
         vtkSphericalHarmonicGlyph.cxx
-        itkSphericalHarmonicITKToVTKFilter.cxx
+        )
+    SET(vtkVisuManagement_LIBS
+        ${vtkVisuManagement_LIBS}
+        itkIOAddOn
         )
 ENDIF(vtkINRIA3D_USE_SPHERICALHARMONICS )
 
@@ -108,7 +111,6 @@ IF(VTK_WRAP_TCL)
      vtkSphereTesselator.cxx
      vtkSphericalHarmonicSource.cxx
      vtkSphericalHarmonicGlyph.cxx
-     itkSphericalHarmonicITKToVTKFilter.cxx
      WRAP_EXCLUDE
     )
     

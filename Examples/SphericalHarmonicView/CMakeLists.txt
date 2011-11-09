@@ -17,6 +17,3 @@ vtkVisuManagement
 vtkRenderingAddOn
 )
 
-#vtkVisuManagement
-#vtkRendering
-#vtkIO
