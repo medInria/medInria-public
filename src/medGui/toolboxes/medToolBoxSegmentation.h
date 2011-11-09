@@ -38,7 +38,7 @@ class MEDGUI_EXPORT medToolBoxSegmentation : public medToolBox
     Q_OBJECT;
 
 public:
-    struct MaskPixelValues { enum E { Background = 0, Unset = 127, Foreground = 255 };  };
+    struct MaskPixelValues { enum E { Unset = 0, Foreground = 1, Background = 2 };  };
 
      medToolBoxSegmentation(medViewerConfiguration * config, QWidget *parent = 0);
     ~medToolBoxSegmentation(void);
