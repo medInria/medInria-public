@@ -14,7 +14,14 @@
 class dtkAbstractView;
 class dtkAbstractData;
 class medViewerToolBoxViewPropertiesPrivate;
+/**
+   
+   \class medViewerToolBoxViewProperties
+   \brief This is designed to help users manipulate the image or mesh data. It can be put into the specific configuration as the other toolboxes
 
+   \ingroup Toolboxes
+   \author Alexandre Abadie and Fatih Arslan, INRIA
+*/
 class MEDGUI_EXPORT medViewerToolBoxViewProperties : public medToolBox
 {
     Q_OBJECT
@@ -23,7 +30,7 @@ public:
      medViewerToolBoxViewProperties(QWidget *parent = 0);
     ~medViewerToolBoxViewProperties(void);
     /**
-    Whenever the view is changed, update metdhod is triggered
+    Whenever the view is changed, update metdhod is triggered. 
     */
     void update(dtkAbstractView *view);
     void constructImageLayer(dtkAbstractData* data, int imageLayer);
@@ -71,7 +78,9 @@ public slots:
 
 
 signals:
+    /** setVisibility is both for images and meshes*/
     void setVisibility(bool visible, int layer);
+    /** setVisibility is both for images and meshes*/
     void setOpacity(double opacity, int layer);
 
 private:
