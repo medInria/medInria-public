@@ -22,7 +22,9 @@ class MEDGUI_EXPORT medViewerToolBoxViewProperties : public medToolBox
 public:
      medViewerToolBoxViewProperties(QWidget *parent = 0);
     ~medViewerToolBoxViewProperties(void);
-
+    /**
+    Whenever the view is changed, update metdhod is triggered
+    */
     void update(dtkAbstractView *view);
     void constructImageLayer(dtkAbstractData* data, int imageLayer);
     void constructMeshLayer(dtkAbstractData* data, int meshLayer);

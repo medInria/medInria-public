@@ -291,26 +291,23 @@ void
         raiseSlider(d->view->layerCount() == 2);
 
 
-        if(d->view->meshLayerCount()!=0)
+        if(d->view->meshLayerCount()!=0) ///activate mesh interactor
             if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
             {
                 d->currentInteractor = d->interactors.indexOf(interactor);
             }
 
-            
+        //Loop all layers and create a layer icon on the toolbox with respect to the fact that it is a mesh or an image    
         for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
         {
             
             if(d->view->dataInList(i) && d->view->dataInList(i)->identifier().contains("vtkDataMesh"))
             {
-              //  qDebug() << "d->view->dataInList("<<i<<")->identifier() : " << d->view->dataInList(i)->identifier();
                 this->constructMeshLayer(d->view->dataInList(i), meshNumber);
                 meshNumber++;
             }
             else //if (d->view->dataInList(i))
             {
-              //  qDebug() << "d->view->dataInList("<<i<<")->identifier() : " << d->view->dataInList(i)->identifier();
-
                 this->constructImageLayer(d->view->dataInList(i), imageNumber);
                 imageNumber++;
             }
@@ -357,7 +354,7 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
         d->propertiesTree->takeTopLevelItem(index);
     }
 
-    if (data)
+    if (data) ///put thumbnail
     {
         if (medMetaDataKeys::SeriesThumbnail.is_set_in(data))
         {
@@ -893,7 +890,7 @@ void
             if(item->text(0).contains("Mesh"))
             {
                 QString s = item->text(0).remove(0,5);
-                d->view->setCurrentMeshLayer(s.toInt());
+                d->view->setCurrentMeshLayer(s.toInt()); //meshlayer is set here
                 d->isMesh = true;
             }
             else
