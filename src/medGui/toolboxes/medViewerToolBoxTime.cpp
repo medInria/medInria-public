@@ -18,6 +18,7 @@
 
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkLog.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <med4DAbstractViewInteractor.h>
 #include <medToolBoxTab.h>
@@ -36,7 +37,7 @@ public:
     medButton *stopButton;
 
     QList <QAction*> actionlist;
-    QList<dtkAbstractView*> views;
+    QList< dtkSmartPointer<dtkAbstractView> > views;
     QList<med4DAbstractViewInteractor*> interactors;
     QTimeLine *timeLine;
     QSpinBox *spinBox;
@@ -200,6 +201,9 @@ void medViewerToolBoxTime::onViewRemoved (dtkAbstractView *view)
     d->timeSlider->setValue(0);
 
     if (!view)
+        return;
+
+    if (!d->views.contains(view))
         return;
 
     if (med4DAbstractViewInteractor *interactor = dynamic_cast<med4DAbstractViewInteractor*>(view->interactor ("v3dView4DInteractor")))

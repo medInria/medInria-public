@@ -164,10 +164,7 @@ void medViewPool::removeView (medAbstractView *vview)
             it->onRemoveViewFromPool( view );
             }
         }
-        */
-
-        d->views.removeOne (view); 
-        emit viewRemoved (view);
+        */        
 
         disconnect (view, SIGNAL (propertySet(const QString&, const QString&)), this, SLOT (onViewPropertySet(const QString&, const QString &)));
         disconnect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));
@@ -189,6 +186,9 @@ void medViewPool::removeView (medAbstractView *vview)
 
         disconnect (this, SIGNAL (viewRemoved (medAbstractView *)),
                     view, SLOT (onRemoveViewFromPool (medAbstractView *)));
+
+        d->views.removeOne (view);
+        emit viewRemoved (view);
     }
 }
 

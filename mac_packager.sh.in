@@ -5,31 +5,38 @@
 # or
 # - mac_packager.sh path_to_plugins/*
 
-# Only vtk libraries seem not to be copied as relative path are used. You have to copy them manually.
-
 # To build a stand-alone mac version of medinria, do the following:
 
 # 1. build medinria / medinria-plugins
-# 2. make install in the same directory for each project
-# 3. copy vtk libraries into ${CMAKE_INSTALL_PREFIX}/bin/medinria.app/Contents/Frameworks
-# 4. run mac_pacakger.sh with all plugins in arguments
+# 2. make install of each project
+# 3. chmod u+x mac_pacakger.sh
+# 4. run mac_pacakger.sh with plugins in arguments (works for common plugins for now), e.g. : ./mac_packager.sh ${Plugins_Install_Dir}/plugins/*
 
-# The bundle medinria.app will contain all plugins and will be standalone, ready to be packaged.
+# The bundle medinria.app will contain all plugins and will be standalone, packaged into MedINRIA.dmg in the install dir
 
 for i in $( otool -L $* 2> /dev/null \
-| sort -u | grep -i -E 'itk|vtk|/opt/local/' | cut -d " " -f 1 ); do
+| sort -u | grep -i -E 'itk|vtk' | cut -d " " -f 1 ); do
 	cp -np $i @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks 2> /dev/null;
 done
 
 for i in $( otool -L @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks/* 2> /dev/null \
-	| sort -u | grep -i -E 'itk|vtk|/opt/local/' | cut -d " " -f 1 ); do
+	| sort -u | grep -i -E 'itk|vtk' | cut -d " " -f 1 ); do
 		cp -np $i @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks 2> /dev/null;
 done
 
 # copy plugins in PlugIns directory
+
+mkdir -p @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/PlugIns
+
 for i in $*; do
-	cp -p $i @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/PlugIns;
+	echo "    Copying $i to plugins"
+	cp -p $i @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/PlugIns
 done
+
+# copy sqlite drivers and svg reader since they are not explicitely linked by medinria
+
+cp -p @QT_PLUGINS_DIR@/sqldrivers/libqsqlite.dylib @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks
+cp -p @QT_PLUGINS_DIR@/imageformats/libqsvg.dylib @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks
 
 cd @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/;
 
@@ -38,21 +45,24 @@ for i in $(ls PlugIns | grep -E 'dylib' ); do
 		#update library id
 		install_name_tool -id @executable_path/../PlugIns/$i PlugIns/$i
 		#update library links
-		for j in $( otool -L PlugIns/$i | grep -i -E 'med|dtk|itk|vtk|/opt/local/' | cut -d " " -f 1 ); do
+		for j in $( otool -L PlugIns/$i | grep -i -E 'med|dtk|itk|vtk' | cut -d " " -f 1 ); do
 			install_name_tool -change \
 			$j @executable_path/../Frameworks/`echo $j | rev | cut -d "/" -f 1 | rev` \
 			PlugIns/$i
 		done
-		install_name_tool -change @QT_LIBRARY_DIR@/QtOpenGL.framework/Versions/4/QtOpenGL @executable_path/../Frameworks/QtOpenGL.framework/Versions/4/QtOpenGL PlugIns/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtHelp.framework/Versions/4/QtHelp @executable_path/../Frameworks/QtHelp.framework/Versions/4/QtHelp PlugIns/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtWebKit.framework/Versions/4/QtWebKit @executable_path/../Frameworks/QtWebKit.framework/Versions/4/QtWebKit PlugIns/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui PlugIns/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtXml.framework/Versions/4/QtXml @executable_path/../Frameworks/QtXml.framework/Versions/4/QtXml PlugIns/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtSql.framework/Versions/4/QtSql @executable_path/../Frameworks/QtSql.framework/Versions/4/QtSql PlugIns/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtXmlPatterns.framework/Versions/4/QtXmlPatterns @executable_path/../Frameworks/QtXmlPatterns.framework/Versions/4/QtXmlPatterns PlugIns/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtNetwork.framework/Versions/4/QtNetwork @executable_path/../Frameworks/QtNetwork.framework/Versions/4/QtNetwork PlugIns/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore PlugIns/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/phonon.framework/Versions/4/phonon @executable_path/../Frameworks/phonon.framework/Versions/4/phonon PlugIns/$i
+
+		for j in $( otool -L PlugIns/$i | grep -E '.framework' | cut -d " " -f 1 ); do
+			if [ ! `echo $j | grep '@executable_path'` ]; then
+				echo "    Updating $j"
+				#Depending on Qt SDK, paths may be relative or not
+				if [ ! `echo $j | grep '@QT_LIBRARY_DIR@'` ]; then
+					install_name_tool -change $j @executable_path/../Frameworks/$j PlugIns/$i
+				else
+					tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
+					install_name_tool -change $j @executable_path/../Frameworks/$tmpVal PlugIns/$i
+				fi
+			fi
+		done;
 done; 
 
 
@@ -61,22 +71,34 @@ for i in $( ls Frameworks | grep -E 'dylib' ); do
 		#update library id
 		install_name_tool -id @executable_path/../Frameworks/$i Frameworks/$i
 		#update library links
-		for j in $( otool -L Frameworks/$i | grep -i -E 'med|dtk|itk|vtk|/opt/local/' | cut -d " " -f 1 ); do
+		for j in $( otool -L Frameworks/$i | grep -i -E 'med|dtk|itk|vtk' | cut -d " " -f 1 ); do
 			install_name_tool -change \
 			$j @executable_path/../Frameworks/`echo $j | rev | cut -d "/" -f 1 | rev` \
 			Frameworks/$i
 		done
-		install_name_tool -change @QT_LIBRARY_DIR@/QtOpenGL.framework/Versions/4/QtOpenGL @executable_path/../Frameworks/QtOpenGL.framework/Versions/4/QtOpenGL Frameworks/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtHelp.framework/Versions/4/QtHelp @executable_path/../Frameworks/QtHelp.framework/Versions/4/QtHelp Frameworks/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtWebKit.framework/Versions/4/QtWebKit @executable_path/../Frameworks/QtWebKit.framework/Versions/4/QtWebKit Frameworks/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui Frameworks/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtXml.framework/Versions/4/QtXml @executable_path/../Frameworks/QtXml.framework/Versions/4/QtXml Frameworks/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtSql.framework/Versions/4/QtSql @executable_path/../Frameworks/QtSql.framework/Versions/4/QtSql Frameworks/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtXmlPatterns.framework/Versions/4/QtXmlPatterns @executable_path/../Frameworks/QtXmlPatterns.framework/Versions/4/QtXmlPatterns Frameworks/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtNetwork.framework/Versions/4/QtNetwork @executable_path/../Frameworks/QtNetwork.framework/Versions/4/QtNetwork Frameworks/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore Frameworks/$i
-		install_name_tool -change @QT_LIBRARY_DIR@/phonon.framework/Versions/4/phonon @executable_path/../Frameworks/phonon.framework/Versions/4/phonon Frameworks/$i
+		
+		for j in $( otool -L Frameworks/$i | grep -E '.framework' | cut -d " " -f 1 ); do
+			if [ ! `echo $j | grep '@executable_path'` ]; then
+				#Depending on Qt SDK, paths may be relative or not
+				if [ ! `echo $j | grep '@QT_LIBRARY_DIR@'` ]; then
+					install_name_tool -change $j @executable_path/../Frameworks/$j Frameworks/$i
+				else
+					tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
+					install_name_tool -change $j @executable_path/../Frameworks/$tmpVal Frameworks/$i
+				fi
+			fi
+        done;
 done; 
 
+cd @CMAKE_INSTALL_PREFIX@/bin/
+macdeployqt medinria.app
 
+cd @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents
+
+mkdir -p PlugIns/sqldrivers
+mv Frameworks/libqsqlite.dylib PlugIns/sqldrivers/
+mv Frameworks/libqsvg.dylib PlugIns/imageformats/
+
+#Run fancy packaging apple script
+osascript @PROJECT_BINARY_DIR@/ScriptGenerateMedInriaFancyDMG.scpt
 

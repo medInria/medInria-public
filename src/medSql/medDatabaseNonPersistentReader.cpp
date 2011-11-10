@@ -208,7 +208,7 @@ void medDatabaseNonPersistentReader::run ( void )
 
     // read and write images in mhd format
 
-    QList<dtkAbstractData*> dtkDataList;
+    QList< dtkSmartPointer<dtkAbstractData> > dtkDataList;
 
     QMap<QString, QStringList>::const_iterator it = imagesToWriteMap.begin();
     QMap<QString, QString>::const_iterator itPat = patientsToWriteMap.begin();

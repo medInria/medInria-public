@@ -22,11 +22,12 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 class medDatabaseExporterPrivate
 {
 public:
-    dtkAbstractData *data;
+    dtkSmartPointer<dtkAbstractData> data;
     QString          filename;
 };
 
@@ -45,7 +46,7 @@ medDatabaseExporter::~medDatabaseExporter(void)
 
 void medDatabaseExporter::run(void)
 {
-    if (!d->data) {
+    if (d->data.isNull()) {
         emit showError(this, "Cannot export data", 3000);
         return;
     }
@@ -56,10 +57,10 @@ void medDatabaseExporter::run(void)
     }
 
     QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
-
+    bool written = false;
     for (int i=0; i<writers.size(); i++)
     {
-        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
+        dtkSmartPointer<dtkAbstractDataWriter> dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
 
         if (! dataWriter->handled().contains(d->data->identifier()))
             continue;
@@ -68,9 +69,13 @@ void medDatabaseExporter::run(void)
 
         if (dataWriter->canWrite( d->filename )) {
             if (dataWriter->write( d->filename )) {
-                dataWriter->deleteLater();
+                written = true;
                 break;
             }
         }
+    }
+
+    if (!written) {
+        emit showError(this, tr("Could not find suitable writer for file: ") + d->filename, 3000);
     }
 }

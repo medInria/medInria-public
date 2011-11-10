@@ -1,5 +1,5 @@
-/* medToolBoxFilteringCustom.h --- 
- * 
+/* medToolBoxFilteringCustom.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 14:16:25 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 23
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDTOOLBOXFILTERINGCUSTOM_H
@@ -32,7 +32,7 @@ class MEDGUI_EXPORT medToolBoxFilteringCustom : public medToolBox
     Q_OBJECT
 
 public:
-             medToolBoxFilteringCustom(QWidget *parent = 0);
+             medToolBoxFilteringCustom(QWidget *parentToolBox = 0);
     virtual ~medToolBoxFilteringCustom(void);
 
     void setFilteringToolBox(medToolBoxFiltering *toolbox);
@@ -40,7 +40,7 @@ public:
     virtual dtkAbstractData* processOutput() = 0;
 
 protected:
-    medToolBoxFiltering *parent(void);
+    medToolBoxFiltering *parentToolBox(void);
 
 private:
     medToolBoxFilteringCustomPrivate *d;

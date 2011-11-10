@@ -1,8 +1,15 @@
 #!/usr/bin/env python
-
+'''
+This scripts install all qt dependencies we have for a running
+medinria
+'''
 import sys,os,shutil
 
-
+'''
+Deprecated, not used any more,
+just put plugins in their subdirectories directly
+in the executable's directory.
+'''
 def create_qt_conf (install_dir):
 
     f = open(os.path.join(install_dir,"qt.conf"),'w')
@@ -10,7 +17,10 @@ def create_qt_conf (install_dir):
     return
 
 def copy_dlls (files_list, qt_install_dir, install_dir):
-
+    '''
+    copy dlls in the file list, from the qt_installation_dir
+    to the installation directory.
+    '''
     for dll in files_list:
         shutil.copy(os.path.join(qt_install_dir,dll),
             os.path.join(install_dir,dll))

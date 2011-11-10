@@ -136,6 +136,8 @@ void medToolBoxDiffusion::onToolBoxChosen(int id)
     }
 
     //set the aboutPlugin button.
+    //get the plugin from the custom toolbox,
+    //since the custom shares the same header as this.
     dtkPlugin* plugin = toolbox->plugin();
     this->setAboutPluginButton(plugin);
     this->setAboutPluginVisibility(true);

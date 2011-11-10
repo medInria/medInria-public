@@ -389,9 +389,11 @@ dtkAbstractData * medAbstractView::dataInList(int layer) const
 
 bool medAbstractView::isInList(dtkAbstractData * data, int layer)
 {
+
     if(layer == d->dataList.size())
         return false;
     if (d->dataList.contains(data) && d->dataList[layer]==data)
+
     {
         qDebug() << "data is in list,layer:" << layer;
         return true;

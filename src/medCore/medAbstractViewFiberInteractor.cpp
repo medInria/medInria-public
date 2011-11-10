@@ -23,7 +23,10 @@ medAbstractViewFiberInteractor::medAbstractViewFiberInteractor(): d2(new medAbst
 {}
 
 medAbstractViewFiberInteractor::~medAbstractViewFiberInteractor()
-{}
+{
+    delete d2;
+    d2 = NULL;
+}
 
 void medAbstractViewFiberInteractor::setROI(dtkAbstractData *data)
 {
