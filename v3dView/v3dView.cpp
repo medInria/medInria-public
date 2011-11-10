@@ -36,6 +36,8 @@
 #include <vtkTextProperty.h>
 #include <vtkImageMapToColors.h>
 #include <vtkOrientedBoxWidget.h>
+#include <vtkMath.h>
+#include <vtkMatrix4x4.h>
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>

@@ -1,6 +1,7 @@
 #include "v3dViewAnnotationInteractor.h"
 
 #include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkLog.h>
 
 #include "medAnnotationData.h"

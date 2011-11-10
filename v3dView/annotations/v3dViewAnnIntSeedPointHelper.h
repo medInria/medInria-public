@@ -12,6 +12,8 @@
 
 #include <map>
 
+#include <vtkSmartPointer.h>
+
 class medSeedPointAnnotationData;
 class v3dViewAnnotationInteractor;
 class v3dViewAnnIntSeedPointHelperPrivate;

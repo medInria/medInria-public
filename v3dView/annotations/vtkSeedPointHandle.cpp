@@ -8,13 +8,15 @@
 #include "vtkSeedPointHandle.h"
 
 #include "vtkCellArray.h"
+#include "vtkMath.h"
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper2D.h"
+#include "vtkRenderer.h"
 #include "vtkViewport.h"
 #include "vtkWindow.h"
-#include "vtkMath.h"
-#include "vtkRenderer.h"
+
+#include <cmath>
 
 vtkStandardNewMacro(vtkSeedPointHandle);
 

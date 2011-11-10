@@ -20,6 +20,7 @@
 #include <vtkHandleWidget.h>
 #include <vtkProperty2D.h>
 #include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
 #include <vtkSeedWidget.h>
 #include <vtkSeedRepresentation.h>
 #include <vtkSphereHandleRepresentation.h>

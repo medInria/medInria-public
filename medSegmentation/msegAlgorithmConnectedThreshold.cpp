@@ -75,9 +75,9 @@ int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( dtkAbstractDa
     typedef itk::ConnectedThresholdImageFilter<InputImageType, OutputImageType> ConnectedThresholdImageFilterType;
     typedef itk::ImageFunction<InputImageType, OutputType> ImageFunctionType;
 
-    InputImageType::PointType point;
+    typename InputImageType::PointType point;
 
-    ConnectedThresholdImageFilterType::Pointer ctiFilter( ConnectedThresholdImageFilterType::New() );
+    typename ConnectedThresholdImageFilterType::Pointer ctiFilter( ConnectedThresholdImageFilterType::New() );
 
     ctiFilter->SetUpper( self->highThreshold() );
     ctiFilter->SetLower( self->lowThreshold() );
@@ -91,8 +91,9 @@ int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( dtkAbstractDa
             point[2] = seedPoint.z();
         } while (false);
 
-        ImageFunctionType::IndexType index;
-        bool isInside = image->TransformPhysicalPointToIndex (point, index);
+        typename ImageFunctionType::IndexType index;
+        //bool isInside =
+        image->TransformPhysicalPointToIndex (point, index);
 
         ctiFilter->AddSeed( index );
     }
@@ -100,13 +101,13 @@ int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( dtkAbstractDa
     ctiFilter->SetInput( image );
 
     // Add progress observer
-    itk::MsegProgressObserverCommand::Pointer progressObserver( itk::MsegProgressObserverCommand::New() );
+    typename itk::MsegProgressObserverCommand::Pointer progressObserver( itk::MsegProgressObserverCommand::New() );
     progressObserver->SetAlgorithm( self );
     ctiFilter->AddObserver(itk::ProgressEvent(), progressObserver );
 
     ctiFilter->Update();
 
-    OutputImageType::Pointer outputImage( ctiFilter->GetOutput() );
+    typename OutputImageType::Pointer outputImage( ctiFilter->GetOutput() );
     QString outputTypeName = QString("itkDataImageChar%1").arg(VDimension,1);
 
     dtkSmartPointer< dtkAbstractData> newData( dtkAbstractDataFactory::instance()->createSmartPointer( outputTypeName ) );

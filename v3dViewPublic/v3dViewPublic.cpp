@@ -18,6 +18,7 @@
 #include <vtkCamera.h>
 #include <vtkLookupTableManager.h>
 #include <vtkOrientedBoxWidget.h>
+#include <vtkMath.h>
 
 #include <QVTKWidget.h>
 
