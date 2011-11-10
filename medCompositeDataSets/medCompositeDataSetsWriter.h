@@ -16,6 +16,7 @@ public:
     virtual ~medCompositeDataSetsWriter() { }
 
     virtual QString description() const { return "Writer for composite data sets"; }
+    virtual QString identifier() const { return "medCompositeDataSetsWriter"; }
 
     virtual QStringList handled() const { return MedInria::medCompositeDataSetsBase::handled(); }
 

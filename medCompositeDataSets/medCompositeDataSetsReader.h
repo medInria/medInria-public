@@ -30,6 +30,7 @@ public:
     }
 
     virtual QString description() const { return "Reader for composite data sets";              }
+    virtual QString identifier() const { return "medCompositeDataSetsReader";              }
     virtual QStringList handled() const { return MedInria::medCompositeDataSetsBase::handled(); }
     
     static bool initialize() {
