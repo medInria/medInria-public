@@ -1,20 +1,12 @@
-/*=========================================================================
+//   Authors:	   Maxime Descoteaux, Jaime Garcia Guevara, Theodore Papadopoulo.
+//
+//   Description:  scale and orient glyph according to spherical harmonic representation
+//   vtkSphericalHarmonicGlyph is a filter that copies a SH representation (specified
+//   as polygonal data) to every input point.
+//
+//   Copyright (c) 2007-2011, INRIA Sophia Antipolis, France, groups Odyssee, Athena.
+//   Please see the copyright notice included in this distribution for full details.
 
-Program:   vtkINRIA3D
-Module:    $Id: TensorManager.cxx 917 2008-08-27 10:37:34Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2008-08-27 12:37:34 +0200 (Wed, 27 Aug 2008) $
-Version:   $Revision: 917 $
-
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
-
-=========================================================================*/
 #include <vtkViewImage3D.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
@@ -105,7 +97,6 @@ int main (int argc, char*argv[])
          We create the vtkSphericalHarmonicManager, feed it with SH data, set the rendering
          properties, the interactor and renderer and finally update it .
       */
-
     vtkSphericalHarmonicManager       *manager;
     manager = vtkSphericalHarmonicManager::New();
 
@@ -144,8 +135,6 @@ int main (int argc, char*argv[])
     rwin->Delete();
     renderer->Delete();
     manager->Delete();
-    reader->Delete();
-
 
     return 0;
 }

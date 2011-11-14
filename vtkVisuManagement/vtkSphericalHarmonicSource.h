@@ -1,17 +1,12 @@
-//  Author(s):           Maxime Descoteaux
-//  
-//  
+//   Authors:		Maxime Descoteaux, Jaime Garcia Guevara, Theodore Papadopoulo.
+//
+//
 //  Description:     SH == SphericalHarmonic
 //  Spherical function viewer when parameterised with a SH basis
 //  Tesselation decides the resolution of the sphere
-//  
-//  assumption: icosahedron polydata
-//  
 //  In charge of drawing a single spherical function
-//  
-//  Copyright (c) 2007 by Maxime Descoteaux, Odyssee Group, INRIA
-//  Sophia Antipolis, France.  Please see the copyright notice
-//  included in this distribution for full details.
+//   Copyright (c) 2007-2011, INRIA Sophia Antipolis, France, groups Odyssee, Athena.
+//   Please see the copyright notice included in this distribution for full details.
 
 #ifndef VTKSPHERICALHARMONICSOURCE_HPP
 #define VTKSPHERICALHARMONICSOURCE_HPP
@@ -108,8 +103,9 @@ public:
     vtkBooleanMacro(MaxThesisFunc,bool);
     vtkGetMacro(MaxThesisFunc,bool);
 
-
-    virtual void SetRotationMatrix(vtkMatrix4x4*);
+    //Set/get the rotation matrix that defines the individual tesselated deformed sphere pose.
+//    virtual void SetRotationMatrix(vtkMatrix4x4*);
+    vtkSetObjectMacro(RotationMatrix,vtkMatrix4x4);
     vtkGetObjectMacro(RotationMatrix,vtkMatrix4x4);
     
     void UpdateSphericalHarmonicSource();

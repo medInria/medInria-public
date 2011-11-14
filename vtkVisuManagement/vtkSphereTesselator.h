@@ -36,7 +36,6 @@ public:
 
     vtkSphereTesselator();
     vtkSphereTesselator(const p_solid& ip);
-    //vtkSphereTesselator(const vtkSphereTesselator<T>& st);
 
     virtual ~vtkSphereTesselator();
 
@@ -60,7 +59,6 @@ private:
     /** Initialize by using the m_initPolyhedra the polyhedron that it is gong to be tesselated  */
     void m_initializeTesselation();
 
-    //    void m_flipOrientation(tesselation<T>* t);
     bool m_verbose;
 };
 }

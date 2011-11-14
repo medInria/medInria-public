@@ -33,15 +33,15 @@ vtkSphericalHarmonicGlyph::vtkSphericalHarmonicGlyph() {
     this->TMatrix = 0;
 }
 
-#if 0
 vtkSphericalHarmonicGlyph::~vtkSphericalHarmonicGlyph()
 {
+    if(this->TMatrix)
+        this->TMatrix->Delete();
     /*
     if (this->SphericalHarmonicSource)
         this->SphericalHarmonicSource->Delete();
     */
 }
-#endif
 
 
 int
@@ -263,7 +263,6 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     
     newPts->Delete();
     newPointData->Delete();
-    //deformPts->Delete();
     trans->Delete();
 
     return 1;

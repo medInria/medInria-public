@@ -18,7 +18,6 @@ public:
     static vtkSphericalHarmonicVisuManager *New();
     vtkTypeRevisionMacro(vtkSphericalHarmonicVisuManager, vtkObject);
 
-
     void SetGlyphScale (const float& scale);
 
     /** Get the Polyhedron type to be tesselated */
@@ -34,7 +33,6 @@ public:
     /** Set the spherical harmonics basis to be used */
     int GetTesselationBasis (void) const
     { return this->SHSource->GetTesselationBasis(); }
-
 
     //  void SetTesselation (const int& type)
     //  { this->SHSource->SetTesselation (type); }
@@ -65,13 +63,14 @@ public:
     vtkGetObjectMacro (Mapper,   vtkPolyDataMapper);
     vtkGetObjectMacro (Actor,    vtkActor);
 
-    vtkSetObjectMacro (MatrixV, vtkMatrix4x4);
-    vtkGetObjectMacro (MatrixV, vtkMatrix4x4);
+    // Get/set inside the per slice VisuManager the transformation matrix that is used
+    // to display the glyphs according to the image coordinate system
+    vtkSetObjectMacro (MatrixT, vtkMatrix4x4);
+    vtkGetObjectMacro (MatrixT, vtkMatrix4x4);
 
 protected:
     vtkSphericalHarmonicVisuManager();
     ~vtkSphericalHarmonicVisuManager();
-
 
 private:
 
@@ -82,10 +81,7 @@ private:
     vtkPolyDataMapper*          Mapper;
     vtkActor*                   Actor;
 
-    vtkMatrix4x4* MatrixV;
-
-
-
+    vtkMatrix4x4* MatrixT;
 };
 
 

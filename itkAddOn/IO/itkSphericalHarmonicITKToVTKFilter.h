@@ -57,11 +57,11 @@ public:
     itkTypeMacro(SphericalHarmonicITKToVTKFilter, ImageToImageFilter);
 
     /** Return the input (no ITK filtering is performed on the input
-  * image) */
+    * image) */
     SHImageType *GetOutput();
 
     /** Get the VTK SphericalHarmonic image obtained from the input ITK SphericalHarmonic
-  * image */
+    * image */
     void CopyVTKSphericalHarmonic( vtkStructuredPoints* );
 
     vtkStructuredPoints* GetVTKSphericalHarmonic(void) const
@@ -74,7 +74,7 @@ protected:
     virtual ~SphericalHarmonicITKToVTKFilter();
 
     /** Method that actually read the ITK data and convert it into a
-  *  VTK structured point */
+    *  VTK structured point */
     virtual void GenerateData();
 
 private:
@@ -90,7 +90,6 @@ private:
 
 } // end namespace itk
 
-//JGG
 #ifndef ITK_MANUAL_INSTANTIATION
 #include "itkSphericalHarmonicITKToVTKFilter.cxx"
 #endif

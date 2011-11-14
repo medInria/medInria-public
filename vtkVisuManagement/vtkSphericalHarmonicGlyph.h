@@ -70,6 +70,8 @@ public:
     vtkGetMacro(ColorGlyphs,bool);
     vtkBooleanMacro(ColorGlyphs,bool);
 
+    // Get/set the transformation matrix that is used to display the glyphs according to the image coordinate system
+
     vtkSetObjectMacro(TMatrix,vtkMatrix4x4);
     vtkGetObjectMacro(TMatrix,vtkMatrix4x4);
 
@@ -87,7 +89,7 @@ public:
 protected:
 
     vtkSphericalHarmonicGlyph();
-    ~vtkSphericalHarmonicGlyph() { }
+    ~vtkSphericalHarmonicGlyph();
 
     virtual int RequestData(vtkInformation*,vtkInformationVector**,vtkInformationVector*);
     virtual int FillInputPortInformation(int port,vtkInformation *info);

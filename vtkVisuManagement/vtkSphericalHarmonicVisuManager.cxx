@@ -57,7 +57,7 @@ vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager()
     
     lut->Delete();
 
-    this->MatrixV=0;
+    this->MatrixT=0;
 
     this->Actor->SetMapper( this->Mapper );
     this->Actor->GetProperty()->SetSpecular(0.7);
@@ -68,17 +68,26 @@ vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager()
 
 vtkSphericalHarmonicVisuManager::~vtkSphericalHarmonicVisuManager()
 {
-    this->SHGlyph->Delete();
-    this->SHSource->Delete();
-    this->Normals->Delete();
-    this->VOI->Delete();
-    this->Mapper->Delete();
-    this->Actor->Delete();
+    if(this->SHGlyph)
+        this->SHGlyph->Delete();
+    if(this->SHSource)
+        this->SHSource->Delete();
+    if(this->Normals)
+        this->Normals->Delete();
+    if(this->VOI)
+        this->VOI->Delete();
+    if(this->Mapper)
+        this->Mapper->Delete();
+    if(this->Actor)
+        this->Actor->Delete();
+    if(this->MatrixT)
+        this->MatrixT->Delete();
+
 }
 
 void vtkSphericalHarmonicVisuManager::SetInput (vtkStructuredPoints* vtkSH)
 {
-    this->SHGlyph->SetTMatrix(MatrixV);
+    this->SHGlyph->SetTMatrix(MatrixT);
 
     if( !vtkSH )
     {

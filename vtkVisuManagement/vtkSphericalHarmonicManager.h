@@ -27,9 +27,9 @@ public:
     vtkSetObjectMacro (Input, vtkStructuredPoints);
     vtkGetObjectMacro (Input, vtkStructuredPoints);
 
+    // Get/set the transformation matrix that is used to display the glyphs according to the image coordinate system
     vtkSetObjectMacro (MatrixT, vtkMatrix4x4);
     vtkGetObjectMacro (MatrixT, vtkMatrix4x4);
-
 
     vtkGetObjectMacro (SHVisuManagerAxial,    vtkSphericalHarmonicVisuManager);
     vtkGetObjectMacro (SHVisuManagerSagittal, vtkSphericalHarmonicVisuManager);

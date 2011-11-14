@@ -108,8 +108,13 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(int tess) {
 vtkSphericalHarmonicSource::~vtkSphericalHarmonicSource() {
     if (shell)
         shell->Delete();
+
+    if(this->RotationMatrix)
+        this->RotationMatrix->Delete();
+
     //    if (SphericalHarmonics)
     //        delete[] SphericalHarmonics;
+
     SphericalHarmonics = 0;
     shell = 0;
 }
@@ -152,7 +157,6 @@ vtkSphericalHarmonicSource::SetSphericalHarmonicComponent(int i,double v) {
     }
 }
 
-vtkCxxSetObjectMacro(vtkSphericalHarmonicSource,RotationMatrix,vtkMatrix4x4);
 
 int
 vtkSphericalHarmonicSource::RequestData(vtkInformation *vtkNotUsed(request),vtkInformationVector **vtkNotUsed(inputVector),vtkInformationVector *outputVector) {

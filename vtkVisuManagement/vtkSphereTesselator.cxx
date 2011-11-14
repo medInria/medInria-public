@@ -456,31 +456,6 @@ void vtkSphereTesselator<T>::getvtkTesselation(vtkPolyData* t) {
     output->Delete();
 }
 
-//template<typename T>
-//void vtkSphereTesselator<T>::m_flipOrientation(tesselation<T>* t) {
-//    vertex<T> tmp;
-//    for(int i=0; i<t->ntri; i++) {
-//        tmp = t->tr[i].v[0];
-//        t->tr[i].v[0] = t->tr[i].v[2];
-//        t->tr[i].v[2] = tmp;
-//    }
-//}
-
-//template<typename T>
-//void vtkSphereTesselator<T>::tesselate(const int& l) {
-
-//}
-
-//template<typename T>
-//tesselation<T> vtkSphereTesselator<T>::getTesselation() {
-//    return m_tesselation;
-//}
-
-//template<typename T>
-//void vtkSphereTesselator<T>::getvtkTesselation(const bool& clean, vtkPolyData* t) {
-
-//}
-
 template class vtkSphereTesselator<float>;
 template class vtkSphereTesselator<double>;
 }
