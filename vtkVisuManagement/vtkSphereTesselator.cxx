@@ -18,8 +18,6 @@ namespace Visualization {
 template<typename T>
 vtkSphereTesselator<T>::vtkSphereTesselator() {
     m_initPolyhedra = icosahedron;
-    m_cclockwise = false;
-    m_verbose = false;
     m_vertices = vtkPoints::New();
     m_triangles  = vtkCellArray::New();
 
@@ -29,23 +27,11 @@ vtkSphereTesselator<T>::vtkSphereTesselator() {
 template<typename T>
 vtkSphereTesselator<T>::vtkSphereTesselator(const p_solid& ip) {
     m_initPolyhedra = ip;
-    m_cclockwise = false;
-    m_verbose = false;
     m_vertices = vtkPoints::New();
     m_triangles  = vtkCellArray::New();
 
     m_initializeTesselation();
 }
-
-//  template<typename T>
-//  vtkSphereTesselator<T>::vtkSphereTesselator(const vtkSphereTesselator<T>& st) {
-//      m_initPolyhedra = st.m_initPolyhedra;
-//      m_cclockwise    = st.m_cclockwise;
-//      m_verbose = st.m_verbose;
-//      m_tesselation   = st.m_tesselation;
-//      m_pDataCleaner = vtkCleanPolyData::New();
-//      m_pDataCleaner->ShallowCopy(st.m_pDataCleaner);
-//  }
 
 template<typename T>
 vtkSphereTesselator<T>::~vtkSphereTesselator() {
@@ -53,16 +39,6 @@ vtkSphereTesselator<T>::~vtkSphereTesselator() {
         m_vertices->Delete();
     if( m_triangles )
         m_triangles->Delete();
-}
-
-template<typename T>
-void vtkSphereTesselator<T>::enableCClockWise(const bool& flag) {
-    m_cclockwise = flag;
-}
-
-template<typename T>
-void vtkSphereTesselator<T>::enableVerbosity(const bool& flag) {
-    m_verbose = flag;
 }
 
 template<typename T>

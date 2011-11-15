@@ -22,14 +22,16 @@
 
 namespace Visualization {
 
-/*! http://davidf.faricy.net/polyhedra/Platonic_Solids.html */
+/** http://davidf.faricy.net/polyhedra/Platonic_Solids.html */
 enum p_solid { cube,          // 0
                dodecahedron,  // 1
                icosahedron,   // 2
                octahedron,    // 3
                tetrahedron }; // 4
 
-/*! Perform tesselation of the unit sphere from a given platonic solid */
+/** \Clas Object
+* \brief Perform tesselation of the unit sphere from a given platonic solid
+*/
 template<typename T>
 class VTK_VISUMANAGEMENT_EXPORT vtkSphereTesselator {
 public:
@@ -41,9 +43,6 @@ public:
 
     vtkSphereTesselator<T>& operator= (const vtkSphereTesselator<T>& st);
 
-    void enableCClockWise(const bool& flag);
-    void enableVerbosity(const bool& flag);
-
     /** Specify the R number of times that the selected polyhedron is going to be tesselated  */
     void tesselate(const int& R);
 
@@ -52,14 +51,12 @@ public:
 
 private:
     p_solid         m_initPolyhedra;
-    bool            m_cclockwise;
     vtkPoints* m_vertices;
     vtkCellArray* m_triangles;
 
     /** Initialize by using the m_initPolyhedra the polyhedron that it is gong to be tesselated  */
     void m_initializeTesselation();
 
-    bool m_verbose;
 };
 }
 #endif

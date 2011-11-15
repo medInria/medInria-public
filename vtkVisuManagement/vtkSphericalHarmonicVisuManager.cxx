@@ -33,7 +33,8 @@ vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager()
     this->SHGlyph->SetScaleFactor( 1.0 );
     this->SHGlyph->SetSphericalHarmonicSource( this->SHSource );
     this->SHGlyph->SetColorModeToDirections();
-    this->SHGlyph->GetOutput()->GetPointData()->SetActiveScalars(vtkSphericalHarmonicGlyph::GetRGBArrayName());
+    this->SHGlyph->GetOutput()->GetPointData()
+                 ->SetActiveScalars(vtkSphericalHarmonicGlyph::GetRGBArrayName());
 
     this->VOI->ReleaseDataFlagOn();
 
@@ -94,8 +95,12 @@ void vtkSphericalHarmonicVisuManager::SetInput (vtkStructuredPoints* vtkSH)
         return;
     }
 
-    int number = vtkSH->GetPointData()->GetArray (vtkSphericalHarmonicGlyph::GetSphericalHarmonicCoefficientsArrayName())->GetNumberOfComponents();
-    this->SHSource->SetNumberOfSphericalHarmonics ( number );
+    int number =
+    vtkSH->GetPointData()
+         ->GetArray(vtkSphericalHarmonicGlyph::GetSphericalHarmonicCoefficientsArrayName())
+         ->GetNumberOfComponents();
+
+    this->SHSource->SetNumberOfSphericalHarmonics( number );
 
     this->VOI->SetInput ( vtkSH );
 }

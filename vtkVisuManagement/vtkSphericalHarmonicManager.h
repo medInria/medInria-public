@@ -21,26 +21,25 @@ public:
     vtkTypeRevisionMacro (vtkSphericalHarmonicManager, vtkObject);
 
     void SetRenderWindowInteractor (vtkRenderWindowInteractor*, vtkRenderer* ren=0);
-    //  vtkSetObjectMacro (RenderWindowInteractor, vtkRenderWindowInteractor);
     vtkGetObjectMacro (RenderWindowInteractor, vtkRenderWindowInteractor);
 
     vtkSetObjectMacro (Input, vtkStructuredPoints);
     vtkGetObjectMacro (Input, vtkStructuredPoints);
 
-    // Get/set the transformation matrix that is used to display the glyphs according to the image coordinate system
-    vtkSetObjectMacro (MatrixT, vtkMatrix4x4);
+    /** Get/set the transformation matrix that is used to display the glyphs
+     *  according to the image coordinate system */
+    vtkSetObjectMacro (MatrixT,vtkMatrix4x4);
     vtkGetObjectMacro (MatrixT, vtkMatrix4x4);
 
     vtkGetObjectMacro (SHVisuManagerAxial,    vtkSphericalHarmonicVisuManager);
     vtkGetObjectMacro (SHVisuManagerSagittal, vtkSphericalHarmonicVisuManager);
     vtkGetObjectMacro (SHVisuManagerCoronal,  vtkSphericalHarmonicVisuManager);
 
-
     /** Set a scaling factor for the glyphs. */
     void SetGlyphScale(const float& f);
 
     /** Set the sample rate 1 over n Spherical Harmonic's will be
-      displayed.*/
+     *  displayed.*/
     void SetSampleRate(const int&,const int&,const int&);
 
     /** Set the glyph resolution */
@@ -67,8 +66,9 @@ public:
     /** Flip Spherical Harmonic's along the Z axis */
     void FlipZ (bool a);
 
-    /** Turn on/off coloring of glyph with input scalar data or directions. If false, or input scalar data not present, then the
-    scalars from the source object are passed through the filter.*/
+    /** Turn on/off coloring of glyph with input scalar data or directions.
+     *  If false, or input scalar data not present, then the
+     *  scalars from the source object are passed through the filter.*/
     void ColorGlyphs (bool a);
 
     /** get the image size it is used to set med gui slider appropiate size*/
@@ -95,7 +95,8 @@ public:
 
     /** Get the current position. */
     void GetCurrentPosition (int pos[3]) const
-    { for( int i=0; i<3; i++)
+    {
+        for( int i=0; i<3; i++)
             pos[i] = this->CurrentPosition[i];
     }
 

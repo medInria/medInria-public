@@ -51,7 +51,7 @@ public:
     void ColorGlyphs (const int&);
 
     /** Set the Volume Of Interest (VOI). Consists in
-      6 integers: xmin, xmax, ymin, ymax, zmin, zmax.*/
+      * 6 integers: xmin, xmax, ymin, ymax, zmin, zmax.*/
     void SetVOI(const int&,const int&,const int&,const int&,const int&,const int&);
 
     void SetInput (vtkStructuredPoints*);
@@ -63,8 +63,8 @@ public:
     vtkGetObjectMacro (Mapper,   vtkPolyDataMapper);
     vtkGetObjectMacro (Actor,    vtkActor);
 
-    // Get/set inside the per slice VisuManager the transformation matrix that is used
-    // to display the glyphs according to the image coordinate system
+    /** Get/set inside the per slice VisuManager the transformation matrix that is used
+      * to display the glyphs according to the image coordinate system*/
     vtkSetObjectMacro (MatrixT, vtkMatrix4x4);
     vtkGetObjectMacro (MatrixT, vtkMatrix4x4);
 

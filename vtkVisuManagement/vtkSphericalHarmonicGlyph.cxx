@@ -24,7 +24,8 @@ vtkStandardNewMacro(vtkSphericalHarmonicGlyph);
 
 static void RGBToIndex(double R,double G,double B,double &index);
 
-vtkSphericalHarmonicGlyph::vtkSphericalHarmonicGlyph() {
+vtkSphericalHarmonicGlyph::vtkSphericalHarmonicGlyph()
+{
     this->ScaleFactor = 1.0;
     this->ColorGlyphs = 1;
     this->ColorMode = COLOR_BY_SCALARS;
@@ -45,8 +46,9 @@ vtkSphericalHarmonicGlyph::~vtkSphericalHarmonicGlyph()
 
 
 int
-vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** inputVector,vtkInformationVector* outputVector) {
-
+vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** inputVector,
+                                       vtkInformationVector* outputVector)
+{
     // Get the info objects.
 
     vtkInformation* inInfo     = inputVector[0]->GetInformationObject(0);
@@ -75,9 +77,10 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
 
     vtkPolyData* source    = vtkPolyData::SafeDownCast(sourceInfo->Get(vtkDataObject::DATA_OBJECT()));
     vtkPoints*   sourcePts = source->GetPoints();  //shell
-    
-    const vtkIdType numSourcePts   = sourcePts->GetNumberOfPoints();  // Number of points on the shell
-    const vtkIdType numSourceCells = source->GetNumberOfCells();      // Number of cells is the number of triangles in shell
+    // Number of points on the shell
+    const vtkIdType numSourcePts   = sourcePts->GetNumberOfPoints();
+    // Number of cells is the number of triangles in shell
+    const vtkIdType numSourceCells = source->GetNumberOfCells();
     
     const unsigned newpts_sz = numDirs*numPts*numSourcePts;
 
@@ -122,7 +125,6 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     newPointScalars->Allocate(numDirs*numPts*numSourcePts);
 
     // Only copy scalar data through.
-
     pd = this->GetSource()->GetPointData();
     
     vtkFloatArray* newScalars = 0;
@@ -143,7 +145,6 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     }
     
     // First copy all topology (transformation independent)
-
     for (vtkIdType inPtId=0;inPtId<numPts;++inPtId) {
         const vtkIdType ptIncr = numDirs*inPtId*numSourcePts;
         for (vtkIdType cellId=0;cellId<numSourceCells;++cellId) {
@@ -163,7 +164,6 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     }
     
     // Traverse all Input points, transforming glyph at Source points 
-
     vtkTransform* trans = vtkTransform::New();
     trans->PreMultiply();
 
@@ -180,12 +180,10 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
         const vtkIdType ptIncr = numDirs*inPtId*numSourcePts;
         
         // Get the Spherical Harmonic vector.
-
         double sh[inScalars->GetNumberOfComponents()];
         inScalars->GetTuple(inPtId,sh);
 
         // Set harmonics and compute spherical function.
-
         this->SphericalHarmonicSource->SetSphericalHarmonics(sh); 
         this->SphericalHarmonicSource->Update();
         
@@ -196,7 +194,6 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
         trans->SetMatrix(this->TMatrix);
         
         // translate Source to Input point
-
         double x[3];
         input->GetPoint(inPtId,x);
         trans->Translate(x[0],x[1],x[2]);
@@ -204,12 +201,10 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
         trans->Scale(ScaleFactor,ScaleFactor,ScaleFactor);
         
         // Translate the deform pt to the correct x,y,z location
-
         trans->TransformPoints(deformPts,newPts);
         
         // This is for spherical values coloring
         // Need to set them at the right place in the list of all points
-
         for (int z=0;z<numSourcePts;++z)
             newPointScalars->InsertTuple(ptIncr+z,sourcePointData->GetScalars()->GetTuple(z));
         
@@ -220,9 +215,7 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
                 newScalars->InsertTuple(ptIncr+i,&s);
         }
         
-        
         // RGB color : color at every point of the spherical function 
-
         if (this->ColorGlyphs && this->ColorMode==COLOR_BY_DIRECTIONS) {
             for (vtkIdType i=0;i<numSourcePts;++i) {
                 double s,vect[3];
@@ -281,7 +274,8 @@ vtkSphericalHarmonicGlyph::SetSourceConnection(int id,vtkAlgorithmOutput* algOut
     else if (id==numConnections && algOutput)
         this->AddInputConnection(1, algOutput);
     else if (algOutput) {
-        vtkWarningMacro("The source id provided is larger than the maximum source id, using " << numConnections << " instead.");
+        vtkWarningMacro("The source id provided is larger than the maximum source id, using "
+                        << numConnections << " instead.");
         this->AddInputConnection(1, algOutput);
     }
 }
