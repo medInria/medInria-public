@@ -361,7 +361,6 @@ void TesselateTriangles( vtkPoints* oldVertices, vtkCellArray* oldTriangles,
                     continue;
                 }
             }
-
         }
 
         for (int j = 0; j < 3; j++)
@@ -369,17 +368,9 @@ void TesselateTriangles( vtkPoints* oldVertices, vtkCellArray* oldTriangles,
             if (triPointsIds[j] == -1)
             {
                 current2P++;
-                // Do not know what was this for it was in late algorithm but it does not make a difference
-                // if (AB[j][0]== 0 && AB[j][1] == 0)
-                // {
-                //     vertices->SetPoint(current2P,AB[j][0],AB[j][1] - M_EPS, AB[j][2]);
-                // }
-                // else{
                 vertices->SetPoint(current2P, AB[j]);
-                // }
                 triPointsIds[j] = current2P;
             }
-
         }
 
         triangles->InsertNextCell((vtkIdType)3,triPointsIds);
@@ -407,7 +398,6 @@ void vtkSphereTesselator<T>::tesselate(const int& R)
 
     for (int level = 0; level < R; level++)
     {
-
         vertices = vtkPoints::New();
         triangles  = vtkCellArray::New();
 
@@ -419,7 +409,6 @@ void vtkSphereTesselator<T>::tesselate(const int& R)
 
         vertices->Delete();
         triangles->Delete();
-
     }
 
 }

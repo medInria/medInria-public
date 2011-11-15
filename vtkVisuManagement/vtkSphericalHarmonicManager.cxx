@@ -93,14 +93,9 @@ void vtkSphericalHarmonicManager::Initialize()
 {
     if ( this->Renderer && this->RenderWindowInteractor)
     {
-        // this->RenderWindowInteractor->GetRenderWindow()->RemoveRenderer ( this->Renderer );
-        // int numLayers = this->RenderWindowInteractor->GetRenderWindow()->GetNumberOfLayers();
-        // this->RenderWindowInteractor->GetRenderWindow()->SetNumberOfLayers ( numLayers-1 );
         this->Renderer->RemoveActor( this->SHVisuManagerAxial->GetActor() );
         this->Renderer->RemoveActor( this->SHVisuManagerSagittal->GetActor() );
         this->Renderer->RemoveActor( this->SHVisuManagerCoronal->GetActor() );
-        //      this->Renderer->Delete();
-        //      this->Renderer = 0;
     }
 }
 
@@ -139,20 +134,9 @@ void vtkSphericalHarmonicManager::Update()
 
     if ( /*!*/this->Renderer )
     {
-        // this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->InitTraversal();
-        //    vtkRenderer* first_renderer = this->RenderWindowInteractor->GetRenderWindow()->GetRenderers()->GetNextItem();
-
-        //    int numLayers = this->RenderWindowInteractor->GetRenderWindow()->GetNumberOfLayers();
-        //    this->RenderWindowInteractor->GetRenderWindow()->SetNumberOfLayers ( numLayers + 1 );
-        //    this->Renderer = vtkRenderer::New();
-        //    this->Renderer->SetLayer ( numLayers );
-        //    this->Renderer->SetActiveCamera ( first_renderer->GetActiveCamera() );
-
         this->Renderer->AddActor ( this->SHVisuManagerAxial->GetActor() );
         this->Renderer->AddActor ( this->SHVisuManagerSagittal->GetActor() );
         this->Renderer->AddActor ( this->SHVisuManagerCoronal->GetActor() );
-
-        //    this->RenderWindowInteractor->GetRenderWindow()->AddRenderer ( this->Renderer );
     }
 }
 
@@ -237,13 +221,6 @@ void vtkSphericalHarmonicManager::SetOrder (int order)
     this->SHVisuManagerCoronal ->SetOrder(order);
 }
 
-//void vtkSHManager::SetScalarRange (const float& min, const float& max)
-//{
-//  this->SHVisuManagerAxial   ->SetScalarRange (min, max);
-//  this->SHVisuManagerSagittal->SetScalarRange (min, max);
-//  this->SHVisuManagerCoronal ->SetScalarRange (min, max);
-//}
-
 void vtkSphericalHarmonicManager::FlipX (bool a)
 {
     this->SHVisuManagerAxial   ->FlipX (a);
@@ -271,13 +248,6 @@ void vtkSphericalHarmonicManager::ColorGlyphs (bool a)
     this->SHVisuManagerSagittal->ColorGlyphs (a);
     this->SHVisuManagerCoronal ->ColorGlyphs (a);
 }
-
-//void vtkSphericalHarmonicManager::SetLookupTable (vtkLookupTable* lut)
-//{
-//  this->SHVisuManagerAxial   ->SetLookupTable (lut);
-//  this->SHVisuManagerSagittal->SetLookupTable (lut);
-//  this->SHVisuManagerCoronal ->SetLookupTable (lut);
-//}
 
 void vtkSphericalHarmonicManager::GetSphericalHarmonicDimensions (int * dims)
 {

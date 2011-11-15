@@ -46,7 +46,7 @@ public:
     /** Specify the R number of times that the selected polyhedron is going to be tesselated  */
     void tesselate(const int& R);
 
-    /** Set in the vtkPolyData the vtkPoints and vtkCellArray that define the tesellated polyhedron   */
+    /** Set in the vtkPolyData the vtkPoints and vtkCellArray that define the tesellated polyhedron  */
     void getvtkTesselation(vtkPolyData* t);
 
 private:

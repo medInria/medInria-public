@@ -125,9 +125,6 @@ vtkSphericalHarmonicSource::~vtkSphericalHarmonicSource()
     if(this->RotationMatrix)
         this->RotationMatrix->Delete();
 
-    //    if (SphericalHarmonics)
-    //        delete[] SphericalHarmonics;
-
     SphericalHarmonics = 0;
     shell = 0;
 }
@@ -141,7 +138,6 @@ void vtkSphericalHarmonicSource::SetNumberOfSphericalHarmonics(const int number)
     SphericalHarmonics[0] = 1.0;
     for(int i=1;i<NumberOfSphericalHarmonics;++i)
         SphericalHarmonics[i] = 0.0;    
-    //Order = (int)(-3/2+std::sqrt((float)(9/4-2*(1-NumberOfSphericalHarmonics)))); // Wrong and redundant !!!
     
     this->UpdateSphericalHarmonicSource();
     this->Modified();
@@ -239,12 +235,6 @@ RequestData(vtkInformation *vtkNotUsed(request),vtkInformationVector **vtkNotUse
 
     TranslateAndDeformShell(shell,output->GetPoints(),this->Center,Deform,RotationMatrix);
 
-    /* This is not copying enough!!! */
-    //  output->SetPoints(shell->GetPoints());
-    //  output->GetPointData()->SetScalars(shell->GetPointData()->GetScalars());
-    //  output->GetPointData()->SetNormals(shell->GetPointData()->GetNormals());
-    //  output->SetPolys(shell->GetPolys());
-
     return 1;
 }
 
@@ -270,9 +260,7 @@ void vtkSphericalHarmonicSource::PrintSelf(ostream& os,vtkIndent indent)
 int vtkSphericalHarmonicSource::RequestInformation(vtkInformation*,vtkInformationVector**,
                                                vtkInformationVector *outputVector)
 {
-
     // Get the info object
-
     vtkInformation* outInfo = outputVector->GetInformationObject(0);
     
     outInfo->Set(vtkStreamingDemandDrivenPipeline::MAXIMUM_NUMBER_OF_PIECES(),-1);
@@ -287,14 +275,12 @@ int vtkSphericalHarmonicSource::RequestInformation(vtkInformation*,vtkInformatio
 itk::Vector<double, 3> Cartesian2Spherical(const itk::Vector<double, 3> vITK)
 {
     const double r =vITK.GetNorm();
-
     if (r==0) {
         std::cerr << "Cannot have a 0 radius in spherical coordinates!\n" << std::endl;
         exit(1);
     }
     // r, phi [0, PI), theta [0, PI) computation
     const double spherical [3] = { vITK.GetNorm(), atan2(vITK[1],vITK[0]), acos(vITK[2]/r)};
-
     const itk::Vector<double, 3> s (spherical);
 
     return s;
@@ -305,14 +291,8 @@ ComputeSHMatrix(const int order,vtkPolyData* shell,const bool FlipX,const bool F
                 const bool FlipZ, itk::VariableSizeMatrix<double>& PhiThetaDirections)
 {
     const int n_s   = shell->GetNumberOfPoints();
-
-    //This is probably wrong !!!
-    //const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank))));
-
     const int rank =  (order+1)*(order+2)/2;
-
     itk::VariableSizeMatrix<double> B(rank,n_s);
-
     vtkPoints* vertices = shell->GetPoints();
 
     for (int i=0;i<n_s;++i) {
@@ -359,11 +339,8 @@ ComputeSHMatrixMaxThesis(const int order,vtkPolyData *shell,const bool FlipX,con
                          const bool FlipZ,itk::VariableSizeMatrix<double>& PhiThetaDirections)
 {
     const int n_s   = shell->GetNumberOfPoints();
-    //const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //This is wrong !!!
     const int rank =  (order+1)*(order+2)/2;
-
     itk::VariableSizeMatrix<double> B(rank,n_s);
-
     vtkPoints* vertices = shell->GetPoints();
     for (int i=0;i<n_s;++i) {
 
@@ -377,52 +354,12 @@ ComputeSHMatrixMaxThesis(const int order,vtkPolyData *shell,const bool FlipX,con
         dITK[2] = (FlipZ) ? -p[2] : p[2];
 
         const itk::Vector<double, 3> v = Cartesian2Spherical(dITK);
-//        const direction v = Cartesian2Spherical(d);
-        
         const double phi   = v[1];// v.y;
         const double theta = v[2];//v.z;
 
         PhiThetaDirections(i,0) = phi;
         PhiThetaDirections(i,1) = theta;
-#if 0
-        double testA=0, testB=0, test2=0;
 
-        for (int l=0,j=0;l<=order;l+=2) {
-            for(int m=-l;m<0;++m,++j){
-
-                //  testA = std::tr1::sph_legendre(l,std::abs(m),theta)*cos(m*phi);
-                //  testB = real(GetSH(l,-m,theta,phi));
-                //  testA = std::tr1::sph_legendre(l,std::abs(m),theta)*sin(std::abs(m)*phi);
-                //  testB = imag(GetSH(l,-m,theta,phi));
-
-                testA = std::tr1::sph_legendre(l,std::abs(m),theta)*cos(m*phi)*std::sqrt(2.0);
-                testB = std::sqrt(2.0)*real(GetSH(l,-m,theta,phi));
-
-                if(std::abs(testA-testB)>=0.0000000000001)
-                    std::cout << "error "<< testA-testB << std::endl;
-
-                B(j,i)=testA;
-            }
-
-            testA = std::tr1::sph_legendre(l,0,theta);
-            testB = real(GetSH(l,0,theta,phi));
-
-            if((testA-testB)!=0)
-                std::cout << "error "<< testA-testB << std::endl;
-
-            B(j++,i)=testA;
-
-            for(int m=1;m<=l;++m,++j){
-                testA = std::tr1::sph_legendre(l, m,theta)*sin(m*phi)*std::sqrt(2.0);
-                testB = std::sqrt(2.0)*imag(GetSH(l,m,theta,phi));
-
-                if(std::abs(testA-testB)>=0.00000000000001)
-                    std::cout << "error "<< testA-testB << std::endl;
-
-                B(j,i)=testA;
-            }
-        }
-#endif
         //  It is even nicer to compute the SH once (for m>0 and for m<0).
         //  The central term is given by the suite u_n
         //  TO
@@ -433,7 +370,6 @@ ComputeSHMatrixMaxThesis(const int order,vtkPolyData *shell,const bool FlipX,con
             for(int m=1,j1=j-1,j2=j+1;m<=l;++m,--j1,++j2) {
                 temp = std::sqrt(2.0)*std::tr1::sph_legendre(l,m,theta);
                 B(j1,i) = temp*cos(m*phi);
-
                 B(j2,i) = temp*sin(m*phi);
             }
         }
@@ -448,9 +384,6 @@ ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool FlipX,cons
 {
     const int n_s   = shell->GetNumberOfPoints();
     const int rank =  (order+1)*(order+2)/2;
-
-    //const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //This is wrong !!!
-
     /*
       We declare the Bmatrix of sixe n_s x n_b.
     */
@@ -460,7 +393,6 @@ ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool FlipX,cons
     std::complex<float>  cplx_1;
 
     for(int i = 0; i < n_s; i++) {
-
         // Get spherical component of the point direction and transform them in spherical coordinates.
         double p[3];
         vertices->GetPoint(i,p);
@@ -471,7 +403,6 @@ ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool FlipX,cons
         dITK[2] = (FlipZ) ? -p[2] : p[2];
 
         const itk::Vector<double, 3> v = Cartesian2Spherical(dITK);
-//        const direction v = Cartesian2Spherical(d);
         const double phi   = v[1]; //v.y;
         const double theta = v[2]; //v.z;
 
@@ -491,7 +422,6 @@ ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool FlipX,cons
                 else { /* negative "m" SH  */
                     B(j,i) = s*temp*sin(m*phi);
                 }
-
                 j++;
             }
     }
@@ -505,8 +435,6 @@ ComputeSHMatrixRshBasis(const int order,vtkPolyData* shell,const bool FlipX,cons
 {
     const int n_s   = shell->GetNumberOfPoints();
     const int rank =  (order+1)*(order+2)/2;
-
-//const int order = static_cast<int>(-3/2+std::sqrt(static_cast<float>(9/4-2*(1-rank)))); //This is probably wrong !!!
 
     itk::VariableSizeMatrix<double> B(rank,n_s);
     vtkPoints* vertices = shell->GetPoints();
@@ -523,8 +451,6 @@ ComputeSHMatrixRshBasis(const int order,vtkPolyData* shell,const bool FlipX,cons
         dITK[2] = (FlipZ) ? -p[2] : p[2];
 
         const itk::Vector<double, 3> v = Cartesian2Spherical(dITK);
-//        const direction v = Cartesian2Spherical(d);
-
         const double phi   = v[1]; //v.y;
         const double theta = v[2]; // v.z;
         PhiThetaDirections(i,0) = phi;
@@ -534,7 +460,6 @@ ComputeSHMatrixRshBasis(const int order,vtkPolyData* shell,const bool FlipX,cons
         for (int l=0,j=0;l<=order;l+=2) {
             B(j,i)=std::tr1::sph_legendre(l,0,theta);
             j=j+1;
-
             for(int m=1,s=-1;m<=l;++m,++j,s=-s) {
                 temp = std::tr1::sph_legendre(l, m,theta)*std::sqrt(2.0);
                 //-m Real like RshBasis.pdf Luke Bloy eq 1.2 but math simplified and with tr1
@@ -605,7 +530,6 @@ void vtkSphericalHarmonicSource::UpdateSphericalHarmonicSource()
 void TranslateAndDeformShell(vtkPolyData *shell,vtkPoints* outPts,double center[3],
                         bool deform,vtkMatrix4x4* transform)
 {
-    
     vtkPoints* inPts = shell->GetPoints();
     const int  n     = inPts->GetNumberOfPoints();
 
@@ -626,7 +550,6 @@ void TranslateAndDeformShell(vtkPolyData *shell,vtkPoints* outPts,double center[
             point[2] = ((val-range[0])/rangeDiff)*point[2];
         } 
         point[3] = 1.0;
-
         const double* pointOut = (transform!=0) ? transform->MultiplyDoublePoint(point) : &point[0];
         outPts->InsertNextPoint(pointOut[0]+center[0],pointOut[1]+center[1],pointOut[2]+center[2]);
     }

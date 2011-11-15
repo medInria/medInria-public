@@ -54,9 +54,6 @@ public:
     /** Set the spherical harmonics order to be used */
     void SetOrder (int order);
 
-    /** Set the scalar range for the LUT */
-    //void SetScalarRange(const float&, const float&);
-
     /** Flip Spherical Harmonic's along the X axis */
     void FlipX (bool a);
 
@@ -73,9 +70,6 @@ public:
 
     /** get the image size it is used to set med gui slider appropiate size*/
     void GetSphericalHarmonicDimensions (int * dims);
-
-    /** Set a user-defined LUT. */
-    //void SetLookupTable (vtkLookupTable* lut);
 
     /** Generate the glyph and add them to the RenderWindowInteractor */
     void Update (void);

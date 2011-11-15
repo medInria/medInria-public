@@ -50,7 +50,6 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
                                        vtkInformationVector* outputVector)
 {
     // Get the info objects.
-
     vtkInformation* inInfo     = inputVector[0]->GetInformationObject(0);
     vtkInformation* sourceInfo = inputVector[1]->GetInformationObject(0);
     vtkInformation* outInfo    = outputVector->GetInformationObject(0);
@@ -58,7 +57,6 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     const int numDirs = 1; 
     
     // Get the input.
-
     vtkDataSet*  input     = vtkDataSet::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
     const vtkIdType numPts = input->GetNumberOfPoints();  //number of points in the data
     
@@ -81,7 +79,6 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     const vtkIdType numSourcePts   = sourcePts->GetNumberOfPoints();
     // Number of cells is the number of triangles in shell
     const vtkIdType numSourceCells = source->GetNumberOfCells();
-    
     const unsigned newpts_sz = numDirs*numPts*numSourcePts;
 
     vtkPoints* newPts = vtkPoints::New();
@@ -91,7 +88,6 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     newPointData->Allocate(newpts_sz);
 
     // Setting up for calls to PolyData::InsertNextCell()
-
     vtkPolyData*  output = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
     vtkPointData* outPD  = output->GetPointData();
 
@@ -232,7 +228,6 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     output->SetPoints(newPts);
     
     // Assigning color to PointData
-
     if (newScalars) {
         if(ColorMode==COLOR_BY_SCALARS) {
             cout << "Color by anisotropy...\n";
@@ -248,7 +243,6 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     }
     
     // Assigning spherical values
-
     if (newPointScalars) {
         newPointScalars->SetName(GetSphericalHarmonicValuesArrayName());
         //const int idx = outPD->AddArray(newPointScalars);
@@ -336,13 +330,11 @@ void RGBToIndex(double R,double G,double B,double &index) {
     }
 
     // Make the smallest of R,G,B equal 0
-
     R -= min;
     G -= min;
     B -= min;
 
     // Now take the max, and scale it to be 1.
-
     double max = R;
     int maxIdx = 0;
     if (G>max) {
@@ -359,16 +351,6 @@ void RGBToIndex(double R,double G,double B,double &index) {
         G /= max;
         B /= max;
     }
-
-    // Now using the inverse sextants, map this into an index.
-    // switch (sextant) {
-    //   case 0: { R = 1;      G = frac;   B = 0;      break; }
-    //   case 1: { R = 1-frac; G = 1;      B = 0;      break; }
-    //   case 2: { R = 0;      G = 1;      B = frac;   break; }
-    //   case 3: { R = 0;      G = 1-frac; B = 1;      break; }
-    //   case 4: { R = frac;   G = 0;      B = 1;      break; }
-    //   case 5: { R = 1;      G = 0;      B = 1-frac; break; }
-    // }
 
     int sextant = 0;
     if (maxIdx==0 && minIdx==2) sextant = 0;

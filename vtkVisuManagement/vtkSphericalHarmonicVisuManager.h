@@ -34,12 +34,6 @@ public:
     int GetTesselationBasis (void) const
     { return this->SHSource->GetTesselationBasis(); }
 
-    //  void SetTesselation (const int& type)
-    //  { this->SHSource->SetTesselation (type); }
-
-    //  int GetTesselation (void) const
-    //  { return this->SHSource->GetTesselation(); }
-
     void SetGlyphResolution (const int&);
     void SetOrder (const int&);
 
@@ -56,16 +50,29 @@ public:
 
     void SetInput (vtkStructuredPoints*);
 
+    /** Get the object that computes the spherical harmonic glyph*/
     vtkGetObjectMacro (SHSource, vtkSphericalHarmonicSource);
+
+    /** Get the object that controls the display the spherical harmonic glyph*/
     vtkGetObjectMacro (SHGlyph,  vtkSphericalHarmonicGlyph);
+
+    /** Get the normals used to display the spherical harmonic glyph*/
     vtkGetObjectMacro (Normals,  vtkPolyDataNormals);
+
+    /** Get the VOI to be displayed as spherical harmonic glyph*/
     vtkGetObjectMacro (VOI,      vtkExtractVOI);
+
+    /** Get the normals used to display the spherical harmonic glyph*/
     vtkGetObjectMacro (Mapper,   vtkPolyDataMapper);
+
     vtkGetObjectMacro (Actor,    vtkActor);
 
-    /** Get/set inside the per slice VisuManager the transformation matrix that is used
+    /** Set into the slice VisuManager the transformation matrix that is used
       * to display the glyphs according to the image coordinate system*/
     vtkSetObjectMacro (MatrixT, vtkMatrix4x4);
+
+    /** Get from the slice VisuManager the transformation matrix that is used
+      * to display the glyphs according to the image coordinate system*/
     vtkGetObjectMacro (MatrixT, vtkMatrix4x4);
 
 protected:
