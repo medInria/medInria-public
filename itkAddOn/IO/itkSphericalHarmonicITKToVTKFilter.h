@@ -34,7 +34,8 @@ namespace itk
  * \ingroup   ImageFilter
  */
 template < class TSHImage >
-class VTK_VISUMANAGEMENT_EXPORT SphericalHarmonicITKToVTKFilter : public ImageToImageFilter< TSHImage, TSHImage >
+class VTK_VISUMANAGEMENT_EXPORT SphericalHarmonicITKToVTKFilter
+      :public ImageToImageFilter< TSHImage, TSHImage >
 {
 public:
     /** Some typedefs. */

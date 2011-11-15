@@ -128,7 +128,10 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     pd = this->GetSource()->GetPointData();
     
     vtkFloatArray* newScalars = 0;
-    if (this->ColorGlyphs && (this->ColorMode==COLOR_BY_DIRECTIONS || (inAniso && this->ColorMode==COLOR_BY_SCALARS))) {
+    if (this->ColorGlyphs &&
+        (this->ColorMode==COLOR_BY_DIRECTIONS ||
+        (inAniso && this->ColorMode==COLOR_BY_SCALARS)))
+    {
         newScalars = vtkFloatArray::New();
         newScalars->Allocate(numDirs*numPts*numSourcePts);
     } else {

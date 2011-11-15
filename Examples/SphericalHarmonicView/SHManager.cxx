@@ -48,9 +48,9 @@ int main (int argc, char*argv[])
     }
 
     /**
-     In this example, we illustrate the use of the vtkSphericalHarmonicVisuManager.
-     We first set up a vtkImageView3D to display an image.
-   */
+       In this example, we illustrate the use of the vtkSphericalHarmonicVisuManager.
+       We first set up a vtkImageView3D to display an image.
+    */
 
     vtkViewImage3D*            view = vtkViewImage3D::New();
     vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New();
@@ -70,8 +70,7 @@ int main (int argc, char*argv[])
 
     /**
          We read the SH coefficinets == typedef itk::VectorImage<float, 3>  with SH data.
-      */
-
+     */
     typedef itk::ImageFileReader<ShImageTypeFloat> ReaderType;
     ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName ( argv[1] );
@@ -87,7 +86,7 @@ int main (int argc, char*argv[])
          We convert the SH coefficinets typedef itk::VectorImage<float, 3>  with SH data to
          vtkStructuredPoints. ITK image is keep and used in this example in order to keep
          the orientation of the image that can not be held by the vtkStructuredPoints.
-      */
+     */
     itk::SphericalHarmonicITKToVTKFilter<ShImageTypeFloat>::Pointer filterFloat;
     filterFloat = itk::SphericalHarmonicITKToVTKFilter<ShImageTypeFloat>::New();
     filterFloat->SetInput(reader->GetOutput());
@@ -96,7 +95,7 @@ int main (int argc, char*argv[])
     /**
          We create the vtkSphericalHarmonicManager, feed it with SH data, set the rendering
          properties, the interactor and renderer and finally update it .
-      */
+     */
     vtkSphericalHarmonicManager       *manager;
     manager = vtkSphericalHarmonicManager::New();
 

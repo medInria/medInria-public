@@ -256,7 +256,8 @@ void GetMiddleNormalizedPoint( double A[3],double B[3], double x[3])
 }
 
 
-void TesselateTriangles( vtkPoints* oldVertices, vtkCellArray* oldTriangles, vtkPoints* vertices,vtkCellArray* triangles)
+void TesselateTriangles( vtkPoints* oldVertices, vtkCellArray* oldTriangles,
+                         vtkPoints* vertices,vtkCellArray* triangles)
 {
     double pointA[3], pointB[3], pointC[3], tempPoint[3];
     double AB[3][3];
