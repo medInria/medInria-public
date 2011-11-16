@@ -62,7 +62,7 @@ public:
     void run ( void );
 
 signals:
-    /*
+    /**
      * This signal is emitted when the import/index process
      * detects an attempt of partial importing. That is when the user
      * tried to import, in 2 separate steps, images belonging

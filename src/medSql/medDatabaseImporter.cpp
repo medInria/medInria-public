@@ -367,7 +367,7 @@ void medDatabaseImporter::onCancel ( QObject* )
 
 bool medDatabaseImporter::isPartialImportAttempt ( dtkAbstractData* dtkData )
 {
-    // here we check is the series we try to import is already in the database
+    // here we check if the series we try to import is already in the database
 
     QSqlDatabase db = * ( medDatabaseController::instance()->database() );
     QSqlQuery query ( db );
@@ -387,7 +387,7 @@ bool medDatabaseImporter::isPartialImportAttempt ( dtkAbstractData* dtkData )
         query.clear();
 
         QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(dtkData).simplified();
-        QString studyUid = medMetaDataKeys::StudyID.getFirstValue(dtkData);
+        QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(dtkData);
 
         query.prepare ( "SELECT id FROM study WHERE patient = :patient AND name = :studyName AND uid = :studyUid" );
         query.bindValue ( ":patient", patientDbId );
@@ -404,7 +404,7 @@ bool medDatabaseImporter::isPartialImportAttempt ( dtkAbstractData* dtkData )
             query.clear();
 
             QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
-            QString seriesUid = medMetaDataKeys::SeriesID.getFirstValue(dtkData);
+            QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(dtkData);
             QString orientation = medMetaDataKeys::Orientation.getFirstValue(dtkData);
             QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(dtkData);
             QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(dtkData);
