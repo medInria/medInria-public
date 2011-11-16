@@ -96,6 +96,13 @@ signals:
 
     void displayJobItem(medJobItem *, QString);
 
+    /**
+     * This signal is emitted when the import/index process
+     * detects an attempt of partial importing. That is when the user
+     * tried to import, in 2 separate steps, images belonging
+     * to the same volume.
+     */
+    void partialImportAttempted ( const QString& message );
 
 public slots:
 
