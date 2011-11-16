@@ -15,7 +15,6 @@ vtkStandardNewMacro(vtkSphericalHarmonicVisuManager);
 
 vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager()
 {
-
     this->SHSource = vtkSphericalHarmonicSource::New();
     this->SHGlyph  = vtkSphericalHarmonicGlyph::New();
     this->Normals  = vtkPolyDataNormals::New();
@@ -83,7 +82,6 @@ vtkSphericalHarmonicVisuManager::~vtkSphericalHarmonicVisuManager()
         this->Actor->Delete();
     if(this->MatrixT)
         this->MatrixT->Delete();
-
 }
 
 void vtkSphericalHarmonicVisuManager::SetInput (vtkStructuredPoints* vtkSH)

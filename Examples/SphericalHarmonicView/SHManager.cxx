@@ -41,7 +41,8 @@ int main (int argc, char*argv[])
     if( argc<2 )
     {
         std::cout << "Usage: " << std::endl;
-        std::cout << "\t" << argv[0] << " <SH file> SH FILE FLOAT ITKVECTOR::IMAGE 15 28 COEF " << std::endl;
+        std::cout << "\t" << argv[0]
+                  << " <SH file> SH FILE FLOAT ITKVECTOR::IMAGE 15 28 COEF " << std::endl;
         std::cout << "Example: " << std::endl;
         std::cout << "\t" << argv[0] << " [vtkINRIA3D_DATA_DIR]/odf.nrrd" << std::endl;
         exit (-1);
@@ -51,7 +52,6 @@ int main (int argc, char*argv[])
        In this example, we illustrate the use of the vtkSphericalHarmonicVisuManager.
        We first set up a vtkImageView3D to display an image.
     */
-
     vtkViewImage3D*            view = vtkViewImage3D::New();
     vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New();
     vtkRenderWindow*           rwin = vtkRenderWindow::New();

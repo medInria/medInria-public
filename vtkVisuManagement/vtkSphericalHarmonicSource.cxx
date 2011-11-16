@@ -82,39 +82,6 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(int tess)
     SphericalHarmonics = 0;
     Order = 4;
     this->SetNumberOfSphericalHarmonics (15);
-
-#if 0
-    shell = vtkPolyData::New(); 
-
-    p_solid tesselationType ;
-
-    switch (TesselationType)
-    {
-    case Cube : { tesselationType = cube ; break ; }
-    case Dodecahedron : { tesselationType = dodecahedron ; break ; }
-    case Icosahedron : { tesselationType = icosahedron ; break ; }
-    case Octahedron : { tesselationType = octahedron ; break ; }
-    case Tetrahedron : { tesselationType = tetrahedron ; break ; }
-    }
-
-    vtkSphereTesselator<double> sMesh(tesselationType);
-    sMesh.tesselate(Tesselation);
-    sMesh.getvtkTesselation(1,shell); 
-    
-    SphericalHarmonics = new double[NumberOfSphericalHarmonics];
-    SphericalHarmonics[0] = 1.0;
-    for(int i = 1; i < NumberOfSphericalHarmonics; i++)
-        SphericalHarmonics[i] = 0.0;    
-    Order = 4;//(int)(-3/2 + std::sqrt((float)(9/4 - 2*(1 - NumberOfSphericalHarmonics))));
-    NumberOfSphericalHarmonics = (Order+1)*(Order+2)/2;
-
-    matrix<double> PhiThetaDirection (shell->GetNumberOfPoints(),2);
-    
-    BasisFunction = ComputeSHMatrix2(NumberOfSphericalHarmonics,shell,
-                                     FlipX,FlipY,FlipZ,PhiThetaDirection);
-    
-    PhiThetaShellDirections = PhiThetaDirection;
-#endif
 }
 
 vtkSphericalHarmonicSource::~vtkSphericalHarmonicSource()

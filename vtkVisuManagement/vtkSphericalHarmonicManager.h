@@ -1,7 +1,6 @@
 #ifndef _vtk_SPHERICALHARMONICManager_h_
 #define _vtk_SPHERICALHARMONICManager_h_
 
-
 #include <vtkObject.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>

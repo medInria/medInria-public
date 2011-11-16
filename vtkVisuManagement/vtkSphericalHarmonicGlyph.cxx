@@ -38,12 +38,7 @@ vtkSphericalHarmonicGlyph::~vtkSphericalHarmonicGlyph()
 {
     if(this->TMatrix)
         this->TMatrix->Delete();
-    /*
-    if (this->SphericalHarmonicSource)
-        this->SphericalHarmonicSource->Delete();
-    */
 }
-
 
 int
 vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** inputVector,
