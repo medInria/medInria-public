@@ -38,11 +38,11 @@ ComputeSHMatrixMaxThesis(const int rank,vtkPolyData *shell,const bool FlipX,cons
                          const bool FlipZ,itk::VariableSizeMatrix<double>& PhiThetaDirections);
 
 static itk::VariableSizeMatrix<double>
-ComputeSHmatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,
+ComputeSHMatrixTournier(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,
                         const bool FlipZ,itk::VariableSizeMatrix<double>& PhiThetaDirections);
 
 static itk::VariableSizeMatrix<double>
-ComputeSHmatrixRshBasis(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,
+ComputeSHMatrixRshBasis(const int rank,vtkPolyData *shell,const bool FlipX,const bool FlipY,
                         const bool FlipZ,itk::VariableSizeMatrix<double>& PhiThetaDirections);
 
 static itk::VariableSizeMatrix<double>
