@@ -1,0 +1,63 @@
+// TR1 cmath -*- C++ -*-
+
+// Copyright (C) 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+//
+// This file is part of the GNU ISO C++ Library.  This library is free
+// software; you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the
+// Free Software Foundation; either version 3, or (at your option)
+// any later version.
+
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// Under Section 7 of GPL version 3, you are granted additional
+// permissions described in the GCC Runtime Library Exception, version
+// 3.1, as published by the Free Software Foundation.
+
+// You should have received a copy of the GNU General Public License and
+// a copy of the GCC Runtime Library Exception along with this program;
+// see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
+// <http://www.gnu.org/licenses/>.
+
+/** @file tr1/cmath
+ *  This is a TR1 C++ Library header. 
+ */
+
+#ifndef _GLIBCXX_TR1_CMATH
+#define _GLIBCXX_TR1_CMATH 1
+
+#include <cmath>
+
+#include <bits/stl_algobase.h>
+#include <limits>
+#include <tr1/type_traits>
+
+#include <tr1/legendre_function.tcc>
+
+namespace std
+{
+namespace tr1
+{
+  inline float
+  sph_legendref(unsigned int __l, unsigned int __m, float __theta)
+  { return __detail::__sph_legendre<float>(__l, __m, __theta); }
+
+  inline long double
+  sph_legendrel(unsigned int __l, unsigned int __m, long double __theta)
+  { return __detail::__sph_legendre<long double>(__l, __m, __theta); }
+
+  ///  5.2.1.22  Spherical associated Legendre functions.
+  template<typename _Tp>
+    inline typename __gnu_cxx::__promote<_Tp>::__type
+    sph_legendre(unsigned int __l, unsigned int __m, _Tp __theta)
+    {
+      typedef typename __gnu_cxx::__promote<_Tp>::__type __type;
+      return __detail::__sph_legendre<__type>(__l, __m, __theta);
+    }
+}
+}
+
+#endif // _GLIBCXX_TR1_CMATH

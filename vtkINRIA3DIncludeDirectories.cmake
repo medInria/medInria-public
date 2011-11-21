@@ -34,3 +34,10 @@ ${vtkINRIA3D_SOURCE_DIR}/vtkRenderingAddOn/
 ${vtkINRIA3D_SOURCE_DIR}/vtkImageView/
 ${vtkINRIA3D_SOURCE_DIR}/SphericalHarmonicsVisu/
 )
+
+IF( WIN32 )
+SET(vtkINRIA3D_INCLUDE_DIRS_SOURCE_TREE
+${vtkINRIA3D_INCLUDE_DIRS_SOURCE_TREE}
+${vtkINRIA3D_SOURCE_DIR}/vtkVisuManagement/compat/tr1
+)
+ENDIF( WIN32 )
