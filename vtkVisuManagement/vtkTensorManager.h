@@ -162,7 +162,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorManager: public vtkObject
       pos[i] = this->CurrentPosition[i];
   }
 
-  
+
   /** Reset the position to the center of the dataset. */
   void ResetPosition (void);
 

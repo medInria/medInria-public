@@ -232,6 +232,17 @@ IF( vtkINRIA3D_USE_HWSHADING )
   ENDIF( NOT VTK_USE_GLSL_SHADERS )
 ENDIF( vtkINRIA3D_USE_HWSHADING )
 
+# -----------------------------------------------------------------------------
+# The SPHERICAL HARMONICS extension by Athena - INRIA Sophia Antipolis to use SphericalHarmonicVisualization of Maxime Descoteaux
+# -----------------------------------------------------------------------------
+OPTION (vtkINRIA3D_USE_SPHERICALHARMONICS "If ON, compile the SPHERICAL HARMONICS extension of vtkINRIA3D." OFF)
+
+IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
+  IF( NOT vtkINRIA3D_USE_ITK )
+    MESSAGE(FATAL_ERROR " ITK is needed ON to use the Spherical Harmonics Functions Visualization")
+  ENDIF( NOT vtkINRIA3D_USE_ITK )
+ENDIF( vtkINRIA3D_USE_SPHERICALHARMONICS )
+
 
 # -------------------------------------------------------------------------------------
 # Setup installation settings
@@ -340,7 +351,6 @@ endif(NOT ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
 
 SET(vtkINRIA3D_DIR "${PROJECT_BINARY_DIR}" CACHE INTERNAL "")
 
-
 add_subdirectory(vtkDataManagement)
 add_subdirectory(vtkImageView)
 add_subdirectory(vtkRenderingAddOn)
@@ -371,6 +381,8 @@ IF(vtkINRIA3D_BUILD_EXAMPLES)
     add_subdirectory(wxSamples)
   endif(vtkINRIA3D_USE_WXWINDOWS)
 ENDIF(vtkINRIA3D_BUILD_EXAMPLES)
+
+
 
 
 
