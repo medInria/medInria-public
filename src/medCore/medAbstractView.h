@@ -357,7 +357,6 @@ protected:
     // Emitted whenever the plane color changes.
     void emitColorChangedEvent();
 
-
 private:
     medAbstractViewPrivate *d;
 };

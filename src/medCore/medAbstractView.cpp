@@ -370,7 +370,7 @@ void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
 {
     if(layer >=0 &&  layer < d->dataList.size() )
         d->dataList[layer] = data;
-    else
+    else 
         d->dataList.append(data);
     medAbstractView::addDataType(data->identifier());
 }
@@ -577,4 +577,3 @@ void medAbstractView::setFullScreen( bool state )
 {
     emit fullScreen( state );
 }
-
