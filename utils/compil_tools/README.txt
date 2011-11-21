@@ -85,4 +85,58 @@ BUILD_TESTING:BOOL=OFF
 
 Be aware that all values in [cmake-common] will also be added to your project.
 
+***************************************************************************
+5- scm
+***************************************************************************
+
+Many projects are not downloaded using wget.
+3 supported methods so far:
+* wget
+* git
+* svn
+
+git has several "parameters"
+username=somebody
+git_protocol=git or ssh
+branch=master
+
+username only matters if ssh has been chosen. In the case of gitorious hosted projects, use git as a username.
+
+source_host is always the server host, and source_file is the path on the server to the git directory. Note that installer.py will add the protocol substring itself. Example:
+
+To check out medinria-asclepios-private, you need authentication on the server and can't use the git protocol.
+ "git@dev-med.inria.fr:medinria-asclepios/medinria.git"
+ is the path to the repository.
+
+ you must then use the following syntax in your section:
+
+[medinria]
+source_host=dev-med.inria.fr
+source_file=medinria-asclepios/medinria.git
+username=git
+scm=git
+scm_protocol=ssh
+
+For a repository that does not need authentication, you may drop the scm_protocol and username tag, they default respectively to "" and "git"
+
+For svn, there are 2 scm_protocols: ssh or any value.
+if ssh, you will need a username. if the value is anything else, the program will just concatenate source_host+/+source_file
+Your source_host will need the protocol substring in it. If using ssh, don't put any such string, installer.py does it for you, because of the username.
+
+[ttk-public]
+source_host= svn://scm.gforge.inria.fr/svn
+source_file=ttk/trunk
+scm=svn
+scm_protocol=svn
+
+or 
+[any-private-proj]
+source_host=scm.gforge.inria.fr/svn
+source_file=any-private-proj/trunk/my selected_directory
+scm=svn
+scm_protocol=ssh
+username=someone
+
+
+
 
