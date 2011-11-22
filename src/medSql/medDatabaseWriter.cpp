@@ -210,55 +210,66 @@ void medDatabaseWriter::run ( void )
 
     bool dataExists = false;
 
-    query.prepare ( "SELECT id, patientId FROM patient WHERE name = :name AND birthdate = :birthdate" );
-    query.bindValue ( ":name", patientName );
-    query.bindValue ( ":birthdate", birthdate );
-
-    if ( !query.exec() )
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
-    if ( query.first() )
-    {
-        id = query.value ( 0 );
-        patientId = query.value ( 1 ).toString();
-
-        query.prepare ( "SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :uid" );
-        query.bindValue ( ":id", id );
-        query.bindValue ( ":name", studyName );
-        query.bindValue ( ":uid", studyUid );
+    do {
+        dataExists = false;
+        query.prepare ( "SELECT id, patientId FROM patient WHERE name = :name AND birthdate = :birthdate" );
+        query.bindValue ( ":name", patientName );
+        query.bindValue ( ":birthdate", birthdate );
+        
         if ( !query.exec() )
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
+        
         if ( query.first() )
         {
             id = query.value ( 0 );
-
-            query.prepare ( "SELECT id, seriesId FROM series WHERE study = :id AND name = :name AND uid = :uid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns" );
-            query.bindValue ( ":id",             id );
-            query.bindValue ( ":name",           seriesName );
-            query.bindValue ( ":uid",            seriesUid );
-            query.bindValue ( ":orientation",    orientation );
-            query.bindValue ( ":seriesNumber",   seriesNumber );
-            query.bindValue ( ":sequenceName",   sequenceName );
-            query.bindValue ( ":sliceThickness", sliceThickness );
-            query.bindValue ( ":rows",           rows );
-            query.bindValue ( ":columns",        columns );
-
+            patientId = query.value ( 1 ).toString();
+            
+            query.prepare ( "SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :uid" );
+            query.bindValue ( ":id", id );
+            query.bindValue ( ":name", studyName );
+            query.bindValue ( ":uid", studyUid );
             if ( !query.exec() )
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
+            
             if ( query.first() )
             {
                 id = query.value ( 0 );
-                seriesId = query.value ( 1 ).toString();
-
-                qDebug() << "Series ID: " << seriesId;
-
-                dataExists = true;
+                
+                query.prepare ( "SELECT id, seriesId FROM series WHERE study = :id AND name = :name AND uid = :uid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns" );
+                query.bindValue ( ":id",             id );
+                query.bindValue ( ":name",           seriesName );
+                query.bindValue ( ":uid",            seriesUid );
+                query.bindValue ( ":orientation",    orientation );
+                query.bindValue ( ":seriesNumber",   seriesNumber );
+                query.bindValue ( ":sequenceName",   sequenceName );
+                query.bindValue ( ":sliceThickness", sliceThickness );
+                query.bindValue ( ":rows",           rows );
+                query.bindValue ( ":columns",        columns );
+                
+                if ( !query.exec() )
+                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+                
+                if ( query.first() )
+                {
+                    id = query.value ( 0 );
+                    seriesId = query.value ( 1 ).toString();
+                    
+                    qDebug() << "Series ID: " << seriesId;
+                    
+                    dataExists = true;
+                }
             }
         }
+        
+        if (dataExists)
+        {
+            seriesName += "-1";
+            d->data->setMetaData(medMetaDataKeys::SeriesDescription.key(),seriesName);
+            qDebug() << "Already exists, new series name" << seriesName;
+        }
     }
-
+    while (dataExists);
+        
     if ( dataExists )
     {
         qDebug() << "data is already in the database, skipping";
@@ -302,12 +313,15 @@ void medDatabaseWriter::run ( void )
         qDebug() << "success with " << dataWriter->identifier();
         dataWriter->setData (d->data);
 
-        QStringList extensions = dataWriter->supportedFileExtensions();
+        // Trick for now to choose which format we're writing to.
+        QStringList extensions; //dataWriter->supportedFileExtensions();
         QString extension;
         if ( extensions.isEmpty() )
         {
             if (d->data->identifier().contains("Mesh"))
                 extension = ".vtk";
+            else if (d->data->identifier().contains("vistal"))
+                extension = ".dim";
             else
                 extension = ".mha";
         }
