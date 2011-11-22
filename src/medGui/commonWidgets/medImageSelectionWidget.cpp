@@ -16,13 +16,13 @@
 class medImageSelectionWidgetPrivate
 {
 public:
-    QWidget* selectedSeriesWidget;
-
-    medDatabasePreview *preview;
+    // data
     medDatabaseModel *model;
-    medDatabaseView *view;
     medDatabaseProxyModel *proxy;
 
+    // view
+    medDatabasePreview *preview;
+    medDatabaseView *view;
     medThumbnailContainer *selected;
 
 //    QTreeView* treeView;

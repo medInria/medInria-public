@@ -38,6 +38,8 @@ public:
 
     medDataIndex dataIndex(void) const;
 
+    void allowDrag(bool isDraggingAllowed);
+
 signals:
     void patientClicked(int id);
     void   studyClicked(int id);

@@ -46,6 +46,8 @@ public:
     QPointF series_groupStartPos;
     QPointF image_groupStartPos;
 
+   QList<medDataIndex>  containedIndexes;
+
 };
 
 medThumbnailContainer::medThumbnailContainer(QWidget *parent) : QFrame(parent), d(new medThumbnailContainerPrivate)
@@ -536,14 +538,23 @@ void medThumbnailContainer::onObjectDropped (const medDataIndex& index)
 //                }
 //        }
 
-        d->series_group->addItem(new medDatabasePreviewItem(
-                                medDataIndex::makeSeriesIndex(index.dataSourceId(), index.patientId(), index.studyId(), index.seriesId()) ) );
+        // we need to check if the image is already here
+        if(!d->containedIndexes.contains(index))
+        {
+            d->containedIndexes << index;
 
-        d->scene->setSceneRect(d->series_group->boundingRect());
 
-        if(d->level)
-            this->onSlideDw();
-        else
-            moveToItem( d->series_group->item(index.seriesId()) );
+            medDatabasePreviewItem* item = new medDatabasePreviewItem( medDataIndex::makeSeriesIndex(index.dataSourceId(), index.patientId(), index.studyId(), index.seriesId()) );
+            item->allowDrag(false);
+
+            d->series_group->addItem(item);
+
+            d->scene->setSceneRect(d->series_group->boundingRect());
+
+            if(d->level)
+                this->onSlideDw();
+            else
+                moveToItem( d->series_group->item(index.seriesId()) );
+        }
 }
 
