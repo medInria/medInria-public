@@ -15,6 +15,10 @@ class medProgressionStack;
 class medViewerConfigurationSegmentationPrivate;
 class medToolBoxSegmentation;
 
+/**
+ * class medViewerConfigurationSegmentation
+ * Defines the segmentation configuration.
+ */
 class medViewerConfigurationSegmentation : public medViewerConfiguration
 {
     Q_OBJECT

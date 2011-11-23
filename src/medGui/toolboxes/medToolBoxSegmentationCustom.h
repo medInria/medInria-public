@@ -26,6 +26,7 @@
 class medToolBoxSegmentation;
 class medToolBoxSegmentationCustomPrivate;
 
+//! Base class for custom segmentation algoithms
 class MEDGUI_EXPORT medToolBoxSegmentationCustom : public medToolBox
 {
     Q_OBJECT
@@ -36,6 +37,7 @@ public:
     virtual ~medToolBoxSegmentationCustom(void);
 
 protected:
+    //! Get the segmentationToolbox (usually one instance)
     medToolBoxSegmentation *segmentationToolBox(void);
 
 private:

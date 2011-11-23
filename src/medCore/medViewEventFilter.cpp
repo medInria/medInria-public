@@ -48,6 +48,11 @@ QString medViewEventFilter::description(void) const
     return s_description();
 }
 
+QString medViewEventFilter::identifier(void) const
+{
+    return s_description();
+}
+
 bool medViewEventFilter::mousePressEvent( medAbstractView * vscene, QGraphicsSceneMouseEvent *mouseEvent )
 {
     return false;

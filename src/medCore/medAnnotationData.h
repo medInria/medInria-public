@@ -7,8 +7,8 @@
 
 class medAbstractData;
 
-/**
- * Base class for the data of view annotations.
+/** 
+ * Base class for annotations : a specialization of medAttachedData.
  * 
  ***/
 class MEDCORE_EXPORT medAnnotationData : public medAttachedData

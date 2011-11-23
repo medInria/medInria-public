@@ -65,6 +65,7 @@ public:
                                                        QString name,
                                                        QString description,
                                                        medToolBoxCompositeDataSetImporterCustomCreator func);
+    //!Register a segemntation toolbox
     bool registerCustomSegmentationToolBox(QString identifier,
                                            QString name,
                                            QString description,
@@ -74,6 +75,7 @@ public:
     QList<QString> diffusionToolBoxes(void);
     QList<QString> filteringToolBoxes(void);
     QList<QString> compositeDataSetImporterToolBoxes(void);
+    //! Get a list of the available segmentation toolboxes
     QList<QString> segmentationToolBoxes(void);
 
     QPair<QString, QString> diffusionToolBoxDetailsFromId (
@@ -84,6 +86,7 @@ public:
             const QString& id );
     QPair<QString, QString> compositeToolBoxDetailsFromId (
             const QString& id );
+    //! Get the id, description pair for the given segmentation toolbox
     QPair<QString, QString> segmentationToolBoxDetailsFromId (
             const QString& id );
 
@@ -92,6 +95,7 @@ public slots:
     medToolBoxDiffusionCustom *createCustomDiffusionToolBox(QString identifier, QWidget *parent=0);
     medToolBoxFilteringCustom *createCustomFilteringToolBox(QString identifier, QWidget *parent=0);
     medToolBoxCompositeDataSetImporterCustom *createCustomCompositeDataSetImporterToolBox(QString identifier, QWidget *parent=0);
+    //! Create the given segemntation toolbox. Return NULL if not found.
     medToolBoxSegmentationCustom *createCustomSegmentationToolBox(QString identifier, QWidget *parent=0);
 
 protected:

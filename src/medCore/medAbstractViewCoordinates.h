@@ -11,7 +11,7 @@ class medAbstractView;
 //class medViewEventHandler;
 
 /**
- * Base class providing access for GraphicsScenes used in medAbstractViews.
+ * Abstract base class for coorindate transformations in medAbstractViews.
  * \sa medAbstractView
  ***/
 class MEDCORE_EXPORT medAbstractViewCoordinates
@@ -36,13 +36,23 @@ public:
     //! The scale (number of pixels on screen per mm)
     virtual qreal scale() const = 0;
 
+    // Utilities to convert between double arrays and Qt primitives.
+    //! Convert double[3] to QVector3D
     static QVector3D doubleToQtVector3d( const double * v ) { return QVector3D( v[0], v[1], v[2] ); }
+    //! Convert double[2] to QVector2D
     static QVector2D doubleToQtVector2d( const double * v ) { return QVector2D( v[0], v[1] ); }
+    //! Convert double[2] to QPointF
     static QPointF   doubleToQtPointF( const double * v ) { return QPointF( v[0], v[1] ); }
+    //! Convert QVector3D to double[3]
     static void qtVector3dToDouble( const QVector3D & v, double * out ) { out[0] = v.x();  out[1] = v.y(); out[2] = v.z();}
+    //! Convert QVector2D to double[2]
     static void qtVector2dToDouble( const QVector2D & v, double * out ) { out[0] = v.x();  out[1] = v.y(); }
+    //! Convert QPointF to double[2]
     static void qtPointFToDouble( const QPointF   & v, double * out ) { out[0] = v.x();  out[1] = v.y(); }
+    //! Convert QColor to double[3]. Components are R,G,B. Alpha not included.
     static void qtColorToDouble ( const QColor & color, double * cv )    {  cv[0] = color.redF();   cv[1] = color.greenF();    cv[2] = color.blueF();    }
+    //! Convert QColor to double[4]. Components are R,G,B,A.
+    static void qtColorAlphaToDouble ( const QColor & color, double * cv )    {  cv[0] = color.redF();   cv[1] = color.greenF();    cv[2] = color.blueF();  cv[3] = color.alphaF();  }
 
 protected :
     medAbstractViewCoordinates() {}

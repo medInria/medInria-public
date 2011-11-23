@@ -20,7 +20,8 @@ public:
     medAttachedData( medAttachedData *parent = NULL );
     virtual ~medAttachedData(void);
 
-    // The data may be reference conted by a parent dataset.
+    //! The data may be reference conted by a parent dataset.
+    // This is not the parent in the Qt sense (it does not take ownership). The parentData reference counts this.
     medAbstractData * parentData() const;
     void setParentData( medAbstractData * mdata );
 

@@ -15,7 +15,9 @@ class medAttachedData;
 class medAbstractData;
 
 /**
- * Base class for view annotations.
+ * Base class for view annotation interactors. These
+ * are classes that interface between the annotations and the views, allowing 
+ * the user to manipulate the annotations, or feedback state changes to UI items.
  * 
  ***/
 class MEDCORE_EXPORT medAbstractAnnotationViewInteractor : public dtkAbstractViewInteractor
@@ -29,22 +31,23 @@ public:
     medAbstractAnnotationViewInteractor();
     virtual ~medAbstractAnnotationViewInteractor();
 
+    //! Implement dtkAbstractObject
     virtual QString description(void) const;
     virtual QString identifier(void) const;
 
-    // Derived classes should implement this with the annotation data they can handle.
-    //    virtual QStringList handled(void) const;
-
+    //! Implement dtkAbstractViewInteractor
     virtual void setData(dtkAbstractData *data);
     virtual void setView(dtkAbstractView *view);
 
+    //! Whether the interactor should be on when the view is in 2d and 3d mode.
     virtual bool showIn2dView() const;
     virtual bool showIn3dView() const;
 
+    //! Return true if the annotation should be shown in the given slice.
     virtual bool isInSlice( const QVector3D & slicePoint, const QVector3D & sliceNormal, qreal thickness) const;
 
 public slots:
-    // Respond to add / removal of attached data to data items viewed.
+    //! Respond to add / removal of attached data to data items viewed.
     virtual void onAttachedDataAdded(medAttachedData* data);
     virtual void onAttachedDataRemoved(medAttachedData* data);
 
