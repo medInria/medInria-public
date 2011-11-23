@@ -11,6 +11,7 @@
 namespace mseg {
     class Controller;
 
+//! Register all algorithms with factory.
 class AlgorithmInitializer {
 public:
     AlgorithmInitializer(Controller * controller);

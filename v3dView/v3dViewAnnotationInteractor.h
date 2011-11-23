@@ -11,7 +11,7 @@ class v3dViewAnnotationInteractorPrivate;
 class v3dView;
 class v3dViewAnnotationInteractor;
 
-// Helper class
+// Helper class for v3dViewAnnotationInteractor
 class V3DVIEWPLUGIN_EXPORT v3dViewAnnIntHelper {
 public :
     v3dViewAnnIntHelper(v3dViewAnnotationInteractor * annInt);
@@ -24,6 +24,8 @@ protected:
     v3dViewAnnotationInteractor * m_v3dViewAnnInt; 
 };
 
+
+//! Interface between annotations and the v3dview.
 class V3DVIEWPLUGIN_EXPORT v3dViewAnnotationInteractor: public medAbstractAnnotationViewInteractor
 {
     typedef medAbstractAnnotationViewInteractor BaseClass;
@@ -34,8 +36,7 @@ public:
     v3dViewAnnotationInteractor();
     virtual ~v3dViewAnnotationInteractor();
 
-    static QString s_identifier();
-
+    //! Override dtkAbstractObject
     virtual QString description(void) const;
     virtual QString identifier(void) const;
     virtual QStringList handled(void) const;
@@ -47,6 +48,8 @@ public:
 
     //! Override dtkAbstractViewInteractor.
     virtual bool isAutoEnabledWith ( dtkAbstractData * data );
+
+    static QString s_identifier();
 
 protected:
 

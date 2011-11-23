@@ -43,6 +43,12 @@ QString AlgorithmConnectedThreshold::s_identifier()
     return AlgorithmConnectedThreshold::staticMetaObject.className();
 }
 
+QString AlgorithmConnectedThreshold::s_description()
+{
+    static QString id = "Connected Threshold Segmentation";
+    return id;
+}
+
 dtkAbstractProcess * AlgorithmConnectedThreshold::create()
 {
     return new AlgorithmConnectedThreshold;
@@ -60,6 +66,7 @@ QString AlgorithmConnectedThreshold::s_localizedName(const QObject * trObj)
 
     return trObj->tr( "Connected Threshold" );
 }
+
 
 template < typename TPixel, unsigned int VDimension > 
 int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( dtkAbstractData * inData )

@@ -13,19 +13,21 @@
 
 class medProcessPaintSegmPrivate;
 
+//! Process that creates a segmented image.
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medProcessPaintSegm : public dtkAbstractProcess
 {
     Q_OBJECT;
 
 public:
-    typedef itk::Image<float,3> ImageType;
-    typedef itk::Image<unsigned char,3> MaskType;
     typedef itk::Image<unsigned char,3> SegmType;
 
              medProcessPaintSegm(void);
     virtual ~medProcessPaintSegm(void);
+
+    // Create function, using new.
     static dtkAbstractProcess *create(void);
 
+    //! Implement dtkAbstractObject
     virtual QString description(void) const;
     virtual QString identifier(void) const;
 
@@ -36,11 +38,11 @@ public:
     static QString MaskImageTypeIdentifier();
     // Input channels
     enum { ImageChannel = 0, MaskChannel = 1};
-    //! Override base class.
+
+    //! Override dtkAbstractProcess
     virtual void setInput(dtkAbstractData *data, int channel);
     virtual  int update(void);
     virtual void *data (void);
-
     dtkAbstractData * output();
 
 protected:

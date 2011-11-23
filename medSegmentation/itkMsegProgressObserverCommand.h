@@ -9,6 +9,7 @@ class Controller;
 
 namespace itk
 {
+  //! Interface between an ITK process and Qt.
   class MsegProgressObserverCommand : public Command
   {
     

@@ -26,7 +26,7 @@ class medSeedPointAnnotationData;
 
 namespace mseg {
 
-
+//! Custom segmentation toolbox to control a connected threshold segmentation.
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmConnectedThresholdToolbox : public medToolBoxSegmentationCustom
 {
     Q_OBJECT;
@@ -34,8 +34,14 @@ public:
     AlgorithmConnectedThresholdToolbox( QWidget *parent );
     ~AlgorithmConnectedThresholdToolbox();
 
+    //! Creator, using new
     static medToolBoxSegmentationCustom * createInstance( QWidget *parent );
 
+    //! Override dtkAbstractObject
+    QString description() const { return s_description(); }
+    QString identifier() const { return s_identifier(); }
+
+    //! description 
     static QString s_description();
 
     /** Get name to use for this when registering with a factory.*/
@@ -46,11 +52,15 @@ public:
     static QString s_name(const QObject * trObj =  NULL);
 
 public slots:
-    void onAddSeedPointPressed();
-    void onRemoveSeedPointPressed();
-    void onApplyButtonPressed();
-
     void onViewMousePress(medAbstractView *view, const QVector3D &vec);
+
+protected slots:
+    //! Callback when add seed point button is pressed.
+    void onAddSeedPointPressed();
+    //! Callback when remove seed point button is pressed.
+    void onRemoveSeedPointPressed();
+    //! Callback when apply button is pressed.
+    void onApplyButtonPressed();
 
     void onSeedPointTableSelectionChanged();
 

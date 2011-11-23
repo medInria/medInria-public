@@ -30,6 +30,7 @@ namespace mseg {
     class ClickAndMoveEventFilter;
     class SelectDataEventFilter;
 
+//! Segmentation toolbox to allow manual painting of pixels
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medToolBoxSegmentationCustom
 {
     Q_OBJECT;
@@ -41,6 +42,10 @@ public:
     AlgorithmPaintToolbox( QWidget *parent );
     ~AlgorithmPaintToolbox();
 
+     //! Override dtkAbstractObject
+    QString description() const { return s_description(); }
+    QString identifier() const { return s_identifier(); }
+ 
     static medToolBoxSegmentationCustom * createInstance( QWidget *parent );
 
     static QString s_description();
