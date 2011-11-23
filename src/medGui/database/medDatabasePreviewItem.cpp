@@ -112,3 +112,13 @@ void medDatabasePreviewItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()/2));
     drag->start();
 }
+
+void medDatabasePreviewItem::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
+{
+    emit hoverEntered(event);
+}
+
+void medDatabasePreviewItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
+{
+    emit hoverLeft(event);
+}
