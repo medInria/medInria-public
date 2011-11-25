@@ -1,0 +1,59 @@
+#! /bin/bash
+
+\rm -fr @CMAKE_INSTALL_PREFIX@/PackageRootDir
+mkdir -p @CMAKE_INSTALL_PREFIX@/PackageRootDir/Applications/medinria.app/Contents/{Frameworks,PlugIns}
+
+cd @CMAKE_INSTALL_PREFIX@/PackageRootDir/Applications/medinria.app/Contents
+
+for i in $( otool -L @CMAKE_INSTALL_PREFIX@/plugins/*.dylib 2> /dev/null \
+| sort -u | grep -i -E '@medinria_DIR@|@dtk_DIR@|itk|vtk' | cut -d " " -f 1 ); do
+	cp -np $i Frameworks/ 2> /dev/null;
+done
+
+for i in $( otool -L Frameworks/* 2> /dev/null \
+| sort -u | grep -i -E '@medinria_DIR@|@dtk_DIR@|itk|vtk' | cut -d " " -f 1 ); do
+	cp -np $i Frameworks 2> /dev/null;
+done
+
+# copy plugins in PlugIns directory
+
+for i in @CMAKE_INSTALL_PREFIX@/plugins/*.dylib; do
+	cp -p $i PlugIns
+done
+
+for i in $(ls PlugIns | grep -E 'dylib' ); do
+		#update library id
+		install_name_tool -id @executable_path/../PlugIns/$i PlugIns/$i
+
+	# ITK, VTK stuff
+	for libname in `otool -L PlugIns/$i | sed "1d" | grep -i -E '@medinria_DIR@|@dtk_DIR@|itk|vtk' | cut -d " " -f 1`
+	do
+		install_name_tool -change $libname @executable_path/../Frameworks/`basename $libname` PlugIns/$i
+	done
+
+	for j in $( otool -L PlugIns/$i | sed "1d" | grep -E @QT_LIBRARY_DIR@ | cut -d " " -f 1 ); do
+		#Depending on Qt SDK, paths may be relative or not
+		tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
+		install_name_tool -change $j @executable_path/../Frameworks/$tmpVal PlugIns/$i
+    done
+done
+
+for i in $( ls Frameworks | grep -E 'dylib' ); do
+		#update library id
+		install_name_tool -id @executable_path/../Frameworks/$i Frameworks/$i
+		#update library links
+		for j in $( otool -L Frameworks/$i | sed "1d" | grep -i -E '@medinria_DIR@|@dtk_DIR@|itk|vtk' | cut -d " " -f 1 ); do
+			install_name_tool -change \
+			$j @executable_path/../Frameworks/`echo $j | rev | cut -d "/" -f 1 | rev` \
+			Frameworks/$i
+		done
+		
+	#Qt stuff (should hopefully be there already)
+	for j in $( otool -L Frameworks/$i | sed "1d" | grep -E @QT_LIBRARY_DIR@ | cut -d " " -f 1 ); do
+		#Depending on Qt SDK, paths may be relative or not
+		tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
+		install_name_tool -change $j @executable_path/../Frameworks/$tmpVal Frameworks/$i
+    done
+done; 
+
+echo @CMAKE_INSTALL_PREFIX@/PackageRootDir

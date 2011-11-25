@@ -194,6 +194,15 @@ endif(BUILD_DOCUMENTATION)
 include(${PROJECT_NAME}Pack)
 
 ## #################################################################
+## Mac packaging tools
+## #################################################################
+
+if (APPLE)
+  configure_file(${PROJECT_SOURCE_DIR}/mac_package_scripts/mac_plugins_release_prepare.sh.in
+                 ${PROJECT_BINARY_DIR}/mac_plugins_release_prepare.sh)
+endif()
+
+## #################################################################
 ## Build settings
 ## #################################################################
 
