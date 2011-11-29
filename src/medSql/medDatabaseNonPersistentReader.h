@@ -20,6 +20,8 @@
 #ifndef MEDDATABASENONPERSISTENTREADER_H
 #define MEDDATABASENONPERSISTENTREADER_H
 
+#include "medSqlExport.h"
+
 #include <QtCore/QObject>
 
 #include <medDataIndex.h>
@@ -35,7 +37,7 @@ class medDatabaseNonPersistentReaderPrivate;
 * This class inherits from medJobItem and is meant to be run by the medJobManager.
 *
 */
-class medDatabaseNonPersistentReader : public medJobItem
+class MEDSQL_EXPORT medDatabaseNonPersistentReader : public medJobItem
 {
     Q_OBJECT
 
