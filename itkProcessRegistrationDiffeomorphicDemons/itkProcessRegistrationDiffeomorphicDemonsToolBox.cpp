@@ -153,16 +153,16 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
         return;
     dtkAbstractProcess * process;
 
-    if (this->parentToolBox()->process())
+    if (this->parentToolBox()->process() && (this->parentToolBox()->process()->identifier() == "itkProcessRegistrationDiffeomorphicDemons"))
     {
         process = this->parentToolBox()->process();
-
     }
     else
     {
         process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons");
         this->parentToolBox()->setProcess(process);
     }
+    
     dtkAbstractData *fixedData = this->parentToolBox()->fixedData();
     dtkAbstractData *movingData = this->parentToolBox()->movingData();
 

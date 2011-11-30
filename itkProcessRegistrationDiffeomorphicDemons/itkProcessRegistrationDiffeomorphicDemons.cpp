@@ -92,6 +92,11 @@ QString itkProcessRegistrationDiffeomorphicDemons::description(void) const
     return "itkProcessRegistrationDiffeomorphicDemons";
 }
 
+QString itkProcessRegistrationDiffeomorphicDemons::identifier(void) const
+{
+    return "itkProcessRegistrationDiffeomorphicDemons";
+}
+
 
 // /////////////////////////////////////////////////////////////////
 // Templated Version of update

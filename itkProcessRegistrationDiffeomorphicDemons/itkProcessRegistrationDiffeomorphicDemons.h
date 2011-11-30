@@ -41,9 +41,17 @@ public:
      *
      * @param void
      * @return QString
-    */
+     */
     virtual QString description(void) const;
-
+    
+    /**
+     * @brief Identifier of the plugin.
+     *
+     * @param void
+     * @return QString
+     */
+    virtual QString identifier(void) const;
+    
     /**
      * @brief tries to register the process with the factory.
      *
