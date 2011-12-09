@@ -10,7 +10,7 @@
 
 The script installer.py aims at downloading sources, installing binary dependencies, configuring, compiling, installing and creating packages of a list of projects. A project is a self contained directory to be compiled and potentially packaged.
 
-It works with several package managing systems for linux (apt, yum). download sources using either wget, git or svn. It configures using autoconf and cmake. The compilation is possible using Visual studio and gcc.Package creation is done using cpack and its generators (rpm, deb, nsis, packagemaker).
+It works with several package managing systems for linux (apt, yum). download sources using either wget, git or svn. It configures using autoconf and cmake. The compilation is possible using Visual studio and gcc. Package creation is done using cpack and its generators (rpm, deb, nsis, packagemaker).
 
 
 ***************************************************************************
@@ -24,7 +24,7 @@ The configuration is based on config files, (.cfg). They are parsed by a python 
 
 ./installer.py -frun_pipol_winxp.cfg -frun.cfg
 
-"-f" is the short name for the option to append an other config file to the hierarchy of configuration values. 
+"-f" is the short name for the option to append another config file to the hierarchy of configuration values.
 
 In our example here, first the installer.py populates its values with default_param.cfg, then overwrites them with run_pipol_winxp.cfg, which has a few windows specific parameters, and run_example.cfg contains only a sublist of packages the user is interested in at the moment.
 
@@ -40,7 +40,7 @@ All the switches present on the command line are computed in conjunction with th
 
 The file to always keep in mind is "default_param.cfg". It contains a documented list of all the parameters recognised by the installer.py script.
 
-The syntax an organisation of the config files follow the ConfigParser python module rules. In short the file follows the .ini syntax. Sections contain key-value pairs. 
+The syntax and organisation of the config files follow the ConfigParser python module rules. In short the file follows the .ini syntax. Sections contain key-value pairs. 
 
 There is a special section [DEFAULT] that contains values that will exist in every other section, as default values. If a key is present in both a section and the default the section's value will prevail.
 
