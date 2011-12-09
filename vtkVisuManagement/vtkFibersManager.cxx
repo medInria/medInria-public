@@ -533,23 +533,12 @@ vtkFibersManager::vtkFibersManager()
   if( vtkFibersManager::GetUseHardwareShaders() )
   {
     vtkFiberMapper* mapper = vtkFiberMapper::New();
-    if( !mapper->IsRenderSupported() )
-    {
-      vtkErrorMacro(<<"Error: Hardware acceleration is not supported, switching to software rendering.");
-      mapper->Delete();
-      vtkPolyDataMapper* mapper2 = vtkPolyDataMapper::New();
-      mapper2->ImmediateModeRenderingOn();
-      this->Mapper = mapper2;
-    }
-    else
-    {
-      mapper->SetAmbientContributionShadow(0.0);
-      mapper->SetDiffuseContributionShadow(0.6);
-      mapper->SetSpecularContributionShadow(0.0);
-      mapper->LightingOff();
-      mapper->ShadowingOff();
-      this->Mapper = mapper;
-    }
+    mapper->SetAmbientContributionShadow(0.0);
+    mapper->SetDiffuseContributionShadow(0.6);
+    mapper->SetSpecularContributionShadow(0.0);
+    mapper->LightingOff();
+    mapper->ShadowingOff();
+    this->Mapper = mapper;
   }
   else
   {
@@ -950,7 +939,7 @@ void vtkFibersManager::ChangeMapperToUseHardwareShaders(void)
   
   vtkFiberMapper* mapper = vtkFiberMapper::New();
   
-  if( !mapper->IsRenderSupported() )
+  if( !mapper->IsRenderSupported(this->Renderer) )
   {
     vtkErrorMacro(<<"Error: Hardware acceleration is not supported.");
     mapper->Delete();

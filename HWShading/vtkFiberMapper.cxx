@@ -100,6 +100,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkAnisoLiShadowMapSP.h"
 #include "vtkShadowMappingHelperLines.h"
 
+#include <vtkOpenGLRenderWindow.h>
 #include <vtkOpenGLExtensionManager.h>
 #include <vtkProperty.h>
 
@@ -141,7 +142,7 @@ void vtkFiberMapper::Render(vtkRenderer* aren, vtkActor* act)
   aren->GetRenderWindow()->MakeCurrent();
   if ( !this->Initialized )
     {
-    this->Initialize();
+    this->Initialize(aren);
     }
 
   if ( !this->Initialized )
@@ -566,12 +567,12 @@ void vtkFiberMapper::SetWarmColor(float r, float g, float b)
     this->ShaderProgramShadow->SetWarmColor(r, g, b);
 }
 
-void vtkFiberMapper::Initialize()
+void vtkFiberMapper::Initialize(vtkRenderer *r)
 {
   this->Initialized = false;
 
-  vtkOpenGLExtensionManager* extensions = vtkOpenGLExtensionManager::New();
-  extensions->SetRenderWindow(NULL); // set render window to current render window
+  vtkOpenGLExtensionManager *extensions=static_cast<vtkOpenGLRenderWindow *>(
+    r->GetRenderWindow())->GetExtensionManager();
   
   int supports_GL_VERSION_2_0			= extensions->ExtensionSupported("GL_VERSION_2_0");
   int supports_GL_EXT_framebuffer_object	= extensions->ExtensionSupported("GL_EXT_framebuffer_object");
@@ -596,15 +597,14 @@ void vtkFiberMapper::Initialize()
     return;
     }
 
-  extensions->Delete(); extensions = NULL;
   this->Initialized = true;
 }
 
-bool vtkFiberMapper::IsRenderSupported()
+bool vtkFiberMapper::IsRenderSupported(vtkRenderer *r)
 {
   if (!this->Initialized)
     {
-    this->Initialize();
+    this->Initialize(r);
     }
 
   return this->Initialized;

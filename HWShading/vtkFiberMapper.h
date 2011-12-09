@@ -77,6 +77,7 @@ class vtkRenderer;
 class vtkActor;
 class vtkPoints;
 class vtkCellArray;
+class vtkRenderer;
 
 class vtkAnisotropicLightingSP;
 class vtkAnisoLiShadowMapSP;
@@ -166,7 +167,7 @@ public:
    * Returns true if the OpenGL extensions required by this mapper are
    * available, and false otherwise.
    */
-  bool IsRenderSupported();
+  bool IsRenderSupported(vtkRenderer *r);
 
 protected:
   vtkFiberMapper();
@@ -186,7 +187,7 @@ protected:
                          vtkRenderer* ren, int &noAbort);
 
   bool Initialized;
-  void Initialize();
+  void Initialize(vtkRenderer *r);
 
 private:
 
