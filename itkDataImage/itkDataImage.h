@@ -311,6 +311,7 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
                 // qDebug() << "Time elapsed: " << time.elapsed();
 
                 QImage *qimage = new QImage (newSize[0],newSize[1],QImage::Format_ARGB32);
+                qimage->fill(0);
                 uchar  *qImageBuffer = qimage->bits();
 
                 unsigned int baseX = 0;
