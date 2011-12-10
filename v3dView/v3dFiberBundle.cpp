@@ -147,13 +147,14 @@ void v3dFiberBundle::UseHardwareShadersOn()
   }
   
   vtkFiberMapper* mapper = vtkFiberMapper::New();
-  
+  /*
   if( !mapper->IsRenderSupported() )
   {
     vtkErrorMacro(<<"Error: Hardware acceleration is not supported.");
     mapper->Delete();
     return;
   }
+  */
   
   mapper->SetAmbientContributionShadow(0.0);
   mapper->SetDiffuseContributionShadow(0.6);
