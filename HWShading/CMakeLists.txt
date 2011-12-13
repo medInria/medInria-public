@@ -34,10 +34,9 @@ project(HWShading)
 
 
   FOREACH(class ${HWShading_classes})
-    SET(HWShading_SRCS 
-    ${HWShading_SRCS} ${class}.h ${class}.cxx 
-    )
-  ENDFOREACH(class)
+    SET(HWShading_SRCS    ${HWShading_SRCS}    ${class}.cxx)
+    SET(HWShading_Headers ${HWShading_HEADERS} ${class}.h)
+  ENDFOREACH()
 
 
   SHADER_TO_HEADER("AnisotropicLightingVertexText"
@@ -91,27 +90,18 @@ project(HWShading)
 
   FIND_PACKAGE(OpenGL REQUIRED)
 
+  set(HWShading_SOURCES_PCH)
   if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
-    add_precompiled_header(HWShading_SOURCES_PCH 
-      "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
-        ${HWShading_SRCS}
-      )
-  endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+    add_precompiled_header(HWShading_SOURCES_PCH "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp")
+  endif()
   
-  ADD_LIBRARY(vtkHWShading ${vtkINRIA3D_LIBS_STYLE}
-  ${HWShading_SOURCES_PCH}
-  ${HWShading_SRCS} 
-  )
+  ADD_LIBRARY(vtkHWShading ${vtkINRIA3D_LIBS_STYLE} ${HWShading_SOURCES_PCH} ${HWShading_SRCS})
 
-  TARGET_LINK_LIBRARIES(vtkHWShading 
-  vtkRendering 
-  vtkHelpers 
-  ${OPENGL_LIBRARIES}
-  )
+  TARGET_LINK_LIBRARIES(vtkHWShading vtkRendering vtkHelpers ${OPENGL_LIBRARIES})
 
   IF( BUILD_TESTING )
     ADD_SUBDIRECTORY( Testing )
-  ENDIF( BUILD_TESTING )
+  ENDIF()
 
   if(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
     install(TARGETS vtkHWShading
@@ -119,10 +109,8 @@ project(HWShading)
     RUNTIME DESTINATION ${vtkINRIA3D_INSTALL_BIN_DIR}
     ARCHIVE DESTINATION ${vtkINRIA3D_INSTALL_LIB_DIR}
     )
-  endif(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
+  endif()
 
   if(NOT vtkINRIA3D_INSTALL_NO_DEVELOPMENT)
-    install_files(${vtkINRIA3D_INSTALL_INCLUDE_DIR} .h ${HWShading_SRCS})
-  endif(NOT vtkINRIA3D_INSTALL_NO_DEVELOPMENT)
-
-
+    install(FILES ${HWShading_Headers} DESTINATION ${vtkINRIA3D_INSTALL_INCLUDE_DIR})
+  endif()
