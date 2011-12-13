@@ -15,6 +15,9 @@
  PURPOSE.  See the above copyright notices for more information.
  
  =========================================================================*/
+
+#include <cmath>
+
 #include "vtkImageView.h"
 #include "vtkObjectFactory.h"
 #include "vtkMath.h"
@@ -252,7 +255,9 @@ vtkImageView::~vtkImageView()
     this->Input = 0;
   }
   
+#ifdef vtkINRIA3D_USE_ITK
   delete this->Impl;
+#endif
 }
 
 //----------------------------------------------------------------------------
@@ -677,9 +682,9 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(
   // or too large causing overflow problems, return otherwise all values will collapse and further
   // windowing will become impossible
   
-  double widthTol = std::fabs(targetWidth);
-  widthTol = std::max( widthTol, std::fabs(maxRange) );
-  widthTol = std::max( widthTol, std::fabs(minRange) );
+  double widthTol = std::abs(targetWidth);
+  widthTol = std::max( widthTol, std::abs(maxRange) );
+  widthTol = std::max( widthTol, std::abs(minRange) );
   widthTol = widthTol * 1.e-7;   // Fractional tolerance
   widthTol = std::max( widthTol, 1.e-30 ); // Absolute tolerance
 

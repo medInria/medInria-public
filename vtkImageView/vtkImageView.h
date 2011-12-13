@@ -437,7 +437,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
 
   //! Get / Set the temporal slice.
   vtkGetMacro(TimeIndex, vtkIdType);
-  virtual void SetTimeIndex ( vtkIdType index );
+  virtual void SetTimeIndex(vtkIdType index);
 
   /**
      Enable or Disable interaction on the view.
