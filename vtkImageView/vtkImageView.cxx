@@ -1525,7 +1525,7 @@ break ;					\
 //----------------------------------------------------------------------------
 template < class T >
 inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkImage, int layer)
-{									
+{
   if(itkImage.IsNull())
     return;
 
