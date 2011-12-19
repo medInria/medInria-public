@@ -186,7 +186,10 @@ QObject * medViewEventFilter::objectToFilter( medAbstractView * view )
 
 void medViewEventFilter::onViewDestroyed( QObject* obj)
 {
-    this->removeFromView(qobject_cast<medAbstractView*>(obj));
+    // Cannot use dynamic casting because the object is being destroyed.
+    // For same reason, we cannot call this->removeFromView.
+    medAbstractView*view = static_cast<medAbstractView*>(obj);
+    m_views.remove(view);
 }
 
 
