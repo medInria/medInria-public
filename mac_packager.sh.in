@@ -7,98 +7,25 @@
 
 # To build a stand-alone mac version of medinria, do the following:
 
-# 1. build medinria / medinria-plugins
+# 1. build medinria
+# 2. build medinria-plugins as well as your desired own plugins
 # 2. make install of each project
 # 3. chmod u+x mac_pacakger.sh
-# 4. run mac_pacakger.sh with plugins in arguments (works for common plugins for now), e.g. : ./mac_packager.sh ${Plugins_Install_Dir}/plugins/*
+# 4. run mac_pacakger.sh with each argument being a script to package your plugins, e.g. : ./mac_packager.sh ${Plugins_Build_Dir}/mac_visages_plugins_packager.sh
 
 # The bundle medinria.app will contain all plugins and will be standalone, packaged into MedINRIA.dmg in the install dir
 
-for i in $( otool -L $* 2> /dev/null \
-| sort -u | grep -i -E 'itk|vtk' | cut -d " " -f 1 ); do
-	cp -np $i @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks 2> /dev/null;
-done
-
-for i in $( otool -L @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks/* 2> /dev/null \
-	| sort -u | grep -i -E 'itk|vtk' | cut -d " " -f 1 ); do
-		cp -np $i @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks 2> /dev/null;
-done
-
-# copy plugins in PlugIns directory
-
-mkdir -p @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/PlugIns
-
-for i in $*; do
-	echo "    Copying $i to plugins"
-	cp -p $i @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/PlugIns
-done
-
-# copy sqlite drivers and svg reader since they are not explicitely linked by medinria
-
-cp -p @QT_PLUGINS_DIR@/sqldrivers/libqsqlite.dylib @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks
-cp -p @QT_PLUGINS_DIR@/imageformats/libqsvg.dylib @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/Frameworks
-
-cd @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/;
-
-for i in $(ls PlugIns | grep -E 'dylib' ); do
-		echo "    Updating $i"
-		#update library id
-		install_name_tool -id @executable_path/../PlugIns/$i PlugIns/$i
-		#update library links
-		for j in $( otool -L PlugIns/$i | grep -i -E 'med|dtk|itk|vtk' | cut -d " " -f 1 ); do
-			install_name_tool -change \
-			$j @executable_path/../Frameworks/`echo $j | rev | cut -d "/" -f 1 | rev` \
-			PlugIns/$i
-		done
-
-		for j in $( otool -L PlugIns/$i | grep -E '.framework' | cut -d " " -f 1 ); do
-			if [ ! `echo $j | grep '@executable_path'` ]; then
-				echo "    Updating $j"
-				#Depending on Qt SDK, paths may be relative or not
-				if [ ! `echo $j | grep '@QT_LIBRARY_DIR@'` ]; then
-					install_name_tool -change $j @executable_path/../Frameworks/$j PlugIns/$i
-				else
-					tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
-					install_name_tool -change $j @executable_path/../Frameworks/$tmpVal PlugIns/$i
-				fi
-			fi
-		done;
-done; 
-
-
-for i in $( ls Frameworks | grep -E 'dylib' ); do
-		echo "    Updating $i"
-		#update library id
-		install_name_tool -id @executable_path/../Frameworks/$i Frameworks/$i
-		#update library links
-		for j in $( otool -L Frameworks/$i | grep -i -E 'med|dtk|itk|vtk' | cut -d " " -f 1 ); do
-			install_name_tool -change \
-			$j @executable_path/../Frameworks/`echo $j | rev | cut -d "/" -f 1 | rev` \
-			Frameworks/$i
-		done
-		
-		for j in $( otool -L Frameworks/$i | grep -E '.framework' | cut -d " " -f 1 ); do
-			if [ ! `echo $j | grep '@executable_path'` ]; then
-				#Depending on Qt SDK, paths may be relative or not
-				if [ ! `echo $j | grep '@QT_LIBRARY_DIR@'` ]; then
-					install_name_tool -change $j @executable_path/../Frameworks/$j Frameworks/$i
-				else
-					tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
-					install_name_tool -change $j @executable_path/../Frameworks/$tmpVal Frameworks/$i
-				fi
-			fi
-        done;
-done; 
-
 cd @CMAKE_INSTALL_PREFIX@/bin/
-macdeployqt medinria.app
+@QT_BINARY_DIR@/macdeployqt medinria.app
 
-cd @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents
-
-mkdir -p PlugIns/sqldrivers
-mv Frameworks/libqsqlite.dylib PlugIns/sqldrivers/
-mv Frameworks/libqsvg.dylib PlugIns/imageformats/
+#Run sub-packagers
+for i in $*; do
+	resultRootDir=`/bin/bash $i`
+	echo Copying plugins from $resultRootDir
+	
+	\cp -r $resultRootDir/Applications/medinria.app/Contents/Frameworks @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/
+	\cp -r $resultRootDir/Applications/medinria.app/Contents/PlugIns @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/
+done
 
 #Run fancy packaging apple script
 osascript @PROJECT_BINARY_DIR@/ScriptGenerateMedInriaFancyDMG.scpt
-
