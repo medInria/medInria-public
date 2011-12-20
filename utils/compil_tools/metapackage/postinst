@@ -1,0 +1,6 @@
+#!/bin/sh
+# postinst script
+
+set -e
+sudo touch /home/serch/dev/temp/postinst
+

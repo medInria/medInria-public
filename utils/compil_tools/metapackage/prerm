@@ -1,0 +1,5 @@
+#!/bin/sh
+# prerm script
+
+sudo touch /home/serch/dev/temp/prerm
+
