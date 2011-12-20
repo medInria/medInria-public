@@ -387,6 +387,7 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
     //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
     connect(importer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
     //connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+    connect(importer, SIGNAL(partialImportAttempted ( const QString& )), this, SIGNAL(partialImportAttempted ( const QString& )));
 
     emit(displayJobItem(importer, info.baseName()));
 
