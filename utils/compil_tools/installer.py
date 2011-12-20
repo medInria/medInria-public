@@ -174,7 +174,7 @@ def load_config_files(filenames=[]):
 def configure_project(project,config,architecture='linux'):
     """
     Run the configure command on the project.
-    The command may be cmake or ./configure, dependint on the config.
+    The command may be cmake or ./configure, depending on the config.
     Let's assume we are in the project's directory.
     """
     command=""
@@ -701,7 +701,7 @@ def main(argv):
 
     # configure projects
     parser.add_option("--configure", dest="configure",action="store_true",
-            default=True,help="configure projects (do not run cmake) (enabled \
+            default=True,help="configure projects (run cmake) (enabled \
                     by default)")
     parser.add_option("--no-configure", dest="configure",action="store_false",
             default=True,
