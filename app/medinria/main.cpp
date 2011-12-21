@@ -23,6 +23,7 @@
 #include <qdebug.h>
 #include "medMainWindow.h"
 #include "medApplication.h"
+#include "medSplashScreen.h"
 
 #include <dtkCore/dtkGlobal.h>
 
@@ -35,6 +36,7 @@
 #include <medStorage.h>
 
 
+
 int main(int argc, char *argv[])
 {
     qRegisterMetaType<medDataIndex>("medDataIndex");
@@ -45,9 +47,11 @@ int main(int argc, char *argv[])
         qDebug() << "Usage: medinria [--no-fullscreen] [--stereo]";
         return 1;
     }
+    //QSplashScreen
+    medSplashScreen splash(QPixmap(":/pixmaps/medinria-splash.png"));
+    splash.setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
 
-    QSplashScreen splash(QPixmap(":/pixmaps/medinria-splash.png"), Qt::WindowStaysOnTopHint);
-
+    //splash.setAttribute(Qt::WA_TranslucentBackground);
     // Do not show the splash screen in debug builds because it hogs the
     // foreground, hiding all other windows. This makes debugging the startup
     // operations difficult.
@@ -65,7 +69,9 @@ int main(int argc, char *argv[])
                      &splash, SLOT(showMessage(const QString&, int, const QColor&)) );
     splash.show();
     splash.showMessage("Loading plugins...",Qt::AlignLeft|Qt::AlignBottom,Qt::white);
+    application.processEvents();
 #endif
+
 
     // DATABASE INITIAL ROUTINE
     medSettingsManager* mnger = medSettingsManager::instance();
