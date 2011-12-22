@@ -3,25 +3,69 @@
 
 #include <QtGui>
 
-////////////////////////////////////////////////////////////////////////////
+class medSplashScreenPrivate;
+
+
+/**
+ * @brief create SplaScreen widget with translucent background.
+ *
+ * not based on QSplashScreen which does not support this feature.
+ Almost all features from the QSplashscreen are replicated, including messages refreshed before a QApplication event loop is running.
+ *
+ */
 class medSplashScreen : public QFrame
 {
     Q_OBJECT
 public:
- medSplashScreen(const QPixmap& pixmap);
- void finish(QWidget *w);
- void repaint();
+    /**
+     * @brief Creates a medSplashScreen.
+     *
+     * There are no parent widgets since it is started before the event loop.
+     *
+     * @param pixmap
+    */
+    medSplashScreen(const QPixmap& pixmap);
+    ~medSplashScreen();
+
+    /**
+     * @brief hides the splashscreen when w is shown.
+     *
+     * @param w
+     */
+    void finish(QWidget *w);
+
+    /**
+     * @brief Repaints the widget without the need of an event loop;
+     *
+     */
+    void repaint();
 
 public slots:
- void clearMessage();
- void showMessage(const QString& theMessage, int theAlignment = Qt::AlignLeft, const QColor& theColor = Qt::black);
+    /**
+     * @brief Clears the message.
+     *
+     */
+    void clearMessage();
+
+    /**
+     * @brief Shows a message with the desired alignment and color.
+     *
+     * @param theMessage
+     * @param theAlignment
+     * @param theColor
+     */
+    void showMessage(const QString& theMessage,
+                     int theAlignment = Qt::AlignLeft,
+                     const QColor& theColor = Qt::black);
 
 private:
- virtual void paintEvent(QPaintEvent* pe);
+    /**
+     * @brief
+     *
+     * @param pe
+     */
+    void paintEvent(QPaintEvent* pe);
 
- QPixmap  itsPixmap;
- QString  itsMessage;
- int   itsAlignment;
- QColor  itsColor;
+    medSplashScreenPrivate * d;
 };
 #endif // MEDSPLASHSCREEN_H
