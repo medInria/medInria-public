@@ -442,13 +442,16 @@ def _git_checkout(project, config):
         git_co_com += target
     else:
         # target is not found, create new branch
-        git_co_com += "-b " + target
+        # git_co_com += "-b " + target
         if remote_tracking:
             # new branch tracks remote branch of same name
-            git_co_com += " " + remote_tracking[0]
+            git_co_com += "-b " + target + " " + remote_tracking[0]
+#        elif active:
+#            # new branch tracks active local branch
+#            git_co_com += "-b " + target + " " + active[0]
         else:
             # new branch tracks active local branch
-            git_co_com += " " + active[0]
+            git_co_com += target
 
     # print git_command
     run_and_log(git_co_com.split())
