@@ -19,13 +19,13 @@ def config_logging(log, config):
 
     if (log and fileName):
         #logging.basicConfig(filename=fileName,level=logging.DEBUG)
-        print "create logger from conf file:",fileName 
+        print "create logger from conf file:",fileName
         logging.config.fileConfig(fileName)
 
         # create logger
         logger = logging.getLogger('root')
     else:
-        print "create default logger" 
+        print "create default logger"
         # create logger
         logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                 level=logging.DEBUG)
@@ -270,8 +270,8 @@ def test(project,config,architecture="linux"):
     os.chdir('..')
 
     return
-    
-    
+
+
 def uncomp_tar(project,config,file):
     """
     Uncompresses a file to the corresponding project's destination_dir
@@ -597,7 +597,8 @@ def build_package(project,config,architecture):
         gen = "RPM"
         if pkg_mngr == "apt":
             gen = "DEB"
-        cmd = [cpack_cmd, "-G ", gen]
+        cmd = [cpack_cmd, "-G", gen]
+        logging.info(cmd)
         run_and_log(cmd)
 
     extra_package_cmd=config.get(project,"extra_package_cmd")
@@ -724,7 +725,7 @@ def main(argv):
     parser.add_option("--no-test", dest="test",action="store_false",
             default=True,
             help="Do not run ctest on the projects")
-            
+
     # install projects
     parser.add_option("-i","--install", dest="install",action="store_true",
             default=True,
@@ -850,7 +851,7 @@ def main(argv):
         if len(extra_update_cmd):
             logging.info( extra_update_cmd)
             run_and_log(extra_update_cmd,shell=True)
-                
+
         cwd = os.path.join(projects_dir, config.get(project,"destination_dir"))
         os.chdir(cwd)
         if choose_fun('configure'):
@@ -869,7 +870,7 @@ def main(argv):
                 test(project,config,architecture)
         elif choose_fun('build') and choose_fun('test'):
             logging.error("Can't build and run CTest at the same time")
-            
+
         os.chdir(cwd)
         if choose_fun('doc'):
             logging.info( "doc " + project + "...")
