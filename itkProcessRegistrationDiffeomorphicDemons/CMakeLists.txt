@@ -10,9 +10,9 @@ project(itkProcessRegistrationDiffeomorphicDemonsPlugin)
 ## Setup version numbering
 ## #################################################################
 
-set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "${PROJECT_NAME} major version number.")
-set(${PROJECT_NAME}_VERSION_MINOR 3 CACHE STRING "${PROJECT_NAME} minor version number.")
-set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "${PROJECT_NAME} build version number.")
+set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "${PROJECT_NAME} major version number." FORCE)
+set(${PROJECT_NAME}_VERSION_MINOR 3 CACHE STRING "${PROJECT_NAME} minor version number." FORCE)
+set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "${PROJECT_NAME} build version number." FORCE)
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
 
