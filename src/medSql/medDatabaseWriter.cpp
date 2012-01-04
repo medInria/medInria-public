@@ -86,18 +86,18 @@ void medDatabaseWriter::run ( void )
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
-    
+
     if ( !d->data->hasMetaData ( medMetaDataKeys::StudyDicomID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "0" );
-    
+
     QString generatedSeriesID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesID );
-    
+
     if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesDicomID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << generatedSeriesID );
-    
+
     if ( !d->data->hasMetaData ( medMetaDataKeys::Orientation.key() ) )
         d->data->addMetaData ( medMetaDataKeys::Orientation.key(), QStringList() << "" );
 
@@ -215,26 +215,26 @@ void medDatabaseWriter::run ( void )
         query.prepare ( "SELECT id, patientId FROM patient WHERE name = :name AND birthdate = :birthdate" );
         query.bindValue ( ":name", patientName );
         query.bindValue ( ":birthdate", birthdate );
-        
+
         if ( !query.exec() )
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-        
+
         if ( query.first() )
         {
             id = query.value ( 0 );
             patientId = query.value ( 1 ).toString();
-            
+
             query.prepare ( "SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :uid" );
             query.bindValue ( ":id", id );
             query.bindValue ( ":name", studyName );
             query.bindValue ( ":uid", studyUid );
             if ( !query.exec() )
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-            
+
             if ( query.first() )
             {
                 id = query.value ( 0 );
-                
+
                 query.prepare ( "SELECT id, seriesId FROM series WHERE study = :id AND name = :name AND uid = :uid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns" );
                 query.bindValue ( ":id",             id );
                 query.bindValue ( ":name",           seriesName );
@@ -245,22 +245,22 @@ void medDatabaseWriter::run ( void )
                 query.bindValue ( ":sliceThickness", sliceThickness );
                 query.bindValue ( ":rows",           rows );
                 query.bindValue ( ":columns",        columns );
-                
+
                 if ( !query.exec() )
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-                
+
                 if ( query.first() )
                 {
                     id = query.value ( 0 );
                     seriesId = query.value ( 1 ).toString();
-                    
+
                     qDebug() << "Series ID: " << seriesId;
-                    
+
                     dataExists = true;
                 }
             }
         }
-        
+
         if (dataExists)
         {
             seriesName += "-1";
@@ -269,7 +269,7 @@ void medDatabaseWriter::run ( void )
         }
     }
     while (dataExists);
-        
+
     if ( dataExists )
     {
         qDebug() << "data is already in the database, skipping";
@@ -313,15 +313,19 @@ void medDatabaseWriter::run ( void )
         qDebug() << "success with " << dataWriter->identifier();
         dataWriter->setData (d->data);
 
-        // Trick for now to choose which format we're writing to.
-        QStringList extensions; //dataWriter->supportedFileExtensions();
+
+        QStringList extensions = dataWriter->supportedFileExtensions();
         QString extension;
-        if ( extensions.isEmpty() )
+        // Trick for now to choose which format we're writing to.
+        //For the moment whenever there is vistal in the idetifier, we use the vistal writer.
+        if (d->data->identifier().contains("vistal"))
+        {
+            extension = ".dim";
+        }
+        else if ( extensions.isEmpty() )
         {
             if (d->data->identifier().contains("Mesh"))
                 extension = ".vtk";
-            else if (d->data->identifier().contains("vistal"))
-                extension = ".dim";
             else
                 extension = ".mha";
         }
