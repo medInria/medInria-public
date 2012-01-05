@@ -143,6 +143,9 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     onSourceIndexChanged(d->stack->currentIndex());
 
     connect(medDataManager::instance(), SIGNAL(failedToOpen(const medDataIndex&)), this, SLOT(onOpeningFailed(const medDataIndex&)));
+
+    medDatabaseControllerImpl* dbcont = medDatabaseController::instance().data();
+    connect(dbcont, SIGNAL(partialImportAttempted ( const QString& )), this, SLOT(onPartialImportAttempted ( const QString& )));
  }
 
 medBrowserArea::~medBrowserArea(void)
@@ -168,7 +171,7 @@ void medBrowserArea::onFileImport(QString path)
 
 void medBrowserArea::onFileIndex(QString path)
 {
-     medDatabaseController::instance()->import(path,true);
+    medDatabaseController::instance()->import(path,true);
 }
 
 void medBrowserArea::onPartialImportAttempted(const QString& message)
