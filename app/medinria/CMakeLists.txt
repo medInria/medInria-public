@@ -27,25 +27,26 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medApplication.h
   medHomepageArea.h
   medHomepageButton.h
-  medBrowserArea.h  
+  medBrowserArea.h
   medBrowserToolBoxSource.h
-  medBrowserToolBoxSettings.h  
+  medBrowserToolBoxSettings.h
   medMainWindow.h
-  medViewerArea.h    
+  medViewerArea.h
   medViewerConfigurationDiffusion.h
   medViewerConfigurationVisualization.h
-  medViewerConfigurationRegistration.h   
-  medViewerConfigurationFiltering.h 
-  medViewerToolBoxConfiguration.h  
-  medPacsDataSource.h 
-  medFileSystemDataSource.h  
+  medViewerConfigurationRegistration.h
+  medViewerConfigurationFiltering.h
+  medViewerToolBoxConfiguration.h
+  medPacsDataSource.h
+  medFileSystemDataSource.h
   medDatabaseDataSource.h
   medSaveModifiedDialog.h
+  medSplashScreen.h
   )
 
 set(${PROJECT_NAME}_HEADERS
   medViewerArea_p.h
-  ${${PROJECT_NAME}_HEADERS_MOC}  
+  ${${PROJECT_NAME}_HEADERS_MOC}
 )
 
 set(${PROJECT_NAME}_SOURCES
@@ -53,20 +54,21 @@ set(${PROJECT_NAME}_SOURCES
   medApplication.cpp
   medHomepageArea.cpp
   medHomepageButton.cpp
-  medBrowserArea.cpp  
+  medBrowserArea.cpp
   medBrowserToolBoxSource.cpp
-  medBrowserToolBoxSettings.cpp    
+  medBrowserToolBoxSettings.cpp
   medMainWindow.cpp
-  medViewerArea.cpp    
+  medViewerArea.cpp
   medViewerToolBoxConfiguration.cpp
   medViewerConfigurationDiffusion.cpp
   medViewerConfigurationVisualization.cpp
-  medViewerConfigurationRegistration.cpp   
-  medViewerConfigurationFiltering.cpp   
-  medPacsDataSource.cpp  
+  medViewerConfigurationRegistration.cpp
+  medViewerConfigurationFiltering.cpp
+  medPacsDataSource.cpp
   medFileSystemDataSource.cpp
   medDatabaseDataSource.cpp
   medSaveModifiedDialog.cpp
+  medSplashScreen.cpp
   )
 
 set(${PROJECT_NAME}_RESOURCES medinria.qrc)
@@ -97,8 +99,8 @@ if(WIN32)
 endif()
 
 if(MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
-    "medPch.h" "../../src/medPch/medPch.cpp" 
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
+    "medPch.h" "../../src/medPch/medPch.cpp"
     ${${PROJECT_NAME}_SOURCES_WRAP}
     ${${PROJECT_NAME}_SOURCES_QRC}
     ${${PROJECT_NAME}_SOURCES_MOC}
