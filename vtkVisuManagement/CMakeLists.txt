@@ -104,6 +104,10 @@ TARGET_LINK_LIBRARIES(vtkVisuManagement
 TARGET_LINK_LIBRARIES(vtkLandmarkManagement  
   ${vtkLandmarkManagement_LIBS}
 )
+
+INSTALL_TARGETS(/lib vtkLandmarkManagement)
+
+
 IF(VTK_WRAP_TCL)
   SET_SOURCE_FILES_PROPERTIES(
      vtkLandmarkManagerCallback.cxx
