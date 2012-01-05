@@ -91,10 +91,10 @@ void medDatabaseWriter::run ( void )
         d->data->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "0" );
     
     QString generatedSeriesID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
-
+    
     if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesID );
-    
+
     if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesDicomID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << generatedSeriesID );
     
@@ -284,6 +284,8 @@ void medDatabaseWriter::run ( void )
     QString subDirName = "/" + patientId;
     QString imageFileNameBase =  subDirName + "/" +  seriesId;
 
+    qDebug() << "Base file name" << imageFileNameBase;
+    
     QDir dir ( medStorage::dataLocation() + subDirName );
     if ( !dir.exists() )
     {
@@ -314,14 +316,12 @@ void medDatabaseWriter::run ( void )
         dataWriter->setData (d->data);
 
         // Trick for now to choose which format we're writing to.
-        QStringList extensions; //dataWriter->supportedFileExtensions();
+        QStringList extensions = dataWriter->supportedFileExtensions();
         QString extension;
         if ( extensions.isEmpty() )
         {
             if (d->data->identifier().contains("Mesh"))
                 extension = ".vtk";
-            else if (d->data->identifier().contains("vistal"))
-                extension = ".dim";
             else
                 extension = ".mha";
         }

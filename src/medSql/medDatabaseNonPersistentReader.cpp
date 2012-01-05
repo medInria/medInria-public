@@ -258,13 +258,13 @@ void medDatabaseNonPersistentReader::run ( void )
                             imData->addMetaData ( medMetaDataKeys::SeriesDescription.key(), QStringList() << QFileInfo ( it.value() [0] ).baseName() );
 
                         if ( !imData->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
-                            imData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << itSer.value() );
+                            imData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
 
                         if ( !imData->hasMetaData ( medMetaDataKeys::StudyDicomID.key() ) )
                             imData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "0" );
 
                         if ( !imData->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
-                            imData->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << "" );
+                            imData->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << itSer.value() );
 
                         if ( !imData->hasMetaData ( medMetaDataKeys::SeriesDicomID.key() ) )
                             imData->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << "0" );
