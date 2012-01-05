@@ -19,8 +19,10 @@ set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSIO
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Sergio Medina")
 set(CPACK_PACKAGE_CONTACT "sergio.medina@inria.fr")
 
-#set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.1-6), libgcc1 (>= 1:3.4.2-12), python2.6, libboost-program-options1.40.0 (>= 1.40.0)")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3.1-6), libgcc1 (>= 1:3.4.2-12)")
+# runtime dependencies: libopenmpi1.3, libqt4-sql-sqlite
+# vistal dependencies: libxml++1.0c2a, libboost-thread1.40.0
+# qtshanoir dependencies: freediams
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "dcmtk-inria (>= 3.6.1), dtk (>= 0.6.0), itk (>= 3.20.0), medinria (>= 0.4.0), medinria-plugins (>= 0.4.0), medinria-plugins-asclepios (>= 0.1.0), medinria-visages-plugins (>= 0.1.0), mips (>= 0.1.1), qtdcm-dev (>= 2.0.0), qtshanoir-dev (>= 0.1.0), ttk-private (>= 1.4.0), vistal (>= 1.1.0), vtk (>= 5.8.0), vtkinria3d (>= 1.0.0), libopenmpi1.3, libqt4-sql-sqlite, libxml++1.0c2a, libboost-thread1.40.0, freediams")
 set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_SOURCE_DIR}/postinst;${CMAKE_SOURCE_DIR}/prerm;")
 set(CPACK_SET_DESTDIR "ON")
   

@@ -1,5 +1,5 @@
 #!/bin/sh
 # prerm script
 
-sudo touch /home/serch/dev/temp/prerm
+sudo rm -f /usr/local/inria/lib/libquazip.so
 

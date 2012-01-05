@@ -2,5 +2,5 @@
 # postinst script
 
 set -e
-sudo touch /home/serch/dev/temp/postinst
+sudo cp /usr/lib/freediams/libquazip.so /usr/local/inria/lib
 
