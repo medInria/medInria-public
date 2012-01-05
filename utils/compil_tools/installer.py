@@ -358,6 +358,8 @@ def _svn_path(project,config):
         user_item=user+"@"
     if scm_protocol == "ssh":
         path = "svn+ssh://"+user_item + source_host +'/'+ source_file
+    elif scm_protocol == "https":
+        path = "https://"+ source_host +'/'+ source_file
     else:
         path = source_host +'/'+ source_file
     return path
@@ -480,12 +482,26 @@ def svn_checkout(project,config):
     #os.makedirs(config.get(project,"destination_dir"))
     #os.chdir()
     svn_command = config.get("commands","svn")
+    scm_protocol =  config.get(project,"scm_protocol")
+    user = config.get(project,"username")
     path = _svn_path(project,config)
     dest_dir =  config.get(project,"destination_dir")
 
-    svn_cmd=[svn_command,'checkout', path, dest_dir]
-    logging.info( svn_cmd)
-    run_and_log(svn_cmd)
+    if scm_protocol == "https":
+        #WARNING: here if the password is asked we can't see it,
+        #the buffered standard output will hide it indefinitely
+        #so we run it in a normal system call
+        svn_cmd = [svn_command,'checkout',"--username",user,path,dest_dir]
+        logging.warning("If you see this you are using svn with https.")
+        logging.warning("The command will be run from a non logged system call.")
+        logging.warning("If a password is prompted you, please allow to save it")
+        logging.info( svn_cmd)
+        os.system(" ".join(svn_cmd))
+    else:
+        svn_cmd=[svn_command,'checkout', path, dest_dir]
+        logging.info( svn_cmd)
+        #os.system(" ".join(svn_cmd))
+        run_and_log(svn_cmd)
     return
 
 def create_dirs(project,config):

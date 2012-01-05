@@ -119,9 +119,15 @@ scm_protocol=ssh
 
 For a repository that does not need authentication, you may drop the scm_protocol and username tag, they default respectively to "" and "git"
 
-For svn, there are 2 scm_protocols: ssh or any value.
-if ssh, you will need a username. if the value is anything else, the program will just concatenate source_host+/+source_file
-Your source_host will need the protocol substring in it. If using ssh, don't put any such string, installer.py does it for you, because of the username.
+For svn, there are 3 scm_protocols: ssh,https or any value.
+if ssh or https, you will need a username. if the value is anything else, the program will just concatenate source_host+/+source_file
+Your source_host will need the protocol substring in it. If using ssh or https, don't put any such string, installer.py does it for you, because of the username.
+
+You will probably have to put your password in the first time you checkout a repositroy using https, but then provided that you allowed svn to store your password, you won't need to intervene anymore.
+
+#WARNING: the first time you checkout on a machine, the script will ask for the password. 
+#Since the buffer is held by the logging system of the installer.py script, https protocol is run in a normal system call and not logged.
+
 
 [ttk-public]
 source_host= svn://scm.gforge.inria.fr/svn
