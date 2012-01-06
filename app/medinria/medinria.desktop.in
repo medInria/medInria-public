@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=MedInria
+GenericName=Medical Imaging Platform
+Comment=Process and Visualize Medical Images
+Icon=@CMAKE_INSTALL_PREFIX@/share/medinria.icns
+Exec=@CMAKE_INSTALL_PREFIX@/bin/medinria
+TryExec=@CMAKE_INSTALL_PREFIX@/bin/medinria
+Terminal=false
+Categories=Graphics;Science;MedicalSoftware;Qt;Viewer;
+
