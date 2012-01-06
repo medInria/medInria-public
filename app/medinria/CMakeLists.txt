@@ -150,6 +150,16 @@ endif(APPLE)
 ## Installation
 ## #################################################################
 
+# medinria.desktop file is used byt Debian/Ubuntu to add the app to the OS menu
+# as CMake doest not provide a way to find out whether we are using Debian/Ubuntu
+# we used this approach that is harmless if we are not.
+if(UNIX AND NOT APPLE)
+  configure_file(medinria.desktop.in medinria.desktop)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/medinria.desktop DESTINATION share/applications)
+  # once the new icon is ready we need to change this
+  install(FILES medinria.icns DESTINATION share)
+endif(UNIX AND NOT APPLE)
+
 install(TARGETS ${PROJECT_NAME}
    BUNDLE DESTINATION bin
   RUNTIME DESTINATION bin)
