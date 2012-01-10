@@ -1,5 +1,0 @@
-#!/bin/sh
-# prerm script
-
-sudo rm -f /usr/local/inria/lib/libquazip.so
-

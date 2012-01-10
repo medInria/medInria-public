@@ -1,6 +1,0 @@
-#!/bin/sh
-# postinst script
-
-set -e
-sudo cp /usr/lib/freediams/libquazip.so /usr/local/inria/lib
-
