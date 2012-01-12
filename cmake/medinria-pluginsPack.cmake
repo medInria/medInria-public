@@ -7,6 +7,7 @@ if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
   execute_process(COMMAND lsb_release -irs
     COMMAND sed "s/ //"
     COMMAND sed "s/Fedora/fc/"
+    COMMAND tr -d '\n' # In Ubuntu the string is Ubuntu\n10.04\n
     OUTPUT_VARIABLE DISTRIB
     OUTPUT_STRIP_TRAILING_WHITESPACE)
   execute_process(COMMAND arch 
