@@ -22,9 +22,9 @@ cmake_minimum_required(VERSION 2.8)
 
 project(medinria)
 
-set(${PROJECT_NAME}_VERSION_MAJOR 1 CACHE STRING "medinria major version number." FORCE)
-set(${PROJECT_NAME}_VERSION_MINOR 9 CACHE STRING "medinria minor version number." FORCE)
-set(${PROJECT_NAME}_VERSION_BUILD 9 CACHE STRING "medinria build version number." FORCE)
+set(${PROJECT_NAME}_VERSION_MAJOR 2 CACHE STRING "medinria major version number." FORCE)
+set(${PROJECT_NAME}_VERSION_MINOR 0 CACHE STRING "medinria minor version number." FORCE)
+set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "medinria build version number." FORCE)
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
 
