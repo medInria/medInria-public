@@ -4,3 +4,4 @@
 # TODO: configure this file with CMake and change the hardcoded install path
 sudo rm -f /usr/local/inria/lib/libquazip.so
 sudo rm -f /usr/share/applications/medinria.desktop
+sudo rm -f /usr/bin/medinria
