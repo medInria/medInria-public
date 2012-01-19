@@ -7,3 +7,5 @@ set -e
 # here we copy it to the proper directory so it is found by Ubuntu
 ln -s /usr/local/inria/share/applications/medinria.desktop /usr/share/applications/medinria.desktop
 
+#also add a link to /usr/bin/medinria, to help command line users.
+ln -s /usr/local/inria/bin/medinria /usr/bin/medinria
