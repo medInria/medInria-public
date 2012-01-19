@@ -1,6 +1,6 @@
-Description of MedINRIA.
+Description of medInria.
 ------------------------
-Medinria is the visualisation and image/mesh processing tool developped at Inria by the teams Asclepios, Athena, Parietal and Visage.
+medInria is the visualisation and image/mesh processing tool developped at Inria by the teams Asclepios, Athena, Parietal and Visage.
 
-This meta package installs all the packages needed by medinria and its plugins.
+This meta package installs all the packages needed by medInria and its plugins.
 
