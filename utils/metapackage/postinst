@@ -3,8 +3,7 @@
 
 set -e
 # TODO: configure this file with CMake and change the hardcoded install path
-sudo cp /usr/lib/freediams/libquazip.so /usr/local/inria/lib
 # the medinria.desktop file is installed by the medinria project
 # here we copy it to the proper directory so it is found by Ubuntu
-sudo cp /usr/local/inria/share/applications/medinria.desktop /usr/share/applications/medinria.desktop
-sudo ln -s /usr/local/inria/bin/medinria /usr/bin/medinria
+ln -s /usr/local/inria/share/applications/medinria.desktop /usr/share/applications/medinria.desktop
+ln -s /usr/local/inria/bin/medinria /usr/bin/medinria

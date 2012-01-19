@@ -298,6 +298,24 @@ void medDatabaseWriter::run ( void )
     QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
 
     int writeSuccess = 0;
+    
+    // Trick similar to medDatabaseImporter
+    QString identifier = d->data->identifier();
+    QString extension = "";
+    
+    if (identifier == "vtkDataMesh") {
+        extension = ".vtk";
+    } else if (identifier == "vtkDataMesh4D") {
+        extension = ".v4d";
+    } else if (identifier == "v3dDataFibers") {
+        extension = ".xml";
+    } else if (identifier.contains("vistal")) {
+        extension = ".dim";
+    } else if (identifier.contains ("CompositeData")) {
+        extension = ".cds";
+    } else if (identifier.contains ("Image")) {
+        extension = ".mha";
+    }    
 
     for ( int i=0; i<writers.size(); i++ )
     {
@@ -313,7 +331,8 @@ void medDatabaseWriter::run ( void )
         qDebug() << "success with " << dataWriter->identifier();
         dataWriter->setData (d->data);
 
-        // Trick for now to choose which format we're writing to.
+        // This is what should be done but for now writers come in a wrong order making analyze the default (and it doesn't handle well orientation matrices
+        /*
         QStringList extensions = dataWriter->supportedFileExtensions();
         QString extension;
         if ( extensions.isEmpty() )
@@ -327,6 +346,8 @@ void medDatabaseWriter::run ( void )
         {
             extension = extensions[0];
         }
+        */
+        
         QString imageFileName = imageFileNameBase + extension;
         qDebug() << "trying to write in file : "<< medStorage::dataLocation() + imageFileName;
 
