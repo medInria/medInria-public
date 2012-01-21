@@ -32,10 +32,12 @@ for i in $(ls PlugIns | grep -E 'dylib' ); do
 		install_name_tool -change $libname @executable_path/../Frameworks/`basename $libname` PlugIns/$i
 	done
 
-	for j in $( otool -L PlugIns/$i | sed "1d" | grep -E @QT_LIBRARY_DIR@ | cut -d " " -f 1 ); do
+	for j in $( otool -L PlugIns/$i | sed "1d" | grep -E .framework | grep -i -E 'Qt|phonon' | cut -d " " -f 1 ); do
 		#Depending on Qt SDK, paths may be relative or not
-		tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
-		install_name_tool -change $j @executable_path/../Frameworks/$tmpVal PlugIns/$i
+		#tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
+		if [ "`echo $j | grep executable_path`" == "" ]; then
+			install_name_tool -change $j @executable_path/../Frameworks/$j PlugIns/$i
+		fi
     done
     
     for libname in `otool -L PlugIns/$i | sed "1d" | grep dcmtk | cut -d " " -f 1`
@@ -81,10 +83,12 @@ for i in $( ls Frameworks | grep -E 'dylib' ); do
 	done
 
 	#Qt stuff (should hopefully be there already)
-	for j in $( otool -L Frameworks/$i | sed "1d" | grep -E @QT_LIBRARY_DIR@ | cut -d " " -f 1 ); do
+	for j in $( otool -L Frameworks/$i | sed "1d" | grep -E .framework | grep -i -E 'Qt|phonon' | cut -d " " -f 1 ); do
 		#Depending on Qt SDK, paths may be relative or not
-		tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
-		install_name_tool -change $j @executable_path/../Frameworks/$tmpVal Frameworks/$i
+		#tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
+		if [ "`echo $j | grep executable_path`" == "" ]; then
+			install_name_tool -change $j @executable_path/../Frameworks/$j Frameworks/$i
+		fi
     done
 done; 
 
