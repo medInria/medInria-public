@@ -80,6 +80,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QHBoxLayout * userButtonsLayout = new QHBoxLayout(d->userWidget);
     medHomepageButton * helpButton = new medHomepageButton ( this );
     helpButton->setText ( "Help" );
+    helpButton->setToolTip(tr("Open Online Documentation"));
     helpButton->setMinimumHeight ( 30 );
     helpButton->setMaximumWidth ( 150 );
     helpButton->setMinimumWidth ( 150 );
