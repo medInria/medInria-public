@@ -6,7 +6,7 @@ if(UNIX AND NOT APPLE)
   
   set(CPACK_PACKAGE_NAME "medinria-all")
   set(CPACK_PACKAGE_VENDOR "Inria")
-  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "MedInria meta package.")
+  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "medInria meta package.")
 
   set(CPACK_PACKAGE_VERSION_MAJOR "2")
   set(CPACK_PACKAGE_VERSION_MINOR "0")
