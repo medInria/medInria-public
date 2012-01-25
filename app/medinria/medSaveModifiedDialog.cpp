@@ -71,13 +71,15 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     hlayout->addWidget(d->saveButton);
     hlayout->addWidget(d->doneButton);
 
-    QVBoxLayout *layout = new QVBoxLayout;
+    QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(label);
     layout->addWidget(d->treeWidget);
     layout->addLayout(hlayout);
 
+    medSaveModifiedDialogCheckListItem * checkListItem;
+
     foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items())
-        medSaveModifiedDialogCheckListItem * checkListItem = new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), item->name(), item->studyName(), item->seriesName(), item->file(), item->thumb());
+        checkListItem = new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), item->name(), item->studyName(), item->seriesName(), item->file(), item->thumb());
 
     d->treeWidget->resizeColumnToContents(0);
 
@@ -85,7 +87,6 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     connect (d->doneButton,SIGNAL(clicked()), this, SLOT(close()));
     connect (medDataManager::instance(), SIGNAL(dataAdded(const medDataIndex &)),this, SLOT(updateCounter()) );
 
-    this->setLayout(layout);
     setModal(true);
 }
 
