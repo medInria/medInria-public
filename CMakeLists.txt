@@ -32,6 +32,8 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
+add_definitions(-DMEDINRIA_VERSION="${${PROJECT_NAME}_VERSION}")
+
 if(WIN32)
   option(MED_SHOW_CONSOLE "Show console at runtime (mainly for debugging)" "FALSE")
   SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")

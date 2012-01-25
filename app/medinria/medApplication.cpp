@@ -37,7 +37,8 @@ medApplication::medApplication(int & argc, char**argv) :
         d(new medApplicationPrivate)
 {
     this->setApplicationName("medinria");
-    this->setApplicationVersion("0.0.1");
+    qDebug() << "Version:" << MEDINRIA_VERSION;
+    this->setApplicationVersion(MEDINRIA_VERSION);
     this->setOrganizationName("inria");
     this->setOrganizationDomain("fr");
     this->setWindowIcon(QIcon(":/medinria.ico"));
