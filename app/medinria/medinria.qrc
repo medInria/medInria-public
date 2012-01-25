@@ -96,6 +96,8 @@
         <file>pixmaps/toolbox-header.png</file>
         <file>pixmaps/tabwidget-pane.png</file>
         <file>pixmaps/checkbox.png</file>
+        <file>pixmaps/checkbox2.png</file>
+        <file>pixmaps/checkbox-checked2.png</file>
         <file>pixmaps/checkbox-checked.png</file>
         <file>pixmaps/checkbox-partial.png</file>
         <file>pixmaps/radio.png</file>
