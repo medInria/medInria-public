@@ -122,8 +122,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 //     QLabel * textLabel = new QLabel;
 
     QTextEdit * textEdit = new QTextEdit(this);
-    textEdit->setHtml ( "<b>medINRIA</b> is a multi-platform medical image processing and visualization software,\
-                      and it's <b>free</b>. Through an intuitive user interface, <b>medINRIA</b> offers from standard \
+    textEdit->setHtml ( "<b>medInria</b> is a multi-platform medical image processing and visualization software,\
+                      and it's <b>free</b>. Through an intuitive user interface, <b>medInria</b> offers from standard \
                       to cutting-edge processing functionalities for your medical images such as 2D/3D/4D image visualization, \
                       image registration, or diffusion MR processing and tractography." );
     textEdit->setReadOnly ( true );
@@ -146,8 +146,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
     aboutTextEdit->setHtml ( "<br/><br/>\
-                              medINRIA is the medical imaging platform developed at INRIA<br/><br/>\
-                              <center>INRIA, Copyright 2011</center><br/><br/><br/>" );
+                              medInria is the medical imaging platform developed at Inria<br/><br/>\
+                              <center>Inria, Copyright 2011</center><br/><br/><br/>" );
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
     QTextBrowser * aboutAuthorTextBrowser = new QTextBrowser(this);
@@ -218,7 +218,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //Setup the startup checkbox
     d->showOnStartupCheckBox = new QCheckBox ( this );
     d->showOnStartupCheckBox->setCheckState(Qt::Checked);
-    d->showOnStartupCheckBox->setText ( "Start medINRIA on homepage ?" );
+    d->showOnStartupCheckBox->setText ( "Start medInria on homepage ?" );
     d->showOnStartupCheckBox->setFocusPolicy ( Qt::NoFocus );
     d->showOnStartupCheckBox->setProperty ( "pos", QPoint ( this->width() - 200 ,  this->height() - 30 ) );
     if ( medSettingsManager::instance()->value ( "startup","default_starting_area" ).toInt() )

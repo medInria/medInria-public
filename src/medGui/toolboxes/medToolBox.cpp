@@ -259,6 +259,7 @@ void medToolBox::onAboutButtonClicked()
         qDebug() << "about plugin" << d->plugin->name();
 
         QDialog * dial = new QDialog(this);
+        dial->setWindowTitle("medInria");
         dtkAboutPlugin * apWidget = new dtkAboutPlugin(d->plugin,dial);
 
         QVBoxLayout * layout = new QVBoxLayout(dial);
