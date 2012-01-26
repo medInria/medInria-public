@@ -41,12 +41,12 @@ find_package(ITK REQUIRED)
   endif(NOT ITK_USE_REVIEW_STATISTICS)
 include(${ITK_USE_FILE})
 
-find_package(medinria REQUIRED)
-include(${medinria_USE_FILE})
+find_package(medInria REQUIRED)
+include(${medInria_USE_FILE})
 
 #include_directories(../dtkItkLogForwarder)
-find_package(medinria-plugins REQUIRED)
-include(${medinria-plugins_USE_FILE})
+find_package(medInria-plugins REQUIRED)
+include(${medInria-plugins_USE_FILE})
 
 
 ## #################################################################

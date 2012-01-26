@@ -1,18 +1,18 @@
 #! /bin/bash
 
 \rm -fr @CMAKE_INSTALL_PREFIX@/PackageRootDir
-mkdir -p @CMAKE_INSTALL_PREFIX@/PackageRootDir/Applications/medinria.app/Contents/{Frameworks,PlugIns}
-mkdir -p @CMAKE_INSTALL_PREFIX@/PackageRootDir/Applications/medinria.app/Contents/Frameworks/DCMTK
+mkdir -p @CMAKE_INSTALL_PREFIX@/PackageRootDir/Applications/medInria.app/Contents/{Frameworks,PlugIns}
+mkdir -p @CMAKE_INSTALL_PREFIX@/PackageRootDir/Applications/medInria.app/Contents/Frameworks/DCMTK
 
-cd @CMAKE_INSTALL_PREFIX@/PackageRootDir/Applications/medinria.app/Contents
+cd @CMAKE_INSTALL_PREFIX@/PackageRootDir/Applications/medInria.app/Contents
 
 for i in $( otool -L @CMAKE_INSTALL_PREFIX@/plugins/*.dylib 2> /dev/null \
-| sort -u | grep -i -E '@medinria_DIR@|@dtk_DIR@|ttk|itk|vtk' | cut -d " " -f 1 ); do
+| sort -u | grep -i -E '@medInria_DIR@|@dtk_DIR@|ttk|itk|vtk' | cut -d " " -f 1 ); do
 	cp -np $i Frameworks/ 2> /dev/null;
 done
 
 for i in $( otool -L Frameworks/* 2> /dev/null \
-| sort -u | grep -i -E '@medinria_DIR@|@dtk_DIR@|ttk|itk|vtk' | cut -d " " -f 1 ); do
+| sort -u | grep -i -E '@medInria_DIR@|@dtk_DIR@|ttk|itk|vtk' | cut -d " " -f 1 ); do
 	cp -np $i Frameworks 2> /dev/null;
 done
 
@@ -27,7 +27,7 @@ for i in $(ls PlugIns | grep -E 'dylib' ); do
 		install_name_tool -id @executable_path/../PlugIns/$i PlugIns/$i
 
 	# ITK, VTK stuff
-	for libname in `otool -L PlugIns/$i | sed "1d" | grep -i -E '@medinria_DIR@|@dtk_DIR@|ttk|itk|vtk' | cut -d " " -f 1`
+	for libname in `otool -L PlugIns/$i | sed "1d" | grep -i -E '@medInria_DIR@|@dtk_DIR@|ttk|itk|vtk' | cut -d " " -f 1`
 	do
 		install_name_tool -change $libname @executable_path/../Frameworks/`basename $libname` PlugIns/$i
 	done
@@ -70,7 +70,7 @@ for i in $( ls Frameworks | grep -E 'dylib' ); do
 		#update library id
 		install_name_tool -id @executable_path/../Frameworks/$i Frameworks/$i
 		#update library links
-		for j in $( otool -L Frameworks/$i | sed "1d" | grep -i -E '@medinria_DIR@|@dtk_DIR@|ttk|itk|vtk' | cut -d " " -f 1 ); do
+		for j in $( otool -L Frameworks/$i | sed "1d" | grep -i -E '@medInria_DIR@|@dtk_DIR@|ttk|itk|vtk' | cut -d " " -f 1 ); do
 			install_name_tool -change \
 			$j @executable_path/../Frameworks/`echo $j | rev | cut -d "/" -f 1 | rev` \
 			Frameworks/$i

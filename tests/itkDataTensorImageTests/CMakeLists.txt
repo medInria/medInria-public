@@ -2,7 +2,7 @@ project (itkDataTensorImageTests)
 
 # we need the directory with the test data
 FIND_PATH(MEDINRIA_TEST_DATA_ROOT MedINRIA_test_data.txt
-  DOC "The directory where medinria test data is located. It is required by the Testing tree."
+  DOC "The directory where medInria test data is located. It is required by the Testing tree."
   )
 
 if(NOT MEDINRIA_TEST_DATA_ROOT)
@@ -11,11 +11,11 @@ else()
     # path where the tests will be
     SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 
-    find_package(medinria REQUIRED)
-    include(${medinria_USE_FILE})
+    find_package(medInria REQUIRED)
+    include(${medInria_USE_FILE})
 
-    find_package(medinria-plugins REQUIRED)
-    include(${medinria-plugins_USE_FILE})
+    find_package(medInria-plugins REQUIRED)
+    include(${medInria-plugins_USE_FILE})
 
     find_package(ITK REQUIRED)
     include(${ITK_USE_FILE})
@@ -23,7 +23,7 @@ else()
     find_package(TTK REQUIRED)
     include(${TTK_USE_FILE})
 
-   SET(MEDINRIA_PLUGINS_PATH "${medinria-plugins_DIR}/plugins")
+   SET(MEDINRIA_PLUGINS_PATH "${medInria-plugins_DIR}/plugins")
 
     # configure file with defines for MEDINRIA_TEST_DATA_ROOT
     CONFIGURE_FILE( itkDataTensorImageTestConfig.h.in itkDataTensorImageTestConfig.h )

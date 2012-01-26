@@ -93,7 +93,7 @@ void itkDataTensorImageTest::initTestCase()
     if (!dataDir.exists())
         QFAIL("Medinria data directory is required to run this test.");
 
-     // load medinria plugins, we will need data types, readers and writers
+     // load medInria plugins, we will need data types, readers and writers
      dtkPluginManager::instance()->setPath(pluginsPath);
      dtkPluginManager::instance()->initialize();
 }

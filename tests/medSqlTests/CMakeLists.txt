@@ -6,7 +6,7 @@ project(medSqlTests)
 
 # we need the directory with the test data
 FIND_PATH(MEDINRIA_TEST_DATA_ROOT MedINRIA_test_data.txt
-  DOC "The directory where medinria test data is located. It is required by the Testing tree."
+  DOC "The directory where medInria test data is located. It is required by the Testing tree."
   )
 
 if(NOT MEDINRIA_TEST_DATA_ROOT)
@@ -19,8 +19,8 @@ else()
     # configure file with defines for MEDINRIA_TEST_DATA_ROOT
     CONFIGURE_FILE( medSqlTest.config.h.cmake.in medSqlTest.config.h )
 
-    find_package(medinria REQUIRED)
-    include(${medinria_USE_FILE})
+    find_package(medInria REQUIRED)
+    include(${medInria_USE_FILE})
 
     ## #################################################################
     ## Setup CTest test wrapping a QTest (test with Qt testing framework)

@@ -35,11 +35,11 @@ include(dtkPlugin)
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
-find_package(medinria REQUIRED)
-include(${medinria_USE_FILE})
+find_package(medInria REQUIRED)
+include(${medInria_USE_FILE})
 
-find_package(medinria-plugins REQUIRED)
-include(${medinria-plugins_USE_FILE})
+find_package(medInria-plugins REQUIRED)
+include(${medInria-plugins_USE_FILE})
 
 ## #################################################################
 ## Input

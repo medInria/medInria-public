@@ -39,8 +39,8 @@ include(${ITK_USE_FILE})
 find_package(vtkINRIA3D REQUIRED) # for itkMultiThreadedImageIO
 include(${vtkINRIA3D_USE_FILE})
 
-find_package(medinria REQUIRED)
-include(${medinria_USE_FILE})
+find_package(medInria REQUIRED)
+include(${medInria_USE_FILE})
 
 find_package(VTK)
 include(${VTK_USE_FILE})
