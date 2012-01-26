@@ -39,10 +39,16 @@ public:
 
     void updateQuickAccessMenu(void);
     void resizeEvent( QResizeEvent * event );
-    
+
 public slots:
     void setWallScreen(bool full);
     void setFullScreen(bool full);
+
+    /**
+     * @brief Switches from the Fullscreen mode to the normal mode.
+     *
+     */
+    void switchFullScreen(void);
 
     void switchToBrowserArea(void);
     void switchToViewerArea(void);

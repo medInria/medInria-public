@@ -140,16 +140,10 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect (medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &, const QString&)),
              this,SLOT(onOpenFile(const medDataIndex&,const QString&)));
 
-    // Setting up menu
-    QAction *windowFullScreenAction = new QAction ( "Toggle fullscreen mode", this );
-    windowFullScreenAction->setShortcut ( Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_F );
-    windowFullScreenAction->setToolTip ( "Toggle fullscreen mode" );
-    windowFullScreenAction->setCheckable ( true );
-    windowFullScreenAction->setChecked ( false );
-
-    connect ( windowFullScreenAction, SIGNAL ( toggled ( bool ) ), this, SLOT ( setFullScreen ( bool ) ) );
-
-    this->addAction ( windowFullScreenAction );
+    // Setting up shortcuts
+    QShortcut * fullscreenShorcut = new QShortcut(Qt::Key_F11,this);
+    fullscreenShorcut->setContext(Qt::ApplicationShortcut);
+    connect ( fullscreenShorcut, SIGNAL ( activated ( ) ), this, SLOT ( switchFullScreen () ) );
 
     // Setting up widgets
     d->settingsEditor = NULL;
@@ -435,6 +429,14 @@ void medMainWindow::setWallScreen ( bool full )
 void medMainWindow::setFullScreen ( bool full )
 {
     if ( full )
+        this->showFullScreen();
+    else
+        this->showNormal();
+}
+
+void medMainWindow::switchFullScreen ( )
+{
+    if ( !this->isFullScreen())
         this->showFullScreen();
     else
         this->showNormal();
