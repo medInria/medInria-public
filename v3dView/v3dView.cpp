@@ -253,7 +253,7 @@ public:
 
     QWidget    *widget;
     QSlider    *slider;
-    QPushButton *anchorButton;
+    //QPushButton *anchorButton;
     QPushButton *linkButton;
     QPushButton *linkWLButton;
     QPushButton *playButton;
@@ -372,17 +372,17 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     d->slider->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Fixed );
     d->slider->setFocusPolicy ( Qt::NoFocus );
 
-    d->anchorButton = new QPushButton ( d->widget );
-    d->anchorButton->setIcon ( QIcon ( ":/icons/anchor.png" ) );
-    //d->anchorButton->setText("a");
-    d->anchorButton->setCheckable ( true );
-    d->anchorButton->setMaximumHeight ( 16 );
-    d->anchorButton->setMaximumWidth ( 16 );
-    d->anchorButton->setFocusPolicy ( Qt::NoFocus );
-    d->anchorButton->setSizePolicy ( QSizePolicy::Fixed, QSizePolicy::Fixed );
-    d->anchorButton->setObjectName ( "tool" );
+//    d->anchorButton = new QPushButton ( d->widget );
+//    d->anchorButton->setIcon ( QIcon ( ":/icons/anchor.png" ) );
+//    //d->anchorButton->setText("a");
+//    d->anchorButton->setCheckable ( true );
+//    d->anchorButton->setMaximumHeight ( 16 );
+//    d->anchorButton->setMaximumWidth ( 16 );
+//    d->anchorButton->setFocusPolicy ( Qt::NoFocus );
+//    d->anchorButton->setSizePolicy ( QSizePolicy::Fixed, QSizePolicy::Fixed );
+//    d->anchorButton->setObjectName ( "tool" );
 
-    connect ( d->anchorButton, SIGNAL ( clicked ( bool ) ), this, SIGNAL ( becomeDaddy ( bool ) ) );
+//    connect ( d->anchorButton, SIGNAL ( clicked ( bool ) ), this, SIGNAL ( becomeDaddy ( bool ) ) );
 
     d->linkButton = new QPushButton ( d->widget );
     d->linkButton->setIcon ( QIcon ( ":/icons/link.png" ) );
@@ -444,7 +444,7 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     connect ( d->closeButton, SIGNAL ( clicked() ), this, SIGNAL ( closing() ) );
 
     QButtonGroup *toolButtonGroup = new QButtonGroup ( d->widget );
-    toolButtonGroup->addButton ( d->anchorButton );
+//    toolButtonGroup->addButton ( d->anchorButton );
     toolButtonGroup->addButton ( d->linkButton );
     toolButtonGroup->setExclusive ( false );
 
@@ -465,7 +465,7 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     toolsLayout->setSpacing ( 0 );
     toolsLayout->addWidget ( d->playButton );
     toolsLayout->addWidget ( d->slider );
-    toolsLayout->addWidget ( d->anchorButton );
+//    toolsLayout->addWidget ( d->anchorButton );
     toolsLayout->addWidget ( d->linkButton );
     toolsLayout->addWidget ( d->linkWLButton );
     toolsLayout->addWidget ( d->fullScreenButton );
@@ -1584,7 +1584,7 @@ void v3dView::onZSliderValueChanged ( int value )
 
 void v3dView::onDaddyPropertySet ( const QString &value )
 {
-    QSignalBlocker anchorBlocker ( d->anchorButton );
+//    QSignalBlocker anchorBlocker ( d->anchorButton );
 
     bool boolValue = false;
     if ( value == "true" )
@@ -1592,7 +1592,7 @@ void v3dView::onDaddyPropertySet ( const QString &value )
         boolValue = true;
     }
 
-    d->anchorButton->setChecked ( boolValue );
+//    d->anchorButton->setChecked ( boolValue );
     emit ( changeDaddy ( boolValue ) );
 }
 
