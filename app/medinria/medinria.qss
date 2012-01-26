@@ -118,22 +118,12 @@ QCheckBox::indicator {
 }
 
 QCheckBox::indicator:unchecked {
-    image: url(:/pixmaps/checkbox2.png);
-}
-
-QCheckBox::indicator:checked {
-    image: url(:/pixmaps/checkbox-checked2.png);
-}
-
-/*
-QCheckBox::indicator:unchecked {
-    image: url(:/pixmaps/checkbox-checked.png);
+    image: url(:/pixmaps/checkbox.png);
 }
 
 QCheckBox::indicator:checked {
     image: url(:/pixmaps/checkbox-checked.png);
 }
-*/
 
 QCheckBox::indicator:indeterminate {
     image: url(:/pixmaps/checkbox-partial.png);
