@@ -1,4 +1,4 @@
-### medinriaUse.cmake.in --- 
+### medInriaUse.cmake.in --- 
 ## 
 ## Author: Julien Wintz
 ## Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,14 +17,14 @@
 ## 
 ######################################################################
 
-if(NOT medinria_USE_FILE_INCLUDED)
+if(NOT medInria_USE_FILE_INCLUDED)
 
-   set(medinria_USE_FILE_INCLUDED 1)
+   set(medInria_USE_FILE_INCLUDED 1)
 
-   include_directories(${medinria_INCLUDE_DIRS})
+   include_directories(${medInria_INCLUDE_DIRS})
 
-   link_directories(${medinria_LIBRARY_DIRS})
+   link_directories(${medInria_LIBRARY_DIRS})
 
-   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${medinria_CMAKE_DIRS})
+   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${medInria_CMAKE_DIRS})
    
-endif(NOT medinria_USE_FILE_INCLUDED)
+endif(NOT medInria_USE_FILE_INCLUDED)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 '''
 This scripts install all qt dependencies we have for a running
-medinria
+medInria
 '''
 import sys,os,shutil
 

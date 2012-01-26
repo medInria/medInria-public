@@ -181,7 +181,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessButton->setFocusPolicy ( Qt::NoFocus );
     d->quickAccessButton->setMinimumHeight(31);
     d->quickAccessButton->setStyleSheet("border: 0px;");
-    d->quickAccessButton->setIcon(QIcon(":medinria.ico"));
+    d->quickAccessButton->setIcon(QIcon(":medInria.ico"));
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
     d->quickAccessButton->setText ( "Workspaces access menu" );
     connect ( d->quickAccessButton,  SIGNAL ( clicked() ), this, SLOT ( onShowQuickAccess() ) );

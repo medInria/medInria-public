@@ -28,7 +28,7 @@
 class medPluginManagerPrivate;
 
 /**
- * @brief Load and unload plugins for medinria.
+ * @brief Load and unload plugins for medInria.
  *
 */
 class MEDCORE_EXPORT medPluginManager : public dtkPluginManager

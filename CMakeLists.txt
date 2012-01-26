@@ -20,11 +20,11 @@
 # Require 2.8 for correct behaviour of if( FALSE ).
 cmake_minimum_required(VERSION 2.8)
 
-project(medinria)
+project(medInria)
 
-set(${PROJECT_NAME}_VERSION_MAJOR 2 CACHE STRING "medinria major version number." FORCE)
-set(${PROJECT_NAME}_VERSION_MINOR 0 CACHE STRING "medinria minor version number." FORCE)
-set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "medinria build version number." FORCE)
+set(${PROJECT_NAME}_VERSION_MAJOR 2 CACHE STRING "medInria major version number." FORCE)
+set(${PROJECT_NAME}_VERSION_MINOR 0 CACHE STRING "medInria minor version number." FORCE)
+set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "medInria build version number." FORCE)
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
 
@@ -44,11 +44,11 @@ enable_testing()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(medinriaBuild)
+include(medInriaBuild)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-include(medinriaPack)
+include(medInriaPack)
 
 #configure ctest variables
 option(BUILD_REPORTING "Build Reporting")

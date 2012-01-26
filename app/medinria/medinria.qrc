@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>LICENSE.txt</file>
-        <file>medinria.ico</file>
+        <file>medInria.ico</file>
         <file>icons/about.png</file>
         <file>icons/quit.png</file>
         <file>icons/anchor.png</file>
@@ -80,7 +80,7 @@
         <file>icons/zoom_out.png</file>
         <file>icons/backward.png</file>
         <file>icons/forward.png</file>
-        <file>medinria.qss</file>
+        <file>medInria.qss</file>
         <file>pixmaps/unknown.jpg</file>
         <file>pixmaps/frame.png</file>
         <file>pixmaps/scrollbar-horizontal-addline.png</file>
@@ -113,9 +113,9 @@
         <file>pixmaps/database_navigator_item_count.png</file>
         <file>pixmaps/database_navigator_item_label.png</file>
         <file>pixmaps/mediseen-logo.png</file>
-        <file>pixmaps/medinria-logo.png</file>
-        <file>pixmaps/medinria-logo-homepage.png</file>
-        <file>pixmaps/medinria-splash.png</file>
+        <file>pixmaps/medInria-logo.png</file>
+        <file>pixmaps/medInria-logo-homepage.png</file>
+        <file>pixmaps/medInria-splash.png</file>
         <file>icons/settings.png</file>
         <file>icons/stop.png</file>
         <file>icons/pause.png</file>

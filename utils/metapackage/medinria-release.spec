@@ -83,9 +83,9 @@ install -d -m755 \
 # Yum .repo files
 #%{__install} -p -m644 %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} \
 #    $RPM_BUILD_ROOT%{_sysconfdir}/yum.repos.d
-cat > $RPM_BUILD_ROOT%{_sysconfdir}/yum.repos.d/medinria.repo <<EOF
-[medinria]
-name=medinria for \$releasever - \$basearch
+cat > $RPM_BUILD_ROOT%{_sysconfdir}/yum.repos.d/medInria.repo <<EOF
+[medInria]
+name=medInria for \$releasever - \$basearch
 baseurl=http://med.inria.fr/yum/fedora/\$releasever/\$basearch/
 enabled=1
 gpgcheck=0

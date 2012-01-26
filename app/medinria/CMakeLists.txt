@@ -17,7 +17,7 @@
 ##
 ######################################################################
 
-project(medinria)
+project(medInria)
 
 ## #################################################################
 ## Sources
@@ -71,7 +71,7 @@ set(${PROJECT_NAME}_SOURCES
   medSplashScreen.cpp
   )
 
-set(${PROJECT_NAME}_RESOURCES medinria.qrc)
+set(${PROJECT_NAME}_RESOURCES medInria.qrc)
 
 # Include header files for Visual Studio.
 FILE(GLOB ${PROJECT_NAME}_HEADERS_ALL *.h )
@@ -150,12 +150,12 @@ endif(APPLE)
 ## Installation
 ## #################################################################
 
-# medinria.desktop file is used by Linux xdg compliant systems to add the app to the OS menu
+# medInria.desktop file is used by Linux xdg compliant systems to add the app to the OS menu
 if(UNIX AND NOT APPLE)
-  configure_file(medinria.desktop.in medinria.desktop)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/medinria.desktop DESTINATION share/applications)
+  configure_file(medInria.desktop.in medInria.desktop)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/medInria.desktop DESTINATION share/applications)
   # once the new icon is ready we need to change this
-  install(FILES medinria.png DESTINATION share/icons)
+  install(FILES medInria.png DESTINATION share/icons)
 endif(UNIX AND NOT APPLE)
 
 install(TARGETS ${PROJECT_NAME}

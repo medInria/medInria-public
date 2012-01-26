@@ -59,7 +59,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->navigationWidget = new QWidget ( this );
     d->navigationWidget->setMinimumWidth ( 250 );
 
-    //Setup the widget where the medinria general information are displayed
+    //Setup the widget where the medInria general information are displayed
     d->infoWidget = new QWidget ( this );
     d->infoWidget->setMinimumWidth ( 400 );
     d->infoWidget->setMinimumHeight ( 500 );
@@ -115,10 +115,10 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //no need to set the layout the userWidget is the parent of the layout already.
 //    d->userWidget->setLayout ( userButtonsLayout );
 
-    // Info widget : medinria logo, medinria description, etc. QtWebkit ?
+    // Info widget : medInria logo, medInria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
-    QLabel * medinriaLabel = new QLabel ( this );
-    medinriaLabel->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ) );
+    QLabel * medInriaLabel = new QLabel ( this );
+    medInriaLabel->setPixmap ( QPixmap ( ":pixmaps/medInria-logo-homepage.png" ) );
 //     QLabel * textLabel = new QLabel;
 
     QTextEdit * textEdit = new QTextEdit(this);
@@ -129,20 +129,20 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     textEdit->setReadOnly ( true );
     textEdit->setFocusPolicy ( Qt::NoFocus );
     textEdit->setMaximumHeight ( 200 );
-    infoLayout->insertWidget ( 0,medinriaLabel );
+    infoLayout->insertWidget ( 0,medInriaLabel );
     infoLayout->insertWidget ( 1, textEdit );
     infoLayout->addStretch();
 
     //no need to set the layout, the infoWidget is the parent of the layout already.
 //    d->infoWidget->setLayout ( infoLayout );
-    d->infoWidget->setMaximumHeight ( medinriaLabel->height() + textEdit->height() );
+    d->infoWidget->setMaximumHeight ( medInriaLabel->height() + textEdit->height() );
 
     //About widget
     QVBoxLayout * aboutLayout = new QVBoxLayout(d->aboutWidget);
     d->aboutTabWidget = new QTabWidget(this);
 
-    QLabel * medinriaLabel2 = new QLabel ( this );
-    medinriaLabel2->setPixmap ( QPixmap ( ":pixmaps/medinria-logo-homepage.png" ) );
+    QLabel * medInriaLabel2 = new QLabel ( this );
+    medInriaLabel2->setPixmap ( QPixmap ( ":pixmaps/medInria-logo-homepage.png" ) );
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
     aboutTextEdit->setHtml ( "<br/><br/>\
@@ -177,7 +177,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->aboutTabWidget->addTab ( aboutAuthorTextBrowser, "Authors" );
     d->aboutTabWidget->addTab ( aboutLicenseTextEdit, "License" );
 
-    aboutLayout->addWidget ( medinriaLabel2 );
+    aboutLayout->addWidget ( medInriaLabel2 );
     aboutLayout->addWidget ( d->aboutTabWidget );
     aboutLayout->addLayout ( aboutButtonLayout );
     aboutLayout->addStretch();
