@@ -93,6 +93,27 @@ public slots:
     **/
     void load(const QString& path);
 
+    /**
+     * @brief Overload existing showFullScreen().
+     *
+     * Allows the update of the fullScreen button.
+     */
+    void showFullScreen();
+
+    /**
+     * @brief Overload existing showNormal().
+     *
+     * Allows the update of the fullScreen button.
+     */
+    void showNormal();
+
+    /**
+     * @brief Overload existing showMaximized().
+     *
+     * Allows the update of the fullScreen button.
+     */
+    void showMaximized();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
