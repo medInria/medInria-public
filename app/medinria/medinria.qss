@@ -17,6 +17,16 @@
 ;;
 */
 
+
+/**
+* QToolTip
+*/
+QToolTip {
+    color: #2a2a2a;
+    border: 1px solid #4b4b4b;
+}
+
+
 /**
  * QTableView
  */
