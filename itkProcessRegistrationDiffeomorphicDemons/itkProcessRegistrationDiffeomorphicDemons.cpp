@@ -212,7 +212,7 @@ template <typename PixelType>
     resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
     resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
     resampler->SetDefaultPixelValue( 0 );
-    
+
     try {
         resampler->Update();
     }
@@ -228,7 +228,7 @@ template <typename PixelType>
 
     if (proc->output())
     proc->output()->setData (result);
- 
+
     return 0;
 }
 

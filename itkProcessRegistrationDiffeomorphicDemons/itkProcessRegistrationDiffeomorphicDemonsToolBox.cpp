@@ -162,7 +162,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
         process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistrationDiffeomorphicDemons");
         this->parentToolBox()->setProcess(process);
     }
-    
+
     dtkAbstractData *fixedData = this->parentToolBox()->fixedData();
     dtkAbstractData *movingData = this->parentToolBox()->movingData();
 
@@ -175,15 +175,24 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
 
     // Many choices here
 
-    itkProcessRegistrationDiffeomorphicDemons *process_Registration = dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process);
-    process_Registration->setDisplacementFieldStandardDeviation(d->disFieldStdDevBox->value());
+    itkProcessRegistrationDiffeomorphicDemons *process_Registration =
+            dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process);
+    if (!process_Registration)
+    {
+        qWarning() << "registration process doesn't exist" ;
+        return;
+    }
+    process_Registration->setDisplacementFieldStandardDeviation(
+                d->disFieldStdDevBox->value());
     process_Registration->setGradientType(d->gradientTypeBox->currentIndex());
     process_Registration->setUpdateRule(d->updateRuleBox->currentIndex());
     process_Registration->setUpdateFieldStandardDeviation(d->updateFieldStdDevBox->value());
     process_Registration->setMaximumUpdateLength(d->maxStepLengthBox->value());
     process_Registration->setUseHistogramMatching(d->useHistogramBox->isChecked());
     try {
-        process_Registration->setNumberOfIterations(rpi::StringToVector<unsigned int>(d->iterationsBox->text().toStdString()));
+        process_Registration->setNumberOfIterations(
+                    rpi::StringToVector<unsigned int>(
+                        d->iterationsBox->text().toStdString()));
     }
     catch ( std::exception & )
     {
@@ -206,10 +215,12 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
     process->setInput(movingData, 1);
 
     medRunnableProcess *runProcess = new medRunnableProcess;
+
     runProcess->setProcess (process);
 
     d->progression_stack->addJobItem(runProcess, tr("Progress:"));
     d->progression_stack->setActive(runProcess,true);
+    d->progression_stack->disableCancel(runProcess);
     connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
     connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
     connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
