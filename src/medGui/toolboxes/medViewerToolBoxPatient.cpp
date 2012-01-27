@@ -77,6 +77,7 @@ int medViewerToolBoxPatient::addChooseItem()
 {
     int itemId = d->ChooserItemId;
     d->combo->addItem(tr("Choose patient"), itemId);
+	d->combo->setToolTip(tr("Choose a patient from the database"));
     return itemId;
 }
 
