@@ -200,6 +200,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect ( d->quitButton, SIGNAL ( triggered() ), this, SLOT ( onQuit() ) );
     connect(d->quitButton, SIGNAL( triggered()), this, SLOT (onSaveModified()));
     d->quitButton->setMaximumWidth ( 31 );
+    d->quitButton->setToolTip(tr("Close medInria"));
 
     //Setup quit message
     d->quitMessage = new QWidget ( this );
