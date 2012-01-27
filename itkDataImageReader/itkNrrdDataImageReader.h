@@ -1,7 +1,7 @@
 #ifndef ITKNRRDDATAIMAGEREADER_H
 #define ITKNRRDDATAIMAGEREADER_H
 
-#include <itkDataImageReaderBase.h>
+#include <itkDataImageReaderBase/itkDataImageReaderBase.h>
 #include <itkDataImageReaderPluginExport.h>
 
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkNrrdDataImageReader: public itkDataImageReaderBase {

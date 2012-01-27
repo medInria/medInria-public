@@ -3,10 +3,12 @@
 
 #include <dtkCore/dtkAbstractDataReader.h>
 
-#include "itkDataImageReaderPluginExport.h"
+#include "itkDataImageReaderBaseExport.h"
 #include "itkImageIOBase.h"
 
-class ITKDATAIMAGEREADERPLUGIN_EXPORT itkDataImageReaderBase: public dtkAbstractDataReader {
+class ITKDATAIMAGEREADERBASE_EXPORT itkDataImageReaderBase:
+        public dtkAbstractDataReader
+{
     Q_OBJECT
 
 public:

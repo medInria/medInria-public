@@ -1,7 +1,7 @@
 #ifndef ITKGIPLDATAIMAGEREADER_H
 #define ITKGIPLDATAIMAGEREADER_H
 
-#include <itkDataImageReaderBase.h>
+#include <itkDataImageReaderBase/itkDataImageReaderBase.h>
 #include <itkDataImageReaderPluginExport.h>
 
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkGiplDataImageReader: public itkDataImageReaderBase {

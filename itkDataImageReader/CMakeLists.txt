@@ -62,7 +62,6 @@ include(${medInria-plugins_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkDataImageReaderBase.h
   itkDataImageReaderPlugin.h
 )
 
@@ -79,7 +78,6 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   itkDataImageReaderPlugin.cpp
   itkDataImageReaderCommand.cxx
-  itkDataImageReaderBase.cpp
   itkMetaDataImageReader.cpp
   itkAnalyzeDataImageReader.cpp
   itkPNGDataImageReader.cpp
@@ -123,14 +121,15 @@ target_link_libraries(${PROJECT_NAME}
   dtkItkLogForwarder
   dtkCore
   medCore
-  ${ITK_LIBRARIES})
+  ${ITK_LIBRARIES}
+  itkDataImageReaderBase)
 
 if (BUILD_TESTING)
-  subdirs(Testing)
+  add_subdirectory(Testing)
 endif (BUILD_TESTING)
 
 if (BUILD_EXAMPLES)
-  subdirs(Examples)
+  add_subdirectory(Examples)
  endif (BUILD_EXAMPLES)
 
 # Group common files together in Visual Studio.
