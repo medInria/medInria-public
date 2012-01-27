@@ -188,7 +188,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     d->view3dVRModeComboBox = new QComboBox(this);
     d->view3dVRModeComboBox->setFocusPolicy(Qt::NoFocus);
-	d->view3dVRModeComboBox->setToolTip(tr("Choose among rendering techniques (e.g. GPU accelerated rendering, Ray Casting"));
+	d->view3dVRModeComboBox->setToolTip(tr("Choose among rendering techniques (e.g. GPU accelerated rendering, Ray Casting)"));
     d->view3dVRModeComboBox->addItem( "GPU" );
     d->view3dVRModeComboBox->addItem( "Ray Cast / Texture" );
     d->view3dVRModeComboBox->addItem( "Ray Cast" );
