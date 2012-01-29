@@ -80,6 +80,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QHBoxLayout * userButtonsLayout = new QHBoxLayout(d->userWidget);
     medHomepageButton * helpButton = new medHomepageButton ( this );
     helpButton->setText ( "Help" );
+    helpButton->setToolTip(tr("Open Online Documentation"));
     helpButton->setMinimumHeight ( 30 );
     helpButton->setMaximumWidth ( 150 );
     helpButton->setMinimumWidth ( 150 );
@@ -93,6 +94,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButton->setMinimumHeight ( 30 );
     aboutButton->setMaximumWidth ( 150 );
     aboutButton->setMinimumWidth ( 150 );
+    aboutButton->setToolTip(tr("About medInria"));
     aboutButton->setFocusPolicy ( Qt::NoFocus );
     aboutButton->setIcon ( QIcon ( ":icons/about.png" ) );
     aboutButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
@@ -103,6 +105,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsButton->setMinimumHeight ( 30 );
     settingsButton->setMaximumWidth ( 150 );
     settingsButton->setMinimumWidth ( 150 );
+    settingsButton->setToolTip(tr("Configure medInria"));
     settingsButton->setFocusPolicy ( Qt::NoFocus );
     settingsButton->setIcon ( QIcon ( ":icons/settings.svg" ) );
     settingsButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
@@ -121,8 +124,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 //     QLabel * textLabel = new QLabel;
 
     QTextEdit * textEdit = new QTextEdit(this);
-    textEdit->setHtml ( "<b>medINRIA</b> is a multi-platform medical image processing and visualization software,\
-                      and it's <b>free</b>. Through an intuitive user interface, <b>medINRIA</b> offers from standard \
+    textEdit->setHtml ( "<b>medInria</b> is a multi-platform medical image processing and visualization software,\
+                      and it's <b>free</b>. Through an intuitive user interface, <b>medInria</b> offers from standard \
                       to cutting-edge processing functionalities for your medical images such as 2D/3D/4D image visualization, \
                       image registration, or diffusion MR processing and tractography." );
     textEdit->setReadOnly ( true );
@@ -145,8 +148,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
     aboutTextEdit->setHtml ( "<br/><br/>\
-                              medINRIA is the medical imaging platform developed at INRIA<br/><br/>\
-                              <center>INRIA, Copyright 2011</center><br/><br/><br/>" );
+                              medInria is the medical imaging platform developed at Inria<br/><br/>\
+                              <center>Inria, Copyright 2011</center><br/><br/><br/>" );
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
     QTextBrowser * aboutAuthorTextBrowser = new QTextBrowser(this);
@@ -166,6 +169,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QPushButton * hideAboutButton = new QPushButton ( this );
     hideAboutButton->setText ( "Hide" );
     hideAboutButton->setFocusPolicy ( Qt::NoFocus );
+    hideAboutButton->setToolTip( tr("Hide the About section") );
     QObject::connect ( hideAboutButton, SIGNAL ( clicked() ), this, SLOT ( onHideAbout() ) );
 
     aboutButtonLayout->addStretch();
@@ -217,7 +221,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //Setup the startup checkbox
     d->showOnStartupCheckBox = new QCheckBox ( this );
     d->showOnStartupCheckBox->setCheckState(Qt::Checked);
-    d->showOnStartupCheckBox->setText ( "Start medINRIA on homepage ?" );
+    d->showOnStartupCheckBox->setText ( "Start medInria on homepage ?" );
     d->showOnStartupCheckBox->setFocusPolicy ( Qt::NoFocus );
     d->showOnStartupCheckBox->setProperty ( "pos", QPoint ( this->width() - 200 ,  this->height() - 30 ) );
     if ( medSettingsManager::instance()->value ( "startup","default_starting_area" ).toInt() )
@@ -325,6 +329,7 @@ void medHomepageArea::onHideAbout()
 
 void medHomepageArea::onShowHelp ( void )
 {
+    QDesktopServices::openUrl(QUrl("http://med.inria.fr/resources/documentation"));
 //     QMessageBox * msgBox = new QMessageBox ( QApplication::activeWindow() );
 //     msgBox->setIcon ( QMessageBox::Information );
 //     msgBox->setText ( "Help ! Help !" );

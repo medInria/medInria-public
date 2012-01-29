@@ -17,6 +17,16 @@
 ;;
 */
 
+
+/**
+* QToolTip
+*/
+QToolTip {
+    color: #2a2a2a;
+    border: 1px solid #4b4b4b;
+}
+
+
 /**
  * QTableView
  */
@@ -106,13 +116,13 @@ QDoubleSpinBox{
  *
  */
 
-QCheckBox {
+QCheckBox,QTreeView::indicator  {
     color: #b2b8b2;
     font-size: 10px;
     spacing: 5px;
 }
 
-QCheckBox::indicator {
+QCheckBox::indicator,QTreeView::indicator {
     width: 15px;
     height: 15px;
 }
@@ -127,6 +137,23 @@ QCheckBox::indicator:checked {
 
 QCheckBox::indicator:indeterminate {
     image: url(:/pixmaps/checkbox-partial.png);
+}
+
+QTreeView::indicator:indeterminate {
+    image: url(:/pixmaps/checkbox-partial.png);
+}
+
+
+QTreeView::indicator:checked
+{
+     background: url(:/pixmaps/checkbox-checked.png);
+     /*background: url(":checkbox/checked");*/
+}
+
+QTreeView::indicator:unchecked
+{
+    image: url(:/pixmaps/checkbox.png);
+     /*background: url(":checkbox/unchecked");*/
 }
 
 /**

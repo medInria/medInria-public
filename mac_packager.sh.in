@@ -27,5 +27,27 @@ for i in $*; do
 	\cp -r $resultRootDir/Applications/medinria.app/Contents/PlugIns @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/
 done
 
+cd @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents
+
+mkdir -p PlugIns/sqldrivers
+
+cp -p @QT_PLUGINS_DIR@/sqldrivers/libqsqlite.dylib PlugIns/sqldrivers/libqsqlite.dylib
+cp -p @QT_PLUGINS_DIR@/imageformats/libqsvg.dylib PlugIns/imageformats/libqsvg.dylib
+
+for f in PlugIns/{sqldrivers/libqsqlite,imageformats/libqsvg}.dylib
+do
+	#Qt stuff (should hopefully be there already)
+	for j in $( otool -L $f | sed "1d" | grep -E .framework | grep -i -E 'Qt|phonon' | cut -d " " -f 1 ); do
+		#Depending on Qt SDK, paths may be relative or not
+		#tmpVal=`echo $j | rev | cut -d "/" -f 1-4 | rev`
+		if [ "`echo $j | grep executable_path`" == "" ]; then
+			install_name_tool -change $j @executable_path/../Frameworks/$j $f
+		fi
+    done
+done
+
+# Remove useless plugins
+\rm -fr PlugIns/{accessible,bearer,codecs,graphicssystems}
+
 #Run fancy packaging apple script
 osascript @PROJECT_BINARY_DIR@/ScriptGenerateMedInriaFancyDMG.scpt

@@ -1,13 +1,13 @@
 on run
-	do shell script ("rm -f @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg @CMAKE_INSTALL_PREFIX@/MedINRIA.dmg")
-	do shell script ("hdiutil create -srcfolder \"@CMAKE_INSTALL_PREFIX@/bin/medinria.app\" -volname \"MedINRIA v2.0\" -fs HFS+ -fsargs \"-c c=64,a=16,e=16\" -format UDRW -size 270M @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg")
+	do shell script ("rm -f @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg @CMAKE_INSTALL_PREFIX@/medinria-2.0.0.dmg")
+	do shell script ("hdiutil create -srcfolder \"@CMAKE_INSTALL_PREFIX@/bin/medinria.app\" -volname \"medInria 2.0.0\" -fs HFS+ -fsargs \"-c c=64,a=16,e=16\" -format UDRW -size 270M @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg")
 	set device to do shell script ("hdiutil attach -readwrite -noverify -noautoopen \"@CMAKE_INSTALL_PREFIX@/TmpPackage.dmg\" | egrep '^/dev/' | sed 1q | awk '{print $1}' ")
 	
-	do shell script ("mkdir -p /Volumes/\"MedINRIA v2.0\"/.background")
-	do shell script ("cp -p @PROJECT_SOURCE_DIR@/app/medinria/pixmaps/medinria-logo.png /Volumes/\"MedINRIA v2.0\"/.background")
+	do shell script ("mkdir -p /Volumes/\"medInria 2.0.0\"/.background")
+	do shell script ("cp -p @PROJECT_SOURCE_DIR@/app/medinria/pixmaps/medinria-logo.png /Volumes/\"medInria 2.0.0\"/.background")
 	
 	tell application "Finder"
-		tell disk "MedINRIA v2.0"
+		tell disk "medInria 2.0.0"
 			open
 			set current view of container window to icon view
 			set toolbar visible of container window to false
@@ -30,6 +30,6 @@ on run
 	do shell script ("sync")
 	do shell script ("sync")
 	do shell script "hdiutil detach " & device
-	do shell script ("hdiutil convert \"@CMAKE_INSTALL_PREFIX@/TmpPackage.dmg\" -format UDZO -imagekey zlib-level=9 -o \"@CMAKE_INSTALL_PREFIX@/MedINRIA.dmg\"")
+	do shell script ("hdiutil convert \"@CMAKE_INSTALL_PREFIX@/TmpPackage.dmg\" -format UDZO -imagekey zlib-level=9 -o \"@CMAKE_INSTALL_PREFIX@/medinria-2.0.0.dmg\"")
 	do shell script ("rm -f @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg")
 end run

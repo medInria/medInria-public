@@ -200,6 +200,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect ( d->quitButton, SIGNAL ( triggered() ), this, SLOT ( onQuit() ) );
     connect(d->quitButton, SIGNAL( triggered()), this, SLOT (onSaveModified()));
     d->quitButton->setMaximumWidth ( 31 );
+    d->quitButton->setToolTip(tr("Close medInria"));
 
     //Setup quit message
     d->quitMessage = new QWidget ( this );
@@ -268,7 +269,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     // Now use the Qt preferred method by setting the Application style instead.
     // The ownership of the style object is not transferred.
     // this->setStyle(new QPlastiqueStyle());
-    this->setWindowTitle ( "medinria" );
+    this->setWindowTitle ( "medInria" );
 
     //Connect the messageController with the status for notification messages management
     QObject::connect(medMessageController::instance(), SIGNAL(addMessage(QWidget*)), d->statusBar, SLOT(addMessage(QWidget*)));
@@ -541,6 +542,7 @@ void medMainWindow::onSaveModified( void )
 void medMainWindow::onEditSettings()
 {
     QDialog * dialog = new QDialog(this);
+    dialog->setWindowTitle("medInria");
     dialog->setMinimumHeight(400);
     dialog->setMinimumWidth(500);
     dialog->setMaximumHeight(400);
