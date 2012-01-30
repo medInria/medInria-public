@@ -37,12 +37,14 @@ medToolBoxFiltering::medToolBoxFiltering ( QWidget *parent ) : medToolBox ( pare
     QWidget *displayWidget = new QWidget ( this );
 
     d->saveInDatabaseButton = new QPushButton ( tr ( "Store in Database" ),this );
+	d->saveInDatabaseButton->setToolTip(tr("Save result of filtering into the medInria database"));
     d->saveInDatabaseButton->setFocusPolicy(Qt::NoFocus);
 
 //    d->saveToDiskButton = new QPushButton(tr("Save to Disk"),this);
 
     d->chooseFilter = new QComboBox ( this );
     d->chooseFilter->addItem ( tr ( "Choose filter" ) );
+	d->chooseFilter->setToolTip(tr("Browse through the list of available filters"));
 
     QVBoxLayout *filterLayout = new QVBoxLayout ( displayWidget );
     filterLayout->addWidget ( d->saveInDatabaseButton );
