@@ -3,10 +3,10 @@
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
-#include <itkDataImageWriterPluginExport.h>
+#include "itkDataImageBaseExport.h"
 #include <itkImageIOBase.h>
 
-class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkDataImageWriterBase: public dtkAbstractDataWriter {
+class ITKDATAIMAGEBASE_EXPORT itkDataImageWriterBase: public dtkAbstractDataWriter {
     Q_OBJECT
 
 public:
@@ -27,7 +27,7 @@ public slots:
 protected:
 
     itk::ImageIOBase::Pointer io;
-    
+
 private:
 
     template <unsigned DIM,typename T>

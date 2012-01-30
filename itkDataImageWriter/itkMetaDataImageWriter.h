@@ -1,7 +1,7 @@
 #ifndef ITKMETADATAIMAGEWRITER_H
 #define ITKMETADATAIMAGEWRITER_H
 
-#include <itkDataImageWriterBase.h>
+#include <itkDataImageBase/itkDataImageWriterBase.h>
 #include <itkDataImageWriterPluginExport.h>
 
 class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkMetaDataImageWriter: public itkDataImageWriterBase {

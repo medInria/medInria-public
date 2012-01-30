@@ -121,8 +121,8 @@ target_link_libraries(${PROJECT_NAME}
   dtkItkLogForwarder
   dtkCore
   medCore
-  ${ITK_LIBRARIES}
-  itkDataImageReaderBase)
+  itkDataImageBase
+  ${ITK_LIBRARIES})
 
 if (BUILD_TESTING)
   add_subdirectory(Testing)

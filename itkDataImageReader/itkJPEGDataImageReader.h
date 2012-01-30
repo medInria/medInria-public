@@ -1,7 +1,7 @@
 #ifndef ITKJPEGDATAIMAGEREADER_H
 #define ITKJPEGDATAIMAGEREADER_H
 
-#include <itkDataImageReaderBase/itkDataImageReaderBase.h>
+#include <itkDataImageBase/itkDataImageReaderBase.h>
 #include <itkDataImageReaderPluginExport.h>
 
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkJPEGDataImageReader: public itkDataImageReaderBase {

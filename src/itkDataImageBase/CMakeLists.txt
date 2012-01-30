@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.1)
 
-project(itkDataImageReaderBase)
+project(itkDataImageBase)
 
 ## #################################################################
 ## Setup version numbering
@@ -38,14 +38,16 @@ include(${ITK_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkDataImageReaderBase.h)
+  itkDataImageReaderBase.h
+  itkDataImageWriterBase.h)
 
 set(${PROJECT_NAME}_HEADERS
-    itkDataImageReaderBaseExport.h
+    itkDataImageBaseExport.h
     ${${PROJECT_NAME}_HEADERS_MOC})
 
 set(${PROJECT_NAME}_SOURCES
   itkDataImageReaderBase.cpp
+  itkDataImageWriterBase.cpp
   )
 
 ## #################################################################
