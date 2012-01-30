@@ -109,7 +109,7 @@ public:
 
     QSlider    *slider;
     QComboBox  *dimensionBox;
-    QPushButton *anchorButton;
+//    QPushButton *anchorButton;
     QPushButton *linkButton;
     QPushButton *linkWLButton;
     QPushButton *fullScreenButton;
@@ -289,16 +289,16 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     d->menu->addAction(zoomAct);
     d->menu->addAction(wlAct);
     
-    d->anchorButton = new QPushButton(d->widget);
-    d->anchorButton->setIcon (QIcon(":/icons/anchor.png"));
-    d->anchorButton->setCheckable(true);
-    d->anchorButton->setMaximumHeight(16);
-    d->anchorButton->setMaximumWidth(16);
-    d->anchorButton->setFocusPolicy(Qt::NoFocus);
-    d->anchorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    d->anchorButton->setObjectName("tool");
+//    d->anchorButton = new QPushButton(d->widget);
+//    d->anchorButton->setIcon (QIcon(":/icons/anchor.png"));
+//    d->anchorButton->setCheckable(true);
+//    d->anchorButton->setMaximumHeight(16);
+//    d->anchorButton->setMaximumWidth(16);
+//    d->anchorButton->setFocusPolicy(Qt::NoFocus);
+//    d->anchorButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+//    d->anchorButton->setObjectName("tool");
     
-    connect(d->anchorButton, SIGNAL(clicked(bool)), this, SIGNAL(becomeDaddy(bool)));
+//    connect(d->anchorButton, SIGNAL(clicked(bool)), this, SIGNAL(becomeDaddy(bool)));
     
     d->linkButton = new QPushButton(d->widget);
     d->linkButton->setIcon (QIcon(":/icons/link.png"));
@@ -368,7 +368,7 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     connect(d->closeButton, SIGNAL(clicked()), this, SIGNAL(closing()));
 
     QButtonGroup *toolButtonGroup = new QButtonGroup(d->widget);
-    toolButtonGroup->addButton(d->anchorButton);
+//    toolButtonGroup->addButton(d->anchorButton);
     toolButtonGroup->addButton(d->linkButton);
     toolButtonGroup->setExclusive(false);
 
@@ -378,7 +378,7 @@ v3dViewPublic::v3dViewPublic(void) : medAbstractView(), d(new v3dViewPublicPriva
     toolsLayout->addWidget(d->dimensionBox);
     toolsLayout->addWidget(d->playButton);	
     toolsLayout->addWidget(d->slider);
-    toolsLayout->addWidget(d->anchorButton);
+//    toolsLayout->addWidget(d->anchorButton);
     toolsLayout->addWidget(d->linkButton);
     toolsLayout->addWidget(d->linkWLButton);
     toolsLayout->addWidget(d->registerButton);
@@ -516,7 +516,7 @@ void v3dViewPublic::onPropertySet(const QString &key, const QString &value)
 
 void v3dViewPublic::onDaddyPropertySet (const QString &value)
 {
-    d->anchorButton->blockSignals(true);
+//    d->anchorButton->blockSignals(true);
     d->linkButton->blockSignals(true);
     d->linkWLButton->blockSignals(true);
     d->registerButton->blockSignals(true);
@@ -524,7 +524,7 @@ void v3dViewPublic::onDaddyPropertySet (const QString &value)
     if (value=="true") {
         d->view2D->SetLinkWindowLevel ( 1 );
 		
-        d->anchorButton->setChecked (true);
+//        d->anchorButton->setChecked (true);
         
         d->linkButton->setChecked (false);
         d->linkWLButton->setChecked (false);
@@ -532,20 +532,20 @@ void v3dViewPublic::onDaddyPropertySet (const QString &value)
         d->linkButton->setEnabled(false);
         d->linkWLButton->setEnabled(false);
         d->registerButton->setEnabled(false);
-        d->anchorButton->blockSignals(false);
+//        d->anchorButton->blockSignals(false);
     }
     
     if (value=="false") {
         d->view2D->SetLinkWindowLevel ( 0 );
 		
-        d->anchorButton->setChecked (false);
+//        d->anchorButton->setChecked (false);
         
         d->linkButton->setEnabled(true);
         d->linkWLButton->setEnabled(true);
         d->registerButton->setEnabled(true);
     }
     
-    d->anchorButton->blockSignals(false);
+//    d->anchorButton->blockSignals(false);
     d->linkButton->blockSignals(false);
     d->linkWLButton->blockSignals(false);
     d->registerButton->blockSignals(false);
