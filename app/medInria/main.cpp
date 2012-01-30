@@ -38,20 +38,23 @@
 
 void forceShow(medMainWindow& mainwindow )
 {
+    //Idea and code taken from the OpenCOR project, Thanks Allan for the code!
+
+
     // Note: to show ourselves, one would normally use activateWindow(), but
     //       depending on the operating system it may or not bring OpenCOR to
     //       the foreground, so... instead we do what follows, depending on the
     //       operating system...
 
-#ifdef Q_WS_WIN
-    // Retrieve OpenCOR's window Id
+#if defined(Q_WS_WIN)
+    // Retrieve window Id
 
     WId mainWinId = mainwindow.winId();
 
     // Bring main window to the foreground
     SetForegroundWindow(mainWinId);
 
-    // Show/restore OpenCOR, depending on its current state
+    // Show/restore the window, depending on its current state
 
     if (IsIconic(mainWinId))
         ShowWindow(mainWinId, SW_RESTORE);
