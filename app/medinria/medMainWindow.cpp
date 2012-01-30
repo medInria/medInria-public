@@ -232,7 +232,11 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->fullscreenButton->setIcon(fullscreenIcon);
     d->fullscreenButton->setCheckable(true);
     d->fullscreenButton->setChecked(false);
+#if defined(Q_WS_MAC)
+    d->fullscreenButton->setShortcut(Qt::ControlModifier + Qt::Key_F);
+#else
     d->fullscreenButton->setShortcut(Qt::Key_F11);
+#endif
     QObject::connect ( d->fullscreenButton, SIGNAL ( toggled(bool) ),
                        this, SLOT ( setFullScreen(bool) ) );
 
