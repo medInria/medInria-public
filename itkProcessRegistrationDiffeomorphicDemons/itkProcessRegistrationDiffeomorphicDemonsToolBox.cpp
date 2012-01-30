@@ -60,6 +60,7 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     QWidget *widget = new QWidget(this);
 
     QPushButton *runButton = new QPushButton(tr("Run"), this);
+    runButton->setToolTip(tr("Start Registration"));
 
     QFormLayout *layout = new QFormLayout(widget);
 
@@ -72,32 +73,51 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     d->maxStepLengthBox->setMaximum(1000);
     d->maxStepLengthBox->setSingleStep(0.01);
     d->maxStepLengthBox->setValue(2.0);
+    d->maxStepLengthBox->setToolTip(tr(
+                "Maximum length of an update vector (voxel units)."
+                " Setting it to 0 implies no restrictions will be made"
+                " on the step length."));
 
     d->updateFieldStdDevBox = new QDoubleSpinBox(this);
     d->updateFieldStdDevBox->setMinimum(0);
     d->updateFieldStdDevBox->setMaximum(1000);
     d->updateFieldStdDevBox->setSingleStep(0.01);
     d->updateFieldStdDevBox->setValue(0.0);
+    d->updateFieldStdDevBox->setToolTip(tr(
+                "Standard deviation of the Gaussian smoothing"
+                "of the update field (voxel units). Setting it below 0.1"
+                "means no smoothing will be performed (default 0.0)."));
 
     d->disFieldStdDevBox = new QDoubleSpinBox(this);
     d->disFieldStdDevBox->setMinimum(0);
     d->disFieldStdDevBox->setMaximum(1000);
     d->disFieldStdDevBox->setSingleStep(0.01);
     d->disFieldStdDevBox->setValue(1.5);
-
+    d->disFieldStdDevBox->setToolTip(tr(
+                "Standard deviation of the Gaussian smoothing of "
+                "the displacement field (voxel units). Setting it below 0.1 "
+                "means no smoothing will be performed (default 1.5)."));
     d->updateRuleBox = new QComboBox(this);
     QStringList updateRules;
     updateRules<< tr("Diffeomorphic") << tr ("Additive") << tr("Compositive");
     d->updateRuleBox->addItems(updateRules);
+    //WARNING IF YOU CHANGE THE ORDER OF THE ITEMS, CHANGE TOOLTIPS also!!!
+    d->updateRuleBox->setItemData(0,"s <- s o exp(u)",Qt::ToolTipRole);
+    d->updateRuleBox->setItemData(1,"s <- s + u",Qt::ToolTipRole);
+    d->updateRuleBox->setItemData(2,"s <- s o (Id+u)",Qt::ToolTipRole);
 
     d->gradientTypeBox = new QComboBox(this);
+    d->gradientTypeBox->setToolTip(tr(
+                "Type of gradient used for computing the demons force."));
     QStringList gradientTypes;
-    gradientTypes<< tr("Symmetrized") << tr ("Fixed Image") << tr("Warped Moving Image")
+    gradientTypes<< tr("Symmetrized") << tr ("Fixed Image")
+                 << tr("Warped Moving Image")
                  << tr("Mapped Moving Image");
     d->gradientTypeBox->addItems(gradientTypes);
-
     d->useHistogramBox =  new QCheckBox(this);
     d->useHistogramBox->setChecked(false);
+    d->useHistogramBox->setToolTip(tr(
+                "Use histogram matching before processing?"));
 
     this->setTitle("Diffeomorphic Demons");
     layout->addRow(new QLabel(tr("Iterations per level of res."),this),d->iterationsBox);
