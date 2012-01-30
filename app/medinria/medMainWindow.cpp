@@ -102,7 +102,7 @@ public:
     medSettingsEditor * settingsEditor;
 
     QHBoxLayout * statusBarLayout;
-
+    QWidget * rightEndButtons;
     medStatusBar * statusBar;
 //     QWidget * quickAccessWidget;
     medQuickAccessMenu * quickAccessWidget;
@@ -233,6 +233,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->fullscreenButton->setIcon(fullscreenIcon);
     d->fullscreenButton->setCheckable(true);
     d->fullscreenButton->setChecked(false);
+    d->fullscreenButton->setObjectName("fullScreenButton");
 #if defined(Q_WS_MAC)
     d->fullscreenButton->setShortcut(Qt::ControlModifier + Qt::Key_F);
 #else
@@ -244,11 +245,21 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     d->quitMessage->setLayout ( quitLayout );
 
+
+    //QuitMessage and rightEndButtons will switch hidden and shown statuses.
+    d->rightEndButtons = new QWidget(this);
+    QHBoxLayout * rightEndButtonsLayout = new QHBoxLayout(d->rightEndButtons);
+    rightEndButtonsLayout->setContentsMargins ( 5, 0, 5, 0 );
+    rightEndButtonsLayout->setSpacing ( 5 );
+    rightEndButtonsLayout->addWidget( d->fullscreenButton );
+    rightEndButtonsLayout->addWidget( d->quitButton );
+
+
     d->statusBarLayout->addWidget ( d->quickAccessButton );
     d->statusBarLayout->addStretch();
     d->statusBarLayout->addWidget ( d->quitMessage );
-    d->statusBarLayout->addWidget ( d->fullscreenButton );
-    d->statusBarLayout->addWidget ( d->quitButton );
+    d->statusBarLayout->addWidget( d->rightEndButtons );
+
     d->quitMessage->hide();
 
     //Create a container widget for the status bar
@@ -575,13 +586,13 @@ void medMainWindow::onConfigurationTriggered ( QAction *action )
 void medMainWindow::onNoQuit ( void )
 {
     d->quitMessage->hide();
-    d->quitButton->show();
+    d->rightEndButtons->show();
 }
 
 void medMainWindow::onQuit ( void )
 {
     d->quitMessage->show();
-    d->quitButton->hide();
+    d->rightEndButtons->hide();
 }
 
 void medMainWindow::onSaveModified( void )

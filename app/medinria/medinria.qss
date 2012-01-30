@@ -595,6 +595,7 @@ QHelpSearchQueryWidget QToolButton::menu-indicator {
     right: 7px;
 }
 
+
 /**
  * QGroupBox
  *
@@ -1293,7 +1294,6 @@ QPushButton#tool:pressed, QPushButton#tool:checked {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
 }
 
-
 QToolButton {
     border: 0px;
     border-left: 1px solid #4b4b4b;
@@ -1310,6 +1310,13 @@ QToolButton {
 QToolButton:pressed, QToolButton:checked {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
 }
+
+
+QToolButton#fullScreenButton{
+    border:none;
+    background-color: rgba(0,0,0,0);
+}
+
 
 /**
  * dtkFinderPathBar
