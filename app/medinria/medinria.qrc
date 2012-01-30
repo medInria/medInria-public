@@ -120,5 +120,7 @@
         <file>icons/pause.png</file>
         <file>icons/play.png</file>
         <file>authors.html</file>
+        <file>icons/fullscreenExpand.png</file>
+        <file>icons/fullscreenReduce.png</file>
     </qresource>
 </RCC>

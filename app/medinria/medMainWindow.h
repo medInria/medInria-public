@@ -39,10 +39,16 @@ public:
 
     void updateQuickAccessMenu(void);
     void resizeEvent( QResizeEvent * event );
-    
+
 public slots:
     void setWallScreen(bool full);
     void setFullScreen(bool full);
+
+    /**
+     * @brief Switches from the Fullscreen mode to the normal mode.
+     *
+     */
+    void switchFullScreen(void);
 
     void switchToBrowserArea(void);
     void switchToViewerArea(void);
@@ -86,6 +92,27 @@ public slots:
     * @param path - the path to the file or directory
     **/
     void load(const QString& path);
+
+    /**
+     * @brief Overload existing showFullScreen().
+     *
+     * Allows the update of the fullScreen button.
+     */
+    void showFullScreen();
+
+    /**
+     * @brief Overload existing showNormal().
+     *
+     * Allows the update of the fullScreen button.
+     */
+    void showNormal();
+
+    /**
+     * @brief Overload existing showMaximized().
+     *
+     * Allows the update of the fullScreen button.
+     */
+    void showMaximized();
 
 protected:
     void closeEvent(QCloseEvent *event);
