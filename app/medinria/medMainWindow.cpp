@@ -236,8 +236,10 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->fullscreenButton->setObjectName("fullScreenButton");
 #if defined(Q_WS_MAC)
     d->fullscreenButton->setShortcut(Qt::ControlModifier + Qt::Key_F);
+    d->fullscreenButton->setToolTip(tr("Switch FullScreen state (Cmd+f)"));
 #else
     d->fullscreenButton->setShortcut(Qt::Key_F11);
+    d->fullscreenButton->setToolTip(tr("Switch FullScreen state (F11)"));
 #endif
     QObject::connect ( d->fullscreenButton, SIGNAL ( toggled(bool) ),
                        this, SLOT ( setFullScreen(bool) ) );
