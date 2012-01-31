@@ -646,7 +646,8 @@ void itkFiltersToolBox::run ( void )
     runProcess->setProcess ( d->process );
 
     d->progression_stack->addJobItem ( runProcess, tr ( "Progress:" ) );
-    d->progression_stack->setActive ( runProcess,true );
+
+    connect(d->process, SIGNAL(progressed(int)), runProcess, SIGNAL(progress(int)));
 
     connect ( runProcess, SIGNAL ( success ( QObject* ) ),  this, SIGNAL ( success () ) );
     connect ( runProcess, SIGNAL ( failure ( QObject* ) ),  this, SIGNAL ( failure () ) );

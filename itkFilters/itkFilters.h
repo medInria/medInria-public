@@ -35,7 +35,6 @@ class ITKFILTERSPLUGIN_EXPORT itkFilters : public dtkAbstractProcess
     Q_OBJECT
 
 public:
-//   itk::CStyleCommand * callback;
   
   enum FILTER
   {
@@ -49,7 +48,7 @@ public:
 
     static bool registered ( void );
 
-//     static void eventCallback(itk::Object *caller, const itk::EventObject& event, void *clientData);
+    void emitProgress(int progress);
     
 public slots:
 
@@ -58,8 +57,11 @@ public slots:
     int update ( void );
     dtkAbstractData *output ( void );
 
+//    void updateProgress(int);
+
 signals:
-  void progress(int progress);
+    void progress(int progress);
+
 
 private:
     itkFiltersPrivate *d;

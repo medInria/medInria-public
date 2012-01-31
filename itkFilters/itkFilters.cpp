@@ -42,7 +42,7 @@ class itkFiltersPrivate
 {
 public:
     itkFilters * filters;
-//     itk::CStyleCommand * callback;
+    itk::CStyleCommand::Pointer callback;
 
     dtkAbstractData *input;
     dtkAbstractData *output;
@@ -72,48 +72,29 @@ public:
     template <class PixelType> void shrinkFilter ( void );
     template <class PixelType> void intensityFilter ( void );
 
-//     static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData );
+    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData );
 };
 
-// void itkFiltersPrivate::eventCallback ( itk::Object* caller, const itk::EventObject& event, void* clientData )
-// {
-//     itkFiltersPrivate * source = static_cast<itkFiltersPrivate *> ( clientData );
-//     itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
-//
-//     float progress = 0.0;
-//
-//     if ( caller )
-//         std::cout << "caller existe" << std::endl;
-//     else
-//         std::cout << "no existe" << std::endl;
-//
-//     if ( processObject )
-//     {
-//         std::cout << "processObject existe" << std::endl;
-// //       caller->Print(std::cout);
-// //       progress = processObject->GetProgress();
-//     }
-//     else
-//         std::cout << "no processObject" << std::endl;
-//
-//
-//
-//     std::cout << "progress = " << progress << std::endl;
-//
-// //     qDebug() << processObject->GetProgress();
-//
-//     if ( !source )
-//         qDebug() << "Source est null";
-// //   emit source->progress(processObject->GetProgress());
-// }
 
+ void itkFiltersPrivate::eventCallback ( itk::Object* caller, const itk::EventObject& event, void* clientData )
+ {
+     itkFiltersPrivate * source = reinterpret_cast<itkFiltersPrivate *> ( clientData );
+     itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
+
+//     qDebug() << (int) (processObject->GetProgress() * 100);
+
+     if ( !source )
+         qDebug() << "Source est null";
+
+     source->filters->emitProgress((int) (processObject->GetProgress() * 100));
+ }
 
 template <class PixelType> int itkFiltersPrivate::update ( void )
 {
 
-//     callback = itk::CStyleCommand::New();
-//     callback->SetClientData ( ( void * ) this );
-//     callback->SetCallback ( eventCallback );
+     callback = itk::CStyleCommand::New();
+     callback->SetClientData ( ( void * ) this );
+     callback->SetCallback ( itkFiltersPrivate::eventCallback );
 
     switch ( filterType )
     {
@@ -175,6 +156,9 @@ template <class PixelType> void itkFiltersPrivate::addFilter ( void )
 
     addFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
     addFilter->SetConstant ( addValue );
+
+    addFilter->AddObserver ( itk::ProgressEvent(), callback );
+
     addFilter->Update();
     output->setData ( addFilter->GetOutput() );
 
@@ -195,6 +179,9 @@ template <class PixelType> void itkFiltersPrivate::subtractFilter ( void )
 
     subtractFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
     subtractFilter->SetConstant ( subtractValue );
+
+    subtractFilter->AddObserver ( itk::ProgressEvent(), callback );
+
     subtractFilter->Update();
     output->setData ( subtractFilter->GetOutput() );
 
@@ -213,6 +200,9 @@ template <class PixelType> void itkFiltersPrivate::multiplyFilter ( void )
 
     multiplyFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
     multiplyFilter->SetConstant ( multiplyValue );
+
+    multiplyFilter->AddObserver ( itk::ProgressEvent(), callback );
+
     multiplyFilter->Update();
     output->setData ( multiplyFilter->GetOutput() );
 
@@ -231,6 +221,9 @@ template <class PixelType> void itkFiltersPrivate::divideFilter ( void )
 
     divideFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
     divideFilter->SetConstant ( divideValue );
+
+    divideFilter->AddObserver ( itk::ProgressEvent(), callback );
+
     divideFilter->Update();
     output->setData ( divideFilter->GetOutput() );
 
@@ -250,9 +243,7 @@ template <class PixelType> void itkFiltersPrivate::gaussianFilter ( void )
     gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
     gaussianFilter->SetSigma ( sigmaValue );
 
-//     gaussianFilter->AddObserver(itk::ProgressEvent(), filters->callback);
-
-//     gaussianFilter->AddObserver ( itk::ProgressEvent(), callback );
+    gaussianFilter->AddObserver ( itk::ProgressEvent(), callback );
 
     gaussianFilter->Update();
     output->setData ( gaussianFilter->GetOutput() );
@@ -271,6 +262,9 @@ template <class PixelType> void itkFiltersPrivate::normalizeFilter ( void )
     typename NormalizeFilterType::Pointer normalizeFilter = NormalizeFilterType::New();
 
     normalizeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+
+    normalizeFilter->AddObserver ( itk::ProgressEvent(), callback );
+
     normalizeFilter->Update();
     output->setData ( normalizeFilter->GetOutput() );
 
@@ -287,14 +281,7 @@ template <class PixelType> void itkFiltersPrivate::medianFilter ( void )
     typedef itk::MedianImageFilter < ImageType, ImageType >  MedianFilterType;
     typename MedianFilterType::Pointer medianFilter = MedianFilterType::New();
 
-//     if ( callback )
-//         qDebug() << "callback existe";
-//     else
-//         qDebug() << "callback n'existe pas";
-//
-//     qDebug() << "Avant add observer";
-
-//     medianFilter->AddObserver ( itk::ProgressEvent(), callback );
+    medianFilter->AddObserver ( itk::ProgressEvent(), callback );
 
     medianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
     medianFilter->Update();
@@ -314,6 +301,9 @@ template <class PixelType> void itkFiltersPrivate::invertFilter ( void )
     typename InvertFilterType::Pointer invertFilter = InvertFilterType::New();
 
     invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
+
+    invertFilter->AddObserver ( itk::ProgressEvent(), callback );
+
     invertFilter->Update();
     output->setData ( invertFilter->GetOutput() );
 
@@ -332,6 +322,9 @@ template <class PixelType> void itkFiltersPrivate::shrinkFilter ( void )
 
     shrinkFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
     shrinkFilter->SetShrinkFactors ( shrinkFactors );
+
+    shrinkFilter->AddObserver ( itk::ProgressEvent(), callback );
+
     shrinkFilter->Update();
     output->setData ( shrinkFilter->GetOutput() );
 
@@ -355,6 +348,8 @@ template <class PixelType> void itkFiltersPrivate::intensityFilter ( void )
     intensityFilter->SetOutputMinimum ( ( PixelType ) minimumOutputIntensityValue );
     intensityFilter->SetOutputMaximum ( ( PixelType ) maximumOutputIntensityValue );
 
+    intensityFilter->AddObserver ( itk::ProgressEvent(), callback );
+
     intensityFilter->Update();
     output->setData ( intensityFilter->GetOutput() );
 
@@ -369,10 +364,6 @@ itkFilters::itkFilters ( void ) : dtkAbstractProcess(), d ( new itkFiltersPrivat
 {
     d->filters = this;
 
-//     callback = itk::CStyleCommand::New();
-//     callback->SetClientData ( ( void * ) this );
-//     callback->SetCallback ( eventCallback );
-
     d->output = NULL;
     d->addValue = 100.0;
     d->multiplyValue = 2.0;
@@ -380,6 +371,8 @@ itkFilters::itkFilters ( void ) : dtkAbstractProcess(), d ( new itkFiltersPrivat
     d->sigmaValue = 1.0;
 
     d->filterType = itkFilters::ADD;
+
+//    connect(this, SIGNAL(progress(int)), this, SLOT(updateProgress(int)));
 }
 
 itkFilters::~itkFilters ( void )
@@ -388,19 +381,15 @@ itkFilters::~itkFilters ( void )
     d = NULL;
 }
 
-// void itkFilters::eventCallback ( itk::Object* caller, const itk::EventObject& event, void* clientData )
-// {
-//     itkFilters * source = reinterpret_cast<itkFilters *> ( clientData );
-//     itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
-//
-//     qDebug() << "in event callback";
-//
-// //     qDebug() << processObject->GetProgress();
-//
-//     if ( !source )
-//         qDebug() << "Source est null";
-// //   emit source->progress(processObject->GetProgress());
-// }
+void itkFilters::emitProgress(int prog)
+{
+    emit progressed(prog);
+}
+
+//void itkFilters::updateProgress(int progress)
+//{
+//    qDebug() << "From itkFilters: " << progress;
+//}
 
 bool itkFilters::registered ( void )
 {
