@@ -1407,6 +1407,29 @@ namespace itk
       }
     }
 
+    
+    if (map.size())
+    {
+      if ((*map.begin()).second.size())
+      {
+	std::string file = (*map.begin()).second[0];
+	gdcm::Reader reader;
+	reader.SetFileName (file.c_str());
+	std::set<gdcm::Tag> set;
+	if (reader.ReadUpToTag(gdcm::Tag(0x20, 0x12), set))
+	{
+	  gdcm::StringFilter filter;
+	  filter.SetFile (reader.GetFile());
+	  std::string toadd = filter.ToString (gdcm::Tag(0x20, 0x12));
+	  if (toadd.size() >= 1)
+	  {
+	    description += "-scan-";
+	    description += toadd;
+	  }
+	}
+      }
+    }
+
     // Remove space and replace underscores
     // Clean sides of the string
     itksys::SystemTools::ReplaceString (description, " ", "-");
@@ -1431,10 +1454,12 @@ namespace itk
       else
 	finished = 1;
     }
+    
     if (!description.size())
       description = "unknown";
-    
     ret = description;
+
+    
 
     // Check if name is taken
     // if it is then add a number at the end of it
@@ -1463,7 +1488,7 @@ namespace itk
 	  toadd++;
 	  break;
 	}
-    }
+    }    
     return ret;
   }
 
