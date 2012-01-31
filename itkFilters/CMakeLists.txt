@@ -36,9 +36,9 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-# medinria
-find_package(medinria REQUIRED)
-include(${medinria_USE_FILE})
+# medInria
+find_package(medInria REQUIRED)
+include(${medInria_USE_FILE})
 
 
 ## #################################################################
@@ -109,5 +109,5 @@ endif (MSVC)
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION plugins
   LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION plugins)
+  ARCHIVE DESTINATION lib)
 

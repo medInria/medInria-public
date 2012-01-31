@@ -34,8 +34,8 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-find_package(medinria REQUIRED)
-include(${medinria_USE_FILE})
+find_package(medInria REQUIRED)
+include(${medInria_USE_FILE})
 
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
@@ -46,8 +46,8 @@ if ( MEDINRIA_V3DVIEW_PUBLIC_BUILD_TTK_DEPENDENT_CODE )
 endif ( MEDINRIA_V3DVIEW_PUBLIC_BUILD_TTK_DEPENDENT_CODE )
 
 #include_directories(../dtkVtkLogForwarder)
-find_package(medinria-plugins REQUIRED)
-include(${medinria-plugins_USE_FILE})
+find_package(medInria-plugins REQUIRED)
+include(${medInria-plugins_USE_FILE})
 
 ## #################################################################
 ## Input

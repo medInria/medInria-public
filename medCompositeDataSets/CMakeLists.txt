@@ -33,8 +33,8 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-find_package(medinria REQUIRED)
-include(${medinria_USE_FILE})
+find_package(medInria REQUIRED)
+include(${medInria_USE_FILE})
 
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
@@ -86,7 +86,7 @@ target_link_libraries(${PROJECT_NAME}
   medGui
   ITKTensor
   ITKCommon)
-#not useful if plugin in the medinria-plugins directory
+#not useful if plugin in the medInria-plugins directory
 dtk_build_doc(medCompositeDataSetsPlugin)
 
 #add_executable(test test.C)

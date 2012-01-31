@@ -1,0 +1,11 @@
+if(NOT medInria-plugins_USE_FILE_INCLUDED)
+
+   set(medInria-plugins_USE_FILE_INCLUDED 1)
+
+   include_directories(${medInria-plugins_INCLUDE_DIRS})
+
+   link_directories(${medInria-plugins_LIBRARY_DIRS})
+
+   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${medInria-plugins_CMAKE_DIRS})
+   
+endif(NOT medInria-plugins_USE_FILE_INCLUDED)

@@ -33,8 +33,8 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-find_package(medinria REQUIRED)
-include(${medinria_USE_FILE})
+find_package(medInria REQUIRED)
+include(${medInria_USE_FILE})
 
 ## #################################################################
 ## Input
@@ -66,7 +66,7 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   medCore)
-#not useful if plugin in the medinria-plugins directory
+#not useful if plugin in the medInria-plugins directory
 dtk_build_doc(%1Plugin)
 
 ## #################################################################

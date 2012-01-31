@@ -14,7 +14,7 @@ class itkProcessRegistrationDiffeomorphicDemonsPrivate;
  * @brief Registration process using diffeomorphic demons from itk.
  *
  * This plugin uses the registration programming interface (RPI).
- * It also implements a custom toolbox plugging itself onto the generic registration toolbox available in medinria/src/medGui.
+ * It also implements a custom toolbox plugging itself onto the generic registration toolbox available in medInria/src/medGui.
  *
 */
 class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemons : public itkProcessRegistration

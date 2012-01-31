@@ -1,6 +1,6 @@
-/*! \page medinria-plugins-modules medinria Modules
+/*! \page medInria-plugins-modules medInria Modules
 
-  medinria-plugins contains these plugins: 
+  medInria-plugins contains these plugins: 
 
   <ul>
   <li> \subpage itkDataDiffusionGradientList... </li>

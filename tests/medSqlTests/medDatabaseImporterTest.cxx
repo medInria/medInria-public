@@ -90,12 +90,12 @@ void medDatabaseImporterTest::initTestCase()
     if (!dataDir.exists())
         QFAIL("Medinria data directory is required to run this test.");
 
-     // load medinria plugins, we will need data types, readers and writers
+     // load medInria plugins, we will need data types, readers and writers
      dtkPluginManager::instance()->setPath(pluginsPath);
      dtkPluginManager::instance()->initialize();
 
      // create temporary directory for new database
-     this->dbPath = QDir::tempPath() + "/medinria-test-db";
+     this->dbPath = QDir::tempPath() + "/medInria-test-db";
 
      medStorage::setDataLocation(this->dbPath);
 }

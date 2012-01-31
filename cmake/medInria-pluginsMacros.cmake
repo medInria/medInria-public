@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# Macros used by medinria-plugins
+# Macros used by medInria-plugins
 #
 # Author: Benoît Bleuzé
 #

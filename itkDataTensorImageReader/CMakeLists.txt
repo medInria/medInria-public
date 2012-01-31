@@ -39,8 +39,8 @@ find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
 #include_directories(../dtkItkLogForwarder)
-find_package(medinria-plugins REQUIRED)
-include(${medinria-plugins_USE_FILE})
+find_package(medInria-plugins REQUIRED)
+include(${medInria-plugins_USE_FILE})
 
 
 ## #################################################################

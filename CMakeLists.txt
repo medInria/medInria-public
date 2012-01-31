@@ -19,7 +19,7 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(medinria-plugins)
+project(medInria-plugins)
 
 ## #################################################################
 ## Setup version numbering
@@ -39,14 +39,14 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(medinria-pluginsMacros)
+include(medInria-pluginsMacros)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
 
 
 # Export medinriq-plugins_DIR variable so that internal project can automatically find i
-set(medinria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
+set(medInria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 
 ## #################################################################
 ## Dashboard settings

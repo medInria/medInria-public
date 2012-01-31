@@ -5,9 +5,9 @@
 # Doxygen's tag files. Mandatory for each documentation set.
 # Note: might be the same as the doxyfile's PROJECT_NAME
 # Example: 
-#   PROJECT_NAME=medinria
+#   PROJECT_NAME=medInria
 #
-set(PROJECT_NAME medinria-plugins)
+set(PROJECT_NAME medInria-plugins)
 
 # OUTPUT_DIRECTORY:
 # Path to the Doxygen output directory (where the resulting doc is stored).
