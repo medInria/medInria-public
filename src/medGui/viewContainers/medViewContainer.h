@@ -413,7 +413,7 @@ protected:
      * @brief Recompute the style sheet after a property change
      *
      * The appearance of the border is controlled by the style sheet
-     * (medinria.qss) and depends on the values of properties like
+     * (medInria.qss) and depends on the values of properties like
      * isCurrent, isLeaf, or isEmpty.  However, if the value of a
      * property changes after the style sheet has been set, it is
      * necessary to force a style sheet recomputation.  One way to

@@ -17,9 +17,9 @@
  * 
  */
 
-/*! \page modules medinria Modules
+/*! \page modules medInria Modules
 
-  Also referred to as layers, medinria modules decompose the source tree into the following structure
+  Also referred to as layers, medInria modules decompose the source tree into the following structure
 
   <ul>
   <li> \subpage medCore: the core module contains ... </li>

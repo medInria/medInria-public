@@ -17,13 +17,13 @@
 ## 
 ######################################################################
 
-set(medinria_VERSION_MAJOR  "@medinria_VERSION_MAJOR@")
-set(medinria_VERSION_MINOR  "@medinria_VERSION_MINOR@")
-set(medinria_VERSION_BUILD  "@medinria_VERSION_BUILD@")
-set(medinria_VERSION        "@medinria_VERSION@")
+set(medInria_VERSION_MAJOR  "@medInria_VERSION_MAJOR@")
+set(medInria_VERSION_MINOR  "@medInria_VERSION_MINOR@")
+set(medInria_VERSION_BUILD  "@medInria_VERSION_BUILD@")
+set(medInria_VERSION        "@medInria_VERSION@")
 
-set(medinria_INCLUDE_DIRS "@medinria_INSTALL_INCLUDE_DIRS@")
-set(medinria_LIBRARY_DIRS "@medinria_INSTALL_LIBRARY_DIRS@")
-set(medinria_CMAKE_DIRS   "@medinria_INSTALL_CMAKE_DIRS@")
+set(medInria_INCLUDE_DIRS "@medInria_INSTALL_INCLUDE_DIRS@")
+set(medInria_LIBRARY_DIRS "@medInria_INSTALL_LIBRARY_DIRS@")
+set(medInria_CMAKE_DIRS   "@medInria_INSTALL_CMAKE_DIRS@")
 
-set(medinria_USE_FILE "@medinria_INSTALL_USE_FILE@")
+set(medInria_USE_FILE "@medInria_INSTALL_USE_FILE@")

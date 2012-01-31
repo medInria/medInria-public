@@ -159,7 +159,7 @@ void medDatabaseWriter::run ( void )
         d->data->addMetaData ( medMetaDataKeys::Report.key(), QStringList() << "" );
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::FilePaths.key() ) )
-        d->data->addMetaData ( medMetaDataKeys::FilePaths.key(), QStringList() << "generated with medinria" );
+        d->data->addMetaData ( medMetaDataKeys::FilePaths.key(), QStringList() << "generated with medInria" );
 
     QString size ="";
     if ( medAbstractDataImage *imagedata = dynamic_cast<medAbstractDataImage*> ( d->data ) )

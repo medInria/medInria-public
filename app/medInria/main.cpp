@@ -44,10 +44,10 @@ int main(int argc, char *argv[])
 
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
-        qDebug() << "Usage: medinria [--no-fullscreen] [--stereo]";
+        qDebug() << "Usage: medInria [--no-fullscreen] [--stereo]";
         return 1;
     }
-    medSplashScreen splash(QPixmap(":/pixmaps/medinria-splash.png"));
+    medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
 
     // Do not show the splash screen in debug builds because it hogs the
     // foreground, hiding all other windows. This makes debugging the startup

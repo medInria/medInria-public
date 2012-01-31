@@ -5,29 +5,29 @@
 # or
 # - mac_packager.sh path_to_plugins/*
 
-# To build a stand-alone mac version of medinria, do the following:
+# To build a stand-alone mac version of medInria, do the following:
 
-# 1. build medinria
-# 2. build medinria-plugins as well as your desired own plugins
+# 1. build medInria
+# 2. build medInria-plugins as well as your desired own plugins
 # 2. make install of each project
 # 3. chmod u+x mac_pacakger.sh
 # 4. run mac_pacakger.sh with each argument being a script to package your plugins, e.g. : ./mac_packager.sh ${Plugins_Build_Dir}/mac_visages_plugins_packager.sh
 
-# The bundle medinria.app will contain all plugins and will be standalone, packaged into MedINRIA.dmg in the install dir
+# The bundle medInria.app will contain all plugins and will be standalone, packaged into MedINRIA.dmg in the install dir
 
 cd @CMAKE_INSTALL_PREFIX@/bin/
-@QT_BINARY_DIR@/macdeployqt medinria.app
+@QT_BINARY_DIR@/macdeployqt medInria.app
 
 #Run sub-packagers
 for i in $*; do
 	resultRootDir=`/bin/bash $i`
 	echo Copying plugins from $resultRootDir
 	
-	\cp -r $resultRootDir/Applications/medinria.app/Contents/Frameworks @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/
-	\cp -r $resultRootDir/Applications/medinria.app/Contents/PlugIns @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents/
+	\cp -r $resultRootDir/Applications/medInria.app/Contents/Frameworks @CMAKE_INSTALL_PREFIX@/bin/medInria.app/Contents/
+	\cp -r $resultRootDir/Applications/medInria.app/Contents/PlugIns @CMAKE_INSTALL_PREFIX@/bin/medInria.app/Contents/
 done
 
-cd @CMAKE_INSTALL_PREFIX@/bin/medinria.app/Contents
+cd @CMAKE_INSTALL_PREFIX@/bin/medInria.app/Contents
 
 mkdir -p PlugIns/sqldrivers
 
