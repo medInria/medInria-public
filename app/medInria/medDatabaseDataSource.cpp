@@ -75,7 +75,7 @@ QWidget* medDatabaseDataSource::sourceSelectorWidget()
 
 QString medDatabaseDataSource::tabName()
 {
-    return tr("Db");
+    return tr("Database");
 }
 
 QList<medToolBox*> medDatabaseDataSource::getToolboxes()
