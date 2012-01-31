@@ -237,6 +237,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCu
     // Run button:
     QPushButton *runButton = new QPushButton ( tr ( "Run" ) );
     runButton->setFocusPolicy ( Qt::NoFocus );
+    runButton->setToolTip(tr("Launch the selected filter"));
 
     // Principal layout:
     QWidget *widget = new QWidget ( this );
