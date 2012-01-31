@@ -171,8 +171,8 @@ public:
       if (rwi->GetKeyCode() == '-')
       {
 	double newscale = TensorGlyph->GetGlyphScale() - 0.5;
-	if (newscale < 0.1)
-	  newscale = 0;
+	// if (newscale < 0.1)
+	//   newscale = 0;
 	TensorGlyph->SetGlyphScale (newscale);
 	View->Render();
       }
@@ -217,7 +217,8 @@ public:
 	vtkMatrix4x4* inv_orientation = vtkMatrix4x4::New();
 	inv_orientation->Identity();
 	
-	vtkMetaImageData* metaimage = this->MetaImage;
+	// vtkMetaImageData* metaimage = this->MetaImage;
+	vtkMetaImageData* metaimage = NULL;
 	
 	if (metaimage)
 	{
@@ -235,8 +236,9 @@ public:
 	else
 	{ 
 	  vtkProp3D* prop = NULL;
-	  prop = this->View->FindDataSetActor (this->View->GetDataSetCollection()->GetDataSet ((int)(0)));
-	  M = prop->GetMatrix();
+	  // prop = this->View->FindDataSetActor (this->View->GetDataSetCollection()->GetDataSet ((int)(1)));
+	  prop = TensorGlyph->GetActor();
+	  M->DeepCopy(prop->GetMatrix());
 	}
 	
 	std::cout<<"estimating modification... "<<std::endl;
@@ -288,6 +290,11 @@ public:
  protected:
   vtkMyCommand()
   {
+    this->View = 0;
+    this->TensorGlyph = 0;
+    this->Sequence = 0;
+    this->Manager = 0;
+    this->MetaImage = 0;
   };
   ~vtkMyCommand(){};
 
@@ -391,9 +398,9 @@ int main (int argc, char* argv[])
       vtkProperty* prop = vtkProperty::SafeDownCast( metadataset->GetProperty() );
       prop->SetColor (0.3,0.3,0.3);
       if (vtkPointSet::SafeDownCast (metadataset->GetDataSet())->GetNumberOfPoints() > 5000)
-	prop->SetOpacity (0.15);
+	prop->SetOpacity (0.25);
       else
-	prop->SetOpacity (0.50);
+	prop->SetOpacity (0.60);
 	
       pool->SyncAddDataSet( vtkPointSet::SafeDownCast (metadataset->GetDataSet()), prop );
       metadataset->SetScalarVisibility(1);
