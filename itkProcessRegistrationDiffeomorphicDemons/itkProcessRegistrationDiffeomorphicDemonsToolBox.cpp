@@ -139,7 +139,7 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     this->addWidget(runButton);
     this->addWidget(d->progression_stack);
 
-    //enable about plugin. Construtor called after the plugin has been registered, go ahead call it.
+    //enable about plugin. Constructor called after the plugin has been registered, go ahead call it.
     medPluginManager* pm = medPluginManager::instance();
     dtkPlugin* plugin = pm->plugin(
                 "itkProcessRegistrationDiffeomorphicDemonsPlugin");
