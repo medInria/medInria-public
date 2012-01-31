@@ -100,7 +100,7 @@ QStringList itkFiltersPlugin::dependencies ( void ) const
 
 QStringList itkFiltersPlugin::tags ( void ) const
 {
-    return QStringList() << "ITK" << "process" << "preprocessing";
+    return QStringList() << "ITK" << "process" << "preprocessing" << "filtering";
 }
 
 QStringList itkFiltersPlugin::types ( void ) const
