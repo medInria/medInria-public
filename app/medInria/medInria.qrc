@@ -4,7 +4,6 @@
         <file>medInria.ico</file>
         <file>icons/about.png</file>
         <file>icons/quit.png</file>
-        <file>icons/anchor.png</file>
         <file>icons/cog.png</file>
         <file>icons/cropping.png</file>
         <file>icons/folder.png</file>
@@ -121,5 +120,7 @@
         <file>icons/pause.png</file>
         <file>icons/play.png</file>
         <file>authors.html</file>
+        <file>icons/fullscreenExpand.png</file>
+        <file>icons/fullscreenReduce.png</file>
     </qresource>
 </RCC>

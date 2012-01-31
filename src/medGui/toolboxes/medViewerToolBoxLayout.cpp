@@ -94,6 +94,7 @@ medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(par
 
     this->setTitle("Layout");
     this->setTabWidget(d->layoutToolBoxTab);
+	this->setToolTip(tr("Change layout properties (e.g. single or split screen)"));
 
     connect(d->layoutToolBoxTab, SIGNAL(currentChanged(int)), this, SLOT(modeChanged(int)));
     connect(layoutChooser, SIGNAL(selected(int,int)), this, SIGNAL(split(int,int)));

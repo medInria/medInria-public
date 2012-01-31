@@ -94,6 +94,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButton->setMinimumHeight ( 30 );
     aboutButton->setMaximumWidth ( 150 );
     aboutButton->setMinimumWidth ( 150 );
+    aboutButton->setToolTip(tr("About medInria"));
     aboutButton->setFocusPolicy ( Qt::NoFocus );
     aboutButton->setIcon ( QIcon ( ":icons/about.png" ) );
     aboutButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
@@ -104,6 +105,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsButton->setMinimumHeight ( 30 );
     settingsButton->setMaximumWidth ( 150 );
     settingsButton->setMinimumWidth ( 150 );
+    settingsButton->setToolTip(tr("Configure medInria"));
     settingsButton->setFocusPolicy ( Qt::NoFocus );
     settingsButton->setIcon ( QIcon ( ":icons/settings.svg" ) );
     settingsButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
@@ -145,9 +147,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     medInriaLabel2->setPixmap ( QPixmap ( ":pixmaps/medInria-logo-homepage.png" ) );
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
-    aboutTextEdit->setHtml ( "<br/><br/>\
-                              medInria is the medical imaging platform developed at Inria<br/><br/>\
-                              <center>Inria, Copyright 2011</center><br/><br/><br/>" );
+    QString aboutText("<br/><br/>\
+                                  medInria is the medical imaging platform developed at Inria<br/><br/>\
+                                  <center>Inria, Copyright 2011</center><br/><br/><br/>\
+                                 Version: ");
+    aboutText+= qApp->applicationVersion();
+    aboutTextEdit->setHtml (aboutText);
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
     QTextBrowser * aboutAuthorTextBrowser = new QTextBrowser(this);
@@ -167,6 +172,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QPushButton * hideAboutButton = new QPushButton ( this );
     hideAboutButton->setText ( "Hide" );
     hideAboutButton->setFocusPolicy ( Qt::NoFocus );
+    hideAboutButton->setToolTip( tr("Hide the About section") );
     QObject::connect ( hideAboutButton, SIGNAL ( clicked() ), this, SLOT ( onHideAbout() ) );
 
     aboutButtonLayout->addStretch();
