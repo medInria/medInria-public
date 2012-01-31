@@ -89,12 +89,15 @@ medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(par
     d->layoutToolBoxTab->addTab(new QWidget, "Single");
     d->layoutToolBoxTab->addTab(new QWidget, "Multi");
     d->layoutToolBoxTab->addTab(customPage, "Custom");
+	
+	d->layoutToolBoxTab->setTabToolTip(0,"Single display");
+	d->layoutToolBoxTab->setTabToolTip(1,"Multi-display (divide screen when an image is added to the view)");
+	d->layoutToolBoxTab->setTabToolTip(2,"Custom display setup");
 
     d->layoutToolBoxTab->setCurrentIndex(1);
 
     this->setTitle("Layout");
     this->setTabWidget(d->layoutToolBoxTab);
-	this->setToolTip(tr("Change layout properties (e.g. single or split screen)"));
 
     connect(d->layoutToolBoxTab, SIGNAL(currentChanged(int)), this, SLOT(modeChanged(int)));
     connect(layoutChooser, SIGNAL(selected(int,int)), this, SIGNAL(split(int,int)));

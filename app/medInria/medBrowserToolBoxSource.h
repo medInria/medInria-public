@@ -32,7 +32,7 @@ public:
      medBrowserToolBoxSource(QWidget *parent = 0);
     ~medBrowserToolBoxSource(void);
 
-    void addTab(QString tabName, QWidget *widget);
+	void addTab(QString tabName, QWidget *widget, QString description = "");
 
 signals:
     void indexChanged(int);

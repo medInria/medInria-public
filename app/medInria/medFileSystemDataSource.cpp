@@ -143,6 +143,11 @@ QList<medToolBox*> medFileSystemDataSource::getToolboxes()
     return QList<medToolBox*>();
 }
 
+QString medFileSystemDataSource::description(void) const
+{
+	return "Browse the file system";
+}
+
 void medFileSystemDataSource::onFileSystemImportClicked(void)
 {
     QFileInfo info(d->finder->selectedPath());

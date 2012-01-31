@@ -44,10 +44,11 @@ medBrowserToolBoxSource::~medBrowserToolBoxSource(void)
     d = NULL;
 }
 
-void medBrowserToolBoxSource::addTab(QString tabName, QWidget *widget)
+void medBrowserToolBoxSource::addTab(QString tabName, QWidget *widget, QString description)
 {
 	d->additional_widgets.push_back(widget);
-	d->tab->addTab(d->additional_widgets.back(), tabName);
+	int i = d->tab->addTab(d->additional_widgets.back(), tabName);
+	d->tab->setTabToolTip (i, description);
 }
 
 
