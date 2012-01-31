@@ -57,12 +57,6 @@ public slots:
     int update ( void );
     dtkAbstractData *output ( void );
 
-//    void updateProgress(int);
-
-signals:
-    void progress(int progress);
-
-
 private:
     itkFiltersPrivate *d;
 };

@@ -371,8 +371,6 @@ itkFilters::itkFilters ( void ) : dtkAbstractProcess(), d ( new itkFiltersPrivat
     d->sigmaValue = 1.0;
 
     d->filterType = itkFilters::ADD;
-
-//    connect(this, SIGNAL(progress(int)), this, SLOT(updateProgress(int)));
 }
 
 itkFilters::~itkFilters ( void )
@@ -385,11 +383,6 @@ void itkFilters::emitProgress(int prog)
 {
     emit progressed(prog);
 }
-
-//void itkFilters::updateProgress(int progress)
-//{
-//    qDebug() << "From itkFilters: " << progress;
-//}
 
 bool itkFilters::registered ( void )
 {
