@@ -107,18 +107,22 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->windowingPushButton->setIcon (QIcon (":/icons/wlww.png"));
     d->windowingPushButton->setCheckable (true);
     d->windowingPushButton->setMinimumWidth ( 20 );
+	d->windowingPushButton->setToolTip (tr("Windowing"));
     d->zoomingPushButton   = new QPushButton("", this);
     d->zoomingPushButton->setFocusPolicy(Qt::NoFocus);
     d->zoomingPushButton->setIcon (QIcon (":/icons/magnify.png"));
     d->zoomingPushButton->setCheckable (true);
+	d->zoomingPushButton->setToolTip (tr("Zooming"));
     d->slicingPushButton   = new QPushButton("", this);
     d->slicingPushButton->setFocusPolicy(Qt::NoFocus);
     d->slicingPushButton->setIcon (QIcon (":/icons/stack.png"));
     d->slicingPushButton->setCheckable (true);
+	d->slicingPushButton->setToolTip (tr("Slicing"));
     d->measuringPushButton = new QPushButton("", this);
     d->measuringPushButton->setFocusPolicy(Qt::NoFocus);
     d->measuringPushButton->setIcon (QIcon (":/icons/length.png"));
     d->measuringPushButton->setCheckable (true);
+	d->measuringPushButton->setToolTip (tr("Measuring"));
 
     QButtonGroup *mouseGroup = new QButtonGroup (this);
     mouseGroup->addButton ( d->windowingPushButton );
@@ -132,8 +136,10 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     d->scalarBarVisibilityCheckBox = new QCheckBox();
     d->scalarBarVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
+	d->scalarBarVisibilityCheckBox->setToolTip(tr("Show scalar bar"));
     d->axisVisibilityCheckBox = new QCheckBox();
     d->axisVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
+	d->axisVisibilityCheckBox->setToolTip(tr("Show axis"));
     d->rulerVisibilityCheckBox = new QCheckBox();
     d->rulerVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
     d->annotationsVisibilityCheckBox = new QCheckBox();
@@ -146,7 +152,9 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->scalarBarVisibilityCheckBox->setText(tr("Scalar Bar"));
     d->axisVisibilityCheckBox->setText(tr("Axis"));
     d->rulerVisibilityCheckBox->setText(tr("Ruler"));
+	d->rulerVisibilityCheckBox->setToolTip(tr("Show ruler"));
     d->annotationsVisibilityCheckBox->setText("Annotations");
+	d->annotationsVisibilityCheckBox->setToolTip(tr("Show annotations"));
     d->annotationsVisibilityCheckBox->setChecked(true);
     d->rulerVisibilityCheckBox->setChecked(true);
 
@@ -170,6 +178,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     d->view3dModeComboBox = new QComboBox(this);
     d->view3dModeComboBox->setFocusPolicy(Qt::NoFocus);
+	d->view3dModeComboBox->setToolTip(tr("Choose a 3D mode (e.g. Volume Rendering, Maximum Intensity Projection, MultiPlanar Reconstruction)"));
     d->view3dModeComboBox->addItem("VR");
     d->view3dModeComboBox->addItem("MIP - Maximum");
     d->view3dModeComboBox->addItem("MIP - Minimum");
@@ -179,6 +188,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     d->view3dVRModeComboBox = new QComboBox(this);
     d->view3dVRModeComboBox->setFocusPolicy(Qt::NoFocus);
+	d->view3dVRModeComboBox->setToolTip(tr("Choose among rendering techniques (e.g. GPU accelerated rendering, Ray Casting)"));
     d->view3dVRModeComboBox->addItem( "GPU" );
     d->view3dVRModeComboBox->addItem( "Ray Cast / Texture" );
     d->view3dVRModeComboBox->addItem( "Ray Cast" );
@@ -197,6 +207,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->croppingPushButton->setIcon (QIcon (":/icons/cropping.png"));
     d->croppingPushButton->setCheckable (true);
     d->croppingPushButton->setMinimumWidth ( 20 );
+	d->croppingPushButton->setToolTip(tr("Crop volume tool"));
 
     connect(d->view3dModeComboBox,            SIGNAL(currentIndexChanged(QString)), this, SLOT(onModeChanged(QString)));
     connect(d->view3dVRModeComboBox,          SIGNAL(currentIndexChanged(QString)), this, SLOT(onVRModeChanged(QString)));
@@ -291,26 +302,23 @@ void
         raiseSlider(d->view->layerCount() == 2);
 
 
-        if(d->view->meshLayerCount()!=0)
+        if(d->view->meshLayerCount()!=0) ///activate mesh interactor
             if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
             {
                 d->currentInteractor = d->interactors.indexOf(interactor);
             }
 
-            
+        //Loop all layers and create a layer icon on the toolbox with respect to the fact that it is a mesh or an image    
         for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
         {
             
             if(d->view->dataInList(i) && d->view->dataInList(i)->identifier().contains("vtkDataMesh"))
             {
-              //  qDebug() << "d->view->dataInList("<<i<<")->identifier() : " << d->view->dataInList(i)->identifier();
                 this->constructMeshLayer(d->view->dataInList(i), meshNumber);
                 meshNumber++;
             }
             else //if (d->view->dataInList(i))
             {
-              //  qDebug() << "d->view->dataInList("<<i<<")->identifier() : " << d->view->dataInList(i)->identifier();
-
                 this->constructImageLayer(d->view->dataInList(i), imageNumber);
                 imageNumber++;
             }
@@ -341,6 +349,7 @@ void
 
 void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, int imageLayer)
 {
+    
     if(!data)
         return;
     QString layerItemString = QString::number(imageLayer);
@@ -356,7 +365,7 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
         d->propertiesTree->takeTopLevelItem(index);
     }
 
-    if (data)
+    if (data) ///put thumbnail
     {
         if (medMetaDataKeys::SeriesThumbnail.is_set_in(data))
         {
@@ -633,7 +642,7 @@ void medViewerToolBoxViewProperties::onDataAdded( int layer)
 void
     medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data, int layer)
 {
-   
+  
     if(!data)
         return;
     if (!d->view)
@@ -892,7 +901,7 @@ void
             if(item->text(0).contains("Mesh"))
             {
                 QString s = item->text(0).remove(0,5);
-                d->view->setCurrentMeshLayer(s.toInt());
+                d->view->setCurrentMeshLayer(s.toInt()); //meshlayer is set here
                 d->isMesh = true;
             }
             else

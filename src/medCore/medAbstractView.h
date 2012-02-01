@@ -31,8 +31,8 @@ class QColor;
 
 /**
  * @class medAbstractView
- * @brief Base class for view types in medinria
- * medAbstractView specializes a dtkAbstractView in the context of medinria.
+ * @brief Base class for view types in medInria
+ * medAbstractView specializes a dtkAbstractView in the context of medInria.
  * Two concepts are added: view synchronization and color lookup.
  *
  * View synchronization is achieved via the Qt signal/slot mecanism. 5 signals
@@ -165,7 +165,7 @@ public:
     bool isInList(dtkAbstractData * data, int layer);
     void addDataInList(dtkAbstractData * data, int layer);
     void addDataInList(dtkAbstractData * data);
-    dtkAbstractData* dataInList(int layer);
+    dtkAbstractData* dataInList(int layer) const;
     void setDataInList(dtkAbstractData * data, int layer);
 
     void addDataType(const QString & dataDescription);
@@ -186,14 +186,14 @@ signals:
     void closing       (void);
 
     /**
-       In medinria, the daddy is the reference view (contoured in red). Only one
+       In medInria, the daddy is the reference view (contoured in red). Only one
        per pool is authorized. Emit this signal when the view wants to become the
        daddy.
      **/
     void becomeDaddy   (bool);
 
     /**
-       In medinria, the daddy is the reference view (contoured in
+       In medInria, the daddy is the reference view (contoured in
        red). Only one per pool is authorized. Emit this signal when
        the daddy state of the view changes.
      **/

@@ -1,4 +1,4 @@
-/* medinria.qss ---
+/* medInria.qss ---
 ;;
 ;; Author: Julien Wintz
 ;; Copyright (C) 2008 - Julien Wintz, Inria.
@@ -594,6 +594,7 @@ QHelpSearchQueryWidget QToolButton::menu-indicator {
 
     right: 7px;
 }
+
 
 /**
  * QGroupBox
@@ -1293,7 +1294,6 @@ QPushButton#tool:pressed, QPushButton#tool:checked {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
 }
 
-
 QToolButton {
     border: 0px;
     border-left: 1px solid #4b4b4b;
@@ -1310,6 +1310,13 @@ QToolButton {
 QToolButton:pressed, QToolButton:checked {
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
 }
+
+
+QToolButton#fullScreenButton{
+    border:none;
+    background-color: rgba(0,0,0,0);
+}
+
 
 /**
  * dtkFinderPathBar
@@ -1465,33 +1472,17 @@ medTabbedViewContainers QPushButton:pressed, medTabbedViewContainers QPushButton
  * medViewContainer
  *
  */
-
 medViewContainer {
-    border: none;
+    border: 1px solid darkGray;
     background: #313131;
 }
 
-medViewContainer[isDaddy="true"] {
+medViewContainer[isEmpty="false"][clicked="false"] {
+    border: 1px solid darkGray;
+    background: #313131;
+}
+
+medViewContainer [isEmpty="false"][clicked="true"] {
     border: 1px solid red;
-    background: #313131;
-}
-
-medViewContainer[isDaddy="false"][isEmpty="true"] {
-    border: 1px solid darkGray;
-    background: #313131;
-}
-
-medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="false"] {
-    border: none;
-    background: #313131;
-}
-
-medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="true"][clicked="false"] {
-    border: 1px solid darkGray;
-    background: #313131;
-}
-
-medViewContainer[isDaddy="false"][isEmpty="false"][isLeaf="true"][clicked="true"] {
-    border: 1px solid #9ab3d5;
     background: #313131;
 }

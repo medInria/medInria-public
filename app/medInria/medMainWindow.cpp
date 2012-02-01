@@ -102,7 +102,7 @@ public:
     medSettingsEditor * settingsEditor;
 
     QHBoxLayout * statusBarLayout;
-
+    QWidget * rightEndButtons;
     medStatusBar * statusBar;
 //     QWidget * quickAccessWidget;
     medQuickAccessMenu * quickAccessWidget;
@@ -114,6 +114,7 @@ public:
     QWidget * quitMessage;
 
     medButton *quitButton;
+    QToolButton *fullscreenButton;
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -140,16 +141,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect (medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &, const QString&)),
              this,SLOT(onOpenFile(const medDataIndex&,const QString&)));
 
-    // Setting up menu
-    QAction *windowFullScreenAction = new QAction ( "Toggle fullscreen mode", this );
-    windowFullScreenAction->setShortcut ( Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_F );
-    windowFullScreenAction->setToolTip ( "Toggle fullscreen mode" );
-    windowFullScreenAction->setCheckable ( true );
-    windowFullScreenAction->setChecked ( false );
 
-    connect ( windowFullScreenAction, SIGNAL ( toggled ( bool ) ), this, SLOT ( setFullScreen ( bool ) ) );
-
-    this->addAction ( windowFullScreenAction );
 
     // Setting up widgets
     d->settingsEditor = NULL;
@@ -181,7 +173,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessButton->setFocusPolicy ( Qt::NoFocus );
     d->quickAccessButton->setMinimumHeight(31);
     d->quickAccessButton->setStyleSheet("border: 0px;");
-    d->quickAccessButton->setIcon(QIcon(":medinria.ico"));
+    d->quickAccessButton->setIcon(QIcon(":medInria.ico"));
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
     d->quickAccessButton->setText ( "Workspaces access menu" );
     connect ( d->quickAccessButton,  SIGNAL ( clicked() ), this, SLOT ( onShowQuickAccess() ) );
@@ -225,12 +217,51 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     quitLayout->addWidget ( ok_button );
     quitLayout->addWidget ( no_button );
 
+    //Setup Fullscreen Button
+    QIcon fullscreenIcon ;
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"),QIcon::Normal,QIcon::Off);
+    fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce.png"),QIcon::Normal,QIcon::On);
+
+    // Setting up shortcuts
+    // we use a toolbutton, which has shorcuts,
+    // so we don't need the application shortcut anymore.
+//    QShortcut * fullscreenShorcut = new QShortcut(Qt::Key_F11,this);
+//    fullscreenShorcut->setContext(Qt::ApplicationShortcut);
+//    connect ( fullscreenShorcut, SIGNAL ( activated ( ) ), this, SLOT ( switchFullScreen () ) );
+
+    d->fullscreenButton = new QToolButton(this);
+    d->fullscreenButton->setIcon(fullscreenIcon);
+    d->fullscreenButton->setCheckable(true);
+    d->fullscreenButton->setChecked(false);
+    d->fullscreenButton->setObjectName("fullScreenButton");
+#if defined(Q_WS_MAC)
+    d->fullscreenButton->setShortcut(Qt::ControlModifier + Qt::Key_F);
+    d->fullscreenButton->setToolTip(tr("Switch FullScreen state (Cmd+f)"));
+#else
+    d->fullscreenButton->setShortcut(Qt::Key_F11);
+    d->fullscreenButton->setToolTip(tr("Switch FullScreen state (F11)"));
+#endif
+    QObject::connect ( d->fullscreenButton, SIGNAL ( toggled(bool) ),
+                       this, SLOT ( setFullScreen(bool) ) );
+
+
     d->quitMessage->setLayout ( quitLayout );
+
+
+    //QuitMessage and rightEndButtons will switch hidden and shown statuses.
+    d->rightEndButtons = new QWidget(this);
+    QHBoxLayout * rightEndButtonsLayout = new QHBoxLayout(d->rightEndButtons);
+    rightEndButtonsLayout->setContentsMargins ( 5, 0, 5, 0 );
+    rightEndButtonsLayout->setSpacing ( 5 );
+    rightEndButtonsLayout->addWidget( d->fullscreenButton );
+    rightEndButtonsLayout->addWidget( d->quitButton );
+
 
     d->statusBarLayout->addWidget ( d->quickAccessButton );
     d->statusBarLayout->addStretch();
     d->statusBarLayout->addWidget ( d->quitMessage );
-    d->statusBarLayout->addWidget ( d->quitButton );
+    d->statusBarLayout->addWidget( d->rightEndButtons );
+
     d->quitMessage->hide();
 
     //Create a container widget for the status bar
@@ -441,6 +472,44 @@ void medMainWindow::setFullScreen ( bool full )
         this->showNormal();
 }
 
+void medMainWindow::switchFullScreen ( )
+{
+    if ( !this->isFullScreen())
+        this->showFullScreen();
+    else
+        this->showNormal();
+}
+
+void medMainWindow::showFullScreen()
+{
+//    qDebug()<<"fullscreen!";
+    //update the icon, but do not trigger too many events
+    d->fullscreenButton->blockSignals(true);
+    d->fullscreenButton->setChecked(true);
+    d->fullscreenButton->blockSignals(false);
+    QMainWindow::showFullScreen();
+}
+
+void medMainWindow::showNormal()
+{
+//    qDebug()<<"normal";
+    //update the icon, but do not trigger too many events
+    d->fullscreenButton->blockSignals(true);
+    d->fullscreenButton->setChecked(false);
+    d->fullscreenButton->blockSignals(false);
+    QMainWindow::showNormal();
+}
+
+void medMainWindow::showMaximized()
+{
+//    qDebug()<<"maximized";
+    //update the icon, but do not trigger too many events
+    d->fullscreenButton->blockSignals(true);
+    d->fullscreenButton->setChecked(false);
+    d->fullscreenButton->blockSignals(false);
+    QMainWindow::showMaximized();
+}
+
 void medMainWindow::switchToHomepageArea ( void )
 {
     d->quickAccessButton->setText("Workspaces access menu");
@@ -519,13 +588,13 @@ void medMainWindow::onConfigurationTriggered ( QAction *action )
 void medMainWindow::onNoQuit ( void )
 {
     d->quitMessage->hide();
-    d->quitButton->show();
+    d->rightEndButtons->show();
 }
 
 void medMainWindow::onQuit ( void )
 {
     d->quitMessage->show();
-    d->quitButton->hide();
+    d->rightEndButtons->hide();
 }
 
 void medMainWindow::onSaveModified( void )

@@ -36,15 +36,16 @@ medApplication::medApplication(int & argc, char**argv) :
         QApplication(argc,argv),
         d(new medApplicationPrivate)
 {
-    this->setApplicationName("medinria");
-    this->setApplicationVersion("0.0.1");
+    this->setApplicationName("medInria");
+    qDebug() << "Version:" << MEDINRIA_VERSION;
+    this->setApplicationVersion(MEDINRIA_VERSION);
     this->setOrganizationName("inria");
     this->setOrganizationDomain("fr");
-    this->setWindowIcon(QIcon(":/medinria.ico"));
+    this->setWindowIcon(QIcon(":/medInria.ico"));
 
     //The ownership of the style object is transferred.
     this->setStyle( new QPlastiqueStyle() );
-    this->setStyleSheet(dtkReadFile(":/medinria.qss"));
+    this->setStyleSheet(dtkReadFile(":/medInria.qss"));
 
     //Set some splash screen properties:
     setMsgColor(Qt::black);

@@ -70,10 +70,13 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     d->process = NULL;
 
     // Process section
-    d->saveImageButton = new QPushButton(tr("Save Image"),this);
+    d->saveImageButton = new QPushButton(tr("Export Image"),this);
+    d->saveImageButton->setToolTip(tr("Save registered image to the File System"));
     connect (d->saveImageButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
 
-    d->saveTransButton = new QPushButton(tr("Save Transformation"),this);
+    d->saveTransButton = new QPushButton(tr("Export Transf."),this);
+    d->saveTransButton->setToolTip(
+                tr("Export the resulting transformation to the File System"));
     connect (d->saveTransButton, SIGNAL(clicked()), this, SLOT(onSaveTrans()));
 
 
@@ -81,6 +84,10 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 
     d->toolboxes = new QComboBox(this);
     d->toolboxes->addItem(tr("Choose algorithm"));
+    d->toolboxes->setToolTip(
+                tr( "Choose the registration algorithm"
+                    " amongst the loaded plugins" ));
+    d->toolboxes->setStyleSheet("QComboBox{margin-top: 5px}");
     medToolBoxFactory* tbFactory =medToolBoxFactory::instance();
     int i=1;
     foreach(QString toolbox, tbFactory->registrationToolBoxes())
@@ -123,8 +130,6 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
 
     addWidget(d->toolboxes);
     addWidget(layoutSection);
-    //addWidget(d->saveImageButton);
-    //addWidget(d->saveTransButton);
 
 
     this->setTitle(tr("Registration"));

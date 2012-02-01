@@ -104,13 +104,13 @@ username only matters if ssh has been chosen. In the case of gitorious hosted pr
 
 source_host is always the server host, and source_file is the path on the server to the git directory. Note that installer.py will add the protocol substring itself. Example:
 
-To check out medinria-asclepios-private, you need authentication on the server and can't use the git protocol.
- "git@dev-med.inria.fr:medinria-asclepios/medinria.git"
+To check out medInria-asclepios-private, you need authentication on the server and can't use the git protocol.
+ "git@dev-med.inria.fr:medInria-asclepios/medInria.git"
  is the path to the repository.
 
  you must then use the following syntax in your section:
 
-[medinria]
+[medInria]
 source_host=dev-med.inria.fr
 source_file=medinria-asclepios/medinria.git
 username=git

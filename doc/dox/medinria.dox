@@ -1,4 +1,4 @@
-/* medinria.dox --- 
+/* medInria.dox --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,9 +17,9 @@
  * 
  */
 
-/*! \mainpage medinria Reference Documentation
+/*! \mainpage medInria Reference Documentation
 
-  medinria is a medical images application and framework designed at INRIA.
+  medInria is a medical images application and framework designed at INRIA.
 
   \subpage modules
 

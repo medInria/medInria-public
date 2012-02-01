@@ -38,13 +38,13 @@ class dtkAbstractDataWriter;
 
 /**
 * @class medDatabaseImporter
-* @brief Threaded importing/indexing of files or directories into medinria database.
+* @brief Threaded importing/indexing of files or directories into medInria database.
 * @medDatabaseImporter is in charge of importing (or indexing, any word will be used
-* hereafter) items into medinria database.
+* hereafter) items into medInria database.
 * It is designed to run as a thread, to know how use it check the documentation
 * of @medJobItem.
 * Images can be imported, that means that are not only indexed but also copied in
-* medinria database (and as a result they can end up being aggregated by volume)
+* medInria database (and as a result they can end up being aggregated by volume)
 * or they can be just indexed (by indicating so using the parameters in the constructor)
 **/
 class MEDSQL_EXPORT medDatabaseImporter : public medJobItem
