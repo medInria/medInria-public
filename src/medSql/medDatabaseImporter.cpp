@@ -109,7 +109,7 @@ void medDatabaseImporter::run ( void )
     // In this first loop we read the headers of all the images to be imported
     // and check if we don't have any problem in reading the file, the header
     // or in selecting a proper format to store the new file afterwards
-    // new files ARE NOT written in medinria database yet, but are stored in a map for writing in a posterior step
+    // new files ARE NOT written in medInria database yet, but are stored in a map for writing in a posterior step
 
     QString tmpPatientId;
     QString currentPatientId = "";
@@ -216,7 +216,7 @@ void medDatabaseImporter::run ( void )
 
         imageFileName = imageFileName + futureExtension;
 
-        // 2.3) c) Add the image to a map for writing them all in medinria's database in a posterior step
+        // 2.3) c) Add the image to a map for writing them all in medInria's database in a posterior step
 
         // First check if patient/study/series/image path already exists in the database
         // Should we emit a message otherwise ??? TO
@@ -240,7 +240,7 @@ void medDatabaseImporter::run ( void )
     emit disableCancel ( this );
 
     // 3) Re-read selected files and re-populate them with missing metadata
-    //    then write them to medinria db and populate db tables
+    //    then write them to medInria db and populate db tables
 
     QMap<QString, QStringList>::const_iterator it = imagesGroupedByVolume.begin();
     QMap<QString, QString>::const_iterator  itPat = imagesGroupedByPatient.begin();
@@ -367,7 +367,7 @@ void medDatabaseImporter::onCancel ( QObject* )
 
 bool medDatabaseImporter::isPartialImportAttempt ( dtkAbstractData* dtkData )
 {
-    // here we check is the series we try to import is already in the database
+    // here we check if the series we try to import is already in the database
 
     QSqlDatabase db = * ( medDatabaseController::instance()->database() );
     QSqlQuery query ( db );
@@ -387,7 +387,7 @@ bool medDatabaseImporter::isPartialImportAttempt ( dtkAbstractData* dtkData )
         query.clear();
 
         QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(dtkData).simplified();
-        QString studyUid = medMetaDataKeys::StudyID.getFirstValue(dtkData);
+        QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(dtkData);
 
         query.prepare ( "SELECT id FROM study WHERE patient = :patient AND name = :studyName AND uid = :studyUid" );
         query.bindValue ( ":patient", patientDbId );
@@ -404,7 +404,7 @@ bool medDatabaseImporter::isPartialImportAttempt ( dtkAbstractData* dtkData )
             query.clear();
 
             QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
-            QString seriesUid = medMetaDataKeys::SeriesID.getFirstValue(dtkData);
+            QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(dtkData);
             QString orientation = medMetaDataKeys::Orientation.getFirstValue(dtkData);
             QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(dtkData);
             QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(dtkData);

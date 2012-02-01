@@ -19,13 +19,13 @@ def config_logging(log, config):
 
     if (log and fileName):
         #logging.basicConfig(filename=fileName,level=logging.DEBUG)
-        print "create logger from conf file:",fileName 
+        print "create logger from conf file:",fileName
         logging.config.fileConfig(fileName)
 
         # create logger
         logger = logging.getLogger('root')
     else:
-        print "create default logger" 
+        print "create default logger"
         # create logger
         logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                 level=logging.DEBUG)
@@ -174,7 +174,7 @@ def load_config_files(filenames=[]):
 def configure_project(project,config,architecture='linux'):
     """
     Run the configure command on the project.
-    The command may be cmake or ./configure, dependint on the config.
+    The command may be cmake or ./configure, depending on the config.
     Let's assume we are in the project's directory.
     """
     command=""
@@ -270,8 +270,8 @@ def test(project,config,architecture="linux"):
     os.chdir('..')
 
     return
-    
-    
+
+
 def uncomp_tar(project,config,file):
     """
     Uncompresses a file to the corresponding project's destination_dir
@@ -358,6 +358,8 @@ def _svn_path(project,config):
         user_item=user+"@"
     if scm_protocol == "ssh":
         path = "svn+ssh://"+user_item + source_host +'/'+ source_file
+    elif scm_protocol == "https":
+        path = "https://"+ source_host +'/'+ source_file
     else:
         path = source_host +'/'+ source_file
     return path
@@ -442,13 +444,16 @@ def _git_checkout(project, config):
         git_co_com += target
     else:
         # target is not found, create new branch
-        git_co_com += "-b " + target
+        # git_co_com += "-b " + target
         if remote_tracking:
             # new branch tracks remote branch of same name
-            git_co_com += " " + remote_tracking[0]
+            git_co_com += "-b " + target + " " + remote_tracking[0]
+#        elif active:
+#            # new branch tracks active local branch
+#            git_co_com += "-b " + target + " " + active[0]
         else:
             # new branch tracks active local branch
-            git_co_com += " " + active[0]
+            git_co_com += target
 
     # print git_command
     run_and_log(git_co_com.split())
@@ -477,12 +482,26 @@ def svn_checkout(project,config):
     #os.makedirs(config.get(project,"destination_dir"))
     #os.chdir()
     svn_command = config.get("commands","svn")
+    scm_protocol =  config.get(project,"scm_protocol")
+    user = config.get(project,"username")
     path = _svn_path(project,config)
     dest_dir =  config.get(project,"destination_dir")
 
-    svn_cmd=[svn_command,'checkout', path, dest_dir]
-    logging.info( svn_cmd)
-    run_and_log(svn_cmd)
+    if scm_protocol == "https":
+        #WARNING: here if the password is asked we can't see it,
+        #the buffered standard output will hide it indefinitely
+        #so we run it in a normal system call
+        svn_cmd = [svn_command,'checkout',"--username",user,path,dest_dir]
+        logging.warning("If you see this you are using svn with https.")
+        logging.warning("The command will be run from a non logged system call.")
+        logging.warning("If a password is prompted you, please allow to save it")
+        logging.info( svn_cmd)
+        os.system(" ".join(svn_cmd))
+    else:
+        svn_cmd=[svn_command,'checkout', path, dest_dir]
+        logging.info( svn_cmd)
+        #os.system(" ".join(svn_cmd))
+        run_and_log(svn_cmd)
     return
 
 def create_dirs(project,config):
@@ -594,7 +613,8 @@ def build_package(project,config,architecture):
         gen = "RPM"
         if pkg_mngr == "apt":
             gen = "DEB"
-        cmd = [cpack_cmd, "-G ", gen]
+        cmd = [cpack_cmd, "-G", gen]
+        logging.info(cmd)
         run_and_log(cmd)
 
     extra_package_cmd=config.get(project,"extra_package_cmd")
@@ -701,7 +721,7 @@ def main(argv):
 
     # configure projects
     parser.add_option("--configure", dest="configure",action="store_true",
-            default=True,help="configure projects (do not run cmake) (enabled \
+            default=True,help="configure projects (run cmake) (enabled \
                     by default)")
     parser.add_option("--no-configure", dest="configure",action="store_false",
             default=True,
@@ -721,7 +741,7 @@ def main(argv):
     parser.add_option("--no-test", dest="test",action="store_false",
             default=True,
             help="Do not run ctest on the projects")
-            
+
     # install projects
     parser.add_option("-i","--install", dest="install",action="store_true",
             default=True,
@@ -847,7 +867,7 @@ def main(argv):
         if len(extra_update_cmd):
             logging.info( extra_update_cmd)
             run_and_log(extra_update_cmd,shell=True)
-                
+
         cwd = os.path.join(projects_dir, config.get(project,"destination_dir"))
         os.chdir(cwd)
         if choose_fun('configure'):
@@ -866,7 +886,7 @@ def main(argv):
                 test(project,config,architecture)
         elif choose_fun('build') and choose_fun('test'):
             logging.error("Can't build and run CTest at the same time")
-            
+
         os.chdir(cwd)
         if choose_fun('doc'):
             logging.info( "doc " + project + "...")

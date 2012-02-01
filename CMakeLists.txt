@@ -20,17 +20,19 @@
 # Require 2.8 for correct behaviour of if( FALSE ).
 cmake_minimum_required(VERSION 2.8)
 
-project(medinria)
+project(medInria)
 
-set(${PROJECT_NAME}_VERSION_MAJOR 0 CACHE STRING "medinria major version number.")
-set(${PROJECT_NAME}_VERSION_MINOR 4 CACHE STRING "medinria minor version number.")
-set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "medinria build version number.")
+set(${PROJECT_NAME}_VERSION_MAJOR 2 CACHE STRING "medInria major version number." FORCE)
+set(${PROJECT_NAME}_VERSION_MINOR 0 CACHE STRING "medInria minor version number." FORCE)
+set(${PROJECT_NAME}_VERSION_BUILD 0 CACHE STRING "medInria build version number." FORCE)
 set(${PROJECT_NAME}_VERSION
   "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
 
 mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
+
+add_definitions(-DMEDINRIA_VERSION="${${PROJECT_NAME}_VERSION}")
 
 if(WIN32)
   option(MED_SHOW_CONSOLE "Show console at runtime (mainly for debugging)" "FALSE")
@@ -44,11 +46,11 @@ enable_testing()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-include(medinriaBuild)
+include(medInriaBuild)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-include(medinriaPack)
+include(medInriaPack)
 
 #configure ctest variables
 option(BUILD_REPORTING "Build Reporting")

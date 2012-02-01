@@ -112,7 +112,7 @@ void medSettingsEditor::initialize()
         d->editor->setVisible(false);
         d->stack->addWidget(d->editor);
     }
-    
+
     vLayout->addWidget(d->stack);
 
 
@@ -187,7 +187,7 @@ void medSettingsEditor::queryWidgets()
             scroll->setFocusPolicy(Qt::NoFocus);
             // we need to call this otherwise the scroll-
             // area limits the widgets to their minimum sizes
-            scroll->setWidgetResizable(true); 
+            scroll->setWidgetResizable(true);
             scroll->setWidget(setWid);
             d->tabWidget->addTab(scroll, setWid->tabName());
             d->settingsWidgets.insert(widgetStyle, setWid);

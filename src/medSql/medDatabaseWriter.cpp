@@ -86,18 +86,18 @@ void medDatabaseWriter::run ( void )
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
-    
+
     if ( !d->data->hasMetaData ( medMetaDataKeys::StudyDicomID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "0" );
-    
-    QString generatedSeriesID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
 
+    QString generatedSeriesID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
+    
     if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesID );
-    
+
     if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesDicomID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << generatedSeriesID );
-    
+
     if ( !d->data->hasMetaData ( medMetaDataKeys::Orientation.key() ) )
         d->data->addMetaData ( medMetaDataKeys::Orientation.key(), QStringList() << "" );
 
@@ -159,7 +159,7 @@ void medDatabaseWriter::run ( void )
         d->data->addMetaData ( medMetaDataKeys::Report.key(), QStringList() << "" );
 
     if ( !d->data->hasMetaData ( medMetaDataKeys::FilePaths.key() ) )
-        d->data->addMetaData ( medMetaDataKeys::FilePaths.key(), QStringList() << "generated with medinria" );
+        d->data->addMetaData ( medMetaDataKeys::FilePaths.key(), QStringList() << "generated with medInria" );
 
     QString size ="";
     if ( medAbstractDataImage *imagedata = dynamic_cast<medAbstractDataImage*> ( d->data ) )
@@ -210,54 +210,65 @@ void medDatabaseWriter::run ( void )
 
     bool dataExists = false;
 
-    query.prepare ( "SELECT id, patientId FROM patient WHERE name = :name AND birthdate = :birthdate" );
-    query.bindValue ( ":name", patientName );
-    query.bindValue ( ":birthdate", birthdate );
+    do {
+        dataExists = false;
+        query.prepare ( "SELECT id, patientId FROM patient WHERE name = :name AND birthdate = :birthdate" );
+        query.bindValue ( ":name", patientName );
+        query.bindValue ( ":birthdate", birthdate );
 
-    if ( !query.exec() )
-        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
-    if ( query.first() )
-    {
-        id = query.value ( 0 );
-        patientId = query.value ( 1 ).toString();
-
-        query.prepare ( "SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :uid" );
-        query.bindValue ( ":id", id );
-        query.bindValue ( ":name", studyName );
-        query.bindValue ( ":uid", studyUid );
         if ( !query.exec() )
             qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
         if ( query.first() )
         {
             id = query.value ( 0 );
+            patientId = query.value ( 1 ).toString();
 
-            query.prepare ( "SELECT id, seriesId FROM series WHERE study = :id AND name = :name AND uid = :uid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns" );
-            query.bindValue ( ":id",             id );
-            query.bindValue ( ":name",           seriesName );
-            query.bindValue ( ":uid",            seriesUid );
-            query.bindValue ( ":orientation",    orientation );
-            query.bindValue ( ":seriesNumber",   seriesNumber );
-            query.bindValue ( ":sequenceName",   sequenceName );
-            query.bindValue ( ":sliceThickness", sliceThickness );
-            query.bindValue ( ":rows",           rows );
-            query.bindValue ( ":columns",        columns );
-
+            query.prepare ( "SELECT id FROM study WHERE patient = :id AND name = :name AND uid = :uid" );
+            query.bindValue ( ":id", id );
+            query.bindValue ( ":name", studyName );
+            query.bindValue ( ":uid", studyUid );
             if ( !query.exec() )
                 qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
 
             if ( query.first() )
             {
                 id = query.value ( 0 );
-                seriesId = query.value ( 1 ).toString();
 
-                qDebug() << "Series ID: " << seriesId;
+                query.prepare ( "SELECT id, seriesId FROM series WHERE study = :id AND name = :name AND uid = :uid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns" );
+                query.bindValue ( ":id",             id );
+                query.bindValue ( ":name",           seriesName );
+                query.bindValue ( ":uid",            seriesUid );
+                query.bindValue ( ":orientation",    orientation );
+                query.bindValue ( ":seriesNumber",   seriesNumber );
+                query.bindValue ( ":sequenceName",   sequenceName );
+                query.bindValue ( ":sliceThickness", sliceThickness );
+                query.bindValue ( ":rows",           rows );
+                query.bindValue ( ":columns",        columns );
 
-                dataExists = true;
+                if ( !query.exec() )
+                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+                if ( query.first() )
+                {
+                    id = query.value ( 0 );
+                    seriesId = query.value ( 1 ).toString();
+
+                    qDebug() << "Series ID: " << seriesId;
+
+                    dataExists = true;
+                }
             }
         }
+
+        if (dataExists)
+        {
+            seriesName += "-1";
+            d->data->setMetaData(medMetaDataKeys::SeriesDescription.key(),seriesName);
+            qDebug() << "Already exists, new series name" << seriesName;
+        }
     }
+    while (dataExists);
 
     if ( dataExists )
     {
@@ -287,6 +298,24 @@ void medDatabaseWriter::run ( void )
     QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
 
     int writeSuccess = 0;
+    
+    // Trick similar to medDatabaseImporter
+    QString identifier = d->data->identifier();
+    QString extension = "";
+    
+    if (identifier == "vtkDataMesh") {
+        extension = ".vtk";
+    } else if (identifier == "vtkDataMesh4D") {
+        extension = ".v4d";
+    } else if (identifier == "v3dDataFibers") {
+        extension = ".xml";
+    } else if (identifier.contains("vistal")) {
+        extension = ".dim";
+    } else if (identifier.contains ("CompositeData")) {
+        extension = ".cds";
+    } else if (identifier.contains ("Image")) {
+        extension = ".mha";
+    }    
 
     for ( int i=0; i<writers.size(); i++ )
     {
@@ -302,6 +331,8 @@ void medDatabaseWriter::run ( void )
         qDebug() << "success with " << dataWriter->identifier();
         dataWriter->setData (d->data);
 
+        // This is what should be done but for now writers come in a wrong order making analyze the default (and it doesn't handle well orientation matrices
+        /*
         QStringList extensions = dataWriter->supportedFileExtensions();
         QString extension;
         if ( extensions.isEmpty() )
@@ -315,6 +346,8 @@ void medDatabaseWriter::run ( void )
         {
             extension = extensions[0];
         }
+        */
+        
         QString imageFileName = imageFileNameBase + extension;
         qDebug() << "trying to write in file : "<< medStorage::dataLocation() + imageFileName;
 

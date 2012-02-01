@@ -16,8 +16,8 @@ public:
     QRadioButton* eigenVectorV3RadioButton;
     QCheckBox*    reverseBackgroundColorCheckBox;
     QSlider*      glyphResolutionSlider;
-    QSlider*      minorScalingSlider;
-    QSlider*      majorScalingSlider;
+    QSpinBox*     scaleBase;
+    QSpinBox*     scaleExp;
     QCheckBox*    hideShowAxialCheckBox;
     QCheckBox*    hideShowCoronalCheckBox;
     QCheckBox*    hideShowSagittalCheckBox;
@@ -108,45 +108,24 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     connect(d->glyphResolutionSlider, SIGNAL(valueChanged(int)), glyphResolutionSpinBox, SLOT(setValue(int)));
     connect(glyphResolutionSpinBox, SIGNAL(valueChanged(int)), d->glyphResolutionSlider, SLOT(setValue(int)));
 
-    // minor scaling
-    d->minorScalingSlider =  new QSlider(Qt::Horizontal, displayWidget);
-    d->minorScalingSlider->setMinimum(1);
-    d->minorScalingSlider->setMaximum(9);
-    d->minorScalingSlider->setSingleStep(1);
-    d->minorScalingSlider->setValue(1);
+    // scale = scaleBase * 10 ^ scaleExp
 
-    QSpinBox* minorScalingSpinBox = new QSpinBox(displayWidget);
-    minorScalingSpinBox->setMinimum(1);
-    minorScalingSpinBox->setMaximum(9);
-    minorScalingSpinBox->setSingleStep(1);
-    minorScalingSpinBox->setValue(1);
+    d->scaleBase = new QSpinBox(displayWidget);
+    d->scaleBase->setMinimum(1);
+    d->scaleBase->setMaximum(9);
+    d->scaleBase->setSingleStep(1);
+    d->scaleBase->setValue(1);
 
-    QHBoxLayout* minorScalingLayout = new QHBoxLayout;
-    minorScalingLayout->addWidget(d->minorScalingSlider);
-    minorScalingLayout->addWidget(minorScalingSpinBox);
+    d->scaleExp = new QSpinBox(displayWidget);
+    d->scaleExp->setMinimum(-10);
+    d->scaleExp->setMaximum(10);
+    d->scaleExp->setSingleStep(1);
+    d->scaleExp->setValue(0);
 
-    connect(d->minorScalingSlider, SIGNAL(valueChanged(int)), minorScalingSpinBox, SLOT(setValue(int)));
-    connect(minorScalingSpinBox, SIGNAL(valueChanged(int)), d->minorScalingSlider, SLOT(setValue(int)));
-
-    // major scaling
-    d->majorScalingSlider =  new QSlider(Qt::Horizontal, displayWidget);
-    d->majorScalingSlider->setMinimum(-10);
-    d->majorScalingSlider->setMaximum(10);
-    d->majorScalingSlider->setSingleStep(1);
-    d->majorScalingSlider->setValue(0);
-
-    QSpinBox* majorScalingSpinBox = new QSpinBox(displayWidget);
-    majorScalingSpinBox->setMinimum(-10);
-    majorScalingSpinBox->setMaximum(10);
-    majorScalingSpinBox->setSingleStep(1);
-    majorScalingSpinBox->setValue(0);
-
-    QHBoxLayout* majorScalingLayout = new QHBoxLayout;
-    majorScalingLayout->addWidget(d->majorScalingSlider);
-    majorScalingLayout->addWidget(majorScalingSpinBox);
-
-    connect(d->majorScalingSlider, SIGNAL(valueChanged(int)), majorScalingSpinBox, SLOT(setValue(int)));
-    connect(majorScalingSpinBox, SIGNAL(valueChanged(int)), d->majorScalingSlider, SLOT(setValue(int)));
+    QHBoxLayout* scaleLayout = new QHBoxLayout;
+    scaleLayout->addWidget(d->scaleBase);
+    scaleLayout->addWidget(new QLabel(" x 10 ^ ", displayWidget));
+    scaleLayout->addWidget(d->scaleExp);
 
     // hide or show axial, coronal, and sagittal
     d->hideShowAxialCheckBox = new QCheckBox("Axial", displayWidget);
@@ -169,8 +148,7 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     layout->addRow(tr("Flip:"), flipAxesLayout);
     layout->addRow(tr("Color with:"), eigenVectorGroupLayout);
     layout->addRow(tr("Resolution:"), glyphResolutionLayout);
-    layout->addRow(tr("Minor scaling:"), minorScalingLayout);
-    layout->addRow(tr("Major scaling:"), majorScalingLayout);
+    layout->addRow(tr("Scale:"), scaleLayout);
     layout->addRow(tr("Hide/show:"), slicesLayout);
 
     // connect all the signals
@@ -193,8 +171,8 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     connect(d->eigenVectorV3RadioButton,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV3Toggled(bool)));
 
     // we need to calculate one single number for the scale, out of the minor and major scales
-    connect(d->minorScalingSlider,            SIGNAL(valueChanged(int)),                   this, SLOT(onMinorScalingChanged(int)));
-    connect(d->majorScalingSlider,            SIGNAL(valueChanged(int)),                   this, SLOT(onMajorScalingChanged(int)));
+    connect(d->scaleBase,            SIGNAL(valueChanged(int)),                   this, SLOT(onMinorScalingChanged(int)));
+    connect(d->scaleExp,            SIGNAL(valueChanged(int)),                   this, SLOT(onMajorScalingChanged(int)));
 
     this->setTitle("Tensor View");
     this->addWidget(displayWidget);
@@ -256,8 +234,8 @@ int medToolBoxDiffusionTensorView::glyphResolution(void)
 
 double medToolBoxDiffusionTensorView::scale(void)
 {
-    int minorScale = d->minorScalingSlider->value();
-    int majorScaleExponent = d->majorScalingSlider->value();
+    int minorScale = d->scaleBase->value();
+    int majorScaleExponent = d->scaleExp->value();
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
     return scale;
@@ -330,7 +308,7 @@ void medToolBoxDiffusionTensorView::onEigenVectorV3Toggled(bool isSelected)
 
 void medToolBoxDiffusionTensorView::onMinorScalingChanged(int minorScale)
 {
-    int majorScaleExponent = d->majorScalingSlider->value();
+    int majorScaleExponent = d->scaleExp->value();
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
     emit scalingChanged(scale);
@@ -338,7 +316,7 @@ void medToolBoxDiffusionTensorView::onMinorScalingChanged(int minorScale)
 
 void medToolBoxDiffusionTensorView::onMajorScalingChanged(int majorScaleExponent)
 {
-    int minorScale = d->minorScalingSlider->value();
+    int minorScale = d->scaleBase->value();
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
     emit scalingChanged(scale);
