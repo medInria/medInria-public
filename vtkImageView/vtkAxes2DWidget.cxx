@@ -209,7 +209,7 @@ void vtkAxes2DWidget::ComputePlanes(void)
 {
   if (!this->ImageView || !this->ImageView->GetRenderer() || !this->ImageView->GetImageActor())
     return;
-
+  
   unsigned char red[3]   = {0,0,0};
   unsigned char green[3] = {0,0,0};
   unsigned char blue[3]  = {0,0,0};
@@ -247,12 +247,12 @@ void vtkAxes2DWidget::ComputePlanes(void)
   double* axisy = cam->GetViewUp();
   double axisx[3];
   vtkMath::Cross (axisy, normal, axisx);
-
+  
   this->PlaneXmin->SetNormal (axisx);
   this->PlaneXmax->SetNormal (axisx);
   this->PlaneYmin->SetNormal (axisy);
   this->PlaneYmax->SetNormal (axisy);
-
+  
   int* ext = this->ImageView->GetImageActor()->GetDisplayExtent();
   
   int imageposition[3];
@@ -284,7 +284,7 @@ void vtkAxes2DWidget::ComputeLyingPoints(double* pos)
   //this->ComputePlanes(); // image may have changed, so we need to re-compute planes
   
   double p0[3], p1[3], p2[3], p3[3], r0[3], r1[3], r2[3], r3[3];
-
+  
   for (unsigned int i=0; i<3; i++)
   {
     r0[i] = pos[i] - this->Radius * this->PlaneXmin->GetNormal()[i];
@@ -298,53 +298,53 @@ void vtkAxes2DWidget::ComputeLyingPoints(double* pos)
   vtkPlane::ProjectPoint (pos, this->PlaneYmin->GetOrigin(), this->PlaneYmin->GetNormal(), p2);
   vtkPlane::ProjectPoint (pos, this->PlaneYmax->GetOrigin(), this->PlaneYmax->GetNormal(), p3);
   
-  if (this->PlaneYmax->EvaluateFunction (pos) > 0) 	 
+  if (this->PlaneYmax->EvaluateFunction (pos) > 0)
   {
     vtkPlane::ProjectPoint (p0, this->PlaneYmax->GetOrigin(), this->PlaneYmax->GetNormal(), p0);
     vtkPlane::ProjectPoint (p1, this->PlaneYmax->GetOrigin(), this->PlaneYmax->GetNormal(), p1);
     vtkPlane::ProjectPoint (r0, this->PlaneYmax->GetOrigin(), this->PlaneYmax->GetNormal(), r0);
     vtkPlane::ProjectPoint (r1, this->PlaneYmax->GetOrigin(), this->PlaneYmax->GetNormal(), r1);
-  } 	 
-  if (this->PlaneYmin->EvaluateFunction (pos) < 0) 	 
+  }
+  if (this->PlaneYmin->EvaluateFunction (pos) < 0)
   {
     vtkPlane::ProjectPoint (p0, this->PlaneYmin->GetOrigin(), this->PlaneYmin->GetNormal(), p0);
     vtkPlane::ProjectPoint (p1, this->PlaneYmin->GetOrigin(), this->PlaneYmin->GetNormal(), p1);
     vtkPlane::ProjectPoint (r0, this->PlaneYmin->GetOrigin(), this->PlaneYmin->GetNormal(), r0);
-    vtkPlane::ProjectPoint (r1, this->PlaneYmin->GetOrigin(), this->PlaneYmin->GetNormal(), r1); 	 
+    vtkPlane::ProjectPoint (r1, this->PlaneYmin->GetOrigin(), this->PlaneYmin->GetNormal(), r1); 
   }
-  if (this->PlaneXmax->EvaluateFunction (pos) > 0) 	 
+  if (this->PlaneXmax->EvaluateFunction (pos) > 0)
   {
     vtkPlane::ProjectPoint (p2, this->PlaneXmax->GetOrigin(), this->PlaneXmax->GetNormal(), p2); 
     vtkPlane::ProjectPoint (p3, this->PlaneXmax->GetOrigin(), this->PlaneXmax->GetNormal(), p3);
     vtkPlane::ProjectPoint (r2, this->PlaneXmax->GetOrigin(), this->PlaneXmax->GetNormal(), r2);
-    vtkPlane::ProjectPoint (r3, this->PlaneXmax->GetOrigin(), this->PlaneXmax->GetNormal(), r3); 	 
-  } 	 
-  if (this->PlaneXmin->EvaluateFunction (pos) < 0) 	 
+    vtkPlane::ProjectPoint (r3, this->PlaneXmax->GetOrigin(), this->PlaneXmax->GetNormal(), r3);
+  }
+  if (this->PlaneXmin->EvaluateFunction (pos) < 0)
   {
     vtkPlane::ProjectPoint (p2, this->PlaneXmin->GetOrigin(), this->PlaneXmin->GetNormal(), p2);
     vtkPlane::ProjectPoint (p3, this->PlaneXmin->GetOrigin(), this->PlaneXmin->GetNormal(), p3);
     vtkPlane::ProjectPoint (r2, this->PlaneXmin->GetOrigin(), this->PlaneXmin->GetNormal(), r2);
-    vtkPlane::ProjectPoint (r3, this->PlaneXmin->GetOrigin(), this->PlaneXmin->GetNormal(), r3); 	 
+    vtkPlane::ProjectPoint (r3, this->PlaneXmin->GetOrigin(), this->PlaneXmin->GetNormal(), r3);
   }
-
-  if (this->PlaneXmax->EvaluateFunction (r0) > 0) 	 
-    vtkPlane::ProjectPoint (r0, this->PlaneXmax->GetOrigin(), this->PlaneXmax->GetNormal(), r0); 	 
-  if (this->PlaneXmax->EvaluateFunction (r1) > 0) 	 
-    vtkPlane::ProjectPoint (r1, this->PlaneXmax->GetOrigin(), this->PlaneXmax->GetNormal(), r1); 	 
-  if (this->PlaneXmin->EvaluateFunction (r0) < 0) 	 
-    vtkPlane::ProjectPoint (r0, this->PlaneXmin->GetOrigin(), this->PlaneXmax->GetNormal(), r0); 	 
-  if (this->PlaneXmin->EvaluateFunction (r1) < 0) 	 
-    vtkPlane::ProjectPoint (r1, this->PlaneXmin->GetOrigin(), this->PlaneXmax->GetNormal(), r1); 	 
   
-  if (this->PlaneYmax->EvaluateFunction (r2) > 0) 	 
-    vtkPlane::ProjectPoint (r2, this->PlaneYmax->GetOrigin(), this->PlaneYmax->GetNormal(), r2); 	 
-  if (this->PlaneYmax->EvaluateFunction (r3) > 0) 	 
-    vtkPlane::ProjectPoint (r3, this->PlaneYmax->GetOrigin(), this->PlaneYmax->GetNormal(), r3); 	 
-  if (this->PlaneYmin->EvaluateFunction (r2) < 0) 	 
-    vtkPlane::ProjectPoint (r2, this->PlaneYmin->GetOrigin(), this->PlaneYmax->GetNormal(), r2); 	 
-  if (this->PlaneYmin->EvaluateFunction (r3) < 0) 	 
-    vtkPlane::ProjectPoint (r3, this->PlaneYmin->GetOrigin(), this->PlaneYmax->GetNormal(), r3); 	 
-
+  if (this->PlaneXmax->EvaluateFunction (r0) > 0)
+    vtkPlane::ProjectPoint (r0, this->PlaneXmax->GetOrigin(), this->PlaneXmax->GetNormal(), r0);
+  if (this->PlaneXmax->EvaluateFunction (r1) > 0)
+    vtkPlane::ProjectPoint (r1, this->PlaneXmax->GetOrigin(), this->PlaneXmax->GetNormal(), r1);
+  if (this->PlaneXmin->EvaluateFunction (r0) < 0)
+    vtkPlane::ProjectPoint (r0, this->PlaneXmin->GetOrigin(), this->PlaneXmax->GetNormal(), r0);
+  if (this->PlaneXmin->EvaluateFunction (r1) < 0)
+    vtkPlane::ProjectPoint (r1, this->PlaneXmin->GetOrigin(), this->PlaneXmax->GetNormal(), r1);
+  
+  if (this->PlaneYmax->EvaluateFunction (r2) > 0)
+    vtkPlane::ProjectPoint (r2, this->PlaneYmax->GetOrigin(), this->PlaneYmax->GetNormal(), r2);
+  if (this->PlaneYmax->EvaluateFunction (r3) > 0)
+    vtkPlane::ProjectPoint (r3, this->PlaneYmax->GetOrigin(), this->PlaneYmax->GetNormal(), r3);
+  if (this->PlaneYmin->EvaluateFunction (r2) < 0)
+    vtkPlane::ProjectPoint (r2, this->PlaneYmin->GetOrigin(), this->PlaneYmax->GetNormal(), r2);
+  if (this->PlaneYmin->EvaluateFunction (r3) < 0)
+    vtkPlane::ProjectPoint (r3, this->PlaneYmin->GetOrigin(), this->PlaneYmax->GetNormal(), r3);
+  
   this->Points->SetPoint (0, p0);
   this->Points->SetPoint (1, r0);
   this->Points->SetPoint (2, p1);

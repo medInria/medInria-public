@@ -511,12 +511,38 @@ void vtkImageView::UnInstallPipeline()
   }
 }
 
+
+//----------------------------------------------------------------------------
+void vtkImageView::GetWithinBoundsPosition (double* pos1, double* pos2)
+{
+  for (unsigned int i=0; i<3; i++) pos2[i] = pos1[i];
+  
+  if (!this->GetInput())
+    return;
+
+  int indices[3];
+  this->GetImageCoordinatesFromWorldCoordinates (pos1, indices);
+  int* w_extent = this->GetInput()->GetWholeExtent();
+  for (unsigned int i=0; i<3; i++)
+  {
+    indices[i] = std::min (indices[i], w_extent[2 * i + 1]);
+    indices[i] = std::max (indices[i], w_extent[2 * i]);
+  }
+
+  this->GetWorldCoordinatesFromImageCoordinates (indices, pos2);
+  
+}
+
+
 //----------------------------------------------------------------------------
 void vtkImageView::SetCurrentPoint (double pos[3])
 {
-  this->CurrentPoint[0] = pos[0];
-  this->CurrentPoint[1] = pos[1];
-  this->CurrentPoint[2] = pos[2];
+  double inside_pos[3];
+  this->GetWithinBoundsPosition (pos, inside_pos);
+  
+  this->CurrentPoint[0] = inside_pos[0];
+  this->CurrentPoint[1] = inside_pos[1];
+  this->CurrentPoint[2] = inside_pos[2];
   this->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL);
   this->Modified();
 }
@@ -1532,7 +1558,7 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
   itkImage->UpdateOutputInformation();
  /* if (this->ITKInput==itkImage)
     return;*/
-  if (layer < this->ITKInputVector.size() && (this->ITKInputVector[layer]==itkImage) )
+  if (layer < (int)(this->ITKInputVector.size()) && (this->ITKInputVector[layer]==itkImage) )
     return;
 
   typedef itk::ImageToVTKImageFilter< itk::Image<T, 3> > ConverterType;
@@ -1571,7 +1597,7 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
   this->SetInput ( myConverter->GetOutput(), matrix, layer);
   this->Impl->ImageConverter[layer] = myConverter;
 
-  if(this->ITKInputVector.size() <= layer) {
+  if((int)(this->ITKInputVector.size()) <= layer) {
       this->ITKInputVector.resize (layer+1);
       this->ITKInputVector[layer] = itkImage;
   }
@@ -1648,7 +1674,7 @@ vtkImplementSetITKInputMacro (FloatVector3Type);
 
 itk::ImageBase<3>* vtkImageView::GetITKInput (int layer) const
 {
-  if (layer < this->ITKInputVector.size())
+  if (layer < (int)(this->ITKInputVector.size()))
     return this->ITKInputVector[layer];
   return NULL;
 }

@@ -625,6 +625,8 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   */
   virtual vtkImageData *ResliceImageToInput(vtkImageData *image, vtkMatrix4x4 *matrix);
 
+  virtual void GetWithinBoundsPosition (double* pos1, double* dos2);
+  
   private:
 #ifdef vtkINRIA3D_USE_ITK
     //! Template function which implements SetInput for all types. 

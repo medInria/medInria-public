@@ -407,8 +407,6 @@ void vtkImageView2D::SetSlice(int slice)
   // Update the instances according to displacement.
   double pos[3];
   pointTransform->TransformPoint ( this->CurrentPoint , pos );
-  //  for (unsigned int i=0; i<3; i++)
-  //    pos[i] = this->CurrentPoint[i] + displacement[i];
   // NB: Modified() and InvokeEvent( vtkImageView::CurrentPointChangedEvent ) are
   // callled in SetCurrentPoint()
   
@@ -445,7 +443,6 @@ void vtkImageView2D::SetSliceOrientation(int orientation)
   {
     this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
     this->UpdateDisplayExtent();
-    // this->UpdateCenter();
     this->UpdateSlicePlane();
     this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
   }
@@ -613,26 +610,30 @@ void vtkImageView2D::SetViewConvention(int convention)
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetViewOrientation(int orientation)
 {
-  /// \todo: in terms of view orientation here we can add some cardiac specific: short axis, long axis, and 4-chambers !!! exiting !
-  if ( (orientation < vtkImageView2D::VIEW_ORIENTATION_SAGITTAL) || orientation == this->ViewOrientation)
-    return;
-  
-  unsigned int sliceorientation = 0;
+  /// \todo: in terms of view orientation here we can add some cardiac specific: short axis, long axis, and 4-chambers !!!
+
   double dot = 0;
+  double projection[3];
+
+  /// Proiority to the xy plane :
+  int viewtoslice[3] = {-1,-1,-1};
   
-  if ( this->GetOrientationMatrix() )
+  for (unsigned int i=0; i<3; i++)
   {
-    for (unsigned int i=0; i<3; i++)
+    // take the third column of the orientation matrix
+    projection[i] = this->GetOrientationMatrix()->GetElement (i, 2);
+    
+    // check to which axis this vector is the closest
+    if (std::abs (projection[i]) > dot)
     {
-      if (dot < std::abs (this->GetOrientationMatrix()->GetElement (orientation, i)))
-      {
-        dot = std::abs (this->GetOrientationMatrix()->GetElement (orientation, i));
-        sliceorientation = i;
-      }
+      dot = std::abs (projection[i]);
+      viewtoslice[i]       = 2;      
+      viewtoslice[(i+1)%3] = 0;
+      viewtoslice[(i+2)%3] = 1;
     }
   }
   
-  this->SetSliceOrientation (sliceorientation);
+  this->SetSliceOrientation (viewtoslice[orientation]);
 }
 
 //----------------------------------------------------------------------------
@@ -647,7 +648,6 @@ void vtkImageView2D::SetOrientationMatrix (vtkMatrix4x4* matrix)
   {
     this->Slice = this->GetSliceForWorldCoordinates (this->CurrentPoint);
     this->UpdateDisplayExtent();
-    // this->UpdateCenter();
     this->UpdateSlicePlane();
     this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
   }
@@ -693,10 +693,17 @@ void vtkImageView2D::InitializeSlicePlane(void)
 
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetCurrentPoint(double pos[3])
-{    
+{
   int old_slice = this->Slice;
   int new_slice = this->GetSliceForWorldCoordinates (pos);
   
+  int *range = this->GetSliceRange();
+  if (range)
+  {
+    new_slice = std::max (new_slice, range[0]);
+    new_slice = std::min (new_slice, range[1]);
+  }
+
   bool sliceChanged = false;
 
   if(new_slice != old_slice)
@@ -710,7 +717,6 @@ void vtkImageView2D::SetCurrentPoint(double pos[3])
   if (sliceChanged)
   {
       this->UpdateDisplayExtent();
-      // this->UpdateCenter();
       this->UpdateSlicePlane();
       this->InvokeEvent (vtkImageView2D::SliceChangedEvent);
   }

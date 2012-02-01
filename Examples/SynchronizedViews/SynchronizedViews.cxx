@@ -96,12 +96,10 @@ public:
 	  id = id+1;
 	for (unsigned int i=0; i<this->Sequences.size(); i++)
 	  this->Sequences[i]->UpdateToIndex (id);
-	// for (int i=0; i<this->Collection->GetNumberOfItems(); i++)
-	//   this->Collection->GetItem (i)->Modified();	  
 	this->Collection->SyncRender();
 	
-      }    
-    }    
+      }
+    }
   }
   
 
@@ -109,6 +107,7 @@ public:
   vtkMyCommand()
   {
     toggle = 1;
+    orientation = 0;
     this->Viewer = NULL;
     this->Collection = NULL;
   };
@@ -121,8 +120,7 @@ public:
   
   std::vector<vtkMetaDataSetSequence*> Sequences;
   bool toggle;
-  
-  
+  unsigned int orientation;
 };
 
 
@@ -130,7 +128,7 @@ public:
 int main (int argc, char* argv[])
 {
 
-  int do_multi_planes  = 0;
+  int do_multi_planes  = 1;
   int do_cardiac_style = 1;
 
 #ifdef ITK_USE_REVIEW
@@ -266,8 +264,8 @@ int main (int argc, char* argv[])
 	view2->SetRenderer(ren2);
 	view2->SetPosition (position);
 	view2->SetInput (image);
-	view2->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
 	view2->SetOrientationMatrix(matrix);
+	view2->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
 	view2->GetCornerAnnotation()->SetText (0, filename.c_str());
 	pool->AddItem (view2);
 	view2->Delete();
@@ -289,8 +287,8 @@ int main (int argc, char* argv[])
 	view3->SetRenderer(ren3);
 	view3->SetPosition (position);
 	view3->SetInput (image);
-	view3->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_CORONAL);
 	view3->SetOrientationMatrix(matrix);
+	view3->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_CORONAL);
 	view3->GetCornerAnnotation()->SetText (0, filename.c_str());
 	
 	if (do_cardiac_style)
@@ -337,8 +335,8 @@ int main (int argc, char* argv[])
   pool->SyncSetShowAnnotations (1);
   pool->SyncSetShowScalarBar (0);
   pool->SyncSetShowRulerWidget (0);
-  pool->SyncSetShowImageAxis (1);
-  pool->SetLinkColorWindowLevel (0);
+  pool->SyncSetShowImageAxis (0);
+  pool->SetLinkColorWindowLevel (1);
   
   pool->SyncSetAnnotationStyle (vtkImageView2D::AnnotationStyle2);
   pool->SyncSetWheelInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
