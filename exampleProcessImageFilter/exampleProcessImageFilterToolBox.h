@@ -33,25 +33,27 @@ class exampleProcessImageFilterToolBoxPrivate;
 * Sets the voxel seed coordinates and LowerThreshold from QSpinBox(es)
 **/
 
-class exampleProcessImageFilterToolBox : public medToolBoxDiffusionCustom
-{
+class exampleProcessImageFilterToolBox : public medToolBoxDiffusionCustom {
+
     Q_OBJECT
 
 public:
+
      exampleProcessImageFilterToolBox(QWidget *parent = 0);
-    ~exampleProcessImageFilterToolBox(void);
+    ~exampleProcessImageFilterToolBox();
 
-    QString description (void) const;
+    QString description() const;
 
-    dtkAbstractProcess *create (void);
-
-    dtkAbstractData *output (void) const;
-
+    dtkAbstractProcess* create();
+    dtkAbstractData*    output() const;
+    dtkPlugin*          plugin() const;
 
 protected slots:
+
     /**
     * Get and Set the voxel seed coordinates to be used by the itkConnectedThresholdImageFilter.h
     **/
+
     void onXValueChanged(int value);
     void onYValueChanged(int value);
     void onZValueChanged(int value);
@@ -59,20 +61,24 @@ protected slots:
     /**
     * Gets and Sets the LowerThreshold to be used by the itkConnectedThresholdImageFilter.h, the HigherThreshold=LowerThreshold+150
     **/
+
     void onAValueChanged(int value);
 
     /**
     * Gets and Sets the option to select the image filter to be used
     **/
+
     void onOptionClicked(QAbstractButton *button);
 
     /**
     * When an image is drop in one of the medDropSite(s) it set it as an input for the process
     **/
+
     void onObjectDropped(void);
     void run(void);
 
 private:
+
     exampleProcessImageFilterToolBoxPrivate *d;
 };
 

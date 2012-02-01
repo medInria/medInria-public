@@ -39,6 +39,7 @@
 #include <medProgressionStack.h>
 #include <medRunnableProcess.h>
 #include <medJobManager.h>
+#include <medPluginManager.h>
 
 class exampleProcessImageFilterToolBoxPrivate
 {
@@ -65,7 +66,7 @@ public:
     medProgressionStack *progression_stack;
 };
 
-exampleProcessImageFilterToolBox::exampleProcessImageFilterToolBox(QWidget *parent) : medToolBoxDiffusionCustom(parent), d(new exampleProcessImageFilterToolBoxPrivate)
+exampleProcessImageFilterToolBox::exampleProcessImageFilterToolBox(QWidget *parent): medToolBoxDiffusionCustom(parent), d(new exampleProcessImageFilterToolBoxPrivate)
 {
     d->process= 0;
 
@@ -211,7 +212,7 @@ void exampleProcessImageFilterToolBox::onObjectDropped(void)
     dtkAbstractData *in_A = NULL;
     dtkAbstractData *in_B = NULL;
     medAbstractView * viewed;
-    vtkImageView2D * view2D;
+
 //    QSharedPointer<dtkAbstractData> data =  data.data(); // return dtkAbstractData *
 
 //    medDataIndex in_A_index = parent()->dataIndex();//method added in medToolBoxDiffusion MEdINria/src/medGUI 4 this to work, index from medToolBoxDiffusion dropsite
@@ -279,7 +280,7 @@ void exampleProcessImageFilterToolBox::run(void)
    //  process->update();
 }
 
-dtkAbstractData * exampleProcessImageFilterToolBox::output (void) const
+dtkAbstractData* exampleProcessImageFilterToolBox::output (void) const
 {
     if (d->process && d->process->output()) {
         // fill out Pateint/Study/Series for proper inclusion in the database
@@ -293,4 +294,9 @@ dtkAbstractData * exampleProcessImageFilterToolBox::output (void) const
         return d->process->output();
     }
     return NULL;
+}
+
+dtkPlugin* exampleProcessImageFilterToolBox::plugin() const {
+    medPluginManager* pm = medPluginManager::instance();
+    return pm->plugin("exampleProcessImageFilterPlugin");
 }

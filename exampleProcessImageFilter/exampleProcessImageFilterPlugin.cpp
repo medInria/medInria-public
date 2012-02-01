@@ -36,15 +36,18 @@ exampleProcessImageFilterPlugin::~exampleProcessImageFilterPlugin(void)
     d = NULL;
 }
 
-bool exampleProcessImageFilterPlugin::initialize(void)
-{   //Register the process
-    if(!exampleProcessImageFilter::registered())
-	dtkWarning() << "Unable to register exampleProcessImageFilter type";
+bool exampleProcessImageFilterPlugin::initialize(void) {
+
+    //  Register the process
+
+    if (!exampleProcessImageFilter::registered())
+        dtkWarning() << "Unable to register exampleProcessImageFilter type";
     else
         dtkWarning() << "ABLE to register exampleProcessImageFilter type";
 
-    //Register the toolbox of the process with the Custon diffusionToolBox
-    if(!medToolBoxFactory::instance()->registerCustomDiffusionToolBox("exampleProcessImageFilter", createExampleProcessImageFilterToolBox))
+    //  Register the toolbox of the process with the Custon diffusionToolBox
+
+    if (!medToolBoxFactory::instance()->registerCustomDiffusionToolBox("exampleProcessImageFilter", name(), description(), createExampleProcessImageFilterToolBox))
         qDebug() << "Unable to register exampleProcessImageFilter toolbox";
     else
         qDebug() << "ABLE to register exampleProcessImageFilter toolbox";
