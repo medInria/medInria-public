@@ -24,7 +24,7 @@
 
 #include <map>
 
-static const char itkGDCMDataImageReader::ID[] = "itkGDCMDataImageReader";;
+const char itkGDCMDataImageReader::ID[] = "itkGDCMDataImageReader";;
 
 template<typename TYPE>
 void Read3DImage(dtkAbstractData* dtkdata,itk::GDCMImageIO::Pointer io,const itkGDCMDataImageReader::FileList& filelist) {
@@ -229,7 +229,7 @@ bool itkGDCMDataImageReader::canRead(QStringList paths) {
 void itkGDCMDataImageReader::readInformation(QString path) {
     QStringList paths;
     paths << path;
-    readInformation(paths);  
+    readInformation(paths);
 }
 
 void itkGDCMDataImageReader::readInformation(QStringList paths)
@@ -240,7 +240,7 @@ void itkGDCMDataImageReader::readInformation(QStringList paths)
   FileList filenames;
   for (int i=0; i<paths.size(); i++)
     filenames.push_back(paths[i].toAscii().constData());
-
+  
   FileListMapType map = this->sort(filenames);
   
   std::string firstfilename = (*map.begin()).second[0];
@@ -255,9 +255,9 @@ void itkGDCMDataImageReader::readInformation(QStringList paths)
     qDebug() << e.GetDescription();
     return;
   }
-
+  
   dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
-
+  
   if (!dtkdata)
   {    
     unsigned int imagedimension = 3;
@@ -469,39 +469,30 @@ bool itkGDCMDataImageReader::read (QStringList paths)
             return false;
         }
 
-        // Copy over the dicom dictionary into metadata
 
-        typedef itk::MetaDataObject<std::string>               MetaDataStringType;
-        typedef itk::MetaDataObject<std::vector<std::string> > MetaDataVectorStringType;
-        typedef std::vector<std::string>                       StringVectorType;
-
-        const itk::MetaDataDictionary& dictionary = d->io->GetMetaDataDictionary();
-        itk::MetaDataDictionary::ConstIterator it = dictionary.Begin();
-        while (it!=dictionary.End()) {
-            if (MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>(it->second.GetPointer())) {
-                const StringVectorType &values = metaData->GetMetaDataObjectValue();
-                    for (unsigned int i=0;i<values.size();i++)
-                        dtkdata->addMetaData( it->first.c_str(), values[i].c_str());
-            }
-            ++it;
-        }
     }
 
-    // copy over the dicom dictionary into metadata
-    typedef itk::MetaDataObject <std::string>                 MetaDataStringType;
-    typedef itk::MetaDataObject <std::vector<std::string> >   MetaDataVectorStringType;
-    typedef std::vector<std::string>                     StringVectorType;
 
-    const itk::MetaDataDictionary& dictionary = d->io->GetMetaDataDictionary();
-    itk::MetaDataDictionary::ConstIterator it = dictionary.Begin();
-    while(it!=dictionary.End()) {
-        if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) ) {
+    if (dtkAbstractData *dtkdata = this->data())
+    {
+      
+	// copy over the dicom dictionary into metadata
+	typedef itk::MetaDataObject <std::string>                 MetaDataStringType;
+	typedef itk::MetaDataObject <std::vector<std::string> >   MetaDataVectorStringType;
+	typedef std::vector<std::string>                     StringVectorType;
+	
+	const itk::MetaDataDictionary& dictionary = d->io->GetMetaDataDictionary();
+	itk::MetaDataDictionary::ConstIterator it = dictionary.Begin();
+	while(it!=dictionary.End()) {
+	  if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) ) {
             const StringVectorType &values = metaData->GetMetaDataObjectValue();
             for (unsigned int i=0; i<values.size(); i++)
-                dtkdata->addMetaData( it->first.c_str(), values[i].c_str());
-        }
+	      dtkdata->addMetaData( it->first.c_str(), values[i].c_str());
+	  }
         ++it;
+	}
     }
+    
 
     d->io->RemoveAllObservers ();
 
