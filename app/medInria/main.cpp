@@ -134,7 +134,6 @@ int main(int argc, char *argv[])
 
     medMainWindow mainwindow;
     forceShow(mainwindow);
-//    mainwindow.show();
 
     if(!dtkApplicationArgumentsContain(&application, "--no-fullscreen")
     && !dtkApplicationArgumentsContain(&application, "--wall")){
