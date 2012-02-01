@@ -81,7 +81,6 @@ option(MEDINRIA_BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individ
 ## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
 set(PLUGIN_LIST
   v3dData                        ON
-  v3dViewPublic                  ON
   v3dView                        ON
   itkDataImage                   ON
   itkDataImageReader             ON
@@ -150,7 +149,6 @@ endif()
 
 if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_V3DDATA_PLUGIN OR
-    MEDINRIA_BUILD_V3DVIEWPUBLIC_PLUGIN OR
     MEDINRIA_BUILD_V3DVIEW_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESH_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN OR
