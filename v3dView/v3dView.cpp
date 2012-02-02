@@ -16,6 +16,7 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 #include <medMessageController.h>
+#include <medSettingsManager.h>
 #include <medAbstractDataImage.h>
 #include <medMetaDataKeys.h>
 
@@ -613,7 +614,12 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     this->setProperty ("ShowRuler",             "true");
     this->setProperty ("ShowAnnotations",       "true");
     this->setProperty ("LookupTable",           "Default");
-    this->setProperty ("MouseInteraction",      "Zooming");
+
+    //get default Mouse interaction from medSettings
+    medSettingsManager * mnger = medSettingsManager::instance();
+    QString mouseInteraction = mnger->value("interactions","mouse",
+                                            "Windowing").toString();
+    this->setProperty ("MouseInteraction", mouseInteraction);
 //     this->setProperty ("3DMode",                "VR");
     this->setProperty ("3DMode",                "MPR");
 #ifdef __APPLE__
@@ -787,14 +793,14 @@ void v3dView::setSharedDataPointer ( dtkSmartPointer<dtkAbstractData> data )
      {
          if(!dataInLayer->identifier().contains ( "vtkDataMesh" ))
              imageLayer++;
-         
+
          layer++;
-         
+
      }
 
      //qDebug() << "this->layerCount() : " << this->layerCount();
      d->sharedData[layer] = data;
- 
+
      this->setData ( data.data(), imageLayer );
 
 }
@@ -866,7 +872,7 @@ bool v3dView::SetViewInputWithConversion(const char* type,const char* newtype,dt
 
 void v3dView::setData ( dtkAbstractData *data, int layer )
 {
-    
+
 
     if ( !data )
         return;
