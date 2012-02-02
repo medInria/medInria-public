@@ -125,14 +125,14 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
     else if (vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(data->data()))) {
         if(!d->view->dataInList(0))
         {
-           /* d->isMeshOnly = true;
+            d->isMeshOnly = true;
             vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
             imagegenerator->SetInput (pointSet);
             vtkImageData * image = imagegenerator->GetOutput();
             d->view->view2d()->SetInput(image, 0);
             d->view->view3d()->SetInput(image, 0);
             vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
-            actor->SetOpacity(0.0);	*/
+            actor->SetOpacity(0.0);
 
         }
         else

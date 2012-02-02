@@ -883,7 +883,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
     if ( layer == 0 && data->identifier().contains ( "vtkDataMesh" ) && medAbstractView::dataInList(layer) == NULL)
     {
         medMessageController::instance()->showError ( this, tr ( "Select image first" ), 5000 );
-        return;
+//        return;
     }
 #ifdef vtkINRIA3D_USE_ITK
     if (SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
@@ -934,6 +934,9 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             this->enableInteractor ( "v3dViewMeshInteractor" );
             // This will add the data to the interactor.
             dtkAbstractView::setData ( data );
+//            QObject::connect(this, SIGNAL(dataAdded(dtkAbstractData*, int)),
+//                             VIEWPROPTOOLBOX, SLOT(onDataAdded(dtkAbstractData*, int)),
+//                             Qt::UniqueConnection);
         }
         else if ( data->description() == "vtkDataMesh4D" )
         {

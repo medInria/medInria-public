@@ -1,5 +1,5 @@
 #include <vtkDataMeshReader.h>
-
+#include <vtkDataSet.h>
 #include <vtkDataSetReader.h>
 #include <vtkSmartPointer.h>
 #include <dtkCore/dtkAbstractData.h>
@@ -75,6 +75,11 @@ bool vtkDataMeshReader::read(const QString& path) {
 
         reader->SetFileName(path.toAscii().constData());
         reader->Update();
+//        reader->GetOutput()->ComputeBounds();
+        double bounds[6];
+        vtkDataSet * mesh;
+        mesh = reader->GetOutput();
+        mesh->GetBounds(bounds);
         dtkdata->setData(reader->GetOutput());
     }
 
