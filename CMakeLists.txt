@@ -94,8 +94,9 @@ set(PLUGIN_LIST
   itkDataTensorImageWriter       ON
   itkDataTensorImageReader       ON
   medCompositeDataSets           ON
-  ITKProcessExample              ON
+  ITKProcessExample              OFF
   itkFilters                     ON
+  exampleProcessImageFilter      OFF  
   )
 
 #MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
@@ -120,12 +121,12 @@ endwhile()
 
 ## Registration plugins, registration plugins are only built if this option is
 ## enabled or MEDINRIA_BUILD_ALL_PLUGINS is ON.
-option(MEDINRIA_ENABLE_REGISTRATION_PLUGINS "Build Registration plugins" "OFF")
+option(MEDINRIA_ENABLE_REGISTRATION_PLUGINS "Build Registration plugins" "ON")
 if (MEDINRIA_ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
 
     #Put here your registration plugin directory/project name.
     set(REG_PLUGIN_LIST
-      itkProcessRegistrationDiffeomorphicDemons OFF)
+      itkProcessRegistrationDiffeomorphicDemons ON)
 
 list(LENGTH REG_PLUGIN_LIST N)
 set(INDEX 0)
@@ -141,10 +142,6 @@ while(INDEX LESS N)
   MATH( EXPR INDEX "${INDEX} + 2" )
 endwhile()
 
-endif()
-
-if (MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
-    add_subdirectory(exampleProcessImageFilter)
 endif()
 
 if (MEDINRIA_BUILD_ALL_PLUGINS OR
@@ -166,7 +163,6 @@ if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN OR
     MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN OR
     MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
-    MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN OR
     MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN OR
     MEDINRIA_BUILD_ITKPROCESSEXAMPLE_PLUGIN OR
     MEDINRIA_BUILD_ITKFILTERS_PLUGIN)
