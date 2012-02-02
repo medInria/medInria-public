@@ -36,6 +36,12 @@
 #include <itkCastImageFilter.h>
 #endif
 
+
+
+#define vtkINRIA3D_CORRECT_IMAGE_ORIENTATION 1
+
+
+
 class vtkImageData;
 class vtkVolumeProperty;
 
@@ -172,6 +178,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
       for (unsigned int y=0; y<3; y++)
 	matrix->SetElement (x,y,direction[x][y]);
 
+#if vtkINRIA3D_CORRECT_IMAGE_ORIENTATION    
     /**
        The origin in ITK pipeline is taken into account in a different
        way than in the VTK equivalent.
@@ -194,6 +201,14 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
     /**
        The matrix instance is from now on corrected.
     */
+#else
+    for (int i=0; i<3; i++)
+      matrix->SetElement (i, 3, origin[i]);
+    
+    /**
+       The matrix instance is from now on corrected.
+    */
+#endif
 
     this->SetOrientationMatrix (matrix);
  
@@ -203,11 +218,29 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
     typename ConverterType::Pointer converter = ConverterType::New();
     converter->SetInput (input);
     converter->Update();
-    /* vtkImageData* vtkinput = vtkImageData::New(); */
-    /* vtkinput->DeepCopy(converter->GetOutput()); */
-    
+
+#if vtkINRIA3D_CORRECT_IMAGE_ORIENTATION
+    /**
+       The origin in ITK pipeline is taken into account in a different
+       way than in the VTK equivalent.
+       A first hack would be to force the vtkImageData instance to have
+       a null origin, and put the ITK origin in the 4th column of the
+       OrientationMatrix instance. BUT, when the ITK pipeline is updated,
+       then the ITK origin is put back in place in the vtkImageData instance.
+
+       Therefore we need to keep the vtkImageData's origin the same as the
+       ITK one. And, we need to correct for this misbehaviour through a hack
+       in the OrientationMatrix 4th column, a sort of corrected origin.
+    */
     this->SetDataSet (converter->GetOutput());
-    
+#else
+    vtkImageData* vtkinput = vtkImageData::New();
+    vtkinput->DeepCopy(converter->GetOutput());
+    vtkinput->SetOrigin (0,0,0);
+    this->SetDataSet (vtkinput);
+    vtkinput->Delete();
+#endif    
+
     this->m_ItkImage = input;
     this->m_Converter = converter;
     
