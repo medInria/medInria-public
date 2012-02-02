@@ -560,6 +560,13 @@ protected:
    */
   virtual void SetSlicePlaneFromOrientation (void);
   /**
+   Returns the estimated View-Orientation corresponding
+   to a given Slice-Orientation, and outputs the camera's parameters
+   This is crucial when choosing to impose the View-Orientation
+   instead of imposing the Slice-Orientation.
+   */
+  virtual int GetViewOrientationFromSliceOrientation(int sliceorientation, double* cam_pos = 0, double* cam_focus = 0);
+  /**
    After the orientation has changed, it is crucial to adapt
    a couple of things according to new orientation.
    In UpdateOrientation() the SlicePlane, the Camera settings,
