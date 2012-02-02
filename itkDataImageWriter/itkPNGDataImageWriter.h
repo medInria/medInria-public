@@ -1,7 +1,7 @@
 #ifndef ITKPNGDATAIMAGEWRITER_H
 #define ITKPNGDATAIMAGEWRITER_H
 
-#include <itkDataImageWriterBase.h>
+#include <itkDataImageBase/itkDataImageWriterBase.h>
 #include <itkDataImageWriterPluginExport.h>
 
 class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkPNGDataImageWriter: public itkDataImageWriterBase {

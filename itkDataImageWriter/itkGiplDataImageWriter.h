@@ -1,7 +1,7 @@
 #ifndef ITKGIPLDATAIMAGEWRITER_H
 #define ITKGIPLDATAIMAGEWRITER_H
 
-#include <itkDataImageWriterBase.h>
+#include <itkDataImageBase/itkDataImageWriterBase.h>
 #include <itkDataImageWriterPluginExport.h>
 
 class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkGiplDataImageWriter: public itkDataImageWriterBase {

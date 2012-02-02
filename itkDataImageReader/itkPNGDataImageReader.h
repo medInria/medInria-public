@@ -1,7 +1,7 @@
 #ifndef ITKPNGDATAIMAGEREADER_H
 #define ITKPNGDATAIMAGEREADER_H
 
-#include <itkDataImageReaderBase.h>
+#include <itkDataImageBase/itkDataImageReaderBase.h>
 #include <itkDataImageReaderPluginExport.h>
 
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkPNGDataImageReader: public itkDataImageReaderBase {
@@ -16,7 +16,7 @@ public:
 
     static QStringList s_handled();
 
-    static bool registered();	
+    static bool registered();
 
 private:
 
