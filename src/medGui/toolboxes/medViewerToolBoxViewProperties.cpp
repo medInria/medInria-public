@@ -271,10 +271,8 @@ medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
     d = NULL;
 }
 
-void
-    medViewerToolBoxViewProperties::update(dtkAbstractView *view)
+void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 {
-
     medToolBox::update(view);
     if(!view)
     {
@@ -323,7 +321,7 @@ void
                 imageNumber++;
             }
 
-            d->propertiesTree->collapseAll();
+//            d->propertiesTree->collapseAll();
         }
 
         QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)),
@@ -400,7 +398,7 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 
     QTreeWidgetItem * lutItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     lutItem->setText(1, "LUT");
-    QComboBox * lutBox = new QComboBox();
+    QComboBox * lutBox = new QComboBox(this);
     lutBox->setFocusPolicy(Qt::NoFocus);
     lutBox->addItem("Default");
     lutBox->addItem("Black & White");
@@ -455,13 +453,20 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
     presetBox->setCurrentIndex(presetBox->findText(d->view->getPreset(imageLayer)));
     presetBox->blockSignals(false);
 
-    QObject::connect(visibleBox, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
-    QObject::connect(opacityBox, SIGNAL(valueChanged(int)), this, SLOT(onOpacitySliderSet(int)));
-    QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
-    QObject::connect(presetBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onPresetChanged(int)));
+    QObject::connect(visibleBox, SIGNAL(stateChanged(int)),
+                     this, SLOT(onVisibilitySet(int)));
+    QObject::connect(opacityBox, SIGNAL(valueChanged(int)),
+                     this, SLOT(onOpacitySliderSet(int)));
+    QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)),
+                     this, SLOT(onLUTChanged(int)));
+    QObject::connect(presetBox, SIGNAL(currentIndexChanged(int)),
+                     this, SLOT(onPresetChanged(int)));
 
-    d->propertiesTree->collapseAll();
-
+    //d->propertiesTree->collapseAll();
+    if (imageLayer == 0)
+    {
+        d->layerItem->setExpanded(true);
+    }
 }
 void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, int meshLayer)
 {
@@ -626,12 +631,9 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     QObject::connect(edgeVisibleBox, SIGNAL(stateChanged(int)), this, SLOT(onEdgeVisibilitySet(int)));
     QObject::connect(colorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(onColorChanged(int)));
     QObject::connect(renderingBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRenderingChanged(int)));
-    d->propertiesTree->collapseAll();
-
-
+    //d->propertiesTree->collapseAll();
 }
-void
-    medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data)
+void medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data)
 {
 
 }
@@ -639,8 +641,8 @@ void medViewerToolBoxViewProperties::onDataAdded( int layer)
 {
 
 }
-void
-    medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data, int layer)
+void medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data,
+                                                 int layer)
 {
 
     if(!data)
@@ -651,12 +653,16 @@ void
     //JGG qDebug() << "1";
     if(data->identifier().contains("vtkDataMesh"))
     {
-        if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
+        if (medMeshAbstractViewInteractor *interactor =
+                dynamic_cast<medMeshAbstractViewInteractor*>
+                (d->view->interactor ("v3dViewMeshInteractor")))
             if (!d->interactors.contains (interactor))
             {
                 d->interactors.append (interactor);
             }
-            if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
+            if (medMeshAbstractViewInteractor *interactor =
+                    dynamic_cast<medMeshAbstractViewInteractor*>
+                    (d->view->interactor ("v3dViewMeshInteractor")))
             {
                 d->currentInteractor = d->interactors.indexOf(interactor);
 
@@ -674,14 +680,14 @@ void
     raiseSlider(d->view->layerCount() == 2);
 }
 
-void
-    medViewerToolBoxViewProperties::clear(void)
+void medViewerToolBoxViewProperties::clear(void)
 {
     d->currentLayer = 0;
     d->propertiesTree->clear();
     raiseSlider(false);
     d->view = 0;
 }
+
 void medViewerToolBoxViewProperties::onColorChanged(int selection)
 {
     QColor color;
@@ -712,8 +718,8 @@ void medViewerToolBoxViewProperties::onColorChanged(int selection)
     d->interactors[d->currentInteractor]->setLayer(d->view->currentMeshLayer());
     d->interactors[d->currentInteractor]->onColorPropertySet(color);
 }
-void
-    medViewerToolBoxViewProperties::onVisibilitySet(int state)
+
+void medViewerToolBoxViewProperties::onVisibilitySet(int state)
 {
 
     if (!d->view)
@@ -746,8 +752,7 @@ void medViewerToolBoxViewProperties::onColorSelected(const QColor& color)
 
 }
 
-void
-    medViewerToolBoxViewProperties::onEdgeVisibilitySet(int state)
+void medViewerToolBoxViewProperties::onEdgeVisibilitySet(int state)
 {
     if (!d->view)
         return;
@@ -760,8 +765,7 @@ void
     d->view->update();
 }
 
-void
-    medViewerToolBoxViewProperties::onOpacitySliderSet(int opacity)
+void medViewerToolBoxViewProperties::onOpacitySliderSet(int opacity)
 {
     if (!d->view)
         return;
@@ -779,8 +783,7 @@ void
 }
 
 
-void
-    medViewerToolBoxViewProperties::on2LayersOpacitySliderSet(int opacity)
+void medViewerToolBoxViewProperties::on2LayersOpacitySliderSet(int opacity)
 {
     if (!d->view)
         return;
@@ -790,6 +793,7 @@ void
     d->view->setOpacity(1.0 - d_opacity, 0);
     d->view->update();
 }
+
 void medViewerToolBoxViewProperties::onAttrBoxChanged(int index)
 {
 
@@ -840,10 +844,8 @@ void medViewerToolBoxViewProperties::onAttrBoxChanged(int index)
     }
 }
 
-void
-    medViewerToolBoxViewProperties::onLUTChanged(int index)
+void medViewerToolBoxViewProperties::onLUTChanged(int index)
 {
-
     if (!d->view)
         return;
     if(!d->isMesh)
@@ -859,8 +861,7 @@ void
     d->view->update();
 }
 
-void
-    medViewerToolBoxViewProperties::onPresetChanged(int index)
+void medViewerToolBoxViewProperties::onPresetChanged(int index)
 {
     if (!d->view)
         return;
@@ -872,8 +873,7 @@ void
     d->view->update();
 }
 
-void
-    medViewerToolBoxViewProperties::onRenderingChanged(int index)
+void medViewerToolBoxViewProperties::onRenderingChanged(int index)
 {
     if (!d->view)
         return;
@@ -882,10 +882,8 @@ void
     d->view->update();
 }
 
-void
-    medViewerToolBoxViewProperties::onItemClicked(QTreeWidgetItem * item, int column)
+void medViewerToolBoxViewProperties::onItemClicked(QTreeWidgetItem * item, int column)
 {
-
     d->propertiesTree->clearSelection();
     if (item->type() == QTreeWidgetItem::UserType + 1)
     {
@@ -1077,11 +1075,6 @@ void medViewerToolBoxViewProperties::onAnnotationsVisibilityChanged(bool visible
     }
 }
 
-
-
-
-
-
 void medViewerToolBoxViewProperties::on2DTriggered(dtkAbstractView* view)
 {
     if(view->property("Orientation")=="Axial" ||
@@ -1093,6 +1086,7 @@ void medViewerToolBoxViewProperties::on2DTriggered(dtkAbstractView* view)
         d->view3dToolBoxWidget->hide();
     }
 }
+
 void medViewerToolBoxViewProperties::on3DTriggered(dtkAbstractView* view)
 {
     if(view->property("Orientation")=="3D")
@@ -1122,6 +1116,7 @@ void medViewerToolBoxViewProperties::onVRModeChanged(QString mode)
         d->view->update();
     }
 }
+
 void medViewerToolBoxViewProperties::onLodChanged(int value)
 {
     if (d->view) {
@@ -1131,6 +1126,7 @@ void medViewerToolBoxViewProperties::onLodChanged(int value)
         d->view->update();
     }
 }
+
 void medViewerToolBoxViewProperties::onCroppingChanged(bool checked)
 {
     if (d->view) {
