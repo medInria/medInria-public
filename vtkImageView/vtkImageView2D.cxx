@@ -80,6 +80,8 @@
 #include <sstream>
 #include <cmath>
 
+#define vtkINRIA3D_HACK_OBLIQUE_ORIENTATION 1
+
 class vtkImage2DDisplay : public vtkObject
 {
 public:
@@ -574,9 +576,12 @@ void vtkImageView2D::SetViewConvention(int convention)
     return;
   
   this->ViewConvention = convention;
-  
+
+  // first vector is the view up for the yz plane (sagittal), directed towards the +z direction
   this->ConventionMatrix->SetElement (2,0, 1);
+  // first vector is the view up for the xz plane (coronal),  directed towards the +z direction
   this->ConventionMatrix->SetElement (2,1, 1);
+  // first vector is the view up for the xy plane (axial),    directed towards the -y direction
   this->ConventionMatrix->SetElement (1,2, -1);
   
   int x_watcher, y_watcher, z_watcher;
@@ -585,14 +590,20 @@ void vtkImageView2D::SetViewConvention(int convention)
   {
     case vtkImageView2D::VIEW_CONVENTION_RADIOLOGICAL:
     default:
+      // for sagittal view, you look from +x point
       x_watcher =  1;
+      // for coronal view,  you look from -y point
       y_watcher = -1;
+      // for axial view,    you look from -z point
       z_watcher = -1;
       break;
     case vtkImageView2D::VIEW_CONVENTION_NEUROLOGICAL:
-      x_watcher = 1;
-      y_watcher = 1;
-      z_watcher = 1;
+      // for sagittal view, you look from +x point
+      x_watcher =  1;
+      // for coronal view,  you look from +y point
+      y_watcher =  1;
+      // for axial view,    you look from +z point
+      z_watcher =  1;
       break;
       /// \todo We can define oblique convention points of view
       /// that would match cardiologic conventions.
@@ -610,30 +621,62 @@ void vtkImageView2D::SetViewConvention(int convention)
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetViewOrientation(int orientation)
 {
-  /// \todo: in terms of view orientation here we can add some cardiac specific: short axis, long axis, and 4-chambers !!!
+  int slice_orientation = -1;
 
-  double dot = 0;
-  double projection[3];
+#if vtkINRIA3D_HACK_OBLIQUE_ORIENTATION
+  /**
+     In cases the acquisition is strongly oblique, it can happen that
+     their is NO slice-orientation corresponding to the desired
+     view-orientation (redundant view-orientation for 2 slice-orientations)
+     
+     We are not doomed though, the hack is to give priority to the native
+     acquisition plane (xy) and derive the other orientations from it.
+  */
+  if (slice_orientation == -1)
+  {
+ 
+    double dot = 0;
+    double projection[3];
 
-  /// Proiority to the xy plane :
-  int viewtoslice[3] = {-1,-1,-1};
-  
+    /// Proiority to the xy plane :
+    int viewtoslice[3] = {-1,-1,-1};
+    
+    for (unsigned int i=0; i<3; i++)
+    {
+      // take the third column of the orientation matrix
+      projection[i] = this->GetOrientationMatrix()->GetElement (i, 2);
+      
+      // check to which axis this vector is the closest
+      if (std::abs (projection[i]) > dot)
+      {
+	dot = std::abs (projection[i]);
+	viewtoslice[i]       = 2;
+	viewtoslice[(i+1)%3] = 0;
+	viewtoslice[(i+2)%3] = 1;
+      }
+    }
+
+    slice_orientation = viewtoslice[orientation];
+  }
+#else // vtkINRIA3D_HACK_OBLIQUE_ORIENTATION
+  /**
+     but normally we should be able to use this bit of code,
+     it works and is stable for most cases, when acquisition is
+     not too oblique.
+  */
+  int view_orientation = -1;
   for (unsigned int i=0; i<3; i++)
   {
-    // take the third column of the orientation matrix
-    projection[i] = this->GetOrientationMatrix()->GetElement (i, 2);
-    
-    // check to which axis this vector is the closest
-    if (std::abs (projection[i]) > dot)
+    view_orientation = this->GetViewOrientationFromSliceOrientation(i);
+    if (view_orientation == orientation)
     {
-      dot = std::abs (projection[i]);
-      viewtoslice[i]       = 2;      
-      viewtoslice[(i+1)%3] = 0;
-      viewtoslice[(i+2)%3] = 1;
+      slice_orientation = i;
+      break;
     }
   }
+#endif // vtkINRIA3D_HACK_OBLIQUE_ORIENTATION
   
-  this->SetSliceOrientation (viewtoslice[orientation]);
+  this->SetSliceOrientation (slice_orientation);
 }
 
 //----------------------------------------------------------------------------
@@ -722,6 +765,87 @@ void vtkImageView2D::SetCurrentPoint(double pos[3])
   }
 }
 
+
+
+//----------------------------------------------------------------------------
+int vtkImageView2D::GetViewOrientationFromSliceOrientation(int sliceorientation, double* cam_pos, double* cam_focus)
+{
+  double position[4] = {0,0,0,0}, focalpoint[4] = {0,0,0,0};
+  double focaltoposition[3]={0,0,0};
+  double origin[3] = {0,0,0};
+  
+  if (this->GetInput())
+    this->GetInput()->GetOrigin(origin);
+  
+  // At first, we initialize the cam focal point to {0,0,0}, so nothing to do 
+  // (after re-orientation, it will become the origin of the image)
+  position[sliceorientation] = this->ConventionMatrix->GetElement (sliceorientation, 3);
+  
+  // Points VS vectors: homogeneous coordinates
+  focalpoint[3] = 1;
+  position[3]   = 1;
+  
+  // Apply the orientation matrix to all this information
+  if ( this->OrientationMatrix )
+  {
+    /**
+       The origin in ITK pipeline is taken into account in a different
+       way than in the VTK equivalent.
+       A first hack would be to force the vtkImageData instance to have
+       a null origin, and put the ITK origin in the 4th column of the
+       OrientationMatrix instance. BUT, when the ITK pipeline is updated,
+       then the ITK origin is put back in place in the vtkImageData instance.
+
+       Therefore we need to keep the vtkImageData's origin the same as the
+       ITK one. And, we need to correct for this misbehaviour through a hack
+       in the OrientationMatrix 4th column, a sort of corrected origin.
+
+       THIS FOR-LOOP HAS TO BE REMOVED IF THE ORIGIN OF THE
+       VTKIMAGEDATA IS FORCED TO ZERO (AND PASSED AS-IS IN THE ORIENTATIONMATRIX)
+    */
+    for (unsigned int i=0; i<3; i++)
+    {
+      position[i] += origin[i];
+      focalpoint[i] += origin[i];
+    }
+    
+    this->OrientationMatrix->MultiplyPoint  (position,   position);
+    this->OrientationMatrix->MultiplyPoint  (focalpoint, focalpoint);
+  }
+  
+  // Compute the vector normal to the view
+  for (unsigned int i=0; i<3; i++)
+    focaltoposition[i] = position[i] - focalpoint[i];
+  
+  // we find the axis the closest to the focaltoposition vector
+  unsigned int id = 0;
+  double dot = 0;
+  for (unsigned int i=0; i<3; i++)
+  {
+    if (dot < std::abs (focaltoposition[i]))
+    {
+      dot = std::abs (focaltoposition[i]);
+      id = i;
+    }
+  }
+
+  if (cam_pos && cam_focus)
+  {
+    for (unsigned int i=0; i<3; i++)
+    {
+      cam_pos[i] = position[i];
+      cam_focus[i] = focalpoint[i];
+    }
+  }
+
+  // return the view-orientation found by those principles.
+  // this should then be set as this->ViewOrientation.
+  return id;
+  
+}
+
+
+
 //----------------------------------------------------------------------------
 int vtkImageView2D::SetCameraFromOrientation(void)
 {
@@ -732,59 +856,32 @@ int vtkImageView2D::SetCameraFromOrientation(void)
   if (!cam)
     return -1;
   
-  double position[4] = {0,0,0,0}, focalpoint[4] = {0,0,0,0}, viewup[4];
-  double conventionposition[4];
-  double conventionview[4];
-  double focaltoposition[3];
+  double position[4] = {0,0,0,0}, focalpoint[4] = {0,0,0,0}, viewup[4] = {0,0,0,0};
+  double focaltoposition[3]={0,0,0};
   std::vector<double*> viewupchoices;
-  double first[3], second[3], third[3], fourth[3];
-  bool inverseposition;
+  double first[3]={0,0,0}, second[3]={0,0,0}, third[3]={0,0,0}, fourth[3]={0,0,0};
+  bool inverseposition = false;
   
-  // At first, we initialize the cam focal point to 0,0,0. (we should do so to the image-center / or the current point)
   // The viewup and the cam position are set according to the convention matrix.
   for (unsigned int i=0; i<3; i++)
     viewup[i]   = this->ConventionMatrix->GetElement (i, this->SliceOrientation);
-  position[this->SliceOrientation] = this->ConventionMatrix->GetElement (this->SliceOrientation, 3);
-  
-  // Recover also information from the convention matrix
-  for (unsigned int i=0; i<3; i++)
-  {
-    conventionposition[i] = this->ConventionMatrix->GetElement (i,3);
-    conventionview[i] = this->ConventionMatrix->GetElement (i, this->SliceOrientation);
-  }
-  
-  // Points VS vectors: uniform coordinates
-  position[3] = 1;
-  focalpoint[3] = 1;
-  conventionposition[3] = 1;
-  conventionview[3] = 0;
-  viewup[3] = 0;
   
   // Apply the orientation matrix to all this information
   if ( this->OrientationMatrix )
-  {
-    this->OrientationMatrix->MultiplyPoint (position, position);
-    this->OrientationMatrix->MultiplyPoint (focalpoint, focalpoint);
-    this->OrientationMatrix->MultiplyPoint (conventionview, conventionview);
-    this->OrientationMatrix->MultiplyPoint (conventionposition, conventionposition);
-  }
+    this->OrientationMatrix->MultiplyPoint  (viewup, viewup);
   
-  // Compute the vector perpendicular to the view
+  // first we find the axis the closest to the focaltoposition vector
+  unsigned int id = this->GetViewOrientationFromSliceOrientation (this->SliceOrientation, position, focalpoint);
+  
+  // Compute the vector normal to the view
   for (unsigned int i=0; i<3; i++)
     focaltoposition[i] = position[i] - focalpoint[i];
-  
-  // Deal with the position :
-  // invert it if necessary (symetry among the focal point)
-  inverseposition = (vtkMath::Dot (focaltoposition, conventionposition) < 0);
-  if (inverseposition)
-    for (unsigned int i=0; i<3; i++)
-      position[i] -= 2*focaltoposition[i];
   
   // Now we now we have 4 choices for the View-Up information
   for(unsigned int i=0; i<3; i++)
   {
-    first[i] = conventionview[i];
-    second[i] = -conventionview[i];
+    first[i]  = viewup[i];
+    second[i] = -viewup[i];
   }
   
   vtkMath::Cross (first, focaltoposition, third);
@@ -797,32 +894,20 @@ int vtkImageView2D::SetCameraFromOrientation(void)
   viewupchoices.push_back (third);
   viewupchoices.push_back (fourth);
   
-  // To choose between these choices, first we find the axis
-  // the closest to the focaltoposition vector
-  unsigned int id = 0;
-  double dot = 0;
-  for (unsigned int i=0; i<3; i++)
-  {
-    if (dot < std::abs (focaltoposition[i]))
-    {
-      dot = std::abs (focaltoposition[i]);
-      id = i;
-    }
-  }
-  
-  // Then we choose the convention matrix vector correspondant to the
+  double conventionviewup[4]={0,0,0,0};
+  // Then we choose the convention matrix vector correspondent to the
   // one we just found
   for (unsigned int i=0; i<3; i++)
-    conventionview[i] = this->ConventionMatrix->GetElement (i, id);
+    conventionviewup[i] = this->ConventionMatrix->GetElement (i, id);
   
   // Then we pick from the 4 solutions the closest to the
   // vector just found
   unsigned int id2 = 0;
   double dot2 = 0;
   for (unsigned int i=0; i<viewupchoices.size(); i++)
-    if (dot2 < vtkMath::Dot (viewupchoices[i], conventionview))
+    if (dot2 < vtkMath::Dot (viewupchoices[i], conventionviewup))
     {
-      dot2 = vtkMath::Dot (viewupchoices[i], conventionview);
+      dot2 = vtkMath::Dot (viewupchoices[i], conventionviewup);
       id2 = i;
     }
   
@@ -830,11 +915,25 @@ int vtkImageView2D::SetCameraFromOrientation(void)
   for (unsigned int i=0; i<3; i++)
     viewup[i] = viewupchoices[id2][i];
   
+  double conventionposition[4]={0,0,0,1};
+  // Then we check if we are on the right side of the image
+  conventionposition[id] = this->ConventionMatrix->GetElement (id, 3);
+  inverseposition = (vtkMath::Dot (focaltoposition, conventionposition) < 0 );
+  
+  // invert the cam position if necessary (symmetry along the focal point)
+  if (inverseposition)
+    for (unsigned int i=0; i<3; i++)
+      position[i] -= 2*focaltoposition[i];
+
+  // finally set the camera with all iinformation.
   cam->SetPosition(position[0], position[1], position[2]);
   cam->SetFocalPoint(focalpoint[0], focalpoint[1], focalpoint[2]);
   cam->SetViewUp(viewup[0], viewup[1], viewup[2]);
+  
   this->InvokeEvent (vtkImageView::CameraChangedEvent);
   
+  // return the view-orientation found by those principles.
+  // this should then be set as this->ViewOrientation.
   return id;
 }
 
