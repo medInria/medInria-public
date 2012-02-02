@@ -9,29 +9,16 @@
 class medDatabaseSettingsWidgetPrivate {
 
 public:
-  QWidget* parent;
   QLineEdit* dbPath;
   QPushButton* btChooseDir;
-
-  medDatabaseSettingsWidgetPrivate();
-  ~medDatabaseSettingsWidgetPrivate();
 };
-
-medDatabaseSettingsWidgetPrivate::medDatabaseSettingsWidgetPrivate()
-{
-}
-
-medDatabaseSettingsWidgetPrivate::~medDatabaseSettingsWidgetPrivate()
-{
-}
-
 
 medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
         medSettingsWidget(parent),
         d(new medDatabaseSettingsWidgetPrivate())
 {
     setTabName("Database");
-   
+
     d->dbPath = new QLineEdit(this);
     d->btChooseDir = new QPushButton(tr("Select directory..."), this);
 
@@ -45,10 +32,8 @@ medDatabaseSettingsWidget::medDatabaseSettingsWidget(QWidget *parent) :
 
     databaseLocation->setContentsMargins(0,-8,0,0);
 
-    QFormLayout* formLayout = new QFormLayout;
+    QFormLayout* formLayout = new QFormLayout(this);
     formLayout->addRow(tr("Database location:"), databaseLocation);
-    this->setLayout(formLayout);
-
 }
 
 void medDatabaseSettingsWidget::selectDbDirectory()

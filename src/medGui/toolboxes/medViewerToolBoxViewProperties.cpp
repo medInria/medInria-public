@@ -10,6 +10,7 @@
 #include <dtkCore/dtkAbstractData.h>
 
 #include <medStorage.h>
+#include <medSettingsManager.h>
 #include <medMetaDataKeys.h>
 #include <medAbstractView.h>
 #include <medToolBoxTab.h>
@@ -131,15 +132,17 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     mouseGroup->addButton ( d->measuringPushButton );
     mouseGroup->setExclusive (true);
 
+    setCurrentInteractionFromSettings();
+
     d->propView = new QWidget(this);
     QHBoxLayout * propLayout = new QHBoxLayout;
 
     d->scalarBarVisibilityCheckBox = new QCheckBox(this);
     d->scalarBarVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
-	d->scalarBarVisibilityCheckBox->setToolTip(tr("Show scalar bar"));
+    d->scalarBarVisibilityCheckBox->setToolTip(tr("Show scalar bar"));
     d->axisVisibilityCheckBox = new QCheckBox(this);
     d->axisVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
-	d->axisVisibilityCheckBox->setToolTip(tr("Show axis"));
+    d->axisVisibilityCheckBox->setToolTip(tr("Show axis"));
     d->rulerVisibilityCheckBox = new QCheckBox(this);
     d->rulerVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
     d->annotationsVisibilityCheckBox = new QCheckBox(this);
@@ -152,9 +155,9 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->scalarBarVisibilityCheckBox->setText(tr("Scalar Bar"));
     d->axisVisibilityCheckBox->setText(tr("Axis"));
     d->rulerVisibilityCheckBox->setText(tr("Ruler"));
-	d->rulerVisibilityCheckBox->setToolTip(tr("Show ruler"));
+    d->rulerVisibilityCheckBox->setToolTip(tr("Show ruler"));
     d->annotationsVisibilityCheckBox->setText("Annotations");
-	d->annotationsVisibilityCheckBox->setToolTip(tr("Show annotations"));
+    d->annotationsVisibilityCheckBox->setToolTip(tr("Show annotations"));
     d->annotationsVisibilityCheckBox->setChecked(true);
     d->rulerVisibilityCheckBox->setChecked(true);
 
@@ -178,7 +181,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     d->view3dModeComboBox = new QComboBox(this);
     d->view3dModeComboBox->setFocusPolicy(Qt::NoFocus);
-	d->view3dModeComboBox->setToolTip(tr("Choose a 3D mode (e.g. Volume Rendering, Maximum Intensity Projection, MultiPlanar Reconstruction)"));
+    d->view3dModeComboBox->setToolTip(tr("Choose a 3D mode (e.g. Volume Rendering, Maximum Intensity Projection, MultiPlanar Reconstruction)"));
     d->view3dModeComboBox->addItem("VR");
     d->view3dModeComboBox->addItem("MIP - Maximum");
     d->view3dModeComboBox->addItem("MIP - Minimum");
@@ -188,7 +191,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     d->view3dVRModeComboBox = new QComboBox(this);
     d->view3dVRModeComboBox->setFocusPolicy(Qt::NoFocus);
-	d->view3dVRModeComboBox->setToolTip(tr("Choose among rendering techniques (e.g. GPU accelerated rendering, Ray Casting)"));
+    d->view3dVRModeComboBox->setToolTip(tr("Choose among rendering techniques (e.g. GPU accelerated rendering, Ray Casting)"));
     d->view3dVRModeComboBox->addItem( "GPU" );
     d->view3dVRModeComboBox->addItem( "Ray Cast / Texture" );
     d->view3dVRModeComboBox->addItem( "Ray Cast" );
@@ -207,7 +210,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->croppingPushButton->setIcon (QIcon (":/icons/cropping.png"));
     d->croppingPushButton->setCheckable (true);
     d->croppingPushButton->setMinimumWidth ( 20 );
-	d->croppingPushButton->setToolTip(tr("Crop volume tool"));
+    d->croppingPushButton->setToolTip(tr("Crop volume tool"));
 
     connect(d->view3dModeComboBox,            SIGNAL(currentIndexChanged(QString)), this, SLOT(onModeChanged(QString)));
     connect(d->view3dVRModeComboBox,          SIGNAL(currentIndexChanged(QString)), this, SLOT(onVRModeChanged(QString)));
@@ -341,7 +344,6 @@ void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
         d->view3dModeComboBox->blockSignals(true);
         d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("3DMode")));
         d->view3dModeComboBox->blockSignals(false);
-
     }
 }
 
@@ -1134,5 +1136,29 @@ void medViewerToolBoxViewProperties::onCroppingChanged(bool checked)
         d->view->setProperty("Cropping", (checked ? "true" : "false"));
         d->view->blockSignals (false);
         d->view->update();
+    }
+}
+
+
+void  medViewerToolBoxViewProperties::setCurrentInteractionFromSettings()
+{
+    medSettingsManager * mnger = medSettingsManager::instance();
+    QString interaction = mnger->value("interactions","mouse",
+                                       "Windowing").toString();
+    if (interaction == "Zooming")
+    {
+        d->zoomingPushButton->setChecked(true);
+    }
+    else if (interaction == "Slicing")
+    {
+        d->slicingPushButton->setChecked(true);
+    }
+    else if (interaction == "Measuring")
+    {
+        d->slicingPushButton->setChecked(true);
+    }
+    else
+    {
+        d->windowingPushButton->setChecked(true);
     }
 }
