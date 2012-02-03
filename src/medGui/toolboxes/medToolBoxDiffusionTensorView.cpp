@@ -33,21 +33,31 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     d->glyphShapesList << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics";
 
     // combobox to control the glyph shape
+    QString glyphShapeToolTip = tr("Tensors will be displayed using the selected shape.");
+    QLabel* glyphShapeLabel = new QLabel(tr("Shape:"));
+    glyphShapeLabel->setToolTip(glyphShapeToolTip);
     d->glyphShapeComboBox = new QComboBox(displayWidget);
     d->glyphShapeComboBox->addItems(d->glyphShapesList);
+    d->glyphShapeComboBox->setToolTip(glyphShapeToolTip);
+
 
     // slider to control sample rate
+    QString sampleRateToolTip = tr("The higher this value, the more spread the sampling, hence less tensors will appear.");
+    QLabel* sampleRateLabel = new QLabel(tr("Sample rate:"));
+    sampleRateLabel->setToolTip(sampleRateToolTip);
     d->sampleRateSlider =  new QSlider(Qt::Horizontal, displayWidget);
     d->sampleRateSlider->setMinimum(1);
     d->sampleRateSlider->setMaximum(10);
     d->sampleRateSlider->setSingleStep(1);
     d->sampleRateSlider->setValue(1);
+    d->sampleRateSlider->setToolTip(sampleRateToolTip);
 
     QSpinBox* sampleRateSpinBox = new QSpinBox(displayWidget);
     sampleRateSpinBox->setMinimum(1);
     sampleRateSpinBox->setMaximum(10);
     sampleRateSpinBox->setSingleStep(1);
     sampleRateSpinBox->setValue(1);
+    sampleRateSpinBox->setToolTip(sampleRateToolTip);
 
     QHBoxLayout* sampleRateLayout = new QHBoxLayout;
     sampleRateLayout->addWidget(d->sampleRateSlider);
@@ -58,8 +68,11 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
 
     // flipX, flipY and flipZ checkboxes
     d->flipXCheckBox = new QCheckBox("X", displayWidget);
+    d->flipXCheckBox->setToolTip(tr("Flip X axis."));
     d->flipYCheckBox = new QCheckBox("Y", displayWidget);
+    d->flipYCheckBox->setToolTip(tr("Flip Y axis."));
     d->flipZCheckBox = new QCheckBox("Z", displayWidget);
+    d->flipZCheckBox->setToolTip(tr("Flip Z axis."));
 
     QHBoxLayout* flipAxesLayout = new QHBoxLayout;
     flipAxesLayout->addWidget(d->flipXCheckBox);
@@ -67,9 +80,13 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     flipAxesLayout->addWidget(d->flipZCheckBox);
 
     // eigen vectors
+    QString eigenVectorToolTip = tr("Choose which eigenvector is used for mapping the color mode.");
     d->eigenVectorV1RadioButton = new QRadioButton("v1", displayWidget);
+    d->eigenVectorV1RadioButton->setToolTip(eigenVectorToolTip);
     d->eigenVectorV2RadioButton = new QRadioButton("v2", displayWidget);
+    d->eigenVectorV2RadioButton->setToolTip(eigenVectorToolTip);
     d->eigenVectorV3RadioButton = new QRadioButton("v3", displayWidget);
+    d->eigenVectorV3RadioButton->setToolTip(eigenVectorToolTip);
 
     QButtonGroup *eigenVectorRadioGroup = new QButtonGroup(displayWidget);
     eigenVectorRadioGroup->addButton(d->eigenVectorV1RadioButton);
@@ -89,17 +106,22 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     //d->reverseBackgroundColorCheckBox = new QCheckBox("Reverse Background Color", displayWidget);
 
     // slider to control glyph resolution
+    QString glyphResolutionToolTip = tr("Increases or decreases the amount of detail of each tensor's glyph.");
+    QLabel* glyphResolutionLabel = new QLabel(tr("Resolution:"));
+    glyphResolutionLabel->setToolTip(glyphResolutionToolTip);
     d->glyphResolutionSlider =  new QSlider(Qt::Horizontal, displayWidget);
     d->glyphResolutionSlider->setMinimum(2);
     d->glyphResolutionSlider->setMaximum(20);
     d->glyphResolutionSlider->setSingleStep(1);
     d->glyphResolutionSlider->setValue(6);
+    d->glyphResolutionSlider->setToolTip(glyphResolutionToolTip);
 
     QSpinBox* glyphResolutionSpinBox = new QSpinBox(displayWidget);
     glyphResolutionSpinBox->setMinimum(2);
     glyphResolutionSpinBox->setMaximum(20);
     glyphResolutionSpinBox->setSingleStep(1);
     glyphResolutionSpinBox->setValue(6);
+    glyphResolutionSpinBox->setToolTip(glyphResolutionToolTip);
 
     QHBoxLayout* glyphResolutionLayout = new QHBoxLayout;
     glyphResolutionLayout->addWidget(d->glyphResolutionSlider);
@@ -110,27 +132,41 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
 
     // scale = scaleBase * 10 ^ scaleExp
 
+    QString scaleToolTip = tr("Modifies the glyph scaling factor, hence its size.");
+    QLabel* scaleLabel = new QLabel(tr("Scale:"));
+    scaleLabel->setToolTip(scaleToolTip);
+
     d->scaleBase = new QSpinBox(displayWidget);
     d->scaleBase->setMinimum(1);
     d->scaleBase->setMaximum(9);
     d->scaleBase->setSingleStep(1);
     d->scaleBase->setValue(1);
+    d->scaleBase->setToolTip(scaleToolTip);
 
     d->scaleExp = new QSpinBox(displayWidget);
     d->scaleExp->setMinimum(-10);
     d->scaleExp->setMaximum(10);
     d->scaleExp->setSingleStep(1);
     d->scaleExp->setValue(0);
+    d->scaleExp->setToolTip(scaleToolTip);
 
+    QLabel* toTheExpLabel = new QLabel(" x 10 ^ ", displayWidget);
+    toTheExpLabel->setToolTip(scaleToolTip);
     QHBoxLayout* scaleLayout = new QHBoxLayout;
     scaleLayout->addWidget(d->scaleBase);
-    scaleLayout->addWidget(new QLabel(" x 10 ^ ", displayWidget));
+    scaleLayout->addWidget(toTheExpLabel);
     scaleLayout->addWidget(d->scaleExp);
 
     // hide or show axial, coronal, and sagittal
+    QString hideShowAxesToolTip = tr("Hide or show a specific axis.");
+    QLabel* hideShowAxesLabel = new QLabel(tr("Hide/show:"));
+    hideShowAxesLabel->setToolTip(hideShowAxesToolTip);
     d->hideShowAxialCheckBox = new QCheckBox("Axial", displayWidget);
+    d->hideShowAxialCheckBox->setToolTip(hideShowAxesToolTip);
     d->hideShowCoronalCheckBox = new QCheckBox("Coronal", displayWidget);
+    d->hideShowCoronalCheckBox->setToolTip(hideShowAxesToolTip);
     d->hideShowSagittalCheckBox = new QCheckBox("Sagittal", displayWidget);
+    d->hideShowSagittalCheckBox->setToolTip(hideShowAxesToolTip);
 
     d->hideShowAxialCheckBox->setChecked(true);
     d->hideShowCoronalCheckBox->setChecked(true);
@@ -143,13 +179,13 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
 
     // layout all the controls in the toolbox
     QFormLayout *layout = new QFormLayout(displayWidget);
-    layout->addRow(tr("Shape:"), d->glyphShapeComboBox);
-    layout->addRow(tr("Sample rate:"), sampleRateLayout);
+    layout->addRow(glyphShapeLabel, d->glyphShapeComboBox);
+    layout->addRow(sampleRateLabel, sampleRateLayout);
     layout->addRow(tr("Flip:"), flipAxesLayout);
     layout->addRow(tr("Color with:"), eigenVectorGroupLayout);
-    layout->addRow(tr("Resolution:"), glyphResolutionLayout);
-    layout->addRow(tr("Scale:"), scaleLayout);
-    layout->addRow(tr("Hide/show:"), slicesLayout);
+    layout->addRow(glyphResolutionLabel, glyphResolutionLayout);
+    layout->addRow(scaleLabel, scaleLayout);
+    layout->addRow(hideShowAxesLabel, slicesLayout);
 
     // connect all the signals
     connect(d->glyphShapeComboBox,              SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(glyphShapeChanged(const QString&)));
