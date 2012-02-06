@@ -85,7 +85,7 @@ QList<medToolBox*> medDatabaseDataSource::getToolboxes()
 
 QString medDatabaseDataSource::description(void) const
 {
-	return "Browse the medInria Database";
+	return tr("Browse the medInria Database");
 }
 
 void medDatabaseDataSource::update(const medDataIndex &index)

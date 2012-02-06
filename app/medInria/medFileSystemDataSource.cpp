@@ -145,7 +145,7 @@ QList<medToolBox*> medFileSystemDataSource::getToolboxes()
 
 QString medFileSystemDataSource::description(void) const
 {
-	return "Browse the file system";
+	return tr("Browse the file system");
 }
 
 void medFileSystemDataSource::onFileSystemImportClicked(void)

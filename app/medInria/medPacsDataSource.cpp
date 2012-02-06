@@ -81,7 +81,7 @@ QList<medToolBox*> medPacsDataSource::getToolboxes()
 
 QString medPacsDataSource::description(void) const
 {
-	return "Browse PACS server";
+	return tr("Browse PACS server");
 }
 
 void medPacsDataSource::onPacsMove( const QVector<medMoveCommandItem>& cmdList)
