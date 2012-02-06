@@ -75,7 +75,7 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     roiLayout->addWidget(boolGroup);
     
     d->bundlingButtonTag = new QPushButton("Tag", bundlingPage);
-    d->bundlingButtonTag->setToolTip(tr("Tag the current shown bundle to let medInria memorize it and another, new bundling box, will appear.\nThis new box will also isolate fibers but will also consider the previously \"tagged\" fibers."));
+    d->bundlingButtonTag->setToolTip(tr("Tag the currently shown bundle to let medInria memorize it and another, new bundling box, will appear.\nThis new box will also isolate fibers but will also consider the previously \"tagged\" fibers."));
     d->bundlingButtonAdd = new QPushButton("Add", bundlingPage);
     d->bundlingButtonAdd->setToolTip(tr("Select to either include the fibers that overlap with the bundling box, or to include the ones that do not overlap."));
     d->bundlingButtonRst = new QPushButton("Reset", bundlingPage);

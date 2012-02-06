@@ -42,7 +42,7 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
 
 
     // slider to control sample rate
-    QString sampleRateToolTip = tr("The higher this value, the more spread the sampling, hence less tensors will appear.");
+    QString sampleRateToolTip = tr("The higher this value, the more spread the sampling, hence fewer tensors will appear.");
     QLabel* sampleRateLabel = new QLabel(tr("Sample rate:"));
     sampleRateLabel->setToolTip(sampleRateToolTip);
     d->sampleRateSlider =  new QSlider(Qt::Horizontal, displayWidget);
