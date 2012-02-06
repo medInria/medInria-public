@@ -36,9 +36,46 @@
 #include <medStorage.h>
 
 
+void forceShow(medMainWindow& mainwindow )
+{
+    //Idea and code taken from the OpenCOR project, Thanks Allan for the code!
+
+
+    // Note: to show ourselves, one would normally use activateWindow(), but
+    //       depending on the operating system it may or not bring OpenCOR to
+    //       the foreground, so... instead we do what follows, depending on the
+    //       operating system...
+
+#if defined(Q_WS_WIN)
+    // Retrieve window Id
+
+    WId mainWinId = mainwindow.winId();
+
+    // Bring main window to the foreground
+    SetForegroundWindow(mainWinId);
+
+    // Show/restore the window, depending on its current state
+
+    if (IsIconic(mainWinId))
+        ShowWindow(mainWinId, SW_RESTORE);
+    else
+        ShowWindow(mainWinId, SW_SHOW);
+
+    // Note: under Windows, to use activateWindow() will only highlight the
+    //       application in the taskbar, since under Windows no application
+    //       should be allowed to bring itself to the foreground when another
+    //       application is already in the foreground. Fair enough, but it
+    //       happens that, here, the user wants OpenCOR to be brought to the
+    //       foreground, hence the above code to get the effect we are after...
+#else
+    mainwindow.activateWindow();
+    mainwindow.raise();
+#endif
+}
 
 int main(int argc, char *argv[])
 {
+
     qRegisterMetaType<medDataIndex>("medDataIndex");
     medApplication application(argc, argv);
 
@@ -97,8 +134,7 @@ int main(int argc, char *argv[])
     dtkScriptManager::instance()->initialize();
 
     medMainWindow mainwindow;
-    mainwindow.show();
-
+    forceShow(mainwindow);
 
     if(!dtkApplicationArgumentsContain(&application, "--no-fullscreen")
     && !dtkApplicationArgumentsContain(&application, "--wall")){

@@ -165,7 +165,7 @@ public:
     bool isInList(dtkAbstractData * data, int layer);
     void addDataInList(dtkAbstractData * data, int layer);
     void addDataInList(dtkAbstractData * data);
-    dtkAbstractData* dataInList(int layer);
+    dtkAbstractData* dataInList(int layer) const;
     void setDataInList(dtkAbstractData * data, int layer);
 
     void addDataType(const QString & dataDescription);

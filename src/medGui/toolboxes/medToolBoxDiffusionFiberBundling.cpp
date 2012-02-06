@@ -40,11 +40,14 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     QWidget *bundlingPage = new QWidget(this);
 
     QPushButton *openRoiButton = new QPushButton("Open ROI", bundlingPage);
+    openRoiButton->setToolTip(tr("Open a file with ROIs declarations."));
     QPushButton *clearRoiButton = new QPushButton("Clear ROI", bundlingPage);
+    clearRoiButton->setToolTip(tr("Clear previously loaded ROIs."));
     d->roiComboBox = new QComboBox(bundlingPage);
     for (int i=0; i<255; i++)
         d->roiComboBox->addItem(tr("ROI ")+QString::number(i+1));
     d->roiComboBox->setCurrentIndex(0);
+    d->roiComboBox->setToolTip(tr("Select a ROI to modify how its interaction with the fibers affects whether they are displayed."));
 
     QGroupBox *boolGroup = new QGroupBox(bundlingPage);
     boolGroup->setStyleSheet("border:0;");
@@ -52,9 +55,12 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     boolGroup->setAlignment(Qt::AlignHCenter);
 
     d->andButton  = new QRadioButton(tr("AND"), bundlingPage);
+    d->andButton->setToolTip(tr("If \"AND\" is selected fibers will need to overlap with this ROI to be displayed."));
     d->andButton->setChecked(true);
     d->notButton  = new QRadioButton(tr("NOT"), bundlingPage);
+    d->notButton->setToolTip(tr("If \"NOT\" is selected fibers overlapping with this ROI will not be displayed."));
     d->nullButton = new QRadioButton(tr("NULL"), bundlingPage);
+    d->nullButton->setToolTip(tr("If \"NULL\" is selected this ROI won't be taken into account."));
 
     QHBoxLayout *boolLayout = new QHBoxLayout;
     boolLayout->setContentsMargins(0, 0, 0, 0);
@@ -69,9 +75,13 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     roiLayout->addWidget(boolGroup);
     
     d->bundlingButtonTag = new QPushButton("Tag", bundlingPage);
+    d->bundlingButtonTag->setToolTip(tr("Tag the currently shown bundle to let medInria memorize it and another, new bundling box, will appear.\nThis new box will also isolate fibers but will also consider the previously \"tagged\" fibers."));
     d->bundlingButtonAdd = new QPushButton("Add", bundlingPage);
+    d->bundlingButtonAdd->setToolTip(tr("Select to either include the fibers that overlap with the bundling box, or to include the ones that do not overlap."));
     d->bundlingButtonRst = new QPushButton("Reset", bundlingPage);
+    d->bundlingButtonRst->setToolTip(tr("Reset all previously tagged bundling boxes."));
     d->bundlingButtonVdt = new QPushButton("Validate", bundlingPage);
+    d->bundlingButtonVdt->setToolTip(tr("Save the current shown bundle and show useful information about it."));
     d->bundlingButtonAdd->setCheckable(true);
     
     QHBoxLayout *bundlingButtonsLayout = new QHBoxLayout;
@@ -95,7 +105,9 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     
     d->bundlingShowCheckBox = new QCheckBox("Show all bundles", bundlingPage);
     d->bundlingShowCheckBox->setChecked(true);
+    d->bundlingShowCheckBox->setToolTip(tr("Uncheck if you do not want the previously validated bundles to be displayed."));
     d->bundleBoxCheckBox = new QCheckBox("Activate bundling box", bundlingPage);
+    d->bundleBoxCheckBox->setToolTip(tr("Select to activate and show the fiber bundling box on the screen."));
 
     QHBoxLayout *roiButtonLayout = new QHBoxLayout;
     roiButtonLayout->addWidget (openRoiButton);

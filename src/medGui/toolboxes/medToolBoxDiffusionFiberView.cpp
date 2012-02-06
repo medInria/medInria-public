@@ -16,22 +16,29 @@ medToolBoxDiffusionFiberView::medToolBoxDiffusionFiberView(QWidget *parent) : me
 {
     QWidget *displayWidget = new QWidget(this);
 
+    QString colorFibersToolTip = tr("Choose the coloring method of the fibers.");
     QLabel *colorLabel = new QLabel("Color fibers by:", displayWidget);
+    colorLabel->setToolTip(colorFibersToolTip);
 
     d->colorCombo = new QComboBox(displayWidget);
     d->colorCombo->addItem("Local orientation");
     d->colorCombo->addItem("Global orientation");
     d->colorCombo->addItem("Fractional anisotropy");
+    d->colorCombo->setToolTip(colorFibersToolTip);
 
     QHBoxLayout *colorLayout = new QHBoxLayout;
     colorLayout->addWidget(colorLabel);
     colorLayout->addWidget(d->colorCombo);
 
     d->displayCheckBox = new QCheckBox("Use hardware acceleration", displayWidget);
+    d->displayCheckBox->setToolTip(tr("Select to use GPU hardware acceleration when possible."));
 
     d->displayRadioPolylines = new QRadioButton("Display fibers as polylines", displayWidget);
+    d->displayRadioPolylines->setToolTip(tr("Use polylines to draw the fibers."));
     d->displayRadioRibbons = new QRadioButton("Display fibers as ribbons", displayWidget);
+    d->displayRadioRibbons->setToolTip(tr("Use ribbons to draw the fibers."));
     d->displayRadioTubes = new QRadioButton("Display fibers as tubes", displayWidget);
+    d->displayRadioTubes->setToolTip(tr("Use tubes to draw the fibers."));
 
     QButtonGroup *displayRadioGroup = new QButtonGroup(displayWidget);
     displayRadioGroup->addButton(d->displayRadioPolylines);
@@ -47,11 +54,14 @@ medToolBoxDiffusionFiberView::medToolBoxDiffusionFiberView(QWidget *parent) : me
 
     d->displayRadioPolylines->setChecked(true);
 
+    QString radiusToolTip = tr("Increase of decrease the radius of the fibers (except if there are being drawn with polylines).");
     QLabel *radiusLabel = new QLabel("Fibers radius:", displayWidget);
+    radiusLabel->setToolTip(radiusToolTip);
 
     d->radiusSlider = new QSlider(Qt::Horizontal, displayWidget);
     d->radiusSlider->setMinimum(1);
     d->radiusSlider->setMaximum(10);
+    d->radiusSlider->setToolTip(radiusToolTip);
 
     QHBoxLayout *radiusLayout = new QHBoxLayout;
     radiusLayout->addWidget(radiusLabel);

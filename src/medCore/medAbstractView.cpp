@@ -365,6 +365,7 @@ void medAbstractView::onSliceChanged (int slice)
 
 void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
 {
+  
     if(layer >=0 &&  layer < d->dataList.size() )
         d->dataList[layer] = data;
     else 
@@ -378,7 +379,7 @@ void medAbstractView::addDataInList(dtkAbstractData * data)
         d->dataList.append(data);
     medAbstractView::addDataType(data->identifier());
 }
-dtkAbstractData * medAbstractView::dataInList(int layer)
+dtkAbstractData * medAbstractView::dataInList(int layer) const
 {
     if (layer >=0 &&  layer < d->dataList.size())
         return d->dataList[layer];
@@ -389,10 +390,12 @@ dtkAbstractData * medAbstractView::dataInList(int layer)
 bool medAbstractView::isInList(dtkAbstractData * data, int layer)
 {
 
-    if (d->dataList.contains(data) &&
-            (d->dataList.count()<layer && d->dataList[layer]==data))
+    if(layer == d->dataList.size())
+        return false;
+    if (d->dataList.contains(data) && d->dataList[layer]==data)
+
     {
-//        qDebug() << "data is in list,layer:" << layer;
+        qDebug() << "data is in list,layer:" << layer;
         return true;
     }
 
