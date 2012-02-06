@@ -1532,7 +1532,7 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
   itkImage->UpdateOutputInformation();
  /* if (this->ITKInput==itkImage)
     return;*/
-  if (layer < this->ITKInputVector.size() && (this->ITKInputVector[layer]==itkImage) )
+  if (layer < (int)this->ITKInputVector.size() && (this->ITKInputVector[layer]==itkImage) )
     return;
 
   typedef itk::ImageToVTKImageFilter< itk::Image<T, 3> > ConverterType;
@@ -1571,7 +1571,7 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
   this->SetInput ( myConverter->GetOutput(), matrix, layer);
   this->Impl->ImageConverter[layer] = myConverter;
 
-  if(this->ITKInputVector.size() <= layer) {
+  if((int)this->ITKInputVector.size() <= layer) {
       this->ITKInputVector.resize (layer+1);
       this->ITKInputVector[layer] = itkImage;
   }
@@ -1648,7 +1648,7 @@ vtkImplementSetITKInputMacro (FloatVector3Type);
 
 itk::ImageBase<3>* vtkImageView::GetITKInput (int layer) const
 {
-  if (layer < this->ITKInputVector.size())
+  if (layer < (int)this->ITKInputVector.size())
     return this->ITKInputVector[layer];
   return NULL;
 }
