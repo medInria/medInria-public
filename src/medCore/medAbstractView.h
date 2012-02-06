@@ -27,6 +27,8 @@
 
 class medAbstractViewPrivate;
 
+class medAbstractViewCoordinates;
+
 class QColor;
 
 /**
@@ -178,6 +180,9 @@ public:
 
     virtual QString getLUT(int layer) const;
     virtual QString getPreset(int layer) const;
+
+    //! Get the coordinates helper
+    virtual medAbstractViewCoordinates * coordinates() = 0;
 
 signals:
     /**

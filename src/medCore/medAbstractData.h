@@ -79,6 +79,11 @@ public slots:
      */
     void removeAttachedData( medAttachedData * data );
 
+    /** Invoke emit datamodified(this);
+     * \sa dataModfied(medAbstractData *);
+    */
+    void invokeModified();
+
 signals:
     /**
      * @brief emitted when an attached data is added
@@ -88,6 +93,9 @@ signals:
      * @brief emitted when an attached data is removed
      */
     void attachedDataRemoved( medAttachedData * );
+
+    //! Signal emitted when the data contents have been altered.
+    void dataModified(medAbstractData *);
 
 private:
     medAbstractDataPrivate* d;
