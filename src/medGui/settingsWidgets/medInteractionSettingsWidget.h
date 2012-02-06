@@ -1,17 +1,17 @@
-#ifndef MEDDATABASESETTINGSWIDGET_H
-#define MEDDATABASESETTINGSWIDGET_H
+#ifndef MEDINTERACTIONSETTINGSWIDGET_H
+#define MEDINTERACTIONSETTINGSWIDGET_H
 
 #include "medGuiExport.h"
 #include "medSettingsWidget.h"
 #include <QWidget>
 
-class medDatabaseSettingsWidgetPrivate;
+class medInteractionSettingsWidgetPrivate;
 
-class MEDGUI_EXPORT medDatabaseSettingsWidget : public medSettingsWidget
+class medInteractionSettingsWidget : public medSettingsWidget
 {
     Q_OBJECT
 public:
-    medDatabaseSettingsWidget(QWidget *parent = 0);
+    medInteractionSettingsWidget(QWidget *parent = 0);
 
     QString identifier()  const;
     QString description() const;
@@ -20,9 +20,6 @@ signals:
 
 public slots:
     void read();
-
-private slots:
-    void selectDbDirectory(void);
 
 protected:
     /**
@@ -35,9 +32,9 @@ protected:
 
     bool write();
 private:
-    medDatabaseSettingsWidgetPrivate *d;
+    medInteractionSettingsWidgetPrivate *d;
 
 };
-
-MEDGUI_EXPORT medSettingsWidget* createDatabaseSettingsWidget(QWidget *parent);
-#endif // MEDDATABASESETTINGSWIDGET_H
+MEDGUI_EXPORT medSettingsWidget* createInteractionSettingsWidget(
+        QWidget *parent);
+#endif // MEDINTERACTIONSETTINGSWIDGET_H

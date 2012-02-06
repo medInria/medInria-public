@@ -15,7 +15,7 @@ class dtkAbstractView;
 class dtkAbstractData;
 class medViewerToolBoxViewPropertiesPrivate;
 /**
-   
+
    \class medViewerToolBoxViewProperties
    \brief This is designed to help users manipulate the image or mesh data. It can be put into the specific configuration as the other toolboxes
 
@@ -30,11 +30,18 @@ public:
      medViewerToolBoxViewProperties(QWidget *parent = 0);
     ~medViewerToolBoxViewProperties(void);
     /**
-    Whenever the view is changed, update metdhod is triggered. 
+    Whenever the view is changed, update metdhod is triggered.
     */
     void update(dtkAbstractView *view);
     void constructImageLayer(dtkAbstractData* data, int imageLayer);
     void constructMeshLayer(dtkAbstractData* data, int meshLayer);
+
+    /**
+     * @brief Checks the interaction button, according to the medSettings
+     *
+     * Uses the medSettingsManager to push the right interaction button;
+     */
+    void setCurrentInteractionFromSettings( void );
 
 public slots:
     void onDataAdded(int layer);

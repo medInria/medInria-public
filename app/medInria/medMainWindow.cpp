@@ -54,6 +54,7 @@
 #include <medSystemSettingsWidget.h>
 #include <medStartupSettingsWidget.h>
 #include <medDatabaseSettingsWidget.h>
+#include <medInteractionSettingsWidget.h>
 #include <medSettingsEditor.h>
 
 #include "medViewerConfigurationVisualization.h"
@@ -599,7 +600,8 @@ void medMainWindow::onQuit ( void )
 
 void medMainWindow::onSaveModified( void )
 {
-    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
+    QList<medDataIndex> indexes =
+            medDatabaseNonPersistentController::instance()->availableItems();
 
     if(!indexes.isEmpty())
     {
@@ -611,7 +613,7 @@ void medMainWindow::onSaveModified( void )
 void medMainWindow::onEditSettings()
 {
     QDialog * dialog = new QDialog(this);
-    dialog->setWindowTitle("medInria");
+    dialog->setWindowTitle("medInria Settings");
     dialog->setMinimumHeight(400);
     dialog->setMinimumWidth(500);
     dialog->setMaximumHeight(400);
@@ -775,4 +777,5 @@ void medMainWindow::registerToFactories()
     medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
     medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);
     medSettingsWidgetFactory::instance()->registerSettingsWidget("Database", createDatabaseSettingsWidget);
+    medSettingsWidgetFactory::instance()->registerSettingsWidget("Interaction", createInteractionSettingsWidget);
 }
