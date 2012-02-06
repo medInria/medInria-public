@@ -37,7 +37,7 @@ class medHomepageAreaPrivate
 {
 public:
     QCheckBox * showOnStartupCheckBox;
-
+    QStackedWidget* stackedWidget;
     QWidget * navigationWidget;
     QPropertyAnimation * navigationAnimation;
 
@@ -49,6 +49,7 @@ public:
 
     QWidget * aboutWidget;
     QTabWidget * aboutTabWidget;
+    QWidget * pluginWidget;
 
     QParallelAnimationGroup * animation;
 };
@@ -76,6 +77,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->aboutWidget->setMinimumHeight ( 500 );
     d->aboutWidget->hide();
 
+
     //User widget content with settings, about and help buttons
     QHBoxLayout * userButtonsLayout = new QHBoxLayout(d->userWidget);
     medHomepageButton * helpButton = new medHomepageButton ( this );
@@ -100,6 +102,17 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( aboutButton,SIGNAL ( clicked() ),this, SLOT ( onShowAbout() ) );
 
+    medHomepageButton * pluginButton = new medHomepageButton ( this );
+    pluginButton->setText ( "Plugins" );
+    pluginButton->setMinimumHeight ( 30 );
+    pluginButton->setMaximumWidth ( 150 );
+    pluginButton->setMinimumWidth ( 150 );
+    pluginButton->setToolTip(tr("Information on loaded plugins"));
+    pluginButton->setFocusPolicy ( Qt::NoFocus );
+    pluginButton->setIcon ( QIcon ( ":icons/medInriaPlugin.png" ) );
+    pluginButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
+    QObject::connect ( pluginButton,SIGNAL ( clicked() ),this, SLOT ( onShowPlugin() ) );
+
     medHomepageButton * settingsButton = new medHomepageButton ( this );
     settingsButton->setText ( "Settings" );
     settingsButton->setMinimumHeight ( 30 );
@@ -112,22 +125,28 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QObject::connect ( settingsButton,SIGNAL ( clicked() ),this, SLOT ( onShowSettings() ) );
 
     userButtonsLayout->insertWidget ( 0, settingsButton );
-    userButtonsLayout->insertWidget ( 1, aboutButton );
-    userButtonsLayout->insertWidget ( 2, helpButton );
+    userButtonsLayout->insertWidget ( 1, pluginButton );
+    userButtonsLayout->insertWidget ( 2, aboutButton );
+    userButtonsLayout->insertWidget ( 3, helpButton );
     //no need to set the layout the userWidget is the parent of the layout already.
 //    d->userWidget->setLayout ( userButtonsLayout );
 
     // Info widget : medInria logo, medInria description, etc. QtWebkit ?
     QVBoxLayout * infoLayout = new QVBoxLayout(d->infoWidget);
     QLabel * medInriaLabel = new QLabel ( this );
-    medInriaLabel->setPixmap ( QPixmap ( ":pixmaps/medInria-logo-homepage.png" ) );
+    QPixmap medLogo( ":pixmaps/medInria-logo-homepage.png" );
+    medInriaLabel->setPixmap ( medLogo );
 //     QLabel * textLabel = new QLabel;
 
     QTextEdit * textEdit = new QTextEdit(this);
-    textEdit->setHtml ( "<b>medInria</b> is a multi-platform medical image processing and visualization software,\
-                      and it's <b>free</b>. Through an intuitive user interface, <b>medInria</b> offers from standard \
-                      to cutting-edge processing functionalities for your medical images such as 2D/3D/4D image visualization, \
-                      image registration, or diffusion MR processing and tractography." );
+    textEdit->setHtml ( tr("<b>medInria</b> is a multi-platform medical image "
+                           "processing and visualization software, "
+                           "and it's <b>free</b>. Through an intuitive user "
+                           "interface, <b>medInria</b> offers from standard "
+                           "to cutting-edge processing functionalities for "
+                           "your medical images such as 2D/3D/4D image "
+                           "visualization, image registration, or diffusion "
+                           "MR processing and tractography." ));
     textEdit->setReadOnly ( true );
     textEdit->setFocusPolicy ( Qt::NoFocus );
     textEdit->setMaximumHeight ( 200 );
@@ -144,7 +163,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->aboutTabWidget = new QTabWidget(this);
 
     QLabel * medInriaLabel2 = new QLabel ( this );
-    medInriaLabel2->setPixmap ( QPixmap ( ":pixmaps/medInria-logo-homepage.png" ) );
+    medInriaLabel2->setPixmap ( medLogo );
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
     QString aboutText("<br/><br/>\
@@ -170,10 +189,10 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //no parent, this layout is added to an other layout.
     QHBoxLayout * aboutButtonLayout = new QHBoxLayout();
     QPushButton * hideAboutButton = new QPushButton ( this );
-    hideAboutButton->setText ( "Hide" );
+    hideAboutButton->setText ( tr("Hide") );
     hideAboutButton->setFocusPolicy ( Qt::NoFocus );
     hideAboutButton->setToolTip( tr("Hide the About section") );
-    QObject::connect ( hideAboutButton, SIGNAL ( clicked() ), this, SLOT ( onHideAbout() ) );
+    QObject::connect ( hideAboutButton, SIGNAL ( clicked() ), this, SLOT ( onShowInfo() ) );
 
     aboutButtonLayout->addStretch();
     aboutButtonLayout->addWidget ( hideAboutButton );
@@ -188,14 +207,47 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutLayout->addLayout ( aboutButtonLayout );
     aboutLayout->addStretch();
 
-    //no need to set the layout, the aboutWidget is the parent of the layout already.
-//    d->aboutWidget->setLayout ( aboutLayout );
+
+    //Create the plugin widget.
+    d->pluginWidget = new QWidget(this);
+    QVBoxLayout * pluginLayout = new QVBoxLayout(d->pluginWidget);
+    QHBoxLayout * pluginHideButtonLayout = new QHBoxLayout();
+    QPushButton * hidePluginButton = new QPushButton ( this );
+    hidePluginButton->setText ( tr("Hide") );
+    hidePluginButton->setFocusPolicy ( Qt::NoFocus );
+    hidePluginButton->setToolTip( tr("Hide the About section") );
+    QObject::connect ( hidePluginButton, SIGNAL ( clicked() ), this, SLOT ( onShowInfo() ) );
+
+    pluginHideButtonLayout->addStretch();
+    pluginHideButtonLayout->addWidget ( hidePluginButton );
+    pluginHideButtonLayout->addStretch();
+
+    QLabel * medInriaLabel3 = new QLabel ( this );
+    medInriaLabel3->setPixmap ( medLogo );
+
+    QLabel * pluginWidgetTitle = new QLabel(tr("Plugins information"),this);
+    pluginLayout->addWidget(medInriaLabel3);
+    pluginLayout->addWidget(pluginWidgetTitle);
+    pluginLayout->addLayout(pluginHideButtonLayout);
+    pluginLayout->addStretch();
+    pluginLayout->setAlignment(pluginWidgetTitle, Qt::AlignHCenter);
 
     //Set the position of the widgets
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
     d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
-    d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
-    d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
+//    d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
+//    d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
+
+
+    //Create a Stacked Widget in which to put info widget, about widget and plugin Widget
+    d->stackedWidget = new QStackedWidget( this );
+    d->stackedWidget->setMinimumWidth ( 400 );
+    d->stackedWidget->setMinimumHeight ( 500 );
+    d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
+    d->stackedWidget->addWidget(d->infoWidget);
+    d->stackedWidget->addWidget(d->aboutWidget);
+    d->stackedWidget->addWidget(d->pluginWidget);
+    d->stackedWidget->setCurrentIndex(0);//d->infoWidget
 
     //Setup homepage animations
     d->animation = new QParallelAnimationGroup ( this );
@@ -211,7 +263,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->userAnimation->setStartValue ( QPoint ( this->width() + 250,  this->height() - 90 ) );
     d->userAnimation->setEndValue ( QPoint ( this->width() * 0.8 ,  this->height() - 90 ) );
 
-    d->infoAnimation = new QPropertyAnimation ( d->infoWidget, "pos" );
+    d->infoAnimation = new QPropertyAnimation ( d->stackedWidget, "pos" );
     d->infoAnimation->setDuration ( 900 );
     d->infoAnimation->setEasingCurve ( QEasingCurve::OutCubic );
     d->infoAnimation->setStartValue ( QPoint ( this->width() + 100 , this->height() / 5 ) );
@@ -244,11 +296,10 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     //Recompute the widgets position when the window is resized
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
     d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
-    d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
-    d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
+    d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
     d->showOnStartupCheckBox->setProperty ( "pos", QPoint ( this->width() - 200 ,  this->height() - 30 ) );
 
-    d->aboutTabWidget->setMaximumHeight ( this->height() / 3 );
+//    d->aboutTabWidget->setMaximumHeight ( this->height() / 3 );
 
     //Update the animations as well
     d->navigationAnimation->setStartValue ( QPoint ( - 300,  this->height() / 4 ) );
@@ -318,15 +369,22 @@ void medHomepageArea::onShowConfiguration ( QString configuration )
 
 void medHomepageArea::onShowAbout ( void )
 {
-    d->infoWidget->hide();
-    d->aboutWidget->show();
+    d->stackedWidget->setCurrentWidget(d->aboutWidget);
     d->aboutWidget->setFocus();
 }
 
-void medHomepageArea::onHideAbout()
+void medHomepageArea::onShowPlugin ( void )
 {
-    d->aboutWidget->hide();
-    d->infoWidget->show();
+    d->stackedWidget->setCurrentWidget(d->pluginWidget);
+
+    d->pluginWidget->setFocus();
+}
+
+
+
+void medHomepageArea::onShowInfo()
+{
+    d->stackedWidget->setCurrentWidget(d->infoWidget);
     d->infoWidget->setFocus();
 }
 

@@ -122,5 +122,6 @@
         <file>authors.html</file>
         <file>icons/fullscreenExpand.png</file>
         <file>icons/fullscreenReduce.png</file>
+        <file>icons/medInriaPlugin.png</file>
     </qresource>
 </RCC>

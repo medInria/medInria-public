@@ -519,7 +519,7 @@ void medMainWindow::switchToHomepageArea ( void )
     if (d->quickAccessVisible)
         this->onHideQuickAccess();
     d->stack->setCurrentWidget ( d->homepageArea );
-    d->homepageArea->onHideAbout();
+    d->homepageArea->onShowInfo();
 
     if ( d->homepageArea->getAnimation() )
         d->homepageArea->getAnimation()->start();
