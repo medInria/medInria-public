@@ -90,9 +90,9 @@ medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(par
     d->layoutToolBoxTab->addTab(new QWidget, "Multi");
     d->layoutToolBoxTab->addTab(customPage, "Custom");
 	
-	d->layoutToolBoxTab->setTabToolTip(0,"Single display");
-	d->layoutToolBoxTab->setTabToolTip(1,"Multi-display (divide screen when an image is added to the view)");
-	d->layoutToolBoxTab->setTabToolTip(2,"Custom display setup");
+	d->layoutToolBoxTab->setTabToolTip(0,"Display data in the same view (use overlay)");
+	d->layoutToolBoxTab->setTabToolTip(1,"Display data in multiple views (one data = one view)");
+	d->layoutToolBoxTab->setTabToolTip(2,"Use a custom layout for multiple views");
 
     d->layoutToolBoxTab->setCurrentIndex(1);
 
