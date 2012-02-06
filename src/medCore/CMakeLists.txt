@@ -30,7 +30,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewManager.h
   medPluginManager.h
   medAbstractView.h
-  medAbstractViewCoordinates.h
   medAbstractViewCollection.h
   med4DAbstractViewInteractor.h
   medMeshAbstractViewInteractor.h
@@ -68,6 +67,7 @@ set(${PROJECT_NAME}_HEADERS
   medAbstractDataTypedImage3D.h
   medAbstractDataTypedImage4D.h
   medAbstractDatabaseItem.h
+  medAbstractViewCoordinates.h
 )
 
 
