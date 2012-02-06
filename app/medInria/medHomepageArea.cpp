@@ -224,7 +224,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //Setup the startup checkbox
     d->showOnStartupCheckBox = new QCheckBox ( this );
     d->showOnStartupCheckBox->setCheckState(Qt::Checked);
-    d->showOnStartupCheckBox->setText ( "Start medInria on homepage ?" );
+    d->showOnStartupCheckBox->setText ( "Start medInria on the homepage?" );
     d->showOnStartupCheckBox->setFocusPolicy ( Qt::NoFocus );
     d->showOnStartupCheckBox->setProperty ( "pos", QPoint ( this->width() - 200 ,  this->height() - 30 ) );
     if ( medSettingsManager::instance()->value ( "startup","default_starting_area" ).toInt() )
