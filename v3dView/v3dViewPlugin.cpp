@@ -6,8 +6,8 @@
 #include "v3dViewFuseInteractor.h"
 #include "v3dViewMeshInteractor.h"
 #include "v3dView4DInteractor.h"
+#include "v3dViewAnnotationInteractor.h"
 #include "v3dViewPlugin.h"
-
 #ifndef DISABLE_TTK_DEPENDENT_CODE
   #include "v3dViewFiberInteractor.h"
   #include "v3dViewTensorInteractor.h"
@@ -52,6 +52,7 @@ bool v3dViewPlugin::initialize(void)
     if (!v3dViewFuseInteractor::registered()) dtkWarning() << "Unable to register v3dViewFuseInteractor type";
     if (!v3dViewMeshInteractor::registered()) dtkWarning() << "Unable to register v3dViewMeshInteractor type";
     if (!v3dView4DInteractor::registered()) dtkWarning() << "Unable to register v3dView4DInteractor type";
+    if (!v3dViewAnnotationInteractor::registered()) dtkWarning() << "Unable to register v3dViewAnnotationInteractor type";
 
 #ifndef DISABLE_TTK_DEPENDENT_CODE
     if (!v3dViewTensorInteractor::registered()) dtkWarning() << "Unable to register v3dViewTensorInteractor type";
@@ -72,7 +73,7 @@ QString v3dViewPlugin::name(void) const
 
 QString v3dViewPlugin::description(void) const
 {
-    return "v3dView";
+    return v3dView::s_identifier();
 }
 
 QStringList v3dViewPlugin::tags(void) const
@@ -82,7 +83,10 @@ QStringList v3dViewPlugin::tags(void) const
 
 QStringList v3dViewPlugin::types(void) const
 {
-    return QStringList() << "v3dView" << "v3dViewFiberInteractor" << "v3dViewFuseInteractor" << "v3dViewMeshInteractor"  << "v3dViewTensorInteractor" << "v3dView4DInteractor";
+    return QStringList() << v3dView::s_identifier() << "v3dViewFiberInteractor"
+        << "v3dViewFuseInteractor" << "v3dViewMeshInteractor"  
+        << "v3dViewTensorInteractor" << "v3dView4DInteractor"
+        << v3dViewAnnotationInteractor::s_identifier();
 }
 
 Q_EXPORT_PLUGIN2(v3dViewPlugin, v3dViewPlugin)

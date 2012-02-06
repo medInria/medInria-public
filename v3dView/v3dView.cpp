@@ -10,15 +10,19 @@
 
 #include <v3dView.h>
 
+#include "v3dViewAnnotationInteractor.h"
+
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCore/dtkSignalBlocker.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 #include <medMessageController.h>
 #include <medSettingsManager.h>
 #include <medAbstractDataImage.h>
 #include <medMetaDataKeys.h>
+#include <medAbstractAnnotationViewInteractor.h>
 
 #include <vtkCamera.h>
 #include <vtkCommand.h>
@@ -33,6 +37,8 @@
 #include <vtkTextProperty.h>
 #include <vtkImageMapToColors.h>
 #include <vtkOrientedBoxWidget.h>
+#include <vtkMath.h>
+#include <vtkMatrix4x4.h>
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
@@ -49,35 +55,6 @@
 #include <QMenu>
 #include <QMouseEvent>
 
-//=============================================================================
-// QSignalBlocker : Blocks signals to a given object as long it remains instantiated.
-// The purpose is to increase exception-safety and to ensure that objects are
-// not still unintentionally blocked what ever the return path from a function.
-class QSignalBlocker
-{
-public:
-    explicit QSignalBlocker ( QObject * o ) : m_object ( o )
-    {
-        m_object->blockSignals ( true );
-    }
-
-    ~QSignalBlocker()
-    {
-        m_object->blockSignals ( false );
-    }
-
-    // Allow early unblocking : before object goes out of scope.
-    void blockSignals ( bool v )
-    {
-        m_object->blockSignals ( v );
-    }
-
-private:
-    QObject * m_object;
-private:
-    QSignalBlocker ( const QSignalBlocker & ); // Copy constructor not implemented.
-    QSignalBlocker & operator= ( const QSignalBlocker & ); // Assignment operator not implemented.
-};
 //=============================================================================
 // Construct a QVector3d from pointer-to-double
 inline QVector3D doubleToQtVector3D ( const double * v )
@@ -167,7 +144,7 @@ void v3dViewObserver::Execute ( vtkObject *caller, unsigned long event, void *ca
     case vtkImageView::CurrentPointChangedEvent:
     {
         {
-            QSignalBlocker blocker ( this->slider );
+            dtkSignalBlocker blocker ( this->slider );
             unsigned int zslice = this->view->view2d()->GetSlice();
             this->slider->setValue ( zslice );
             this->slider->update();
@@ -241,6 +218,7 @@ public:
 
     vtkRenderer *renderer2d;
     vtkRenderer *renderer3d;
+    vtkSmartPointer<vtkRenderer> overlayRenderer2d;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
 
@@ -346,6 +324,8 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     d->view2d->ShowImageAxisOff();
     d->view2d->ShowScalarBarOff();
     d->view2d->ShowRulerWidgetOn();
+    d->overlayRenderer2d = vtkSmartPointer<vtkRenderer>::New();
+    d->view2d->SetOverlayRenderer(d->overlayRenderer2d);
 
     // Setting up 3D view
     d->renderer3d = vtkRenderer::New();
@@ -366,8 +346,11 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
     d->view3d->SetInteractorStyle ( interactorStyle );
     interactorStyle->Delete();
+    
+    QMainWindow * mainWindow = dynamic_cast< QMainWindow * >(
+        qApp->property( "MainWindow" ).value< QObject * >() );
 
-    d->widget = new QWidget;
+    d->widget = new QWidget( mainWindow );
 
     d->slider = new QSlider ( Qt::Horizontal, d->widget );
     d->slider->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Fixed );
@@ -704,7 +687,7 @@ v3dView::~v3dView ( void )
 
 bool v3dView::registered ( void )
 {
-    return dtkAbstractViewFactory::instance()->registerViewType ( "v3dView", createV3dView );
+    return dtkAbstractViewFactory::instance()->registerViewType ( v3dView::s_identifier(), createV3dView );
 }
 
 QString v3dView::description ( void ) const
@@ -715,7 +698,7 @@ QString v3dView::description ( void ) const
 
 QString v3dView::identifier() const
 {
-    return "v3dView";
+    return v3dView::s_identifier();
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -844,6 +827,7 @@ bool v3dView::SetViewInput(const char* type,dtkAbstractData* data,const int laye
         d->view2d->SetITKInput(image,layer);
         d->view3d->SetITKInput(image,layer);
     }
+    dtkAbstractView::setData(data);
     return true;
 }
 
@@ -867,6 +851,7 @@ bool v3dView::SetViewInputWithConversion(const char* type,const char* newtype,dt
         d->view2d->SetITKInput(image,layer);
         d->view3d->SetITKInput(image,layer);
     }
+    dtkAbstractView::setData(data);
     return true;
 }
 
@@ -885,6 +870,11 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         medMessageController::instance()->showError ( this, tr ( "Select image first" ), 5000 );
         return;
     }
+
+    if ( layer == 0 ) {
+        this->enableInteractor(v3dViewAnnotationInteractor::s_identifier());
+    }
+
 #ifdef vtkINRIA3D_USE_ITK
     if (SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
         SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3",data,layer) ||
@@ -1021,7 +1011,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
                 d->view3d->SetSeriesName ( seriesName.toAscii().constData() );
             }
 
-            QSignalBlocker blocker (d->slider);
+            dtkSignalBlocker blocker (d->slider );
             // slice orientation may differ from view orientation. Adapt slider range accordingly.
             int orientationId = d->view2d->GetSliceOrientation();
             if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
@@ -1088,7 +1078,7 @@ void v3dView::onOrientationPropertySet ( const QString &value )
     if ( value==d->orientation )
         return;
 
-    QSignalBlocker thisBlocker ( this );
+    dtkSignalBlocker thisBlocker ( this );
 
     double pos[3], window = 0.0, level = 0.0;
     int timeIndex = 0;
@@ -1114,7 +1104,7 @@ void v3dView::onOrientationPropertySet ( const QString &value )
 
     // in case the max range becomes smaller than the actual value, a signal is emitted and
     // we don't want it
-    QSignalBlocker sliderBlocker ( d->slider );
+    dtkSignalBlocker sliderBlocker ( d->slider );
 
     if ( value == "Axial" )
     {
@@ -1877,6 +1867,7 @@ void v3dView::setColorLookupTable ( QList<double> scalars, QList<QColor> colors 
     double min = scalars.first();
     double max = scalars.last();
     int n = static_cast< int > ( max - min ) + 1;
+    n = std::max(n, size);
     double * table = new double[3*n];
     double * alphaTable = new double[n];
     ctf->GetTable ( min, max, n, table );
@@ -1894,7 +1885,11 @@ void v3dView::setColorLookupTable ( QList<double> scalars, QList<QColor> colors 
         lut->SetTableValue ( i+1, table[j], table[j+1], table[j+2], alphaTable[i] );
     lut->SetTableValue ( n + 1, 0.0, 0.0, 0.0, 0.0 );
 
-    d->currentView->SetLookupTable ( lut );
+    if ( d->currentView == d->view2d ) {
+        d->view2d->SetLookupTable( lut , this->currentLayer() );
+    } else {
+        d->currentView->SetLookupTable ( lut );
+    }
     d->currentView->Render();
     lut->Delete();
     delete [] table;
@@ -2206,7 +2201,7 @@ void v3dView::onPositionChanged ( const QVector3D &position )
     if ( vtkImageView2D *view2d = vtkImageView2D::SafeDownCast ( d->currentView ) )
     {
         unsigned int zslice = view2d->GetSlice();
-        QSignalBlocker sliderBlocker ( d->slider );
+        dtkSignalBlocker sliderBlocker( d->slider );
         d->slider->setValue ( zslice );
     }
 }
@@ -2287,4 +2282,169 @@ void v3dView::onOpacityChanged ( double opacity, int layer )
 void v3dView::widgetDestroyed ( void )
 {
     d->widget = NULL;
+}
+
+medAbstractViewCoordinates * v3dView::coordinates()
+{
+    return this;
+}
+
+QPointF v3dView::worldToDisplay( const QVector3D & worldVec ) const
+{
+    // The following code is implemented without calling ren->SetWorldPoint, 
+    // because that generates an unnecessary modified event.
+    //ren->SetWorldPoint( d->view->currentView()->GetCurrentPoint() );
+    //ren->WorldToDisplay();
+    //ren->GetDisplayPoint( posDisplay );
+
+    vtkRenderer * ren = d->currentView->GetRenderer();
+
+    // Get window for dimensions
+    vtkWindow * win = ren->GetVTKWindow();
+
+    if ( !win )
+        return QPointF();
+
+    double wx = worldVec.x();
+    double wy = worldVec.y();
+    double wz = worldVec.z();
+
+    ren->WorldToView( wx, wy, wz );
+
+    // get physical window dimensions
+    const int * size = win->GetSize();
+    int sizex = size[0];
+    int sizey = size[1];
+
+    const double * viewport = ren->GetViewport( );
+
+    double dx = (wx + 1.0) *
+        (sizex*(viewport[2]-viewport[0])) / 2.0 +
+        sizex*viewport[0];
+    double dy = (wy + 1.0) *
+        (sizey*(viewport[3]-viewport[1])) / 2.0 +
+        sizey*viewport[1];
+
+    // Convert VTK display coordinates to Qt (flipped in Y)
+    return QPointF( dx, sizey - 1 - dy );
+}
+
+QVector3D v3dView::displayToWorld( const QPointF & scenePoint ) const
+{
+    // The following code is implemented without calling ren->SetWorldPoint, 
+    // because that generates an unnecessary modified event.
+    //ren->SetWorldPoint( minWorld );
+    //ren->WorldToDisplay();
+    //ren->GetDisplayPoint( minDisplay );
+    //ren->SetWorldPoint( maxWorld );
+    //ren->WorldToDisplay();
+    //ren->GetDisplayPoint( maxDisplay );
+    vtkRenderer * ren = d->currentView->GetRenderer();
+
+    /* get physical window dimensions */
+    vtkWindow * win = ren->GetVTKWindow();
+
+    if ( !win )
+        return QVector3D();
+
+    const int * size = win->GetSize();
+    int sizex = size[0];
+    int sizey = size[1];
+
+    const double * viewport = ren->GetViewport( );
+
+    // Convert Qt display coordinates to VTK (flipped in Y)
+    const double dx = scenePoint.x();
+    const double dy = sizey - 1 - scenePoint.y();
+
+    double vx = 2.0 * (dx - sizex*viewport[0])/
+        (sizex*(viewport[2]-viewport[0])) - 1.0;
+    double vy = 2.0 * (dy - sizey*viewport[1])/
+        (sizey*(viewport[3]-viewport[1])) - 1.0;
+    double vz = 0.;
+
+    if (this->is2D() ) {
+        // Project the point into the view plane.
+        vtkCamera * cam = ren->GetActiveCamera();
+        double pointInDisplayPlane[3];
+        //if (cam) {
+        //    cam->GetFocalPoint(pointInDisplayPlane);
+        //} else {
+            d->currentView->GetCurrentPoint(pointInDisplayPlane);
+        //}
+        ren->WorldToView(pointInDisplayPlane[0],pointInDisplayPlane[1],pointInDisplayPlane[2]);
+        vz = pointInDisplayPlane[2];
+    }
+
+    ren->ViewToWorld(vx,vy,vz);
+
+    return QVector3D( vx, vy, vz );
+}
+
+QVector3D v3dView::viewCenter() const
+{
+    vtkRenderer * ren = d->currentView->GetRenderer();
+    double fp[3];
+    ren->GetActiveCamera()->GetFocalPoint( fp);
+    return QVector3D( fp[0], fp[1], fp[2] );
+}
+
+QVector3D v3dView::viewPlaneNormal() const
+{
+    double vpn[3];
+    vtkRenderer * ren = d->currentView->GetRenderer();
+    ren->GetActiveCamera()->GetViewPlaneNormal(vpn);
+    return QVector3D( vpn[0], vpn[1], vpn[2] );
+}
+
+QVector3D v3dView::viewUp() const
+{
+    double vup[3];
+    vtkRenderer * ren = d->currentView->GetRenderer();
+    ren->GetActiveCamera()->GetViewUp(vup);
+    return QVector3D( vup[0], vup[1], vup[2] );
+}
+
+bool v3dView::is2D() const
+{
+    return d->currentView == d->view2d;
+}
+
+qreal v3dView::sliceThickness() const
+{
+    double cr[2] = { 0,0 };
+    d->renderer2d->GetActiveCamera()->GetClippingRange(cr);
+    return std::fabs(cr[1] - cr[0]);
+}
+
+qreal v3dView::scale() const
+{
+    double scale;
+    if ( this->is2D() ) {
+        // The height of the viewport in world coordinates
+        double camScale = d->currentView->GetRenderer()->GetActiveCamera()->GetParallelScale();
+        double heightInPx = d->currentView->GetRenderWindow()->GetSize()[1];
+        // return pixels per world coord.
+        scale = heightInPx / camScale;
+    } else {
+        // Return scale at fp.
+        double vup[4];
+        d->currentView->GetRenderer()->GetActiveCamera()->GetViewUp(vup);
+        vup[3] = 0;  //intentionally zero and not one.
+        double MVup[4];
+        d->currentView->GetRenderer()->GetActiveCamera()->GetViewTransformMatrix()->MultiplyPoint(vup, MVup);
+        double lScale = vtkMath::Norm(MVup) / vtkMath::Norm(vup);
+        //We now have the scale in viewport coords. (normalised).
+        double heightInPx = d->currentView->GetRenderWindow()->GetSize()[1];
+        scale = heightInPx *lScale;
+    }
+
+    if ( scale < 0 ) 
+        scale *= -1;
+    return scale;
+}
+
+QString v3dView::s_identifier()
+{
+    return "v3dView";
 }

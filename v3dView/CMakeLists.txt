@@ -84,11 +84,16 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewFuseInteractor.h
   v3dViewMeshInteractor.h
   v3dView4DInteractor.h
+  v3dViewAnnotationInteractor.h
   ${${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC}
   )
 
 set(${PROJECT_NAME}_HEADERS
-  ${${PROJECT_NAME}_HEADERS_MOC})
+  ${${PROJECT_NAME}_HEADERS_MOC}
+  annotations/vtkSeedPointHandle.h
+  annotations/v3dViewAnnIntImageMaskHelper.h
+  annotations/v3dViewAnnIntSeedPointHelper.h
+  )
 
 set(${PROJECT_NAME}_SOURCES
   v3dViewPlugin.cpp
@@ -97,11 +102,12 @@ set(${PROJECT_NAME}_SOURCES
   v3dViewMeshInteractor.cpp
   v3dView4DInteractor.cpp
   v3dFiberBundle.cpp
+  v3dViewAnnotationInteractor.cpp
+  annotations/v3dViewAnnIntImageMaskHelper.cpp
+  annotations/v3dViewAnnIntSeedPointHelper.cpp
+  annotations/vtkSeedPointHandle.cpp
   ${${PROJECT_NAME}_TTK_DEPENDENT_SOURCES}
   )
-
-# Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 
 ## #################################################################
 ## Build rules
@@ -116,8 +122,10 @@ if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
     ${${PROJECT_NAME}_SOURCES})
 endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
 
+include_directories(annotations)
+
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC} 
+  ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_SOURCES_PCH}
   ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES})
@@ -147,6 +155,10 @@ endif (vtkINRIA3D_USE_HWSHADING)
 if (BUILD_TESTING)
   add_subdirectory(Testing)
 endif (BUILD_TESTING)
+
+# Include header files for Visual Studio.
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules
