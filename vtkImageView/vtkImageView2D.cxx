@@ -320,7 +320,10 @@ unsigned long vtkImageView2D::GetMTime()
 
         const int numLayer = this->GetNumberOfLayers();
         for ( int i(0); i<numLayer; ++i ) {
-            this->GetImage2DDisplayForLayer(i)->GetInput()->UpdateInformation();            
+            if (this->GetImage2DDisplayForLayer(i)->GetInput())
+            {
+              this->GetImage2DDisplayForLayer(i)->GetInput()->UpdateInformation();
+            }
             vtkObject * object = this->GetImage2DDisplayForLayer(i)->GetImageActor();
             if (object) {
                 const MTimeType testMtime = object->GetMTime();
