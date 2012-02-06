@@ -1809,3 +1809,8 @@ void vtkImageView::SetOverlayRenderer( vtkRenderer *arg )
         }
     }
 }
+
+vtkImageMapToColors * vtkImageView::GetWindowLevel( int layer/*=0*/ )
+{
+    return this->WindowLevel;
+}

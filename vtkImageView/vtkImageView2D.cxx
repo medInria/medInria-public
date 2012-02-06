@@ -299,7 +299,6 @@ unsigned long vtkImageView2D::GetMTime()
     MTimeType mTime = Superclass::GetMTime();
 
     vtkObject * objectsToInclude[] = {
-        this->GetImageActor(0),
         this->Axes2DWidget,
         this->RulerWidget,
         this->DistanceWidget,
@@ -318,6 +317,18 @@ unsigned long vtkImageView2D::GetMTime()
                     mTime = testMtime;
             }
         }
+
+        const int numLayer = this->GetNumberOfLayers();
+        for ( int i(0); i<numLayer; ++i ) {
+            this->GetImage2DDisplayForLayer(i)->GetInput()->UpdateInformation();            
+            vtkObject * object = this->GetImage2DDisplayForLayer(i)->GetImageActor();
+            if (object) {
+                const MTimeType testMtime = object->GetMTime();
+                if ( testMtime > mTime )
+                    mTime = testMtime;
+            }
+        }
+
         return mTime;
 }
 
@@ -1796,4 +1807,9 @@ vtkImage2DDisplay * vtkImageView2D::GetImage2DDisplayForLayer( int layer ) const
 vtkRenderer * vtkImageView2D::GetRendererForLayer( int layer ) const
 {
     return this->LayerInfoVec.at(layer).Renderer;
+}
+
+vtkImageMapToColors * vtkImageView2D::GetWindowLevel( int layer/*=0*/ )
+{
+    return this->GetImage2DDisplayForLayer(layer)->GetWindowLevel();
 }
