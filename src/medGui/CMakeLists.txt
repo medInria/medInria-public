@@ -76,6 +76,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   settingsWidgets/medSettingsEditor.h
   settingsWidgets/medSystemSettingsWidget.h
   settingsWidgets/medStartupSettingsWidget.h
+  settingsWidgets/medInteractionSettingsWidget.h
 
   # general toolbox classes
   toolboxes/medToolBox.h
@@ -182,6 +183,7 @@ set(${PROJECT_NAME}_SOURCES
   settingsWidgets/medSettingsEditor.cpp
   settingsWidgets/medSystemSettingsWidget.cpp
   settingsWidgets/medStartupSettingsWidget.cpp
+  settingsWidgets/medInteractionSettingsWidget.cpp
 
   # general toolbox classes
   toolboxes/medToolBox.cpp
