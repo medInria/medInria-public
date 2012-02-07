@@ -356,9 +356,31 @@ void medToolBoxRegistration::onSaveTrans()
         emit showError(this, tr  ("Please run the registration before saving"),3000);
         return;
     }
+
+    //get the transformation type: affine or deformation field.
+    QString fileTypeSuggestion;
+    QString defaultSuffix;
+    if (d->process->hasProperty("transformType"))
+    {
+        if ( d->process->property("transformType") == "rigid")
+        {
+            fileTypeSuggestion = tr("Transformation (*.txt)");
+            defaultSuffix = "txt";
+        }
+        else
+        {
+            defaultSuffix = "mha";
+            fileTypeSuggestion = tr("MetaFile (*.mha *.mhd);;Nifty (*.nii);;"
+                                    "Analyse (*.hdr);;Nrrd (*.nrrd);;"
+                                    "VTK (*.vtk);;"
+                                    "All supported files "
+                                    "(*.mha *.mhd *.nii *.hdr *.nrrd)");
+        }
+    }
+
     QFileDialog dialog(this, tr("Save Transformation"),
                                QDir::homePath(),
-                               tr("Transformation (*.txt);;MetaFile (*.mha *.mhd);;Nifty (*.nii);;Analyse (*.hdr);;Nrrd (*.nrrd);;VTK (*.vtk);;All supported files (*.mha *.mhd *.nii *.hdr *.nrrd)"));
+                               fileTypeSuggestion);
 
     dialog.setDefaultSuffix("mha");
     dialog.setAcceptMode(QFileDialog::AcceptSave);
@@ -373,14 +395,14 @@ void medToolBoxRegistration::onSaveTrans()
         //qDebug()<< (void *) d->movingData;
         //qDebug()<<  d->movingView->data();
         QStringList transformFileName;
-        transformFileName << "" << fileName[0];
+        transformFileName << ""<< fileName[0];
         if (d->process->write(transformFileName))
         {
-            emit(showInfo(this, tr  ("Registered Image Saved"),3000));
+            emit(showInfo(this, tr  ("Transformation saved"),3000));
         }
         else
         {
-            emit(showError(this, tr  ("Image saving failed, no suitable writer found"),3000));
+            emit(showError(this, tr  ("Transformation saving failed, no suitable writer found"),3000));
         }
     }
 }
