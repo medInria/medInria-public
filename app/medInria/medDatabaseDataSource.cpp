@@ -10,6 +10,8 @@
 #include <medDatabaseModel.h>
 #include <medDatabaseExporter.h>
 
+#include <medToolBoxActions.h>
+
 class medDatabaseDataSourcePrivate
 {
 public:
@@ -21,6 +23,7 @@ public:
 
     QList<medToolBox*> toolboxes;
     medDatabaseSearchPanel *searchPanel;
+    medToolBoxActions* actionsTb;
 
 };
 
@@ -43,18 +46,26 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
     database_layout->addWidget(d->view);
     database_layout->addWidget(d->preview);
 
+    d->actionsTb = new medToolBoxActions(parent);
+    d->toolboxes.push_back(d->actionsTb);
+
     d->searchPanel = new medDatabaseSearchPanel(parent);
     d->searchPanel->setColumnNames(d->model->columnNames());
     d->toolboxes.push_back(d->searchPanel);
 
     connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->preview, SLOT(onPatientClicked(const medDataIndex&)));
     connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(onSeriesClicked(const medDataIndex&)));
+    connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->actionsTb, SLOT(patientSelected()));
+    connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsTb, SLOT(seriesSelected()));
     connect(d->view, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
     connect(d->view, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
     connect(d->view, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));
 
     connect(d->searchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(onFilter(const QString &, int)));
 
+    connect(d->actionsTb, SIGNAL(removeClicked()), d->view, SLOT(onMenuRemoveClicked()));
+    connect(d->actionsTb, SIGNAL(exportClicked()), d->view, SLOT(onMenuExportClicked()));
+    connect(d->actionsTb, SIGNAL(viewClicked()), d->view, SLOT(onMenuViewClicked()));
 }
 
 medDatabaseDataSource::~medDatabaseDataSource()

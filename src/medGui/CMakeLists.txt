@@ -103,6 +103,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medViewerToolBoxPatient.h
   toolboxes/medToolBoxCompositeDataSetImporter.h
   toolboxes/medToolBoxCompositeDataSetImporterCustom.h
+  toolboxes/medToolBoxActions.h
 
 
   # viewContainers:
@@ -211,6 +212,7 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medViewerToolBoxPatient.cpp
   toolboxes/medToolBoxCompositeDataSetImporter.cpp
   toolboxes/medToolBoxCompositeDataSetImporterCustom.cpp
+  toolboxes/medToolBoxActions.cpp
 
 
   # viewContainers:

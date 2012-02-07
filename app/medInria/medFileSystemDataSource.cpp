@@ -3,6 +3,8 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkGui/dtkFinder.h>
 
+#include <medToolBoxActions.h>
+
 class medFileSystemDataSourcePrivate
 {
 public:
@@ -11,6 +13,9 @@ public:
     dtkFinderPathBar *path;
     dtkFinderSideView *side;
     dtkFinderToolBar *toolbar;
+
+    QList<medToolBox*> toolboxes;
+    medToolBoxActions* actionsTb;
 };
 
 medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
@@ -26,6 +31,9 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
 
     d->toolbar = new dtkFinderToolBar (d->filesystem_widget);
     d->toolbar->setPath(QDir::currentPath());
+
+    d->actionsTb = new medToolBoxActions(parent);
+    d->toolboxes.push_back(d->actionsTb);
 
     d->side = new dtkFinderSideView;
     d->side->setStyleSheet(
@@ -115,6 +123,14 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
 
     connect (d->toolbar, SIGNAL(treeView()),       d->finder, SLOT(switchToTreeView()));
     connect (d->toolbar, SIGNAL(listView()),       d->finder, SLOT(switchToListView()));
+
+    connect(d->finder, SIGNAL(itemSelected(QString)), d->actionsTb, SLOT(pathSelected(QString)));
+
+    connect(d->actionsTb, SIGNAL(bookmarkClicked()), d->finder, SLOT(onBookmarkSelectedItemRequested()));
+    connect(d->actionsTb, SIGNAL(viewClicked()), this, SLOT(onFileSystemViewClicked()));
+    connect(d->actionsTb, SIGNAL(importClicked()), this, SLOT(onFileSystemImportClicked()));
+    connect(d->actionsTb, SIGNAL(indexClicked()), this, SLOT(onFileSystemIndexClicked()));
+    connect(d->actionsTb, SIGNAL(loadClicked()), this, SLOT(onFileSystemLoadClicked()));
 }
 
 medFileSystemDataSource::~medFileSystemDataSource()
@@ -140,7 +156,7 @@ QString medFileSystemDataSource::tabName()
 
 QList<medToolBox*> medFileSystemDataSource::getToolboxes()
 {
-    return QList<medToolBox*>();
+    return d->toolboxes;
 }
 
 void medFileSystemDataSource::onFileSystemImportClicked(void)
