@@ -244,6 +244,10 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
     connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
     connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
     connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
+    //First have the moving progress bar,
+    //and then display the remaining % when known
+    connect (runProcess, SIGNAL(activate(QObject*,bool)),
+             d->progression_stack, SLOT(setActive(QObject*,bool)));
 
     medJobManager::instance()->registerJobItem(runProcess);
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));

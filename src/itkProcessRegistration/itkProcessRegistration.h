@@ -27,6 +27,12 @@ class itkProcessRegistrationPrivate;
  * published there: http://gforge.inria.fr/projects/asclepiospublic/
  * to implement the registration algorithms.
  *
+ * @note The process has the following dtk property: "transformType".
+ * Each subclass should set accordingly the property with either "rigid", or "nonRigid".
+ * Example:
+ * @code this->setProperty("transformType","rigid"); @endcode
+ *
+ *
 */
 class ITKPROCESSREGISTRATION_EXPORT itkProcessRegistration : public dtkAbstractProcess
 {
@@ -98,7 +104,7 @@ public:
      * @return itk::ImageBase<int> NULL if none is set yet.
     */
     itk::ImageBase<3>::Pointer fixedImage();
-   
+
     /**
      * @brief Gets an itk smart pointer to the moving image.
      *
@@ -124,7 +130,7 @@ public:
     itkProcessRegistration::ImageType movingImageType();
 
 
-    
+
 
 public slots:
     /**

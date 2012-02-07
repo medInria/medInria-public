@@ -60,6 +60,8 @@ itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDe
     d->updateFieldStandardDeviation = 0.0;
     d->displacementFieldStandardDeviation = 1.5;
     d->useHistogramMatching = false;
+    //set transform type for the exportation of the transformation to a file
+    this->setProperty("transformType","nonRigid");
 }
 
 itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicDemons(void)
@@ -202,6 +204,8 @@ template <typename PixelType>
     time_t t2 = clock();
 
     qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
+
+    emit proc->progressed(80);
 
     typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType >    ResampleFilterType;
     typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
