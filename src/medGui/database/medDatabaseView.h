@@ -52,17 +52,27 @@ signals:
     void dataRemoved(const medDataIndex &index);
 
 public slots:
-    virtual void onMenuViewClicked(void);
-    virtual void onMenuExportClicked(void);
-    virtual void onMenuRemoveClicked(void);
-    virtual void onMenuSaveClicked(void);
-    virtual void selectionChanged(const QModelIndex&, const QModelIndex&);
+
+    /** Opens the currently selected item. */
+    virtual void onViewSelectedItemRequested(void);
+
+    /** Exports the currently selected item. */
+    virtual void onExportSelectedItemRequested(void);
+
+    /** Removes the currently selected item. */
+    virtual void onRemoveSelectedItemRequested(void);
+
+    /** Saves the currently selected item. */
+    virtual void onSaveSelectedItemRequested(void);
+
+    /** Called after having failed to open a file. Will add a visual indicator of the failed file. */
     void onOpeningFailed(const medDataIndex& index);
 
 protected slots:
     virtual void updateContextMenu(const QPoint&);
     virtual void onItemClicked(const QModelIndex& index);
     virtual void onItemDoubleClicked(const QModelIndex& index);
+    virtual void onSelectionChanged(const QModelIndex& selected, const QModelIndex& deselected);
 
 private:
     medDatabaseViewPrivate *d;

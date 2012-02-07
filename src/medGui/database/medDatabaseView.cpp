@@ -122,7 +122,7 @@ void medDatabaseView::setModel(QAbstractItemModel *model)
     QTreeView::setModel(model);
 
     for(int i = 0; i < model->columnCount(); this->resizeColumnToContents(i), i++);
-    connect( this->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), SLOT(selectionChanged(const QModelIndex&, const QModelIndex&)));
+        connect( this->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), SLOT(onSelectionChanged(const QModelIndex&, const QModelIndex&)));
 
 }
 
@@ -146,18 +146,18 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
         QMenu menu(this);
         if( item->dataIndex().isValidForSeries())
         {
-            menu.addAction(tr("View"), this, SLOT(onMenuViewClicked()));
-            menu.addAction(tr("Export"), this, SLOT(onMenuExportClicked()));
-            menu.addAction(tr("Remove"), this, SLOT(onMenuRemoveClicked()));
+            menu.addAction(tr("View"), this, SLOT(onViewSelectedItemRequested()));
+            menu.addAction(tr("Export"), this, SLOT(onExportSelectedItemRequested()));
+            menu.addAction(tr("Remove"), this, SLOT(onRemoveSelectedItemRequested()));
             if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
-                            menu.addAction(tr("Save"), this, SLOT(onMenuSaveClicked()));
+                            menu.addAction(tr("Save"), this, SLOT(onSaveSelectedItemRequested()));
             menu.exec(mapToGlobal(point));
         }
         else if (item->dataIndex().isValidForPatient())
         {
-            menu.addAction(tr("Remove"), this, SLOT(onMenuRemoveClicked()));
+            menu.addAction(tr("Remove"), this, SLOT(onRemoveSelectedItemRequested()));
             if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
-                                        menu.addAction(tr("Save"), this, SLOT(onMenuSaveClicked()));
+                                        menu.addAction(tr("Save"), this, SLOT(onSaveSelectedItemRequested()));
             menu.exec(mapToGlobal(point));
         }
     }
@@ -207,7 +207,7 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
         emit (open(item->dataIndex()));
 }
 
-void medDatabaseView::onMenuViewClicked(void)
+void medDatabaseView::onViewSelectedItemRequested(void)
 {
     if(!this->selectedIndexes().count())
         return;
@@ -228,7 +228,7 @@ void medDatabaseView::onMenuViewClicked(void)
     }
 }
 
-void medDatabaseView::onMenuExportClicked(void)
+void medDatabaseView::onExportSelectedItemRequested(void)
 {
     if(!this->selectedIndexes().count())
         return;
@@ -247,12 +247,12 @@ void medDatabaseView::onMenuExportClicked(void)
         emit exportData(item->dataIndex());
 }
 
-void medDatabaseView::selectionChanged( const QModelIndex& current, const QModelIndex& previous)
+void medDatabaseView::onSelectionChanged( const QModelIndex& current, const QModelIndex& previous)
 {
     emit onItemClicked(current);
 }
 
-void medDatabaseView::onMenuRemoveClicked( void )
+void medDatabaseView::onRemoveSelectedItemRequested( void )
 {
     int reply = QMessageBox::question(this, tr("Remove item"),
             tr("Are you sure you want to continue?\n""This cannot be undone."),
@@ -280,7 +280,7 @@ void medDatabaseView::onMenuRemoveClicked( void )
     }
 }
 
-void medDatabaseView::onMenuSaveClicked(void)
+void medDatabaseView::onSaveSelectedItemRequested(void)
 {
         QModelIndexList indexes = this->selectedIndexes();
         if(!indexes.count())
