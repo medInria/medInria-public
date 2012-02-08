@@ -99,6 +99,12 @@ public:
 	this->Collection->SyncRender();
 	
       }
+      if (rwi->GetKeyCode() == 'z')
+      {
+	this->Collection->SyncSetViewOrientation (orientation++);
+	if (orientation > 2) orientation = 0;
+	this->Collection->SyncRender();
+      }
     }
   }
   
@@ -336,16 +342,18 @@ int main (int argc, char* argv[])
   pool->SyncSetShowScalarBar (0);
   pool->SyncSetShowRulerWidget (0);
   pool->SyncSetShowImageAxis (0);
+  pool->SyncSetViewConvention (vtkImageView2D::VIEW_CONVENTION_RADIOLOGICAL);
+  
   pool->SetLinkColorWindowLevel (1);
   
   pool->SyncSetAnnotationStyle (vtkImageView2D::AnnotationStyle2);
   pool->SyncSetWheelInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
   //pool->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeTime);
+
   int size[2]={370, 370};
   pool->SyncSetSize (size);
   pool->SyncRender();
   
-  // pool->SyncSetUseLookupTable (1);
   
   pool->SyncStart();
   
