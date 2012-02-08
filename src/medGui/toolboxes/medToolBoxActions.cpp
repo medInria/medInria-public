@@ -66,26 +66,25 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
     d->btList = *(new QList<QPushButton*>());
     d->btList << d->removeBt << d->viewBt << d->exportBt << d->bookmarkBt << d->importBt << d->loadBt << d->indexBt;
 
-    QSize btSize(76, 52);
     foreach(QPushButton* bt, d->btList)
     {
-        bt->setFixedSize(btSize);
         bt->setVisible(false);
+        bt->setObjectName("actionToolBoxButton"); // set for style sheet medInria.qss
     }
 
     d->placeholder = new QLabel(tr("Select an item to see possible actions."));
-    d->placeholder->setMinimumHeight(52);
+    d->placeholder->setObjectName("actionToolBoxLabel");
 
     QGridLayout *glayout = new QGridLayout();
-    glayout->addWidget(d->removeBt, 0, 0, Qt::AlignHCenter & Qt::AlignVCenter);
-    glayout->addWidget(d->viewBt, 0, 1, Qt::AlignHCenter & Qt::AlignVCenter);
-    glayout->addWidget(d->exportBt, 0, 2, Qt::AlignHCenter & Qt::AlignVCenter);
-    glayout->addWidget(d->importBt, 1, 0, Qt::AlignHCenter & Qt::AlignVCenter);
-    glayout->addWidget(d->loadBt, 1, 1, Qt::AlignHCenter & Qt::AlignVCenter);
-    glayout->addWidget(d->indexBt, 1, 2, Qt::AlignHCenter & Qt::AlignVCenter);
-    glayout->addWidget(d->bookmarkBt, 2, 1, Qt::AlignHCenter & Qt::AlignVCenter);
+    glayout->addWidget(d->removeBt, 0, 0, Qt::AlignCenter);
+    glayout->addWidget(d->viewBt, 0, 1, Qt::AlignCenter);
+    glayout->addWidget(d->exportBt, 0, 2, Qt::AlignCenter);
+    glayout->addWidget(d->importBt, 1, 0, Qt::AlignCenter);
+    glayout->addWidget(d->loadBt, 1, 1, Qt::AlignCenter);
+    glayout->addWidget(d->indexBt, 1, 2, Qt::AlignCenter);
+    glayout->addWidget(d->bookmarkBt, 2, 1, Qt::AlignCenter);
 
-    glayout->addWidget(d->placeholder, 3, 0, 1, 3, Qt::AlignHCenter & Qt::AlignVCenter);
+    glayout->addWidget(d->placeholder, 3, 1, 1, 3, Qt::AlignCenter);
 
     d->page->setLayout(glayout);
     this->addWidget(d->page);

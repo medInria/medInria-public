@@ -1486,3 +1486,21 @@ medViewContainer [isEmpty="false"][clicked="true"] {
     border: 1px solid red;
     background: #313131;
 }
+
+/**
+ * Actions ToolBox
+ *
+ */
+
+QPushButton#actionToolBoxButton {
+    width: 64px;
+    height: 48px;
+    font-size: 13px;
+}
+
+QLabel#actionToolBoxLabel {
+    height: 52px;
+    font-size: 14px;
+	text-align: center;
+    vertical-align: middle;
+}
