@@ -15,9 +15,9 @@ public:
     QPushButton* importBt;
     QPushButton* loadBt;
     QPushButton* indexBt;
+    QLabel* placeholder;
 
     QList<QPushButton*> btList;
-
     QMultiMap<QString, QString> itemToActions;
 };
 
@@ -54,17 +54,27 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
     d->viewBt->setAccessibleName("View");
     d->exportBt = new QPushButton(tr("Export"));
     d->exportBt->setAccessibleName("Export");
-    d->bookmarkBt = new QPushButton(tr("Bookmark"));
-    d->bookmarkBt->setAccessibleName("Bookmark");
     d->importBt = new QPushButton(tr("Import"));
     d->importBt->setAccessibleName("Import");
     d->loadBt = new QPushButton(tr("Load"));
     d->loadBt->setAccessibleName("Load");
     d->indexBt = new QPushButton(tr("Index"));
     d->indexBt->setAccessibleName("Index");
+    d->bookmarkBt = new QPushButton(tr("Bookmark"));
+    d->bookmarkBt->setAccessibleName("Bookmark");
 
     d->btList = *(new QList<QPushButton*>());
     d->btList << d->removeBt << d->viewBt << d->exportBt << d->bookmarkBt << d->importBt << d->loadBt << d->indexBt;
+
+    QSize btSize(76, 52);
+    foreach(QPushButton* bt, d->btList)
+    {
+        bt->setFixedSize(btSize);
+        bt->setVisible(false);
+    }
+
+    d->placeholder = new QLabel(tr("Select an item to see possible actions."));
+    d->placeholder->setMinimumHeight(52);
 
     QGridLayout *glayout = new QGridLayout();
     glayout->addWidget(d->removeBt, 0, 0, Qt::AlignHCenter & Qt::AlignVCenter);
@@ -74,6 +84,8 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
     glayout->addWidget(d->loadBt, 1, 1, Qt::AlignHCenter & Qt::AlignVCenter);
     glayout->addWidget(d->indexBt, 1, 2, Qt::AlignHCenter & Qt::AlignVCenter);
     glayout->addWidget(d->bookmarkBt, 2, 1, Qt::AlignHCenter & Qt::AlignVCenter);
+
+    glayout->addWidget(d->placeholder, 3, 0, 1, 3, Qt::AlignHCenter & Qt::AlignVCenter);
 
     d->page->setLayout(glayout);
     this->addWidget(d->page);
@@ -130,4 +142,10 @@ void medToolBoxActions::updateButtons(QString item)
            bt->setVisible(false);
         }
     }
+
+    // insert a placeholder if no button is being displayed
+    if(actions.size() == 0)
+        d->placeholder->setVisible(true);
+    else
+        d->placeholder->setVisible(false);
 }
