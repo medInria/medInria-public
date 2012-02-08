@@ -151,12 +151,17 @@ QWidget* medFileSystemDataSource::sourceSelectorWidget()
 
 QString medFileSystemDataSource::tabName()
 {
-    return tr("Fs");
+    return tr("File");
 }
 
 QList<medToolBox*> medFileSystemDataSource::getToolboxes()
 {
     return d->toolboxes;
+}
+
+QString medFileSystemDataSource::description(void) const
+{
+	return tr("Browse the file system");
 }
 
 void medFileSystemDataSource::onFileSystemImportClicked(void)

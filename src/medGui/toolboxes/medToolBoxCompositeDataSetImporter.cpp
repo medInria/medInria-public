@@ -100,6 +100,7 @@ void medToolBoxCompositeDataSetImporter::initialize()
 
     d->type = new QComboBox(mainwidget);
     d->type->addItem (tr ("select data type"));
+	d->type->setToolTip(tr("Choose a type of composite data set to import"));
 
     foreach(QString toolbox, medToolBoxFactory::instance()->compositeDataSetImporterToolBoxes())
       d->type->addItem(toolbox, toolbox);
