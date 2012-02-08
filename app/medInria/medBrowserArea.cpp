@@ -37,6 +37,7 @@
 #include <medStorage.h>
 
 #include <medDatabaseController.h>
+#include <medDatabaseNonPersistentController.h>
 #include <medDatabaseExporter.h>
 #include <medDatabaseImporter.h>
 
@@ -146,6 +147,14 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     medDatabaseControllerImpl* dbcont = medDatabaseController::instance().data();
     connect(dbcont, SIGNAL(partialImportAttempted ( const QString& )), this, SLOT(onPartialImportAttempted ( const QString& )));
+
+    //Check if there are already item in the database, otherwise, switch to File system datasource
+    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
+    QList<medDataIndex> patients = medDatabaseController::instance()->patients();
+    if (indexes.isEmpty() && patients.isEmpty())
+    {
+        d->toolbox_source->setCurrentTab(1);
+    }
  }
 
 medBrowserArea::~medBrowserArea(void)
