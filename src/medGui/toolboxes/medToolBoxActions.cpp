@@ -50,18 +50,25 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
 
     d->removeBt = new QPushButton(tr("Remove"));
     d->removeBt->setAccessibleName("Remove");
+    d->removeBt->setToolTip(tr("Remove selected item from the database."));
     d->viewBt = new QPushButton(tr("View"));
     d->viewBt->setAccessibleName("View");
+    d->viewBt->setToolTip(tr("Load and visualize the currently selected item."));
     d->exportBt = new QPushButton(tr("Export"));
     d->exportBt->setAccessibleName("Export");
+    d->exportBt->setToolTip(tr("Export the series."));
     d->importBt = new QPushButton(tr("Import"));
     d->importBt->setAccessibleName("Import");
+    d->importBt->setToolTip(tr("Import (copy) item(s) into medInria's database."));
     d->loadBt = new QPushButton(tr("Load"));
     d->loadBt->setAccessibleName("Load");
+    d->loadBt->setToolTip(tr("Temporary load the item(s) so as they can be used inside medInria,\nbut do not include them in the database."));
     d->indexBt = new QPushButton(tr("Index"));
     d->indexBt->setAccessibleName("Index");
+    d->indexBt->setToolTip(tr("Include the item(s) into medInria's database but do not import (copy) them."));
     d->bookmarkBt = new QPushButton(tr("Bookmark"));
     d->bookmarkBt->setAccessibleName("Bookmark");
+    d->bookmarkBt->setToolTip(tr("Bookmark selected folder/resource."));
 
     d->btList = *(new QList<QPushButton*>());
     d->btList << d->removeBt << d->viewBt << d->exportBt << d->bookmarkBt << d->importBt << d->loadBt << d->indexBt;
