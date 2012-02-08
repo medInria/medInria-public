@@ -544,6 +544,20 @@ void medMainWindow::switchToViewerArea ( void )
     d->viewerArea->setup ( this->statusBar() );
 
     d->stack->setCurrentWidget ( d->viewerArea );
+
+	// Dialog window to recall users if database is empty
+	
+	QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
+	QList<medDataIndex> patients = medDatabaseController::instance()->patients();
+
+    if( indexes.isEmpty() )
+		if( patients.isEmpty())
+		{
+		QMessageBox msgBox ( this );
+        msgBox.setIcon ( QMessageBox::Warning );
+        msgBox.setText(tr("The database is empty. Switch to the Browser workspace to import data"));
+		msgBox.exec();
+		}
 }
 
 void medMainWindow::onShowConfiguration ( QString config )
