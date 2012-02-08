@@ -56,6 +56,7 @@
 #include <medDatabaseSettingsWidget.h>
 #include <medInteractionSettingsWidget.h>
 #include <medSettingsEditor.h>
+#include <medEmptyDbWarning.h>
 
 #include "medViewerConfigurationVisualization.h"
 #include "medViewerConfigurationRegistration.h"
@@ -545,19 +546,27 @@ void medMainWindow::switchToViewerArea ( void )
 
     d->stack->setCurrentWidget ( d->viewerArea );
 
-	// Dialog window to recall users if database is empty
-	
-	QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-	QList<medDataIndex> patients = medDatabaseController::instance()->patients();
+    // Dialog window to recall users if database is empty
+    //but only if the warning is enabled in medSettings
+    bool showWarning = medSettingsManager::instance()->value(
+                "system",
+                "showEmptyDbWarning",
+                QVariant(true)).toBool();
+    if ( showWarning )
+    {
+        QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
+        QList<medDataIndex> patients = medDatabaseController::instance()->patients();
 
-    if( indexes.isEmpty() )
-		if( patients.isEmpty())
-		{
-		QMessageBox msgBox ( this );
-        msgBox.setIcon ( QMessageBox::Warning );
-        msgBox.setText(tr("The database is empty. Switch to the Browser workspace to import data"));
-		msgBox.exec();
-		}
+        if( indexes.isEmpty() )
+            if( patients.isEmpty())
+            {
+                //            QMessageBox msgBox ( this );
+                //            msgBox.setIcon ( QMessageBox::Warning );
+                //            msgBox.setText(tr("The database is empty. Switch to the Browser workspace to import data"));
+                medEmptyDbWarning* msgBox = new medEmptyDbWarning(this);
+                msgBox->exec();
+            }
+    }
 }
 
 void medMainWindow::onShowConfiguration ( QString config )
