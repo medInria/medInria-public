@@ -51,5 +51,9 @@ void medBrowserToolBoxSource::addTab(QString tabName, QWidget *widget, QString d
 	d->tab->setTabToolTip (i, description);
 }
 
+void medBrowserToolBoxSource::setCurrentTab(int current)
+{
+	d->tab->setCurrentIndex(current);
+}
 
 

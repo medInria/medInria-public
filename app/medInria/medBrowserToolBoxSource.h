@@ -34,6 +34,8 @@ public:
 
 	void addTab(QString tabName, QWidget *widget, QString description = "");
 
+	void setCurrentTab(int current);
+
 signals:
     void indexChanged(int);
 
