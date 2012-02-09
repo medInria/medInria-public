@@ -20,6 +20,9 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 
+string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
+add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
+
 set(CMAKE_COLOR_MAKEFILE ON)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
@@ -62,11 +65,6 @@ set(${PROJECT_NAME}_SOURCES
 ## #################################################################
 ## Build rules
 ## #################################################################
-
-CONFIGURE_FILE( 
-      ${CMAKE_CURRENT_SOURCE_DIR}/itkProcessRegistrationDiffeomorphicDemonsDefinitions.h.in
-      ${CMAKE_CURRENT_BINARY_DIR}/itkProcessRegistrationDiffeomorphicDemonsDefinitions.h
-      )
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
