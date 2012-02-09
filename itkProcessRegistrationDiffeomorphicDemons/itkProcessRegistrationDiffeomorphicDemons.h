@@ -43,7 +43,7 @@ public:
      * @return QString
      */
     virtual QString description(void) const;
-    
+
     /**
      * @brief Identifier of the plugin.
      *
@@ -51,7 +51,7 @@ public:
      * @return QString
      */
     virtual QString identifier(void) const;
-    
+
     /**
      * @brief tries to register the process with the factory.
      *
@@ -132,7 +132,7 @@ protected :
 
 private:
     itkProcessRegistrationDiffeomorphicDemonsPrivate *d;
-
+    friend class itkProcessRegistrationDiffeomorphicDemonsPrivate;
 };
 
 /**

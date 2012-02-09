@@ -65,7 +65,9 @@ itkProcessRegistration::itkProcessRegistration(void) : dtkAbstractProcess(), d(n
     d->dimensions=3;
     d->fixedImageType = itkProcessRegistration::FLOAT;
     d->movingImageType = itkProcessRegistration::FLOAT;
-
+    QStringList types;
+    types << "rigid" << "nonRigid";
+    this->addProperty("transformType",types);
     this->addMetaData("category","registration");
 }
 
