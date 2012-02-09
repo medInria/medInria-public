@@ -18,8 +18,8 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     d->filesystem_widget = new QWidget(parent);
 
     d->finder = new dtkFinder (d->filesystem_widget);
-    d->finder->setPath(QDir::homePath());
     d->finder->allowFileBookmarking(false);
+    d->finder->setPath(QDir::homePath());
 
     d->path = new dtkFinderPathBar (d->filesystem_widget);
     d->path->setPath(QDir::homePath());
@@ -116,6 +116,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
 
     connect (d->toolbar, SIGNAL(treeView()),       d->finder, SLOT(switchToTreeView()));
     connect (d->toolbar, SIGNAL(listView()),       d->finder, SLOT(switchToListView()));
+    connect (d->toolbar, SIGNAL(showHiddenFiles(bool)), d->finder, SLOT(onShowHiddenFiles(bool)));
 }
 
 medFileSystemDataSource::~medFileSystemDataSource()
