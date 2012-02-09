@@ -175,10 +175,14 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     //propertiesViewLayout->addRow (d->scalarBarVisibilityCheckBox);
     propertiesViewLayout->setFormAlignment(Qt::AlignHCenter);
 
-    connect(d->windowingPushButton,           SIGNAL(toggled(bool)),                this, SLOT(onWindowingChanged(bool)));
-    connect(d->zoomingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(onZoomingChanged(bool)));
-    connect(d->slicingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(onSlicingChanged(bool)));
-    connect(d->measuringPushButton,           SIGNAL(toggled(bool)),                this, SLOT(onMeasuringChanged(bool)));
+    connect(d->windowingPushButton, SIGNAL(toggled(bool)),
+            this, SLOT(onWindowingChanged(bool)));
+    connect(d->zoomingPushButton, SIGNAL(toggled(bool)),
+            this, SLOT(onZoomingChanged(bool)));
+    connect(d->slicingPushButton, SIGNAL(toggled(bool)),
+            this, SLOT(onSlicingChanged(bool)));
+    connect(d->measuringPushButton, SIGNAL(toggled(bool)),
+            this, SLOT(onMeasuringChanged(bool)));
 
     d->view3dModeComboBox = new QComboBox(this);
     d->view3dModeComboBox->setFocusPolicy(Qt::NoFocus);

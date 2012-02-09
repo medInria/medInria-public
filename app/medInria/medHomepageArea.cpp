@@ -32,6 +32,7 @@
 #include <medViewerConfiguration.h>
 #include <medViewerConfigurationFactory.h>
 #include <medSettingsManager.h>
+#include "medPluginWidget.h"
 
 class medHomepageAreaPrivate
 {
@@ -64,6 +65,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->infoWidget = new QWidget ( this );
     d->infoWidget->setMinimumWidth ( 400 );
     d->infoWidget->setMinimumHeight ( 500 );
+    //maximum height set below after we determine the position of the userWidget
+//    d->infoWidget->setMaximumHeight ( 500 );
 
     //Setup the widget with about, settings and documentation buttons
     d->userWidget = new QWidget ( this );
@@ -166,10 +169,11 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     medInriaLabel2->setPixmap ( medLogo );
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
-    QString aboutText("<br/><br/>\
-                                  medInria is the medical imaging platform developed at Inria<br/><br/>\
-                                  <center>Inria, Copyright 2011</center><br/><br/><br/>\
-                                 Version: ");
+    QString aboutText(tr("<br/><br/>"
+                      "medInria is the medical imaging platform developed at "
+                      "Inria<br/><br/>"
+                      "<center>Inria, Copyright 2011</center><br/><br/><br/>"
+                      "Version: "));
     aboutText+= qApp->applicationVersion();
     aboutTextEdit->setHtml (aboutText);
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
@@ -225,12 +229,17 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QLabel * medInriaLabel3 = new QLabel ( this );
     medInriaLabel3->setPixmap ( medLogo );
 
-    QLabel * pluginWidgetTitle = new QLabel(tr("Plugins information"),this);
+//    QLabel * pluginWidgetTitle = new QLabel(tr("Plugins information"),this);
+    medPluginWidget * pWid = new medPluginWidget(d->pluginWidget);
+    QScrollArea * pluginScrolledArea = new QScrollArea(d->pluginWidget);
+    pluginScrolledArea->setWidget(pWid);
+
     pluginLayout->addWidget(medInriaLabel3);
-    pluginLayout->addWidget(pluginWidgetTitle);
+//    pluginLayout->addWidget(pluginWidgetTitle);
+    pluginLayout->addWidget(pluginScrolledArea);
     pluginLayout->addLayout(pluginHideButtonLayout);
     pluginLayout->addStretch();
-    pluginLayout->setAlignment(pluginWidgetTitle, Qt::AlignHCenter);
+//    pluginLayout->setAlignment(pluginWidgetTitle, Qt::AlignHCenter);
 
     //Set the position of the widgets
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
@@ -238,12 +247,17 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 //    d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 //    d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 
-
     //Create a Stacked Widget in which to put info widget, about widget and plugin Widget
     d->stackedWidget = new QStackedWidget( this );
     d->stackedWidget->setMinimumWidth ( 400 );
     d->stackedWidget->setMinimumHeight ( 500 );
-    d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
+
+    d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,
+                                                    this->height() / 5) );
+    int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
+    if (d->stackedWidget->minimumHeight() > stackedWidgetHeight)
+        stackedWidgetHeight = d->stackedWidget->minimumHeight();
+    d->stackedWidget->setMaximumHeight(stackedWidgetHeight);
     d->stackedWidget->addWidget(d->infoWidget);
     d->stackedWidget->addWidget(d->aboutWidget);
     d->stackedWidget->addWidget(d->pluginWidget);
@@ -298,6 +312,11 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
     d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
     d->showOnStartupCheckBox->setProperty ( "pos", QPoint ( this->width() - 200 ,  this->height() - 30 ) );
+
+    int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
+    if (d->stackedWidget->minimumHeight() > stackedWidgetHeight)
+        stackedWidgetHeight = d->stackedWidget->minimumHeight();
+    d->stackedWidget->setMaximumHeight(stackedWidgetHeight);
 
 //    d->aboutTabWidget->setMaximumHeight ( this->height() / 3 );
 
