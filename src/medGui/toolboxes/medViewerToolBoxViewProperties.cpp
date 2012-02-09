@@ -1155,7 +1155,7 @@ void  medViewerToolBoxViewProperties::setCurrentInteractionFromSettings()
     }
     else if (interaction == "Measuring")
     {
-        d->slicingPushButton->setChecked(true);
+        d->measuringPushButton->setChecked(true);
     }
     else
     {
