@@ -37,6 +37,7 @@ public:
     QList<medMeshAbstractViewInteractor*> interactors;
     medAbstractView *view;
 
+    QButtonGroup *mouseGroup;
     QPushButton *windowingPushButton;
     QPushButton *zoomingPushButton;
     QPushButton *slicingPushButton;
@@ -125,12 +126,12 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->measuringPushButton->setCheckable (true);
     d->measuringPushButton->setToolTip (tr("Measuring"));
 
-    QButtonGroup *mouseGroup = new QButtonGroup (this);
-    mouseGroup->addButton ( d->windowingPushButton );
-    mouseGroup->addButton ( d->zoomingPushButton );
-    mouseGroup->addButton ( d->slicingPushButton );
-    mouseGroup->addButton ( d->measuringPushButton );
-    mouseGroup->setExclusive (true);
+    d->mouseGroup = new QButtonGroup (this);
+    d->mouseGroup->addButton ( d->windowingPushButton );
+    d->mouseGroup->addButton ( d->zoomingPushButton );
+    d->mouseGroup->addButton ( d->slicingPushButton );
+    d->mouseGroup->addButton ( d->measuringPushButton );
+    d->mouseGroup->setExclusive (true);
 
     setCurrentInteractionFromSettings();
 
@@ -289,6 +290,7 @@ void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
         clear();
     }
 
+
 //    qDebug() << "update 1";
     if (medAbstractView *medView = dynamic_cast<medAbstractView *> (view))
     {
@@ -297,6 +299,8 @@ void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
         {
             return;
         }
+
+
         d->view = medView;
         d->propertiesTree->clear();
         //decide whether to show the 2 layers slider
@@ -344,6 +348,17 @@ void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
         d->view3dModeComboBox->blockSignals(true);
         d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("3DMode")));
         d->view3dModeComboBox->blockSignals(false);
+
+        //set a few view pool wide properties in the view.
+        qDebug()<<"update some view properties";
+        onScalarBarVisibilityChanged(d->scalarBarVisibilityCheckBox->isChecked());
+        onAnnotationsVisibilityChanged(d->annotationsVisibilityCheckBox->isChecked());
+        onAxisVisibilityChanged(d->axisVisibilityCheckBox->isChecked());
+        onRulerVisibilityChanged(d->rulerVisibilityCheckBox->isChecked());
+        onZoomingChanged(d->zoomingPushButton->isChecked());
+        onSlicingChanged(d->slicingPushButton->isChecked());
+        onMeasuringChanged(d->measuringPushButton->isChecked());
+        onWindowingChanged(d->windowingPushButton->isChecked());
     }
 }
 
@@ -1018,28 +1033,28 @@ QIcon medViewerToolBoxViewProperties::createIcon(QString colorName)
 
 void medViewerToolBoxViewProperties::onWindowingChanged(bool checked)
 {
-    if (d->view) {
+    if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Windowing");
     }
 }
 
 void medViewerToolBoxViewProperties::onZoomingChanged(bool checked)
 {
-    if (d->view) {
+    if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Zooming");
     }
 }
 
 void medViewerToolBoxViewProperties::onSlicingChanged(bool checked)
 {
-    if (d->view) {
+    if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Slicing");
     }
 }
 
 void medViewerToolBoxViewProperties::onMeasuringChanged(bool checked)
 {
-    if (d->view) {
+    if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Measuring");
     }
 }
