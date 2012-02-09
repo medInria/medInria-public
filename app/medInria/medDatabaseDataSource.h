@@ -25,6 +25,9 @@ public:
     QString tabName();
 
     QList<medToolBox*> getToolboxes();
+	
+	QString description(void) const;
+	
 public slots:
     void update(const medDataIndex &);
     void onOpeningFailed(const medDataIndex& index);

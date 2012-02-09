@@ -43,6 +43,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseDataSource.h
   medSaveModifiedDialog.h
   medSplashScreen.h
+  medEmptyDbWarning.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -71,6 +72,7 @@ set(${PROJECT_NAME}_SOURCES
   medDatabaseDataSource.cpp
   medSaveModifiedDialog.cpp
   medSplashScreen.cpp
+  medEmptyDbWarning.cpp
   )
 
 set(${PROJECT_NAME}_RESOURCES medInria.qrc)
@@ -78,9 +80,9 @@ set(${PROJECT_NAME}_RESOURCES medInria.qrc)
 # Include header files for Visual Studio.
 FILE(GLOB ${PROJECT_NAME}_HEADERS_ALL *.h )
 set(${PROJECT_NAME}_SOURCES
-	${${PROJECT_NAME}_SOURCES}
-	${${PROJECT_NAME}_HEADERS_MOC}
-	)
+  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_HEADERS_MOC}
+  )
 
 ## #################################################################
 ## Build rules

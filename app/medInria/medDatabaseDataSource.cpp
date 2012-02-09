@@ -75,12 +75,17 @@ QWidget* medDatabaseDataSource::sourceSelectorWidget()
 
 QString medDatabaseDataSource::tabName()
 {
-    return tr("Db");
+    return tr("Database");
 }
 
 QList<medToolBox*> medDatabaseDataSource::getToolboxes()
 {
     return d->toolboxes;
+}
+
+QString medDatabaseDataSource::description(void) const
+{
+	return tr("Browse the medInria Database");
 }
 
 void medDatabaseDataSource::update(const medDataIndex &index)
