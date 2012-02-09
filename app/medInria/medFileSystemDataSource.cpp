@@ -34,6 +34,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
         "    padding: 5px;"
         "    background: #494949;"
         "    show-decoration-selected: 1;"
+        "    border-width: 0px"
         "}"
         ""
         "dtkFinderSideView::item {"
