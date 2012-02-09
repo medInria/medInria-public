@@ -134,7 +134,7 @@ public:
 int main (int argc, char* argv[])
 {
 
-  int do_multi_planes  = 1;
+  int do_multi_planes  = 0;
   int do_cardiac_style = 1;
 
 #ifdef ITK_USE_REVIEW
@@ -155,13 +155,13 @@ int main (int argc, char* argv[])
   
   unsigned int doSequence = 0;
   
-  vtkImageViewCollection* pool = vtkImageViewCollection::New();
-  vtkDataManager* manager = vtkDataManager::New();
-
-  vtkImageView3D* view3d = vtkImageView3D::New();
+  vtkImageViewCollection*      pool = vtkImageViewCollection::New();
+  vtkDataManager*           manager = vtkDataManager::New();
+  vtkImageView3D*            view3d = vtkImageView3D::New();
   vtkRenderWindowInteractor* iren3d = vtkRenderWindowInteractor::New();
-  vtkRenderWindow* rwin3d = vtkRenderWindow::New();
-  vtkRenderer* ren3d = vtkRenderer::New();
+  vtkRenderWindow*           rwin3d = vtkRenderWindow::New();
+  vtkRenderer*                ren3d = vtkRenderer::New();
+
   position[0] = 400; position[1] = 420;
   
   iren3d->SetRenderWindow(rwin3d);
@@ -172,9 +172,8 @@ int main (int argc, char* argv[])
   view3d->SetPosition (position);
   double color[3]={0.9,0.9,0.9};
   view3d->SetBackground (color);
-  // view3d->SetVRQualityToHigh();
-  // view3d->SetVolumeMapperToGPU();
-
+  view3d->SetVolumeMapperToGPU();
+  
   if (!do_cardiac_style)
   {
     view3d->SetShowActorX(do_multi_planes);
@@ -188,10 +187,10 @@ int main (int argc, char* argv[])
     view3d->SetShowActorZ (0);
   }
   
-  
   vtkMyCommand* command = vtkMyCommand::New();
   command->SetViewer (view3d);
   command->SetCollection (pool);
+  
   view3d->GetInteractor()->AddObserver(vtkCommand::CharEvent, command);
 
   pool->AddItem (view3d);
@@ -225,6 +224,12 @@ int main (int argc, char* argv[])
 	image = metaimage->GetImageData();
       
       matrix = metaimage->GetOrientationMatrix();
+      
+      if (i == 1)
+      {
+	view3d->SetInput (image);
+	view3d->SetOrientationMatrix (matrix);
+      }
       
       vtkImageView2D* view = vtkImageView2D::New();
       vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New();

@@ -214,8 +214,8 @@ void vtkKWPageView::SetProperties()
   this->View4->SetBackground (1,1,1);
   this->View4->GetTextProperty()->SetColor (0,0,0);
 
-  this->View4->SetVolumeMapperTo3DTexture();
-  
+  this->View4->SetVolumeMapperToGPU();
+    
   this->LandmarkManager->AddView(this->GetView1()); 
   this->LandmarkManager->AddView(this->GetView2());
   this->LandmarkManager->AddView(this->GetView3());
