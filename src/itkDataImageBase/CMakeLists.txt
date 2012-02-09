@@ -63,6 +63,7 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   medCore
   dtkCore
+  medCore
   ITKCommon
   ITKIO
 )
