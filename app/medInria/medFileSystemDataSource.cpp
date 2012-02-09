@@ -25,7 +25,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     d->path->setPath(QDir::homePath());
 
     d->toolbar = new dtkFinderToolBar (d->filesystem_widget);
-    d->toolbar->setPath(QDir::currentPath());
+    d->toolbar->setPath(QDir::homePath());
 
     d->side = new dtkFinderSideView;
     d->side->setStyleSheet(
