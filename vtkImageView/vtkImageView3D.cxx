@@ -223,6 +223,17 @@ unsigned long vtkImageView3D::GetMTime()
 	mTime = testMtime;
     }
   }
+  
+  this->ExtraPlaneCollection->InitTraversal();
+  vtkObject* item = this->ExtraPlaneCollection->GetNextProp3D();
+  while(item)
+  {
+    const MTimeType testMtime = item->GetMTime();
+    if ( testMtime > mTime )
+      mTime = testMtime;
+    item = this->ExtraPlaneCollection->GetNextProp3D();
+  }
+  
   return mTime;
 }
 
@@ -491,7 +502,7 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
     return;
   }
   
-  bool multiLayers = false;
+  // bool multiLayers = false;
 
   if (layer>0 && layer<4)
   {
@@ -535,7 +546,7 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
     
     this->SetTransferFunctions (rgb, alpha, layer);
 
-    multiLayers = true;
+    // multiLayers = true;
     
     rgb->Delete();
     alpha->Delete();
@@ -1129,6 +1140,12 @@ public:
 	this->Actor->SetInterpolate(imagecaller->GetInterpolate());
 	this->Actor->SetOpacity(imagecaller->GetOpacity());
 	this->Actor->SetUserMatrix (imagecaller->GetUserMatrix());
+	this->Actor->Modified();
+      }
+      vtkImageData* image = vtkImageData::SafeDownCast (caller);
+      if (image && (event == vtkCommand::ModifiedEvent))
+      {
+	this->Actor->Modified();
       }
     }
   }
@@ -1183,6 +1200,8 @@ void vtkImageView3D::AddExtraPlane (vtkImageActor* input)
   actor->SetVisibility (input->GetVisibility());
 
   input->AddObserver (vtkCommand::ModifiedEvent, cbk);
+  if (input->GetInput())
+    input->GetInput()->AddObserver (vtkCommand::ModifiedEvent, cbk);
   
   this->GetRenderer()->AddViewProp (actor);
 
@@ -1217,7 +1236,10 @@ void vtkImageView3D::RemoveExtraPlane (vtkImageActor* input)
   while(item && iteminput)
   {
     if ( iteminput == input)
+    {
       this->GetRenderer()->RemoveViewProp (item);
+      break;
+    }
     item = this->ExtraPlaneCollection->GetNextProp3D();
     iteminput = this->ExtraPlaneCollection->GetNextProp3D();
   }
