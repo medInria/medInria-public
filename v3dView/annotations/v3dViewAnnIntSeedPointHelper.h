@@ -46,7 +46,6 @@ private:
 
     bool findActorMapForWidget(vtkAbstractWidget * w, ActorMap::iterator & it);
 
-    v3dViewAnnotationInteractor * m_v3dViewAnnInt;
     v3dViewAnnIntSeedPointHelperPrivate * d;
 };
 

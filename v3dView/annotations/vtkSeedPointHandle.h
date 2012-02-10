@@ -37,6 +37,9 @@ public:
     virtual void ShallowCopy(vtkProp *prop);
     virtual void DeepCopy(vtkProp *prop);
 
+    //! Override vtkHandleRepresentation.
+    virtual void SetWorldPosition(double pos[3]);
+
 protected:
     vtkSeedPointHandle();
 

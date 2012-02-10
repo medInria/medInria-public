@@ -18,6 +18,7 @@
 
 #include <vtkCommand.h>
 #include <vtkHandleWidget.h>
+#include <vtkProperty.h>
 #include <vtkProperty2D.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
@@ -112,6 +113,8 @@ bool v3dViewAnnIntSeedPointHelper::addAnnotation( medAnnotationData* annData )
     double zero[2] = {0,0};
     typedef vtkSmartPointer<vtkSeedPointHandle> RepSmartPointer;
     RepSmartPointer handleRep = RepSmartPointer::New();
+    // Blue, close to selected color in table widget.
+    handleRep->GetSelectedProperty()->SetColor(0x33/255., 0x99/255., 0xff/255.);
 
     vtkSmartPointer<vtkSeedWidget> seedActor2d = vtkSmartPointer<vtkSeedWidget>::New();
     seedActor2d->SetCurrentRenderer(view->renderer2d());
@@ -213,6 +216,7 @@ void v3dViewAnnIntSeedPointHelper::annotationModified( medAnnotationData* annDat
         seedActor2d->CompleteInteraction();
         seedActor3d->CompleteInteraction();
     }
+    this->getV3dView()->currentView()->Modified();
     this->getV3dView()->update();
     return;
 }

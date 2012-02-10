@@ -12,6 +12,7 @@
 #include "vtkObjectFactory.h"
 #include "vtkPolyData.h"
 #include "vtkPolyDataMapper2D.h"
+#include "vtkProperty.h"
 #include "vtkRenderer.h"
 #include "vtkViewport.h"
 #include "vtkWindow.h"
@@ -31,6 +32,9 @@ vtkSeedPointHandle::vtkSeedPointHandle()
     this->SetHandleSize(this->SizeInDisplayUnits);
 
     this->BuildPolyData();
+
+    // Default to red
+    this->GetProperty()->SetColor(1,0,0);
 }
 
 vtkSeedPointHandle::~vtkSeedPointHandle()
@@ -88,6 +92,7 @@ void vtkSeedPointHandle::BuildPolyData()
   lines->InsertCellPoint(num/2 + num/4);
 
   this->BuildTime.Modified();
+  this->Modified();
 }
 
 void vtkSeedPointHandle::DeepCopy( vtkProp *prop )
@@ -105,6 +110,16 @@ void vtkSeedPointHandle::ShallowCopy( vtkProp *prop )
         this->SizeInDisplayUnits = h->SizeInDisplayUnits;
     }
 }
+
+void vtkSeedPointHandle::SetWorldPosition( double pos[3] )
+{
+    Superclass::SetWorldPosition(pos);
+
+    // Need to call this to update the actor position
+    // otherwise the bounds are not returned correctly.
+    this->UpdateHandle();
+}
+
 
 
 
