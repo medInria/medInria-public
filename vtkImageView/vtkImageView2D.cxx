@@ -632,32 +632,29 @@ void vtkImageView2D::SetViewOrientation(int orientation)
      We are not doomed though, the hack is to give priority to the native
      acquisition plane (xy) and derive the other orientations from it.
   */
-  if (slice_orientation == -1)
+  double dot = 0;
+  double projection[3];
+  
+  /// Proiority to the xy plane :
+  int viewtoslice[3] = {-1,-1,-1};
+  
+  for (unsigned int i=0; i<3; i++)
   {
- 
-    double dot = 0;
-    double projection[3];
-
-    /// Proiority to the xy plane :
-    int viewtoslice[3] = {-1,-1,-1};
+    // take the third column of the orientation matrix
+    projection[i] = this->GetOrientationMatrix()->GetElement (i, 2);
     
-    for (unsigned int i=0; i<3; i++)
+    // check to which axis this vector is the closest
+    if (std::abs (projection[i]) > dot)
     {
-      // take the third column of the orientation matrix
-      projection[i] = this->GetOrientationMatrix()->GetElement (i, 2);
-      
-      // check to which axis this vector is the closest
-      if (std::abs (projection[i]) > dot)
-      {
-	dot = std::abs (projection[i]);
-	viewtoslice[i]       = 2;
-	viewtoslice[(i+1)%3] = 0;
-	viewtoslice[(i+2)%3] = 1;
-      }
+      dot = std::abs (projection[i]);
+      viewtoslice[i]       = 2;
+      viewtoslice[(i+1)%3] = 0;
+      viewtoslice[(i+2)%3] = 1;
     }
-
-    slice_orientation = viewtoslice[orientation];
   }
+  
+  slice_orientation = viewtoslice[orientation];
+
 #else // vtkINRIA3D_HACK_OBLIQUE_ORIENTATION
   /**
      but normally we should be able to use this bit of code,
@@ -674,6 +671,14 @@ void vtkImageView2D::SetViewOrientation(int orientation)
       break;
     }
   }
+
+  if (slice_orientation == -1)
+  {
+    vtkErrorMacro("Error - No slice-orientation corresponding to the required view-orientation "<< orientation
+		  <<"\n Please consider switch ON vtkINRIA3D_HACK_OBLIQUE_ORIENTATION ");
+    slice_orientation = orientation;
+  }
+  
 #endif // vtkINRIA3D_HACK_OBLIQUE_ORIENTATION
   
   this->SetSliceOrientation (slice_orientation);
