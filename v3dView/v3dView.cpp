@@ -1384,7 +1384,20 @@ QString v3dView::getPreset ( int layer ) const
 
 void v3dView::onPresetPropertySet ( const QString &value )
 {
-    if ( value == "VR Muscles&Bones" )
+    if ( value == "None" )
+    {
+        // we reset the LUT and the ww/wl to the default values
+
+        this->onLookupTablePropertySet ( "Black & White" );
+
+        double color[3] = {0.0, 0.0, 0.0};
+
+        d->collection->SyncSetBackground ( color );
+        d->collection->SyncResetWindowLevel(0);
+        //d->collection->SyncSetTextColor ( white );
+        //d->collection->SyncSetAboutData ("None - Powered by croissants and café.");
+    }
+    else if ( value == "VR Muscles&Bones" )
     {
 
         this->onLookupTablePropertySet ( "Muscles & Bones" );
