@@ -100,6 +100,7 @@ void medToolBoxCompositeDataSetImporter::initialize()
 
     d->type = new QComboBox(mainwidget);
     d->type->addItem (tr ("select data type"));
+	d->type->setToolTip(tr("Choose a type of composite data set to import"));
 
     foreach(QString toolbox, medToolBoxFactory::instance()->compositeDataSetImporterToolBoxes())
       d->type->addItem(toolbox, toolbox);
@@ -175,7 +176,7 @@ void medToolBoxCompositeDataSetImporter::onCurrentTypeChanged(QString id)
     else {
         toolbox = medToolBoxFactory::instance()->createCustomCompositeDataSetImporterToolBox(id, this);
         if (toolbox) {
-	    toolbox->setStyleSheet("medToolBoxBody {border:none}");
+            toolbox->setStyleSheet("medToolBoxBody {border:none;padding:0px}");
             toolbox->header()->hide();
 
             connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));

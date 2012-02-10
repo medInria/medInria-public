@@ -1,5 +1,5 @@
-/* medRunnableProcess.cpp --- 
- * 
+/* medRunnableProcess.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:40:14 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 1
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medRunnableProcess.h"
@@ -57,9 +57,9 @@ void medRunnableProcess::run (void)
 {
     if (d->process) {
         if (d->process->update()==0)
-	    emit success (this);
-	else
-	    emit failure (this);
+            emit success (this);
+        else
+            emit failure (this);
     }
 }
 
@@ -75,6 +75,7 @@ void medRunnableProcess::onFailure (void)
 
 void medRunnableProcess::onProgressed (int value)
 {
+    emit activate (this, false);
     emit progress (this, value);
 }
 
