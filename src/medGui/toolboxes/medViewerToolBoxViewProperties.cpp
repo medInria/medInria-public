@@ -311,9 +311,13 @@ void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
         raiseSlider(d->view->layerCount() == 2);
 
 
-        if(d->view->meshLayerCount()!=0) ///activate mesh interactor
+//        if(d->view->meshLayerCount()!=0) ///activate mesh interactor
             if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
             {
+                if (!d->interactors.contains (interactor))
+                {
+                    d->interactors.append (interactor);
+                }
                 d->currentInteractor = d->interactors.indexOf(interactor);
             }
 
