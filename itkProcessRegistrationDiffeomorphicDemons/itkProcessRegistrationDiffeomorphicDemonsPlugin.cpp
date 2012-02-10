@@ -5,7 +5,6 @@
 #include "itkProcessRegistrationDiffeomorphicDemons.h"
 #include "itkProcessRegistrationDiffeomorphicDemonsPlugin.h"
 #include "itkProcessRegistrationDiffeomorphicDemonsToolBox.h"
-#include "itkProcessRegistrationDiffeomorphicDemonsDefinitions.h"
 
 #include <dtkCore/dtkLog.h>
 
@@ -58,20 +57,38 @@ QString itkProcessRegistrationDiffeomorphicDemonsPlugin::name(void) const
 
 QString itkProcessRegistrationDiffeomorphicDemonsPlugin::contact(void) const
 {
-    return QString::fromUtf8("Benoît Bleuzé benoit.bleuze@inria.fr");
+    return QString::fromUtf8("benoit.bleuze@inria.fr");
+}
+
+QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::authors(void) const
+{
+    QStringList list;
+    list << QString::fromUtf8("Benoît Bleuzé");
+    return list;
+}
+
+QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::contributors(void) const
+{
+    QStringList list;
+    list <<  "Vincent Garcia";
+    return list;
 }
 
 QString itkProcessRegistrationDiffeomorphicDemonsPlugin::description(void) const
 {
-    return "Applies the diffeomorphic demons as they can be found in itk. Converts any type of image to float before applying the change, since the diffeomorphic demons only work on float images <br/> see: <a href=\"http://www.insight-journal.org/browse/publication/154\" > http://www.insight-journal.org/browse/publication/154 </a>";
+    return tr("Applies the diffeomorphic demons as they can be found in itk. Converts any type of image to float before applying the change, since the diffeomorphic demons only work on float images <br/> see: <a href=\"http://www.insight-journal.org/browse/publication/154\" > http://www.insight-journal.org/browse/publication/154 </a>");
 }
 
 
 QString itkProcessRegistrationDiffeomorphicDemonsPlugin::version(void) const
 {
-    return PLUGIN_VERSION;
+    return ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_VERSION;
 }
 
+QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::dependencies() const
+{
+    return QStringList();
+}
 
 
 QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::tags(void) const
@@ -86,3 +103,5 @@ QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::types(void) const
 }
 
 Q_EXPORT_PLUGIN2(itkProcessRegistrationDiffeomorphicDemonsPlugin, itkProcessRegistrationDiffeomorphicDemonsPlugin)
+
+
