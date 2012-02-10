@@ -65,9 +65,9 @@ v3dViewMeshInteractor::v3dViewMeshInteractor(): medMeshAbstractViewInteractor(),
     this->addProperty("RenderingMode", QStringList() << "surface" << "wireframe" << "points" );
     this->addProperty("OpacityMode", QStringList() << "");
     this->addProperty("LUTMode", QStringList() << "Default" << "Black & White" << "Black & White Inversed" << "Spectrum" << "Hot Metal" << "Hot Green"
-        << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2" << "Asymmetry" << "P-Value" << "Red Black Alpha"
-        << "Green Black Alpha" << "Blue Black Alpha" << "Muscles & Bones" << "Bones" << "Red Vessels"
-        << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body");
+                      << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2" << "Asymmetry" << "P-Value" << "Red Black Alpha"
+                      << "Green Black Alpha" << "Blue Black Alpha" << "Muscles & Bones" << "Bones" << "Red Vessels"
+                      << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body");
     this->addProperty("ColorMode", QStringList() << "#FFFFFF");
 }
 
@@ -109,7 +109,7 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
 
     if(data->identifier() == "vtkDataMesh4D")
     {
-        d->isMeshOnly = true;
+        d->isMeshOnly = true; //        d->isMeshOnly = false;
 
         vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
         vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet());
@@ -127,7 +127,6 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         d->attributeList.append("Solid");
         d->lutList.append("Default");
         updatePipeline(d->dataList.size()-1);
-//        d->isMeshOnly = false;
     }
     else if (vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(data->data()))) {
         if(!d->view->dataInList(0))
@@ -140,10 +139,6 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
             //d->view->view3d()->SetInput(image, 0);
             vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
             actor->SetOpacity(0.0);
-
-
-//            imagegenerator->Delete();
-//            image->Delete();
         }
         else
             d->isMeshOnly = false;
@@ -157,7 +152,6 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         d->attributeList.append("Solid");
         d->lutList.append("Default");
         updatePipeline(d->dataList.size()-1);
-
     }
 }
 
@@ -177,7 +171,6 @@ void v3dViewMeshInteractor::setView(dtkAbstractView *view)
 bool v3dViewMeshInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 {
     if ( data->identifier() == "vtkDataMesh" ) {
-
         this->enable ();
         return true;
     }
@@ -187,12 +180,9 @@ bool v3dViewMeshInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 void v3dViewMeshInteractor::enable(void)
 {
     dtkWarning() << "enabling v3dViewMeshInteractor" ;
-
     if (this->enabled())
         return;
-
     updatePipeline ();
-
     dtkAbstractViewInteractor::enable();
 }
 
@@ -201,59 +191,23 @@ void v3dViewMeshInteractor::disable(void)
 {
     if (!this->enabled())
         return;
-
     if (d->view) {
         for (int i = 0; i < d->dataList.size(); ++i) {
             if (d->view && !d->dataList.isEmpty() ) {
                 if(vtkPointSet *pointset = dynamic_cast<vtkPointSet*>((vtkObject *)(d->dataList[i]->data()))) {
-                    std::cout <<"DataSet ARG @v3dViewMeshInteractor" << pointset<< std::endl;
                     d->view->view3d()->RemoveDataSet (pointset);
                     d->view->view2d()->RemoveDataSet(pointset);
-                    //                    d->actor2dList.append(d->view->view2d ()->AddDataSet(pointset));
-                    //                    d->actor3dList.append(d->view->view3d ()->AddDataSet(pointset));
-                    //                    d->actorPropertyList.append(v3dViewMeshInteractorPrivate::PropertySmartPointer::New ());
-                    //                    d->actor2dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
-                    //                    d->actor3dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
                 }
                 else if (vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(d->dataList[i]->data()))){
-                    std::cout << "DESPUES  Id " << sequence->GetCurrentId() <<
-                                 " NActors " <<  sequence->GetNumberOfActors() <<
-                                 std::endl;
-                    sequence->UpdateToIndex(4);
-                    sequence->UpdateData();
-                    sequence->Update();
-
-                     std::cout << "DESPUES Update 4 Id " << sequence->GetCurrentId() <<
-                                  " NActors " <<  sequence->GetNumberOfActors() <<
-                                  std::endl;
-                     sequence->UpdateToIndex(0);
-                     sequence->UpdateData();
-                     sequence->Update();
-
-                      std::cout << "DESPUES Update 0 Id " << sequence->GetCurrentId() <<
-                                   " NActors " <<  sequence->GetNumberOfActors() <<
-                                   std::endl;
-
                     if(vtkPointSet *pointSet4D = dynamic_cast<vtkPointSet*> (vtkPointSet::SafeDownCast (sequence->GetDataSet())))
                     {
-                        std::cout <<"DataSet ARG @v3dViewMeshInteractor" << pointSet4D<< std::endl;
-
-                        qDebug() << "Remove dataset";
-
                         d->view->view3d()->RemoveDataSet (pointSet4D);
                         d->view->view2d()->RemoveDataSet(pointSet4D);
                     }
                 }
             }
         }
-
-
-
-
-        // MAYBE TODO d->actor2dList[d->currentLayer]->Delete();
-        // TODO        d->view->view3D ()->RemoveDataset ();
-        // TODO        d->view->view3D ()->RemoveDataset ();
-        // TODO        d->view->view3D ()->RemoveDataset ();
+        // MAYBE TODO d->actor2dList[d->currentLayer]->Delete();d->actorPropertyList
         // TODO        d->view->view3D ()->RemoveDataset ();
     }
     dtkAbstractViewInteractor::disable();
@@ -382,7 +336,7 @@ char* v3dViewMeshInteractor::getLUTQuery (int meshLayer)
 
         return dataArray->GetName();
     }
-        return NULL;
+    return NULL;
 }
 void v3dViewMeshInteractor::onLUTModePropertySet (const QString& value)
 {
@@ -499,33 +453,14 @@ void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
         }
         else if (vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(d->dataList[meshLayer]->data()))){
 
-            std::cout << "ANTES  Id " << sequence->GetCurrentId() <<
-                         " NActors " <<  sequence->GetNumberOfActors() <<
-                         std::endl;
-            sequence->UpdateToIndex(4);
-            sequence->UpdateData();
-            sequence->Update();
-
-             std::cout << "ANTES Update 4 Id " << sequence->GetCurrentId() <<
-                          " NActors " <<  sequence->GetNumberOfActors() <<
-                          std::endl;
-             sequence->UpdateToIndex(0);
-             sequence->UpdateData();
-             sequence->Update();
-
-              std::cout << "ANTES Update 0 Id " << sequence->GetCurrentId() <<
-                           " NActors " <<  sequence->GetNumberOfActors() <<
-                           std::endl;
             if(vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet()))
-        {
-            std::cout << pointSet<< std::endl;
-
-            d->actor2dList.append(d->view->view2d ()->AddDataSet(pointSet));
-            d->actor3dList.append(d->view->view3d ()->AddDataSet(pointSet));
-            d->actorPropertyList.append(v3dViewMeshInteractorPrivate::PropertySmartPointer::New ());
-            d->actor2dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
-            d->actor3dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
-         }}
-
+            {
+                d->actor2dList.append(d->view->view2d ()->AddDataSet(pointSet));
+                d->actor3dList.append(d->view->view3d ()->AddDataSet(pointSet));
+                d->actorPropertyList.append(v3dViewMeshInteractorPrivate::PropertySmartPointer::New ());
+                d->actor2dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
+                d->actor3dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
+            }
+        }
     }
 }
