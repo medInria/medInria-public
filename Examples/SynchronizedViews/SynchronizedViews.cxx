@@ -225,12 +225,6 @@ int main (int argc, char* argv[])
       
       matrix = metaimage->GetOrientationMatrix();
       
-      if (i == 1)
-      {
-	view3d->SetInput (image);
-	view3d->SetOrientationMatrix (matrix);
-      }
-      
       vtkImageView2D* view = vtkImageView2D::New();
       vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New();
       vtkRenderWindow* rwin = vtkRenderWindow::New();
@@ -244,15 +238,15 @@ int main (int argc, char* argv[])
       view->SetPosition (position);
       view->SetInput (image);
       view->SetOrientationMatrix(matrix);
-      view->GetCornerAnnotation()->SetText (0, filename.c_str());
-	
+      view->GetCornerAnnotation()->SetText (1, filename.c_str());
+      
       if (do_cardiac_style)
       {
 	view3d->AddExtraPlane (view->GetImageActor());
       }
       
       pool->AddItem (view);
-      
+
       view->Delete();
       iren->Delete();
       ren->Delete();
@@ -334,27 +328,27 @@ int main (int argc, char* argv[])
     }
   }
 
-  vtkImageView2D* firstview = vtkImageView2D::SafeDownCast (pool->GetItem (0));
-
+  vtkImageView2D* firstview = vtkImageView2D::SafeDownCast (pool->GetItem (1));
+  
   if (firstview)
   {
     view3d->SetInput (firstview->GetInput());
     view3d->SetOrientationMatrix(firstview->GetOrientationMatrix());
   }
-  
+
   pool->SyncReset();
   pool->SyncSetShowAnnotations (1);
   pool->SyncSetShowScalarBar (0);
   pool->SyncSetShowRulerWidget (0);
   pool->SyncSetShowImageAxis (0);
+  pool->SyncSetAnnotationStyle (vtkImageView2D::AnnotationStyle2);
   pool->SyncSetViewConvention (vtkImageView2D::VIEW_CONVENTION_RADIOLOGICAL);
   
   pool->SetLinkColorWindowLevel (1);
   
-  pool->SyncSetAnnotationStyle (vtkImageView2D::AnnotationStyle2);
   pool->SyncSetWheelInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
   //pool->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeTime);
-
+  
   int size[2]={370, 370};
   pool->SyncSetSize (size);
   pool->SyncRender();
