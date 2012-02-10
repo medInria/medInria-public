@@ -825,9 +825,7 @@ medSettingsWidget, QScrollArea {
   border:none;
 }
 
-medPluginWidget {
-  background: #313131;
-}
+
 /**
  * QScrollBar
  *
@@ -1489,4 +1487,49 @@ medViewContainer[isEmpty="false"][clicked="false"] {
 medViewContainer [isEmpty="false"][clicked="true"] {
     border: 1px solid red;
     background: #313131;
+}
+
+
+/**
+ * medPluginWidget
+ *
+ */
+medPluginWidget {
+  background: #313131;
+}
+
+medPluginWidget QTreeWidget {
+    alternate-background-color: #505050;
+
+    border: 0px;
+    padding: 0px;
+    font-size: 10px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
+
+medPluginWidget QTreeWidget::branch:has-siblings:!adjoins-item {
+    image: none;
+}
+
+medPluginWidget QTreeWidget::branch:has-siblings:adjoins-item {
+    image: none;
+}
+
+medPluginWidget QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
+    image: none;
+}
+
+medPluginWidget QTreeWidget::branch:has-children:!has-siblings:closed,
+medPluginWidget QTreeWidget::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-closed.png);
+}
+
+medPluginWidget QTreeWidget::branch:open:has-children:!has-siblings,
+QTreeWidget::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-open.png);
 }

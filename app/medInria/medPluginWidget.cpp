@@ -54,8 +54,8 @@ void medPluginWidgetPrivate::resetPluginsTree()
 
     }
     pluginsTree->resizeColumnToContents(0);
-    pluginsTree->resizeColumnToContents(1);
-    pluginsTree->resizeColumnToContents(2);
+//    pluginsTree->resizeColumnToContents(1);
+//    pluginsTree->resizeColumnToContents(2);
     pluginsTree->sortByColumn(0,Qt::AscendingOrder);
 }
 
@@ -172,12 +172,13 @@ medPluginWidget::medPluginWidget(QWidget *parent) :
     d->pluginsTree->setSortingEnabled(true);
     d->pluginsTree->setSelectionBehavior(QAbstractItemView::SelectRows);
     d->pluginsTree->setSelectionMode(QAbstractItemView::SingleSelection);
-    //d->pluginsTree->header()->setStretchLastSection(true);
+    d->pluginsTree->header()->setStretchLastSection(true);
     d->pluginsTree->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     d->pluginsTree->setColumnCount(3);
     QStringList treeColumns;
     treeColumns << tr("Name") << tr("Version") << tr("Authors");
     d->pluginsTree->setHeaderLabels(treeColumns);
+    d->pluginsTree->setColumnWidth(1, 50);
 
     connect(d->pluginsTree,SIGNAL(itemActivated(QTreeWidgetItem*,int)),
             this, SLOT(onPluginTreeItemActivated(QTreeWidgetItem*,int)));
