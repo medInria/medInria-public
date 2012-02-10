@@ -109,14 +109,22 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
 
     if(data->identifier() == "vtkDataMesh4D")
     {
-        d->isMeshOnly = true; //        d->isMeshOnly = false;
-
-        vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
-        vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet());
-        vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
-        imagegenerator->SetInput (pointSet);
-        vtkImageData * image = imagegenerator->GetOutput();
-        d->view->view2d()->SetInput(image, 0);
+        if(!d->view->dataInList(0))
+        {
+            d->isMeshOnly = true; //        d->isMeshOnly = false;
+            vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
+            vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet());
+            vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
+            unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
+            imagegenerator->SetOutputImageSize(imSize);
+            imagegenerator->SetInput (pointSet);
+            vtkImageData * image = imagegenerator->GetOutput();
+            d->view->view2d()->SetInput(image, 0);
+            vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
+            actor->SetOpacity(0.0);
+        }
+        else
+            d->isMeshOnly = false;
 
         d->dataList.append(data);
         d->opacityList.append(1.0);
@@ -135,6 +143,8 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
             vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
             imagegenerator->SetInput (pointSet);
             vtkImageData * image = imagegenerator->GetOutput();
+            unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
+            imagegenerator->SetOutputImageSize(imSize);
             d->view->view2d()->SetInput(image, 0);
             //d->view->view3d()->SetInput(image, 0);
             vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
@@ -142,6 +152,7 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         }
         else
             d->isMeshOnly = false;
+
         Q_UNUSED( pointSet );
         d->dataList.append(data);
         d->opacityList.append(1.0);
