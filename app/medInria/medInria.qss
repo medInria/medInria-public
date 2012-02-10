@@ -1489,6 +1489,45 @@ medViewContainer [isEmpty="false"][clicked="true"] {
     background: #313131;
 }
 
+/**
+ * medDiffusionSequenceCompositeDataToolBox
+ *
+ */
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget {
+    alternate-background-color: #505050;
+
+    border: 0px;
+    padding: 0px;
+    font-size: 10px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+ }
+
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget::branch:has-siblings:!adjoins-item {
+     image: none;
+ }
+
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget::branch:has-siblings:adjoins-item {
+     image: none;
+ }
+
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
+     image: none;
+ }
+
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget::branch:has-children:!has-siblings:closed,
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget::branch:closed:has-children:has-siblings {
+     border-image: none;
+     image: url(:pixmaps/treeview-branch-closed.png);
+ }
+
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget::branch:open:has-children:!has-siblings,
+ QTreeWidget::branch:open:has-children:has-siblings  {
+     border-image: none;
+     image: url(:pixmaps/treeview-branch-open.png);
+ }
 
 /**
  * medPluginWidget
