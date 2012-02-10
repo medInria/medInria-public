@@ -2,19 +2,29 @@
 
 #include <medPluginManager.h>
 
+#include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkAbstractProcessFactory.h>
+#include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkPlugin.h>
 #include <dtkGui/dtkAboutPlugin.h>
 
 #include <QtGui>
 
+
+////////////////////////////////////////////////////////////////////////////////
+//medPluginWidgetPrivate
+////////////////////////////////////////////////////////////////////////////////
+
 class medPluginWidgetPrivate
 {
 public:
     QTreeWidget* pluginsTree;
-    QTableWidget* errorTable;
+    QTreeWidget* typesTree;
+    QTreeWidget* errorTree;
 
     void resetPluginsTree();
-    void resetFailedPluginsTable();
+    void resetTypesTree();
+    void resetFailedPluginsTree();
 };
 
 
@@ -44,37 +54,117 @@ void medPluginWidgetPrivate::resetPluginsTree()
 
     }
     pluginsTree->resizeColumnToContents(0);
+    pluginsTree->resizeColumnToContents(1);
+    pluginsTree->resizeColumnToContents(2);
+    pluginsTree->sortByColumn(0,Qt::AscendingOrder);
 }
 
-void medPluginWidgetPrivate::resetFailedPluginsTable()
+void medPluginWidgetPrivate::resetTypesTree()
 {
     //First clear the content
-    errorTable->clearContents();
+    typesTree->clear();
 
     //get the list of plugins
     medPluginManager* mpm = medPluginManager::instance();
-    errorTable->setRowCount(mpm->loadErrors().size());
 
-    for(unsigned int i=0; i < mpm->loadErrors().size(); i++)
+    dtkAbstractDataFactory * dataFactory = dtkAbstractDataFactory::instance();
+    QTreeWidgetItem * dataItem = new QTreeWidgetItem(typesTree);
+    dataItem->setText(0,QObject::tr("Data"));
+    foreach(QString data,dataFactory->creators())
     {
-        qDebug()<< "display error" << mpm->loadErrors()[i];
-        QTableWidgetItem * item = new QTableWidgetItem(mpm->loadErrors()[i]);
-        errorTable->setItem(i,0,item);
+        QTreeWidgetItem * item = new QTreeWidgetItem(dataItem);
+        item->setText(1,data);
+//        item->setText(2,mpm->);
     }
-    errorTable->resizeColumnToContents(0);
+    typesTree->addTopLevelItem(dataItem);
+
+    QTreeWidgetItem * readerItem = new QTreeWidgetItem(typesTree);
+    readerItem->setText(0,QObject::tr("Readers"));
+    foreach(QString data,dataFactory->readers())
+    {
+        QTreeWidgetItem * item = new QTreeWidgetItem(readerItem);
+        item->setText(1,data);
+//        item->setText(1,plugin->version());
+    }
+    typesTree->addTopLevelItem(readerItem);
+
+    QTreeWidgetItem * writerItem = new QTreeWidgetItem(typesTree);
+    writerItem->setText(0,QObject::tr("Writers"));
+    foreach(QString data,dataFactory->writers())
+    {
+        QTreeWidgetItem * item = new QTreeWidgetItem(writerItem);
+        item->setText(1,data);
+//        item->setText(1,plugin->version());
+    }
+    typesTree->addTopLevelItem(writerItem);
+
+
+    dtkAbstractViewFactory * viewFactory =
+            dtkAbstractViewFactory::instance();
+
+    QTreeWidgetItem * viewItem = new QTreeWidgetItem(typesTree);
+    viewItem->setText(0,QObject::tr("Views"));
+    foreach(QString view,viewFactory->creators())
+    {
+        QTreeWidgetItem * item = new QTreeWidgetItem(viewItem);
+        item->setText(1,view);
+//        item->setText(1,plugin->version());
+
+        //typesTree->addTopLevelItem(item);
+    }
+    typesTree->addTopLevelItem(viewItem);
+
+    dtkAbstractProcessFactory * processFactory =
+            dtkAbstractProcessFactory::instance();
+
+    QTreeWidgetItem * processItem = new QTreeWidgetItem(typesTree);
+    processItem->setText(0,QObject::tr("Processes"));
+    foreach(QString process,processFactory->creators())
+    {
+        QTreeWidgetItem * item = new QTreeWidgetItem(processItem);
+        item->setText(1,process);
+//        item->setText(1,plugin->version());
+
+        //typesTree->addTopLevelItem(item);
+    }
+    typesTree->addTopLevelItem(processItem);
+
+    typesTree->resizeColumnToContents(0);
+    typesTree->setColumnWidth(1,200);
+    typesTree->sortByColumn(1,Qt::AscendingOrder);
+    typesTree->sortByColumn(0,Qt::AscendingOrder);
+
+//    typesTree->setSortingEnabled(true);
 }
 
-
-medPluginWidget::medPluginWidget(QWidget *parent) :
-    QWidget(parent), d(new medPluginWidgetPrivate)
+void medPluginWidgetPrivate::resetFailedPluginsTree()
 {
-    QVBoxLayout * layout = new QVBoxLayout(this);
-    QLabel * pluginListLabel = new QLabel(tr("List of Plugins"),this);
-    QLabel * failedPluginsLabel = new QLabel(tr("Failed Plugins"),this);
+    //First clear the content
+    errorTree->clear();
 
+    //get the list of plugins
+    medPluginManager* mpm = medPluginManager::instance();
+
+    foreach(QString error, mpm->loadErrors())
+    {
+        QTreeWidgetItem * item = new QTreeWidgetItem(errorTree);
+        item->setText(0,error);
+        errorTree->addTopLevelItem(item);
+    }
+    errorTree->resizeColumnToContents(0);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//medPluginWidget methods
+////////////////////////////////////////////////////////////////////////////////
+medPluginWidget::medPluginWidget(QWidget *parent) :
+    QTabWidget(parent), d(new medPluginWidgetPrivate)
+{
     //Initialise the tree Widget
     d->pluginsTree = new QTreeWidget(this);
     d->pluginsTree->setFrameStyle(QFrame::NoFrame);
+    //d->pluginsTree->setMinimumWidth(700);
+
     d->pluginsTree->setAttribute(Qt::WA_MacShowFocusRect, false);
     d->pluginsTree->setUniformRowHeights(true);
     d->pluginsTree->setAlternatingRowColors(true);
@@ -82,8 +172,8 @@ medPluginWidget::medPluginWidget(QWidget *parent) :
     d->pluginsTree->setSortingEnabled(true);
     d->pluginsTree->setSelectionBehavior(QAbstractItemView::SelectRows);
     d->pluginsTree->setSelectionMode(QAbstractItemView::SingleSelection);
-    d->pluginsTree->header()->setStretchLastSection(true);
-    d->pluginsTree->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
+    //d->pluginsTree->header()->setStretchLastSection(true);
+    d->pluginsTree->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     d->pluginsTree->setColumnCount(3);
     QStringList treeColumns;
     treeColumns << tr("Name") << tr("Version") << tr("Authors");
@@ -92,29 +182,51 @@ medPluginWidget::medPluginWidget(QWidget *parent) :
     connect(d->pluginsTree,SIGNAL(itemActivated(QTreeWidgetItem*,int)),
             this, SLOT(onPluginTreeItemActivated(QTreeWidgetItem*,int)));
 
-    //Initialise the error table
-    d->errorTable = new QTableWidget(this);
-    d->errorTable->setFrameStyle(QFrame::NoFrame);
-    d->errorTable->setAttribute(Qt::WA_MacShowFocusRect, false);
-    d->errorTable->setAlternatingRowColors(true);
-    d->errorTable->setSortingEnabled(true);
-    d->errorTable->setSelectionBehavior(QAbstractItemView::SelectRows);
-    d->errorTable->setSelectionMode(QAbstractItemView::SingleSelection);
-    d->errorTable->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
-    d->errorTable->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
-    d->errorTable->setColumnCount(1);
-    QStringList tableColumns;
-    tableColumns << tr("Error Messages");
-    d->errorTable->setHorizontalHeaderLabels(tableColumns);
+    //Initialise the error Tree
+    d->errorTree = new QTreeWidget(this);
+    d->errorTree->setFrameStyle(QFrame::NoFrame);
+    //d->errorTree->setMinimumWidth(700);
+    d->errorTree->setAttribute(Qt::WA_MacShowFocusRect, false);
+    d->errorTree->setAlternatingRowColors(true);
+    d->errorTree->setSortingEnabled(true);
+    d->errorTree->setSelectionBehavior(QAbstractItemView::SelectRows);
+    d->errorTree->setSelectionMode(QAbstractItemView::SingleSelection);
+    d->errorTree->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    d->errorTree->setColumnCount(1);
+    QStringList errorColumns;
+    errorColumns << tr("Error Messages");
+    d->errorTree->setHeaderLabels(errorColumns);
 
-    connect(d->errorTable,SIGNAL(itemActivated(QTableWidgetItem*)),
-            this,SLOT(onErrorTableItemActivated(QTableWidgetItem*)));
+    connect(d->errorTree,SIGNAL(itemActivated(QTreeWidgetItem*,int)),
+            this,SLOT(onErrorTreeItemActivated(QTreeWidgetItem*,int)));
+
+    //Initialise list of types
+    d->typesTree = new QTreeWidget(this);
 
 
-    layout->addWidget(pluginListLabel);
-    layout->addWidget(d->pluginsTree);
-    layout->addWidget(failedPluginsLabel);
-    layout->addWidget(d->errorTable);
+    d->typesTree->setFrameStyle(QFrame::NoFrame);
+    //d->typesTree->setMinimumWidth(700);
+
+    d->typesTree->setAttribute(Qt::WA_MacShowFocusRect, false);
+    d->typesTree->setUniformRowHeights(true);
+    d->typesTree->setAlternatingRowColors(true);
+    d->typesTree->setAnimated(true);
+    d->typesTree->setSortingEnabled(true);
+    d->typesTree->setSelectionBehavior(QAbstractItemView::SelectRows);
+    d->typesTree->setSelectionMode(QAbstractItemView::SingleSelection);
+    //d->typesTree->header()->setStretchLastSection(true);
+    d->typesTree->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    d->typesTree->setColumnCount(2);
+    QStringList typesTreeColumns;
+    typesTreeColumns << tr("Category") << tr("Name");// << tr("Plugin");
+    d->typesTree->setHeaderLabels(typesTreeColumns);
+
+    //connect(d->typesTree,SIGNAL(itemActivated(QTreeWidgetItem*,int)),
+    //        this, SLOT(onTypesTreeItemActivated(QTreeWidgetItem*,int)));
+
+    this->addTab(d->pluginsTree,tr("Loaded Plugins"));
+    this->addTab(d->typesTree,tr("Loaded types"));
+    this->addTab(d->errorTree,tr("Failed Plugins"));
     reset();
 }
 
@@ -127,7 +239,8 @@ medPluginWidget::~medPluginWidget()
 void medPluginWidget::reset()
 {
     d->resetPluginsTree();
-    d->resetFailedPluginsTable();
+    d->resetFailedPluginsTree();
+    d->resetTypesTree();
 }
 
 void medPluginWidget::onPluginTreeItemActivated(QTreeWidgetItem *item, int column)
@@ -159,8 +272,9 @@ void medPluginWidget::onPluginTreeItemActivated(QTreeWidgetItem *item, int colum
     dial->exec();
 }
 
-void medPluginWidget::onErrorTableItemActivated(QTableWidgetItem* item)
+void medPluginWidget::onErrorTreeItemActivated(QTreeWidgetItem* item,int column)
 {
+    Q_UNUSED (column);
     QDialog * dial = new QDialog(this);
 
     QString windowTitle = tr("medInria: error message");
@@ -170,7 +284,7 @@ void medPluginWidget::onErrorTableItemActivated(QTableWidgetItem* item)
 
     QTextEdit * message = new QTextEdit(dial);
     message->setReadOnly(true);
-    message->setText(item->text());
+    message->setText(item->text(0));
 
     QPushButton * okBut = new QPushButton(dial);
     okBut->setText("Ok");

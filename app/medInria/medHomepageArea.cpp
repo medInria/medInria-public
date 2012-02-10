@@ -231,14 +231,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
 //    QLabel * pluginWidgetTitle = new QLabel(tr("Plugins information"),this);
     medPluginWidget * pWid = new medPluginWidget(d->pluginWidget);
-    QScrollArea * pluginScrolledArea = new QScrollArea(d->pluginWidget);
-    pluginScrolledArea->setWidget(pWid);
 
     pluginLayout->addWidget(medInriaLabel3);
 //    pluginLayout->addWidget(pluginWidgetTitle);
-    pluginLayout->addWidget(pluginScrolledArea);
+    pluginLayout->addWidget(pWid);
     pluginLayout->addLayout(pluginHideButtonLayout);
-    pluginLayout->addStretch();
+    //pluginLayout->addStretch();
 //    pluginLayout->setAlignment(pluginWidgetTitle, Qt::AlignHCenter);
 
     //Set the position of the widgets
@@ -258,10 +256,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     if (d->stackedWidget->minimumHeight() > stackedWidgetHeight)
         stackedWidgetHeight = d->stackedWidget->minimumHeight();
     d->stackedWidget->setMaximumHeight(stackedWidgetHeight);
+    d->stackedWidget->setMaximumWidth(this->width() / 2-50);
     d->stackedWidget->addWidget(d->infoWidget);
     d->stackedWidget->addWidget(d->aboutWidget);
     d->stackedWidget->addWidget(d->pluginWidget);
     d->stackedWidget->setCurrentIndex(0);//d->infoWidget
+    d->stackedWidget->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
 
     //Setup homepage animations
     d->animation = new QParallelAnimationGroup ( this );
@@ -318,7 +318,12 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
         stackedWidgetHeight = d->stackedWidget->minimumHeight();
     d->stackedWidget->setMaximumHeight(stackedWidgetHeight);
 
-//    d->aboutTabWidget->setMaximumHeight ( this->height() / 3 );
+    int stackedWidgetWidth =  this->width() / 2 - 50 ;
+
+    d->stackedWidget->setMaximumWidth(stackedWidgetWidth);
+    //TODO: this is ugly, find a way to use the right policy here...
+    d->stackedWidget->resize(stackedWidgetWidth,stackedWidgetHeight);
+//    qDebug()<< d->stackedWidget->maximumSize();
 
     //Update the animations as well
     d->navigationAnimation->setStartValue ( QPoint ( - 300,  this->height() / 4 ) );

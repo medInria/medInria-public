@@ -819,11 +819,15 @@ medSettingsEditor QTabBar::tab {
  * medSettingsWidget
  *
  */
-medSettingsWidget, medSettingsEditor QScrollArea {
+medSettingsWidget, QScrollArea {
   color: #b2b8b2;
-  background: #505050;
+  background: #313131;
+  border:none;
 }
 
+medPluginWidget {
+  background: #313131;
+}
 /**
  * QScrollBar
  *

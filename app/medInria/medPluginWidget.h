@@ -1,12 +1,12 @@
 #ifndef MEDPLUGINWIDGET_H
 #define MEDPLUGINWIDGET_H
 
-#include <QWidget>
+#include <QTabWidget>
 #include <QTreeWidgetItem>
 #include <QTableWidgetItem>
 class medPluginWidgetPrivate;
 
-class medPluginWidget : public QWidget
+class medPluginWidget : public QTabWidget
 {
     Q_OBJECT
 public:
@@ -17,7 +17,7 @@ signals:
 
 public slots:
     void onPluginTreeItemActivated(QTreeWidgetItem* item ,int column);
-    void onErrorTableItemActivated(QTableWidgetItem* item);
+    void onErrorTreeItemActivated(QTreeWidgetItem* item,int column);
 protected:
     void reset();
 
