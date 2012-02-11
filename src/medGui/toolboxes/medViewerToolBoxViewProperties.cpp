@@ -10,6 +10,7 @@
 #include <dtkCore/dtkAbstractData.h>
 
 #include <medStorage.h>
+#include <medSettingsManager.h>
 #include <medMetaDataKeys.h>
 #include <medAbstractView.h>
 #include <medToolBoxTab.h>
@@ -36,6 +37,7 @@ public:
     QList<medMeshAbstractViewInteractor*> interactors;
     medAbstractView *view;
 
+    QButtonGroup *mouseGroup;
     QPushButton *windowingPushButton;
     QPushButton *zoomingPushButton;
     QPushButton *slicingPushButton;
@@ -100,49 +102,51 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     QObject::connect(d->propertiesTree, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(onItemClicked(QTreeWidgetItem *, int)));
     QObject::connect(d->propertiesTree, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextTreeMenu(QPoint)));
 
-    d->propertiesView = new QWidget;
+    d->propertiesView = new QWidget(this);
 
     d->windowingPushButton = new QPushButton("", this);
     d->windowingPushButton->setFocusPolicy(Qt::NoFocus);
     d->windowingPushButton->setIcon (QIcon (":/icons/wlww.png"));
     d->windowingPushButton->setCheckable (true);
     d->windowingPushButton->setMinimumWidth ( 20 );
-	d->windowingPushButton->setToolTip (tr("Windowing"));
+    d->windowingPushButton->setToolTip (tr("Windowing"));
     d->zoomingPushButton   = new QPushButton("", this);
     d->zoomingPushButton->setFocusPolicy(Qt::NoFocus);
     d->zoomingPushButton->setIcon (QIcon (":/icons/magnify.png"));
     d->zoomingPushButton->setCheckable (true);
-	d->zoomingPushButton->setToolTip (tr("Zooming"));
+    d->zoomingPushButton->setToolTip (tr("Zooming"));
     d->slicingPushButton   = new QPushButton("", this);
     d->slicingPushButton->setFocusPolicy(Qt::NoFocus);
     d->slicingPushButton->setIcon (QIcon (":/icons/stack.png"));
     d->slicingPushButton->setCheckable (true);
-	d->slicingPushButton->setToolTip (tr("Slicing"));
+    d->slicingPushButton->setToolTip (tr("Slicing"));
     d->measuringPushButton = new QPushButton("", this);
     d->measuringPushButton->setFocusPolicy(Qt::NoFocus);
     d->measuringPushButton->setIcon (QIcon (":/icons/length.png"));
     d->measuringPushButton->setCheckable (true);
-	d->measuringPushButton->setToolTip (tr("Measuring"));
+    d->measuringPushButton->setToolTip (tr("Measuring"));
 
-    QButtonGroup *mouseGroup = new QButtonGroup (this);
-    mouseGroup->addButton ( d->windowingPushButton );
-    mouseGroup->addButton ( d->zoomingPushButton );
-    mouseGroup->addButton ( d->slicingPushButton );
-    mouseGroup->addButton ( d->measuringPushButton );
-    mouseGroup->setExclusive (true);
+    d->mouseGroup = new QButtonGroup (this);
+    d->mouseGroup->addButton ( d->windowingPushButton );
+    d->mouseGroup->addButton ( d->zoomingPushButton );
+    d->mouseGroup->addButton ( d->slicingPushButton );
+    d->mouseGroup->addButton ( d->measuringPushButton );
+    d->mouseGroup->setExclusive (true);
 
-    d->propView = new QWidget;
+    setCurrentInteractionFromSettings();
+
+    d->propView = new QWidget(this);
     QHBoxLayout * propLayout = new QHBoxLayout;
 
-    d->scalarBarVisibilityCheckBox = new QCheckBox();
+    d->scalarBarVisibilityCheckBox = new QCheckBox(this);
     d->scalarBarVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
-	d->scalarBarVisibilityCheckBox->setToolTip(tr("Show scalar bar"));
-    d->axisVisibilityCheckBox = new QCheckBox();
+    d->scalarBarVisibilityCheckBox->setToolTip(tr("Show scalar bar"));
+    d->axisVisibilityCheckBox = new QCheckBox(this);
     d->axisVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
-	d->axisVisibilityCheckBox->setToolTip(tr("Show axis"));
-    d->rulerVisibilityCheckBox = new QCheckBox();
+    d->axisVisibilityCheckBox->setToolTip(tr("Show axes"));
+    d->rulerVisibilityCheckBox = new QCheckBox(this);
     d->rulerVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
-    d->annotationsVisibilityCheckBox = new QCheckBox();
+    d->annotationsVisibilityCheckBox = new QCheckBox(this);
     d->annotationsVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
 
     propLayout->addWidget(d->scalarBarVisibilityCheckBox);
@@ -150,11 +154,11 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->propView->setLayout(propLayout);
     propLayout->setAlignment(Qt::AlignJustify);
     d->scalarBarVisibilityCheckBox->setText(tr("Scalar Bar"));
-    d->axisVisibilityCheckBox->setText(tr("Axis"));
+    d->axisVisibilityCheckBox->setText(tr("Axes"));
     d->rulerVisibilityCheckBox->setText(tr("Ruler"));
-	d->rulerVisibilityCheckBox->setToolTip(tr("Show ruler"));
+    d->rulerVisibilityCheckBox->setToolTip(tr("Show ruler"));
     d->annotationsVisibilityCheckBox->setText("Annotations");
-	d->annotationsVisibilityCheckBox->setToolTip(tr("Show annotations"));
+    d->annotationsVisibilityCheckBox->setToolTip(tr("Show annotations"));
     d->annotationsVisibilityCheckBox->setChecked(true);
     d->rulerVisibilityCheckBox->setChecked(true);
 
@@ -178,7 +182,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     d->view3dModeComboBox = new QComboBox(this);
     d->view3dModeComboBox->setFocusPolicy(Qt::NoFocus);
-	d->view3dModeComboBox->setToolTip(tr("Choose a 3D mode (e.g. Volume Rendering, Maximum Intensity Projection, MultiPlanar Reconstruction)"));
+    d->view3dModeComboBox->setToolTip(tr("Choose a 3D mode (e.g. Volume Rendering, Maximum Intensity Projection, MultiPlanar Reconstruction)"));
     d->view3dModeComboBox->addItem("VR");
     d->view3dModeComboBox->addItem("MIP - Maximum");
     d->view3dModeComboBox->addItem("MIP - Minimum");
@@ -188,7 +192,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     d->view3dVRModeComboBox = new QComboBox(this);
     d->view3dVRModeComboBox->setFocusPolicy(Qt::NoFocus);
-	d->view3dVRModeComboBox->setToolTip(tr("Choose among rendering techniques (e.g. GPU accelerated rendering, Ray Casting)"));
+    d->view3dVRModeComboBox->setToolTip(tr("Choose among rendering techniques (e.g. GPU accelerated rendering, Ray Casting)"));
     d->view3dVRModeComboBox->addItem( "GPU" );
     d->view3dVRModeComboBox->addItem( "Ray Cast / Texture" );
     d->view3dVRModeComboBox->addItem( "Ray Cast" );
@@ -207,14 +211,14 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->croppingPushButton->setIcon (QIcon (":/icons/cropping.png"));
     d->croppingPushButton->setCheckable (true);
     d->croppingPushButton->setMinimumWidth ( 20 );
-	d->croppingPushButton->setToolTip(tr("Crop volume tool"));
+    d->croppingPushButton->setToolTip(tr("Crop volume tool"));
 
     connect(d->view3dModeComboBox,            SIGNAL(currentIndexChanged(QString)), this, SLOT(onModeChanged(QString)));
     connect(d->view3dVRModeComboBox,          SIGNAL(currentIndexChanged(QString)), this, SLOT(onVRModeChanged(QString)));
     connect(d->view3dLODSlider,               SIGNAL(valueChanged(int)),            this, SLOT(onLodChanged(int)));
     connect(d->croppingPushButton,            SIGNAL(toggled(bool)),                this, SLOT(onCroppingChanged(bool)));
 
-    d->view3dToolBoxWidget = new QWidget;
+    d->view3dToolBoxWidget = new QWidget(this);
     QFormLayout *view3dToolBoxWidgetLayout = new QFormLayout(d->view3dToolBoxWidget);
     view3dToolBoxWidgetLayout->addRow(tr("3D Mode"), d->view3dModeComboBox);
     view3dToolBoxWidgetLayout->addRow(tr("Renderer:"), d->view3dVRModeComboBox);
@@ -226,8 +230,8 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     //add 2 layers opacity slider and switcher.
     d->twoLayersWidget = new QWidget(this);
-    QGridLayout * twoLayersLayout = new QGridLayout();
-    d->twoLayersWidget->setLayout(twoLayersLayout);
+    QGridLayout * twoLayersLayout = new QGridLayout(d->twoLayersWidget);
+    //d->twoLayersWidget->setLayout(twoLayersLayout);
 
     d->slider = new QSlider(Qt::Horizontal,this);
     d->slider->setFocusPolicy(Qt::NoFocus);
@@ -271,10 +275,8 @@ medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
     d = NULL;
 }
 
-void
-    medViewerToolBoxViewProperties::update(dtkAbstractView *view)
+void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 {
-
     medToolBox::update(view);
     if(!view)
     {
@@ -288,6 +290,7 @@ void
         clear();
     }
 
+
 //    qDebug() << "update 1";
     if (medAbstractView *medView = dynamic_cast<medAbstractView *> (view))
     {
@@ -296,6 +299,8 @@ void
         {
             return;
         }
+
+
         d->view = medView;
         d->propertiesTree->clear();
         //decide whether to show the 2 layers slider
@@ -308,10 +313,10 @@ void
                 d->currentInteractor = d->interactors.indexOf(interactor);
             }
 
-        //Loop all layers and create a layer icon on the toolbox with respect to the fact that it is a mesh or an image    
+        //Loop all layers and create a layer icon on the toolbox with respect to the fact that it is a mesh or an image
         for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
         {
-            
+
             if(d->view->dataInList(i) && d->view->dataInList(i)->identifier().contains("vtkDataMesh"))
             {
                 this->constructMeshLayer(d->view->dataInList(i), meshNumber);
@@ -323,7 +328,7 @@ void
                 imageNumber++;
             }
 
-            d->propertiesTree->collapseAll();
+//            d->propertiesTree->collapseAll();
         }
 
         QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)),
@@ -344,12 +349,22 @@ void
         d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("3DMode")));
         d->view3dModeComboBox->blockSignals(false);
 
+        //set a few view pool wide properties in the view.
+        qDebug()<<"update some view properties";
+        onScalarBarVisibilityChanged(d->scalarBarVisibilityCheckBox->isChecked());
+        onAnnotationsVisibilityChanged(d->annotationsVisibilityCheckBox->isChecked());
+        onAxisVisibilityChanged(d->axisVisibilityCheckBox->isChecked());
+        onRulerVisibilityChanged(d->rulerVisibilityCheckBox->isChecked());
+        onZoomingChanged(d->zoomingPushButton->isChecked());
+        onSlicingChanged(d->slicingPushButton->isChecked());
+        onMeasuringChanged(d->measuringPushButton->isChecked());
+        onWindowingChanged(d->windowingPushButton->isChecked());
     }
 }
 
 void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, int imageLayer)
 {
-    
+
     if(!data)
         return;
     QString layerItemString = QString::number(imageLayer);
@@ -400,7 +415,7 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 
     QTreeWidgetItem * lutItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     lutItem->setText(1, "LUT");
-    QComboBox * lutBox = new QComboBox();
+    QComboBox * lutBox = new QComboBox(this);
     lutBox->setFocusPolicy(Qt::NoFocus);
     lutBox->addItem("Default");
     lutBox->addItem("Black & White");
@@ -455,13 +470,20 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
     presetBox->setCurrentIndex(presetBox->findText(d->view->getPreset(imageLayer)));
     presetBox->blockSignals(false);
 
-    QObject::connect(visibleBox, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
-    QObject::connect(opacityBox, SIGNAL(valueChanged(int)), this, SLOT(onOpacitySliderSet(int)));
-    QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onLUTChanged(int)));
-    QObject::connect(presetBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onPresetChanged(int)));
+    QObject::connect(visibleBox, SIGNAL(stateChanged(int)),
+                     this, SLOT(onVisibilitySet(int)));
+    QObject::connect(opacityBox, SIGNAL(valueChanged(int)),
+                     this, SLOT(onOpacitySliderSet(int)));
+    QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)),
+                     this, SLOT(onLUTChanged(int)));
+    QObject::connect(presetBox, SIGNAL(currentIndexChanged(int)),
+                     this, SLOT(onPresetChanged(int)));
 
-    d->propertiesTree->collapseAll();
-
+    //d->propertiesTree->collapseAll();
+    if (imageLayer == 0)
+    {
+        d->layerItem->setExpanded(true);
+    }
 }
 void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, int meshLayer)
 {
@@ -626,12 +648,9 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     QObject::connect(edgeVisibleBox, SIGNAL(stateChanged(int)), this, SLOT(onEdgeVisibilitySet(int)));
     QObject::connect(colorComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(onColorChanged(int)));
     QObject::connect(renderingBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRenderingChanged(int)));
-    d->propertiesTree->collapseAll();
-
-
+    //d->propertiesTree->collapseAll();
 }
-void
-    medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data)
+void medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data)
 {
 
 }
@@ -639,10 +658,10 @@ void medViewerToolBoxViewProperties::onDataAdded( int layer)
 {
 
 }
-void
-    medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data, int layer)
+void medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data,
+                                                 int layer)
 {
-  
+
     if(!data)
         return;
     if (!d->view)
@@ -651,19 +670,23 @@ void
     //JGG qDebug() << "1";
     if(data->identifier().contains("vtkDataMesh"))
     {
-        if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
+        if (medMeshAbstractViewInteractor *interactor =
+                dynamic_cast<medMeshAbstractViewInteractor*>
+                (d->view->interactor ("v3dViewMeshInteractor")))
             if (!d->interactors.contains (interactor))
             {
                 d->interactors.append (interactor);
             }
-            if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
+            if (medMeshAbstractViewInteractor *interactor =
+                    dynamic_cast<medMeshAbstractViewInteractor*>
+                    (d->view->interactor ("v3dViewMeshInteractor")))
             {
                 d->currentInteractor = d->interactors.indexOf(interactor);
 
             }
         this->constructMeshLayer(data, d->view->meshLayerCount());
         d->view->setMeshLayerCount(d->view->meshLayerCount()+1);
-      
+
     }
     else
     {
@@ -674,14 +697,14 @@ void
     raiseSlider(d->view->layerCount() == 2);
 }
 
-void
-    medViewerToolBoxViewProperties::clear(void)
+void medViewerToolBoxViewProperties::clear(void)
 {
     d->currentLayer = 0;
     d->propertiesTree->clear();
     raiseSlider(false);
     d->view = 0;
 }
+
 void medViewerToolBoxViewProperties::onColorChanged(int selection)
 {
     QColor color;
@@ -712,8 +735,8 @@ void medViewerToolBoxViewProperties::onColorChanged(int selection)
     d->interactors[d->currentInteractor]->setLayer(d->view->currentMeshLayer());
     d->interactors[d->currentInteractor]->onColorPropertySet(color);
 }
-void
-    medViewerToolBoxViewProperties::onVisibilitySet(int state)
+
+void medViewerToolBoxViewProperties::onVisibilitySet(int state)
 {
 
     if (!d->view)
@@ -746,8 +769,7 @@ void medViewerToolBoxViewProperties::onColorSelected(const QColor& color)
 
 }
 
-void
-    medViewerToolBoxViewProperties::onEdgeVisibilitySet(int state)
+void medViewerToolBoxViewProperties::onEdgeVisibilitySet(int state)
 {
     if (!d->view)
         return;
@@ -760,8 +782,7 @@ void
     d->view->update();
 }
 
-void
-    medViewerToolBoxViewProperties::onOpacitySliderSet(int opacity)
+void medViewerToolBoxViewProperties::onOpacitySliderSet(int opacity)
 {
     if (!d->view)
         return;
@@ -779,8 +800,7 @@ void
 }
 
 
-void
-    medViewerToolBoxViewProperties::on2LayersOpacitySliderSet(int opacity)
+void medViewerToolBoxViewProperties::on2LayersOpacitySliderSet(int opacity)
 {
     if (!d->view)
         return;
@@ -790,6 +810,7 @@ void
     d->view->setOpacity(1.0 - d_opacity, 0);
     d->view->update();
 }
+
 void medViewerToolBoxViewProperties::onAttrBoxChanged(int index)
 {
 
@@ -840,10 +861,8 @@ void medViewerToolBoxViewProperties::onAttrBoxChanged(int index)
     }
 }
 
-void
-    medViewerToolBoxViewProperties::onLUTChanged(int index)
+void medViewerToolBoxViewProperties::onLUTChanged(int index)
 {
-
     if (!d->view)
         return;
     if(!d->isMesh)
@@ -859,8 +878,7 @@ void
     d->view->update();
 }
 
-void
-    medViewerToolBoxViewProperties::onPresetChanged(int index)
+void medViewerToolBoxViewProperties::onPresetChanged(int index)
 {
     if (!d->view)
         return;
@@ -872,8 +890,7 @@ void
     d->view->update();
 }
 
-void
-    medViewerToolBoxViewProperties::onRenderingChanged(int index)
+void medViewerToolBoxViewProperties::onRenderingChanged(int index)
 {
     if (!d->view)
         return;
@@ -882,10 +899,8 @@ void
     d->view->update();
 }
 
-void
-    medViewerToolBoxViewProperties::onItemClicked(QTreeWidgetItem * item, int column)
+void medViewerToolBoxViewProperties::onItemClicked(QTreeWidgetItem * item, int column)
 {
-
     d->propertiesTree->clearSelection();
     if (item->type() == QTreeWidgetItem::UserType + 1)
     {
@@ -1018,28 +1033,28 @@ QIcon medViewerToolBoxViewProperties::createIcon(QString colorName)
 
 void medViewerToolBoxViewProperties::onWindowingChanged(bool checked)
 {
-    if (d->view) {
+    if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Windowing");
     }
 }
 
 void medViewerToolBoxViewProperties::onZoomingChanged(bool checked)
 {
-    if (d->view) {
+    if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Zooming");
     }
 }
 
 void medViewerToolBoxViewProperties::onSlicingChanged(bool checked)
 {
-    if (d->view) {
+    if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Slicing");
     }
 }
 
 void medViewerToolBoxViewProperties::onMeasuringChanged(bool checked)
 {
-    if (d->view) {
+    if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Measuring");
     }
 }
@@ -1077,11 +1092,6 @@ void medViewerToolBoxViewProperties::onAnnotationsVisibilityChanged(bool visible
     }
 }
 
-
-
-
-
-
 void medViewerToolBoxViewProperties::on2DTriggered(dtkAbstractView* view)
 {
     if(view->property("Orientation")=="Axial" ||
@@ -1093,6 +1103,7 @@ void medViewerToolBoxViewProperties::on2DTriggered(dtkAbstractView* view)
         d->view3dToolBoxWidget->hide();
     }
 }
+
 void medViewerToolBoxViewProperties::on3DTriggered(dtkAbstractView* view)
 {
     if(view->property("Orientation")=="3D")
@@ -1122,6 +1133,7 @@ void medViewerToolBoxViewProperties::onVRModeChanged(QString mode)
         d->view->update();
     }
 }
+
 void medViewerToolBoxViewProperties::onLodChanged(int value)
 {
     if (d->view) {
@@ -1131,6 +1143,7 @@ void medViewerToolBoxViewProperties::onLodChanged(int value)
         d->view->update();
     }
 }
+
 void medViewerToolBoxViewProperties::onCroppingChanged(bool checked)
 {
     if (d->view) {
@@ -1138,5 +1151,29 @@ void medViewerToolBoxViewProperties::onCroppingChanged(bool checked)
         d->view->setProperty("Cropping", (checked ? "true" : "false"));
         d->view->blockSignals (false);
         d->view->update();
+    }
+}
+
+
+void  medViewerToolBoxViewProperties::setCurrentInteractionFromSettings()
+{
+    medSettingsManager * mnger = medSettingsManager::instance();
+    QString interaction = mnger->value("interactions","mouse",
+                                       "Windowing").toString();
+    if (interaction == "Zooming")
+    {
+        d->zoomingPushButton->setChecked(true);
+    }
+    else if (interaction == "Slicing")
+    {
+        d->slicingPushButton->setChecked(true);
+    }
+    else if (interaction == "Measuring")
+    {
+        d->measuringPushButton->setChecked(true);
+    }
+    else
+    {
+        d->windowingPushButton->setChecked(true);
     }
 }

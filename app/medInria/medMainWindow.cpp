@@ -54,7 +54,9 @@
 #include <medSystemSettingsWidget.h>
 #include <medStartupSettingsWidget.h>
 #include <medDatabaseSettingsWidget.h>
+#include <medInteractionSettingsWidget.h>
 #include <medSettingsEditor.h>
+#include <medEmptyDbWarning.h>
 
 #include "medViewerConfigurationVisualization.h"
 #include "medViewerConfigurationRegistration.h"
@@ -543,6 +545,28 @@ void medMainWindow::switchToViewerArea ( void )
     d->viewerArea->setup ( this->statusBar() );
 
     d->stack->setCurrentWidget ( d->viewerArea );
+
+    // Dialog window to recall users if database is empty
+    //but only if the warning is enabled in medSettings
+    bool showWarning = medSettingsManager::instance()->value(
+                "system",
+                "showEmptyDbWarning",
+                QVariant(true)).toBool();
+    if ( showWarning )
+    {
+        QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
+        QList<medDataIndex> patients = medDatabaseController::instance()->patients();
+
+        if( indexes.isEmpty() )
+            if( patients.isEmpty())
+            {
+                //            QMessageBox msgBox ( this );
+                //            msgBox.setIcon ( QMessageBox::Warning );
+                //            msgBox.setText(tr("The database is empty. Switch to the Browser workspace to import data"));
+                medEmptyDbWarning* msgBox = new medEmptyDbWarning(this);
+                msgBox->exec();
+            }
+    }
 }
 
 void medMainWindow::onShowConfiguration ( QString config )
@@ -599,7 +623,8 @@ void medMainWindow::onQuit ( void )
 
 void medMainWindow::onSaveModified( void )
 {
-    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
+    QList<medDataIndex> indexes =
+            medDatabaseNonPersistentController::instance()->availableItems();
 
     if(!indexes.isEmpty())
     {
@@ -611,7 +636,7 @@ void medMainWindow::onSaveModified( void )
 void medMainWindow::onEditSettings()
 {
     QDialog * dialog = new QDialog(this);
-    dialog->setWindowTitle("medInria");
+    dialog->setWindowTitle("medInria Settings");
     dialog->setMinimumHeight(400);
     dialog->setMinimumWidth(500);
     dialog->setMaximumHeight(400);
@@ -775,4 +800,5 @@ void medMainWindow::registerToFactories()
     medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
     medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);
     medSettingsWidgetFactory::instance()->registerSettingsWidget("Database", createDatabaseSettingsWidget);
+    medSettingsWidgetFactory::instance()->registerSettingsWidget("Interaction", createInteractionSettingsWidget);
 }

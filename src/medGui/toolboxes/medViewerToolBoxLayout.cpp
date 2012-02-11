@@ -89,12 +89,15 @@ medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(par
     d->layoutToolBoxTab->addTab(new QWidget, "Single");
     d->layoutToolBoxTab->addTab(new QWidget, "Multi");
     d->layoutToolBoxTab->addTab(customPage, "Custom");
+	
+	d->layoutToolBoxTab->setTabToolTip(0,tr("Display data in the same view (use overlay)"));
+	d->layoutToolBoxTab->setTabToolTip(1,tr("Display data in multiple views (one data = one view)"));
+	d->layoutToolBoxTab->setTabToolTip(2,tr("Use a custom layout for multiple views"));
 
     d->layoutToolBoxTab->setCurrentIndex(1);
 
     this->setTitle("Layout");
     this->setTabWidget(d->layoutToolBoxTab);
-	this->setToolTip(tr("Change layout properties (e.g. single or split screen)"));
 
     connect(d->layoutToolBoxTab, SIGNAL(currentChanged(int)), this, SLOT(modeChanged(int)));
     connect(layoutChooser, SIGNAL(selected(int,int)), this, SIGNAL(split(int,int)));

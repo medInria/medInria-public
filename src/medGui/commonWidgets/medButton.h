@@ -4,7 +4,6 @@
 #include "medGuiExport.h"
 
 #include <QtGui/QWidget>
-#include "medGuiExport.h"
 
 class medButtonPrivate;
 

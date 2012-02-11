@@ -43,11 +43,15 @@ medDatabaseSearchPanel::medDatabaseSearchPanel( QWidget *parent /*= 0*/ ) : medT
     d->page = new QWidget(this);
 
     d->columnBox = new QComboBox();
+	d->columnBox->setToolTip(tr("Search criteria"));
 
     d->addButton = new QPushButton("+");
     d->addButton->setFocusPolicy(Qt::NoFocus);
+	d->addButton->setToolTip(tr("Add a search criterion"));
+	
     d->removeButton = new QPushButton("-");
     d->removeButton->setFocusPolicy(Qt::NoFocus);
+	d->removeButton->setToolTip(tr("Remove a search criterion"));
 
     QHBoxLayout *vlayout = new QHBoxLayout();
     vlayout->addWidget(d->columnBox);
