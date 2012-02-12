@@ -34,9 +34,8 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
             }
         if (!found)
             return false;
-        QString uuid = QUuid::createUuid().toString().replace(
-                    "{","").replace("}","");
-        tmpdir = QDir::tempPath()+"/"+"medcds"+uuid;
+        QString uuid = QUuid::createUuid().toString().replace("{","").replace("}","");
+        tmpdir = QDir::tempPath()+"/"+"medcds"+uuid+"/";
         QDir::temp().mkdir("medcds"+uuid);
         descname = tmpdir+dname;
         zip.extractAll(tmpdir);
