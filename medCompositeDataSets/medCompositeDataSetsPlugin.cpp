@@ -63,7 +63,7 @@ QString medCompositeDataSetsPlugin::name() const {
 //  Description of the plugin.
 
 QString medCompositeDataSetsPlugin::description() const {
-    return "Manager for composite data types";
+    return tr("Manager for composite data types");
 }
 
 //  Tags to appear in the tag cloud.
