@@ -24,17 +24,13 @@ bool medCompositeDataSetsWriter::write(const QString& path) {
 
     const QString& zipdirn = zip_dirname(path);
     QDir systemTmpDir = QDir::temp();
-    QString uuid = QUuid::createUuid().toString().replace(
-                "{","").replace("}","");
+    QString uuid = QUuid::createUuid().toString().replace("{","").replace("}","");
     const QString& tmpDirn = "medcds"+uuid;
-    const QString& tmpDirPath =QDir::cleanPath(
-            systemTmpDir.absolutePath()+"/"+tmpDirn);
+    const QString& tmpDirPath =QDir::cleanPath(systemTmpDir.absolutePath()+"/"+tmpDirn);
     const QString& zipDirPath = tmpDirPath+"/"+zipdirn;
 
-    if (!systemTmpDir.mkpath(zipDirPath))
-    {
-        qWarning() << tr("medCompositeDataSets: cannot create directory ")
-                      << zipDirPath;
+    if (!systemTmpDir.mkpath(zipDirPath)) {
+        qWarning() << tr("medCompositeDataSets: cannot create directory ") << zipDirPath;
         return error(tmpDirPath);
     }
 
