@@ -135,7 +135,7 @@ QWidget* medFileSystemDataSource::sourceSelectorWidget()
 
 QString medFileSystemDataSource::tabName()
 {
-    return tr("File");
+    return tr("File system");
 }
 
 QList<medToolBox*> medFileSystemDataSource::getToolboxes()
