@@ -15,11 +15,12 @@ class medDiffusionSequenceCompositeDataToolBox;
 class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medDiffusionSequenceCompositeData: public MedInria::medCompositeDataSetsBase {
 
     typedef itk::GradientFileReader            GradientReaderType;
-    typedef GradientReaderType::VectorType     GradientType;
-    typedef GradientReaderType::VectorListType GradientListType;
     typedef QVector<dtkAbstractData*>          Volumes;
 
 public:
+
+    typedef GradientReaderType::VectorType     GradientType;
+    typedef GradientReaderType::VectorListType GradientListType;
 
     friend class medDiffusionSequenceCompositeDataToolBox;
 
@@ -53,6 +54,9 @@ public:
 
     //  Methods specific to this type.
 
+    static dtkAbstractData* readVolume(const QString& path);
+
+    void readVolumes(const QStringList& paths);
     void readVolumes(const QString& dirname,const QStringList& paths);
     void writeVolumes(const QString& dirname,const QStringList& paths) const;
 
@@ -69,6 +73,8 @@ private:
     Volumes          images;
     GradientListType gradients;
     unsigned         meta_data_index;
+
+    static dtkAbstractData* create() { return new medDiffusionSequenceCompositeData; }
 
     static const medDiffusionSequenceCompositeData proto;
 
