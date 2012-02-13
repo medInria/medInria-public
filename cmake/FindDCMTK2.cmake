@@ -50,6 +50,16 @@ set(dcmtk_LIBRARY_NAMES
   ofstd oflog dcmdata dcmimgle dcmjpeg ijg8 ijg12 ijg16 dcmqrdb dcmnet dcmjpls charls
   )
 
+# Attempt to use the source dir from CMakeCache in DCMTK_DIR if present
+if (NOT DCMTK_SOURCE_DIR)
+  if (EXISTS ${DCMTK_DIR}/CMakeCache.txt)
+    load_cache(${DCMTK_DIR} READ_WITH_PREFIX findDcmtk2_ DCMTK_SOURCE_DIR)
+    if (findDcmtk2_DCMTK_SOURCE_DIR)
+      set(DCMTK_SOURCE_DIR "${findDcmtk2_DCMTK_SOURCE_DIR}")
+    endif()
+  endif()
+endif()
+
 #Loop over include dirs, find them.
 list(LENGTH dcmtk_INCLUDE_DIR_NAMES_FILES dcmtk_INCLUDE_DIR_NAMES_FILES_LEN)
 
