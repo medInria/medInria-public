@@ -111,16 +111,22 @@ dtkAbstractData* medDiffusionSequenceCompositeData::readVolume(const QString& pa
     return volume;
 }
 
-void medDiffusionSequenceCompositeData::readVolumes(const QStringList& paths) {
+void medDiffusionSequenceCompositeData::readVolumes(const QStringList& paths,const bool add_to_image_list) {
 
     QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
       
     for (int i=0;i<paths.size();++i) {
         const QString& filepath = paths[i];
         dtkAbstractData* volume = readVolume(filepath);
+
         images.push_back(volume);
 
-        //  To be changed (and the push_back above might be moved after the checks).
+        if (add_to_image_list) {
+            const QFileInfo& info = QFileInfo(filepath);
+            image_list << info.fileName();
+        }
+
+        //  To be changed (and the push_back(s) above might be moved after the checks).
 
         QString identifier = volume->identifier();
         if (!identifier.contains("Image")) {
@@ -140,7 +146,7 @@ void medDiffusionSequenceCompositeData::readVolumes(const QStringList& paths) {
     for (medMetaDataKeys::Key::Registery::const_iterator i=medMetaDataKeys::Key::all().begin();i!=medMetaDataKeys::Key::all().end();++i)
         if ((*i)->is_set_in(images[meta_data_index])) {
             (*i)->set(this,(*i)->getValues(images[meta_data_index]));
-            qDebug() << "MetaData: " << (*i)->key() << (*i)->getValues(images[meta_data_index]);
+            //qDebug() << "MetaData: " << (*i)->key() << (*i)->getValues(images[meta_data_index]);
         }
 }
 
@@ -154,22 +160,9 @@ void medDiffusionSequenceCompositeData::readVolumes(const QString& dirname,const
 }
 
 void medDiffusionSequenceCompositeData::writeVolumes(const QString& dirname,const QStringList& paths) const {
-
-    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
-      
     for (int i=0;i<paths.size();++i) {
-        QString filepath = dirname+"/"+paths[i];
-        dtkAbstractDataWriter* writer = NULL;
-        for (int j=0;j<writers.size();++j) {
-            writer = dtkAbstractDataFactory::instance()->writer(writers[j]);
-            if (writer->canWrite(filepath))
-                break;
-            else
-                delete writer;
-        }
-        writer->setData(images[i]);
-        writer->write(filepath);
-        delete writer;
+        const QString& filepath = dirname+"/"+paths[i];
+        medInria::DataReaderWriter::write(filepath,images[i]);
     }  
 }
 

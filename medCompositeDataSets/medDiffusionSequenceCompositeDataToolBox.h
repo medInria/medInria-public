@@ -23,7 +23,7 @@ public slots:
 
     bool import();
     void reset();
-    void cancel();
+    void load();
 
     void onItemClicked(QTableWidgetItem*);
     void onContextTreeMenu(QPoint);
@@ -32,6 +32,8 @@ public slots:
 private:
 
     DiffusionSequenceWidget table;
+
+    bool import(const bool persistent);
 
     static medToolBoxCompositeDataSetImporterCustom* create(QWidget* parent);
 };

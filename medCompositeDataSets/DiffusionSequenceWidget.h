@@ -1,13 +1,7 @@
 #ifndef DIFFUSIONSEQUENCEWIDGET_H
 #define DIFFUSIONSEQUENCEWIDGET_H
 
-#include <QUrl>
-#include <QString>
-#include <QFileInfo>
-#include <QTableWidget>
-#include <QDragEnterEvent>
-#include <QDragMoveEvent>
-#include <QDragLeaveEvent>
+#include <QtGui>
 #include <DiffusionSequenceDelegate.h>
 
 class DiffusionSequenceWidget: public QTableWidget {
@@ -21,10 +15,11 @@ public:
         clear();
         setAcceptDrops(true);
         setColumnCount(2);
-        setColumnWidth(0,125);
-        setColumnWidth(1,125);
+        setColumnWidth(0,120);
+        //setColumnWidth(1,120);
         setShowGrid(false);
         setSelectionMode(QAbstractItemView::NoSelection);
+        horizontalHeader()->setStretchLastSection(true);
         
         setItemDelegate(new Vector3DDelegate(this));
 
@@ -63,9 +58,26 @@ public:
         }
     }
 
+    void contextMenuEvent(QContextMenuEvent* event) {
+        QMenu menu(this);
+        menu.addAction(tr("Remove"),this,SLOT(onRemoveClicked()));
+        menu.exec(event->globalPos());
+    }
+
 signals:
 
     void newItem(const QString& item,bool& valid);
+
+public slots:
+
+    void onRemoveClicked() {
+        if (!selectedIndexes().count())
+            return;
+        const QModelIndex& index = selectedIndexes().first();
+        if (!index.isValid())
+            return;
+        removeRow(index.row());
+    }
 };
 
 #endif  //  ! DIFFUSIONSEQUENCEWIDGET_H

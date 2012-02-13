@@ -56,7 +56,7 @@ public:
 
     static dtkAbstractData* readVolume(const QString& path);
 
-    void readVolumes(const QStringList& paths);
+    void readVolumes(const QStringList& paths,const bool add_to_image_list=false);
     void readVolumes(const QString& dirname,const QStringList& paths);
     void writeVolumes(const QString& dirname,const QStringList& paths) const;
 

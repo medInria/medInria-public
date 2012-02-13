@@ -12,6 +12,8 @@
 #include <medCore/medAbstractView.h>
 #include <medCore/medRunnableProcess.h>
 #include <medCore/medJobManager.h>
+#include <medCore/medDataReaderWriter.h>
+#include <medDatabaseController.h>
 
 #include <medDropSite.h>
 #include <medToolBoxFactory.h>
@@ -67,24 +69,23 @@ void medDiffusionSequenceCompositeDataToolBox::onNewItem(const QString& item,boo
     dtkAbstractData* volume = medDiffusionSequenceCompositeData::readVolume(item);
     if (volume!=0)
         valid = true;
-    qDebug() << item << valid;
-    //itemList.push_back(item);
 }
 
 void medDiffusionSequenceCompositeDataToolBox::onItemClicked(QTableWidgetItem* item) { 
-    qDebug() << "Clicked" << item->row() << item->column();
-    table.editItem(item);
+    if (item->column()==1)
+        table.editItem(item);
 }
 
 void medDiffusionSequenceCompositeDataToolBox::onContextTreeMenu(QPoint) {  
 }
 
 void medDiffusionSequenceCompositeDataToolBox::reset()  { table.clear(); }
-void medDiffusionSequenceCompositeDataToolBox::cancel() { this->reset(); }
+void medDiffusionSequenceCompositeDataToolBox::load()   { import(false); }
+bool medDiffusionSequenceCompositeDataToolBox::import() { return import(true);  }
 
 //  Import the data through the writer.
 
-bool medDiffusionSequenceCompositeDataToolBox::import() {
+bool medDiffusionSequenceCompositeDataToolBox::import(const bool persistent) {
 
     QStringList                                         vol_list;
     medDiffusionSequenceCompositeData::GradientListType grad_list;
@@ -97,12 +98,18 @@ bool medDiffusionSequenceCompositeDataToolBox::import() {
         medDiffusionSequenceCompositeData::GradientType grad;
         for (int i=0;i<3;++i)
             grad[i] = values.at(i).simplified().toDouble();
+        grad_list.push_back(grad);
     }
 
     medDiffusionSequenceCompositeData* cds = new medDiffusionSequenceCompositeData();
-    cds->readVolumes(vol_list);
+    cds->readVolumes(vol_list,true);
     cds->setGradientList(grad_list);
 
-    //return this->writeInDataBase();
+    const QString& uuid = QUuid::createUuid().toString().replace("{","").replace("}","")+".cds";
+    medInria::DataReaderWriter::write(uuid,cds);
+
+    medDatabaseController::instance()->import(uuid,!persistent);
+    reset();
+
     return true;
 }
