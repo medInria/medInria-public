@@ -80,6 +80,8 @@ public:
     */
     QStringList handlers(const QString& category);
 
+    QStringList loadErrors();
+
 public slots:
 
     /**
@@ -98,12 +100,16 @@ protected:
      */
      medPluginManager(void);
 
+
     /**
      * @brief Hidden destructor because of the singleton.
      *
      * @param void
     */
     ~medPluginManager(void);
+
+protected slots:
+     void onLoadError(const QString& errorMessage);
 
 private:
     static medPluginManager *s_instance; /**< TODO */

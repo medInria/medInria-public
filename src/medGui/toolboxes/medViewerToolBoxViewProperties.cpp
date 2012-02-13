@@ -143,7 +143,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->scalarBarVisibilityCheckBox->setToolTip(tr("Show scalar bar"));
     d->axisVisibilityCheckBox = new QCheckBox(this);
     d->axisVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
-    d->axisVisibilityCheckBox->setToolTip(tr("Show axis"));
+    d->axisVisibilityCheckBox->setToolTip(tr("Show axes"));
     d->rulerVisibilityCheckBox = new QCheckBox(this);
     d->rulerVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
     d->annotationsVisibilityCheckBox = new QCheckBox(this);
@@ -154,7 +154,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->propView->setLayout(propLayout);
     propLayout->setAlignment(Qt::AlignJustify);
     d->scalarBarVisibilityCheckBox->setText(tr("Scalar Bar"));
-    d->axisVisibilityCheckBox->setText(tr("Axis"));
+    d->axisVisibilityCheckBox->setText(tr("Axes"));
     d->rulerVisibilityCheckBox->setText(tr("Ruler"));
     d->rulerVisibilityCheckBox->setToolTip(tr("Show ruler"));
     d->annotationsVisibilityCheckBox->setText("Annotations");
@@ -175,10 +175,14 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     //propertiesViewLayout->addRow (d->scalarBarVisibilityCheckBox);
     propertiesViewLayout->setFormAlignment(Qt::AlignHCenter);
 
-    connect(d->windowingPushButton,           SIGNAL(toggled(bool)),                this, SLOT(onWindowingChanged(bool)));
-    connect(d->zoomingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(onZoomingChanged(bool)));
-    connect(d->slicingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(onSlicingChanged(bool)));
-    connect(d->measuringPushButton,           SIGNAL(toggled(bool)),                this, SLOT(onMeasuringChanged(bool)));
+    connect(d->windowingPushButton, SIGNAL(toggled(bool)),
+            this, SLOT(onWindowingChanged(bool)));
+    connect(d->zoomingPushButton, SIGNAL(toggled(bool)),
+            this, SLOT(onZoomingChanged(bool)));
+    connect(d->slicingPushButton, SIGNAL(toggled(bool)),
+            this, SLOT(onSlicingChanged(bool)));
+    connect(d->measuringPushButton, SIGNAL(toggled(bool)),
+            this, SLOT(onMeasuringChanged(bool)));
 
     d->view3dModeComboBox = new QComboBox(this);
     d->view3dModeComboBox->setFocusPolicy(Qt::NoFocus);

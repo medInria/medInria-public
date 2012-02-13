@@ -28,6 +28,7 @@ class medPluginManagerPrivate
 {
 public:
     QHash<QString, QStringList> handlers;
+    QStringList loadErrors;
 };
 
 medPluginManager *medPluginManager::instance(void)
@@ -115,6 +116,7 @@ void medPluginManager::onPluginLoaded(const QString& name)
 medPluginManager::medPluginManager(void) : dtkPluginManager(), d(new medPluginManagerPrivate)
 {
     connect(this, SIGNAL(loaded(const QString&)), this, SLOT(onPluginLoaded(const QString&)));
+    connect(this, SIGNAL(loadError(QString)), this, SLOT(onLoadError(QString)));
 }
 
 medPluginManager::~medPluginManager(void)
@@ -125,3 +127,16 @@ medPluginManager::~medPluginManager(void)
 }
 
 medPluginManager *medPluginManager::s_instance = NULL;
+
+
+void medPluginManager::onLoadError(const QString &errorMessage)
+{
+//    qDebug() << "add error message to pluginManager:";
+//    qDebug() << "\t" << errorMessage;
+    d->loadErrors << errorMessage;
+}
+
+QStringList medPluginManager::loadErrors()
+{
+    return d->loadErrors;
+}

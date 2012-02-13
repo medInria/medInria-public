@@ -111,8 +111,17 @@ medDatabaseView::~medDatabaseView(void)
 
 int medDatabaseView::sizeHintForColumn(int column) const
 {
-    if (column<3)
+    if (column<2)
         return 150;
+
+    if (column == 2) // series description/filename
+        return 250;
+
+    if (column == 3) // slices count
+        return 70;
+
+    if (column == 5) // date of birth
+        return 80;
 
     return 50;
 }
