@@ -43,6 +43,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medSaveModifiedDialog.h
   medSplashScreen.h
   medEmptyDbWarning.h
+  medPluginWidget.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -71,6 +72,7 @@ set(${PROJECT_NAME}_SOURCES
   medSaveModifiedDialog.cpp
   medSplashScreen.cpp
   medEmptyDbWarning.cpp
+  medPluginWidget.cpp
   )
 
 set(${PROJECT_NAME}_RESOURCES medInria.qrc)
