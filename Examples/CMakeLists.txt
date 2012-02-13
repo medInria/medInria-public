@@ -6,6 +6,7 @@ TensorManager
 CompareImageManager
 DataManager
 PolydataToFiberXML
+RegisterDataSets
 )
 
 
