@@ -26,6 +26,7 @@ public:
     QStringList lutList;
     QStringList attributeList;
     QStringList presetList;
+    QMap<QString, QString> presetToLut;
     QStringList renderingList;
     int currentLayer;
     QWidget * twoLayersWidget;
@@ -79,6 +80,22 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
         << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body";
     d->presetList << "None" << "VR Muscles&Bones" << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
         << "Standard" << "Soft" << "Soft on White" << "Soft on Blue" << "Red on White" << "Glossy" ;
+
+    // a preset is a predefined choice of three things: LUT, window width and window level
+    // hence when the user selects a preset we also change the LUT
+    d->presetToLut.insert("None", "Black & White");
+    d->presetToLut.insert("VR Muscles&Bones", "Muscles & Bones");
+    d->presetToLut.insert("Vascular I", "Stern");
+    d->presetToLut.insert("Vascular II", "Red Vessels");
+    d->presetToLut.insert("Vascular III", "Red Vessels");
+    d->presetToLut.insert("Vascular IV", "Red Vessels");
+    d->presetToLut.insert("Standard", "Muscles & Bones");
+    d->presetToLut.insert("Soft", "Bones");
+    d->presetToLut.insert("Soft on White", "Muscles & Bones");
+    d->presetToLut.insert("Soft on Blue", "Muscles & Bones");
+    d->presetToLut.insert("Red on White", "Red Vessels");
+    d->presetToLut.insert("Glossy", "Bones");
+
     d->renderingList << "wireframe"<<"surface"<<"points";
     d->attributeList << "Solid";
     //lutBox = new QComboBox();
@@ -865,6 +882,7 @@ void medViewerToolBoxViewProperties::onLUTChanged(int index)
 {
     if (!d->view)
         return;
+
     if(!d->isMesh)
     {
         d->view->setCurrentLayer(d->currentLayer);
@@ -875,18 +893,62 @@ void medViewerToolBoxViewProperties::onLUTChanged(int index)
         d->interactors[d->currentInteractor]->setLayer( d->view->currentMeshLayer());
         d->interactors[d->currentInteractor]->setProperty("LUTMode", d->lutList.at(index));
     }
+
+    // as the LUT changed we need to change the preset to None (just the preset combobox)
+    // also we won't change the preset back to None if the ww/wl is changed (by design)
+    QString currentLayerItemString = QString::number(d->currentLayer);
+    QTreeWidgetItem* layerItem = d->propertiesTree->findItems(currentLayerItemString, Qt::MatchExactly | Qt::MatchWrap, 0)[0]; // we take the first one as there's only one
+    QTreeWidgetItem* presetItem = layerItem->child(3); // the preset item is the fourth one
+    QComboBox* presetComboBox = dynamic_cast<QComboBox*>(d->propertiesTree->itemWidget(presetItem, 2));
+
+    // 0 == None
+    if (presetComboBox->currentIndex() != 0)
+    {
+        presetComboBox->blockSignals(true);
+        presetComboBox->setCurrentIndex(0);
+        presetComboBox->blockSignals(false);
+    }
+
     d->view->update();
 }
 
 void medViewerToolBoxViewProperties::onPresetChanged(int index)
 {
+    //a "Preset" is a prepared selection of 3 values: LUT, window width and window level
+
     if (!d->view)
         return;
-    if(d->isMesh)
-        return;
 
-    d->view->setCurrentLayer(d->currentLayer);
-    d->view->setProperty("Preset", d->presetList.at(index));
+    // anyone knows why this 'if clause' is here? I mean... a preset sets 3 values: LUT + ww/wl
+    // and there IS code for meshes in onLUTchanged (apparently the interactors need to be notified)
+    // but if the LUT is set through this function, they are not
+//    if(d->isMesh)
+//        return;
+
+    // find the LUT combo box to manually change the new value
+    QString currentLayerItemString = QString::number(d->currentLayer);
+    QTreeWidgetItem* layerItem = d->propertiesTree->findItems(currentLayerItemString, Qt::MatchExactly | Qt::MatchWrap, 0)[0]; // we take the first one as there's only one
+    QTreeWidgetItem* lutItem = layerItem->child(2); // the LUT item is the third one
+    QComboBox* lutComboBox = dynamic_cast<QComboBox*>(d->propertiesTree->itemWidget(lutItem, 2));
+    QString lutStringToSet = d->presetToLut[d->presetList.at(index)];
+    int lutValueToSet = d->lutList.indexOf(lutStringToSet, 0);
+
+    lutComboBox->blockSignals(true);
+    lutComboBox->setCurrentIndex(lutValueToSet);
+    lutComboBox->blockSignals(false);
+
+    if(!d->isMesh)
+    {
+        d->view->setCurrentLayer(d->currentLayer);
+        // the setProperty/LUT is called in the v3dView within setProperty/Preset
+        d->view->setProperty("Preset", d->presetList.at(index));
+    }
+    else
+    {
+        d->interactors[d->currentInteractor]->setLayer( d->view->currentMeshLayer());
+        d->interactors[d->currentInteractor]->setProperty("LUTMode", lutStringToSet);
+    }
+
     d->view->update();
 }
 
