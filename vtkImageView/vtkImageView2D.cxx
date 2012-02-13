@@ -1065,11 +1065,15 @@ void vtkImageView2D::SetAnnotationsFromOrientation(void)
     }
       break;
   }
-  
-  this->GetCornerAnnotation()->SetText (2, osNW.str().c_str());
-  this->GetCornerAnnotation()->SetText (1, osSE.str().c_str());
-  this->GetCornerAnnotation()->SetText (0, osSW.str().c_str());
-  this->GetCornerAnnotation()->SetText (3, osNE.str().c_str());
+
+  if (osNW.str().size())
+    this->GetCornerAnnotation()->SetText (2, osNW.str().c_str());
+  if (osSE.str().size())
+    this->GetCornerAnnotation()->SetText (1, osSE.str().c_str());
+  if (osSW.str().size())
+    this->GetCornerAnnotation()->SetText (0, osSW.str().c_str());
+  if (osNE.str().size())
+    this->GetCornerAnnotation()->SetText (3, osNE.str().c_str());
 }
 
 //----------------------------------------------------------------------------
