@@ -1542,7 +1542,7 @@ medPluginWidget QTreeWidget {
 
     border: 0px;
     padding: 0px;
-    font-size: 10px;
+    font-size: 11px;
 
     color: #b2b8b2;
 
