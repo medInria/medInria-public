@@ -51,14 +51,20 @@ public:
     QList<QString> lutList;
     int currentLayer;
     bool isMeshOnly;
+    double ImageBounds[6];
+    bool isImageOutBounded;
 };
 
 v3dViewMeshInteractor::v3dViewMeshInteractor(): medMeshAbstractViewInteractor(), d(new v3dViewMeshInteractorPrivate)
 {
+    for (int i=0; i<6; i++)
+        d->ImageBounds[i]=0;
     //d->data = NULL;
     d->view = NULL;
     d->currentLayer = 0;
     d->isMeshOnly = false;
+    d->isImageOutBounded = false;
+
     // addProperty here
     this->addProperty("Visibility", QStringList() << "true" << "false");
     this->addProperty("ShowEdges", QStringList() << "true" << "false");
@@ -102,10 +108,10 @@ bool v3dViewMeshInteractor::registered(void)
 void v3dViewMeshInteractor::setData(dtkAbstractData *data)
 {
 
-    if (d->dataList.contains (data))
-    {
-        return;
-    }
+//    if (d->dataList.contains (data))
+//    {
+//        return;
+//    }
 
     if(data->identifier() == "vtkDataMesh4D")
     {
@@ -126,6 +132,9 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         else
             d->isMeshOnly = false;
 
+
+
+
         d->dataList.append(data);
         d->opacityList.append(1.0);
         d->visibilityList.append(true);
@@ -137,21 +146,59 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         updatePipeline(d->dataList.size()-1);
     }
     else if (vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(data->data()))) {
-        if(!d->view->dataInList(0))
+
+        double limites[6];
+        pointSet->GetBounds(limites);
+        qDebug() << "bounds " << limites;
+
+        if(!d->view->dataInList(0) )
         {
+            for (int i=0; i<6; i++)
+            {
+                d->ImageBounds[i]=limites[i];
+            }
             d->isMeshOnly = true;
+            d->isImageOutBounded=true;
+        }
+        else
+        {
+            for (int i=0; i<6; i=i+2)
+            {
+                if (limites[i]<d->ImageBounds[i])
+                {
+                    d->ImageBounds[i]=limites[i];
+                    d->isImageOutBounded=true;
+                }
+            }
+            for (int i=1; i<6; i=i+2)
+            {
+                if (limites[i]>d->ImageBounds[i])
+                {
+                    d->ImageBounds[i]=limites[i];
+                    d->isImageOutBounded=true;
+                }
+            }
+        }
+
+        if (d->isImageOutBounded && d->isMeshOnly)
+        {
             vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
             imagegenerator->SetInput (pointSet);
-            vtkImageData * image = imagegenerator->GetOutput();
             unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
             imagegenerator->SetOutputImageSize(imSize);
+            imagegenerator->SetOutputImageBounds(d->ImageBounds);
+            vtkImageData * image = imagegenerator->GetOutput();
+            int layer = 0;
+            layer = d->view->view2d()->GetNumberOfLayers();
+
             d->view->view2d()->SetInput(image, 0);
             //d->view->view3d()->SetInput(image, 0);
             vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
             actor->SetOpacity(0.0);
+            layer = d->view->view2d()->GetNumberOfLayers();
+            d->view->view2d()->GetInputBounds(limites);//d->view->view2d()->RemoveLayer();
         }
-        else
-            d->isMeshOnly = false;
+
 
         Q_UNUSED( pointSet );
         d->dataList.append(data);
@@ -454,7 +501,12 @@ dtkAbstractViewInteractor *createV3dViewMeshInteractor(void)
 
 void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
 {
+    int layer = 0;double limites[6];
+    layer = d->view->view2d()->GetNumberOfLayers();
+    layer = d->view->view3d()->GetNumberOfLayers();
+
     if (d->view && !d->dataList.isEmpty() ) {
+
         if(vtkPointSet *pointset = dynamic_cast<vtkPointSet*>((vtkObject *)(d->dataList[meshLayer]->data()))) {
             d->actor2dList.append(d->view->view2d ()->AddDataSet(pointset));
             d->actor3dList.append(d->view->view3d ()->AddDataSet(pointset));
@@ -473,5 +525,43 @@ void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
                 d->actor3dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
             }
         }
+
+        layer = d->view->view2d()->GetNumberOfLayers();
+        layer = d->view->view3d()->GetNumberOfLayers();
+
+        d->view->view2d()->GetInputBounds(limites);//d->view->view2d()->RemoveLayer();
+//        d->view->view3d()->GetInputBounds(limites);
+
     }
 }
+
+//void v3dViewMeshInteractor::imageFromBounds (vtkSmartPointer<vtkImageData> imageBounds, double bounds[], double origin[])
+//{      unsigned int OutputImageSize[3];
+
+//    imageBounds->SetOrigin(origin);
+//    imageBounds->SetDimensions(100,100,100);
+//    imageBounds->SetNumberOfScalarComponents(1);
+
+//     for (unsigned int i=0; i<3; i++)
+//      ImageSpacing[i] = (bounds[2*i+1] - bounds[2*i])/(double)ImageSize[i];
+
+
+
+//    // Fill every entry of the image data with "2.0"
+//    int* dims = imageBounds->GetDimensions();
+
+//    for (int z=0; z<dims[2]; z++)
+//    {
+//        for (int y=0; y<dims[1]; y++)
+//        {
+//            for (int x=0; x<dims[0]; x++)
+//            {
+//                imageBounds->SetScalarComponentFromDouble(x,y,z,0,0.0);
+//            }
+//        }
+//    }
+//}
+
+
+
+
