@@ -1493,14 +1493,14 @@ medViewContainer [isEmpty="false"][clicked="true"] {
  */
 
 QPushButton#actionToolBoxButton {
-    width: 64px;
-    height: 48px;
-    font-size: 13px;
+    width: 45px;
+    height: 30px;
+    font-size: 10px;
 }
 
 QLabel#actionToolBoxLabel {
     height: 52px;
-    font-size: 14px;
+    font-size: 13px;
 	text-align: center;
     vertical-align: middle;
 }

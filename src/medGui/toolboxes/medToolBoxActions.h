@@ -69,6 +69,9 @@ protected:
     void updateButtons(QString item);
 
 private:
+
+    void initializeItemToActionsMap();
+
     medToolBoxActionsPrivate* d;
 };
 

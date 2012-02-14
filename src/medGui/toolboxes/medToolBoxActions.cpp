@@ -4,12 +4,14 @@
 
 #include <medDataManager.h>
 #include <medAbstractDbController.h>
+#include <medToolBoxBody.h>
 
 class medToolBoxActionsPrivate
 {
 public:
 
-    QWidget *page;
+    QWidget* buttonsWidget;
+    QWidget* noButtonsSelectedWidget;
 
     QPushButton* removeBt;
     QPushButton* viewBt;
@@ -19,51 +21,30 @@ public:
     QPushButton* loadBt;
     QPushButton* indexBt;
     QPushButton* saveBt;
-    QLabel* placeholder;
 
-    QList<QPushButton*> btList;
+    QList<QPushButton*> buttonsList;
     QMultiMap<QString, QString> itemToActions;
 };
 
 medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(parent), d(new medToolBoxActionsPrivate)
 {
-    d->page = new QWidget(this);
+    /**
+     * This toolbox will show possible action buttons depending on the
+     * items that is currently selected in the file system or db browser.
+     *
+     * Which actions are appropriate to which item is specified in the itemToActions map.
+     *
+     * It consists of two widgets: one containing the buttons and another one
+     * with an explanatory label telling the user that an item must be selected.
+     * Both widgets' visibilities are set depending on the selection.
+     */
 
-    /* Begin Initialization of itemsToActions map */
+    d->buttonsWidget = new QWidget(this);
+    d->noButtonsSelectedWidget = new QWidget(this);
 
-    d->itemToActions = *(new QMultiMap<QString, QString>());
+    initializeItemToActionsMap();
 
-    d->itemToActions.insert("Patient", "Remove");
-
-    d->itemToActions.insert("Unsaved Patient", "Remove");
-    d->itemToActions.insert("Unsaved Patient", "Save");
-
-    d->itemToActions.insert("Series", "View");
-    d->itemToActions.insert("Series", "Export");
-    d->itemToActions.insert("Series", "Remove");
-
-    d->itemToActions.insert("Unsaved Series", "Remove");
-    d->itemToActions.insert("Unsaved Series", "Save");
-    d->itemToActions.insert("Unsaved Series", "View");
-    d->itemToActions.insert("Unsaved Series", "Export");
-
-    d->itemToActions.insert("Folders", "Bookmark");
-    d->itemToActions.insert("Folders", "Import");
-    d->itemToActions.insert("Folders", "Index");
-    d->itemToActions.insert("Folders", "Load");
-    d->itemToActions.insert("Folders", "View");
-
-    d->itemToActions.insert("Files", "Import");
-    d->itemToActions.insert("Files", "Index");
-    d->itemToActions.insert("Files", "Load");
-    d->itemToActions.insert("Files", "View");
-
-    d->itemToActions.insert("Files & Folders", "Import");
-    d->itemToActions.insert("Files & Folders", "Index");
-    d->itemToActions.insert("Files & Folders", "Load");
-    d->itemToActions.insert("Files & Folders", "View");
-
-    /* End Initialization of itemsToActions map */
+    /* Begin create buttons */
 
     d->removeBt = new QPushButton(tr("Remove"));
     d->removeBt->setAccessibleName("Remove");
@@ -90,32 +71,39 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
     d->saveBt->setAccessibleName("Save");
     d->saveBt->setToolTip(tr("Save selected item into the database."));
 
-    d->btList = *(new QList<QPushButton*>());
-    d->btList << d->removeBt << d->viewBt << d->exportBt << d->bookmarkBt << d->importBt << d->loadBt << d->indexBt << d->saveBt;
+    /* End create buttons */
 
-    foreach(QPushButton* bt, d->btList)
+    // the order of the buttons in this list determines the order used to place them in the grid layout
+    d->buttonsList << d->viewBt << d->loadBt << d->importBt << d->indexBt;
+    d->buttonsList << d->removeBt << d->exportBt << d->saveBt << d->bookmarkBt;
+
+    int COLUMNS = 4; // we will use 2 rows of 4 buttons each
+    int i = 0;
+    QGridLayout *gridLayout = new QGridLayout();
+    foreach(QPushButton* bt, d->buttonsList)
     {
-        bt->setVisible(false);
         bt->setObjectName("actionToolBoxButton"); // set for style sheet medInria.qss
+
+        // this widget is required to keep the space even if the button is invisible
+        QWidget* placeHolder = new QWidget();
+        placeHolder->setFixedHeight(38);
+        placeHolder->setFixedWidth(58);
+        bt->setParent(placeHolder);
+        gridLayout->addWidget(placeHolder, i / COLUMNS, i % COLUMNS, Qt::AlignCenter);
+        i++;
     }
 
-    d->placeholder = new QLabel(tr("Select an item to see possible actions."));
-    d->placeholder->setObjectName("actionToolBoxLabel");
+    d->buttonsWidget->setLayout(gridLayout);
+    this->addWidget(d->buttonsWidget);
+    d->buttonsWidget->setVisible(false);
 
-    QGridLayout *glayout = new QGridLayout();
-    glayout->addWidget(d->removeBt, 0, 0, Qt::AlignCenter);
-    glayout->addWidget(d->viewBt, 0, 1, Qt::AlignCenter);
-    glayout->addWidget(d->exportBt, 0, 2, Qt::AlignCenter);
-    glayout->addWidget(d->importBt, 1, 0, Qt::AlignCenter);
-    glayout->addWidget(d->loadBt, 1, 1, Qt::AlignCenter);
-    glayout->addWidget(d->indexBt, 1, 2, Qt::AlignCenter);
-    glayout->addWidget(d->saveBt, 2, 0, Qt::AlignCenter);
-    glayout->addWidget(d->bookmarkBt, 2, 1, Qt::AlignCenter);
-
-    glayout->addWidget(d->placeholder, 3, 1, 1, 3, Qt::AlignCenter);
-
-    d->page->setLayout(glayout);
-    this->addWidget(d->page);
+    QLabel* noButtonsSelectedLabel = new QLabel(tr("Select any item to see possible actions."));
+    noButtonsSelectedLabel->setObjectName("actionToolBoxLabel");
+    // we use a layout to center the label
+    QHBoxLayout* noButtonsSelectedLayout = new QHBoxLayout();
+    noButtonsSelectedLayout->addWidget(noButtonsSelectedLabel, 0, Qt::AlignCenter);
+    d->noButtonsSelectedWidget->setLayout(noButtonsSelectedLayout);
+    this->addWidget(d->noButtonsSelectedWidget);
 
     connect(d->removeBt, SIGNAL(clicked()), this, SIGNAL(removeClicked()));
     connect(d->viewBt, SIGNAL(clicked()), this, SIGNAL(viewClicked()));
@@ -125,6 +113,10 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
     connect(d->loadBt, SIGNAL(clicked()), this, SIGNAL(loadClicked()));
     connect(d->indexBt, SIGNAL(clicked()), this, SIGNAL(indexClicked()));
     connect(d->saveBt, SIGNAL(clicked()), this, SIGNAL(saveClicked()));
+
+    // we keep the size of the toolbox fixed so as it doesn't not resize
+    // constantly due to the exchange of the widgets
+    this->body()->setFixedHeight(38 + 38 + 35);
 
     this->setTitle(tr("Actions"));
 }
@@ -176,25 +168,60 @@ void medToolBoxActions::selectedPathsChanged(const QStringList& paths)
         updateButtons("None");
 }
 
-void medToolBoxActions::updateButtons(QString item)
+void medToolBoxActions::updateButtons(QString selectedItem)
 {
-    QList<QString> actions = d->itemToActions.values(item);
+    QList<QString> actions = d->itemToActions.values(selectedItem);
 
-    foreach(QPushButton* bt, d->btList)
+    foreach(QPushButton* bt, d->buttonsList)
     {
-        if( actions.contains( bt->accessibleName()) )
-        {
-            bt->setVisible(true);
-        }
-        else
-        {
-           bt->setVisible(false);
-        }
+        bool showButton = actions.contains( bt->accessibleName() );
+        bt->setVisible(showButton);
     }
 
-    // insert a placeholder if no button is being displayed
+    // insert an explanatory label if no button is being displayed
     if(actions.size() == 0)
-        d->placeholder->setVisible(true);
+    {
+        d->noButtonsSelectedWidget->setVisible(true);
+        d->buttonsWidget->setVisible(false);
+    }
     else
-        d->placeholder->setVisible(false);
+    {
+        d->noButtonsSelectedWidget->setVisible(false);
+        d->buttonsWidget->setVisible(true);
+    }
+}
+
+void medToolBoxActions::initializeItemToActionsMap()
+{
+    d->itemToActions = *(new QMultiMap<QString, QString>());
+
+    d->itemToActions.insert("Patient", "Remove");
+
+    d->itemToActions.insert("Unsaved Patient", "Remove");
+    d->itemToActions.insert("Unsaved Patient", "Save");
+
+    d->itemToActions.insert("Series", "View");
+    d->itemToActions.insert("Series", "Export");
+    d->itemToActions.insert("Series", "Remove");
+
+    d->itemToActions.insert("Unsaved Series", "Remove");
+    d->itemToActions.insert("Unsaved Series", "Save");
+    d->itemToActions.insert("Unsaved Series", "View");
+    d->itemToActions.insert("Unsaved Series", "Export");
+
+    d->itemToActions.insert("Folders", "Bookmark");
+    d->itemToActions.insert("Folders", "Import");
+    d->itemToActions.insert("Folders", "Index");
+    d->itemToActions.insert("Folders", "Load");
+    d->itemToActions.insert("Folders", "View");
+
+    d->itemToActions.insert("Files", "Import");
+    d->itemToActions.insert("Files", "Index");
+    d->itemToActions.insert("Files", "Load");
+    d->itemToActions.insert("Files", "View");
+
+    d->itemToActions.insert("Files & Folders", "Import");
+    d->itemToActions.insert("Files & Folders", "Index");
+    d->itemToActions.insert("Files & Folders", "Load");
+    d->itemToActions.insert("Files & Folders", "View");
 }
