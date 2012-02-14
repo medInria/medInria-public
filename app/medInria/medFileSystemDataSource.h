@@ -44,10 +44,10 @@ signals:
     void open(QString path);
 
 private slots:
-    void onFileSystemImportClicked();
-    void onFileSystemIndexClicked();
-    void onFileSystemLoadClicked();
-    void onFileSystemViewClicked();
+    void onFileSystemImportRequested();
+    void onFileSystemIndexRequested();
+    void onFileSystemLoadRequested();
+    void onFileSystemViewRequested();
     void onFileDoubleClicked(const QString& filename);
 
 

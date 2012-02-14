@@ -35,16 +35,21 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
     d->itemToActions.insert("Series", "Export");
     d->itemToActions.insert("Series", "Remove");
 
-    d->itemToActions.insert("Folder", "Bookmark");
-    d->itemToActions.insert("Folder", "Import");
-    d->itemToActions.insert("Folder", "Index");
-    d->itemToActions.insert("Folder", "Load");
-    d->itemToActions.insert("Folder", "View");
+    d->itemToActions.insert("Folders", "Bookmark");
+    d->itemToActions.insert("Folders", "Import");
+    d->itemToActions.insert("Folders", "Index");
+    d->itemToActions.insert("Folders", "Load");
+    d->itemToActions.insert("Folders", "View");
 
-    d->itemToActions.insert("File", "Import");
-    d->itemToActions.insert("File", "Index");
-    d->itemToActions.insert("File", "Load");
-    d->itemToActions.insert("File", "View");
+    d->itemToActions.insert("Files", "Import");
+    d->itemToActions.insert("Files", "Index");
+    d->itemToActions.insert("Files", "Load");
+    d->itemToActions.insert("Files", "View");
+
+    d->itemToActions.insert("Files & Folders", "Import");
+    d->itemToActions.insert("Files & Folders", "Index");
+    d->itemToActions.insert("Files & Folders", "Load");
+    d->itemToActions.insert("Files & Folders", "View");
 
     /* End Initialization of itemsToActions map */
 
@@ -123,14 +128,29 @@ void medToolBoxActions::seriesSelected()
     updateButtons("Series");
 }
 
-void medToolBoxActions::pathSelected(QString path)
+void medToolBoxActions::selectedPathsChanged(const QStringList& paths)
 {
-    QFileInfo fi(path);
+    bool containsFolders = false;
+    bool containsFiles = false;
 
-    if (fi.isDir())
-        updateButtons("Folder");
+    foreach(QString path, paths)
+    {
+        QFileInfo fi(path);
+
+        if (fi.isDir())
+            containsFolders = true;
+        else
+            containsFiles = true;
+    }
+
+    if (containsFolders && containsFiles)
+        updateButtons("Files & Folders");
+    else if (containsFolders)
+        updateButtons("Folders");
+    else if (containsFiles)
+        updateButtons("Files");
     else
-        updateButtons("File");
+        updateButtons("None");
 }
 
 void medToolBoxActions::updateButtons(QString item)

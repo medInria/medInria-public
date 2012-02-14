@@ -25,6 +25,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     d->finder = new dtkFinder (d->filesystem_widget);
     d->finder->setPath(QDir::homePath());
     d->finder->allowFileBookmarking(false);
+    d->finder->allowMultipleSelection(true);
 
     d->path = new dtkFinderPathBar (d->filesystem_widget);
     d->path->setPath(QDir::homePath());
@@ -86,10 +87,10 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     d->finder->addContextMenuAction(loadAction);
     d->finder->addContextMenuAction(viewAction);
 
-    connect(importAction, SIGNAL(triggered()), this, SLOT(onFileSystemImportClicked()));
-    connect(indexAction, SIGNAL(triggered()),  this, SLOT(onFileSystemIndexClicked()));
-    connect(  loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadClicked()));
-    connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewClicked()));
+    connect(importAction, SIGNAL(triggered()), this, SLOT(onFileSystemImportRequested()));
+    connect(indexAction, SIGNAL(triggered()),  this, SLOT(onFileSystemIndexRequested()));
+    connect(  loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadRequested()));
+    connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewRequested()));
 
     QHBoxLayout *toolbar_layout = new QHBoxLayout;
     toolbar_layout->setContentsMargins(0, 0, 0, 0);
@@ -124,13 +125,13 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     connect (d->toolbar, SIGNAL(treeView()),       d->finder, SLOT(switchToTreeView()));
     connect (d->toolbar, SIGNAL(listView()),       d->finder, SLOT(switchToListView()));
 
-    connect(d->finder, SIGNAL(itemSelected(QString)), d->actionsTb, SLOT(pathSelected(QString)));
+    connect(d->finder, SIGNAL(selectionChanged(const QStringList&)), d->actionsTb, SLOT(selectedPathsChanged(const QStringList&)));
 
-    connect(d->actionsTb, SIGNAL(bookmarkClicked()), d->finder, SLOT(onBookmarkSelectedItemRequested()));
-    connect(d->actionsTb, SIGNAL(viewClicked()), this, SLOT(onFileSystemViewClicked()));
-    connect(d->actionsTb, SIGNAL(importClicked()), this, SLOT(onFileSystemImportClicked()));
-    connect(d->actionsTb, SIGNAL(indexClicked()), this, SLOT(onFileSystemIndexClicked()));
-    connect(d->actionsTb, SIGNAL(loadClicked()), this, SLOT(onFileSystemLoadClicked()));
+    connect(d->actionsTb, SIGNAL(bookmarkClicked()), d->finder, SLOT(onBookmarkSelectedItemsRequested()));
+    connect(d->actionsTb, SIGNAL(viewClicked()), this, SLOT(onFileSystemViewRequested()));
+    connect(d->actionsTb, SIGNAL(importClicked()), this, SLOT(onFileSystemImportRequested()));
+    connect(d->actionsTb, SIGNAL(indexClicked()), this, SLOT(onFileSystemIndexRequested()));
+    connect(d->actionsTb, SIGNAL(loadClicked()), this, SLOT(onFileSystemLoadRequested()));
 }
 
 medFileSystemDataSource::~medFileSystemDataSource()
@@ -164,28 +165,40 @@ QString medFileSystemDataSource::description(void) const
 	return tr("Browse the file system");
 }
 
-void medFileSystemDataSource::onFileSystemImportClicked(void)
+void medFileSystemDataSource::onFileSystemImportRequested(void)
 {
-    QFileInfo info(d->finder->selectedPath());
-    emit dataToImportReceived(info.absoluteFilePath());
+    foreach(QString path, d->finder->selectedPaths())
+    {
+        QFileInfo info(path);
+        emit dataToImportReceived(info.absoluteFilePath());
+    }
 }
 
-void medFileSystemDataSource::onFileSystemIndexClicked(void)
+void medFileSystemDataSource::onFileSystemIndexRequested(void)
 {
-    QFileInfo info(d->finder->selectedPath());
-    emit dataToIndexReceived(info.absoluteFilePath());
+    foreach(QString path, d->finder->selectedPaths())
+    {
+        QFileInfo info(path);
+        emit dataToIndexReceived(info.absoluteFilePath());
+    }
 }
 
-void medFileSystemDataSource::onFileSystemLoadClicked()
+void medFileSystemDataSource::onFileSystemLoadRequested()
 {
-    QFileInfo info(d->finder->selectedPath());
-    emit load(info.absoluteFilePath());
+    foreach(QString path, d->finder->selectedPaths())
+    {
+        QFileInfo info(path);
+        emit load(info.absoluteFilePath());
+    }
 }
 
-void medFileSystemDataSource::onFileSystemViewClicked()
+void medFileSystemDataSource::onFileSystemViewRequested()
 {
-    QFileInfo info(d->finder->selectedPath());
-    emit open(info.absoluteFilePath());
+    foreach(QString path, d->finder->selectedPaths())
+    {
+        QFileInfo info(path);
+        emit open(info.absoluteFilePath());
+    }
 }
 
 void medFileSystemDataSource::onFileDoubleClicked(const QString& filename)

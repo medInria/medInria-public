@@ -27,7 +27,7 @@ public slots:
 
     void patientSelected();
     void seriesSelected();
-    void pathSelected(QString path);
+    void selectedPathsChanged(const QStringList& paths);
 
 protected:
 
