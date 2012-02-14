@@ -4,6 +4,7 @@
 
 #include "itkProcessRegistration.h"
 
+#include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -12,6 +13,8 @@
 // /////////////////////////////////////////////////////////////////
 //
 // /////////////////////////////////////////////////////////////////
+
+#include "itkCastImageFilter.h"
 
 #include "itkImageRegistrationMethod.h"
 #include "itkMattesMutualInformationImageToImageMetric.h"
@@ -226,41 +229,123 @@ void itkProcessRegistration::setInput(dtkAbstractData *data, int channel)
         qDebug() << "Unable to handle the number of dimensions " \
                 << "for an image of description: "<< data->identifier();
     }
-
+    
     *last_charac = '3';
+    typedef itk::Image< float, 3 > RegImageType;
+    
+    dtkSmartPointer <dtkAbstractData> convertedData = dtkAbstractDataFactory::instance()->create ("itkDataImageFloat3");
+    foreach ( QString metaData, data->metaDataList() )
+        if (!convertedData->hasMetaData(metaData))
+            convertedData->addMetaData ( metaData, data->metaDataValues ( metaData ) );
+    
+    foreach ( QString property, data->propertyList() )
+        convertedData->addProperty ( property,data->propertyValues ( property ) );
+    
     if (channel==0)
-        d->output = dtkAbstractDataFactory::instance()->create (id);
+        d->output = dtkAbstractDataFactory::instance()->create ("itkDataImageFloat3");
     if (id =="itkDataImageChar3") {
-        d->setInput<char>(data,channel);
+        typedef itk::Image< char, 3 > FixedImageType;
+        typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
+        
+        CastFilterType::Pointer  caster = CastFilterType::New();
+        caster->SetInput((const FixedImageType*)data->data());
+        caster->Update();
+        convertedData->setData(caster->GetOutput());
+        
+        d->setInput<float>(convertedData,channel);
     }
     else if (id =="itkDataImageUChar3") {
-        d->setInput<unsigned char>(data,channel);
+        typedef itk::Image< unsigned char, 3 > FixedImageType;
+        typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
+        
+        CastFilterType::Pointer  caster = CastFilterType::New();
+        caster->SetInput((const FixedImageType*)data->data());
+        caster->Update();
+        convertedData->setData(caster->GetOutput());
+        
+        d->setInput<float>(convertedData,channel);
     }
     else if (id =="itkDataImageShort3") {
-        d->setInput<short>(data,channel);
+        typedef itk::Image< short, 3 > FixedImageType;
+        typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
+        
+        CastFilterType::Pointer  caster = CastFilterType::New();
+        caster->SetInput((const FixedImageType*)data->data());
+        caster->Update();
+        convertedData->setData(caster->GetOutput());
+        
+        d->setInput<float>(convertedData,channel);
     }
     else if (id =="itkDataImageUShort3") {
-        d->setInput<unsigned short>(data,channel);
+        typedef itk::Image< unsigned short, 3 > FixedImageType;
+        typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
+        
+        CastFilterType::Pointer  caster = CastFilterType::New();
+        caster->SetInput((const FixedImageType*)data->data());
+        caster->Update();
+        convertedData->setData(caster->GetOutput());
+        
+        d->setInput<float>(convertedData,channel);
     }
 
     else if (id =="itkDataImageInt3") {
-        d->setInput<int>(data,channel);
+        typedef itk::Image< int, 3 > FixedImageType;
+        typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
+        
+        CastFilterType::Pointer  caster = CastFilterType::New();
+        caster->SetInput((const FixedImageType*)data->data());
+        caster->Update();
+        convertedData->setData(caster->GetOutput());
+        
+        d->setInput<float>(convertedData,channel);
     }
     else if (id =="itkDataImageUInt3") {
-        d->setInput<unsigned int>(data,channel);
+        typedef itk::Image< unsigned int, 3 > FixedImageType;
+        typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
+        
+        CastFilterType::Pointer  caster = CastFilterType::New();
+        caster->SetInput((const FixedImageType*)data->data());
+        caster->Update();
+        convertedData->setData(caster->GetOutput());
+        
+        d->setInput<float>(convertedData,channel);
     }
 
     else if (id =="itkDataImageLong3") {
-        d->setInput<long>(data,channel);
+        typedef itk::Image< long, 3 > FixedImageType;
+        typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
+        
+        CastFilterType::Pointer  caster = CastFilterType::New();
+        caster->SetInput((const FixedImageType*)data->data());
+        caster->Update();
+        convertedData->setData(caster->GetOutput());
+        
+        d->setInput<float>(convertedData,channel);
     }
     else if (id=="itkDataImageULong3") {
-        d->setInput<unsigned long>(data,channel);
+        typedef itk::Image< unsigned long, 3 > FixedImageType;
+        typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
+        
+        CastFilterType::Pointer  caster = CastFilterType::New();
+        caster->SetInput((const FixedImageType*)data->data());
+        caster->Update();
+        convertedData->setData(caster->GetOutput());
+        
+        d->setInput<float>(convertedData,channel);
     }
     else if (id =="itkDataImageFloat3") {
         d->setInput<float>(data,channel);
     }
     else if (id =="itkDataImageDouble3") {
-        d->setInput<double>(data,channel);
+        typedef itk::Image< double, 3 > FixedImageType;
+        typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
+        
+        CastFilterType::Pointer  caster = CastFilterType::New();
+        caster->SetInput((const FixedImageType*)data->data());
+        caster->Update();
+        convertedData->setData(caster->GetOutput());
+        
+        d->setInput<float>(convertedData,channel);
     }
 
 }
@@ -281,7 +366,7 @@ int itkProcessRegistration::update(void)
 
     if(d->fixedImage.IsNull() || d->movingImages.empty())
         return 1;
-
+    
     int retval =  update(d->fixedImageType);
     d->mutex.unlock();
     return retval;
@@ -308,7 +393,7 @@ itkProcessRegistration::ImageType itkProcessRegistration::fixedImageType()
 
 itkProcessRegistration::ImageType itkProcessRegistration::movingImageType()
 {
-    return d->fixedImageType;
+    return d->movingImageType;
 }
 
 
