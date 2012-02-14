@@ -2,6 +2,9 @@
 
 #include <QtGui>
 
+#include <medDataManager.h>
+#include <medAbstractDbController.h>
+
 class medToolBoxActionsPrivate
 {
 public:
@@ -15,6 +18,7 @@ public:
     QPushButton* importBt;
     QPushButton* loadBt;
     QPushButton* indexBt;
+    QPushButton* saveBt;
     QLabel* placeholder;
 
     QList<QPushButton*> btList;
@@ -31,9 +35,17 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
 
     d->itemToActions.insert("Patient", "Remove");
 
+    d->itemToActions.insert("Unsaved Patient", "Remove");
+    d->itemToActions.insert("Unsaved Patient", "Save");
+
     d->itemToActions.insert("Series", "View");
     d->itemToActions.insert("Series", "Export");
     d->itemToActions.insert("Series", "Remove");
+
+    d->itemToActions.insert("Unsaved Series", "Remove");
+    d->itemToActions.insert("Unsaved Series", "Save");
+    d->itemToActions.insert("Unsaved Series", "View");
+    d->itemToActions.insert("Unsaved Series", "Export");
 
     d->itemToActions.insert("Folders", "Bookmark");
     d->itemToActions.insert("Folders", "Import");
@@ -74,9 +86,12 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
     d->bookmarkBt = new QPushButton(tr("Bookmark"));
     d->bookmarkBt->setAccessibleName("Bookmark");
     d->bookmarkBt->setToolTip(tr("Bookmark selected folder/resource."));
+    d->saveBt = new QPushButton(tr("Save"));
+    d->saveBt->setAccessibleName("Save");
+    d->saveBt->setToolTip(tr("Save selected item into the database."));
 
     d->btList = *(new QList<QPushButton*>());
-    d->btList << d->removeBt << d->viewBt << d->exportBt << d->bookmarkBt << d->importBt << d->loadBt << d->indexBt;
+    d->btList << d->removeBt << d->viewBt << d->exportBt << d->bookmarkBt << d->importBt << d->loadBt << d->indexBt << d->saveBt;
 
     foreach(QPushButton* bt, d->btList)
     {
@@ -94,6 +109,7 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
     glayout->addWidget(d->importBt, 1, 0, Qt::AlignCenter);
     glayout->addWidget(d->loadBt, 1, 1, Qt::AlignCenter);
     glayout->addWidget(d->indexBt, 1, 2, Qt::AlignCenter);
+    glayout->addWidget(d->saveBt, 2, 0, Qt::AlignCenter);
     glayout->addWidget(d->bookmarkBt, 2, 1, Qt::AlignCenter);
 
     glayout->addWidget(d->placeholder, 3, 1, 1, 3, Qt::AlignCenter);
@@ -108,6 +124,7 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
     connect(d->importBt, SIGNAL(clicked()), this, SIGNAL(importClicked()));
     connect(d->loadBt, SIGNAL(clicked()), this, SIGNAL(loadClicked()));
     connect(d->indexBt, SIGNAL(clicked()), this, SIGNAL(indexClicked()));
+    connect(d->saveBt, SIGNAL(clicked()), this, SIGNAL(saveClicked()));
 
     this->setTitle(tr("Actions"));
 }
@@ -118,14 +135,20 @@ medToolBoxActions::~medToolBoxActions()
     d = NULL;
 }
 
-void medToolBoxActions::patientSelected()
+void medToolBoxActions::patientSelected(const medDataIndex& index)
 {
-    updateButtons("Patient");
+    if( !(medDataManager::instance()->controllerForDataSource(index.dataSourceId())->isPersistent()) )
+        updateButtons("Unsaved Patient");
+    else
+        updateButtons("Patient");
 }
 
-void medToolBoxActions::seriesSelected()
+void medToolBoxActions::seriesSelected(const medDataIndex& index)
 {
-    updateButtons("Series");
+    if( !(medDataManager::instance()->controllerForDataSource(index.dataSourceId())->isPersistent()) )
+        updateButtons("Unsaved Series");
+    else
+        updateButtons("Series");
 }
 
 void medToolBoxActions::selectedPathsChanged(const QStringList& paths)

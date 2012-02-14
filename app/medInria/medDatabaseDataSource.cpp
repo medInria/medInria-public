@@ -55,8 +55,8 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
 
     connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->preview, SLOT(onPatientClicked(const medDataIndex&)));
     connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(onSeriesClicked(const medDataIndex&)));
-    connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->actionsTb, SLOT(patientSelected()));
-    connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsTb, SLOT(seriesSelected()));
+    connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->actionsTb, SLOT(patientSelected(const medDataIndex&)));
+    connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsTb, SLOT(seriesSelected(const medDataIndex&)));
     connect(d->view, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
     connect(d->view, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
     connect(d->view, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));
@@ -66,6 +66,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
     connect(d->actionsTb, SIGNAL(removeClicked()), d->view, SLOT(onRemoveSelectedItemRequested()));
     connect(d->actionsTb, SIGNAL(exportClicked()), d->view, SLOT(onExportSelectedItemRequested()));
     connect(d->actionsTb, SIGNAL(viewClicked()), d->view, SLOT(onViewSelectedItemRequested()));
+    connect(d->actionsTb, SIGNAL(saveClicked()), d->view, SLOT(onSaveSelectedItemRequested()));
 }
 
 medDatabaseDataSource::~medDatabaseDataSource()
