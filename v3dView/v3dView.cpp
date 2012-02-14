@@ -471,7 +471,6 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     toolsLayout->addWidget ( d->linkWLButton );
     toolsLayout->addWidget ( d->fullScreenButton );
     toolsLayout->addWidget ( d->closeButton );
-    //JGG qDebug() << "1";
 
     QVBoxLayout *layout = new QVBoxLayout ( d->widget );
     layout->setContentsMargins ( 0, 0, 0, 0 );
@@ -935,9 +934,6 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             this->enableInteractor ( "v3dViewMeshInteractor" );
             // This will add the data to the interactor.
             dtkAbstractView::setData ( data );
-//            QObject::connect(this, SIGNAL(dataAdded(dtkAbstractData*, int)),
-//                             VIEWPROPTOOLBOX, SLOT(onDataAdded(dtkAbstractData*, int)),
-//                             Qt::UniqueConnection);
         }
         else if ( data->description() == "vtkDataMesh4D" )
         {

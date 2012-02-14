@@ -71,9 +71,9 @@ v3dViewMeshInteractor::v3dViewMeshInteractor(): medMeshAbstractViewInteractor(),
     this->addProperty("RenderingMode", QStringList() << "surface" << "wireframe" << "points" );
     this->addProperty("OpacityMode", QStringList() << "");
     this->addProperty("LUTMode", QStringList() << "Default" << "Black & White" << "Black & White Inversed" << "Spectrum" << "Hot Metal" << "Hot Green"
-                      << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2" << "Asymmetry" << "P-Value" << "Red Black Alpha"
-                      << "Green Black Alpha" << "Blue Black Alpha" << "Muscles & Bones" << "Bones" << "Red Vessels"
-                      << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body");
+        << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2" << "Asymmetry" << "P-Value" << "Red Black Alpha"
+        << "Green Black Alpha" << "Blue Black Alpha" << "Muscles & Bones" << "Bones" << "Red Vessels"
+        << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body");
     this->addProperty("ColorMode", QStringList() << "#FFFFFF");
 }
 
