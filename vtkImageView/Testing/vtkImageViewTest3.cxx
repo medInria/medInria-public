@@ -226,7 +226,6 @@ int vtkImageViewTest3(int argc, char *argv[])
   }
   matrix4->Delete();
   std::cout<<" success." <<std::endl;
-  
 
   view->Delete();
   iren->Delete();
