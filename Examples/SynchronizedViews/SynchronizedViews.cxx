@@ -344,7 +344,9 @@ int main (int argc, char* argv[])
   pool->SyncSetAnnotationStyle (vtkImageView2D::AnnotationStyle2);
   pool->SyncSetViewConvention (vtkImageView2D::VIEW_CONVENTION_RADIOLOGICAL);
   
-  pool->SetLinkColorWindowLevel (1);
+  pool->LinkColorWindowLevelOn ();
+  pool->LinkSliceMoveOn();
+  
   
   pool->SyncSetWheelInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
   //pool->SyncSetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeTime);
