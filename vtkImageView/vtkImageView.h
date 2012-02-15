@@ -624,7 +624,10 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
      Reslice an image onto the input image. Internal use only.
   */
   virtual vtkImageData *ResliceImageToInput(vtkImageData *image, vtkMatrix4x4 *matrix);
-
+  /**
+     From any point in space \arg pos1, this method will return in \arg pos2
+     the closest position that lies within the image boundaries.
+   */
   virtual void GetWithinBoundsPosition (double* pos1, double* dos2);
   
   private:

@@ -519,18 +519,30 @@ void vtkImageView::GetWithinBoundsPosition (double* pos1, double* pos2)
   
   if (!this->GetInput())
     return;
-
+  
   int indices[3];
   this->GetImageCoordinatesFromWorldCoordinates (pos1, indices);
   int* w_extent = this->GetInput()->GetWholeExtent();
+  bool out_of_bounds = false;
+  
   for (unsigned int i=0; i<3; i++)
   {
-    indices[i] = std::min (indices[i], w_extent[2 * i + 1]);
-    indices[i] = std::max (indices[i], w_extent[2 * i]);
+    if (indices[i] > w_extent[2 * i + 1])
+    {
+      indices[i] = w_extent[2 * i + 1];
+      out_of_bounds=true;
+    }
+    if (indices[i] < w_extent[2 * i])
+    {
+      indices[i] = w_extent[2 * i];
+      out_of_bounds=true;
+    }
   }
-
-  this->GetWorldCoordinatesFromImageCoordinates (indices, pos2);
   
+  if (out_of_bounds)
+    this->GetWorldCoordinatesFromImageCoordinates (indices, pos2);
+  else
+    pos2 = pos1;
 }
 
 
