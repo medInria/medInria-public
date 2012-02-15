@@ -80,8 +80,6 @@
 #include <sstream>
 #include <cmath>
 
-#define vtkINRIA3D_HACK_OBLIQUE_ORIENTATION 0
-
 class vtkImage2DDisplay : public vtkObject
 {
 public:
@@ -636,7 +634,6 @@ void vtkImageView2D::SetViewOrientation(int orientation)
 {
   int slice_orientation = -1;
 
-#if vtkINRIA3D_HACK_OBLIQUE_ORIENTATION
   /**
      In cases the acquisition is strongly oblique, it can happen that
      their is NO slice-orientation corresponding to the desired
@@ -671,8 +668,13 @@ void vtkImageView2D::SetViewOrientation(int orientation)
   }
   
   slice_orientation = viewtoslice[orientation];
+
+
   
-#else //vtkINRIA3D_HACK_OBLIQUE_ORIENTATION
+#if 0 // comment code above and replace it by the one below if you
+      // want to test the behavior of this function as it was
+      // previous to the fix...
+  
   /**
      but normally we should be able to use this bit of code,
      it works and is stable for most cases, when acquisition is
@@ -696,7 +698,7 @@ void vtkImageView2D::SetViewOrientation(int orientation)
     slice_orientation = orientation;
   }
 
-#endif //vtkINRIA3D_HACK_OBLIQUE_ORIENTATION
+#endif //
   
   this->SetSliceOrientation (slice_orientation);
 }
