@@ -646,28 +646,32 @@ void vtkImageView2D::SetViewOrientation(int orientation)
      acquisition plane (xy) and derive the other orientations from it.
   */
   double dot = 0;
-  double projection[3];
+  double projection, p1, p2;
   
   /// Proiority to the xy plane :
   int viewtoslice[3] = {-1,-1,-1};
   
   for (unsigned int i=0; i<3; i++)
   {
-    // take the third column of the orientation matrix
-    projection[i] = this->GetOrientationMatrix()->GetElement (i, 2);
+    // take the third column of the orientation matrix, check the i-est projection
+    projection  = std::abs (this->GetOrientationMatrix()->GetElement (i,       2));
+    // take the read-out acquisition axis, check the other projections
+    p1          = std::abs (this->GetOrientationMatrix()->GetElement ((i+1)%3, 0));
+    p2          = std::abs (this->GetOrientationMatrix()->GetElement ((i+2)%3, 0));
     
     // check to which axis this vector is the closest
-    if (std::abs (projection[i]) > dot)
+    if (projection > dot)
     {
-      dot = std::abs (projection[i]);
-      viewtoslice[i]       = 2;
-      viewtoslice[(i+1)%3] = 0;
-      viewtoslice[(i+2)%3] = 1;
+      dot = projection;
+      viewtoslice[i] = 2;
+      // choose between the 2 options according to respective projections.
+      viewtoslice[(i+1)%3] = (p1 >= p2) ? 0 : 1;
+      viewtoslice[(i+2)%3] = (p1 >= p2) ? 1 : 0;
     }
   }
   
   slice_orientation = viewtoslice[orientation];
-
+  
 #else // vtkINRIA3D_HACK_OBLIQUE_ORIENTATION
   /**
      but normally we should be able to use this bit of code,
@@ -691,7 +695,7 @@ void vtkImageView2D::SetViewOrientation(int orientation)
 		  <<"\n Please consider switch ON vtkINRIA3D_HACK_OBLIQUE_ORIENTATION ");
     slice_orientation = orientation;
   }
-  
+
 #endif // vtkINRIA3D_HACK_OBLIQUE_ORIENTATION
   
   this->SetSliceOrientation (slice_orientation);
