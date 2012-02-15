@@ -513,10 +513,20 @@ public:
   virtual void SetCursorFollowMouse (int val);
   vtkBooleanMacro (CursorFollowMouse, int);
   vtkGetMacro (CursorFollowMouse, int);
-  
+  /**
+     Switch between annotation style.
+     AnnotationStyle1 is there by default, it shows the X-Y position (in-plane),
+     and specify the orientation on lower-right corner
+     AnnotationStyle1 shows the global physical x-y-z position (scanner coordinates),
+     and leaves lower-right corner empty for user to fill.
+  */
   void SetAnnotationStyle (unsigned int arg);
   vtkGetMacro (AnnotationStyle, unsigned int);
-  
+  /**
+     adding a PointSet to the view.
+     The method will "cut" the dataset, therefore reducing the dimension by 1.
+     e.g. volumes become surfaces, surfaces lines, and lines points.
+  */
   virtual vtkActor* AddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
   virtual void RemoveDataSet (vtkPointSet *arg);
   
