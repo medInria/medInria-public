@@ -11,6 +11,7 @@ public:
     dtkFinderPathBar *path;
     dtkFinderSideView *side;
     dtkFinderToolBar *toolbar;
+    QLabel * infoText;
 };
 
 medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
@@ -26,6 +27,24 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
 
     d->toolbar = new dtkFinderToolBar (d->filesystem_widget);
     d->toolbar->setPath(QDir::homePath());
+
+    d->infoText = new QLabel(d->filesystem_widget);
+    d->infoText->setText("");
+    d->infoText->setVisible(false);
+    d->infoText->setTextFormat(Qt::RichText);
+    d->infoText->setStyleSheet(
+                "font-size: 11px;"
+                "color: #b2b8b2;"
+                "border-bottom: 1px solid #a9a9a9;"
+                "border-right: 1px solid #a9a9a9;"
+                "border-left: 1px solid #a9a9a9;"
+                "border-top: 0px;"
+                "border-radius: 0px;"
+                "padding: 0 8px;"
+                "background: #4b4b4b;"
+                "selection-background-color: #4b4b4b;"
+                "selection-color: #b2b8b2;"
+                );
 
     d->side = new dtkFinderSideView;
     d->side->setStyleSheet(
@@ -95,11 +114,14 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     filesystem_layout->setSpacing(0);
     filesystem_layout->addLayout (toolbar_layout);
     filesystem_layout->addWidget(d->finder);
+    filesystem_layout->addWidget(d->infoText);
 
     connect(d->finder, SIGNAL(changed(QString)), d->path, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(changed(QString)), d->toolbar, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(fileDoubleClicked(const QString&)), this, SLOT(onFileDoubleClicked(const QString&)));
+    connect(d->finder, SIGNAL(fileClicked(const QFileInfo&)), this, SLOT(onFileClicked(const QFileInfo&)));
+    connect(d->finder, SIGNAL(nothingSelected()), this, SLOT(onNothingSelected()));
 
     connect(d->path, SIGNAL(changed(QString)), d->finder, SLOT(setPath(QString)));
     connect(d->path, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
@@ -179,4 +201,21 @@ void medFileSystemDataSource::onFileDoubleClicked(const QString& filename)
     QFileInfo info(filename);
     if (info.isFile())
         emit open(info.absoluteFilePath());
+}
+
+void medFileSystemDataSource::onFileClicked(const QFileInfo& info)
+{
+    d->infoText->setVisible(true);
+    if (info.isDir()) {
+        d->infoText->setText("Directory <b>" + info.fileName() + "</b> selected");
+    }
+    else {
+        d->infoText->setText("<b>" + info.fileName() + "</b> selected - <i>" + QString::number(info.size()) + " bytes</i>");
+    }
+}
+
+void medFileSystemDataSource::onNothingSelected(void)
+{
+    d->infoText->setVisible(false);
+    d->infoText->setText("");
 }

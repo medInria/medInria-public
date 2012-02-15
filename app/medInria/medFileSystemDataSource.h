@@ -49,6 +49,8 @@ private slots:
     void onFileSystemLoadClicked();
     void onFileSystemViewClicked();
     void onFileDoubleClicked(const QString& filename);
+    void onFileClicked(const QFileInfo& info);
+    void onNothingSelected(void);
 
 
 private:
