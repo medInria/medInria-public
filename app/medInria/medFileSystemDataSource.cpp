@@ -210,8 +210,25 @@ void medFileSystemDataSource::onFileClicked(const QFileInfo& info)
         d->infoText->setText("Directory <b>" + info.fileName() + "</b> selected");
     }
     else {
-        d->infoText->setText("<b>" + info.fileName() + "</b> selected - <i>" + QString::number(info.size()) + " bytes</i>");
+        d->infoText->setText("<b>" + info.fileName() + "</b> selected - <i>" + this->formatByteSize(info.size()) + "</i>");
     }
+}
+
+QString medFileSystemDataSource::formatByteSize(qint64 bytes)
+{
+    qint64 b = 1;
+    qint64 kb = 1024 * b;
+    qint64 mb = 1024 * kb;
+    qint64 gb = 1024 * mb;
+
+    if (bytes > gb)
+        return QString::number(qIntCast((qreal)(bytes) / gb )) + " GB";
+    else if (bytes > mb)
+        return QString::number(qIntCast((qreal)(bytes) / mb )) + " MB";
+    else if (bytes > kb)
+        return QString::number(qIntCast((qreal)(bytes) / kb )) + " KB";
+    else
+        return QString::number(qIntCast((qreal)(bytes))) + " Bytes";
 }
 
 void medFileSystemDataSource::onNothingSelected(void)

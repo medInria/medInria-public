@@ -55,6 +55,8 @@ private slots:
 
 private:
     medFileSystemDataSourcePrivate* d;
+
+    QString formatByteSize(qint64 bytes);
 };
 
 #endif // medFileSystemDataSource_h__
