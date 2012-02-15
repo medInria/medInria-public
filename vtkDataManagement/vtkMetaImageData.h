@@ -36,10 +36,19 @@
 #include <itkCastImageFilter.h>
 #endif
 
-
-
+/**
+   The origin in ITK pipeline is taken into account in a different
+   way than in the VTK equivalent.
+   A first hack would be to force the vtkImageData instance to have
+   a null origin, and put the ITK origin in the 4th column of the
+   OrientationMatrix instance. BUT, when the ITK pipeline is updated,
+   then the ITK origin is put back in place in the vtkImageData instance.
+   
+   Therefore we need to keep the vtkImageData's origin the same as the
+   ITK one. And, we need to correct for this misbehaviour through a hack
+   in the OrientationMatrix 4th column, a sort of corrected origin.
+*/
 #define vtkINRIA3D_CORRECT_IMAGE_ORIENTATION 1
-
 
 
 class vtkImageData;
