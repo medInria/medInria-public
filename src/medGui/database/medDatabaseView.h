@@ -41,11 +41,21 @@ public:
     void setModel(QAbstractItemModel *model);
 
 signals:
+
+    /** Signal emitted when user clicks on a patient item. */
     void patientClicked(const medDataIndex &index);
+
+    /** Signal emitted when user clicks on a series item. */
     void seriesClicked(const medDataIndex &index);
 
+    /** Signal emitted when user double-clicks on a patient item. */
     void patientDoubleClicked(const medDataIndex &index);
+
+    /** Signal emitted when user double-clicks on a series item. */
     void seriesDoubleClicked(const medDataIndex &index);
+
+    /** Signal emitted when the selection changes and no item is selected. */
+    void noPatientOrSeriesSelected();
 
     void open(const medDataIndex&);
     void exportData(const medDataIndex &index);
@@ -70,9 +80,8 @@ public slots:
 
 protected slots:
     virtual void updateContextMenu(const QPoint&);
-    virtual void onItemClicked(const QModelIndex& index);
     virtual void onItemDoubleClicked(const QModelIndex& index);
-    virtual void onSelectionChanged(const QModelIndex& selected, const QModelIndex& deselected);
+    virtual void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
 private:
     medDatabaseViewPrivate *d;

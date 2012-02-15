@@ -143,6 +143,11 @@ void medToolBoxActions::seriesSelected(const medDataIndex& index)
         updateButtons("Series");
 }
 
+void medToolBoxActions::noPatientOrSeriesSelected()
+{
+    updateButtons("None");
+}
+
 void medToolBoxActions::selectedPathsChanged(const QStringList& paths)
 {
     bool containsFolders = false;

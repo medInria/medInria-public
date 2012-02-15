@@ -57,6 +57,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
     connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(onSeriesClicked(const medDataIndex&)));
     connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->actionsTb, SLOT(patientSelected(const medDataIndex&)));
     connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsTb, SLOT(seriesSelected(const medDataIndex&)));
+    connect(d->view, SIGNAL(noPatientOrSeriesSelected()), d->actionsTb, SLOT(noPatientOrSeriesSelected()));
     connect(d->view, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
     connect(d->view, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
     connect(d->view, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));

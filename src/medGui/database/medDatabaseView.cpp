@@ -122,10 +122,12 @@ void medDatabaseView::setModel(QAbstractItemModel *model)
     QTreeView::setModel(model);
 
     for(int i = 0; i < model->columnCount(); this->resizeColumnToContents(i), i++);
-        connect( this->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), SLOT(onSelectionChanged(const QModelIndex&, const QModelIndex&)));
 
+    // we stopped using this signal as it is not being emitted after removing or saving an item (and the selection does change)
+    //connect( this->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), SLOT(onSelectionChanged(const QModelIndex&, const QModelIndex&)));
+
+    connect( this->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(onSelectionChanged(const QItemSelection&, const QItemSelection&)) );
 }
-
 
 void medDatabaseView::updateContextMenu(const QPoint& point)
 {
@@ -161,37 +163,6 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
             menu.exec(mapToGlobal(point));
         }
     }
-}
-
-void medDatabaseView::onItemClicked(const QModelIndex& index)
-{
-
-    medAbstractDatabaseItem *item = NULL;
-
-    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
-        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-    else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(this->model()))
-        item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
-
-    if (!item)
-        return;
-
-    if (item->dataIndex().isValidForSeries())
-    {
-        this->collapseAll();
-        this->setExpanded(index.parent().parent(), true);
-        this->setExpanded(index.parent(), true);
-        this->setExpanded(index, true);
-        emit seriesClicked(item->dataIndex ());
-    }
-    else if (item->dataIndex().isValidForPatient())
-    {
-        this->collapseAll();
-        this->setExpanded(index, true);
-        emit patientClicked(item->dataIndex ());
-    }
-
-
 }
 
 void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
@@ -247,9 +218,41 @@ void medDatabaseView::onExportSelectedItemRequested(void)
         emit exportData(item->dataIndex());
 }
 
-void medDatabaseView::onSelectionChanged( const QModelIndex& current, const QModelIndex& previous)
+void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
-    emit onItemClicked(current);
+    if (selected.count() == 0)
+    {
+        emit noPatientOrSeriesSelected();
+        return;
+    }
+
+    // so far we only allow single selection
+    QModelIndex index = selected.indexes()[0];
+
+    medAbstractDatabaseItem *item = NULL;
+
+    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
+
+    if (!item)
+        return;
+
+    if (item->dataIndex().isValidForSeries())
+    {
+        this->collapseAll();
+        this->setExpanded(index.parent().parent(), true);
+        this->setExpanded(index.parent(), true);
+        this->setExpanded(index, true);
+        emit seriesClicked(item->dataIndex());
+    }
+    else if (item->dataIndex().isValidForPatient())
+    {
+        this->collapseAll();
+        this->setExpanded(index, true);
+        emit patientClicked(item->dataIndex());
+    }
 }
 
 void medDatabaseView::onRemoveSelectedItemRequested( void )
