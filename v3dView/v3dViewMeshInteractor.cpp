@@ -120,9 +120,14 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
             d->isMeshOnly = true; //        d->isMeshOnly = false;
             vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
             vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet());
+            double limites[6];
+            pointSet->GetBounds(limites);
+            changeBounds (limites);
+
             vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
             unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
             imagegenerator->SetOutputImageSize(imSize);
+            imagegenerator->SetOutputImageBounds(d->ImageBounds);
             imagegenerator->SetInput (pointSet);
             vtkImageData * image = imagegenerator->GetOutput();
             d->view->view2d()->SetInput(image, 0);
@@ -149,36 +154,7 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
 
         double limites[6];
         pointSet->GetBounds(limites);
-        qDebug() << "bounds " << limites;
-
-        if(!d->view->dataInList(0) )
-        {
-            for (int i=0; i<6; i++)
-            {
-                d->ImageBounds[i]=limites[i];
-            }
-            d->isMeshOnly = true;
-            d->isImageOutBounded=true;
-        }
-        else
-        {
-            for (int i=0; i<6; i=i+2)
-            {
-                if (limites[i]<d->ImageBounds[i])
-                {
-                    d->ImageBounds[i]=limites[i];
-                    d->isImageOutBounded=true;
-                }
-            }
-            for (int i=1; i<6; i=i+2)
-            {
-                if (limites[i]>d->ImageBounds[i])
-                {
-                    d->ImageBounds[i]=limites[i];
-                    d->isImageOutBounded=true;
-                }
-            }
-        }
+        changeBounds (limites);
 
         if (d->isImageOutBounded && d->isMeshOnly)
         {
@@ -562,6 +538,35 @@ void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
 //    }
 //}
 
-
-
+void v3dViewMeshInteractor::changeBounds (double limites[])
+{
+    if(!d->view->dataInList(0) )
+    {
+        for (int i=0; i<6; i++)
+        {
+            d->ImageBounds[i]=limites[i];
+        }
+        d->isMeshOnly = true;
+        d->isImageOutBounded=true;
+    }
+    else
+    {
+        for (int i=0; i<6; i=i+2)
+        {
+            if (limites[i]<d->ImageBounds[i])
+            {
+                d->ImageBounds[i]=limites[i];
+                d->isImageOutBounded=true;
+            }
+        }
+        for (int i=1; i<6; i=i+2)
+        {
+            if (limites[i]>d->ImageBounds[i])
+            {
+                d->ImageBounds[i]=limites[i];
+                d->isImageOutBounded=true;
+            }
+        }
+    }
+}
 

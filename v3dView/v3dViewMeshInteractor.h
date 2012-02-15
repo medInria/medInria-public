@@ -52,6 +52,7 @@ public:
     bool isMeshOnly();
 protected:
     virtual void updatePipeline (unsigned int meshLayer=0);
+    void changeBounds ( double bound[]);
 
 signals:
     void selectionValidated (const QString& name);

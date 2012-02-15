@@ -938,17 +938,10 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         else if ( data->description() == "vtkDataMesh4D" )
         {
             this->enableInteractor ( "v3dViewMeshInteractor" );
-
+            this->enableInteractor("v3dView4DInteractor");
             // This will add the data to the interactor.
 
             dtkAbstractView::setData ( data );
-        }
-        else if ( data->identifier() == "vtkDataMesh4D" )
-        {
-            this->enableInteractor ( "v3dViewMeshInteractor" );
-            this->enableInteractor ( "v3dView4DInteractor" );
-            // This will add the data to the interactor.
-            dtkAbstractView::setData(data);
         }
         else if ( data->identifier() == "v3dDataFibers" )
         {
