@@ -912,7 +912,7 @@ void medViewerToolBoxViewProperties::onItemClicked(QTreeWidgetItem * item, int c
             d->propertiesTree->expandItem(item);
 
             d->currentLayer = item->text(0).toInt();
-
+            d->view->setCurrentLayer(d->currentLayer);
             if(item->text(0).contains("Mesh"))
             {
                 QString s = item->text(0).remove(0,5);

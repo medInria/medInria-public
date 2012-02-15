@@ -130,11 +130,7 @@ public:
      */
     virtual double opacity(int layer) const;
 
-    /**
-     * Set the current layer. The current layer is used to determine which layer will receive
-     * property changed.
-     */
-    void setCurrentLayer(int layer);
+
 
     /**
      * Get the current layer. The current layer is used to determine which layer will receive
@@ -341,6 +337,11 @@ public slots:
 
 
     void setFullScreen( bool state );
+    /**
+     * Set the current layer. The current layer is used to determine which layer will receive
+     * property changed.
+     */
+    virtual void setCurrentLayer(int layer);
 
 protected:
     void emitViewSliceChangedEvent    (int slice);
