@@ -89,9 +89,17 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
         "}");
 
     QAction *importAction = new QAction(tr("Import"), this);
+    importAction->setIconVisibleInMenu(true);
+    importAction->setIcon(QIcon(":icons/import.png"));
     QAction *indexAction = new QAction(tr("Index"), this);
+    indexAction->setIconVisibleInMenu(true);
+    indexAction->setIcon(QIcon(":icons/link.png"));
     QAction *loadAction = new QAction(tr("Load"), this);
+    loadAction->setIconVisibleInMenu(true);
+    loadAction->setIcon(QIcon(":icons/load.svg"));
     QAction *viewAction = new QAction(tr("View"), this);
+    viewAction->setIconVisibleInMenu(true);
+    viewAction->setIcon(QIcon(":icons/magnifier.png"));
 
     d->finder->addContextMenuAction(importAction);
     d->finder->addContextMenuAction(indexAction);
@@ -122,6 +130,10 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     connect(d->finder, SIGNAL(fileDoubleClicked(const QString&)), this, SLOT(onFileDoubleClicked(const QString&)));
     connect(d->finder, SIGNAL(fileClicked(const QFileInfo&)), this, SLOT(onFileClicked(const QFileInfo&)));
     connect(d->finder, SIGNAL(nothingSelected()), this, SLOT(onNothingSelected()));
+
+    connect(d->finder, SIGNAL(listView()), d->toolbar, SLOT(onListView()));
+    connect(d->finder, SIGNAL(treeView()), d->toolbar, SLOT(onTreeView()));
+    connect(d->finder, SIGNAL(showHiddenFiles(bool)), d->toolbar, SLOT(onShowHiddenFiles(bool)));
 
     connect(d->path, SIGNAL(changed(QString)), d->finder, SLOT(setPath(QString)));
     connect(d->path, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
