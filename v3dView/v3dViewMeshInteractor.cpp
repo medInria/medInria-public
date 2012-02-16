@@ -91,12 +91,12 @@ QString v3dViewMeshInteractor::identifier() const
 
 QStringList v3dViewMeshInteractor::handled(void) const
 {
-    return QStringList () << "v3dView";
+    return QStringList () << v3dView::s_identifier();
 }
 
 bool v3dViewMeshInteractor::registered(void)
 {
-    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewMeshInteractor", QStringList() << "v3dView", createV3dViewMeshInteractor);
+    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewMeshInteractor", QStringList() << v3dView::s_identifier(), createV3dViewMeshInteractor);
 }
 
 void v3dViewMeshInteractor::setData(dtkAbstractData *data)
