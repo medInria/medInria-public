@@ -43,11 +43,15 @@ public:
     typedef QHash<QString,
         QPair < medToolBoxFactory::medToolBoxCompositeDataSetImporterCustomCreator,
                 medHelperStrings > > medToolBoxCompositeDataSetImporterCustomCreatorHash;
+    typedef QHash<QString,
+        QPair < medToolBoxFactory::medToolBoxSegmentationCustomCreator,
+                medHelperStrings > > medToolBoxSegmentationCustomCreatorHash;
 
     medToolBoxRegistrationCustomCreatorHash custom_registration_creators;
     medToolBoxDiffusionCustomCreatorHash custom_diffusion_creators;
     medToolBoxCompositeDataSetImporterCustomCreatorHash custom_compositedatasetimporter_creators;
     medToolBoxFilteringCustomCreatorHash custom_filtering_creators;
+    medToolBoxSegmentationCustomCreatorHash custom_segmentation_creators;
 };
 
 medToolBoxFactory *medToolBoxFactory::instance(void)
@@ -143,6 +147,40 @@ bool medToolBoxFactory::registerCustomCompositeDataSetImporterToolBox(QString id
     return false;
 }
 
+bool medToolBoxFactory::registerCustomSegmentationToolBox(QString identifier,
+                                                       QString name,
+                                                       QString description,
+                                                       medToolBoxSegmentationCustomCreator func)
+{
+    if(!d->custom_filtering_creators.contains(identifier))
+    {
+        medHelperStrings helpers(name,description);
+        d->custom_segmentation_creators.insert(identifier,
+                                            QPair <
+                                            medToolBoxSegmentationCustomCreator,
+                                            medHelperStrings>( func, helpers ));
+        return true;
+    }
+
+    return false;
+}
+
+QList<QString> medToolBoxFactory::segmentationToolBoxes(void)
+{
+    return d->custom_segmentation_creators.keys();
+}
+
+medToolBoxSegmentationCustom *medToolBoxFactory::createCustomSegmentationToolBox(QString type, QWidget *parent)
+{
+    if(!d->custom_segmentation_creators.contains(type))
+        return NULL;
+
+    medToolBoxSegmentationCustom *toolbox =
+            d->custom_segmentation_creators[type].first(parent);
+    return toolbox;
+}
+
+
 bool medToolBoxFactory::registerCustomFilteringToolBox(QString identifier,
                                                        QString name,
                                                        QString description,
@@ -201,6 +239,7 @@ medToolBoxFactory::diffusionToolBoxDetailsFromId (
         medHelperStrings helper  = d->custom_diffusion_creators[id].second;
         return QPair<QString, QString>(helper.name,helper.description);
     }
+    return QPair<QString, QString>();
 }
 
 QPair<QString, QString>
@@ -212,6 +251,7 @@ medToolBoxFactory::registrationToolBoxDetailsFromId (
         medHelperStrings helper  = d->custom_registration_creators[id].second;
         return QPair<QString, QString>(helper.name,helper.description);
     }
+    return QPair<QString, QString>();
 }
 
 QPair<QString, QString>
@@ -223,6 +263,7 @@ medToolBoxFactory::filteringToolBoxDetailsFromId (
         medHelperStrings helper  = d->custom_filtering_creators[id].second;
         return QPair<QString, QString>(helper.name,helper.description);
     }
+    return QPair<QString, QString>();
 }
 
 QPair<QString, QString>
@@ -234,6 +275,19 @@ medToolBoxFactory::compositeToolBoxDetailsFromId (
         medHelperStrings helper  = d->custom_compositedatasetimporter_creators[id].second;
         return QPair<QString, QString>(helper.name,helper.description);
     }
+    return QPair<QString, QString>();
+}
+
+QPair<QString, QString>
+medToolBoxFactory::segmentationToolBoxDetailsFromId (
+        const QString& id )
+{
+    if (d->custom_segmentation_creators.contains(id))
+    {
+        medHelperStrings helper  = d->custom_segmentation_creators[id].second;
+        return QPair<QString, QString>(helper.name,helper.description);
+    }
+    return QPair<QString, QString>();
 }
 
 medToolBoxFactory::medToolBoxFactory(void) : dtkAbstractFactory(), d(new medToolBoxFactoryPrivate)

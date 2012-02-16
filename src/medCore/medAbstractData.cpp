@@ -3,12 +3,14 @@
 #include "medDataIndex.h"
 #include "medAttachedData.h"
 
+#include <dtkCore/dtkSmartPointer.h>
+
 class medAbstractDataPrivate
 {
 public:
     bool isTrueVolumetric;
     medDataIndex index;
-    QList< medAttachedData * > attachedData;
+    QList< dtkSmartPointer<medAttachedData> > attachedData;
 };
 
 medAbstractData::medAbstractData( dtkAbstractData *parent )
@@ -54,7 +56,12 @@ medDataIndex medAbstractData::dataIndex() const
 
 QList< medAttachedData * > medAbstractData::attachedData() const
 {
-    return d->attachedData;
+    QList< medAttachedData * > ret;
+    ret.reserve(d->attachedData.size());
+    foreach( medAttachedData * data, d->attachedData ) {
+        ret.push_back(data);
+    }
+    return ret;
 }
 
 void medAbstractData::clearAttachedData()
@@ -68,6 +75,7 @@ void medAbstractData::addAttachedData( medAttachedData * data )
 {
     if ( !d->attachedData.contains( data ) ) {
         d->attachedData.append( data );
+        data->setParentData(this);
         emit attachedDataAdded( data );
     }
 }
@@ -76,6 +84,13 @@ void medAbstractData::removeAttachedData( medAttachedData * data )
 {
     int n = d->attachedData.count();
     d->attachedData.removeAll( data );
-    if ( n > d->attachedData.count() )
+    if ( n > d->attachedData.count() ) {
         emit attachedDataRemoved( data );
+        data->setParentData(NULL);
+    }
+}
+
+void medAbstractData::invokeModified()
+{
+    emit dataModified(this);
 }

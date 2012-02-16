@@ -102,6 +102,8 @@ QStringList medPluginManager::handlers(const QString& category)
 
 void medPluginManager::onPluginLoaded(const QString& name)
 {
+    qDebug() << " Loading plugin : " << name;
+
     dtkPlugin *plug = plugin(name);
 
     QStringList categories;
