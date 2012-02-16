@@ -57,6 +57,7 @@ set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
   medCoreExport.h
   medDataIndex.h
+  medDataReaderWriter.h
   medAbstractDataTypedImage.h
   medAbstractDataTypedImage2D.h
   medAbstractDataTypedImage3D.h
@@ -68,6 +69,7 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
   medDataManager.cpp
+  medDataReaderWriter.cpp
   medMessageController.cpp
   medMetaDataKeys.cpp
   medViewManager.cpp
