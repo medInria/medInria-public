@@ -662,7 +662,7 @@ QMenu::indicator:exclusive:checked {
 }
 
 QMenu::separator {
-    border: 1px solid #4b4b4b;
+    border: 1px solid #a9a9a9;
 }
 
 QMenu::item:hover {
