@@ -123,5 +123,9 @@
         <file>icons/fullscreenExpand.png</file>
         <file>icons/fullscreenReduce.png</file>
         <file>icons/medInriaPlugin.png</file>
+        <file>icons/export.svg</file>
+        <file>icons/save.svg</file>
+        <file>icons/magnifier.svg</file>
+        <file>icons/cross.svg</file>
     </qresource>
 </RCC>
