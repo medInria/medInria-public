@@ -50,6 +50,11 @@ private slots:
     void onFileSystemViewRequested();
     void onFileDoubleClicked(const QString& filename);
 
+private:
+
+    /** This function takes a list of paths as an input and creates
+     * another list by removing the paths that are subpaths of others. */
+    QStringList removeNestedPaths(const QStringList& paths);
 
 private:
     medFileSystemDataSourcePrivate* d;

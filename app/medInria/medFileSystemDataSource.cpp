@@ -167,7 +167,10 @@ QString medFileSystemDataSource::description(void) const
 
 void medFileSystemDataSource::onFileSystemImportRequested(void)
 {
-    foreach(QString path, d->finder->selectedPaths())
+    // remove paths that are subpaths of some other path in the list
+    QStringList purgedList = removeNestedPaths(d->finder->selectedPaths());
+
+    foreach(QString path, purgedList)
     {
         QFileInfo info(path);
         emit dataToImportReceived(info.absoluteFilePath());
@@ -176,7 +179,10 @@ void medFileSystemDataSource::onFileSystemImportRequested(void)
 
 void medFileSystemDataSource::onFileSystemIndexRequested(void)
 {
-    foreach(QString path, d->finder->selectedPaths())
+    // remove paths that are subpaths of some other path in the list
+    QStringList purgedList = removeNestedPaths(d->finder->selectedPaths());
+
+    foreach(QString path, purgedList)
     {
         QFileInfo info(path);
         emit dataToIndexReceived(info.absoluteFilePath());
@@ -185,7 +191,10 @@ void medFileSystemDataSource::onFileSystemIndexRequested(void)
 
 void medFileSystemDataSource::onFileSystemLoadRequested()
 {
-    foreach(QString path, d->finder->selectedPaths())
+    // remove paths that are subpaths of some other path in the list
+    QStringList purgedList = removeNestedPaths(d->finder->selectedPaths());
+
+    foreach(QString path, purgedList)
     {
         QFileInfo info(path);
         emit load(info.absoluteFilePath());
@@ -194,7 +203,10 @@ void medFileSystemDataSource::onFileSystemLoadRequested()
 
 void medFileSystemDataSource::onFileSystemViewRequested()
 {
-    foreach(QString path, d->finder->selectedPaths())
+    // remove paths that are subpaths of some other path in the list
+    QStringList purgedList = removeNestedPaths(d->finder->selectedPaths());
+
+    foreach(QString path, purgedList)
     {
         QFileInfo info(path);
         emit open(info.absoluteFilePath());
@@ -206,4 +218,32 @@ void medFileSystemDataSource::onFileDoubleClicked(const QString& filename)
     QFileInfo info(filename);
     if (info.isFile())
         emit open(info.absoluteFilePath());
+}
+
+QStringList medFileSystemDataSource::removeNestedPaths(const QStringList& paths)
+{
+    QStringList toRemove;
+
+    for(int i = 0; i < paths.size(); i++)
+    {
+        for(int j = 0; j < paths.size(); j++)
+        {
+            if(j != i)
+            {
+                QString path_i = paths.at(i);
+                QString path_j = paths.at(j);
+
+                // if path_i is contained in path_j we remove it
+                if(path_i.startsWith(path_j))
+                    toRemove << path_i;
+            }
+        }
+    }
+
+    QStringList purgedList = *(new QStringList(paths));
+
+    foreach(QString path, toRemove)
+        purgedList.removeAll(path);
+
+    return purgedList;
 }
