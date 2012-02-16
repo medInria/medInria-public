@@ -28,7 +28,7 @@ public:
 };
 
 
-medToolBoxCompositeDataSetImporterCustom::medToolBoxCompositeDataSetImporterCustom(QWidget *parent) : medToolBox(parent), d(new medToolBoxCompositeDataSetImporterCustomPrivate)
+medToolBoxCompositeDataSetImporterCustom::medToolBoxCompositeDataSetImporterCustom(QWidget *parent): medToolBox(parent), d(new medToolBoxCompositeDataSetImporterCustomPrivate)
 {
     d->parent  = NULL;
 }
