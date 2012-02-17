@@ -37,6 +37,8 @@ public:
     itkGDCMDataImageReader(void);
     virtual ~itkGDCMDataImageReader(void);
 
+    
+    virtual QString identifier()  const;
     virtual QString description(void) const;
 
     virtual QStringList handled(void) const;
