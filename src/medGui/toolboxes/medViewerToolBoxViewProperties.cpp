@@ -692,7 +692,12 @@ void medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data,
                 d->currentInteractor = d->interactors.indexOf(interactor);
 
             }
-        this->constructMeshLayer(data, d->view->meshLayerCount());
+            int realMeshCount=0;
+            if (d->view->hasImage())
+                realMeshCount=d->view->meshLayerCount();
+            else
+                realMeshCount=d->view->meshLayerCount()+1;
+        this->constructMeshLayer(data, realMeshCount);
         d->view->setMeshLayerCount(d->view->meshLayerCount()+1);
 
     }

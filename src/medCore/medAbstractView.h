@@ -141,6 +141,12 @@ public:
     virtual int currentLayer(void) const;
 
     /**
+     * Get the flag that indicates if the view has an image loaded
+     *
+     */
+    virtual bool hasImage(void) const;
+
+    /**
      * Get the number of layers of the view.
      */
     virtual int layerCount(void) const;
