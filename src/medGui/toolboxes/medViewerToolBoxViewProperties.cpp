@@ -692,6 +692,12 @@ void medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data,
                 d->currentInteractor = d->interactors.indexOf(interactor);
 
             }
+
+            //this solves the layering updating issue and crashes, it is not counting
+            //correctly the meshes coz onDataAdded is not connected when the first mesh is
+            //loaded, it does not happen when an image is loaded first coz onDataAdded
+            //is connected before the first mesh is loaded. Though not best solution in my opinion
+            //it works pretty fine and it will do the MR with other toolbox modifications simpler.
             int realMeshCount=0;
             if (d->view->hasImage())
                 realMeshCount=d->view->meshLayerCount();
