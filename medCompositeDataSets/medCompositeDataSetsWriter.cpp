@@ -24,21 +24,17 @@ bool medCompositeDataSetsWriter::write(const QString& path) {
 
     const QString& zipdirn = zip_dirname(path);
     QDir systemTmpDir = QDir::temp();
-    QString uuid = QUuid::createUuid().toString().replace(
-                "{","").replace("}","");
+    const QString& uuid = QUuid::createUuid().toString().replace("{","").replace("}","");
     const QString& tmpDirn = "medcds"+uuid;
-    const QString& tmpDirPath =QDir::cleanPath(
-            systemTmpDir.absolutePath()+"/"+tmpDirn);
-    const QString& zipDirPath = tmpDirPath+"/"+zipdirn;
+    const QString& tmpDirPath =QDir::cleanPath(systemTmpDir.absolutePath()+QDir::separator()+tmpDirn);
+    const QString& zipDirPath = tmpDirPath+QDir::separator()+zipdirn;
 
-    if (!systemTmpDir.mkpath(zipDirPath))
-    {
-        qWarning() << tr("medCompositeDataSets: cannot create directory ")
-                      << zipDirPath;
+    if (!systemTmpDir.mkpath(zipDirPath)) {
+        qWarning() << tr("medCompositeDataSets: cannot create directory ") << zipDirPath;
         return error(tmpDirPath);
     }
 
-    const QString descname(zipDirPath+"/Description.txt");
+    const QString descname(zipDirPath+QDir::separator()+"Description.txt");
     QFile desc(descname);
     if (!desc.open(QIODevice::WriteOnly)) {
         qWarning() << tr("medCompositeDataSets: cannot open file ") << descname.toLocal8Bit().constData();
@@ -49,7 +45,7 @@ bool medCompositeDataSetsWriter::write(const QString& path) {
     writer = MedInria::medCompositeDataSetsBase::find(data());
     if (!writer) {
         //emit showError(this, tr ("Could not write this data type: ")+data()->description(), 5000);
-        qWarning() << tr ("Could not write this data type: ")+data()->identifier();
+        qWarning() << tr("Could not write this data type: ")+data()->identifier();
         return error(tmpDirPath);
     }
 
@@ -68,20 +64,27 @@ bool medCompositeDataSetsWriter::write(const QString& path) {
 
     foreach(QFileInfo file,QDir(zipDirPath).entryInfoList()) {
 
-        if (!file.isFile())
+        if (file.isDir()) {
+            if (file.fileName()!="..") {
+                const QFile::Permissions& perms = zip.creationPermissions();
+                zip.setCreationPermissions(QFile::ReadOwner|QFile::WriteOwner|QFile::ExeOwner);
+                zip.addDirectory(file.dir().dirName());
+                zip.setCreationPermissions(perms);
+            }
             continue;
+        }
 
-        QFile inFile(zipDirPath+"/"+file.fileName());
-        if(!inFile.open(QIODevice::ReadOnly)) {
+        QFile inFile(zipDirPath+QDir::separator()+file.fileName());
+        if (!inFile.open(QIODevice::ReadOnly)) {
             qWarning("medCompositeDataSets: inFile.open(): %s",inFile.errorString().toLocal8Bit().constData());
             return error(tmpDirPath);
         }
 
-        zip.addFile(zipdirn+"/"+file.fileName(),&inFile);
+        zip.addFile(zipdirn+QDir::separator()+file.fileName(),&inFile);
         inFile.close();
     }
     zip.close();
 
-    RemoveDirectory(QDir(tmpDirPath));
+    //RemoveDirectory(QDir(tmpDirPath));
     return true;
 }

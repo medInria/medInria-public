@@ -15,8 +15,8 @@ public:
     medCompositeDataSetsWriter(): writer(0) { }
     virtual ~medCompositeDataSetsWriter() { }
 
-    virtual QString description() const { return "Writer for composite data sets"; }
-    virtual QString identifier() const { return "medCompositeDataSetsWriter"; }
+    virtual QString description() const { return tr("Writer for composite data sets"); }
+    virtual QString identifier()  const { return "medCompositeDataSetsWriter";         }
 
     virtual QStringList handled() const { return MedInria::medCompositeDataSetsBase::handled(); }
 
@@ -29,9 +29,7 @@ public:
 public slots:
 
     bool write(const QString& path);
-    //bool write(const QStringList& files);
     bool canWrite(const QString& path) { return true; }
-    //bool canWrite(const QStringList& files);
 
     //void setProgress(int value);
 

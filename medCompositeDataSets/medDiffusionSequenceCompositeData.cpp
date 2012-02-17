@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include <medMetaDataKeys.h>
+#include <medDataReaderWriter.h>
 
 #include <medDiffusionSequenceCompositeData.h>
 #include <medDiffusionSequenceCompositeDataToolBox.h>
@@ -26,7 +27,7 @@ const char medDiffusionSequenceCompositeData::ImagesString[] = "Images:";
 const char medDiffusionSequenceCompositeData::MetaDataString[] = "MetaData:";
 
 bool medDiffusionSequenceCompositeData::registered() const {
-    return dtkAbstractDataFactory::instance()->registerDataType(ID,createDiffusionSequenceCompositeData) &&
+    return dtkAbstractDataFactory::instance()->registerDataType(ID,create) &&
            medDiffusionSequenceCompositeDataToolBox::registered();
 }
 
@@ -86,27 +87,46 @@ bool medDiffusionSequenceCompositeData::write_data(const QString& dirname) {
     return true;
 }
 
-void medDiffusionSequenceCompositeData::readVolumes(const QString& dirname,const QStringList& paths) {
+dtkAbstractData* medDiffusionSequenceCompositeData::readVolume(const QString& path) {
+    dtkAbstractData* volume = medInria::DataReaderWriter::read(path);
+    const QString&   type   = volume->name();
+
+    if (!type.contains("Image")) {
+        // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("file does not describe any known image type"), 3000);
+        return 0;
+    }
+
+#if 0
+    if (type.contains("Image4D")) {
+        // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("4D image is not supported yet"), 3000);
+        return 0;
+    }
+
+    if (!type.contains("Image3D")) {
+        // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("image should be 3D"), 3000);
+        return 0;
+    }
+#endif
+
+    return volume;
+}
+
+void medDiffusionSequenceCompositeData::readVolumes(const QStringList& paths,const bool add_to_image_list) {
 
     QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
       
     for (int i=0;i<paths.size();++i) {
-        QString filepath = dirname+"/"+paths[i];
-        dtkAbstractDataReader* reader = NULL;
-        for (int j=0;j<readers.size();++j) {
-            reader = dtkAbstractDataFactory::instance()->reader(readers[j]);
-            if (reader->canRead(filepath))
-                break;
-            else
-                delete reader;
+        const QString& filepath = paths[i];
+        dtkAbstractData* volume = readVolume(filepath);
+
+        images.push_back(volume);
+
+        if (add_to_image_list) {
+            const QFileInfo& info = QFileInfo(filepath);
+            image_list << info.fileName();
         }
 
-        reader->read(filepath);
-        dtkAbstractData* volume = reader->data();
-        images.push_back(volume);
-        delete reader;
-
-        //  To be changed (and the push_back above might be moved after the checks).
+        //  To be changed (and the push_back(s) above might be moved after the checks).
 
         QString identifier = volume->identifier();
         if (!identifier.contains("Image")) {
@@ -126,40 +146,27 @@ void medDiffusionSequenceCompositeData::readVolumes(const QString& dirname,const
     for (medMetaDataKeys::Key::Registery::const_iterator i=medMetaDataKeys::Key::all().begin();i!=medMetaDataKeys::Key::all().end();++i)
         if ((*i)->is_set_in(images[meta_data_index])) {
             (*i)->set(this,(*i)->getValues(images[meta_data_index]));
-            qDebug() << "MetaData: " << (*i)->key() << (*i)->getValues(images[meta_data_index]);
+            //qDebug() << "MetaData: " << (*i)->key() << (*i)->getValues(images[meta_data_index]);
         }
 }
 
-void medDiffusionSequenceCompositeData::writeVolumes(const QString& dirname,const QStringList& paths) const {
-
-    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
-      
+void medDiffusionSequenceCompositeData::readVolumes(const QString& dirname,const QStringList& paths) {
+    QStringList filelist;
     for (int i=0;i<paths.size();++i) {
-        QString filepath = dirname+"/"+paths[i];
-        dtkAbstractDataWriter* writer = NULL;
-        for (int j=0;j<writers.size();++j) {
-            writer = dtkAbstractDataFactory::instance()->writer(writers[j]);
-            if (writer->canWrite(filepath))
-                break;
-            else
-                delete writer;
-        }
-        writer->setData(images[i]);
-        writer->write(filepath);
-        delete writer;
+        const QString filepath = dirname+"/"+paths[i];
+        filelist << filepath;
+    }
+    readVolumes(filelist);
+}
+
+void medDiffusionSequenceCompositeData::writeVolumes(const QString& dirname,const QStringList& paths) const {
+    for (int i=0;i<paths.size();++i) {
+        const QString& filepath = dirname+"/"+paths[i];
+        medInria::DataReaderWriter::write(filepath,images[i]);
     }  
 }
 
 bool medDiffusionSequenceCompositeData::read_data(const QString& dirname) {
     readVolumes(dirname,image_list); // TODO: Error management....
     return true;
-}
-
-// /////////////////////////////////////////////////////////////////
-// Type instantiation
-// /////////////////////////////////////////////////////////////////
-
-dtkAbstractData* createDiffusionSequenceCompositeData()
-{
-    return new medDiffusionSequenceCompositeData;
 }

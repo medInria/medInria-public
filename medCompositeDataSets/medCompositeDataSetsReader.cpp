@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <sstream>
 
@@ -24,7 +25,8 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
 
         //  Check that the file Description.txt exists.
 
-        const QString dname = zip_dirname(path)+"/Description.txt";
+        const QString& dname = zip_dirname(path)+QDir::separator()+"Description.txt";
+
         const QList<dtkZipReader::FileInfo>& files = zip.fileInfoList();
         bool found = false;
         for (QList<dtkZipReader::FileInfo>::const_iterator i=files.begin();i!=files.end();++i)
@@ -34,15 +36,16 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
             }
         if (!found)
             return false;
-        QString uuid = QUuid::createUuid().toString().replace(
-                    "{","").replace("}","");
-        tmpdir = QDir::tempPath()+"/"+"medcds"+uuid;
-        QDir::temp().mkdir("medcds"+uuid);
+
+        const QString& uuid = QUuid::createUuid().toString().replace("{","").replace("}","");
+        tmpdir = QDir::tempPath()+QDir::separator()+"medcds"+uuid+QDir::separator();
         descname = tmpdir+dname;
+
         zip.extractAll(tmpdir);
         is_zip_file = true;
+
     } else {
-        descname += "/Description.txt";
+        descname = descname+QDir::separator()+"Description.txt";
     }
 
     basedir = QFileInfo(descname).dir().path();
@@ -100,5 +103,5 @@ bool medCompositeDataSetsReader::read(const QString& path) {
 }
 
 void medCompositeDataSetsReader::setProgress(const int value) {
-    qDebug() << "setProgress" << value;
+    //qDebug() << "setProgress" << value;
 }

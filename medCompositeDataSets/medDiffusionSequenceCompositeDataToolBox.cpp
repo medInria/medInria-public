@@ -12,185 +12,104 @@
 #include <medCore/medAbstractView.h>
 #include <medCore/medRunnableProcess.h>
 #include <medCore/medJobManager.h>
+#include <medCore/medDataReaderWriter.h>
+#include <medDatabaseController.h>
 
+#include <medDropSite.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxCompositeDataSetImporter.h>
+#include <medCompositeDataSetsWriter.h>
 #include <medProgressionStack.h>
 
+#include <VectorWidget.h>
 
-class medDiffusionSequenceCompositeDataToolBoxPrivate {
-public:
-    QTreeWidget * tree;
-    medDiffusionSequenceCompositeDataToolBox::GradientListType gradients;
-    QVector<dtkAbstractData*> volumeList;
-    QList<QTreeWidgetItem*> itemList;
-};
+medDiffusionSequenceCompositeDataToolBox::medDiffusionSequenceCompositeDataToolBox(QWidget* parent): medToolBoxCompositeDataSetImporterCustom(parent) {
+    QWidget*     widget = new QWidget(this);
+    QFormLayout* layout = new QFormLayout(widget);
 
-medDiffusionSequenceCompositeDataToolBox::medDiffusionSequenceCompositeDataToolBox(QWidget *parent): medToolBoxCompositeDataSetImporterCustom(parent),d(new medDiffusionSequenceCompositeDataToolBoxPrivate)
-{
-    d->tree = new QTreeWidget(this);
+    reset();
 
-    d->tree->setColumnCount(2);
-    d->tree->setColumnWidth(10,80);
-    d->tree->setSelectionMode(QAbstractItemView::NoSelection);
-    QStringList headers;
-    headers << "Image" << "Gradient";
-    d->tree->setHeaderLabels(headers);
-    d->tree->setAnimated(true);
-    d->tree->setAlternatingRowColors(true);
-    d->tree->setRootIsDecorated(false);
-    d->tree->setContextMenuPolicy(Qt::CustomContextMenu);
+    setAcceptDrops(true);
+    widget->setAcceptDrops(true);
 
-    this->setTitle("images and gradients");
-    this->addWidget(d->tree);
+    setTitle(tr("Images and gradients"));
+    layout->addRow(&table);
 
-    QObject::connect(d->tree, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(onItemClicked(QTreeWidgetItem *, int)));
-    QObject::connect(d->tree, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextTreeMenu(QPoint)));
+    QObject::connect(&table,SIGNAL(itemClicked(QTableWidgetItem*)),this,SLOT(onItemClicked(QTableWidgetItem*)));
+    QObject::connect(&table,SIGNAL(customContextMenuRequested(QPoint)),this,SLOT(onContextTreeMenu(QPoint)));
+    QObject::connect(&table,SIGNAL(newItem(const QString&,bool&)),this,SLOT(onNewItem(const QString&,bool&)));
 
-    this->addVolumeToTree(0, QString("dtiimage[0]"));
-    GradientType tmpgradient;
-    tmpgradient[0] = 1;
-    tmpgradient[1] = -0.5;
-    tmpgradient[2] = -0.3;
-    
-    this->addGradientToTree(0, tmpgradient);
+    addWidget(widget);
 }
 
-medDiffusionSequenceCompositeDataToolBox::~medDiffusionSequenceCompositeDataToolBox(void)
-{
+medDiffusionSequenceCompositeDataToolBox::~medDiffusionSequenceCompositeDataToolBox() {
+#if 0
     delete d;
     d = NULL;
+#endif
 }
 
-bool medDiffusionSequenceCompositeDataToolBox::registered(void)
-{
-    qDebug() << "diffusion gradient toolbox registered ";
+bool medDiffusionSequenceCompositeDataToolBox::registered() {
     return medToolBoxFactory::instance()->registerCustomCompositeDataSetImporterToolBox(
                 "medDiffusionSequenceCompositeDataToolBox",
-                "Diffusion Sequence Importer",
-                "Diffusion Sequence Composite Dataset Importer",
-                createMedDiffusionCompositeDataToolBox);
+                tr("Diffusion Sequence Importer"),
+                tr("Diffusion Sequence Importer"),
+                medDiffusionSequenceCompositeDataToolBox::create);
 }
 
-QString medDiffusionSequenceCompositeDataToolBox::description(void) const
-{
-    return QString("Composite Data");
+QString medDiffusionSequenceCompositeDataToolBox::description() const {
+    return QString(tr("Diffusion Sequence Importer"));
 }
 
-
-medToolBoxCompositeDataSetImporterCustom* createMedDiffusionCompositeDataToolBox(QWidget *parent)
-{
-    return new medDiffusionSequenceCompositeDataToolBox (parent);
+medToolBoxCompositeDataSetImporterCustom* medDiffusionSequenceCompositeDataToolBox::create(QWidget* parent) {
+    return new medDiffusionSequenceCompositeDataToolBox(parent);
 }
 
-void medDiffusionSequenceCompositeDataToolBox::onItemClicked (QTreeWidgetItem *, int)
-{ 
+void medDiffusionSequenceCompositeDataToolBox::onNewItem(const QString& item,bool& valid) { 
+    dtkAbstractData* volume = medDiffusionSequenceCompositeData::readVolume(item);
+    if (volume!=0)
+        valid = true;
 }
 
-void medDiffusionSequenceCompositeDataToolBox::onContextTreeMenu (QPoint)
-{  
+void medDiffusionSequenceCompositeDataToolBox::onItemClicked(QTableWidgetItem* item) { 
+    if (item->column()==1)
+        table.editItem(item);
 }
 
-void medDiffusionSequenceCompositeDataToolBox::reset (void)
-{
-    // empty the file list of data
-    d->tree->clear();
-    d->itemList.clear();
+void medDiffusionSequenceCompositeDataToolBox::onContextTreeMenu(QPoint) {  
 }
 
-void medDiffusionSequenceCompositeDataToolBox::cancel (void)
-{
-    this->reset();
-}
+void medDiffusionSequenceCompositeDataToolBox::reset()  { table.clear(); }
+void medDiffusionSequenceCompositeDataToolBox::load()   { import(false); }
+bool medDiffusionSequenceCompositeDataToolBox::import() { return import(true);  }
 
-bool medDiffusionSequenceCompositeDataToolBox::import (void)
-{
-    // actually import the data through the writer and the header thing, zip ;-)
-    qDebug() << "importing data...";
+//  Import the data through the writer.
 
-    return this->writeInDataBase();
-}
+bool medDiffusionSequenceCompositeDataToolBox::import(const bool persistent) {
 
-void medDiffusionSequenceCompositeDataToolBox::addVolumeToTree (unsigned int index, QString volumename)
-{
-    QString itemstring = volumename;
-    QTreeWidgetItem * item = new QTreeWidgetItem(d->tree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
-    item->setText(0, itemstring);
-    item->setIcon(0,QIcon(":icons/layer.png"));
-    d->itemList.push_back (item);
-}
+    QStringList                                         vol_list;
+    medDiffusionSequenceCompositeData::GradientListType grad_list;
 
-//  Duplicate of 
-void medDiffusionSequenceCompositeDataToolBox::readVolumes(QStringList paths)
-{
-    QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
-  
-    for (int i=0; i<paths.size(); i++) {
-        QString filepath = paths[i];
-        dtkAbstractDataReader* reader = NULL;
-        
-        for (int j=0; j<readers.size(); j++) {
-            dtkAbstractDataReader* dataReader = dtkAbstractDataFactory::instance()->reader(readers[j]);
-            if (dataReader->canRead( filepath ))
-                reader = dataReader;
-            else
-                delete reader;
-        }
+    for (int i=0;i<table.rowCount();++i) {
+        const QTableWidgetItem* item0 = table.item(i,0);
+        const QTableWidgetItem* item1 = table.item(i,1);
+        vol_list << item0->data(Qt::UserRole).toString();
+        const QStringList values = item1->data(Qt::EditRole).toString().split(",");
+        medDiffusionSequenceCompositeData::GradientType grad;
+        for (int i=0;i<3;++i)
+            grad[i] = values.at(i).simplified().toDouble();
+        grad_list.push_back(grad);
+    }
 
-        reader->readInformation( filepath );
-        dtkAbstractData* volume = reader->data();
-        QString description = volume->description();
-        if (!description.contains ("Image")) {
-            // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("file does not describe any known image type"), 3000);
-            continue;
-        }
-        if (description.contains ("Image4D")) {
-            // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("4D image is not supported yet"), 3000);
-            continue;
-        }
-        if (!description.contains ("Image3D")) {
-            // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("image should be 3D"), 3000);
-            continue;
-        }
-        
-        d->volumeList.push_back (volume);
-        this->addVolumeToTree (0, filepath);
-    }  
-}
+    medDiffusionSequenceCompositeData* cds = new medDiffusionSequenceCompositeData();
+    cds->readVolumes(vol_list,true);
+    cds->setGradientList(grad_list);
 
-void medDiffusionSequenceCompositeDataToolBox::addGradientToTree (unsigned int imageindex, GradientType gradient) {
+    const QString& uuid = QUuid::createUuid().toString().replace("{","").replace("}","")+".cds";
+    medInria::DataReaderWriter::write(uuid,cds);
 
-    QTreeWidgetItem * item = new QTreeWidgetItem(d->tree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
-    std::ostringstream os;
-    os << "["<<gradient[0]<<", "<<gradient[1]<<","<<gradient[2]<<"]";
-    qDebug() << os.str().c_str();
+    medDatabaseController::instance()->import(uuid,!persistent);
+    reset();
 
-    item->setText(1, os.str().c_str());
-    //d->tree->setItemWidget(item, 2, NULL);
-}
-
-void medDiffusionSequenceCompositeDataToolBox::readGradients(QString filepath) {
-    GradientReaderType::Pointer reader = GradientReaderType::New();
-
-    reader->SetFileName (filepath.toAscii().data());
-    reader->Update();
-    d->gradients = reader->GetGradientList();
-    for (unsigned int i=0; i<d->gradients.size(); i++)
-        this->addGradientToTree (i, d->gradients[i]);
-}
-
-bool medDiffusionSequenceCompositeDataToolBox::writeInDataBase(void) {
-    // instantiate the data
-    medDiffusionSequenceCompositeData* diffusionsequence = new medDiffusionSequenceCompositeData();
-    diffusionsequence->setGradientList(d->gradients);
-    diffusionsequence->setVolumeList(d->volumeList);
-
-#if 0
-    // instantiate the writer
-    medDiffusionSequenceCompositeDataWriter* writer = new medDiffusionSequenceCompositeDataWriter();
-    writer->setData(diffusionsequence);
-    writer->write();
-#endif
-
-    return 1;
+    return true;
 }
