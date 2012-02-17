@@ -124,7 +124,6 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
             changeBounds(pointSet);
         }
 
-//        Q_UNUSED( pointSet );
         d->dataList.append(data);
         d->opacityList.append(1.0);
         d->visibilityList.append(true);
@@ -142,7 +141,6 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
             changeBounds(pointSet);
         }
 
-//        Q_UNUSED( pointSet );
         d->dataList.append(data);
         d->opacityList.append(1.0);
         d->visibilityList.append(true);
@@ -207,6 +205,7 @@ void v3dViewMeshInteractor::disable(void)
                 }
             }
         }
+
         if(!d->view->hasImage())
             d->view->view2d()->RemoveLayer(0);
 
@@ -446,10 +445,6 @@ dtkAbstractViewInteractor *createV3dViewMeshInteractor(void)
 
 void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
 {
-    int layer = 0;double limites[6];
-    layer = d->view->view2d()->GetNumberOfLayers();
-    layer = d->view->view3d()->GetNumberOfLayers();
-
     if (d->view && !d->dataList.isEmpty() ) {
 
         if(vtkPointSet *pointset = dynamic_cast<vtkPointSet*>((vtkObject *)(d->dataList[meshLayer]->data()))) {
@@ -470,13 +465,6 @@ void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
                 d->actor3dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
             }
         }
-
-        layer = d->view->view2d()->GetNumberOfLayers();
-        layer = d->view->view3d()->GetNumberOfLayers();
-
-        d->view->view2d()->GetInputBounds(limites);//d->view->view2d()->RemoveLayer();
-//        d->view->view3d()->GetInputBounds(limites);
-
     }
 }
 
@@ -521,7 +509,6 @@ void v3dViewMeshInteractor::changeBounds (vtkPointSet* pointSet)
         imagegenerator->SetInput (pointSet);
         vtkImageData * image = imagegenerator->GetOutput();
         d->view->view2d()->SetInput(image, 0);
-//        d->view->view2d()->RemoveLayer(0);
         vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
         actor->SetOpacity(0.0);
         d->isImageOutBounded=false;
