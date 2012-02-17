@@ -43,6 +43,11 @@ include(${medInria_USE_FILE})
 find_package(vtkINRIA3D REQUIRED)
 include(${vtkINRIA3D_USE_FILE})
 
+if ( VTK_MAJOR_VERSION LESS 5 OR 
+     VTK_MINOR_VERSION LESS 8)
+    message (SEND_ERROR "VTK 5.8.0 version is needed for the annotations in v3dView, please update to generate the v3dView project.")
+endif()
+
 # if(vtkINRIA3D_USE_ITK)
 #   find_package(ITK REQUIRED)
 #   include(${ITK_USE_FILE})
