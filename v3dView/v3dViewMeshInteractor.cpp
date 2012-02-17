@@ -107,39 +107,24 @@ bool v3dViewMeshInteractor::registered(void)
 
 void v3dViewMeshInteractor::setData(dtkAbstractData *data)
 {
+    if (d->dataList.contains (data))
+    {
+        return;
+    }
 
-//    if (d->dataList.contains (data))
-//    {
-//        return;
-//    }
+    qDebug()<<d->view->layerCount()<<d->view->meshLayerCount();
 
     if(data->identifier() == "vtkDataMesh4D")
     {
-        if(!d->view->dataInList(0))
+        vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
+        vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet());
+
+        if(!d->view->hasImage())
         {
-            d->isMeshOnly = true; //        d->isMeshOnly = false;
-            vtkMetaDataSetSequence *sequence = dynamic_cast<vtkMetaDataSetSequence *>((vtkDataObject *)(data->data()));
-            vtkPointSet *pointSet = vtkPointSet::SafeDownCast (sequence->GetDataSet());
-            double limites[6];
-            pointSet->GetBounds(limites);
-            changeBounds (limites);
-
-            vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
-            unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
-            imagegenerator->SetOutputImageSize(imSize);
-            imagegenerator->SetOutputImageBounds(d->ImageBounds);
-            imagegenerator->SetInput (pointSet);
-            vtkImageData * image = imagegenerator->GetOutput();
-            d->view->view2d()->SetInput(image, 0);
-            vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
-            actor->SetOpacity(0.0);
+            changeBounds(pointSet);
         }
-        else
-            d->isMeshOnly = false;
 
-
-
-
+//        Q_UNUSED( pointSet );
         d->dataList.append(data);
         d->opacityList.append(1.0);
         d->visibilityList.append(true);
@@ -152,31 +137,12 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
     }
     else if (vtkPointSet *pointSet = dynamic_cast<vtkPointSet *>((vtkDataObject *)(data->data()))) {
 
-        double limites[6];
-        pointSet->GetBounds(limites);
-        changeBounds (limites);
-
-        if (d->isImageOutBounded && d->isMeshOnly)
+        if(!d->view->hasImage())
         {
-            vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
-            imagegenerator->SetInput (pointSet);
-            unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
-            imagegenerator->SetOutputImageSize(imSize);
-            imagegenerator->SetOutputImageBounds(d->ImageBounds);
-            vtkImageData * image = imagegenerator->GetOutput();
-            int layer = 0;
-            layer = d->view->view2d()->GetNumberOfLayers();
-
-            d->view->view2d()->SetInput(image, 0);
-            //d->view->view3d()->SetInput(image, 0);
-            vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
-            actor->SetOpacity(0.0);
-            layer = d->view->view2d()->GetNumberOfLayers();
-            d->view->view2d()->GetInputBounds(limites);//d->view->view2d()->RemoveLayer();
+            changeBounds(pointSet);
         }
 
-
-        Q_UNUSED( pointSet );
+//        Q_UNUSED( pointSet );
         d->dataList.append(data);
         d->opacityList.append(1.0);
         d->visibilityList.append(true);
@@ -241,6 +207,9 @@ void v3dViewMeshInteractor::disable(void)
                 }
             }
         }
+        if(!d->view->hasImage())
+            d->view->view2d()->RemoveLayer(0);
+
         // MAYBE TODO d->actor2dList[d->currentLayer]->Delete();d->actorPropertyList
         // TODO        d->view->view3D ()->RemoveDataset ();
     }
@@ -511,6 +480,54 @@ void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
     }
 }
 
+void v3dViewMeshInteractor::changeBounds (vtkPointSet* pointSet)
+{
+    double limites[6];
+    pointSet->GetBounds(limites);
+
+    if(!d->view->dataInList(0) )
+    {
+        for (int i=0; i<6; i++)
+        {
+            d->ImageBounds[i]=limites[i];
+        }
+        d->isImageOutBounded = true;
+    }
+    else
+    {
+        for (int i=0; i<6; i=i+2)
+        {
+            if (limites[i]<d->ImageBounds[i])
+            {
+                d->ImageBounds[i]=limites[i];
+                d->isImageOutBounded=true;
+            }
+        }
+        for (int i=1; i<6; i=i+2)
+        {
+            if (limites[i]>d->ImageBounds[i])
+            {
+                d->ImageBounds[i]=limites[i];
+                d->isImageOutBounded=true;
+            }
+        }
+    }
+    if(d->isImageOutBounded)
+    {
+        vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
+        unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
+        imagegenerator->SetOutputImageSize(imSize);
+        imagegenerator->SetOutputImageBounds(d->ImageBounds);
+        imagegenerator->SetInput (pointSet);
+        vtkImageData * image = imagegenerator->GetOutput();
+        d->view->view2d()->SetInput(image, 0);
+//        d->view->view2d()->RemoveLayer(0);
+        vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
+        actor->SetOpacity(0.0);
+        d->isImageOutBounded=false;
+    }
+}
+
 //void v3dViewMeshInteractor::imageFromBounds (vtkSmartPointer<vtkImageData> imageBounds, double bounds[], double origin[])
 //{      unsigned int OutputImageSize[3];
 
@@ -538,35 +555,5 @@ void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
 //    }
 //}
 
-void v3dViewMeshInteractor::changeBounds (double limites[])
-{
-    if(!d->view->dataInList(0) )
-    {
-        for (int i=0; i<6; i++)
-        {
-            d->ImageBounds[i]=limites[i];
-        }
-        d->isMeshOnly = true;
-        d->isImageOutBounded=true;
-    }
-    else
-    {
-        for (int i=0; i<6; i=i+2)
-        {
-            if (limites[i]<d->ImageBounds[i])
-            {
-                d->ImageBounds[i]=limites[i];
-                d->isImageOutBounded=true;
-            }
-        }
-        for (int i=1; i<6; i=i+2)
-        {
-            if (limites[i]>d->ImageBounds[i])
-            {
-                d->ImageBounds[i]=limites[i];
-                d->isImageOutBounded=true;
-            }
-        }
-    }
-}
+
 
