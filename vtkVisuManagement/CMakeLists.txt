@@ -19,9 +19,11 @@ SET(vtkVisuManagement_SRCS
  vtkVectorVisuManager.cxx
  vtkLimitVectorsToVOI.cxx
  vtkDatasetToImageGenerator.cxx
+ vtkImageFromBoundsSource.cxx
  vtkImageClamp.cxx
  vtkImageFuse.cxx
  vtkImageClippingPlane.cxx
+
  vtkDisplacementFieldToGridFilter.cxx
  vtkMeshCropManager.cxx
 # vtkLandmarkManager.cxx
