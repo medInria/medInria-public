@@ -20,10 +20,8 @@
 #include <vtkSmartPointer.h>
 #include <vtkBoundingBox.h>
 #include <vtkPolyDataManager.h>
-#include <vtkInformationDoubleVectorKey.h>
 #include "v3dView.h"
 #include "vtkImageFromBoundsSource.h"
-#include "vtkDatasetToImageGenerator.h"
 #include <vtkImageData.h>
 #include <QInputDialog>
 #include <QColorDialog>
@@ -73,9 +71,9 @@ v3dViewMeshInteractor::v3dViewMeshInteractor(): medMeshAbstractViewInteractor(),
     this->addProperty("RenderingMode", QStringList() << "surface" << "wireframe" << "points" );
     this->addProperty("OpacityMode", QStringList() << "");
     this->addProperty("LUTMode", QStringList() << "Default" << "Black & White" << "Black & White Inversed" << "Spectrum" << "Hot Metal" << "Hot Green"
-        << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2" << "Asymmetry" << "P-Value" << "Red Black Alpha"
-        << "Green Black Alpha" << "Blue Black Alpha" << "Muscles & Bones" << "Bones" << "Red Vessels"
-        << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body");
+                      << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2" << "Asymmetry" << "P-Value" << "Red Black Alpha"
+                      << "Green Black Alpha" << "Blue Black Alpha" << "Muscles & Bones" << "Bones" << "Red Vessels"
+                      << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body");
     this->addProperty("ColorMode", QStringList() << "#FFFFFF");
 }
 
@@ -113,8 +111,6 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
     {
         return;
     }
-
-    qDebug()<<d->view->layerCount()<<d->view->meshLayerCount();
 
     if(data->identifier() == "vtkDataMesh4D")
     {
@@ -507,16 +503,16 @@ void v3dViewMeshInteractor::changeBounds (vtkPointSet* pointSet)
         vtkImageFromBoundsSource* imagegenerator = vtkImageFromBoundsSource::New();
         unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
         imagegenerator->SetOutputImageSize(imSize);
-//        vtkInformationDoubleVectorKey * origin = pointSet->ORIGIN();
-//        double *originDouble= origin->Get(pointSet->GetInformation() );
-//        imagegenerator->SetOutputImageOrigin(originDouble);
+        //        vtkInformationDoubleVectorKey * origin = pointSet->ORIGIN();
+        //        double *originDouble= origin->Get(pointSet->GetInformation() );
+        //        imagegenerator->SetOutputImageOrigin(originDouble);
         imagegenerator->SetOutputImageBounds(d->ImageBounds);
         vtkImageData * image = imagegenerator->GetOutput();
 
         if(d->view->dataInList(0))
         {
-//d->view->view2d()->RemoveDataSet();
-        d->view->view2d()->RemoveLayer(0);
+            //d->view->view2d()->RemoveDataSet();
+            d->view->view2d()->RemoveLayer(0);
         }
 
         d->view->view2d()->SetInput(image, 0);
@@ -526,33 +522,3 @@ void v3dViewMeshInteractor::changeBounds (vtkPointSet* pointSet)
         imagegenerator->Delete();
     }
 }
-
-//void v3dViewMeshInteractor::imageFromBounds (vtkSmartPointer<vtkImageData> imageBounds, double bounds[], double origin[])
-//{      unsigned int OutputImageSize[3];
-
-//    imageBounds->SetOrigin(origin);
-//    imageBounds->SetDimensions(100,100,100);
-//    imageBounds->SetNumberOfScalarComponents(1);
-
-//     for (unsigned int i=0; i<3; i++)
-//      ImageSpacing[i] = (bounds[2*i+1] - bounds[2*i])/(double)ImageSize[i];
-
-
-
-//    // Fill every entry of the image data with "2.0"
-//    int* dims = imageBounds->GetDimensions();
-
-//    for (int z=0; z<dims[2]; z++)
-//    {
-//        for (int y=0; y<dims[1]; y++)
-//        {
-//            for (int x=0; x<dims[0]; x++)
-//            {
-//                imageBounds->SetScalarComponentFromDouble(x,y,z,0,0.0);
-//            }
-//        }
-//    }
-//}
-
-
-
