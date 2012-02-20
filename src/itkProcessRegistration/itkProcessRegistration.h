@@ -81,6 +81,8 @@ public:
     /**
      * @brief Sets the fixed or moving image paramters of the process.
      *
+     * Directly converts the inputs in <float, 3> images.
+     * The output is allocated and is also a <float,3 image>
      * @param data: Pointer to an itkDataImageXXY.
      * @param channel: 0 for the fixed image, 1 for the moving one.
     */

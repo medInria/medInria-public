@@ -226,12 +226,19 @@ template <typename PixelType>
 
 int itkProcessRegistrationDiffeomorphicDemons::update(itkProcessRegistration::ImageType imgType)
 {
-    if(fixedImage().IsNull() || movingImages().isEmpty())
+    if(fixedImage().IsNull() || movingImages().isEmpty()
+            || movingImages()[0].IsNull())
+    {
+        qWarning() << "Either the fixed image or the moving image is Null";
         return 1;
-    
+    }
+
     if (imgType != itkProcessRegistration::FLOAT)
+    {
+        qWarning() << "the imageType should be float, and it's :"<<imgType;
         return 1;
-    
+    }
+
     return d->update<float>();
 }
 
