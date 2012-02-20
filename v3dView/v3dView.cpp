@@ -2529,3 +2529,10 @@ QString v3dView::s_identifier()
 {
     return "v3dView";
 }
+
+void v3dView::setCurrentLayer(int layer)
+{
+    qDebug()<<"setCurrentLayer" << layer;
+    medAbstractView::setCurrentLayer(layer);
+    d->view2d->SetCurrentLayer(layer);
+}

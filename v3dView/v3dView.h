@@ -211,6 +211,7 @@ public:
     QString cameraProjectionMode(void);
     double cameraViewAngle(void);
     double cameraZoom(void);
+    void setCurrentLayer(int layer);
 
 public :
     // Satisfy medAbstractViewCoordinates API
