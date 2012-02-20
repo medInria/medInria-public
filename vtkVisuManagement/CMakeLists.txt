@@ -23,7 +23,6 @@ SET(vtkVisuManagement_SRCS
  vtkImageClamp.cxx
  vtkImageFuse.cxx
  vtkImageClippingPlane.cxx
-
  vtkDisplacementFieldToGridFilter.cxx
  vtkMeshCropManager.cxx
 # vtkLandmarkManager.cxx

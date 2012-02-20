@@ -1,11 +1,10 @@
 /*=========================================================================
 
 Program:   vtkINRIA3D
-Module:    $Id: vtkImageFromBoundsSource.h 724 2008-03-03 14:55:36Z ntoussaint $
+Module:    $Id: vtkImageFromBoundsSource.h 724 2008-03-03 14:55:36Z jgarcia $
 Language:  C++
-Author:    $Author: ntoussaint $
+Author:    $Author: jgarcia $
 Date:      $Date: 2012-02-19 15:55:36 +0100 (Mon, 19 Jan 2012) $
-Version:   $Revision: 724 $
 
 Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
 See Copyright.txt for details.
@@ -39,7 +38,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkImageAlgorithm.h"
 
-class VTK_IMAGING_EXPORT vtkImageFromBoundsSource : public vtkImageAlgorithm
+class VTK_VISUMANAGEMENT_EXPORT vtkImageFromBoundsSource : public vtkImageAlgorithm
 {
 public:
   static vtkImageFromBoundsSource *New();
