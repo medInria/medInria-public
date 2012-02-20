@@ -147,10 +147,6 @@ vtkImage2DDisplay::~vtkImage2DDisplay()
 {
   this->WindowLevel->Delete();
   this->ImageActor->Delete();
-  if ( this->ColorTransferFunction != NULL )
-    this->ColorTransferFunction->Delete();
-  if ( this->OpacityTransferFunction != NULL )
-    this->OpacityTransferFunction->Delete();
 }
 
 void vtkImage2DDisplay::SetInput(vtkImageData * image)
@@ -1591,6 +1587,8 @@ void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPi
     imageDisplay->GetWindowLevel()->SetLookupTable(color);
     imageDisplay->SetColorTransferFunction(color);
     imageDisplay->SetOpacityTransferFunction(opacity);
+    color->Delete();
+    opacity->Delete();
     imageDisplay->SetUseLookupTable (false);
     this->SetTransferFunctionRangeFromWindowSettings(layer);
     this->Modified();
