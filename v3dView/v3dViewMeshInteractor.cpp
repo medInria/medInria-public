@@ -20,8 +20,10 @@
 #include <vtkSmartPointer.h>
 #include <vtkBoundingBox.h>
 #include <vtkPolyDataManager.h>
+#include <vtkInformationDoubleVectorKey.h>
 #include "v3dView.h"
-#include <vtkDatasetToImageGenerator.h>
+#include "vtkImageFromBoundsSource.h"
+#include "vtkDatasetToImageGenerator.h"
 #include <vtkImageData.h>
 #include <QInputDialog>
 #include <QColorDialog>
@@ -472,7 +474,6 @@ void v3dViewMeshInteractor::changeBounds (vtkPointSet* pointSet)
 {
     double limites[6];
     pointSet->GetBounds(limites);
-
     if(!d->view->dataInList(0) )
     {
         for (int i=0; i<6; i++)
@@ -500,18 +501,29 @@ void v3dViewMeshInteractor::changeBounds (vtkPointSet* pointSet)
             }
         }
     }
+
     if(d->isImageOutBounded)
     {
-        vtkDatasetToImageGenerator* imagegenerator = vtkDatasetToImageGenerator::New();
+        vtkImageFromBoundsSource* imagegenerator = vtkImageFromBoundsSource::New();
         unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
         imagegenerator->SetOutputImageSize(imSize);
+//        vtkInformationDoubleVectorKey * origin = pointSet->ORIGIN();
+//        double *originDouble= origin->Get(pointSet->GetInformation() );
+//        imagegenerator->SetOutputImageOrigin(originDouble);
         imagegenerator->SetOutputImageBounds(d->ImageBounds);
-        imagegenerator->SetInput (pointSet);
         vtkImageData * image = imagegenerator->GetOutput();
+
+        if(d->view->dataInList(0))
+        {
+//d->view->view2d()->RemoveDataSet();
+        d->view->view2d()->RemoveLayer(0);
+        }
+
         d->view->view2d()->SetInput(image, 0);
         vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
         actor->SetOpacity(0.0);
         d->isImageOutBounded=false;
+        imagegenerator->Delete();
     }
 }
 
