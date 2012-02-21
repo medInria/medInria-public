@@ -21,6 +21,8 @@ medGroupBox::medGroupBox(QWidget *parent) :
 
 medGroupBox::~medGroupBox()
 {
+    delete d;
+    d = NULL;
 }
 
 bool medGroupBox::isCollapsible()
