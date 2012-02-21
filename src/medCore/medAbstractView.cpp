@@ -409,6 +409,18 @@ bool medAbstractView::isInList(dtkAbstractData * data, int layer)
     return false;
 }
 
+bool medAbstractView::isInList(dtkAbstractData * data)
+{
+    if (d->dataList.contains(data))
+
+    {
+        qDebug() << "data is already in list";
+        return true;
+    }
+    return false;
+}
+
+
 void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
 {
     // start by removing the data type if layer already exists
