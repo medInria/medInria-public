@@ -107,10 +107,10 @@ bool v3dViewMeshInteractor::registered(void)
 
 void v3dViewMeshInteractor::setData(dtkAbstractData *data)
 {
-    if (d->dataList.contains (data))
-    {
-        return;
-    }
+//    if (d->dataList.contains (data))
+//    {
+//        return;
+//    }
 
     if(data->identifier() == "vtkDataMesh4D")
     {

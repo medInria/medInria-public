@@ -880,10 +880,10 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
     if ( medAbstractView::isInList ( data, layer ) )
         return;
 
-    if ( layer == 0 && data->identifier().contains ( "vtkDataMesh" ) && medAbstractView::dataInList(layer) == NULL)
+    if (data->identifier().contains( "vtkDataMesh" ) && medAbstractView::isInList(data))
     {
-        medMessageController::instance()->showError ( this, tr ( "Select image first" ), 5000 );
-//        return;
+        medMessageController::instance()->showError ( this, tr ( "The mesh is already visualized" ), 5000 );
+        return;
     }
 #ifdef vtkINRIA3D_USE_ITK
     if (SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
