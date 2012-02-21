@@ -36,6 +36,8 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef __vtkImageFromBoundsSource_h
 #define __vtkImageFromBoundsSource_h
 
+#include "vtkINRIA3DConfigure.h"
+
 #include "vtkImageAlgorithm.h"
 
 class VTK_VISUMANAGEMENT_EXPORT vtkImageFromBoundsSource : public vtkImageAlgorithm
