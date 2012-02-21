@@ -421,6 +421,7 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 
     QTreeWidgetItem * visibleItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     visibleItem->setText(1, "Visible");
+    //No need to parent this widget, setItemWidget takes ownership of the widget
     QCheckBox * visibleBox = new QCheckBox();
     visibleBox->setChecked(d->view->visibility(imageLayer));
     d->propertiesTree->setItemWidget(visibleItem, 2, visibleBox);
@@ -428,6 +429,7 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 
     QTreeWidgetItem * opacityItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     opacityItem->setText(1, "Opacity");
+    //No need to parent this widget, setItemWidget takes ownership of the widget
     QSlider * opacityBox = new QSlider(Qt::Horizontal);
     opacityBox->setRange(0,100);
     opacityBox->setValue(d->view->opacity(imageLayer) * 100);
@@ -436,7 +438,8 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 
     QTreeWidgetItem * lutItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     lutItem->setText(1, "LUT");
-    QComboBox * lutBox = new QComboBox(this);
+    //No need to parent this widget, setItemWidget takes ownership of the widget
+    QComboBox * lutBox = new QComboBox();
     lutBox->setFocusPolicy(Qt::NoFocus);
     lutBox->addItem("Default");
     lutBox->addItem("Black & White");
