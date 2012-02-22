@@ -111,7 +111,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->propertiesTree->setHeaderLabels(headers);
     d->propertiesTree->setAnimated(true);
     d->propertiesTree->setAlternatingRowColors(true);
-    d->propertiesTree->setRootIsDecorated(false);
+    d->propertiesTree->setRootIsDecorated(true);
     d->propertiesTree->setContextMenuPolicy(Qt::CustomContextMenu);
 
     this->setTitle("View Properties");
