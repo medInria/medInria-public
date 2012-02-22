@@ -105,7 +105,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     d->propertiesTree->setColumnCount(3);
     d->propertiesTree->setColumnWidth(0,85);
-    d->propertiesTree->setColumnWidth(1,75);
+    d->propertiesTree->setColumnWidth(1,65);
     d->propertiesTree->setSelectionMode(QAbstractItemView::NoSelection);
     QStringList headers;
     headers << tr("Object") << tr("Name") << tr("Value");
