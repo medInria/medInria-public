@@ -2,6 +2,8 @@
 
 #include <dtkCore/dtkAbstractData.h>
 
+#include <medAbstractViewCoordinates.h>
+
 class medAbstractViewPrivate
 {
 public:
@@ -350,8 +352,9 @@ void medAbstractView::removeOverlay(int layer)
 
     if (layer >= 0 && layer < d->dataList.size())
     {
-        medAbstractView::removeDataType(d->dataList[layer]->identifier());
-        emit (dataRemoved(d->dataList[layer], layer));
+        dtkAbstractData * oldData = d->dataList[layer];
+        medAbstractView::removeDataType(oldData->identifier());
+        emit (dataRemoved(oldData, layer));
         emit (dataRemoved(layer));
         d->dataList.removeAt(layer);
         
@@ -375,10 +378,11 @@ void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
 
 void medAbstractView::addDataInList(dtkAbstractData * data)
 {
-    
-        d->dataList.append(data);
+
+    d->dataList.append(data);
     medAbstractView::addDataType(data->identifier());
 }
+
 dtkAbstractData * medAbstractView::dataInList(int layer) const
 {
     if (layer >=0 &&  layer < d->dataList.size())
@@ -405,10 +409,16 @@ bool medAbstractView::isInList(dtkAbstractData * data, int layer)
 void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
 {
     // start by removing the data type if layer already exists
+    dtkAbstractData * oldData = NULL;
+
     if (layer >=0 &&  layer < d->dataList.size()) {
+        oldData = d->dataList[layer];
         removeDataType(d->dataList[layer]->identifier());
     }
 
+    if ( oldData && ( data != oldData ) ) {
+        emit dataRemoved(oldData,layer);
+    }
     d->dataList[layer] = data;
 
     addDataType(data->identifier());

@@ -65,7 +65,7 @@ public slots:
     /**
      *
     */
-    void onCurrentTypeChanged(QString type);
+    void onCurrentTypeChanged(const int type);
     
  protected:
     /**

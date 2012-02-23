@@ -1,5 +1,6 @@
-#include "medSplashScreen.h"
-
+#include <medSplashScreen.h>
+#include <dtkCore/dtkPlugin.h>
+#include <medPluginManager.h>
 
 class medSplashScreenPrivate {
 public:
@@ -37,11 +38,21 @@ void medSplashScreen::clearMessage()
 }
 
 ////////////////////////////////////////////////////////////////////////////
-void medSplashScreen::showMessage(const QString& theMessage,
+void medSplashScreen::showMessage(const QString& id,
                                   int theAlignment ,
                                   const QColor& theColor)
 {
-    d->message  = theMessage;
+    const dtkPlugin* plugin = medPluginManager::instance()->plugin(id);
+    if (plugin)
+    {
+        d->message = plugin->description();
+        //in case descriptions have several lines (html or plain text)
+        d->message = d->message.section('\n',0,0);
+        d->message = d->message.section("<br/>",0,0);
+    }
+    else
+        d->message = id;
+
     d->alignment = theAlignment;
     d->color  = theColor;
     repaint();

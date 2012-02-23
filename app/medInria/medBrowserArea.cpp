@@ -110,11 +110,21 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(d->fsSource, SIGNAL(open(QString)), this, SIGNAL(open(QString)));
     connect(d->fsSource, SIGNAL(load(QString)), this, SIGNAL(load(QString)));
 
-    d->pacsSource = new medPacsDataSource(this);
+    medPacsDataSource* pacsDataSource = new medPacsDataSource(this);
 
-    medPacsWidget * mainPacsWidget = dynamic_cast<medPacsWidget *> (d->pacsSource->mainViewWidget());
+    medPacsWidget * mainPacsWidget = qobject_cast<medPacsWidget *> (pacsDataSource->mainViewWidget());
+    //make the widget hide if not functional (otehrwise it flickers in and out).
+    mainPacsWidget->hide();
     if (mainPacsWidget->isServerFunctional())
+    {
+        d->pacsSource = pacsDataSource;
         addDataSource(d->pacsSource);
+    }
+    else
+    {
+        d->pacsSource = NULL;
+        pacsDataSource->deleteLater();
+    }
 
     // dynamic data sources (from plugins) ////////////////
     foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->dataSourcePlugins()) {
@@ -248,7 +258,7 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
 {
     d->data_sources.push_back(dataSource);
     d->stack->addWidget(dataSource->mainViewWidget());
-	d->toolbox_source->addTab(dataSource->tabName(),dataSource->sourceSelectorWidget(),dataSource->description());
+    d->toolbox_source->addTab(dataSource->tabName(),dataSource->sourceSelectorWidget(),dataSource->description());
     QList<medToolBox*> toolBoxes = dataSource->getToolboxes();
     foreach(medToolBox* toolBox, toolBoxes) {
         toolBox->setVisible(false);

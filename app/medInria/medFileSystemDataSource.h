@@ -24,8 +24,8 @@ public:
     QString tabName();
 
     QList<medToolBox*> getToolboxes();
-	
-	QString description(void) const;
+
+    QString description(void) const;
 
 signals:
 
@@ -49,6 +49,8 @@ private slots:
     void onFileSystemLoadRequested();
     void onFileSystemViewRequested();
     void onFileDoubleClicked(const QString& filename);
+    void onFileClicked(const QFileInfo& info);
+    void onNothingSelected(void);
 
 private:
 
@@ -58,6 +60,8 @@ private:
 
 private:
     medFileSystemDataSourcePrivate* d;
+
+    QString formatByteSize(qint64 bytes);
 };
 
 #endif // medFileSystemDataSource_h__

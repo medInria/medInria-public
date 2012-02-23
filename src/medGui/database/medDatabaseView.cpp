@@ -80,6 +80,11 @@ class medDatabaseViewPrivate
 {
 public:
     QList<int> failedToOpenSeriesIds;
+    QAction *viewAction;
+    QAction *exportAction;
+    QAction *saveAction;
+    QAction *removeAction;
+    QMenu *contextMenu;
 };
 
 medDatabaseView::medDatabaseView(QWidget *parent) : d(new medDatabaseViewPrivate), QTreeView(parent)
@@ -100,6 +105,29 @@ medDatabaseView::medDatabaseView(QWidget *parent) : d(new medDatabaseViewPrivate
 
     NoFocusDelegate* delegate = new NoFocusDelegate(this, QList<medDataIndex>());
     this->setItemDelegate(delegate);
+
+    d->contextMenu = new QMenu(this);
+
+    //Init the QActions
+    d->viewAction = new QAction(tr("View"), this);
+    d->viewAction->setIconVisibleInMenu(true);
+    d->viewAction->setIcon(QIcon(":icons/magnifier.svg"));
+    connect(d->viewAction, SIGNAL(triggered()), this, SLOT(onMenuViewClicked()));
+
+    d->exportAction = new QAction(tr("Export"), this);
+    d->exportAction->setIconVisibleInMenu(true);
+    d->exportAction->setIcon(QIcon(":icons/export.svg"));
+    connect(d->exportAction, SIGNAL(triggered()), this, SLOT(onMenuExportClicked()));
+
+    d->saveAction = new QAction(tr("Save"), this);
+    d->saveAction->setIconVisibleInMenu(true);
+    d->saveAction->setIcon(QIcon(":icons/save.svg"));
+    connect(d->saveAction, SIGNAL(triggered()), this, SLOT(onMenuSaveClicked()));
+
+    d->removeAction = new QAction(tr("Remove"), this);
+    d->removeAction->setIconVisibleInMenu(true);
+    d->removeAction->setIcon(QIcon(":icons/cross.svg"));
+    connect(d->removeAction, SIGNAL(triggered()), this, SLOT(onMenuRemoveClicked()));
 }
 
 medDatabaseView::~medDatabaseView(void)
@@ -111,8 +139,17 @@ medDatabaseView::~medDatabaseView(void)
 
 int medDatabaseView::sizeHintForColumn(int column) const
 {
-    if (column<3)
+    if (column<2)
         return 150;
+
+    if (column == 2) // series description/filename
+        return 250;
+
+    if (column == 3) // slices count
+        return 70;
+
+    if (column == 5) // date of birth
+        return 80;
 
     return 50;
 }
@@ -143,24 +180,23 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
     else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
-
     if (item) {
-        QMenu menu(this);
+        d->contextMenu->clear();
         if( item->dataIndex().isValidForSeries())
         {
-            menu.addAction(tr("View"), this, SLOT(onViewSelectedItemRequested()));
-            menu.addAction(tr("Export"), this, SLOT(onExportSelectedItemRequested()));
-            menu.addAction(tr("Remove"), this, SLOT(onRemoveSelectedItemRequested()));
+            d->contextMenu->addAction(d->viewAction);
+            d->contextMenu->addAction(d->exportAction);
+            d->contextMenu->addAction(d->removeAction);
             if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
-                            menu.addAction(tr("Save"), this, SLOT(onSaveSelectedItemRequested()));
-            menu.exec(mapToGlobal(point));
+                d->contextMenu->addAction(d->saveAction);
+            d->contextMenu->exec(mapToGlobal(point));
         }
         else if (item->dataIndex().isValidForPatient())
         {
-            menu.addAction(tr("Remove"), this, SLOT(onRemoveSelectedItemRequested()));
+            d->contextMenu->addAction(d->removeAction);
             if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
-                                        menu.addAction(tr("Save"), this, SLOT(onSaveSelectedItemRequested()));
-            menu.exec(mapToGlobal(point));
+                d->contextMenu->addAction(d->saveAction);
+            d->contextMenu->exec(mapToGlobal(point));
         }
     }
 }

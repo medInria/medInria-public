@@ -25,6 +25,7 @@
 #include "medViewerConfigurator.h"
 
 #include <dtkCore/dtkGlobal.h>
+#include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkScript/dtkScriptInterpreter.h>
 #include <dtkScript/dtkScriptInterpreterPool.h>
 #include <dtkScript/dtkScriptInterpreterPython.h>
@@ -56,15 +57,25 @@
 #include <medDatabaseSettingsWidget.h>
 #include <medInteractionSettingsWidget.h>
 #include <medSettingsEditor.h>
+#include <medEmptyDbWarning.h>
+
+#include "medSeedPointAnnotationData.h"
 
 #include "medViewerConfigurationVisualization.h"
 #include "medViewerConfigurationRegistration.h"
 #include "medViewerConfigurationDiffusion.h"
 #include "medViewerConfigurationFiltering.h"
+#include "medViewerConfigurationSegmentation.h"
 
 #include "medSaveModifiedDialog.h"
 
 #include <QtGui>
+
+// Simple new function used for factories.
+namespace  {
+    template< class T > 
+    dtkAbstractData * dtkAbstractDataCreateFunc() { return new T; }
+}
 
 // /////////////////////////////////////////////////////////////////
 // medMainWindowStyle
@@ -518,7 +529,7 @@ void medMainWindow::switchToHomepageArea ( void )
     if (d->quickAccessVisible)
         this->onHideQuickAccess();
     d->stack->setCurrentWidget ( d->homepageArea );
-    d->homepageArea->onHideAbout();
+    d->homepageArea->onShowInfo();
 
     if ( d->homepageArea->getAnimation() )
         d->homepageArea->getAnimation()->start();
@@ -545,19 +556,27 @@ void medMainWindow::switchToViewerArea ( void )
 
     d->stack->setCurrentWidget ( d->viewerArea );
 
-	// Dialog window to recall users if database is empty
-	
-	QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
-	QList<medDataIndex> patients = medDatabaseController::instance()->patients();
+    // Dialog window to recall users if database is empty
+    //but only if the warning is enabled in medSettings
+    bool showWarning = medSettingsManager::instance()->value(
+                "system",
+                "showEmptyDbWarning",
+                QVariant(true)).toBool();
+    if ( showWarning )
+    {
+        QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
+        QList<medDataIndex> patients = medDatabaseController::instance()->patients();
 
-    if( indexes.isEmpty() )
-		if( patients.isEmpty())
-		{
-		QMessageBox msgBox ( this );
-        msgBox.setIcon ( QMessageBox::Warning );
-        msgBox.setText(tr("The database is empty. Switch to the Browser workspace to import data"));
-		msgBox.exec();
-		}
+        if( indexes.isEmpty() )
+            if( patients.isEmpty())
+            {
+                //            QMessageBox msgBox ( this );
+                //            msgBox.setIcon ( QMessageBox::Warning );
+                //            msgBox.setText(tr("The database is empty. Switch to the Browser workspace to import data"));
+                medEmptyDbWarning* msgBox = new medEmptyDbWarning(this);
+                msgBox->exec();
+            }
+    }
 }
 
 void medMainWindow::onShowConfiguration ( QString config )
@@ -782,14 +801,21 @@ void medMainWindow::registerToFactories()
 #endif
 
     // Registering different configurations
-    medViewerConfigurationFactory::instance()->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
-    medViewerConfigurationFactory::instance()->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
-    medViewerConfigurationFactory::instance()->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
-    medViewerConfigurationFactory::instance()->registerConfiguration("Filtering",     createMedViewerConfigurationFiltering);
+    medViewerConfigurationFactory * viewerConfigFactory = medViewerConfigurationFactory::instance();
+    viewerConfigFactory->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
+    viewerConfigFactory->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
+    viewerConfigFactory->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
+    viewerConfigFactory->registerConfiguration("Filtering",     createMedViewerConfigurationFiltering);
+    viewerConfigFactory->registerConfiguration("Segmentation",     createMedViewerConfigurationSegmentation);
 
     //Register settingsWidgets
-    medSettingsWidgetFactory::instance()->registerSettingsWidget("System", createSystemSettingsWidget);
-    medSettingsWidgetFactory::instance()->registerSettingsWidget("Startup", createStartupSettingsWidget);
-    medSettingsWidgetFactory::instance()->registerSettingsWidget("Database", createDatabaseSettingsWidget);
-    medSettingsWidgetFactory::instance()->registerSettingsWidget("Interaction", createInteractionSettingsWidget);
+    medSettingsWidgetFactory * settingsWidgetFactory = medSettingsWidgetFactory::instance();
+    settingsWidgetFactory->registerSettingsWidget("System", createSystemSettingsWidget);
+    settingsWidgetFactory->registerSettingsWidget("Startup", createStartupSettingsWidget);
+    settingsWidgetFactory->registerSettingsWidget("Database", createDatabaseSettingsWidget);
+    settingsWidgetFactory->registerSettingsWidget("Interaction", createInteractionSettingsWidget);
+
+    //Register annotations
+    dtkAbstractDataFactory * datafactory = dtkAbstractDataFactory::instance();
+    datafactory->registerDataType( medSeedPointAnnotationData::s_identifier(), dtkAbstractDataCreateFunc<medSeedPointAnnotationData> );
 }

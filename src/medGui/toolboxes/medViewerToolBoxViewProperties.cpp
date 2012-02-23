@@ -26,6 +26,7 @@ public:
     QStringList lutList;
     QStringList attributeList;
     QStringList presetList;
+    QMap<QString, QString> presetToLut;
     QStringList renderingList;
     int currentLayer;
     QWidget * twoLayersWidget;
@@ -37,6 +38,7 @@ public:
     QList<medMeshAbstractViewInteractor*> interactors;
     medAbstractView *view;
 
+    QButtonGroup *mouseGroup;
     QPushButton *windowingPushButton;
     QPushButton *zoomingPushButton;
     QPushButton *slicingPushButton;
@@ -78,6 +80,22 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
         << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body";
     d->presetList << "None" << "VR Muscles&Bones" << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
         << "Standard" << "Soft" << "Soft on White" << "Soft on Blue" << "Red on White" << "Glossy" ;
+
+    // a preset is a predefined choice of three things: LUT, window width and window level
+    // hence when the user selects a preset we also change the LUT
+    d->presetToLut.insert("None", "Black & White");
+    d->presetToLut.insert("VR Muscles&Bones", "Muscles & Bones");
+    d->presetToLut.insert("Vascular I", "Stern");
+    d->presetToLut.insert("Vascular II", "Red Vessels");
+    d->presetToLut.insert("Vascular III", "Red Vessels");
+    d->presetToLut.insert("Vascular IV", "Red Vessels");
+    d->presetToLut.insert("Standard", "Muscles & Bones");
+    d->presetToLut.insert("Soft", "Bones");
+    d->presetToLut.insert("Soft on White", "Muscles & Bones");
+    d->presetToLut.insert("Soft on Blue", "Muscles & Bones");
+    d->presetToLut.insert("Red on White", "Red Vessels");
+    d->presetToLut.insert("Glossy", "Bones");
+
     d->renderingList << "wireframe"<<"surface"<<"points";
     d->attributeList << "Solid";
     //lutBox = new QComboBox();
@@ -125,12 +143,12 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->measuringPushButton->setCheckable (true);
     d->measuringPushButton->setToolTip (tr("Measuring"));
 
-    QButtonGroup *mouseGroup = new QButtonGroup (this);
-    mouseGroup->addButton ( d->windowingPushButton );
-    mouseGroup->addButton ( d->zoomingPushButton );
-    mouseGroup->addButton ( d->slicingPushButton );
-    mouseGroup->addButton ( d->measuringPushButton );
-    mouseGroup->setExclusive (true);
+    d->mouseGroup = new QButtonGroup (this);
+    d->mouseGroup->addButton ( d->windowingPushButton );
+    d->mouseGroup->addButton ( d->zoomingPushButton );
+    d->mouseGroup->addButton ( d->slicingPushButton );
+    d->mouseGroup->addButton ( d->measuringPushButton );
+    d->mouseGroup->setExclusive (true);
 
     setCurrentInteractionFromSettings();
 
@@ -142,7 +160,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->scalarBarVisibilityCheckBox->setToolTip(tr("Show scalar bar"));
     d->axisVisibilityCheckBox = new QCheckBox(this);
     d->axisVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
-    d->axisVisibilityCheckBox->setToolTip(tr("Show axis"));
+    d->axisVisibilityCheckBox->setToolTip(tr("Show axes"));
     d->rulerVisibilityCheckBox = new QCheckBox(this);
     d->rulerVisibilityCheckBox->setFocusPolicy(Qt::NoFocus);
     d->annotationsVisibilityCheckBox = new QCheckBox(this);
@@ -153,7 +171,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->propView->setLayout(propLayout);
     propLayout->setAlignment(Qt::AlignJustify);
     d->scalarBarVisibilityCheckBox->setText(tr("Scalar Bar"));
-    d->axisVisibilityCheckBox->setText(tr("Axis"));
+    d->axisVisibilityCheckBox->setText(tr("Axes"));
     d->rulerVisibilityCheckBox->setText(tr("Ruler"));
     d->rulerVisibilityCheckBox->setToolTip(tr("Show ruler"));
     d->annotationsVisibilityCheckBox->setText("Annotations");
@@ -174,10 +192,14 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     //propertiesViewLayout->addRow (d->scalarBarVisibilityCheckBox);
     propertiesViewLayout->setFormAlignment(Qt::AlignHCenter);
 
-    connect(d->windowingPushButton,           SIGNAL(toggled(bool)),                this, SLOT(onWindowingChanged(bool)));
-    connect(d->zoomingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(onZoomingChanged(bool)));
-    connect(d->slicingPushButton,             SIGNAL(toggled(bool)),                this, SLOT(onSlicingChanged(bool)));
-    connect(d->measuringPushButton,           SIGNAL(toggled(bool)),                this, SLOT(onMeasuringChanged(bool)));
+    connect(d->windowingPushButton, SIGNAL(toggled(bool)),
+            this, SLOT(onWindowingChanged(bool)));
+    connect(d->zoomingPushButton, SIGNAL(toggled(bool)),
+            this, SLOT(onZoomingChanged(bool)));
+    connect(d->slicingPushButton, SIGNAL(toggled(bool)),
+            this, SLOT(onSlicingChanged(bool)));
+    connect(d->measuringPushButton, SIGNAL(toggled(bool)),
+            this, SLOT(onMeasuringChanged(bool)));
 
     d->view3dModeComboBox = new QComboBox(this);
     d->view3dModeComboBox->setFocusPolicy(Qt::NoFocus);
@@ -289,6 +311,7 @@ void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
         clear();
     }
 
+
 //    qDebug() << "update 1";
     if (medAbstractView *medView = dynamic_cast<medAbstractView *> (view))
     {
@@ -297,6 +320,8 @@ void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
         {
             return;
         }
+
+
         d->view = medView;
         d->propertiesTree->clear();
         //decide whether to show the 2 layers slider
@@ -344,6 +369,17 @@ void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
         d->view3dModeComboBox->blockSignals(true);
         d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("3DMode")));
         d->view3dModeComboBox->blockSignals(false);
+
+        //set a few view pool wide properties in the view.
+        qDebug()<<"update some view properties";
+        onScalarBarVisibilityChanged(d->scalarBarVisibilityCheckBox->isChecked());
+        onAnnotationsVisibilityChanged(d->annotationsVisibilityCheckBox->isChecked());
+        onAxisVisibilityChanged(d->axisVisibilityCheckBox->isChecked());
+        onRulerVisibilityChanged(d->rulerVisibilityCheckBox->isChecked());
+        onZoomingChanged(d->zoomingPushButton->isChecked());
+        onSlicingChanged(d->slicingPushButton->isChecked());
+        onMeasuringChanged(d->measuringPushButton->isChecked());
+        onWindowingChanged(d->windowingPushButton->isChecked());
     }
 }
 
@@ -385,6 +421,7 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 
     QTreeWidgetItem * visibleItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     visibleItem->setText(1, "Visible");
+    //No need to parent this widget, setItemWidget takes ownership of the widget
     QCheckBox * visibleBox = new QCheckBox();
     visibleBox->setChecked(d->view->visibility(imageLayer));
     d->propertiesTree->setItemWidget(visibleItem, 2, visibleBox);
@@ -392,6 +429,7 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 
     QTreeWidgetItem * opacityItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     opacityItem->setText(1, "Opacity");
+    //No need to parent this widget, setItemWidget takes ownership of the widget
     QSlider * opacityBox = new QSlider(Qt::Horizontal);
     opacityBox->setRange(0,100);
     opacityBox->setValue(d->view->opacity(imageLayer) * 100);
@@ -400,7 +438,8 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 
     QTreeWidgetItem * lutItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     lutItem->setText(1, "LUT");
-    QComboBox * lutBox = new QComboBox(this);
+    //No need to parent this widget, setItemWidget takes ownership of the widget
+    QComboBox * lutBox = new QComboBox();
     lutBox->setFocusPolicy(Qt::NoFocus);
     lutBox->addItem("Default");
     lutBox->addItem("Black & White");
@@ -850,6 +889,7 @@ void medViewerToolBoxViewProperties::onLUTChanged(int index)
 {
     if (!d->view)
         return;
+
     if(!d->isMesh)
     {
         d->view->setCurrentLayer(d->currentLayer);
@@ -860,18 +900,62 @@ void medViewerToolBoxViewProperties::onLUTChanged(int index)
         d->interactors[d->currentInteractor]->setLayer( d->view->currentMeshLayer());
         d->interactors[d->currentInteractor]->setProperty("LUTMode", d->lutList.at(index));
     }
+
+    // as the LUT changed we need to change the preset to None (just the preset combobox)
+    // also we won't change the preset back to None if the ww/wl is changed (by design)
+    QString currentLayerItemString = QString::number(d->currentLayer);
+    QTreeWidgetItem* layerItem = d->propertiesTree->findItems(currentLayerItemString, Qt::MatchExactly | Qt::MatchWrap, 0)[0]; // we take the first one as there's only one
+    QTreeWidgetItem* presetItem = layerItem->child(3); // the preset item is the fourth one
+    QComboBox* presetComboBox = dynamic_cast<QComboBox*>(d->propertiesTree->itemWidget(presetItem, 2));
+
+    // 0 == None
+    if (presetComboBox->currentIndex() != 0)
+    {
+        presetComboBox->blockSignals(true);
+        presetComboBox->setCurrentIndex(0);
+        presetComboBox->blockSignals(false);
+    }
+
     d->view->update();
 }
 
 void medViewerToolBoxViewProperties::onPresetChanged(int index)
 {
+    //a "Preset" is a prepared selection of 3 values: LUT, window width and window level
+
     if (!d->view)
         return;
-    if(d->isMesh)
-        return;
 
-    d->view->setCurrentLayer(d->currentLayer);
-    d->view->setProperty("Preset", d->presetList.at(index));
+    // anyone knows why this 'if clause' is here? I mean... a preset sets 3 values: LUT + ww/wl
+    // and there IS code for meshes in onLUTchanged (apparently the interactors need to be notified)
+    // but if the LUT is set through this function, they are not
+//    if(d->isMesh)
+//        return;
+
+    // find the LUT combo box to manually change the new value
+    QString currentLayerItemString = QString::number(d->currentLayer);
+    QTreeWidgetItem* layerItem = d->propertiesTree->findItems(currentLayerItemString, Qt::MatchExactly | Qt::MatchWrap, 0)[0]; // we take the first one as there's only one
+    QTreeWidgetItem* lutItem = layerItem->child(2); // the LUT item is the third one
+    QComboBox* lutComboBox = dynamic_cast<QComboBox*>(d->propertiesTree->itemWidget(lutItem, 2));
+    QString lutStringToSet = d->presetToLut[d->presetList.at(index)];
+    int lutValueToSet = d->lutList.indexOf(lutStringToSet, 0);
+
+    lutComboBox->blockSignals(true);
+    lutComboBox->setCurrentIndex(lutValueToSet);
+    lutComboBox->blockSignals(false);
+
+    if(!d->isMesh)
+    {
+        d->view->setCurrentLayer(d->currentLayer);
+        // the setProperty/LUT is called in the v3dView within setProperty/Preset
+        d->view->setProperty("Preset", d->presetList.at(index));
+    }
+    else
+    {
+        d->interactors[d->currentInteractor]->setLayer( d->view->currentMeshLayer());
+        d->interactors[d->currentInteractor]->setProperty("LUTMode", lutStringToSet);
+    }
+
     d->view->update();
 }
 
@@ -897,7 +981,7 @@ void medViewerToolBoxViewProperties::onItemClicked(QTreeWidgetItem * item, int c
             d->propertiesTree->expandItem(item);
 
             d->currentLayer = item->text(0).toInt();
-
+            d->view->setCurrentLayer(d->currentLayer);
             if(item->text(0).contains("Mesh"))
             {
                 QString s = item->text(0).remove(0,5);
@@ -1018,28 +1102,28 @@ QIcon medViewerToolBoxViewProperties::createIcon(QString colorName)
 
 void medViewerToolBoxViewProperties::onWindowingChanged(bool checked)
 {
-    if (d->view) {
+    if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Windowing");
     }
 }
 
 void medViewerToolBoxViewProperties::onZoomingChanged(bool checked)
 {
-    if (d->view) {
+    if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Zooming");
     }
 }
 
 void medViewerToolBoxViewProperties::onSlicingChanged(bool checked)
 {
-    if (d->view) {
+    if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Slicing");
     }
 }
 
 void medViewerToolBoxViewProperties::onMeasuringChanged(bool checked)
 {
-    if (d->view) {
+    if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Measuring");
     }
 }
@@ -1155,7 +1239,7 @@ void  medViewerToolBoxViewProperties::setCurrentInteractionFromSettings()
     }
     else if (interaction == "Measuring")
     {
-        d->slicingPushButton->setChecked(true);
+        d->measuringPushButton->setChecked(true);
     }
     else
     {

@@ -31,7 +31,10 @@ public:
 
 medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(parent), d(new medPacsDataSourcePrivate)
 {
-    d->pacsWidget = new medPacsWidget;
+    //this hierarchy is clearly broken: medPacsDataSource inherits from QObject,
+    //pacsWidget is a widget, and its parent is the browserArea,
+    //see destructor.
+    d->pacsWidget = new medPacsWidget(parent);
     d->pacs_selector = new medPacsSelector(d->pacsWidget);
     d->toolbox_pacs_host = new medBrowserToolBoxPacsHost(d->pacsWidget);
     d->toolboxes.push_back(d->toolbox_pacs_host);
@@ -55,6 +58,10 @@ medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(pa
 
 medPacsDataSource::~medPacsDataSource()
 {
+    //I don't know what happens if the browser destroys pacsWidget before
+    //destroying medPacsDataSource...
+    //we can delete the pacsdatasource without destroying the parent.
+    d->pacsWidget->deleteLater();
     delete d;
     d = NULL;
 }

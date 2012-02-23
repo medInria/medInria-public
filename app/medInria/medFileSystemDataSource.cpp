@@ -13,9 +13,9 @@ public:
     dtkFinderPathBar *path;
     dtkFinderSideView *side;
     dtkFinderToolBar *toolbar;
-
     QList<medToolBox*> toolboxes;
     medToolBoxActions* actionsTb;
+    QLabel * infoText;
 };
 
 medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
@@ -23,15 +23,33 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     d->filesystem_widget = new QWidget(parent);
 
     d->finder = new dtkFinder (d->filesystem_widget);
-    d->finder->setPath(QDir::homePath());
     d->finder->allowFileBookmarking(false);
     d->finder->allowMultipleSelection(true);
+    d->finder->setPath(QDir::homePath());
 
     d->path = new dtkFinderPathBar (d->filesystem_widget);
     d->path->setPath(QDir::homePath());
 
     d->toolbar = new dtkFinderToolBar (d->filesystem_widget);
-    d->toolbar->setPath(QDir::currentPath());
+    d->toolbar->setPath(QDir::homePath());
+
+    d->infoText = new QLabel(d->filesystem_widget);
+    d->infoText->setText("");
+    d->infoText->setVisible(false);
+    d->infoText->setTextFormat(Qt::RichText);
+    d->infoText->setStyleSheet(
+                "font-size: 11px;"
+                "color: #b2b8b2;"
+                "border-bottom: 1px solid #a9a9a9;"
+                "border-right: 1px solid #a9a9a9;"
+                "border-left: 1px solid #a9a9a9;"
+                "border-top: 0px;"
+                "border-radius: 0px;"
+                "padding: 0 8px;"
+                "background: #4b4b4b;"
+                "selection-background-color: #4b4b4b;"
+                "selection-color: #b2b8b2;"
+                );
 
     d->actionsTb = new medToolBoxActions(parent);
     d->toolboxes.push_back(d->actionsTb);
@@ -43,6 +61,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
         "    padding: 5px;"
         "    background: #494949;"
         "    show-decoration-selected: 1;"
+        "    border-width: 0px"
         "}"
         ""
         "dtkFinderSideView::item {"
@@ -78,9 +97,17 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
         "}");
 
     QAction *importAction = new QAction(tr("Import"), this);
+    importAction->setIconVisibleInMenu(true);
+    importAction->setIcon(QIcon(":icons/import.png"));
     QAction *indexAction = new QAction(tr("Index"), this);
+    indexAction->setIconVisibleInMenu(true);
+    indexAction->setIcon(QIcon(":icons/link.png"));
     QAction *loadAction = new QAction(tr("Load"), this);
+    loadAction->setIconVisibleInMenu(true);
+    loadAction->setIcon(QIcon(":icons/load.svg"));
     QAction *viewAction = new QAction(tr("View"), this);
+    viewAction->setIconVisibleInMenu(true);
+    viewAction->setIcon(QIcon(":icons/magnifier.png"));
 
     d->finder->addContextMenuAction(importAction);
     d->finder->addContextMenuAction(indexAction);
@@ -103,11 +130,18 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     filesystem_layout->setSpacing(0);
     filesystem_layout->addLayout (toolbar_layout);
     filesystem_layout->addWidget(d->finder);
+    filesystem_layout->addWidget(d->infoText);
 
     connect(d->finder, SIGNAL(changed(QString)), d->path, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(changed(QString)), d->toolbar, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(fileDoubleClicked(const QString&)), this, SLOT(onFileDoubleClicked(const QString&)));
+    connect(d->finder, SIGNAL(fileClicked(const QFileInfo&)), this, SLOT(onFileClicked(const QFileInfo&)));
+    connect(d->finder, SIGNAL(nothingSelected()), this, SLOT(onNothingSelected()));
+
+    connect(d->finder, SIGNAL(listView()), d->toolbar, SLOT(onListView()));
+    connect(d->finder, SIGNAL(treeView()), d->toolbar, SLOT(onTreeView()));
+    connect(d->finder, SIGNAL(showHiddenFiles(bool)), d->toolbar, SLOT(onShowHiddenFiles(bool)));
 
     connect(d->path, SIGNAL(changed(QString)), d->finder, SLOT(setPath(QString)));
     connect(d->path, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
@@ -132,6 +166,8 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     connect(d->actionsTb, SIGNAL(importClicked()), this, SLOT(onFileSystemImportRequested()));
     connect(d->actionsTb, SIGNAL(indexClicked()), this, SLOT(onFileSystemIndexRequested()));
     connect(d->actionsTb, SIGNAL(loadClicked()), this, SLOT(onFileSystemLoadRequested()));
+
+    connect (d->toolbar, SIGNAL(showHiddenFiles(bool)), d->finder, SLOT(onShowHiddenFiles(bool)));
 }
 
 medFileSystemDataSource::~medFileSystemDataSource()
@@ -152,7 +188,7 @@ QWidget* medFileSystemDataSource::sourceSelectorWidget()
 
 QString medFileSystemDataSource::tabName()
 {
-    return tr("File");
+    return tr("File system");
 }
 
 QList<medToolBox*> medFileSystemDataSource::getToolboxes()
@@ -246,4 +282,38 @@ QStringList medFileSystemDataSource::removeNestedPaths(const QStringList& paths)
         purgedList.removeAll(path);
 
     return purgedList;
+}
+
+void medFileSystemDataSource::onFileClicked(const QFileInfo& info)
+{
+    d->infoText->setVisible(true);
+    if (info.isDir()) {
+        d->infoText->setText("Directory <b>" + info.fileName() + "</b> selected");
+    }
+    else {
+        d->infoText->setText("<b>" + info.fileName() + "</b> selected - <i>" + this->formatByteSize(info.size()) + "</i>");
+    }
+}
+
+QString medFileSystemDataSource::formatByteSize(qint64 bytes)
+{
+    qint64 b = 1;
+    qint64 kb = 1024 * b;
+    qint64 mb = 1024 * kb;
+    qint64 gb = 1024 * mb;
+
+    if (bytes > gb)
+        return QString::number(qIntCast((qreal)(bytes) / gb )) + " GB";
+    else if (bytes > mb)
+        return QString::number(qIntCast((qreal)(bytes) / mb )) + " MB";
+    else if (bytes > kb)
+        return QString::number(qIntCast((qreal)(bytes) / kb )) + " KB";
+    else
+        return QString::number(qIntCast((qreal)(bytes))) + " Bytes";
+}
+
+void medFileSystemDataSource::onNothingSelected(void)
+{
+    d->infoText->setVisible(false);
+    d->infoText->setText("");
 }

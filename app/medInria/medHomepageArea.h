@@ -45,16 +45,17 @@ public:
     QParallelAnimationGroup * getAnimation(void);
 
     void resizeEvent( QResizeEvent * event );
-    
+
 public slots:
     void onShowBrowser(void);
     void onShowConfiguration(QString configuration);
     void onShowSettings(void);
     void onShowAbout(void);
+    void onShowPlugin(void);
     void onShowHelp(void);
     void onStartWithHomepage(int state);
-    void onHideAbout();
-    
+    void onShowInfo();
+
 signals:
     void showSettings(void);
     void showAbout(void);
@@ -62,7 +63,7 @@ signals:
     void showBrowser(void);
     void showViewer(void);
     void showConfiguration(QString configuration);
-    
+
 private:
     medHomepageAreaPrivate * d;
 };
