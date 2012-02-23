@@ -202,6 +202,41 @@ void v3dViewObserver::Execute ( vtkObject *caller, unsigned long event, void *ca
 // v3dViewPrivate
 // /////////////////////////////////////////////////////////////////
 
+//Create a few icons with several states, and we'll use them as static members
+//to save some memory and allocation time.
+class medPlayIcon: public QIcon{
+public:
+    medPlayIcon():QIcon(":/icons/play.png"){
+        addPixmap(QPixmap(":/icons/pause.png"),
+                  QIcon::Normal,
+                  QIcon::On);
+    }
+    ~medPlayIcon(){}
+};
+
+class medLinkIcon: public QIcon{
+public:
+    medLinkIcon():QIcon(":/icons/broken_link.svg"){
+        addFile(":/icons/link.svg",
+                  QSize(48,48),
+                  QIcon::Normal,
+                  QIcon::On);
+    }
+    ~medLinkIcon(){}
+};
+
+class medLinkWLIcon: public QIcon{
+public:
+    medLinkWLIcon():QIcon(":/icons/broken_link_wl.svg"){
+        addFile(":/icons/link_wl.svg",
+                  QSize(48,48),
+                  QIcon::Normal,
+                  QIcon::On);
+    }
+    ~medLinkWLIcon(){}
+};
+
+
 class v3dViewPrivate
 {
 public:
@@ -257,10 +292,19 @@ public:
 
     static QList<QColor> presetColors;
     static int nextColorIndex;
+    static medPlayIcon playIcon;
+    static medLinkIcon linkIcon;
+    static medLinkWLIcon linkWLIcon;
 };
+
+
 
 QList<QColor> v3dViewPrivate::presetColors;
 int v3dViewPrivate::nextColorIndex = -1;
+medPlayIcon v3dViewPrivate::playIcon;
+medLinkIcon v3dViewPrivate::linkIcon;
+medLinkWLIcon v3dViewPrivate::linkWLIcon;
+
 // /////////////////////////////////////////////////////////////////
 // v3dView
 // /////////////////////////////////////////////////////////////////
@@ -346,7 +390,7 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
     d->view3d->SetInteractorStyle ( interactorStyle );
     interactorStyle->Delete();
-    
+
     QMainWindow * mainWindow = dynamic_cast< QMainWindow * >(
         qApp->property( "MainWindow" ).value< QObject * >() );
 
@@ -369,7 +413,8 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
 //    connect ( d->anchorButton, SIGNAL ( clicked ( bool ) ), this, SIGNAL ( becomeDaddy ( bool ) ) );
 
     d->linkButton = new QPushButton ( d->widget );
-    d->linkButton->setIcon ( QIcon ( ":/icons/link.png" ) );
+    d->linkButton->setIcon (d->linkIcon );
+    d->linkButton->setToolTip(tr("Link the position with other views"));
     //d->linkButton->setText("l");
     d->linkButton->setCheckable ( true );
     d->linkButton->setMaximumHeight ( 16 );
@@ -382,8 +427,9 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     connect ( d->linkButton, SIGNAL ( clicked ( bool ) ), this, SLOT ( setLinkCamera ( bool ) ) );
 
     d->linkWLButton = new QPushButton ( d->widget );
-    d->linkWLButton->setIcon ( QIcon ( ":/icons/link_wl.png" ) );
-    //d->linkWLButton->setText("l");
+//    d->linkWLButton->setIcon ( QIcon ( ":/icons/link_wl.png" ) );
+    d->linkWLButton->setIcon ( d->linkWLIcon);
+    d->linkWLButton->setToolTip(tr("Link the window level with other views"));
     d->linkWLButton->setCheckable ( true );
     d->linkWLButton->setMaximumHeight ( 16 );
     d->linkWLButton->setMaximumWidth ( 16 );
@@ -394,8 +440,8 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     connect ( d->linkWLButton, SIGNAL ( clicked ( bool ) ), this, SLOT ( setLinkWindowing ( bool ) ) );
 
     d->fullScreenButton = new QPushButton ( d->widget );
-    // d->fullScreenButton->setIcon (QIcon(":/icons/link_wl.png"));
-    d->fullScreenButton->setText ( "M" );
+    d->fullScreenButton->setIcon (QIcon(":/icons/maximize.svg"));
+    d->fullScreenButton->setToolTip(tr("(Un)Maximize the view"));
     d->fullScreenButton->setCheckable ( true );
     d->fullScreenButton->setMaximumHeight ( 16 );
     d->fullScreenButton->setMaximumWidth ( 16 );
@@ -406,7 +452,10 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     connect ( d->fullScreenButton, SIGNAL ( clicked ( bool ) ), this, SIGNAL ( fullScreen ( bool ) ) );
 
     d->playButton = new QPushButton ( d->widget );
-    d->playButton->setText ( ">" );
+//    QIcon playIcon = QIcon(":icons/play.png");
+//    playIcon.addPixmap(QPixmap(":icons/pause.png"),QIcon::Normal,QIcon::On);
+    d->playButton->setIcon(d->playIcon);
+    d->playButton->setToolTip(tr("Play through the slices") );
     d->playButton->setCheckable ( true );
     d->playButton->setMaximumHeight ( 16 );
     d->playButton->setMaximumWidth ( 16 );
@@ -417,7 +466,8 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     connect ( d->playButton, SIGNAL ( clicked ( bool ) ), this, SLOT ( play ( bool ) ) );
 
     d->closeButton = new QPushButton ( d->widget );
-    d->closeButton->setText ( "x" );
+    d->closeButton->setIcon(QIcon(":/icons/whitecross.svg"));
+    d->closeButton->setToolTip(tr("Close View"));
     d->closeButton->setCheckable ( false );
     d->closeButton->setMaximumHeight ( 16 );
     d->closeButton->setMaximumWidth ( 16 );
@@ -2304,7 +2354,7 @@ medAbstractViewCoordinates * v3dView::coordinates()
 
 QPointF v3dView::worldToDisplay( const QVector3D & worldVec ) const
 {
-    // The following code is implemented without calling ren->SetWorldPoint, 
+    // The following code is implemented without calling ren->SetWorldPoint,
     // because that generates an unnecessary modified event.
     //ren->SetWorldPoint( d->view->currentView()->GetCurrentPoint() );
     //ren->WorldToDisplay();
@@ -2344,7 +2394,7 @@ QPointF v3dView::worldToDisplay( const QVector3D & worldVec ) const
 
 QVector3D v3dView::displayToWorld( const QPointF & scenePoint ) const
 {
-    // The following code is implemented without calling ren->SetWorldPoint, 
+    // The following code is implemented without calling ren->SetWorldPoint,
     // because that generates an unnecessary modified event.
     //ren->SetWorldPoint( minWorld );
     //ren->WorldToDisplay();
@@ -2452,7 +2502,7 @@ qreal v3dView::scale() const
         scale = heightInPx *lScale;
     }
 
-    if ( scale < 0 ) 
+    if ( scale < 0 )
         scale *= -1;
     return scale;
 }
