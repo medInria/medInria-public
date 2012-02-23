@@ -885,6 +885,23 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         medMessageController::instance()->showError ( this, tr ( "The mesh is already visualized" ), 5000 );
         return;
     }
+
+    if(medAbstractView::hasImage()){
+        if (data->identifier().contains( "vtkDataMesh" ) && medAbstractView::meshLayerCount()>1)
+        {
+            medMessageController::instance()->showError ( this, tr ( "By now only 2 mesh layers are possible :(, improvements in progress" ), 5000 );
+            return;
+        }
+    }
+    else
+    {
+        if (data->identifier().contains( "vtkDataMesh" ) && medAbstractView::meshLayerCount()>=1)
+        {
+            medMessageController::instance()->showError ( this, tr ( "By now only 2 mesh layers are possible :(, improvements in progress" ), 5000 );
+            return;
+        }
+    }
+
 #ifdef vtkINRIA3D_USE_ITK
     if (SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
         SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3",data,layer) ||
