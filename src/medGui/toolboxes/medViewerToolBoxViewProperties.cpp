@@ -104,17 +104,18 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->propertiesTree->setFocusPolicy(Qt::NoFocus);
 
     d->propertiesTree->setColumnCount(3);
-    d->propertiesTree->setColumnWidth(0,50);
+    d->propertiesTree->setColumnWidth(0,85);
+    d->propertiesTree->setColumnWidth(1,65);
     d->propertiesTree->setSelectionMode(QAbstractItemView::NoSelection);
     QStringList headers;
-    headers << "Object" << "Name" << "Value";
+    headers << tr("Object") << tr("Name") << tr("Value");
     d->propertiesTree->setHeaderLabels(headers);
     d->propertiesTree->setAnimated(true);
     d->propertiesTree->setAlternatingRowColors(true);
-    d->propertiesTree->setRootIsDecorated(false);
+    d->propertiesTree->setRootIsDecorated(true);
     d->propertiesTree->setContextMenuPolicy(Qt::CustomContextMenu);
 
-    this->setTitle("View Properties");
+    this->setTitle(tr("View Properties"));
 
     QObject::connect(d->propertiesTree, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(onItemClicked(QTreeWidgetItem *, int)));
     QObject::connect(d->propertiesTree, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextTreeMenu(QPoint)));

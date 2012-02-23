@@ -1416,11 +1416,16 @@ medViewerToolBoxViewProperties QTreeWidget::branch:closed:has-children:has-sibli
     image: url(:pixmaps/treeview-branch-closed.png);
 }
 
-medViewerToolBoxViewProperties QTreeWidget::branch:open:has-children:!has-siblings,
-QTreeWidget::branch:open:has-children:has-siblings  {
+medViewerToolBoxViewProperties QTreeWidget::branch:open:has-children  {
     border-image: none;
     image: url(:pixmaps/treeview-branch-open.png);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);
 }
+medViewerToolBoxViewProperties QTreeWidget::item:open:has-children  {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);
+    color: white;
+}
+
 
 /**
  * medTabbedViewContainers
