@@ -22,7 +22,7 @@ public:
     QPushButton* indexBt;
     QPushButton* saveBt;
 
-    QList<QPushButton*> buttonsList;
+    QList<QAbstractButton*> buttonsList;
     QMultiMap<QString, QString> itemToActions;
 };
 
@@ -46,30 +46,45 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
 
     /* Begin create buttons */
 
-    d->removeBt = new QPushButton(tr("Remove"));
+    d->removeBt = new QPushButton();
     d->removeBt->setAccessibleName("Remove");
     d->removeBt->setToolTip(tr("Remove selected item from the database."));
-    d->viewBt = new QPushButton(tr("View"));
+    d->removeBt->setIcon(QIcon(":/icons/cross.svg"));
+
+    d->viewBt = new QPushButton();
     d->viewBt->setAccessibleName("View");
     d->viewBt->setToolTip(tr("Load and visualize the currently selected item."));
-    d->exportBt = new QPushButton(tr("Export"));
+    d->viewBt->setIcon(QIcon(":/icons/eye.png"));
+
+    d->exportBt = new QPushButton();
     d->exportBt->setAccessibleName("Export");
     d->exportBt->setToolTip(tr("Export the series."));
-    d->importBt = new QPushButton(tr("Import"));
+    d->exportBt->setIcon(QIcon(":/icons/export.png"));
+
+    d->importBt = new QPushButton();
     d->importBt->setAccessibleName("Import");
     d->importBt->setToolTip(tr("Import (copy) item(s) into medInria's database."));
-    d->loadBt = new QPushButton(tr("Load"));
+    d->importBt->setIcon(QIcon(":/icons/import.png"));
+
+    d->loadBt = new QPushButton();
     d->loadBt->setAccessibleName("Load");
     d->loadBt->setToolTip(tr("Temporary load the item(s) so as they can be used inside medInria,\nbut do not include them in the database."));
-    d->indexBt = new QPushButton(tr("Index"));
+    d->loadBt->setIcon(QIcon(":/icons/document-open.png"));
+
+    d->indexBt = new QPushButton();
     d->indexBt->setAccessibleName("Index");
     d->indexBt->setToolTip(tr("Include the item(s) into medInria's database but do not import (copy) them."));
-    d->bookmarkBt = new QPushButton(tr("Bookmark"));
+    d->indexBt->setIcon(QIcon(":/icons/finger.png"));
+
+    d->bookmarkBt = new QPushButton();
     d->bookmarkBt->setAccessibleName("Bookmark");
     d->bookmarkBt->setToolTip(tr("Bookmark selected folder/resource."));
-    d->saveBt = new QPushButton(tr("Save"));
+    d->bookmarkBt->setIcon(QIcon(":/icons/star.svg"));
+
+    d->saveBt = new QPushButton();
     d->saveBt->setAccessibleName("Save");
     d->saveBt->setToolTip(tr("Save selected item into the database."));
+    d->saveBt->setIcon(QIcon(":/icons/save.png"));
 
     /* End create buttons */
 
@@ -80,8 +95,9 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
     int COLUMNS = 4; // we will use 2 rows of 4 buttons each
     int i = 0;
     QGridLayout *gridLayout = new QGridLayout();
-    foreach(QPushButton* bt, d->buttonsList)
+    foreach(QAbstractButton* bt, d->buttonsList)
     {
+        bt->setAutoFillBackground(true);
         bt->setObjectName("actionToolBoxButton"); // set for style sheet medInria.qss
 
         // this widget is required to keep the space even if the button is invisible
@@ -177,7 +193,7 @@ void medToolBoxActions::updateButtons(QString selectedItem)
 {
     QList<QString> actions = d->itemToActions.values(selectedItem);
 
-    foreach(QPushButton* bt, d->buttonsList)
+    foreach(QAbstractButton* bt, d->buttonsList)
     {
         bool showButton = actions.contains( bt->accessibleName() );
         bt->setVisible(showButton);

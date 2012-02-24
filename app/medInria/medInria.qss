@@ -1500,9 +1500,8 @@ medViewContainer [isEmpty="false"][clicked="true"] {
  */
 
 QPushButton#actionToolBoxButton {
-    width: 45px;
+    width: 40px;
     height: 30px;
-    font-size: 10px;
 }
 
 QLabel#actionToolBoxLabel {
@@ -1595,4 +1594,3 @@ QTreeWidget::branch:open:has-children:has-siblings  {
     border-image: none;
     image: url(:pixmaps/treeview-branch-open.png);
 }
-

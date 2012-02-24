@@ -101,13 +101,13 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     importAction->setIcon(QIcon(":icons/import.png"));
     QAction *indexAction = new QAction(tr("Index"), this);
     indexAction->setIconVisibleInMenu(true);
-    indexAction->setIcon(QIcon(":icons/link.png"));
+    indexAction->setIcon(QIcon(":icons/finger.png"));
     QAction *loadAction = new QAction(tr("Load"), this);
     loadAction->setIconVisibleInMenu(true);
-    loadAction->setIcon(QIcon(":icons/load.svg"));
+    loadAction->setIcon(QIcon(":icons/document-open.png"));
     QAction *viewAction = new QAction(tr("View"), this);
     viewAction->setIconVisibleInMenu(true);
-    viewAction->setIcon(QIcon(":icons/magnifier.png"));
+    viewAction->setIcon(QIcon(":icons/eye.png"));
 
     d->finder->addContextMenuAction(importAction);
     d->finder->addContextMenuAction(indexAction);

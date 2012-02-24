@@ -111,23 +111,23 @@ medDatabaseView::medDatabaseView(QWidget *parent) : d(new medDatabaseViewPrivate
     //Init the QActions
     d->viewAction = new QAction(tr("View"), this);
     d->viewAction->setIconVisibleInMenu(true);
-    d->viewAction->setIcon(QIcon(":icons/magnifier.svg"));
-    connect(d->viewAction, SIGNAL(triggered()), this, SLOT(onMenuViewClicked()));
+    d->viewAction->setIcon(QIcon(":icons/eye.png"));
+    connect(d->viewAction, SIGNAL(triggered()), this, SLOT(onViewSelectedItemRequested()));
 
     d->exportAction = new QAction(tr("Export"), this);
     d->exportAction->setIconVisibleInMenu(true);
-    d->exportAction->setIcon(QIcon(":icons/export.svg"));
-    connect(d->exportAction, SIGNAL(triggered()), this, SLOT(onMenuExportClicked()));
+    d->exportAction->setIcon(QIcon(":icons/export.png"));
+    connect(d->exportAction, SIGNAL(triggered()), this, SLOT(onExportSelectedItemRequested()));
 
     d->saveAction = new QAction(tr("Save"), this);
     d->saveAction->setIconVisibleInMenu(true);
-    d->saveAction->setIcon(QIcon(":icons/save.svg"));
-    connect(d->saveAction, SIGNAL(triggered()), this, SLOT(onMenuSaveClicked()));
+    d->saveAction->setIcon(QIcon(":icons/save.png"));
+    connect(d->saveAction, SIGNAL(triggered()), this, SLOT(onSaveSelectedItemRequested()));
 
     d->removeAction = new QAction(tr("Remove"), this);
     d->removeAction->setIconVisibleInMenu(true);
     d->removeAction->setIcon(QIcon(":icons/cross.svg"));
-    connect(d->removeAction, SIGNAL(triggered()), this, SLOT(onMenuRemoveClicked()));
+    connect(d->removeAction, SIGNAL(triggered()), this, SLOT(onRemoveSelectedItemRequested()));
 }
 
 medDatabaseView::~medDatabaseView(void)
