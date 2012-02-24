@@ -536,18 +536,13 @@ public:
   virtual bool HasLayer(int layer) const;
   virtual int GetNumberOfLayers(void) const;
 
-  virtual void SetCurrentLayer (int layer);
-  vtkGetMacro(CurrentLayer,int);
-  virtual void GetColorRange( double r[2] ,int layer);
-  virtual void SetColorRange( double r[2] ,int layer);
-
-  virtual void SetColorLevel(double s);
+  using vtkImageView::SetColorLevel;
   virtual void SetColorLevel(double s, int layer);
-  virtual double GetColorLevel();
+  using vtkImageView::GetColorLevel;
   virtual double GetColorLevel(int layer);
-  virtual void SetColorWindow(double s);
+  using vtkImageView::SetColorWindow;
   virtual void SetColorWindow(double s, int layer);
-  virtual double GetColorWindow();
+  using vtkImageView::GetColorWindow;
   virtual double GetColorWindow(int layer);
   virtual void SetTransferFunctionRangeFromWindowSettings();
   virtual void SetTransferFunctionRangeFromWindowSettings(int layer);

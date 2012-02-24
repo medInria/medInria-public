@@ -1,19 +1,19 @@
 /*=========================================================================
- 
+
  Program:   vtkINRIA3D
  Module:    $Id: vtkViewImage.cxx 917 2008-08-27 10:37:34Z ntoussaint $
  Language:  C++
  Author:    $Author: ntoussaint $
  Date:      $Date: 2008-08-27 12:37:34 +0200 (Wed, 27 Aug 2008) $
  Version:   $Revision: 917 $
- 
+
  Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
  See Copyright.txt for details.
- 
+
  This software is distributed WITHOUT ANY WARRANTY; without even
  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  PURPOSE.  See the above copyright notices for more information.
- 
+
  =========================================================================*/
 
 #include <cmath>
@@ -87,12 +87,12 @@ class vtkImageView::vtkImageViewImplementation {
 public:
   //! Default constructor
   vtkImageViewImplementation () : TemporalFilterType (IMAGE_VIEW_NONE) {}
-  
+
   std::map<int, itk::ProcessObject::Pointer> ImageConverter;
   // should not be handled in this class.
   std::map<int, itk::ProcessObject::Pointer> ImageTemporalFilter;
   int TemporalFilterType;
-  
+
   public :
   template < typename T > static ImageViewType GetImageViewType () ;
 public:
@@ -118,25 +118,28 @@ template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageView
 
 vtkImageView::vtkImageView()
 {
+  //by default the CurrentLayer is always the bottom one.
+  this->CurrentLayer = 0;
+
   this->OrientationMatrix       = vtkMatrix4x4::New();
   this->InvertOrientationMatrix = vtkMatrix4x4::New();
   this->OrientationTransform    = vtkMatrixToLinearTransform::New();
-  
+
   this->CornerAnnotation        = vtkImageViewCornerAnnotation::New();
   this->TextProperty            = vtkTextProperty::New();
 
   this->DataSetCollection       = vtkDataSetCollection::New();
   this->DataSetActorCollection  = vtkProp3DCollection::New();
-  
+
   // either use transfer functions or lookup table, the members not
   // in use are set to NULL.
   this->ColorTransferFunction   = NULL;
   this->OpacityTransferFunction = NULL;
   this->LookupTable             = NULL;
-  
+
   this->WindowLevel             = vtkImageMapToColors::New();
   this->ScalarBar               = vtkScalarBarActor::New();
-  
+
   this->Renderer               = 0;
   this->OverlayRenderer        = 0;
   this->RenderWindow           = 0;
@@ -145,20 +148,20 @@ vtkImageView::vtkImageView()
   this->InternalMTime          = 0;
   this->InteractorStyle        = 0;
   this->IsInteractorInstalled  = 0;
-  
+
 #ifdef vtkINRIA3D_USE_ITK
   this->Impl = new vtkImageViewImplementation;
   //this->ITKInput  = 0;
   this->ITKInput4 = 0;
 #endif
-  
+
   this->CornerAnnotation->SetNonlinearFontScaleFactor (0.3);
   this->CornerAnnotation->SetTextProperty ( this->TextProperty );
   this->CornerAnnotation->SetMaximumFontSize (46);
   this->CornerAnnotation->SetImageView (this);
   this->CornerAnnotation->PickableOff();
   this->CornerAnnotation->SetText (3, "<patient>\n<study>\n<series>");
-  
+
   this->ScalarBar->SetLabelFormat ("%.0f");
   this->ScalarBar->SetNumberOfLabels (3);
   this->ScalarBar->GetPositionCoordinate()->
@@ -173,29 +176,29 @@ vtkImageView::vtkImageView()
   this->ScalarBar->SetPosition (0.9,0.3);
   this->ScalarBar->PickableOff();
   this->ScalarBar->VisibilityOn();
-  
-  
+
+
   for(int i=0; i<3; i++)
     this->CurrentPoint[i] = 0.0; //VTK_DOUBLE_MIN;
-  
+
   this->PatientName = "";
   this->StudyName   = "";
   this->SeriesName  = "";
-  
+
   this->ShowAnnotations = true;
   this->ShowScalarBar = true;
-  
+
   this->OrientationTransform->SetInput (this->OrientationMatrix);
-  
+
   this->ColorWindow = 1e-3 * VTK_DOUBLE_MAX;
-  this->ColorLevel  = 0;  
-  
+  this->ColorLevel  = 0;
+
   // use default maps, sets color map of WindowLevel and ScalarBar
   this->UseLookupTable = false;
   this->SetTransferFunctions( NULL, NULL );
-  
+
   this->WindowLevel->SetOutputFormatToRGB();
-  
+
   this->TimeIndex = 0;
 }
 
@@ -203,27 +206,27 @@ vtkImageView::vtkImageView()
 vtkImageView::~vtkImageView()
 {
   this->OrientationTransform->SetInput ( NULL );
-  
-  this->OrientationMatrix->Delete();  
-  this->InvertOrientationMatrix->Delete();  
-  this->OrientationTransform->Delete();  
-  
+
+  this->OrientationMatrix->Delete();
+  this->InvertOrientationMatrix->Delete();
+  this->OrientationTransform->Delete();
+
   this->CornerAnnotation->Delete();
   this->TextProperty->Delete();
 
   this->DataSetCollection->Delete();
   this->DataSetActorCollection->Delete();
-  
+
   if ( this->LookupTable != NULL )
     this->LookupTable->Delete();
   if ( this->ColorTransferFunction != NULL )
     this->ColorTransferFunction->Delete();
   if ( this->OpacityTransferFunction != NULL )
     this->OpacityTransferFunction->Delete();
-  
+
   this->ScalarBar->Delete();
   this->WindowLevel->Delete();
-  
+
   if( this->RenderWindow )
   {
     this->RenderWindow->Delete();
@@ -254,7 +257,7 @@ vtkImageView::~vtkImageView()
     this->Input->Delete();
     this->Input = 0;
   }
-  
+
 #ifdef vtkINRIA3D_USE_ITK
   delete this->Impl;
 #endif
@@ -290,9 +293,9 @@ unsigned long vtkImageView::GetMTime()
 void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 {
   this->UnInstallPipeline();
-  
+
   vtkSetObjectBodyMacro (Interactor, vtkRenderWindowInteractor, arg);
-  
+
   this->InstallPipeline();
 }
 
@@ -300,13 +303,13 @@ void vtkImageView::SetupInteractor(vtkRenderWindowInteractor *arg)
 void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
 {
   this->UnInstallPipeline();
-  
+
   vtkSetObjectBodyMacro (RenderWindow, vtkRenderWindow, arg);
-  
+
   if (this->RenderWindow && this->RenderWindow->GetInteractor())
   {
     this->SetupInteractor (this->RenderWindow->GetInteractor());
-  }  
+  }
   this->InstallPipeline();
 }
 
@@ -314,9 +317,9 @@ void vtkImageView::SetRenderWindow(vtkRenderWindow *arg)
 void vtkImageView::SetRenderer(vtkRenderer *arg)
 {
   this->UnInstallPipeline();
-  
+
   vtkSetObjectBodyMacro (Renderer, vtkRenderer, arg);
-  
+
   this->InstallPipeline();
 }
 
@@ -327,15 +330,15 @@ void vtkImageView::Render()
   {
       /*
     if ( this->GetColorWindow () == VTK_DOUBLE_MAX ) {
-      
+
       this->ResetWindowLevel();
     }*/
-    
+
     if (!this->RenderWindow->GetNeverRendered())
     {
       if( this->GetMTime()>this->InternalMTime )
       {
-	this->RenderWindow->Render();
+        this->RenderWindow->Render();
         this->InternalMTime = this->GetMTime();
       }
     }
@@ -356,7 +359,7 @@ bool vtkImageView::Compare(double *array1, double *array2, int size)
       result = false;
       break;
     }
-  
+
   return result;
 }
 
@@ -370,7 +373,7 @@ bool vtkImageView::Compare(int *array1, int *array2, int size)
       result = false;
       break;
     }
-  
+
   return result;
 }
 
@@ -385,7 +388,7 @@ bool vtkImageView::Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2)
 	result = false;
 	break;
       }
-  
+
   return result;
 }
 
@@ -396,7 +399,7 @@ vtkImageData *vtkImageView::ResliceImageToInput(vtkImageData *image, vtkMatrix4x
     return NULL;
 
   vtkImageData *output = 0;
-  
+
   if ( this->Compare(image->GetOrigin(),      this->GetInput()->GetOrigin(), 3) &&
        this->Compare(image->GetSpacing(),     this->GetInput()->GetSpacing(), 3) &&
        this->Compare(image->GetWholeExtent(), this->GetInput()->GetWholeExtent(), 6) &&
@@ -413,13 +416,13 @@ vtkImageData *vtkImageView::ResliceImageToInput(vtkImageData *image, vtkMatrix4x
       auxMatrix->DeepCopy(matrix);
       vtkMatrix4x4::Invert(auxMatrix, auxMatrix);
     }
-    else 
+    else
     {
       auxMatrix->Identity();
     }
-  
+
     vtkMatrix4x4::Multiply4x4(auxMatrix, this->OrientationMatrix, auxMatrix);
-    
+
     vtkImageReslice *reslicer = vtkImageReslice::New();
     reslicer->SetInput         (image);
     reslicer->SetResliceAxes   (auxMatrix);
@@ -428,22 +431,22 @@ vtkImageData *vtkImageView::ResliceImageToInput(vtkImageData *image, vtkMatrix4x
     reslicer->SetOutputExtent  (this->GetInput()->GetWholeExtent());
     reslicer->SetInterpolationModeToLinear();
     reslicer->Update();
-  
+
     output = reslicer->GetOutput();
     output->Register (this); // hack to make vtk believe output is referenced here
     // otherwise, next call to reslicer->Delete() would discard its output
-  
+
     reslicer->Delete();
     auxMatrix->Delete();
   }
-  
+
   return output;
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::SetInput(vtkImageData *arg, vtkMatrix4x4 *matrix, int layer) 
+void vtkImageView::SetInput(vtkImageData *arg, vtkMatrix4x4 *matrix, int layer)
 {
-  
+
   vtkSetObjectBodyMacro (Input, vtkImageData, arg);
   if (layer==0)
   {
@@ -463,7 +466,7 @@ void vtkImageView::SetInput(vtkImageData *arg, vtkMatrix4x4 *matrix, int layer)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::SetInputConnection(vtkAlgorithmOutput* arg, vtkMatrix4x4 *matrix, int layer) 
+void vtkImageView::SetInputConnection(vtkAlgorithmOutput* arg, vtkMatrix4x4 *matrix, int layer)
 {
   if (layer==0)
     this->SetOrientationMatrix(matrix);
@@ -477,20 +480,20 @@ void vtkImageView::InstallPipeline()
   {
     this->RenderWindow->AddRenderer(this->Renderer);
   }
-  
+
   if (this->Interactor)
   {
     this->Interactor->SetRenderWindow(this->RenderWindow);
   }
-  
+
   if (this->Renderer)
   {
     this->Renderer->AddViewProp ( this->CornerAnnotation );
     this->Renderer->AddViewProp ( this->ScalarBar );
-    
+
     this->Renderer->GetActiveCamera()->ParallelProjectionOn();
   }
-  
+
   this->InstallInteractor();
 }
 
@@ -498,13 +501,13 @@ void vtkImageView::InstallPipeline()
 void vtkImageView::UnInstallPipeline()
 {
   this->UnInstallInteractor();
-  
+
   if (this->Renderer)
   {
     this->Renderer->RemoveViewProp(this->CornerAnnotation);
     this->Renderer->RemoveViewProp(this->ScalarBar);
   }
-  
+
   if (this->RenderWindow && this->Renderer)
   {
     this->RenderWindow->RemoveRenderer(this->Renderer);
@@ -564,12 +567,12 @@ void vtkImageView::ResetCurrentPoint (void)
 {
   if (!this->GetInput())
     return;
-  
+
   this->GetInput()->UpdateInformation();
   int *wholeExtent = this->GetInput()->GetWholeExtent();
-  //this->GetInput()->PropagateUpdateExtent ();	
+  //this->GetInput()->PropagateUpdateExtent ();
   //this->GetInput()->Update();
-  
+
   int center[3];
   for (unsigned int i=0; i<3; i++)
     center[i] = vtkMath::Round((double)(wholeExtent [2*i+1] - wholeExtent[2*i])/2.0);
@@ -583,13 +586,13 @@ void vtkImageView::SetOrientationMatrix (vtkMatrix4x4* matrix)
 {
   if (!matrix)
     return;
-  
+
   vtkMatrix4x4* matrixcopy = vtkMatrix4x4::New();
   matrixcopy->DeepCopy (matrix);
   vtkSetObjectBodyMacro (OrientationMatrix, vtkMatrix4x4, matrixcopy);
   this->OrientationTransform->SetInput (this->OrientationMatrix);
   vtkMatrix4x4::Invert (this->OrientationMatrix, this->InvertOrientationMatrix);
-  
+
   matrixcopy->Delete();
 }
 
@@ -622,9 +625,9 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
     this->SetLookupTable( this->LookupTable );
     return;
   }
-  
+
   this->UseLookupTable = false;
-  
+
   // color
   vtkColorTransferFunction * rgb = NULL;
   if ( color != NULL )
@@ -634,14 +637,14 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
   }
   else if ( this->ColorTransferFunction == NULL )
     rgb = this->GetDefaultColorTransferFunction();
-  
+
   if ( rgb != NULL )
   {
     vtkSetObjectBodyMacro( ColorTransferFunction, vtkColorTransferFunction,
                            rgb );
     rgb->Delete();
   }
-  
+
   // opacity
   vtkPiecewiseFunction * alpha = NULL;
   if ( opacity != NULL )
@@ -651,14 +654,14 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
   }
   else if ( this->OpacityTransferFunction == NULL )
     alpha = this->GetDefaultOpacityTransferFunction();
-  
+
   if ( alpha != NULL )
   {
     vtkSetObjectBodyMacro( OpacityTransferFunction, vtkPiecewiseFunction,
                            alpha );
     alpha->Delete();
   }
-  
+
   // clean up
   if ( this->LookupTable != NULL )
   {
@@ -666,9 +669,9 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
     this->LookupTable->Delete();
     this->LookupTable = NULL;
   }
-  
+
   this->SetTransferFunctionRangeFromWindowSettings();
-  
+
   this->WindowLevel->SetLookupTable( this->ColorTransferFunction );
   this->ScalarBar->SetLookupTable( this->ColorTransferFunction );
 }
@@ -689,12 +692,12 @@ void vtkImageView::SetOpacityTransferFunction( vtkPiecewiseFunction * otf )
 void vtkImageView::SetLookupTable (vtkLookupTable* lookuptable)
 {
   this->UseLookupTable = true;
-  
+
   vtkSetObjectBodyMacro (LookupTable, vtkLookupTable, lookuptable);
-  
+
   this->WindowLevel->SetLookupTable( this->LookupTable );
   this->ScalarBar->SetLookupTable( this->LookupTable );
-  
+
   if ( this->ColorTransferFunction != NULL )
   {
     this->ColorTransferFunction->Delete();
@@ -705,7 +708,7 @@ void vtkImageView::SetLookupTable (vtkLookupTable* lookuptable)
     this->OpacityTransferFunction->Delete();
     this->OpacityTransferFunction = NULL;
   }
-  
+
   this->SetTransferFunctionRangeFromWindowSettings();
 }
 
@@ -716,10 +719,10 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(
   double minRange, double maxRange)
 {
   double targetWidth  = maxRange  - minRange;
-  // in case targetWidth is too small causing numerical precision issues, 
+  // in case targetWidth is too small causing numerical precision issues,
   // or too large causing overflow problems, return otherwise all values will collapse and further
   // windowing will become impossible
-  
+
   double widthTol = std::abs(targetWidth);
   widthTol = std::max( widthTol, std::abs(maxRange) );
   widthTol = std::max( widthTol, std::abs(minRange) );
@@ -741,7 +744,7 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(
     {
 
       double currentWidth = currentRange[1] - currentRange[0];
-      
+
       const unsigned int n = cf->GetSize();
       if ( n > 0 && currentWidth == 0.0 )
         currentWidth = 1.0;
@@ -760,12 +763,12 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(
         val[0] = val[0] * targetWidth + minRange;
         cf->AddRGBPoint( val[0], val[1], val[2], val[3], val[4], val[5] );
       }
-      
+
     }
   }
 
   if (of)
-  {    
+  {
     // Take a copy of the range since we use & modify the object later.
     double currentRange[2];
     of->GetRange(currentRange);
@@ -773,7 +776,7 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(
          currentRange[1] != maxRange )
     {
       double currentWidth = currentRange[1] - currentRange[0];
-            
+
       const unsigned int n = of->GetSize();
       if ( n > 0 && currentWidth == 0.0 )
           currentWidth = 1.0;
@@ -792,7 +795,7 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(
         val[0] = val[0] * targetWidth + minRange;
         of->AddPoint( val[0], val[1], val[2], val[3] );
       }
-      
+
     }
   }
 }
@@ -807,9 +810,9 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings()
     targetRange[0] = 0.0;
     targetRange[1] = 1.0;
   }
-  
+
   bool touched = false;
-  
+
   // lookup table
   if ( this->UseLookupTable && this->LookupTable != NULL )
   {
@@ -821,7 +824,7 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings()
       touched = true;
     }
   }
-  
+
   // color transfer function
   if ( !this->UseLookupTable )
   {
@@ -829,10 +832,10 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings()
                                                        this->OpacityTransferFunction,
                                                        targetRange[0],
                                                        targetRange[1]);
-                                                       
+
       touched = true;
   }
-  
+
   if ( touched )
   {
     this->WindowLevel->Modified();
@@ -894,56 +897,108 @@ void vtkImageView::SetWindowSettingsFromTransferFunction()
   if ( touched )
   {
     this->SetColorRange( targetRange );
-    
+
     this->WindowLevel->Modified();
     this->ScalarBar->Modified();
   }
 }
 
-//----------------------------------------------------------------------------
-void vtkImageView::SetColorWindow(double s) 
+double vtkImageView::GetColorLevel()
 {
+    int currentLayer = this->GetCurrentLayer();
+    return this->GetColorLevel(currentLayer);
+}
+
+
+double vtkImageView::GetColorLevel(int layer)
+{
+    return this->ColorLevel;
+}
+
+void vtkImageView::SetColorLevel(double s)
+{
+    int currentLayer = this->GetCurrentLayer();
+    this->SetColorLevel(s,currentLayer);
+}
+
+
+double vtkImageView::GetColorWindow()
+{
+    int currentLayer = this->GetCurrentLayer();
+    return this->GetColorWindow(currentLayer);
+}
+
+double vtkImageView::GetColorWindow(int layer)
+{
+    return this->ColorWindow;
+}
+
+void vtkImageView::SetColorWindow(double s)
+{
+    int currentLayer = this->GetCurrentLayer();
+    this->SetColorWindow(s,currentLayer);
+}
+
+
+//----------------------------------------------------------------------------
+void vtkImageView::SetColorWindow(double s,int layer)
+{
+  //layer is not used here yet.
   if (s < 0)
     s = 0;
-  
+
   if (s == this->ColorWindow)
     return;
-  
+
   this->ColorWindow = s;
-  
+
   this->SetTransferFunctionRangeFromWindowSettings();
-  
+
   this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, NULL);
   this->Modified();
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::SetColorLevel(double s) 
+void vtkImageView::SetColorLevel(double s,int layer)
 {
+  //layer is not used here yet
   if (s == this->ColorLevel)
     return;
-  
+
   this->ColorLevel = s;
-  
+
   this->SetTransferFunctionRangeFromWindowSettings();
-  
+
   this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, NULL);
   this->Modified();
 }
 
 void vtkImageView::SetColorRange( double r[2] )
 {
-  double level  = 0.5 * ( r[0] + r[1] );
-  double window = r[1] - r[0];
-  
-  this->SetColorLevel( level );
-  this->SetColorWindow( window );
+    int currentLayer = this->GetCurrentLayer();
+    this->SetColorRange(r, currentLayer);
 }
 
 void vtkImageView::GetColorRange( double r[2] )
 {
-  r[0] = this->GetColorLevel() - 0.5 * this->GetColorWindow();
-  r[1] = this->GetColorLevel() + 0.5 * this->GetColorWindow();
+  int currentLayer = this->GetCurrentLayer();
+  this->GetColorRange(r, currentLayer);
+}
+
+
+void vtkImageView::GetColorRange(double r[], int layer)
+{
+    r[0] = this->GetColorLevel(layer) - 0.5 * this->GetColorWindow(layer);
+    r[1] = this->GetColorLevel(layer) + 0.5 * this->GetColorWindow(layer);
+}
+
+void vtkImageView::SetColorRange( double r[2],int layer )
+{
+  double level  = 0.5 * ( r[0] + r[1] );
+  double window = r[1] - r[0];
+
+  this->SetColorLevel( level,layer );
+  this->SetColorWindow( window,layer );
 }
 
 //----------------------------------------------------------------------------
@@ -961,16 +1016,16 @@ void vtkImageView::GetWorldCoordinatesFromImageCoordinates(int indices[3], doubl
     position[0] = 0; position[1] = 0; position[2] = 0;
     return;
   }
-  
+
   // Get information
   double* spacing = this->GetInput()->GetSpacing();
   double* origin = this->GetInput()->GetOrigin();
-  
+
   double orientedposition[4];
   for (unsigned int i=0; i<3; i++)
     orientedposition[i] = origin[i] + spacing[i]*indices[i];
   orientedposition[3] = 1;
-  
+
   this->GetOrientationMatrix()->MultiplyPoint (orientedposition, orientedposition);
   for( unsigned int i=0; i<3; i++)
     position[i] = orientedposition[i];
@@ -984,15 +1039,15 @@ void vtkImageView::GetImageCoordinatesFromWorldCoordinates(double position[3], i
     indices[0] = 0; indices[1] = 0; indices[2] = 0;
     return;
   }
-  
+
   // Get information
   double unorientedposition[4] = {position[0], position[1], position[2], 1};
   double* spacing = this->GetInput()->GetSpacing();
   double* origin = this->GetInput()->GetOrigin();
-  
+
   // apply inverted orientation matrix to the world-coordinate position
   this->InvertOrientationMatrix->MultiplyPoint (unorientedposition, unorientedposition);
-  
+
   for (unsigned int i=0; i<3;i++)
   {
     if (fabs (spacing[i]) > 1e-15)
@@ -1007,7 +1062,7 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
 {
   if (!this->GetInput())
     return 0.0;
-  
+
   int indices[3];
   this->GetImageCoordinatesFromWorldCoordinates (worldcoordinates, indices);
   int* w_extent = this->GetInput()->GetWholeExtent();
@@ -1018,7 +1073,7 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
       (indices[2] < w_extent[4]) ||
       (indices[2] > w_extent[5]) )
     return 0;
-  
+
   // Is the requested point in the currently loaded data extent? If not, attempt to update.
   int* extent = this->GetInput()->GetExtent ();
   if ( (indices[0] < extent[0]) ||
@@ -1026,51 +1081,51 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
       (indices[1] < extent[2]) ||
       (indices[1] > extent[3]) ||
       (indices[2] < extent[4]) ||
-      (indices[2] > extent[5]) ) 
+      (indices[2] > extent[5]) )
   {
-    
+
     int* u_extent = this->GetInput()->GetUpdateExtent ();
     if ( (indices[0] < u_extent[0]) ||
         (indices[0] > u_extent[1]) ||
         (indices[1] < u_extent[2]) ||
         (indices[1] > u_extent[3]) ||
         (indices[2] < u_extent[4]) ||
-        (indices[2] > u_extent[5]) ) 
+        (indices[2] > u_extent[5]) )
     {
-      
+
       int pointExtent [6] = { indices [0], indices [0], indices [1], indices [1], indices [2], indices [2] };
       this->GetInput()->SetUpdateExtent(pointExtent);
       this->GetInput()->PropagateUpdateExtent();
       this->GetInput()->UpdateData();
-      
+
     } else {
-      
+
       this->GetInput ()->Update ();
-      
+
       int* new_extent = this->GetInput()->GetExtent ();
       if ( (indices[0] < new_extent[0]) ||
           (indices[0] > new_extent[1]) ||
           (indices[1] < new_extent[2]) ||
           (indices[1] > new_extent[3]) ||
           (indices[2] < new_extent[4]) ||
-          (indices[2] > new_extent[5]) ) 
+          (indices[2] > new_extent[5]) )
       {
         vtkErrorMacro( "data not in slice extent after update" );
-      } 
-      
+      }
+
     }
   } else {
-    
+
     // Need to be sure that the input is up to date. Otherwise we may be requesting bad data.
     this->GetInput()->Update ();
   }
-  
+
   return this->GetInput()->GetScalarComponentAsDouble (indices[0], indices[1], indices[2], component);
-  
+
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::SetPosition(int a,int b) 
+void vtkImageView::SetPosition(int a,int b)
 {
   if (this->RenderWindow)
     this->RenderWindow->SetPosition(a, b);
@@ -1079,13 +1134,13 @@ void vtkImageView::SetPosition(int a,int b)
 //----------------------------------------------------------------------------
 int* vtkImageView::GetPosition() const
 {
-  if (this->RenderWindow)  
+  if (this->RenderWindow)
     return this->RenderWindow->GetPosition();
   return NULL;
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::SetSize(int a,int b) 
+void vtkImageView::SetSize(int a,int b)
 {
   if (this->RenderWindow)
     this->RenderWindow->SetSize(a, b);
@@ -1145,30 +1200,30 @@ void vtkImageView::SetZoom (double arg)
 {
   if (!this->GetInput())
     return;
-  
+
   vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
   if (!cam)
     return;
-  
+
   // Ensure that the spacing and dimensions are up-to-date.
   this->GetInput()->UpdateInformation();
   this->GetInput()->PropagateUpdateExtent ();
-  
-  // It seems that the above still does not succeed in getting the dimensions in all cases. 
+
+  // It seems that the above still does not succeed in getting the dimensions in all cases.
   // int* dimensions = this->GetInput()->GetDimensions();
   const int* extent = this->GetInput()->GetUpdateExtent ();
-  
+
   double* spacing = this->GetInput()->GetSpacing();
-  double xyz[3] = {0,0,0};  
+  double xyz[3] = {0,0,0};
   for (unsigned int i=0; i<3; i++)
-    xyz[i] = (extent [2*i +1] - extent [2*i]) * spacing[i] / 2.0;  
+    xyz[i] = (extent [2*i +1] - extent [2*i]) * spacing[i] / 2.0;
   double val = std::max (std::max (xyz[0], xyz[1]), xyz[2]);
-  
+
   // Just in case no data, avoid setting scale to zero.
   val = ( val == 0. ) ? 1. : val;
-	
+
   cam->SetParallelScale (val / arg);
-  
+
   this->InvokeEvent (vtkImageView::ZoomChangedEvent);
   this->Modified();
 }
@@ -1178,24 +1233,24 @@ double vtkImageView::GetZoom (void)
 {
   if (!this->GetInput())
     return 1.0;
-  
+
   vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
   if (!cam)
     return 1.0;
-  
+
   // Ensure that the spacing and dimensions are up-to-date.
   this->GetInput()->UpdateInformation();
-  this->GetInput()->PropagateUpdateExtent ();	
-	
+  this->GetInput()->PropagateUpdateExtent ();
+
   //int* dimensions = this->GetInput()->GetDimensions();
   const int* extent = this->GetInput()->GetUpdateExtent ();
   double* spacing = this->GetInput()->GetSpacing();
-  double xyz[3] = {0,0,0};  
+  double xyz[3] = {0,0,0};
   for (unsigned int i=0; i<3; i++)
     xyz[i] = (extent [2*i +1] - extent [2*i]) * spacing[i] / 2.0;
   //xyz[i] = dimensions[i] * spacing[i] / 2.0;
   double val = std::max (std::max (xyz[0], xyz[1]), xyz[2]);
-  
+
   return (val / cam->GetParallelScale());
 }
 
@@ -1207,10 +1262,10 @@ void vtkImageView::ResetCamera (void)
     //  ResetCamera calls ResetCameraClippingRange anyway...
     //      this->Renderer->ResetCameraClippingRange();
 
-     if ( this->GetInput () ) 
+     if ( this->GetInput () )
       {
           double bounds [6];
-          this->GetInputBoundsInWorldCoordinates (bounds);			  
+          this->GetInputBoundsInWorldCoordinates (bounds);
           this->Renderer->ResetCamera (bounds);
           this->InvokeEvent (vtkImageView::CameraChangedEvent);
       } else {
@@ -1308,7 +1363,7 @@ void vtkImageView::Reset (void)
   this->ResetCurrentPoint();
   this->ResetWindowLevel();
   // this->SetColorWindow (VTK_DOUBLE_MAX); // NT: ?? --> when i press reset I would like the windowlevels to be "reset" ?
-  this->ResetCamera();	
+  this->ResetCamera();
 }
 
 //----------------------------------------------------------------------------
@@ -1332,23 +1387,23 @@ void vtkImageView::ResetWindowLevel()
   {
     return;
   }
-  
+
   if( this->GetInput()->GetScalarType()==VTK_UNSIGNED_CHAR  &&
      (this->GetInput()->GetNumberOfScalarComponents()==3 || this->GetInput()->GetNumberOfScalarComponents()==4) )
   {
     return;
   }
-	
+
   this->GetInput()->Update();
-	
+
   double* range = this->GetInput()->GetScalarRange();
   double window = range[1]-range[0];
   double level = 0.5*(range[1]+range[0]);
-  
+
   // std::cerr << "vtkImageView::ResetWindowLevel" << std::endl;
   // std::cerr << "range: " << range[0] << " - " << range[1] << " ("
-  // 	    << range[1] - range[0] << ")" << std::endl;
-  
+  //     << range[1] - range[0] << ")" << std::endl;
+
   this->SetColorWindow ( window );
   this->SetColorLevel ( level );
 }
@@ -1427,7 +1482,7 @@ void vtkImageView::RemoveDataSet (vtkPointSet *arg)
 }
 
 //----------------------------------------------------------------------------
-vtkProp3D* vtkImageView::FindDataSetActor (vtkDataSet* arg) 
+vtkProp3D* vtkImageView::FindDataSetActor (vtkDataSet* arg)
 {
   int id = this->DataSetCollection->IsItemPresent (arg);
   if (id == 0)
@@ -1436,7 +1491,7 @@ vtkProp3D* vtkImageView::FindDataSetActor (vtkDataSet* arg)
 }
 
 //----------------------------------------------------------------------------
-vtkDataSet* vtkImageView::FindActorDataSet (vtkProp3D* arg) 
+vtkDataSet* vtkImageView::FindActorDataSet (vtkProp3D* arg)
 {
   int id = this->DataSetActorCollection->IsItemPresent (arg);
   if (id == 0)
@@ -1472,10 +1527,10 @@ void vtkImageView::SetTimeIndex (vtkIdType timeIndex)
   typedef typename itk::Image<T, 4> ImageType4d;
   typedef typename itk::Image<T, 3> ImageType3d;
   typedef typename itk::ExtractImageBufferFilter< ImageType4d, ImageType3d > ExtractFilterType;
-  
-  // Since we store the extractor type using an enum, the dynamic cast should always succeed, 
+
+  // Since we store the extractor type using an enum, the dynamic cast should always succeed,
   // unless the Filter was already NULL.
-  if(this->Impl->ImageTemporalFilter.size()) 
+  if(this->Impl->ImageTemporalFilter.size())
   {
     ExtractFilterType * extractor = dynamic_cast < ExtractFilterType *> ( this->Impl->ImageTemporalFilter[0].GetPointer () ) ;
     if ( extractor )
@@ -1497,14 +1552,14 @@ void vtkImageView::SetTimeIndex (vtkIdType timeIndex)
 void vtkImageView::SetTimeIndex ( vtkIdType index )
 {
   if ( this->TimeIndex != index ) {
-    
+
 #ifdef vtkINRIA3D_USE_ITK
     if (this->Impl->ImageTemporalFilter.size())
     {
       if ( this->Impl->ImageTemporalFilter[0].IsNotNull ()) {
-        
+
         switch ( this->Impl->TemporalFilterType ) {
-            
+
           default:
           case IMAGE_VIEW_NONE : break;
             // Macro calls template method for correct argument type.
@@ -1514,7 +1569,7 @@ case enumName :				\
 this->SetTimeIndex < type > ( index );	\
 break ;					\
 }
-            
+
             ImageViewCaseEntry( double, IMAGE_VIEW_DOUBLE );
             ImageViewCaseEntry( float, IMAGE_VIEW_FLOAT );
             ImageViewCaseEntry( int, IMAGE_VIEW_INT );
@@ -1529,10 +1584,10 @@ break ;					\
             ImageViewCaseEntry( RGBAPixelType, IMAGE_VIEW_RGBAPIXELTYPE );
             ImageViewCaseEntry( UCharVector3Type, IMAGE_VIEW_UCHARVECTOR3TYPE  );
             ImageViewCaseEntry( FloatVector3Type, IMAGE_VIEW_FLOATVECTOR3TYPE  );
-            
+
         };
       }
-#endif        
+#endif
       this->TimeIndex = index;
       this->GetInput ()->UpdateInformation ();
       this->GetInput ()->PropagateUpdateExtent ();
@@ -1549,15 +1604,15 @@ break ;					\
 ///////////////// One comment on the origin handling ////////////////
 /////////////////////////////////////////////////////////////////////
 
-/// The 4th column of the OrientationMatrix instance is intensively	
-/// used in this class in order to estimate world coordinate position 
-/// and other conversions. The fact that vtkImageData class does not	
-/// handle any orientation matrix makes this class weak, compared to	
-/// ITK version. Therefore I think that ALL orientation AND origin	
-/// information should be stored in the same instance, i.e. a vtkMatrix4x4. 
-/// Thus impliing that the origin in a vtkImageData should be forced to 0. 
-/// If we mix the information between vtkImageData "origin" and the	
-/// vtkMatrix4x4 instances, it will be VERY confusing. and it will	
+/// The 4th column of the OrientationMatrix instance is intensively
+/// used in this class in order to estimate world coordinate position
+/// and other conversions. The fact that vtkImageData class does not
+/// handle any orientation matrix makes this class weak, compared to
+/// ITK version. Therefore I think that ALL orientation AND origin
+/// information should be stored in the same instance, i.e. a vtkMatrix4x4.
+/// Thus impliing that the origin in a vtkImageData should be forced to 0.
+/// If we mix the information between vtkImageData "origin" and the
+/// vtkMatrix4x4 instances, it will be VERY confusing. and it will
 /// introduce misbehaviours in the position evaluation in this class.
 
 //----------------------------------------------------------------------------
@@ -1621,40 +1676,40 @@ inline void vtkImageView::SetITKInput (typename itk::Image<T, 3>::Pointer itkIma
 
 template < class T >
 inline void vtkImageView::SetITKInput4 (typename itk::Image<T, 4>::Pointer itkImage, int layer)
-{									
+{
   if( itkImage.IsNull() )
   {
     return;
   }
-  
+
   // if (this->ITKInput4==itkImage) // if SetITKInput is called after SetITKInput4, pointer is not changed
   // return;                        // and image is not displayed
-  
+
   typedef typename itk::Image<T, 4> ImageType4d;
   typedef typename itk::Image<T, 3> ImageType3d;
   typedef typename itk::ExtractImageBufferFilter< ImageType4d, ImageType3d > ExtractFilterType;
-  
+
   typename ExtractFilterType::Pointer extractor (ExtractFilterType::New());
   // extractor->SetNumberOfThreads(1); // not thread safe, to correct // extractor is now not multi-threaded
   typename ImageType4d::SizeType size = itkImage->GetLargestPossibleRegion().GetSize();
-  
+
   unsigned int timeIndex = this->TimeIndex;
   unsigned int timeLimit = itkImage->GetLargestPossibleRegion().GetSize()[3]-1;
   if (timeIndex<0)
     timeIndex = 0;
   if (timeIndex>timeLimit)
     timeIndex = timeLimit;
-  
+
   typename ImageType4d::IndexType index = {{0,0,0, timeIndex}};
-  
+
   size[3] = 0;
   typename ImageType4d::RegionType region;
   region.SetSize (size);
   region.SetIndex (index);
-  
+
   extractor->SetExtractionRegion (region);
   extractor->SetInput ( itkImage );
-  
+
   this->Impl->ImageTemporalFilter[layer] = extractor;
   this->Impl->TemporalFilterType = vtkImageView::vtkImageViewImplementation::GetImageViewType <T> ();
   this->ITKInput4 = itkImage;
@@ -1722,36 +1777,36 @@ itk::ImageBase<4>* vtkImageView::GetTemporalITKInput (void) const
 void vtkImageView::GetInputBounds ( double * bounds )
 {
   this->GetInput()->UpdateInformation ();
-  
+
   // GetWholeBoundingBox may not be updated by UpdateInformation
   //this->GetInput()->GetWholeBoundingBox (bounds);
-  
+
   const int * wholeExtent = this->GetInput ()->GetWholeExtent ();
   const double * spacing = this->GetInput ()->GetSpacing ();
   const double * origin = this->GetInput ()->GetOrigin ();
-	
-  for ( int i(0); i < 3; ++i ) 
+
+  for ( int i(0); i < 3; ++i )
   {
     bounds[ 2*i     ] = spacing [ i ]*wholeExtent [ 2*i     ] + origin [ i ];
-    bounds[ 2*i + 1 ] = spacing [ i ]*wholeExtent [ 2*i + 1 ] + origin [ i ];		
-  }  
+    bounds[ 2*i + 1 ] = spacing [ i ]*wholeExtent [ 2*i + 1 ] + origin [ i ];
+  }
 }
 
 void vtkImageView::GetInputBoundsInWorldCoordinates ( double * bounds )
 {
   double imageBounds [6];
   this->GetInput()->UpdateInformation ();
-  
+
   const int * wholeExtent = this->GetInput ()->GetWholeExtent ();
   const double * spacing = this->GetInput ()->GetSpacing ();
   const double * origin = this->GetInput ()->GetOrigin ();
-  
-  for ( int i(0); i < 3; ++i ) 
+
+  for ( int i(0); i < 3; ++i )
   {
     imageBounds[ 2*i     ] = spacing [ i ]*wholeExtent [ 2*i     ] + origin [i];
-    imageBounds[ 2*i + 1 ] = spacing [ i ]*wholeExtent [ 2*i + 1 ] + origin [i];		
+    imageBounds[ 2*i + 1 ] = spacing [ i ]*wholeExtent [ 2*i + 1 ] + origin [i];
   }
-  
+
   // Loop over the eight points that define the external vertices of the bounding cuboid.
   double testPoint[4];
   bounds [0] = VTK_DOUBLE_MAX;
@@ -1763,23 +1818,23 @@ void vtkImageView::GetInputBoundsInWorldCoordinates ( double * bounds )
   for ( int k(0); k<2; ++k ) {
     for ( int j(0); j<2; ++j ) {
       for ( int i(0); i<2; ++i ) {
-        
+
         testPoint [0] = imageBounds [i  ];   // x coordinate
         testPoint [1] = imageBounds [2+j];   // y coordinate
         testPoint [2] = imageBounds [4+k];   // z coordinate
         testPoint [3] = 1.;
-        
+
         // Transform to world coordinates
         this->GetOrientationMatrix()->MultiplyPoint (testPoint, testPoint);
-        
+
         // Compare min / max for each coordinate.
         for ( int m(0); m < 3; ++m ) {
-          
+
           if ( bounds [2*m] > testPoint [m] )
             bounds [2*m] = testPoint [m];
           if ( bounds [2*m + 1] < testPoint [m] )
             bounds [2*m + 1] = testPoint [m];
-          
+
         }
       }
     }
@@ -1790,31 +1845,31 @@ void vtkImageView::GetInputBoundsInWorldCoordinates ( double * bounds )
 void vtkImageView::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os, indent);
-  
+
   os << indent << "OrientationMatrix:\n";
   this->OrientationMatrix->PrintSelf(os,indent.GetNextIndent());
-  
+
   if ( this->LookupTable != NULL )
   {
     os << indent << "LookupTable:\n";
     this->LookupTable->PrintSelf(os,indent.GetNextIndent());
   }
-  
+
   if ( this->ColorTransferFunction != NULL )
   {
     os << indent << "ColorTransferFunction:\n";
     this->ColorTransferFunction->PrintSelf(os,indent.GetNextIndent());
   }
-  
+
   if ( this->OpacityTransferFunction != NULL )
   {
     os << indent << "OpacityTransferFunction:\n";
     this->OpacityTransferFunction->PrintSelf(os,indent.GetNextIndent());
   }
-  
+
   os << indent << "WindowLevel:\n";
   this->WindowLevel->PrintSelf(os,indent.GetNextIndent());
-  
+
   if (this->Input)
   {
     os << indent << "Input:\n";
@@ -1829,7 +1884,7 @@ void vtkImageView::PrintSelf(ostream& os, vtkIndent indent)
   {
     os << indent << "Renderer:\n";
     this->Renderer->PrintSelf(os,indent.GetNextIndent());
-  }  
+  }
   if (this->InteractorStyle)
   {
     os << indent << "InteractorStyle:\n";
@@ -1839,7 +1894,7 @@ void vtkImageView::PrintSelf(ostream& os, vtkIndent indent)
 
 void vtkImageView::SetOverlayRenderer( vtkRenderer *arg )
 {
-    vtkSetObjectBodyMacro( OverlayRenderer, vtkRenderer, arg); 
+    vtkSetObjectBodyMacro( OverlayRenderer, vtkRenderer, arg);
     if ( arg ) {
         arg->SetLayer(this->GetNumberOfLayers());
         if ( this->GetRenderer() ) {
@@ -1851,4 +1906,12 @@ void vtkImageView::SetOverlayRenderer( vtkRenderer *arg )
 vtkImageMapToColors * vtkImageView::GetWindowLevel( int layer/*=0*/ )
 {
     return this->WindowLevel;
+}
+
+void vtkImageView::SetCurrentLayer(int layer)
+{
+    if (this->HasLayer(layer))
+    {
+        this->CurrentLayer = layer;
+    }
 }

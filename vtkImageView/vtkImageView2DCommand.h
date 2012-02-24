@@ -36,46 +36,46 @@ class vtkImageView2D;
 
    B) The Zoom and Pan events as separated in Pierre's version are still work
    in progress to be separated here as well. Zoom is done but pan is still to be done.
-   
+
 */
 
 class VTK_IMAGEVIEW_EXPORT vtkImageView2DCommand : public vtkCommand
-{    
+{
  public:
-  static  vtkImageView2DCommand* New() 
+  static  vtkImageView2DCommand* New()
   { return new vtkImageView2DCommand; }
-  
+
   //BTX
   enum EventIds
   {
     SliceMoveEvent=(vtkCommand::UserEvent+1),
     StartSliceMoveEvent,
     EndSliceMoveEvent,
-	TimeChangeEvent,
-	StartTimeChangeEvent,
-	EndTimeChangeEvent,
+    TimeChangeEvent,
+    StartTimeChangeEvent,
+    EndTimeChangeEvent,
     RequestedPositionEvent,
     ResetViewerEvent,
     CameraMoveEvent,
     CameraZoomEvent,
-    CameraPanEvent, 
+    CameraPanEvent,
     DefaultMoveEvent
   };
   //ETX
-  
+
   // Description:
   // Satisfy the superclass API for callbacks. Recall that the caller is
   // the instance invoking the event; eid is the event id (see
   // vtkCommand.h); and calldata is information sent when the callback
   // was invoked (e.g., progress value in the vtkCommand::ProgressEvent).
   virtual void Execute(vtkObject *caller,unsigned long event, void *vtkNotUsed(callData));
-  
+
   virtual void SetViewer(vtkImageView2D *viewer)
   { this->Viewer = viewer; }
 
 
  protected:
-  vtkImageView2DCommand(); 
+  vtkImageView2DCommand();
   ~vtkImageView2DCommand();
 
  private:
@@ -83,8 +83,8 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView2DCommand : public vtkCommand
   double InitialWindow;
   double InitialLevel;
   int InitialSlice;
-  
-   
+
+
 };
 
 #endif

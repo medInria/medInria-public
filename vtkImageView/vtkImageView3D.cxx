@@ -1,19 +1,19 @@
 /*=========================================================================
- 
+
  Program:   vtkINRIA3D
  Module:    $Id: vtkImageView3D.cxx 1324 2009-11-17 13:19:09Z filus $
  Language:  C++
  Author:    $Author: filus $
  Date:      $Date: 2009-11-17 14:19:09 +0100 (mar, 17 nov 2009) $
  Version:   $Revision: 1324 $
- 
+
  Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
  See Copyright.txt for details.
- 
+
  This software is distributed WITHOUT ANY WARRANTY; without even
  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
  PURPOSE.  See the above copyright notices for more information.
- 
+
  =========================================================================*/
 #include "vtkImageView3D.h"
 
@@ -80,25 +80,25 @@ class vtkImage3DDisplay : public vtkObject
 public:
   static vtkImage3DDisplay *New();
   vtkTypeRevisionMacro (vtkImage3DDisplay, vtkObject);
-  
+
   vtkSetObjectMacro(Input, vtkImageData);
   vtkGetObjectMacro(Input, vtkImageData);
-  
+
   vtkSetMacro(Opacity, double);
   vtkGetMacro(Opacity, double);
-  
+
   vtkSetMacro(Visibility, int);
   vtkGetMacro(Visibility, int);
-  
+
 protected:
   vtkImage3DDisplay();
   ~vtkImage3DDisplay();
-  
+
 private:
   vtkImageData         *Input;
   double Opacity;
   int    Visibility;
-  
+
   vtkImage3DDisplay(const vtkImage3DDisplay&);
   void operator=(const vtkImage3DDisplay&);
 };
@@ -131,42 +131,42 @@ vtkImageView3D::vtkImageView3D()
 {
   this->VolumeProperty  = vtkVolumeProperty::New();
   this->VolumeActor     = vtkVolume::New();
-  
+
   this->VolumeMapper = vtkSmartVolumeMapper::New();
-  
+
   this->Callback    = vtkImageView3DCroppingBoxCallback::New();
   this->BoxWidget   = vtkOrientedBoxWidget::New();
   this->PlaneWidget = vtkPlaneWidget::New();
   this->Marker      = vtkOrientationMarkerWidget::New();
   this->Cube        = vtkAnnotatedCubeActor::New();
-  
+
   this->ActorX = vtkImageActor::New();
   this->ActorY = vtkImageActor::New();
   this->ActorZ = vtkImageActor::New();
 
   this->ExtraPlaneCollection = vtkProp3DCollection::New();
   this->ExtraPlaneInputCollection = vtkProp3DCollection::New();
-  
+
   this->VolumeActor->SetVisibility (0);
-  
+
   this->SetupVolumeRendering();
-  this->SetupWidgets();  
-  
+  this->SetupWidgets();
+
   this->ShowAnnotationsOn();
   this->TextProperty->SetColor (0,0,0);
   double white[3] = {0.9, 0.9, 0.9};
   this->SetBackground (white);
-  
+
   this->RenderingMode = PLANAR_RENDERING;
   this->ShowActorX = 1;
   this->ShowActorY = 1;
   this->ShowActorZ = 1;
-    
+
   this->Opacity    = 1.0;
   this->Visibility = 1;
-  
+
   this->CroppingMode = CROPPING_OFF;
-  
+
   vtkInteractorStyleSwitch* styleswitch = vtkInteractorStyleSwitch::New();
   styleswitch->SetCurrentStyleToTrackballCamera();
   this->SetInteractorStyle ( styleswitch );
@@ -176,9 +176,9 @@ vtkImageView3D::vtkImageView3D()
 //----------------------------------------------------------------------------
 vtkImageView3D::~vtkImageView3D()
 {
-  // delete all vtk objects  
+  // delete all vtk objects
   this->LayerInfoVec.clear();  // Delete handled by smartpointer
-  
+
   this->VolumeMapper->Delete();
   this->VolumeProperty->Delete();
   this->VolumeActor->Delete();
@@ -198,9 +198,9 @@ vtkImageView3D::~vtkImageView3D()
 unsigned long vtkImageView3D::GetMTime()
 {
   typedef unsigned long MTimeType;
-  
+
   MTimeType mTime = Superclass::GetMTime();
-  
+
   vtkObject * objectsToInclude[] = {
     this->VolumeMapper,
     this->VolumeProperty,
@@ -212,9 +212,9 @@ unsigned long vtkImageView3D::GetMTime()
     this->ActorX,
     this->ActorY,
     this->ActorZ};
-  
+
   const int numObjects = sizeof(objectsToInclude) / sizeof(vtkObject *);
-  
+
   for ( int i(0); i<numObjects; ++i ) {
     vtkObject * object = objectsToInclude[i];
     if (object) {
@@ -317,7 +317,7 @@ void vtkImageView3D::SetupVolumeRendering()
   this->VolumeMapper->SetRequestedRenderMode( vtkSmartVolumeMapper::DefaultRenderMode );
 #endif
   this->SetCroppingModeToInside();
-  
+
   this->VolumeProperty->IndependentComponentsOn();
   this->VolumeProperty->SetInterpolationTypeToLinear();
   this->VolumeProperty->ShadeOff();
@@ -330,12 +330,12 @@ void vtkImageView3D::SetupVolumeRendering()
     this->VolumeProperty->SetScalarOpacity(0, this->OpacityTransferFunction );
     this->VolumeProperty->SetColor(0, this->ColorTransferFunction );
   }
-  
+
   this->VolumeActor->SetProperty ( this->VolumeProperty );
   this->VolumeActor->SetMapper ( this->VolumeMapper );
   this->VolumeActor->PickableOff();
-  this->VolumeActor->DragableOff();  
-  
+  this->VolumeActor->DragableOff();
+
   this->Callback->SetVolumeMapper ( this->VolumeMapper );
 }
 
@@ -356,17 +356,17 @@ void vtkImageView3D::SetupWidgets()
   this->Cube->GetTextEdgesProperty()->SetDiffuse (0);
   this->Cube->GetTextEdgesProperty()->SetAmbient (1);
   this->Cube->GetTextEdgesProperty()->SetColor (0.18, 0.28, 0.23);
-  
+
 #if VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>=1
-  this->Cube->SetTextEdgesVisibility (1);  
-  this->Cube->SetCubeVisibility(1);  
+  this->Cube->SetTextEdgesVisibility (1);
+  this->Cube->SetCubeVisibility(1);
   this->Cube->SetFaceTextVisibility(1);
 #else
   this->Cube->TextEdgesOn ();
   this->Cube->FaceTextOn();
   this->Cube->CubeOn();
 #endif
-  
+
   this->Cube->GetXPlusFaceProperty()->SetColor (1, 0, 0);
   this->Cube->GetXPlusFaceProperty()->SetInterpolationToFlat();
   this->Cube->GetXMinusFaceProperty()->SetColor (1, 0, 0);
@@ -379,16 +379,16 @@ void vtkImageView3D::SetupWidgets()
   this->Cube->GetZPlusFaceProperty()->SetInterpolationToFlat();
   this->Cube->GetZMinusFaceProperty()->SetColor (0, 0, 1);
   this->Cube->GetZMinusFaceProperty()->SetInterpolationToFlat();
-  
+
   this->Marker->SetOutlineColor (0.93, 0.57, 0.13);
   this->Marker->SetOrientationMarker (this->Cube);
   this->Marker->SetViewport (0.0, 0.05, 0.15, 0.15);
-  
+
   this->BoxWidget->RotationEnabledOff();
   this->BoxWidget->SetPlaceFactor (0.5);
   this->BoxWidget->SetKeyPressActivationValue ('b');
-  this->BoxWidget->AddObserver (vtkCommand::InteractionEvent, this->Callback);  
-  
+  this->BoxWidget->AddObserver (vtkCommand::InteractionEvent, this->Callback);
+
   this->PlaneWidget->SetKeyPressActivationValue ('p');
   //   this->PlaneWidget->NormalToZAxisOn();
 }
@@ -397,7 +397,7 @@ void vtkImageView3D::SetupWidgets()
 void vtkImageView3D::InstallPipeline()
 {
   this->Superclass::InstallPipeline();
-  
+
   if (this->Renderer)
   {
     this->Renderer->AddViewProp (this->VolumeActor);
@@ -409,7 +409,7 @@ void vtkImageView3D::InstallPipeline()
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::UnInstallPipeline()
-{  
+{
   if (this->Renderer)
   {
     this->Renderer->RemoveViewProp (this->VolumeActor);
@@ -417,9 +417,9 @@ void vtkImageView3D::UnInstallPipeline()
     this->Renderer->RemoveViewProp (this->ActorY);
     this->Renderer->RemoveViewProp (this->ActorZ);
   }
-  
+
   this->Superclass::UnInstallPipeline();
-	
+
   this->IsInteractorInstalled = 0;
 }
 
@@ -430,19 +430,19 @@ void vtkImageView3D::InstallInteractor()
   {
     this->Interactor->SetInteractorStyle (this->InteractorStyle);
   }
-  
+
   if (this->Interactor && this->RenderWindow)
   {
     this->Interactor->SetRenderWindow(this->RenderWindow);
-    
+
     this->BoxWidget->SetInteractor ( this->Interactor );
     this->PlaneWidget->SetInteractor ( this->Interactor );
     this->Marker->SetInteractor ( this->Interactor );
-    
+
     this->Marker->On();
     this->Marker->InteractiveOff ();
   }
-	
+
   this->IsInteractorInstalled = 1;
 }
 
@@ -452,13 +452,13 @@ void vtkImageView3D::UnInstallInteractor()
   this->BoxWidget->SetInteractor (NULL);
   this->PlaneWidget->SetInteractor (NULL);
   this->Marker->SetInteractor (NULL);
-  
+
   if (this->Interactor)
   {
     this->Interactor->SetRenderWindow (NULL);
     this->Interactor->SetInteractorStyle (NULL);
   }
-  this->IsInteractorInstalled = 0;    
+  this->IsInteractorInstalled = 0;
 }
 
 //----------------------------------------------------------------------------
@@ -472,19 +472,19 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
     }
     this->Superclass::SetInput (image, matrix, layer);
   }
-  
+
   if( !image )
   {
     return;
   }
-  
+
   image->UpdateInformation ();
-  
+
   // Get whole extent : More reliable than dimensions if not up-to-date.
   int * w_extent = image->GetWholeExtent ();
-  
+
   int size [3] = { w_extent [1] - w_extent[0], w_extent [3] - w_extent[2], w_extent [5] - w_extent[4] };
-  
+
   //  int* size = image->GetDimensions();
   if ( (size[0] < 2) ||
       (size[1] < 2) ||
@@ -494,11 +494,11 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
     this->ActorX->SetInput ( (vtkImageData*)0 );
     this->ActorY->SetInput ( (vtkImageData*)0 );
     this->ActorZ->SetInput ( (vtkImageData*)0 );
-    
+
     this->VolumeMapper->SetInput( static_cast< vtkImageData * >( NULL ) );
     this->BoxWidget->SetInput ( (vtkImageData*)0 );
     this->PlaneWidget->SetInput ( (vtkImageData*)0 );
-    
+
     return;
   }
   
@@ -511,7 +511,7 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
       vtkErrorMacro (<< "Set input prior to adding layers");
       return;
     }
-   
+
     // reslice input image if needed
     vtkImageData *reslicedImage = this->ResliceImageToInput(image, matrix); //vtkImageData::New();
     if (!reslicedImage)
@@ -520,7 +520,7 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
       return;
     }
 
-    // cast it if needed    
+    // cast it if needed
     if (reslicedImage->GetScalarType()!=this->GetInput()->GetScalarType())
     {
       vtkImageCast *cast = vtkImageCast::New();
@@ -529,12 +529,12 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
       cast->Update();
 
       reslicedImage->ShallowCopy (cast->GetOutput());
-      
+
       cast->Delete();
     }
-    
+
     this->AddLayer (layer);
-    
+
     this->GetImage3DDisplayForLayer(layer)->SetInput (reslicedImage);
 
     // set default display properties
@@ -543,11 +543,16 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
 
     vtkColorTransferFunction *rgb   = this->GetDefaultColorTransferFunction();
     vtkPiecewiseFunction     *alpha = this->GetDefaultOpacityTransferFunction();
-    
+
     this->SetTransferFunctions (rgb, alpha, layer);
 
+<<<<<<< HEAD
     // multiLayers = true;
     
+=======
+    multiLayers = true;
+
+>>>>>>> Factorises layer knowledge for 3d and 2d a bit.
     rgb->Delete();
     alpha->Delete();
     reslicedImage->Delete();
@@ -571,11 +576,11 @@ void vtkImageView3D::InternalUpdate (void)
   if (this->LayerInfoVec.size()>0)
   {
     multiLayers = true;
-    
+
     // append all scalar buffer into the same image
     vtkImageAppendComponents *appender = vtkImageAppendComponents::New();
     appender->SetInput (0, this->GetInput());
-    
+
     for( LayerInfoVecType::const_iterator it = this->LayerInfoVec.begin();
          it!=this->LayerInfoVec.end(); ++it)
     {
@@ -584,11 +589,11 @@ void vtkImageView3D::InternalUpdate (void)
 
       appender->AddInput (it->ImageDisplay->GetInput());
     }
-    
+
     appender->Update();
 
     input = appender->GetOutput();
-    
+
     appender->Delete();
   }
 
@@ -598,14 +603,14 @@ void vtkImageView3D::InternalUpdate (void)
   if (this->VolumeMapper->GetInput())
   {
     unsigned long mtime = this->VolumeMapper->GetInput()->GetMTime();
-    
+
     while (input->GetMTime()<=mtime)
       input->Modified();
   }
-  
+
   this->VolumeMapper->SetInput (input);
   this->VolumeMapper->Modified();
-  
+
   // If an image is already of type unsigned char, there is no need to
   // map it through a lookup table
   if ( !multiLayers &&  (input->GetScalarType() == VTK_UNSIGNED_CHAR &&
@@ -613,7 +618,7 @@ void vtkImageView3D::InternalUpdate (void)
 			 input->GetNumberOfScalarComponents() == 4 )) )
   {
     this->VolumeProperty->IndependentComponentsOff();
-    
+
     this->ActorX->SetInput ( input );
     this->ActorY->SetInput ( input );
     this->ActorZ->SetInput ( input );
@@ -630,14 +635,14 @@ void vtkImageView3D::InternalUpdate (void)
   // Read bounds and use these to place widget, rather than force whole dataset to be read.
   double bounds [6];
   this->GetInputBounds (bounds);
-  
+
   this->BoxWidget->SetInput (input);
   this->BoxWidget->PlaceWidget (bounds);
   this->Callback->Execute (this->BoxWidget, 0, bounds);
-  
+
   this->PlaneWidget->SetInput (input);
   this->PlaneWidget->PlaceWidget(bounds);
-  
+
   this->UpdateDisplayExtent();
 }
 
@@ -655,15 +660,15 @@ void vtkImageView3D::SetOrientationMatrix (vtkMatrix4x4* matrix)
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetLookupTable (vtkLookupTable* lookuptable)
 {
-  this->Superclass::SetLookupTable (lookuptable);  
+  this->Superclass::SetLookupTable (lookuptable);
   this->UpdateVolumeFunctions();
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetTransferFunctions (vtkColorTransferFunction * color,
-					   vtkPiecewiseFunction * opacity)
+                                           vtkPiecewiseFunction * opacity)
 {
-  this->SetTransferFunctions (color, opacity, 0);
+  this->SetTransferFunctions (color, opacity);
 }
 
 //----------------------------------------------------------------------------
@@ -692,12 +697,12 @@ void vtkImageView3D::SetTransferFunctions (vtkColorTransferFunction * color,
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetOpacity (double opacity, int layer)
 {
-  if (layer==0) 
+  if (layer==0)
   {
     this->Opacity = opacity;
     this->VolumeProperty->SetComponentWeight(0, opacity);
   }
-  else if (this->HasLayer(layer)) 
+  else if (this->HasLayer(layer))
   {
     this->VolumeProperty->SetComponentWeight(layer, opacity);
     this->GetImage3DDisplayForLayer(layer)->SetOpacity(opacity);
@@ -711,14 +716,14 @@ double vtkImageView3D::GetOpacity(int layer) const
     return this->Opacity;
   else if (this->HasLayer(layer))
     return this->GetImage3DDisplayForLayer(layer)->GetOpacity();
-  
+
   return 0.0;
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetVisibility (int visibility, int layer)
 {
-  if (layer==0) 
+  if (layer==0)
   {
     this->VolumeActor->SetVisibility (visibility);
     this->SetShowActorX (visibility);
@@ -727,25 +732,25 @@ void vtkImageView3D::SetVisibility (int visibility, int layer)
 
     if (visibility)
       this->SetRenderingMode (this->GetRenderingMode());
-    
+
     // if (visibility)
     // {
     //   this->VolumeProperty->SetComponentWeight(0, this->GetOpacity(0));
     // }
-    // else 
+    // else
     // {
     //   this->VolumeProperty->SetComponentWeight(layer, 0);
     // }
     this->Visibility = visibility;
-    
+
   }
-  else if (this->HasLayer(layer)) 
+  else if (this->HasLayer(layer))
   {
     if (visibility)
     {
       this->VolumeProperty->SetComponentWeight(layer, this->GetOpacity(layer));
     }
-    else 
+    else
     {
       this->VolumeProperty->SetComponentWeight(layer, 0);
     }
@@ -758,18 +763,18 @@ int vtkImageView3D::GetVisibility (int layer) const
 {
   if (layer==0)
     return this->Visibility;
-  
+
   else if (this->HasLayer(layer))
     return this->GetImage3DDisplayForLayer(layer)->GetVisibility();
-  
+
   return 0;
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetColorWindow (double s)
 {
-  this->Superclass::SetColorWindow (s);
-  this->UpdateVolumeFunctions();
+  int currentLayer = this->GetCurrentLayer();
+  this->SetColorWindow(s,currentLayer);
 }
 
 //----------------------------------------------------------------------------
@@ -779,23 +784,37 @@ void vtkImageView3D::SetColorLevel (double s)
   this->UpdateVolumeFunctions();
 }
 
+void vtkImageView3D::SetColorWindow (double s,int layer)
+{
+  this->Superclass::SetColorWindow (s,layer);
+  this->UpdateVolumeFunctions();
+}
+
+//----------------------------------------------------------------------------
+void vtkImageView3D::SetColorLevel (double s,int layer)
+{
+  this->Superclass::SetColorLevel (s,layer);
+  this->UpdateVolumeFunctions();
+}
+
+
 //----------------------------------------------------------------------------
 void vtkImageView3D::UpdateVolumeFunctions()
 {
   if ( !this->UseLookupTable || this->GetLookupTable() == NULL )
     return;
-  
+
   vtkColorTransferFunction * color   =
   this->VolumeProperty->GetRGBTransferFunction(0);
   vtkPiecewiseFunction     * opacity =
   this->VolumeProperty->GetScalarOpacity(0);
-  
+
   double colorValue[6]   = { 0.0, 0.0, 0.0, 0.0, 0.5, 0.0 };
   double opacityValue[4] = { 0.0, 0.0,           0.5, 0.0 };
-  
+
   const double * range = this->LookupTable->GetRange();
   double width = range[1] - range[0];
-  
+
   int numColors = this->GetLookupTable()->GetNumberOfTableValues();
   double factor = 1.0 / static_cast< double >( numColors - 1 );
   if ( color->GetSize() == numColors && opacity->GetSize() == numColors )
@@ -803,14 +822,14 @@ void vtkImageView3D::UpdateVolumeFunctions()
     for( int i = 0; i < numColors; ++i )
     {
       double x = range[0] + factor * static_cast< double >( i ) * width;
-      
+
       double * val = this->GetLookupTable()->GetTableValue( i );
       colorValue[0] = x;
       colorValue[1] = val[0];
       colorValue[2] = val[1];
       colorValue[3] = val[2];
       color->SetNodeValue( i, colorValue );
-      
+
       opacityValue[0] = x;
       opacityValue[1] = val[3];
       opacity->SetNodeValue( i, opacityValue);
@@ -820,12 +839,12 @@ void vtkImageView3D::UpdateVolumeFunctions()
   {
     color->RemoveAllPoints();
     opacity->RemoveAllPoints();
-    
+
     // this->OpacityFunction->AddPoint (0.0,  0.0);
     for ( int i = 0; i < numColors; ++i )
     {
       double x = range[0] + factor * static_cast< double >( i ) * width;
-      
+
       double * val = this->GetLookupTable()->GetTableValue( i );
       color->AddRGBPoint( x, val[0], val[1], val[2]);
       opacity->AddPoint( x, val[3] );
@@ -930,17 +949,17 @@ void vtkImageView3D::SetCroppingModeToOutside( void )
 void vtkImageView3D::SetCroppingMode( unsigned int mode )
 {
   this->CroppingMode = mode;
-  
+
   switch ( mode )
   {
     case CROPPING_OFF:
       this->VolumeMapper->CroppingOff();
-      
+
       break;
     case CROPPING_OUTSIDE:
       this->VolumeMapper->CroppingOn();
       this->VolumeMapper->SetCroppingRegionFlagsToSubVolume();
-      
+
       break;
     case CROPPING_INSIDE:         // fall through to default
     default:                      // default is CROPPING_INSIDE
@@ -972,36 +991,36 @@ void vtkImageView3D::UpdateDisplayExtent (void)
   {
     return;
   }
-  
+
   input->UpdateInformation();
   int *w_ext = input->GetWholeExtent();
-    
+
   int slices[3];
   this->GetImageCoordinatesFromWorldCoordinates (this->CurrentPoint, slices);
-  
+
   // Is the slice in range ? If not, fix it
   for (unsigned int i=0; i<3; i++)
   {
     slices[i] = std::max (w_ext[2*i], slices[i]);
     slices[i] = std::min (w_ext[2*i + 1], slices[i]);
-  }	 
-  
+  }
+
   // Set the image actors
   this->ActorX->SetDisplayExtent(
                                  slices[0], slices[0],
                                  w_ext[2],  w_ext[3],
                                  w_ext[4],  w_ext[5] );
-  
+
   this->ActorY->SetDisplayExtent(
                                  w_ext[0],  w_ext[1],
                                  slices[1], slices[1],
                                  w_ext[4],  w_ext[5] );
-  
+
   this->ActorZ->SetDisplayExtent(
                                  w_ext[0],  w_ext[1],
                                  w_ext[2],  w_ext[3],
                                  slices[2], slices[2]);
-  
+
   // this->Modified(); // not in UpdateXXX() methods
 }
 
@@ -1012,7 +1031,7 @@ vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
   vtkPolyDataNormals* normalextractor = vtkPolyDataNormals::New();
   vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
   vtkActor* actor = vtkActor::New();
-  
+
   normalextractor->SetFeatureAngle (90);
   ///\todo try to skip the normal extraction filter in order to
   // enhance the visualization speed when the data is time sequence.
@@ -1022,9 +1041,9 @@ vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
   actor->SetMapper (mapper);
   if (prop)
     actor->SetProperty (prop);
-  
+
   this->Renderer->AddViewProp(actor);
-  
+
   mapper->Delete();
   normalextractor->Delete();
   geometryextractor->Delete();
@@ -1044,10 +1063,10 @@ vtkActor* vtkImageView3D::AddDataSet (vtkPointSet* arg, vtkProperty* prop)
     this->Renderer->ResetCamera(bounds);
 
   }
-  
+
   this->DataSetCollection->AddItem (arg);
   this->DataSetActorCollection->AddItem ( actor);
-  
+
   // the actor is actually not deleted as it has
   // been referenced in the renderer, so we can
   // safely return it. well hopefully.
@@ -1094,6 +1113,12 @@ bool vtkImageView3D::HasLayer (int layer) const
 }
 
 //----------------------------------------------------------------------------
+int vtkImageView3D::GetNumberOfLayers(void) const
+{
+  return this->LayerInfoVec.size();
+}
+
+//----------------------------------------------------------------------------
 void vtkImageView3D::RemoveLayer (int layer)
 {
   if (!this->HasLayer(layer))
@@ -1124,9 +1149,9 @@ class ImageActorCallback : public vtkCommand
 public:
   static ImageActorCallback *New()
   { return new ImageActorCallback; }
-  
-  void Execute(vtkObject *caller, 
-               unsigned long event, 
+
+  void Execute(vtkObject *caller,
+               unsigned long event,
                void *vtkNotUsed(callData))
   {
     if (this->Actor != NULL)
@@ -1160,12 +1185,12 @@ public:
     if (this->Actor)
       this->Actor->Register(this);
   }
-  
+
   vtkImageActor* GetActor()
   {
     return this->Actor;
   }
-  
+
 protected:
   ImageActorCallback()
   {
@@ -1176,9 +1201,9 @@ protected:
     if (this->Actor)
       this->Actor->Delete ();
   }
-  
+
   vtkImageActor* Actor;
-  
+
 };
 
 
@@ -1188,7 +1213,7 @@ void vtkImageView3D::AddExtraPlane (vtkImageActor* input)
 
   if (!this->GetRenderer())
     return;
-  
+
   ImageActorCallback* cbk = ImageActorCallback::New();
   vtkImageActor* actor = vtkImageActor::New();
   cbk->SetActor (actor);
@@ -1200,28 +1225,32 @@ void vtkImageView3D::AddExtraPlane (vtkImageActor* input)
   actor->SetVisibility (input->GetVisibility());
 
   input->AddObserver (vtkCommand::ModifiedEvent, cbk);
+<<<<<<< HEAD
   if (input->GetInput())
     input->GetInput()->AddObserver (vtkCommand::ModifiedEvent, cbk);
   
+=======
+
+>>>>>>> Factorises layer knowledge for 3d and 2d a bit.
   this->GetRenderer()->AddViewProp (actor);
 
   this->ExtraPlaneCollection->AddItem (actor);
   this->ExtraPlaneInputCollection->AddItem (input);
-  
+
   actor->Delete();
   cbk->Delete();
 
   /**
      IMPORTANT NOTE
-     
+
      Adding a 2D actor in the 3D scene should be as simple as the next line
      instead of the code above...
-     
+
      Unfortunately it does not seem to work properly. But this is something
      we should investigate in because it would be much simpler
   */
 //  this->GetRenderer()->AddActor (input);
-  
+
 }
 
 //----------------------------------------------------------------------------

@@ -213,8 +213,7 @@ vtkImageView2D::vtkImageView2D()
   this->SlicePlane          = vtkPolyData::New();
   this->Command             = vtkImageView2DCommand::New();
   this->OrientationAnnotation = vtkOrientationAnnotation::New();
-  //by default the CurrentLayer is always the bottom one.
-  this->CurrentLayer = 0;
+
   this->LayerInfoVec.resize(1);
   this->LayerInfoVec[0].ImageDisplay = vtkSmartPointer<vtkImage2DDisplay>::New();
 
@@ -2020,14 +2019,6 @@ vtkImageMapToColors * vtkImageView2D::GetWindowLevel( int layer/*=0*/ )
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::SetCurrentLayer(int layer)
-{
-    if (this->HasLayer(layer))
-    {
-        this->CurrentLayer = layer;
-    }
-}
-
 
 void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings()
 {
@@ -2045,7 +2036,7 @@ void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings(int layer)
       targetRange[0] = 0.0;
       targetRange[1] = 1.0;
     }
-    vtkWarningMacro (<< "changer transfer function on layer:"<< layer);
+    std::cout<< "change transfer function on layer:"<< layer <<std::endl;
     vtkWarningMacro(<< targetRange[0] << " " << targetRange[1]);
     bool touched = false;
 
@@ -2077,7 +2068,7 @@ void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings(int layer)
            imageDisplay->GetWindowLevel()->
                    SetLookupTable(imageDisplay->GetColorTransferFunction());
         touched = true;
-        vtkWarningMacro(<<"not using lookup table");
+//        vtkWarningMacro(<<"not using lookup table");
     }
     if ( touched )
     {
@@ -2088,20 +2079,7 @@ void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings(int layer)
     }
 }
 
-void vtkImageView2D::GetColorRange(double r[], int layer)
-{
-    r[0] = this->GetColorLevel(layer) - 0.5 * this->GetColorWindow(layer);
-    r[1] = this->GetColorLevel(layer) + 0.5 * this->GetColorWindow(layer);
-}
 
-void vtkImageView2D::SetColorRange( double r[2],int layer )
-{
-  double level  = 0.5 * ( r[0] + r[1] );
-  double window = r[1] - r[0];
-
-  this->SetColorLevel( level,layer );
-  this->SetColorWindow( window,layer );
-}
 
 double vtkImageView2D::GetColorLevel(int layer)
 {
@@ -2113,12 +2091,6 @@ double vtkImageView2D::GetColorLevel(int layer)
     else return 0;
 }
 
-double vtkImageView2D::GetColorWindow()
-{
-    int currentLayer = this->GetCurrentLayer();
-    return this->GetColorWindow(currentLayer);
-}
-
 double vtkImageView2D::GetColorWindow(int layer)
 {
     vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
@@ -2127,12 +2099,6 @@ double vtkImageView2D::GetColorWindow(int layer)
         return imageDisplay->GetColorWindow();
     }
     else return 0;
-}
-
-void vtkImageView2D::SetColorWindow(double s)
-{
-    int currentLayer = this->GetCurrentLayer();
-    this->SetColorWindow(s,currentLayer);
 }
 
 void vtkImageView2D::SetColorWindow(double s,int layer)
@@ -2154,17 +2120,7 @@ void vtkImageView2D::SetColorWindow(double s,int layer)
   this->Modified();
 }
 
-double vtkImageView2D::GetColorLevel()
-{
-    int currentLayer = this->GetCurrentLayer();
-    return this->GetColorLevel(currentLayer);
-}
 
-void vtkImageView2D::SetColorLevel(double s)
-{
-    int currentLayer = this->GetCurrentLayer();
-    this->SetColorLevel(s,currentLayer);
-}
 
 void vtkImageView2D::SetColorLevel(double s,int layer)
 {

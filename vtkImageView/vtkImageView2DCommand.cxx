@@ -16,7 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 #ifdef _MSC_VER
-#  pragma warning (disable : 4018) 
+#  pragma warning (disable : 4018)
 #endif
 
 #include "vtkImageView2DCommand.h"
@@ -46,7 +46,7 @@ vtkImageView2DCommand::~vtkImageView2DCommand()
 {
 }
 
- 
+
 void
 vtkImageView2DCommand::Execute(vtkObject*    caller,
                                  unsigned long event,
@@ -74,7 +74,7 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
     this->Viewer->Render();
     return;
   }
-  
+
   // Start
   if (event == vtkImageView2DCommand::StartWindowLevelEvent)
   {
@@ -87,7 +87,7 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
   if (event == vtkImageView2DCommand::WindowLevelEvent)
   {
 
-    int *size = this->Viewer->GetRenderWindow()->GetSize();  
+    int *size = this->Viewer->GetRenderWindow()->GetSize();
 
     double* range = this->Viewer->GetInput()->GetScalarRange();
     double windowImage = range[1]-range[0];
@@ -178,7 +178,7 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
 //     {
 //       this->Viewer->SetShowImageAxis (!this->Viewer->GetShowImageAxis());
 //     }
-    
+
     return;
   }
 
@@ -201,19 +201,19 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
     this->Viewer->Render();
     return;
   }
-	
+
 	// Start Slice Move
 	if (event == vtkImageView2DCommand::StartTimeChangeEvent)
 	{
 		return;
 	}
-	
+
 	// End Slice Move
 	if (event == vtkImageView2DCommand::EndTimeChangeEvent)
 	{
 		return;
 	}
-	
+
 	// Move Slice
 	if (event == vtkImageView2DCommand::TimeChangeEvent)
 	{
@@ -231,21 +231,21 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
     this->Viewer->Render();
     return;
   }
-  
+
   // default move : align cursor and update annotation accordingly
   if( event == vtkImageView2DCommand::DefaultMoveEvent)
   {
     vtkRenderWindowInteractor *rwi = this->Viewer->GetInteractor();
     if (!rwi)
       return;
-    
+
     int* xy = rwi->GetEventPosition();
     double position[3];
     this->Viewer->GetWorldCoordinatesFromDisplayPosition (xy, position);
     this->Viewer->SetCurrentPoint(position);
     if (isi->GetState() == VTKIS_NONE)
       this->Viewer->Render();
-    
+
     return;
   }
 
@@ -261,7 +261,7 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
   {
     this->Viewer->Modified();
     return;
-    
+
   }
 
 }

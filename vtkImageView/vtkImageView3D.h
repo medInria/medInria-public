@@ -52,7 +52,7 @@ class vtkProp3DCollection;
    \class vtkImageView3D vtkImageView3D.h "vtkImageView3D.h"
    \brief 3D image 3D rendering viewer
    \author Pierre Fillard & Marc Traina & Nicolas Toussaint
-   
+
    This class allows to view 3D images. Images have to be
    vtkImageData.
    volume rendering and mulptiplane reconstructions are provided
@@ -60,12 +60,12 @@ class vtkProp3DCollection;
 */
 
 class VTK_IMAGEVIEW_EXPORT vtkImageView3D : public vtkImageView
-{  
+{
 public:
 
   static vtkImageView3D* New();
   vtkTypeRevisionMacro(vtkImageView3D, vtkImageView);
-  
+
   // Override vtkObject - return the maximum mtime of this and any objects owned by this.
   unsigned long GetMTime();
 
@@ -80,7 +80,7 @@ public:
     PLANAR_RENDERING
   };
   //ETX
-  
+
   vtkGetObjectMacro (VolumeActor, vtkVolume);
   // vtkGetObjectMacro (OpacityFunction, vtkPiecewiseFunction);
   // vtkGetObjectMacro (ColorFunction, vtkColorTransferFunction);
@@ -91,7 +91,7 @@ public:
   vtkGetObjectMacro (ActorY, vtkImageActor);
   vtkGetObjectMacro (ActorZ, vtkImageActor);
   vtkGetObjectMacro (ExtraPlaneCollection, vtkProp3DCollection);
-  
+
   virtual void SetVolumeMapperTo3DTexture (void);
   virtual void SetVolumeMapperToRayCast (void);
   virtual void SetVolumeMapperToRayCastAndTexture (void);
@@ -102,23 +102,23 @@ public:
   virtual void SetVolumeRayCastFunctionToMaximumIntensityProjection (void);
   virtual void SetVolumeRayCastFunctionToMinimumIntensityProjection (void);
   // virtual void SetVolumeRayCastFunctionToAdditive (void);
-   
+
   virtual void SetInterpolationToNearestNeighbor (void);
   virtual void SetInterpolationToLinear (void);
 
   /** Set the box widget visibility */
   void SetShowBoxWidget (int a)
   {
-      std::cout << this->Interactor << "finteracgtor" << std::endl;
+      std::cout << this->Interactor << " interactor" << std::endl;
 if (this->Interactor)
       this->BoxWidget->SetEnabled (a);
   }
   bool GetShowBoxWidget (void)
   {
     return this->BoxWidget->GetEnabled();
-  }  
+  }
   vtkBooleanMacro (ShowBoxWidget, int);
-  
+
   /** Set the plane widget on */
   void SetShowPlaneWidget (int a)
   {
@@ -142,7 +142,7 @@ if (this->Interactor)
     return this->Marker->GetEnabled();
   }
   vtkBooleanMacro (ShowCube, int);
-  
+
   void SetShade (int a)
   {
     this->VolumeProperty->SetShade (a);
@@ -182,13 +182,16 @@ if (this->Interactor)
   virtual void SetCroppingMode(unsigned int);
   // vtkGetMacro (CroppingMode, int);
   virtual unsigned int GetCroppingMode ();
-  
+
   virtual void SetInput (vtkImageData* input, vtkMatrix4x4 *matrix = 0, int layer = 0);
   virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
   // Description:
   // Set window and level for mapping pixels to colors.
   virtual void SetColorWindow(double s);
   virtual void SetColorLevel(double s);
+
+  virtual void SetColorWindow(double s,int layer);
+  virtual void SetColorLevel(double s,int layer);
   /** Set a user-defined lookup table */
   virtual void SetLookupTable (vtkLookupTable* lookuptable);
   /**
@@ -197,7 +200,7 @@ if (this->Interactor)
    */
   virtual void SetTransferFunctions(vtkColorTransferFunction * color,
                                     vtkPiecewiseFunction * opacity,
-				    int layer);
+                                    int layer);
 
   /**
    * This function is equivalent to setTransferFunctions(color, opacity, 0)
@@ -218,7 +221,7 @@ if (this->Interactor)
 
   // /**
   //    Presets for VR quality.
-  //  */  
+  //  */
   // virtual void SetVRQualityToLow (void)
   // { this->SetVRQuality (0.0); };
   // virtual void SetVRQualityToMed (void)
@@ -240,16 +243,16 @@ if (this->Interactor)
 
   void SetOrientationMarker(vtkActor *actor);
   void SetOrientationMarkerViewport(double, double, double, double);
-	
+
   /**
      The wolrd is not always what we think it is ...
-  
+
      Use this method to move the viewer slice such that the position
      (in world coordinates) given by the arguments is contained by
      the slice plane. If the given position is outside the bounds
      of the image, then the slice will be as close as possible.
   */
-  virtual void SetCurrentPoint (double pos[3]);  
+  virtual void SetCurrentPoint (double pos[3]);
 
   virtual void UpdateDisplayExtent (void);
 
@@ -267,16 +270,17 @@ if (this->Interactor)
      be displayed in the 3D scene and will be fully synchronized with
      the actor it came from.
   */
-  virtual void AddExtraPlane (vtkImageActor* input); 
-  virtual void RemoveExtraPlane (vtkImageActor* input); 
+  virtual void AddExtraPlane (vtkImageActor* input);
+  virtual void RemoveExtraPlane (vtkImageActor* input);
 
 
   virtual void AddLayer (int layer);
   virtual bool HasLayer (int layer) const;
+  virtual int GetNumberOfLayers(void) const;
   virtual void RemoveLayer (int layer);
   virtual void RemoveAllLayers (void);
-    
-protected: 
+
+protected:
 
   vtkImageView3D();
   ~vtkImageView3D();
@@ -285,7 +289,7 @@ protected:
   virtual void InstallPipeline();
   virtual void UnInstallPipeline();
 
-  
+
   virtual void SetupVolumeRendering();
   virtual void SetupWidgets();
   virtual void UpdateVolumeFunctions();
@@ -304,14 +308,14 @@ protected:
   vtkVolumeProperty* VolumeProperty;
   // volume actor
   vtkVolume* VolumeActor;
-	
+
   // smart volume mapper
   vtkSmartVolumeMapper* VolumeMapper;
-  
+
   // blender
   vtkImageBlend* Blender;
   // image 3D cropping box callback
-  vtkImageView3DCroppingBoxCallback* Callback; 
+  vtkImageView3DCroppingBoxCallback* Callback;
   // box widget
   vtkOrientedBoxWidget* BoxWidget;
   // vtkPlane widget
@@ -320,7 +324,7 @@ protected:
   vtkAnnotatedCubeActor* Cube;
   vtkOrientationMarkerWidget* Marker;
 
-  
+
   /**
      The ExtraPlaneCollection is a collection gathering the ImageActor
      instances that are currently displayed in addition to common ones
@@ -339,19 +343,19 @@ protected:
      following.
   */
   vtkProp3DCollection* ExtraPlaneInputCollection;
-  
+
   unsigned int RenderingMode;
   unsigned int ShowActorX;
   unsigned int ShowActorY;
   unsigned int ShowActorZ;
-  
+
   int          LastNodeIndex;
 
   int          CroppingMode;
-    
+
   double Opacity;
   int Visibility;
-    
+
   struct LayerInfo {
       vtkSmartPointer<vtkImage3DDisplay> ImageDisplay;
   };
@@ -359,12 +363,12 @@ protected:
   // Layer indices start from 1, so the entries are at [layer - 1]
   typedef std::vector<LayerInfo > LayerInfoVecType;
   LayerInfoVecType LayerInfoVec;
-  
+
 private:
   vtkImageView3D(const vtkImageView3D&);  // Not implemented.
   void operator=(const vtkImageView3D&);    // Not implemented.
-  
+
 };
-  
+
 
 #endif

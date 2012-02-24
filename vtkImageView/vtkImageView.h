@@ -57,8 +57,8 @@ class vtkProp3D;
 
 
 /**
-   
-   \class vtkImageView 
+
+   \class vtkImageView
    \brief This class is a top-level convenience class for displaying a scalar - or RGB
    image in a 2D or 3D scene.
 
@@ -71,7 +71,7 @@ class vtkProp3D;
    annotation text properties (SetTextProperty()), or a call for reseting to default values
    (Reset() or ResetCamera()).
 
-   
+
    The principle add-on of this class is to tacke the common issue of placing
    different objects in a same consistent reference frame. In a world coordinates system, an
    volume image can be localized by its origin and its spacing, and an orientation vector defining
@@ -99,7 +99,7 @@ class vtkProp3D;
    A) the instance names:
    Interactor, instead of RenderWindowInteractor : shorter
    ShowXX instead of XXVisibility : shorter
-   
+
 
    B) interactorstyle : it is an observer but the most generic instance would
    certainly be a InteractorStyle, and it could be interesting to have it on the
@@ -137,7 +137,7 @@ class vtkProp3D;
    L) Input
    No actual need to keep the input instance, but preferably directly put it into the ImageToColor instance
    as it will (or should) normally not be used otherwise.
-   
+
    NOTA on ITK: if we want at one point to submit this concept to VTK, we might
    consider remove ITK dependency.
 */
@@ -147,7 +147,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   //static vtkImageView* New(); // pure virtual class
   vtkTypeRevisionMacro(vtkImageView, vtkObject);
   void PrintSelf (ostream& os, vtkIndent indent);
-  
+
   // Override vtkObject - return the maximum mtime of this and any objects owned by this.
   unsigned long GetMTime();
 
@@ -170,18 +170,18 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
     PanChangedEvent
   };
   //ETX
-  
+
   // Description:
   // Render the resulting image.
   virtual void Render(void);
-  
+
   // Description:
   // Set/Get the input image to the viewer.
   // LAYER
   virtual void SetInput (vtkImageData *arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
   virtual void SetInputConnection (vtkAlgorithmOutput* arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
   vtkGetObjectMacro (Input, vtkImageData);
-  
+
   // Description:
   // Get the internal render window, renderer,
   // image map and interactor instances.
@@ -203,14 +203,14 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual void SetupInteractor           (vtkRenderWindowInteractor* arg);
   virtual void SetRenderWindowInteractor (vtkRenderWindowInteractor* arg)
   { this->SetupInteractor (arg); }
-  
+
   // Description:
   // Start/Stop the interactor relation with the view.
   // it basically plug or unplug the interactor.
-  // IMPORTANT: pure abstract method to be implemented by subclasses. 
+  // IMPORTANT: pure abstract method to be implemented by subclasses.
   virtual void InstallInteractor()   = 0;
   virtual void UnInstallInteractor() = 0;
-  
+
   // Description:
   // Attach a specific interactor style to this view.
   vtkSetObjectMacro(InteractorStyle, vtkInteractorStyle);
@@ -222,13 +222,13 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
      n begins down-right and increases anti-clockwise.
   */
   vtkGetObjectMacro (CornerAnnotation, vtkImageViewCornerAnnotation);
-  
+
   /**
      Get the scalar bar actor. This instance follows the color window/level
      of the viewer.
   */
   vtkGetObjectMacro (ScalarBar, vtkScalarBarActor);
-  
+
   /**
      The OrientationMatrix instance (GetOrientationMatrix()) is a very important
      added feature of this viewer. It describes the rotation and translation to
@@ -241,7 +241,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
      CAUTION: if you provide non-zero origin to the viewer vtkImageData input
      (SetInput()), then don't provide translation to the OrientationMatrix instance,
      otherwise the information is redundant.
-     
+
      The best behaviour is to force the origin of the vtkImageData input to zero and
      provide this origin information in the OrientationMatrix.
 
@@ -256,18 +256,18 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
    */
   virtual void SetTransferFunctions (vtkColorTransferFunction *color,
                                      vtkPiecewiseFunction     *opacity);
-  
+
   /** Set the ColorTransferFunction */
   vtkGetObjectMacro (ColorTransferFunction, vtkColorTransferFunction);
   virtual void SetColorTransferFunction (vtkColorTransferFunction *ctf);
-  
+
   /**
    * Composite volume rendering takes into account the opacity (alpha)
    * value to add transparency.
    */
   vtkGetObjectMacro (OpacityTransferFunction, vtkPiecewiseFunction);
   virtual void SetOpacityTransferFunction (vtkPiecewiseFunction *otf);
-  
+
   /**
    * The lookup table is an alternative way to define a transfer
    * function.  Internally this is transformed into a
@@ -283,7 +283,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   */
   vtkGetObjectMacro (TextProperty, vtkTextProperty);
   virtual void SetTextProperty (vtkTextProperty* textproperty);
-  
+
   /**
      The world is not always what we think it is ...
 
@@ -304,8 +304,8 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
      This framework is only used in vtkViewImage2D to
      update corner annotations and cursor position.
   */
-  vtkGetVector3Macro (CurrentPoint, double);  
-  
+  vtkGetVector3Macro (CurrentPoint, double);
+
   /**
      Reset the 3D position to center of the image
   */
@@ -315,18 +315,18 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
      Convert an indices coordinate point (image coordinates) into a world coordinate point
   */
   virtual void GetWorldCoordinatesFromImageCoordinates (int indices[3], double* position);
-  
+
   /**
      Convert a world coordinate point into an image indices coordinate point
   */
   virtual void GetImageCoordinatesFromWorldCoordinates (double position[3], int* indices);
-  
+
   /**
      Get the pixel value at a given world coordinate point in space, return
      zero if out of bounds.
   */
   virtual double GetValueAtPosition(double worldcoordinates[3], int component=0 );
-  
+
   /**
      Set the background color. Format is RGB, 0 <= R,G,B <=1
      Example: SetBackground(0.9,0.9,0.9) for grey-white.
@@ -338,56 +338,82 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
     this->SetBackground (rgb);
   }
   virtual double* GetBackground(void) const;
-  
+
   /**
      Get/Set the camera settings, position
   */
   void    SetCameraPosition (double* arg);
   double* GetCameraPosition (void) const;
-  
+
   /**
      Get/Set the camera settings, focal point
   */
   void    SetCameraFocalPoint (double* arg);
   double* GetCameraFocalPoint (void) const;
-  
+
   /**
      Get/Set the camera settings, ViewUp
   */
   void    SetCameraViewUp (double* arg);
   double* GetCameraViewUp (void) const;
-  
+
   /**
      Get/Set the camera settings, parallel scale
   */
   void   SetCameraParallelScale (double arg);
   double GetCameraParallelScale (void) const;
-  
+
   /**
      Get/Set the zoom factor of the view
   */
   virtual void   SetZoom(double arg);
   virtual double GetZoom(void);
-  
+
   /**
      Reset the camera in a nice way for the 2D view
   */
-  virtual void ResetCamera (void);  
+  virtual void ResetCamera (void);
 
   // Description:
   // Set window and level for mapping pixels to colors.
+  /**
+   * Sets the color window of the current layer.
+   */
   virtual void SetColorWindow(double s);
-  vtkGetMacro (ColorWindow, double);
+  virtual void SetColorWindow(double s,int layer);
+  /**
+   * Gets the color window of the current layer.
+   */
+  virtual double GetColorWindow();
+  virtual double GetColorWindow(int layer);
+  /**
+   * Sets the color level of the current layer.
+   */
   virtual void SetColorLevel(double s);
-  vtkGetMacro (ColorLevel, double);
+  virtual void SetColorLevel(double s, int layer);
+  /**
+   * Gets the color level of the current layer.
+   */
+  virtual double GetColorLevel();
+  virtual double GetColorLevel(int layer);
+  /**
+   * Sets the color range of the current layer.
+   */
   virtual void SetColorRange( double r[2] );
+  /**
+   * Gets the color range of the current layer.
+   */
   virtual void GetColorRange( double r[2] );
-  
+
+  virtual void SetColorRange( double r[2], int layer );
+  virtual void GetColorRange( double r[2], int layer );
+
+
   /**
      Reset the window level
   */
   virtual void ResetWindowLevel(void);
-  
+
   /**
      Reset position - zoom - window/level to default
   */
@@ -397,22 +423,22 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
      Show/Hide the annotations.
   */
   vtkGetMacro (ShowAnnotations, int);
-  
+
   /**
      Show/Hide the annotations.
   */
   virtual void SetShowAnnotations (int);
-  
+
   /**
      Show/Hide the annotations.
   */
   vtkBooleanMacro (ShowAnnotations, int);
-  
+
   /**
      Show/Hide the scalarbar.
   */
   vtkGetMacro (ShowScalarBar, int);
-  
+
   /**
      Show/Hide the scalarbar.
   */
@@ -420,9 +446,9 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   /**
      Show/Hide the scalarbar.
   */
-  
+
   vtkBooleanMacro (ShowScalarBar, int);
-  
+
   // Description:
   // Set/Get the position in screen coordinates of the rendering window.
   virtual int* GetPosition() const;
@@ -443,17 +469,17 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
      Enable or Disable interaction on the view.
   */
   virtual void Enable (void);
-  
+
   /**
      Enable or Disable interaction on the view.
   */
   virtual void Disable (void);
-  
+
   /**
      Enable or Disable interaction on the view.
   */
   virtual int GetEnabled (void) const;
-  
+
   /**
      Start the interactor.
   */
@@ -468,12 +494,12 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
       Get the bounding box of the input image in world coordinates.
   */
   virtual void GetInputBoundsInWorldCoordinates ( double * bounds );
-  
+
   /**
    * Add a new layer. Returns the id of the layer created. Should be reimplemented in subclasses.
    */
   virtual void AddLayer(int);
-  
+
   /**
    * Remove a layer. Should be reimplemented in subclasses.
    */
@@ -483,7 +509,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
    * Remove all layers. Should be reimplemented in subclasses.
    */
   virtual void RemoveAllLayers (void);
-  
+
   /**
    * Check whether layer exists. Should be reimplemented in subclasses.
    */
@@ -491,10 +517,21 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
 
   /**
    * Returns the number of layers. Should be reimplemented in subclasses.
-   */  
+   */
   virtual int GetNumberOfLayers(void) const;
-  
-  
+
+
+  /**
+   * Sets the current active layer.
+   *
+   * @param layer If HasLayer(layer) returns false, does nothing.
+   */
+  virtual void SetCurrentLayer (int layer);
+
+  /**
+   * Gets the current active layer.
+   */
+  vtkGetMacro(CurrentLayer,int)
 
 #ifdef vtkINRIA3D_USE_ITK
   /**
@@ -536,7 +573,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   itk::ImageBase<3>*  GetITKInput (int layer = 0) const;
 
   /**
-     NT: 
+     NT:
      \todo The 4th dimension might have to be moved to another class as it is
      a bit overloading the code of this class with a concept which can be placed
      in a dedicated class.
@@ -559,13 +596,13 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
 
 #endif
 
-  
+
   void        SetPatientName (const char* name);
   const char *GetPatientName (void) const;
 
   void        SetStudyName (const char* name);
   const char *GetStudyName (void) const;
-  
+
   void        SetSeriesName (const char* name);
   const char *GetSeriesName (void) const;
 
@@ -588,10 +625,10 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
 
   vtkProp3D* FindDataSetActor (vtkDataSet* arg);
   vtkDataSet* FindActorDataSet (vtkProp3D* arg);
-  
+
   vtkGetObjectMacro (DataSetCollection, vtkDataSetCollection);
   vtkGetObjectMacro (DataSetActorCollection, vtkProp3DCollection);
-  
+
   vtkGetMacro(IsInteractorInstalled, int);
 
  protected:
@@ -610,15 +647,15 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   vtkColorTransferFunction * GetDefaultColorTransferFunction();
   vtkPiecewiseFunction * GetDefaultOpacityTransferFunction();
 
-  virtual void SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFunction *cf, 
+  virtual void SetTransferFunctionRangeFromWindowSettings(vtkColorTransferFunction *cf,
                                                           vtkPiecewiseFunction *of,
                                                           double minRange, double maxRange);
   virtual void SetTransferFunctionRangeFromWindowSettings();
   virtual void SetWindowSettingsFromTransferFunction();
-    
+
   virtual bool Compare(double *array1, double *array2, int size);
   virtual bool Compare(int *array1,    int *array2,    int size);
-  virtual bool Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2);  
+  virtual bool Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2);
 
   /**
      Reslice an image onto the input image. Internal use only.
@@ -632,17 +669,17 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   
   private:
 #ifdef vtkINRIA3D_USE_ITK
-    //! Template function which implements SetInput for all types. 
+    //! Template function which implements SetInput for all types.
     // Defined locally and not exposed.
       template < class T >
          void SetITKInput (typename itk::Image<T, 3>::Pointer itkImage, int layer=0);
 
-    //! Template function which implements SetInput4 for all types. 
+    //! Template function which implements SetInput4 for all types.
     // Defined locally and not exposed.
       template < class T >
          void SetITKInput4 (typename itk::Image<T, 4>::Pointer itkImage, int layer=0);
 
-    //! Template function which sets the time step. 
+    //! Template function which sets the time step.
     // Defined locally and not exposed.
       template < class T >
          void SetTimeIndex (vtkIdType timeIndex);
@@ -661,14 +698,14 @@ protected:
      CAUTION: if you provide non-zero origin to the viewer vtkImageData input
      (SetInput()), then don't provide translation to the OrientationMatrix instance,
      otherwise the information is redundant.
-     
+
      The best behaviour is to force the origin of the vtkImageData input to zero and
      provide this origin information in the OrientationMatrix.
 
   */
   vtkMatrix4x4* OrientationMatrix;
   vtkMatrix4x4* InvertOrientationMatrix;
-  
+
   /**
      The corner annotation gather information related to the image.
      In vtkViewImage2D, it displays slice number, spacing, window-level, position, etc
@@ -676,7 +713,7 @@ protected:
      n begins down-right and increases anti-clockwise.
   */
   vtkImageViewCornerAnnotation* CornerAnnotation;
-  
+
   /**
      The TextProperty instance (GetTextProperty()) describes the font and
      other settings of the CornerAnnotation instance (GetCornerAnnotation())
@@ -685,7 +722,7 @@ protected:
 
   vtkColorTransferFunction * ColorTransferFunction;
   vtkPiecewiseFunction     * OpacityTransferFunction;
-  
+
   /**
    * The lookup table is an alternative way to define a transfer
    * function.  Internally this is transformed into a
@@ -694,13 +731,13 @@ protected:
    */
   vtkLookupTable* LookupTable;
   bool UseLookupTable;
-  
+
   /**
      Get the scalar bar actor. This instance follows the color window/level
      of the viewer.
   */
   vtkScalarBarActor* ScalarBar;
-  
+
   /**
      This vtkTransform instance carries the OrientationMatrix (see GetOrientationMatrix())
      and is used to quickly transform the slice plane in vtkViewImage2D.
@@ -713,13 +750,13 @@ protected:
   /**
    */
   vtkProp3DCollection* DataSetActorCollection;
-  
+
   /**
      local instances.
   */
   int ShowAnnotations;
   int ShowScalarBar;
-  
+
   /**
      Get the current position in world coordinate.
      This framework is only used in vtkViewImage2D to
@@ -729,7 +766,7 @@ protected:
 
   double ColorWindow;
   double ColorLevel;
-  
+  int CurrentLayer;
   int IsInteractorInstalled;
 
   vtkRenderer*                    Renderer;
@@ -738,7 +775,7 @@ protected:
   vtkRenderWindowInteractor*      Interactor;
   vtkInteractorStyle*             InteractorStyle;
   vtkImageMapToColors*            WindowLevel;
-  
+
   vtkImageData*                   Input;
 
   std::string PatientName;
@@ -746,12 +783,12 @@ protected:
   std::string SeriesName;
 
 private:
-  
+
   unsigned long InternalMTime;
 
   //! The time slice to be displayed.
   vtkIdType TimeIndex;
-  
+
 #ifdef vtkINRIA3D_USE_ITK
   /**
      This pointer is used to store internally a reference to the
