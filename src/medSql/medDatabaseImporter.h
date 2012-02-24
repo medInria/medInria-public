@@ -70,11 +70,14 @@ signals:
      */
     void partialImportAttempted ( const QString& message );
 
+    /**
+     * This signal is emitted after a successful import/index.
+     * @param addedIndex - the @medDataIndex that was successfully added
+     */
+    void addedIndex ( const medDataIndex& addedIndex);
+
 public slots:
     void onCancel ( QObject* );
-
-signals:
-    void addedIndex ( const medDataIndex & );
 
 private:
     /**
