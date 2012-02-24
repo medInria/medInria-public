@@ -1093,6 +1093,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
 
     //this->addDataInList ( data, layer );
     this->addDataInList ( data);
+    setCurrentLayer(layer);
     emit dataAdded ( data );
     emit dataAdded ( data, layer );
 }
@@ -1148,13 +1149,22 @@ void v3dView::onOrientationPropertySet ( const QString &value )
 
     dtkSignalBlocker thisBlocker ( this );
 
-    double pos[3], window = 0.0, level = 0.0;
+    double pos[3];//, window = 0.0, level = 0.0;
+    QVector <double> windows;
+    QVector <double> levels;
     int timeIndex = 0;
     if ( d->currentView )
     {
         d->currentView->GetCurrentPoint ( pos );
-        window = d->currentView->GetColorWindow();
-        level  = d->currentView->GetColorLevel();
+        //fo the moment only do this if going to 3d mode:
+        if (d->currentView == d->view2d)
+        {
+            for (int i =0; i < d->currentView->GetNumberOfLayers(); i++)
+            {
+                windows.push_back( d->view2d->GetColorWindow(i));
+                levels.push_back( d->view2d->GetColorLevel(i));
+            }
+        }
         timeIndex = d->currentView->GetTimeIndex();
 
         d->currentView->UnInstallInteractor();
@@ -1235,8 +1245,16 @@ void v3dView::onOrientationPropertySet ( const QString &value )
     //d->observer->setView ( d->currentView );
 
     d->currentView->SetCurrentPoint ( pos );
-    d->currentView->SetColorWindow ( window );
-    d->currentView->SetColorLevel ( level );
+    //for the moment only act when going to 3d mode:
+    //update the color level and window
+    if (d->currentView == d->view3d)
+    {
+        for (int i=0; i < d->currentView->GetNumberOfLayers();i++)
+        {
+            d->currentView->SetColorWindow ( windows.at(i),i );
+            d->currentView->SetColorLevel ( levels.at(i),i );
+        }
+    }
     d->currentView->SetTimeIndex ( timeIndex );
 
 
