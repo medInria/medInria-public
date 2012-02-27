@@ -1,0 +1,60 @@
+/*
+ * msegSeedPointAnnotationData.h
+ *
+ *  Created on: 31 mai 2011 10:36:54
+ *      Author: jstark
+ */
+
+#ifndef MSEGSEEDPOINTANNOTATIONDATA_H_
+#define MSEGSEEDPOINTANNOTATIONDATA_H_
+
+#include "medCoreExport.h"
+
+#include <medAnnotationData.h>
+#include <medAbstractDataImage.h>
+
+#include <dtkCore/dtkSmartPointer.h>
+
+#include <QtCore>
+
+/*
+ * Implementation of an overlay image to be used to mark voxels as inside, outside or unknown.
+ * Can be added to an image data as an annotation, in which case the size of this mask should
+ * match the size of the image.
+ * 
+ * The class contains a medAbstractDataImage containing the actual mask data. This can be manipulated.
+ */
+class MEDCORE_EXPORT medImageMaskAnnotationData : public medAnnotationData {
+    Q_OBJECT;
+public:
+    medImageMaskAnnotationData();
+    virtual ~medImageMaskAnnotationData();
+
+    //! Implement dtkAbstractObject
+    QString description(void) const;
+    QString identifier(void) const;
+
+    // Implement dtkAbstractData
+    virtual void *data(void);
+    virtual void setData(void* data);
+
+    //! Set the color map to be used.
+    typedef QList< QPair<double, QColor> > ColorMapType;
+    const ColorMapType & colorMap();
+    void setColorMap(const ColorMapType & colorMap);
+
+    // static methods returning description and id.
+    static QString s_description();
+    static QString s_identifier();
+
+    //! Return the actual mask data.
+    medAbstractDataImage * maskData();
+    void setMaskData( medAbstractDataImage * data );
+
+protected:
+    ColorMapType m_colorMap;
+    dtkSmartPointer<medAbstractDataImage> m_maskData;
+};
+
+#endif /* MSEGSEEDPOINTANNOTATIONDATA_H_ */
+

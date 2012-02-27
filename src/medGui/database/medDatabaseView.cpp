@@ -111,23 +111,23 @@ medDatabaseView::medDatabaseView(QWidget *parent) : d(new medDatabaseViewPrivate
     //Init the QActions
     d->viewAction = new QAction(tr("View"), this);
     d->viewAction->setIconVisibleInMenu(true);
-    d->viewAction->setIcon(QIcon(":icons/magnifier.svg"));
-    connect(d->viewAction, SIGNAL(triggered()), this, SLOT(onMenuViewClicked()));
+    d->viewAction->setIcon(QIcon(":icons/eye.png"));
+    connect(d->viewAction, SIGNAL(triggered()), this, SLOT(onViewSelectedItemRequested()));
 
     d->exportAction = new QAction(tr("Export"), this);
     d->exportAction->setIconVisibleInMenu(true);
-    d->exportAction->setIcon(QIcon(":icons/export.svg"));
-    connect(d->exportAction, SIGNAL(triggered()), this, SLOT(onMenuExportClicked()));
+    d->exportAction->setIcon(QIcon(":icons/export.png"));
+    connect(d->exportAction, SIGNAL(triggered()), this, SLOT(onExportSelectedItemRequested()));
 
     d->saveAction = new QAction(tr("Save"), this);
     d->saveAction->setIconVisibleInMenu(true);
-    d->saveAction->setIcon(QIcon(":icons/save.svg"));
-    connect(d->saveAction, SIGNAL(triggered()), this, SLOT(onMenuSaveClicked()));
+    d->saveAction->setIcon(QIcon(":icons/save.png"));
+    connect(d->saveAction, SIGNAL(triggered()), this, SLOT(onSaveSelectedItemRequested()));
 
     d->removeAction = new QAction(tr("Remove"), this);
     d->removeAction->setIconVisibleInMenu(true);
     d->removeAction->setIcon(QIcon(":icons/cross.svg"));
-    connect(d->removeAction, SIGNAL(triggered()), this, SLOT(onMenuRemoveClicked()));
+    connect(d->removeAction, SIGNAL(triggered()), this, SLOT(onRemoveSelectedItemRequested()));
 }
 
 medDatabaseView::~medDatabaseView(void)
@@ -159,10 +159,12 @@ void medDatabaseView::setModel(QAbstractItemModel *model)
     QTreeView::setModel(model);
 
     for(int i = 0; i < model->columnCount(); this->resizeColumnToContents(i), i++);
-    connect( this->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), SLOT(selectionChanged(const QModelIndex&, const QModelIndex&)));
 
+    // we stopped using this signal as it is not being emitted after removing or saving an item (and the selection does change)
+    //connect( this->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), SLOT(onSelectionChanged(const QModelIndex&, const QModelIndex&)));
+
+    connect( this->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(onSelectionChanged(const QItemSelection&, const QItemSelection&)) );
 }
-
 
 void medDatabaseView::updateContextMenu(const QPoint& point)
 {
@@ -199,37 +201,6 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
     }
 }
 
-void medDatabaseView::onItemClicked(const QModelIndex& index)
-{
-
-    medAbstractDatabaseItem *item = NULL;
-
-    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
-        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-    else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(this->model()))
-        item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
-
-    if (!item)
-        return;
-
-    if (item->dataIndex().isValidForSeries())
-    {
-        this->collapseAll();
-        this->setExpanded(index.parent().parent(), true);
-        this->setExpanded(index.parent(), true);
-        this->setExpanded(index, true);
-        emit seriesClicked(item->dataIndex ());
-    }
-    else if (item->dataIndex().isValidForPatient())
-    {
-        this->collapseAll();
-        this->setExpanded(index, true);
-        emit patientClicked(item->dataIndex ());
-    }
-
-
-}
-
 void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 {
     medAbstractDatabaseItem *item = NULL;
@@ -243,7 +214,7 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
         emit (open(item->dataIndex()));
 }
 
-void medDatabaseView::onMenuViewClicked(void)
+void medDatabaseView::onViewSelectedItemRequested(void)
 {
     if(!this->selectedIndexes().count())
         return;
@@ -264,7 +235,7 @@ void medDatabaseView::onMenuViewClicked(void)
     }
 }
 
-void medDatabaseView::onMenuExportClicked(void)
+void medDatabaseView::onExportSelectedItemRequested(void)
 {
     if(!this->selectedIndexes().count())
         return;
@@ -283,12 +254,44 @@ void medDatabaseView::onMenuExportClicked(void)
         emit exportData(item->dataIndex());
 }
 
-void medDatabaseView::selectionChanged( const QModelIndex& current, const QModelIndex& previous)
+void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
-    emit onItemClicked(current);
+    if (selected.count() == 0)
+    {
+        emit noPatientOrSeriesSelected();
+        return;
+    }
+
+    // so far we only allow single selection
+    QModelIndex index = selected.indexes()[0];
+
+    medAbstractDatabaseItem *item = NULL;
+
+    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+    else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
+
+    if (!item)
+        return;
+
+    if (item->dataIndex().isValidForSeries())
+    {
+        this->collapseAll();
+        this->setExpanded(index.parent().parent(), true);
+        this->setExpanded(index.parent(), true);
+        this->setExpanded(index, true);
+        emit seriesClicked(item->dataIndex());
+    }
+    else if (item->dataIndex().isValidForPatient())
+    {
+        this->collapseAll();
+        this->setExpanded(index, true);
+        emit patientClicked(item->dataIndex());
+    }
 }
 
-void medDatabaseView::onMenuRemoveClicked( void )
+void medDatabaseView::onRemoveSelectedItemRequested( void )
 {
     int reply = QMessageBox::question(this, tr("Remove item"),
             tr("Are you sure you want to continue?\n""This cannot be undone."),
@@ -316,7 +319,7 @@ void medDatabaseView::onMenuRemoveClicked( void )
     }
 }
 
-void medDatabaseView::onMenuSaveClicked(void)
+void medDatabaseView::onSaveSelectedItemRequested(void)
 {
         QModelIndexList indexes = this->selectedIndexes();
         if(!indexes.count())

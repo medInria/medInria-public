@@ -99,7 +99,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // static data sources ////////////////
 
-    d->dbSource = new medDatabaseDataSource();
+    d->dbSource = new medDatabaseDataSource(this);
     addDataSource(d->dbSource);
     connect(d->dbSource, SIGNAL(open(const medDataIndex&)), this,SIGNAL(open(const medDataIndex&)));
     connect(medDatabaseController::instance(), SIGNAL(updated(const medDataIndex &)),d->dbSource,SLOT(update(const medDataIndex&)));
@@ -110,11 +110,21 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(d->fsSource, SIGNAL(open(QString)), this, SIGNAL(open(QString)));
     connect(d->fsSource, SIGNAL(load(QString)), this, SIGNAL(load(QString)));
 
-    d->pacsSource = new medPacsDataSource(this);
+    medPacsDataSource* pacsDataSource = new medPacsDataSource(this);
 
-    medPacsWidget * mainPacsWidget = dynamic_cast<medPacsWidget *> (d->pacsSource->mainViewWidget());
+    medPacsWidget * mainPacsWidget = qobject_cast<medPacsWidget *> (pacsDataSource->mainViewWidget());
+    //make the widget hide if not functional (otehrwise it flickers in and out).
+    mainPacsWidget->hide();
     if (mainPacsWidget->isServerFunctional())
+    {
+        d->pacsSource = pacsDataSource;
         addDataSource(d->pacsSource);
+    }
+    else
+    {
+        d->pacsSource = NULL;
+        pacsDataSource->deleteLater();
+    }
 
     // dynamic data sources (from plugins) ////////////////
     foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->dataSourcePlugins()) {
@@ -159,6 +169,11 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
 medBrowserArea::~medBrowserArea(void)
 {
+    foreach(medAbstractDataSource* source, d->data_sources)
+    {
+        source->deleteLater();
+    }
+
     delete d;
     d = NULL;
 }
@@ -248,7 +263,7 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
 {
     d->data_sources.push_back(dataSource);
     d->stack->addWidget(dataSource->mainViewWidget());
-	d->toolbox_source->addTab(dataSource->tabName(),dataSource->sourceSelectorWidget(),dataSource->description());
+    d->toolbox_source->addTab(dataSource->tabName(),dataSource->sourceSelectorWidget(),dataSource->description());
     QList<medToolBox*> toolBoxes = dataSource->getToolboxes();
     foreach(medToolBox* toolBox, toolBoxes) {
         toolBox->setVisible(false);

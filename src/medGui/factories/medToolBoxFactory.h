@@ -32,6 +32,7 @@ class medToolBoxRegistrationCustom;
 class medToolBoxDiffusionCustom;
 class medToolBoxCompositeDataSetImporterCustom;
 class medToolBoxFilteringCustom;
+class medToolBoxSegmentationCustom;
 
 class MEDGUI_EXPORT medToolBoxFactory : public dtkAbstractFactory
 {
@@ -42,6 +43,7 @@ public:
     typedef medToolBoxDiffusionCustom    *(*medToolBoxDiffusionCustomCreator)(QWidget *parent);
     typedef medToolBoxFilteringCustom *(*medToolBoxFilteringCustomCreator)(QWidget *parent);
     typedef medToolBoxCompositeDataSetImporterCustom    *(*medToolBoxCompositeDataSetImporterCustomCreator)(QWidget *parent);
+    typedef medToolBoxSegmentationCustom    *(*medToolBoxSegmentationCustomCreator)(QWidget *parent);
 
 
 public:
@@ -63,11 +65,18 @@ public:
                                                        QString name,
                                                        QString description,
                                                        medToolBoxCompositeDataSetImporterCustomCreator func);
+    //!Register a segemntation toolbox
+    bool registerCustomSegmentationToolBox(QString identifier,
+                                           QString name,
+                                           QString description,
+                                           medToolBoxSegmentationCustomCreator func);
 
     QList<QString> registrationToolBoxes(void);
     QList<QString> diffusionToolBoxes(void);
     QList<QString> filteringToolBoxes(void);
     QList<QString> compositeDataSetImporterToolBoxes(void);
+    //! Get a list of the available segmentation toolboxes
+    QList<QString> segmentationToolBoxes(void);
 
     QPair<QString, QString> diffusionToolBoxDetailsFromId (
             const QString& id );
@@ -77,12 +86,17 @@ public:
             const QString& id );
     QPair<QString, QString> compositeToolBoxDetailsFromId (
             const QString& id );
+    //! Get the id, description pair for the given segmentation toolbox
+    QPair<QString, QString> segmentationToolBoxDetailsFromId (
+            const QString& id );
 
 public slots:
     medToolBoxRegistrationCustom *createCustomRegistrationToolBox(QString identifier, QWidget *parent=0);
     medToolBoxDiffusionCustom *createCustomDiffusionToolBox(QString identifier, QWidget *parent=0);
     medToolBoxFilteringCustom *createCustomFilteringToolBox(QString identifier, QWidget *parent=0);
     medToolBoxCompositeDataSetImporterCustom *createCustomCompositeDataSetImporterToolBox(QString identifier, QWidget *parent=0);
+    //! Create the given segemntation toolbox. Return NULL if not found.
+    medToolBoxSegmentationCustom *createCustomSegmentationToolBox(QString identifier, QWidget *parent=0);
 
 protected:
      medToolBoxFactory(void);

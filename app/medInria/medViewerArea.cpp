@@ -271,8 +271,8 @@ bool medViewerArea::open(const medDataIndex& index)
         {
             view = qobject_cast<medAbstractView*>(root->view());
         }
-
-        if( view.isNull())
+        bool newView = view.isNull();
+        if( newView)
         {
             //container empty, or multi with no extendable view
             view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"));
@@ -294,6 +294,7 @@ bool medViewerArea::open(const medDataIndex& index)
             //TODO: move the whole opening of indices to the medViewContainer itself one day.
             view->removeOverlay(0);
             view->setSharedDataPointer(data,0);
+            newView = true;
         }
         else
         {
@@ -306,7 +307,12 @@ bool medViewerArea::open(const medDataIndex& index)
         {
             //set the view to the current container
             root->setView(view);
-            view->reset();
+            //only call reset if the view is a new one or with only one layer.
+            if (newView)
+            {
+                qDebug() << "reset view";
+                view->reset();
+            }
             view->update();
 //            qDebug() <<  QApplication::focusWidget();
         }

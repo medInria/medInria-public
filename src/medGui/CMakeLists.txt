@@ -90,6 +90,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medToolBoxDiffusionFiberBundling.h
   toolboxes/medToolBoxRegistration.h
   toolboxes/medToolBoxRegistrationCustom.h
+  toolboxes/medToolBoxSegmentation.h
+  toolboxes/medToolBoxSegmentationCustom.h
   toolboxes/medToolBoxDiffusionTensorView.h
   toolboxes/medToolBoxFiltering.h
   toolboxes/medToolBoxFilteringCustom.h
@@ -103,6 +105,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medViewerToolBoxPatient.h
   toolboxes/medToolBoxCompositeDataSetImporter.h
   toolboxes/medToolBoxCompositeDataSetImporterCustom.h
+  toolboxes/medToolBoxActions.h
 
 
   # viewContainers:
@@ -198,6 +201,8 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medToolBoxDiffusionFiberBundling.cpp
   toolboxes/medToolBoxRegistration.cpp
   toolboxes/medToolBoxRegistrationCustom.cpp
+  toolboxes/medToolBoxSegmentation.cpp
+  toolboxes/medToolBoxSegmentationCustom.cpp
   toolboxes/medToolBoxDiffusionTensorView.cpp
   toolboxes/medToolBoxFiltering.cpp
   toolboxes/medToolBoxFilteringCustom.cpp
@@ -211,6 +216,7 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medViewerToolBoxPatient.cpp
   toolboxes/medToolBoxCompositeDataSetImporter.cpp
   toolboxes/medToolBoxCompositeDataSetImporterCustom.cpp
+  toolboxes/medToolBoxActions.cpp
 
 
   # viewContainers:

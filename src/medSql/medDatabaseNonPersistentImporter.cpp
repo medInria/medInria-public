@@ -83,6 +83,8 @@ void medDatabaseNonPersistentImporter::run ( void )
 
     int patientDbId = -1;
     QString patientName = medMetaDataKeys::PatientName.getFirstValue(data);
+
+    // These metadata may be missing, in which case you get an empty QString.
     QString birthdate = medMetaDataKeys::BirthDate.getFirstValue(data);
     QString patientId = medMetaDataKeys::PatientID.getFirstValue(data);
 
@@ -109,6 +111,8 @@ void medDatabaseNonPersistentImporter::run ( void )
         patientDbId = medDatabaseNonPersistentController::instance()->patientId ( true );
 
     int     studyDbId   = -1;
+
+    // Optional, will use empty string otherwise.
     QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(data);
     QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(data);
     QString studyId = medMetaDataKeys::StudyID.getFirstValue(data);

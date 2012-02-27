@@ -20,17 +20,18 @@
 #include "medRunnableProcess.h"
 
 #include <dtkCore/dtkAbstractProcess.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 class medRunnableProcessPrivate
 {
 public:
-    dtkAbstractProcess *process;
+    dtkSmartPointer<dtkAbstractProcess> process;
 };
 
 
 medRunnableProcess::medRunnableProcess(void): medJobItem(), d (new medRunnableProcessPrivate)
 {
-    d->process = 0;
+    // d->process = 0; // automatic.
 }
 
 medRunnableProcess::~medRunnableProcess (void)

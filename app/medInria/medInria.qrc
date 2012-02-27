@@ -79,6 +79,7 @@
         <file>icons/zoom_out.png</file>
         <file>icons/backward.png</file>
         <file>icons/forward.png</file>
+        <file>icons/star.svg</file>
         <file>medInria.qss</file>
         <file>pixmaps/unknown.jpg</file>
         <file>pixmaps/frame.png</file>
@@ -123,9 +124,21 @@
         <file>icons/fullscreenExpand.png</file>
         <file>icons/fullscreenReduce.png</file>
         <file>icons/medInriaPlugin.png</file>
+        <file>icons/import.png</file>
+        <file>icons/export.png</file>
+        <file>icons/load.svg</file>
         <file>icons/export.svg</file>
         <file>icons/save.svg</file>
+        <file>icons/save.png</file>
         <file>icons/magnifier.svg</file>
         <file>icons/cross.svg</file>
+        <file>icons/finger.png</file>
+        <file>icons/document-open.png</file>
+        <file>icons/maximize.svg</file>
+        <file>icons/whitecross.svg</file>
+        <file>icons/link.svg</file>
+        <file>icons/broken_link.svg</file>
+        <file>icons/link_wl.svg</file>
+        <file>icons/broken_link_wl.svg</file>
     </qresource>
 </RCC>

@@ -27,6 +27,8 @@
 
 class medAbstractViewPrivate;
 
+class medAbstractViewCoordinates;
+
 class QColor;
 
 /**
@@ -128,11 +130,7 @@ public:
      */
     virtual double opacity(int layer) const;
 
-    /**
-     * Set the current layer. The current layer is used to determine which layer will receive
-     * property changed.
-     */
-    void setCurrentLayer(int layer);
+
 
     /**
      * Get the current layer. The current layer is used to determine which layer will receive
@@ -178,6 +176,9 @@ public:
 
     virtual QString getLUT(int layer) const;
     virtual QString getPreset(int layer) const;
+
+    //! Get the coordinates helper
+    virtual medAbstractViewCoordinates * coordinates() = 0;
 
 signals:
     /**
@@ -336,6 +337,11 @@ public slots:
 
 
     void setFullScreen( bool state );
+    /**
+     * Set the current layer. The current layer is used to determine which layer will receive
+     * property changed.
+     */
+    virtual void setCurrentLayer(int layer);
 
 protected:
     void emitViewSliceChangedEvent    (int slice);

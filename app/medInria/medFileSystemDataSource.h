@@ -44,14 +44,19 @@ signals:
     void open(QString path);
 
 private slots:
-    void onFileSystemImportClicked();
-    void onFileSystemIndexClicked();
-    void onFileSystemLoadClicked();
-    void onFileSystemViewClicked();
+    void onFileSystemImportRequested();
+    void onFileSystemIndexRequested();
+    void onFileSystemLoadRequested();
+    void onFileSystemViewRequested();
     void onFileDoubleClicked(const QString& filename);
     void onFileClicked(const QFileInfo& info);
     void onNothingSelected(void);
 
+private:
+
+    /** This function takes a list of paths as an input and creates
+     * another list by removing the paths that are subpaths of others. */
+    QStringList removeNestedPaths(const QStringList& paths);
 
 private:
     medFileSystemDataSourcePrivate* d;
