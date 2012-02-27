@@ -415,7 +415,6 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     d->linkButton = new QPushButton ( d->widget );
     d->linkButton->setIcon (d->linkIcon );
     d->linkButton->setToolTip(tr("Link the position with other views"));
-    //d->linkButton->setText("l");
     d->linkButton->setCheckable ( true );
     d->linkButton->setMaximumHeight ( 16 );
     d->linkButton->setMaximumWidth ( 16 );
@@ -429,7 +428,7 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     d->linkWLButton = new QPushButton ( d->widget );
 //    d->linkWLButton->setIcon ( QIcon ( ":/icons/link_wl.png" ) );
     d->linkWLButton->setIcon ( d->linkWLIcon);
-    d->linkWLButton->setToolTip(tr("Link the window level with other views"));
+    d->linkWLButton->setToolTip(tr("Link the window/level with other views"));
     d->linkWLButton->setCheckable ( true );
     d->linkWLButton->setMaximumHeight ( 16 );
     d->linkWLButton->setMaximumWidth ( 16 );
@@ -452,8 +451,6 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     connect ( d->fullScreenButton, SIGNAL ( clicked ( bool ) ), this, SIGNAL ( fullScreen ( bool ) ) );
 
     d->playButton = new QPushButton ( d->widget );
-//    QIcon playIcon = QIcon(":icons/play.png");
-//    playIcon.addPixmap(QPixmap(":icons/pause.png"),QIcon::Normal,QIcon::On);
     d->playButton->setIcon(d->playIcon);
     d->playButton->setToolTip(tr("Play through the slices") );
     d->playButton->setCheckable ( true );
