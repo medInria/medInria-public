@@ -36,9 +36,9 @@ public:
     virtual dtkAbstractData *output (void) const;
 
 public slots:    
-    virtual bool import (void) = 0;
-    virtual void reset (void)  {};
-    virtual void cancel (void) {};
+    virtual bool import() = 0;
+    virtual void reset()  {};
+    virtual void load() {};
     
 protected:
     medToolBoxCompositeDataSetImporter *parent(void);

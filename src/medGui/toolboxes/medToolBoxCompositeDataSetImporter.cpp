@@ -30,7 +30,7 @@ public:
   QComboBox* type;
   QPushButton* import;
   QPushButton* reset;
-  QPushButton* cancel;
+  QPushButton* load;
   bool isInitialized;
 };
 
@@ -57,10 +57,10 @@ void medToolBoxCompositeDataSetImporter::onImportClicked() {
     d->currentToolBox->import();
 }
 
-void medToolBoxCompositeDataSetImporter::onCancelClicked() {
+void medToolBoxCompositeDataSetImporter::onLoadClicked() {
     if (!d->currentToolBox)
         return;
-    d->currentToolBox->cancel();
+    d->currentToolBox->load();
 }
 
 void medToolBoxCompositeDataSetImporter::onResetClicked() {
@@ -110,21 +110,19 @@ void medToolBoxCompositeDataSetImporter::initialize()
 
     d->customContainerLayout = new QVBoxLayout();
 
-    vLayout->addLayout (d->customContainerLayout);
+    vLayout->addLayout(d->customContainerLayout);
 
-    //import button
+    //  Import button
     d->import = new QPushButton (tr("Import"),mainwidget);
     d->import->setMaximumWidth(buttonWidth);
-    connect(d->import,SIGNAL(clicked()),
-        this,SLOT(onImportClicked()));
+    connect(d->import,SIGNAL(clicked()),this,SLOT(onImportClicked()));
 
-    //cancel button
-    d->cancel = new QPushButton (tr("Cancel"),mainwidget);
-    d->cancel->setMaximumWidth(buttonWidth);
-    connect(d->cancel,SIGNAL(clicked()),
-        this,SLOT(onCancelClicked()));
+    //  Load button
+    d->load = new QPushButton (tr("Load"),mainwidget);
+    d->load->setMaximumWidth(buttonWidth);
+    connect(d->load,SIGNAL(clicked()),this,SLOT(onLoadClicked()));
 
-    //reset button
+    //  Reset button
     d->reset = new QPushButton (tr("Reset"), mainwidget);
     d->reset->setMaximumWidth(buttonWidth);
     connect(d->reset,SIGNAL(clicked()),this,SLOT(onResetClicked()));
@@ -133,12 +131,12 @@ void medToolBoxCompositeDataSetImporter::initialize()
     QHBoxLayout * buttonLayout = new QHBoxLayout();
     buttonLayout->addStretch(1);
     buttonLayout->addWidget(d->reset,1);
-    buttonLayout->addWidget(d->cancel,1);
+    buttonLayout->addWidget(d->load,1);
     buttonLayout->addWidget(d->import,1);
     vLayout->addLayout(buttonLayout);
 
     d->reset->hide ();
-    d->cancel->hide ();
+    d->load->hide ();
     d->import->hide ();
 
     this->addWidget (mainwidget);
@@ -148,7 +146,7 @@ void medToolBoxCompositeDataSetImporter::initialize()
         medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
     connect(this,SIGNAL(showInfo(QObject*,const        QString&,unsigned int)),
         medMessageController::instance(),SLOT(showInfo (QObject*,const QString&,unsigned int)));
-
+    //connect(this,SIGNAL(success()),this,SLOT(onSuccess()));
 
     d->isInitialized = true;
 }
@@ -187,7 +185,7 @@ void medToolBoxCompositeDataSetImporter::onCurrentTypeChanged(const int i) {
             d->currentToolBox = 0;
         }
         d->reset->hide ();
-        d->cancel->hide ();
+        d->load->hide ();
         d->import->hide ();
         return;
     }
@@ -207,6 +205,6 @@ void medToolBoxCompositeDataSetImporter::onCurrentTypeChanged(const int i) {
     d->currentToolBox = toolbox;
 
     d->reset->show ();
-    d->cancel->show ();
+    d->load->show ();
     d->import->show ();
 }

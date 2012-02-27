@@ -111,7 +111,7 @@ void medDatabaseNonPersistentControllerImpl::import(const QString& file,QString 
     connect(reader, SIGNAL(failure(QObject *)),
             medMessageController::instance(), SLOT(remove(QObject *)));
 
-    medMessageController::instance()->showProgress(reader, "Opening file item");
+    medMessageController::instance()->showProgress(reader,tr("Opening file item"));
 
     medJobManager::instance()->registerJobItem(reader);
     QThreadPool::globalInstance()->start(reader);

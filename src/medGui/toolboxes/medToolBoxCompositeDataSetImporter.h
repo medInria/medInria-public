@@ -52,10 +52,10 @@ public slots:
     virtual void onImportClicked();
 
     /**
-     * @brief Cancel any non saved change and closes the widget.
+     * @brief Load in non-persistent database.
      *
     */
-    virtual void onCancelClicked();
+    virtual void onLoadClicked();
 
     /**
      * @brief reset the display to the last saved values.
@@ -67,6 +67,10 @@ public slots:
     */
     void onCurrentTypeChanged(const int type);
     
+    // @brief Succesful import/load
+
+    //void onSucess();
+
  protected:
     /**
      * Call save on all child widgets and return the status
