@@ -99,7 +99,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // static data sources ////////////////
 
-    d->dbSource = new medDatabaseDataSource();
+    d->dbSource = new medDatabaseDataSource(this);
     addDataSource(d->dbSource);
     connect(d->dbSource, SIGNAL(open(const medDataIndex&)), this,SIGNAL(open(const medDataIndex&)));
     connect(medDatabaseController::instance(), SIGNAL(updated(const medDataIndex &)),d->dbSource,SLOT(update(const medDataIndex&)));
@@ -169,6 +169,11 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
 medBrowserArea::~medBrowserArea(void)
 {
+    foreach(medAbstractDataSource* source, d->data_sources)
+    {
+        source->deleteLater();
+    }
+
     delete d;
     d = NULL;
 }
