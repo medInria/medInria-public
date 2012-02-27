@@ -86,11 +86,21 @@ void medToolBoxCompositeDataSetImporter::initialize()
 
     d->type = new QComboBox(mainwidget);
     d->type->addItem(tr("Select data type"));
-	d->type->setToolTip(tr("Choose a type of composite data set to import"));
+    d->type->setToolTip(tr("Choose a type of composite data set to import"));
 
+    int i=1;
     medToolBoxFactory* factory = medToolBoxFactory::instance();
     foreach (QString toolbox,factory->compositeDataSetImporterToolBoxes())
-        d->type->addItem(factory->compositeToolBoxDetailsFromId(toolbox).second,toolbox); // TODO
+    {
+//        d->type->addItem(factory->compositeToolBoxDetailsFromId(toolbox).second,toolbox);
+        QPair<QString, QString> pair = factory->compositeToolBoxDetailsFromId(
+                    toolbox);
+        QString name = pair.first;
+        QString descr = pair.second;
+        d->type->addItem(name, toolbox);
+        d->type->setItemData(i, descr, Qt::ToolTipRole);
+        i++;
+    }
 
     connect(d->type,SIGNAL(activated(int)),this,SLOT(onCurrentTypeChanged(int)));
 
@@ -153,7 +163,7 @@ bool medToolBoxCompositeDataSetImporter::import()
 void medToolBoxCompositeDataSetImporter::onCurrentTypeChanged(const int i) {
 
     medToolBoxCompositeDataSetImporterCustom* toolbox = NULL;
-    const QString id = medToolBoxFactory::instance()->compositeDataSetImporterToolBoxes().at(i-1);
+    const QString id = d->type->itemData(i).toString();
 
     if (d->toolBoxes.contains(id))
         toolbox = d->toolBoxes[id];
