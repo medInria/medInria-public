@@ -88,7 +88,7 @@ bool medDiffusionSequenceCompositeData::write_data(const QString& dirname) {
 }
 
 dtkAbstractData* medDiffusionSequenceCompositeData::readVolume(const QString& path) {
-    dtkAbstractData* volume = medInria::DataReaderWriter::read(path);
+    dtkAbstractData* volume = medDataReaderWriter::read(path);
     const QString&   type   = volume->name();
 
     if (!type.contains("Image")) {
@@ -114,7 +114,7 @@ dtkAbstractData* medDiffusionSequenceCompositeData::readVolume(const QString& pa
 void medDiffusionSequenceCompositeData::readVolumes(const QStringList& paths,const bool add_to_image_list) {
 
     QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
-      
+
     for (int i=0;i<paths.size();++i) {
         const QString& filepath = paths[i];
         dtkAbstractData* volume = readVolume(filepath);
@@ -162,8 +162,8 @@ void medDiffusionSequenceCompositeData::readVolumes(const QString& dirname,const
 void medDiffusionSequenceCompositeData::writeVolumes(const QString& dirname,const QStringList& paths) const {
     for (int i=0;i<paths.size();++i) {
         const QString& filepath = dirname+"/"+paths[i];
-        medInria::DataReaderWriter::write(filepath,images[i]);
-    }  
+        medDataReaderWriter::write(filepath,images[i]);
+    }
 }
 
 bool medDiffusionSequenceCompositeData::read_data(const QString& dirname) {

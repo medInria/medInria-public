@@ -65,18 +65,18 @@ medToolBoxCompositeDataSetImporterCustom* medDiffusionSequenceCompositeDataToolB
     return new medDiffusionSequenceCompositeDataToolBox(parent);
 }
 
-void medDiffusionSequenceCompositeDataToolBox::onNewItem(const QString& item,bool& valid) { 
+void medDiffusionSequenceCompositeDataToolBox::onNewItem(const QString& item,bool& valid) {
     dtkAbstractData* volume = medDiffusionSequenceCompositeData::readVolume(item);
     if (volume!=0)
         valid = true;
 }
 
-void medDiffusionSequenceCompositeDataToolBox::onItemClicked(QTableWidgetItem* item) { 
+void medDiffusionSequenceCompositeDataToolBox::onItemClicked(QTableWidgetItem* item) {
     if (item->column()==1)
         table.editItem(item);
 }
 
-void medDiffusionSequenceCompositeDataToolBox::onContextTreeMenu(QPoint) {  
+void medDiffusionSequenceCompositeDataToolBox::onContextTreeMenu(QPoint) {
 }
 
 void medDiffusionSequenceCompositeDataToolBox::reset()  { table.clear(); }
@@ -106,7 +106,7 @@ bool medDiffusionSequenceCompositeDataToolBox::import(const bool persistent) {
     cds->setGradientList(grad_list);
 
     const QString& uuid = QUuid::createUuid().toString().replace("{","").replace("}","")+".cds";
-    medInria::DataReaderWriter::write(uuid,cds);
+    medDataReaderWriter::write(uuid,cds);
 
     medDatabaseController::instance()->import(uuid,!persistent);
     reset();
