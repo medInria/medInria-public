@@ -61,6 +61,7 @@ medDataReaderWriter::Data medDataReaderWriter::read(const QString& path) {
         dreader->read(path);
         return dreader->data();
     }
+    return NULL;
 }
 
 bool medDataReaderWriter::write(const QString& path,dtkAbstractData* data) {
