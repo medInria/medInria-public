@@ -46,42 +46,42 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
 
     /* Begin create buttons */
 
-    d->removeBt = new QPushButton();
+    d->removeBt = new QPushButton(d->buttonsWidget);
     d->removeBt->setAccessibleName("Remove");
     d->removeBt->setToolTip(tr("Remove selected item from the database."));
     d->removeBt->setIcon(QIcon(":/icons/cross.svg"));
 
-    d->viewBt = new QPushButton();
+    d->viewBt = new QPushButton(d->buttonsWidget);
     d->viewBt->setAccessibleName("View");
     d->viewBt->setToolTip(tr("Load and visualize the currently selected item."));
     d->viewBt->setIcon(QIcon(":/icons/eye.png"));
 
-    d->exportBt = new QPushButton();
+    d->exportBt = new QPushButton(d->buttonsWidget);
     d->exportBt->setAccessibleName("Export");
     d->exportBt->setToolTip(tr("Export the series."));
     d->exportBt->setIcon(QIcon(":/icons/export.png"));
 
-    d->importBt = new QPushButton();
+    d->importBt = new QPushButton(d->buttonsWidget);
     d->importBt->setAccessibleName("Import");
     d->importBt->setToolTip(tr("Import (copy) item(s) into medInria's database."));
     d->importBt->setIcon(QIcon(":/icons/import.png"));
 
-    d->loadBt = new QPushButton();
+    d->loadBt = new QPushButton(d->buttonsWidget);
     d->loadBt->setAccessibleName("Load");
     d->loadBt->setToolTip(tr("Temporary load the item(s) so as they can be used inside medInria,\nbut do not include them in the database."));
     d->loadBt->setIcon(QIcon(":/icons/document-open.png"));
 
-    d->indexBt = new QPushButton();
+    d->indexBt = new QPushButton(d->buttonsWidget);
     d->indexBt->setAccessibleName("Index");
     d->indexBt->setToolTip(tr("Include the item(s) into medInria's database but do not import (copy) them."));
     d->indexBt->setIcon(QIcon(":/icons/finger.png"));
 
-    d->bookmarkBt = new QPushButton();
+    d->bookmarkBt = new QPushButton(d->buttonsWidget);
     d->bookmarkBt->setAccessibleName("Bookmark");
     d->bookmarkBt->setToolTip(tr("Bookmark selected folder/resource."));
     d->bookmarkBt->setIcon(QIcon(":/icons/star.svg"));
 
-    d->saveBt = new QPushButton();
+    d->saveBt = new QPushButton(d->buttonsWidget);
     d->saveBt->setAccessibleName("Save");
     d->saveBt->setToolTip(tr("Save selected item into the database."));
     d->saveBt->setIcon(QIcon(":/icons/save.png"));
@@ -94,7 +94,7 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
 
     int COLUMNS = 4; // we will use 2 rows of 4 buttons each
     int i = 0;
-    QGridLayout *gridLayout = new QGridLayout();
+    QGridLayout *gridLayout = new QGridLayout(d->buttonsWidget);
     foreach(QAbstractButton* bt, d->buttonsList)
     {
         bt->setAutoFillBackground(true);
@@ -109,16 +109,16 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
         i++;
     }
 
-    d->buttonsWidget->setLayout(gridLayout);
     this->addWidget(d->buttonsWidget);
     d->buttonsWidget->setVisible(false);
 
-    QLabel* noButtonsSelectedLabel = new QLabel(tr("Select any item to see possible actions."));
+    QLabel* noButtonsSelectedLabel = new QLabel(
+                tr("Select any item to see possible actions."),
+                d->noButtonsSelectedWidget);
     noButtonsSelectedLabel->setObjectName("actionToolBoxLabel");
     // we use a layout to center the label
-    QHBoxLayout* noButtonsSelectedLayout = new QHBoxLayout();
+    QHBoxLayout* noButtonsSelectedLayout = new QHBoxLayout(d->noButtonsSelectedWidget);
     noButtonsSelectedLayout->addWidget(noButtonsSelectedLabel, 0, Qt::AlignCenter);
-    d->noButtonsSelectedWidget->setLayout(noButtonsSelectedLayout);
     this->addWidget(d->noButtonsSelectedWidget);
 
     connect(d->removeBt, SIGNAL(clicked()), this, SIGNAL(removeClicked()));
@@ -139,6 +139,8 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
 
 medToolBoxActions::~medToolBoxActions()
 {
+//    delete d->itemToActions;
+//    d->itemToActions = NULL;
     delete d;
     d = NULL;
 }
@@ -214,7 +216,7 @@ void medToolBoxActions::updateButtons(QString selectedItem)
 
 void medToolBoxActions::initializeItemToActionsMap()
 {
-    d->itemToActions = *(new QMultiMap<QString, QString>());
+    d->itemToActions = QMultiMap<QString, QString>();
 
     d->itemToActions.insert("Patient", "Remove");
 
