@@ -6,6 +6,7 @@
 
 #include <medMetaDataKeys.h>
 #include <medDataReaderWriter.h>
+#include <medMessageController.h>
 
 #include <medDiffusionSequenceCompositeData.h>
 #include <medDiffusionSequenceCompositeDataToolBox.h>
@@ -89,6 +90,13 @@ bool medDiffusionSequenceCompositeData::write_data(const QString& dirname) {
 
 dtkAbstractData* medDiffusionSequenceCompositeData::readVolume(const QString& path) {
     dtkAbstractData* volume = medDataReaderWriter::read(path);
+    if (!volume)
+    {
+        //Why is this method static? using it to send messages sounded like a good idea
+//        emit medToolBoxCompositeDataSetImporter::showError(this,
+//                        tr("This file is not readable by this Importer"));
+        return NULL;
+    }
     const QString&   type   = volume->name();
 
     if (!type.contains("Image")) {
@@ -118,7 +126,12 @@ void medDiffusionSequenceCompositeData::readVolumes(const QStringList& paths,con
     for (int i=0;i<paths.size();++i) {
         const QString& filepath = paths[i];
         dtkAbstractData* volume = readVolume(filepath);
-
+        if (!volume)
+        {
+            //Warning should have been sent by the readVolume method by now,
+            //so no need for further warning.
+            continue;
+        }
         images.push_back(volume);
 
         if (add_to_image_list) {
