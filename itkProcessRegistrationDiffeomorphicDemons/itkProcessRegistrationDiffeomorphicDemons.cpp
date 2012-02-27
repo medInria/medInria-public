@@ -16,7 +16,6 @@
 
 #include "itkImage.h"
 #include "itkResampleImageFilter.h"
-#include "itkCastImageFilter.h"
 
 #include "time.h"
 
@@ -122,19 +121,8 @@ template <typename PixelType>
 
     registrationMethod = registration;
 
-    typedef itk::CastImageFilter< FixedImageType, RegImageType > CastFilterType;
-    typename CastFilterType::Pointer  caster =  CastFilterType::New();
-    caster->SetInput((const FixedImageType*)proc->fixedImage().GetPointer());
-    caster->Update();
-    registration->SetFixedImage(caster->GetOutput());
-
-
-
-    typedef itk::CastImageFilter< MovingImageType, RegImageType > CastFilterMovingType;
-    typename CastFilterType::Pointer  casterMov =  CastFilterType::New();
-    casterMov->SetInput((const MovingImageType*)proc->movingImages()[0].GetPointer());
-    casterMov->Update();
-    registration->SetMovingImage(casterMov->GetOutput());
+    registration->SetFixedImage((FixedImageType*)proc->fixedImage().GetPointer());
+    registration->SetMovingImage((MovingImageType*)proc->movingImages()[0].GetPointer());
 
     registration->SetNumberOfIterations(iterations);
     registration->SetMaximumUpdateStepLength(maximumUpdateStepLength);
@@ -238,42 +226,20 @@ template <typename PixelType>
 
 int itkProcessRegistrationDiffeomorphicDemons::update(itkProcessRegistration::ImageType imgType)
 {
-    if(fixedImage().IsNull() || movingImages().isEmpty())
+    if(fixedImage().IsNull() || movingImages().isEmpty()
+            || movingImages()[0].IsNull())
+    {
+        qWarning() << "Either the fixed image or the moving image is Null";
         return 1;
-    switch (imgType){
-    //unfortunately diffeomorphic demons only work on float or double pixels...
-
-    case itkProcessRegistration::UCHAR:
-        return d->update<unsigned char>();
-        break;
-    case itkProcessRegistration::CHAR:
-        return d->update<char>();
-        break;
-    case itkProcessRegistration::USHORT:
-        return d->update<unsigned short>();
-        break;
-    case itkProcessRegistration::SHORT:
-        return d->update<short>();
-        break;
-    case itkProcessRegistration::UINT:
-       return d->update<unsigned int>();
-       break;
-    case itkProcessRegistration::INT:
-        return d->update<int>();
-        break;
-    case itkProcessRegistration::ULONG:
-       return d->update<unsigned long>();
-       break;
-    case itkProcessRegistration::LONG:
-        return d->update<long>();
-        break;
-    case itkProcessRegistration::DOUBLE:
-        return d->update<double>();
-        break;
-    default:
-        return d->update<float>();
-        break;
     }
+
+    if (imgType != itkProcessRegistration::FLOAT)
+    {
+        qWarning() << "the imageType should be float, and it's :"<<imgType;
+        return 1;
+    }
+
+    return d->update<float>();
 }
 
 

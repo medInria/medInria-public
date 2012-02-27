@@ -103,6 +103,7 @@ endif()
 foreach(libName ${dcmtk_LIBRARY_NAMES})
 
   find_library( DCMTK_${libName}_LIBRARY ${libName}
+    ${DCMTK_DIR}/lib
     ${DCMTK_DIR}/${libName}/libsrc
     ${DCMTK_DIR}/${libName}/libsrc/Release
     ${DCMTK_DIR}/${libName}/Release
