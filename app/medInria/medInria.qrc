@@ -134,5 +134,11 @@
         <file>icons/cross.svg</file>
         <file>icons/finger.png</file>
         <file>icons/document-open.png</file>
+        <file>icons/maximize.svg</file>
+        <file>icons/whitecross.svg</file>
+        <file>icons/link.svg</file>
+        <file>icons/broken_link.svg</file>
+        <file>icons/link_wl.svg</file>
+        <file>icons/broken_link_wl.svg</file>
     </qresource>
 </RCC>

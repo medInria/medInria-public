@@ -53,7 +53,7 @@ public slots:
     void on2LayersOpacitySliderSet(int opacity);
     void onLUTChanged(int index);
     void onPresetChanged(int index);
-    void onItemClicked(QTreeWidgetItem * item, int column);
+    void onItemClicked(QTreeWidgetItem * item);
     void onContextTreeMenu( const QPoint point );
     void onDeleteLayer();
     void onSwitchLayersButtonClicked();

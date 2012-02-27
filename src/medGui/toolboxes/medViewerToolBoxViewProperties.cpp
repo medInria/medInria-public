@@ -117,8 +117,12 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     this->setTitle(tr("View Properties"));
 
-    QObject::connect(d->propertiesTree, SIGNAL(itemClicked(QTreeWidgetItem *, int)), this, SLOT(onItemClicked(QTreeWidgetItem *, int)));
-    QObject::connect(d->propertiesTree, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextTreeMenu(QPoint)));
+    QObject::connect(d->propertiesTree, SIGNAL(itemClicked(QTreeWidgetItem *, int)),
+                     this, SLOT(onItemClicked(QTreeWidgetItem *)));
+    QObject::connect(d->propertiesTree, SIGNAL(customContextMenuRequested(QPoint)),
+                     this, SLOT(onContextTreeMenu(QPoint)));
+    QObject::connect(d->propertiesTree,SIGNAL(itemExpanded(QTreeWidgetItem*)),
+                     this, SLOT(onItemClicked(QTreeWidgetItem *)));
 
     d->propertiesView = new QWidget(this);
 
@@ -353,6 +357,10 @@ void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 //            d->propertiesTree->collapseAll();
         }
 
+
+        //select the first layer, since we don't have more information
+        d->propertiesTree->topLevelItem(0)->setExpanded(true);
+
         QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)),
                          this, SLOT(onDataAdded(dtkAbstractData*, int)),
                          Qt::UniqueConnection);
@@ -421,7 +429,7 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
     }
 
     QTreeWidgetItem * visibleItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    visibleItem->setText(1, "Visible");
+    visibleItem->setText(1, tr("Visible"));
     //No need to parent this widget, setItemWidget takes ownership of the widget
     QCheckBox * visibleBox = new QCheckBox();
     visibleBox->setChecked(d->view->visibility(imageLayer));
@@ -429,7 +437,7 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 
 
     QTreeWidgetItem * opacityItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    opacityItem->setText(1, "Opacity");
+    opacityItem->setText(1, tr("Opacity"));
     //No need to parent this widget, setItemWidget takes ownership of the widget
     QSlider * opacityBox = new QSlider(Qt::Horizontal);
     opacityBox->setRange(0,100);
@@ -438,7 +446,7 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 
 
     QTreeWidgetItem * lutItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    lutItem->setText(1, "LUT");
+    lutItem->setText(1, tr("LUT"));
     //No need to parent this widget, setItemWidget takes ownership of the widget
     QComboBox * lutBox = new QComboBox();
     lutBox->setFocusPolicy(Qt::NoFocus);
@@ -474,7 +482,7 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
 
 
     QTreeWidgetItem * presetItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    presetItem->setText(1, "Preset");
+    presetItem->setText(1, tr("Preset"));
     QComboBox * presetBox = new QComboBox();
     presetBox->setFocusPolicy(Qt::NoFocus);
     presetBox->addItem("None");
@@ -505,11 +513,8 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
                      this, SLOT(onPresetChanged(int)));
 
     //d->propertiesTree->collapseAll();
-    if (imageLayer == 0)
-    {
-        d->layerItem->setExpanded(true);
-    }
 }
+
 void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, int meshLayer)
 {
     if(!data)
@@ -547,14 +552,14 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
 
 
     QTreeWidgetItem * meshVisibleItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    meshVisibleItem->setText(1, "Visible");
+    meshVisibleItem->setText(1, tr("Visible"));
     QCheckBox * meshVisibleBox = new QCheckBox();
     meshVisibleBox->setChecked(d->interactors[d->currentInteractor]->visibility(meshLayer));
     d->propertiesTree->setItemWidget(meshVisibleItem, 2, meshVisibleBox);
 
 
     QTreeWidgetItem * opacityItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    opacityItem->setText(1, "Opacity");
+    opacityItem->setText(1, tr("Opacity"));
     QSlider * opacityBox = new QSlider(Qt::Horizontal);
     opacityBox->setRange(0,100);
     opacityBox->setValue(d->interactors[d->currentInteractor]->opacity(meshLayer) * 100);
@@ -562,7 +567,7 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
 
 
     QTreeWidgetItem * attrMap = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    attrMap->setText(1, "Attributes");
+    attrMap->setText(1, tr("Attributes"));
     QComboBox * attrBox = new QComboBox();
     attrBox->setFocusPolicy(Qt::NoFocus);
     attrBox->addItem("Solid");
@@ -575,7 +580,7 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     attrBox->setCurrentIndex(attrBox->findText(*(d->interactors[d->currentInteractor]->attribute(meshLayer))));
 
     QTreeWidgetItem * lutItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    lutItem->setText(1, "LUT");
+    lutItem->setText(1, tr("LUT"));
     QComboBox * lutBox = new QComboBox();
 
     if(!d->meshLutBoxList.at(meshLayer) ){
@@ -620,14 +625,14 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
 
 
     QTreeWidgetItem * edgeVisibleItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    edgeVisibleItem->setText(1, "Edge Visible");
+    edgeVisibleItem->setText(1, tr("Edge Visible"));
     QCheckBox * edgeVisibleBox = new QCheckBox();
     edgeVisibleBox->setChecked(d->interactors[d->currentInteractor]->edgeVisibility(meshLayer));
     d->propertiesTree->setItemWidget(edgeVisibleItem, 2, edgeVisibleBox);
 
 
     QTreeWidgetItem * coloringItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    coloringItem->setText(1, "Color");
+    coloringItem->setText(1, tr("Color"));
     QComboBox *colorComboBox = new QComboBox();
     colorComboBox->addItem("Default");
     colorComboBox->addItem(createIcon("#000000"),"#000000",QColor("#000000"));
@@ -655,7 +660,7 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     colorComboBox->setCurrentIndex(colorComboBox->findText(*(d->interactors[d->currentInteractor]->color(meshLayer))));
 
     QTreeWidgetItem * renderingItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    renderingItem->setText(1, "Rendering");
+    renderingItem->setText(1, tr("Rendering"));
     QComboBox * renderingBox = new QComboBox();
     renderingBox->setFocusPolicy(Qt::NoFocus);
     //renderingBox->addItem("Default");
@@ -717,6 +722,12 @@ void medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data,
     {
         this->constructImageLayer(data, d->view->layerCount()-1);
     }
+
+    //expand the item that has been added.
+//    qDebug()<<"let's select item:"<<d->propertiesTree->topLevelItemCount()-1;
+    QTreeWidgetItem * newlySelectedItem = d->propertiesTree->topLevelItem(
+                d->propertiesTree->topLevelItemCount()-1);
+    newlySelectedItem->setExpanded(true);
 
     //decide whether to show the 2 layers slider:
     raiseSlider(d->view->layerCount() == 2);
@@ -969,17 +980,24 @@ void medViewerToolBoxViewProperties::onRenderingChanged(int index)
     d->view->update();
 }
 
-void medViewerToolBoxViewProperties::onItemClicked(QTreeWidgetItem * item, int column)
+void medViewerToolBoxViewProperties::onItemClicked(QTreeWidgetItem * item)
 {
+    qDebug()<<"clicked on Item: " << item->text(0);
     d->propertiesTree->clearSelection();
     if (item->type() == QTreeWidgetItem::UserType + 1)
     {
-        if (item->isExpanded())
-            d->propertiesTree->collapseItem(item);
-        else
+    //BEN: we don't try to collapse items, there is always a current layer.
+//        if (item->isExpanded())
+//        {
+//            d->propertiesTree->collapseItem(item);
+//        }
+//        else
         {
             d->propertiesTree->collapseAll();
+            //blocking signak
+            d->propertiesTree->blockSignals(true);
             d->propertiesTree->expandItem(item);
+            d->propertiesTree->blockSignals(false);
 
             d->currentLayer = item->text(0).toInt();
             d->view->setCurrentLayer(d->currentLayer);
@@ -1019,7 +1037,7 @@ void medViewerToolBoxViewProperties::onContextTreeMenu( const QPoint point )
     QMenu * menu = new QMenu(d->propertiesTree);
     menu->setFocusPolicy(Qt::NoFocus);
     QAction * deleteLayer = new QAction(this);
-    deleteLayer->setIcon(QIcon(":icons/cross.png"));
+    deleteLayer->setIcon(QIcon(":icons/cross.svg"));
     deleteLayer->setIconVisibleInMenu(true);
     deleteLayer->setText(tr("Delete"));
     QObject::connect(deleteLayer, SIGNAL(triggered()), this, SLOT(onDeleteLayer()));
@@ -1052,10 +1070,24 @@ void medViewerToolBoxViewProperties::onDeleteLayer()
 
     d->view->update();
 
-    if (d->currentLayer != 0)
+    //remove item if it was the last item: this should never happen since
+    //we never delete the layer 0... BEN: I removed the test, should never be needed
+//    if (d->currentLayer != 0)
+    {
+        bool reexpand = d->propertiesTree->selectedItems()[0]->isExpanded();
+
         d->propertiesTree->invisibleRootItem()->removeChild(d->propertiesTree->selectedItems()[0]);
 
+        //select a new item if the currentLayer was expanded
+        if (reexpand)
+        {
+//            qDebug()<<"let's select item:"<< 0;
+            QTreeWidgetItem * newlySelectedItem = d->propertiesTree->topLevelItem(0);
+            newlySelectedItem->setExpanded(true);
+        }
+    }
     d->propertiesTree->clearSelection();
+
     raiseSlider(d->view->layerCount() == 2);
 }
 
