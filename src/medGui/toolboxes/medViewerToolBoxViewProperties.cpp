@@ -359,7 +359,8 @@ void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 
 
         //select the first layer, since we don't have more information
-        d->propertiesTree->topLevelItem(0)->setExpanded(true);
+        if (d->propertiesTree->topLevelItem(0))
+            d->propertiesTree->topLevelItem(0)->setExpanded(true);
 
         QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)),
                          this, SLOT(onDataAdded(dtkAbstractData*, int)),
