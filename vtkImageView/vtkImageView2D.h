@@ -310,7 +310,7 @@ public:
   virtual void GetWorldCoordinatesFromDisplayPosition (int xy[2], double* position);
 
   //! Get the WindowLevel for given layer. Overrides Superclass.
-  virtual vtkImageMapToColors *GetWindowLevel(int layer=0);
+  virtual vtkImageMapToColors *GetWindowLevel(int layer=0) const;
 
   //BTX
   /**
@@ -539,14 +539,26 @@ public:
   using vtkImageView::SetColorLevel;
   virtual void SetColorLevel(double s, int layer);
   using vtkImageView::GetColorLevel;
-  virtual double GetColorLevel(int layer);
+  virtual double GetColorLevel(int layer) const;
   using vtkImageView::SetColorWindow;
   virtual void SetColorWindow(double s, int layer);
   using vtkImageView::GetColorWindow;
-  virtual double GetColorWindow(int layer);
-  virtual void SetTransferFunctionRangeFromWindowSettings();
-  virtual void SetTransferFunctionRangeFromWindowSettings(int layer);
+  virtual double GetColorWindow(int layer)const;
+//  virtual void SetTransferFunctionRangeFromWindowSettings();
+//  virtual void SetTransferFunctionRangeFromWindowSettings(int layer);
 
+  //pure virtual methods from base class:
+  virtual vtkColorTransferFunction * GetColorTransferFunction(int layer) const;
+  virtual vtkPiecewiseFunction* GetOpacityTransferFunction (int layer) const;
+  virtual void StoreColorTransferFunction (vtkColorTransferFunction *ctf,
+                                           int layer);
+  virtual void StoreOpacityTransferFunction (vtkPiecewiseFunction *otf,
+                                             int layer);
+  virtual vtkScalarsToColors * GetLookupTable(int layer) const;
+  virtual bool GetUseLookupTable(int layer) const;
+  virtual void SetUseLookupTable (bool use, int layer);
+  virtual void StoreColorWindow(double s,int layer);
+  virtual void StoreColorLevel(double s,int layer);
 
 protected:
   vtkImageView2D();

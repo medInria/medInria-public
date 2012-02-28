@@ -280,6 +280,19 @@ if (this->Interactor)
   virtual void RemoveLayer (int layer);
   virtual void RemoveAllLayers (void);
 
+  //pure virtual methods from base class:
+  virtual vtkColorTransferFunction * GetColorTransferFunction(int layer) const;
+  virtual vtkPiecewiseFunction* GetOpacityTransferFunction (int layer) const;
+  virtual void StoreColorTransferFunction (vtkColorTransferFunction *ctf,
+                                           int layer);
+  virtual void StoreOpacityTransferFunction (vtkPiecewiseFunction *otf,
+                                             int layer);
+  virtual vtkScalarsToColors * GetLookupTable(int layer) const;
+  virtual bool GetUseLookupTable(int layer) const;
+  virtual void SetUseLookupTable (bool use, int layer);
+  virtual void StoreColorWindow(double s,int layer);
+  virtual void StoreColorLevel(double s,int layer);
+
 protected:
 
   vtkImageView3D();

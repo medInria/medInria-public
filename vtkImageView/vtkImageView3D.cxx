@@ -98,6 +98,7 @@ private:
   vtkImageData         *Input;
   double Opacity;
   int    Visibility;
+  bool
 
   vtkImage3DDisplay(const vtkImage3DDisplay&);
   void operator=(const vtkImage3DDisplay&);
@@ -325,10 +326,11 @@ void vtkImageView3D::SetupVolumeRendering()
   this->VolumeProperty->SetAmbient (0.15);
   this->VolumeProperty->SetSpecular (0.3);
   this->VolumeProperty->SetSpecularPower (15.0);
-  if ( !this->UseLookupTable )
+  //Warning circular reasonning here
+  if ( !this->GetUseLookupTable(0) )
   {
-    this->VolumeProperty->SetScalarOpacity(0, this->OpacityTransferFunction );
-    this->VolumeProperty->SetColor(0, this->ColorTransferFunction );
+    this->VolumeProperty->SetScalarOpacity(0, this->GetOpacityTransferFunction(0) );
+    this->VolumeProperty->SetColor(0, this->GetColorTransferFunction(0) );
   }
 
   this->VolumeActor->SetProperty ( this->VolumeProperty );
@@ -546,13 +548,8 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
 
     this->SetTransferFunctions (rgb, alpha, layer);
 
-<<<<<<< HEAD
     // multiLayers = true;
     
-=======
-    multiLayers = true;
-
->>>>>>> Factorises layer knowledge for 3d and 2d a bit.
     rgb->Delete();
     alpha->Delete();
     reslicedImage->Delete();
@@ -614,8 +611,8 @@ void vtkImageView3D::InternalUpdate (void)
   // If an image is already of type unsigned char, there is no need to
   // map it through a lookup table
   if ( !multiLayers &&  (input->GetScalarType() == VTK_UNSIGNED_CHAR &&
-			(input->GetNumberOfScalarComponents() == 3 ||
-			 input->GetNumberOfScalarComponents() == 4 )) )
+                         (input->GetNumberOfScalarComponents() == 3 ||
+                          input->GetNumberOfScalarComponents() == 4 )) )
   {
     this->VolumeProperty->IndependentComponentsOff();
 
@@ -626,10 +623,10 @@ void vtkImageView3D::InternalUpdate (void)
   else
   {
     this->VolumeProperty->IndependentComponentsOn();
-
-    this->ActorX->SetInput ( this->WindowLevel->GetOutput() );
-    this->ActorY->SetInput ( this->WindowLevel->GetOutput() );
-    this->ActorZ->SetInput ( this->WindowLevel->GetOutput() );
+    //todo: fix planar representation: layers
+    this->ActorX->SetInput ( this->GetWindowLevel(0)->GetOutput() );
+    this->ActorY->SetInput ( this->GetWindowLevel(0)->GetOutput() );
+    this->ActorZ->SetInput ( this->GetWindowLevel(0)->GetOutput() );
   }
 
   // Read bounds and use these to place widget, rather than force whole dataset to be read.
@@ -675,14 +672,15 @@ void vtkImageView3D::SetTransferFunctions (vtkColorTransferFunction * color,
 void vtkImageView3D::SetTransferFunctions (vtkColorTransferFunction * color,
 					   vtkPiecewiseFunction * opacity, int layer)
 {
-  if(layer==0)
-  {
-    this->Superclass::SetTransferFunctions( color, opacity );
-    // superclass generates a default function if one of the arguments is NULL
-    this->VolumeProperty->SetColor(0, this->ColorTransferFunction );
-    this->VolumeProperty->SetScalarOpacity(0, this->OpacityTransferFunction );
-  }
-  else if (this->HasLayer (layer))
+//  if(layer==0)
+//  {
+//    this->Superclass::SetTransferFunctions( color, opacity );
+//    // superclass generates a default function if one of the arguments is NULL
+//    this->VolumeProperty->SetColor(0, this->GetColorTransferFunction(layer) );
+//    this->VolumeProperty->SetScalarOpacity(0, this->GetOpacityTransferFunction(layer) );
+//  }
+//  else
+  if (this->HasLayer (layer))
   {
     if (!this->GetImage3DDisplayForLayer(layer)->GetInput())
       return;
@@ -697,12 +695,13 @@ void vtkImageView3D::SetTransferFunctions (vtkColorTransferFunction * color,
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetOpacity (double opacity, int layer)
 {
-  if (layer==0)
-  {
-    this->Opacity = opacity;
-    this->VolumeProperty->SetComponentWeight(0, opacity);
-  }
-  else if (this->HasLayer(layer))
+//  if (layer==0)
+//  {
+//    this->Opacity = opacity;
+//    this->VolumeProperty->SetComponentWeight(0, opacity);
+//  }
+//  else
+  if (this->HasLayer(layer))
   {
     this->VolumeProperty->SetComponentWeight(layer, opacity);
     this->GetImage3DDisplayForLayer(layer)->SetOpacity(opacity);
@@ -712,9 +711,10 @@ void vtkImageView3D::SetOpacity (double opacity, int layer)
 //----------------------------------------------------------------------------
 double vtkImageView3D::GetOpacity(int layer) const
 {
-  if (layer==0)
-    return this->Opacity;
-  else if (this->HasLayer(layer))
+//  if (layer==0)
+//    return this->Opacity;
+//  else
+    if (this->HasLayer(layer))
     return this->GetImage3DDisplayForLayer(layer)->GetOpacity();
 
   return 0.0;
@@ -723,28 +723,29 @@ double vtkImageView3D::GetOpacity(int layer) const
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetVisibility (int visibility, int layer)
 {
-  if (layer==0)
-  {
-    this->VolumeActor->SetVisibility (visibility);
-    this->SetShowActorX (visibility);
-    this->SetShowActorY (visibility);
-    this->SetShowActorZ (visibility);
+//  if (layer==0)
+//  {
+//    this->VolumeActor->SetVisibility (visibility);
+//    this->SetShowActorX (visibility);
+//    this->SetShowActorY (visibility);
+//    this->SetShowActorZ (visibility);
 
-    if (visibility)
-      this->SetRenderingMode (this->GetRenderingMode());
+//    if (visibility)
+//      this->SetRenderingMode (this->GetRenderingMode());
 
-    // if (visibility)
-    // {
-    //   this->VolumeProperty->SetComponentWeight(0, this->GetOpacity(0));
-    // }
-    // else
-    // {
-    //   this->VolumeProperty->SetComponentWeight(layer, 0);
-    // }
-    this->Visibility = visibility;
+//    // if (visibility)
+//    // {
+//    //   this->VolumeProperty->SetComponentWeight(0, this->GetOpacity(0));
+//    // }
+//    // else
+//    // {
+//    //   this->VolumeProperty->SetComponentWeight(layer, 0);
+//    // }
+//    this->Visibility = visibility;
 
-  }
-  else if (this->HasLayer(layer))
+//  }
+//  else
+    if (this->HasLayer(layer))
   {
     if (visibility)
     {
@@ -761,47 +762,37 @@ void vtkImageView3D::SetVisibility (int visibility, int layer)
 //----------------------------------------------------------------------------
 int vtkImageView3D::GetVisibility (int layer) const
 {
-  if (layer==0)
-    return this->Visibility;
+//  if (layer==0)
+//    return this->Visibility;
 
-  else if (this->HasLayer(layer))
+//  else
+    if (this->HasLayer(layer))
     return this->GetImage3DDisplayForLayer(layer)->GetVisibility();
 
   return 0;
 }
 
-//----------------------------------------------------------------------------
-void vtkImageView3D::SetColorWindow (double s)
-{
-  int currentLayer = this->GetCurrentLayer();
-  this->SetColorWindow(s,currentLayer);
-}
-
-//----------------------------------------------------------------------------
-void vtkImageView3D::SetColorLevel (double s)
-{
-  this->Superclass::SetColorLevel (s);
-  this->UpdateVolumeFunctions();
-}
-
 void vtkImageView3D::SetColorWindow (double s,int layer)
 {
   this->Superclass::SetColorWindow (s,layer);
-  this->UpdateVolumeFunctions();
+  this->UpdateVolumeFunctions(layer);
 }
 
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetColorLevel (double s,int layer)
 {
   this->Superclass::SetColorLevel (s,layer);
-  this->UpdateVolumeFunctions();
+  this->UpdateVolumeFunctions(layer);
 }
 
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::UpdateVolumeFunctions()
+void vtkImageView3D::UpdateVolumeFunctions(int layer)
 {
-  if ( !this->UseLookupTable || this->GetLookupTable() == NULL )
+  vtkLookupTable* lookuptable = vtkLookupTable::SafeDownCast(
+        this->GetLookupTable(layer));
+  std::cout<<"lookuptable:" << lookuptable;
+  if ( !this->UseLookupTable(layer) || lookuptable == NULL )
     return;
 
   vtkColorTransferFunction * color   =
@@ -809,13 +800,14 @@ void vtkImageView3D::UpdateVolumeFunctions()
   vtkPiecewiseFunction     * opacity =
   this->VolumeProperty->GetScalarOpacity(0);
 
+
   double colorValue[6]   = { 0.0, 0.0, 0.0, 0.0, 0.5, 0.0 };
   double opacityValue[4] = { 0.0, 0.0,           0.5, 0.0 };
 
-  const double * range = this->LookupTable->GetRange();
+  const double * range = lookuptable->GetRange();
   double width = range[1] - range[0];
 
-  int numColors = this->GetLookupTable()->GetNumberOfTableValues();
+  int numColors = lookuptable->GetNumberOfTableValues();
   double factor = 1.0 / static_cast< double >( numColors - 1 );
   if ( color->GetSize() == numColors && opacity->GetSize() == numColors )
   {
@@ -823,7 +815,7 @@ void vtkImageView3D::UpdateVolumeFunctions()
     {
       double x = range[0] + factor * static_cast< double >( i ) * width;
 
-      double * val = this->GetLookupTable()->GetTableValue( i );
+      double * val = lookuptable->GetTableValue( i );
       colorValue[0] = x;
       colorValue[1] = val[0];
       colorValue[2] = val[1];
@@ -845,7 +837,7 @@ void vtkImageView3D::UpdateVolumeFunctions()
     {
       double x = range[0] + factor * static_cast< double >( i ) * width;
 
-      double * val = this->GetLookupTable()->GetTableValue( i );
+      double * val = lookuptable->GetTableValue( i );
       color->AddRGBPoint( x, val[0], val[1], val[2]);
       opacity->AddPoint( x, val[3] );
     }
@@ -1159,18 +1151,18 @@ public:
       vtkImageActor* imagecaller = vtkImageActor::SafeDownCast (caller);
       if (imagecaller && (event == vtkCommand::ModifiedEvent))
       {
-	this->Actor->SetDisplayExtent (imagecaller->GetDisplayExtent());
-	this->Actor->SetVisibility(imagecaller->GetVisibility());
-	this->Actor->SetInput(imagecaller->GetInput());
-	this->Actor->SetInterpolate(imagecaller->GetInterpolate());
-	this->Actor->SetOpacity(imagecaller->GetOpacity());
-	this->Actor->SetUserMatrix (imagecaller->GetUserMatrix());
-	this->Actor->Modified();
+        this->Actor->SetDisplayExtent (imagecaller->GetDisplayExtent());
+        this->Actor->SetVisibility(imagecaller->GetVisibility());
+        this->Actor->SetInput(imagecaller->GetInput());
+        this->Actor->SetInterpolate(imagecaller->GetInterpolate()); 
+        this->Actor->SetOpacity(imagecaller->GetOpacity());
+        this->Actor->SetUserMatrix (imagecaller->GetUserMatrix());
+        this->Actor->Modified();
       }
       vtkImageData* image = vtkImageData::SafeDownCast (caller);
       if (image && (event == vtkCommand::ModifiedEvent))
       {
-	this->Actor->Modified();
+        this->Actor->Modified();
       }
     }
   }
@@ -1225,13 +1217,9 @@ void vtkImageView3D::AddExtraPlane (vtkImageActor* input)
   actor->SetVisibility (input->GetVisibility());
 
   input->AddObserver (vtkCommand::ModifiedEvent, cbk);
-<<<<<<< HEAD
   if (input->GetInput())
     input->GetInput()->AddObserver (vtkCommand::ModifiedEvent, cbk);
   
-=======
-
->>>>>>> Factorises layer knowledge for 3d and 2d a bit.
   this->GetRenderer()->AddViewProp (actor);
 
   this->ExtraPlaneCollection->AddItem (actor);
@@ -1276,5 +1264,71 @@ void vtkImageView3D::RemoveExtraPlane (vtkImageActor* input)
 
 vtkImage3DDisplay * vtkImageView3D::GetImage3DDisplayForLayer( int layer ) const
 {
-    return this->LayerInfoVec.at(layer - 1).ImageDisplay;
+  return this->LayerInfoVec.at(layer - 1).ImageDisplay;
+}
+
+vtkColorTransferFunction * vtkImageView3D::GetColorTransferFunction(int layer) const
+{
+
+  if (this->HasLayer(layer))
+    //warning if it does not exist, a default one is created.
+    return this->VolumeProperty->GetRGBTransferFunction(layer);
+  else return NULL;
+}
+
+vtkPiecewiseFunction * vtkImageView3D::GetOpacityTransferFunction(int layer) const
+{
+  if (this->HasLayer(layer))
+    //warning if it does not exist, a default one is created.
+    return this->VolumeProperty->GetScalarOpacity(layer);
+  else return NULL;
+}
+
+void vtkImageView3D::StoreColorTransferFunction(vtkColorTransferFunction *ctf, int layer)
+{
+  if(this->HasLayer(layer))
+  {
+    this->VolumeProperty->SetColor(layer,ctf);
+  }
+
+}
+
+void vtkImageView3D::StoreOpacityTransferFunction(vtkPiecewiseFunction *otf, int layer)
+{
+  if(this->HasLayer(layer))
+  {
+    this->VolumeProperty->SetScalarOpacity(layer,otf);
+  }
+}
+
+vtkScalarsToColors * vtkImageView3D::GetLookupTable(int layer) const
+{
+  if(this->HasLayer(layer))
+  {
+    this->VolumeProperty->Get(layer,otf);
+  }
+}
+
+bool vtkImageView3D::GetUseLookupTable(int layer) const
+{
+}
+
+void vtkImageView3D::SetUseLookupTable(bool use, int layer)
+{
+}
+
+void vtkImageView3D::StoreColorWindow(double s, int layer)
+{
+  vtkImage3DDisplay * imageDisplay = this->GetImage3DDisplayForLayer(layer);
+  if (!imageDisplay)
+    return;
+  imageDisplay->SetColorWindow( s );
+}
+
+void vtkImageView3D::StoreColorLevel(double s, int layer)
+{
+  vtkImage3DDisplay * imageDisplay = this->GetImage3DDisplayForLayer(layer);
+  if (!imageDisplay)
+      return;
+  imageDisplay->SetColorLevel(s);
 }

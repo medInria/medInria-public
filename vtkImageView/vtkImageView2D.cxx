@@ -1553,68 +1553,68 @@ int vtkImageView2D::GetInterpolate(int layer)
   return 0;
 }
 
-//----------------------------------------------------------------------------
-void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity)
-{
-    this->SetTransferFunctions (color, opacity, CurrentLayer);
-}
+////----------------------------------------------------------------------------
+//void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity)
+//{
+//    this->SetTransferFunctions (color, opacity, CurrentLayer);
+//}
 
-//----------------------------------------------------------------------------
-void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity, int layer)
-{
-  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
-  if (layer==0)
-  {
-    this->Superclass::SetTransferFunctions(color, opacity);
-    this->GetImage2DDisplayForLayer(0)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());
-    imageDisplay->SetColorTransferFunction(this->GetColorTransferFunction());
-    imageDisplay->SetOpacityTransferFunction(this->GetOpacityTransferFunction());
-    imageDisplay->SetUseLookupTable (false);
-  }
-  else if (this->HasLayer(layer))
-  {
-    vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
-//    if (!imageDisplay->GetInput())
+////----------------------------------------------------------------------------
+//void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity, int layer)
+//{
+//  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+//  if (layer==0)
+//  {
+//    this->Superclass::SetTransferFunctions(color, opacity);
+//    this->GetImage2DDisplayForLayer(0)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());
+//    imageDisplay->SetColorTransferFunction(this->GetColorTransferFunction());
+//    imageDisplay->SetOpacityTransferFunction(this->GetOpacityTransferFunction());
+//    imageDisplay->SetUseLookupTable (false);
+//  }
+//  else if (this->HasLayer(layer))
+//  {
+//    vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+////    if (!imageDisplay->GetInput())
+////      return;
+
+////    double *range = imageDisplay->GetInput()->GetScalarRange();
+//    if ( color == NULL)
+//        color = this->GetDefaultColorTransferFunction();
+//    if (opacity == NULL)
+//        opacity = this->GetDefaultOpacityTransferFunction();
+
+//    imageDisplay->GetWindowLevel()->SetLookupTable(color);
+//    imageDisplay->SetColorTransferFunction(color);
+//    imageDisplay->SetOpacityTransferFunction(opacity);
+//    color->Delete();
+//    opacity->Delete();
+//    imageDisplay->SetUseLookupTable (false);
+//    this->SetTransferFunctionRangeFromWindowSettings(layer);
+//    this->Modified();
+//  }
+//}
+
+////----------------------------------------------------------------------------
+//void vtkImageView2D::SetLookupTable(vtkLookupTable* lut, int layer)
+//{
+//  if (layer==0)
+//  {
+//    this->Superclass::SetLookupTable(lut);
+//    this->GetImage2DDisplayForLayer(0)->SetUseLookupTable(true);
+//    this->GetImage2DDisplayForLayer(0)->GetWindowLevel()->SetLookupTable(lut);
+//  }
+//  else if (lut && this->HasLayer(layer))
+//  {
+//    // this->GetImage2DDisplayForLayer(layer)->GetInput()->Update();
+//    if (!this->GetImage2DDisplayForLayer(layer)->GetInput())
 //      return;
-
-//    double *range = imageDisplay->GetInput()->GetScalarRange();
-    if ( color == NULL)
-        color = this->GetDefaultColorTransferFunction();
-    if (opacity == NULL)
-        opacity = this->GetDefaultOpacityTransferFunction();
-
-    imageDisplay->GetWindowLevel()->SetLookupTable(color);
-    imageDisplay->SetColorTransferFunction(color);
-    imageDisplay->SetOpacityTransferFunction(opacity);
-    color->Delete();
-    opacity->Delete();
-    imageDisplay->SetUseLookupTable (false);
-    this->SetTransferFunctionRangeFromWindowSettings(layer);
-    this->Modified();
-  }
-}
-
-//----------------------------------------------------------------------------
-void vtkImageView2D::SetLookupTable(vtkLookupTable* lut, int layer)
-{
-  if (layer==0)
-  {
-    this->Superclass::SetLookupTable(lut);
-    this->GetImage2DDisplayForLayer(0)->SetUseLookupTable(true);
-    this->GetImage2DDisplayForLayer(0)->GetWindowLevel()->SetLookupTable(lut);
-  }
-  else if (lut && this->HasLayer(layer))
-  {
-    // this->GetImage2DDisplayForLayer(layer)->GetInput()->Update();
-    if (!this->GetImage2DDisplayForLayer(layer)->GetInput())
-      return;
-    this->GetImage2DDisplayForLayer(layer)->SetUseLookupTable(true);
-    double *range = this->GetImage2DDisplayForLayer(layer)->GetInput()->GetScalarRange();
-    lut->SetTableRange(range[0], range[1]);
-    this->GetImage2DDisplayForLayer(layer)->GetWindowLevel()->SetLookupTable(lut);
-    this->Modified();
-  }
-}
+//    this->GetImage2DDisplayForLayer(layer)->SetUseLookupTable(true);
+//    double *range = this->GetImage2DDisplayForLayer(layer)->GetInput()->GetScalarRange();
+//    lut->SetTableRange(range[0], range[1]);
+//    this->GetImage2DDisplayForLayer(layer)->GetWindowLevel()->SetLookupTable(lut);
+//    this->Modified();
+//  }
+//}
 
 //----------------------------------------------------------------------------
 void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int layer)
@@ -2010,7 +2010,7 @@ vtkRenderer * vtkImageView2D::GetRendererForLayer( int layer ) const
     else return NULL;
 }
 
-vtkImageMapToColors * vtkImageView2D::GetWindowLevel( int layer/*=0*/ )
+vtkImageMapToColors * vtkImageView2D::GetWindowLevel( int layer/*=0*/ ) const
 {
     vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
     if (imageDisplay)
@@ -2018,122 +2018,157 @@ vtkImageMapToColors * vtkImageView2D::GetWindowLevel( int layer/*=0*/ )
     else return NULL;
 }
 
-//----------------------------------------------------------------------------
+////----------------------------------------------------------------------------
 
-void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings()
+//void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings()
+//{
+//    int currentLayer = this->GetCurrentLayer();
+//    this->SetTransferFunctionRangeFromWindowSettings(currentLayer);
+//}
+
+//void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings(int layer)
+//{
+//    double targetRange[2];
+
+//    this->GetColorRange( targetRange, layer );
+//    if (targetRange[1] - targetRange[0] <= 0.0)
+//    {
+//      targetRange[0] = 0.0;
+//      targetRange[1] = 1.0;
+//    }
+//    std::cout<< "change transfer function on layer:"<< layer <<std::endl;
+//    vtkWarningMacro(<< targetRange[0] << " " << targetRange[1]);
+//    bool touched = false;
+
+//    // lookup table
+//    vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+//    vtkScalarsToColors * lookupTable = imageDisplay->GetWindowLevel()->GetLookupTable();
+//    if ( imageDisplay->GetUseLookupTable() &&
+//         lookupTable != NULL )
+//    {
+//      const double * currentRange = lookupTable->GetRange();
+//      if ( currentRange[0] != targetRange[0] ||
+//          currentRange[1] != targetRange[1] )
+//      {
+//        lookupTable->SetRange( targetRange );
+//        touched = true;
+//      }
+//    }
+
+//    // color transfer function
+//    if ( !imageDisplay->GetUseLookupTable())
+//    {
+//        this->Superclass::SetTransferFunctionRangeFromWindowSettings(
+//                    imageDisplay->GetColorTransferFunction(),
+//                    imageDisplay->GetOpacityTransferFunction(),
+//                                                         targetRange[0],
+//                                                         targetRange[1]);
+
+//        if (imageDisplay->GetColorTransferFunction())
+//           imageDisplay->GetWindowLevel()->
+//                   SetLookupTable(imageDisplay->GetColorTransferFunction());
+//        touched = true;
+////        vtkWarningMacro(<<"not using lookup table");
+//    }
+//    if ( touched )
+//    {
+//      imageDisplay->GetWindowLevel()->Modified();
+//      imageDisplay->GetImageActor()->Modified();
+//      this->Modified();
+//      this->ScalarBar->Modified();
+//    }
+//}
+
+
+
+double vtkImageView2D::GetColorLevel(int layer)const
 {
-    int currentLayer = this->GetCurrentLayer();
-    this->SetTransferFunctionRangeFromWindowSettings(currentLayer);
+  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+  if (imageDisplay)
+  {
+    return imageDisplay->GetColorLevel();
+  }
+  else return 0.0;
 }
 
-void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings(int layer)
+double vtkImageView2D::GetColorWindow(int layer)const
 {
-    double targetRange[2];
-
-    this->GetColorRange( targetRange, layer );
-    if (targetRange[1] - targetRange[0] <= 0.0)
-    {
-      targetRange[0] = 0.0;
-      targetRange[1] = 1.0;
-    }
-    std::cout<< "change transfer function on layer:"<< layer <<std::endl;
-    vtkWarningMacro(<< targetRange[0] << " " << targetRange[1]);
-    bool touched = false;
-
-    // lookup table
-    vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
-    vtkScalarsToColors * lookupTable = imageDisplay->GetWindowLevel()->GetLookupTable();
-    if ( imageDisplay->GetUseLookupTable() &&
-         lookupTable != NULL )
-    {
-      const double * currentRange = lookupTable->GetRange();
-      if ( currentRange[0] != targetRange[0] ||
-          currentRange[1] != targetRange[1] )
-      {
-        lookupTable->SetRange( targetRange );
-        touched = true;
-      }
-    }
-
-    // color transfer function
-    if ( !imageDisplay->GetUseLookupTable())
-    {
-        this->Superclass::SetTransferFunctionRangeFromWindowSettings(
-                    imageDisplay->GetColorTransferFunction(),
-                    imageDisplay->GetOpacityTransferFunction(),
-                                                         targetRange[0],
-                                                         targetRange[1]);
-
-        if (imageDisplay->GetColorTransferFunction())
-           imageDisplay->GetWindowLevel()->
-                   SetLookupTable(imageDisplay->GetColorTransferFunction());
-        touched = true;
-//        vtkWarningMacro(<<"not using lookup table");
-    }
-    if ( touched )
-    {
-      imageDisplay->GetWindowLevel()->Modified();
-      imageDisplay->GetImageActor()->Modified();
-      this->Modified();
-      this->ScalarBar->Modified();
-    }
+  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+  if (imageDisplay)
+  {
+    return imageDisplay->GetColorWindow();
+  }
+  else return 0.0;
 }
 
-
-
-double vtkImageView2D::GetColorLevel(int layer)
-{
-    vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
-    if (imageDisplay)
-    {
-        return imageDisplay->GetColorLevel();
-    }
-    else return 0;
-}
-
-double vtkImageView2D::GetColorWindow(int layer)
-{
-    vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
-    if (imageDisplay)
-    {
-        return imageDisplay->GetColorWindow();
-    }
-    else return 0;
-}
-
-void vtkImageView2D::SetColorWindow(double s,int layer)
+void vtkImageView2D::StoreColorWindow(double s,int layer)
 {
   vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
   if (!imageDisplay)
     return;
-  if (s < 0)
-    s = 0;
-
-  if (s == imageDisplay->GetColorWindow())
-    return;
-
   imageDisplay->SetColorWindow( s );
-
-  this->SetTransferFunctionRangeFromWindowSettings(layer);
-
-  this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, NULL);
-  this->Modified();
 }
 
-
-
-void vtkImageView2D::SetColorLevel(double s,int layer)
+void vtkImageView2D::StoreColorLevel(double s,int layer)
 {
     vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
     if (!imageDisplay)
         return;
-    if (s == imageDisplay->GetColorLevel())
-      return;
-
     imageDisplay->SetColorLevel(s);
+}
 
-    this->SetTransferFunctionRangeFromWindowSettings(layer);
+vtkColorTransferFunction * vtkImageView2D::GetColorTransferFunction(int layer) const
+{
+  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+  if (!imageDisplay)
+      return NULL;
+  return imageDisplay->GetColorTransferFunction();
+}
 
-    this->InvokeEvent (vtkImageView::WindowLevelChangedEvent, NULL);
-    this->Modified();
+vtkPiecewiseFunction * vtkImageView2D::GetOpacityTransferFunction(int layer) const
+{
+  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+  if (!imageDisplay)
+      return NULL;
+  return imageDisplay->GetOpacityTransferFunction();
+}
+
+void vtkImageView2D::StoreColorTransferFunction(vtkColorTransferFunction *ctf, int layer)
+{
+  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+  if (!imageDisplay)
+      return;
+  imageDisplay->SetColorTransferFunction(ctf);
+}
+
+void vtkImageView2D::StoreOpacityTransferFunction(vtkPiecewiseFunction *otf, int layer)
+{
+  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+  if (!imageDisplay)
+      return;
+  imageDisplay->SetOpacityTransferFunction(otf);
+}
+
+vtkScalarsToColors * vtkImageView2D::GetLookupTable(int layer) const
+{
+  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+  if (!imageDisplay)
+      return NULL;
+  return imageDisplay->GetWindowLevel()->GetLookupTable();
+}
+
+bool vtkImageView2D::GetUseLookupTable(int layer) const
+{
+  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+  if (!imageDisplay)
+      return false;
+  return imageDisplay->GetUseLookupTable();
+}
+
+void vtkImageView2D::SetUseLookupTable(bool use, int layer)
+{
+  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+  if (!imageDisplay)
+      return;
+  imageDisplay->SetUseLookupTable(use);
 }

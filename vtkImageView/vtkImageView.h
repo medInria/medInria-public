@@ -54,6 +54,7 @@ class vtkPiecewiseFunction;
 class vtkDataSetCollection;
 class vtkProp3DCollection;
 class vtkProp3D;
+class vtkScalarsToColors;
 
 
 /**
@@ -257,16 +258,33 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual void SetTransferFunctions (vtkColorTransferFunction *color,
                                      vtkPiecewiseFunction     *opacity);
 
+  virtual void SetTransferFunctions (vtkColorTransferFunction *color,
+                                     vtkPiecewiseFunction     *opacity,
+                                     int layer);
+
   /** Set the ColorTransferFunction */
-  vtkGetObjectMacro (ColorTransferFunction, vtkColorTransferFunction);
+  virtual vtkColorTransferFunction * GetColorTransferFunction() const;
+  virtual vtkColorTransferFunction * GetColorTransferFunction(int layer) const= 0;
+
   virtual void SetColorTransferFunction (vtkColorTransferFunction *ctf);
+  /** Sets the ColorTransferFunction, but just store the value in the layer,
+   *  doesn't apply anything.
+   *  @todo: call it storeColorTransferFunction perhaps?
+   */
+  virtual void StoreColorTransferFunction (vtkColorTransferFunction *ctf, int layer) = 0;
 
   /**
    * Composite volume rendering takes into account the opacity (alpha)
    * value to add transparency.
    */
-  vtkGetObjectMacro (OpacityTransferFunction, vtkPiecewiseFunction);
+  virtual vtkPiecewiseFunction* GetOpacityTransferFunction () const;
+  virtual vtkPiecewiseFunction* GetOpacityTransferFunction (int layer) const = 0;
   virtual void SetOpacityTransferFunction (vtkPiecewiseFunction *otf);
+  /** Sets the OpacityTransferFunction, but just store the value in the layer,
+   *  doesn't apply anything.
+   *  @todo: call it storeOpacityTransferFunction perhaps?
+   */
+  virtual void StoreOpacityTransferFunction (vtkPiecewiseFunction *otf,int layer) = 0;
 
   /**
    * The lookup table is an alternative way to define a transfer
@@ -274,8 +292,15 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
    * vtkColorTransferFunction (color) and a vtkPiecewiseFunction
    * (opacity/alpha).  Default is a linear black to white table.
    */
-  vtkGetObjectMacro (LookupTable, vtkLookupTable);
-  virtual void SetLookupTable (vtkLookupTable *lookuptable);
+  virtual vtkScalarsToColors * GetLookupTable() const;
+  virtual vtkScalarsToColors * GetLookupTable(int layer) const = 0;
+  virtual void SetLookupTable (vtkScalarsToColors *lookuptable);
+  virtual void SetLookupTable (vtkScalarsToColors *lookuptable, int layer);
+
+  virtual bool GetUseLookupTable() const;
+  virtual bool GetUseLookupTable(int layer) const = 0;
+  virtual void SetUseLookupTable(bool use);
+  virtual void SetUseLookupTable(bool use, int layer) = 0;
 
   /**
      The TextProperty instance (GetTextProperty()) describes the font and
@@ -381,21 +406,23 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
    */
   virtual void SetColorWindow(double s);
   virtual void SetColorWindow(double s,int layer);
+  virtual void StoreColorWindow(double s,int layer) = 0;
   /**
    * Gets the color window of the current layer.
    */
-  virtual double GetColorWindow();
-  virtual double GetColorWindow(int layer);
+  virtual double GetColorWindow() const;
+  virtual double GetColorWindow(int layer) const;
   /**
    * Sets the color level of the current layer.
    */
   virtual void SetColorLevel(double s);
   virtual void SetColorLevel(double s, int layer);
+  virtual void StoreColorLevel(double s,int layer) = 0;
   /**
    * Gets the color level of the current layer.
    */
-  virtual double GetColorLevel();
-  virtual double GetColorLevel(int layer);
+  virtual double GetColorLevel() const;
+  virtual double GetColorLevel(int layer) const;
   /**
    * Sets the color range of the current layer.
    */
@@ -531,7 +558,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   /**
    * Gets the current active layer.
    */
-  vtkGetMacro(CurrentLayer,int)
+  virtual int GetCurrentLayer() const;
 
 #ifdef vtkINRIA3D_USE_ITK
   /**
@@ -651,7 +678,9 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
                                                           vtkPiecewiseFunction *of,
                                                           double minRange, double maxRange);
   virtual void SetTransferFunctionRangeFromWindowSettings();
+  virtual void SetTransferFunctionRangeFromWindowSettings(int layer);
   virtual void SetWindowSettingsFromTransferFunction();
+  virtual void SetWindowSettingsFromTransferFunction(int layer);
 
   virtual bool Compare(double *array1, double *array2, int size);
   virtual bool Compare(int *array1,    int *array2,    int size);
@@ -720,18 +749,6 @@ protected:
   */
   vtkTextProperty* TextProperty;
 
-  vtkColorTransferFunction * ColorTransferFunction;
-  vtkPiecewiseFunction     * OpacityTransferFunction;
-
-  /**
-   * The lookup table is an alternative way to define a transfer
-   * function.  Internally this is transformed into a
-   * vtkColorTransferFunction (color) and a vtkPiecewiseFunction
-   * (opacity/alpha).  Default is a linear black to white table.
-   */
-  vtkLookupTable* LookupTable;
-  bool UseLookupTable;
-
   /**
      Get the scalar bar actor. This instance follows the color window/level
      of the viewer.
@@ -764,8 +781,6 @@ protected:
   */
   double CurrentPoint[3];
 
-  double ColorWindow;
-  double ColorLevel;
   int CurrentLayer;
   int IsInteractorInstalled;
 
@@ -774,7 +789,6 @@ protected:
   vtkRenderWindow*                RenderWindow;
   vtkRenderWindowInteractor*      Interactor;
   vtkInteractorStyle*             InteractorStyle;
-  vtkImageMapToColors*            WindowLevel;
 
   vtkImageData*                   Input;
 
