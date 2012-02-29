@@ -1,10 +1,10 @@
 on run
 	do shell script ("rm -f @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg @CMAKE_INSTALL_PREFIX@/medInria-2.0.0.dmg")
-	do shell script ("hdiutil create -srcfolder \"@CMAKE_INSTALL_PREFIX@/bin/medInria.app\" -volname \"medInria 2.0.0\" -fs HFS+ -fsargs \"-c c=64,a=16,e=16\" -format UDRW -size 270M @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg")
+	do shell script ("hdiutil create -srcfolder \"@CMAKE_INSTALL_PREFIX@/bin/medInria.app\" -volname \"medInria 2.0.0\" -fs HFS+ -fsargs \"-c c=64,a=16,e=16\" -format UDRW -size 400M @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg")
 	set device to do shell script ("hdiutil attach -readwrite -noverify -noautoopen \"@CMAKE_INSTALL_PREFIX@/TmpPackage.dmg\" | egrep '^/dev/' | sed 1q | awk '{print $1}' ")
 	
 	do shell script ("mkdir -p /Volumes/\"medInria 2.0.0\"/.background")
-	do shell script ("cp -p @PROJECT_SOURCE_DIR@/app/medInria/pixmaps/medInria-logo.png /Volumes/\"medInria 2.0.0\"/.background")
+	do shell script ("cp -p @PROJECT_SOURCE_DIR@/app/medInria/pixmaps/medInria-logo-dmg.png /Volumes/\"medInria 2.0.0\"/.background")
 	
 	tell application "Finder"
 		tell disk "medInria 2.0.0"
@@ -16,7 +16,7 @@ on run
 			set theViewOptions to the icon view options of container window
 			set arrangement of theViewOptions to not arranged
 			set icon size of theViewOptions to 72
-			set background picture of theViewOptions to file ".background:medInria-logo.png"
+			set background picture of theViewOptions to file ".background:medInria-logo-dmg.png"
 			make new alias file at container window to POSIX file "/Applications" with properties {name:"Applications"}
 			set position of item "medInria" of container window to {100, 200}
 			set position of item "Applications" of container window to {460, 200}
