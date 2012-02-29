@@ -50,6 +50,9 @@ medViewerConfiguration(parent), d(new medViewerConfigurationSegmentationPrivate)
 {
     d->segmentationToolBox = new medToolBoxSegmentation(this, parent );
 
+    connect(d->segmentationToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
+    connect(d->segmentationToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
+
     // Always have a parent.
     if ( !parent) 
         throw (std::runtime_error ("Must have a parent widget"));
