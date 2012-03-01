@@ -94,7 +94,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : d(new medDatabaseViewPrivate
     this->setAttribute(Qt::WA_MacShowFocusRect, false);
     this->setUniformRowHeights(true);
     this->setAlternatingRowColors(true);
-    this->setAnimated(true);
+    this->setAnimated(false);
     this->setSortingEnabled(true);
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->setSelectionMode(QAbstractItemView::SingleSelection);
