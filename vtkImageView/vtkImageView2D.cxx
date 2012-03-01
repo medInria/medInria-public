@@ -245,6 +245,8 @@ vtkImageView2D::~vtkImageView2D()
   for (std::list<vtkDataSet2DWidget*>::iterator it3 = this->DataSetWidgets.begin();
       it3!=this->DataSetWidgets.end(); ++it3)
   {
+    (*it3)->Off();
+    (*it3)->SetImageView (NULL);
     (*it3)->Delete();
   }
 }
