@@ -69,6 +69,9 @@
 
 #include "medSaveModifiedDialog.h"
 
+// TODO remove
+#include "medImageSelectionWidget.h"
+
 #include <QtGui>
 
 // Simple new function used for factories.
@@ -153,7 +156,12 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect (medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &, const QString&)),
              this,SLOT(onOpenFile(const medDataIndex&,const QString&)));
 
-
+    // Shortcut to open medImageSelectionWidget
+    // TODO delete this
+    QAction* openImageWidgetAction = new QAction("Open image selection widget", this);
+    openImageWidgetAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_O);
+    connect(openImageWidgetAction, SIGNAL(triggered()), this, SLOT(openImageSelectionWidget()));
+    this->addAction(openImageWidgetAction);
 
     // Setting up widgets
     d->settingsEditor = NULL;
@@ -818,4 +826,22 @@ void medMainWindow::registerToFactories()
     //Register annotations
     dtkAbstractDataFactory * datafactory = dtkAbstractDataFactory::instance();
     datafactory->registerDataType( medSeedPointAnnotationData::s_identifier(), dtkAbstractDataCreateFunc<medSeedPointAnnotationData> );
+}
+
+void medMainWindow::openImageSelectionWidget()
+{
+    medImageSelectionWidget* widget = new medImageSelectionWidget(this);
+//    QSize size = widget->sizeHint();
+//    QDesktopWidget* d = QApplication::desktop();
+//    int w = d->width();   // returns screen width
+//    int h = d->height();  // returns screen height
+//    int mw = size.width();
+//    int mh = size.height();
+//    int cw = (w/2) - (mw/2);
+//    int ch = (h/2) - (mh/2);
+//    widget->move(cw,ch);
+//    widget->show();
+//    widget->activateWindow();
+
+    widget->exec();
 }

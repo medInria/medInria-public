@@ -114,6 +114,9 @@ public slots:
      */
     void showMaximized();
 
+    // TODO delete this, it's just for testing
+    void openImageSelectionWidget();
+
 protected:
     void closeEvent(QCloseEvent *event);
 
