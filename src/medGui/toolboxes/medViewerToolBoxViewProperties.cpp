@@ -16,6 +16,35 @@
 #include <medToolBoxTab.h>
 #include <medMeshAbstractViewInteractor.h>
 
+//Just a normal combobox, but with a link to its associated LutBox.
+//The selected item in the attribute box determines which Lut is selected
+//or if a lut can even be selected.
+class medAttributeBox: public QComboBox{
+public:
+    medAttributeBox(QWidget* parent,QComboBox* lutBox);
+    medAttributeBox():QComboBox(){}
+    void setLutBox(QComboBox* lutBox);
+    QComboBox* getLutBox()const;
+protected:
+    QWeakPointer<QComboBox> lutBox;
+};
+
+medAttributeBox::medAttributeBox(QWidget *parent, QComboBox *lutBox):
+    QComboBox(parent)
+{
+    this->lutBox = lutBox;
+}
+
+void medAttributeBox::setLutBox(QComboBox *lutBox)
+{
+    this->lutBox = lutBox;
+}
+
+QComboBox* medAttributeBox::getLutBox()const
+{
+    return lutBox.data();
+}
+
 class medViewerToolBoxViewPropertiesPrivate
 {
 public:
@@ -23,11 +52,12 @@ public:
     QTreeWidget * propertiesTree;
     QWidget * propertiesView;
     QWidget * propView;
-    QStringList lutList;
+    //attribtueList can be filled depending on the data, not static.
     QStringList attributeList;
-    QStringList presetList;
-    QMap<QString, QString> presetToLut;
-    QStringList renderingList;
+    static QStringList lutList;
+    static QStringList presetList;
+    static QMap<QString, QString> presetToLut;
+    static QStringList renderingList;
     int currentLayer;
     QWidget * twoLayersWidget;
     QSlider * slider;
@@ -60,9 +90,12 @@ public:
     QTreeWidgetItem * layerItem;
     bool isMesh;
     int currentInteractor;
-
-    QList <QComboBox *> meshLutBoxList;
 };
+
+QStringList medViewerToolBoxViewPropertiesPrivate::lutList;
+QStringList medViewerToolBoxViewPropertiesPrivate::renderingList;
+QStringList medViewerToolBoxViewPropertiesPrivate::presetList;
+QMap<QString, QString> medViewerToolBoxViewPropertiesPrivate::presetToLut;
 
 medViewerToolBoxViewProperties::medViewerToolBoxViewProperties(QWidget *parent) :
 medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
@@ -74,31 +107,48 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->textLayer1 = tr("Switch to layer 1 only");
     d->isMesh = false;
     d->currentInteractor = 0;
-    d->lutList << "Default" << "Black & White" << "Black & White Inversed" << "Spectrum" << "Hot Metal" << "Hot Green"
-        << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2" << "Asymmetry" << "P-Value" << "Red Black Alpha"
-        << "Green Black Alpha" << "Blue Black Alpha" << "Muscles & Bones" << "Bones" << "Red Vessels"
-        << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body";
-    d->presetList << "None" << "VR Muscles&Bones" << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
-        << "Standard" << "Soft" << "Soft on White" << "Soft on Blue" << "Red on White" << "Glossy" ;
+    if (d->lutList.isEmpty())
+    {
+        d->lutList << "Default" << "Black & White" << "Black & White Inversed"
+                   << "Spectrum" << "Hot Metal" << "Hot Green"
+                   << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2"
+                   << "Asymmetry" << "P-Value" << "Red Black Alpha"
+                   << "Green Black Alpha" << "Blue Black Alpha"
+                   << "Muscles & Bones" << "Bones" << "Red Vessels"
+                   << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body";
+    }
+    if (d->presetList.isEmpty())
+    {
+        d->presetList << "None" << "VR Muscles&Bones" << "Vascular I"
+                      << "Vascular II" << "Vascular III" << "Vascular IV"
+                      << "Standard" << "Soft" << "Soft on White"
+                      << "Soft on Blue" << "Red on White" << "Glossy" ;
+    }
 
     // a preset is a predefined choice of three things: LUT, window width and window level
     // hence when the user selects a preset we also change the LUT
-    d->presetToLut.insert("None", "Black & White");
-    d->presetToLut.insert("VR Muscles&Bones", "Muscles & Bones");
-    d->presetToLut.insert("Vascular I", "Stern");
-    d->presetToLut.insert("Vascular II", "Red Vessels");
-    d->presetToLut.insert("Vascular III", "Red Vessels");
-    d->presetToLut.insert("Vascular IV", "Red Vessels");
-    d->presetToLut.insert("Standard", "Muscles & Bones");
-    d->presetToLut.insert("Soft", "Bones");
-    d->presetToLut.insert("Soft on White", "Muscles & Bones");
-    d->presetToLut.insert("Soft on Blue", "Muscles & Bones");
-    d->presetToLut.insert("Red on White", "Red Vessels");
-    d->presetToLut.insert("Glossy", "Bones");
+    if(d->presetToLut.isEmpty())
+    {
+        d->presetToLut.insert("None", "Black & White");
+        d->presetToLut.insert("VR Muscles&Bones", "Muscles & Bones");
+        d->presetToLut.insert("Vascular I", "Stern");
+        d->presetToLut.insert("Vascular II", "Red Vessels");
+        d->presetToLut.insert("Vascular III", "Red Vessels");
+        d->presetToLut.insert("Vascular IV", "Red Vessels");
+        d->presetToLut.insert("Standard", "Muscles & Bones");
+        d->presetToLut.insert("Soft", "Bones");
+        d->presetToLut.insert("Soft on White", "Muscles & Bones");
+        d->presetToLut.insert("Soft on Blue", "Muscles & Bones");
+        d->presetToLut.insert("Red on White", "Red Vessels");
+        d->presetToLut.insert("Glossy", "Bones");
+    }
+    if (d->renderingList.isEmpty())
+    {
+        d->renderingList << "wireframe"<<"surface"<<"points";
+    }
 
-    d->renderingList << "wireframe"<<"surface"<<"points";
     d->attributeList << "Solid";
-    //lutBox = new QComboBox();
+
 
     d->propertiesTree = new QTreeWidget(this);
     d->propertiesTree->setFocusPolicy(Qt::NoFocus);
@@ -303,6 +353,7 @@ medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
 
 void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 {
+
     medToolBox::update(view);
     if(!view)
     {
@@ -451,29 +502,10 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
     //No need to parent this widget, setItemWidget takes ownership of the widget
     QComboBox * lutBox = new QComboBox();
     lutBox->setFocusPolicy(Qt::NoFocus);
-    lutBox->addItem("Default");
-    lutBox->addItem("Black & White");
-    lutBox->addItem("Black & White Inversed");
-    lutBox->addItem("Spectrum");
-    lutBox->addItem("Hot Metal");
-    lutBox->addItem("Hot Green");
-    lutBox->addItem("Hot Iron");
-    lutBox->addItem("GE");
-    lutBox->addItem("Flow");
-    lutBox->addItem("Loni");
-    lutBox->addItem("Loni 2");
-    lutBox->addItem("Asymmetry");
-    lutBox->addItem("P-Value");
-    lutBox->addItem("Red Black Alpha");
-    lutBox->addItem("Green Black Alpha");
-    lutBox->addItem("Blue Black Alpha");
-    lutBox->addItem("Muscles & Bones");
-    lutBox->addItem("Bones");
-    lutBox->addItem("Red Vessels");
-    lutBox->addItem("Cardiac");
-    lutBox->addItem("Gray Rainbow");
-    lutBox->addItem("Stern");
-    lutBox->addItem("Black Body");
+    foreach (QString lut,d->lutList)
+    {
+        lutBox->addItem(lut);
+    }
 
     d->propertiesTree->setItemWidget(lutItem, 2, lutBox);
     lutBox->blockSignals(true);
@@ -486,18 +518,10 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
     presetItem->setText(1, tr("Preset"));
     QComboBox * presetBox = new QComboBox();
     presetBox->setFocusPolicy(Qt::NoFocus);
-    presetBox->addItem("None");
-    presetBox->addItem("VR Muscles&Bones");
-    presetBox->addItem("Vascular I");
-    presetBox->addItem("Vascular II");
-    presetBox->addItem("Vascular III");
-    presetBox->addItem("Vascular IV");
-    presetBox->addItem("Standard");
-    presetBox->addItem("Soft");
-    presetBox->addItem("Soft on White");
-    presetBox->addItem("Soft on Blue");
-    presetBox->addItem("Red on White");
-    presetBox->addItem("Glossy");
+    foreach(QString preset,d->presetList)
+    {
+         presetBox->addItem(preset);
+    }
 
     d->propertiesTree->setItemWidget(presetItem, 2, presetBox);
     presetBox->blockSignals(true);
@@ -539,23 +563,26 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
 
 
     if (data)
+    {
         if (medMetaDataKeys::SeriesThumbnail.is_set_in(data))
             d->thumbLocation = medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png");
+    }
 
     d->layerItem = new QTreeWidgetItem(d->propertiesTree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
     d->layerItem->setText(0, layerItemString);
     d->layerItem->setIcon(0,QIcon(d->thumbLocation));
     if (medMetaDataKeys::SeriesDescription.is_set_in(data)) {
-        d->layerItem->setToolTip(0,data->metaDataValues(medMetaDataKeys::PatientName.key())[0]
-        + "\n" + data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0]
-        + "\n" + data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0]);
+        d->layerItem->setToolTip(0,medMetaDataKeys::PatientName.getFirstValue(data)
+        + "\n" + medMetaDataKeys::StudyDescription.getFirstValue(data)
+        + "\n" + medMetaDataKeys::SeriesDescription.getFirstValue(data));
     }
 
-
+    medMeshAbstractViewInteractor * currentInteractor =
+            d->interactors[d->currentInteractor];
     QTreeWidgetItem * meshVisibleItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     meshVisibleItem->setText(1, tr("Visible"));
     QCheckBox * meshVisibleBox = new QCheckBox();
-    meshVisibleBox->setChecked(d->interactors[d->currentInteractor]->visibility(meshLayer));
+    meshVisibleBox->setChecked(currentInteractor->visibility(meshLayer));
     d->propertiesTree->setItemWidget(meshVisibleItem, 2, meshVisibleBox);
 
 
@@ -563,72 +590,51 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     opacityItem->setText(1, tr("Opacity"));
     QSlider * opacityBox = new QSlider(Qt::Horizontal);
     opacityBox->setRange(0,100);
-    opacityBox->setValue(d->interactors[d->currentInteractor]->opacity(meshLayer) * 100);
+    opacityBox->setValue(currentInteractor->opacity(meshLayer) * 100);
     d->propertiesTree->setItemWidget(opacityItem, 2, opacityBox);
 
+    //create the lutBox before the attrBox,
+    //we want to enable it only if the right attribute is selected
+    QComboBox * lutBox = new QComboBox();
+    //disabled by default
+    lutBox->setEnabled(false);
+    lutBox->setFocusPolicy(Qt::NoFocus);
+
+    foreach (QString lut,d->lutList)
+    {
+        lutBox->addItem(lut);
+    }
+
+
+    lutBox->blockSignals(true);
+    lutBox->setCurrentIndex(lutBox->findText(*(currentInteractor->lut(meshLayer))));
+    lutBox->blockSignals(false);
 
     QTreeWidgetItem * attrMap = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     attrMap->setText(1, tr("Attributes"));
-    QComboBox * attrBox = new QComboBox();
+    medAttributeBox * attrBox = new medAttributeBox(NULL,lutBox);
     attrBox->setFocusPolicy(Qt::NoFocus);
     attrBox->addItem("Solid");
-    if (d->interactors[d->currentInteractor]->getLUTQuery(meshLayer)!=NULL)
+    if (currentInteractor->getLUTQuery(meshLayer)!=NULL)
     {
-        attrBox->addItem(d->interactors[d->currentInteractor]->getLUTQuery(meshLayer));
-        d->attributeList << d->interactors[d->currentInteractor]->getLUTQuery(meshLayer);
+        QString lutQuery (currentInteractor->getLUTQuery(meshLayer));
+        attrBox->addItem(lutQuery);
+        d->attributeList << lutQuery;
     }
     d->propertiesTree->setItemWidget(attrMap, 2, attrBox);
-    attrBox->setCurrentIndex(attrBox->findText(*(d->interactors[d->currentInteractor]->attribute(meshLayer))));
+    //BEN: Too complex need to rewrite all this!!!!
+    attrBox->setCurrentIndex(attrBox->findText(*(currentInteractor->attribute(meshLayer))));
 
     QTreeWidgetItem * lutItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     lutItem->setText(1, tr("LUT"));
-    QComboBox * lutBox = new QComboBox();
 
-    if(!d->meshLutBoxList.at(meshLayer) ){
-    d->meshLutBoxList.append(lutBox);
 
-    }
-    else
-    d->meshLutBoxList.replace(meshLayer, lutBox);
-
-    lutBox->setFocusPolicy(Qt::NoFocus);
-
-    if(attrBox->currentIndex()!=0)
-    {
-    lutBox->addItem("Default");
-    lutBox->addItem("Black & White");
-    lutBox->addItem("Black & White Inversed");
-    lutBox->addItem("Spectrum");
-    lutBox->addItem("Hot Metal");
-    lutBox->addItem("Hot Green");
-    lutBox->addItem("Hot Iron");
-    lutBox->addItem("GE");
-    lutBox->addItem("Flow");
-    lutBox->addItem("Loni");
-    lutBox->addItem("Loni 2");
-    lutBox->addItem("Asymmetry");
-    lutBox->addItem("P-Value");
-    lutBox->addItem("Red Black Alpha");
-    lutBox->addItem("Green Black Alpha");
-    lutBox->addItem("Blue Black Alpha");
-    lutBox->addItem("Muscles & Bones");
-    lutBox->addItem("Bones");
-    lutBox->addItem("Red Vessels");
-    lutBox->addItem("Cardiac");
-    lutBox->addItem("Gray Rainbow");
-    lutBox->addItem("Stern");
-    lutBox->addItem("Black Body");
-    }
     d->propertiesTree->setItemWidget(lutItem, 2, lutBox);
-    lutBox->blockSignals(true);
-    lutBox->setCurrentIndex(lutBox->findText(*(d->interactors[d->currentInteractor]->lut(meshLayer))));
-    lutBox->blockSignals(false);
-
 
     QTreeWidgetItem * edgeVisibleItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     edgeVisibleItem->setText(1, tr("Edge Visible"));
     QCheckBox * edgeVisibleBox = new QCheckBox();
-    edgeVisibleBox->setChecked(d->interactors[d->currentInteractor]->edgeVisibility(meshLayer));
+    edgeVisibleBox->setChecked(currentInteractor->edgeVisibility(meshLayer));
     d->propertiesTree->setItemWidget(edgeVisibleItem, 2, edgeVisibleBox);
 
 
@@ -658,7 +664,7 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     colorComboBox->addItem(createIcon("#0080C0"),"#0080C0",QColor("#0080C0"));
     d->propertiesTree->setItemWidget(coloringItem, 2, colorComboBox);
 
-    colorComboBox->setCurrentIndex(colorComboBox->findText(*(d->interactors[d->currentInteractor]->color(meshLayer))));
+    colorComboBox->setCurrentIndex(colorComboBox->findText(*(currentInteractor->color(meshLayer))));
 
     QTreeWidgetItem * renderingItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     renderingItem->setText(1, tr("Rendering"));
@@ -670,7 +676,7 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     renderingBox->addItem("Points");
 
     d->propertiesTree->setItemWidget(renderingItem, 2, renderingBox);
-    renderingBox->setCurrentIndex(renderingBox->findText(*(d->interactors[d->currentInteractor]->renderingType(meshLayer))));
+    renderingBox->setCurrentIndex(renderingBox->findText(*(currentInteractor->renderingType(meshLayer))));
 
     QObject::connect(meshVisibleBox, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
     QObject::connect(opacityBox, SIGNAL(valueChanged(int)), this, SLOT(onOpacitySliderSet(int)));
@@ -737,6 +743,7 @@ void medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data,
 void medViewerToolBoxViewProperties::clear(void)
 {
     d->currentLayer = 0;
+    d->interactors.clear();
     d->propertiesTree->clear();
     raiseSlider(false);
     d->view = 0;
@@ -857,44 +864,26 @@ void medViewerToolBoxViewProperties::onAttrBoxChanged(int index)
     if(!d->isMesh)
         return;
 
-    QComboBox * lutBox = d->meshLutBoxList[d->view->currentMeshLayer()];
-    if(index!=0 && lutBox->count()==0)
+    QComboBox* lutBox = NULL;
+    QComboBox* attrBox = qobject_cast<QComboBox*>(sender());
+    medAttributeBox* atBox = static_cast<medAttributeBox*>(attrBox);
+    if (atBox)
+        lutBox = atBox->getLutBox();
+
+    if (lutBox)
     {
-    lutBox->addItem("Default");
-    lutBox->addItem("Black & White");
-    lutBox->addItem("Black & White Inversed");
-    lutBox->addItem("Spectrum");
-    lutBox->addItem("Hot Metal");
-    lutBox->addItem("Hot Green");
-    lutBox->addItem("Hot Iron");
-    lutBox->addItem("GE");
-    lutBox->addItem("Flow");
-    lutBox->addItem("Loni");
-    lutBox->addItem("Loni 2");
-    lutBox->addItem("Asymmetry");
-    lutBox->addItem("P-Value");
-    lutBox->addItem("Red Black Alpha");
-    lutBox->addItem("Green Black Alpha");
-    lutBox->addItem("Blue Black Alpha");
-    lutBox->addItem("Muscles & Bones");
-    lutBox->addItem("Bones");
-    lutBox->addItem("Red Vessels");
-    lutBox->addItem("Cardiac");
-    lutBox->addItem("Gray Rainbow");
-    lutBox->addItem("Stern");
-    lutBox->addItem("Black Body");
-    }
-    if(index != 0)
-    {
-        lutBox->setEnabled(true);
-        d->interactors[d->currentInteractor]->setScalarVisibility(true);
-        lutBox->setCurrentIndex(lutBox->findText(*(d->interactors[d->currentInteractor]->lut(d->view->currentMeshLayer()))));
-    }
-    else
-    {
-        lutBox->setEnabled(false);
-        d->interactors[d->currentInteractor]->setLayer( d->view->currentMeshLayer());
-        d->interactors[d->currentInteractor]->setScalarVisibility(false);
+        if(index != 0)
+        {
+            lutBox->setEnabled(true);
+            d->interactors[d->currentInteractor]->setScalarVisibility(true);
+            lutBox->setCurrentIndex(lutBox->findText(*(d->interactors[d->currentInteractor]->lut(d->view->currentMeshLayer()))));
+        }
+        else
+        {
+            lutBox->setEnabled(false);
+            d->interactors[d->currentInteractor]->setLayer( d->view->currentMeshLayer());
+            d->interactors[d->currentInteractor]->setScalarVisibility(false);
+        }
     }
 }
 
