@@ -81,7 +81,7 @@ void vtkImageFromBoundsSource::PrintSelf(ostream& os, vtkIndent indent)
        << this->OutputImageOrigin[2] << ")\n";
 }
 //----------------------------------------------------------------------------
-void vtkImageFromBoundsSource::SetOutputImageBounds(double bounds[6])
+void vtkImageFromBoundsSource::SetOutputImageBounds(const double bounds[6])
 {
     int idx;
 

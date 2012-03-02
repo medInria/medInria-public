@@ -49,14 +49,14 @@ public:
   
   // Description:
   // Set/Get the extent of the whole output image.
-  void SetOutputImageBounds(double Bounds[6]);
+  void SetOutputImageBounds(const double Bounds[6]);
   void SetOutputImageBounds(double minX, double maxX, double minY, double maxY,
                             double minZ, double maxZ);
   void GetOutputImageBounds(double extent[6]);
   double *GetOutputImageBounds() {return this->OutputImageBounds;}
 
 
-  void SetOutputImageSize (unsigned int* size)
+  void SetOutputImageSize (const unsigned int* size)
   {
     for (unsigned int i=0; i<3; i++)
       this->OutputImageSize[i] = size[i];
@@ -66,7 +66,7 @@ public:
   {
     return this->OutputImageSize;
   }
-  void SetOutputImageSpacing (double* spacing)
+  void SetOutputImageSpacing (const double* spacing)
   {
     for (unsigned int i=0; i<3; i++)
       this->OutputImageSpacing[i] = spacing[i];
@@ -76,7 +76,7 @@ public:
   {
     return this->OutputImageSpacing;
   }
-  void SetOutputImageOrigin (double* origin)
+  void SetOutputImageOrigin (const double* origin)
   {
     for (unsigned int i=0; i<3; i++)
       this->OutputImageOrigin[i] = origin[i];
