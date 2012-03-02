@@ -62,7 +62,6 @@ void medViewContainerSingle2::setView (dtkAbstractView *view)
         // d->pool->appendView (view); // only difference with medViewContainerSingle: do not add the view to the pool
         connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
     }
-    this->onViewFocused(true);//medViewContainer::setView (view);
     this->setFocus(Qt::MouseFocusReason);
 }
 
@@ -304,7 +303,7 @@ void medViewContainerMulti::onViewClosing (void)
         // line may trigger the deletion of the view
         emit viewRemoved (view);
 
-        d2->views.removeOne (view);       
+        d2->views.removeOne (view);
 
         // view->close(); // the container will close the view once deleted
 

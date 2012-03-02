@@ -212,10 +212,6 @@ void medViewContainer::setView ( dtkAbstractView *view )
 
     if ( d->view )
     {
-        //Modification for the filtering config bug
-        this->onViewFocused(true);
-
-
         // pass properties to the view
         QHash<QString,QString>::iterator it = d->viewProperties.begin();
         while ( it!=d->viewProperties.end() )
