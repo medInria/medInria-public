@@ -23,6 +23,8 @@
 #include <vtkImageFromBoundsSource.h>
 
 #include <cmath>
+#include <cstdlib>
+#include <iostream>
 
 int vtkImageFromBoundsSourceTest(int argc, char *argv[])
 {
