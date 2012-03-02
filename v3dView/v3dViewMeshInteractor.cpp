@@ -463,6 +463,7 @@ void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
                 d->actor3dList[meshLayer]->SetProperty ( d->actorPropertyList[meshLayer] );
             }
         }
+        d->view->view3d()->ResetCamera();
     }
 }
 
@@ -520,5 +521,6 @@ void v3dViewMeshInteractor::changeBounds (vtkPointSet* pointSet)
         actor->SetOpacity(0.0);
         d->isImageOutBounded=false;
         imagegenerator->Delete();
+        d->view->view2d()->ResetCamera();
     }
 }
