@@ -911,26 +911,33 @@ void medViewerToolBoxViewProperties::onLUTChanged(int index)
     {
         d->view->setCurrentLayer(d->currentLayer);
         d->view->setProperty("LookupTable", d->lutList.at(index));
+
+
+        // as the LUT changed we need to change the preset to None (just the preset combobox)
+        // also we won't change the preset back to None if the ww/wl is changed (by design)
+        //Only doable on images, Meshes should be left alone.
+        QString currentLayerItemString = QString::number(d->currentLayer);
+        // we take the first one as there's only one
+        QTreeWidgetItem* layerItem = d->propertiesTree->findItems(
+                    currentLayerItemString,
+                    Qt::MatchExactly | Qt::MatchWrap, 0)[0];
+        // the preset item is the fourth one
+        QTreeWidgetItem* presetItem = layerItem->child(3);
+        QComboBox* presetComboBox = dynamic_cast<QComboBox*>(
+                    d->propertiesTree->itemWidget(presetItem, 2));
+
+        // 0 == None
+        if (presetComboBox->currentIndex() != 0)
+        {
+            presetComboBox->blockSignals(true);
+            presetComboBox->setCurrentIndex(0);
+            presetComboBox->blockSignals(false);
+        }
     }
     else
     {
         d->interactors[d->currentInteractor]->setLayer( d->view->currentMeshLayer());
         d->interactors[d->currentInteractor]->setProperty("LUTMode", d->lutList.at(index));
-    }
-
-    // as the LUT changed we need to change the preset to None (just the preset combobox)
-    // also we won't change the preset back to None if the ww/wl is changed (by design)
-    QString currentLayerItemString = QString::number(d->currentLayer);
-    QTreeWidgetItem* layerItem = d->propertiesTree->findItems(currentLayerItemString, Qt::MatchExactly | Qt::MatchWrap, 0)[0]; // we take the first one as there's only one
-    QTreeWidgetItem* presetItem = layerItem->child(3); // the preset item is the fourth one
-    QComboBox* presetComboBox = dynamic_cast<QComboBox*>(d->propertiesTree->itemWidget(presetItem, 2));
-
-    // 0 == None
-    if (presetComboBox->currentIndex() != 0)
-    {
-        presetComboBox->blockSignals(true);
-        presetComboBox->setCurrentIndex(0);
-        presetComboBox->blockSignals(false);
     }
 
     d->view->update();
