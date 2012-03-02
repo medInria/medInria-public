@@ -89,7 +89,7 @@ public:
 
   // Description:
   // Set/Get the outside pixel values.
-  void SetOutValue (double out)
+  void SetOutValue (const double out)
   {
       this->OutValue = out;
       this->OutValueSet = 1;
