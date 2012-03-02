@@ -24,6 +24,7 @@ public:
     int currentLayer;
     int currentMeshLayer;
     int meshLayerCount;
+    bool hasImage;
     QList< dtkSmartPointer <dtkAbstractData> > dataList;
     //QMap <int, dtkSmartPointer<dtkAbstractData> > dataList;
 
@@ -54,6 +55,7 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
 
     d->currentMeshLayer = 0;
     d->meshLayerCount = 0;
+    d->hasImage= false;
 
     d->position = QVector3D(0.0, 0.0, 0.0);
     d->pan = QVector2D(0.0, 0.0);
@@ -319,6 +321,11 @@ int medAbstractView::currentLayer(void) const
     return d->currentLayer;
 }
 
+bool medAbstractView::hasImage(void) const
+{
+    return d->hasImage;
+}
+
 int medAbstractView::layerCount(void) const
 {
     DTK_DEFAULT_IMPLEMENTATION;
@@ -406,6 +413,18 @@ bool medAbstractView::isInList(dtkAbstractData * data, int layer)
     return false;
 }
 
+bool medAbstractView::isInList(dtkAbstractData * data)
+{
+    if (d->dataList.contains(data))
+
+    {
+        qDebug() << "data is already in list";
+        return true;
+    }
+    return false;
+}
+
+
 void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
 {
     // start by removing the data type if layer already exists
@@ -434,6 +453,19 @@ void medAbstractView::addDataType(const QString & dataDescription)
     }
     else
         d->DataTypes.insert(dataDescription, 1);
+    d->DataTypes;
+
+    QHash<QString, unsigned int>::const_iterator i = d->DataTypes.constBegin();
+    while (i != d->DataTypes.constEnd()) {
+        d->hasImage=false;
+        if (i.value()>0 && i.key().contains("Image"))
+        {
+            d->hasImage=true;
+            break;
+        }
+        ++i;
+    }
+    qDebug() << d->hasImage<<endl;//JGG
 }
 
 void medAbstractView::removeDataType(const QString & dataDescription)
@@ -446,6 +478,18 @@ void medAbstractView::removeDataType(const QString & dataDescription)
     }
     else
         qDebug() << "Not DataType in the view! ";
+
+    QHash<QString, unsigned int>::const_iterator i = d->DataTypes.constBegin();
+    while (i != d->DataTypes.constEnd()) {
+        d->hasImage=false;
+        qDebug() << i.key() << ": " << i.value() << endl;
+        if (i.value()>0 && i.key().contains("Image"))
+        {
+            d->hasImage=true;
+            break;
+        }
+        ++i;
+    }
 }
 
 QHash<QString, unsigned int> medAbstractView::dataTypes()

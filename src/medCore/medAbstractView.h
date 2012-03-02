@@ -139,6 +139,11 @@ public:
     virtual int currentLayer(void) const;
 
     /**
+     * Get the flag that indicates if the view has an image loaded
+     */
+    virtual bool hasImage(void) const;
+
+    /**
      * Get the number of layers of the view.
      */
     virtual int layerCount(void) const;
@@ -161,6 +166,11 @@ public:
     virtual int meshLayerCount(void) const;
 
     bool isInList(dtkAbstractData * data, int layer);
+
+    /**
+     * Return true if the data is already contained in the data list
+     */
+    bool isInList(dtkAbstractData * data);
     void addDataInList(dtkAbstractData * data, int layer);
     void addDataInList(dtkAbstractData * data);
     dtkAbstractData* dataInList(int layer) const;

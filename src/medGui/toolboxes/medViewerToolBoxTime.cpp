@@ -76,7 +76,8 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
             << "itkDataImageLong4"
             << "itkDataImageULong4"
             << "itkDataImageFloat4"
-            << "itkDataImageDouble4";
+            << "itkDataImageDouble4"
+               << "vtkDataMesh4D";
 
     setValidDataTypes(validDataTypes);
 
