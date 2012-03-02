@@ -4,6 +4,8 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 #include <medMeshAbstractViewInteractor.h>
 
+#include <vtkPointSet.h>
+
 #include "v3dViewPluginExport.h"
 
 
@@ -52,6 +54,7 @@ public:
     bool isMeshOnly();
 protected:
     virtual void updatePipeline (unsigned int meshLayer=0);
+    void changeBounds ( vtkPointSet* pointSet);
 
 signals:
     void selectionValidated (const QString& name);

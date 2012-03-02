@@ -912,15 +912,30 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
     if ( medAbstractView::isInList ( data, layer ) )
         return;
 
-    if ( layer == 0 && data->identifier().contains ( "vtkDataMesh" ) && medAbstractView::dataInList(layer) == NULL)
+    if (data->identifier().contains( "vtkDataMesh" ) && medAbstractView::isInList(data))
     {
-        medMessageController::instance()->showError ( this, tr ( "Select image first" ), 5000 );
+        medMessageController::instance()->showError ( this, tr ( "The mesh is already visualized" ), 5000 );
         return;
     }
 
     if ( layer == 0 ) {
         this->enableInteractor(v3dViewAnnotationInteractor::s_identifier());
     }
+//    if(medAbstractView::hasImage()){
+//        if (data->identifier().contains( "vtkDataMesh" ) && medAbstractView::meshLayerCount()>1)
+//        {
+//            medMessageController::instance()->showError ( this, tr ( "By now only 2 mesh layers are possible :(, improvements in progress" ), 5000 );
+//            return;
+//        }
+//    }
+//    else
+//    {
+//        if (data->identifier().contains( "vtkDataMesh" ) && medAbstractView::meshLayerCount()>=1)
+//        {
+//            medMessageController::instance()->showError ( this, tr ( "By now only 2 mesh layers are possible :(, improvements in progress" ), 5000 );
+//            return;
+//        }
+//    }
 
 #ifdef vtkINRIA3D_USE_ITK
     if (SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
@@ -975,17 +990,10 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         else if ( data->description() == "vtkDataMesh4D" )
         {
             this->enableInteractor ( "v3dViewMeshInteractor" );
-
+            this->enableInteractor("v3dView4DInteractor");
             // This will add the data to the interactor.
 
             dtkAbstractView::setData ( data );
-        }
-        else if ( data->identifier() == "vtkDataMesh4D" )
-        {
-            this->enableInteractor ( "v3dViewMeshInteractor" );
-            this->enableInteractor ( "v3dView4DInteractor" );
-            // This will add the data to the interactor.
-            dtkAbstractView::setData(data);
         }
         else if ( data->identifier() == "v3dDataFibers" )
         {
