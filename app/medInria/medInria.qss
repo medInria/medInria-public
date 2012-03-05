@@ -702,6 +702,8 @@ medToolBoxTab QTabBar::tab {
     height: 22px;
     min-width: 100px;
     color: #b2b8b2;
+    padding-left : 3px;
+    padding-right : 3px;
 }
 
 
@@ -800,8 +802,6 @@ medSettingsEditor QTabBar::tab:selected, medSettingsEditor QTabBar::tab:hover {
     border-left: none;
     border-radius: 0;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);
-    min-height: 70px;
-    width: 30px;
 }
 
 medSettingsEditor QTabBar::tab {
@@ -811,8 +811,20 @@ medSettingsEditor QTabBar::tab {
     border-left: none;
     border-radius: 0;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);
-    min-height: 70px;
-    width: 30px;
+    /*min-height: 70px;
+    width: 30px;*/
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+/* warning, for some reason if tabPosition == West,
+ *  it is mapped to :right pseudo state in qss...
+ */
+medSettingsEditor QTabBar::tab:right {
+  min-height: 70px;
+  width: 30px;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 
 /**

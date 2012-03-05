@@ -57,9 +57,19 @@ public slots:
     void onShowInfo();
 
 signals:
+    /**
+     * @deprecated Doesn't use the medMainWindow's slots anymore.
+     */
     void showSettings(void);
+    /**
+     * @deprecated Doesn't use the medMainWindow's slots anymore.
+     */
     void showAbout(void);
+    /**
+     * @deprecated Doesn't use the medMainWindow's slots anymore.
+     */
     void showHelp(void);
+
     void showBrowser(void);
     void showViewer(void);
     void showConfiguration(QString configuration);

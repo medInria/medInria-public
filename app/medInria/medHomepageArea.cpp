@@ -33,6 +33,7 @@
 #include <medViewerConfigurationFactory.h>
 #include <medSettingsManager.h>
 #include "medPluginWidget.h"
+#include <medSettingsEditor.h>
 
 class medHomepageAreaPrivate
 {
@@ -51,6 +52,8 @@ public:
     QWidget * aboutWidget;
     QTabWidget * aboutTabWidget;
     QWidget * pluginWidget;
+    QWidget * settingsWidget;
+    medSettingsEditor* settingsEditor;
 
     QParallelAnimationGroup * animation;
 };
@@ -219,7 +222,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QPushButton * hidePluginButton = new QPushButton ( this );
     hidePluginButton->setText ( tr("Hide") );
     hidePluginButton->setFocusPolicy ( Qt::NoFocus );
-    hidePluginButton->setToolTip( tr("Hide the About section") );
+    hidePluginButton->setToolTip( tr("Hide the Plugins section") );
     QObject::connect ( hidePluginButton, SIGNAL ( clicked() ), this, SLOT ( onShowInfo() ) );
 
     pluginHideButtonLayout->addStretch();
@@ -239,11 +242,35 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //pluginLayout->addStretch();
 //    pluginLayout->setAlignment(pluginWidgetTitle, Qt::AlignHCenter);
 
+    //Create the setttings widget.
+    d->settingsWidget = new QWidget(this);
+    QVBoxLayout * settingsLayout = new QVBoxLayout(d->settingsWidget);
+    QHBoxLayout * settingsHideButtonLayout = new QHBoxLayout();
+    QPushButton * hideSettingsButton = new QPushButton ( this );
+    hideSettingsButton->setText ( tr("Hide") );
+    hideSettingsButton->setFocusPolicy ( Qt::NoFocus );
+    hideSettingsButton->setToolTip( tr("Hide the Settings section") );
+    QObject::connect ( hideSettingsButton, SIGNAL ( clicked() ), this, SLOT ( onShowInfo() ) );
+
+    settingsHideButtonLayout->addStretch();
+    settingsHideButtonLayout->addWidget ( hideSettingsButton );
+    settingsHideButtonLayout->addStretch();
+
+    QLabel * medInriaLabel4 = new QLabel ( this );
+    medInriaLabel4->setPixmap ( medLogo );
+
+//    QLabel * pluginWidgetTitle = new QLabel(tr("Plugins information"),this);
+    d->settingsEditor = new medSettingsEditor(d->settingsWidget,true);
+    settingsLayout->addWidget(medInriaLabel4);
+//    pluginLayout->addWidget(pluginWidgetTitle);
+    settingsLayout->addWidget(d->settingsEditor);
+    settingsLayout->addLayout(settingsHideButtonLayout);
+
+
+
     //Set the position of the widgets
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
     d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
-//    d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
-//    d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 
     //Create a Stacked Widget in which to put info widget, about widget and plugin Widget
     d->stackedWidget = new QStackedWidget( this );
@@ -260,6 +287,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->stackedWidget->addWidget(d->infoWidget);
     d->stackedWidget->addWidget(d->aboutWidget);
     d->stackedWidget->addWidget(d->pluginWidget);
+    d->stackedWidget->addWidget(d->settingsWidget);
     d->stackedWidget->setCurrentIndex(0);//d->infoWidget
     d->stackedWidget->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
 
@@ -424,7 +452,14 @@ void medHomepageArea::onShowHelp ( void )
 
 void medHomepageArea::onShowSettings ( void )
 {
-    emit showSettings();
+    // emit showSettings is not deprecated here
+//    emit showSettings();
+    d->settingsEditor->setTabPosition(QTabWidget::North);
+    d->settingsEditor->initialize();
+    d->settingsEditor->queryWidgets();
+    d->stackedWidget->setCurrentWidget(d->settingsWidget);
+
+    d->settingsWidget->setFocus();
 }
 
 void medHomepageArea::onStartWithHomepage ( int state )
