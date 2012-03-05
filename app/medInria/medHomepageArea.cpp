@@ -66,21 +66,17 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     //Setup the widget where the medInria general information are displayed
     d->infoWidget = new QWidget ( this );
-    d->infoWidget->setMinimumWidth ( 400 );
-    d->infoWidget->setMinimumHeight ( 500 );
-    //maximum height set below after we determine the position of the userWidget
-//    d->infoWidget->setMaximumHeight ( 500 );
+    d->infoWidget->setMinimumSize(400,300);
 
-    //Setup the widget with about, settings and documentation buttons
+    //Setup the widget with about, settings, plugins and documentation buttons
     d->userWidget = new QWidget ( this );
     d->userWidget->setMinimumWidth ( 250 );
     d->userWidget->setMinimumHeight ( 40 );
 
     //Setup the about container widget (with a QTabWidget inside)
     d->aboutWidget = new QWidget ( this );
-    d->aboutWidget->setMinimumWidth ( 400 );
     d->aboutWidget->setMaximumHeight ( 500 );
-    d->aboutWidget->setMinimumHeight ( 500 );
+
     d->aboutWidget->hide();
 
 
@@ -232,15 +228,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QLabel * medInriaLabel3 = new QLabel ( this );
     medInriaLabel3->setPixmap ( medLogo );
 
-//    QLabel * pluginWidgetTitle = new QLabel(tr("Plugins information"),this);
     medPluginWidget * pWid = new medPluginWidget(d->pluginWidget);
 
     pluginLayout->addWidget(medInriaLabel3);
-//    pluginLayout->addWidget(pluginWidgetTitle);
     pluginLayout->addWidget(pWid);
     pluginLayout->addLayout(pluginHideButtonLayout);
-    //pluginLayout->addStretch();
-//    pluginLayout->setAlignment(pluginWidgetTitle, Qt::AlignHCenter);
+
 
     //Create the setttings widget.
     d->settingsWidget = new QWidget(this);
@@ -274,8 +267,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     //Create a Stacked Widget in which to put info widget, about widget and plugin Widget
     d->stackedWidget = new QStackedWidget( this );
-    d->stackedWidget->setMinimumWidth ( 400 );
-    d->stackedWidget->setMinimumHeight ( 500 );
+    d->stackedWidget->setMinimumSize ( 400,300 );
 
     d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,
                                                     this->height() / 5) );
@@ -306,7 +298,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->userAnimation->setEndValue ( QPoint ( this->width() * 0.8 ,  this->height() - 90 ) );
 
     d->infoAnimation = new QPropertyAnimation ( d->stackedWidget, "pos" );
-    d->infoAnimation->setDuration ( 900 );
+    d->infoAnimation->setDuration ( 750 );
     d->infoAnimation->setEasingCurve ( QEasingCurve::OutCubic );
     d->infoAnimation->setStartValue ( QPoint ( this->width() + 100 , this->height() / 5 ) );
     d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 5 ) );
