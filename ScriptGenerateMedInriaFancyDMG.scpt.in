@@ -1,13 +1,52 @@
 on run
-	do shell script ("rm -f @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg @CMAKE_INSTALL_PREFIX@/medInria-2.0.0.dmg")
-	do shell script ("hdiutil create -srcfolder \"@CMAKE_INSTALL_PREFIX@/bin/medInria.app\" -volname \"medInria 2.0.0\" -fs HFS+ -fsargs \"-c c=64,a=16,e=16\" -format UDRW -size 400M @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg")
+	do shell script ("rm -f @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg @CMAKE_INSTALL_PREFIX@/medInria-@medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@.dmg")
+	do shell script ("hdiutil create -srcfolder \"@CMAKE_INSTALL_PREFIX@/bin/medInria.app\" -volname \"medInria @medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@\" -fs HFS+ -fsargs \"-c c=64,a=16,e=16\" -format UDRW -size 400M @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg")
 	set device to do shell script ("hdiutil attach -readwrite -noverify -noautoopen \"@CMAKE_INSTALL_PREFIX@/TmpPackage.dmg\" | egrep '^/dev/' | sed 1q | awk '{print $1}' ")
 	
-	do shell script ("mkdir -p /Volumes/\"medInria 2.0.0\"/.background")
-	do shell script ("cp -p @PROJECT_SOURCE_DIR@/app/medInria/pixmaps/medInria-logo-dmg.png /Volumes/\"medInria 2.0.0\"/.background")
+	do shell script ("mkdir -p /Volumes/\"medInria @medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@\"/.background")
+	do shell script ("cp -p @PROJECT_SOURCE_DIR@/app/medInria/pixmaps/medInria-logo-dmg.png /Volumes/\"medInria @medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@\"/.background")
+	
+	set dmgIcon to (POSIX file "@PROJECT_SOURCE_DIR@/app/medInria/pixmaps/medInria_dmg_mountedimage.icns") as alias
+	set dmgFolder to (POSIX file "/Volumes/medInria @medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@") as alias
 	
 	tell application "Finder"
-		tell disk "medInria 2.0.0"
+		activate
+		set infoWindow to open information window of dmgIcon
+		set infoWindowName to name of infoWindow
+	end tell
+	
+	tell application "System Events"
+		tell application process "Finder"
+			tell window infoWindowName
+				keystroke tab
+				delay 5
+				keystroke "c" using command down
+			end tell
+		end tell
+	end tell
+	
+	tell application "Finder"
+		close infoWindow
+		set infoWindow to open information window of dmgFolder
+		set infoWindowName to name of infoWindow
+	end tell
+	
+	tell application "System Events"
+		tell application process "Finder"
+			tell window infoWindowName
+				keystroke tab
+				delay 5
+				keystroke "v" using command down
+			end tell
+		end tell
+	end tell
+	
+	tell application "Finder"
+		close infoWindow
+	end tell
+	
+	tell application "Finder"
+		tell disk "medInria @medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@"
 			open
 			set current view of container window to icon view
 			set toolbar visible of container window to false
@@ -30,6 +69,6 @@ on run
 	do shell script ("sync")
 	do shell script ("sync")
 	do shell script "hdiutil detach " & device
-	do shell script ("hdiutil convert \"@CMAKE_INSTALL_PREFIX@/TmpPackage.dmg\" -format UDZO -imagekey zlib-level=9 -o \"@CMAKE_INSTALL_PREFIX@/medInria-2.0.0.dmg\"")
+	do shell script ("hdiutil convert \"@CMAKE_INSTALL_PREFIX@/TmpPackage.dmg\" -format UDZO -imagekey zlib-level=9 -o \"@CMAKE_INSTALL_PREFIX@/medInria-@medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@.dmg\"")
 	do shell script ("rm -f @CMAKE_INSTALL_PREFIX@/TmpPackage.dmg")
 end run
