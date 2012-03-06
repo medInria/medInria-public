@@ -189,6 +189,14 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutLicenseTextEdit->setText ( licenseContent );
     aboutLicenseTextEdit->setFocusPolicy ( Qt::NoFocus );
 
+    QTextEdit * releaseNotesTextEdit = new QTextEdit(this);
+    QFile releaseNotes ( ":RELEASE_NOTES.txt" );
+    releaseNotes.open ( QIODevice::ReadOnly | QIODevice::Text );
+    QString releaseNotesContent = releaseNotes.readAll();
+    releaseNotes.close();
+    releaseNotesTextEdit->setText ( releaseNotesContent );
+    releaseNotesTextEdit->setFocusPolicy ( Qt::NoFocus );
+
     //no parent, this layout is added to an other layout.
     QHBoxLayout * aboutButtonLayout = new QHBoxLayout();
     QPushButton * hideAboutButton = new QPushButton ( this );
@@ -201,9 +209,10 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButtonLayout->addWidget ( hideAboutButton );
     aboutButtonLayout->addStretch();
 
-    d->aboutTabWidget->addTab ( aboutTextEdit, "About" );
-    d->aboutTabWidget->addTab ( aboutAuthorTextBrowser, "Authors" );
-    d->aboutTabWidget->addTab ( aboutLicenseTextEdit, "License" );
+    d->aboutTabWidget->addTab ( aboutTextEdit, tr("About") );
+    d->aboutTabWidget->addTab ( aboutAuthorTextBrowser, tr("Authors") );
+    d->aboutTabWidget->addTab ( releaseNotesTextEdit, tr("Release Notes") );
+    d->aboutTabWidget->addTab ( aboutLicenseTextEdit, tr("License") );
 
     aboutLayout->addWidget ( medInriaLabel2 );
     aboutLayout->addWidget ( d->aboutTabWidget );
@@ -252,10 +261,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QLabel * medInriaLabel4 = new QLabel ( this );
     medInriaLabel4->setPixmap ( medLogo );
 
-//    QLabel * pluginWidgetTitle = new QLabel(tr("Plugins information"),this);
     d->settingsEditor = new medSettingsEditor(d->settingsWidget,true);
     settingsLayout->addWidget(medInriaLabel4);
-//    pluginLayout->addWidget(pluginWidgetTitle);
     settingsLayout->addWidget(d->settingsEditor);
     settingsLayout->addLayout(settingsHideButtonLayout);
 
