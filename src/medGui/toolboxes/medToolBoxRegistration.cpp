@@ -430,8 +430,8 @@ void medToolBoxRegistration::onSuccess()
     if(output)
     {
         d->movingView->setData(output,0);
-        d->fixedView->unlink (d->movingView);
-        d->fixedView->link (d->movingView);
+		//d->movingView->onPanChanged(d->fixedView->pan());
+		d->movingView->setPan(d->fixedView->pan());
         d->movingView->update();
         d->fuseView->setData(output,1);
         d->fuseView->update();
