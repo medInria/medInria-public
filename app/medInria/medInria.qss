@@ -690,6 +690,12 @@ QTabWidget::pane{
     border-bottom-width: 22px;
 }
 
+QTabBar::tab
+{
+  padding-left : 3px;
+  padding-right : 3px;
+}
+
 medToolBoxTab::tab-bar {
     top: 6px;
     left: 11px;
@@ -702,8 +708,6 @@ medToolBoxTab QTabBar::tab {
     height: 22px;
     min-width: 100px;
     color: #b2b8b2;
-    padding-left : 3px;
-    padding-right : 3px;
 }
 
 
@@ -811,10 +815,6 @@ medSettingsEditor QTabBar::tab {
     border-left: none;
     border-radius: 0;
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);
-    /*min-height: 70px;
-    width: 30px;*/
-    padding-left: 3px;
-    padding-right: 3px;
 }
 
 /* warning, for some reason if tabPosition == West,
@@ -823,8 +823,6 @@ medSettingsEditor QTabBar::tab {
 medSettingsEditor QTabBar::tab:right {
   min-height: 70px;
   width: 30px;
-  padding-top: 3px;
-  padding-bottom: 3px;
 }
 
 /**
