@@ -236,6 +236,17 @@ public:
     ~medLinkWLIcon(){}
 };
 
+class medMaximizeIcon: public QIcon{
+public:
+    medMaximizeIcon():QIcon(":/icons/maximize.svg"){
+        addFile(":/icons/un_maximize.svg",
+                  QSize(48,48),
+                  QIcon::Normal,
+                  QIcon::On);
+    }
+    ~medMaximizeIcon(){}
+};
+
 
 class v3dViewPrivate
 {
@@ -295,6 +306,7 @@ public:
     static medPlayIcon playIcon;
     static medLinkIcon linkIcon;
     static medLinkWLIcon linkWLIcon;
+    static medMaximizeIcon maximizeIcon;
 };
 
 
@@ -304,6 +316,7 @@ int v3dViewPrivate::nextColorIndex = -1;
 medPlayIcon v3dViewPrivate::playIcon;
 medLinkIcon v3dViewPrivate::linkIcon;
 medLinkWLIcon v3dViewPrivate::linkWLIcon;
+medMaximizeIcon v3dViewPrivate::maximizeIcon;
 
 // /////////////////////////////////////////////////////////////////
 // v3dView
@@ -439,7 +452,7 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     connect ( d->linkWLButton, SIGNAL ( clicked ( bool ) ), this, SLOT ( setLinkWindowing ( bool ) ) );
 
     d->fullScreenButton = new QPushButton ( d->widget );
-    d->fullScreenButton->setIcon (QIcon(":/icons/maximize.svg"));
+    d->fullScreenButton->setIcon (d->maximizeIcon);
     d->fullScreenButton->setToolTip(tr("(Un)Maximize the view"));
     d->fullScreenButton->setCheckable ( true );
     d->fullScreenButton->setMaximumHeight ( 16 );
