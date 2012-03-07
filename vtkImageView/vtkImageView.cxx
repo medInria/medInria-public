@@ -206,15 +206,7 @@ vtkImageView::~vtkImageView()
   this->DataSetCollection->Delete();
   this->DataSetActorCollection->Delete();
 
-//  if ( this->LookupTable != NULL )
-//    this->LookupTable->Delete();
-//  if ( this->ColorTransferFunction != NULL )
-//    this->ColorTransferFunction->Delete();
-//  if ( this->OpacityTransferFunction != NULL )
-//    this->OpacityTransferFunction->Delete();
-
   this->ScalarBar->Delete();
-//  this->WindowLevel->Delete();
 
   if( this->RenderWindow )
   {
@@ -264,7 +256,6 @@ unsigned long vtkImageView::GetMTime()
         InteractorStyle, OrientationTransform, ScalarBar, OrientationMatrix,
         InvertOrientationMatrix, CornerAnnotation, TextProperty,
         ScalarBar, Input };
-        /* WindowLevel, ColorTransferFunction, OpacityTransferFunction, LookupTable,*/
         const int numObjects = sizeof(objectsToInclude) / sizeof(vtkObject *);
 
         for ( int i(0); i<numObjects; ++i ) {
@@ -374,8 +365,8 @@ bool vtkImageView::Compare(vtkMatrix4x4 *mat1, vtkMatrix4x4 *mat2)
     for (int j=0; j<4; j++)
       if (mat1->GetElement(i,j)!=mat2->GetElement(i,j))
       {
-	result = false;
-	break;
+        result = false;
+        break;
       }
 
   return result;
@@ -449,7 +440,7 @@ void vtkImageView::SetInput(vtkImageData *arg, vtkMatrix4x4 *matrix, int layer)
       this->SetOrientationMatrix (identity);
       identity->Delete();
     }
-    this->GetWindowLevel(0)->SetInput(arg);
+
   }
 
 }
@@ -460,7 +451,6 @@ void vtkImageView::SetInputConnection(vtkAlgorithmOutput* arg, vtkMatrix4x4 *mat
   if (layer==0)
   {
     this->SetOrientationMatrix(matrix);
-    this->GetWindowLevel(0)->SetInputConnection(arg);
   }
 }
 
@@ -510,15 +500,15 @@ void vtkImageView::UnInstallPipeline()
 void vtkImageView::GetWithinBoundsPosition (double* pos1, double* pos2)
 {
   for (unsigned int i=0; i<3; i++) pos2[i] = pos1[i];
-  
+
   if (!this->GetInput())
     return;
-  
+
   int indices[3];
   this->GetImageCoordinatesFromWorldCoordinates (pos1, indices);
   int* w_extent = this->GetInput()->GetWholeExtent();
   bool out_of_bounds = false;
-  
+
   for (unsigned int i=0; i<3; i++)
   {
     if (indices[i] > w_extent[2 * i + 1])
@@ -532,7 +522,7 @@ void vtkImageView::GetWithinBoundsPosition (double* pos1, double* pos2)
       out_of_bounds=true;
     }
   }
-  
+
   if (out_of_bounds)
     this->GetWorldCoordinatesFromImageCoordinates (indices, pos2);
   else
@@ -545,7 +535,7 @@ void vtkImageView::SetCurrentPoint (double pos[3])
 {
   double inside_pos[3];
   this->GetWithinBoundsPosition (pos, inside_pos);
-  
+
   this->CurrentPoint[0] = inside_pos[0];
   this->CurrentPoint[1] = inside_pos[1];
   this->CurrentPoint[2] = inside_pos[2];
@@ -664,14 +654,13 @@ void vtkImageView::SetTransferFunctions (vtkColorTransferFunction *color,
   if ( this->GetLookupTable(layer) != NULL )
   {
     // remove lookup table not in use
-    this->GetLookupTable(layer)->Delete();
+//    this->GetLookupTable(layer)->Delete();
     this->SetLookupTable(NULL, layer);
   }
 
   this->SetTransferFunctionRangeFromWindowSettings(layer);
 
-  this->GetWindowLevel(layer)->SetLookupTable(
-        this->GetColorTransferFunction(layer) );
+  this->ApplyColorTransferFunction(this->GetColorTransferFunction(layer),layer);
   this->ScalarBar->SetLookupTable( this->GetColorTransferFunction(layer) );
 }
 
@@ -697,24 +686,21 @@ void vtkImageView::SetLookupTable (vtkLookupTable* lookuptable)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::SetLookupTable (vtkScalarsToColors* lookuptable,int layer)
+void vtkImageView::SetLookupTable (vtkLookupTable* lookuptable,int layer)
 {
   if (lookuptable && this->HasLayer(layer))
   {
-    this->SetUseLookupTable(true,layer);//  vtkSetObjectBodyMacro (LookupTable, vtkLookupTable, lookuptable);
-    this->SetLookupTable(lookuptable,layer);
-    this->GetWindowLevel(layer)->SetLookupTable( lookuptable );
+    this->SetUseLookupTable(true,layer);
+    this->StoreLookupTable(lookuptable,layer);
     this->ScalarBar->SetLookupTable( lookuptable );
 
     if ( this->GetColorTransferFunction(layer) != NULL )
     {
-      this->GetColorTransferFunction(layer)->Delete();
-      this->SetColorTransferFunction(NULL,layer);
+      this->StoreColorTransferFunction(NULL,layer);
     }
     if ( this->GetOpacityTransferFunction(layer) != NULL )
     {
-      this->GetOpacityTransferFunction(layer)->Delete();
-      this->SetOpacityTransferFunction(NULL,layer);
+      this->StoreOpacityTransferFunction(NULL,layer);
     }
     this->SetTransferFunctionRangeFromWindowSettings(layer);
   }
@@ -860,7 +846,9 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(int layer)
 
   if ( touched )
   {
-    this->GetWindowLevel(layer)->Modified();
+    //todo: Call Modified on the right object
+//    this->GetWindowLevel(layer)->Modified();
+
     //probably should change the lookuptable of this scalar bar?
     //no, done in setLookupTable.
     this->ScalarBar->Modified();
@@ -930,8 +918,8 @@ void vtkImageView::SetWindowSettingsFromTransferFunction(int layer)
   if ( touched )
   {
     this->SetColorRange( targetRange, layer );
-
-    this->GetWindowLevel(layer)->Modified();
+//TODO call Modified on the right object
+//    this->GetWindowLevel(layer)->Modified();
     this->ScalarBar->Modified();
   }
 }
@@ -957,10 +945,6 @@ double vtkImageView::GetColorWindow() const
     return this->GetColorWindow(currentLayer);
 }
 
-//double vtkImageView::GetColorWindow(int layer)
-//{
-//    return this->ColorWindow;
-//}
 
 void vtkImageView::SetColorWindow(double s)
 {
@@ -990,7 +974,6 @@ void vtkImageView::SetColorWindow(double s,int layer)
 //----------------------------------------------------------------------------
 void vtkImageView::SetColorLevel(double s,int layer)
 {
-  //layer is not used here yet
   if (s == this->GetColorLevel(layer))
     return;
 
@@ -1494,7 +1477,7 @@ void vtkImageView::RemoveAllLayers(void)
 //----------------------------------------------------------------------------
 bool vtkImageView::HasLayer(int layer) const
 {
-  return false;
+  return ( layer >= 0 ) && ( layer < this->GetNumberOfLayers());
 }
 
 //----------------------------------------------------------------------------
@@ -1940,7 +1923,12 @@ void vtkImageView::SetCurrentLayer(int layer)
     }
 }
 
-vtkScalarsToColors * vtkImageView::GetLookupTable() const
+int vtkImageView::GetCurrentLayer() const
+{
+  return this->CurrentLayer;
+}
+
+vtkLookupTable * vtkImageView::GetLookupTable() const
 {
     int layer = this->GetCurrentLayer();
     return this->GetLookupTable(layer);

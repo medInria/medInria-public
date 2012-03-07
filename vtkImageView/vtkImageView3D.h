@@ -185,15 +185,13 @@ if (this->Interactor)
 
   virtual void SetInput (vtkImageData* input, vtkMatrix4x4 *matrix = 0, int layer = 0);
   virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
-  // Description:
-  // Set window and level for mapping pixels to colors.
-  virtual void SetColorWindow(double s);
-  virtual void SetColorLevel(double s);
 
+  using vtkImageView::SetColorWindow;
   virtual void SetColorWindow(double s,int layer);
+  using vtkImageView::SetColorLevel;
   virtual void SetColorLevel(double s,int layer);
   /** Set a user-defined lookup table */
-  virtual void SetLookupTable (vtkLookupTable* lookuptable);
+  virtual void SetLookupTable (vtkLookupTable* lookuptable, int layer);
   /**
    * Transfer functions define the mapping of the intensity or color
    * values in the image to colors and opacity displayed on the screen.
@@ -201,12 +199,6 @@ if (this->Interactor)
   virtual void SetTransferFunctions(vtkColorTransferFunction * color,
                                     vtkPiecewiseFunction * opacity,
                                     int layer);
-
-  /**
-   * This function is equivalent to setTransferFunctions(color, opacity, 0)
-   */
-  virtual void SetTransferFunctions(vtkColorTransferFunction * color,
-                                    vtkPiecewiseFunction * opacity);
 
   virtual void SetOpacity(double opacity, int layer);
   virtual double GetOpacity(int layer) const;
@@ -275,7 +267,6 @@ if (this->Interactor)
 
 
   virtual void AddLayer (int layer);
-  virtual bool HasLayer (int layer) const;
   virtual int GetNumberOfLayers(void) const;
   virtual void RemoveLayer (int layer);
   virtual void RemoveAllLayers (void);
@@ -287,11 +278,16 @@ if (this->Interactor)
                                            int layer);
   virtual void StoreOpacityTransferFunction (vtkPiecewiseFunction *otf,
                                              int layer);
-  virtual vtkScalarsToColors * GetLookupTable(int layer) const;
+  virtual vtkLookupTable * GetLookupTable(int layer) const;
   virtual bool GetUseLookupTable(int layer) const;
   virtual void SetUseLookupTable (bool use, int layer);
+  using vtkImageView::GetColorWindow;
+  virtual double GetColorWindow(int layer) const;
   virtual void StoreColorWindow(double s,int layer);
+  using vtkImageView::GetColorLevel;
+  virtual double GetColorLevel(int layer) const;
   virtual void StoreColorLevel(double s,int layer);
+  virtual void StoreLookupTable (vtkLookupTable *lookuptable, int layer);
 
 protected:
 
@@ -305,7 +301,9 @@ protected:
 
   virtual void SetupVolumeRendering();
   virtual void SetupWidgets();
-  virtual void UpdateVolumeFunctions();
+  virtual void UpdateVolumeFunctions(int layer);
+  virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors,
+                                                  int layer);
 
   virtual void InternalUpdate (void);
 
@@ -325,8 +323,8 @@ protected:
   // smart volume mapper
   vtkSmartVolumeMapper* VolumeMapper;
 
-  // blender
-  vtkImageBlend* Blender;
+//  // blender
+//  vtkImageBlend* Blender;
   // image 3D cropping box callback
   vtkImageView3DCroppingBoxCallback* Callback;
   // box widget

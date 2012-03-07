@@ -189,7 +189,8 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   vtkGetObjectMacro(RenderWindow,    vtkRenderWindow);
   vtkGetObjectMacro(Renderer,        vtkRenderer); // LAYER
   vtkGetObjectMacro(OverlayRenderer, vtkRenderer);
-  virtual vtkImageMapToColors *GetWindowLevel(int layer=0);
+  //Is it useful for 2d and 3d?
+//  virtual vtkImageMapToColors *GetWindowLevel(int layer=0);
   vtkGetObjectMacro(InteractorStyle, vtkInteractorStyle);
   vtkGetObjectMacro(Interactor,      vtkRenderWindowInteractor);
 
@@ -273,6 +274,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
    */
   virtual void StoreColorTransferFunction (vtkColorTransferFunction *ctf, int layer) = 0;
 
+
   /**
    * Composite volume rendering takes into account the opacity (alpha)
    * value to add transparency.
@@ -292,10 +294,11 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
    * vtkColorTransferFunction (color) and a vtkPiecewiseFunction
    * (opacity/alpha).  Default is a linear black to white table.
    */
-  virtual vtkScalarsToColors * GetLookupTable() const;
-  virtual vtkScalarsToColors * GetLookupTable(int layer) const = 0;
-  virtual void SetLookupTable (vtkScalarsToColors *lookuptable);
-  virtual void SetLookupTable (vtkScalarsToColors *lookuptable, int layer);
+  virtual vtkLookupTable * GetLookupTable() const;
+  virtual vtkLookupTable * GetLookupTable(int layer) const = 0;
+  virtual void SetLookupTable (vtkLookupTable *lookuptable);
+  virtual void SetLookupTable (vtkLookupTable *lookuptable, int layer);
+  virtual void StoreLookupTable (vtkLookupTable *lookuptable, int layer) = 0;
 
   virtual bool GetUseLookupTable() const;
   virtual bool GetUseLookupTable(int layer) const = 0;
@@ -411,7 +414,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
    * Gets the color window of the current layer.
    */
   virtual double GetColorWindow() const;
-  virtual double GetColorWindow(int layer) const;
+  virtual double GetColorWindow(int layer) const = 0;
   /**
    * Sets the color level of the current layer.
    */
@@ -422,7 +425,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
    * Gets the color level of the current layer.
    */
   virtual double GetColorLevel() const;
-  virtual double GetColorLevel(int layer) const;
+  virtual double GetColorLevel(int layer) const = 0;
   /**
    * Sets the color range of the current layer.
    */
@@ -715,6 +718,14 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
 #endif
 
 protected:
+  /**
+   * Takes a vtkScalarsToColors pointer
+   * (ideally from this->GetColorTransferFunction(layer))
+   * and applies it to the layer.
+   */
+  virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors,
+                                          int layer) = 0;
+
   /**
      The OrientationMatrix instance (GetOrientationMatrix()) is a very important
      added feature of this viewer. It describes the rotation and translation to

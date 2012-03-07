@@ -90,37 +90,37 @@ public:
   virtual void SetInput(vtkImageData * image);
   vtkGetObjectMacro(Input, vtkImageData);
 
-  virtual void SetLookupTable(vtkLookupTable * lut);
+  virtual vtkLookupTable * GetLookupTable();
 
   vtkGetObjectMacro(ImageActor, vtkImageActor);
 
   vtkGetObjectMacro(WindowLevel, vtkImageMapToColors);
-  virtual void SetColorWindow(double window);
+  vtkSetMacro(ColorWindow, double);
   vtkGetMacro(ColorWindow,double);
-  virtual void SetColorLevel(double level);
+  vtkSetMacro(ColorLevel, double);
   vtkGetMacro(ColorLevel,double);
 
-  vtkGetMacro(ColorTransferFunction,vtkColorTransferFunction *);
-  void SetColorTransferFunction(vtkColorTransferFunction* function);
-  vtkGetMacro(OpacityTransferFunction,vtkPiecewiseFunction *);
-  void SetOpacityTransferFunction(vtkPiecewiseFunction* function);
+  vtkGetMacro(ColorTransferFunction,vtkColorTransferFunction*);
+  void SetColorTransferFunction ( vtkColorTransferFunction* function);
+  void SetOpacityTransferFunction(vtkPiecewiseFunction* opacity);
+  vtkGetMacro(OpacityTransferFunction, vtkPiecewiseFunction*);
 
   vtkGetMacro(UseLookupTable,bool);
-  void SetUseLookupTable(bool use);
+  vtkSetMacro(UseLookupTable, bool);
 
 protected:
   vtkImage2DDisplay();
   ~vtkImage2DDisplay();
 
 private:
-  vtkImageMapToColors*            WindowLevel;
-  vtkImageData*                   Input;
-  vtkImageActor*                  ImageActor;
-  double                          ColorWindow;
-  double                          ColorLevel;
-  bool                            UseLookupTable;
-  vtkSmartPointer<vtkColorTransferFunction >      ColorTransferFunction;
-  vtkSmartPointer<vtkPiecewiseFunction>           OpacityTransferFunction;
+  vtkSmartPointer<vtkImageMapToColors>        WindowLevel;
+  vtkSmartPointer<vtkImageData>               Input;
+  vtkSmartPointer<vtkImageActor>              ImageActor;
+  double                                      ColorWindow;
+  double                                      ColorLevel;
+  bool                                        UseLookupTable;
+  vtkSmartPointer<vtkColorTransferFunction >  ColorTransferFunction;
+  vtkSmartPointer<vtkPiecewiseFunction>       OpacityTransferFunction;
 
 
   vtkImage2DDisplay (const vtkImage2DDisplay&);
@@ -145,8 +145,9 @@ vtkImage2DDisplay::vtkImage2DDisplay()
 
 vtkImage2DDisplay::~vtkImage2DDisplay()
 {
-  this->WindowLevel->Delete();
-  this->ImageActor->Delete();
+//  vtkSmartPointer
+//  this->WindowLevel->Delete();
+//  this->ImageActor->Delete();
 }
 
 void vtkImage2DDisplay::SetInput(vtkImageData * image)
@@ -168,34 +169,19 @@ void vtkImage2DDisplay::SetInput(vtkImageData * image)
   }
 }
 
-void vtkImage2DDisplay::SetLookupTable(vtkLookupTable * lut)
+vtkLookupTable * vtkImage2DDisplay::GetLookupTable()
 {
-  this->WindowLevel->SetLookupTable(lut);
-}
-
-void vtkImage2DDisplay::SetUseLookupTable(bool use)
-{
-    this->UseLookupTable = use;
-}
-
-void vtkImage2DDisplay::SetColorLevel(double level)
-{
-  this->ColorLevel = level;
-}
-
-void vtkImage2DDisplay::SetColorWindow(double window)
-{
-  this->ColorWindow = window;
+  return vtkLookupTable::SafeDownCast(this->GetWindowLevel()->GetLookupTable());
 }
 
 void vtkImage2DDisplay::SetColorTransferFunction(vtkColorTransferFunction* function)
 {
-    this->ColorTransferFunction = function;
+  this->ColorTransferFunction = function;
 }
 
 void vtkImage2DDisplay::SetOpacityTransferFunction(vtkPiecewiseFunction* function)
 {
-    this->OpacityTransferFunction = function;
+  this->OpacityTransferFunction = function;
 }
 
 vtkCxxRevisionMacro(vtkImageView2D, "$Revision: 3 $");
@@ -687,16 +673,16 @@ void vtkImageView2D::SetViewOrientation(int orientation)
      In cases the acquisition is strongly oblique, it can happen that
      their is NO slice-orientation corresponding to the desired
      view-orientation (redundant view-orientation for 2 slice-orientations)
-     
+
      We are not doomed though, the hack is to give priority to the native
      acquisition plane (xy) and derive the other orientations from it.
   */
   double dot = 0;
   double projection, p1, p2;
-  
+
   /// Proiority to the xy plane :
   int viewtoslice[3] = {-1,-1,-1};
-  
+
   for (unsigned int i=0; i<3; i++)
   {
     // take the third column of the orientation matrix, check the i-est projection
@@ -704,7 +690,7 @@ void vtkImageView2D::SetViewOrientation(int orientation)
     // take the read-out acquisition axis, check the other projections
     p1          = std::abs (this->GetOrientationMatrix()->GetElement ((i+1)%3, 0));
     p2          = std::abs (this->GetOrientationMatrix()->GetElement ((i+2)%3, 0));
-    
+
     // check to which axis this vector is the closest
     if (projection > dot)
     {
@@ -715,15 +701,15 @@ void vtkImageView2D::SetViewOrientation(int orientation)
       viewtoslice[(i+2)%3] = (p1 >= p2) ? 1 : 0;
     }
   }
-  
+
   slice_orientation = viewtoslice[orientation];
 
 
-  
+
 #if 0 // comment code above and replace it by the one below if you
       // want to test the behavior of this function as it was
       // previous to the fix...
-  
+
   /**
      but normally we should be able to use this bit of code,
      it works and is stable for most cases, when acquisition is
@@ -748,7 +734,7 @@ void vtkImageView2D::SetViewOrientation(int orientation)
   }
 
 #endif //
-  
+
   this->SetSliceOrientation (slice_orientation);
 }
 
@@ -812,7 +798,7 @@ void vtkImageView2D::SetCurrentPoint(double pos[3])
 {
   int old_slice = this->Slice;
   int new_slice = this->GetSliceForWorldCoordinates (pos);
-  
+
   int *range = this->GetSliceRange();
   if (range)
   {
@@ -846,18 +832,18 @@ int vtkImageView2D::GetViewOrientationFromSliceOrientation(int sliceorientation,
   double position[4] = {0,0,0,0}, focalpoint[4] = {0,0,0,0};
   double focaltoposition[3]={0,0,0};
   double origin[3] = {0,0,0};
-  
+
   if (this->GetInput())
     this->GetInput()->GetOrigin(origin);
-  
-  // At first, we initialize the cam focal point to {0,0,0}, so nothing to do 
+
+  // At first, we initialize the cam focal point to {0,0,0}, so nothing to do
   // (after re-orientation, it will become the origin of the image)
   position[sliceorientation] = this->ConventionMatrix->GetElement (sliceorientation, 3);
-  
+
   // Points VS vectors: homogeneous coordinates
   focalpoint[3] = 1;
   position[3]   = 1;
-  
+
   // Apply the orientation matrix to all this information
   if ( this->OrientationMatrix )
   {
@@ -881,15 +867,15 @@ int vtkImageView2D::GetViewOrientationFromSliceOrientation(int sliceorientation,
       position[i] += origin[i];
       focalpoint[i] += origin[i];
     }
-    
+
     this->OrientationMatrix->MultiplyPoint  (position,   position);
     this->OrientationMatrix->MultiplyPoint  (focalpoint, focalpoint);
   }
-  
+
   // Compute the vector normal to the view
   for (unsigned int i=0; i<3; i++)
     focaltoposition[i] = position[i] - focalpoint[i];
-  
+
   // we find the axis the closest to the focaltoposition vector
   unsigned int id = 0;
   double dot = 0;
@@ -914,7 +900,7 @@ int vtkImageView2D::GetViewOrientationFromSliceOrientation(int sliceorientation,
   // return the view-orientation found by those principles.
   // this should then be set as this->ViewOrientation.
   return id;
-  
+
 }
 
 
@@ -928,28 +914,28 @@ int vtkImageView2D::SetCameraFromOrientation(void)
   vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
   if (!cam)
     return -1;
-  
+
   double position[4] = {0,0,0,0}, focalpoint[4] = {0,0,0,0}, viewup[4] = {0,0,0,0};
   double focaltoposition[3]={0,0,0};
   std::vector<double*> viewupchoices;
   double first[3]={0,0,0}, second[3]={0,0,0}, third[3]={0,0,0}, fourth[3]={0,0,0};
   bool inverseposition = false;
-  
+
   // The viewup and the cam position are set according to the convention matrix.
   for (unsigned int i=0; i<3; i++)
     viewup[i]   = this->ConventionMatrix->GetElement (i, this->SliceOrientation);
-  
+
   // Apply the orientation matrix to all this information
   if ( this->OrientationMatrix )
     this->OrientationMatrix->MultiplyPoint  (viewup, viewup);
-  
+
   // first we find the axis the closest to the focaltoposition vector
   unsigned int id = this->GetViewOrientationFromSliceOrientation (this->SliceOrientation, position, focalpoint);
-  
+
   // Compute the vector normal to the view
   for (unsigned int i=0; i<3; i++)
     focaltoposition[i] = position[i] - focalpoint[i];
-  
+
   // Now we now we have 4 choices for the View-Up information
   for(unsigned int i=0; i<3; i++)
   {
@@ -966,13 +952,13 @@ int vtkImageView2D::SetCameraFromOrientation(void)
   viewupchoices.push_back (second);
   viewupchoices.push_back (third);
   viewupchoices.push_back (fourth);
-  
+
   double conventionviewup[4]={0,0,0,0};
   // Then we choose the convention matrix vector correspondent to the
   // one we just found
   for (unsigned int i=0; i<3; i++)
     conventionviewup[i] = this->ConventionMatrix->GetElement (i, id);
-  
+
   // Then we pick from the 4 solutions the closest to the
   // vector just found
   unsigned int id2 = 0;
@@ -987,12 +973,12 @@ int vtkImageView2D::SetCameraFromOrientation(void)
   // We found the solution
   for (unsigned int i=0; i<3; i++)
     viewup[i] = viewupchoices[id2][i];
-  
+
   double conventionposition[4]={0,0,0,1};
   // Then we check if we are on the right side of the image
   conventionposition[id] = this->ConventionMatrix->GetElement (id, 3);
   inverseposition = (vtkMath::Dot (focaltoposition, conventionposition) < 0 );
-  
+
   // invert the cam position if necessary (symmetry along the focal point)
   if (inverseposition)
     for (unsigned int i=0; i<3; i++)
@@ -1002,9 +988,9 @@ int vtkImageView2D::SetCameraFromOrientation(void)
   cam->SetPosition(position[0], position[1], position[2]);
   cam->SetFocalPoint(focalpoint[0], focalpoint[1], focalpoint[2]);
   cam->SetViewUp(viewup[0], viewup[1], viewup[2]);
-  
+
   this->InvokeEvent (vtkImageView::CameraChangedEvent);
-  
+
   // return the view-orientation found by those principles.
   // this should then be set as this->ViewOrientation.
   return id;
@@ -1559,40 +1545,14 @@ int vtkImageView2D::GetInterpolate(int layer)
 //    this->SetTransferFunctions (color, opacity, CurrentLayer);
 //}
 
-////----------------------------------------------------------------------------
-//void vtkImageView2D::SetTransferFunctions(vtkColorTransferFunction* color, vtkPiecewiseFunction *opacity, int layer)
-//{
-//  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
-//  if (layer==0)
-//  {
-//    this->Superclass::SetTransferFunctions(color, opacity);
-//    this->GetImage2DDisplayForLayer(0)->GetWindowLevel()->SetLookupTable(this->GetColorTransferFunction());
-//    imageDisplay->SetColorTransferFunction(this->GetColorTransferFunction());
-//    imageDisplay->SetOpacityTransferFunction(this->GetOpacityTransferFunction());
-//    imageDisplay->SetUseLookupTable (false);
-//  }
-//  else if (this->HasLayer(layer))
-//  {
-//    vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
-////    if (!imageDisplay->GetInput())
-////      return;
-
-////    double *range = imageDisplay->GetInput()->GetScalarRange();
-//    if ( color == NULL)
-//        color = this->GetDefaultColorTransferFunction();
-//    if (opacity == NULL)
-//        opacity = this->GetDefaultOpacityTransferFunction();
-
-//    imageDisplay->GetWindowLevel()->SetLookupTable(color);
-//    imageDisplay->SetColorTransferFunction(color);
-//    imageDisplay->SetOpacityTransferFunction(opacity);
-//    color->Delete();
-//    opacity->Delete();
-//    imageDisplay->SetUseLookupTable (false);
-//    this->SetTransferFunctionRangeFromWindowSettings(layer);
-//    this->Modified();
-//  }
-//}
+//----------------------------------------------------------------------------
+void vtkImageView2D::ApplyColorTransferFunction(vtkScalarsToColors * colors, int layer)
+{
+  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+  if (!imageDisplay)
+      return;
+  imageDisplay->GetWindowLevel()->SetLookupTable(colors);
+}
 
 ////----------------------------------------------------------------------------
 //void vtkImageView2D::SetLookupTable(vtkLookupTable* lut, int layer)
@@ -1621,7 +1581,7 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
 {
   if (image)
     image->UpdateInformation(); // must be called before GetSliceForWorldCoordinates()
-
+  vtkRenderer *renderer = 0;
   if (layer==0)
   {
     if (this->GetInput())
@@ -1630,13 +1590,10 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
     }
     this->GetImage2DDisplayForLayer(0)->SetInput(image);
     this->Superclass::SetInput (image, matrix, layer);
+    this->GetWindowLevel(0)->SetInput(image);
     double *range = this->GetImage2DDisplayForLayer(layer)->GetInput()->GetScalarRange();
     this->SetColorRange(range,0);
-  }
 
-  vtkRenderer *renderer = 0;
-  if (layer == 0)
-  {
     renderer = this->GetRenderer();
   }
   else // layer >0
@@ -1698,6 +1655,9 @@ void vtkImageView2D::SetInput (vtkImageData *image, vtkMatrix4x4 *matrix, int la
 void vtkImageView2D::SetInputConnection (vtkAlgorithmOutput *input, vtkMatrix4x4 *matrix, int layer)
 {
   this->Superclass::SetInputConnection( input, matrix, layer);
+  if (layer ==0 )
+    this->GetWindowLevel(0)->SetInputConnection(input);
+
   // this->ImageActor->SetInput( this->WindowLevel->GetOutput() );
 
   // The slice might have changed in the process
@@ -1981,12 +1941,6 @@ void vtkImageView2D::RemoveAllLayers (void)
 }
 
 //----------------------------------------------------------------------------
-bool vtkImageView2D::HasLayer(int layer) const
-{
-  return ( (layer >= 0) && (layer < this->GetNumberOfLayers() ) );
-}
-
-//----------------------------------------------------------------------------
 int vtkImageView2D::GetNumberOfLayers(void) const
 {
   return this->LayerInfoVec.size();
@@ -2025,6 +1979,14 @@ vtkImageMapToColors * vtkImageView2D::GetWindowLevel( int layer/*=0*/ ) const
 //    int currentLayer = this->GetCurrentLayer();
 //    this->SetTransferFunctionRangeFromWindowSettings(currentLayer);
 //}
+
+void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings(int layer)
+{
+  this->Superclass::SetTransferFunctionRangeFromWindowSettings(layer);
+  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+  imageDisplay->GetWindowLevel()->Modified();
+
+}
 
 //void vtkImageView2D::SetTransferFunctionRangeFromWindowSettings(int layer)
 //{
@@ -2149,12 +2111,20 @@ void vtkImageView2D::StoreOpacityTransferFunction(vtkPiecewiseFunction *otf, int
   imageDisplay->SetOpacityTransferFunction(otf);
 }
 
-vtkScalarsToColors * vtkImageView2D::GetLookupTable(int layer) const
+vtkLookupTable * vtkImageView2D::GetLookupTable(int layer) const
 {
   vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
   if (!imageDisplay)
       return NULL;
-  return imageDisplay->GetWindowLevel()->GetLookupTable();
+  return imageDisplay->GetLookupTable();
+}
+
+void vtkImageView2D::StoreLookupTable(vtkLookupTable* lookupTable, int layer)
+{
+  vtkImage2DDisplay * imageDisplay = this->GetImage2DDisplayForLayer(layer);
+  if (!imageDisplay)
+      return;
+  imageDisplay->GetWindowLevel()->SetLookupTable(lookupTable);
 }
 
 bool vtkImageView2D::GetUseLookupTable(int layer) const

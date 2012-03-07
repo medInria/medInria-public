@@ -130,16 +130,17 @@ public:
   virtual void InstallInteractor(void);
   virtual void UnInstallInteractor(void);
 
-  /**
-   * This function is equivalent to setTransferFunctions(color, opacity, 0)
-   */
-  virtual void SetTransferFunctions (vtkColorTransferFunction* color,
-                                     vtkPiecewiseFunction *opacity);
+//  /**
+//   * This function is equivalent to setTransferFunctions(color, opacity, 0)
+//   */
+//  virtual void SetTransferFunctions (vtkColorTransferFunction* color,
+//                                     vtkPiecewiseFunction *opacity);
 
-  virtual void SetTransferFunctions (vtkColorTransferFunction* color,
-                                     vtkPiecewiseFunction *opacity,
-                                     int layer);
-  virtual void SetLookupTable (vtkLookupTable* lookuptable, int layer);
+//  virtual void SetTransferFunctions (vtkColorTransferFunction* color,
+//                                     vtkPiecewiseFunction *opacity,
+//                                     int layer);
+//  virtual void SetLookupTable (vtkLookupTable* lookuptable, int layer);
+  virtual void StoreLookupTable (vtkLookupTable *lookuptable, int layer);
 
   /**
    Description:
@@ -533,19 +534,14 @@ public:
   virtual void AddLayer(int);
   virtual void RemoveLayer(int layer);
   virtual void RemoveAllLayers (void);
-  virtual bool HasLayer(int layer) const;
   virtual int GetNumberOfLayers(void) const;
 
-  using vtkImageView::SetColorLevel;
-  virtual void SetColorLevel(double s, int layer);
   using vtkImageView::GetColorLevel;
   virtual double GetColorLevel(int layer) const;
-  using vtkImageView::SetColorWindow;
-  virtual void SetColorWindow(double s, int layer);
   using vtkImageView::GetColorWindow;
   virtual double GetColorWindow(int layer)const;
 //  virtual void SetTransferFunctionRangeFromWindowSettings();
-//  virtual void SetTransferFunctionRangeFromWindowSettings(int layer);
+  virtual void SetTransferFunctionRangeFromWindowSettings(int layer);
 
   //pure virtual methods from base class:
   virtual vtkColorTransferFunction * GetColorTransferFunction(int layer) const;
@@ -554,7 +550,7 @@ public:
                                            int layer);
   virtual void StoreOpacityTransferFunction (vtkPiecewiseFunction *otf,
                                              int layer);
-  virtual vtkScalarsToColors * GetLookupTable(int layer) const;
+  virtual vtkLookupTable * GetLookupTable(int layer) const;
   virtual bool GetUseLookupTable(int layer) const;
   virtual void SetUseLookupTable (bool use, int layer);
   virtual void StoreColorWindow(double s,int layer);
@@ -563,6 +559,9 @@ public:
 protected:
   vtkImageView2D();
   ~vtkImageView2D();
+
+  virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors,
+                                                  int layer);
 
   /**
    The SlicePlane instance (GetSlicePlane()) is the polygonal
