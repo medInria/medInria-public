@@ -10,10 +10,9 @@
 
 #ifndef VTKSPHERICALHARMONICSOURCE_HPP
 #define VTKSPHERICALHARMONICSOURCE_HPP
+#include "vtkINRIA3DConfigure.h"
 
 #include <vtkPolyDataAlgorithm.h>
-//#include <vtkSphereTesselator.h>
-#include "vtkINRIA3DConfigure.h"
 #include <vtkMatrix4x4.h>
 
 #include <itkVariableSizeMatrix.h>

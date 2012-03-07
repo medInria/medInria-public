@@ -1,6 +1,6 @@
 //  Authors:	   Maxime Descoteaux, Jaime Garcia Guevara, Theodore Papadopoulo.
 //
-//  Description:  source of one spherical mesh.
+//  Description:  vtk source of one spherical mesh.
 //  Define the mesh and associated value for each direction
 //  Deform the mesh after
 //
@@ -11,11 +11,12 @@
 #define vtkSphereTesselator_H
 #include "vtkINRIA3DConfigure.h"
 
-#include <cmath>
+
 
 #include <vtkPolyDataAlgorithm.h>
 #include <vtkPoints.h>
 #include <vtkCellArray.h>
+
 #include <vtkPointLocator.h>
 
 /** http://davidf.faricy.net/polyhedra/Platonic_Solids.html */
@@ -27,6 +28,10 @@
 template<typename T>
 class VTK_VISUMANAGEMENT_EXPORT vtkSphereTesselator : public vtkPolyDataAlgorithm {
 public:
+    static vtkSphereTesselator *New();
+    vtkTypeRevisionMacro(vtkSphereTesselator,vtkPolyDataAlgorithm);
+    void PrintSelf(ostream& os, vtkIndent indent);
+
     enum {
         cube=0,
         dodecahedron = 1,
@@ -35,12 +40,21 @@ public:
         tetrahedron = 4
     };
 
+    // Description:
+    // Set the Resolution number of times that the selected polyhedron is going to be tesselated.
+    vtkSetMacro(resolution,unsigned int);
+    vtkGetMacro(resolution,unsigned int);
+
+protected:
     vtkSphereTesselator();
     vtkSphereTesselator(const int ip);
 
-    virtual ~vtkSphereTesselator();
+    virtual ~vtkSphereTesselator(){}
 
     vtkSphereTesselator<T>& operator= (const vtkSphereTesselator<T>& st);
+
+    int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+    int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
     /** Specify the R number of times that the selected polyhedron is going to be tesselated  */
     void tesselate(const int& R);
@@ -48,16 +62,14 @@ public:
     /** Set in the vtkPolyData the vtkPoints and vtkCellArray that define the tesellated polyhedron  */
     void getvtkTesselation(vtkPolyData* t);
 
-
+    unsigned int resolution;
 
 private:
+
     int         m_initPolyhedra;
-    vtkPoints* m_vertices;
-    vtkCellArray* m_triangles;
 
     /** Initialize by using the m_initPolyhedra the polyhedron that it is gong to be tesselated  */
-    void m_initializeTesselation();
-
+    void initializeTesselation(vtkPoints* vertices, vtkCellArray* triangles);
 };
 
 #endif

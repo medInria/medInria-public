@@ -11,8 +11,8 @@
 #include <complex>
 #include <cmath>
 
-#include "vtkSphericalHarmonicSource.h"
-#include "vtkSphereTesselator.h"
+#include <vtkSphericalHarmonicSource.h>
+#include <vtkSphereTesselator.h>
 
 #include <vtkPolyDataNormals.h>
 #include <vtkCellArray.h>

@@ -9,66 +9,75 @@
 
 #include <vtkSphereTesselator.h>
 
+#include <cmath>
+
+#include <vtkObjectFactory.h>
+#include <vtkInformationVector.h>
+#include <vtkInformation.h>
 #ifdef WIN32
 #pragma warning(disable:4661)
 #endif
 
-
+vtkStandardNewMacro(vtkSphereTesselator);
 
 template<typename T>
 vtkSphereTesselator<T>::vtkSphereTesselator() {
     m_initPolyhedra = icosahedron;
-    m_vertices = vtkPoints::New();
-    m_triangles  = vtkCellArray::New();
+//    vertices = vtkPoints::New();
+//    triangles  = vtkCellArray::New();
 
-    m_initializeTesselation();
+//    m_initializeTesselation();
+
+    this->SetNumberOfInputPorts(0);
 }
 
 template<typename T>
 vtkSphereTesselator<T>::vtkSphereTesselator(const int ip) {
     m_initPolyhedra = ip;
-    m_vertices = vtkPoints::New();
-    m_triangles  = vtkCellArray::New();
+//    vertices = vtkPoints::New();
+//    triangles  = vtkCellArray::New();
 
-    m_initializeTesselation();
+//    m_initializeTesselation();
+
+    this->SetNumberOfInputPorts(0);
 }
 
-template<typename T>
-vtkSphereTesselator<T>::~vtkSphereTesselator() {
-    if( m_vertices )
-        m_vertices->Delete();
-    if( m_triangles )
-        m_triangles->Delete();
-}
+//template<typename T>
+//vtkSphereTesselator<T>::~vtkSphereTesselator() {
+//    if( vertices )
+//        vertices->Delete();
+//    if( triangles )
+//        triangles->Delete();
+//}
 
 template<typename T>
-void vtkSphereTesselator<T>:: m_initializeTesselation() {
+void vtkSphereTesselator<T>::initializeTesselation(vtkPoints* vertices, vtkCellArray* triangles) {
     vtkIdType* vi = new vtkIdType[3];
 
     switch( m_initPolyhedra ) {
 
     case tetrahedron: {
         T sqrt_3 = 0.5773502692;
-        m_vertices->SetNumberOfPoints(4);
-        //m_vertices->Allocate(4);
+        vertices->SetNumberOfPoints(4);
+        //vertices->Allocate(4);
 
         /* 4 vertices */
-        m_vertices->SetPoint(0,  sqrt_3,  sqrt_3,  sqrt_3);
-        m_vertices->SetPoint(1, -sqrt_3, -sqrt_3,  sqrt_3);
-        m_vertices->SetPoint(2, -sqrt_3,  sqrt_3, -sqrt_3);
-        m_vertices->SetPoint(3,  sqrt_3, -sqrt_3, -sqrt_3);
+        vertices->SetPoint(0,  sqrt_3,  sqrt_3,  sqrt_3);
+        vertices->SetPoint(1, -sqrt_3, -sqrt_3,  sqrt_3);
+        vertices->SetPoint(2, -sqrt_3,  sqrt_3, -sqrt_3);
+        vertices->SetPoint(3,  sqrt_3, -sqrt_3, -sqrt_3);
 
-        m_triangles->Allocate(4);
+        triangles->Allocate(4);
 
         /* Create Tetrahedron */
         vi[0] = 0; vi[1] = 1; vi[2] = 2;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 0; vi[1] = 3; vi[2] = 1;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 2; vi[1] = 1; vi[2] = 3;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 0; vi[1] = 2; vi[2] = 3;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
 
         break;
     }
@@ -78,65 +87,65 @@ void vtkSphereTesselator<T>:: m_initializeTesselation() {
         T tau = 0.850650808352039932;
         T one = 0.525731112119133606;
 
-        m_vertices->SetNumberOfPoints(12);
+        vertices->SetNumberOfPoints(12);
 
         /* 12 vertices */
-        m_vertices->SetPoint(0,  tau,  one,  0.0);
-        m_vertices->SetPoint(1, -tau,  one,  0.0);
-        m_vertices->SetPoint(2, -tau, -one,  0.0);
-        m_vertices->SetPoint(3,  tau, -one,  0.0);
-        m_vertices->SetPoint(4,  one,  0.0,  tau);
-        m_vertices->SetPoint(5,  one,  0.0, -tau);
-        m_vertices->SetPoint(6, -one,  0.0, -tau);
-        m_vertices->SetPoint(7, -one,  0.0,  tau);
-        m_vertices->SetPoint(8,  0.0,  tau,  one);
-        m_vertices->SetPoint(9,  0.0, -tau,  one);
-        m_vertices->SetPoint(10, 0.0, -tau, -one);
-        m_vertices->SetPoint(11, 0.0,  tau, -one);
+        vertices->SetPoint(0,  tau,  one,  0.0);
+        vertices->SetPoint(1, -tau,  one,  0.0);
+        vertices->SetPoint(2, -tau, -one,  0.0);
+        vertices->SetPoint(3,  tau, -one,  0.0);
+        vertices->SetPoint(4,  one,  0.0,  tau);
+        vertices->SetPoint(5,  one,  0.0, -tau);
+        vertices->SetPoint(6, -one,  0.0, -tau);
+        vertices->SetPoint(7, -one,  0.0,  tau);
+        vertices->SetPoint(8,  0.0,  tau,  one);
+        vertices->SetPoint(9,  0.0, -tau,  one);
+        vertices->SetPoint(10, 0.0, -tau, -one);
+        vertices->SetPoint(11, 0.0,  tau, -one);
 
         /* Create Icosahedron */
-        m_triangles->Allocate(20);
+        triangles->Allocate(20);
 
         vi[0] = 4; vi[1] = 8; vi[2] = 7;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 4; vi[1] = 7; vi[2] = 9;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 5; vi[1] = 6; vi[2] = 11;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 5; vi[1] = 10; vi[2] = 6;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 0; vi[1] = 4; vi[2] = 3;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 0; vi[1] = 3; vi[2] = 5;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 2; vi[1] = 7; vi[2] = 1;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 2; vi[1] = 1; vi[2] = 6;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 8; vi[1] = 0; vi[2] = 11;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 8; vi[1] = 11; vi[2] = 1;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 9; vi[1] = 10; vi[2] = 3;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 9; vi[1] = 2; vi[2] = 10;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 8; vi[1] = 4; vi[2] = 0;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 11; vi[1] = 0; vi[2] = 5;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 4; vi[1] = 9; vi[2] = 3;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 5; vi[1] = 3; vi[2] = 10;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 7; vi[1] = 8; vi[2] = 1;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 6; vi[1] = 1; vi[2] = 11;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 7; vi[1] = 2; vi[2] = 9;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 6; vi[1] = 10; vi[2] = 2;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
 
         break;
 
@@ -144,32 +153,32 @@ void vtkSphereTesselator<T>:: m_initializeTesselation() {
 
     case octahedron: {
         /* 6 vertices */
-        m_vertices->SetNumberOfPoints(6);
-        m_vertices->SetPoint(0, 1.0, 0.0,  0.0);
-        m_vertices->SetPoint(1,-1.0, 0.0,  0.0);
-        m_vertices->SetPoint(2, 0.0, 1.0,  0.0);
-        m_vertices->SetPoint(3, 0.0,-1.0,  0.0);
-        m_vertices->SetPoint(4, 0.0, 0.0,  1.0);
-        m_vertices->SetPoint(5, 0.0, 0.0, -1.0);
+        vertices->SetNumberOfPoints(6);
+        vertices->SetPoint(0, 1.0, 0.0,  0.0);
+        vertices->SetPoint(1,-1.0, 0.0,  0.0);
+        vertices->SetPoint(2, 0.0, 1.0,  0.0);
+        vertices->SetPoint(3, 0.0,-1.0,  0.0);
+        vertices->SetPoint(4, 0.0, 0.0,  1.0);
+        vertices->SetPoint(5, 0.0, 0.0, -1.0);
 
-        m_triangles->Allocate(8);
+        triangles->Allocate(8);
 
         vi[0] = 0; vi[1] = 4; vi[2] = 2;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 2; vi[1] = 4; vi[2] = 1;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 1; vi[1] = 4; vi[2] = 3;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 3; vi[1] = 4; vi[2] = 0;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 0; vi[1] = 2; vi[2] = 5;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 2; vi[1] = 1; vi[2] = 5;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 1; vi[1] = 3; vi[2] = 5;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 3; vi[1] = 0; vi[2] = 5;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         break;
     }
 
@@ -178,66 +187,66 @@ void vtkSphereTesselator<T>:: m_initializeTesselation() {
         T tau = 0.850650808352039932;
         T one = 0.525731112119133606;
 
-        m_vertices->SetNumberOfPoints(12);
-        //        m_vertices->Allocate(12);
+        vertices->SetNumberOfPoints(12);
+        //        vertices->Allocate(12);
 
         /* 12 vertices */
-        m_vertices->SetPoint(0, tau,  one,  0.0);
-        m_vertices->SetPoint(1,-tau,  one,  0.0);
-        m_vertices->SetPoint(2,-tau, -one,  0.0);
-        m_vertices->SetPoint(3, tau, -one,  0.0);
-        m_vertices->SetPoint(4, one,  0.0,  tau);
-        m_vertices->SetPoint(5, one,  0.0, -tau);
-        m_vertices->SetPoint(6,-one,  0.0, -tau);
-        m_vertices->SetPoint(7,-one,  0.0,  tau);
-        m_vertices->SetPoint(8, 0.0,  tau,  one);
-        m_vertices->SetPoint(9, 0.0, -tau,  one);
-        m_vertices->SetPoint(10, 0.0, -tau, -one);
-        m_vertices->SetPoint(11, 0.0,  tau, -one);
+        vertices->SetPoint(0, tau,  one,  0.0);
+        vertices->SetPoint(1,-tau,  one,  0.0);
+        vertices->SetPoint(2,-tau, -one,  0.0);
+        vertices->SetPoint(3, tau, -one,  0.0);
+        vertices->SetPoint(4, one,  0.0,  tau);
+        vertices->SetPoint(5, one,  0.0, -tau);
+        vertices->SetPoint(6,-one,  0.0, -tau);
+        vertices->SetPoint(7,-one,  0.0,  tau);
+        vertices->SetPoint(8, 0.0,  tau,  one);
+        vertices->SetPoint(9, 0.0, -tau,  one);
+        vertices->SetPoint(10, 0.0, -tau, -one);
+        vertices->SetPoint(11, 0.0,  tau, -one);
 
-        m_triangles->Allocate(20);
+        triangles->Allocate(20);
 
         /* Create Icosahedron */
         vi[0] = 4; vi[1] = 8; vi[2] = 7;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 4; vi[1] = 7; vi[2] = 9;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 5; vi[1] = 6; vi[2] = 11;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 5; vi[1] = 10; vi[2] = 6;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 0; vi[1] = 4; vi[2] = 3;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 0; vi[1] = 3; vi[2] = 5;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 2; vi[1] = 7; vi[2] = 1;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 2; vi[1] = 1; vi[2] = 6;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 8; vi[1] = 0; vi[2] = 11;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 8; vi[1] = 11; vi[2] = 1;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 9; vi[1] = 10; vi[2] = 3;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 9; vi[1] = 2; vi[2] = 10;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 8; vi[1] = 4; vi[2] = 0;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 11; vi[1] = 0; vi[2] = 5;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 4; vi[1] = 9; vi[2] = 3;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 5; vi[1] = 3; vi[2] = 10;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 7; vi[1] = 8; vi[2] = 1;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 6; vi[1] = 1; vi[2] = 11;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 7; vi[1] = 2; vi[2] = 9;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
         vi[0] = 6; vi[1] = 10; vi[2] = 2;
-        m_triangles->InsertNextCell((vtkIdType)3,vi);
+        triangles->InsertNextCell((vtkIdType)3,vi);
 
         break;
     }
@@ -391,25 +400,47 @@ void TesselateTriangles( vtkPoints* oldVertices, vtkCellArray* oldTriangles,
 
 
 template<typename T>
-void vtkSphereTesselator<T>::tesselate(const int& R)
-{
-    vtkCellArray *triangles = NULL;
-    vtkPoints *vertices = NULL;
+void vtkSphereTesselator<T>::RequestData(
+    vtkInformation *vtkNotUsed(request),
+    vtkInformationVector **vtkNotUsed(inputVector),
+    vtkInformationVector *outputVector)
+  {
+    // get the info object
+    vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
-    for (int level = 0; level < R; level++)
+    // get the ouptut
+    vtkPolyData *output = vtkPolyData::SafeDownCast(
+      outInfo->Get(vtkDataObject::DATA_OBJECT()));
+
+    vtkPoints* m_vertices = vtkPoints::New();
+    vtkCellArray* m_triangles = vtkCellArray::New();
+
+    initializeTesselation(m_vertices, m_triangles);
+    vtkCellArray *tempTriangles = NULL;
+    vtkPoints *tempVertices = NULL;
+    this->initializeTesselation(m_vertices, m_triangles);
+
+    for (int level = 0; level < this->resolution; level++)
     {
-        vertices = vtkPoints::New();
-        triangles  = vtkCellArray::New();
 
-        TesselateTriangles(m_vertices , m_triangles, vertices, triangles);
+        tempVertices = vtkPoints::New();
+        tempTriangles  = vtkCellArray::New();
 
-        m_vertices->SetData(vertices->GetData());
+        TesselateTriangles(m_vertices , m_triangles, vertices, tempTriangles);
 
-        m_triangles->SetCells(triangles->GetNumberOfCells(),triangles->GetData());
+        m_vertices->SetData(tempVertices->GetData());
+        m_triangles->SetCells(tempTriangles->GetNumberOfCells(),tempTriangles->GetData());
 
-        vertices->Delete();
-        triangles->Delete();
+        tempVertices->Delete();
+        tempTriangles->Delete();
     }
+
+    output->SetPoints(m_vertices);
+    m_vertices->Delete();
+
+    m_triangles->Squeeze();
+    output->SetPolys(m_triangles);
+    m_triangles->Delete();
 
 }
 
