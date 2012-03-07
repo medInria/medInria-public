@@ -29,8 +29,6 @@
 
 #include <tr1/cmath>
 
-using namespace Visualization;
-
 static itk::Vector<double, 3> Cartesian2Spherical(const itk::Vector<double, 3> vITK );
 
 static itk::VariableSizeMatrix<double>
@@ -75,7 +73,7 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(int tess)
     this->FlipZOn();
     this->MaxThesisFuncOff();
 
-    TesselationType = icosahedron;
+    TesselationType = Icosahedron;
     TesselationBasis = SHMatrix;
     Tesselation = tess;
     shell = 0;
@@ -451,18 +449,18 @@ void vtkSphericalHarmonicSource::UpdateSphericalHarmonicSource()
 {
     if (shell)
         shell->Delete();
-    shell = vtkPolyData::New(); 
-    p_solid tesselationType ;
+    shell = vtkPolyData::New();
+//    p_solid tesselationType ;
 
-    switch (TesselationType) {
-    case Cube:         { tesselationType = cube;         break; }
-    case Dodecahedron: { tesselationType = dodecahedron; break; }
-    case Icosahedron:  { tesselationType = icosahedron;  break; }
-    case Octahedron:   { tesselationType = octahedron;   break; }
-    case Tetrahedron:  { tesselationType = tetrahedron;  break; }
-    }
+//    switch (TesselationType) {
+//    case Cube:         { tesselationType = cube;         break; }
+//    case Dodecahedron: { tesselationType = dodecahedron; break; }
+//    case Icosahedron:  { tesselationType = icosahedron;  break; }
+//    case Octahedron:   { tesselationType = octahedron;   break; }
+//    case Tetrahedron:  { tesselationType = tetrahedron;  break; }
+//    }
 
-    vtkSphereTesselator<double> sMesh(tesselationType);
+    vtkSphereTesselator<double> sMesh(this->TesselationType);
 
     sMesh.tesselate(Tesselation);
     sMesh.getvtkTesselation(shell);

@@ -17,10 +17,10 @@
 #include <vtkSphericalHarmonicSource.h>
 
 
-enum { COLOR_BY_SCALARS, COLOR_BY_DIRECTIONS };
 
 class VTK_VISUMANAGEMENT_EXPORT vtkSphericalHarmonicGlyph: public vtkPolyDataAlgorithm {
 public:
+    enum { COLOR_BY_SCALARS, COLOR_BY_DIRECTIONS };
 
     vtkTypeRevisionMacro(vtkSphericalHarmonicGlyph,vtkPolyDataAlgorithm);
     void PrintSelf(ostream& os,vtkIndent indent);

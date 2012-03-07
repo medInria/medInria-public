@@ -15,29 +15,32 @@
 
 #include "vtkINRIA3DConfigure.h"
 
+#include <vtkPolyDataAlgorithm.h>
 #include <vtkPoints.h>
 #include <vtkCellArray.h>
-#include <vtkPolyData.h>
 #include <vtkPointLocator.h>
 
-namespace Visualization {
+
 
 /** http://davidf.faricy.net/polyhedra/Platonic_Solids.html */
-enum p_solid { cube,          // 0
-               dodecahedron,  // 1
-               icosahedron,   // 2
-               octahedron,    // 3
-               tetrahedron }; // 4
+
 
 /** \Clas Object
 * \brief Perform tesselation of the unit sphere from a given platonic solid
 */
 template<typename T>
-class VTK_VISUMANAGEMENT_EXPORT vtkSphereTesselator {
+class VTK_VISUMANAGEMENT_EXPORT vtkSphereTesselator : public vtkPolyDataAlgorithm {
 public:
+    enum {
+        cube=0,
+        dodecahedron = 1,
+        icosahedron = 2,
+        octahedron = 3,
+        tetrahedron = 4
+    };
 
     vtkSphereTesselator();
-    vtkSphereTesselator(const p_solid& ip);
+    vtkSphereTesselator(const int ip);
 
     virtual ~vtkSphereTesselator();
 
@@ -49,8 +52,10 @@ public:
     /** Set in the vtkPolyData the vtkPoints and vtkCellArray that define the tesellated polyhedron  */
     void getvtkTesselation(vtkPolyData* t);
 
+
+
 private:
-    p_solid         m_initPolyhedra;
+    int         m_initPolyhedra;
     vtkPoints* m_vertices;
     vtkCellArray* m_triangles;
 
@@ -58,6 +63,6 @@ private:
     void m_initializeTesselation();
 
 };
-}
+
 #endif
 

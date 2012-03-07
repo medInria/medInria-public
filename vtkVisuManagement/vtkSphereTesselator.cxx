@@ -13,7 +13,7 @@
 #pragma warning(disable:4661)
 #endif
 
-namespace Visualization {
+
 
 template<typename T>
 vtkSphereTesselator<T>::vtkSphereTesselator() {
@@ -25,7 +25,7 @@ vtkSphereTesselator<T>::vtkSphereTesselator() {
 }
 
 template<typename T>
-vtkSphereTesselator<T>::vtkSphereTesselator(const p_solid& ip) {
+vtkSphereTesselator<T>::vtkSphereTesselator(const int ip) {
     m_initPolyhedra = ip;
     m_vertices = vtkPoints::New();
     m_triangles  = vtkCellArray::New();
@@ -424,7 +424,7 @@ void vtkSphereTesselator<T>::getvtkTesselation(vtkPolyData* t) {
 
 template class vtkSphereTesselator<float>;
 template class vtkSphereTesselator<double>;
-}
+
 
 
 
