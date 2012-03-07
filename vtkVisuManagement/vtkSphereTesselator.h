@@ -9,18 +9,14 @@
 
 #ifndef vtkSphereTesselator_H
 #define vtkSphereTesselator_H
-
-#include <cstdlib>
-#include <cmath>
-
 #include "vtkINRIA3DConfigure.h"
+
+#include <cmath>
 
 #include <vtkPolyDataAlgorithm.h>
 #include <vtkPoints.h>
 #include <vtkCellArray.h>
 #include <vtkPointLocator.h>
-
-
 
 /** http://davidf.faricy.net/polyhedra/Platonic_Solids.html */
 

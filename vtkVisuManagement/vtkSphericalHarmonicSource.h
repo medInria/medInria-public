@@ -12,8 +12,8 @@
 #define VTKSPHERICALHARMONICSOURCE_HPP
 
 #include <vtkPolyDataAlgorithm.h>
-#include <vtkSphereTesselator.h>
-
+//#include <vtkSphereTesselator.h>
+#include "vtkINRIA3DConfigure.h"
 #include <vtkMatrix4x4.h>
 
 #include <itkVariableSizeMatrix.h>

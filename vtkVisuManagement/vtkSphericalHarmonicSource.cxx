@@ -11,7 +11,8 @@
 #include <complex>
 #include <cmath>
 
-#include <vtkSphericalHarmonicSource.h>
+#include "vtkSphericalHarmonicSource.h"
+#include "vtkSphereTesselator.h"
 
 #include <vtkPolyDataNormals.h>
 #include <vtkCellArray.h>
@@ -25,7 +26,6 @@
 #include <vtkPolyData.h>
 #include <vtkMatrix4x4.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
-#include <vtkSphereTesselator.h>
 
 #include <tr1/cmath>
 
@@ -450,15 +450,6 @@ void vtkSphericalHarmonicSource::UpdateSphericalHarmonicSource()
     if (shell)
         shell->Delete();
     shell = vtkPolyData::New();
-//    p_solid tesselationType ;
-
-//    switch (TesselationType) {
-//    case Cube:         { tesselationType = cube;         break; }
-//    case Dodecahedron: { tesselationType = dodecahedron; break; }
-//    case Icosahedron:  { tesselationType = icosahedron;  break; }
-//    case Octahedron:   { tesselationType = octahedron;   break; }
-//    case Tetrahedron:  { tesselationType = tetrahedron;  break; }
-//    }
 
     vtkSphereTesselator<double> sMesh(this->TesselationType);
 
