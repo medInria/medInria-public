@@ -81,7 +81,7 @@ public:
   vtkTypeRevisionMacro (vtkImage3DDisplay, vtkObject);
 
   vtkSetObjectMacro(Input, vtkImageData);
-  vtkGetObjectMacro(Input, vtkImageData);
+  vtkGetMacro(Input, vtkImageData*);
 
   vtkSetMacro(Opacity, double);
   vtkGetMacro(Opacity, double);
@@ -93,7 +93,7 @@ public:
   vtkGetMacro(UseLookupTable, bool);
 
   vtkSetObjectMacro(LookupTable, vtkLookupTable);
-  vtkGetObjectMacro(LookupTable, vtkLookupTable);
+  vtkGetMacro(LookupTable, vtkLookupTable*);
   vtkSetMacro(ColorWindow,double);
   vtkGetMacro(ColorWindow,double);
 
@@ -164,6 +164,7 @@ vtkImageView3D::vtkImageView3D()
   this->Marker      = vtkOrientationMarkerWidget::New();
   this->Cube        = vtkAnnotatedCubeActor::New();
 
+  this->PlanarWindowLevel = vtkSmartPointer<vtkImageMapToColors>::New();
   this->ActorX = vtkImageActor::New();
   this->ActorY = vtkImageActor::New();
   this->ActorZ = vtkImageActor::New();
@@ -236,6 +237,7 @@ unsigned long vtkImageView3D::GetMTime()
     this->Cube,
     this->Marker,
     this->PlaneWidget,
+    this->PlanarWindowLevel,
     this->ActorX,
     this->ActorY,
     this->ActorZ};
@@ -357,6 +359,7 @@ void vtkImageView3D::SetupVolumeRendering()
   {
     this->VolumeProperty->SetScalarOpacity(0, this->GetOpacityTransferFunction(0) );
     this->VolumeProperty->SetColor(0, this->GetColorTransferFunction(0) );
+    this->PlanarWindowLevel->SetLookupTable(this->GetColorTransferFunction(0));
   }
 
   this->VolumeActor->SetProperty ( this->VolumeProperty );
@@ -606,12 +609,8 @@ void vtkImageView3D::InternalUpdate (void)
 {
   vtkSmartPointer<vtkImageData> input = this->GetInput();
 
-  bool multiLayers = false;
-
   if (this->LayerInfoVec.size()>0)
   {
-    multiLayers = true;
-
     // append all scalar buffer into the same image
     vtkImageAppendComponents *appender = vtkImageAppendComponents::New();
 //    appender->SetInputConnection(0, this->LayerInfoVec.at(0).ImageDisplay->GetInput());
@@ -648,26 +647,19 @@ void vtkImageView3D::InternalUpdate (void)
 
   // If an image is already of type unsigned char, there is no need to
   // map it through a lookup table
-  if ( !multiLayers &&  (input->GetScalarType() == VTK_UNSIGNED_CHAR &&
-                         (input->GetNumberOfScalarComponents() == 3 ||
-                          input->GetNumberOfScalarComponents() == 4 )) )
-  {
-    this->VolumeProperty->IndependentComponentsOff();
 
-    this->ActorX->SetInput ( input );
-    this->ActorY->SetInput ( input );
-    this->ActorZ->SetInput ( input );
-  }
-  else
+  this->VolumeProperty->IndependentComponentsOn();
+  this->PlanarWindowLevel->SetInput(this->Input);
+  this->PlanarWindowLevel->SetOutputFormatToRGB();
+
+  vtkScalarsToColors* lut = this->VolumeProperty->GetRGBTransferFunction(0);
+  if (lut)
   {
-    this->VolumeProperty->IndependentComponentsOn();
-    //todo: fix planar representation: layers
-//    this->ActorX->SetInput ( this->GetWindowLevel(0)->GetOutput() );
-//    this->ActorY->SetInput ( this->GetWindowLevel(0)->GetOutput() );
-//    this->ActorZ->SetInput ( this->GetWindowLevel(0)->GetOutput() );
-    this->ActorX->SetInput ( input );
-    this->ActorY->SetInput ( input );
-    this->ActorZ->SetInput ( input );
+    this->PlanarWindowLevel->SetLookupTable(lut);
+    this->PlanarWindowLevel->Update();
+    this->ActorX->SetInput ( this->PlanarWindowLevel->GetOutput() );
+    this->ActorY->SetInput ( this->PlanarWindowLevel->GetOutput() );
+    this->ActorZ->SetInput ( this->PlanarWindowLevel->GetOutput() );
   }
 
   // Read bounds and use these to place widget, rather than force whole dataset to be read.
@@ -721,10 +713,16 @@ void vtkImageView3D::SetTransferFunctions (vtkColorTransferFunction * color,
       return;
 
     double *range = this->GetImage3DDisplayForLayer(layer)->GetInput()->GetScalarRange();
-    std::cout << "range: "<<range[0] << range[1]<<std::endl;
+//    std::cout << "range: "<<range[0] << range[1]<<std::endl;
     this->SetTransferFunctionRangeFromWindowSettings(color, opacity, range[0], range[1]);
     this->VolumeProperty->SetColor(layer, color );
+
     this->VolumeProperty->SetScalarOpacity(layer, opacity );
+    if (layer == 0)
+    {
+      //update planar window level only if we change layer 0
+      this->PlanarWindowLevel->SetLookupTable(color);
+    }
   }
 }
 
@@ -1335,6 +1333,11 @@ void vtkImageView3D::StoreColorTransferFunction(vtkColorTransferFunction *ctf, i
   if(this->HasLayer(layer))
   {
     this->VolumeProperty->SetColor(layer,ctf);
+    if (layer ==0)
+    {
+      //only update multiplanar windowlevel if layer 0 changes
+      this->PlanarWindowLevel->SetLookupTable(this->VolumeProperty->GetRGBTransferFunction());
+    }
   }
 
 }

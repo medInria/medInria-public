@@ -355,6 +355,7 @@ protected:
   */
   vtkProp3DCollection* ExtraPlaneInputCollection;
 
+
   unsigned int RenderingMode;
   unsigned int ShowActorX;
   unsigned int ShowActorY;
@@ -371,7 +372,9 @@ protected:
       vtkSmartPointer<vtkImage3DDisplay> ImageDisplay;
   };
 
-  // Layer indices start from 1, so the entries are at [layer - 1]
+  vtkSmartPointer<vtkImageMapToColors>        PlanarWindowLevel;
+  // Layer indices start from 0, as they do for the 2d case
+  //(API change)
   typedef std::vector<LayerInfo > LayerInfoVecType;
   LayerInfoVecType LayerInfoVec;
 
