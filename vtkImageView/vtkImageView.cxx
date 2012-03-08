@@ -1917,10 +1917,20 @@ void vtkImageView::SetOverlayRenderer( vtkRenderer *arg )
 
 void vtkImageView::SetCurrentLayer(int layer)
 {
-    if (this->HasLayer(layer))
+  if (this->HasLayer(layer) && this->CurrentLayer != layer)
+  {
+    this->CurrentLayer = layer;
+    if (this->GetUseLookupTable(layer))
     {
-        this->CurrentLayer = layer;
+      this->ScalarBar->SetLookupTable(this->GetLookupTable(layer));
     }
+    else
+    {
+      this->ScalarBar->SetLookupTable(this->GetColorTransferFunction(layer));
+    }
+    this->ScalarBar->Modified();
+    this->Modified();
+  }
 }
 
 int vtkImageView::GetCurrentLayer() const
