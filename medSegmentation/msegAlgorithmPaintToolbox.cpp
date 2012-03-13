@@ -164,8 +164,14 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     QHBoxLayout * brushSizeLayout = new QHBoxLayout();
     m_brushSizeSlider = new QSlider(Qt::Horizontal, displayWidget);
     m_brushSizeSlider->setValue(this->m_strokeRadius/2);
-    brushSizeLayout->addWidget(new QLabel(tr("Brush Size"), displayWidget));
+    m_brushSizeSpinBox = new QSpinBox(displayWidget);
+    m_brushSizeSpinBox->setValue(this->m_strokeRadius/2);
+    connect(m_brushSizeSpinBox, SIGNAL(valueChanged(int)),m_brushSizeSlider,SLOT(setValue(int)) );
+    connect(m_brushSizeSlider,SIGNAL(valueChanged(int)),m_brushSizeSpinBox,SLOT(setValue(int)) );
+    
+    brushSizeLayout->addWidget(new QLabel(tr("Brush Radius"), displayWidget));
     brushSizeLayout->addWidget( m_brushSizeSlider );
+    brushSizeLayout->addWidget( m_brushSizeSpinBox );
     layout->addLayout( brushSizeLayout );
 
     m_dataText = new QTextEdit( m_noDataText );

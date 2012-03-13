@@ -95,6 +95,7 @@ private:
     QPushButton *m_boundaryStrokeButton;
 
     QSlider *m_brushSizeSlider;
+    QSpinBox *m_brushSizeSpinBox;
 
     QPushButton *m_applyButton;
 
