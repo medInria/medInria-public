@@ -14,6 +14,7 @@
 #include "itkNrrdDataImageWriter.h"
 #include "itkGiplDataImageWriter.h"
 #include "itkVTKDataImageWriter.h"
+#include "itkPhilipsRECDataImageWriter.h"
 
 #include <dtkCore/dtkLog.h>
 #include <dtkItkLogForwarder/itkLogForwarder.h>
@@ -79,6 +80,8 @@ bool itkDataImageWriterPlugin::initialize(void)
     if(!itkBMPDataImageWriter::registered()) dtkWarning() << "Unable to register itkBMPDataImageWriter type";
     if(!itkJPEGDataImageWriter::registered()) dtkWarning() << "Unable to register itkJPEGDataImageWriter type";
     if(!itkTIFFDataImageWriter::registered()) dtkWarning() << "Unable to register itkTIFFDataImageWriter type";
+    if(!itkPhilipsRECDataImageWriter::registered()) dtkWarning() << "Unable to register itkPhilipsRECDataImageWriter type";
+
 
     return true;
 }

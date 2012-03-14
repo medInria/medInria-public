@@ -64,7 +64,8 @@ set(${PROJECT_NAME}_SOURCES
   itkNiftiDataImageWriter.cpp
   itkNrrdDataImageWriter.cpp
   itkGiplDataImageWriter.cpp
-  itkVTKDataImageWriter.cpp)
+  itkVTKDataImageWriter.cpp
+  itkPhilipsRECDataImageWriter.cpp)
 
 ## #################################################################
 ## Build rules
@@ -91,6 +92,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   medCore
   itkDataImageBase
+  ITKIOReview
   ${ITK_LIBRARIES})
 
 # Group common files together in Visual Studio.
