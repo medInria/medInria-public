@@ -1893,7 +1893,7 @@ void v3dView::getTransferFunctions ( QList<double> & scalars,
         return;
 
     if ( color->GetSize() != opacity->GetSize() )
-        qDebug() << Q_FUNC_INFO << " sizes of color and opacity transfer "
+        qWarning() << Q_FUNC_INFO << " sizes of color and opacity transfer "
         "functions don't match!";
     int size = qMin ( color->GetSize(), opacity->GetSize() );
 
@@ -1916,7 +1916,7 @@ void v3dView::getTransferFunctions ( QList<double> & scalars,
     }
 
     if ( !ok )
-        qDebug() << Q_FUNC_INFO << " x values of color and opacity transfer "
+        qWarning() << Q_FUNC_INFO << " x values of color and opacity transfer "
         "functions don't match!";
 }
 
@@ -2550,7 +2550,7 @@ QString v3dView::s_identifier()
 
 void v3dView::setCurrentLayer(int layer)
 {
-    qDebug()<<"setCurrentLayer" << layer;
+//    qDebug()<<"setCurrentLayer" << layer;
     medAbstractView::setCurrentLayer(layer);
     d->view2d->SetCurrentLayer(layer);
 }
