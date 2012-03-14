@@ -3,6 +3,7 @@
 
 #include "medGuiExport.h"
 #include <QWidget>
+#include <QTabWidget>
 
 class medSettingsEditorPrivate;
 
@@ -92,6 +93,19 @@ public slots:
      *
     */
     virtual void onResetClicked();
+
+    /**
+     * @brief Sets the tabs position around the tab widget.
+     *
+     * @param position
+     */
+    virtual void setTabPosition(QTabWidget::TabPosition position);
+
+    /**
+     * @brief Gets the position of the tabs around the tab widget.
+     *
+     */
+    virtual QTabWidget::TabPosition tabPosition();
 
 protected:
 

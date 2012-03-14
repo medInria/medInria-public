@@ -303,7 +303,7 @@ void medViewContainerMulti::onViewClosing (void)
         // line may trigger the deletion of the view
         emit viewRemoved (view);
 
-        d2->views.removeOne (view);       
+        d2->views.removeOne (view);
 
         // view->close(); // the container will close the view once deleted
 

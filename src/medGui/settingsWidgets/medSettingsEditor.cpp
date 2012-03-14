@@ -29,6 +29,7 @@ public:
   QHash<QString,medSettingsWidget*> settingsWidgets;
   bool isInitialized;
   bool isUsingAdvancedWidget;
+  QTabWidget::TabPosition tabPosition;
 };
 
 
@@ -37,6 +38,7 @@ medSettingsEditor::medSettingsEditor(QWidget *parent, bool useAdvancedWidget) :
 {
     d->isInitialized = false;
     d->isUsingAdvancedWidget = useAdvancedWidget;
+    d->tabPosition = QTabWidget::West;
 }
 
 void medSettingsEditorPrivate::read()
@@ -95,12 +97,12 @@ void medSettingsEditor::initialize()
     if (d->isInitialized)
         return;
 
-    QVBoxLayout * vLayout = new QVBoxLayout();
+    QVBoxLayout * vLayout = new QVBoxLayout(this);
     d->stack = new QStackedWidget();
     d->stack->setFocusPolicy(Qt::NoFocus);
     d->tabWidget = new QTabWidget ();
     d->tabWidget->setFocusPolicy(Qt::NoFocus);
-    d->tabWidget->setTabPosition(QTabWidget::West);
+    d->tabWidget->setTabPosition(d->tabPosition);
     d->tabWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     //use stackedWidget to display the advanced or normal editor
@@ -159,7 +161,6 @@ void medSettingsEditor::initialize()
     buttonLayout->addWidget(d->save,1);
     vLayout->addLayout(buttonLayout);
 
-    setLayout(vLayout);
 
     // connections
     connect(this,SIGNAL(showError(QObject*,const        QString&,unsigned int)),
@@ -229,5 +230,15 @@ bool medSettingsEditor::save()
     }
 
     return success;
+}
+
+void medSettingsEditor::setTabPosition(QTabWidget::TabPosition position)
+{
+    d->tabPosition = position;
+}
+
+QTabWidget::TabPosition medSettingsEditor::tabPosition()
+{
+    return d->tabPosition;
 }
 

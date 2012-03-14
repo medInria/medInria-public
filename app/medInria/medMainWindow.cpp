@@ -76,7 +76,7 @@
 
 // Simple new function used for factories.
 namespace  {
-    template< class T > 
+    template< class T >
     dtkAbstractData * dtkAbstractDataCreateFunc() { return new T; }
 }
 
@@ -195,7 +195,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessButton->setStyleSheet("border: 0px;");
     d->quickAccessButton->setIcon(QIcon(":medInria.ico"));
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
-    d->quickAccessButton->setText ( "Workspaces access menu" );
+    d->quickAccessButton->setText ( tr("Workspaces access menu") );
     connect ( d->quickAccessButton,  SIGNAL ( clicked() ), this, SLOT ( onShowQuickAccess() ) );
 
     d->quickAccessWidget = new medQuickAccessMenu( this );
@@ -222,11 +222,11 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     icon->setPixmap ( QPixmap ( ":/icons/information.png" ) );
     QLabel *info = new QLabel ( this );
     info->setMinimumHeight ( 30 );
-    info->setText ( "Are you sure you want to quit ?" );
-    QPushButton *ok_button = new QPushButton ( "Yes", this );
+    info->setText ( tr("Are you sure you want to quit ?") );
+    QPushButton *ok_button = new QPushButton ( tr("Yes"), this );
     ok_button->setFocusPolicy ( Qt::NoFocus );
     QObject::connect ( ok_button, SIGNAL ( clicked() ), this, SLOT ( close() ) );
-    QPushButton *no_button = new QPushButton ( "No", this );
+    QPushButton *no_button = new QPushButton ( tr("No"), this );
     no_button->setFocusPolicy ( Qt::NoFocus );
     QObject::connect ( no_button, SIGNAL ( clicked() ), this, SLOT ( onNoQuit() ) );
 
@@ -404,7 +404,7 @@ void medMainWindow::updateQuickAccessMenu ( void )
     configurationButtonsLayout->setSpacing ( 0 );
 
     //Setup quick access menu title
-    QLabel * configurationLabel = new QLabel ( "<b>Switch to workspaces</b>" );
+    QLabel * configurationLabel = new QLabel ( tr("<b>Switch to workspaces</b>") );
     configurationLabel->setMaximumWidth(300);
     configurationLabel->setFixedHeight(25);
     configurationLabel->setAlignment(Qt::AlignHCenter);
@@ -532,7 +532,7 @@ void medMainWindow::showMaximized()
 
 void medMainWindow::switchToHomepageArea ( void )
 {
-    d->quickAccessButton->setText("Workspaces access menu");
+    d->quickAccessButton->setText(tr("Workspaces access menu"));
     d->quickAccessButton->setMinimumWidth(170);
     if (d->quickAccessVisible)
         this->onHideQuickAccess();
@@ -545,7 +545,7 @@ void medMainWindow::switchToHomepageArea ( void )
 
 void medMainWindow::switchToBrowserArea ( void )
 {
-    d->quickAccessButton->setText("Workspace: Browser");
+    d->quickAccessButton->setText(tr("Workspace: Browser"));
     d->quickAccessButton->setMinimumWidth(170);
     if (d->quickAccessVisible)
         this->onHideQuickAccess();
@@ -592,7 +592,8 @@ void medMainWindow::onShowConfiguration ( QString config )
     d->quickAccessButton->setMinimumWidth(170);
     d->viewerArea->setupConfiguration(config);
     this->switchToViewerArea();
-    d->quickAccessButton->setText("Workspace: " + config);
+    //warning: here should get a translated config string...
+    d->quickAccessButton->setText(tr("Workspace: ") + config);
 }
 
 void medMainWindow::onShowQuickAccess ( void )
@@ -653,8 +654,9 @@ void medMainWindow::onSaveModified( void )
 
 void medMainWindow::onEditSettings()
 {
+    //Should not be called anymore, now embedded in homepage.
     QDialog * dialog = new QDialog(this);
-    dialog->setWindowTitle("medInria Settings");
+    dialog->setWindowTitle(tr("medInria Settings"));
     dialog->setMinimumHeight(400);
     dialog->setMinimumWidth(500);
     dialog->setMaximumHeight(400);
@@ -681,7 +683,7 @@ void medMainWindow::open ( const medDataIndex& index )
 {
    if(d->viewerArea->openInTab(index))
     {
-        d->quickAccessButton->setText("Workspace: Visualization");
+        d->quickAccessButton->setText(tr("Workspace: Visualization"));
         d->quickAccessButton->setMinimumWidth(170);
         this->switchToViewerArea();
     }
@@ -706,7 +708,7 @@ void medMainWindow::onOpenFile(const medDataIndex & index,const QString& importU
         {
             this->switchToViewerArea();
             d->viewerArea->openInTab(index);
-            d->quickAccessButton->setText("Workspace: Visualization");
+            d->quickAccessButton->setText(tr("Workspace: Visualization"));
             d->quickAccessButton->setMinimumWidth(170);
         }
         else
@@ -729,8 +731,10 @@ void medMainWindow::closeEvent(QCloseEvent *event)
 
     if ( QThreadPool::globalInstance()->activeThreadCount() > 0 )
     {
-        switch ( QMessageBox::information ( this, "System message", "Running background jobs detected! Quit anyway?",
-                                            "Quit", "WaitForDone", "Cancel",0, 1 ) )
+        switch ( QMessageBox::information ( this, tr("System message"),
+                                            tr("Running background jobs detected! Quit anyway?"),
+                                            tr("Quit"), tr("WaitForDone"),
+                                            tr("Cancel"),0, 1 ) )
         {
         case 0:
             // send cancel request to all running jobs, then wait for them

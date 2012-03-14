@@ -33,6 +33,7 @@
 #include <medViewerConfigurationFactory.h>
 #include <medSettingsManager.h>
 #include "medPluginWidget.h"
+#include <medSettingsEditor.h>
 
 class medHomepageAreaPrivate
 {
@@ -51,6 +52,8 @@ public:
     QWidget * aboutWidget;
     QTabWidget * aboutTabWidget;
     QWidget * pluginWidget;
+    QWidget * settingsWidget;
+    medSettingsEditor* settingsEditor;
 
     QParallelAnimationGroup * animation;
 };
@@ -63,21 +66,17 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     //Setup the widget where the medInria general information are displayed
     d->infoWidget = new QWidget ( this );
-    d->infoWidget->setMinimumWidth ( 400 );
-    d->infoWidget->setMinimumHeight ( 500 );
-    //maximum height set below after we determine the position of the userWidget
-//    d->infoWidget->setMaximumHeight ( 500 );
+    d->infoWidget->setMinimumSize(400,300);
 
-    //Setup the widget with about, settings and documentation buttons
+    //Setup the widget with about, settings, plugins and documentation buttons
     d->userWidget = new QWidget ( this );
     d->userWidget->setMinimumWidth ( 250 );
     d->userWidget->setMinimumHeight ( 40 );
 
     //Setup the about container widget (with a QTabWidget inside)
     d->aboutWidget = new QWidget ( this );
-    d->aboutWidget->setMinimumWidth ( 400 );
     d->aboutWidget->setMaximumHeight ( 500 );
-    d->aboutWidget->setMinimumHeight ( 500 );
+
     d->aboutWidget->hide();
 
 
@@ -190,6 +189,14 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutLicenseTextEdit->setText ( licenseContent );
     aboutLicenseTextEdit->setFocusPolicy ( Qt::NoFocus );
 
+    QTextEdit * releaseNotesTextEdit = new QTextEdit(this);
+    QFile releaseNotes ( ":RELEASE_NOTES.txt" );
+    releaseNotes.open ( QIODevice::ReadOnly | QIODevice::Text );
+    QString releaseNotesContent = releaseNotes.readAll();
+    releaseNotes.close();
+    releaseNotesTextEdit->setText ( releaseNotesContent );
+    releaseNotesTextEdit->setFocusPolicy ( Qt::NoFocus );
+
     //no parent, this layout is added to an other layout.
     QHBoxLayout * aboutButtonLayout = new QHBoxLayout();
     QPushButton * hideAboutButton = new QPushButton ( this );
@@ -202,9 +209,10 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutButtonLayout->addWidget ( hideAboutButton );
     aboutButtonLayout->addStretch();
 
-    d->aboutTabWidget->addTab ( aboutTextEdit, "About" );
-    d->aboutTabWidget->addTab ( aboutAuthorTextBrowser, "Authors" );
-    d->aboutTabWidget->addTab ( aboutLicenseTextEdit, "License" );
+    d->aboutTabWidget->addTab ( aboutTextEdit, tr("About") );
+    d->aboutTabWidget->addTab ( aboutAuthorTextBrowser, tr("Authors") );
+    d->aboutTabWidget->addTab ( releaseNotesTextEdit, tr("Release Notes") );
+    d->aboutTabWidget->addTab ( aboutLicenseTextEdit, tr("License") );
 
     aboutLayout->addWidget ( medInriaLabel2 );
     aboutLayout->addWidget ( d->aboutTabWidget );
@@ -219,7 +227,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QPushButton * hidePluginButton = new QPushButton ( this );
     hidePluginButton->setText ( tr("Hide") );
     hidePluginButton->setFocusPolicy ( Qt::NoFocus );
-    hidePluginButton->setToolTip( tr("Hide the About section") );
+    hidePluginButton->setToolTip( tr("Hide the Plugins section") );
     QObject::connect ( hidePluginButton, SIGNAL ( clicked() ), this, SLOT ( onShowInfo() ) );
 
     pluginHideButtonLayout->addStretch();
@@ -229,26 +237,44 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     QLabel * medInriaLabel3 = new QLabel ( this );
     medInriaLabel3->setPixmap ( medLogo );
 
-//    QLabel * pluginWidgetTitle = new QLabel(tr("Plugins information"),this);
     medPluginWidget * pWid = new medPluginWidget(d->pluginWidget);
 
     pluginLayout->addWidget(medInriaLabel3);
-//    pluginLayout->addWidget(pluginWidgetTitle);
     pluginLayout->addWidget(pWid);
     pluginLayout->addLayout(pluginHideButtonLayout);
-    //pluginLayout->addStretch();
-//    pluginLayout->setAlignment(pluginWidgetTitle, Qt::AlignHCenter);
+
+
+    //Create the setttings widget.
+    d->settingsWidget = new QWidget(this);
+    QVBoxLayout * settingsLayout = new QVBoxLayout(d->settingsWidget);
+    QHBoxLayout * settingsHideButtonLayout = new QHBoxLayout();
+    QPushButton * hideSettingsButton = new QPushButton ( this );
+    hideSettingsButton->setText ( tr("Hide") );
+    hideSettingsButton->setFocusPolicy ( Qt::NoFocus );
+    hideSettingsButton->setToolTip( tr("Hide the Settings section") );
+    QObject::connect ( hideSettingsButton, SIGNAL ( clicked() ), this, SLOT ( onShowInfo() ) );
+
+    settingsHideButtonLayout->addStretch();
+    settingsHideButtonLayout->addWidget ( hideSettingsButton );
+    settingsHideButtonLayout->addStretch();
+
+    QLabel * medInriaLabel4 = new QLabel ( this );
+    medInriaLabel4->setPixmap ( medLogo );
+
+    d->settingsEditor = new medSettingsEditor(d->settingsWidget,true);
+    settingsLayout->addWidget(medInriaLabel4);
+    settingsLayout->addWidget(d->settingsEditor);
+    settingsLayout->addLayout(settingsHideButtonLayout);
+
+
 
     //Set the position of the widgets
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
     d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
-//    d->infoWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
-//    d->aboutWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 
     //Create a Stacked Widget in which to put info widget, about widget and plugin Widget
     d->stackedWidget = new QStackedWidget( this );
-    d->stackedWidget->setMinimumWidth ( 400 );
-    d->stackedWidget->setMinimumHeight ( 500 );
+    d->stackedWidget->setMinimumSize ( 400,300 );
 
     d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,
                                                     this->height() / 5) );
@@ -260,6 +286,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->stackedWidget->addWidget(d->infoWidget);
     d->stackedWidget->addWidget(d->aboutWidget);
     d->stackedWidget->addWidget(d->pluginWidget);
+    d->stackedWidget->addWidget(d->settingsWidget);
     d->stackedWidget->setCurrentIndex(0);//d->infoWidget
     d->stackedWidget->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
 
@@ -278,7 +305,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->userAnimation->setEndValue ( QPoint ( this->width() * 0.8 ,  this->height() - 90 ) );
 
     d->infoAnimation = new QPropertyAnimation ( d->stackedWidget, "pos" );
-    d->infoAnimation->setDuration ( 900 );
+    d->infoAnimation->setDuration ( 750 );
     d->infoAnimation->setEasingCurve ( QEasingCurve::OutCubic );
     d->infoAnimation->setStartValue ( QPoint ( this->width() + 100 , this->height() / 5 ) );
     d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 5 ) );
@@ -424,7 +451,14 @@ void medHomepageArea::onShowHelp ( void )
 
 void medHomepageArea::onShowSettings ( void )
 {
-    emit showSettings();
+    // emit showSettings is not deprecated here
+//    emit showSettings();
+    d->settingsEditor->setTabPosition(QTabWidget::North);
+    d->settingsEditor->initialize();
+    d->settingsEditor->queryWidgets();
+    d->stackedWidget->setCurrentWidget(d->settingsWidget);
+
+    d->settingsWidget->setFocus();
 }
 
 void medHomepageArea::onStartWithHomepage ( int state )

@@ -140,5 +140,7 @@
         <file>icons/broken_link.svg</file>
         <file>icons/link_wl.svg</file>
         <file>icons/broken_link_wl.svg</file>
+        <file>icons/un_maximize.svg</file>
+        <file>RELEASE_NOTES.txt</file>
     </qresource>
 </RCC>
