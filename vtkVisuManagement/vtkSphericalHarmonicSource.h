@@ -17,7 +17,7 @@
 
 #include <itkVariableSizeMatrix.h>
 #include <itkVector.h>
-#include <vtkSphereTesselator.h>
+#include <vtkTessellatedSphereSource.h>
 
 class vtkMatrix4x4;
 
@@ -185,7 +185,7 @@ protected:
     
     /** Spherical function */
 //    vtkPolyData* shell;
-    vtkSphereTesselator *sphereT;
+    vtkTessellatedSphereSource *sphereT;
 
 
     /** Spherical harmonic basis function*/

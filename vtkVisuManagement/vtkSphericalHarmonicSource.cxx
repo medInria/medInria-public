@@ -12,7 +12,7 @@
 #include <cmath>
 
 #include <vtkSphericalHarmonicSource.h>
-#include <vtkSphereTesselator.h>
+//#include <vtkTessellatedSphereSource.h>
 
 #include <vtkPolyDataNormals.h>
 #include <vtkCellArray.h>
@@ -76,7 +76,7 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(int tess)
     TesselationType = Icosahedron;
     TesselationBasis = SHMatrix;
     Tesselation = tess;
-    this->sphereT = vtkSphereTesselator::New();
+    this->sphereT = vtkTessellatedSphereSource::New();
     SphericalHarmonics = 0;
     Order = 4;
     this->SetNumberOfSphericalHarmonics (15);

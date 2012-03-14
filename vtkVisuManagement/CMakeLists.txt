@@ -69,7 +69,7 @@ IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
         ${vtkVisuManagement_SRCS}
         vtkSphericalHarmonicVisuManager.cxx
         vtkSphericalHarmonicManager.cxx
-        vtkTesselatedSphereSource.cxx
+        vtkTessellatedSphereSource.cxx
         vtkSphericalHarmonicSource.cxx
         vtkSphericalHarmonicGlyph.cxx
         )
@@ -113,7 +113,7 @@ IF(VTK_WRAP_TCL)
   SET_SOURCE_FILES_PROPERTIES(
      vtkLandmarkManagerCallback.cxx
      vtkLandmark.cxx
-     vtkTesselatedSphereSource.cxx
+     vtkTessellatedSphereSource.cxx
      vtkSphericalHarmonicSource.cxx
      vtkSphericalHarmonicGlyph.cxx
      WRAP_EXCLUDE
