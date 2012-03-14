@@ -7,7 +7,7 @@
 //   Copyright (c) 2007-2011, INRIA Sophia Antipolis, France, groups Odyssee, Athena.
 //   Please see the copyright notice included in this distribution for full details.
 
-#include <vtkSphereTesselator.h>
+#include <vtkTesselatedSphereSource.h>
 
 #include <cmath>
 #include "vtkStreamingDemandDrivenPipeline.h"
@@ -23,23 +23,23 @@
 #pragma warning(disable:4661)
 #endif
 
-vtkStandardNewMacro(vtkSphereTesselator);
+vtkStandardNewMacro(vtkTesselatedSphereSource);
 
-vtkSphereTesselator::vtkSphereTesselator() {
+vtkTesselatedSphereSource::vtkTesselatedSphereSource() {
     this->PolyhedraType = icosahedron;
     this->Resolution=4;
     this->SetNumberOfInputPorts(0);
 }
 
 
-vtkSphereTesselator::vtkSphereTesselator(const int ip) {
+vtkTesselatedSphereSource::vtkTesselatedSphereSource(const int ip) {
     this->PolyhedraType = ip;
     this->Resolution=4;
     this->SetNumberOfInputPorts(0);
 }
 
 
-void vtkSphereTesselator::initializeTesselation(vtkPoints* vertices, vtkCellArray* triangles) {
+void vtkTesselatedSphereSource::initializeTesselation(vtkPoints* vertices, vtkCellArray* triangles) {
     vtkIdType* vi = new vtkIdType[3];
 
     switch( this->PolyhedraType ) {
@@ -386,9 +386,7 @@ void TesselateTriangles( vtkPoints* oldVertices, vtkCellArray* oldTriangles,
     delete [] vi;
 }
 
-
-
-int vtkSphereTesselator::RequestData(
+int vtkTesselatedSphereSource::RequestData(
     vtkInformation *vtkNotUsed(request),
     vtkInformationVector **vtkNotUsed(inputVector),
     vtkInformationVector *outputVector)
@@ -433,7 +431,7 @@ int vtkSphereTesselator::RequestData(
 }
 
 //----------------------------------------------------------------------------
-void vtkSphereTesselator::PrintSelf(ostream& os, vtkIndent indent)
+void vtkTesselatedSphereSource::PrintSelf(ostream& os, vtkIndent indent)
 {
     this->Superclass::PrintSelf(os,indent);
 

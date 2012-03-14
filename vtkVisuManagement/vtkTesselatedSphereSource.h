@@ -7,26 +7,22 @@
 //   Copyright (c) 2007-2011, INRIA Sophia Antipolis, France, groups Odyssee, Athena.
 //   Please see the copyright notice included in this distribution for full details.
 
-#ifndef vtkSphereTesselator_H
-#define vtkSphereTesselator_H
+#ifndef vtkTesselatedSphereSource_H
+#define vtkTesselatedSphereSource_H
 #include "vtkINRIA3DConfigure.h"
-
-
 
 #include <vtkPolyDataAlgorithm.h>
 
-
 /** http://davidf.faricy.net/polyhedra/Platonic_Solids.html */
-
 
 /** \Clas Object
 * \brief Perform tesselation of the unit sphere from a given platonic solid
 */
 
-class VTK_VISUMANAGEMENT_EXPORT vtkSphereTesselator : public vtkPolyDataAlgorithm {
+class VTK_VISUMANAGEMENT_EXPORT vtkTesselatedSphereSource : public vtkPolyDataAlgorithm {
 public:
-    static vtkSphereTesselator *New();
-    vtkTypeMacro(vtkSphereTesselator,vtkPolyDataAlgorithm);
+    static vtkTesselatedSphereSource *New();
+    vtkTypeMacro(vtkTesselatedSphereSource,vtkPolyDataAlgorithm);
     void PrintSelf(ostream& os, vtkIndent indent);
 
     // Description:
@@ -41,9 +37,9 @@ public:
 
 
 protected:
-    vtkSphereTesselator();
-    vtkSphereTesselator(const int ip);
-    /*virtual*/ ~vtkSphereTesselator(){}
+    vtkTesselatedSphereSource();
+    vtkTesselatedSphereSource(const int ip);
+    /*virtual*/ ~vtkTesselatedSphereSource(){}
 
 
     int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
@@ -61,8 +57,8 @@ protected:
 
 private:
 
-    vtkSphereTesselator& operator= (const vtkSphereTesselator& st); // Not implemented
-    vtkSphereTesselator(const vtkSphereTesselator&);  // Not implemented.
+    vtkTesselatedSphereSource& operator= (const vtkTesselatedSphereSource& st); // Not implemented
+    vtkTesselatedSphereSource(const vtkTesselatedSphereSource&);  // Not implemented.
 
     /** Initialize by using the m_PolyhedraType the polyhedron that it is gong to be tesselated  */
     void initializeTesselation(vtkPoints* vertices, vtkCellArray* triangles);
