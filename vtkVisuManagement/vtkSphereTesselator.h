@@ -14,10 +14,7 @@
 
 
 #include <vtkPolyDataAlgorithm.h>
-#include <vtkPoints.h>
-#include <vtkCellArray.h>
 
-#include <vtkPointLocator.h>
 
 /** http://davidf.faricy.net/polyhedra/Platonic_Solids.html */
 
@@ -25,13 +22,34 @@
 /** \Clas Object
 * \brief Perform tesselation of the unit sphere from a given platonic solid
 */
-template<typename T>
+
 class VTK_VISUMANAGEMENT_EXPORT vtkSphereTesselator : public vtkPolyDataAlgorithm {
 public:
     static vtkSphereTesselator *New();
-    vtkTypeRevisionMacro(vtkSphereTesselator,vtkPolyDataAlgorithm);
+    vtkTypeMacro(vtkSphereTesselator,vtkPolyDataAlgorithm);
     void PrintSelf(ostream& os, vtkIndent indent);
 
+    // Description:
+    // Set the Resolution number of times that the selected polyhedron is going to be tesselated.
+    vtkSetMacro(Resolution,unsigned int);
+    vtkGetMacro(Resolution,unsigned int);
+
+    // Description:
+    // Set the type of polyhedron is going to be tesselated.
+    vtkSetMacro(PolyhedraType,unsigned int);
+    vtkGetMacro(PolyhedraType,unsigned int);
+
+
+protected:
+    vtkSphereTesselator();
+    vtkSphereTesselator(const int ip);
+    /*virtual*/ ~vtkSphereTesselator(){}
+
+
+    int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+
+    unsigned int Resolution;
+    unsigned int PolyhedraType;
     enum {
         cube=0,
         dodecahedron = 1,
@@ -40,35 +58,13 @@ public:
         tetrahedron = 4
     };
 
-    // Description:
-    // Set the Resolution number of times that the selected polyhedron is going to be tesselated.
-    vtkSetMacro(resolution,unsigned int);
-    vtkGetMacro(resolution,unsigned int);
-
-protected:
-    vtkSphereTesselator();
-    vtkSphereTesselator(const int ip);
-
-    virtual ~vtkSphereTesselator(){}
-
-    vtkSphereTesselator<T>& operator= (const vtkSphereTesselator<T>& st);
-
-    int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
-    int RequestInformation(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
-
-    /** Specify the R number of times that the selected polyhedron is going to be tesselated  */
-    void tesselate(const int& R);
-
-    /** Set in the vtkPolyData the vtkPoints and vtkCellArray that define the tesellated polyhedron  */
-    void getvtkTesselation(vtkPolyData* t);
-
-    unsigned int resolution;
 
 private:
 
-    int         m_initPolyhedra;
+    vtkSphereTesselator& operator= (const vtkSphereTesselator& st); // Not implemented
+    vtkSphereTesselator(const vtkSphereTesselator&);  // Not implemented.
 
-    /** Initialize by using the m_initPolyhedra the polyhedron that it is gong to be tesselated  */
+    /** Initialize by using the m_PolyhedraType the polyhedron that it is gong to be tesselated  */
     void initializeTesselation(vtkPoints* vertices, vtkCellArray* triangles);
 };
 

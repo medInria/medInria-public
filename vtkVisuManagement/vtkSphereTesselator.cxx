@@ -10,54 +10,42 @@
 #include <vtkSphereTesselator.h>
 
 #include <cmath>
-
+#include "vtkStreamingDemandDrivenPipeline.h"
 #include <vtkObjectFactory.h>
 #include <vtkInformationVector.h>
 #include <vtkInformation.h>
+
+#include <vtkPoints.h>
+#include <vtkCellArray.h>
+
+#include <vtkPointLocator.h>
 #ifdef WIN32
 #pragma warning(disable:4661)
 #endif
 
 vtkStandardNewMacro(vtkSphereTesselator);
 
-template<typename T>
-vtkSphereTesselator<T>::vtkSphereTesselator() {
-    m_initPolyhedra = icosahedron;
-//    vertices = vtkPoints::New();
-//    triangles  = vtkCellArray::New();
-
-//    m_initializeTesselation();
-
+vtkSphereTesselator::vtkSphereTesselator() {
+    this->PolyhedraType = icosahedron;
+    this->Resolution=4;
     this->SetNumberOfInputPorts(0);
 }
 
-template<typename T>
-vtkSphereTesselator<T>::vtkSphereTesselator(const int ip) {
-    m_initPolyhedra = ip;
-//    vertices = vtkPoints::New();
-//    triangles  = vtkCellArray::New();
 
-//    m_initializeTesselation();
-
+vtkSphereTesselator::vtkSphereTesselator(const int ip) {
+    this->PolyhedraType = ip;
+    this->Resolution=4;
     this->SetNumberOfInputPorts(0);
 }
 
-//template<typename T>
-//vtkSphereTesselator<T>::~vtkSphereTesselator() {
-//    if( vertices )
-//        vertices->Delete();
-//    if( triangles )
-//        triangles->Delete();
-//}
 
-template<typename T>
-void vtkSphereTesselator<T>::initializeTesselation(vtkPoints* vertices, vtkCellArray* triangles) {
+void vtkSphereTesselator::initializeTesselation(vtkPoints* vertices, vtkCellArray* triangles) {
     vtkIdType* vi = new vtkIdType[3];
 
-    switch( m_initPolyhedra ) {
+    switch( this->PolyhedraType ) {
 
     case tetrahedron: {
-        T sqrt_3 = 0.5773502692;
+        double sqrt_3 = 0.5773502692;
         vertices->SetNumberOfPoints(4);
         //vertices->Allocate(4);
 
@@ -84,8 +72,8 @@ void vtkSphereTesselator<T>::initializeTesselation(vtkPoints* vertices, vtkCellA
 
     case icosahedron: {
 
-        T tau = 0.850650808352039932;
-        T one = 0.525731112119133606;
+        double tau = 0.850650808352039932;
+        double one = 0.525731112119133606;
 
         vertices->SetNumberOfPoints(12);
 
@@ -184,8 +172,8 @@ void vtkSphereTesselator<T>::initializeTesselation(vtkPoints* vertices, vtkCellA
 
     default: {
 
-        T tau = 0.850650808352039932;
-        T one = 0.525731112119133606;
+        double tau = 0.850650808352039932;
+        double one = 0.525731112119133606;
 
         vertices->SetNumberOfPoints(12);
         //        vertices->Allocate(12);
@@ -399,34 +387,34 @@ void TesselateTriangles( vtkPoints* oldVertices, vtkCellArray* oldTriangles,
 }
 
 
-template<typename T>
-void vtkSphereTesselator<T>::RequestData(
+
+int vtkSphereTesselator::RequestData(
     vtkInformation *vtkNotUsed(request),
     vtkInformationVector **vtkNotUsed(inputVector),
     vtkInformationVector *outputVector)
-  {
+{
     // get the info object
     vtkInformation *outInfo = outputVector->GetInformationObject(0);
 
-    // get the ouptut
+    // get the ouptutb
     vtkPolyData *output = vtkPolyData::SafeDownCast(
-      outInfo->Get(vtkDataObject::DATA_OBJECT()));
+                outInfo->Get(vtkDataObject::DATA_OBJECT()));
 
     vtkPoints* m_vertices = vtkPoints::New();
     vtkCellArray* m_triangles = vtkCellArray::New();
-
-    initializeTesselation(m_vertices, m_triangles);
-    vtkCellArray *tempTriangles = NULL;
-    vtkPoints *tempVertices = NULL;
     this->initializeTesselation(m_vertices, m_triangles);
 
-    for (int level = 0; level < this->resolution; level++)
+    vtkCellArray *tempTriangles = NULL;
+    vtkPoints *tempVertices = NULL;
+
+
+    for (unsigned int level = 0; level < this->Resolution; level++)
     {
 
         tempVertices = vtkPoints::New();
         tempTriangles  = vtkCellArray::New();
 
-        TesselateTriangles(m_vertices , m_triangles, vertices, tempTriangles);
+        TesselateTriangles(m_vertices , m_triangles, tempVertices, tempTriangles);
 
         m_vertices->SetData(tempVertices->GetData());
         m_triangles->SetCells(tempTriangles->GetNumberOfCells(),tempTriangles->GetData());
@@ -441,20 +429,17 @@ void vtkSphereTesselator<T>::RequestData(
     m_triangles->Squeeze();
     output->SetPolys(m_triangles);
     m_triangles->Delete();
-
+    return 1;
 }
 
-template<typename T>
-void vtkSphereTesselator<T>::getvtkTesselation(vtkPolyData* t) {
-    vtkPolyData* output = vtkPolyData::New();
-    output->SetPoints(m_vertices);
-    output->SetPolys(m_triangles);
-    t->ShallowCopy(output);
-    output->Delete();
-}
+//----------------------------------------------------------------------------
+void vtkSphereTesselator::PrintSelf(ostream& os, vtkIndent indent)
+{
+    this->Superclass::PrintSelf(os,indent);
 
-template class vtkSphereTesselator<float>;
-template class vtkSphereTesselator<double>;
+    os << indent << "Polyhedratype: " << this->PolyhedraType << "\n";
+
+}
 
 
 

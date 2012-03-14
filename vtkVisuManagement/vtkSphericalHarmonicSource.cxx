@@ -76,7 +76,7 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(int tess)
     TesselationType = Icosahedron;
     TesselationBasis = SHMatrix;
     Tesselation = tess;
-    shell = 0;
+    this->sphereT = vtkSphereTesselator::New();
     SphericalHarmonics = 0;
     Order = 4;
     this->SetNumberOfSphericalHarmonics (15);
@@ -84,14 +84,13 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(int tess)
 
 vtkSphericalHarmonicSource::~vtkSphericalHarmonicSource()
 {
-    if (shell)
-        shell->Delete();
+    if (this->sphereT)
+        this->sphereT->Delete();
 
     if(this->RotationMatrix)
         this->RotationMatrix->Delete();
 
     SphericalHarmonics = 0;
-    shell = 0;
 }
 
 void vtkSphericalHarmonicSource::SetNumberOfSphericalHarmonics(const int number)
@@ -140,10 +139,10 @@ RequestData(vtkInformation *vtkNotUsed(request),vtkInformationVector **vtkNotUse
     // Get the info and output objects.
     vtkInformation* outInfo = outputVector->GetInformationObject(0);
     vtkPolyData*    output  = vtkPolyData::SafeDownCast(outInfo->Get(vtkDataObject::DATA_OBJECT()));
-    
+    int N = this->sphereT->GetOutput()->GetNumberOfPoints();
     // SH Source stuff.
     vtkFloatArray* sValues = vtkFloatArray::New();
-    sValues->SetNumberOfTuples(shell->GetNumberOfPoints());
+    sValues->SetNumberOfTuples(N);
     sValues->SetNumberOfComponents(1);
 
     /* Project data on the sphere:
@@ -153,7 +152,6 @@ RequestData(vtkInformation *vtkNotUsed(request),vtkInformationVector **vtkNotUse
     B := Basis function 
     S = CB
     */
-    int N = shell->GetNumberOfPoints();
     
     itk::VariableSizeMatrix<double> C(1,NumberOfSphericalHarmonics);
 
@@ -191,14 +189,14 @@ RequestData(vtkInformation *vtkNotUsed(request),vtkInformationVector **vtkNotUse
         sValues->SetTuple1(i,S(0,i));
     }
 
-    shell->GetPointData()->SetScalars(sValues);
+    this->sphereT->GetOutput()->GetPointData()->SetScalars(sValues);
     sValues->Delete();
 
     // Don't know how to copy everything but the points.
-    output->DeepCopy(shell);
+    output->DeepCopy(this->sphereT->GetOutput());
     output->GetPoints()->Reset();
 
-    TranslateAndDeformShell(shell,output->GetPoints(),this->Center,Deform,RotationMatrix);
+    TranslateAndDeformShell(this->sphereT->GetOutput(),output->GetPoints(),this->Center,Deform,RotationMatrix);
 
     return 1;
 }
@@ -215,7 +213,7 @@ void vtkSphericalHarmonicSource::PrintSelf(ostream& os,vtkIndent indent)
     os << indent << "Length of SH coefficient vector: "
        << NumberOfSphericalHarmonics << std::endl;
     os << indent << "SH Basis: " << NumberOfSphericalHarmonics << "x"
-       << shell->GetNumberOfPoints() << std::endl;
+       << this->sphereT->GetOutput()->GetNumberOfPoints() << std::endl;
     os << indent << "SH Coefficients:" << std::endl << '[';
     for (int i=0;i<NumberOfSphericalHarmonics;++i)
         os << indent << SphericalHarmonics[i] << " ";
@@ -223,7 +221,7 @@ void vtkSphericalHarmonicSource::PrintSelf(ostream& os,vtkIndent indent)
 }
 
 int vtkSphericalHarmonicSource::RequestInformation(vtkInformation*,vtkInformationVector**,
-                                               vtkInformationVector *outputVector)
+                                                   vtkInformationVector *outputVector)
 {
     // Get the info object
     vtkInformation* outInfo = outputVector->GetInformationObject(0);
@@ -447,44 +445,40 @@ void vtkSphericalHarmonicSource::SetSphericalHarmonics(double* _arg)
 
 void vtkSphericalHarmonicSource::UpdateSphericalHarmonicSource()
 {
-    if (shell)
-        shell->Delete();
-    shell = vtkPolyData::New();
+    this->sphereT->SetResolution(Tesselation);
+    this->sphereT->Update();
 
-    vtkSphereTesselator<double> sMesh(this->TesselationType);
-
-    sMesh.tesselate(Tesselation);
-    sMesh.getvtkTesselation(shell);
-
-    itk::VariableSizeMatrix<double>  PhiThetaDirection(shell->GetNumberOfPoints(),2);
+    itk::VariableSizeMatrix<double>  PhiThetaDirection(this->sphereT->GetOutput()->GetNumberOfPoints(),2);
 
     switch (TesselationBasis) {
     case SHMatrix:
     {
-        BasisFunction = ComputeSHMatrix(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);
+        BasisFunction = ComputeSHMatrix(Order,this->sphereT->GetOutput(),FlipX,FlipY,FlipZ,PhiThetaDirection);
         break;
     }
     case SHMatrixMaxThesis:
     {
-        BasisFunction = ComputeSHMatrixMaxThesis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);
+        BasisFunction = ComputeSHMatrixMaxThesis(Order,this->sphereT->GetOutput(),FlipX,FlipY,FlipZ,PhiThetaDirection);
         break;
     }
     case SHMatrixTournier:
     {
-        BasisFunction = ComputeSHMatrixTournier(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);
+        BasisFunction = ComputeSHMatrixTournier(Order,this->sphereT->GetOutput(),FlipX,FlipY,FlipZ,PhiThetaDirection);
         break;
     }
     case SHMatrixRshBasis:
     {
-        BasisFunction = ComputeSHMatrixRshBasis(Order,shell,FlipX,FlipY,FlipZ,PhiThetaDirection);
+        BasisFunction = ComputeSHMatrixRshBasis(Order,this->sphereT->GetOutput(),FlipX,FlipY,FlipZ,PhiThetaDirection);
         break;
     }
     }
     PhiThetaShellDirections = PhiThetaDirection;
+
+
 }
 
 void TranslateAndDeformShell(vtkPolyData *shell,vtkPoints* outPts,double center[3],
-                        bool deform,vtkMatrix4x4* transform)
+                             bool deform,vtkMatrix4x4* transform)
 {
     vtkPoints* inPts = shell->GetPoints();
     const int  n     = inPts->GetNumberOfPoints();
