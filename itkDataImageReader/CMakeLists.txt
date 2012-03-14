@@ -88,6 +88,7 @@ set(${PROJECT_NAME}_SOURCES
   itkNrrdDataImageReader.cpp
   itkGiplDataImageReader.cpp
   itkVTKDataImageReader.cpp
+  itkPhilipsRECDataImageReader.cpp
   )
 if(ITK_USE_SYSTEM_GDCM)
   set(${PROJECT_NAME}_SOURCES
@@ -122,6 +123,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   medCore
   itkDataImageBase
+  ITKIOReview
   ${ITK_LIBRARIES})
 
 if (BUILD_TESTING)

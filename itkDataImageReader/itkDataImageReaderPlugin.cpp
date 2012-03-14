@@ -16,6 +16,7 @@
 #include "itkNrrdDataImageReader.h"
 #include "itkGiplDataImageReader.h"
 #include "itkVTKDataImageReader.h"
+#include "itkPhilipsRECDataImageReader.h"
 
 #include "itkDataImageReaderPlugin.h"
 #include <dtkItkLogForwarder/itkLogForwarder.h>
@@ -71,6 +72,8 @@ bool itkDataImageReaderPlugin::initialize(void)
     if(!itkBMPDataImageReader::registered())      dtkWarning() << "Unable to register itkBMPDataImageReader type";
     if(!itkJPEGDataImageReader::registered())     dtkWarning() << "Unable to register itkJPEGDataImageReader type";
     if(!itkTIFFDataImageReader::registered())     dtkWarning() << "Unable to register itkTIFFDataImageReader type";
+    if(!itkPhilipsRECDataImageReader::registered())     dtkWarning() << "Unable to register itkPhilipsRECDataImageReader type";
+
 
     return true;
 }
@@ -109,7 +112,8 @@ QStringList itkDataImageReaderPlugin::types(void) const
             << "itkPNGDataImageReader"
             << "itkBMPDataImageReader"
             << "itkJPEGDataImageReader"
-            << "itkTIFFDataImageReader";
+            << "itkTIFFDataImageReader"
+            << "itkPhilipsRECDataImageReader";
 }
 
 Q_EXPORT_PLUGIN2(itkDataImageReaderPlugin, itkDataImageReaderPlugin)
