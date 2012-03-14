@@ -88,22 +88,22 @@ public:
   vtkTypeRevisionMacro (vtkImage2DDisplay, vtkObject);
 
   virtual void SetInput(vtkImageData * image);
-  vtkGetObjectMacro(Input, vtkImageData);
+  virtual vtkImageData* GetInput() { return this->Input; }
 
   virtual vtkLookupTable * GetLookupTable();
 
-  vtkGetObjectMacro(ImageActor, vtkImageActor);
+  virtual vtkImageActor* GetImageActor() { return this->ImageActor; }
 
-  vtkGetObjectMacro(WindowLevel, vtkImageMapToColors);
+  virtual vtkImageMapToColors* GetWindowLevel() { return this->WindowLevel; }
   vtkSetMacro(ColorWindow, double);
   vtkGetMacro(ColorWindow,double);
   vtkSetMacro(ColorLevel, double);
   vtkGetMacro(ColorLevel,double);
 
-  vtkGetMacro(ColorTransferFunction,vtkColorTransferFunction*);
+  virtual vtkColorTransferFunction* GetColorTransferFunction() { return this->ColorTransferFunction; }
   void SetColorTransferFunction ( vtkColorTransferFunction* function);
   void SetOpacityTransferFunction(vtkPiecewiseFunction* opacity);
-  vtkGetMacro(OpacityTransferFunction, vtkPiecewiseFunction*);
+  virtual vtkPiecewiseFunction* GetOpacityTransferFunction() { return this->OpacityTransferFunction; }
 
   vtkGetMacro(UseLookupTable,bool);
   vtkSetMacro(UseLookupTable, bool);

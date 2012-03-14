@@ -74,6 +74,7 @@
 #include <vtkProp3DCollection.h>
 
 
+
 class vtkImage3DDisplay : public vtkObject
 {
 public:
@@ -81,7 +82,7 @@ public:
   vtkTypeRevisionMacro (vtkImage3DDisplay, vtkObject);
 
   vtkSetObjectMacro(Input, vtkImageData);
-  vtkGetMacro(Input, vtkImageData*);
+  virtual vtkImageData* GetInput() { return this->Input;}
 
   vtkSetMacro(Opacity, double);
   vtkGetMacro(Opacity, double);
@@ -93,7 +94,7 @@ public:
   vtkGetMacro(UseLookupTable, bool);
 
   vtkSetObjectMacro(LookupTable, vtkLookupTable);
-  vtkGetMacro(LookupTable, vtkLookupTable*);
+  virtual vtkLookupTable* GetLookupTable() { return this->LookupTable; }
   vtkSetMacro(ColorWindow,double);
   vtkGetMacro(ColorWindow,double);
 
