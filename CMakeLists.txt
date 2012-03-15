@@ -94,7 +94,7 @@ set(PLUGIN_LIST
   itkDataTensorImageWriter       ON
   itkDataTensorImageReader       ON
   medSegmentation                ON
-  medCompositeDataSets           ON
+  medCompositeDataSets           OFF
   ITKProcessExample              OFF
   itkFilters                     ON
   exampleProcessImageFilter      OFF  
