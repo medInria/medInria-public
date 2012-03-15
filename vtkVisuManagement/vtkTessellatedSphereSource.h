@@ -21,47 +21,47 @@
 
 class VTK_VISUMANAGEMENT_EXPORT vtkTessellatedSphereSource : public vtkPolyDataAlgorithm {
 public:
-    static vtkTessellatedSphereSource *New();
-    vtkTypeMacro(vtkTessellatedSphereSource,vtkPolyDataAlgorithm);
-    void PrintSelf(ostream& os, vtkIndent indent);
+  static vtkTessellatedSphereSource *New();
+  vtkTypeMacro(vtkTessellatedSphereSource,vtkPolyDataAlgorithm);
+  void PrintSelf(ostream& os, vtkIndent indent);
 
-    // Description:
-    // Set the Resolution number of times that the selected polyhedron is going to be tesselated.
-    vtkSetMacro(Resolution,unsigned int);
-    vtkGetMacro(Resolution,unsigned int);
+  // Description:
+  // Set the Resolution number of times that the selected polyhedron is going to be tesselated.
+  vtkSetMacro(Resolution,unsigned int);
+  vtkGetMacro(Resolution,unsigned int);
 
-    // Description:
-    // Set the type of polyhedron is going to be tesselated.
-    vtkSetMacro(PolyhedraType,unsigned int);
-    vtkGetMacro(PolyhedraType,unsigned int);
+  // Description:
+  // Set the type of polyhedron is going to be tesselated.
+  vtkSetMacro(PolyhedraType,unsigned int);
+  vtkGetMacro(PolyhedraType,unsigned int);
 
 
 protected:
-    vtkTessellatedSphereSource();
-    vtkTessellatedSphereSource(const int ip);
-    /*virtual*/ ~vtkTessellatedSphereSource(){}
+  vtkTessellatedSphereSource();
+  vtkTessellatedSphereSource(const int ip);
+  /*virtual*/ ~vtkTessellatedSphereSource(){}
 
 
-    int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+  int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
-    unsigned int Resolution;
-    unsigned int PolyhedraType;
-    enum {
-        cube=0,
-        dodecahedron = 1,
-        icosahedron = 2,
-        octahedron = 3,
-        tetrahedron = 4
-    };
+  unsigned int Resolution;
+  unsigned int PolyhedraType;
+  enum {
+    cube=0,
+    dodecahedron = 1,
+    icosahedron = 2,
+    octahedron = 3,
+    tetrahedron = 4
+  };
 
 
 private:
 
-    vtkTessellatedSphereSource& operator= (const vtkTessellatedSphereSource& st); // Not implemented
-    vtkTessellatedSphereSource(const vtkTessellatedSphereSource&);  // Not implemented.
+  vtkTessellatedSphereSource& operator= (const vtkTessellatedSphereSource& st); // Not implemented
+  vtkTessellatedSphereSource(const vtkTessellatedSphereSource&);  // Not implemented.
 
-    /** Initialize by using the m_PolyhedraType the polyhedron that it is gong to be tesselated  */
-    void initializeTesselation(vtkPoints* vertices, vtkCellArray* triangles);
+  /** Initialize by using the m_PolyhedraType the polyhedron that it is gong to be tesselated  */
+  void initializeTesselation(vtkPoints* vertices, vtkCellArray* triangles);
 };
 
 #endif
