@@ -16,7 +16,7 @@ ENDIF(NOT ITK_USE_SYSTEM_GDCM)
 IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
   SET ( itkIOAddOnSRCS
     ${itkIOAddOnSRCS}
-    itkSphericalHarmonicITKToVTKFilter.cxx
+    itkSphericalHarmonicITKToVTKFilter.txx
     )
 ENDIF(vtkINRIA3D_USE_SPHERICALHARMONICS )
 
