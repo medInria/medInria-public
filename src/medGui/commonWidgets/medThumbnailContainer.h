@@ -37,7 +37,18 @@ public:
     void init(void);
     void reset(void);
 
+    void setAllowDragging(bool isDraggingAllowed);
+    void setAllowDropping(bool isDroppingAllowed);
+    void setAllowDeleting(bool isDeletingAllowed);
+    void setColumnsCount(int columnsCount);
+    void setRowsCount(int rowsCount);
+
+public slots:
+
+    void addSeriesItem(const medDataIndex&);
+
 protected slots:
+
     void onObjectDropped (const medDataIndex& index);
     void onHoverEntered(medDatabasePreviewItem* item);
     void onSelectorReachedThumbnail();
@@ -46,6 +57,7 @@ protected slots:
     void onDeleteButtonClicked();
 
 protected:
+
     void moveToItem(medDatabasePreviewItem *target);
     void showDeleteButton();
 

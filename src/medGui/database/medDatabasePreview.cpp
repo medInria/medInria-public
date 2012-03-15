@@ -110,10 +110,9 @@ medDatabasePreview::medDatabasePreview(QWidget *parent) : QFrame(parent), d(new 
     layout->setSpacing(0);
     layout->addWidget(d->view);
 
-    //TODO solve this...
-//    medDatabasePreviewController::instance()->orientation() == Qt::Horizontal
-//        ? this->setFixedHeight(medDatabasePreviewController::instance()->groupHeight() + medDatabasePreviewController::instance()->itemSpacing() + 36) // 26 pixels for the scroller
-//        : this->setFixedWidth(medDatabasePreviewController::instance()->groupWidth() + medDatabasePreviewController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
+    medDatabasePreviewController::instance()->orientation() == Qt::Horizontal
+        ? this->setFixedHeight(medDatabasePreviewController::instance()->groupHeight() + medDatabasePreviewController::instance()->itemSpacing() + 36) // 26 pixels for the scroller
+        : this->setFixedWidth(medDatabasePreviewController::instance()->groupWidth() + medDatabasePreviewController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
 
     this->init();
 }
@@ -173,34 +172,6 @@ void medDatabasePreview::onPatientClicked(const medDataIndex& id)
             }
 
         }
-    }
-
-    d->scene->setSceneRect(d->series_group->boundingRect());
-
-    if(d->level)
-        this->onSlideDw();
-    else
-        moveToItem( d->series_group->item(firstSeId) );
-}
-
-void medDatabasePreview::onStudyClicked(const medDataIndex& id)
-{
-    d->series_group->clear();
-    d->image_group->clear();
-
-    int firstSeId = -1;
-    medAbstractDbController * db =  medDataManager::instance()->controllerForDataSource(id.dataSourceId());
-    if ( db ) {
-
-        QList<medDataIndex> series = db->series(id);
-            for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
-
-                if ( firstSeId < 0)
-                    firstSeId = (*seriesIt).seriesId();
-
-                d->series_group->addItem(new medDatabasePreviewItem(
-                    medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
-            }
     }
 
     d->scene->setSceneRect(d->series_group->boundingRect());

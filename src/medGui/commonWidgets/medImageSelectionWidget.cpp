@@ -8,10 +8,10 @@
 #include <medDatabaseProxyModel.h>
 #include <medDatabaseModel.h>
 #include <medDatabaseExporter.h>
+#include <medAbstractDbController.h>
 
 #include <medDropSite.h>
 #include <medThumbnailContainer.h>
-
 
 class medImageSelectionWidgetPrivate
 {
@@ -21,7 +21,7 @@ public:
     medDatabaseProxyModel *proxy;
 
     // view
-    medDatabasePreview *preview;
+    medThumbnailContainer *preview;
     medDatabaseView *view;
     medThumbnailContainer *selected;
 
@@ -36,15 +36,26 @@ medImageSelectionWidget::medImageSelectionWidget(QWidget *parent) : d(new medIma
     d->model = new medDatabaseModel(this, true);
     d->proxy = new medDatabaseProxyModel(this);
     d->proxy->setSourceModel(d->model);
-    d->preview = new medDatabasePreview(displayWidget);
+
+    d->preview = new medThumbnailContainer(displayWidget);
+    d->preview->setAllowDeleting(false);
+    d->preview->setAllowDragging(true);
+    d->preview->setAllowDropping(false);
+    d->preview->setColumnsCount(4);
+    d->preview->setRowsCount(2);
 
     d->selected = new medThumbnailContainer(displayWidget);
+    d->selected->setAllowDeleting(true);
+    d->selected->setAllowDragging(false);
+    d->selected->setAllowDropping(true);
+    d->selected->setColumnsCount(5);
+    d->selected->setRowsCount(3);
 
     QSizePolicy* policy = new QSizePolicy();
 //    policy->setHorizontalStretch(10);
     policy->setHorizontalPolicy(QSizePolicy::Expanding);
-    d->preview->setSizePolicy(*policy);
-    d->preview->setMinimumSize(QSize(600, 400));
+//    d->preview->setSizePolicy(*policy);
+//    d->preview->setMinimumSize(QSize(600, 400));
 
     d->selected->setMinimumSize(QSize(600 + 100, 300));
 
@@ -59,15 +70,13 @@ medImageSelectionWidget::medImageSelectionWidget(QWidget *parent) : d(new medIma
     hlayout->addWidget(d->preview);
 
 
-
     QVBoxLayout* vlayout = new QVBoxLayout(displayWidget);
     vlayout->addLayout(hlayout);
     vlayout->addWidget(d->selected);
 //    vlayout->addWidget(new medDropSite());
 
-    connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->preview, SLOT(onPatientClicked(const medDataIndex&)));
-    connect(d->view, SIGNAL(studyClicked(const medDataIndex&)), d->preview, SLOT(onStudyClicked(const medDataIndex&)));
-    connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(onSeriesClicked(const medDataIndex&)));
+    connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), this, SLOT(onPatientSelected(const medDataIndex&)));
+    connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(addSeriesItem(const medDataIndex&)));
 
 //    connect(d->view, SIGNAL(studyClicked(const medDataIndex&)), d->selected, SLOT(onStudyClicked(const medDataIndex&)));
 
@@ -92,4 +101,21 @@ QSize medImageSelectionWidget::sizeHint(void) const
 
 void medImageSelectionWidget::clear()
 {
+}
+
+void medImageSelectionWidget::onPatientSelected(const medDataIndex& id)
+{
+    medAbstractDbController * db =  medDataManager::instance()->controllerForDataSource(id.dataSourceId());
+    if ( db ) {
+
+        QList<medDataIndex> studies = db->studies(id);
+        for (QList<medDataIndex>::const_iterator studyIt( studies.begin() ); studyIt != studies.end(); ++studyIt ) {
+
+            QList<medDataIndex> series = db->series(*studyIt);
+            for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
+
+                d->preview->addSeriesItem(*seriesIt);
+            }
+        }
+    }
 }

@@ -4,6 +4,7 @@
 #include <QtGui>
 
 #include "medGuiExport.h"
+#include <medDataIndex.h>
 
 class medImageSelectionWidgetPrivate;
 
@@ -17,9 +18,9 @@ public:
 
     QSize sizeHint(void) const;
 
-public:
-
 public slots:
+    void onPatientSelected(const medDataIndex&);
+
     void clear();
 
 signals:

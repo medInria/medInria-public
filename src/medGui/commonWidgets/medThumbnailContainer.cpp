@@ -42,7 +42,12 @@ void medDeleteButton::mousePressEvent(QGraphicsSceneMouseEvent* event)
 class medThumbnailContainerPrivate
 {
 public:
-    int maxImagesPerGroup;
+
+    int columns;
+    int rows;
+    bool canDrag;
+    bool canDrop;
+    bool canDelete;
 
     QList<medDataIndex> containedIndexes;
 
@@ -65,7 +70,7 @@ public:
 
 medThumbnailContainer::medThumbnailContainer(QWidget *parent) : QFrame(parent), d(new medThumbnailContainerPrivate)
 {
-    d->maxImagesPerGroup = 4;
+    d->columns = 4;
 
     d->scene = new QGraphicsScene(this);
     d->scene->setBackgroundBrush(QColor(0x41, 0x41, 0x41));
@@ -73,7 +78,6 @@ medThumbnailContainer::medThumbnailContainer(QWidget *parent) : QFrame(parent), 
     d->view = new medDatabasePreviewView(this);
     d->view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     d->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-//    d->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     d->view->setScene(d->scene);
 
@@ -82,7 +86,6 @@ medThumbnailContainer::medThumbnailContainer(QWidget *parent) : QFrame(parent), 
 
     d->scene->addItem(d->selector);
 
-    d->view->setAcceptDrops(true);
     connect(d->view, SIGNAL(objectDropped (const medDataIndex&)), this, SLOT(onObjectDropped (const medDataIndex&)));
 
 //    connect(d->view, SIGNAL(hovered(medDatabasePreviewItem*)), this, SLOT(onHovered(medDatabasePreviewItem*)));
@@ -102,6 +105,13 @@ medThumbnailContainer::medThumbnailContainer(QWidget *parent) : QFrame(parent), 
 //        qDebug() << "FUCK MY LIFE";
     d->scene->addItem(d->del);
     connect(d->del, SIGNAL(clicked()), this, SLOT(onDeleteButtonClicked()));
+
+    qreal item_width   = medDatabasePreviewController::instance()->itemWidth(); //128
+    qreal item_height   = medDatabasePreviewController::instance()->itemHeight(); //128
+    qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing(); //10
+
+    this->setFixedHeight(2 * (item_height + item_spacing) + item_spacing + 36); // 36 pixels for the scroller
+    this->setFixedWidth(d->columns * (item_width + item_spacing) + item_spacing + 36); // 36 pixels for the scroller
 
     this->init();
 }
@@ -123,16 +133,16 @@ void medThumbnailContainer::init(void)
     d->del->hide();
 }
 
-void medThumbnailContainer::onObjectDropped (const medDataIndex& index)
+void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
 {
     if (!index.isValidForSeries())
-        return;
+            return;
 
     // we need to check if the image is already here
     if(!d->containedIndexes.contains(index))
     {
         medDatabasePreviewItem* item = new medDatabasePreviewItem( medDataIndex::makeSeriesIndex(index.dataSourceId(), index.patientId(), index.studyId(), index.seriesId()) );
-        item->allowDrag(false);
+        item->allowDrag(d->canDrag);
         item->setAcceptHoverEvents(true);
 
         connect(item, SIGNAL(hoverEntered(QGraphicsSceneHoverEvent*)), this, SLOT(onThumbnailHoverEntered(QGraphicsSceneHoverEvent*)) );
@@ -146,18 +156,18 @@ void medThumbnailContainer::onObjectDropped (const medDataIndex& index)
         int top_margin = 10;
 
         int items_count = d->containedIndexes.count();
-        int items_in_last_row = items_count % d->maxImagesPerGroup;
+        int items_in_last_row = items_count % d->columns;
 
         qreal space_taken_by_items_already_in_row =  items_in_last_row * (item_width + item_spacing);
         qreal pos_x = left_margin + space_taken_by_items_already_in_row;
 
-        int full_columns_count = items_count / d->maxImagesPerGroup;
+        int full_columns_count = items_count / d->columns;
         qreal space_taken_by_items_on_top =  full_columns_count * (item_height + item_spacing);
         qreal pos_y = top_margin + space_taken_by_items_on_top;
 
         item->setPos(pos_x,  pos_y);
 
-        qDebug() << "__x__ : " << pos_x << "__Y__ : " << pos_y;
+        qDebug() << "__x__ : " << pos_x << "__y__ : " << pos_y;
 
         d->scene->addItem(item);
 
@@ -168,6 +178,12 @@ void medThumbnailContainer::onObjectDropped (const medDataIndex& index)
 
         moveToItem( item );
     }
+}
+
+void medThumbnailContainer::onObjectDropped (const medDataIndex& index)
+{
+    if(d->canDrop)
+        addSeriesItem(index);
 }
 
 void medThumbnailContainer::moveToItem(medDatabasePreviewItem *target)
@@ -253,7 +269,8 @@ void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
 
     if(qAbs(d->selector->pos().x() - item->scenePos().x()) < 20 && qAbs(d->selector->pos().y() - item->scenePos().y()) < 20)
     {
-        showDeleteButton();
+        if(d->canDelete)
+            showDeleteButton();
         return;
     }
 
@@ -304,7 +321,8 @@ void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
 
 void medThumbnailContainer::onSelectorReachedThumbnail()
 {
-    showDeleteButton();
+    if(d->canDelete)
+        showDeleteButton();
 }
 
 void medThumbnailContainer::onThumbnailHoverEntered(QGraphicsSceneHoverEvent* event)
@@ -322,6 +340,9 @@ void medThumbnailContainer::onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event
 
 void medThumbnailContainer::showDeleteButton()
 {
+    if(!d->canDelete)
+        return;
+
     QPointF newPos = QPointF(d->selector->pos().rx() + 88, d->selector->pos().ry() + 8);
     d->del->setPos(newPos);
     d->del->show();
@@ -349,4 +370,30 @@ void medThumbnailContainer::onDeleteButtonClicked()
 
     }
 
+}
+
+void medThumbnailContainer::setAllowDragging(bool isDraggingAllowed)
+{
+    d->canDrag = isDraggingAllowed;
+}
+
+void medThumbnailContainer::setAllowDropping(bool isDroppingAllowed)
+{
+    d->canDrop = isDroppingAllowed;
+    d->view->setAcceptDrops(isDroppingAllowed);
+}
+
+void medThumbnailContainer::setAllowDeleting(bool isDeletingAllowed)
+{
+    d->canDelete = isDeletingAllowed;
+}
+
+void medThumbnailContainer::setColumnsCount(int columnsCount)
+{
+    d->columns = columnsCount;
+}
+
+void medThumbnailContainer::setRowsCount(int rowsCount)
+{
+    d->rows = rowsCount;
 }
