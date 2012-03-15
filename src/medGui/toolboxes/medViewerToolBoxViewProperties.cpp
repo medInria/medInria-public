@@ -436,7 +436,7 @@ void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
         d->view3dModeComboBox->blockSignals(false);
 
         //set a few view pool wide properties in the view.
-        qDebug()<<"update some view properties";
+//        qDebug()<<"update some view properties";
         onScalarBarVisibilityChanged(d->scalarBarVisibilityCheckBox->isChecked());
         onAnnotationsVisibilityChanged(d->annotationsVisibilityCheckBox->isChecked());
         onAxisVisibilityChanged(d->axisVisibilityCheckBox->isChecked());
@@ -994,7 +994,7 @@ void medViewerToolBoxViewProperties::onRenderingChanged(int index)
 
 void medViewerToolBoxViewProperties::onItemClicked(QTreeWidgetItem * item)
 {
-    qDebug()<<"clicked on Item: " << item->text(0);
+//    qDebug()<<"clicked on Item: " << item->text(0);
     d->propertiesTree->clearSelection();
     if (item->type() == QTreeWidgetItem::UserType + 1)
     {
