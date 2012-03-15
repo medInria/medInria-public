@@ -36,7 +36,6 @@ protected:
     itk::ImageIOBase::Pointer io;
 
 private:
-
     template <unsigned DIM,typename T>
     bool read_image(const QString& path,const char* type);
 };

@@ -3,6 +3,7 @@
 
 #include <itkDataImageBase/itkDataImageReaderBase.h>
 #include <itkDataImageReaderPluginExport.h>
+#include <itkImage.h>
 
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkPhilipsRECDataImageReader: public itkDataImageReaderBase {
 public:
@@ -18,10 +19,38 @@ public:
 
     static bool registered();
 
+    /**
+     * @brief Reads File.
+     *
+     * Overrides parent method. Calls the parent method and then applies
+     * a fix for the directions and origin of the image.
+     * Itk is doing it wrong here.
+     *
+     * @param path
+     */
+    virtual bool read (const QString& path);
+
 private:
 
     static const char ID[];
     static dtkAbstractDataReader* create();
+
+    typedef itk::Image<float,3> FloatImageType;
+    template <unsigned dim,typename T>
+    /**
+     * @brief Corrects the origin and directions on a loaded file.
+     *
+     * Requires the data to be already loaded using the io and the base class
+     * read() method.
+     *
+     * @param origin
+     * @param direction
+     */
+    void applyCorrection(FloatImageType::PointType origin,
+                    FloatImageType::DirectionType direction);
+    FloatImageType::PointType ExtractPARRECImageOrigin (
+            FloatImageType::DirectionType direction);
+    FloatImageType::DirectionType ExtractPARRECImageOrientation ();
 };
 
 #endif  //  ! ITKPHILIPSRECDATAIMAGEREADER_H

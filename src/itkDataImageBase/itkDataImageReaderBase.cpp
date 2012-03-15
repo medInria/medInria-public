@@ -80,9 +80,9 @@ void itkDataImageReaderBase::readInformation (const QString& path)
         qDebug() << e.GetDescription();
         return;
     }
-    
+
     dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
-    
+
     if (!dtkdata) {
 
         if (this->io->GetPixelType()==itk::ImageIOBase::SCALAR ) {
@@ -149,14 +149,14 @@ void itkDataImageReaderBase::readInformation (const QString& path)
                 case itk::ImageIOBase::UCHAR:
                     dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageRGB3");
                     break;
-            
+
                 default:
                     qDebug() << "Unrecognized component type";
                     return;
             }
         }
         else if (this->io->GetPixelType()==itk::ImageIOBase::VECTOR) { //   Added by Theo.
-            qDebug() << "this->io->GetPixelType()" << this->io->GetComponentType(); 
+            qDebug() << "this->io->GetPixelType()" << this->io->GetComponentType();
             switch (this->io->GetComponentType()) {
 
                 case itk::ImageIOBase::UCHAR:
@@ -191,7 +191,7 @@ void itkDataImageReaderBase::readInformation (const QString& path)
         if (dtkdata)
             this->setData(dtkdata);
     }
-    
+
 
     if (dtkdata) {
         /*
@@ -273,10 +273,10 @@ bool itkDataImageReaderBase::read(const QString& path)
     this->setProgress(50);
 
     /*
-	itk::DataImageReaderCommand::Pointer command = itk::DataImageReaderCommand::New();
-	command->SetDCMTKDataImageReader ( this );
-	this->io->AddObserver ( itk::ProgressEvent(), command);
-  */	
+    itk::DataImageReaderCommand::Pointer command = itk::DataImageReaderCommand::New();
+    command->SetDCMTKDataImageReader ( this );
+    this->io->AddObserver ( itk::ProgressEvent(), command);
+    */
 
     try {
         if (!(read_image<3,unsigned char>(path,"itkDataImageUChar3")   ||
