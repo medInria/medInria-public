@@ -105,6 +105,8 @@ void medImageSelectionWidget::clear()
 
 void medImageSelectionWidget::onPatientSelected(const medDataIndex& id)
 {
+    d->preview->reset();
+
     medAbstractDbController * db =  medDataManager::instance()->controllerForDataSource(id.dataSourceId());
     if ( db ) {
 

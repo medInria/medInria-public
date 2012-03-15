@@ -125,6 +125,15 @@ medThumbnailContainer::~medThumbnailContainer(void)
 
 void medThumbnailContainer::reset(void)
 {
+    foreach(medDatabasePreviewItem* item, d->containedItems)
+            d->scene->removeItem(item);
+
+    d->containedIndexes.clear();
+
+//    d->current_index = NULL;
+//    d->current_item = NULL;
+
+    d->containedItems.clear();
 }
 
 void medThumbnailContainer::init(void)
