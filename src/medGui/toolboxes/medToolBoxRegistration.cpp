@@ -430,11 +430,10 @@ void medToolBoxRegistration::onSuccess()
     if(output)
     {
         d->movingView->setData(output,0);
-        d->fixedView->unlink (d->movingView);
-        d->fixedView->link (d->movingView);
+		// calling reset() will reset all the view parameters (position - zoom - window/level) to default
+		d->movingView->reset();				
         d->movingView->update();
         d->fuseView->setData(output,1);
         d->fuseView->update();
-
     }
 }
