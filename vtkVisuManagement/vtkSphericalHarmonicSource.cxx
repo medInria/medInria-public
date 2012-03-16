@@ -12,7 +12,6 @@
 #include <cmath>
 
 #include <vtkSphericalHarmonicSource.h>
-//#include <vtkTessellatedSphereSource.h>
 
 #include <vtkPolyDataNormals.h>
 #include <vtkCellArray.h>
@@ -27,7 +26,28 @@
 #include <vtkMatrix4x4.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Compute spherical associated Legendre function
+#ifndef WIN32
+#include <boost/math/special_functions/legendre.hpp>
+#else
 #include <tr1/cmath>
+#endif //WIN32
+
+#ifndef WIN32
+double sphLegendre(int _l, int _m, double theta) {
+  double factor = sqrt(((double)(2*_l+1) / (4.0*M_PI))*(boost::math::factorial<double>((unsigned int)(_l - _m))
+                                                        / boost::math::factorial<double>((unsigned int)(_l + _m))))*boost::math::legendre_p (_l, _m, cos(theta));
+    return factor;
+}
+#else
+double sphLegendre(int _l, int _m, double theta) {
+    double factor =std::tr1::sph_legendre(_l,_m,theta);
+    return factor;
+}
+#endif //WIN32
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 static itk::Vector<double, 3> Cartesian2Spherical(const itk::Vector<double, 3> vITK );
 
@@ -279,11 +299,11 @@ ComputeSHMatrix(const int order,vtkPolyData* shell,const bool FlipX,const bool F
     for (int l=0,j=0;l<=order;l+=2) {
 
       //  Handle the case m=0
-      B(j,i) = std::tr1::sph_legendre(l,0,theta);
+      B(j,i) = sphLegendre(l,0,theta);
       j = j+1;
 
       for(int m=1,s=-1;m<=l;++m,++j,s=-s) {
-        temp = std::tr1::sph_legendre(l, m,theta)*std::sqrt(2.0);
+        temp = sphLegendre(l, m,theta)*std::sqrt(2.0);
 
         //-m Real like t3 at hardi.cpp but math simplified and with tr1
         B(j,i) = s*temp*(cos(m*phi));
@@ -328,10 +348,10 @@ ComputeSHMatrixMaxThesis(const int order,vtkPolyData *shell,const bool FlipX,con
     //  TO
     double temp=0;
     for (int l=0,j=0;l<=order;l+=2,j+=2*l-1) {
-      B(j,i) = std::tr1::sph_legendre(l,0,theta);
+      B(j,i) = sphLegendre(l,0,theta);
 
       for(int m=1,j1=j-1,j2=j+1;m<=l;++m,--j1,++j2) {
-        temp = std::sqrt(2.0)*std::tr1::sph_legendre(l,m,theta);
+        temp = std::sqrt(2.0)*sphLegendre(l,m,theta);
         B(j1,i) = temp*cos(m*phi);
         B(j2,i) = temp*sin(m*phi);
       }
@@ -378,7 +398,7 @@ ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool FlipX,cons
 
     for(int l = 0; l <= order; l+=2)
       for(int m = -l,s=1; m <= l; m++,s=-s) {
-        temp = std::tr1::sph_legendre(l,std::abs(m),theta);
+        temp = sphLegendre(l,std::abs(m),theta);
         if(m >= 0) { /* positive "m" SH */
           B(j,i) =  temp*cos(m*phi);;
         }
@@ -421,10 +441,10 @@ ComputeSHMatrixRshBasis(const int order,vtkPolyData* shell,const bool FlipX,cons
     double temp=0;
 
     for (int l=0,j=0;l<=order;l+=2) {
-      B(j,i)=std::tr1::sph_legendre(l,0,theta);
+      B(j,i)=sphLegendre(l,0,theta);
       j=j+1;
       for(int m=1,s=-1;m<=l;++m,++j,s=-s) {
-        temp = std::tr1::sph_legendre(l, m,theta)*std::sqrt(2.0);
+        temp = sphLegendre(l, m,theta)*std::sqrt(2.0);
         //-m Real like RshBasis.pdf Luke Bloy eq 1.2 but math simplified and with tr1
         B(j,i)   = temp*(cos(m*phi));
         //+m Imag
