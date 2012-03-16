@@ -26,12 +26,12 @@ namespace mseg {
 
     static const QString SEED_POINT_ANNOTATION_DATA_NAME = medSeedPointAnnotationData::s_description();
 
-class SingleClickEventFilter : public medViewEventFilter 
+class SingleClickEventFilter : public medViewEventFilter
 {
 public:
-    SingleClickEventFilter(medToolBoxSegmentation * controller, AlgorithmConnectedThresholdToolbox *cb ) : 
-        medViewEventFilter(), 
-        m_cb(cb) 
+    SingleClickEventFilter(medToolBoxSegmentation * controller, AlgorithmConnectedThresholdToolbox *cb ) :
+        medViewEventFilter(),
+        m_cb(cb)
         {}
 
     virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent ) MED_OVERRIDE
@@ -48,7 +48,7 @@ public:
 
             QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
             //Project vector onto plane
-            dtkAbstractData * viewData = medToolBoxSegmentation::viewData( view );
+//            dtkAbstractData * viewData = medToolBoxSegmentation::viewData( view );
             m_cb->onViewMousePress( view, posImage );
 
             this->removeFromAllViews();
@@ -118,7 +118,7 @@ AlgorithmConnectedThresholdToolbox::AlgorithmConnectedThresholdToolbox(QWidget *
         this, SLOT(onRemoveSeedPointPressed ()));
     connect (m_applyButton,     SIGNAL(pressed()),
         this, SLOT(onApplyButtonPressed()));
-    connect(m_seedPointTable, SIGNAL(itemSelectionChanged()), 
+    connect(m_seedPointTable, SIGNAL(itemSelectionChanged()),
         this, SLOT(onSeedPointTableSelectionChanged()));
 }
 
@@ -139,7 +139,7 @@ void AlgorithmConnectedThresholdToolbox::onAddSeedPointPressed()
 
 void AlgorithmConnectedThresholdToolbox::onRemoveSeedPointPressed()
 {
-    if ( m_seedPoints->getNumberOfSeeds() == 0 ) 
+    if ( m_seedPoints->getNumberOfSeeds() == 0 )
         return;
 
     QList<QTableWidgetItem *> selection = m_seedPointTable->selectedItems();
@@ -187,7 +187,7 @@ void AlgorithmConnectedThresholdToolbox::onApplyButtonPressed()
 
 }
 void AlgorithmConnectedThresholdToolbox::setData( dtkAbstractData *dtkdata )
-{   
+{
     // disconnect existing
     if ( m_data ) {
         foreach( medAttachedData * mdata, m_data->attachedData() ) {
@@ -244,7 +244,7 @@ void AlgorithmConnectedThresholdToolbox::addSeedPoint( medAbstractView *view, co
     if (!m_seedPoints) {
         setData( medToolBoxSegmentation::viewData(view) );
     }
-    
+
     int iSeed = m_seedPoints->getNumberOfSeeds();
     m_seedPoints->setCenterWorld(iSeed, vec);
 
@@ -264,8 +264,8 @@ void AlgorithmConnectedThresholdToolbox::onViewMousePress( medAbstractView *view
     }
 }
 
-//static 
-medToolBoxSegmentationCustom * 
+//static
+medToolBoxSegmentationCustom *
     AlgorithmConnectedThresholdToolbox::createInstance(QWidget *parent )
 {
     return new AlgorithmConnectedThresholdToolbox( parent );
@@ -273,7 +273,7 @@ medToolBoxSegmentationCustom *
 
 QString AlgorithmConnectedThresholdToolbox::s_description()
 {
-    static const QString desc = "Connected Threshold Tool";
+    static const QString desc = tr("Connected Threshold Tool");
     return desc;
 }
 
@@ -285,7 +285,7 @@ QString AlgorithmConnectedThresholdToolbox::s_identifier()
 
 QString AlgorithmConnectedThresholdToolbox::s_name(const QObject * trObj)
 {
-    if (!trObj) 
+    if (!trObj)
         trObj = qApp;
 
     return trObj->tr( "Connected Threshold" );
@@ -300,7 +300,7 @@ void AlgorithmConnectedThresholdToolbox::onSeedPointTableSelectionChanged()
         selectedRows.insert( item->row() );
     }
 
-    if( selectedRows.empty() ) 
+    if( selectedRows.empty() )
         m_seedPoints->setSelectedSeed(-1);
     else
         m_seedPoints->setSelectedSeed( *(selectedRows.begin()) );
@@ -308,9 +308,9 @@ void AlgorithmConnectedThresholdToolbox::onSeedPointTableSelectionChanged()
 
 void AlgorithmConnectedThresholdToolbox::onDataModified(medAbstractData* attached )
 {
-    medSeedPointAnnotationData * spad = qobject_cast<medSeedPointAnnotationData*>(attached);
+//    medSeedPointAnnotationData * spad = qobject_cast<medSeedPointAnnotationData*>(attached);
     const int numSeeds = (m_seedPoints ? m_seedPoints->getNumberOfSeeds() : 0 );
-    if ( m_seedPointTable->rowCount() != numSeeds ) 
+    if ( m_seedPointTable->rowCount() != numSeeds )
         m_seedPointTable->clear();
     for ( int i(0); i< numSeeds; ++i) {
         this->updateTableRow(i);
@@ -323,7 +323,7 @@ void AlgorithmConnectedThresholdToolbox::updateTableRow( int row )
 
     // Ensure row is present
     if ( row >= m_seedPointTable->rowCount() ) {
-        while ( row >= m_seedPointTable->rowCount() ) { 
+        while ( row >= m_seedPointTable->rowCount() ) {
             m_seedPointTable->insertRow( m_seedPointTable->rowCount() );
         }
     }

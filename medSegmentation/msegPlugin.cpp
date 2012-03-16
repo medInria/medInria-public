@@ -13,7 +13,7 @@ namespace mseg {
 // PluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class PluginPrivate 
+class PluginPrivate
 {
 public:
     // Class variables go here.
@@ -29,7 +29,7 @@ const char * PluginPrivate::s_Type = "Process";
 
 Plugin::Plugin(QObject *parent) : dtkPlugin(parent), d(new PluginPrivate)
 {
-    AlgorithmInitializer::initialize();
+
 }
 
 Plugin::~Plugin(void)
@@ -40,8 +40,7 @@ Plugin::~Plugin(void)
 
 bool Plugin::initialize(void)
 {
-
-    return true;
+    return AlgorithmInitializer::initialize();
 }
 
 bool Plugin::uninitialize(void)
