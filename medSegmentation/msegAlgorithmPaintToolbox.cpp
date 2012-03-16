@@ -25,11 +25,11 @@
 
 namespace mseg {
 
-class SelectDataEventFilter : public medViewEventFilter 
+class SelectDataEventFilter : public medViewEventFilter
 {
 public:
     SelectDataEventFilter(medToolBoxSegmentation * controller, AlgorithmPaintToolbox *cb ) :
-        medViewEventFilter(), 
+        medViewEventFilter(),
             m_cb(cb)
         {}
         virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
@@ -48,11 +48,11 @@ private :
     AlgorithmPaintToolbox *m_cb;
 };
 
-class ClickAndMoveEventFilter : public medViewEventFilter 
+class ClickAndMoveEventFilter : public medViewEventFilter
 {
 public:
     ClickAndMoveEventFilter(medToolBoxSegmentation * controller, AlgorithmPaintToolbox *cb ) :
-        medViewEventFilter(), 
+        medViewEventFilter(),
         m_cb(cb)
         {}
 
@@ -79,7 +79,7 @@ public:
 
     virtual bool mouseMoveEvent( medAbstractView *view, QMouseEvent *mouseEvent )
     {
-        if ( this->m_state != State::Painting ) 
+        if ( this->m_state != State::Painting )
             return false;
 
         medAbstractViewCoordinates * coords = view->coordinates();
@@ -98,7 +98,7 @@ public:
 
     virtual bool mouseReleaseEvent( medAbstractView *view, QMouseEvent *mouseEvent )
     {
-        if ( this->m_state == State::Painting ) 
+        if ( this->m_state == State::Painting )
         {
             this->m_state = State::Done;
             m_cb->updateStroke(this,view);
@@ -136,8 +136,12 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
 
     QHBoxLayout * dataButtonsLayout = new QHBoxLayout();
     m_selectDataButton = new QPushButton( tr("Select Data") , displayWidget);
+    m_selectDataButton->setToolTip(tr("To select data, click on this button, "
+                                      "and then on a view."));
     m_resetDataButton = new QPushButton( tr("Reset Data") , displayWidget);
-    m_clearMaskButton = new QPushButton( tr("ClearMask") , displayWidget);
+    m_resetDataButton->setToolTip(tr("Choose an other view to segment."));
+    m_clearMaskButton = new QPushButton( tr("Clear Mask") , displayWidget);
+    m_clearMaskButton->setToolTip(tr("Resets the mask."));
     m_selectDataButton->setCheckable(true);
     dataButtonsLayout->addWidget( m_selectDataButton );
     dataButtonsLayout->addWidget( m_resetDataButton );
@@ -145,9 +149,13 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     layout->addLayout(dataButtonsLayout);
 
     m_insideStrokeButton = new QPushButton( tr("Inside") , displayWidget);
+    m_insideStrokeButton->setToolTip(tr("Start painting the inside of the ROI."));
     m_outsideStrokeButton = new QPushButton( tr("Outside") , displayWidget);
-    m_removeStrokeButton = new QPushButton( tr("Remove") , displayWidget);
+    m_insideStrokeButton->setToolTip(tr("Start painting the outside of the ROI."));
+    m_removeStrokeButton = new QPushButton( tr("Erase") , displayWidget);
+    m_removeStrokeButton->setToolTip(tr("Use an eraser on painted voxels."));
     m_boundaryStrokeButton = new QPushButton( tr("Boundary") , displayWidget);
+    m_boundaryStrokeButton->setToolTip(tr("Select a Brush that paints bounderies between in and out"));
 
     m_insideStrokeButton->setCheckable(true);
     m_outsideStrokeButton->setCheckable(true);
@@ -163,12 +171,14 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
 
     QHBoxLayout * brushSizeLayout = new QHBoxLayout();
     m_brushSizeSlider = new QSlider(Qt::Horizontal, displayWidget);
+    m_brushSizeSlider->setToolTip(tr("Changes the brush radius."));
     m_brushSizeSlider->setValue(this->m_strokeRadius/2);
     m_brushSizeSpinBox = new QSpinBox(displayWidget);
+    m_brushSizeSpinBox->setToolTip(tr("Changes the brush radius."));
     m_brushSizeSpinBox->setValue(this->m_strokeRadius/2);
     connect(m_brushSizeSpinBox, SIGNAL(valueChanged(int)),m_brushSizeSlider,SLOT(setValue(int)) );
     connect(m_brushSizeSlider,SIGNAL(valueChanged(int)),m_brushSizeSpinBox,SLOT(setValue(int)) );
-    
+
     brushSizeLayout->addWidget(new QLabel(tr("Brush Radius"), displayWidget));
     brushSizeLayout->addWidget( m_brushSizeSlider );
     brushSizeLayout->addWidget( m_brushSizeSpinBox );
@@ -185,6 +195,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     layout->addWidget( m_dataText );
 
     m_applyButton = new QPushButton( tr("Create Database Item") , displayWidget);
+    m_applyButton->setToolTip(tr("Save result to the Temporary Database"));
     layout->addWidget( m_applyButton );
 
     enableButtons(false);
@@ -204,7 +215,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
         this, SLOT(onResetDataPressed ()));
     connect (m_clearMaskButton,     SIGNAL(pressed()),
         this, SLOT(onClearMaskPressed ()));
-    
+
     connect (m_applyButton,     SIGNAL(pressed()),
         this, SLOT(onApplyButtonPressed()));
 }
@@ -306,7 +317,7 @@ void AlgorithmPaintToolbox::onClearMaskPressed()
 }
 
 void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
-{   
+{
     // disconnect existing
     if ( m_imageData ) {
         // TODO?
@@ -397,8 +408,8 @@ void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
     }
 }
 
-//static 
-medToolBoxSegmentationCustom * 
+//static
+medToolBoxSegmentationCustom *
     AlgorithmPaintToolbox::createInstance(QWidget *parent )
 {
     return new AlgorithmPaintToolbox( parent );
@@ -418,7 +429,7 @@ QString AlgorithmPaintToolbox::s_identifier()
 
 QString AlgorithmPaintToolbox::s_name(const QObject * trObj)
 {
-    if (!trObj) 
+    if (!trObj)
         trObj = qApp;
 
     return trObj->tr( "Paint Segmentation" );
@@ -430,7 +441,7 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
     MaskType::Pointer mask = MaskType::New();
 
     Q_ASSERT(mask->GetImageDimension() == 3);
-    
+
     medAbstractDataImage * mImage = qobject_cast<medAbstractDataImage*>(imageData);
     Q_ASSERT(mImage);
     Q_ASSERT(mask->GetImageDimension() >= mImage->Dimension());
@@ -441,7 +452,7 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
     region.SetSize(0, ( mImage->Dimension() > 0 ? mImage->xDimension() : 1 ) );
     region.SetSize(1, ( mImage->Dimension() > 1 ? mImage->yDimension() : 1 ) );
     region.SetSize(2, ( mImage->Dimension() > 2 ? mImage->zDimension() : 1 ) );
-    
+
     mask->CopyInformation( imageDataOb );
     mask->SetLargestPossibleRegion(region);
     mask->SetBufferedRegion(region);
@@ -488,7 +499,7 @@ void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medA
         const MaskType::DirectionType & direction = m_itkMask->GetDirection();
 
         // project spacing onto view.
-    
+
         vnl_matrix_fixed<ElemType,2,3> projMatrix;
         projMatrix.set_row(0, vecRight );
         projMatrix.set_row(1, vecVup );
@@ -507,7 +518,7 @@ void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medA
                 const double elem2 = elem*elem;
                 s += elem2*(spacing[j] >= 0 ? spacing[j] : -spacing[j]);
                 r += elem2;
-            } 
+            }
             s /= r;
             sampleSpacing[i] = s;
         }
@@ -558,7 +569,7 @@ void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medA
         double dy = y*m_sampleSpacing[1];
         for ( int x(-Nx); x < Nx; ++x ) {
             double dx = x*m_sampleSpacing[0];
-            if ( dx*dx + dy*dy > radius2 ) 
+            if ( dx*dx + dy*dy > radius2 )
                 continue;
 
             for ( int ic(0); ic<3; ++ic) {
@@ -603,7 +614,7 @@ void AlgorithmPaintToolbox::enableButtons( bool value )
 
 void AlgorithmPaintToolbox::setPaintState( PaintState::E value )
 {
-    if ( m_paintState == value ) 
+    if ( m_paintState == value )
         return;
 
     switch( m_paintState ){
