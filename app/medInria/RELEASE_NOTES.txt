@@ -1,3 +1,12 @@
+medInria v2.0.1:
+- Improved UI
+- Added registration algorithms: Baloo, Super Baloo, iLogDemons
+- Registration always performed in float for now
+- Added Segmentation Configuration preview
+- Improved layer aware window level interactions
+- Added INRImage support
+
+
 medInria v2.0.0:
 
 Total rewrite of the code from v 1.9.0

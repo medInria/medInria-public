@@ -142,6 +142,15 @@ extern "C" int Core_Init ( Tcl_Interp *interp ); // -- Initialization core layer
 
 medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( new medMainWindowPrivate )
 {
+    // etch-disabled-text stylesheet property was deprecated
+    // this is the only way I found to avoid the label's text look like etched when disabled
+    //also not puting the opacity to 0 works very well, except for tooltips
+    // but only tooltips in a QGroupBox, others are fine...
+    //Solution: put a transparent color to the etching palette (Light)
+    QPalette p = QApplication::palette();
+    p.setColor(QPalette::Disabled, QPalette::Light, QColor(100,100,100,0));
+    QApplication::setPalette(p);
+
     // To avoid strange behaviours with the homepageshifter
     this->setMinimumHeight ( 600 );
     this->setMinimumWidth ( 800 );
