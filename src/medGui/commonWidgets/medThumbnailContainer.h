@@ -58,6 +58,7 @@ protected slots:
 
 protected:
 
+    void moveItem(medDatabasePreviewItem *target, QPointF pos);
     void moveToItem(medDatabasePreviewItem *target);
     void showDeleteButton();
 

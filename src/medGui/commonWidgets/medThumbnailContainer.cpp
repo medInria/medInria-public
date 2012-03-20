@@ -195,6 +195,21 @@ void medThumbnailContainer::onObjectDropped (const medDataIndex& index)
         addSeriesItem(index);
 }
 
+void medThumbnailContainer::moveItem(medDatabasePreviewItem *target, QPointF pos)
+{
+    if (!target)
+        return;
+
+    QPropertyAnimation* ani = new QPropertyAnimation(target, "pos");
+
+    ani->setDuration(200);
+    ani->setStartValue(target->pos());
+    ani->setEndValue(pos);
+    ani->setEasingCurve(QEasingCurve::OutQuad);
+
+    ani->start();
+}
+
 void medThumbnailContainer::moveToItem(medDatabasePreviewItem *target)
 {
 
@@ -360,19 +375,33 @@ void medThumbnailContainer::showDeleteButton()
 void medThumbnailContainer::onDeleteButtonClicked()
 {
     if(d->current_item) {
+
+        QPointF deletedItemPosition = d->current_item->pos();
+
         d->scene->removeItem(d->current_item);
         d->del->hide();
-        d->containedIndexes.removeOne(d->current_index);
-        d->containedItems.removeOne(d->current_item);
 
-        if(d->containedIndexes.count() > 0)
+        if(d->containedIndexes.count() > 1)
         {
-            // TODO let's move to any item, then we do it better
-            medDatabasePreviewItem* target = d->containedItems[0];
-            moveToItem(target);
+            int i1 = d->containedIndexes.indexOf(d->current_index, 0);
+            int i2 = d->containedItems.indexOf(d->current_item, 0);
+
+            d->containedIndexes.removeOne(d->current_index);
+            d->containedItems.removeOne(d->current_item);
+
+            medDatabasePreviewItem* last = d->containedItems.last();
+
+            moveItem(last, deletedItemPosition);
+            moveToItem(last);
+
+            d->containedIndexes.swap(i1, d->containedIndexes.count() -1);
+            d->containedItems.swap(i2, d->containedItems.count() -1);
         }
         else
         {
+            d->containedIndexes.removeOne(d->current_index);
+            d->containedItems.removeOne(d->current_item);
+
             d->selector->hide();
             d->selector->setPos(QPointF(0,0));
         }

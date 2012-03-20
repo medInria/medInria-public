@@ -30,6 +30,8 @@ class medDatabasePreviewItem : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 
+    Q_PROPERTY(QPointF pos READ pos WRITE setPos)
+
 public:
      medDatabasePreviewItem(const medDataIndex &index, QGraphicsItem *parent = 0);
     ~medDatabasePreviewItem(void);
