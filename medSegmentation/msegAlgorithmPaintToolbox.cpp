@@ -124,7 +124,7 @@ private :
 AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     medToolBoxSegmentationCustom( parent),
     m_noDataText( tr("[No input data]") ),
-    m_strokeRadius(10),
+    m_strokeRadius(4),
     m_paintState(PaintState::None)
 {
     QWidget *displayWidget = new QWidget(this);
@@ -151,7 +151,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_insideStrokeButton = new QPushButton( tr("Inside") , displayWidget);
     m_insideStrokeButton->setToolTip(tr("Start painting the inside of the ROI."));
     m_outsideStrokeButton = new QPushButton( tr("Outside") , displayWidget);
-    m_insideStrokeButton->setToolTip(tr("Start painting the outside of the ROI."));
+    m_outsideStrokeButton->setToolTip(tr("Start painting the outside of the ROI."));
     m_removeStrokeButton = new QPushButton( tr("Erase") , displayWidget);
     m_removeStrokeButton->setToolTip(tr("Use an eraser on painted voxels."));
     m_boundaryStrokeButton = new QPushButton( tr("Boundary") , displayWidget);
@@ -172,10 +172,12 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     QHBoxLayout * brushSizeLayout = new QHBoxLayout();
     m_brushSizeSlider = new QSlider(Qt::Horizontal, displayWidget);
     m_brushSizeSlider->setToolTip(tr("Changes the brush radius."));
-    m_brushSizeSlider->setValue(this->m_strokeRadius/2);
+    m_brushSizeSlider->setValue(this->m_strokeRadius);
+    m_brushSizeSlider->setMinimum(0);
     m_brushSizeSpinBox = new QSpinBox(displayWidget);
     m_brushSizeSpinBox->setToolTip(tr("Changes the brush radius."));
-    m_brushSizeSpinBox->setValue(this->m_strokeRadius/2);
+    m_brushSizeSpinBox->setValue(this->m_strokeRadius);
+    m_brushSizeSpinBox->setMinimum(0);
     connect(m_brushSizeSpinBox, SIGNAL(valueChanged(int)),m_brushSizeSlider,SLOT(setValue(int)) );
     connect(m_brushSizeSlider,SIGNAL(valueChanged(int)),m_brushSizeSpinBox,SLOT(setValue(int)) );
 
@@ -598,7 +600,7 @@ void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medA
 
 void AlgorithmPaintToolbox::updateFromGuiItems()
 {
-    this->m_strokeRadius = m_brushSizeSlider->value()/2 + 0.5;
+    this->m_strokeRadius = m_brushSizeSlider->value();
 }
 
 void AlgorithmPaintToolbox::enableButtons( bool value )
