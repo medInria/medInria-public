@@ -2,6 +2,7 @@ SET(KIT vtkVisuManagement)
 
 SET(vtkVisuManagementTests
   vtkImageFromBoundsSourceTest.cxx
+  vtkSphericalHarmonicSourceTest.cxx
   )
 
 CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx

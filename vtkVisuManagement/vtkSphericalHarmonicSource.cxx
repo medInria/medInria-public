@@ -368,7 +368,7 @@ ComputeSHMatrixTournier(const int order,vtkPolyData *shell,const bool FlipX,cons
   const int n_s   = shell->GetNumberOfPoints();
   const int rank =  (order+1)*(order+2)/2;
   /*
-      We declare the Bmatrix of sixe n_s x n_b.
+      We declare the Bmatrix of size n_s x n_b.
     */
   itk::VariableSizeMatrix<double> B(rank,n_s);
 

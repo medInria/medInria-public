@@ -15,6 +15,7 @@
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 #include <vtkTransform.h>
+//#include <vtkPolyDataWriter.h> //ONLY ONE GLYPH
 
 #include <vtkSphericalHarmonicGlyph.h>
 #include <vtkSphericalHarmonicSource.h>
@@ -218,6 +219,17 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
         newScalars->InsertTuple(ptIncr+i,&s);
       }
     }
+//ONLY ONE GLYPH
+//    if (inPtId==11)
+//    {
+//      vtkPolyDataWriter * shWriter;
+//      shWriter= vtkPolyDataWriter::New();
+//      shWriter->SetFileName("/user/jgarciag/home/svnGIT/odysseedmri/tmp/odf/MaxTest1Inria3d.vtk");
+//      shWriter->SetInput(this->SphericalHarmonicSource->GetOutput());
+//      shWriter->Update();
+//      shWriter->Delete();
+//    }
+
   }
 
   output->SetPoints(newPts);

@@ -28,15 +28,15 @@ typedef ShImageTypeFloat::Pointer ShImagePointerFloat;
 int main (int argc, char*argv[])
 {
   int sampleRate = 1;
-  int glyphResolution = 6;
-  int tesselationBasis = 0;
-  int sliceVisibility[3] = {1,0,1};
+  int glyphResolution = 2;
+  int tesselationBasis = 1;
+  int sliceVisibility[3] = {1,0,0};
   int dims[3] = {0,0,0};
 
-  int flipGlyphAxis[3] = {0,0,0};
+  int flipGlyphAxis[3] = {0,0,1};
   bool glyphColouring  = true;
-  int tesselationType = 2;
-  const float glyphScale = 0.3;
+  int tesselationType = 0;//TODO it is actually not workin only icosahedro works
+  const float glyphScale = .5;
 
   if( argc<2 )
   {

@@ -44,6 +44,8 @@ public:
   void FlipZ (const int&);
   void ColorGlyphs (const int&);
 
+  void WriteGlyphs (char* fileName);
+
   /** Set the Volume Of Interest (VOI). Consists in
       * 6 integers: xmin, xmax, ymin, ymax, zmin, zmax.*/
   void SetVOI(const int&,const int&,const int&,const int&,const int&,const int&);
