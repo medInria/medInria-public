@@ -43,6 +43,8 @@ public:
     void setColumnsCount(int columnsCount);
     void setRowsCount(int rowsCount);
 
+    QList<medDataIndex> getContainedIndexes();
+
 public slots:
 
     void addSeriesItem(const medDataIndex&);

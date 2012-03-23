@@ -73,8 +73,8 @@ medThumbnailContainer::medThumbnailContainer(QWidget *parent) : QFrame(parent), 
     d->scene->setBackgroundBrush(QColor(0x41, 0x41, 0x41));
 
     d->view = new medDatabasePreviewView(this);
-    d->view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    d->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    d->view->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    d->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
     d->view->setScene(d->scene);
 
@@ -107,8 +107,10 @@ medThumbnailContainer::medThumbnailContainer(QWidget *parent) : QFrame(parent), 
     qreal item_height   = medDatabasePreviewController::instance()->itemHeight(); //128
     qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing(); //10
 
-    this->setFixedHeight(2 * (item_height + item_spacing) + item_spacing + 36); // 36 pixels for the scroller
-    this->setFixedWidth(d->columns * (item_width + item_spacing) + item_spacing + 36); // 36 pixels for the scroller
+//    this->setFixedHeight(2 * (item_height + item_spacing) + item_spacing + 36); // 36 pixels for the scroller
+//    this->setFixedWidth(d->columns * (item_width + item_spacing) + item_spacing + 36); // 36 pixels for the scroller
+    this->setMinimumHeight(2 * (item_height + item_spacing) + item_spacing + 36);
+    this->setMinimumWidth(d->columns * (item_width + item_spacing) + item_spacing + 36);
 
     this->init();
 }
@@ -462,4 +464,16 @@ void medThumbnailContainer::setColumnsCount(int columnsCount)
 void medThumbnailContainer::setRowsCount(int rowsCount)
 {
     d->rows = rowsCount;
+}
+
+QList<medDataIndex> medThumbnailContainer::getContainedIndexes()
+{
+    QList<medDataIndex> pepe = *(new QList<medDataIndex>()); //TODO dejo el new o lo  saco?
+    foreach(medDatabasePreviewItem* it, d->containedItems)
+    {
+        medDataIndex index = it->dataIndex();
+        pepe << index;
+    }
+
+    return pepe;
 }

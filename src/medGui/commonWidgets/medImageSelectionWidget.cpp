@@ -25,11 +25,18 @@ public:
     medDatabaseView *view;
     medThumbnailContainer *selected;
 
+    QList<medDataIndex> selectedImages;
+
+    QPushButton* btOk;
+    QPushButton* btCancel;
+
 //    QTreeView* treeView;
 };
 
-medImageSelectionWidget::medImageSelectionWidget(QWidget *parent) : d(new medImageSelectionWidgetPrivate)
+medImageSelectionWidget::medImageSelectionWidget(QList<medDataIndex> indexes, QWidget *parent) : d(new medImageSelectionWidgetPrivate)
 {
+    d->selectedImages = indexes;
+
     QWidget* displayWidget = new QWidget(this);
     displayWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -70,13 +77,25 @@ medImageSelectionWidget::medImageSelectionWidget(QWidget *parent) : d(new medIma
     hlayout->addWidget(d->preview);
 
 
+    d->btOk = new QPushButton(tr("OK"), this);
+    d->btCancel = new QPushButton(tr("Cancel"), this);
+    d->btOk->setDefault( true );
+
+    QHBoxLayout* buttonlayout = new QHBoxLayout;
+    buttonlayout->addWidget( d->btCancel );
+    buttonlayout->addWidget( d->btOk );
+
     QVBoxLayout* vlayout = new QVBoxLayout(displayWidget);
     vlayout->addLayout(hlayout);
     vlayout->addWidget(d->selected);
+    vlayout->addLayout(buttonlayout);
 //    vlayout->addWidget(new medDropSite());
 
     connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), this, SLOT(onPatientSelected(const medDataIndex&)));
     connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(addSeriesItem(const medDataIndex&)));
+
+    connect(d->btOk, SIGNAL(clicked()), this, SLOT(onOkClicked()));
+    connect(d->btCancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
 
 //    connect(d->view, SIGNAL(studyClicked(const medDataIndex&)), d->selected, SLOT(onStudyClicked(const medDataIndex&)));
 
@@ -84,6 +103,11 @@ medImageSelectionWidget::medImageSelectionWidget(QWidget *parent) : d(new medIma
     for (int var = 2; var < d->proxy->columnCount(); ++var) {
 //        d->treeView->hideColumn(var);
         d->view->hideColumn(var);
+    }
+
+    foreach(medDataIndex ind, indexes)
+    {
+        d->selected->addSeriesItem(ind);
     }
 }
 
@@ -120,4 +144,21 @@ void medImageSelectionWidget::onPatientSelected(const medDataIndex& id)
             }
         }
     }
+}
+
+void medImageSelectionWidget::onCancelClicked()
+{
+    qDebug() << "canceeeeeeeeeeeeeeeeeeeeeeel";
+    reject();
+}
+
+void medImageSelectionWidget::onOkClicked()
+{
+    qDebug() << "oooooooooooooKKKKKKKKKKKKKKKKKK";
+    accept();
+}
+
+QList<medDataIndex> medImageSelectionWidget::getSelectedIndexes()
+{
+    return d->selected->getContainedIndexes();
 }

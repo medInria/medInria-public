@@ -130,6 +130,9 @@ public:
 
     medButton *quitButton;
     QToolButton *fullscreenButton;
+
+    //TODO delete me
+    QList<medDataIndex> indices;
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -843,7 +846,7 @@ void medMainWindow::registerToFactories()
 
 void medMainWindow::openImageSelectionWidget()
 {
-    medImageSelectionWidget* widget = new medImageSelectionWidget(this);
+    medImageSelectionWidget* misw = new medImageSelectionWidget( d->indices, this );
 //    QSize size = widget->sizeHint();
 //    QDesktopWidget* d = QApplication::desktop();
 //    int w = d->width();   // returns screen width
@@ -856,5 +859,11 @@ void medMainWindow::openImageSelectionWidget()
 //    widget->show();
 //    widget->activateWindow();
 
-    widget->exec();
+    int retCode = misw->exec();
+    if ( retCode==QDialog::Accepted ) {
+        d->indices = misw->getSelectedIndexes();
+        qDebug() << d->indices;
+    } else if ( retCode==QDialog::Rejected ) {
+        qDebug() << "cancele todo oooo esaaaa gilun";
+    }
 }

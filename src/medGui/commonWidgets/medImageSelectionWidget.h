@@ -13,10 +13,12 @@ class MEDGUI_EXPORT medImageSelectionWidget : public QDialog
     Q_OBJECT
 
 public:
-    medImageSelectionWidget(QWidget *parent = 0);
+    medImageSelectionWidget(QList<medDataIndex> indexes, QWidget *parent = 0);
     ~medImageSelectionWidget(void);
 
     QSize sizeHint(void) const;
+
+    QList<medDataIndex> getSelectedIndexes();
 
 public slots:
     void onPatientSelected(const medDataIndex&);
@@ -27,7 +29,10 @@ signals:
 
 private:
 
-protected:
+protected slots:
+
+    void onCancelClicked();
+    void onOkClicked();
 
 private:
     medImageSelectionWidgetPrivate *d;
