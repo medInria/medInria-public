@@ -56,11 +56,13 @@ protected slots:
     void onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event);
     void onDeleteButtonClicked();
 
-protected:
+private:
 
     void moveItem(medDatabasePreviewItem *target, QPointF pos);
     void moveToItem(medDatabasePreviewItem *target);
     void showDeleteButton();
+    void updateSelectorLegend(const medDataIndex& index);
+    void print();
 
 private:
     medThumbnailContainerPrivate *d;

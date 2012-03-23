@@ -49,14 +49,11 @@ public:
     bool canDrop;
     bool canDelete;
 
-    QList<medDataIndex> containedIndexes;
-
     QGraphicsScene* scene;
     medDatabasePreviewView* view;
 
     medDatabasePreviewSelector *selector;
 
-    medDataIndex current_index;
     medDatabasePreviewItem* current_item;
 
     QPropertyAnimation *selector_position_animation;
@@ -128,10 +125,7 @@ void medThumbnailContainer::reset(void)
     foreach(medDatabasePreviewItem* item, d->containedItems)
             d->scene->removeItem(item);
 
-    d->containedIndexes.clear();
-
-//    d->current_index = NULL;
-//    d->current_item = NULL;
+    d->current_item = NULL;
 
     d->containedItems.clear();
 }
@@ -148,7 +142,11 @@ void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
             return;
 
     // we need to check if the image is already here
-    if(!d->containedIndexes.contains(index))
+    bool isContainedAlready = false;
+    foreach(medDatabasePreviewItem* it, d->containedItems)
+        isContainedAlready |= it->dataIndex() == index;
+
+    if(!isContainedAlready)
     {
         medDatabasePreviewItem* item = new medDatabasePreviewItem( medDataIndex::makeSeriesIndex(index.dataSourceId(), index.patientId(), index.studyId(), index.seriesId()) );
         item->allowDrag(d->canDrag);
@@ -164,7 +162,7 @@ void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
         int left_margin = 10;
         int top_margin = 10;
 
-        int items_count = d->containedIndexes.count();
+        int items_count = d->containedItems.count();
         int items_in_last_row = items_count % d->columns;
 
         qreal space_taken_by_items_already_in_row =  items_in_last_row * (item_width + item_spacing);
@@ -180,12 +178,14 @@ void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
 
         d->scene->addItem(item);
 
-        d->containedIndexes << index;
+
         d->containedItems << item;
 
         //d->series_group->addItem(item);
 
         moveToItem( item );
+
+        print();
     }
 }
 
@@ -229,28 +229,11 @@ void medThumbnailContainer::moveToItem(medDatabasePreviewItem *target)
     QPoint selector_offset((medDatabasePreviewController::instance()->selectorWidth()  - medDatabasePreviewController::instance()->itemWidth())/-2,
                            (medDatabasePreviewController::instance()->selectorHeight() - medDatabasePreviewController::instance()->itemHeight())/-2);
 
-    d->current_index = target->dataIndex();
+    medDataIndex current_index = target->dataIndex();
 
     target->ensureVisible(QRectF(0,0,item_width,item_height), selector_width + item_spacing, 0);
 
-    if ( d->current_index.isValidForImage() )
-    {
-        d->selector->setText(QString(tr("Image id %1")).arg(d->current_index.imageId()));
-    }
-    else if (d->current_index.isValidForSeries() )
-    {
-        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->current_index.dataSourceId());
-        QString seriesName = dbc->metaData(d->current_index, medMetaDataKeys::SeriesDescription);
-
-        if ( seriesName.isEmpty() )
-            seriesName = QString(tr("Series id %1")).arg(d->current_index.seriesId());
-
-        d->selector->setText(seriesName);
-    }
-    else
-    {
-        d->selector->setText(d->current_index.asString());
-    }
+    updateSelectorLegend(current_index);
 
     if(!d->selector_position_animation)
         d->selector_position_animation = new QPropertyAnimation(d->selector, "pos");
@@ -286,7 +269,7 @@ void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
     qreal item_margins = selector_width - item_width;
     qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
 
-    d->current_index = item->dataIndex();
+    medDataIndex current_index = item->dataIndex();
     d->current_item = item;
 
     QPoint selector_offset(-4, -4);
@@ -298,23 +281,7 @@ void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
         return;
     }
 
-    if ( d->current_index.isValidForImage() )
-    {
-        d->selector->setText(QString(tr("Image id %1")).arg(d->current_index.imageId()));
-    }
-    else if (d->current_index.isValidForSeries() )
-    {
-        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->current_index.dataSourceId());
-        QString seriesName = dbc->metaData(d->current_index,medMetaDataKeys::SeriesDescription);
-        d->selector->setText(seriesName);
-
-        if ( seriesName.isEmpty() )
-            seriesName = QString(tr("Series id %1")).arg(d->current_index.seriesId());
-    }
-    else
-    {
-        d->selector->setText(d->current_index.asString());
-    }
+    updateSelectorLegend(current_index);
 
     if(!d->selector_position_animation)
         d->selector_position_animation = new QPropertyAnimation(d->selector, "pos");
@@ -341,6 +308,28 @@ void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
     connect(d->selector_animation, SIGNAL(finished()), this, SLOT(onSelectorReachedThumbnail()));
 
     d->selector_animation->start();
+}
+
+void medThumbnailContainer::updateSelectorLegend(const medDataIndex& index)
+{
+    if ( index.isValidForImage() )
+    {
+        d->selector->setText(QString(tr("Image id %1")).arg(index.imageId()));
+    }
+    else if (index.isValidForSeries() )
+    {
+        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+        QString seriesName = dbc->metaData(index, medMetaDataKeys::SeriesDescription);
+
+        if ( seriesName.isEmpty() )
+            seriesName = QString(tr("Series id %1")).arg(index.seriesId());
+
+        d->selector->setText(seriesName);
+    }
+    else
+    {
+        d->selector->setText(index.asString());
+    }
 }
 
 void medThumbnailContainer::onSelectorReachedThumbnail()
@@ -374,40 +363,79 @@ void medThumbnailContainer::showDeleteButton()
 
 void medThumbnailContainer::onDeleteButtonClicked()
 {
+
     if(d->current_item) {
 
-        QPointF deletedItemPosition = d->current_item->pos();
+        // if it is the last item or the only one
+        // we just delete it and hide the selector
 
-        d->scene->removeItem(d->current_item);
-        d->del->hide();
-
-        if(d->containedIndexes.count() > 1)
+        if(d->containedItems.last()->dataIndex() == d->current_item->dataIndex() || d->containedItems.count() == 1)
         {
-            int i1 = d->containedIndexes.indexOf(d->current_index, 0);
+            d->scene->removeItem(d->current_item);
+            d->del->hide();
+
+            d->containedItems.removeOne(d->current_item);
+
+            d->selector->hide();
+//            d->selector->setPos(QPointF(0,0));
+            d->current_item = NULL;
+        }
+        else
+        {
+            // we have at least 2 and we are not deleting the last one
+            QPointF deletedItemPosition = d->current_item->pos();
+            d->scene->removeItem(d->current_item);
+
             int i2 = d->containedItems.indexOf(d->current_item, 0);
 
-            d->containedIndexes.removeOne(d->current_index);
             d->containedItems.removeOne(d->current_item);
 
             medDatabasePreviewItem* last = d->containedItems.last();
 
             moveItem(last, deletedItemPosition);
-            moveToItem(last);
+            updateSelectorLegend(last->dataIndex());
 
-            d->containedIndexes.swap(i1, d->containedIndexes.count() -1);
-            d->containedItems.swap(i2, d->containedItems.count() -1);
+            d->current_item = last;
+
+            if(d->containedItems.count() > 1)
+            {
+                d->containedItems.move(d->containedItems.count() - 1, i2);
+            }
+        }
+    }
+}
+
+void medThumbnailContainer::print()
+{
+    qDebug() << d->containedItems.count();
+
+    QStringList pepe;
+    foreach(medDatabasePreviewItem* it, d->containedItems)
+    {
+        medDataIndex index = it->dataIndex();
+        QString lala;
+        if ( index.isValidForImage() )
+        {
+            lala = QString(tr("Image id %1")).arg(index.imageId());
+        }
+        else if (index.isValidForSeries() )
+        {
+            medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+            QString seriesName = dbc->metaData(index, medMetaDataKeys::SeriesDescription);
+
+            if ( seriesName.isEmpty() )
+                seriesName = QString(tr("Series id %1")).arg(index.seriesId());
+
+            lala = seriesName;
         }
         else
         {
-            d->containedIndexes.removeOne(d->current_index);
-            d->containedItems.removeOne(d->current_item);
-
-            d->selector->hide();
-            d->selector->setPos(QPointF(0,0));
+            lala = index.asString();
         }
 
+        pepe << lala;
     }
-
+    qDebug() << pepe;
 }
 
 void medThumbnailContainer::setAllowDragging(bool isDraggingAllowed)
