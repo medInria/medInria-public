@@ -57,7 +57,9 @@ medDataIndex medAbstractData::dataIndex() const
 QList< medAttachedData * > medAbstractData::attachedData() const
 {
     QList< medAttachedData * > ret;
+#if QT_VERSION > 0x0406FF
     ret.reserve(d->attachedData.size());
+#endif
     foreach( medAttachedData * data, d->attachedData ) {
         ret.push_back(data);
     }
