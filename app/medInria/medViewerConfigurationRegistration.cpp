@@ -58,15 +58,6 @@ QString medViewerConfigurationRegistration::description() const {
     return "Registration";
 }
 
-void medViewerConfigurationRegistration::onSetupLayoutCompare (void)
-{
-    emit layoutModeChanged ("Compare");
-}
-
-void medViewerConfigurationRegistration::onSetupLayoutFuse (void)
-{
-    emit layoutModeChanged ("Fuse");
-}
 
 void medViewerConfigurationRegistration::setupViewContainerStack()
 {
