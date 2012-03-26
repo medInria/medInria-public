@@ -91,7 +91,7 @@ void medDatabaseWriter::run ( void )
         d->data->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "0" );
 
     QString generatedSeriesID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
-    
+
     if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
         d->data->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesID );
 
@@ -298,11 +298,11 @@ void medDatabaseWriter::run ( void )
     QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
 
     int writeSuccess = 0;
-    
+
     // Trick similar to medDatabaseImporter
     QString identifier = d->data->identifier();
     QString extension = "";
-    
+
     if (identifier == "vtkDataMesh") {
         extension = ".vtk";
     } else if (identifier == "vtkDataMesh4D") {
@@ -314,8 +314,13 @@ void medDatabaseWriter::run ( void )
     } else if (identifier.contains ("CompositeData")) {
         extension = ".cds";
     } else if (identifier.contains ("Image")) {
-        extension = ".mha";
-    }    
+        //.mha stored rgb data as vector data
+        //we can't know whether it's a vector field or colred data if mha.
+        if (identifier.contains("RGB")) {
+            extension = ".nii";
+        }
+        else extension = ".mha";
+    }
 
     for ( int i=0; i<writers.size(); i++ )
     {
@@ -347,7 +352,7 @@ void medDatabaseWriter::run ( void )
             extension = extensions[0];
         }
         */
-        
+
         QString imageFileName = imageFileNameBase + extension;
         qDebug() << "trying to write in file : "<< medStorage::dataLocation() + imageFileName;
 
