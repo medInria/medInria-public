@@ -217,9 +217,6 @@ vtkImageView2D::vtkImageView2D()
   this->Slice = 0;
 
   this->ConventionMatrix->Zero();
-  this->SetViewConvention (vtkImageView2D::VIEW_CONVENTION_RADIOLOGICAL);
-
-  this->InitializeSlicePlane();
 
   this->InitialParallelScale = 1.0;
   this->ShowRulerWidget      = 1;
@@ -228,6 +225,10 @@ vtkImageView2D::vtkImageView2D()
   this->ShowAngleWidget      = 0;
   this->AnnotationStyle      = AnnotationStyle1;
   this->CursorFollowMouse    = 0;
+
+  this->SetViewConvention (vtkImageView2D::VIEW_CONVENTION_RADIOLOGICAL);
+
+  this->InitializeSlicePlane();
 
   this->CornerAnnotation->SetImageActor (this->GetImageActor());
   this->CornerAnnotation->ShowSliceAndImageOn();
