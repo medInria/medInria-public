@@ -92,6 +92,8 @@ public:
   vtkGetObjectMacro (ActorZ, vtkImageActor);
   vtkGetObjectMacro (ExtraPlaneCollection, vtkProp3DCollection);
 
+  virtual vtkImageData* GetInput(int layer = 0) const;
+
   virtual void SetVolumeMapperTo3DTexture (void);
   virtual void SetVolumeMapperToRayCast (void);
   virtual void SetVolumeMapperToRayCastAndTexture (void);

@@ -977,7 +977,23 @@ void vtkImageView::SetColorLevel(double s,int layer)
   if (s == this->GetColorLevel(layer))
     return;
 
-  this->StoreColorLevel (s, layer);
+  double correct_s = s;
+  //check validity of the color level, only apply within range.
+  vtkImageData * input = this->GetInput(layer);
+  if (input)
+  {
+    double min = input->GetScalarTypeMin();
+    double max = input->GetScalarTypeMax();
+    if ( s > max )
+      correct_s = max;
+    if (s < min)
+      correct_s = min;
+  }
+  //test again if changed after correction
+  if (correct_s == this->GetColorLevel(layer))
+    return;
+
+  this->StoreColorLevel (correct_s, layer);
 
   this->SetTransferFunctionRangeFromWindowSettings(layer);
 
@@ -1044,7 +1060,7 @@ void vtkImageView::GetWorldCoordinatesFromImageCoordinates(int indices[3], doubl
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::GetImageCoordinatesFromWorldCoordinates(double position[3], int* indices)
+void vtkImageView::GetImageCoordinatesFromWorldCoordinates(double position[3], int* indices) const
 {
   if (!this->GetInput())
   {

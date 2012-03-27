@@ -109,10 +109,10 @@ public:
   //ETX
 
   virtual void SetVisibility(int visible, int layer);
-  virtual int  GetVisibility(int layer);
+  virtual int  GetVisibility(int layer) const;
 
   virtual void   SetOpacity(double opacity, int layer);
-  virtual double GetOpacity(int layer);
+  virtual double GetOpacity(int layer) const;
 
   // Description:
   // Set/Get the input image to the viewer.
@@ -123,6 +123,7 @@ public:
                                    vtkMatrix4x4 *matrix = 0,
                                    int layer=0);
   vtkImageData *GetImageInput(int layer) const;
+  vtkImageData *GetInput(int layer = 0) const;
 
   // Description:
   // Start/Stop the interactor relation with the view.
@@ -222,7 +223,7 @@ public:
   // Description:
   // Set/Get the current slice to display (depending on the orientation
   // this can be in X, Y or Z).
-  virtual int  GetSlice(void);
+  virtual int  GetSlice(void) const;
   virtual void SetSlice(int s);
   /**
    The wolrd is not always what we think it is ...
@@ -250,12 +251,12 @@ public:
   // Description:
   // Return the minimum and maximum slice values (depending on the orientation
   // this can be in X, Y or Z).
-  virtual int GetSliceMin();
-  virtual int GetSliceMax();
-  virtual void GetSliceRange(int range[2])
+  virtual int GetSliceMin() const;
+  virtual int GetSliceMax() const;
+  virtual void GetSliceRange(int range[2]) const
   { this->GetSliceRange(range[0], range[1]); }
-  virtual void GetSliceRange(int &min, int &max);
-  virtual int* GetSliceRange();
+  virtual void GetSliceRange(int &min, int &max) const;
+  virtual int* GetSliceRange() const;
 
   /**
    Instead of setting the slice orientation to an axis (YZ - XZ - XY),
@@ -285,7 +286,7 @@ public:
   /**
    Convert a world coordinate point into an image indices coordinate point
    */
-  virtual int GetSliceForWorldCoordinates(double pos[3]);
+  virtual int GetSliceForWorldCoordinates(double pos[3]) const;
   /**
    Reset position - zoom - window/level to default
    */
@@ -326,7 +327,7 @@ public:
      It is On by default
   */
   virtual void SetInterpolate (int val, int layer=0);
-  virtual int  GetInterpolate (int layer = 0);
+  virtual int  GetInterpolate (int layer = 0) const;
   vtkBooleanMacro (Interpolate, int);
 
   /**

@@ -90,11 +90,12 @@ public:
   virtual void SetInput(vtkImageData * image);
   virtual vtkImageData* GetInput() { return this->Input; }
 
-  virtual vtkLookupTable * GetLookupTable();
+  virtual vtkLookupTable * GetLookupTable() const;
 
   virtual vtkImageActor* GetImageActor() { return this->ImageActor; }
 
-  virtual vtkImageMapToColors* GetWindowLevel() { return this->WindowLevel; }
+  virtual vtkImageMapToColors* GetWindowLevel() const
+  { return this->WindowLevel; }
   vtkSetMacro(ColorWindow, double);
   vtkGetMacro(ColorWindow,double);
   vtkSetMacro(ColorLevel, double);
@@ -169,7 +170,7 @@ void vtkImage2DDisplay::SetInput(vtkImageData * image)
   }
 }
 
-vtkLookupTable * vtkImage2DDisplay::GetLookupTable()
+vtkLookupTable * vtkImage2DDisplay::GetLookupTable() const
 {
   return vtkLookupTable::SafeDownCast(this->GetWindowLevel()->GetLookupTable());
 }
@@ -295,7 +296,7 @@ void vtkImageView2D::SetVisibility(int visible, int layer)
 }
 
 //----------------------------------------------------------------------------
-int vtkImageView2D::GetVisibility(int layer)
+int vtkImageView2D::GetVisibility(int layer) const
 {
   if (this->HasLayer(layer))
   {
@@ -316,7 +317,7 @@ void vtkImageView2D::SetOpacity(double opacity, int layer)
 }
 
 //----------------------------------------------------------------------------
-double vtkImageView2D::GetOpacity(int layer)
+double vtkImageView2D::GetOpacity(int layer) const
 {
   if (this->HasLayer(layer))
   {
@@ -371,7 +372,7 @@ unsigned long vtkImageView2D::GetMTime()
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::GetSliceRange(int &min, int &max)
+void vtkImageView2D::GetSliceRange(int &min, int &max) const
 {
   vtkImageData *input = this->GetInput();
   if (input)
@@ -384,7 +385,7 @@ void vtkImageView2D::GetSliceRange(int &min, int &max)
 }
 
 //----------------------------------------------------------------------------
-int* vtkImageView2D::GetSliceRange()
+int* vtkImageView2D::GetSliceRange() const
 {
   vtkImageData *input = this->GetInput();
   if (input)
@@ -396,7 +397,7 @@ int* vtkImageView2D::GetSliceRange()
 }
 
 //----------------------------------------------------------------------------
-int vtkImageView2D::GetSliceMin()
+int vtkImageView2D::GetSliceMin() const
 {
   int *range = this->GetSliceRange();
   if (range)
@@ -407,7 +408,7 @@ int vtkImageView2D::GetSliceMin()
 }
 
 //----------------------------------------------------------------------------
-int vtkImageView2D::GetSliceMax()
+int vtkImageView2D::GetSliceMax() const
 {
   int *range = this->GetSliceRange();
   if (range)
@@ -418,7 +419,7 @@ int vtkImageView2D::GetSliceMax()
 }
 
 //----------------------------------------------------------------------------
-int vtkImageView2D::GetSlice (void)
+int vtkImageView2D::GetSlice (void) const
 {
   return this->Slice;
 }
@@ -1203,7 +1204,7 @@ void vtkImageView2D::UpdateCenter (void)
 }
 
 //----------------------------------------------------------------------------
-int vtkImageView2D::GetSliceForWorldCoordinates(double pos[3])
+int vtkImageView2D::GetSliceForWorldCoordinates(double pos[3]) const
 {
   int indices[3];
   this->GetImageCoordinatesFromWorldCoordinates (pos, indices);
@@ -1531,7 +1532,7 @@ void vtkImageView2D::SetInterpolate(int val, int layer)
 }
 
 //----------------------------------------------------------------------------
-int vtkImageView2D::GetInterpolate(int layer)
+int vtkImageView2D::GetInterpolate(int layer) const
 {
   if (this->HasLayer (layer))
     return this->GetImage2DDisplayForLayer(layer)->GetImageActor()->GetInterpolate();
@@ -1687,6 +1688,11 @@ vtkImageData *vtkImageView2D::GetImageInput(int layer) const
     return NULL;
 
   return this->GetImage2DDisplayForLayer(layer)->GetInput();
+}
+
+vtkImageData *vtkImageView2D::GetInput(int layer) const
+{
+  return GetImageInput(layer);
 }
 
 //----------------------------------------------------------------------------

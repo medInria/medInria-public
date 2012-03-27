@@ -181,7 +181,8 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   // LAYER
   virtual void SetInput (vtkImageData *arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
   virtual void SetInputConnection (vtkAlgorithmOutput* arg, vtkMatrix4x4 *matrix = 0, int layer = 0);
-  vtkGetObjectMacro (Input, vtkImageData);
+//  vtkGetObjectMacro (Input, vtkImageData);
+  virtual vtkImageData* GetInput (int layer = 0) const = 0;
 
   // Description:
   // Get the internal render window, renderer,
@@ -347,7 +348,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   /**
      Convert a world coordinate point into an image indices coordinate point
   */
-  virtual void GetImageCoordinatesFromWorldCoordinates (double position[3], int* indices);
+  virtual void GetImageCoordinatesFromWorldCoordinates (double position[3], int* indices) const;
 
   /**
      Get the pixel value at a given world coordinate point in space, return
@@ -698,7 +699,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
      the closest position that lies within the image boundaries.
    */
   virtual void GetWithinBoundsPosition (double* pos1, double* dos2);
-  
+
   private:
 #ifdef vtkINRIA3D_USE_ITK
     //! Template function which implements SetInput for all types.
