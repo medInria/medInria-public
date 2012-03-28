@@ -982,12 +982,12 @@ void vtkImageView::SetColorLevel(double s,int layer)
   vtkImageData * input = this->GetInput(layer);
   if (input)
   {
-    double min = input->GetScalarTypeMin();
-    double max = input->GetScalarTypeMax();
-    if ( s > max )
-      correct_s = max;
-    if (s < min)
-      correct_s = min;
+    double min_Level = input->GetScalarTypeMin();
+    double max_level = input->GetScalarTypeMax();
+    if ( s > max_level )
+      correct_s = max_level;
+    if (s < min_level)
+      correct_s = min_level;
   }
   //test again if changed after correction
   if (correct_s == this->GetColorLevel(layer))
