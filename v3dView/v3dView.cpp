@@ -931,9 +931,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         return;
     }
 
-    if ( layer == 0 ) {
-        this->enableInteractor(v3dViewAnnotationInteractor::s_identifier());
-    }
+
 //    if(medAbstractView::hasImage()){
 //        if (data->identifier().contains( "vtkDataMesh" ) && medAbstractView::meshLayerCount()>1)
 //        {
@@ -1037,6 +1035,8 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
 
     if ( layer==0 )
     {
+
+
         if ( medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> ( data ) )
         {
             d->data = data;
@@ -1089,6 +1089,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
                 d->slider->setRange (0, d->imageData->xDimension()-1);
         }
+
     }
 
     //this->addDataInList ( data, layer );
@@ -1096,6 +1097,8 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
     setCurrentLayer(layer);
     emit dataAdded ( data );
     emit dataAdded ( data, layer );
+    if (layer ==0 )
+        this->enableInteractor(v3dViewAnnotationInteractor::s_identifier());
 }
 
 void *v3dView::data ( void )

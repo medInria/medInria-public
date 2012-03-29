@@ -40,27 +40,30 @@ v3dViewAnnIntImageMaskHelper::~v3dViewAnnIntImageMaskHelper()
 bool v3dViewAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
 {
     medImageMaskAnnotationData * imad = qobject_cast<medImageMaskAnnotationData*>(annData);
-    if ( !imad ) 
+    if ( !imad )
         return false;
 
     medAbstractDataImage * dataImage = imad->maskData();
     v3dView * view = this->getV3dView();
-
+    int oldLayer = view->currentLayer();
     int maskLayer = view->layerCount();
+
     view->setData(dataImage, maskLayer);
 
     QList<double> scalars;
     QList<QColor> colors;
     for( medImageMaskAnnotationData::ColorMapType::const_iterator it(imad->colorMap().begin()), end(imad->colorMap().end());
-        it != end; ++it ) 
+        it != end; ++it )
     {
         scalars.push_back(it->first);
         colors.push_back(it->second);
     }
-        
-    int oldLayer = view->currentLayer();
+
+
     view->setCurrentLayer(maskLayer);
     view->setColorLookupTable(scalars,colors);
+//    qDebug() << "windowLevel" << view->view2d()->GetWindowLevel(maskLayer);
+//    qDebug() << "lookuptable"<< view->view2d()->GetWindowLevel(maskLayer)->GetLookupTable();
     view->view2d()->GetWindowLevel(maskLayer)->GetLookupTable()->SetRange(
         scalars.first() - 1, // v3dView pads the data by one.
         scalars.back()  + 1);
@@ -88,7 +91,7 @@ void v3dViewAnnIntImageMaskHelper::annotationModified( medAnnotationData * annDa
     medImageMaskAnnotationData * imad = qobject_cast<medImageMaskAnnotationData*>(annData);
     v3dView * view = this->getV3dView();
 
-    if ( !imad ) 
+    if ( !imad )
         return;
 
     int layer(-1);

@@ -21,7 +21,7 @@ public :
     virtual void annotationModified( medAnnotationData* annData ) = 0;
 protected:
     v3dView * getV3dView();
-    v3dViewAnnotationInteractor * m_v3dViewAnnInt; 
+    v3dViewAnnotationInteractor * m_v3dViewAnnInt;
 };
 
 
@@ -48,6 +48,8 @@ public:
 
     //! Override dtkAbstractViewInteractor.
     virtual bool isAutoEnabledWith ( dtkAbstractData * data );
+
+    void setView(dtkAbstractView* view);
 
     static QString s_identifier();
 

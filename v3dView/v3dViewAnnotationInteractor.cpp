@@ -75,13 +75,13 @@ QStringList v3dViewAnnotationInteractor::handled(void) const
 bool v3dViewAnnotationInteractor::registered(void)
 {
     return dtkAbstractViewFactory::instance()->registerViewInteractorType(
-        v3dViewAnnotationInteractor::s_identifier(), 
+        v3dViewAnnotationInteractor::s_identifier(),
         QStringList() << v3dView::s_identifier(), createV3dViewAnnotationInteractor);
 }
 
 bool v3dViewAnnotationInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 {
-    if ( data ) 
+    if ( data )
         return true;
     return false;
 }
@@ -139,6 +139,14 @@ v3dView * v3dViewAnnotationInteractor::getV3dView()
     return qobject_cast<v3dView *>(this->view());
 }
 
+void v3dViewAnnotationInteractor::setView(dtkAbstractView* view)
+{
+    BaseClass::setView(view);
+    if (view)     setData((dtkAbstractData*)view->data());
+    else setData(NULL);
+}
+
+
 void v3dViewAnnotationInteractor::initialize( medAbstractView * view, medAbstractData* data )
 {
     BaseClass::initialize(view,data);
@@ -147,7 +155,7 @@ void v3dViewAnnotationInteractor::initialize( medAbstractView * view, medAbstrac
 void v3dViewAnnotationInteractor::onDataModified( medAbstractData* data )
 {
     medAnnotationData * annData = qobject_cast<medAnnotationData*>(data);
-    if (!annData) 
+    if (!annData)
         return;
 
     v3dViewAnnotationInteractorPrivate::HelperMap::iterator it = d->dataToHelperIdMap.find(annData);
