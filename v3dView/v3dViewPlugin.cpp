@@ -71,9 +71,40 @@ QString v3dViewPlugin::name(void) const
     return "v3dViewPlugin";
 }
 
+QString v3dViewPlugin::contact(void) const
+{
+    return "";
+}
+
+QStringList v3dViewPlugin::authors(void) const
+{
+    QStringList list;
+    list << QString::fromUtf8("Pierre Fillard");
+    return list;
+}
+
+QStringList v3dViewPlugin::contributors(void) const
+{
+    QStringList list;
+    list <<  "Nicolas Toussaint"
+          << "Stephan Schmitt"
+          << "John Stark"
+          << QString::fromUtf8("Benoît Bleuzé")
+          << "Jaime Garcia"
+          << "Fatih Arslan"
+          << "Sergio Medina";
+    return list;
+}
+
+QString v3dViewPlugin::version(void) const
+{
+    return V3DVIEWPLUGIN_VERSION;
+}
+
 QString v3dViewPlugin::description(void) const
 {
-    return v3dView::s_identifier();
+    return tr("View Plugin\n<br/>"
+              "Contains view and interactors based on vtkinria3d");
 }
 
 QStringList v3dViewPlugin::tags(void) const
@@ -84,7 +115,7 @@ QStringList v3dViewPlugin::tags(void) const
 QStringList v3dViewPlugin::types(void) const
 {
     return QStringList() << v3dView::s_identifier() << "v3dViewFiberInteractor"
-        << "v3dViewFuseInteractor" << "v3dViewMeshInteractor"  
+        << "v3dViewFuseInteractor" << "v3dViewMeshInteractor"
         << "v3dViewTensorInteractor" << "v3dView4DInteractor"
         << v3dViewAnnotationInteractor::s_identifier();
 }
