@@ -8,6 +8,7 @@
 #include <medImageMaskAnnotationData.h>
 #include <medMetaDataKeys.h>
 #include <medToolBoxSegmentation.h>
+#include <medMessageController.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -328,6 +329,13 @@ void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
     m_lastVup = QVector3D();
     m_lastVpn = QVector3D();
 
+    if (dtkdata->identifier().contains("4"))
+    {
+        qDebug() << "Tried to set a 4d image as input, refused";
+        medMessageController::instance()->showError(this,"Segmentation on 4D images not yet supported",5);
+        return;
+    }
+    
     m_imageData = dtkSmartPointer<dtkAbstractData>(dtkdata);
 
     QString dataText;
