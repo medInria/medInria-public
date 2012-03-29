@@ -62,6 +62,11 @@ QString vtkDataMeshWriterPlugin::description(void) const
   return "Writers for any VTK mesh data type.";
 }
 
+QString vtkDataMeshWriterPlugin::version(void) const
+{
+    return VTKDATAMESHWRITERPLUGIN_VERSION;
+}
+
 QStringList vtkDataMeshWriterPlugin::tags(void) const
 {
     return QStringList() << "vtk" << "data" << "mesh" << "writer";

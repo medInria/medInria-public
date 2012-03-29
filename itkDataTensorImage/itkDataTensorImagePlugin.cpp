@@ -75,6 +75,12 @@ QStringList itkDataTensorImagePlugin::tags(void) const
     return QStringList() << "itk" << "data" << "tensor" << "image";
 }
 
+QString itkDataTensorImagePlugin::version(void) const
+{
+    return ITKDATATENSORIMAGEPLUGIN_VERSION;
+}
+
+
 QStringList itkDataTensorImagePlugin::types(void) const
 {
     return QStringList() << "itkDataTensorImageFloat3"

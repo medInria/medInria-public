@@ -47,7 +47,7 @@ itkDataDiffusionGradientListPlugin::~itkDataDiffusionGradientListPlugin(void)
 bool itkDataDiffusionGradientListPlugin::initialize(void)
 {
     if(!itkDataDiffusionGradientList::registered())
-	dtkWarning() << "Unable to register itkDataDiffusionGradientList type";
+        dtkWarning() << "Unable to register itkDataDiffusionGradientList type";
 
     return true;
 }
@@ -70,6 +70,11 @@ QString itkDataDiffusionGradientListPlugin::description(void) const
 QString itkDataDiffusionGradientListPlugin::identifier(void) const
 {
     return "itkDataDiffusionGradientListPlugin";
+}
+
+QString itkDataDiffusionGradientListPlugin::version(void) const
+{
+    return ITKDATADIFFUSIONGRADIENTLISTPLUGIN_VERSION;
 }
 
 QStringList itkDataDiffusionGradientListPlugin::tags(void) const

@@ -11,7 +11,7 @@
 // itkDCMTKDataImageReaderPluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class itkDCMTKDataImageReaderPluginPrivate 
+class itkDCMTKDataImageReaderPluginPrivate
 {
 public:
     // Class variables go here.
@@ -55,6 +55,27 @@ QString itkDCMTKDataImageReaderPlugin::description(void) const
 {
     return "ITK DICOM reader using DCMTK";
 }
+
+QStringList itkDCMTKDataImageReaderPlugin::authors(void) const
+{
+    QStringList list;
+    list << QString::fromUtf8("Pierre Fillard");
+    return list;
+}
+
+QStringList itkDCMTKDataImageReaderPlugin::contributors(void) const
+{
+    QStringList list;
+    list <<  "Michael Knopke";
+    return list;
+}
+
+
+QString itkDCMTKDataImageReaderPlugin::version(void) const
+{
+    return ITKDCMTKDATAIMAGEREADERPLUGIN_VERSION;
+}
+
 
 QStringList itkDCMTKDataImageReaderPlugin::tags(void) const
 {

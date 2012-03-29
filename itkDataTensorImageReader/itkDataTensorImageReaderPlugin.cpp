@@ -70,6 +70,11 @@ QString itkDataTensorImageReaderPlugin::description(void) const
     return "ITK tensor data image readers";
 }
 
+QString itkDataTensorImageReaderPlugin::version(void) const
+{
+    return ITKDATATENSORIMAGEREADERPLUGIN_VERSION;
+}
+
 QStringList itkDataTensorImageReaderPlugin::tags(void) const
 {
     return QStringList() << "itk" << "data" << "tensor" << "image" << "reader";

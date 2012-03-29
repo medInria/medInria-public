@@ -111,6 +111,11 @@ QString itkDataImagePlugin::description(void) const
     return "Plugin containing all types of ITK images";
 }
 
+QString itkDataImagePlugin::version(void) const
+{
+    return ITKDATAIMAGEPLUGIN_VERSION;
+}
+
 QStringList itkDataImagePlugin::tags(void) const
 {
     return QStringList() << "itk" << "data" << "image";

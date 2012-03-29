@@ -87,17 +87,24 @@ QString v3dDataPlugin::description(void) const
     return "v3dData";
 }
 
+QString v3dDataPlugin::version(void) const
+{
+    return V3DDATAPLUGIN_VERSION;
+}
+
 QStringList v3dDataPlugin::tags(void) const
 {
     return QStringList() << "v3d" << "data";
 }
 
+
+
 QStringList v3dDataPlugin::types(void) const
 {
     return QStringList() << "v3dDataImage"
-			 << "v3dDataFibers"
-			 << "v3dDataFibersWriter"
-			 << "v3dDataFibersReader";
+                         << "v3dDataFibers"
+                         << "v3dDataFibersWriter"
+                         << "v3dDataFibersReader";
 }
 
 Q_EXPORT_PLUGIN2(v3dDataPlugin, v3dDataPlugin)

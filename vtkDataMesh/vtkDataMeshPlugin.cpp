@@ -62,6 +62,11 @@ QString vtkDataMeshPlugin::description(void) const
     return "Plugin containing all types of VTK meshes";
 }
 
+QString vtkDataMeshPlugin::version(void) const
+{
+    return VTKDATAMESHPLUGIN_VERSION;
+}
+
 QStringList vtkDataMeshPlugin::tags(void) const
 {
   return QStringList() << "vtk" << "data" << "mesh" << "4D";

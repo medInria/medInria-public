@@ -13,7 +13,7 @@
 // itkDataTensorImageWriterPluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class itkDataTensorImageWriterPluginPrivate 
+class itkDataTensorImageWriterPluginPrivate
 {
 public:
     // Class variables go here.
@@ -60,6 +60,11 @@ QString itkDataTensorImageWriterPlugin::name(void) const
 QString itkDataTensorImageWriterPlugin::description(void) const
 {
     return "ITK tensor data image writers";
+}
+
+QString itkDataTensorImageWriterPlugin::version(void) const
+{
+    return ITKDATATENSORIMAGEWRITERPLUGIN_VERSION;
 }
 
 QStringList itkDataTensorImageWriterPlugin::tags(void) const

@@ -101,6 +101,12 @@ QString itkDataImageWriterPlugin::description(void) const
     return "Writers for any ITK image data type.";
 }
 
+QString itkDataImageWriterPlugin::version(void) const
+{
+    return ITKDATAIMAGEWRITERPLUGIN_VERSION;
+}
+
+
 QStringList itkDataImageWriterPlugin::tags(void) const
 {
     return QStringList() << "itk" << "data" << "image" << "writer";

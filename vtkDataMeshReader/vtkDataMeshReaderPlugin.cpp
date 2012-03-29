@@ -63,6 +63,11 @@ QString vtkDataMeshReaderPlugin::description(void) const
   return "Readers for any VTK point data type.";
 }
 
+QString vtkDataMeshReaderPlugin::version(void) const
+{
+  return VTKDATAMESHREADERPLUGIN_VERSION;
+}
+
 QStringList vtkDataMeshReaderPlugin::tags(void) const
 {
   return QStringList() << "vtk" << "data" << "mesh" << "reader";
