@@ -329,13 +329,6 @@ void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
     m_lastVup = QVector3D();
     m_lastVpn = QVector3D();
 
-    if (dtkdata->identifier().contains("4"))
-    {
-        qDebug() << "Tried to set a 4d image as input, refused";
-        medMessageController::instance()->showError(this,"Segmentation on 4D images not yet supported",5);
-        return;
-    }
-    
     m_imageData = dtkSmartPointer<dtkAbstractData>(dtkdata);
 
     QString dataText;
@@ -389,6 +382,7 @@ void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
         //    if ( this->m_maskAnnotationData ) {
         //        m_maskAnnotationData->parentData()->removeAttachedData(m_maskAnnotationData);
         //    }
+            
             m_maskAnnotationData = new medImageMaskAnnotationData;
             this->initializeMaskData( m_imageData, m_maskData );
             m_maskAnnotationData->setMaskData(qobject_cast<medAbstractDataImage*>(m_maskData));
@@ -454,16 +448,80 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
 
     medAbstractDataImage * mImage = qobject_cast<medAbstractDataImage*>(imageData);
     Q_ASSERT(mImage);
-    Q_ASSERT(mask->GetImageDimension() >= mImage->Dimension());
-
-    itk::DataObject * imageDataOb = dynamic_cast<itk::DataObject*>( reinterpret_cast<itk::Object*>(imageData->data()) );
+    //Q_ASSERT(mask->GetImageDimension() >= mImage->Dimension());
 
     MaskType::RegionType region;
     region.SetSize(0, ( mImage->Dimension() > 0 ? mImage->xDimension() : 1 ) );
     region.SetSize(1, ( mImage->Dimension() > 1 ? mImage->yDimension() : 1 ) );
     region.SetSize(2, ( mImage->Dimension() > 2 ? mImage->zDimension() : 1 ) );
 
-    mask->CopyInformation( imageDataOb );
+    MaskType::DirectionType direction;
+    MaskType::SpacingType spacing;
+    MaskType::PointType origin;
+    
+    direction.Fill(0);
+    spacing.Fill(0);
+    origin.Fill(0);
+    for (unsigned int i = 0;i < mask->GetImageDimension();++i)
+        direction(i,i) = 1;
+    
+    unsigned int maxIndex = std::min<unsigned int>(mask->GetImageDimension(),mImage->Dimension());
+    
+    switch (mImage->Dimension())
+    {
+        case 2:
+        {
+            itk::ImageBase <2> * imageDataOb = dynamic_cast<itk::ImageBase <2> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
+
+            for (unsigned int i = 0;i < maxIndex;++i)
+            {
+                for (unsigned int j = 0;j < maxIndex;++j)
+                    direction(i,j) = imageDataOb->GetDirection()(i,j);
+                
+                spacing[i] = imageDataOb->GetSpacing()[i];
+                origin[i] = imageDataOb->GetOrigin()[i];
+            }
+
+            break;
+        }
+            
+        case 4:
+        {
+            itk::ImageBase <4> * imageDataOb = dynamic_cast<itk::ImageBase <4> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
+            
+            for (unsigned int i = 0;i < maxIndex;++i)
+            {
+                for (unsigned int j = 0;j < maxIndex;++j)
+                    direction(i,j) = imageDataOb->GetDirection()(i,j);
+                
+                spacing[i] = imageDataOb->GetSpacing()[i];
+                origin[i] = imageDataOb->GetOrigin()[i];
+            }
+
+            break;
+        }
+            
+        case 3:
+        default:
+        {
+            itk::ImageBase <3> * imageDataOb = dynamic_cast<itk::ImageBase <3> *>( reinterpret_cast<itk::Object*>(imageData->data()) );
+            
+            for (unsigned int i = 0;i < maxIndex;++i)
+            {
+                for (unsigned int j = 0;j < maxIndex;++j)
+                    direction(i,j) = imageDataOb->GetDirection()(i,j);
+                
+                spacing[i] = imageDataOb->GetSpacing()[i];
+                origin[i] = imageDataOb->GetOrigin()[i];
+            }
+
+            break;
+        }
+    }
+    
+    mask->SetOrigin(origin);
+    mask->SetDirection(direction);
+    mask->SetSpacing(spacing);
     mask->SetLargestPossibleRegion(region);
     mask->SetBufferedRegion(region);
     mask->Allocate();
