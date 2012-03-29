@@ -24,7 +24,7 @@ class MEDVIEWSEGMENTATIONPLUGIN_EXPORT Plugin : public dtkPlugin
     Q_INTERFACES(dtkPlugin)
 
 public:
-     Plugin(QObject *parent = 0);
+    Plugin(QObject *parent = 0);
     ~Plugin(void);
 
     virtual bool initialize(void);
@@ -33,7 +33,11 @@ public:
     virtual QString name(void) const;
     virtual QString description(void) const;
     virtual QString identifier(void) const;
+    virtual QString version(void) const;
 
+    virtual QStringList authors(void) const;
+    virtual QString contact(void) const;
+    virtual QStringList contributors(void) const;
     virtual QStringList tags(void) const;
     virtual QStringList types(void) const;
 

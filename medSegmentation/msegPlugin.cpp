@@ -55,7 +55,36 @@ QString Plugin::name(void) const
 
 QString Plugin::description(void) const
 {
-    return PluginPrivate::s_Name;
+    return tr("Segmentation plugin\n<br/>"
+              "Manual painting of regions: inside, and outside."
+              "<br/> Exports masks with three values: inside (1), outside (2)"
+              "and other (0). You may leave out the outside colour "
+              "for simple binary masks.");
+}
+
+QString Plugin::version(void) const
+{
+    return MEDSEGMENTATIONPLUGIN_VERSION;
+}
+
+QString Plugin::contact(void) const
+{
+    return "John.Stark@inria.fr";
+}
+
+QStringList Plugin::authors(void) const
+{
+    QStringList list;
+    list << "John Stark";
+    return list;
+}
+
+QStringList Plugin::contributors(void) const
+{
+    QStringList list;
+    list <<  QString::fromUtf8("Benoît Bleuzé")
+             << "Olivier Commowick";
+    return list;
 }
 
 QString Plugin::identifier(void) const
