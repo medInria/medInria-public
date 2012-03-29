@@ -70,7 +70,7 @@ public:
             this->m_state = State::Painting;
 
             //Project vector onto plane
-            dtkAbstractData * viewData = medToolBoxSegmentation::viewData( view );
+//            dtkAbstractData * viewData = medToolBoxSegmentation::viewData( view );
             this->m_points.push_back(posImage);
 
             m_cb->updateStroke( this,view );
@@ -329,13 +329,15 @@ void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
     m_lastVup = QVector3D();
     m_lastVpn = QVector3D();
 
-    if (dtkdata->identifier().contains("4"))
+    if (dtkdata && dtkdata->identifier().contains("4"))
     {
         qDebug() << "Tried to set a 4d image as input, refused";
-        medMessageController::instance()->showError(this,"Segmentation on 4D images not yet supported",5);
+        medMessageController::instance()->showError(this,
+                   tr("Segmentation on 4D images not yet supported"),
+                                                    5000);
         return;
     }
-    
+
     m_imageData = dtkSmartPointer<dtkAbstractData>(dtkdata);
 
     QString dataText;
