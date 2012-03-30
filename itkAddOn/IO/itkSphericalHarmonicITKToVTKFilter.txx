@@ -195,10 +195,6 @@ SphericalHarmonicITKToVTKFilter< TSHImage >
   for (int i=0; i<3; i++)
     m_DirectionMatrix->SetElement (i, 3, /*i_origin[i]-1*/v_origin[i]-v_origin2[i]);
 
-  for (int l=0; l<4;l++)
-    std::cout << m_DirectionMatrix->GetElement(l,0) << m_DirectionMatrix->GetElement(l,1)
-              << m_DirectionMatrix->GetElement(l,2) << m_DirectionMatrix->GetElement(l,3)<<std::endl;
-
   m_VTKSphericalHarmonic->GetPointData()->AddArray(sh_array);
   m_VTKSphericalHarmonic->GetPointData()->AddArray(aniso_array);
   m_VTKSphericalHarmonic->GetPointData()->AddArray(rgb_array);

@@ -138,11 +138,6 @@ void vtkSphericalHarmonicManager::Update()
     this->Renderer->AddActor ( this->SHVisuManagerSagittal->GetActor() );
     this->Renderer->AddActor ( this->SHVisuManagerCoronal->GetActor() );
   }
-
-//  this->SHVisuManagerAxial->WriteGlyphs("/user/jgarciag/home/svnGIT/odysseedmri/tmp/odf/MaxTestInria3dA.vtk");
-//  this->SHVisuManagerSagittal->WriteGlyphs("/user/jgarciag/home/svnGIT/odysseedmri/tmp/odf/MaxTestInria3dS.vtk");
-//  this->SHVisuManagerCoronal->WriteGlyphs("/user/jgarciag/home/svnGIT/odysseedmri/tmp/odf/MaxTestInria3dC.vtk");
-
 }
 
 void

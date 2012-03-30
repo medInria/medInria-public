@@ -5,7 +5,6 @@
 #include <vtkExtractVOI.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkActor.h>
-#include "vtkPolyDataWriter.h"
 
 #include <vtkStructuredPoints.h>
 #include <vtkLookupTable.h>
@@ -181,20 +180,3 @@ void vtkSphericalHarmonicVisuManager::ColorGlyphs (const int& a)
     this->SHGlyph->SetColorGlyphs(false);
   this->SHSource->UpdateSphericalHarmonicSource();
 }
-void vtkSphericalHarmonicVisuManager::WriteGlyphs (char* fileName)
-{
-
-  this->SHSource->UpdateSphericalHarmonicSource();
-  if(this->SHGlyph->GetOutput())
-  {
-        vtkPolyDataWriter * shWriterB = vtkPolyDataWriter::New();
-        shWriterB->SetFileName(fileName);
-        shWriterB->SetInput(this->SHGlyph->GetOutput());
-        shWriterB->Update();
-        shWriterB->Delete();
-
-  }
-
-}
-
-
