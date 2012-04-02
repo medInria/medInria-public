@@ -6,7 +6,9 @@
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractData.h>
 
-struct medDataReaderWriter {
+#include "medCoreExport.h"
+
+struct MEDCORE_EXPORT medDataReaderWriter {
 
     typedef dtkSmartPointer<dtkAbstractDataReader> Reader;
     typedef dtkSmartPointer<dtkAbstractDataWriter> Writer;
