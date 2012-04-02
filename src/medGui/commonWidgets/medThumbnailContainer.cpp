@@ -178,7 +178,7 @@ void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
 
         item->setPos(pos_x,  pos_y);
 
-        qDebug() << "__x__ : " << pos_x << "__y__ : " << pos_y;
+//        qDebug() << "__x__ : " << pos_x << "__y__ : " << pos_y;
 
         d->scene->addItem(item);
 
@@ -189,7 +189,7 @@ void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
 
         moveToItem( item );
 
-        print();
+        //print();
     }
 }
 
@@ -216,12 +216,11 @@ void medThumbnailContainer::moveItem(medDatabasePreviewItem *target, QPointF pos
 
 void medThumbnailContainer::moveToItem(medDatabasePreviewItem *target)
 {
+    if (!target)
+        return;
 
     if(!d->selector->isVisible())
         d->selector->show();
-
-    if (!target)
-        return;
 
     qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
@@ -266,6 +265,8 @@ void medThumbnailContainer::moveToItem(medDatabasePreviewItem *target)
 
 void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
 {
+    qDebug() << "ON HOOOOOOOOOOVER BOY";
+
     qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
     qreal item_height = medDatabasePreviewController::instance()->itemHeight();
@@ -279,39 +280,45 @@ void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
     QPoint selector_offset(-4, -4);
 
     if(qAbs(d->selector->pos().x() - item->scenePos().x()) < 20 && qAbs(d->selector->pos().y() - item->scenePos().y()) < 20)
-    {
-        if(d->canDelete)
-            showDeleteButton();
         return;
-    }
 
     updateSelectorLegend(current_index);
 
-    if(!d->selector_position_animation)
-        d->selector_position_animation = new QPropertyAnimation(d->selector, "pos");
+    if(d->selector->isVisible())
+    {
+        if(!d->selector_position_animation)
+            d->selector_position_animation = new QPropertyAnimation(d->selector, "pos");
 
-    d->selector_position_animation->setDuration(100);
-    d->selector_position_animation->setStartValue(d->selector->pos());
-    d->selector_position_animation->setEndValue(item->scenePos() + selector_offset);
-    d->selector_position_animation->setEasingCurve(QEasingCurve::Linear);
+        d->selector_position_animation->setDuration(100);
+        d->selector_position_animation->setStartValue(d->selector->pos());
+        d->selector_position_animation->setEndValue(item->scenePos() + selector_offset);
+        d->selector_position_animation->setEasingCurve(QEasingCurve::Linear);
 
-    if(!d->selector_rect_animation)
-        d->selector_rect_animation = new QPropertyAnimation(d->selector, "rect");
+        if(!d->selector_rect_animation)
+            d->selector_rect_animation = new QPropertyAnimation(d->selector, "rect");
 
-    d->selector_rect_animation->setDuration(100);
-    d->selector_rect_animation->setStartValue(d->selector->rect());
-    d->selector_rect_animation->setEndValue(QRectF(item->boundingRect().x(), item->boundingRect().y(), item->boundingRect().width() + item_margins, item->boundingRect().height() + item_margins + item_spacing));
-    d->selector_rect_animation->setEasingCurve(QEasingCurve::Linear);
+        d->selector_rect_animation->setDuration(100);
+        d->selector_rect_animation->setStartValue(d->selector->rect());
+        d->selector_rect_animation->setEndValue(QRectF(item->boundingRect().x(), item->boundingRect().y(), item->boundingRect().width() + item_margins, item->boundingRect().height() + item_margins + item_spacing));
+        d->selector_rect_animation->setEasingCurve(QEasingCurve::Linear);
 
-    if(!d->selector_animation) {
-        d->selector_animation = new QParallelAnimationGroup(this);
-        d->selector_animation->addAnimation(d->selector_position_animation);
-        d->selector_animation->addAnimation(d->selector_rect_animation);
+        if(!d->selector_animation) {
+            d->selector_animation = new QParallelAnimationGroup(this);
+            d->selector_animation->addAnimation(d->selector_position_animation);
+            d->selector_animation->addAnimation(d->selector_rect_animation);
+        }
+
+        connect(d->selector_animation, SIGNAL(finished()), this, SLOT(onSelectorReachedThumbnail()));
+
+        d->selector_animation->start();
+    }
+    else
+    {
+        d->selector->setPos(item->scenePos() + selector_offset);
+        d->selector->setRect(QRectF(item->boundingRect().x(), item->boundingRect().y(), item->boundingRect().width() + item_margins, item->boundingRect().height() + item_margins + item_spacing));
+        d->selector->show();
     }
 
-    connect(d->selector_animation, SIGNAL(finished()), this, SLOT(onSelectorReachedThumbnail()));
-
-    d->selector_animation->start();
 }
 
 void medThumbnailContainer::updateSelectorLegend(const medDataIndex& index)
@@ -352,6 +359,8 @@ void medThumbnailContainer::onThumbnailHoverEntered(QGraphicsSceneHoverEvent* ev
 
 void medThumbnailContainer::onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event)
 {
+    qDebug() << "LEFT";
+
     d->del->hide();
 }
 
@@ -362,6 +371,7 @@ void medThumbnailContainer::showDeleteButton()
 
     QPointF newPos = QPointF(d->selector->pos().rx() + 88, d->selector->pos().ry() + 8);
     d->del->setPos(newPos);
+    qDebug() << "lo mostré!";
     d->del->show();
 }
 

@@ -64,7 +64,7 @@ medImageSelectionWidget::medImageSelectionWidget(QList<medDataIndex> indexes, QW
 //    d->preview->setSizePolicy(*policy);
 //    d->preview->setMinimumSize(QSize(600, 400));
 
-    d->selected->setMinimumSize(QSize(600 + 100, 300));
+    d->selected->setMinimumSize(QSize(600 + 100, 300 + 15));
 
     d->view    = new medDatabaseView(displayWidget);
     d->view->setModel(d->proxy);
