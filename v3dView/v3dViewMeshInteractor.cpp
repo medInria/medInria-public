@@ -374,6 +374,8 @@ void v3dViewMeshInteractor::onLUTModePropertySet (const QString& value)
         }
         else
         {
+            junk = NULL;
+            attributes = NULL;
             //junk = pointSet->GetCellData()->GetArray (dataArray->GetName());
             //attributes = pointSet->GetCellData();
         }

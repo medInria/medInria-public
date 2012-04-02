@@ -110,7 +110,7 @@ bool v3dViewAnnIntSeedPointHelper::addAnnotation( medAnnotationData* annData )
 
     v3dView * view = this->getV3dView();
 
-    double zero[2] = {0,0};
+    //double zero[2] = {0,0};
     typedef vtkSmartPointer<vtkSeedPointHandle> RepSmartPointer;
     RepSmartPointer handleRep = RepSmartPointer::New();
     // Blue, close to selected color in table widget.

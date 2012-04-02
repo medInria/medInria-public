@@ -832,7 +832,7 @@ void v3dView::setSharedDataPointer ( dtkSmartPointer<dtkAbstractData> data )
         return;
      int layer = 0, imageLayer = 0;
      dtkAbstractData * dataInLayer;
-     while ( dataInLayer = medAbstractView::dataInList( layer ) )
+     while ( (dataInLayer = medAbstractView::dataInList( layer )) )
      {
          if(!dataInLayer->identifier().contains ( "vtkDataMesh" ))
              imageLayer++;
@@ -2467,7 +2467,7 @@ QVector3D v3dView::displayToWorld( const QPointF & scenePoint ) const
 
     if (this->is2D() ) {
         // Project the point into the view plane.
-        vtkCamera * cam = ren->GetActiveCamera();
+        //vtkCamera * cam = ren->GetActiveCamera();
         double pointInDisplayPlane[3];
         //if (cam) {
         //    cam->GetFocalPoint(pointInDisplayPlane);
