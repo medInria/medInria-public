@@ -59,6 +59,7 @@ def main (argv):
 	QtNetwork4.dll \
 	QtOpenGL4.dll \
 	QtSql4.dll \
+	QtSvg4.dll \
 	QtWebkit4.dll \
 	QtXml4.dll \
 	QtXmlPatterns4.dll \
