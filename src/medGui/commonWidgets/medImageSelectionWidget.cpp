@@ -68,6 +68,7 @@ medImageSelectionWidget::medImageSelectionWidget(QList<medDataIndex> indexes, QW
 
     d->view    = new medDatabaseView(displayWidget);
     d->view->setModel(d->proxy);
+    d->view->setColumnWidth(0, 120);
 //    d->treeView = new QTreeView(displayWidget);
 //    d->treeView->setModel(d->proxy);
 

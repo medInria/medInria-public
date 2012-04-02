@@ -75,6 +75,7 @@ medThumbnailContainer::medThumbnailContainer(QWidget *parent) : QFrame(parent), 
     d->view = new medDatabasePreviewView(this);
     d->view->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     d->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    d->view->setAcceptWheelEvent(true);
 
     d->view->setScene(d->scene);
 
@@ -159,7 +160,8 @@ void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
 
         qreal item_width   = medDatabasePreviewController::instance()->itemWidth();
         qreal item_height   = medDatabasePreviewController::instance()->itemHeight();
-        qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
+        qreal item_vertical_spacing = medDatabasePreviewController::instance()->itemSpacing();
+        qreal item_horizontal_spacing = item_vertical_spacing + 6;
 
         int left_margin = 10;
         int top_margin = 10;
@@ -167,11 +169,11 @@ void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
         int items_count = d->containedItems.count();
         int items_in_last_row = items_count % d->columns;
 
-        qreal space_taken_by_items_already_in_row =  items_in_last_row * (item_width + item_spacing);
+        qreal space_taken_by_items_already_in_row =  items_in_last_row * (item_width + item_vertical_spacing);
         qreal pos_x = left_margin + space_taken_by_items_already_in_row;
 
         int full_columns_count = items_count / d->columns;
-        qreal space_taken_by_items_on_top =  full_columns_count * (item_height + item_spacing);
+        qreal space_taken_by_items_on_top =  full_columns_count * (item_height + item_horizontal_spacing);
         qreal pos_y = top_margin + space_taken_by_items_on_top;
 
         item->setPos(pos_x,  pos_y);

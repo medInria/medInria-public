@@ -38,6 +38,8 @@ public:
 
     void setScene(QGraphicsScene *scene);
 
+    void setAcceptWheelEvent(bool accept);
+
 signals:
     void moveUp(void);
     void moveDw(void);

@@ -28,10 +28,13 @@
 class medDatabasePreviewViewPrivate
 {
 public:
+    bool acceptWheelEvent;
 };
 
 medDatabasePreviewView::medDatabasePreviewView(QWidget *parent) : QGraphicsView(parent), d(new medDatabasePreviewViewPrivate)
 {
+    d->acceptWheelEvent = false;
+
     this->viewport()->setMouseTracking(true);
 
     this->setAlignment(Qt::AlignTop | Qt::AlignLeft);
@@ -59,6 +62,11 @@ void medDatabasePreviewView::setScene(QGraphicsScene *scene)
     QGraphicsView::setScene(scene);
 }
 
+void medDatabasePreviewView::setAcceptWheelEvent(bool accept)
+{
+    d->acceptWheelEvent = accept;
+}
+
 void medDatabasePreviewView::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key()) {
@@ -82,7 +90,13 @@ void medDatabasePreviewView::mouseMoveEvent(QMouseEvent *event)
 
 void medDatabasePreviewView::wheelEvent(QWheelEvent *event)
 {
-    Q_UNUSED(event);
+    if(d->acceptWheelEvent)
+    {
+        QGraphicsView::wheelEvent(event);
+    }
+    else {
+        qDebug() <<  "NADA LOCURA";
+    }
 }
 
 
