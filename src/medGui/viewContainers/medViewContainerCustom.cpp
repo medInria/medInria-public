@@ -228,7 +228,10 @@ dtkAbstractView *medViewContainerCustom::view ( void ) const
 {
     const medViewContainerCustom* currentContainer =
             qobject_cast<const medViewContainerCustom*> ( current() );
-    if ( !isLeaf() && currentContainer != NULL )
+    //Only go into the recursion if we are not a leaf
+    //if this is the currentContainer, and not a leaf, we will
+    //have an infinite recursion.
+    if ( !isLeaf() && currentContainer!= this && currentContainer != NULL  )
     {
         return currentContainer->view();
     }

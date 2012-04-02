@@ -23,8 +23,6 @@ public:
     void setupViewContainerStack ();
 
 public slots:
-    void onSetupLayoutCompare (void);
-    void onSetupLayoutFuse (void);
     void patientChanged(int patientId);
 
 private:

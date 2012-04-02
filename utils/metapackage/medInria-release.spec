@@ -4,7 +4,7 @@
 #Name:           medInria-%{repo}-release
 Name:           medInria-release
 Version:        2
-Release:        1.0
+Release:        1.2
 #Summary:        medInria (%{repo}) Repository Configuration
 Summary:        medInria Repository Configuration
 
@@ -100,6 +100,9 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %{_sysconfdir}/yum.repos.d/*
 
 %changelog
+* Wed Mar 28 2012 Benoit Bleuze <benoit.bleuze@inria.fr>
+> - 1.2 
+- Supercedes the unofficial 1.1 release that contained credentials for the beta release
 * Wed Jan 18 2012 Theodore Papadopoulo <Theodore.Papadopoulo@inria.fr> - 1.0
 - Initial RPM release
 

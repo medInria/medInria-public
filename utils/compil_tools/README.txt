@@ -144,5 +144,29 @@ scm_protocol=ssh
 username=someone
 
 
+***************************************************************************
+6- Notes on tests
+***************************************************************************
 
+To run tests and automatically upload the results to the dashboards,
+there are a few tricky things to know, that require some ctest knowledge.
 
+Running ctest implies uploading the build and configure steps to the server.
+
+Knowing this, if developers wish to run tests through the installer scripts, they may do so by setting the following steps in the project's section:
+
+ [medinria]
+ configure=1
+ build=0
+ test=1
+
+medInria needs to run the cmake at least once before running ctest, 
+since it needs to configure a few paths to upload the tests before 
+running ctest. However the build step is not necessary, since 
+ctest will run it anyway. 
+
+This configuration is the minimum safe path to a good upload. 
+If you know you already ran configure previously and only need 
+to test some new code, even code needing a reconfigure 
+(not touching the ctest parts of course), then you may remove the 
+configure step.
