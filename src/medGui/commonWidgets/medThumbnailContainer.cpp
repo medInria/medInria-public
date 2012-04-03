@@ -48,6 +48,7 @@ public:
     bool canDrag;
     bool canDrop;
     bool canDelete;
+    bool showDelBt;
 
     QGraphicsScene* scene;
     medDatabasePreviewView* view;
@@ -142,7 +143,7 @@ void medThumbnailContainer::init(void)
 void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
 {
     if (!index.isValidForSeries())
-            return;
+        return;
 
     // we need to check if the image is already here
     bool isContainedAlready = false;
@@ -177,17 +178,11 @@ void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
         qreal pos_y = top_margin + space_taken_by_items_on_top;
 
         item->setPos(pos_x,  pos_y);
-
-//        qDebug() << "__x__ : " << pos_x << "__y__ : " << pos_y;
-
         d->scene->addItem(item);
-
 
         d->containedItems << item;
 
-        //d->series_group->addItem(item);
-
-        moveToItem( item );
+        moveSelectorToItem( item );
 
         //print();
     }
@@ -214,7 +209,7 @@ void medThumbnailContainer::moveItem(medDatabasePreviewItem *target, QPointF pos
     ani->start();
 }
 
-void medThumbnailContainer::moveToItem(medDatabasePreviewItem *target)
+void medThumbnailContainer::moveSelectorToItem(medDatabasePreviewItem *target)
 {
     if (!target)
         return;
@@ -265,8 +260,6 @@ void medThumbnailContainer::moveToItem(medDatabasePreviewItem *target)
 
 void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
 {
-    qDebug() << "ON HOOOOOOOOOOVER BOY";
-
     qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
     qreal item_height = medDatabasePreviewController::instance()->itemHeight();
@@ -277,10 +270,16 @@ void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
     medDataIndex current_index = item->dataIndex();
     d->current_item = item;
 
-    QPoint selector_offset(-4, -4);
+    QPoint selector_offset((medDatabasePreviewController::instance()->selectorWidth()  - medDatabasePreviewController::instance()->itemWidth())/-2,
+                           (medDatabasePreviewController::instance()->selectorHeight() - medDatabasePreviewController::instance()->itemHeight())/-2);
 
+    // if the selector is already here do nothing
     if(qAbs(d->selector->pos().x() - item->scenePos().x()) < 20 && qAbs(d->selector->pos().y() - item->scenePos().y()) < 20)
+    {
+        showDeleteButton();
         return;
+    }
+
 
     updateSelectorLegend(current_index);
 
@@ -317,8 +316,8 @@ void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
         d->selector->setPos(item->scenePos() + selector_offset);
         d->selector->setRect(QRectF(item->boundingRect().x(), item->boundingRect().y(), item->boundingRect().width() + item_margins, item->boundingRect().height() + item_margins + item_spacing));
         d->selector->show();
+        showDeleteButton();
     }
-
 }
 
 void medThumbnailContainer::updateSelectorLegend(const medDataIndex& index)
@@ -354,30 +353,32 @@ void medThumbnailContainer::onThumbnailHoverEntered(QGraphicsSceneHoverEvent* ev
     medDatabasePreviewItem* target = dynamic_cast<medDatabasePreviewItem*>(d->scene->itemAt(event->scenePos()));
 
     if(target)
+    {
+        // this flag is necessary bc the button is made visible after the animation
+        // hence it can be turned on even after it was turned off, due to the delay
+        d->showDelBt = true;
         onHoverEntered(target);
+    }
 }
 
 void medThumbnailContainer::onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event)
 {
-    qDebug() << "LEFT";
-
+    d->showDelBt = false;
     d->del->hide();
 }
 
 void medThumbnailContainer::showDeleteButton()
 {
-    if(!d->canDelete)
+    if(!d->canDelete || !d->showDelBt)
         return;
 
     QPointF newPos = QPointF(d->selector->pos().rx() + 88, d->selector->pos().ry() + 8);
     d->del->setPos(newPos);
-    qDebug() << "lo mostré!";
     d->del->show();
 }
 
 void medThumbnailContainer::onDeleteButtonClicked()
 {
-
     if(d->current_item) {
 
         // if it is the last item or the only one

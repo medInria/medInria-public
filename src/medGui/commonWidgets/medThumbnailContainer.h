@@ -61,7 +61,7 @@ protected slots:
 private:
 
     void moveItem(medDatabasePreviewItem *target, QPointF pos);
-    void moveToItem(medDatabasePreviewItem *target);
+    void moveSelectorToItem(medDatabasePreviewItem *target);
     void showDeleteButton();
     void updateSelectorLegend(const medDataIndex& index);
     void print();
