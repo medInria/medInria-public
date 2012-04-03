@@ -156,8 +156,8 @@ void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
         item->allowDrag(d->canDrag);
         item->setAcceptHoverEvents(true);
 
-        connect(item, SIGNAL(hoverEntered(QGraphicsSceneHoverEvent*)), this, SLOT(onThumbnailHoverEntered(QGraphicsSceneHoverEvent*)) );
-        connect(item, SIGNAL(hoverLeft(QGraphicsSceneHoverEvent*)), this, SLOT(onThumbnailHoverLeft(QGraphicsSceneHoverEvent*)) );
+        connect(item, SIGNAL(hoverEntered(QGraphicsSceneHoverEvent*, medDatabasePreviewItem*)), this, SLOT(onThumbnailHoverEntered(QGraphicsSceneHoverEvent*, medDatabasePreviewItem*)) );
+        connect(item, SIGNAL(hoverLeft(QGraphicsSceneHoverEvent*, medDatabasePreviewItem*)), this, SLOT(onThumbnailHoverLeft(QGraphicsSceneHoverEvent*, medDatabasePreviewItem*)) );
 
         qreal item_width   = medDatabasePreviewController::instance()->itemWidth();
         qreal item_height   = medDatabasePreviewController::instance()->itemHeight();
@@ -348,20 +348,18 @@ void medThumbnailContainer::onSelectorReachedThumbnail()
         showDeleteButton();
 }
 
-void medThumbnailContainer::onThumbnailHoverEntered(QGraphicsSceneHoverEvent* event)
+void medThumbnailContainer::onThumbnailHoverEntered(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item)
 {
-    medDatabasePreviewItem* target = dynamic_cast<medDatabasePreviewItem*>(d->scene->itemAt(event->scenePos()));
-
-    if(target)
+    if(item)
     {
         // this flag is necessary bc the button is made visible after the animation
         // hence it can be turned on even after it was turned off, due to the delay
         d->showDelBt = true;
-        onHoverEntered(target);
+        onHoverEntered(item);
     }
 }
 
-void medThumbnailContainer::onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event)
+void medThumbnailContainer::onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item)
 {
     d->showDelBt = false;
     d->del->hide();

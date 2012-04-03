@@ -54,8 +54,8 @@ protected slots:
     void onObjectDropped (const medDataIndex& index);
     void onHoverEntered(medDatabasePreviewItem* item);
     void onSelectorReachedThumbnail();
-    void onThumbnailHoverEntered(QGraphicsSceneHoverEvent* event);
-    void onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event);
+    void onThumbnailHoverEntered(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
+    void onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
     void onDeleteButtonClicked();
 
 private:

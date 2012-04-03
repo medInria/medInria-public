@@ -48,8 +48,8 @@ signals:
     void  seriesClicked(int id);
     void   imageClicked(int id);
 
-    void hoverEntered(QGraphicsSceneHoverEvent* event);
-    void hoverLeft(QGraphicsSceneHoverEvent* event);
+    void hoverEntered(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
+    void hoverLeft(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
 
 protected slots:
     void setImage(const QImage& image);

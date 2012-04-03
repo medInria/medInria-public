@@ -115,10 +115,10 @@ void medDatabasePreviewItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void medDatabasePreviewItem::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 {
-    emit hoverEntered(event);
+    emit hoverEntered(event, this);
 }
 
 void medDatabasePreviewItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
-    emit hoverLeft(event);
+    emit hoverLeft(event, this);
 }
