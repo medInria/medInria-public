@@ -184,7 +184,8 @@ def configure_project(project,config,architecture='linux'):
         #if not os.path.exists(os.path.abspath('build')):
 
         src_dir = os.path.join(config.get("DEFAULT","projects_dir"),
-                               config.get(project,"destination_dir"))
+                               config.get(project,"destination_dir"),
+                               config.get(project,"cmake_configure_dir"))
         build_dir = config.get(project,"build_dir")
         if (architecture == "win"):
             src_dir=config.get(project,"cyg_drive")+src_dir
