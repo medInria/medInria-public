@@ -38,7 +38,7 @@ ENDIF(WIN32)
 # vtkINRIA3D version number.
 # -------------------------------------------------------------------------------------
 SET(vtkINRIA3D_VERSION_MAJOR 1)
-SET(vtkINRIA3D_VERSION_MINOR 0)
+SET(vtkINRIA3D_VERSION_MINOR 1)
 SET(vtkINRIA3D_VERSION_BUILD 0)
 SET(vtkINRIA3D_VERSION
   "${vtkINRIA3D_VERSION_MAJOR}.${vtkINRIA3D_VERSION_MINOR}.${vtkINRIA3D_VERSION_BUILD}")
