@@ -49,6 +49,7 @@ public:
     bool canDrop;
     bool canDelete;
     bool showDelBt;
+    bool blockHoverEvents;
 
     QGraphicsScene* scene;
     medDatabasePreviewView* view;
@@ -69,11 +70,12 @@ public:
 medThumbnailContainer::medThumbnailContainer(QWidget *parent) : QFrame(parent), d(new medThumbnailContainerPrivate)
 {
     d->columns = 4;
+    d->blockHoverEvents = false;
 
     d->scene = new QGraphicsScene(this);
     d->scene->setBackgroundBrush(QColor(0x41, 0x41, 0x41));
 
-    d->view = new medDatabasePreviewView(this);
+    d->view = new medDatabasePreviewView();
     d->view->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     d->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     d->view->setAcceptWheelEvent(true);
@@ -87,21 +89,20 @@ medThumbnailContainer::medThumbnailContainer(QWidget *parent) : QFrame(parent), 
 
     connect(d->view, SIGNAL(objectDropped (const medDataIndex&)), this, SLOT(onObjectDropped (const medDataIndex&)));
 
-//    connect(d->view, SIGNAL(hovered(medDatabasePreviewItem*)), this, SLOT(onHovered(medDatabasePreviewItem*)));
+    d->view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    QVBoxLayout *layout = new QVBoxLayout(this);
+    QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(10, 0, 10, 10);
     layout->setSpacing(0);
     layout->addWidget(d->view);
+    this->setLayout(layout);
+
 
     d->selector_position_animation = NULL;
     d->selector_rect_animation = NULL;
     d->selector_animation = NULL;
 
     d->del = new medDeleteButton();
-//    QObject* pp = dynamic_cast<QObject*>(d->del);
-//    if(!pp)
-//        qDebug() << "FUCK MY LIFE";
     d->scene->addItem(d->del);
     connect(d->del, SIGNAL(clicked()), this, SLOT(onDeleteButtonClicked()));
 
@@ -109,11 +110,9 @@ medThumbnailContainer::medThumbnailContainer(QWidget *parent) : QFrame(parent), 
     qreal item_height   = medDatabasePreviewController::instance()->itemHeight(); //128
     qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing(); //10
 
-//    this->setFixedHeight(2 * (item_height + item_spacing) + item_spacing + 36); // 36 pixels for the scroller
-//    this->setFixedWidth(d->columns * (item_width + item_spacing) + item_spacing + 36); // 36 pixels for the scroller
-    this->setMinimumHeight(2 * (item_height + item_spacing) + item_spacing + 36);
-    this->setMinimumWidth(d->columns * (item_width + item_spacing) + item_spacing + 36);
-
+//    this->setMinimumHeight(2 * (item_height + item_spacing) + item_spacing + 36);
+//    this->setMinimumWidth(d->columns * (item_width + item_spacing) + item_spacing + 36);
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->init();
 }
 
@@ -130,7 +129,6 @@ void medThumbnailContainer::reset(void)
             d->scene->removeItem(item);
 
     d->current_item = NULL;
-
     d->containedItems.clear();
 }
 
@@ -199,6 +197,8 @@ void medThumbnailContainer::moveItem(medDatabasePreviewItem *target, QPointF pos
     if (!target)
         return;
 
+    d->blockHoverEvents = true;
+
     QPropertyAnimation* ani = new QPropertyAnimation(target, "pos");
 
     ani->setDuration(200);
@@ -206,7 +206,14 @@ void medThumbnailContainer::moveItem(medDatabasePreviewItem *target, QPointF pos
     ani->setEndValue(pos);
     ani->setEasingCurve(QEasingCurve::OutQuad);
 
+    connect(ani, SIGNAL(finished()), this, SLOT(unblockHoverEvents()));
+
     ani->start();
+}
+
+void medThumbnailContainer::unblockHoverEvents()
+{
+    d->blockHoverEvents = false;
 }
 
 void medThumbnailContainer::moveSelectorToItem(medDatabasePreviewItem *target)
@@ -350,6 +357,9 @@ void medThumbnailContainer::onSelectorReachedThumbnail()
 
 void medThumbnailContainer::onThumbnailHoverEntered(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item)
 {
+    if(d->blockHoverEvents)
+        return;
+
     if(item)
     {
         // this flag is necessary bc the button is made visible after the animation
@@ -361,6 +371,9 @@ void medThumbnailContainer::onThumbnailHoverEntered(QGraphicsSceneHoverEvent* ev
 
 void medThumbnailContainer::onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item)
 {
+//    if(d->blockHoverEvents)
+//        return;
+
     d->showDelBt = false;
     d->del->hide();
 }

@@ -16,7 +16,7 @@ public:
     medImageSelectionWidget(QList<medDataIndex> indexes, QWidget *parent = 0);
     ~medImageSelectionWidget(void);
 
-    QSize sizeHint(void) const;
+//    QSize sizeHint(void) const;
 
     QList<medDataIndex> getSelectedIndexes();
 

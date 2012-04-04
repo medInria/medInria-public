@@ -29,68 +29,69 @@ public:
 
     QPushButton* btOk;
     QPushButton* btCancel;
-
-//    QTreeView* treeView;
 };
 
 medImageSelectionWidget::medImageSelectionWidget(QList<medDataIndex> indexes, QWidget *parent) : d(new medImageSelectionWidgetPrivate)
 {
     d->selectedImages = indexes;
 
-    QWidget* displayWidget = new QWidget(this);
-    displayWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
     d->model = new medDatabaseModel(this, true);
     d->proxy = new medDatabaseProxyModel(this);
     d->proxy->setSourceModel(d->model);
 
-    d->preview = new medThumbnailContainer(displayWidget);
+    d->preview = new medThumbnailContainer();
     d->preview->setAllowDeleting(false);
     d->preview->setAllowDragging(true);
     d->preview->setAllowDropping(false);
     d->preview->setColumnsCount(4);
     d->preview->setRowsCount(2);
 
-    d->selected = new medThumbnailContainer(displayWidget);
+    d->selected = new medThumbnailContainer();
     d->selected->setAllowDeleting(true);
     d->selected->setAllowDragging(false);
     d->selected->setAllowDropping(true);
-    d->selected->setColumnsCount(5);
+    d->selected->setColumnsCount(6);
     d->selected->setRowsCount(3);
 
-    QSizePolicy* policy = new QSizePolicy();
-//    policy->setHorizontalStretch(10);
-    policy->setHorizontalPolicy(QSizePolicy::Expanding);
-//    d->preview->setSizePolicy(*policy);
-//    d->preview->setMinimumSize(QSize(600, 400));
-
-    d->selected->setMinimumSize(QSize(600 + 100, 300 + 15));
-
-    d->view    = new medDatabaseView(displayWidget);
+    d->view = new medDatabaseView();
     d->view->setModel(d->proxy);
     d->view->setColumnWidth(0, 120);
-//    d->treeView = new QTreeView(displayWidget);
-//    d->treeView->setModel(d->proxy);
 
-    QHBoxLayout *hlayout = new QHBoxLayout();
-//    hlayout->addWidget(d->treeView);
-    hlayout->addWidget(d->view);
-    hlayout->addWidget(d->preview);
-
-
-    d->btOk = new QPushButton(tr("OK"), this);
-    d->btCancel = new QPushButton(tr("Cancel"), this);
+    d->btOk = new QPushButton(tr("OK"));
+    d->btCancel = new QPushButton(tr("Cancel"));
     d->btOk->setDefault( true );
 
-    QHBoxLayout* buttonlayout = new QHBoxLayout;
-    buttonlayout->addWidget( d->btCancel );
-    buttonlayout->addWidget( d->btOk );
+    // layouting
 
-    QVBoxLayout* vlayout = new QVBoxLayout(displayWidget);
-    vlayout->addLayout(hlayout);
-    vlayout->addWidget(d->selected);
-    vlayout->addLayout(buttonlayout);
-//    vlayout->addWidget(new medDropSite());
+    QVBoxLayout* main_layout = new QVBoxLayout();
+
+    QSplitter* splitterHorizontal = new QSplitter(Qt::Horizontal);
+    QSplitter* splitterVertical = new QSplitter(Qt::Vertical);
+    splitterHorizontal->setHandleWidth(2);
+    splitterVertical->setHandleWidth(2);
+
+    splitterHorizontal->insertWidget(0, d->view);
+    splitterHorizontal->insertWidget(1, d->preview);
+
+    splitterVertical->insertWidget(0, splitterHorizontal);
+    splitterVertical->insertWidget(1, d->selected);
+
+    QHBoxLayout* btl = new QHBoxLayout();
+    btl->setDirection(QBoxLayout::RightToLeft);
+
+//    btl->addWidget(d->btCancel, 0, Qt::AlignRight);
+//    btl->addWidget(d->btOk, 0, Qt::Align);
+    d->btOk->setFixedSize(60, 35);
+    d->btCancel->setFixedSize(60, 35);
+    btl->addWidget(d->btOk);
+    btl->addWidget(d->btCancel);
+
+    main_layout->addWidget(splitterVertical);
+    main_layout->addLayout(btl);
+
+    this->setLayout(main_layout);
+//    d->view->setParent(this);
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), this, SLOT(onPatientSelected(const medDataIndex&)));
     connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(addSeriesItem(const medDataIndex&)));
@@ -98,11 +99,8 @@ medImageSelectionWidget::medImageSelectionWidget(QList<medDataIndex> indexes, QW
     connect(d->btOk, SIGNAL(clicked()), this, SLOT(onOkClicked()));
     connect(d->btCancel, SIGNAL(clicked()), this, SLOT(onCancelClicked()));
 
-//    connect(d->view, SIGNAL(studyClicked(const medDataIndex&)), d->selected, SLOT(onStudyClicked(const medDataIndex&)));
-
     // for the moment we just need patient and study
     for (int var = 2; var < d->proxy->columnCount(); ++var) {
-//        d->treeView->hideColumn(var);
         d->view->hideColumn(var);
     }
 
@@ -119,10 +117,10 @@ medImageSelectionWidget::~medImageSelectionWidget(void)
     d = NULL;
 }
 
-QSize medImageSelectionWidget::sizeHint(void) const
-{
-    return QSize(1000, 1200);
-}
+//QSize medImageSelectionWidget::sizeHint(void) const
+//{
+//    return QSize(1000, 1200);
+//}
 
 void medImageSelectionWidget::clear()
 {
@@ -149,13 +147,13 @@ void medImageSelectionWidget::onPatientSelected(const medDataIndex& id)
 
 void medImageSelectionWidget::onCancelClicked()
 {
-    qDebug() << "canceeeeeeeeeeeeeeeeeeeeeeel";
+    qDebug() << "CANCEL";
     reject();
 }
 
 void medImageSelectionWidget::onOkClicked()
 {
-    qDebug() << "oooooooooooooKKKKKKKKKKKKKKKKKK";
+    qDebug() << "OK";
     accept();
 }
 

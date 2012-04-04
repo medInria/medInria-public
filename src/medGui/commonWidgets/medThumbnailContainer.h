@@ -57,6 +57,7 @@ protected slots:
     void onThumbnailHoverEntered(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
     void onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
     void onDeleteButtonClicked();
+    void unblockHoverEvents();
 
 private:
 
