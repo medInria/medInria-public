@@ -629,8 +629,16 @@ void vtkMetaDataSet::ColorByArray(vtkDataArray* array)
   vtkLookupTable* lut = array->GetLookupTable();
   if (lut)
   {
-    lut->SetRange (min, max);	  
+    lut->SetRange (min, max);
     junk->SetLookupTable (lut);
+
+    double values[4];
+    for(int i = 0; i < lut->GetNumberOfTableValues(); i++)
+    {
+      lut->GetTableValue(i, values);
+      values[3] = 1.0;
+      lut->SetTableValue(i, values);
+    }
   }
   
   attributes->SetActiveScalars(array->GetName());
