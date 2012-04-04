@@ -24,7 +24,7 @@ if(UNIX AND NOT APPLE)
   set(CPACK_DEBIAN_PACKAGE_DEPENDS "dcmtk-inria (>= 3.6.1), dtk (>= 0.6.1), itk-inria-build (> 3.20.1), medinria (>= 2.0.1), medinria-plugins (>= 2.0.1), medinria-plugins-asclepios (>= 2.0.1), medinria-visages-plugins (>= 2.0.1), mips (>= 0.2.0), qtdcm-dev (>= 2.0.2), qtshanoir-dev (>= 0.1.0), ttk-private (>= 1.4.0), vistal (>= 1.1.1), vtk-inria-build (>= 5.8.0), vtkinria3d (>= 1.1.0), libopenmpi1.3, libqt4-sql-sqlite, libxml++1.0c2a, libboost-all-dev, nvidia-settings")
 
   #RPM dependencies:
-  set(CPACK_RPM_PACKAGE_REQUIRES "dcmtk-inria >= 3.6.1, dtk >= 0.6.0, itk-inria-build >= 3.20.1, medinria >= 2.0.1, medinria-plugins >= 2.0.1, medinria-plugins-asclepios >= 2.0.1, medinria-visages-plugins >= 2.0.1, mips >= 0.2.0, qtdcm-dev >= 2.0.2, qtshanoir-dev >= 0.1.0, ttk-private >= 1.4.0, vistal >= 1.1.1, vtk-inria-build >= 5.8.0, vtkinria3d >= 1.1.0")
+  set(CPACK_RPM_PACKAGE_REQUIRES "dcmtk-inria >= 3.6.1, dtk >= 0.6.1, itk-inria-build >= 3.20.1, medinria >= 2.0.1, medinria-plugins >= 2.0.1, medinria-plugins-asclepios >= 2.0.1, medinria-visages-plugins >= 2.0.1, mips >= 0.2.0, qtdcm-dev >= 2.0.2, qtshanoir-dev >= 0.1.0, ttk-private >= 1.4.0, vistal >= 1.1.1, vtk-inria-build >= 5.8.0, vtkinria3d >= 1.1.0")
 
   set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${CMAKE_SOURCE_DIR}/postinst;${CMAKE_SOURCE_DIR}/prerm;")
   set (CPACK_RPM_POST_INSTALL_SCRIPT_FILE "${CMAKE_SOURCE_DIR}/postinst")
