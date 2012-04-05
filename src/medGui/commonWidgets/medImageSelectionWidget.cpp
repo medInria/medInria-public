@@ -67,11 +67,19 @@ medImageSelectionWidget::medImageSelectionWidget(QList<medDataIndex> indexes, QW
 
     QSplitter* splitterHorizontal = new QSplitter(Qt::Horizontal);
     QSplitter* splitterVertical = new QSplitter(Qt::Vertical);
-    splitterHorizontal->setHandleWidth(2);
-    splitterVertical->setHandleWidth(2);
+    splitterHorizontal->setHandleWidth(1);
+    splitterVertical->setHandleWidth(1);
+	splitterHorizontal->setOpaqueResize(false);
+	splitterVertical->setOpaqueResize(false);
 
     splitterHorizontal->insertWidget(0, d->view);
     splitterHorizontal->insertWidget(1, d->preview);
+
+	QList<int> sizes;
+	sizes << 240 << 550;
+	splitterHorizontal->setSizes(sizes);
+
+	splitterHorizontal->setStretchFactor(1, 1);
 
     splitterVertical->insertWidget(0, splitterHorizontal);
     splitterVertical->insertWidget(1, d->selected);
@@ -117,10 +125,15 @@ medImageSelectionWidget::~medImageSelectionWidget(void)
     d = NULL;
 }
 
-//QSize medImageSelectionWidget::sizeHint(void) const
-//{
-//    return QSize(1000, 1200);
-//}
+QSize medImageSelectionWidget::sizeHint(void) const
+{
+    const int width = QApplication::desktop()->width();
+    const int height = QApplication::desktop()->height();
+
+    qDebug() << "WIDTH : " << width  << "HEIGHT : " << height ;
+
+    return QSize(850, 700);
+}
 
 void medImageSelectionWidget::clear()
 {
