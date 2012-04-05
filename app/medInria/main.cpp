@@ -73,12 +73,13 @@ void forceShow(medMainWindow& mainwindow )
 #endif
 }
 
+
+
 int main(int argc, char *argv[])
 {
 
     qRegisterMetaType<medDataIndex>("medDataIndex");
     medApplication application(argc, argv);
-
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
         qDebug() << "Usage: medInria [--no-fullscreen] [--stereo]";

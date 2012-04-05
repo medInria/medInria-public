@@ -1,5 +1,5 @@
-/* medStorage.cpp --- 
- * 
+/* medStorage.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 17 18:45:13 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 2
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medStorage.h"
@@ -48,7 +48,7 @@ bool medStorage::rmpath(const QString& dirPath)
 QString medStorage::dataLocation(void)
 {
     QString vDbLoc;
-    
+
     // first check if someone set the data location, then try to pull the actual database
     if (m_dataLocation != NULL)
     {
@@ -56,7 +56,7 @@ QString medStorage::dataLocation(void)
     }
     else
     {
-        vDbLoc = medSettingsManager::instance()->value("medDatabaseSettingsWidget", "actual_database_location").toString();
+        vDbLoc = medSettingsManager::instance()->value("database", "actual_database_location").toString();
 
         // if the location is still not set we return the default paths
         if ( vDbLoc.isEmpty() )
@@ -67,7 +67,7 @@ QString medStorage::dataLocation(void)
                 .append(QCoreApplication::applicationName());
 #else
             vDbLoc = QString(QDesktopServices::storageLocation(QDesktopServices::DataLocation));
-#endif   
+#endif
         }
         setDataLocation(vDbLoc);
     }
@@ -96,7 +96,7 @@ void medStorage::setDataLocation( QString newLocation)
 }
 
 
-void medStorage::recurseAddDir(QDir d, QStringList & list) 
+void medStorage::recurseAddDir(QDir d, QStringList & list)
 {
 
     QStringList qsl = d.entryList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
@@ -158,11 +158,11 @@ bool medStorage::copyFiles(QStringList sourceList, QStringList destList, SigEmit
         return false;
 
     // just copy not using a dialog
-    for (int i = 0; i < sourceList.count(); i++) 
+    for (int i = 0; i < sourceList.count(); i++)
     {
 
         // coping
-        if (!QFile::copy(sourceList.at(i), destList.at(i))) 
+        if (!QFile::copy(sourceList.at(i), destList.at(i)))
         {
             qWarning() << "[Failure] copying file: " << sourceList.at(i) << " to " << destList.at(i);
             return false;
@@ -172,7 +172,7 @@ bool medStorage::copyFiles(QStringList sourceList, QStringList destList, SigEmit
             if (emitter)
             {
                 QString message;
-                message = "copying files " + QString::number(i) + " of " + QString::number(sourceList.count()); 
+                message = "copying files " + QString::number(i) + " of " + QString::number(sourceList.count());
                 emitter->doEmit(message);
             }
         }
