@@ -390,6 +390,11 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     d->renderer3d->GetActiveCamera()->SetViewUp ( 0, 0, 1 );
     d->renderer3d->GetActiveCamera()->SetFocalPoint ( 0, 0, 0 );
 
+    // Activate depth-peeling to have a proper opacity rendering
+    d->renderer3d->SetUseDepthPeeling(1);
+    d->renderer3d->SetMaximumNumberOfPeels(100);
+    d->renderer3d->SetOcclusionRatio(0.01);
+
     d->view3d = vtkImageView3D::New();
     d->view3d->SetRenderer ( d->renderer3d );
     d->view3d->SetShowBoxWidget ( 0 );
@@ -501,6 +506,10 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     d->renWin->SetStereoTypeToCrystalEyes();
     // if(qApp->arguments().contains("--stereo"))
     //     renwin->SetStereoRender(1);
+
+    // Necessary options for depth-peeling
+    d->renWin->SetAlphaBitPlanes(1);
+    d->renWin->SetMultiSamples(0);
 
     d->vtkWidget->SetRenderWindow ( d->renWin );
 
