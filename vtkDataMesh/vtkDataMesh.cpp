@@ -5,6 +5,7 @@
 #include "vtkSmartPointer.h"
 #include "vtkPolyData.h"
 #include "vtkUnstructuredGrid.h"
+#include "vtkMetaDataSetSequence.h"
 
 #include <vtkPNGWriter.h>
 #include <vtkDataSetSurfaceFilter.h>
@@ -18,7 +19,7 @@
 class vtkDataMeshPrivate
 {
 public:
-  vtkSmartPointer<vtkPointSet> mesh;
+  vtkSmartPointer<vtkMetaDataSet> mesh;
   QList<QImage>          thumbnails;
 };
 
@@ -49,9 +50,15 @@ QString vtkDataMesh::identifier() const {
 
 void vtkDataMesh::setData(void *data)
 {
-  vtkPointSet* mesh = vtkPointSet::SafeDownCast( (vtkObject*) data );
-
+  vtkMetaDataSet * mesh = vtkMetaDataSet::SafeDownCast( (vtkObject*) data );
   if (!mesh)
+  {
+    qDebug() << "Cannot cast data to correct data type";
+    return;
+  }
+
+  if ( (mesh->GetType() != vtkMetaDataSet::VTK_META_SURFACE_MESH) &&
+       (mesh->GetType() != vtkMetaDataSet::VTK_META_VOLUME_MESH) )
   {
     qDebug() << "Cannot cast data to correct data type";
     return;
@@ -92,8 +99,10 @@ QList<QImage> & vtkDataMesh::thumbnails (void) const
 {
   d->thumbnails.clear();
 
-  if (!d->mesh->GetNumberOfPoints())
-    return d->thumbnails;
+  vtkPointSet * mesh = vtkPointSet::SafeDownCast(d->mesh->GetDataSet());
+
+  if (!mesh || !mesh->GetNumberOfPoints())
+      return d->thumbnails;
 
   vtkDataSetSurfaceFilter* geometryextractor = vtkDataSetSurfaceFilter::New();
   vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
@@ -101,14 +110,15 @@ QList<QImage> & vtkDataMesh::thumbnails (void) const
   vtkProperty* prop = vtkProperty::New();
   vtkRenderer* renderer = vtkRenderer::New();
   vtkRenderWindow* window = vtkRenderWindow::New();
-  geometryextractor->SetInput (d->mesh);
+  geometryextractor->SetInput (mesh);
   mapper->SetInput (geometryextractor->GetOutput());
   actor->SetMapper (mapper);
   actor->SetProperty (prop);
   renderer->AddViewProp(actor);
   window->SetSize (128,128);
-  window->AddRenderer (renderer);
   window->OffScreenRenderingOn();
+  window->AddRenderer (renderer);
+
   renderer->ResetCamera();
   window->Render();
   unsigned int w=128, h=128;

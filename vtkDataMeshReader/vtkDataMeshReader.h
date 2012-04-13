@@ -35,10 +35,6 @@ public slots:
 
     static bool registered();	
 
-protected:
-
-    vtkDataSetReader* reader;
-
 private:
 
     static const char ID[];
