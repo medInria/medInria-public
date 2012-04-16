@@ -31,7 +31,7 @@ class MEDGUI_EXPORT medThumbnailContainer : public QFrame
     Q_OBJECT
 
 public:
-    medThumbnailContainer(QList<medDataIndex> previouslyContainedIndexes, QWidget *parent = 0);
+    medThumbnailContainer(QList<medDataIndex>& previouslyContainedIndexes, QWidget *parent = 0);
     ~medThumbnailContainer();
 
     void init();
@@ -53,6 +53,7 @@ protected slots:
     void onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
     void onDeleteButtonClicked();
     void unblockHoverEvents();
+    void tryShowDeleteButton();
 
 protected:
     void paintEvent(QPaintEvent* paintEvent);
@@ -61,7 +62,6 @@ protected:
 private:
     void moveItem(medDatabasePreviewItem* targetItem, QPointF newPos);
     void moveSelectorToItem(medDatabasePreviewItem* targetItem);
-    void tryShowDeleteButton();
     void updateSelectorLegend(const medDataIndex& index);
     void handleResize(const QSize& size);
 

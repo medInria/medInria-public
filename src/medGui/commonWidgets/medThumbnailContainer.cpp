@@ -48,7 +48,7 @@ public:
     bool canDelete;
     bool showDeleteButton;
     bool blockHoverEvents;
-    bool firstTimePaintEventIsCalled;
+    bool firstTimeResizeEventIsCalled;
 
     QGraphicsScene* scene;
     medDatabasePreviewView* view;
@@ -64,13 +64,13 @@ public:
     QList<medDatabasePreviewItem*> containedItems;
 };
 
-medThumbnailContainer::medThumbnailContainer(QList<medDataIndex> previouslyContainedIndexes, QWidget *parent) : QFrame(parent), d(new medThumbnailContainerPrivate)
+medThumbnailContainer::medThumbnailContainer(QList<medDataIndex>& previouslyContainedIndexes, QWidget* parent) : QFrame(parent), d(new medThumbnailContainerPrivate)
 {
     d->previouslyContainedIndexes = previouslyContainedIndexes;
 
     d->amountOfColumns = 4;
     d->blockHoverEvents = false;
-    d->firstTimePaintEventIsCalled = true;
+    d->firstTimeResizeEventIsCalled = true;
 
     d->scene = new QGraphicsScene(this);
     d->scene->setBackgroundBrush(QColor(0x41, 0x41, 0x41));
@@ -112,7 +112,10 @@ medThumbnailContainer::medThumbnailContainer(QList<medDataIndex> previouslyConta
     this->setMinimumHeight(item_height);
     this->setMinimumWidth(item_width);
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    this->setFrameStyle(QFrame::NoFrame);
+    this->setAttribute(Qt::WA_MacShowFocusRect, false);
     this->init();
+
 }
 
 medThumbnailContainer::~medThumbnailContainer()
@@ -140,25 +143,27 @@ void medThumbnailContainer::init()
 void medThumbnailContainer::paintEvent(QPaintEvent* paintEvent)
 {
 //    qDebug() << "medThumbnailContainer Paint Event";
-
-    if( d->firstTimePaintEventIsCalled )
-    {
-        d->firstTimePaintEventIsCalled = false;
-        handleResize(paintEvent->rect().size());
-    }
 }
 
 void medThumbnailContainer::resizeEvent(QResizeEvent* resizeEvent)
 {
-    qDebug() << "medThumbnailContainer Resize Event";
+//    qDebug() << "medThumbnailContainer Resize Event";
 
     // TODO checar si hago los calculos siempre o solo si cambia el ancho
+
+    if( d->firstTimeResizeEventIsCalled )
+    {
+        d->firstTimeResizeEventIsCalled = false;
+    }
+    else
+    {
+        d->previouslyContainedIndexes = getContainedIndexes();
+    }
     handleResize(resizeEvent->size());
 }
 
 void medThumbnailContainer::handleResize(const QSize& size)
 {
-    d->previouslyContainedIndexes = getContainedIndexes();
     reset();
 
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
@@ -478,7 +483,7 @@ void medThumbnailContainer::setAllowDeleting(bool isDeletingAllowed)
 
 QList<medDataIndex> medThumbnailContainer::getContainedIndexes()
 {
-    QList<medDataIndex> getContainedIndexes;
+    QList<medDataIndex> getContainedIndexes = *(new QList<medDataIndex>());
     foreach(medDatabasePreviewItem* item, d->containedItems)
     {
         getContainedIndexes << item->dataIndex();

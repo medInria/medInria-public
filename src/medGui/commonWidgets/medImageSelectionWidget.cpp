@@ -35,7 +35,8 @@ medImageSelectionWidget::medImageSelectionWidget(QList<medDataIndex> previouslyS
     d->proxy = new medDatabaseProxyModel(this);
     d->proxy->setSourceModel(d->model);
 
-    d->preview = new medThumbnailContainer(previouslySelectedIndexes);
+    QList<medDataIndex> empty;
+    d->preview = new medThumbnailContainer(empty);
     d->preview->setAllowDeleting(false);
     d->preview->setAllowDragging(true);
     d->preview->setAllowDropping(false);
@@ -72,16 +73,16 @@ medImageSelectionWidget::medImageSelectionWidget(QList<medDataIndex> previouslyS
     splitterVertical->insertWidget(0, splitterHorizontal);
     splitterVertical->insertWidget(1, d->selected);
 
-    splitterVertical->setStretchFactor(0, 2);
-    splitterVertical->setStretchFactor(1, 3);
+    splitterVertical->setStretchFactor(0, 1);
+    splitterVertical->setStretchFactor(1, 1);
 
     QHBoxLayout* buttonsLayout = new QHBoxLayout();
     buttonsLayout->setDirection(QBoxLayout::RightToLeft);
 
     int btWidth = 60;
-    int btHeight = 35;
-    d->btOk->setFixedSize(btWidth, btWidth);
-    d->btCancel->setFixedSize(btWidth, btWidth);
+    int btHeight = 45;
+    d->btOk->setFixedSize(btWidth, btHeight);
+    d->btCancel->setFixedSize(btWidth, btHeight);
     buttonsLayout->addWidget(d->btOk);
     buttonsLayout->addWidget(d->btCancel);
 
