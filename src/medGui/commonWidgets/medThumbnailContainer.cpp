@@ -33,7 +33,6 @@ medDeleteButton::~medDeleteButton(void)
 {
 }
 
-
 void medDeleteButton::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
     emit clicked();
@@ -43,99 +42,143 @@ class medThumbnailContainerPrivate
 {
 public:
 
-    int columns;
-    int rows;
+    int amountOfColumns;
     bool canDrag;
     bool canDrop;
     bool canDelete;
-    bool showDelBt;
+    bool showDeleteButton;
     bool blockHoverEvents;
+    bool firstTimePaintEventIsCalled;
 
     QGraphicsScene* scene;
     medDatabasePreviewView* view;
-
     medDatabasePreviewSelector *selector;
-
-    medDatabasePreviewItem* current_item;
+    medDeleteButton* deleteButton;
 
     QPropertyAnimation *selector_position_animation;
     QPropertyAnimation *selector_rect_animation;
     QParallelAnimationGroup *selector_animation;
 
-    medDeleteButton* del;
-
+    medDatabasePreviewItem* currentSelectedItem;
+    QList<medDataIndex> previouslyContainedIndexes;
     QList<medDatabasePreviewItem*> containedItems;
 };
 
-medThumbnailContainer::medThumbnailContainer(QWidget *parent) : QFrame(parent), d(new medThumbnailContainerPrivate)
+medThumbnailContainer::medThumbnailContainer(QList<medDataIndex> previouslyContainedIndexes, QWidget *parent) : QFrame(parent), d(new medThumbnailContainerPrivate)
 {
-    d->columns = 4;
+    d->previouslyContainedIndexes = previouslyContainedIndexes;
+
+    d->amountOfColumns = 4;
     d->blockHoverEvents = false;
+    d->firstTimePaintEventIsCalled = true;
 
     d->scene = new QGraphicsScene(this);
     d->scene->setBackgroundBrush(QColor(0x41, 0x41, 0x41));
 
     d->view = new medDatabasePreviewView();
     d->view->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    //TODO change this to Qt::ScrollBarAlwaysOff once you are sure it is not needed any more
     d->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    d->view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     d->view->setAcceptWheelEvent(true);
-
     d->view->setScene(d->scene);
 
     d->selector = new medDatabasePreviewSelector;
-    d->selector->setRect(QRectF(5, 5, 138, 138));
-
     d->scene->addItem(d->selector);
 
     connect(d->view, SIGNAL(objectDropped (const medDataIndex&)), this, SLOT(onObjectDropped (const medDataIndex&)));
 
-    d->view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->setContentsMargins(10, 0, 10, 10);
-    layout->setSpacing(0);
-    layout->addWidget(d->view);
-    this->setLayout(layout);
-
+    // a layout is needed for proper resizing
+    QVBoxLayout *viewLayout = new QVBoxLayout();
+    // TODO si juego con las sombras de los widgets esto deberia tocarlo
+//    layout->setContentsMargins(10, 9, 10, 15);
+    viewLayout->setContentsMargins(10, 8, 10, 13);
+    viewLayout->setSpacing(0);
+    viewLayout->addWidget(d->view);
+    this->setLayout(viewLayout);
 
     d->selector_position_animation = NULL;
     d->selector_rect_animation = NULL;
     d->selector_animation = NULL;
 
-    d->del = new medDeleteButton();
-    d->scene->addItem(d->del);
-    connect(d->del, SIGNAL(clicked()), this, SLOT(onDeleteButtonClicked()));
+    d->deleteButton = new medDeleteButton();
+    d->scene->addItem(d->deleteButton);
+    connect(d->deleteButton, SIGNAL(clicked()), this, SLOT(onDeleteButtonClicked()));
 
-    qreal item_width   = medDatabasePreviewController::instance()->itemWidth(); //128
-    qreal item_height   = medDatabasePreviewController::instance()->itemHeight(); //128
+    qreal item_width = medDatabasePreviewController::instance()->itemWidth(); //128
+    qreal item_height = medDatabasePreviewController::instance()->itemHeight(); //128
     qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing(); //10
 
-//    this->setMinimumHeight(2 * (item_height + item_spacing) + item_spacing + 36);
-//    this->setMinimumWidth(d->columns * (item_width + item_spacing) + item_spacing + 36);
+    this->setMinimumHeight(item_height);
+    this->setMinimumWidth(item_width);
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->init();
 }
 
-medThumbnailContainer::~medThumbnailContainer(void)
+medThumbnailContainer::~medThumbnailContainer()
 {
     delete d;
 
     d = NULL;
 }
 
-void medThumbnailContainer::reset(void)
+void medThumbnailContainer::reset()
 {
     foreach(medDatabasePreviewItem* item, d->containedItems)
             d->scene->removeItem(item);
 
-    d->current_item = NULL;
+    d->currentSelectedItem = NULL;
     d->containedItems.clear();
 }
 
-void medThumbnailContainer::init(void)
+void medThumbnailContainer::init()
 {
     d->selector->hide();
-    d->del->hide();
+    d->deleteButton->hide();
+}
+
+void medThumbnailContainer::paintEvent(QPaintEvent* paintEvent)
+{
+//    qDebug() << "medThumbnailContainer Paint Event";
+
+    if( d->firstTimePaintEventIsCalled )
+    {
+        d->firstTimePaintEventIsCalled = false;
+        handleResize(paintEvent->rect().size());
+    }
+}
+
+void medThumbnailContainer::resizeEvent(QResizeEvent* resizeEvent)
+{
+    qDebug() << "medThumbnailContainer Resize Event";
+
+    // TODO checar si hago los calculos siempre o solo si cambia el ancho
+    handleResize(resizeEvent->size());
+}
+
+void medThumbnailContainer::handleResize(const QSize& size)
+{
+    d->previouslyContainedIndexes = getContainedIndexes();
+    reset();
+
+    qreal item_width = medDatabasePreviewController::instance()->itemWidth();
+    qreal item_vertical_spacing = medDatabasePreviewController::instance()->itemSpacing();
+    qreal item_horizontal_spacing = item_vertical_spacing + 6;
+
+    int columns = size.width() / (int)(item_width + item_horizontal_spacing);
+
+    if (columns == 0)
+        columns = 1;
+
+    d->amountOfColumns = columns;
+
+    foreach(medDataIndex index, d->previouslyContainedIndexes)
+    {
+        addSeriesItem(index);
+    }
+
+    // TODO check this as no vertical scrollbar is shown with this line present
+    d->scene->setSceneRect(0, 0, d->view->viewport()->size().width(), d->view->viewport()->size().height());
 }
 
 void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
@@ -157,22 +200,22 @@ void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
         connect(item, SIGNAL(hoverEntered(QGraphicsSceneHoverEvent*, medDatabasePreviewItem*)), this, SLOT(onThumbnailHoverEntered(QGraphicsSceneHoverEvent*, medDatabasePreviewItem*)) );
         connect(item, SIGNAL(hoverLeft(QGraphicsSceneHoverEvent*, medDatabasePreviewItem*)), this, SLOT(onThumbnailHoverLeft(QGraphicsSceneHoverEvent*, medDatabasePreviewItem*)) );
 
-        qreal item_width   = medDatabasePreviewController::instance()->itemWidth();
-        qreal item_height   = medDatabasePreviewController::instance()->itemHeight();
+        qreal item_width = medDatabasePreviewController::instance()->itemWidth();
+        qreal item_height = medDatabasePreviewController::instance()->itemHeight();
         qreal item_vertical_spacing = medDatabasePreviewController::instance()->itemSpacing();
-        qreal item_horizontal_spacing = item_vertical_spacing + 6;
+        qreal item_horizontal_spacing = medDatabasePreviewController::instance()->itemSpacing() + 6;
 
         int left_margin = 10;
         int top_margin = 10;
 
         int items_count = d->containedItems.count();
-        int items_in_last_row = items_count % d->columns;
+        int items_in_last_row = items_count % d->amountOfColumns;
 
-        qreal space_taken_by_items_already_in_row =  items_in_last_row * (item_width + item_vertical_spacing);
+        qreal space_taken_by_items_already_in_row = items_in_last_row * (item_width + item_vertical_spacing);
         qreal pos_x = left_margin + space_taken_by_items_already_in_row;
 
-        int full_columns_count = items_count / d->columns;
-        qreal space_taken_by_items_on_top =  full_columns_count * (item_height + item_horizontal_spacing);
+        int number_of_full_columns = items_count / d->amountOfColumns;
+        qreal space_taken_by_items_on_top =  number_of_full_columns * (item_height + item_horizontal_spacing);
         qreal pos_y = top_margin + space_taken_by_items_on_top;
 
         item->setPos(pos_x,  pos_y);
@@ -181,8 +224,6 @@ void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
         d->containedItems << item;
 
         moveSelectorToItem( item );
-
-        //print();
     }
 }
 
@@ -192,23 +233,24 @@ void medThumbnailContainer::onObjectDropped (const medDataIndex& index)
         addSeriesItem(index);
 }
 
-void medThumbnailContainer::moveItem(medDatabasePreviewItem *target, QPointF pos)
+void medThumbnailContainer::moveItem(medDatabasePreviewItem* targetItem, QPointF newPos)
 {
-    if (!target)
+    if (!targetItem)
         return;
 
+    // hover events shall be blocked otherwise the user can quickly move the mouse and disturb the current movement
     d->blockHoverEvents = true;
 
-    QPropertyAnimation* ani = new QPropertyAnimation(target, "pos");
+    QPropertyAnimation* position_animation = new QPropertyAnimation(targetItem, "pos");
 
-    ani->setDuration(200);
-    ani->setStartValue(target->pos());
-    ani->setEndValue(pos);
-    ani->setEasingCurve(QEasingCurve::OutQuad);
+    position_animation->setDuration(200);
+    position_animation->setStartValue(targetItem->pos());
+    position_animation->setEndValue(newPos);
+    position_animation->setEasingCurve(QEasingCurve::OutQuad);
 
-    connect(ani, SIGNAL(finished()), this, SLOT(unblockHoverEvents()));
+    connect(position_animation, SIGNAL(finished()), this, SLOT(unblockHoverEvents()));
 
-    ani->start();
+    position_animation->start();
 }
 
 void medThumbnailContainer::unblockHoverEvents()
@@ -216,9 +258,9 @@ void medThumbnailContainer::unblockHoverEvents()
     d->blockHoverEvents = false;
 }
 
-void medThumbnailContainer::moveSelectorToItem(medDatabasePreviewItem *target)
+void medThumbnailContainer::moveSelectorToItem(medDatabasePreviewItem* targetItem)
 {
-    if (!target)
+    if (!targetItem)
         return;
 
     if(!d->selector->isVisible())
@@ -234,18 +276,16 @@ void medThumbnailContainer::moveSelectorToItem(medDatabasePreviewItem *target)
     QPoint selector_offset((medDatabasePreviewController::instance()->selectorWidth()  - medDatabasePreviewController::instance()->itemWidth())/-2,
                            (medDatabasePreviewController::instance()->selectorHeight() - medDatabasePreviewController::instance()->itemHeight())/-2);
 
-    medDataIndex current_index = target->dataIndex();
+    targetItem->ensureVisible(QRectF(0,0,item_width,item_height), selector_width + item_spacing, 0);
 
-    target->ensureVisible(QRectF(0,0,item_width,item_height), selector_width + item_spacing, 0);
-
-    updateSelectorLegend(current_index);
+    updateSelectorLegend(targetItem->dataIndex());
 
     if(!d->selector_position_animation)
         d->selector_position_animation = new QPropertyAnimation(d->selector, "pos");
 
     d->selector_position_animation->setDuration(100);
     d->selector_position_animation->setStartValue(d->selector->pos());
-    d->selector_position_animation->setEndValue(target->scenePos() + selector_offset);
+    d->selector_position_animation->setEndValue(targetItem->scenePos() + selector_offset);
     d->selector_position_animation->setEasingCurve(QEasingCurve::OutQuad);
 
     if(!d->selector_rect_animation)
@@ -265,7 +305,7 @@ void medThumbnailContainer::moveSelectorToItem(medDatabasePreviewItem *target)
     d->selector_animation->start();
 }
 
-void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
+void medThumbnailContainer::onItemHovered(medDatabasePreviewItem* item)
 {
     qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
@@ -274,21 +314,19 @@ void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
     qreal item_margins = selector_width - item_width;
     qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
 
-    medDataIndex current_index = item->dataIndex();
-    d->current_item = item;
+    d->currentSelectedItem = item;
 
     QPoint selector_offset((medDatabasePreviewController::instance()->selectorWidth()  - medDatabasePreviewController::instance()->itemWidth())/-2,
                            (medDatabasePreviewController::instance()->selectorHeight() - medDatabasePreviewController::instance()->itemHeight())/-2);
 
-    // if the selector is already here do nothing
+    // if the selector is already here don't move it
     if(qAbs(d->selector->pos().x() - item->scenePos().x()) < 20 && qAbs(d->selector->pos().y() - item->scenePos().y()) < 20)
     {
-        showDeleteButton();
+        tryShowDeleteButton();
         return;
     }
 
-
-    updateSelectorLegend(current_index);
+    updateSelectorLegend(item->dataIndex());
 
     if(d->selector->isVisible())
     {
@@ -314,7 +352,7 @@ void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
             d->selector_animation->addAnimation(d->selector_rect_animation);
         }
 
-        connect(d->selector_animation, SIGNAL(finished()), this, SLOT(onSelectorReachedThumbnail()));
+        connect(d->selector_animation, SIGNAL(finished()), this, SLOT(tryShowDeleteButton()));
 
         d->selector_animation->start();
     }
@@ -323,7 +361,7 @@ void medThumbnailContainer::onHoverEntered(medDatabasePreviewItem *item)
         d->selector->setPos(item->scenePos() + selector_offset);
         d->selector->setRect(QRectF(item->boundingRect().x(), item->boundingRect().y(), item->boundingRect().width() + item_margins, item->boundingRect().height() + item_margins + item_spacing));
         d->selector->show();
-        showDeleteButton();
+        tryShowDeleteButton();
     }
 }
 
@@ -335,10 +373,10 @@ void medThumbnailContainer::updateSelectorLegend(const medDataIndex& index)
     }
     else if (index.isValidForSeries() )
     {
-        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+        medAbstractDbController* dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
         QString seriesName = dbc->metaData(index, medMetaDataKeys::SeriesDescription);
 
-        if ( seriesName.isEmpty() )
+        if (seriesName.isEmpty())
             seriesName = QString(tr("Series id %1")).arg(index.seriesId());
 
         d->selector->setText(seriesName);
@@ -347,12 +385,6 @@ void medThumbnailContainer::updateSelectorLegend(const medDataIndex& index)
     {
         d->selector->setText(index.asString());
     }
-}
-
-void medThumbnailContainer::onSelectorReachedThumbnail()
-{
-    if(d->canDelete)
-        showDeleteButton();
 }
 
 void medThumbnailContainer::onThumbnailHoverEntered(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item)
@@ -364,8 +396,8 @@ void medThumbnailContainer::onThumbnailHoverEntered(QGraphicsSceneHoverEvent* ev
     {
         // this flag is necessary bc the button is made visible after the animation
         // hence it can be turned on even after it was turned off, due to the delay
-        d->showDelBt = true;
-        onHoverEntered(item);
+        d->showDeleteButton = true;
+        onItemHovered(item);
     }
 }
 
@@ -374,94 +406,58 @@ void medThumbnailContainer::onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event
 //    if(d->blockHoverEvents)
 //        return;
 
-    d->showDelBt = false;
-    d->del->hide();
+    d->showDeleteButton = false;
+    d->deleteButton->hide();
 }
 
-void medThumbnailContainer::showDeleteButton()
+void medThumbnailContainer::tryShowDeleteButton()
 {
-    if(!d->canDelete || !d->showDelBt)
+    if(!d->canDelete || !d->showDeleteButton)
         return;
 
     QPointF newPos = QPointF(d->selector->pos().rx() + 88, d->selector->pos().ry() + 8);
-    d->del->setPos(newPos);
-    d->del->show();
+    d->deleteButton->setPos(newPos);
+    d->deleteButton->show();
 }
 
 void medThumbnailContainer::onDeleteButtonClicked()
 {
-    if(d->current_item) {
-
+    if(d->currentSelectedItem)
+    {
         // if it is the last item or the only one
         // we just delete it and hide the selector
 
-        if(d->containedItems.last()->dataIndex() == d->current_item->dataIndex() || d->containedItems.count() == 1)
+        if(d->containedItems.last()->dataIndex() == d->currentSelectedItem->dataIndex() || d->containedItems.count() == 1)
         {
-            d->scene->removeItem(d->current_item);
-            d->del->hide();
+            d->scene->removeItem(d->currentSelectedItem);
+            d->deleteButton->hide();
 
-            d->containedItems.removeOne(d->current_item);
+            d->containedItems.removeOne(d->currentSelectedItem);
 
             d->selector->hide();
-//            d->selector->setPos(QPointF(0,0));
-            d->current_item = NULL;
+            d->currentSelectedItem = NULL;
         }
         else
         {
-            // we have at least 2 and we are not deleting the last one
-            QPointF deletedItemPosition = d->current_item->pos();
-            d->scene->removeItem(d->current_item);
+            // we have at least 2 items and we are not deleting the last one
+            QPointF deletedItemPosition = d->currentSelectedItem->pos();
+            d->scene->removeItem(d->currentSelectedItem);
 
-            int i2 = d->containedItems.indexOf(d->current_item, 0);
+            int indexOfDeletedItem = d->containedItems.indexOf(d->currentSelectedItem, 0);
 
-            d->containedItems.removeOne(d->current_item);
+            d->containedItems.removeOne(d->currentSelectedItem);
 
-            medDatabasePreviewItem* last = d->containedItems.last();
+            medDatabasePreviewItem* lastItem = d->containedItems.last();
 
-            moveItem(last, deletedItemPosition);
-            updateSelectorLegend(last->dataIndex());
+            moveItem(lastItem, deletedItemPosition);
+            updateSelectorLegend(lastItem->dataIndex());
 
-            d->current_item = last;
+            d->currentSelectedItem = lastItem;
 
             if(d->containedItems.count() > 1)
-            {
-                d->containedItems.move(d->containedItems.count() - 1, i2);
-            }
+                d->containedItems.move(d->containedItems.count() - 1, indexOfDeletedItem);
         }
     }
-}
-
-void medThumbnailContainer::print()
-{
-    qDebug() << d->containedItems.count();
-
-    QStringList pepe;
-    foreach(medDatabasePreviewItem* it, d->containedItems)
-    {
-        medDataIndex index = it->dataIndex();
-        QString lala;
-        if ( index.isValidForImage() )
-        {
-            lala = QString(tr("Image id %1")).arg(index.imageId());
-        }
-        else if (index.isValidForSeries() )
-        {
-            medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
-            QString seriesName = dbc->metaData(index, medMetaDataKeys::SeriesDescription);
-
-            if ( seriesName.isEmpty() )
-                seriesName = QString(tr("Series id %1")).arg(index.seriesId());
-
-            lala = seriesName;
-        }
-        else
-        {
-            lala = index.asString();
-        }
-
-        pepe << lala;
-    }
-    qDebug() << pepe;
 }
 
 void medThumbnailContainer::setAllowDragging(bool isDraggingAllowed)
@@ -480,24 +476,13 @@ void medThumbnailContainer::setAllowDeleting(bool isDeletingAllowed)
     d->canDelete = isDeletingAllowed;
 }
 
-void medThumbnailContainer::setColumnsCount(int columnsCount)
-{
-    d->columns = columnsCount;
-}
-
-void medThumbnailContainer::setRowsCount(int rowsCount)
-{
-    d->rows = rowsCount;
-}
-
 QList<medDataIndex> medThumbnailContainer::getContainedIndexes()
 {
-    QList<medDataIndex> pepe = *(new QList<medDataIndex>()); //TODO dejo el new o lo  saco?
-    foreach(medDatabasePreviewItem* it, d->containedItems)
+    QList<medDataIndex> getContainedIndexes;
+    foreach(medDatabasePreviewItem* item, d->containedItems)
     {
-        medDataIndex index = it->dataIndex();
-        pepe << index;
+        getContainedIndexes << item->dataIndex();
     }
 
-    return pepe;
+    return getContainedIndexes;
 }

@@ -860,6 +860,7 @@ void medMainWindow::openImageSelectionWidget()
 //    widget->activateWindow();
 
     int retCode = misw->exec();
+
     if ( retCode==QDialog::Accepted ) {
         d->indices = misw->getSelectedIndexes();
         qDebug() << d->indices;
