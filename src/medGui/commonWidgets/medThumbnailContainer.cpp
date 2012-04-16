@@ -76,9 +76,8 @@ medThumbnailContainer::medThumbnailContainer(QList<medDataIndex>& previouslyCont
     d->scene->setBackgroundBrush(QColor(0x41, 0x41, 0x41));
 
     d->view = new medDatabasePreviewView();
-    d->view->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    //TODO change this to Qt::ScrollBarAlwaysOff once you are sure it is not needed any more
-    d->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    d->view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    d->view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     d->view->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     d->view->setAcceptWheelEvent(true);
     d->view->setScene(d->scene);
@@ -90,8 +89,6 @@ medThumbnailContainer::medThumbnailContainer(QList<medDataIndex>& previouslyCont
 
     // a layout is needed for proper resizing
     QVBoxLayout *viewLayout = new QVBoxLayout();
-    // TODO si juego con las sombras de los widgets esto deberia tocarlo
-//    layout->setContentsMargins(10, 9, 10, 15);
     viewLayout->setContentsMargins(10, 8, 10, 13);
     viewLayout->setSpacing(0);
     viewLayout->addWidget(d->view);
@@ -184,9 +181,6 @@ void medThumbnailContainer::handleResize(const QSize& size)
     {
         addSeriesItem(index);
     }
-
-    // TODO check this as no vertical scrollbar is shown with this line present
-    d->scene->setSceneRect(0, 0, d->view->viewport()->size().width(), d->view->viewport()->size().height());
 }
 
 void medThumbnailContainer::addSeriesItem(const medDataIndex& index)

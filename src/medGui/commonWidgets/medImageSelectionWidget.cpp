@@ -54,7 +54,6 @@ medImageSelectionWidget::medImageSelectionWidget(QList<medDataIndex> previouslyS
     d->btOk->setDefault(true);
 
     // layouting
-
     QVBoxLayout* mainLayout = new QVBoxLayout();
 
     QSplitter* splitterHorizontal = new QSplitter(Qt::Horizontal);
@@ -79,7 +78,7 @@ medImageSelectionWidget::medImageSelectionWidget(QList<medDataIndex> previouslyS
     QHBoxLayout* buttonsLayout = new QHBoxLayout();
     buttonsLayout->setDirection(QBoxLayout::RightToLeft);
 
-    int btWidth = 60;
+    int btWidth = 70;
     int btHeight = 45;
     d->btOk->setFixedSize(btWidth, btHeight);
     d->btCancel->setFixedSize(btWidth, btHeight);
