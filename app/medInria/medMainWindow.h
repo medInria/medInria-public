@@ -114,8 +114,8 @@ public slots:
      */
     void showMaximized();
 
-    // TODO delete this, it's just for testing
-    void openImageSelectionWidget();
+    // TODO remove this include before MR selection-widget branch
+    void openMultipleImageSelectionWidget();
 
 protected:
     void closeEvent(QCloseEvent *event);

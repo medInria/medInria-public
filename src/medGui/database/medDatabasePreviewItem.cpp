@@ -84,17 +84,17 @@ void medDatabasePreviewItem::setImage(const QImage& image)
     this->setPixmap(QPixmap::fromImage(image));
 }
 
-void medDatabasePreviewItem::allowDrag(bool isDraggingAllowed)
+void medDatabasePreviewItem::setAllowDragging(bool isDraggingAllowed)
 {
     d->isDraggingAllowed = isDraggingAllowed;
 }
 
-void medDatabasePreviewItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void medDatabasePreviewItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 {
     Q_UNUSED(event);
 }
 
-void medDatabasePreviewItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+void medDatabasePreviewItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
     if(!d->isDraggingAllowed)
         return;

@@ -69,7 +69,7 @@
 
 #include "medSaveModifiedDialog.h"
 
-// TODO remove
+// TODO remove this include before MR selection-widget branch
 #include "medImageSelectionWidget.h"
 
 #include <QtGui>
@@ -131,8 +131,8 @@ public:
     medButton *quitButton;
     QToolButton *fullscreenButton;
 
-    //TODO delete me
-    QList<medDataIndex> indices;
+    // TODO remove this include before MR selection-widget branch
+    QList<medDataIndex> previouslySelectedIndexes;
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -169,11 +169,11 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
              this,SLOT(onOpenFile(const medDataIndex&,const QString&)));
 
     // Shortcut to open medImageSelectionWidget
-    // TODO delete this
-    QAction* openImageWidgetAction = new QAction("Open image selection widget", this);
-    openImageWidgetAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_O);
-    connect(openImageWidgetAction, SIGNAL(triggered()), this, SLOT(openImageSelectionWidget()));
-    this->addAction(openImageWidgetAction);
+    // TODO remove this include before MR selection-widget branch
+    QAction* openMultipleImageSelectionWidgetAction = new QAction("Open multiple image selection widget", this);
+    openMultipleImageSelectionWidgetAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_O);
+    connect(openMultipleImageSelectionWidgetAction, SIGNAL(triggered()), this, SLOT(openMultipleImageSelectionWidget()));
+    this->addAction(openMultipleImageSelectionWidgetAction);
 
     // Setting up widgets
     d->settingsEditor = NULL;
@@ -844,27 +844,18 @@ void medMainWindow::registerToFactories()
     datafactory->registerDataType( medSeedPointAnnotationData::s_identifier(), dtkAbstractDataCreateFunc<medSeedPointAnnotationData> );
 }
 
-void medMainWindow::openImageSelectionWidget()
+void medMainWindow::openMultipleImageSelectionWidget()
 {
-    medImageSelectionWidget* misw = new medImageSelectionWidget( d->indices, this );
-//    QSize size = widget->sizeHint();
-//    QDesktopWidget* d = QApplication::desktop();
-//    int w = d->width();   // returns screen width
-//    int h = d->height();  // returns screen height
-//    int mw = size.width();
-//    int mh = size.height();
-//    int cw = (w/2) - (mw/2);
-//    int ch = (h/2) - (mh/2);
-//    widget->move(cw,ch);
-//    widget->show();
-//    widget->activateWindow();
+    medImageSelectionWidget* misw = new medImageSelectionWidget( d->previouslySelectedIndexes, this );
 
-    int retCode = misw->exec();
+    int returnCode = misw->exec();
 
-    if ( retCode==QDialog::Accepted ) {
-        d->indices = misw->getSelectedIndexes();
-        qDebug() << d->indices;
-    } else if ( retCode==QDialog::Rejected ) {
-        qDebug() << "cancele todo oooo esaaaa gilun";
+    if ( returnCode == QDialog::Accepted )
+    {
+        d->previouslySelectedIndexes = misw->getSelectedIndexes();
+    }
+    else if ( returnCode == QDialog::Rejected )
+    {
+        qDebug() << "medImageSelectionWidget dialog rejected";
     }
 }

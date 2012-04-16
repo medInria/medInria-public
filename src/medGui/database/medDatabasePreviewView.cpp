@@ -88,17 +88,13 @@ void medDatabasePreviewView::mouseMoveEvent(QMouseEvent *event)
     QGraphicsView::mouseMoveEvent(event);
 }
 
-void medDatabasePreviewView::wheelEvent(QWheelEvent *event)
+void medDatabasePreviewView::wheelEvent(QWheelEvent* event)
 {
     if(d->acceptWheelEvent)
     {
         QGraphicsView::wheelEvent(event);
     }
-    else {
-        qDebug() <<  "NADA LOCURA";
-    }
 }
-
 
 void medDatabasePreviewView::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -109,15 +105,11 @@ void medDatabasePreviewView::dragEnterEvent(QDragEnterEvent *event)
 
 void medDatabasePreviewView::dragMoveEvent(QDragMoveEvent *event)
 {
-//    qDebug() << "dragMoveEvent";
-
     event->acceptProposedAction();
 }
 
 void medDatabasePreviewView::dragLeaveEvent(QDragLeaveEvent *event)
 {
-//    qDebug() << "dragLeaveEvent";
-
     setBackgroundRole(QPalette::Base);
 
     event->accept();
@@ -125,8 +117,6 @@ void medDatabasePreviewView::dragLeaveEvent(QDragLeaveEvent *event)
 
 void medDatabasePreviewView::dropEvent(QDropEvent *event)
 {
-    qDebug() << "dropEvent";
-
     const QMimeData *mimeData = event->mimeData();
 
     if (mimeData->hasImage()) {
@@ -147,8 +137,6 @@ void medDatabasePreviewView::dropEvent(QDropEvent *event)
 
 void medDatabasePreviewView::paintEvent(QPaintEvent *event)
 {
-//    qDebug() << "paintEvent";
-
     QGraphicsView::paintEvent(event);
 
 //    // Optionally draw something (e.g. a tag) over the label in case it is a pixmap

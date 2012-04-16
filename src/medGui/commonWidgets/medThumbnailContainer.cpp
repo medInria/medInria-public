@@ -194,7 +194,7 @@ void medThumbnailContainer::addSeriesItem(const medDataIndex& index)
     if(!isContainedAlready)
     {
         medDatabasePreviewItem* item = new medDatabasePreviewItem( medDataIndex::makeSeriesIndex(index.dataSourceId(), index.patientId(), index.studyId(), index.seriesId()) );
-        item->allowDrag(d->canDrag);
+        item->setAllowDragging(d->canDrag);
         item->setAcceptHoverEvents(true);
 
         connect(item, SIGNAL(hoverEntered(QGraphicsSceneHoverEvent*, medDatabasePreviewItem*)), this, SLOT(onThumbnailHoverEntered(QGraphicsSceneHoverEvent*, medDatabasePreviewItem*)) );
