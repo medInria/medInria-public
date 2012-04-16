@@ -149,7 +149,9 @@ void medThumbnailContainer::resizeEvent(QResizeEvent* resizeEvent)
 {
 //    qDebug() << "medThumbnailContainer Resize Event";
 
-    // TODO checar si hago los calculos siempre o solo si cambia el ancho
+    // no resize if the widget was only made taller
+    if( resizeEvent->oldSize().width() == resizeEvent->size().width() )
+        return;
 
     if( d->firstTimeResizeEventIsCalled )
     {
@@ -159,6 +161,7 @@ void medThumbnailContainer::resizeEvent(QResizeEvent* resizeEvent)
     {
         d->previouslyContainedIndexes = getContainedIndexes();
     }
+
     handleResize(resizeEvent->size());
 }
 
