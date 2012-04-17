@@ -154,8 +154,8 @@ bool medPluginGenerator::generateCMakeLists(void)
     QFile targetFile(d->target.absoluteFilePath("CMakeLists.txt"));
 
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-	qWarning() << "medPluginGenerator: unable to open CMakeLists.txt for writing";
-	return false;
+        qWarning() << "medPluginGenerator: unable to open CMakeLists.txt for writing";
+        return false;
     }
 
     QFile templateFile(QString(":template/%1/cmake").arg(d->pluginFamilyString));
@@ -235,8 +235,10 @@ bool medPluginGenerator::generateTypeSourceFile(void)
 
     stream << QString(templateFile.readAll())
         .arg(QString(d->plugin))
-	.arg(QString(d->type))
-	.arg(QString(d->plugin).remove(d->namesp).prepend(QString(d->namesp).replace(0, 1, QString(d->namesp).left(1).toUpper())));
+        .arg(QString(d->type))
+        .arg(QString(d->plugin).remove(d->namesp).prepend(QString(d->namesp).replace(0, 1, QString(d->namesp).left(1).toUpper())))
+        .arg(QString(d->name));//for RPI header inclusion
+
 
     targetFile.close();
 

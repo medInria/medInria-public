@@ -68,28 +68,32 @@ bool %1ToolBox::registered(void)
 {
     return medToolBoxFactory::instance()->
             registerCustomRegistrationToolBox("%1ToolBox",
+                                 tr("Friendly name"),
+                                 tr("short tooltip description"),
                                  create%3ToolBox);
 }
 
 void %1ToolBox::run(void)
 {
 
-    if(!this->parent())
+    if(!this->parentToolBox())
         return;
+    medToolBoxRegistration * parentTB = this->parentToolBox();
     dtkAbstractProcess * process;
 
-    if (this->parent()->process())
+    if (this->parent()->process() &&
+            (parentTB->process()->identifier() == "%1"))
     {
-        process = this->parent()->process();
+        process = parentTB->process();
 
     }
     else
     {
         process = dtkAbstractProcessFactory::instance()->create("%1");
-        this->parent()->setProcess(process);
+        parentTB->setProcess(process);
     }
-    dtkAbstractData *fixedData = this->parent()->fixedData();
-    dtkAbstractData *movingData = this->parent()->movingData();
+    dtkAbstractData *fixedData = parentTB->fixedData();
+    dtkAbstractData *movingData = parentTB->movingData();
 
 
     if (!fixedData || !movingData)
@@ -97,7 +101,11 @@ void %1ToolBox::run(void)
 
 
     %1 *process_Registration = dynamic_cast<%1 *>(process);
-
+    if (!process_Registration)
+    {
+        qWarning() << "registration process doesn't exist" ;
+        return;
+    }
     // process_Registration->setMyWonderfullParameter(fronTheGui);
     // process_Registration->setMyWonderfullParameter(fronTheGui);
 
@@ -107,11 +115,18 @@ void %1ToolBox::run(void)
     medRunnableProcess *runProcess = new medRunnableProcess;
     runProcess->setProcess (process);
 
-    d->progression_stack->addJobItem(runProcess, "Progress:");
+    d->progression_stack->addJobItem(runProcess, tr("Progress:"));
+    //If there is no observer to track the progression,
+    //make the progress bar spin:
+    //d->progression_stack->setActive(runProcess,true);
 
     connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
     connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
     connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
+    //First have the moving progress bar,
+    //and then display the remaining % when known
+    connect (runProcess, SIGNAL(activate(QObject*,bool)),
+             d->progression_stack, SLOT(setActive(QObject*,bool)));
 
     medJobManager::instance()->registerJobItem(runProcess);
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));

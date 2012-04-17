@@ -16,7 +16,10 @@ class %1PluginPrivate
 {
 public:
     // Class variables go here.
+    static const char *s_Name;
 };
+
+const char * %1PluginPrivate::s_Name = "%1";
 
 // /////////////////////////////////////////////////////////////////
 // %1Plugin
@@ -57,8 +60,36 @@ QString %1Plugin::name(void) const
 
 QString %1Plugin::description(void) const
 {
+    return tr("%3");
+}
+
+QString %1Plugin::version(void) const
+{
+    return %2PLUGIN_VERSION;
+}
+
+QString %1Plugin::contact(void) const
+{
     return "";
 }
+
+QStringList %1Plugin::authors(void) const
+{
+    QStringList list;
+    return list;
+}
+
+QStringList %1Plugin::contributors(void) const
+{
+    QStringList list;
+    return list;
+}
+
+QString %1Plugin::identifier(void) const
+{
+    return %1PluginPrivate::s_Name;
+}
+
 
 QStringList %1Plugin::tags(void) const
 {
@@ -68,6 +99,10 @@ QStringList %1Plugin::tags(void) const
 QStringList %1Plugin::types(void) const
 {
     return QStringList() << "%1";
+}
+QStringList %1Plugin::dependencies(void) const
+{
+    return QStringList();
 }
 
 Q_EXPORT_PLUGIN2(%1Plugin, %1Plugin)
