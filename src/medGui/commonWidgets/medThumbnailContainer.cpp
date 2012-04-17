@@ -45,7 +45,7 @@ public:
     bool canDrop;
     bool canDelete;
     bool showDeleteButton;
-    bool blockHoverEvents;
+    bool blockHoverEnterEvent;
     bool firstTimeResizeEventIsCalled;
 
     QGraphicsScene* scene;
@@ -67,7 +67,7 @@ medThumbnailContainer::medThumbnailContainer(QList<medDataIndex>& previouslyCont
     d->previouslyContainedIndexes = previouslyContainedIndexes;
 
     d->amountOfColumns = 4;
-    d->blockHoverEvents = false;
+    d->blockHoverEnterEvent = false;
     d->firstTimeResizeEventIsCalled = true;
 
     d->scene = new QGraphicsScene(this);
@@ -109,8 +109,9 @@ medThumbnailContainer::medThumbnailContainer(QList<medDataIndex>& previouslyCont
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     this->setFrameStyle(QFrame::NoFrame);
     this->setAttribute(Qt::WA_MacShowFocusRect, false);
-    this->init();
 
+    d->selector->hide();
+    d->deleteButton->hide();
 }
 
 medThumbnailContainer::~medThumbnailContainer()
@@ -122,17 +123,12 @@ medThumbnailContainer::~medThumbnailContainer()
 
 void medThumbnailContainer::reset()
 {
+    // remove all images from the scene
     foreach(medDatabasePreviewItem* item, d->containedItems)
             d->scene->removeItem(item);
 
     d->currentSelectedItem = NULL;
     d->containedItems.clear();
-}
-
-void medThumbnailContainer::init()
-{
-    d->selector->hide();
-    d->deleteButton->hide();
 }
 
 void medThumbnailContainer::paintEvent(QPaintEvent* paintEvent)
@@ -144,10 +140,14 @@ void medThumbnailContainer::resizeEvent(QResizeEvent* resizeEvent)
 {
 //    qDebug() << "medThumbnailContainer Resize Event";
 
-    // no resize if the widget was only made taller
+    // no resize if the widget was only made taller, as the number of columns won't change
     if( resizeEvent->oldSize().width() == resizeEvent->size().width() )
         return;
 
+    // the first time the resize event is called is when the widget is being shown
+    // for the first time. if so we want to add the previously selected images
+    // (those passed to the constructor), otherwise we save the images we have now,
+    // we calculate the new number of columns, and we put them back
     if( d->firstTimeResizeEventIsCalled )
     {
         d->firstTimeResizeEventIsCalled = false;
@@ -239,7 +239,7 @@ void medThumbnailContainer::moveItem(medDatabasePreviewItem* targetItem, QPointF
         return;
 
     // hover events shall be blocked otherwise the user can quickly move the mouse and disturb the current movement
-    d->blockHoverEvents = true;
+    d->blockHoverEnterEvent = true;
 
     QPropertyAnimation* position_animation = new QPropertyAnimation(targetItem, "pos");
 
@@ -255,7 +255,7 @@ void medThumbnailContainer::moveItem(medDatabasePreviewItem* targetItem, QPointF
 
 void medThumbnailContainer::unblockHoverEvents()
 {
-    d->blockHoverEvents = false;
+    d->blockHoverEnterEvent = false;
 }
 
 void medThumbnailContainer::moveSelectorToItem(medDatabasePreviewItem* targetItem)
@@ -328,6 +328,7 @@ void medThumbnailContainer::onItemHovered(medDatabasePreviewItem* item)
 
     updateSelectorLegend(item->dataIndex());
 
+    // if the selector is visible, and not already where we want, we animate the movement
     if(d->selector->isVisible())
     {
         if(!d->selector_position_animation)
@@ -358,6 +359,7 @@ void medThumbnailContainer::onItemHovered(medDatabasePreviewItem* item)
     }
     else
     {
+        // but if it is not visible, we just update its position and show it
         d->selector->setPos(item->scenePos() + selector_offset);
         d->selector->setRect(QRectF(item->boundingRect().x(), item->boundingRect().y(), item->boundingRect().width() + item_margins, item->boundingRect().height() + item_margins + item_spacing));
         d->selector->show();
@@ -389,13 +391,15 @@ void medThumbnailContainer::updateSelectorLegend(const medDataIndex& index)
 
 void medThumbnailContainer::onThumbnailHoverEntered(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item)
 {
-    if(d->blockHoverEvents)
+    if(d->blockHoverEnterEvent)
         return;
 
     if(item)
     {
-        // this flag is necessary bc the button is made visible after the animation
+        // this flag is necessary because the button is made visible after the animation
         // hence it can be turned on even after it was turned off, due to the delay
+        // for example, without this flag, it can happen that the user quickly enters and leaves a thumbnail
+        // but the animation finishes after the mouse left and shows the delete button anyway
         d->showDeleteButton = true;
         onItemHovered(item);
     }
@@ -403,9 +407,6 @@ void medThumbnailContainer::onThumbnailHoverEntered(QGraphicsSceneHoverEvent* ev
 
 void medThumbnailContainer::onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item)
 {
-//    if(d->blockHoverEvents)
-//        return;
-
     d->showDeleteButton = false;
     d->deleteButton->hide();
 }
@@ -422,6 +423,9 @@ void medThumbnailContainer::tryShowDeleteButton()
 
 void medThumbnailContainer::onDeleteButtonClicked()
 {
+    // we will delete the item and try to fill the hole it left (if that's the case)
+    // with the last item in the container (for simplicity)
+
     if(d->currentSelectedItem)
     {
         // if it is the last item or the only one
@@ -440,6 +444,7 @@ void medThumbnailContainer::onDeleteButtonClicked()
         else
         {
             // we have at least 2 items and we are not deleting the last one
+
             QPointF deletedItemPosition = d->currentSelectedItem->pos();
             d->scene->removeItem(d->currentSelectedItem);
 

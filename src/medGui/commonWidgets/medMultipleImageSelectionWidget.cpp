@@ -20,9 +20,9 @@ public:
     medDatabaseProxyModel *proxy;
 
     // view
-    medThumbnailContainer *preview;
-    medDatabaseView *view;
-    medThumbnailContainer *selected;
+    medDatabaseView *dbView;
+    medThumbnailContainer *dbPreview;
+    medThumbnailContainer *selectedImages;
 
     QPushButton* btOk;
     QPushButton* btCancel;
@@ -36,45 +36,50 @@ medMultipleImageSelectionWidget::medMultipleImageSelectionWidget(QList<medDataIn
     d->proxy->setSourceModel(d->model);
 
     QList<medDataIndex> empty;
-    d->preview = new medThumbnailContainer(empty);
-    d->preview->setAllowDeleting(false);
-    d->preview->setAllowDragging(true);
-    d->preview->setAllowDropping(false);
+    d->dbPreview = new medThumbnailContainer(empty);
+    d->dbPreview->setAllowDeleting(false);
+    d->dbPreview->setAllowDragging(true);
+    d->dbPreview->setAllowDropping(false);
 
-    d->selected = new medThumbnailContainer(previouslySelectedIndexes);
-    d->selected->setAllowDeleting(true);
-    d->selected->setAllowDragging(false);
-    d->selected->setAllowDropping(true);
+    d->selectedImages = new medThumbnailContainer(previouslySelectedIndexes);
+    d->selectedImages->setAllowDeleting(true);
+    d->selectedImages->setAllowDragging(false);
+    d->selectedImages->setAllowDropping(true);
 
-    d->view = new medDatabaseView();
-    d->view->setModel(d->proxy);
+    d->dbView = new medDatabaseView();
+    d->dbView->setModel(d->proxy);
 
     d->btOk = new QPushButton(tr("OK"));
     d->btCancel = new QPushButton(tr("Cancel"));
     d->btOk->setDefault(true);
 
-    // layouting
+    // 3 main panels layout
+    // db-view | db-preview
+    // --------------------
+    //   selected-images
     QVBoxLayout* mainLayout = new QVBoxLayout();
 
     QSplitter* splitterHorizontal = new QSplitter(Qt::Horizontal);
     QSplitter* splitterVertical = new QSplitter(Qt::Vertical);
     splitterHorizontal->setHandleWidth(1);
     splitterVertical->setHandleWidth(1);
+    // we do not want to handle dynamic resizing
 	splitterHorizontal->setOpaqueResize(false);
 	splitterVertical->setOpaqueResize(false);
 
-    splitterHorizontal->insertWidget(0, d->view);
-    splitterHorizontal->insertWidget(1, d->preview);
+    splitterHorizontal->insertWidget(0, d->dbView);
+    splitterHorizontal->insertWidget(1, d->dbPreview);
 
 	splitterHorizontal->setStretchFactor(0, 1);
 	splitterHorizontal->setStretchFactor(1, 3);
 
     splitterVertical->insertWidget(0, splitterHorizontal);
-    splitterVertical->insertWidget(1, d->selected);
+    splitterVertical->insertWidget(1, d->selectedImages);
 
     splitterVertical->setStretchFactor(0, 1);
     splitterVertical->setStretchFactor(1, 1);
 
+    // buttons
     QHBoxLayout* buttonsLayout = new QHBoxLayout();
     buttonsLayout->setDirection(QBoxLayout::RightToLeft);
 
@@ -91,15 +96,15 @@ medMultipleImageSelectionWidget::medMultipleImageSelectionWidget(QList<medDataIn
     this->setLayout(mainLayout);
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), this, SLOT(onPatientSelected(const medDataIndex&)));
-    connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(addSeriesItem(const medDataIndex&)));
+    connect(d->dbView, SIGNAL(patientClicked(const medDataIndex&)), this, SLOT(onPatientSelected(const medDataIndex&)));
+    connect(d->dbView, SIGNAL(seriesClicked(const medDataIndex&)), d->dbPreview, SLOT(addSeriesItem(const medDataIndex&)));
 
     connect(d->btOk, SIGNAL(clicked()), this, SLOT(onOkButtonClicked()));
     connect(d->btCancel, SIGNAL(clicked()), this, SLOT(onCancelButtonClicked()));
 
     // for the moment we just need patient and study
     for (int var = 2; var < d->proxy->columnCount(); ++var) {
-        d->view->hideColumn(var);
+        d->dbView->hideColumn(var);
     }
 }
 
@@ -123,6 +128,7 @@ QSize medMultipleImageSelectionWidget::sizeHint(void) const
 
 void medMultipleImageSelectionWidget::clear()
 {
+//    qDebug() << "clear()";
 }
 
 void medMultipleImageSelectionWidget::paintEvent(QPaintEvent* paintEvent)
@@ -137,7 +143,9 @@ void medMultipleImageSelectionWidget::resizeEvent(QResizeEvent* resizeEvent)
 
 void medMultipleImageSelectionWidget::onPatientSelected(const medDataIndex& patientId)
 {
-    d->preview->reset();
+    // when a patient is selected on the dbView we add the series
+    // belonging to that patient to the dbPreview panel
+    d->dbPreview->reset();
 
     medAbstractDbController* db =  medDataManager::instance()->controllerForDataSource(patientId.dataSourceId());
     if (db)
@@ -148,7 +156,7 @@ void medMultipleImageSelectionWidget::onPatientSelected(const medDataIndex& pati
             QList<medDataIndex> series = db->series(*studyIt);
             for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt )
             {
-                d->preview->addSeriesItem(*seriesIt);
+                d->dbPreview->addSeriesItem(*seriesIt);
             }
         }
     }
@@ -168,5 +176,5 @@ void medMultipleImageSelectionWidget::onOkButtonClicked()
 
 QList<medDataIndex> medMultipleImageSelectionWidget::getSelectedIndexes()
 {
-    return d->selected->getContainedIndexes();
+    return d->selectedImages->getContainedIndexes();
 }
