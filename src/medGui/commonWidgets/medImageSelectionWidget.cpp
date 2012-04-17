@@ -28,7 +28,7 @@ public:
     QPushButton* btCancel;
 };
 
-medImageSelectionWidget::medImageSelectionWidget(QList<medDataIndex> previouslySelectedIndexes, QWidget *parent) : d(new medImageSelectionWidgetPrivate)
+medMultipleImageSelectionWidget::medMultipleImageSelectionWidget(QList<medDataIndex> previouslySelectedIndexes, QWidget *parent) : d(new medImageSelectionWidgetPrivate)
 {
     bool justBringStudies = true;
     d->model = new medDatabaseModel(this, justBringStudies);
@@ -103,14 +103,14 @@ medImageSelectionWidget::medImageSelectionWidget(QList<medDataIndex> previouslyS
     }
 }
 
-medImageSelectionWidget::~medImageSelectionWidget(void)
+medMultipleImageSelectionWidget::~medMultipleImageSelectionWidget(void)
 {
     delete d;
 
     d = NULL;
 }
 
-QSize medImageSelectionWidget::sizeHint(void) const
+QSize medMultipleImageSelectionWidget::sizeHint(void) const
 {
     const int width = QApplication::desktop()->screen(0)->width();
     const int height = QApplication::desktop()->screen(0)->width();
@@ -121,21 +121,21 @@ QSize medImageSelectionWidget::sizeHint(void) const
     return QSize(widthHint, heightHint);
 }
 
-void medImageSelectionWidget::clear()
+void medMultipleImageSelectionWidget::clear()
 {
 }
 
-void medImageSelectionWidget::paintEvent(QPaintEvent* paintEvent)
+void medMultipleImageSelectionWidget::paintEvent(QPaintEvent* paintEvent)
 {
 //    qDebug() << "medImageSelectionWidget Paint Event";
 }
 
-void medImageSelectionWidget::resizeEvent(QResizeEvent* resizeEvent)
+void medMultipleImageSelectionWidget::resizeEvent(QResizeEvent* resizeEvent)
 {
 //    qDebug() << "medImageSelectionWidget Resize Event";
 }
 
-void medImageSelectionWidget::onPatientSelected(const medDataIndex& patientId)
+void medMultipleImageSelectionWidget::onPatientSelected(const medDataIndex& patientId)
 {
     d->preview->reset();
 
@@ -154,19 +154,19 @@ void medImageSelectionWidget::onPatientSelected(const medDataIndex& patientId)
     }
 }
 
-void medImageSelectionWidget::onCancelButtonClicked()
+void medMultipleImageSelectionWidget::onCancelButtonClicked()
 {
 //    qDebug() << "Cancel button clicked";
     reject();
 }
 
-void medImageSelectionWidget::onOkButtonClicked()
+void medMultipleImageSelectionWidget::onOkButtonClicked()
 {
 //    qDebug() << "OK button clicked";
     accept();
 }
 
-QList<medDataIndex> medImageSelectionWidget::getSelectedIndexes()
+QList<medDataIndex> medMultipleImageSelectionWidget::getSelectedIndexes()
 {
     return d->selected->getContainedIndexes();
 }

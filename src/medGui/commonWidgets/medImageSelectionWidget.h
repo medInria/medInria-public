@@ -8,13 +8,13 @@
 
 class medImageSelectionWidgetPrivate;
 
-class MEDGUI_EXPORT medImageSelectionWidget : public QDialog
+class MEDGUI_EXPORT medMultipleImageSelectionWidget : public QDialog
 {
     Q_OBJECT
 
 public:
-    medImageSelectionWidget(QList<medDataIndex> previouslySelectedIndexes, QWidget *parent = 0);
-    ~medImageSelectionWidget(void);
+    medMultipleImageSelectionWidget(QList<medDataIndex> previouslySelectedIndexes, QWidget *parent = 0);
+    ~medMultipleImageSelectionWidget(void);
 
     QSize sizeHint() const;
     QList<medDataIndex> getSelectedIndexes();

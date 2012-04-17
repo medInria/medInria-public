@@ -846,7 +846,7 @@ void medMainWindow::registerToFactories()
 
 void medMainWindow::openMultipleImageSelectionWidget()
 {
-    medImageSelectionWidget* misw = new medImageSelectionWidget( d->previouslySelectedIndexes, this );
+    medMultipleImageSelectionWidget* misw = new medMultipleImageSelectionWidget( d->previouslySelectedIndexes, this );
 
     int returnCode = misw->exec();
 
