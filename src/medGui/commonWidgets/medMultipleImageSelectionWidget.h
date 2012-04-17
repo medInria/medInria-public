@@ -1,12 +1,12 @@
-#ifndef MEDIMAGESELECTIONWIDGET_H
-#define MEDIMAGESELECTIONWIDGET_H
+#ifndef MEDMULTIPLEIMAGESELECTIONWIDGET_H
+#define MEDMULTIPLEIMAGESELECTIONWIDGET_H
 
 #include <QtGui>
 
 #include "medGuiExport.h"
 #include <medDataIndex.h>
 
-class medImageSelectionWidgetPrivate;
+class medMultipleImageSelectionWidgetPrivate;
 
 class MEDGUI_EXPORT medMultipleImageSelectionWidget : public QDialog
 {
@@ -34,7 +34,7 @@ protected:
     void resizeEvent(QResizeEvent* resizeEvent);
 
 private:
-    medImageSelectionWidgetPrivate *d;
+    medMultipleImageSelectionWidgetPrivate *d;
 };
 
 #endif

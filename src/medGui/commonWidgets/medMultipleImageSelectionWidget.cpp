@@ -1,4 +1,4 @@
-#include "medImageSelectionWidget.h"
+#include "medMultipleImageSelectionWidget.h"
 
 #include <QtGui>
 
@@ -12,7 +12,7 @@
 #include <medDropSite.h>
 #include <medThumbnailContainer.h>
 
-class medImageSelectionWidgetPrivate
+class medMultipleImageSelectionWidgetPrivate
 {
 public:
     // data
@@ -28,7 +28,7 @@ public:
     QPushButton* btCancel;
 };
 
-medMultipleImageSelectionWidget::medMultipleImageSelectionWidget(QList<medDataIndex> previouslySelectedIndexes, QWidget *parent) : d(new medImageSelectionWidgetPrivate)
+medMultipleImageSelectionWidget::medMultipleImageSelectionWidget(QList<medDataIndex> previouslySelectedIndexes, QWidget *parent) : d(new medMultipleImageSelectionWidgetPrivate)
 {
     bool justBringStudies = true;
     d->model = new medDatabaseModel(this, justBringStudies);
@@ -127,12 +127,12 @@ void medMultipleImageSelectionWidget::clear()
 
 void medMultipleImageSelectionWidget::paintEvent(QPaintEvent* paintEvent)
 {
-//    qDebug() << "medImageSelectionWidget Paint Event";
+//    qDebug() << "medMultipleImageSelectionWidget Paint Event";
 }
 
 void medMultipleImageSelectionWidget::resizeEvent(QResizeEvent* resizeEvent)
 {
-//    qDebug() << "medImageSelectionWidget Resize Event";
+//    qDebug() << "medMultipleImageSelectionWidget Resize Event";
 }
 
 void medMultipleImageSelectionWidget::onPatientSelected(const medDataIndex& patientId)

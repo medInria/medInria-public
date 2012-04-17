@@ -70,7 +70,7 @@
 #include "medSaveModifiedDialog.h"
 
 // TODO remove this include before MR selection-widget branch
-#include "medImageSelectionWidget.h"
+#include "medMultipleImageSelectionWidget.h"
 
 #include <QtGui>
 
@@ -168,7 +168,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect (medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &, const QString&)),
              this,SLOT(onOpenFile(const medDataIndex&,const QString&)));
 
-    // Shortcut to open medImageSelectionWidget
+    // Shortcut to open medMultipleImageSelectionWidget
     // TODO remove this include before MR selection-widget branch
     QAction* openMultipleImageSelectionWidgetAction = new QAction("Open multiple image selection widget", this);
     openMultipleImageSelectionWidgetAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_O);
@@ -856,6 +856,6 @@ void medMainWindow::openMultipleImageSelectionWidget()
     }
     else if ( returnCode == QDialog::Rejected )
     {
-        qDebug() << "medImageSelectionWidget dialog rejected";
+        qDebug() << "medMultipleImageSelectionWidget dialog rejected";
     }
 }
