@@ -69,9 +69,6 @@
 
 #include "medSaveModifiedDialog.h"
 
-// TODO remove this include before MR selection-widget branch
-#include "medMultipleImageSelectionWidget.h"
-
 #include <QtGui>
 
 // Simple new function used for factories.
@@ -130,9 +127,6 @@ public:
 
     medButton *quitButton;
     QToolButton *fullscreenButton;
-
-    // TODO remove this include before MR selection-widget branch
-    QList<medDataIndex> previouslySelectedIndexes;
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -168,12 +162,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect (medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &, const QString&)),
              this,SLOT(onOpenFile(const medDataIndex&,const QString&)));
 
-    // Shortcut to open medMultipleImageSelectionWidget
-    // TODO remove this include before MR selection-widget branch
-    QAction* openMultipleImageSelectionWidgetAction = new QAction("Open multiple image selection widget", this);
-    openMultipleImageSelectionWidgetAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_O);
-    connect(openMultipleImageSelectionWidgetAction, SIGNAL(triggered()), this, SLOT(openMultipleImageSelectionWidget()));
-    this->addAction(openMultipleImageSelectionWidgetAction);
+
 
     // Setting up widgets
     d->settingsEditor = NULL;
@@ -842,20 +831,4 @@ void medMainWindow::registerToFactories()
     //Register annotations
     dtkAbstractDataFactory * datafactory = dtkAbstractDataFactory::instance();
     datafactory->registerDataType( medSeedPointAnnotationData::s_identifier(), dtkAbstractDataCreateFunc<medSeedPointAnnotationData> );
-}
-
-void medMainWindow::openMultipleImageSelectionWidget()
-{
-    medMultipleImageSelectionWidget* misw = new medMultipleImageSelectionWidget( d->previouslySelectedIndexes, this );
-
-    int returnCode = misw->exec();
-
-    if ( returnCode == QDialog::Accepted )
-    {
-        d->previouslySelectedIndexes = misw->getSelectedIndexes();
-    }
-    else if ( returnCode == QDialog::Rejected )
-    {
-        qDebug() << "medMultipleImageSelectionWidget dialog rejected";
-    }
 }
