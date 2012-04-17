@@ -369,7 +369,9 @@ bool medPluginGenerator::generatePluginSourceFile(void)
 
     QTextStream stream(&targetFile);
 
-    stream << QString(templateFile.readAll()).arg(QString(d->plugin));
+    stream << QString(templateFile.readAll()).arg(QString(d->plugin))
+              .arg(QString(d->plugin).toUpper())
+              .arg(QString(d->description));
 
     targetFile.close();
 
