@@ -5,6 +5,8 @@
 #include "msegPlugin.h"
 
 #include "msegAlgorithmInitializer.h"
+#include "msegAlgorithmConnectedThreshold.h"
+#include "medProcessPaintSegm.h"
 
 #include <dtkCore/dtkLog.h>
 namespace mseg {
@@ -18,10 +20,8 @@ class PluginPrivate
 public:
     // Class variables go here.
     static const char *s_Name;
-    static const char *s_Type;
 };
 const char * PluginPrivate::s_Name = "mseg::Plugin";
-const char * PluginPrivate::s_Type = "Process";
 
 // /////////////////////////////////////////////////////////////////
 // Plugin
@@ -99,7 +99,8 @@ QStringList Plugin::tags(void) const
 
 QStringList Plugin::types(void) const
 {
-    return QStringList() << PluginPrivate::s_Type;
+    return QStringList() << AlgorithmConnectedThreshold::s_identifier()
+                         << medProcessPaintSegm::s_identifier();
 }
 
 Q_EXPORT_PLUGIN2(Plugin, Plugin)
