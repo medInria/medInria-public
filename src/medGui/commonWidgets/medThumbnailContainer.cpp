@@ -20,12 +20,10 @@
 #include <dtkCore/dtkGlobal.h>
 
 
-medDeleteButton::medDeleteButton() : QGraphicsRectItem()
+medDeleteButton::medDeleteButton() : QGraphicsPixmapItem()
 {
-    QRectF rec = QRectF(0, 0, 35, 35);
-    setRect(rec);
-    setPen(Qt::SolidLine);
-    setBrush(Qt::red);
+    const QPixmap pixmap(":pixmaps/delete.png");
+    this->setPixmap(pixmap);
     setZValue(100); // this item should always be on top of all the others
 }
 

@@ -10,7 +10,7 @@ class medDatabasePreviewItem;
 class medThumbnailContainerPrivate;
 class medDataIndex;
 
-class MEDGUI_EXPORT medDeleteButton : public QObject, public QGraphicsRectItem
+class MEDGUI_EXPORT medDeleteButton : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 
