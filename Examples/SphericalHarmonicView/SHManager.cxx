@@ -29,7 +29,7 @@ int main (int argc, char*argv[])
 {
   int sampleRate = 1;
   int glyphResolution = 2;
-  int tesselationBasis = 1;
+  int tesselationBasis = 0;
   int sliceVisibility[3] = {1,0,0};
   int dims[3] = {0,0,0};
 

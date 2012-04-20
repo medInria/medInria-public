@@ -269,6 +269,12 @@ itk::Vector<double, 3> Cartesian2Spherical(const itk::Vector<double, 3> vITK)
   return s;
 }
 
+
+/*
+  Compute SH matrix for discrete samplings on the sphere
+  rank := number of spherical harmonics (rank of HOT in Reseach report 5681)
+  n_s  := number of spherical values on the sphere (Research report 5681)
+*/
 itk::VariableSizeMatrix<double>
 ComputeSHMatrix(const int order,vtkPolyData* shell,const bool FlipX,const bool FlipY,
                 const bool FlipZ, itk::VariableSizeMatrix<double>& PhiThetaDirections)
