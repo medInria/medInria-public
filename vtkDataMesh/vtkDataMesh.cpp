@@ -89,8 +89,12 @@ dtkAbstractData *createVtkDataMesh(void)
 
 QImage & vtkDataMesh::thumbnail (void)
 {
-  if (!d->thumbnails.size())
-    return medAbstractDataMesh::thumbnail();
+    if (d->thumbnails.empty())
+    {
+        QList<QImage> & thumbnails = this->thumbnails();
+        if (thumbnails.empty())
+            return medAbstractDataMesh::thumbnail();
+    }
 
   return (d->thumbnails[0]);
 }
