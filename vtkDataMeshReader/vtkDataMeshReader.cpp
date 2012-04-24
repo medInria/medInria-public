@@ -64,16 +64,23 @@ bool vtkDataMeshReader::read(const QString& path) {
         if (vtkMetaVolumeMesh::CanReadFile(path.toLocal8Bit().constData()) != 0)
         {
             dataSet = vtkMetaVolumeMesh::New();
-            dataSet->Read(path.toLocal8Bit().constData());
         }
         else if ( vtkMetaSurfaceMesh::CanReadFile(path.toLocal8Bit().constData()) != 0)
         {
             dataSet = vtkMetaSurfaceMesh::New();
-            dataSet->Read(path.toLocal8Bit().constData());
         }
         else
         {
-            qDebug() << "Loading the vtkDataMesh failed, it's neither a surface or volume mesh !";;
+            qDebug() << "Loading the vtkDataMesh failed, it's neither a surface or volume mesh !";
+            return false;
+        }
+
+        try
+        {
+            dataSet->Read(path.toLocal8Bit().constData());
+        } catch (...)
+        {
+            qDebug() << "Loading the vtkDataMesh failed, error while parsing !";
             return false;
         }
 
