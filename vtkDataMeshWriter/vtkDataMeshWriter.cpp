@@ -4,20 +4,17 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkLog.h>
 
-#include <vtkDataSetWriter.h>
-#include <vtkPolyData.h>
-#include <vtkUnstructuredGrid.h>
+#include <vtkMetaDataSet.h>
+
 
 const char vtkDataMeshWriter::ID[] = "vtkDataMeshWriter";
 
 vtkDataMeshWriter::vtkDataMeshWriter()
 {
-  this->writer = vtkDataSetWriter::New();
 }
 
 vtkDataMeshWriter::~vtkDataMeshWriter()
 {
-  this->writer->Delete();
 }
 
 QStringList vtkDataMeshWriter::handled(void) const
@@ -42,21 +39,18 @@ bool vtkDataMeshWriter::write(const QString& path)
 
   qDebug() << "Can write with: " << this->identifier();
 
-  dtkAbstractData *dtkdata = this->data();
+  dtkAbstractData * dtkdata = this->data();
 
-  if(dtkdata->identifier()!="vtkDataMesh")
+  if(dtkdata->identifier() != "vtkDataMesh")
   {
     return false;
   }
 
-  vtkPointSet* pointset = dynamic_cast< vtkPointSet* >( (vtkObject*)(this->data()->output()));
-  if (!pointset)
+  vtkMetaDataSet * mesh = dynamic_cast< vtkMetaDataSet*>( (vtkObject*)(this->data()->data()));
+  if (!mesh)
     return false;
 
-  this->writer->SetFileName(path.toAscii().constData());
-  this->writer->SetInput (pointset);
-  this->writer->SetFileTypeToBinary();
-  this->writer->Update();
+  mesh->Write(path.toLocal8Bit().constData());
 
   return true;
 }

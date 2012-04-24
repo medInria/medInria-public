@@ -27,8 +27,6 @@ public slots:
     bool write    (const QString& path);
     bool canWrite (const QString& path);
 
-protected:
-    vtkDataSetWriter* writer;
 private:
     static const char ID[];
 };

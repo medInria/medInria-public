@@ -1,19 +1,20 @@
 #include <vtkDataMeshReader.h>
 
-#include <vtkDataSetReader.h>
-#include <vtkSmartPointer.h>
+#include <vtkErrorCode.h>
+
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
+#include <vtkMetaVolumeMesh.h>
+#include <vtkMetaSurfaceMesh.h>
+
 const char vtkDataMeshReader::ID[] = "vtkDataMeshReader";
 
-vtkDataMeshReader::vtkDataMeshReader(): dtkAbstractDataReader() {
-    reader = vtkDataSetReader::New();
+vtkDataMeshReader::vtkDataMeshReader() : dtkAbstractDataReader() {
 }
 
 vtkDataMeshReader::~vtkDataMeshReader() {
-    reader->Delete();
 }
 
 QStringList vtkDataMeshReader::handled() const {
@@ -25,40 +26,26 @@ QStringList vtkDataMeshReader::s_handled() {
 }
 
 bool vtkDataMeshReader::canRead(const QString& path) {
-    reader->SetFileName(path.toAscii().constData());
-
-    return reader->IsFilePolyData()         ||
-           reader->IsFileUnstructuredGrid() ||
-           reader->IsFileStructuredGrid()   ||
-           reader->IsFileRectilinearGrid();
+    return (vtkMetaVolumeMesh::CanReadFile(path.toLocal8Bit().constData()) != 0) ||
+           (vtkMetaSurfaceMesh::CanReadFile(path.toLocal8Bit().constData()) != 0);
 }
 
-bool vtkDataMeshReader::canRead(const QStringList& paths) {
-    if (!paths.count())
+bool vtkDataMeshReader::canRead(const QStringList& paths){
+    if (paths.empty())
         return false;
-    return canRead(paths[0].toAscii().constData());
+    return canRead(paths.first().toLocal8Bit().constData());
 }
 
 void vtkDataMeshReader::readInformation(const QString& path) {
-
-    dtkSmartPointer<dtkAbstractData> dtkdata = data();
-    reader->SetFileName(path.toAscii().constData());
-
-    if (!dtkdata) {
-        dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer("vtkDataMesh");
-        if (dtkdata)
-            setData(dtkdata);
-    }
-
-
-    dtkdata->addMetaData("FilePath", QStringList() << path);
-    dtkdata->identifier() = "vtkDataMesh";  //  Strange !!
+    dtkSmartPointer<dtkAbstractData> dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer("vtkDataMesh");
+    this->setData(dtkdata);
+    dtkdata->addMetaData("FilePath", QStringList() << path); // useful ?
 }
 
 void vtkDataMeshReader::readInformation(const QStringList& paths) {
-    if (!paths.count())
+    if (paths.empty())
         return;
-    readInformation(paths[0].toAscii().constData());
+    readInformation(paths.first().toLocal8Bit().constData());
 }
 
 bool vtkDataMeshReader::read(const QString& path) {
@@ -68,14 +55,29 @@ bool vtkDataMeshReader::read(const QString& path) {
 
     qDebug() << "Can read with: " << identifier();
 
-    if (dtkAbstractData *dtkdata = data()) {
-
-        if (!(dtkdata->identifier()=="vtkDataMesh"))
+    if (dtkAbstractData * dtkdata = data())
+    {
+        if (!(dtkdata->identifier() == "vtkDataMesh"))
             return false;
 
-        reader->SetFileName(path.toAscii().constData());
-        reader->Update();
-        dtkdata->setData(reader->GetOutput());
+        vtkMetaDataSet * dataSet = NULL;
+        if (vtkMetaVolumeMesh::CanReadFile(path.toLocal8Bit().constData()) != 0)
+        {
+            dataSet = vtkMetaVolumeMesh::New();
+            dataSet->Read(path.toLocal8Bit().constData());
+        }
+        else if ( vtkMetaSurfaceMesh::CanReadFile(path.toLocal8Bit().constData()) != 0)
+        {
+            dataSet = vtkMetaSurfaceMesh::New();
+            dataSet->Read(path.toLocal8Bit().constData());
+        }
+        else
+        {
+            qDebug() << "Loading the vtkDataMesh failed, it's neither a surface or volume mesh !";;
+            return false;
+        }
+
+        dtkdata->setData(dataSet);
     }
 
     setProgress(100);
@@ -83,9 +85,9 @@ bool vtkDataMeshReader::read(const QString& path) {
 }
 
 bool vtkDataMeshReader::read(const QStringList& paths) {
-    if (!paths.count())
+    if (paths.empty())
         return false;
-    return read(paths[0].toAscii().constData());
+    return read(paths.first().toLocal8Bit().constData());
 }
 
 void vtkDataMeshReader::setProgress(int value) {

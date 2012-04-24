@@ -13,11 +13,10 @@ class v3dViewMeshInteractorPrivate;
 
 class dtkAbstractData;
 class dtkAbstractView;
-class vtkImageActor;
+class vtkLookupTable;
 
 class V3DVIEWPLUGIN_EXPORT v3dViewMeshInteractor: public medMeshAbstractViewInteractor
 {
-
     Q_OBJECT
 
 public:
@@ -30,51 +29,49 @@ public:
 
     static bool registered(void);
 
-    virtual void setData(dtkAbstractData *data);
-    virtual void setView(dtkAbstractView *view);
+    virtual void setData(dtkAbstractData * data);
+    virtual void setView(dtkAbstractView * view);
 
     virtual void enable(void);
     virtual void disable(void);
 
     //! Override dtkAbstractViewInteractor.
     virtual bool isAutoEnabledWith ( dtkAbstractData * data );
-    char* getLUTQuery (int meshLayer);
-    void setOpacity (double value);
-    double opacity (int meshLayer);
-    bool visibility (int meshLayer);
-    void setLayer(int meshLayer);
-    int meshLayer(void);
-    bool edgeVisibility (int meshLayer);
-    QString* color (int meshLayer);
-    QString* renderingType (int meshLayer);
-    QString* attribute (int meshLayer);
-    QString* lut (int meshLayer);
-    void setAttribute (const QString& attribute, int meshLayer);
-    void setScalarVisibility(bool val);
-    bool isMeshOnly();
+
+    void setOpacity(int meshLayer, double value);
+    double opacity(int meshLayer) const;
+
+    void setVisibility(int meshLayer, bool visible);
+    bool visibility(int meshLayer) const;
+
+    void setEdgeVisibility(int meshLayer, bool visible);
+    bool edgeVisibility(int meshLayer) const;
+
+    void setColor(int meshLayer, QColor color);
+    QColor color(int meshLayer) const;
+
+    void setRenderingType(int meshLayer, const QString & type);
+    QString renderingType(int meshLayer) const;
+
+    void setAttribute(int meshLayer, const QString & attribute);
+    QString attribute(int meshLayer) const;
+
+    QStringList getAllAttributes(int meshLayer) const;
+
+    void setLut(int meshLayer, const QString & lutName);
+    QString lut(int meshLayer) const;
+
+    QStringList getAllLUTs() const;
+
 protected:
-    virtual void updatePipeline (unsigned int meshLayer=0);
+    void updatePipeline (unsigned int meshLayer = 0);
     void changeBounds ( vtkPointSet* pointSet);
-
-signals:
-    void selectionValidated (const QString& name);
-
-public slots:
-    virtual void onPropertySet (const QString& key, const QString& value);
-    virtual void onVisibilityPropertySet (const QString& value);
-    virtual void onEdgeVisibilityPropertySet (const QString& value);
-    virtual void onRenderingModePropertySet (const QString& value);
-
-    virtual void onLUTModePropertySet (const QString& value);
-    virtual void onColorPropertySet ( const QColor& color);
-
+    void setLut(int meshLayer, vtkLookupTable * lut);
 
 private:
-    v3dViewMeshInteractorPrivate *d;
-
-
+    v3dViewMeshInteractorPrivate * d;
 };
 
-dtkAbstractViewInteractor *createV3dViewMeshInteractor(void);
+dtkAbstractViewInteractor * createV3dViewMeshInteractor(void);
 
 #endif // V3DVIEWMESHINTERACTOR_H
