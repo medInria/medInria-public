@@ -140,7 +140,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_selectDataButton->setToolTip(tr("To select data, click on this button, "
                                       "and then on a view."));
     m_resetDataButton = new QPushButton( tr("Reset Data") , displayWidget);
-    m_resetDataButton->setToolTip(tr("Choose an other view to segment."));
+    m_resetDataButton->setToolTip(tr("Choose another view to segment."));
     m_clearMaskButton = new QPushButton( tr("Clear Mask") , displayWidget);
     m_clearMaskButton->setToolTip(tr("Resets the mask."));
     m_selectDataButton->setCheckable(true);
