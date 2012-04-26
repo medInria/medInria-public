@@ -1,5 +1,5 @@
 /* medViewerToolBoxLayout.cpp ---
- * 
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:06:02 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 56
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 
@@ -86,17 +86,17 @@ medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(par
     customPageLayout->addWidget(buttonF, 1, 2);
 
     d->layoutToolBoxTab = new medToolBoxTab(this);
-    d->layoutToolBoxTab->addTab(new QWidget, "Single");
-    d->layoutToolBoxTab->addTab(new QWidget, "Multi");
-    d->layoutToolBoxTab->addTab(customPage, "Custom");
-	
-	d->layoutToolBoxTab->setTabToolTip(0,tr("Display data in the same view (use overlay)"));
-	d->layoutToolBoxTab->setTabToolTip(1,tr("Display data in multiple views (one data = one view)"));
-	d->layoutToolBoxTab->setTabToolTip(2,tr("Use a custom layout for multiple views"));
+    d->layoutToolBoxTab->addTab(new QWidget(d->layoutToolBoxTab), tr("Single"));
+    d->layoutToolBoxTab->addTab(new QWidget(d->layoutToolBoxTab), tr("Multi"));
+    d->layoutToolBoxTab->addTab(customPage, tr("Custom"));
+
+    d->layoutToolBoxTab->setTabToolTip(0,tr("Display data in the same view (use overlay)"));
+    d->layoutToolBoxTab->setTabToolTip(1,tr("Display data in multiple views (one data = one view)"));
+    d->layoutToolBoxTab->setTabToolTip(2,tr("Use a custom layout for multiple views"));
 
     d->layoutToolBoxTab->setCurrentIndex(1);
 
-    this->setTitle("Layout");
+    this->setTitle(tr("Layout"));
     this->setTabWidget(d->layoutToolBoxTab);
 
     connect(d->layoutToolBoxTab, SIGNAL(currentChanged(int)), this, SLOT(modeChanged(int)));
@@ -138,7 +138,7 @@ void medViewerToolBoxLayout::onButtonEClicked(void)
 void medViewerToolBoxLayout::modeChanged(int tabIndex)
 {
     switch (tabIndex){
-    case 1: 
+    case 1:
         emit (modeChanged("Multi"));
         break;
     case 2:
@@ -147,7 +147,7 @@ void medViewerToolBoxLayout::modeChanged(int tabIndex)
     case 0:
     default:
         emit (modeChanged("Single"));
-    }            
+    }
 }
 
 void medViewerToolBoxLayout::clear()
