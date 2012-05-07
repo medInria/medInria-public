@@ -670,6 +670,9 @@ void vtkImageView3D::InternalUpdate (void)
   if ( !multiLayers &&  multichannelInput )
   {
     this->VolumeProperty->IndependentComponentsOff();
+    //shading and more than one dependent component (rgb) don't work well...
+    //as vtk stands now in debug mode an assert makes this crash.
+    this->VolumeProperty->ShadeOff();
     this->ActorX->SetInput ( input );
     this->ActorY->SetInput ( input );
     this->ActorZ->SetInput ( input );
@@ -677,6 +680,7 @@ void vtkImageView3D::InternalUpdate (void)
   else
   {
     this->VolumeProperty->IndependentComponentsOn();
+    this->VolumeProperty->ShadeOn();
     this->PlanarWindowLevel->SetInput(this->Input);
     this->PlanarWindowLevel->SetOutputFormatToRGB();
 
@@ -769,14 +773,33 @@ double vtkImageView3D::GetOpacity(int layer) const
 //----------------------------------------------------------------------------
 void vtkImageView3D::SetVisibility (int visibility, int layer)
 {
-    if (this->HasLayer(layer))
+  if (layer == 0 && this->RenderingMode == vtkImageView3D::PLANAR_RENDERING)
+  {
+    this->ActorX->SetVisibility(visibility);
+    this->ActorY->SetVisibility(visibility);
+    this->ActorZ->SetVisibility(visibility);
+  }
+  if (this->HasLayer(layer))
   {
     if (visibility)
     {
+      if (this->RenderingMode != vtkImageView3D::PLANAR_RENDERING)
+      {
+        //ensure the volumeActor is visible
+        //(if there is one layer, or used to have only one layer)
+        this->VolumeActor->SetVisibility(1);
+      }
       this->VolumeProperty->SetComponentWeight(layer, this->GetOpacity(layer));
     }
     else
     {
+      if (this->GetNumberOfLayers() ==1 )
+      {
+        //setting just the weight for a single component does nothing.
+        this->VolumeActor->SetVisibility(0);
+      }
+      //still set the component weight to 0 even if only 1 layer
+      //if we add new layers later the first one will stay hidden
       this->VolumeProperty->SetComponentWeight(layer, 0);
     }
     this->GetImage3DDisplayForLayer(layer)->SetVisibility(visibility);
