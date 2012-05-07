@@ -1085,15 +1085,24 @@ void vtkImageView::GetImageCoordinatesFromWorldCoordinates(double position[3], i
   }
 }
 
-//----------------------------------------------------------------------------
 double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int component )
 {
-  if (!this->GetInput())
+  int layer = this->GetCurrentLayer();
+  return this->GetValueAtPosition(worldcoordinates,component,layer);
+}
+
+//----------------------------------------------------------------------------
+double vtkImageView::GetValueAtPosition(double worldcoordinates[3],
+                                        int component,
+                                        int layer )
+{
+  vtkImageData* input = this->GetInput(layer);
+  if (!input)
     return 0.0;
 
   int indices[3];
   this->GetImageCoordinatesFromWorldCoordinates (worldcoordinates, indices);
-  int* w_extent = this->GetInput()->GetWholeExtent();
+  int* w_extent = input->GetWholeExtent();
   if ( (indices[0] < w_extent[0]) ||
       (indices[0] > w_extent[1]) ||
       (indices[1] < w_extent[2]) ||
@@ -1103,7 +1112,7 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
     return 0;
 
   // Is the requested point in the currently loaded data extent? If not, attempt to update.
-  int* extent = this->GetInput()->GetExtent ();
+  int* extent = input->GetExtent ();
   if ( (indices[0] < extent[0]) ||
       (indices[0] > extent[1]) ||
       (indices[1] < extent[2]) ||
@@ -1112,7 +1121,7 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
       (indices[2] > extent[5]) )
   {
 
-    int* u_extent = this->GetInput()->GetUpdateExtent ();
+    int* u_extent = input->GetUpdateExtent ();
     if ( (indices[0] < u_extent[0]) ||
         (indices[0] > u_extent[1]) ||
         (indices[1] < u_extent[2]) ||
@@ -1122,15 +1131,15 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
     {
 
       int pointExtent [6] = { indices [0], indices [0], indices [1], indices [1], indices [2], indices [2] };
-      this->GetInput()->SetUpdateExtent(pointExtent);
-      this->GetInput()->PropagateUpdateExtent();
-      this->GetInput()->UpdateData();
+      input->SetUpdateExtent(pointExtent);
+      input->PropagateUpdateExtent();
+      input->UpdateData();
 
     } else {
 
-      this->GetInput ()->Update ();
+      input->Update ();
 
-      int* new_extent = this->GetInput()->GetExtent ();
+      int* new_extent = input->GetExtent ();
       if ( (indices[0] < new_extent[0]) ||
           (indices[0] > new_extent[1]) ||
           (indices[1] < new_extent[2]) ||
@@ -1145,10 +1154,10 @@ double vtkImageView::GetValueAtPosition(double worldcoordinates[3], int componen
   } else {
 
     // Need to be sure that the input is up to date. Otherwise we may be requesting bad data.
-    this->GetInput()->Update ();
+    input->Update ();
   }
 
-  return this->GetInput()->GetScalarComponentAsDouble (indices[0], indices[1], indices[2], component);
+  return input->GetScalarComponentAsDouble (indices[0], indices[1], indices[2], component);
 
 }
 

@@ -355,7 +355,9 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
      zero if out of bounds.
   */
   virtual double GetValueAtPosition(double worldcoordinates[3], int component=0 );
-
+  virtual double GetValueAtPosition(double worldcoordinates[3],
+                                          int component,
+                                          int layer );
   /**
      Set the background color. Format is RGB, 0 <= R,G,B <=1
      Example: SetBackground(0.9,0.9,0.9) for grey-white.
