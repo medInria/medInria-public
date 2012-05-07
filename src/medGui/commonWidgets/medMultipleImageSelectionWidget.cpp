@@ -5,9 +5,6 @@
 #include <medDataManager.h>
 #include <medDatabaseView.h>
 #include <medDatabasePreview.h>
-#include <medDatabaseProxyModel.h>
-#include <medDatabaseModel.h>
-#include <medDatabaseExporter.h>
 #include <medAbstractDbController.h>
 #include <medDropSite.h>
 #include <medThumbnailContainer.h>
@@ -15,11 +12,6 @@
 class medMultipleImageSelectionWidgetPrivate
 {
 public:
-    // data
-    medDatabaseModel *model;
-    medDatabaseProxyModel *proxy;
-
-    // view
     medDatabaseView *dbView;
     medThumbnailContainer *dbPreview;
     medThumbnailContainer *selectedImages;
@@ -30,11 +22,6 @@ public:
 
 medMultipleImageSelectionWidget::medMultipleImageSelectionWidget(QList<medDataIndex> previouslySelectedIndexes, QWidget *parent) : d(new medMultipleImageSelectionWidgetPrivate)
 {
-    bool justBringStudies = true;
-    d->model = new medDatabaseModel(this, justBringStudies);
-    d->proxy = new medDatabaseProxyModel(this);
-    d->proxy->setSourceModel(d->model);
-
     QList<medDataIndex> empty;
     d->dbPreview = new medThumbnailContainer(empty);
     d->dbPreview->setAllowDeleting(false);
@@ -47,7 +34,6 @@ medMultipleImageSelectionWidget::medMultipleImageSelectionWidget(QList<medDataIn
     d->selectedImages->setAllowDropping(true);
 
     d->dbView = new medDatabaseView();
-    d->dbView->setModel(d->proxy);
 
     d->btOk = new QPushButton(tr("OK"));
     d->btCancel = new QPushButton(tr("Cancel"));
@@ -101,11 +87,6 @@ medMultipleImageSelectionWidget::medMultipleImageSelectionWidget(QList<medDataIn
 
     connect(d->btOk, SIGNAL(clicked()), this, SLOT(onOkButtonClicked()));
     connect(d->btCancel, SIGNAL(clicked()), this, SLOT(onCancelButtonClicked()));
-
-    // for the moment we just need patient and study
-    for (int var = 2; var < d->proxy->columnCount(); ++var) {
-        d->dbView->hideColumn(var);
-    }
 }
 
 medMultipleImageSelectionWidget::~medMultipleImageSelectionWidget(void)
@@ -129,6 +110,16 @@ QSize medMultipleImageSelectionWidget::sizeHint(void) const
 void medMultipleImageSelectionWidget::clear()
 {
 //    qDebug() << "clear()";
+}
+
+void medMultipleImageSelectionWidget::setModel(QAbstractItemModel* model)
+{
+    d->dbView->setModel(model);
+
+    // for the moment we just need patient and study
+    for (int var = 2; var < model->columnCount(); ++var) {
+        d->dbView->hideColumn(var);
+    }
 }
 
 void medMultipleImageSelectionWidget::paintEvent(QPaintEvent* paintEvent)

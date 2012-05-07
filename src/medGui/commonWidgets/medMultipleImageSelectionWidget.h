@@ -42,6 +42,13 @@ public:
     **/
     QList<medDataIndex> getSelectedIndexes();
 
+    /**
+    * Sets the database model
+    * @param a @QAbstractItemModel of the database
+    * (probably a medDatabaseModel or medDatabaseProxyModel)
+    **/
+    void setModel(QAbstractItemModel* model);
+
 public slots:
     void clear();
 
