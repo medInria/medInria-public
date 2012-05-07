@@ -34,6 +34,7 @@ class medViewerConfigurationVisualization : public medViewerConfiguration
 public:
      medViewerConfigurationVisualization(QWidget *parent = 0);
     ~medViewerConfigurationVisualization(void);
+
     virtual void setupViewContainerStack();
 
     virtual QString identifier()  const;

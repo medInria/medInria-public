@@ -11,6 +11,7 @@ public:
   QWidget* parent;
   QCheckBox* startInFullScreen;
   QComboBox* defaultStartingArea;
+  QComboBox* defaultContainerLayout;
 
   medStartupSettingsWidgetPrivate();
   ~medStartupSettingsWidgetPrivate();
@@ -38,9 +39,16 @@ medStartupSettingsWidget::medStartupSettingsWidget(QWidget *parent) :
     d->defaultStartingArea->addItem(tr("Browser"));
     d->defaultStartingArea->addItem(tr("Viewer"));
 
+    d->defaultContainerLayout = new QComboBox(this);
+    d->defaultContainerLayout->addItem(tr("Single"),"Single");
+    d->defaultContainerLayout->addItem(tr("Multi"),"Multi");
+    //TODO: add a setting per specific-layout.
+    d->defaultContainerLayout->addItem(tr("Custom"),"Custom");
+
     QFormLayout* layout = new QFormLayout;
     layout->addRow(tr("Fullscreen"),d->startInFullScreen);
     layout->addRow(tr("Starting area"), d->defaultStartingArea);
+    layout->addRow(tr("Default Container layout"), d->defaultContainerLayout);
     this->setLayout(layout);
 }
 
@@ -60,22 +68,36 @@ void medStartupSettingsWidget::read()
     d->startInFullScreen->setChecked(mnger->value("startup", "fullscreen").toBool());
 
     //if nothing is configured then Browser is the default area
-    int areaIndex = mnger->value("startup", "default_starting_area", 0).toInt();
+    int index = mnger->value("startup", "default_starting_area", 0).toInt();
 
     // clamp range
-    if (areaIndex < 0)
-        areaIndex = 0;
-    if (areaIndex > d->defaultStartingArea->count() -1)
-        areaIndex = d->defaultStartingArea->count() -1;
+    if (index < 0)
+        index = 0;
+    if (index > d->defaultStartingArea->count() -1)
+        index = d->defaultStartingArea->count() -1;
 
-    d->defaultStartingArea->setCurrentIndex(areaIndex);
+    d->defaultStartingArea->setCurrentIndex(index);
+
+    //If nothing is set, default is multi
+    QString layout = mnger->value("startup",
+                                  "default_container_layout",
+                                  "Multi").toString();
+    index = d->defaultContainerLayout->findData(layout);
+    //Clamp value to the default one in case the index is not found.
+    if ( index == -1) index = 1;
+    d->defaultContainerLayout->setCurrentIndex(index);
 }
 
 bool medStartupSettingsWidget::write()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
     mnger->setValue("startup","fullscreen", d->startInFullScreen->isChecked());
-    mnger->setValue("startup","default_starting_area", d->defaultStartingArea->currentIndex());
+    mnger->setValue("startup","default_starting_area",
+                    d->defaultStartingArea->currentIndex());
+    QString layout = d->defaultContainerLayout->itemData(
+                d->defaultContainerLayout->currentIndex()).toString();
+    mnger->setValue("startup","default_container_layout",
+                    layout);
     return true;
 }
 
@@ -84,5 +106,5 @@ QString medStartupSettingsWidget::identifier() const {
 }
 
 QString medStartupSettingsWidget::description() const {
-    return "startup";
+    return tr("startup");
 }

@@ -7,6 +7,7 @@
 #include "medToolBoxSegmentation.h"
 
 #include <medCore/medAbstractView.h>
+#include <medSettingsManager.h>
 
 #include <medProgressionStack.h>
 #include <medTabbedViewContainers.h>
@@ -26,7 +27,7 @@ class medViewerConfigurationSegmentationPrivate
 {
 public:
     // Give values to items without a constructor.
-    medViewerConfigurationSegmentationPrivate() : 
+    medViewerConfigurationSegmentationPrivate() :
       layoutToolBox(NULL), viewPropertiesToolBox(NULL), segmentationToolBox(NULL)
     {}
 
@@ -45,7 +46,7 @@ medViewerConfiguration * medViewerConfigurationSegmentation::createMedSegmentati
     return new medViewerConfigurationSegmentation(parent);
 }
 
-medViewerConfigurationSegmentation::medViewerConfigurationSegmentation(QWidget * parent /* = NULL */ ) : 
+medViewerConfigurationSegmentation::medViewerConfigurationSegmentation(QWidget * parent /* = NULL */ ) :
 medViewerConfiguration(parent), d(new medViewerConfigurationSegmentationPrivate)
 {
     d->segmentationToolBox = new medToolBoxSegmentation(this, parent );
@@ -54,7 +55,7 @@ medViewerConfiguration(parent), d(new medViewerConfigurationSegmentationPrivate)
     connect(d->segmentationToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
 
     // Always have a parent.
-    if ( !parent) 
+    if ( !parent)
         throw (std::runtime_error ("Must have a parent widget"));
 
     // -- Layout toolbox --
@@ -92,8 +93,8 @@ medViewerConfigurationSegmentation::~medViewerConfigurationSegmentation(void)
 
 bool medViewerConfigurationSegmentation::registerWithViewerConfigurationFactory()
 {
-    return medViewerConfigurationFactory::instance()->registerConfiguration( 
-        medViewerConfigurationSegmentation::ConfigurationName(), 
+    return medViewerConfigurationFactory::instance()->registerConfiguration(
+        medViewerConfigurationSegmentation::ConfigurationName(),
         medViewerConfigurationSegmentation::createMedSegmentationConfiguration
         );
 }
@@ -110,8 +111,23 @@ void medViewerConfigurationSegmentation::setupViewContainerStack()
     const QString identifier(this->containerIdentifier());
     if (!stackedViewContainers()->count())
     {
-        //Containers:
-        this->addMultiContainer(identifier);
+
+        //Default container:
+        //get default Layout type from settings:
+        medSettingsManager * mnger = medSettingsManager::instance();
+        QString layout = mnger->value("startup","default_container_layout",
+                                           "Multi").toString();
+        if (layout == "Custom")
+        {
+            addCustomContainer("Visualization");
+        } else if (layout == "Single")
+        {
+            addSingleContainer("Visualization");
+        }
+        else
+        {
+            addMultiContainer("Visualization");
+        }
 
         //Default container:
         this->connectToolboxesToCurrentContainer(identifier);

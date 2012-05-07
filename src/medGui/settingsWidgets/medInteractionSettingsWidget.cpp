@@ -14,7 +14,7 @@ medInteractionSettingsWidget::medInteractionSettingsWidget(QWidget * parent):
     medSettingsWidget(parent),
     d(new medInteractionSettingsWidgetPrivate())
 {
-    setTabName(tr("Interaction"));
+    setTabName(tr("Interactions"));
 
     d->defaultInteraction = new QComboBox(this);
     d->defaultInteraction->addItem(tr("Windowing"),"Windowing");

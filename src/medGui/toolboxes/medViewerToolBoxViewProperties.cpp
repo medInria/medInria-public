@@ -16,10 +16,14 @@
 #include <medToolBoxTab.h>
 #include <medMeshAbstractViewInteractor.h>
 
+#define LAYER_NUMBER_ROLE (Qt::UserRole+1)
+#define LAYER_IS_MESH_ROLE (Qt::UserRole+2)
+
 //Just a normal combobox, but with a link to its associated LutBox.
 //The selected item in the attribute box determines which Lut is selected
 //or if a lut can even be selected.
-class medAttributeBox: public QComboBox{
+class medAttributeBox: public QComboBox
+{
 public:
     medAttributeBox(QWidget* parent,QComboBox* lutBox);
     medAttributeBox():QComboBox(){}
@@ -53,7 +57,7 @@ public:
     QWidget * propertiesView;
     QWidget * propView;
     //attribtueList can be filled depending on the data, not static.
-    QStringList attributeList;
+    QList<QStringList> attributeList;
     static QStringList lutList;
     static QStringList presetList;
     static QMap<QString, QString> presetToLut;
@@ -65,7 +69,7 @@ public:
     QString textLayer0;
     QString textLayer1;
     QPushButton * switchLayersButton;
-    QList<medMeshAbstractViewInteractor*> interactors;
+    medMeshAbstractViewInteractor * meshInteractor;
     medAbstractView *view;
 
     QButtonGroup *mouseGroup;
@@ -89,7 +93,6 @@ public:
 
     QTreeWidgetItem * layerItem;
     bool isMesh;
-    int currentInteractor;
 };
 
 QStringList medViewerToolBoxViewPropertiesPrivate::lutList;
@@ -102,11 +105,11 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 {
 
     d->view = 0;
+    d->meshInteractor = 0;
     d->currentLayer = 0;
     d->textLayer0 = tr("Switch to layer 0 only");
     d->textLayer1 = tr("Switch to layer 1 only");
     d->isMesh = false;
-    d->currentInteractor = 0;
     if (d->lutList.isEmpty())
     {
         d->lutList << "Default" << "Black & White" << "Black & White Inversed"
@@ -146,9 +149,6 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     {
         d->renderingList << "wireframe"<<"surface"<<"points";
     }
-
-    d->attributeList << "Solid";
-
 
     d->propertiesTree = new QTreeWidget(this);
     d->propertiesTree->setFocusPolicy(Qt::NoFocus);
@@ -265,7 +265,6 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->view3dModeComboBox->addItem("MPR");
     d->view3dModeComboBox->addItem("Off");
 
-
     d->view3dVRModeComboBox = new QComboBox(this);
     d->view3dVRModeComboBox->setFocusPolicy(Qt::NoFocus);
     d->view3dVRModeComboBox->setToolTip(tr("Choose among rendering techniques (e.g. GPU accelerated rendering, Ray Casting)"));
@@ -274,7 +273,6 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->view3dVRModeComboBox->addItem( "Ray Cast" );
     d->view3dVRModeComboBox->addItem( "Texture" );
     d->view3dVRModeComboBox->addItem( "Default" );
-
 
     d->view3dLODSlider = new QSlider (Qt::Horizontal, this);
     d->view3dLODSlider->setFocusPolicy(Qt::NoFocus);
@@ -289,10 +287,10 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->croppingPushButton->setMinimumWidth ( 20 );
     d->croppingPushButton->setToolTip(tr("Crop volume tool"));
 
-    connect(d->view3dModeComboBox,            SIGNAL(currentIndexChanged(QString)), this, SLOT(onModeChanged(QString)));
-    connect(d->view3dVRModeComboBox,          SIGNAL(currentIndexChanged(QString)), this, SLOT(onVRModeChanged(QString)));
-    connect(d->view3dLODSlider,               SIGNAL(valueChanged(int)),            this, SLOT(onLodChanged(int)));
-    connect(d->croppingPushButton,            SIGNAL(toggled(bool)),                this, SLOT(onCroppingChanged(bool)));
+    connect(d->view3dModeComboBox,   SIGNAL(currentIndexChanged(QString)), this, SLOT(onModeChanged(QString)));
+    connect(d->view3dVRModeComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onVRModeChanged(QString)));
+    connect(d->view3dLODSlider,      SIGNAL(valueChanged(int)),            this, SLOT(onLodChanged(int)));
+    connect(d->croppingPushButton,   SIGNAL(toggled(bool)),                this, SLOT(onCroppingChanged(bool)));
 
     d->view3dToolBoxWidget = new QWidget(this);
     QFormLayout *view3dToolBoxWidgetLayout = new QFormLayout(d->view3dToolBoxWidget);
@@ -301,8 +299,6 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     view3dToolBoxWidgetLayout->addRow(tr("LOD:"), d->view3dLODSlider);
     view3dToolBoxWidgetLayout->addRow(tr("Cropping:"), d->croppingPushButton);
     view3dToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
-
-
 
     //add 2 layers opacity slider and switcher.
     d->twoLayersWidget = new QWidget(this);
@@ -330,10 +326,6 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     connect(d->rulerVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(onRulerVisibilityChanged(bool)));
     connect(d->annotationsVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(onAnnotationsVisibilityChanged(bool)));
 
-
-
-
-
     this->hide();
 
     this->addWidget(d->propertiesView);
@@ -353,7 +345,6 @@ medViewerToolBoxViewProperties::~medViewerToolBoxViewProperties(void)
 
 void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
 {
-
     medToolBox::update(view);
     if(!view)
     {
@@ -367,85 +358,68 @@ void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
         clear();
     }
 
+    medAbstractView * medView = dynamic_cast<medAbstractView *> (view);
+    if ( ! medView )
+        return;
 
-//    qDebug() << "update 1";
-    if (medAbstractView *medView = dynamic_cast<medAbstractView *> (view))
+    if ((d->view == dynamic_cast<medAbstractView *> (view)))
+        return;
+
+    d->view = medView;
+    d->propertiesTree->clear();
+    //decide whether to show the 2 layers slider
+    raiseSlider(d->view->layerCount() == 2);
+
+    if ( ! d->meshInteractor )
+        d->meshInteractor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor"));
+
+    //Loop all layers and create a layer icon on the toolbox with respect to the fact that it is a mesh or an image
+    for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
     {
-
-        if ((d->view == dynamic_cast<medAbstractView *> (view)))
+        if(d->view->dataInList(i) && d->view->dataInList(i)->identifier().contains("vtkDataMesh"))
         {
-            return;
+            this->constructMeshLayer(d->view->dataInList(i), meshNumber);
+            meshNumber++;
         }
-
-
-        d->view = medView;
-        d->propertiesTree->clear();
-        //decide whether to show the 2 layers slider
-        raiseSlider(d->view->layerCount() == 2);
-
-
-//        if(d->view->meshLayerCount()!=0) ///activate mesh interactor
-            if (medMeshAbstractViewInteractor *interactor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor")))
-            {
-                if (!d->interactors.contains (interactor))
-                {
-                    d->interactors.append (interactor);
-                }
-                d->currentInteractor = d->interactors.indexOf(interactor);
-            }
-
-        //Loop all layers and create a layer icon on the toolbox with respect to the fact that it is a mesh or an image
-        for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
+        else //if (d->view->dataInList(i))
         {
-
-            if(d->view->dataInList(i) && d->view->dataInList(i)->identifier().contains("vtkDataMesh"))
-            {
-                this->constructMeshLayer(d->view->dataInList(i), meshNumber);
-                meshNumber++;
-            }
-            else //if (d->view->dataInList(i))
-            {
-                this->constructImageLayer(d->view->dataInList(i), imageNumber);
-                imageNumber++;
-            }
-
-//            d->propertiesTree->collapseAll();
+            this->constructImageLayer(d->view->dataInList(i), imageNumber);
+            imageNumber++;
         }
-
-
-        //select the first layer, since we don't have more information
-        if (d->propertiesTree->topLevelItem(0))
-            d->propertiesTree->topLevelItem(0)->setExpanded(true);
-
-        QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)),
-                         this, SLOT(onDataAdded(dtkAbstractData*, int)),
-                         Qt::UniqueConnection);
-//        QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
-
-        QObject::connect(d->view, SIGNAL(TwoDTriggered(dtkAbstractView*)),
-                         this, SLOT(on2DTriggered(dtkAbstractView*)),
-                         Qt::UniqueConnection);
-        QObject::connect(d->view, SIGNAL(ThreeDTriggered(dtkAbstractView*)),
-                         this, SLOT(on3DTriggered(dtkAbstractView*)),
-                         Qt::UniqueConnection);
-        this->on2DTriggered(d->view);
-        this->on3DTriggered(d->view);
-
-        d->view3dModeComboBox->blockSignals(true);
-        d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("3DMode")));
-        d->view3dModeComboBox->blockSignals(false);
-
-        //set a few view pool wide properties in the view.
-//        qDebug()<<"update some view properties";
-        onScalarBarVisibilityChanged(d->scalarBarVisibilityCheckBox->isChecked());
-        onAnnotationsVisibilityChanged(d->annotationsVisibilityCheckBox->isChecked());
-        onAxisVisibilityChanged(d->axisVisibilityCheckBox->isChecked());
-        onRulerVisibilityChanged(d->rulerVisibilityCheckBox->isChecked());
-        onZoomingChanged(d->zoomingPushButton->isChecked());
-        onSlicingChanged(d->slicingPushButton->isChecked());
-        onMeasuringChanged(d->measuringPushButton->isChecked());
-        onWindowingChanged(d->windowingPushButton->isChecked());
     }
+
+    //select the first layer, since we don't have more information
+    if (d->propertiesTree->topLevelItem(0))
+        d->propertiesTree->topLevelItem(0)->setExpanded(true);
+
+    QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)),
+                     this, SLOT(onDataAdded(dtkAbstractData*, int)),
+                     Qt::UniqueConnection);
+    //        QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
+
+    QObject::connect(d->view, SIGNAL(TwoDTriggered(dtkAbstractView*)),
+                     this, SLOT(on2DTriggered(dtkAbstractView*)),
+                     Qt::UniqueConnection);
+    QObject::connect(d->view, SIGNAL(ThreeDTriggered(dtkAbstractView*)),
+                     this, SLOT(on3DTriggered(dtkAbstractView*)),
+                     Qt::UniqueConnection);
+    this->on2DTriggered(d->view);
+    this->on3DTriggered(d->view);
+
+    d->view3dModeComboBox->blockSignals(true);
+    d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("3DMode")));
+    d->view3dModeComboBox->blockSignals(false);
+
+    //set a few view pool wide properties in the view.
+    //        qDebug()<<"update some view properties";
+    onScalarBarVisibilityChanged(d->scalarBarVisibilityCheckBox->isChecked());
+    onAnnotationsVisibilityChanged(d->annotationsVisibilityCheckBox->isChecked());
+    onAxisVisibilityChanged(d->axisVisibilityCheckBox->isChecked());
+    onRulerVisibilityChanged(d->rulerVisibilityCheckBox->isChecked());
+    onZoomingChanged(d->zoomingPushButton->isChecked());
+    onSlicingChanged(d->slicingPushButton->isChecked());
+    onMeasuringChanged(d->measuringPushButton->isChecked());
+    onWindowingChanged(d->windowingPushButton->isChecked());
 }
 
 void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, int imageLayer)
@@ -477,12 +451,14 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
     d->layerItem = new QTreeWidgetItem(d->propertiesTree->invisibleRootItem(), QTreeWidgetItem::UserType+1);
     d->layerItem->setText(0, QString::number(imageLayer));
     d->layerItem->setIcon(0,QIcon(d->thumbLocation));
-    if (data!= NULL && medMetaDataKeys::SeriesDescription.is_set_in(data))
+    if (data != NULL && medMetaDataKeys::SeriesDescription.is_set_in(data))
     {
         d->layerItem->setToolTip(0,data->metaDataValues(medMetaDataKeys::PatientName.key())[0]
         + "\n" + data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0]
         + "\n" + data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0]);
     }
+    d->layerItem->setData(0, LAYER_NUMBER_ROLE, imageLayer);
+    d->layerItem->setData(0, LAYER_IS_MESH_ROLE, false);
 
     QTreeWidgetItem * visibleItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     visibleItem->setText(1, tr("Visible"));
@@ -512,11 +488,7 @@ void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, 
     }
 
     d->propertiesTree->setItemWidget(lutItem, 2, lutBox);
-    lutBox->blockSignals(true);
     lutBox->setCurrentIndex(lutBox->findText(d->view->getLUT(imageLayer)));
-    lutBox->blockSignals(false);
-
-
 
     QTreeWidgetItem * presetItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     presetItem->setText(1, tr("Preset"));
@@ -580,13 +552,13 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
         + "\n" + medMetaDataKeys::StudyDescription.getFirstValue(data)
         + "\n" + medMetaDataKeys::SeriesDescription.getFirstValue(data));
     }
+    d->layerItem->setData(0, LAYER_NUMBER_ROLE, meshLayer);
+    d->layerItem->setData(0, LAYER_IS_MESH_ROLE, true);
 
-    medMeshAbstractViewInteractor * currentInteractor =
-            d->interactors[d->currentInteractor];
     QTreeWidgetItem * meshVisibleItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     meshVisibleItem->setText(1, tr("Visible"));
     QCheckBox * meshVisibleBox = new QCheckBox();
-    meshVisibleBox->setChecked(currentInteractor->visibility(meshLayer));
+    meshVisibleBox->setChecked(d->meshInteractor->visibility(meshLayer));
     d->propertiesTree->setItemWidget(meshVisibleItem, 2, meshVisibleBox);
 
 
@@ -594,7 +566,7 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     opacityItem->setText(1, tr("Opacity"));
     QSlider * opacityBox = new QSlider(Qt::Horizontal);
     opacityBox->setRange(0,100);
-    opacityBox->setValue(currentInteractor->opacity(meshLayer) * 100);
+    opacityBox->setValue(d->meshInteractor->opacity(meshLayer) * 100);
     d->propertiesTree->setItemWidget(opacityItem, 2, opacityBox);
 
     //create the lutBox before the attrBox,
@@ -603,31 +575,21 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     //disabled by default
     lutBox->setEnabled(false);
     lutBox->setFocusPolicy(Qt::NoFocus);
-
-    foreach (QString lut,d->lutList)
-    {
-        lutBox->addItem(lut);
-    }
-
-
-    lutBox->blockSignals(true);
-    lutBox->setCurrentIndex(lutBox->findText(*(currentInteractor->lut(meshLayer))));
-    lutBox->blockSignals(false);
+    lutBox->addItems(d->meshInteractor->getAllLUTs());
+    lutBox->setCurrentIndex(0);
 
     QTreeWidgetItem * attrMap = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     attrMap->setText(1, tr("Attributes"));
     medAttributeBox * attrBox = new medAttributeBox(NULL,lutBox);
     attrBox->setFocusPolicy(Qt::NoFocus);
-    attrBox->addItem("Solid");
-    if (currentInteractor->getLUTQuery(meshLayer)!=NULL)
-    {
-        QString lutQuery (currentInteractor->getLUTQuery(meshLayer));
-        attrBox->addItem(lutQuery);
-        d->attributeList << lutQuery;
-    }
+    d->attributeList.append(QStringList());
+    d->attributeList[meshLayer] = QStringList("Solid"); // Flo - Ugly, but currently, it's never emptied so we need to reset it
+    d->attributeList[meshLayer] << d->meshInteractor->getAllAttributes(meshLayer);
+    attrBox->addItems(d->attributeList[meshLayer]);
+
     d->propertiesTree->setItemWidget(attrMap, 2, attrBox);
     //BEN: Too complex need to rewrite all this!!!!
-    attrBox->setCurrentIndex(attrBox->findText(*(currentInteractor->attribute(meshLayer))));
+    attrBox->setCurrentIndex(0);
 
     QTreeWidgetItem * lutItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     lutItem->setText(1, tr("LUT"));
@@ -638,7 +600,7 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     QTreeWidgetItem * edgeVisibleItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     edgeVisibleItem->setText(1, tr("Edge Visible"));
     QCheckBox * edgeVisibleBox = new QCheckBox();
-    edgeVisibleBox->setChecked(currentInteractor->edgeVisibility(meshLayer));
+    edgeVisibleBox->setChecked(d->meshInteractor->edgeVisibility(meshLayer));
     d->propertiesTree->setItemWidget(edgeVisibleItem, 2, edgeVisibleBox);
 
 
@@ -668,7 +630,7 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     colorComboBox->addItem(createIcon("#0080C0"),"#0080C0",QColor("#0080C0"));
     d->propertiesTree->setItemWidget(coloringItem, 2, colorComboBox);
 
-    colorComboBox->setCurrentIndex(colorComboBox->findText(*(currentInteractor->color(meshLayer))));
+    colorComboBox->setCurrentIndex(colorComboBox->findText(d->meshInteractor->color(meshLayer).name().toUpper()));
 
     QTreeWidgetItem * renderingItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     renderingItem->setText(1, tr("Rendering"));
@@ -680,7 +642,7 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     renderingBox->addItem("Points");
 
     d->propertiesTree->setItemWidget(renderingItem, 2, renderingBox);
-    renderingBox->setCurrentIndex(renderingBox->findText(*(currentInteractor->renderingType(meshLayer))));
+    renderingBox->setCurrentIndex(renderingBox->findText(d->meshInteractor->renderingType(meshLayer), Qt::MatchFixedString));
 
     QObject::connect(meshVisibleBox, SIGNAL(stateChanged(int)), this, SLOT(onVisibilitySet(int)));
     QObject::connect(opacityBox, SIGNAL(valueChanged(int)), this, SLOT(onOpacitySliderSet(int)));
@@ -711,34 +673,21 @@ void medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data,
     //JGG qDebug() << "1";
     if(data->identifier().contains("vtkDataMesh"))
     {
-        if (medMeshAbstractViewInteractor *interactor =
-                dynamic_cast<medMeshAbstractViewInteractor*>
-                (d->view->interactor ("v3dViewMeshInteractor")))
-            if (!d->interactors.contains (interactor))
-            {
-                d->interactors.append (interactor);
-            }
-            if (medMeshAbstractViewInteractor *interactor =
-                    dynamic_cast<medMeshAbstractViewInteractor*>
-                    (d->view->interactor ("v3dViewMeshInteractor")))
-            {
-                d->currentInteractor = d->interactors.indexOf(interactor);
+        if ( ! d->meshInteractor )
+            d->meshInteractor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor"));
 
-            }
-
-            //this solves the layering updating issue and crashes, it is not counting
-            //correctly the meshes coz onDataAdded is not connected when the first mesh is
-            //loaded, it does not happen when an image is loaded first coz onDataAdded
-            //is connected before the first mesh is loaded. Though not best solution in my opinion
-            //it works pretty fine and it will do the MR with other toolbox modifications simpler.
-            int realMeshCount=0;
-            if (d->view->hasImage())
-                realMeshCount=d->view->meshLayerCount();
-            else
-                realMeshCount=d->view->meshLayerCount()+1;
+        //this solves the layering updating issue and crashes, it is not counting
+        //correctly the meshes coz onDataAdded is not connected when the first mesh is
+        //loaded, it does not happen when an image is loaded first coz onDataAdded
+        //is connected before the first mesh is loaded. Though not best solution in my opinion
+        //it works pretty fine and it will do the MR with other toolbox modifications simpler.
+        int realMeshCount=0;
+        if (d->view->hasImage())
+            realMeshCount=d->view->meshLayerCount();
+        else
+            realMeshCount=d->view->meshLayerCount()+1;
         this->constructMeshLayer(data, realMeshCount);
         d->view->setMeshLayerCount(d->view->meshLayerCount()+1);
-
     }
     else
     {
@@ -758,7 +707,7 @@ void medViewerToolBoxViewProperties::onDataAdded(dtkAbstractData* data,
 void medViewerToolBoxViewProperties::clear(void)
 {
     d->currentLayer = 0;
-    d->interactors.clear();
+    d->meshInteractor = 0;
     d->propertiesTree->clear();
     raiseSlider(false);
     d->view = 0;
@@ -791,8 +740,7 @@ void medViewerToolBoxViewProperties::onColorChanged(int selection)
     case 19: color = QColor("#0080FF");break;
     case 20: color = QColor("#0080C0");break;
     }
-    d->interactors[d->currentInteractor]->setLayer(d->view->currentMeshLayer());
-    d->interactors[d->currentInteractor]->onColorPropertySet(color);
+    d->meshInteractor->setColor(d->currentLayer, color);
 }
 
 void medViewerToolBoxViewProperties::onVisibilitySet(int state)
@@ -809,11 +757,10 @@ void medViewerToolBoxViewProperties::onVisibilitySet(int state)
     }
     else
     {
-        d->interactors[d->currentInteractor]->setLayer(d->view->currentMeshLayer());
         if (state == Qt::Checked)
-            d->interactors[d->currentInteractor]->setProperty("Visibility","true");
+            d->meshInteractor->setVisibility(d->currentLayer, true);
         else
-            d->interactors[d->currentInteractor]->setProperty("Visibility","false");
+            d->meshInteractor->setVisibility(d->currentLayer, false);
     }
     d->view->update();
 }
@@ -824,8 +771,6 @@ void medViewerToolBoxViewProperties::onColorSelected(const QColor& color)
         return;
     if(!d->isMesh)
         return;
-    d->interactors[d->currentInteractor]->setLayer(d->view->currentMeshLayer());
-
 }
 
 void medViewerToolBoxViewProperties::onEdgeVisibilitySet(int state)
@@ -833,11 +778,10 @@ void medViewerToolBoxViewProperties::onEdgeVisibilitySet(int state)
     if (!d->view)
         return;
 
-    d->interactors[d->currentInteractor]->setLayer(d->view->currentMeshLayer());
     if (state == Qt::Checked)
-        d->interactors[d->currentInteractor]->setProperty("ShowEdges","true");
+        d->meshInteractor->setEdgeVisibility(d->currentLayer, true);
     else
-        d->interactors[d->currentInteractor]->setProperty("ShowEdges","false");
+        d->meshInteractor->setEdgeVisibility(d->currentLayer, false);
     d->view->update();
 }
 
@@ -850,10 +794,7 @@ void medViewerToolBoxViewProperties::onOpacitySliderSet(int opacity)
     if(!d->isMesh)
         d->view->setOpacity(d_opacity, d->currentLayer);
     else
-    {
-        d->interactors[d->currentInteractor]->setLayer( d->view->currentMeshLayer());
-        d->interactors[d->currentInteractor]->setOpacity(d_opacity);
-    }
+        d->meshInteractor->setOpacity(d->currentLayer, d_opacity);
 
     d->view->update();
 }
@@ -872,34 +813,17 @@ void medViewerToolBoxViewProperties::on2LayersOpacitySliderSet(int opacity)
 
 void medViewerToolBoxViewProperties::onAttrBoxChanged(int index)
 {
-
-    d->interactors[d->currentInteractor]->setAttribute(d->attributeList[index], d->view->currentMeshLayer());
-    if (!d->view)
-        return;
-    if(!d->isMesh)
+    if ( ! d->view || ! d->isMesh)
         return;
 
-    QComboBox* lutBox = NULL;
-    QComboBox* attrBox = qobject_cast<QComboBox*>(sender());
-    medAttributeBox* atBox = static_cast<medAttributeBox*>(attrBox);
-    if (atBox)
-        lutBox = atBox->getLutBox();
+    int meshLayer = d->view->currentMeshLayer();
+    QString attribute = d->attributeList[meshLayer][index];
+    d->meshInteractor->setAttribute(d->currentLayer, attribute);
 
-    if (lutBox)
-    {
-        if(index != 0)
-        {
-            lutBox->setEnabled(true);
-            d->interactors[d->currentInteractor]->setScalarVisibility(true);
-            lutBox->setCurrentIndex(lutBox->findText(*(d->interactors[d->currentInteractor]->lut(d->view->currentMeshLayer()))));
-        }
-        else
-        {
-            lutBox->setEnabled(false);
-            d->interactors[d->currentInteractor]->setLayer( d->view->currentMeshLayer());
-            d->interactors[d->currentInteractor]->setScalarVisibility(false);
-        }
-    }
+    medAttributeBox * attrBox = dynamic_cast<medAttributeBox*>(sender());
+    attrBox->getLutBox()->setEnabled(index != 0);
+
+    d->view->update();
 }
 
 void medViewerToolBoxViewProperties::onLUTChanged(int index)
@@ -936,8 +860,7 @@ void medViewerToolBoxViewProperties::onLUTChanged(int index)
     }
     else
     {
-        d->interactors[d->currentInteractor]->setLayer( d->view->currentMeshLayer());
-        d->interactors[d->currentInteractor]->setProperty("LUTMode", d->lutList.at(index));
+        d->meshInteractor->setLut(d->currentLayer, d->lutList.at(index));
     }
 
     d->view->update();
@@ -976,8 +899,7 @@ void medViewerToolBoxViewProperties::onPresetChanged(int index)
     }
     else
     {
-        d->interactors[d->currentInteractor]->setLayer( d->view->currentMeshLayer());
-        d->interactors[d->currentInteractor]->setProperty("LUTMode", lutStringToSet);
+        d->meshInteractor->setLut(d->currentLayer, lutStringToSet);
     }
 
     d->view->update();
@@ -987,8 +909,7 @@ void medViewerToolBoxViewProperties::onRenderingChanged(int index)
 {
     if (!d->view)
         return;
-    d->interactors[d->currentInteractor]->setLayer( d->view->currentMeshLayer());
-    d->interactors[d->currentInteractor]->setProperty("RenderingMode", d->renderingList.at(index));
+    d->meshInteractor->setRenderingType(d->currentLayer, d->renderingList.at(index));
     d->view->update();
 }
 
@@ -1011,13 +932,13 @@ void medViewerToolBoxViewProperties::onItemClicked(QTreeWidgetItem * item)
             d->propertiesTree->expandItem(item);
             d->propertiesTree->blockSignals(false);
 
-            d->currentLayer = item->text(0).toInt();
+            d->currentLayer = item->data(0, LAYER_NUMBER_ROLE).toInt();
+            bool isMesh = item->data(0, LAYER_IS_MESH_ROLE).toBool();
             d->view->setCurrentLayer(d->currentLayer);
             d->view->update();
-            if(item->text(0).contains("Mesh"))
+            if(isMesh)
             {
-                QString s = item->text(0).remove(0,5);
-                d->view->setCurrentMeshLayer(s.toInt()); //meshlayer is set here
+                d->view->setCurrentMeshLayer(d->currentLayer); //meshlayer is set here
                 d->isMesh = true;
             }
             else

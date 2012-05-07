@@ -26,6 +26,7 @@ public:
      * @param parent
     */
     medSettingsEditor(QWidget *parent = 0, bool useAdvancedWidget = false);
+    ~medSettingsEditor();
 
     /**
      * @brief initialize layout

@@ -41,6 +41,12 @@ medSettingsEditor::medSettingsEditor(QWidget *parent, bool useAdvancedWidget) :
     d->tabPosition = QTabWidget::West;
 }
 
+medSettingsEditor::~medSettingsEditor()
+{
+    delete d;
+}
+
+
 void medSettingsEditorPrivate::read()
 {
     foreach(medSettingsWidget * setting, settingsWidgets)
