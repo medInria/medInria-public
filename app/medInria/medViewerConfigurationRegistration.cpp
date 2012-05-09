@@ -52,7 +52,7 @@ QString medViewerConfigurationRegistration::identifier() const {
 }
 
 QString medViewerConfigurationRegistration::description() const {
-    return "Registration";
+    return tr("Registration");
 }
 
 

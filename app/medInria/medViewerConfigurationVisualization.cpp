@@ -71,23 +71,9 @@ void medViewerConfigurationVisualization::setupViewContainerStack()
 {
     if (!stackedViewContainers()->count())
     {
-        //Default container:
-        //get default Layout type from settings:
-        medSettingsManager * mnger = medSettingsManager::instance();
-        QString layout = mnger->value("startup","default_container_layout",
-                                           "Multi").toString();
-        if (layout == "Custom")
-        {
-            addCustomContainer("Visualization");
-        } else if (layout == "Single")
-        {
-            addSingleContainer("Visualization");
-        }
-        else
-        {
-            addMultiContainer("Visualization");
-        }
-        this->connectToolboxesToCurrentContainer("Visualization");
+        const QString description = this->description();
+        addDefaultTypeContainer(description);
+        this->connectToolboxesToCurrentContainer(description);
     }
     this->stackedViewContainers()->unlockTabs();
 }

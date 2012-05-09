@@ -16,10 +16,10 @@
 /* Change log:
  *
  */
+#include "medViewerConfiguration.h"
 
 #include <medDataIndex.h>
-
-#include "medViewerConfiguration.h"
+#include <medSettingsManager.h>
 
 #include "medToolBox.h"
 #include "medViewContainer.h"
@@ -27,6 +27,7 @@
 #include "medViewContainerSingle.h"
 #include "medViewContainerMulti.h"
 #include "medTabbedViewContainers.h"
+
 
 class medViewerConfigurationPrivate
 {
@@ -145,6 +146,32 @@ medTabbedViewContainers* medViewerConfiguration::stackedViewContainers() const
     return d->viewContainerStack;
 }
 
+void medViewerConfiguration::addDefaultTypeContainer(const QString& name)
+{
+    //Default container:
+    //get default Layout type from settings:
+    medSettingsManager * mnger = medSettingsManager::instance();
+    QString layout = mnger->value("startup","default_container_layout",
+                                       "Multi").toString();
+    if (layout == "Custom")
+    {
+        if (name.isEmpty())
+            addCustomContainer();
+        else addCustomContainer(name);
+    } else if (layout == "Single")
+    {
+        if(name.isEmpty())
+            addSingleContainer();
+        else addSingleContainer(name);
+    }
+    else
+    {
+        if(name.isEmpty())
+            addMultiContainer();
+        else addMultiContainer(name);
+    }
+}
+
 void medViewerConfiguration::addSingleContainer(const QString& name)
 {
     if (!this->stackedViewContainers()->container(name))
@@ -233,7 +260,7 @@ void medViewerConfiguration::clearToolBoxes()
 
 void medViewerConfiguration::onAddTabClicked()
 {
-    QString name = this->identifier();
+    QString name = this->description();
     QString realName = name;
 
     unsigned int suppTag = 0;
@@ -244,6 +271,6 @@ void medViewerConfiguration::onAddTabClicked()
         realName += QString::number(suppTag);
     }
 
-    this->addMultiContainer(realName);
+    this->addDefaultTypeContainer(realName);
     this->stackedViewContainers()->setContainer(realName);
 }
