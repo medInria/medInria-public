@@ -53,16 +53,14 @@ medToolBoxFiltering::medToolBoxFiltering ( QWidget *parent ) : medToolBox ( pare
 
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
     int i = 1; //account for the choose Filter item
-    foreach ( QString toolbox, tbFactory->filteringToolBoxes() )
+    foreach ( QString toolbox, tbFactory->toolBoxesFromCategory("filtering") )
     {
-        QPair<QString, QString> pair =
-                tbFactory->filteringToolBoxDetailsFromId( toolbox );
-        QString name = pair.first;
-        QString description = pair.second;
+        medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
+
 //        qDebug() << "Added registration toolbox" << name;
-        d->chooseFilter->addItem( name, toolbox );
+        d->chooseFilter->addItem( details->name, toolbox );
         d->chooseFilter->setItemData( i,
-                                  description,
+                                  details->description,
                                   Qt::ToolTipRole);
         i++;
     }
@@ -100,7 +98,7 @@ void medToolBoxFiltering::onToolBoxChosen ( int index )
     //get identifier for toolbox.
     QString id = d->chooseFilter->itemData( index ).toString();
 
-    medToolBoxFilteringCustom *toolbox = medToolBoxFactory::instance()->createCustomFilteringToolBox ( id );
+    medToolBoxFilteringCustom *toolbox = qobject_cast<medToolBoxFilteringCustom *>(medToolBoxFactory::instance()->createToolBox ( id ));
 
     if ( !toolbox )
     {

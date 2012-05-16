@@ -98,16 +98,13 @@ medToolBoxSegmentation::medToolBoxSegmentation( medViewerConfiguration * configu
     d->toolboxes->addItem("Choose algorithm");
 
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
-    foreach(QString toolbox, tbFactory->segmentationToolBoxes()) {
-        QPair<QString, QString> pair =
-            tbFactory->segmentationToolBoxDetailsFromId(toolbox);
-        QString name = pair.first;
-        QString description = pair.second;
+    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("segmentation")) {
+        medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
 
         QByteArray toolboxIdBA( toolbox.toAscii() );
-        d->toolboxes->addItem(name, QVariant(toolboxIdBA));
+        d->toolboxes->addItem(details->name, QVariant(toolboxIdBA));
         d->toolboxes->setItemData(d->toolboxes->count() - 1,
-            description,
+            details->description,
             Qt::ToolTipRole);
     }
 
@@ -167,7 +164,7 @@ void medToolBoxSegmentation::onToolBoxChosen(int index)
 
 void medToolBoxSegmentation::onToolBoxChosen(const QByteArray& id)
 {
-    medToolBoxSegmentationCustom *toolbox = medToolBoxFactory::instance()->createCustomSegmentationToolBox(QString(id), this);
+    medToolBoxSegmentationCustom *toolbox = qobject_cast<medToolBoxSegmentationCustom*>(medToolBoxFactory::instance()->createToolBox(QString(id), this));
 
     if(!toolbox) {
         dtkDebug() << "Unable to instantiate" << id << "toolbox";
@@ -286,7 +283,7 @@ void medToolBoxSegmentation::initializeAlgorithms()
 {
     medToolBoxFactory * factory = medToolBoxFactory::instance();
 
-    QList<QString> algorithmImplementations = factory->segmentationToolBoxes();
+    QList<QString> algorithmImplementations = factory->toolBoxesFromCategory("segmentation");
     foreach ( QString algName, algorithmImplementations ) {
 
         AlgorithmInfo itAlgInfo;

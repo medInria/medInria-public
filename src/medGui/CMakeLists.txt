@@ -86,6 +86,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
   # specific toolbox classes
   toolboxes/medToolBoxDiffusion.h
+  toolboxes/medToolBoxDiffusionCustom.h
   toolboxes/medToolBoxDiffusionFiberView.h
   toolboxes/medToolBoxDiffusionFiberBundling.h
   toolboxes/medToolBoxRegistration.h

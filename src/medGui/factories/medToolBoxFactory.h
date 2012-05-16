@@ -28,75 +28,42 @@
 
 class medToolBox;
 class medToolBoxFactoryPrivate;
-class medToolBoxRegistrationCustom;
-class medToolBoxDiffusionCustom;
-class medToolBoxCompositeDataSetImporterCustom;
-class medToolBoxFilteringCustom;
-class medToolBoxSegmentationCustom;
+class medToolBoxFactory;
+struct medToolBoxDetails;
 
 class MEDGUI_EXPORT medToolBoxFactory : public dtkAbstractFactory
 {
     Q_OBJECT
 
 public:
-    typedef medToolBoxRegistrationCustom *(*medToolBoxRegistrationCustomCreator)(QWidget *parent);
-    typedef medToolBoxDiffusionCustom    *(*medToolBoxDiffusionCustomCreator)(QWidget *parent);
-    typedef medToolBoxFilteringCustom *(*medToolBoxFilteringCustomCreator)(QWidget *parent);
-    typedef medToolBoxCompositeDataSetImporterCustom    *(*medToolBoxCompositeDataSetImporterCustomCreator)(QWidget *parent);
-    typedef medToolBoxSegmentationCustom    *(*medToolBoxSegmentationCustomCreator)(QWidget *parent);
-
+    typedef medToolBox *(*medToolBoxCreator)(QWidget *parent);
 
 public:
     static medToolBoxFactory *instance(void);
-
-    bool registerCustomRegistrationToolBox(QString identifier,
+    template <class toolboxType>
+    bool registerToolBox(QString identifier,
                                            QString name,
                                            QString description,
-                                           medToolBoxRegistrationCustomCreator func);
-    bool registerCustomDiffusionToolBox(QString identifier,
-                                        QString name,
-                                        QString description,
-                                        medToolBoxDiffusionCustomCreator func);
-    bool registerCustomFilteringToolBox(QString identifier,
-                                        QString name,
-                                        QString description,
-                                        medToolBoxFilteringCustomCreator func);
-    bool registerCustomCompositeDataSetImporterToolBox(QString identifier,
-                                                       QString name,
-                                                       QString description,
-                                                       medToolBoxCompositeDataSetImporterCustomCreator func);
-    //!Register a segemntation toolbox
-    bool registerCustomSegmentationToolBox(QString identifier,
-                                           QString name,
-                                           QString description,
-                                           medToolBoxSegmentationCustomCreator func);
+                                           QStringList categories);
 
-    QList<QString> registrationToolBoxes(void);
-    QList<QString> diffusionToolBoxes(void);
-    QList<QString> filteringToolBoxes(void);
-    QList<QString> compositeDataSetImporterToolBoxes(void);
-    //! Get a list of the available segmentation toolboxes
-    QList<QString> segmentationToolBoxes(void);
+    /**
+     * Get a list of the available toolboxes from a specific category.
+     *
+     */
+    QList<QString> toolBoxesFromCategory(const QString& category) const;
 
-    QPair<QString, QString> diffusionToolBoxDetailsFromId (
-            const QString& id );
-    QPair<QString, QString> registrationToolBoxDetailsFromId (
-            const QString& id );
-    QPair<QString, QString> filteringToolBoxDetailsFromId (
-            const QString& id );
-    QPair<QString, QString> compositeToolBoxDetailsFromId (
-            const QString& id );
-    //! Get the id, description pair for the given segmentation toolbox
-    QPair<QString, QString> segmentationToolBoxDetailsFromId (
-            const QString& id );
+
+    /**
+     *Get the id, description pair for the given toolbox.
+     *
+     */
+    medToolBoxDetails* toolBoxDetailsFromId (
+            const QString& id )const;
+
 
 public slots:
-    medToolBoxRegistrationCustom *createCustomRegistrationToolBox(QString identifier, QWidget *parent=0);
-    medToolBoxDiffusionCustom *createCustomDiffusionToolBox(QString identifier, QWidget *parent=0);
-    medToolBoxFilteringCustom *createCustomFilteringToolBox(QString identifier, QWidget *parent=0);
-    medToolBoxCompositeDataSetImporterCustom *createCustomCompositeDataSetImporterToolBox(QString identifier, QWidget *parent=0);
-    //! Create the given segemntation toolbox. Return NULL if not found.
-    medToolBoxSegmentationCustom *createCustomSegmentationToolBox(QString identifier, QWidget *parent=0);
+    medToolBox *createToolBox(QString identifier, QWidget *parent=0);
+
 
 protected:
      medToolBoxFactory(void);
@@ -104,9 +71,23 @@ protected:
 
 private:
     static medToolBoxFactory *s_instance;
-
+    template < typename T >
+    medToolBox* create ( QWidget* parent ) {
+    return ( new T(parent) );
+    }
 private:
     medToolBoxFactoryPrivate *d;
+};
+
+struct MEDGUI_EXPORT medToolBoxDetails{
+    QString name;
+    QString description;
+    QStringList categories;
+    medToolBoxFactory::medToolBoxCreator creator;
+    medToolBoxDetails(QString name,QString description, QStringList categories,
+                     medToolBoxFactory::medToolBoxCreator creator):
+        name(name),description(description),categories(categories),
+        creator(creator){}
 };
 
 #endif
