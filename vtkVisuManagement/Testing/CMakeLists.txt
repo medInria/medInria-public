@@ -33,5 +33,5 @@ FOREACH (test ${vtkVisuManagementTests})
 ENDFOREACH (test) 
 
 IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
-  ADD_TEST(NAME vtkSphericalHarmonicGlyphTest COMMAND "vtkSphericalHarmonicGlyphTest" "${vtkINRIA3D_DATA_DIR}/odf.nrrd ${vtkINRIA3D_DATA_DIR}/SHTest.vtk" )
+  ADD_TEST(NAME vtkSphericalHarmonicGlyphTest COMMAND ${CXX_TEST_PATH}/${KIT}CxxTests vtkSphericalHarmonicGlyphTest "${vtkINRIA3D_DATA_DIR}/odf.nrrd" "${vtkINRIA3D_DATA_DIR}/SHTest.vtk" )
 ENDIF(vtkINRIA3D_USE_SPHERICALHARMONICS )
