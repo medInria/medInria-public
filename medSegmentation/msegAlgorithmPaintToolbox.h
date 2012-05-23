@@ -36,7 +36,7 @@ class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medToolBox
     Q_OBJECT;
 public:
     struct PaintState { 
-        enum E{ None, InsideStroke, OutsideStroke, DeleteStroke, BoundaryStroke }; 
+        enum E{ None, Stroke, DeleteStroke, BoundaryStroke }; 
     };
 
     AlgorithmPaintToolbox( QWidget *parent );
@@ -58,8 +58,7 @@ public:
     static QString s_name(const QObject * trObj =  NULL);
 
 public slots:
-    void onInsideStrokePressed();
-    void onOutsideStrokePressed();
+    void onStrokePressed();
     void onRemoveStrokePressed();
     void onBoundaryStrokePressed();
 
@@ -89,13 +88,13 @@ protected:
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
 
-    QPushButton *m_insideStrokeButton;
-    QPushButton *m_outsideStrokeButton;
+    QPushButton *m_strokeButton;
     QPushButton *m_removeStrokeButton;
     QPushButton *m_boundaryStrokeButton;
 
     QSlider *m_brushSizeSlider;
     QSpinBox *m_brushSizeSpinBox;
+    QSpinBox *m_strokeLabelSpinBox;
 
     QPushButton *m_applyButton;
 
@@ -121,6 +120,7 @@ private:
     double m_sampleSpacing[2];
 
     double m_strokeRadius;
+    unsigned int m_strokeLabel;
 
     PaintState::E m_paintState;
 };

@@ -126,6 +126,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     medToolBoxSegmentationCustom( parent),
     m_noDataText( tr("[No input data]") ),
     m_strokeRadius(4),
+    m_strokeLabel(1),
     m_paintState(PaintState::None)
 {
     QWidget *displayWidget = new QWidget(this);
@@ -149,27 +150,37 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     dataButtonsLayout->addWidget( m_clearMaskButton );
     layout->addLayout(dataButtonsLayout);
 
-    m_insideStrokeButton = new QPushButton( tr("Inside") , displayWidget);
-    m_insideStrokeButton->setToolTip(tr("Start painting the inside of the ROI."));
-    m_outsideStrokeButton = new QPushButton( tr("Outside") , displayWidget);
-    m_outsideStrokeButton->setToolTip(tr("Start painting the outside of the ROI."));
+    m_strokeButton = new QPushButton( tr("Paint") , displayWidget);
+    m_strokeButton->setToolTip(tr("Start painting the ROI with specified label."));
+        
     m_removeStrokeButton = new QPushButton( tr("Erase") , displayWidget);
     m_removeStrokeButton->setToolTip(tr("Use an eraser on painted voxels."));
     m_boundaryStrokeButton = new QPushButton( tr("Boundary") , displayWidget);
-    m_boundaryStrokeButton->setToolTip(tr("Select a Brush that paints bounderies between in and out"));
+    m_boundaryStrokeButton->setToolTip(tr("Select a Brush that paints boundaries between in and out (forces labels to 1 and 2)"));
 
-    m_insideStrokeButton->setCheckable(true);
-    m_outsideStrokeButton->setCheckable(true);
+    m_strokeButton->setCheckable(true);
     m_removeStrokeButton->setCheckable(true);
     m_boundaryStrokeButton->setCheckable(true);
 
     QHBoxLayout * addRemoveButtonLayout = new QHBoxLayout();
-    addRemoveButtonLayout->addWidget( m_insideStrokeButton );
-    addRemoveButtonLayout->addWidget( m_outsideStrokeButton );
+    addRemoveButtonLayout->addWidget( m_strokeButton );
     addRemoveButtonLayout->addWidget( m_removeStrokeButton );
     addRemoveButtonLayout->addWidget( m_boundaryStrokeButton );
     layout->addLayout( addRemoveButtonLayout );
 
+    QHBoxLayout * labelSelectionLayout = new QHBoxLayout();
+    
+    m_strokeLabelSpinBox = new QSpinBox(displayWidget);
+    m_strokeLabelSpinBox->setToolTip(tr("Changes the painted label."));
+    m_strokeLabelSpinBox->setValue(this->m_strokeLabel);
+    m_strokeLabelSpinBox->setMinimum(1);    
+    m_strokeLabelSpinBox->setMaximum(12);    
+    
+    labelSelectionLayout->addWidget(new QLabel(tr("Label"), displayWidget));
+    labelSelectionLayout->addWidget( m_strokeLabelSpinBox );
+    
+    layout->addLayout( labelSelectionLayout );
+    
     QHBoxLayout * brushSizeLayout = new QHBoxLayout();
     m_brushSizeSlider = new QSlider(Qt::Horizontal, displayWidget);
     m_brushSizeSlider->setToolTip(tr("Changes the brush radius."));
@@ -203,10 +214,8 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
 
     enableButtons(false);
 
-    connect (m_insideStrokeButton,     SIGNAL(pressed()),
-        this, SLOT(onInsideStrokePressed ()));
-    connect (m_outsideStrokeButton,     SIGNAL(pressed()),
-        this, SLOT(onOutsideStrokePressed ()));
+    connect (m_strokeButton,     SIGNAL(pressed()),
+        this, SLOT(onStrokePressed ()));
     connect (m_removeStrokeButton,     SIGNAL(pressed()),
         this, SLOT(onRemoveStrokePressed ()));
     connect (m_boundaryStrokeButton,     SIGNAL(pressed()),
@@ -227,29 +236,18 @@ AlgorithmPaintToolbox::~AlgorithmPaintToolbox()
 {
 }
 
-void AlgorithmPaintToolbox::onInsideStrokePressed()
+void AlgorithmPaintToolbox::onStrokePressed()
 {
-    if ( this->m_insideStrokeButton->isChecked() ) {
+    if ( this->m_strokeButton->isChecked() ) {
         this->m_viewFilter->removeFromAllViews();
         m_paintState = (PaintState::None);
         return;
     }
-    setPaintState(PaintState::InsideStroke);
+    setPaintState(PaintState::Stroke);
     m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
     this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
 }
 
-void AlgorithmPaintToolbox::onOutsideStrokePressed()
-{
-    if ( this->m_outsideStrokeButton->isChecked() ) {
-        this->m_viewFilter->removeFromAllViews();
-        m_paintState = (PaintState::None);
-        return;
-    }
-    setPaintState(PaintState::OutsideStroke);
-    m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
-    this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
-}
 void AlgorithmPaintToolbox::onRemoveStrokePressed()
 {
     if ( this->m_removeStrokeButton->isChecked() ) {
@@ -261,6 +259,7 @@ void AlgorithmPaintToolbox::onRemoveStrokePressed()
     m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
     this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
 }
+    
 void AlgorithmPaintToolbox::onBoundaryStrokePressed()
 {
     if ( this->m_boundaryStrokeButton->isChecked() ) {
@@ -272,7 +271,6 @@ void AlgorithmPaintToolbox::onBoundaryStrokePressed()
     m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
     this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
 }
-
 
 void AlgorithmPaintToolbox::onApplyButtonPressed()
 {
@@ -391,12 +389,20 @@ void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
             typedef medImageMaskAnnotationData::ColorMapType::value_type PairType;
             const qreal fgVal = medToolBoxSegmentation::MaskPixelValues::Foreground;
             const qreal bgVal = medToolBoxSegmentation::MaskPixelValues::Background;
-            colorMap.push_back( PairType( fgVal - 0.4, QColor(0,0,0,0.1) ) );
+            
             colorMap.push_back( PairType( fgVal      , QColor(Qt::green) ) );
-            colorMap.push_back( PairType( fgVal + 0.4, QColor(0,0,0,0.1) ) );
-            colorMap.push_back( PairType( bgVal - 0.4, QColor(0,0,0,0.1) ) );
             colorMap.push_back( PairType( bgVal      , QColor(Qt::red) ) );
-            colorMap.push_back( PairType( bgVal + 0.4, QColor(0,0,0,0.1) ) );
+            colorMap.push_back( PairType( 3          , QColor(Qt::blue) ) );
+            colorMap.push_back( PairType( 4          , QColor(Qt::yellow) ) );
+            colorMap.push_back( PairType( 5          , QColor(Qt::cyan) ) );
+            colorMap.push_back( PairType( 6          , QColor(Qt::magenta) ) );
+            colorMap.push_back( PairType( 7          , QColor(Qt::darkGreen) ) );
+            colorMap.push_back( PairType( 8          , QColor(Qt::darkRed) ) );
+            colorMap.push_back( PairType( 9          , QColor(Qt::darkBlue) ) );
+            colorMap.push_back( PairType( 10         , QColor(Qt::darkYellow) ) );
+            colorMap.push_back( PairType( 11         , QColor(Qt::darkCyan) ) );
+            colorMap.push_back( PairType( 12         , QColor(Qt::darkMagenta) ) );
+            
             m_maskAnnotationData->setColorMap( colorMap );
 
             m_imageData->addAttachedData(m_maskAnnotationData);
@@ -608,11 +614,8 @@ void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medA
 
     MaskType::PixelType pxValue;
     switch ( m_paintState ) {
-    case PaintState::InsideStroke :
-        pxValue = medToolBoxSegmentation::MaskPixelValues::Foreground;
-        break;
-    case PaintState::OutsideStroke :
-        pxValue = medToolBoxSegmentation::MaskPixelValues::Background;
+    case PaintState::Stroke :
+        pxValue = m_strokeLabel;
         break;
     default:
         pxValue = medToolBoxSegmentation::MaskPixelValues::Unset;
@@ -667,12 +670,12 @@ void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medA
 void AlgorithmPaintToolbox::updateFromGuiItems()
 {
     this->m_strokeRadius = m_brushSizeSlider->value();
+    this->m_strokeLabel = m_strokeLabelSpinBox->value();
 }
 
 void AlgorithmPaintToolbox::enableButtons( bool value )
 {
-    m_insideStrokeButton->setEnabled(value);
-    m_outsideStrokeButton->setEnabled(value);
+    m_strokeButton->setEnabled(value);
     m_removeStrokeButton->setEnabled(value);
     m_boundaryStrokeButton->setEnabled(value);
     m_applyButton->setEnabled(value);
@@ -686,10 +689,8 @@ void AlgorithmPaintToolbox::setPaintState( PaintState::E value )
         return;
 
     switch( m_paintState ){
-    case PaintState::InsideStroke:
-        m_insideStrokeButton->setChecked(false); break;
-    case PaintState::OutsideStroke:
-        m_outsideStrokeButton->setChecked(false); break;
+    case PaintState::Stroke:
+        m_strokeButton->setChecked(false); break;
     case PaintState::DeleteStroke:
         m_removeStrokeButton->setChecked(false); break;
     case PaintState::BoundaryStroke:
