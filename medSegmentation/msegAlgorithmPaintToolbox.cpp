@@ -20,6 +20,7 @@
 #include <vnl/vnl_vector.h>
 
 #include <QtCore>
+#include <QColorDialog>
 
 #include <algorithm>
 #include <set>
@@ -181,10 +182,10 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     
     m_labelColorWidget = new QPushButton(displayWidget);
     m_labelColorWidget->setToolTip(tr("Current label color"));
-    m_labelColorWidget->setCheckable(false);
-    m_labelColorWidget->setAutoFillBackground(true);
     m_labelColorWidget->setStyleSheet("background-color: rgb(255, 0, 0);border:0;border-radius: 0px;width:20px;height:20px;");
+    m_labelColorWidget->setCheckable(false);
     m_labelColorWidget->setText("");
+    connect(m_labelColorWidget, SIGNAL(clicked()), this, SLOT(onSelectLabelColor()));
     this->onLabelChanged(1);
     
     labelSelectionLayout->addWidget(new QLabel(tr("Label"), displayWidget));
@@ -334,6 +335,23 @@ void AlgorithmPaintToolbox::onLabelChanged(int newVal)
 {
     QColor labelColor = m_labelColorMap[newVal-1].second;
     m_labelColorWidget->setStyleSheet("background-color: " + labelColor.name() + ";border:0;border-radius: 0px;width:20px;height:20px;");
+}
+    
+void AlgorithmPaintToolbox::onSelectLabelColor()
+{
+    QColor currentColor = m_labelColorMap[m_strokeLabelSpinBox->value() - 1].second;
+    QColor newColor = QColorDialog::getColor(currentColor,this);
+    
+    if (newColor.isValid())
+    {
+        m_labelColorMap[m_strokeLabelSpinBox->value() - 1].second = newColor;
+        if (m_maskAnnotationData)
+            m_maskAnnotationData->setColorMap(m_labelColorMap);
+        
+        m_maskAnnotationData->invokeModified();
+        
+        this->onLabelChanged(m_strokeLabelSpinBox->value());
+    }
 }
     
 void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )

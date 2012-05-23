@@ -68,6 +68,7 @@ public slots:
     void onResetDataPressed();
     
     void onLabelChanged(int newVal);
+    void onSelectLabelColor();
 
     void updateStroke(ClickAndMoveEventFilter * filter, medAbstractView * view);
 
