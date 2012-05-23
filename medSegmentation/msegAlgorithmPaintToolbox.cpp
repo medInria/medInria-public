@@ -441,11 +441,9 @@ void AlgorithmPaintToolbox::generateLabelColorMap()
 {
     medImageMaskAnnotationData::ColorMapType colorMap;
     typedef medImageMaskAnnotationData::ColorMapType::value_type PairType;
-    const qreal fgVal = medToolBoxSegmentation::MaskPixelValues::Foreground;
-    const qreal bgVal = medToolBoxSegmentation::MaskPixelValues::Background;
     
-    colorMap.push_back( PairType( fgVal      , QColor(Qt::green) ) );
-    colorMap.push_back( PairType( bgVal      , QColor(Qt::red) ) );
+    colorMap.push_back( PairType( 1          , QColor(Qt::green) ) );
+    colorMap.push_back( PairType( 2          , QColor(Qt::red) ) );
     colorMap.push_back( PairType( 3          , QColor(Qt::blue) ) );
     colorMap.push_back( PairType( 4          , QColor(Qt::yellow) ) );
     colorMap.push_back( PairType( 5          , QColor(Qt::cyan) ) );
