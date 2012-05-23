@@ -346,9 +346,10 @@ void AlgorithmPaintToolbox::onSelectLabelColor()
     {
         m_labelColorMap[m_strokeLabelSpinBox->value() - 1].second = newColor;
         if (m_maskAnnotationData)
+        {
             m_maskAnnotationData->setColorMap(m_labelColorMap);
-        
-        m_maskAnnotationData->invokeModified();
+            m_maskAnnotationData->invokeModified();
+        }
         
         this->onLabelChanged(m_strokeLabelSpinBox->value());
     }
