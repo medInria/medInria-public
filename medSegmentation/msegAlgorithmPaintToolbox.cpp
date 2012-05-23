@@ -174,9 +174,22 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_strokeLabelSpinBox->setToolTip(tr("Changes the painted label."));
     m_strokeLabelSpinBox->setValue(this->m_strokeLabel);
     m_strokeLabelSpinBox->setMinimum(1);    
-    m_strokeLabelSpinBox->setMaximum(12);    
+    m_strokeLabelSpinBox->setMaximum(12);
+    connect (m_strokeLabelSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onLabelChanged(int)));
+    
+    this->generateLabelColorMap();
+    
+    m_labelColorWidget = new QPushButton(displayWidget);
+    m_labelColorWidget->setToolTip(tr("Current label color"));
+    m_labelColorWidget->setCheckable(false);
+    m_labelColorWidget->setAutoFillBackground(true);
+    m_labelColorWidget->setStyleSheet("background-color: rgb(255, 0, 0);border:0;border-radius: 0px;width:20px;height:20px;");
+    m_labelColorWidget->setText("");
+    this->onLabelChanged(1);
     
     labelSelectionLayout->addWidget(new QLabel(tr("Label"), displayWidget));
+    labelSelectionLayout->addStretch();
+    labelSelectionLayout->addWidget( m_labelColorWidget );
     labelSelectionLayout->addWidget( m_strokeLabelSpinBox );
     
     layout->addLayout( labelSelectionLayout );
@@ -317,6 +330,12 @@ void AlgorithmPaintToolbox::onClearMaskPressed()
     }
 }
 
+void AlgorithmPaintToolbox::onLabelChanged(int newVal)
+{
+    QColor labelColor = m_labelColorMap[newVal-1].second;
+    m_labelColorWidget->setStyleSheet("background-color: " + labelColor.name() + ";border:0;border-radius: 0px;width:20px;height:20px;");
+}
+    
 void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
 {
     // disconnect existing
@@ -384,26 +403,8 @@ void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
             m_maskAnnotationData = new medImageMaskAnnotationData;
             this->initializeMaskData( m_imageData, m_maskData );
             m_maskAnnotationData->setMaskData(qobject_cast<medAbstractDataImage*>(m_maskData));
-
-            medImageMaskAnnotationData::ColorMapType colorMap;
-            typedef medImageMaskAnnotationData::ColorMapType::value_type PairType;
-            const qreal fgVal = medToolBoxSegmentation::MaskPixelValues::Foreground;
-            const qreal bgVal = medToolBoxSegmentation::MaskPixelValues::Background;
             
-            colorMap.push_back( PairType( fgVal      , QColor(Qt::green) ) );
-            colorMap.push_back( PairType( bgVal      , QColor(Qt::red) ) );
-            colorMap.push_back( PairType( 3          , QColor(Qt::blue) ) );
-            colorMap.push_back( PairType( 4          , QColor(Qt::yellow) ) );
-            colorMap.push_back( PairType( 5          , QColor(Qt::cyan) ) );
-            colorMap.push_back( PairType( 6          , QColor(Qt::magenta) ) );
-            colorMap.push_back( PairType( 7          , QColor(Qt::darkGreen) ) );
-            colorMap.push_back( PairType( 8          , QColor(Qt::darkRed) ) );
-            colorMap.push_back( PairType( 9          , QColor(Qt::darkBlue) ) );
-            colorMap.push_back( PairType( 10         , QColor(Qt::darkYellow) ) );
-            colorMap.push_back( PairType( 11         , QColor(Qt::darkCyan) ) );
-            colorMap.push_back( PairType( 12         , QColor(Qt::darkMagenta) ) );
-            
-            m_maskAnnotationData->setColorMap( colorMap );
+            m_maskAnnotationData->setColorMap( m_labelColorMap );
 
             m_imageData->addAttachedData(m_maskAnnotationData);
         }
@@ -418,6 +419,29 @@ void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
     }
 }
 
+void AlgorithmPaintToolbox::generateLabelColorMap()
+{
+    medImageMaskAnnotationData::ColorMapType colorMap;
+    typedef medImageMaskAnnotationData::ColorMapType::value_type PairType;
+    const qreal fgVal = medToolBoxSegmentation::MaskPixelValues::Foreground;
+    const qreal bgVal = medToolBoxSegmentation::MaskPixelValues::Background;
+    
+    colorMap.push_back( PairType( fgVal      , QColor(Qt::green) ) );
+    colorMap.push_back( PairType( bgVal      , QColor(Qt::red) ) );
+    colorMap.push_back( PairType( 3          , QColor(Qt::blue) ) );
+    colorMap.push_back( PairType( 4          , QColor(Qt::yellow) ) );
+    colorMap.push_back( PairType( 5          , QColor(Qt::cyan) ) );
+    colorMap.push_back( PairType( 6          , QColor(Qt::magenta) ) );
+    colorMap.push_back( PairType( 7          , QColor(Qt::darkGreen) ) );
+    colorMap.push_back( PairType( 8          , QColor(Qt::darkRed) ) );
+    colorMap.push_back( PairType( 9          , QColor(Qt::darkBlue) ) );
+    colorMap.push_back( PairType( 10         , QColor(Qt::darkYellow) ) );
+    colorMap.push_back( PairType( 11         , QColor(Qt::darkCyan) ) );
+    colorMap.push_back( PairType( 12         , QColor(Qt::darkMagenta) ) );
+    
+    m_labelColorMap = colorMap;
+}
+    
 //static
 medToolBoxSegmentationCustom *
     AlgorithmPaintToolbox::createInstance(QWidget *parent )

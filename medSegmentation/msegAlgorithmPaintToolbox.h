@@ -66,6 +66,8 @@ public slots:
     void onApplyButtonPressed();
     void onClearMaskPressed();
     void onResetDataPressed();
+    
+    void onLabelChanged(int newVal);
 
     void updateStroke(ClickAndMoveEventFilter * filter, medAbstractView * view);
 
@@ -85,12 +87,15 @@ protected:
     void enableButtons( bool value);
 
     void setPaintState( PaintState::E value);
+    
+    void generateLabelColorMap();
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
 
     QPushButton *m_strokeButton;
     QPushButton *m_removeStrokeButton;
     QPushButton *m_boundaryStrokeButton;
+    QPushButton *m_labelColorWidget;
 
     QSlider *m_brushSizeSlider;
     QSpinBox *m_brushSizeSpinBox;
@@ -111,6 +116,8 @@ private:
     dtkSmartPointer<medAbstractData> m_imageData;
 
     QString m_noDataText;
+    
+    medImageMaskAnnotationData::ColorMapType m_labelColorMap;
 
     typedef itk::Image<unsigned char, 3> MaskType;
     MaskType::Pointer m_itkMask;
