@@ -175,10 +175,10 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_strokeLabelSpinBox->setToolTip(tr("Changes the painted label."));
     m_strokeLabelSpinBox->setValue(this->m_strokeLabel);
     m_strokeLabelSpinBox->setMinimum(1);    
-    m_strokeLabelSpinBox->setMaximum(12);
+    m_strokeLabelSpinBox->setMaximum(24);
     connect (m_strokeLabelSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onLabelChanged(int)));
     
-    this->generateLabelColorMap();
+    this->generateLabelColorMap(24);
     
     m_labelColorWidget = new QPushButton(displayWidget);
     m_labelColorWidget->setToolTip(tr("Current label color"));
@@ -438,23 +438,23 @@ void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
     }
 }
 
-void AlgorithmPaintToolbox::generateLabelColorMap()
+void AlgorithmPaintToolbox::generateLabelColorMap(unsigned int numLabels)
 {
     medImageMaskAnnotationData::ColorMapType colorMap;
     typedef medImageMaskAnnotationData::ColorMapType::value_type PairType;
     
-    colorMap.push_back( PairType( 1          , QColor(Qt::green) ) );
-    colorMap.push_back( PairType( 2          , QColor(Qt::red) ) );
-    colorMap.push_back( PairType( 3          , QColor(Qt::blue) ) );
-    colorMap.push_back( PairType( 4          , QColor(Qt::yellow) ) );
-    colorMap.push_back( PairType( 5          , QColor(Qt::cyan) ) );
-    colorMap.push_back( PairType( 6          , QColor(Qt::magenta) ) );
-    colorMap.push_back( PairType( 7          , QColor(Qt::darkGreen) ) );
-    colorMap.push_back( PairType( 8          , QColor(Qt::darkRed) ) );
-    colorMap.push_back( PairType( 9          , QColor(Qt::darkBlue) ) );
-    colorMap.push_back( PairType( 10         , QColor(Qt::darkYellow) ) );
-    colorMap.push_back( PairType( 11         , QColor(Qt::darkCyan) ) );
-    colorMap.push_back( PairType( 12         , QColor(Qt::darkMagenta) ) );
+    QColor tmpColor;
+    double realHueValue = 0;
+    double factor = (1.0 + sqrt(5.0)) / 2.0;
+    for (unsigned int i = 0;i < numLabels;++i)
+    {
+        tmpColor.setHsvF(realHueValue,1.0,1.0);
+        colorMap.push_back(PairType(i+1 , tmpColor));
+        
+        realHueValue += 1.0 / factor;
+        if (realHueValue > 1.0)
+            realHueValue -= 1.0;
+    }
     
     m_labelColorMap = colorMap;
 }

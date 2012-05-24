@@ -89,7 +89,7 @@ protected:
 
     void setPaintState( PaintState::E value);
     
-    void generateLabelColorMap();
+    void generateLabelColorMap(unsigned int numLabels);
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
 
