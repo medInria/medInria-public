@@ -18,9 +18,9 @@
 #include <medDatabaseRemover.h>
 
 
-#include <medTestCommon/medQtDataImage.h>
-#include <medTestCommon/medQtDataImageReader.h>
-#include <medTestCommon/medQtDataImageWriter.h>
+#include <medTest/medQtDataImage.h>
+#include <medTest/medQtDataImageReader.h>
+#include <medTest/medQtDataImageWriter.h>
 
 #include <iostream>
 #include <stdexcept>

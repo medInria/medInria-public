@@ -6,7 +6,7 @@
 #include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkLog.h>
 
-#include <medTestCommon/medTestApplication.h>
+#include <medTest/medTestApplication.h>
 #include <medDataIndex.h>
 #include <medDataManager.h>
 
