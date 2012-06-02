@@ -53,6 +53,9 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     if (d->view) {
         d->layout->setContentsMargins(0, 0, 0, 0);
         d->layout->addWidget(view->widget(), 0, 0);
+        // BEGIN FIXME
+        view->widget()->show();
+        // END FIXME
 
         // set the view properties
         if (medAbstractView *medView = qobject_cast<medAbstractView*> (view))

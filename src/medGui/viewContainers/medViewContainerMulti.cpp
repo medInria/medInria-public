@@ -303,7 +303,11 @@ void medViewContainerMulti::onViewClosing (void)
 
         //tests showed it's safe to call directly delete here: deleteLater
         //doesn't work: container is still a child of "this" for some time afterward.
-        delete closedContainer;
+        //delete closedContainer;
+        // BEGIN FIXME
+        closedContainer->setParent (NULL);
+        closedContainer->deleteLater();
+        // END FIXME
 
         this->layout (content);
         //Choose the new current container based on who is next or previous
