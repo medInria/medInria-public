@@ -64,24 +64,57 @@ public slots:
     void addSeriesItem(const medDataIndex& seriesIndex);
 
 protected slots:
+
+    /**
+     * This slot is called when an item is dragged and dropped.
+     * It adds the corresponding thumbnail to the container.
+     */
     void onObjectDropped(const medDataIndex& index);
+
+    /**
+     * This slot is called when the cursor enters an item.
+     * It updates the position and legend of the selector and
+     * shows a delete button if appropriate.
+     */
     void onItemHovered(medDatabasePreviewItem* item);
+
+    /** Calls @onItemHovered if hover events are allowed at the moment. **/
     void onThumbnailHoverEntered(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
+
+    /** Simply hides the delete button. **/
     void onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
+
+    /**
+     * This slot is called when the user clicks the delete button.
+     * It removes the selected item from the container.
+     */
     void onDeleteButtonClicked();
 
 private slots:
+
+    /** Unblocks hover events. **/
     void unblockHoverEvents();
+
+    /** Shows the delete button if appropriate. **/
     void tryShowDeleteButton();
 
 protected:
-    void paintEvent(QPaintEvent* paintEvent);
+
+    /** This function reorders all the contained items after a resize event. **/
     void resizeEvent(QResizeEvent* resizeEvent);
 
 private:
+
+    /** Moves the thumbnail @item to the new position @newPos. **/
     void moveItem(medDatabasePreviewItem* targetItem, QPointF newPos);
+
+    /** Moves the selector to the target item **/
     void moveSelectorToItem(medDatabasePreviewItem* targetItem);
+
+    /** Updates the legend of the selector with the information of @index. **/
     void updateSelectorLegend(const medDataIndex& index);
+
+    /** Called by @resizeEvent. It actually handles the new placement of the contained items. **/
     void handleResize(const QSize& size);
 
 private:

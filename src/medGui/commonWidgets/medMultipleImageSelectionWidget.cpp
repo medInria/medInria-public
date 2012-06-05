@@ -107,11 +107,6 @@ QSize medMultipleImageSelectionWidget::sizeHint(void) const
     return QSize(widthHint, heightHint);
 }
 
-void medMultipleImageSelectionWidget::clear()
-{
-//    qDebug() << "clear()";
-}
-
 void medMultipleImageSelectionWidget::setModel(QAbstractItemModel* model)
 {
     d->dbView->setModel(model);
@@ -120,16 +115,6 @@ void medMultipleImageSelectionWidget::setModel(QAbstractItemModel* model)
     for (int var = 2; var < model->columnCount(); ++var) {
         d->dbView->hideColumn(var);
     }
-}
-
-void medMultipleImageSelectionWidget::paintEvent(QPaintEvent* paintEvent)
-{
-//    qDebug() << "medMultipleImageSelectionWidget Paint Event";
-}
-
-void medMultipleImageSelectionWidget::resizeEvent(QResizeEvent* resizeEvent)
-{
-//    qDebug() << "medMultipleImageSelectionWidget Resize Event";
 }
 
 void medMultipleImageSelectionWidget::onPatientSelected(const medDataIndex& patientId)

@@ -131,11 +131,6 @@ void medThumbnailContainer::reset()
     d->containedItems.clear();
 }
 
-void medThumbnailContainer::paintEvent(QPaintEvent* paintEvent)
-{
-//    qDebug() << "medThumbnailContainer Paint Event";
-}
-
 void medThumbnailContainer::resizeEvent(QResizeEvent* resizeEvent)
 {
 //    qDebug() << "medThumbnailContainer Resize Event";
@@ -407,6 +402,7 @@ void medThumbnailContainer::onThumbnailHoverEntered(QGraphicsSceneHoverEvent* ev
 
 void medThumbnailContainer::onThumbnailHoverLeft(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item)
 {
+    // read @onThumbnailHoverEntered to understand this flag
     d->showDeleteButton = false;
     d->deleteButton->hide();
 }

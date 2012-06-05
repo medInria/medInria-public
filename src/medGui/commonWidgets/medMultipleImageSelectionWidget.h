@@ -49,19 +49,28 @@ public:
     **/
     void setModel(QAbstractItemModel* model);
 
-public slots:
-    void clear();
-
 private slots:
+
+    /**
+     * This slot is called when the user selects a patient
+     * in the database view and it populates the preview panel
+     * with thumbnails for the patient's series.
+     */
     void onPatientSelected(const medDataIndex&);
 
 protected slots:
-    void onCancelButtonClicked();
-    void onOkButtonClicked();
 
-protected:
-    void paintEvent(QPaintEvent* paintEvent);
-    void resizeEvent(QResizeEvent* resizeEvent);
+    /**
+     * Slot called when the user presses the cancel button.
+     * The return code of the @QDialog becomes QDialog::Rejected.
+     */
+    void onCancelButtonClicked();
+
+    /**
+     * Slot called when the user presses the Ok button.
+     * The return code of the @QDialog becomes QDialog::Accepted.
+     */
+    void onOkButtonClicked();
 
 private:
     medMultipleImageSelectionWidgetPrivate *d;
