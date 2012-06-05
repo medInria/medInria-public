@@ -39,10 +39,8 @@ public:
     //! Register with factory, return true if successful.
     static bool registerWithViewerConfigurationFactory();
 
-    //! Return the name associated with this configuration
-    static QString ConfigurationName();
 
-    //! 
+    //!
     medProgressionStack * progressionStack();
 
     medToolBoxSegmentation * segmentationToobox();
@@ -66,8 +64,6 @@ protected:
     // Creator function
     static medViewerConfiguration * createMedSegmentationConfiguration(QWidget * parent);
 
-    //! Id stgring used for  view containers
-    QString containerIdentifier() const; 
 
 private:
     medViewerConfigurationSegmentationPrivate *d;

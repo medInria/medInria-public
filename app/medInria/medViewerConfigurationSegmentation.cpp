@@ -7,7 +7,6 @@
 #include "medToolBoxSegmentation.h"
 
 #include <medCore/medAbstractView.h>
-#include <medSettingsManager.h>
 
 #include <medProgressionStack.h>
 #include <medTabbedViewContainers.h>
@@ -40,6 +39,9 @@ public:
 // /////////////////////////////////////////////////////////////////
 // medViewerConfigurationSegmentation
 // /////////////////////////////////////////////////////////////////
+
+static QString msegConfigSegmentationDescription = "Segmentation";
+
 //static
 medViewerConfiguration * medViewerConfigurationSegmentation::createMedSegmentationConfiguration(QWidget * parent)
 {
@@ -94,43 +96,20 @@ medViewerConfigurationSegmentation::~medViewerConfigurationSegmentation(void)
 bool medViewerConfigurationSegmentation::registerWithViewerConfigurationFactory()
 {
     return medViewerConfigurationFactory::instance()->registerConfiguration(
-        medViewerConfigurationSegmentation::ConfigurationName(),
+        msegConfigSegmentationDescription,
         medViewerConfigurationSegmentation::createMedSegmentationConfiguration
         );
 }
 
-QString medViewerConfigurationSegmentation::ConfigurationName()
-{
-    // This is the string that appears in the drop-down.
-    static QString confName( tr("Segmentation") );
-    return confName;
-}
 
 void medViewerConfigurationSegmentation::setupViewContainerStack()
 {
-    const QString identifier(this->containerIdentifier());
+    const QString description(this->description());
     if (!stackedViewContainers()->count())
     {
-
+        addDefaultTypeContainer(description);
         //Default container:
-        //get default Layout type from settings:
-        medSettingsManager * mnger = medSettingsManager::instance();
-        QString layout = mnger->value("startup","default_container_layout",
-                                           "Multi").toString();
-        if (layout == "Custom")
-        {
-            addCustomContainer("Visualization");
-        } else if (layout == "Single")
-        {
-            addSingleContainer("Visualization");
-        }
-        else
-        {
-            addMultiContainer("Visualization");
-        }
-
-        //Default container:
-        this->connectToolboxesToCurrentContainer(identifier);
+        this->connectToolboxesToCurrentContainer(description);
     }
 
     this->stackedViewContainers()->unlockTabs();
@@ -139,8 +118,7 @@ void medViewerConfigurationSegmentation::setupViewContainerStack()
 //static
 QString medViewerConfigurationSegmentation::description( void ) const
 {
-    static QString descString( "Segmentation Configuration" );
-    return descString;
+    return msegConfigSegmentationDescription;
 }
 
 void medViewerConfigurationSegmentation::onViewAdded( dtkAbstractView* view )
@@ -171,11 +149,6 @@ void medViewerConfigurationSegmentation::buildConfiguration(  )
 medToolBoxSegmentation * medViewerConfigurationSegmentation::segmentationToobox()
 {
     return d->segmentationToolBox;
-}
-
-QString medViewerConfigurationSegmentation::containerIdentifier() const
-{
-    return "Segmentation";
 }
 
 
