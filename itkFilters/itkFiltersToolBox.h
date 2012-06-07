@@ -24,7 +24,7 @@ signals:
 public slots:
 
     void onFiltersActivated(int index);
-  
+
     void clear(void);
     void update(dtkAbstractView *view);
 
@@ -34,6 +34,6 @@ private:
     itkFiltersToolBoxPrivate *d;
 };
 
-medToolBoxFilteringCustom *createitkFiltersToolBox(QWidget *parent);
+medToolBox *createitkFiltersToolBox(QWidget *parent);
 
 #endif // ITKFILTERSTOOLBOX_H

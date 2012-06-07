@@ -269,11 +269,13 @@ itkFiltersToolBox::~itkFiltersToolBox ( void )
 
 bool itkFiltersToolBox::registered ( void )
 {
-    return medToolBoxFactory::instance()->registerCustomFilteringToolBox (
+    medToolBoxFactory* factory = medToolBoxFactory::instance();
+    return factory->registerToolBox<itkFiltersToolBox> (
                 "itkBasicFilters",
                 "ITK Basic Filters",
                 "ITK filters, processing examples",
-                createitkFiltersToolBox );
+                QStringList()<<"filtering"/*,
+                createitkFiltersToolBox */);
 }
 
 
@@ -687,7 +689,7 @@ void itkFiltersToolBox::onFiltersActivated ( int index )
 }
 
 
-medToolBoxFilteringCustom *createitkFiltersToolBox ( QWidget *parent )
+medToolBox *createitkFiltersToolBox ( QWidget *parent )
 {
     return new itkFiltersToolBox ( parent );
 }

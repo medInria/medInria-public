@@ -42,6 +42,5 @@ private:
     itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate *d;
 };
 
-medToolBoxRegistrationCustom *createItkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent);
 
 #endif

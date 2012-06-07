@@ -159,11 +159,11 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::~itkProcessRegistrationDiffeom
 bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered(void)
 {
     return medToolBoxFactory::instance()->
-            registerCustomRegistrationToolBox(
+            registerToolBox<itkProcessRegistrationDiffeomorphicDemonsToolBox>(
                 "itkProcessRegistrationDiffeomorphicDemonsToolBox",
-                "Diffeomorphic Demons",
-                "Diffeomorphic demons registration using the ITK implementation",
-                createItkProcessRegistrationDiffeomorphicDemonsToolBox);
+                tr("Diffeomorphic Demons"),
+                tr("Diffeomorphic demons registration using the ITK implementation"),
+                QStringList()<< "registration");
 }
 
 void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
@@ -251,9 +251,4 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
 
     medJobManager::instance()->registerJobItem(runProcess);
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
-}
-
-medToolBoxRegistrationCustom *createItkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent)
-{
-    return new itkProcessRegistrationDiffeomorphicDemonsToolBox (parent);
 }

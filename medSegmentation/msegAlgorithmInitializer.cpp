@@ -53,17 +53,18 @@ bool AlgorithmInitializer::initializeWidgets()
     bool ret (true);
     medToolBoxFactory * factory = medToolBoxFactory::instance();
     //Commented out until bugs are fixed: #338 #339
-//    ret &= factory->registerCustomSegmentationToolBox(
+//    ret &= factory->registerCustomToolBox(
 //        AlgorithmConnectedThresholdToolbox::s_identifier(),
 //        AlgorithmConnectedThresholdToolbox::s_name(),
 //        AlgorithmConnectedThresholdToolbox::s_description(),
+//        "segmentation",
 //        AlgorithmConnectedThresholdToolbox::createInstance);
 
-    ret &= factory->registerCustomSegmentationToolBox(
+    ret &= factory->registerToolBox<AlgorithmPaintToolbox>(
         AlgorithmPaintToolbox::s_identifier(),
         AlgorithmPaintToolbox::s_name(),
         AlgorithmPaintToolbox::s_description(),
-        AlgorithmPaintToolbox::createInstance);
+        QStringList()<<"segmentation");
 
     return ret;
 }
