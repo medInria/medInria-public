@@ -31,6 +31,26 @@ class medToolBoxFactoryPrivate;
 class medToolBoxFactory;
 struct medToolBoxDetails;
 
+/**
+ * @brief Factory for toolbox generation.
+ *
+ * Any toolbox can be registered with this factory.
+ * A toolbox will be identified in the factory by a string that should be unique and identifies the type (in the dtk sense) of the toolbox.
+ * It should also have a readable name and description (localised are better).
+ *
+ * Finally a list of category allows the toolbox to belong to categories such as:
+ * <ul>
+ * <li> diffusion</li>
+ * <li> registration </li>
+ * <li> filtering </li>
+ * <li> ... </li>
+ * </ul>
+ * Developers can add their own categories, and use their own filters afterwards.
+ *
+ * The details for each toolbox are stored in a struct of type medToolBoxDetails.
+ */
+
+
 class MEDGUI_EXPORT medToolBoxFactory : public dtkAbstractFactory
 {
     Q_OBJECT
@@ -40,12 +60,44 @@ public:
 
 public:
     static medToolBoxFactory *instance(void);
+    /**
+     * @brief Registers a medToolBox type with the factory.
+     *
+     *
+     * This method is templated with the toolboxType. This is a convience method.
+     * The constructor of the toolbox - with a (QWidget *parent) signature -
+     * is used to create a function pointer to allocate memory.
+     * The toolbox source code doesn't need to contain any such function itself.
+     *
+     * @param identifier Identifier of the type.
+     * @param name Human readable name(Potentially localised).
+     * @param description short description, mainly used for tooltips
+     * in comboboxes listing the toolboxes (Potentially localised).
+     * @param categories List of categories classifying the Toolbox.
+     */
     template <class toolboxType>
     bool registerToolBox(QString identifier,
-                                           QString name,
-                                           QString description,
-                                           QStringList categories);
-
+                         QString name,
+                         QString description,
+                         QStringList categories);
+    /**
+     * @brief Registers a medToolBox type with the factory.
+     *
+     * This method requires the developer to provide his own function pointer
+     * to allocate the toolbox memory.
+     *
+     * @param identifier Identifier of the type.
+     * @param name Human readable name(Potentially localised).
+     * @param description short description, mainly used for tooltips
+     * in comboboxes listing the toolboxes (Potentially localised).
+     * @param categories List of categories classifying the Toolbox.
+     * @param creator function pointer allocating memory for the toolbox.
+     */
+    bool registerToolBox(QString identifier,
+                         QString name,
+                         QString description,
+                         QStringList categories,
+                         medToolBoxCreator creator);
     /**
      * Get a list of the available toolboxes from a specific category.
      *
@@ -54,7 +106,8 @@ public:
 
 
     /**
-     *Get the id, description pair for the given toolbox.
+     * @brief Gets the name, description, categories and creators
+     * for the given toolbox.
      *
      */
     medToolBoxDetails* toolBoxDetailsFromId (
@@ -70,7 +123,11 @@ protected:
     ~medToolBoxFactory(void);
 
 private:
-    static medToolBoxFactory *s_instance;
+    static medToolBoxFactory *s_instance; /** Singleton holder.*/
+    /**
+     * @brief Templated method returning a pointer to an allocated toolbox.
+     * @see template<class toolboxType> registerToolBox
+     */
     template < typename T >
     medToolBox* create ( QWidget* parent ) {
     return ( new T(parent) );
@@ -79,11 +136,16 @@ private:
     medToolBoxFactoryPrivate *d;
 };
 
+/**
+ * @brief stores the details for a particular toolbox,
+ * and a function to allocate memory.
+ *
+ */
 struct MEDGUI_EXPORT medToolBoxDetails{
-    QString name;
-    QString description;
-    QStringList categories;
-    medToolBoxFactory::medToolBoxCreator creator;
+    QString name; /** Readable name*/
+    QString description; /** (tooltip) short description of the Toolbox */
+    QStringList categories; /** List of categories the toolbox falls in*/
+    medToolBoxFactory::medToolBoxCreator creator; /** function pointer allocating memory for the toolbox*/
     medToolBoxDetails(QString name,QString description, QStringList categories,
                      medToolBoxFactory::medToolBoxCreator creator):
         name(name),description(description),categories(categories),
