@@ -79,7 +79,12 @@ public:
     bool registerToolBox(QString identifier,
                          QString name,
                          QString description,
-                         QStringList categories);
+                         QStringList categories){
+        //we must keep the templated part in the .h file for library users
+        medToolBoxCreator creator = create<toolboxType>;
+        return registerToolBox(identifier,name,description,categories,creator);
+    }
+
     /**
      * @brief Registers a medToolBox type with the factory.
      *
@@ -108,10 +113,20 @@ public:
     /**
      * @brief Gets the name, description, categories and creators
      * for the given toolbox.
-     *
      */
     medToolBoxDetails* toolBoxDetailsFromId (
             const QString& id )const;
+
+    /**
+     * @brief Gets the name, description, categories and creators
+     *  of all toolboxes for a given category.
+     *
+     * Probably slower than using toolBoxesFromCategory() + toolBoxDetailsFromId()
+     * but only just, given the probable size of the list.
+     */
+    QHash<QString, medToolBoxDetails*> toolBoxDetailsFromCategory (
+            const QString& id )const;
+
 
 
 public slots:
@@ -127,9 +142,10 @@ private:
     /**
      * @brief Templated method returning a pointer to an allocated toolbox.
      * @see template<class toolboxType> registerToolBox
+     * @warning keep it static if you don't want to freeze your brain (solution in http://www.parashift.com/c++-faq-lite/pointers-to-members.html#faq-33.5 for those interested)
      */
     template < typename T >
-    medToolBox* create ( QWidget* parent ) {
+    static medToolBox* create ( QWidget* parent ) {
     return ( new T(parent) );
     }
 private:
