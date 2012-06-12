@@ -19,6 +19,9 @@
 #include <vnl/vnl_cross.h>
 #include <vnl/vnl_vector.h>
 
+#include <itkImageRegionIterator.h>
+#include <itkConnectedThresholdImageFilter.h>
+
 #include <QtCore>
 #include <QColorDialog>
 
@@ -50,6 +53,35 @@ private :
     AlgorithmPaintToolbox *m_cb;
 };
 
+    class ClickEventFilter : public medViewEventFilter
+    {
+    public:
+        ClickEventFilter(medToolBoxSegmentation * controller, AlgorithmPaintToolbox *cb ) :
+        medViewEventFilter(),
+        m_cb(cb)
+        {}
+        
+        virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
+        {
+            medAbstractViewCoordinates * coords = view->coordinates();
+            
+            mouseEvent->accept();
+            
+            if (coords->is2D()) {
+                // Convert mouse click to a 3D point in the image.
+                
+                QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
+                                
+                // handled after release
+                m_cb->updateWandRegion(view, posImage);
+            }
+            return mouseEvent->isAccepted();
+        }
+        
+        private :
+        AlgorithmPaintToolbox *m_cb;
+    };
+    
 class ClickAndMoveEventFilter : public medViewEventFilter
 {
 public:
@@ -126,6 +158,7 @@ private :
 AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     medToolBoxSegmentationCustom( parent),
     m_noDataText( tr("[No input data]") ),
+    m_wandRadius(50),
     m_strokeRadius(4),
     m_strokeLabel(1),
     m_paintState(PaintState::None)
@@ -212,6 +245,25 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     brushSizeLayout->addWidget( m_brushSizeSpinBox );
     layout->addLayout( brushSizeLayout );
 
+    QHBoxLayout * magicWandLayout = new QHBoxLayout();
+    
+    m_magicWandButton = new QPushButton( tr("Wand") , displayWidget);
+    m_magicWandButton->setToolTip(tr("Magic wand to automatically paint similar voxels."));
+    m_magicWandButton->setCheckable(true);    
+    m_wandThresholdSizeSlider = new QSlider(Qt::Horizontal, displayWidget);
+    m_wandThresholdSizeSlider->setValue(this->m_wandRadius);
+    m_wandThresholdSizeSlider->setMinimum(0);
+    m_wandThresholdSizeSpinBox = new QSpinBox(displayWidget);
+    m_wandThresholdSizeSpinBox->setValue(this->m_wandRadius);
+    m_wandThresholdSizeSpinBox->setMinimum(0);
+    connect(m_wandThresholdSizeSpinBox, SIGNAL(valueChanged(int)),m_wandThresholdSizeSlider,SLOT(setValue(int)) );
+    connect(m_wandThresholdSizeSlider,SIGNAL(valueChanged(int)),m_wandThresholdSizeSpinBox,SLOT(setValue(int)) );
+
+    magicWandLayout->addWidget( m_magicWandButton );
+    magicWandLayout->addWidget( m_wandThresholdSizeSlider );
+    magicWandLayout->addWidget( m_wandThresholdSizeSpinBox );
+    layout->addLayout( magicWandLayout );    
+    
     m_dataText = new QTextEdit( m_noDataText );
     {
         QFont font = m_dataText->currentFont();
@@ -234,6 +286,8 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
         this, SLOT(onRemoveStrokePressed ()));
     connect (m_boundaryStrokeButton,     SIGNAL(pressed()),
         this, SLOT(onBoundaryStrokePressed ()));
+    connect (m_magicWandButton, SIGNAL(pressed()),
+             this,SLOT(onMagicWandPressed()));
 
     connect (m_selectDataButton,     SIGNAL(pressed()),
         this, SLOT(onSetDataPressed ()));
@@ -286,6 +340,20 @@ void AlgorithmPaintToolbox::onBoundaryStrokePressed()
     this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
 }
 
+    
+    void AlgorithmPaintToolbox::onMagicWandPressed()
+    {
+        if ( this->m_magicWandButton->isChecked() ) {
+            this->m_viewFilter->removeFromAllViews();
+            m_paintState = (PaintState::None);
+            return;
+        }
+        setPaintState(PaintState::Wand);
+        m_viewFilter = ( new ClickEventFilter(this->segmentationToolBox(), this) );
+        this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
+    }
+    
+    
 void AlgorithmPaintToolbox::onApplyButtonPressed()
 {
     dtkAbstractProcessFactory *factory = dtkAbstractProcessFactory::instance();
@@ -577,6 +645,140 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
     maskData->setData((QObject*)(mask.GetPointer()));
 }
 
+    void AlgorithmPaintToolbox::updateWandRegion(medAbstractView * view, QVector3D &vec)
+    {
+        this->updateFromGuiItems();
+     
+        if ( !m_imageData ) {
+            this->setData(this->segmentationToolBox()->viewData(view));
+        }
+        if (!m_imageData) {
+            dtkWarning() << "Could not set data";
+            return;
+        }
+        
+        const medAbstractViewCoordinates * coords = view->coordinates();
+        const QVector3D vpn = coords->viewPlaneNormal();
+        
+        const MaskType::DirectionType & direction = m_itkMask->GetDirection();
+        
+        typedef  MaskType::DirectionType::InternalMatrixType::element_type ElemType;
+        vnl_vector_fixed<ElemType, 3> vecVpn(vpn.x(), vpn.y(), vpn.z() );
+        
+        qDebug() << vpn;
+        qDebug() << direction(0,0) << direction(0,1) << direction(0,2);
+        qDebug() << direction(1,0) << direction(1,1) << direction(1,2);
+        qDebug() << direction(2,0) << direction(2,1) << direction(2,2);
+
+        double absDotProductMax = 0;
+        unsigned int planeIndex = 0;
+        for (unsigned int i = 0;i < 3;++i)
+        {
+            double dotProduct = 0;
+            for (unsigned int j = 0;j < 3;++j)
+                dotProduct += direction(j,i) * vecVpn[j];
+            
+            qDebug() << i << fabs(dotProduct);
+            
+            if (fabs(dotProduct) > absDotProductMax)
+            {
+                planeIndex = i;
+                absDotProductMax = fabs(dotProduct);
+            }
+        }
+        
+        MaskType::PointType point;
+        MaskType::IndexType index;
+        
+        point[0] = vec.x();
+        point[1] = vec.y();
+        point[2] = vec.z();
+        
+        bool isInside = m_itkMask->TransformPhysicalPointToIndex (point, index);
+        
+        if (isInside)
+        {
+            RunConnectedFilter < itk::Image <char,3> > (index,planeIndex);
+            RunConnectedFilter < itk::Image <unsigned char,3> > (index,planeIndex);
+            RunConnectedFilter < itk::Image <short,3> > (index,planeIndex);
+            RunConnectedFilter < itk::Image <unsigned short,3> > (index,planeIndex);
+            RunConnectedFilter < itk::Image <int,3> > (index,planeIndex);
+            RunConnectedFilter < itk::Image <unsigned int,3> > (index,planeIndex);
+            RunConnectedFilter < itk::Image <long,3> > (index,planeIndex);
+            RunConnectedFilter < itk::Image <unsigned long,3> > (index,planeIndex);
+            RunConnectedFilter < itk::Image <float,3> > (index,planeIndex);
+            RunConnectedFilter < itk::Image <double,3> > (index,planeIndex);
+        }
+    }
+
+    template <typename IMAGE> 
+    void
+    AlgorithmPaintToolbox::RunConnectedFilter (MaskType::IndexType &index, unsigned int planeIndex)
+    {
+        IMAGE *tmpPtr = dynamic_cast<IMAGE *> ((itk::Object*)(m_imageData->data()));
+
+        MaskType::PixelType pxValue = m_strokeLabel;
+        
+        if (tmpPtr)
+        {
+            typedef itk::ConnectedThresholdImageFilter<IMAGE, MaskType> ConnectedThresholdImageFilterType;
+            typename ConnectedThresholdImageFilterType::Pointer ctiFilter = ConnectedThresholdImageFilterType::New();
+            
+            double value = tmpPtr->GetPixel(index);
+            
+            ctiFilter->SetUpper( value + m_wandRadius );
+            ctiFilter->SetLower( value - m_wandRadius );
+            
+            MaskType::RegionType regionRequested = tmpPtr->GetLargestPossibleRegion();
+            regionRequested.SetIndex(planeIndex, index[planeIndex]);
+            regionRequested.SetSize(planeIndex, 1);
+            MaskType::RegionType outRegion = regionRequested;
+            outRegion.SetIndex(planeIndex,0);
+            
+            typename IMAGE::Pointer workPtr = IMAGE::New();
+            workPtr->Initialize();
+            workPtr->SetDirection(tmpPtr->GetDirection());
+            workPtr->SetSpacing(tmpPtr->GetSpacing());
+            workPtr->SetOrigin(tmpPtr->GetOrigin());
+            workPtr->SetRegions(outRegion);
+            workPtr->Allocate();
+            
+            itk::ImageRegionConstIterator < IMAGE > inputItr (tmpPtr, regionRequested);
+            itk::ImageRegionIterator < IMAGE > workItr (workPtr, outRegion);
+            
+            while (!workItr.IsAtEnd())
+            {
+                workItr.Set(inputItr.Get());
+                
+                ++workItr;
+                ++inputItr;
+            }
+            
+            ctiFilter->SetInput( workPtr );
+            index[planeIndex] = 0;
+            ctiFilter->AddSeed( index );
+            
+            ctiFilter->Update();
+            
+            itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), outRegion);
+            itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, regionRequested);
+            while (!maskFilterItr.IsAtEnd())
+            {
+                if (outFilterItr.Get() != 0)
+                    maskFilterItr.Set(pxValue);
+                
+                ++outFilterItr;
+                ++maskFilterItr;
+            }
+            
+            m_itkMask->Modified();
+            m_itkMask->GetPixelContainer()->Modified();
+            m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
+            
+            m_maskAnnotationData->invokeModified();
+        }
+    }
+    
 void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medAbstractView * view )
 {
     this->updateFromGuiItems();
@@ -712,6 +914,7 @@ void AlgorithmPaintToolbox::updateFromGuiItems()
 {
     this->m_strokeRadius = m_brushSizeSlider->value();
     this->m_strokeLabel = m_strokeLabelSpinBox->value();
+    this->m_wandRadius = m_wandThresholdSizeSpinBox->value();
 }
 
 void AlgorithmPaintToolbox::enableButtons( bool value )
@@ -719,6 +922,7 @@ void AlgorithmPaintToolbox::enableButtons( bool value )
     m_strokeButton->setEnabled(value);
     m_removeStrokeButton->setEnabled(value);
     m_boundaryStrokeButton->setEnabled(value);
+    m_magicWandButton->setEnabled(value);
     m_applyButton->setEnabled(value);
     m_clearMaskButton->setEnabled(value);
     m_resetDataButton->setEnabled(value);
@@ -730,8 +934,10 @@ void AlgorithmPaintToolbox::setPaintState( PaintState::E value )
         return;
 
     switch( m_paintState ){
-    case PaintState::Stroke:
-        m_strokeButton->setChecked(false); break;
+        case PaintState::Wand:
+            m_magicWandButton->setChecked(false); break;
+        case PaintState::Stroke:
+            m_strokeButton->setChecked(false); break;
     case PaintState::DeleteStroke:
         m_removeStrokeButton->setChecked(false); break;
     case PaintState::BoundaryStroke:

@@ -28,6 +28,7 @@ class medSeedPointAnnotationData;
 
 namespace mseg {
     class ClickAndMoveEventFilter;
+    class ClickEventFilter;
     class SelectDataEventFilter;
 
 //! Segmentation toolbox to allow manual painting of pixels
@@ -36,7 +37,7 @@ class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medToolBox
     Q_OBJECT;
 public:
     struct PaintState { 
-        enum E{ None, Stroke, DeleteStroke, BoundaryStroke }; 
+        enum E{ None, Wand, Stroke, DeleteStroke, BoundaryStroke }; 
     };
 
     AlgorithmPaintToolbox( QWidget *parent );
@@ -59,6 +60,7 @@ public:
 
 public slots:
     void onStrokePressed();
+    void onMagicWandPressed();
     void onRemoveStrokePressed();
     void onBoundaryStrokePressed();
 
@@ -71,6 +73,7 @@ public slots:
     void onSelectLabelColor();
 
     void updateStroke(ClickAndMoveEventFilter * filter, medAbstractView * view);
+    void updateWandRegion(medAbstractView * view, QVector3D &vec);
 
 protected:
     friend class SelectDataEventFilter;
@@ -82,7 +85,7 @@ protected:
     void updateTableRow(int row);
 
     void initializeMaskData( medAbstractData * imageData, medAbstractData * maskData );
-
+    
     void updateFromGuiItems();
 
     void enableButtons( bool value);
@@ -92,7 +95,7 @@ protected:
     void generateLabelColorMap(unsigned int numLabels);
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
-
+    
     QPushButton *m_strokeButton;
     QPushButton *m_removeStrokeButton;
     QPushButton *m_boundaryStrokeButton;
@@ -101,6 +104,10 @@ private:
     QSlider *m_brushSizeSlider;
     QSpinBox *m_brushSizeSpinBox;
     QSpinBox *m_strokeLabelSpinBox;
+    
+    QPushButton *m_magicWandButton;
+    QSlider *m_wandThresholdSizeSlider;
+    QSpinBox *m_wandThresholdSizeSpinBox;
 
     QPushButton *m_applyButton;
 
@@ -123,10 +130,13 @@ private:
     typedef itk::Image<unsigned char, 3> MaskType;
     MaskType::Pointer m_itkMask;
 
+    template <typename IMAGE> void RunConnectedFilter (MaskType::IndexType &index, unsigned int planeIndex);
+    
     QVector3D m_lastVup;
     QVector3D m_lastVpn;
     double m_sampleSpacing[2];
 
+    double m_wandRadius;
     double m_strokeRadius;
     unsigned int m_strokeLabel;
 
