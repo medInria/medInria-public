@@ -4,3 +4,4 @@ build
 *.user
 *.orig
 .directory
+CMakeLists.txt.user.*
