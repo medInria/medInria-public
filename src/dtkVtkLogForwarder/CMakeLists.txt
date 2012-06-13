@@ -22,7 +22,7 @@ add_library(${PROJECT_NAME} SHARED
   ${DTKLOGFORWARDER_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-  dtkCore
+  dtkCore dtkLog
   vtkCommon
   ${QT_LIBRARIES})
 

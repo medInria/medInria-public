@@ -62,7 +62,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   medCore
-  dtkCore
+  dtkCore dtkLog
   medCore
   ITKCommon
   ITKIO

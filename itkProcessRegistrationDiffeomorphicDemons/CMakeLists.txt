@@ -75,7 +75,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   itkProcessRegistration
   ${QT_LIBRARIES}
-  dtkCore
+  dtkCore dtkLog
   medCore
   medGui
   ITKCommon

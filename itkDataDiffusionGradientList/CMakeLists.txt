@@ -81,7 +81,7 @@ target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
   dtkItkLogForwarder
-  dtkCore)
+  dtkCore dtkLog)
 
 # Group common files together in Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)

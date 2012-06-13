@@ -142,7 +142,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES}
-  dtkCore
+  dtkCore dtkLog
   medCore
   vtkCommon
   vtkRendering

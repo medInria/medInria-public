@@ -57,7 +57,7 @@ else()
         ${QT_QTLOCATION_LIBRARY}
         ${QT_LIBRARIES}
         medSql
-        dtkCore
+        dtkCore dtkLog
         medCore
         ITKTensor
         ${ITK_LIBRARIES}

@@ -80,7 +80,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  dtkCore
+  dtkCore dtkLog
   dtkZip
   medCore
   medGui
@@ -91,7 +91,7 @@ target_link_libraries(${PROJECT_NAME}
 dtk_build_doc(medCompositeDataSetsPlugin)
 
 #add_executable(test test.C)
-#target_link_libraries(test medCompositeDataSetsPlugin ${QT_LIBRARIES} dtkCore dtkZip medCore)
+#target_link_libraries(test medCompositeDataSetsPlugin ${QT_LIBRARIES} dtkCore dtkLog dtkZip medCore)
 
 ## #################################################################
 ## Source file layout in development environments like Visual Studio

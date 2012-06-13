@@ -85,7 +85,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
-  dtkCore)
+  dtkCore dtkLog)
 
 if(BUILD_DOCUMENTATION)
 	dtk_build_doc(${PROJECT_NAME})

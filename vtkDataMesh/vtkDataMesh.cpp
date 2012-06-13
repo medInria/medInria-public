@@ -87,7 +87,7 @@ dtkAbstractData *createVtkDataMesh(void)
   return new vtkDataMesh;
 }
 
-QImage & vtkDataMesh::thumbnail (void) const
+QImage & vtkDataMesh::thumbnail (void)
 {
   if (!d->thumbnails.size())
     return medAbstractDataMesh::thumbnail();
@@ -95,7 +95,7 @@ QImage & vtkDataMesh::thumbnail (void) const
   return (d->thumbnails[0]);
 }
 
-QList<QImage> & vtkDataMesh::thumbnails (void) const
+QList<QImage> & vtkDataMesh::thumbnails (void)
 {
   d->thumbnails.clear();
 

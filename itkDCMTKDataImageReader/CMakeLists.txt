@@ -88,7 +88,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKDCMTKIO
   ${QT_LIBRARIES}
   medCore
-  dtkCore
+  dtkCore dtkLog
 )
 
 if (BUILD_TESTING)
