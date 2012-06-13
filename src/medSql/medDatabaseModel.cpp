@@ -21,7 +21,7 @@
 #include <QtSql>
 
 #include <dtkCore/dtkGlobal.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <medDatabaseController.h>
 #include <medDatabaseItem.h>
@@ -61,7 +61,7 @@ medAbstractDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index)
 {
     if (index.isValid()) {
         medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
-        if (item) 
+        if (item)
             return item;
     }
 
@@ -149,7 +149,7 @@ int medDatabaseModel::rowCount(const QModelIndex& parent) const
         parentItem = d->root;
     else
         parentItem = static_cast<medAbstractDatabaseItem *>(parent.internalPointer());
-    
+
     return parentItem->childCount();
 }
 
@@ -177,7 +177,7 @@ QVariant medDatabaseModel::data(const QModelIndex& index, int role) const
 
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
-    
+
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     return item->data(index.column());
@@ -326,7 +326,7 @@ Qt::ItemFlags medDatabaseModel::flags(const QModelIndex& index) const
  * \param index The index of the data item to be modified.
  * \param value The value to be set for the data item.
  * \param role  The role for which the value is to be changed.
- * 
+ *
  * \return true if the update is successful, false otherwise.
  */
 bool medDatabaseModel::setData(const QModelIndex& index, const QVariant& value, int role)

@@ -88,7 +88,6 @@ public:
         virtual QList<QImage>& thumbnails(void) const;
 
 public:
-    virtual bool casts(const QString& type);
 
 
     /**
@@ -103,7 +102,7 @@ public:
     medAbstractData* first();
 
     /**
-     * Get the next item or null 
+     * Get the next item or null
      * increments the iterator
      */
     medAbstractData* next();
@@ -135,7 +134,7 @@ public:
     * Get the attached data instance
     * @return medAttachedData* pointer to data
     */
-    medAttachedData* attachedData(); 
+    medAttachedData* attachedData();
 
 private:
     medAbstractDataCollectionPrivate*   d;

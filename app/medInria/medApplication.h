@@ -101,7 +101,7 @@ public slots:
     void redirectMessageToSplash(const QString& message);
 
     /**
-     * @brief Logs a message as a dtkOutput entry.
+     * @brief Logs a message as a dtkTrace entry.
      *
      * @param message
      */

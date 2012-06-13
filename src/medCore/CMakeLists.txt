@@ -154,7 +154,8 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
-    dtkCore)
+    dtkCore
+    dtkLog)
 if(TCL_FOUND)
   target_link_libraries(${PROJECT_NAME} ${TCL_LIBRARY})
 endif(TCL_FOUND)

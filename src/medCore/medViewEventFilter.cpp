@@ -9,7 +9,7 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <QObject>
 #include <QEvent>
@@ -33,7 +33,7 @@ QString medViewEventFilter::s_description()
     return name;
 }
 
-medViewEventFilter::medViewEventFilter(dtkAbstractObject * parent) 
+medViewEventFilter::medViewEventFilter(dtkAbstractObject * parent)
     : dtkAbstractObject(parent)
 {
 }
@@ -92,7 +92,7 @@ bool medViewEventFilter::eventFilter( QObject *obj, QEvent *event )
 
     medAbstractView * view = NULL;
     if ( it == m_filterObjToView.end()) {
-        dtkWarning() <<  __FILE__ << __LINE__ << " : Filtering events on unknown QObject";
+        dtkWarn() <<  __FILE__ << __LINE__ << " : Filtering events on unknown QObject";
         return false;
     }
     view = it.value();
@@ -141,12 +141,12 @@ bool medViewEventFilter::eventFilter( QObject *obj, QEvent *event )
 void medViewEventFilter::installOnView( medAbstractView * view )
 {
     if ( !view ) {
-        dtkWarning() << "medViewEventFilter::installOnView : View is NULL";
+        dtkWarn() << "medViewEventFilter::installOnView : View is NULL";
         return;
     }
 
     if (m_views.contains(view)) {
-        dtkWarning() << "Installing View when it has already been installed";
+        dtkWarn() << "Installing View when it has already been installed";
         return;
     }
 

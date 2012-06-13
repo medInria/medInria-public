@@ -301,8 +301,3 @@ QList<QImage>& medAbstractDataCollection::thumbnails( void ) const
 {
     return (*d->dataIterator)->thumbnails();
 }
-
-bool medAbstractDataCollection::casts( const QString& type )
-{
-    return (*d->dataIterator)->casts(type);
-}

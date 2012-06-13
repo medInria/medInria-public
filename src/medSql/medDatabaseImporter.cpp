@@ -26,7 +26,7 @@
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 #include <medDatabaseController.h>
 #include <medMetaDataKeys.h>
 #include <medStorage.h>
@@ -118,7 +118,7 @@ void medDatabaseImporter::run ( void )
     QString tmpSeriesUid;
     QString currentSeriesUid = "-1";
     QString currentSeriesId = "";
-    
+
     d->volumeIdToImageFile.clear();
 
     foreach ( QString file, fileList )
@@ -154,7 +154,7 @@ void medDatabaseImporter::run ( void )
         if(tmpPatientId != currentPatientId)
         {
           currentPatientId = tmpPatientId;
-                        
+
           //Let's see if the patient is already in the db
           QSqlDatabase db = * ( medDatabaseController::instance()->database() );
           QSqlQuery query ( db );
@@ -173,9 +173,9 @@ void medDatabaseImporter::run ( void )
         }
 
         dtkData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientID );
-        
+
         tmpSeriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(dtkData);
-        
+
         if (tmpSeriesUid != currentSeriesUid)
         {
           currentSeriesUid = tmpSeriesUid;
@@ -198,7 +198,7 @@ void medDatabaseImporter::run ( void )
         // 2.3) a) Determine future file name and path based on patient/study/series/image
         // i.e.: where we will write the imported image
         QString imageFileName = determineFutureImageFileName ( dtkData, volumeUniqueIdToVolumeNumber[volumeId] );
-        
+
         if ( (medStorage::dataLocation() + "/" + imageFileName).length() > 255 )
         {
             emit showError ( this, tr ( "Your database path is too long" ), 5000 );
@@ -331,7 +331,7 @@ void medDatabaseImporter::run ( void )
         QFileInfo aggregatedFileNameFileInfo ( aggregatedFileName );
         QString pathToStoreThumbnails = aggregatedFileNameFileInfo.dir().path() + "/" + aggregatedFileNameFileInfo.completeBaseName() + "/";
         index = this->populateDatabaseAndGenerateThumbnails ( imageDtkData, pathToStoreThumbnails );
-        
+
         itPat++;
         itSer++;
     } // end of the final loop
@@ -467,10 +467,10 @@ void medDatabaseImporter::populateMissingMetadata ( dtkAbstractData* dtkData, co
         dtkData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
 
     QString generatedSeriesId = QUuid::createUuid().toString().replace("{","").replace("}","");
-    
+
     if ( !dtkData->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
       dtkData->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesId);
-    
+
     if ( !dtkData->hasMetaData ( medMetaDataKeys::SeriesDicomID.key() ) )
         dtkData->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << "" );
 
@@ -678,7 +678,7 @@ int medDatabaseImporter::getOrCreatePatient ( const dtkAbstractData* dtkData, QS
     QString patientName = medMetaDataKeys::PatientName.getFirstValue(dtkData).simplified();
     QString birthDate = medMetaDataKeys::BirthDate.getFirstValue(dtkData);
     QString patientId = medMetaDataKeys::PatientID.getFirstValue(dtkData);
-    
+
     query.prepare ( "SELECT id FROM patient WHERE name = :name AND birthdate = :birthdate" );
     query.bindValue ( ":name", patientName );
     query.bindValue ( ":birthdate", birthDate );
@@ -760,7 +760,7 @@ int medDatabaseImporter::getOrCreateSeries ( const dtkAbstractData* dtkData, QSq
     QString seriesName     = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
     QString seriesUid      = medMetaDataKeys::SeriesDicomID.getFirstValue(dtkData);
     QString seriesId       = medMetaDataKeys::SeriesID.getFirstValue(dtkData);
-    
+
     QString orientation    = medMetaDataKeys::Orientation.getFirstValue(dtkData);
     QString seriesNumber   = medMetaDataKeys::SeriesNumber.getFirstValue(dtkData);
     QString sequenceName   = medMetaDataKeys::SequenceName.getFirstValue(dtkData);
@@ -1057,7 +1057,7 @@ dtkSmartPointer<dtkAbstractData> medDatabaseImporter::tryReadImages ( const QStr
 
 // QString medDatabaseImporter::determineFutureImageFileName(const dtkAbstractData* dtkdata, int volumeNumber)
 QString medDatabaseImporter::determineFutureImageFileName ( const dtkAbstractData* dtkdata, int volumeNumber )
-{    
+{
     // we cache the generated file name corresponding to volume number
     // because:
     // 1. it ensures that all data belonging to the same volume will have the

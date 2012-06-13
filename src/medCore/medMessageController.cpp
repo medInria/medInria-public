@@ -21,7 +21,7 @@
 
 #include "medMessageController.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
 // medMessageControllerMessage
@@ -231,7 +231,7 @@ void medMessageController::showInfo(QObject *sender, const QString& text,unsigne
 
         d->messages.insert(sender, message);
     } else {
-        dtkOutput() << text;
+        dtkTrace() << text;
     }
 }
 

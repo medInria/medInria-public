@@ -29,7 +29,7 @@
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 class medDatabaseWriterPrivate
 {

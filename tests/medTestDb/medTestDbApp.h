@@ -4,7 +4,7 @@
 #include <QMutex>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <medTestCommon/medTestApplication.h>
 #include <medDataIndex.h>

@@ -6,7 +6,7 @@
 #include <medAbstractViewCoordinates.h>
 
 #include <dtkCore/dtkSmartPointer.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <QDebug>
 #include <QVector2D>

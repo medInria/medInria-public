@@ -1,5 +1,5 @@
 /* medImageFileLoader.cpp ---
- * 
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:43:36 2009 (+0100)
@@ -9,17 +9,17 @@
  *     Update #: 1
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medImageFileLoader.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 class medImageFileLoaderPrivate
 {
@@ -53,7 +53,11 @@ void medImageFileLoader::run(void)
         // we create the default image
         int height = 128;
         int width = 128;
-        QImage *defaultImage = new QImage(height,width,QImage::Format_RGB32);        QPainter painter(defaultImage);        painter.fillRect( 0, 0, width, height, qRgb(0,0,0) );        painter.setPen(Qt::gray);        painter.drawText(10, 64, "No preview available");
+        QImage *defaultImage = new QImage(height,width,QImage::Format_RGB32);
+        QPainter painter(defaultImage);
+        painter.fillRect( 0, 0, width, height, qRgb(0,0,0) );
+        painter.setPen(Qt::gray);
+        painter.drawText(10, 64, "No preview available");
         d->image = *defaultImage;
     }
     emit completed(d->image);

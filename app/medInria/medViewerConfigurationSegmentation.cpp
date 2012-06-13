@@ -15,7 +15,7 @@
 #include <medViewerToolBoxLayout.h>
 #include <medViewerToolBoxViewProperties.h>
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <stdexcept>
 

@@ -8,7 +8,7 @@
 #include "medQtDataImage.h"
 
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <QImage>
 
@@ -102,7 +102,7 @@ void * medQtDataImage::data( int channel )
     return &(d->images[channel]);
 }
 
-QImage & medQtDataImage::thumbnail( void ) const
+QImage & medQtDataImage::thumbnail( void )
 {
     if ( !d->thumbnailValid )
         this->generateThumbnails();
@@ -110,7 +110,7 @@ QImage & medQtDataImage::thumbnail( void ) const
     return this->medAbstractDataImage::thumbnails()[0];
 }
 
-QList<QImage>& medQtDataImage::thumbnails( void ) const
+QList<QImage>& medQtDataImage::thumbnails( void )
 {
     if ( !d->thumbnailValid )
         this->generateThumbnails();
@@ -118,7 +118,7 @@ QList<QImage>& medQtDataImage::thumbnails( void ) const
     return this->medAbstractDataImage::thumbnails();
 }
 
-void medQtDataImage::generateThumbnails() const
+void medQtDataImage::generateThumbnails()
 {
     QImage refImage;
     if ( this->medAbstractDataImage::thumbnails().isEmpty() ) {

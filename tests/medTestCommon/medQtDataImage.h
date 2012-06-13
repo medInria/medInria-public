@@ -35,8 +35,8 @@ public:
     virtual void *data(void);
     virtual void *data(int channel);
 
-    virtual       QImage & thumbnail(void)  const;
-    virtual QList<QImage>& thumbnails(void) const;
+    virtual       QImage & thumbnail(void)  ;
+    virtual QList<QImage>& thumbnails(void) ;
 
     // Implement dtkAbstractDataImage
     void *image(void);
@@ -57,7 +57,7 @@ public:
     virtual int scalarValueMaxCount(void);
 public:
 protected:
-    void generateThumbnails() const;
+    void generateThumbnails();
 private:
 
     medQtDataImagePrivate * d;

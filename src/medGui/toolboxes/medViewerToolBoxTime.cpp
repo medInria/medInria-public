@@ -17,7 +17,7 @@
 #include <QMouseEvent>
 
 #include <dtkCore/dtkAbstractView.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <med4DAbstractViewInteractor.h>

@@ -1,6 +1,6 @@
 #include "medTestDbApp.h"
 
-#include<dtkCore/dtkLog.h>
+#include<dtkLog/dtkLog.h>
 
 
 int main(int argc, char *argv[])

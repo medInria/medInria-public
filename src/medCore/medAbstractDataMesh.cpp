@@ -1,5 +1,5 @@
-/* medAbstractDataMesh.cpp --- 
- * 
+/* medAbstractDataMesh.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Mon Feb  2 09:08:09 2009 (+0100)
@@ -9,16 +9,16 @@
  *     Update #: 65
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include <medAbstractDataMesh.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
 // medAbstractDataMeshPrivate

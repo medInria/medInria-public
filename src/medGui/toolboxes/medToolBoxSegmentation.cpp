@@ -24,7 +24,7 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <medAbstractDataImage.h>
 #include <medAbstractView.h>
@@ -170,7 +170,7 @@ void medToolBoxSegmentation::onToolBoxChosen(const QByteArray& id)
     medToolBoxSegmentationCustom *toolbox = medToolBoxFactory::instance()->createCustomSegmentationToolBox(QString(id), this);
 
     if(!toolbox) {
-        qDebug() << "Unable to instantiate" << id << "toolbox";
+        dtkDebug() << "Unable to instantiate" << id << "toolbox";
         return;
     }
 
@@ -207,7 +207,7 @@ medAbstractViewCoordinates * medToolBoxSegmentation::viewCoordinates( dtkAbstrac
 {
     medAbstractView * mview = qobject_cast< medAbstractView * >( view );
     if ( ! mview ) {
-        dtkLog::debug() << "Failed to get a view";
+        dtkDebug() << "Failed to get a view";
         return NULL;
     }
 
@@ -218,7 +218,7 @@ dtkAbstractData * medToolBoxSegmentation::viewData( dtkAbstractView * view )
 {
     medAbstractView * mview = qobject_cast< medAbstractView * >( view );
     if ( ! mview ) {
-        dtkLog::debug() << "Failed to get a view";
+        dtkDebug() << "Failed to get a view";
         return NULL;
     }
 
@@ -231,15 +231,15 @@ void medToolBoxSegmentation::onSuccess( QObject * sender )
 //        alg->update();
     // At this point the sender has already been deleted by the thread pool.
     // Do not attempt to do anything with it (this includes qobject_cast).
-    if (! d->runningProcesses.contains(sender) ) 
+    if (! d->runningProcesses.contains(sender) )
         return;
     dtkAbstractProcess * alg = d->runningProcesses.value( sender );
 
 #pragma message DTK_COMPILER_WARNING("JDS : Need to complete this")
 //#error
     /*
-    Create a segmentation algorithm, pass it the data and 
-        run it. 
+    Create a segmentation algorithm, pass it the data and
+        run it.
         gather the output.
         register the output in the non-persistent db
         Add the output as a layer to the view
@@ -285,7 +285,7 @@ void medToolBoxSegmentation::run( dtkAbstractProcess * alg )
 void medToolBoxSegmentation::initializeAlgorithms()
 {
     medToolBoxFactory * factory = medToolBoxFactory::instance();
-    
+
     QList<QString> algorithmImplementations = factory->segmentationToolBoxes();
     foreach ( QString algName, algorithmImplementations ) {
 

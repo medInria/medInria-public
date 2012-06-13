@@ -31,7 +31,7 @@
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 class medDatabaseNonPersistentReaderPrivate
 {
@@ -105,10 +105,10 @@ void medDatabaseNonPersistentReader::run ( void )
 
         QFileInfo fileInfo ( file );
 
-        dtkSmartPointer<dtkAbstractData> dtkdata;        
+        dtkSmartPointer<dtkAbstractData> dtkdata;
 
         for ( int i=0; i<readers.size(); i++ )
-        {            
+        {
             dtkSmartPointer<dtkAbstractDataReader> dataReader;
             dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer ( readers[i] );
 

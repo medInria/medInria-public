@@ -18,7 +18,7 @@
 #include <QtGui>
 
 #include <dtkCore/dtkGlobal.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 #include <medPluginManager.h>
 
 class medApplicationPrivate
@@ -144,7 +144,7 @@ void medApplication::setMsgAlignment(int alignment)
 
 void medApplication::redirectMessageToLog(const QString &message)
 {
-    dtkOutput()<< message;
+    dtkTrace()<< message;
 }
 
 void medApplication::redirectErrorMessageToLog(const QString &message)
