@@ -3,7 +3,7 @@
 #include "itkFiltersToolBox.h"
 #include "itkFiltersDefinitions.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 class itkFiltersPluginPrivate
 {
@@ -25,10 +25,10 @@ itkFiltersPlugin::~itkFiltersPlugin ( void )
 bool itkFiltersPlugin::initialize ( void )
 {
     if ( !itkFilters::registered() )
-        dtkWarning() << "Unable to register itkFilters type";
+        dtkWarn() << "Unable to register itkFilters type";
 
     if ( !itkFiltersToolBox::registered() )
-        dtkWarning() << "Unable to register itkFilters toolbox";
+        dtkWarn() << "Unable to register itkFilters toolbox";
 
     return true;
 }

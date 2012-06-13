@@ -12,7 +12,7 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkGlobal.h>
 
@@ -540,7 +540,7 @@ void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medA
         this->setData(this->segmentationToolBox()->viewData(view));
     }
     if (!m_imageData) {
-        dtkWarning() << "Could not set data";
+        dtkWarn() << "Could not set data";
         return;
     }
 

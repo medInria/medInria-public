@@ -4,7 +4,7 @@
 #include "dtkCore/dtkAbstractDataFactory.h"
 #include <dtkCore/dtkAbstractDataReader.h>
 #include "dtkCore/dtkAbstractData.h"
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <itkImage.h>

@@ -6,7 +6,7 @@
 #include "%1Plugin.h"
 #include "%1ToolBox.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
 // %1PluginPrivate
@@ -40,10 +40,10 @@ const char * %1PluginPrivate::s_Name = "%1";
 bool %1Plugin::initialize(void)
 {
     if(!%1::registered())
-        dtkWarning() << "Unable to register %1 type";
+        dtkWarn() << "Unable to register %1 type";
 
     if(!%1ToolBox::registered())
-        dtkWarning() << "Unable to register %1 toolbox";
+        dtkWarn() << "Unable to register %1 toolbox";
 
     return true;
 }

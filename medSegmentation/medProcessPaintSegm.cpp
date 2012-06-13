@@ -10,7 +10,7 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 // /////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ void medProcessPaintSegm::setInput( dtkAbstractData *data, int channel )
         d->maskInput = data;
         break;
     default :
-        dtkWarning() << "Attempt to set channel out of range";
+        dtkWarn() << "Attempt to set channel out of range";
         break;
     }
 }

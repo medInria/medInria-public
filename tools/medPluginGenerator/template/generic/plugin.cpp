@@ -5,7 +5,7 @@
 #include "%1.h"
 #include "%1Plugin.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
 // %1PluginPrivate
@@ -39,7 +39,7 @@ const char * %1PluginPrivate::s_Name = "%1";
 bool %1Plugin::initialize(void)
 {
     if(!%1::registered())
-        dtkWarning() << "Unable to register %1 type";
+        dtkWarn() << "Unable to register %1 type";
 
     return true;
 }

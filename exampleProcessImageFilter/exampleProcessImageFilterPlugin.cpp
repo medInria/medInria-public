@@ -6,7 +6,7 @@
 #include "exampleProcessImageFilterPlugin.h"
 #include "exampleProcessImageFilterToolBox.h" //the toolbox gui and functionality for the process
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <medToolBoxFactory.h>  //To register the toolbox into the diffusion toolbox
 
@@ -41,9 +41,9 @@ bool exampleProcessImageFilterPlugin::initialize(void) {
     //  Register the process
 
     if (!exampleProcessImageFilter::registered())
-        dtkWarning() << "Unable to register exampleProcessImageFilter type";
+        dtkWarn() << "Unable to register exampleProcessImageFilter type";
     else
-        dtkWarning() << "ABLE to register exampleProcessImageFilter type";
+        dtkWarn() << "ABLE to register exampleProcessImageFilter type";
 
     //  Register the toolbox of the process with the Custon diffusionToolBox
 

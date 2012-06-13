@@ -4,7 +4,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 #include <vtkCamera.h>
 #include <vtkActor.h>
 #include <vtkDataSetSurfaceFilter.h>
@@ -121,7 +121,7 @@ void v3dViewMeshInteractor::setView(dtkAbstractView *view)
 
 void v3dViewMeshInteractor::enable(void)
 {
-    dtkWarning() << "enabling v3dViewMeshInteractor";
+    dtkWarn() << "enabling v3dViewMeshInteractor";
     if (this->enabled())
         return;
     updatePipeline ();

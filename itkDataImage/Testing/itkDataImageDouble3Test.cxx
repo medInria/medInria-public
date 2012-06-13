@@ -4,7 +4,7 @@
 #include "dtkCore/dtkAbstractData.h"
 #include "dtkCore/dtkSmartPointer.h"
 
-#include "medCore/medAbstractDataImage.h"
+#include "medAbstractDataImage.h"
 
 #include <itkImage.h>
 

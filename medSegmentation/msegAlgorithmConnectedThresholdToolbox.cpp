@@ -12,7 +12,7 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkGlobal.h>
 

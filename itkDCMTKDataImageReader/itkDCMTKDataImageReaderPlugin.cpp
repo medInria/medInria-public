@@ -5,7 +5,7 @@
 #include "itkDCMTKDataImageReader.h"
 #include "itkDCMTKDataImageReaderPlugin.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkDCMTKDataImageReaderPluginPrivate
@@ -36,7 +36,7 @@ itkDCMTKDataImageReaderPlugin::~itkDCMTKDataImageReaderPlugin(void)
 bool itkDCMTKDataImageReaderPlugin::initialize(void)
 {
     if(!itkDCMTKDataImageReader::registered())
-	dtkWarning() << "Unable to register itkDCMTKDataImageReader type";
+	dtkWarn() << "Unable to register itkDCMTKDataImageReader type";
 
     return true;
 }

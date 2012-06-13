@@ -28,7 +28,7 @@
 #include "itkDataImageRGB3.h"
 #include "itkDataImageRGBA3.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 #include <dtkItkLogForwarder/itkLogForwarder.h>
 
 // /////////////////////////////////////////////////////////////////

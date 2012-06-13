@@ -6,7 +6,7 @@
 
 #include <dtkCore/dtkAbstractData.h>
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 namespace mseg {
 
@@ -48,7 +48,7 @@ void AlgorithmGeneric::addHandler( const QString & typeName, HandlerFunc * func 
 int AlgorithmGeneric::callHandler( dtkAbstractData * data )
 {
     if ( !data  ) {
-        dtkWarning() << "Attempt to run segmentation algorithm with no input set.";
+        dtkWarn() << "Attempt to run segmentation algorithm with no input set.";
         return DTK_FAILURE;
     }
 
@@ -56,7 +56,7 @@ int AlgorithmGeneric::callHandler( dtkAbstractData * data )
 
     AlgorithmGenericPrivate::HandlerContainerType::const_iterator it( d->handlers.find( dataId ) );
     if ( it == d->handlers.end() ) {
-        dtkWarning() << "Unknown data type encountered " << dataId;
+        dtkWarn() << "Unknown data type encountered " << dataId;
         return DTK_FAILURE;
     }
 

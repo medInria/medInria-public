@@ -6,7 +6,7 @@
 #include "itkProcessRegistrationDiffeomorphicDemonsPlugin.h"
 #include "itkProcessRegistrationDiffeomorphicDemonsToolBox.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkProcessRegistrationDiffeomorphicDemonsPluginPrivate
@@ -37,10 +37,10 @@ itkProcessRegistrationDiffeomorphicDemonsPlugin::~itkProcessRegistrationDiffeomo
 bool itkProcessRegistrationDiffeomorphicDemonsPlugin::initialize(void)
 {
     if(!itkProcessRegistrationDiffeomorphicDemons::registered())
-        dtkWarning() << "Unable to register itkProcessRegistrationDiffeomorphicDemons type";
+        dtkWarn() << "Unable to register itkProcessRegistrationDiffeomorphicDemons type";
 
     if(!itkProcessRegistrationDiffeomorphicDemonsToolBox::registered())
-        dtkWarning() << "Unable to register itkProcessRegistrationDiffeomorphicDemons toolbox";
+        dtkWarn() << "Unable to register itkProcessRegistrationDiffeomorphicDemons toolbox";
 
     return true;
 }

@@ -5,7 +5,7 @@
 #include "itkDataDiffusionGradientList.h"
 #include "itkDataDiffusionGradientListPlugin.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <dtkItkLogForwarder/itkLogForwarder.h>
 
@@ -47,7 +47,7 @@ itkDataDiffusionGradientListPlugin::~itkDataDiffusionGradientListPlugin(void)
 bool itkDataDiffusionGradientListPlugin::initialize(void)
 {
     if(!itkDataDiffusionGradientList::registered())
-        dtkWarning() << "Unable to register itkDataDiffusionGradientList type";
+        dtkWarn() << "Unable to register itkDataDiffusionGradientList type";
 
     return true;
 }

@@ -7,7 +7,7 @@
 #include <itkDataTensorImageDouble3.h>
 #include <itkDataTensorImageFloat3.h>
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <dtkItkLogForwarder/itkLogForwarder.h>
 
@@ -49,8 +49,8 @@ itkDataTensorImagePlugin::~itkDataTensorImagePlugin(void)
 
 bool itkDataTensorImagePlugin::initialize(void)
 {
-    if(!itkDataTensorImageDouble3::registered()) dtkWarning() << "Unable to register itkDataTensorImageDouble3 type";
-    if(!itkDataTensorImageFloat3::registered()) dtkWarning() << "Unable to register itkDataTensorImageFloat3 type";
+    if(!itkDataTensorImageDouble3::registered()) dtkWarn() << "Unable to register itkDataTensorImageDouble3 type";
+    if(!itkDataTensorImageFloat3::registered()) dtkWarn() << "Unable to register itkDataTensorImageFloat3 type";
 
     return true;
 }

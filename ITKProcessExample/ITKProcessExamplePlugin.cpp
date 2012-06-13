@@ -7,7 +7,7 @@
 #include "ITKProcessExampleToolBox.h"
 #include "ITKProcessExampleDefinitions.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
 // ITKProcessExamplePluginPrivate
@@ -38,10 +38,10 @@ ITKProcessExamplePlugin::~ITKProcessExamplePlugin(void)
 bool ITKProcessExamplePlugin::initialize(void)
 {
     if(!ITKProcessExample::registered())
-	dtkWarning() << "Unable to register ITKProcessExample type";
+	dtkWarn() << "Unable to register ITKProcessExample type";
 
     if(!ITKProcessExampleToolBox::registered())
-	dtkWarning() << "Unable to register ITKProcessExample toolbox";
+	dtkWarn() << "Unable to register ITKProcessExample toolbox";
 
     return true;
 }

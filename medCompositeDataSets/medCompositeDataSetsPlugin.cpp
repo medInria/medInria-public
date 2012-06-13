@@ -6,7 +6,7 @@
 #include <medCompositeDataSetsReader.h>
 #include <medCompositeDataSetsWriter.h>
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
 // medCompositeDataSetsPluginPrivate

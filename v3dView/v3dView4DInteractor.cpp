@@ -19,7 +19,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <medMessageController.h>
 

@@ -2,7 +2,7 @@
 
 #include <vtkObjectFactory.h>
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 vtkCxxRevisionMacro(vtkLogForwarder, "$Revision: 1 $");
 vtkStandardNewMacro(vtkLogForwarder);
@@ -14,7 +14,7 @@ void vtkLogForwarder::DisplayErrorText( const char *txt )
 
 void vtkLogForwarder::DisplayWarningText( const char *txt )
 {
-    dtkWarning() << txt;
+    dtkWarn() << txt;
 }
 
 void vtkLogForwarder::DisplayDebugText( const char *txt )

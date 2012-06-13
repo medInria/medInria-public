@@ -2,7 +2,7 @@
 #include "vtkDataMeshReader.h"
 #include "vtkDataMesh4DReader.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <dtkVtkLogForwarder/vtkLogForwarder.h>
 
@@ -43,8 +43,8 @@ vtkDataMeshReaderPlugin::~vtkDataMeshReaderPlugin(void)
 
 bool vtkDataMeshReaderPlugin::initialize(void)
 {
-  if(!vtkDataMeshReader::registered())     dtkWarning() << "Unable to register vtkDataMeshReader type";
-  if(!vtkDataMesh4DReader::registered())     dtkWarning() << "Unable to register vtkDataMeshReader type";
+  if(!vtkDataMeshReader::registered())     dtkWarn() << "Unable to register vtkDataMeshReader type";
+  if(!vtkDataMesh4DReader::registered())     dtkWarn() << "Unable to register vtkDataMeshReader type";
   return true;
 }
 

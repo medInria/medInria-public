@@ -7,7 +7,7 @@
 #include "itkNrrdDataTensorImageWriter.h"
 #include "itkDataTensorImageWriterPlugin.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkDataTensorImageWriterPluginPrivate
@@ -38,11 +38,11 @@ itkDataTensorImageWriterPlugin::~itkDataTensorImageWriterPlugin(void)
 bool itkDataTensorImageWriterPlugin::initialize(void)
 {
     if(!itkMetaDataTensorImageWriter::registered())
-    	dtkWarning() << "Unable to register itkMetaDataTensorImageWriter type";
+    	dtkWarn() << "Unable to register itkMetaDataTensorImageWriter type";
     if(!itkNiftiDataTensorImageWriter::registered())
-        dtkWarning() << "Unable to register itkNiftiDataTensorImageWriter type";
+        dtkWarn() << "Unable to register itkNiftiDataTensorImageWriter type";
     if(!itkNrrdDataTensorImageWriter::registered())
-        dtkWarning() << "Unable to register itkNrrdDataTensorImageWriter type";
+        dtkWarn() << "Unable to register itkNrrdDataTensorImageWriter type";
 
     return true;
 }

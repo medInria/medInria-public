@@ -2,7 +2,7 @@
 #include "vtkDataMesh.h"
 #include "vtkDataMesh4D.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <dtkVtkLogForwarder/vtkLogForwarder.h>
 

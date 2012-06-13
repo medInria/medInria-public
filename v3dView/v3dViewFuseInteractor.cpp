@@ -1,6 +1,6 @@
 #include <v3dViewFuseInteractor.h>
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkAbstractData.h>
 
 #include <medAbstractDataImage.h>
@@ -414,7 +414,7 @@ void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
       if (d->data1->xDimension()!=d->data2->xDimension() ||
 	  d->data1->yDimension()!=d->data2->yDimension() ||
 	  d->data1->zDimension()!=d->data2->zDimension()) {
-	dtkWarning() << "Dimensions mismatch";
+	dtkWarn() << "Dimensions mismatch";
 	return;
       }
       */

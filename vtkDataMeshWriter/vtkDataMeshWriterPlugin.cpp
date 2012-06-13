@@ -2,7 +2,7 @@
 #include "vtkDataMeshWriter.h"
 #include "vtkDataMesh4DWriter.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <dtkVtkLogForwarder/vtkLogForwarder.h>
 
@@ -41,8 +41,8 @@ vtkDataMeshWriterPlugin::~vtkDataMeshWriterPlugin(void)
 
 bool vtkDataMeshWriterPlugin::initialize(void)
 {
-  if(!vtkDataMeshWriter::registered()) dtkWarning() << "Unable to register vtkDataMeshWriter type";
-  if(!vtkDataMesh4DWriter::registered()) dtkWarning() << "Unable to register vtkDataMeshWriter type";
+  if(!vtkDataMeshWriter::registered()) dtkWarn() << "Unable to register vtkDataMeshWriter type";
+  if(!vtkDataMesh4DWriter::registered()) dtkWarn() << "Unable to register vtkDataMeshWriter type";
 
   return true;
 }

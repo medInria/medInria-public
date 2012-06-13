@@ -8,7 +8,7 @@
 #include "msegAlgorithmConnectedThreshold.h"
 #include "medProcessPaintSegm.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 namespace mseg {
 
 // /////////////////////////////////////////////////////////////////

@@ -2,7 +2,7 @@
 
 
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 namespace itk {
 
@@ -24,7 +24,7 @@ void LogForwarder::DisplayGenericOutputText( const char *t )
 
 void LogForwarder::DisplayWarningText( const char *t )
 {
-    dtkWarning() << t;
+    dtkWarn() << t;
 }
 
 void LogForwarder::DisplayErrorText( const char *t )

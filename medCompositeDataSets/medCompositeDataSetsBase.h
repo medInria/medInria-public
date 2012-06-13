@@ -5,7 +5,7 @@
 #include <string>
 
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 namespace MedInria {
 
@@ -65,7 +65,7 @@ namespace MedInria {
             for (Registery::const_iterator i=registery().begin();i!=registery().end();++i) {
                 const QString desc = i->second->identifier();
                 if (!(i->second->registered()))
-                    dtkWarning() << "Unable to register " << desc << " type";
+                    dtkWarn() << "Unable to register " << desc << " type";
                 ql << desc;
             }
             qDebug() << ql;

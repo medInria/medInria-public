@@ -3,7 +3,7 @@
 // /////////////////////////////////////////////////////////////////
 #include "itkDataTensorImageReaderPlugin.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <dtkItkLogForwarder/itkLogForwarder.h>
 
@@ -48,9 +48,9 @@ itkDataTensorImageReaderPlugin::~itkDataTensorImageReaderPlugin(void)
 
 bool itkDataTensorImageReaderPlugin::initialize(void)
 {
-    if(!itkMetaDataTensorImageReader::registered())  dtkWarning() << "Unable to register itkMetaDataTensorImageReader type";
-    if(!itkNiftiDataTensorImageReader::registered()) dtkWarning() << "Unable to register itkNiftiDataTensorImageReader type";
-    if(!itkNrrdDataTensorImageReader::registered())  dtkWarning() << "Unable to register itkNrrdDataTensorImageReader type";
+    if(!itkMetaDataTensorImageReader::registered())  dtkWarn() << "Unable to register itkMetaDataTensorImageReader type";
+    if(!itkNiftiDataTensorImageReader::registered()) dtkWarn() << "Unable to register itkNiftiDataTensorImageReader type";
+    if(!itkNrrdDataTensorImageReader::registered())  dtkWarn() << "Unable to register itkNrrdDataTensorImageReader type";
 
     return true;
 }

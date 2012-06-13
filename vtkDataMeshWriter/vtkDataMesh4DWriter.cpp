@@ -2,7 +2,7 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include "vtkDataManagerWriter.h"
 #include "vtkDataManager.h"

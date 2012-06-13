@@ -2,7 +2,7 @@
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include "medAnnotationData.h"
 #include "medSeedPointAnnotationData.h"
@@ -88,7 +88,7 @@ bool v3dViewAnnotationInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 
 void v3dViewAnnotationInteractor::enable(void)
 {
-    dtkWarning() << "enabling " << this->identifier() ;
+    dtkWarn() << "enabling " << this->identifier() ;
 
     if (this->enabled())
         return;

@@ -3,7 +3,7 @@
 // /////////////////////////////////////////////////////////////////
 #include "v3dDataPlugin.h"
 
-#include <dtkCore/dtkLog.h>
+#include <dtkLog/dtkLog.h>
 
 #include <dtkVtkLogForwarder/vtkLogForwarder.h>
 
@@ -58,16 +58,16 @@ bool v3dDataPlugin::initialize(void)
     itk::VTKImageIOFactory::RegisterOneFactory();
 
     if(!v3dDataImage::registered())
-	dtkWarning() << "Unable to register v3dDataImage type";
+	dtkWarn() << "Unable to register v3dDataImage type";
 
     if(!v3dDataFibers::registered())
-	dtkWarning() << "Unable to register v3dDataFibers type";
+	dtkWarn() << "Unable to register v3dDataFibers type";
 
     if(!v3dDataFibersWriter::registered())
-	dtkWarning() << "Unable to register v3dDataFibersWriter type";
+	dtkWarn() << "Unable to register v3dDataFibersWriter type";
 
     if(!v3dDataFibersReader::registered())
-	dtkWarning() << "Unable to register v3dDataFibersReader type";
+	dtkWarn() << "Unable to register v3dDataFibersReader type";
 
     return true;
 }
