@@ -21,9 +21,9 @@ if(NOT medInria_USE_FILE_INCLUDED)
 
    set(medInria_USE_FILE_INCLUDED 1)
 
-   include_directories(${medInria_INCLUDE_DIRS})
+   include_directories(${medInria_INCLUDE_DIR})
 
-   link_directories(${medInria_LIBRARY_DIRS})
+   link_directories(${medInria_LIBRARY_DIR})
 
    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${medInria_CMAKE_DIRS})
    

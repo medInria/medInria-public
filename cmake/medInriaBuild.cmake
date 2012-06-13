@@ -25,7 +25,7 @@ endif()
 ## ###################################################################
 ## INCLUDE RULES
 ## ###################################################################
-set(${PROJECT_NAME}_INCLUDE_DIRS 
+set(${PROJECT_NAME}_INCLUDE_DIR 
     ${PROJECT_SOURCE_DIR}/src/medCore
     ${PROJECT_SOURCE_DIR}/src/medCore/annotationData
     ${PROJECT_SOURCE_DIR}/src/medGui
@@ -39,9 +39,9 @@ set(${PROJECT_NAME}_INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/src/medGui/viewContainers
 	${PROJECT_SOURCE_DIR}/src/medGui/database)
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
+include_directories(${${PROJECT_NAME}_INCLUDE_DIR})
 
-set(${PROJECT_NAME}_INSTALL_INCLUDE_DIRS 
+set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR 
     ${CMAKE_INSTALL_PREFIX}/include/medCore
     ${CMAKE_INSTALL_PREFIX}/src/medCore/annotationData
     ${CMAKE_INSTALL_PREFIX}/include/medGui
