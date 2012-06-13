@@ -588,9 +588,9 @@ public:
         return dtkAbstractDataFactory::instance()->registerDataType(ID,createItkDataImage<DIM,T,ID>);
     }
 
-    virtual QImage& thumbnail() const;
+    virtual QImage& thumbnail();
 
-    virtual QList<QImage>& thumbnails() const { return d->make_thumbnails(128,false); }
+    virtual QList<QImage>& thumbnails() { return d->make_thumbnails(128,false); }
 
     //  Inherited slots (through virtual member functions).
 
@@ -667,7 +667,7 @@ dtkAbstractData* createItkDataImage() {
 }
 
 template <unsigned DIM,typename T,const char* ID>
-QImage& itkDataImage<DIM,T,ID>::thumbnail() const {
+QImage& itkDataImage<DIM,T,ID>::thumbnail() {
     if (d->image.IsNull())
         return medAbstractDataImage::thumbnail();
 

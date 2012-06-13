@@ -41,8 +41,8 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public medAbstractDataMesh
     virtual QString identifier(void) const;
     static bool registered(void);
 
-    virtual QImage        &thumbnail  (void) const;
-    virtual QList<QImage> &thumbnails (void) const;
+    virtual QImage        &thumbnail  (void);
+    virtual QList<QImage> &thumbnails (void);
 
  public slots:
     // derived from dtkAbstractData
