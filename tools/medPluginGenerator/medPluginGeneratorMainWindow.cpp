@@ -60,6 +60,10 @@ medPluginGeneratorMainWindow::medPluginGeneratorMainWindow(QWidget *parent) : QM
     connect(d->ui.aboutAction,       SIGNAL(triggered()), this, SLOT(about()));
     connect(d->ui.actionDefault_Path,SIGNAL(triggered()), this,
             SLOT(onSetDefaultPath()));
+
+    connect(d->ui.quitButton,        SIGNAL(clicked()), qApp, SLOT(quit()));
+    connect(d->ui.generateButton,    SIGNAL(clicked()), this, SLOT(generate()));
+
     Q_UNUSED(statusBar());
 }
 
@@ -131,9 +135,8 @@ void medPluginGeneratorMainWindow::onPluginLicenseChanged()
 void medPluginGeneratorMainWindow::update(void)
 {
     d->ui.outputNameLabel->setText(
-        QString("%1%2")
-        .arg(d->namesp)
-        .arg(QString(d->name).replace(0, 1, QString(d->name).left(1).toUpper()))
+        QString("%1")
+        .arg(QString(d->name).replace(0, 1, QString(d->name).left(1).toLower()))
     );
 }
 
@@ -155,12 +158,12 @@ void medPluginGeneratorMainWindow::generate(void)
         QMessageBox::warning(this, "Plugin generation", "Specify a plugin type.");
         return;
     }
-
+    
     if(d->name.isNull()) {
         QMessageBox::warning(this, "Plugin generation", "Specify a name.");
         return;
     }
-
+    
     medPluginGenerator generator;
     generator.setPluginFamily(static_cast<medPluginGenerator::PluginFamily>(d->ui.FamilyCombo->currentIndex()));
     generator.setOutputDirectory(d->output);

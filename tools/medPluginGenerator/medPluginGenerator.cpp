@@ -31,7 +31,7 @@ public:
     QString type;
     QString description;
     QString license;
-
+    
     QDir parent;
     QDir target;
 };
@@ -61,8 +61,8 @@ void medPluginGenerator::setPluginFamily(const medPluginGenerator::PluginFamily 
             d->pluginFamilyString = "generic";
             break;
     }
-
-
+    
+    
 }
 
 void medPluginGenerator::setOutputDirectory(const QString& directory)
@@ -73,6 +73,7 @@ void medPluginGenerator::setOutputDirectory(const QString& directory)
 void medPluginGenerator::setNamespace(const QString& namesp)
 {
     d->namesp = namesp;
+    d->namesp.replace(0, 1, QString(d->namesp).left(1).toLower());
 }
 
 void medPluginGenerator::setName(const QString& name)
@@ -98,44 +99,32 @@ void medPluginGenerator::setLicense(const QString& license)
 bool medPluginGenerator::run(void)
 {
     d->parent = QDir(d->output);
-
+    
     if(!d->parent.exists()) {
         qWarning() << "medPluginGenerator: parent directory is not valid.";
         return false;
     }
-
-    d->plugin = QString("%1%3")
-        .arg(QString(d->namesp).toLower())
-        .arg(d->name.replace(0, 1, QString(d->name).left(1).toUpper()));
-
+    
+    d->plugin = QString("%1").arg(d->name.replace(0, 1, QString(d->name).left(1).toLower()));
+    
     if(!d->parent.mkdir(QString(d->plugin))) {
         qWarning() << "medPluginGenerator: unable to create target directory.";
         return false;
     }
-
+    
     d->target = QDir(d->parent);
-
+    
     if(!d->target.cd(QString(d->plugin))) {
         qWarning() << "medPluginGenerator: unable to move to target directory.";
         return false;
     }
-
+    
     if (d->pluginFamily == REGISTRATION)
         return generateCMakeLists()
-                && generateTypeHeaderFile()
-                && generateTypeSourceFile()
-                && generateTypeToolBoxSourceFile()
-                && generateTypeToolBoxHeaderFile()
-                && generatePluginHeaderFile()
-                && generatePluginSourceFile()
-                && generateExportHeaderFile()
-                && generateHelpCollectionFile()
-                && generateHelpConfigurationFile()
-                && generateReadmeFile()
-                && generateCopyingFile();
-    return generateCMakeLists()
         && generateTypeHeaderFile()
         && generateTypeSourceFile()
+        && generateTypeToolBoxSourceFile()
+        && generateTypeToolBoxHeaderFile()
         && generatePluginHeaderFile()
         && generatePluginSourceFile()
         && generateExportHeaderFile()
@@ -143,6 +132,16 @@ bool medPluginGenerator::run(void)
         && generateHelpConfigurationFile()
         && generateReadmeFile()
         && generateCopyingFile();
+    return generateCMakeLists()
+    && generateTypeHeaderFile()
+    && generateTypeSourceFile()
+    && generatePluginHeaderFile()
+    && generatePluginSourceFile()
+    && generateExportHeaderFile()
+    && generateHelpCollectionFile()
+    && generateHelpConfigurationFile()
+    && generateReadmeFile()
+    && generateCopyingFile();
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -152,27 +151,27 @@ bool medPluginGenerator::run(void)
 bool medPluginGenerator::generateCMakeLists(void)
 {
     QFile targetFile(d->target.absoluteFilePath("CMakeLists.txt"));
-
+    
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         qWarning() << "medPluginGenerator: unable to open CMakeLists.txt for writing";
         return false;
     }
-
+    
     QFile templateFile(QString(":template/%1/cmake").arg(d->pluginFamilyString));
-
+    
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
         return false;
     }
-
+    
     QTextStream stream(&targetFile);
-
+    
     stream << QString(templateFile.readAll()).arg(QString(d->plugin));
-
+    
     targetFile.close();
-
+    
     templateFile.close();
-
+    
     return true;
 }
 
@@ -183,31 +182,32 @@ bool medPluginGenerator::generateCMakeLists(void)
 bool medPluginGenerator::generateTypeHeaderFile(void)
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append(".h")));
-
+    
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-	qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append(".h") << "for writing";
-	return false;
+        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append(".h") << "for writing";
+        return false;
     }
-
+    
     QFile templateFile(QString(":template/%1/type.h").arg(d->pluginFamilyString));
-
+    
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
         return false;
     }
-
+    
     QTextStream stream(&targetFile);
-
+    
     stream << QString(templateFile.readAll())
-        .arg(QString(d->plugin))
+    .arg(QString(d->plugin))
 	.arg(QString(d->plugin).toUpper())
 	.arg(QString(d->type))
-	.arg(QString(d->plugin).remove(d->namesp).prepend(QString(d->namesp).replace(0, 1, QString(d->namesp).left(1).toUpper())));
-
+	.arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
+    .arg(QString(d->namesp));
+    
     targetFile.close();
-
+    
     templateFile.close();
-
+    
     return true;
 }
 
@@ -218,32 +218,32 @@ bool medPluginGenerator::generateTypeHeaderFile(void)
 bool medPluginGenerator::generateTypeSourceFile(void)
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append(".cpp")));
-
+    
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-	qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append(".cpp") << "for writing";
-	return false;
+        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append(".cpp") << "for writing";
+        return false;
     }
-
+    
     QFile templateFile(QString(":template/%1/type.cpp").arg(d->pluginFamilyString));
-
+    
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
         return false;
     }
-
+    
     QTextStream stream(&targetFile);
-
+    
     stream << QString(templateFile.readAll())
-        .arg(QString(d->plugin))
-        .arg(QString(d->type))
-        .arg(QString(d->plugin).remove(d->namesp).prepend(QString(d->namesp).replace(0, 1, QString(d->namesp).left(1).toUpper())))
-        .arg(QString(d->name));//for RPI header inclusion
-
-
+    .arg(QString(d->plugin))
+    .arg(QString(d->type))
+    .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
+    .arg(QString(d->namesp))
+    .arg(QString(d->name).replace(0, 1, QString(d->name).left(1).toUpper()));
+    
     targetFile.close();
-
+    
     templateFile.close();
-
+    
     return true;
 }
 
@@ -254,29 +254,30 @@ bool medPluginGenerator::generateTypeSourceFile(void)
 bool medPluginGenerator::generateTypeToolBoxHeaderFile(void)
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("ToolBox.h")));
-
+    
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-	qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("ToolBox.h") << "for writing";
-	return false;
+        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("ToolBox.h") << "for writing";
+        return false;
     }
-
+    
     QFile templateFile(QString(":template/%1/typeToolBox.h").arg(d->pluginFamilyString));
-
+    
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
         return false;
     }
-
+    
     QTextStream stream(&targetFile);
-
+    
     stream << QString(templateFile.readAll())
-        .arg(QString(d->plugin))
-	.arg(QString(d->plugin).toUpper())
-    .arg(QString(d->plugin).remove(d->namesp).prepend(QString(d->namesp).replace(0, 1, QString(d->namesp).left(1).toUpper())));
+    .arg(QString(d->plugin))
+    .arg(QString(d->plugin).toUpper())
+    .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
+    .arg(QString(d->namesp));
     targetFile.close();
-
+    
     templateFile.close();
-
+    
     return true;
 }
 
@@ -287,31 +288,31 @@ bool medPluginGenerator::generateTypeToolBoxHeaderFile(void)
 bool medPluginGenerator::generateTypeToolBoxSourceFile(void)
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("ToolBox.cpp")));
-
+    
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-	qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("ToolBox.cpp") << "for writing";
-	return false;
+        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("ToolBox.cpp") << "for writing";
+        return false;
     }
-
+    
     QFile templateFile(QString(":template/%1/typeToolBox.cpp").arg(d->pluginFamilyString));
-
+    
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
         return false;
     }
-
+    
     QTextStream stream(&targetFile);
-
+    
     stream << QString(templateFile.readAll())
-        .arg(QString(d->plugin))
-        .arg(d->name)
-        .arg(QString(d->plugin).remove(d->namesp).prepend(QString(d->namesp).replace(0, 1, QString(d->namesp).left(1).toUpper())));
-
-
+    .arg(QString(d->plugin))
+    .arg(d->name)
+    .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
+    .arg(QString(d->namesp));
+    
     targetFile.close();
-
+    
     templateFile.close();
-
+    
     return true;
 }
 
@@ -323,29 +324,30 @@ bool medPluginGenerator::generateTypeToolBoxSourceFile(void)
 bool medPluginGenerator::generatePluginHeaderFile(void)
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("Plugin.h")));
-
+    
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-	qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("Plugin.h") << "for writing";
-	return false;
+        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("Plugin.h") << "for writing";
+        return false;
     }
-
+    
     QFile templateFile(QString(":template/%1/plugin.h").arg(d->pluginFamilyString));
-
+    
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
         return false;
     }
-
+    
     QTextStream stream(&targetFile);
-
+    
     stream << QString(templateFile.readAll())
-        .arg(QString(d->plugin))
-	.arg(QString(d->plugin).toUpper());
-
+    .arg(QString(d->plugin))
+    .arg(QString(d->plugin).toUpper())
+    .arg(QString(d->namesp));
+    
     targetFile.close();
-
+    
     templateFile.close();
-
+    
     return true;
 }
 
@@ -356,29 +358,30 @@ bool medPluginGenerator::generatePluginHeaderFile(void)
 bool medPluginGenerator::generatePluginSourceFile(void)
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("Plugin.cpp")));
-
+    
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-	qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("Plugin.cpp") << "for writing";
-	return false;
+        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("Plugin.cpp") << "for writing";
+        return false;
     }
-
+    
     QFile templateFile(QString(":template/%1/plugin.cpp").arg(d->pluginFamilyString));
-
+    
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
         return false;
     }
-
+    
     QTextStream stream(&targetFile);
-
+    
     stream << QString(templateFile.readAll()).arg(QString(d->plugin))
-              .arg(QString(d->plugin).toUpper())
-              .arg(QString(d->description));
-
+    .arg(QString(d->plugin).toUpper())
+    .arg(QString(d->description))
+    .arg(QString(d->namesp));
+    
     targetFile.close();
-
+    
     templateFile.close();
-
+    
     return true;
 }
 
@@ -389,27 +392,27 @@ bool medPluginGenerator::generatePluginSourceFile(void)
 bool medPluginGenerator::generateExportHeaderFile(void)
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("PluginExport.h")));
-
+    
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-	qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("PluginExport.h") << "for writing";
-	return false;
+        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("PluginExport.h") << "for writing";
+        return false;
     }
-
+    
     QFile templateFile(":template/export.h");
-
+    
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
         return false;
     }
-
+    
     QTextStream stream(&targetFile);
-
+    
     stream << QString(templateFile.readAll()).arg(QString(d->plugin)).arg(QString(d->plugin).toUpper());
-
+    
     targetFile.close();
-
+    
     templateFile.close();
-
+    
     return true;
 }
 
@@ -420,27 +423,27 @@ bool medPluginGenerator::generateExportHeaderFile(void)
 bool medPluginGenerator::generateHelpCollectionFile(void)
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("Plugin.qhcp.in")));
-
+    
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-	qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("Plugin.qhcp.in") << "for writing";
-	return false;
+        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("Plugin.qhcp.in") << "for writing";
+        return false;
     }
-
+    
     QFile templateFile(":template/qhcp");
-
+    
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
         return false;
     }
-
+    
     QTextStream stream(&targetFile);
-
+    
     stream << QString(templateFile.readAll());
-
+    
     targetFile.close();
-
+    
     templateFile.close();
-
+    
     return true;
 }
 
@@ -452,27 +455,27 @@ bool medPluginGenerator::generateHelpCollectionFile(void)
 bool medPluginGenerator::generateHelpConfigurationFile(void)
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("Plugin.doxyfile.in")));
-
+    
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-	qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("Plugin.doxyfile.in") << "for writing";
-	return false;
+        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("Plugin.doxyfile.in") << "for writing";
+        return false;
     }
-
+    
     QFile templateFile(":template/doxyfile");
-
+    
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
         return false;
     }
-
+    
     QTextStream stream(&targetFile);
-
+    
     stream << QString(templateFile.readAll());
-
+    
     targetFile.close();
-
+    
     templateFile.close();
-
+    
     return true;
 }
 
@@ -483,18 +486,18 @@ bool medPluginGenerator::generateHelpConfigurationFile(void)
 bool medPluginGenerator::generateReadmeFile(void)
 {
     QFile targetFile(d->target.absoluteFilePath("README.txt"));
-
+    
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-	qWarning() << "medPluginGenerator: unable to open CMakeLists.txt for writing";
-	return false;
+        qWarning() << "medPluginGenerator: unable to open CMakeLists.txt for writing";
+        return false;
     }
-
+    
     QTextStream stream(&targetFile);
-
+    
     stream << d->description;
-
+    
     targetFile.close();
-
+    
     return true;
 }
 
@@ -505,24 +508,24 @@ bool medPluginGenerator::generateReadmeFile(void)
 bool medPluginGenerator::generateCopyingFile(void)
 {
     QFile targetFile(d->target.absoluteFilePath("COPYING.txt"));
-
+    
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-	qWarning() << "medPluginGenerator: unable to open COPYING.txt for writing";
-	return false;
+        qWarning() << "medPluginGenerator: unable to open COPYING.txt for writing";
+        return false;
     }
-
+    
     QFile templateFile(QString(":template/license/").append(d->license));
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
         return false;
     }
-
+    
     QTextStream stream(&targetFile);
-
+    
     stream << QString(templateFile.readAll());
-
+    
     targetFile.close();
-
+    
     return true;
 }
 

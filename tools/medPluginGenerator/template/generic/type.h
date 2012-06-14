@@ -9,24 +9,29 @@
 
 #include "%1PluginExport.h"
 
-class %1Private;
-
-class %2PLUGIN_EXPORT %1 : public dtkAbstract%3
+namespace %5
 {
-    Q_OBJECT
-
-public:
-             %1(void);
-    virtual ~%1(void);
-
-    virtual QString description(void) const;
-
-    static bool registered(void);
-
-private:
-    %1Private *d;
-};
-
-dtkAbstract%3 *create%4(void);
+    
+    class %1Private;
+    
+    class %2PLUGIN_EXPORT %1 : public dtkAbstract%3
+    {
+        Q_OBJECT
+        
+    public:
+        %1(void);
+        virtual ~%1(void);
+        
+        virtual QString description(void) const;
+        
+        static bool registered(void);
+        
+    private:
+        %1Private *d;
+    };
+    
+    dtkAbstract%3 *create%4(void);
+    
+} // end namespace %5
 
 #endif

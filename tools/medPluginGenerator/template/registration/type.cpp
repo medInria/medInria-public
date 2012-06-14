@@ -21,303 +21,307 @@
 
 #include "time.h"
 
-#include <%4/rpi%4.hxx>
+#include <%5/rpi%5.hxx>
 #include <rpiCommonTools.hxx>
 
-// /////////////////////////////////////////////////////////////////
-// %1Private
-// /////////////////////////////////////////////////////////////////
-
-class %1Private
+namespace %4
 {
-public:
-    %1 * proc;
-    template <class PixelType>
-            int update(void);
+    
+    // /////////////////////////////////////////////////////////////////
+    // %1Private
+    // /////////////////////////////////////////////////////////////////
+    
+    class %1Private
+    {
+    public:
+        %1 * proc;
+        template <class PixelType>
+        int update(void);
+        template <typename PixelType>
+        bool writeTransform(const QString& file);
+        
+        void * registrationMethod;
+        
+    };
+    
+    // /////////////////////////////////////////////////////////////////
+    // %1
+    // /////////////////////////////////////////////////////////////////
+    
+    %1::%1(void) : itkProcessRegistration(), d(new %1Private)
+    {
+        d->proc = this;
+        switch(fixedImageType()){
+            case itkProcessRegistration::UCHAR:
+            {
+                typedef itk::Image< float, 3 >  RegImageType;
+                delete static_cast<rpi::%5< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+            }
+                break;
+            case itkProcessRegistration::CHAR:
+            {
+                typedef itk::Image< char, 3 >  RegImageType;
+                delete static_cast<rpi::%5< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+            }
+                break;
+            case itkProcessRegistration::USHORT:
+            {
+                typedef itk::Image< unsigned short, 3 >  RegImageType;
+                delete static_cast<rpi::%5< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+            }
+                break;
+            case itkProcessRegistration::SHORT:
+            {
+                typedef itk::Image< short, 3 >  RegImageType;
+                delete static_cast<rpi::%5< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+            }
+                break;
+            case itkProcessRegistration::UINT:
+            {
+                typedef itk::Image< unsigned int, 3 >  RegImageType;
+                delete static_cast<rpi::%5< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+            }
+                break;
+            case itkProcessRegistration::INT:
+            {
+                typedef itk::Image< int, 3 >  RegImageType;
+                delete static_cast<rpi::%5< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+            }
+                break;
+            case itkProcessRegistration::ULONG:
+            {
+                typedef itk::Image< unsigned long, 3 >  RegImageType;
+                delete static_cast<rpi::%5< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+            }
+                break;
+            case itkProcessRegistration::LONG:
+            {
+                typedef itk::Image< long, 3 >  RegImageType;
+                delete static_cast<rpi::%5< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+            }
+                break;
+            case itkProcessRegistration::DOUBLE:
+            {
+                typedef itk::Image< double, 3 >  RegImageType;
+                delete static_cast<rpi::%5< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+            }
+                break;
+            default:
+            {
+                typedef itk::Image< float, 3 >  RegImageType;
+                delete static_cast<rpi::%5< RegImageType, RegImageType,
+                float > *>(d->registrationMethod);
+            }
+                break;
+        }
+    }
+    
+    %1::~%1(void)
+    {
+        d->proc = NULL;
+        d->registrationMethod->Delete();
+        delete d;
+        d = 0;
+    }
+    
+    bool %1::registered(void)
+    {
+        return dtkAbstractProcessFactory::instance()->register%2Type("%1",
+                                                                     create%3);
+    }
+    
+    QString %1::description(void) const
+    {
+        return "%1";
+    }
+    
+    
+    
+    // /////////////////////////////////////////////////////////////////
+    // Templated Version of update
+    // /////////////////////////////////////////////////////////////////
+    
+    
     template <typename PixelType>
-bool writeTransform(const QString& file);
-
-    void * registrationMethod;
-
-   };
-
-// /////////////////////////////////////////////////////////////////
-// %1
-// /////////////////////////////////////////////////////////////////
-
-%1::%1(void) : itkProcessRegistration(), d(new %1Private)
-{
-    d->proc = this;
-    switch(fixedImageType()){
-    case itkProcessRegistration::UCHAR:
+    int %1Private::update(void)
     {
-        typedef itk::Image< float, 3 >  RegImageType;
-        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
-                float > *>(d->registrationMethod);
+        typedef itk::Image< PixelType, 3 >  FixedImageType;
+        typedef itk::Image< PixelType, 3 >  MovingImageType;
+        
+        
+        typename rpi::%5<FixedImageType,MovingImageType> * registration =
+        new rpi::%5<FixedImageType,MovingImageType> ();
+        
+        registrationMethod = registration;
+        
+        registration->SetFixedImage((const FixedImageType*) proc->fixedImage().GetPointer());
+        registration->SetMovingImage((const MovingImageType*) proc->movingImage().GetPointer());
+        
+        
+        // Run the registration
+        time_t t1 = clock();
+        try {
+            registration->StartRegistration();
+        }
+        catch( std::exception & err )
+        {
+            qDebug() << "ExceptionObject caught ! (startRegistration)" << err.what();
+            return 1;
+        }
+        
+        time_t t2 = clock();
+        
+        qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
+        
+        typedef itk::ResampleImageFilter< MovingImageType,MovingImageType >    ResampleFilterType;
+        typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
+        resampler->SetTransform(registration->GetTransformation());
+        resampler->SetInput((const MovingImageType*)proc->movingImage().GetPointer());
+        resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
+        resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
+        resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
+        resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
+        resampler->SetDefaultPixelValue( 0 );
+        
+        
+        try {
+            resampler->Update();
+        }
+        catch (itk::ExceptionObject &e) {
+            qDebug() << e.GetDescription();
+            return 1;
+        }
+        
+        itk::ImageBase<3>::Pointer result = resampler->GetOutput();
+        result->DisconnectPipeline();
+        
+        if (proc->output())
+            proc->output()->setData (result);
+        return 0;
     }
-        break;
-    case itkProcessRegistration::CHAR:
+    
+    int %1::update(itkProcessRegistration::ImageType imgType)
     {
-        typedef itk::Image< char, 3 >  RegImageType;
-        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
-                float > *>(d->registrationMethod);
+        if(fixedImage().IsNull() || movingImage().IsNull())
+            return 1;
+        switch (imgType){
+            case itkProcessRegistration::UCHAR:
+                return d->update<unsigned char>();
+                break;
+            case itkProcessRegistration::CHAR:
+                return d->update<char>();
+                break;
+            case itkProcessRegistration::USHORT:
+                return d->update<unsigned short>();
+                break;
+            case itkProcessRegistration::SHORT:
+                return d->update<short>();
+                break;
+            case itkProcessRegistration::UINT:
+                return d->update<unsigned int>();
+                break;
+            case itkProcessRegistration::INT:
+                return d->update<int>();
+                break;
+            case itkProcessRegistration::ULONG:
+                return d->update<unsigned long>();
+                break;
+            case itkProcessRegistration::LONG:
+                return d->update<long>();
+                break;
+            case itkProcessRegistration::DOUBLE:
+                return d->update<double>();
+                break;
+            default:
+                return d->update<float>();
+                break;
+        }
     }
-        break;
-    case itkProcessRegistration::USHORT:
+    
+    
+    template <typename PixelType>
+    bool %1Private::writeTransform(const QString& file)
     {
-        typedef itk::Image< unsigned short, 3 >  RegImageType;
-        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
-                float > *>(d->registrationMethod);
+        typedef double TransformScalarType;
+        typedef itk::Image< PixelType, 3 > RegImageType;
+        
+        if (rpi::%5<RegImageType,RegImageType,TransformScalarType> * registration =
+            static_cast<rpi::%5<RegImageType,RegImageType,TransformScalarType> *>(registrationMethod))
+        {
+            try{
+                rpi::writeDisplacementFieldTransformation<TransformScalarType, 3>(
+                                                                                  registration->GetTransformation(),
+                                                                                  file.toStdString());
+            }
+            catch (std::exception)
+            {
+                return false;
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+        
     }
-        break;
-    case itkProcessRegistration::SHORT:
+    
+    bool %1::writeTransform(const QString& file)
     {
-        typedef itk::Image< short, 3 >  RegImageType;
-        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
-                float > *>(d->registrationMethod);
+        if(d->registrationMethod == NULL)
+            return 1;
+        
+        switch (this->fixedImageType()){
+            case itkProcessRegistration::UCHAR:
+                return d->writeTransform<unsigned char>(file);
+                break;
+            case itkProcessRegistration::CHAR:
+                return d->writeTransform<char>(file);
+                break;
+            case itkProcessRegistration::USHORT:
+                return d->writeTransform<unsigned short>(file);
+                break;
+            case itkProcessRegistration::SHORT:
+                return d->writeTransform<short>(file);
+                break;
+            case itkProcessRegistration::UINT:
+                return d->writeTransform<unsigned int>(file);
+                break;
+            case itkProcessRegistration::INT:
+                return d->writeTransform<int>(file);
+                break;
+            case itkProcessRegistration::ULONG:
+                return d->writeTransform<unsigned long>(file);
+                break;
+            case itkProcessRegistration::LONG:
+                return d->writeTransform<long>(file);
+                break;
+            case itkProcessRegistration::DOUBLE:
+                return d->writeTransform<double>(file);
+                break;
+            default:
+                return d->writeTransform<float>(file);
+                break;
+        }
+        
     }
-        break;
-    case itkProcessRegistration::UINT:
+    
+    // /////////////////////////////////////////////////////////////////
+    // Type instanciation
+    // /////////////////////////////////////////////////////////////////
+    
+    dtkAbstract%2 *create%3(void)
     {
-        typedef itk::Image< unsigned int, 3 >  RegImageType;
-        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
-                float > *>(d->registrationMethod);
+        return new %1;
     }
-        break;
-    case itkProcessRegistration::INT:
-    {
-        typedef itk::Image< int, 3 >  RegImageType;
-        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
-                float > *>(d->registrationMethod);
-    }
-        break;
-    case itkProcessRegistration::ULONG:
-    {
-        typedef itk::Image< unsigned long, 3 >  RegImageType;
-        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
-                float > *>(d->registrationMethod);
-    }
-        break;
-    case itkProcessRegistration::LONG:
-     {
-        typedef itk::Image< long, 3 >  RegImageType;
-        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
-                float > *>(d->registrationMethod);
-    }
-        break;
-    case itkProcessRegistration::DOUBLE:
-     {
-        typedef itk::Image< double, 3 >  RegImageType;
-        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
-                float > *>(d->registrationMethod);
-    }
-        break;
-    default:
-    {
-        typedef itk::Image< float, 3 >  RegImageType;
-        delete static_cast<rpi::DiffeomorphicDemons< RegImageType, RegImageType,
-                float > *>(d->registrationMethod);
-    }
-        break;
-    }
-}
-
-%1::~%1(void)
-{
-    d->proc = NULL;
-    d->registrationMethod->Delete();
-    delete d;
-    d = 0;
-}
-
-bool %1::registered(void)
-{
-    return dtkAbstractProcessFactory::instance()->register%2Type("%1",
-              create%3);
-}
-
-QString %1::description(void) const
-{
-    return "%1";
-}
-
-
-
-// /////////////////////////////////////////////////////////////////
-// Templated Version of update
-// /////////////////////////////////////////////////////////////////
-
-
-template <typename PixelType>
-        int %1Private::update(void)
-{
-    typedef itk::Image< PixelType, 3 >  FixedImageType;
-    typedef itk::Image< PixelType, 3 >  MovingImageType;
-
-
-    typename rpi::%4<FixedImageType,MovingImageType> * registration =
-            new rpi::%4<FixedImageType,MovingImageType> ();
-
-    registrationMethod = registration;
-
-    registration->SetFixedImage((const FixedImageType*) proc->fixedImage().GetPointer());
-    registration->SetMovingImage((const MovingImageType*) proc->movingImage().GetPointer());
-
-
-    // Run the registration
-    time_t t1 = clock();
-    try {
-        registration->StartRegistration();
-    }
-    catch( std::exception & err )
-    {
-        qDebug() << "ExceptionObject caught ! (startRegistration)" << err.what();
-        return 1;
-    }
-
-    time_t t2 = clock();
-
-    qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
-
-    typedef itk::ResampleImageFilter< MovingImageType,MovingImageType >    ResampleFilterType;
-    typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
-    resampler->SetTransform(registration->GetTransformation());
-    resampler->SetInput((const MovingImageType*)proc->movingImage().GetPointer());
-    resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
-    resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
-    resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
-    resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
-    resampler->SetDefaultPixelValue( 0 );
-
-
-    try {
-        resampler->Update();
-    }
-    catch (itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
-        return 1;
-    }
-
-    itk::ImageBase<3>::Pointer result = resampler->GetOutput();
-    result->DisconnectPipeline();
-
-    if (proc->output())
-      proc->output()->setData (result);
-    return 0;
-}
-
-int %1::update(itkProcessRegistration::ImageType imgType)
-{
-    if(fixedImage().IsNull() || movingImage().IsNull())
-        return 1;
-    switch (imgType){
-    case itkProcessRegistration::UCHAR:
-        return d->update<unsigned char>();
-        break;
-    case itkProcessRegistration::CHAR:
-        return d->update<char>();
-        break;
-    case itkProcessRegistration::USHORT:
-        return d->update<unsigned short>();
-        break;
-    case itkProcessRegistration::SHORT:
-        return d->update<short>();
-        break;
-    case itkProcessRegistration::UINT:
-       return d->update<unsigned int>();
-       break;
-    case itkProcessRegistration::INT:
-        return d->update<int>();
-        break;
-    case itkProcessRegistration::ULONG:
-       return d->update<unsigned long>();
-       break;
-    case itkProcessRegistration::LONG:
-        return d->update<long>();
-        break;
-    case itkProcessRegistration::DOUBLE:
-        return d->update<double>();
-        break;
-    default:
-        return d->update<float>();
-        break;
-    }
-}
-
-
-template <typename PixelType>
-bool %1Private::writeTransform(const QString& file)
-{
-    typedef double TransformScalarType;
-    typedef itk::Image< PixelType, 3 > RegImageType;
-
-   if (rpi::%4<RegImageType,RegImageType,TransformScalarType> * registration =
-            static_cast<rpi::%4<RegImageType,RegImageType,TransformScalarType> *>(registrationMethod))
-   {
-       try{
-           rpi::writeDisplacementFieldTransformation<TransformScalarType, 3>(
-                    registration->GetTransformation(),
-                    file.toStdString());
-       }
-       catch (std::exception)
-       {
-           return false;
-       }
-       return true;
-   }
-   else
-   {
-       return false;
-   }
-
-}
-
-bool %1::writeTransform(const QString& file)
-{
-     if(d->registrationMethod == NULL)
-        return 1;
-
-    switch (this->fixedImageType()){
-    case itkProcessRegistration::UCHAR:
-        return d->writeTransform<unsigned char>(file);
-        break;
-    case itkProcessRegistration::CHAR:
-        return d->writeTransform<char>(file);
-        break;
-    case itkProcessRegistration::USHORT:
-        return d->writeTransform<unsigned short>(file);
-        break;
-    case itkProcessRegistration::SHORT:
-        return d->writeTransform<short>(file);
-        break;
-    case itkProcessRegistration::UINT:
-       return d->writeTransform<unsigned int>(file);
-       break;
-    case itkProcessRegistration::INT:
-        return d->writeTransform<int>(file);
-        break;
-    case itkProcessRegistration::ULONG:
-       return d->writeTransform<unsigned long>(file);
-       break;
-    case itkProcessRegistration::LONG:
-        return d->writeTransform<long>(file);
-        break;
-    case itkProcessRegistration::DOUBLE:
-        return d->writeTransform<double>(file);
-        break;
-    default:
-        return d->writeTransform<float>(file);
-        break;
-    }
-
-}
-
-// /////////////////////////////////////////////////////////////////
-// Type instanciation
-// /////////////////////////////////////////////////////////////////
-
-dtkAbstract%2 *create%3(void)
-{
-    return new %1;
-}
-
+    
+} // end namespace %4
