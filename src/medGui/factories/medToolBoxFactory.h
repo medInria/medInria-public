@@ -75,7 +75,7 @@ public:
      * in comboboxes listing the toolboxes (Potentially localised).
      * @param categories List of categories classifying the Toolbox.
      */
-    template <class toolboxType>
+    template <typename toolboxType>
     bool registerToolBox(QString identifier,
                          QString name,
                          QString description,
