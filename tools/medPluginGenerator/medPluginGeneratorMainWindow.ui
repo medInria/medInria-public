@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>468</width>
-    <height>499</height>
+    <height>504</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,6 +39,11 @@
       <item>
        <property name="text">
         <string>Generic</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Filtering</string>
        </property>
       </item>
       <item>

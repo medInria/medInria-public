@@ -53,6 +53,9 @@ void medPluginGenerator::setPluginFamily(const medPluginGenerator::PluginFamily 
     d->pluginFamily = family;
     switch (family)
     {
+        case medPluginGenerator::FILTERING:
+            d->pluginFamilyString = "filtering";
+            break;
         case medPluginGenerator::REGISTRATION:
             d->pluginFamilyString = "registration";
             break;
@@ -119,7 +122,7 @@ bool medPluginGenerator::run(void)
         return false;
     }
     
-    if (d->pluginFamily == REGISTRATION)
+    if (d->pluginFamily != GENERIC)
         return generateCMakeLists()
         && generateTypeHeaderFile()
         && generateTypeSourceFile()
@@ -132,6 +135,7 @@ bool medPluginGenerator::run(void)
         && generateHelpConfigurationFile()
         && generateReadmeFile()
         && generateCopyingFile();
+    
     return generateCMakeLists()
     && generateTypeHeaderFile()
     && generateTypeSourceFile()

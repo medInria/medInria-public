@@ -29,6 +29,7 @@ class medPluginGenerator
 public:
     enum PluginFamily {
         GENERIC, /** generic plugin*/
+        FILTERING, /** filtering plugin*/
         REGISTRATION /** registration plugin*/
     };
 public:
