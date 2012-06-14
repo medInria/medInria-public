@@ -55,6 +55,8 @@ medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent),
 
     medFlicker *flicker = new medFlicker(this);
     flicker->activateOn(this);
+    
+    this->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 }
 
 medToolBoxContainer::~medToolBoxContainer(void)
