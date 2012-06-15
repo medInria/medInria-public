@@ -516,6 +516,15 @@ void medDataManager::importNonPersistent( QString file, const QString &uuid )
     }
 }
 
+//-------------------------------------------------------------------------------------------------------
+
+void medDataManager::exportDataToFile(dtkAbstractData *data, const QString &filename)
+{
+    medAbstractDbController* db = d->getDbController();
+
+    if(db)
+        db->exportDataToFile(data,filename);
+}
 
 //-------------------------------------------------------------------------------------------------------
 

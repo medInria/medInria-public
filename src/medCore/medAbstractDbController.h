@@ -125,6 +125,12 @@ public slots:
     virtual void import(const QString& file,bool indexWithoutCopying);
 
     /**
+    * Export data to file
+    */
+    virtual void exportDataToFile(dtkAbstractData *data, const QString &filename);
+
+
+    /**
      * This method allows removing one data from the database
      * @params const medDataIndex & index The data index to be removed in the db
      */

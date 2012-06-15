@@ -87,6 +87,11 @@ public:
     void importNonPersistent(QString file);
     void importNonPersistent(QString file, const QString &uuid);
 
+    /**
+    * Use this function to save data to file.
+    */
+    void exportDataToFile(dtkAbstractData *data, const QString &filename);
+
 
     /**
     * Use this function to save all non-persistent data to the sql database.
@@ -194,6 +199,8 @@ signals:
      * @param uuid the identifier linked to this import request
     */
     void importFailed(const medDataIndex& index, QString uuid);
+
+    void progressed(QObject*,int);
 
 public slots:
     void onNonPersistentDataImported(const medDataIndex &index, QString uuid);

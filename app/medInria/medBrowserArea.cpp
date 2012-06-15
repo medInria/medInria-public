@@ -311,11 +311,17 @@ void medBrowserArea::onExportData(const medDataIndex &index)
         //There may be other cases, but this will get us through most
     }
 
+    /*
     medDatabaseExporter *exporter = new medDatabaseExporter (data, fileName);
 
     connect(exporter, SIGNAL(progress(QObject*,int)), d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
 
     QThreadPool::globalInstance()->start(exporter);
+    */
+
+    medDataManager::instance()->exportDataToFile(data,fileName);
+
+    connect(medDataManager::instance(),SIGNAL(progressed(QObject*,int)),d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
 }
 
 void medBrowserArea::addToolBox(medToolBox *toolbox)

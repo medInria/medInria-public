@@ -135,6 +135,12 @@ public slots:
     */
     void import(dtkAbstractData *data, QString importUuid=QString());
 
+    /**
+    * Export data to file
+    */
+    void exportDataToFile(dtkAbstractData *data, const QString &filename);
+
+
     /** override base class */
     virtual void remove(const medDataIndex& index);
     virtual QImage thumbnail( const medDataIndex& index) const;
