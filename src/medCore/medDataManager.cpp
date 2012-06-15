@@ -647,7 +647,9 @@ void medDataManager::import( dtkSmartPointer<dtkAbstractData> &data )
 
 void medDataManager::import(const QString& file,bool indexWithoutCopying)
 {
-    if(!file.isEmpty())
+    qDebug() << "DEBUG : entering medDataManager::import(const QString& file,bool indexWithoutCopying)";
+
+    if(file.isEmpty())
         return;
 
     medAbstractDbController* db = d->getDbController();

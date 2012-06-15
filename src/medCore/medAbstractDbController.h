@@ -122,7 +122,7 @@ public slots:
     * @params bool indexWithoutCopying true if the file must only be indexed by its current path,
     * false if the file will be imported (copied or converted to the internal storage format)
     */
-    virtual void import(const QString& file,bool indexWithoutCopying) = 0;
+    virtual void import(const QString& file,bool indexWithoutCopying);
 
     /**
      * This method allows removing one data from the database

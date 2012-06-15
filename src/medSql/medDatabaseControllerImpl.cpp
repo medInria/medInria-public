@@ -380,6 +380,8 @@ void medDatabaseControllerImpl::import(const QString& file, QString importUuid)
 
 void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopying)
 {
+    qDebug() << "DEBUG : entering medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopying)";
+
     QFileInfo info(file);
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(),indexWithoutCopying);
     //if we want to add importUuid support to permanent db,

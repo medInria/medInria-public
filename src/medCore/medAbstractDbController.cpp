@@ -9,6 +9,11 @@ void medAbstractDbController::import( const medDataIndex& index, const medAbstra
     import(data);
 }
 
+void medAbstractDbController::import(const QString& file,bool indexWithoutCopying)
+{
+    qDebug() << "DEBUG : entering medAbstractDbController::import(const QString& file,bool indexWithoutCopying)";
+}
+
 void medAbstractDbController::clear (void)
 {
 }
