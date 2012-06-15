@@ -240,7 +240,11 @@ void medBrowserArea::onDataImport(dtkAbstractData *data)
         return;
     }
 
-    medDatabaseController::instance()->import(data);
+    dtkSmartPointer<dtkAbstractData> data_smart(data);
+
+    medDataManager::instance()->import(data_smart);
+
+    //medDatabaseController::instance()->import(data);
 }
 
 void medBrowserArea::onDataReceivingFailed(QString fileName)
