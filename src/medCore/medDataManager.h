@@ -62,6 +62,15 @@ public:
     void import(dtkSmartPointer<dtkAbstractData> &data);
 
     /**
+    * Import data into the db read from file
+    * @Note _NOT_IMPLEMENTED_YET
+    * @params const QString & file The file containing the data
+    * @params bool indexWithoutCopying true if the file must only be indexed by its current path,
+    * false if the file will be imported (copied or converted to the internal storage format)
+    */
+    void import(const QString& file,bool indexWithoutCopying);
+
+    /**
     * Use this function to insert data into the non-persistent database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task

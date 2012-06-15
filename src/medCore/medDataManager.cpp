@@ -645,6 +645,20 @@ void medDataManager::import( dtkSmartPointer<dtkAbstractData> &data )
 
 //-------------------------------------------------------------------------------------------------------
 
+void medDataManager::import(const QString& file,bool indexWithoutCopying)
+{
+    if(!file.isEmpty())
+        return;
+
+    medAbstractDbController* db = d->getDbController();
+
+    if(db)
+        db->import(file,indexWithoutCopying);
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+
 void medDataManager::onPersistentDataImported(const medDataIndex &index)
 {
     if (!index.isValid()) {

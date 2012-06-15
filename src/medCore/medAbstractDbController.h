@@ -116,6 +116,15 @@ public slots:
     virtual void import(const medDataIndex& index, const medAbstractDbController& controller);
 
     /**
+    * Import data into the db read from file
+    * @Note _NOT_IMPLEMENTED_YET
+    * @params const QString & file The file containing the data
+    * @params bool indexWithoutCopying true if the file must only be indexed by its current path,
+    * false if the file will be imported (copied or converted to the internal storage format)
+    */
+    virtual void import(const QString& file,bool indexWithoutCopying) = 0;
+
+    /**
      * This method allows removing one data from the database
      * @params const medDataIndex & index The data index to be removed in the db
      */

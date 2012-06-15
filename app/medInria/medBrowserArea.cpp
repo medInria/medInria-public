@@ -190,12 +190,15 @@ void medBrowserArea::setdw(QStatusBar *status)
 
 void medBrowserArea::onFileImport(QString path)
 {
-    medDatabaseController::instance()->import(path,false);
+    //medDatabaseController::instance()->import(path,false);
+    medDataManager::instance()->import(path,false);
 }
 
 void medBrowserArea::onFileIndex(QString path)
 {
-    medDatabaseController::instance()->import(path,true);
+    //medDatabaseController::instance()->import(path,true);
+    medDataManager::instance()->import(path,true);
+
 }
 
 void medBrowserArea::onPartialImportAttempted(const QString& message)
