@@ -183,17 +183,17 @@ bool itkDCMTKDataImageReader::canRead(const QStringList& paths) {
     return true;
 }
 
-void itkDCMTKDataImageReader::readInformation (const QString& path)
+bool itkDCMTKDataImageReader::readInformation (const QString& path)
 {
     QStringList paths;
     paths << path;
-    readInformation ( paths );
+    return readInformation ( paths );
 }
 
-void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
+bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
 {
     if (paths.size()==0)
-        return;
+        return false;
 
     std::vector< std::string > filenames;
     for (int i=0; i<paths.size(); i++)
@@ -205,7 +205,7 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     }
     catch (itk::ExceptionObject &e) {
         qDebug() << e.GetDescription();
-        return;
+        return false;
     }
 
     dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
@@ -252,7 +252,7 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
                 break;
             default:
                 qDebug() << "Unrecognized component type: " << d->io->GetComponentType();
-                return;
+                return false;
             }
 
             imagetypestring << d->io->GetNumberOfDimensions();
@@ -273,12 +273,12 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
 
             default:
                 qDebug() << "Unrecognized component type";
-                return;
+                return false;
             }
         }
         else {
             qDebug() << "Unsupported pixel type";
-            return;
+            return false;
         }
     }
 
@@ -387,8 +387,10 @@ void itkDCMTKDataImageReader::readInformation (const QStringList& paths)
     }
     else {
       qDebug() << "Unsupported pixel type";
-      return;
+      return false;
     }
+    
+    return true;
   }
 
 bool itkDCMTKDataImageReader::read (const QString& path)

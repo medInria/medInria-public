@@ -38,7 +38,7 @@ bool v3dDataFibersReader::canRead (const QStringList& paths) {
     return this->canRead (paths[0]);
 }
 
-void v3dDataFibersReader::readInformation (const QString& path) {
+bool v3dDataFibersReader::readInformation (const QString& path) {
     // d->reader->SetFileName (path.toAscii().constData());
 
     dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
@@ -48,12 +48,14 @@ void v3dDataFibersReader::readInformation (const QString& path) {
         if (dtkdata)
             this->setData (dtkdata);
     }
+    
+    return true;
 }
 
-void v3dDataFibersReader::readInformation (const QStringList& paths) {
+bool v3dDataFibersReader::readInformation (const QStringList& paths) {
     if (!paths.count())
-        return;
-    this->readInformation ( paths[0].toAscii().constData() );
+        return false;
+    return this->readInformation ( paths[0].toAscii().constData() );
 }
 
 bool v3dDataFibersReader::read (const QString& path) {

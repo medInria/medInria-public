@@ -67,10 +67,10 @@ bool itkDataImageReaderBase::canRead (const QStringList& paths)
     return this->canRead ( paths[0].toAscii().constData() );
 }
 
-void itkDataImageReaderBase::readInformation (const QString& path)
+bool itkDataImageReaderBase::readInformation (const QString& path)
 {
     if (this->io.IsNull())
-        return;
+        return false;
 
     this->io->SetFileName ( path.toAscii().constData() );
     try {
@@ -78,7 +78,7 @@ void itkDataImageReaderBase::readInformation (const QString& path)
     }
     catch (itk::ExceptionObject &e) {
         qDebug() << e.GetDescription();
-        return;
+        return false;
     }
 
     dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
@@ -90,7 +90,7 @@ void itkDataImageReaderBase::readInformation (const QString& path)
             const int  dim  = this->io->GetNumberOfDimensions();
             if (!(dim>0 && dim<=4)) {
                 qDebug() << "Unrecognized component type";
-                return;
+                return false;
             }
 
             const char cdim = '0'+((dim<=3) ? 3 : 4);
@@ -139,7 +139,7 @@ void itkDataImageReaderBase::readInformation (const QString& path)
 
                 default:
                     qDebug() << "Unrecognized component type";
-                    return;
+                    return false;
             }
         }
         else if (this->io->GetPixelType()==itk::ImageIOBase::RGB) {
@@ -152,7 +152,7 @@ void itkDataImageReaderBase::readInformation (const QString& path)
 
                 default:
                     qDebug() << "Unrecognized component type";
-                    return;
+                    return false;
             }
         }
         else if (this->io->GetPixelType()==itk::ImageIOBase::VECTOR) { //   Added by Theo.
@@ -167,7 +167,7 @@ void itkDataImageReaderBase::readInformation (const QString& path)
                     break;
                 default:
                     qDebug() << "Unrecognized component type";
-                    return;
+                    return false;
             }
         }
         else if ( this->io->GetPixelType()==itk::ImageIOBase::RGBA ) {
@@ -180,12 +180,12 @@ void itkDataImageReaderBase::readInformation (const QString& path)
 
             default:
                 qDebug() << "Unrecognized component type";
-                return;
+                return false;
             }
         }
         else {
             qDebug() << "Unsupported pixel type";
-            return;
+            return false;
         }
 
         if (dtkdata)
@@ -225,14 +225,16 @@ void itkDataImageReaderBase::readInformation (const QString& path)
         dtkdata->addMetaData ("FilePath", QStringList() << path);
 
     }
+    
+    return true;
 }
 
 
-void itkDataImageReaderBase::readInformation (const QStringList& paths)
+bool itkDataImageReaderBase::readInformation (const QStringList& paths)
 {
     if (!paths.count())
-        return;
-    this->readInformation ( paths[0].toAscii().constData() );
+        return false;
+    return this->readInformation ( paths[0].toAscii().constData() );
 }
 
 template <unsigned DIM,typename T>

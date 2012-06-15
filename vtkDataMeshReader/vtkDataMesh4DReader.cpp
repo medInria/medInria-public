@@ -36,7 +36,7 @@ bool vtkDataMesh4DReader::canRead (const QStringList& paths) {
     return this->canRead ( paths[0].toAscii().constData() );
 }
 
-void vtkDataMesh4DReader::readInformation (const QString& path) {
+bool vtkDataMesh4DReader::readInformation (const QString& path) {
   
     dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
     this->reader->SetFileName (path.toAscii().constData());
@@ -49,12 +49,14 @@ void vtkDataMesh4DReader::readInformation (const QString& path) {
 
     dtkdata->addMetaData ("FilePath", QStringList() << path);
     dtkdata->identifier() = "vtkDataMesh4D";
+    
+    return true;
 }
 
-void vtkDataMesh4DReader::readInformation (const QStringList& paths) {
+bool vtkDataMesh4DReader::readInformation (const QStringList& paths) {
     if (!paths.count())
-        return;
-    this->readInformation ( paths[0].toAscii().constData() );
+        return false;
+    return this->readInformation ( paths[0].toAscii().constData() );
 }
 
 bool vtkDataMesh4DReader::read (const QString& path) {

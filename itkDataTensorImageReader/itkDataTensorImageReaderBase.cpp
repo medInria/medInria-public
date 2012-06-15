@@ -69,16 +69,18 @@ bool itkDataTensorImageReaderBase::canRead (const QString &path)
     return false;
 }
 
-void itkDataTensorImageReaderBase::readInformation (const QStringList &paths)
+bool itkDataTensorImageReaderBase::readInformation (const QStringList &paths)
 {
     if (paths.count())
-        this->readInformation (paths[0]);
+        return this->readInformation (paths[0]);
+    
+    return false;
 }
 
-void itkDataTensorImageReaderBase::readInformation (const QString &path)
+bool itkDataTensorImageReaderBase::readInformation (const QString &path)
 {
     if (this->io.IsNull())
-        return;
+        return false;
     
     this->io->SetFileName ( path.toAscii().constData() );
     try {
@@ -86,7 +88,7 @@ void itkDataTensorImageReaderBase::readInformation (const QString &path)
     }
     catch (itk::ExceptionObject &e) {
         qDebug() << e.GetDescription();
-	return;
+	return false;
     }
     
     dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
@@ -109,13 +111,15 @@ void itkDataTensorImageReaderBase::readInformation (const QString &path)
 		  
 	    default:
 	        qDebug() << "Unsupported component type";
-		return;
+		return false;
 	}
     }
 
     if (dtkdata) {
         dtkdata->addMetaData ("FilePath", QStringList() << path);
     }
+    
+    return true;
 }
 
 bool itkDataTensorImageReaderBase::read (const QStringList &paths)

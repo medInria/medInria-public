@@ -36,16 +36,18 @@ bool vtkDataMeshReader::canRead(const QStringList& paths){
     return canRead(paths.first().toLocal8Bit().constData());
 }
 
-void vtkDataMeshReader::readInformation(const QString& path) {
+bool vtkDataMeshReader::readInformation(const QString& path) {
     dtkSmartPointer<dtkAbstractData> dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer("vtkDataMesh");
     this->setData(dtkdata);
     dtkdata->addMetaData("FilePath", QStringList() << path); // useful ?
+    
+    return true;
 }
 
-void vtkDataMeshReader::readInformation(const QStringList& paths) {
+bool vtkDataMeshReader::readInformation(const QStringList& paths) {
     if (paths.empty())
-        return;
-    readInformation(paths.first().toLocal8Bit().constData());
+        return false;
+    return readInformation(paths.first().toLocal8Bit().constData());
 }
 
 bool vtkDataMeshReader::read(const QString& path) {

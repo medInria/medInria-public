@@ -33,8 +33,8 @@ public slots:
     bool canRead (const QString& path);
     bool canRead (const QStringList& paths);
 
-    void readInformation (const QString& path);
-    void readInformation (const QStringList& paths);
+    bool readInformation (const QString& path);
+    bool readInformation (const QStringList& paths);
     
     bool read (const QString& path);
     bool read (const QStringList& paths);

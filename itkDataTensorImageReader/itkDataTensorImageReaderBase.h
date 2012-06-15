@@ -26,8 +26,8 @@ public slots:
     virtual bool canRead (const QString &path);
     virtual bool canRead (const QStringList &paths);
     
-    virtual void readInformation (const QString &path);
-    virtual void readInformation (const QStringList &paths);
+    virtual bool readInformation (const QString &path);
+    virtual bool readInformation (const QStringList &paths);
     
     virtual bool read (const QString &path);
     virtual bool read (const QStringList &paths);
