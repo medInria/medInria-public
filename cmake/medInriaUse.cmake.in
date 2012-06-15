@@ -25,6 +25,6 @@ if(NOT medInria_USE_FILE_INCLUDED)
 
    link_directories(${medInria_LIBRARY_DIR})
 
-   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${medInria_CMAKE_DIRS})
+   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${medInria_CMAKE_DIR})
    
 endif(NOT medInria_USE_FILE_INCLUDED)
