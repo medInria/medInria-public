@@ -21,6 +21,7 @@
 
 #include <itkImageRegionIterator.h>
 #include <itkConnectedThresholdImageFilter.h>
+#include <itkMinimumMaximumImageCalculator.h>
 
 #include <QtCore>
 #include <QColorDialog>
@@ -157,8 +158,9 @@ private :
 
 AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     medToolBoxSegmentationCustom( parent),
+    m_MinValueImage(0),
+    m_MaxValueImage(500),
     m_noDataText( tr("[No input data]") ),
-    m_wandRadius(50),
     m_strokeRadius(4),
     m_strokeLabel(1),
     m_paintState(PaintState::None)
@@ -251,13 +253,19 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_magicWandButton->setToolTip(tr("Magic wand to automatically paint similar voxels."));
     m_magicWandButton->setCheckable(true);    
     m_wandThresholdSizeSlider = new QSlider(Qt::Horizontal, displayWidget);
-    m_wandThresholdSizeSlider->setValue(this->m_wandRadius);
+    m_wandThresholdSizeSlider->setValue(100);
     m_wandThresholdSizeSlider->setMinimum(0);
-    m_wandThresholdSizeSpinBox = new QSpinBox(displayWidget);
-    m_wandThresholdSizeSpinBox->setValue(this->m_wandRadius);
+    m_wandThresholdSizeSlider->setMaximum(1000);
+        
+    m_wandThresholdSizeSpinBox = new QDoubleSpinBox(displayWidget);
     m_wandThresholdSizeSpinBox->setMinimum(0);
-    connect(m_wandThresholdSizeSpinBox, SIGNAL(valueChanged(int)),m_wandThresholdSizeSlider,SLOT(setValue(int)) );
-    connect(m_wandThresholdSizeSlider,SIGNAL(valueChanged(int)),m_wandThresholdSizeSpinBox,SLOT(setValue(int)) );
+    m_wandThresholdSizeSpinBox->setMaximum(1000000);
+    m_wandThresholdSizeSpinBox->setDecimals(2);
+    
+    this->setWandSpinBoxValue(100);
+    
+    connect(m_wandThresholdSizeSpinBox, SIGNAL(valueChanged(double)),this,SLOT(setWandSliderValue(double)) );
+    connect(m_wandThresholdSizeSlider,SIGNAL(valueChanged(int)),this,SLOT(setWandSpinBoxValue(int)) );
 
     magicWandLayout->addWidget( m_magicWandButton );
     magicWandLayout->addWidget( m_wandThresholdSizeSlider );
@@ -304,6 +312,41 @@ AlgorithmPaintToolbox::~AlgorithmPaintToolbox()
 {
 }
 
+    void AlgorithmPaintToolbox::setWandSliderValue(double val)
+    {
+        double perc = 4000.0 * val / (m_MaxValueImage - m_MinValueImage);
+        
+        unsigned int percRound = (unsigned int)floor(perc);
+        
+        m_wandThresholdSizeSlider->blockSignals(true);
+        m_wandThresholdSizeSlider->setValue(percRound);
+        m_wandThresholdSizeSlider->blockSignals(false);
+    }
+    
+    void AlgorithmPaintToolbox::setWandSpinBoxValue(int val)
+    {
+        double realValue = val * (m_MaxValueImage - m_MinValueImage) / 4000.0;
+
+        // Determine number of decimals necessary
+        
+        double testValue = (m_MaxValueImage - m_MinValueImage) / 4.0;
+        
+        unsigned int powTestValue = 1;
+        while (testValue < 1)
+        {
+            ++powTestValue;
+            testValue *= 10;
+        }
+        
+        if (powTestValue < 2)
+            powTestValue = 2;
+        
+        m_wandThresholdSizeSpinBox->setDecimals(powTestValue);
+        m_wandThresholdSizeSpinBox->blockSignals(true);
+        m_wandThresholdSizeSpinBox->setValue(realValue);
+        m_wandThresholdSizeSpinBox->blockSignals(false);
+    }
+    
 void AlgorithmPaintToolbox::onStrokePressed()
 {
     if ( this->m_strokeButton->isChecked() ) {
@@ -425,6 +468,9 @@ void AlgorithmPaintToolbox::onSelectLabelColor()
     
 void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
 {
+    if (!dtkdata)
+        return;
+        
     // disconnect existing
     if ( m_imageData ) {
         // TODO?
@@ -434,6 +480,19 @@ void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
     m_lastVpn = QVector3D();
 
     m_imageData = dtkSmartPointer<dtkAbstractData>(dtkdata);
+
+    // Update values of slider
+    
+    GenerateMinMaxValuesFromImage < itk::Image <char,3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <unsigned char,3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <short,3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <unsigned short,3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <int,3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <unsigned int,3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <long,3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <unsigned long,3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <float,3> > ();
+    GenerateMinMaxValuesFromImage < itk::Image <double,3> > ();
 
     QString dataText;
     if ( m_imageData ) {
@@ -777,6 +836,28 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
             
             m_maskAnnotationData->invokeModified();
         }
+    }
+    
+    template <typename IMAGE> 
+    void 
+    AlgorithmPaintToolbox::GenerateMinMaxValuesFromImage ()
+    {
+        IMAGE *tmpPtr = dynamic_cast<IMAGE *> ((itk::Object*)(m_imageData->data()));
+        
+        if (!tmpPtr)
+            return;
+        
+        typedef typename itk::MinimumMaximumImageCalculator< IMAGE > MinMaxCalculatorType;
+        
+        typename MinMaxCalculatorType::Pointer minMaxFilter = MinMaxCalculatorType::New();
+        
+        minMaxFilter->SetImage(tmpPtr);
+        minMaxFilter->Compute();
+        
+        m_MinValueImage = minMaxFilter->GetMinimum();
+        m_MaxValueImage = minMaxFilter->GetMaximum();
+        
+        this->setWandSpinBoxValue(m_wandThresholdSizeSlider->value());
     }
     
 void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medAbstractView * view )

@@ -71,6 +71,9 @@ public slots:
     
     void onLabelChanged(int newVal);
     void onSelectLabelColor();
+    
+    void setWandSliderValue(double val);
+    void setWandSpinBoxValue(int val);
 
     void updateStroke(ClickAndMoveEventFilter * filter, medAbstractView * view);
     void updateWandRegion(medAbstractView * view, QVector3D &vec);
@@ -106,8 +109,13 @@ private:
     QSpinBox *m_strokeLabelSpinBox;
     
     QPushButton *m_magicWandButton;
+    // The slider works on percentages of a linear scale between min and max values, i.e. 
+    // wandradius = (max - min) * sliderPerc / 2.0
     QSlider *m_wandThresholdSizeSlider;
-    QSpinBox *m_wandThresholdSizeSpinBox;
+    QDoubleSpinBox *m_wandThresholdSizeSpinBox;
+    
+    double m_MinValueImage;
+    double m_MaxValueImage;
 
     QPushButton *m_applyButton;
 
@@ -131,6 +139,7 @@ private:
     MaskType::Pointer m_itkMask;
 
     template <typename IMAGE> void RunConnectedFilter (MaskType::IndexType &index, unsigned int planeIndex);
+    template <typename IMAGE> void GenerateMinMaxValuesFromImage ();
     
     QVector3D m_lastVup;
     QVector3D m_lastVpn;
