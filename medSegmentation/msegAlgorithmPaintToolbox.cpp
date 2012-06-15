@@ -653,7 +653,7 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
             this->setData(this->segmentationToolBox()->viewData(view));
         }
         if (!m_imageData) {
-            dtkWarning() << "Could not set data";
+            dtkWarn() << "Could not set data";
             return;
         }
         
