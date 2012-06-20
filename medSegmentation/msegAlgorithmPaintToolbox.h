@@ -113,6 +113,7 @@ private:
     // wandradius = (max - min) * sliderPerc / 2.0
     QSlider *m_wandThresholdSizeSlider;
     QDoubleSpinBox *m_wandThresholdSizeSpinBox;
+    QCheckBox *m_wand3DCheckbox;
     
     double m_MinValueImage;
     double m_MaxValueImage;

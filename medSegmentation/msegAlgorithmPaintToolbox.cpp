@@ -266,8 +266,12 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     
     connect(m_wandThresholdSizeSpinBox, SIGNAL(valueChanged(double)),this,SLOT(setWandSliderValue(double)) );
     connect(m_wandThresholdSizeSlider,SIGNAL(valueChanged(int)),this,SLOT(setWandSpinBoxValue(int)) );
-
+    
+    m_wand3DCheckbox = new QCheckBox (tr("3D"), displayWidget);
+    m_wand3DCheckbox->setCheckState(Qt::Unchecked);
+    
     magicWandLayout->addWidget( m_magicWandButton );
+    magicWandLayout->addWidget( m_wand3DCheckbox );
     magicWandLayout->addWidget( m_wandThresholdSizeSlider );
     magicWandLayout->addWidget( m_wandThresholdSizeSpinBox );
     layout->addLayout( magicWandLayout );    
@@ -724,11 +728,6 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
         typedef  MaskType::DirectionType::InternalMatrixType::element_type ElemType;
         vnl_vector_fixed<ElemType, 3> vecVpn(vpn.x(), vpn.y(), vpn.z() );
         
-        qDebug() << vpn;
-        qDebug() << direction(0,0) << direction(0,1) << direction(0,2);
-        qDebug() << direction(1,0) << direction(1,1) << direction(1,2);
-        qDebug() << direction(2,0) << direction(2,1) << direction(2,2);
-
         double absDotProductMax = 0;
         unsigned int planeIndex = 0;
         for (unsigned int i = 0;i < 3;++i)
@@ -736,8 +735,6 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
             double dotProduct = 0;
             for (unsigned int j = 0;j < 3;++j)
                 dotProduct += direction(j,i) * vecVpn[j];
-            
-            qDebug() << i << fabs(dotProduct);
             
             if (fabs(dotProduct) > absDotProductMax)
             {
@@ -794,40 +791,61 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
             MaskType::RegionType outRegion = regionRequested;
             outRegion.SetIndex(planeIndex,0);
             
-            typename IMAGE::Pointer workPtr = IMAGE::New();
-            workPtr->Initialize();
-            workPtr->SetDirection(tmpPtr->GetDirection());
-            workPtr->SetSpacing(tmpPtr->GetSpacing());
-            workPtr->SetOrigin(tmpPtr->GetOrigin());
-            workPtr->SetRegions(outRegion);
-            workPtr->Allocate();
-            
-            itk::ImageRegionConstIterator < IMAGE > inputItr (tmpPtr, regionRequested);
-            itk::ImageRegionIterator < IMAGE > workItr (workPtr, outRegion);
-            
-            while (!workItr.IsAtEnd())
-            {
-                workItr.Set(inputItr.Get());
+            if (m_wand3DCheckbox->checkState() == Qt::Unchecked)
+            {            
+                typename IMAGE::Pointer workPtr = IMAGE::New();
+                workPtr->Initialize();
+                workPtr->SetDirection(tmpPtr->GetDirection());
+                workPtr->SetSpacing(tmpPtr->GetSpacing());
+                workPtr->SetOrigin(tmpPtr->GetOrigin());
+                workPtr->SetRegions(outRegion);
+                workPtr->Allocate();
                 
-                ++workItr;
-                ++inputItr;
+                itk::ImageRegionConstIterator < IMAGE > inputItr (tmpPtr, regionRequested);
+                itk::ImageRegionIterator < IMAGE > workItr (workPtr, outRegion);
+                
+                while (!workItr.IsAtEnd())
+                {
+                    workItr.Set(inputItr.Get());
+                    
+                    ++workItr;
+                    ++inputItr;
+                }
+                
+                ctiFilter->SetInput( workPtr );
+                index[planeIndex] = 0;
+                ctiFilter->AddSeed( index );
+                
+                ctiFilter->Update();
+                
+                itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), outRegion);
+                itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, regionRequested);
+                while (!maskFilterItr.IsAtEnd())
+                {
+                    if (outFilterItr.Get() != 0)
+                        maskFilterItr.Set(pxValue);
+                    
+                    ++outFilterItr;
+                    ++maskFilterItr;
+                }
             }
-            
-            ctiFilter->SetInput( workPtr );
-            index[planeIndex] = 0;
-            ctiFilter->AddSeed( index );
-            
-            ctiFilter->Update();
-            
-            itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), outRegion);
-            itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, regionRequested);
-            while (!maskFilterItr.IsAtEnd())
+            else
             {
-                if (outFilterItr.Get() != 0)
-                    maskFilterItr.Set(pxValue);
+                ctiFilter->SetInput( tmpPtr );
+                ctiFilter->AddSeed( index );
                 
-                ++outFilterItr;
-                ++maskFilterItr;
+                ctiFilter->Update();
+                
+                itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), tmpPtr->GetLargestPossibleRegion());
+                itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, tmpPtr->GetLargestPossibleRegion());
+                while (!maskFilterItr.IsAtEnd())
+                {
+                    if (outFilterItr.Get() != 0)
+                        maskFilterItr.Set(pxValue);
+                    
+                    ++outFilterItr;
+                    ++maskFilterItr;
+                }                
             }
             
             m_itkMask->Modified();
