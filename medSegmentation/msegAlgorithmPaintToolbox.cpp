@@ -249,7 +249,10 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
 
     QHBoxLayout * magicWandLayout = new QHBoxLayout();
     
-    m_magicWandButton = new QPushButton( tr("Wand") , displayWidget);
+    m_magicWandButton = new QPushButton(displayWidget);
+    QPixmap pixmap(":medSegmentation/pixmaps/magic_wand.png");
+    QIcon buttonIcon(pixmap);
+    m_magicWandButton->setIcon(buttonIcon);
     m_magicWandButton->setToolTip(tr("Magic wand to automatically paint similar voxels."));
     m_magicWandButton->setCheckable(true);    
     m_wandThresholdSizeSlider = new QSlider(Qt::Horizontal, displayWidget);
