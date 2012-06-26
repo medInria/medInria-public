@@ -17,35 +17,43 @@
 ## 
 ######################################################################
 
-project(medTestCommon)
+project(medTest)
 
 ## #################################################################
 ## Input
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
+  medQtView.h
   medQtDataImage.h
   medQtDataImageReader.h
   medQtDataImageWriter.h
-  medTestApplication.h
+  medTestApplication.h  
 )
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
-  medTestCommonExport.h
+  medTestExport.h
+  medTest.h
 )
 
 set(${PROJECT_NAME}_SOURCES
+  medQtView.cpp
   medQtDataImage.cpp
   medQtDataImageReader.cpp
   medQtDataImageWriter.cpp
   medTestApplication.cpp
+  medTest.cpp
 )
-#set(${PROJECT_NAME}_RESOURCES xxxxx.qrc)
 
 ## #################################################################
 ## Build rules
 ## #################################################################
+
+if(MSVC)
+  configure_file(${CMAKE_SOURCE_DIR}/m4s_dll.rc.in "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.rc" @ONLY)
+  set(${PROJECT_NAME}_SOURCES ${${PROJECT_NAME}_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.rc)
+endif()
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 # qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
@@ -53,13 +61,13 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC} 
   ${${PROJECT_NAME}_HEADERS}
-  ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_SOURCES_QRC})
+  ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
   dtkCore
   medCore
-  ${QT_LIBRARIES}
+  ${QT_QTTEST_LIBRARY}
+  ${QT_LIBRARIES}  
 )
 
 # Group common files together in Visual Studio.
@@ -70,7 +78,8 @@ SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 ## Install rules
 ## #################################################################
 
+install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
 install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib)

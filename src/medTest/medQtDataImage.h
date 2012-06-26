@@ -8,14 +8,14 @@
 #ifndef MEDQTDATAIMAGE_H_
 #define MEDQTDATAIMAGE_H_
 
-#include "medTestCommonExport.h"
+#include "medTestExport.h"
 
 #include <medCore/medAbstractDataImage.h>
 
 class medQtDataImagePrivate;
 
 /** A concrete implementation of a dtkAbstractDataImage for use in testing. */
-class MEDTESTCOMMON_EXPORT medQtDataImage : public medAbstractDataImage
+class MEDTEST_EXPORT medQtDataImage : public medAbstractDataImage
 {
     Q_OBJECT;
 public:
@@ -44,10 +44,15 @@ public:
     virtual int   Dimension(void) const;
     virtual const PixId& PixelType(void) const;
 
-    virtual int xDimension(void);
-    virtual int yDimension(void);
-    virtual int zDimension(void);
-    virtual int tDimension(void);
+    virtual int xDimension(void) const;
+    virtual int yDimension(void) const;
+    virtual int zDimension(void) const;
+    virtual int tDimension(void) const;
+
+    virtual qreal xSpacing(void) const;
+    virtual qreal ySpacing(void) const;
+    virtual qreal zSpacing(void) const;
+    virtual qreal tSpacing(void) const;
 
     virtual int minRangeValue(void);
     virtual int maxRangeValue(void);

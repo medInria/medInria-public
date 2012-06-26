@@ -153,7 +153,7 @@ void * medQtDataImage::output( void )
     return this->data();
 }
 
-int medQtDataImage::xDimension( void )
+int medQtDataImage::xDimension( void ) const
 {
     if ( d->images.isEmpty() ) {
         return 0;
@@ -162,7 +162,7 @@ int medQtDataImage::xDimension( void )
     }
 }
 
-int medQtDataImage::yDimension( void )
+int medQtDataImage::yDimension( void ) const
 {
     if ( d->images.isEmpty() ) {
         return 0;
@@ -171,19 +171,54 @@ int medQtDataImage::yDimension( void )
     }
 }
 
-int medQtDataImage::zDimension( void )
+int medQtDataImage::zDimension( void ) const
 {
     return d->images.size();
 }
 
-int medQtDataImage::tDimension( void )
+int medQtDataImage::tDimension( void ) const
 {
     if ( d->images.isEmpty() ) {
         return 0;
     } else {
         return 1;
     }
+}
 
+qreal medQtDataImage::xSpacing( void ) const
+{
+    if ( d->images.isEmpty() ) {
+        return 0.0;
+    } else {
+        return 1.0;
+    }
+}
+
+qreal medQtDataImage::ySpacing( void ) const
+{
+    if ( d->images.isEmpty() ) {
+        return 0.0;
+    } else {
+        return 1.0;
+    }
+}
+
+qreal medQtDataImage::zSpacing( void ) const
+{
+    if ( d->images.isEmpty() ) {
+        return 0.0;
+    } else {
+        return 1.0;
+    }
+}
+
+qreal medQtDataImage::tSpacing( void ) const
+{
+    if ( d->images.isEmpty() ) {
+        return 0.0;
+    } else {
+        return 1.0;
+    }
 }
 
 int medQtDataImage::Dimension( void ) const

@@ -8,14 +8,14 @@
 #ifndef MEDQTDATAIMAGEREADER_H_
 #define MEDQTDATAIMAGEREADER_H_
 
-#include "medTestCommonExport.h"
+#include "medTestExport.h"
 
 #include <dtkCore/dtkAbstractDataReader.h>
 
 class dtkAbstractDataImage;
 
 /** A concrete implementation of a dtkAbstractDataReader for use in testing. */
-class MEDTESTCOMMON_EXPORT medQtDataImageReader : public dtkAbstractDataReader {
+class MEDTEST_EXPORT medQtDataImageReader : public dtkAbstractDataReader {
     Q_OBJECT;
 
 public: //functions
