@@ -105,7 +105,7 @@ void medViewContainersTestObject::testSingle()
     QSignalSpy spy3 (container, SIGNAL(focused(dtkAbstractView*)));
 
     // create dummy view
-    testView *view1 = new testView;
+    dtkSmartPointer<testView>view1 = new testView;
 
     // test setView:
     // - view should become visible
@@ -114,19 +114,20 @@ void medViewContainersTestObject::testSingle()
     container->setView(view1);
 
     QVERIFY(view1->widget()->isVisible());
-    QCOMPARE(container->view(), view1);
+    QCOMPARE(container->view(), view1.data());
     QCOMPARE(spy1.count(), 1);
 
     // test focus:
     // - container->current() should be itself
     // - spy3.count() should be 1
     container->setFocus (Qt::MouseFocusReason);
-
+    QTest::qWait(500);
     QVERIFY (container->current()==container);
     QCOMPARE (spy3.count(), 1);
 
     // test null view
     container->setView ((dtkAbstractView*)NULL);
+    container->view();
     QVERIFY(!view1->widget()->isVisible());
     QVERIFY(container->view()==NULL);
 
@@ -134,7 +135,7 @@ void medViewContainersTestObject::testSingle()
     container->setView(view1);
 
     // create 2nd dummy view
-    testView *view2 = new testView;
+    dtkSmartPointer<testView> view2 = new testView;
 
     // test view replacement:
     // - view1 should be hidden
@@ -148,7 +149,7 @@ void medViewContainersTestObject::testSingle()
     QVERIFY(view2->widget()->isVisible());
     QCOMPARE(spy1.count(), 3);
     QCOMPARE(spy2.count(), 2);
-    QCOMPARE(container->view(), view2);
+    QCOMPARE(container->view(), view2.data());
 
     // test closing:
     // - view2 should be hidden
@@ -162,8 +163,6 @@ void medViewContainersTestObject::testSingle()
 
     // cleanup before exiting test function
     delete container;
-    delete view1;
-    delete view2;
 }
 
 void medViewContainersTestObject::testMulti()
@@ -177,10 +176,10 @@ void medViewContainersTestObject::testMulti()
     QSignalSpy spy2 (container, SIGNAL(viewRemoved(dtkAbstractView*)));
 
     // create 4 dummy views
-    testView *view1 = new testView;
-    testView *view2 = new testView;
-    testView *view3 = new testView;
-    testView *view4 = new testView;
+    dtkSmartPointer<testView> view1 = new testView;
+    dtkSmartPointer<testView> view2 = new testView;
+    dtkSmartPointer<testView> view3 = new testView;
+    dtkSmartPointer<testView> view4 = new testView;
 
     // test setView:
     // - views should be shown
@@ -256,10 +255,6 @@ void medViewContainersTestObject::testMulti()
     QCOMPARE(container->childContainers().count(), 0);
 
     delete container;
-    delete view1;
-    delete view2;
-    delete view3;
-    delete view4;
 }
 
 void medViewContainersTestObject::testCustom()
@@ -288,9 +283,8 @@ void medViewContainersTestObject::testCustom()
     foreach (medViewContainer *c, container->leaves()) {
         c->setFocus (Qt::MouseFocusReason);
         c->setView (NULL);
-        QCOMPARE(container->views().count(), 0);
     }
-
+    QCOMPARE(container->views().count(), 0);
     delete container;
 }
 

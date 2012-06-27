@@ -90,7 +90,7 @@ void medViewContainerSingle::onViewClosing (void)
         if (medAbstractView *medView = qobject_cast<medAbstractView*> (d->view))
             d->pool->removeView (medView);
 
-	    emit viewRemoved (d->view);
+        emit viewRemoved (d->view);
 
         d->view->close();
         d->view = NULL;
