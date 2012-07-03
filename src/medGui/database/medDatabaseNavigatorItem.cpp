@@ -51,9 +51,11 @@ public:
     
     medDatabaseNavigatorItemOverlay *item_saver;
     medDatabaseNavigatorItemOverlay *item_exporter;
+    medDatabaseNavigatorItemOverlay *item_trasher;
     
     QPropertyAnimation *item_saver_fading_animation;
     QPropertyAnimation *item_exporter_fading_animation;
+    QPropertyAnimation *item_trasher_fading_animation;
     
     QParallelAnimationGroup *fading_animation;
 };
@@ -91,7 +93,7 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
     d->item_exporter = new medDatabaseNavigatorItemOverlay(this);
     QPixmap pixmap(":/icons/export.png");
     d->item_exporter->setPixmap(pixmap);
-    d->item_exporter->setPos(10, 25);
+    d->item_exporter->setPos(10, 45);
     d->item_exporter->setOpacity(0.0);
     
     connect(d->item_exporter, SIGNAL(clicked()), this, SLOT(exportData()));
@@ -108,7 +110,7 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
         d->item_saver = new medDatabaseNavigatorItemOverlay(this);
         QPixmap pixmapSave(":/icons/import.png");
         d->item_saver->setPixmap(pixmapSave);
-        d->item_saver->setPos(10, 45);
+        d->item_saver->setPos(10, 65);
         d->item_saver->setOpacity(0.0);
         
         connect(d->item_saver, SIGNAL(clicked()), this, SLOT(saveData()));
@@ -124,6 +126,20 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
         d->item_saver = NULL;
         d->item_saver_fading_animation = NULL;
     }
+    
+    d->item_trasher = new medDatabaseNavigatorItemOverlay(this);
+    QPixmap pixmapDelete(":/icons/cross.svg");
+    d->item_trasher->setPixmap(pixmapDelete.scaledToWidth(16));
+    d->item_trasher->setPos(10, 25);
+    d->item_trasher->setOpacity(0.0);
+    
+    connect(d->item_trasher, SIGNAL(clicked()), this, SLOT(deleteData()));
+    
+    // Setup animation        
+    d->item_trasher_fading_animation = new QPropertyAnimation(d->item_trasher, "opacity", this);
+    d->item_trasher_fading_animation->setDuration(150);
+    
+    d->fading_animation->addAnimation(d->item_trasher_fading_animation);
 }
 
 medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)
@@ -151,6 +167,11 @@ medDataIndex medDatabaseNavigatorItem::dataIndex(void) const
 QString medDatabaseNavigatorItem::text(void) const
 {
     return d->text;
+}
+
+void medDatabaseNavigatorItem::deleteData()
+{
+    medDataManager::instance()->removeData(d->index);
 }
 
 void medDatabaseNavigatorItem::saveData()
@@ -243,6 +264,9 @@ void medDatabaseNavigatorItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     d->item_exporter_fading_animation->setStartValue(0.0);
     d->item_exporter_fading_animation->setEndValue(1.0);
 
+    d->item_trasher_fading_animation->setStartValue(0.0);
+    d->item_trasher_fading_animation->setEndValue(1.0);
+
     d->fading_animation->start();
 }
 
@@ -256,6 +280,9 @@ void medDatabaseNavigatorItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     
     d->item_exporter_fading_animation->setStartValue(1.0);
     d->item_exporter_fading_animation->setEndValue(0.0);
-
+    
+    d->item_trasher_fading_animation->setStartValue(1.0);
+    d->item_trasher_fading_animation->setEndValue(0.0);
+    
     d->fading_animation->start();
 }

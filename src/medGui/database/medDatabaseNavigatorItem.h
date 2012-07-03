@@ -53,6 +53,7 @@ public:
 public slots:
     void saveData();    
     void exportData();    
+    void deleteData();    
     
 signals:
     void itemClicked(const medDataIndex&);
