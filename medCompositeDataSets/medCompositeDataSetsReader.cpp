@@ -79,9 +79,10 @@ bool medCompositeDataSetsReader::canRead(const QString& path) {
     return reader!=0;
 }
 
-void medCompositeDataSetsReader::readInformation(const QString&) {
+bool medCompositeDataSetsReader::readInformation(const QString&) {
     QByteArray buffer = desc->readAll();
     in_error = reader->read_description(buffer);
+    return in_error;
 }
 
 bool medCompositeDataSetsReader::read(const QString& path) {

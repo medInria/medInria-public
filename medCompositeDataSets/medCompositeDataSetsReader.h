@@ -44,7 +44,7 @@ public slots:
     virtual bool canRead(const QString& file);
 
     virtual bool read(const QString& file);
-    virtual void readInformation(const QString& path);
+    virtual bool readInformation(const QString& path);
     virtual void setProgress(const int value);
 
 private:
