@@ -68,11 +68,11 @@ medViewerConfigurationDiffusion::medViewerConfigurationDiffusion(QWidget *parent
 
     connect(d->diffusionToolBox, SIGNAL(success()),                  this, SLOT(onTBDiffusionSuccess()));
 
-    
+
     this->addToolBox( d->diffusionToolBox );
     this->addToolBox( d->viewPropertiesToolBox );
     this->addToolBox( d->tensorViewToolBox );
-    this->addToolBox( d->fiberViewToolBox );    
+    this->addToolBox( d->fiberViewToolBox );
     this->addToolBox( d->fiberBundlingToolBox );
 }
 
@@ -434,7 +434,3 @@ void medViewerConfigurationDiffusion::onAddTabClicked()
     this->stackedViewContainers()->setContainer(realName);
 }
 
-medViewerConfiguration *createMedViewerConfigurationDiffusion(QWidget* parent)
-{
-    return new medViewerConfigurationDiffusion(parent);
-}

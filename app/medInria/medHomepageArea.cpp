@@ -366,7 +366,8 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
 void medHomepageArea::initPage ( void )
 {
     //Initialization of the navigation widget with available workspaces
-    QList<QString> configList = medViewerConfigurationFactory::instance()->configurations();
+    QHash<QString,medViewerConfigurationDetails*> configDetails =
+            medViewerConfigurationFactory::instance()->configurationDetails();
     QVBoxLayout * configurationButtonsLayout = new QVBoxLayout;
     configurationButtonsLayout->setSpacing ( 10 );
     QLabel * configurationLabel = new QLabel ( "<b>Available workspaces</b>" );
@@ -385,22 +386,25 @@ void medHomepageArea::initPage ( void )
     configurationButtonsLayout->addWidget ( browserButton );
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( onShowBrowser() ) );
 
-    for ( int i = 0; i< configList.size(); i++ )
+    foreach ( QString id, configDetails.keys())
     {
         medHomepageButton * button = new medHomepageButton ( this );
-        button->setText ( configList.at ( i ) );
+        medViewerConfigurationDetails* detail = configDetails.value(id);
+        button->setText ( detail->name );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
         button->setMinimumHeight ( 40 );
         button->setMaximumWidth ( 250 );
-        button->setMinimumWidth ( 250 );;
+        button->setMinimumWidth ( 250 );
+        button->setToolTip(detail->description);
+        button->setIdentifier(id);
         configurationButtonsLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowConfiguration ( QString ) ) );
     }
     configurationButtonsLayout->addStretch();
     d->navigationWidget->setLayout ( configurationButtonsLayout );
     d->navigationWidget->setProperty ( "pos", QPoint ( 100,  100 ) );
-    d->navigationWidget->setMinimumHeight ( 55 * ( 1 + configList.size() ) );
+    d->navigationWidget->setMinimumHeight ( 55 * ( 1 + configDetails.size() ) );
 }
 
 QParallelAnimationGroup* medHomepageArea::getAnimation ( void )

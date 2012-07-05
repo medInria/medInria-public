@@ -37,11 +37,32 @@ class medHomepagePushButton : public QPushButton
 public:
     medHomepagePushButton ( QWidget * parent = 0 );
 
-    public slots:
+    /**
+     * @brief Sets an identifier string for the translated valu displayed in text.
+     *
+     * This String is used to store the identifier corresponding to a configuration in hte button.
+     * @see identifier
+     */
+    void setIdentifier(const QString & id);
+
+    /**
+     * @brief Returns the identifier string stored in the button.
+     * @see setIdentifier
+     */
+    QString identifier ();
+
+public slots:
     void onClick ( void );
 
 signals:
+    /**
+     * @brief is emitted when the button is clicked.
+     * @param the identifier, or if not present the displayed text.append
+     */
     void clicked ( QString text );
+
+private:
+    QString id;
 };
 
 class medQuickAccessPushButton : public QPushButton
@@ -49,12 +70,13 @@ class medQuickAccessPushButton : public QPushButton
     Q_OBJECT
 public:
     medQuickAccessPushButton ( QWidget * parent = 0 );
-    
+
 public slots:
     void onClick ( void );
 
 signals:
     void clicked ( QString text );
+
 };
 
 class medHomepageButton : public QToolButton
@@ -63,11 +85,31 @@ class medHomepageButton : public QToolButton
 public:
     medHomepageButton ( QWidget * parent = 0 );
 
+    /**
+     * @brief Sets an identifier string for the translated valu displayed in text.
+     *
+     * This String is used to store the identifier corresponding to a configuration in hte button.
+     * @see identifier
+     */
+    void setIdentifier(const QString & id);
+
+    /**
+     * @brief Returns the identifier string stored in the button.
+     * @see setIdentifier
+     */
+    QString identifier ();
 public slots:
     void onClick ( void );
 
 signals:
+    /**
+     * @brief is emitted when the button is clicked.
+     * @param the identifier, or if not present the displayed text.append
+     */
     void clicked ( QString text );
+
+private:
+    QString id;
 
 };
 

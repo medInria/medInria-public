@@ -7,7 +7,8 @@
 class medViewerConfigurationFactoryPrivate
 {
 public:
-    medViewerConfigurationFactory::medViewerConfigurationCreatorHash configuration_creators;
+    typedef QHash<QString, medViewerConfigurationDetails*> medViewerConfigurationCreatorHash;
+    medViewerConfigurationCreatorHash creators;
 };
 
 medViewerConfigurationFactory *medViewerConfigurationFactory::instance(void)
@@ -18,29 +19,43 @@ medViewerConfigurationFactory *medViewerConfigurationFactory::instance(void)
     return s_instance;
 }
 
-bool medViewerConfigurationFactory::registerConfiguration(QString type, medViewerConfigurationCreator func)
+bool medViewerConfigurationFactory::registerConfiguration(QString identifier,
+                                                          QString name,
+                                                          QString description,
+                                                          medViewerConfigurationCreator creator)
 {
-    if(!d->configuration_creators.contains(type)) {
-        d->configuration_creators.insert(type, func);
+
+    if(!d->creators.contains(identifier))
+    {
+        medViewerConfigurationDetails* holder = new medViewerConfigurationDetails
+                (name,
+                 description,
+                 creator);
+        d->creators.insert( identifier,
+                            holder);
         return true;
     }
-
     return false;
 }
 
 QList<QString> medViewerConfigurationFactory::configurations(void)
 {
-    return d->configuration_creators.keys();
+    return d->creators.keys();
 }
 
 medViewerConfiguration *medViewerConfigurationFactory::createConfiguration(QString type,QWidget* parent)
 {
-    if(!d->configuration_creators.contains(type))
+    if(!d->creators.contains(type))
         return NULL;
 
-    medViewerConfiguration *conf = d->configuration_creators[type](parent);
+    medViewerConfiguration *conf = d->creators[type]->creator(parent);
 
     return conf;
+}
+
+QHash<QString, medViewerConfigurationDetails *> medViewerConfigurationFactory::configurationDetails() const
+{
+    return d->creators;
 }
 
 medViewerConfigurationFactory::medViewerConfigurationFactory(void) : dtkAbstractFactory(), d(new medViewerConfigurationFactoryPrivate)
@@ -50,9 +65,22 @@ medViewerConfigurationFactory::medViewerConfigurationFactory(void) : dtkAbstract
 
 medViewerConfigurationFactory::~medViewerConfigurationFactory(void)
 {
+    foreach (medViewerConfigurationDetails * detail, d->creators.values())
+    {
+        delete detail;
+        detail = NULL;
+    }
+
     delete d;
 
     d = NULL;
 }
 
+
+medViewerConfigurationDetails * medViewerConfigurationFactory::configurationDetailsFromId(QString identifier) const
+{
+    return d->creators.value(identifier);
+}
+
 medViewerConfigurationFactory *medViewerConfigurationFactory::s_instance = NULL;
+

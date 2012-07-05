@@ -46,7 +46,7 @@ medHomepagePushButton::medHomepagePushButton ( QWidget * parent ) : QPushButton 
 
 void medHomepagePushButton::onClick ( void )
 {
-    emit clicked ( this->text() );
+    emit clicked ( this->identifier() );
 }
 
 medHomepageButton::medHomepageButton ( QWidget * parent ) : QToolButton ( parent )
@@ -56,6 +56,31 @@ medHomepageButton::medHomepageButton ( QWidget * parent ) : QToolButton ( parent
 
 void medHomepageButton::onClick ( void )
 {
-    emit clicked ( this->text() );
+    emit clicked ( this->identifier() );
 }
 
+QString medHomepagePushButton::identifier()
+{
+    if (this->id.isEmpty())
+        return this->text();
+    else
+        return this->id;
+}
+
+QString medHomepageButton::identifier()
+{
+    if (this->id.isEmpty())
+        return this->text();
+    else
+        return this->id;
+}
+
+void medHomepagePushButton::setIdentifier(const QString & identifier)
+{
+    this->id = identifier;
+}
+
+void medHomepageButton::setIdentifier(const QString & identifier)
+{
+    this->id = identifier;
+}

@@ -60,15 +60,10 @@ public slots:
      * @param name the container name */
     virtual void connectToolboxesToCurrentContainer(const QString &name);
 
-protected:
-    // Creator function
-    static medViewerConfiguration * createMedSegmentationConfiguration(QWidget * parent);
-
 
 private:
+    static QString s_identifier();
     medViewerConfigurationSegmentationPrivate *d;
 };
-
-medViewerConfiguration *createMedViewerConfigurationSegmentation(QWidget* parent);
 
 #endif // MEDVIEWERCONFIGURATIONSEGMENTATION_H

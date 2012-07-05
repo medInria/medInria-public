@@ -399,7 +399,8 @@ void medMainWindow::writeSettings()
 
 void medMainWindow::updateQuickAccessMenu ( void )
 {
-    QList<QString> configList = medViewerConfigurationFactory::instance()->configurations();
+     QHash<QString,medViewerConfigurationDetails*> configDetails =
+             medViewerConfigurationFactory::instance()->configurationDetails();
     QVBoxLayout * configurationButtonsLayout = new QVBoxLayout;
     configurationButtonsLayout->setMargin(0);
     configurationButtonsLayout->setSpacing ( 0 );
@@ -445,22 +446,25 @@ void medMainWindow::updateQuickAccessMenu ( void )
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( switchToBrowserArea()) );
 
     //Dynamically setup configurations access button
-    for ( int i = 0; i< configList.size(); i++ )
+    foreach ( QString id, configDetails.keys() )
     {
         medHomepagePushButton * button = new medHomepagePushButton ( this );
-        button->setText ( configList.at ( i ) );
+        medViewerConfigurationDetails* detail = configDetails.value(id);
+        button->setText ( detail->name );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setCursor(Qt::PointingHandCursor);
         button->setStyleSheet("border: 0px;");
         button->setFixedHeight ( 40 );
         button->setMaximumWidth ( 250 );
         button->setMinimumWidth ( 250 );;
+        button->setToolTip( detail->description);
+        button->setIdentifier(id);
         configurationButtonsLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowConfiguration ( QString ) ) );
     }
     configurationButtonsLayout->addStretch();
     d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() - 30 ) );
-    d->quickAccessWidget->setMinimumHeight ( 20 + 40 * ( 2 + configList.size() ) );
+    d->quickAccessWidget->setMinimumHeight ( 20 + 40 * ( 2 + configDetails.size() ) );
     d->quickAccessWidget->setLayout(configurationButtonsLayout);
 }
 
@@ -593,8 +597,10 @@ void medMainWindow::onShowConfiguration ( QString config )
     d->quickAccessButton->setMinimumWidth(170);
     d->viewerArea->setupConfiguration(config);
     this->switchToViewerArea();
-    //warning: here should get a translated config string...
-    d->quickAccessButton->setText(tr("Workspace: ") + config);
+    medViewerConfigurationDetails* details =
+            medViewerConfigurationFactory::instance()->configurationDetailsFromId(config);
+
+    d->quickAccessButton->setText(tr("Workspace: ") + details->name);
 }
 
 void medMainWindow::onShowQuickAccess ( void )
@@ -815,11 +821,24 @@ void medMainWindow::registerToFactories()
 
     // Registering different configurations
     medViewerConfigurationFactory * viewerConfigFactory = medViewerConfigurationFactory::instance();
-    viewerConfigFactory->registerConfiguration("Visualization", createMedViewerConfigurationVisualization);
-    viewerConfigFactory->registerConfiguration("Registration",  createMedViewerConfigurationRegistration);
-    viewerConfigFactory->registerConfiguration("Diffusion",     createMedViewerConfigurationDiffusion);
-    viewerConfigFactory->registerConfiguration("Filtering",     createMedViewerConfigurationFiltering);
-    viewerConfigFactory->registerConfiguration("Segmentation",     createMedViewerConfigurationSegmentation);
+    //TODO: move the register method to the classes maybe??
+    viewerConfigFactory->
+            registerConfiguration<medViewerConfigurationVisualization>
+            ("Visualization",tr("Visualization"),
+             tr("Visualize images, Mesh and other data types"));
+    viewerConfigFactory->
+            registerConfiguration<medViewerConfigurationRegistration>
+            ("Registration", tr("Registration"),
+             tr("Register a moving image to a fixed image"));
+    viewerConfigFactory->registerConfiguration
+            <medViewerConfigurationDiffusion>("Diffusion",
+                                              tr("Diffusion"),
+                                              tr("Diffusion Tensor Images"));
+    viewerConfigFactory->registerConfiguration
+            <medViewerConfigurationFiltering>("Filtering",
+                                              tr("Filtering"),
+                                              tr("Filter workspace"));
+    medViewerConfigurationSegmentation::registerWithViewerConfigurationFactory();
 
     //Register settingsWidgets
     medSettingsWidgetFactory * settingsWidgetFactory = medSettingsWidgetFactory::instance();

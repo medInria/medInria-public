@@ -99,10 +99,5 @@ QString medViewerConfigurationVisualization::identifier() const {
 }
 
 QString medViewerConfigurationVisualization::description() const {
-    return "Visualization";
-}
-
-medViewerConfiguration *createMedViewerConfigurationVisualization(QWidget* parent)
-{
-    return new medViewerConfigurationVisualization(parent);
+    return tr("Visualization");
 }

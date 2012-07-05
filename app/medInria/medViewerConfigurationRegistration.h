@@ -29,7 +29,4 @@ private:
     medViewerConfigurationRegistrationPrivate *d;
 };
 
-medViewerConfiguration *createMedViewerConfigurationRegistration(QWidget* parent);
-
-
 #endif // MEDVIEWERCONFIGURATIONREGISTRATION_H

@@ -81,6 +81,4 @@ private:
     medViewerConfigurationFilteringPrivate *d;
 };
 
-medViewerConfiguration *createMedViewerConfigurationFiltering ( QWidget* parent );
-
 #endif
