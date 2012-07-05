@@ -5,7 +5,7 @@
 class medSettingsWidgetFactoryPrivate
 {
 public:
-    medSettingsWidgetFactory::medSettingsWidgetCreatorHash settingsWidget_creators;
+    medSettingsWidgetFactory::medSettingsWidgetCreatorHash creators;
 };
 
 medSettingsWidgetFactory *medSettingsWidgetFactory::instance(void)
@@ -16,31 +16,44 @@ medSettingsWidgetFactory *medSettingsWidgetFactory::instance(void)
     return s_instance;
 }
 
-bool medSettingsWidgetFactory::registerSettingsWidget(const QString& type, medSettingsWidgetCreator func)
+bool medSettingsWidgetFactory::registerSettingsWidget(const QString& type,
+                                                      QString name,
+                                                      QString description,
+                                                      medSettingsWidgetCreator func)
 {
-    if(!d->settingsWidget_creators.contains(type)) {
-        d->settingsWidget_creators.insert(type, func);
+    if(!d->creators.contains(type))
+    {
+        medSettingDetails* holder = new medSettingDetails(name,
+                                                          description,
+                                                          func);
+        d->creators.insert( type,
+                            holder);
         return true;
     }
-    qWarning() << "failed registering" << type;
-
     return false;
 }
 
 QList<QString> medSettingsWidgetFactory::settingsWidgets(void)
 {
-    return d->settingsWidget_creators.keys();
+    return d->creators.keys();
 }
 
 medSettingsWidget *medSettingsWidgetFactory::createSettingsWidget(QString type,QWidget * parent)
 {
-    if(!d->settingsWidget_creators.contains(type))
+    if(!d->creators.contains(type))
         return NULL;
 
-    medSettingsWidget *conf = d->settingsWidget_creators[type](parent);
+    medSettingsWidget *conf = d->creators[type]->creator(parent);
 
     return conf;
 }
+
+medSettingDetails * medSettingsWidgetFactory::settingDetailsFromId(
+        const QString &id) const
+{
+    return d->creators.value(id);
+}
+
 
 medSettingsWidgetFactory::medSettingsWidgetFactory(void) : dtkAbstractFactory(), d(new medSettingsWidgetFactoryPrivate)
 {

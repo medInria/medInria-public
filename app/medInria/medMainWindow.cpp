@@ -841,11 +841,25 @@ void medMainWindow::registerToFactories()
     medViewerConfigurationSegmentation::registerWithViewerConfigurationFactory();
 
     //Register settingsWidgets
+    //TODO: get rid of the setTabName, or make it staic and use it here...
+    //or else create a static register method in the widgets...
     medSettingsWidgetFactory * settingsWidgetFactory = medSettingsWidgetFactory::instance();
-    settingsWidgetFactory->registerSettingsWidget("System", createSystemSettingsWidget);
-    settingsWidgetFactory->registerSettingsWidget("Startup", createStartupSettingsWidget);
-    settingsWidgetFactory->registerSettingsWidget("Database", createDatabaseSettingsWidget);
-    settingsWidgetFactory->registerSettingsWidget("Interaction", createInteractionSettingsWidget);
+    settingsWidgetFactory->registerSettingsWidget
+            <medSystemSettingsWidget>("System",
+                                                  tr("System"),
+                                                  tr("System Settings"));
+    settingsWidgetFactory->registerSettingsWidget
+            <medStartupSettingsWidget>("Startup",
+                                       tr("Start Up"),
+                                       tr("Start up time settings"));
+    settingsWidgetFactory->registerSettingsWidget
+            <medDatabaseSettingsWidget>("Database",
+                                        tr("Database"),
+                                        tr("Database related settings"));
+    settingsWidgetFactory->registerSettingsWidget
+            <medInteractionSettingsWidget>("Interaction",
+                                           tr("Interaction"),
+                                           tr("View Interaction settings"));
 
     //Register annotations
     dtkAbstractDataFactory * datafactory = dtkAbstractDataFactory::instance();

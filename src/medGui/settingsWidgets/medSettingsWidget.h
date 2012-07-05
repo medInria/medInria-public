@@ -53,7 +53,7 @@ public slots:
      * @brief Reads its data from the QSettings.
      *
     */
-    virtual void read();
+    virtual void read()=0;
 
     /**
      * @brief Validates the form before saving the data.
@@ -66,7 +66,7 @@ public slots:
 protected:
 
     /**
-     * @brief Sets the name of the tab appearing in the settingsEditor. 
+     * @brief Sets the name of the tab appearing in the settingsEditor.
      * MUST be used by inherited classes.
      *
      * @param section

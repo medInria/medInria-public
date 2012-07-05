@@ -185,10 +185,13 @@ void medSettingsEditor::queryWidgets()
     //Process manager widget
     medSettingsWidget * setWid;
     QScrollArea * scroll;
+    unsigned int i =0;
     foreach (QString widgetStyle, settingsFactory->settingsWidgets())
     {
         if (!d->settingsWidgets.contains(widgetStyle))
         {
+            medSettingDetails* details = settingsFactory->settingDetailsFromId(
+                        widgetStyle);
             setWid = settingsFactory->createSettingsWidget(widgetStyle,d->tabWidget);
             scroll = new QScrollArea(this);
             scroll->setFocusPolicy(Qt::NoFocus);
@@ -196,7 +199,10 @@ void medSettingsEditor::queryWidgets()
             // area limits the widgets to their minimum sizes
             scroll->setWidgetResizable(true);
             scroll->setWidget(setWid);
-            d->tabWidget->addTab(scroll, setWid->tabName());
+            //TODO: use tabName or details.name, but remove one...
+            d->tabWidget->addTab(scroll, details->name);
+            d->tabWidget->setTabToolTip(i,details->description);
+            i++;
             d->settingsWidgets.insert(widgetStyle, setWid);
             // read the settings for this widget
             setWid->read();
