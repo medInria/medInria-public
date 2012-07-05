@@ -1,5 +1,5 @@
-### CMakeLists.txt --- 
-## 
+### CMakeLists.txt ---
+##
 ## Author: John Stark
 ## Copyright (C) 2011 - Thibaud Kloczko, Inria.
 ## Created: Wed May 25 16:00:00 2011 (+0100)
@@ -8,13 +8,13 @@
 ##           By: Julien Wintz
 ##     Update #: 2
 ######################################################################
-## 
-### Commentary: 
-## 
+##
+### Commentary:
+##
 ######################################################################
-## 
+##
 ### Change log:
-## 
+##
 ######################################################################
 
 project(medTest)
@@ -28,7 +28,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medQtDataImage.h
   medQtDataImageReader.h
   medQtDataImageWriter.h
-  medTestApplication.h  
+  medTestApplication.h
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -50,16 +50,12 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
-if(MSVC)
-  configure_file(${CMAKE_SOURCE_DIR}/m4s_dll.rc.in "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.rc" @ONLY)
-  set(${PROJECT_NAME}_SOURCES ${${PROJECT_NAME}_SOURCES} ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.rc)
-endif()
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 # qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC} 
+  ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES})
 
@@ -67,7 +63,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   medCore
   ${QT_QTTEST_LIBRARY}
-  ${QT_LIBRARIES}  
+  ${QT_LIBRARIES}
 )
 
 # Group common files together in Visual Studio.
