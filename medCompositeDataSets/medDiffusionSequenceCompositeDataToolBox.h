@@ -28,14 +28,12 @@ public slots:
     void onItemClicked(QTableWidgetItem*);
     void onContextTreeMenu(QPoint);
     void onNewItem(const QString&,bool&);
-    
+
 private:
 
     DiffusionSequenceWidget table;
 
     bool import(const bool persistent);
-
-    static medToolBoxCompositeDataSetImporterCustom* create(QWidget* parent);
 };
 
 #endif

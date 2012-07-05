@@ -84,11 +84,12 @@ ITKProcessExampleToolBox::~ITKProcessExampleToolBox(void)
 
 bool ITKProcessExampleToolBox::registered(void)
 {
-    return medToolBoxFactory::instance()->registerCustomFilteringToolBox(
+    return medToolBoxFactory::instance()->registerToolBox
+            <ITKProcessExampleToolBox>(
                 "itkGaussianBlurExample",
                 "ITK Gaussian Blur Filter Example",
                 "Applis Gaussian Blur to a view",
-                createITKProcessExampleToolBox);
+                QStringList()<<"filtering");
 }
 
 
@@ -128,7 +129,3 @@ void ITKProcessExampleToolBox::run(void)
 
 }
 
-medToolBoxFilteringCustom *createITKProcessExampleToolBox(QWidget *parent)
-{
-    return new ITKProcessExampleToolBox(parent);
-}

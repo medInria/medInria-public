@@ -30,7 +30,5 @@ private:
     ITKProcessExampleToolBoxPrivate *d;
 };
 
-medToolBoxFilteringCustom *createITKProcessExampleToolBox(QWidget *parent);
-
 #endif
 

@@ -14,7 +14,7 @@
 // exampleProcessImageFilterPluginPrivate
 // /////////////////////////////////////////////////////////////////
 
-class exampleProcessImageFilterPluginPrivate 
+class exampleProcessImageFilterPluginPrivate
 {
 public:
     // Class variables go here.
@@ -47,7 +47,8 @@ bool exampleProcessImageFilterPlugin::initialize(void) {
 
     //  Register the toolbox of the process with the Custon diffusionToolBox
 
-    if (!medToolBoxFactory::instance()->registerCustomDiffusionToolBox("exampleProcessImageFilter", name(), description(), createExampleProcessImageFilterToolBox))
+    if (!medToolBoxFactory::instance()->registerToolBox
+            <exampleProcessImageFilterToolBox>("exampleProcessImageFilter", name(), description(), QStringList()<<"diffusion"))
         qDebug() << "Unable to register exampleProcessImageFilter toolbox";
     else
         qDebug() << "ABLE to register exampleProcessImageFilter toolbox";

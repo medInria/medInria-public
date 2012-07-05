@@ -50,19 +50,16 @@ medDiffusionSequenceCompositeDataToolBox::~medDiffusionSequenceCompositeDataTool
 }
 
 bool medDiffusionSequenceCompositeDataToolBox::registered() {
-    return medToolBoxFactory::instance()->registerCustomCompositeDataSetImporterToolBox(
+    return medToolBoxFactory::instance()->registerToolBox
+            <medDiffusionSequenceCompositeDataToolBox>(
                 "medDiffusionSequenceCompositeDataToolBox",
                 tr("Diffusion Sequence Importer"),
                 tr("Diffusion Sequence Importer"),
-                medDiffusionSequenceCompositeDataToolBox::create);
+                QStringList()<<"composite_dataset");
 }
 
 QString medDiffusionSequenceCompositeDataToolBox::description() const {
     return QString(tr("Diffusion Sequence Importer"));
-}
-
-medToolBoxCompositeDataSetImporterCustom* medDiffusionSequenceCompositeDataToolBox::create(QWidget* parent) {
-    return new medDiffusionSequenceCompositeDataToolBox(parent);
 }
 
 void medDiffusionSequenceCompositeDataToolBox::onNewItem(const QString& item,bool& valid) {
