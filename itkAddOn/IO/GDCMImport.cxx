@@ -152,6 +152,9 @@ int main( int argc, char *argv[] )
 
   try
   {
+    itk::Object::GlobalWarningDisplayOn();
+    importer->SetDebug (1);
+    
     importer->SetInputDirectory (args.InputDirectory);
     importer->Scan();
     importer->Update();

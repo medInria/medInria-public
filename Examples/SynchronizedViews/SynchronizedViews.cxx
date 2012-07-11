@@ -35,7 +35,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkErrorCode.h>
 #include <vtkImageViewCollection.h>
 #include "vtkDataSetReader.h"
-
+#include <vtkLookupTableManager.h>
 
 #ifdef ITK_USE_REVIEW
 #include <itkPhilipsRECImageIOFactory.h>
@@ -316,9 +316,26 @@ int main (int argc, char* argv[])
     {
       vtkProperty* prop = vtkProperty::SafeDownCast( metadataset->GetProperty() );
       prop->SetColor (0.5,0.5,0.5);
-      prop->SetOpacity (1.0);
+      if (vtkPointSet::SafeDownCast (metadataset->GetDataSet())->GetNumberOfPoints() > 10000)
+	prop->SetOpacity (0.7);
       pool->SyncAddDataSet( vtkPointSet::SafeDownCast (metadataset->GetDataSet()), prop);
+      metadataset->AddActor (vtkActor::SafeDownCast (view3d->FindDataSetActor (metadataset->GetDataSet())));
+      
+      vtkDataArray* array = metadataset->GetArray ("Sequence_Scalars");
+      if (array)
+      {
+	if (array->GetLookupTable())
+	{
+	  std::cout<<"array "<<"Sequence_Scalars"<<" have a lut :"<<(*array->GetLookupTable())<<std::endl;
+	}
+	else
+	  array->SetLookupTable (vtkLookupTableManager::GetLONILookupTable());
+	metadataset->ColorByArray (array);
+      }
+      else
+	std::cout<<"no array called "<<"Sequence_Scalars"<<std::endl;
     }
+    
     
     if (vtkMetaDataSetSequence::SafeDownCast(metadataset))
     {
@@ -338,9 +355,10 @@ int main (int argc, char* argv[])
 
   pool->SyncReset();
   pool->SyncSetShowAnnotations (1);
-  pool->SyncSetShowScalarBar (0);
   pool->SyncSetShowRulerWidget (0);
   pool->SyncSetShowImageAxis (0);
+  pool->SyncSetShowScalarBar (0);
+  
   pool->SyncSetAnnotationStyle (vtkImageView2D::AnnotationStyle2);
   pool->SyncSetViewConvention (vtkImageView2D::VIEW_CONVENTION_RADIOLOGICAL);
   

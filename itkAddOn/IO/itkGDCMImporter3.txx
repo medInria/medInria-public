@@ -853,7 +853,7 @@ namespace itk
   {
 
     FileListMapType ret;
-    std::cout<<"scanning files..."<<std::flush;
+    std::cout<<"first scanning " << list.size() << " files..."<<std::flush;
     
     if (!this->m_FirstScanner.Scan (list))
     {
@@ -861,6 +861,9 @@ namespace itk
 			 <<this->m_InputDirectory<<std::endl);
     }
     std::cout<<" done"<<std::endl;
+
+    std::cout<<"the first scanner found "<<m_FirstScanner.GetKeys().size()
+	     <<" valid files"<<std::endl;
 
     gdcm::Directory::FilenamesType::const_iterator file;
     gdcm::Scanner::TagToValue::const_iterator it;
@@ -890,7 +893,7 @@ namespace itk
       }
       else
       {
-	itkDebugMacro (<<"The file "<<(*file).c_str()
+	itkWarningMacro (<<"The file "<<(*file).c_str()
 			 <<" does not appear in the scanner mappings, skipping. "<<std::endl);
       }
       
@@ -915,12 +918,19 @@ namespace itk
   {
 
     FileListMapType ret;
+
+    std::cout<<"second scanning " << list.size() << " files..."<<std::flush;
     
     if (!this->m_SecondScanner.Scan (list))
     {
       itkExceptionMacro (<<"The second scanner did not succeed scanning the list, skipping"
 			 <<std::endl);
     }
+
+    
+    std::cout<<"the second scanner found "<<m_SecondScanner.GetKeys().size()
+	     <<" valid files"<<std::endl;
+
     
     gdcm::Directory::FilenamesType::const_iterator file;
     gdcm::Scanner::TagToValue::const_iterator it;
@@ -949,14 +959,14 @@ namespace itk
       }
       else
       {
-	itkDebugMacro (<<"The file "<<(*file).c_str()
+	itkWarningMacro (<<"The file "<<(*file).c_str()
 			 <<" does not appear in the scanner mappings, skipping. "<<std::endl);
       }
     }    
 
     if ((list.size() % ret.size()) != 0)
     {
-      itkDebugMacro (<<"There appears to be inconsistent file list sizes "<<std::endl
+      itkWarningMacro (<<"There appears to be inconsistent file list sizes "<<std::endl
 			 <<"Scanner outputs "<<ret.size()<<" different time/gradients/b-factor/phase-encoding combinations "
 			 <<"within a total list of "<<list.size()<<" files."<<std::endl
 			 <<"attempting simple sort..."<<std::endl);
@@ -1117,7 +1127,7 @@ namespace itk
       }
       else
       {
-	itkDebugMacro (<<"The file "<<filename
+	itkWarningMacro (<<"The file "<<filename
 			 <<" does not appear in the scanner mappings, skipping. "<<std::endl);
       }
     }

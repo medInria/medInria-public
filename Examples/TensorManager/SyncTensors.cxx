@@ -396,11 +396,14 @@ int main (int argc, char* argv[])
     else
     {
       vtkProperty* prop = vtkProperty::SafeDownCast( metadataset->GetProperty() );
-      prop->SetColor (0.3,0.3,0.3);
-      if (vtkPointSet::SafeDownCast (metadataset->GetDataSet())->GetNumberOfPoints() > 5000)
+      prop->SetColor (0.5,0.5,0.5);
+      if (vtkPointSet::SafeDownCast (metadataset->GetDataSet())->GetNumberOfPoints() > 10000)
 	prop->SetOpacity (0.25);
       else
+      {
 	prop->SetOpacity (0.60);
+	prop->SetLineWidth (1);
+      }
 	
       pool->SyncAddDataSet( vtkPointSet::SafeDownCast (metadataset->GetDataSet()), prop );
       metadataset->SetScalarVisibility(1);
