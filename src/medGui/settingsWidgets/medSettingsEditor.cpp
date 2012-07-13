@@ -148,7 +148,7 @@ void medSettingsEditor::initialize()
     d->cancel->setFocusPolicy(Qt::NoFocus);
     d->cancel->setMaximumWidth(buttonWidth);
     connect(d->cancel,SIGNAL(clicked()),
-        this,SLOT(onCancelClicked()));
+        this,SLOT(onCancelButtonClicked()));
 
     //reset button
     d->reset = new QPushButton (tr("Reset"), this);

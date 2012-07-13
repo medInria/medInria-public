@@ -32,6 +32,7 @@ class medDatabasePreviewItemPrivate
 {
 public:
     medDataIndex index;
+    bool isDraggingAllowed;
 };
 
 medDatabasePreviewItem::medDatabasePreviewItem(const medDataIndex &index, QGraphicsItem *parent) : QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabasePreviewItemPrivate)
@@ -56,6 +57,9 @@ medDatabasePreviewItem::medDatabasePreviewItem(const medDataIndex &index, QGraph
         connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
         QThreadPool::globalInstance()->start(loader);
     }
+
+    // we allow dragging by default;
+    d->isDraggingAllowed = true;
 }
 
 medDatabasePreviewItem::~medDatabasePreviewItem(void)
@@ -78,4 +82,43 @@ medDataIndex medDatabasePreviewItem::dataIndex(void) const
 void medDatabasePreviewItem::setImage(const QImage& image)
 {
     this->setPixmap(QPixmap::fromImage(image));
+}
+
+void medDatabasePreviewItem::setAllowDragging(bool isDraggingAllowed)
+{
+    d->isDraggingAllowed = isDraggingAllowed;
+}
+
+void medDatabasePreviewItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
+{
+    Q_UNUSED(event);
+}
+
+void medDatabasePreviewItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
+{
+    if(!d->isDraggingAllowed)
+        return;
+
+    QMimeData *data = d->index.createMimeData();
+    data->setImageData(this->pixmap());
+
+    QDrag *drag = new QDrag(this->scene()->views().first());
+    drag->setMimeData(data);
+#if WIN32
+    drag->setPixmap(this->pixmap().scaled(64,64));
+#else
+    drag->setPixmap(this->pixmap());
+#endif
+    drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()/2));
+    drag->start();
+}
+
+void medDatabasePreviewItem::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
+{
+    emit hoverEntered(event, this);
+}
+
+void medDatabasePreviewItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
+{
+    emit hoverLeft(event, this);
 }

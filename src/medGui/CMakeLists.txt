@@ -59,6 +59,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   commonWidgets/medStatusBar.h
   commonWidgets/medQuickAccessMenu.h
   commonWidgets/medGroupBox.h
+  commonWidgets/medMultipleImageSelectionWidget.h
+  commonWidgets/medThumbnailContainer.h
 
   # factories
   factories/medSettingsWidgetFactory.h
@@ -149,6 +151,8 @@ set(${PROJECT_NAME}_SOURCES
   commonWidgets/medStatusBar.cpp
   commonWidgets/medQuickAccessMenu.cpp
   commonWidgets/medGroupBox.cpp
+  commonWidgets/medMultipleImageSelectionWidget.cpp
+  commonWidgets/medThumbnailContainer.cpp
 
   # db related items
   database/medDatabaseSearchPanel.cpp

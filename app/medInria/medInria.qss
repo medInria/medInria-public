@@ -1610,3 +1610,24 @@ QTreeWidget::branch:open:has-children:has-siblings  {
     border-image: none;
     image: url(:pixmaps/treeview-branch-open.png);
 }
+
+/**
+ * medThumbnailContainer
+ *
+ */
+
+medThumbnailContainer {
+    border-image: url(:/pixmaps/treeview-frame.png) 16 16 16 16;
+    border-top-width: 16px;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-bottom-width: 16px;
+
+    padding-top: -7px;
+    padding-left: -4px;
+    padding-right: -5px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
