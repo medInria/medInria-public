@@ -28,7 +28,7 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
-
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <medAbstractView.h>
 #include <medRunnableProcess.h>
@@ -171,7 +171,7 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
 
     if(!this->parentToolBox())
         return;
-    dtkAbstractProcess * process;
+    dtkSmartPointer<dtkAbstractProcess> process;
 
     if (this->parentToolBox()->process() && (this->parentToolBox()->process()->identifier() == "itkProcessRegistrationDiffeomorphicDemons"))
     {
@@ -183,20 +183,16 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
         this->parentToolBox()->setProcess(process);
     }
 
-    dtkAbstractData *fixedData = this->parentToolBox()->fixedData();
-    dtkAbstractData *movingData = this->parentToolBox()->movingData();
-
+    dtkSmartPointer<dtkAbstractData> fixedData(this->parentToolBox()->fixedData());
+    dtkSmartPointer<dtkAbstractData> movingData(this->parentToolBox()->movingData());
 
     if (!fixedData || !movingData)
         return;
 
-
-
-
     // Many choices here
 
     itkProcessRegistrationDiffeomorphicDemons *process_Registration =
-            dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process);
+            dynamic_cast<itkProcessRegistrationDiffeomorphicDemons *>(process.data());
     if (!process_Registration)
     {
         qWarning() << "registration process doesn't exist" ;
