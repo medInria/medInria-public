@@ -2,6 +2,7 @@
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <medViewerToolBoxViewProperties.h>
 #include <medToolBoxRegistration.h>
@@ -64,7 +65,7 @@ void medViewerConfigurationRegistration::setupViewContainerStack()
         //create the fuse container
         medViewContainerSingle *fuseContainer = new medViewContainerSingle(
                 this->stackedViewContainers());
-        if (dtkAbstractView *view = dtkAbstractViewFactory::instance()->create("v3dView"))
+        if (dtkSmartPointer<dtkAbstractView> view = dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"))
         {
             fuseContainer->setView (view);
             d->registrationToolBox->setFuseView (view);
