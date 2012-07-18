@@ -22,6 +22,7 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <medCore/medDataManager.h>
 
@@ -30,7 +31,7 @@ class medViewerConfigurationFilteringPrivate
 public:
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
     medToolBoxFiltering *filteringToolBox;
-    dtkAbstractData *filterOutput;
+    dtkSmartPointer<dtkAbstractData> filterOutput;
     QString importUuid;
 };
 
@@ -87,8 +88,7 @@ void medViewerConfigurationFiltering::onProcessSuccess()
     if ( !d->filterOutput )
         return;
 
-    dtkAbstractData *inputData = d->filteringToolBox->data();
-
+    dtkSmartPointer<dtkAbstractData> inputData(d->filteringToolBox->data());
 
     if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
       {
