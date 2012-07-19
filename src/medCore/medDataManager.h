@@ -63,7 +63,6 @@ public:
 
     /**
     * Import data into the db read from file
-    * @Note _NOT_IMPLEMENTED_YET
     * @params const QString & file The file containing the data
     * @params bool indexWithoutCopying true if the file must only be indexed by its current path,
     * false if the file will be imported (copied or converted to the internal storage format)
@@ -79,7 +78,6 @@ public:
     void importNonPersistent(dtkAbstractData *data);
     void importNonPersistent(dtkAbstractData *data, QString uuid);
 
-
     /**
     * Overload to insert data directly from a file into the no-persistent database
     * @params QString file
@@ -88,10 +86,11 @@ public:
     void importNonPersistent(QString file, const QString &uuid);
 
     /**
-    * Use this function to save data to file.
+    * Use this function to save data to a file.
+    * @params dtkAbstractData *data Pointer to some data to save
+    * @params const QString & filename The location in which the data will be stored in the file system
     */
     void exportDataToFile(dtkAbstractData *data, const QString &filename);
-
 
     /**
     * Use this function to save all non-persistent data to the sql database.
@@ -200,7 +199,12 @@ signals:
     */
     void importFailed(const medDataIndex& index, QString uuid);
 
-    void progressed(QObject*,int);
+    /**
+     * This signal is emitted when the operation has progressed
+     * @param QObject *obj Pointer to the operating QObject
+     * @param int value Progress bar's current value
+     */
+    void progressed(QObject* obj,int value);
 
 public slots:
     void onNonPersistentDataImported(const medDataIndex &index, QString uuid);
