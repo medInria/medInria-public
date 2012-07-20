@@ -76,6 +76,14 @@ public:
     * @params const dtkAbstractData & data
     */
     void importNonPersistent(dtkAbstractData *data);
+
+    /**
+    * Use this function to insert data into the non-persistent database,
+    * Do *not* use the concrete database controller implementation for it
+    * The data-manager will take over this task
+    * @params const dtkAbstractData & data
+    * @params QString uuid Universally unique identifier associated with the data
+    */
     void importNonPersistent(dtkAbstractData *data, QString uuid);
 
     /**
@@ -83,6 +91,12 @@ public:
     * @params QString file
     */
     void importNonPersistent(QString file);
+
+    /**
+    * Overload to insert data directly from a file into the no-persistent database
+    * @params QString file
+    * @params QString & uuid Universally unique identifier associated with the data
+    */
     void importNonPersistent(QString file, const QString &uuid);
 
     /**
