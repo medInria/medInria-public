@@ -69,7 +69,7 @@ int main (int argc, char*argv[])
   view->SetAboutData ("Powered by vtkINRIA3D");
 
   /**
-         We read the SH coefficinets == typedef itk::VectorImage<float, 3>  with SH data.
+         We read the SH coefficients == typedef itk::VectorImage<float, 3>  with SH data.
      */
   typedef itk::ImageFileReader<ShImageTypeFloat> ReaderType;
   ReaderType::Pointer reader = ReaderType::New();

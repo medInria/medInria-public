@@ -24,6 +24,7 @@ TARGET_LINK_LIBRARIES(${KIT}CxxTests
   vtkVisuManagement
   vtkRendering 
   vtkImaging
+  vtkRenderingAddOn
   )
 
 

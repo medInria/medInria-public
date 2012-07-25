@@ -21,10 +21,16 @@
 #include <vtkPolyData.h>
 #include <vtkExtractVOI.h>
 #include <vtkPolyDataReader.h>
+#include <vtkViewImage3D.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkViewImage3D.h>
 
 #include <itkVectorImage.h>
 #include <itkImageFileReader.h>
 
+#include "vtkSphericalHarmonicManager.h"
 #include "itkSphericalHarmonicITKToVTKFilter.h"
 #include "vtkSphericalHarmonicSource.h"
 #include "vtkSphericalHarmonicGlyph.h"
@@ -74,8 +80,8 @@ int Compare( vtkPoints* verticesA, vtkPoints* verticesB)
 
 int vtkSphericalHarmonicGlyphTest(int argc, char *argv[])
 {
-  int status = EXIT_SUCCESS;
-
+  int status = EXIT_FAILURE;
+ std::cout << "HOLA " << argc;
   if( argc<3 )
   {
     std::cout << "Usage: " << std::endl;
@@ -187,8 +193,69 @@ int vtkSphericalHarmonicGlyphTest(int argc, char *argv[])
   shReaderB->SetFileName(argv[2]);
   shReaderB->Update();
 
-  if (!Compare(SHGlyph->GetOutput()->GetPoints(), shReaderB->GetOutput()->GetPoints()))
-    status = EXIT_FAILURE;
+  /**
+       In this example, we illustrate the use of the vtkSphericalHarmonicVisuManager.
+       We first set up a vtkImageView3D to display an image.
+    */
+  vtkViewImage3D*            view = vtkViewImage3D::New();
+  vtkRenderWindowInteractor* iren = vtkRenderWindowInteractor::New();
+  vtkRenderWindow*           rwin = vtkRenderWindow::New();
+  vtkRenderer*           renderer = vtkRenderer::New();
+
+  iren->SetRenderWindow ( rwin );
+  rwin->AddRenderer ( renderer );
+  view->SetRenderWindow ( rwin );
+  view->SetRenderer ( renderer );
+
+  double color[3] = {0.0,0.0,0.0};
+  view->SetTextColor (color);
+  view->SetRenderingModeToPlanar();
+  view->SetCubeVisibility(1);
+  view->SetAboutData ("Powered by vtkINRIA3D");
+
+  /**
+  We create the vtkSphericalHarmonicManager, feed it with SH data, set the rendering
+  properties, the interactor and renderer and finally update it .
+*/
+vtkSphericalHarmonicManager       *manager;
+manager = vtkSphericalHarmonicManager::New();
+
+
+manager->SetInput(shs);
+manager->SetMatrixT(matrix);
+
+manager->SetOrder(Order);
+
+// Rendering  properties
+manager->SetTesselationType(tesselationType);
+manager->SetTesselationBasis(tesselationBasis);
+manager->SetSampleRate(sampleRate, sampleRate, sampleRate);
+manager->SetGlyphResolution(glyphResolution);
+manager->SetGlyphScale((float)glyphScale);
+manager->SetCurrentPosition((int*)dims);
+manager->SetAxialSliceVisibility(sliceVisibility[0]);
+manager->SetCoronalSliceVisibility(sliceVisibility[1]);
+manager->SetSagittalSliceVisibility(sliceVisibility[2]);
+manager->FlipX(flipGlyphAxis[0]);
+manager->FlipY(flipGlyphAxis[1]);
+manager->FlipZ(flipGlyphAxis[2]);
+manager->ColorGlyphs(glyphColouring);
+
+manager->SetRenderWindowInteractor( iren, renderer );
+manager->Update();
+
+renderer->ResetCamera();
+rwin->Render();
+//iren->Start();
+
+  if (Compare(SHGlyph->GetOutput()->GetPoints(), shReaderB->GetOutput()->GetPoints()))
+    status = EXIT_SUCCESS ;
+
+  view->Delete(); view=NULL;
+  iren->Delete(); iren =NULL;
+  rwin->Delete();  rwin =NULL;
+  renderer->Delete();  renderer =NULL;
+  manager->Delete();   manager =NULL;
 
   SHGlyph->Delete();
   SHSource->Delete();
