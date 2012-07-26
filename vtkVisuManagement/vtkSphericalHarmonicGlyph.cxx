@@ -17,7 +17,7 @@
 #include <vtkTransform.h>
 
 #include <vtkSphericalHarmonicGlyph.h>
-#include <vtkSphericalHarmonicSource.h>
+//#include <vtkSphericalHarmonicSource.h>
 
 vtkCxxRevisionMacro(vtkSphericalHarmonicGlyph,"$Revision: 0 $");
 vtkStandardNewMacro(vtkSphericalHarmonicGlyph);

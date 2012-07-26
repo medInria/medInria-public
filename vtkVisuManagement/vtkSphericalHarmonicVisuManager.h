@@ -43,6 +43,7 @@ public:
   void FlipY (const int&);
   void FlipZ (const int&);
   void ColorGlyphs (const int&);
+  void SetNormalization (const int& a);
 
   /** Set the Volume Of Interest (VOI). Consists in
       * 6 integers: xmin, xmax, ymin, ymax, zmin, zmax.*/

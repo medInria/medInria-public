@@ -67,6 +67,9 @@ public:
      *  scalars from the source object are passed through the filter.*/
   void ColorGlyphs (bool a);
 
+  /** Turn on/off Normalizaiton.*/
+  void Normalization (bool a);
+
   /** get the image size it is used to set med gui slider appropiate size*/
   void GetSphericalHarmonicDimensions (int * dims);
 

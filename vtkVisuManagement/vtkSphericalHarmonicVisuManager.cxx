@@ -28,6 +28,7 @@ vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager()
   this->SHSource->SetTesselation( 3 );
   this->SHSource->UpdateSphericalHarmonicSource();
 
+  this->SHSource->SetNormalize(true);
   this->SHGlyph->SetSource ( this->SHSource->GetOutput() );
   this->SHGlyph->SetScaleFactor( 1.0 );
   this->SHGlyph->SetSphericalHarmonicSource( this->SHSource );
@@ -180,3 +181,13 @@ void vtkSphericalHarmonicVisuManager::ColorGlyphs (const int& a)
     this->SHGlyph->SetColorGlyphs(false);
   this->SHSource->UpdateSphericalHarmonicSource();
 }
+
+void vtkSphericalHarmonicVisuManager::SetNormalization (const int& a)
+{
+    if (a)
+        this->SHSource->NormalizeOn();
+      else
+        this->SHSource->NormalizeOff();
+      this->SHSource->UpdateSphericalHarmonicSource();
+}
+

@@ -242,6 +242,12 @@ void vtkSphericalHarmonicManager::FlipZ (bool a)
   this->SHVisuManagerCoronal ->FlipZ (a);
 }
 
+void vtkSphericalHarmonicManager:: Normalization (bool a)
+{
+  this->SHVisuManagerAxial   ->SetNormalization (a);
+  this->SHVisuManagerSagittal->SetNormalization (a);
+  this->SHVisuManagerCoronal ->SetNormalization (a);
+}
 void vtkSphericalHarmonicManager::ColorGlyphs (bool a)
 {
   this->SHVisuManagerAxial   ->ColorGlyphs (a);

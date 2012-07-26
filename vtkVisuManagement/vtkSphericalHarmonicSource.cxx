@@ -86,7 +86,7 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(int tess)
   this->SetNumberOfInputPorts(0);
 
   this->DeformOn();
-  this->NormalizeOn();
+  this->NormalizeOff();
   this->FlipXOff();
   this->FlipYOff();
   // By Default we flip the z-axis, the internal x,y,z have z flipped with respect to visu
@@ -186,6 +186,8 @@ RequestData(vtkInformation *vtkNotUsed(request),vtkInformationVector **vtkNotUse
 
     double min = S.GetVnlMatrix().min_value();
     double max = S.GetVnlMatrix().max_value();
+
+//    std::cout << "Normalizing by min/max" << min << "/" << max << "\n";
 
     if (max!=min) {
       for (unsigned i=0; i<S.Rows(); ++i)
@@ -509,10 +511,10 @@ void TranslateAndDeformShell(vtkPolyData *shell,vtkPoints* outPts,double center[
   vtkPoints* inPts = shell->GetPoints();
   const int  n     = inPts->GetNumberOfPoints();
 
-  double range[2];
-  shell->GetPointData()->GetScalars()->GetRange(range);
+//  double range[2];
+//  shell->GetPointData()->GetScalars()->GetRange(range);
+//  const double rangeDiff = (range[0]!=range[1]) ? range[1]-range[0] : 1.;
 
-  const double rangeDiff = (range[0]!=range[1]) ? range[1]-range[0] : 1.;
   vtkDataArray* sValues  = shell->GetPointData()->GetScalars();
 
   for (int i=0;i<n;++i) {
@@ -521,9 +523,9 @@ void TranslateAndDeformShell(vtkPolyData *shell,vtkPoints* outPts,double center[
 
     if (deform) {
       const double val = sValues->GetTuple1(i);
-      point[0] = ((val-range[0])/rangeDiff)*point[0];
-      point[1] = ((val-range[0])/rangeDiff)*point[1];
-      point[2] = ((val-range[0])/rangeDiff)*point[2];
+      point[0] = (val)*point[0];// ((val-range[0])/rangeDiff)*point[0];
+      point[1] = (val)*point[1];//((val-range[0])/rangeDiff)*point[1];
+      point[2] =(val)*point[2];// ((val-range[0])/rangeDiff)*point[2];
     }
     point[3] = 1.0;
     const double* pointOut = (transform!=0) ? transform->MultiplyDoublePoint(point) : &point[0];
