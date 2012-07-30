@@ -24,6 +24,7 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <medDataManager.h>
 #include <medViewManager.h>
@@ -48,14 +49,14 @@ public:
     QPushButton * saveTransButton;
 
     QComboBox *toolboxes;
-    medAbstractView *fixedView;
-    medAbstractView *movingView;
-    medAbstractView *fuseView;
+    dtkSmartPointer<medAbstractView> fixedView;
+    dtkSmartPointer<medAbstractView> movingView;
+    dtkSmartPointer<medAbstractView> fuseView;
 
     dtkSmartPointer<medAbstractDataImage> fixedData;
     dtkSmartPointer<medAbstractDataImage> movingData;
 
-    dtkAbstractProcess * process;
+    dtkSmartPointer<dtkAbstractProcess> process;
 
     medToolBoxRegistrationCustom * customToolBox;
 };
@@ -407,7 +408,7 @@ void medToolBoxRegistration::onSaveTrans()
 
 void medToolBoxRegistration::onSuccess()
 {
-    dtkAbstractData *output = d->process->output();
+    dtkSmartPointer<dtkAbstractData> output(d->process->output());
 
     foreach(QString metaData, d->fixedData->metaDataList())
         output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
