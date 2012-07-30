@@ -20,38 +20,16 @@
 #include "medToolBox.h"
 #include "medToolBoxFactory.h"
 
-struct MEDGUI_EXPORT medHelperStrings{
-    QString name;
-    QString description;
-    medHelperStrings():name(),description(){}
-    medHelperStrings(QString name,QString description):
-        name(name),description(description){}
-};
+
 
 class medToolBoxFactoryPrivate
 {
 public:
     typedef QHash<QString,
-        QPair < medToolBoxFactory::medToolBoxRegistrationCustomCreator,
-                medHelperStrings> > medToolBoxRegistrationCustomCreatorHash;
-    typedef QHash<QString,
-        QPair < medToolBoxFactory::medToolBoxDiffusionCustomCreator,
-                medHelperStrings > > medToolBoxDiffusionCustomCreatorHash;
-    typedef QHash<QString,
-        QPair < medToolBoxFactory::medToolBoxFilteringCustomCreator,
-                medHelperStrings > > medToolBoxFilteringCustomCreatorHash;
-    typedef QHash<QString,
-        QPair < medToolBoxFactory::medToolBoxCompositeDataSetImporterCustomCreator,
-                medHelperStrings > > medToolBoxCompositeDataSetImporterCustomCreatorHash;
-    typedef QHash<QString,
-        QPair < medToolBoxFactory::medToolBoxSegmentationCustomCreator,
-                medHelperStrings > > medToolBoxSegmentationCustomCreatorHash;
+        medToolBoxDetails*> medToolBoxCreatorHash;
 
-    medToolBoxRegistrationCustomCreatorHash custom_registration_creators;
-    medToolBoxDiffusionCustomCreatorHash custom_diffusion_creators;
-    medToolBoxCompositeDataSetImporterCustomCreatorHash custom_compositedatasetimporter_creators;
-    medToolBoxFilteringCustomCreatorHash custom_filtering_creators;
-    medToolBoxSegmentationCustomCreatorHash custom_segmentation_creators;
+    medToolBoxCreatorHash creators;
+
 };
 
 medToolBoxFactory *medToolBoxFactory::instance(void)
@@ -62,232 +40,76 @@ medToolBoxFactory *medToolBoxFactory::instance(void)
     return s_instance;
 }
 
-bool medToolBoxFactory::registerCustomRegistrationToolBox(QString identifier,
-                                                          QString name,
-                                                          QString description,
-                                                          medToolBoxRegistrationCustomCreator func)
+
+bool medToolBoxFactory::registerToolBox(QString identifier,
+                                        QString name,
+                                        QString description,
+                                        QStringList categories,
+                                        medToolBoxCreator creator)
 {
-    if(!d->custom_registration_creators.contains(identifier))
+    if(!d->creators.contains(identifier))
     {
-        medHelperStrings helpers(name,description);
-        d->custom_registration_creators.insert( identifier,
-                                                QPair <
-                                                medToolBoxRegistrationCustomCreator,
-                                                medHelperStrings>( func, helpers ));
-        return true;
-    }
-
-    return false;
-}
-
-QList<QString> medToolBoxFactory::registrationToolBoxes(void)
-{
-    return d->custom_registration_creators.keys();
-}
-
-medToolBoxRegistrationCustom *medToolBoxFactory::createCustomRegistrationToolBox(QString type, QWidget *parent)
-{
-    if(!d->custom_registration_creators.contains(type))
-        return NULL;
-
-    medToolBoxRegistrationCustom *toolbox =
-            (d->custom_registration_creators[type]).first(parent);
-
-    return toolbox;
-}
-
-bool medToolBoxFactory::registerCustomDiffusionToolBox(QString identifier,
-                                                       QString name,
-                                                       QString description,
-                                                       medToolBoxDiffusionCustomCreator func)
-{
-    if(!d->custom_diffusion_creators.contains(identifier))
-    {
-        medHelperStrings helpers(name,description);
-        d->custom_diffusion_creators.insert(identifier,
-                                            QPair <
-                                            medToolBoxDiffusionCustomCreator,
-                                            medHelperStrings>( func, helpers ));
-        return true;
-    }
-
-    return false;
-}
-
-QList<QString> medToolBoxFactory::diffusionToolBoxes(void)
-{
-    return d->custom_diffusion_creators.keys();
-}
-
-medToolBoxDiffusionCustom *medToolBoxFactory::createCustomDiffusionToolBox(QString type, QWidget *parent)
-{
-    if(!d->custom_diffusion_creators.contains(type))
-        return NULL;
-
-    medToolBoxDiffusionCustom *toolbox =
-            d->custom_diffusion_creators[type].first(parent);
-
-    return toolbox;
-}
-
-bool medToolBoxFactory::registerCustomCompositeDataSetImporterToolBox(QString identifier,
-                                                                      QString name,
-                                                                      QString description,
-                                                                      medToolBoxCompositeDataSetImporterCustomCreator func)
-{
-    if(!d->custom_compositedatasetimporter_creators.contains(identifier))
-    {
-        medHelperStrings helpers(name,description);
-        d->custom_compositedatasetimporter_creators.insert(identifier,
-                                                           QPair <
-                                                           medToolBoxCompositeDataSetImporterCustomCreator,
-                                                           medHelperStrings>( func, helpers ));
+        medToolBoxDetails* holder = new medToolBoxDetails(name,
+                                                          description,
+                                                          categories,
+                                                          creator);
+        d->creators.insert( identifier,
+                            holder);
         return true;
     }
     return false;
 }
 
-bool medToolBoxFactory::registerCustomSegmentationToolBox(QString identifier,
-                                                       QString name,
-                                                       QString description,
-                                                       medToolBoxSegmentationCustomCreator func)
+QList<QString> medToolBoxFactory::toolBoxesFromCategory(
+        const QString& category)const
 {
-    if(!d->custom_filtering_creators.contains(identifier))
+    QList<QString> ids;
+    typedef medToolBoxFactoryPrivate::medToolBoxCreatorHash::iterator creator_iterator;
+    creator_iterator i = d->creators.begin();
+    while (i != d->creators.end())
     {
-        medHelperStrings helpers(name,description);
-        d->custom_segmentation_creators.insert(identifier,
-                                            QPair <
-                                            medToolBoxSegmentationCustomCreator,
-                                            medHelperStrings>( func, helpers ));
-        return true;
+        if (i.value()->categories.contains(category))
+        {
+            ids << i.key();
+        }
+        ++i;
     }
-
-    return false;
+    return ids;
 }
 
-QList<QString> medToolBoxFactory::segmentationToolBoxes(void)
+medToolBox *medToolBoxFactory::createToolBox(QString identifier,
+                                                         QWidget *parent)
 {
-    return d->custom_segmentation_creators.keys();
-}
-
-medToolBoxSegmentationCustom *medToolBoxFactory::createCustomSegmentationToolBox(QString type, QWidget *parent)
-{
-    if(!d->custom_segmentation_creators.contains(type))
+    if(!d->creators.contains(identifier))
         return NULL;
 
-    medToolBoxSegmentationCustom *toolbox =
-            d->custom_segmentation_creators[type].first(parent);
-    return toolbox;
-}
-
-
-bool medToolBoxFactory::registerCustomFilteringToolBox(QString identifier,
-                                                       QString name,
-                                                       QString description,
-                                                       medToolBoxFilteringCustomCreator func)
-{
-    if(!d->custom_filtering_creators.contains(identifier))
-    {
-        medHelperStrings helpers(name,description);
-        d->custom_filtering_creators.insert(identifier,
-                                            QPair <
-                                            medToolBoxFilteringCustomCreator,
-                                            medHelperStrings>( func, helpers ));
-        return true;
-    }
-
-    return false;
-}
-
-QList<QString> medToolBoxFactory::compositeDataSetImporterToolBoxes(void)
-{
-    return d->custom_compositedatasetimporter_creators.keys();
-}
-
-medToolBoxCompositeDataSetImporterCustom *medToolBoxFactory::createCustomCompositeDataSetImporterToolBox(QString type, QWidget *parent)
-{
-    if(!d->custom_compositedatasetimporter_creators.contains(type))
-        return NULL;
-
-    medToolBoxCompositeDataSetImporterCustom *toolbox =
-            d->custom_compositedatasetimporter_creators[type].first(parent);
-    return toolbox;
-}
-
-QList<QString> medToolBoxFactory::filteringToolBoxes(void)
-{
-    return d->custom_filtering_creators.keys();
-}
-
-medToolBoxFilteringCustom *medToolBoxFactory::createCustomFilteringToolBox(QString type, QWidget *parent)
-{
-    if(!d->custom_filtering_creators.contains(type))
-        return NULL;
-
-    medToolBoxFilteringCustom *toolbox =
-            d->custom_filtering_creators[type].first(parent);
+    medToolBox *toolbox =
+            (d->creators[identifier])->creator(parent);
 
     return toolbox;
 }
 
-QPair<QString, QString>
-medToolBoxFactory::diffusionToolBoxDetailsFromId (
-        const QString& id )
+medToolBoxDetails * medToolBoxFactory::toolBoxDetailsFromId(
+        const QString &id) const
 {
-    if (d->custom_diffusion_creators.contains(id))
-    {
-        medHelperStrings helper  = d->custom_diffusion_creators[id].second;
-        return QPair<QString, QString>(helper.name,helper.description);
-    }
-    return QPair<QString, QString>();
+    return d->creators.value(id);
 }
 
-QPair<QString, QString>
-medToolBoxFactory::registrationToolBoxDetailsFromId (
-        const QString& id )
-{
-    if (d->custom_registration_creators.contains(id))
-    {
-        medHelperStrings helper  = d->custom_registration_creators[id].second;
-        return QPair<QString, QString>(helper.name,helper.description);
-    }
-    return QPair<QString, QString>();
-}
 
-QPair<QString, QString>
-medToolBoxFactory::filteringToolBoxDetailsFromId (
-        const QString& id )
+QHash<QString, medToolBoxDetails *> medToolBoxFactory::toolBoxDetailsFromCategory(const QString &cat) const
 {
-    if (d->custom_filtering_creators.contains(id))
+    QHash<QString, medToolBoxDetails *> tbsDetails;
+    typedef medToolBoxFactoryPrivate::medToolBoxCreatorHash::iterator creator_iterator;
+    creator_iterator i = d->creators.begin();
+    while (i != d->creators.end())
     {
-        medHelperStrings helper  = d->custom_filtering_creators[id].second;
-        return QPair<QString, QString>(helper.name,helper.description);
+        if (i.value()->categories.contains(cat))
+        {
+            tbsDetails.insert(i.key(),i.value());
+        }
+        ++i;
     }
-    return QPair<QString, QString>();
-}
-
-QPair<QString, QString>
-medToolBoxFactory::compositeToolBoxDetailsFromId (
-        const QString& id )
-{
-    if (d->custom_compositedatasetimporter_creators.contains(id))
-    {
-        medHelperStrings helper  = d->custom_compositedatasetimporter_creators[id].second;
-        return QPair<QString, QString>(helper.name,helper.description);
-    }
-    return QPair<QString, QString>();
-}
-
-QPair<QString, QString>
-medToolBoxFactory::segmentationToolBoxDetailsFromId (
-        const QString& id )
-{
-    if (d->custom_segmentation_creators.contains(id))
-    {
-        medHelperStrings helper  = d->custom_segmentation_creators[id].second;
-        return QPair<QString, QString>(helper.name,helper.description);
-    }
-    return QPair<QString, QString>();
+    return tbsDetails;
 }
 
 medToolBoxFactory::medToolBoxFactory(void) : dtkAbstractFactory(), d(new medToolBoxFactoryPrivate)
@@ -297,9 +119,19 @@ medToolBoxFactory::medToolBoxFactory(void) : dtkAbstractFactory(), d(new medTool
 
 medToolBoxFactory::~medToolBoxFactory(void)
 {
+    //delete details.
+    foreach (medToolBoxDetails * detail, d->creators.values())
+    {
+        delete detail;
+        detail = NULL;
+    }
+
     delete d;
 
     d = NULL;
 }
 
 medToolBoxFactory *medToolBoxFactory::s_instance = NULL;
+
+
+

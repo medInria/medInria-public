@@ -90,8 +90,3 @@ void medViewerConfigurationRegistration::patientChanged(int patientId)
     d->registrationToolBox->clear();
 }
 
-medViewerConfiguration *createMedViewerConfigurationRegistration(QWidget* parent)
-{
-    return new medViewerConfigurationRegistration(parent);
-}
-

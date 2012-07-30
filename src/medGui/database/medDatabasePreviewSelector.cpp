@@ -39,7 +39,6 @@ medDatabasePreviewSelector::~medDatabasePreviewSelector(void)
     d = NULL;
 }
 
-
 QRectF medDatabasePreviewSelector::rect(void) const
 {
     return d->rect;

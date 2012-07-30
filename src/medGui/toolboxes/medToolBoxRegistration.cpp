@@ -90,16 +90,13 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
     d->toolboxes->setStyleSheet("QComboBox{margin-top: 5px}");
     medToolBoxFactory* tbFactory =medToolBoxFactory::instance();
     int i=1;
-    foreach(QString toolbox, tbFactory->registrationToolBoxes())
+    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("registration"))
     {
-        QPair<QString, QString> pair =
-                tbFactory->registrationToolBoxDetailsFromId(toolbox);
-        QString name = pair.first;
-        QString description = pair.second;
+        medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
 //        qDebug() << "Added registration toolbox" << name;
-        d->toolboxes->addItem(name, toolbox);
+        d->toolboxes->addItem(details->name, toolbox);
         d->toolboxes->setItemData(i,
-                                  description,
+                                  details->description,
                                   Qt::ToolTipRole);
         i++;
     }
@@ -256,7 +253,7 @@ void medToolBoxRegistration::onToolBoxChosen(int index)
     //get identifier for toolbox.
     QString id = d->toolboxes->itemData(index).toString();
 
-    medToolBoxRegistrationCustom *toolbox = medToolBoxFactory::instance()->createCustomRegistrationToolBox(id);
+    medToolBoxRegistrationCustom *toolbox = qobject_cast<medToolBoxRegistrationCustom*>(medToolBoxFactory::instance()->createToolBox(id));
 
 
     if(!toolbox) {

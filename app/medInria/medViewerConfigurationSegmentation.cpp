@@ -42,11 +42,6 @@ public:
 
 static QString msegConfigSegmentationDescription = "Segmentation";
 
-//static
-medViewerConfiguration * medViewerConfigurationSegmentation::createMedSegmentationConfiguration(QWidget * parent)
-{
-    return new medViewerConfigurationSegmentation(parent);
-}
 
 medViewerConfigurationSegmentation::medViewerConfigurationSegmentation(QWidget * parent /* = NULL */ ) :
 medViewerConfiguration(parent), d(new medViewerConfigurationSegmentationPrivate)
@@ -95,10 +90,11 @@ medViewerConfigurationSegmentation::~medViewerConfigurationSegmentation(void)
 
 bool medViewerConfigurationSegmentation::registerWithViewerConfigurationFactory()
 {
-    return medViewerConfigurationFactory::instance()->registerConfiguration(
-        msegConfigSegmentationDescription,
-        medViewerConfigurationSegmentation::createMedSegmentationConfiguration
-        );
+    return medViewerConfigurationFactory::instance()->registerConfiguration
+            <medViewerConfigurationSegmentation>(
+                medViewerConfigurationSegmentation::s_identifier(),
+                tr("Segmentation"),
+                tr("Segment Images"));
 }
 
 
@@ -160,13 +156,13 @@ void medViewerConfigurationSegmentation::connectToolboxesToCurrentContainer(cons
         this,SLOT(onViewRemoved(dtkAbstractView*)));
 }
 
-QString medViewerConfigurationSegmentation::identifier( void ) const
+QString medViewerConfigurationSegmentation::s_identifier()
 {
-    static QString id( "msegConfiguration" );
-    return id;
+    return "msegConfiguration";
 }
 
-medViewerConfiguration *createMedViewerConfigurationSegmentation(QWidget* parent)
+QString medViewerConfigurationSegmentation::identifier( void ) const
 {
-    return new medViewerConfigurationSegmentation(parent);
+    return s_identifier();
 }
+

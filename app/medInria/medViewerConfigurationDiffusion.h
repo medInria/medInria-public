@@ -71,7 +71,5 @@ private:
     void updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionFiberView* fiberViewToolBox);
 };
 
-medViewerConfiguration *createMedViewerConfigurationDiffusion(QWidget*);
-
 
 #endif // MEDVIEWERCONFIGURATIONDIFFUSION_H

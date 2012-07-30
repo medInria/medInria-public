@@ -38,7 +38,7 @@ medQtDataImageReader::~medQtDataImageReader()
 bool medQtDataImageReader::registered(void)
 {
     return dtkAbstractDataFactory::instance()->registerDataReaderType(
-        medQtDataImageReader::s_description(), 
+        medQtDataImageReader::s_description(),
         medQtDataImageReader::s_handled(),
         createMedQtDataImageReader);
 }
@@ -71,14 +71,14 @@ bool medQtDataImageReader::canRead( const QStringList& paths )
     return true;
 }
 
-void medQtDataImageReader::readInformation( const QString& path )
+bool medQtDataImageReader::readInformation( const QString& path )
 {
-    this->read( path );
+    return this->read( path );
 }
 
-void medQtDataImageReader::readInformation( const QStringList& paths )
+bool medQtDataImageReader::readInformation( const QStringList& paths )
 {
-    this->read(paths);
+    return this->read(paths);
 }
 
 
@@ -91,7 +91,7 @@ void medQtDataImageReader::reset()
 void medQtDataImageReader::setMetaDataFromImageReader()
 {
     dtkAbstractData * dtkdata = this->data();
-    if ( !dtkdata || m_reader.isNull() ) 
+    if ( !dtkdata || m_reader.isNull() )
         return;
 
     const QStringList keys = m_reader->textKeys();
@@ -144,7 +144,7 @@ int medQtDataImageReader::readStartingFrom( const QString& path, int iStart )
     }
 
     m_reader.reset( new QImageReader( path ) );
-    if ( !m_reader->canRead() ) 
+    if ( !m_reader->canRead() )
         return 0;
 
 

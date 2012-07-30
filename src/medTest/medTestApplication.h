@@ -10,13 +10,13 @@
 
 #include <QCoreApplication>
 
-#include "medTestCommonExport.h"
+#include "medTestExport.h"
 
 /** A basic application which does not require a GUI.
  *  This is so that tests that do not require a GUI can be run on batch servers
  *  without an X-server connection.
  */
-class MEDTESTCOMMON_EXPORT medTestApplication : public QCoreApplication
+class MEDTEST_EXPORT medTestApplication : public QCoreApplication
 {
     Q_OBJECT;
 public:

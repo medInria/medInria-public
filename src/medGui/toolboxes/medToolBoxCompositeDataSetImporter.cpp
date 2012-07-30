@@ -90,15 +90,12 @@ void medToolBoxCompositeDataSetImporter::initialize()
 
     int i=1;
     medToolBoxFactory* factory = medToolBoxFactory::instance();
-    foreach (QString toolbox,factory->compositeDataSetImporterToolBoxes())
+    foreach (QString toolbox,factory->toolBoxesFromCategory("composite_dataset"))
     {
-//        d->type->addItem(factory->compositeToolBoxDetailsFromId(toolbox).second,toolbox);
-        QPair<QString, QString> pair = factory->compositeToolBoxDetailsFromId(
-                    toolbox);
-        QString name = pair.first;
-        QString descr = pair.second;
-        d->type->addItem(name, toolbox);
-        d->type->setItemData(i, descr, Qt::ToolTipRole);
+        medToolBoxDetails* details = factory->toolBoxDetailsFromId(toolbox);
+
+        d->type->addItem(details->name, toolbox);
+        d->type->setItemData(i, details->description, Qt::ToolTipRole);
         i++;
     }
 
@@ -166,7 +163,7 @@ void medToolBoxCompositeDataSetImporter::onCurrentTypeChanged(const int i) {
     if (d->toolBoxes.contains(id))
         toolbox = d->toolBoxes[id];
     else {
-        toolbox = medToolBoxFactory::instance()->createCustomCompositeDataSetImporterToolBox(id, this);
+        toolbox = qobject_cast<medToolBoxCompositeDataSetImporterCustom*>(medToolBoxFactory::instance()->createToolBox(id, this));
         if (toolbox) {
             toolbox->setStyleSheet("medToolBoxBody {border:none;padding:0px}");
             toolbox->header()->hide();

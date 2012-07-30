@@ -96,7 +96,7 @@ void medViewerConfigurationFiltering::onProcessSuccess()
         newSeriesDescription += " filtered";
         d->filterOutput->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
       }
-    
+
     foreach ( QString metaData, inputData->metaDataList() )
       if (!d->filterOutput->hasMetaData(metaData))
         d->filterOutput->addMetaData ( metaData, inputData->metaDataValues ( metaData ) );
@@ -148,9 +148,4 @@ void medViewerConfigurationFiltering::onViewRemoved ()
 QString medViewerConfigurationFiltering::description(void) const
 {
     return "Filtering";
-}
-
-medViewerConfiguration *createMedViewerConfigurationFiltering ( QWidget* parent )
-{
-    return new medViewerConfigurationFiltering ( parent );
 }

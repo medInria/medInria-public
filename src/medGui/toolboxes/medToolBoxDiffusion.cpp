@@ -71,14 +71,12 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     d->tractographyMethodCombo->addItem( tr( "Choose..." ) );
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
     int i=1;
-    foreach(QString toolbox, tbFactory->diffusionToolBoxes())
+    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("diffusion"))
     {
-        QPair<QString, QString> pair = tbFactory->diffusionToolBoxDetailsFromId(toolbox);
-        QString name = pair.first;
-        QString descr = pair.second;
-        d->tractographyMethodCombo->addItem(name, toolbox);
+        medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
+        d->tractographyMethodCombo->addItem(details->name, toolbox);
         d->tractographyMethodCombo->setItemData(i,
-                                  descr,
+                                  details->description,
                                   Qt::ToolTipRole);
         i++;
     }
@@ -103,7 +101,9 @@ void medToolBoxDiffusion::onToolBoxChosen(int id)
     if (d->toolBoxes.contains (identifier))
         toolbox = d->toolBoxes[identifier];
     else {
-        toolbox = medToolBoxFactory::instance()->createCustomDiffusionToolBox(identifier, this);
+        medToolBox* tb = medToolBoxFactory::instance()->createToolBox(
+                    identifier, this);
+        toolbox = qobject_cast<medToolBoxDiffusionCustom*>(tb);
         if (toolbox) {
             toolbox->setStyleSheet("medToolBoxBody {border:none}");
             toolbox->header()->hide();

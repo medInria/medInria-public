@@ -59,6 +59,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   commonWidgets/medStatusBar.h
   commonWidgets/medQuickAccessMenu.h
   commonWidgets/medGroupBox.h
+  commonWidgets/medMultipleImageSelectionWidget.h
+  commonWidgets/medThumbnailContainer.h
 
   # factories
   factories/medSettingsWidgetFactory.h
@@ -86,6 +88,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
   # specific toolbox classes
   toolboxes/medToolBoxDiffusion.h
+  toolboxes/medToolBoxDiffusionCustom.h
   toolboxes/medToolBoxDiffusionFiberView.h
   toolboxes/medToolBoxDiffusionFiberBundling.h
   toolboxes/medToolBoxRegistration.h
@@ -148,6 +151,8 @@ set(${PROJECT_NAME}_SOURCES
   commonWidgets/medStatusBar.cpp
   commonWidgets/medQuickAccessMenu.cpp
   commonWidgets/medGroupBox.cpp
+  commonWidgets/medMultipleImageSelectionWidget.cpp
+  commonWidgets/medThumbnailContainer.cpp
 
   # db related items
   database/medDatabaseSearchPanel.cpp
@@ -265,6 +270,10 @@ target_link_libraries(${PROJECT_NAME}
 # Include header files for Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+
+if (BUILD_TESTING)
+  add_subdirectory (Testing)
+endif()
 
 ## #################################################################
 ## Installation

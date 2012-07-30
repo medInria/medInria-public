@@ -7,7 +7,7 @@
 
 class medInteractionSettingsWidgetPrivate;
 
-class medInteractionSettingsWidget : public medSettingsWidget
+class MEDGUI_EXPORT medInteractionSettingsWidget : public medSettingsWidget
 {
     Q_OBJECT
 public:

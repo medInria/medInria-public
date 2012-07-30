@@ -8,12 +8,12 @@
 #ifndef MEDQTDATAIMAGEWRITER_H_
 #define MEDQTDATAIMAGEWRITER_H_
 
-#include "medTestCommonExport.h"
+#include "medTestExport.h"
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
 /** A concrete implementation of a dtkAbstractDataWriter for use in testing. */
-class MEDTESTCOMMON_EXPORT medQtDataImageWriter : public dtkAbstractDataWriter
+class MEDTEST_EXPORT medQtDataImageWriter : public dtkAbstractDataWriter
 {
     Q_OBJECT;
 public:

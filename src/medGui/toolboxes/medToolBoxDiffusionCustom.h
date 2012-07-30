@@ -32,13 +32,14 @@ class dtkPlugin;
 
 class MEDGUI_EXPORT medToolBoxDiffusionCustom : public medToolBox
 {
+    Q_OBJECT
 public:
              medToolBoxDiffusionCustom(QWidget *parentToolBox = 0);
     virtual ~medToolBoxDiffusionCustom(void);
 
     virtual void setDiffusionToolBox(medToolBoxDiffusion *toolbox);
 
-    virtual QString description (void) const = 0;
+    virtual QString description (void) const=0;
 
     virtual dtkAbstractData *output (void) const;
 
@@ -48,7 +49,7 @@ public:
      * Used to fill the aboutPlugin button in the parent toolbox.
      *
      */
-    virtual dtkPlugin *plugin( void )const = 0;
+    virtual dtkPlugin *plugin( void )const = 0 ;
 
 protected:
     medToolBoxDiffusion *parentToolBox(void);

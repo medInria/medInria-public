@@ -52,6 +52,4 @@ private:
     medViewerConfigurationVisualizationPrivate *d;
 };
 
-medViewerConfiguration *createMedViewerConfigurationVisualization(QWidget* parent);
-
 #endif

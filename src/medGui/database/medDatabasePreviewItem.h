@@ -20,6 +20,7 @@
 #ifndef MEDDATABASEPREVIEWITEM_H
 #define MEDDATABASEPREVIEWITEM_H
 
+#include <QtGui>
 #include <QtGui/QGraphicsPixmapItem>
 
 class medDataIndex;
@@ -29,6 +30,8 @@ class medDatabasePreviewItem : public QObject, public QGraphicsPixmapItem
 {
     Q_OBJECT
 
+    Q_PROPERTY(QPointF pos READ pos WRITE setPos)
+
 public:
      medDatabasePreviewItem(const medDataIndex &index, QGraphicsItem *parent = 0);
     ~medDatabasePreviewItem(void);
@@ -37,14 +40,24 @@ public:
 
     medDataIndex dataIndex(void) const;
 
+    void setAllowDragging(bool isDraggingAllowed);
+
 signals:
     void patientClicked(int id);
     void   studyClicked(int id);
     void  seriesClicked(int id);
     void   imageClicked(int id);
 
+    void hoverEntered(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
+    void hoverLeft(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
+
 protected slots:
     void setImage(const QImage& image);
+
+    void mousePressEvent(QGraphicsSceneMouseEvent* event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
+    void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent* event);
 
 private:
     medDatabasePreviewItemPrivate *d;

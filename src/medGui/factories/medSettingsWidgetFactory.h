@@ -7,6 +7,7 @@
 
 class medSettingsWidget;
 class medSettingsWidgetFactoryPrivate;
+struct medSettingDetails;
 
 /**
  * @brief This factory creates Widgets that are pages in the medSettingsEditor widget.
@@ -27,7 +28,7 @@ public:
    * @brief Type designating the internal has table containing the creator functions.
    *
   */
-  typedef QHash<QString, medSettingsWidgetCreator> medSettingsWidgetCreatorHash;
+  typedef QHash<QString, medSettingDetails*> medSettingsWidgetCreatorHash;
 
 public:
   /**
@@ -41,17 +42,42 @@ public:
    * @brief Registers a new widget type, and its creator function.
    *
    * @param type name of the widget type.
-   * @param func creator function
+   * @param name Human readable name(Potentially localised).
+   * @param description short description, mainly used for tooltips
    * @return bool true if type was not registered already, false if it exists.
   */
+  template <typename settingType>
   bool registerSettingsWidget (const QString& type,
-                               medSettingsWidgetCreator func);
+                               QString name,
+                               QString description)
+  {
+      //we must keep the templated part in the .h file for library users
+      medSettingsWidgetCreator creator = create<settingType>;
+      return registerSettingsWidget(type,name,description,creator);
+  }
+
+
+
   /**
    * @brief Gets a list of registered type names.
    *
    * @return QList<QString>
   */
   QList<QString> settingsWidgets();
+
+  /**
+   * @brief Gets the name, description and creators
+   * for the given settings.
+   */
+  medSettingDetails* settingDetailsFromId (
+          const QString& id )const;
+
+  /**
+   * @brief Gets the name, description, and creators of all the settings
+   *
+   */
+  QHash<QString, medSettingDetails*> toolBoxDetailsFromCategory (
+          const QString& id )const;
 
 public slots:
   /**
@@ -84,9 +110,38 @@ protected:
 
 private:
   static medSettingsWidgetFactory * s_instance; /**< TODO */
+  /**
+   * @brief Templated method returning a pointer to an allocated settingsWidget.
+   * @see template<class settingType> registerToolBox
+   * @warning keep it static if you don't want to freeze your brain (solution in http://www.parashift.com/c++-faq-lite/pointers-to-members.html#faq-33.5 for those interested)
+   */
+  template < typename T >
+  static medSettingsWidget* create ( QWidget* parent ) {
+  return ( new T(parent) );
+  }
+
+  bool registerSettingsWidget (const QString& type,
+                               QString name,
+                               QString description,
+                               medSettingsWidgetCreator);
 
 private:
   medSettingsWidgetFactoryPrivate * d; /**< TODO */
+};
+
+/**
+ * @brief Stores the details for a particular settingsWidget,
+ * and a function to allocate memory.
+ *
+ */
+struct MEDGUI_EXPORT medSettingDetails{
+    QString name; /** Readable name*/
+    QString description; /** (tooltip) short description */
+    medSettingsWidgetFactory::medSettingsWidgetCreator creator; /** function pointer allocating memory for the widget*/
+    medSettingDetails(QString name,QString description,
+                     medSettingsWidgetFactory::medSettingsWidgetCreator creator):
+        name(name),description(description),
+        creator(creator){}
 };
 
 #endif // MEDSETTINGSWIDGETFACTORY_H

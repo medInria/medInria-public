@@ -171,7 +171,7 @@ void medViewContainerCustom::setPreset ( int preset )
 
 void medViewContainerCustom::setView ( dtkAbstractView *view )
 {
-  qDebug() << "Set view";
+    qDebug() << "Set view";
     if ( this->isLeaf() )
     {
         if ( view != d->view )
@@ -185,41 +185,48 @@ void medViewContainerCustom::setView ( dtkAbstractView *view )
 
             medViewContainer::setView ( view );
 
-            d->layout->setContentsMargins ( 0, 0, 0, 0 );
-            d->layout->addWidget ( view->widget(), 0, 0 );
+            // BEGIN FIXME
+            if (d->view) {
+                d->layout->setContentsMargins ( 0, 0, 0, 0 );
+                d->layout->addWidget ( view->widget(), 0, 0 );
 
-            //d->view = view; // already called in medViewContainer::setView()
-            // d->view->reset();
+                //d->view = view; // already called in medViewContainer::setView()
+                // d->view->reset();
 
-            // retrieve the list of child containers and connect clicked signal
-            // to warn other containers that another one was clicked
-            medViewContainer *root = this->root();
-            if ( root )
-            {
-                QList<medViewContainer *> containers = root->childContainers();
-                foreach ( medViewContainer *container, containers )
+                // retrieve the list of child containers and connect clicked signal
+                // to warn other containers that another one was clicked
+                medViewContainer *root = this->root();
+                if ( root )
                 {
-                    if ( container->isLeaf() && container!=this )
+                    QList<medViewContainer *> containers = root->childContainers();
+                    foreach ( medViewContainer *container, containers )
                     {
-                        connect ( this,      SIGNAL ( clicked() ), container, SLOT ( onContainerClicked() ), Qt::UniqueConnection );
-                        connect ( container, SIGNAL ( clicked() ), this,      SLOT ( onContainerClicked() ), Qt::UniqueConnection );
+                        if ( container->isLeaf() && container!=this )
+                        {
+                            connect ( this,      SIGNAL ( clicked() ), container, SLOT ( onContainerClicked() ), Qt::UniqueConnection );
+                            connect ( container, SIGNAL ( clicked() ), this,      SLOT ( onContainerClicked() ), Qt::UniqueConnection );
+                        }
                     }
                 }
+
+                this->synchronize_2 ( view );
+
+                connect ( view, SIGNAL ( closing() ),         this, SLOT ( onViewClosing() ) );
+                connect ( view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
+                connect ( view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
+
+                this->recomputeStyleSheet();
+                emit viewAdded ( view );
             }
-
-            this->synchronize_2 ( view );
-
-            connect ( view, SIGNAL ( closing() ),         this, SLOT ( onViewClosing() ) );
-            connect ( view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
-            connect ( view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
-
-            this->recomputeStyleSheet();
-            emit viewAdded ( view );
+            // END FIXME
         }
     }
     else
     {
-        current()->setView ( view );
+        // BEGIN FIXME
+        if (current())
+            current()->setView ( view );
+        // END FIXME
         return;
     }
 }
@@ -249,7 +256,7 @@ QList<dtkAbstractView *> medViewContainerCustom::views ( void ) const
     else
     {
         foreach ( medViewContainer * container, this->childContainers() )
-        views << container->views();
+            views << container->views();
     }
     return views;
 }
@@ -415,6 +422,10 @@ void medViewContainerCustom::clear ( void )
             custom->clear();
         }
         d->layout->removeWidget ( container );
+        // BEGIN FIXME
+        container->close();
+        container->setParent(NULL);
+        // END FIXME
         container->deleteLater(); // safer than delete container
     }
 

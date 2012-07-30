@@ -1,5 +1,5 @@
-### CMakeLists.txt --- 
-## 
+### CMakeLists.txt ---
+##
 ## Author: John Stark
 ## Copyright (C) 2011 - Thibaud Kloczko, Inria.
 ## Created: Wed May 25 16:00:00 2011 (+0100)
@@ -8,22 +8,23 @@
 ##           By: Julien Wintz
 ##     Update #: 2
 ######################################################################
-## 
-### Commentary: 
-## 
+##
+### Commentary:
+##
 ######################################################################
-## 
+##
 ### Change log:
-## 
+##
 ######################################################################
 
-project(medTestCommon)
+project(medTest)
 
 ## #################################################################
 ## Input
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
+  medQtView.h
   medQtDataImage.h
   medQtDataImageReader.h
   medQtDataImageWriter.h
@@ -32,33 +33,36 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
-  medTestCommonExport.h
+  medTestExport.h
+  medTest.h
 )
 
 set(${PROJECT_NAME}_SOURCES
+  medQtView.cpp
   medQtDataImage.cpp
   medQtDataImageReader.cpp
   medQtDataImageWriter.cpp
   medTestApplication.cpp
+  medTest.cpp
 )
-#set(${PROJECT_NAME}_RESOURCES xxxxx.qrc)
 
 ## #################################################################
 ## Build rules
 ## #################################################################
 
+
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 # qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC} 
+  ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_HEADERS}
-  ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_SOURCES_QRC})
+  ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
   dtkCore
   medCore
+  ${QT_QTTEST_LIBRARY}
   ${QT_LIBRARIES}
 )
 
@@ -70,7 +74,8 @@ SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 ## Install rules
 ## #################################################################
 
+install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
 install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib)

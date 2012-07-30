@@ -44,11 +44,16 @@ public:
     medAbstractDatabaseItem *item(const QModelIndex& index) const;
 
 public:
+    bool justBringStudies;
+
     medAbstractDatabaseItem *root;
 
     QList<QVariant> ptAttributes;  // Attributes displayed on Patient rows
+    QList<QVariant> stAttributes;  // Attributes displayed on studies rows
     QList<QVariant> seAttributes;  // Attributes displayed on series rows.
+
     QList<QVariant> ptDefaultData;
+    QList<QVariant> stDefaultData;
     QList<QVariant> seDefaultData;
 
     QList<QVariant> data;
@@ -72,8 +77,10 @@ medAbstractDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index)
 // medDatabaseModel
 // /////////////////////////////////////////////////////////////////
 
-medDatabaseModel::medDatabaseModel(QObject *parent) : QAbstractItemModel(parent), d(new medDatabaseModelPrivate)
+medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAbstractItemModel(parent), d(new medDatabaseModelPrivate)
 {
+    d->justBringStudies = justBringStudies;
+
     QString NulString;
     const int dataCount = d->DataCount;
 
@@ -87,6 +94,15 @@ medDatabaseModel::medDatabaseModel(QObject *parent) : QAbstractItemModel(parent)
     d->ptAttributes[0] = medMetaDataKeys::PatientName.key();
     d->ptAttributes[5] = medMetaDataKeys::BirthDate.key();
     d->ptAttributes[6] = medMetaDataKeys::Gender.key();
+
+    d->stAttributes = QList<QVariant>();
+#if QT_VERSION > 0x0406FF
+    d->stAttributes.reserve(dataCount);
+#endif
+    for (int i(0); i<dataCount; ++i)
+        d->stAttributes.append(NulString);
+
+    d->stAttributes[1] = medMetaDataKeys::StudyDescription.key();
 
     d->seAttributes = QList<QVariant>();
 #if QT_VERSION > 0x0406FF
@@ -116,6 +132,9 @@ medDatabaseModel::medDatabaseModel(QObject *parent) : QAbstractItemModel(parent)
 
     d->ptDefaultData =  d->data;
     d->ptDefaultData[0] = tr("[No Patient Name]");
+
+    d->stDefaultData =  d->data;
+    d->stDefaultData[1] = tr("[No Study Name]");
 
     d->seDefaultData =  d->data;
     d->seDefaultData[1] = tr("[No Study Name]");
@@ -538,24 +557,44 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
             // Iterate over studyIds for this patient
             foreach( const medDataIndex& study, studiesForSource ) {
 
-                IndexList seriesForSource = dbc->series(study);
+                if (d->justBringStudies)
+                {
+                      QList<QVariant> stData = d->stDefaultData;
+                      for (int i(0); i<d->DataCount; ++i) {
+                          QVariant attribute = d->stAttributes[i];
+                          if ( !attribute.isNull() ) {
+                              QString value =  dbc->metaData(study, attribute.toString() );
+                              if ( !value.isEmpty() )
+                                  stData[i] = value;
+                          }
+                      }
+                      medAbstractDatabaseItem *stItem = new medDatabaseItem(study, d->stAttributes, stData, ptItem);
 
-                // Iterate over series for this study
-                foreach( const medDataIndex& serie, seriesForSource ) {
+                      ptItem->append(stItem);
 
-                    QList<QVariant> seData = d->seDefaultData;
-                    for (int i(0); i<d->DataCount; ++i) {
-                        QVariant attribute = d->seAttributes[i];
-                        if ( !attribute.isNull() ) {
-                            QString value =  dbc->metaData(serie, attribute.toString() );
-                            if ( !value.isEmpty() )
-                                seData[i] = value;
-                        }
-                    }
-                    medAbstractDatabaseItem *seItem = new medDatabaseItem(serie, d->seAttributes, seData, ptItem);
+                }
+                else
+                {
+                    IndexList seriesForSource = dbc->series(study);
 
-                    ptItem->append(seItem);
-                } // foreach series
+                        // Iterate over series for this study
+                        foreach( const medDataIndex& serie, seriesForSource ) {
+
+                            QList<QVariant> seData = d->seDefaultData;
+                            for (int i(0); i<d->DataCount; ++i) {
+                                QVariant attribute = d->seAttributes[i];
+                                if ( !attribute.isNull() ) {
+                                    QString value =  dbc->metaData(serie, attribute.toString() );
+                                    if ( !value.isEmpty() )
+                                        seData[i] = value;
+                                }
+                            }
+                            medAbstractDatabaseItem *seItem = new medDatabaseItem(serie, d->seAttributes, seData, ptItem);
+
+                            ptItem->append(seItem);
+                        } // foreach series
+                }
+
             } // foreach study
             // ptItem->append(stItem);
             root->append(ptItem);

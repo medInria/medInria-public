@@ -71,11 +71,10 @@ const medImageMaskAnnotationData::ColorMapType & medImageMaskAnnotationData::col
     return m_colorMap;
 }
 
-namespace {
 bool operator<( const QColor & lhs, const QColor & rhs ){
     return lhs.rgba() < rhs.rgba();
 }
-}
+
 
 void medImageMaskAnnotationData::setColorMap( const ColorMapType & colorMap )
 {

@@ -34,7 +34,7 @@ class MEDSQL_EXPORT medDatabaseModel : public QAbstractItemModel
     Q_OBJECT
   
 public:
-     medDatabaseModel(QObject *parent = 0);
+     medDatabaseModel(QObject *parent = 0, bool justBringStudies = false);
     ~medDatabaseModel(void);
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
