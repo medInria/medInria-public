@@ -2,6 +2,7 @@
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <medMetaDataKeys.h>
 
@@ -24,8 +25,8 @@ public:
     itkFilters * filters;
     itk::CStyleCommand::Pointer callback;
 
-    dtkAbstractData *input;
-    dtkAbstractData *output;
+    dtkSmartPointer<dtkAbstractData> input;
+    dtkSmartPointer<dtkAbstractData> output;
     double addValue;
     double subtractValue;
     double multiplyValue;
@@ -382,7 +383,7 @@ void itkFilters::setInput ( dtkAbstractData *data )
 
     QString identifier = data->identifier();
 
-    d->output = dtkAbstractDataFactory::instance()->create ( identifier );
+    d->output = dtkAbstractDataFactory::instance()->createSmartPointer ( identifier );
 
     d->input = data;
 }
