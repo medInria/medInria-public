@@ -13,7 +13,7 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
-
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <medAbstractView.h>
 #include <medRunnableProcess.h>
@@ -25,14 +25,14 @@
 #include <medToolBoxFiltering.h>
 #include <medProgressionStack.h>
 
-namespace %4
+namespace %3
 {
     
     class %1ToolBoxPrivate
     {
     public:
         
-        dtkAbstractProcess *process;
+        dtkSmartPointer <dtkAbstractProcess> process;
         medProgressionStack * progression_stack;
     };
     
@@ -65,10 +65,10 @@ namespace %4
     bool %1ToolBox::registered(void)
     {
         return medToolBoxFactory::instance()->
-        registerCustomRegistrationToolBox("%1ToolBox",
-                                          tr("Friendly name"),
-                                          tr("short tooltip description"),
-                                          create%3ToolBox);
+        registerToolBox<%1ToolBox>("%1ToolBox",
+                                   tr("Friendly name"),
+                                   tr("short tooltip description"),
+                                   QStringList()<< "filtering");
     }
     
     dtkAbstractData* %1ToolBox::processOutput(void)
@@ -84,7 +84,7 @@ namespace %4
         if(!this->parentToolBox())
             return;
         
-        d->process = dtkAbstractProcessFactory::instance()->create("%1");
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("%1");
         
         if(!this->parentToolBox()->data())
             return;
@@ -111,9 +111,4 @@ namespace %4
         QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
     }
     
-    medToolBoxFilteringCustom *create%3ToolBox(QWidget *parent)
-    {
-        return new %1ToolBox (parent);
-    }
-    
-} // end namespace %4
+} // end namespace %3

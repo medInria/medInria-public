@@ -5,6 +5,11 @@
 #include "%1.h"
 
 #include <dtkCore/dtkAbstract%2Factory.h>
+#include <dtkCore/dtkSmartPointer.h>
+
+#include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkAbstract%2.h>
 
 namespace %4 
 {
@@ -51,7 +56,7 @@ namespace %4
         
         QString identifier = data->identifier();
         
-        d->output = dtkAbstractDataFactory::instance()->create ( identifier );
+        d->output = dtkAbstractDataFactory::instance()->createSmartPointer ( identifier );
         
         d->input = data;
     }    

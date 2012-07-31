@@ -276,7 +276,6 @@ bool medPluginGenerator::generateTypeToolBoxHeaderFile(void)
     stream << QString(templateFile.readAll())
     .arg(QString(d->plugin))
     .arg(QString(d->plugin).toUpper())
-    .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
     .arg(QString(d->namesp));
     targetFile.close();
     
@@ -310,7 +309,6 @@ bool medPluginGenerator::generateTypeToolBoxSourceFile(void)
     stream << QString(templateFile.readAll())
     .arg(QString(d->plugin))
     .arg(d->name)
-    .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
     .arg(QString(d->namesp));
     
     targetFile.close();

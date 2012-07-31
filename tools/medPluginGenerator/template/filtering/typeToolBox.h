@@ -8,7 +8,7 @@
 #include <medToolBoxFilteringCustom.h>
 #include "%1PluginExport.h"
 
-namespace %4
+namespace %3
 {
     
     class %1ToolBoxPrivate;
@@ -36,8 +36,6 @@ namespace %4
         %1ToolBoxPrivate *d;
     };
     
-    medToolBoxRegistrationCustom *create%3ToolBox(QWidget *parent);
-    
-} // end namespace %4
+} // end namespace %3
 
 #endif

@@ -13,7 +13,7 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
-
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <medAbstractView.h>
 #include <medRunnableProcess.h>
@@ -27,7 +27,7 @@
 
 #include <rpiCommonTools.hxx>
 
-namespace %4
+namespace %3
 {
     
     class %1ToolBoxPrivate
@@ -70,10 +70,10 @@ namespace %4
     bool %1ToolBox::registered(void)
     {
         return medToolBoxFactory::instance()->
-        registerCustomRegistrationToolBox("%1ToolBox",
-                                          tr("Friendly name"),
-                                          tr("short tooltip description"),
-                                          create%3ToolBox);
+        registerToolBox<%1ToolBox>("%1ToolBox",
+                                   tr("Friendly name"),
+                                   tr("short tooltip description"),
+                                   QStringList() << "registration");
     }
     
     void %1ToolBox::run(void)
@@ -82,7 +82,7 @@ namespace %4
         if(!this->parentToolBox())
             return;
         medToolBoxRegistration * parentTB = this->parentToolBox();
-        dtkAbstractProcess * process;
+        dtkSmartPointer <dtkAbstractProcess> process;
         
         if (this->parentToolBox()->process() &&
             (parentTB->process()->identifier() == "%1"))
@@ -92,7 +92,7 @@ namespace %4
         }
         else
         {
-            process = dtkAbstractProcessFactory::instance()->create("%1");
+            process = dtkAbstractProcessFactory::instance()->createSmartPointer("%1");
             parentTB->setProcess(process);
         }
         dtkAbstractData *fixedData = parentTB->fixedData();
@@ -135,9 +135,4 @@ namespace %4
         QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
     }
     
-    medToolBoxRegistrationCustom *create%3ToolBox(QWidget *parent)
-    {
-        return new %1ToolBox (parent);
-    }
-    
-} // end namespace %4
+} // end namespace %3
