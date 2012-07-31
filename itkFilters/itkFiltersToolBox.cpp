@@ -13,6 +13,7 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <medRunnableProcess.h>
 #include <medJobManager.h>
@@ -56,7 +57,7 @@ public:
     QDoubleSpinBox * intensityOutputMaximumValue;
 
     QComboBox * filters;
-    dtkAbstractProcess *process;
+    dtkSmartPointer <dtkAbstractProcess> process;
     medProgressionStack * progression_stack;
 };
 
@@ -566,7 +567,7 @@ void itkFiltersToolBox::run ( void )
     if ( !this->parentToolBox() )
         return;
 
-    d->process = dtkAbstractProcessFactory::instance()->create ( "itkFilters" );
+    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkFilters" );
 
     if ( !this->parentToolBox()->data() )
         return;
