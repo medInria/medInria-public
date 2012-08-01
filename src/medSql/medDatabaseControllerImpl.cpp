@@ -15,6 +15,8 @@
 #include <medJobManager.h>
 #include <medMetaDataKeys.h>
 
+#include <medDataManager.h>
+
 #include <medDatabaseImporter.h>
 #include <medDatabaseExporter.h>
 #include <medDatabaseReader.h>
@@ -380,6 +382,8 @@ void medDatabaseControllerImpl::import(const QString& file, QString importUuid)
 
 void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopying)
 {
+    qDebug() << "DEBUG : entering medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopying)";
+
     QFileInfo info(file);
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(),indexWithoutCopying);
     //if we want to add importUuid support to permanent db,
@@ -416,6 +420,18 @@ void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUui
 
     medJobManager::instance()->registerJobItem(writer);
     QThreadPool::globalInstance()->start(writer);
+}
+
+
+void medDatabaseControllerImpl::exportDataToFile(dtkAbstractData *data, const QString &filename)
+{
+    medDatabaseExporter *exporter = new medDatabaseExporter (data, filename);
+
+    connect(exporter, SIGNAL(progress(QObject*,int)), medDataManager::instance(), SIGNAL(progressed(QObject*,int)));
+
+    //medMessageController::instance()->showProgress(exporter, "Saving database item");
+
+    QThreadPool::globalInstance()->start(exporter);
 }
 
 dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIndex& index) const

@@ -62,22 +62,49 @@ public:
     void import(dtkSmartPointer<dtkAbstractData> &data);
 
     /**
+    * Import data into the db read from file
+    * @params const QString & file The file containing the data
+    * @params bool indexWithoutCopying true if the file must only be indexed by its current path,
+    * false if the file will be imported (copied or converted to the internal storage format)
+    */
+    void import(const QString& file,bool indexWithoutCopying);
+
+    /**
     * Use this function to insert data into the non-persistent database,
     * Do *not* use the concrete database controller implementation for it
     * The data-manager will take over this task
     * @params const dtkAbstractData & data
     */
     void importNonPersistent(dtkAbstractData *data);
-    void importNonPersistent(dtkAbstractData *data, QString uuid);
 
+    /**
+    * Use this function to insert data into the non-persistent database,
+    * Do *not* use the concrete database controller implementation for it
+    * The data-manager will take over this task
+    * @params const dtkAbstractData & data
+    * @params QString uuid Universally unique identifier associated with the data
+    */
+    void importNonPersistent(dtkAbstractData *data, QString uuid);
 
     /**
     * Overload to insert data directly from a file into the no-persistent database
     * @params QString file
     */
     void importNonPersistent(QString file);
+
+    /**
+    * Overload to insert data directly from a file into the no-persistent database
+    * @params QString file
+    * @params QString & uuid Universally unique identifier associated with the data
+    */
     void importNonPersistent(QString file, const QString &uuid);
 
+    /**
+    * Use this function to save data to a file.
+    * @params dtkAbstractData *data Pointer to some data to save
+    * @params const QString & filename The location in which the data will be stored in the file system
+    */
+    void exportDataToFile(dtkAbstractData *data, const QString &filename);
 
     /**
     * Use this function to save all non-persistent data to the sql database.
@@ -185,6 +212,13 @@ signals:
      * @param uuid the identifier linked to this import request
     */
     void importFailed(const medDataIndex& index, QString uuid);
+
+    /**
+     * This signal is emitted when the operation has progressed
+     * @param QObject *obj Pointer to the operating QObject
+     * @param int value Progress bar's current value
+     */
+    void progressed(QObject* obj,int value);
 
 public slots:
     void onNonPersistentDataImported(const medDataIndex &index, QString uuid);

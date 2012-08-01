@@ -516,6 +516,15 @@ void medDataManager::importNonPersistent( QString file, const QString &uuid )
     }
 }
 
+//-------------------------------------------------------------------------------------------------------
+
+void medDataManager::exportDataToFile(dtkAbstractData *data, const QString &filename)
+{
+    medAbstractDbController* db = d->getDbController();
+
+    if(db)
+        db->exportDataToFile(data,filename);
+}
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -644,6 +653,22 @@ void medDataManager::import( dtkSmartPointer<dtkAbstractData> &data )
 }
 
 //-------------------------------------------------------------------------------------------------------
+
+void medDataManager::import(const QString& file,bool indexWithoutCopying)
+{
+    qDebug() << "DEBUG : entering medDataManager::import(const QString& file,bool indexWithoutCopying)";
+
+    if(file.isEmpty())
+        return;
+
+    medAbstractDbController* db = d->getDbController();
+
+    if(db)
+        db->import(file,indexWithoutCopying);
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 
 void medDataManager::onPersistentDataImported(const medDataIndex &index)
 {

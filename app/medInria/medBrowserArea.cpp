@@ -190,12 +190,13 @@ void medBrowserArea::setdw(QStatusBar *status)
 
 void medBrowserArea::onFileImport(QString path)
 {
-    medDatabaseController::instance()->import(path,false);
+    medDataManager::instance()->import(path,false);
 }
 
 void medBrowserArea::onFileIndex(QString path)
 {
-    medDatabaseController::instance()->import(path,true);
+    medDataManager::instance()->import(path,true);
+
 }
 
 void medBrowserArea::onPartialImportAttempted(const QString& message)
@@ -237,7 +238,9 @@ void medBrowserArea::onDataImport(dtkAbstractData *data)
         return;
     }
 
-    medDatabaseController::instance()->import(data);
+    dtkSmartPointer<dtkAbstractData> data_smart(data);
+
+    medDataManager::instance()->import(data_smart);
 }
 
 void medBrowserArea::onDataReceivingFailed(QString fileName)
@@ -304,11 +307,9 @@ void medBrowserArea::onExportData(const medDataIndex &index)
         //There may be other cases, but this will get us through most
     }
 
-    medDatabaseExporter *exporter = new medDatabaseExporter (data, fileName);
+    medDataManager::instance()->exportDataToFile(data,fileName);
 
-    connect(exporter, SIGNAL(progress(QObject*,int)), d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
-
-    QThreadPool::globalInstance()->start(exporter);
+    connect(medDataManager::instance(),SIGNAL(progressed(QObject*,int)),d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
 }
 
 void medBrowserArea::addToolBox(medToolBox *toolbox)

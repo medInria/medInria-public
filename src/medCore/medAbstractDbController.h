@@ -110,10 +110,25 @@ public slots:
 
     /**
      * This method allows importing data from other databases
-     * @params const medDataIndex & index The data index used in the referenced db (source)
-     * @params const medAbstractDbController & controller  The referenced db (source)
+     * @param const medDataIndex & index The data index used in the referenced db (source)
+     * @param const medAbstractDbController & controller  The referenced db (source)
      */
     virtual void import(const medDataIndex& index, const medAbstractDbController& controller);
+
+    /**
+    * Import data into the db read from file
+    * @param const QString & file The file containing the data
+    * @param bool indexWithoutCopying true if the file must only be indexed by its current path,
+    * false if the file will be imported (copied or converted to the internal storage format)
+    */
+    virtual void import(const QString& file,bool indexWithoutCopying);
+
+    /**
+    * Export data to file
+    * @param dtkAbstractData *data Pointer to some data to export
+    * @param const QString & filename The location in which the data will be stored in the file system
+    */
+    virtual void exportDataToFile(dtkAbstractData *data, const QString &filename);
 
     /**
      * This method allows removing one data from the database
