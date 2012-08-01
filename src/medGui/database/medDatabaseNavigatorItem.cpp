@@ -25,8 +25,6 @@
 #include <medCore/medDataManager.h>
 #include <medCore/medMetaDataKeys.h>
 
-#include <medSql/medDatabaseExporter.h>
-
 #include <QtCore>
 #include <QtGui>
 
@@ -181,8 +179,6 @@ void medDatabaseNavigatorItem::saveData()
 
 void medDatabaseNavigatorItem::exportData()
 {
-    //medDataManager::instance()->exportDataFromDatabase(d->index);
-    
     QString fileName = QFileDialog::getSaveFileName(NULL, tr("Save as"), "", "*.*");
     
     if (fileName.isEmpty())
@@ -206,10 +202,8 @@ void medDatabaseNavigatorItem::exportData()
         qDebug() << "filename:" << fileName;
         //There may be other cases, but this will get us through most
     }
-    
-    medDatabaseExporter *exporter = new medDatabaseExporter (data, fileName);
-    
-    QThreadPool::globalInstance()->start(exporter);
+
+    medDataManager::instance()->exportDataToFile(data, fileName);
 }
 
 void medDatabaseNavigatorItem::setImage(const QImage& image)
