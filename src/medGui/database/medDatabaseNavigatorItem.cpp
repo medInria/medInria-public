@@ -169,7 +169,12 @@ QString medDatabaseNavigatorItem::text(void) const
 
 void medDatabaseNavigatorItem::deleteData()
 {
-    medDataManager::instance()->removeData(d->index);
+    int reply = QMessageBox::question(NULL, tr("Remove item"),
+                                      tr("Are you sure you want to continue removing this data?\n""This cannot be undone."),
+                                      QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton);
+    
+    if( reply == QMessageBox::Yes )
+        medDataManager::instance()->removeData(d->index);
 }
 
 void medDatabaseNavigatorItem::saveData()
