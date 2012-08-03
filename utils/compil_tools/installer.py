@@ -189,7 +189,7 @@ def configure_project(project,config,architecture='linux'):
         build_dir = config.get(project,"build_dir")
         if (architecture == "win"):
             src_dir=config.get(project,"cyg_drive")+src_dir
-        shutil.rmtree(build_dir,True)
+        #shutil.rmtree(build_dir,True)
         print("making dir %s",build_dir )
         os.makedirs(build_dir)
         os.chdir(build_dir)
@@ -233,7 +233,7 @@ def build(project,config,architecture="linux"):
                 cmd = make_command + ' -f Makefile'
         else:
             cmd =  config.get("commands",
-                    "visual_build") +' ' + project_name + '.sln ' + win32_config
+                    "visual_build") + ' /m:' + config.get(project,"cpus") + ' ' + project_name + '.sln ' + win32_config
     else:
          cmd = make_command+' -j'+config.get(project,"cpus") + ' -k'
     logging.info(cmd)
