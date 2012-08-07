@@ -52,11 +52,11 @@ public:
 
     //BTX
     enum {
-        Cube=0,    
-        Dodecahedron = 1,
-        Icosahedron = 2,
-        Octahedron = 3,
-        Tetrahedron = 4
+        Icosahedron=0,
+        Dodecahedron,
+        Octahedron ,
+        Cube,
+        Tetrahedron
     };
     //ETX
 

@@ -47,11 +47,11 @@ protected:
   unsigned int Resolution;
   unsigned int PolyhedraType;
   enum {
-    cube=0,
-    dodecahedron = 1,
-    icosahedron = 2,
-    octahedron = 3,
-    tetrahedron = 4
+      icosahedron,
+      dodecahedron,
+      octahedron,
+      cube,
+      tetrahedron
   };
 
 

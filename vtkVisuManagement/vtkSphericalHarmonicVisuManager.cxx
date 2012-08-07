@@ -179,7 +179,7 @@ void vtkSphericalHarmonicVisuManager::ColorGlyphs (const int& a)
     this->SHGlyph->SetColorGlyphs(true);
   else
     this->SHGlyph->SetColorGlyphs(false);
-  this->SHSource->UpdateSphericalHarmonicSource();
+//  this->SHSource->UpdateSphericalHarmonicSource();
 }
 
 void vtkSphericalHarmonicVisuManager::SetNormalization (const int& a)
@@ -188,6 +188,6 @@ void vtkSphericalHarmonicVisuManager::SetNormalization (const int& a)
         this->SHSource->NormalizeOn();
       else
         this->SHSource->NormalizeOff();
-      this->SHSource->UpdateSphericalHarmonicSource();
+//      this->SHSource->UpdateSphericalHarmonicSource();
 }
 

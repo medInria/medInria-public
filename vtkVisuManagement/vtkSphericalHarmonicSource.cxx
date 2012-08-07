@@ -93,12 +93,12 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(int tess)
   this->FlipZOn();
   this->MaxThesisFuncOff();
 
-  TesselationType = Icosahedron;
-  TesselationBasis = SHMatrix;
-  Tesselation = tess;
+  this->TesselationType = Icosahedron;
+  this->TesselationBasis = SHMatrix;
+  this->Tesselation = tess;
   this->sphereT = vtkTessellatedSphereSource::New();
-  SphericalHarmonics = 0;
-  Order = 4;
+ this-> SphericalHarmonics = 0;
+ this-> Order = 4;
   this->SetNumberOfSphericalHarmonics (15);
 }
 
@@ -473,6 +473,7 @@ void vtkSphericalHarmonicSource::SetSphericalHarmonics(double* _arg)
 
 void vtkSphericalHarmonicSource::UpdateSphericalHarmonicSource()
 {
+  this->sphereT->SetPolyhedraType(TesselationType);
   this->sphereT->SetResolution(Tesselation);
   this->sphereT->Update();
 
