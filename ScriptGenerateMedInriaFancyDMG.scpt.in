@@ -6,48 +6,9 @@ on run
 	do shell script ("mkdir -p /Volumes/\"medInria @medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@\"/.background")
 	do shell script ("cp -p @PROJECT_SOURCE_DIR@/app/medInria/pixmaps/medInria-logo-dmg.png /Volumes/\"medInria @medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@\"/.background")
 	
-	set dmgIcon to (POSIX file "@PROJECT_SOURCE_DIR@/app/medInria/pixmaps/medInria_dmg_mountedimage.icns") as alias
-	set dmgFolder to (POSIX file "/Volumes/medInria @medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@") as alias
-	
-	tell application "Finder"
-		set infoWindow to open information window of dmgIcon
-		set infoWindowName to name of infoWindow
-		activate
-		delay 1
-	end tell
-	
-	tell application "System Events"
-		tell application process "Finder"
-			tell window infoWindowName
-				keystroke tab
-				keystroke "c" using command down
-				delay 2
-			end tell
-		end tell
-	end tell
-	
-	tell application "Finder"
-		close infoWindow
-		set infoWindow to open information window of dmgFolder
-		set infoWindowName to name of infoWindow
-		activate
-		delay 1
-	end tell
-	
-	tell application "System Events"
-		tell application process "Finder"
-			tell window infoWindowName
-				keystroke tab
-				keystroke "v" using command down
-				delay 2
-			end tell
-		end tell
-	end tell
-	
-	tell application "Finder"
-		close infoWindow
-		delay 1
-	end tell
+	do shell script ("cp -p @PROJECT_SOURCE_DIR@/app/medInria/pixmaps/medInria_dmg_mountedimage.icns /Volumes/\"medInria @medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@\"/.VolumeIcon.icns")
+	do shell script ("SetFile -c icnC /Volumes/\"medInria @medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@\"/.VolumeIcon.icns")	
+	do shell script ("SetFile -a C /Volumes/\"medInria @medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@\"/")	
 	
 	tell application "Finder"
 		tell disk "medInria @medInria_VERSION_MAJOR@.@medInria_VERSION_MINOR@.@medInria_VERSION_BUILD@"
