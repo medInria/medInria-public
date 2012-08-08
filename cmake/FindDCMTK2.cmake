@@ -262,12 +262,12 @@ if(DCMTK_dcmnet_LIBRARY)
     ${DCMTK_LIBRARIES_DEBUG}
     )
 
-    if (UNIX)
+    if (UNIX AND NOT APPLE)
     set( DCMTK_LIBRARIES
     ${DCMTK_LIBRARIES}
     wrap
     )
-    endif (UNIX)
+    endif (UNIX AND NOT APPLE)
 endif(DCMTK_dcmnet_LIBRARY)
 
 if( WIN32 )
