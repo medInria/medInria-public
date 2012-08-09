@@ -137,30 +137,35 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     newNormals->Allocate(numDirs*3*numPts*numSourcePts);
     newNormals->Delete();
   }
-
+  vtkIdType inPtIdReal=0; double test=1;
   // First copy all topology (transformation independent)
   for (vtkIdType inPtId=0;inPtId<numPts;++inPtId) {
-    const vtkIdType ptIncr = numDirs*inPtId*numSourcePts;
-    for (vtkIdType cellId=0;cellId<numSourceCells;++cellId) {
-      vtkCell*   cell    = this->GetSource()->GetCell(cellId);
-      vtkIdList* cellPts = cell->GetPointIds();
+    test= inAniso->GetComponent(inPtId,0);
+    if(test!=0)
+    {
+      const vtkIdType ptIncr = numDirs* inPtIdReal*numSourcePts;
+      for (vtkIdType cellId=0;cellId<numSourceCells;++cellId) {
+        vtkCell*   cell    = this->GetSource()->GetCell(cellId);
+        vtkIdList* cellPts = cell->GetPointIds();
 
-      const int  npts    = cellPts->GetNumberOfIds();
-      vtkIdType  pts[npts];
+        const int  npts    = cellPts->GetNumberOfIds();
+        vtkIdType  pts[npts];
 
-      for (int dir=0;dir<numDirs;++dir) {
-        const vtkIdType subIncr = ptIncr+dir*numSourcePts;
-        for (vtkIdType i=0;i<npts;++i)
-          pts[i] = cellPts->GetId(i)+subIncr;
-        output->InsertNextCell(cell->GetCellType(),npts,pts);
+        for (int dir=0;dir<numDirs;++dir) {
+          const vtkIdType subIncr = ptIncr+dir*numSourcePts;
+          for (vtkIdType i=0;i<npts;++i)
+            pts[i] = cellPts->GetId(i)+subIncr;
+          output->InsertNextCell(cell->GetCellType(),npts,pts);
+        }
       }
+      inPtIdReal++;
     }
   }
 
   // Traverse all Input points, transforming glyph at Source points
   vtkTransform* trans = vtkTransform::New();
   trans->PreMultiply();
-
+  inPtIdReal=0;
   // Visualization::vtkSphericalHarmonicSource* shs = Visualization::vtkSphericalHarmonicSource::New();
   //   shs->SetTesselation(3);
 
@@ -171,55 +176,59 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
         break;
     }
 
-    const vtkIdType ptIncr = numDirs*inPtId*numSourcePts;
+    test= inAniso->GetComponent(inPtId,0);
+    if(test!=0)
+    {
+      const vtkIdType ptIncr = numDirs*inPtIdReal*numSourcePts;
 
-    // Get the Spherical Harmonic vector.
-    double sh[inScalars->GetNumberOfComponents()];
-    inScalars->GetTuple(inPtId,sh);
+      // Get the Spherical Harmonic vector.
+      double sh[inScalars->GetNumberOfComponents()];
+      inScalars->GetTuple(inPtId,sh);
 
-    // Set harmonics and compute spherical function.
-    this->SphericalHarmonicSource->SetSphericalHarmonics(sh);
-    this->SphericalHarmonicSource->Update();
+      // Set harmonics and compute spherical function.
+      this->SphericalHarmonicSource->SetSphericalHarmonics(sh);
+      this->SphericalHarmonicSource->Update();
 
-    vtkPointData* sourcePointData = this->SphericalHarmonicSource->GetOutput()->GetPointData();
-    vtkPoints*    deformPts       = this->SphericalHarmonicSource->GetOutput()->GetPoints();
+      vtkPointData* sourcePointData = this->SphericalHarmonicSource->GetOutput()->GetPointData();
+      vtkPoints*    deformPts       = this->SphericalHarmonicSource->GetOutput()->GetPoints();
 
-    trans->Identity();
-    trans->SetMatrix(this->TMatrix);
+      trans->Identity();
+      trans->SetMatrix(this->TMatrix);
 
-    // translate Source to Input point
-    double x[3];
-    input->GetPoint(inPtId,x);
-    trans->Translate(x[0],x[1],x[2]);
+      // translate Source to Input point
+      double x[3];
+      input->GetPoint(inPtId,x);
+      trans->Translate(x[0],x[1],x[2]);
 
-    trans->Scale(ScaleFactor,ScaleFactor,ScaleFactor);
+      trans->Scale(ScaleFactor,ScaleFactor,ScaleFactor);
 
-    // Translate the deform pt to the correct x,y,z location
-    trans->TransformPoints(deformPts,newPts);
+      // Translate the deform pt to the correct x,y,z location
+      trans->TransformPoints(deformPts,newPts);
 
-    // This is for spherical values coloring
-    // Need to set them at the right place in the list of all points
-    for (int z=0;z<numSourcePts;++z)
-      newPointScalars->InsertTuple(ptIncr+z,sourcePointData->GetScalars()->GetTuple(z));
+      // This is for spherical values coloring
+      // Need to set them at the right place in the list of all points
+      for (int z=0;z<numSourcePts;++z)
+        newPointScalars->InsertTuple(ptIncr+z,sourcePointData->GetScalars()->GetTuple(z));
 
-    // Scalar color for anisotropy : one color per shell
-    if (this->ColorGlyphs && inAniso && this->ColorMode==COLOR_BY_SCALARS) {
-      const double s = inAniso->GetComponent(inPtId,0);
-      for (vtkIdType i=0;i<numSourcePts;++i)
-        newScalars->InsertTuple(ptIncr+i,&s);
-    }
-
-    // RGB color : color at every point of the spherical function
-    if (this->ColorGlyphs && this->ColorMode==COLOR_BY_DIRECTIONS) {
-      for (vtkIdType i=0;i<numSourcePts;++i) {
-        double s,vect[3];
-        this->SphericalHarmonicSource->GetOutput()->GetPoints()->GetPoint(i,vect);
-        RGBToIndex(fabs(vect[0]),fabs(vect[1]),fabs(vect[2]),s);
-        newScalars->InsertTuple(ptIncr+i,&s);
+      // Scalar color for anisotropy : one color per shell
+      if (this->ColorGlyphs && inAniso && this->ColorMode==COLOR_BY_SCALARS) {
+        const double s = inAniso->GetComponent(inPtId,0);
+        for (vtkIdType i=0;i<numSourcePts;++i)
+          newScalars->InsertTuple(ptIncr+i,&s);
       }
+
+      // RGB color : color at every point of the spherical function
+      if (this->ColorGlyphs && this->ColorMode==COLOR_BY_DIRECTIONS) {
+        for (vtkIdType i=0;i<numSourcePts;++i) {
+          double s,vect[3];
+          this->SphericalHarmonicSource->GetOutput()->GetPoints()->GetPoint(i,vect);
+          RGBToIndex(fabs(vect[0]),fabs(vect[1]),fabs(vect[2]),s);
+          newScalars->InsertTuple(ptIncr+i,&s);
+        }
+      }
+      inPtIdReal++;
     }
   }
-
   output->SetPoints(newPts);
 
   // Assigning color to PointData
