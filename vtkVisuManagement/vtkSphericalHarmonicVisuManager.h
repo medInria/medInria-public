@@ -9,7 +9,7 @@ class vtkPolyDataNormals;
 class vtkExtractVOI;
 class vtkPolyDataMapper;
 class vtkActor;
-class vtkStructuredPoints;
+class vtkImageData;
 
 class VTK_VISUMANAGEMENT_EXPORT vtkSphericalHarmonicVisuManager : public vtkObject
 {
@@ -49,7 +49,7 @@ public:
       * 6 integers: xmin, xmax, ymin, ymax, zmin, zmax.*/
   void SetVOI(const int&,const int&,const int&,const int&,const int&,const int&);
 
-  void SetInput (vtkStructuredPoints*);
+  void SetInput (vtkImageData*);
 
   /** Get the object that computes the spherical harmonic glyph*/
   vtkGetObjectMacro (SHSource, vtkSphericalHarmonicSource);

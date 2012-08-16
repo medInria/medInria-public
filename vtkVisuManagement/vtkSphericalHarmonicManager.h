@@ -6,7 +6,7 @@
 #include <vtkRenderer.h>
 #include <vtkRendererCollection.h>
 #include <vtkRenderWindow.h>
-#include <vtkStructuredPoints.h>
+#include <vtkImageData.h>
 #include <vtkLookupTable.h>
 
 #include <vtkSphericalHarmonicVisuManager.h>
@@ -22,8 +22,8 @@ public:
   void SetRenderWindowInteractor (vtkRenderWindowInteractor*, vtkRenderer* ren=0);
   vtkGetObjectMacro (RenderWindowInteractor, vtkRenderWindowInteractor);
 
-  vtkSetObjectMacro (Input, vtkStructuredPoints);
-  vtkGetObjectMacro (Input, vtkStructuredPoints);
+  vtkSetObjectMacro (Input, vtkImageData);
+  vtkGetObjectMacro (Input, vtkImageData);
 
   /** Get/set the transformation matrix that is used to display the glyphs
      *  according to the image coordinate system */
@@ -116,7 +116,7 @@ private:
 
   vtkRenderWindowInteractor* RenderWindowInteractor;
 
-  vtkStructuredPoints* Input;
+  vtkImageData* Input;
   vtkMatrix4x4* MatrixT;
 
   vtkRenderer* Renderer;

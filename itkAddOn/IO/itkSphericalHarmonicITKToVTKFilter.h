@@ -22,7 +22,7 @@
 #include "itkImageToImageFilter.h"
 #include "vtkINRIA3DConfigure.h"
 
-class vtkStructuredPoints;
+class vtkImageData;
 class vtkMatrix4x4;
 
 namespace itk
@@ -63,9 +63,9 @@ public:
 
   /** Get the VTK SphericalHarmonic image obtained from the input ITK SphericalHarmonic
      *  image */
-  void CopyVTKSphericalHarmonic( vtkStructuredPoints* );
+  void CopyVTKSphericalHarmonic( vtkImageData* );
 
-  vtkStructuredPoints* GetVTKSphericalHarmonic(void) const
+  vtkImageData* GetVTKSphericalHarmonic(void) const
   { return m_VTKSphericalHarmonic; }
 
   /** Get the VTKMatrix4x4 obtained from the Itk image transformation that
@@ -85,7 +85,7 @@ private:
   void operator=(const Self&);                 //purposely not implemented
 
   /** VTK output */
-  vtkStructuredPoints* m_VTKSphericalHarmonic;
+  vtkImageData* m_VTKSphericalHarmonic;
 
   vtkMatrix4x4 *m_DirectionMatrix;
 

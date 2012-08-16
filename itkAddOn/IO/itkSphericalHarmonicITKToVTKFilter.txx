@@ -19,7 +19,7 @@
 
 
 #include <vtkPointData.h>
-#include <vtkStructuredPoints.h>
+#include <vtkImageData.h>
 #include <vtkMatrix4x4.h>
 #include <vtkFloatArray.h>
 
@@ -41,7 +41,7 @@ template < class TSHImage >
 SphericalHarmonicITKToVTKFilter< TSHImage >
 ::SphericalHarmonicITKToVTKFilter()
 {
-  m_VTKSphericalHarmonic = vtkStructuredPoints::New();
+  m_VTKSphericalHarmonic = vtkImageData::New();
   m_DirectionMatrix = vtkMatrix4x4::New();
   m_DirectionMatrix->Identity();
 }
@@ -58,12 +58,12 @@ SphericalHarmonicITKToVTKFilter< TSHImage >
 }
 
 /**
- * Set a vtkStructuredPoints as input
+ * Set a vtkImageData as input
  */
 template < class TSHImage >
 void
 SphericalHarmonicITKToVTKFilter< TSHImage >
-::CopyVTKSphericalHarmonic( vtkStructuredPoints* p )
+::CopyVTKSphericalHarmonic( vtkImageData* p )
 {
   p->DeepCopy(m_VTKSphericalHarmonic);
 }
@@ -94,8 +94,8 @@ SphericalHarmonicITKToVTKFilter< TSHImage >
     throw itk::ExceptionObject (__FILE__,__LINE__,"Error: No input ITK SphericalHarmonic image has been set.");
   }
 
-  // conversion itkVectorImage -> vtkStructuredPoints
-  //        vtkStructuredPoints *sh_points = vtkStructuredPoints::New();
+  // conversion itkVectorImage -> vtkImageData
+  //        vtkImageData *sh_points = vtkImageData::New();
   vtkFloatArray *sh_array        = vtkFloatArray::New();
   vtkFloatArray *aniso_array = vtkFloatArray::New();
   vtkFloatArray *rgb_array = vtkFloatArray::New();

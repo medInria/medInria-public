@@ -17,7 +17,7 @@
  =========================================================================*/
 #include <vtkMatrix4x4.h>
 #include <vtkSmartPointer.h>
-#include <vtkStructuredPoints.h>
+#include <vtkImageData.h>
 #include <vtkPolyData.h>
 #include <vtkExtractVOI.h>
 #include <vtkPolyDataReader.h>
@@ -120,8 +120,8 @@ int vtkSphericalHarmonicGlyphTest(int argc, char *argv[])
 
   /**
            We convert the SH coefficinets typedef itk::VectorImage<float, 3>  with SH data to
-           vtkStructuredPoints. ITK image is keep and used in this example in order to keep
-           the orientation of the image that can not be held by the vtkStructuredPoints.
+           vtkImageData. ITK image is keep and used in this example in order to keep
+           the orientation of the image that can not be held by the vtkImageData.
        */
   itk::SphericalHarmonicITKToVTKFilter<ShImageTypeFloat>::Pointer filterFloat;
   filterFloat = itk::SphericalHarmonicITKToVTKFilter<ShImageTypeFloat>::New();
@@ -133,7 +133,7 @@ int vtkSphericalHarmonicGlyphTest(int argc, char *argv[])
            properties, the interactor and renderer and finally update it .
        */
 
-  vtkStructuredPoints *shs = filterFloat->GetVTKSphericalHarmonic();
+  vtkImageData *shs = filterFloat->GetVTKSphericalHarmonic();
   vtkMatrix4x4 *matrix = filterFloat->GetDirectionMatrix();
 
   int number = reader->GetOutput()->GetNumberOfComponentsPerPixel();

@@ -6,7 +6,7 @@
 #include <vtkPolyDataMapper.h>
 #include <vtkActor.h>
 
-#include <vtkStructuredPoints.h>
+#include <vtkImageData.h>
 #include <vtkLookupTable.h>
 #include <vtkProperty.h>
 
@@ -85,7 +85,7 @@ vtkSphericalHarmonicVisuManager::~vtkSphericalHarmonicVisuManager()
     this->MatrixT->Delete();
 }
 
-void vtkSphericalHarmonicVisuManager::SetInput (vtkStructuredPoints* vtkSH)
+void vtkSphericalHarmonicVisuManager::SetInput (vtkImageData* vtkSH)
 {
   this->SHGlyph->SetTMatrix(MatrixT);
 
