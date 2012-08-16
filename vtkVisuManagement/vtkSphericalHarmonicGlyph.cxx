@@ -165,10 +165,9 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
   // Traverse all Input points, transforming glyph at Source points
   vtkTransform* trans = vtkTransform::New();
   trans->PreMultiply();
-  inPtIdReal=0;
-  // Visualization::vtkSphericalHarmonicSource* shs = Visualization::vtkSphericalHarmonicSource::New();
-  //   shs->SetTesselation(3);
 
+  inPtIdReal=0;
+  double x[4];
   for (vtkIdType inPtId=0;inPtId<numPts;++inPtId) {
     if (inPtId%10000==0) {
       this->UpdateProgress (static_cast<vtkFloatingPointType>(inPtId)/numPts);
@@ -192,14 +191,9 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
       vtkPointData* sourcePointData = this->SphericalHarmonicSource->GetOutput()->GetPointData();
       vtkPoints*    deformPts       = this->SphericalHarmonicSource->GetOutput()->GetPoints();
 
-      trans->Identity();
-      trans->SetMatrix(this->TMatrix);
-
-      // translate Source to Input point
-      double x[3];
+      trans->SetMatrix( this->TMatrix);
       input->GetPoint(inPtId,x);
       trans->Translate(x[0],x[1],x[2]);
-
       trans->Scale(ScaleFactor,ScaleFactor,ScaleFactor);
 
       // Translate the deform pt to the correct x,y,z location

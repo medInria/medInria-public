@@ -103,19 +103,31 @@ SphericalHarmonicITKToVTKFilter< TSHImage >
   typename SHImageType::SizeType   size    = inputSH->GetLargestPossibleRegion().GetSize();
   typename SHImageType::SpacingType spacing = inputSH->GetSpacing();
   typename SHImageType::PointType  origin  = inputSH->GetOrigin();
+  typename TSHImage::DirectionType directions = inputSH->GetDirection();
 
   int numVoxels=1;
   double pt[3], sp[3];
   for( unsigned int i=0; i<3; i++)
   {
     numVoxels *= size[i];
-    pt[i] = origin[i];
+    pt[i] = 0; /*do not use origin[i] coz if the directions does not match it wont be useful better keep em both in m_DirectionMatrix*/
     sp[i] = spacing[i];
   }
 
   m_VTKSphericalHarmonic->SetDimensions(size[0], size[1], size[2]);
   m_VTKSphericalHarmonic->SetSpacing( sp );
   m_VTKSphericalHarmonic->SetOrigin( pt );
+
+  for (int i=0; i<3; i++)
+    for (int j=0; j<3; j++)
+        m_DirectionMatrix->SetElement (i, j, directions(i,j));
+
+  for (int i=0; i<3; i++)
+   m_DirectionMatrix->SetElement (i, 3,origin[i]);
+
+//    for (int l=0; l<4;l++)
+//      std::cout << m_DirectionMatrix->GetElement(l,0) << m_DirectionMatrix->GetElement(l,1)
+//                << m_DirectionMatrix->GetElement(l,2) << m_DirectionMatrix->GetElement(l,3)<<std::endl;
 
   sh_array->SetName( vtkSphericalHarmonicGlyph::GetSphericalHarmonicCoefficientsArrayName() );
   sh_array->SetNumberOfComponents( inputSH->GetNumberOfComponentsPerPixel() );
@@ -177,28 +189,6 @@ SphericalHarmonicITKToVTKFilter< TSHImage >
     }
   }
 
-  typename TSHImage::DirectionType directions = inputSH->GetDirection();
-  typename TSHImage::PointType i_origin = inputSH->GetOrigin();
-  m_DirectionMatrix->Identity();
-  for (int i=0; i<3; i++)
-    for (int j=0; j<3; j++)
-//      if ( i==1)
-        m_DirectionMatrix->SetElement (i, j, directions (i,j));
-//      else
-//        m_DirectionMatrix->SetElement (i, j, directions (i,j));
-
-  double v_origin[4], v_origin2[4];
-  for (int i=0; i<3; i++)
-    v_origin[i] = i_origin[i];
-  v_origin[3] = 1.0;
-//  m_DirectionMatrix->MultiplyPoint (v_origin, v_origin2);
-  for (int i=0; i<3; i++)
-    m_DirectionMatrix->SetElement (i, 3, /*i_origin[i]-1*/v_origin[i]/*-v_origin2[i]*/);
-
-    for (int l=0; l<4;l++)
-      std::cout << m_DirectionMatrix->GetElement(l,0) << m_DirectionMatrix->GetElement(l,1)
-                << m_DirectionMatrix->GetElement(l,2) << m_DirectionMatrix->GetElement(l,3)<<std::endl;
-
   m_VTKSphericalHarmonic->GetPointData()->AddArray(sh_array);
   m_VTKSphericalHarmonic->GetPointData()->AddArray(aniso_array);
   m_VTKSphericalHarmonic->GetPointData()->AddArray(rgb_array);
@@ -206,7 +196,6 @@ SphericalHarmonicITKToVTKFilter< TSHImage >
   sh_array->Delete();
   aniso_array->Delete();
   rgb_array->Delete();
-
   m_VTKSphericalHarmonic->Update();
 }
 
