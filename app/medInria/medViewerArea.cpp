@@ -159,7 +159,12 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
     connect (medDatabaseController::instance(), SIGNAL (updated (const medDataIndex&)), d->navigator,
         SLOT (updateNavigator (const medDataIndex&)));
     connect (medDatabaseNonPersistentController::instance(), SIGNAL (updated (const medDataIndex&)), d->navigator,
-        SLOT (updateNavigator (const medDataIndex&)));
+             SLOT (updateNavigator (const medDataIndex&)));
+    
+    connect (medDatabaseController::instance(), SIGNAL (updated (const medDataIndex&)), d->toolboxPatient,
+             SLOT (setPatientIndex (const medDataIndex&)));
+    connect (medDatabaseNonPersistentController::instance(), SIGNAL (updated (const medDataIndex&)), d->toolboxPatient,
+             SLOT (setPatientIndex (const medDataIndex&)));
 
 /*
 //------------- MEM LEAK TEST BEGIN -----------------//
