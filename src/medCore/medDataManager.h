@@ -222,7 +222,7 @@ signals:
 
 public slots:
     void onNonPersistentDataImported(const medDataIndex &index, QString uuid);
-    void onPersistentDataImported(const medDataIndex &index);
+    void onPersistentDatabaseUpdated(const medDataIndex &index);
     void onSingleNonPersistentDataStored(const medDataIndex &index, const QString &uuid);
 
 protected:

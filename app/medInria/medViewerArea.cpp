@@ -150,22 +150,21 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
     //Avoid double triggering between update and dataAdded/Removed.
     //And dataRemoved is triggered too early: the data has not been actually removed yet.
-//    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator,
-//        SLOT (updateNavigator (const medDataIndex&)));
-//    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->navigator,
-//        SLOT (updateNavigator (const medDataIndex&)));
-
-    //connect the updated signals of the 2 controllers.
-    connect (medDatabaseController::instance(), SIGNAL (updated (const medDataIndex&)), d->navigator,
-        SLOT (updateNavigator (const medDataIndex&)));
-    connect (medDatabaseNonPersistentController::instance(), SIGNAL (updated (const medDataIndex&)), d->navigator,
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator,
+             SLOT (updateNavigator (const medDataIndex&)));
+    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->navigator,
              SLOT (updateNavigator (const medDataIndex&)));
     
-    connect (medDatabaseController::instance(), SIGNAL (updated (const medDataIndex&)), d->toolboxPatient,
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->toolboxPatient,
+             SLOT (setupDatabase ()));
+    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->toolboxPatient,
+             SLOT (setupDatabase ()));
+    
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->toolboxPatient,
              SLOT (setPatientIndex (const medDataIndex&)));
-    connect (medDatabaseNonPersistentController::instance(), SIGNAL (updated (const medDataIndex&)), d->toolboxPatient,
+    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->toolboxPatient,
              SLOT (setPatientIndex (const medDataIndex&)));
-
+    
 /*
 //------------- MEM LEAK TEST BEGIN -----------------//
     int memusage = 0;

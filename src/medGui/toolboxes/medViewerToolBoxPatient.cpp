@@ -256,6 +256,10 @@ void medViewerToolBoxPatient::setupDatabase(void)
 
 void medViewerToolBoxPatient::onDbControllerRegistered( const QString& )
 {
+    // These connections are moved to medViewerArea for now, the reason is that otherwise setupDatabase is called too late
+    // This method stays only to call the first setupDatabase method
+    
+/*
     medDataManager * dataManager = medDataManager::instance();
     QList<int> dataSourceIds = dataManager->dataSourceIds();
 
@@ -266,11 +270,13 @@ void medViewerToolBoxPatient::onDbControllerRegistered( const QString& )
 
         if ( !dbc )
             continue;
-
-        newConnection |= connect(dbc, SIGNAL(updated(medDataIndex)), this, SLOT(setupDatabase()), Qt::UniqueConnection);
+        
+        newConnection |= connect(dbc, SIGNAL(updated(const medDataIndex &)), this, SLOT(setupDatabase()), Qt::UniqueConnection);
+        newConnection |= connect(dbc, SIGNAL(updated(const medDataIndex &,const QString &)), this, SLOT(setupDatabase()), Qt::UniqueConnection);
     }
-
-    if ( newConnection ) {
-        this->setupDatabase();
-    }
+*/
+    
+    //if ( newConnection ) {
+    this->setupDatabase();
+    //}
 }

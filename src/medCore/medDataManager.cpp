@@ -203,10 +203,17 @@ medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
     medAbstractDbController* db = d->getDbController();
     medAbstractDbController* npDb = d->getNonPersDbController();
 
+    // Highly deendent on the current implementation of the controllers.
     connect(npDb, SIGNAL(updated(const medDataIndex &,QString)),
-            this, SLOT(onNonPersistentDataImported(const medDataIndex &,QString)));
+            this, SLOT(onNonPersistentDataImported(const medDataIndex &,QString)));    
+    connect(npDb, SIGNAL(updated(const medDataIndex &)),
+            this, SIGNAL(dataRemoved(const medDataIndex &)));
+
     connect(db,SIGNAL(updated(const medDataIndex &, const QString &)),
             this, SLOT(onSingleNonPersistentDataStored(const medDataIndex &, const QString &)));
+    connect(db,SIGNAL(updated(const medDataIndex &)),
+            this, SLOT(onPersistentDatabaseUpdated(const medDataIndex &)));
+
 //    connect(npDb, SIGNAL(updated(const medDataIndex &, QString )),
 //            this, SLOT(onNonPersistentDataImported(const medDataIndex &, QString)));
 //    connect(db,SIGNAL(updated(const medDataIndex &)),this,
@@ -477,17 +484,15 @@ void medDataManager::onNonPersistentDataImported(const medDataIndex &index, QStr
         return;
     }
 
-    if (d->volatileDataCache.contains (index)) {
-        qWarning() << "index already in manager, skipping";
-        return;
-    }
-
     medAbstractDbController* npDb = d->getNonPersDbController();
     dtkSmartPointer<dtkAbstractData> data = npDb->read(index);
-
+    
     if (!data.isNull())
     {
-        d->volatileDataCache[index] = data;
+        // It might happen that the data was already loaded by a concurrent call to open the data
+        if (d->volatileDataCache.contains (index))
+            d->volatileDataCache[index] = data;
+
         emit dataAdded (index);
     }
     else
@@ -670,13 +675,13 @@ void medDataManager::import(const QString& file,bool indexWithoutCopying)
 //-------------------------------------------------------------------------------------------------------
 
 
-void medDataManager::onPersistentDataImported(const medDataIndex &index)
+void medDataManager::onPersistentDatabaseUpdated(const medDataIndex &index)
 {
     if (!index.isValid()) {
         qWarning() << "index is not valid";
         return;
     }
-
+    
     dtkSmartPointer<dtkAbstractData> data = this->data(index);
 
     if (!data.isNull())
@@ -684,15 +689,19 @@ void medDataManager::onPersistentDataImported(const medDataIndex &index)
         d->dataCache[index] = data;
         emit dataAdded (index);
     }
+    else
+    {
+        // Normally go here only if the data was actually removed from the database
+        // Otherwise, reader should have sent an error
+        emit dataRemoved (index);
+    }
+
 }
 
 //-------------------------------------------------------------------------------------------------------
 
 void medDataManager::removeData( const medDataIndex& index )
 {
-
-    emit dataRemoved( index );
-
     // Remove from cache first
     this->removeDataFromCache(index);
 
