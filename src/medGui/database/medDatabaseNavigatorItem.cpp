@@ -89,6 +89,7 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
     this->setAcceptHoverEvents(true);
     
     d->item_exporter = new medDatabaseNavigatorItemOverlay(this);
+    d->item_exporter->setToolTip("<span style=\"background: #fff8dc;\">Export data to disk</span>");
     QPixmap pixmap(":/icons/export.png");
     d->item_exporter->setPixmap(pixmap);
     d->item_exporter->setPos(10, 45);
@@ -107,6 +108,7 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
     {
         d->item_saver = new medDatabaseNavigatorItemOverlay(this);
         QPixmap pixmapSave(":/icons/import.png");
+        d->item_saver->setToolTip("<span style=\"background: #fff8dc;\">Save data to database</span>");
         d->item_saver->setPixmap(pixmapSave);
         d->item_saver->setPos(10, 65);
         d->item_saver->setOpacity(0.0);
@@ -126,6 +128,7 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
     }
     
     d->item_trasher = new medDatabaseNavigatorItemOverlay(this);
+    d->item_trasher->setToolTip("<span style=\"background: #fff8dc;\">Remove data</span>");
     QPixmap pixmapDelete(":/icons/cross.svg");
     d->item_trasher->setPixmap(pixmapDelete.scaledToWidth(16));
     d->item_trasher->setPos(10, 25);

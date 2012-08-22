@@ -23,13 +23,13 @@
 */
 QToolTip {
     color: #2a2a2a;
+    background: #fff8dc;
     border: 1px solid #4b4b4b;
 }
 
 QToolTip:disabled {
     color: #2a2a2a;
 }
-
 
 /**
  * QTableView
