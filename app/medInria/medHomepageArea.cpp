@@ -445,7 +445,7 @@ void medHomepageArea::onShowInfo()
 
 void medHomepageArea::onShowHelp ( void )
 {
-    QDesktopServices::openUrl(QUrl("http://med.inria.fr/resources/documentation"));
+    QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
 //     QMessageBox * msgBox = new QMessageBox ( QApplication::activeWindow() );
 //     msgBox->setIcon ( QMessageBox::Information );
 //     msgBox->setText ( "Help ! Help !" );
