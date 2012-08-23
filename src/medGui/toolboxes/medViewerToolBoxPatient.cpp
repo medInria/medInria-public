@@ -166,8 +166,13 @@ QSet<medDataIndex> medViewerToolBoxPatient::patientIndex(int itemId) const
 
 void medViewerToolBoxPatient::setPatientIndex(const medDataIndex &index)
 {
+    medDataIndex baseIndex = index;
+    baseIndex.setStudyId(-1);
+    baseIndex.setSeriesId(-1);
+    baseIndex.setImageId(-1);
+    
     typedef QHash< medDataIndex, int  > IndexHashType;
-    IndexHashType::const_iterator it = d->indexMap.find( index );
+    IndexHashType::const_iterator it = d->indexMap.find( baseIndex );
     if ( it != d->indexMap.end() ) {
         int itemId =it.value();
         d->combo->setCurrentIndex(d->combo->findData(itemId));

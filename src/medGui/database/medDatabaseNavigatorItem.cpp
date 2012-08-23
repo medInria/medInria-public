@@ -18,6 +18,7 @@
  */
 
 #include "medDatabaseNavigatorItem.h"
+#include <medDatabaseNavigatorItemOverlay.h>
 #include "medImageFileLoader.h"
 
 #include <medCore/medAbstractDbController.h>
@@ -45,6 +46,16 @@ public:
     medDataIndex index;
     bool persistent;
     QString text;
+    
+    medDatabaseNavigatorItemOverlay *item_saver;
+    medDatabaseNavigatorItemOverlay *item_exporter;
+    medDatabaseNavigatorItemOverlay *item_trasher;
+    
+    QPropertyAnimation *item_saver_fading_animation;
+    QPropertyAnimation *item_exporter_fading_animation;
+    QPropertyAnimation *item_trasher_fading_animation;
+    
+    QParallelAnimationGroup *fading_animation;
 };
 
 medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabaseNavigatorItemPrivate)
@@ -76,8 +87,61 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
     }
 
     this->setAcceptHoverEvents(true);
+    
+    d->item_exporter = new medDatabaseNavigatorItemOverlay(this);
+    d->item_exporter->setToolTip("<span style=\"background: #fff8dc;\">Export data to disk</span>");
+    QPixmap pixmap(":/icons/export.png");
+    d->item_exporter->setPixmap(pixmap);
+    d->item_exporter->setPos(10, 45);
+    d->item_exporter->setOpacity(0.0);
+    
+    connect(d->item_exporter, SIGNAL(clicked()), this, SLOT(exportData()));
+    
+    // Setup animation        
+    d->item_exporter_fading_animation = new QPropertyAnimation(d->item_exporter, "opacity", this);
+    d->item_exporter_fading_animation->setDuration(150);
+    
+    d->fading_animation = new QParallelAnimationGroup(this);
+    d->fading_animation->addAnimation(d->item_exporter_fading_animation);    
+    
+    if (!d->persistent)
+    {
+        d->item_saver = new medDatabaseNavigatorItemOverlay(this);
+        QPixmap pixmapSave(":/icons/import.png");
+        d->item_saver->setToolTip("<span style=\"background: #fff8dc;\">Save data to database</span>");
+        d->item_saver->setPixmap(pixmapSave);
+        d->item_saver->setPos(10, 65);
+        d->item_saver->setOpacity(0.0);
+        
+        connect(d->item_saver, SIGNAL(clicked()), this, SLOT(saveData()));
+        
+        // Setup animation        
+        d->item_saver_fading_animation = new QPropertyAnimation(d->item_saver, "opacity", this);
+        d->item_saver_fading_animation->setDuration(150);
+        
+        d->fading_animation->addAnimation(d->item_saver_fading_animation);
+    }
+    else
+    {
+        d->item_saver = NULL;
+        d->item_saver_fading_animation = NULL;
+    }
+    
+    d->item_trasher = new medDatabaseNavigatorItemOverlay(this);
+    d->item_trasher->setToolTip("<span style=\"background: #fff8dc;\">Remove data</span>");
+    QPixmap pixmapDelete(":/icons/cross.svg");
+    d->item_trasher->setPixmap(pixmapDelete.scaledToWidth(16));
+    d->item_trasher->setPos(10, 25);
+    d->item_trasher->setOpacity(0.0);
+    
+    connect(d->item_trasher, SIGNAL(clicked()), this, SLOT(deleteData()));
+    
+    // Setup animation        
+    d->item_trasher_fading_animation = new QPropertyAnimation(d->item_trasher, "opacity", this);
+    d->item_trasher_fading_animation->setDuration(150);
+    
+    d->fading_animation->addAnimation(d->item_trasher_fading_animation);
 }
-
 
 medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)
 {
@@ -106,6 +170,49 @@ QString medDatabaseNavigatorItem::text(void) const
     return d->text;
 }
 
+void medDatabaseNavigatorItem::deleteData()
+{
+    int reply = QMessageBox::question(NULL, tr("Remove item"),
+                                      tr("Are you sure you want to continue removing this data?\n""This cannot be undone."),
+                                      QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton);
+    
+    if( reply == QMessageBox::Yes )
+        medDataManager::instance()->removeData(d->index);
+}
+
+void medDatabaseNavigatorItem::saveData()
+{
+    medDataManager::instance()->storeNonPersistentSingleDataToDatabase(d->index);
+}
+
+void medDatabaseNavigatorItem::exportData()
+{
+    QString fileName = QFileDialog::getSaveFileName(NULL, tr("Save as"), "", "*.*");
+    
+    if (fileName.isEmpty())
+        return;
+    
+    dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(d->index);
+    
+    if (!data)
+        return;
+    
+    //Check extension:
+    QFileInfo fileInfo(fileName);
+    if(fileInfo.suffix().isEmpty())
+    {
+        qDebug() << "determining suffix for type" << data->identifier();
+        if (data->identifier().contains("vtk") ||
+            data->identifier().contains("v3d"))
+            fileName.append(".vtk");
+        else
+            fileName.append(".nii.gz");
+        qDebug() << "filename:" << fileName;
+        //There may be other cases, but this will get us through most
+    }
+
+    medDataManager::instance()->exportDataToFile(data, fileName);
+}
 
 void medDatabaseNavigatorItem::setImage(const QImage& image)
 {
@@ -146,5 +253,38 @@ void medDatabaseNavigatorItem::paint(QPainter *painter, const QStyleOptionGraphi
 
     painter->setPen(Qt::white);
     painter->drawText(option->rect.adjusted(5, 5, -5, option->rect.height()-5), Qt::AlignRight | Qt::TextSingleLine, d->text);
+}
 
+void medDatabaseNavigatorItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    if (d->item_saver_fading_animation)
+    {
+        d->item_saver_fading_animation->setStartValue(0.0);
+        d->item_saver_fading_animation->setEndValue(1.0);
+    }
+
+    d->item_exporter_fading_animation->setStartValue(0.0);
+    d->item_exporter_fading_animation->setEndValue(1.0);
+
+    d->item_trasher_fading_animation->setStartValue(0.0);
+    d->item_trasher_fading_animation->setEndValue(1.0);
+
+    d->fading_animation->start();
+}
+
+void medDatabaseNavigatorItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    if (d->item_saver_fading_animation)
+    {
+        d->item_saver_fading_animation->setStartValue(1.0);
+        d->item_saver_fading_animation->setEndValue(0.0);
+    }
+    
+    d->item_exporter_fading_animation->setStartValue(1.0);
+    d->item_exporter_fading_animation->setEndValue(0.0);
+    
+    d->item_trasher_fading_animation->setStartValue(1.0);
+    d->item_trasher_fading_animation->setEndValue(0.0);
+    
+    d->fading_animation->start();
 }

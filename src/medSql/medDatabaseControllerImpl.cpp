@@ -428,6 +428,7 @@ void medDatabaseControllerImpl::exportDataToFile(dtkAbstractData *data, const QS
     medDatabaseExporter *exporter = new medDatabaseExporter (data, filename);
 
     connect(exporter, SIGNAL(progress(QObject*,int)), medDataManager::instance(), SIGNAL(progressed(QObject*,int)));
+    connect(exporter, SIGNAL(showError(QObject*, const QString&, unsigned int)), medMessageController::instance(), SLOT(showError(QObject*, const QString&, unsigned int)));
 
     //medMessageController::instance()->showProgress(exporter, "Saving database item");
 

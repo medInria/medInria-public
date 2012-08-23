@@ -117,13 +117,18 @@ void medDatabaseNavigator::updateNavigator(const medDataIndex& index)
 
 void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 {
-//    qDebug()<< "resetting Navigator";
+    //qDebug()<< "resetting Navigator" << index;
+    
+    // Small trick so that when a patient image gets deleted, we're still able to find all other images of that patient
+    medDataIndex baseIndex = index;
+    baseIndex.setSeriesId(-1);
+    
     this->reset();
 
-    if  (!index.isValidForPatient()) {
+    if  (!baseIndex.isValidForPatient()) {
         return;
     }
-    d->currentPatient = index.patientId();
+    d->currentPatient = baseIndex.patientId();
 
     typedef QSet<medDataIndex> IndexSet;
     typedef QList<int> IntList;
@@ -135,28 +140,30 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 
     QMap<StudyDataKey, medDatabaseNavigatorItemGroup*> groupMap;
 
-    medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
+    medAbstractDbController *dbc = dataManager->controllerForDataSource(baseIndex.dataSourceId());
     if ( !dbc )
         return;
     PatientDataKey referencePatientKey;
-    referencePatientKey.name = dbc->metaData(index,medMetaDataKeys::PatientName);
+    referencePatientKey.name = dbc->metaData(baseIndex,medMetaDataKeys::PatientName);
 
 
     foreach (const int dataSourceId, dataSources ) {
-//        qDebug() << "dataSource:" << dataSourceId;
+        //qDebug() << "dataSource:" << dataSourceId;
         medAbstractDbController *dbc = dataManager->controllerForDataSource(dataSourceId);
         if ( !dbc )
             continue;
 
         IndexList patientsForSource;
-        if ( dataSourceId == index.dataSourceId() ) {
-            patientsForSource.push_back(index);
+        if ( dataSourceId == baseIndex.dataSourceId() ) {
+            patientsForSource.push_back(baseIndex);
         } else {
             patientsForSource = dbc->patients();
         }
 
+        //qDebug() << "patients for source" << patientsForSource;
+        
         foreach (const medDataIndex& patient, patientsForSource ) {
-//            qDebug() << "patient:" << patient;
+            //qDebug() << "patient:" << patient;
             IndexList studiesForSource = dbc->studies(patient);
             QString patientName = dbc->metaData(patient,medMetaDataKeys::PatientName);
             PatientDataKey patientKey;
@@ -166,18 +173,18 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
             }
 
             foreach (const medDataIndex& study, studiesForSource ) {
-//                qDebug() << "study:" << study;
+                //qDebug() << "study:" << study;
                 QString studyName = dbc->metaData(study,medMetaDataKeys::StudyDescription);
                 StudyDataKey studyKey;
                 studyKey.name = studyName;
 
                 medDatabaseNavigatorItemGroup *group = NULL;
-//                qDebug() << "groups";
+                //qDebug() << "groups";
                 if ( groupMap.contains(studyKey) ) {
-                    qDebug() << "group contains" << studyKey.name;
+                    //qDebug() << "group contains" << studyKey.name;
                     group = groupMap.find(studyKey).value();
                 } else {
-//                    qDebug() << "new group";
+                    //qDebug() << "new group";
                     group = new medDatabaseNavigatorItemGroup;
                     group->setOrientation (d->orientation);
                     group->setName(studyName);
@@ -188,7 +195,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 
                 foreach (const medDataIndex& series, seriesForSource )
                 {
-//                    qDebug() << "Creating new item for series:" << series;
+                    //qDebug() << "Creating new item for series:" << series;
                     medDatabaseNavigatorItem *item = new medDatabaseNavigatorItem( medDataIndex(series) );
 
                     connect(item, SIGNAL(itemClicked(const medDataIndex&)),

@@ -50,6 +50,11 @@ public:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
+public slots:
+    void saveData();    
+    void exportData();    
+    void deleteData();    
+    
 signals:
     void itemClicked(const medDataIndex&);
 
@@ -57,6 +62,8 @@ protected slots:
     void setImage(const QImage& image);
 
 protected:
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void  mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 

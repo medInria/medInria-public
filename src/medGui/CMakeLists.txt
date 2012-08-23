@@ -40,6 +40,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   database/medDatabaseView.h
   database/medDatabaseNavigator.h
   database/medDatabaseNavigatorItem.h
+  database/medDatabaseNavigatorItemOverlay.h
   database/medDatabaseNavigatorItemGroup.h
   database/medDatabaseNavigatorView.h
   database/medDatabasePreview.h
@@ -160,6 +161,7 @@ set(${PROJECT_NAME}_SOURCES
   database/medDatabaseNavigator.cpp
   database/medDatabaseNavigatorController.cpp
   database/medDatabaseNavigatorItem.cpp
+  database/medDatabaseNavigatorItemOverlay.cpp
   database/medDatabaseNavigatorItemGroup.cpp
   database/medDatabaseNavigatorScene.cpp
   database/medDatabaseNavigatorView.cpp
@@ -265,7 +267,8 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkGui
   dtkLog
-  medCore)
+  medCore
+)
 
 # Include header files for Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
