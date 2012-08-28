@@ -778,85 +778,85 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
 
         MaskType::PixelType pxValue = m_strokeLabel;
         
-        if (tmpPtr)
-        {
-            typedef itk::ConnectedThresholdImageFilter<IMAGE, MaskType> ConnectedThresholdImageFilterType;
-            typename ConnectedThresholdImageFilterType::Pointer ctiFilter = ConnectedThresholdImageFilterType::New();
+        if (!tmpPtr)
+            return;
+        
+        typedef itk::ConnectedThresholdImageFilter<IMAGE, MaskType> ConnectedThresholdImageFilterType;
+        typename ConnectedThresholdImageFilterType::Pointer ctiFilter = ConnectedThresholdImageFilterType::New();
+        
+        double value = tmpPtr->GetPixel(index);
+        
+        ctiFilter->SetUpper( value + m_wandRadius );
+        ctiFilter->SetLower( value - m_wandRadius );
+        
+        MaskType::RegionType regionRequested = tmpPtr->GetLargestPossibleRegion();
+        regionRequested.SetIndex(planeIndex, index[planeIndex]);
+        regionRequested.SetSize(planeIndex, 1);
+        MaskType::RegionType outRegion = regionRequested;
+        outRegion.SetIndex(planeIndex,0);
+        
+        if (m_wand3DCheckbox->checkState() == Qt::Unchecked)
+        {            
+            typename IMAGE::Pointer workPtr = IMAGE::New();
+            workPtr->Initialize();
+            workPtr->SetDirection(tmpPtr->GetDirection());
+            workPtr->SetSpacing(tmpPtr->GetSpacing());
+            workPtr->SetOrigin(tmpPtr->GetOrigin());
+            workPtr->SetRegions(outRegion);
+            workPtr->Allocate();
             
-            double value = tmpPtr->GetPixel(index);
+            itk::ImageRegionConstIterator < IMAGE > inputItr (tmpPtr, regionRequested);
+            itk::ImageRegionIterator < IMAGE > workItr (workPtr, outRegion);
             
-            ctiFilter->SetUpper( value + m_wandRadius );
-            ctiFilter->SetLower( value - m_wandRadius );
-            
-            MaskType::RegionType regionRequested = tmpPtr->GetLargestPossibleRegion();
-            regionRequested.SetIndex(planeIndex, index[planeIndex]);
-            regionRequested.SetSize(planeIndex, 1);
-            MaskType::RegionType outRegion = regionRequested;
-            outRegion.SetIndex(planeIndex,0);
-            
-            if (m_wand3DCheckbox->checkState() == Qt::Unchecked)
-            {            
-                typename IMAGE::Pointer workPtr = IMAGE::New();
-                workPtr->Initialize();
-                workPtr->SetDirection(tmpPtr->GetDirection());
-                workPtr->SetSpacing(tmpPtr->GetSpacing());
-                workPtr->SetOrigin(tmpPtr->GetOrigin());
-                workPtr->SetRegions(outRegion);
-                workPtr->Allocate();
-                
-                itk::ImageRegionConstIterator < IMAGE > inputItr (tmpPtr, regionRequested);
-                itk::ImageRegionIterator < IMAGE > workItr (workPtr, outRegion);
-                
-                while (!workItr.IsAtEnd())
-                {
-                    workItr.Set(inputItr.Get());
-                    
-                    ++workItr;
-                    ++inputItr;
-                }
-                
-                ctiFilter->SetInput( workPtr );
-                index[planeIndex] = 0;
-                ctiFilter->AddSeed( index );
-                
-                ctiFilter->Update();
-                
-                itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), outRegion);
-                itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, regionRequested);
-                while (!maskFilterItr.IsAtEnd())
-                {
-                    if (outFilterItr.Get() != 0)
-                        maskFilterItr.Set(pxValue);
-                    
-                    ++outFilterItr;
-                    ++maskFilterItr;
-                }
-            }
-            else
+            while (!workItr.IsAtEnd())
             {
-                ctiFilter->SetInput( tmpPtr );
-                ctiFilter->AddSeed( index );
+                workItr.Set(inputItr.Get());
                 
-                ctiFilter->Update();
-                
-                itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), tmpPtr->GetLargestPossibleRegion());
-                itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, tmpPtr->GetLargestPossibleRegion());
-                while (!maskFilterItr.IsAtEnd())
-                {
-                    if (outFilterItr.Get() != 0)
-                        maskFilterItr.Set(pxValue);
-                    
-                    ++outFilterItr;
-                    ++maskFilterItr;
-                }                
+                ++workItr;
+                ++inputItr;
             }
             
-            m_itkMask->Modified();
-            m_itkMask->GetPixelContainer()->Modified();
-            m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
+            ctiFilter->SetInput( workPtr );
+            index[planeIndex] = 0;
+            ctiFilter->AddSeed( index );
             
-            m_maskAnnotationData->invokeModified();
+            ctiFilter->Update();
+            
+            itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), outRegion);
+            itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, regionRequested);
+            while (!maskFilterItr.IsAtEnd())
+            {
+                if (outFilterItr.Get() != 0)
+                    maskFilterItr.Set(pxValue);
+                
+                ++outFilterItr;
+                ++maskFilterItr;
+            }
         }
+        else
+        {
+            ctiFilter->SetInput( tmpPtr );
+            ctiFilter->AddSeed( index );
+            
+            ctiFilter->Update();
+            
+            itk::ImageRegionConstIterator <MaskType> outFilterItr (ctiFilter->GetOutput(), tmpPtr->GetLargestPossibleRegion());
+            itk::ImageRegionIterator <MaskType> maskFilterItr (m_itkMask, tmpPtr->GetLargestPossibleRegion());
+            while (!maskFilterItr.IsAtEnd())
+            {
+                if (outFilterItr.Get() != 0)
+                    maskFilterItr.Set(pxValue);
+                
+                ++outFilterItr;
+                ++maskFilterItr;
+            }                
+        }
+        
+        m_itkMask->Modified();
+        m_itkMask->GetPixelContainer()->Modified();
+        m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
+        
+        m_maskAnnotationData->invokeModified();
     }
     
     template <typename IMAGE> 
