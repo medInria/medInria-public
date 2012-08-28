@@ -241,8 +241,7 @@ bool medPluginGenerator::generateTypeSourceFile(void)
     .arg(QString(d->plugin))
     .arg(QString(d->type))
     .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
-    .arg(QString(d->namesp))
-    .arg(QString(d->name).replace(0, 1, QString(d->name).left(1).toUpper()));
+    .arg(QString(d->namesp));
     
     targetFile.close();
     

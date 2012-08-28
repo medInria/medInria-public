@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef DTKPLUGINGENERATOR_H
-#define DTKPLUGINGENERATOR_H
+#ifndef MEDPLUGINGENERATOR_H
+#define MEDPLUGINGENERATOR_H
 
 #include <QtCore>
 

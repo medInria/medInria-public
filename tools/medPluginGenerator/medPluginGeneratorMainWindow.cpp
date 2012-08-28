@@ -144,22 +144,22 @@ void medPluginGeneratorMainWindow::generate(void)
 {
     QDir outputParentDirectory(d->output);
 
-    if(d->output.isNull() || !outputParentDirectory.exists()) {
+    if(d->output.isEmpty() || !outputParentDirectory.exists()) {
         QMessageBox::warning(this, "Plugin generation", "Specify a valid output directory.");
         return;
     }
 
-    if(d->namesp.isNull()) {
+    if(d->namesp.isEmpty()) {
         QMessageBox::warning(this, "Plugin generation", "Specify a namespace.");
         return;
     }
 
-    if(d->type.isNull()) {
+    if(d->type.isEmpty()) {
         QMessageBox::warning(this, "Plugin generation", "Specify a plugin type.");
         return;
     }
     
-    if(d->name.isNull()) {
+    if(d->name.isEmpty()) {
         QMessageBox::warning(this, "Plugin generation", "Specify a name.");
         return;
     }
