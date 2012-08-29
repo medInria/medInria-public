@@ -203,7 +203,7 @@ medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
     medAbstractDbController* db = d->getDbController();
     medAbstractDbController* npDb = d->getNonPersDbController();
 
-    // Highly deendent on the current implementation of the controllers.
+    // Highly dependent on the current implementation of the controllers.
     connect(npDb, SIGNAL(updated(const medDataIndex &,QString)),
             this, SLOT(onNonPersistentDataImported(const medDataIndex &,QString)));    
     connect(npDb, SIGNAL(updated(const medDataIndex &)),
@@ -586,7 +586,6 @@ void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index,
     d->volatileDataCache.remove(d->npDataIndexBeingSaved[uuid]);
     d->npDataIndexBeingSaved.remove(uuid);
 
-    qDebug() << "onSingleNonPersistentDataStored, emit dataAdded";
     emit dataAdded(index);
 }
 
@@ -682,11 +681,11 @@ void medDataManager::onPersistentDatabaseUpdated(const medDataIndex &index)
         return;
     }
     
-    dtkSmartPointer<dtkAbstractData> data = this->data(index);
+    medAbstractDbController* db = d->getDbController();
 
-    if (!data.isNull())
+    // Test if index is in database (to distinguish between remove and add)
+    if (db->contains(index))
     {
-        d->dataCache[index] = data;
         emit dataAdded (index);
     }
     else
@@ -705,7 +704,7 @@ void medDataManager::removeData( const medDataIndex& index )
     // Remove from cache first
     this->removeDataFromCache(index);
 
-    qDebug() << "Reading from db";
+    qDebug() << "Removing from db";
 
     // try to load the data from db
     medAbstractDbController* db = d->getDbController();
