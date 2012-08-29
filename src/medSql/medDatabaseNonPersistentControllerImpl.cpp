@@ -207,6 +207,9 @@ void medDatabaseNonPersistentControllerImpl::remove(const medDataIndex &index)
         }
     }
 
+    if (indexesToRemove.size() == 0)
+        return;
+
     for (medDataIndexList::const_iterator it(indexesToRemove.begin()); it != indexesToRemove.end(); ++it)
     {
         DataHashMapType::iterator itemIt(d->items.find(*it));
