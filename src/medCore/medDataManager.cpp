@@ -213,11 +213,6 @@ medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
             this, SLOT(onSingleNonPersistentDataStored(const medDataIndex &, const QString &)));
     connect(db,SIGNAL(updated(const medDataIndex &)),
             this, SLOT(onPersistentDatabaseUpdated(const medDataIndex &)));
-
-//    connect(npDb, SIGNAL(updated(const medDataIndex &, QString )),
-//            this, SLOT(onNonPersistentDataImported(const medDataIndex &, QString)));
-//    connect(db,SIGNAL(updated(const medDataIndex &)),this,
-//            SLOT(onPersistentDataImported(const medDataIndex &)));
 }
 
 //-------------------------------------------------------------------------------------------------------
