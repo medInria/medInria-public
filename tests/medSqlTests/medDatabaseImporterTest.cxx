@@ -68,8 +68,6 @@ private slots:
     void import_data();
     void import();
 
-    void importFibers();
-
     // combinations of partial Import and Index
     // a partial import is when you try to import images
     // belonging to the same volume in 2 separate steps
@@ -187,37 +185,6 @@ void medDatabaseImporterTest::import()
     QFETCH(VolumeNameToImagesCountMap, volumes);
 
     importImagesAndCheckIntegrity(this->dbPath, info.absoluteFilePath(), patientName, studyName, importedFileExtension, volumes);
-}
-
-void medDatabaseImporterTest::importFibers()
-{
-    QString pathToFileOrDirectory = QDir::separator() + QString("fibers") + QDir::separator()+ QString("study_tumor_fibers_T1.xml");
-    QString fullPathToFileOrDirectory = dataPath + pathToFileOrDirectory;
-    QFileInfo info(fullPathToFileOrDirectory);
-
-    if(!info.exists())
-        QFAIL("Test data does not exist.");
-
-    VolumeNameToImagesCountMap volumes;
-
-    QString patientName = "John Doe";
-    QString studyName = "EmptyStudy";
-    QString importedFileExtension = "xml";
-    volumes.insert("study_tumor_fibers_T1", 1);
-
-    importImagesAndCheckIntegrity(this->dbPath, info.absoluteFilePath(), patientName, studyName, importedFileExtension, volumes);
-
-    // for this fiber set we also need to check that the corresponding .vtp file is in the right place
-
-    QPointer<medDatabaseControllerImpl> dbc = medDatabaseController::instance();
-    QSqlDatabase db = *(dbc->database());
-
-    QString seriesId = medSqlHelpers::getSeriesId(db, "study_tumor_fibers_T1");
-    QString patientId = medSqlHelpers::getPatientId(db, patientName);
-    QString vtpFilePath = dbPath + QDir::separator() + patientId + QDir::separator() + seriesId + "1" + QDir::separator() + seriesId + "1_0.vtp";
-    QFileInfo fileInfo = QFileInfo(vtpFilePath);
-
-    QVERIFY2(fileInfo.exists(), "Fibers were not properly imported: vtp file is missing.");
 }
 
 void importImagesAndCheckIntegrity(QString dbPath, QString pathToImport, QString patientName, QString studyName, QString importedFileExtension, VolumeNameToImagesCountMap volumes)

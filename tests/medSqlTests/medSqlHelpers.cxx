@@ -7,7 +7,7 @@ namespace medSqlHelpers
 /** Returns all the ids of the series whose name is the one given by the parameter. */
 QList<int> getSeriesIdsWithName(QSqlDatabase db, QString seriesName)
 {
-    QList<int> seriesIds = *(new QList<int>());
+    QList<int> seriesIds;
 
     QSqlQuery query(db);
 
@@ -47,7 +47,8 @@ QString listToStringRepresentation(QList<int> intList)
  * in the image table are associated with that given id. */
 QList<int> getImagesCountGroupedBySeriesIds(QSqlDatabase db, QList<int> seriesIds)
 {
-    QList<int> imagesCount = *(new QList<int>());
+    QList<int> imagesCount;
+
     if(seriesIds.isEmpty())
         return imagesCount;
 
