@@ -234,7 +234,7 @@ QString getSeriesRelativePathFromThumbnail(QSqlDatabase db, QString seriesName)
     if (query.first())
     {
         QString id = query.value(0).toString();
-        QFileInfo file = QFile(id);
+        QFileInfo file(id);
         return file.dir().path();
     }
     else
