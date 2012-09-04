@@ -8,29 +8,24 @@
 #include <medToolBoxRegistrationCustom.h>
 #include "%1PluginExport.h"
 
-namespace %3
+class %1ToolBoxPrivate;
+
+class %2PLUGIN_EXPORT %1ToolBox : public medToolBoxRegistrationCustom
 {
+    Q_OBJECT
     
-    class %1ToolBoxPrivate;
+public:
+    %1ToolBox(QWidget *parent = 0);
+    ~%1ToolBox(void);
     
-    class %2PLUGIN_EXPORT %1ToolBox : public medToolBoxRegistrationCustom
-    {
-        Q_OBJECT
-        
-    public:
-        %1ToolBox(QWidget *parent = 0);
-        ~%1ToolBox(void);
-        
-    public:
-        static bool registered(void);
-        
-        public slots:
-        void run(void);
-        
-    private:
-        %1ToolBoxPrivate *d;
-    };
+public:
+    static bool registered(void);
     
-} // end namespace %3
+public slots:
+    void run(void);
+    
+private:
+    %1ToolBoxPrivate *d;
+};
 
 #endif

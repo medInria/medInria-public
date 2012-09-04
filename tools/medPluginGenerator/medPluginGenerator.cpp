@@ -26,7 +26,6 @@ public:
     medPluginGenerator::PluginFamily pluginFamily;
     QString pluginFamilyString;
     QString output;
-    QString namesp;
     QString name;
     QString type;
     QString description;
@@ -71,12 +70,6 @@ void medPluginGenerator::setPluginFamily(const medPluginGenerator::PluginFamily 
 void medPluginGenerator::setOutputDirectory(const QString& directory)
 {
     d->output = directory;
-}
-
-void medPluginGenerator::setNamespace(const QString& namesp)
-{
-    d->namesp = namesp;
-    d->namesp.replace(0, 1, QString(d->namesp).left(1).toLower());
 }
 
 void medPluginGenerator::setName(const QString& name)
@@ -205,8 +198,7 @@ bool medPluginGenerator::generateTypeHeaderFile(void)
     .arg(QString(d->plugin))
 	.arg(QString(d->plugin).toUpper())
 	.arg(QString(d->type))
-	.arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
-    .arg(QString(d->namesp));
+	.arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()));
     
     targetFile.close();
     
@@ -237,11 +229,21 @@ bool medPluginGenerator::generateTypeSourceFile(void)
     
     QTextStream stream(&targetFile);
     
-    stream << QString(templateFile.readAll())
-    .arg(QString(d->plugin))
-    .arg(QString(d->type))
-    .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
-    .arg(QString(d->namesp));
+    if (d->pluginFamily == REGISTRATION)
+    {    
+        stream << QString(templateFile.readAll())
+        .arg(QString(d->plugin))
+        .arg(QString(d->type))
+        .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
+        .arg(QString(d->name).replace(0, 1, QString(d->name).left(1).toUpper()));
+    }
+    else
+    {
+        stream << QString(templateFile.readAll())
+        .arg(QString(d->plugin))
+        .arg(QString(d->type))
+        .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()));
+    }
     
     targetFile.close();
     
@@ -274,8 +276,8 @@ bool medPluginGenerator::generateTypeToolBoxHeaderFile(void)
     
     stream << QString(templateFile.readAll())
     .arg(QString(d->plugin))
-    .arg(QString(d->plugin).toUpper())
-    .arg(QString(d->namesp));
+    .arg(QString(d->plugin).toUpper());
+    
     targetFile.close();
     
     templateFile.close();
@@ -307,8 +309,7 @@ bool medPluginGenerator::generateTypeToolBoxSourceFile(void)
     
     stream << QString(templateFile.readAll())
     .arg(QString(d->plugin))
-    .arg(d->name)
-    .arg(QString(d->namesp));
+    .arg(d->name);
     
     targetFile.close();
     
@@ -342,8 +343,7 @@ bool medPluginGenerator::generatePluginHeaderFile(void)
     
     stream << QString(templateFile.readAll())
     .arg(QString(d->plugin))
-    .arg(QString(d->plugin).toUpper())
-    .arg(QString(d->namesp));
+    .arg(QString(d->plugin).toUpper());
     
     targetFile.close();
     
@@ -374,10 +374,10 @@ bool medPluginGenerator::generatePluginSourceFile(void)
     
     QTextStream stream(&targetFile);
     
-    stream << QString(templateFile.readAll()).arg(QString(d->plugin))
+    stream << QString(templateFile.readAll())
+    .arg(QString(d->plugin))
     .arg(QString(d->plugin).toUpper())
-    .arg(QString(d->description))
-    .arg(QString(d->namesp));
+    .arg(QString(d->description));
     
     targetFile.close();
     

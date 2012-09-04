@@ -9,44 +9,39 @@
 
 #include "%1PluginExport.h"
 
-namespace %5
+class %1Private;
+
+class %2PLUGIN_EXPORT %1 : public dtkAbstract%3
 {
+    Q_OBJECT
     
-    class %1Private;
+public:
+    %1(void);
+    virtual ~%1(void);
     
-    class %2PLUGIN_EXPORT %1 : public dtkAbstract%3
-    {
-        Q_OBJECT
-        
-    public:
-        %1(void);
-        virtual ~%1(void);
-        
-        virtual QString description(void) const;
-        
-        static bool registered(void);
-        
-    public slots:
-        
-        //! Input data to the plugin is set through here
-        void setInput(dtkAbstractData *data);
-        
-        //! Parameters are set through here, channel allows to handle multiple parameters
-        void setParameter(double  data, int channel);
-        
-        //! Method to actually start the filter
-        int update(void);
-        
-        //! The output will be available through here
-        dtkAbstractData *output(void);
-        
-        
-    private:
-        %1Private *d;
-    };
+    virtual QString description(void) const;
     
-    dtkAbstract%3 *create%4(void);
+    static bool registered(void);
     
-} // end namespace %5
+public slots:
+    
+    //! Input data to the plugin is set through here
+    void setInput(dtkAbstractData *data);
+    
+    //! Parameters are set through here, channel allows to handle multiple parameters
+    void setParameter(double  data, int channel);
+    
+    //! Method to actually start the filter
+    int update(void);
+    
+    //! The output will be available through here
+    dtkAbstractData *output(void);
+    
+    
+private:
+    %1Private *d;
+};
+
+dtkAbstract%3 *create%4(void);
 
 #endif

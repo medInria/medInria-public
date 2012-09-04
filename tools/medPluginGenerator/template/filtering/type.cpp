@@ -11,83 +11,78 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstract%2.h>
 
-namespace %4 
+// /////////////////////////////////////////////////////////////////
+// %1Private
+// /////////////////////////////////////////////////////////////////
+
+class %1Private
+{
+public:
+    dtkSmartPointer <dtkAbstractData> input;
+    dtkSmartPointer <dtkAbstractData> output;
+};
+
+// /////////////////////////////////////////////////////////////////
+// %1
+// /////////////////////////////////////////////////////////////////
+
+%1::%1(void) : dtkAbstract%2(), d(new %1Private)
 {
     
-    // /////////////////////////////////////////////////////////////////
-    // %1Private
-    // /////////////////////////////////////////////////////////////////
+}
+
+%1::~%1(void)
+{
     
-    class %1Private
-    {
-    public:
-        dtkSmartPointer <dtkAbstractData> input;
-        dtkSmartPointer <dtkAbstractData> output;
-    };
+}
+
+bool %1::registered(void)
+{
+    return dtkAbstract%2Factory::instance()->register%2Type("%1", create%3);
+}
+
+QString %1::description(void) const
+{
+    return "%1";
+}
+
+void %1::setInput ( dtkAbstractData *data )
+{
+    if ( !data )
+        return;
     
-    // /////////////////////////////////////////////////////////////////
-    // %1
-    // /////////////////////////////////////////////////////////////////
+    QString identifier = data->identifier();
     
-    %1::%1(void) : dtkAbstract%2(), d(new %1Private)
-    {
-        
-    }
+    d->output = dtkAbstractDataFactory::instance()->createSmartPointer ( identifier );
     
-    %1::~%1(void)
-    {
-        
-    }
+    d->input = data;
+}    
+
+void %1::setParameter ( double  data, int channel )
+{
+    // Here comes a switch over channel to handle parameters
+}
+
+int %1::update ( void )
+{
+    if ( !d->input )
+        return -1;
     
-    bool %1::registered(void)
-    {
-        return dtkAbstract%2Factory::instance()->register%2Type("%1", create%3);
-    }
+    // Your update code comes in here
     
-    QString %1::description(void) const
-    {
-        return "%1";
-    }
-    
-    void %1::setInput ( dtkAbstractData *data )
-    {
-        if ( !data )
-            return;
-        
-        QString identifier = data->identifier();
-        
-        d->output = dtkAbstractDataFactory::instance()->createSmartPointer ( identifier );
-        
-        d->input = data;
-    }    
-    
-    void %1::setParameter ( double  data, int channel )
-    {
-        // Here comes a switch over channel to handle parameters
-    }
-    
-    int %1::update ( void )
-    {
-        if ( !d->input )
-            return -1;
-    
-        // Your update code comes in here
-        
-        return EXIT_SUCCESS;
-    }        
-    
-    dtkAbstractData * %1::output ( void )
-    {
-        return ( d->output );
-    }
-    
-    // /////////////////////////////////////////////////////////////////
-    // Type instantiation
-    // /////////////////////////////////////////////////////////////////
-    
-    dtkAbstract%2 *create%3(void)
-    {
-        return new %1;
-    }
-    
-} // end namespace %4
+    return EXIT_SUCCESS;
+}        
+
+dtkAbstractData * %1::output ( void )
+{
+    return ( d->output );
+}
+
+// /////////////////////////////////////////////////////////////////
+// Type instantiation
+// /////////////////////////////////////////////////////////////////
+
+dtkAbstract%2 *create%3(void)
+{
+    return new %1;
+}

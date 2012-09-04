@@ -37,7 +37,6 @@ public:
    ~medPluginGenerator(void);
 
    void setOutputDirectory(const QString& directory);
-   void setNamespace(const QString& prefix);
    void setName(const QString& suffix);
    void setType(const QString& type);
    void setDescription(const QString& desc);

@@ -25,90 +25,85 @@
 #include <medToolBoxFiltering.h>
 #include <medProgressionStack.h>
 
-namespace %3
+class %1ToolBoxPrivate
 {
+public:
     
-    class %1ToolBoxPrivate
-    {
-    public:
-        
-        dtkSmartPointer <dtkAbstractProcess> process;
-        medProgressionStack * progression_stack;
-    };
+    dtkSmartPointer <dtkAbstractProcess> process;
+    medProgressionStack * progression_stack;
+};
+
+%1ToolBox::%1ToolBox(QWidget *parent) : medToolBoxFilteringCustom(parent), d(new %1ToolBoxPrivate)
+{
+    QWidget *widget = new QWidget(this);
     
-    %1ToolBox::%1ToolBox(QWidget *parent) : medToolBoxFilteringCustom(parent), d(new %1ToolBoxPrivate)
-    {
-        QWidget *widget = new QWidget(this);
-        
-        QPushButton *runButton = new QPushButton(tr("Run"), this);
-                
-        this->setTitle("%2");
-        
-        // progression stack
-        d->progression_stack = new medProgressionStack(widget);
-        QHBoxLayout *progressStackLayout = new QHBoxLayout;
-        progressStackLayout->addWidget(d->progression_stack);
-        
-        this->addWidget(runButton);
-        this->addWidget(d->progression_stack);
-        
-        connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
-    }
+    QPushButton *runButton = new QPushButton(tr("Run"), this);
     
-    %1ToolBox::~%1ToolBox(void)
-    {
-        delete d;
-        
-        d = NULL;
-    }
+    this->setTitle("%2");
     
-    bool %1ToolBox::registered(void)
-    {
-        return medToolBoxFactory::instance()->
-        registerToolBox<%1ToolBox>("%1ToolBox",
-                                   tr("Friendly name"),
-                                   tr("short tooltip description"),
-                                   QStringList()<< "filtering");
-    }
+    // progression stack
+    d->progression_stack = new medProgressionStack(widget);
+    QHBoxLayout *progressStackLayout = new QHBoxLayout;
+    progressStackLayout->addWidget(d->progression_stack);
     
-    dtkAbstractData* %1ToolBox::processOutput(void)
-    {
-        if(!d->process)
-            return NULL;
-        
-        return d->process->output();
-    }
+    this->addWidget(runButton);
+    this->addWidget(d->progression_stack);
     
-    void %1ToolBox::run(void)
-    {
-        if(!this->parentToolBox())
-            return;
-        
-        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("%1");
-        
-        if(!this->parentToolBox()->data())
-            return;
-        
-        d->process->setInput(this->parentToolBox()->data());
-        
-        // Set your parameters here
-        
-        medRunnableProcess *runProcess = new medRunnableProcess;
-        runProcess->setProcess (d->process);
-        
-        d->progression_stack->addJobItem(runProcess, "Progress:");
-        
-        d->progression_stack->disableCancel(runProcess);
-        
-        connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
-        connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-        connect (runProcess, SIGNAL (cancelled (QObject*)),  this, SIGNAL (failure ()));
-        
-        connect (runProcess, SIGNAL(activate(QObject*,bool)),
-                 d->progression_stack, SLOT(setActive(QObject*,bool)));
-        
-        medJobManager::instance()->registerJobItem(runProcess);
-        QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
-    }
+    connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
+}
+
+%1ToolBox::~%1ToolBox(void)
+{
+    delete d;
     
-} // end namespace %3
+    d = NULL;
+}
+
+bool %1ToolBox::registered(void)
+{
+    return medToolBoxFactory::instance()->
+    registerToolBox<%1ToolBox>("%1ToolBox",
+                               tr("Friendly name"),
+                               tr("short tooltip description"),
+                               QStringList()<< "filtering");
+}
+
+dtkAbstractData* %1ToolBox::processOutput(void)
+{
+    if(!d->process)
+        return NULL;
+    
+    return d->process->output();
+}
+
+void %1ToolBox::run(void)
+{
+    if(!this->parentToolBox())
+        return;
+    
+    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("%1");
+    
+    if(!this->parentToolBox()->data())
+        return;
+    
+    d->process->setInput(this->parentToolBox()->data());
+    
+    // Set your parameters here
+    
+    medRunnableProcess *runProcess = new medRunnableProcess;
+    runProcess->setProcess (d->process);
+    
+    d->progression_stack->addJobItem(runProcess, "Progress:");
+    
+    d->progression_stack->disableCancel(runProcess);
+    
+    connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
+    connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
+    connect (runProcess, SIGNAL (cancelled (QObject*)),  this, SIGNAL (failure ()));
+    
+    connect (runProcess, SIGNAL(activate(QObject*,bool)),
+             d->progression_stack, SLOT(setActive(QObject*,bool)));
+    
+    medJobManager::instance()->registerJobItem(runProcess);
+    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+}

@@ -40,7 +40,6 @@ public slots:
     void onOutputPathClicked(void);
     void onOutputPathChanged(void);
     void onPluginTypeChanged(void);
-    void onNamespaceChanged(void);
     void onNameChanged(void);
     void onDescriptionChanged();
     void onPluginLicenseChanged();
