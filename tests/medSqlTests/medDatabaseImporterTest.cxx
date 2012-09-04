@@ -1,7 +1,6 @@
 #include <QtTest/QtTest>
 
-// file configured by cmake
-// with required paths
+// file configured by cmake with required paths
 #include "medSqlTest.config.h"
 
 #include "medSqlHelpers.cxx"
@@ -14,17 +13,15 @@
 #include <medCore/medDataIndex.h>
 
 
-
 // we need these lines to be able to use the types
 // for injecting data in the tests
 
-typedef QMap<QString, int> VolumeToImageCountMap;
-Q_DECLARE_METATYPE(VolumeToImageCountMap)
+typedef QMultiMap<QString, int> VolumeNameToImagesCountMap;
+Q_DECLARE_METATYPE(VolumeNameToImagesCountMap)
 
-typedef QString (*GetOriginalFileName)(QString sessionName, int index);
-Q_DECLARE_METATYPE(GetOriginalFileName)
+void checkDirectoryHierarchyAndThumbnails(QSqlDatabase db, QString dbPath, QString patientName, QString importedFileExtension, VolumeNameToImagesCountMap volumeMap);
 
-void checkDirectoryHierarchyAndThumbnails(QString dbPath, QString patientName, QString studyName, VolumeToImageCountMap volumeMap);
+void importImagesAndCheckIntegrity(QString pathToImport, QString dbPath, QString patientName,QString studyName,QString importedFileExtension, VolumeNameToImagesCountMap volumes);
 
 class medDatabaseImporterTest: public QObject
 {
@@ -124,18 +121,6 @@ void medDatabaseImporterTest::cleanupTestCase()
     //qDebug() << "cleanupTestCase()";
 }
 
-// This function is specifically for the test data
-// does not work with every Dicom, of course.
-QString getOriginalFileName(QString sessionName, int index)
-{
-    QString end = "0000";
-    QString ind = QString::number(index+1);
-
-    QString ending = end.replace(4 - ind.size(), ind.size(), ind);
-
-    return QString(MEDINRIA_TEST_DATA_ROOT) + "/OSIRIX/WRIX/WRIST RIGHT/" + sessionName + "/IM-0001-" + ending + ".dcm";
-}
-
 void medDatabaseImporterTest::import_data()
 {
     // here we will prepare data for running "import" test
@@ -144,42 +129,45 @@ void medDatabaseImporterTest::import_data()
     QTest::addColumn<QString>("pathToFileOrDirectory"); // what we want to import
     QTest::addColumn<QString>("patientName");
     QTest::addColumn<QString>("studyName");
-    QTest::addColumn<VolumeToImageCountMap>("volumes");
-    QTest::addColumn<GetOriginalFileName>("getOriginalFileName");
+    QTest::addColumn<QString>("importedFileExtension");
+    QTest::addColumn<VolumeNameToImagesCountMap>("volumes");
 
     QString fileOrDirToImport;
-    VolumeToImageCountMap volumes;
+    VolumeNameToImagesCountMap volumes;
 
-    // test with NRRD
+    //test with NRRD
     volumes.clear();
-    volumes["I1"] = 64;
+    volumes.insert("I1",64);
     fileOrDirToImport = QDir::separator() + QString("Nrrd") + QDir::separator() + QString("I1.nhdr");
-    QTest::newRow("I1.nhdr") << fileOrDirToImport << "John Doe" << "EmptyStudy" << volumes;
+    QTest::newRow("I1.nhdr") << fileOrDirToImport << "John Doe" << "EmptyStudy" << "mha" << volumes;
 
     // test with NIfTI
     volumes.clear();
-    volumes["1-session01"] = 26;
+    volumes.insert("1-session01",26);
     fileOrDirToImport = QDir::separator() + QString("Nifti") + QDir::separator()+ QString("1-session01.nii");
-    QTest::newRow("1-session01.nii") << fileOrDirToImport << "John Doe" << "EmptyStudy" << volumes;
+    QTest::newRow("1-session01.nii") << fileOrDirToImport << "John Doe" << "EmptyStudy" << "mha" << volumes;
 
     // test with Dicoms
     // Dicoms are a horrible thing to test, really, I hate Dicoms. I needed to say that. Thanks.
     volumes.clear();
-    volumes["SCOUT AXIAL LG FOV RT."] = 7;
-    volumes["STIR COR. RT."] = 12;
-    volumes["T1 TSE COR RT."] = 12;
+    volumes.insert("SCOUT AXIAL LG FOV RT.",7);
+    volumes.insert("STIR COR. RT.",12);
+    volumes.insert("T1 TSE COR RT.",12);
     fileOrDirToImport = QDir::separator() + QString("OSIRIX") + QDir::separator()+ QString("WRIX");
-    QTest::newRow("WRIX") << fileOrDirToImport << "WRIX" << "WRIST^RIGHT" << volumes << &getOriginalFileName;
+    QTest::newRow("WRIX") << fileOrDirToImport << "WRIX" << "WRIST^RIGHT" << "mha" << volumes;
 
     // test dicoms with 4D volume (diffusion MRI)
     volumes.clear();
-    volumes["e.t2/2mm/C"] = 35;
-    volumes["e.t2/2mm/S"] = 17;
-    volumes["e.t2/2mm/A"] = 35;
-    volumes["DTI_TENSOR"] = 60;
-    volumes["T1/3D/6.5ML GADOVIST"] = 85;
+    volumes.insert("e.t2/2mm/C", 35);
+    volumes.insert("e.t2/2mm/S", 17);
+    volumes.insert("e.t2/2mm/A", 35);
+    volumes.insert("DTI_TENSOR", 2040); // 60 is the series 'size', but 2040 is the image count
+    volumes.insert("T1/3D/6.5ML GADOVIST", 85);
+    volumes.insert(".survHead.", 7);
+    volumes.insert(".survHead.", 3);
+    volumes.insert(".survHead.", 3);
     fileOrDirToImport = QDir::separator() + QString("dicom3");
-    QTest::newRow("dicom3") << fileOrDirToImport << "001" << "MR Gehirnschädel" << volumes;
+    QTest::newRow("dicom3") << fileOrDirToImport << "001" << QString::fromUtf8("MR Gehirnschädel") << "mha" << volumes;
 }
 
 void medDatabaseImporterTest::import()
@@ -189,11 +177,21 @@ void medDatabaseImporterTest::import()
     QFileInfo info(fullPathToFileOrDirectory);
 
     if(!info.exists())
-        QFAIL("Test data does not exists.");
+        QFAIL("Test data does not exist.");
 
+    QFETCH(QString, patientName);
+    QFETCH(QString, studyName);
+    QFETCH(QString, importedFileExtension);
+    QFETCH(VolumeNameToImagesCountMap, volumes);
+
+    importImagesAndCheckIntegrity(this->dbPath, info.absoluteFilePath(), patientName, studyName, importedFileExtension, volumes);
+}
+
+void importImagesAndCheckIntegrity(QString dbPath, QString pathToImport, QString patientName, QString studyName, QString importedFileExtension, VolumeNameToImagesCountMap volumes)
+{
     bool indexWithoutCopying = false;
     // import
-    medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(), indexWithoutCopying);
+    medDatabaseImporter *importer = new medDatabaseImporter(pathToImport, indexWithoutCopying);
     importer->run();
 
     /* CHECK
@@ -203,18 +201,13 @@ void medDatabaseImporterTest::import()
     * will take a look at the database tables.
     */
 
-    QFETCH(QString, patientName);
-    QFETCH(QString, studyName);
-    QFETCH(VolumeToImageCountMap, volumes);
-
-    checkDirectoryHierarchyAndThumbnails(this->dbPath, patientName, studyName, volumes);
-
     QPointer<medDatabaseControllerImpl> dbc = medDatabaseController::instance();
     QSqlDatabase db = *(dbc->database());
 
+    checkDirectoryHierarchyAndThumbnails(db, dbPath, patientName, importedFileExtension, volumes);
+
     // check that there is only one row in patient table
     QVERIFY(1 == medSqlHelpers::countRowsInTable(db, "patient"));
-
 
     // check that patient named patientName exists
     // we do not check for all the other columns
@@ -233,110 +226,89 @@ void medDatabaseImporterTest::import()
 
     QString sessionName;
     int imageCount;
-    QMapIterator<QString, int> i(volumes);
+
+    // removing duplicates
+    QSet<QString> keys = volumes.keys().toSet();
 
     int totalAmountOfImages = 0;
-    int index = -1;
-    // now for each volume we need to check the images and the session
-    while (i.hasNext())
+    // now for each volume we need to check the images and the series
+    foreach( QString seriesName, keys)
     {
-        i.next();
-        index++;
+        QList<int> imagesCount = volumes.values(seriesName);
 
-        sessionName = i.key(); // name of this session
-        imageCount = i.value(); // amount of images in this session
+        QListIterator<int> i(imagesCount);
+        while (i.hasNext())
+            totalAmountOfImages += i.next();;
 
-        totalAmountOfImages += imageCount;
+        // check there are that many rows in series table with the given name as indicated by the input
+        QList<int> seriesIds = medSqlHelpers::getSeriesIdsWithName(db, seriesName);
+        if(seriesIds.count() != imagesCount.count())
+            QFAIL(QString("Should be exactly %1 rows in 'series' table with name %2").arg(imagesCount.count()).arg(seriesName).toLatin1());
 
-        // check that the proper path is in series table
-        QString seriesPath = QDir::separator() + patientName + QDir::separator()  + studyName + QDir::separator() + sessionName + QString::number(index+1) + QString(".mha");
+        // now we need to check that for each one of these series ids
+        // there must be in the image table as many rows as indicated in the input volumeNameToImagesCount map
 
-        QVERIFY(medSqlHelpers::checkIfRowExists(db, "series", "path", seriesPath));
+        // let's say there are 7 images in image table associated with series id 34 and 14 with series id 153
+        // and the input value seriesIds is (34, 153) then this function will return (7,14)
+        QList<int> imagesCountForEachSeriesIds = medSqlHelpers::getImagesCountGroupedBySeriesIds(db, seriesIds);
 
-        // check every row inside image table
-        for (int i = 0; i < imageCount ; i++)
-        {
-            QHash<QString, QString> columnValues;
-            columnValues.insert("instance_path", seriesPath);
-            QString thumbnailPath = QDir::separator() + patientName + QDir::separator()  + studyName + QDir::separator() + sessionName + QString::number(index+1) + QDir::separator() + QString::number(i) + ".png";
-            columnValues.insert("thumbnail", thumbnailPath);
+        // we sort them so as it's easy to compare them by using QList == operator
+        qSort(imagesCountForEachSeriesIds.begin(), imagesCountForEachSeriesIds.end());
+        qSort(imagesCount.begin(), imagesCount.end());
 
-            // if we are importing a directory then is WRIX
-            if(info.isDir())
-            {
-                QFETCH(GetOriginalFileName, getOriginalFileName);
-                QString origFileName = getOriginalFileName(sessionName, i);
-
-                // if we are importing just a file then the name if each image
-                // is the filename plus and index
-                columnValues.insert("name", origFileName.right(16));
-                columnValues.insert("path", origFileName);
-            }
-            else
-            {
-                columnValues.insert("name", info.fileName() + QString::number(i));
-                columnValues.insert("path", fullPathToFileOrDirectory);
-            }
-
-            QVERIFY(medSqlHelpers::checkIfRowExists(db, "image", columnValues));
-        }
+        QVERIFY2(imagesCountForEachSeriesIds == imagesCount, "The amount of rows in the image table is of the one expected.");
     }
     // instead of writing a new function we count the total amount of images, it's easier
     QVERIFY(totalAmountOfImages == medSqlHelpers::countRowsInTable(db, "image"));
 }
 
-void checkDirectoryHierarchyAndThumbnails(QString dbPath, QString patientName, QString studyName, VolumeToImageCountMap volumeMap)
+void checkDirectoryHierarchyAndThumbnails(QSqlDatabase db, QString dbPath, QString patientName,  QString importedFileExtension, VolumeNameToImagesCountMap volumeMap)
 {
     // We do not check the content of the files
     // we just see whether they exist
 
     // Patient
-    QString patientPath = dbPath + QDir::separator() + patientName;
+
+    QString patientId = medSqlHelpers::getPatientId(db, patientName);
+
+    QString patientPath = dbPath + QDir::separator() + patientId;
     if (QDir(patientPath).exists())
     {
-        QString studyPath = patientPath + QDir::separator() + studyName;
-        if (QDir(studyPath).exists())
-        {
-            QString sessionName;
-            int thumbnailsCount;
-            QMapIterator<QString, int> i(volumeMap);
+        QString sessionName;
+        int thumbnailsCount;
+        QMapIterator<QString, int> i(volumeMap);
 
-            int index = -1;
-            // now for each volume we need to check the thumbnails and the aggregated file
-            while (i.hasNext())
+        int index = -1;
+        // now for each volume we need to check the path, the thumbnails and the aggregated file
+        while (i.hasNext())
+        {
+            i.next();
+            index++;
+
+            sessionName = i.key(); // name of this session
+            thumbnailsCount = i.value(); // amount of images in this session
+
+            QString sessionPath = dbPath + QDir::separator() + medSqlHelpers::getSeriesRelativePathFromThumbnail(db, sessionName);
+            QString sessionFile = sessionPath + QString(".") + importedFileExtension;
+
+            if (QDir(sessionPath).exists() && QFile(sessionFile).exists())
             {
-                i.next();
-                index++;
-
-                sessionName = i.key(); // name of this session
-                thumbnailsCount = i.value(); // amount of images in this session
-
-                QString sessionPath = studyPath + QDir::separator() + sessionName + QString::number(index+1);
-                QString sessionFile = sessionPath + QString(".mha");
-
-                if (QDir(sessionPath).exists() && QFile(sessionFile).exists())
-                {
-                    // check if thumbnails exist
-                    for (unsigned int i = 0; i <= thumbnailsCount-1; i++) {
-                        QFile thumbnail(sessionPath + QDir::separator() + QString::number(i) + QString(".png"));
-                        if (!thumbnail.exists())
-                            QFAIL("At least one thumbnail is missing.");
-                    }
-
-                    // finally check reference thumbnail
-                    QFile ref(sessionPath + QDir::separator() + QString("ref.png"));
-                    if (!ref.exists())
-                        QFAIL("Reference thumbnail is missing.");
+                // check if thumbnails exist
+                for (unsigned int i = 0; i <= thumbnailsCount-1; i++) {
+                    QFile thumbnail(sessionPath + QDir::separator() + QString::number(i) + QString(".png"));
+                    if (!thumbnail.exists())
+                        QFAIL("At least one thumbnail is missing.");
                 }
-                else
-                {
-                    QFAIL("Session path does not exist.");
-                }
+
+                // finally check reference thumbnail
+                QFile ref(sessionPath + QDir::separator() + QString("ref.png"));
+                if (!ref.exists())
+                    QFAIL("Reference thumbnail is missing.");
             }
-        }
-        else
-        {
-            QFAIL("Study path does not exist.");
+            else
+            {
+                QFAIL("Session path does not exist.");
+            }
         }
     }
     else
