@@ -110,18 +110,18 @@ void medDatabaseNavigator::onItemClicked(const medDataIndex& index)
 void medDatabaseNavigator::updateNavigator(const medDataIndex& index)
 {
     if (index.isValidForPatient() && index.patientId() == d->currentPatient)
-    {
         onPatientClicked(index);
-    }
 }
 
 void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 {
-    //qDebug()<< "resetting Navigator" << index;
-    
     // Small trick so that when a patient image gets deleted, we're still able to find all other images of that patient
     medDataIndex baseIndex = index;
+    baseIndex.setStudyId(-1);
     baseIndex.setSeriesId(-1);
+    baseIndex.setImageId(-1);
+    
+    //qDebug()<< "resetting Navigator" << index << baseIndex;
     
     this->reset();
 

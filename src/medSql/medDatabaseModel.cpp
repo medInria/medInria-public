@@ -144,8 +144,8 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
 
     populate(d->root);
 
-    connect(medDatabaseController::instance(), SIGNAL(updated(medDataIndex)), this, SLOT(repopulate()));
-    connect(medDatabaseNonPersistentController::instance(), SIGNAL(updated(medDataIndex)), this, SLOT(repopulate()));
+    connect(medDataManager::instance(), SIGNAL(dataAdded(medDataIndex)), this, SLOT(repopulate()));
+    connect(medDataManager::instance(), SIGNAL(dataRemoved(medDataIndex)), this, SLOT(repopulate()));
     connect(medDbControllerFactory::instance(), SIGNAL(dbControllerRegistered(const QString&)), this, SLOT(repopulate()));
 }
 
@@ -536,11 +536,11 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
     foreach( const int dataSourceId, dataSources ) {
 
         medAbstractDbController * dbc = dataManager->controllerForDataSource(dataSourceId);
+        
         IndexList patientsForSource = dbc->patients();
 
         // Iterate over patientIds for this data source
         foreach( const medDataIndex& patient, patientsForSource ) {
-
             QList<QVariant> ptData = d->ptDefaultData;
             for (int i(0); i<d->DataCount; ++i) {
                 QVariant attribute = d->ptAttributes[i];

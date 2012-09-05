@@ -104,8 +104,6 @@ void medDatabaseNonPersistentControllerImpl::import(const QString& file,QString 
             medMessageController::instance(), SLOT(setProgress(int)));
     connect(reader, SIGNAL(nonPersistentRead(const medDataIndex &,const QString &)),
             this, SIGNAL(updated(const medDataIndex &, const QString&)));
-    connect(reader, SIGNAL(nonPersistentRead(const medDataIndex &,const QString &)),
-            this, SIGNAL(updated(const medDataIndex &)));
     connect(reader, SIGNAL(success(QObject *)),
             medMessageController::instance(), SLOT(remove(QObject *)));
     connect(reader, SIGNAL(failure(QObject *)),
@@ -168,7 +166,6 @@ void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
     medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data,callerUuid);
 
     connect(importer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
-    connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &)));
     connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &, QString)));
     connect(importer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
     connect(importer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
@@ -206,6 +203,9 @@ void medDatabaseNonPersistentControllerImpl::remove(const medDataIndex &index)
             qDebug() << "it.key() = " << it.key();
         }
     }
+
+    if (indexesToRemove.size() == 0)
+        return;
 
     for (medDataIndexList::const_iterator it(indexesToRemove.begin()); it != indexesToRemove.end(); ++it)
     {
