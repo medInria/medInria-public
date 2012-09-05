@@ -100,7 +100,7 @@ void %1ToolBox::run(void)
         return;
     
     
-    %1 *process_Registration = dynamic_cast<%1 *>(process);
+    %1 *process_Registration = dynamic_cast<%1 *>(process.data());
     if (!process_Registration)
     {
         qWarning() << "registration process doesn't exist" ;
