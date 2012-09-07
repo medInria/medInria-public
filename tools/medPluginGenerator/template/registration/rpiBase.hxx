@@ -1,8 +1,6 @@
 #ifndef _RPI%2_HXX_
 #define _RPI%2_HXX_
 
-#include "rpi%1.hxx"
-
 // Namespace RPI : Registration Programming Interface
 namespace rpi
 {
