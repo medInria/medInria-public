@@ -115,10 +115,26 @@ bool medPluginGenerator::run(void)
         return false;
     }
     
-    if (d->pluginFamily != GENERIC)
+    if (d->pluginFamily == FILTERING)
         return generateCMakeLists()
         && generateTypeHeaderFile()
         && generateTypeSourceFile()
+        && generateTypeToolBoxSourceFile()
+        && generateTypeToolBoxHeaderFile()
+        && generatePluginHeaderFile()
+        && generatePluginSourceFile()
+        && generateExportHeaderFile()
+        && generateHelpCollectionFile()
+        && generateHelpConfigurationFile()
+        && generateReadmeFile()
+        && generateCopyingFile();
+    
+    if (d->pluginFamily == REGISTRATION)
+        return generateCMakeLists()
+        && generateTypeHeaderFile()
+        && generateTypeSourceFile()
+        && generateRPIHeaderFile()
+        && generateRPISourceFile()
         && generateTypeToolBoxSourceFile()
         && generateTypeToolBoxHeaderFile()
         && generatePluginHeaderFile()
@@ -244,6 +260,74 @@ bool medPluginGenerator::generateTypeSourceFile(void)
         .arg(QString(d->type))
         .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()));
     }
+    
+    targetFile.close();
+    
+    templateFile.close();
+    
+    return true;
+}
+
+// /////////////////////////////////////////////////////////////////
+// RPI header file
+// /////////////////////////////////////////////////////////////////
+
+bool medPluginGenerator::generateRPIHeaderFile(void)
+{
+    QString baseName = QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper());
+    QFile targetFile(d->target.absoluteFilePath(QString("rpi" + baseName).append(".h")));
+    
+    if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "medPluginGenerator: unable to open" << QString("rpi" + baseName).append(".h") << "for writing";
+        return false;
+    }
+    
+    QFile templateFile(QString(":template/%1/rpiBase.h").arg(d->pluginFamilyString));
+    
+    if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
+        return false;
+    }
+    
+    QTextStream stream(&targetFile);
+    
+    stream << QString(templateFile.readAll())
+    .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
+	.arg(QString(d->plugin).toUpper());
+    
+    targetFile.close();
+    
+    templateFile.close();
+    
+    return true;
+}
+
+// /////////////////////////////////////////////////////////////////
+// RPI source file
+// /////////////////////////////////////////////////////////////////
+
+bool medPluginGenerator::generateRPISourceFile(void)
+{
+    QString baseName = QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper());
+    QFile targetFile(d->target.absoluteFilePath(QString("rpi" + baseName).append(".hxx")));
+    
+    if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "medPluginGenerator: unable to open" << QString("rpi" + baseName).append(".hxx") << "for writing";
+        return false;
+    }
+    
+    QFile templateFile(QString(":template/%1/rpiBase.hxx").arg(d->pluginFamilyString));
+    
+    if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
+        return false;
+    }
+    
+    QTextStream stream(&targetFile);
+    
+    stream << QString(templateFile.readAll())
+    .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
+	.arg(QString(d->plugin).toUpper());
     
     targetFile.close();
     

@@ -50,6 +50,8 @@ protected:
    bool generateTypeSourceFile(void);
    bool generateTypeToolBoxHeaderFile(void);
    bool generateTypeToolBoxSourceFile(void);
+   bool generateRPIHeaderFile(void);
+   bool generateRPISourceFile(void);
    bool generatePluginHeaderFile(void);
    bool generatePluginSourceFile(void);
    bool generateExportHeaderFile(void);

@@ -21,7 +21,8 @@
 
 #include "time.h"
 
-#include <%4/rpi%4.hxx>
+// Include specific RPI implementation of the registration method
+#include <rpi%4.h>
 #include <rpiCommonTools.hxx>
 
 // /////////////////////////////////////////////////////////////////
@@ -49,69 +50,6 @@ public:
 {
     d->proc = this;
     switch(fixedImageType()){
-        case itkProcessRegistration::UCHAR:
-        {
-            typedef itk::Image< float, 3 >  RegImageType;
-            delete static_cast<rpi::%4< RegImageType, RegImageType,
-            float > *>(d->registrationMethod);
-        }
-            break;
-        case itkProcessRegistration::CHAR:
-        {
-            typedef itk::Image< char, 3 >  RegImageType;
-            delete static_cast<rpi::%4< RegImageType, RegImageType,
-            float > *>(d->registrationMethod);
-        }
-            break;
-        case itkProcessRegistration::USHORT:
-        {
-            typedef itk::Image< unsigned short, 3 >  RegImageType;
-            delete static_cast<rpi::%4< RegImageType, RegImageType,
-            float > *>(d->registrationMethod);
-        }
-            break;
-        case itkProcessRegistration::SHORT:
-        {
-            typedef itk::Image< short, 3 >  RegImageType;
-            delete static_cast<rpi::%4< RegImageType, RegImageType,
-            float > *>(d->registrationMethod);
-        }
-            break;
-        case itkProcessRegistration::UINT:
-        {
-            typedef itk::Image< unsigned int, 3 >  RegImageType;
-            delete static_cast<rpi::%4< RegImageType, RegImageType,
-            float > *>(d->registrationMethod);
-        }
-            break;
-        case itkProcessRegistration::INT:
-        {
-            typedef itk::Image< int, 3 >  RegImageType;
-            delete static_cast<rpi::%4< RegImageType, RegImageType,
-            float > *>(d->registrationMethod);
-        }
-            break;
-        case itkProcessRegistration::ULONG:
-        {
-            typedef itk::Image< unsigned long, 3 >  RegImageType;
-            delete static_cast<rpi::%4< RegImageType, RegImageType,
-            float > *>(d->registrationMethod);
-        }
-            break;
-        case itkProcessRegistration::LONG:
-        {
-            typedef itk::Image< long, 3 >  RegImageType;
-            delete static_cast<rpi::%4< RegImageType, RegImageType,
-            float > *>(d->registrationMethod);
-        }
-            break;
-        case itkProcessRegistration::DOUBLE:
-        {
-            typedef itk::Image< double, 3 >  RegImageType;
-            delete static_cast<rpi::%4< RegImageType, RegImageType,
-            float > *>(d->registrationMethod);
-        }
-            break;
         default:
         {
             typedef itk::Image< float, 3 >  RegImageType;
@@ -125,7 +63,18 @@ public:
 %1::~%1(void)
 {
     d->proc = NULL;
-    d->registrationMethod->Delete();
+
+    switch(fixedImageType()){
+        default:
+        {
+            typedef itk::Image< float, 3 >  RegImageType;
+            delete static_cast<rpi::%4< RegImageType, RegImageType,
+            float > *>(d->registrationMethod);
+        }
+            break;
+    }
+    d->registrationMethod = NULL;
+    
     delete d;
     d = 0;
 }
@@ -161,7 +110,7 @@ int %1Private::update(void)
     registrationMethod = registration;
     
     registration->SetFixedImage((const FixedImageType*) proc->fixedImage().GetPointer());
-    registration->SetMovingImage((const MovingImageType*) proc->movingImage().GetPointer());
+    registration->SetMovingImage((const MovingImageType*) proc->movingImages()[0].GetPointer());
     
     
     // Run the registration
@@ -182,7 +131,7 @@ int %1Private::update(void)
     typedef itk::ResampleImageFilter< MovingImageType,MovingImageType >    ResampleFilterType;
     typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
     resampler->SetTransform(registration->GetTransformation());
-    resampler->SetInput((const MovingImageType*)proc->movingImage().GetPointer());
+    resampler->SetInput((const MovingImageType*)proc->movingImages()[0].GetPointer());
     resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
     resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
     resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
@@ -208,7 +157,7 @@ int %1Private::update(void)
 
 int %1::update(itkProcessRegistration::ImageType imgType)
 {
-    if(fixedImage().IsNull() || movingImage().IsNull())
+    if(fixedImage().IsNull() || movingImages()[0].IsNull())
         return 1;
     switch (imgType){
         case itkProcessRegistration::UCHAR:

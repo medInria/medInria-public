@@ -28,5 +28,7 @@
         <file>filtering/type.h</file>
         <file>filtering/typeToolBox.cpp</file>
         <file>filtering/typeToolBox.h</file>
+        <file>registration/rpiBase.h</file>
+        <file>registration/rpiBase.hxx</file>
     </qresource>
 </RCC>
