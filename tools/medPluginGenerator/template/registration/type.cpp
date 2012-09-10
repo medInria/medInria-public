@@ -49,30 +49,18 @@ public:
 %1::%1(void) : itkProcessRegistration(), d(new %1Private)
 {
     d->proc = this;
-    switch(fixedImageType()){
-        default:
-        {
-            typedef itk::Image< float, 3 >  RegImageType;
-            delete static_cast<rpi::%4< RegImageType, RegImageType,
-            float > *>(d->registrationMethod);
-        }
-            break;
-    }
+    d->registrationMethod = NULL;
 }
 
 %1::~%1(void)
 {
     d->proc = NULL;
 
-    switch(fixedImageType()){
-        default:
-        {
-            typedef itk::Image< float, 3 >  RegImageType;
-            delete static_cast<rpi::%4< RegImageType, RegImageType,
-            float > *>(d->registrationMethod);
-        }
-            break;
-    }
+    typedef itk::Image< float, 3 >  RegImageType;
+    
+    if (d->registrationMethod)
+        delete static_cast<rpi::%4< RegImageType, RegImageType,float > *>(d->registrationMethod);
+
     d->registrationMethod = NULL;
     
     delete d;
@@ -159,38 +147,8 @@ int %1::update(itkProcessRegistration::ImageType imgType)
 {
     if(fixedImage().IsNull() || movingImages()[0].IsNull())
         return 1;
-    switch (imgType){
-        case itkProcessRegistration::UCHAR:
-            return d->update<unsigned char>();
-            break;
-        case itkProcessRegistration::CHAR:
-            return d->update<char>();
-            break;
-        case itkProcessRegistration::USHORT:
-            return d->update<unsigned short>();
-            break;
-        case itkProcessRegistration::SHORT:
-            return d->update<short>();
-            break;
-        case itkProcessRegistration::UINT:
-            return d->update<unsigned int>();
-            break;
-        case itkProcessRegistration::INT:
-            return d->update<int>();
-            break;
-        case itkProcessRegistration::ULONG:
-            return d->update<unsigned long>();
-            break;
-        case itkProcessRegistration::LONG:
-            return d->update<long>();
-            break;
-        case itkProcessRegistration::DOUBLE:
-            return d->update<double>();
-            break;
-        default:
-            return d->update<float>();
-            break;
-    }
+
+    return d->update<float>();
 }
 
 
@@ -204,8 +162,7 @@ bool %1Private::writeTransform(const QString& file)
         static_cast<rpi::%4<RegImageType,RegImageType,TransformScalarType> *>(registrationMethod))
     {
         try{
-            rpi::writeDisplacementFieldTransformation<TransformScalarType, 3>(
-                                                                              registration->GetTransformation(),
+            rpi::writeDisplacementFieldTransformation<TransformScalarType, 3>(registration->GetTransformation(),
                                                                               file.toStdString());
         }
         catch (std::exception)
@@ -226,39 +183,7 @@ bool %1::writeTransform(const QString& file)
     if(d->registrationMethod == NULL)
         return 1;
     
-    switch (this->fixedImageType()){
-        case itkProcessRegistration::UCHAR:
-            return d->writeTransform<unsigned char>(file);
-            break;
-        case itkProcessRegistration::CHAR:
-            return d->writeTransform<char>(file);
-            break;
-        case itkProcessRegistration::USHORT:
-            return d->writeTransform<unsigned short>(file);
-            break;
-        case itkProcessRegistration::SHORT:
-            return d->writeTransform<short>(file);
-            break;
-        case itkProcessRegistration::UINT:
-            return d->writeTransform<unsigned int>(file);
-            break;
-        case itkProcessRegistration::INT:
-            return d->writeTransform<int>(file);
-            break;
-        case itkProcessRegistration::ULONG:
-            return d->writeTransform<unsigned long>(file);
-            break;
-        case itkProcessRegistration::LONG:
-            return d->writeTransform<long>(file);
-            break;
-        case itkProcessRegistration::DOUBLE:
-            return d->writeTransform<double>(file);
-            break;
-        default:
-            return d->writeTransform<float>(file);
-            break;
-    }
-    
+    return d->writeTransform<float>(file);
 }
 
 // /////////////////////////////////////////////////////////////////
