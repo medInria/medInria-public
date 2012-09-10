@@ -5,6 +5,11 @@
 #include "%1.h"
 
 #include <dtkCore/dtkAbstract%2Factory.h>
+#include <dtkCore/dtkSmartPointer.h>
+
+#include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkAbstract%2.h>
 
 // /////////////////////////////////////////////////////////////////
 // %1Private
@@ -13,6 +18,8 @@
 class %1Private
 {
 public:
+    dtkSmartPointer <dtkAbstractData> input;
+    dtkSmartPointer <dtkAbstractData> output;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -37,6 +44,38 @@ bool %1::registered(void)
 QString %1::description(void) const
 {
     return "%1";
+}
+
+void %1::setInput ( dtkAbstractData *data )
+{
+    if ( !data )
+        return;
+    
+    QString identifier = data->identifier();
+    
+    d->output = dtkAbstractDataFactory::instance()->createSmartPointer ( identifier );
+    
+    d->input = data;
+}    
+
+void %1::setParameter ( double  data, int channel )
+{
+    // Here comes a switch over channel to handle parameters
+}
+
+int %1::update ( void )
+{
+    if ( !d->input )
+        return -1;
+    
+    // Your update code comes in here
+    
+    return EXIT_SUCCESS;
+}        
+
+dtkAbstractData * %1::output ( void )
+{
+    return ( d->output );
 }
 
 // /////////////////////////////////////////////////////////////////

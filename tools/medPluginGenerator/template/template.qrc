@@ -21,5 +21,14 @@
         <file>license/BSD</file>
         <file>registration/typeToolBox.cpp</file>
         <file>registration/typeToolBox.h</file>
+        <file>filtering/cmake</file>
+        <file>filtering/plugin.cpp</file>
+        <file>filtering/plugin.h</file>
+        <file>filtering/type.cpp</file>
+        <file>filtering/type.h</file>
+        <file>filtering/typeToolBox.cpp</file>
+        <file>filtering/typeToolBox.h</file>
+        <file>registration/rpiBase.h</file>
+        <file>registration/rpiBase.hxx</file>
     </qresource>
 </RCC>

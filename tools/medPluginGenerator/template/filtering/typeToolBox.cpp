@@ -22,35 +22,30 @@
 #include <medAbstractDataImage.h>
 
 #include <medToolBoxFactory.h>
-#include <medToolBoxRegistration.h>
+#include <medToolBoxFiltering.h>
 #include <medProgressionStack.h>
-
-#include <rpiCommonTools.hxx>
 
 class %1ToolBoxPrivate
 {
 public:
     
+    dtkSmartPointer <dtkAbstractProcess> process;
     medProgressionStack * progression_stack;
 };
 
-%1ToolBox::%1ToolBox(QWidget *parent) : medToolBoxRegistrationCustom(parent), d(new %1ToolBoxPrivate)
+%1ToolBox::%1ToolBox(QWidget *parent) : medToolBoxFilteringCustom(parent), d(new %1ToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
     
     QPushButton *runButton = new QPushButton(tr("Run"), this);
     
-    //QFormLayout *layout = new QFormLayout(widget);
-    
     this->setTitle("%2");
-    //layout->addRow(new QLabel(tr(""),this),d->iterationsBox);
     
     // progression stack
     d->progression_stack = new medProgressionStack(widget);
     QHBoxLayout *progressStackLayout = new QHBoxLayout;
     progressStackLayout->addWidget(d->progression_stack);
     
-    this->addWidget(widget);
     this->addWidget(runButton);
     this->addWidget(d->progression_stack);
     
@@ -70,61 +65,42 @@ bool %1ToolBox::registered(void)
     registerToolBox<%1ToolBox>("%1ToolBox",
                                tr("Friendly name"),
                                tr("short tooltip description"),
-                               QStringList() << "registration");
+                               QStringList()<< "filtering");
+}
+
+dtkAbstractData* %1ToolBox::processOutput(void)
+{
+    if(!d->process)
+        return NULL;
+    
+    return d->process->output();
 }
 
 void %1ToolBox::run(void)
 {
-    
     if(!this->parentToolBox())
         return;
-    medToolBoxRegistration * parentTB = this->parentToolBox();
-    dtkSmartPointer <dtkAbstractProcess> process;
     
-    if (this->parentToolBox()->process() &&
-        (parentTB->process()->identifier() == "%1"))
-    {
-        process = parentTB->process();
-        
-    }
-    else
-    {
-        process = dtkAbstractProcessFactory::instance()->createSmartPointer("%1");
-        parentTB->setProcess(process);
-    }
-    dtkAbstractData *fixedData = parentTB->fixedData();
-    dtkAbstractData *movingData = parentTB->movingData();
+    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer("%1");
     
-    
-    if (!fixedData || !movingData)
+    if(!this->parentToolBox()->data())
         return;
     
+    d->process->setInput(this->parentToolBox()->data());
     
-    %1 *process_Registration = dynamic_cast<%1 *>(process.data());
-    if (!process_Registration)
-    {
-        qWarning() << "registration process doesn't exist" ;
-        return;
-    }
-    // process_Registration->setMyWonderfullParameter(fronTheGui);
-    // process_Registration->setMyWonderfullParameter(fronTheGui);
-    
-    process->setInput(fixedData,  0);
-    process->setInput(movingData, 1);
+    // Set your parameters here
     
     medRunnableProcess *runProcess = new medRunnableProcess;
-    runProcess->setProcess (process);
+    runProcess->setProcess (d->process);
     
-    d->progression_stack->addJobItem(runProcess, tr("Progress:"));
-    //If there is no observer to track the progression,
-    //make the progress bar spin:
-    //d->progression_stack->setActive(runProcess,true);
+    d->progression_stack->addJobItem(runProcess, "Progress:");
+    
+    d->progression_stack->disableCancel(runProcess);
     
     connect (runProcess, SIGNAL (success  (QObject*)),  this, SIGNAL (success ()));
     connect (runProcess, SIGNAL (failure  (QObject*)),  this, SIGNAL (failure ()));
-    connect (runProcess, SIGNAL (cancelled (QObject*)), this, SIGNAL (failure ()));
-    //First have the moving progress bar,
-    //and then display the remaining % when known
+    connect (runProcess, SIGNAL (cancelled (QObject*)),  this, SIGNAL (failure ()));
+    
     connect (runProcess, SIGNAL(activate(QObject*,bool)),
              d->progression_stack, SLOT(setActive(QObject*,bool)));
     

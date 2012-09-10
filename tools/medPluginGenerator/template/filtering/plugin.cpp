@@ -42,7 +42,7 @@ bool %1Plugin::initialize(void)
     if(!%1::registered())
         dtkWarn() << "Unable to register %1 type";
     
-    if(!%1ToolBox::registered())
+    if ( !%1ToolBox::registered() )
         dtkWarn() << "Unable to register %1 toolbox";
     
     return true;
@@ -104,5 +104,4 @@ QStringList %1Plugin::dependencies(void) const
 {
     return QStringList();
 }
-
 Q_EXPORT_PLUGIN2(%1Plugin, %1Plugin)

@@ -16,14 +16,14 @@ class %2PLUGIN_EXPORT %1Plugin : public dtkPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
-
+    
 public:
-     %1Plugin(QObject *parent = 0);
+    %1Plugin(QObject *parent = 0);
     ~%1Plugin(void);
-
+    
     virtual bool initialize(void);
     virtual bool uninitialize(void);
-
+    
     virtual QString name(void) const;
     virtual QString identifier(void) const;
     virtual QString description(void) const;
@@ -32,12 +32,12 @@ public:
     virtual QStringList authors(void) const;
     virtual QStringList contributors(void) const;
     virtual QStringList dependencies(void) const;
-
+    
     virtual QStringList tags(void) const;
     virtual QStringList types(void) const;
-
+    
 private:
-     %1PluginPrivate *d;
+    %1PluginPrivate *d;
 };
 
 #endif

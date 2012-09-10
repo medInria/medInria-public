@@ -5,12 +5,12 @@
 #ifndef %2TOOLBOX_H
 #define %2TOOLBOX_H
 
-#include <medToolBoxRegistrationCustom.h>
+#include <medToolBoxFilteringCustom.h>
 #include "%1PluginExport.h"
 
 class %1ToolBoxPrivate;
 
-class %2PLUGIN_EXPORT %1ToolBox : public medToolBoxRegistrationCustom
+class %2PLUGIN_EXPORT %1ToolBox : public medToolBoxFilteringCustom
 {
     Q_OBJECT
     
@@ -18,10 +18,15 @@ public:
     %1ToolBox(QWidget *parent = 0);
     ~%1ToolBox(void);
     
-public:
+    dtkAbstractData *processOutput();
+    
     static bool registered(void);
     
-public slots:
+signals:
+    void success(void);
+    void failure(void);
+    
+    public slots:
     void run(void);
     
 private:

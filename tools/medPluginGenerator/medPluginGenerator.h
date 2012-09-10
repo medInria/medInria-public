@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef DTKPLUGINGENERATOR_H
-#define DTKPLUGINGENERATOR_H
+#ifndef MEDPLUGINGENERATOR_H
+#define MEDPLUGINGENERATOR_H
 
 #include <QtCore>
 
@@ -29,6 +29,7 @@ class medPluginGenerator
 public:
     enum PluginFamily {
         GENERIC, /** generic plugin*/
+        FILTERING, /** filtering plugin*/
         REGISTRATION /** registration plugin*/
     };
 public:
@@ -36,7 +37,6 @@ public:
    ~medPluginGenerator(void);
 
    void setOutputDirectory(const QString& directory);
-   void setNamespace(const QString& prefix);
    void setName(const QString& suffix);
    void setType(const QString& type);
    void setDescription(const QString& desc);
@@ -50,6 +50,8 @@ protected:
    bool generateTypeSourceFile(void);
    bool generateTypeToolBoxHeaderFile(void);
    bool generateTypeToolBoxSourceFile(void);
+   bool generateRPIHeaderFile(void);
+   bool generateRPISourceFile(void);
    bool generatePluginHeaderFile(void);
    bool generatePluginSourceFile(void);
    bool generateExportHeaderFile(void);

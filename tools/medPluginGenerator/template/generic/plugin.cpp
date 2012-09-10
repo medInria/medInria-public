@@ -26,13 +26,13 @@ const char * %1PluginPrivate::s_Name = "%1";
 
 %1Plugin::%1Plugin(QObject *parent) : dtkPlugin(parent), d(new %1PluginPrivate)
 {
-
+    
 }
 
 %1Plugin::~%1Plugin(void)
 {
     delete d;
-
+    
     d = NULL;
 }
 
@@ -40,7 +40,7 @@ bool %1Plugin::initialize(void)
 {
     if(!%1::registered())
         dtkWarn() << "Unable to register %1 type";
-
+    
     return true;
 }
 

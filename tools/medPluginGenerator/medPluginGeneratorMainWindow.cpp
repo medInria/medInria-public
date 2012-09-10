@@ -27,7 +27,6 @@ public:
     Ui::medPluginGeneratorMainWindow ui;
 
     QString output;
-    QString namesp;
     QString type;
     QString name;
     QString description;
@@ -50,7 +49,6 @@ medPluginGeneratorMainWindow::medPluginGeneratorMainWindow(QWidget *parent) : QM
     connect(d->ui.pathToolButton, SIGNAL(clicked()), this, SLOT(onOutputPathClicked()));
     connect(d->ui.pathLineEdit, SIGNAL(textEdited(const QString&)), this, SLOT(onOutputPathChanged()));
     connect(d->ui.pluginTypeCombo, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onPluginTypeChanged()));
-    connect(d->ui.namespaceLineEdit, SIGNAL(textEdited(const QString&)), this, SLOT(onNamespaceChanged()));
     connect(d->ui.nameLineEdit, SIGNAL(textEdited(const QString&)), this, SLOT(onNameChanged()));
     connect(d->ui.descriptionTextEdit, SIGNAL(textChanged()), this, SLOT(onDescriptionChanged()));
     connect(d->ui.pluginLicenseCombo, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onPluginLicenseChanged()));
@@ -60,6 +58,10 @@ medPluginGeneratorMainWindow::medPluginGeneratorMainWindow(QWidget *parent) : QM
     connect(d->ui.aboutAction,       SIGNAL(triggered()), this, SLOT(about()));
     connect(d->ui.actionDefault_Path,SIGNAL(triggered()), this,
             SLOT(onSetDefaultPath()));
+
+    connect(d->ui.quitButton,        SIGNAL(clicked()), qApp, SLOT(quit()));
+    connect(d->ui.generateButton,    SIGNAL(clicked()), this, SLOT(generate()));
+
     Q_UNUSED(statusBar());
 }
 
@@ -103,13 +105,6 @@ void medPluginGeneratorMainWindow::onPluginTypeChanged(void)
     }
 }
 
-void medPluginGeneratorMainWindow::onNamespaceChanged(void)
-{
-    d->namesp = d->ui.namespaceLineEdit->text();
-
-    update();
-}
-
 void medPluginGeneratorMainWindow::onNameChanged(void)
 {
     d->name = d->ui.nameLineEdit->text();
@@ -131,9 +126,8 @@ void medPluginGeneratorMainWindow::onPluginLicenseChanged()
 void medPluginGeneratorMainWindow::update(void)
 {
     d->ui.outputNameLabel->setText(
-        QString("%1%2")
-        .arg(d->namesp)
-        .arg(QString(d->name).replace(0, 1, QString(d->name).left(1).toUpper()))
+        QString("%1")
+        .arg(QString(d->name).replace(0, 1, QString(d->name).left(1).toLower()))
     );
 }
 
@@ -141,30 +135,24 @@ void medPluginGeneratorMainWindow::generate(void)
 {
     QDir outputParentDirectory(d->output);
 
-    if(d->output.isNull() || !outputParentDirectory.exists()) {
+    if(d->output.isEmpty() || !outputParentDirectory.exists()) {
         QMessageBox::warning(this, "Plugin generation", "Specify a valid output directory.");
         return;
     }
 
-    if(d->namesp.isNull()) {
-        QMessageBox::warning(this, "Plugin generation", "Specify a namespace.");
-        return;
-    }
-
-    if(d->type.isNull()) {
+    if(d->type.isEmpty()) {
         QMessageBox::warning(this, "Plugin generation", "Specify a plugin type.");
         return;
     }
-
-    if(d->name.isNull()) {
+    
+    if(d->name.isEmpty()) {
         QMessageBox::warning(this, "Plugin generation", "Specify a name.");
         return;
     }
-
+    
     medPluginGenerator generator;
     generator.setPluginFamily(static_cast<medPluginGenerator::PluginFamily>(d->ui.FamilyCombo->currentIndex()));
     generator.setOutputDirectory(d->output);
-    generator.setNamespace(d->namesp);
     generator.setName(d->name);
     generator.setType(d->type);
     generator.setDescription(d->description);

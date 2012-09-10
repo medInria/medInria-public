@@ -45,6 +45,7 @@ include(${medInria_USE_FILE})
 
 set(${PROJECT_NAME}_HEADERS_MOC
   %1Plugin.h
+  %1ToolBox.h
   %1.h)
 
 set(${PROJECT_NAME}_HEADERS
@@ -52,6 +53,7 @@ set(${PROJECT_NAME}_HEADERS
 
 set(${PROJECT_NAME}_SOURCES
   %1Plugin.cpp
+  %1ToolBox.cpp
   %1.cpp)
 
 ## #################################################################
@@ -69,7 +71,9 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkLog
   dtkCore
-  medCore)
+  medCore
+  medGui)
+
 #not useful if plugin in the medInria-plugins directory
 dtk_build_doc(%1Plugin)
 
