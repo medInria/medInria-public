@@ -62,6 +62,9 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
     connect(d->view, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
     connect(d->view, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));
 
+    connect (medDataManager::instance(), SIGNAL(dataRemoved()), this, SLOT(update()));
+    connect (medDataManager::instance(), SIGNAL(dataAdded()), this, SLOT(update()));
+
     connect(d->searchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(onFilter(const QString &, int)));
 
     connect(d->actionsTb, SIGNAL(removeClicked()), d->view, SLOT(onRemoveSelectedItemRequested()));
