@@ -11,6 +11,9 @@
 #include <medDbControllerFactory.h>
 #include <medAbstractViewFiberInteractor.h>
 #include <medMessageController.h>
+#include <medDropSite.h>
+#include <medMetaDataKeys.h>
+#include <medImageFileLoader.h>
 
 #include <medDatabaseNonPersistentController.h>
 
@@ -30,6 +33,7 @@ public:
     QRadioButton *andButton;
     QRadioButton *notButton;
     QRadioButton *nullButton;
+    medDropSite *dropOrOpenRoi;
     
     dtkSmartPointer<dtkAbstractView> view;
     dtkSmartPointer<dtkAbstractData> data;
@@ -39,8 +43,11 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
 {    
     QWidget *bundlingPage = new QWidget(this);
 
-    QPushButton *openRoiButton = new QPushButton("Open ROI", bundlingPage);
-    openRoiButton->setToolTip(tr("Open a file with ROIs declarations."));
+    d->dropOrOpenRoi = new medDropSite();
+    d->dropOrOpenRoi->setToolTip(tr("Once you are viewing fibers, click here to open a ROI or drag-and-drop one from the database."));
+    d->dropOrOpenRoi->setText(tr("Once you are viewing fibers\nclick here to open a ROI\nor drag-and-drop one\nfrom the database."));
+    d->dropOrOpenRoi->setCanAutomaticallyChangeAppereance(false);
+
     QPushButton *clearRoiButton = new QPushButton("Clear ROI", bundlingPage);
     clearRoiButton->setToolTip(tr("Clear previously loaded ROIs."));
     d->roiComboBox = new QComboBox(bundlingPage);
@@ -109,9 +116,10 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
     d->bundleBoxCheckBox = new QCheckBox("Activate bundling box", bundlingPage);
     d->bundleBoxCheckBox->setToolTip(tr("Select to activate and show the fiber bundling box on the screen."));
 
-    QHBoxLayout *roiButtonLayout = new QHBoxLayout;
-    roiButtonLayout->addWidget (openRoiButton);
+    QVBoxLayout *roiButtonLayout = new QVBoxLayout;
+    roiButtonLayout->addWidget(d->dropOrOpenRoi);
     roiButtonLayout->addWidget (clearRoiButton);
+    roiButtonLayout->setAlignment(Qt::AlignCenter);
 
     QVBoxLayout *bundlingLayout = new QVBoxLayout(bundlingPage);
     bundlingLayout->addLayout(roiButtonLayout);
@@ -131,12 +139,13 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
 
     connect (d->bundlingModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(onBundlingItemChanged(QStandardItem*)));
 
-    connect (openRoiButton,  SIGNAL(clicked()),                this, SLOT(onOpenRoiButtonClicked()));
-    connect (clearRoiButton, SIGNAL(clicked()),                this, SLOT(onClearRoiButtonClicked()));
-    connect (d->roiComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRoiComboIndexChanged(int)));
-    connect (d->andButton,   SIGNAL(toggled(bool)),            this, SLOT(onAddButtonToggled(bool)));
-    connect (d->notButton,   SIGNAL(toggled(bool)),            this, SLOT(onNotButtonToggled(bool)));
-    connect (d->nullButton,  SIGNAL(toggled(bool)),            this, SLOT(onNullButtonToggled(bool)));
+    connect (d->dropOrOpenRoi, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(onRoiImported(const medDataIndex&)));
+    connect (d->dropOrOpenRoi, SIGNAL(clicked()),                          this, SLOT(onDropSiteClicked()));
+    connect (clearRoiButton,   SIGNAL(clicked()),                          this, SLOT(onClearRoiButtonClicked()));
+    connect (d->roiComboBox,   SIGNAL(currentIndexChanged(int)),           this, SLOT(onRoiComboIndexChanged(int)));
+    connect (d->andButton,     SIGNAL(toggled(bool)),                      this, SLOT(onAddButtonToggled(bool)));
+    connect (d->notButton,     SIGNAL(toggled(bool)),                      this, SLOT(onNotButtonToggled(bool)));
+    connect (d->nullButton,    SIGNAL(toggled(bool)),                      this, SLOT(onNullButtonToggled(bool)));
 
     this->setTitle("Fiber Bundling");
     this->addWidget(bundlingPage);
@@ -291,35 +300,41 @@ void medToolBoxDiffusionFiberBundling::addBundle (const QString &name, const QCo
     //d->bundlingList->update();
 }
 
-void medToolBoxDiffusionFiberBundling::onOpenRoiButtonClicked(void)
-{
-    if (!d->view)
-        return;
-
-    QString roiFileName = QFileDialog::getOpenFileName(this, tr("Open ROI"), "", tr("Image file (*.*)"));
-
-    if (roiFileName.isEmpty())
-        return;
-
-    medAbstractDbController *nonPersDbController  = medDbControllerFactory::instance()->createDbController("NonPersistentDbController");
-    if (!nonPersDbController) {
-        qWarning() << "No nonPersistentDbController registered!";
-        return;
-    }
-    
-    connect(nonPersDbController,SIGNAL(updated(const medDataIndex &)),this,SLOT(onRoiImported(const medDataIndex &)));
-
-    nonPersDbController->import(roiFileName);
-}
-
-void medToolBoxDiffusionFiberBundling::onRoiImported(const medDataIndex &index)
+void medToolBoxDiffusionFiberBundling::onRoiImported(const medDataIndex& index)
 {
     dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(index);
 
-    if (!data)
+    // we accept only ROIs (itkDataImageUChar3)
+    if (!data || !d->view || data->identifier() != "itkDataImageUChar3")
+    {
         return;
+    }
 
-    if (medAbstractViewFiberInteractor *interactor = qobject_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor"))) {
+    // put the thumbnail in the medDropSite as well
+    // (code copied from @medDatabasePreviewItem)
+    medAbstractDbController* dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
+
+    bool shouldSkipLoading = false;
+    if ( thumbpath.isEmpty() )
+    {
+        // first try to get it from controller
+        QImage thumbImage = dbc->thumbnail(index);
+        if (!thumbImage.isNull())
+        {
+            d->dropOrOpenRoi->setPixmap(QPixmap::fromImage(thumbImage));
+            shouldSkipLoading = true;
+        }
+    }
+
+    if (!shouldSkipLoading) {
+        medImageFileLoader *loader = new medImageFileLoader(thumbpath);
+        connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
+        QThreadPool::globalInstance()->start(loader);
+    }
+
+    if (medAbstractViewFiberInteractor *interactor = qobject_cast<medAbstractViewFiberInteractor*>(d->view->interactor ("v3dViewFiberInteractor")))
+    {
         interactor->setROI(data);
         d->view->update();
     }
@@ -337,6 +352,10 @@ void medToolBoxDiffusionFiberBundling::onClearRoiButtonClicked(void)
         d->view->update();
     }
     data->deleteLater();
+
+    // clear medDropSite and put text again
+    d->dropOrOpenRoi->clear();
+    d->dropOrOpenRoi->setText(tr("Click to open a ROI\nfrom your hard drive\nor drag-and-drop one\nfrom the database."));
 }
 
 void medToolBoxDiffusionFiberBundling::onRoiComboIndexChanged (int value)
@@ -415,6 +434,9 @@ void medToolBoxDiffusionFiberBundling::onNullButtonToggled (bool value)
 
 void medToolBoxDiffusionFiberBundling::clear(void)
 {
+    // clear ROIs and related GUI elements
+    onClearRoiButtonClicked();
+
     d->bundlingModel->removeRows(0, d->bundlingModel->rowCount(QModelIndex()), QModelIndex());
 
     d->view = 0;
@@ -502,4 +524,24 @@ void medToolBoxDiffusionFiberBundling::onBundlingButtonAndToggled(bool value)
 
     if (d->view)
         d->view->update();
+}
+
+void medToolBoxDiffusionFiberBundling::onDropSiteClicked()
+{
+    if (!d->view)
+        return;
+
+    QString roiFileName = QFileDialog::getOpenFileName(this, tr("Open ROI"), "", tr("Image file (*.*)"));
+
+    if (roiFileName.isEmpty())
+        return;
+
+    medDataManager* mdm = medDataManager::instance();
+    connect(mdm, SIGNAL(dataAdded(const medDataIndex &)), this, SLOT(onRoiImported(const medDataIndex &)));
+    mdm->importNonPersistent(roiFileName);
+}
+
+void medToolBoxDiffusionFiberBundling::setImage(const QImage& thumbnail)
+{
+    d->dropOrOpenRoi->setPixmap(QPixmap::fromImage(thumbnail));
 }

@@ -38,6 +38,14 @@ public:
 
     QSize sizeHint(void) const;
 
+    /**
+     * Whenever an object is dropped on the @medDropSite it
+     * automatically updates itself to use the correspondent
+     * thumbnail. If you prefer to manually modify it from
+     * outside set this to false.
+     */
+    void setCanAutomaticallyChangeAppereance(bool can);
+
 public:
     medDataIndex index(void) const;
 
@@ -45,7 +53,15 @@ public slots:
     void clear(void);
 
 signals:
+
+    /**
+     * This signal is emitted when an object containing
+     * a valid @medDataIndex is dropped.
+     */
     void objectDropped (const medDataIndex& index);
+
+    /** Signal emitted when the user clicks on the @medDropSite. */
+    void clicked();
     
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -53,6 +69,7 @@ protected:
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
     void paintEvent(QPaintEvent *event);
+    void mousePressEvent(QMouseEvent* event);
     
 private:
     medDropSitePrivate *d;

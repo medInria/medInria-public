@@ -29,6 +29,7 @@ class medDropSitePrivate
 {
 public:
     medDataIndex index;
+    bool canAutomaticallyChangeAppereance;
 };
 
 medDropSite::medDropSite(QWidget *parent) : QLabel(parent), d(new medDropSitePrivate)
@@ -38,6 +39,7 @@ medDropSite::medDropSite(QWidget *parent) : QLabel(parent), d(new medDropSitePri
     setBackgroundRole(QPalette::Base);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     d->index = medDataIndex();
+    d->canAutomaticallyChangeAppereance = true;
 }
 
 medDropSite::~medDropSite(void)
@@ -50,6 +52,11 @@ medDropSite::~medDropSite(void)
 QSize medDropSite::sizeHint(void) const
 {
     return QSize(128, 128);
+}
+
+void medDropSite::setCanAutomaticallyChangeAppereance(bool can)
+{
+    d->canAutomaticallyChangeAppereance = can;
 }
 
 medDataIndex medDropSite::index(void) const
@@ -80,7 +87,7 @@ void medDropSite::dropEvent(QDropEvent *event)
 {
     const QMimeData *mimeData = event->mimeData();
 
-    if (mimeData->hasImage()) {
+    if (d->canAutomaticallyChangeAppereance && mimeData->hasImage()) {
         setPixmap(qvariant_cast<QPixmap>(mimeData->imageData()));
     }
 
@@ -115,4 +122,11 @@ void medDropSite::paintEvent(QPaintEvent *event)
 //    painter.setPen(Qt::white);
 //    painter.drawText(event->rect(), "Overlay", QTextOption(Qt::AlignHCenter | Qt::AlignCenter));
 //    painter.end();
+}
+
+void medDropSite::mousePressEvent(QMouseEvent* event)
+{
+    Qt::MouseButtons mouseButtons = event->buttons();
+    if( mouseButtons & Qt::LeftButton )
+        emit clicked();
 }
