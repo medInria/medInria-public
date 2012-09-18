@@ -32,7 +32,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medPacsSelector.h
   medViewPool.h
   medTabbedViewContainers.h
-  medViewerConfiguration.h
+  medViewerWorkspace.h
   medImageFileLoader.h
 
   # db related items
@@ -66,7 +66,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   # factories
   factories/medSettingsWidgetFactory.h
   factories/medToolBoxFactory.h
-  factories/medViewerConfigurationFactory.h
+  factories/medViewerWorkspaceFactory.h
 
   # LUT
   LUT/medClutEditor.h
@@ -137,7 +137,7 @@ set(${PROJECT_NAME}_SOURCES
   medPacsSelector.cpp
   medToolBoxContainer.cpp
   medTabbedViewContainers.cpp
-  medViewerConfiguration.cpp
+  medViewerWorkspace.cpp
 
   medPacsSelector.cpp
   medViewPool.cpp
@@ -178,7 +178,7 @@ set(${PROJECT_NAME}_SOURCES
   # factories
   factories/medSettingsWidgetFactory.cpp
   factories/medToolBoxFactory.cpp
-  factories/medViewerConfigurationFactory.cpp
+  factories/medViewerWorkspaceFactory.cpp
 
   # LUT
   LUT/medClutEditor.cpp

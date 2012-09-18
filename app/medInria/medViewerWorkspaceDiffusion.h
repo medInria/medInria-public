@@ -1,25 +1,25 @@
-#ifndef MEDVIEWERCONFIGURATIONDIFFUSION_H
-#define MEDVIEWERCONFIGURATIONDIFFUSION_H
+#ifndef MEDVIEWERWORKSPACEDIFFUSION_H
+#define MEDVIEWERWORKSPACEDIFFUSION_H
 
 
 #include <QtCore>
 
-#include <medViewerConfiguration.h>
+#include <medViewerWorkspace.h>
 #include <medToolBoxDiffusionTensorView.h>
 #include <medToolBoxDiffusionFiberView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 
 class medTabbedViewContainers;
-class medViewerConfigurationDiffusionPrivate;
+class medViewerWorkspaceDiffusionPrivate;
 
-class medViewerConfigurationDiffusion : public medViewerConfiguration
+class medViewerWorkspaceDiffusion : public medViewerWorkspace
 {
     Q_OBJECT
 
 public:
-     medViewerConfigurationDiffusion(QWidget *parent = 0);
-    ~medViewerConfigurationDiffusion();
+     medViewerWorkspaceDiffusion(QWidget *parent = 0);
+    ~medViewerWorkspaceDiffusion();
 
     virtual QString identifier()  const;
     virtual QString description() const;
@@ -40,9 +40,9 @@ public slots:
     void refreshInteractors (void);
 
     /**
-      * @brief Adds a new tab to a configuration
+      * @brief Adds a new tab to a workspace
       *
-      * Re-implemented, replaces default implementation in medViewerConfiguration
+      * Re-implemented, replaces default implementation in medViewerWorkspace
       */
     void onAddTabClicked();
 
@@ -62,7 +62,7 @@ public slots:
     void onFlipZChanged(bool flipZ);
 
 private:
-    medViewerConfigurationDiffusionPrivate *d;
+    medViewerWorkspaceDiffusionPrivate *d;
 
     /** Updates the tensor interactor with the current values in the tensor toolbox. */
     void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionTensorView* tensorViewToolBox);
@@ -72,4 +72,4 @@ private:
 };
 
 
-#endif // MEDVIEWERCONFIGURATIONDIFFUSION_H
+#endif // MEDVIEWERWORKSPACEDIFFUSION_H

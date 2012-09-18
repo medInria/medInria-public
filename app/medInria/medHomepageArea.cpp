@@ -29,8 +29,8 @@
 #include "medHomepageArea.h"
 
 #include <medHomepageButton.h>
-#include <medViewerConfiguration.h>
-#include <medViewerConfigurationFactory.h>
+#include <medViewerWorkspace.h>
+#include <medViewerWorkspaceFactory.h>
 #include <medSettingsManager.h>
 #include "medPluginWidget.h"
 #include <medSettingsEditor.h>
@@ -366,14 +366,14 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
 void medHomepageArea::initPage ( void )
 {
     //Initialization of the navigation widget with available workspaces
-    QHash<QString,medViewerConfigurationDetails*> configDetails =
-            medViewerConfigurationFactory::instance()->configurationDetails();
-    QVBoxLayout * configurationButtonsLayout = new QVBoxLayout;
-    configurationButtonsLayout->setSpacing ( 10 );
-    QLabel * configurationLabel = new QLabel ( "<b>Available workspaces</b>" );
-    configurationLabel->setTextFormat(Qt::RichText);
-    configurationLabel->setAlignment(Qt::AlignHCenter);
-    configurationButtonsLayout->addWidget ( configurationLabel );
+    QHash<QString,medViewerWorkspaceDetails*> workspaceDetails =
+            medViewerWorkspaceFactory::instance()->workspaceDetails();
+    QVBoxLayout * workspaceButtonsLayout = new QVBoxLayout;
+    workspaceButtonsLayout->setSpacing ( 10 );
+    QLabel * workspaceLabel = new QLabel ( "<b>Available workspaces</b>" );
+    workspaceLabel->setTextFormat(Qt::RichText);
+    workspaceLabel->setAlignment(Qt::AlignHCenter);
+    workspaceButtonsLayout->addWidget ( workspaceLabel );
 
     medHomepageButton * browserButton = new medHomepageButton ( this );
     browserButton->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
@@ -383,13 +383,13 @@ void medHomepageArea::initPage ( void )
     browserButton->setMaximumWidth ( 250 );
     browserButton->setMinimumWidth ( 250 );
     browserButton->setFocusPolicy ( Qt::NoFocus );
-    configurationButtonsLayout->addWidget ( browserButton );
+    workspaceButtonsLayout->addWidget ( browserButton );
     QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SLOT ( onShowBrowser() ) );
 
-    foreach ( QString id, configDetails.keys())
+    foreach ( QString id, workspaceDetails.keys())
     {
         medHomepageButton * button = new medHomepageButton ( this );
-        medViewerConfigurationDetails* detail = configDetails.value(id);
+        medViewerWorkspaceDetails* detail = workspaceDetails.value(id);
         button->setText ( detail->name );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );
@@ -398,13 +398,13 @@ void medHomepageArea::initPage ( void )
         button->setMinimumWidth ( 250 );
         button->setToolTip(detail->description);
         button->setIdentifier(id);
-        configurationButtonsLayout->addWidget ( button );
-        QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowConfiguration ( QString ) ) );
+        workspaceButtonsLayout->addWidget ( button );
+        QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowWorkspace ( QString ) ) );
     }
-    configurationButtonsLayout->addStretch();
-    d->navigationWidget->setLayout ( configurationButtonsLayout );
+    workspaceButtonsLayout->addStretch();
+    d->navigationWidget->setLayout ( workspaceButtonsLayout );
     d->navigationWidget->setProperty ( "pos", QPoint ( 100,  100 ) );
-    d->navigationWidget->setMinimumHeight ( 55 * ( 1 + configDetails.size() ) );
+    d->navigationWidget->setMinimumHeight ( 55 * ( 1 + workspaceDetails.size() ) );
 }
 
 QParallelAnimationGroup* medHomepageArea::getAnimation ( void )
@@ -417,9 +417,9 @@ void medHomepageArea::onShowBrowser ( void )
     emit showBrowser();
 }
 
-void medHomepageArea::onShowConfiguration ( QString configuration )
+void medHomepageArea::onShowWorkspace ( QString workspace )
 {
-    emit showConfiguration ( configuration );
+    emit showWorkspace ( workspace );
 }
 
 void medHomepageArea::onShowAbout ( void )

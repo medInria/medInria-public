@@ -1,33 +1,33 @@
-#include "medViewerConfigurationFactory.h"
+#include "medViewerWorkspaceFactory.h"
 
 
-#include "medViewerConfiguration.h"
-#include "medViewerConfigurationFactory.h"
+#include "medViewerWorkspace.h"
+#include "medViewerWorkspaceFactory.h"
 
-class medViewerConfigurationFactoryPrivate
+class medViewerWorkspaceFactoryPrivate
 {
 public:
-    typedef QHash<QString, medViewerConfigurationDetails*> medViewerConfigurationCreatorHash;
-    medViewerConfigurationCreatorHash creators;
+    typedef QHash<QString, medViewerWorkspaceDetails*> medViewerWorkspaceCreatorHash;
+    medViewerWorkspaceCreatorHash creators;
 };
 
-medViewerConfigurationFactory *medViewerConfigurationFactory::instance(void)
+medViewerWorkspaceFactory *medViewerWorkspaceFactory::instance(void)
 {
     if(!s_instance)
-        s_instance = new medViewerConfigurationFactory;
+        s_instance = new medViewerWorkspaceFactory;
 
     return s_instance;
 }
 
-bool medViewerConfigurationFactory::registerConfiguration(QString identifier,
+bool medViewerWorkspaceFactory::registerWorkspace(QString identifier,
                                                           QString name,
                                                           QString description,
-                                                          medViewerConfigurationCreator creator)
+                                                          medViewerWorkspaceCreator creator)
 {
 
     if(!d->creators.contains(identifier))
     {
-        medViewerConfigurationDetails* holder = new medViewerConfigurationDetails
+        medViewerWorkspaceDetails* holder = new medViewerWorkspaceDetails
                 (name,
                  description,
                  creator);
@@ -38,34 +38,34 @@ bool medViewerConfigurationFactory::registerConfiguration(QString identifier,
     return false;
 }
 
-QList<QString> medViewerConfigurationFactory::configurations(void)
+QList<QString> medViewerWorkspaceFactory::workspaces(void)
 {
     return d->creators.keys();
 }
 
-medViewerConfiguration *medViewerConfigurationFactory::createConfiguration(QString type,QWidget* parent)
+medViewerWorkspace *medViewerWorkspaceFactory::createWorkspace(QString type,QWidget* parent)
 {
     if(!d->creators.contains(type))
         return NULL;
 
-    medViewerConfiguration *conf = d->creators[type]->creator(parent);
+    medViewerWorkspace * workspace = d->creators[type]->creator(parent);
 
-    return conf;
+    return workspace;
 }
 
-QHash<QString, medViewerConfigurationDetails *> medViewerConfigurationFactory::configurationDetails() const
+QHash<QString, medViewerWorkspaceDetails *> medViewerWorkspaceFactory::workspaceDetails() const
 {
     return d->creators;
 }
 
-medViewerConfigurationFactory::medViewerConfigurationFactory(void) : dtkAbstractFactory(), d(new medViewerConfigurationFactoryPrivate)
+medViewerWorkspaceFactory::medViewerWorkspaceFactory(void) : dtkAbstractFactory(), d(new medViewerWorkspaceFactoryPrivate)
 {
 
 }
 
-medViewerConfigurationFactory::~medViewerConfigurationFactory(void)
+medViewerWorkspaceFactory::~medViewerWorkspaceFactory(void)
 {
-    foreach (medViewerConfigurationDetails * detail, d->creators.values())
+    foreach (medViewerWorkspaceDetails * detail, d->creators.values())
     {
         delete detail;
         detail = NULL;
@@ -77,10 +77,10 @@ medViewerConfigurationFactory::~medViewerConfigurationFactory(void)
 }
 
 
-medViewerConfigurationDetails * medViewerConfigurationFactory::configurationDetailsFromId(QString identifier) const
+medViewerWorkspaceDetails * medViewerWorkspaceFactory::workspaceDetailsFromId(QString identifier) const
 {
     return d->creators.value(identifier);
 }
 
-medViewerConfigurationFactory *medViewerConfigurationFactory::s_instance = NULL;
+medViewerWorkspaceFactory *medViewerWorkspaceFactory::s_instance = NULL;
 

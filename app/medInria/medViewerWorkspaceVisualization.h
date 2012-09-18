@@ -1,4 +1,4 @@
-/* medViewerConfigurationVisualization.h ---
+/* medViewerWorkspaceVisualization.h ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,23 +17,23 @@
  *
  */
 
-#ifndef medViewerConfigurationVisualization_H
-#define medViewerConfigurationVisualization_H
+#ifndef medViewerWorkspaceVisualization_H
+#define medViewerWorkspaceVisualization_H
 
 #include <QtCore>
 
-#include <medViewerConfiguration.h>
+#include <medViewerWorkspace.h>
 
 
-class medViewerConfigurationVisualizationPrivate;
+class medViewerWorkspaceVisualizationPrivate;
 
-class medViewerConfigurationVisualization : public medViewerConfiguration
+class medViewerWorkspaceVisualization : public medViewerWorkspace
 {
     Q_OBJECT
 
 public:
-     medViewerConfigurationVisualization(QWidget *parent = 0);
-    ~medViewerConfigurationVisualization(void);
+     medViewerWorkspaceVisualization(QWidget *parent = 0);
+    ~medViewerWorkspaceVisualization(void);
 
     virtual void setupViewContainerStack();
 
@@ -49,7 +49,7 @@ public slots:
     virtual void connectToolboxesToCurrentContainer(const QString &name);
 
 private:
-    medViewerConfigurationVisualizationPrivate *d;
+    medViewerWorkspaceVisualizationPrivate *d;
 };
 
 #endif

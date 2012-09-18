@@ -32,12 +32,12 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medBrowserToolBoxSettings.h
   medMainWindow.h
   medViewerArea.h
-  medViewerConfigurationDiffusion.h
-  medViewerConfigurationVisualization.h
-  medViewerConfigurationRegistration.h
-  medViewerConfigurationSegmentation.h
-  medViewerConfigurationFiltering.h
-  medViewerToolBoxConfiguration.h
+  medViewerWorkspaceDiffusion.h
+  medViewerWorkspaceVisualization.h
+  medViewerWorkspaceRegistration.h
+  medViewerWorkspaceSegmentation.h
+  medViewerWorkspaceFiltering.h
+  medViewerToolBoxWorkspace.h
   medPacsDataSource.h
   medFileSystemDataSource.h
   medDatabaseDataSource.h
@@ -62,12 +62,12 @@ set(${PROJECT_NAME}_SOURCES
   medBrowserToolBoxSettings.cpp
   medMainWindow.cpp
   medViewerArea.cpp
-  medViewerToolBoxConfiguration.cpp
-  medViewerConfigurationDiffusion.cpp
-  medViewerConfigurationVisualization.cpp
-  medViewerConfigurationRegistration.cpp
-  medViewerConfigurationSegmentation.cpp  
-  medViewerConfigurationFiltering.cpp
+  medViewerToolBoxWorkspace.cpp
+  medViewerWorkspaceDiffusion.cpp
+  medViewerWorkspaceVisualization.cpp
+  medViewerWorkspaceRegistration.cpp
+  medViewerWorkspaceSegmentation.cpp  
+  medViewerWorkspaceFiltering.cpp
   medPacsDataSource.cpp
   medFileSystemDataSource.cpp
   medDatabaseDataSource.cpp

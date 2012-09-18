@@ -1,21 +1,21 @@
-#ifndef MEDVIEWERCONFIGURATIONREGISTRATION_H
-#define MEDVIEWERCONFIGURATIONREGISTRATION_H
+#ifndef MEDVIEWERWORKSPACEREGISTRATION_H
+#define MEDVIEWERWORKSPACEREGISTRATION_H
 
 
 #include <QtCore>
 
-#include <medViewerConfiguration.h>
+#include <medViewerWorkspace.h>
 
 class medTabbedViewContainers;
-class medViewerConfigurationRegistrationPrivate;
+class medViewerWorkspaceRegistrationPrivate;
 
-class medViewerConfigurationRegistration : public medViewerConfiguration
+class medViewerWorkspaceRegistration : public medViewerWorkspace
 {
     Q_OBJECT
 
 public:
-     medViewerConfigurationRegistration(QWidget *parent = 0);
-    ~medViewerConfigurationRegistration(void);
+     medViewerWorkspaceRegistration(QWidget *parent = 0);
+    ~medViewerWorkspaceRegistration(void);
 
     virtual QString identifier()  const;
     virtual QString description() const;
@@ -26,7 +26,7 @@ public slots:
     void patientChanged(int patientId);
 
 private:
-    medViewerConfigurationRegistrationPrivate *d;
+    medViewerWorkspaceRegistrationPrivate *d;
 };
 
-#endif // MEDVIEWERCONFIGURATIONREGISTRATION_H
+#endif // MEDVIEWERWORKSPACEREGISTRATION_H

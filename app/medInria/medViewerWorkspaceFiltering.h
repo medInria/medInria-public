@@ -1,24 +1,24 @@
-/* @file medViewerConfigurationFiltering.h ---
+/* @file medViewerWorkspaceFiltering.h ---
  *
  * @author Clément Philipot <clement.philipot@inria.fr>
  *
  */
 
-#ifndef medViewerConfigurationFiltering_H
-#define medViewerConfigurationFiltering_H
+#ifndef medViewerWorkspaceFiltering_H
+#define medViewerWorkspaceFiltering_H
 
 #include <QtCore>
-#include <medViewerConfiguration.h>
+#include <medViewerWorkspace.h>
 
-class medViewerConfigurationFilteringPrivate;
+class medViewerWorkspaceFilteringPrivate;
 class medViewContainerStack;
 class dtkAbstractData;
 class dtkAbstractView;
 
 /**
- * @brief Configuration providing a comparative display of the input and output of image-to-image filtering process plugins
+ * @brief Workspace providing a comparative display of the input and output of image-to-image filtering process plugins
  */
-class medViewerConfigurationFiltering : public medViewerConfiguration
+class medViewerWorkspaceFiltering : public medViewerWorkspace
 {
     Q_OBJECT
 
@@ -28,14 +28,14 @@ public:
      *
      * @param parent
      */
-    medViewerConfigurationFiltering(QWidget *parent = 0);
-    ~medViewerConfigurationFiltering();
+    medViewerWorkspaceFiltering(QWidget *parent = 0);
+    ~medViewerWorkspaceFiltering();
 
     virtual QString identifier()  const;
     virtual QString description() const;
 
     /**
-     * @brief sets up all the signal/slot connections when Viewer is switched to this configuration
+     * @brief sets up all the signal/slot connections when Viewer is switched to this workspace
      */
     void setupViewContainerStack ();
 
@@ -78,7 +78,7 @@ public slots:
     void onViewRemoved();
 
 private:
-    medViewerConfigurationFilteringPrivate *d;
+    medViewerWorkspaceFilteringPrivate *d;
 };
 
 #endif

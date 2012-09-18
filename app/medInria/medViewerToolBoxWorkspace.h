@@ -1,4 +1,4 @@
-/* medViewerToolBoxConfiguration.h --- 
+/* medViewerToolBoxWorkspace.h --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,28 +17,28 @@
  * 
  */
 
-#ifndef MEDVIEWERTOOLBOXCONFIGURATION_H
-#define MEDVIEWERTOOLBOXCONFIGURATION_H
+#ifndef MEDVIEWERTOOLBOXWORKSPACE_H
+#define MEDVIEWERTOOLBOXWORKSPACE_H
 
 #include <medToolBox.h>
 
-class medViewerToolBoxConfigurationPrivate;
+class medViewerToolBoxWorkspacePrivate;
 
-class medViewerToolBoxConfiguration : public medToolBox
+class medViewerToolBoxWorkspace : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medViewerToolBoxConfiguration(QWidget *parent = 0);
-    ~medViewerToolBoxConfiguration(void);
+     medViewerToolBoxWorkspace(QWidget *parent = 0);
+    ~medViewerToolBoxWorkspace(void);
 
-    void addConfiguration(QString name);
+    void addWorkspace(QString name);
 
 signals:
-    void configurationChanged(QString);
+    void workspaceChanged(QString);
 
 private:
-    medViewerToolBoxConfigurationPrivate *d;
+    medViewerToolBoxWorkspacePrivate *d;
 };
 
 #endif

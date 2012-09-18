@@ -1,4 +1,4 @@
-#include "medViewerConfigurationRegistration.h"
+#include "medViewerWorkspaceRegistration.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -12,14 +12,14 @@
 #include <medTabbedViewContainers.h>
 #include <medToolBoxRegistration.h>
 
-class medViewerConfigurationRegistrationPrivate
+class medViewerWorkspaceRegistrationPrivate
 {
 public:
     medToolBoxRegistration * registrationToolBox;
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
 };
 
-medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationRegistrationPrivate)
+medViewerWorkspaceRegistration::medViewerWorkspaceRegistration(QWidget *parent) : medViewerWorkspace(parent), d(new medViewerWorkspaceRegistrationPrivate)
 {
 
 
@@ -38,26 +38,26 @@ medViewerConfigurationRegistration::medViewerConfigurationRegistration(QWidget *
     this->addToolBox( d->registrationToolBox );
 
 
-    //this->setLayoutType(medViewerConfiguration::TopDbBottomTb);
-    this->setLayoutType(medViewerConfiguration::LeftDbRightTb);
+    //this->setLayoutType(medViewerWorkspace::TopDbBottomTb);
+    this->setLayoutType(medViewerWorkspace::LeftDbRightTb);
 }
 
-medViewerConfigurationRegistration::~medViewerConfigurationRegistration(void)
+medViewerWorkspaceRegistration::~medViewerWorkspaceRegistration(void)
 {
     delete d;
     d = NULL;
 }
 
-QString medViewerConfigurationRegistration::identifier() const {
+QString medViewerWorkspaceRegistration::identifier() const {
     return "Registration";
 }
 
-QString medViewerConfigurationRegistration::description() const {
+QString medViewerWorkspaceRegistration::description() const {
     return tr("Registration");
 }
 
 
-void medViewerConfigurationRegistration::setupViewContainerStack()
+void medViewerWorkspaceRegistration::setupViewContainerStack()
 {
     //the stack has been instantiated in constructor
     if (!this->stackedViewContainers()->count())
@@ -86,7 +86,7 @@ void medViewerConfigurationRegistration::setupViewContainerStack()
     }
 }
 
-void medViewerConfigurationRegistration::patientChanged(int patientId)
+void medViewerWorkspaceRegistration::patientChanged(int patientId)
 {
     d->registrationToolBox->clear();
 }

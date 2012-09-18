@@ -17,7 +17,7 @@ class medViewerToolBoxViewPropertiesPrivate;
 /**
 
    \class medViewerToolBoxViewProperties
-   \brief This is designed to help users manipulate the image or mesh data. It can be put into the specific configuration as the other toolboxes
+   \brief This is designed to help users manipulate the image or mesh data. It can be put into the specific workspace as the other toolboxes
 
    \ingroup Toolboxes
    \author Alexandre Abadie and Fatih Arslan, INRIA

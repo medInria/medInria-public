@@ -1,4 +1,4 @@
-/* medViewerConfiguration.h ---
+/* medViewerWorkspace.h ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef MEDVIEWERCONFIGURATION_H
-#define MEDVIEWERCONFIGURATION_H
+#ifndef MEDVIEWERWORKSPACE_H
+#define MEDVIEWERWORKSPACE_H
 
 #include <QtCore>
 #include "medViewContainer.h"
@@ -27,22 +27,22 @@
 #include "medGuiExport.h"
 
 class medToolBox;
-class medViewerConfigurationPrivate;
+class medViewerWorkspacePrivate;
 class medTabbedViewContainers;
 class medDataIndex;
 
 /**
- * @brief A Configuration holds medToolBoxes, medViewContainers and their relations.
+ * @brief A Workspace holds medToolBoxes, medViewContainers and their relations.
  *
- *The main role of a configuration is to provide a coherent set of toolboxes and containers that interact with each other.
+ *The main role of a workspace is to provide a coherent set of toolboxes and containers that interact with each other.
  *
- * A configuration is usually instantiated by a factory.
+ * A workspace is usually instantiated by a factory.
  * It owns several medViewContainers in a medTabbedViewContainers.
  * It also owns toolboxes, but does not place them, the medViewerArea does it when
- * medViewerArea::setupConfiguration is called.
+ * medViewerArea::setupWorkspace is called.
  *
 */
-class MEDGUI_EXPORT medViewerConfiguration : public QObject
+class MEDGUI_EXPORT medViewerWorkspace : public QObject
 {
     Q_OBJECT
 
@@ -52,16 +52,16 @@ public:
      *
      * @param parent
     */
-    medViewerConfiguration(QWidget *parent=0);
+    medViewerWorkspace(QWidget *parent=0);
     /**
      * @brief
      *
      * @param void
     */
-    ~medViewerConfiguration(void);
+    ~medViewerWorkspace(void);
 
     /**
-     * @brief Identifies a configuration in the factory.
+     * @brief Identifies a workspace in the factory.
      *
      * @param void
      * @return QString
@@ -119,8 +119,8 @@ public:
     /**
      * @brief Sets the layout preset for medViewContainerCustom.
      *
-     * The value is really applied when the configuration
-     * is set in the medViewArea::setupConfiguration method.
+     * The value is really applied when the workspace
+     * is set in the medViewArea::setupWorkspace method.
      *
      * @param value
     */
@@ -137,8 +137,8 @@ public:
     /**
      * @brief Sets the Database navigator's visibility.
      *
-     * The value is really applied when the configuration
-     * is set in the medViewArea::setupConfiguration method.
+     * The value is really applied when the workspace
+     * is set in the medViewArea::setupWorkspace method.
      * @param bool
     */
     void setDatabaseVisibility(bool);
@@ -154,8 +154,8 @@ public:
     /**
      * @brief Sets the toolbox containers's visibility.
      *
-     * The value is really applied when the configuration
-     * is set in the medViewArea::setupConfiguration method.
+     * The value is really applied when the workspace
+     * is set in the medViewArea::setupWorkspace method.
      * @param bool
     */
     void setToolBoxesVisibility(bool);
@@ -171,7 +171,7 @@ public:
     /**
      * @brief Sets up the medTabbedViewContainers.
      *
-     * Abstract method that every configuration should implement. It sets or
+     * Abstract method that every workspace should implement. It sets or
      * resets the stack so that containers are connected properly with the toolboxes,
      * between them if needed, and without any dangling views.
     */
@@ -238,10 +238,10 @@ public:
 
 public slots:
     /**
-     * @brief Adds a toolbox to the configuration.
+     * @brief Adds a toolbox to the workspace.
      *
      * This function connects the medToolBox::addToolBox signals
-     * from a new toolbox with the toolboxAdded signal of the configuration.
+     * from a new toolbox with the toolboxAdded signal of the workspace.
      * This way the medToolBoxContainer will eventually be notified and display
      * new toolboxes added by the one in parameter here.
      * A toolboxAdded signal is also emitted to add this toolbox
@@ -253,7 +253,7 @@ public slots:
     virtual void addToolBox(medToolBox *toolbox);
 
     /**
-     * @brief Removes a toolbox from the configuration.
+     * @brief Removes a toolbox from the workspace.
      *
      * Disconnects the signals connected at addition time,
      * and emits a toolboxRemoved signal.
@@ -264,9 +264,9 @@ public slots:
     virtual void removeToolBox(medToolBox *toolbox);
 
     /**
-     * @brief Clears the Configuration.
+     * @brief Clears the Workspace.
      *
-     * Gives the configuration a pristine look and state.
+     * Gives the workspace a pristine look and state.
      * This method removes the containers
      * (by calling medTabbedViewContainers::removeContainer)
      *
@@ -274,7 +274,7 @@ public slots:
     virtual void clear();
 
     /**
-      * @brief Adds a new tab to a configuration
+      * @brief Adds a new tab to a workspace
       *
       * Default implementation adds a multi-container tab
       * If another behavior is wanted, override this in child class
@@ -344,7 +344,7 @@ signals:
     /**
      * @brief Signal to change layout toolbox tab type
      *
-     * Connect it in your config to the layout toolbox
+     * Connect it in your workspace to the layout toolbox
      *
      * @param int
     */
@@ -352,15 +352,15 @@ signals:
 
 protected:
     /**
-     * @brief Clears the configuration's toolboxes.
+     * @brief Clears the workspace's toolboxes.
      *
-     * resets all the buttons and internal parameters of the Configuration.
+     * resets all the buttons and internal parameters of the Workspace.
      *
     */
     void clearToolBoxes();
 
 private:
-    medViewerConfigurationPrivate *d;
+    medViewerWorkspacePrivate *d;
 };
 
 #endif

@@ -38,7 +38,7 @@
 #include <medToolBoxTab.h>
 #include <medToolBoxSegmentationCustom.h>
 #include <medViewManager.h>
-#include <medViewerConfiguration.h>
+#include <medViewerWorkspace.h>
 #include <medViewEventFilter.h>
 
 #include <QtGui>
@@ -53,13 +53,13 @@ class medToolBoxSegmentationPrivate
 {
 public:
     medToolBoxSegmentationPrivate() : progression_stack(NULL), algorithmParameterLayout(NULL),
-        toolboxes(NULL), customToolBox(NULL), configuration(NULL) { }
+        toolboxes(NULL), customToolBox(NULL), workspace(NULL) { }
 
     medProgressionStack *progression_stack;
     QBoxLayout *algorithmParameterLayout;
     QComboBox *toolboxes;
     medToolBoxSegmentationCustom * customToolBox;
-    medViewerConfiguration * configuration;
+    medViewerWorkspace * workspace;
 
     dtkSmartPointer<dtkAbstractProcess> process;
 
@@ -73,9 +73,9 @@ public:
 
 };
 
-medToolBoxSegmentation::medToolBoxSegmentation( medViewerConfiguration * configuration, QWidget *parent) : medToolBox(parent), d(new medToolBoxSegmentationPrivate)
+medToolBoxSegmentation::medToolBoxSegmentation( medViewerWorkspace * workspace, QWidget *parent) : medToolBox(parent), d(new medToolBoxSegmentationPrivate)
 {
-    d->configuration = configuration;
+    d->workspace = workspace;
     QWidget *displayWidget = new QWidget(this);
     d->algorithmParameterLayout = new QBoxLayout( QBoxLayout::LeftToRight );
 
@@ -307,7 +307,7 @@ QString medToolBoxSegmentation::localizedNameForAlgorithm( const QString & algNa
 
 void medToolBoxSegmentation::addViewEventFilter( medViewEventFilter * filter )
 {
-    QList< dtkAbstractView *> views = d->configuration->currentViewContainer()->views();
+    QList< dtkAbstractView *> views = d->workspace->currentViewContainer()->views();
     foreach( dtkAbstractView * view, views ) {
         medAbstractView * mview = qobject_cast<medAbstractView *>(view);
         filter->installOnView(mview);
@@ -316,7 +316,7 @@ void medToolBoxSegmentation::addViewEventFilter( medViewEventFilter * filter )
 
 void medToolBoxSegmentation::removeViewEventFilter( medViewEventFilter * filter )
 {
-    QList< dtkAbstractView *> views = d->configuration->currentViewContainer()->views();
+    QList< dtkAbstractView *> views = d->workspace->currentViewContainer()->views();
     foreach( dtkAbstractView * view, views ) {
         medAbstractView * mview = qobject_cast<medAbstractView *>(view);
         filter->removeFromView(mview);

@@ -1,4 +1,4 @@
-/* medViewerConfigurationVisualization.cpp ---
+/* medViewerWorkspaceVisualization.cpp ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,7 +17,7 @@
  *
  */
 
-#include "medViewerConfigurationVisualization.h"
+#include "medViewerWorkspaceVisualization.h"
 
 #include <medViewerToolBoxViewProperties.h>
 #include <medViewContainer.h>
@@ -26,7 +26,7 @@
 #include <medViewerToolBoxLayout.h>
 #include <medSettingsManager.h>
 
-class medViewerConfigurationVisualizationPrivate
+class medViewerWorkspaceVisualizationPrivate
 {
 public:
     medViewerToolBoxLayout              *layoutToolBox;
@@ -34,7 +34,7 @@ public:
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
 };
 
-medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget *parent) : medViewerConfiguration(parent), d(new medViewerConfigurationVisualizationPrivate)
+medViewerWorkspaceVisualization::medViewerWorkspaceVisualization(QWidget *parent) : medViewerWorkspace(parent), d(new medViewerWorkspaceVisualizationPrivate)
 {
     // -- Layout toolbox --
     d->layoutToolBox = new medViewerToolBoxLayout(parent);
@@ -67,7 +67,7 @@ medViewerConfigurationVisualization::medViewerConfigurationVisualization(QWidget
               this, SLOT(connectToolboxesToCurrentContainer(const QString &)));
 }
 
-void medViewerConfigurationVisualization::setupViewContainerStack()
+void medViewerWorkspaceVisualization::setupViewContainerStack()
 {
     if (!stackedViewContainers()->count())
     {
@@ -78,7 +78,7 @@ void medViewerConfigurationVisualization::setupViewContainerStack()
     this->stackedViewContainers()->unlockTabs();
 }
 
-void medViewerConfigurationVisualization::connectToolboxesToCurrentContainer(const QString &name)
+void medViewerWorkspaceVisualization::connectToolboxesToCurrentContainer(const QString &name)
 {
     connect(stackedViewContainers()->container(name),
             SIGNAL(viewAdded(dtkAbstractView*)),
@@ -88,16 +88,16 @@ void medViewerConfigurationVisualization::connectToolboxesToCurrentContainer(con
             d->timeToolBox, SLOT(onViewRemoved(dtkAbstractView*)));
 }
 
-medViewerConfigurationVisualization::~medViewerConfigurationVisualization(void)
+medViewerWorkspaceVisualization::~medViewerWorkspaceVisualization(void)
 {
     delete d;
     d = NULL;
 }
 
-QString medViewerConfigurationVisualization::identifier() const {
+QString medViewerWorkspaceVisualization::identifier() const {
     return "Visualization";
 }
 
-QString medViewerConfigurationVisualization::description() const {
+QString medViewerWorkspaceVisualization::description() const {
     return tr("Visualization");
 }

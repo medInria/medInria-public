@@ -85,7 +85,7 @@ void medTabbedViewContainers::addNewTabContainer()
         this->setContainer(name);
     }
     else
-        qDebug() << "Container" << name << "already exists in this configurations";
+        qDebug() << "Container" << name << "already exists in this workspaces";
 }
 */
 

@@ -1,4 +1,4 @@
-/* medViewerConfiguration.cpp ---
+/* medViewerWorkspace.cpp ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -16,7 +16,7 @@
 /* Change log:
  *
  */
-#include "medViewerConfiguration.h"
+#include "medViewerWorkspace.h"
 
 #include <medDataIndex.h>
 #include <medSettingsManager.h>
@@ -29,12 +29,12 @@
 #include "medTabbedViewContainers.h"
 
 
-class medViewerConfigurationPrivate
+class medViewerWorkspacePrivate
 {
 public:
     QWidget *parent;
     QList<medToolBox*> toolboxes;
-    medViewerConfiguration::LayoutType layoutType;
+    medViewerWorkspace::LayoutType layoutType;
     int customLayoutType;
     bool databaseVisibility;
     bool toolBoxesVisibility;
@@ -42,7 +42,7 @@ public:
 
 };
 
-medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(parent), d(new medViewerConfigurationPrivate)
+medViewerWorkspace::medViewerWorkspace(QWidget *parent) : QObject(parent), d(new medViewerWorkspacePrivate)
 {
     d->parent = parent;
 
@@ -50,19 +50,19 @@ medViewerConfiguration::medViewerConfiguration(QWidget *parent) : QObject(parent
     connect(d->viewContainerStack,SIGNAL(addTabButtonClicked()),this,SLOT(onAddTabClicked()));
     connect(d->viewContainerStack,SIGNAL(currentChanged(const QString &)),this,SLOT(onContainerChanged(const QString &)));
 
-    d->layoutType = medViewerConfiguration::LeftDbRightTb;
+    d->layoutType = medViewerWorkspace::LeftDbRightTb;
     d->customLayoutType = 0;
     d->databaseVisibility = true;
     d->toolBoxesVisibility = true;
 }
 
-medViewerConfiguration::~medViewerConfiguration(void)
+medViewerWorkspace::~medViewerWorkspace(void)
 {
     delete d;
     d = NULL;
 }
 
-void medViewerConfiguration::addToolBox(medToolBox *toolbox)
+void medViewerWorkspace::addToolBox(medToolBox *toolbox)
 {
     if (!d->toolboxes.contains(toolbox)) {
         connect (toolbox, SIGNAL(addToolBox(medToolBox*)),    this, SIGNAL(toolboxAdded  (medToolBox*)));
@@ -72,7 +72,7 @@ void medViewerConfiguration::addToolBox(medToolBox *toolbox)
     }
 }
 
-void medViewerConfiguration::removeToolBox(medToolBox *toolbox)
+void medViewerWorkspace::removeToolBox(medToolBox *toolbox)
 {
     if (d->toolboxes.contains(toolbox)) {
         disconnect (toolbox, SIGNAL(addToolBox(medToolBox*)),    this, SIGNAL(toolboxAdded  (medToolBox*)));
@@ -82,27 +82,27 @@ void medViewerConfiguration::removeToolBox(medToolBox *toolbox)
     }
 }
 
-QList<medToolBox*> medViewerConfiguration::toolBoxes(void) const
+QList<medToolBox*> medViewerWorkspace::toolBoxes(void) const
 {
     return d->toolboxes;
 }
 
-void medViewerConfiguration::setLayoutType(medViewerConfiguration::LayoutType type)
+void medViewerWorkspace::setLayoutType(medViewerWorkspace::LayoutType type)
 {
     d->layoutType = type;
 }
 
-medViewerConfiguration::LayoutType medViewerConfiguration::layoutType(void) const
+medViewerWorkspace::LayoutType medViewerWorkspace::layoutType(void) const
 {
     return d->layoutType;
 }
 
-void medViewerConfiguration::setCurrentViewContainer(const QString& name)
+void medViewerWorkspace::setCurrentViewContainer(const QString& name)
 {
     d->viewContainerStack->setContainer(name);
 }
 
-void medViewerConfiguration::onContainerChanged(const QString &name)
+void medViewerWorkspace::onContainerChanged(const QString &name)
 {
     if (!d->viewContainerStack->container(name))
         return;
@@ -111,42 +111,42 @@ void medViewerConfiguration::onContainerChanged(const QString &name)
     emit setLayoutTab(containerType);
 }
 
-void medViewerConfiguration::setCustomPreset(int type)
+void medViewerWorkspace::setCustomPreset(int type)
 {
     d->customLayoutType = type;
 }
 
-int medViewerConfiguration::customLayoutPreset(void) const
+int medViewerWorkspace::customLayoutPreset(void) const
 {
     return d->customLayoutType;
 }
 
-void medViewerConfiguration::setDatabaseVisibility(bool visibility)
+void medViewerWorkspace::setDatabaseVisibility(bool visibility)
 {
     d->databaseVisibility = visibility;
 }
 
-bool medViewerConfiguration::isDatabaseVisible(void) const
+bool medViewerWorkspace::isDatabaseVisible(void) const
 {
     return d->databaseVisibility;
 }
 
-medViewContainer* medViewerConfiguration::currentViewContainer() const
+medViewContainer* medViewerWorkspace::currentViewContainer() const
 {
     return d->viewContainerStack->current();
 }
 
-QString medViewerConfiguration::currentViewContainerName() const
+QString medViewerWorkspace::currentViewContainerName() const
 {
     return d->viewContainerStack->currentName();
 }
 
-medTabbedViewContainers* medViewerConfiguration::stackedViewContainers() const
+medTabbedViewContainers* medViewerWorkspace::stackedViewContainers() const
 {
     return d->viewContainerStack;
 }
 
-void medViewerConfiguration::addDefaultTypeContainer(const QString& name)
+void medViewerWorkspace::addDefaultTypeContainer(const QString& name)
 {
     //Default container:
     //get default Layout type from settings:
@@ -172,15 +172,15 @@ void medViewerConfiguration::addDefaultTypeContainer(const QString& name)
     }
 }
 
-void medViewerConfiguration::addSingleContainer(const QString& name)
+void medViewerWorkspace::addSingleContainer(const QString& name)
 {
     if (!this->stackedViewContainers()->container(name))
         this->stackedViewContainers()->addContainer (name, new medViewContainerSingle());
     else
-        qDebug() << "Container" << name << "already exists in this configurations";
+        qDebug() << "Container" << name << "already exists in this workspaces";
 }
 
-QString medViewerConfiguration::addMultiContainer(const QString& name)
+QString medViewerWorkspace::addMultiContainer(const QString& name)
 {
     if (!this->stackedViewContainers()->container(name))
     {
@@ -204,21 +204,21 @@ QString medViewerConfiguration::addMultiContainer(const QString& name)
     }
 }
 
-void medViewerConfiguration::addCustomContainer(const QString& name)
+void medViewerWorkspace::addCustomContainer(const QString& name)
 {
     if (!this->stackedViewContainers()->container(name))
         this->stackedViewContainers()->addContainer (name, new medViewContainerCustom());
     else
-        qDebug() << "Container" << name << "already exists in this configuration";
+        qDebug() << "Container" << name << "already exists in this workspace";
 }
 
 
-//void medViewerConfiguration::patientChanged(const medDataIndex& id)
+//void medViewerWorkspace::patientChanged(const medDataIndex& id)
 //{
 //    Q_UNUSED(id);
 //}
 
-void medViewerConfiguration::clear()
+void medViewerWorkspace::clear()
 {
     //medViewContainer* container;
     QList<QString> names = d->viewContainerStack->keys();
@@ -231,7 +231,7 @@ void medViewerConfiguration::clear()
     return;
 }
 
-void medViewerConfiguration::onButtonChecked( const QString & buttonGroup )
+void medViewerWorkspace::onButtonChecked( const QString & buttonGroup )
 {
     medToolBox * sender = qobject_cast< medToolBox * >( this->sender() );
     foreach ( medToolBox * toolbox, d->toolboxes )
@@ -239,18 +239,18 @@ void medViewerConfiguration::onButtonChecked( const QString & buttonGroup )
             toolbox->uncheckButtons( buttonGroup );
 }
 
-void medViewerConfiguration::setToolBoxesVisibility (bool value)
+void medViewerWorkspace::setToolBoxesVisibility (bool value)
 {
     d->toolBoxesVisibility = value;
 }
 
-bool medViewerConfiguration::areToolBoxesVisible (void) const
+bool medViewerWorkspace::areToolBoxesVisible (void) const
 {
     return d->toolBoxesVisibility;
 }
 
 
-void medViewerConfiguration::clearToolBoxes()
+void medViewerWorkspace::clearToolBoxes()
 {
     foreach(medToolBox* tb,d->toolboxes)
     {
@@ -258,7 +258,7 @@ void medViewerConfiguration::clearToolBoxes()
     }
 }
 
-void medViewerConfiguration::onAddTabClicked()
+void medViewerWorkspace::onAddTabClicked()
 {
     QString name = this->description();
     QString realName = name;
