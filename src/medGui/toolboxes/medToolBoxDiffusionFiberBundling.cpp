@@ -43,7 +43,7 @@ medToolBoxDiffusionFiberBundling::medToolBoxDiffusionFiberBundling(QWidget *pare
 {    
     QWidget *bundlingPage = new QWidget(this);
 
-    d->dropOrOpenRoi = new medDropSite();
+    d->dropOrOpenRoi = new medDropSite(bundlingPage);
     d->dropOrOpenRoi->setToolTip(tr("Once you are viewing fibers, click here to open a ROI or drag-and-drop one from the database."));
     d->dropOrOpenRoi->setText(tr("Once you are viewing fibers\nclick here to open a ROI\nor drag-and-drop one\nfrom the database."));
     d->dropOrOpenRoi->setCanAutomaticallyChangeAppereance(false);
