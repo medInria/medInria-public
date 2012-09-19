@@ -7,6 +7,7 @@
 #include <medDataIndex.h>
 #include <medImageMaskAnnotationData.h>
 #include <medMetaDataKeys.h>
+#include <medMessageController.h>
 #include <medToolBoxSegmentation.h>
 #include <medMessageController.h>
 
@@ -720,6 +721,15 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
         }
         if (!m_imageData) {
             dtkWarn() << "Could not set data";
+            return;
+        }
+        
+        if ((m_imageData->identifier().contains("4"))||
+            (m_imageData->identifier().contains("RGB"))||
+            (m_imageData->identifier().contains("Vector"))||
+            (m_imageData->identifier().contains("2")))
+        {
+            medMessageController::instance()->showError(this,tr("Magic wand option is only available for 3D images"),3000);
             return;
         }
         
