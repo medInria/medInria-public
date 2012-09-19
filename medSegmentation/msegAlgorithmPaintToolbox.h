@@ -28,6 +28,7 @@ class medSeedPointAnnotationData;
 
 namespace mseg {
     class ClickAndMoveEventFilter;
+    class ClickEventFilter;
     class SelectDataEventFilter;
 
 //! Segmentation toolbox to allow manual painting of pixels
@@ -36,7 +37,7 @@ class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medToolBox
     Q_OBJECT;
 public:
     struct PaintState { 
-        enum E{ None, InsideStroke, OutsideStroke, DeleteStroke, BoundaryStroke }; 
+        enum E{ None, Wand, Stroke, DeleteStroke, BoundaryStroke }; 
     };
 
     AlgorithmPaintToolbox( QWidget *parent );
@@ -58,8 +59,8 @@ public:
     static QString s_name(const QObject * trObj =  NULL);
 
 public slots:
-    void onInsideStrokePressed();
-    void onOutsideStrokePressed();
+    void onStrokePressed();
+    void onMagicWandPressed();
     void onRemoveStrokePressed();
     void onBoundaryStrokePressed();
 
@@ -67,8 +68,15 @@ public slots:
     void onApplyButtonPressed();
     void onClearMaskPressed();
     void onResetDataPressed();
+    
+    void onLabelChanged(int newVal);
+    void onSelectLabelColor();
+    
+    void setWandSliderValue(double val);
+    void setWandSpinBoxValue(int val);
 
     void updateStroke(ClickAndMoveEventFilter * filter, medAbstractView * view);
+    void updateWandRegion(medAbstractView * view, QVector3D &vec);
 
 protected:
     friend class SelectDataEventFilter;
@@ -80,22 +88,35 @@ protected:
     void updateTableRow(int row);
 
     void initializeMaskData( medAbstractData * imageData, medAbstractData * maskData );
-
+    
     void updateFromGuiItems();
 
     void enableButtons( bool value);
 
     void setPaintState( PaintState::E value);
+    
+    void generateLabelColorMap(unsigned int numLabels);
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
-
-    QPushButton *m_insideStrokeButton;
-    QPushButton *m_outsideStrokeButton;
+    
+    QPushButton *m_strokeButton;
     QPushButton *m_removeStrokeButton;
     QPushButton *m_boundaryStrokeButton;
+    QPushButton *m_labelColorWidget;
 
     QSlider *m_brushSizeSlider;
     QSpinBox *m_brushSizeSpinBox;
+    QSpinBox *m_strokeLabelSpinBox;
+    
+    QPushButton *m_magicWandButton;
+    // The slider works on percentages of a linear scale between min and max values, i.e. 
+    // wandradius = (max - min) * sliderPerc / 2.0
+    QSlider *m_wandThresholdSizeSlider;
+    QDoubleSpinBox *m_wandThresholdSizeSpinBox;
+    QCheckBox *m_wand3DCheckbox;
+    
+    double m_MinValueImage;
+    double m_MaxValueImage;
 
     QPushButton *m_applyButton;
 
@@ -112,15 +133,22 @@ private:
     dtkSmartPointer<medAbstractData> m_imageData;
 
     QString m_noDataText;
+    
+    medImageMaskAnnotationData::ColorMapType m_labelColorMap;
 
     typedef itk::Image<unsigned char, 3> MaskType;
     MaskType::Pointer m_itkMask;
 
+    template <typename IMAGE> void RunConnectedFilter (MaskType::IndexType &index, unsigned int planeIndex);
+    template <typename IMAGE> void GenerateMinMaxValuesFromImage ();
+    
     QVector3D m_lastVup;
     QVector3D m_lastVpn;
     double m_sampleSpacing[2];
 
+    double m_wandRadius;
     double m_strokeRadius;
+    unsigned int m_strokeLabel;
 
     PaintState::E m_paintState;
 };

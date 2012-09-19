@@ -59,11 +59,14 @@ foreach(fileIt ${${PROJECT_NAME}_HEADERS})
     endif( ${foundLength} GREATER 0 )
 endforeach(fileIt)
 
+set(${PROJECT_NAME}_RESOURCES medSegmentation.qrc)
+
 ## #################################################################
 ## Build rules
 ## #################################################################
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
 if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
@@ -75,6 +78,7 @@ endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_SOURCES_PCH}
+  ${${PROJECT_NAME}_SOURCES_QRC}
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_HEADERS})
 
