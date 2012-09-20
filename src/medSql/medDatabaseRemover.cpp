@@ -151,10 +151,17 @@ void medDatabaseRemover::run ( void )
                 imQuery.bindValue ( ":series", seriesDbId );
 
                 EXEC_QUERY ( imQuery );
+
+                imQuery.last();
+                double nbImage = imQuery.at();
+
+                EXEC_QUERY ( imQuery );
+
                 while ( imQuery.next() )
                 {
                     int imageId = imQuery.value ( 0 ).toInt();
                     this->removeImage ( patientDbId, studyDbId, seriesDbId, imageId );
+                    emit progressed ( imQuery.at() / nbImage * 100 );
                 }
                 if ( this->isSeriesEmpty ( seriesDbId ) )
                     this->removeSeries ( patientDbId, studyDbId, seriesDbId );
@@ -215,7 +222,7 @@ void medDatabaseRemover::removeSeries ( int patientDbId, int studyDbId, int seri
     query.prepare ( "SELECT thumbnail, path, name  FROM " + d->T_SERIES + " WHERE id = :series " );
     query.bindValue ( ":series", seriesDbId );
     EXEC_QUERY ( query );
-    
+
     QString thumbnail;
     if ( query.next() )
     {
@@ -281,7 +288,7 @@ void medDatabaseRemover::removePatient ( int patientDbId )
     QString patientName;
     QString patientBirthdate;
     QString patientId;
-    
+
     query.prepare ( "SELECT thumbnail, patientId  FROM " + d->T_PATIENT + " WHERE id = :patient " );
     query.bindValue ( ":patient", patientDbId );
     EXEC_QUERY ( query );
