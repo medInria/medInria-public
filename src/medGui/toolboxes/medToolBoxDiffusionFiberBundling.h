@@ -59,19 +59,40 @@ signals:
       */
     void bundlingBoxBooleanOperatorChanged (int value);
 
-public slots:
+protected slots:
+
     /**
       * When update() is called, this toolbox automatically searches for a subclass
       * of a medAbstractFiberViewInteractor and set its input to the interactor's
       * input. It adapts its GUI automatically (populate the list of bundles).
       */
     virtual void update (dtkAbstractView *view);
-    virtual void clear  (void);
+
+    /**
+     * Clears the toolbox. Removes any bundle in the fiber bundle treeview,
+     * any ROI previously loaded (if any), etc.
+     */
+    virtual void clear (void);
 
     /**
       * Add a bundle (identified by a name and a color) to the list of bundles.
       */
     virtual void addBundle (const QString &name, const QColor &color);
+
+    /** Slot called when external ROI image finishes being imported. */
+    virtual void onRoiImported(const medDataIndex &index);
+
+    /**
+     * Slot called when the @meDropSite is clicked.
+     * Will open a @QFileDialog so the user can choose
+     * and external ROI image to open.
+     */
+    virtual void onDropSiteClicked();
+
+    /**
+     * Sets the image passed as parameter as the @medDropSite image.
+     */
+    void setImage(const QImage& thumbnail);
 
     // internal method, doc to come
     virtual void onBundlingButtonVdtClicked (void);
@@ -79,7 +100,6 @@ public slots:
     virtual void onBundleBoxCheckBoxToggled (bool);
     virtual void onBundlingShowCheckBoxToggled (bool);
 
-    virtual void onOpenRoiButtonClicked  (void);
     virtual void onClearRoiButtonClicked (void);
     virtual void onRoiComboIndexChanged  (int value);
     virtual void onAddButtonToggled      (bool value);
@@ -87,8 +107,6 @@ public slots:
     virtual void onNullButtonToggled     (bool value);
 
     virtual void onBundlingItemChanged (QStandardItem *item);
-    
-    virtual void onRoiImported(const medDataIndex &index);
 
 private:
     medToolBoxDiffusionFiberBundlingPrivate *d;
