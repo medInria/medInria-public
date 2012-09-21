@@ -154,15 +154,15 @@ void medDatabaseRemover::run ( void )
 
                 imQuery.last();
                 double nbImage = imQuery.at();
+                imQuery.first();
 
-                EXEC_QUERY ( imQuery );
-
-                while ( imQuery.next() )
+                do
                 {
                     int imageId = imQuery.value ( 0 ).toInt();
                     this->removeImage ( patientDbId, studyDbId, seriesDbId, imageId );
                     emit progressed ( imQuery.at() / nbImage * 100 );
                 }
+                while ( imQuery.next() );
                 if ( this->isSeriesEmpty ( seriesDbId ) )
                     this->removeSeries ( patientDbId, studyDbId, seriesDbId );
 
