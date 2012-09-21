@@ -64,9 +64,6 @@ set(${PROJECT_NAME}_HEADERS
   medDataIndex.h
   medDataReaderWriter.h
   medAbstractDataTypedImage.h
-  medAbstractDataTypedImage2D.h
-  medAbstractDataTypedImage3D.h
-  medAbstractDataTypedImage4D.h
   medAbstractDatabaseItem.h
   medAbstractViewCoordinates.h
 )

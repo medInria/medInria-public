@@ -29,7 +29,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medHomepageButton.h
   medBrowserArea.h
   medBrowserToolBoxSource.h
-  medBrowserToolBoxSettings.h
   medMainWindow.h
   medViewerArea.h
   medViewerWorkspaceDiffusion.h
@@ -37,7 +36,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medViewerWorkspaceRegistration.h
   medViewerWorkspaceSegmentation.h
   medViewerWorkspaceFiltering.h
-  medViewerToolBoxWorkspace.h
   medPacsDataSource.h
   medFileSystemDataSource.h
   medDatabaseDataSource.h
@@ -59,10 +57,8 @@ set(${PROJECT_NAME}_SOURCES
   medHomepageButton.cpp
   medBrowserArea.cpp
   medBrowserToolBoxSource.cpp
-  medBrowserToolBoxSettings.cpp
   medMainWindow.cpp
   medViewerArea.cpp
-  medViewerToolBoxWorkspace.cpp
   medViewerWorkspaceDiffusion.cpp
   medViewerWorkspaceVisualization.cpp
   medViewerWorkspaceRegistration.cpp
