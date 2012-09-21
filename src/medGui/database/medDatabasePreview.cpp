@@ -1,5 +1,5 @@
-/* medDatabasePreview.cpp --- 
- * 
+/* medDatabasePreview.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Dec 15 09:42:18 2009 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 132
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medDatabasePreview.h"
@@ -127,7 +127,11 @@ medDatabasePreview::~medDatabasePreview(void)
 void medDatabasePreview::reset(void)
 {
     d->scene->reset();
+
+    d->series_group->clear();
     d->series_group->setPos(d->series_groupStartPos);
+
+    d->image_group->clear();
     d->image_group->setPos(d->image_groupStartPos);
 
     d->level = 0;
@@ -164,7 +168,7 @@ void medDatabasePreview::onPatientClicked(const medDataIndex& id)
             QList<medDataIndex> series = db->series(*studyIt);
             for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
 
-                if ( firstSeId < 0) 
+                if ( firstSeId < 0)
                     firstSeId = (*seriesIt).seriesId();
 
                 d->series_group->addItem(new medDatabasePreviewItem(
@@ -196,7 +200,7 @@ void medDatabasePreview::onSeriesClicked(const medDataIndex& id)
                 medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
         }
     }
-    
+
     // Image level
     int firstImageId(-1);
 
@@ -331,7 +335,7 @@ void medDatabasePreview::onMoveRt(void)
 
     if(!target)
         return;
-    
+
     moveToItem( target );
 }
 
@@ -368,15 +372,15 @@ void medDatabasePreview::onMoveBg(void) // move to beginning of the current line
 {
     if(!d->selector->isVisible())
         d->selector->show();
-    
+
     medDatabasePreviewItem *target = NULL;
-    
+
     target = dynamic_cast<medDatabasePreviewItem *>(d->scene->itemAt(40,40));
-    
+
     if(!target) {
         d->selector->setPos(5, 5);
         return;
-    }    
+    }
 
     moveToItem( target );
 }
@@ -389,19 +393,19 @@ void medDatabasePreview::moveToItem(medDatabasePreviewItem *target) // move to b
 
     if (!target)
         return;
-    
+
     qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
     qreal item_height = medDatabasePreviewController::instance()->itemHeight();
     qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
     qreal item_margins = selector_width - item_width;
     qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
-    
+
     QPoint selector_offset((medDatabasePreviewController::instance()->selectorWidth()  - medDatabasePreviewController::instance()->itemWidth())/-2,
                            (medDatabasePreviewController::instance()->selectorHeight() - medDatabasePreviewController::instance()->itemHeight())/-2);
-    
+
     d->current_index = target->dataIndex();
-    
+
     target->ensureVisible(QRectF(0,0,item_width,item_height), medDatabasePreviewController::instance()->selectorWidth() + medDatabasePreviewController::instance()->itemSpacing(), 0);
 
     if ( d->current_index.isValidForImage() ) {
@@ -418,32 +422,32 @@ void medDatabasePreview::moveToItem(medDatabasePreviewItem *target) // move to b
 
     if(!d->selector_position_animation)
         d->selector_position_animation = new QPropertyAnimation(d->selector, "pos");
-    
+
     d->selector_position_animation->setDuration(100);
     d->selector_position_animation->setStartValue(d->selector->pos());
     d->selector_position_animation->setEndValue(target->scenePos() + selector_offset);
     d->selector_position_animation->setEasingCurve(QEasingCurve::OutQuad);
-    
+
     if(!d->selector_rect_animation)
         d->selector_rect_animation = new QPropertyAnimation(d->selector, "rect");
-    
+
     d->selector_rect_animation->setDuration(100);
     d->selector_rect_animation->setStartValue(d->selector->rect());
     d->selector_rect_animation->setEndValue(QRectF(0, 0, item_width + item_margins, item_height + item_margins + item_spacing));
     d->selector_rect_animation->setEasingCurve(QEasingCurve::Linear);
-    
+
     if(!d->selector_animation) {
         d->selector_animation = new QParallelAnimationGroup(this);
         d->selector_animation->addAnimation(d->selector_position_animation);
         d->selector_animation->addAnimation(d->selector_rect_animation);
     }
-    
+
     d->selector_animation->start();
 }
 
 void medDatabasePreview::onHovered(medDatabasePreviewItem *item)
 {
-    
+
     qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
     qreal item_height = medDatabasePreviewController::instance()->itemHeight();
