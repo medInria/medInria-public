@@ -31,7 +31,7 @@ class medTabbedViewContainersPrivate;
 
 /**
  * @brief A QStackedWidget that contains medViewContainers.
- * There is one such stack per medViewConfiguration. 
+ * There is one such stack per medViewWorkspace. 
  *
 */
 class MEDGUI_EXPORT medTabbedViewContainers : public QTabWidget
@@ -169,7 +169,7 @@ signals:
     void viewRemoved( dtkAbstractView * );
 
     /**
-     * @brief Emits a signal when the add tab button has been clicked. Handled by the configurations
+     * @brief Emits a signal when the add tab button has been clicked. Handled by the workspaces
      *
     */
     void addTabButtonClicked();

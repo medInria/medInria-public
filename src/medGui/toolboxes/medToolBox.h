@@ -92,7 +92,7 @@ public:
     /**
      * @brief Sets the orientation of the toolbox.
      * Given the orientation, lays the widgets vertically or horizontally.
-     * Usually used by the medViewerConfiguration.
+     * Usually used by the medViewerWorkspace.
      *
      * @param orientation
     */
@@ -125,7 +125,7 @@ public:
     /**
      * @brief Uncheck all buttons in this toolbox belonging to buttonGroup
      *
-     * This function is called by the configuration when it receives
+     * This function is called by the workspace when it receives
      * the buttonChecked signal from another toolbox.  Override it
      * when your toolbox shares a buttonGroup with other toolboxes.
      *

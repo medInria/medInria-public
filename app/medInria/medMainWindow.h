@@ -54,10 +54,10 @@ public slots:
     void switchToViewerArea(void);
     void switchToHomepageArea(void);
 
-    void onShowConfiguration(QString config);
+    void onShowWorkspace(QString workspace);
     void onShowQuickAccess(void);
     void onHideQuickAccess(void);
-    void onConfigurationTriggered(QAction *action);
+    void onWorkspaceTriggered(QAction *action);
     void onQuit(void);
     void onSaveModified(void);
     void onNoQuit(void);

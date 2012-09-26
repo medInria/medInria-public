@@ -40,7 +40,7 @@ public:
     /**
      * @brief Sets an identifier string for the translated valu displayed in text.
      *
-     * This String is used to store the identifier corresponding to a configuration in hte button.
+     * This String is used to store the identifier corresponding to a workspace in the button.
      * @see identifier
      */
     void setIdentifier(const QString & id);
@@ -88,7 +88,7 @@ public:
     /**
      * @brief Sets an identifier string for the translated valu displayed in text.
      *
-     * This String is used to store the identifier corresponding to a configuration in hte button.
+     * This String is used to store the identifier corresponding to a workspace in the button.
      * @see identifier
      */
     void setIdentifier(const QString & id);

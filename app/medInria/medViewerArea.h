@@ -22,7 +22,7 @@
 
 #include <QtGui>
 
-#include <medViewerConfiguration.h>
+#include <medViewerWorkspace.h>
 
 class dtkAbstractView;
 
@@ -35,7 +35,7 @@ class medViewerAreaPrivate;
 /**
  * @brief Handles all connections between all elements of the Viewer area.
  * In this Area or workspace all visualization will take place.
- * The object is instantiated by the medMainWindow to display the viewer configurations.
+ * The object is instantiated by the medMainWindow to display the viewer workspaces.
  *
 */
 class medViewerArea : public QWidget
@@ -76,16 +76,16 @@ public:
 
 public slots:
     /**
-     * @brief Sets up the newly chosen configuration.
+     * @brief Sets up the newly chosen workspace.
      *
-     * When a configuration is switched to, sets up all the signal/slot connections
-     * to raise the new medViewerConfiguration.
-     * This calls the factory if the configuration is not yet in the private
-     * hash table of configurations
+     * When a workspace is switched to, sets up all the signal/slot connections
+     * to raise the new medViewerWorkspace.
+     * This calls the factory if the workspace is not yet in the private
+     * hash table of workspaces
      *
-     * @param name the identifyer/description of the configuration.
+     * @param name the identifyer/description of the workspace.
     */
-    void setupConfiguration(QString name);
+    void setupWorkspace(QString name);
 
     /**
      * @brief Split the currently displayed custom container.
@@ -159,9 +159,9 @@ public slots:
 
     /**
      * @brief Switches between stack of containers
-     * (from one configuration to an other)
+     * (from one workspace to an other)
      *
-     * Called from the setupConfiguration method.
+     * Called from the setupWorkspace method.
      * @param stack
     */
     void switchToStackedViewContainers(medTabbedViewContainers* stack);
@@ -169,7 +169,7 @@ public slots:
     /**
      * @brief Switches between medViewContainers.
      *
-     * The list of containers is different from one configuration to an other.
+     * The list of containers is different from one workspace to an other.
      * This method tries to switch to a container of name \param name.
      * If it doesn't exist, does nothing.
      *
@@ -200,14 +200,14 @@ public slots:
     void removeToolBox(medToolBox *toolbox);
 
     /**
-     * @brief Switches from a medViewerConfiguration::LayoutType to an other.
+     * @brief Switches from a medViewerWorkspace::LayoutType to an other.
      *
-     * This can't be done by the configuration which has no access to the
+     * This can't be done by the workspace which has no access to the
      * medViewerArea Widget and its internal organisation.
      *
      * @param layout
     */
-    void switchToLayout (medViewerConfiguration::LayoutType layout);
+    void switchToLayout (medViewerWorkspace::LayoutType layout);
 
 //    void onFileOpened(const medDataIndex &index);
     void onFileOpenedInTab(const medDataIndex &index);
@@ -265,7 +265,7 @@ signals:
     /**
      * @brief Emitted when the patient has changed
      *
-     * Allows to clear all patient related data in a medViewerConfiguration.
+     * Allows to clear all patient related data in a medViewerWorkspace.
      * Only emitted if the setting "system/clearOnPatientChange" is set to true.
      *
     */

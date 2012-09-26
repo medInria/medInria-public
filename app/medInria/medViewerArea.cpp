@@ -51,7 +51,7 @@
 #include <medViewContainerMulti.h>
 #include <medViewContainerSingle.h>
 #include <medViewPool.h>
-#include <medViewerConfigurationFactory.h>
+#include <medViewerWorkspaceFactory.h>
 #include <medToolBoxDiffusion.h>
 #include <medToolBoxRegistration.h>
 #include <medTabbedViewContainers.h>
@@ -71,9 +71,9 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 {
     // -- Internal logic
     d->current_patient = medDataIndex();
-    d->current_configuration_name = "";
-    d->current_configuration = 0;
-    d->current_layout = medViewerConfiguration::LeftDbRightTb;
+    d->current_workspace_name = "";
+    d->current_workspace = 0;
+    d->current_layout = medViewerWorkspace::LeftDbRightTb;
 
     d->splitter = new QSplitter(this);
     d->splitter->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
@@ -194,7 +194,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 medViewerArea::~medViewerArea(void)
 {
 
-    d->saveSplitterSize(d->current_configuration->layoutType());
+    d->saveSplitterSize(d->current_workspace->layoutType());
 
     delete d;
 
@@ -224,18 +224,18 @@ bool medViewerArea::openInTab(const medDataIndex &index)
         return false;
 
     // For the moment switch to visualization, later we will be cleverer
-    this->setupConfiguration("Visualization");
+    this->setupWorkspace("Visualization");
 
     if (!this->currentRootContainer()->views().isEmpty())
     {
         medDataManager *dataManager = medDataManager::instance();
         medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
         QString createdName = dbc->metaData(index,medMetaDataKeys::PatientName.key());
-        createdName = d->current_configuration->addMultiContainer(createdName);
-        d->current_configuration->stackedViewContainers()->setContainer(createdName);
+        createdName = d->current_workspace->addMultiContainer(createdName);
+        d->current_workspace->stackedViewContainers()->setContainer(createdName);
     }
     else
-        d->current_configuration->stackedViewContainers()->changeCurrentContainerType("Multi");
+        d->current_workspace->stackedViewContainers()->changeCurrentContainerType("Multi");
 
     return this->open(index);
 }
@@ -327,7 +327,7 @@ bool medViewerArea::open(const medDataIndex& index)
     if(index.isValidForPatient())
     {
         // For the moment switch to visualization, later we will be cleverer
-        this->setupConfiguration("Visualization");
+        this->setupWorkspace("Visualization");
         this->switchToContainer("Multi");
 
         medDataManager *dataManager = medDataManager::instance();
@@ -502,31 +502,31 @@ void medViewerArea::switchToStackedViewContainers(medTabbedViewContainers* stack
 void medViewerArea::switchToContainer(const QString& name)
 {
 //    qDebug() << "switching from"
-//             << d->current_configuration->currentViewContainerName()
-//             << d->current_configuration->currentViewContainer()
+//             << d->current_workspace->currentViewContainerName()
+//             << d->current_workspace->currentViewContainer()
 //             << "to container" << name
-//             << d->current_configuration->stackedViewContainers()->container(name);
-    if (d->current_configuration)
+//             << d->current_workspace->stackedViewContainers()->container(name);
+    if (d->current_workspace)
     {
         medViewContainer * root = this->currentRootContainer();
 
 //        root->current()->clearFocus();
         root->current()->setFocus(Qt::MouseFocusReason);
         if ( (root==NULL) || (root ==
-             d->current_configuration->stackedViewContainers()->container(name)) )
+             d->current_workspace->stackedViewContainers()->container(name)) )
         {
 //            qDebug() << "same conf do nothing";
             //same conf, do nothing
             return;
         }
 
-        d->current_configuration->setCurrentViewContainer(name);
+        d->current_workspace->setCurrentViewContainer(name);
         root->setFocus(Qt::MouseFocusReason);
     }
     else
     {
         //should not happen
-        qWarning() << "no currentConfiguration";
+        qWarning() << "no currentWorkspace";
     }
 }
 
@@ -542,7 +542,7 @@ void medViewerArea::switchToContainerPreset(int index)
             dynamic_cast<medViewContainerCustom *>( root );
         if ( custom ) {
             custom->setPreset(index);
-            d->current_configuration->setCustomPreset(index);
+            d->current_workspace->setCustomPreset(index);
         }
     }
 }
@@ -608,10 +608,10 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
 
 medViewContainer *medViewerArea::currentRootContainer(void)
 {
-    if ( d->current_configuration == NULL )
+    if ( d->current_workspace == NULL )
         return NULL;
 
-    return d->current_configuration->currentViewContainer();
+    return d->current_workspace->currentViewContainer();
 }
 
 medViewContainer *medViewerArea::currentContainerFocused(void)
@@ -691,50 +691,50 @@ void medViewerArea::updateTransferFunction()
 }
 
 
-void medViewerArea::setupConfiguration(QString name)
+void medViewerArea::setupWorkspace(QString name)
 {
-    //    qDebug() << "setupConfiguration to :" << name;
-    if (d->current_configuration_name == name)
+    //    qDebug() << "setupWorkspace to :" << name;
+    if (d->current_workspace_name == name)
         return;
 
     // clear the current config if needed
     /*
-    if (d->current_configuration) {
+    if (d->current_workspace) {
         medSettingsManager * mnger = medSettingsManager::instance();
         bool clear = mnger->value("system","clearOnPatientChange",QVariant(false)).toBool();
         if (clear)
         {
-            qDebug()<<"clearing the containers on configuration switch";
-            d->current_configuration->clear();
+            qDebug()<<"clearing the containers on workspace switch";
+            d->current_workspace->clear();
         }
     }
 */
 
-    medViewerConfiguration *conf = NULL;
+    medViewerWorkspace *workspace = NULL;
 
-    if (d->configurations.contains(name))
-        conf = d->configurations[name];
+    if (d->workspaces.contains(name))
+        workspace = d->workspaces[name];
     else {
-        if (conf = medViewerConfigurationFactory::instance()->createConfiguration(name, this)) {
-            connect(this, SIGNAL(clearOnPatientChange()), conf, SLOT(clear()));
-            d->configurations.insert(name, conf);
+        if (workspace = medViewerWorkspaceFactory::instance()->createWorkspace(name, this)) {
+            connect(this, SIGNAL(clearOnPatientChange()), workspace, SLOT(clear()));
+            d->workspaces.insert(name, workspace);
         }
         else
-            qWarning()<< "Configuration" << name << "couldn't be created";
+            qWarning()<< "Workspace" << name << "couldn't be created";
     }
 
-    if (!conf)
+    if (!workspace)
         return;
 
-    d->current_configuration = conf;
-    d->current_configuration_name = name;
+    d->current_workspace = workspace;
+    d->current_workspace_name = name;
 
     //clean toolboxes
     d->toolbox_container->hide();
     d->toolbox_container->clear();
 
     //setup layout
-    switchToLayout (conf->layoutType());
+    switchToLayout (workspace->layoutType());
 
     // setup layout type
     //clear the confs if needed:
@@ -742,31 +742,31 @@ void medViewerArea::setupConfiguration(QString name)
     bool clear = mnger->value("system","clearOnPatientChange",QVariant(false)).toBool();
     if (clear)
     {
-        qDebug()<<"clearing the containers on configuration switch";
-        conf->clear();
+        qDebug()<<"clearing the containers on workspace switch";
+        workspace->clear();
     }
     else
     {
-        conf->setupViewContainerStack();
+        workspace->setupViewContainerStack();
     }
 
-    switchToStackedViewContainers(conf->stackedViewContainers());
+    switchToStackedViewContainers(workspace->stackedViewContainers());
 
-    if (qobject_cast<medViewContainerCustom *>(conf->currentViewContainer())) {
-        switchToContainerPreset(conf->customLayoutPreset());
+    if (qobject_cast<medViewContainerCustom *>(workspace->currentViewContainer())) {
+        switchToContainerPreset(workspace->customLayoutPreset());
     }
 
     //setup database visibility
-    d->navigator_container->setVisible( conf->isDatabaseVisible() );
+    d->navigator_container->setVisible( workspace->isDatabaseVisible() );
 
     // add toolboxes
 
-    foreach (medToolBox * toolbox, conf->toolBoxes() ) {
+    foreach (medToolBox * toolbox, workspace->toolBoxes() ) {
         this->addToolBox(toolbox);
         toolbox->show();
     }
 
-    d->toolbox_container->setVisible( conf->areToolBoxesVisible() );
+    d->toolbox_container->setVisible( workspace->areToolBoxesVisible() );
 
     /*
       if (d->toolbox_container->toolBoxes().count()) {
@@ -784,15 +784,15 @@ void medViewerArea::setupConfiguration(QString name)
       animation->start();
       }*/
 
-//    connect(conf->stackedViewContainers(), SIGNAL(currentChanged(const QString&)),
+//    connect(workspace->stackedViewContainers(), SIGNAL(currentChanged(const QString&)),
 //            this, SLOT(switchToContainer(const QString&)), Qt::UniqueConnection);
-    connect(conf, SIGNAL(layoutSplit(int,int)),       this, SLOT(split(int,int)), Qt::UniqueConnection);
-    connect(conf, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)), Qt::UniqueConnection);
-    connect(conf, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)), Qt::UniqueConnection);
-    connect(conf, SIGNAL(toolboxRemoved(medToolBox*)),this, SLOT(removeToolBox(medToolBox*)), Qt::UniqueConnection);
+    connect(workspace, SIGNAL(layoutSplit(int,int)),       this, SLOT(split(int,int)), Qt::UniqueConnection);
+    connect(workspace, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)), Qt::UniqueConnection);
+    connect(workspace, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)), Qt::UniqueConnection);
+    connect(workspace, SIGNAL(toolboxRemoved(medToolBox*)),this, SLOT(removeToolBox(medToolBox*)), Qt::UniqueConnection);
 }
 
-void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
+void medViewerArea::switchToLayout (medViewerWorkspace::LayoutType layout)
 {
     if (d->current_layout==layout)
         return;
@@ -805,8 +805,8 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
 
     //setup orientation
     switch (layout){
-        case medViewerConfiguration::TopDbBottomTb:
-        case medViewerConfiguration::TopTbBottomDb:
+        case medViewerWorkspace::TopDbBottomTb:
+        case medViewerWorkspace::TopTbBottomDb:
            {
 
          d->navigator_container_layout->removeWidget ( d->toolboxPatient );
@@ -830,8 +830,8 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
            }
             break;
 
-        case medViewerConfiguration::LeftDbRightTb:
-        case medViewerConfiguration::LeftTbRightDb:
+        case medViewerWorkspace::LeftDbRightTb:
+        case medViewerWorkspace::LeftTbRightDb:
         default:
            {
 
@@ -858,14 +858,14 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
 
 
     switch (layout){
-        case medViewerConfiguration::TopDbBottomTb:
-        case medViewerConfiguration::LeftDbRightTb:
+        case medViewerWorkspace::TopDbBottomTb:
+        case medViewerWorkspace::LeftDbRightTb:
             d->splitter->insertWidget(0,d->navigator_container);
             d->splitter->insertWidget(2,d->toolbox_container);
         break;
 
-        case medViewerConfiguration::TopTbBottomDb:
-        case medViewerConfiguration::LeftTbRightDb:
+        case medViewerWorkspace::TopTbBottomDb:
+        case medViewerWorkspace::LeftTbRightDb:
         default:
             d->splitter->insertWidget(0,d->toolbox_container);
             d->splitter->insertWidget(2,d->navigator_container);
@@ -875,10 +875,10 @@ void medViewerArea::switchToLayout (medViewerConfiguration::LayoutType layout)
 }
 
 
-void medViewerAreaPrivate::saveSplitterSize(medViewerConfiguration::LayoutType layout)
+void medViewerAreaPrivate::saveSplitterSize(medViewerWorkspace::LayoutType layout)
 {
-    if (layout == medViewerConfiguration::TopDbBottomTb ||
-        layout == medViewerConfiguration::TopTbBottomDb)
+    if (layout == medViewerWorkspace::TopDbBottomTb ||
+        layout == medViewerWorkspace::TopTbBottomDb)
     {
         medSettingsManager::instance()->setValue("application","ViewerSplitterSizeVertical",
             splitter->saveState());

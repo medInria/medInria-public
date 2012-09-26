@@ -48,7 +48,7 @@ public:
 
 public slots:
     void onShowBrowser(void);
-    void onShowConfiguration(QString configuration);
+    void onShowWorkspace(QString workspace);
     void onShowSettings(void);
     void onShowAbout(void);
     void onShowPlugin(void);
@@ -72,7 +72,7 @@ signals:
 
     void showBrowser(void);
     void showViewer(void);
-    void showConfiguration(QString configuration);
+    void showWorkspace(QString workspace);
 
 private:
     medHomepageAreaPrivate * d;
