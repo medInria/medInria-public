@@ -177,8 +177,6 @@ void medDatabaseRemover::run ( void )
     } // ptQuery.next
 
     emit removed ( index );
-    emit progress ( this, 100 );
-    emit progressed ( 100 );
     if ( d->isCancelled )
         emit failure ( this );
     else
