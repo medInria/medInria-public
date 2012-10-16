@@ -48,11 +48,11 @@ public:
 
 signals:
     void progress  (QObject* sender, int progress);
+    void progressed(int progress); // backward compatible version (automatically called when progress is emitted)
     void success   (QObject* sender);
     void failure   (QObject* sender);
     void cancelled (QObject* sender);
     void showError (QObject* sender, const QString& message, unsigned int timeout);
-    void progressed(int progress); // backward compatible version (automatically called when progressed is emitted)
     void activate(QObject* sender,bool active);
 
     /**
