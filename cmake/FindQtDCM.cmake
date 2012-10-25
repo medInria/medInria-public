@@ -21,7 +21,6 @@
 FIND_PATH(QTDCM_DIR UseQtDCM.cmake 
   /usr/lib/qtdcm-0.1 
   /usr/local/lib/qtdcm-0.1
-  /home/aabadie/Softs/builds/qtdcm2
   DOC "QTDCM directory")
 
 SET(QTDCM_CONFIG_FILE ${QTDCM_DIR}/QtDCMConfig.cmake)

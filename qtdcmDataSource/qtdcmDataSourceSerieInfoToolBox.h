@@ -11,6 +11,7 @@ class qtdcmDataSourceSerieInfoToolBox : public medToolBox
     Q_OBJECT
 public:
     qtdcmDataSourceSerieInfoToolBox ( QWidget* parent = 0 );
+    ~qtdcmDataSourceSerieInfoToolBox();
 
     QtDcmSerieInfoWidget * getSerieInfoWidget();
 

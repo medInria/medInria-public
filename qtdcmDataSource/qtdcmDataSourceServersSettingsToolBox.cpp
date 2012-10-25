@@ -56,6 +56,14 @@ qtdcmDataSourceServersSettingsToolBox::qtdcmDataSourceServersSettingsToolBox ( Q
     this->setTitle ( "Dicom servers settings" );
 }
 
+qtdcmDataSourceServersSettingsToolBox::~qtdcmDataSourceServersSettingsToolBox()
+{
+    if (d)
+        delete d;
+    
+    d = NULL;
+}
+
 QtDcmServersDicomSettingsWidget* qtdcmDataSourceServersSettingsToolBox::getServersDicomSettingsWidget()
 {
   return d->serversSettingsWidget;

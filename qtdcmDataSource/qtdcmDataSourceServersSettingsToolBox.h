@@ -11,6 +11,7 @@ class qtdcmDataSourceServersSettingsToolBox : public medToolBox
 Q_OBJECT
 public:
     qtdcmDataSourceServersSettingsToolBox ( QWidget* parent = 0 );
+    ~qtdcmDataSourceServersSettingsToolBox();
 
     QtDcmServersDicomSettingsWidget * getServersDicomSettingsWidget();
     

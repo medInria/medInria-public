@@ -11,6 +11,7 @@ class qtdcmDataSourcePreviewToolBox : public medToolBox
     Q_OBJECT
 public:
     qtdcmDataSourcePreviewToolBox ( QWidget* parent = 0 );
+    ~qtdcmDataSourcePreviewToolBox();
 
     QtDcmPreviewWidget * getPreviewWidget();
 

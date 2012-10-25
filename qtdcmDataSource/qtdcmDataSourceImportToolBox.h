@@ -11,6 +11,7 @@ class qtdcmDataSourceImportToolBox : public medToolBox
 Q_OBJECT
 public:
     qtdcmDataSourceImportToolBox ( QWidget* parent = 0 );
+    ~qtdcmDataSourceImportToolBox();
 
     QtDcmImportWidget * getImportWidget();
 

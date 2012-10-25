@@ -18,6 +18,14 @@ qtdcmDataSourcePreviewToolBox::qtdcmDataSourcePreviewToolBox ( QWidget* parent )
     this->setTitle("Serie preview");
 }
 
+qtdcmDataSourcePreviewToolBox::~qtdcmDataSourcePreviewToolBox()
+{
+    if (d)
+        delete d;
+    
+    d = NULL;
+}
+
 QtDcmPreviewWidget* qtdcmDataSourcePreviewToolBox::getPreviewWidget()
 {
   return d->preview;

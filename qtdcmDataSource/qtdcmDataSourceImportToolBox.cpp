@@ -13,7 +13,7 @@ public:
 qtdcmDataSourceImportToolBox::qtdcmDataSourceImportToolBox ( QWidget* parent ) : medToolBox ( parent ), d ( new qtdcmDataSourceImportToolBoxPrivate )
 {
     d->parent = parent;
-    d->importWidget = new QtDcmImportWidget;
+    d->importWidget = new QtDcmImportWidget(this);
 
     this->setTitle ( "Import in database" );
     this->addWidget ( d->importWidget );
@@ -23,6 +23,14 @@ qtdcmDataSourceImportToolBox::qtdcmDataSourceImportToolBox ( QWidget* parent ) :
     dtkPlugin* plugin = pm->plugin ( "qtdcmDataSourcePlugin" );
     setAboutPluginButton ( plugin );
     setAboutPluginVisibility( true );
+}
+
+qtdcmDataSourceImportToolBox::~qtdcmDataSourceImportToolBox()
+{
+    if (d)
+        delete d;
+    
+    d = NULL;
 }
 
 QtDcmImportWidget* qtdcmDataSourceImportToolBox::getImportWidget()
