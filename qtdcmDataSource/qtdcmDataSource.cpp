@@ -42,14 +42,24 @@ public:
     qtdcmDataSourceServersSettingsToolBox * serversSettingsToolBox;
 
     QList <medToolBox *> additional_toolboxes;
+    
+    QPushButton * localSettingsButton;
 
     ~qtdcmDataSourcePrivate();
 };
 
 qtdcmDataSourcePrivate::~qtdcmDataSourcePrivate()
 {
-    delete mainWidget;
-    delete rightWidget;
+    if (mainWidget)
+        delete mainWidget;
+    
+    if (rightWidget)
+        delete rightWidget;
+    
+    if (localSettingsButton)
+        delete localSettingsButton;
+    
+    qDeleteAll(additional_toolboxes);
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -64,16 +74,16 @@ qtdcmDataSource::qtdcmDataSource ( void ) : medAbstractDataSource(), d ( new qtd
     // Create gui for the right Widget;
     d->localDicomSettingsWidget = new QtDcmLocalDicomSettingsWidget;
 
-    QPushButton * localSettingsButton = new QPushButton;
-    localSettingsButton->setText ( "Save settings" );
-    localSettingsButton->setFocusPolicy ( Qt::NoFocus );
-    localSettingsButton->setToolTip(tr("Save local Dicom settings"));
-    localSettingsButton->setMaximumWidth ( 100 );
-    QObject::connect ( localSettingsButton, SIGNAL ( clicked() ), this, SLOT ( onSaveLocalSettings() ) );
+    d->localSettingsButton = new QPushButton;
+    d->localSettingsButton->setText ( "Save settings" );
+    d->localSettingsButton->setFocusPolicy ( Qt::NoFocus );
+    d->localSettingsButton->setToolTip(tr("Save local Dicom settings"));
+    d->localSettingsButton->setMaximumWidth ( 100 );
+    QObject::connect ( d->localSettingsButton, SIGNAL ( clicked() ), this, SLOT ( onSaveLocalSettings() ) );
 
     QHBoxLayout * buttonLayout = new QHBoxLayout;
     buttonLayout->addStretch();
-    buttonLayout->addWidget(localSettingsButton);
+    buttonLayout->addWidget(d->localSettingsButton);
     buttonLayout->addStretch();
 
     QVBoxLayout * layout = new QVBoxLayout;
