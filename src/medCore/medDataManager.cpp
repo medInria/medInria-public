@@ -205,7 +205,7 @@ medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
 
     // Highly dependent on the current implementation of the controllers.
     connect(npDb, SIGNAL(updated(const medDataIndex &,QString)),
-            this, SLOT(onNonPersistentDataImported(const medDataIndex &,QString)));    
+            this, SLOT(onNonPersistentDataImported(const medDataIndex &,QString)));
     connect(npDb, SIGNAL(updated(const medDataIndex &)),
             this, SIGNAL(dataRemoved(const medDataIndex &)));
 
@@ -481,11 +481,11 @@ void medDataManager::onNonPersistentDataImported(const medDataIndex &index, QStr
 
     medAbstractDbController* npDb = d->getNonPersDbController();
     dtkSmartPointer<dtkAbstractData> data = npDb->read(index);
-    
+
     if (!data.isNull())
     {
         // It might happen that the data was already loaded by a concurrent call to open the data
-        if (d->volatileDataCache.contains (index))
+        if (!d->volatileDataCache.contains (index))
             d->volatileDataCache[index] = data;
 
         emit dataAdded (index);
@@ -675,7 +675,7 @@ void medDataManager::onPersistentDatabaseUpdated(const medDataIndex &index)
         qWarning() << "index is not valid";
         return;
     }
-    
+
     medAbstractDbController* db = d->getDbController();
 
     // Test if index is in database (to distinguish between remove and add)
