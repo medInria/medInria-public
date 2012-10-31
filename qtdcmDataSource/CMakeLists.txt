@@ -51,9 +51,7 @@ endif (QTDCM_FOUND)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   qtdcmDataSourcePlugin.h
-  qtdcmDataSourcePreviewToolBox.h
-  qtdcmDataSourceImportToolBox.h
-  qtdcmDataSourceSerieInfoToolBox.h
+  qtdcmDataSourceSerieToolBox.h
   qtdcmDataSourceServersSettingsToolBox.h
   qtdcmDataSource.h)
 
@@ -62,9 +60,7 @@ set(${PROJECT_NAME}_HEADERS
 
 set(${PROJECT_NAME}_SOURCES
   qtdcmDataSourcePlugin.cpp
-  qtdcmDataSourcePreviewToolBox.cpp
-  qtdcmDataSourceImportToolBox.cpp
-  qtdcmDataSourceSerieInfoToolBox.cpp
+  qtdcmDataSourceSerieToolBox.cpp
   qtdcmDataSourceServersSettingsToolBox.cpp
   qtdcmDataSource.cpp)
 

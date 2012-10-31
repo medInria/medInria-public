@@ -20,9 +20,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
 
-#include <qtdcmDataSourcePreviewToolBox.h>
-#include <qtdcmDataSourceImportToolBox.h>
-#include <qtdcmDataSourceSerieInfoToolBox.h>
+#include <qtdcmDataSourceSerieToolBox.h>
 #include <qtdcmDataSourceServersSettingsToolBox.h>
 
 // /////////////////////////////////////////////////////////////////
@@ -36,9 +34,8 @@ public:
     QWidget * rightWidget;
     QtDcmLocalDicomSettingsWidget * localDicomSettingsWidget;
     QtDcmServersDicomSettingsWidget * serversDicomSettingsWidget;
-    qtdcmDataSourcePreviewToolBox * previewToolBox;
-    qtdcmDataSourceImportToolBox * importToolBox;
-    qtdcmDataSourceSerieInfoToolBox * serieInfoToolBox;
+
+    qtdcmDataSourceSerieToolBox * serieToolBox;
     qtdcmDataSourceServersSettingsToolBox * serversSettingsToolBox;
 
     QList <medToolBox *> additional_toolboxes;
@@ -94,17 +91,13 @@ qtdcmDataSource::qtdcmDataSource ( void ) : medAbstractDataSource(), d ( new qtd
     d->rightWidget = new QWidget;
     d->rightWidget->setLayout ( layout );
 
-    d->previewToolBox = new qtdcmDataSourcePreviewToolBox;
-    d->importToolBox = new qtdcmDataSourceImportToolBox;
-    d->serieInfoToolBox = new qtdcmDataSourceSerieInfoToolBox;
+    d->serieToolBox = new qtdcmDataSourceSerieToolBox;
     d->serversSettingsToolBox = new qtdcmDataSourceServersSettingsToolBox;
     d->serversSettingsToolBox->switchMinimize();
 
     d->additional_toolboxes.clear();
     d->additional_toolboxes.push_back ( d->serversSettingsToolBox );
-    d->additional_toolboxes.push_back ( d->previewToolBox );
-    d->additional_toolboxes.push_back ( d->serieInfoToolBox );
-    d->additional_toolboxes.push_back ( d->importToolBox );
+    d->additional_toolboxes.push_back ( d->serieToolBox );
 }
 
 qtdcmDataSource::~qtdcmDataSource ( void )
@@ -161,9 +154,9 @@ void qtdcmDataSource::initWidgets ( void )
         d->mainWidget = new QtDcm();
         QtDcmPreferences::instance()->setIniFile("medInria");
         QtDcmManager::instance()->setQtDcmWidget(d->mainWidget);
-        QtDcmManager::instance()->setPreviewWidget ( d->previewToolBox->getPreviewWidget() );
-        QtDcmManager::instance()->setImportWidget ( d->importToolBox->getImportWidget() );
-        QtDcmManager::instance()->setSerieInfoWidget ( d->serieInfoToolBox->getSerieInfoWidget() );
+        QtDcmManager::instance()->setPreviewWidget ( d->serieToolBox->getPreviewWidget() );
+        QtDcmManager::instance()->setImportWidget ( d->serieToolBox->getImportWidget() );
+        QtDcmManager::instance()->setSerieInfoWidget ( d->serieToolBox->getSerieInfoWidget() );
         QtDcmManager::instance()->useConverter ( false );
         QObject::connect ( QtDcmManager::instance(), SIGNAL ( serieMoved ( QString ) ), this, SLOT ( onSerieMoved ( QString ) ) );
 
