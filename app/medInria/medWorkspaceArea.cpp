@@ -212,11 +212,9 @@ bool medWorkspaceArea::openInTab(const medDataIndex &index)
         medDataManager *dataManager = medDataManager::instance();
         medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
         QString createdName = dbc->metaData(index,medMetaDataKeys::PatientName.key());
-        createdName = d->currentWorkspace->addMultiContainer(createdName);
+        createdName = d->currentWorkspace->addDefaultTypeContainer(createdName);
         d->currentWorkspace->stackedViewContainers()->setContainer(createdName);
     }
-    else
-        d->currentWorkspace->stackedViewContainers()->changeCurrentContainerType("Multi");
 
     return this->open(index);
 }

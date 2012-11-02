@@ -72,8 +72,8 @@ void medVisualizationWorkspace::setupViewContainerStack()
     if (!stackedViewContainers()->count())
     {
         const QString description = this->description();
-        addDefaultTypeContainer(description);
-        this->connectToolboxesToCurrentContainer(description);
+        QString createdTab = addDefaultTypeContainer(description);
+        this->connectToolboxesToCurrentContainer(createdTab);
     }
     this->stackedViewContainers()->unlockTabs();
 }
