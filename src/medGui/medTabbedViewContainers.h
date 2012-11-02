@@ -196,6 +196,12 @@ public slots:
     void changeCurrentContainerType(const QString &name);
 
     /**
+     * @brief Deletes the container at current index (connected from close shortcut).
+     *
+     */
+    void deleteContainerShortcutActivated();
+    
+    /**
      * @brief Deletes the container at index (if not the last one in the stack).
      *
      * @param index the tab index.

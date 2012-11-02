@@ -18,6 +18,7 @@
  */
 
 #include <QtCore>
+#include <QShortcut>
 
 #include "medTabbedViewContainers.h"
 
@@ -29,10 +30,11 @@
 class medTabbedViewContainersPrivate
 {
 public:
-   QHash<QString, medViewContainer*> containers;
-   QString currentName;
-
-   QPushButton *addButton;
+    QHash<QString, medViewContainer*> containers;
+    QString currentName;
+    QShortcut *closeShortcut;
+    
+    QPushButton *addButton;
 };
 
 medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(parent), d(new medTabbedViewContainersPrivate)
@@ -43,12 +45,16 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
     connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(deleteContainerClicked(int)));
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(onCurrentContainerChanged(int)));
 
-    d->addButton = new QPushButton();
+    d->addButton = new QPushButton(this);
     d->addButton->setStyleSheet("background-image: url(:medGui/pixmaps/plus_button.png);background-position: center;background-repeat: no-repeat;");
     d->addButton->setShortcut(Qt::ControlModifier + Qt::Key_T);
     this->setCornerWidget(d->addButton);
 
     connect(d->addButton,SIGNAL(clicked()),this,SIGNAL(addTabButtonClicked()));
+    
+    d->closeShortcut = new QShortcut(this);
+    d->closeShortcut->setKey(Qt::ControlModifier + Qt::Key_W);
+    connect(d->closeShortcut,SIGNAL(activated()),this,SLOT(deleteContainerShortcutActivated()));
 }
 
 medTabbedViewContainers::~medTabbedViewContainers(void)
@@ -89,6 +95,12 @@ void medTabbedViewContainers::addNewTabContainer()
         qDebug() << "Container" << name << "already exists in this workspaces";
 }
 */
+
+void medTabbedViewContainers::deleteContainerShortcutActivated()
+{
+    int index = this->currentIndex();
+    this->deleteContainerClicked(index);
+}
 
 void medTabbedViewContainers::deleteContainerClicked(int index)
 {
