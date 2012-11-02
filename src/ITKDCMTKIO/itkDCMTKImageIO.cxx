@@ -928,25 +928,6 @@ namespace itk
       {
 	DcmFileFormat *dcm = new DcmFileFormat;
 	dcm->loadFile (filename.c_str());
-	DcmDataset *dset = dcm->getDataset();
-
-	OFString ofstr;
-	if (dset->findAndGetOFString(DCM_Modality, ofstr)==EC_Normal)
-	{
-	  if (ofstr=="CT")
-	  {
-	    double minValue, maxValue;
-	    image->getMinMaxValues (minValue, maxValue);
-
-	    if (minValue<-1000) // probably wrong pixelRepresentation
-	    {
-	      dset->putAndInsertUint16 (DCM_PixelRepresentation, 0);
-
-	      delete image;
-	      image = new DicomImage (dcm, dset->getOriginalXfer(), CIF_UseAbsolutePixelRange);
-	    }
-	  }
-	}
 
 	const DiPixel *dmp = image->getInterData();
 	if (!dmp)
