@@ -928,7 +928,6 @@ namespace itk
       {
 	DcmFileFormat *dcm = new DcmFileFormat;
 	dcm->loadFile (filename.c_str());
-	DcmDataset *dset = dcm->getDataset();
 
 	const DiPixel *dmp = image->getInterData();
 	if (!dmp)
