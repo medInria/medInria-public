@@ -45,6 +45,7 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
 
     d->addButton = new QPushButton();
     d->addButton->setStyleSheet("background-image: url(:medGui/pixmaps/plus_button.png);background-position: center;background-repeat: no-repeat;");
+    d->addButton->setShortcut(Qt::ControlModifier + Qt::Key_T);
     this->setCornerWidget(d->addButton);
 
     connect(d->addButton,SIGNAL(clicked()),this,SIGNAL(addTabButtonClicked()));
@@ -126,7 +127,7 @@ void medTabbedViewContainers::addContainer(const QString &name, medViewContainer
 {
     if (!container)
         return;
-
+    
     d->containers[name] = container;
 
     connect( container, SIGNAL( focused( dtkAbstractView * ) ),
