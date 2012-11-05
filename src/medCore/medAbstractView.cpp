@@ -382,7 +382,7 @@ void medAbstractView::removeOverlay(int layer)
         emit (dataRemoved(oldData, layer));
         emit (dataRemoved(layer));
         d->dataList.removeAt(layer);
-        
+
     }
 }
 
@@ -393,10 +393,10 @@ void medAbstractView::onSliceChanged (int slice)
 
 void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
 {
-  
+
     if(layer >=0 &&  layer < d->dataList.size() )
         d->dataList[layer] = data;
-    else 
+    else
         d->dataList.append(data);
     medAbstractView::addDataType(data->identifier());
 }
