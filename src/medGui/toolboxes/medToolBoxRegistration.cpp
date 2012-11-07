@@ -138,6 +138,9 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
             medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
     connect(this,SIGNAL(showInfo(QObject*,const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showInfo(QObject*,const QString&,unsigned int)));
+	
+	
+	
 }
 
 medToolBoxRegistration::~medToolBoxRegistration(void)
@@ -209,6 +212,9 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
         d->fuseView->reset();
         d->fuseView->update();
     }
+	connect(d->fixedView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(SynchroniseWindowLevel(void)));
+	if (!d->movingView)
+		connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(SynchroniseWindowLevel(void)));
 }
 
 void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
@@ -247,6 +253,9 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
     }
     //d->fuseView->reset();
     d->fuseView->update();
+	connect(d->movingView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(SynchroniseWindowLevel(void)));
+	if (!d->fixedView)
+		connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(SynchroniseWindowLevel(void)));
 }
 
 void medToolBoxRegistration::onToolBoxChosen(int index)
@@ -434,4 +443,34 @@ void medToolBoxRegistration::onSuccess()
         d->fuseView->setData(output,1);
         d->fuseView->update();
     }
+}
+
+
+void medToolBoxRegistration::SynchroniseWindowLevel(){ 
+	// this function synchronises the windowlevel of :
+	//Layer 0 of the fixedView <-> Layer 0 of the fuseView
+	//Layer 0 of the movingView <-> Layer 1 of the fuseView 
+	
+	double window,level;
+	
+	if (d->fixedView==QObject::sender())
+	{
+		d->fixedView->windowLevel(level,window);
+		d->fuseView->setCurrentLayer(0);
+		d->fuseView->onWindowingChanged(level,window);
+	}
+	else if (d->movingView==QObject::sender())
+	{
+		d->movingView->windowLevel(level,window);
+		d->fuseView->setCurrentLayer(1);
+		d->fuseView->onWindowingChanged(level,window);
+	}
+	else{
+		d->fuseView->windowLevel(level,window);
+		if (d->fuseView->currentLayer()==0)
+			d->fixedView->onWindowingChanged(level,window);
+		else if (d->fuseView->currentLayer()==1)	
+			d->movingView->onWindowingChanged(level,window);
+		// In the case that the currentLayer>1 we do nothing.
+	}
 }
