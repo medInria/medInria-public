@@ -78,11 +78,16 @@ public:
     QPushButton *slicingPushButton;
     QPushButton *measuringPushButton;
 
+	QAction *axialButton;
+	QAction *coronalButton;
+	QAction* sagittalButton;
+	QAction* view3DButton;
+	
     QCheckBox *scalarBarVisibilityCheckBox;
     QCheckBox *axisVisibilityCheckBox;
     QCheckBox *rulerVisibilityCheckBox;
     QCheckBox *annotationsVisibilityCheckBox;
-
+	
     QComboBox * view3dModeComboBox;
     QComboBox * view3dVRModeComboBox;
     QSlider * view3dLODSlider;
@@ -205,7 +210,22 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     d->mouseGroup->addButton ( d->measuringPushButton );
     d->mouseGroup->setExclusive (true);
 
-    setCurrentInteractionFromSettings();
+	QActionGroup *orientationActionGroup = new QActionGroup(this);
+	d->axialButton = new QAction("Axial",this);
+	d->axialButton->setCheckable(true);
+	d->coronalButton = new QAction("Coronal",this);
+	d->coronalButton->setCheckable(true);
+	d->sagittalButton = new QAction("Sagittal",this);
+	d->sagittalButton->setCheckable(true);
+	d->view3DButton = new QAction("3D",this);
+	d->view3DButton->setCheckable(true);
+
+	orientationActionGroup->addAction(d->axialButton);
+	orientationActionGroup->addAction(d->coronalButton);
+	orientationActionGroup->addAction(d->sagittalButton);
+	orientationActionGroup->addAction(d->view3DButton);
+	
+	setCurrentInteractionFromSettings();
 
     d->propView = new QWidget(this);
     QHBoxLayout * propLayout = new QHBoxLayout;
@@ -256,6 +276,18 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     connect(d->measuringPushButton, SIGNAL(toggled(bool)),
             this, SLOT(onMeasuringChanged(bool)));
 
+	connect(d->axialButton,SIGNAL(toggled(bool)),this,SLOT(onAxialChanged(bool)));
+	connect(d->coronalButton,SIGNAL(toggled(bool)),this,SLOT(onCoronalChanged(bool)));
+	connect(d->sagittalButton,SIGNAL(toggled(bool)),this,SLOT(onSagittalChanged(bool)));
+	connect(d->view3DButton,SIGNAL(toggled(bool)),this,SLOT(onView3DChanged(bool)));
+
+	QToolBar *orientationToolBar = new QToolBar("Orientation",this);
+	orientationToolBar->addAction(d->axialButton);
+	orientationToolBar->addAction(d->coronalButton);
+	orientationToolBar->addAction(d->sagittalButton);
+	orientationToolBar->addAction(d->view3DButton);
+	orientationToolBar->setToolButtonStyle(Qt::ToolButtonTextOnly);
+	
     d->view3dModeComboBox = new QComboBox(this);
     d->view3dModeComboBox->setFocusPolicy(Qt::NoFocus);
     d->view3dModeComboBox->setToolTip(tr("Choose a 3D mode (e.g. Volume Rendering, Maximum Intensity Projection, MultiPlanar Reconstruction)"));
@@ -294,7 +326,7 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
 
     d->view3dToolBoxWidget = new QWidget(this);
     QFormLayout *view3dToolBoxWidgetLayout = new QFormLayout(d->view3dToolBoxWidget);
-    view3dToolBoxWidgetLayout->addRow(tr("3D Mode"), d->view3dModeComboBox);
+	view3dToolBoxWidgetLayout->addRow(tr("3D Mode"), d->view3dModeComboBox);
     view3dToolBoxWidgetLayout->addRow(tr("Renderer:"), d->view3dVRModeComboBox);
     view3dToolBoxWidgetLayout->addRow(tr("LOD:"), d->view3dLODSlider);
     view3dToolBoxWidgetLayout->addRow(tr("Cropping:"), d->croppingPushButton);
@@ -325,11 +357,12 @@ medToolBox(parent), d(new medViewerToolBoxViewPropertiesPrivate)
     connect(d->axisVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(onAxisVisibilityChanged(bool)));
     connect(d->rulerVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(onRulerVisibilityChanged(bool)));
     connect(d->annotationsVisibilityCheckBox, SIGNAL(toggled(bool)), this, SLOT(onAnnotationsVisibilityChanged(bool)));
-
+	
     this->hide();
-
-    this->addWidget(d->propertiesView);
-    this->addWidget(d->view3dToolBoxWidget);
+		
+	this->addWidget(orientationToolBar);
+	this->addWidget(d->propertiesView);
+	this->addWidget(d->view3dToolBoxWidget);
     d->view3dToolBoxWidget->hide();
     this->addWidget(d->propertiesTree);
     this->addWidget(d->twoLayersWidget);
@@ -420,6 +453,15 @@ void medViewerToolBoxViewProperties::update(dtkAbstractView *view)
     onSlicingChanged(d->slicingPushButton->isChecked());
     onMeasuringChanged(d->measuringPushButton->isChecked());
     onWindowingChanged(d->windowingPushButton->isChecked());
+
+	if (d->view->property("Orientation") == "Axial")
+		d->axialButton->setChecked(true);
+	else if (d->view->property("Orientation") == "Coronal")
+		d->coronalButton->setChecked(true);
+	else if (d->view->property("Orientation") == "Sagittal")
+		d->sagittalButton->setChecked(true);
+	else
+		d->view3DButton->setChecked(true);
 }
 
 void medViewerToolBoxViewProperties::constructImageLayer(dtkAbstractData* data, int imageLayer)
@@ -577,7 +619,7 @@ void medViewerToolBoxViewProperties::constructMeshLayer(dtkAbstractData* data, i
     lutBox->setFocusPolicy(Qt::NoFocus);
     lutBox->addItems(d->meshInteractor->getAllLUTs());
     lutBox->setCurrentIndex(0);
-
+	
     QTreeWidgetItem * attrMap = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
     attrMap->setText(1, tr("Attributes"));
     medAttributeBox * attrBox = new medAttributeBox(NULL,lutBox);
@@ -1212,4 +1254,38 @@ void  medViewerToolBoxViewProperties::setCurrentInteractionFromSettings()
     {
         d->windowingPushButton->setChecked(true);
     }
+}
+
+void medViewerToolBoxViewProperties::onAxialChanged(bool checked)
+{
+	if (checked && d->view){
+		d->view->setProperty ( "Orientation", "Axial" );
+		d->view->update();
+		on2DTriggered(d->view);
+	}
+}
+void medViewerToolBoxViewProperties::onSagittalChanged(bool checked)
+{
+	if (checked && d->view){
+		d->view->setProperty ( "Orientation", "Sagittal" );
+		d->view->update();
+		on2DTriggered(d->view);
+	}
+}
+void medViewerToolBoxViewProperties::onCoronalChanged(bool checked)
+{
+	if (checked && d->view){
+		d->view->setProperty ( "Orientation", "Coronal" );
+		d->view->update();
+		on2DTriggered(d->view);
+	}
+}
+void medViewerToolBoxViewProperties::onView3DChanged(bool checked)
+{
+	if (checked && d->view){
+		d->view->setProperty ( "3DMode", d->view->property ( "3DMode" ) );
+		d->view->setProperty ( "Orientation", "3D" );
+		d->view->update();
+		on3DTriggered(d->view);
+	}
 }

@@ -61,6 +61,12 @@ public slots:
     void onZoomingChanged(bool);
     void onSlicingChanged(bool);
     void onMeasuringChanged(bool);
+
+	void onAxialChanged(bool);
+	void onSagittalChanged(bool);
+	void onCoronalChanged(bool);
+	void onView3DChanged(bool);
+
     void on2DTriggered(dtkAbstractView* d);
     void on3DTriggered(dtkAbstractView* d);
 
@@ -81,8 +87,6 @@ public slots:
     void onVRModeChanged(QString mode);
     void onLodChanged(int value);
     void onCroppingChanged(bool checked);
-
-
 
 signals:
     /** setVisibility is both for images and meshes*/
