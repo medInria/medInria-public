@@ -98,6 +98,7 @@ set(PLUGIN_LIST
   ITKProcessExample              OFF
   itkFilters                     ON
   exampleProcessImageFilter      OFF  
+  qtdcmDataSource                ON
   )
 
 #MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
