@@ -20,11 +20,8 @@ qtdcmDataSourceSerieToolBox::qtdcmDataSourceSerieToolBox ( QWidget* parent ) : m
 {
     d->parent = parent;
     d->preview = new QtDcmPreviewWidget(this);
-    //d->preview->previewGroupBox->setTitle("");
 
     d->serieInfoWidget = new QtDcmSerieInfoWidget(this);
-    //d->serieInfoWidget->infosGroupBox->setTitle("");
-    
     d->importWidget = new QtDcmImportWidget(this);
     
     this->addWidget(d->preview);
