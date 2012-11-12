@@ -464,9 +464,7 @@ void medToolBoxRegistration::synchroniseWindowLevel(){
 	}
 	else{		
 		d->fuseView->windowLevel(level,window);
-		bool b = d->movingView->windowingLinked();
-		bool b2 = d->fixedView->windowingLinked();
-		if (b && b2){
+		if (d->movingView->windowingLinked() && d->fixedView->windowingLinked()){
 			d->fixedView->onWindowingChanged(level,window);
 			d->movingView->onWindowingChanged(level,window);
 			if (d->fuseView->currentLayer()==0){ // Since the fixed view and moving view are linked we must assure that the two layers of the fuse view are changed.
