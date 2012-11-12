@@ -58,7 +58,7 @@ signals:
 public slots:
     void onMovingImageDropped(const medDataIndex& index);
     void onFixedImageDropped(const medDataIndex& index);
-	
+
 //    void onBlendModeSet(bool value);
 //    void onCheckerboardModeSet(bool value);
 
@@ -68,7 +68,7 @@ public slots:
     void onSaveTrans(void);
     void onSuccess(void);
 
-	void SynchroniseWindowLevel(void);
+	void synchroniseWindowLevel(void);
 
 private:
     medToolBoxRegistrationPrivate *d;

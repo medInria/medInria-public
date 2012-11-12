@@ -138,9 +138,6 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
             medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
     connect(this,SIGNAL(showInfo(QObject*,const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showInfo(QObject*,const QString&,unsigned int)));
-	
-	
-	
 }
 
 medToolBoxRegistration::~medToolBoxRegistration(void)
@@ -212,9 +209,9 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
         d->fuseView->reset();
         d->fuseView->update();
     }
-	connect(d->fixedView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(SynchroniseWindowLevel(void)));
+	connect(d->fixedView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
 	if (!d->movingView)
-		connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(SynchroniseWindowLevel(void)));
+		connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
 }
 
 void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
@@ -253,9 +250,9 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
     }
     //d->fuseView->reset();
     d->fuseView->update();
-	connect(d->movingView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(SynchroniseWindowLevel(void)));
+	connect(d->movingView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
 	if (!d->fixedView)
-		connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(SynchroniseWindowLevel(void)));
+		connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
 }
 
 void medToolBoxRegistration::onToolBoxChosen(int index)
@@ -446,13 +443,13 @@ void medToolBoxRegistration::onSuccess()
 }
 
 
-void medToolBoxRegistration::SynchroniseWindowLevel(){ 
+void medToolBoxRegistration::synchroniseWindowLevel(){ 
 	// this function synchronises the windowlevel of :
 	//Layer 0 of the fixedView <-> Layer 0 of the fuseView
 	//Layer 0 of the movingView <-> Layer 1 of the fuseView 
-	
+		
 	double window,level;
-	
+		
 	if (d->fixedView==QObject::sender())
 	{
 		d->fixedView->windowLevel(level,window);
@@ -465,9 +462,24 @@ void medToolBoxRegistration::SynchroniseWindowLevel(){
 		d->fuseView->setCurrentLayer(1);
 		d->fuseView->onWindowingChanged(level,window);
 	}
-	else{
+	else{		
 		d->fuseView->windowLevel(level,window);
-		if (d->fuseView->currentLayer()==0)
+		bool b = d->movingView->windowingLinked();
+		bool b2 = d->fixedView->windowingLinked();
+		if (b && b2){
+			d->fixedView->onWindowingChanged(level,window);
+			d->movingView->onWindowingChanged(level,window);
+			if (d->fuseView->currentLayer()==0){ // Since the fixed view and moving view are linked we must assure that the two layers of the fuse view are changed.
+				d->fuseView->setCurrentLayer(1);
+				d->fuseView->onWindowingChanged(level,window);
+			}
+			else if (d->fuseView->currentLayer()==1)
+			{
+				d->fuseView->setCurrentLayer(0);
+				d->fuseView->onWindowingChanged(level,window);
+			}
+		}
+		else if (d->fuseView->currentLayer()==0)
 			d->fixedView->onWindowingChanged(level,window);
 		else if (d->fuseView->currentLayer()==1)	
 			d->movingView->onWindowingChanged(level,window);
