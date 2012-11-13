@@ -1256,6 +1256,11 @@ void  medViewerToolBoxViewProperties::setCurrentInteractionFromSettings()
     }
 }
 
+/**
+ * Changes the orientation property of the view to Axial if checked is true.
+ *
+ * @param checked 
+ */
 void medViewerToolBoxViewProperties::onAxialChanged(bool checked)
 {
 	if (checked && d->view){
@@ -1264,6 +1269,11 @@ void medViewerToolBoxViewProperties::onAxialChanged(bool checked)
 		on2DTriggered(d->view);
 	}
 }
+/**
+ * Changes the orientation property of the view to Sagittal if checked is true.
+ *
+ * @param checked 
+ */
 void medViewerToolBoxViewProperties::onSagittalChanged(bool checked)
 {
 	if (checked && d->view){
@@ -1272,6 +1282,11 @@ void medViewerToolBoxViewProperties::onSagittalChanged(bool checked)
 		on2DTriggered(d->view);
 	}
 }
+/**
+ * Changes the orientation property of the view to Coronal if checked is true.
+ *
+ * @param checked 
+ */
 void medViewerToolBoxViewProperties::onCoronalChanged(bool checked)
 {
 	if (checked && d->view){
@@ -1280,6 +1295,11 @@ void medViewerToolBoxViewProperties::onCoronalChanged(bool checked)
 		on2DTriggered(d->view);
 	}
 }
+/**
+ * Changes the view to the 3Dmode if checked is true.
+ *
+ * @param checked 
+ */
 void medViewerToolBoxViewProperties::onView3DChanged(bool checked)
 {
 	if (checked && d->view){
