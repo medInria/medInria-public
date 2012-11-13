@@ -133,48 +133,38 @@ medToolBoxRegistration::~medToolBoxRegistration(void)
     d = NULL;
 }
 
-/** 
- * @brief Gets the fixedView.
- */
+//! Gets the fixedView.
 dtkAbstractView *medToolBoxRegistration::fixedView(void)
 {
     return d->fixedView;
 }
 
-/** 
- * @brief Gets the movingView.
- */
+//! Gets the movingView.
 dtkAbstractView *medToolBoxRegistration::movingView(void)
 {
     return d->movingView;
 }
 
-/** 
- * @brief Gets the fuseView.
- */
+//! Gets the fuseView.
 dtkAbstractView *medToolBoxRegistration::fuseView(void)
 {
     return d->fuseView;
 }
 
-/** 
- * @brief Gets the fixedData.
- */
+//! Gets the fixedData.
 medAbstractDataImage *medToolBoxRegistration::fixedData(void)
 {
     return d->fixedData;
 }
 
-/** 
- * @brief Gets the movingData.
- */
+//! Gets the movingData.
 medAbstractDataImage *medToolBoxRegistration::movingData(void)
 {
     return d->movingData;
 }
 
 /** 
- * @brief Sets up the fixedView and the layer 0 of the fuseView.
+ * Sets up the fixedView and the layer 0 of the fuseView.
  *
  * @param index The index that was imported.
  */
@@ -220,7 +210,7 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
 }
 
 /** 
- * @brief Sets up the movingView and the layer 1 of the fuseView.
+ * Sets up the movingView and the layer 1 of the fuseView.
  *
  * @param index The index that was imported.
  */
@@ -266,7 +256,7 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
 }
 
 /** 
- * @brief Sets up the toolbox chosen and remove the old one.
+ * Sets up the toolbox chosen and remove the old one.
  *
  * @param index The index of the toolbox that was chosen.
  */
@@ -299,7 +289,7 @@ void medToolBoxRegistration::onToolBoxChosen(int index)
 }
 
 /** 
- * @brief Sets the fuseView.
+ * Sets the fuseView.
  *
  * @param view The new fuseView.
  */
@@ -311,9 +301,7 @@ void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
     d->fuseView = dynamic_cast <medAbstractView*> (view);
 }
 
-/** 
- * @brief Clears the toolbox.
- */
+//! Clears the toolbox.
 void medToolBoxRegistration::clear(void)
 {
 
@@ -322,16 +310,14 @@ void medToolBoxRegistration::clear(void)
         d->customToolBox->clear();
 }
 
-/** 
- * @brief Gets the process.
- */
+//! Gets the process.
 dtkAbstractProcess * medToolBoxRegistration::process(void)
 {
     return d->process;
 }
 
 /** 
- * @brief Sets the process.
+ * Sets the process.
  *
  * @param proc The new process.
  */
@@ -340,9 +326,7 @@ void medToolBoxRegistration::setProcess(dtkAbstractProcess* proc)
     d->process = proc;
 }
 
-/** 
- * @brief Saves the registered image.
- */
+//! Saves the registered image.
 void medToolBoxRegistration::onSaveImage()
 {
     if ( !d->movingData)
@@ -382,9 +366,7 @@ void medToolBoxRegistration::onSaveImage()
 
 }
 
-/** 
- * @brief Saves the transformation.
- */
+//! Saves the transformation.
 void medToolBoxRegistration::onSaveTrans()
 {
     if (!d->movingData)
@@ -448,9 +430,7 @@ void medToolBoxRegistration::onSaveTrans()
     }
 }
 
-/** 
- * @brief If the registration has ended well, it sets the output's metaData and reset the movingView and fuseView with the registered image.
- */
+//! If the registration has ended well, it sets the output's metaData and reset the movingView and fuseView with the registered image.
 void medToolBoxRegistration::onSuccess()
 {
     dtkSmartPointer<dtkAbstractData> output(d->process->output());
@@ -481,10 +461,7 @@ void medToolBoxRegistration::onSuccess()
     }
 }
 
-/** 
- * @brief Synchronises the window/level of the layer 0 of the fixedView with the layer 0 of the fuseView,
- * and the layer 0 of the movingView with the layer 1 of the fuseView. 
- */
+//! Synchronises the window/level of the layer 0 of the fixedView with the layer 0 of the fuseView, and the layer 0 of the movingView with the layer 1 of the fuseView. 
 void medToolBoxRegistration::synchroniseWindowLevel(){ 
 			
 	double window,level;
