@@ -1382,12 +1382,11 @@ void v3dView::onShowAnnotationsPropertySet ( const QString &value )
 
 void v3dView::onMouseInteractionPropertySet ( const QString &value )
 {
-    d->collection->SyncSetMiddleButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeSlice );
+    d->collection->SyncSetMiddleButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypePan );
 
     if ( value == "Zooming" )
     {
         d->collection->SyncSetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeZoom );
-        d->collection->SyncSetMiddleButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypePan );
     }
 
     if ( value == "Windowing" )
