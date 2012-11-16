@@ -2,6 +2,10 @@
     <qresource prefix="/">
         <file>LICENSE.txt</file>
         <file>medInria.ico</file>
+        <file>icons/AxialIcon.png</file>
+        <file>icons/CoronalIcon.png</file>
+        <file>icons/SagittalIcon.png</file>
+        <file>icons/3DIcon.png</file>
         <file>icons/about.png</file>
         <file>icons/quit.png</file>
         <file>icons/cog.png</file>

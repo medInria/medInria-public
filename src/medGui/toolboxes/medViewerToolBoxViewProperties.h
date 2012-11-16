@@ -62,10 +62,10 @@ public slots:
     void onSlicingChanged(bool);
     void onMeasuringChanged(bool);
 
-	void onAxialChanged(bool);
-	void onSagittalChanged(bool);
-	void onCoronalChanged(bool);
-	void onView3DChanged(bool);
+    void onAxialChanged(bool);
+    void onSagittalChanged(bool);
+    void onCoronalChanged(bool);
+    void onView3DChanged(bool);
 
     void on2DTriggered(dtkAbstractView* d);
     void on3DTriggered(dtkAbstractView* d);
