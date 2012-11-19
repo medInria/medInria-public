@@ -135,6 +135,8 @@ public slots:
     */
     virtual void import(const QString& file,bool indexWithoutCopying);
 
+    virtual void createNewPatient(void) = 0;
+
     /**
     * Export data to file
     * @param dtkAbstractData *data Pointer to some data to export
@@ -147,6 +149,10 @@ public slots:
      * @params const medDataIndex & index The data index to be removed in the db
      */
     virtual void remove(const medDataIndex& index) = 0;
+
+    virtual bool moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient) =  0;
+
+    virtual bool moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy) =  0;
 
     /**
     * This method clears data already loaded in the database.

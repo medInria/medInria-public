@@ -54,12 +54,16 @@ public:
     QList<QVariant> data;
     QList<QString> columnNames;
 
+    medAbstractDatabaseItem *draggedItem;
+    QModelIndex draggedIndex;
+
     enum { DataCount = 19 };
 };
 
 medAbstractDatabaseItem *medDatabaseModelPrivate::item(const QModelIndex& index) const
 {
-    if (index.isValid()) {
+    if (index.isValid())
+    {
         medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
         if (item)
             return item;
@@ -105,7 +109,8 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
 #endif
     for (int i(0); i<dataCount; ++i)
         d->seAttributes.append(NulString);
-    d->seAttributes[1] = medMetaDataKeys::StudyDescription.key();
+    //test GPR
+    //d->seAttributes[1] = medMetaDataKeys::StudyDescription.key();
     d->seAttributes[2] = medMetaDataKeys::SeriesDescription.key();
     d->seAttributes[3] = medMetaDataKeys::Size.key();
     d->seAttributes[4] = medMetaDataKeys::Age.key();
@@ -132,7 +137,7 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
     d->stDefaultData[1] = tr("[No Study Name]");
 
     d->seDefaultData =  d->data;
-    d->seDefaultData[1] = tr("[No Study Name]");
+    //d->seDefaultData[1] = tr("[No Study Name]");
     d->seDefaultData[2] = tr("[No Series Name]");
 
     d->root = new medDatabaseItem(medDataIndex(), d->data, d->data);
@@ -167,6 +172,11 @@ int medDatabaseModel::rowCount(const QModelIndex& parent) const
     return parentItem->childCount();
 }
 
+bool medDatabaseModel::hasChildren ( const QModelIndex & parent ) const
+{
+    return (rowCount(parent) > 0);
+}
+
 int medDatabaseModel::columnCount(const QModelIndex& parent) const
 {
     if (parent.isValid())
@@ -178,8 +188,8 @@ int medDatabaseModel::columnCount(const QModelIndex& parent) const
 int medDatabaseModel::columnIndex(const QString& title) const
 {
     for(int i = 0 ; i < d->root->columnCount() ; i++)
-    if(d->root->data(i).toString() == title)
-        return i;
+        if(d->root->data(i).toString() == title)
+            return i;
 
     return -1;
 }
@@ -209,7 +219,8 @@ QVariant medDatabaseModel::headerData(int section, Qt::Orientation orientation, 
 
 QModelIndex medDatabaseModel::indexForPatient(int id) const
 {
-    for(int i = 0; i < this->rowCount(); i++) {
+    for(int i = 0; i < this->rowCount(); i++)
+    {
         QModelIndex index = this->index(i, 0);
         if(medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer()))
             if(item->data(0).toInt() == id)
@@ -223,10 +234,12 @@ QModelIndex medDatabaseModel::indexForPatient(int id) const
 
 QModelIndex medDatabaseModel::indexForStudy(int id) const
 {
-    for(int i = 0; i < this->rowCount(); i++) {
+    for(int i = 0; i < this->rowCount(); i++)
+    {
         QModelIndex patientIndex = this->index(i, 0);
         if(medAbstractDatabaseItem *patientItem = static_cast<medAbstractDatabaseItem *>(patientIndex.internalPointer()))
-            for(int j = 0; j < patientItem->childCount(); j++) {
+            for(int j = 0; j < patientItem->childCount(); j++)
+            {
                 QModelIndex index = this->index(j, 0, patientIndex);
                 if(medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer()))
                     if(item->data(0).toInt() == id)
@@ -241,13 +254,16 @@ QModelIndex medDatabaseModel::indexForStudy(int id) const
 
 QModelIndex medDatabaseModel::indexForSeries(int id) const
 {
-    for(int i = 0; i < this->rowCount(); i++) {
+    for(int i = 0; i < this->rowCount(); i++)
+    {
         QModelIndex patientIndex = this->index(i, 0);
         if(medAbstractDatabaseItem *patientItem = static_cast<medAbstractDatabaseItem *>(patientIndex.internalPointer()))
-            for(int j = 0; j < patientItem->childCount(); j++) {
+            for(int j = 0; j < patientItem->childCount(); j++)
+            {
                 QModelIndex studyIndex = this->index(j, 0, patientIndex);
                 if(medAbstractDatabaseItem *studyItem = static_cast<medAbstractDatabaseItem *>(studyIndex.internalPointer()))
-                    for(int k = 0; k < studyItem->childCount(); k++) {
+                    for(int k = 0; k < studyItem->childCount(); k++)
+                    {
                         QModelIndex index = this->index(k, 0, studyIndex);
                         if(medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer()))
                             if(item->data(0).toInt() == id)
@@ -263,16 +279,20 @@ QModelIndex medDatabaseModel::indexForSeries(int id) const
 
 QModelIndex medDatabaseModel::indexForImage(int id) const
 {
-    for(int i = 0; i < this->rowCount(); i++) {
+    for(int i = 0; i < this->rowCount(); i++)
+    {
         QModelIndex patientIndex = this->index(i, 0);
         if(medAbstractDatabaseItem *patientItem = static_cast<medAbstractDatabaseItem *>(patientIndex.internalPointer()))
-            for(int j = 0; j < patientItem->childCount(); j++) {
+            for(int j = 0; j < patientItem->childCount(); j++)
+            {
                 QModelIndex studyIndex = this->index(j, 0, patientIndex);
                 if(medAbstractDatabaseItem *studyItem = static_cast<medAbstractDatabaseItem *>(studyIndex.internalPointer()))
-                    for(int k = 0; k < studyItem->childCount(); k++) {
+                    for(int k = 0; k < studyItem->childCount(); k++)
+                    {
                         QModelIndex seriesIndex = this->index(k, 0, studyIndex);
                         if(medAbstractDatabaseItem *seriesItem = static_cast<medAbstractDatabaseItem *>(seriesIndex.internalPointer()))
-                            for(int l = 0; l < seriesItem->childCount(); l++) {
+                            for(int l = 0; l < seriesItem->childCount(); l++)
+                            {
                                 QModelIndex index = this->index(l, 0, seriesIndex);
                                 if(medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer()))
                                     if(item->data(0).toInt() == id)
@@ -328,7 +348,34 @@ QModelIndex medDatabaseModel::parent(const QModelIndex& index) const
 
 Qt::ItemFlags medDatabaseModel::flags(const QModelIndex& index) const
 {
-    return Qt::ItemIsSelectable | /*Qt::ItemIsEditable |*/ Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
+    medAbstractDatabaseItem *item = d->item(index);
+    medDataIndex dataIndex= item->dataIndex();
+
+    Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+
+    if(dataIndex.isValidForSeries())
+    {
+        if(!d->seAttributes[index.column()].toString().isEmpty())
+        {
+            flags = Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
+        }
+    }
+    else if(dataIndex.isValidForStudy())
+    {
+        if(!d->stAttributes[index.column()].toString().isEmpty())
+        {
+            flags = Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
+        }
+    }
+    else if(dataIndex.isValidForPatient())
+    {
+        if(!d->ptAttributes[index.column()].toString().isEmpty())
+        {
+            flags = Qt::ItemIsSelectable | Qt::ItemIsEditable | /* Qt::ItemIsDragEnabled | */ Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
+        }
+    }
+
+    return flags;
 }
 
 //! Sets the role data for the item at index to value. Returns true if
@@ -348,22 +395,44 @@ bool medDatabaseModel::setData(const QModelIndex& index, const QVariant& value, 
     if (role != Qt::EditRole)
         return false;
 
-    if(index.column() == 0)
-        return false;
+    //test GPR
+    /*if(index.column() == 0)
+        return false;*/
 
     medAbstractDatabaseItem *item = d->item(index);
 
-    bool result = item->setData(index.column(), value);
+    /*
+        bool result = item->setData(index.column(), value);
 
-    if(result) {
-        medDataIndex dataIndex = item->dataIndex();
-        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource( dataIndex.dataSourceId() );
-        QString attribute = item->attribute(index.column()).toString();
-        QString value     = item->value(index.column()).toString();
-        bool success = dbc->setMetaData( dataIndex, attribute, value );
-        if ( !success ) {
-            dtkDebug() << "Could not set data for index " << dataIndex.asString();
+        if(result) {
+            medDataIndex dataIndex = item->dataIndex();
+            medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource( dataIndex.dataSourceId() );
+            QString attribute = item->attribute(index.column()).toString();
+            QString value     = item->value(index.column()).toString();
+            bool success = dbc->setMetaData( dataIndex, attribute, value );
+            if ( !success ) {
+                dtkDebug() << "Could not set data for index " << dataIndex.asString();
+            }
         }
+        */
+
+    //test GPR
+    bool result = false;
+
+    //first, we try to set metadata
+    medDataIndex dataIndex = item->dataIndex();
+    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource( dataIndex.dataSourceId() );
+    QString attribute = item->attribute(index.column()).toString();
+    //QString itemValue     = item->value(index.column()).toString();
+    bool success = dbc->setMetaData( dataIndex, attribute, value.toString() );
+    if ( !success )
+    {
+        dtkDebug() << "Could not set data for index " << dataIndex.asString();
+    }
+    else
+    {
+        //and if we succeed, we try to update item
+        result = item->setData(index.column(), value);
     }
 
     return result;
@@ -439,7 +508,7 @@ bool medDatabaseModel::removeRows(int position, int rows, const QModelIndex& par
 
 QStringList medDatabaseModel::mimeTypes(void) const
 {
-    return QAbstractItemModel::mimeTypes() << "text/uri-list";
+    return QAbstractItemModel::mimeTypes() << "med/index" << "med/DbItem";
 }
 
 Qt::DropActions medDatabaseModel::supportedDropActions(void) const
@@ -447,175 +516,331 @@ Qt::DropActions medDatabaseModel::supportedDropActions(void) const
     return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction;
 }
 
+QMimeData *medDatabaseModel::mimeData(const QModelIndexList &indexes) const
+{
+    d->draggedIndex = indexes[0];
+    medAbstractDatabaseItem *item = d->item(indexes[0]);
+    d->draggedItem = d->item(indexes[0]);
+
+    if(item)
+    {
+        medDataIndex dataIndex = item->dataIndex();
+        return dataIndex.createMimeData();
+    }
+    else return NULL;
+}
+
 bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
+    bool moveResult = false;
+
+    medAbstractDatabaseItem *destinationItem = d->item(parent);
+
+    medDataIndex destinationDataIndex = destinationItem->dataIndex();
+
     if (action == Qt::IgnoreAction)
         return true;
 
-    if (!data->hasFormat("text/uri-list"))
+    if (!data->hasFormat("med/index"))
         return false;
 
-    if (!data->hasUrls())
-        return false;
+    medDataIndex originDataIndex = medDataIndex::readMimeData(data);
 
-    if (column > 0)
-        return false;
+    if( originDataIndex.isValidForSeries() )
+    {
+        if ( destinationDataIndex.isValidForSeries() )
+        {
+            //move serie to parent study
+            moveResult = medDataManager::instance()->moveSerie(originDataIndex,destinationDataIndex);
+            destinationItem = destinationItem->parent();
+        }
+        else if( destinationDataIndex.isValidForStudy() )
+        {
+            moveResult = medDataManager::instance()->moveSerie(originDataIndex,destinationDataIndex);
+        }
+        else if ( destinationDataIndex.isValidForPatient() )
+        {
+            moveResult = false;
+        }
+    }
+    else if( originDataIndex.isValidForStudy() )
+    {
+        if ( destinationDataIndex.isValidForSeries() )
+        {
+            moveResult = false;
+        }
+        else if( destinationDataIndex.isValidForStudy())
+        {
+            //move study to parent patient
+            moveResult = medDataManager::instance()->moveStudy(originDataIndex,destinationDataIndex);
+            destinationItem = destinationItem->parent();
+        }
+        else if( destinationDataIndex.isValidForPatient() )
+        {
+            moveResult = medDataManager::instance()->moveStudy(originDataIndex,destinationDataIndex);
+        }
+    }
 
-    for (int i = 0; i < data->urls().size(); ++i)
-        medDatabaseController::instance()->import(data->urls().at(i).path());
+    if(moveResult)
+    {
+        emit layoutAboutToBeChanged();
+
+        // remove dragged item from its parent without deleting it
+        d->draggedItem->parent()->removeChildren(d->draggedIndex.row(),1,false);
+
+        // add dragged item to the chidren of its new parent
+        destinationItem->append(d->draggedItem);
+
+        // and set destination item as its new parent
+        d->draggedItem->setParent(destinationItem);
+
+        emit layoutChanged();
+    }
+
+    else
+    {
+        return false;
+    }
 
     return true;
-}
+
+        /*   if (action == Qt::IgnoreAction)
+               return true;
+
+           if (!data->hasFormat("text/uri-list"))
+               return false;
+
+           if (!data->hasUrls())
+               return false;
+
+           if (column > 0)
+               return false;
+
+           int beginRow;
+
+           if (row != -1)
+               beginRow = row;
+           else if (parent.isValid())
+               beginRow = parent.row();
+           else
+               beginRow = rowCount(QModelIndex());
+
+           int rows = 0;
+
+           for (int i = 0; i < data->urls().size(); ++i, ++rows)
+               medDatabaseController::instance()->import(data->urls().at(i).path());
+
+           return true;*/
+    }
 
 // /////////////////////////////////////////////////////////////////
 // Initialization
 // /////////////////////////////////////////////////////////////////
 
-void medDatabaseModel::repopulate(void)
-{
-    beginRemoveRows(QModelIndex(),0,rowCount());
-    if (rowCount() > 0)
-        this->removeRows(0, this->rowCount(QModelIndex()), QModelIndex());
-    endRemoveRows();
-
-    beginInsertRows(QModelIndex(),0,0);
-    populate(d->root);
-    endInsertRows();
-
-    reset();
-}
-
-//! Model population.
-/*!
- *  This method fills the model in with the data. The actual data is
- *  contained within an medDatabaseItem and the later is accessed from
- *  an index using the QModelIndex::internalPointer() method.
- *
- * \param root The root item of the model.
- */
-
-void medDatabaseModel::populate(medAbstractDatabaseItem *root)
-{
-    typedef QList<int> IntList;
-    typedef QList<medDataIndex> IndexList;
-    medDataManager * dataManager = medDataManager::instance();
-    IntList dataSources = dataManager->dataSourceIds();
+    void medDatabaseModel::repopulate(void)
     {
-        // Initial Rearrangement, so that non-Persistent data sources are at the end.
-        IntList npDataSources;
-        for (IntList::iterator dataSourceIt(dataSources.begin()); dataSourceIt!= dataSources.end(); ) {
-            medAbstractDbController * dbc = dataManager->controllerForDataSource(*dataSourceIt);
-            if ( !dbc ) {
-                dataSourceIt = dataSources.erase(dataSourceIt);
-            } else if ( dbc->isPersistent() ) {
-                ++dataSourceIt;
-            } else {
-                npDataSources.push_back(*dataSourceIt);
-                dataSourceIt = dataSources.erase(dataSourceIt);
-            }
-        }
-        dataSources << npDataSources;
+        beginRemoveRows(QModelIndex(),0,rowCount());
+        if (rowCount() > 0)
+            this->removeRows(0, this->rowCount(QModelIndex()), QModelIndex());
+        endRemoveRows();
+
+        beginInsertRows(QModelIndex(),0,0);
+        populate(d->root);
+        endInsertRows();
+
+        reset();
     }
 
-    foreach( const int dataSourceId, dataSources ) {
 
-        medAbstractDbController * dbc = dataManager->controllerForDataSource(dataSourceId);
-        
-        IndexList patientsForSource = dbc->patients();
 
-        // Iterate over patientIds for this data source
-        foreach( const medDataIndex& patient, patientsForSource ) {
-            QList<QVariant> ptData = d->ptDefaultData;
-            for (int i(0); i<d->DataCount; ++i) {
-                QVariant attribute = d->ptAttributes[i];
-                if ( !attribute.isNull() ) {
-                    QString value =  dbc->metaData(patient, attribute.toString() );
-                    if ( !value.isEmpty() )
-                        ptData[i] = value;
-                }
-            }
-            medAbstractDatabaseItem *ptItem = new medDatabaseItem(patient, d->ptAttributes, ptData, root);
+//! Model population.
+    /*!
+     *  This method fills the model in with the data. The actual data is
+     *  contained within an medDatabaseItem and the later is accessed from
+     *  an index using the QModelIndex::internalPointer() method.
+     *
+     * \param root The root item of the model.
+     */
 
-            IndexList studiesForSource = dbc->studies(patient);
-
-            // Iterate over studyIds for this patient
-            foreach( const medDataIndex& study, studiesForSource ) {
-
-                if (d->justBringStudies)
+    void medDatabaseModel::populate(medAbstractDatabaseItem *root)
+    {
+        typedef QList<int> IntList;
+        typedef QList<medDataIndex> IndexList;
+        medDataManager * dataManager = medDataManager::instance();
+        IntList dataSources = dataManager->dataSourceIds();
+        {
+            // Initial Rearrangement, so that non-Persistent data sources are at the end.
+            IntList npDataSources;
+            for (IntList::iterator dataSourceIt(dataSources.begin()); dataSourceIt!= dataSources.end(); )
+            {
+                medAbstractDbController * dbc = dataManager->controllerForDataSource(*dataSourceIt);
+                if ( !dbc )
                 {
-                      QList<QVariant> stData = d->stDefaultData;
-                      for (int i(0); i<d->DataCount; ++i) {
-                          QVariant attribute = d->stAttributes[i];
-                          if ( !attribute.isNull() ) {
-                              QString value =  dbc->metaData(study, attribute.toString() );
-                              if ( !value.isEmpty() )
-                                  stData[i] = value;
-                          }
-                      }
-                      medAbstractDatabaseItem *stItem = new medDatabaseItem(study, d->stAttributes, stData, ptItem);
-
-                      ptItem->append(stItem);
-
+                    dataSourceIt = dataSources.erase(dataSourceIt);
+                }
+                else if ( dbc->isPersistent() )
+                {
+                    ++dataSourceIt;
                 }
                 else
                 {
+                    npDataSources.push_back(*dataSourceIt);
+                    dataSourceIt = dataSources.erase(dataSourceIt);
+                }
+            }
+            dataSources << npDataSources;
+        }
+
+        foreach( const int dataSourceId, dataSources )
+        {
+
+            medAbstractDbController * dbc = dataManager->controllerForDataSource(dataSourceId);
+
+            IndexList patientsForSource = dbc->patients();
+
+            // Iterate over patientIds for this data source
+            foreach( const medDataIndex& patient, patientsForSource )
+            {
+                QList<QVariant> ptData = d->ptDefaultData;
+                for (int i(0); i<d->DataCount; ++i)
+                {
+                    QVariant attribute = d->ptAttributes[i];
+                    if ( !attribute.isNull() )
+                    {
+                        QString value =  dbc->metaData(patient, attribute.toString() );
+                        if ( !value.isEmpty() )
+                            ptData[i] = value;
+                    }
+                }
+                medAbstractDatabaseItem *ptItem = new medDatabaseItem(patient, d->ptAttributes, ptData, root);
+
+                IndexList studiesForSource = dbc->studies(patient);
+
+                /* Test GPR
+                // Iterate over studyIds for this patient
+                foreach( const medDataIndex& study, studiesForSource ) {
+
+                    if (d->justBringStudies)
+                    {
+                          QList<QVariant> stData = d->stDefaultData;
+                          for (int i(0); i<d->DataCount; ++i) {
+                              QVariant attribute = d->stAttributes[i];
+                              if ( !attribute.isNull() ) {
+                                  QString value =  dbc->metaData(study, attribute.toString() );
+                                  if ( !value.isEmpty() )
+                                      stData[i] = value;
+                              }
+                          }
+                          medAbstractDatabaseItem *stItem = new medDatabaseItem(study, d->stAttributes, stData, ptItem);
+
+                          ptItem->append(stItem);
+
+                    }
+                    else
+                    {
+                        IndexList seriesForSource = dbc->series(study);
+
+                            // Iterate over series for this study
+                            foreach( const medDataIndex& serie, seriesForSource ) {
+
+                                QList<QVariant> seData = d->seDefaultData;
+                                for (int i(0); i<d->DataCount; ++i) {
+                                    QVariant attribute = d->seAttributes[i];
+                                    if ( !attribute.isNull() ) {
+                                        QString value =  dbc->metaData(serie, attribute.toString() );
+                                        if ( !value.isEmpty() )
+                                            seData[i] = value;
+                                    }
+                                }
+                                medAbstractDatabaseItem *seItem = new medDatabaseItem(serie, d->seAttributes, seData, ptItem);
+
+                                ptItem->append(seItem);
+                            } // foreach series
+                    }
+
+                } // foreach study */
+
+                // Iterate over studyIds for this patient
+                foreach( const medDataIndex& study, studiesForSource )
+                {
+
+                    QList<QVariant> stData = d->stDefaultData;
+                    for (int i(0); i<d->DataCount; ++i)
+                    {
+                        QVariant attribute = d->stAttributes[i];
+                        if ( !attribute.isNull() )
+                        {
+                            QString value =  dbc->metaData(study, attribute.toString() );
+                            if ( !value.isEmpty() )
+                                stData[i] = value;
+                        }
+                    }
+                    medAbstractDatabaseItem *stItem = new medDatabaseItem(study, d->stAttributes, stData, ptItem);
+
+                    ptItem->append(stItem);
+
                     IndexList seriesForSource = dbc->series(study);
 
-                        // Iterate over series for this study
-                        foreach( const medDataIndex& serie, seriesForSource ) {
+                    // Iterate over series for this study
+                    foreach( const medDataIndex& serie, seriesForSource )
+                    {
 
-                            QList<QVariant> seData = d->seDefaultData;
-                            for (int i(0); i<d->DataCount; ++i) {
-                                QVariant attribute = d->seAttributes[i];
-                                if ( !attribute.isNull() ) {
-                                    QString value =  dbc->metaData(serie, attribute.toString() );
-                                    if ( !value.isEmpty() )
-                                        seData[i] = value;
-                                }
+                        QList<QVariant> seData = d->seDefaultData;
+                        for (int i(0); i<d->DataCount; ++i)
+                        {
+                            QVariant attribute = d->seAttributes[i];
+                            if ( !attribute.isNull() )
+                            {
+                                QString value =  dbc->metaData(serie, attribute.toString() );
+                                if ( !value.isEmpty() )
+                                    seData[i] = value;
                             }
-                            medAbstractDatabaseItem *seItem = new medDatabaseItem(serie, d->seAttributes, seData, ptItem);
+                        }
+                        medAbstractDatabaseItem *seItem = new medDatabaseItem(serie, d->seAttributes, seData, stItem);
 
-                            ptItem->append(seItem);
-                        } // foreach series
+                        stItem->append(seItem);
+                    } // foreach series
                 }
 
-            } // foreach study
-            // ptItem->append(stItem);
-            root->append(ptItem);
-        } // foreach patient
-    } // foreach dataSource
-}
-
-QStringList medDatabaseModel::columnNames() const
-{
-    if ( d->columnNames.isEmpty() ) {
-        QStringList ret;
-#if QT_VERSION > 0x0406FF
-        ret.reserve( d->DataCount );
-#endif
-        for (int i(0); i<d->DataCount; ++i)
-            ret.append(QString());
-
-        ret[0] = tr("Patient name");
-        ret[1] = tr("Study name");
-        ret[2] = tr("Series name");
-        ret[3] = tr("Slice Count");
-        ret[4] = tr("Age");
-        ret[5] = tr("Date of birth");
-        ret[6] = tr("Gender");
-        ret[7] = tr("Description");
-        ret[8] = tr("Modality");
-        ret[9] = tr("Protocol");
-        ret[10] = tr("Comments");
-        ret[11] = tr("Status");
-        ret[12] = tr("Date acquired");
-        ret[13] = tr("Date imported");
-        ret[14] = tr("Last opened");
-        ret[15] = tr("Referee");
-        ret[16] = tr("Performer");
-        ret[17] = tr("Institution");
-        ret[18] = tr("Report");
-        d->columnNames = ret;
+                // ptItem->append(stItem);
+                root->append(ptItem);
+            } // foreach patient
+        } // foreach dataSource
     }
-    return d->columnNames;
-}
+
+
+    QStringList medDatabaseModel::columnNames() const
+    {
+        if ( d->columnNames.isEmpty() )
+        {
+            QStringList ret;
+#if QT_VERSION > 0x0406FF
+            ret.reserve( d->DataCount );
+#endif
+            for (int i(0); i<d->DataCount; ++i)
+                ret.append(QString());
+
+            ret[0] = tr("Patient name");
+            ret[1] = tr("Study name");
+            ret[2] = tr("Series name");
+            ret[3] = tr("Slice Count");
+            ret[4] = tr("Age");
+            ret[5] = tr("Date of birth");
+            ret[6] = tr("Gender");
+            ret[7] = tr("Description");
+            ret[8] = tr("Modality");
+            ret[9] = tr("Protocol");
+            ret[10] = tr("Comments");
+            ret[11] = tr("Status");
+            ret[12] = tr("Date acquired");
+            ret[13] = tr("Date imported");
+            ret[14] = tr("Last opened");
+            ret[15] = tr("Referee");
+            ret[16] = tr("Performer");
+            ret[17] = tr("Institution");
+            ret[18] = tr("Report");
+            d->columnNames = ret;
+        }
+        return d->columnNames;
+    }
+

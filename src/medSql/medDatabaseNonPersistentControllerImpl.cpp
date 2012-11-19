@@ -12,6 +12,7 @@
 =========================================================================*/
 
 #include "medDatabaseNonPersistentItem.h"
+#include "medDatabaseNonPersistentItem_p.h"
 #include "medDatabaseNonPersistentControllerImpl.h"
 #include "medDatabaseNonPersistentReader.h"
 #include "medDatabaseNonPersistentImporter.h"
@@ -19,6 +20,9 @@
 #include <medDataIndex.h>
 #include <medMessageController.h>
 #include <medJobManager.h>
+
+#include "medAttachedData.h"
+#include <medMetaDataKeys.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -265,7 +269,7 @@ QImage medDatabaseNonPersistentControllerImpl::thumbnail( const medDataIndex &in
             }
         }
     }
-    if ( item ) {
+    if ( item && item->data()) {
         return item->data()->thumbnail();
     }
     else
@@ -295,6 +299,76 @@ QList<medDataIndex> medDatabaseNonPersistentControllerImpl::patients() const
     }
     return ret;
 }
+
+void medDatabaseNonPersistentControllerImpl::createNewPatient(void)
+{
+    medDataIndex index;
+    QString patientName = "new patient";
+    QString studyName = "new study";
+
+    int patientDbId = this->patientId ( true );
+    int studyDbId = this->studyId ( true );
+    int serieDbId = this->seriesId ( true );
+
+    index = medDataIndex ( this->dataSourceId(), patientDbId, studyDbId, serieDbId, -1 );
+
+    medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
+
+    item->d->birthdate  = "";
+    item->d->patientId  = QString::number(patientDbId);
+    item->d->studyName  = studyName;
+    item->d->studyId    = QString::number(studyDbId);
+    item->d->studyUid    = "";
+    item->d->seriesName = "";
+    item->d->seriesId   = QString::number(serieDbId);
+    item->d->seriesUid   = "";
+    item->d->file       = "";
+    //item->d->thumb      = data->thumbnail();
+    item->d->index      = index;
+
+    medAttachedData *  dtkData = new medAttachedData;
+
+    dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
+    dtkData->addMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << "0" );
+    dtkData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
+    dtkData->addMetaData ( medMetaDataKeys::SeriesDescription.key(), QStringList() << "seriesDescription" );
+    dtkData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
+    dtkData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
+
+    QString generatedSeriesId = QUuid::createUuid().toString().replace("{","").replace("}","");
+
+    dtkData->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesId);
+    dtkData->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Orientation.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::SeriesNumber.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::SequenceName.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::SliceThickness.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Rows.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Columns.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Age.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Gender.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Description.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Modality.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Protocol.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Comments.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Status.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::AcquisitionDate.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::ImportationDate.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Referee.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Performer.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Institution.key(), QStringList() << "" );
+    dtkData->addMetaData ( medMetaDataKeys::Report.key(), QStringList() << "" );
+
+    item->d->data       = dtkData;
+
+    this->insert ( index, item );
+
+    QString uuid = QUuid::createUuid().toString();
+    emit updated(index, uuid);
+}
+
+
 
 QList<medDataIndex> medDatabaseNonPersistentControllerImpl::studies( const medDataIndex& index ) const
 {
@@ -435,4 +509,16 @@ bool medDatabaseNonPersistentControllerImpl::isPersistent( ) const
     return false;
 }
 
+
+bool medDatabaseNonPersistentControllerImpl::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
+{
+    //TODO GPR: reprendre
+    return false;
+}
+
+bool medDatabaseNonPersistentControllerImpl::moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy)
+{
+    //TODO GPR: reprendre
+    return false;
+}
 

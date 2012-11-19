@@ -667,6 +667,44 @@ void medDatabaseControllerImpl::remove( const medDataIndex& index )
     QThreadPool::globalInstance()->start(remover);
 }
 
+
+bool medDatabaseControllerImpl::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
+{
+    QSqlDatabase & db (*(this->database()));
+    QSqlQuery query(db);
+
+    bool result = false;
+
+    if(indexStudy.isValidForStudy() && toPatient.isValidForPatient())
+    {
+        query.prepare("UPDATE study SET patient=:patientId  WHERE id=:studyId");
+        query.bindValue(":patientId", toPatient.patientId());
+        query.bindValue(":studyId", indexStudy.studyId());
+
+        result = EXEC_QUERY(query);
+    }
+
+    return result;
+}
+
+bool medDatabaseControllerImpl::moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy)
+{
+    QSqlDatabase & db (*(this->database()));
+    QSqlQuery query(db);
+
+    bool result = false;
+
+    if(indexSerie.isValidForSeries() && toStudy.isValidForStudy())
+    {
+        query.prepare("UPDATE series SET study=:studyId  WHERE id=:serieId");
+        query.bindValue(":studyId", toStudy.studyId());
+        query.bindValue(":serieId", indexSerie.seriesId());
+
+        result = EXEC_QUERY(query);
+    }
+    return result;
+}
+
 QString medDatabaseControllerImpl::metaData(const medDataIndex& index,const QString& key) const
 {
     typedef medDatabaseControllerImplPrivate::MetaDataMap MetaDataMap;
@@ -784,6 +822,12 @@ QList<medDataIndex> medDatabaseControllerImpl::patients() const
         ret.push_back( medDataIndex::makePatientIndex(this->dataSourceId(), query.value(0).toInt()));
     }
     return ret;
+}
+
+
+void medDatabaseControllerImpl::createNewPatient(void)
+{
+    return;
 }
 
 QList<medDataIndex> medDatabaseControllerImpl::studies( const medDataIndex& index ) const

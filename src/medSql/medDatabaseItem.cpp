@@ -51,6 +51,11 @@ medAbstractDatabaseItem *medDatabaseItem::parent(void)
     return d->parentItem;
 }
 
+void medDatabaseItem::setParent(medAbstractDatabaseItem *parent)
+{
+    d->parentItem = static_cast<medDatabaseItem*>(parent);
+}
+
 void medDatabaseItem::append(medAbstractDatabaseItem *item)
 {
     d->childItems.append(static_cast<medDatabaseItem*>(item));
@@ -119,13 +124,20 @@ bool medDatabaseItem::insertColumns(int position, int columns)
     return true;
 }
 
-bool medDatabaseItem::removeChildren(int position, int count)
+bool medDatabaseItem::removeChildren(int position, int count,  bool deleteChildren)
 {
     if (position < 0 || position + count > d->childItems.size())
         return false;
 
     for (int row = 0 ; row < count ; ++row)
-        delete d->childItems.takeAt(position);
+    {
+        if (deleteChildren)
+          delete d->childItems.takeAt(position);
+        else
+        {
+            d->childItems.removeAt(position);
+        }
+    }
 
     return true;
 }

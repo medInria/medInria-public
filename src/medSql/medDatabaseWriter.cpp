@@ -361,22 +361,29 @@ void medDatabaseWriter::run()
         }
     }
 
-    if ( !writeSuccess )
+    //test GPR
+    /*if ( !writeSuccess )
     {
         emit failure ( this );
         return;
-    }
+    }*/
+    QStringList filePaths;
+    QString     seriesPath = "";
+    QString thumbPath = "";
+    QStringList thumbPaths;
 
+    if ( writeSuccess )
+    {
 
-    QStringList filePaths  = d->data->metaDataValues ( medMetaDataKeys::FilePaths.key() );
-    QString     seriesPath = d->data->metaDataValues ( "FileName" ) [0];
+    /*QStringList*/ filePaths  = d->data->metaDataValues ( medMetaDataKeys::FilePaths.key() );
+    /*QString */    seriesPath = d->data->metaDataValues ( "FileName" ) [0];
 
     // generate and save the thumbnails
     QList<QImage> &thumbnails = d->data->thumbnails();
 
     QFileInfo   seriesInfo ( seriesPath );
     QString     thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.completeBaseName() + "/";
-    QStringList thumbPaths;
+    /*QStringList thumbPaths;*/
 
     if ( thumbnails.count() )
         if ( !medStorage::mkpath ( medStorage::dataLocation() + thumb_dir ) )
@@ -390,9 +397,10 @@ void medDatabaseWriter::run()
     }
 
     QImage  thumbnail = d->data->thumbnail(); // representative thumbnail for PATIENT/STUDY/SERIES
-    QString thumbPath = thumb_dir + "ref.jpg";
+    /*QString*/ thumbPath = thumb_dir + "ref.jpg";
     thumbnail.save ( medStorage::dataLocation() + thumbPath, "JPG" );
 
+    }
 
     // Now, populate the database
     medDataIndex index ( medDatabaseController::instance()->dataSourceId(), medDataIndex::NOT_VALID,
