@@ -63,10 +63,13 @@ public:
 
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex& parent);
 
+    QMimeData *mimeData(const QModelIndexList &indexes) const;
     /**
      * return a list of strings that represents the currently shown columns
      */
     QStringList columnNames() const;
+
+    bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
 
 protected slots:
     void repopulate();

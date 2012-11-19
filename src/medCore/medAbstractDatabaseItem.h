@@ -27,6 +27,8 @@ public:
     virtual medAbstractDatabaseItem *child(int row) = 0;
     virtual medAbstractDatabaseItem *parent() = 0;
 
+    virtual void setParent(medAbstractDatabaseItem *parent) = 0;
+
     virtual void append(medAbstractDatabaseItem *child) = 0;
 
     virtual int row() const = 0;
@@ -39,7 +41,8 @@ public:
     virtual bool insertChildren(const medDataIndex& index, int position, int count, int columns)= 0;
     virtual bool insertColumns(int position, int columns)= 0;
 
-    virtual bool removeChildren(int position, int count) = 0;
+    virtual bool removeChildren(int position, int count, bool deleteChildren = true) = 0;
+
     virtual bool removeColumns(int position, int columns) = 0;
 
     virtual bool setData(int column, const QVariant& value) = 0;

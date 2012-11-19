@@ -57,7 +57,7 @@ public:
     bool Match(dtkAbstractData *);
 
 private:
-    friend class medDatabaseNonPersitentController;
+    friend class medDatabaseNonPersistentControllerImpl;
     friend class medDatabaseNonPersistentReader;
     friend class medDatabaseNonPersistentImporter;
 

@@ -32,6 +32,8 @@ public:
     medAbstractDatabaseItem *child(int row);
     medAbstractDatabaseItem *parent();
 
+    void setParent(medAbstractDatabaseItem *parent);
+
     void append(medAbstractDatabaseItem *child);
 
     int row() const;
@@ -44,7 +46,7 @@ public:
     bool insertChildren(const medDataIndex& index, int position, int count, int columns);
     bool insertColumns(int position, int columns);
 
-    bool removeChildren(int position, int count);
+    bool removeChildren(int position, int count,  bool deleteChildren = true);
     bool removeColumns(int position, int columns);
 
     bool setData(int column, const QVariant& value);

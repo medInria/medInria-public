@@ -71,6 +71,12 @@ public slots:
     /** Called after having failed to open a file. Will add a visual indicator of the failed file. */
     void onOpeningFailed(const medDataIndex& index);
 
+    /** Creates a new patient */
+    void onCreatePatientRequested(void);
+
+    /** Edits selected item */
+    void onEditRequested(void);
+
 protected slots:
     virtual void updateContextMenu(const QPoint&);
     virtual void onItemDoubleClicked(const QModelIndex& index);

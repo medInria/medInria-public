@@ -15,6 +15,10 @@
 #include <medDataManager.h>
 #include <medAbstractDatabaseItem.h>
 #include <medAbstractDbController.h>
+#include <medDatabaseEditItemDialog.h>
+
+#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medTest/medQtDataImage.h>
 
 #include <QSortFilterProxyModel>
 #include <QAbstractItemModel>
@@ -78,11 +82,17 @@ public:
     QAction *exportAction;
     QAction *saveAction;
     QAction *removeAction;
+    QAction *addPatientAction;
+    QAction *editAction;
     QMenu *contextMenu;
 };
 
 medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new medDatabaseViewPrivate)
 {
+    //test GPR
+    this->setDragEnabled(true);
+    this->setDropIndicatorShown(true);
+
     this->setAcceptDrops(true);
     this->setFrameStyle(QFrame::NoFrame);
     this->setAttribute(Qt::WA_MacShowFocusRect, false);
@@ -94,6 +104,9 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new med
     this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->header()->setStretchLastSection(true);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    this->setEditTriggers(QAbstractItemView:: SelectedClicked);
+
     connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
 
@@ -122,6 +135,17 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new med
     d->removeAction->setIconVisibleInMenu(true);
     d->removeAction->setIcon(QIcon(":icons/cross.svg"));
     connect(d->removeAction, SIGNAL(triggered()), this, SLOT(onRemoveSelectedItemRequested()));
+
+    d->addPatientAction = new QAction(tr("Create Patient"), this);
+    d->addPatientAction->setIconVisibleInMenu(true);
+    d->addPatientAction->setIcon(QIcon(":icons/cross.svg"));
+    connect(d->addPatientAction, SIGNAL(triggered()), this, SLOT(onCreatePatientRequested()));
+
+    d->editAction = new QAction(tr("Edit..."), this);
+    d->editAction->setIconVisibleInMenu(true);
+    d->editAction->setIcon(QIcon(":icons/cross.svg"));
+    connect(d->editAction, SIGNAL(triggered()), this, SLOT(onEditRequested()));
+
 }
 
 medDatabaseView::~medDatabaseView(void)
@@ -181,6 +205,8 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
             d->contextMenu->addAction(d->viewAction);
             d->contextMenu->addAction(d->exportAction);
             d->contextMenu->addAction(d->removeAction);
+            d->contextMenu->addAction(d->addPatientAction);
+            d->contextMenu->addAction(d->editAction);
             if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
                 d->contextMenu->addAction(d->saveAction);
             d->contextMenu->exec(mapToGlobal(point));
@@ -188,6 +214,7 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
         else if (item->dataIndex().isValidForPatient())
         {
             d->contextMenu->addAction(d->removeAction);
+            d->contextMenu->addAction(d->editAction);
             if( !(medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId())->isPersistent()) )
                 d->contextMenu->addAction(d->saveAction);
             d->contextMenu->exec(mapToGlobal(point));
@@ -271,7 +298,8 @@ void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const Q
 
     if (item->dataIndex().isValidForSeries())
     {
-        this->collapseAll();
+        //test GPR
+        //this->collapseAll();
         this->setExpanded(index.parent().parent(), true);
         this->setExpanded(index.parent(), true);
         this->setExpanded(index, true);
@@ -279,10 +307,14 @@ void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const Q
     }
     else if (item->dataIndex().isValidForPatient())
     {
-        this->collapseAll();
+        //test GPR
+        //this->collapseAll();
         this->setExpanded(index, true);
         emit patientClicked(item->dataIndex());
     }
+
+    //test GPR
+    //this->expandAll();
 }
 
 void medDatabaseView::onRemoveSelectedItemRequested( void )
@@ -334,6 +366,44 @@ void medDatabaseView::onSaveSelectedItemRequested(void)
             qDebug() << "DEBUG : onMenuSaveClicked() after storeNonPersistentSingleDataToDatabase";
             qDebug() << "DEBUG : index" << index;
         }
+}
+
+void medDatabaseView::onCreatePatientRequested(void)
+{
+   medDataManager::instance()->createNewNonPersistantPatient();
+}
+
+void medDatabaseView::onEditRequested(void)
+{
+    QModelIndexList indexes = this->selectedIndexes();
+    if(!indexes.count())
+        return;
+
+    QModelIndex index = indexes.at(0);
+
+    medAbstractDatabaseItem *item = NULL;
+
+    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+
+    if(item)
+    {
+        medDatabaseEditItemDialog editDialog(item, this);
+        int res =  editDialog.exec();
+
+        if(res == QDialog::Accepted)
+        {
+            for(int i=0; i<item->columnCount(); i++)
+            {
+                QVariant data = item->data(i);
+                QModelIndex tmpIndex = index.parent().child(index.row(), i);
+                this->model()->setData(tmpIndex, data, Qt::EditRole);
+            }
+        }
+        this->update();
+        this->repaint();
+    }
+
 }
 
 void medDatabaseView::onOpeningFailed(const medDataIndex& index)
