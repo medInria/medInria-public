@@ -24,8 +24,8 @@ project(medInria)
 
 set(${PROJECT_NAME}_VERSION_MAJOR 2 CACHE STRING "medInria major version number." FORCE)
 set(${PROJECT_NAME}_VERSION_MINOR 0 CACHE STRING "medInria minor version number." FORCE)
-set(${PROJECT_NAME}_VERSION_BUILD 1 CACHE STRING "medInria build version number." FORCE)
-set(${PROJECT_NAME}_VERSION_BUGFIX 1 CACHE STRING "medInria bug-fix version number." FORCE)
+set(${PROJECT_NAME}_VERSION_BUILD 2 CACHE STRING "medInria build version number." FORCE)
+set(${PROJECT_NAME}_VERSION_BUGFIX 0 CACHE STRING "medInria bug-fix version number." FORCE)
 
 if (${${PROJECT_NAME}_VERSION_BUGFIX} GREATER 0)
   set(${PROJECT_NAME}_VERSION
