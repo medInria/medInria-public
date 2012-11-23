@@ -7,7 +7,7 @@ mkdir -p @CMAKE_INSTALL_PREFIX@/PackageRootDir/Applications/medInria.app/Content
 
 cd @CMAKE_INSTALL_PREFIX@/PackageRootDir/Applications/medInria.app/Contents
 
-for i in $( otool -L @CMAKE_INSTALL_PREFIX@/plugins/*.dylib 2> /dev/null \
+for i in $( otool -L @CMAKE_BINARY_DIR@/plugins/*.dylib 2> /dev/null \
 | sort -u | grep -i -E '@medInria_DIR@|@dtk_DIR@|ttk|itk|vtk' | cut -d " " -f 1 ); do
 	cp -np $i Frameworks/ 2> /dev/null;
 done
@@ -19,7 +19,7 @@ done
 
 # copy plugins in PlugIns directory
 
-for i in @CMAKE_INSTALL_PREFIX@/plugins/*.dylib; do
+for i in @CMAKE_BINARY_DIR@/plugins/*.dylib; do
 	cp -p $i PlugIns
 done
 
