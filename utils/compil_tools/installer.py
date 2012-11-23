@@ -190,8 +190,11 @@ def configure_project(project,config,architecture='linux'):
         if (architecture == "win"):
             src_dir=config.get(project,"cyg_drive")+src_dir
         #shutil.rmtree(build_dir,True)
-        print("making dir %s",build_dir )
-        os.makedirs(build_dir)
+        
+        if not os.path.exists(os.path.abspath('build')):
+            print("making dir %s",build_dir )
+            os.makedirs(build_dir)
+
         os.chdir(build_dir)
 
         command= shlex.split(cmake_command)
