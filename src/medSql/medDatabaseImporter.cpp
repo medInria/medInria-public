@@ -198,12 +198,14 @@ void medDatabaseImporter::run ( void )
         // 2.3) a) Determine future file name and path based on patient/study/series/image
         // i.e.: where we will write the imported image
         QString imageFileName = determineFutureImageFileName ( dtkData, volumeUniqueIdToVolumeNumber[volumeId] );
-
-        if ( (medStorage::dataLocation() + "/" + imageFileName).length() > 255 )
-        {
-            emit showError ( this, tr ( "Your database path is too long" ), 5000 );
-            emit failure ( this );
-        }
+        #ifdef Q_OS_WIN32
+	        if ( (medStorage::dataLocation() + "/" + imageFileName).length() > 255 )
+	        {
+	            emit showError ( this, tr ( "Your database path is too long" ), 5000 );
+                emit failure ( this );
+                return;
+	        }
+	    #endif
         // 2.3) b) Find the proper extension according to the type of the data
         // i.e.: in which format we will write the file in our database
         QString futureExtension  = determineFutureImageExtensionByDataType ( dtkData );
