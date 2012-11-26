@@ -206,8 +206,8 @@ double medAbstractView::zoom(void) const
 
 void medAbstractView::setPan (const QVector2D &pan)
 {
-    //if ( d->pan == pan )
-    //    return;
+    if ( d->pan == pan )
+        return;
 
     d->pan = pan;
     this->onPanChanged (pan);
