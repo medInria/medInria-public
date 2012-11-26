@@ -177,14 +177,10 @@ public slots:
     void onWindowingLinkedPropertySet       (const QString &value);
 
 public slots:
-    void onMousePressEvent                  (QMouseEvent *event);
     void onZSliderValueChanged              (int value);
     void onMetaDataSet         (const QString &key, const QString &value);
 
 public slots: // Menu interface
-    void onMenuAxialTriggered               (void);
-    void onMenuSagittalTriggered            (void);
-    void onMenuCoronalTriggered             (void);
     void onMenu3DVRTriggered                (void);
     void onMenu3DMaxIPTriggered             (void);
     void onMenu3DMinIPTriggered             (void);
@@ -197,7 +193,6 @@ public slots: // Menu interface
     void onMenu3DLODTriggered               (void);
     void onMenuZoomTriggered                (void);
     void onMenuWindowLevelTriggered         (void);
-    void onMenu3DTriggered                (void);
 public:
     void  enableInteraction(void);
     void disableInteraction(void);

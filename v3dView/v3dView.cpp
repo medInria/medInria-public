@@ -285,7 +285,6 @@ public:
     QPushButton *closeButton;
     QPushButton *fullScreenButton;
     QVTKWidget *vtkWidget;
-    QMenu      *menu;
     QString orientation;
 
     dtkAbstractData *data;
@@ -375,7 +374,6 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     d->view2d->SetBackground ( 0.0, 0.0, 0.0 );
     d->view2d->SetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeZoom );
     d->view2d->SetMiddleButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypePan );
-    d->view2d->SetRightButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeNull );
     d->view2d->SetViewOrientation ( vtkImageView2D::VIEW_ORIENTATION_AXIAL );
     d->view2d->CursorFollowMouseOff();
     d->view2d->ShowImageAxisOff();
@@ -404,10 +402,6 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     d->view3d->ShadeOn();
 
     d->currentView = d->view2d;
-
-    vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
-    d->view3d->SetInteractorStyle ( interactorStyle );
-    interactorStyle->Delete();
 
     QMainWindow * mainWindow = dynamic_cast< QMainWindow * >(
         qApp->property( "MainWindow" ).value< QObject * >() );
@@ -563,21 +557,6 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     d->view2d->GetInteractorStyle()->AddObserver ( vtkImageView2DCommand::CameraPanEvent, d->observer, 0 );
     d->view3d->GetInteractorStyle()->AddObserver ( vtkCommand::InteractionEvent, d->observer, 0 );
 
-
-    // 2D mode
-    QAction *axialAct = new QAction ( tr ( "Axial" ), d->vtkWidget );
-    connect ( axialAct, SIGNAL ( triggered() ), this, SLOT ( onMenuAxialTriggered() ) );
-
-    QAction *coronalAct = new QAction ( tr ( "Coronal" ), d->vtkWidget );
-    connect ( coronalAct, SIGNAL ( triggered() ), this, SLOT ( onMenuCoronalTriggered() ) );
-
-    QAction *sagittalAct = new QAction ( tr ( "Sagittal" ), d->vtkWidget );
-    connect ( sagittalAct, SIGNAL ( triggered() ), this, SLOT ( onMenuSagittalTriggered() ) );
-
-    // 3D mode
-    QAction *ThreeDAct = new QAction ( tr ( "3D" ), d->vtkWidget );
-    connect ( ThreeDAct, SIGNAL ( triggered() ), this, SLOT ( onMenu3DTriggered() ) );
-
     // 3D mode
     QAction *vrAct = new QAction ( tr ( "VR" ), d->vtkWidget );
 
@@ -623,38 +602,6 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     QAction *wlAct = new QAction ( tr ( "Window / Level" ), d->vtkWidget );
     connect ( wlAct, SIGNAL ( triggered() ), this, SLOT ( onMenuWindowLevelTriggered() ) );
 
-
-    /*QActionGroup *group = new QActionGroup(d->vtkWidget);
-    group->addAction(zoomAct);
-    group->addAction(wlAct);
-    wlAct->setChecked(true);*/
-
-    d->menu = new QMenu ( d->vtkWidget );
-    d->menu->addAction ( axialAct );
-    d->menu->addAction ( coronalAct );
-    d->menu->addAction ( sagittalAct );
-    d->menu->addAction ( ThreeDAct );
-
-    /* QMenu *tridMenu = d->menu->addMenu (tr ("3D"));
-
-     tridMenu->addAction (vrAct);
-     tridMenu->addAction (maxipAct);
-     tridMenu->addAction (minipAct);
-     tridMenu->addAction (mprAct);
-     tridMenu->addAction (offAct);
-
-     QMenu *vrMenu = d->menu->addMenu (tr ("Renderer"));
-     vrMenu->addAction (gpuAct);
-     vrMenu->addAction (rntAct);
-     vrMenu->addAction (rayAct);
-     vrMenu->addAction (defAct);
-
-     d->menu->addAction(lodAct);
-
-     d->menu->addSeparator();
-     d->menu->addAction(zoomAct);
-     d->menu->addAction(wlAct);*/
-
     // set property to actually available presets
     QStringList lut = this->getAvailableTransferFunctionPresets();
     this->addProperty ( "LookupTable",           lut );
@@ -698,7 +645,6 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     }
     this->setColor ( d->presetColors.at ( colorIndex ) );
 
-    connect ( d->vtkWidget,    SIGNAL ( mouseEvent ( QMouseEvent* ) ),     this, SLOT ( onMousePressEvent ( QMouseEvent* ) ) );
     connect ( d->slider,       SIGNAL ( valueChanged ( int ) ),            this, SLOT ( onZSliderValueChanged ( int ) ) );
 
     connect ( d->widget, SIGNAL ( destroyed() ), this, SLOT ( widgetDestroyed() ) );
@@ -1056,12 +1002,15 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
                 switch ( d->view2d->GetViewOrientation() )
                 {
                 case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
+					this->setProperty("Orientation","Sagittal");
                     d->orientation = "Sagittal";
                     break;
                 case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
+					this->setProperty("Orientation","Coronal");
                     d->orientation = "Coronal";
                     break;
                 case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
+					this->setProperty("Orientation","Axial");
                     d->orientation = "Axial";
                     break;
                 }
@@ -1433,12 +1382,11 @@ void v3dView::onShowAnnotationsPropertySet ( const QString &value )
 
 void v3dView::onMouseInteractionPropertySet ( const QString &value )
 {
-    d->collection->SyncSetMiddleButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeSlice );
+    d->collection->SyncSetMiddleButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypePan );
 
     if ( value == "Zooming" )
     {
         d->collection->SyncSetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeZoom );
-        d->collection->SyncSetMiddleButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypePan );
     }
 
     if ( value == "Windowing" )
@@ -1659,13 +1607,6 @@ void v3dView::onCroppingPropertySet ( const QString &value )
     }
 }
 
-void v3dView::onMousePressEvent ( QMouseEvent *event )
-{
-    if ( event->button() == Qt::RightButton )
-    {
-        d->menu->popup ( event->globalPos() );
-    }
-}
 
 void v3dView::onZSliderValueChanged ( int value )
 {
@@ -1736,48 +1677,6 @@ void v3dView::onMetaDataSet ( const QString &key, const QString &value )
 
     // if (key == "LOD")
     //     d->view3d->SetVRQuality((float)(value.toInt())/100.0);
-}
-
-void v3dView::onMenuAxialTriggered ( void )
-{
-    if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 0 );
-
-    this->setProperty ( "Orientation", "Axial" );
-    d->view2d->Render();
-    emit TwoDTriggered ( this );
-}
-
-
-void v3dView::onMenuCoronalTriggered ( void )
-{
-    if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 0 );
-
-    this->setProperty ( "Orientation", "Coronal" );
-    d->view2d->Render();
-    emit TwoDTriggered ( this );
-}
-
-
-void v3dView::onMenuSagittalTriggered ( void )
-{
-    if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 0 );
-
-    this->setProperty ( "Orientation", "Sagittal" );
-    d->view2d->Render();
-
-    emit TwoDTriggered ( this );
-
-}
-
-void v3dView::onMenu3DTriggered ( void )
-{
-    this->setProperty ( "3DMode", this->property ( "3DMode" ) );
-    this->setProperty ( "Orientation", "3D" );
-    d->view3d->Render();
-    emit ThreeDTriggered ( this );
 }
 
 void v3dView::onMenu3DVRTriggered ( void )
