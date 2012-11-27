@@ -52,7 +52,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLookupTableManager: public vtkObject
     LUT_BLACKBODY,
     LUT_CARDIAC,
     LUT_GRAYRAINBOW,
-    LUT_STERN
+    LUT_STERN,
+    LUT_JET
   };
   //ETX
 
@@ -104,6 +105,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLookupTableManager: public vtkObject
   static vtkLookupTable* GetVRRedVesselsLookupTable (void);
   
   static vtkLookupTable* GetBlackBodyLookupTable (void);
+  
+  static vtkLookupTable* GetJetLookupTable (void);
   
   //BTX
   static std::vector<std::string> GetAvailableLookupTables(void);
