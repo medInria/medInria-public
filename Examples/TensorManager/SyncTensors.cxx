@@ -51,6 +51,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkMetaDataSetSequence.h>
 #include <vtkMultiThreader.h>
 #include <vtkProp3DCollection.h>
+#include <vtkLookupTableManager.h>
 
 #include <vtkWindowToImageFilter.h>
 
@@ -447,6 +448,9 @@ int main (int argc, char* argv[])
   }
   
   tensormanager->SetInput (mytensors);
+  // tensormanager->SetLookupTable (vtkLookupTableManager::GetJetLookupTable());
+  
+  // tensormanager->SetColorModeToVolume();
   
   view3d->GetRenderer()->AddViewProp (tensormanager->GetActor());
   view3d->GetRenderer()->Modified();
