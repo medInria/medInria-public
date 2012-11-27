@@ -316,8 +316,9 @@ int main (int argc, char* argv[])
     {
       vtkProperty* prop = vtkProperty::SafeDownCast( metadataset->GetProperty() );
       prop->SetColor (0.5,0.5,0.5);
+      prop->SetLineWidth (2);
       if (vtkPointSet::SafeDownCast (metadataset->GetDataSet())->GetNumberOfPoints() > 10000)
-	prop->SetOpacity (0.7);
+	prop->SetOpacity (0.9);
       pool->SyncAddDataSet( vtkPointSet::SafeDownCast (metadataset->GetDataSet()), prop);
       metadataset->AddActor (vtkActor::SafeDownCast (view3d->FindDataSetActor (metadataset->GetDataSet())));
       
