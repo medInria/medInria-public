@@ -49,6 +49,7 @@
 #include <medDatabaseItem.h>
 
 #include <medViewerWorkspace.h>
+#include <medToolBoxFactory.h>
 #include <medViewerWorkspaceFactory.h>
 #include <medSettingsWidgetFactory.h>
 #include <medSystemSettingsWidget.h>
@@ -460,6 +461,15 @@ void medMainWindow::updateQuickAccessMenu ( void )
         button->setIdentifier(id);
         workspaceButtonsLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowWorkspace ( QString ) ) );
+        medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
+        if ((detail->name=="Registration" && tbFactory->toolBoxesFromCategory("registration").size()==0) || 
+            (detail->name=="Filtering" && tbFactory->toolBoxesFromCategory("filtering").size()==0) ||
+            (detail->name=="Segmentation" && tbFactory->toolBoxesFromCategory("segmentation").size()==0) ||
+            (detail->name=="Diffusion" && tbFactory->toolBoxesFromCategory("diffusion").size()==0))
+        {
+            button->setDisabled(true);
+            button->setToolTip("No useful plugin has been found for this workspace.");
+        }
     }
     workspaceButtonsLayout->addStretch();
     d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() - 30 ) );
