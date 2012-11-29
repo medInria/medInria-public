@@ -15,6 +15,10 @@
 
 # The bundle medInria.app will contain all plugins and will be standalone, packaged into MedINRIA.dmg in the install dir
 
+cd @PROJECT_BINARY_DIR@
+\rm -fr @CMAKE_INSTALL_PREFIX@
+make install
+
 cd @CMAKE_INSTALL_PREFIX@/bin/
 @QT_BINARY_DIR@/macdeployqt medInria.app
 
@@ -50,4 +54,18 @@ done
 \rm -fr PlugIns/{accessible,bearer,codecs,graphicssystems}
 
 #Run fancy packaging apple script
-osascript @PROJECT_BINARY_DIR@/ScriptGenerateMedInriaFancyDMG.scpt
+#osascript @PROJECT_BINARY_DIR@/ScriptGenerateMedInriaFancyDMG.scpt
+
+\cp -f @CMAKE_SOURCE_DIR@/utils/osx_packaging/BaseMedinriaPackage.sparseimage.gz @CMAKE_INSTALL_PREFIX@/MedinriaPackage.sparseimage.gz
+cd @CMAKE_INSTALL_PREFIX@
+gunzip -f MedinriaPackage.sparseimage.gz
+
+devName=`hdiutil attach -readwrite -noverify -noautoopen MedinriaPackage.sparseimage | egrep '^/dev/' | sed 1q | awk '{print $1}'`
+diskutil rename "medInria base" "medInria @medInria_VERSION@"
+\cp -rf bin/medInria.app /Volumes/"medInria @medInria_VERSION@"/
+
+sync
+sync
+hdiutil detach ${devName}
+hdiutil convert MedinriaPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "medInria-@medInria_VERSION@.dmg"
+\rm -f MedinriaPackage.sparseimage
