@@ -462,10 +462,7 @@ void medMainWindow::updateQuickAccessMenu ( void )
         workspaceButtonsLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowWorkspace ( QString ) ) );
         medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-        if ((detail->name=="Registration" && tbFactory->toolBoxesFromCategory("registration").size()==0) || 
-            (detail->name=="Filtering" && tbFactory->toolBoxesFromCategory("filtering").size()==0) ||
-            (detail->name=="Segmentation" && tbFactory->toolBoxesFromCategory("segmentation").size()==0) ||
-            (detail->name=="Diffusion" && tbFactory->toolBoxesFromCategory("diffusion").size()==0))
+        if (!(detail->name=="Visualization") && tbFactory->toolBoxesFromCategory(detail->name.toLower()).size()==0)
         {
             button->setDisabled(true);
             button->setToolTip("No useful plugin has been found for this workspace.");
