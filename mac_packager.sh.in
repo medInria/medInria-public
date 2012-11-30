@@ -67,5 +67,5 @@ diskutil rename "medInria base" "medInria @medInria_VERSION@"
 sync
 sync
 hdiutil detach $devName
-hdiutil convert MedinriaPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "medInria-@medInria_VERSION@.dmg"
+hdiutil convert MedinriaPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "medInria-@medInria_VERSION@.dmg" 1>/dev/null 2>/dev/null
 \rm -f MedinriaPackage.sparseimage
