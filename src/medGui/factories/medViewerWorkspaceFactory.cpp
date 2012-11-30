@@ -28,8 +28,7 @@ bool medViewerWorkspaceFactory::registerWorkspace(QString identifier,
     if(!d->creators.contains(identifier))
     {
         medViewerWorkspaceDetails* holder = new medViewerWorkspaceDetails
-                (identifier,
-                 name,
+                (name,
                  description,
                  creator,
                  isUsable);
@@ -91,7 +90,7 @@ medViewerWorkspaceFactory *medViewerWorkspaceFactory::s_instance = NULL;
 
 bool medViewerWorkspaceFactory::isUsable(QString identifier) const
 {
-    if (d->creators.value(identifier))
+    if (d->creators.contains(identifier))
         return d->creators.value(identifier)->isUsable();
     
     return false;

@@ -461,8 +461,7 @@ void medMainWindow::updateQuickAccessMenu ( void )
         button->setIdentifier(id);
         workspaceButtonsLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowWorkspace ( QString ) ) );
-        medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
-        if (!(medViewerWorkspaceFactory::instance()->isUsable(detail->identifier)))
+        if (!(medViewerWorkspaceFactory::instance()->isUsable(id)))
         {
             button->setDisabled(true);
             button->setToolTip("No useful plugin has been found for this workspace.");

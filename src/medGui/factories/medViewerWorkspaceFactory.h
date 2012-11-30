@@ -64,7 +64,7 @@ public:
                          QString name,
                          QString description,
                          medViewerWorkspaceCreator creator,
-                         medViewerWorkspaceIsUsable isUsable);
+                         medViewerWorkspaceIsUsable isUsable=NULL);
 
     /**
      * @brief Gives the details of all workspaces.
@@ -114,13 +114,12 @@ private:
  *
  */
 struct MEDGUI_EXPORT medViewerWorkspaceDetails{
-    QString identifier;
     QString name; /** Readable name*/
     QString description; /** (tooltip) short description of the workspace */
     medViewerWorkspaceFactory::medViewerWorkspaceCreator creator; /** function pointer allocating memory for the workspace*/
     medViewerWorkspaceFactory::medViewerWorkspaceIsUsable isUsable;
-    medViewerWorkspaceDetails(QString identifier,QString name,QString description,medViewerWorkspaceFactory::medViewerWorkspaceCreator creator, medViewerWorkspaceFactory::medViewerWorkspaceIsUsable isUsable = NULL):
-        identifier(identifier),name(name),description(description),creator(creator),isUsable(isUsable){}
+    medViewerWorkspaceDetails(QString name,QString description,medViewerWorkspaceFactory::medViewerWorkspaceCreator creator, medViewerWorkspaceFactory::medViewerWorkspaceIsUsable isUsable = NULL):
+        name(name),description(description),creator(creator),isUsable(isUsable){}
 };
 
 #endif // MEDVIEWERWORKSPACEFACTORY_H
