@@ -19,7 +19,7 @@ public:
 
     virtual QString identifier()  const;
     virtual QString description() const;
-
+    static bool isUsable();
     void setupViewContainerStack ();
 
 public slots:

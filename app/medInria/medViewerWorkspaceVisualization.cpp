@@ -101,3 +101,7 @@ QString medViewerWorkspaceVisualization::identifier() const {
 QString medViewerWorkspaceVisualization::description() const {
     return tr("Visualization");
 }
+
+bool medViewerWorkspaceVisualization::isUsable(){
+    return true; // for the time being, no test is defined.
+}

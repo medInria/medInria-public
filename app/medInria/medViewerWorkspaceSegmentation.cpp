@@ -14,6 +14,7 @@
 #include <medViewerWorkspaceFactory.h>
 #include <medViewerToolBoxLayout.h>
 #include <medViewerToolBoxViewProperties.h>
+#include <medToolBoxFactory.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -166,3 +167,7 @@ QString medViewerWorkspaceSegmentation::identifier( void ) const
     return s_identifier();
 }
 
+bool medViewerWorkspaceSegmentation::isUsable(){
+    medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
+    return (tbFactory->toolBoxesFromCategory("segmentation").size()!=0); 
+}

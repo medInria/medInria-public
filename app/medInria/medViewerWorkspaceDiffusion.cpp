@@ -16,6 +16,8 @@
 #include <medViewContainer.h>
 #include <medViewContainerSingle.h>
 #include <medTabbedViewContainers.h>
+#include <medToolBoxFactory.h>
+
 
 class medViewerWorkspaceDiffusionPrivate
 {
@@ -434,3 +436,7 @@ void medViewerWorkspaceDiffusion::onAddTabClicked()
     this->stackedViewContainers()->setContainer(realName);
 }
 
+bool medViewerWorkspaceDiffusion::isUsable(){
+    medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
+    return (tbFactory->toolBoxesFromCategory("diffusion").size()!=0); 
+}

@@ -1,6 +1,6 @@
 #include "medViewerWorkspaceFactory.h"
 
-
+#include <medToolBoxFactory.h>
 #include "medViewerWorkspace.h"
 #include "medViewerWorkspaceFactory.h"
 
@@ -22,15 +22,18 @@ medViewerWorkspaceFactory *medViewerWorkspaceFactory::instance(void)
 bool medViewerWorkspaceFactory::registerWorkspace(QString identifier,
                                                           QString name,
                                                           QString description,
-                                                          medViewerWorkspaceCreator creator)
+                                                          medViewerWorkspaceCreator creator,
+                                                          medViewerWorkspaceIsUsable isUsable)
 {
-
     if(!d->creators.contains(identifier))
     {
         medViewerWorkspaceDetails* holder = new medViewerWorkspaceDetails
-                (name,
+                (identifier,
+                 name,
                  description,
-                 creator);
+                 creator,
+                 isUsable);
+
         d->creators.insert( identifier,
                             holder);
         return true;
@@ -84,3 +87,12 @@ medViewerWorkspaceDetails * medViewerWorkspaceFactory::workspaceDetailsFromId(QS
 
 medViewerWorkspaceFactory *medViewerWorkspaceFactory::s_instance = NULL;
 
+
+
+bool medViewerWorkspaceFactory::isUsable(QString identifier) const
+{
+    if (d->creators.value(identifier))
+        return d->creators.value(identifier)->isUsable();
+    
+    return false;
+}
