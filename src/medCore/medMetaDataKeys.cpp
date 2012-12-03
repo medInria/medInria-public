@@ -20,6 +20,7 @@ namespace medMetaDataKeys {
     /** Define the actual keys to use */
 
     MEDCORE_EXPORT const Key TransferSyntaxUID("TransferSyntaxUID");
+    MEDCORE_EXPORT const Key ContainsBasicInfo("ContainsBasicInfo");
 
     // PATIENT
     MEDCORE_EXPORT const Key PatientID("PatientID");

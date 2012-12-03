@@ -365,6 +365,14 @@ bool medDatabaseImporter::isPartialImportAttempt ( dtkAbstractData* dtkData )
 {
     // here we check if the series we try to import is already in the database
 
+    // if the image didn't provide basic information like patient, study or series
+    // we cannot tell whether we are importing the same file twice or
+    // if we want to import now a file with a path that was previously imported before
+    // see http://pm-med.inria.fr/issues/292 for more details
+    QString containsBasicInfo = medMetaDataKeys::ContainsBasicInfo.getFirstValue(dtkData);
+    if (containsBasicInfo.compare("true", Qt::CaseInsensitive) != 0)
+        return false;
+
     QSqlDatabase db = * ( medDatabaseController::instance()->database() );
     QSqlQuery query ( db );
 
@@ -444,6 +452,31 @@ void medDatabaseImporter::populateMissingMetadata ( dtkAbstractData* dtkData, co
         return;
     }
 
+
+    QString newSeriesDescription;
+    // check if image have basic information like patient, study, etc.
+    // DICOMs, for instance, do provide it
+    if ( !dtkData->hasMetaData ( medMetaDataKeys::PatientName.key() ) &&
+         !dtkData->hasMetaData ( medMetaDataKeys::StudyDescription.key() ) &&
+         !dtkData->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) )
+    {
+        // if none of these fields could be read from the file(s) then we won't be able to know for sure
+        // if it was previously imported/indexed as it could happen that it is just another file with the same path
+        // see http://pm-med.inria.fr/issues/292
+        dtkData->addMetaData ( medMetaDataKeys::ContainsBasicInfo.key(), "false" );
+
+        // it could be that we have already another image with this characteristics
+        // so we would like to check whether the image filename is on the db
+        // and if so we would add some suffix to distinguish it
+
+        newSeriesDescription = ensureUniqueSeriesName(seriesDescription);
+    }
+    else
+    {
+        dtkData->addMetaData ( medMetaDataKeys::ContainsBasicInfo.key(), "true" );
+        newSeriesDescription = seriesDescription;
+    }
+
     if ( !dtkData->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
         dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << "John Doe" );
 
@@ -454,7 +487,7 @@ void medDatabaseImporter::populateMissingMetadata ( dtkAbstractData* dtkData, co
         dtkData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << "EmptyStudy" );
 
     if ( !dtkData->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) )
-        dtkData->addMetaData ( medMetaDataKeys::SeriesDescription.key(), QStringList() << seriesDescription );
+        dtkData->addMetaData ( medMetaDataKeys::SeriesDescription.key(), QStringList() << newSeriesDescription );
 
     if ( !dtkData->hasMetaData ( medMetaDataKeys::StudyID.key() ) )
         dtkData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
@@ -853,6 +886,8 @@ void medDatabaseImporter::createMissingImages ( dtkAbstractData* dtkData, QSqlDa
 
     if ( filePaths.count() == 1 && thumbPaths.count() > 1 ) // special case to 1 image and multiple thumbnails
     {
+        QString seriesName  = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData);
+
         QFileInfo fileInfo ( filePaths[0] );
         for ( int i = 0; i < thumbPaths.count(); i++ )
         {
@@ -869,9 +904,11 @@ void medDatabaseImporter::createMissingImages ( dtkAbstractData* dtkData, QSqlDa
             }
             else
             {
+                QString name_str = seriesName + "." + fileInfo.completeSuffix() + QString().setNum ( i );
+
                 query.prepare ( "INSERT INTO image (series, name, path, instance_path, thumbnail, isIndexed) VALUES (:series, :name, :path, :instance_path, :thumbnail, :isIndexed)" );
                 query.bindValue ( ":series", seriesDbId );
-                query.bindValue ( ":name", fileInfo.fileName() + QString().setNum ( i ) );
+                query.bindValue ( ":name", name_str);
                 query.bindValue ( ":path", fileInfo.filePath() );
                 query.bindValue ( ":thumbnail", thumbPaths[i] );
                 query.bindValue ( ":isIndexed", d->indexWithoutImporting );
@@ -1183,4 +1220,39 @@ QString medDatabaseImporter::generateUniqueVolumeId ( const dtkAbstractData* dtk
     QString key = patientName+studyDicomId+seriesDicomId+orientation+seriesNumber+sequenceName+sliceThickness+rows+columns;
 
     return key;
+}
+
+QString medDatabaseImporter::ensureUniqueSeriesName ( const QString seriesName )
+{
+    QSqlDatabase db = * ( medDatabaseController::instance()->database() );
+
+    QString originalSeriesName = seriesName;
+    QString newSeriesName = seriesName;
+    int suffix = 0;
+
+    bool continueSearch = true;
+
+    while (continueSearch)
+    {
+        QSqlQuery query ( db );
+        query.prepare ( "SELECT * FROM series WHERE name = :seriesName" );
+        query.bindValue ( ":seriesName", newSeriesName );
+
+        if ( !query.exec() )
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+        if ( query.first() )
+        {
+           // it exist
+            suffix++;
+            newSeriesName = originalSeriesName + "_" + QString::number(suffix);
+        }
+        else
+        {
+            // it does not exist
+            continueSearch = false;
+        }
+    }
+
+    return newSeriesName;
 }
