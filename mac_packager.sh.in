@@ -9,7 +9,6 @@
 
 # 1. build medInria
 # 2. build medInria-plugins as well as your desired own plugins
-# 2. make install of each project
 # 3. chmod u+x mac_pacakger.sh
 # 4. run mac_pacakger.sh with each argument being a script to package your plugins, e.g. : ./mac_packager.sh ${Plugins_Build_Dir}/mac_visages_plugins_packager.sh
 
@@ -54,7 +53,6 @@ done
 \rm -fr PlugIns/{accessible,bearer,codecs,graphicssystems}
 
 #Run fancy packaging apple script
-#osascript @PROJECT_BINARY_DIR@/ScriptGenerateMedInriaFancyDMG.scpt
 
 \cp -f @CMAKE_SOURCE_DIR@/utils/osx_packaging/BaseMedinriaPackage.sparseimage.gz @CMAKE_INSTALL_PREFIX@/MedinriaPackage.sparseimage.gz
 cd @CMAKE_INSTALL_PREFIX@
@@ -64,7 +62,6 @@ devName=`hdiutil attach -readwrite -noverify -noautoopen MedinriaPackage.sparsei
 diskutil rename "medInria base" "medInria @medInria_VERSION@"
 \cp -rf bin/medInria.app /Volumes/"medInria @medInria_VERSION@"/
 
-sync
 sync
 hdiutil detach $devName
 hdiutil convert MedinriaPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "medInria-@medInria_VERSION@.dmg" 1>/dev/null 2>/dev/null
