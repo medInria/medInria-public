@@ -73,6 +73,16 @@ public slots:
     void onCancel ( QObject* );
 
 private:
+
+    /**
+    * Finds if parameter @seriesName is already being used in the database
+    * if is not, it returns @seriesName unchanged
+    * otherwise, it returns an unused new series name (created by adding a suffix)
+    * @param seriesName - the series name
+    * @return newSeriesName - a new, unused, series name
+    **/
+    QString ensureUniqueSeriesName ( const QString seriesName );
+
     /**
     * Populates the missing metadata in the @dtkAbstractData object.
     * If metadata is not present it's filled with default or empty values.
