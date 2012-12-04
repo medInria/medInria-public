@@ -27,6 +27,10 @@ public:
 
     QString description(void) const;
 
+    void view(const QString& filename) {
+        emit open(filename);
+    }
+
 signals:
 
     /**
@@ -58,7 +62,6 @@ private:
      * another list by removing the paths that are subpaths of others. */
     QStringList removeNestedPaths(const QStringList& paths);
 
-private:
     medFileSystemDataSourcePrivate* d;
 
     QString formatByteSize(qint64 bytes);

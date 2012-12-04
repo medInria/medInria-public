@@ -5,8 +5,7 @@
 
 #include <medToolBoxActions.h>
 
-class medFileSystemDataSourcePrivate
-{
+class medFileSystemDataSourcePrivate {
 public:
     QWidget *filesystem_widget;
     dtkFinder *finder;
@@ -18,7 +17,8 @@ public:
     QLabel * infoText;
 };
 
-medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
+medFileSystemDataSource::medFileSystemDataSource(QWidget* parent):
+    medAbstractDataSource(parent),d(new medFileSystemDataSourcePrivate)
 {
     d->filesystem_widget = new QWidget(parent);
 
@@ -170,39 +170,32 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     connect (d->toolbar, SIGNAL(showHiddenFiles(bool)), d->finder, SLOT(onShowHiddenFiles(bool)));
 }
 
-medFileSystemDataSource::~medFileSystemDataSource()
-{
+medFileSystemDataSource::~medFileSystemDataSource() {
     delete d;
     d = NULL;
 }
 
-QWidget* medFileSystemDataSource::mainViewWidget()
-{
+QWidget* medFileSystemDataSource::mainViewWidget() {
     return d->filesystem_widget;
 }
 
-QWidget* medFileSystemDataSource::sourceSelectorWidget()
-{
+QWidget* medFileSystemDataSource::sourceSelectorWidget() {
     return d->side;
 }
 
-QString medFileSystemDataSource::tabName()
-{
+QString medFileSystemDataSource::tabName() {
     return tr("File system");
 }
 
-QList<medToolBox*> medFileSystemDataSource::getToolboxes()
-{
+QList<medToolBox*> medFileSystemDataSource::getToolboxes() {
     return d->toolboxes;
 }
 
-QString medFileSystemDataSource::description(void) const
-{
+QString medFileSystemDataSource::description() const {
 	return tr("Browse the file system");
 }
 
-void medFileSystemDataSource::onFileSystemImportRequested(void)
-{
+void medFileSystemDataSource::onFileSystemImportRequested() {
     // remove paths that are subpaths of some other path in the list
     QStringList purgedList = removeNestedPaths(d->finder->selectedPaths());
 
@@ -213,8 +206,7 @@ void medFileSystemDataSource::onFileSystemImportRequested(void)
     }
 }
 
-void medFileSystemDataSource::onFileSystemIndexRequested(void)
-{
+void medFileSystemDataSource::onFileSystemIndexRequested() {
     // remove paths that are subpaths of some other path in the list
     QStringList purgedList = removeNestedPaths(d->finder->selectedPaths());
 
@@ -225,8 +217,7 @@ void medFileSystemDataSource::onFileSystemIndexRequested(void)
     }
 }
 
-void medFileSystemDataSource::onFileSystemLoadRequested()
-{
+void medFileSystemDataSource::onFileSystemLoadRequested() {
     // remove paths that are subpaths of some other path in the list
     QStringList purgedList = removeNestedPaths(d->finder->selectedPaths());
 
@@ -237,35 +228,30 @@ void medFileSystemDataSource::onFileSystemLoadRequested()
     }
 }
 
-void medFileSystemDataSource::onFileSystemViewRequested()
-{
-    // remove paths that are subpaths of some other path in the list
+void medFileSystemDataSource::onFileSystemViewRequested() {
+
+    //  Remove paths that are subpaths of some other path in the list
+
     QStringList purgedList = removeNestedPaths(d->finder->selectedPaths());
 
-    foreach(QString path, purgedList)
-    {
+    foreach(QString path,purgedList) {
         QFileInfo info(path);
         emit open(info.absoluteFilePath());
     }
 }
 
-void medFileSystemDataSource::onFileDoubleClicked(const QString& filename)
-{
+void medFileSystemDataSource::onFileDoubleClicked(const QString& filename) {
     QFileInfo info(filename);
     if (info.isFile())
         emit open(info.absoluteFilePath());
 }
 
-QStringList medFileSystemDataSource::removeNestedPaths(const QStringList& paths)
-{
-    QStringList toRemove;
+QStringList medFileSystemDataSource::removeNestedPaths(const QStringList& paths) {
 
-    for(int i = 0; i < paths.size(); i++)
-    {
-        for(int j = 0; j < paths.size(); j++)
-        {
-            if(j != i)
-            {
+    QStringList toRemove;
+    for (int i = 0; i < paths.size(); i++) {
+        for (int j = 0; j < paths.size(); j++) {
+            if (j!=i) {
                 QString path_i = paths.at(i);
                 QString path_j = paths.at(j);
 
@@ -284,19 +270,17 @@ QStringList medFileSystemDataSource::removeNestedPaths(const QStringList& paths)
     return purgedList;
 }
 
-void medFileSystemDataSource::onFileClicked(const QFileInfo& info)
-{
+void medFileSystemDataSource::onFileClicked(const QFileInfo& info) {
     d->infoText->setVisible(true);
     if (info.isDir()) {
         d->infoText->setText("Directory <b>" + info.fileName() + "</b> selected");
-    }
-    else {
+    } else {
         d->infoText->setText("<b>" + info.fileName() + "</b> selected - <i>" + this->formatByteSize(info.size()) + "</i>");
     }
 }
 
-QString medFileSystemDataSource::formatByteSize(qint64 bytes)
-{
+QString medFileSystemDataSource::formatByteSize(qint64 bytes) {
+
     qint64 b = 1;
     qint64 kb = 1024 * b;
     qint64 mb = 1024 * kb;
@@ -312,8 +296,8 @@ QString medFileSystemDataSource::formatByteSize(qint64 bytes)
         return QString::number(qIntCast((qreal)(bytes))) + " Bytes";
 }
 
-void medFileSystemDataSource::onNothingSelected(void)
-{
+void medFileSystemDataSource::onNothingSelected() {
+
     d->infoText->setVisible(false);
     d->infoText->setText("");
 }
