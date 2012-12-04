@@ -29,8 +29,7 @@ class medApplicationPrivate;
  * @brief Sets the style for the application and redirects some messages to logs or splash-screen.
  *
  */
-class medApplication : public QApplication
-{
+class medApplication: public QApplication {
     Q_OBJECT
     /**  Font color for messages redirected to the Splash screen.*/
     Q_PROPERTY(QColor msgColor READ msgColor WRITE setMsgColor)
@@ -44,7 +43,7 @@ public:
      * @param argc
      * @param argv
     */
-    medApplication(int & argc, char **argv);
+    medApplication(int& argc,char** argv);
 
     /**
      * @brief

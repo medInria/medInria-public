@@ -21,18 +21,15 @@
 #include <dtkLog/dtkLog.h>
 #include <medPluginManager.h>
 
-class medApplicationPrivate
-{
+class medApplicationPrivate {
 public:
+
     QColor msgColor;
     int msgAlignment;
 
-    /*
-      fix the settings filename in the move 2.0.0 -> 2.0.1
-    */
-    inline void fix_settings_path(const QString & organization,
-                           const QString & applicationName)
-    {
+    //  Fix the settings filename in the move 2.0.0 -> 2.0.1
+ 
+    inline void fix_settings_path(const QString & organization,const QString & applicationName) {
     #ifdef Q_OS_WIN
         //maybe fix registry keys???
     #else
@@ -42,8 +39,7 @@ public:
         QString userPath;
         QString homePath = QDir::homePath();
         char *env = getenv("XDG_CONFIG_HOME");
-        if (env == 0)
-        {
+        if (env==0) {
             userPath = homePath;
             userPath += QLatin1Char('/');
     #ifdef Q_WS_QWS
@@ -51,8 +47,7 @@ public:
     #else
             userPath += QLatin1String(".config");
     #endif
-        } else if (*env == '/')
-        {
+        } else if (*env=='/') {
             userPath = QLatin1String(env);
         } else {
             userPath = homePath;
@@ -61,25 +56,21 @@ public:
         }
         userPath += QLatin1Char('/');
 
-        QString oldUserPath= userPath + organization +
-                "/medinria.conf";//app.applicationName();
+        const QString& oldUserPath = userPath+organization+"/medinria.conf";
 
-        if (QFile::exists(oldUserPath) )
-        {
-            qWarning() << "Updating old medinria.conf file";
+        if (QFile::exists(oldUserPath)) {
+            qWarning() << "updating old medinria.conf file";
             QFile oldSettings (oldUserPath);
-            bool result = oldSettings.rename(userPath + organization +
-                                             QLatin1Char('/') +
-                               applicationName + ".conf" );
-            if (!result)
-            {
-                qWarning() << "Could not rename medinria.conf\n"
-                           << "Either you don't have write access\n"
-                           << "or medInria.conf already exists.";
+            const bool result = oldSettings.rename(userPath+organization+QLatin1Char('/')+
+                                applicationName+".conf" );
+            if (!result) {
+                qWarning() << "could not rename medinria.conf\n"
+                           << "either you don't have write access\n"
+                           << "or medinria.conf already exists.";
             }
         }
-    #endif //Q_OS_LINUX
-    #endif //Q_OS_WIN
+    #endif //q_os_linux
+    #endif //q_os_win
     }
 };
 
@@ -87,9 +78,8 @@ public:
 // medApplication
 // /////////////////////////////////////////////////////////////////
 
-medApplication::medApplication(int & argc, char**argv) :
-        QApplication(argc,argv),
-        d(new medApplicationPrivate)
+medApplication::medApplication(int& argc,char** argv):
+        QApplication(argc,argv),d(new medApplicationPrivate)
 {
     this->setApplicationName("medInria");
     qDebug() << "Version:" << MEDINRIA_VERSION;
@@ -102,7 +92,7 @@ medApplication::medApplication(int & argc, char**argv) :
 
     qDebug() <<  "default data location:" << QDesktopServices::storageLocation(QDesktopServices::DataLocation);
     //The ownership of the style object is transferred.
-    this->setStyle( new QPlastiqueStyle() );
+    this->setStyle( new QPlastiqueStyle());
     this->setStyleSheet(dtkReadFile(":/medInria.qss"));
 
     //Set some splash screen properties:
@@ -111,48 +101,40 @@ medApplication::medApplication(int & argc, char**argv) :
 
     //redirect medPluginManager msgs to the logs
     QObject::connect(medPluginManager::instance(), SIGNAL(loadError(const QString &)),
-                     this, SLOT(redirectErrorMessageToLog(const QString&)) );
+                     this, SLOT(redirectErrorMessageToLog(const QString&)));
     QObject::connect(medPluginManager::instance(), SIGNAL(loaded(QString)),
-                     this, SLOT(redirectMessageToLog(QString)) );
+                     this, SLOT(redirectMessageToLog(QString)));
 }
 
-medApplication::~medApplication(void)
-{
+medApplication::~medApplication() {
     delete d;
     d = NULL;
 }
 
-void medApplication::setMsgColor(const QColor& color)
-{
+void medApplication::setMsgColor(const QColor& color) {
     d->msgColor = color;
 }
 
-const QColor& medApplication::msgColor()
-{
+const QColor& medApplication::msgColor() {
     return d->msgColor;
 }
 
-int medApplication::msgAlignment()
-{
+int medApplication::msgAlignment() {
     return d->msgAlignment;
 }
 
-void medApplication::setMsgAlignment(int alignment)
-{
+void medApplication::setMsgAlignment(int alignment) {
     d->msgAlignment = alignment;
 }
 
-void medApplication::redirectMessageToLog(const QString &message)
-{
+void medApplication::redirectMessageToLog(const QString &message) {
     dtkTrace()<< message;
 }
 
-void medApplication::redirectErrorMessageToLog(const QString &message)
-{
+void medApplication::redirectErrorMessageToLog(const QString &message) {
     dtkError()<< message;
 }
 
-void medApplication::redirectMessageToSplash(const QString &message)
-{
+void medApplication::redirectMessageToSplash(const QString &message) {
     emit showMessage(message,d->msgAlignment,d->msgColor);
 }
