@@ -1105,7 +1105,9 @@ void vtkMetaDataSetSequence::UpdateToIndex (unsigned int id)
 //----------------------------------------------------------------------------
 double* vtkMetaDataSetSequence::GetCurrentScalarRange (void)
 {
-  double* val = this->Superclass::GetCurrentScalarRange();
+  static double * val = new double[2];
+  val[0] = VTK_DOUBLE_MAX;
+  val[1] = VTK_DOUBLE_MIN;
   
   for (unsigned int i=0; i<this->MetaDataSetList.size(); i++)
   {
