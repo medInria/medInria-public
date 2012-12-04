@@ -87,7 +87,4 @@ endif(BUILD_DOCUMENTATION)
 if (APPLE)
   configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in
                  ${PROJECT_BINARY_DIR}/mac_packager.sh)
-
-  configure_file(${PROJECT_SOURCE_DIR}/ScriptGenerateMedInriaFancyDMG.scpt.in
-                 ${PROJECT_BINARY_DIR}/ScriptGenerateMedInriaFancyDMG.scpt)
 endif()

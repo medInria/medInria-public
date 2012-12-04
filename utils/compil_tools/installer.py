@@ -190,8 +190,11 @@ def configure_project(project,config,architecture='linux'):
         if (architecture == "win"):
             src_dir=config.get(project,"cyg_drive")+src_dir
         #shutil.rmtree(build_dir,True)
-        print("making dir %s",build_dir )
-        os.makedirs(build_dir)
+        
+        if not os.path.exists(os.path.abspath(build_dir)):
+            print("making dir %s",build_dir )
+            os.makedirs(build_dir)
+
         os.chdir(build_dir)
 
         command= shlex.split(cmake_command)
@@ -546,6 +549,11 @@ def update_dirs(project,config):
             return
     else : create_dirs(project,config)
 
+    extra_update_cmd=config.get(project,"extra_update_cmd")
+    if len(extra_update_cmd):
+        logging.info( extra_update_cmd)
+        run_and_log(extra_update_cmd,shell=True)
+
     return
 
 def install(project,config,architecture):
@@ -863,11 +871,6 @@ def main(argv):
             logging.info("Updating directory for " + project + "...")
             if confirm_fun():
                 update_dirs(project,config)
-
-        extra_update_cmd=config.get(project,"extra_update_cmd")
-        if len(extra_update_cmd):
-            logging.info( extra_update_cmd)
-            run_and_log(extra_update_cmd,shell=True)
 
         cwd = os.path.join(projects_dir, config.get(project,"destination_dir"))
         os.chdir(cwd)
