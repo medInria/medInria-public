@@ -10,21 +10,19 @@
 
 #ifndef VTKSPHERICALHARMONICSOURCE_HPP
 #define VTKSPHERICALHARMONICSOURCE_HPP
+#include "vtkINRIA3DConfigure.h"
 
 #include <vtkPolyDataAlgorithm.h>
-#include <vtkSphereTesselator.h>
-
 #include <vtkMatrix4x4.h>
 
 #include <itkVariableSizeMatrix.h>
 #include <itkVector.h>
-
+#include <vtkTessellatedSphereSource.h>
 
 class vtkMatrix4x4;
 
 class VTK_VISUMANAGEMENT_EXPORT vtkSphericalHarmonicSource: public vtkPolyDataAlgorithm {
 public:
-
     vtkTypeRevisionMacro(vtkSphericalHarmonicSource,vtkPolyDataAlgorithm);
     void PrintSelf(ostream& os,vtkIndent indent);
 
@@ -54,11 +52,11 @@ public:
 
     //BTX
     enum {
-        Cube=0,    
-        Dodecahedron = 1,
-        Icosahedron = 2,
-        Octahedron = 3,
-        Tetrahedron = 4
+        Icosahedron=0,
+        Dodecahedron,
+        Octahedron ,
+        Cube,
+        Tetrahedron
     };
     //ETX
 
@@ -186,7 +184,9 @@ protected:
     double Center[3];
     
     /** Spherical function */
-    vtkPolyData* shell;
+//    vtkPolyData* shell;
+    vtkTessellatedSphereSource *sphereT;
+
 
     /** Spherical harmonic basis function*/
     itk::VariableSizeMatrix<double> BasisFunction;

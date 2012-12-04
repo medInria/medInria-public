@@ -22,7 +22,7 @@
 #include "itkImageToImageFilter.h"
 #include "vtkINRIA3DConfigure.h"
 
-class vtkStructuredPoints;
+class vtkImageData;
 class vtkMatrix4x4;
 
 namespace itk
@@ -34,67 +34,67 @@ namespace itk
  * \ingroup   ImageFilter
  */
 template < class TSHImage >
-class VTK_VISUMANAGEMENT_EXPORT SphericalHarmonicITKToVTKFilter
-      :public ImageToImageFilter< TSHImage, TSHImage >
+class ITK_EXPORT SphericalHarmonicITKToVTKFilter
+    :public ImageToImageFilter< TSHImage, TSHImage >
 {
 public:
-    /** Some typedefs. */
-    typedef TSHImage                             SHImageType;
-    typedef typename  SHImageType::PixelType     SHType;
-    typedef typename  SHType::ValueType          ScalarType;
-    typedef typename  SHImageType::Pointer       SHImagePointer;
-    typedef typename  SHImageType::ConstPointer  SHImageConstPointer;
+  /** Some typedefs. */
+  typedef TSHImage                             SHImageType;
+  typedef typename  SHImageType::PixelType     SHType;
+  typedef typename  SHType::ValueType          ScalarType;
+  typedef typename  SHImageType::Pointer       SHImagePointer;
+  typedef typename  SHImageType::ConstPointer  SHImageConstPointer;
 
-    /** Standard class typedefs. */
-    typedef SphericalHarmonicITKToVTKFilter                         Self;
-    typedef ImageToImageFilter<SHImageType,SHImageType>  Superclass;
-    typedef SmartPointer<Self>                                   Pointer;
-    typedef SmartPointer<const Self>                             ConstPointer;
+  /** Standard class typedefs. */
+  typedef SphericalHarmonicITKToVTKFilter                         Self;
+  typedef ImageToImageFilter<SHImageType,SHImageType>  Superclass;
+  typedef SmartPointer<Self>                                   Pointer;
+  typedef SmartPointer<const Self>                             ConstPointer;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self);
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(SphericalHarmonicITKToVTKFilter, ImageToImageFilter);
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(SphericalHarmonicITKToVTKFilter, ImageToImageFilter);
 
-    /** Return the input (no ITK filtering is performed on the input
+  /** Return the input (no ITK filtering is performed on the input
      *  image) */
-    SHImageType *GetOutput();
+  SHImageType *GetOutput();
 
-    /** Get the VTK SphericalHarmonic image obtained from the input ITK SphericalHarmonic
+  /** Get the VTK SphericalHarmonic image obtained from the input ITK SphericalHarmonic
      *  image */
-    void CopyVTKSphericalHarmonic( vtkStructuredPoints* );
+  void CopyVTKSphericalHarmonic( vtkImageData* );
 
-    vtkStructuredPoints* GetVTKSphericalHarmonic(void) const
-    { return m_VTKSphericalHarmonic; }
+  vtkImageData* GetVTKSphericalHarmonic(void) const
+  { return m_VTKSphericalHarmonic; }
 
-    /** Get the VTKMatrix4x4 obtained from the Itk image transformation that
+  /** Get the VTKMatrix4x4 obtained from the Itk image transformation that
      *  defines the image coordinate system*/ vtkMatrix4x4*
-    GetDirectionMatrix(void) const;
+  GetDirectionMatrix(void) const;
 
 protected:
-    SphericalHarmonicITKToVTKFilter();
-    virtual ~SphericalHarmonicITKToVTKFilter();
+  SphericalHarmonicITKToVTKFilter();
+  virtual ~SphericalHarmonicITKToVTKFilter();
 
-    /** Method that actually read the ITK data and convert it into a
+  /** Method that actually read the ITK data and convert it into a
      *  VTK structured point */
-    virtual void GenerateData();
+  virtual void GenerateData();
 
 private:
-    SphericalHarmonicITKToVTKFilter(const Self&);   //purposely not implemented
-    void operator=(const Self&);                 //purposely not implemented
+  SphericalHarmonicITKToVTKFilter(const Self&);   //purposely not implemented
+  void operator=(const Self&);                 //purposely not implemented
 
-    /** VTK output */
-    vtkStructuredPoints* m_VTKSphericalHarmonic;
+  /** VTK output */
+  vtkImageData* m_VTKSphericalHarmonic;
 
-    vtkMatrix4x4 *m_DirectionMatrix;
+  vtkMatrix4x4 *m_DirectionMatrix;
 
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkSphericalHarmonicITKToVTKFilter.cxx"
+#include "itkSphericalHarmonicITKToVTKFilter.txx"
 #endif
 
 #endif

@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
+
 IF(COMMAND cmake_policy)
   cmake_policy(VERSION 2.6)
   cmake_policy(SET CMP0005 OLD)
@@ -241,6 +242,13 @@ IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
   IF( NOT vtkINRIA3D_USE_ITK )
     MESSAGE(FATAL_ERROR " ITK is needed ON to use the Spherical Harmonics Functions Visualization")
   ENDIF( NOT vtkINRIA3D_USE_ITK )
+
+  IF(WIN32)
+    find_package( Boost REQUIRED)
+  ENDIF(WIN32)
+
+  find_path(vtkINRIA3D_DATA_DIR NAMES SHTest.vtk DOC "vtkInria3d Data directory")
+
 ENDIF( vtkINRIA3D_USE_SPHERICALHARMONICS )
 
 

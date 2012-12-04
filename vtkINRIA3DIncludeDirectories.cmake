@@ -34,3 +34,11 @@ ${vtkINRIA3D_SOURCE_DIR}/vtkRenderingAddOn/
 ${vtkINRIA3D_SOURCE_DIR}/vtkImageView/
 ${vtkINRIA3D_SOURCE_DIR}/SphericalHarmonicsVisu/
 )
+
+IF(Boost_FOUND)
+  MESSAGE("Boost Include DIRS " ${Boost_INCLUDE_DIRS})
+  SET(vtkINRIA3D_INCLUDE_DIRS_SOURCE_TREE
+  ${vtkINRIA3D_INCLUDE_DIRS_SOURCE_TREE}
+  ${Boost_INCLUDE_DIRS}
+  )
+ENDIF( Boost_FOUND )
