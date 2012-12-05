@@ -18,6 +18,8 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _itk_DicomTagManager_h_
 #define _itk_DicomTagManager_h_
 
+#include <cstddef> // For ITK 3.20 that does not define correctly ptrdiff_t
+
 #include <itkProcessObject.h>
 #include <itkImage.h>
 #include <itkImageFileReader.h>

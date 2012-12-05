@@ -18,6 +18,8 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _itkRegistrationFactory_h_
 #define _itkRegistrationFactory_h_
 
+#include <cstddef> // For ITK 3.20 that does not define correctly ptrdiff_t
+
 #include "itkProcessObject.h"
 #include "itkRegistrationMethod.h"
 #include "itkGeneralTransform.h"
