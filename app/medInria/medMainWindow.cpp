@@ -390,7 +390,6 @@ void medMainWindow::writeSettings() {
 
 void medMainWindow::setStartup(const int areaIndex,const QString& filename) {
     switchToArea(areaIndex);
-    qDebug() << "HERE" << filename;
     open(filename);
 }
 
