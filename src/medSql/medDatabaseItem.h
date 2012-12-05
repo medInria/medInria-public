@@ -55,10 +55,15 @@ public:
     * Returns the data index for this item
     */
     const medDataIndex & dataIndex () const;
+    
+    void setDataIndex (const medDataIndex &);
 
 public:
     QVariant attribute(int column);
     QVariant     value(int column);
+    
+    QList<QVariant> attributes();
+    QList<QVariant> values();
 
 private:
     medDatabaseItemPrivate *d;

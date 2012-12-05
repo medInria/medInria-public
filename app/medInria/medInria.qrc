@@ -69,6 +69,8 @@
         <file>icons/mouse_add.png</file>
         <file>icons/mouse_delete.png</file>
         <file>icons/mouse_error.png</file>
+        <file>icons/page_add.png</file>
+        <file>icons/page_edit.png</file>
         <file>icons/page_white_copy.png</file>
         <file>icons/page_white_database.png</file>
         <file>icons/page_white_delete.png</file>
@@ -93,6 +95,8 @@
         <file>icons/backward.png</file>
         <file>icons/forward.png</file>
         <file>icons/star.svg</file>
+        <file>icons/user_add.png</file>
+        <file>icons/user_edit.png</file>
         <file>medInria.qss</file>
         <file>pixmaps/unknown.jpg</file>
         <file>pixmaps/frame.png</file>

@@ -18,15 +18,21 @@ class medDatabaseEditItemDialog: public QDialog
     Q_OBJECT
 
 public:
+    medDatabaseEditItemDialog(QList<QString> attributes, QList<QVariant> data, QWidget *parent, 
+         bool displayPersistency=false,  bool persistent=false);
 
-    medDatabaseEditItemDialog(medAbstractDatabaseItem *item, QWidget *parent);
     virtual ~medDatabaseEditItemDialog();
-    medAbstractDatabaseItem* item();
-    medAbstractDatabaseItem* setItem(medAbstractDatabaseItem *item);
+
+    QVariant value(QString attribute);
+    
+    bool isPersistent();
 
 public slots:
+    
     void setValue(const QString &text);
+    
     void cancel();
+    
     void validate();
 
 

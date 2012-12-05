@@ -81,6 +81,9 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
     connect(d->actionsToolBox, SIGNAL(exportClicked()), d->view, SLOT(onExportSelectedItemRequested()));
     connect(d->actionsToolBox, SIGNAL(viewClicked()), d->view, SLOT(onViewSelectedItemRequested()));
     connect(d->actionsToolBox, SIGNAL(saveClicked()), d->view, SLOT(onSaveSelectedItemRequested()));
+    connect(d->actionsToolBox, SIGNAL(newPatientClicked()), d->view, SLOT(onCreatePatientRequested()));
+    connect(d->actionsToolBox, SIGNAL(newStudyClicked()), d->view, SLOT(onCreateStudyRequested()));
+    connect(d->actionsToolBox, SIGNAL(editClicked()), d->view, SLOT(onEditRequested()));
 }
 
 medDatabaseDataSource::~medDatabaseDataSource()

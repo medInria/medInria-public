@@ -11,53 +11,71 @@ class medDatabaseEditItemDialogPrivate
 {
 public:
 
-    medAbstractDatabaseItem *item;
+    QList<QVariant> values;
 
-    QList<QVariant> itemDataCopy;
+    QList<QString> attributes;
+
+    QRadioButton *persistentRadioBt;
 };
 
 
+medDatabaseEditItemDialog::medDatabaseEditItemDialog(QList<QString> attributes, QList<QVariant> dataList, QWidget *parent,  bool displayPersistency, bool persistent): QDialog(parent,
+            Qt::Dialog | Qt::WindowCloseButtonHint), d (new medDatabaseEditItemDialogPrivate)
 
-medDatabaseEditItemDialog::medDatabaseEditItemDialog(medAbstractDatabaseItem *item, QWidget *parent) : QDialog(parent,
-                  Qt::Dialog | Qt::WindowCloseButtonHint), d (new medDatabaseEditItemDialogPrivate)
 {
     QVBoxLayout *dialogLayout = new QVBoxLayout;
-    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    QHBoxLayout *radioBtLayout = new QHBoxLayout;
     QFormLayout *formLayout = new QFormLayout;
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
 
     QPushButton *okButton = new QPushButton(tr("OK"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
     buttonLayout->addWidget(okButton);
     buttonLayout->addWidget(cancelButton);
 
+    dialogLayout->addLayout(radioBtLayout);
     dialogLayout->addLayout(formLayout);
     dialogLayout->addStretch();
     dialogLayout->addLayout(buttonLayout);
 
-    d->item = item;
-    d->itemDataCopy.reserve(item->columnCount());
-
-    for(int i=0; i<item->columnCount(); i++)
+    if(displayPersistency)
     {
-        QVariant attribute = item->attribute(i);
+        d->persistentRadioBt = new QRadioButton(tr("Persistent"));
+        QRadioButton *nonPersistentRadioBt = new QRadioButton(tr("Non Persistent"));
+        radioBtLayout->addWidget(d->persistentRadioBt);
+        radioBtLayout->addWidget(nonPersistentRadioBt);
+        d->persistentRadioBt->setChecked(persistent);
+        nonPersistentRadioBt->setChecked(!persistent);
+    }
 
-        QVariant data = item->data(i);
+    int i=0;
 
-        d->itemDataCopy << data;
+    d->attributes = attributes;
+    d->values = dataList;
 
-        if(attribute.toString().isEmpty())
+    foreach(QString attrib, attributes)
+    {
+        QVariant data = dataList[i];
+        i++;
+
+        if(attrib.isEmpty())
             continue;
+        
+        QLineEdit *textEdit;
 
         switch(data.type())
         {
+         //TODO: add other type QDateTime, int, ...
         case QVariant::String:
-            QLineEdit *textEdit = new QLineEdit(this);
-            //textEdit->setObjectName(attribute.toString());
-            textEdit->setObjectName(QString::number(i));
+            textEdit = new QLineEdit(this);
+            textEdit->setObjectName(attrib);
             textEdit->setText(data.toString());
-            formLayout->addRow(attribute.toString(), textEdit);
+            formLayout->addRow(attrib, textEdit);
             connect(textEdit, SIGNAL(textChanged(const QString &)), this, SLOT(setValue(const QString &)));
+            break;  
+        default:
             break;
+
         }
     }
 
@@ -75,24 +93,19 @@ medDatabaseEditItemDialog::~medDatabaseEditItemDialog()
 }
 
 
-medAbstractDatabaseItem* medDatabaseEditItemDialog::item()
-{
-    return d->item;
-}
-
-medAbstractDatabaseItem* medDatabaseEditItemDialog::setItem(medAbstractDatabaseItem *item)
-{
-    d->item = item;
-}
-
 void medDatabaseEditItemDialog::setValue(const QString & text)
 {
     QWidget *currentWidget = QApplication::focusWidget();
     QString objectName = currentWidget->objectName();
+
     if(!objectName.isEmpty())
     {
-        int index = objectName.toInt();
-        d->itemDataCopy[index] = QVariant(text);
+        int index = d->attributes.indexOf(objectName);
+
+        if(index>-1 && index<d->values.length())
+        {
+            d->values[index] = QVariant(text);
+        }
     }
 }
 
@@ -104,14 +117,32 @@ void medDatabaseEditItemDialog::cancel()
 
 void medDatabaseEditItemDialog::validate()
 {
-    for(int i=0; i<d->item->columnCount(); i++)
-    {
-        QVariant data = d->itemDataCopy[i];
-
-        d->item->setData(i, data);
-    }
-
     this->accept();
 }
+
+QVariant medDatabaseEditItemDialog::value(QString attribute)
+{
+    QVariant res;
+    int index = d->attributes.indexOf(attribute);
+
+    if(index>-1 && index<d->values.length()+1)
+        res = d->values[index];
+
+    if(res.isNull())
+        res=QVariant("");
+
+    return res;
+}
+
+
+bool medDatabaseEditItemDialog::isPersistent()
+{
+    if(d->persistentRadioBt)
+        return d->persistentRadioBt->isChecked();
+    else return false;
+
+}
+
+
 
 

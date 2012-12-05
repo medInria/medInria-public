@@ -199,7 +199,7 @@ medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
 
     // Highly dependent on the current implementation of the controllers.
     connect(npDb, SIGNAL(updated(const medDataIndex &,QString)),
-            this, SLOT(onNonPersistentDataImported(const medDataIndex &,QString)));    
+            this, SLOT(onNonPersistentDataImported(const medDataIndex &,QString)));
     connect(npDb, SIGNAL(updated(const medDataIndex &)),
             this, SIGNAL(dataRemoved(const medDataIndex &)));
 
@@ -475,11 +475,12 @@ void medDataManager::onNonPersistentDataImported(const medDataIndex &index, QStr
 
     medAbstractDbController* npDb = d->getNonPersDbController();
     dtkSmartPointer<dtkAbstractData> data = npDb->read(index);
-    
+
     if (!data.isNull())
     {
-        // It might happen that the data was already loaded by a concurrent call to open the data
-        if (!d->volatileDataCache.contains (index))
+        // d->volatileDataCache[index] = data is only done in data(), but we need it at this stage as well to be able to save data
+        // in the persistent database, so i try to comment out the following line
+        //if (d->volatileDataCache.contains (index))
             d->volatileDataCache[index] = data;
 
         emit dataAdded (index);
@@ -488,6 +489,7 @@ void medDataManager::onNonPersistentDataImported(const medDataIndex &index, QStr
     {
         emit(failedToOpen(index));
     }
+
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -507,6 +509,15 @@ void medDataManager::importNonPersistent( QString file, const QString &uuid )
     {
 
         npDb->import(file, uuid);
+    }
+}
+
+void medDataManager::createNewNonPersistantPatient(void)
+{
+    medAbstractDbController* npDb = d->getNonPersDbController();
+    if(npDb)
+    {
+        npDb->createNewPatient();
     }
 }
 
@@ -669,7 +680,7 @@ void medDataManager::onPersistentDatabaseUpdated(const medDataIndex &index)
         qWarning() << "index is not valid";
         return;
     }
-    
+
     medAbstractDbController* db = d->getDbController();
 
     // Test if index is in database (to distinguish between remove and add)
@@ -709,6 +720,42 @@ void medDataManager::removeData( const medDataIndex& index )
     }
 }
 
+
+bool medDataManager::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
+{
+        // try to load the data from db
+    //TODO GPR: reprendre
+    medAbstractDbController* db = d->getDbController();
+    if (db)
+    {
+        return db->moveStudy(indexStudy,toPatient);
+    }
+
+    medAbstractDbController* npDb = d->getNonPersDbController();
+    if(npDb)
+    {
+        return npDb->moveStudy(indexStudy,toPatient);
+    }
+
+}
+
+bool medDataManager::moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy)
+{
+    // try to load the data from db
+    //TODO GPR: reprendre
+    medAbstractDbController* db = d->getDbController();
+    if (db)
+    {
+        return db->moveSerie(indexSerie,toStudy);
+    }
+
+    medAbstractDbController* npDb = d->getNonPersDbController();
+    if(npDb)
+    {
+        return npDb->moveSerie(indexSerie,toStudy);
+    }
+
+}
 //-------------------------------------------------------------------------------------------------------
 
 void medDataManager::removeDataFromCache( const medDataIndex &index )

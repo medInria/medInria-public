@@ -182,7 +182,22 @@ QVariant medDatabaseItem::value(int column)
     return d->itemData.at(column);
 }
 
+QList<QVariant> medDatabaseItem::attributes()
+{
+    return d->attrData;       
+}
+
+QList<QVariant> medDatabaseItem::values()
+{
+    return d->itemData;  
+}
+
 const medDataIndex & medDatabaseItem::dataIndex() const
 {
     return d->index;
+}
+
+void medDatabaseItem::setDataIndex (const medDataIndex &index)
+{
+    d->index = index;
 }

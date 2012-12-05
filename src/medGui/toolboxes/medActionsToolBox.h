@@ -52,6 +52,15 @@ signals:
 
     /** Emitted when the 'Save' button is clicked. */
     void saveClicked();
+    
+    /** Emitted when the 'new Patient' button is clicked. */   
+    void newPatientClicked();
+    
+    /** Emitted when the 'new Study' button is clicked. */   
+    void newStudyClicked();
+    
+    /** Emitted when the 'Edit' button is clicked. */   
+    void editClicked();
 
 public slots:
 

@@ -83,8 +83,6 @@ public:
     /** Enumerate all patients stored in this DB*/
     virtual QList<medDataIndex> patients() const;
 
-    virtual void createNewPatient(void);
-
     /** Enumerate all studies for given patient*/
     virtual QList<medDataIndex> studies(const medDataIndex& index ) const;
 
@@ -129,9 +127,9 @@ public slots:
      */
     void remove(const medDataIndex& index);
 
-    bool moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
+    const QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
 
-    bool moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
+    const medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
 
 
     /**
