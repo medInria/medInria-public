@@ -20,6 +20,7 @@
 #include <QtGui>
 #include <QtOpenGL>
 #include <QtDebug>
+
 #include <qdebug.h>
 #include "medMainWindow.h"
 #include "medApplication.h"
@@ -35,10 +36,9 @@
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
-void forceShow(medMainWindow& mainwindow )
-{
-    //Idea and code taken from the OpenCOR project, Thanks Allan for the code!
+void forceShow(medMainWindow& mainwindow) {
 
+    //Idea and code taken from the OpenCOR project, Thanks Allan for the code!
 
     // Note: to show ourselves, one would normally use activateWindow(), but
     //       depending on the operating system it may or not bring OpenCOR to
@@ -71,8 +71,6 @@ void forceShow(medMainWindow& mainwindow )
     mainwindow.raise();
 #endif
 }
-
-
 
 int main(int argc,char* argv[]) {
 
