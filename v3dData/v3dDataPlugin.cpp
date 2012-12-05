@@ -57,17 +57,21 @@ bool v3dDataPlugin::initialize(void)
     itk::AnalyzeImageIOFactory::RegisterOneFactory();
     itk::VTKImageIOFactory::RegisterOneFactory();
 
-    if(!v3dDataImage::registered())
-	dtkWarn() << "Unable to register v3dDataImage type";
+    if (!v3dDataImage::registered()) {
+        dtkWarn() << "Unable to register v3dDataImage type";
+    }
 
-    if(!v3dDataFibers::registered())
-	dtkWarn() << "Unable to register v3dDataFibers type";
+    if (!v3dDataFibers::registered()) {
+        dtkWarn() << "Unable to register v3dDataFibers type";
+    }
 
-    if(!v3dDataFibersWriter::registered())
-	dtkWarn() << "Unable to register v3dDataFibersWriter type";
+    if (!v3dDataFibersWriter::registered()) {
+        dtkWarn() << "Unable to register v3dDataFibersWriter type";
+    }
 
-    if(!v3dDataFibersReader::registered())
-	dtkWarn() << "Unable to register v3dDataFibersReader type";
+    if (!v3dDataFibersReader::registered()) {
+        dtkWarn() << "Unable to register v3dDataFibersReader type";
+    }
 
     return true;
 }
