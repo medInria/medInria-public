@@ -91,7 +91,7 @@ public:
 // /////////////////////////////////////////////////////////////////
 
 medApplication::medApplication(int & argc, char**argv) :
-        QApplication(argc,argv),
+        QtSingleApplication(argc,argv),
         d(new medApplicationPrivate)
 {
     this->setApplicationName("medInria");
