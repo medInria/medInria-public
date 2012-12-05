@@ -91,7 +91,10 @@ medViewerWorkspaceFactory *medViewerWorkspaceFactory::s_instance = NULL;
 bool medViewerWorkspaceFactory::isUsable(QString identifier) const
 {
     if (d->creators.contains(identifier))
-        return d->creators.value(identifier)->isUsable();
-    
+        if (d->creators.value(identifier)->isUsable==NULL)
+            return true;
+        else
+            return d->creators.value(identifier)->isUsable();
+        
     return false;
 }
