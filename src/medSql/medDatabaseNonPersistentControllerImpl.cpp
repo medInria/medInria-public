@@ -119,7 +119,7 @@ dtkSmartPointer<dtkAbstractData> medDatabaseNonPersistentControllerImpl::read( c
     medDatabaseNonPersistentControllerImplPrivate::DataHashMapType::const_iterator it( d->items.find(index) );
 
     // Is item in our table ? if not, return null.
-    if ( it == d->items.end() )
+    if ( it == d->items.end() || it.value() == NULL )
         return dtkSmartPointer<dtkAbstractData> ();
 
     dtkSmartPointer<dtkAbstractData> ret(it.value()->data());
@@ -300,76 +300,6 @@ QList<medDataIndex> medDatabaseNonPersistentControllerImpl::patients() const
     return ret;
 }
 
-void medDatabaseNonPersistentControllerImpl::createNewPatient(void)
-{
-    medDataIndex index;
-    QString patientName = "new patient";
-    QString studyName = "new study";
-
-    int patientDbId = this->patientId ( true );
-    int studyDbId = this->studyId ( true );
-    int serieDbId = this->seriesId ( true );
-
-    index = medDataIndex ( this->dataSourceId(), patientDbId, studyDbId, serieDbId, -1 );
-
-    medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
-
-    item->d->birthdate  = "";
-    item->d->patientId  = QString::number(patientDbId);
-    item->d->studyName  = studyName;
-    item->d->studyId    = QString::number(studyDbId);
-    item->d->studyUid    = "";
-    item->d->seriesName = "";
-    item->d->seriesId   = QString::number(serieDbId);
-    item->d->seriesUid   = "";
-    item->d->file       = "";
-    //item->d->thumb      = data->thumbnail();
-    item->d->index      = index;
-
-    medAttachedData *  dtkData = new medAttachedData;
-
-    dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
-    dtkData->addMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << "0" );
-    dtkData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
-    dtkData->addMetaData ( medMetaDataKeys::SeriesDescription.key(), QStringList() << "seriesDescription" );
-    dtkData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
-    dtkData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
-
-    QString generatedSeriesId = QUuid::createUuid().toString().replace("{","").replace("}","");
-
-    dtkData->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesId);
-    dtkData->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Orientation.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::SeriesNumber.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::SequenceName.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::SliceThickness.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Rows.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Columns.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Age.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Gender.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Description.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Modality.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Protocol.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Comments.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Status.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::AcquisitionDate.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::ImportationDate.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Referee.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Performer.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Institution.key(), QStringList() << "" );
-    dtkData->addMetaData ( medMetaDataKeys::Report.key(), QStringList() << "" );
-
-    item->d->data       = dtkData;
-
-    this->insert ( index, item );
-
-    QString uuid = QUuid::createUuid().toString();
-    emit updated(index, uuid);
-}
-
-
-
 QList<medDataIndex> medDatabaseNonPersistentControllerImpl::studies( const medDataIndex& index ) const
 {
     QList<medDataIndex> ret;
@@ -458,7 +388,7 @@ QString medDatabaseNonPersistentControllerImpl::metaData( const medDataIndex& in
     typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
 
     MapType::const_iterator it(d->items.find(index));
-    if (it != d->items.end() ) {
+    if (it != d->items.end()  && it.value()!=NULL ) {
         dtkAbstractData *data = it.value()->data();
         if (data &&  data->hasMetaData(key) )
             return data->metadata(key);
@@ -466,7 +396,7 @@ QString medDatabaseNonPersistentControllerImpl::metaData( const medDataIndex& in
         // Cannot find an exact match for the given index. Find first data that may match
         // using ordered map.
         it = d->items.lowerBound( index );
-        if (it != d->items.end() && medDataIndex::isMatch( it.key(), index) ) {
+        if (it != d->items.end() && medDataIndex::isMatch( it.key(), index) && it.value()!=NULL ) {
             dtkAbstractData *data = it.value()->data();
             if (data &&  data->hasMetaData(key) )
                 return data->metadata(key);
@@ -510,15 +440,100 @@ bool medDatabaseNonPersistentControllerImpl::isPersistent( ) const
 }
 
 
-bool medDatabaseNonPersistentControllerImpl::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
+ const QList<medDataIndex> medDatabaseNonPersistentControllerImpl::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
 {
-    //TODO GPR: reprendre
-    return false;
+    QList<medDataIndex> newIndexList;
+    medDataIndex newIndex(indexStudy);
+    newIndex.setPatientId(toPatient.patientId());
+    
+    insert(newIndex, d->items[indexStudy]);
+    
+    //retrieve destination patient information
+    dtkAbstractData *dataPatient = read(toPatient);
+
+    if(dataPatient==NULL)
+    {
+        // let's try to get patient information from its series
+        QList<medDataIndex> studiesIndexList = studies(toPatient);
+        if(!studiesIndexList.isEmpty())
+        {
+            QList<medDataIndex> seriesIndexList = series(studiesIndexList[0]);
+
+            if(!seriesIndexList.isEmpty())
+                dataPatient = read(seriesIndexList[0]);
+            else return newIndexList;
+        }
+        else return newIndexList;
+    }
+        
+    dtkAbstractData *dataStudy = read(indexStudy); 
+
+    if(dataStudy==NULL)
+    {
+	newIndexList << newIndex;
+	
+        // there is nothing to update directly in the study, we have to update the series of the study
+        QList<medDataIndex> seriesIndexList = series(indexStudy);
+
+        foreach(medDataIndex serie, seriesIndexList)
+        {
+            dataStudy = read(serie);
+	    
+            if(dataStudy!=NULL)
+            {
+                dataStudy->setMetaData ( medMetaDataKeys::PatientName.key(),
+                                         QStringList() <<  dataPatient->metadata( medMetaDataKeys::PatientName.key()) );
+                dataStudy->setMetaData ( medMetaDataKeys::PatientID.key(),
+                                         QStringList() <<  dataPatient->metadata( medMetaDataKeys::PatientID.key()) );
+
+                medDataIndex newSerieIndex = moveSerie(serie, newIndex);
+
+                if(newSerieIndex.isValid())
+                    newIndexList << newSerieIndex;
+            }
+        }
+    }
+    
+    d->items.remove(indexStudy);
+
+    return newIndexList;
 }
 
-bool medDatabaseNonPersistentControllerImpl::moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy)
+const medDataIndex medDatabaseNonPersistentControllerImpl::moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy)
 {
-    //TODO GPR: reprendre
-    return false;
+    medDataIndex newIndex(indexSerie);
+    newIndex.setStudyId(toStudy.studyId());
+    newIndex.setPatientId(toStudy.patientId());
+
+    // we need to update metadatas (patient, study) of the serie to move
+    dtkAbstractData *dataSerie = read(indexSerie);
+
+    //retrieve destination study information
+    dtkAbstractData *dataStudy = read(toStudy);
+    
+    if(dataStudy == NULL)
+    {
+        // let's try to get study information from its series
+        QList<medDataIndex> seriesIndexList = series(toStudy);
+        if(!seriesIndexList.isEmpty())
+            dataStudy = read(seriesIndexList[0]);
+        else return newIndex;
+    }
+
+    dataSerie->setMetaData ( medMetaDataKeys::PatientName.key(),
+                             QStringList() <<  dataStudy->metadata( medMetaDataKeys::PatientName.key()) );
+    dataSerie->setMetaData ( medMetaDataKeys::PatientID.key(),
+                             QStringList() <<  dataStudy->metadata( medMetaDataKeys::PatientID.key()) );
+    dataSerie->setMetaData ( medMetaDataKeys::StudyDescription.key(),
+                             QStringList() <<  dataStudy->metadata( medMetaDataKeys::StudyDescription.key()) );
+    dataSerie->setMetaData ( medMetaDataKeys::StudyID.key(),
+                             QStringList() <<  dataStudy->metadata( medMetaDataKeys::StudyID.key()) );
+    dataSerie->setMetaData ( medMetaDataKeys::StudyDicomID.key(),
+                             QStringList() <<  dataStudy->metadata( medMetaDataKeys::StudyDicomID.key()) );
+
+    insert(newIndex, d->items[indexSerie]);
+    d->items.remove(indexSerie);
+
+    return newIndex;
 }
 

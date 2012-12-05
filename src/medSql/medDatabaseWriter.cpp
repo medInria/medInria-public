@@ -28,7 +28,7 @@
 class medDatabaseWriterPrivate
 {
 public:
-    dtkAbstractData *data;
+    dtkSmartPointer<dtkAbstractData> data;
     QString callerUuid;
     bool isCancelled;
 };
@@ -55,12 +55,13 @@ void medDatabaseWriter::run()
         return;
     }
 
-    if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) )
+    //test GPR pour essayer de créer des patients vides
+    /*if ( !d->data->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) )
     {
         qDebug() << "Critical: data has no SeriesDescription, cannot save it";
         emit failure ( this );
         return;
-    }
+    }*/
 
     // copied from medDatabaseImporter::run()
 
@@ -156,7 +157,7 @@ void medDatabaseWriter::run()
         d->data->addMetaData ( medMetaDataKeys::FilePaths.key(), QStringList() << "generated with medInria" );
 
     QString size ="";
-    if ( medAbstractDataImage *imagedata = dynamic_cast<medAbstractDataImage*> ( d->data ) )
+    if ( medAbstractDataImage *imagedata = dynamic_cast<medAbstractDataImage*> ( d->data.data() ) )
         size = QString::number ( imagedata->zDimension() );
     d->data->addMetaData ( medMetaDataKeys::Size.key(), size );
 

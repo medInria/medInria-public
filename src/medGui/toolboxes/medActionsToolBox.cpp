@@ -34,6 +34,9 @@ public:
     QPushButton* loadBt;
     QPushButton* indexBt;
     QPushButton* saveBt;
+    QPushButton* newPatientBt;
+    QPushButton* newStudyBt;
+    QPushButton* editBt;
 
     QList<QAbstractButton*> buttonsList;
     QMultiMap<QString, QString> itemToActions;
@@ -106,14 +109,33 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/ ) : medToolBox(par
     d->saveBt->setText(tr("Save"));
     d->saveBt->setToolTip(tr("Save selected item into the database."));
     d->saveBt->setIcon(QIcon(":/icons/save.png"));
+    
+    d->newPatientBt = new QPushButton(d->buttonsWidget);
+    d->newPatientBt->setAccessibleName("New Patient");
+    d->newPatientBt->setText("New Patient");
+    d->newPatientBt->setToolTip(tr("Create a new patient."));
+    d->newPatientBt->setIcon(QIcon(":/icons/user_add.png"));
+    
+    d->newStudyBt = new QPushButton(d->buttonsWidget);
+    d->newStudyBt->setAccessibleName("New Study");
+    d->newStudyBt->setText("New Study");
+    d->newStudyBt->setToolTip(tr("Create a new study."));
+    d->newStudyBt->setIcon(QIcon(":/icons/page_add.png"));
+    
+    d->editBt = new QPushButton(d->buttonsWidget);
+    d->editBt->setAccessibleName("Edit");
+    d->editBt->setText("Edit");
+    d->editBt->setToolTip(tr("Edit item."));
+    d->editBt->setIcon(QIcon(":/icons/page_edit.png"));
 
     /* End create buttons */
 
     // the order of the buttons in this list determines the order used to place them in the grid layout
     d->buttonsList << d->viewBt << d->loadBt << d->importBt << d->indexBt;
     d->buttonsList << d->removeBt << d->saveBt << d->exportBt << d->bookmarkBt;
+    d->buttonsList << d->newPatientBt << d->newStudyBt << d->editBt;
 
-    int COLUMNS = 4; // we will use 2 rows of 4 buttons each
+    int COLUMNS = 4; // we will use 3 rows of 4 buttons each
     int i = 0;
     QGridLayout *gridLayout = new QGridLayout(d->buttonsWidget);
     gridLayout->setHorizontalSpacing(4);
@@ -146,10 +168,13 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/ ) : medToolBox(par
     connect(d->loadBt, SIGNAL(clicked()), this, SIGNAL(loadClicked()));
     connect(d->indexBt, SIGNAL(clicked()), this, SIGNAL(indexClicked()));
     connect(d->saveBt, SIGNAL(clicked()), this, SIGNAL(saveClicked()));
+    connect(d->newPatientBt, SIGNAL(clicked()), this, SIGNAL(newPatientClicked()));
+    connect(d->newStudyBt, SIGNAL(clicked()), this, SIGNAL(newStudyClicked()));
+    connect(d->editBt, SIGNAL(clicked()), this, SIGNAL(editClicked()));
 
     // we keep the size of the toolbox fixed so as it doesn't not resize
     // constantly due to the exchange of the widgets
-    this->body()->setFixedHeight(38 + 38 + 35);
+    this->body()->setFixedHeight(38 + 38 +38 + 35);
 
     this->setTitle(tr("Actions"));
 }
@@ -237,18 +262,28 @@ void medActionsToolBox::initializeItemToActionsMap()
     d->itemToActions = QMultiMap<QString, QString>();
 
     d->itemToActions.insert("Patient", "Remove");
+    d->itemToActions.insert("Patient", "New Patient");
+    d->itemToActions.insert("Patient", "New Study");
+    d->itemToActions.insert("Patient", "Edit");
 
     d->itemToActions.insert("Unsaved Patient", "Remove");
     d->itemToActions.insert("Unsaved Patient", "Save");
+    d->itemToActions.insert("Unsaved Patient", "New Patient");
+    d->itemToActions.insert("Unsaved Patient", "New Study");
+    d->itemToActions.insert("Unsaved Patient", "Edit");
 
     d->itemToActions.insert("Series", "View");
     d->itemToActions.insert("Series", "Export");
     d->itemToActions.insert("Series", "Remove");
+    d->itemToActions.insert("Series", "New Patient");
+    d->itemToActions.insert("Series", "Edit");
 
     d->itemToActions.insert("Unsaved Series", "Remove");
     d->itemToActions.insert("Unsaved Series", "Save");
     d->itemToActions.insert("Unsaved Series", "View");
     d->itemToActions.insert("Unsaved Series", "Export");
+    d->itemToActions.insert("Unsaved Series", "New Patient");
+    d->itemToActions.insert("Unsaved Series", "Edit");
 
     d->itemToActions.insert("Folders", "Bookmark");
     d->itemToActions.insert("Folders", "Import");

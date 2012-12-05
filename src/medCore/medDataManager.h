@@ -85,8 +85,6 @@ public:
     */
     void importNonPersistent(QString file);
 
-    void createNewNonPersistantPatient(void);
-
     /**
     * Overload to insert data directly from a file into the no-persistent database
     * @params QString file
@@ -136,9 +134,9 @@ public:
      */
     void removeData(const medDataIndex& index);
 
-    bool moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
+     const QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
 
-    bool moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
+     const medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
 
 
     /** return the DB controller for given data source. */

@@ -48,9 +48,13 @@ public:
     virtual bool setData(int column, const QVariant& value) = 0;
 
     virtual const medDataIndex & dataIndex () const = 0;
-
+    virtual void setDataIndex (const medDataIndex &) = 0;
+	
     virtual QVariant attribute(int column) = 0;
-    virtual QVariant     value(int column) = 0;
+    virtual QVariant value(int column) = 0;
+    
+    virtual QList<QVariant> attributes() = 0;
+    virtual QList<QVariant> values() = 0;
 
 };
 

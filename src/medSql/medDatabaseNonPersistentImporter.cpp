@@ -30,15 +30,15 @@ class medDatabaseNonPersistentImporterPrivate
 {
 public:
     medDatabaseNonPersistentImporterPrivate ( const QString& uuid ) :
-            callerUuid ( uuid ) {}
-    dtkAbstractData *data;
+        callerUuid ( uuid ) {}
+    dtkSmartPointer<dtkAbstractData> data;
     QString callerUuid;
     bool isCancelled;
 };
 
 medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter ( dtkAbstractData *data,
         const QString& callerUuid )
-        : medJobItem(), d ( new medDatabaseNonPersistentImporterPrivate ( callerUuid ) )
+    : medJobItem(), d ( new medDatabaseNonPersistentImporterPrivate ( callerUuid ) )
 {
     qDebug() << "DEBUG : entering medDatabaseNonPersistentImporter constructor";
     d->data = data;
@@ -64,14 +64,15 @@ void medDatabaseNonPersistentImporter::run()
         return;
     }
 
-    if ( !data->hasMetaData ( medMetaDataKeys::PatientName.key() ) ||
+    // when creating empty patient or studies, we need to continue
+    /*if ( !data->hasMetaData ( medMetaDataKeys::PatientName.key() ) ||
          !data->hasMetaData ( medMetaDataKeys::StudyDescription.key() ) ||
          !data->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) )
     {
         qDebug() << "metaData PatientName or StudyDescription or SeriesDescription are missing, cannot proceed";
         emit failure ( this );
         return;
-    }
+    }*/
 
     QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
 
@@ -94,11 +95,20 @@ void medDatabaseNonPersistentImporter::run()
     else
     {
         for ( int i=0; i<items.count(); i++ )
-            if ( items[i]->name() ==patientName )
+        {
+            QString itemPatientName = medDatabaseNonPersistentController::instance()->metaData(items[i]->index(),medMetaDataKeys::PatientName.key() );
+
+            /*if ( items[i]->name() ==patientName )
+            {
+                patientDbId = items[i]->index().patientId();
+                break;
+            }*/
+            if ( itemPatientName == patientName )
             {
                 patientDbId = items[i]->index().patientId();
                 break;
             }
+        }
     }
 
     if ( patientDbId==-1 )
@@ -120,21 +130,42 @@ void medDatabaseNonPersistentImporter::run()
     else
     {
         for ( int i=0; i<items.count(); i++ )
-            if ( items[i]->name() ==patientName && items[i]->studyName() ==studyName )
+        {
+            QString itemPatientName = medDatabaseNonPersistentController::instance()->metaData(items[i]->index(),medMetaDataKeys::PatientName.key() );
+            QString itemStudyName = medDatabaseNonPersistentController::instance()->metaData(items[i]->index(),medMetaDataKeys::StudyDescription.key() );
+
+            /*if ( items[i]->name() ==patientName && items[i]->studyName() ==studyName )
+                {
+                    studyDbId = items[i]->index().studyId();
+                    break;
+                }*/
+            if ( itemPatientName == patientName && itemStudyName == studyName )
             {
                 studyDbId = items[i]->index().studyId();
                 break;
             }
+        }
     }
 
-    if ( studyDbId==-1 )
-        studyDbId = medDatabaseNonPersistentController::instance()->studyId ( true );
-
-    index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, studyDbId, medDatabaseNonPersistentController::instance()->seriesId ( true ), -1 );
-
+    int     serieDbId   = -1;
     QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
     QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(data);
     QString seriesId = medMetaDataKeys::SeriesID.getFirstValue(data);
+
+    if ( studyDbId==-1 && ( !studyName.isEmpty() ) )
+    {
+        //the study is defined and is not in the db, let's generate a new id
+        studyDbId = medDatabaseNonPersistentController::instance()->studyId ( true );
+
+        if ( !seriesName.isEmpty() )
+        {
+            //the serie is defined and is not in the db, let's generate a new id
+            serieDbId = medDatabaseNonPersistentController::instance()->studyId ( true );
+        }
+    }
+
+    index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, studyDbId,serieDbId, -1 );
+
 
     medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
 

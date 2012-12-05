@@ -29,7 +29,7 @@ public:
      medDatabaseView(QWidget *parent = 0);
     ~medDatabaseView();
 
-    virtual int sizeHintForColumn(int column) const;
+    //virtual int sizeHintForColumn(int column) const;
 
     void setModel(QAbstractItemModel *model);
 
@@ -73,6 +73,9 @@ public slots:
 
     /** Creates a new patient */
     void onCreatePatientRequested(void);
+    
+    /** Creates a new study */
+    void onCreateStudyRequested(void);
 
     /** Edits selected item */
     void onEditRequested(void);

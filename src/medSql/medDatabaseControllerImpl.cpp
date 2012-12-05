@@ -431,7 +431,23 @@ void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUui
     connect(writer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
 
     medJobManager::instance()->registerJobItem(writer);
-    QThreadPool::globalInstance()->start(writer);
+    QThreadPool::globalInstance()->start(writer);*/
+    
+    medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid);
+    medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
+
+    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
+
+    if (importUuid == "")
+        connect(importer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
+    else
+        connect(importer, SIGNAL(addedIndex(const medDataIndex &, const QString &)), this, SIGNAL(updated(const medDataIndex &, const QString &)));
+
+    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+
+    medJobManager::instance()->registerJobItem(importer);
+    QThreadPool::globalInstance()->start(importer);
 }
 
 
@@ -668,12 +684,14 @@ void medDatabaseControllerImpl::remove( const medDataIndex& index )
 }
 
 
-bool medDatabaseControllerImpl::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
+const QList<medDataIndex> medDatabaseControllerImpl::moveStudy( const medDataIndex& indexStudy, const medDataIndex& toPatient)
 {
     QSqlDatabase & db (*(this->database()));
     QSqlQuery query(db);
 
     bool result = false;
+    QList<medDataIndex> newIndexList;
+    medDataIndex newIndex;
 
     if(indexStudy.isValidForStudy() && toPatient.isValidForPatient())
     {
@@ -682,17 +700,36 @@ bool medDatabaseControllerImpl::moveStudy(const medDataIndex& indexStudy, const 
         query.bindValue(":studyId", indexStudy.studyId());
 
         result = EXEC_QUERY(query);
+
+        if(result)
+        {
+            // we need to update patient id in study index
+            newIndex = indexStudy;
+            newIndex.setPatientId(toPatient.patientId());
+
+            newIndexList << newIndex;
+            
+            // and update patient id in series indexes
+            QList<medDataIndex> seriesIndexList = series(indexStudy);
+            foreach(medDataIndex newSerieIndex, seriesIndexList)
+            {
+                newSerieIndex.setPatientId(toPatient.patientId());
+                newIndexList << newSerieIndex;
+                
+            }
+        }
     }
 
-    return result;
+    return newIndexList;
 }
 
-bool medDatabaseControllerImpl::moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy)
+const medDataIndex medDatabaseControllerImpl::moveSerie( const medDataIndex& indexSerie, const medDataIndex& toStudy)
 {
     QSqlDatabase & db (*(this->database()));
     QSqlQuery query(db);
 
     bool result = false;
+    medDataIndex newIndex;
 
     if(indexSerie.isValidForSeries() && toStudy.isValidForStudy())
     {
@@ -701,8 +738,15 @@ bool medDatabaseControllerImpl::moveSerie(const medDataIndex& indexSerie, const 
         query.bindValue(":serieId", indexSerie.seriesId());
 
         result = EXEC_QUERY(query);
+
+        if(result)
+        {
+            newIndex = indexSerie;
+            newIndex.setPatientId(toStudy.patientId());
+            newIndex.setStudyId(toStudy.studyId());
+        }
     }
-    return result;
+    return newIndex;
 }
 
 QString medDatabaseControllerImpl::metaData(const medDataIndex& index,const QString& key) const
@@ -824,11 +868,6 @@ QList<medDataIndex> medDatabaseControllerImpl::patients() const
     return ret;
 }
 
-
-void medDatabaseControllerImpl::createNewPatient(void)
-{
-    return;
-}
 
 QList<medDataIndex> medDatabaseControllerImpl::studies( const medDataIndex& index ) const
 {

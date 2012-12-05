@@ -29,10 +29,16 @@ namespace medMetaDataKeys {
     public:
         typedef std::vector<const Key*> Registery;
 
-        Key(const char* name): KEY(name) { registery.push_back(this); }
+        Key(const char* name, const char* label=""): KEY(name), LABEL(label)
+        { 
+            if(QString(label)=="") LABEL=QString(name);
+            registery.push_back(this); 
+        }
+        
         ~Key() { }
 
         const QString& key() const { return KEY; }
+        const QString& label() const { return LABEL; }
 
         bool is_set_in(const dtkAbstractData *d) const { return d->hasMetaData(KEY) ; }
 
@@ -48,12 +54,27 @@ namespace medMetaDataKeys {
         void set(dtkAbstractData* d,const QString& value)      const { d->setMetaData(KEY,value);  }
 
         static const Registery& all() { return registery; }
+        
+        bool operator==(const Key& other){ return ( this->key() == other.key() ); }
+        
+        static const Key* fromKeyName(const char* name)
+        {
+            std::vector<const Key*>::iterator it;
+            for ( it=registery.begin() ; it < registery.end(); it++ )
+            {
+                if( (*it)->key() == name )
+                    return *it;
+            }
+            return NULL;    
+        }
+        
 
     private:
 
         static Registery registery;
 
         const QString KEY;
+        QString LABEL;
     };
 
 
