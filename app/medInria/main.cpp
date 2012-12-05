@@ -78,7 +78,7 @@ int main(int argc,char* argv[]) {
     medApplication application(argc,argv);
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
-        qDebug() << "Usage: medInria [--no-fullscreen] [--stereo]";
+        qDebug() << "Usage: medInria [--no-fullscreen] [--stereo] [--view file]";
         return 1;
     }
 
