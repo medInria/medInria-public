@@ -363,10 +363,7 @@ void medMainWindow::readSettings() {
 
     //  If nothing is configured then Browser is the default area
 
-    const int areaIndex = mnger->value("startup","default_starting_area",0).toInt();
-    qDebug() << "areaIndex" << areaIndex;
-
-    switchToArea(areaIndex);
+    switchToArea(mnger->value("startup","default_starting_area",0).toInt());
 
     //  Restore size
 
@@ -390,7 +387,6 @@ void medMainWindow::writeSettings() {
 
 void medMainWindow::setStartup(const int areaIndex,const QString& filename) {
     switchToArea(areaIndex);
-    qDebug() << "HERE" << filename;
     open(filename);
 }
 
