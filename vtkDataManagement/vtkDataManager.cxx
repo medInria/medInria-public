@@ -415,32 +415,22 @@ vtkMetaDataSet* vtkDataManager::ReadFile (const char* filename, const char* name
   }
   
   vtkMetaDataSet* metadataset = NULL;
-  //vtkMetaDataSetSequence* sequence = NULL;
-  unsigned int type = 0;
   
   if (vtkMetaVolumeMesh::CanReadFile (filename))
   {
-    type = vtkMetaDataSet::VTK_META_VOLUME_MESH;
     metadataset = vtkMetaVolumeMesh::New();    
-//     junk = vtkUnstructuredGrid::New();    
   }
   else if (vtkMetaSurfaceMesh::CanReadFile (filename))
   {
-    type = vtkMetaDataSet::VTK_META_SURFACE_MESH;
     metadataset = vtkMetaSurfaceMesh::New();
-//     junk = vtkPolyData::New();
   }
   else if (vtkMetaImageData::CanReadFile (filename))
   {
-    type = vtkMetaDataSet::VTK_META_IMAGE_DATA;
     metadataset = vtkMetaImageData::New();
-//     junk = vtkImageData::New();
   }
   else if (vtkMetaDataSetSequence::CanReadFile (filename))
   {
-    type = vtkMetaDataSet::VTK_META_IMAGE_DATA;
     metadataset = vtkMetaDataSetSequence::New();
-//     junk = vtkImageData::New();
   }
   
   else
@@ -579,22 +569,18 @@ vtkMetaDataSet* vtkDataManager::DuplicateMetaDataSet(vtkMetaDataSet* input)
 
   vtkMetaDataSet* metadataset;
   vtkDataSet* dataset = NULL;
-  unsigned int type = 0;
 
   switch(input->GetType())
   {
       case vtkMetaDataSet::VTK_META_SURFACE_MESH :
-	type = vtkMetaDataSet::VTK_META_SURFACE_MESH;
 	metadataset = vtkMetaSurfaceMesh::New();
 	dataset = vtkPolyData::New();
 	break;
       case vtkMetaDataSet::VTK_META_VOLUME_MESH :
-	type = vtkMetaDataSet::VTK_META_VOLUME_MESH;
 	metadataset = vtkMetaVolumeMesh::New();
 	dataset = vtkUnstructuredGrid::New();
 	break;
       case vtkMetaDataSet::VTK_META_IMAGE_DATA :
-	type = vtkMetaDataSet::VTK_META_IMAGE_DATA;
 	metadataset = vtkMetaImageData::New();
 	dataset = vtkImageData::New();
 	break;
