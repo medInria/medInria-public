@@ -169,12 +169,14 @@ void vtkSynchronizedView::SetRenderer(vtkRenderer *arg)
 }
 
 
+#ifndef VTK_LEGACY_REMOVE
 void vtkSynchronizedView::SetInteractor(vtkRenderWindowInteractor *arg)
 {
   VTK_LEGACY_REPLACED_BODY(vtkSynchronizedView::SetInteractor, "vtkINRIA3D 0.1",
 			   vtkSynchronizedView::SetRenderWindowInteractor);
   this->SetRenderWindowInteractor ( arg );
 }
+#endif
 
 
 
@@ -293,11 +295,12 @@ void vtkSynchronizedView::Uninitialize()
 }
 
 
+#ifndef VTK_LEGACY_REMOVE
 std::vector < vtkSynchronizedView* > vtkSynchronizedView::GetViewToObserve(void) const
 { 
   return this->GetChildren(); 
 }
-
+#endif
 
 void vtkSynchronizedView::AddActor (vtkProp* actor)
 {
@@ -494,10 +497,12 @@ void vtkSynchronizedView::SetAboutDataVisibility (int val)
 }
 
 
+#ifndef VTK_LEGACY_REMOVE
 void vtkSynchronizedView::UpdateAnnotations()
 {
   VTK_LEGACY_BODY (vtkSynchronizedView::UpdateAnnotations, "vtkINRIA3D 0.1");
 }
+#endif
 
 
 void vtkSynchronizedView::SetShowAnnotations (int val)
