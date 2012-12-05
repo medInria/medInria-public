@@ -8,9 +8,8 @@ public:
     QSettings settings;
 };
 
-medSettingsManager * medSettingsManager::instance( void )
-{
-    if(!s_instance)
+medSettingsManager* medSettingsManager::instance() {
+    if (!s_instance)
         s_instance = new medSettingsManager;
     return s_instance;
 }
@@ -34,7 +33,7 @@ void medSettingsManager::destroy( void )
     }
 }
 
-QVariant medSettingsManager::value( const QString & section, const QString & key, const QVariant & defaultValue /*= QVariant() */ )
+QVariant medSettingsManager::value(const QString& section,const QString& key,const QVariant& defaultValue /*= QVariant() */ )
 {
     bool valuePresent;
 
