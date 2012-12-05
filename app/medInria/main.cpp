@@ -35,7 +35,6 @@
 #include <medSettingsManager.h>
 #include <medStorage.h>
 
-
 void forceShow(medMainWindow& mainwindow )
 {
     //Idea and code taken from the OpenCOR project, Thanks Allan for the code!
@@ -75,78 +74,95 @@ void forceShow(medMainWindow& mainwindow )
 
 
 
-int main(int argc, char *argv[])
-{
+int main(int argc,char* argv[]) {
 
     qRegisterMetaType<medDataIndex>("medDataIndex");
-    medApplication application(argc, argv);
+    medApplication application(argc,argv);
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
         qDebug() << "Usage: medInria [--no-fullscreen] [--stereo]";
         return 1;
     }
-    medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
 
     // Do not show the splash screen in debug builds because it hogs the
     // foreground, hiding all other windows. This makes debugging the startup
     // operations difficult.
-#if ! defined( _DEBUG ) // && defined( WINDOWS )
-    QObject::connect(medDatabaseController::instance().data(), SIGNAL(copyMessage(QString, int, QColor)), &splash, SLOT(showMessage(QString, int, QColor)) );
 
-    application.setMsgColor(Qt::white);
-    application.setMsgAlignment(Qt::AlignLeft|Qt::AlignBottom);
+    #if !defined(_DEBUG)
+    bool show_splash = true;
+    #else
+    bool show_splash = false;
+    #endif
 
-    QObject::connect(medPluginManager::instance(), SIGNAL(loadError(const QString&)),
-                     &application, SLOT(redirectMessageToSplash(const QString&)) );
-    QObject::connect(medPluginManager::instance(), SIGNAL(loaded(QString)),
-                     &application, SLOT(redirectMessageToSplash(QString)) );
-    QObject::connect(&application, SIGNAL(showMessage(const QString&, int, const QColor&)),
-                     &splash, SLOT(showMessage(const QString&, int, const QColor&)) );
-    splash.show();
-    splash.showMessage("Loading plugins...",Qt::AlignLeft|Qt::AlignBottom,Qt::white);
-    //application.processEvents();
-#endif
-
-
-    // DATABASE INITIAL ROUTINE
     medSettingsManager* mnger = medSettingsManager::instance();
-    // first compare the current with the new data location
+
+    const QString& FileToView = dtkApplicationArgumentsValue(&application,"--view");
+    const bool DirectView = (FileToView!=QString());
+    if (DirectView)
+        show_splash = false;
+
+    medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
+    if (show_splash) {
+
+        QObject::connect(medDatabaseController::instance().data(),
+                         SIGNAL(copyMessage(QString,int,QColor)),
+                         &splash,SLOT(showMessage(QString,int, QColor)));
+
+        application.setMsgColor(Qt::white);
+        application.setMsgAlignment(Qt::AlignLeft|Qt::AlignBottom);
+
+        QObject::connect(medPluginManager::instance(),SIGNAL(loadError(const QString&)),
+                         &application,SLOT(redirectMessageToSplash(const QString&)) );
+        QObject::connect(medPluginManager::instance(),SIGNAL(loaded(QString)),
+                         &application,SLOT(redirectMessageToSplash(QString)) );
+        QObject::connect(&application,SIGNAL(showMessage(const QString&, int, const QColor&)),
+                         &splash,SLOT(showMessage(const QString&, int, const QColor&)) );
+        splash.show();
+        splash.showMessage("Loading plugins...",Qt::AlignLeft|Qt::AlignBottom,Qt::white);
+    }
+
+    //  DATABASE INITIALISATION.
+    //  First compare the current with the new data location
+
     QString currentLocation = medStorage::dataLocation();
 
-    // if the user configured a new location for the database in the settings editor, we'll need to move it
+    //  If the user configured a new location for the database in the settings editor, we'll need to move it
+
     QString newLocation = mnger->value("medDatabaseSettingsWidget", "new_database_location").toString();
     if (!newLocation.isEmpty()) {
 
-        // if the locations are different we need to move the db to the new location
-        if (currentLocation.compare(newLocation) != 0) {
-            if(!medDatabaseController::instance()->moveDatabase(newLocation)){
+        //  If the locations are different we need to move the db to the new location
+
+        if (currentLocation.compare(newLocation)!=0) {
+            if (!medDatabaseController::instance()->moveDatabase(newLocation)) {
                 qDebug() << "Failed to move the database from " << currentLocation << " to " << newLocation;
-                // the new location is invalid so set it to zero
+                //  The new location is invalid so set it to zero
                 newLocation = "";
             }
-        mnger->setValue("medDatabaseSettingsWidget", "actual_database_location", newLocation);
-        // we need to reset the new Location to prevent doing it all the time
-        mnger->setValue("medDatabaseSettingsWidget", "new_database_location","");
+            mnger->setValue("medDatabaseSettingsWidget", "actual_database_location",newLocation);
+
+            //  We need to reset the new Location to prevent doing it all the time
+
+            mnger->setValue("medDatabaseSettingsWidget", "new_database_location","");
         }
     }
-    // END OF DATABASE INITIAL ROUTINE
+    // END OF DATABASE INITIALISATION
 
     medPluginManager::instance()->initialize();
     dtkScriptManager::instance()->initialize();
 
     medMainWindow mainwindow;
+    if (DirectView)
+        mainwindow.setStartup(2,FileToView);
+
     forceShow(mainwindow);
 
-    if(!dtkApplicationArgumentsContain(&application, "--no-fullscreen")
-    && !dtkApplicationArgumentsContain(&application, "--wall")){
-        bool fullScreen  = medSettingsManager::instance()->value("startup", "fullscreen", true).toBool();
-        mainwindow.setFullScreen(fullScreen);
-    }
-
-    if(application.arguments().contains("--wall"))
+    if (application.arguments().contains("--wall"))
         mainwindow.setWallScreen(true);
+    else if (!dtkApplicationArgumentsContain(&application,"--no-fullscreen"))
+        mainwindow.setFullScreen(mnger->value("startup","fullscreen",true).toBool());
 
-    if(application.arguments().contains("--stereo")) {
+    if (application.arguments().contains("--stereo")) {
        QGLFormat format;
        format.setAlpha(true);
        format.setDoubleBuffer(true);
@@ -155,13 +171,13 @@ int main(int argc, char *argv[])
        QGLFormat::setDefaultFormat(format);
     }
 
-    splash.finish(&mainwindow);
+    if (show_splash)
+        splash.finish(&mainwindow);
 
-    int status = application.exec();
+    const int status = application.exec();
 
     medPluginManager::instance()->uninitialize();
     dtkScriptManager::instance()->uninitialize();
-
 
     return status;
 }

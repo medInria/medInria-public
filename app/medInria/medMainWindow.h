@@ -38,6 +38,8 @@ public:
     void readSettings();
     void writeSettings();
 
+    void setStartup(const int areaIndex,const QString& filename);
+
     void updateQuickAccessMenu();
     void resizeEvent(QResizeEvent* event);
 
@@ -53,6 +55,7 @@ public slots:
 
     void switchFullScreen();
 
+    void switchToArea(const int areaIndex);
     void switchToBrowserArea();
     void switchToViewerArea();
     void switchToHomepageArea();

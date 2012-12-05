@@ -102,29 +102,25 @@ public:
 class medMainWindowPrivate {
 public:
 
-    QStackedWidget *stack;
-    QList<QString> importUuids;
+    //  Interface elements.
 
-    medBrowserArea *browserArea;
-    medViewerArea  *viewerArea;
-    medHomepageArea * homepageArea;
+    QStackedWidget*           stack;
+    medBrowserArea*           browserArea;
+    medViewerArea*            viewerArea;
+    medHomepageArea*          homepageArea;
+    medSettingsEditor*        settingsEditor;
+    QHBoxLayout*              statusBarLayout;
+    QWidget*                  rightEndButtons;
+    medStatusBar*             statusBar;
+    medQuickAccessMenu*       quickAccessWidget;
+    medQuickAccessPushButton* quickAccessButton;
+    QPropertyAnimation*       quickAccessAnimation;
+    QWidget*                  quitMessage;
+    medButton*                quitButton;
+    QToolButton*              fullscreenButton;
 
-    medSettingsEditor * settingsEditor;
-
-    QHBoxLayout * statusBarLayout;
-    QWidget * rightEndButtons;
-    medStatusBar * statusBar;
-//     QWidget * quickAccessWidget;
-    medQuickAccessMenu * quickAccessWidget;
-    bool quickAccessVisible;
-
-    medQuickAccessPushButton * quickAccessButton;
-    QPropertyAnimation * quickAccessAnimation;
-
-    QWidget * quitMessage;
-
-    medButton *quitButton;
-    QToolButton *fullscreenButton;
+    QList<QString>            importUuids;
+    bool                      quickAccessVisible;
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -135,56 +131,66 @@ extern "C" int init_core();               // -- Initialization core layer python
 extern "C" int Core_Init(Tcl_Interp *interp); // -- Initialization core layer tcl    wrapped functions
 #endif
 
-medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent),d(new medMainWindowPrivate) {
-    // etch-disabled-text stylesheet property was deprecated
-    // this is the only way I found to avoid the label's text look like etched when disabled
-    //also not puting the opacity to 0 works very well, except for tooltips
-    // but only tooltips in a QGroupBox, others are fine...
-    //Solution: put a transparent color to the etching palette (Light)
+medMainWindow::medMainWindow(QWidget *parent): QMainWindow(parent),d(new medMainWindowPrivate) {
+
+    //  Etch-disabled-text stylesheet property was deprecated.
+    //  This is the only way I found to avoid the label's text look like etched when disabled
+    //  also not puting the opacity to 0 works very well, except for tooltips
+    //  but only tooltips in a QGroupBox, others are fine...
+    //  Solution: put a transparent color to the etching palette (Light).
+
     QPalette p = QApplication::palette();
     p.setColor(QPalette::Disabled,QPalette::Light,QColor(100,100,100,0));
     QApplication::setPalette(p);
 
-    // To avoid strange behaviours with the homepageshifter
+    //  To avoid strange behaviours with the homepageshifter
+
     this->setMinimumHeight(600);
     this->setMinimumWidth(800);
 
-    // register controller, workspaces etc
+    //  Register controller, workspaces etc
+
     this->registerToFactories();
 
-    // Setting up database connection
+    //  Setting up database connection
+
     if (!medDatabaseController::instance()->createConnection())
         qDebug() << "Unable to create a connection to the database";
 
     connect(medDatabaseNonPersistentController::instance(),SIGNAL(updated(const medDataIndex &,const QString&)),
             this,SLOT(onOpenFile(const medDataIndex&,const QString&)));
 
-    // Setting up widgets
-    d->settingsEditor = NULL;
-    d->browserArea = new medBrowserArea(this);
-    d->viewerArea = new medViewerArea(this);
-    d->homepageArea = new medHomepageArea(this);
+    //  Setting up widgets
 
+    d->settingsEditor = NULL;
+
+    //  Browser area.
+
+    d->browserArea = new medBrowserArea(this);
     d->browserArea->setObjectName("Browser");
+    connect(d->browserArea,SIGNAL(open(const QString&)),this,SLOT(open(const QString&)));
+    connect(d->browserArea,SIGNAL(load(const QString&)),this,SLOT(load(const QString&)));
+    connect(d->browserArea,SIGNAL(open(const medDataIndex&)),this,SLOT(open(const medDataIndex&)));
+
+    //  Viewer area.
+
+    d->viewerArea = new medViewerArea(this);
     d->viewerArea->setObjectName("Viewer");
+
+    //  Home page
+
+    d->homepageArea = new medHomepageArea(this);
     d->homepageArea->setObjectName("Homepage");
 
+    //  Stack
 
     d->stack = new QStackedWidget(this);
     d->stack->addWidget(d->homepageArea);
     d->stack->addWidget(d->browserArea);
     d->stack->addWidget(d->viewerArea);
 
-    d->statusBarLayout = new QHBoxLayout;
-    d->statusBarLayout->setMargin(0);
-    d->statusBarLayout->setSpacing(5);
+    //  Setup quick access menu
 
-    connect(d->browserArea,SIGNAL(open(const QString&)),this,SLOT(open(const QString&)));
-    connect(d->browserArea,SIGNAL(load(const QString&)),this,SLOT(load(const QString&)));
-    connect(d->browserArea,SIGNAL(open(const medDataIndex&)),this,SLOT(open(const medDataIndex&)));
-
-    // Setting up status bar
-    //Setup quick access menu
     d->quickAccessButton = new medQuickAccessPushButton(this);
     d->quickAccessButton->setFocusPolicy(Qt::NoFocus);
     d->quickAccessButton->setMinimumHeight(31);
@@ -203,14 +209,16 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent),d(new medMai
     d->quickAccessVisible = false;
     d->quickAccessAnimation = new QPropertyAnimation(d->quickAccessWidget,"pos",this);
 
-    //Add quit button
+    //  Add quit button
+
     d->quitButton = new medButton(this,":/icons/quit.png",tr("Quit Application"));
     connect(d->quitButton,SIGNAL(triggered()),this,SLOT(onQuit()));
     connect(d->quitButton,SIGNAL(triggered()),this,SLOT(onSaveModified()));
     d->quitButton->setMaximumWidth(31);
     d->quitButton->setToolTip(tr("Close medInria"));
 
-    //Setup quit message
+    //  Setup quit message
+
     d->quitMessage = new QWidget(this);
     QHBoxLayout * quitLayout = new QHBoxLayout;
     QLabel *icon = new QLabel(this);
@@ -233,23 +241,22 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent),d(new medMai
     quitLayout->addWidget(ok_button);
     quitLayout->addWidget(no_button);
 
-    //Setup Fullscreen Button
+    //  Setup Fullscreen Button
+
     QIcon fullscreenIcon ;
     fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenExpand.png"),QIcon::Normal,QIcon::Off);
     fullscreenIcon.addPixmap(QPixmap(":icons/fullscreenReduce.png"),QIcon::Normal,QIcon::On);
 
-    // Setting up shortcuts
-    // we use a toolbutton, which has shorcuts,
-    // so we don't need the application shortcut anymore.
-//    QShortcut * fullscreenShorcut = new QShortcut(Qt::Key_F11,this);
-//    fullscreenShorcut->setContext(Qt::ApplicationShortcut);
-//    connect(fullscreenShorcut,SIGNAL(activated()),this,SLOT(switchFullScreen()));
+    //  Setting up shortcuts
+    //  we use a toolbutton, which has shorcuts,
+    //  so we don't need the application shortcut anymore.
 
     d->fullscreenButton = new QToolButton(this);
     d->fullscreenButton->setIcon(fullscreenIcon);
     d->fullscreenButton->setCheckable(true);
     d->fullscreenButton->setChecked(false);
     d->fullscreenButton->setObjectName("fullScreenButton");
+
 #if defined(Q_WS_MAC)
     d->fullscreenButton->setShortcut(Qt::ControlModifier + Qt::Key_F);
     d->fullscreenButton->setToolTip(tr("Switch FullScreen state (Cmd+f)"));
@@ -257,14 +264,13 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent),d(new medMai
     d->fullscreenButton->setShortcut(Qt::Key_F11);
     d->fullscreenButton->setToolTip(tr("Switch FullScreen state (F11)"));
 #endif
-    QObject::connect(d->fullscreenButton,SIGNAL(toggled(bool)),
-                       this,SLOT(setFullScreen(bool)));
 
+    QObject::connect(d->fullscreenButton,SIGNAL(toggled(bool)),this,SLOT(setFullScreen(bool)));
 
     d->quitMessage->setLayout(quitLayout);
 
+    //  QuitMessage and rightEndButtons will switch hidden and shown statuses.
 
-    //QuitMessage and rightEndButtons will switch hidden and shown statuses.
     d->rightEndButtons = new QWidget(this);
     QHBoxLayout * rightEndButtonsLayout = new QHBoxLayout(d->rightEndButtons);
     rightEndButtonsLayout->setContentsMargins(5,0,5,0);
@@ -272,6 +278,11 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent),d(new medMai
     rightEndButtonsLayout->addWidget(d->fullscreenButton);
     rightEndButtonsLayout->addWidget(d->quitButton);
 
+    //  Setting up status bar
+
+    d->statusBarLayout = new QHBoxLayout;
+    d->statusBarLayout->setMargin(0);
+    d->statusBarLayout->setSpacing(5);
 
     d->statusBarLayout->addWidget(d->quickAccessButton);
     d->statusBarLayout->addStretch();
@@ -280,12 +291,14 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent),d(new medMai
 
     d->quitMessage->hide();
 
-    //Create a container widget for the status bar
+    //  Create a container widget for the status bar
+
     QWidget * statusBarWidget = new QWidget(this);
     statusBarWidget->setContentsMargins(5,0,5,0);
     statusBarWidget->setLayout(d->statusBarLayout);
 
-    //Setup status bar
+    //  Setup status bar
+
     d->statusBar = new medStatusBar(this);
     d->statusBar->setStatusBarLayout(d->statusBarLayout);
     d->statusBar->setSizeGripEnabled(false);
@@ -302,29 +315,34 @@ medMainWindow::medMainWindow(QWidget *parent) : QMainWindow(parent),d(new medMai
 
     this->readSettings();
 
-    //Init homepage with workspace buttons
+    //  Init homepage with workspace buttons
+
     d->homepageArea->initPage();
     QObject::connect(d->homepageArea,SIGNAL(showBrowser()),this,SLOT(switchToBrowserArea()));
     QObject::connect(d->homepageArea,SIGNAL(showWorkspace(QString)),this,SLOT(onShowWorkspace(QString)));
     QObject::connect(d->homepageArea,SIGNAL(showSettings()),this,SLOT(onEditSettings()));
 
-    //Add workspace button to the quick access menu
+    //  Add workspace button to the quick access menu
     this->updateQuickAccessMenu();
 
     this->setCentralWidget(d->stack);
 
-    // Now use the Qt preferred method by setting the Application style instead.
-    // The ownership of the style object is not transferred.
-    // this->setStyle(new QPlastiqueStyle());
+    //  Now use the Qt preferred method by setting the Application style instead.
+    //  The ownership of the style object is not transferred.
+    //  this->setStyle(new QPlastiqueStyle());
+
     this->setWindowTitle("medInria");
 
-    //Connect the messageController with the status for notification messages management
+    //  Connect the messageController with the status for notification messages management
+
     QObject::connect(medMessageController::instance(),SIGNAL(addMessage(QWidget*)),d->statusBar,SLOT(addMessage(QWidget*)));
     QObject::connect(medMessageController::instance(),SIGNAL(removeMessage(QWidget*)),d->statusBar,SLOT(removeMessage(QWidget*)));
 
     d->viewerArea->setupWorkspace("Visualization");
 
     connect(qApp,SIGNAL(aboutToQuit()),this,SLOT(close()));
+
+    //  If directly opening the file was mandated on the command line, ask for it now.
 }
 
 medMainWindow::~medMainWindow() {
@@ -341,12 +359,42 @@ void medMainWindow::readSettings() {
 
     //  If the user configured a default area we need to show it
 
-    medSettingsManager * mnger = medSettingsManager::instance();
+    medSettingsManager* mnger = medSettingsManager::instance();
 
     //  If nothing is configured then Browser is the default area
 
     const int areaIndex = mnger->value("startup","default_starting_area",0).toInt();
+    qDebug() << "areaIndex" << areaIndex;
 
+    switchToArea(areaIndex);
+
+    //  Restore size
+
+    if (!this->isFullScreen()) {
+        QPoint pos = mnger->value("application","pos",QPoint(200,200)).toPoint();
+        QSize size = mnger->value("application","size",QSize(600,400)).toSize();
+        move(pos);
+        resize(size);
+    }
+}
+
+void medMainWindow::writeSettings() {
+    // if the app is in full screen mode we do not want to save the pos and size
+    // as there is a setting that defines either the user wants to open the app in FS or not
+    // so, if he/she chose not to and quit the app while in FS mode, we skip the settings saving
+    if (!this->isFullScreen()) {
+        medSettingsManager::instance()->setValue("application","pos",pos());
+        medSettingsManager::instance()->setValue("application","size",size());
+    }
+}
+
+void medMainWindow::setStartup(const int areaIndex,const QString& filename) {
+    switchToArea(areaIndex);
+    qDebug() << "HERE" << filename;
+    open(filename);
+}
+
+void medMainWindow::switchToArea(const int areaIndex) {
     switch (areaIndex) {
         case 0:
             this->switchToHomepageArea();
@@ -356,34 +404,16 @@ void medMainWindow::readSettings() {
             this->switchToBrowserArea();
             break;
 
-        case 2:
+        case 2: {
             this->switchToViewerArea();
             break;
+        }
 
         default:
             this->switchToHomepageArea();
             break;
-    }
+        }
 
-    // restore size
-    if (!this->isFullScreen()) {
-        QPoint pos = mnger->value("application","pos",QPoint(200,200)).toPoint();
-        QSize size = mnger->value("application","size",QSize(600,400)).toSize();
-        move(pos);
-        resize(size);
-    }
-
-}
-
-void medMainWindow::writeSettings()
-{
-    // if the app is in full screen mode we do not want to save the pos and size
-    // as there is a setting that defines either the user wants to open the app in FS or not
-    // so, if he/she chose not to and quit the app while in FS mode, we skip the settings saving
-    if (!this->isFullScreen()) {
-        medSettingsManager::instance()->setValue("application","pos",pos());
-        medSettingsManager::instance()->setValue("application","size",size());
-    }
 }
 
 void medMainWindow::updateQuickAccessMenu()
