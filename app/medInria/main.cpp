@@ -98,6 +98,10 @@ int main(int argc,char* argv[]) {
     if (DirectView)
         show_splash = false;
 
+    const QString& message = (DirectView) ? QString("/open ")+FileToView : QString("");
+    if (application.sendMessage(message))
+        return 0;
+
     medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
     if (show_splash) {
 
@@ -194,6 +198,15 @@ int main(int argc,char* argv[]) {
                              QObject::tr("No plugin loaded"),
                              QObject::tr("Warning : no plugin loaded successfully."));
     }
+
+    //  Handle signals for multiple medInria instances.
+
+    QObject::connect(&application,SIGNAL(messageReceived(const QString&)),
+		             &mainwindow,SLOT(onNewInstance(const QString&)));
+
+    application.setActivationWindow(&mainwindow);
+
+    //  Start main loop.
 
     const int status = application.exec();
 

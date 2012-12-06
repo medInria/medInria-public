@@ -117,6 +117,11 @@ medApplication::medApplication(int & argc, char**argv) :
                      this, SLOT(redirectErrorMessageToLog(const QString&)) );
     QObject::connect(medPluginManager::instance(), SIGNAL(loaded(QString)),
                      this, SLOT(redirectMessageToLog(QString)) );
+
+    //  React if anothe medInria instance is launched.
+
+    QObject::connect(this,SIGNAL(messageReceived(const QString&)),
+                     this,SLOT(onNewInstance(const QString& message)));
 }
 
 medApplication::~medApplication(void)

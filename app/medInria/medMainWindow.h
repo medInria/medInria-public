@@ -71,6 +71,10 @@ private slots:
     void onEditSettings(void);
 
     void availableSpaceOnStatusBar();
+    //  @brief React to to new medInria instance.
+    //  @param message
+
+    void onNewInstance(const QString& message);
 
     /**
      * @brief: Decides what to do when the importer returned a medDataIndex after importation.

@@ -742,9 +742,17 @@ void medMainWindow::availableSpaceOnStatusBar()
     d->statusBar->setAvailableSpace(space);
 }
 
+void medMainWindow::onNewInstance(const QString& message) {
+    QString filename = message;
+    if (message.toLower().startsWith("/open ")) {
+        filename = filename.mid(6);
+        open(filename);
+    }
+}
+
 void medMainWindow::open ( const medDataIndex& index )
 {
-   if(d->workspaceArea->openInTab(index))
+    if(d->workspaceArea->openInTab(index))
     {
         d->quickAccessButton->setText(tr("Workspace: Visualization"));
         d->quickAccessButton->setMinimumWidth(170);
