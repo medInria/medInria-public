@@ -7,7 +7,7 @@ mkdir -p @CMAKE_INSTALL_PREFIX@/PackageRootDir/Applications/medInria.app/Content
 
 cd @CMAKE_INSTALL_PREFIX@/PackageRootDir/Applications/medInria.app/Contents
 
-for i in $( otool -L @CMAKE_INSTALL_PREFIX@/plugins/*.dylib 2> /dev/null \
+for i in $( otool -L @CMAKE_BINARY_DIR@/plugins/*.dylib 2> /dev/null \
 | sort -u | grep -i -E '@medInria_DIR@|@dtk_DIR@|ttk|itk|vtk' | cut -d " " -f 1 ); do
 	cp -np $i Frameworks/ 2> /dev/null;
 done
@@ -19,7 +19,7 @@ done
 
 # copy plugins in PlugIns directory
 
-for i in @CMAKE_INSTALL_PREFIX@/plugins/*.dylib; do
+for i in @CMAKE_BINARY_DIR@/plugins/*.dylib; do
 	cp -p $i PlugIns
 done
 
@@ -41,7 +41,7 @@ for i in $(ls PlugIns | grep -E 'dylib' ); do
 		fi
     done
     
-    for libname in `otool -L PlugIns/$i | sed "1d" | grep dcmtk | cut -d " " -f 1`
+    for libname in `otool -L PlugIns/$i | sed "1d" | grep @DCMTK_DIR@ | cut -d " " -f 1`
     do
     	baselibname=`basename $libname`
     	if [ ! -e Frameworks/DCMTK/$baselibname ]; then
@@ -61,7 +61,7 @@ do
 		install_name_tool -change $libname @executable_path/../Frameworks/Dcm/$baselibname $f
 	done
 
-    for libname in `otool -L $f | sed "1d" | grep dcmtk | cut -d " " -f 1`
+    for libname in `otool -L $f | sed "1d" | grep @DCMTK_DIR@ | cut -d " " -f 1`
     do
     	baselibname=`basename $libname`
     	if [ ! -e Frameworks/DCMTK/$baselibname ]; then
@@ -95,7 +95,7 @@ do
 		fi
     done
     
-    for libname in `otool -L $f | sed "1d" | grep dcmtk | cut -d " " -f 1`
+    for libname in `otool -L $f | sed "1d" | grep @DCMTK_DIR@ | cut -d " " -f 1`
     do
     	baselibname=`basename $libname`
     	if [ ! -e Frameworks/DCMTK/$baselibname ]; then
@@ -110,7 +110,7 @@ for f in Frameworks/DCMTK/*.dylib
 do
 	install_name_tool -id @executable_path/../$f $f
 
-	for libname in `otool -L $f | sed "1d" | grep dcmtk | cut -d " " -f 1`
+	for libname in `otool -L $f | sed "1d" | grep @DCMTK_DIR@ | cut -d " " -f 1`
 	do
 		baselibname=`basename $libname`
 		if [ ! -e Frameworks/DCMTK/$baselibname ]; then
@@ -131,7 +131,7 @@ for i in $( ls Frameworks | grep -E 'dylib' ); do
 			Frameworks/$i
 		done
 		
-	for libname in `otool -L Frameworks/$i | sed "1d" | grep dcmtk | cut -d " " -f 1`
+	for libname in `otool -L Frameworks/$i | sed "1d" | grep @DCMTK_DIR@ | cut -d " " -f 1`
 	do
 		baselibname=`basename $libname`
 		install_name_tool -change $libname @executable_path/../Frameworks/DCMTK/$baselibname Frameworks/$i
