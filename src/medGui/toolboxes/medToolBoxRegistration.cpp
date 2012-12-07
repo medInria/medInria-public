@@ -204,9 +204,13 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
         d->fuseView->reset();
         d->fuseView->update();
     }
-	connect(d->fixedView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
-	if (!d->movingView)
-		connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+    connect(d->fixedView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
+    connect(d->fixedView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+    if (!d->movingView)
+    {
+        connect(d->fuseView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
+        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+    }
 }
 
 /** 
@@ -250,9 +254,13 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
     }
     //d->fuseView->reset();
     d->fuseView->update();
-	connect(d->movingView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
-	if (!d->fixedView)
-		connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+    connect(d->movingView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
+    connect(d->movingView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+    if (!d->fixedView)
+    {
+        connect(d->fuseView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
+        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+    }
 }
 
 /** 
@@ -458,6 +466,10 @@ void medToolBoxRegistration::onSuccess()
         d->movingView->update();
         d->fuseView->setData(output,1);
         d->fuseView->update();
+        d->fixedView->setLinkPosition(true);
+        d->fixedView->setLinkCamera(true);
+        d->movingView->setLinkPosition(true);
+        d->movingView->setLinkCamera(true);
     }
 }
 
@@ -465,7 +477,7 @@ void medToolBoxRegistration::onSuccess()
 void medToolBoxRegistration::synchroniseWindowLevel(){ 
 			
 	double window,level;
-		
+    
 	if (d->fixedView==QObject::sender())
 	{
 		d->fixedView->windowLevel(level,window);
@@ -500,3 +512,18 @@ void medToolBoxRegistration::synchroniseWindowLevel(){
 		// In the case that the currentLayer>1 we do nothing.
 	}
 }
+//! Synchronises the position between the compare and the fuse mode.
+void medToolBoxRegistration::synchronisePosition(const QVector3D &position){ 
+   
+    if (d->fixedView==QObject::sender() || d->movingView==QObject::sender())
+    {
+        if (d->fixedView->positionLinked() && d->movingView->positionLinked()) // If the fixedView and movingView are linked in position then the changes also appear in fuseView.
+            d->fuseView->onPositionChanged(position);
+    }
+    else // the changes in fuseView are propagated to the fixedView and movingView.
+    {		
+        d->fixedView->onPositionChanged(position);
+        d->movingView->onPositionChanged(position);
+    }
+}
+
