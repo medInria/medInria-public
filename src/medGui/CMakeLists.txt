@@ -100,7 +100,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medToolBoxFiltering.h
   toolboxes/medToolBoxFilteringCustom.h
   toolboxes/medBrowserJobsToolBox.h
-  toolboxes/medViewerToolBoxLayout.h
+  toolboxes/medVisualizationLayoutToolBox.h
   toolboxes/medViewerToolBoxTime.h
   toolboxes/medViewerToolBoxViewProperties.h
   toolboxes/medBrowserPacsHostToolBox.h
@@ -214,7 +214,7 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medToolBoxFiltering.cpp
   toolboxes/medToolBoxFilteringCustom.cpp
   toolboxes/medBrowserJobsToolBox.cpp
-  toolboxes/medViewerToolBoxLayout.cpp
+  toolboxes/medVisualizationLayoutToolBox.cpp
   toolboxes/medViewerToolBoxTime.cpp
   toolboxes/medViewerToolBoxViewProperties.cpp
   toolboxes/medBrowserPacsHostToolBox.cpp

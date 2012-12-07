@@ -23,21 +23,21 @@
 #include <medViewContainer.h>
 #include <medTabbedViewContainers.h>
 #include <medViewerToolBoxTime.h>
-#include <medViewerToolBoxLayout.h>
+#include <medVisualizationLayoutToolBox.h>
 #include <medSettingsManager.h>
 
 class medVisualizationWorkspacePrivate
 {
 public:
-    medViewerToolBoxLayout              *layoutToolBox;
-    medViewerToolBoxTime                *timeToolBox;
-    medViewerToolBoxViewProperties      *viewPropertiesToolBox;
+    medVisualizationLayoutToolBox *layoutToolBox;
+    medViewerToolBoxTime *timeToolBox;
+    medViewerToolBoxViewProperties *viewPropertiesToolBox;
 };
 
 medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medViewerWorkspace(parent), d(new medVisualizationWorkspacePrivate)
 {
     // -- Layout toolbox --
-    d->layoutToolBox = new medViewerToolBoxLayout(parent);
+    d->layoutToolBox = new medVisualizationLayoutToolBox(parent);
 
     connect (d->layoutToolBox, SIGNAL(modeChanged(const QString&)),
              this,             SIGNAL(layoutModeChanged(const QString&)));

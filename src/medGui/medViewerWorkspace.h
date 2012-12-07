@@ -320,7 +320,7 @@ signals:
      *
      * This signal is mainly intended for the medWorkspaceArea,
      * that connects it with its medWorkspaceArea::switchToContainer slot.
-     * @todo rename this signal when changing the medViewerToolBoxLayout API.
+     * @todo rename this signal when changing the medVisualizationLayoutToolBox API.
      *
      * @param mode
     */

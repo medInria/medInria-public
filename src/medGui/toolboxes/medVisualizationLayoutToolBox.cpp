@@ -1,4 +1,4 @@
-/* medViewerToolBoxLayout.cpp ---
+/* medVisualizationLayoutToolBox.cpp ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -20,15 +20,15 @@
 
 #include "medToolBoxTab.h"
 #include "medLayoutChooser.h"
-#include "medViewerToolBoxLayout.h"
+#include "medVisualizationLayoutToolBox.h"
 
-class medViewerToolBoxLayoutPrivate
+class medVisualizationLayoutToolBoxPrivate
 {
 public:
     medToolBoxTab *layoutToolBoxTab;
 };
 
-medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxLayoutPrivate)
+medVisualizationLayoutToolBox::medVisualizationLayoutToolBox(QWidget *parent) : medToolBox(parent), d(new medVisualizationLayoutToolBoxPrivate)
 {
     QWidget *customPage = new QWidget(this);
 
@@ -103,39 +103,39 @@ medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(par
     connect(layoutChooser, SIGNAL(selected(int,int)), this, SIGNAL(split(int,int)));
 }
 
-medViewerToolBoxLayout::~medViewerToolBoxLayout(void)
+medVisualizationLayoutToolBox::~medVisualizationLayoutToolBox(void)
 {
     delete d;
 
     d = NULL;
 }
 
-void medViewerToolBoxLayout::onButtonAClicked(void)
+void medVisualizationLayoutToolBox::onButtonAClicked(void)
 {
     emit presetClicked(1);
 }
 
-void medViewerToolBoxLayout::onButtonBClicked(void)
+void medVisualizationLayoutToolBox::onButtonBClicked(void)
 {
     emit presetClicked(2);
 }
 
-void medViewerToolBoxLayout::onButtonCClicked(void)
+void medVisualizationLayoutToolBox::onButtonCClicked(void)
 {
     emit presetClicked(3);
 }
 
-void medViewerToolBoxLayout::onButtonDClicked(void)
+void medVisualizationLayoutToolBox::onButtonDClicked(void)
 {
     emit presetClicked(4);
 }
 
-void medViewerToolBoxLayout::onButtonEClicked(void)
+void medVisualizationLayoutToolBox::onButtonEClicked(void)
 {
     emit presetClicked(5);
 }
 
-void medViewerToolBoxLayout::modeChanged(int tabIndex)
+void medVisualizationLayoutToolBox::modeChanged(int tabIndex)
 {
     switch (tabIndex){
     case 1:
@@ -150,14 +150,14 @@ void medViewerToolBoxLayout::modeChanged(int tabIndex)
     }
 }
 
-void medViewerToolBoxLayout::clear()
+void medVisualizationLayoutToolBox::clear()
 {
     blockSignals(true);
     d->layoutToolBoxTab->setCurrentIndex(0);
     blockSignals(false);
 }
 
-void medViewerToolBoxLayout::setTab(const QString &name)
+void medVisualizationLayoutToolBox::setTab(const QString &name)
 {
     if (name == "Single")
         d->layoutToolBoxTab->setCurrentIndex(0);

@@ -12,7 +12,7 @@
 #include <medTabbedViewContainers.h>
 #include <medViewContainer.h>
 #include <medWorkspaceFactory.h>
-#include <medViewerToolBoxLayout.h>
+#include <medVisualizationLayoutToolBox.h>
 #include <medViewerToolBoxViewProperties.h>
 #include <medToolBoxFactory.h>
 
@@ -31,10 +31,10 @@ public:
       layoutToolBox(NULL), viewPropertiesToolBox(NULL), segmentationToolBox(NULL)
     {}
 
-    medViewerToolBoxLayout              *layoutToolBox;
-    medViewerToolBoxViewProperties      *viewPropertiesToolBox;
+    medVisualizationLayoutToolBox *layoutToolBox;
+    medViewerToolBoxViewProperties *viewPropertiesToolBox;
 
-    medToolBoxSegmentation          *segmentationToolBox;
+    medToolBoxSegmentation *segmentationToolBox;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ medViewerWorkspace(parent), d(new medSegmentationWorkspacePrivate)
         throw (std::runtime_error ("Must have a parent widget"));
 
     // -- Layout toolbox --
-    d->layoutToolBox = new medViewerToolBoxLayout(parent);
+    d->layoutToolBox = new medVisualizationLayoutToolBox(parent);
 
     connect (d->layoutToolBox, SIGNAL(modeChanged(const QString&)),
         this,             SIGNAL(layoutModeChanged(const QString&)));

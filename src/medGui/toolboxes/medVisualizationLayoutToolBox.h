@@ -1,5 +1,5 @@
-/* medViewerToolBoxLayout.h ---
- * 
+/* medVisualizationLayoutToolBox.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:02:09 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 10
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDVIEWERTOOLBOXLAYOUT_H
@@ -23,15 +23,15 @@
 #include "medGuiExport.h"
 #include "medToolBox.h"
 
-class medViewerToolBoxLayoutPrivate;
+class medVisualizationLayoutToolBoxPrivate;
 
-class MEDGUI_EXPORT medViewerToolBoxLayout : public medToolBox
+class MEDGUI_EXPORT medVisualizationLayoutToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medViewerToolBoxLayout(QWidget *parent = 0);
-    ~medViewerToolBoxLayout(void);
+     medVisualizationLayoutToolBox(QWidget *parent = 0);
+    ~medVisualizationLayoutToolBox(void);
 
 signals:
     void modeChanged(const QString&);
@@ -56,7 +56,7 @@ protected slots:
     void modeChanged(int);
 
 private:
-    medViewerToolBoxLayoutPrivate *d;
+    medVisualizationLayoutToolBoxPrivate *d;
 };
 
 #endif

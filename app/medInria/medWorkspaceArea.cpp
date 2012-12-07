@@ -36,7 +36,7 @@
 #include <medToolBoxDiffusion.h>
 #include <medToolBoxRegistration.h>
 #include <medTabbedViewContainers.h>
-#include <medViewerToolBoxLayout.h>
+#include <medVisualizationLayoutToolBox.h>
 #include <medViewerToolBoxPatient.h>
 #include <medViewerToolBoxViewProperties.h>
 
