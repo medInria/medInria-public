@@ -26,12 +26,12 @@
 #include <medAbstractView.h>
 #include <medViewManager.h>
 
-medViewContainerSingle2::~medViewContainerSingle2()
+medSingleViewContainer2::~medSingleViewContainer2()
 {
     d->layout->setContentsMargins(0, 0, 0, 0);
 }
 
-void medViewContainerSingle2::setView (dtkAbstractView *view)
+void medSingleViewContainer2::setView (dtkAbstractView *view)
 {
 //    Never replace an existing view: we are in multi, we always add a new one.
 //    if (d->view==view)
@@ -59,18 +59,18 @@ void medViewContainerSingle2::setView (dtkAbstractView *view)
 
     if (view) {
         d->layout->addWidget(view->widget(), 0, 0);
-        // d->pool->appendView (view); // only difference with medViewContainerSingle: do not add the view to the pool
+        // d->pool->appendView (view); // only difference with medSingleViewContainer: do not add the view to the pool
         connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
     }
     this->setFocus(Qt::MouseFocusReason);
 }
 
-bool medViewContainerSingle2::isLeaf(void) const
+bool medSingleViewContainer2::isLeaf(void) const
 {
     return true;
 }
 
-void medViewContainerSingle2::onViewClosing (void)
+void medSingleViewContainer2::onViewClosing (void)
 {
     qDebug()<<"closing single2";
     if (d->view) {
@@ -91,7 +91,7 @@ void medViewContainerSingle2::onViewClosing (void)
     // qDebug() << "isCurrent: " << this->isCurrent();
 }
 
-void medViewContainerSingle2::onViewFocused (bool value)
+void medSingleViewContainer2::onViewFocused (bool value)
 {
     if ( !value )
         return;
@@ -178,7 +178,7 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
     // so it is not in the list
     QList <medViewContainer *> containers = this->childContainers();
 
-    medViewContainer *container = new medViewContainerSingle2(this);
+    medViewContainer *container = new medSingleViewContainer2(this);
     container->setAcceptDrops(false);
     container->setView(view);
 

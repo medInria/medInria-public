@@ -116,7 +116,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   viewContainers/medViewContainerCompare.h
   viewContainers/medViewContainerMulti.h
   viewContainers/medViewContainerCustom.h
-  viewContainers/medViewContainerSingle.h
+  viewContainers/medSingleViewContainer.h
   viewContainers/medViewContainerFiltering.h
   viewContainers/medViewContainer.h
 )
@@ -230,7 +230,7 @@ set(${PROJECT_NAME}_SOURCES
   viewContainers/medViewContainerCompare.cpp
   viewContainers/medViewContainerMulti.cpp
   viewContainers/medViewContainerCustom.cpp
-  viewContainers/medViewContainerSingle.cpp
+  viewContainers/medSingleViewContainer.cpp
   viewContainers/medViewContainerFiltering.cpp
   viewContainers/medViewContainer.cpp
 )

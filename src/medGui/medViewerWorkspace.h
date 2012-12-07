@@ -191,7 +191,7 @@ public:
     void addDefaultTypeContainer(const QString& name = "");
 
     /**
-     * @brief Convenience method to add a medViewContainerSingle.
+     * @brief Convenience method to add a medSingleViewContainer.
      *
      * @param name identifier/description. By Default "Single",
      * which makes sense in most simple cases.

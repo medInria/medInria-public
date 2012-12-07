@@ -23,16 +23,16 @@
 #include "medGuiExport.h"
 
 #include "medViewContainer.h"
-#include "medViewContainerSingle.h"
+#include "medSingleViewContainer.h"
 
-class MEDGUI_EXPORT medViewContainerSingle2 : public medViewContainerSingle
+class MEDGUI_EXPORT medSingleViewContainer2 : public medSingleViewContainer
 {
     Q_OBJECT
 
 public:
-     medViewContainerSingle2(QWidget *parent = 0) :
-         medViewContainerSingle(parent) {}
-    ~medViewContainerSingle2();
+     medSingleViewContainer2(QWidget *parent = 0) :
+         medSingleViewContainer(parent) {}
+    ~medSingleViewContainer2();
 
     void setView(dtkAbstractView *view);
 
@@ -42,7 +42,7 @@ public:
      * This method is useful in the case of a custom or multi
      * container.  Returns true if this object is supposed to contain
      * only views and no other containers (like
-     * medViewContainerSingle2).
+     * medSingleViewContainer2).
      *
      * @param void
      * @return bool
@@ -94,8 +94,8 @@ private:
     medViewContainerMultiPrivate *d2;
 
     //Needed to access the setCurrent protected method
-    //from within medViewContainerSingle2
-    friend void medViewContainerSingle2::onViewFocused(bool);
+    //from within medSingleViewContainer2
+    friend void medSingleViewContainer2::onViewFocused(bool);
 };
 
 #endif

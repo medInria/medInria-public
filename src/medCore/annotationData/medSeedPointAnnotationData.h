@@ -16,7 +16,7 @@
 
 /*Defines a set of seed points that may be attached to a data
  * One of the points may be in a selected state.
- * A single size and color is set, the selected point has a different color.
+ * A singleViewContainer size and color is set, the selected point has a different color.
  */
 class MEDCORE_EXPORT medSeedPointAnnotationData : public medAnnotationData {
     Q_OBJECT;
@@ -51,7 +51,7 @@ public:
     //! Get / Set the the selected seed point.
     int selectedSeed(){ return m_selectedSeed; }
     virtual void setSelectedSeed(int num);
-    
+
     //! Return true if given num is the selected seed.
     //! Return false if num is out of range.
     bool isSelected(int num) const { return m_selectedSeed == num; }

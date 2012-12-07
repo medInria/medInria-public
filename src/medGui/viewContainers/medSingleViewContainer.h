@@ -1,4 +1,4 @@
-/* medViewContainerSingle.h ---
+/* medSingleViewContainer.h ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,19 +17,19 @@
  *
  */
 
-#ifndef MEDVIEWCONTAINERSINGLE_H
-#define MEDVIEWCONTAINERSINGLE_H
+#ifndef medSingleViewContainer_H
+#define medSingleViewContainer_H
 
 #include "medGuiExport.h"
 
 #include "medViewContainer.h"
 
-class MEDGUI_EXPORT medViewContainerSingle : public medViewContainer
+class MEDGUI_EXPORT medSingleViewContainer : public medViewContainer
 {
     Q_OBJECT
 
 public:
-    medViewContainerSingle(QWidget *parent = 0) : medViewContainer(parent) {}
+    medSingleViewContainer(QWidget *parent = 0) : medViewContainer(parent) {}
 
 
     void split(int rows, int cols);
@@ -43,13 +43,13 @@ public:
      * This method is useful in the case of a custom container.
      * Returns true if this object is supposed to contain
      * only views and no other containers (like
-     * medViewContainerSingle)
+     * medSingleViewContainer)
      *
      * @param void
      * @return bool
     */
     virtual bool isLeaf(void) const;
-    
+
     virtual QString identifier() {return "Single";}
 
     virtual QString description() {return "Single";}

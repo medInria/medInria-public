@@ -1,4 +1,4 @@
-/* medViewContainerSingle.cpp ---
+/* medSingleViewContainer.cpp ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -18,7 +18,7 @@
  */
 
 #include "medViewContainer_p.h"
-#include "medViewContainerSingle.h"
+#include "medSingleViewContainer.h"
 #include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
@@ -27,7 +27,7 @@
 #include <medViewManager.h>
 
 
-void medViewContainerSingle::split(int rows, int cols)
+void medSingleViewContainer::split(int rows, int cols)
 {
     Q_UNUSED(rows);
     Q_UNUSED(cols);
@@ -37,7 +37,7 @@ void medViewContainerSingle::split(int rows, int cols)
     return;
 }
 
-void medViewContainerSingle::setView(dtkAbstractView *view)
+void medSingleViewContainer::setView(dtkAbstractView *view)
 {
     if (view==d->view)
         return;
@@ -70,17 +70,17 @@ void medViewContainerSingle::setView(dtkAbstractView *view)
     }
 }
 
-dtkAbstractView *medViewContainerSingle::view (void) const
+dtkAbstractView *medSingleViewContainer::view (void) const
 {
     return d->view;
 }
 
-bool medViewContainerSingle::isLeaf(void) const
+bool medSingleViewContainer::isLeaf(void) const
 {
     return true;
 }
 
-void medViewContainerSingle::onViewClosing (void)
+void medSingleViewContainer::onViewClosing (void)
 {
     if (d->view) {
         d->layout->removeWidget (d->view->widget());
@@ -105,26 +105,26 @@ void medViewContainerSingle::onViewClosing (void)
     // qDebug() << "isCurrent: " << this->isCurrent();
 }
 
-void medViewContainerSingle::dragEnterEvent(QDragEnterEvent *event)
+void medSingleViewContainer::dragEnterEvent(QDragEnterEvent *event)
 {
     this->setAttribute(Qt::WA_UpdatesDisabled, true);
 
     medViewContainer::dragEnterEvent(event);
 }
 
-void medViewContainerSingle::dragMoveEvent(QDragMoveEvent *event)
+void medSingleViewContainer::dragMoveEvent(QDragMoveEvent *event)
 {
     medViewContainer::dragMoveEvent(event);
 }
 
-void medViewContainerSingle::dragLeaveEvent(QDragLeaveEvent *event)
+void medSingleViewContainer::dragLeaveEvent(QDragLeaveEvent *event)
 {
     this->setAttribute(Qt::WA_UpdatesDisabled, false);
 
     medViewContainer::dragLeaveEvent(event);
 }
 
-void medViewContainerSingle::dropEvent(QDropEvent *event)
+void medSingleViewContainer::dropEvent(QDropEvent *event)
 {
     this->setCurrent(this);
     this->setAttribute(Qt::WA_UpdatesDisabled, false);

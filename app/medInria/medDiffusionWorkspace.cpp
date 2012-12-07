@@ -14,7 +14,7 @@
 #include "medToolBoxDiffusionFiberView.h"
 #include "medToolBoxDiffusionFiberBundling.h"
 #include <medViewContainer.h>
-#include <medViewContainerSingle.h>
+#include <medSingleViewContainer.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 
@@ -100,14 +100,14 @@ void medDiffusionWorkspace::setupViewContainerStack()
     //the stack has been instantiated in constructor
     if (!this->stackedViewContainers()->count())
     {
-        medViewContainerSingle *single = new medViewContainerSingle ();
-        connect (single, SIGNAL (viewAdded (dtkAbstractView*)),   this, SLOT (onViewAdded (dtkAbstractView*)));
-        connect (single, SIGNAL (viewRemoved (dtkAbstractView*)), this, SLOT (onViewRemoved (dtkAbstractView*)));
+        medSingleViewContainer *singleViewContainer = new medSingleViewContainer ();
+        connect (singleViewContainer, SIGNAL (viewAdded (dtkAbstractView*)),   this, SLOT (onViewAdded (dtkAbstractView*)));
+        connect (singleViewContainer, SIGNAL (viewRemoved (dtkAbstractView*)), this, SLOT (onViewRemoved (dtkAbstractView*)));
 
-        //ownership of single is transferred to the stackedWidget.
-        this->stackedViewContainers()->addContainer (identifier(), single);
+        //ownership of singleViewContainer is transferred to the stackedWidget.
+        this->stackedViewContainers()->addContainer (identifier(), singleViewContainer);
 
-        diffusionContainer = single;
+        diffusionContainer = singleViewContainer;
 
         this->stackedViewContainers()->lockTabs();
         this->stackedViewContainers()->hideTabBar();

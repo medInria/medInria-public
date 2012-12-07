@@ -5,7 +5,7 @@
 #include "medViewContainersTest.h"
 
 #include <medAbstractView.h>
-#include <medViewContainerSingle.h>
+#include <medSingleViewContainer.h>
 #include <medViewContainerMulti.h>
 #include <medViewContainerCustom.h>
 
@@ -94,8 +94,8 @@ void medViewContainersTestObject::testFoo_data()
 
 void medViewContainersTestObject::testSingle()
 {
-    // create a view container single
-    medViewContainerSingle *container = new medViewContainerSingle;
+    // create a view container singleViewContainer
+    medSingleViewContainer *container = new medSingleViewContainer;
     container->setFixedSize(500, 500);
     container->show();
 

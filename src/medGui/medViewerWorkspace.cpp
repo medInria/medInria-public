@@ -24,7 +24,7 @@
 #include "medToolBox.h"
 #include "medViewContainer.h"
 #include "medViewContainerCustom.h"
-#include "medViewContainerSingle.h"
+#include "medSingleViewContainer.h"
 #include "medViewContainerMulti.h"
 #include "medTabbedViewContainers.h"
 
@@ -175,7 +175,7 @@ void medViewerWorkspace::addDefaultTypeContainer(const QString& name)
 void medViewerWorkspace::addSingleContainer(const QString& name)
 {
     if (!this->stackedViewContainers()->container(name))
-        this->stackedViewContainers()->addContainer (name, new medViewContainerSingle());
+        this->stackedViewContainers()->addContainer (name, new medSingleViewContainer());
     else
         qDebug() << "Container" << name << "already exists in this workspaces";
 }

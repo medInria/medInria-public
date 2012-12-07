@@ -30,7 +30,7 @@
 #include <medViewContainer.h>
 #include <medViewContainerCustom.h>
 #include <medViewContainerMulti.h>
-#include <medViewContainerSingle.h>
+#include <medSingleViewContainer.h>
 #include <medViewPool.h>
 #include <medWorkspaceFactory.h>
 #include <medToolBoxDiffusion.h>
