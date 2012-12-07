@@ -1,9 +1,9 @@
-#include "medViewContainerCompare.h"
+#include "medCompareViewContainer.h"
 
 
 
 
-class medViewContainerComparePrivate
+class medCompareViewContainerPrivate
 {
 public:
     medViewContainer * fixedContainer;
@@ -11,8 +11,8 @@ public:
 };
 
 
-medViewContainerCompare::medViewContainerCompare(QWidget * parent):
-        medViewContainerCustom(parent), d3(new medViewContainerComparePrivate)
+medCompareViewContainer::medCompareViewContainer(QWidget * parent):
+        medViewContainerCustom(parent), d3(new medCompareViewContainerPrivate)
 {
     split(1, 2);
     d3->fixedContainer = this->childContainers()[0];
@@ -26,7 +26,7 @@ medViewContainerCompare::medViewContainerCompare(QWidget * parent):
     d3->movingContainer->setInfo(tr("Moving"));
 }
 
-medViewContainerCompare::~medViewContainerCompare()
+medCompareViewContainer::~medCompareViewContainer()
 {
     delete d3;
     d3 = NULL;

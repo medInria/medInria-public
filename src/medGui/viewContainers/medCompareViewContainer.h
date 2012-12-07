@@ -7,23 +7,23 @@
 
 #include "medGuiExport.h"
 
-class medViewContainerComparePrivate;
+class medCompareViewContainerPrivate;
 
-class MEDGUI_EXPORT medViewContainerCompare : public medViewContainerCustom
+class MEDGUI_EXPORT medCompareViewContainer : public medViewContainerCustom
 {
     Q_OBJECT
 public:
-    medViewContainerCompare(QWidget * parent = 0);
-    ~medViewContainerCompare();
-    
+    medCompareViewContainer(QWidget * parent = 0);
+    ~medCompareViewContainer();
+
 signals:
 //  fixedViewAdded(dtkAbstractView*);
 //  movingViewAdded(dtkAbstractView*);
     void droppedFixed  (const medDataIndex& index);
     void droppedMoving (const medDataIndex &index);
-    
+
 private:
-    medViewContainerComparePrivate *d3;
+    medCompareViewContainerPrivate *d3;
 };
 
 #endif // MEDVIEWCONTAINERCOMPARE_H

@@ -8,7 +8,7 @@
 #include <medToolBoxRegistration.h>
 #include <medViewContainer.h>
 #include <medSingleViewContainer.h>
-#include <medViewContainerCompare.h>
+#include <medCompareViewContainer.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxRegistration.h>
 
@@ -74,14 +74,14 @@ void medRegistrationWorkspace::setupViewContainerStack()
         }
 
         //create the compare container
-        medViewContainerCompare * compareContainer = new medViewContainerCompare(
+        medCompareViewContainer * compareViewContainer = new medCompareViewContainer(
                 this->stackedViewContainers());
-        connect(compareContainer,SIGNAL(droppedFixed(medDataIndex)),
+        connect(compareViewContainer,SIGNAL(droppedFixed(medDataIndex)),
                 d->registrationToolBox,SLOT(onFixedImageDropped(medDataIndex)));
-        connect(compareContainer,SIGNAL(droppedMoving(medDataIndex)),
+        connect(compareViewContainer,SIGNAL(droppedMoving(medDataIndex)),
                 d->registrationToolBox,SLOT(onMovingImageDropped(medDataIndex)));
 
-        this->stackedViewContainers()->addContainer("Compare",compareContainer);
+        this->stackedViewContainers()->addContainer("Compare",compareViewContainer);
         this->stackedViewContainers()->addContainer("Fuse",fuseContainer);
         this->stackedViewContainers()->lockTabs();
         setCurrentViewContainer("Compare");
