@@ -37,7 +37,7 @@
 #include <medToolBoxRegistration.h>
 #include <medTabbedViewContainers.h>
 #include <medVisualizationLayoutToolBox.h>
-#include <medViewerToolBoxPatient.h>
+#include <medWorkspacePatientToolBox.h>
 #include <medViewerToolBoxViewProperties.h>
 
 #include <QtGui>
@@ -64,9 +64,9 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->stack = new QStackedWidget(this);
     d->stack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    d->toolboxPatient = new medViewerToolBoxPatient(this);
-    d->toolboxPatient->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
-    d->toolboxPatient->setFixedWidth(176); // 186 - 10
+    d->patient_toolbox = new medWorkspacePatientToolBox(this);
+    d->patient_toolbox->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
+    d->patient_toolbox->setFixedWidth(176); // 186 - 10
 
 
     // Setting up toolbox container
@@ -102,7 +102,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->navigator_container_layout->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
     d->navigator_container_layout->setContentsMargins(0, 0, 0, 0);
     d->navigator_container_layout->setSpacing(0);
-    d->navigator_container_layout->addWidget(d->toolboxPatient, 0, 0);
+    d->navigator_container_layout->addWidget(d->patient_toolbox, 0, 0);
     d->navigator_container_layout->addWidget(d->navigator, 1, 0);
 
     //Set up viewer layout
@@ -126,7 +126,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
     this->addAction(transFunAction);
 
-    connect (d->toolboxPatient,          SIGNAL (patientIndexChanged(const medDataIndex&)),
+    connect (d->patient_toolbox,          SIGNAL (patientIndexChanged(const medDataIndex&)),
         this, SLOT(switchToPatient(const medDataIndex&)));
 
     //Avoid double triggering between update and dataAdded/Removed.
@@ -136,14 +136,14 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->navigator,
              SLOT (updateNavigator (const medDataIndex&)));
 
-    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->toolboxPatient,
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->patient_toolbox,
              SLOT (setupDatabase ()));
-    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->toolboxPatient,
+    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->patient_toolbox,
              SLOT (setupDatabase ()));
 
-    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->toolboxPatient,
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->patient_toolbox,
              SLOT (setPatientIndex (const medDataIndex&)));
-    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->toolboxPatient,
+    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->patient_toolbox,
              SLOT (setPatientIndex (const medDataIndex&)));
 
 /*
@@ -412,9 +412,9 @@ void medWorkspaceArea::switchToPatient(const medDataIndex& id )
                 default:
                     //not switching
                     //set the patient toolbox back to the current patient
-                    d->toolboxPatient->blockSignals (true);
-                    d->toolboxPatient->setPatientIndex(d->current_patient);
-                    d->toolboxPatient->blockSignals (false);
+                    d->patient_toolbox->blockSignals (true);
+                    d->patient_toolbox->setPatientIndex(d->current_patient);
+                    d->patient_toolbox->blockSignals (false);
                     return;
                     break;
                 }
@@ -454,11 +454,11 @@ void medWorkspaceArea::switchToPatient(const medDataIndex& id )
     }
 
     // Setup patient toolbox
-    d->toolboxPatient->blockSignals (true);
-    d->toolboxPatient->setPatientIndex (
+    d->patient_toolbox->blockSignals (true);
+    d->patient_toolbox->setPatientIndex (
                 medDataIndex::makePatientIndex(id.dataSourceId(),
                                                id.patientId()));
-    d->toolboxPatient->blockSignals (false);
+    d->patient_toolbox->blockSignals (false);
 }
 
 void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* stack)
@@ -790,12 +790,12 @@ void medWorkspaceArea::switchToLayout (medViewerWorkspace::LayoutType layout)
         case medViewerWorkspace::TopTbBottomDb:
            {
 
-         d->navigator_container_layout->removeWidget ( d->toolboxPatient );
+         d->navigator_container_layout->removeWidget ( d->patient_toolbox );
          d->navigator_container_layout->removeWidget ( d->navigator );
 
          d->navigator->setOrientation (Qt::Horizontal);
 
-         d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
+         d->navigator_container_layout->addWidget (d->patient_toolbox, 0, 0);
          d->navigator_container_layout->addWidget (d->navigator, 0, 1);
              //width must be fixed or the navigator doesn't grow
              //back when changing orientation again
@@ -816,12 +816,12 @@ void medWorkspaceArea::switchToLayout (medViewerWorkspace::LayoutType layout)
         default:
            {
 
-         d->navigator_container_layout->removeWidget ( d->toolboxPatient );
+         d->navigator_container_layout->removeWidget ( d->patient_toolbox );
          d->navigator_container_layout->removeWidget ( d->navigator );
 
          d->navigator->setOrientation (Qt::Vertical);
 
-         d->navigator_container_layout->addWidget (d->toolboxPatient, 0, 0);
+         d->navigator_container_layout->addWidget (d->patient_toolbox, 0, 0);
          d->navigator_container_layout->addWidget (d->navigator, 1, 0);
 
              d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);

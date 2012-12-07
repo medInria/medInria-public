@@ -1,4 +1,4 @@
-/* medViewerToolBoxPatient.cpp ---
+/* medWorkspacePatientToolBox.cpp ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,7 +17,7 @@
  *
  */
 
-#include "medViewerToolBoxPatient.h"
+#include "medWorkspacePatientToolBox.h"
 
 #include <QtGui>
 
@@ -30,7 +30,7 @@
 #include <medAbstractDbController.h>
 #include <medDbControllerFactory.h>
 
-class medViewerToolBoxPatientPrivate
+class medWorkspacePatientToolBoxPrivate
 {
 public:
     QHash< int, QSet<medDataIndex> > itemMap;
@@ -41,7 +41,7 @@ public:
     enum{ ChooserItemId = -1 };
 };
 
-medViewerToolBoxPatient::medViewerToolBoxPatient(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxPatientPrivate)
+medWorkspacePatientToolBox::medWorkspacePatientToolBox(QWidget *parent) : medToolBox(parent), d(new medWorkspacePatientToolBoxPrivate)
 {
     QWidget *central = new QWidget(this);
     d->nextItemId = 0;
@@ -65,7 +65,7 @@ medViewerToolBoxPatient::medViewerToolBoxPatient(QWidget *parent) : medToolBox(p
 
 }
 
-medViewerToolBoxPatient::~medViewerToolBoxPatient(void)
+medWorkspacePatientToolBox::~medWorkspacePatientToolBox(void)
 {
     delete d;
 
@@ -73,7 +73,7 @@ medViewerToolBoxPatient::~medViewerToolBoxPatient(void)
 }
 
 //! Add the chooser text item
-int medViewerToolBoxPatient::addChooseItem()
+int medWorkspacePatientToolBox::addChooseItem()
 {
     int itemId = d->ChooserItemId;
     d->combo->addItem(tr("Choose patient"), itemId);
@@ -82,7 +82,7 @@ int medViewerToolBoxPatient::addChooseItem()
 }
 
 //! Remove the chooser text item
-void medViewerToolBoxPatient::removeChooseItem()
+void medWorkspacePatientToolBox::removeChooseItem()
 {
     int itemId = d->ChooserItemId;
     d->combo->removeItem(d->combo->findData(itemId));
@@ -94,7 +94,7 @@ void medViewerToolBoxPatient::removeChooseItem()
  *  item. \param data corresponds to the patient's database id.
  */
 
-int medViewerToolBoxPatient::addItem(const QString& item, const medDataIndex& data)
+int medWorkspacePatientToolBox::addItem(const QString& item, const medDataIndex& data)
 {
     if ( d->indexMap.contains(data) )
         return d->indexMap.find(data).value();
@@ -116,7 +116,7 @@ int medViewerToolBoxPatient::addItem(const QString& item, const medDataIndex& da
  *
  */
 
-void medViewerToolBoxPatient::clear(void)
+void medWorkspacePatientToolBox::clear(void)
 {
     d->nextItemId = 0;
     d->itemMap.clear();
@@ -130,7 +130,7 @@ void medViewerToolBoxPatient::clear(void)
  *  in the combo box, that is not necessarily the same.
  */
 
-QSet<medDataIndex> medViewerToolBoxPatient::patientIndex(void) const
+QSet<medDataIndex> medWorkspacePatientToolBox::patientIndex(void) const
 {
     int itemId = d->combo->itemData(d->combo->currentIndex()).toInt();
 
@@ -143,13 +143,13 @@ QSet<medDataIndex> medViewerToolBoxPatient::patientIndex(void) const
  *  in the combo box, that is not necessarily the same.
  */
 
-QSet<medDataIndex> medViewerToolBoxPatient::patientIndex(QString patient) const
+QSet<medDataIndex> medWorkspacePatientToolBox::patientIndex(QString patient) const
 {
     int itemId = d->combo->itemData(d->combo->findText(patient)).toInt();
     return patientIndex(itemId);
 }
 
-QSet<medDataIndex> medViewerToolBoxPatient::patientIndex(int itemId) const
+QSet<medDataIndex> medWorkspacePatientToolBox::patientIndex(int itemId) const
 {
     typedef QHash< int, QSet<medDataIndex> > HashType;
     HashType::const_iterator it = d->itemMap.find(itemId);
@@ -164,7 +164,7 @@ QSet<medDataIndex> medViewerToolBoxPatient::patientIndex(int itemId) const
  *  \param index is the index of a patient in the database.
  */
 
-void medViewerToolBoxPatient::setPatientIndex(const medDataIndex &index)
+void medWorkspacePatientToolBox::setPatientIndex(const medDataIndex &index)
 {
     medDataIndex baseIndex = index;
     baseIndex.setStudyId(-1);
@@ -185,7 +185,7 @@ void medViewerToolBoxPatient::setPatientIndex(const medDataIndex &index)
  *  the newly displayed patient in the database.
  */
 
-void medViewerToolBoxPatient::onCurrentIndexChanged(int index)
+void medWorkspacePatientToolBox::onCurrentIndexChanged(int index)
 {
     int itemId = d->combo->itemData(index).toInt();
     if ( itemId != d->ChooserItemId ) {
@@ -209,7 +209,7 @@ void medViewerToolBoxPatient::onCurrentIndexChanged(int index)
  *  corresponds to the one of the patient in the database.
  */
 
-void medViewerToolBoxPatient::setupDatabase(void)
+void medWorkspacePatientToolBox::setupDatabase(void)
 {
     dtkSignalBlocker( d->combo );
 
@@ -254,7 +254,7 @@ void medViewerToolBoxPatient::setupDatabase(void)
     // d->combo->blockSignals (false);  // automatic.
 }
 
-void medViewerToolBoxPatient::onDbControllerRegistered( const QString& )
+void medWorkspacePatientToolBox::onDbControllerRegistered( const QString& )
 {
     // Connections are moved to medWorkspaceArea for now, the reason is that otherwise setupDatabase is called too late
     // This method stays only to call the first setupDatabase method

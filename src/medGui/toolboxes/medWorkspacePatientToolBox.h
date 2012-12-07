@@ -1,5 +1,5 @@
-/* medViewerToolBoxPatient.h ---
- * 
+/* medWorkspacePatientToolBox.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:02:09 2010 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 28
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef MEDVIEWERTOOLBOXPATIENT_H
@@ -24,15 +24,15 @@
 #include "medToolBox.h"
 
 class medDataIndex;
-class medViewerToolBoxPatientPrivate;
+class medWorkspacePatientToolBoxPrivate;
 
-class MEDGUI_EXPORT medViewerToolBoxPatient : public medToolBox
+class MEDGUI_EXPORT medWorkspacePatientToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medViewerToolBoxPatient(QWidget *parent = 0);
-    ~medViewerToolBoxPatient(void);
+     medWorkspacePatientToolBox(QWidget *parent = 0);
+    ~medWorkspacePatientToolBox(void);
 
 
     QSet<medDataIndex> patientIndex(void) const;
@@ -40,7 +40,7 @@ public:
     QSet<medDataIndex> patientIndex(int itemId) const;
 
 signals:
-    /** Emitted when the selected patient changes. 
+    /** Emitted when the selected patient changes.
      *  \param Patients currently selected */
     void patientIndexChanged(const medDataIndex&);
 
@@ -61,7 +61,7 @@ protected:
     void clear(void);
 
 private:
-    medViewerToolBoxPatientPrivate *d;
+    medWorkspacePatientToolBoxPrivate *d;
 };
 
 #endif

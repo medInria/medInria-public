@@ -106,7 +106,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medBrowserPacsHostToolBox.h
   toolboxes/medBrowserPacsNodesToolBox.h
   toolboxes/medBrowserPacsSearchToolBox.h
-  toolboxes/medViewerToolBoxPatient.h
+  toolboxes/medWorkspacePatientToolBox.h
   toolboxes/medToolBoxCompositeDataSetImporter.h
   toolboxes/medToolBoxCompositeDataSetImporterCustom.h
   toolboxes/medActionsToolBox.h
@@ -220,7 +220,7 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medBrowserPacsHostToolBox.cpp
   toolboxes/medBrowserPacsNodesToolBox.cpp
   toolboxes/medBrowserPacsSearchToolBox.cpp
-  toolboxes/medViewerToolBoxPatient.cpp
+  toolboxes/medWorkspacePatientToolBox.cpp
   toolboxes/medToolBoxCompositeDataSetImporter.cpp
   toolboxes/medToolBoxCompositeDataSetImporterCustom.cpp
   toolboxes/medActionsToolBox.cpp
