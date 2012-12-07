@@ -1,10 +1,10 @@
-/* medViewerWorkspaceFiltering.cpp ---
+/* medFilteringWorkspace.cpp ---
  *
  * @author Clément Philipot <clement.philipot@inria.fr>
  *
  */
 
-#include "medViewerWorkspaceFiltering.h"
+#include "medFilteringWorkspace.h"
 #include <medViewContainerFiltering.h>
 
 #include <medDatabaseNonPersistentController.h>
@@ -27,7 +27,7 @@
 
 #include <medCore/medDataManager.h>
 
-class medViewerWorkspaceFilteringPrivate
+class medFilteringWorkspacePrivate
 {
 public:
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
@@ -36,7 +36,7 @@ public:
     QString importUuid;
 };
 
-medViewerWorkspaceFiltering::medViewerWorkspaceFiltering ( QWidget *parent ) : medViewerWorkspace ( parent ), d ( new medViewerWorkspaceFilteringPrivate )
+medFilteringWorkspace::medFilteringWorkspace ( QWidget *parent ) : medViewerWorkspace ( parent ), d ( new medFilteringWorkspacePrivate )
 {
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties ( parent );
 
@@ -51,13 +51,13 @@ medViewerWorkspaceFiltering::medViewerWorkspaceFiltering ( QWidget *parent ) : m
     this->addToolBox( d->filteringToolBox );
 }
 
-medViewerWorkspaceFiltering::~medViewerWorkspaceFiltering ( void )
+medFilteringWorkspace::~medFilteringWorkspace ( void )
 {
     delete d;
     d = NULL;
 }
 
-void medViewerWorkspaceFiltering::setupViewContainerStack()
+void medFilteringWorkspace::setupViewContainerStack()
 {
     if ( !this->stackedViewContainers()->count() )
     {
@@ -78,12 +78,12 @@ void medViewerWorkspaceFiltering::setupViewContainerStack()
     }
 }
 
-void medViewerWorkspaceFiltering::patientChanged ( int patientId )
+void medFilteringWorkspace::patientChanged ( int patientId )
 {
     d->filteringToolBox->clear();
 }
 
-void medViewerWorkspaceFiltering::onProcessSuccess()
+void medFilteringWorkspace::onProcessSuccess()
 {
     d->filterOutput = d->filteringToolBox->customToolbox()->processOutput();
     if ( !d->filterOutput )
@@ -126,7 +126,7 @@ void medViewerWorkspaceFiltering::onProcessSuccess()
     emit outputDataChanged ( d->filterOutput );
 }
 
-void medViewerWorkspaceFiltering::onOutputImported ( const medDataIndex& dataIndex,
+void medFilteringWorkspace::onOutputImported ( const medDataIndex& dataIndex,
         const QString& uuid )
 {
     if ( !uuid.isEmpty() && uuid == d->importUuid )
@@ -136,17 +136,17 @@ void medViewerWorkspaceFiltering::onOutputImported ( const medDataIndex& dataInd
     }
 }
 
-QString medViewerWorkspaceFiltering::identifier() const {
+QString medFilteringWorkspace::identifier() const {
     return "Filtering";
 }
 
-void medViewerWorkspaceFiltering::onViewRemoved ()
+void medFilteringWorkspace::onViewRemoved ()
 {
     d->filteringToolBox->clear();
 }
 
 
-QString medViewerWorkspaceFiltering::description(void) const
+QString medFilteringWorkspace::description(void) const
 {
     return "Filtering";
 }

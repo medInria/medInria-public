@@ -1,16 +1,16 @@
-/* @file medViewerWorkspaceFiltering.h ---
+/* @file medFilteringWorkspace.h ---
  *
  * @author Clément Philipot <clement.philipot@inria.fr>
  *
  */
 
-#ifndef medViewerWorkspaceFiltering_H
-#define medViewerWorkspaceFiltering_H
+#ifndef medFilteringWorkspace_H
+#define medFilteringWorkspace_H
 
 #include <QtCore>
 #include <medViewerWorkspace.h>
 
-class medViewerWorkspaceFilteringPrivate;
+class medFilteringWorkspacePrivate;
 class medViewContainerStack;
 class dtkAbstractData;
 class dtkAbstractView;
@@ -18,7 +18,7 @@ class dtkAbstractView;
 /**
  * @brief Workspace providing a comparative display of the input and output of image-to-image filtering process plugins
  */
-class medViewerWorkspaceFiltering : public medViewerWorkspace
+class medFilteringWorkspace : public medViewerWorkspace
 {
     Q_OBJECT
 
@@ -28,8 +28,8 @@ public:
      *
      * @param parent
      */
-    medViewerWorkspaceFiltering(QWidget *parent = 0);
-    ~medViewerWorkspaceFiltering();
+    medFilteringWorkspace(QWidget *parent = 0);
+    ~medFilteringWorkspace();
 
     virtual QString identifier()  const;
     virtual QString description() const;
@@ -78,7 +78,7 @@ public slots:
     void onViewRemoved();
 
 private:
-    medViewerWorkspaceFilteringPrivate *d;
+    medFilteringWorkspacePrivate *d;
 };
 
 #endif

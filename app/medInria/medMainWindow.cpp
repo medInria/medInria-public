@@ -64,7 +64,7 @@
 #include "medViewerWorkspaceVisualization.h"
 #include "medViewerWorkspaceRegistration.h"
 #include "medDiffusionWorkspace.h"
-#include "medViewerWorkspaceFiltering.h"
+#include "medFilteringWorkspace.h"
 #include "medViewerWorkspaceSegmentation.h"
 
 #include "medSaveModifiedDialog.h"
@@ -840,13 +840,13 @@ void medMainWindow::registerToFactories()
                                               tr("Diffusion"),
                                               tr("Diffusion Tensor Images"));
     viewerWSpaceFactory->registerWorkspace
-            <medViewerWorkspaceFiltering>("Filtering",
+            <medFilteringWorkspace>("Filtering",
                                               tr("Filtering"),
                                               tr("Filter workspace"));
     medViewerWorkspaceSegmentation::registerWithViewerWorkspaceFactory();
 
     //Register settingsWidgets
-    //TODO: get rid of the setTabName, or make it staic and use it here...
+    //TODO: get rid of the setTabName, or make it static and use it here...
     //or else create a static register method in the widgets...
     medSettingsWidgetFactory * settingsWidgetFactory = medSettingsWidgetFactory::instance();
     settingsWidgetFactory->registerSettingsWidget
