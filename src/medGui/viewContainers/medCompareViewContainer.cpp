@@ -12,7 +12,7 @@ public:
 
 
 medCompareViewContainer::medCompareViewContainer(QWidget * parent):
-        medViewContainerCustom(parent), d3(new medCompareViewContainerPrivate)
+        medCustomViewContainer(parent), d3(new medCompareViewContainerPrivate)
 {
     split(1, 2);
     d3->fixedContainer = this->childContainers()[0];

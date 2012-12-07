@@ -2,14 +2,14 @@
 #define MEDVIEWCONTAINERCOMPARE_H
 
 
-#include <medViewContainerCustom.h>
+#include <medCustomViewContainer.h>
 
 
 #include "medGuiExport.h"
 
 class medCompareViewContainerPrivate;
 
-class MEDGUI_EXPORT medCompareViewContainer : public medViewContainerCustom
+class MEDGUI_EXPORT medCompareViewContainer : public medCustomViewContainer
 {
     Q_OBJECT
 public:

@@ -22,7 +22,7 @@
 
 #include <QtCore>
 #include "medViewContainer.h"
-#include "medViewContainerCustom.h"
+#include "medCustomViewContainer.h"
 
 #include "medGuiExport.h"
 
@@ -117,7 +117,7 @@ public:
     void setCurrentViewContainer(const QString& name);
 
     /**
-     * @brief Sets the layout preset for medViewContainerCustom.
+     * @brief Sets the layout preset for medCustomViewContainer.
      *
      * The value is really applied when the workspace
      * is set in the medViewArea::setupWorkspace method.
@@ -208,7 +208,7 @@ public:
     QString addMultiContainer(const QString& name="Multi");
 
     /**
-     * @brief Convenience method to add a medViewContainerCustom.
+     * @brief Convenience method to add a medCustomViewContainer.
      *
      * @param name identifier/description. By Default "Custom",
      * which makes sense in most simple cases.

@@ -7,7 +7,7 @@
 #include <medAbstractView.h>
 #include <medSingleViewContainer.h>
 #include <medMultiViewContainer.h>
-#include <medViewContainerCustom.h>
+#include <medCustomViewContainer.h>
 
 #include <QtGui>
 #include <QtTest/QSignalSpy>
@@ -260,13 +260,13 @@ void medViewContainersTestObject::testMulti()
 void medViewContainersTestObject::testCustom()
 {
     // create the custom container
-    medViewContainerCustom *container = new medViewContainerCustom;
+    medCustomViewContainer *container = new medCustomViewContainer;
     container->setFixedSize(500, 500);
-    container->setPreset (medViewContainerCustom::A);
+    container->setPreset (medCustomViewContainer::A);
     container->show();
 
-    for (int preset = medViewContainerCustom::A;
-         preset <= medViewContainerCustom::E; preset++) {
+    for (int preset = medCustomViewContainer::A;
+         preset <= medCustomViewContainer::E; preset++) {
         container->setPreset (preset);
         foreach (medViewContainer *c, container->leaves()) {
             c->setFocus (Qt::MouseFocusReason);
@@ -279,7 +279,7 @@ void medViewContainersTestObject::testCustom()
     }
 
     // my favorite: let's try to set NULL view to preset E:
-    container->setPreset (medViewContainerCustom::E);
+    container->setPreset (medCustomViewContainer::E);
     foreach (medViewContainer *c, container->leaves()) {
         c->setFocus (Qt::MouseFocusReason);
         c->setView (NULL);

@@ -9,7 +9,7 @@
 
 #include <medCore/medDataIndex.h>
 #include <medCore/medDataManager.h>
-#include <medViewContainerCustom.h>
+#include <medCustomViewContainer.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -21,7 +21,7 @@ class medFilteringViewContainerPrivate;
 /**
  * @brief filtering view container to visualize both input / output from image-to-image filtering processes
  */
-class MEDGUI_EXPORT medFilteringViewContainer : public medViewContainerCustom
+class MEDGUI_EXPORT medFilteringViewContainer : public medCustomViewContainer
 {
     Q_OBJECT
 

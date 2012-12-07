@@ -16,7 +16,7 @@ public:
 };
 
 medFilteringViewContainer::medFilteringViewContainer ( QWidget * parent ) :
-        medViewContainerCustom ( parent ), d3 ( new medFilteringViewContainerPrivate )
+        medCustomViewContainer ( parent ), d3 ( new medFilteringViewContainerPrivate )
 {
     split(1, 2);
     setMultiLayer(false);

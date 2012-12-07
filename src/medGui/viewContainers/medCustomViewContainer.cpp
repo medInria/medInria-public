@@ -1,4 +1,4 @@
-/* medViewContainerCustom.cpp ---
+/* medCustomViewContainer.cpp ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -18,7 +18,7 @@
  */
 
 #include "medViewContainer_p.h"
-#include "medViewContainerCustom.h"
+#include "medCustomViewContainer.h"
 #include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractData.h>
@@ -28,7 +28,7 @@
 #include <medAbstractView.h>
 #include <medViewManager.h>
 
-class medViewContainerCustomPrivate
+class medCustomViewContainerPrivate
 {
 public:
     int rowMax;
@@ -36,21 +36,21 @@ public:
     int preset;
 };
 
-medViewContainerCustom::medViewContainerCustom ( QWidget *parent ) : medViewContainer ( parent ), d2 ( new medViewContainerCustomPrivate )
+medCustomViewContainer::medCustomViewContainer ( QWidget *parent ) : medViewContainer ( parent ), d2 ( new medCustomViewContainerPrivate )
 {
     d2->rowMax    = 5;
     d2->columnMax = 5;
     d2->preset = 0;
 }
 
-medViewContainerCustom::~medViewContainerCustom()
+medCustomViewContainer::~medCustomViewContainer()
 {
     delete d2;
     d2 = NULL;
 }
 
 
-void medViewContainerCustom::split ( int rows, int cols )
+void medCustomViewContainer::split ( int rows, int cols )
 {
     if ( d->view )
         return;
@@ -62,7 +62,7 @@ void medViewContainerCustom::split ( int rows, int cols )
         d->layout->setRowStretch ( i, 0 );
         for ( int j = 0 ; j < cols ; j++ )
         {
-            medViewContainerCustom *container = new medViewContainerCustom ( this );
+            medCustomViewContainer *container = new medCustomViewContainer ( this );
             connect ( container, SIGNAL ( viewAdded ( dtkAbstractView* ) ),   this, SIGNAL ( viewAdded ( dtkAbstractView* ) ) );
             connect ( container, SIGNAL ( viewRemoved ( dtkAbstractView* ) ), this, SIGNAL ( viewRemoved ( dtkAbstractView* ) ) );
             d->layout->addWidget ( container, i, j );
@@ -76,7 +76,7 @@ void medViewContainerCustom::split ( int rows, int cols )
     this->setCurrent ( NULL );
 }
 
-void medViewContainerCustom::setPreset ( int preset )
+void medCustomViewContainer::setPreset ( int preset )
 {
     if ( d2->preset == preset )
         return;
@@ -85,16 +85,16 @@ void medViewContainerCustom::setPreset ( int preset )
 
     this->clear();
 
-    medViewContainerCustom *custom1 = NULL;
-    medViewContainerCustom *custom2 = NULL;
-    medViewContainerCustom *custom3 = NULL;
-    medViewContainerCustom *custom4 = NULL;
+    medCustomViewContainer *custom1 = NULL;
+    medCustomViewContainer *custom2 = NULL;
+    medCustomViewContainer *custom3 = NULL;
+    medCustomViewContainer *custom4 = NULL;
 
     switch ( preset )
     {
     case B:
-        custom1 = new medViewContainerCustom ( this );
-        custom2 = new medViewContainerCustom ( this );
+        custom1 = new medCustomViewContainer ( this );
+        custom2 = new medCustomViewContainer ( this );
         d->layout->addWidget ( custom1, 0, 0 );
         d->layout->addWidget ( custom2, 1, 0 );
         d->layout->setRowStretch ( 0, 0 );
@@ -102,9 +102,9 @@ void medViewContainerCustom::setPreset ( int preset )
         break;
 
     case C:
-        custom1 = new medViewContainerCustom ( this );
+        custom1 = new medCustomViewContainer ( this );
         custom1->split ( 2, 1 );
-        custom2 = new medViewContainerCustom ( this );
+        custom2 = new medCustomViewContainer ( this );
         d->layout->addWidget ( custom1, 0, 0 );
         d->layout->addWidget ( custom2, 0, 1 );
         d->layout->setColumnStretch ( 0, 1 );
@@ -112,9 +112,9 @@ void medViewContainerCustom::setPreset ( int preset )
         break;
 
     case D:
-        custom1 = new medViewContainerCustom ( this );
+        custom1 = new medCustomViewContainer ( this );
         custom1->split ( 3, 1 );
-        custom2 = new medViewContainerCustom ( this );
+        custom2 = new medCustomViewContainer ( this );
         d->layout->addWidget ( custom1, 0, 0 );
         d->layout->addWidget ( custom2, 0, 1 );
         d->layout->setColumnStretch ( 0, 1 );
@@ -122,10 +122,10 @@ void medViewContainerCustom::setPreset ( int preset )
         break;
 
     case E:
-        custom1 = new medViewContainerCustom ( this );
-        custom2 = new medViewContainerCustom ( this );
-        custom3 = new medViewContainerCustom ( this );
-        custom4 = new medViewContainerCustom ( this );
+        custom1 = new medCustomViewContainer ( this );
+        custom2 = new medCustomViewContainer ( this );
+        custom3 = new medCustomViewContainer ( this );
+        custom4 = new medCustomViewContainer ( this );
 
         custom1->setViewProperty ( "Orientation", "Axial" );
         custom2->setViewProperty ( "Orientation", "Sagittal" );
@@ -144,8 +144,8 @@ void medViewContainerCustom::setPreset ( int preset )
 
     case A:
     default:
-        custom1 = new medViewContainerCustom ( this );
-        custom2 = new medViewContainerCustom ( this );
+        custom1 = new medCustomViewContainer ( this );
+        custom2 = new medCustomViewContainer ( this );
         d->layout->addWidget ( custom1, 0, 0 );
         d->layout->addWidget ( custom2, 0, 1 );
         d->layout->setColumnStretch ( 0, 0 );
@@ -155,9 +155,9 @@ void medViewContainerCustom::setPreset ( int preset )
     }
 
     // connect all new custom containers
-    QList< medViewContainerCustom * > containers;
+    QList< medCustomViewContainer * > containers;
     containers << custom1 << custom2 << custom3 << custom4;
-    foreach ( medViewContainerCustom * container, containers )
+    foreach ( medCustomViewContainer * container, containers )
     if ( container != NULL )
     {
         connect ( container, SIGNAL ( viewAdded ( dtkAbstractView * ) ),
@@ -169,7 +169,7 @@ void medViewContainerCustom::setPreset ( int preset )
     this->setCurrent ( NULL );
 }
 
-void medViewContainerCustom::setView ( dtkAbstractView *view )
+void medCustomViewContainer::setView ( dtkAbstractView *view )
 {
     qDebug() << "Set view";
     if ( this->isLeaf() )
@@ -231,10 +231,10 @@ void medViewContainerCustom::setView ( dtkAbstractView *view )
     }
 }
 
-dtkAbstractView *medViewContainerCustom::view ( void ) const
+dtkAbstractView *medCustomViewContainer::view ( void ) const
 {
-    const medViewContainerCustom* currentContainer =
-            qobject_cast<const medViewContainerCustom*> ( current() );
+    const medCustomViewContainer* currentContainer =
+            qobject_cast<const medCustomViewContainer*> ( current() );
     //Only go into the recursion if we are not a leaf
     //if this is the currentContainer, and not a leaf, we will
     //have an infinite recursion.
@@ -245,7 +245,7 @@ dtkAbstractView *medViewContainerCustom::view ( void ) const
     return d->view;
 }
 
-QList<dtkAbstractView *> medViewContainerCustom::views ( void ) const
+QList<dtkAbstractView *> medCustomViewContainer::views ( void ) const
 {
     QList<dtkAbstractView *> views;
     if ( this->childContainers().count() ==0 )
@@ -261,34 +261,34 @@ QList<dtkAbstractView *> medViewContainerCustom::views ( void ) const
     return views;
 }
 
-bool medViewContainerCustom::isLeaf ( void ) const
+bool medCustomViewContainer::isLeaf ( void ) const
 {
     // this implementation relies on the fact that for the root custom
     // container the leaf custom containers are already set (in setPreset)
     return this->childContainers().count() == 0;
 }
 
-void medViewContainerCustom::synchronize_2 ( dtkAbstractView *view )
+void medCustomViewContainer::synchronize_2 ( dtkAbstractView *view )
 {
-    if ( medViewContainerCustom *parent = qobject_cast<medViewContainerCustom*> ( this->parent() ) )
+    if ( medCustomViewContainer *parent = qobject_cast<medCustomViewContainer*> ( this->parent() ) )
     {
         parent->synchronize_2 ( view );
     }
     else
-    { // top level medViewContainerCustom
+    { // top level medCustomViewContainer
         if ( medAbstractView *medView = qobject_cast<medAbstractView*> ( view ) )
             d->pool->appendView ( medView );
         connect ( view, SIGNAL ( becomeDaddy ( bool ) ), this, SLOT ( repaint() ) );
     }
 }
 
-void medViewContainerCustom::desynchronize_2 ( dtkAbstractView *view )
+void medCustomViewContainer::desynchronize_2 ( dtkAbstractView *view )
 {
-    if ( medViewContainerCustom *parent = qobject_cast<medViewContainerCustom*> ( this->parent() ) )
+    if ( medCustomViewContainer *parent = qobject_cast<medCustomViewContainer*> ( this->parent() ) )
     {
         parent->desynchronize_2 ( view );
     }
-    else   // top level medViewContainerCustom
+    else   // top level medCustomViewContainer
     {
         if ( medAbstractView *medView = qobject_cast<medAbstractView*> ( view ) )
         {
@@ -298,7 +298,7 @@ void medViewContainerCustom::desynchronize_2 ( dtkAbstractView *view )
     }
 }
 
-void medViewContainerCustom::onViewClosing ( void )
+void medCustomViewContainer::onViewClosing ( void )
 {
     if ( d->view )
     {
@@ -336,31 +336,31 @@ void medViewContainerCustom::onViewClosing ( void )
     // qDebug() << "isCurrent: " << this->isCurrent();
 }
 
-void medViewContainerCustom::onViewFullScreen ( bool value )
+void medCustomViewContainer::onViewFullScreen ( bool value )
 {
-    if ( medViewContainerCustom *parent = qobject_cast<medViewContainerCustom*> ( this->parent() ) )
+    if ( medCustomViewContainer *parent = qobject_cast<medCustomViewContainer*> ( this->parent() ) )
     {
         parent->onViewFullScreen2 ( value, qobject_cast<dtkAbstractView *> ( this->sender() ) );
     }
-    else   // top level medViewContainerCustom
+    else   // top level medCustomViewContainer
     {
         this->fullScreen ( value, qobject_cast<dtkAbstractView *> ( this->sender() ) );
     }
 }
 
-void medViewContainerCustom::onViewFullScreen2 ( bool value, dtkAbstractView *view )
+void medCustomViewContainer::onViewFullScreen2 ( bool value, dtkAbstractView *view )
 {
-    if ( medViewContainerCustom *parent = qobject_cast<medViewContainerCustom*> ( this->parent() ) )
+    if ( medCustomViewContainer *parent = qobject_cast<medCustomViewContainer*> ( this->parent() ) )
     {
         parent->onViewFullScreen2 ( value, view );
     }
-    else   // top level medViewContainerCustom
+    else   // top level medCustomViewContainer
     {
         this->fullScreen ( value, view );
     }
 }
 
-void medViewContainerCustom::fullScreen ( bool value, dtkAbstractView *view )
+void medCustomViewContainer::fullScreen ( bool value, dtkAbstractView *view )
 {
     if ( this->childContainers().count() == 0 )   // no children = end widget
     {
@@ -376,47 +376,47 @@ void medViewContainerCustom::fullScreen ( bool value, dtkAbstractView *view )
     {
         foreach ( medViewContainer *container, this->childContainers() )
         {
-            medViewContainerCustom * custom =
-                qobject_cast< medViewContainerCustom * > ( container );
+            medCustomViewContainer * custom =
+                qobject_cast< medCustomViewContainer * > ( container );
             if ( custom != NULL )
                 custom->fullScreen ( value, view );
         }
     }
 }
 
-void medViewContainerCustom::dragEnterEvent ( QDragEnterEvent *event )
+void medCustomViewContainer::dragEnterEvent ( QDragEnterEvent *event )
 {
     this->setAttribute ( Qt::WA_UpdatesDisabled, true );
     medViewContainer::dragEnterEvent ( event );
 }
 
-void medViewContainerCustom::dragMoveEvent ( QDragMoveEvent *event )
+void medCustomViewContainer::dragMoveEvent ( QDragMoveEvent *event )
 {
     medViewContainer::dragMoveEvent ( event );
 }
 
-void medViewContainerCustom::dragLeaveEvent ( QDragLeaveEvent *event )
+void medCustomViewContainer::dragLeaveEvent ( QDragLeaveEvent *event )
 {
     this->setAttribute ( Qt::WA_UpdatesDisabled, false );
 
     medViewContainer::dragLeaveEvent ( event );
 }
 
-void medViewContainerCustom::dropEvent ( QDropEvent *event )
+void medCustomViewContainer::dropEvent ( QDropEvent *event )
 {
     this->setCurrent ( this );
     this->setAttribute ( Qt::WA_UpdatesDisabled, false );
     medViewContainer::dropEvent ( event );
 }
 
-void medViewContainerCustom::clear ( void )
+void medCustomViewContainer::clear ( void )
 {
     if ( d->view )
         this->onViewClosing();
 
     foreach ( medViewContainer *container, this->childContainers() )
     {
-        medViewContainerCustom * custom = qobject_cast< medViewContainerCustom * > ( container );
+        medCustomViewContainer * custom = qobject_cast< medCustomViewContainer * > ( container );
         if ( custom != NULL )
         {
             custom->clear();

@@ -28,7 +28,7 @@
 #include <medToolBox.h>
 #include <medToolBoxContainer.h>
 #include <medViewContainer.h>
-#include <medViewContainerCustom.h>
+#include <medCustomViewContainer.h>
 #include <medMultiViewContainer.h>
 #include <medSingleViewContainer.h>
 #include <medViewPool.h>
@@ -519,8 +519,8 @@ void medWorkspaceArea::switchToContainerPreset(int index)
 
     medViewContainer * root = this->currentRootContainer();
     if ( root != NULL ) {
-        medViewContainerCustom *custom =
-            dynamic_cast<medViewContainerCustom *>( root );
+        medCustomViewContainer *custom =
+            dynamic_cast<medCustomViewContainer *>( root );
         if ( custom ) {
             custom->setPreset(index);
             d->current_workspace->setCustomPreset(index);
@@ -733,7 +733,7 @@ void medWorkspaceArea::setupWorkspace(QString name)
 
     switchToStackedViewContainers(workspace->stackedViewContainers());
 
-    if (qobject_cast<medViewContainerCustom *>(workspace->currentViewContainer())) {
+    if (qobject_cast<medCustomViewContainer *>(workspace->currentViewContainer())) {
         switchToContainerPreset(workspace->customLayoutPreset());
     }
 

@@ -1,4 +1,4 @@
-/* medViewContainerCustom.h ---
+/* medCustomViewContainer.h ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -24,9 +24,9 @@
 
 #include "medViewContainer.h"
 
-class medViewContainerCustomPrivate;
+class medCustomViewContainerPrivate;
 
-class MEDGUI_EXPORT medViewContainerCustom : public medViewContainer
+class MEDGUI_EXPORT medCustomViewContainer : public medViewContainer
 {
     Q_OBJECT
 
@@ -39,8 +39,8 @@ public:
         E = 5  // (2, 2)
     };
 
-    medViewContainerCustom(QWidget *parent = 0);
-    ~medViewContainerCustom(void);
+    medCustomViewContainer(QWidget *parent = 0);
+    ~medCustomViewContainer(void);
 
 
     void split(int rows, int cols);
@@ -82,8 +82,8 @@ protected:
     void onViewFullScreen2 (bool value, dtkAbstractView *view);
     void fullScreen (bool value, dtkAbstractView *view);
 
-    // QList<medViewContainerCustom*> children() const;
-    medViewContainerCustomPrivate *d2;
+    // QList<medCustomViewContainer*> children() const;
+    medCustomViewContainerPrivate *d2;
 };
 
 #endif

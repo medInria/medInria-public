@@ -34,31 +34,31 @@ medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(par
 
     QPushButton *buttonA = new QPushButton(customPage);
     buttonA->setFlat(true);
-    buttonA->setIcon(QIcon(":/icons/medViewContainerCustomA.png"));
+    buttonA->setIcon(QIcon(":/icons/medCustomViewContainerA.png"));
     buttonA->setIconSize(QSize(32, 32));
     connect(buttonA, SIGNAL(clicked()), this, SLOT(onButtonAClicked()));
 
     QPushButton *buttonB = new QPushButton(customPage);
     buttonB->setFlat(true);
-    buttonB->setIcon(QIcon(":/icons/medViewContainerCustomB.png"));
+    buttonB->setIcon(QIcon(":/icons/medCustomViewContainerB.png"));
     buttonB->setIconSize(QSize(32, 32));
     connect(buttonB, SIGNAL(clicked()), this, SLOT(onButtonBClicked()));
 
     QPushButton *buttonC = new QPushButton(customPage);
     buttonC->setFlat(true);
-    buttonC->setIcon(QIcon(":/icons/medViewContainerCustomC.png"));
+    buttonC->setIcon(QIcon(":/icons/medCustomViewContainerC.png"));
     buttonC->setIconSize(QSize(32, 32));
     connect(buttonC, SIGNAL(clicked()), this, SLOT(onButtonCClicked()));
 
     QPushButton *buttonD = new QPushButton(customPage);
     buttonD->setFlat(true);
-    buttonD->setIcon(QIcon(":/icons/medViewContainerCustomD.png"));
+    buttonD->setIcon(QIcon(":/icons/medCustomViewContainerD.png"));
     buttonD->setIconSize(QSize(32, 32));
     connect(buttonD, SIGNAL(clicked()), this, SLOT(onButtonDClicked()));
 
     QPushButton *buttonE = new QPushButton(customPage);
     buttonE->setFlat(true);
-    buttonE->setIcon(QIcon(":/icons/medViewContainerCustomE.png"));
+    buttonE->setIcon(QIcon(":/icons/medCustomViewContainerE.png"));
     buttonE->setIconSize(QSize(32, 32));
     connect(buttonE, SIGNAL(clicked()), this, SLOT(onButtonEClicked()));
 
@@ -72,7 +72,7 @@ medViewerToolBoxLayout::medViewerToolBoxLayout(QWidget *parent) : medToolBox(par
 
     QPushButton *buttonF = new QPushButton(customPage);
     buttonF->setFlat(true);
-    buttonF->setIcon(QIcon(":/icons/medViewContainerCustomF.png"));
+    buttonF->setIcon(QIcon(":/icons/medCustomViewContainerF.png"));
     buttonF->setIconSize(QSize(32, 32));
     buttonF->setMenu(menu);
 

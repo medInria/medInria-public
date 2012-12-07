@@ -22,7 +22,7 @@
 #include "medTabbedViewContainers.h"
 
 #include "medViewContainer.h"
-#include "medViewContainerCustom.h"
+#include "medCustomViewContainer.h"
 #include "medMultiViewContainer.h"
 #include "medSingleViewContainer.h"
 
@@ -99,7 +99,7 @@ void medTabbedViewContainers::deleteContainerClicked(int index)
         if (name == "Single")
             newTab = new medSingleViewContainer();
         else if (name == "Custom")
-            newTab = new medViewContainerCustom();
+            newTab = new medCustomViewContainer();
         else if (name == "Multi")
             newTab = new medMultiViewContainer();
 
@@ -195,7 +195,7 @@ void medTabbedViewContainers::changeCurrentContainerType(const QString &name)
         if (name == "Single")
             newTab = new medSingleViewContainer();
         else if (name == "Custom")
-            newTab = new medViewContainerCustom();
+            newTab = new medCustomViewContainer();
         else if (name == "Multi")
             newTab = new medMultiViewContainer();
 

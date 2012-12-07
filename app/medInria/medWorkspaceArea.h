@@ -160,7 +160,7 @@ public slots:
 
     /**
      * @brief Set custom view preset
-     *  Presets are defined in medViewContainerCustom::Preset.
+     *  Presets are defined in medCustomViewContainer::Preset.
      *  @todo change from int to Preset
      * @param index
     */
