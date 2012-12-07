@@ -1,5 +1,5 @@
-/* medBrowserToolBoxPacsSearch.cpp ---
- * 
+/* medBrowserPacsSearchToolBox.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 15:49:05 2010 (+0200)
@@ -9,26 +9,26 @@
  *     Update #: 121
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
-#include "medBrowserToolBoxPacsSearch.h"
+#include "medBrowserPacsSearchToolBox.h"
 
 #include <QtGui>
 
-class medBrowserToolBoxPacsSearchPrivate
+class medBrowserPacsSearchToolBoxPrivate
 {
 public:
     QLineEdit *edit;
     QPushButton *button;
 };
 
-medBrowserToolBoxPacsSearch::medBrowserToolBoxPacsSearch(QWidget *parent) : medToolBox(parent), d(new medBrowserToolBoxPacsSearchPrivate)
+medBrowserPacsSearchToolBox::medBrowserPacsSearchToolBox(QWidget *parent) : medToolBox(parent), d(new medBrowserPacsSearchToolBoxPrivate)
 {
     QWidget *page = new QWidget(this);
 
@@ -46,14 +46,14 @@ medBrowserToolBoxPacsSearch::medBrowserToolBoxPacsSearch(QWidget *parent) : medT
     connect(d->button, SIGNAL(clicked()), this, SLOT(onSearch()));
 }
 
-medBrowserToolBoxPacsSearch::~medBrowserToolBoxPacsSearch(void)
+medBrowserPacsSearchToolBox::~medBrowserPacsSearchToolBox(void)
 {
     delete d;
 
     d = NULL;
 }
 
-void medBrowserToolBoxPacsSearch::onSearch(void)
+void medBrowserPacsSearchToolBox::onSearch(void)
 {
     QString name = d->edit->text();
     name.append("*");

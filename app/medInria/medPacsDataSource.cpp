@@ -4,7 +4,7 @@
 
 #include <medBrowserPacsHostToolBox.h>
 #include <medBrowserPacsNodesToolBox.h>
-#include <medBrowserToolBoxPacsSearch.h>
+#include <medBrowserPacsSearchToolBox.h>
 #include <medPacsSelector.h>
 #include <medToolBox.h>
 
@@ -24,7 +24,7 @@ public:
     // specific toolboxes
     medBrowserPacsHostToolBox *pacsHostToolBox;
     medBrowserPacsNodesToolBox *pacsNodesToolBox;
-    medBrowserToolBoxPacsSearch *toolbox_pacs_search;
+    medBrowserPacsSearchToolBox *pacsSearchToolBox;
 
     QList<medToolBox*> toolboxes;
 };
@@ -40,8 +40,8 @@ medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(pa
     d->toolboxes.push_back(d->pacsHostToolBox);
     d->pacsNodesToolBox = new medBrowserPacsNodesToolBox(d->pacsWidget);
     d->toolboxes.push_back(d->pacsNodesToolBox);
-    d->toolbox_pacs_search = new medBrowserToolBoxPacsSearch(d->pacsWidget);
-    d->toolboxes.push_back(d->toolbox_pacs_search);
+    d->pacsSearchToolBox = new medBrowserPacsSearchToolBox(d->pacsWidget);
+    d->toolboxes.push_back(d->pacsSearchToolBox);
 
     connect(d->pacsWidget, SIGNAL(moveList(const QVector<medMoveCommandItem>&)), this, SLOT(onPacsMove(const QVector<medMoveCommandItem>&)));
     connect(d->pacsWidget, SIGNAL(import(QString)), this, SIGNAL(dataToImportReceived(QString)));
@@ -52,7 +52,7 @@ medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(pa
     connect(d->pacsNodesToolBox, SIGNAL(echoRequest()), d->pacsWidget, SLOT(onEchoRequest()));
     connect(d->pacsWidget, SIGNAL(echoResponse(QVector<bool>)), d->pacsNodesToolBox, SLOT(onEchoResponse(QVector<bool>)));
 
-    connect(d->toolbox_pacs_search, SIGNAL(search(QString)), d->pacsWidget, SLOT(search(QString)));
+    connect(d->pacsSearchToolBox, SIGNAL(search(QString)), d->pacsWidget, SLOT(search(QString)));
 
 }
 

@@ -1,5 +1,5 @@
-/* medBrowserToolBoxPacsSearch.h ---
- * 
+/* medBrowserPacsSearchToolBox.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 15:45:46 2010 (+0200)
@@ -9,29 +9,29 @@
  *     Update #: 14
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
-#ifndef medBrowserToolBoxPacsSEARCH_H
-#define medBrowserToolBoxPacsSEARCH_H
+#ifndef medBrowserPacsSearchToolBox_H
+#define medBrowserPacsSearchToolBox_H
 
 #include <medToolBox.h>
 #include "medGuiExport.h"
 
-class medBrowserToolBoxPacsSearchPrivate;
+class medBrowserPacsSearchToolBoxPrivate;
 
-class MEDGUI_EXPORT medBrowserToolBoxPacsSearch : public medToolBox
+class MEDGUI_EXPORT medBrowserPacsSearchToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medBrowserToolBoxPacsSearch(QWidget *parent = 0);
-    ~medBrowserToolBoxPacsSearch(void);
+     medBrowserPacsSearchToolBox(QWidget *parent = 0);
+    ~medBrowserPacsSearchToolBox(void);
 
 signals:
     void search(QString query);
@@ -40,7 +40,7 @@ protected slots:
     void onSearch(void);
 
 private:
-    medBrowserToolBoxPacsSearchPrivate *d;
+    medBrowserPacsSearchToolBoxPrivate *d;
 };
 
 #endif
