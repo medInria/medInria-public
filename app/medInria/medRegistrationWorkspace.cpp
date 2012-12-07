@@ -1,4 +1,4 @@
-#include "medViewerWorkspaceRegistration.h"
+#include "medRegistrationWorkspace.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -14,14 +14,14 @@
 
 #include <medToolBoxFactory.h>
 
-class medViewerWorkspaceRegistrationPrivate
+class medRegistrationWorkspacePrivate
 {
 public:
     medToolBoxRegistration * registrationToolBox;
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
 };
 
-medViewerWorkspaceRegistration::medViewerWorkspaceRegistration(QWidget *parent) : medViewerWorkspace(parent), d(new medViewerWorkspaceRegistrationPrivate)
+medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medViewerWorkspace(parent), d(new medRegistrationWorkspacePrivate)
 {
 
 
@@ -44,22 +44,22 @@ medViewerWorkspaceRegistration::medViewerWorkspaceRegistration(QWidget *parent) 
     this->setLayoutType(medViewerWorkspace::LeftDbRightTb);
 }
 
-medViewerWorkspaceRegistration::~medViewerWorkspaceRegistration(void)
+medRegistrationWorkspace::~medRegistrationWorkspace(void)
 {
     delete d;
     d = NULL;
 }
 
-QString medViewerWorkspaceRegistration::identifier() const {
+QString medRegistrationWorkspace::identifier() const {
     return "Registration";
 }
 
-QString medViewerWorkspaceRegistration::description() const {
+QString medRegistrationWorkspace::description() const {
     return tr("Registration");
 }
 
 
-void medViewerWorkspaceRegistration::setupViewContainerStack()
+void medRegistrationWorkspace::setupViewContainerStack()
 {
     //the stack has been instantiated in constructor
     if (!this->stackedViewContainers()->count())
@@ -88,12 +88,12 @@ void medViewerWorkspaceRegistration::setupViewContainerStack()
     }
 }
 
-void medViewerWorkspaceRegistration::patientChanged(int patientId)
+void medRegistrationWorkspace::patientChanged(int patientId)
 {
     d->registrationToolBox->clear();
 }
 
-bool medViewerWorkspaceRegistration::isUsable(){
+bool medRegistrationWorkspace::isUsable(){
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
     return (tbFactory->toolBoxesFromCategory("registration").size()!=0); 
 }

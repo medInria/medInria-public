@@ -62,7 +62,7 @@
 #include "medSeedPointAnnotationData.h"
 
 #include "medViewerWorkspaceVisualization.h"
-#include "medViewerWorkspaceRegistration.h"
+#include "medRegistrationWorkspace.h"
 #include "medDiffusionWorkspace.h"
 #include "medFilteringWorkspace.h"
 #include "medViewerWorkspaceSegmentation.h"
@@ -832,7 +832,7 @@ void medMainWindow::registerToFactories()
             ("Visualization",tr("Visualization"),
              tr("Visualize images, Mesh and other data types"));
     viewerWSpaceFactory->
-            registerWorkspace<medViewerWorkspaceRegistration>
+            registerWorkspace<medRegistrationWorkspace>
             ("Registration", tr("Registration"),
              tr("Register a moving image to a fixed image"));
     viewerWSpaceFactory->registerWorkspace
