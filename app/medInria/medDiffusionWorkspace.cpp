@@ -1,4 +1,4 @@
-#include "medViewerWorkspaceDiffusion.h"
+#include "medDiffusionWorkspace.h"
 
 #include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkAbstractData.h>
@@ -19,7 +19,7 @@
 #include <medToolBoxFactory.h>
 
 
-class medViewerWorkspaceDiffusionPrivate
+class medDiffusionWorkspacePrivate
 {
 public:
 
@@ -34,7 +34,7 @@ public:
     QString uuid;
 };
 
-medViewerWorkspaceDiffusion::medViewerWorkspaceDiffusion(QWidget *parent) : medViewerWorkspace(parent), d(new medViewerWorkspaceDiffusionPrivate)
+medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medViewerWorkspace(parent), d(new medDiffusionWorkspacePrivate)
 {
     d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
 
@@ -78,21 +78,21 @@ medViewerWorkspaceDiffusion::medViewerWorkspaceDiffusion(QWidget *parent) : medV
     this->addToolBox( d->fiberBundlingToolBox );
 }
 
-medViewerWorkspaceDiffusion::~medViewerWorkspaceDiffusion(void)
+medDiffusionWorkspace::~medDiffusionWorkspace(void)
 {
     delete d;
     d = NULL;
 }
 
-QString medViewerWorkspaceDiffusion::identifier() const {
+QString medDiffusionWorkspace::identifier() const {
     return "Diffusion";
 }
 
-QString medViewerWorkspaceDiffusion::description() const {
+QString medDiffusionWorkspace::description() const {
     return "Diffusion";
 }
 
-void medViewerWorkspaceDiffusion::setupViewContainerStack()
+void medDiffusionWorkspace::setupViewContainerStack()
 {
     d->views.clear();
     medViewContainer * diffusionContainer = NULL;
@@ -128,7 +128,7 @@ void medViewerWorkspaceDiffusion::setupViewContainerStack()
 }
 
 
-void medViewerWorkspaceDiffusion::onViewAdded (dtkAbstractView *view)
+void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
 {
     if (!view)
         return;
@@ -176,7 +176,7 @@ void medViewerWorkspaceDiffusion::onViewAdded (dtkAbstractView *view)
     }
 }
 
-void medViewerWorkspaceDiffusion::updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionTensorView* tensorViewToolBox)
+void medDiffusionWorkspace::updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionTensorView* tensorViewToolBox)
 {
     // we are temporary using Qt's reflection in this function to call the slots in the interactor
     // without casting to a specific type (which is in a plugin)
@@ -217,7 +217,7 @@ void medViewerWorkspaceDiffusion::updateTensorInteractorWithToolboxValues(dtkAbs
     QMetaObject::invokeMethod( interactor, "onHideShowSagittalPropertySet", Qt::QueuedConnection, Q_ARG( bool, isShowSagittal ) );
 }
 
-void medViewerWorkspaceDiffusion::updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionFiberView* fiberViewToolBox)
+void medDiffusionWorkspace::updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionFiberView* fiberViewToolBox)
 {
     // we are temporary using Qt's reflection in this function to call the slots in the interactor
     // without casting to a specific type (which is in a plugin)
@@ -254,7 +254,7 @@ void medViewerWorkspaceDiffusion::updateFiberInteractorWithToolboxValues(dtkAbst
         interactor->setProperty ("RenderingMode", "tubes");
 }
 
-void medViewerWorkspaceDiffusion::onViewRemoved (dtkAbstractView *view)
+void medDiffusionWorkspace::onViewRemoved (dtkAbstractView *view)
 {
     if (!view)
         return;
@@ -269,7 +269,7 @@ void medViewerWorkspaceDiffusion::onViewRemoved (dtkAbstractView *view)
     d->views.removeOne (view);
 }
 
-void medViewerWorkspaceDiffusion::onFiberColorModeChanged(int index)
+void medDiffusionWorkspace::onFiberColorModeChanged(int index)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
@@ -285,7 +285,7 @@ void medViewerWorkspaceDiffusion::onFiberColorModeChanged(int index)
     }
 }
 
-void medViewerWorkspaceDiffusion::onGPUActivated (bool value)
+void medDiffusionWorkspace::onGPUActivated (bool value)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
@@ -299,7 +299,7 @@ void medViewerWorkspaceDiffusion::onGPUActivated (bool value)
     }
 }
 
-void medViewerWorkspaceDiffusion::onLineModeSelected (bool value)
+void medDiffusionWorkspace::onLineModeSelected (bool value)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (value)
@@ -311,7 +311,7 @@ void medViewerWorkspaceDiffusion::onLineModeSelected (bool value)
     }
 }
 
-void medViewerWorkspaceDiffusion::onRibbonModeSelected (bool value)
+void medDiffusionWorkspace::onRibbonModeSelected (bool value)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (value)
@@ -323,7 +323,7 @@ void medViewerWorkspaceDiffusion::onRibbonModeSelected (bool value)
     }
 }
 
-void medViewerWorkspaceDiffusion::onTubeModeSelected (bool value)
+void medDiffusionWorkspace::onTubeModeSelected (bool value)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (value)
@@ -335,7 +335,7 @@ void medViewerWorkspaceDiffusion::onTubeModeSelected (bool value)
     }
 }
 
-void medViewerWorkspaceDiffusion::onTBDiffusionSuccess(void)
+void medDiffusionWorkspace::onTBDiffusionSuccess(void)
 {
     foreach (dtkAbstractView *view, d->views) {
         view->setData( d->diffusionToolBox->output(), 0 );
@@ -351,7 +351,7 @@ void medViewerWorkspaceDiffusion::onTBDiffusionSuccess(void)
 
 // tensor interaction related methods
 
-void medViewerWorkspaceDiffusion::onGlyphShapeChanged(const QString& glyphShape)
+void medDiffusionWorkspace::onGlyphShapeChanged(const QString& glyphShape)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
@@ -362,7 +362,7 @@ void medViewerWorkspaceDiffusion::onGlyphShapeChanged(const QString& glyphShape)
     }
 }
 
-void medViewerWorkspaceDiffusion::onFlipXChanged(bool flipX)
+void medDiffusionWorkspace::onFlipXChanged(bool flipX)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
@@ -377,7 +377,7 @@ void medViewerWorkspaceDiffusion::onFlipXChanged(bool flipX)
     }
 }
 
-void medViewerWorkspaceDiffusion::onFlipYChanged(bool flipY)
+void medDiffusionWorkspace::onFlipYChanged(bool flipY)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
@@ -392,7 +392,7 @@ void medViewerWorkspaceDiffusion::onFlipYChanged(bool flipY)
     }
 }
 
-void medViewerWorkspaceDiffusion::onFlipZChanged(bool flipZ)
+void medDiffusionWorkspace::onFlipZChanged(bool flipZ)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
@@ -409,7 +409,7 @@ void medViewerWorkspaceDiffusion::onFlipZChanged(bool flipZ)
 
 // end of tensor interaction related methods
 
-void medViewerWorkspaceDiffusion::refreshInteractors (void)
+void medDiffusionWorkspace::refreshInteractors (void)
 {
     foreach (dtkAbstractView *view, d->views) {
         if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
@@ -419,7 +419,7 @@ void medViewerWorkspaceDiffusion::refreshInteractors (void)
     }
 }
 
-void medViewerWorkspaceDiffusion::onAddTabClicked()
+void medDiffusionWorkspace::onAddTabClicked()
 {
     QString name = this->identifier();
     QString realName = name;

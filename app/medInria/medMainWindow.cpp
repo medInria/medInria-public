@@ -63,7 +63,7 @@
 
 #include "medViewerWorkspaceVisualization.h"
 #include "medViewerWorkspaceRegistration.h"
-#include "medViewerWorkspaceDiffusion.h"
+#include "medDiffusionWorkspace.h"
 #include "medViewerWorkspaceFiltering.h"
 #include "medViewerWorkspaceSegmentation.h"
 
@@ -836,7 +836,7 @@ void medMainWindow::registerToFactories()
             ("Registration", tr("Registration"),
              tr("Register a moving image to a fixed image"));
     viewerWSpaceFactory->registerWorkspace
-            <medViewerWorkspaceDiffusion>("Diffusion",
+            <medDiffusionWorkspace>("Diffusion",
                                               tr("Diffusion"),
                                               tr("Diffusion Tensor Images"));
     viewerWSpaceFactory->registerWorkspace

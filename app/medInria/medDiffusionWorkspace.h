@@ -1,5 +1,5 @@
-#ifndef MEDVIEWERWORKSPACEDIFFUSION_H
-#define MEDVIEWERWORKSPACEDIFFUSION_H
+#ifndef medDiffusionWorkspace_H
+#define medDiffusionWorkspace_H
 
 
 #include <QtCore>
@@ -11,15 +11,15 @@
 
 
 class medTabbedViewContainers;
-class medViewerWorkspaceDiffusionPrivate;
+class medDiffusionWorkspacePrivate;
 
-class medViewerWorkspaceDiffusion : public medViewerWorkspace
+class medDiffusionWorkspace : public medViewerWorkspace
 {
     Q_OBJECT
 
 public:
-     medViewerWorkspaceDiffusion(QWidget *parent = 0);
-    ~medViewerWorkspaceDiffusion();
+     medDiffusionWorkspace(QWidget *parent = 0);
+    ~medDiffusionWorkspace();
 
     virtual QString identifier()  const;
     virtual QString description() const;
@@ -62,7 +62,7 @@ public slots:
     void onFlipZChanged(bool flipZ);
 
 private:
-    medViewerWorkspaceDiffusionPrivate *d;
+    medDiffusionWorkspacePrivate *d;
 
     /** Updates the tensor interactor with the current values in the tensor toolbox. */
     void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionTensorView* tensorViewToolBox);
@@ -72,4 +72,4 @@ private:
 };
 
 
-#endif // MEDVIEWERWORKSPACEDIFFUSION_H
+#endif // medDiffusionWorkspace_H

@@ -31,7 +31,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medBrowserSourceSelectorToolBox.h
   medMainWindow.h
   medWorkspaceArea.h
-  medViewerWorkspaceDiffusion.h
+  medDiffusionWorkspace.h
   medViewerWorkspaceVisualization.h
   medViewerWorkspaceRegistration.h
   medViewerWorkspaceSegmentation.h
@@ -59,7 +59,7 @@ set(${PROJECT_NAME}_SOURCES
   medBrowserSourceSelectorToolBox.cpp
   medMainWindow.cpp
   medWorkspaceArea.cpp
-  medViewerWorkspaceDiffusion.cpp
+  medDiffusionWorkspace.cpp
   medViewerWorkspaceVisualization.cpp
   medViewerWorkspaceRegistration.cpp
   medViewerWorkspaceSegmentation.cpp
