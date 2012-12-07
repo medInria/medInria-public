@@ -5,47 +5,47 @@
 
 class dtkAbstractView;
 class dtkAbstractData;
-class medViewerToolBoxTimePrivate;
+class medWorkspaceTimeToolBoxPrivate;
 
 /**
- * \class medViewerToolBoxTime
- * 
+ * \class medWorkspaceTimeToolBox
+ *
  * \author Fatih Arslan and Nicolas Toussaint
- * 
+ *
  * \brief Class Declaration for 4D Image/Mesh Support ToolBox
- * 
+ *
  * The time toolbox is dedicated to the handling of a 4th
- * dimension of objects that are visualized in the set of 
+ * dimension of objects that are visualized in the set of
  * views currently loaded.
  *
  * If any object contains a 4th dimension (supposely time)
  * then the toolbox is activated and user can display the
  * different available time points.
  *
- * When several loaded objects contain a time dimension, 
+ * When several loaded objects contain a time dimension,
  * then the toolbox automatically re-arranges its range
  * to adapt to the set of time objects ( updateRange() ).
  * The smallest time resolution is taken for the slider.
  *
  * The toolbox has a list of med4DAbstractViewInteractor
  * that do the main part of the work.
- * 
+ *
  * \see med4DAbstractViewInteractor
  *
  */
 
 class med4DAbstractViewInteractor;
 
-class MEDGUI_EXPORT medViewerToolBoxTime : public medToolBox
+class MEDGUI_EXPORT medWorkspaceTimeToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medViewerToolBoxTime(QWidget *parent = 0);
-    ~medViewerToolBoxTime(void);
+     medWorkspaceTimeToolBox(QWidget *parent = 0);
+    ~medWorkspaceTimeToolBox(void);
 
     void update(dtkAbstractView *view);
-	
+
 public slots:
 
     /** Slot when the sequence is in played, icons will be changed according to the state */
@@ -62,14 +62,14 @@ public slots:
     void onViewAdded   (dtkAbstractView *view);
     void onViewRemoved (dtkAbstractView *view);
     void onDataAdded (dtkAbstractData* data);
-    
+
     /** parameters updated when the spinbox is changed */
     void onSpinBoxChanged(int);
     void onStopButton();
     void onStepIncreased( );
 
     void clear();
-    
+
  protected:
 
     /** Add/Remove an interactor from the list */
@@ -89,10 +89,10 @@ public slots:
 
     /** override the mouse release function for the slider */
     void mouseReleaseEvent ( QMouseEvent *  );
-    
+
  private:
-    
-    medViewerToolBoxTimePrivate *d;
+
+    medWorkspaceTimeToolBoxPrivate *d;
     bool isViewAdded;
     QString DoubleToQString(double);
 };

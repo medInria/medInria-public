@@ -1,4 +1,4 @@
-/* medViewerToolBoxTime.h ---
+/* medWorkspaceTimeToolBox.h ---
  *
  * Author: Fatih Arslan and Nicolas Toussaint
 
@@ -6,7 +6,7 @@
  *
  */
 
-#include "medViewerToolBoxTime.h"
+#include "medWorkspaceTimeToolBox.h"
 
 #include <iomanip>
 #include <cmath>
@@ -27,7 +27,7 @@
 
 
 
-class medViewerToolBoxTimePrivate
+class medWorkspaceTimeToolBoxPrivate
 {
 public:
     QSlider     *timeSlider;
@@ -52,7 +52,7 @@ public:
     QPixmap playIcon;
 };
 
-medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent), d(new medViewerToolBoxTimePrivate)
+medWorkspaceTimeToolBox::medWorkspaceTimeToolBox(QWidget *parent) : medToolBox(parent), d(new medWorkspaceTimeToolBoxPrivate)
 {
     QWidget *box = new QWidget (this);
     d->labelmin = new QLabel(this);
@@ -162,7 +162,7 @@ medViewerToolBoxTime::medViewerToolBoxTime(QWidget *parent) : medToolBox(parent)
     this->hide();
 }
 
-medViewerToolBoxTime::~medViewerToolBoxTime(void)
+medWorkspaceTimeToolBox::~medWorkspaceTimeToolBox(void)
 {
     delete d;
 
@@ -170,7 +170,7 @@ medViewerToolBoxTime::~medViewerToolBoxTime(void)
 }
 
 
-void medViewerToolBoxTime::onViewAdded (dtkAbstractView *view)
+void medWorkspaceTimeToolBox::onViewAdded (dtkAbstractView *view)
 {
     if (!view)
         return;
@@ -188,7 +188,7 @@ void medViewerToolBoxTime::onViewAdded (dtkAbstractView *view)
     this->isViewAdded = true;
 }
 
-void medViewerToolBoxTime::onDataAdded (dtkAbstractData *data)
+void medWorkspaceTimeToolBox::onDataAdded (dtkAbstractData *data)
 {
     if (!data)
         return;
@@ -196,7 +196,7 @@ void medViewerToolBoxTime::onDataAdded (dtkAbstractData *data)
     this->updateRange();
 }
 
-void medViewerToolBoxTime::onViewRemoved (dtkAbstractView *view)
+void medWorkspaceTimeToolBox::onViewRemoved (dtkAbstractView *view)
 {
     d->timeLine->stop();
     d->timeSlider->setValue(0);
@@ -217,24 +217,24 @@ void medViewerToolBoxTime::onViewRemoved (dtkAbstractView *view)
     this->isViewAdded = false;
 }
 
-void medViewerToolBoxTime::AddInteractor (med4DAbstractViewInteractor* interactor)
+void medWorkspaceTimeToolBox::AddInteractor (med4DAbstractViewInteractor* interactor)
 {
     d->interactors.removeOne (interactor);
     d->interactors.append (interactor);
 }
-void medViewerToolBoxTime::RemoveInteractor (med4DAbstractViewInteractor* interactor)
+void medWorkspaceTimeToolBox::RemoveInteractor (med4DAbstractViewInteractor* interactor)
 {
     d->interactors.removeOne (interactor);
 }
 
-void medViewerToolBoxTime::update(dtkAbstractView *view)
+void medWorkspaceTimeToolBox::update(dtkAbstractView *view)
 {
     //JGG qDebug()<<"updating time tb";
     medToolBox::update(view);
 }
 
 
-void medViewerToolBoxTime::onPlaySequences ()
+void medWorkspaceTimeToolBox::onPlaySequences ()
 {
     if ( this->isViewAdded)
     {
@@ -261,7 +261,7 @@ void medViewerToolBoxTime::onPlaySequences ()
     }
 }
 
-void medViewerToolBoxTime::onStopButton ()
+void medWorkspaceTimeToolBox::onStopButton ()
 {
     if (d->timeLine->state() == QTimeLine::Running)
     {
@@ -272,18 +272,18 @@ void medViewerToolBoxTime::onStopButton ()
     d->timeSlider->setValue(0);
 }
 
-void medViewerToolBoxTime::onNextFrame ()
+void medWorkspaceTimeToolBox::onNextFrame ()
 {
     if ( this->isViewAdded)
 	d->timeSlider->setValue(d->timeSlider->value()+1);
 }
-void medViewerToolBoxTime::onPreviousFrame ()
+void medWorkspaceTimeToolBox::onPreviousFrame ()
 {
     if ( this->isViewAdded)
 	d->timeSlider->setValue(d->timeSlider->value()-1);
 }
 
-void medViewerToolBoxTime::onTimeChanged (int val)
+void medWorkspaceTimeToolBox::onTimeChanged (int val)
 {
     double time = this->getTimeFromSliderValue (val);
     for (int i=0; i<d->interactors.size(); i++)
@@ -294,26 +294,26 @@ void medViewerToolBoxTime::onTimeChanged (int val)
     d->labelcurr->setText( DoubleToQString(( time ) / (d->spinBox->value()/100.0)) + QString(" sec") );
 }
 
-void medViewerToolBoxTime::onSpinBoxChanged(int time)
+void medWorkspaceTimeToolBox::onSpinBoxChanged(int time)
 {
     this->updateRange();
 
     d->timeLine->setDuration((d->maxTime + d->minTimeStep)*(1000/(time/100.0)));
 }
 
-double medViewerToolBoxTime::getTimeFromSliderValue (int s)
+double medWorkspaceTimeToolBox::getTimeFromSliderValue (int s)
 {
     double value = d->minTime + (double)(s) * (d->minTimeStep);
     return value;
 }
 
-unsigned int medViewerToolBoxTime::getSliderValueFromTime (double t)
+unsigned int medWorkspaceTimeToolBox::getSliderValueFromTime (double t)
 {
     unsigned int value = std::ceil ((t - d->minTime) / (d->minTimeStep));
     return value;
 }
 
-void medViewerToolBoxTime::updateRange (void)
+void medWorkspaceTimeToolBox::updateRange (void)
 {
     if (!d->interactors.size())
         return;
@@ -345,7 +345,7 @@ void medViewerToolBoxTime::updateRange (void)
     d->labelmax->setText( DoubleToQString(( maxtime ) / (d->spinBox->value()/100.0)) + QString(" sec"));
 }
 
-QString medViewerToolBoxTime::DoubleToQString (double val)
+QString medWorkspaceTimeToolBox::DoubleToQString (double val)
 {
     std::ostringstream strs;
     strs <<  std::fixed << std::setprecision(2)<< val;
@@ -354,7 +354,7 @@ QString medViewerToolBoxTime::DoubleToQString (double val)
 }
 
 
-void medViewerToolBoxTime::mouseReleaseEvent ( QMouseEvent *  mouseEvent)
+void medWorkspaceTimeToolBox::mouseReleaseEvent ( QMouseEvent *  mouseEvent)
 {
     if(mouseEvent->button() == Qt::RightButton)
     {
@@ -375,7 +375,7 @@ void medViewerToolBoxTime::mouseReleaseEvent ( QMouseEvent *  mouseEvent)
         menu->exec(mouseEvent->globalPos());
     }
 }
-void medViewerToolBoxTime::onStepIncreased()
+void medWorkspaceTimeToolBox::onStepIncreased()
 {
     if (QObject::sender() == d->actionlist[0])
         d->spinBox->setSingleStep(1);
@@ -389,7 +389,7 @@ void medViewerToolBoxTime::onStepIncreased()
         d->spinBox->setSingleStep(50);
 }
 
-void medViewerToolBoxTime::clear()
+void medWorkspaceTimeToolBox::clear()
 {
     d->minTime = 0.0;
     d->minTimeStep = 1.0;
