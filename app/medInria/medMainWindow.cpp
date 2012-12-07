@@ -61,7 +61,7 @@
 
 #include "medSeedPointAnnotationData.h"
 
-#include "medViewerWorkspaceVisualization.h"
+#include "medVisualizationWorkspace.h"
 #include "medRegistrationWorkspace.h"
 #include "medDiffusionWorkspace.h"
 #include "medFilteringWorkspace.h"
@@ -828,7 +828,7 @@ void medMainWindow::registerToFactories()
     medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();
     //TODO: move the register method to the classes maybe??
     viewerWSpaceFactory->
-            registerWorkspace<medViewerWorkspaceVisualization>
+            registerWorkspace<medVisualizationWorkspace>
             ("Visualization",tr("Visualization"),
              tr("Visualize images, Mesh and other data types"));
     viewerWSpaceFactory->

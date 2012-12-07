@@ -1,4 +1,4 @@
-/* medViewerWorkspaceVisualization.cpp ---
+/* medVisualizationWorkspace.cpp ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,7 +17,7 @@
  *
  */
 
-#include "medViewerWorkspaceVisualization.h"
+#include "medVisualizationWorkspace.h"
 
 #include <medViewerToolBoxViewProperties.h>
 #include <medViewContainer.h>
@@ -26,7 +26,7 @@
 #include <medViewerToolBoxLayout.h>
 #include <medSettingsManager.h>
 
-class medViewerWorkspaceVisualizationPrivate
+class medVisualizationWorkspacePrivate
 {
 public:
     medViewerToolBoxLayout              *layoutToolBox;
@@ -34,7 +34,7 @@ public:
     medViewerToolBoxViewProperties      *viewPropertiesToolBox;
 };
 
-medViewerWorkspaceVisualization::medViewerWorkspaceVisualization(QWidget *parent) : medViewerWorkspace(parent), d(new medViewerWorkspaceVisualizationPrivate)
+medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medViewerWorkspace(parent), d(new medVisualizationWorkspacePrivate)
 {
     // -- Layout toolbox --
     d->layoutToolBox = new medViewerToolBoxLayout(parent);
@@ -67,7 +67,7 @@ medViewerWorkspaceVisualization::medViewerWorkspaceVisualization(QWidget *parent
               this, SLOT(connectToolboxesToCurrentContainer(const QString &)));
 }
 
-void medViewerWorkspaceVisualization::setupViewContainerStack()
+void medVisualizationWorkspace::setupViewContainerStack()
 {
     if (!stackedViewContainers()->count())
     {
@@ -78,7 +78,7 @@ void medViewerWorkspaceVisualization::setupViewContainerStack()
     this->stackedViewContainers()->unlockTabs();
 }
 
-void medViewerWorkspaceVisualization::connectToolboxesToCurrentContainer(const QString &name)
+void medVisualizationWorkspace::connectToolboxesToCurrentContainer(const QString &name)
 {
     connect(stackedViewContainers()->container(name),
             SIGNAL(viewAdded(dtkAbstractView*)),
@@ -88,17 +88,17 @@ void medViewerWorkspaceVisualization::connectToolboxesToCurrentContainer(const Q
             d->timeToolBox, SLOT(onViewRemoved(dtkAbstractView*)));
 }
 
-medViewerWorkspaceVisualization::~medViewerWorkspaceVisualization(void)
+medVisualizationWorkspace::~medVisualizationWorkspace(void)
 {
     delete d;
     d = NULL;
 }
 
-QString medViewerWorkspaceVisualization::identifier() const {
+QString medVisualizationWorkspace::identifier() const {
     return "Visualization";
 }
 
-QString medViewerWorkspaceVisualization::description() const {
+QString medVisualizationWorkspace::description() const {
     return tr("Visualization");
 }
 
