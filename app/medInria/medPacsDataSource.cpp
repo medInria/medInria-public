@@ -3,7 +3,7 @@
 #include <medJobManager.h>
 
 #include <medBrowserPacsHostToolBox.h>
-#include <medBrowserToolBoxPacsNodes.h>
+#include <medBrowserPacsNodesToolBox.h>
 #include <medBrowserToolBoxPacsSearch.h>
 #include <medPacsSelector.h>
 #include <medToolBox.h>
@@ -23,7 +23,7 @@ public:
 
     // specific toolboxes
     medBrowserPacsHostToolBox *pacsHostToolBox;
-    medBrowserToolBoxPacsNodes *toolbox_pacs_nodes;
+    medBrowserPacsNodesToolBox *pacsNodesToolBox;
     medBrowserToolBoxPacsSearch *toolbox_pacs_search;
 
     QList<medToolBox*> toolboxes;
@@ -38,19 +38,19 @@ medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(pa
     d->pacs_selector = new medPacsSelector(d->pacsWidget);
     d->pacsHostToolBox = new medBrowserPacsHostToolBox(d->pacsWidget);
     d->toolboxes.push_back(d->pacsHostToolBox);
-    d->toolbox_pacs_nodes = new medBrowserToolBoxPacsNodes(d->pacsWidget);
-    d->toolboxes.push_back(d->toolbox_pacs_nodes);
+    d->pacsNodesToolBox = new medBrowserPacsNodesToolBox(d->pacsWidget);
+    d->toolboxes.push_back(d->pacsNodesToolBox);
     d->toolbox_pacs_search = new medBrowserToolBoxPacsSearch(d->pacsWidget);
     d->toolboxes.push_back(d->toolbox_pacs_search);
 
     connect(d->pacsWidget, SIGNAL(moveList(const QVector<medMoveCommandItem>&)), this, SLOT(onPacsMove(const QVector<medMoveCommandItem>&)));
     connect(d->pacsWidget, SIGNAL(import(QString)), this, SIGNAL(dataToImportReceived(QString)));
 
-    connect(d->toolbox_pacs_nodes, SIGNAL(nodesUpdated()), d->pacs_selector, SLOT(updateList()));
+    connect(d->pacsNodesToolBox, SIGNAL(nodesUpdated()), d->pacs_selector, SLOT(updateList()));
     connect(d->pacs_selector, SIGNAL(selectionChanged(QVector<int>)), d->pacsWidget, SLOT(updateSelectedNodes(QVector<int>)));
 
-    connect(d->toolbox_pacs_nodes, SIGNAL(echoRequest()), d->pacsWidget, SLOT(onEchoRequest()));
-    connect(d->pacsWidget, SIGNAL(echoResponse(QVector<bool>)), d->toolbox_pacs_nodes, SLOT(onEchoResponse(QVector<bool>)));
+    connect(d->pacsNodesToolBox, SIGNAL(echoRequest()), d->pacsWidget, SLOT(onEchoRequest()));
+    connect(d->pacsWidget, SIGNAL(echoResponse(QVector<bool>)), d->pacsNodesToolBox, SLOT(onEchoResponse(QVector<bool>)));
 
     connect(d->toolbox_pacs_search, SIGNAL(search(QString)), d->pacsWidget, SLOT(search(QString)));
 

@@ -152,7 +152,7 @@ void medPacsWidget::readSettings(void)
 
     QList<QVariant> nodes;
 
-    settings.beginGroup("medBrowserToolBoxPacsNodes");
+    settings.beginGroup("medBrowserPacsNodesToolBox");
     nodes = settings.value("nodes").toList();
     settings.endGroup();
 

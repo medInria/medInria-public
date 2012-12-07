@@ -1,5 +1,5 @@
-/* medBrowserToolBoxPacsNodes.h ---
- * 
+/* medBrowserPacsNodesToolBox.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 15:46:09 2010 (+0200)
@@ -9,29 +9,29 @@
  *     Update #: 11
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
-#ifndef medBrowserToolBoxPacsNODES_H
-#define medBrowserToolBoxPacsNODES_H
+#ifndef medBrowserPacsNodesToolBox_H
+#define medBrowserPacsNodesToolBox_H
 
 #include <medToolBox.h>
 #include "medGuiExport.h"
 
-class medBrowserToolBoxPacsNodesPrivate;
+class medBrowserPacsNodesToolBoxPrivate;
 
-class MEDGUI_EXPORT medBrowserToolBoxPacsNodes : public medToolBox
+class MEDGUI_EXPORT medBrowserPacsNodesToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medBrowserToolBoxPacsNodes(QWidget *parent = 0);
-    ~medBrowserToolBoxPacsNodes(void);
+     medBrowserPacsNodesToolBox(QWidget *parent = 0);
+    ~medBrowserPacsNodesToolBox(void);
 
     void readSettings(void);
 
@@ -50,7 +50,7 @@ private:
 
     void fillWidget( QList<QVariant> nodes );
 
-    medBrowserToolBoxPacsNodesPrivate *d;
+    medBrowserPacsNodesToolBoxPrivate *d;
 };
 
 #endif

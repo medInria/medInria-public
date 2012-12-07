@@ -16,7 +16,7 @@ medPacsSelector::medPacsSelector( QWidget *parent /*= 0*/ ): d(new medToolBoxPac
 
     QFormLayout* fLayout = new QFormLayout(this);
     fLayout->addWidget(d->selectionList);
- 
+
     connect(d->selectionList, SIGNAL(itemClicked(QListWidgetItem* )), this, SLOT(emitSelectionChanged()));
 
     readSettings();
@@ -35,7 +35,7 @@ void medPacsSelector::readSettings( void )
 
     QSettings settings;
 
-    settings.beginGroup("medBrowserToolBoxPacsNodes");
+    settings.beginGroup("medBrowserPacsNodesToolBox");
     nodes = settings.value("nodes").toList();
     settings.endGroup();
 
@@ -46,7 +46,7 @@ void medPacsSelector::readSettings( void )
 void medPacsSelector::fillWidget( QList<QVariant> nodes )
 {
     d->selectionList->clear();
-    foreach(QVariant node, nodes) 
+    foreach(QVariant node, nodes)
     {
         QListWidgetItem* myItem = new QListWidgetItem(node.toStringList().at(0),d->selectionList);
         myItem->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
