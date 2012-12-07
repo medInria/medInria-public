@@ -1,5 +1,5 @@
-/* medBrowserToolBoxSource.h ---
- * 
+/* medBrowserSourceSelectorToolBox.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 15:19:01 2010 (+0200)
@@ -9,28 +9,28 @@
  *     Update #: 16
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
-#ifndef MEDBROWSERTOOLBOXSOURCE_H
-#define MEDBROWSERTOOLBOXSOURCE_H
+#ifndef medBrowserSourceSelectorToolBox_H
+#define medBrowserSourceSelectorToolBox_H
 
 #include <medToolBox.h>
 
-class medBrowserToolBoxSourcePrivate;
+class medBrowserSourceSelectorToolBoxPrivate;
 
-class medBrowserToolBoxSource : public medToolBox
+class medBrowserSourceSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medBrowserToolBoxSource(QWidget *parent = 0);
-    ~medBrowserToolBoxSource(void);
+     medBrowserSourceSelectorToolBox(QWidget *parent = 0);
+    ~medBrowserSourceSelectorToolBox(void);
 
 	void addTab(QString tabName, QWidget *widget, QString description = "");
 
@@ -40,7 +40,7 @@ signals:
     void indexChanged(int);
 
 private:
-    medBrowserToolBoxSourcePrivate *d;
+    medBrowserSourceSelectorToolBoxPrivate *d;
 };
 
 #endif

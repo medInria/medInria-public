@@ -1,5 +1,5 @@
-/* medBrowserToolBoxSource.cpp ---
- * 
+/* medBrowserSourceSelectorToolBox.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 15:20:03 2010 (+0200)
@@ -9,27 +9,27 @@
  *     Update #: 115
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
-#include "medBrowserToolBoxSource.h"
+#include "medBrowserSourceSelectorToolBox.h"
 #include <medToolBoxTab.h>
 
 #include <QtGui>
 
-class medBrowserToolBoxSourcePrivate
+class medBrowserSourceSelectorToolBoxPrivate
 {
 public:
     QList <QWidget *> additional_widgets;
     medToolBoxTab *tab;
 };
 
-medBrowserToolBoxSource::medBrowserToolBoxSource(QWidget *parent) : medToolBox(parent), d(new medBrowserToolBoxSourcePrivate)
+medBrowserSourceSelectorToolBox::medBrowserSourceSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medBrowserSourceSelectorToolBoxPrivate)
 {
     d->tab = new medToolBoxTab(this);
     connect(d->tab, SIGNAL(currentChanged(int)), this, SIGNAL(indexChanged(int)));
@@ -38,20 +38,20 @@ medBrowserToolBoxSource::medBrowserToolBoxSource(QWidget *parent) : medToolBox(p
     this->setTabWidget(d->tab);
 }
 
-medBrowserToolBoxSource::~medBrowserToolBoxSource(void)
+medBrowserSourceSelectorToolBox::~medBrowserSourceSelectorToolBox(void)
 {
     delete d;
     d = NULL;
 }
 
-void medBrowserToolBoxSource::addTab(QString tabName, QWidget *widget, QString description)
+void medBrowserSourceSelectorToolBox::addTab(QString tabName, QWidget *widget, QString description)
 {
 	d->additional_widgets.push_back(widget);
 	int i = d->tab->addTab(d->additional_widgets.back(), tabName);
 	d->tab->setTabToolTip (i, description);
 }
 
-void medBrowserToolBoxSource::setCurrentTab(int current)
+void medBrowserSourceSelectorToolBox::setCurrentTab(int current)
 {
 	d->tab->setCurrentIndex(current);
 }
