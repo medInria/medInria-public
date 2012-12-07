@@ -34,7 +34,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDiffusionWorkspace.h
   medViewerWorkspaceVisualization.h
   medRegistrationWorkspace.h
-  medViewerWorkspaceSegmentation.h
+  medSegmentationWorkspace.h
   medFilteringWorkspace.h
   medPacsDataSource.h
   medFileSystemDataSource.h
@@ -62,7 +62,7 @@ set(${PROJECT_NAME}_SOURCES
   medDiffusionWorkspace.cpp
   medViewerWorkspaceVisualization.cpp
   medRegistrationWorkspace.cpp
-  medViewerWorkspaceSegmentation.cpp
+  medSegmentationWorkspace.cpp
   medFilteringWorkspace.cpp
   medPacsDataSource.cpp
   medFileSystemDataSource.cpp

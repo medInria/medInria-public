@@ -65,7 +65,7 @@
 #include "medRegistrationWorkspace.h"
 #include "medDiffusionWorkspace.h"
 #include "medFilteringWorkspace.h"
-#include "medViewerWorkspaceSegmentation.h"
+#include "medSegmentationWorkspace.h"
 
 #include "medSaveModifiedDialog.h"
 
@@ -843,7 +843,7 @@ void medMainWindow::registerToFactories()
             <medFilteringWorkspace>("Filtering",
                                               tr("Filtering"),
                                               tr("Filter workspace"));
-    medViewerWorkspaceSegmentation::registerWithViewerWorkspaceFactory();
+    medSegmentationWorkspace::registerWithViewerWorkspaceFactory();
 
     //Register settingsWidgets
     //TODO: get rid of the setTabName, or make it static and use it here...

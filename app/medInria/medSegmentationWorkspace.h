@@ -1,5 +1,5 @@
-#ifndef MEDVIEWERWORKSPACESEGMENTATION_H
-#define MEDVIEWERWORKSPACESEGMENTATION_H
+#ifndef medSegmentationWorkspace_H
+#define medSegmentationWorkspace_H
 
 
 // /////////////////////////////////////////////////////////////////
@@ -12,21 +12,21 @@ class QGraphicsSceneMouseEvent;
 
 class medProgressionStack;
 
-class medViewerWorkspaceSegmentationPrivate;
+class medSegmentationWorkspacePrivate;
 class medToolBoxSegmentation;
 
 /**
- * class medViewerWorkspaceSegmentation
+ * class medSegmentationWorkspace
  * Defines the segmentation workspace.
  */
-class medViewerWorkspaceSegmentation : public medViewerWorkspace
+class medSegmentationWorkspace : public medViewerWorkspace
 {
     Q_OBJECT
 
 public:
-    medViewerWorkspaceSegmentation(QWidget * parent = NULL);
+    medSegmentationWorkspace(QWidget * parent = NULL);
 
-    virtual ~medViewerWorkspaceSegmentation(void);
+    virtual ~medSegmentationWorkspace(void);
 
     //! Overrides base class.
     QString description(void) const;
@@ -66,7 +66,7 @@ public slots:
 
 private:
     static QString s_identifier();
-    medViewerWorkspaceSegmentationPrivate *d;
+    medSegmentationWorkspacePrivate *d;
 };
 
-#endif // MEDVIEWERWORKSPACESEGMENTATION_H
+#endif // medSegmentationWorkspace_H
