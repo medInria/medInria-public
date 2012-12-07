@@ -8,7 +8,7 @@
 
 #include <medDataManager.h>
 
-#include "medViewerToolBoxViewProperties.h"
+#include "medWorkspaceViewPropertiesToolBox.h"
 #include "medToolBoxDiffusionTensorView.h"
 #include "medToolBoxDiffusion.h"
 #include "medToolBoxDiffusionFiberView.h"
@@ -23,7 +23,7 @@ class medDiffusionWorkspacePrivate
 {
 public:
 
-    medViewerToolBoxViewProperties      *viewPropertiesToolBox;
+    medWorkspaceViewPropertiesToolBox      *viewPropertiesToolBox;
     medToolBoxDiffusionFiberView        *fiberViewToolBox;
     medToolBoxDiffusionFiberBundling    *fiberBundlingToolBox;
     medToolBoxDiffusion                 *diffusionToolBox;
@@ -36,7 +36,7 @@ public:
 
 medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medViewerWorkspace(parent), d(new medDiffusionWorkspacePrivate)
 {
-    d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
+    d->viewPropertiesToolBox = new medWorkspaceViewPropertiesToolBox(parent);
 
     // -- Bundling  toolbox --
     d->fiberBundlingToolBox = new medToolBoxDiffusionFiberBundling(parent);

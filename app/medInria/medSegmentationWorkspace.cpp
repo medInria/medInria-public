@@ -13,7 +13,7 @@
 #include <medViewContainer.h>
 #include <medWorkspaceFactory.h>
 #include <medVisualizationLayoutToolBox.h>
-#include <medViewerToolBoxViewProperties.h>
+#include <medWorkspaceViewPropertiesToolBox.h>
 #include <medToolBoxFactory.h>
 
 #include <dtkLog/dtkLog.h>
@@ -32,7 +32,7 @@ public:
     {}
 
     medVisualizationLayoutToolBox *layoutToolBox;
-    medViewerToolBoxViewProperties *viewPropertiesToolBox;
+    medWorkspaceViewPropertiesToolBox *viewPropertiesToolBox;
 
     medToolBoxSegmentation *segmentationToolBox;
 };
@@ -70,7 +70,7 @@ medViewerWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 
     // -- View toolbox --
 
-    d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
+    d->viewPropertiesToolBox = new medWorkspaceViewPropertiesToolBox(parent);
 
 
     connect ( this, SIGNAL(layoutModeChanged(const QString &)),
@@ -167,7 +167,7 @@ QString medSegmentationWorkspace::identifier( void ) const
     return s_identifier();
 }
 
-bool medViewerWorkspaceSegmentation::isUsable(){
+bool medSegmentationWorkspace::isUsable(){
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
     return (tbFactory->toolBoxesFromCategory("segmentation").size()!=0); 
 }

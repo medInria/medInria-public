@@ -19,7 +19,7 @@
 
 #include "medVisualizationWorkspace.h"
 
-#include <medViewerToolBoxViewProperties.h>
+#include <medWorkspaceViewPropertiesToolBox.h>
 #include <medViewContainer.h>
 #include <medTabbedViewContainers.h>
 #include <medWorkspaceTimeToolBox.h>
@@ -31,7 +31,7 @@ class medVisualizationWorkspacePrivate
 public:
     medVisualizationLayoutToolBox *layoutToolBox;
     medWorkspaceTimeToolBox *timeToolBox;
-    medViewerToolBoxViewProperties *viewPropertiesToolBox;
+    medWorkspaceViewPropertiesToolBox *viewPropertiesToolBox;
 };
 
 medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medViewerWorkspace(parent), d(new medVisualizationWorkspacePrivate)
@@ -52,7 +52,7 @@ medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medViewe
 
     // -- View toolbox --
 
-    d->viewPropertiesToolBox = new medViewerToolBoxViewProperties(parent);
+    d->viewPropertiesToolBox = new medWorkspaceViewPropertiesToolBox(parent);
     d->timeToolBox           = new medWorkspaceTimeToolBox(parent);
 
 
