@@ -1,5 +1,5 @@
-/* medPacsWidget.cpp --- 
- * 
+/* medPacsWidget.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 11:07:29 2010 (+0200)
@@ -9,12 +9,12 @@
  *     Update #: 343
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medPacsWidget.h"
@@ -110,7 +110,7 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
     connect(this, SIGNAL(itemExpanded(QTreeWidgetItem *)), this, SLOT(onItemExpanded(QTreeWidgetItem *)));
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(updateContextMenu(const QPoint&)));
     connect(this->d->server, SIGNAL(endOfStudy(QString)), this, SIGNAL(import(QString)));
-    
+
     this->readSettings();
     d->start();
     d->selectedNodes = d->nodes;
@@ -135,7 +135,7 @@ medPacsWidget::~medPacsWidget(void)
 void medPacsWidget::readSettings(void)
 {
     QSettings settings;
-    settings.beginGroup("medBrowserToolBoxPacsHost");
+    settings.beginGroup("medBrowserPacsHostToolBox");
     QString title = settings.value("title").toString();
     d->host_address = "localhost";
     QString port = settings.value("port").toString();
@@ -178,7 +178,7 @@ void medPacsWidget::search(QString query)
     this->clear();
 
     if (!d->find) d->find = medAbstractPacsFactory::instance()->createFindScu("dcmtkFindScu");
-    if(d->find) 
+    if(d->find)
     {
         d->find->clearAllQueryAttributes();
         d->find->setQueryLevel(medAbstractPacsFindScu::STUDY);
@@ -193,25 +193,25 @@ void medPacsWidget::search(QString query)
         d->find->addQueryAttribute(0x0010,0x0040, "\0"); // sex
         d->find->addQueryAttribute(0x0020,0x000D, "\0"); // studyInstanceUID
         d->find->addQueryAttribute(0x0020,0x0010, "\0"); // study ID
-        
+
         foreach(QStringList node, d->selectedNodes)
-            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)), 
+            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)),
                 d->host_title.toLatin1(), d->host_address.toLatin1(), tryToInt(d->host_port));
-        
+
         QVector<medAbstractPacsNode *> nodes = d->find->getNodeContainer();
-        
+
         foreach(medAbstractPacsNode *node, nodes) {
-            
+
             QVector<medAbstractPacsResultDataset *> container = node->getResultDatasetContainer();
-            
+
             foreach(medAbstractPacsResultDataset *dataset, container) {
-                
+
                 QTreeWidgetItem *item = new QTreeWidgetItem(this, QStringList()
                                                             << QString(dataset->findKeyValue(0x0010,0x0010))
                                                             << QString(dataset->findKeyValue(0x0008,0x1030))
                                                             << QString(dataset->findKeyValue(0x0020,0x0010))
                                                             << QString(dataset->findKeyValue(0x0008,0x0061)));
-                
+
                 item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
                 item->setData(0,Qt::UserRole, d->index(*node));
                 item->setData(1,Qt::UserRole, QPoint(0x0020,0x000D));
@@ -225,7 +225,7 @@ void medPacsWidget::search(QString query)
 
 void medPacsWidget::onItemExpanded(QTreeWidgetItem *item)
 {
-    if(!item->parent() && !item->childCount()) 
+    if(!item->parent() && !item->childCount())
         this->findSeriesLevel(item);
 
     if(item->parent() && !item->childCount())
@@ -261,19 +261,19 @@ void medPacsWidget::findSeriesLevel(QTreeWidgetItem * item)
         if (i == nodeIndex)
         {
             QStringList node = d->nodes.at(i);
-            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)), 
+            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)),
                 d->host_title.toLatin1(), d->host_address.toLatin1(), tryToInt(d->host_port));
         }
     }
 
     QVector<medAbstractPacsNode *> nodes = d->find->getNodeContainer();
-    
+
     foreach(medAbstractPacsNode *node, nodes) {
-        
+
         QVector<medAbstractPacsResultDataset*> container = node->getResultDatasetContainer();
-        
+
         foreach(medAbstractPacsResultDataset *dataset, container) {
-            
+
             QTreeWidgetItem *pItem = new QTreeWidgetItem(item);
             pItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
             pItem->setData(0,Qt::UserRole, nodeIndex);
@@ -316,28 +316,28 @@ void medPacsWidget::findImageLevel(QTreeWidgetItem *item)
         if (i == nodeIndex)
         {
             QStringList node = d->nodes.at(i);
-            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)), 
+            d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)),
                   d->host_title.toLatin1(), d->host_address.toLatin1(), tryToInt(d->host_port));
         }
     }
 
     QVector<medAbstractPacsNode *> nodes = d->find->getNodeContainer();
-    
+
     foreach(medAbstractPacsNode *node, nodes) {
-        
+
         QVector<medAbstractPacsResultDataset*> container = node->getResultDatasetContainer();
-        
+
         foreach(medAbstractPacsResultDataset *dataset, container) {
-            
+
             QTreeWidgetItem *pItem = new QTreeWidgetItem(item);
-            
+
             pItem->setData(0,Qt::UserRole, nodeIndex);
             pItem->setData(1,Qt::UserRole, QPoint(0x0008,0x0018));
             pItem->setData(2,Qt::UserRole, QString(dataset->getSOPInstanceUID()));
-            
+
             pItem->setText(2, dataset->findKeyValue(0x0020,0x0012));
             pItem->setText(3, dataset->findKeyValue(0x0008,0x0008));
-            
+
             item->addChild(pItem);
         }
     }
@@ -365,7 +365,7 @@ void medPacsWidget::onItemImported(void)
     QList<QTreeWidgetItem*> itemList = this->selectedItems();
 
     QHash<int,int>hash;
-    for (int i = 0; i < itemList.size(); ++i) 
+    for (int i = 0; i < itemList.size(); ++i)
     {
         if(!(hash.contains(itemList.at(i)->data(0, Qt::UserRole).toInt())))
             hash.insert(itemList.at(i)->data(0, Qt::UserRole).toInt(),i);
@@ -375,7 +375,7 @@ void medPacsWidget::onItemImported(void)
     {
 
     QVector<medMoveCommandItem> cmdList;
-        for (int i = 0; i < itemList.size(); ++i) 
+        for (int i = 0; i < itemList.size(); ++i)
         {
             int nodeIndex = itemList.at(i)->data(0, Qt::UserRole).toInt();
             QPoint tag    = itemList.at(i)->data(1, Qt::UserRole).toPoint();
@@ -419,7 +419,7 @@ void medPacsWidget::onEchoRequest()
         if(!d->echo) d->echo = medAbstractPacsFactory::instance()->createEchoScu("dcmtkEchoScu");
         if(d->echo)
         {
-            if(!d->echo->sendEchoRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)), 
+            if(!d->echo->sendEchoRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)),
                     d->host_title.toLatin1(), d->host_address.toLatin1(),tryToInt(d->host_port) ))
                 response.push_back(true);
             else

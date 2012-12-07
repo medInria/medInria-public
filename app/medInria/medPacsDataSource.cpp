@@ -2,7 +2,7 @@
 
 #include <medJobManager.h>
 
-#include <medBrowserToolBoxPacsHost.h>
+#include <medBrowserPacsHostToolBox.h>
 #include <medBrowserToolBoxPacsNodes.h>
 #include <medBrowserToolBoxPacsSearch.h>
 #include <medPacsSelector.h>
@@ -22,7 +22,7 @@ public:
     medPacsSelector* pacs_selector;
 
     // specific toolboxes
-    medBrowserToolBoxPacsHost *toolbox_pacs_host;
+    medBrowserPacsHostToolBox *pacsHostToolBox;
     medBrowserToolBoxPacsNodes *toolbox_pacs_nodes;
     medBrowserToolBoxPacsSearch *toolbox_pacs_search;
 
@@ -36,8 +36,8 @@ medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(pa
     //see destructor.
     d->pacsWidget = new medPacsWidget(parent);
     d->pacs_selector = new medPacsSelector(d->pacsWidget);
-    d->toolbox_pacs_host = new medBrowserToolBoxPacsHost(d->pacsWidget);
-    d->toolboxes.push_back(d->toolbox_pacs_host);
+    d->pacsHostToolBox = new medBrowserPacsHostToolBox(d->pacsWidget);
+    d->toolboxes.push_back(d->pacsHostToolBox);
     d->toolbox_pacs_nodes = new medBrowserToolBoxPacsNodes(d->pacsWidget);
     d->toolboxes.push_back(d->toolbox_pacs_nodes);
     d->toolbox_pacs_search = new medBrowserToolBoxPacsSearch(d->pacsWidget);

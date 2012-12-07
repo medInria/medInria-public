@@ -1,5 +1,5 @@
-/* medBrowserToolBoxPacsHost.cpp ---
- * 
+/* medBrowserPacsHostToolBox.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Oct  5 15:49:05 2010 (+0200)
@@ -9,21 +9,21 @@
  *     Update #: 55
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
-#include "medBrowserToolBoxPacsHost.h"
+#include "medBrowserPacsHostToolBox.h"
 
 #include <QtGui>
 
 #include <iostream>
 
-class medBrowserToolBoxPacsHostPrivate
+class medBrowserPacsHostToolBoxPrivate
 {
 public:
     QLineEdit *title;
@@ -31,7 +31,7 @@ public:
     QPushButton *apply;
 };
 
-medBrowserToolBoxPacsHost::medBrowserToolBoxPacsHost(QWidget *parent) : medToolBox(parent), d(new medBrowserToolBoxPacsHostPrivate)
+medBrowserPacsHostToolBox::medBrowserPacsHostToolBox(QWidget *parent) : medToolBox(parent), d(new medBrowserPacsHostToolBoxPrivate)
 {
     QWidget *page = new QWidget(this);
 
@@ -54,7 +54,7 @@ medBrowserToolBoxPacsHost::medBrowserToolBoxPacsHost(QWidget *parent) : medToolB
     this->readSettings();
 }
 
-medBrowserToolBoxPacsHost::~medBrowserToolBoxPacsHost(void)
+medBrowserPacsHostToolBox::~medBrowserPacsHostToolBox(void)
 {
     this->writeSettings();
 
@@ -63,10 +63,10 @@ medBrowserToolBoxPacsHost::~medBrowserToolBoxPacsHost(void)
     d = NULL;
 }
 
-void medBrowserToolBoxPacsHost::readSettings(void)
+void medBrowserPacsHostToolBox::readSettings(void)
 {
     QSettings settings;
-    settings.beginGroup("medBrowserToolBoxPacsHost");
+    settings.beginGroup("medBrowserPacsHostToolBox");
     QString title = settings.value("title").toString();
     QString port = settings.value("port").toString();
     settings.endGroup();
@@ -82,26 +82,26 @@ void medBrowserToolBoxPacsHost::readSettings(void)
 
 }
 
-void medBrowserToolBoxPacsHost::writeSettings(void)
+void medBrowserPacsHostToolBox::writeSettings(void)
 {
     QSettings settings;
-    settings.beginGroup("medBrowserToolBoxPacsHost");
+    settings.beginGroup("medBrowserPacsHostToolBox");
     settings.setValue("title", d->title->text());
     settings.setValue("port", d->port->text());
     settings.endGroup();
 }
 
-QString medBrowserToolBoxPacsHost::title(void)
+QString medBrowserPacsHostToolBox::title(void)
 {
     return d->title->text();
 }
 
-QString medBrowserToolBoxPacsHost::port(void)
+QString medBrowserPacsHostToolBox::port(void)
 {
     return d->port->text();
 }
 
-void medBrowserToolBoxPacsHost::onSettingsApplied(void)
+void medBrowserPacsHostToolBox::onSettingsApplied(void)
 {
     this->writeSettings();
 }

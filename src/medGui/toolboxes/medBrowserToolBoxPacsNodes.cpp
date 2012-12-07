@@ -1,5 +1,5 @@
 /* medBrowserToolBoxPacsNodes.cpp ---
-* 
+*
 * Author: Julien Wintz
 * Copyright (C) 2008 - Julien Wintz, Inria.
 * Created: Tue Oct  5 15:49:05 2010 (+0200)
@@ -9,12 +9,12 @@
 *     Update #: 151
 */
 
-/* Commentary: 
-* 
+/* Commentary:
+*
 */
 
 /* Change log:
-* 
+*
 */
 
 #include "medBrowserToolBoxPacsNodes.h"
@@ -97,7 +97,7 @@ void medBrowserToolBoxPacsNodes::readSettings(void)
 
     QSettings settings;
 
-    settings.beginGroup("medBrowserToolBoxPacsHost");
+    settings.beginGroup("medBrowserPacsHostToolBox");
     d->host_title = settings.value("title").toString();
     d->host_address = settings.value("address").toString();
     d->host_port = settings.value("port").toString();
@@ -179,7 +179,7 @@ void medBrowserToolBoxPacsNodes::onEchoResponse( QVector<bool> vect)
                d->table->item(i, 1)->setBackground(Qt::green);
                d->table->item(i, 2)->setBackground(Qt::green);
             }
-            else 
+            else
             {
                d->table->item(i, 0)->setBackground(Qt::red);
                d->table->item(i, 1)->setBackground(Qt::red);
