@@ -99,7 +99,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medToolBoxDiffusionTensorView.h
   toolboxes/medToolBoxFiltering.h
   toolboxes/medToolBoxFilteringCustom.h
-  toolboxes/medBrowserToolBoxJobs.h
+  toolboxes/medBrowserJobsToolBox.h
   toolboxes/medViewerToolBoxLayout.h
   toolboxes/medViewerToolBoxTime.h
   toolboxes/medViewerToolBoxViewProperties.h
@@ -213,7 +213,7 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medToolBoxDiffusionTensorView.cpp
   toolboxes/medToolBoxFiltering.cpp
   toolboxes/medToolBoxFilteringCustom.cpp
-  toolboxes/medBrowserToolBoxJobs.cpp
+  toolboxes/medBrowserJobsToolBox.cpp
   toolboxes/medViewerToolBoxLayout.cpp
   toolboxes/medViewerToolBoxTime.cpp
   toolboxes/medViewerToolBoxViewProperties.cpp

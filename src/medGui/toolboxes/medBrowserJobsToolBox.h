@@ -1,5 +1,5 @@
-/* medBrowserToolBoxJobs.h --- 
- * 
+/* medBrowserJobsToolBox.h ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 15:21:29 2010 (+0200)
@@ -9,35 +9,35 @@
  *     Update #: 7
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
-#ifndef MEDBROWSERTOOLBOXJOBS_H
-#define MEDBROWSERTOOLBOXJOBS_H
+#ifndef medBrowserJobsToolBox_H
+#define medBrowserJobsToolBox_H
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
 
 class medProgressionStack;
-class medBrowserToolBoxJobsPrivate;
+class medBrowserJobsToolBoxPrivate;
 
-class MEDGUI_EXPORT medBrowserToolBoxJobs : public medToolBox
+class MEDGUI_EXPORT medBrowserJobsToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medBrowserToolBoxJobs(QWidget *parent = 0);
-    ~medBrowserToolBoxJobs(void);
+     medBrowserJobsToolBox(QWidget *parent = 0);
+    ~medBrowserJobsToolBox(void);
 
     medProgressionStack *stack(void);
 
 private:
-    medBrowserToolBoxJobsPrivate *d;
+    medBrowserJobsToolBoxPrivate *d;
 };
 
 #endif

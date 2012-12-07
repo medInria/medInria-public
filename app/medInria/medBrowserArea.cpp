@@ -45,7 +45,7 @@
 #include <medToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxContainer.h>
-#include <medBrowserToolBoxJobs.h>
+#include <medBrowserJobsToolBox.h>
 #include <medPacsMover.h>
 #include <medPacsWidget.h>
 #include <medToolBoxCompositeDataSetImporter.h>
@@ -58,7 +58,7 @@ public:
     medPacsDataSource* pacsSource;
 
     medToolBoxContainer *toolbox_container;
-    medBrowserToolBoxJobs *toolbox_jobs;
+    medBrowserJobsToolBox *jobsToolBox;
     medBrowserSourceSelectorToolBox *sourceSelectorToolBox;
     medToolBoxCompositeDataSetImporter *toolbox_compositeimporter;
 
@@ -85,11 +85,11 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // Jobs //////////////////////////////////////////
 
-    d->toolbox_jobs = new medBrowserToolBoxJobs(this);
-    d->toolbox_jobs->setVisible(false);
+    d->jobsToolBox = new medBrowserJobsToolBox(this);
+    d->jobsToolBox->setVisible(false);
     // connect the job-manager with the visual representation
     connect(medJobManager::instance(), SIGNAL(jobRegistered(medJobItem*, QString)),
-        d->toolbox_jobs->stack(),SLOT(addJobItem(medJobItem*, QString)));
+        d->jobsToolBox->stack(),SLOT(addJobItem(medJobItem*, QString)));
 
     // Toolbox container /////////////////////////////////////////////
 
@@ -138,7 +138,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     }
 
     // Jobs should be added as the last item so that they appear at the bottom
-    d->toolbox_container->addToolBox(d->toolbox_jobs);
+    d->toolbox_container->addToolBox(d->jobsToolBox);
 
     connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
@@ -218,7 +218,7 @@ void medBrowserArea::onOpeningFailed(const medDataIndex& index)
 
 void medBrowserArea::displayJobItem(medJobItem *importer, QString infoBaseName)
 {
-    d->toolbox_jobs->stack()->addJobItem(importer, infoBaseName);
+    d->jobsToolBox->stack()->addJobItem(importer, infoBaseName);
 }
 
 void medBrowserArea::onDataImport(dtkAbstractData *data)
@@ -313,7 +313,7 @@ void medBrowserArea::onExportData(const medDataIndex &index)
 
     medDataManager::instance()->exportDataToFile(data,fileName);
 
-    connect(medDataManager::instance(),SIGNAL(progressed(QObject*,int)),d->toolbox_jobs->stack(), SLOT(setProgress(QObject*,int)));
+    connect(medDataManager::instance(),SIGNAL(progressed(QObject*,int)),d->jobsToolBox->stack(), SLOT(setProgress(QObject*,int)));
 }
 
 void medBrowserArea::addToolBox(medToolBox *toolbox)

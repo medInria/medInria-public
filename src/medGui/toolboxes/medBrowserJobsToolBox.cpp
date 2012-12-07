@@ -1,5 +1,5 @@
-/* medBrowserToolBoxJobs.cpp --- 
- * 
+/* medBrowserJobsToolBox.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Thu May 13 15:20:03 2010 (+0200)
@@ -9,27 +9,27 @@
  *     Update #: 17
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
-#include "medBrowserToolBoxJobs.h"
+#include "medBrowserJobsToolBox.h"
 
 #include <medProgressionStack.h>
 
 #include <QtGui>
 
-class medBrowserToolBoxJobsPrivate
+class medBrowserJobsToolBoxPrivate
 {
 public:
     medProgressionStack *stack;
 };
 
-medBrowserToolBoxJobs::medBrowserToolBoxJobs(QWidget *parent) : medToolBox(parent), d(new medBrowserToolBoxJobsPrivate)
+medBrowserJobsToolBox::medBrowserJobsToolBox(QWidget *parent) : medToolBox(parent), d(new medBrowserJobsToolBoxPrivate)
 {
     d->stack = new medProgressionStack(this);
 
@@ -40,14 +40,14 @@ medBrowserToolBoxJobs::medBrowserToolBoxJobs(QWidget *parent) : medToolBox(paren
     this->addWidget(d->stack);
 }
 
-medBrowserToolBoxJobs::~medBrowserToolBoxJobs(void)
+medBrowserJobsToolBox::~medBrowserJobsToolBox(void)
 {
     delete d;
 
     d = NULL;
 }
 
-medProgressionStack *medBrowserToolBoxJobs::stack(void)
+medProgressionStack *medBrowserJobsToolBox::stack(void)
 {
     return d->stack;
 }
