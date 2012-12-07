@@ -5,7 +5,7 @@
  */
 
 #include "medFilteringWorkspace.h"
-#include <medViewContainerFiltering.h>
+#include <medFilteringViewContainer.h>
 
 #include <medDatabaseNonPersistentController.h>
 #include <medMetaDataKeys.h>
@@ -15,7 +15,7 @@
 #include <medToolBoxFiltering.h>
 #include <medToolBoxFactory.h>
 #include <medViewContainer.h>
-#include <medViewContainerMulti.h>
+#include <medMultiViewContainer.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFilteringCustom.h>
 
@@ -61,15 +61,15 @@ void medFilteringWorkspace::setupViewContainerStack()
 {
     if ( !this->stackedViewContainers()->count() )
     {
-        medViewContainerFiltering *filteringContainer = new medViewContainerFiltering ( this->stackedViewContainers() );
+        medFilteringViewContainer *filteringViewContainer = new medFilteringViewContainer ( this->stackedViewContainers() );
 
-        connect(filteringContainer,SIGNAL(droppedInput(medDataIndex)), d->filteringToolBox,SLOT(onInputSelected(medDataIndex)));
+        connect(filteringViewContainer,SIGNAL(droppedInput(medDataIndex)), d->filteringToolBox,SLOT(onInputSelected(medDataIndex)));
         connect(this,SIGNAL(outputDataChanged(dtkAbstractData *)),
-                filteringContainer,SLOT(updateOutput(dtkAbstractData *)));
-        connect(filteringContainer, SIGNAL(inputViewRemoved()),
+                filteringViewContainer,SLOT(updateOutput(dtkAbstractData *)));
+        connect(filteringViewContainer, SIGNAL(inputViewRemoved()),
                 this, SLOT(onViewRemoved()));
 
-        this->stackedViewContainers()->addContainer ( "Filtering",filteringContainer );
+        this->stackedViewContainers()->addContainer ( "Filtering",filteringViewContainer );
 
         setCurrentViewContainer ( "Filtering" );
 

@@ -1,13 +1,13 @@
-/* medViewContainerFiltering.cpp ---
+/* medFilteringViewContainer.cpp ---
  *
  * @author Clément Philipot <clement.philipot@inria.fr>
  *
  */
 
-#include "medViewContainerFiltering.h"
+#include "medFilteringViewContainer.h"
 #include <medAbstractView.h>
 
-class medViewContainerFilteringPrivate
+class medFilteringViewContainerPrivate
 {
 public:
     medViewContainer* inputViewContainer;
@@ -15,8 +15,8 @@ public:
     dtkAbstractData * inputData;
 };
 
-medViewContainerFiltering::medViewContainerFiltering ( QWidget * parent ) :
-        medViewContainerCustom ( parent ), d3 ( new medViewContainerFilteringPrivate )
+medFilteringViewContainer::medFilteringViewContainer ( QWidget * parent ) :
+        medViewContainerCustom ( parent ), d3 ( new medFilteringViewContainerPrivate )
 {
     split(1, 2);
     setMultiLayer(false);
@@ -35,20 +35,20 @@ medViewContainerFiltering::medViewContainerFiltering ( QWidget * parent ) :
             this,SIGNAL(inputViewRemoved()));
 }
 
-medViewContainerFiltering::~medViewContainerFiltering()
+medFilteringViewContainer::~medFilteringViewContainer()
 {
     delete d3;
     d3 = NULL;
 }
 
-void medViewContainerFiltering::updateInput ( const medDataIndex& index )
+void medFilteringViewContainer::updateInput ( const medDataIndex& index )
 {
     if ( !index.isValid() )
         return;
     emit droppedInput(index);
 }
 
-void medViewContainerFiltering::updateOutput ( dtkAbstractData *data )
+void medFilteringViewContainer::updateOutput ( dtkAbstractData *data )
 {
     if ( !data )
         return;
@@ -66,7 +66,7 @@ void medViewContainerFiltering::updateOutput ( dtkAbstractData *data )
     outputView->update();
 }
 
-void medViewContainerFiltering::dropEvent ( QDropEvent *event )
+void medFilteringViewContainer::dropEvent ( QDropEvent *event )
 {
     //This drop should never read any image, we are not in a leaf,
     //if we end up here, it is only because the output container doesn't accept

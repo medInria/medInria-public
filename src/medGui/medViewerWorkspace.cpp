@@ -25,7 +25,7 @@
 #include "medViewContainer.h"
 #include "medViewContainerCustom.h"
 #include "medSingleViewContainer.h"
-#include "medViewContainerMulti.h"
+#include "medMultiViewContainer.h"
 #include "medTabbedViewContainers.h"
 
 
@@ -184,7 +184,7 @@ QString medViewerWorkspace::addMultiContainer(const QString& name)
 {
     if (!this->stackedViewContainers()->container(name))
     {
-        this->stackedViewContainers()->addContainer (name, new medViewContainerMulti());
+        this->stackedViewContainers()->addContainer (name, new medMultiViewContainer());
         return name;
     }
     else
@@ -199,7 +199,7 @@ QString medViewerWorkspace::addMultiContainer(const QString& name)
             newName += QString::number(i);
         }
 
-        this->stackedViewContainers()->addContainer (newName, new medViewContainerMulti());
+        this->stackedViewContainers()->addContainer (newName, new medMultiViewContainer());
         return newName;
     }
 }

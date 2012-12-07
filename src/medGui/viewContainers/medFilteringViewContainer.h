@@ -1,11 +1,11 @@
-/* medViewContainerFiltering.h ---
+/* medFilteringViewContainer.h ---
  *
  * @author Clément Philipot <clement.philipot@inria.fr>
  *
  */
 
-#ifndef MEDVIEWCONTAINERFILTERING_H
-#define MEDVIEWCONTAINERFILTERING_H
+#ifndef medFilteringViewContainer_H
+#define medFilteringViewContainer_H
 
 #include <medCore/medDataIndex.h>
 #include <medCore/medDataManager.h>
@@ -16,12 +16,12 @@
 
 #include "medGuiExport.h"
 
-class medViewContainerFilteringPrivate;
+class medFilteringViewContainerPrivate;
 
 /**
  * @brief filtering view container to visualize both input / output from image-to-image filtering processes
  */
-class MEDGUI_EXPORT medViewContainerFiltering : public medViewContainerCustom
+class MEDGUI_EXPORT medFilteringViewContainer : public medViewContainerCustom
 {
     Q_OBJECT
 
@@ -30,8 +30,8 @@ public:
      * @brief
      * @param parent
      */
-    medViewContainerFiltering ( QWidget * parent = 0 );
-    ~medViewContainerFiltering();
+    medFilteringViewContainer ( QWidget * parent = 0 );
+    ~medFilteringViewContainer();
 
 signals:
 
@@ -55,7 +55,7 @@ public slots:
 
     void dropEvent ( QDropEvent *event );
 private:
-    medViewContainerFilteringPrivate *d3;
+    medFilteringViewContainerPrivate *d3;
 };
 
-#endif // MEDVIEWCONTAINERFILTERING_H
+#endif // medFilteringViewContainer_H

@@ -1,4 +1,4 @@
-/* medViewContainerMulti.h ---
+/* medMultiViewContainer.h ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef MEDVIEWCONTAINERMULTI_H
-#define MEDVIEWCONTAINERMULTI_H
+#ifndef medMultiViewContainer_H
+#define medMultiViewContainer_H
 
 #include "medGuiExport.h"
 
@@ -56,15 +56,15 @@ public slots:
 };
 
 
-class medViewContainerMultiPrivate;
+class medMultiViewContainerPrivate;
 
-class MEDGUI_EXPORT medViewContainerMulti : public medViewContainer
+class MEDGUI_EXPORT medMultiViewContainer : public medViewContainer
 {
     Q_OBJECT
 
 public:
-    medViewContainerMulti(QWidget *parent = 0);
-   ~medViewContainerMulti();
+    medMultiViewContainer(QWidget *parent = 0);
+   ~medMultiViewContainer();
 
 
     void split(int rows, int cols);
@@ -91,7 +91,7 @@ public slots:
     void onViewFullScreen (bool value);
 
 private:
-    medViewContainerMultiPrivate *d2;
+    medMultiViewContainerPrivate *d2;
 
     //Needed to access the setCurrent protected method
     //from within medSingleViewContainer2

@@ -1,4 +1,4 @@
-/* medViewContainerMulti.cpp ---
+/* medMultiViewContainer.cpp ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -18,7 +18,7 @@
  */
 
 #include "medViewContainer_p.h"
-#include "medViewContainerMulti.h"
+#include "medMultiViewContainer.h"
 #include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
@@ -44,8 +44,8 @@ void medSingleViewContainer2::setView (dtkAbstractView *view)
     if (d->view)
     //if we already have a view, we should transfer the request to the root.
     {
-        if (medViewContainerMulti* container =
-                qobject_cast<medViewContainerMulti*>(parentContainer()))
+        if (medMultiViewContainer* container =
+                qobject_cast<medMultiViewContainer*>(parentContainer()))
         {
             qDebug() << "let set the parent's container" << container;
             container->setView( view );
@@ -98,7 +98,7 @@ void medSingleViewContainer2::onViewFocused (bool value)
 
     if ( !this->isEmpty() )
     {
-        qobject_cast<medViewContainerMulti*>( parentContainer() )->setCurrent( this );
+        qobject_cast<medMultiViewContainer*>( parentContainer() )->setCurrent( this );
     }
 
     if (dtkAbstractView *view = d->view)
@@ -109,17 +109,17 @@ void medSingleViewContainer2::onViewFocused (bool value)
     this->update();
 }
 
-class medViewContainerMultiPrivate
+class medMultiViewContainerPrivate
 {
 public:
     QList< dtkSmartPointer<dtkAbstractView> >  views;
 };
 
-medViewContainerMulti::medViewContainerMulti (QWidget *parent) : medViewContainer (parent), d2 (new medViewContainerMultiPrivate)
+medMultiViewContainer::medMultiViewContainer (QWidget *parent) : medViewContainer (parent), d2 (new medMultiViewContainerPrivate)
 {
 }
 
-medViewContainerMulti::~medViewContainerMulti()
+medMultiViewContainer::~medMultiViewContainer()
 {
     foreach ( QObject* obj, d->layout->children())
     {
@@ -131,7 +131,7 @@ medViewContainerMulti::~medViewContainerMulti()
 }
 
 
-void medViewContainerMulti::split(int rows, int cols)
+void medMultiViewContainer::split(int rows, int cols)
 {
     Q_UNUSED(rows);
     Q_UNUSED(cols);
@@ -141,12 +141,12 @@ void medViewContainerMulti::split(int rows, int cols)
     return;
 }
 
-dtkAbstractView *medViewContainerMulti::view(void) const
+dtkAbstractView *medMultiViewContainer::view(void) const
 {
     return NULL;
 }
 
-QList<dtkAbstractView*> medViewContainerMulti::views (void) const
+QList<dtkAbstractView*> medMultiViewContainer::views (void) const
 {
     QList<dtkAbstractView *> views;
     foreach(dtkAbstractView *view, d2->views)
@@ -155,7 +155,7 @@ QList<dtkAbstractView*> medViewContainerMulti::views (void) const
     return views;
 }
 
-void medViewContainerMulti::setView(dtkAbstractView *view)
+void medMultiViewContainer::setView(dtkAbstractView *view)
 {
     if (!view)
         return;
@@ -208,7 +208,7 @@ void medViewContainerMulti::setView(dtkAbstractView *view)
 //    container->setFocus(Qt::MouseFocusReason);
 }
 
-void medViewContainerMulti::layout(QList<QWidget *> content)
+void medMultiViewContainer::layout(QList<QWidget *> content)
 {
     int row = 0;
     int col = 0, colmax = 0;
@@ -247,7 +247,7 @@ void medViewContainerMulti::layout(QList<QWidget *> content)
     }
 }
 
-void medViewContainerMulti::onViewClosing (void)
+void medMultiViewContainer::onViewClosing (void)
 {
 //    qDebug()<<"containerMulti closing a view";
     if (dtkAbstractView *view =
@@ -340,7 +340,7 @@ void medViewContainerMulti::onViewClosing (void)
     }
 }
 
-void medViewContainerMulti::onViewFullScreen (bool value)
+void medMultiViewContainer::onViewFullScreen (bool value)
 {
     if (dtkAbstractView *view = qobject_cast<dtkAbstractView *>(this->sender())) {
         if (value) {

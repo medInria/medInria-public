@@ -6,7 +6,7 @@
 
 #include <medAbstractView.h>
 #include <medSingleViewContainer.h>
-#include <medViewContainerMulti.h>
+#include <medMultiViewContainer.h>
 #include <medViewContainerCustom.h>
 
 #include <QtGui>
@@ -168,7 +168,7 @@ void medViewContainersTestObject::testSingle()
 void medViewContainersTestObject::testMulti()
 {
     // create a multi container
-    medViewContainerMulti *container = new medViewContainerMulti;
+    medMultiViewContainer *container = new medMultiViewContainer;
     container->setFixedSize(500, 500);
     container->show();
 

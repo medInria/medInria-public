@@ -199,7 +199,7 @@ public:
     void addSingleContainer(const QString& name="Single");
 
     /**
-     * @brief Convenience method to add a medViewContainerMulti.
+     * @brief Convenience method to add a medMultiViewContainer.
      *
      * @param name identifier/description. By Default "Multi",
      * which makes sense in most simple cases.
