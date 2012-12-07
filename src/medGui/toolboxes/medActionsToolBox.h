@@ -1,19 +1,19 @@
-#ifndef MEDTOOLBOXACTIONS_H
-#define MEDTOOLBOXACTIONS_H
+#ifndef medActionsToolBox_H
+#define medActionsToolBox_H
 
 #include <medDataIndex.h>
 #include <medToolBox.h>
 #include "medGuiExport.h"
 
-class medToolBoxActionsPrivate;
+class medActionsToolBoxPrivate;
 
-class MEDGUI_EXPORT medToolBoxActions : public medToolBox
+class MEDGUI_EXPORT medActionsToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-    medToolBoxActions(QWidget *parent = 0);
-    ~medToolBoxActions();
+    medActionsToolBox(QWidget *parent = 0);
+    ~medActionsToolBox();
 
 signals:
 
@@ -78,7 +78,7 @@ private:
 
     void initializeItemToActionsMap();
 
-    medToolBoxActionsPrivate* d;
+    medActionsToolBoxPrivate* d;
 };
 
-#endif // MEDTOOLBOXACTIONS_H
+#endif // medActionsToolBox_H

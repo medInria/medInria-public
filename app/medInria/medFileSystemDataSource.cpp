@@ -3,7 +3,7 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkGui/dtkFinder.h>
 
-#include <medToolBoxActions.h>
+#include <medActionsToolBox.h>
 
 class medFileSystemDataSourcePrivate
 {
@@ -14,7 +14,7 @@ public:
     dtkFinderSideView *side;
     dtkFinderToolBar *toolbar;
     QList<medToolBox*> toolboxes;
-    medToolBoxActions* actionsTb;
+    medActionsToolBox* actionsToolBox;
     QLabel * infoText;
 };
 
@@ -51,8 +51,8 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
                 "selection-color: #b2b8b2;"
                 );
 
-    d->actionsTb = new medToolBoxActions(parent);
-    d->toolboxes.push_back(d->actionsTb);
+    d->actionsToolBox = new medActionsToolBox(parent);
+    d->toolboxes.push_back(d->actionsToolBox);
 
     d->side = new dtkFinderSideView;
     d->side->setStyleSheet(
@@ -159,13 +159,13 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     connect (d->toolbar, SIGNAL(treeView()),       d->finder, SLOT(switchToTreeView()));
     connect (d->toolbar, SIGNAL(listView()),       d->finder, SLOT(switchToListView()));
 
-    connect(d->finder, SIGNAL(selectionChanged(const QStringList&)), d->actionsTb, SLOT(selectedPathsChanged(const QStringList&)));
+    connect(d->finder, SIGNAL(selectionChanged(const QStringList&)), d->actionsToolBox, SLOT(selectedPathsChanged(const QStringList&)));
 
-    connect(d->actionsTb, SIGNAL(bookmarkClicked()), d->finder, SLOT(onBookmarkSelectedItemsRequested()));
-    connect(d->actionsTb, SIGNAL(viewClicked()), this, SLOT(onFileSystemViewRequested()));
-    connect(d->actionsTb, SIGNAL(importClicked()), this, SLOT(onFileSystemImportRequested()));
-    connect(d->actionsTb, SIGNAL(indexClicked()), this, SLOT(onFileSystemIndexRequested()));
-    connect(d->actionsTb, SIGNAL(loadClicked()), this, SLOT(onFileSystemLoadRequested()));
+    connect(d->actionsToolBox, SIGNAL(bookmarkClicked()), d->finder, SLOT(onBookmarkSelectedItemsRequested()));
+    connect(d->actionsToolBox, SIGNAL(viewClicked()), this, SLOT(onFileSystemViewRequested()));
+    connect(d->actionsToolBox, SIGNAL(importClicked()), this, SLOT(onFileSystemImportRequested()));
+    connect(d->actionsToolBox, SIGNAL(indexClicked()), this, SLOT(onFileSystemIndexRequested()));
+    connect(d->actionsToolBox, SIGNAL(loadClicked()), this, SLOT(onFileSystemLoadRequested()));
 
     connect (d->toolbar, SIGNAL(showHiddenFiles(bool)), d->finder, SLOT(onShowHiddenFiles(bool)));
 }

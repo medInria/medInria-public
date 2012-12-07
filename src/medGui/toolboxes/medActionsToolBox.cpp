@@ -1,4 +1,4 @@
-#include "medToolBoxActions.h"
+#include "medActionsToolBox.h"
 
 #include <QtGui>
 
@@ -6,7 +6,7 @@
 #include <medAbstractDbController.h>
 #include <medToolBoxBody.h>
 
-class medToolBoxActionsPrivate
+class medActionsToolBoxPrivate
 {
 public:
 
@@ -26,7 +26,7 @@ public:
     QMultiMap<QString, QString> itemToActions;
 };
 
-medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(parent), d(new medToolBoxActionsPrivate)
+medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/ ) : medToolBox(parent), d(new medActionsToolBoxPrivate)
 {
     /**
      * This toolbox will show possible action buttons depending on the
@@ -137,7 +137,7 @@ medToolBoxActions::medToolBoxActions( QWidget *parent /*= 0*/ ) : medToolBox(par
     this->setTitle(tr("Actions"));
 }
 
-medToolBoxActions::~medToolBoxActions()
+medActionsToolBox::~medActionsToolBox()
 {
 //    delete d->itemToActions;
 //    d->itemToActions = NULL;
@@ -145,7 +145,7 @@ medToolBoxActions::~medToolBoxActions()
     d = NULL;
 }
 
-void medToolBoxActions::patientSelected(const medDataIndex& index)
+void medActionsToolBox::patientSelected(const medDataIndex& index)
 {
     if( !(medDataManager::instance()->controllerForDataSource(index.dataSourceId())->isPersistent()) )
         updateButtons("Unsaved Patient");
@@ -153,7 +153,7 @@ void medToolBoxActions::patientSelected(const medDataIndex& index)
         updateButtons("Patient");
 }
 
-void medToolBoxActions::seriesSelected(const medDataIndex& index)
+void medActionsToolBox::seriesSelected(const medDataIndex& index)
 {
     if( !(medDataManager::instance()->controllerForDataSource(index.dataSourceId())->isPersistent()) )
         updateButtons("Unsaved Series");
@@ -161,12 +161,12 @@ void medToolBoxActions::seriesSelected(const medDataIndex& index)
         updateButtons("Series");
 }
 
-void medToolBoxActions::noPatientOrSeriesSelected()
+void medActionsToolBox::noPatientOrSeriesSelected()
 {
     updateButtons("None");
 }
 
-void medToolBoxActions::selectedPathsChanged(const QStringList& paths)
+void medActionsToolBox::selectedPathsChanged(const QStringList& paths)
 {
     bool containsFolders = false;
     bool containsFiles = false;
@@ -191,7 +191,7 @@ void medToolBoxActions::selectedPathsChanged(const QStringList& paths)
         updateButtons("None");
 }
 
-void medToolBoxActions::updateButtons(QString selectedItem)
+void medActionsToolBox::updateButtons(QString selectedItem)
 {
     QList<QString> actions = d->itemToActions.values(selectedItem);
 
@@ -214,7 +214,7 @@ void medToolBoxActions::updateButtons(QString selectedItem)
     }
 }
 
-void medToolBoxActions::initializeItemToActionsMap()
+void medActionsToolBox::initializeItemToActionsMap()
 {
     d->itemToActions = QMultiMap<QString, QString>();
 
