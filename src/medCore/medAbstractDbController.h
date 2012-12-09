@@ -147,10 +147,20 @@ public slots:
      * @params const medDataIndex & index The data index to be removed in the db
      */
     virtual void remove(const medDataIndex& index) = 0;
-
-    virtual const QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient) =  0;
-
-    virtual const medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy) =  0;
+    
+    /**
+     * Moves study and its series from one patient to another and returns the list of new indexes
+     * @params const medDataIndex & indexStudy The data index of the study to be moved
+     * @params const medDataIndex & toPatient The data index to move the study to.
+     */
+    virtual QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient) =  0;
+    
+    /**
+     * Moves serie from one study to another and returns the new index of the serie
+     * @params const medDataIndex & indexSerie The data index of the serie to be moved
+     * @params const medDataIndex & toStudy The data index to move the serie to.
+     */
+    virtual medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy) =  0;
 
     /**
     * This method clears data already loaded in the database.

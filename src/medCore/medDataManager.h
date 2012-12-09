@@ -134,9 +134,21 @@ public:
      */
     void removeData(const medDataIndex& index);
 
-     const QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
+    /**
+     * Moves study and its series from one patient to another and returns the list of new indexes.
+     * Moves across different datasources are not supported.
+     * @params const medDataIndex & indexStudy The data index of the study to be moved
+     * @params const medDataIndex & toPatient The data index to move the study to.
+     */
+    QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
 
-     const medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
+    /**
+     * Moves serie from one study to another and returns the new index of the serie.
+     * Moves across different datasources are not supported.
+     * @params const medDataIndex & indexSerie The data index of the serie to be moved
+     * @params const medDataIndex & toStudy The data index to move the serie to.
+     */    
+    medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
 
 
     /** return the DB controller for given data source. */

@@ -156,12 +156,13 @@ void medDatabaseNonPersistentImporter::run()
     {
         //the study is defined and is not in the db, let's generate a new id
         studyDbId = medDatabaseNonPersistentController::instance()->studyId ( true );
+    }
 
-        if ( !seriesName.isEmpty() )
-        {
-            //the serie is defined and is not in the db, let's generate a new id
-            serieDbId = medDatabaseNonPersistentController::instance()->studyId ( true );
-        }
+    // the study is defined
+    if ( studyDbId!=-1 && !seriesName.isEmpty() )
+    {
+        // and the serie is defined, let's generate a new id
+        serieDbId = medDatabaseNonPersistentController::instance()->studyId ( true );
     }
 
     index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, studyDbId,serieDbId, -1 );
