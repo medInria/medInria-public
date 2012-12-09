@@ -34,7 +34,6 @@
 #include <medDatabaseExporter.h>
 #include <medDatabaseReader.h>
 #include <medDatabaseRemover.h>
-#include <medDatabaseWriter.h>
 
 #define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
 namespace {
@@ -413,26 +412,7 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
 }
 
 void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUuid)
-{
-    medDatabaseWriter *writer = new medDatabaseWriter(data, importUuid);
-    medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
-    //if we want to add importUuid support to permanent db,
-    //we need to change the importer and its addedIndex signal to suppot importUuid
-    //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
-
-    connect(writer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-
-    if (importUuid == "")
-        connect(writer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
-    else
-        connect(writer, SIGNAL(addedIndex(const medDataIndex &, const QString &)), this, SIGNAL(updated(const medDataIndex &, const QString &)));
-
-    connect(writer, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(writer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
-
-    medJobManager::instance()->registerJobItem(writer);
-    QThreadPool::globalInstance()->start(writer);*/
-    
+{    
     medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid);
     medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
 
@@ -684,7 +664,7 @@ void medDatabaseControllerImpl::remove( const medDataIndex& index )
 }
 
 
-const QList<medDataIndex> medDatabaseControllerImpl::moveStudy( const medDataIndex& indexStudy, const medDataIndex& toPatient)
+QList<medDataIndex> medDatabaseControllerImpl::moveStudy( const medDataIndex& indexStudy, const medDataIndex& toPatient)
 {
     QSqlDatabase & db (*(this->database()));
     QSqlQuery query(db);
@@ -723,7 +703,7 @@ const QList<medDataIndex> medDatabaseControllerImpl::moveStudy( const medDataInd
     return newIndexList;
 }
 
-const medDataIndex medDatabaseControllerImpl::moveSerie( const medDataIndex& indexSerie, const medDataIndex& toStudy)
+medDataIndex medDatabaseControllerImpl::moveSerie( const medDataIndex& indexSerie, const medDataIndex& toStudy)
 {
     QSqlDatabase & db (*(this->database()));
     QSqlQuery query(db);

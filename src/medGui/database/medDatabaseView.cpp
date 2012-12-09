@@ -388,22 +388,23 @@ void medDatabaseView::onSaveSelectedItemRequested(void)
 void medDatabaseView::onCreatePatientRequested(void)
 {
     QModelIndexList indexes = this->selectedIndexes();
-    if(!indexes.count())
-        return;
-
-    QModelIndex index = indexes.at(0);
-
-    medAbstractDatabaseItem *item = NULL;
-
-    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
-        item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
 
     bool isPersistent = true;
 
-    if (item)
+    if(indexes.count() > 0)
     {
-        isPersistent = medDataManager::instance()->controllerForDataSource(
-                          item->dataIndex().dataSourceId() )->isPersistent();
+        QModelIndex index = indexes.at(0);
+
+        medAbstractDatabaseItem *item = NULL;
+
+        if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+            item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
+
+        if (item)
+        {
+            isPersistent = medDataManager::instance()->controllerForDataSource(
+                               item->dataIndex().dataSourceId() )->isPersistent();
+        }
     }
 
     QString patientName = "new patient";
@@ -419,7 +420,6 @@ void medDatabaseView::onCreatePatientRequested(void)
     ptValues << patientName;
     ptValues << "";
     ptValues << "";
-
 
     medDatabaseEditItemDialog editDialog(ptAttributes, ptValues, this, true, isPersistent);
 
@@ -466,10 +466,11 @@ void medDatabaseView::onCreateStudyRequested(void)
         bool isPersistent = medDataManager::instance()->controllerForDataSource(
                                 item->dataIndex().dataSourceId() )->isPersistent();
 
-        //TODO: find another way to retrieve patientName and birthdate
-        QString patientName = item->data(0).toString();
-        QString birthdate = item->data(5).toString();
-        
+        int patientNameIndex = item->attributes().indexOf(medMetaDataKeys::PatientName.key());
+        int birthdateIndex = item->attributes().indexOf(medMetaDataKeys::BirthDate.key());
+        QString patientName = item->data( patientNameIndex ).toString();
+        QString birthdate = item->data( birthdateIndex ).toString();
+  
         if(birthdate.isNull()) 
             birthdate="";
 

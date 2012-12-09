@@ -46,7 +46,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseProxyModel.h
   medDatabaseReader.h
   medDatabaseRemover.h
-  medDatabaseWriter.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -71,7 +70,6 @@ set(${PROJECT_NAME}_SOURCES
   medDatabaseProxyModel.cpp
   medDatabaseReader.cpp
   medDatabaseRemover.cpp
-  medDatabaseWriter.cpp
   )
 
 ## #################################################################

@@ -512,15 +512,6 @@ void medDataManager::importNonPersistent( QString file, const QString &uuid )
     }
 }
 
-void medDataManager::createNewNonPersistantPatient(void)
-{
-    medAbstractDbController* npDb = d->getNonPersDbController();
-    if(npDb)
-    {
-        npDb->createNewPatient();
-    }
-}
-
 //-------------------------------------------------------------------------------------------------------
 
 void medDataManager::exportDataToFile(dtkAbstractData *data, const QString &filename)
@@ -721,39 +712,80 @@ void medDataManager::removeData( const medDataIndex& index )
 }
 
 
-bool medDataManager::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
+QList<medDataIndex> medDataManager::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
 {
-        // try to load the data from db
-    //TODO GPR: reprendre
-    medAbstractDbController* db = d->getDbController();
-    if (db)
+    medAbstractDbController *dbcSource = controllerForDataSource(indexStudy.dataSourceId());
+    medAbstractDbController *dbcDest = controllerForDataSource(toPatient.dataSourceId());
+    
+    QList<medDataIndex> newIndexList;
+    
+    if(!dbcSource || !dbcDest)
     {
-        return db->moveStudy(indexStudy,toPatient);
+      qWarning() << "Incorrect controllers";
     }
+    else if( dbcSource->isPersistent() && !dbcDest->isPersistent() )
+    {
+      qWarning() << "Move from persistent to non persistent controller not allowed";
+    }
+    else if( !dbcSource->isPersistent() && dbcDest->isPersistent() )
+    {
+      qWarning() << "Move from non persistent to persistent controller not allowed. Please save data first.";
+      
+      // Could be nice to have this feature
+      // Would need to call storeNonPersistentSingleDataToDatabase(indexStudy);
+      // and then to wait for correct signals since the command is asynchronuous (with QEventLoop),
+      // retrieve inserted index et then realize the move      
 
-    medAbstractDbController* npDb = d->getNonPersDbController();
-    if(npDb)
+    } 
+    else
     {
-        return npDb->moveStudy(indexStudy,toPatient);
+      newIndexList = dbcSource->moveStudy(indexStudy,toPatient);
+      
+        if(!dbcSource->isPersistent())
+        {
+            foreach(medDataIndex newIndex, newIndexList)
+                d->volatileDataCache[newIndex] = dbcSource->read(newIndex);
+        }
     }
+    
+    return newIndexList;
 
 }
 
-bool medDataManager::moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy)
+medDataIndex medDataManager::moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy)
 {
-    // try to load the data from db
-    //TODO GPR: reprendre
-    medAbstractDbController* db = d->getDbController();
-    if (db)
+    medAbstractDbController *dbcSource = controllerForDataSource(indexSerie.dataSourceId());
+    medAbstractDbController *dbcDest = controllerForDataSource(toStudy.dataSourceId());
+    
+    medDataIndex newIndex;
+    
+    if(!dbcSource || !dbcDest)
     {
-        return db->moveSerie(indexSerie,toStudy);
+      qWarning() << "Incorrect controllers";
     }
+    else if( dbcSource->isPersistent() && !dbcDest->isPersistent() )
+    {
+      qWarning() << "Move from persistent to non persistent controller not allowed";
+    }
+    else if( !dbcSource->isPersistent() && dbcDest->isPersistent() )
+    {
+      qWarning() << "Move from non persistent to persistent controller not allowed. Please save data first.";
+      
+      // Could be cool to have this feature
+      // Would need to call storeNonPersistentSingleDataToDatabase(indexSerie);
+      // and then to wait for correct signals since the command is asynchronuous (with QEventLoop),
+      // retrieve inserted index et then realize the move      
 
-    medAbstractDbController* npDb = d->getNonPersDbController();
-    if(npDb)
+    } 
+    else
     {
-        return npDb->moveSerie(indexSerie,toStudy);
+      newIndex =  dbcSource->moveSerie(indexSerie,toStudy);
+      
+      if(!dbcSource->isPersistent())
+        d->volatileDataCache[newIndex] = dbcSource->read(newIndex);
     }
+    
+    return newIndex;
 
 }
 //-------------------------------------------------------------------------------------------------------
