@@ -101,21 +101,6 @@ void medToolBox::setTitle(const QString &title)
     d->header->setTitle(title);
 }
 
-/**
- * @brief Sets the offset of the header's title from upper left corner.
- *
- * @param titleOffset
- */
-void medToolBox::setTitleOffset(const QPoint & titleOffset)
-{
-    d->header->setTitleOffset(titleOffset);
-}
-
-/**
- * @brief Gets the Toolbox's header.
- *
- * @return medToolBoxHeader *
-*/
 medToolBoxHeader *medToolBox::header(void) const
 {
     return d->header;

@@ -27,7 +27,7 @@
 #include <itkObjectFactoryBase.h>
 #include <itkMetaDataObject.h>
 
-itkDataImageReaderBase::itkDataImageReaderBase() : dtkAbstractDataReader()
+itkDataImageReaderBase::itkDataImageReaderBase() : medAbstractDataReader()
 {
     this->io = 0;
 }
@@ -328,4 +328,21 @@ bool itkDataImageReaderBase::read (const QStringList& paths)
 void itkDataImageReaderBase::setProgress (int value)
 {
     emit progressed (value);
+}
+
+
+QStringList itkDataImageReaderBase::supportedFileExtensions() const
+{
+    QStringList ret;
+
+    if (this->io) {
+        typedef itk::ImageIOBase::ArrayOfExtensionsType ArrayOfExtensionsType;
+        const ArrayOfExtensionsType & extensions = this->io->GetSupportedReadExtensions();
+        for( ArrayOfExtensionsType::const_iterator it(extensions.begin());
+            it != extensions.end(); ++it )
+        {
+            ret << it->c_str();
+        }
+    }
+    return ret;
 }

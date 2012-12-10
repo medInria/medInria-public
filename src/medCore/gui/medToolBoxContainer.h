@@ -34,6 +34,10 @@ public:
     void clear();
     
     QList<medToolBox*> toolBoxes() const;
+
+    void setLayoutSpacing(int spacing);
+
+    virtual void showEvent(QShowEvent * e);
     
 private:
     medToolBoxContainerPrivate *d;

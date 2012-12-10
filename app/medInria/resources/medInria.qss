@@ -867,12 +867,12 @@ QGroupBox::title
     font-size: $GROUP_BOX_FONTSIZE;
 }
 
-QGroupBox::indicator::checked
+.QGroupBox::indicator::checked
 {
     image: url(:/pixmaps/checkbox-checked.png);
 }
 
-QGroupBox::indicator::unchecked
+.QGroupBox::indicator::unchecked
 {
     image: url(:/pixmaps/checkbox.png);
 }

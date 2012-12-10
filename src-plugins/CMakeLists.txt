@@ -61,6 +61,7 @@ set(PLUGIN_LIST
   undoRedoRegistration                      ON
   itkProcessRegistrationDiffeomorphicDemons ON
   medVtkView                                ON
+  cliSupport                                ON
   )   
 
 

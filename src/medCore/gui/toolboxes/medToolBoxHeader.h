@@ -42,6 +42,7 @@ public:
     void setAboutButtonVisibility(bool visible);
     medButton* aboutButton();
 
+    virtual QSize sizeHint() const;
 protected:
     void paintEvent(QPaintEvent *event);
     void mousePressEvent(QMouseEvent *event);

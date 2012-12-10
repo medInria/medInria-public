@@ -22,6 +22,7 @@
 class medDropSitePrivate
 {
 public:
+    QStringList acceptedTypes;
     medDataIndex index;
     bool canAutomaticallyChangeAppereance;
 };
@@ -32,6 +33,7 @@ medDropSite::medDropSite(QWidget *parent) : QLabel(parent), d(new medDropSitePri
     setAcceptDrops(true);
     setBackgroundRole(QPalette::Base);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    setScaledContents(true);
     d->index = medDataIndex();
     d->canAutomaticallyChangeAppereance = true;
 }
@@ -45,7 +47,7 @@ medDropSite::~medDropSite(void)
 
 QSize medDropSite::sizeHint(void) const
 {
-    return QSize(128, 128);
+    return QSize(32, 32);
 }
 
 /**
@@ -59,6 +61,16 @@ void medDropSite::setCanAutomaticallyChangeAppereance(bool can)
     d->canAutomaticallyChangeAppereance = can;
 }
 
+void medDropSite::setAcceptedTypes(const QStringList & types)
+{
+    d->acceptedTypes = types;
+}
+
+QStringList medDropSite::acceptedTypes() const
+{
+    return d->acceptedTypes;
+}
+
 medDataIndex medDropSite::index(void) const
 {
     return d->index;
@@ -68,7 +80,14 @@ void medDropSite::dragEnterEvent(QDragEnterEvent *event)
 {
     setBackgroundRole(QPalette::Highlight);
 
-    event->acceptProposedAction();
+    QString type;
+    medDataIndex index( medDataIndex::readMimeData(event->mimeData()) );
+    if (index.isValid()) {
+//        type = medDataManaindex;
+    }
+
+    if (acceptedTypes().isEmpty() || acceptedTypes().contains(type))
+        event->acceptProposedAction();
 }
 
 void medDropSite::dragMoveEvent(QDragMoveEvent *event)

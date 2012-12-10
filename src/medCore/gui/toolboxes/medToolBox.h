@@ -44,8 +44,13 @@ public:
     void addWidget(QWidget *widget);
     void setTabWidget (medToolBoxTab* tab);
     void setTitle(const QString& title);
-    void setTitleOffset(const QPoint & titleOffset);
 
+    /**
+     * @brief Gets the Toolbox's header.
+     *
+     * @param void
+     * @return medToolBoxHeader *
+    */
     medToolBoxHeader *header() const;
     medToolBoxBody   *body()   const;
 

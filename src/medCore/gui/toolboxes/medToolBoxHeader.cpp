@@ -20,7 +20,7 @@ class medToolBoxHeaderPrivate
 {
 public:
     QString title;
-    QPoint titleOffset;
+    QLabel * titleLabel;
     medButton* about;
     static QPixmap* png;
     static const QString tooltip;
@@ -34,13 +34,12 @@ medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medT
 {
     if (!d->png)  d->png = new QPixmap(":icons/information.png");
     d->title = "Untitled";
-    d->titleOffset = QPoint( 0, 0 );
-//    d->about = NULL;
+    d->titleLabel = new QLabel(d->title);
     QBoxLayout* layout = new QBoxLayout(QBoxLayout::LeftToRight,this);
     layout->setMargin(0);
 
-    d->about = new medButton(this,*(d->png),
-                             medToolBoxHeaderPrivate::tooltip);
+    d->about = new medButton(this,*(d->png), medToolBoxHeaderPrivate::tooltip);
+    layout->addWidget(d->titleLabel);
     layout->addStretch();
     layout->addWidget(d->about);
     d->about->hide();
@@ -54,14 +53,15 @@ medToolBoxHeader::~medToolBoxHeader(void)
     d = NULL;
 }
 
-/**
- * @brief Sets the header's title.
- *
- * @param title
-*/
+QSize medToolBoxHeader::sizeHint(void) const
+{
+    return QSize(100, 32);
+}
+
 void medToolBoxHeader::setTitle(const QString& title)
 {
     d->title = title;
+    d->titleLabel->setText(d->title);
 }
 
 
@@ -75,39 +75,7 @@ QString medToolBoxHeader::title() const
     return d->title;
 }
 
-/**
- * @brief Sets the offset of the header's title from upper left corner.
- *
- * @param titleOffset
-*/
-void medToolBoxHeader::setTitleOffset(const QPoint & titleOffset)
-{
-    d->titleOffset = titleOffset;
-}
 
-/**
- * @brief Paints the header.
- *
- * @param event
-*/
-void medToolBoxHeader::paintEvent(QPaintEvent *event)
-{
-    QFrame::paintEvent(event);
-
-    QRectF rect = this->contentsRect();
-
-    QPainter painter(this);
-    painter.translate( d->titleOffset );
-
-    painter.drawText(rect, Qt::AlignCenter, d->title);
-    painter.end();
-}
-
-/**
- * @brief
- *
- * @param visible
- */
 void medToolBoxHeader::setAboutButtonVisibility(bool visible)
 {
     d->about->setVisible(visible);

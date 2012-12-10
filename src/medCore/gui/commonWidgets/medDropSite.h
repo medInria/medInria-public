@@ -27,13 +27,15 @@ class MEDCORE_EXPORT medDropSite : public QLabel
 
 public:
      medDropSite(QWidget *parent = 0);
-    ~medDropSite();
+    virtual ~medDropSite();
 
     QSize sizeHint() const;
 
     void setCanAutomaticallyChangeAppereance(bool can);
 
-public:
+    void setAcceptedTypes(const QStringList & types);
+    QStringList acceptedTypes() const;
+
     medDataIndex index() const;
 
 public slots:
