@@ -82,6 +82,7 @@ void medDatabaseNonPersistentImporter::run()
     // These metadata may be missing, in which case you get an empty QString.
     QString birthdate = medMetaDataKeys::BirthDate.getFirstValue(data);
     QString patientId = medMetaDataKeys::PatientID.getFirstValue(data);
+    QString gender = medMetaDataKeys::Gender.getFirstValue(data);
 
     qDebug() << "in database non persistent importer: " << patientId;
 
@@ -98,11 +99,6 @@ void medDatabaseNonPersistentImporter::run()
         {
             QString itemPatientName = medDatabaseNonPersistentController::instance()->metaData(items[i]->index(),medMetaDataKeys::PatientName.key() );
 
-            /*if ( items[i]->name() ==patientName )
-            {
-                patientDbId = items[i]->index().patientId();
-                break;
-            }*/
             if ( itemPatientName == patientName )
             {
                 patientDbId = items[i]->index().patientId();
@@ -112,7 +108,31 @@ void medDatabaseNonPersistentImporter::run()
     }
 
     if ( patientDbId==-1 )
+    {
         patientDbId = medDatabaseNonPersistentController::instance()->patientId ( true );
+
+        // create an item for patient
+        medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
+        medDataIndex index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, -1, -1, -1 );
+
+        if ( !patientName.isEmpty() )
+            item->d->name = patientName;
+        else
+            item->d->name = "John Doe";
+
+        dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
+        dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() <<  item->d->name );
+        dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
+        dtkData->addMetaData ( medMetaDataKeys::Gender.key(), gender );
+
+        item->d->patientId = patientId;
+        item->d->index = index;
+        item->d->data = dtkData;
+
+        medDatabaseNonPersistentController::instance()->insert ( index, item );
+        
+        emit nonPersistentImported ( index, d->callerUuid );
+    }
 
     int     studyDbId   = -1;
 
@@ -134,11 +154,6 @@ void medDatabaseNonPersistentImporter::run()
             QString itemPatientName = medDatabaseNonPersistentController::instance()->metaData(items[i]->index(),medMetaDataKeys::PatientName.key() );
             QString itemStudyName = medDatabaseNonPersistentController::instance()->metaData(items[i]->index(),medMetaDataKeys::StudyDescription.key() );
 
-            /*if ( items[i]->name() ==patientName && items[i]->studyName() ==studyName )
-                {
-                    studyDbId = items[i]->index().studyId();
-                    break;
-                }*/
             if ( itemPatientName == patientName && itemStudyName == studyName )
             {
                 studyDbId = items[i]->index().studyId();
@@ -156,43 +171,76 @@ void medDatabaseNonPersistentImporter::run()
     {
         //the study is defined and is not in the db, let's generate a new id
         studyDbId = medDatabaseNonPersistentController::instance()->studyId ( true );
+
+        // create an item for study
+        medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
+        medDataIndex index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, studyDbId, -1, -1 );
+
+        if ( !patientName.isEmpty() )
+            item->d->name = patientName;
+        else
+            item->d->name = "John Doe";
+
+        item->d->patientId = patientId;
+        item->d->index = index;
+        item->d->studyName = studyName;
+
+        dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
+
+        dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
+        dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
+        dtkData->addMetaData ( medMetaDataKeys::Gender.key(), gender );
+        dtkData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
+        dtkData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
+        dtkData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "0" ); 
+
+        item->d->data = dtkData;
+
+        medDatabaseNonPersistentController::instance()->insert ( index, item );
+        
+        emit nonPersistentImported ( index, d->callerUuid );
     }
 
     // the study is defined
     if ( studyDbId!=-1 && !seriesName.isEmpty() )
     {
         // and the serie is defined, let's generate a new id
-        serieDbId = medDatabaseNonPersistentController::instance()->studyId ( true );
+        serieDbId = medDatabaseNonPersistentController::instance()->seriesId ( true );
     }
 
-    index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, studyDbId,serieDbId, -1 );
+    index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, studyDbId, serieDbId, -1 );
 
 
-    medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
+    if( serieDbId!=-1)
+    {
+        medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
 
-    if ( !patientName.isEmpty() )
-        item->d->name = patientName;
-    else
-        item->d->name = "John Doe";
+        if ( !patientName.isEmpty() )
+            item->d->name = patientName;
+        else
+            item->d->name = "John Doe";
 
-    item->d->birthdate  = birthdate;
-    item->d->patientId  = patientId;
-    item->d->studyName  = studyName;
-    item->d->studyId    = studyId;
-    item->d->studyUid    = studyUid;
-    item->d->seriesName = seriesName;
-    item->d->seriesId   = seriesId;
-    item->d->seriesUid   = seriesUid;
-    item->d->file       = "";
-    item->d->thumb      = data->thumbnail();
-    item->d->index      = index;
-    item->d->data       = data;
+        item->d->birthdate  = birthdate;
+        item->d->patientId  = patientId;
+        item->d->studyName  = studyName;
+        item->d->studyId    = studyId;
+        item->d->studyUid    = studyUid;
+        item->d->seriesName = seriesName;
+        item->d->seriesId   = seriesId;
+        item->d->seriesUid   = seriesUid;
+        item->d->file       = "";
+        item->d->thumb      = data->thumbnail();
+        item->d->index      = index;
+        item->d->data       = data;
 
-    medDatabaseNonPersistentController::instance()->insert ( index, item );
+        medDatabaseNonPersistentController::instance()->insert ( index, item );
+        
+        emit nonPersistentImported ( index, d->callerUuid );
+    }
 
     emit progress ( this, 100 );
     emit success ( this );
-    emit nonPersistentImported ( index, d->callerUuid );
+    
 }
 
 void medDatabaseNonPersistentImporter::onCancel ( QObject* )

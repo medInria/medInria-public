@@ -34,14 +34,29 @@ const QString& medDatabaseNonPersistentItem::name(void) const
     return d->name;
 }
 
-const QString& medDatabaseNonPersistentItem::birthdate() const
+void medDatabaseNonPersistentItem::setName(const QString& name)
+{
+    d->name = name;
+}
+
+const QString& medDatabaseNonPersistentItem::birthdate () const
 {
     return d->birthdate;
 }
 
-const QString& medDatabaseNonPersistentItem::patientId() const
+void medDatabaseNonPersistentItem::setBirthdate(const QString& birthdate)
+{
+    d->birthdate = birthdate;
+}
+
+const QString& medDatabaseNonPersistentItem::patientId () const
 {
   return d->patientId;
+}
+
+void medDatabaseNonPersistentItem::setPatientId(const QString& patientId)
+{
+    d->patientId = patientId;
 }
 
 const QString& medDatabaseNonPersistentItem::studyName(void) const
@@ -49,75 +64,89 @@ const QString& medDatabaseNonPersistentItem::studyName(void) const
     return d->studyName;
 }
 
-const QString& medDatabaseNonPersistentItem::studyId() const
+void medDatabaseNonPersistentItem::setStudyName(const QString& studyName)
+{
+    d->studyName = studyName;
+}
+
+const QString& medDatabaseNonPersistentItem::studyId () const
 {
   return d->studyId;
 }
 
-const QString& medDatabaseNonPersistentItem::studyUid() const
+void medDatabaseNonPersistentItem::setStudyId(const QString& studyId)
+{
+    d->studyId = studyId;
+}
+
+const QString& medDatabaseNonPersistentItem::studyUid () const
 {
   return d->studyUid;
 }
 
+void medDatabaseNonPersistentItem::setStudyUid(const QString& studyUid)
+{
+    d->studyUid = studyUid;
+}
 
-const QString& medDatabaseNonPersistentItem::seriesName(void) const
+const QString& medDatabaseNonPersistentItem::seriesName() const
 {
     return d->seriesName;
 }
 
-const QString& medDatabaseNonPersistentItem::seriesId() const
+void medDatabaseNonPersistentItem::setSeriesName(const QString& seriesName)
+{
+    d->seriesName = seriesName;
+}
+
+const QString& medDatabaseNonPersistentItem::seriesId () const
 {
     return d->seriesId;
 }
 
-const QString& medDatabaseNonPersistentItem::seriesUid() const
+void medDatabaseNonPersistentItem::setSeriesId(const QString& seriesId)
+{
+    d->seriesId = seriesId;
+}
+
+const QString& medDatabaseNonPersistentItem::seriesUid () const
 {
   return d->seriesUid;
 }
 
-const QString& medDatabaseNonPersistentItem::file(void) const
+void medDatabaseNonPersistentItem::setSeriesUid(const QString& seriesUid)
+{
+    d->seriesUid = seriesUid;
+}
+
+const QString& medDatabaseNonPersistentItem::file() const
 {
     return d->file;
 }
 
-const QImage& medDatabaseNonPersistentItem::thumb(void) const
+void medDatabaseNonPersistentItem::setFile(const QString& file)
+{
+    d->file = file;
+}
+
+const QImage& medDatabaseNonPersistentItem::thumb() const
 {
     return d->thumb;
 }
 
-const QString medDatabaseNonPersistentItem::orientation(void) const
+void medDatabaseNonPersistentItem::setThumb(const QImage& thumb)
 {
-    return d->orientation;
+    d->thumb = thumb;
 }
 
-const QString medDatabaseNonPersistentItem::seriesNumber(void) const
-{
-    return d->seriesNumber;
-}
-
-const QString medDatabaseNonPersistentItem::sequenceName(void) const
-{
-    return d->sequenceName;
-}
-
-const QString medDatabaseNonPersistentItem::sliceThickness(void) const
-{
-    return d->sliceThickness;
-}
-
-const QString medDatabaseNonPersistentItem::rows(void) const
-{
-    return d->rows;
-}
-
-const QString medDatabaseNonPersistentItem::columns(void) const
-{
-    return d->columns;
-}
-
-const medDataIndex& medDatabaseNonPersistentItem::index(void) const
+const medDataIndex& medDatabaseNonPersistentItem::index() const
 {
     return d->index;
+}
+
+void medDatabaseNonPersistentItem::setIndex(const medDataIndex& index)
+{
+    d->index = index;
 }
 
 dtkAbstractData *medDatabaseNonPersistentItem::data(void)
