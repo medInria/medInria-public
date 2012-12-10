@@ -54,7 +54,24 @@ public:
     
     dtkAbstractData *data(void);
     
-    bool Match(dtkAbstractData *);
+    
+    void setName(const QString& );
+    void setBirthdate(const QString& );
+    void setPatientId(const QString& );
+    void setStudyName(const QString& );
+    void setSeriesName(const QString& );
+    void setFile(const QString& );
+    void setStudyId(const QString& );
+    void setStudyUid(const QString& );
+    void setSeriesId(const QString& );
+    void setSeriesUid(const QString& );
+    void setThumb(const QImage& );
+    
+    void setIndex(const medDataIndex& );
+    
+    void setData(dtkAbstractData* );
+
+	bool Match(dtkAbstractData *);
 
 private:
     friend class medDatabaseNonPersistentControllerImpl;
