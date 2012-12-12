@@ -23,7 +23,7 @@
 #include <medToolBoxTab.h>
 #include <medToolBoxFactory.h>
 
-#include <medToolBoxRegistrationCustom.h>
+#include <medRegistrationAbstractToolBox.h>
 
 
 #include <QtGui>
@@ -44,7 +44,7 @@ public:
 
     dtkSmartPointer<dtkAbstractProcess> process;
 
-    medToolBoxRegistrationCustom * customToolBox;
+    medRegistrationAbstractToolBox * customToolBox;
 };
 
 medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(parent), d(new medToolBoxRegistrationPrivate)
@@ -282,7 +282,7 @@ void medToolBoxRegistration::onToolBoxChosen(int index)
     //get identifier for toolbox.
     QString id = d->toolboxes->itemData(index).toString();
 
-    medToolBoxRegistrationCustom *toolbox = qobject_cast<medToolBoxRegistrationCustom*>(medToolBoxFactory::instance()->createToolBox(id));
+    medRegistrationAbstractToolBox *toolbox = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id));
 
 
     if(!toolbox) {
