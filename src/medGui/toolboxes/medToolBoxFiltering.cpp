@@ -5,7 +5,7 @@
  */
 
 #include "medToolBoxFiltering.h"
-#include "medToolBoxFilteringCustom.h"
+#include "medFilteringAbstractToolBox.h"
 
 #include <medToolBoxFactory.h>
 #include <medDropSite.h>
@@ -24,7 +24,7 @@ public:
     QComboBox    *chooseFilter;
     QPushButton *saveInDatabaseButton;
 //    QPushButton *saveToDiskButton;
-    medToolBoxFilteringCustom *customToolBox;
+    medFilteringAbstractToolBox *customToolBox;
     medAbstractView *inputView;
     dtkAbstractData *inputData;
     medDataIndex index;
@@ -82,7 +82,7 @@ medToolBoxFiltering::~medToolBoxFiltering()
     d = NULL;
 }
 
-medToolBoxFilteringCustom* medToolBoxFiltering::customToolbox ( void )
+medFilteringAbstractToolBox* medToolBoxFiltering::customToolbox ( void )
 {
 
     return d->customToolBox;
@@ -98,7 +98,7 @@ void medToolBoxFiltering::onToolBoxChosen ( int index )
     //get identifier for toolbox.
     QString id = d->chooseFilter->itemData( index ).toString();
 
-    medToolBoxFilteringCustom *toolbox = qobject_cast<medToolBoxFilteringCustom *>(medToolBoxFactory::instance()->createToolBox ( id ));
+    medFilteringAbstractToolBox *toolbox = qobject_cast<medFilteringAbstractToolBox *>(medToolBoxFactory::instance()->createToolBox ( id ));
 
     if ( !toolbox )
     {

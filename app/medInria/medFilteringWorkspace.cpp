@@ -17,7 +17,7 @@
 #include <medViewContainer.h>
 #include <medMultiViewContainer.h>
 #include <medTabbedViewContainers.h>
-#include <medToolBoxFilteringCustom.h>
+#include <medFilteringAbstractToolBox.h>
 
 
 #include <dtkCore/dtkAbstractData.h>

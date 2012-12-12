@@ -13,7 +13,7 @@
 
 class medToolBoxFilteringPrivate;
 class dtkAbstractData;
-class medToolBoxFilteringCustom;
+class medFilteringAbstractToolBox;
 
 /**
  * @brief main toolbox for filtering processes
@@ -35,7 +35,7 @@ public:
     /**
      * @brief returns current selected toolbox
      */
-    medToolBoxFilteringCustom* customToolbox(void);
+    medFilteringAbstractToolBox* customToolbox(void);
 
     /**
      * @brief set data index

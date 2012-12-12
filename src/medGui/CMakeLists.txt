@@ -98,7 +98,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medToolBoxSegmentationCustom.h
   toolboxes/medToolBoxDiffusionTensorView.h
   toolboxes/medToolBoxFiltering.h
-  toolboxes/medToolBoxFilteringCustom.h
+  toolboxes/medFilteringAbstractToolBox.h
   toolboxes/medBrowserJobsToolBox.h
   toolboxes/medVisualizationLayoutToolBox.h
   toolboxes/medWorkspaceTimeToolBox.h
@@ -212,7 +212,7 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medToolBoxSegmentationCustom.cpp
   toolboxes/medToolBoxDiffusionTensorView.cpp
   toolboxes/medToolBoxFiltering.cpp
-  toolboxes/medToolBoxFilteringCustom.cpp
+  toolboxes/medFilteringAbstractToolBox.cpp
   toolboxes/medBrowserJobsToolBox.cpp
   toolboxes/medVisualizationLayoutToolBox.cpp
   toolboxes/medWorkspaceTimeToolBox.cpp

@@ -1,4 +1,4 @@
-/* medToolBoxFilteringCustom.h ---
+/* medFilteringAbstractToolBox.h ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -24,16 +24,16 @@
 #include "medToolBox.h"
 
 class medToolBoxFiltering;
-class medToolBoxFilteringCustomPrivate;
+class medFilteringAbstractToolBoxPrivate;
 class dtkAbstractData;
 
-class MEDGUI_EXPORT medToolBoxFilteringCustom : public medToolBox
+class MEDGUI_EXPORT medFilteringAbstractToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-             medToolBoxFilteringCustom(QWidget *parentToolBox = 0);
-    virtual ~medToolBoxFilteringCustom(void);
+             medFilteringAbstractToolBox(QWidget *parentToolBox = 0);
+    virtual ~medFilteringAbstractToolBox(void);
 
     void setFilteringToolBox(medToolBoxFiltering *toolbox);
 
@@ -43,7 +43,7 @@ protected:
     medToolBoxFiltering *parentToolBox(void);
 
 private:
-    medToolBoxFilteringCustomPrivate *d;
+    medFilteringAbstractToolBoxPrivate *d;
 };
 
 #endif
