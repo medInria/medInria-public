@@ -1,11 +1,11 @@
-#ifndef MEDTOOLBOXCUSTOM_H
-#define MEDTOOLBOXCUSTOM_H
+#ifndef medAbstractToolBox_H
+#define medAbstractToolBox_H
 
 #include "medGuiExport.h"
 
 #include <medToolBox.h>
 
-class medToolBoxCustomPrivate;
+class medAbstractToolBoxPrivate;
 
 
 /**
@@ -13,16 +13,16 @@ class medToolBoxCustomPrivate;
  *
  *
  */
-class MEDGUI_EXPORT medToolBoxCustom : public medToolBox
+class MEDGUI_EXPORT medAbstractToolBox : public medToolBox
 {
 public:
 
-    medToolBoxCustom(QWidget* parentWidget = 0);
+    medAbstractToolBox(QWidget* parentWidget = 0);
     /**
      * @note considering setting this method the only constructor.
      */
-    medToolBoxCustom(medToolBox* parentToolbox, QWidget* parentWidget = 0);
-    ~medToolBoxCustom();
+    medAbstractToolBox(medToolBox* parentToolbox, QWidget* parentWidget = 0);
+    ~medAbstractToolBox();
 
     /**
      * @brief
@@ -54,7 +54,7 @@ public:
 protected:
     medToolBox *parentToolBox(void);
 
-    medToolBoxCustomPrivate *d;
+    medAbstractToolBoxPrivate *d;
 };
 
-#endif // MEDTOOLBOXCUSTOM_H
+#endif // medAbstractToolBox_H
