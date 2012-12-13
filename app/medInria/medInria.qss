@@ -1390,11 +1390,11 @@ dtkFinderTreeView::branch:open:has-children:has-siblings  {
 
 
 /**
- * medViewerToolBoxViewProperties QTreeWidget
+ * medWorkspaceViewPropertiesToolBox QTreeWidget
  *
  */
 
-medViewerToolBoxViewProperties QTreeWidget {
+medWorkspaceViewPropertiesToolBox QTreeWidget {
     alternate-background-color: #505050;
 
     border-top-width: 0px;
@@ -1414,30 +1414,30 @@ medViewerToolBoxViewProperties QTreeWidget {
     background: #313131;
 }
 
-medViewerToolBoxViewProperties QTreeWidget::branch:has-siblings:!adjoins-item {
+medWorkspaceViewPropertiesToolBox QTreeWidget::branch:has-siblings:!adjoins-item {
     image: none;
 }
 
-medViewerToolBoxViewProperties QTreeWidget::branch:has-siblings:adjoins-item {
+medWorkspaceViewPropertiesToolBox QTreeWidget::branch:has-siblings:adjoins-item {
     image: none;
 }
 
-medViewerToolBoxViewProperties QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
+medWorkspaceViewPropertiesToolBox QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
     image: none;
 }
 
-medViewerToolBoxViewProperties QTreeWidget::branch:has-children:!has-siblings:closed,
-medViewerToolBoxViewProperties QTreeWidget::branch:closed:has-children:has-siblings {
+medWorkspaceViewPropertiesToolBox QTreeWidget::branch:has-children:!has-siblings:closed,
+medWorkspaceViewPropertiesToolBox QTreeWidget::branch:closed:has-children:has-siblings {
     border-image: none;
     image: url(:pixmaps/treeview-branch-closed.png);
 }
 
-medViewerToolBoxViewProperties QTreeWidget::branch:open:has-children  {
+medWorkspaceViewPropertiesToolBox QTreeWidget::branch:open:has-children  {
     border-image: none;
     image: url(:pixmaps/treeview-branch-open.png);
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);
 }
-medViewerToolBoxViewProperties QTreeWidget::item:open:has-children  {
+medWorkspaceViewPropertiesToolBox QTreeWidget::item:open:has-children  {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);
     color: white;
 }
