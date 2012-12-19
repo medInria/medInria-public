@@ -34,15 +34,15 @@
 #include <medToolBoxHeader.h>
 
 #include "medToolBoxDiffusion.h"
-#include "medToolBoxDiffusionCustom.h"
+#include "medDiffusionAbstractToolBox.h"
 
 class medToolBoxDiffusionPrivate
 {
 public:
 
-    QHash<QString, medToolBoxDiffusionCustom*> toolBoxes;
+    QHash<QString, medDiffusionAbstractToolBox*> toolBoxes;
 
-    medToolBoxDiffusionCustom *currentToolBox;
+    medDiffusionAbstractToolBox *currentToolBox;
 
     QComboBox *tractographyMethodCombo;
 
@@ -95,7 +95,7 @@ medToolBoxDiffusion::~medToolBoxDiffusion(void)
 
 void medToolBoxDiffusion::onToolBoxChosen(int id)
 {
-    medToolBoxDiffusionCustom *toolbox = NULL;
+    medDiffusionAbstractToolBox *toolbox = NULL;
     //get identifier for toolbox.
     QString identifier = d->tractographyMethodCombo->itemData(id).toString();
     if (d->toolBoxes.contains (identifier))
@@ -103,7 +103,7 @@ void medToolBoxDiffusion::onToolBoxChosen(int id)
     else {
         medToolBox* tb = medToolBoxFactory::instance()->createToolBox(
                     identifier, this);
-        toolbox = qobject_cast<medToolBoxDiffusionCustom*>(tb);
+        toolbox = qobject_cast<medDiffusionAbstractToolBox*>(tb);
         if (toolbox) {
             toolbox->setStyleSheet("medToolBoxBody {border:none}");
             toolbox->header()->hide();
@@ -159,7 +159,7 @@ dtkAbstractData *medToolBoxDiffusion::output(void) const
 
 void medToolBoxDiffusion::clear(void)
 {
-    foreach (medToolBoxDiffusionCustom *tb, d->toolBoxes)
+    foreach (medDiffusionAbstractToolBox *tb, d->toolBoxes)
         tb->deleteLater();
 
     d->toolBoxes.clear();

@@ -24,7 +24,7 @@
 
 class medToolBoxDiffusion;
 
-class medToolBoxDiffusionCustomPrivate
+class medDiffusionAbstractToolBoxPrivate
 {
 public:
     medToolBoxDiffusion *parent;

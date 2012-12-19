@@ -1,4 +1,4 @@
-/* medToolBoxDiffusionCustom.h ---
+/* medDiffusionAbstractToolBox.h ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -18,24 +18,24 @@
  */
 
 
-#ifndef MEDTOOLBOXDIFFUSIONCUSTOM_H
-#define MEDTOOLBOXDIFFUSIONCUSTOM_H
+#ifndef medDiffusionAbstractToolBox_H
+#define medDiffusionAbstractToolBox_H
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
 
 class medToolBoxDiffusion;
-class medToolBoxDiffusionCustomPrivate;
+class medDiffusionAbstractToolBoxPrivate;
 class dtkAbstractProcess;
 class dtkAbstractData;
 class dtkPlugin;
 
-class MEDGUI_EXPORT medToolBoxDiffusionCustom : public medToolBox
+class MEDGUI_EXPORT medDiffusionAbstractToolBox : public medToolBox
 {
     Q_OBJECT
 public:
-             medToolBoxDiffusionCustom(QWidget *parentToolBox = 0);
-    virtual ~medToolBoxDiffusionCustom(void);
+             medDiffusionAbstractToolBox(QWidget *parentToolBox = 0);
+    virtual ~medDiffusionAbstractToolBox(void);
 
     virtual void setDiffusionToolBox(medToolBoxDiffusion *toolbox);
 
@@ -54,7 +54,7 @@ public:
 protected:
     medToolBoxDiffusion *parentToolBox(void);
 
-    medToolBoxDiffusionCustomPrivate *d;
+    medDiffusionAbstractToolBoxPrivate *d;
 };
 
-#endif // MEDTOOLBOXDIFFUSIONCUSTOM_H
+#endif // medDiffusionAbstractToolBox_H
