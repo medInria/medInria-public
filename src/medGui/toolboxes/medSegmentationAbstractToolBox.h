@@ -1,5 +1,5 @@
-/* medToolBoxSegmentationCustom.h ---
- * 
+/* medSegmentationAbstractToolBox.h ---
+ *
  * Author: John Stark
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 14:16:25 2010 (+0100)
@@ -9,39 +9,39 @@
  *     Update #: 23
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
-#ifndef MEDTOOLBOXSEGMENTATIONCUSTOM_H
-#define MEDTOOLBOXSEGMENTATIONCUSTOM_H
+#ifndef medSegmentationAbstractToolBox_H
+#define medSegmentationAbstractToolBox_H
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
 
 class medToolBoxSegmentation;
-class medToolBoxSegmentationCustomPrivate;
+class medSegmentationAbstractToolBoxPrivate;
 
 //! Base class for custom segmentation algoithms
-class MEDGUI_EXPORT medToolBoxSegmentationCustom : public medToolBox
+class MEDGUI_EXPORT medSegmentationAbstractToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
     //! Parent should be a medToolBoxSegmentation
-             medToolBoxSegmentationCustom(QWidget *parent = 0);
-    virtual ~medToolBoxSegmentationCustom(void);
+             medSegmentationAbstractToolBox(QWidget *parent = 0);
+    virtual ~medSegmentationAbstractToolBox(void);
 
 protected:
     //! Get the segmentationToolbox (usually one instance)
     medToolBoxSegmentation *segmentationToolBox(void);
 
 private:
-    medToolBoxSegmentationCustomPrivate *d;
+    medSegmentationAbstractToolBoxPrivate *d;
 };
 
 #endif

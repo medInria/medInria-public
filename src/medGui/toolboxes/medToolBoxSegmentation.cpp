@@ -36,7 +36,7 @@
 #include <medRunnableProcess.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxTab.h>
-#include <medToolBoxSegmentationCustom.h>
+#include <medSegmentationAbstractToolBox.h>
 #include <medViewManager.h>
 #include <medViewerWorkspace.h>
 #include <medViewEventFilter.h>
@@ -58,7 +58,7 @@ public:
     medProgressionStack *progression_stack;
     QBoxLayout *algorithmParameterLayout;
     QComboBox *toolboxes;
-    medToolBoxSegmentationCustom * customToolBox;
+    medSegmentationAbstractToolBox * customToolBox;
     medViewerWorkspace * workspace;
 
     dtkSmartPointer<dtkAbstractProcess> process;
@@ -164,7 +164,7 @@ void medToolBoxSegmentation::onToolBoxChosen(int index)
 
 void medToolBoxSegmentation::onToolBoxChosen(const QByteArray& id)
 {
-    medToolBoxSegmentationCustom *toolbox = qobject_cast<medToolBoxSegmentationCustom*>(medToolBoxFactory::instance()->createToolBox(QString(id), this));
+    medSegmentationAbstractToolBox *toolbox = qobject_cast<medSegmentationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(QString(id), this));
 
     if(!toolbox) {
         dtkDebug() << "Unable to instantiate" << id << "toolbox";

@@ -95,7 +95,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medToolBoxRegistration.h
   toolboxes/medRegistrationAbstractToolBox.h
   toolboxes/medToolBoxSegmentation.h
-  toolboxes/medToolBoxSegmentationCustom.h
+  toolboxes/medSegmentationAbstractToolBox.h
   toolboxes/medToolBoxDiffusionTensorView.h
   toolboxes/medToolBoxFiltering.h
   toolboxes/medFilteringAbstractToolBox.h
@@ -209,7 +209,7 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medToolBoxRegistration.cpp
   toolboxes/medRegistrationAbstractToolBox.cpp
   toolboxes/medToolBoxSegmentation.cpp
-  toolboxes/medToolBoxSegmentationCustom.cpp
+  toolboxes/medSegmentationAbstractToolBox.cpp
   toolboxes/medToolBoxDiffusionTensorView.cpp
   toolboxes/medToolBoxFiltering.cpp
   toolboxes/medFilteringAbstractToolBox.cpp

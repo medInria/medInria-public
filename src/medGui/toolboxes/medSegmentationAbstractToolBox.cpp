@@ -1,5 +1,5 @@
-/* medToolBoxSegmentationCustom.cpp ---
- * 
+/* medSegmentationAbstractToolBox.cpp ---
+ *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Nov 10 15:42:09 2010 (+0100)
@@ -9,35 +9,35 @@
  *     Update #: 17
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include "medToolBoxSegmentation.h"
-#include "medToolBoxSegmentationCustom.h"
+#include "medSegmentationAbstractToolBox.h"
 
-class medToolBoxSegmentationCustomPrivate
+class medSegmentationAbstractToolBoxPrivate
 {
 public:
     medToolBoxSegmentation * segmentationToolBox;
 };
 
-medToolBoxSegmentationCustom::medToolBoxSegmentationCustom(QWidget *parent) : medToolBox(parent), d(new medToolBoxSegmentationCustomPrivate)
+medSegmentationAbstractToolBox::medSegmentationAbstractToolBox(QWidget *parent) : medToolBox(parent), d(new medSegmentationAbstractToolBoxPrivate)
 {
     d->segmentationToolBox = qobject_cast<medToolBoxSegmentation*>(parent);
 }
 
-medToolBoxSegmentationCustom::~medToolBoxSegmentationCustom(void)
+medSegmentationAbstractToolBox::~medSegmentationAbstractToolBox(void)
 {
     delete d;
     d = NULL;
 }
 
-medToolBoxSegmentation *medToolBoxSegmentationCustom::segmentationToolBox(void)
+medToolBoxSegmentation *medSegmentationAbstractToolBox::segmentationToolBox(void)
 {
     return d->segmentationToolBox;
 }
