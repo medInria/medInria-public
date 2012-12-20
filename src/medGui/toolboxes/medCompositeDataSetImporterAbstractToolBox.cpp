@@ -17,14 +17,14 @@
  *
  */
 
-#include <medToolBoxCompositeDataSetImporter.h>
+#include <medCompositeDataSetImporterSelectorToolBox.h>
 #include <medCompositeDataSetImporterAbstractToolBox.h>
 #include <dtkCore/dtkAbstractObject.h>
 
 class medCompositeDataSetImporterAbstractToolBoxPrivate
 {
 public:
-    medToolBoxCompositeDataSetImporter *parent;
+    medCompositeDataSetImporterSelectorToolBox *parent;
 };
 
 
@@ -40,12 +40,12 @@ medCompositeDataSetImporterAbstractToolBox::~medCompositeDataSetImporterAbstract
     d = NULL;
 }
 
-void medCompositeDataSetImporterAbstractToolBox::setCompositeDataSetImporterToolBox(medToolBoxCompositeDataSetImporter *toolbox)
+void medCompositeDataSetImporterAbstractToolBox::setCompositeDataSetImporterToolBox(medCompositeDataSetImporterSelectorToolBox *toolbox)
 {
     d->parent = toolbox;
 }
 
-medToolBoxCompositeDataSetImporter *medCompositeDataSetImporterAbstractToolBox::parent(void)
+medCompositeDataSetImporterSelectorToolBox *medCompositeDataSetImporterAbstractToolBox::parent(void)
 {
     return d->parent;
 }

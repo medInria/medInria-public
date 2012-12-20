@@ -48,7 +48,7 @@
 #include <medBrowserJobsToolBox.h>
 #include <medPacsMover.h>
 #include <medPacsWidget.h>
-#include <medToolBoxCompositeDataSetImporter.h>
+#include <medCompositeDataSetImporterSelectorToolBox.h>
 
 class medBrowserAreaPrivate
 {
@@ -60,7 +60,7 @@ public:
     medToolBoxContainer *toolbox_container;
     medBrowserJobsToolBox *jobsToolBox;
     medBrowserSourceSelectorToolBox *sourceSelectorToolBox;
-    medToolBoxCompositeDataSetImporter *toolbox_compositeimporter;
+    medCompositeDataSetImporterSelectorToolBox *toolbox_compositeimporter;
 
     QList <medAbstractDataSource *> data_sources;
 
@@ -143,7 +143,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
 
-    d->toolbox_compositeimporter = new medToolBoxCompositeDataSetImporter(this);
+    d->toolbox_compositeimporter = new medCompositeDataSetImporterSelectorToolBox(this);
     d->toolbox_compositeimporter->setVisible(true);
     d->toolbox_container->addToolBox(d->toolbox_compositeimporter);
 

@@ -1,4 +1,4 @@
-/* medToolBoxCompositeDataSetImporter ---
+/* medCompositeDataSetImporterSelectorToolBox ---
  *
  * Author: Nicolas Toussaint
 
@@ -9,10 +9,10 @@
 #include <medCore/medMessageController.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>
-#include <medToolBoxCompositeDataSetImporter.h>
+#include <medCompositeDataSetImporterSelectorToolBox.h>
 #include <medCompositeDataSetImporterAbstractToolBox.h>
 
-class medToolBoxCompositeDataSetImporterPrivate
+class medCompositeDataSetImporterSelectorToolBoxPrivate
 {
 public:
 
@@ -34,22 +34,22 @@ public:
   bool isInitialized;
 };
 
-medToolBoxCompositeDataSetImporter::medToolBoxCompositeDataSetImporter(QWidget *parent): medToolBox(parent), d(new medToolBoxCompositeDataSetImporterPrivate) {
+medCompositeDataSetImporterSelectorToolBox::medCompositeDataSetImporterSelectorToolBox(QWidget *parent): medToolBox(parent), d(new medCompositeDataSetImporterSelectorToolBoxPrivate) {
     d->isInitialized = false;
     d->currentToolBox = 0;
     this->setTitle(tr("Composite DataSet Import"));
     this->initialize();
 }
 
-medToolBoxCompositeDataSetImporter::~medToolBoxCompositeDataSetImporter(void)
+medCompositeDataSetImporterSelectorToolBox::~medCompositeDataSetImporterSelectorToolBox(void)
 {
     delete d;
     d = NULL;
 }
 
-void medToolBoxCompositeDataSetImporterPrivate::read(QString filename) { }
+void medCompositeDataSetImporterSelectorToolBoxPrivate::read(QString filename) { }
 
-void medToolBoxCompositeDataSetImporter::onImportClicked() {
+void medCompositeDataSetImporterSelectorToolBox::onImportClicked() {
     if (!d->currentToolBox) {
         this->showError(this,tr("Select a type first"),3000);
         return;
@@ -57,19 +57,19 @@ void medToolBoxCompositeDataSetImporter::onImportClicked() {
     d->currentToolBox->import();
 }
 
-void medToolBoxCompositeDataSetImporter::onLoadClicked() {
+void medCompositeDataSetImporterSelectorToolBox::onLoadClicked() {
     if (!d->currentToolBox)
         return;
     d->currentToolBox->load();
 }
 
-void medToolBoxCompositeDataSetImporter::onResetClicked() {
+void medCompositeDataSetImporterSelectorToolBox::onResetClicked() {
     if (!d->currentToolBox)
         return;
     d->currentToolBox->reset();
 }
 
-void medToolBoxCompositeDataSetImporter::initialize()
+void medCompositeDataSetImporterSelectorToolBox::initialize()
 {
     if (d->isInitialized)
         return;
@@ -149,13 +149,13 @@ void medToolBoxCompositeDataSetImporter::initialize()
 }
 
 
-bool medToolBoxCompositeDataSetImporter::import()
+bool medCompositeDataSetImporterSelectorToolBox::import()
 {
     return true;
 }
 
 
-void medToolBoxCompositeDataSetImporter::onCurrentTypeChanged(const int i) {
+void medCompositeDataSetImporterSelectorToolBox::onCurrentTypeChanged(const int i) {
 
     medCompositeDataSetImporterAbstractToolBox* toolbox = NULL;
     const QString id = d->type->itemData(i).toString();

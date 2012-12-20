@@ -1,23 +1,23 @@
-#ifndef MEDTOOLBOXCOMPOSITEDATASETIMPORTER_H
-#define MEDTOOLBOXCOMPOSITEDATASETIMPORTER_H
+#ifndef medCompositeDataSetImporterSelectorToolBox_H
+#define medCompositeDataSetImporterSelectorToolBox_H
 
 #include <medToolBox.h>
 
-class medToolBoxCompositeDataSetImporterPrivate;
+class medCompositeDataSetImporterSelectorToolBoxPrivate;
 
-class MEDGUI_EXPORT medToolBoxCompositeDataSetImporter : public medToolBox
+class MEDGUI_EXPORT medCompositeDataSetImporterSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medToolBoxCompositeDataSetImporter(QWidget *parent = 0);
-    ~medToolBoxCompositeDataSetImporter(void);
+     medCompositeDataSetImporterSelectorToolBox(QWidget *parent = 0);
+    ~medCompositeDataSetImporterSelectorToolBox(void);
     /**
      * @brief initialize layout
      */
     virtual void initialize();
 
-signals:    
+signals:
     /**
      * @brief Emits an error message for the medMessageController to display.
      *
@@ -38,8 +38,8 @@ signals:
      * @param timeout The timeout before the message disapears.
     */
     void showInfo(QObject *sender, const QString& text,unsigned int timeout=0);
-    
-    
+
+
 public slots:
     /**
      * @brief Performs validation tests on each section and tires to save.
@@ -66,7 +66,7 @@ public slots:
      *
     */
     void onCurrentTypeChanged(const int type);
-    
+
     // @brief Succesful import/load
 
     //void onSucess();
@@ -77,10 +77,10 @@ public slots:
      */
     virtual bool import();
 
-    
+
  private:
-    medToolBoxCompositeDataSetImporterPrivate* d;
-    
+    medCompositeDataSetImporterSelectorToolBoxPrivate* d;
+
 };
 
 #endif
