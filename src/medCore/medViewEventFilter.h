@@ -13,13 +13,13 @@
 //Forward declarations
 class medAbstractView;
 class medAbstractViewScene;
-class medToolBoxSegmentation;
+class medSegmentationSelectorToolBox;
 
 /** class medViewEventFilter
- * This class can be added as an EventFilter on a medAbstractView. 
+ * This class can be added as an EventFilter on a medAbstractView.
  * The class allows the retreival of the mouse clicks, including where the mouse was clicked in the coordinates defined by the view.
- * 
- * (see QObject::eventFilter & QObject::installEventFilter) 
+ *
+ * (see QObject::eventFilter & QObject::installEventFilter)
  */
 class MEDCORE_EXPORT medViewEventFilter : public dtkAbstractObject
 {
@@ -68,7 +68,7 @@ protected slots:
 private:
     static QString s_description();
 
-    medToolBoxSegmentation * m_segmentationController;
+    medSegmentationSelectorToolBox * m_segmentationController;
     QSet<medAbstractView *> m_views;
     typedef QHash<QObject *, medAbstractView *> FilterObjToViewType;
     FilterObjToViewType m_filterObjToView;

@@ -17,18 +17,18 @@
  *
  */
 
-#include "medToolBoxSegmentation.h"
+#include "medSegmentationSelectorToolBox.h"
 #include "medSegmentationAbstractToolBox.h"
 
 class medSegmentationAbstractToolBoxPrivate
 {
 public:
-    medToolBoxSegmentation * segmentationToolBox;
+    medSegmentationSelectorToolBox * segmentationToolBox;
 };
 
 medSegmentationAbstractToolBox::medSegmentationAbstractToolBox(QWidget *parent) : medToolBox(parent), d(new medSegmentationAbstractToolBoxPrivate)
 {
-    d->segmentationToolBox = qobject_cast<medToolBoxSegmentation*>(parent);
+    d->segmentationToolBox = qobject_cast<medSegmentationSelectorToolBox*>(parent);
 }
 
 medSegmentationAbstractToolBox::~medSegmentationAbstractToolBox(void)
@@ -37,7 +37,7 @@ medSegmentationAbstractToolBox::~medSegmentationAbstractToolBox(void)
     d = NULL;
 }
 
-medToolBoxSegmentation *medSegmentationAbstractToolBox::segmentationToolBox(void)
+medSegmentationSelectorToolBox *medSegmentationAbstractToolBox::segmentationToolBox(void)
 {
     return d->segmentationToolBox;
 }

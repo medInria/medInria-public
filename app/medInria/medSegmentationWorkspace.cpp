@@ -4,7 +4,7 @@
 
 #include "medSegmentationWorkspace.h"
 
-#include "medToolBoxSegmentation.h"
+#include "medSegmentationSelectorToolBox.h"
 
 #include <medCore/medAbstractView.h>
 
@@ -34,7 +34,7 @@ public:
     medVisualizationLayoutToolBox *layoutToolBox;
     medWorkspaceViewPropertiesToolBox *viewPropertiesToolBox;
 
-    medToolBoxSegmentation *segmentationToolBox;
+    medSegmentationSelectorToolBox *segmentationToolBox;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ static QString msegWorkspaceSegmentationDescription = "Segmentation";
 medSegmentationWorkspace::medSegmentationWorkspace(QWidget * parent /* = NULL */ ) :
 medViewerWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 {
-    d->segmentationToolBox = new medToolBoxSegmentation(this, parent );
+    d->segmentationToolBox = new medSegmentationSelectorToolBox(this, parent );
 
     connect(d->segmentationToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
     connect(d->segmentationToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
@@ -138,12 +138,12 @@ void medSegmentationWorkspace::buildWorkspace(  )
 {
     QWidget * parent = qobject_cast<QWidget *>(this->parent());
     if ( !d->segmentationToolBox)
-        d->segmentationToolBox = new medToolBoxSegmentation( this, parent );
+        d->segmentationToolBox = new medSegmentationSelectorToolBox( this, parent );
 
     this->addToolBox( d->segmentationToolBox );
 }
 
-medToolBoxSegmentation * medSegmentationWorkspace::segmentationToobox()
+medSegmentationSelectorToolBox * medSegmentationWorkspace::segmentationToobox()
 {
     return d->segmentationToolBox;
 }

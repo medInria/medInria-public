@@ -23,7 +23,7 @@
 #include "medToolBox.h"
 #include "medGuiExport.h"
 
-class medToolBoxSegmentation;
+class medSegmentationSelectorToolBox;
 class medSegmentationAbstractToolBoxPrivate;
 
 //! Base class for custom segmentation algoithms
@@ -32,13 +32,13 @@ class MEDGUI_EXPORT medSegmentationAbstractToolBox : public medToolBox
     Q_OBJECT
 
 public:
-    //! Parent should be a medToolBoxSegmentation
+    //! Parent should be a medSegmentationSelectorToolBox
              medSegmentationAbstractToolBox(QWidget *parent = 0);
     virtual ~medSegmentationAbstractToolBox(void);
 
 protected:
     //! Get the segmentationToolbox (usually one instance)
-    medToolBoxSegmentation *segmentationToolBox(void);
+    medSegmentationSelectorToolBox *segmentationToolBox(void);
 
 private:
     medSegmentationAbstractToolBoxPrivate *d;

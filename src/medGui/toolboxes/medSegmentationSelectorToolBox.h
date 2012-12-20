@@ -1,5 +1,5 @@
-/* medToolBoxSegmentation.h ---
- * 
+/* medSegmentationSelectorToolBox.h ---
+ *
  * Author: John Stark
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Fri Feb 19 09:02:09 2010 (+0100)
@@ -9,16 +9,16 @@
  *     Update #: 47
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 /* Change log:
- * 
+ *
  */
 
-#ifndef MEDTOOLBOXSEGMENTATION_H
-#define MEDTOOLBOXSEGMENTATION_H
+#ifndef medSegmentationSelectorToolBox_H
+#define medSegmentationSelectorToolBox_H
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -29,20 +29,20 @@ class medAbstractDataImage;
 class medAbstractViewCoordinates;
 class medDataIndex;
 class medProgressionStack;
-class medToolBoxSegmentationPrivate;
+class medSegmentationSelectorToolBoxPrivate;
 class medViewerWorkspace;
 class medViewEventFilter;
 
 //! Segmentation toolbox
-class MEDGUI_EXPORT medToolBoxSegmentation : public medToolBox
+class MEDGUI_EXPORT medSegmentationSelectorToolBox : public medToolBox
 {
     Q_OBJECT;
 
 public:
     struct MaskPixelValues { enum E { Unset = 0, Foreground = 1, Background = 2 };  };
 
-     medToolBoxSegmentation(medViewerWorkspace * workspace, QWidget *parent = 0);
-    ~medToolBoxSegmentation(void);
+     medSegmentationSelectorToolBox(medViewerWorkspace * workspace, QWidget *parent = 0);
+    ~medSegmentationSelectorToolBox(void);
 
     //! Get/Set the currently running process.
     dtkAbstractProcess * process();
@@ -73,7 +73,7 @@ signals:
 
     //! Emitted when an error should be shown.
     void showError (QObject*,const QString&,unsigned int timeout);
-    
+
     //! Emitted when info should be shown.
     void showInfo(QObject*,const QString&,unsigned int timeout);
 
@@ -86,10 +86,10 @@ public slots:
 
     //! Callback from combo box.
     void onToolBoxChosen(int);
-    
+
     //! The given segmentation algorithm is selected.
     void onToolBoxChosen(const QByteArray & id);
-    
+
     //! Reset selection
     void clear(void);
 
@@ -110,7 +110,7 @@ public:
     void setAlgorithmParameterWidget( QWidget * widget );
 
 private:
-    medToolBoxSegmentationPrivate *d;
+    medSegmentationSelectorToolBoxPrivate *d;
 };
 
 #endif

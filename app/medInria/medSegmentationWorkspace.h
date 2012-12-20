@@ -13,7 +13,7 @@ class QGraphicsSceneMouseEvent;
 class medProgressionStack;
 
 class medSegmentationWorkspacePrivate;
-class medToolBoxSegmentation;
+class medSegmentationSelectorToolBox;
 
 /**
  * class medSegmentationWorkspace
@@ -45,7 +45,7 @@ public:
     //!
     medProgressionStack * progressionStack();
 
-    medToolBoxSegmentation * segmentationToobox();
+    medSegmentationSelectorToolBox * segmentationToobox();
 
     void buildWorkspace(  );
 

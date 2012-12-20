@@ -1,4 +1,4 @@
-/* medToolBoxSegmentation.cpp ---
+/* medSegmentationSelectorToolBox.cpp ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,7 +17,7 @@
  *
  */
 
-#include "medToolBoxSegmentation.h"
+#include "medSegmentationSelectorToolBox.h"
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
@@ -49,10 +49,10 @@ struct AlgorithmInfo {
     QString description;
 };
 
-class medToolBoxSegmentationPrivate
+class medSegmentationSelectorToolBoxPrivate
 {
 public:
-    medToolBoxSegmentationPrivate() : progression_stack(NULL), algorithmParameterLayout(NULL),
+    medSegmentationSelectorToolBoxPrivate() : progression_stack(NULL), algorithmParameterLayout(NULL),
         toolboxes(NULL), customToolBox(NULL), workspace(NULL) { }
 
     medProgressionStack *progression_stack;
@@ -73,7 +73,7 @@ public:
 
 };
 
-medToolBoxSegmentation::medToolBoxSegmentation( medViewerWorkspace * workspace, QWidget *parent) : medToolBox(parent), d(new medToolBoxSegmentationPrivate)
+medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medViewerWorkspace * workspace, QWidget *parent) : medToolBox(parent), d(new medSegmentationSelectorToolBoxPrivate)
 {
     d->workspace = workspace;
     QWidget *displayWidget = new QWidget(this);
@@ -126,25 +126,25 @@ medToolBoxSegmentation::medToolBoxSegmentation( medViewerWorkspace * workspace, 
             medMessageController::instance(),SLOT(showInfo(QObject*,const QString&,unsigned int)));
 }
 
-medToolBoxSegmentation::~medToolBoxSegmentation(void)
+medSegmentationSelectorToolBox::~medSegmentationSelectorToolBox(void)
 {
     delete d;
 
     d = NULL;
 }
 
-medProgressionStack * medToolBoxSegmentation::progressionStack()
+medProgressionStack * medSegmentationSelectorToolBox::progressionStack()
 {
     return d->progression_stack;
 }
 
-void medToolBoxSegmentation::onAlgorithmAdded( const QString & algName )
+void medSegmentationSelectorToolBox::onAlgorithmAdded( const QString & algName )
 {
     d->toolboxes->addItem( algName, QVariant(
         QByteArray(algName.toAscii()) ) );
 }
 
-void medToolBoxSegmentation::setAlgorithmParameterWidget( QWidget * widget )
+void medSegmentationSelectorToolBox::setAlgorithmParameterWidget( QWidget * widget )
 {
     while ( ! d->algorithmParameterLayout->isEmpty() ) {
         QScopedPointer<QLayoutItem> item (d->algorithmParameterLayout->itemAt(0));
@@ -153,7 +153,7 @@ void medToolBoxSegmentation::setAlgorithmParameterWidget( QWidget * widget )
     d->algorithmParameterLayout->addWidget( widget );
 }
 
-void medToolBoxSegmentation::onToolBoxChosen(int index)
+void medSegmentationSelectorToolBox::onToolBoxChosen(int index)
 {
     QByteArray algId =  (d->toolboxes->itemData( index ) ).toByteArray();
     if ( !algId.isEmpty() ) {
@@ -162,7 +162,7 @@ void medToolBoxSegmentation::onToolBoxChosen(int index)
     }
 }
 
-void medToolBoxSegmentation::onToolBoxChosen(const QByteArray& id)
+void medSegmentationSelectorToolBox::onToolBoxChosen(const QByteArray& id)
 {
     medSegmentationAbstractToolBox *toolbox = qobject_cast<medSegmentationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(QString(id), this));
 
@@ -183,24 +183,24 @@ void medToolBoxSegmentation::onToolBoxChosen(const QByteArray& id)
     emit addToolBox(toolbox);
 }
 
-void medToolBoxSegmentation::clear(void)
+void medSegmentationSelectorToolBox::clear(void)
 {
     //maybe clear the customtoolbox?
     if (d->customToolBox)
         d->customToolBox->clear();
 }
 
-dtkAbstractProcess * medToolBoxSegmentation::process(void)
+dtkAbstractProcess * medSegmentationSelectorToolBox::process(void)
 {
     return d->process;
 }
 
-void medToolBoxSegmentation::setProcess(dtkAbstractProcess* proc)
+void medSegmentationSelectorToolBox::setProcess(dtkAbstractProcess* proc)
 {
     d->process = proc;
 }
 
-medAbstractViewCoordinates * medToolBoxSegmentation::viewCoordinates( dtkAbstractView * view )
+medAbstractViewCoordinates * medSegmentationSelectorToolBox::viewCoordinates( dtkAbstractView * view )
 {
     medAbstractView * mview = qobject_cast< medAbstractView * >( view );
     if ( ! mview ) {
@@ -211,7 +211,7 @@ medAbstractViewCoordinates * medToolBoxSegmentation::viewCoordinates( dtkAbstrac
     return mview->coordinates();
 }
 
-dtkAbstractData * medToolBoxSegmentation::viewData( dtkAbstractView * view )
+dtkAbstractData * medSegmentationSelectorToolBox::viewData( dtkAbstractView * view )
 {
     medAbstractView * mview = qobject_cast< medAbstractView * >( view );
     if ( ! mview ) {
@@ -223,7 +223,7 @@ dtkAbstractData * medToolBoxSegmentation::viewData( dtkAbstractView * view )
     return reinterpret_cast< dtkAbstractData * >( mview->data() );
 }
 
-void medToolBoxSegmentation::onSuccess( QObject * sender )
+void medSegmentationSelectorToolBox::onSuccess( QObject * sender )
 {
 //        alg->update();
     // At this point the sender has already been deleted by the thread pool.
@@ -249,17 +249,17 @@ void medToolBoxSegmentation::onSuccess( QObject * sender )
     d->runningProcesses.remove( sender );
 }
 
-void medToolBoxSegmentation::onFailure( QObject * sender )
+void medSegmentationSelectorToolBox::onFailure( QObject * sender )
 {
     d->runningProcesses.remove( sender );
 }
 
-void medToolBoxSegmentation::onCancelled( QObject * sender )
+void medSegmentationSelectorToolBox::onCancelled( QObject * sender )
 {
     d->runningProcesses.remove( sender );
 }
 
-void medToolBoxSegmentation::run( dtkAbstractProcess * alg )
+void medSegmentationSelectorToolBox::run( dtkAbstractProcess * alg )
 {
     QScopedPointer<medRunnableProcess> runProcessSp (new medRunnableProcess) ;
     medRunnableProcess * runProcess  = runProcessSp.data();
@@ -279,7 +279,7 @@ void medToolBoxSegmentation::run( dtkAbstractProcess * alg )
 
 
 
-void medToolBoxSegmentation::initializeAlgorithms()
+void medSegmentationSelectorToolBox::initializeAlgorithms()
 {
     medToolBoxFactory * factory = medToolBoxFactory::instance();
 
@@ -295,9 +295,9 @@ void medToolBoxSegmentation::initializeAlgorithms()
     }
 }
 
-QString medToolBoxSegmentation::localizedNameForAlgorithm( const QString & algName ) const
+QString medSegmentationSelectorToolBox::localizedNameForAlgorithm( const QString & algName ) const
 {
-    medToolBoxSegmentationPrivate::AlgInfoContainerType::const_iterator it( d->algInfo.find(algName.toAscii()) );
+    medSegmentationSelectorToolBoxPrivate::AlgInfoContainerType::const_iterator it( d->algInfo.find(algName.toAscii()) );
     if ( it != d->algInfo.end() ) {
         return it->localizedName;
     }
@@ -305,7 +305,7 @@ QString medToolBoxSegmentation::localizedNameForAlgorithm( const QString & algNa
 }
 
 
-void medToolBoxSegmentation::addViewEventFilter( medViewEventFilter * filter )
+void medSegmentationSelectorToolBox::addViewEventFilter( medViewEventFilter * filter )
 {
     QList< dtkAbstractView *> views = d->workspace->currentViewContainer()->views();
     foreach( dtkAbstractView * view, views ) {
@@ -314,7 +314,7 @@ void medToolBoxSegmentation::addViewEventFilter( medViewEventFilter * filter )
     }
 }
 
-void medToolBoxSegmentation::removeViewEventFilter( medViewEventFilter * filter )
+void medSegmentationSelectorToolBox::removeViewEventFilter( medViewEventFilter * filter )
 {
     QList< dtkAbstractView *> views = d->workspace->currentViewContainer()->views();
     foreach( dtkAbstractView * view, views ) {
@@ -323,12 +323,12 @@ void medToolBoxSegmentation::removeViewEventFilter( medViewEventFilter * filter 
     }
 }
 
-void medToolBoxSegmentation::update( dtkAbstractView *view )
+void medSegmentationSelectorToolBox::update( dtkAbstractView *view )
 {
     medToolBox::update(view);
 }
 
-void medToolBoxSegmentation::setOutputMetadata(const dtkAbstractData * inputData, dtkAbstractData * outputData)
+void medSegmentationSelectorToolBox::setOutputMetadata(const dtkAbstractData * inputData, dtkAbstractData * outputData)
 {
     Q_ASSERT(outputData && inputData);
 
