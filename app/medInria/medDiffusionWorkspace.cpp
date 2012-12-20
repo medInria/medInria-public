@@ -9,7 +9,7 @@
 #include <medDataManager.h>
 
 #include "medWorkspaceViewPropertiesToolBox.h"
-#include "medToolBoxDiffusionTensorView.h"
+#include "medTensorViewToolBox.h"
 #include "medToolBoxDiffusion.h"
 #include "medFiberViewToolBox.h"
 #include "medFiberBundlingToolBox.h"
@@ -27,7 +27,7 @@ public:
     medFiberViewToolBox        *fiberViewToolBox;
     medFiberBundlingToolBox    *fiberBundlingToolBox;
     medToolBoxDiffusion                 *diffusionToolBox;
-    medToolBoxDiffusionTensorView       *tensorViewToolBox;
+    medTensorViewToolBox       *tensorViewToolBox;
 
     QList<dtkSmartPointer<dtkAbstractView> > views;
 
@@ -50,7 +50,7 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medViewerWorkspa
             this, SLOT(removeToolBox(medToolBox *)));
 
     // -- Tensor tb --
-    d->tensorViewToolBox = new medToolBoxDiffusionTensorView(parent);
+    d->tensorViewToolBox = new medTensorViewToolBox(parent);
 
     connect(d->tensorViewToolBox, SIGNAL(glyphShapeChanged(const QString&)), this, SLOT(onGlyphShapeChanged(const QString&)));
     connect(d->tensorViewToolBox, SIGNAL(flipX(bool)),                       this, SLOT(onFlipXChanged(bool)));
@@ -176,7 +176,7 @@ void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
     }
 }
 
-void medDiffusionWorkspace::updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionTensorView* tensorViewToolBox)
+void medDiffusionWorkspace::updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medTensorViewToolBox* tensorViewToolBox)
 {
     // we are temporary using Qt's reflection in this function to call the slots in the interactor
     // without casting to a specific type (which is in a plugin)

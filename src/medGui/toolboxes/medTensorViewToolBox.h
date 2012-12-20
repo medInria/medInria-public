@@ -1,26 +1,26 @@
-#ifndef MEDTOOLBOXDIFFUSIONTENSORVIEW_H
-#define MEDTOOLBOXDIFFUSIONTENSORVIEW_H
+#ifndef medTensorViewToolBox_H
+#define medTensorViewToolBox_H
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
 
-class medToolBoxDiffusionTensorViewPrivate;
+class medTensorViewToolBoxPrivate;
 
 /**
- * @class medToolBoxDiffusionTensorView
+ * @class medTensorViewToolBox
  * @brief Toolbox with widgets to control settings of tensor image visualization.
  * A toolbox with widgets that allow the user to change values which are used by
  * later tensor visualizers.
  * For instance, users can change the glyph shape, or choose to calculate
  * more or less polygons for each glyph.
  */
-class MEDGUI_EXPORT medToolBoxDiffusionTensorView : public medToolBox
+class MEDGUI_EXPORT medTensorViewToolBox : public medToolBox
 {
 	Q_OBJECT
 
 public:
-	medToolBoxDiffusionTensorView(QWidget *parent);
-	~medToolBoxDiffusionTensorView();
+	medTensorViewToolBox(QWidget *parent);
+	~medTensorViewToolBox();
 
 	/** Returns the currently selected glyph shape */
 	QString glyphShape(void);
@@ -120,7 +120,7 @@ private slots:
     void onHideShowSagittalChanged(int checkBoxState);
 
 protected:
-    medToolBoxDiffusionTensorViewPrivate *d;
+    medTensorViewToolBoxPrivate *d;
 };
 
-#endif // MEDTOOLBOXDIFFUSIONTENSORVIEW_H
+#endif // medTensorViewToolBox_H

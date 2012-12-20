@@ -1,9 +1,9 @@
-#include "medToolBoxDiffusionTensorView.h"
+#include "medTensorViewToolBox.h"
 #include <dtkCore/dtkAbstractViewInteractor.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <math.h>
 
-class medToolBoxDiffusionTensorViewPrivate
+class medTensorViewToolBoxPrivate
 {
 public:
     QComboBox*    glyphShapeComboBox;
@@ -25,7 +25,7 @@ public:
     QStringList glyphShapesList;
 };
 
-medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionTensorViewPrivate)
+medTensorViewToolBox::medTensorViewToolBox(QWidget *parent) : medToolBox(parent), d(new medTensorViewToolBoxPrivate)
 {
     QWidget* displayWidget = new QWidget(this);
 
@@ -214,38 +214,38 @@ medToolBoxDiffusionTensorView::medToolBoxDiffusionTensorView(QWidget *parent) : 
     this->addWidget(displayWidget);
 }
 
-medToolBoxDiffusionTensorView::~medToolBoxDiffusionTensorView()
+medTensorViewToolBox::~medTensorViewToolBox()
 {
     delete d;
     d = NULL;
 }
 
-QString medToolBoxDiffusionTensorView::glyphShape(void)
+QString medTensorViewToolBox::glyphShape(void)
 {
     return d->glyphShapeComboBox->currentText();
 }
 
-int medToolBoxDiffusionTensorView::sampleRate(void)
+int medTensorViewToolBox::sampleRate(void)
 {
     return d->sampleRateSlider->value();
 }
 
-bool medToolBoxDiffusionTensorView::isFlipX(void)
+bool medTensorViewToolBox::isFlipX(void)
 {
     return d->flipXCheckBox->checkState() == Qt::Checked;
 }
 
-bool medToolBoxDiffusionTensorView::isFlipY(void)
+bool medTensorViewToolBox::isFlipY(void)
 {
     return d->flipYCheckBox->checkState() == Qt::Checked;
 }
 
-bool medToolBoxDiffusionTensorView::isFlipZ(void)
+bool medTensorViewToolBox::isFlipZ(void)
 {
     return d->flipZCheckBox->checkState() == Qt::Checked;
 }
 
-int medToolBoxDiffusionTensorView::eigenVector(void)
+int medTensorViewToolBox::eigenVector(void)
 {
     if (d->eigenVectorV1RadioButton->isChecked())
     {
@@ -263,12 +263,12 @@ int medToolBoxDiffusionTensorView::eigenVector(void)
     return 1;
 }
 
-int medToolBoxDiffusionTensorView::glyphResolution(void)
+int medTensorViewToolBox::glyphResolution(void)
 {
     return d->glyphResolutionSlider->value();
 }
 
-double medToolBoxDiffusionTensorView::scale(void)
+double medTensorViewToolBox::scale(void)
 {
     int minorScale = d->scaleBase->value();
     int majorScaleExponent = d->scaleExp->value();
@@ -277,22 +277,22 @@ double medToolBoxDiffusionTensorView::scale(void)
     return scale;
 }
 
-bool medToolBoxDiffusionTensorView::isShowAxial(void)
+bool medTensorViewToolBox::isShowAxial(void)
 {
     return d->hideShowAxialCheckBox->checkState() == Qt::Checked;
 }
 
-bool medToolBoxDiffusionTensorView::isShowCoronal(void)
+bool medTensorViewToolBox::isShowCoronal(void)
 {
     return d->hideShowCoronalCheckBox->checkState() == Qt::Checked;
 }
 
-bool medToolBoxDiffusionTensorView::isShowSagittal(void)
+bool medTensorViewToolBox::isShowSagittal(void)
 {
     return d->hideShowSagittalCheckBox->checkState() == Qt::Checked;
 }
 
-void medToolBoxDiffusionTensorView::onFlipXCheckBoxStateChanged(int checkBoxState)
+void medTensorViewToolBox::onFlipXCheckBoxStateChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit flipX(false);
@@ -300,7 +300,7 @@ void medToolBoxDiffusionTensorView::onFlipXCheckBoxStateChanged(int checkBoxStat
         emit flipX(true);
 }
 
-void medToolBoxDiffusionTensorView::onFlipYCheckBoxStateChanged(int checkBoxState)
+void medTensorViewToolBox::onFlipYCheckBoxStateChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit flipY(false);
@@ -308,7 +308,7 @@ void medToolBoxDiffusionTensorView::onFlipYCheckBoxStateChanged(int checkBoxStat
         emit flipY(true);
 }
 
-void medToolBoxDiffusionTensorView::onFlipZCheckBoxStateChanged(int checkBoxState)
+void medTensorViewToolBox::onFlipZCheckBoxStateChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit flipZ(false);
@@ -316,7 +316,7 @@ void medToolBoxDiffusionTensorView::onFlipZCheckBoxStateChanged(int checkBoxStat
         emit flipZ(true);
 }
 
-void medToolBoxDiffusionTensorView::onReverseBackgroundColorChanged(int checkBoxState)
+void medTensorViewToolBox::onReverseBackgroundColorChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit reverseBackgroundColor(false);
@@ -324,25 +324,25 @@ void medToolBoxDiffusionTensorView::onReverseBackgroundColorChanged(int checkBox
         emit reverseBackgroundColor(true);
 }
 
-void medToolBoxDiffusionTensorView::onEigenVectorV1Toggled(bool isSelected)
+void medTensorViewToolBox::onEigenVectorV1Toggled(bool isSelected)
 {
     if (isSelected)
         emit eigenVectorChanged(3);
 }
 
-void medToolBoxDiffusionTensorView::onEigenVectorV2Toggled(bool isSelected)
+void medTensorViewToolBox::onEigenVectorV2Toggled(bool isSelected)
 {
     if (isSelected)
         emit eigenVectorChanged(2);
 }
 
-void medToolBoxDiffusionTensorView::onEigenVectorV3Toggled(bool isSelected)
+void medTensorViewToolBox::onEigenVectorV3Toggled(bool isSelected)
 {
     if (isSelected)
         emit eigenVectorChanged(1);
 }
 
-void medToolBoxDiffusionTensorView::onMinorScalingChanged(int minorScale)
+void medTensorViewToolBox::onMinorScalingChanged(int minorScale)
 {
     int majorScaleExponent = d->scaleExp->value();
     double majorScale = pow(10.0, majorScaleExponent);
@@ -350,7 +350,7 @@ void medToolBoxDiffusionTensorView::onMinorScalingChanged(int minorScale)
     emit scalingChanged(scale);
 }
 
-void medToolBoxDiffusionTensorView::onMajorScalingChanged(int majorScaleExponent)
+void medTensorViewToolBox::onMajorScalingChanged(int majorScaleExponent)
 {
     int minorScale = d->scaleBase->value();
     double majorScale = pow(10.0, majorScaleExponent);
@@ -358,7 +358,7 @@ void medToolBoxDiffusionTensorView::onMajorScalingChanged(int majorScaleExponent
     emit scalingChanged(scale);
 }
 
-void medToolBoxDiffusionTensorView::onHideShowAxialChanged(int checkBoxState)
+void medTensorViewToolBox::onHideShowAxialChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit hideShowAxial(false);
@@ -366,7 +366,7 @@ void medToolBoxDiffusionTensorView::onHideShowAxialChanged(int checkBoxState)
         emit hideShowAxial(true);
 }
 
-void medToolBoxDiffusionTensorView::onHideShowCoronalChanged(int checkBoxState)
+void medTensorViewToolBox::onHideShowCoronalChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit hideShowCoronal(false);
@@ -374,7 +374,7 @@ void medToolBoxDiffusionTensorView::onHideShowCoronalChanged(int checkBoxState)
         emit hideShowCoronal(true);
 }
 
-void medToolBoxDiffusionTensorView::onHideShowSagittalChanged(int checkBoxState)
+void medTensorViewToolBox::onHideShowSagittalChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit hideShowSagittal(false);
@@ -382,7 +382,7 @@ void medToolBoxDiffusionTensorView::onHideShowSagittalChanged(int checkBoxState)
         emit hideShowSagittal(true);
 }
 
-void medToolBoxDiffusionTensorView::update (dtkAbstractView *view)
+void medTensorViewToolBox::update (dtkAbstractView *view)
 {
     if (!view)
         return;

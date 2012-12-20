@@ -5,7 +5,7 @@
 #include <QtCore>
 
 #include <medViewerWorkspace.h>
-#include <medToolBoxDiffusionTensorView.h>
+#include <medTensorViewToolBox.h>
 #include <medFiberViewToolBox.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
@@ -65,7 +65,7 @@ private:
     medDiffusionWorkspacePrivate *d;
 
     /** Updates the tensor interactor with the current values in the tensor toolbox. */
-    void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionTensorView* tensorViewToolBox);
+    void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medTensorViewToolBox* tensorViewToolBox);
 
     /** Updates the fiber interactor with the current values in the fiber toolbox. */
     void updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medFiberViewToolBox* fiberViewToolBox);
