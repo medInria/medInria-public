@@ -1,11 +1,11 @@
 /*
-* medWorkspaceViewPropertiesToolBox.cpp
+* medViewPropertiesToolBox.cpp
 *
 *  Created on: 15 févr. 2011
 *      Author: aabadie
 */
 
-#include <medWorkspaceViewPropertiesToolBox.h>
+#include <medViewPropertiesToolBox.h>
 
 #include <dtkCore/dtkAbstractData.h>
 
@@ -49,7 +49,7 @@ QComboBox* medAttributeBox::getLutBox()const
     return lutBox.data();
 }
 
-class medWorkspaceViewPropertiesToolBoxPrivate
+class medViewPropertiesToolBoxPrivate
 {
 public:
 
@@ -100,13 +100,13 @@ public:
     bool isMesh;
 };
 
-QStringList medWorkspaceViewPropertiesToolBoxPrivate::lutList;
-QStringList medWorkspaceViewPropertiesToolBoxPrivate::renderingList;
-QStringList medWorkspaceViewPropertiesToolBoxPrivate::presetList;
-QMap<QString, QString> medWorkspaceViewPropertiesToolBoxPrivate::presetToLut;
+QStringList medViewPropertiesToolBoxPrivate::lutList;
+QStringList medViewPropertiesToolBoxPrivate::renderingList;
+QStringList medViewPropertiesToolBoxPrivate::presetList;
+QMap<QString, QString> medViewPropertiesToolBoxPrivate::presetToLut;
 
-medWorkspaceViewPropertiesToolBox::medWorkspaceViewPropertiesToolBox(QWidget *parent) :
-medToolBox(parent), d(new medWorkspaceViewPropertiesToolBoxPrivate)
+medViewPropertiesToolBox::medViewPropertiesToolBox(QWidget *parent) :
+medToolBox(parent), d(new medViewPropertiesToolBoxPrivate)
 {
 
     d->view = 0;
@@ -389,13 +389,13 @@ medToolBox(parent), d(new medWorkspaceViewPropertiesToolBoxPrivate)
     this->addWidget(d->propView);
 }
 
-medWorkspaceViewPropertiesToolBox::~medWorkspaceViewPropertiesToolBox(void)
+medViewPropertiesToolBox::~medViewPropertiesToolBox(void)
 {
     delete d;
     d = NULL;
 }
 
-void medWorkspaceViewPropertiesToolBox::update(dtkAbstractView *view)
+void medViewPropertiesToolBox::update(dtkAbstractView *view)
 {
     medToolBox::update(view);
     if(!view)
@@ -483,7 +483,7 @@ void medWorkspaceViewPropertiesToolBox::update(dtkAbstractView *view)
         d->view3DButton->setChecked(true);
 }
 
-void medWorkspaceViewPropertiesToolBox::constructImageLayer(dtkAbstractData* data, int imageLayer)
+void medViewPropertiesToolBox::constructImageLayer(dtkAbstractData* data, int imageLayer)
 {
 
     if(!data)
@@ -577,7 +577,7 @@ void medWorkspaceViewPropertiesToolBox::constructImageLayer(dtkAbstractData* dat
     //d->propertiesTree->collapseAll();
 }
 
-void medWorkspaceViewPropertiesToolBox::constructMeshLayer(dtkAbstractData* data, int meshLayer)
+void medViewPropertiesToolBox::constructMeshLayer(dtkAbstractData* data, int meshLayer)
 {
     if(!data)
         return;
@@ -714,15 +714,15 @@ void medWorkspaceViewPropertiesToolBox::constructMeshLayer(dtkAbstractData* data
     QObject::connect(renderingBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRenderingChanged(int)));
     //d->propertiesTree->collapseAll();
 }
-void medWorkspaceViewPropertiesToolBox::onDataAdded(dtkAbstractData* data)
+void medViewPropertiesToolBox::onDataAdded(dtkAbstractData* data)
 {
 
 }
-void medWorkspaceViewPropertiesToolBox::onDataAdded( int layer)
+void medViewPropertiesToolBox::onDataAdded( int layer)
 {
 
 }
-void medWorkspaceViewPropertiesToolBox::onDataAdded(dtkAbstractData* data,
+void medViewPropertiesToolBox::onDataAdded(dtkAbstractData* data,
                                                  int layer)
 {
 
@@ -765,7 +765,7 @@ void medWorkspaceViewPropertiesToolBox::onDataAdded(dtkAbstractData* data,
     raiseSlider(d->view->layerCount() == 2);
 }
 
-void medWorkspaceViewPropertiesToolBox::clear(void)
+void medViewPropertiesToolBox::clear(void)
 {
     d->currentLayer = 0;
     d->meshInteractor = 0;
@@ -774,7 +774,7 @@ void medWorkspaceViewPropertiesToolBox::clear(void)
     d->view = 0;
 }
 
-void medWorkspaceViewPropertiesToolBox::onColorChanged(int selection)
+void medViewPropertiesToolBox::onColorChanged(int selection)
 {
     QColor color;
 
@@ -804,7 +804,7 @@ void medWorkspaceViewPropertiesToolBox::onColorChanged(int selection)
     d->meshInteractor->setColor(d->currentLayer, color);
 }
 
-void medWorkspaceViewPropertiesToolBox::onVisibilitySet(int state)
+void medViewPropertiesToolBox::onVisibilitySet(int state)
 {
 
     if (!d->view)
@@ -826,7 +826,7 @@ void medWorkspaceViewPropertiesToolBox::onVisibilitySet(int state)
     d->view->update();
 }
 
-void medWorkspaceViewPropertiesToolBox::onColorSelected(const QColor& color)
+void medViewPropertiesToolBox::onColorSelected(const QColor& color)
 {
     if (!d->view)
         return;
@@ -834,7 +834,7 @@ void medWorkspaceViewPropertiesToolBox::onColorSelected(const QColor& color)
         return;
 }
 
-void medWorkspaceViewPropertiesToolBox::onEdgeVisibilitySet(int state)
+void medViewPropertiesToolBox::onEdgeVisibilitySet(int state)
 {
     if (!d->view)
         return;
@@ -846,7 +846,7 @@ void medWorkspaceViewPropertiesToolBox::onEdgeVisibilitySet(int state)
     d->view->update();
 }
 
-void medWorkspaceViewPropertiesToolBox::onOpacitySliderSet(int opacity)
+void medViewPropertiesToolBox::onOpacitySliderSet(int opacity)
 {
     if (!d->view)
         return;
@@ -861,7 +861,7 @@ void medWorkspaceViewPropertiesToolBox::onOpacitySliderSet(int opacity)
 }
 
 
-void medWorkspaceViewPropertiesToolBox::on2LayersOpacitySliderSet(int opacity)
+void medViewPropertiesToolBox::on2LayersOpacitySliderSet(int opacity)
 {
     if (!d->view)
         return;
@@ -872,7 +872,7 @@ void medWorkspaceViewPropertiesToolBox::on2LayersOpacitySliderSet(int opacity)
     d->view->update();
 }
 
-void medWorkspaceViewPropertiesToolBox::onAttrBoxChanged(int index)
+void medViewPropertiesToolBox::onAttrBoxChanged(int index)
 {
     if ( ! d->view || ! d->isMesh)
         return;
@@ -887,7 +887,7 @@ void medWorkspaceViewPropertiesToolBox::onAttrBoxChanged(int index)
     d->view->update();
 }
 
-void medWorkspaceViewPropertiesToolBox::onLUTChanged(int index)
+void medViewPropertiesToolBox::onLUTChanged(int index)
 {
     if (!d->view)
         return;
@@ -927,7 +927,7 @@ void medWorkspaceViewPropertiesToolBox::onLUTChanged(int index)
     d->view->update();
 }
 
-void medWorkspaceViewPropertiesToolBox::onPresetChanged(int index)
+void medViewPropertiesToolBox::onPresetChanged(int index)
 {
     //a "Preset" is a prepared selection of 3 values: LUT, window width and window level
 
@@ -966,7 +966,7 @@ void medWorkspaceViewPropertiesToolBox::onPresetChanged(int index)
     d->view->update();
 }
 
-void medWorkspaceViewPropertiesToolBox::onRenderingChanged(int index)
+void medViewPropertiesToolBox::onRenderingChanged(int index)
 {
     if (!d->view)
         return;
@@ -974,7 +974,7 @@ void medWorkspaceViewPropertiesToolBox::onRenderingChanged(int index)
     d->view->update();
 }
 
-void medWorkspaceViewPropertiesToolBox::onItemClicked(QTreeWidgetItem * item)
+void medViewPropertiesToolBox::onItemClicked(QTreeWidgetItem * item)
 {
 //    qDebug()<<"clicked on Item: " << item->text(0);
     d->propertiesTree->clearSelection();
@@ -1010,7 +1010,7 @@ void medWorkspaceViewPropertiesToolBox::onItemClicked(QTreeWidgetItem * item)
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::onContextTreeMenu( const QPoint point )
+void medViewPropertiesToolBox::onContextTreeMenu( const QPoint point )
 {
 
     QTreeWidgetItem * item = 0;
@@ -1042,7 +1042,7 @@ void medWorkspaceViewPropertiesToolBox::onContextTreeMenu( const QPoint point )
     delete menu;
 }
 
-void medWorkspaceViewPropertiesToolBox::onDeleteLayer()
+void medViewPropertiesToolBox::onDeleteLayer()
 {
 
     //calculate somehow the number of meshes before the image
@@ -1087,7 +1087,7 @@ void medWorkspaceViewPropertiesToolBox::onDeleteLayer()
 }
 
 
-void medWorkspaceViewPropertiesToolBox::raiseSlider(bool isVisible,double opacity)
+void medViewPropertiesToolBox::raiseSlider(bool isVisible,double opacity)
 {
     if (isVisible)
     {
@@ -1106,7 +1106,7 @@ void medWorkspaceViewPropertiesToolBox::raiseSlider(bool isVisible,double opacit
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::onSwitchLayersButtonClicked()
+void medViewPropertiesToolBox::onSwitchLayersButtonClicked()
 {
     if (d->switchLayersButton->text() == d->textLayer0)
     {
@@ -1120,7 +1120,7 @@ void medWorkspaceViewPropertiesToolBox::onSwitchLayersButtonClicked()
     }
 }
 
-QIcon medWorkspaceViewPropertiesToolBox::createIcon(QString colorName)
+QIcon medViewPropertiesToolBox::createIcon(QString colorName)
 {
     QPixmap iconPixmap(32,32);
     iconPixmap.fill(QColor(colorName));
@@ -1128,28 +1128,28 @@ QIcon medWorkspaceViewPropertiesToolBox::createIcon(QString colorName)
     return itemIcon;
 }
 
-void medWorkspaceViewPropertiesToolBox::onWindowingChanged(bool checked)
+void medViewPropertiesToolBox::onWindowingChanged(bool checked)
 {
     if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Windowing");
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::onZoomingChanged(bool checked)
+void medViewPropertiesToolBox::onZoomingChanged(bool checked)
 {
     if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Zooming");
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::onSlicingChanged(bool checked)
+void medViewPropertiesToolBox::onSlicingChanged(bool checked)
 {
     if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Slicing");
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::onMeasuringChanged(bool checked)
+void medViewPropertiesToolBox::onMeasuringChanged(bool checked)
 {
     if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Measuring");
@@ -1157,7 +1157,7 @@ void medWorkspaceViewPropertiesToolBox::onMeasuringChanged(bool checked)
 }
 
 
-void medWorkspaceViewPropertiesToolBox::onAxisVisibilityChanged(bool visible)
+void medViewPropertiesToolBox::onAxisVisibilityChanged(bool visible)
 {
     if (d->view) {
         d->view->setProperty("ShowAxis", (visible ? "true" : "false"));
@@ -1165,7 +1165,7 @@ void medWorkspaceViewPropertiesToolBox::onAxisVisibilityChanged(bool visible)
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::onScalarBarVisibilityChanged(bool visible)
+void medViewPropertiesToolBox::onScalarBarVisibilityChanged(bool visible)
 {
     if (d->view) {
         d->view->setProperty("ShowScalarBar", (visible ? "true" : "false"));
@@ -1173,7 +1173,7 @@ void medWorkspaceViewPropertiesToolBox::onScalarBarVisibilityChanged(bool visibl
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::onRulerVisibilityChanged(bool visible)
+void medViewPropertiesToolBox::onRulerVisibilityChanged(bool visible)
 {
     if (d->view) {
         d->view->setProperty("ShowRuler", (visible ? "true" : "false"));
@@ -1181,7 +1181,7 @@ void medWorkspaceViewPropertiesToolBox::onRulerVisibilityChanged(bool visible)
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::onAnnotationsVisibilityChanged(bool visible)
+void medViewPropertiesToolBox::onAnnotationsVisibilityChanged(bool visible)
 {
     if (d->view) {
         d->view->setProperty("ShowAnnotations", (visible ? "true" : "false"));
@@ -1189,7 +1189,7 @@ void medWorkspaceViewPropertiesToolBox::onAnnotationsVisibilityChanged(bool visi
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::on2DTriggered(dtkAbstractView* view)
+void medViewPropertiesToolBox::on2DTriggered(dtkAbstractView* view)
 {
     if(view->property("Orientation")=="Axial" ||
         view->property("Orientation")=="Sagittal" ||
@@ -1201,7 +1201,7 @@ void medWorkspaceViewPropertiesToolBox::on2DTriggered(dtkAbstractView* view)
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::on3DTriggered(dtkAbstractView* view)
+void medViewPropertiesToolBox::on3DTriggered(dtkAbstractView* view)
 {
     if(view->property("Orientation")=="3D")
     {
@@ -1211,7 +1211,7 @@ void medWorkspaceViewPropertiesToolBox::on3DTriggered(dtkAbstractView* view)
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::onModeChanged(QString mode)
+void medViewPropertiesToolBox::onModeChanged(QString mode)
 {
     if (d->view) {
         d->view->blockSignals (true);
@@ -1221,7 +1221,7 @@ void medWorkspaceViewPropertiesToolBox::onModeChanged(QString mode)
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::onVRModeChanged(QString mode)
+void medViewPropertiesToolBox::onVRModeChanged(QString mode)
 {
     if (d->view) {
         d->view->blockSignals (true);
@@ -1231,7 +1231,7 @@ void medWorkspaceViewPropertiesToolBox::onVRModeChanged(QString mode)
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::onLodChanged(int value)
+void medViewPropertiesToolBox::onLodChanged(int value)
 {
     if (d->view) {
         d->view->blockSignals (true);
@@ -1241,7 +1241,7 @@ void medWorkspaceViewPropertiesToolBox::onLodChanged(int value)
     }
 }
 
-void medWorkspaceViewPropertiesToolBox::onCroppingChanged(bool checked)
+void medViewPropertiesToolBox::onCroppingChanged(bool checked)
 {
     if (d->view) {
         d->view->blockSignals (true);
@@ -1252,7 +1252,7 @@ void medWorkspaceViewPropertiesToolBox::onCroppingChanged(bool checked)
 }
 
 
-void  medWorkspaceViewPropertiesToolBox::setCurrentInteractionFromSettings()
+void  medViewPropertiesToolBox::setCurrentInteractionFromSettings()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
     QString interaction = mnger->value("interactions","mouse",
@@ -1280,7 +1280,7 @@ void  medWorkspaceViewPropertiesToolBox::setCurrentInteractionFromSettings()
  *
  * @param checked
  */
-void medWorkspaceViewPropertiesToolBox::onAxialChanged(bool checked)
+void medViewPropertiesToolBox::onAxialChanged(bool checked)
 {
 	if (checked && d->view){
 		d->view->setProperty ( "Orientation", "Axial" );
@@ -1293,7 +1293,7 @@ void medWorkspaceViewPropertiesToolBox::onAxialChanged(bool checked)
  *
  * @param checked
  */
-void medWorkspaceViewPropertiesToolBox::onSagittalChanged(bool checked)
+void medViewPropertiesToolBox::onSagittalChanged(bool checked)
 {
 	if (checked && d->view){
 		d->view->setProperty ( "Orientation", "Sagittal" );
@@ -1306,7 +1306,7 @@ void medWorkspaceViewPropertiesToolBox::onSagittalChanged(bool checked)
  *
  * @param checked
  */
-void medWorkspaceViewPropertiesToolBox::onCoronalChanged(bool checked)
+void medViewPropertiesToolBox::onCoronalChanged(bool checked)
 {
 	if (checked && d->view){
 		d->view->setProperty ( "Orientation", "Coronal" );
@@ -1319,7 +1319,7 @@ void medWorkspaceViewPropertiesToolBox::onCoronalChanged(bool checked)
  *
  * @param checked
  */
-void medWorkspaceViewPropertiesToolBox::onView3DChanged(bool checked)
+void medViewPropertiesToolBox::onView3DChanged(bool checked)
 {
 	if (checked && d->view){
 		d->view->setProperty ( "3DMode", d->view->property ( "3DMode" ) );

@@ -38,7 +38,7 @@
 #include <medTabbedViewContainers.h>
 #include <medVisualizationLayoutToolBox.h>
 #include <medPatientSelectorToolBox.h>
-#include <medWorkspaceViewPropertiesToolBox.h>
+#include <medViewPropertiesToolBox.h>
 
 #include <QtGui>
 #include <QPropertyAnimation>

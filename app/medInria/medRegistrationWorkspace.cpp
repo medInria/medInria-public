@@ -4,7 +4,7 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medWorkspaceViewPropertiesToolBox.h>
+#include <medViewPropertiesToolBox.h>
 #include <medRegistrationSelectorToolBox.h>
 #include <medViewContainer.h>
 #include <medSingleViewContainer.h>
@@ -18,14 +18,14 @@ class medRegistrationWorkspacePrivate
 {
 public:
     medRegistrationSelectorToolBox * registrationToolBox;
-    medWorkspaceViewPropertiesToolBox      *viewPropertiesToolBox;
+    medViewPropertiesToolBox      *viewPropertiesToolBox;
 };
 
 medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medViewerWorkspace(parent), d(new medRegistrationWorkspacePrivate)
 {
 
 
-    d->viewPropertiesToolBox = new medWorkspaceViewPropertiesToolBox(parent);
+    d->viewPropertiesToolBox = new medViewPropertiesToolBox(parent);
     this->addToolBox(d->viewPropertiesToolBox);
 
     // -- Registration toolbox --

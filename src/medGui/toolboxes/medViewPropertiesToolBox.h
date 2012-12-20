@@ -1,5 +1,5 @@
 /*
- * medWorkspaceViewPropertiesToolBox.h
+ * medViewPropertiesToolBox.h
  *
  *  Created on: 15 févr. 2011
  *      Author: aabadie
@@ -13,22 +13,22 @@
 
 class dtkAbstractView;
 class dtkAbstractData;
-class medWorkspaceViewPropertiesToolBoxPrivate;
+class medViewPropertiesToolBoxPrivate;
 /**
 
-   \class medWorkspaceViewPropertiesToolBox
+   \class medViewPropertiesToolBox
    \brief This is designed to help users manipulate the image or mesh data. It can be put into the specific workspace as the other toolboxes
 
    \ingroup Toolboxes
    \author Alexandre Abadie and Fatih Arslan, INRIA
 */
-class MEDGUI_EXPORT medWorkspaceViewPropertiesToolBox : public medToolBox
+class MEDGUI_EXPORT medViewPropertiesToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medWorkspaceViewPropertiesToolBox(QWidget *parent = 0);
-    ~medWorkspaceViewPropertiesToolBox(void);
+     medViewPropertiesToolBox(QWidget *parent = 0);
+    ~medViewPropertiesToolBox(void);
     /**
     Whenever the view is changed, update metdhod is triggered.
     */
@@ -95,7 +95,7 @@ signals:
     void setOpacity(double opacity, int layer);
 
 private:
-    medWorkspaceViewPropertiesToolBoxPrivate *d;
+    medViewPropertiesToolBoxPrivate *d;
     void raiseSlider(bool isVisible, double opacity = 0.5);
     QIcon createIcon(QString colorName);
 };
