@@ -3,7 +3,7 @@
  * It also manages the saving of the transformation and registered image.
  */
 
-#include "medToolBoxRegistration.h"
+#include "medRegistrationSelectorToolBox.h"
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
@@ -28,7 +28,7 @@
 
 #include <QtGui>
 
-class medToolBoxRegistrationPrivate
+class medRegistrationSelectorToolBoxPrivate
 {
 public:
     QPushButton * saveImageButton;
@@ -47,7 +47,7 @@ public:
     medRegistrationAbstractToolBox * customToolBox;
 };
 
-medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(parent), d(new medToolBoxRegistrationPrivate)
+medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medRegistrationSelectorToolBoxPrivate)
 {
     d->fuseView = 0;
     d->fixedData  = NULL;
@@ -126,7 +126,7 @@ medToolBoxRegistration::medToolBoxRegistration(QWidget *parent) : medToolBox(par
             medMessageController::instance(),SLOT(showInfo(QObject*,const QString&,unsigned int)));
 }
 
-medToolBoxRegistration::~medToolBoxRegistration(void)
+medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
 {
     delete d;
 
@@ -134,31 +134,31 @@ medToolBoxRegistration::~medToolBoxRegistration(void)
 }
 
 //! Gets the fixedView.
-dtkAbstractView *medToolBoxRegistration::fixedView(void)
+dtkAbstractView *medRegistrationSelectorToolBox::fixedView(void)
 {
     return d->fixedView;
 }
 
 //! Gets the movingView.
-dtkAbstractView *medToolBoxRegistration::movingView(void)
+dtkAbstractView *medRegistrationSelectorToolBox::movingView(void)
 {
     return d->movingView;
 }
 
 //! Gets the fuseView.
-dtkAbstractView *medToolBoxRegistration::fuseView(void)
+dtkAbstractView *medRegistrationSelectorToolBox::fuseView(void)
 {
     return d->fuseView;
 }
 
 //! Gets the fixedData.
-medAbstractDataImage *medToolBoxRegistration::fixedData(void)
+medAbstractDataImage *medRegistrationSelectorToolBox::fixedData(void)
 {
     return d->fixedData;
 }
 
 //! Gets the movingData.
-medAbstractDataImage *medToolBoxRegistration::movingData(void)
+medAbstractDataImage *medRegistrationSelectorToolBox::movingData(void)
 {
     return d->movingData;
 }
@@ -168,7 +168,7 @@ medAbstractDataImage *medToolBoxRegistration::movingData(void)
  *
  * @param index The index that was imported.
  */
-void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
+void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& index)
 {
 
     if (!index.isValid())
@@ -221,7 +221,7 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
  *
  * @param index The index that was imported.
  */
-void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
+void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& index)
 {
 
     if (!index.isValid())
@@ -277,7 +277,7 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
  *
  * @param index The index of the toolbox that was chosen.
  */
-void medToolBoxRegistration::onToolBoxChosen(int index)
+void medRegistrationSelectorToolBox::onToolBoxChosen(int index)
 {
     //get identifier for toolbox.
     QString id = d->toolboxes->itemData(index).toString();
@@ -310,7 +310,7 @@ void medToolBoxRegistration::onToolBoxChosen(int index)
  *
  * @param view The new fuseView.
  */
-void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
+void medRegistrationSelectorToolBox::setFuseView(dtkAbstractView *view)
 {
     if (!view)
         return;
@@ -319,7 +319,7 @@ void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
 }
 
 //! Clears the toolbox.
-void medToolBoxRegistration::clear(void)
+void medRegistrationSelectorToolBox::clear(void)
 {
 
     //maybe clear the customtoolbox?
@@ -328,7 +328,7 @@ void medToolBoxRegistration::clear(void)
 }
 
 //! Gets the process.
-dtkAbstractProcess * medToolBoxRegistration::process(void)
+dtkAbstractProcess * medRegistrationSelectorToolBox::process(void)
 {
     return d->process;
 }
@@ -338,13 +338,13 @@ dtkAbstractProcess * medToolBoxRegistration::process(void)
  *
  * @param proc The new process.
  */
-void medToolBoxRegistration::setProcess(dtkAbstractProcess* proc)
+void medRegistrationSelectorToolBox::setProcess(dtkAbstractProcess* proc)
 {
     d->process = proc;
 }
 
 //! Saves the registered image.
-void medToolBoxRegistration::onSaveImage()
+void medRegistrationSelectorToolBox::onSaveImage()
 {
     if ( !d->movingData)
     {
@@ -384,7 +384,7 @@ void medToolBoxRegistration::onSaveImage()
 }
 
 //! Saves the transformation.
-void medToolBoxRegistration::onSaveTrans()
+void medRegistrationSelectorToolBox::onSaveTrans()
 {
     if (!d->movingData)
     {
@@ -448,7 +448,7 @@ void medToolBoxRegistration::onSaveTrans()
 }
 
 //! If the registration has ended well, it sets the output's metaData and reset the movingView and fuseView with the registered image.
-void medToolBoxRegistration::onSuccess()
+void medRegistrationSelectorToolBox::onSuccess()
 {
     dtkSmartPointer<dtkAbstractData> output(d->process->output());
 
@@ -483,7 +483,7 @@ void medToolBoxRegistration::onSuccess()
 }
 
 //! Synchronises the window/level of the layer 0 of the fixedView with the layer 0 of the fuseView, and the layer 0 of the movingView with the layer 1 of the fuseView. 
-void medToolBoxRegistration::synchroniseWindowLevel(QObject * sender){ 
+void medRegistrationSelectorToolBox::synchroniseWindowLevel(QObject * sender){ 
 			
     double window,level;
     QObject * senderView;
@@ -529,8 +529,9 @@ void medToolBoxRegistration::synchroniseWindowLevel(QObject * sender){
         // In the case that the currentLayer>1 we do nothing.
     }
 }
+
 //! Synchronises the position between the compare and the fuse mode.
-void medToolBoxRegistration::synchronisePosition(const QVector3D &position){ 
+void medRegistrationSelectorToolBox::synchronisePosition(const QVector3D &position){ 
    
     if (d->fixedView==QObject::sender() || d->movingView==QObject::sender())
     {

@@ -5,19 +5,19 @@
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medWorkspaceViewPropertiesToolBox.h>
-#include <medToolBoxRegistration.h>
+#include <medRegistrationSelectorToolBox.h>
 #include <medViewContainer.h>
 #include <medSingleViewContainer.h>
 #include <medCompareViewContainer.h>
 #include <medTabbedViewContainers.h>
-#include <medToolBoxRegistration.h>
+#include <medRegistrationSelectorToolBox.h>
 
 #include <medToolBoxFactory.h>
 
 class medRegistrationWorkspacePrivate
 {
 public:
-    medToolBoxRegistration * registrationToolBox;
+    medRegistrationSelectorToolBox * registrationToolBox;
     medWorkspaceViewPropertiesToolBox      *viewPropertiesToolBox;
 };
 
@@ -30,7 +30,7 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medViewerW
 
     // -- Registration toolbox --
 
-    d->registrationToolBox = new medToolBoxRegistration(parent);
+    d->registrationToolBox = new medRegistrationSelectorToolBox(parent);
 
     connect(d->registrationToolBox, SIGNAL(addToolBox(medToolBox *)),
             this, SLOT(addToolBox(medToolBox *)));

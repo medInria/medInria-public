@@ -1,4 +1,4 @@
-/* medToolBoxRegistration.h ---
+/* medRegistrationSelectorToolBox.h ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef MEDTOOLBOXREGISTRATION_H
-#define MEDTOOLBOXREGISTRATION_H
+#ifndef medRegistrationSelectorToolBox_H
+#define medRegistrationSelectorToolBox_H
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -27,15 +27,15 @@ class dtkAbstractView;
 class dtkAbstractProcess;
 class medAbstractDataImage;
 class medDataIndex;
-class medToolBoxRegistrationPrivate;
+class medRegistrationSelectorToolBoxPrivate;
 
-class MEDGUI_EXPORT medToolBoxRegistration : public medToolBox
+class MEDGUI_EXPORT medRegistrationSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medToolBoxRegistration(QWidget *parent = 0);
-    ~medToolBoxRegistration(void);
+     medRegistrationSelectorToolBox(QWidget *parent = 0);
+    ~medRegistrationSelectorToolBox(void);
 
     dtkAbstractView *fixedView(void);
     dtkAbstractView *movingView(void);
@@ -72,7 +72,7 @@ public slots:
     void synchronisePosition(const QVector3D &position);
 
 private:
-    medToolBoxRegistrationPrivate *d;
+    medRegistrationSelectorToolBoxPrivate *d;
 };
 
 #endif

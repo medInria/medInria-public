@@ -34,7 +34,7 @@
 #include <medViewPool.h>
 #include <medWorkspaceFactory.h>
 #include <medToolBoxDiffusion.h>
-#include <medToolBoxRegistration.h>
+#include <medRegistrationSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
 #include <medVisualizationLayoutToolBox.h>
 #include <medWorkspacePatientToolBox.h>

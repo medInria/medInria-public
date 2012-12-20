@@ -17,13 +17,13 @@
  *
  */
 
-#ifndef MEDTOOLBOXREGISTRATIONCUSTOM_H
-#define MEDTOOLBOXREGISTRATIONCUSTOM_H
+#ifndef medRegistrationSelectorToolBoxCUSTOM_H
+#define medRegistrationSelectorToolBoxCUSTOM_H
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
 
-class medToolBoxRegistration;
+class medRegistrationSelectorToolBox;
 class medRegistrationAbstractToolBoxPrivate;
 
 class MEDGUI_EXPORT medRegistrationAbstractToolBox : public medToolBox
@@ -34,10 +34,10 @@ public:
              medRegistrationAbstractToolBox(QWidget *parentToolBox = 0);
     virtual ~medRegistrationAbstractToolBox(void);
 
-    void setRegistrationToolBox(medToolBoxRegistration *toolbox);
+    void setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox);
 
 protected:
-    medToolBoxRegistration *parentToolBox(void);
+    medRegistrationSelectorToolBox *parentToolBox(void);
 
 private:
     medRegistrationAbstractToolBoxPrivate *d;

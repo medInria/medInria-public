@@ -17,13 +17,13 @@
  *
  */
 
-#include "medToolBoxRegistration.h"
+#include "medRegistrationSelectorToolBox.h"
 #include "medRegistrationAbstractToolBox.h"
 
 class medRegistrationAbstractToolBoxPrivate
 {
 public:
-    medToolBoxRegistration *parent;
+    medRegistrationSelectorToolBox *parent;
 };
 
 medRegistrationAbstractToolBox::medRegistrationAbstractToolBox(QWidget *parent) : medToolBox(parent), d(new medRegistrationAbstractToolBoxPrivate)
@@ -38,12 +38,12 @@ medRegistrationAbstractToolBox::~medRegistrationAbstractToolBox(void)
     d = NULL;
 }
 
-void medRegistrationAbstractToolBox::setRegistrationToolBox(medToolBoxRegistration *toolbox)
+void medRegistrationAbstractToolBox::setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox)
 {
     d->parent = toolbox;
 }
 
-medToolBoxRegistration *medRegistrationAbstractToolBox::parentToolBox(void)
+medRegistrationSelectorToolBox *medRegistrationAbstractToolBox::parentToolBox(void)
 {
     return d->parent;
 }
