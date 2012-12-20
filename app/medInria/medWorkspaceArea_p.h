@@ -11,7 +11,7 @@ class medViewerWorkspace;
 class medClutEditor;
 class QStackedWidget;
 class QSplitter;
-class medWorkspacePatientToolBox;
+class medPatientSelectorToolBox;
 
 
 class medWorkspaceAreaPrivate
@@ -22,7 +22,7 @@ public:
     QFrame *navigator_container;
     QWidget *view_container;
     
-    medWorkspacePatientToolBox *patient_toolbox;
+    medPatientSelectorToolBox *patient_toolbox;
     
     medDatabaseNavigator *navigator;
 

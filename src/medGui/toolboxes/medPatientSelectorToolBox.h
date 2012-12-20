@@ -1,4 +1,4 @@
-/* medWorkspacePatientToolBox.h ---
+/* medPatientSelectorToolBox.h ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -24,15 +24,15 @@
 #include "medToolBox.h"
 
 class medDataIndex;
-class medWorkspacePatientToolBoxPrivate;
+class medPatientSelectorToolBoxPrivate;
 
-class MEDGUI_EXPORT medWorkspacePatientToolBox : public medToolBox
+class MEDGUI_EXPORT medPatientSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medWorkspacePatientToolBox(QWidget *parent = 0);
-    ~medWorkspacePatientToolBox(void);
+     medPatientSelectorToolBox(QWidget *parent = 0);
+    ~medPatientSelectorToolBox(void);
 
 
     QSet<medDataIndex> patientIndex(void) const;
@@ -61,7 +61,7 @@ protected:
     void clear(void);
 
 private:
-    medWorkspacePatientToolBoxPrivate *d;
+    medPatientSelectorToolBoxPrivate *d;
 };
 
 #endif

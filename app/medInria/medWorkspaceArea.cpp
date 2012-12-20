@@ -37,7 +37,7 @@
 #include <medRegistrationSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
 #include <medVisualizationLayoutToolBox.h>
-#include <medWorkspacePatientToolBox.h>
+#include <medPatientSelectorToolBox.h>
 #include <medWorkspaceViewPropertiesToolBox.h>
 
 #include <QtGui>
@@ -64,7 +64,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->stack = new QStackedWidget(this);
     d->stack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    d->patient_toolbox = new medWorkspacePatientToolBox(this);
+    d->patient_toolbox = new medPatientSelectorToolBox(this);
     d->patient_toolbox->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
     d->patient_toolbox->setFixedWidth(176); // 186 - 10
 
