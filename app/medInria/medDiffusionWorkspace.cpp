@@ -12,7 +12,7 @@
 #include "medToolBoxDiffusionTensorView.h"
 #include "medToolBoxDiffusion.h"
 #include "medToolBoxDiffusionFiberView.h"
-#include "medToolBoxDiffusionFiberBundling.h"
+#include "medFiberBundlingToolBox.h"
 #include <medViewContainer.h>
 #include <medSingleViewContainer.h>
 #include <medTabbedViewContainers.h>
@@ -25,7 +25,7 @@ public:
 
     medWorkspaceViewPropertiesToolBox      *viewPropertiesToolBox;
     medToolBoxDiffusionFiberView        *fiberViewToolBox;
-    medToolBoxDiffusionFiberBundling    *fiberBundlingToolBox;
+    medFiberBundlingToolBox    *fiberBundlingToolBox;
     medToolBoxDiffusion                 *diffusionToolBox;
     medToolBoxDiffusionTensorView       *tensorViewToolBox;
 
@@ -39,7 +39,7 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medViewerWorkspa
     d->viewPropertiesToolBox = new medWorkspaceViewPropertiesToolBox(parent);
 
     // -- Bundling  toolbox --
-    d->fiberBundlingToolBox = new medToolBoxDiffusionFiberBundling(parent);
+    d->fiberBundlingToolBox = new medFiberBundlingToolBox(parent);
 
     // -- Diffusion toolbox --
     d->diffusionToolBox = new medToolBoxDiffusion(parent);

@@ -1,5 +1,5 @@
-#ifndef MEDTOOLBOXDIFFUSIONFIBERBUNDLING_H
-#define MEDTOOLBOXDIFFUSIONFIBERBUNDLING_H
+#ifndef medFiberBundlingToolBox_H
+#define medFiberBundlingToolBox_H
 
 #include "medToolBox.h"
 
@@ -7,11 +7,11 @@
 
 class dtkAbstractView;
 class dtkAbstractData;
-class medToolBoxDiffusionFiberBundlingPrivate;
+class medFiberBundlingToolBoxPrivate;
 class medDataIndex;
 
 /**
-  * @class medToolBoxDiffusionFiberBundling
+  * @class medFiberBundlingToolBox
   * @author Pierre Fillard
   * @brief Toolbox to extract bundle from fibers and to compute statistics of those
   * This toolbox allows to perform fiber bundling. It must be used with subclasses
@@ -19,19 +19,19 @@ class medDataIndex;
   * declare groups of fibers as belonging to the same anatomical bundle), name
   * and color bundles, and compute and display FA, ADC and length statistics.
   */
-class MEDGUI_EXPORT medToolBoxDiffusionFiberBundling : public medToolBox
+class MEDGUI_EXPORT medFiberBundlingToolBox : public medToolBox
 {
     Q_OBJECT
 public:
-     medToolBoxDiffusionFiberBundling(QWidget *parent);
-    ~medToolBoxDiffusionFiberBundling();
-    
+     medFiberBundlingToolBox(QWidget *parent);
+    ~medFiberBundlingToolBox();
+
     /**
       * Set input fibers as a dtkAbstractData object. Subclass should
       * inherit it and cass it into proper fiber data type.
       */
     virtual void setData(dtkAbstractData *data);
-    
+
 signals:
     /**
       * This signal is emitted when the user want to bundle fibers on screen.
@@ -109,8 +109,8 @@ protected slots:
     virtual void onBundlingItemChanged (QStandardItem *item);
 
 private:
-    medToolBoxDiffusionFiberBundlingPrivate *d;
-    
+    medFiberBundlingToolBoxPrivate *d;
+
 };
 
 
