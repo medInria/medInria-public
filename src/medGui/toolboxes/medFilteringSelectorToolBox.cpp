@@ -1,10 +1,10 @@
-/* medToolBoxFiltering.cpp ---
+/* medFilteringSelectorToolBox.cpp ---
  *
  * @author Clément Philipot <clement.philipot@inria.fr>
  *
  */
 
-#include "medToolBoxFiltering.h"
+#include "medFilteringSelectorToolBox.h"
 #include "medFilteringAbstractToolBox.h"
 
 #include <medToolBoxFactory.h>
@@ -18,7 +18,7 @@
 
 
 
-class medToolBoxFilteringPrivate
+class medFilteringSelectorToolBoxPrivate
 {
 public:
     QComboBox    *chooseFilter;
@@ -30,7 +30,7 @@ public:
     medDataIndex index;
 };
 
-medToolBoxFiltering::medToolBoxFiltering ( QWidget *parent ) : medToolBox ( parent ), d ( new medToolBoxFilteringPrivate )
+medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) : medToolBox ( parent ), d ( new medFilteringSelectorToolBoxPrivate )
 {
     d->inputView = NULL;
 
@@ -76,24 +76,24 @@ medToolBoxFiltering::medToolBoxFiltering ( QWidget *parent ) : medToolBox ( pare
     d->inputData = NULL;
 }
 
-medToolBoxFiltering::~medToolBoxFiltering()
+medFilteringSelectorToolBox::~medFilteringSelectorToolBox()
 {
     delete d;
     d = NULL;
 }
 
-medFilteringAbstractToolBox* medToolBoxFiltering::customToolbox ( void )
+medFilteringAbstractToolBox* medFilteringSelectorToolBox::customToolbox ( void )
 {
 
     return d->customToolBox;
 }
 
-dtkAbstractData*  medToolBoxFiltering::data()
+dtkAbstractData*  medFilteringSelectorToolBox::data()
 {
     return d->inputData;
 }
 
-void medToolBoxFiltering::onToolBoxChosen ( int index )
+void medFilteringSelectorToolBox::onToolBoxChosen ( int index )
 {
     //get identifier for toolbox.
     QString id = d->chooseFilter->itemData( index ).toString();
@@ -124,7 +124,7 @@ void medToolBoxFiltering::onToolBoxChosen ( int index )
 }
 
 
-void medToolBoxFiltering::onInputSelected ( const medDataIndex& index )
+void medFilteringSelectorToolBox::onInputSelected ( const medDataIndex& index )
 {
     if ( !index.isValid() )
         return;
@@ -148,7 +148,7 @@ void medToolBoxFiltering::onInputSelected ( const medDataIndex& index )
     }
 }
 
-void medToolBoxFiltering::clear ( void )
+void medFilteringSelectorToolBox::clear ( void )
 {
     if ( d->customToolBox )
         d->customToolBox->clear();
@@ -159,12 +159,12 @@ void medToolBoxFiltering::clear ( void )
 }
 
 
-void medToolBoxFiltering::setDataIndex ( medDataIndex index )
+void medFilteringSelectorToolBox::setDataIndex ( medDataIndex index )
 {
     d->index = index;
 }
 
-void medToolBoxFiltering::onSavedImage ( void )
+void medFilteringSelectorToolBox::onSavedImage ( void )
 {
     medDataManager::instance()->storeNonPersistentSingleDataToDatabase ( d->index );
 }

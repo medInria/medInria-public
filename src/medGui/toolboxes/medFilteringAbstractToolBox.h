@@ -17,13 +17,13 @@
  *
  */
 
-#ifndef MEDTOOLBOXFILTERINGCUSTOM_H
-#define MEDTOOLBOXFILTERINGCUSTOM_H
+#ifndef medFilteringSelectorToolBoxCUSTOM_H
+#define medFilteringSelectorToolBoxCUSTOM_H
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
 
-class medToolBoxFiltering;
+class medFilteringSelectorToolBox;
 class medFilteringAbstractToolBoxPrivate;
 class dtkAbstractData;
 
@@ -35,12 +35,12 @@ public:
              medFilteringAbstractToolBox(QWidget *parentToolBox = 0);
     virtual ~medFilteringAbstractToolBox(void);
 
-    void setFilteringToolBox(medToolBoxFiltering *toolbox);
+    void setFilteringToolBox(medFilteringSelectorToolBox *toolbox);
 
     virtual dtkAbstractData* processOutput() = 0;
 
 protected:
-    medToolBoxFiltering *parentToolBox(void);
+    medFilteringSelectorToolBox *parentToolBox(void);
 
 private:
     medFilteringAbstractToolBoxPrivate *d;

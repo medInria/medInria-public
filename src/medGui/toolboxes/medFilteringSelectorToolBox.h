@@ -4,14 +4,14 @@
  *
  */
 
-#ifndef MEDTOOLBOXFILTERING_H
-#define MEDTOOLBOXFILTERING_H
+#ifndef medFilteringSelectorToolBox_H
+#define medFilteringSelectorToolBox_H
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
 #include <medCore/medDataIndex.h>
 
-class medToolBoxFilteringPrivate;
+class medFilteringSelectorToolBoxPrivate;
 class dtkAbstractData;
 class medFilteringAbstractToolBox;
 
@@ -20,12 +20,12 @@ class medFilteringAbstractToolBox;
  *
  * This toolbox provides a comboBox to switch between filtering process plugins and buttons to store results in a file or database.
  */
-class MEDGUI_EXPORT medToolBoxFiltering : public medToolBox
+class MEDGUI_EXPORT medFilteringSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 public:
-    medToolBoxFiltering(QWidget *parent);
-    ~medToolBoxFiltering();
+    medFilteringSelectorToolBox(QWidget *parent);
+    ~medFilteringSelectorToolBox();
 
     /**
      * @brief returns input data
@@ -73,7 +73,7 @@ public slots:
 
 
 protected:
-    medToolBoxFilteringPrivate *d;
+    medFilteringSelectorToolBoxPrivate *d;
 };
 
 #endif

@@ -44,7 +44,7 @@ signals:
     /**
      * @brief signal emitted to refresh the output view with the data resulting from a successful filtering process
      *
-     * This is a connection between the medToolBoxFiltering and the medFilteringViewContainer which displays input/output images
+     * This is a connection between the medFilteringSelectorToolBox and the medFilteringViewContainer which displays input/output images
      *
      */
     void outputDataChanged ( dtkAbstractData * );

@@ -12,7 +12,7 @@
 #include <medStorage.h>
 
 #include <medWorkspaceViewPropertiesToolBox.h>
-#include <medToolBoxFiltering.h>
+#include <medFilteringSelectorToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medViewContainer.h>
 #include <medMultiViewContainer.h>
@@ -31,7 +31,7 @@ class medFilteringWorkspacePrivate
 {
 public:
     medWorkspaceViewPropertiesToolBox  *viewPropertiesToolBox;
-    medToolBoxFiltering *filteringToolBox;
+    medFilteringSelectorToolBox *filteringToolBox;
     dtkSmartPointer<dtkAbstractData> filterOutput;
     QString importUuid;
 };
@@ -42,7 +42,7 @@ medFilteringWorkspace::medFilteringWorkspace ( QWidget *parent ) : medViewerWork
 
     this->addToolBox ( d->viewPropertiesToolBox );
 
-    d->filteringToolBox = new medToolBoxFiltering ( parent );
+    d->filteringToolBox = new medFilteringSelectorToolBox ( parent );
 
     connect(d->filteringToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
     connect(d->filteringToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
@@ -151,7 +151,7 @@ QString medFilteringWorkspace::description(void) const
     return "Filtering";
 }
 
-bool medViewerWorkspaceFiltering::isUsable(){
+bool medFilteringWorkspace::isUsable(){
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
     return (tbFactory->toolBoxesFromCategory("filtering").size()!=0); 
 }

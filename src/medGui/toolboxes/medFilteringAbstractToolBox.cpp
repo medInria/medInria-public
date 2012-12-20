@@ -17,13 +17,13 @@
  *
  */
 
-#include "medToolBoxFiltering.h"
+#include "medFilteringSelectorToolBox.h"
 #include "medFilteringAbstractToolBox.h"
 
 class medFilteringAbstractToolBoxPrivate
 {
 public:
-    medToolBoxFiltering *parent;
+    medFilteringSelectorToolBox *parent;
 };
 
 medFilteringAbstractToolBox::medFilteringAbstractToolBox(QWidget *parent) : medToolBox(parent), d(new medFilteringAbstractToolBoxPrivate)
@@ -38,12 +38,12 @@ medFilteringAbstractToolBox::~medFilteringAbstractToolBox(void)
     d = NULL;
 }
 
-void medFilteringAbstractToolBox::setFilteringToolBox(medToolBoxFiltering *toolbox)
+void medFilteringAbstractToolBox::setFilteringToolBox(medFilteringSelectorToolBox *toolbox)
 {
     d->parent = toolbox;
 }
 
-medToolBoxFiltering *medFilteringAbstractToolBox::parentToolBox(void)
+medFilteringSelectorToolBox *medFilteringAbstractToolBox::parentToolBox(void)
 {
     return d->parent;
 }
