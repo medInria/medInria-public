@@ -22,7 +22,7 @@
 #include <medWorkspaceViewPropertiesToolBox.h>
 #include <medViewContainer.h>
 #include <medTabbedViewContainers.h>
-#include <medWorkspaceTimeToolBox.h>
+#include <medTimeLineToolBox.h>
 #include <medVisualizationLayoutToolBox.h>
 #include <medSettingsManager.h>
 
@@ -30,7 +30,7 @@ class medVisualizationWorkspacePrivate
 {
 public:
     medVisualizationLayoutToolBox *layoutToolBox;
-    medWorkspaceTimeToolBox *timeToolBox;
+    medTimeLineToolBox *timeToolBox;
     medWorkspaceViewPropertiesToolBox *viewPropertiesToolBox;
 };
 
@@ -53,7 +53,7 @@ medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medViewe
     // -- View toolbox --
 
     d->viewPropertiesToolBox = new medWorkspaceViewPropertiesToolBox(parent);
-    d->timeToolBox           = new medWorkspaceTimeToolBox(parent);
+    d->timeToolBox           = new medTimeLineToolBox(parent);
 
 
     this->addToolBox( d->viewPropertiesToolBox );

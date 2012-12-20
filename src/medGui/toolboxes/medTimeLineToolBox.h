@@ -5,10 +5,10 @@
 
 class dtkAbstractView;
 class dtkAbstractData;
-class medWorkspaceTimeToolBoxPrivate;
+class medTimeLineToolBoxPrivate;
 
 /**
- * \class medWorkspaceTimeToolBox
+ * \class medTimeLineToolBox
  *
  * \author Fatih Arslan and Nicolas Toussaint
  *
@@ -36,13 +36,13 @@ class medWorkspaceTimeToolBoxPrivate;
 
 class med4DAbstractViewInteractor;
 
-class MEDGUI_EXPORT medWorkspaceTimeToolBox : public medToolBox
+class MEDGUI_EXPORT medTimeLineToolBox : public medToolBox
 {
     Q_OBJECT
 
 public:
-     medWorkspaceTimeToolBox(QWidget *parent = 0);
-    ~medWorkspaceTimeToolBox(void);
+     medTimeLineToolBox(QWidget *parent = 0);
+    ~medTimeLineToolBox(void);
 
     void update(dtkAbstractView *view);
 
@@ -92,7 +92,7 @@ public slots:
 
  private:
 
-    medWorkspaceTimeToolBoxPrivate *d;
+    medTimeLineToolBoxPrivate *d;
     bool isViewAdded;
     QString DoubleToQString(double);
 };
