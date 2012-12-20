@@ -90,7 +90,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   # specific toolbox classes
   toolboxes/medToolBoxDiffusion.h
   toolboxes/medDiffusionAbstractToolBox.h
-  toolboxes/medToolBoxDiffusionFiberView.h
+  toolboxes/medFiberViewToolBox.h
   toolboxes/medFiberBundlingToolBox.h
   toolboxes/medRegistrationSelectorToolBox.h
   toolboxes/medRegistrationAbstractToolBox.h
@@ -204,7 +204,7 @@ set(${PROJECT_NAME}_SOURCES
   # specific toolbox classes
   toolboxes/medToolBoxDiffusion.cpp
   toolboxes/medDiffusionAbstractToolBox.cpp
-  toolboxes/medToolBoxDiffusionFiberView.cpp
+  toolboxes/medFiberViewToolBox.cpp
   toolboxes/medFiberBundlingToolBox.cpp
   toolboxes/medRegistrationSelectorToolBox.cpp
   toolboxes/medRegistrationAbstractToolBox.cpp

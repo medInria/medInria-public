@@ -11,7 +11,7 @@
 #include "medWorkspaceViewPropertiesToolBox.h"
 #include "medToolBoxDiffusionTensorView.h"
 #include "medToolBoxDiffusion.h"
-#include "medToolBoxDiffusionFiberView.h"
+#include "medFiberViewToolBox.h"
 #include "medFiberBundlingToolBox.h"
 #include <medViewContainer.h>
 #include <medSingleViewContainer.h>
@@ -24,7 +24,7 @@ class medDiffusionWorkspacePrivate
 public:
 
     medWorkspaceViewPropertiesToolBox      *viewPropertiesToolBox;
-    medToolBoxDiffusionFiberView        *fiberViewToolBox;
+    medFiberViewToolBox        *fiberViewToolBox;
     medFiberBundlingToolBox    *fiberBundlingToolBox;
     medToolBoxDiffusion                 *diffusionToolBox;
     medToolBoxDiffusionTensorView       *tensorViewToolBox;
@@ -58,7 +58,7 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medViewerWorkspa
     connect(d->tensorViewToolBox, SIGNAL(flipZ(bool)),                       this, SLOT(onFlipZChanged(bool)));
 
     // -- Fiber view tb --
-    d->fiberViewToolBox = new medToolBoxDiffusionFiberView(parent);
+    d->fiberViewToolBox = new medFiberViewToolBox(parent);
 
     connect(d->fiberViewToolBox, SIGNAL(fiberColorModeChanged(int)), this, SLOT(onFiberColorModeChanged(int)));
     connect(d->fiberViewToolBox, SIGNAL(GPUActivated(bool)),         this, SLOT(onGPUActivated(bool)));
@@ -217,7 +217,7 @@ void medDiffusionWorkspace::updateTensorInteractorWithToolboxValues(dtkAbstractV
     QMetaObject::invokeMethod( interactor, "onHideShowSagittalPropertySet", Qt::QueuedConnection, Q_ARG( bool, isShowSagittal ) );
 }
 
-void medDiffusionWorkspace::updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionFiberView* fiberViewToolBox)
+void medDiffusionWorkspace::updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medFiberViewToolBox* fiberViewToolBox)
 {
     // we are temporary using Qt's reflection in this function to call the slots in the interactor
     // without casting to a specific type (which is in a plugin)

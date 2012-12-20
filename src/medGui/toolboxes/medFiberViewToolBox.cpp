@@ -1,6 +1,6 @@
-#include "medToolBoxDiffusionFiberView.h"
+#include "medFiberViewToolBox.h"
 
-class medToolBoxDiffusionFiberViewPrivate
+class medFiberViewToolBoxPrivate
 {
 public:
     QComboBox    *colorCombo;
@@ -12,7 +12,7 @@ public:
 };
 
 
-medToolBoxDiffusionFiberView::medToolBoxDiffusionFiberView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionFiberViewPrivate)
+medFiberViewToolBox::medFiberViewToolBox(QWidget *parent) : medToolBox(parent), d(new medFiberViewToolBoxPrivate)
 {
     QWidget *displayWidget = new QWidget(this);
 
@@ -84,42 +84,42 @@ medToolBoxDiffusionFiberView::medToolBoxDiffusionFiberView(QWidget *parent) : me
     this->addWidget(displayWidget);
 }
 
-medToolBoxDiffusionFiberView::~medToolBoxDiffusionFiberView()
+medFiberViewToolBox::~medFiberViewToolBox()
 {
     delete d;
     d = NULL;
 }
 
-int medToolBoxDiffusionFiberView::fiberRadius()
+int medFiberViewToolBox::fiberRadius()
 {
     return d->radiusSlider->value();
 }
 
-int medToolBoxDiffusionFiberView::fiberColorMode()
+int medFiberViewToolBox::fiberColorMode()
 {
     return d->colorCombo->currentIndex();
 }
 
-bool medToolBoxDiffusionFiberView::isGPUActivated()
+bool medFiberViewToolBox::isGPUActivated()
 {
     return d->displayCheckBox->isChecked();
 }
 
-bool medToolBoxDiffusionFiberView::isLineModeSelected()
+bool medFiberViewToolBox::isLineModeSelected()
 {
     return d->displayRadioPolylines->isChecked();
 }
 
-bool medToolBoxDiffusionFiberView::isRibbonModeSelected()
+bool medFiberViewToolBox::isRibbonModeSelected()
 {
     return d->displayRadioRibbons->isChecked();
 }
 
-bool medToolBoxDiffusionFiberView::isTubesModeSelected()
+bool medFiberViewToolBox::isTubesModeSelected()
 {
     return d->displayRadioTubes->isChecked();
 }
 
-void medToolBoxDiffusionFiberView::update (dtkAbstractView *view)
+void medFiberViewToolBox::update (dtkAbstractView *view)
 {
 }
