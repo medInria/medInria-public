@@ -88,7 +88,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medToolBoxTab.h
 
   # specific toolbox classes
-  toolboxes/medToolBoxDiffusion.h
+  toolboxes/medDiffusionSelectorToolBox.h
   toolboxes/medDiffusionAbstractToolBox.h
   toolboxes/medFiberViewToolBox.h
   toolboxes/medFiberBundlingToolBox.h
@@ -108,7 +108,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medBrowserPacsSearchToolBox.h
   toolboxes/medWorkspacePatientToolBox.h
   toolboxes/medToolBoxCompositeDataSetImporter.h
-  toolboxes/medToolBoxCompositeDataSetImporterCustom.h
+  toolboxes/medCompositeDataSetImporterAbstractToolBox.h
   toolboxes/medActionsToolBox.h
 
 
@@ -202,7 +202,7 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medToolBoxTab.cpp
 
   # specific toolbox classes
-  toolboxes/medToolBoxDiffusion.cpp
+  toolboxes/medDiffusionSelectorToolBox.cpp
   toolboxes/medDiffusionAbstractToolBox.cpp
   toolboxes/medFiberViewToolBox.cpp
   toolboxes/medFiberBundlingToolBox.cpp
@@ -222,7 +222,7 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medBrowserPacsSearchToolBox.cpp
   toolboxes/medWorkspacePatientToolBox.cpp
   toolboxes/medToolBoxCompositeDataSetImporter.cpp
-  toolboxes/medToolBoxCompositeDataSetImporterCustom.cpp
+  toolboxes/medCompositeDataSetImporterAbstractToolBox.cpp
   toolboxes/medActionsToolBox.cpp
 
 

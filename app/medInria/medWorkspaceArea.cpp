@@ -33,7 +33,7 @@
 #include <medSingleViewContainer.h>
 #include <medViewPool.h>
 #include <medWorkspaceFactory.h>
-#include <medToolBoxDiffusion.h>
+#include <medDiffusionSelectorToolBox.h>
 #include <medRegistrationSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
 #include <medVisualizationLayoutToolBox.h>

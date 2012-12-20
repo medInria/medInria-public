@@ -1,4 +1,4 @@
-/* medToolBoxDiffusion.cpp ---
+/* medDiffusionSelectorToolBox.cpp ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -33,10 +33,10 @@
 #include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>
 
-#include "medToolBoxDiffusion.h"
+#include "medDiffusionSelectorToolBox.h"
 #include "medDiffusionAbstractToolBox.h"
 
-class medToolBoxDiffusionPrivate
+class medDiffusionSelectorToolBoxPrivate
 {
 public:
 
@@ -49,7 +49,7 @@ public:
     QVBoxLayout *tractographyLayout;
 };
 
-medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionPrivate)
+medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medDiffusionSelectorToolBoxPrivate)
 {
     d->currentToolBox = 0;
 
@@ -87,13 +87,13 @@ medToolBoxDiffusion::medToolBoxDiffusion(QWidget *parent) : medToolBox(parent), 
     this->addWidget(tractographyPage);
 }
 
-medToolBoxDiffusion::~medToolBoxDiffusion(void)
+medDiffusionSelectorToolBox::~medDiffusionSelectorToolBox(void)
 {
     delete d;
     d = NULL;
 }
 
-void medToolBoxDiffusion::onToolBoxChosen(int id)
+void medDiffusionSelectorToolBox::onToolBoxChosen(int id)
 {
     medDiffusionAbstractToolBox *toolbox = NULL;
     //get identifier for toolbox.
@@ -148,7 +148,7 @@ void medToolBoxDiffusion::onToolBoxChosen(int id)
     d->currentToolBox = toolbox;
 }
 
-dtkAbstractData *medToolBoxDiffusion::output(void) const
+dtkAbstractData *medDiffusionSelectorToolBox::output(void) const
 {
     if (d->currentToolBox)
         return d->currentToolBox->output();
@@ -157,7 +157,7 @@ dtkAbstractData *medToolBoxDiffusion::output(void) const
 }
 
 
-void medToolBoxDiffusion::clear(void)
+void medDiffusionSelectorToolBox::clear(void)
 {
     foreach (medDiffusionAbstractToolBox *tb, d->toolBoxes)
         tb->deleteLater();

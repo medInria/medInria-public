@@ -24,7 +24,7 @@
 #include "medToolBox.h"
 #include "medGuiExport.h"
 
-class medToolBoxDiffusion;
+class medDiffusionSelectorToolBox;
 class medDiffusionAbstractToolBoxPrivate;
 class dtkAbstractProcess;
 class dtkAbstractData;
@@ -37,7 +37,7 @@ public:
              medDiffusionAbstractToolBox(QWidget *parentToolBox = 0);
     virtual ~medDiffusionAbstractToolBox(void);
 
-    virtual void setDiffusionToolBox(medToolBoxDiffusion *toolbox);
+    virtual void setDiffusionToolBox(medDiffusionSelectorToolBox *toolbox);
 
     virtual QString description (void) const=0;
 
@@ -52,7 +52,7 @@ public:
     virtual dtkPlugin *plugin( void )const = 0 ;
 
 protected:
-    medToolBoxDiffusion *parentToolBox(void);
+    medDiffusionSelectorToolBox *parentToolBox(void);
 
     medDiffusionAbstractToolBoxPrivate *d;
 };

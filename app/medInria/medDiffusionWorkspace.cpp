@@ -10,7 +10,7 @@
 
 #include "medWorkspaceViewPropertiesToolBox.h"
 #include "medTensorViewToolBox.h"
-#include "medToolBoxDiffusion.h"
+#include "medDiffusionSelectorToolBox.h"
 #include "medFiberViewToolBox.h"
 #include "medFiberBundlingToolBox.h"
 #include <medViewContainer.h>
@@ -26,7 +26,7 @@ public:
     medWorkspaceViewPropertiesToolBox      *viewPropertiesToolBox;
     medFiberViewToolBox        *fiberViewToolBox;
     medFiberBundlingToolBox    *fiberBundlingToolBox;
-    medToolBoxDiffusion                 *diffusionToolBox;
+    medDiffusionSelectorToolBox                 *diffusionToolBox;
     medTensorViewToolBox       *tensorViewToolBox;
 
     QList<dtkSmartPointer<dtkAbstractView> > views;
@@ -42,7 +42,7 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medViewerWorkspa
     d->fiberBundlingToolBox = new medFiberBundlingToolBox(parent);
 
     // -- Diffusion toolbox --
-    d->diffusionToolBox = new medToolBoxDiffusion(parent);
+    d->diffusionToolBox = new medDiffusionSelectorToolBox(parent);
 
     connect(d->diffusionToolBox, SIGNAL(addToolBox(medToolBox *)),
             this, SLOT(addToolBox(medToolBox *)));

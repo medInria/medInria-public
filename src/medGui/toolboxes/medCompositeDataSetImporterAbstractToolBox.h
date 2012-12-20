@@ -1,4 +1,4 @@
-/* medToolBoxCompositeDataSetImporterCustom.h ---
+/* medCompositeDataSetImporterAbstractToolBox.h ---
  *
  * Author: Nicolas Toussaint
  */
@@ -12,39 +12,39 @@
  */
 
 
-#ifndef MEDTOOLBOXCOMPOSITEDATASETIMPORTERCUSTOM_H
-#define MEDTOOLBOXCOMPOSITEDATASETIMPORTERCUSTOM_H
+#ifndef medCompositeDataSetImporterAbstractToolBox_H
+#define medCompositeDataSetImporterAbstractToolBox_H
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
 
 class medToolBoxCompositeDataSetImporter;
-class medToolBoxCompositeDataSetImporterCustomPrivate;
+class medCompositeDataSetImporterAbstractToolBoxPrivate;
 class dtkAbstractProcess;
 class dtkAbstractData;
 
-class MEDGUI_EXPORT medToolBoxCompositeDataSetImporterCustom : public medToolBox
+class MEDGUI_EXPORT medCompositeDataSetImporterAbstractToolBox : public medToolBox
 {
     Q_OBJECT
 public:
-             medToolBoxCompositeDataSetImporterCustom(QWidget *parent = 0);
-    virtual ~medToolBoxCompositeDataSetImporterCustom(void);
+             medCompositeDataSetImporterAbstractToolBox(QWidget *parent = 0);
+    virtual ~medCompositeDataSetImporterAbstractToolBox(void);
     virtual void setCompositeDataSetImporterToolBox(medToolBoxCompositeDataSetImporter *toolbox);
 
     virtual QString description (void) const = 0;
 
     virtual dtkAbstractData *output (void) const;
 
-public slots:    
+public slots:
     virtual bool import() = 0;
     virtual void reset()  {};
     virtual void load() {};
-    
+
 protected:
     medToolBoxCompositeDataSetImporter *parent(void);
 
 protected:
-    medToolBoxCompositeDataSetImporterCustomPrivate *d;
+    medCompositeDataSetImporterAbstractToolBoxPrivate *d;
 };
 
-#endif // MEDTOOLBOXCOMPOSITEDATASETIMPORTERCUSTOM_H
+#endif // medCompositeDataSetImporterAbstractToolBox_H

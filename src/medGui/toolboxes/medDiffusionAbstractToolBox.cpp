@@ -17,7 +17,7 @@
  *
  */
 
-#include "medToolBoxDiffusion.h"
+#include "medDiffusionSelectorToolBox.h"
 
 #include "medDiffusionAbstractToolBox.h"
 #include "medDiffusionAbstractToolBox_p.h"
@@ -36,12 +36,12 @@ medDiffusionAbstractToolBox::~medDiffusionAbstractToolBox(void)
     d = NULL;
 }
 
-void medDiffusionAbstractToolBox::setDiffusionToolBox(medToolBoxDiffusion *toolbox)
+void medDiffusionAbstractToolBox::setDiffusionToolBox(medDiffusionSelectorToolBox *toolbox)
 {
     d->parent = toolbox;
 }
 
-medToolBoxDiffusion *medDiffusionAbstractToolBox::parentToolBox(void)
+medDiffusionSelectorToolBox *medDiffusionAbstractToolBox::parentToolBox(void)
 {
     return d->parent;
 }

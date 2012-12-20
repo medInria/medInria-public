@@ -1,4 +1,4 @@
-/* medToolBoxDiffusionCustom_p.h --- 
+/* medDiffusionAbstractToolBox_p.h --- 
  * 
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,17 +17,17 @@
  * 
  */
 
-#ifndef MEDTOOLBOXDIFFUSIONCUSTOM_P_H
-#define MEDTOOLBOXDIFFUSIONCUSTOM_P_H
+#ifndef medDiffusionAbstractToolBox_P_H
+#define medDiffusionAbstractToolBox_P_H
 
 #include <QtGui>
 
-class medToolBoxDiffusion;
+class medDiffusionSelectorToolBox;
 
 class medDiffusionAbstractToolBoxPrivate
 {
 public:
-    medToolBoxDiffusion *parent;
+    medDiffusionSelectorToolBox *parent;
 };
 
 #endif

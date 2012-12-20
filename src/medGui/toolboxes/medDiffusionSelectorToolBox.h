@@ -1,4 +1,4 @@
-/* medToolBoxDiffusion.h ---
+/* medDiffusionSelectorToolBox.h ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef MEDTOOLBOXDIFFUSION_H
-#define MEDTOOLBOXDIFFUSION_H
+#ifndef medDiffusionSelectorToolBox_H
+#define medDiffusionSelectorToolBox_H
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -26,15 +26,15 @@
 class dtkAbstractView;
 class dtkAbstractData;
 class dtkAbstractProcess;
-class medToolBoxDiffusionPrivate;
+class medDiffusionSelectorToolBoxPrivate;
 class medDataIndex;
 
-class MEDGUI_EXPORT medToolBoxDiffusion : public medToolBox
+class MEDGUI_EXPORT medDiffusionSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 public:
-     medToolBoxDiffusion(QWidget *parent = 0);
-    ~medToolBoxDiffusion(void);
+     medDiffusionSelectorToolBox(QWidget *parent = 0);
+    ~medDiffusionSelectorToolBox(void);
 
     dtkAbstractData *output(void) const;
 
@@ -45,8 +45,8 @@ public slots:
     void onToolBoxChosen(int id);
 
 private:
-    medToolBoxDiffusionPrivate *d;
+    medDiffusionSelectorToolBoxPrivate *d;
 
 };
 
-#endif // MEDTOOLBOXDIFFUSION_H
+#endif // medDiffusionSelectorToolBox_H

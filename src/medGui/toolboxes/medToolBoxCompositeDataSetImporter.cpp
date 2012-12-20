@@ -10,15 +10,15 @@
 #include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>
 #include <medToolBoxCompositeDataSetImporter.h>
-#include <medToolBoxCompositeDataSetImporterCustom.h>
+#include <medCompositeDataSetImporterAbstractToolBox.h>
 
 class medToolBoxCompositeDataSetImporterPrivate
 {
 public:
 
-  QHash<QString, medToolBoxCompositeDataSetImporterCustom*> toolBoxes;
+  QHash<QString, medCompositeDataSetImporterAbstractToolBox*> toolBoxes;
 
-  medToolBoxCompositeDataSetImporterCustom* currentToolBox;
+  medCompositeDataSetImporterAbstractToolBox* currentToolBox;
 
   // methods
   void read(QString filename);
@@ -157,13 +157,13 @@ bool medToolBoxCompositeDataSetImporter::import()
 
 void medToolBoxCompositeDataSetImporter::onCurrentTypeChanged(const int i) {
 
-    medToolBoxCompositeDataSetImporterCustom* toolbox = NULL;
+    medCompositeDataSetImporterAbstractToolBox* toolbox = NULL;
     const QString id = d->type->itemData(i).toString();
 
     if (d->toolBoxes.contains(id))
         toolbox = d->toolBoxes[id];
     else {
-        toolbox = qobject_cast<medToolBoxCompositeDataSetImporterCustom*>(medToolBoxFactory::instance()->createToolBox(id, this));
+        toolbox = qobject_cast<medCompositeDataSetImporterAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id, this));
         if (toolbox) {
             toolbox->setStyleSheet("medToolBoxBody {border:none;padding:0px}");
             toolbox->header()->hide();
