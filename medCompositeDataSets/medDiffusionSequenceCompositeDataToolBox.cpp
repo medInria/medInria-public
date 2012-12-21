@@ -17,13 +17,13 @@
 
 #include <medDropSite.h>
 #include <medToolBoxFactory.h>
-#include <medToolBoxCompositeDataSetImporter.h>
+#include <medCompositeDataSetImporterSelectorToolBox.h>
 #include <medCompositeDataSetsWriter.h>
 #include <medProgressionStack.h>
 
 #include <VectorWidget.h>
 
-medDiffusionSequenceCompositeDataToolBox::medDiffusionSequenceCompositeDataToolBox(QWidget* parent): medToolBoxCompositeDataSetImporterCustom(parent) {
+medDiffusionSequenceCompositeDataToolBox::medDiffusionSequenceCompositeDataToolBox(QWidget* parent): medCompositeDataSetImporterAbstractToolBox(parent) {
     QWidget*     widget = new QWidget(this);
     QFormLayout* layout = new QFormLayout(widget);
 
