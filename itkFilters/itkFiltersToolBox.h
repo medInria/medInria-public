@@ -1,11 +1,11 @@
 #ifndef ITKFILTERSTOOLBOX_H
 #define ITKFILTERSTOOLBOX_H
 
-#include <medToolBoxFilteringCustom.h>
+#include <medFilteringAbstractToolBox.h>
 
 class itkFiltersToolBoxPrivate;
 
-class itkFiltersToolBox : public medToolBoxFilteringCustom
+class itkFiltersToolBox : public medFilteringAbstractToolBox
 {
     Q_OBJECT
 

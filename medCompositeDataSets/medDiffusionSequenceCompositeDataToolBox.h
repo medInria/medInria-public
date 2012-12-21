@@ -1,13 +1,13 @@
 #ifndef MEDDIFFUSIONSEQUENCECOMPOSITEDATATOOLBOX_H
 #define MEDDIFFUSIONSEQUENCECOMPOSITEDATATOOLBOX_H
 
-#include <medToolBoxCompositeDataSetImporterCustom.h>
+#include <medCompositeDataSetImporterAbstractToolBox.h>
 
 #include <medDiffusionSequenceCompositeData.h>
 #include <itkGradientFileReader.h>
 #include <DiffusionSequenceWidget.h>
 
-class medDiffusionSequenceCompositeDataToolBox: public medToolBoxCompositeDataSetImporterCustom {
+class medDiffusionSequenceCompositeDataToolBox: public medCompositeDataSetImporterAbstractToolBox {
     Q_OBJECT
 
 public:

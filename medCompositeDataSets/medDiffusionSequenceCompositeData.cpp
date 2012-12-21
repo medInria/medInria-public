@@ -93,25 +93,25 @@ dtkAbstractData* medDiffusionSequenceCompositeData::readVolume(const QString& pa
     if (!volume)
     {
         //Why is this method static? using it to send messages sounded like a good idea
-//        emit medToolBoxCompositeDataSetImporter::showError(this,
+//        emit medCompositeDataSetImporterSelectorToolBox::showError(this,
 //                        tr("This file is not readable by this Importer"));
         return NULL;
     }
     const QString&   type   = volume->name();
 
     if (!type.contains("Image")) {
-        // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("file does not describe any known image type"), 3000);
+        // emit medCompositeDataSetImporterSelectorToolBox::showError (this, tr ("file does not describe any known image type"), 3000);
         return 0;
     }
 
 #if 0
     if (type.contains("Image4D")) {
-        // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("4D image is not supported yet"), 3000);
+        // emit medCompositeDataSetImporterSelectorToolBox::showError (this, tr ("4D image is not supported yet"), 3000);
         return 0;
     }
 
     if (!type.contains("Image3D")) {
-        // emit medToolBoxCompositeDataSetImporter::showError (this, tr ("image should be 3D"), 3000);
+        // emit medCompositeDataSetImporterSelectorToolBox::showError (this, tr ("image should be 3D"), 3000);
         return 0;
     }
 #endif
@@ -143,15 +143,15 @@ void medDiffusionSequenceCompositeData::readVolumes(const QStringList& paths,con
 
         QString identifier = volume->identifier();
         if (!identifier.contains("Image")) {
-            // emit medToolBoxCompositeDataSetImporter::showError(this,tr("file does not describe any known image type"),3000);
+            // emit medCompositeDataSetImporterSelectorToolBox::showError(this,tr("file does not describe any known image type"),3000);
             continue;
         }
         if (identifier.contains ("Image4D")) {
-            // emit medToolBoxCompositeDataSetImporter::showError(this,tr("4D image is not supported yet"),3000);
+            // emit medCompositeDataSetImporterSelectorToolBox::showError(this,tr("4D image is not supported yet"),3000);
             continue;
         }
         if (!identifier.contains ("Image3D")) {
-            // emit medToolBoxCompositeDataSetImporter::showError(this,tr("image should be 3D"),3000);
+            // emit medCompositeDataSetImporterSelectorToolBox::showError(this,tr("image should be 3D"),3000);
             continue;
         }
     }

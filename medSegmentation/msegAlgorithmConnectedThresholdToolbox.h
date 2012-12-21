@@ -1,7 +1,7 @@
 #ifndef MSEGALGORITHMCONNECTEDTHRESHOLDTOOLBOX_H
 #define MSEGALGORITHMCONNECTEDTHRESHOLDTOOLBOX_H
 
-#include "medToolBoxSegmentationCustom.h"
+#include "medSegmentationAbstractToolBox.h"
 
 #include "msegPluginExport.h"
 
@@ -27,7 +27,7 @@ class medSeedPointAnnotationData;
 namespace mseg {
 
 //! Custom segmentation toolbox to control a connected threshold segmentation.
-class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmConnectedThresholdToolbox : public medToolBoxSegmentationCustom
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmConnectedThresholdToolbox : public medSegmentationAbstractToolBox
 {
     Q_OBJECT;
 public:
@@ -35,13 +35,13 @@ public:
     ~AlgorithmConnectedThresholdToolbox();
 
     //! Creator, using new
-    static medToolBoxSegmentationCustom * createInstance( QWidget *parent );
+    static medSegmentationAbstractToolBox * createInstance( QWidget *parent );
 
     //! Override dtkAbstractObject
     QString description() const { return s_description(); }
     QString identifier() const { return s_identifier(); }
 
-    //! description 
+    //! description
     static QString s_description();
 
     /** Get name to use for this when registering with a factory.*/
@@ -85,7 +85,7 @@ private:
 
     SeedPoint m_seedPoints;
     dtkSmartPointer< medViewEventFilter > m_viewFilter;
-     
+
     enum ViewState { ViewState_None, ViewState_PickingSeedPoint };
     ViewState m_viewState;
 

@@ -1,7 +1,7 @@
 #ifndef MSEGAlgorithmPaintToolbox_H
 #define MSEGAlgorithmPaintToolbox_H
 
-#include "medToolBoxSegmentationCustom.h"
+#include "medSegmentationAbstractToolBox.h"
 
 #include "msegPluginExport.h"
 
@@ -32,12 +32,12 @@ namespace mseg {
     class SelectDataEventFilter;
 
 //! Segmentation toolbox to allow manual painting of pixels
-class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medToolBoxSegmentationCustom
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medSegmentationAbstractToolBox
 {
     Q_OBJECT;
 public:
-    struct PaintState { 
-        enum E{ None, Wand, Stroke, DeleteStroke, BoundaryStroke }; 
+    struct PaintState {
+        enum E{ None, Wand, Stroke, DeleteStroke, BoundaryStroke };
     };
 
     AlgorithmPaintToolbox( QWidget *parent );
@@ -46,8 +46,8 @@ public:
      //! Override dtkAbstractObject
     QString description() const { return s_description(); }
     QString identifier() const { return s_identifier(); }
- 
-    static medToolBoxSegmentationCustom * createInstance( QWidget *parent );
+
+    static medSegmentationAbstractToolBox * createInstance( QWidget *parent );
 
     static QString s_description();
 
@@ -68,10 +68,10 @@ public slots:
     void onApplyButtonPressed();
     void onClearMaskPressed();
     void onResetDataPressed();
-    
+
     void onLabelChanged(int newVal);
     void onSelectLabelColor();
-    
+
     void setWandSliderValue(double val);
     void setWandSpinBoxValue(int val);
 
@@ -88,17 +88,17 @@ protected:
     void updateTableRow(int row);
 
     void initializeMaskData( medAbstractData * imageData, medAbstractData * maskData );
-    
+
     void updateFromGuiItems();
 
     void enableButtons( bool value);
 
     void setPaintState( PaintState::E value);
-    
+
     void generateLabelColorMap(unsigned int numLabels);
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
-    
+
     QPushButton *m_strokeButton;
     QPushButton *m_removeStrokeButton;
     QPushButton *m_boundaryStrokeButton;
@@ -107,14 +107,14 @@ private:
     QSlider *m_brushSizeSlider;
     QSpinBox *m_brushSizeSpinBox;
     QSpinBox *m_strokeLabelSpinBox;
-    
+
     QPushButton *m_magicWandButton;
-    // The slider works on percentages of a linear scale between min and max values, i.e. 
+    // The slider works on percentages of a linear scale between min and max values, i.e.
     // wandradius = (max - min) * sliderPerc / 2.0
     QSlider *m_wandThresholdSizeSlider;
     QDoubleSpinBox *m_wandThresholdSizeSpinBox;
     QCheckBox *m_wand3DCheckbox;
-    
+
     double m_MinValueImage;
     double m_MaxValueImage;
 
@@ -133,7 +133,7 @@ private:
     dtkSmartPointer<medAbstractData> m_imageData;
 
     QString m_noDataText;
-    
+
     medImageMaskAnnotationData::ColorMapType m_labelColorMap;
 
     typedef itk::Image<unsigned char, 3> MaskType;
@@ -141,7 +141,7 @@ private:
 
     template <typename IMAGE> void RunConnectedFilter (MaskType::IndexType &index, unsigned int planeIndex);
     template <typename IMAGE> void GenerateMinMaxValuesFromImage ();
-    
+
     QVector3D m_lastVup;
     QVector3D m_lastVpn;
     double m_sampleSpacing[2];

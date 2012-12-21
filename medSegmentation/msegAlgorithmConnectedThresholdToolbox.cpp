@@ -6,7 +6,7 @@
 #include <medAbstractView.h>
 #include <medAbstractData.h>
 #include <medDataIndex.h>
-#include <medToolBoxSegmentation.h>
+#include <medSegmentationSelectorToolBox.h>
 #include <medMetaDataKeys.h>
 #include <medAbstractViewCoordinates.h>
 
@@ -29,7 +29,7 @@ namespace mseg {
 class SingleClickEventFilter : public medViewEventFilter
 {
 public:
-    SingleClickEventFilter(medToolBoxSegmentation * controller, AlgorithmConnectedThresholdToolbox *cb ) :
+    SingleClickEventFilter(medSegmentationSelectorToolBox * controller, AlgorithmConnectedThresholdToolbox *cb ) :
         medViewEventFilter(),
         m_cb(cb)
         {}
@@ -48,7 +48,7 @@ public:
 
             QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
             //Project vector onto plane
-//            dtkAbstractData * viewData = medToolBoxSegmentation::viewData( view );
+//            dtkAbstractData * viewData = medSegmentationSelectorToolBox::viewData( view );
             m_cb->onViewMousePress( view, posImage );
 
             this->removeFromAllViews();
@@ -61,7 +61,7 @@ private :
 };
 
 AlgorithmConnectedThresholdToolbox::AlgorithmConnectedThresholdToolbox(QWidget *parent ) :
-    medToolBoxSegmentationCustom( parent),
+    medSegmentationAbstractToolBox( parent),
     m_viewState(ViewState_None),
     m_noDataText( tr("[No input data]") )
 {
@@ -242,7 +242,7 @@ void AlgorithmConnectedThresholdToolbox::setData( dtkAbstractData *dtkdata )
 void AlgorithmConnectedThresholdToolbox::addSeedPoint( medAbstractView *view, const QVector3D &vec )
 {
     if (!m_seedPoints) {
-        setData( medToolBoxSegmentation::viewData(view) );
+        setData( medSegmentationSelectorToolBox::viewData(view) );
     }
 
     int iSeed = m_seedPoints->getNumberOfSeeds();
@@ -265,7 +265,7 @@ void AlgorithmConnectedThresholdToolbox::onViewMousePress( medAbstractView *view
 }
 
 //static
-medToolBoxSegmentationCustom *
+medSegmentationAbstractToolBox *
     AlgorithmConnectedThresholdToolbox::createInstance(QWidget *parent )
 {
     return new AlgorithmConnectedThresholdToolbox( parent );
