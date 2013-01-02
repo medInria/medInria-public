@@ -476,54 +476,59 @@ void medToolBoxRegistration::onSuccess()
 //! Synchronises the window/level of the layer 0 of the fixedView with the layer 0 of the fuseView, and the layer 0 of the movingView with the layer 1 of the fuseView. 
 void medToolBoxRegistration::synchroniseWindowLevel(){ 
 			
-	double window,level;
+    double window,level;
     
-	if (d->fixedView==QObject::sender())
-	{
-		d->fixedView->windowLevel(level,window);
-		d->fuseView->setCurrentLayer(0);
-		d->fuseView->onWindowingChanged(level,window);
-	}
-	else if (d->movingView==QObject::sender())
-	{
-		d->movingView->windowLevel(level,window);
-		d->fuseView->setCurrentLayer(1);
-		d->fuseView->onWindowingChanged(level,window);
-	}
-	else{		
-		d->fuseView->windowLevel(level,window);
-		if (d->movingView->windowingLinked() && d->fixedView->windowingLinked()){
-			d->fixedView->onWindowingChanged(level,window);
-			d->movingView->onWindowingChanged(level,window);
-			if (d->fuseView->currentLayer()==0){ // Since the fixed view and moving view are linked we must assure that the two layers of the fuse view are changed.
-				d->fuseView->setCurrentLayer(1);
-				d->fuseView->onWindowingChanged(level,window);
-			}
-			else if (d->fuseView->currentLayer()==1)
-			{
-				d->fuseView->setCurrentLayer(0);
-				d->fuseView->onWindowingChanged(level,window);
-			}
-		}
-		else if (d->fuseView->currentLayer()==0)
-			d->fixedView->onWindowingChanged(level,window);
-		else if (d->fuseView->currentLayer()==1)	
-			d->movingView->onWindowingChanged(level,window);
-		// In the case that the currentLayer>1 we do nothing.
-	}
+    if (d->fixedView==QObject::sender())
+    {
+        d->fixedView->windowLevel(level,window);
+        d->fuseView->setCurrentLayer(0);
+        d->fuseView->onWindowingChanged(level,window);
+    }
+    else if (d->movingView==QObject::sender())
+    {
+        d->movingView->windowLevel(level,window);
+        d->fuseView->setCurrentLayer(1);
+        d->fuseView->onWindowingChanged(level,window);
+    }
+    else
+    {		
+        d->fuseView->windowLevel(level,window);
+        if (d->fixedView && d->fixedView->windowingLinked() && d->movingView && d->movingView->windowingLinked())
+        {
+            d->fixedView->onWindowingChanged(level,window);
+            d->movingView->onWindowingChanged(level,window);
+            if (d->fuseView->currentLayer()==0)// Since the fixed view and moving view are linked we must assure that the two layers of the fuse view are changed.
+            { 
+                d->fuseView->setCurrentLayer(1);
+                d->fuseView->onWindowingChanged(level,window);
+            }
+            else if (d->fuseView->currentLayer()==1)
+            {
+                d->fuseView->setCurrentLayer(0);
+                d->fuseView->onWindowingChanged(level,window);
+            }
+        }
+        else if (d->fixedView && d->fuseView->currentLayer()==0)
+            d->fixedView->onWindowingChanged(level,window);
+        else if (d->movingView && d->fuseView->currentLayer()==1)	
+            d->movingView->onWindowingChanged(level,window);
+        // In the case that the currentLayer>1 we do nothing.
+    }
 }
 //! Synchronises the position between the compare and the fuse mode.
 void medToolBoxRegistration::synchronisePosition(const QVector3D &position){ 
    
     if (d->fixedView==QObject::sender() || d->movingView==QObject::sender())
     {
-        if (d->fixedView->positionLinked() && d->movingView->positionLinked()) // If the fixedView and movingView are linked in position then the changes also appear in fuseView.
+        if (d->fixedView && d->fixedView->positionLinked() && d->movingView &&  d->movingView->positionLinked()) // If the fixedView and movingView are linked in position then the changes also appear in fuseView.
             d->fuseView->onPositionChanged(position);
     }
     else // the changes in fuseView are propagated to the fixedView and movingView.
     {		
-        d->fixedView->onPositionChanged(position);
-        d->movingView->onPositionChanged(position);
+        if (d->fixedView)
+            d->fixedView->onPositionChanged(position);
+        if (d->movingView)
+            d->movingView->onPositionChanged(position);
     }
 }
 
