@@ -169,10 +169,10 @@ void medSettingsEditor::initialize()
 
 
     // connections
-    connect(this,SIGNAL(showError(QObject*,const        QString&,unsigned int)),
-        medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
-    connect(this,SIGNAL(showInfo(QObject*,const        QString&,unsigned int)),
-        medMessageController::instance(),SLOT(showInfo (QObject*,const QString&,unsigned int)));
+    connect(this,SIGNAL(showError(const        QString&,unsigned int)),
+        medMessageController::instance(),SLOT(showError (const QString&,unsigned int)));
+    connect(this,SIGNAL(showInfo(const        QString&,unsigned int)),
+        medMessageController::instance(),SLOT(showInfo (const QString&,unsigned int)));
 
     d->isInitialized = true;
 }
@@ -224,7 +224,7 @@ bool medSettingsEditor::save()
                     "failed";
                 QString error = tr("Error in validation of tabname ");
                 error.append(setting->tabName());
-                emit (showError(this,error,3000));
+                emit (showError(error,3000));
                 success = false;
             }
             else
@@ -236,7 +236,7 @@ bool medSettingsEditor::save()
     }
     if (success)
     {
-        emit (showInfo(this,
+        emit (showInfo(
             tr("Settings successfully saved"),
             3000));
     }

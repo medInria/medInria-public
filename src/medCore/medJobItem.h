@@ -52,7 +52,7 @@ signals:
     void success   (QObject* sender);
     void failure   (QObject* sender);
     void cancelled (QObject* sender);
-    void showError (QObject* sender, const QString& message, unsigned int timeout);
+    void showError (const QString& message, unsigned int timeout);
     void activate(QObject* sender,bool active);
 
     /**

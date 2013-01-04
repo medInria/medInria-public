@@ -120,10 +120,10 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medWorkspace * w
     addWidget(d->toolBoxes);
 
     //Connect Message Controller:
-    connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
-    connect(this,SIGNAL(showInfo(QObject*,const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showInfo(QObject*,const QString&,unsigned int)));
+    connect(this,SIGNAL(showError(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
+    connect(this,SIGNAL(showInfo(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showInfo(const QString&,unsigned int)));
 }
 
 medSegmentationSelectorToolBox::~medSegmentationSelectorToolBox(void)

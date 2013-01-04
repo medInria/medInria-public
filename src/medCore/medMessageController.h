@@ -36,49 +36,38 @@ class MEDCORE_EXPORT medMessageControllerMessage : public QWidget
     Q_OBJECT
 
 public:
-     medMessageControllerMessage(QObject* sender, QWidget *parent = 0);
+     medMessageControllerMessage(QObject* sender, QWidget *parent = 0, const QString& text=NULL, unsigned int timeout=0, bool progress=false);
     ~medMessageControllerMessage(void);
 
     QWidget * getWidget();
-    
+
+	    
 protected:
     QObject* sender;
+	QProgressBar *progress;
+	QLabel *icon;
+	QTimer *timer;
+	QLabel *info;
 
     //The widget containing the message
     QWidget* widget;
-};
-
-
-// /////////////////////////////////////////////////////////////////
-// medMessageControllerMessageSimple
-// /////////////////////////////////////////////////////////////////
-
-class medMessageControllerMessageSimple : public medMessageControllerMessage
-{
-    Q_OBJECT
-
-public:
-     medMessageControllerMessageSimple(QObject* sender,const QString& text, QWidget *parent = 0, unsigned int timeout=0);
-    ~medMessageControllerMessageSimple(void);
-
-protected:
-    QLabel *icon;
-    QTimer *timer;
 
 protected slots:
     void remove(void);
 };
 
+
+
 // /////////////////////////////////////////////////////////////////
 // medMessageControllerMessageInfo
 // /////////////////////////////////////////////////////////////////
 
-class medMessageControllerMessageInfo : public medMessageControllerMessageSimple
+class medMessageControllerMessageInfo : public medMessageControllerMessage
 {
     Q_OBJECT
 
 public:
-     medMessageControllerMessageInfo(QObject* sender,const QString& text, QWidget *parent = 0,
+     medMessageControllerMessageInfo(const QString& text, QWidget *parent = 0,
                                      unsigned int timeout=0);
     ~medMessageControllerMessageInfo(void);
 };
@@ -87,11 +76,11 @@ public:
 // medMessageControllerMessageError
 // /////////////////////////////////////////////////////////////////
 
-class medMessageControllerMessageError : public medMessageControllerMessageSimple
+class medMessageControllerMessageError : public medMessageControllerMessage
 {
     Q_OBJECT
 public:
-     medMessageControllerMessageError(QObject* sender,const QString& text, QWidget *parent = 0,
+     medMessageControllerMessageError(const QString& text, QWidget *parent = 0,
                                       unsigned int timeout=0);
     ~medMessageControllerMessageError(void);
 };
@@ -100,7 +89,6 @@ public:
 // medMessageControllerMessageProgress
 // /////////////////////////////////////////////////////////////////
 
-class medMessageControllerMessageProgressPrivate;
 
 class MEDCORE_EXPORT medMessageControllerMessageProgress : public medMessageControllerMessage
 {
@@ -110,11 +98,12 @@ public:
      medMessageControllerMessageProgress(QObject* sender,const QString& text, QWidget *parent = 0);
     ~medMessageControllerMessageProgress(void);
 
+	void successMessage();
+	void abortMessage();
+
 public slots:
     void setProgress(int value);
 
-private:
-    medMessageControllerMessageProgressPrivate *d;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -151,13 +140,16 @@ public:
     static medMessageController *instance(void);
 
 public slots:
-    void     showInfo(QObject *sender, const QString& text,unsigned int timeout=0);
-    void     showError(QObject *sender, const QString& text,unsigned int timeout=0);
+    void     showInfo(const QString& text,unsigned int timeout=0);
+    void     showError(const QString& text,unsigned int timeout=0);
     void     showProgress(QObject *sender, const QString& text);
 
     void setProgress(int value);
+	void success(QObject *sender);
+	void failure (QObject *sender);
 
     void remove(QObject *sender);
+	void remove(medMessageControllerMessage *message);
 
 signals:
   void addMessage(QWidget * message);

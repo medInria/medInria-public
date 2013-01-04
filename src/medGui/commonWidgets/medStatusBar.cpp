@@ -34,16 +34,9 @@ void medStatusBar::addMessage ( QWidget* widget )
     if ( widget )
         if ( d->statusBarLayout )
             d->statusBarLayout->insertWidget ( 1, widget );
-    this->update();
-    qApp->processEvents();
 }
 
 void medStatusBar::removeMessage ( QWidget* widget )
 {
-    if ( widget )
-        if ( d->statusBarLayout )
-            d->statusBarLayout->removeWidget ( widget );
     widget->deleteLater();
-    this->update();
-    qApp->processEvents();
 }

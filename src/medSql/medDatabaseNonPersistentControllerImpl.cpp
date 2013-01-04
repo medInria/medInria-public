@@ -105,9 +105,9 @@ void medDatabaseNonPersistentControllerImpl::import(const QString& file,QString 
     connect(reader, SIGNAL(nonPersistentRead(const medDataIndex &,const QString &)),
             this, SIGNAL(updated(const medDataIndex &, const QString&)));
     connect(reader, SIGNAL(success(QObject *)),
-            medMessageController::instance(), SLOT(remove(QObject *)));
+            medMessageController::instance(), SLOT(success(QObject *)));
     connect(reader, SIGNAL(failure(QObject *)),
-            medMessageController::instance(), SLOT(remove(QObject *)));
+            medMessageController::instance(), SLOT(failure(QObject *)));
 
     medMessageController::instance()->showProgress(reader,tr("Opening file item"));
 
@@ -167,8 +167,8 @@ void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
 
     connect(importer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
     connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &, QString)));
-    connect(importer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(importer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(importer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(success(QObject *)));
+    connect(importer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(failure(QObject *)));
 
     medMessageController::instance()->showProgress(importer, "Importing data item");
 
