@@ -96,8 +96,8 @@ public:
 
 public slots:
     void setProgress(int value);
-	void success(void);
-	void failure(void);
+    void success(void);
+    void failure(void);
 
 };
 
@@ -139,7 +139,7 @@ public slots:
     void     showError(const QString& text,unsigned int timeout=0);
     medMessageProgress * showProgress(const QString& text);
 
-	void remove(medMessage *message);
+    void remove(medMessage *message);
 
 signals:
   void addMessage(QWidget * message);

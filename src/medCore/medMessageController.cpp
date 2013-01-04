@@ -27,15 +27,14 @@
 // medMessage
 // /////////////////////////////////////////////////////////////////
 
-medMessage::medMessage(
-                                                         QWidget *parent,
-														 const QString& text, 
-														 unsigned int timeout, 
-														 bool messageProgress) : QWidget(parent)
+medMessage::medMessage( QWidget *parent,
+                        const QString& text, 
+                        unsigned int timeout, 
+                        bool messageProgress) : QWidget(parent)
 {
     this->setFixedWidth(400);
 	
-	icon = new QLabel(this);
+    icon = new QLabel(this);
 
     info = new QLabel(this);
     info->setText(text);
@@ -53,7 +52,7 @@ medMessage::medMessage(
         timer->start(timeout);
     }
 
-	if (messageProgress){
+    if (messageProgress){
 		progress = new QProgressBar(this);
 		progress->setMinimum(0);
 		progress->setMaximum(100);
@@ -98,7 +97,7 @@ medMessageError::medMessageError(
         medMessage(parent, text, timeout)
 {
     icon->setPixmap(QPixmap(":/icons/exclamation.png"));
-	this->setFixedWidth(300);
+    this->setFixedWidth(300);
 }
 
 medMessageError::~medMessageError(void)
@@ -124,8 +123,8 @@ medMessageProgress::~medMessageProgress(void)
 void medMessageProgress::setProgress(int value)
 {
     progress->setValue(value);
-	progress->update();
-	qApp->processEvents();
+    progress->update();
+    qApp->processEvents();
 }
 
 void medMessageProgress::success(void)
@@ -242,7 +241,7 @@ medMessageProgress * medMessageController::showProgress(const QString& text)
         medMessageProgress *message = new medMessageProgress(text);
 
         emit addMessage(message);
-		return message;
+        return message;
 
     } /*else {
         dtkDebug() << "Progress : " << text;
