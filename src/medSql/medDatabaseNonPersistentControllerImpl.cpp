@@ -100,16 +100,16 @@ void medDatabaseNonPersistentControllerImpl::import(const QString& file,QString 
     medDatabaseNonPersistentReader *reader =
             new medDatabaseNonPersistentReader(file,importUuid);
 
+	medMessageControllerMessageProgress *message = medMessageController::instance()->showProgress(tr("Opening file item"));
+
     connect(reader, SIGNAL(progressed(int)),
-            medMessageController::instance(), SLOT(setProgress(int)));
+            message, SLOT(setProgress(int)));
     connect(reader, SIGNAL(nonPersistentRead(const medDataIndex &,const QString &)),
             this, SIGNAL(updated(const medDataIndex &, const QString&)));
     connect(reader, SIGNAL(success(QObject *)),
-            medMessageController::instance(), SLOT(success(QObject *)));
+            message, SLOT(success()));
     connect(reader, SIGNAL(failure(QObject *)),
-            medMessageController::instance(), SLOT(failure(QObject *)));
-
-    medMessageController::instance()->showProgress(reader,tr("Opening file item"));
+            message, SLOT(failure()));
 
     medJobManager::instance()->registerJobItem(reader);
     QThreadPool::globalInstance()->start(reader);
@@ -164,13 +164,12 @@ void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
     qDebug() << "DEBUG : entering medDatabaseNonPersistentControllerImpl::import";
 
     medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data,callerUuid);
+	medMessageControllerMessageProgress *message = medMessageController::instance()->showProgress("Importing data item");
 
-    connect(importer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
     connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &, QString)));
-    connect(importer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(success(QObject *)));
-    connect(importer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(failure(QObject *)));
-
-    medMessageController::instance()->showProgress(importer, "Importing data item");
+    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
 
     medJobManager::instance()->registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);

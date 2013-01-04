@@ -36,21 +36,16 @@ class MEDCORE_EXPORT medMessageControllerMessage : public QWidget
     Q_OBJECT
 
 public:
-     medMessageControllerMessage(QObject* sender, QWidget *parent = 0, const QString& text=NULL, unsigned int timeout=0, bool progress=false);
+     medMessageControllerMessage(QWidget *parent = 0, const QString& text=NULL, unsigned int timeout=0, bool progress=false);
     ~medMessageControllerMessage(void);
-
-    QWidget * getWidget();
 
 	    
 protected:
-    QObject* sender;
 	QProgressBar *progress;
 	QLabel *icon;
 	QTimer *timer;
 	QLabel *info;
 
-    //The widget containing the message
-    QWidget* widget;
 
 protected slots:
     void remove(void);
@@ -95,14 +90,14 @@ class MEDCORE_EXPORT medMessageControllerMessageProgress : public medMessageCont
     Q_OBJECT
 
 public:
-     medMessageControllerMessageProgress(QObject* sender,const QString& text, QWidget *parent = 0);
+     medMessageControllerMessageProgress(const QString& text, QWidget *parent = 0);
     ~medMessageControllerMessageProgress(void);
 
-	void successMessage();
-	void abortMessage();
 
 public slots:
     void setProgress(int value);
+	void success(void);
+	void failure(void);
 
 };
 
@@ -117,7 +112,7 @@ class MEDCORE_EXPORT medMessageControllerMessageQuestion : public medMessageCont
     Q_OBJECT
 
 public:
-     medMessageControllerMessageQuestion(QObject* sender, const QString& text, QWidget *parent = 0);
+     medMessageControllerMessageQuestion(const QString& text, QWidget *parent = 0);
     ~medMessageControllerMessageQuestion(void);
 
 signals:
@@ -142,13 +137,8 @@ public:
 public slots:
     void     showInfo(const QString& text,unsigned int timeout=0);
     void     showError(const QString& text,unsigned int timeout=0);
-    void     showProgress(QObject *sender, const QString& text);
+    medMessageControllerMessageProgress * showProgress(const QString& text);
 
-    void setProgress(int value);
-	void success(QObject *sender);
-	void failure (QObject *sender);
-
-    void remove(QObject *sender);
 	void remove(medMessageControllerMessage *message);
 
 signals:
