@@ -402,7 +402,7 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
 void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUuid)
 {
     medDatabaseWriter *writer = new medDatabaseWriter(data, importUuid);
-	medMessageControllerMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
+	medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
     //if we want to add importUuid support to permanent db,
     //we need to change the importer and its addedIndex signal to suppot importUuid
     //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
@@ -437,7 +437,7 @@ void medDatabaseControllerImpl::exportDataToFile(dtkAbstractData *data, const QS
 dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIndex& index) const
 {
     QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
-	medMessageControllerMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
+	medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
 
     connect(reader.data(), SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
     connect(reader.data(), SIGNAL(success(QObject *)), message, SLOT(success()));
@@ -643,7 +643,7 @@ qint64 medDatabaseControllerImpl::getEstimatedSize( const medDataIndex& index ) 
 void medDatabaseControllerImpl::remove( const medDataIndex& index )
 {
     medDatabaseRemover *remover = new medDatabaseRemover(index);
-	medMessageControllerMessageProgress *message = medMessageController::instance()->showProgress("Removing item");
+	medMessageProgress *message = medMessageController::instance()->showProgress("Removing item");
 
     connect(remover, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
     connect(remover, SIGNAL(success(QObject *)), message, SLOT(success()));

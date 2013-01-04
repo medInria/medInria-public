@@ -100,7 +100,7 @@ void medDatabaseNonPersistentControllerImpl::import(const QString& file,QString 
     medDatabaseNonPersistentReader *reader =
             new medDatabaseNonPersistentReader(file,importUuid);
 
-	medMessageControllerMessageProgress *message = medMessageController::instance()->showProgress(tr("Opening file item"));
+	medMessageProgress *message = medMessageController::instance()->showProgress(tr("Opening file item"));
 
     connect(reader, SIGNAL(progressed(int)),
             message, SLOT(setProgress(int)));
@@ -164,7 +164,7 @@ void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
     qDebug() << "DEBUG : entering medDatabaseNonPersistentControllerImpl::import";
 
     medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data,callerUuid);
-	medMessageControllerMessageProgress *message = medMessageController::instance()->showProgress("Importing data item");
+	medMessageProgress *message = medMessageController::instance()->showProgress("Importing data item");
 
     connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
     connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &, QString)));

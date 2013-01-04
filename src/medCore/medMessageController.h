@@ -28,16 +28,16 @@
 class medMessageControllerPrivate;
 
 // /////////////////////////////////////////////////////////////////
-// medMessageControllerMessage
+// medMessage
 // /////////////////////////////////////////////////////////////////
 
-class MEDCORE_EXPORT medMessageControllerMessage : public QWidget
+class MEDCORE_EXPORT medMessage : public QWidget
 {
     Q_OBJECT
 
 public:
-     medMessageControllerMessage(QWidget *parent = 0, const QString& text=NULL, unsigned int timeout=0, bool progress=false);
-    ~medMessageControllerMessage(void);
+     medMessage(QWidget *parent = 0, const QString& text=NULL, unsigned int timeout=0, bool progress=false);
+    ~medMessage(void);
 
 	    
 protected:
@@ -54,44 +54,44 @@ protected slots:
 
 
 // /////////////////////////////////////////////////////////////////
-// medMessageControllerMessageInfo
+// medMessageInfo
 // /////////////////////////////////////////////////////////////////
 
-class medMessageControllerMessageInfo : public medMessageControllerMessage
+class medMessageInfo : public medMessage
 {
     Q_OBJECT
 
 public:
-     medMessageControllerMessageInfo(const QString& text, QWidget *parent = 0,
+     medMessageInfo(const QString& text, QWidget *parent = 0,
                                      unsigned int timeout=0);
-    ~medMessageControllerMessageInfo(void);
+    ~medMessageInfo(void);
 };
 
 // /////////////////////////////////////////////////////////////////
-// medMessageControllerMessageError
+// medMessageError
 // /////////////////////////////////////////////////////////////////
 
-class medMessageControllerMessageError : public medMessageControllerMessage
+class medMessageError : public medMessage
 {
     Q_OBJECT
 public:
-     medMessageControllerMessageError(const QString& text, QWidget *parent = 0,
+     medMessageError(const QString& text, QWidget *parent = 0,
                                       unsigned int timeout=0);
-    ~medMessageControllerMessageError(void);
+    ~medMessageError(void);
 };
 
 // /////////////////////////////////////////////////////////////////
-// medMessageControllerMessageProgress
+// medMessageProgress
 // /////////////////////////////////////////////////////////////////
 
 
-class MEDCORE_EXPORT medMessageControllerMessageProgress : public medMessageControllerMessage
+class MEDCORE_EXPORT medMessageProgress : public medMessage
 {
     Q_OBJECT
 
 public:
-     medMessageControllerMessageProgress(const QString& text, QWidget *parent = 0);
-    ~medMessageControllerMessageProgress(void);
+     medMessageProgress(const QString& text, QWidget *parent = 0);
+    ~medMessageProgress(void);
 
 
 public slots:
@@ -102,25 +102,25 @@ public slots:
 };
 
 // /////////////////////////////////////////////////////////////////
-// medMessageControllerMessageQuestion
+// medMessageQuestion
 // /////////////////////////////////////////////////////////////////
 
-class medMessageControllerMessageQuestionPrivate;
+class medMessageQuestionPrivate;
 
-class MEDCORE_EXPORT medMessageControllerMessageQuestion : public medMessageControllerMessage
+class MEDCORE_EXPORT medMessageQuestion : public medMessage
 {
     Q_OBJECT
 
 public:
-     medMessageControllerMessageQuestion(const QString& text, QWidget *parent = 0);
-    ~medMessageControllerMessageQuestion(void);
+     medMessageQuestion(const QString& text, QWidget *parent = 0);
+    ~medMessageQuestion(void);
 
 signals:
     void accepted(void);
     void rejected(void);
 
 private:
-    medMessageControllerMessageQuestionPrivate *d;
+    medMessageQuestionPrivate *d;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -137,9 +137,9 @@ public:
 public slots:
     void     showInfo(const QString& text,unsigned int timeout=0);
     void     showError(const QString& text,unsigned int timeout=0);
-    medMessageControllerMessageProgress * showProgress(const QString& text);
+    medMessageProgress * showProgress(const QString& text);
 
-	void remove(medMessageControllerMessage *message);
+	void remove(medMessage *message);
 
 signals:
   void addMessage(QWidget * message);

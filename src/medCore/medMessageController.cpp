@@ -24,10 +24,10 @@
 #include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
-// medMessageControllerMessage
+// medMessage
 // /////////////////////////////////////////////////////////////////
 
-medMessageControllerMessage::medMessageControllerMessage(
+medMessage::medMessage(
                                                          QWidget *parent,
 														 const QString& text, 
 														 unsigned int timeout, 
@@ -63,72 +63,72 @@ medMessageControllerMessage::medMessageControllerMessage(
     this->setLayout(layout);
 }
 
-medMessageControllerMessage::~medMessageControllerMessage(void)
+medMessage::~medMessage(void)
 {
 
 }
 
-void medMessageControllerMessage::remove(){
+void medMessage::remove(){
 	medMessageController::instance()->remove(this);
 }
 
 // /////////////////////////////////////////////////////////////////
-// medMessageControllerMessageInfo
+// medMessageInfo
 // /////////////////////////////////////////////////////////////////
 
-medMessageControllerMessageInfo::medMessageControllerMessageInfo(
+medMessageInfo::medMessageInfo(
         const QString& text, QWidget *parent,unsigned int timeout) :
-        medMessageControllerMessage(parent,text, timeout)
+        medMessage(parent,text, timeout)
 {
     icon->setPixmap(QPixmap(":/icons/information.png"));
 	this->setFixedWidth(200);
 }
 
-medMessageControllerMessageInfo::~medMessageControllerMessageInfo(void)
+medMessageInfo::~medMessageInfo(void)
 {
 
 }
 
 // /////////////////////////////////////////////////////////////////
-// medMessageControllerMessageError
+// medMessageError
 // /////////////////////////////////////////////////////////////////
 
-medMessageControllerMessageError::medMessageControllerMessageError(
+medMessageError::medMessageError(
         const QString& text, QWidget *parent,unsigned int timeout) :
-        medMessageControllerMessage(parent, text, timeout)
+        medMessage(parent, text, timeout)
 {
     icon->setPixmap(QPixmap(":/icons/exclamation.png"));
 	this->setFixedWidth(300);
 }
 
-medMessageControllerMessageError::~medMessageControllerMessageError(void)
+medMessageError::~medMessageError(void)
 {
 
 }
 
 // /////////////////////////////////////////////////////////////////
-// medMessageControllerMessageProgress
+// medMessageProgress
 // /////////////////////////////////////////////////////////////////
 
 
-medMessageControllerMessageProgress::medMessageControllerMessageProgress(
+medMessageProgress::medMessageProgress(
         const QString& text, QWidget *parent) :
-        medMessageControllerMessage(parent, text, 0, true)
+        medMessage(parent, text, 0, true)
 {
 }
 
-medMessageControllerMessageProgress::~medMessageControllerMessageProgress(void)
+medMessageProgress::~medMessageProgress(void)
 {
 }
 
-void medMessageControllerMessageProgress::setProgress(int value)
+void medMessageProgress::setProgress(int value)
 {
     progress->setValue(value);
 	progress->update();
 	qApp->processEvents();
 }
 
-void medMessageControllerMessageProgress::success(void)
+void medMessageProgress::success(void)
 
 
 {
@@ -141,7 +141,7 @@ void medMessageControllerMessageProgress::success(void)
 
 }
 
-void medMessageControllerMessageProgress::failure(void)
+void medMessageProgress::failure(void)
 
 
 {
@@ -155,15 +155,15 @@ void medMessageControllerMessageProgress::failure(void)
 }
 
 // /////////////////////////////////////////////////////////////////
-// medMessageControllerMessageQuestion
+// medMessageQuestion
 // /////////////////////////////////////////////////////////////////
 
-class medMessageControllerMessageQuestionPrivate
+class medMessageQuestionPrivate
 {
 public:
 };
 
-medMessageControllerMessageQuestion::medMessageControllerMessageQuestion(const QString& text, QWidget *parent) : medMessageControllerMessage(parent), d(new medMessageControllerMessageQuestionPrivate)
+medMessageQuestion::medMessageQuestion(const QString& text, QWidget *parent) : medMessage(parent), d(new medMessageQuestionPrivate)
 {
     QLabel *icon = new QLabel(this);
     icon->setPixmap(QPixmap(":/icons/information.png"));
@@ -189,7 +189,7 @@ medMessageControllerMessageQuestion::medMessageControllerMessageQuestion(const Q
     this->setLayout(layout);
 }
 
-medMessageControllerMessageQuestion::~medMessageControllerMessageQuestion(void)
+medMessageQuestion::~medMessageQuestion(void)
 {
     delete d;
 }
@@ -211,7 +211,7 @@ void medMessageController::showInfo(const QString& text,unsigned int timeout)
 {
     if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) {
         // GUI
-        medMessageControllerMessageInfo *message = new medMessageControllerMessageInfo(
+        medMessageInfo *message = new medMessageInfo(
                 text,0,timeout);
 
         emit addMessage(message);
@@ -225,7 +225,7 @@ void medMessageController::showError(const QString& text,unsigned int timeout)
 {
     if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) {
         // GUI
-        medMessageControllerMessageError *message = new medMessageControllerMessageError(
+        medMessageError *message = new medMessageError(
                 text,0,timeout);
 
         emit addMessage(message);
@@ -235,11 +235,11 @@ void medMessageController::showError(const QString& text,unsigned int timeout)
     }
 }
 
-medMessageControllerMessageProgress * medMessageController::showProgress(const QString& text)
+medMessageProgress * medMessageController::showProgress(const QString& text)
 {
     if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) {
         // GUI
-        medMessageControllerMessageProgress *message = new medMessageControllerMessageProgress(text);
+        medMessageProgress *message = new medMessageProgress(text);
 
         emit addMessage(message);
 		return message;
@@ -251,7 +251,7 @@ medMessageControllerMessageProgress * medMessageController::showProgress(const Q
 }
 
 
-void medMessageController::remove(medMessageControllerMessage *message){
+void medMessageController::remove(medMessage *message){
 	if(message != NULL){
 		emit removeMessage(message);
 		delete message;
