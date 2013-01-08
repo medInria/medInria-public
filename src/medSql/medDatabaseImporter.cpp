@@ -1226,32 +1226,30 @@ QString medDatabaseImporter::ensureUniqueSeriesName ( const QString seriesName )
 {
     QSqlDatabase db = * ( medDatabaseController::instance()->database() );
 
+    QSqlQuery query ( db );
+    query.prepare ( "SELECT name FROM series WHERE name LIKE '" + seriesName + "%'" );
+
+    if ( !query.exec() )
+        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+
+    QStringList seriesNames;
+    while (query.next())
+    {
+        QString sname = query.value(0).toString();
+        seriesNames << sname;
+    }
+
     QString originalSeriesName = seriesName;
     QString newSeriesName = seriesName;
     int suffix = 0;
 
-    bool continueSearch = true;
+    bool continueSearch = !seriesNames.isEmpty();
 
-    while (continueSearch)
+    while (seriesNames.contains(newSeriesName))
     {
-        QSqlQuery query ( db );
-        query.prepare ( "SELECT * FROM series WHERE name = :seriesName" );
-        query.bindValue ( ":seriesName", newSeriesName );
-
-        if ( !query.exec() )
-            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-
-        if ( query.first() )
-        {
-           // it exist
-            suffix++;
-            newSeriesName = originalSeriesName + "_" + QString::number(suffix);
-        }
-        else
-        {
-            // it does not exist
-            continueSearch = false;
-        }
+       // it exist
+        suffix++;
+        newSeriesName = originalSeriesName + "_" + QString::number(suffix);
     }
 
     return newSeriesName;
