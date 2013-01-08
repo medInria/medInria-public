@@ -232,8 +232,7 @@ void v3dViewFiberInteractor::onVisibilityPropertySet (const QString& value)
 void v3dViewFiberInteractor::onBoxVisibilityPropertySet (const QString& value)
 {
     if (d->view && d->view->property("Orientation")!="3D") {
-        medMessageController::instance()->showError(this,
-                                                    "View must be in 3D mode to activate the bundling box",
+        medMessageController::instance()->showError("View must be in 3D mode to activate the bundling box",
                                                     3000);
         d->manager->SetBoxWidget(0);
         return;

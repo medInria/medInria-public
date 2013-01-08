@@ -878,7 +878,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
 
     if (data->identifier().contains( "vtkDataMesh" ) && medAbstractView::isInList(data))
     {
-        medMessageController::instance()->showError ( this, tr ( "The mesh is already visualized" ), 5000 );
+        medMessageController::instance()->showError (tr ( "The mesh is already visualized" ), 5000 );
         return;
     }
 
