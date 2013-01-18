@@ -28,7 +28,6 @@ include_directories(QSingleApplication)
 set(${PROJECT_NAME}_HEADERS_MOC
   medApplication.h
   medHomepageArea.h
-  medHomepageButton.h
   medBrowserArea.h
   medBrowserSourceSelectorToolBox.h
   medMainWindow.h
@@ -60,7 +59,6 @@ set(${PROJECT_NAME}_SOURCES
   main.cpp
   medApplication.cpp
   medHomepageArea.cpp
-  medHomepageButton.cpp
   medBrowserArea.cpp
   medBrowserSourceSelectorToolBox.cpp
   medMainWindow.cpp
