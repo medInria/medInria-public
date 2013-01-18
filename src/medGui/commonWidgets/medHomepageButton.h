@@ -34,6 +34,9 @@
 class medHomepagePushButton : public QPushButton
 {
     Q_OBJECT
+    
+    Q_PROPERTY(bool selected READ isSelected WRITE setSelected);
+    
 public:
     medHomepagePushButton ( QWidget * parent = 0 );
 
@@ -51,8 +54,12 @@ public:
      */
     QString identifier ();
 
+    bool selected() const;
+    bool isSelected() const;
+
 public slots:
     void onClick ( void );
+    void setSelected(bool value);
 
 signals:
     /**
@@ -63,11 +70,13 @@ signals:
 
 private:
     QString id;
+    bool m_selected;
 };
 
 class medQuickAccessPushButton : public QPushButton
 {
     Q_OBJECT
+
 public:
     medQuickAccessPushButton ( QWidget * parent = 0 );
 
@@ -76,7 +85,6 @@ public slots:
 
 signals:
     void clicked ( QString text );
-
 };
 
 class medHomepageButton : public QToolButton
