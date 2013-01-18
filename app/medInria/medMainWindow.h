@@ -41,7 +41,6 @@ public:
     void writeSettings();
 
     void setStartup(const AreaType areaIndex,const QStringList& filenames);
-    void updateQuickAccessMenu(void);
     void resizeEvent( QResizeEvent * event );
 
 public slots:
@@ -64,6 +63,8 @@ private slots:
     void onShowWorkspace(QString workspace);
     void onShowQuickAccess(void);
     void onHideQuickAccess(void);
+    void onShowShortcutAccess(void);
+    void onHideShortcutAccess(void);
     void onWorkspaceTriggered(QAction *action);
     void onQuit(void);
     void onSaveModified(void);
