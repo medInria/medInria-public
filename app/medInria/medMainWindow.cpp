@@ -121,8 +121,8 @@ public:
     QList<QString>            importUuids;
 
     medQuickAccessMenu * quickAccessWidget;
-    QShortcut * quickShortcut;
     bool quickAccessVisible;
+    bool controlPressed;
     
     medQuickAccessMenu *shortcutAccessWidget;
     bool shortcutAccessVisible;
@@ -226,11 +226,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->shortcutAccessWidget, SIGNAL(switchToBrowserArea()), this, SLOT(switchToBrowserArea()));
     connect(d->shortcutAccessWidget, SIGNAL(showWorkspace(QString)), this, SLOT(onShowWorkspace(QString)));
     
-    d->quickShortcut = new QShortcut(this);
-    d->quickShortcut->setKey(Qt::ControlModifier + Qt::Key_A);
-    connect(d->quickShortcut,SIGNAL(activated()),this,SLOT(onShowShortcutAccess()));
-
     d->shortcutAccessVisible = false;
+    d->controlPressed = false;
     
     //Add quit button
     d->quitButton = new medButton ( this,":/icons/quit.png", tr ( "Quit Application" ) );
@@ -371,6 +368,37 @@ void medMainWindow::mousePressEvent ( QMouseEvent* event )
 {
     QWidget::mousePressEvent ( event );
     this->onHideQuickAccess();
+}
+
+void medMainWindow::keyPressEvent( QKeyEvent *event )
+{
+    if (event->key() == Qt::Key_Control)
+        d->controlPressed = true;
+    
+    if ((event->key() == Qt::Key_Shift)&&(d->controlPressed))
+    {
+        if (!d->shortcutAccessVisible)
+            this->onShowShortcutAccess();
+        else
+            d->shortcutAccessWidget->updateCurrentlySelectedRight();
+    }
+
+    QMainWindow::keyPressEvent(event);
+}
+
+void medMainWindow::keyReleaseEvent( QKeyEvent * event )
+{
+    if (event->key() == Qt::Key_Control)
+    {
+        if (d->shortcutAccessVisible)
+        {
+            d->shortcutAccessWidget->switchToCurrentlySelected();
+            this->onHideShortcutAccess();
+        }
+        d->controlPressed = false;
+    }
+    
+    QMainWindow::keyReleaseEvent(event);
 }
 
 void medMainWindow::readSettings ( void )

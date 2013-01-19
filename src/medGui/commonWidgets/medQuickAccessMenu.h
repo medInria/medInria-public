@@ -14,6 +14,11 @@ public:
     
     void reset(bool optimizeLayout);
     
+    void updateCurrentlySelectedRight();
+    void updateCurrentlySelectedLeft();
+    
+    void switchToCurrentlySelected ();
+    
 protected:
   /**
    *  emit the hideMenu() signal when the widget lost the focus
@@ -23,12 +28,7 @@ protected:
     void mouseMoveEvent (QMouseEvent * event);
     
     void keyPressEvent ( QKeyEvent * event );
-    
-    void updateCurrentlySelectedRight();
-    void updateCurrentlySelectedLeft();
-    
-    void switchToCurrentlySelected ();
-
+        
     void createHorizontalQuickAccessMenu();
     void createVerticalQuickAccessMenu();
     

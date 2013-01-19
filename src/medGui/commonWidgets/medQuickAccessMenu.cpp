@@ -3,7 +3,7 @@
 
 medQuickAccessMenu::medQuickAccessMenu ( bool vertical, QWidget* parent, Qt::WindowFlags f ) : QFrame ( parent, f )
 {
-    currentSelected = -1;
+    currentSelected = 0;
     if (vertical)
         this->createVerticalQuickAccessMenu();
     else
@@ -137,12 +137,13 @@ void medQuickAccessMenu::reset(bool optimizeLayout)
 {
     for (unsigned int i = 0;i < buttonsList.size();++i)
     {
-        buttonsList[i]->setSelected(false);
+        if (currentSelected == i)
+            buttonsList[i]->setSelected(true);
+        else
+            buttonsList[i]->setSelected(false);
         buttonsList[i]->style()->unpolish(buttonsList[i]);
         buttonsList[i]->style()->polish(buttonsList[i]);
     }
-    
-    currentSelected = -1;
     
     if (optimizeLayout)
     {
@@ -304,6 +305,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
     smallHomeButton->setCursor(Qt::PointingHandCursor);
     smallHomeButton->setIdentifier("Homepage");
     smallHomeButton->setText("Homepage");
+    smallHomeButton->setSelected(true);
     shortcutAccessLayout->addWidget ( smallHomeButton );
     QObject::connect ( smallHomeButton, SIGNAL ( clicked() ), this, SIGNAL ( switchToHomepageArea() ) );
     buttonsList.push_back(smallHomeButton);

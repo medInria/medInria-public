@@ -132,6 +132,9 @@ protected:
     void closeEvent(QCloseEvent *event);
 
     void mousePressEvent(QMouseEvent * event);
+    
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
     /**
      * all initial registering should be done here
