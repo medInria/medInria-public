@@ -180,6 +180,31 @@ void medTabbedViewContainers::insertContainer(int index, const QString &name, me
     this->insertTab(index,container, name);
 }
 
+void medTabbedViewContainers::changeCurrentContainerName(const QString &name)
+{
+    unsigned int index = this->currentIndex();
+    QString currentName = this->tabText(index);
+    medViewContainer *currentContainer = d->containers[currentName];
+    d->containers.remove(currentName);
+    
+    QString newName = name;
+    if (this->container(newName))
+    {
+        unsigned int i = 1;
+        newName = name + " ";
+        newName += QString::number(i);
+        while (this->container(newName))
+        {
+            ++i;
+            newName = name + " ";
+            newName += QString::number(i);
+        }
+    }
+    
+    this->setTabText(index,newName);
+    d->containers[newName] = currentContainer;
+}
+
 void medTabbedViewContainers::changeCurrentContainerType(const QString &name)
 {
     //qDebug() << "Changing container type to " << name << " from " << this->current()->identifier();

@@ -187,13 +187,20 @@ public slots:
      * @param index the tab index.
     */
     void onCurrentContainerChanged(int index);
-
+    
     /**
      * @brief Changes the type of the current container to name.
      *
      * @param name the container description.
-    */
+     */
     void changeCurrentContainerType(const QString &name);
+    
+    /**
+     * @brief Changes the name of the current tab.
+     *
+     * @param name the new tab name.
+     */
+    void changeCurrentContainerName(const QString &name);
 
     /**
      * @brief Deletes the container at current index (connected from close shortcut).

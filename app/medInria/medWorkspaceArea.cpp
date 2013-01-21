@@ -215,7 +215,20 @@ bool medWorkspaceArea::openInTab(const medDataIndex &index)
         createdName = d->currentWorkspace->addDefaultTypeContainer(createdName);
         d->currentWorkspace->stackedViewContainers()->setContainer(createdName);
     }
-
+    
+    medSettingsManager * mnger = medSettingsManager::instance();
+    QString defaultLayout = mnger->value("startup","default_container_layout",
+                                  "Multi").toString();
+    
+    if ((this->currentRootContainer()->views().isEmpty()))
+    {
+        medDataManager *dataManager = medDataManager::instance();
+        d->current_workspace->stackedViewContainers()->changeCurrentContainerType(defaultLayout);
+        medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
+        QString realName = dbc->metaData(index,medMetaDataKeys::PatientName.key());
+        d->current_workspace->stackedViewContainers()->changeCurrentContainerName(realName);
+    }
+    
     return this->open(index);
 }
 
@@ -288,6 +301,9 @@ bool medWorkspaceArea::open(const medDataIndex& index)
         QMutexLocker ( &d->mutex );
         if ( root != NULL )
         {
+            while (!root->isLeaf())
+                root = root->childContainers()[0];
+            
             //set the view to the current container
             root->setView(view);
             //only call reset if the view is a new one or with only one layer.
