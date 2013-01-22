@@ -301,8 +301,11 @@ bool medWorkspaceArea::open(const medDataIndex& index)
         QMutexLocker ( &d->mutex );
         if ( root != NULL )
         {
-            while (root->childContainers().size() != 0)
-                root = root->childContainers()[0];
+            if (!root->current())
+            {
+                while (root->childContainers().size() != 0)
+                    root = root->childContainers()[0];
+            }
             
             //set the view to the current container
             root->setView(view);
