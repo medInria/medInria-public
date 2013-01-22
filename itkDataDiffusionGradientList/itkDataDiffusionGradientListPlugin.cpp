@@ -46,8 +46,9 @@ itkDataDiffusionGradientListPlugin::~itkDataDiffusionGradientListPlugin(void)
 
 bool itkDataDiffusionGradientListPlugin::initialize(void)
 {
-    if(!itkDataDiffusionGradientList::registered())
+    if (!itkDataDiffusionGradientList::registered()) {
         dtkWarn() << "Unable to register itkDataDiffusionGradientList type";
+    }
 
     return true;
 }
