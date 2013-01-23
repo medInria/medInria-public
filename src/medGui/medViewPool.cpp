@@ -208,8 +208,6 @@ void medViewPool::onViewDaddy (bool daddy)
         
         if (daddy) { // view wants to become daddy
             
-            medAbstractView *refView = this->daddy();
-            
             // tell all views that they are not daddys
             QList< dtkSmartPointer<medAbstractView> >::iterator it = d->views.begin();
             for( ; it!=d->views.end(); it++)

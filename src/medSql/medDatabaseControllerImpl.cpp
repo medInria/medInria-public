@@ -727,12 +727,10 @@ bool medDatabaseControllerImpl::setMetaData( const medDataIndex& index, const QS
 
     bool success (false);
 
-    bool isPath = false;
     for ( TableEntryList::const_iterator entryIt(it.value().begin() ); entryIt != it.value().end(); ++entryIt ) {
 
         const QString tableName = entryIt->table;
         const QString columnName = entryIt->column;
-        isPath = entryIt->isPath;
 
         int id = -1;
         if ( tableName == d->T_image && index.isValidForImage() ) {

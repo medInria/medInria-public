@@ -8,8 +8,8 @@
 #include "medSeedPointAnnotationData.h"
 
 medSeedPointAnnotationData::medSeedPointAnnotationData() :
-    m_selectedColor(Qt::red),
     m_color(Qt::cyan),
+    m_selectedColor(Qt::red),
     m_radiusScene(10),
     m_selectedSeed(-1)
 {

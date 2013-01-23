@@ -204,20 +204,18 @@ void medDatabaseNonPersistentReader::run ( void )
         seriesToWriteMap[ key ] = seriesId;
     }
 
-    QMap<QString, int>::const_iterator itk = keyToInt.begin();
-
     // read and write images in mhd format
 
     QList< dtkSmartPointer<dtkAbstractData> > dtkDataList;
 
-    QMap<QString, QStringList>::const_iterator it = imagesToWriteMap.begin();
+    QMap<QString, QStringList>::const_iterator it;
     QMap<QString, QString>::const_iterator itPat = patientsToWriteMap.begin();
     QMap<QString, QString>::const_iterator itSer = seriesToWriteMap.begin();
 
     int imagesCount = imagesToWriteMap.count();
     int imageIndex = 0;
 
-    for ( it; it!=imagesToWriteMap.end(); it++ )
+    for ( it = imagesToWriteMap.begin(); it != imagesToWriteMap.end(); it++)
     {
         emit progress ( this, ( int ) ( ( ( qreal ) imageIndex/ ( qreal ) imagesCount ) *50.0 + 50.0 ) );
 

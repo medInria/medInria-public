@@ -1225,7 +1225,6 @@ void medClutEditorScene::adjustRange()
 void medClutEditorScene::scaleRange( qreal factor )
 {
     qreal center = 0.5 * ( d->rangeMin + d->rangeMax );
-    qreal range  = d->rangeMax - d->rangeMin;
 
     this->setRange( factor * ( d->rangeMin - center ) + center,
                     factor * ( d->rangeMax - center ) + center );
@@ -1301,22 +1300,27 @@ void medClutEditorView::wheelEvent( QWheelEvent * event )
     bool withCtrl =
         static_cast<bool>( event->modifiers() & Qt::ControlModifier );
 
-    if ( !withCtrl ) {
+    if ( !withCtrl )
+    {
         medClutEditorScene * scene =
             dynamic_cast< medClutEditorScene * >( this->scene() );
         if ( scene != NULL )
+        {
             if ( !withShift )
                 scene->scaleRange( scale );
             else
                 scene->shiftRange( shift );
+        }
     }
     else {
         medClutEditorTable * table = this->table();
         if ( table != NULL )
+        {
             if ( !withShift )
                 table->scaleWindowWidth( scale );
             else
                 table->shiftWindowCenter( shift );
+        }
     }
 
     this->update();
@@ -1614,10 +1618,12 @@ void medClutEditor::initializeTable(void)
 
 void medClutEditor::deleteTable(void)
 {
-    medClutEditorTable * table;
-    while ( table = d->scene->table() ) {
-        d->scene->removeItem( table );
-        delete table;
+    medClutEditorTable *table = d->scene->table();
+    while( table )
+    {
+        d->scene->removeItem( d->scene->table() );
+        delete d->scene->table();
+        table = d->scene->table();
     }
 }
 
@@ -1683,9 +1689,11 @@ void medClutEditor::onNewTableAction(void)
 
 void medClutEditor::onVertexMoved(void)
 {
-    if ( medClutEditorTable * table = d->scene->table() )
+    if ( d->scene->table() )
+    {
         if ( d->toggleDirectUpdateAction->isChecked() )
             this->applyTable();
+    }
 }
 
 void medClutEditor::onApplyTablesAction(void)

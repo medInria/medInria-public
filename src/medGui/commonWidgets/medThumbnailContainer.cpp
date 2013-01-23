@@ -102,7 +102,7 @@ medThumbnailContainer::medThumbnailContainer(QList<medDataIndex>& previouslyCont
 
     qreal item_width = medDatabasePreviewController::instance()->itemWidth(); //128
     qreal item_height = medDatabasePreviewController::instance()->itemHeight(); //128
-    qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing(); //10
+
 
     this->setMinimumHeight(item_height);
     this->setMinimumWidth(item_width);
@@ -266,7 +266,6 @@ void medThumbnailContainer::moveSelectorToItem(medDatabasePreviewItem* targetIte
     qreal item_height = medDatabasePreviewController::instance()->itemHeight();
     qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
     qreal item_margins = selector_width - item_width;
-    qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
 
     QPoint selector_offset((medDatabasePreviewController::instance()->selectorWidth()  - medDatabasePreviewController::instance()->itemWidth())/-2,
                            (medDatabasePreviewController::instance()->selectorHeight() - medDatabasePreviewController::instance()->itemHeight())/-2);
@@ -304,10 +303,8 @@ void medThumbnailContainer::onItemHovered(medDatabasePreviewItem* item)
 {
     qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
-    qreal item_height = medDatabasePreviewController::instance()->itemHeight();
     qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
     qreal item_margins = selector_width - item_width;
-    qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
 
     d->currentSelectedItem = item;
 

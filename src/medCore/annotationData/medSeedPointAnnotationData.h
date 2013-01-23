@@ -65,9 +65,9 @@ public:
 
 
 protected:
-    qreal m_radiusScene;
-    QColor m_selectedColor;
     QColor m_color;
+    QColor m_selectedColor;
+    qreal m_radiusScene;
     QVector<QVector3D> m_centerWorld;
     int m_selectedSeed;
 };

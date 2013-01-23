@@ -65,7 +65,7 @@ void medPluginWidgetPrivate::resetTypesTree()
     typesTree->clear();
 
     //get the list of plugins
-    medPluginManager* mpm = medPluginManager::instance();
+    //medPluginManager* mpm = medPluginManager::instance();
 
     dtkAbstractDataFactory * dataFactory = dtkAbstractDataFactory::instance();
     QTreeWidgetItem * dataItem = new QTreeWidgetItem(typesTree);
