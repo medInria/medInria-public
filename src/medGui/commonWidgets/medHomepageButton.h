@@ -30,6 +30,7 @@
 #define MEDHOMEPAGEBUTTON_H
 
 #include <QtGui>
+#include "medGuiExport.h"
 
 class medHomepagePushButton : public QPushButton
 {
@@ -73,7 +74,7 @@ private:
     bool m_selected;
 };
 
-class medQuickAccessPushButton : public QPushButton
+class MEDGUI_EXPORT medQuickAccessPushButton : public QPushButton
 {
     Q_OBJECT
 
@@ -87,7 +88,7 @@ signals:
     void clicked ( QString text );
 };
 
-class medHomepageButton : public QToolButton
+class MEDGUI_EXPORT medHomepageButton : public QToolButton
 {
     Q_OBJECT
 public:
