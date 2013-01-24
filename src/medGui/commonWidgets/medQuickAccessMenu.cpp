@@ -311,6 +311,8 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
     backgroundFrame = new QFrame(this);
     backgroundFrame->setStyleSheet("border-radius: 10px;background-color: rgba(200,200,200,150);");
     QHBoxLayout *mainWidgetLayout = new QHBoxLayout;
+    mainWidgetLayout->setMargin(0);
+    mainWidgetLayout->setSpacing ( 0 );
     
     QHBoxLayout * shortcutAccessLayout = new QHBoxLayout;
     
