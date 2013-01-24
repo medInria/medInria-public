@@ -1,13 +1,17 @@
 #include "medQuickAccessMenu.h"
 #include <medViewerWorkspaceFactory.h>
 
-medQuickAccessMenu::medQuickAccessMenu ( bool vertical, QWidget* parent, Qt::WindowFlags f ) : QFrame ( parent, f )
+medQuickAccessMenu::medQuickAccessMenu ( bool vertical, QWidget* parent, Qt::WindowFlags f ) : QWidget ( parent, f )
 {
     currentSelected = 0;
     if (vertical)
         this->createVerticalQuickAccessMenu();
     else
+    {
         this->createHorizontalQuickAccessMenu();
+        this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+        this->setAttribute(Qt::WA_TranslucentBackground, true);
+    }
 }
 
 void medQuickAccessMenu::focusOutEvent ( QFocusEvent* event )
@@ -36,7 +40,12 @@ void medQuickAccessMenu::keyPressEvent ( QKeyEvent * event )
         return;
     }
     
-    QWidget::keyPressEvent(event);
+    QApplication::sendEvent(this->parentWidget(),event);
+}
+
+void medQuickAccessMenu::keyReleaseEvent ( QKeyEvent * event )
+{
+    QApplication::sendEvent(this->parentWidget(),event);
 }
 
 void medQuickAccessMenu::mouseMoveEvent (QMouseEvent *event)
@@ -145,15 +154,15 @@ void medQuickAccessMenu::reset(bool optimizeLayout)
         buttonsList[i]->style()->polish(buttonsList[i]);
     }
     
-    if (optimizeLayout)
+    if ((optimizeLayout)&&(backgroundFrame))
     {
         unsigned int width = ((QWidget *)this->parent())->size().width();
         unsigned int numberOfWidgetsPerLine = floor((width - 40.0) / 180.0);
         unsigned int optimalSizeLayout = ceil((float)buttonsList.size() / numberOfWidgetsPerLine);
         //numberOfWidgetsPerLine = ceil((float)buttonsList.size() / optimalSizeLayout);
         
-        if (this->layout())
-            delete this->layout();
+        if (backgroundFrame->layout())
+            delete backgroundFrame->layout();
         
         if (optimalSizeLayout > 1)
         {
@@ -174,8 +183,9 @@ void medQuickAccessMenu::reset(bool optimizeLayout)
                     break;
             }
             
-            this->setLayout(layout);
-            
+            backgroundFrame->setLayout(layout);
+            backgroundFrame->setFixedWidth ( 40 + 180 * numberOfWidgetsPerLine );
+            backgroundFrame->setFixedHeight ( 130 * optimalSizeLayout );
             this->setFixedWidth ( 40 + 180 * numberOfWidgetsPerLine );
             this->setFixedHeight ( 130 * optimalSizeLayout );
         }
@@ -186,7 +196,9 @@ void medQuickAccessMenu::reset(bool optimizeLayout)
             for (unsigned int i = 0;i < buttonsList.size();++i)
                 layout->addWidget(buttonsList[i]);
             
-            this->setLayout(layout);
+            backgroundFrame->setLayout(layout);
+            backgroundFrame->setFixedWidth ( 40 + 180 * buttonsList.size() );
+            backgroundFrame->setFixedHeight ( 130 );
             
             this->setFixedWidth ( 40 + 180 * buttonsList.size() );
             this->setFixedHeight ( 130 );
@@ -295,6 +307,11 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
 {
     buttonsList.clear();
     QHash<QString,medViewerWorkspaceDetails*> workspaceDetails = medViewerWorkspaceFactory::instance()->workspaceDetails();
+
+    backgroundFrame = new QFrame(this);
+    backgroundFrame->setStyleSheet("border-radius: 10px;background-color: rgba(200,200,200,150);");
+    QHBoxLayout *mainWidgetLayout = new QHBoxLayout;
+    
     QHBoxLayout * shortcutAccessLayout = new QHBoxLayout;
     
     medHomepagePushButton * smallHomeButton = new medHomepagePushButton ( this );
@@ -339,7 +356,11 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
         buttonsList.push_back(button);
     }
     
-    this->setLayout(shortcutAccessLayout);
+    backgroundFrame->setLayout(shortcutAccessLayout);
+    backgroundFrame->setFixedWidth ( 40 + 180 * ( 2 + workspaceDetails.size() ) );
+    backgroundFrame->setFixedHeight ( 130 );
+    mainWidgetLayout->addWidget(backgroundFrame);
     this->setFixedWidth ( 40 + 180 * ( 2 + workspaceDetails.size() ) );
     this->setFixedHeight ( 130 );
+    this->setLayout(mainWidgetLayout);
 }

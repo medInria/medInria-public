@@ -649,10 +649,15 @@ void medMainWindow::onShowShortcutAccess ( void )
     }
     
     d->shortcutAccessWidget->reset(true);
-    d->shortcutAccessWidget->setFocus();
     d->shortcutAccessWidget->setMouseTracking(true);
     d->shortcutAccessVisible = true;
-    d->shortcutAccessWidget->setProperty ( "pos", QPoint ( (this->width() - d->shortcutAccessWidget->width()) / 2.0 , (this->height() - d->shortcutAccessWidget->height()) / 2.0 ) );
+
+    QPoint menuPosition = this->mapToGlobal(this->rect().topLeft());
+    menuPosition.setX(menuPosition.rx() + (this->rect().width() - d->shortcutAccessWidget->width()) / 2);
+    menuPosition.setY(menuPosition.ry() + (this->rect().height() - d->shortcutAccessWidget->height()) / 2);
+    
+    d->shortcutAccessWidget->setProperty ( "pos", menuPosition );
+    d->shortcutAccessWidget->show();
 }
 
 void medMainWindow::onHideShortcutAccess ( void )
@@ -663,6 +668,7 @@ void medMainWindow::onHideShortcutAccess ( void )
     d->shortcutAccessWidget->setMouseTracking(false);
     d->shortcutAccessVisible = false;
     d->shortcutAccessWidget->setProperty ( "pos", QPoint ( 0 , -500 ) );
+    d->shortcutAccessWidget->hide();
 }
 
 void medMainWindow::onWorkspaceTriggered ( QAction *action )

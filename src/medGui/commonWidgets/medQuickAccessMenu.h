@@ -6,7 +6,7 @@
 
 #include <QtGui>
 
-class MEDGUI_EXPORT medQuickAccessMenu : public QFrame
+class MEDGUI_EXPORT medQuickAccessMenu : public QWidget
 {
   Q_OBJECT
 public:
@@ -28,7 +28,8 @@ protected:
     void mouseMoveEvent (QMouseEvent * event);
     
     void keyPressEvent ( QKeyEvent * event );
-        
+    void keyReleaseEvent ( QKeyEvent * event );
+    
     void createHorizontalQuickAccessMenu();
     void createVerticalQuickAccessMenu();
     
@@ -44,6 +45,9 @@ private:
     int currentSelected;
     
     QList <medHomepagePushButton *> buttonsList;
+    
+    //! Frame for alt-tab like shortcut access menu
+    QFrame *backgroundFrame;
 };
 
 #endif // MEDQUICKACCESSMENU_H
