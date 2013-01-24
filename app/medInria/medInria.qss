@@ -1086,7 +1086,7 @@ medHomepagePushButton {
 
 medHomepagePushButton[selected="true"] {
     background-color:#4e4e4e;
-    border: 2px solid #b2b8b2;
+    border: 2px solid red;
 }
 
 medHomepagePushButton:pressed {

@@ -319,7 +319,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
     medHomepagePushButton * smallHomeButton = new medHomepagePushButton ( this );
     smallHomeButton->setFixedHeight ( 100 );
     smallHomeButton->setFixedWidth ( 160 );
-    smallHomeButton->setStyleSheet("border-radius: 4px;font-size:12px;background-image: url(:icons/home_sc.png) no-repeat;");
+    smallHomeButton->setStyleSheet("border-radius: 5px;font-size:12px;background-image: url(:icons/home_sc.png) no-repeat;");
     smallHomeButton->setFocusPolicy ( Qt::NoFocus );
     smallHomeButton->setCursor(Qt::PointingHandCursor);
     smallHomeButton->setIdentifier("Homepage");
@@ -332,7 +332,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
     //Setup browser access button
     medHomepagePushButton * smallBrowserButton = new medHomepagePushButton ( this );
     smallBrowserButton->setCursor(Qt::PointingHandCursor);
-    smallBrowserButton->setStyleSheet("border-radius: 4px;font-size:12px;background-image: url(:icons/database.png) no-repeat;");
+    smallBrowserButton->setStyleSheet("border-radius: 5px;font-size:12px;background-image: url(:icons/database.png) no-repeat;");
     smallBrowserButton->setFixedHeight ( 100 );
     smallBrowserButton->setFixedWidth ( 160 );
     smallBrowserButton->setFocusPolicy ( Qt::NoFocus );
@@ -351,7 +351,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
         button->setCursor(Qt::PointingHandCursor);
         button->setFixedHeight ( 100 );
         button->setFixedWidth ( 160 );
-        button->setStyleSheet("border-radius: 4px;font-size:12px;background-image: url(:icons/workspace_" + detail->name + ".png) no-repeat;");
+        button->setStyleSheet("border-radius: 5px;font-size:12px;background-image: url(:icons/workspace_" + detail->name + ".png) no-repeat;");
         button->setIdentifier(id);
         shortcutAccessLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( showWorkspace ( QString ) ) );
