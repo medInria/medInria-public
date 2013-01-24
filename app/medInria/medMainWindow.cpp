@@ -649,7 +649,6 @@ void medMainWindow::onShowShortcutAccess ( void )
     }
     
     d->shortcutAccessWidget->reset(true);
-    d->shortcutAccessWidget->setMouseTracking(true);
     d->shortcutAccessVisible = true;
 
     QPoint menuPosition = this->mapToGlobal(this->rect().topLeft());
@@ -658,6 +657,8 @@ void medMainWindow::onShowShortcutAccess ( void )
     
     d->shortcutAccessWidget->setProperty ( "pos", menuPosition );
     d->shortcutAccessWidget->show();
+    d->shortcutAccessWidget->setFocus();
+    d->shortcutAccessWidget->setMouseTracking(true);
 }
 
 void medMainWindow::onHideShortcutAccess ( void )

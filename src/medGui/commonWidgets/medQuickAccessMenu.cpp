@@ -361,6 +361,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
     backgroundFrame->setLayout(shortcutAccessLayout);
     backgroundFrame->setFixedWidth ( 40 + 180 * ( 2 + workspaceDetails.size() ) );
     backgroundFrame->setFixedHeight ( 130 );
+    backgroundFrame->setMouseTracking(true);
     mainWidgetLayout->addWidget(backgroundFrame);
     this->setFixedWidth ( 40 + 180 * ( 2 + workspaceDetails.size() ) );
     this->setFixedHeight ( 130 );
