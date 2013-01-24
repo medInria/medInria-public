@@ -166,7 +166,6 @@ int main(int argc, char *argv[])
 
     medPluginManager::instance()->uninitialize();
 
-
     return status;
 }
 

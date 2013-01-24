@@ -465,19 +465,8 @@ bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
     if (column > 0)
         return false;
-    /*
-    int beginRow;
 
-    if (row != -1)
-        beginRow = row;
-    else if (parent.isValid())
-        beginRow = parent.row();
-    else
-        beginRow = rowCount(QModelIndex());
-    */
-    //int rows = 0;
-
-    for (int i = 0; i < data->urls().size(); ++i/*, ++rows*/)
+    for (int i = 0; i < data->urls().size(); ++i)
         medDatabaseController::instance()->import(data->urls().at(i).path());
 
     return true;
