@@ -1,6 +1,9 @@
 #include "medQuickAccessMenu.h"
 #include <medViewerWorkspaceFactory.h>
 
+/**
+ * Constructor, parameter vertical chooses if the layout will be vertical (bottom left menu) or horizontal (alt-tab like menu)
+ */
 medQuickAccessMenu::medQuickAccessMenu ( bool vertical, QWidget* parent, Qt::WindowFlags f ) : QWidget ( parent, f )
 {
     currentSelected = 0;
@@ -20,6 +23,9 @@ void medQuickAccessMenu::focusOutEvent ( QFocusEvent* event )
     emit hideMenu();
 }
 
+/**
+ * Handles key press events to control selected widget in menu
+ */
 void medQuickAccessMenu::keyPressEvent ( QKeyEvent * event )
 {
     if ((event->key() == Qt::Key_Down)||(event->key() == Qt::Key_Right))
@@ -43,11 +49,17 @@ void medQuickAccessMenu::keyPressEvent ( QKeyEvent * event )
     QApplication::sendEvent(this->parentWidget(),event);
 }
 
+/**
+ * Send back key release event to parent widget that handles key releases
+ */
 void medQuickAccessMenu::keyReleaseEvent ( QKeyEvent * event )
 {
     QApplication::sendEvent(this->parentWidget(),event);
 }
 
+/**
+ * Mouse over implementation to select widget in menu
+ */
 void medQuickAccessMenu::mouseMoveEvent (QMouseEvent *event)
 {
     for (unsigned int i = 0;i < buttonsList.size();++i)
@@ -63,6 +75,9 @@ void medQuickAccessMenu::mouseMoveEvent (QMouseEvent *event)
     QWidget::mouseMoveEvent(event);
 }
 
+/**
+ * Actually emits signal to switch to selected workspace
+ */
 void medQuickAccessMenu::switchToCurrentlySelected ( void )
 {
     if (currentSelected < 0)
@@ -90,6 +105,9 @@ void medQuickAccessMenu::switchToCurrentlySelected ( void )
     }
 }
 
+/**
+ * Move selected widget one position to the left
+ */
 void medQuickAccessMenu::updateCurrentlySelectedLeft ( void )
 {
     if (currentSelected <= 0)
@@ -118,6 +136,9 @@ void medQuickAccessMenu::updateCurrentlySelectedLeft ( void )
     buttonsList[currentSelected]->style()->polish(buttonsList[currentSelected]);
 }
 
+/**
+ * Move selected widget one position to the right
+ */
 void medQuickAccessMenu::updateCurrentlySelectedRight ( void )
 {
     if (currentSelected < 0)
@@ -142,6 +163,9 @@ void medQuickAccessMenu::updateCurrentlySelectedRight ( void )
     buttonsList[currentSelected]->style()->polish(buttonsList[currentSelected]);
 }
 
+/**
+ * Resets the menu when shown, optionally updates the layout to window size
+ */
 void medQuickAccessMenu::reset(bool optimizeLayout)
 {
     for (unsigned int i = 0;i < buttonsList.size();++i)
@@ -206,6 +230,9 @@ void medQuickAccessMenu::reset(bool optimizeLayout)
     }
 }
 
+/**
+ * Mouse over slot to select widget in menu
+ */
 void medQuickAccessMenu::onMouseMovedInWidget(unsigned int identifier)
 {
     unsigned int newSelection = identifier;
@@ -227,6 +254,9 @@ void medQuickAccessMenu::onMouseMovedInWidget(unsigned int identifier)
     currentSelected = newSelection;
 }
 
+/**
+ * Vertical menu layout creation method
+ */
 void medQuickAccessMenu::createVerticalQuickAccessMenu ( void )
 {
     buttonsList.clear();
@@ -303,6 +333,9 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu ( void )
     this->setLayout(workspaceButtonsLayout);
 }
 
+/**
+ * Horizontal menu layout creation method
+ */
 void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
 {
     buttonsList.clear();

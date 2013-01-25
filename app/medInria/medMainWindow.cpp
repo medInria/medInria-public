@@ -370,6 +370,9 @@ void medMainWindow::mousePressEvent ( QMouseEvent* event )
     this->onHideQuickAccess();
 }
 
+/**
+ * Key press event reimplementation to handle alt-tab like menu
+ */
 void medMainWindow::keyPressEvent( QKeyEvent *event )
 {
     if (event->key() == Qt::Key_Control)
@@ -386,6 +389,9 @@ void medMainWindow::keyPressEvent( QKeyEvent *event )
     QMainWindow::keyPressEvent(event);
 }
 
+/**
+ * Key release event reimplementation to handle alt-tab like menu
+ */
 void medMainWindow::keyReleaseEvent( QKeyEvent * event )
 {
     if (event->key() == Qt::Key_Control)
@@ -610,6 +616,9 @@ void medMainWindow::onShowWorkspace ( QString workspace )
     d->quickAccessButton->setText(tr("Workspace: ") + details->name);
 }
 
+/**
+ * Slot to show bottom left menu
+ */
 void medMainWindow::onShowQuickAccess ( void )
 {
     if ( d->quickAccessVisible )
@@ -628,6 +637,9 @@ void medMainWindow::onShowQuickAccess ( void )
     d->quickAccessAnimation->start();
 }
 
+/**
+ * Slot to hide bottom left menu
+ */
 void medMainWindow::onHideQuickAccess ( void )
 {
     if (!d->quickAccessVisible)
@@ -640,6 +652,9 @@ void medMainWindow::onHideQuickAccess ( void )
     d->quickAccessAnimation->start();
 }
 
+/**
+ * Slot to show alt-tab like menu
+ */
 void medMainWindow::onShowShortcutAccess ( void )
 {
     if ( d->shortcutAccessVisible )
@@ -661,6 +676,9 @@ void medMainWindow::onShowShortcutAccess ( void )
     d->shortcutAccessWidget->setMouseTracking(true);
 }
 
+/**
+ * Slot to hide alt-tab like menu
+ */
 void medMainWindow::onHideShortcutAccess ( void )
 {
     if (!d->shortcutAccessVisible)
