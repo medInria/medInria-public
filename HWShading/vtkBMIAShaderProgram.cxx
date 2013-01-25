@@ -39,7 +39,7 @@ PURPOSE.  See the above copyright notices for more information.
  *
  * 2005-06-03	Tim Peeters
  * - Use namespace bmia
- * - Include vtkstd/string
+ * - Include string
  *
  * 2005-06-06	Tim Peeters
  * - Switch to OpenGL 2.0
@@ -61,7 +61,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkShaderUniform.h"
 #include "vtkShaderUniformCollection.h"
 #include <vtkObjectFactory.h>
-#include <vtkstd/string>
+#include <string>
 #include <vtkgl.h>
 
 vtkCxxRevisionMacro(vtkBMIAShaderProgram, "$Revision: 1 $");

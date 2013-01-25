@@ -15,6 +15,10 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+
+#include <string>
+#include <vector>
+
 #include "vtkDataManagerWriter.h"
 
 #include "vtkAMRBox.h"
@@ -48,8 +52,6 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <vtksys/SystemTools.hxx>
 #include <vtksys/ios/sstream>
-#include <vtkstd/string>
-#include <vtkstd/vector>
 #include "vtkSmartPointer.h"
 #include <string>
 #include "vtkDataManager.h"
@@ -65,10 +67,10 @@ class vtkDataManagerWriterInternals
 {
 public:
   
-  vtkstd::string FilePath;
-  vtkstd::string FilePrefix;
-  vtkstd::vector<vtkstd::string> Entries;
-  vtkstd::string CreatePieceFileName(int index1, int index2, unsigned int type);
+  std::string FilePath;
+  std::string FilePrefix;
+  std::vector<std::string> Entries;
+  std::string CreatePieceFileName(int index1, int index2, unsigned int type);
 
 };
 
@@ -183,9 +185,9 @@ int  vtkDataManagerWriter::WriteMetaDataSet (vtkMetaDataSet* metadataset, unsign
   else
   {
 
-    vtkstd::string filename = this->Internal->FilePath;
+    std::string filename = this->Internal->FilePath;
     // Set the file name.
-    vtkstd::string datasetname = this->Internal->CreatePieceFileName(groupid, datasetid, metadataset->GetType());
+    std::string datasetname = this->Internal->CreatePieceFileName(groupid, datasetid, metadataset->GetType());
     filename += datasetname;
 
     vtkXMLWriter* writer = this->CreateWriter (metadataset);
@@ -278,7 +280,7 @@ int vtkDataManagerWriter::RequestData(vtkInformation*,
   this->GetProgressRange(progressRange);
   
   // Create the subdirectory for the internal files.
-  vtkstd::string subdir = this->Internal->FilePath;
+  std::string subdir = this->Internal->FilePath;
   subdir += this->Internal->FilePrefix;
   this->MakeDirectory(subdir.c_str());
   
@@ -370,8 +372,8 @@ std::string vtkDataManagerWriter::CreateMetaDataSetEntry(vtkMetaDataSet* metadat
   else
   {
     // Set the file name.
-    // vtkstd::string fname = this->Internal->CreatePieceFileName(i);
-    vtkstd::string fname = this->Internal->CreatePieceFileName(groupid, datasetid, metadataset->GetType());
+    // std::string fname = this->Internal->CreatePieceFileName(i);
+    std::string fname = this->Internal->CreatePieceFileName(groupid, datasetid, metadataset->GetType());
     
     os << indent.GetNextIndent()
 	    << "<DataSet group=\"" << groupid << "\" dataset=\"" << datasetid << "\""
@@ -513,11 +515,11 @@ vtkXMLWriter* vtkDataManagerWriter::CreateWriter(vtkMetaDataSet* metadataset)
 //----------------------------------------------------------------------------
 void vtkDataManagerWriter::SplitFileName()
 {
-  vtkstd::string fileName = this->FileName;
-  vtkstd::string name;
+  std::string fileName = this->FileName;
+  std::string name;
   
   // Split the file name and extension from the path.
-  vtkstd::string::size_type pos = fileName.find_last_of("/\\");
+  std::string::size_type pos = fileName.find_last_of("/\\");
   if(pos != fileName.npos)
     {
     // Keep the slash in the file path.
@@ -597,10 +599,10 @@ void vtkDataManagerWriter::DeleteAllEntries()
 }
 
 //----------------------------------------------------------------------------
-vtkstd::string vtkDataManagerWriterInternals::CreatePieceFileName(int index1, int index2, unsigned int type)
+std::string vtkDataManagerWriterInternals::CreatePieceFileName(int index1, int index2, unsigned int type)
 {
   
-  vtkstd::string ext;
+  std::string ext;
   switch(type)
   {
       case vtkMetaDataSet::VTK_META_IMAGE_DATA :
@@ -614,7 +616,7 @@ vtkstd::string vtkDataManagerWriterInternals::CreatePieceFileName(int index1, in
 	break;
   }
   
-  vtkstd::string fname;
+  std::string fname;
   vtksys_ios::ostringstream fn_with_warning_C4701;
   fn_with_warning_C4701
     << this->FilePrefix.c_str() << "/"

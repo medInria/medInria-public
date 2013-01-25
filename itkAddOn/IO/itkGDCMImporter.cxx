@@ -376,8 +376,6 @@ namespace itk
     gdcm::XCoherentFileSetmap filesetmap = this->SplitOnPosition(inputvolume->GetgdcmFileList());
     gdcm::XCoherentFileSetmap newfilesetmap;
     
-    bool multiple = false;
-
     gdcm::XCoherentFileSetmap::iterator it = filesetmap.begin();
     while( it != filesetmap.end() )
     {
@@ -417,11 +415,6 @@ namespace itk
 	newfilesetmap[strid.str()]->push_back( (*it2) );
 	
 	fileid++;
-
-	if (fileid > 1)
-        {
-          multiple = true;
-        }
 
         ++it2;
 	count++;

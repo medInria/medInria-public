@@ -66,8 +66,8 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <vtkSource.h>
 
-#include <vtkstd/string>
-#include <vtkstd/vector>
+#include <string>
+#include <vector>
 
 using namespace std;
 

@@ -17,12 +17,11 @@
   =========================================================================*/
 #include "vtkDiffXMLWriter.h"
 
+#include <string>
+#include <vector>
 #include <vtksys/SystemTools.hxx>
 #include <vtksys/ios/sstream>
-#include <vtkstd/string>
-#include <vtkstd/vector>
 #include "vtkSmartPointer.h"
-#include <string>
 #include "vtkDataManager.h"
 #include "vtkMetaDataSetSequence.h"
 #include "vtkDataSet.h"

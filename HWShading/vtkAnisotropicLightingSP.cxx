@@ -39,6 +39,8 @@ PURPOSE.  See the above copyright notices for more information.
  * - Add support for tone shading.
  */
 
+#include <string>
+
 #include "vtkAnisotropicLightingSP.h"
 #include "AnisotropicLightingVertexText.h"
 #include "AnisotropicLightingFragmentText.h"
@@ -53,7 +55,6 @@ PURPOSE.  See the above copyright notices for more information.
 //#include "vtkShaderDir.h"
 
 #include <vtkObjectFactory.h>
-#include <vtkstd/string>
 
 vtkCxxRevisionMacro(vtkAnisotropicLightingSP, "$Revision: 1 $");
 vtkStandardNewMacro(vtkAnisotropicLightingSP);

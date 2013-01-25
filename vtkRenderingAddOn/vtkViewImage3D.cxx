@@ -868,13 +868,14 @@ void vtkViewImage3D::PrintSelf(ostream& os, vtkIndent indent)
   os << indent << "Rendering mode: " << this->RenderingMode << "\n";
 }
 
-
+#ifndef VTK_LEGACY_REMOVE
 void vtkViewImage3D::Center()
 {
   VTK_LEGACY_REPLACED_BODY(vtkViewImage3D::Center, "vtkINRIA3D 0.1",
 			   vtkViewImage3D::ResetCamera);
   this->ResetCamera ();
 }
+#endif
 
 
 void vtkViewImage3D::SetVisibility (int isVisible)

@@ -15,6 +15,10 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
+#include <map>
+#include <string>
+#include <vector>
+
 #include "vtkDataManagerReader.h"
 
 #include "vtkCompositeDataPipeline.h"
@@ -31,10 +35,6 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkXMLRectilinearGridReader.h"
 #include "vtkXMLStructuredGridReader.h"
 #include "vtkXMLUnstructuredGridReader.h"
-
-#include <vtkstd/map>
-#include <vtkstd/string>
-#include <vtkstd/vector>
 
 #include <vtkDataManager.h>
 #include <vtkMetaImageData.h>
@@ -60,8 +60,8 @@ struct vtkDataManagerReaderEntry
 struct vtkDataManagerReaderInternals
 {
   vtkXMLDataElement* MetaDataInformation;
-  vtkstd::vector<vtkXMLDataElement*> MetaDataSets;
-  typedef vtkstd::map<vtkstd::string, vtkSmartPointer<vtkXMLReader> > ReadersType;
+  std::vector<vtkXMLDataElement*> MetaDataSets;
+  typedef std::map<std::string, vtkSmartPointer<vtkXMLReader> > ReadersType;
   ReadersType Readers;
   static const vtkDataManagerReaderEntry ReaderList[];
 };
@@ -203,8 +203,8 @@ vtkXMLReader* vtkDataManagerReader::GetReaderOfType(const char* type)
   
 //   // Find the path to this file in case the internal files are
 //   // specified as relative paths.
-//   vtkstd::string filePath = this->FileName;
-//   vtkstd::string::size_type pos = filePath.find_last_of("/\\");
+//   std::string filePath = this->FileName;
+//   std::string::size_type pos = filePath.find_last_of("/\\");
 //   if(pos != filePath.npos)
 //     {
 //     filePath = filePath.substr(0, pos);
@@ -214,9 +214,9 @@ vtkXMLReader* vtkDataManagerReader::GetReaderOfType(const char* type)
 //     filePath = "";
 //     }
 
-//   vtkstd::vector<vtkXMLDataElement*>::iterator d;
+//   std::vector<vtkXMLDataElement*>::iterator d;
 
-//   vtkstd::vector<unsigned int> numDataSets;
+//   std::vector<unsigned int> numDataSets;
   
 //   for(d=this->Internal->MetaDataSets.begin();
 //       d != this->Internal->MetaDataSets.end(); ++d)
@@ -292,7 +292,7 @@ vtkXMLReader* vtkDataManagerReader::GetReaderOfType(const char* type)
 //       {
       
 //       // Construct the name of the internal file.
-//       vtkstd::string fileName;
+//       std::string fileName;
 //       const char* file = ds->GetAttribute("file");
 //       if(!(file[0] == '/' || file[1] == ':'))
 //         {
@@ -305,8 +305,8 @@ vtkXMLReader* vtkDataManagerReader::GetReaderOfType(const char* type)
 //       fileName += file;
       
 //       // Get the file extension.
-//       vtkstd::string ext;
-//       vtkstd::string::size_type pos2 = fileName.rfind('.');
+//       std::string ext;
+//       std::string::size_type pos2 = fileName.rfind('.');
 //       if(pos2 != fileName.npos)
 //         {
 //         ext = fileName.substr(pos2+1);
@@ -365,8 +365,8 @@ vtkMetaDataSet* vtkDataManagerReader::CreateMetaDataSetFromXMLElement (vtkXMLDat
   double time = 0;
   const char* tag;
 
-  vtkstd::string filePath = this->FileName;
-  vtkstd::string::size_type pos = filePath.find_last_of("/\\");
+  std::string filePath = this->FileName;
+  std::string::size_type pos = filePath.find_last_of("/\\");
   if(pos != filePath.npos)
   {
     filePath = filePath.substr(0, pos);
@@ -452,7 +452,7 @@ vtkMetaDataSet* vtkDataManagerReader::CreateMetaDataSetFromXMLElement (vtkXMLDat
   if (!frames.size())
   {
     // Construct the name of the internal file.
-    vtkstd::string fileName;
+    std::string fileName;
     const char* file = data->GetAttribute("file");
     if(!(file[0] == '/' || file[1] == ':'))
     {
@@ -465,8 +465,8 @@ vtkMetaDataSet* vtkDataManagerReader::CreateMetaDataSetFromXMLElement (vtkXMLDat
     fileName += file;
     
     // Get the file extension.
-    vtkstd::string ext;
-    vtkstd::string::size_type pos2 = fileName.rfind('.');
+    std::string ext;
+    std::string::size_type pos2 = fileName.rfind('.');
     if(pos2 != fileName.npos)
     {
       ext = fileName.substr(pos2+1);
@@ -540,8 +540,8 @@ void vtkDataManagerReader::ReadXMLData()
 
   // Find the path to this file in case the internal files are
   // specified as relative paths.
-  vtkstd::string filePath = this->FileName;
-  vtkstd::string::size_type pos = filePath.find_last_of("/\\");
+  std::string filePath = this->FileName;
+  std::string::size_type pos = filePath.find_last_of("/\\");
   if(pos != filePath.npos)
   {
     filePath = filePath.substr(0, pos);
@@ -551,7 +551,7 @@ void vtkDataManagerReader::ReadXMLData()
     filePath = "";
   }
   
-  vtkstd::vector<vtkXMLDataElement*>::iterator d;
+  std::vector<vtkXMLDataElement*>::iterator d;
   
   for(d=this->Internal->MetaDataSets.begin();
       d != this->Internal->MetaDataSets.end(); ++d)
