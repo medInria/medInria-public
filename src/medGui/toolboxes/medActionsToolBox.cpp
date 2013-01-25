@@ -48,49 +48,49 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/ ) : medToolBox(par
 
     d->removeBt = new QPushButton(d->buttonsWidget);
     d->removeBt->setAccessibleName("Remove");
-    d->removeBt->setText("Remove");
+    d->removeBt->setText(tr("Remove"));
     d->removeBt->setToolTip(tr("Remove selected item from the database."));
     d->removeBt->setIcon(QIcon(":/icons/cross.svg"));
 
     d->viewBt = new QPushButton(d->buttonsWidget);
     d->viewBt->setAccessibleName("View");
-    d->viewBt->setText("View");
+    d->viewBt->setText(tr("View"));
     d->viewBt->setToolTip(tr("Load and visualize the currently selected item."));
     d->viewBt->setIcon(QIcon(":/icons/eye.png"));
 
     d->exportBt = new QPushButton(d->buttonsWidget);
     d->exportBt->setAccessibleName("Export");
-    d->exportBt->setText("Export");
+    d->exportBt->setText(tr("Export"));
     d->exportBt->setToolTip(tr("Export the series."));
     d->exportBt->setIcon(QIcon(":/icons/export.png"));
 
     d->importBt = new QPushButton(d->buttonsWidget);
     d->importBt->setAccessibleName("Import");
-    d->importBt->setText("Import");
+    d->importBt->setText(tr("Import"));
     d->importBt->setToolTip(tr("Import (copy) item(s) into medInria's database."));
     d->importBt->setIcon(QIcon(":/icons/import.png"));
 
     d->loadBt = new QPushButton(d->buttonsWidget);
     d->loadBt->setAccessibleName("Load");
-    d->loadBt->setText("Load");
+    d->loadBt->setText(tr("Load"));
     d->loadBt->setToolTip(tr("Temporary load the item(s) so as they can be used inside medInria,\nbut do not include them in the database."));
     d->loadBt->setIcon(QIcon(":/icons/document-open.png"));
 
     d->indexBt = new QPushButton(d->buttonsWidget);
     d->indexBt->setAccessibleName("Index");
-    d->indexBt->setText("Index");
+    d->indexBt->setText(tr("Index"));
     d->indexBt->setToolTip(tr("Include the item(s) into medInria's database but do not import (copy) them."));
     d->indexBt->setIcon(QIcon(":/icons/finger.png"));
 
     d->bookmarkBt = new QPushButton(d->buttonsWidget);
     d->bookmarkBt->setAccessibleName("Bookmark");
-    d->bookmarkBt->setText("Bookmark");
+    d->bookmarkBt->setText(tr("Bookmark"));
     d->bookmarkBt->setToolTip(tr("Bookmark selected folder/resource."));
     d->bookmarkBt->setIcon(QIcon(":/icons/star.svg"));
 
     d->saveBt = new QPushButton(d->buttonsWidget);
     d->saveBt->setAccessibleName("Save");
-    d->saveBt->setText("Save");
+    d->saveBt->setText(tr("Save"));
     d->saveBt->setToolTip(tr("Save selected item into the database."));
     d->saveBt->setIcon(QIcon(":/icons/save.png"));
 
@@ -107,11 +107,9 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/ ) : medToolBox(par
 
     foreach(QAbstractButton* bt, d->buttonsList)
     {
-        bt->setMinimumWidth(bt->minimumWidth()+12);
         bt->setAutoFillBackground(true);
         bt->setObjectName("actionToolBoxButton"); // set for style sheet medInria.qss
-
-        gridLayout->addWidget(bt, (int)i/COLUMNS, (int)i%COLUMNS/*, Qt::AlignCenter*/);
+        gridLayout->addWidget(bt, (int)i/COLUMNS, (int)i%COLUMNS);
         i++;
     }
 
@@ -206,11 +204,6 @@ void medActionsToolBox::updateButtons(QString selectedItem)
         bt->setVisible(true); 
         bool showButton = actions.contains( bt->accessibleName() );
         bt->setEnabled(showButton); // Not accessible buttons are disabled
-        if(!showButton)
-            bt->setStyleSheet(
-                "background: rgb(64, 64, 64);"
-                "min-height: 30px;"
-                "color: rgb(105, 105, 105)");
     }
 
     // insert an explanatory label if no button is being displayed
