@@ -89,16 +89,13 @@ void vtkFillImageWithPolyDataExecuteZ(vtkFillImageWithPolyData *self, int ext[6]
                                       vtkImageData *outData, unsigned char *outPtr,
                                       int id, int slice, double bbox[6])
 {
-  int num0, num1, num2, numC, numP, pixSize;
+  int num0, num1, num2, numP;
   int idx0, idx1, idx2;
   vtkIdType in1Inc0, in1Inc1, in1Inc2;
   vtkIdType outInc0, outInc1, outInc2;
   unsigned long count = 0;
   unsigned long target;
-  
-  numC = outData->GetNumberOfScalarComponents();
-  pixSize = numC * sizeof(T);
-  
+
   // Get information to march through data 
   inData->GetContinuousIncrements(ext, in1Inc0, in1Inc1, in1Inc2);
   outData->GetContinuousIncrements(ext, outInc0, outInc1, outInc2);
@@ -188,15 +185,12 @@ void vtkFillImageWithPolyDataExecuteY(vtkFillImageWithPolyData *self, int ext[6]
                                       vtkImageData *outData, unsigned char *outPtr,
                                       int id, int slice, double bbox[6])
 {
-  int num0, num1, num2, numC, numP, pixSize;
+  int num0, num1, num2, numP;
   int idx0, idx1, idx2;
   vtkIdType in1Inc0, in1Inc1, in1Inc2;
   vtkIdType outInc0, outInc1, outInc2;
   unsigned long count = 0;
   unsigned long target;
-  
-  numC = outData->GetNumberOfScalarComponents();
-  pixSize = numC * sizeof(T);
   
   // Get information to march through data 
   inData->GetContinuousIncrements(ext, in1Inc0, in1Inc1, in1Inc2);
@@ -287,16 +281,13 @@ void vtkFillImageWithPolyDataExecuteX(vtkFillImageWithPolyData *self, int ext[6]
                                       vtkImageData *outData, unsigned char *outPtr,
                                       int id, int slice, double bbox[6])
 {
-  int num0, num1, num2, numC, numP, pixSize;
+  int num0, num1, num2, numP;
   int idx0, idx1, idx2;
   vtkIdType in1Inc0, in1Inc1, in1Inc2;
   vtkIdType outInc0, outInc1, outInc2;
   unsigned long count = 0;
   unsigned long target;
-  
-  numC = outData->GetNumberOfScalarComponents();
-  pixSize = numC * sizeof(T);
-  
+    
   // Get information to march through data 
   inData->GetContinuousIncrements(ext, in1Inc0, in1Inc1, in1Inc2);
   outData->GetContinuousIncrements(ext, outInc0, outInc1, outInc2);
