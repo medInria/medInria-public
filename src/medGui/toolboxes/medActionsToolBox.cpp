@@ -98,7 +98,7 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/ ) : medToolBox(par
 
     // the order of the buttons in this list determines the order used to place them in the grid layout
     d->buttonsList << d->viewBt << d->loadBt << d->importBt << d->indexBt;
-    d->buttonsList << d->removeBt << d->exportBt << d->saveBt << d->bookmarkBt;
+    d->buttonsList << d->removeBt << d->saveBt << d->exportBt << d->bookmarkBt;
 
     int COLUMNS = 4; // we will use 2 rows of 4 buttons each
     int i = 0;
