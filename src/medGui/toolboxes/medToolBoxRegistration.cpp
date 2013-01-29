@@ -193,8 +193,10 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
         if (d->movingView && d->fuseView->layerCount()==1)
         {
             //only the moving view has been set: shift it to layer 1
+            d->fuseView->blockSignals(true);
             d->fuseView->setData(d->fixedData,0);
             d->fuseView->setData(d->movingData,1);
+            d->fuseView->blockSignals(false);
         }
         else
         {
