@@ -58,6 +58,9 @@ public slots:
 
 private:
     medStatusBarPrivate * d;
+    int availableSpace; //available space on the status bar
+    int statusBarWidth;
+    QList<QWidget *> widgetList; // storing messages waiting to be displayed
 };
 
 #endif // MEDSTATUSBAR_H

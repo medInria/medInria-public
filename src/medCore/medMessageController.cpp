@@ -97,7 +97,7 @@ medMessageError::medMessageError(
         medMessage(parent, text, timeout)
 {
     icon->setPixmap(QPixmap(":/icons/exclamation.png"));
-    this->setFixedWidth(300);
+    this->setFixedWidth(350);
 }
 
 medMessageError::~medMessageError(void)
