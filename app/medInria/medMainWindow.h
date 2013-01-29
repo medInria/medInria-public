@@ -56,6 +56,8 @@ public slots:
 
 private slots:
 
+    void captureScreenshot(void);
+
     void switchToBrowserArea(void);
     void switchToWorkspaceArea(void);
     void switchToHomepageArea(void);

@@ -126,6 +126,8 @@ public:
     
     medQuickAccessMenu *shortcutAccessWidget;
     bool shortcutAccessVisible;
+
+    QToolButton *screenshotButton;
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
@@ -288,6 +290,16 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QObject::connect ( d->fullscreenButton, SIGNAL ( toggled(bool) ),
                        this, SLOT ( setFullScreen(bool) ) );
 
+    QIcon cameraIcon;
+    cameraIcon.addPixmap(QPixmap(":icons/camera.png"));
+    d->screenshotButton = new QToolButton(this);
+    d->screenshotButton->setIcon(cameraIcon);
+    d->screenshotButton->setObjectName("screenshotButton");
+    d->screenshotButton->setShortcut(Qt::ControlModifier + Qt::Key_S);
+    d->screenshotButton->setToolTip(tr("Capture screenshot"));
+    QObject::connect ( d->screenshotButton, SIGNAL ( clicked() ),
+                      this, SLOT ( captureScreenshot() ) );
+
     d->quitMessage->setLayout ( quitLayout );
 
     //  QuitMessage and rightEndButtons will switch hidden and shown statuses.
@@ -296,6 +308,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QHBoxLayout * rightEndButtonsLayout = new QHBoxLayout(d->rightEndButtons);
     rightEndButtonsLayout->setContentsMargins ( 5, 0, 5, 0 );
     rightEndButtonsLayout->setSpacing ( 5 );
+    rightEndButtonsLayout->addWidget( d->screenshotButton );
     rightEndButtonsLayout->addWidget( d->fullscreenButton );
     rightEndButtonsLayout->addWidget( d->quitButton );
 
@@ -506,6 +519,14 @@ void medMainWindow::switchFullScreen ( )
         this->showNormal();
 }
 
+void medMainWindow::captureScreenshot()
+{
+    QPixmap screenshot = d->viewerArea->grabScreenshot();
+    
+    QString fileName = QFileDialog::getSaveFileName(NULL, tr("Save screenshot as"), "", "*.png");
+    screenshot.save(fileName);
+}
+
 void medMainWindow::showFullScreen()
 {
 //    qDebug()<<"fullscreen!";
@@ -548,6 +569,8 @@ void medMainWindow::switchToHomepageArea ( void )
 
     d->stack->setCurrentWidget ( d->homepageArea );
     d->homepageArea->onShowInfo();
+    
+    d->screenshotButton->setEnabled(false);
 
     if ( d->homepageArea->getAnimation() )
         d->homepageArea->getAnimation()->start();
@@ -566,6 +589,8 @@ void medMainWindow::switchToBrowserArea ( void )
     d->browserArea->setup ( this->statusBar() );
     d->workspaceArea->setdw ( this->statusBar() );
 
+    d->screenshotButton->setEnabled(false);
+
     d->stack->setCurrentWidget ( d->browserArea );
 }
 
@@ -579,6 +604,8 @@ void medMainWindow::switchToWorkspaceArea ( void )
 
     d->browserArea->setdw ( this->statusBar() );
     d->workspaceArea->setup ( this->statusBar() );
+
+    d->screenshotButton->setEnabled(true);
 
     d->stack->setCurrentWidget ( d->workspaceArea );
 
