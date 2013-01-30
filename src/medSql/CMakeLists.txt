@@ -35,6 +35,7 @@ set(${PROJECT_NAME}_DEVEL_HEADERS
 
 set(${PROJECT_NAME}_HEADERS_MOC
   ${${PROJECT_NAME}_DEVEL_HEADERS_MOC}
+  medAbstractDatabaseImporter.h
   medDatabaseExporter.h
   medDatabaseModel.h  
   medDatabaseNonPersistentController.h
@@ -55,6 +56,7 @@ set(${PROJECT_NAME}_HEADERS
   )
 
 set(${PROJECT_NAME}_SOURCES
+  medAbstractDatabaseImporter.cpp
   medDatabaseController.cpp
   medDatabaseControllerImpl.cpp
   medDatabaseExporter.cpp

@@ -20,7 +20,7 @@
 
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medJobItem.h>
+#include <medAbstractDatabaseImporter.h>
 #include <medDataIndex.h>
 
 class medDatabaseImporterPrivate;
@@ -40,7 +40,7 @@ class dtkAbstractDataWriter;
 * medInria database (and as a result they can end up being aggregated by volume)
 * or they can be just indexed (by indicating so using the parameters in the constructor)
 **/
-class MEDSQL_EXPORT medDatabaseImporter : public medJobItem
+class MEDSQL_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter
 {
     Q_OBJECT
 
@@ -69,8 +69,7 @@ signals:
      */
     void addedIndex ( const medDataIndex& addedIndex);
 
-public slots:
-    void onCancel ( QObject* );
+
 
 private:
 
@@ -82,15 +81,6 @@ private:
     * @return newSeriesName - a new, unused, series name
     **/
     QString ensureUniqueSeriesName ( const QString seriesName );
-
-    /**
-    * Populates the missing metadata in the @dtkAbstractData object.
-    * If metadata is not present it's filled with default or empty values.
-    * @param dtkData - the object whose missing metadata will be filled
-    * @param seriesDescription - string used to fill SeriesDescription field if not present
-    **/
-    void populateMissingMetadata ( dtkAbstractData* dtkData, const QString seriesDescription );
-
 
     /**
     * Checks if the image which was used to create the dtkData object
@@ -108,78 +98,6 @@ private:
     * @return medDataIndex the new medDataIndex associated with this imported series.
     **/
     medDataIndex populateDatabaseAndGenerateThumbnails ( dtkAbstractData* dtkData, QString pathToStoreThumbnails );
-
-    /**
-    * Tries to find a @dtkAbstractDataReader able to read input file/s.
-    * @param filename - Input file/s we would like to find a reader for
-    * @return a proper reader if found, NULL otherwise
-    **/
-    dtkSmartPointer<dtkAbstractDataReader> getSuitableReader ( QStringList filename );
-
-    /**
-    * Tries to find a @dtkAbstractDataWriter able to write input file/s.
-    * @param filename - name of the file we want to write
-    * @param dtkData - the @dtkAbstractData object we want to write
-    * @return a proper writer if found, NULL otherwise
-    **/
-    dtkSmartPointer<dtkAbstractDataWriter> getSuitableWriter ( QString filename, dtkAbstractData* dtkData );
-
-    /**
-    * Walks through the whole directory tree and returns a list of every file found.
-    * @param fileOrDirectory - File or directory to search
-    * @return a list containing all files found
-    **/
-    QStringList getAllFilesToBeProcessed ( QString fileOrDirectory );
-
-    /**
-    * Tries to read the file/s indicated by filesPath.
-    * Only the header is read is specified by readOnlyImageInformation parameter.
-    * @param filesPath - path/s of the file/s we want to read
-    * @param readOnlyImageInformation - if true only image header is read, otherwise the full image
-    * @return a @dtkAbstractData containing the read data
-    **/
-    dtkSmartPointer<dtkAbstractData> tryReadImages ( const QStringList& filesPath,const bool readOnlyImageInformation );
-
-    /**
-    * Determines the filename where the dtkData object will be written (if importing).
-    * @param dtkData - the @dtkAbstractData that will be written
-    * @param volumeNumber - the volume number
-    * @return a string with the new filename
-    **/
-    QString determineFutureImageFileName ( const dtkAbstractData* dtkData, int volumeNumber );
-//     QString determineFutureImageFileName(const dtkAbstractData* dtkData, int volumeNumber);
-
-    /**
-    * Determines the extension (i.e. file format) which
-    * will be used for writing the dtkData object (if importing).
-    * @param dtkData - the @dtkAbstractData that will be written
-    * @return a string with the desired extension if found, and empty string otherwise
-    **/
-    QString determineFutureImageExtensionByDataType ( const dtkAbstractData* dtkData );
-
-    /**
-    * Tries writing the dtkData object in filePath.
-    * @param filePath - file path to use for writing
-    * @param dtkData - @dtkAbstractData object to be written
-    * @return true is writing was successful, false otherwise
-    **/
-    bool tryWriteImage ( QString filePath, dtkAbstractData* dtkData );
-
-    /**
-    * Adds some additional metadata (e.g. Size, FilePaths
-    * and FileName) to the dtkData object.
-    * @param dtkData - a @dtkAbstractData object to add metadata to
-    * @param fileName - file name where the object will be written to
-    * @param filePaths - if the file is aggregating more than one file, all of them will be listed here
-    **/
-    void addAdditionalMetaData ( dtkAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths );
-
-    /**
-    * Generates an Id intended to be unique for each volume
-    * @param dtkData - @dtkAbstractData object whose id will be generate
-    * @return the volume id of the dtkData object
-    **/
-    QString generateUniqueVolumeId ( const dtkAbstractData* dtkData );
 
     /**
     * Generates and saves the thumbnails for images in @dtkAbstractData.
@@ -220,6 +138,12 @@ private:
      * in 2 different steps).
      */
     bool isPartialImportAttempt ( dtkAbstractData* dtkData );
+    
+    /**
+     * Retrieves patientID. Checks if patient is already in the database
+     * if so, reurns is Id, otherwise creates a new guid
+     */
+    QString getPatientID(QString patientName, QString birthDate);
 
     medDatabaseImporterPrivate *d;
 
