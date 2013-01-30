@@ -18,7 +18,7 @@
 #include <QtCore/QObject>
 
 #include <medDataIndex.h>
-#include <medJobItem.h>
+#include <medAbstractDatabaseImporter.h>
 
 class dtkAbstractData;
 
@@ -30,7 +30,7 @@ class medDatabaseNonPersistentReaderPrivate;
 * This class inherits from medJobItem and is meant to be run by the medJobManager.
 *
 */
-class MEDSQL_EXPORT medDatabaseNonPersistentReader : public medJobItem
+class MEDSQL_EXPORT medDatabaseNonPersistentReader : public medAbstractDatabaseImporter
 {
     Q_OBJECT
 
@@ -63,7 +63,42 @@ signals:
     void nonPersistentRead(const medDataIndex & index,const QString& callerUuid);
 
 public slots:
-    void onCancel(QObject*);
+
+   
+public:
+     /**
+     * Retrieves patientID. Checks if patient is already in the database
+     * if so, reurns is Id, otherwise creates a new guid
+     */
+    QString getPatientID(QString patientName, QString birthDate);
+    
+     /**
+    * Populates database tables and generates thumbnails.
+    * @param dtkData - a @dtkAbstractData object created from the original image
+    * @param pathToStoreThumbnails - path where the thumbnails will be stored
+    * @return medDataIndex the new medDataIndex associated with this imported series.
+    **/
+    medDataIndex populateDatabaseAndGenerateThumbnails ( dtkAbstractData* dtkData, QString pathToStoreThumbnails );
+
+     /**
+    * Finds if parameter @seriesName is already being used in the database
+    * if is not, it returns @seriesName unchanged
+    * otherwise, it returns an unused new series name (created by adding a suffix)
+    * @param seriesName - the series name
+    * @return newSeriesName - a new, unused, series name
+    **/
+    QString ensureUniqueSeriesName ( const QString seriesName );
+    
+    /**
+    * Checks if the image which was used to create the dtkData object
+    * passed as parameter already exists in the database
+    * @param dtkData - a @dtkAbstractData object created from the original image
+    * @param imageName - the name of the image we are looking for
+    * @return true if already exists, false otherwise
+    **/
+    virtual bool checkIfExists ( dtkAbstractData* dtkdata, QString imageName );
+
+
 
 private:
     medDatabaseNonPersistentReaderPrivate *d;
