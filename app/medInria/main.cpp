@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
     if (medPluginManager::instance()->plugins().isEmpty() ||
             medPluginManager::instance()->plugins().size() < medPluginManager::instance()->loadErrors().size())
     {
-        QMessageBox::warning(0,
+        QMessageBox::warning(&mainwindow,
                              QObject::tr("No plugin was loaded"),
                              QObject::tr("Warning : no plugin was successfully loaded."));
     }
