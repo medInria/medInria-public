@@ -25,315 +25,20 @@
 #include <medMetaDataKeys.h>
 #include <medStorage.h>
 
-class medDatabaseImporterPrivate
-{
-public:
-    QString file;
-    static QMutex mutex;
-    QString lastSuccessfulReaderDescription;
-    QString lastSuccessfulWriterDescription;
-    bool isCancelled;
-    bool indexWithoutImporting;
 
-    // example of item in the list: ["patient", "study", "series"]
-    QList<QStringList> partialAttemptsInfo;
-};
-
-QMutex medDatabaseImporterPrivate::mutex;
 
 //-----------------------------------------------------------------------------------------------------------
 
-medDatabaseImporter::medDatabaseImporter ( const QString& file, bool indexWithoutImporting = false ) : medAbstractDatabaseImporter(file,indexWithoutImporting), d ( new medDatabaseImporterPrivate )
+medDatabaseImporter::medDatabaseImporter ( const QString& file, bool indexWithoutImporting = false ) : medAbstractDatabaseImporter(file,indexWithoutImporting)
 {
-    d->isCancelled = false;
-    d->lastSuccessfulReaderDescription = "";
-    d->lastSuccessfulWriterDescription = "";
-    d->file = file;
-    d->indexWithoutImporting = indexWithoutImporting;
+
 }
 
 //-----------------------------------------------------------------------------------------------------------
 
-medDatabaseImporter::~medDatabaseImporter()
+medDatabaseImporter::~medDatabaseImporter ( void )
 {
-    delete d;
 
-    d = NULL;
-}
-
-//-----------------------------------------------------------------------------------------------------------
-
-void medDatabaseImporter::run()
-{
-    QMutexLocker locker ( &d->mutex );
-
-    /* The idea of this algorithm can be summarized in 3 steps:
-     * 1. Get a list of all the files that will (try to) be imported or indexed
-     * 2. Filter files that cannot be read, or won't be possible to write afterwards, or are already in the db
-     * 3. Fill files metadata, write them to the db, and populate db tables
-     *
-     * note that depending on the input files, they might be aggregated by volume
-     */
-
-    // 1) Obtain a list of all the files that are going to be processed
-    // this flattens the tree structure (if the input is a directory)
-    // and puts all the files in one single list
-    QStringList fileList = getAllFilesToBeProcessed ( d->file );
-
-    // Files that pass the filters named above are grouped
-    // by volume in this map and will be written in the db after.
-    // the key will be the name of the aggregated file with the volume
-    QMap<QString, QStringList> imagesGroupedByVolume;
-    QMap<QString, QString> imagesGroupedByPatient;
-    QMap<QString, QString> imagesGroupedBySeriesId;
-
-    int currentFileNumber = 0; // this variable will be used only for calculating progress
-
-    // if importing, and depending on the input files, they might be aggregated
-    // that is: files corresponding to the same volume will be written
-    // in a single output meta file (e.g. .mha)
-    // this map is used to store a unique id per volume and its volume number
-    QMap<QString, int> volumeUniqueIdToVolumeNumber;
-    int volumeNumber = 1;
-
-    // 2) Select (by filtering) files to be imported
-    //
-    // In this first loop we read the headers of all the images to be imported
-    // and check if we don't have any problem in reading the file, the header
-    // or in selecting a proper format to store the new file afterwards
-    // new files ARE NOT written in medInria database yet, but are stored in a map for writing in a posterior step
-
-    QString tmpPatientId;
-    QString currentPatientId = "";
-    QString patientID;
-
-    QString tmpSeriesUid;
-    QString currentSeriesUid = "-1";
-    QString currentSeriesId = "";
-
-    foreach ( QString file, fileList )
-    {
-        if ( d->isCancelled ) // check if user cancelled the process
-            break;
-
-        emit progress ( this, ( ( qreal ) currentFileNumber/ ( qreal ) fileList.count() ) * 50.0 ); //TODO: reading and filtering represents 50% of the importing process?
-
-        currentFileNumber++;
-
-        QFileInfo fileInfo ( file );
-
-        dtkSmartPointer<dtkAbstractData> dtkData;
-
-        // 2.1) Try reading file information, just the header not the whole file
-
-        bool readOnlyImageInformation = true;
-        dtkData = tryReadImages ( QStringList ( fileInfo.filePath() ), readOnlyImageInformation );
-
-        if ( !dtkData )
-        {
-            qWarning() << "Reader was unable to read: " << fileInfo.filePath();
-            continue;
-        }
-
-        // 2.2) Fill missing metadata
-        populateMissingMetadata ( dtkData, fileInfo.baseName() );
-        QString patientName = medMetaDataKeys::PatientName.getFirstValue(dtkData).simplified();
-        QString birthDate = medMetaDataKeys::BirthDate.getFirstValue(dtkData);
-        tmpPatientId = patientName + birthDate;
-
-        if(tmpPatientId != currentPatientId)
-        {
-          currentPatientId = tmpPatientId;
-
-          patientID = getPatientID(patientName, birthDate);
-        }
-
-        dtkData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientID );
-
-        tmpSeriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(dtkData);
-
-        if (tmpSeriesUid != currentSeriesUid)
-        {
-          currentSeriesUid = tmpSeriesUid;
-          currentSeriesId = medMetaDataKeys::SeriesID.getFirstValue(dtkData);
-        }
-        else
-          dtkData->setMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << currentSeriesId );
-
-        // 2.3) Generate an unique id for each volume
-        // all images of the same volume should share the same id
-        QString volumeId = generateUniqueVolumeId ( dtkData );
-
-        // check whether the image belongs to a new volume
-        if ( !volumeUniqueIdToVolumeNumber.contains ( volumeId ) )
-        {
-            volumeUniqueIdToVolumeNumber[volumeId] = volumeNumber;
-            volumeNumber++;
-        }
-
-        // 2.3) a) Determine future file name and path based on patient/study/series/image
-        // i.e.: where we will write the imported image
-        QString imageFileName = determineFutureImageFileName ( dtkData, volumeUniqueIdToVolumeNumber[volumeId] );
-        #ifdef Q_OS_WIN32
-	        if ( (medStorage::dataLocation() + "/" + imageFileName).length() > 255 )
-	        {
-	            emit showError (tr ( "Your database path is too long" ), 5000 );
-                emit failure ( this );
-                return;
-	        }
-	    #endif
-        // 2.3) b) Find the proper extension according to the type of the data
-        // i.e.: in which format we will write the file in our database
-        QString futureExtension  = determineFutureImageExtensionByDataType ( dtkData );
-
-        // we care whether we can write the image or not if we are importing
-        if (!d->indexWithoutImporting && futureExtension.isEmpty()) {
-            emit showError(tr("Could not save file due to unhandled data type: ") + dtkData->identifier(), 5000);
-            continue;
-        }
-
-        imageFileName = imageFileName + futureExtension;
-
-        // 2.3) c) Add the image to a map for writing them all in medInria's database in a posterior step
-
-        // First check if patient/study/series/image path already exists in the database
-        // Should we emit a message otherwise ??? TO
-        if ( !checkIfExists ( dtkData, fileInfo.fileName() ) )
-        {
-            imagesGroupedByVolume[imageFileName] << fileInfo.filePath();
-            imagesGroupedByPatient[imageFileName] = patientID;
-            imagesGroupedBySeriesId[imageFileName] = currentSeriesId;
-        }
-    }
-
-    // some checks to see if the user cancelled or something failed
-    if ( d->isCancelled )
-    {
-        emit showError ( tr ( "User cancelled import process" ), 5000 );
-        emit cancelled ( this );
-        return;
-    }
-
-    // from now on the process cannot be cancelled
-    emit disableCancel ( this );
-
-    // 3) Re-read selected files and re-populate them with missing metadata
-    //    then write them to medInria db and populate db tables
-
-    QMap<QString, QStringList>::const_iterator it = imagesGroupedByVolume.begin();
-    QMap<QString, QString>::const_iterator  itPat = imagesGroupedByPatient.begin();
-    QMap<QString, QString>::const_iterator  itSer = imagesGroupedBySeriesId.begin();
-
-    // 3.1) first check is after the filtering we have something to import
-    // maybe we had problems with all the files, or they were already in the database
-    if ( it == imagesGroupedByVolume.end() )
-    {
-        // TODO we know if it's either one or the other error, we can make this error better...
-        emit showError ( tr ( "No compatible image found or all of them had been already imported." ), 5000 );
-        emit failure ( this );
-        return;
-    }
-    else
-        qDebug() << "Image map contains " << imagesGroupedByVolume.size() << " files";
-
-    int imagesCount = imagesGroupedByVolume.count(); // used only to calculate progress
-    int currentImageIndex = 0; // used only to calculate progress
-
-    medDataIndex index; //stores the last volume's index to be emitted on success
-
-    // final loop: re-read, re-populate and write to db
-    for ( ; it != imagesGroupedByVolume.end(); it++ )
-    {
-        emit progress ( this, ( ( qreal ) currentImageIndex/ ( qreal ) imagesCount ) * 50.0 + 50.0 ); // 50? I do not think that reading all the headers is half the job...
-
-        currentImageIndex++;
-
-        QString aggregatedFileName = it.key(); // note that this file might be aggregating more than one input files
-        QStringList filesPaths = it.value();   // input files being aggregated, might be only one or many
-        patientID = itPat.value();
-        QString seriesID = itSer.value();
-
-        //qDebug() << currentImageIndex << ": " << aggregatedFileName << "with " << filesPaths.size() << " files";
-
-        dtkSmartPointer<dtkAbstractData> imageDtkData;
-
-        QFileInfo imagefileInfo ( filesPaths[0] );
-
-        // 3.2) Try to read the whole image, not just the header
-        bool readOnlyImageInformation = false;
-        imageDtkData = tryReadImages ( filesPaths, readOnlyImageInformation );
-
-        if ( imageDtkData )
-        {
-            // 3.3) a) re-populate missing metadata
-            // as files might be aggregated we use the aggregated file name as SeriesDescription (if not provided, of course)
-            populateMissingMetadata ( imageDtkData, imagefileInfo.baseName() );
-            imageDtkData->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientID );
-            imageDtkData->setMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << seriesID );
-
-            // 3.3) b) now we are able to add some more metadata
-            addAdditionalMetaData ( imageDtkData, aggregatedFileName, filesPaths );
-        }
-        else
-        {
-            qWarning() << "Could not repopulate data!";
-            emit showError ( tr ( "Could not read data: " ) + filesPaths[0], 5000 );
-            continue;
-        }
-
-        // check for partial import attempts
-        if ( isPartialImportAttempt ( imageDtkData ) )
-            continue;
-
-        if ( !d->indexWithoutImporting )
-        {
-            // create location to store file
-            QFileInfo fileInfo ( medStorage::dataLocation() + aggregatedFileName );
-            if ( !fileInfo.dir().exists() && !medStorage::mkpath ( fileInfo.dir().path() ) )
-            {
-                qDebug() << "Cannot create directory: " << fileInfo.dir().path();
-                continue;
-            }
-
-            // now writing file
-            bool writeSuccess = tryWriteImage ( fileInfo.filePath(), imageDtkData );
-
-            if ( !writeSuccess )
-            {
-                emit showError (tr ( "Could not save data file: " ) + filesPaths[0], 5000 );
-                continue;
-            }
-        }
-
-        // and finally we populate the database
-        QFileInfo aggregatedFileNameFileInfo ( aggregatedFileName );
-        QString pathToStoreThumbnails = aggregatedFileNameFileInfo.dir().path() + "/" + aggregatedFileNameFileInfo.completeBaseName() + "/";
-        index = this->populateDatabaseAndGenerateThumbnails ( imageDtkData, pathToStoreThumbnails );
-
-        itPat++;
-        itSer++;
-    } // end of the final loop
-
-
-    // if a partial import was attempted we tell the user what to do
-    // to perform a correct import next time
-    if ( d->partialAttemptsInfo.size() > 0 )
-    {
-        QString process = d->indexWithoutImporting ? "index" : "import";
-        QString msg = "It seems you are trying to " + process + " some images that belong to a volume which is already in the database." + "\n";
-        msg += "For a more accurate " + process + " please first delete the following series: " + "\n" + "\n";
-
-        foreach ( QStringList info, d->partialAttemptsInfo )
-        {
-            msg += "Series: " + info[2] + " (from patient: " + info[0] + " and study: " + info[1] + "\n";
-        }
-
-        emit partialImportAttempted ( msg );
-    }
-
-    emit progress ( this,100 );
-    emit success ( this );
-    emit addedIndex ( index );
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -433,7 +138,7 @@ bool medDatabaseImporter::isPartialImportAttempt ( dtkAbstractData* dtkData )
             if ( query.first() )
             {
                 QStringList filePaths = dtkData->metaDataValues ( medMetaDataKeys::FilePaths.key() );
-                d->partialAttemptsInfo << ( QStringList() << patientName << studyName << seriesName << filePaths[0] );
+                *(partialAttemptsInfo()) << ( QStringList() << patientName << studyName << seriesName << filePaths[0] );
                 return true;
             }
         }
@@ -700,7 +405,7 @@ int medDatabaseImporter::getOrCreateSeries ( const dtkAbstractData* dtkData, QSq
         // the column 'path', as there won't be a file aggregating the images
 
         QString seriesPath = "";
-        if ( !d->indexWithoutImporting )
+        if ( !indexWithoutImporting() )
             //seriesPath = dtkData->metaDataValues (medMetaDataKeys::FilePaths.key())[0];
             seriesPath = dtkData->metaDataValues ( "FileName" ) [0];
         int size               = medMetaDataKeys::Size.getFirstValue(dtkData).toInt();
@@ -788,12 +493,12 @@ void medDatabaseImporter::createMissingImages ( dtkAbstractData* dtkData, QSqlDa
                 query.bindValue ( ":name", name_str);
                 query.bindValue ( ":path", fileInfo.filePath() );
                 query.bindValue ( ":thumbnail", thumbPaths[i] );
-                query.bindValue ( ":isIndexed", d->indexWithoutImporting );
+                query.bindValue ( ":isIndexed", indexWithoutImporting() );
 
                 // if we are indexing we want to leave the 'instance_path' column blank
                 // as we will use the full path in 'path' column to load them
                 QString relativeFilePath = dtkData->metaDataValues ( "FileName" ) [0];
-                query.bindValue ( ":instance_path", d->indexWithoutImporting ? "" : relativeFilePath );
+                query.bindValue ( ":instance_path", indexWithoutImporting() ? "" : relativeFilePath );
 
                 if ( !query.exec() )
                     qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
@@ -823,12 +528,12 @@ void medDatabaseImporter::createMissingImages ( dtkAbstractData* dtkData, QSqlDa
                 query.bindValue ( ":series", seriesDbId );
                 query.bindValue ( ":name", fileInfo.fileName() );
                 query.bindValue ( ":path", fileInfo.filePath() );
-                query.bindValue ( ":isIndexed", d->indexWithoutImporting );
+                query.bindValue ( ":isIndexed", indexWithoutImporting() );
 
                 // if we are indexing we want to leave the 'instance_path' column blank
                 // as we will use the full path in 'path' column to load them
                 QString relativeFilePath = dtkData->metaDataValues ( "FileName" ) [0];
-                query.bindValue ( ":instance_path", d->indexWithoutImporting ? "" : relativeFilePath );
+                query.bindValue ( ":instance_path", indexWithoutImporting() ? "" : relativeFilePath );
 
                 if ( i < thumbPaths.count() )
                     query.bindValue ( ":thumbnail", thumbPaths[i] );

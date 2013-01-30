@@ -11,7 +11,8 @@
 
 =========================================================================*/
 
-#pragma once
+#ifndef MEDDATABASEIMPORTER_H
+#define MEDDATABASEIMPORTER_H
 
 #include "medSqlExport.h"
 
@@ -46,29 +47,7 @@ class MEDSQL_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter
 
 public:
     medDatabaseImporter ( const QString& file, bool indexWithoutImporting );
-    ~medDatabaseImporter();
-
-    /**
-    * Runs the import process based on the input file
-    * or directory given in the constructor
-    **/
-    void run();
-
-signals:
-    /**
-     * This signal is emitted when the import/index process
-     * detects an attempt of partial importing. That is when the user
-     * tried to import, in 2 separate steps, images belonging
-     * to the same volume.
-     */
-    void partialImportAttempted ( const QString& message );
-
-    /**
-     * This signal is emitted after a successful import/index.
-     * @param addedIndex - the @medDataIndex that was successfully added
-     */
-    void addedIndex ( const medDataIndex& addedIndex);
-
+    ~medDatabaseImporter ( void );
 
 
 private:
@@ -141,12 +120,10 @@ private:
     
     /**
      * Retrieves patientID. Checks if patient is already in the database
-     * if so, reurns is Id, otherwise creates a new guid
+     * if so, returns his Id, otherwise creates a new guid
      */
     QString getPatientID(QString patientName, QString birthDate);
 
-    medDatabaseImporterPrivate *d;
-
 };
 
-
+#endif // MEDDATABASEIMPORTER_H

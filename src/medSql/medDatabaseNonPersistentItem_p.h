@@ -37,6 +37,12 @@ public:
     QString seriesUid;
     QString file;
     QImage thumb;
+    QString orientation;
+    QString seriesNumber;
+    QString sequenceName;
+    QString sliceThickness;
+    QString rows;
+    QString columns;
 
     medDataIndex index;
 
