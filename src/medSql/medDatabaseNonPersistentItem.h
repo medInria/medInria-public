@@ -29,24 +29,32 @@ class MEDSQL_EXPORT medDatabaseNonPersistentItem : public QObject
     Q_OBJECT
 
 public:
-     medDatabaseNonPersistentItem();
-    ~medDatabaseNonPersistentItem();
+     medDatabaseNonPersistentItem(void);
+    ~medDatabaseNonPersistentItem(void);
 
-    const QString& name() const;
-    const QString& birthdate() const;
-    const QString& patientId() const;
-    const QString& studyName() const;
-    const QString& seriesName() const;
-    const QString& file() const;
-    const QString& studyId() const;
-    const QString& studyUid() const;
-    const QString& seriesId() const;
-    const QString& seriesUid() const;
-    const QImage& thumb() const;
+    const QString& name(void) const;
+    const QString& birthdate(void) const;
+    const QString& patientId(void) const;
+    const QString& studyName(void) const;
+    const QString& seriesName(void) const;
+    const QString& file(void) const;
+    const QString& studyId(void) const;
+    const QString& studyUid(void) const;
+    const QString& seriesId(void) const;
+    const QString& seriesUid(void) const;
+    const QImage& thumb(void) const;
+    const QString orientation(void) const;
+    const QString seriesNumber(void) const;
+    const QString sequenceName(void) const;
+    const QString sliceThickness(void) const;
+    const QString rows(void) const;
+    const QString columns(void) const;
 
-    const medDataIndex& index() const;
+    const medDataIndex& index(void) const;
     
-    dtkAbstractData *data();
+    dtkAbstractData *data(void);
+    
+    bool Match(dtkAbstractData *);
 
 private:
     friend class medDatabaseNonPersitentController;
@@ -57,4 +65,4 @@ private:
     medDatabaseNonPersistentItemPrivate *d;
 };
 
-
+#endif

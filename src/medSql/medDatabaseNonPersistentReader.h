@@ -44,14 +44,13 @@ public:
     medDatabaseNonPersistentReader(const QString& file,const QString& callerUuid = QString());
     ~medDatabaseNonPersistentReader();
 
-    void run();
-
     /**
-      Returns the index of the data which has been read. Index is not
-      valid if reading was not successful.
-    */
-    medDataIndex index() const;
-
+    * Runs the import process based on the input file
+    * or directory given in the constructor
+    **/
+    virtual void run () ;
+    
+    
 signals:
 
     /**
@@ -62,8 +61,7 @@ signals:
     */
     void nonPersistentRead(const medDataIndex & index,const QString& callerUuid);
 
-public slots:
-
+    
    
 public:
      /**
@@ -96,7 +94,14 @@ public:
     * @param imageName - the name of the image we are looking for
     * @return true if already exists, false otherwise
     **/
-    virtual bool checkIfExists ( dtkAbstractData* dtkdata, QString imageName );
+    bool checkIfExists ( dtkAbstractData* dtkdata, QString imageName );
+    
+    /**
+     * Checks if the user is trying to perform a partial import
+     * (that is, trying to import files belonging to the same volume
+     * in 2 different steps).
+     */
+    bool isPartialImportAttempt ( dtkAbstractData* dtkData );
 
 
 

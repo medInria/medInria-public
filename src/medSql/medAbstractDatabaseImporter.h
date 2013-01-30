@@ -59,7 +59,7 @@ public:
     * Runs the import process based on the input file
     * or directory given in the constructor
     **/
-    void run ( void ) = 0;
+    virtual void run ( void ) ;
 
 signals:
     /**
@@ -79,8 +79,29 @@ signals:
 public slots:
     void onCancel ( QObject* );
 
-//private:
+
 protected:    
+    
+    QString file ( void );
+    
+    QString lastSuccessfulReaderDescription ( void );
+    
+    QString lastSuccessfulWriterDescription ( void );
+    
+    bool isCancelled ( void );
+    
+    bool indexWithoutImporting ( void );
+    
+    QList<QStringList>* partialAttemptsInfo ( void );
+    
+    QMap<int, QString> volumeIdToImageFile ( void );
+    
+    /**
+      Returns the index of the data which has been read. Index is not
+      valid if reading was not successful.
+    */
+    medDataIndex index(void) const;
+    
 
     /**
     * Finds if parameter @seriesName is already being used in the database
@@ -90,15 +111,13 @@ protected:
     * @return newSeriesName - a new, unused, series name
     **/
     virtual QString ensureUniqueSeriesName ( const QString seriesName ) = 0;
-
+    
     /**
-    * Populates the missing metadata in the @dtkAbstractData object.
-    * If metadata is not present it's filled with default or empty values.
-    * @param dtkData - the object whose missing metadata will be filled
-    * @param seriesDescription - string used to fill SeriesDescription field if not present
-    **/
-    void populateMissingMetadata ( dtkAbstractData* dtkData, const QString seriesDescription );
-
+     * Checks if the user is trying to perform a partial import
+     * (that is, trying to import files belonging to the same volume
+     * in 2 different steps).
+     */
+    virtual bool isPartialImportAttempt ( dtkAbstractData* dtkData ) = 0;
 
     /**
     * Checks if the image which was used to create the dtkData object
@@ -108,6 +127,30 @@ protected:
     * @return true if already exists, false otherwise
     **/
     virtual bool checkIfExists ( dtkAbstractData* dtkdata, QString imageName ) = 0;
+    
+    /**
+     * Retrieves patientID. Checks if patient is already in the database
+     * if so, returns his Id, otherwise creates a new guid
+     */
+    virtual QString getPatientID(QString patientName, QString birthDate) = 0;
+    
+    /**
+    * Populates database tables and generates thumbnails.
+    * @param dtkData - a @dtkAbstractData object created from the original image
+    * @param pathToStoreThumbnails - path where the thumbnails will be stored
+    * @return medDataIndex the new medDataIndex associated with this imported series.
+    **/
+    virtual medDataIndex populateDatabaseAndGenerateThumbnails ( dtkAbstractData* dtkData, QString pathToStoreThumbnails ) = 0;
+    
+    
+    /**
+    * Populates the missing metadata in the @dtkAbstractData object.
+    * If metadata is not present it's filled with default or empty values.
+    * @param dtkData - the object whose missing metadata will be filled
+    * @param seriesDescription - string used to fill SeriesDescription field if not present
+    **/
+    void populateMissingMetadata ( dtkAbstractData* dtkData, const QString seriesDescription );
+
 
 
     /**
@@ -148,7 +191,6 @@ protected:
     * @return a string with the new filename
     **/
     QString determineFutureImageFileName ( const dtkAbstractData* dtkData, int volumeNumber );
-//     QString determineFutureImageFileName(const dtkAbstractData* dtkData, int volumeNumber);
 
     /**
     * Determines the extension (i.e. file format) which
@@ -191,14 +233,6 @@ protected:
     * @return a list of the thumbnails paths
     **/
     QStringList generateThumbnails ( dtkAbstractData* dtkData, QString pathToStoreThumbnails );
-
-
-    /**
-     * Checks if the user is trying to perform a partial import
-     * (that is, trying to import files belonging to the same volume
-     * in 2 different steps).
-     */
-    bool isPartialImportAttempt ( dtkAbstractData* dtkData );
     
     
     medAbstractDatabaseImporterPrivate *d;

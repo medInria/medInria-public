@@ -14,6 +14,9 @@
 #include "medDatabaseNonPersistentItem.h"
 #include "medDatabaseNonPersistentItem_p.h"
 
+#include <medMetaDataKeys.h>
+
+
 medDatabaseNonPersistentItem::medDatabaseNonPersistentItem(void) : QObject(), d(new medDatabaseNonPersistentItemPrivate)
 {
     //d->data = NULL;
@@ -82,6 +85,36 @@ const QImage& medDatabaseNonPersistentItem::thumb(void) const
     return d->thumb;
 }
 
+const QString medDatabaseNonPersistentItem::orientation(void) const
+{
+    return d->orientation;
+}
+
+const QString medDatabaseNonPersistentItem::seriesNumber(void) const
+{
+    return d->seriesNumber;
+}
+
+const QString medDatabaseNonPersistentItem::sequenceName(void) const
+{
+    return d->sequenceName;
+}
+
+const QString medDatabaseNonPersistentItem::sliceThickness(void) const
+{
+    return d->sliceThickness;
+}
+
+const QString medDatabaseNonPersistentItem::rows(void) const
+{
+    return d->rows;
+}
+
+const QString medDatabaseNonPersistentItem::columns(void) const
+{
+    return d->columns;
+}
+
 const medDataIndex& medDatabaseNonPersistentItem::index(void) const
 {
     return d->index;
@@ -90,4 +123,32 @@ const medDataIndex& medDatabaseNonPersistentItem::index(void) const
 dtkAbstractData *medDatabaseNonPersistentItem::data(void)
 {
     return d->data;
+}
+
+
+bool medDatabaseNonPersistentItem::Match(dtkAbstractData *dtkData)
+{
+    QString patientName = medMetaDataKeys::PatientName.getFirstValue(dtkData).simplified();
+    QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(dtkData).simplified();
+    QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(dtkData);
+    QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
+    QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(dtkData);
+    QString orientation = medMetaDataKeys::Orientation.getFirstValue(dtkData);
+    QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(dtkData);
+    QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(dtkData);
+    QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(dtkData);
+    QString rows = medMetaDataKeys::Rows.getFirstValue(dtkData);
+    QString columns = medMetaDataKeys::Columns.getFirstValue(dtkData);
+    
+    return (
+        patientName == d->name &&
+        studyName == d->studyName &&
+        studyUid == d->studyUid &&
+        seriesName == d->seriesName &&
+        seriesUid == d->seriesUid &&
+        orientation == d->orientation &&
+        seriesNumber == d->seriesNumber &&
+        sequenceName == d->sequenceName &&
+        sliceThickness == d->sliceThickness &&
+        rows == d->rows );
 }
