@@ -12,6 +12,8 @@
 #include <medTabbedViewContainers.h>
 #include <medToolBoxRegistration.h>
 
+#include <medToolBoxFactory.h>
+
 class medViewerWorkspaceRegistrationPrivate
 {
 public:
@@ -90,4 +92,10 @@ void medViewerWorkspaceRegistration::patientChanged(int patientId)
 {
     d->registrationToolBox->clear();
 }
+
+bool medViewerWorkspaceRegistration::isUsable(){
+    medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
+    return (tbFactory->toolBoxesFromCategory("registration").size()!=0); 
+}
+
 

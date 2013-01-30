@@ -33,6 +33,8 @@ public:
     //! Implement base class
     QString identifier(void) const;
 
+    static bool isUsable();
+
     //! Implement abstract method in base class.
     void setupViewContainerStack();
 
@@ -47,6 +49,7 @@ public:
 
     void buildWorkspace(  );
 
+    
 
 signals:
     void viewAdded(dtkAbstractView* view);

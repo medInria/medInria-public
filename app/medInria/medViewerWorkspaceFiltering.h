@@ -33,7 +33,7 @@ public:
 
     virtual QString identifier()  const;
     virtual QString description() const;
-
+    static bool isUsable();
     /**
      * @brief sets up all the signal/slot connections when Viewer is switched to this workspace
      */
