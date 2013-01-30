@@ -159,9 +159,9 @@ int main(int argc, char *argv[])
 
     if (medPluginManager::instance()->plugins().isEmpty())
     {
-        QMessageBox::warning( (0,
-                               QObject::tr("No plugin was loaded"),
-                               QObject::tr("Warning : no plugin was loaded."));
+        QMessageBox::warning(0,
+                             QObject::tr("No plugin was loaded"),
+                             QObject::tr("Warning : no plugin was loaded."));
     }
 
     int status = application.exec();
