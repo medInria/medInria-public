@@ -157,13 +157,13 @@ int main(int argc, char *argv[])
 
     splash.finish(&mainwindow);
 
-    if (medPluginManager::instance()->plugins().isEmpty() ||
-            medPluginManager::instance()->plugins().size() < medPluginManager::instance()->loadErrors().size())
+    if (medPluginManager::instance()->plugins().isEmpty())
     {
         QMessageBox::warning(&mainwindow,
                              QObject::tr("No plugin loaded"),
                              QObject::tr("Warning : no plugin loaded successfully."));
     }
+
 
     int status = application.exec();
 
