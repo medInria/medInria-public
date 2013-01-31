@@ -161,8 +161,8 @@ int main(int argc, char *argv[])
             medPluginManager::instance()->plugins().size() < medPluginManager::instance()->loadErrors().size())
     {
         QMessageBox::warning(&mainwindow,
-                             QObject::tr("No plugin was loaded"),
-                             QObject::tr("Warning : no plugin was successfully loaded."));
+                             QObject::tr("No plugin loaded"),
+                             QObject::tr("Warning : no plugin loaded successfully."));
     }
 
     int status = application.exec();
