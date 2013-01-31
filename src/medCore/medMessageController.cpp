@@ -33,7 +33,6 @@ medMessage::medMessage( QWidget *parent,
                         bool messageProgress) : QWidget(parent)
 {
     this->setFixedWidth(400);
-	
     icon = new QLabel(this);
 
     info = new QLabel(this);
@@ -46,19 +45,20 @@ medMessage::medMessage( QWidget *parent,
     layout->addWidget(icon);
     layout->addWidget(info);
 
-    if ( timeout > 0 ){
+    if ( timeout > 0 )
+    {
         this->timer = new QTimer(this);
         connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
         timer->start(timeout);
     }
 
-    if (messageProgress){
-		progress = new QProgressBar(this);
-		progress->setMinimum(0);
-		progress->setMaximum(100);
-		layout->addWidget(progress);
-	}
-
+    if (messageProgress)
+    {
+        progress = new QProgressBar(this);
+        progress->setMinimum(0);
+        progress->setMaximum(100);
+        layout->addWidget(progress);
+    }
     this->setLayout(layout);
 }
 
@@ -67,8 +67,9 @@ medMessage::~medMessage(void)
 
 }
 
-void medMessage::remove(){
-	medMessageController::instance()->remove(this);
+void medMessage::remove()
+{
+    medMessageController::instance()->remove(this);
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -80,7 +81,7 @@ medMessageInfo::medMessageInfo(
         medMessage(parent,text, timeout)
 {
     icon->setPixmap(QPixmap(":/icons/information.png"));
-	this->setFixedWidth(200);
+    this->setFixedWidth(200);
 }
 
 medMessageInfo::~medMessageInfo(void)
@@ -123,34 +124,27 @@ medMessageProgress::~medMessageProgress(void)
 void medMessageProgress::setProgress(int value)
 {
     progress->setValue(value);
-    progress->update();
-    qApp->processEvents();
 }
 
 void medMessageProgress::success(void)
-
-
 {
-	progress->setStyleSheet("QProgressBar::chunk {background-color: lime;}");
-	this->timer = new QTimer(this);
-	int timeout = 2000;
-	connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
-	timer->start(timeout);
-	info->setText("Operation succeeded");
+    progress->setStyleSheet("QProgressBar::chunk {background-color: lime;}");
+    this->timer = new QTimer(this);
+    int timeout = 2000;
+    connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
+    timer->start(timeout);
+    info->setText("Operation succeeded");
 
 }
 
 void medMessageProgress::failure(void)
-
-
 {
-	progress->setStyleSheet("QProgressBar::chunk {background-color: red;}");
-	this->timer = new QTimer(this);
-	int timeout = 2000;
-	connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
-	timer->start(timeout);
-	info->setText("Operation aborted");
-
+    progress->setStyleSheet("QProgressBar::chunk {background-color: red;}");
+    this->timer = new QTimer(this);
+    int timeout = 2000;
+    connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
+    timer->start(timeout);
+    info->setText("Operation aborted");
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -208,13 +202,13 @@ medMessageController *medMessageController::instance(void)
 
 void medMessageController::showInfo(const QString& text,unsigned int timeout)
 {
-    if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) {
+    if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) 
+    {
         // GUI
         medMessageInfo *message = new medMessageInfo(
                 text,0,timeout);
 
         emit addMessage(message);
-
     } else {
         dtkTrace() << text;
     }
@@ -222,11 +216,11 @@ void medMessageController::showInfo(const QString& text,unsigned int timeout)
 
 void medMessageController::showError(const QString& text,unsigned int timeout)
 {
-    if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) {
+    if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) 
+    {
         // GUI
         medMessageError *message = new medMessageError(
                 text,0,timeout);
-
         emit addMessage(message);
 
     } else {
@@ -236,25 +230,25 @@ void medMessageController::showError(const QString& text,unsigned int timeout)
 
 medMessageProgress * medMessageController::showProgress(const QString& text)
 {
-    if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) {
+    if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) 
+    {
         // GUI
         medMessageProgress *message = new medMessageProgress(text);
 
         emit addMessage(message);
         return message;
 
-    } /*else {
-        dtkDebug() << "Progress : " << text;
-    }*/
-
+    } 
 }
 
 
-void medMessageController::remove(medMessage *message){
-	if(message != NULL){
-		emit removeMessage(message);
-		delete message;
-	}
+void medMessageController::remove(medMessage *message)
+{
+    if(message != NULL)
+    {
+        emit removeMessage(message);
+        delete message;
+    }
 }
 
 medMessageController::medMessageController(void) : QObject()

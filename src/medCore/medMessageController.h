@@ -41,10 +41,10 @@ public:
 
 	    
 protected:
-	QProgressBar *progress;
-	QLabel *icon;
-	QTimer *timer;
-	QLabel *info;
+    QProgressBar *progress;
+    QLabel *icon;
+    QTimer *timer;
+    QLabel *info;
 
 
 protected slots:
