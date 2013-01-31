@@ -1290,12 +1290,14 @@ void v3dView::onShowScalarBarPropertySet ( const QString &value )
     {
         //d->collection->SyncSetShowScalarBar(true);
         d->view2d->SetShowScalarBar ( true );
+        d->view3d->SetShowScalarBar ( true );
     }
 
     if ( value == "false" )
     {
         //d->collection->SyncSetShowScalarBar(false);
         d->view2d->SetShowScalarBar ( false );
+        d->view3d->SetShowScalarBar ( false );
     }
 }
 
