@@ -35,7 +35,6 @@
 #include <vtkOrientedBoxWidget.h>
 #include <vtkMath.h>
 #include <vtkMatrix4x4.h>
-#include <vtkScalarBarActor.h>
 
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
@@ -2454,4 +2453,5 @@ void v3dView::setCurrentLayer(int layer)
 //    qDebug()<<"setCurrentLayer" << layer;
     medAbstractView::setCurrentLayer(layer);
     d->view2d->SetCurrentLayer(layer);
+    d->view3d->SetCurrentLayer(layer);
 }
