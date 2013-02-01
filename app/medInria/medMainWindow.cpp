@@ -521,10 +521,16 @@ void medMainWindow::switchFullScreen ( )
 
 void medMainWindow::captureScreenshot()
 {
-    QPixmap screenshot = d->viewerArea->grabScreenshot();
-    
+    QPixmap screenshot = d->viewerArea->grabScreenshot();    
     QString fileName = QFileDialog::getSaveFileName(NULL, tr("Save screenshot as"), "", "*.png");
-    screenshot.save(fileName);
+    
+    QImage transparentImage = screenshot.toImage();
+    QImage outImage(transparentImage.size(), QImage::Format_RGB32);
+    outImage.fill(QColor(Qt::black).rgb());
+    
+    QPainter painter(&outImage);
+    painter.drawImage(0,0,transparentImage);
+    outImage.save(fileName);
 }
 
 void medMainWindow::showFullScreen()
