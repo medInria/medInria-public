@@ -754,12 +754,17 @@ void vtkTensorVisuManager::SetUpLUTToMapVolume()
   double range[2];
   this->VolumeArray->GetRange (range);
   std::cout << "Volume range is: " << range[0] << " " << range[1] << std::endl;
+  // canine 2
+  // range[0] =  260;  range [1] = 600;
+  // canine 5
+  // range[0] =  340;  range [1] = 830;
+  // std::cout << "adhoc Volume range is: " << range[0] << " " << range[1] << std::endl;
   
   myData->GetPointData()->SetScalars(this->VolumeArray);
   this->Glyph->Modified();
-  
+  this->LUT->SetRange (range);
   this->Mapper->SetColorModeToMapScalars();  
-
+  this->Mapper->UseLookupTableScalarRangeOn();
   
   if( !this->LUT )
   {

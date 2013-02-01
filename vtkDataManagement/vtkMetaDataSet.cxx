@@ -712,6 +712,10 @@ void vtkMetaDataSet::GetColorArrayCollection(vtkDataArrayCollection* collection)
   if (!this->GetDataSet())
     return;
 
+  std::cout<<"dataset has "<<this->GetDataSet()->GetPointData()->GetNumberOfArrays()<<" pointdata arrays..."<<std::endl;
+  if (this->GetDataSet()->GetPointData()->GetScalars())
+    std::cout<<"dataset has pointdata scalars..."<<std::endl;
+  
   for (int i=0; i<this->GetDataSet()->GetPointData()->GetNumberOfArrays(); i++)
   {
     collection->AddItem(this->GetDataSet()->GetPointData()->GetArray (i));
@@ -753,6 +757,8 @@ vtkDataArray* vtkMetaDataSet::GetArray (const char* name)
   
   for (int i=0; i<arrays->GetNumberOfItems(); i++)
   {
+    std::cout<<"comparing name : "<<name<<" VS "<<arrays->GetItem (i)->GetName()<<std::endl;
+    
     if (arrays->GetItem (i)->GetName() && (strcmp(arrays->GetItem (i)->GetName(), name) == 0))
     {
       ret = arrays->GetItem (i);

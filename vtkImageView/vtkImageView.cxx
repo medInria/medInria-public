@@ -194,6 +194,8 @@ vtkImageView::vtkImageView()
 
 vtkImageView::~vtkImageView()
 {
+  std::cout<<"deleting a view"<<std::endl;
+  
   this->OrientationTransform->SetInput ( NULL );
 
   this->OrientationMatrix->Delete();
@@ -242,6 +244,10 @@ vtkImageView::~vtkImageView()
 #ifdef vtkINRIA3D_USE_ITK
   delete this->Impl;
 #endif
+
+  std::cout<<"deleting a view. done"<<std::endl;
+
+  
 }
 
 //----------------------------------------------------------------------------
@@ -749,7 +755,7 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(
       if ( n > 0 && currentWidth == 0.0 )
         currentWidth = 1.0;
 
-      vtkSmartPointer<vtkColorTransferFunction> cfCopy( vtkSmartPointer<vtkColorTransferFunction>::New() );
+      vtkSmartPointer<vtkColorTransferFunction> cfCopy = vtkSmartPointer<vtkColorTransferFunction>::New();
       cfCopy->DeepCopy( cf );
       cf->RemoveAllPoints();
 
@@ -781,7 +787,7 @@ void vtkImageView::SetTransferFunctionRangeFromWindowSettings(
       if ( n > 0 && currentWidth == 0.0 )
           currentWidth = 1.0;
 
-      vtkSmartPointer<vtkPiecewiseFunction> ofCopy( vtkSmartPointer<vtkPiecewiseFunction>::New() );
+      vtkSmartPointer<vtkPiecewiseFunction> ofCopy = vtkSmartPointer<vtkPiecewiseFunction>::New();
       ofCopy->DeepCopy( of );
       of->RemoveAllPoints();
 

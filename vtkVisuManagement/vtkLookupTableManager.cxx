@@ -37,6 +37,8 @@ vtkStandardNewMacro(vtkLookupTableManager);
 #include "lut/VRBones.h"
 #include "lut/VRRedVessels.h"
 #include "lut/BlackBody.h"
+#include "lut/jet.h"
+
 
 #include <time.h>
 
@@ -72,11 +74,12 @@ std::vector<std::string> vtkLookupTableManager::GetAvailableLookupTables()
 			  "Cardiac",
 			  "Gray Rainbow",
 			  "Stern",
-			  "Black Body"};
+			  "Black Body",
+  			  "Jet"};
     
 
   std::vector<std::string> v_lutNames;
-  for( int i=0; i<23; i++)
+  for( int i=0; i<24; i++)
   {
     v_lutNames.push_back(lutNames[i]);
   }
@@ -143,6 +146,8 @@ vtkLookupTable* vtkLookupTableManager::GetLookupTable(const std::string & name)
     return vtkLookupTableManager::GetSternLookupTable();
   else if ( name == "Black Body" )
     return vtkLookupTableManager::GetBlackBodyLookupTable();
+  else if ( name == "Jet" )
+    return vtkLookupTableManager::GetJetLookupTable();
   else
     return vtkLookupTableManager::GetBWLookupTable();
 }
@@ -580,6 +585,22 @@ vtkLookupTable* vtkLookupTableManager::GetBlackBodyLookupTable(void)
   for( int i=0; i<256; i++)
   {
     lut->SetTableValue(i, (double)BlackBody[i]/255.0, (double)BlackBody[256+i]/255.0, (double)BlackBody[256*2+i]/255.0, /*(double)(i)/255.0*/ log (1.0+(double)(i)/255.0*9.0)/log (10.0) );
+  }
+  
+  return lut;
+
+}
+
+
+vtkLookupTable* vtkLookupTableManager::GetJetLookupTable(void)
+{
+  vtkLookupTable* lut = vtkLookupTable::New();
+  lut->SetNumberOfTableValues(64);
+  lut->Build();
+  
+  for( int i=0; i<64; i++)
+  {
+    lut->SetTableValue(i, (double)jet[i][0], (double)jet[i][1], (double)jet[i][2], (double)1.0);
   }
   
   return lut;
