@@ -243,9 +243,9 @@ IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
     MESSAGE(FATAL_ERROR " ITK is needed ON to use the Spherical Harmonics Functions Visualization")
   ENDIF( NOT vtkINRIA3D_USE_ITK )
 
-  IF(WIN32)
+  IF(APPLE OR WIN32)
     find_package( Boost REQUIRED)
-  ENDIF(WIN32)
+  ENDIF(APPLE OR WIN32)
 
   find_path(vtkINRIA3D_DATA_DIR NAMES SHTest.vtk DOC "vtkInria3d Data directory")
 
