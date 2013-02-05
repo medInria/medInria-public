@@ -1,0 +1,35 @@
+project(itkAddOn)
+
+IF(WIN32 AND NOT CYGWIN AND NOT MINGW)
+  ADD_LIBRARY(getoptcompatlib STATIC
+    getoptcompat/getopt.c
+    getoptcompat/getopt_long.c
+  )
+ENDIF(WIN32 AND NOT CYGWIN AND NOT MINGW)
+
+ADD_EXECUTABLE(itkReshaper
+itkReshaper.cxx
+)
+
+IF(WIN32 AND NOT CYGWIN AND NOT MINGW)
+ TARGET_LINK_LIBRARIES(itkReshaper 
+  itkIOAddOn 
+  getoptcompatlib
+ )
+ELSE(WIN32 AND NOT CYGWIN AND NOT MINGW)
+ TARGET_LINK_LIBRARIES(itkReshaper
+  itkIOAddOn
+ )
+ENDIF(WIN32 AND NOT CYGWIN AND NOT MINGW)
+
+IF(NOT vtkINRIA3D_INSTALL_NO_DEVELOPMENT)
+  FILE(GLOB __files1 "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+  FILE(GLOB __files2 "${CMAKE_CURRENT_SOURCE_DIR}/*.txx")
+  INSTALL(FILES ${__files1} ${__files2}
+    DESTINATION ${vtkINRIA3D_INSTALL_INCLUDE_DIR})
+ENDIF(NOT vtkINRIA3D_INSTALL_NO_DEVELOPMENT)
+
+subdirs(
+  Registration
+  IO
+)

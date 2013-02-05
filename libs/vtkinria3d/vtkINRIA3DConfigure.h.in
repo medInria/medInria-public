@@ -1,0 +1,138 @@
+#ifndef _vtk_INRIA3D_Configure_h_
+#define _vtk_INRIA3D_Configure_h_
+
+#include <cstddef> // For ITK 3.20 that does not define correctly ptrdiff_t
+
+/* Whether we are building shared libraries.  */
+#cmakedefine VTK_BUILD_SHARED_LIBS
+
+#cmakedefine wxWidgets_BUILD_SHARED_LIBS
+#cmakedefine vtkINRIA3D_USE_ITK
+#cmakedefine vtkINRIA3D_USE_HWSHADING
+#cmakedefine vtkINRIA3D_USE_WXWINDOWS
+#cmakedefine vtkINRIA3D_USE_KWWIDGETS
+#cmakedefine vtkINRIA3D_USE_KWWIDGETS_OLD_API
+#cmakedefine VTK_TCL_SUPPORT_LIBRARY_PATH
+#cmakedefine VTK_TK_SUPPORT_LIBRARY_PATH
+#cmakedefine ITK_USE_SYSTEM_GDCM
+
+#define vtkINRIA3D_VERSION_MAJOR @vtkINRIA3D_VERSION_MAJOR@
+#define vtkINRIA3D_VERSION_MINOR @vtkINRIA3D_VERSION_MINOR@
+#define vtkINRIA3D_VERSION_BUILD @vtkINRIA3D_VERSION_BUILD@
+#define vtkINRIA3D_VERSION "@vtkINRIA3D_VERSION@"
+
+
+#if defined (WIN32) && defined (VTK_BUILD_SHARED_LIBS)
+
+ #if defined (vtkVisuManagement_EXPORTS)
+  #define VTK_VISUMANAGEMENT_EXPORT __declspec( dllexport )
+ #else
+  #define VTK_VISUMANAGEMENT_EXPORT __declspec( dllimport )
+ #endif
+
+ #if defined (vtkLandmarkManagement_EXPORTS)
+  #define VTK_LANDMARKMANAGEMENT_EXPORT __declspec( dllexport )
+ #else
+  #define VTK_LANDMARKMANAGEMENT_EXPORT __declspec( dllimport )
+ #endif
+
+ #if defined (vtkWidgetsAddOn_EXPORTS)
+  #define VTK_WIDGETSADDON_EXPORT __declspec( dllexport )
+ #else
+  #define VTK_WIDGETSADDON_EXPORT __declspec( dllimport )
+ #endif
+ 
+ #if defined (vtkHWShading_EXPORTS)
+  #define VTK_HWSHADING_EXPORT __declspec( dllexport )
+ #else
+  #define VTK_HWSHADING_EXPORT __declspec( dllimport )
+ #endif
+ 
+ #if defined (vtkHelpers_EXPORTS)
+  #define VTK_HELPERS_EXPORT __declspec( dllexport )
+ #else
+  #define VTK_HELPERS_EXPORT __declspec( dllimport )
+ #endif
+ 
+ #if defined (vtkDataManagement_EXPORTS)
+  #define VTK_DATAMANAGEMENT_EXPORT __declspec( dllexport )
+ #else
+  #define VTK_DATAMANAGEMENT_EXPORT __declspec( dllimport )
+ #endif
+ 
+ #if defined (vtkRenderingAddOn_EXPORTS)
+  #define VTK_RENDERINGADDON_EXPORT __declspec( dllexport )
+ #else
+  #define VTK_RENDERINGADDON_EXPORT __declspec( dllimport )
+ #endif
+
+ #if defined (vtkImageView_EXPORTS)
+  #define VTK_IMAGEVIEW_EXPORT __declspec( dllexport )
+ #else
+  #define VTK_IMAGEVIEW_EXPORT __declspec( dllimport )
+ #endif
+
+ #if defined (KWAddOn_EXPORTS)
+  #define KW_ADDON_EXPORT __declspec( dllexport )
+ #else
+  #define KW_ADDON_EXPORT __declspec( dllimport )
+ #endif
+
+#else
+
+  #define VTK_VISUMANAGEMENT_EXPORT
+  #define VTK_LANDMARKMANAGEMENT_EXPORT
+  #define VTK_WIDGETSADDON_EXPORT
+  #define VTK_HWSHADING_EXPORT
+  #define VTK_HELPERS_EXPORT
+  #define VTK_DATAMANAGEMENT_EXPORT
+  #define VTK_RENDERINGADDON_EXPORT
+  #define VTK_IMAGEVIEW_EXPORT
+  #define KW_ADDON_EXPORT
+
+#endif
+
+
+
+
+#if defined (WIN32) && defined (wxWidgets_BUILD_SHARED_LIBS)
+
+ #if defined (wxAddOn_EXPORTS)
+  #define WX_ADDON_EXPORT __declspec( dllexport )
+ #else
+  #define WX_ADDON_EXPORT __declspec( dllimport )
+ #endif
+ 
+ 
+ #if defined (wxVtk_EXPORTS)
+ #    define WX_VTK_EXPORT __declspec(dllexport)
+ #else
+ #    define WX_VTK_EXPORT __declspec(dllimport)
+ #endif
+ 
+ 
+ #if defined (ImageViewer_EXPORTS)
+ #    define IMAGEVIEWER_EXPORT __declspec(dllexport)
+ #else
+ #    define IMAGEVIEWER_EXPORT __declspec(dllimport)
+ #endif
+ 
+ 
+ #if defined (HelloWorldLib_EXPORTS)
+ #    define HELLOWORLDLIB_EXPORT __declspec(dllexport)
+ #else
+ #    define HELLOWORLDLIB_EXPORT __declspec(dllimport)
+ #endif
+
+#else
+
+ #define WX_ADDON_EXPORT
+ #define WX_VTK_EXPORT
+ #define IMAGEVIEWER_EXPORT
+ #define HELLOWORLDLIB_EXPORT
+
+#endif
+
+
+
+#endif
