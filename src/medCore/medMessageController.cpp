@@ -29,8 +29,7 @@
 
 medMessage::medMessage( QWidget *parent,
                         const QString& text, 
-                        unsigned int timeout, 
-                        bool messageProgress) : QWidget(parent)
+                        unsigned int timeout) : QWidget(parent)
 {
     this->setFixedWidth(400);
     icon = new QLabel(this);
@@ -52,13 +51,6 @@ medMessage::medMessage( QWidget *parent,
         timer->start(timeout);
     }
 
-    if (messageProgress)
-    {
-        progress = new QProgressBar(this);
-        progress->setMinimum(0);
-        progress->setMaximum(100);
-        layout->addWidget(progress);
-    }
     this->setLayout(layout);
 }
 
@@ -113,8 +105,12 @@ medMessageError::~medMessageError(void)
 
 medMessageProgress::medMessageProgress(
         const QString& text, QWidget *parent) :
-        medMessage(parent, text, 0, true)
+        medMessage(parent, text, 0)
 {
+    progress = new QProgressBar(this);
+    progress->setMinimum(0);
+    progress->setMaximum(100);
+    this->layout()->addWidget(progress);
 }
 
 medMessageProgress::~medMessageProgress(void)

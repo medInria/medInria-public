@@ -36,12 +36,11 @@ class MEDCORE_EXPORT medMessage : public QWidget
     Q_OBJECT
 
 public:
-     medMessage(QWidget *parent = 0, const QString& text=NULL, unsigned int timeout=0, bool progress=false);
+     medMessage(QWidget *parent = 0, const QString& text=NULL, unsigned int timeout=0);
     ~medMessage(void);
 
 	    
 protected:
-    QProgressBar *progress;
     QLabel *icon;
     QTimer *timer;
     QLabel *info;
@@ -92,6 +91,9 @@ class MEDCORE_EXPORT medMessageProgress : public medMessage
 public:
      medMessageProgress(const QString& text, QWidget *parent = 0);
     ~medMessageProgress(void);
+
+protected:
+    QProgressBar *progress;
 
 
 public slots:

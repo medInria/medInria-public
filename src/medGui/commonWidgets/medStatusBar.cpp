@@ -12,7 +12,7 @@ medStatusBar::medStatusBar ( QWidget* parent ) : QStatusBar ( parent ), d ( new 
 {
     d->statusBarLayout = NULL;
     this->statusBarWidth = this->size().width();
-    this->availableSpace = this->statusBarWidth-175-100; // width of statusbar - workspaceButton - (Quit & Fullscreen)
+    this->availableSpace = -1;
 }
 
 medStatusBar::~medStatusBar()
@@ -31,9 +31,21 @@ QBoxLayout* medStatusBar::statusBarLayout()
     return d->statusBarLayout;
 }
 
+void medStatusBar::setAvailableSpace( int space )
+{
+    this->statusBarWidth = this->size().width();
+    this->availableSpace = space;
+}
+
 void medStatusBar::addMessage ( QWidget* widget )
 {
-    if (statusBarWidth!=this->size().width()){ // if window dimensions have changed
+    if (availableSpace == -1 )
+    {
+        emit initializeAvailableSpace();
+    }
+
+    if (statusBarWidth!=this->size().width())       // if window dimensions have changed
+    {
         availableSpace += (this->size().width()-statusBarWidth);    //update available space 
         statusBarWidth = this->size().width();                      // and statusbarWidth
     }   
@@ -42,10 +54,10 @@ void medStatusBar::addMessage ( QWidget* widget )
     {
         if ( d->statusBarLayout )
         {
-            if ( this->availableSpace > widget->size().width())      // if enough space
+            if ( this->availableSpace > widget->size().width()+d->statusBarLayout->spacing())      // if enough space
             {      
                 d->statusBarLayout->insertWidget ( 1, widget );
-                this->availableSpace -= widget->size().width();       //update available space
+                this->availableSpace -= (widget->size().width() +d->statusBarLayout->spacing());       //update available space
             }
             else
             {
@@ -58,7 +70,7 @@ void medStatusBar::addMessage ( QWidget* widget )
 void medStatusBar::removeMessage ( QWidget* widget )
 {
     widget->deleteLater();
-    this->availableSpace += widget->size().width();         //update available space
+    this->availableSpace += (widget->size().width()+d->statusBarLayout->spacing());         //update available space
 
     if(!this->widgetList.isEmpty())                         // if message waiting to be displayed
     {                

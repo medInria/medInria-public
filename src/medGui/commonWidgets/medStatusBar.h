@@ -42,6 +42,8 @@ public:
      */
     QBoxLayout * statusBarLayout();
 
+    void setAvailableSpace(int);
+
 public slots:
     /**
      * Add a widget containing a message (information, progress, error)
@@ -55,6 +57,9 @@ public slots:
      *  Remove a widget (containing a message)
      */
     void removeMessage ( QWidget * widget );
+
+signals:
+    void initializeAvailableSpace(void);
 
 private:
     medStatusBarPrivate * d;
