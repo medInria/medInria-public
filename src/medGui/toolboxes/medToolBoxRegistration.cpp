@@ -190,13 +190,12 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
 
     if (d->fuseView)
     {
+        d->fuseView->blockSignals(true);
         if (d->movingView && d->fuseView->layerCount()==1)
         {
             //only the moving view has been set: shift it to layer 1
-            d->fuseView->blockSignals(true);
             d->fuseView->setData(d->fixedData,0);
             d->fuseView->setData(d->movingData,1);
-            d->fuseView->blockSignals(false);
         }
         else
         {
@@ -205,6 +204,7 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
         }
         d->fuseView->reset();
         d->fuseView->update();
+        d->fuseView->blockSignals(false);
     }
     connect(d->fixedView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
     connect(d->fixedView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
@@ -244,6 +244,7 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
         d->movingView->update();
     }
 
+    
     if (d->fixedView)
     {
         //already one layer present
@@ -254,8 +255,11 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
         //only the moving view is set
         d->fuseView->setData(d->movingData,0);
     }
-    d->fuseView->reset();
+    
+    //d->fuseView->reset();
     d->fuseView->update();
+    
+
     connect(d->movingView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
     connect(d->movingView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
     if (!d->fixedView)
