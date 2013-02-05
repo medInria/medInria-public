@@ -1,4 +1,3 @@
-
 SET(Helpers_classes
 vtkImageDataInterpolator
 vtkBetterDataReader
@@ -27,13 +26,4 @@ IF( BUILD_TESTING )
   ADD_SUBDIRECTORY( Testing )
 ENDIF()
 
-if(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
-  install(TARGETS vtkHelpers
-          LIBRARY DESTINATION ${vtkINRIA3D_INSTALL_LIB_DIR}
-          RUNTIME DESTINATION ${vtkINRIA3D_INSTALL_BIN_DIR}
-          ARCHIVE DESTINATION ${vtkINRIA3D_INSTALL_LIB_DIR})
-endif()
 
-if(NOT vtkINRIA3D_INSTALL_NO_DEVELOPMENT)
-  install(FILES ${Helpers_Headers} DESTINATION ${vtkINRIA3D_INSTALL_INCLUDE_DIR} COMPONENT devel)
-endif()

@@ -21,7 +21,6 @@ TARGET_LINK_LIBRARIES(${KIT}CxxTests
   vtkImaging
   )
 
-
 FOREACH (test ${vtkImageViewTests})
   GET_FILENAME_COMPONENT(TName ${test} NAME_WE)
   ADD_TEST(${TName} ${CXX_TEST_PATH}/${KIT}CxxTests ${TName}) 

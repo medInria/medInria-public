@@ -31,9 +31,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 find_package(dtk REQUIRED)
 find_package(medInria REQUIRED)
-find_package(vtkINRIA3D REQUIRED)
 
-include(${vtkINRIA3D_USE_FILE})
 include(${dtk_USE_FILE})
 include(${medInria_USE_FILE})
 include(dtkPlugin)

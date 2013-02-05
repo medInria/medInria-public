@@ -34,15 +34,12 @@ include(dtkPlugin)
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
-find_package(vtkINRIA3D REQUIRED)
-include(${vtkINRIA3D_USE_FILE})
-
 find_package(medInria REQUIRED)
 include(${medInria_USE_FILE})
 
 #include_directories(../dtkVtkLogForwarder)
-find_package(medInria-plugins REQUIRED)
-include(${medInria-plugins_USE_FILE})
+#find_package(medInria-plugins REQUIRED)
+#include(${medInria-plugins_USE_FILE})
 
 
 ## #################################################################

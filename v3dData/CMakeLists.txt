@@ -35,14 +35,15 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-find_package(vtkINRIA3D REQUIRED)
-include(${vtkINRIA3D_USE_FILE})
+FIND_PACKAGE(VTK REQUIRED)
+INCLUDE(${VTK_USE_FILE})
+
+FIND_PACKAGE(ITK REQUIRED)
+INCLUDE(${ITK_USE_FILE})
 
 find_package(medInria REQUIRED)
 include(${medInria_USE_FILE})
 
-find_package(medInria-plugins REQUIRED)
-include(${medInria-plugins_USE_FILE})
 
 ## #################################################################
 ## Input
@@ -91,16 +92,16 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   dtkCore dtkLog
-  dtkItkLogForwarder
-  dtkVtkLogForwarder
+  vtkCommon
   medCore
   vtkDataManagement
   QVTK
-  vtkCommon
   vtkFiltering
   vtkRendering
   itkIOAddOn
   ITKIOReview
+  dtkItkLogForwarder
+  dtkVtkLogForwarder
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES})
 

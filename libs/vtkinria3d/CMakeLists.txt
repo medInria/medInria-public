@@ -77,21 +77,20 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/CMakeMod
 include(Dart)
 include(CTest)
 
-
 # -----------------------------------------------------------------------------
 # Add in the option for building examples, default to ON
 # -----------------------------------------------------------------------------
-OPTION(vtkINRIA3D_BUILD_EXAMPLES "Build vtkINRIA3D examples." ON)
+OPTION(vtkINRIA3D_BUILD_EXAMPLES "Build vtkINRIA3D examples." OFF)
 
 # -----------------------------------------------------------------------------
 # Add in the option for precompiled headers, default to ON
 # -----------------------------------------------------------------------------
 if(MSVC)
   option(vtkINRIA3D_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
+  # include the cmake macro to add precompiled headers.
+  include(AddPch)
 endif(MSVC)
 
-# include the cmake macro to add precompiled headers.
-include(AddPch)
 
 # -----------------------------------------------------------------------------
 # We need vtk, no matter what
@@ -140,7 +139,7 @@ ENDIF( VTK_BUILD_SHARED_LIBS )
 # -----------------------------------------------------------------------------
 # ITK
 # -----------------------------------------------------------------------------
-OPTION(vtkINRIA3D_USE_ITK "If ON, Compile ITK extensions, like itkAddOn" OFF)
+OPTION(vtkINRIA3D_USE_ITK "If ON, Compile ITK extensions, like itkAddOn" ON)
 IF(vtkINRIA3D_USE_ITK)
   FIND_PACKAGE(ITK REQUIRED)
   INCLUDE(${ITK_USE_FILE})
@@ -153,79 +152,10 @@ IF(vtkINRIA3D_USE_ITK)
 ENDIF(vtkINRIA3D_USE_ITK)
 
 
-
-# -----------------------------------------------------------------------------
-# wxWidgets
-# -----------------------------------------------------------------------------
-OPTION(vtkINRIA3D_USE_WXWINDOWS "If ON, Build the wxVtk extension and the wxSamples (requires ITK too)" OFF)
-IF(vtkINRIA3D_USE_WXWINDOWS)
-
-  IF(WIN32)
-    SET(wxWidgets_USE_LIBS adv aui xrc xml html core base)
-  ELSE(WIN32)
-    SET(wxWidgets_USE_LIBS adv aui xrc xml html gl core base)
-  ENDIF(WIN32)
-
-  FIND_PACKAGE(wxWidgets2 REQUIRED) # use the version provided by vtkINRIA3D -> to find the aui
-                                    # library (advanced user interface)
-  INCLUDE(${wxWidgets_USE_FILE})
-
-  # We make the distinction between shared VTK and wxWidgets. If wxWidgets is build
-  # shared, all wx-derived addons here will be shared as well.
-  IF( WIN32 )
-    OPTION(wxWidgets_SHARED "Is wxWidgets built with shared libraries?" OFF)
-  ELSE( WIN32 )
-    OPTION(wxWidgets_SHARED "Is wxWidgets built with shared libraries?" ON)
-  ENDIF( WIN32 )
-
-  IF( wxWidgets_SHARED )
-    SET( wxWidgets_BUILD_SHARED_LIBS "ON" )
-    SET( wxWidgets_LIBS_STYLE "SHARED")
-  ELSE ( wxWidgets_SHARED )
-    SET( wxWidgets_BUILD_SHARED_LIBS "OFF")
-    SET( wxWidgets_LIBS_STYLE "STATIC")
-  ENDIF( wxWidgets_SHARED )
-
-  IF(UNIX AND NOT APPLE) # our UNIX version depends on GTK-2, so find GTK-2 as well
-    FIND_PACKAGE(GTK-2 REQUIRED)
-    LINK_DIRECTORIES(
-    ${GTK_LINK_DIRS}
-    )
-
-    SET(wxWidgets_LIBRARIES
-    ${wxWidgets_LIBRARIES}
-    ${GTK_LINK_LIBS}
-    )
-  ENDIF(UNIX AND NOT APPLE)
-
-ENDIF(vtkINRIA3D_USE_WXWINDOWS)
-
-
-# -----------------------------------------------------------------------------
-# KWWidgets
-# -----------------------------------------------------------------------------
-OPTION(vtkINRIA3D_USE_KWWIDGETS "If ON, Build the vtkKW extension and KwVizz" OFF)
-IF(vtkINRIA3D_USE_KWWIDGETS)
-   FIND_PACKAGE(KWWidgets REQUIRED)
-   INCLUDE(${KWWidgets_USE_FILE})
-   OPTION ( vtkINRIA3D_USE_KWWIDGETS_OLD_API "For KWWidgets version anterior to version 1.788, please set this flag to ON" OFF )
-ENDIF(vtkINRIA3D_USE_KWWIDGETS)
-
-
-
-IF(APPLE)
-  SET(CMAKE_EXE_LINKER_FLAGS   "${CMAKE_EXE_LINKER_FLAGS} -bind_at_load" ) # prevent linker warnings
-  IF(NOT vtkINRIA3D_BUILD_SHARED_LIBS)
-    SET(vtkINRIA3D_REQUIRED_C_FLAGS   "${vtkINRIA3D_REQUIRED_C_FLAGS}   -mlong-branch")
-    SET(vtkINRIA3D_REQUIRED_CXX_FLAGS "${vtkINRIA3D_REQUIRED_CXX_FLAGS} -mlong-branch")
-  ENDIF(NOT vtkINRIA3D_BUILD_SHARED_LIBS)
-ENDIF(APPLE)
-
-
 # -----------------------------------------------------------------------------
 # The hardware shading extension by T. Peeters (BMIA - TUe)
 # -----------------------------------------------------------------------------
-OPTION (vtkINRIA3D_USE_HWSHADING "If ON, compile the hardware shading (HWShading) extension of vtkINRIA3D. Requires VTK>=5.1." OFF)
+OPTION (vtkINRIA3D_USE_HWSHADING "If ON, compile the hardware shading (HWShading) extension of vtkINRIA3D. Requires VTK>=5.1." ON)
 
 IF( vtkINRIA3D_USE_HWSHADING )
   IF( NOT VTK_USE_GLSL_SHADERS )
@@ -251,64 +181,8 @@ IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
 
 ENDIF( vtkINRIA3D_USE_SPHERICALHARMONICS )
 
-
-# -------------------------------------------------------------------------------------
-# Setup installation settings
-# -------------------------------------------------------------------------------------
-set(${PROJECT_NAME}_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES})
-
-if(NOT ${PROJECT_NAME}_INSTALL_BIN_DIR)
-  set(${PROJECT_NAME}_INSTALL_BIN_DIR "bin")
-endif(NOT ${PROJECT_NAME}_INSTALL_BIN_DIR)
-
-if(NOT ${PROJECT_NAME}_INSTALL_LIB_DIR)
-  set(${PROJECT_NAME}_INSTALL_LIB_DIR "lib")
-endif(NOT ${PROJECT_NAME}_INSTALL_LIB_DIR)
-
-if(NOT ${PROJECT_NAME}_INSTALL_DATA_DIR)
-  set(${PROJECT_NAME}_INSTALL_DATA_DIR "share/${PROJECT_NAME}" CACHE INTERNAL "")
-endif(NOT ${PROJECT_NAME}_INSTALL_DATA_DIR)
-
-if(NOT ${PROJECT_NAME}_INSTALL_INCLUDE_DIR)
-  set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR "include")
-endif(NOT ${PROJECT_NAME}_INSTALL_INCLUDE_DIR)
-
-if(NOT ${PROJECT_NAME}_INSTALL_MODULE_DIR)
-  set(${PROJECT_NAME}_INSTALL_MODULE_DIR "module/${PROJECT_NAME}")
-endif(NOT ${PROJECT_NAME}_INSTALL_MODULE_DIR)
-
-if(NOT ${PROJECT_NAME}_INSTALL_PACKAGE_DIR)
-  set(${PROJECT_NAME}_INSTALL_PACKAGE_DIR ${VTK_INSTALL_PACKAGE_DIR})
-endif(NOT ${PROJECT_NAME}_INSTALL_PACKAGE_DIR)
-
-option(${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT OFF)
-
-if(NOT ${PROJECT_NAME}_INSTALL_NO_RUNTIME)
-  set(${PROJECT_NAME}_INSTALL_NO_RUNTIME 0)
-endif(NOT ${PROJECT_NAME}_INSTALL_NO_RUNTIME)
-
-if(NOT ${PROJECT_NAME}_INSTALL_NO_DOCUMENTATION)
-  set(${PROJECT_NAME}_INSTALL_NO_DOCUMENTATION 0)
-endif(NOT ${PROJECT_NAME}_INSTALL_NO_DOCUMENTATION)
-
-set(${PROJECT_NAME}_INSTALL_NO_LIBRARIES)
-if(${PROJECT_NAME}_BUILD_SHARED_LIBS)
-  if(${PROJECT_NAME}_INSTALL_NO_RUNTIME AND ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
-    set(${PROJECT_NAME}_INSTALL_NO_LIBRARIES 1)
-  endif(${PROJECT_NAME}_INSTALL_NO_RUNTIME AND ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
-else(${PROJECT_NAME}_BUILD_SHARED_LIBS)
-  if(${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
-    set(${PROJECT_NAME}_INSTALL_NO_LIBRARIES 1)
-  endif(${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
-endif(${PROJECT_NAME}_BUILD_SHARED_LIBS)
-
-
-
-
-
 # Create the list of include directories needed for vtkINRIA3D header files.
 INCLUDE(${vtkINRIA3D_SOURCE_DIR}/vtkINRIA3DIncludeDirectories.cmake)
-
 
 INCLUDE_DIRECTORIES(
 ${vtkINRIA3D_INCLUDE_DIRS_BUILD_TREE}
@@ -317,44 +191,6 @@ ${vtkINRIA3D_INCLUDE_DIRS_SOURCE_TREE}
 
 SET(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}    ${vtkINRIA3D_REQUIRED_C_FLAGS}")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${vtkINRIA3D_REQUIRED_CXX_FLAGS}")
-
-
-# -----------------------------------------------------------------------------
-# Header file used to pass CMake settings to the source code
-# -----------------------------------------------------------------------------
-CONFIGURE_FILE(${vtkINRIA3D_SOURCE_DIR}/vtkINRIA3DConfigure.h.in
-               ${vtkINRIA3D_BINARY_DIR}/vtkINRIA3DConfigure.h)
-
-if(NOT ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
-  install(FILES ${${PROJECT_NAME}_BINARY_DIR}/vtkINRIA3DConfigure.h
-      DESTINATION ${vtkINRIA3D_INSTALL_INCLUDE_DIR})
-endif(NOT ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
-
-
-# -----------------------------------------------------------------------------
-# Help other project use vtkINRIA3D
-# -----------------------------------------------------------------------------
-# Save the compiler settings so another project can import them.
-SET(vtkINRIA3D_BUILD_SETTINGS_FILE ${vtkINRIA3D_BINARY_DIR}/vtkINRIA3DBuildSettings.cmake)
-INCLUDE(${CMAKE_ROOT}/Modules/CMakeExportBuildSettings.cmake)
-CMAKE_EXPORT_BUILD_SETTINGS(${vtkINRIA3D_BUILD_SETTINGS_FILE})
-if(NOT ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
-  install(FILES ${vtkINRIA3D_BUILD_SETTINGS_FILE}
-      DESTINATION ${${PROJECT_NAME}_INSTALL_LIB_DIR})
-endif(NOT ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
-
-
-CONFIGURE_FILE(${vtkINRIA3D_SOURCE_DIR}/UsevtkINRIA3D.cmake.in
-               ${vtkINRIA3D_BINARY_DIR}/UsevtkINRIA3D.cmake COPYONLY IMMEDIATE)
-
-# Create the vtkINRIA3DConfig.cmake file containing the vtkINRIA3D configuration.
-INCLUDE (${vtkINRIA3D_SOURCE_DIR}/vtkGenerateINRIA3DConfig.cmake)
-
-if(NOT ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
-  install(FILES ${${PROJECT_NAME}_BINARY_DIR}/UsevtkINRIA3D.cmake
-      DESTINATION ${${PROJECT_NAME}_INSTALL_LIB_DIR})
-endif(NOT ${PROJECT_NAME}_INSTALL_NO_DEVELOPMENT)
-
 SET(vtkINRIA3D_DIR "${PROJECT_BINARY_DIR}" CACHE INTERNAL "")
 
 add_subdirectory(vtkDataManagement)
@@ -367,30 +203,14 @@ IF( vtkINRIA3D_USE_HWSHADING )
   add_subdirectory(HWShading)
 ENDIF( vtkINRIA3D_USE_HWSHADING )
 
-if(vtkINRIA3D_USE_WXWINDOWS)
-  add_subdirectory(wxAddOn)
-  add_subdirectory(wxVtk)
-endif(vtkINRIA3D_USE_WXWINDOWS)
-
-if(vtkINRIA3D_USE_ITK)
+IF(vtkINRIA3D_USE_ITK)
   add_subdirectory(vtkItk)
   add_subdirectory(itkAddOn)
-endif(vtkINRIA3D_USE_ITK)
-
-if(vtkINRIA3D_USE_KWWIDGETS)
-  add_subdirectory( KWAddOn )
-endif(vtkINRIA3D_USE_KWWIDGETS)
+ENDIF(vtkINRIA3D_USE_ITK)
 
 IF(vtkINRIA3D_BUILD_EXAMPLES)
   add_subdirectory(Examples)
-  if(vtkINRIA3D_USE_WXWINDOWS)
-    add_subdirectory(wxSamples)
-  endif(vtkINRIA3D_USE_WXWINDOWS)
 ENDIF(vtkINRIA3D_BUILD_EXAMPLES)
-
-
-
-
 
 #-----------------------------------------------------------------------------
 # doxygen (and other?) documentation
@@ -433,28 +253,3 @@ IF (DOXYGEN)
     ${MY_DOXYGEN_BUILD_DIR}/doxygen.config
   )
 ENDIF(DOXYGEN)
-
-
-
-
-# Packaging
-
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "vtkINRIA3D")
-SET(CPACK_PACKAGE_VENDOR "INRIA Sophia Antipolis, Asclepios Research Team.")
-SET(CPACK_PACKAGE_VERSION_MAJOR "${vtkINRIA3D_VERSION_MAJOR}")
-SET(CPACK_PACKAGE_VERSION_MINOR "${vtkINRIA3D_VERSION_MINOR}")
-SET(CPACK_PACKAGE_VERSION_PATCH "${vtkINRIA3D_VERSION_BUILD}")
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY "vtkINRIA3D ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}")
-SET(CPACK_SOURCE_PACKAGE_FILE_NAME
-"vtkINRIA3D-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
-set(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-
-IF(WIN32)
-  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY}")
-  SET(CPACK_NSIS_HELP_LINK "https://gforge.inria.fr/projects/vtkinria3d/")
-  SET(CPACK_NSIS_URL_INFO_ABOUT "http://www-sop.inria.fr/asclepios/")
-  SET(CPACK_NSIS_CONTACT "vtkinria3d-users@lists.gforge.inria.fr")
-ENDIF(WIN32)
-
-INCLUDE(CPack)
-

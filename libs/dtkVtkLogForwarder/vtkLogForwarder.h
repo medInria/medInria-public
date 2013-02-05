@@ -1,6 +1,8 @@
-#include "vtkOutputWindow.h"
+#ifndef VTKLOGFORWARDER_H
+#define VTKLOGFORWARDER_H
 
 #include "dtkVtkLogForwarderExport.h"
+#include <vtkOutputWindow.h>
 
 /**
 * @class vtkLogForwarder
@@ -38,3 +40,5 @@ protected:
      vtkLogForwarder();
     ~vtkLogForwarder();
 };
+
+#endif //VTKLOGFORWARDER_H

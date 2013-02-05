@@ -30,8 +30,7 @@ endif (ITK_BUILD_SHARED)
 find_package(DCMTK2 REQUIRED)
 include_directories(${DCMTK_INCLUDE_DIR})
 
-find_package(vtkINRIA3D REQUIRED) # for itkMultiThreadedImageIO
-include(${vtkINRIA3D_USE_FILE})
+set(MEDINRIA_REQUIRES_VTK TRUE) # for itkMultiThreadedImageIO in vtkInria3d
 
 set (${PROJECT_NAME}_HEADERS 
     itkDCMTKImageIO.h)
