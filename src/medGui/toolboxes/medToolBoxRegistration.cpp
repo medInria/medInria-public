@@ -254,7 +254,7 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
         //only the moving view is set
         d->fuseView->setData(d->movingData,0);
     }
-    //d->fuseView->reset();
+    d->fuseView->reset();
     d->fuseView->update();
     connect(d->movingView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
     connect(d->movingView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
