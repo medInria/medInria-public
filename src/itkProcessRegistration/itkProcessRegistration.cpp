@@ -76,13 +76,6 @@ itkProcessRegistration::itkProcessRegistration(void) : dtkAbstractProcess(), d(n
 
 itkProcessRegistration::~itkProcessRegistration(void)
 {
-    //delete d->output;
-    d->fixedImage->Delete();
-    //for the moment only 1 image in vector, so:
-    foreach (itk::ImageBase<3>::Pointer img , d->movingImages)
-    {
-        img->Delete();
-    }
     delete d;
     d = 0;
 }
