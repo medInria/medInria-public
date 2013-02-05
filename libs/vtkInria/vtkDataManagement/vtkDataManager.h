@@ -18,7 +18,6 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtkDataManager_h_
 #define _vtkDataManager_h_
 
-#include "vtkINRIA3DConfigure.h"
 
 #include <vtkObject.h>
 
@@ -45,7 +44,7 @@ class vtkMetaDataSetSequence;
 */
 
 
-class VTK_DATAMANAGEMENT_EXPORT vtkDataManager: public vtkObject
+class vtkDataManager: public vtkObject
 {
  public:
 

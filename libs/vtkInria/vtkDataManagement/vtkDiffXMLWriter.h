@@ -25,8 +25,6 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef __vtkDiffXMLWriter_h
 #define __vtkDiffXMLWriter_h
 
-#include "vtkINRIA3DConfigure.h"
-
 #include "vtkObject.h"
 
 #include <string>
@@ -36,7 +34,7 @@ class vtkMetaDataSet;
 class vtkDiffXMLWriterInternals;
 
 
-class VTK_DATAMANAGEMENT_EXPORT vtkDiffXMLWriter : public vtkObject
+class vtkDiffXMLWriter : public vtkObject
 {
 public:
   static vtkDiffXMLWriter* New();

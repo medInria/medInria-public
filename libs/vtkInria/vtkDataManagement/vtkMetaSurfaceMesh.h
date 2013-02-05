@@ -18,8 +18,6 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtkMetaSurfaceMesh_h_
 #define _vtkMetaSurfaceMesh_h_
 
-#include "vtkINRIA3DConfigure.h"
-
 #include <vtkMetaDataSet.h>
 
 class vtkPolyData;
@@ -44,7 +42,7 @@ class vtkPolyData;
 
 
 
-class VTK_DATAMANAGEMENT_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
+class  vtkMetaSurfaceMesh: public vtkMetaDataSet
 {
  public:
 

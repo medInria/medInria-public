@@ -24,8 +24,6 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef __vtkDataManagerReader_h
 #define __vtkDataManagerReader_h
 
-#include "vtkINRIA3DConfigure.h"
-
 #include "vtkXMLReader.h"
 
 class vtkDataManager;
@@ -36,7 +34,7 @@ class vtkMetaDataSet;
 struct vtkDataManagerReaderInternals;
 //ETX
 
-class VTK_DATAMANAGEMENT_EXPORT vtkDataManagerReader : public vtkXMLReader
+class vtkDataManagerReader : public vtkXMLReader
 {
 public:
   static vtkDataManagerReader* New();

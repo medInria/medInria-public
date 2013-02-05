@@ -25,8 +25,6 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef __vtkDataManagerWriter_h
 #define __vtkDataManagerWriter_h
 
-#include "vtkINRIA3DConfigure.h"
-
 #include "vtkXMLWriter.h"
 
 #include <string>
@@ -37,7 +35,7 @@ class vtkCallbackCommand;
 class vtkDataManagerWriterInternals;
 
 
-class VTK_DATAMANAGEMENT_EXPORT vtkDataManagerWriter : public vtkXMLWriter
+class vtkDataManagerWriter : public vtkXMLWriter
 {
 public:
   static vtkDataManagerWriter* New();

@@ -3,11 +3,9 @@
 
 #include "vtkXMLCompositeDataReader.h"
 
-#include "vtkINRIA3DConfigure.h"
-
 class vtkFiberDataSet;
 
-class VTK_DATAMANAGEMENT_EXPORT vtkXMLFiberDataSetReader : public vtkXMLCompositeDataReader
+class vtkXMLFiberDataSetReader : public vtkXMLCompositeDataReader
 {
 public:
   static vtkXMLFiberDataSetReader* New();

@@ -18,8 +18,6 @@
 #ifndef _vtkMetaImageData_h_
 #define _vtkMetaImageData_h_
 
-#include "vtkINRIA3DConfigure.h"
-
 #include <vtkErrorCode.h>
 #include <vtksys/SystemTools.hxx>
 
@@ -78,7 +76,7 @@ class vtkVolumeProperty;
 
 
 
-class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
+class vtkMetaImageData: public vtkMetaDataSet
 {
  public:
 

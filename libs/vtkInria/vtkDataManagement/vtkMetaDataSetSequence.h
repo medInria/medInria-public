@@ -18,8 +18,6 @@
 #ifndef _vtkMetaDataSetSequence_h_
 #define _vtkMetaDataSetSequence_h_
 
-#include "vtkINRIA3DConfigure.h"
-
 #include <vtkMetaDataSet.h>
 
 #include <string>
@@ -56,7 +54,7 @@
 
 class vtkDoubleArray;
 
-class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
+class vtkMetaDataSetSequence: public vtkMetaDataSet
 {
  public:
 

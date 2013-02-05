@@ -18,14 +18,12 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtkDataManagerCallback_h_
 #define _vtkDataManagerCallback_h_
 
-#include "vtkINRIA3DConfigure.h"
-
 #include <vtkCommand.h>
 #include <vtkObject.h>
 class vtkDataManager;
 
   
-class VTK_DATAMANAGEMENT_EXPORT vtkDataManagerCallback : public vtkCommand
+class vtkDataManagerCallback : public vtkCommand
 {    
  public:
   

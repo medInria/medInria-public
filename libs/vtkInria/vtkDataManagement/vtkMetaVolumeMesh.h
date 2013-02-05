@@ -20,8 +20,6 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include <vtkMetaDataSet.h>
 
-#include "vtkINRIA3DConfigure.h"
-
 class vtkUnstructuredGrid;
 
 
@@ -39,7 +37,7 @@ class vtkUnstructuredGrid;
 */
 
 
-class VTK_DATAMANAGEMENT_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
+class vtkMetaVolumeMesh: public vtkMetaDataSet
 {
  public:
 

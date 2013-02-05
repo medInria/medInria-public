@@ -3,9 +3,7 @@
 
 #include "vtkXMLCompositeDataWriter.h"
 
-#include "vtkINRIA3DConfigure.h"
-
-class VTK_DATAMANAGEMENT_EXPORT vtkXMLFiberDataSetWriter : public vtkXMLCompositeDataWriter
+class vtkXMLFiberDataSetWriter : public vtkXMLCompositeDataWriter
 {
 public:
   static vtkXMLFiberDataSetWriter* New();

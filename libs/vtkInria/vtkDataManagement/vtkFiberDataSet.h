@@ -18,8 +18,6 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtk_FiberDataSet_
 #define _vtk_FiberDataSet_
 
-#include "vtkINRIA3DConfigure.h"
-
 #include <vtkMultiBlockDataSet.h>
 
 #include <map>
@@ -31,7 +29,7 @@ class vtkPolyData;
    as vtkPolyData as well.
  */
 
-class VTK_DATAMANAGEMENT_EXPORT vtkFiberDataSet : public vtkMultiBlockDataSet
+class vtkFiberDataSet : public vtkMultiBlockDataSet
 {
  public:
   static vtkFiberDataSet *New();

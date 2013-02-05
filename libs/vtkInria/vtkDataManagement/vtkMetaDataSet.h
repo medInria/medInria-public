@@ -18,8 +18,6 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtkMetaDataSet_h_
 #define _vtkMetaDataSet_h_
 
-#include "vtkINRIA3DConfigure.h"
-
 #include <vtkDataObject.h>
 #include <string>
 #include <vector>
@@ -52,7 +50,7 @@ class vtkScalarsToColors;
 class vtkPolyData;
 
 
-class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSet: public vtkDataObject
+class vtkMetaDataSet: public vtkDataObject
 {
  public:
 
