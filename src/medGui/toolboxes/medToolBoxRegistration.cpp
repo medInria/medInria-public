@@ -254,9 +254,8 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
     {
         //only the moving view is set
         d->fuseView->setData(d->movingData,0);
+        d->fuseView->reset();
     }
-    
-    //d->fuseView->reset();
     d->fuseView->update();
     
 
