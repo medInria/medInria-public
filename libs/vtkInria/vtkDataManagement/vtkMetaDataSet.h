@@ -27,10 +27,8 @@ PURPOSE.  See the above copyright notices for more information.
 //#include <vtkActor.h>
 
 
-#ifdef vtkINRIA3D_USE_ITK
 #include <itkMetaDataDictionary.h>
 #include <itkMetaDataObject.h>
-#endif
 /**
    \class vtkMetaDataSet vtkMetaDataSet.h "vtkMetaDataSet.h"
    \brief Abstract class for vtkDataset handling
@@ -58,7 +56,6 @@ class vtkMetaDataSet: public vtkDataObject
   vtkTypeRevisionMacro(vtkMetaDataSet,vtkDataObject);
   virtual void PrintSelf(ostream& os, vtkIndent indent);
 
-#ifdef vtkINRIA3D_USE_ITK
   //BTX
   typedef itk::MetaDataDictionary DictionaryType;
   /**
@@ -73,7 +70,6 @@ class vtkMetaDataSet: public vtkDataObject
   void SetMetaDataDictionary (DictionaryType dictionary)
   { this->MetaDataDictionary = dictionary; }
   //ETX
-#endif
 
   //BTX
   /**
@@ -83,14 +79,10 @@ class vtkMetaDataSet: public vtkDataObject
   */
   template <class type> inline void SetMetaData (std::string key, type value)
   {
-#ifdef vtkINRIA3D_USE_ITK
     if (this->MetaDataDictionary.HasKey (key))
       itk::EncapsulateMetaData<type>(this->MetaDataDictionary, key, (type)value);
     else
       itk::EncapsulateMetaData<type>(this->MetaDataDictionary, key, (type)value);
-#else
-    vtkWarningMacro(<< "Cannot have any metadata whithout ITK !"<<endl);
-#endif  
     
   }
   
@@ -102,28 +94,19 @@ class vtkMetaDataSet: public vtkDataObject
   template <class type> inline bool GetMetaData (std::string key, type &ret)
   {
     
-#ifdef vtkINRIA3D_USE_ITK
     //type toret;//=vtkMetaDataSet::VTK_META_UNKNOWN; // to be implemanted with good template
     bool valid = itk::ExposeMetaData<type>(this->MetaDataDictionary, key, ret);
     //ret = toret;
     if(!valid)
       return false;
     return true;
-#else
-    vtkWarningMacro(<< "Cannot have any metadata whithout ITK !"<<endl);
-    return false;
-#endif
   }
 
 
   std::vector<std::string> GetMetaDataKeyList (void)
   {
     std::vector<std::string> ret;
-#ifdef vtkINRIA3D_USE_ITK
     ret = this->MetaDataDictionary.GetKeys();
-#else
-    vtkWarningMacro(<< "Cannot have any metadata whithout ITK !"<<endl); 
-#endif
 
     return ret;
   }
@@ -424,12 +407,9 @@ class vtkMetaDataSet: public vtkDataObject
 
   int Lock;
   
-
-#ifdef vtkINRIA3D_USE_ITK
   //BTX
   DictionaryType MetaDataDictionary;
   //ETX
-#endif
 
   vtkPolyData* WirePolyData;
   
@@ -437,5 +417,5 @@ class vtkMetaDataSet: public vtkDataObject
  
 };
 
-#endif
+#endif //_vtkMetaDataSet_h_
 

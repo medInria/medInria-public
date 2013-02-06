@@ -41,7 +41,7 @@ if(vtkInria_USE_PRECOMPILED_HEADERS)
     ${${PROJECT_NAME}_SOURCES})
 endif(vtkInria_USE_PRECOMPILED_HEADERS)
 
-add_library(${PROJECT_NAME} ${vtkInria_LIBS_STYLE}
+add_library(${PROJECT_NAME} SHARED
 ${${PROJECT_NAME}_SOURCES_PCH}
 ${${PROJECT_NAME}_SOURCES}
 ${${PROJECT_NAME}_HEADERS}
@@ -71,7 +71,7 @@ ENDIF( vtkInria_USE_ITK )
       "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
     )
 
-    ADD_LIBRARY(vtkImageViewTCL ${vtkInria_LIBS_STYLE}
+    ADD_LIBRARY(vtkImageViewTCL SHARED
     ${vtkImageViewTCL_SRCS}
     )
     TARGET_LINK_LIBRARIES(vtkImageViewTCL

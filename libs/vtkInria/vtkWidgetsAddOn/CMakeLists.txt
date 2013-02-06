@@ -19,7 +19,7 @@ SET(vtkWidgetsAddOn_LIBS
 
     
 # C++ library for the InterfaceManagers
-ADD_LIBRARY(vtkWidgetsAddOn ${vtkInria_LIBS_STYLE}
+ADD_LIBRARY(vtkWidgetsAddOn SHARED
  ${vtkWidgetsAddOn_SRCS}
 )
   

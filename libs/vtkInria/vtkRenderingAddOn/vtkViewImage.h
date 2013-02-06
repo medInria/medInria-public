@@ -30,11 +30,9 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkScalarBarActor.h>
 #include <vtkMatrix4x4.h>
 
-#ifdef vtkINRIA3D_USE_ITK
 #include <itkImage.h>
 #include <itkRGBPixel.h>
 #include <itkRGBAPixel.h>
-#endif
 
 #include <vector>
 
@@ -171,7 +169,6 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
     
   void SyncSetVolumeIndex(vtkIdType index);
     
-#ifdef vtkINRIA3D_USE_ITK
   /**
      When ITK is set ot ON, we propose the following method to open
      directly an ITK image. Because of the templates, we have to setup
@@ -227,7 +224,6 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   virtual void SetITKImage4 (itk::Image<FloatVector3Type, 4> *input);
   itk::ImageBase<4>* GetTemporalITKImage (void) const;
   //ETX
-#endif
 
 
   /**
@@ -731,7 +727,6 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   //! The volume to be displayed.
   vtkIdType VolumeIndex;
 
-#ifdef vtkINRIA3D_USE_ITK
     //! Template function which implements SetInput for all types. 
     // Defined locally and not exposed.
     template < class T >
@@ -760,7 +755,6 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
     itk::ImageBase<3>::Pointer  ITKImage;
     itk::ImageBase<4>::Pointer  ITKImage4;    
   //ETX
-#endif
 
   //BTX
   std::string     SizeData_str;

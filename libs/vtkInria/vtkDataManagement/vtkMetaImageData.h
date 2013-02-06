@@ -24,7 +24,6 @@
 #include <vtkMetaDataSet.h>
 #include <vtkMatrix4x4.h>
 
-#ifdef vtkINRIA3D_USE_ITK
 // ITK includes for I/O only
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -32,7 +31,6 @@
 #include <itkVTKImageToImageFilter.h>
 #include <itkImage.h>
 #include <itkCastImageFilter.h>
-#endif
 
 /**
    The origin in ITK pipeline is taken into account in a different
@@ -89,7 +87,6 @@ class vtkMetaImageData: public vtkMetaDataSet
   virtual void SetOrientationMatrix (vtkMatrix4x4* matrix);
   
   
-#ifdef vtkINRIA3D_USE_ITK
 
   //BTX
   typedef float ImageComponentType;
@@ -405,7 +402,6 @@ class vtkMetaImageData: public vtkMetaDataSet
   */  
   virtual void CopyInformation (vtkMetaDataSet* metadataset);
 
-#endif  
   /**
      Overwridden methods for read and write images
      These methods could only be used if ITK is set to ON
@@ -455,7 +451,6 @@ class vtkMetaImageData: public vtkMetaDataSet
 
   vtkMatrix4x4* OrientationMatrix;
   
-#ifdef vtkINRIA3D_USE_ITK
   //BTX
   itk::ImageBase<3>::Pointer m_ItkImage;
   itk::ProcessObject::Pointer m_Converter;
@@ -464,11 +459,8 @@ class vtkMetaImageData: public vtkMetaDataSet
   DicomEntryList DicomTagList;
   //ETX
 
-  
-#endif
-  
 
 };
 
-#endif
+#endif // _vtkMetaImageData_h_
 

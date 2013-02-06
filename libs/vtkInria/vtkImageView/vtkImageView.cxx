@@ -48,17 +48,14 @@
 #include "vtkCommand.h"
 #include "vtkImageView2DCommand.h"
 
-#ifdef vtkINRIA3D_USE_ITK
 #include <itkExtractImageBufferFilter.h>
 #include <itkImageToVTKImageFilter.h>
 #include <itkMatrix.h>
 //#include <vnl/algo/vnl_qr.h>
-#endif
 
 vtkCxxRevisionMacro(vtkImageView, "$Revision: 1 $");
 //vtkStandardNewMacro(vtkImageView); // pure virtual class
 
-#ifdef vtkINRIA3D_USE_ITK
 
 // Enumeration for the supported pixel types
 // NT: why not using the vtk IO definitions ?
@@ -114,7 +111,6 @@ template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageView
 template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::RGBAPixelType > () { return     IMAGE_VIEW_RGBAPIXELTYPE; }
 template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::UCharVector3Type > () { return     IMAGE_VIEW_UCHARVECTOR3TYPE ; }
 template <> ImageViewType vtkImageView::vtkImageViewImplementation::GetImageViewType < vtkImageView::FloatVector3Type > () { return     IMAGE_VIEW_FLOATVECTOR3TYPE ; }
-#endif
 
 vtkImageView::vtkImageView()
 {
@@ -142,11 +138,9 @@ vtkImageView::vtkImageView()
   this->InteractorStyle        = 0;
   this->IsInteractorInstalled  = 0;
 
-#ifdef vtkINRIA3D_USE_ITK
   this->Impl = new vtkImageViewImplementation;
   //this->ITKInput  = 0;
   this->ITKInput4 = 0;
-#endif
 
   this->CornerAnnotation->SetNonlinearFontScaleFactor (0.3);
   this->CornerAnnotation->SetTextProperty ( this->TextProperty );
@@ -241,9 +235,7 @@ vtkImageView::~vtkImageView()
     this->Input = 0;
   }
 
-#ifdef vtkINRIA3D_USE_ITK
   delete this->Impl;
-#endif
 
   std::cout<<"deleting a view. done"<<std::endl;
 
@@ -525,7 +517,8 @@ void vtkImageView::GetWithinBoundsPosition (double* pos1, double* pos2)
     if (indices[i] < w_extent[2 * i])
     {
       indices[i] = w_extent[2 * i];
-      out_of_bounds=true;
+      out_of_bounds=true;#endif
+
     }
   }
 
@@ -1596,7 +1589,6 @@ void vtkImageView::SetTimeIndex ( vtkIdType index )
 {
   if ( this->TimeIndex != index ) {
 
-#ifdef vtkINRIA3D_USE_ITK
     if (this->Impl->ImageTemporalFilter.size())
     {
       if ( this->Impl->ImageTemporalFilter[0].IsNotNull ()) {
@@ -1606,12 +1598,12 @@ void vtkImageView::SetTimeIndex ( vtkIdType index )
           default:
           case IMAGE_VIEW_NONE : break;
             // Macro calls template method for correct argument type.
-#define ImageViewCaseEntry( type , enumName )		\
-case enumName :				\
-{						\
-this->SetTimeIndex < type > ( index );	\
-break ;					\
-}
+            #define ImageViewCaseEntry( type , enumName )		\
+          case enumName :				\
+          {						\
+            this->SetTimeIndex < type > ( index );	\
+            break ;					\
+          }
 
             ImageViewCaseEntry( double, IMAGE_VIEW_DOUBLE );
             ImageViewCaseEntry( float, IMAGE_VIEW_FLOAT );
@@ -1630,7 +1622,6 @@ break ;					\
 
         };
       }
-#endif
       this->TimeIndex = index;
       this->GetInput ()->UpdateInformation ();
       this->GetInput ()->PropagateUpdateExtent ();
@@ -1640,8 +1631,6 @@ break ;					\
   }
 }
 //----------------------------------------------------------------------------
-
-#ifdef vtkINRIA3D_USE_ITK
 
 /////////////////////////////////////////////////////////////////////
 ///////////////// One comment on the origin handling ////////////////
@@ -1815,7 +1804,6 @@ itk::ImageBase<4>* vtkImageView::GetTemporalITKInput (void) const
   return this->ITKInput4;
 }
 
-#endif
 
 void vtkImageView::GetInputBounds ( double * bounds )
 {

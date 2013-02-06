@@ -34,7 +34,11 @@ if(vtkInria_USE_PRECOMPILED_HEADERS)
 endif(vtkInria_USE_PRECOMPILED_HEADERS)
 
   # C++ library for the InterfaceManagers
-  ADD_LIBRARY(vtkDataManagement ${vtkInria_LIBS_STYLE}
+  
+  message(SHARED)
+  message(vtkInria_LIBS_STYLE \n\n\n\n\n\n)
+  
+  ADD_LIBRARY(vtkDataManagement SHARED
   ${vtkDataManagement_SOURCES_PCH}
   ${vtkDataManagement_SRCS}
   )
@@ -51,24 +55,15 @@ endif(vtkInria_USE_PRECOMPILED_HEADERS)
     vtkImaging
     vtkIO
     vtkRendering
+    itkIOAddOn
+    ITKIOReview
   )
     
-  SET(vtkDataManagement_LIBS
-      itkIOAddOn
-      ${vtkDataManagement_LIBS}
-    )
-
-  SET(vtkDataManagement_LIBS
-        ITKIOReview
-	${vtkDataManagement_LIBS}	
-   )
-    
-
   TARGET_LINK_LIBRARIES(vtkDataManagement
   ${vtkDataManagement_LIBS}
   )
 
-  IF (VTK_WRAP_TCL)
+IF (VTK_WRAP_TCL)
 
     SET_SOURCE_FILES_PROPERTIES(
      vtkDataManagerCallback.cxx
@@ -84,7 +79,7 @@ endif(vtkInria_USE_PRECOMPILED_HEADERS)
       "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
     )
 
-    ADD_LIBRARY(vtkDataManagementTCL ${vtkInria_LIBS_STYLE}
+    ADD_LIBRARY(vtkDataManagementTCL SHARED
       ${vtkDataManagementTCL_SRCS}
     )
     TARGET_LINK_LIBRARIES(vtkDataManagementTCL
@@ -96,7 +91,7 @@ endif(vtkInria_USE_PRECOMPILED_HEADERS)
         vtkHybridTCL
         vtkImagingTCL
     )
-  ENDIF(VTK_WRAP_TCL)
+ENDIF(VTK_WRAP_TCL)
 
   IF( BUILD_TESTING )
     ADD_SUBDIRECTORY(Testing)

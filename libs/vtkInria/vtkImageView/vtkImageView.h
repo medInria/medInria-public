@@ -24,11 +24,9 @@
 #include <vtkCommand.h>
 #include <vtkInteractorStyle.h>
 
-#ifdef vtkINRIA3D_USE_ITK
 #include <itkImage.h>
 #include <itkRGBPixel.h>
 #include <itkRGBAPixel.h>
-#endif
 
 #include <cstring>
 
@@ -566,7 +564,6 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
    */
   virtual int GetCurrentLayer() const;
 
-#ifdef vtkINRIA3D_USE_ITK
   /**
      When ITK is set ot ON, we propose the following method to open
      directly an ITK image. Because of the templates, we have to setup
@@ -627,7 +624,6 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual void SetITKInput4 (itk::Image<FloatVector3Type, 4>::Pointer input, int layer=0);
   itk::ImageBase<4>* GetTemporalITKInput (void) const;
 
-#endif
 
 
   void        SetPatientName (const char* name);
@@ -703,7 +699,6 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual void GetWithinBoundsPosition (double* pos1, double* dos2);
 
   private:
-#ifdef vtkINRIA3D_USE_ITK
     //! Template function which implements SetInput for all types.
     // Defined locally and not exposed.
       template < class T >
@@ -718,7 +713,6 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
     // Defined locally and not exposed.
       template < class T >
          void SetTimeIndex (vtkIdType timeIndex);
-#endif
 
 protected:
   /**
@@ -817,7 +811,6 @@ private:
   //! The time slice to be displayed.
   vtkIdType TimeIndex;
 
-#ifdef vtkINRIA3D_USE_ITK
   /**
      This pointer is used to store internally a reference to the
      current ITK->VTK converter, in order to prevent the image buffer
@@ -830,12 +823,10 @@ private:
   std::vector< itk::ImageBase<3>::Pointer> ITKInputVector;
   itk::ImageBase<4>::Pointer  ITKInput4;
 
-#endif
-
   vtkImageView  (const vtkImageView&); // Not implemented.
   void operator=(const vtkImageView&); // Not implemented.
 
 };
 
 
-#endif
+#endif //_vtkImageView_h_

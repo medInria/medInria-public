@@ -437,7 +437,6 @@ vtkMetaDataSet* vtkDataManagerReader::CreateMetaDataSetFromXMLElement (vtkXMLDat
   if (tag)
     metadataset->SetTag (tag);
 
-#ifdef vtkINRIA3D_USE_ITK
   for (unsigned int j=0; j<flags.size(); j++)
   {
     const char* key = flags[j]->GetAttribute("key");
@@ -447,7 +446,6 @@ vtkMetaDataSet* vtkDataManagerReader::CreateMetaDataSetFromXMLElement (vtkXMLDat
     flags[j]->GetScalarAttribute("value", val);
     metadataset->SetMetaData<double>(key, val);
   }  
-#endif
     
   if (!frames.size())
   {
@@ -706,7 +704,6 @@ void vtkDataManagerReader::RestoreMetaDataSetInformation (vtkXMLDataElement* ele
     metadataset->SetName (name);
     metadataset->SetTime (time);
     metadataset->SetTag (tag);
-#ifdef vtkINRIA3D_USE_ITK
     int NumberOfFlags = metadatasetelement->GetNumberOfNestedElements();
     for (int j=0; j<NumberOfFlags; j++)
     {
@@ -717,7 +714,6 @@ void vtkDataManagerReader::RestoreMetaDataSetInformation (vtkXMLDataElement* ele
       metadataset->SetMetaData<double>(key, val);
     }
     
-#endif 
     
   }
   

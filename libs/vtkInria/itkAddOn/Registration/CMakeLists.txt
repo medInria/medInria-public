@@ -3,7 +3,7 @@ set ( itkRegistrationAddOnSRCS
   itkRegistrationFactory-explicit-template.cxx
 )
 
-add_library ( itkRegistrationAddOn ${ITK_LIBS_STYLE}
+add_library ( itkRegistrationAddOn SHARED
   ${itkRegistrationAddOnSRCS} 
   )
 

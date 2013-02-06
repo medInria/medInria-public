@@ -54,14 +54,12 @@ PURPOSE.  See the above copyright notices for more information.
 #include <vtkIntArray.h>
 #include <vtkMath.h>
 
-#ifdef vtkINRIA3D_USE_ITK
 #include <itkImageToVTKImageFilter.h>
 #include <itkFlipImageFilter.h>
 #include <itkExtractImageBufferFilter.h>
 #include <itkImage.h>
 #include <itkMatrix.h>
 #include <vnl/algo/vnl_qr.h>
-#endif
 
 #include <assert.h>
 #include <iostream>
@@ -72,7 +70,6 @@ vtkCxxRevisionMacro(vtkViewImage, "$Revision: 1315 $");
 vtkStandardNewMacro(vtkViewImage);
 
 
-#ifdef vtkINRIA3D_USE_ITK
 
 // Enumeration for the supported pixel types
 namespace {
@@ -124,7 +121,6 @@ template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImage
 template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < vtkViewImage::RGBAPixelType > () { return     IMAGE_VIEW_RGBAPIXELTYPE; }
 template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < vtkViewImage::UCharVector3Type > () { return     IMAGE_VIEW_UCHARVECTOR3TYPE ; }
 template <> ViewImageType vtkViewImage::vtkViewImageImplementation::GetViewImageType < vtkViewImage::FloatVector3Type > () { return     IMAGE_VIEW_FLOATVECTOR3TYPE ; }
-#endif
 
 
 vtkViewImage::vtkViewImage()
@@ -192,11 +188,9 @@ vtkViewImage::vtkViewImage()
   //vtkMapper::SetResolveCoincidentTopologyToPolygonOffset();
   //vtkMapper::SetResolveCoincidentTopologyPolygonOffsetParameters(10,10);
 
-#ifdef vtkINRIA3D_USE_ITK
   this->Impl = new vtkViewImageImplementation;    
   this->ITKImage  = 0;
   this->ITKImage4 = 0;    
-#endif
 
   this->DirectionMatrix = vtkMatrix4x4::New();
   this->DirectionMatrix->Identity();
@@ -222,12 +216,10 @@ vtkViewImage::~vtkViewImage()
 
   this->RemoveAllDataSet();
 
-#ifdef vtkINRIA3D_USE_ITK
   this->ITKImage = 0;
   this->ITKImage4 = 0;    
     
   delete this->Impl;
-#endif
 
   this->DirectionMatrix->Delete();
 
@@ -1681,7 +1673,6 @@ void vtkViewImage::SetVolumeIndex ( vtkIdType index )
 {
     if ( this->VolumeIndex != index ) {
         
-#ifdef vtkINRIA3D_USE_ITK
         if ( this->Impl->ImageTemporalFilter.IsNotNull ()) {
             
             switch ( this->Impl->TemporalFilterType ) {
@@ -1713,7 +1704,6 @@ break ;					\
                     
             };
         }
-#endif        
         this->VolumeIndex = index;
         this->GetImage ()->UpdateInformation ();
         this->GetImage ()->PropagateUpdateExtent ();
@@ -1722,7 +1712,6 @@ break ;					\
     }
 }
 
-#ifdef vtkINRIA3D_USE_ITK
 
 template <class T>
 inline void vtkViewImage::SetITKImage (typename itk::Image<T, 3> *itkImage)
@@ -1845,4 +1834,3 @@ itk::ImageBase<4>* vtkViewImage::GetTemporalITKImage (void) const
 }
 
 
-#endif

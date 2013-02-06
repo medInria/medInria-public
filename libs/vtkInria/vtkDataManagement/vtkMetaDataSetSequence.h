@@ -23,13 +23,11 @@
 #include <string>
 #include <vector>
 
-#ifdef vtkINRIA3D_USE_ITK
 #include <vtkMetaImageData.h>
 #include <itkExtractImageFilter.h>
 #include "itkImageRegionIterator.h"
 #include "itkImageRegion.h"
 #include "itkImage.h"
-#endif  
 
 
 
@@ -86,7 +84,6 @@ class vtkMetaDataSetSequence: public vtkMetaDataSet
 
   virtual void ReadData (const char* filename);
   
-#ifdef vtkINRIA3D_USE_ITK
   //BTX
 
   typedef itk::Image<short,3> ShortImageType;
@@ -376,9 +373,6 @@ class vtkMetaDataSetSequence: public vtkMetaDataSet
   
 
   //ETX
-#endif
-
-
   /**
      Insert a vtkMetaDataSet at the end of the sequence list
      As soon as the metadataset time flag is set, the list will be reordered
@@ -575,12 +569,10 @@ class vtkMetaDataSetSequence: public vtkMetaDataSet
   bool   SameGeometryFlag;
   bool  ParseAttributes;
 
-#ifdef vtkINRIA3D_USE_ITK
   //BTX
   std::vector<itk::ProcessObject::Pointer> Converters;
   //ETX
-#endif
 };
 
-#endif
+#endif //_vtkMetaDataSetSequence_h_
 

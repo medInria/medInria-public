@@ -91,13 +91,6 @@ void vtkMetaDataSetSequence::Initialize (void)
 //----------------------------------------------------------------------------
 unsigned int vtkMetaDataSetSequence::CanReadFile (const char* filename)
 {
-  
-#ifndef vtkINRIA3D_USE_ITK
-  std::cerr<<"cannot write file without ITK"<<std::endl;
-  
-  return 0;
-#else
-
   /*
     As their might be more than one volume in an image, we read 4D
     images, and then split them into 3D volumes if the 4th dimension
@@ -127,10 +120,6 @@ unsigned int vtkMetaDataSetSequence::CanReadFile (const char* filename)
   }
 
   return 1;
-
-#endif  
-
-  return 0;
 }
 
 
@@ -143,10 +132,6 @@ void vtkMetaDataSetSequence::Read(const char* dirname)
 
   if (!vtksys::SystemTools::FileIsDirectory (dirname))
   {
-#ifndef vtkINRIA3D_USE_ITK
-    std::cerr<<"cannot read single file without ITK"<<std::endl;
-    return;
-#else
   
     try
     {
@@ -208,11 +193,7 @@ void vtkMetaDataSetSequence::Read(const char* dirname)
     {
       throw error;
     }
-#endif
-
     this->SetFilePath (dirname);  
-
-
     return;
   }
   
@@ -374,11 +355,6 @@ void vtkMetaDataSetSequence::Write(const char* dirname)
   
   if (!vtksys::SystemTools::FileIsDirectory (dirname) && (this->GetType() == vtkMetaDataSet::VTK_META_IMAGE_DATA))
   {
-
-#ifndef vtkINRIA3D_USE_ITK
-    vtkErrorMacro(<<"Cannot save without ITK !"<<endl);
-    throw vtkErrorCode::UserError;
-#else
     std::string filename = dirname;
     std::string extension = vtksys::SystemTools::GetFilenameLastExtension(dirname);
     if (extension.size() < 2)
@@ -423,8 +399,6 @@ void vtkMetaDataSetSequence::Write(const char* dirname)
     {
       throw error;
     }
-#endif
-
     this->SetFilePath (dirname);  
 
     return;
@@ -1615,14 +1589,6 @@ void vtkMetaDataSetSequence::ComputeTimesFromDuration(void)
   }
 }
 
-
-
-
-
-
-#ifdef vtkINRIA3D_USE_ITK
-
-
 //----------------------------------------------------------------------------
 vtkMetaDataSetSequence::ShortImageType::PointType vtkMetaDataSetSequence::ExtractPARRECImageOrigin (const char* filename, ShortDirectionType direction)
 {
@@ -1696,11 +1662,6 @@ vtkMetaDataSetSequence::ShortImageType::PointType vtkMetaDataSetSequence::Extrac
   
 }
 
-
-#endif
-  
-
-#ifdef vtkINRIA3D_USE_ITK
 
 
 //----------------------------------------------------------------------------
@@ -1850,7 +1811,5 @@ vtkMetaDataSetSequence::ShortDirectionType vtkMetaDataSetSequence::ExtractPARREC
   
 #endif
   
-  
 }
 
-#endif

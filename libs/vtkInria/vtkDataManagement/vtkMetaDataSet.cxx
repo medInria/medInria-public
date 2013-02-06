@@ -785,31 +785,23 @@ void vtkMetaDataSet::PrintSelf(ostream& os, vtkIndent indent)
 // template <class type>
 // inline void vtkMetaDataSet::SetMetaData (std::string key, type value)
 // {
-// #ifdef vtkINRIA3D_USE_ITK
 //   if (this->MetaDataDictionary.HasKey (key))
 //     itk::EncapsulateMetaData<type>(this->MetaDataDictionary, key, (type)value);
 //   else
 //     itk::EncapsulateMetaData<type>(this->MetaDataDictionary, key, (type)value);
-// #else
-//   vtkWarningMacro(<< "Cannot have any metadata whithout ITK !"<<endl);
-// #endif  
-
 // }
 
 // //----------------------------------------------------------------------------
 // template <class type>
 // inline bool vtkMetaDataSet::GetMetaData (std::string key, type &ret)
 // {
-// #ifdef vtkINRIA3D_USE_ITK
+
 //   type toret;
 //   bool valid = itk::ExposeMetaData<type>(this->MetaDataDictionary, key, toret);
 //   if(!valid)
 //     return false;
 //   ret = toret;
 //   return true;
-// #else
-//   vtkWarningMacro(<< "Cannot have any metadata whithout ITK !"<<endl); 
-// #endif
 // }
 
 

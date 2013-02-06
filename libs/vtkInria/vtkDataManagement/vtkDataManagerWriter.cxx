@@ -345,7 +345,6 @@ std::string vtkDataManagerWriter::CreateMetaDataSetEntry(vtkMetaDataSet* metadat
 	   << "\" tag=\"" << metadataset->GetTag()
 	   << "\">" << std::endl;
   
-#ifdef vtkINRIA3D_USE_ITK
   std::vector<std::string> flaglist = metadataset->GetMetaDataKeyList();
   for (unsigned int i=0; i<flaglist.size(); i++)
   {
@@ -357,7 +356,6 @@ std::string vtkDataManagerWriter::CreateMetaDataSetEntry(vtkMetaDataSet* metadat
 		  << "<metadata key=\""<< key
 		  << "\" value=\""<< val << "\"/>" << std::endl;
   }
-#endif
 
   vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast (metadataset);
   

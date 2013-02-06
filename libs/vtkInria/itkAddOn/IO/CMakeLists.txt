@@ -25,7 +25,7 @@ IF( WIN32 )
     ${itkIOAddOnSRCS}
   )
 ELSE( WIN32 )
-  ADD_LIBRARY( itkIOAddOn ${ITK_LIBS_STYLE}
+  ADD_LIBRARY( itkIOAddOn SHARED
     ${itkIOAddOnSRCS} 
   )
 ENDIF( WIN32 )

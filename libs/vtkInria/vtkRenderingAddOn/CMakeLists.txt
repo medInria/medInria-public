@@ -26,7 +26,7 @@ if(vtkInria_USE_PRECOMPILED_HEADERS)
 endif(vtkInria_USE_PRECOMPILED_HEADERS)
 
   # C++ library for the InterfaceManagers
-  ADD_LIBRARY(vtkRenderingAddOn ${vtkInria_LIBS_STYLE}
+  ADD_LIBRARY(vtkRenderingAddOn SHARED
   ${vtkRenderingAddOn_SOURCES_PCH}
   ${vtkRenderingAddOn_SRCS}
   )
@@ -67,7 +67,7 @@ ENDIF( vtkInria_USE_ITK )
       "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
     )
 
-    ADD_LIBRARY(vtkRenderingAddOnTCL ${vtkInria_LIBS_STYLE}
+    ADD_LIBRARY(vtkRenderingAddOnTCL SHARED
     ${vtkRenderingAddOnTCL_SRCS}
     )
     TARGET_LINK_LIBRARIES(vtkRenderingAddOnTCL

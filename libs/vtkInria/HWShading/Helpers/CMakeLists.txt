@@ -11,7 +11,7 @@ FOREACH(class ${Helpers_classes})
   SET(Helpers_Headers ${Helpers_Headers} ${class}.h)
 ENDFOREACH(class)
 
-ADD_LIBRARY(vtkHelpers ${vtkInria_LIBS_STYLE} ${Helpers_SRCS})
+ADD_LIBRARY(vtkHelpers SHARED ${Helpers_SRCS})
 
 TARGET_LINK_LIBRARIES(vtkHelpers
 vtkCommon

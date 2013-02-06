@@ -28,10 +28,8 @@ vtkStandardNewMacro( vtkMetaImageData );
 vtkCxxRevisionMacro(vtkMetaImageData, "$Revision: 1370 $");
 
 
-#ifdef vtkINRIA3D_USE_ITK
 #include <itkMatrix.h>
 #include <itkImage.h>
-#endif
 
 #ifdef ITK_USE_REVIEW
 #include <itkPhilipsRECImageIO.h>
@@ -49,9 +47,7 @@ vtkCxxRevisionMacro(vtkMetaImageData, "$Revision: 1370 $");
 //----------------------------------------------------------------------------
 vtkMetaImageData::vtkMetaImageData()
 {
-#ifdef vtkINRIA3D_USE_ITK
   this->m_ItkImage  = 0;
-#endif
   this->Type = vtkMetaDataSet::VTK_META_IMAGE_DATA;
 
   this->OrientationMatrix = vtkMatrix4x4::New();
@@ -119,12 +115,6 @@ bool vtkMetaImageData::IsImageExtension (const char* ext)
 unsigned int vtkMetaImageData::CanReadFile (const char* filename)
 {
   
-#ifndef vtkINRIA3D_USE_ITK
-  std::cerr<<"cannot write file without ITK"<<std::endl;
-  
-  return 0;
-#else
-
   /*
     As their might be more than one volume in an image, we read 4D
     images, and then split them into 3D volumes if the 4th dimension
@@ -158,10 +148,6 @@ unsigned int vtkMetaImageData::CanReadFile (const char* filename)
   }
 
   return 1;
-
-#endif  
-
-  return 0;
 }
 
 
@@ -174,7 +160,7 @@ unsigned long vtkMetaImageData::GetComponentType (void)
 }
 
 
-#ifdef vtkINRIA3D_USE_ITK
+
 
 itk::ImageBase<3>* vtkMetaImageData::GetItkImage(void)
 {
@@ -232,7 +218,7 @@ void vtkMetaImageData::CopyInformation (vtkMetaDataSet* metadataset)
   this->SetOrientationMatrix (imagedata->GetOrientationMatrix());
 }
 
-#endif  
+
 
 
 
@@ -292,12 +278,6 @@ void vtkMetaImageData::ReadColorImage (const char* filename)
 //----------------------------------------------------------------------------
 void vtkMetaImageData::Read (const char* filename)
 {
-
-#ifndef vtkINRIA3D_USE_ITK
-  std::cerr<<"ITK not used : cannot read any image..."<<std::endl;
-  return;
-
-#else
 
   // first read the image component type
   typedef itk::Image<short,3> d_ImageType;
@@ -366,10 +346,7 @@ void vtkMetaImageData::Read (const char* filename)
     else if (componenttype ==  itk::ImageIOBase::DOUBLE)
       this->ReadFile<double>(filename);
   }
-  
-  
-#endif
-  
+    
   // remember the path of the file
   this->SetFilePath (filename);
   
@@ -378,11 +355,6 @@ void vtkMetaImageData::Read (const char* filename)
 //----------------------------------------------------------------------------
 void vtkMetaImageData::Write (const char* filename)
 {
-
-#ifndef vtkINRIA3D_USE_ITK
-  std::cout<<"ITK not used : cannot write any image..."<<std::endl;
-  throw vtkErrorCode::UserError;
-#else
 
   // check if there is actually any image to save
   if (!this->GetImageData())
@@ -419,9 +391,6 @@ void vtkMetaImageData::Write (const char* filename)
   else
     this->WriteFile<float>(filename);
 
-  
-#endif
-  
   // remember the path of the file
   this->SetFilePath (filename);
   
@@ -448,10 +417,6 @@ void vtkMetaImageData::SetOrientationMatrix (vtkMatrix4x4* matrix)
   this->Modified();
 
 }
-
-
-
-#ifdef vtkINRIA3D_USE_ITK
 
 
 //----------------------------------------------------------------------------
@@ -526,11 +491,6 @@ vtkMetaImageData::FloatImageType::PointType vtkMetaImageData::ExtractPARRECImage
   
 }
 
-
-#endif
-  
-
-#ifdef vtkINRIA3D_USE_ITK
 
 
 //----------------------------------------------------------------------------
@@ -684,4 +644,3 @@ vtkMetaImageData::DirectionType vtkMetaImageData::ExtractPARRECImageOrientation 
   
 }
 
-#endif

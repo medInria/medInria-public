@@ -87,13 +87,13 @@ if(vtkInria_USE_PRECOMPILED_HEADERS)
 endif(vtkInria_USE_PRECOMPILED_HEADERS)
 
 # C++ library for the InterfaceManagers
-ADD_LIBRARY(vtkVisuManagement ${vtkInria_LIBS_STYLE}
+ADD_LIBRARY(vtkVisuManagement SHARED
   ${vtkVisuManagement_SOURCES_PCH}
   ${vtkVisuManagement_SRCS}
 )
   
 # C++ library for the InterfaceManagers
-ADD_LIBRARY(vtkLandmarkManagement ${vtkInria_LIBS_STYLE}
+ADD_LIBRARY(vtkLandmarkManagement SHARED
   ${vtkLandmarkManagement_SRCS}
 )
   
@@ -125,7 +125,7 @@ IF(VTK_WRAP_TCL)
       ""
       "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
     )
-  ADD_LIBRARY(vtkVisuManagementTCL ${vtkInria_LIBS_STYLE}
+  ADD_LIBRARY(vtkVisuManagementTCL SHARED
     ${vtkVisuManagementTCL_SRCS}
     )
   TARGET_LINK_LIBRARIES(vtkVisuManagementTCL
@@ -146,7 +146,7 @@ IF(VTK_WRAP_TCL)
       ""
       "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
     )
-  ADD_LIBRARY(vtkLandmarkManagementTCL ${vtkInria_LIBS_STYLE}
+  ADD_LIBRARY(vtkLandmarkManagementTCL SHARED
     ${vtkLandmarkManagementTCL_SRCS}
     )
   TARGET_LINK_LIBRARIES(vtkLandmarkManagementTCL
