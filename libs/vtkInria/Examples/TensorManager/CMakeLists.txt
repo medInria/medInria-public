@@ -1,7 +1,7 @@
 PROJECT(TensorManager)
 
-FIND_PACKAGE(vtkINRIA3D REQUIRED)
-INCLUDE(${vtkINRIA3D_USE_FILE})
+FIND_PACKAGE(vtkInria REQUIRED)
+INCLUDE(${vtkInria_USE_FILE})
 
 ADD_EXECUTABLE(TensorManager
 TensorManager.cxx

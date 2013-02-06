@@ -10,8 +10,8 @@ RegisterDataSets
 )
 
 
-IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
+IF( vtkInria_USE_SPHERICALHARMONICS )
 add_subdirectory(
 SphericalHarmonicView
 )
-ENDIF( vtkINRIA3D_USE_SPHERICALHARMONICS )
+ENDIF( vtkInria_USE_SPHERICALHARMONICS )

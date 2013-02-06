@@ -4,9 +4,7 @@
 
 #include <vtkINRIA3DConfigure.h>
 
-#ifdef vtkINRIA3D_USE_ITK
 #include <itkExtractImageFilter.h>
-#endif
 
 #include <v3dView.h>
 
@@ -903,7 +901,6 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
 //        }
 //    }
 
-#ifdef vtkINRIA3D_USE_ITK
     if (SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
         SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3",data,layer) ||
         SetViewInput<itk::Image<short,3> >("itkDataImageShort3",data,layer) ||
@@ -938,7 +935,6 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
 
     }
     else
-#endif
         if (data->identifier()=="v3dDataImage")
         {
             if(vtkImageData *dataset = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data())))

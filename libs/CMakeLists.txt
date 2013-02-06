@@ -22,7 +22,7 @@ if ( MEDINRIA_REQUIRES_ITK )
 endif()
 
 if ( MEDINRIA_REQUIRES_VTK )
-    add_subdirectory(vtkinria3d)
+    add_subdirectory(vtkInria)
     add_subdirectory(dtkVtkLogForwarder)
 endif()
 

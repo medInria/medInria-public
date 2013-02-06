@@ -1,4 +1,4 @@
-project(HWShading)
+project(vtkHWShading)
 
   INCLUDE(ShaderText.cmake)
 
@@ -41,64 +41,64 @@ project(HWShading)
 
   SHADER_TO_HEADER("AnisotropicLightingVertexText"
 		   "Shaders/AnisotropicLighting.vert"
-	           "${vtkINRIA3D_BINARY_DIR}/Shaders/AnisotropicLightingVertexText.h"
+	           "${vtkInria_BINARY_DIR}/Shaders/AnisotropicLightingVertexText.h"
 		  )
   SHADER_TO_HEADER("AnisotropicLightingFragmentText"
 		   "Shaders/AnisotropicLighting.frag"
-	           "${vtkINRIA3D_BINARY_DIR}/Shaders/AnisotropicLightingFragmentText.h"
+	           "${vtkInria_BINARY_DIR}/Shaders/AnisotropicLightingFragmentText.h"
 		  )
   SHADER_TO_HEADER("ShadowMappingVertexText"
 		   "Shaders/ShadowMapping.vert"
-		   "${vtkINRIA3D_BINARY_DIR}/Shaders/ShadowMappingVertexText.h"
+		   "${vtkInria_BINARY_DIR}/Shaders/ShadowMappingVertexText.h"
 		  )
   SHADER_TO_HEADER("ShadowMappingFragmentText"
 		   "Shaders/ShadowMapping.frag"
-		   "${vtkINRIA3D_BINARY_DIR}/Shaders/ShadowMappingFragmentText.h"
+		   "${vtkInria_BINARY_DIR}/Shaders/ShadowMappingFragmentText.h"
 		  )
   SHADER_TO_HEADER("SpotlightFunctionsText"
 		   "Shaders/Spotlight.func"
-		   "${vtkINRIA3D_BINARY_DIR}/Shaders/SpotlightFunctionsText.h"
+		   "${vtkInria_BINARY_DIR}/Shaders/SpotlightFunctionsText.h"
 		  )
   SHADER_TO_HEADER("AnisotropicLightingFunctionsText"
 		   "Shaders/AnisotropicLighting.func"
-		   "${vtkINRIA3D_BINARY_DIR}/Shaders/AnisotropicLightingFunctionsText.h"
+		   "${vtkInria_BINARY_DIR}/Shaders/AnisotropicLightingFunctionsText.h"
 		  )
   SHADER_TO_HEADER("AnisotropicLightingShadowMappingFragmentText"
 		   "Shaders/AnisoLiShadowMap.frag"
-		   "${vtkINRIA3D_BINARY_DIR}/Shaders/AnisotropicLightingShadowMappingFragmentText.h"
+		   "${vtkInria_BINARY_DIR}/Shaders/AnisotropicLightingShadowMappingFragmentText.h"
 		  )
   SHADER_TO_HEADER("AnisotropicLightingShadowMappingVertexText"
 		   "Shaders/AnisoLiShadowMap.vert"
-		   "${vtkINRIA3D_BINARY_DIR}/Shaders/AnisotropicLightingShadowMappingVertexText.h"
+		   "${vtkInria_BINARY_DIR}/Shaders/AnisotropicLightingShadowMappingVertexText.h"
 		  )
   SHADER_TO_HEADER("BuildShadowMapVertexText"
 		   "Shaders/BuildShadowMap.vert"
-		   "${vtkINRIA3D_BINARY_DIR}/Shaders/BuildShadowMapVertexText.h"
+		   "${vtkInria_BINARY_DIR}/Shaders/BuildShadowMapVertexText.h"
 		  )
   SHADER_TO_HEADER("BuildShadowMapFragmentText"
 		   "Shaders/BuildShadowMap.frag"
-		   "${vtkINRIA3D_BINARY_DIR}/Shaders/BuildShadowMapFragmentText.h"
+		   "${vtkInria_BINARY_DIR}/Shaders/BuildShadowMapFragmentText.h"
 		  )
   SHADER_TO_HEADER("BuildShadowMapLinesVertexText"
 		   "Shaders/BuildShadowMapLines.vert"
-		   "${vtkINRIA3D_BINARY_DIR}/Shaders/BuildShadowMapLinesVertexText.h"
+		   "${vtkInria_BINARY_DIR}/Shaders/BuildShadowMapLinesVertexText.h"
 		  )
   SHADER_TO_HEADER("BuildShadowMapLinesFragmentText"
 		   "Shaders/BuildShadowMapLines.frag"
-		   "${vtkINRIA3D_BINARY_DIR}/Shaders/BuildShadowMapLinesFragmentText.h"
+		   "${vtkInria_BINARY_DIR}/Shaders/BuildShadowMapLinesFragmentText.h"
 		  )
 
   FIND_PACKAGE(OpenGL REQUIRED)
 
   set(HWShading_SOURCES_PCH)
-  if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+  if(vtkInria_USE_PRECOMPILED_HEADERS)
     add_precompiled_header(HWShading_SOURCES_PCH
       "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp"
       ${HWShading_SRCS}
     )
   endif()
   
-  ADD_LIBRARY(vtkHWShading ${vtkINRIA3D_LIBS_STYLE}
+  ADD_LIBRARY(${PROJECT_NAME} SHARED
     ${HWShading_SOURCES_PCH}
     ${HWShading_SRCS}
     ${HWShading_Headers}

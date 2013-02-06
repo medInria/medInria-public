@@ -53,7 +53,7 @@ SET(vtkLandmarkManagement_LIBS
  vtkImageView
 )
 
-IF( vtkINRIA3D_USE_HWSHADING )
+IF( vtkInria_USE_HWSHADING )
   SET(vtkVisuManagement_LIBS
     ${vtkVisuManagement_LIBS}
     vtkHWShading
@@ -62,9 +62,9 @@ IF( vtkINRIA3D_USE_HWSHADING )
     ${vtkLandmarkManagement_LIBS}
     vtkHWShading
     )
-ENDIF(vtkINRIA3D_USE_HWSHADING )
+ENDIF(vtkInria_USE_HWSHADING )
 
-IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
+IF( vtkInria_USE_SPHERICALHARMONICS )
     SET(vtkVisuManagement_SRCS
         ${vtkVisuManagement_SRCS}
         vtkSphericalHarmonicVisuManager.cxx
@@ -77,23 +77,23 @@ IF( vtkINRIA3D_USE_SPHERICALHARMONICS )
         ${vtkVisuManagement_LIBS}
         itkIOAddOn
         )
-ENDIF(vtkINRIA3D_USE_SPHERICALHARMONICS )
+ENDIF(vtkInria_USE_SPHERICALHARMONICS )
 
-if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+if(vtkInria_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(vtkVisuManagement_SOURCES_PCH 
-    "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
+    "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
       ${vtkVisuManagement_SRCS}
     )
-endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+endif(vtkInria_USE_PRECOMPILED_HEADERS)
 
 # C++ library for the InterfaceManagers
-ADD_LIBRARY(vtkVisuManagement ${vtkINRIA3D_LIBS_STYLE}
+ADD_LIBRARY(vtkVisuManagement ${vtkInria_LIBS_STYLE}
   ${vtkVisuManagement_SOURCES_PCH}
   ${vtkVisuManagement_SRCS}
 )
   
 # C++ library for the InterfaceManagers
-ADD_LIBRARY(vtkLandmarkManagement ${vtkINRIA3D_LIBS_STYLE}
+ADD_LIBRARY(vtkLandmarkManagement ${vtkInria_LIBS_STYLE}
   ${vtkLandmarkManagement_SRCS}
 )
   
@@ -125,7 +125,7 @@ IF(VTK_WRAP_TCL)
       ""
       "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
     )
-  ADD_LIBRARY(vtkVisuManagementTCL ${vtkINRIA3D_LIBS_STYLE}
+  ADD_LIBRARY(vtkVisuManagementTCL ${vtkInria_LIBS_STYLE}
     ${vtkVisuManagementTCL_SRCS}
     )
   TARGET_LINK_LIBRARIES(vtkVisuManagementTCL
@@ -146,7 +146,7 @@ IF(VTK_WRAP_TCL)
       ""
       "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
     )
-  ADD_LIBRARY(vtkLandmarkManagementTCL ${vtkINRIA3D_LIBS_STYLE}
+  ADD_LIBRARY(vtkLandmarkManagementTCL ${vtkInria_LIBS_STYLE}
     ${vtkLandmarkManagementTCL_SRCS}
     )
   TARGET_LINK_LIBRARIES(vtkLandmarkManagementTCL

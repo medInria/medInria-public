@@ -10,8 +10,8 @@
 //#include <itkVTKImageIOFactory.h>
 
 #include "vtkSmartPointer.h"
-#include <vtkImageData.h>
-#include <vtkMetaImageData.h>
+#include "vtkImageData.h"
+#include <vtkDataManagement/vtkMetaImageData.h>
 
 // /////////////////////////////////////////////////////////////////
 // v3dDataImagePrivate

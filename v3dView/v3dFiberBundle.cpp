@@ -7,7 +7,7 @@
 #include <vtkProperty.h>
 #include <vtkGenericCell.h>
 
-#include "vtkINRIA3DConfigure.h"
+
 
 vtkCxxRevisionMacro(v3dFiberBundle, "$Revision: 1.4 $");
 vtkStandardNewMacro(v3dFiberBundle);

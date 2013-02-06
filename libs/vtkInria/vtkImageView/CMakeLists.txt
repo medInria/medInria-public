@@ -3,10 +3,10 @@ project(vtkImageView)
 # find_package(VTK REQUIRED)
 # include(${VTK_USE_FILE})
 
-# if(vtkINRIA3D_USE_ITK)
+# if(vtkInria_USE_ITK)
 #   find_package(ITK REQUIRED)
 #   include(${ITK_USE_FILE})
-# endif(vtkINRIA3D_USE_ITK)
+# endif(vtkInria_USE_ITK)
 
 set(${PROJECT_NAME}_HEADERS
 vtkImageView.h
@@ -35,13 +35,13 @@ vtkImageViewCollection.cxx
 vtkImageView3DCroppingBoxCallback.cxx
 vtkSmartVolumeMapper.cxx
 )
-if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+if(vtkInria_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
     "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
     ${${PROJECT_NAME}_SOURCES})
-endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+endif(vtkInria_USE_PRECOMPILED_HEADERS)
 
-add_library(${PROJECT_NAME} ${vtkINRIA3D_LIBS_STYLE}
+add_library(${PROJECT_NAME} ${vtkInria_LIBS_STYLE}
 ${${PROJECT_NAME}_SOURCES_PCH}
 ${${PROJECT_NAME}_SOURCES}
 ${${PROJECT_NAME}_HEADERS}
@@ -55,12 +55,12 @@ vtkVolumeRendering
 vtkVisuManagement
 )
 
-IF( vtkINRIA3D_USE_ITK )
+IF( vtkInria_USE_ITK )
    target_link_libraries(${PROJECT_NAME}
    ITKCommon
    ITKBasicFilters
    )
-ENDIF( vtkINRIA3D_USE_ITK )
+ENDIF( vtkInria_USE_ITK )
 
   IF (VTK_WRAP_TCL)
    
@@ -71,7 +71,7 @@ ENDIF( vtkINRIA3D_USE_ITK )
       "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
     )
 
-    ADD_LIBRARY(vtkImageViewTCL ${vtkINRIA3D_LIBS_STYLE}
+    ADD_LIBRARY(vtkImageViewTCL ${vtkInria_LIBS_STYLE}
     ${vtkImageViewTCL_SRCS}
     )
     TARGET_LINK_LIBRARIES(vtkImageViewTCL

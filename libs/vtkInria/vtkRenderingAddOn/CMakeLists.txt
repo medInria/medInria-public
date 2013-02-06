@@ -19,14 +19,14 @@ project(vtkRenderingAddOn)
     vtkViewImage2DWithTracer.cxx
   )
 
-if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+if(vtkInria_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(vtkRenderingAddOn_SOURCES_PCH 
-    "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
+    "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
     ${vtkRenderingAddOn_SRCS})
-endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+endif(vtkInria_USE_PRECOMPILED_HEADERS)
 
   # C++ library for the InterfaceManagers
-  ADD_LIBRARY(vtkRenderingAddOn ${vtkINRIA3D_LIBS_STYLE}
+  ADD_LIBRARY(vtkRenderingAddOn ${vtkInria_LIBS_STYLE}
   ${vtkRenderingAddOn_SOURCES_PCH}
   ${vtkRenderingAddOn_SRCS}
   )
@@ -41,13 +41,13 @@ SET(vtkRenderingAddOn_LIBS
     vtkImaging
 )
 
-IF( vtkINRIA3D_USE_ITK )
+IF( vtkInria_USE_ITK )
    SET(vtkRenderingAddOn_LIBS
    ITKCommon
    ITKBasicFilters
    ${vtkRenderingAddOn_LIBS}
    )
-ENDIF( vtkINRIA3D_USE_ITK )
+ENDIF( vtkInria_USE_ITK )
 
 
   TARGET_LINK_LIBRARIES(vtkRenderingAddOn
@@ -67,7 +67,7 @@ ENDIF( vtkINRIA3D_USE_ITK )
       "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
     )
 
-    ADD_LIBRARY(vtkRenderingAddOnTCL ${vtkINRIA3D_LIBS_STYLE}
+    ADD_LIBRARY(vtkRenderingAddOnTCL ${vtkInria_LIBS_STYLE}
     ${vtkRenderingAddOnTCL_SRCS}
     )
     TARGET_LINK_LIBRARIES(vtkRenderingAddOnTCL
@@ -81,13 +81,13 @@ ENDIF( vtkINRIA3D_USE_ITK )
     vtkRenderingAddOn
     )
  
-    if(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
+    if(NOT vtkInria_INSTALL_NO_LIBRARIES)
       install(TARGETS vtkRenderingAddOnTCL
-      LIBRARY DESTINATION ${vtkINRIA3D_INSTALL_LIB_DIR}
-      RUNTIME DESTINATION ${vtkINRIA3D_INSTALL_BIN_DIR}
-      ARCHIVE DESTINATION ${vtkINRIA3D_INSTALL_LIB_DIR}
+      LIBRARY DESTINATION ${vtkInria_INSTALL_LIB_DIR}
+      RUNTIME DESTINATION ${vtkInria_INSTALL_BIN_DIR}
+      ARCHIVE DESTINATION ${vtkInria_INSTALL_LIB_DIR}
       )
-    endif(NOT vtkINRIA3D_INSTALL_NO_LIBRARIES)
+    endif(NOT vtkInria_INSTALL_NO_LIBRARIES)
 
   ENDIF(VTK_WRAP_TCL)
 

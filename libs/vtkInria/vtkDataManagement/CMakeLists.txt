@@ -1,5 +1,8 @@
 project(vtkDataManagement)
 
+FIND_PACKAGE(ITK REQUIRED)
+INCLUDE(${ITK_USE_FILE})
+
   SET(vtkDataManagement_SRCS
   vtkDataManagerCallback.cxx
   vtkMetaDataSet.cxx
@@ -24,14 +27,14 @@ project(vtkDataManagement)
   ENDIF (VTK_MINOR_VERSION GREATER 0)
   ENDIF (VTK_MAJOR_VERSION GREATER 4)
 
-if(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+if(vtkInria_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(vtkDataManagement_SOURCES_PCH 
     "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
     ${vtkDataManagement_SRCS})
-endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
+endif(vtkInria_USE_PRECOMPILED_HEADERS)
 
   # C++ library for the InterfaceManagers
-  ADD_LIBRARY(vtkDataManagement ${vtkINRIA3D_LIBS_STYLE}
+  ADD_LIBRARY(vtkDataManagement ${vtkInria_LIBS_STYLE}
   ${vtkDataManagement_SOURCES_PCH}
   ${vtkDataManagement_SRCS}
   )
@@ -50,21 +53,16 @@ endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
     vtkRendering
   )
     
-  IF(ITK_FOUND)
-    
-    SET(vtkDataManagement_LIBS
+  SET(vtkDataManagement_LIBS
       itkIOAddOn
       ${vtkDataManagement_LIBS}
     )
 
-    IF(ITK_USE_REVIEW)
-      SET(vtkDataManagement_LIBS
+  SET(vtkDataManagement_LIBS
         ITKIOReview
 	${vtkDataManagement_LIBS}	
-      )
-    ENDIF(ITK_USE_REVIEW)
+   )
     
-  ENDIF(ITK_FOUND)
 
   TARGET_LINK_LIBRARIES(vtkDataManagement
   ${vtkDataManagement_LIBS}
@@ -86,7 +84,7 @@ endif(vtkINRIA3D_USE_PRECOMPILED_HEADERS)
       "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
     )
 
-    ADD_LIBRARY(vtkDataManagementTCL ${vtkINRIA3D_LIBS_STYLE}
+    ADD_LIBRARY(vtkDataManagementTCL ${vtkInria_LIBS_STYLE}
       ${vtkDataManagementTCL_SRCS}
     )
     TARGET_LINK_LIBRARIES(vtkDataManagementTCL

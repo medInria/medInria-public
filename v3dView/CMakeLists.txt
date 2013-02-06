@@ -147,13 +147,8 @@ target_link_libraries(${PROJECT_NAME}
   vtkVolumeRendering
   QVTK)
 
-if (vtkINRIA3D_USE_ITK)
   target_link_libraries(${PROJECT_NAME} ${ITK_LIBRARIES})
-endif (vtkINRIA3D_USE_ITK)
-
-if (vtkINRIA3D_USE_HWSHADING)
   target_link_libraries(${PROJECT_NAME} vtkHWShading vtkHelpers)
-endif (vtkINRIA3D_USE_HWSHADING)
 
 if (BUILD_TESTING)
   add_subdirectory(Testing)

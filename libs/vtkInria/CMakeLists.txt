@@ -34,27 +34,6 @@ SET(vtkInria_VERSION_BUILD 0)
 SET(vtkInria_VERSION
   "${vtkInria_VERSION_MAJOR}.${vtkInria_VERSION_MINOR}.${vtkInria_VERSION_BUILD}")
 
-
-# -------------------------------------------------------------------------------------
-# Define EXECUTABLE_OUTPUT_PATH and LIBRARY_OUTPUT_PATH
-# -------------------------------------------------------------------------------------
-if(WIN32)
-  set(${PROJECT_NAME}_ARCHIVE_OUTPUT_DIRECTORY lib)
-  set(${PROJECT_NAME}_RUNTIME_OUTPUT_DIRECTORY bin)
-  set(${PROJECT_NAME}_LIBRARY_OUTPUT_DIRECTORY bin)
-else(WIN32)
-  set(${PROJECT_NAME}_ARCHIVE_OUTPUT_DIRECTORY lib)
-  set(${PROJECT_NAME}_RUNTIME_OUTPUT_DIRECTORY bin)
-  set(${PROJECT_NAME}_LIBRARY_OUTPUT_DIRECTORY lib)
-endif(WIN32)
-
-set(LIBRARY_OUTPUT_PATH    ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_LIBRARY_OUTPUT_DIRECTORY})
-set(ARCHIVE_OUTPUT_PATH    ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_ARCHIVE_OUTPUT_DIRECTORY})
-set(RUNTIME_OUTPUT_PATH    ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_RUNTIME_OUTPUT_DIRECTORY})
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/${${PROJECT_NAME}_RUNTIME_OUTPUT_DIRECTORY})
-set(CXX_TEST_PATH          ${EXECUTABLE_OUTPUT_PATH})
-
-
 # -------------------------------------------------------------------------------------
 # Set the path to our FindXXX.cmake files
 # -------------------------------------------------------------------------------------
@@ -115,43 +94,23 @@ endif(VTK_TCL_INCLUDE_DIR)
 # -----------------------------------------------------------------------------
 # SHARED LIBRARY
 # -----------------------------------------------------------------------------
-# We must remain consistent with the VTK build settings: VTK is shared => addons to VTK
-# will be shared. VTK is static => things will be static.
-IF( VTK_BUILD_SHARED_LIBS )
-  SET(vtkInria_LIBS_STYLE "SHARED")
-  SET (${PROJECT_NAME}_BUILD_SHARED_LIBS 1)
-ELSE( VTK_BUILD_SHARED_LIBS )
-  SET(vtkInria_LIBS_STYLE "STATIC")
-  SET (${PROJECT_NAME}_BUILD_SHARED_LIBS 0)
-ENDIF( VTK_BUILD_SHARED_LIBS )
+# For now we always compile all shared
+SET (${PROJECT_NAME}_BUILD_SHARED_LIBS 1)
 
 
 # -----------------------------------------------------------------------------
 # ITK
 # -----------------------------------------------------------------------------
-OPTION(vtkInria_USE_ITK "If ON, Compile ITK extensions, like itkAddOn" ON)
-IF(vtkInria_USE_ITK)
-  FIND_PACKAGE(ITK REQUIRED)
-  INCLUDE(${ITK_USE_FILE})
-
-  IF( ITK_BUILD_SHARED )
-    SET( ITK_LIBS_STYLE "SHARED" )
-  ELSE( ITK_BUILD_SHARED )
-    SET( ITK_LIBS_STYLE "STATIC" )
-  ENDIF( ITK_BUILD_SHARED )
-ENDIF(vtkInria_USE_ITK)
-
+FIND_PACKAGE(ITK REQUIRED)
+INCLUDE(${ITK_USE_FILE})
 
 # -----------------------------------------------------------------------------
 # The hardware shading extension by T. Peeters (BMIA - TUe)
 # -----------------------------------------------------------------------------
-OPTION (vtkInria_USE_HWSHADING "If ON, compile the hardware shading (HWShading) extension of vtkInria. Requires VTK>=5.1." ON)
-
-IF( vtkInria_USE_HWSHADING )
-  IF( NOT VTK_USE_GLSL_SHADERS )
+IF( NOT VTK_USE_GLSL_SHADERS )
     MESSAGE(FATAL_ERROR " VTK must be compiled with VTK_USE_GLSL_SHADERS at ON to use the HWShading library. This option is only available with VTK>=5.1.")
-  ENDIF( NOT VTK_USE_GLSL_SHADERS )
-ENDIF( vtkInria_USE_HWSHADING )
+ENDIF( NOT VTK_USE_GLSL_SHADERS )
+
 
 # -----------------------------------------------------------------------------
 # The SPHERICAL HARMONICS extension by Athena - INRIA Sophia Antipolis to use SphericalHarmonicVisualization of Maxime Descoteaux
@@ -172,7 +131,7 @@ IF( vtkInria_USE_SPHERICALHARMONICS )
 ENDIF( vtkInria_USE_SPHERICALHARMONICS )
 
 # Create the list of include directories needed for vtkInria header files.
-INCLUDE(${vtkInria_SOURCE_DIR}/vtkInriaIncludeDirectories.cmake)
+INCLUDE(${vtkInria_SOURCE_DIR}/IncludeDirectories.cmake)
 
 INCLUDE_DIRECTORIES(
 ${vtkInria_INCLUDE_DIRS_BUILD_TREE}
@@ -188,15 +147,9 @@ add_subdirectory(vtkImageView)
 add_subdirectory(vtkRenderingAddOn)
 add_subdirectory(vtkWidgetsAddOn)
 add_subdirectory(vtkVisuManagement)
-
-IF( vtkInria_USE_HWSHADING )
-  add_subdirectory(HWShading)
-ENDIF( vtkInria_USE_HWSHADING )
-
-IF(vtkInria_USE_ITK)
-  add_subdirectory(vtkItk)
-  add_subdirectory(itkAddOn)
-ENDIF(vtkInria_USE_ITK)
+add_subdirectory(HWShading)
+add_subdirectory(vtkItk)
+add_subdirectory(itkAddOn)
 
 IF(vtkInria_BUILD_EXAMPLES)
   add_subdirectory(Examples)
@@ -243,3 +196,4 @@ IF (DOXYGEN)
     ${MY_DOXYGEN_BUILD_DIR}/doxygen.config
   )
 ENDIF(DOXYGEN)
+
