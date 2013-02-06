@@ -68,7 +68,7 @@ public slots:
     void onSaveTrans(void);
     void onSuccess(void);
 
-    void synchroniseWindowLevel(void);
+    void synchroniseWindowLevel(QObject * sender = NULL);
     void synchronisePosition(const QVector3D &position);
 
 private:
