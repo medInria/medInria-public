@@ -46,7 +46,7 @@ class MEDSQL_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter
     Q_OBJECT
 
 public:
-    medDatabaseImporter ( const QString& file, bool indexWithoutImporting );
+    medDatabaseImporter ( const QString& file, bool indexWithoutImporting = false, const QString& callerUuid = QString() );
     ~medDatabaseImporter ( void );
 
 

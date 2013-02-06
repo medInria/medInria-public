@@ -29,7 +29,7 @@
 
 //-----------------------------------------------------------------------------------------------------------
 
-medDatabaseImporter::medDatabaseImporter ( const QString& file, bool indexWithoutImporting = false ) : medAbstractDatabaseImporter(file,indexWithoutImporting)
+medDatabaseImporter::medDatabaseImporter ( const QString& file, bool indexWithoutImporting, const QString& callerUuid ) : medAbstractDatabaseImporter(file,indexWithoutImporting, callerUuid)
 {
 
 }
@@ -65,6 +65,8 @@ QString medDatabaseImporter::getPatientID(QString patientName, QString birthDate
 
     return patientID;
 }
+
+//-----------------------------------------------------------------------------------------------------------
 
 bool medDatabaseImporter::isPartialImportAttempt ( dtkAbstractData* dtkData )
 {
@@ -323,6 +325,8 @@ int medDatabaseImporter::getOrCreatePatient ( const dtkAbstractData* dtkData, QS
     return patientDbId;
 }
 
+//-----------------------------------------------------------------------------------------------------------
+
 int medDatabaseImporter::getOrCreateStudy ( const dtkAbstractData* dtkData, QSqlDatabase db, int patientDbId )
 {
     int studyDbId = -1;
@@ -363,6 +367,8 @@ int medDatabaseImporter::getOrCreateStudy ( const dtkAbstractData* dtkData, QSql
 
     return studyDbId;
 }
+
+//-----------------------------------------------------------------------------------------------------------
 
 int medDatabaseImporter::getOrCreateSeries ( const dtkAbstractData* dtkData, QSqlDatabase db, int studyDbId )
 {
@@ -459,6 +465,8 @@ int medDatabaseImporter::getOrCreateSeries ( const dtkAbstractData* dtkData, QSq
 
     return seriesDbId;
 }
+
+//-----------------------------------------------------------------------------------------------------------
 
 void medDatabaseImporter::createMissingImages ( dtkAbstractData* dtkData, QSqlDatabase db, int seriesDbId, QStringList thumbPaths )
 {

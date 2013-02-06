@@ -27,34 +27,23 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 
-class medDatabaseNonPersistentReaderPrivate
-{
-public:
-    medDatabaseNonPersistentReaderPrivate ( const QString& uuid ) :callerUuid ( uuid ) {}
-    const QString callerUuid;
-};
 
 
-medDatabaseNonPersistentReader::medDatabaseNonPersistentReader ( const QString& file
-        ,const QString& callerUuid ) : medAbstractDatabaseImporter(file,true), d ( new medDatabaseNonPersistentReaderPrivate ( callerUuid ) )
+medDatabaseNonPersistentReader::medDatabaseNonPersistentReader ( const QString& file,
+                                                                 const QString& callerUuid )
+: medAbstractDatabaseImporter(file, true, callerUuid)
 {
-    qDebug() << "npr created with uuid:"<< d->callerUuid;
+    qDebug() << "medDatabaseNonPersistentReader created with uuid:" << this->callerUuid();
 }
 
-medDatabaseNonPersistentReader::~medDatabaseNonPersistentReader()
-{
-    delete d;
+//-----------------------------------------------------------------------------------------------------------
 
-    d = NULL;
-}
-
-void medDatabaseNonPersistentReader::run()
+medDatabaseNonPersistentReader::~medDatabaseNonPersistentReader ( void )
 {
-    medAbstractDatabaseImporter::run();
     
-    emit nonPersistentRead ( index(),d->callerUuid );
 }
 
+//-----------------------------------------------------------------------------------------------------------
 
 QString medDatabaseNonPersistentReader::getPatientID(QString patientName, QString birthDate)
 {
@@ -84,6 +73,8 @@ QString medDatabaseNonPersistentReader::getPatientID(QString patientName, QStrin
     
     return patientID;
 }
+
+//-----------------------------------------------------------------------------------------------------------
 
 medDataIndex medDatabaseNonPersistentReader::populateDatabaseAndGenerateThumbnails ( dtkAbstractData* data, QString pathToStoreThumbnails )
 {
@@ -119,6 +110,7 @@ medDataIndex medDatabaseNonPersistentReader::populateDatabaseAndGenerateThumbnai
     int     studyDbId   = -1;
     QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(data);
     QString studyId = medMetaDataKeys::StudyID.getFirstValue(data);
+    QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(data);
 
     databaseIndex = medDatabaseController::instance()->indexForStudy ( patientName, studyName );
     if ( databaseIndex.isValid() )
@@ -143,6 +135,13 @@ medDataIndex medDatabaseNonPersistentReader::populateDatabaseAndGenerateThumbnai
 
     QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
     QString seriesId = medMetaDataKeys::SeriesID.getFirstValue(data);
+    QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(data);
+    QString orientation = medMetaDataKeys::Orientation.getFirstValue(data);
+    QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(data);
+    QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(data);
+    QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(data);
+    QString rows = medMetaDataKeys::Rows.getFirstValue(data);
+    QString columns = medMetaDataKeys::Columns.getFirstValue(data);
 
     QFileInfo info (file() );
 
@@ -161,6 +160,14 @@ medDataIndex medDatabaseNonPersistentReader::populateDatabaseAndGenerateThumbnai
     item->d->thumb = data->thumbnail();
     item->d->index = index;
     item->d->data = data;
+    item->d->orientation = orientation;
+    item->d->seriesNumber = seriesNumber;
+    item->d->sequenceName = sequenceName;
+    item->d->sliceThickness = sliceThickness;
+    item->d->rows = rows;
+    item->d->columns = columns;
+    item->d->seriesUid = seriesUid;
+    item->d->studyUid = studyUid;
 
     npdc->insert ( index, item );
     return index;
@@ -189,8 +196,6 @@ bool medDatabaseNonPersistentReader::checkIfExists ( dtkAbstractData* dtkdata, Q
 }
 
 //-----------------------------------------------------------------------------------------------------------
-
-
 
 QString medDatabaseNonPersistentReader::ensureUniqueSeriesName ( const QString seriesName )
 {
@@ -221,6 +226,7 @@ QString medDatabaseNonPersistentReader::ensureUniqueSeriesName ( const QString s
     return newSeriesName;
 }
 
+//-----------------------------------------------------------------------------------------------------------
 
 bool medDatabaseNonPersistentReader::isPartialImportAttempt ( dtkAbstractData* dtkData )
 {

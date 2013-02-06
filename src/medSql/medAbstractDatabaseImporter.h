@@ -38,21 +38,21 @@ class dtkAbstractDataWriter;
 
 /**
 * @class medAbstractDatabaseImporter
-* @brief Threaded importing/indexing of files or directories into medInria database.
-* @medDatabaseImporter is in charge of importing (or indexing, any word will be used
-* hereafter) items into medInria database.
-* It is designed to run as a thread, to know how use it check the documentation
+* @brief Base class for database importers.
+* @medAbstractDatabaseImporter is in charge of importing (or indexing, any word will be used
+* hereafter) items into medInria databases.
+* It is designed to run as a thread, to know how to use it, check the documentation
 * of @medJobItem.
-* Images can be imported, that means that are not only indexed but also copied in
-* medInria database (and as a result they can end up being aggregated by volume)
-* or they can be just indexed (by indicating so using the parameters in the constructor)
+* It defines a set of usefuls method (populateMissingMetadata, getSuitableReader,...) and implements a default run() method.
+* To implement your own database importer, implement  the pure virtual methods, and override the run() method if neccessary. 
+* For example, see @medDatabaseImporter and @medDatabaseNonPersistentReader
 **/
 class MEDSQL_EXPORT medAbstractDatabaseImporter : public medJobItem
 {
     Q_OBJECT
 
 public:
-    medAbstractDatabaseImporter ( const QString& file, bool indexWithoutImporting );
+    medAbstractDatabaseImporter ( const QString& file, bool indexWithoutImporting, const QString& callerUuid = QString() );
     ~medAbstractDatabaseImporter ( void ); 
 
     /**
@@ -74,7 +74,15 @@ signals:
      * This signal is emitted after a successful import/index.
      * @param addedIndex - the @medDataIndex that was successfully added
      */
-    void addedIndex ( const medDataIndex& addedIndex);
+    void addedIndex ( const medDataIndex& addedIndex );
+    
+    /**
+     * This signal is emitted after a successful import/index.
+     * @param addedIndex - the @medDataIndex that was successfully added
+     * @param callerUuid - the caller Uuid. If the caller Uuid has not been specified, 
+     * the addedSignal(const medDataIndex& addedIndex) is emitted instead.
+     */
+    void addedIndex ( const medDataIndex& addedIndex, const QString& callerUuid );
 
 public slots:
     void onCancel ( QObject* );
@@ -82,19 +90,45 @@ public slots:
 
 protected:    
     
+    /**
+    * Returns file or directory used for import.
+    **/
     QString file ( void );
     
+    /**
+    * Returns last successful reader description.
+    **/
     QString lastSuccessfulReaderDescription ( void );
     
+    /**
+    * Returns last successful writer description.
+    **/
     QString lastSuccessfulWriterDescription ( void );
     
+    /**
+    * Returns if pocess has been cancelled.
+    **/
     bool isCancelled ( void );
     
+    /**
+    * Returns true if process is indexing without importing.
+    **/
     bool indexWithoutImporting ( void );
     
+    /**
+    * Returns information about partial import attempts .
+    **/
     QList<QStringList>* partialAttemptsInfo ( void );
     
+    /**
+    * Returns a QMap linking volume id to image file.
+    **/
     QMap<int, QString> volumeIdToImageFile ( void );
+    
+    /**
+    * Returns caller Uuid.
+    **/
+    QString callerUuid ( void );
     
     /**
       Returns the index of the data which has been read. Index is not
@@ -140,7 +174,7 @@ protected:
     * @param pathToStoreThumbnails - path where the thumbnails will be stored
     * @return medDataIndex the new medDataIndex associated with this imported series.
     **/
-    virtual medDataIndex populateDatabaseAndGenerateThumbnails ( dtkAbstractData* dtkData, QString pathToStoreThumbnails ) = 0;
+    virtual medDataIndex populateDatabaseAndGenerateThumbnails ( dtkAbstractData* dtkData, QString pathToStoreThumbnails ) = 0;  
     
     
     /**
@@ -150,8 +184,6 @@ protected:
     * @param seriesDescription - string used to fill SeriesDescription field if not present
     **/
     void populateMissingMetadata ( dtkAbstractData* dtkData, const QString seriesDescription );
-
-
 
     /**
     * Tries to find a @dtkAbstractDataReader able to read input file/s.

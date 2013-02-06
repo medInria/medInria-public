@@ -551,7 +551,7 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
 {
     if (d->volatileDataCache.count(index) > 0)
     {
-        qDebug() << "method storeNonPersistentSingleDataToDatabase, IF";
+        qDebug() << "storing non persistent single data to database";
         dtkSmartPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
         QUuid tmpUid = QUuid::createUuid().toString();
         d->npDataIndexBeingSaved[tmpUid] = index;

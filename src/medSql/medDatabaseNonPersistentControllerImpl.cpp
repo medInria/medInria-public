@@ -98,8 +98,8 @@ void medDatabaseNonPersistentControllerImpl::import(const QString& file,QString 
 
     connect(reader, SIGNAL(progressed(int)),
             message, SLOT(setProgress(int)));
-    connect(reader, SIGNAL(nonPersistentRead(const medDataIndex &,const QString &)),
-            this, SIGNAL(updated(const medDataIndex &, const QString&)));
+    connect(reader, SIGNAL(addedIndex(const medDataIndex &,const QString&)),
+            this, SIGNAL(updated(const medDataIndex &, QString)));
     connect(reader, SIGNAL(success(QObject *)),
             message, SLOT(success()));
     connect(reader, SIGNAL(failure(QObject *)),
