@@ -46,19 +46,22 @@ public:
     QList<QStringList> partialAttemptsInfo;
 
     QMap<int, QString> volumeIdToImageFile;
+    
+    QString callerUuid;
 };
 
 QMutex medAbstractDatabaseImporterPrivate::mutex;
 
 //-----------------------------------------------------------------------------------------------------------
 
-medAbstractDatabaseImporter::medAbstractDatabaseImporter ( const QString& file, bool indexWithoutImporting = false ) : medJobItem(), d ( new medAbstractDatabaseImporterPrivate )
+medAbstractDatabaseImporter::medAbstractDatabaseImporter ( const QString& file, bool indexWithoutImporting, const QString& callerUuid ) : medJobItem(), d ( new medAbstractDatabaseImporterPrivate )
 {
     d->isCancelled = false;
     d->lastSuccessfulReaderDescription = "";
     d->lastSuccessfulWriterDescription = "";
     d->file = file;
     d->indexWithoutImporting = indexWithoutImporting;
+    d->callerUuid = callerUuid;
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -93,7 +96,7 @@ bool medAbstractDatabaseImporter::isCancelled ( void )
 
 bool medAbstractDatabaseImporter::indexWithoutImporting ( void )   
 {
-  return d->indexWithoutImporting;
+    return d->indexWithoutImporting;
 }
 
 QList<QStringList>* medAbstractDatabaseImporter::partialAttemptsInfo ( void ) 
@@ -109,6 +112,11 @@ QMap<int, QString> medAbstractDatabaseImporter::volumeIdToImageFile ( void )
 medDataIndex medAbstractDatabaseImporter::index() const
 {
     return d->index;
+}
+
+QString medAbstractDatabaseImporter::callerUuid()
+{
+    return d->callerUuid;
 }
     
 void medAbstractDatabaseImporter::run ( void )
@@ -357,6 +365,15 @@ void medAbstractDatabaseImporter::run ( void )
         QFileInfo aggregatedFileNameFileInfo ( aggregatedFileName );
         QString pathToStoreThumbnails = aggregatedFileNameFileInfo.dir().path() + "/" + aggregatedFileNameFileInfo.completeBaseName() + "/";
         index = this->populateDatabaseAndGenerateThumbnails ( imageDtkData, pathToStoreThumbnails );
+        
+        if(!d->callerUuid.isEmpty())
+        {
+            emit addedIndex ( index, d->callerUuid );
+        }
+        else 
+        {
+            emit addedIndex ( index );
+        }
 
         itPat++;
         itSer++;
@@ -383,7 +400,6 @@ void medAbstractDatabaseImporter::run ( void )
     
     emit progress ( this,100 );
     emit success ( this );
-    emit addedIndex ( index );
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -392,6 +408,8 @@ void medAbstractDatabaseImporter::onCancel ( QObject* )
 {
     d->isCancelled = true;
 }
+
+//-----------------------------------------------------------------------------------------------------------
 
 void medAbstractDatabaseImporter::populateMissingMetadata ( dtkAbstractData* dtkData, const QString seriesDescription )
 {
@@ -642,6 +660,8 @@ QStringList medAbstractDatabaseImporter::getAllFilesToBeProcessed ( QString file
     return fileList;
 }
 
+//-----------------------------------------------------------------------------------------------------------
+
 dtkSmartPointer<dtkAbstractData> medAbstractDatabaseImporter::tryReadImages ( const QStringList& filesPaths,const bool readOnlyImageInformation )
 {
     dtkSmartPointer<dtkAbstractData> dtkData = 0;
@@ -667,7 +687,8 @@ dtkSmartPointer<dtkAbstractData> medAbstractDatabaseImporter::tryReadImages ( co
     return dtkData;
 }
 
-// QString medDatabaseImporter::determineFutureImageFileName(const dtkAbstractData* dtkdata, int volumeNumber)
+//-----------------------------------------------------------------------------------------------------------
+
 QString medAbstractDatabaseImporter::determineFutureImageFileName ( const dtkAbstractData* dtkdata, int volumeNumber )
 {
     // we cache the generated file name corresponding to volume number
@@ -695,6 +716,8 @@ QString medAbstractDatabaseImporter::determineFutureImageFileName ( const dtkAbs
 
     return imageFileName;
 }
+
+//-----------------------------------------------------------------------------------------------------------
 
 QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( const dtkAbstractData* dtkdata )
 {
@@ -726,6 +749,8 @@ QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( c
     return extension;
 }
 
+//-----------------------------------------------------------------------------------------------------------
+
 bool medAbstractDatabaseImporter::tryWriteImage ( QString filePath, dtkAbstractData* imData )
 {
     dtkSmartPointer<dtkAbstractDataWriter> dataWriter = getSuitableWriter ( filePath, imData );
@@ -737,6 +762,8 @@ bool medAbstractDatabaseImporter::tryWriteImage ( QString filePath, dtkAbstractD
     }
     return false;
 }
+
+//-----------------------------------------------------------------------------------------------------------
 
 void medAbstractDatabaseImporter::addAdditionalMetaData ( dtkAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths )
 {
@@ -757,6 +784,8 @@ void medAbstractDatabaseImporter::addAdditionalMetaData ( dtkAbstractData* imDat
 
     imData->addMetaData ( "FileName", aggregatedFileName );
 }
+
+//-----------------------------------------------------------------------------------------------------------
 
 QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const dtkAbstractData* dtkData )
 {

@@ -22,8 +22,6 @@
 
 class dtkAbstractData;
 
-class medDatabaseNonPersistentReaderPrivate;
-
 /**
 * @brief Reads files and adds them to the medNonPersistentDatabase.
 *
@@ -43,26 +41,6 @@ public:
     */
     medDatabaseNonPersistentReader(const QString& file,const QString& callerUuid = QString());
     ~medDatabaseNonPersistentReader();
-
-    /**
-    * Runs the import process based on the input file
-    * or directory given in the constructor
-    **/
-    virtual void run () ;
-    
-    
-signals:
-
-    /**
-    * @brief Signal emitted when the reading is complete (or has failed).
-    *
-    * @param index the new medDatataIndex, or an invalid one
-    * @param callerUuid the identifier from the caller.
-    */
-    void nonPersistentRead(const medDataIndex & index,const QString& callerUuid);
-
-    
-   
 public:
      /**
      * Retrieves patientID. Checks if patient is already in the database
@@ -104,9 +82,8 @@ public:
     bool isPartialImportAttempt ( dtkAbstractData* dtkData );
 
 
-
 private:
-    medDatabaseNonPersistentReaderPrivate *d;
+
 };
 
 
