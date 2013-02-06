@@ -204,7 +204,7 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
         d->fuseView->reset();
         d->fuseView->update();
         this->synchroniseWindowLevel(d->movingView); // This line will synchronise the windowlvl between the movingView and fuseView.
-        this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the movingView and fuseView.
+        this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the fixedView and fuseView.
         d->fuseView->blockSignals(false);
     }
     connect(d->fixedView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
@@ -259,7 +259,7 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
     d->fuseView->reset();
     d->fuseView->update();
     this->synchroniseWindowLevel(d->movingView); // This line will synchronise the windowlvl between the movingView and fuseView.
-    this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the movingView and fuseView.
+    this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the fixedView and fuseView.
     d->fuseView->blockSignals(false);
 
     
