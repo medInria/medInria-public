@@ -35,7 +35,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkBMIAShaderProgramReader_h
 #define bmia_vtkBMIAShaderProgramReader_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 #include "vtkBetterDataReader.h"
 

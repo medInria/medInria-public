@@ -69,7 +69,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkFiberMapper_h
 #define bmia_vtkFiberMapper_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 #include <vtkOpenGLPolyDataMapper.h>
 

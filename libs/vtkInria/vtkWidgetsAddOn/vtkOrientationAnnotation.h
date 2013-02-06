@@ -27,7 +27,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef __vtkOrientationAnnotation_h
 #define __vtkOrientationAnnotation_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkWidgetsAddOnExport.h"
 
 #include "vtkCornerAnnotation.h"
 

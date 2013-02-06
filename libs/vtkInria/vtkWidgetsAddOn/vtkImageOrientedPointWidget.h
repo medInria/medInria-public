@@ -58,7 +58,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef __vtkImageOrientedPointWidget_h
 #define __vtkImageOrientedPointWidget_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkWidgetsAddOnExport.h"
 
 #include "vtk3DWidget.h"
 

@@ -41,7 +41,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkShaderBaseHandle_h
 #define bmia_vtkShaderBaseHandle_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 #include "vtkShaderBase.h"
 

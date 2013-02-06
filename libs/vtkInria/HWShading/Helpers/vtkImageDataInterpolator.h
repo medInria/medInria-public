@@ -52,7 +52,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkImageDataInterpolator_h
 #define bmia_vtkImageDataInterpolator_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHelpersExport.h"
 
 #include <vtkObject.h>
 

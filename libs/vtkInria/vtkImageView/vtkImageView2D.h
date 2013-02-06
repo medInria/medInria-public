@@ -19,7 +19,7 @@
 #ifndef _vtkImageView2D_h_
 #define _vtkImageView2D_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkImageViewExport.h"
 #include "vtkImageView.h"
 #include "vtkInteractorStyleImageView2D.h"
 

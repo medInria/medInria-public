@@ -35,7 +35,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkUniformVec3_h
 #define bmia_vtkUniformVec3_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 #include "vtkShaderUniform.h"
 
@@ -61,4 +61,4 @@ private:
   float Value[3];
 };
 
-#endif
+#endif //bmia_vtkUniformVec3_h

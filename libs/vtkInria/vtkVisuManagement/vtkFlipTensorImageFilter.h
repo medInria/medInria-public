@@ -18,7 +18,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtk_FlipTensorImageFilter_h_
 #define _vtk_FlipTensorImageFilter_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkVisuManagementExport.h"
 
 //#include <vtkDataSetAlgorithm.h>
 #include <vtkThreadedImageAlgorithm.h>

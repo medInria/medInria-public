@@ -18,7 +18,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtkDataSet2DWidget_h_
 #define _vtkDataSet2DWidget_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkImageViewExport.h"
 #include "vtkObject.h"
 #include "vtkCommand.h"
 

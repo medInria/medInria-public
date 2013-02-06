@@ -36,7 +36,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _extension_initialize_h_
 #define _extension_initialize_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 class vtkRenderWindow;
 

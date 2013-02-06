@@ -18,7 +18,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtkRulerWidget_h_
 #define _vtkRulerWidget_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkWidgetsAddOnExport.h"
 #include <vtkInteractorObserver.h>
 
 

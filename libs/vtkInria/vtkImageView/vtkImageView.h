@@ -18,7 +18,7 @@
 #ifndef _vtkImageView_h_
 #define _vtkImageView_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkImageViewExport.h"
 
 #include <vtkObject.h>
 #include <vtkCommand.h>

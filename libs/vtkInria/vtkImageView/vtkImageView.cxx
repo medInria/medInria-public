@@ -517,7 +517,7 @@ void vtkImageView::GetWithinBoundsPosition (double* pos1, double* pos2)
     if (indices[i] < w_extent[2 * i])
     {
       indices[i] = w_extent[2 * i];
-      out_of_bounds=true;#endif
+      out_of_bounds=true;
 
     }
   }

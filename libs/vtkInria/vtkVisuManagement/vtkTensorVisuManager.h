@@ -18,7 +18,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _VTK_TENSOR_VISU_MANAGER_H_
 #define _VTK_TENSOR_VISU_MANAGER_H_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkVisuManagementExport.h"
 
 #include <vtkObject.h>
 

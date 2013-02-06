@@ -3,7 +3,7 @@
 
 #include "vtkCornerAnnotation.h"
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkImageViewExport.h"
 
 class vtkImageView;
 

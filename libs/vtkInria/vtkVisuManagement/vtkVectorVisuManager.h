@@ -18,7 +18,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtk_VectorVisuManager_h_
 #define _vtk_VectorVisuManager_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkVisuManagementExport.h"
 
 #include <vtkCommand.h>
 #include <vtkBoxWidget.h>

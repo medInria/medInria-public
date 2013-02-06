@@ -36,7 +36,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkImageOrthogonalSlicesActor_h
 #define bmia_vtkImageOrthogonalSlicesActor_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHelpersExport.h"
 
 class vtkAlgorithmOutput;
 class vtkImageData;

@@ -39,7 +39,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkDoubleToUCharFilter_h
 #define bmia_vtkDoubleToUCharFilter_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHelpersExport.h"
 
 #include <vtkSimpleImageToImageFilter.h>
 

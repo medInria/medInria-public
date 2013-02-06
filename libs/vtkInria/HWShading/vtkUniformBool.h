@@ -38,7 +38,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkUniformBool_h
 #define bmia_vtkUniformBool_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 #include "vtkShaderUniform.h"
 

@@ -19,7 +19,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef __vtkImageClamp_h
 #define __vtkImageClamp_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkVisuManagementExport.h"
 
 #include "vtkThreadedImageAlgorithm.h"
 

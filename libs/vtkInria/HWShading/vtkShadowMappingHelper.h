@@ -46,7 +46,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkShadowMappingHelper_h
 #define bmia_vtkShadowMappingHelper_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 #include <vtkObject.h>
 

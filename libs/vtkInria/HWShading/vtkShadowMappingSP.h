@@ -36,7 +36,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkShadowMappingSP_h
 #define bmia_vtkShadowMappingSP_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 #include "vtkBMIAShaderProgram.h"
 

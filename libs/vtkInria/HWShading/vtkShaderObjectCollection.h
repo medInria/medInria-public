@@ -35,7 +35,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkShaderObjectCollection_h
 #define bmia_vtkShaderObjectCollection_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 #include <vtkCollection.h>
 #include "vtkShaderObject.h" // for inline methods/static casts

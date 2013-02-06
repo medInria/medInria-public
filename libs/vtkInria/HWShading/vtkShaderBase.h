@@ -53,7 +53,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkShaderBase_h
 #define bmia_vtkShaderBase_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 //#include <GL/glew.h> // for OpenGL types and some functions
 		     // TODO: can this be done without glew?

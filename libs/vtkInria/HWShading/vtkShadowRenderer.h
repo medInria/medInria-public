@@ -43,7 +43,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkShadowRenderer_h
 #define bmia_vtkShadowRenderer_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 #include <vtkOpenGLRenderer.h>
 //#include <GL/glew.h>

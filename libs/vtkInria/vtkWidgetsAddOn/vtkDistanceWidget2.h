@@ -18,7 +18,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtkDistanceWidget2_h_
 #define _vtkDistanceWidget2_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkWidgetsAddOnExport.h"
 #include <vtkLineWidget.h>
 
 class vtkCaptionActor2D;

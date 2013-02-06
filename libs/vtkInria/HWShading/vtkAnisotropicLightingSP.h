@@ -39,7 +39,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkAnisotropicLightingSP_h
 #define bmia_vtkAnisotropicLightingSP_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 #include "vtkBMIAShaderProgram.h"
 

@@ -18,7 +18,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtk_ImageView3DCroppingBoxCallback_h_
 #define _vtk_ImageView3DCroppingBoxCallback_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkImageViewExport.h"
 
 #include <vtkCommand.h>
 #include <vtkVolumeMapper.h>

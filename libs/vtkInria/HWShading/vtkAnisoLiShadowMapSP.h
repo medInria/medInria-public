@@ -45,7 +45,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 //#include "vtkBMIAShaderProgram.h"
 #include "vtkAnisotropicLightingSP.h"
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 /**
  * Shader program that combines anisotropic lighting and shadow mapping.

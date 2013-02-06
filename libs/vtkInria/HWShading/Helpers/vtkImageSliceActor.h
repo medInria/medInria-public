@@ -39,7 +39,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkImageSliceActor_h
 #define bmia_vtkImageSliceActor_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHelpersExport.h"
 
 #include <vtkAssembly.h>
 

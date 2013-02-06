@@ -38,7 +38,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkShadowMappingHelper.h"
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHWShadingExport.h"
 
 /**
  * Shadow mapping helper with a slightly different shader for building

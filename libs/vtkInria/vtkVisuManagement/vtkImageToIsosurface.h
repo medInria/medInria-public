@@ -18,7 +18,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtk_ImageToIsosurface_h_
 #define _vtk_ImageToIsosurface_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkVisuManagementExport.h"
 
 #include <vtkObject.h>
 #include <vtkDataObject.h>

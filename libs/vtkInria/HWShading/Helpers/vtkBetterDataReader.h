@@ -62,7 +62,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef bmia_vtkBetterDataReader_h
 #define bmia_vtkBetterDataReader_h
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkHelpersExport.h"
 
 #include <vtkSource.h>
 

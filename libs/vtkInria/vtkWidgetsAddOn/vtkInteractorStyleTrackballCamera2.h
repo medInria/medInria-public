@@ -7,7 +7,7 @@
 
 #include "vtkInteractorStyleTrackballCamera.h"
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkWidgetsAddOnExport.h"
 
 class vtkTransform;
 

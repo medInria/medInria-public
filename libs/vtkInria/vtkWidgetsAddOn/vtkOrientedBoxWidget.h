@@ -18,7 +18,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtkOrientedBoxWidget_h_
 #define _vtkOrientedBoxWidget_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkWidgetsAddOnExport.h"
 #include "vtkBoxWidget.h"
 
 class vtkMatrix4x4;

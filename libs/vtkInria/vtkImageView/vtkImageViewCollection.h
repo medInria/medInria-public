@@ -18,7 +18,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtkImageViewCollection_h_
 #define _vtkImageViewCollection_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkImageViewExport.h"
 
 #include "vtkCollection.h"
 #include "vtkCommand.h"
