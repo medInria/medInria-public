@@ -19,7 +19,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtkViewImage2DCommand_h_
 #define _vtkViewImage2DCommand_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkRenderingAddOnExport.h"
 
 #include<vtkCommand.h>
 #include<vtkObjectFactory.h>

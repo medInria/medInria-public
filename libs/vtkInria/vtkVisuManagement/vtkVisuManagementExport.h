@@ -2,7 +2,7 @@
 #define VTKVISUMANAGEMENTEXPORT_H
 
 #ifdef WIN32
- #if defined (vtkWidgetsAddOn_EXPORTS)
+ #if defined (vtkVisuManagement_EXPORTS)
   #define VTK_VISUMANAGEMENT_EXPORT __declspec( dllexport )
  #else
   #define VTK_VISUMANAGEMENT_EXPORT __declspec( dllimport )

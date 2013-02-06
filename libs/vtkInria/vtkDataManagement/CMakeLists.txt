@@ -1,3 +1,6 @@
+
+
+
 project(vtkDataManagement)
 
 FIND_PACKAGE(ITK REQUIRED)
@@ -34,16 +37,13 @@ if(vtkInria_USE_PRECOMPILED_HEADERS)
 endif(vtkInria_USE_PRECOMPILED_HEADERS)
 
   # C++ library for the InterfaceManagers
-  
-  message(SHARED)
-  message(vtkInria_LIBS_STYLE \n\n\n\n\n\n)
-  
   ADD_LIBRARY(vtkDataManagement SHARED
-  ${vtkDataManagement_SOURCES_PCH}
-  ${vtkDataManagement_SRCS}
+        ${vtkDataManagement_SOURCES_PCH}
+        ${vtkDataManagement_SRCS}
   )
   
   SET(vtkDataManagement_LIBS
+    ITKCommon
     vtkCommon
     vtkRendering
     vtkWidgets
@@ -60,6 +60,7 @@ endif(vtkInria_USE_PRECOMPILED_HEADERS)
   )
     
   TARGET_LINK_LIBRARIES(vtkDataManagement
+  ${ITK_LIBRARIES}
   ${vtkDataManagement_LIBS}
   )
 

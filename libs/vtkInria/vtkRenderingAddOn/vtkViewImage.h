@@ -19,7 +19,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtkViewImage_h_
 #define _vtkViewImage_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkRenderingAddOnExport.h"
 
 #include <vtkSynchronizedView.h>
 

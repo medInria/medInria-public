@@ -26,9 +26,8 @@ PURPOSE.  See the above copyright notices for more information.
 
 //#include <vtkActor.h>
 
-
-#include <itkMetaDataDictionary.h>
 #include <itkMetaDataObject.h>
+#include <itkMetaDataDictionary.h>
 /**
    \class vtkMetaDataSet vtkMetaDataSet.h "vtkMetaDataSet.h"
    \brief Abstract class for vtkDataset handling

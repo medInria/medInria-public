@@ -19,7 +19,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtkImageTracerWidgetCallback_h_
 #define _vtkImageTracerWidgetCallback_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkRenderingAddOnExport.h"
 
 #include "vtkCommand.h"
 #include "vtkPolyData.h"

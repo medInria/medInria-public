@@ -19,7 +19,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtk_InteractorStyleImage2D_h_
 #define _vtk_InteractorStyleImage2D_h__
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkRenderingAddOnExport.h"
 
 #include <vtkInteractorStyleImage.h>
 #include <vtkRenderingAddOn/vtkViewImage2D.h>

@@ -19,7 +19,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtk_Image3DImagePlaneCallback_h_
 #define _vtk_Image3DImagePlaneCallback_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkRenderingAddOnExport.h"
 
 #include <vtkCommand.h>
 #include <vtkImageReslice.h>

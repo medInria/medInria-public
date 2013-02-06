@@ -19,7 +19,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtkViewImage2DWithTracer_h_
 #define _vtkViewImage2DWithTracer_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkRenderingAddOnExport.h"
 
 #include<vector>
 #include<iostream>

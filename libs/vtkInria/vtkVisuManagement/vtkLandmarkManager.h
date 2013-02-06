@@ -18,7 +18,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtk_LandmarkManager_h_
 #define _vtk_LandmarkManager_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkLandmarkManagementExport.h"
 
 #include <vtkLandmark.h>
 

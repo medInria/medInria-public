@@ -19,7 +19,7 @@ PURPOSE.  See the above copyright notices for more information.
 #ifndef _vtk_ImageBlendWithMask_h_
 #define _vtk_ImageBlendWithMask_h_
 
-#include "vtkINRIA3DConfigure.h"
+#include "vtkRenderingAddOnExport.h"
 
 #include "vtkThreadedImageAlgorithm.h"
 #include "vtkLookupTable.h"
