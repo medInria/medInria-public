@@ -47,7 +47,6 @@ medDatabaseNonPersistentReader::~medDatabaseNonPersistentReader ( void )
 
 QString medDatabaseNonPersistentReader::getPatientID(QString patientName, QString birthDate)
 {
-    //TODO GPR : à reprendre 
     QPointer<medDatabaseNonPersistentControllerImpl> npdc =
             medDatabaseNonPersistentController::instance();
             
