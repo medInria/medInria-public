@@ -124,9 +124,6 @@ ENDIF( NOT VTK_USE_GLSL_SHADERS )
 OPTION (vtkInria_USE_SPHERICALHARMONICS "If ON, compile the SPHERICAL HARMONICS extension of vtkInria." OFF)
 
 IF( vtkInria_USE_SPHERICALHARMONICS )
-  IF( NOT vtkInria_USE_ITK )
-    MESSAGE(FATAL_ERROR " ITK is needed ON to use the Spherical Harmonics Functions Visualization")
-  ENDIF( NOT vtkInria_USE_ITK )
 
   IF(APPLE OR WIN32)
     find_package( Boost REQUIRED)

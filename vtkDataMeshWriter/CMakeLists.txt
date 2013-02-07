@@ -32,6 +32,9 @@ include(dtkPlugin)
 find_package(VTK)
 include(${VTK_USE_FILE})
 
+find_package(ITK)
+include(${ITK_USE_FILE})
+
 #include_directories(../dtkVtkLogForwarder)
 find_package(medInria-plugins REQUIRED)
 include(${medInria-plugins_USE_FILE})
@@ -77,6 +80,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  ${ITK_LIBRARIES}
   dtkVtkLogForwarder
   dtkCore dtkLog
   dtkLog

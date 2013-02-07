@@ -43,6 +43,9 @@ include(${medInria_USE_FILE})
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
 
+find_package(ITK REQUIRED)
+include(${ITK_USE_FILE})
+
 if ( VTK_MAJOR_VERSION LESS 5 OR
      VTK_MINOR_VERSION LESS 8)
     message (SEND_ERROR "VTK 5.8.0 version is needed for the annotations in v3dView, please update to generate the v3dView project.")
@@ -135,6 +138,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  ${ITK_LIBRARIES}
   ${${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES}
   dtkCore dtkLog
   medCore

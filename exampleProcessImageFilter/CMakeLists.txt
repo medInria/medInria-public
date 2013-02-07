@@ -45,6 +45,9 @@ find_package(ITK REQUIRED)
   endif(NOT ITK_USE_REVIEW_STATISTICS)
 include(${ITK_USE_FILE})
 
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
+
 include_directories(../dtkItkLogForwarder)
 include_directories(../v3dView)
 
@@ -82,7 +85,8 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore dtkLog
   medCore
   medGui
-  ${ITK_LIBRARIES})
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES})
 
 dtk_build_doc(exampleProcessImageFilterPlugin)
 
