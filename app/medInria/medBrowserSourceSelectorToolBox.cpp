@@ -25,7 +25,7 @@
 class medBrowserSourceSelectorToolBoxPrivate
 {
 public:
-    QList <QWidget *> additional_widgets;
+    QList <QWidget *> additionalWidgets;
     medToolBoxTab *tab;
 };
 
@@ -46,8 +46,8 @@ medBrowserSourceSelectorToolBox::~medBrowserSourceSelectorToolBox(void)
 
 void medBrowserSourceSelectorToolBox::addTab(QString tabName, QWidget *widget, QString description)
 {
-	d->additional_widgets.push_back(widget);
-	int i = d->tab->addTab(d->additional_widgets.back(), tabName);
+    d->additionalWidgets.push_back(widget);
+    int i = d->tab->addTab(d->additionalWidgets.back(), tabName);
 	d->tab->setTabToolTip (i, description);
 }
 

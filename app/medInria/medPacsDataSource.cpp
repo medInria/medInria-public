@@ -19,14 +19,14 @@ public:
     medPacsWidget* pacsWidget;
 
     // selector
-    medPacsSelector* pacs_selector;
+    medPacsSelector* pacsSelector;
 
-    // specific toolboxes
+    // specific toolBoxes
     medBrowserPacsHostToolBox *pacsHostToolBox;
     medBrowserPacsNodesToolBox *pacsNodesToolBox;
     medBrowserPacsSearchToolBox *pacsSearchToolBox;
 
-    QList<medToolBox*> toolboxes;
+    QList<medToolBox*> toolBoxes;
 };
 
 medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(parent), d(new medPacsDataSourcePrivate)
@@ -35,19 +35,19 @@ medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(pa
     //pacsWidget is a widget, and its parent is the browserArea,
     //see destructor.
     d->pacsWidget = new medPacsWidget(parent);
-    d->pacs_selector = new medPacsSelector(d->pacsWidget);
+    d->pacsSelector = new medPacsSelector(d->pacsWidget);
     d->pacsHostToolBox = new medBrowserPacsHostToolBox(d->pacsWidget);
-    d->toolboxes.push_back(d->pacsHostToolBox);
+    d->toolBoxes.push_back(d->pacsHostToolBox);
     d->pacsNodesToolBox = new medBrowserPacsNodesToolBox(d->pacsWidget);
-    d->toolboxes.push_back(d->pacsNodesToolBox);
+    d->toolBoxes.push_back(d->pacsNodesToolBox);
     d->pacsSearchToolBox = new medBrowserPacsSearchToolBox(d->pacsWidget);
-    d->toolboxes.push_back(d->pacsSearchToolBox);
+    d->toolBoxes.push_back(d->pacsSearchToolBox);
 
     connect(d->pacsWidget, SIGNAL(moveList(const QVector<medMoveCommandItem>&)), this, SLOT(onPacsMove(const QVector<medMoveCommandItem>&)));
     connect(d->pacsWidget, SIGNAL(import(QString)), this, SIGNAL(dataToImportReceived(QString)));
 
-    connect(d->pacsNodesToolBox, SIGNAL(nodesUpdated()), d->pacs_selector, SLOT(updateList()));
-    connect(d->pacs_selector, SIGNAL(selectionChanged(QVector<int>)), d->pacsWidget, SLOT(updateSelectedNodes(QVector<int>)));
+    connect(d->pacsNodesToolBox, SIGNAL(nodesUpdated()), d->pacsSelector, SLOT(updateList()));
+    connect(d->pacsSelector, SIGNAL(selectionChanged(QVector<int>)), d->pacsWidget, SLOT(updateSelectedNodes(QVector<int>)));
 
     connect(d->pacsNodesToolBox, SIGNAL(echoRequest()), d->pacsWidget, SLOT(onEchoRequest()));
     connect(d->pacsWidget, SIGNAL(echoResponse(QVector<bool>)), d->pacsNodesToolBox, SLOT(onEchoResponse(QVector<bool>)));
@@ -73,7 +73,7 @@ QWidget* medPacsDataSource::mainViewWidget()
 
 QWidget* medPacsDataSource::sourceSelectorWidget()
 {
-    return d->pacs_selector;
+    return d->pacsSelector;
 }
 
 QString medPacsDataSource::tabName()
@@ -81,9 +81,9 @@ QString medPacsDataSource::tabName()
     return tr("Pacs");
 }
 
-QList<medToolBox*> medPacsDataSource::getToolboxes()
+QList<medToolBox*> medPacsDataSource::getToolBoxes()
 {
-    return d->toolboxes;
+    return d->toolBoxes;
 }
 
 QString medPacsDataSource::description(void) const

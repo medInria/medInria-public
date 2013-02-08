@@ -51,10 +51,10 @@
 medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new medWorkspaceAreaPrivate)
 {
     // -- Internal logic
-    d->current_patient = medDataIndex();
-    d->current_workspace_name = "";
-    d->current_workspace = 0;
-    d->current_layout = medViewerWorkspace::LeftDbRightTb;
+    d->currentPatient = medDataIndex();
+    d->currentWorkspaceName = "";
+    d->currentWorkspace = 0;
+    d->currentLayout = medViewerWorkspace::LeftDbRightTb;
 
     d->splitter = new QSplitter(this);
     d->splitter->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
@@ -64,54 +64,54 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->stack = new QStackedWidget(this);
     d->stack->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    d->patient_toolbox = new medPatientSelectorToolBox(this);
-    d->patient_toolbox->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
-    d->patient_toolbox->setFixedWidth(176); // 186 - 10
+    d->patientToolBox = new medPatientSelectorToolBox(this);
+    d->patientToolBox->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
+    d->patientToolBox->setFixedWidth(176); // 186 - 10
 
 
     // Setting up toolbox container
-    d->toolbox_container = new medToolBoxContainer(this);
-    d->toolbox_container->setOrientation(Qt::Vertical);
-    d->toolbox_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-    d->toolbox_container->setMinimumWidth(320);
+    d->toolBoxContainer = new medToolBoxContainer(this);
+    d->toolBoxContainer->setOrientation(Qt::Vertical);
+    d->toolBoxContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    d->toolBoxContainer->setMinimumWidth(320);
 
     // Setting up view container
-    d->view_container = new QWidget(this);
-    QVBoxLayout *view_container_layout = new QVBoxLayout(d->view_container);
-    view_container_layout->setContentsMargins(0, 0, 0, 0);
-    view_container_layout->addWidget(d->stack);
+    d->viewContainer = new QWidget(this);
+    QVBoxLayout *viewContainerLayout = new QVBoxLayout(d->viewContainer);
+    viewContainerLayout->setContentsMargins(0, 0, 0, 0);
+    viewContainerLayout->addWidget(d->stack);
 
 
     // Setting up navigator container
-    d->navigator_container = new QFrame(this);
-    d->navigator_container->setObjectName("medNavigatorContainer");
-    d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    d->navigator_container->setFixedWidth(186);
+    d->navigatorContainer = new QFrame(this);
+    d->navigatorContainer->setObjectName("medNavigatorContainer");
+    d->navigatorContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    d->navigatorContainer->setFixedWidth(186);
 
     // Setting up navigator
     medDatabaseNavigatorController::instance()->setOrientation( Qt::Vertical );
-    d->navigator = new medDatabaseNavigator(d->navigator_container);
+    d->navigator = new medDatabaseNavigator(d->navigatorContainer);
 
     // First argument is the target, last is the parent.
-    d->navigator_animation = new QPropertyAnimation (d->navigator, "geometry", d->view_container);
-    d->navigator_animation->setDuration (500);
-    d->navigator_animation->setEasingCurve (QEasingCurve::OutQuad);
+    d->navigatorAnimation = new QPropertyAnimation (d->navigator, "geometry", d->viewContainer);
+    d->navigatorAnimation->setDuration (500);
+    d->navigatorAnimation->setEasingCurve (QEasingCurve::OutQuad);
 
-    // d->navigator_container_layout = 0;
-    d->navigator_container_layout = new QGridLayout(d->navigator_container);
-    d->navigator_container_layout->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
-    d->navigator_container_layout->setContentsMargins(0, 0, 0, 0);
-    d->navigator_container_layout->setSpacing(0);
-    d->navigator_container_layout->addWidget(d->patient_toolbox, 0, 0);
-    d->navigator_container_layout->addWidget(d->navigator, 1, 0);
+    // d->navigatorContainerLayout = 0;
+    d->navigatorContainerLayout = new QGridLayout(d->navigatorContainer);
+    d->navigatorContainerLayout->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
+    d->navigatorContainerLayout->setContentsMargins(0, 0, 0, 0);
+    d->navigatorContainerLayout->setSpacing(0);
+    d->navigatorContainerLayout->addWidget(d->patientToolBox, 0, 0);
+    d->navigatorContainerLayout->addWidget(d->navigator, 1, 0);
 
     //Set up viewer layout
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(d->splitter);
     setLayout(layout);
-    d->splitter->addWidget(d->navigator_container);
-    d->splitter->addWidget(d->view_container);
-    d->splitter->addWidget(d->toolbox_container);
+    d->splitter->addWidget(d->navigatorContainer);
+    d->splitter->addWidget(d->viewContainer);
+    d->splitter->addWidget(d->toolBoxContainer);
 
     //restore previous splitter position.
     d->restoreSplitterSize(Qt::Horizontal);
@@ -126,7 +126,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
     this->addAction(transFunAction);
 
-    connect (d->patient_toolbox,          SIGNAL (patientIndexChanged(const medDataIndex&)),
+    connect (d->patientToolBox,          SIGNAL (patientIndexChanged(const medDataIndex&)),
         this, SLOT(switchToPatient(const medDataIndex&)));
 
     //Avoid double triggering between update and dataAdded/Removed.
@@ -136,14 +136,14 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->navigator,
              SLOT (updateNavigator (const medDataIndex&)));
 
-    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->patient_toolbox,
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->patientToolBox,
              SLOT (setupDatabase ()));
-    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->patient_toolbox,
+    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->patientToolBox,
              SLOT (setupDatabase ()));
 
-    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->patient_toolbox,
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->patientToolBox,
              SLOT (setPatientIndex (const medDataIndex&)));
-    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->patient_toolbox,
+    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->patientToolBox,
              SLOT (setPatientIndex (const medDataIndex&)));
 
 /*
@@ -175,7 +175,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 medWorkspaceArea::~medWorkspaceArea(void)
 {
 
-    d->saveSplitterSize(d->current_workspace->layoutType());
+    d->saveSplitterSize(d->currentWorkspace->layoutType());
 
     delete d;
 
@@ -212,11 +212,11 @@ bool medWorkspaceArea::openInTab(const medDataIndex &index)
         medDataManager *dataManager = medDataManager::instance();
         medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
         QString createdName = dbc->metaData(index,medMetaDataKeys::PatientName.key());
-        createdName = d->current_workspace->addMultiContainer(createdName);
-        d->current_workspace->stackedViewContainers()->setContainer(createdName);
+        createdName = d->currentWorkspace->addMultiContainer(createdName);
+        d->currentWorkspace->stackedViewContainers()->setContainer(createdName);
     }
     else
-        d->current_workspace->stackedViewContainers()->changeCurrentContainerType("Multi");
+        d->currentWorkspace->stackedViewContainers()->changeCurrentContainerType("Multi");
 
     return this->open(index);
 }
@@ -354,7 +354,7 @@ void medWorkspaceArea::onFileOpenedInTab(const medDataIndex &index)
 void medWorkspaceArea::onViewClosed(void)
 {
     if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
-        QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
+        QList<medToolBox *> toolboxes = d->toolBoxContainer->toolBoxes();
         foreach( medToolBox *tb, toolboxes)
             tb->update(NULL);
 
@@ -369,7 +369,7 @@ void medWorkspaceArea::onDataRemoved(int layer)
     //JGG qDebug()<< "Removing layer ";
     Q_UNUSED(layer);
     if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
-        QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
+        QList<medToolBox *> toolboxes = d->toolBoxContainer->toolBoxes();
         foreach( medToolBox *tb, toolboxes)
             tb->update(view);
     }
@@ -378,12 +378,12 @@ void medWorkspaceArea::onDataRemoved(int layer)
 
 void medWorkspaceArea::switchToPatient(const medDataIndex& id )
 {
-    if(!id.isValid()  || d->current_patient.patientId() == id.patientId() ||
+    if(!id.isValid()  || d->currentPatient.patientId() == id.patientId() ||
        id.patientId() < 0)
         return;
 
 
-    if (d->current_patient.isValid())
+    if (d->currentPatient.isValid())
     {
         //clear the confs if needed:
         medSettingsManager * mnger = medSettingsManager::instance();
@@ -412,9 +412,9 @@ void medWorkspaceArea::switchToPatient(const medDataIndex& id )
                 default:
                     //not switching
                     //set the patient toolbox back to the current patient
-                    d->patient_toolbox->blockSignals (true);
-                    d->patient_toolbox->setPatientIndex(d->current_patient);
-                    d->patient_toolbox->blockSignals (false);
+                    d->patientToolBox->blockSignals (true);
+                    d->patientToolBox->setPatientIndex(d->currentPatient);
+                    d->patientToolBox->blockSignals (false);
                     return;
                     break;
                 }
@@ -429,12 +429,12 @@ void medWorkspaceArea::switchToPatient(const medDataIndex& id )
     }
 
 
-    d->current_patient = id;
+    d->currentPatient = id;
 
     // Setup navigator
 
     if (d->navigator) {
-        d->navigator->onItemClicked(d->current_patient);
+        d->navigator->onItemClicked(d->currentPatient);
         // We can't use the animation here:
         // if a volume is opened from the browser
         // and the workspaceArea has never been shown, the navigator goes outside
@@ -448,17 +448,17 @@ void medWorkspaceArea::switchToPatient(const medDataIndex& id )
 //            startGeometry.setX (endGeometry.x()+1000);
 //        qDebug()<<"startGeometry:" << startGeometry;
 //        qDebug()<<"endGeometry"<< endGeometry;
-//        d->navigator_animation->setStartValue(startGeometry);
-//        d->navigator_animation->setEndValue(endGeometry);
-//        d->navigator_animation->start();
+//        d->navigatorAnimation->setStartValue(startGeometry);
+//        d->navigatorAnimation->setEndValue(endGeometry);
+//        d->navigatorAnimation->start();
     }
 
     // Setup patient toolbox
-    d->patient_toolbox->blockSignals (true);
-    d->patient_toolbox->setPatientIndex (
+    d->patientToolBox->blockSignals (true);
+    d->patientToolBox->setPatientIndex (
                 medDataIndex::makePatientIndex(id.dataSourceId(),
                                                id.patientId()));
-    d->patient_toolbox->blockSignals (false);
+    d->patientToolBox->blockSignals (false);
 }
 
 void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* stack)
@@ -483,25 +483,25 @@ void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* st
 void medWorkspaceArea::switchToContainer(const QString& name)
 {
 //    qDebug() << "switching from"
-//             << d->current_workspace->currentViewContainerName()
-//             << d->current_workspace->currentViewContainer()
+//             << d->currentWorkspace->currentViewContainerName()
+//             << d->currentWorkspace->currentViewContainer()
 //             << "to container" << name
-//             << d->current_workspace->stackedViewContainers()->container(name);
-    if (d->current_workspace)
+//             << d->currentWorkspace->stackedViewContainers()->container(name);
+    if (d->currentWorkspace)
     {
         medViewContainer * root = this->currentRootContainer();
 
 //        root->current()->clearFocus();
         root->current()->setFocus(Qt::MouseFocusReason);
         if ( (root==NULL) || (root ==
-             d->current_workspace->stackedViewContainers()->container(name)) )
+             d->currentWorkspace->stackedViewContainers()->container(name)) )
         {
 //            qDebug() << "same conf do nothing";
             //same conf, do nothing
             return;
         }
 
-        d->current_workspace->setCurrentViewContainer(name);
+        d->currentWorkspace->setCurrentViewContainer(name);
         root->setFocus(Qt::MouseFocusReason);
     }
     else
@@ -523,19 +523,19 @@ void medWorkspaceArea::switchToContainerPreset(int index)
             dynamic_cast<medCustomViewContainer *>( root );
         if ( custom ) {
             custom->setPreset(index);
-            d->current_workspace->setCustomPreset(index);
+            d->currentWorkspace->setCustomPreset(index);
         }
     }
 }
 
 void medWorkspaceArea::addToolBox(medToolBox *toolbox)
 {
-    d->toolbox_container->addToolBox(toolbox);
+    d->toolBoxContainer->addToolBox(toolbox);
 }
 
 void medWorkspaceArea::removeToolBox(medToolBox *toolbox)
 {
-    d->toolbox_container->removeToolBox(toolbox);
+    d->toolBoxContainer->removeToolBox(toolbox);
 }
 
 void medWorkspaceArea::onViewFocused(dtkAbstractView *view)
@@ -580,7 +580,7 @@ void medWorkspaceArea::onViewFocused(dtkAbstractView *view)
     }
 
     // Update toolboxes
-    QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
+    QList<medToolBox *> toolboxes = d->toolBoxContainer->toolBoxes();
     foreach( medToolBox *tb, toolboxes)
     {
         tb->update(view);
@@ -589,10 +589,10 @@ void medWorkspaceArea::onViewFocused(dtkAbstractView *view)
 
 medViewContainer *medWorkspaceArea::currentRootContainer(void)
 {
-    if ( d->current_workspace == NULL )
+    if ( d->currentWorkspace == NULL )
         return NULL;
 
-    return d->current_workspace->currentViewContainer();
+    return d->currentWorkspace->currentViewContainer();
 }
 
 medViewContainer *medWorkspaceArea::currentContainerFocused(void)
@@ -675,18 +675,18 @@ void medWorkspaceArea::updateTransferFunction()
 void medWorkspaceArea::setupWorkspace(QString name)
 {
     //    qDebug() << "setupWorkspace to :" << name;
-    if (d->current_workspace_name == name)
+    if (d->currentWorkspaceName == name)
         return;
 
     // clear the current config if needed
     /*
-    if (d->current_workspace) {
+    if (d->currentWorkspace) {
         medSettingsManager * mnger = medSettingsManager::instance();
         bool clear = mnger->value("system","clearOnPatientChange",QVariant(false)).toBool();
         if (clear)
         {
             qDebug()<<"clearing the containers on workspace switch";
-            d->current_workspace->clear();
+            d->currentWorkspace->clear();
         }
     }
 */
@@ -707,12 +707,12 @@ void medWorkspaceArea::setupWorkspace(QString name)
     if (!workspace)
         return;
 
-    d->current_workspace = workspace;
-    d->current_workspace_name = name;
+    d->currentWorkspace = workspace;
+    d->currentWorkspaceName = name;
 
     //clean toolboxes
-    d->toolbox_container->hide();
-    d->toolbox_container->clear();
+    d->toolBoxContainer->hide();
+    d->toolBoxContainer->clear();
 
     //setup layout
     switchToLayout (workspace->layoutType());
@@ -738,7 +738,7 @@ void medWorkspaceArea::setupWorkspace(QString name)
     }
 
     //setup database visibility
-    d->navigator_container->setVisible( workspace->isDatabaseVisible() );
+    d->navigatorContainer->setVisible( workspace->isDatabaseVisible() );
 
     // add toolboxes
 
@@ -747,19 +747,19 @@ void medWorkspaceArea::setupWorkspace(QString name)
         toolbox->show();
     }
 
-    d->toolbox_container->setVisible( workspace->areToolBoxesVisible() );
+    d->toolBoxContainer->setVisible( workspace->areToolBoxesVisible() );
 
     /*
-      if (d->toolbox_container->toolBoxes().count()) {
-      QPropertyAnimation *animation = new QPropertyAnimation(d->toolbox_container, "geometry");
+      if (d->toolBoxContainer->toolBoxes().count()) {
+      QPropertyAnimation *animation = new QPropertyAnimation(d->toolBoxContainer, "geometry");
       animation->setDuration(500);
-      if (d->toolbox_container->orientation()==medToolBoxContainer::Vertical)  {
-      animation->setStartValue(QRect(d->toolbox_container->x(), 1000, d->toolbox_container->width(), d->toolbox_container->height()));
-      animation->setEndValue(QRect(d->toolbox_container->x(), 0, d->toolbox_container->width(), d->toolbox_container->height()));
+      if (d->toolBoxContainer->orientation()==medToolBoxContainer::Vertical)  {
+      animation->setStartValue(QRect(d->toolBoxContainer->x(), 1000, d->toolBoxContainer->width(), d->toolBoxContainer->height()));
+      animation->setEndValue(QRect(d->toolBoxContainer->x(), 0, d->toolBoxContainer->width(), d->toolBoxContainer->height()));
       }
       else {
-      animation->setStartValue(QRect(1000, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
-      animation->setEndValue(QRect(0, d->toolbox_container->y(), d->toolbox_container->width(), d->toolbox_container->height()));
+      animation->setStartValue(QRect(1000, d->toolBoxContainer->y(), d->toolBoxContainer->width(), d->toolBoxContainer->height()));
+      animation->setEndValue(QRect(0, d->toolBoxContainer->y(), d->toolBoxContainer->width(), d->toolBoxContainer->height()));
       }
       animation->setEasingCurve(QEasingCurve::OutQuad);
       animation->start();
@@ -775,14 +775,14 @@ void medWorkspaceArea::setupWorkspace(QString name)
 
 void medWorkspaceArea::switchToLayout (medViewerWorkspace::LayoutType layout)
 {
-    if (d->current_layout==layout)
+    if (d->currentLayout==layout)
         return;
 
 
     //save previous splitter size
-    d->saveSplitterSize(d->current_layout);
+    d->saveSplitterSize(d->currentLayout);
 
-    d->current_layout = layout;
+    d->currentLayout = layout;
 
     //setup orientation
     switch (layout){
@@ -790,23 +790,23 @@ void medWorkspaceArea::switchToLayout (medViewerWorkspace::LayoutType layout)
         case medViewerWorkspace::TopTbBottomDb:
            {
 
-         d->navigator_container_layout->removeWidget ( d->patient_toolbox );
-         d->navigator_container_layout->removeWidget ( d->navigator );
+         d->navigatorContainerLayout->removeWidget ( d->patientToolBox );
+         d->navigatorContainerLayout->removeWidget ( d->navigator );
 
          d->navigator->setOrientation (Qt::Horizontal);
 
-         d->navigator_container_layout->addWidget (d->patient_toolbox, 0, 0);
-         d->navigator_container_layout->addWidget (d->navigator, 0, 1);
+         d->navigatorContainerLayout->addWidget (d->patientToolBox, 0, 0);
+         d->navigatorContainerLayout->addWidget (d->navigator, 0, 1);
              //width must be fixed or the navigator doesn't grow
              //back when changing orientation again
-             d->navigator_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-             d->navigator_container->setFixedHeight(186);
-             d->navigator_container->setFixedWidth(QWIDGETSIZE_MAX);
+             d->navigatorContainer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+             d->navigatorContainer->setFixedHeight(186);
+             d->navigatorContainer->setFixedWidth(QWIDGETSIZE_MAX);
 
-         d->toolbox_container->setOrientation(Qt::Horizontal);
-             d->toolbox_container->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-             d->toolbox_container->setMinimumHeight(200);
-             d->toolbox_container->setFixedWidth(QWIDGETSIZE_MAX);
+         d->toolBoxContainer->setOrientation(Qt::Horizontal);
+             d->toolBoxContainer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+             d->toolBoxContainer->setMinimumHeight(200);
+             d->toolBoxContainer->setFixedWidth(QWIDGETSIZE_MAX);
              d->restoreSplitterSize(Qt::Vertical);
            }
             break;
@@ -816,22 +816,22 @@ void medWorkspaceArea::switchToLayout (medViewerWorkspace::LayoutType layout)
         default:
            {
 
-         d->navigator_container_layout->removeWidget ( d->patient_toolbox );
-         d->navigator_container_layout->removeWidget ( d->navigator );
+         d->navigatorContainerLayout->removeWidget ( d->patientToolBox );
+         d->navigatorContainerLayout->removeWidget ( d->navigator );
 
          d->navigator->setOrientation (Qt::Vertical);
 
-         d->navigator_container_layout->addWidget (d->patient_toolbox, 0, 0);
-         d->navigator_container_layout->addWidget (d->navigator, 1, 0);
+         d->navigatorContainerLayout->addWidget (d->patientToolBox, 0, 0);
+         d->navigatorContainerLayout->addWidget (d->navigator, 1, 0);
 
-             d->navigator_container->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-             d->navigator_container->setFixedWidth(186);
-             d->navigator_container->setFixedHeight(QWIDGETSIZE_MAX);
+             d->navigatorContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+             d->navigatorContainer->setFixedWidth(186);
+             d->navigatorContainer->setFixedHeight(QWIDGETSIZE_MAX);
 
-         d->toolbox_container->setOrientation(Qt::Vertical);
-             d->toolbox_container->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-             d->toolbox_container->setMinimumWidth(320);
-             d->toolbox_container->setMinimumHeight (QWIDGETSIZE_MAX);
+         d->toolBoxContainer->setOrientation(Qt::Vertical);
+             d->toolBoxContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+             d->toolBoxContainer->setMinimumWidth(320);
+             d->toolBoxContainer->setMinimumHeight (QWIDGETSIZE_MAX);
              d->restoreSplitterSize(Qt::Horizontal);
            }
 
@@ -841,15 +841,15 @@ void medWorkspaceArea::switchToLayout (medViewerWorkspace::LayoutType layout)
     switch (layout){
         case medViewerWorkspace::TopDbBottomTb:
         case medViewerWorkspace::LeftDbRightTb:
-            d->splitter->insertWidget(0,d->navigator_container);
-            d->splitter->insertWidget(2,d->toolbox_container);
+            d->splitter->insertWidget(0,d->navigatorContainer);
+            d->splitter->insertWidget(2,d->toolBoxContainer);
         break;
 
         case medViewerWorkspace::TopTbBottomDb:
         case medViewerWorkspace::LeftTbRightDb:
         default:
-            d->splitter->insertWidget(0,d->toolbox_container);
-            d->splitter->insertWidget(2,d->navigator_container);
+            d->splitter->insertWidget(0,d->toolBoxContainer);
+            d->splitter->insertWidget(2,d->navigatorContainer);
         break;
     }
 
@@ -883,11 +883,11 @@ void medWorkspaceAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
             //viewcontainer size
             int containerSize = QWIDGETSIZE_MAX -
                 navigator->minimumWidth()-
-                toolbox_container->minimumWidth();
+                toolBoxContainer->minimumWidth();
             QList<int> sizes;
             sizes.append(navigator->minimumWidth());
             sizes.append(containerSize);
-            sizes.append(toolbox_container->minimumWidth());
+            sizes.append(toolBoxContainer->minimumWidth());
             splitter->setSizes(sizes);
         }
         splitter->setOrientation(Qt::Horizontal);
@@ -901,11 +901,11 @@ void medWorkspaceAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
             //viewcontainer size
             int containerSize = QWIDGETSIZE_MAX -
                 navigator->minimumHeight() -
-                toolbox_container->minimumHeight();
+                toolBoxContainer->minimumHeight();
             QList<int> sizes;
             sizes.append(navigator->minimumHeight());
             sizes.append(containerSize);
-            sizes.append(toolbox_container->minimumHeight());
+            sizes.append(toolBoxContainer->minimumHeight());
             splitter->setSizes(sizes);
         }
         splitter->setOrientation(Qt::Vertical);

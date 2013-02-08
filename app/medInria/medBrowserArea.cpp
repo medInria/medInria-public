@@ -57,12 +57,12 @@ public:
     medFileSystemDataSource* fsSource;
     medPacsDataSource* pacsSource;
 
-    medToolBoxContainer *toolbox_container;
+    medToolBoxContainer *toolboxContainer;
     medBrowserJobsToolBox *jobsToolBox;
     medBrowserSourceSelectorToolBox *sourceSelectorToolBox;
-    medCompositeDataSetImporterSelectorToolBox *toolbox_compositeimporter;
+    medCompositeDataSetImporterSelectorToolBox *toolboxCompositeimporter;
 
-    QList <medAbstractDataSource *> data_sources;
+    QList <medAbstractDataSource *> dataSources;
 
     QStackedWidget *stack;
     QStatusBar *status;
@@ -93,9 +93,9 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // Toolbox container /////////////////////////////////////////////
 
-    d->toolbox_container = new medToolBoxContainer(this);
-    d->toolbox_container->setFixedWidth(300);
-    d->toolbox_container->addToolBox(d->sourceSelectorToolBox);
+    d->toolboxContainer = new medToolBoxContainer(this);
+    d->toolboxContainer->setFixedWidth(300);
+    d->toolboxContainer->addToolBox(d->sourceSelectorToolBox);
 
     // static data sources ////////////////
 
@@ -138,21 +138,21 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     }
 
     // Jobs should be added as the last item so that they appear at the bottom
-    d->toolbox_container->addToolBox(d->jobsToolBox);
+    d->toolboxContainer->addToolBox(d->jobsToolBox);
 
     connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
 
-    d->toolbox_compositeimporter = new medCompositeDataSetImporterSelectorToolBox(this);
-    d->toolbox_compositeimporter->setVisible(true);
-    d->toolbox_container->addToolBox(d->toolbox_compositeimporter);
+    d->toolboxCompositeimporter = new medCompositeDataSetImporterSelectorToolBox(this);
+    d->toolboxCompositeimporter->setVisible(true);
+    d->toolboxContainer->addToolBox(d->toolboxCompositeimporter);
 
     // Layout /////////////////////////////////////////////
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(d->stack);
-    layout->addWidget(d->toolbox_container);
+    layout->addWidget(d->toolboxContainer);
 
     // make toolboxes visible
     onSourceIndexChanged(d->stack->currentIndex());
@@ -173,7 +173,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
 medBrowserArea::~medBrowserArea(void)
 {
-    foreach(medAbstractDataSource* source, d->data_sources)
+    foreach(medAbstractDataSource* source, d->dataSources)
     {
         source->deleteLater();
     }
@@ -261,20 +261,20 @@ void medBrowserArea::onSourceIndexChanged(int index)
 
 void medBrowserArea::setToolBoxesVisible(int index, bool visible )
 {
-    QList<medToolBox*> toolBoxes = d->data_sources[index]->getToolboxes();
+    QList<medToolBox*> toolBoxes = d->dataSources[index]->getToolBoxes();
     foreach(medToolBox* toolBox, toolBoxes)
         toolBox->setVisible(visible);
 }
 
 void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
 {
-    d->data_sources.push_back(dataSource);
+    d->dataSources.push_back(dataSource);
     d->stack->addWidget(dataSource->mainViewWidget());
     d->sourceSelectorToolBox->addTab(dataSource->tabName(),dataSource->sourceSelectorWidget(),dataSource->description());
-    QList<medToolBox*> toolBoxes = dataSource->getToolboxes();
+    QList<medToolBox*> toolBoxes = dataSource->getToolBoxes();
     foreach(medToolBox* toolBox, toolBoxes) {
         toolBox->setVisible(false);
-        d->toolbox_container->addToolBox(toolBox);
+        d->toolboxContainer->addToolBox(toolBox);
     }
 
     connect(dataSource,SIGNAL(dataToImportReceived(QString)),this,SLOT(onFileImport(QString)));
@@ -318,12 +318,12 @@ void medBrowserArea::onExportData(const medDataIndex &index)
 
 void medBrowserArea::addToolBox(medToolBox *toolbox)
 {
-    d->toolbox_container->addToolBox(toolbox);
+    d->toolboxContainer->addToolBox(toolbox);
 }
 
 void medBrowserArea::removeToolBox(medToolBox *toolbox)
 {
-    d->toolbox_container->removeToolBox(toolbox);
+    d->toolboxContainer->removeToolBox(toolbox);
 }
 
 void medBrowserArea::onDataRemoved( const medDataIndex &index )

@@ -8,32 +8,32 @@
 class medFileSystemDataSourcePrivate
 {
 public:
-    QWidget *filesystem_widget;
+    QWidget *filesystemWidget;
     dtkFinder *finder;
     dtkFinderPathBar *path;
     dtkFinderSideView *side;
     dtkFinderToolBar *toolbar;
-    QList<medToolBox*> toolboxes;
+    QList<medToolBox*> toolBoxes;
     medActionsToolBox* actionsToolBox;
     QLabel * infoText;
 };
 
 medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
 {
-    d->filesystem_widget = new QWidget(parent);
+    d->filesystemWidget = new QWidget(parent);
 
-    d->finder = new dtkFinder (d->filesystem_widget);
+    d->finder = new dtkFinder (d->filesystemWidget);
     d->finder->allowFileBookmarking(false);
     d->finder->allowMultipleSelection(true);
     d->finder->setPath(QDir::homePath());
 
-    d->path = new dtkFinderPathBar (d->filesystem_widget);
+    d->path = new dtkFinderPathBar (d->filesystemWidget);
     d->path->setPath(QDir::homePath());
 
-    d->toolbar = new dtkFinderToolBar (d->filesystem_widget);
+    d->toolbar = new dtkFinderToolBar (d->filesystemWidget);
     d->toolbar->setPath(QDir::homePath());
 
-    d->infoText = new QLabel(d->filesystem_widget);
+    d->infoText = new QLabel(d->filesystemWidget);
     d->infoText->setText("");
     d->infoText->setVisible(false);
     d->infoText->setTextFormat(Qt::RichText);
@@ -52,7 +52,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
                 );
 
     d->actionsToolBox = new medActionsToolBox(parent);
-    d->toolboxes.push_back(d->actionsToolBox);
+    d->toolBoxes.push_back(d->actionsToolBox);
 
     d->side = new dtkFinderSideView;
     d->side->setStyleSheet(
@@ -125,7 +125,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     toolbar_layout->addWidget  (d->toolbar);
     toolbar_layout->addWidget  (d->path);
 
-    QVBoxLayout *filesystem_layout = new QVBoxLayout(d->filesystem_widget);
+    QVBoxLayout *filesystem_layout = new QVBoxLayout(d->filesystemWidget);
     filesystem_layout->setContentsMargins(10, 10, 10, 10);
     filesystem_layout->setSpacing(0);
     filesystem_layout->addLayout (toolbar_layout);
@@ -178,7 +178,7 @@ medFileSystemDataSource::~medFileSystemDataSource()
 
 QWidget* medFileSystemDataSource::mainViewWidget()
 {
-    return d->filesystem_widget;
+    return d->filesystemWidget;
 }
 
 QWidget* medFileSystemDataSource::sourceSelectorWidget()
@@ -191,9 +191,9 @@ QString medFileSystemDataSource::tabName()
     return tr("File system");
 }
 
-QList<medToolBox*> medFileSystemDataSource::getToolboxes()
+QList<medToolBox*> medFileSystemDataSource::getToolBoxes()
 {
-    return d->toolboxes;
+    return d->toolBoxes;
 }
 
 QString medFileSystemDataSource::description(void) const
