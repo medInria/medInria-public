@@ -51,7 +51,7 @@ public slots:
     void switchFullScreen(void);
 
     void switchToBrowserArea(void);
-    void switchToworkspaceArea(void);
+    void switchToWorkspaceArea(void);
     void switchToHomepageArea(void);
 
     void onShowWorkspace(QString workspace);

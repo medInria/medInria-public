@@ -366,7 +366,7 @@ void medMainWindow::readSettings ( void )
         break;
 
     case 2:
-        this->switchToworkspaceArea();
+        this->switchToWorkspaceArea();
         break;
 
     default:
@@ -565,7 +565,7 @@ void medMainWindow::switchToBrowserArea ( void )
     d->stack->setCurrentWidget ( d->browserArea );
 }
 
-void medMainWindow::switchToworkspaceArea ( void )
+void medMainWindow::switchToWorkspaceArea ( void )
 {
     if (d->quickAccessVisible)
         this->onHideQuickAccess();
@@ -601,7 +601,7 @@ void medMainWindow::onShowWorkspace ( QString workspace )
 {
     d->quickAccessButton->setMinimumWidth(170);
     d->workspaceArea->setupWorkspace(workspace);
-    this->switchToworkspaceArea();
+    this->switchToWorkspaceArea();
     medViewerWorkspaceDetails* details =
             medWorkspaceFactory::instance()->workspaceDetailsFromId(workspace);
 
@@ -697,7 +697,7 @@ void medMainWindow::open ( const medDataIndex& index )
     {
         d->quickAccessButton->setText(tr("Workspace: Visualization"));
         d->quickAccessButton->setMinimumWidth(170);
-        this->switchToworkspaceArea();
+        this->switchToWorkspaceArea();
     }
 }
 
@@ -718,7 +718,7 @@ void medMainWindow::onOpenFile(const medDataIndex & index,const QString& importU
     {
         if (index.isValid())
         {
-            this->switchToworkspaceArea();
+            this->switchToWorkspaceArea();
             d->workspaceArea->openInTab(index);
             d->quickAccessButton->setText(tr("Workspace: Visualization"));
             d->quickAccessButton->setMinimumWidth(170);
