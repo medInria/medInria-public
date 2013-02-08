@@ -40,10 +40,10 @@
 class medDatabaseNonPersistentControllerImplPrivate
 {
 public:
-    int pt_index;
-    int st_index;
-    int se_index;
-    int im_index;
+    int patientIndex;
+    int studyIndex;
+    int serieIndex;
+    int imageIndex;
     typedef QMap<medDataIndex, medDatabaseNonPersistentItem *> DataHashMapType;
     DataHashMapType items;
 };
@@ -55,33 +55,33 @@ public:
 int medDatabaseNonPersistentControllerImpl::patientId(bool increment)
 {
     if (increment)
-        return d->pt_index++;
+        return d->patientIndex++;
     else
-        return d->pt_index;
+        return d->patientIndex;
 }
 
 int medDatabaseNonPersistentControllerImpl::studyId(bool increment)
 {
     if (increment)
-        return d->st_index++;
+        return d->studyIndex++;
     else
-        return d->st_index;
+        return d->studyIndex;
 }
 
 int medDatabaseNonPersistentControllerImpl::seriesId(bool increment)
 {
     if (increment)
-        return d->se_index++;
+        return d->serieIndex++;
     else
-        return d->se_index;
+        return d->serieIndex;
 }
 
 int medDatabaseNonPersistentControllerImpl::imageId(bool increment)
 {
     if (increment)
-        return d->im_index++;
+        return d->imageIndex++;
     else
-        return d->im_index;
+        return d->imageIndex;
 }
 
 QList<medDatabaseNonPersistentItem *> medDatabaseNonPersistentControllerImpl::items(void)
@@ -136,10 +136,10 @@ int medDatabaseNonPersistentControllerImpl::nonPersistentDataStartingIndex(void)
 
 medDatabaseNonPersistentControllerImpl::medDatabaseNonPersistentControllerImpl(void): d(new medDatabaseNonPersistentControllerImplPrivate)
 {
-    d->pt_index = nonPersistentDataStartingIndex();
-    d->st_index = nonPersistentDataStartingIndex();
-    d->se_index = nonPersistentDataStartingIndex();
-    d->im_index = nonPersistentDataStartingIndex();
+    d->patientIndex = nonPersistentDataStartingIndex();
+    d->studyIndex = nonPersistentDataStartingIndex();
+    d->serieIndex = nonPersistentDataStartingIndex();
+    d->imageIndex = nonPersistentDataStartingIndex();
 }
 
 medDatabaseNonPersistentControllerImpl::~medDatabaseNonPersistentControllerImpl(void)
@@ -183,10 +183,10 @@ void medDatabaseNonPersistentControllerImpl::clear(void)
     qDeleteAll(d->items);
 
     d->items.clear();
-    d->pt_index = nonPersistentDataStartingIndex();
-    d->st_index = nonPersistentDataStartingIndex();
-    d->se_index = nonPersistentDataStartingIndex();
-    d->im_index = nonPersistentDataStartingIndex();
+    d->patientIndex = nonPersistentDataStartingIndex();
+    d->studyIndex = nonPersistentDataStartingIndex();
+    d->serieIndex = nonPersistentDataStartingIndex();
+    d->imageIndex = nonPersistentDataStartingIndex();
 }
 
 
