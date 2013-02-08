@@ -21,7 +21,7 @@ project(vtkRenderingAddOn)
 
 if(vtkInria_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(vtkRenderingAddOn_SOURCES_PCH 
-    "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
+    "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
     ${vtkRenderingAddOn_SRCS})
 endif(vtkInria_USE_PRECOMPILED_HEADERS)
 
