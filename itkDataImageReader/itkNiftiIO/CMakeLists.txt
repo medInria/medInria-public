@@ -1,4 +1,3 @@
-### CMakeLists.txt --- 
 ## 
 ## Author: Julien Wintz
 ## Copyright (C) 2008 - Julien Wintz, Inria.

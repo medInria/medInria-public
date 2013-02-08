@@ -81,7 +81,7 @@ ENDIF(vtkInria_USE_SPHERICALHARMONICS )
 
 if(vtkInria_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(vtkVisuManagement_SOURCES_PCH 
-    "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
+    "vtkInria3dPch/vtkInriaPch.h" "../vtkInria3dPch/vtkInriaPch.cpp" 
       ${vtkVisuManagement_SRCS}
     )
 endif(vtkInria_USE_PRECOMPILED_HEADERS)
