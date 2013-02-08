@@ -27,7 +27,7 @@ public:
     QWidget *sourceSelectorWidget();
     QString tabName();
 
-    QList<medToolBox*> getToolboxes();
+    QList<medToolBox*> getToolBoxes();
 
 public slots:
     void onSaveLocalSettings();
