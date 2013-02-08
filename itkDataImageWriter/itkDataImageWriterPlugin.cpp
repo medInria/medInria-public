@@ -56,32 +56,32 @@ itkDataImageWriterPlugin::~itkDataImageWriterPlugin(void)
 
 bool itkDataImageWriterPlugin::initialize(void)
 {
-    /*
-    if(!itkDataImageChar3Writer::registered()) dtkWarn() << "Unable to register itkDataImageChar3Writer type";
-    if(!itkDataImageUChar3Writer::registered()) dtkWarn() << "Unable to register itkDataImageUChar3Writer type";
-    if(!itkDataImageShort3Writer::registered()) dtkWarn() << "Unable to register itkDataImageShort3Writer type";
-    if(!itkDataImageUShort3Writer::registered()) dtkWarn() << "Unable to register itkDataImageUShort3Writer type";
-    if(!itkDataImageInt3Writer::registered()) dtkWarn() << "Unable to register itkDataImageInt3Writer type";
-    if(!itkDataImageUInt3Writer::registered()) dtkWarn() << "Unable to register itkDataImageUInt3Writer type";
-    if(!itkDataImageLong3Writer::registered()) dtkWarn() << "Unable to register itkDataImageLong3Writer type";
-    if(!itkDataImageULong3Writer::registered()) dtkWarn() << "Unable to register itkDataImageULong3Writer type";
-    if(!itkDataImageFloat3Writer::registered()) dtkWarn() << "Unable to register itkDataImageFloat3Writer type";
-    if(!itkDataImageDouble3Writer::registered()) dtkWarn() << "Unable to register itkDataImageDouble3Writer type";
-    if(!itkDataImageVector3Writer::registered()) dtkWarn() << "Unable to register itkDataImageVector3Writer type";
-    if(!itkDataImageRGB3Writer::registered()) dtkWarn() << "Unable to register itkDataImageRGB3Writer type";
-  */
-    if(!itkMetaDataImageWriter::registered()) dtkWarn() << "Unable to register itkMetaDataImageWriter type";
-    if(!itkNiftiDataImageWriter::registered()) dtkWarn() << "Unable to register itkNiftiDataImageWriter type";
-    if(!itkAnalyzeDataImageWriter::registered()) dtkWarn() << "Unable to register itkAnalyzeDataImageWriter type";
-    if(!itkNrrdDataImageWriter::registered()) dtkWarn() << "Unable to register itkNrrdDataImageWriter type";
-    if(!itkGiplDataImageWriter::registered()) dtkWarn() << "Unable to register itkGiplDataImageWriter type";
-    if(!itkVTKDataImageWriter::registered()) dtkWarn() << "Unable to register itkVTKDataImageWriter type";
-    if(!itkPNGDataImageWriter::registered()) dtkWarn() << "Unable to register itkPNGDataImageWriter type";
-    if(!itkBMPDataImageWriter::registered()) dtkWarn() << "Unable to register itkBMPDataImageWriter type";
-    if(!itkJPEGDataImageWriter::registered()) dtkWarn() << "Unable to register itkJPEGDataImageWriter type";
-    if(!itkTIFFDataImageWriter::registered()) dtkWarn() << "Unable to register itkTIFFDataImageWriter type";
-    if(!itkPhilipsRECDataImageWriter::registered()) dtkWarn() << "Unable to register itkPhilipsRECDataImageWriter type";
+#if 0
+    if (!itkDataImageChar3Writer::registered())   { dtkWarn() << "Unable to register itkDataImageChar3Writer type";   }
+    if (!itkDataImageUChar3Writer::registered())  { dtkWarn() << "Unable to register itkDataImageUChar3Writer type";  }
+    if (!itkDataImageShort3Writer::registered())  { dtkWarn() << "Unable to register itkDataImageShort3Writer type";  }
+    if (!itkDataImageUShort3Writer::registered()) { dtkWarn() << "Unable to register itkDataImageUShort3Writer type"; }
+    if (!itkDataImageInt3Writer::registered())    { dtkWarn() << "Unable to register itkDataImageInt3Writer type";    }
+    if (!itkDataImageUInt3Writer::registered())   { dtkWarn() << "Unable to register itkDataImageUInt3Writer type";   }
+    if (!itkDataImageLong3Writer::registered())   { dtkWarn() << "Unable to register itkDataImageLong3Writer type";   }
+    if (!itkDataImageULong3Writer::registered())  { dtkWarn() << "Unable to register itkDataImageULong3Writer type";  }
+    if (!itkDataImageFloat3Writer::registered())  { dtkWarn() << "Unable to register itkDataImageFloat3Writer type";  }
+    if (!itkDataImageDouble3Writer::registered()) { dtkWarn() << "Unable to register itkDataImageDouble3Writer type"; }
+    if (!itkDataImageVector3Writer::registered()) { dtkWarn() << "Unable to register itkDataImageVector3Writer type"; }
+    if (!itkDataImageRGB3Writer::registered())    { dtkWarn() << "Unable to register itkDataImageRGB3Writer type";    }
+#endif
 
+    if (!itkMetaDataImageWriter::registered())       { dtkWarn() << "Unable to register itkMetaDataImageWriter type";       }
+    if (!itkNiftiDataImageWriter::registered())      { dtkWarn() << "Unable to register itkNiftiDataImageWriter type";      }
+    if (!itkAnalyzeDataImageWriter::registered())    { dtkWarn() << "Unable to register itkAnalyzeDataImageWriter type";    }
+    if (!itkNrrdDataImageWriter::registered())       { dtkWarn() << "Unable to register itkNrrdDataImageWriter type";       }
+    if (!itkGiplDataImageWriter::registered())       { dtkWarn() << "Unable to register itkGiplDataImageWriter type";       }
+    if (!itkVTKDataImageWriter::registered())        { dtkWarn() << "Unable to register itkVTKDataImageWriter type";        }
+    if (!itkPNGDataImageWriter::registered())        { dtkWarn() << "Unable to register itkPNGDataImageWriter type";        }
+    if (!itkBMPDataImageWriter::registered())        { dtkWarn() << "Unable to register itkBMPDataImageWriter type";        }
+    if (!itkJPEGDataImageWriter::registered())       { dtkWarn() << "Unable to register itkJPEGDataImageWriter type";       }
+    if (!itkTIFFDataImageWriter::registered())       { dtkWarn() << "Unable to register itkTIFFDataImageWriter type";       }
+    if (!itkPhilipsRECDataImageWriter::registered()) { dtkWarn() << "Unable to register itkPhilipsRECDataImageWriter type"; }
 
     return true;
 }

@@ -37,12 +37,9 @@ itkDataTensorImageWriterPlugin::~itkDataTensorImageWriterPlugin(void)
 
 bool itkDataTensorImageWriterPlugin::initialize(void)
 {
-    if(!itkMetaDataTensorImageWriter::registered())
-    	dtkWarn() << "Unable to register itkMetaDataTensorImageWriter type";
-    if(!itkNiftiDataTensorImageWriter::registered())
-        dtkWarn() << "Unable to register itkNiftiDataTensorImageWriter type";
-    if(!itkNrrdDataTensorImageWriter::registered())
-        dtkWarn() << "Unable to register itkNrrdDataTensorImageWriter type";
+    if (!itkMetaDataTensorImageWriter::registered())  { dtkWarn() << "Unable to register itkMetaDataTensorImageWriter type";  }
+    if (!itkNiftiDataTensorImageWriter::registered()) { dtkWarn() << "Unable to register itkNiftiDataTensorImageWriter type"; }
+    if (!itkNrrdDataTensorImageWriter::registered())  { dtkWarn() << "Unable to register itkNrrdDataTensorImageWriter type";  }
 
     return true;
 }

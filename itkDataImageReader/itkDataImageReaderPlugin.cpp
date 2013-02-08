@@ -59,20 +59,20 @@ itkDataImageReaderPlugin::~itkDataImageReaderPlugin(void)
 
 bool itkDataImageReaderPlugin::initialize(void)
 {
-    if(!itkMetaDataImageReader::registered())     dtkWarn() << "Unable to register itkMetaDataImageReader type";
+    if (!itkMetaDataImageReader::registered())       { dtkWarn() << "Unable to register itkMetaDataImageReader type";       }
 #ifdef ITK_USE_SYSTEM_GDCM
-    if(!itkGDCMDataImageReader::registered())     dtkWarn() << "Unable to register  itkGDCMDataImageReader type";
+    if (!itkGDCMDataImageReader::registered())       { dtkWarn() << "Unable to register  itkGDCMDataImageReader type";      }
 #endif
-    if(!itkNiftiDataImageReader::registered())    dtkWarn() << "Unable to register itkNiftiDataImageReader type";
-    if(!itkAnalyzeDataImageReader::registered())  dtkWarn() << "Unable to register itkAnalyzeDataImageReader type";
-    if(!itkNrrdDataImageReader::registered())     dtkWarn() << "Unable to register itkNrrdDataImageReader type";
-    if(!itkGiplDataImageReader::registered())     dtkWarn() << "Unable to register itkGiplDataImageReader type";
-    if(!itkVTKDataImageReader::registered())      dtkWarn() << "Unable to register itkVTKDataImageReader type";
-    if(!itkPNGDataImageReader::registered())      dtkWarn() << "Unable to register itkPNGDataImageReader type";
-    if(!itkBMPDataImageReader::registered())      dtkWarn() << "Unable to register itkBMPDataImageReader type";
-    if(!itkJPEGDataImageReader::registered())     dtkWarn() << "Unable to register itkJPEGDataImageReader type";
-    if(!itkTIFFDataImageReader::registered())     dtkWarn() << "Unable to register itkTIFFDataImageReader type";
-    if(!itkPhilipsRECDataImageReader::registered())     dtkWarn() << "Unable to register itkPhilipsRECDataImageReader type";
+    if (!itkNiftiDataImageReader::registered())      { dtkWarn() << "Unable to register itkNiftiDataImageReader type";      }
+    if (!itkAnalyzeDataImageReader::registered())    { dtkWarn() << "Unable to register itkAnalyzeDataImageReader type";    }
+    if (!itkNrrdDataImageReader::registered())       { dtkWarn() << "Unable to register itkNrrdDataImageReader type";       }
+    if (!itkGiplDataImageReader::registered())       { dtkWarn() << "Unable to register itkGiplDataImageReader type";       }
+    if (!itkVTKDataImageReader::registered())        { dtkWarn() << "Unable to register itkVTKDataImageReader type";        }
+    if (!itkPNGDataImageReader::registered())        { dtkWarn() << "Unable to register itkPNGDataImageReader type";        }
+    if (!itkBMPDataImageReader::registered())        { dtkWarn() << "Unable to register itkBMPDataImageReader type";        }
+    if (!itkJPEGDataImageReader::registered())       { dtkWarn() << "Unable to register itkJPEGDataImageReader type";       }
+    if (!itkTIFFDataImageReader::registered())       { dtkWarn() << "Unable to register itkTIFFDataImageReader type";       }
+    if (!itkPhilipsRECDataImageReader::registered()) { dtkWarn() << "Unable to register itkPhilipsRECDataImageReader type"; }
 
 
     return true;

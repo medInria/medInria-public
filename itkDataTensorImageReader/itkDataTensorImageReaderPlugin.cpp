@@ -48,9 +48,9 @@ itkDataTensorImageReaderPlugin::~itkDataTensorImageReaderPlugin(void)
 
 bool itkDataTensorImageReaderPlugin::initialize(void)
 {
-    if(!itkMetaDataTensorImageReader::registered())  dtkWarn() << "Unable to register itkMetaDataTensorImageReader type";
-    if(!itkNiftiDataTensorImageReader::registered()) dtkWarn() << "Unable to register itkNiftiDataTensorImageReader type";
-    if(!itkNrrdDataTensorImageReader::registered())  dtkWarn() << "Unable to register itkNrrdDataTensorImageReader type";
+    if (!itkMetaDataTensorImageReader::registered())  { dtkWarn() << "Unable to register itkMetaDataTensorImageReader type";  }
+    if (!itkNiftiDataTensorImageReader::registered()) { dtkWarn() << "Unable to register itkNiftiDataTensorImageReader type"; }
+    if (!itkNrrdDataTensorImageReader::registered())  { dtkWarn() << "Unable to register itkNrrdDataTensorImageReader type";  }
 
     return true;
 }

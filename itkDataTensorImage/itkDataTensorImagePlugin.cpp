@@ -49,8 +49,8 @@ itkDataTensorImagePlugin::~itkDataTensorImagePlugin(void)
 
 bool itkDataTensorImagePlugin::initialize(void)
 {
-    if(!itkDataTensorImageDouble3::registered()) dtkWarn() << "Unable to register itkDataTensorImageDouble3 type";
-    if(!itkDataTensorImageFloat3::registered()) dtkWarn() << "Unable to register itkDataTensorImageFloat3 type";
+    if (!itkDataTensorImageDouble3::registered()) { dtkWarn() << "Unable to register itkDataTensorImageDouble3 type"; }
+    if (!itkDataTensorImageFloat3::registered())  { dtkWarn() << "Unable to register itkDataTensorImageFloat3 type";  }
 
     return true;
 }
