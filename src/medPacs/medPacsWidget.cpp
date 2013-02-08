@@ -43,9 +43,9 @@ public:
     int index(medAbstractPacsNode& node);
 
 public:
-    QString host_title;
-    QString host_address;
-    QString host_port;
+    QString hostTitle;
+    QString hostAddress;
+    QString hostPort;
 
     QList<QStringList> nodes;
     QList<QStringList> selectedNodes;
@@ -66,7 +66,7 @@ void medPacsWidgetPrivate::run(void)
     tmp.mkdir("import");
     tmp.cd("import");
     this->server->setStorageDirectory(tmp.absolutePath().toLatin1());
-    this->server->start(this->host_title.toLatin1(), this->host_address.toLatin1(), tryToInt(this->host_port));
+    this->server->start(this->hostTitle.toLatin1(), this->hostAddress.toLatin1(), tryToInt(this->hostPort));
 }
 
 int medPacsWidgetPrivate::index(medAbstractPacsNode& node)
@@ -137,18 +137,18 @@ void medPacsWidget::readSettings(void)
     QSettings settings;
     settings.beginGroup("medBrowserPacsHostToolBox");
     QString title = settings.value("title").toString();
-    d->host_address = "localhost";
+    d->hostAddress = "localhost";
     QString port = settings.value("port").toString();
     settings.endGroup();
 
     if (title.isEmpty())
-        d->host_title = ("MEDINRIA");
+        d->hostTitle = ("MEDINRIA");
     else
-        d->host_title = title;
+        d->hostTitle = title;
     if (port.isEmpty())
-        d->host_port = "9999";
+        d->hostPort = "9999";
     else
-        d->host_port = port;
+        d->hostPort = port;
 
     QList<QVariant> nodes;
 
@@ -196,7 +196,7 @@ void medPacsWidget::search(QString query)
 
         foreach(QStringList node, d->selectedNodes)
             d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)),
-                d->host_title.toLatin1(), d->host_address.toLatin1(), tryToInt(d->host_port));
+                d->hostTitle.toLatin1(), d->hostAddress.toLatin1(), tryToInt(d->hostPort));
 
         QVector<medAbstractPacsNode *> nodes = d->find->getNodeContainer();
 
@@ -262,7 +262,7 @@ void medPacsWidget::findSeriesLevel(QTreeWidgetItem * item)
         {
             QStringList node = d->nodes.at(i);
             d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)),
-                d->host_title.toLatin1(), d->host_address.toLatin1(), tryToInt(d->host_port));
+                d->hostTitle.toLatin1(), d->hostAddress.toLatin1(), tryToInt(d->hostPort));
         }
     }
 
@@ -317,7 +317,7 @@ void medPacsWidget::findImageLevel(QTreeWidgetItem *item)
         {
             QStringList node = d->nodes.at(i);
             d->find->sendFindRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)),
-                  d->host_title.toLatin1(), d->host_address.toLatin1(), tryToInt(d->host_port));
+                  d->hostTitle.toLatin1(), d->hostAddress.toLatin1(), tryToInt(d->hostPort));
         }
     }
 
@@ -387,9 +387,9 @@ void medPacsWidget::onItemImported(void)
             item.sourceTitle = d->nodes.at(nodeIndex).at(0);
             item.sourceIp = d->nodes.at(nodeIndex).at(1);
             item.sourcePort = tryToInt(d->nodes.at(nodeIndex).at(2));
-            item.targetTitle = d->host_title;
-            item.targetIp = d->host_address;
-            item.targetPort = tryToInt(d->host_port);
+            item.targetTitle = d->hostTitle;
+            item.targetIp = d->hostAddress;
+            item.targetPort = tryToInt(d->hostPort);
             item.query = query;
 
             if(hash.contains(itemList.at(i)->data(0, Qt::UserRole).toInt()))
@@ -420,7 +420,7 @@ void medPacsWidget::onEchoRequest()
         if(d->echo)
         {
             if(!d->echo->sendEchoRequest(node.at(0).toLatin1(), node.at(1).toLatin1(), tryToInt(node.at(2)),
-                    d->host_title.toLatin1(), d->host_address.toLatin1(),tryToInt(d->host_port) ))
+                    d->hostTitle.toLatin1(), d->hostAddress.toLatin1(),tryToInt(d->hostPort) ))
                 response.push_back(true);
             else
                 response.push_back(false);
