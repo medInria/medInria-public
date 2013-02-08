@@ -1,20 +1,6 @@
-/* medToolBoxRegistration.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Feb 19 09:06:02 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Nov 10 16:32:30 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 272
- */
-
-/* Commentary:
- *
- */
-
-/* Change log:
- *
+/**
+ * This class defines the registration toolbox and manages the changes in the different views.
+ * It also manages the saving of the transformation and registered image.
  */
 
 #include "medToolBoxRegistration.h"
@@ -147,32 +133,41 @@ medToolBoxRegistration::~medToolBoxRegistration(void)
     d = NULL;
 }
 
+//! Gets the fixedView.
 dtkAbstractView *medToolBoxRegistration::fixedView(void)
 {
     return d->fixedView;
 }
 
+//! Gets the movingView.
 dtkAbstractView *medToolBoxRegistration::movingView(void)
 {
     return d->movingView;
 }
 
+//! Gets the fuseView.
 dtkAbstractView *medToolBoxRegistration::fuseView(void)
 {
     return d->fuseView;
 }
 
+//! Gets the fixedData.
 medAbstractDataImage *medToolBoxRegistration::fixedData(void)
 {
     return d->fixedData;
 }
 
+//! Gets the movingData.
 medAbstractDataImage *medToolBoxRegistration::movingData(void)
 {
     return d->movingData;
 }
 
-
+/** 
+ * Sets up the fixedView and the layer 0 of the fuseView.
+ *
+ * @param index The index that was imported.
+ */
 void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
 {
 
@@ -192,9 +187,9 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
 	return;
     }
 
-
     if (d->fuseView)
     {
+        d->fuseView->blockSignals(true);
         if (d->movingView && d->fuseView->layerCount()==1)
         {
             //only the moving view has been set: shift it to layer 1
@@ -208,9 +203,24 @@ void medToolBoxRegistration::onFixedImageDropped (const medDataIndex& index)
         }
         d->fuseView->reset();
         d->fuseView->update();
+        this->synchroniseWindowLevel(d->movingView); // This line will synchronise the windowlvl between the movingView and fuseView.
+        this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the fixedView and fuseView.
+        d->fuseView->blockSignals(false);
+    }
+    connect(d->fixedView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
+    connect(d->fixedView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+    if (!d->movingView)
+    {
+        connect(d->fuseView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
+        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
     }
 }
 
+/** 
+ * Sets up the movingView and the layer 1 of the fuseView.
+ *
+ * @param index The index that was imported.
+ */
 void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
 {
 
@@ -235,6 +245,7 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
         d->movingView->update();
     }
 
+    d->fuseView->blockSignals(true);
     if (d->fixedView)
     {
         //already one layer present
@@ -245,10 +256,27 @@ void medToolBoxRegistration::onMovingImageDropped (const medDataIndex& index)
         //only the moving view is set
         d->fuseView->setData(d->movingData,0);
     }
-    //d->fuseView->reset();
+    d->fuseView->reset();
     d->fuseView->update();
+    this->synchroniseWindowLevel(d->movingView); // This line will synchronise the windowlvl between the movingView and fuseView.
+    this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the fixedView and fuseView.
+    d->fuseView->blockSignals(false);
+
+    
+    connect(d->movingView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
+    connect(d->movingView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+    if (!d->fixedView)
+    {
+        connect(d->fuseView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
+        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+    }
 }
 
+/** 
+ * Sets up the toolbox chosen and remove the old one.
+ *
+ * @param index The index of the toolbox that was chosen.
+ */
 void medToolBoxRegistration::onToolBoxChosen(int index)
 {
     //get identifier for toolbox.
@@ -277,6 +305,11 @@ void medToolBoxRegistration::onToolBoxChosen(int index)
     connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
 }
 
+/** 
+ * Sets the fuseView.
+ *
+ * @param view The new fuseView.
+ */
 void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
 {
     if (!view)
@@ -285,6 +318,7 @@ void medToolBoxRegistration::setFuseView(dtkAbstractView *view)
     d->fuseView = dynamic_cast <medAbstractView*> (view);
 }
 
+//! Clears the toolbox.
 void medToolBoxRegistration::clear(void)
 {
 
@@ -293,16 +327,23 @@ void medToolBoxRegistration::clear(void)
         d->customToolBox->clear();
 }
 
+//! Gets the process.
 dtkAbstractProcess * medToolBoxRegistration::process(void)
 {
     return d->process;
 }
 
+/** 
+ * Sets the process.
+ *
+ * @param proc The new process.
+ */
 void medToolBoxRegistration::setProcess(dtkAbstractProcess* proc)
 {
     d->process = proc;
 }
 
+//! Saves the registered image.
 void medToolBoxRegistration::onSaveImage()
 {
     if ( !d->movingData)
@@ -342,6 +383,7 @@ void medToolBoxRegistration::onSaveImage()
 
 }
 
+//! Saves the transformation.
 void medToolBoxRegistration::onSaveTrans()
 {
     if (!d->movingData)
@@ -405,7 +447,7 @@ void medToolBoxRegistration::onSaveTrans()
     }
 }
 
-
+//! If the registration has ended well, it sets the output's metaData and reset the movingView and fuseView with the registered image.
 void medToolBoxRegistration::onSuccess()
 {
     dtkSmartPointer<dtkAbstractData> output(d->process->output());
@@ -433,5 +475,74 @@ void medToolBoxRegistration::onSuccess()
         d->movingView->update();
         d->fuseView->setData(output,1);
         d->fuseView->update();
+        d->fixedView->setLinkPosition(true);
+        d->fixedView->setLinkCamera(true);
+        d->movingView->setLinkPosition(true);
+        d->movingView->setLinkCamera(true);
     }
 }
+
+//! Synchronises the window/level of the layer 0 of the fixedView with the layer 0 of the fuseView, and the layer 0 of the movingView with the layer 1 of the fuseView. 
+void medToolBoxRegistration::synchroniseWindowLevel(QObject * sender){ 
+			
+    double window,level;
+    QObject * senderView;
+    if (sender)
+        senderView = sender;
+    else
+        senderView = QObject::sender();
+
+    if (d->fixedView==senderView)
+    {
+        d->fixedView->windowLevel(level,window);
+        d->fuseView->setCurrentLayer(0);
+        d->fuseView->onWindowingChanged(level,window);
+    }
+    else if (d->movingView==senderView)
+    {
+        d->movingView->windowLevel(level,window);
+        d->fuseView->setCurrentLayer(1);
+        d->fuseView->onWindowingChanged(level,window);
+    }
+    else
+    {		
+        d->fuseView->windowLevel(level,window);
+        if (d->fixedView && d->fixedView->windowingLinked() && d->movingView && d->movingView->windowingLinked())
+        {
+            d->fixedView->onWindowingChanged(level,window);
+            d->movingView->onWindowingChanged(level,window);
+            if (d->fuseView->currentLayer()==0)// Since the fixed view and moving view are linked we must assure that the two layers of the fuse view are changed.
+            { 
+                d->fuseView->setCurrentLayer(1);
+                d->fuseView->onWindowingChanged(level,window);
+            }
+            else if (d->fuseView->currentLayer()==1)
+            {
+                d->fuseView->setCurrentLayer(0);
+                d->fuseView->onWindowingChanged(level,window);
+            }
+        }
+        else if (d->fixedView && d->fuseView->currentLayer()==0)
+            d->fixedView->onWindowingChanged(level,window);
+        else if (d->movingView && (d->fuseView->currentLayer()==1 || d->fuseView->layerCount()==1))	
+            d->movingView->onWindowingChanged(level,window);
+        // In the case that the currentLayer>1 we do nothing.
+    }
+}
+//! Synchronises the position between the compare and the fuse mode.
+void medToolBoxRegistration::synchronisePosition(const QVector3D &position){ 
+   
+    if (d->fixedView==QObject::sender() || d->movingView==QObject::sender())
+    {
+        if (d->fixedView && d->fixedView->positionLinked() && d->movingView &&  d->movingView->positionLinked()) // If the fixedView and movingView are linked in position then the changes also appear in fuseView.
+            d->fuseView->onPositionChanged(position);
+    }
+    else // the changes in fuseView are propagated to the fixedView and movingView.
+    {		
+        if (d->fixedView)
+            d->fixedView->onPositionChanged(position);
+        if (d->movingView)
+            d->movingView->onPositionChanged(position);
+    }
+}
+
