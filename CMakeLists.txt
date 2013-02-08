@@ -52,27 +52,9 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
 include(dtkPlugin)
- 
-include_directories(
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/dtkItkLogForwarder
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/dtkVtkLogForwarder
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/HWShading
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/HWShading/Helpers/
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/HWShading/Shaders/
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/vtkVisuManagement/
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/vtkWidgetsAddOn/
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/vtkDataManagement/
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/vtkItk/
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/itkAddOn/
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/itkAddOn/Registration/
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/itkAddOn/IO/
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/vtkRenderingAddOn/
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/vtkImageView/
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/SphericalHarmonicsVisu/
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria)
 
-
+#directories to include to the project
+include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeIncludeDirectories.cmake)
 
 # Export medinriq-plugins_DIR variable so that internal project can automatically find it
 set(medInria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
@@ -184,10 +166,7 @@ if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN OR
     MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
     MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
-        FIND_PACKAGE(VTK REQUIRED)
-        INCLUDE(${VTK_USE_FILE})
-        set(MEDINRIA_REQUIRES_VTK TRUE)
-        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/dtkVtkLogForwarder)
+    set(MEDINRIA_REQUIRES_VTK TRUE)
 endif()
 
 if (MEDINRIA_BUILD_ALL_PLUGINS OR
@@ -203,10 +182,7 @@ if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN OR
     MEDINRIA_BUILD_ITKPROCESSEXAMPLE_PLUGIN OR
     MEDINRIA_BUILD_ITKFILTERS_PLUGIN)
-        FIND_PACKAGE(ITK REQUIRED)
-        INCLUDE(${ITK_USE_FILE})
-        set(MEDINRIA_REQUIRES_ITK TRUE)
-        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/dtkItkLogForwarder)
+    set(MEDINRIA_REQUIRES_ITK TRUE)
 endif()
 
 ## Needs MEDINRIA_REQUIRES_ITK and MEDINRIA_REQUIRES_VTK

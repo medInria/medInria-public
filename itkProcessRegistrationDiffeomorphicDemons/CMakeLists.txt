@@ -38,14 +38,13 @@ include(dtkPlugin)
 find_package(medInria REQUIRED)
 include(${medInria_USE_FILE})
 
-find_package(ITK REQUIRED)
-if(ITK_FOUND)
-   include(${ITK_USE_FILE})
-endif(ITK_FOUND)
-
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
 
+find_package(ITK REQUIRED)
+include(${ITK_USE_FILE})
+
+include_directories(../libs/itkProcessRegistration)
 
 ## #################################################################
 ## Input
@@ -73,16 +72,17 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
+  ${RPI_LIBRARIES}
   itkProcessRegistration
   ${QT_LIBRARIES}
   dtkCore dtkLog
   medCore
   medGui
   ITKCommon
-  ITKIO
-  ITKStatistics
-  ITKNumerics
-  ITKAlgorithms
+  #ITKIO
+  #ITKStatistics
+  #ITKNumerics
+  #ITKAlgorithms
 )
 
 dtk_build_doc(${PROJECT_NAME})
