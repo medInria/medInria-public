@@ -28,14 +28,14 @@
 class medDatabasePreviewItemGroupPrivate
 {
 public:
-    int item_count;
+    int itemCount;
 
     QHash<int, medDatabasePreviewItem *> items;
 };
 
 medDatabasePreviewItemGroup::medDatabasePreviewItemGroup(QGraphicsItem *parent) : QGraphicsItem(parent), d(new medDatabasePreviewItemGroupPrivate)
 {
-    d->item_count = 0;
+    d->itemCount = 0;
 }
 
 medDatabasePreviewItemGroup::~medDatabasePreviewItemGroup(void)
@@ -47,14 +47,14 @@ medDatabasePreviewItemGroup::~medDatabasePreviewItemGroup(void)
 
 void medDatabasePreviewItemGroup::addItem(medDatabasePreviewItem *item)
 {
-    qreal item_width   = medDatabasePreviewController::instance()->itemWidth();
-    qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
+    qreal itemWidth   = medDatabasePreviewController::instance()->itemWidth();
+    qreal itemSpacing = medDatabasePreviewController::instance()->itemSpacing();
 
     item->setParentItem(this);
 
     medDatabasePreviewController::instance()->orientation() == Qt::Horizontal
-        ? item->setPos(d->item_count * (item_width + item_spacing), 0)
-        : item->setPos(0, d->item_count * (item_width + item_spacing));
+        ? item->setPos(d->itemCount * (itemWidth + itemSpacing), 0)
+        : item->setPos(0, d->itemCount * (itemWidth + itemSpacing));
 
     if (item->dataIndex().imageId() >= 0)
         d->items.insert(item->dataIndex().imageId(), item);
@@ -65,7 +65,7 @@ void medDatabasePreviewItemGroup::addItem(medDatabasePreviewItem *item)
     else
         d->items.insert(item->dataIndex().patientId(), item);
 
-    d->item_count++;
+    d->itemCount++;
 }
 
 void medDatabasePreviewItemGroup::clear(void)
@@ -73,7 +73,7 @@ void medDatabasePreviewItemGroup::clear(void)
     foreach(QGraphicsItem *item, this->childItems())
         delete item;
 
-    d->item_count = 0;
+    d->itemCount = 0;
     d->items.clear();
 }
 
@@ -87,11 +87,11 @@ medDatabasePreviewItem *medDatabasePreviewItemGroup::item(int index)
 
 QRectF medDatabasePreviewItemGroup::boundingRect(void) const
 {
-    qreal item_width   = medDatabasePreviewController::instance()->itemWidth();
-    qreal item_height  = medDatabasePreviewController::instance()->itemHeight();
-    qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
+    qreal itemWidth   = medDatabasePreviewController::instance()->itemWidth();
+    qreal itemHeight  = medDatabasePreviewController::instance()->itemHeight();
+    qreal itemSpacing = medDatabasePreviewController::instance()->itemSpacing();
 
-    return QRectF(0, 0, d->item_count * (item_width + item_spacing), item_height);
+    return QRectF(0, 0, d->itemCount * (itemWidth + itemSpacing), itemHeight);
 }
 
 void medDatabasePreviewItemGroup::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

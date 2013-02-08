@@ -30,7 +30,7 @@
 class medDatabaseNavigatorItemGroupPrivate
 {
 public:
-    int item_count;
+    int itemCount;
 
     QString name;
 
@@ -41,7 +41,7 @@ public:
 
 medDatabaseNavigatorItemGroup::medDatabaseNavigatorItemGroup(QGraphicsItem *parent) : QGraphicsItem(parent), d(new medDatabaseNavigatorItemGroupPrivate)
 {
-    d->item_count = 0;
+    d->itemCount = 0;
 
     d->orientation = medDatabaseNavigatorController::instance()->orientation();
 }
@@ -67,10 +67,10 @@ void medDatabaseNavigatorItemGroup::addItem(medDatabaseNavigatorItem *item)
     // 2x10px for the margins
 
     d->orientation == Qt::Horizontal
-        ? item->setPos(d->item_count * (item_height + item_spacing) + 10, 30)
-        : item->setPos(10, d->item_count * (item_width + item_spacing) + 30);
+        ? item->setPos(d->itemCount * (item_height + item_spacing) + 10, 30)
+        : item->setPos(10, d->itemCount * (item_width + item_spacing) + 30);
 
-    d->item_count++;
+    d->itemCount++;
 }
 
 void medDatabaseNavigatorItemGroup::clear(void)
@@ -78,7 +78,7 @@ void medDatabaseNavigatorItemGroup::clear(void)
     foreach(QGraphicsItem *item, this->childItems())
         delete item;
 
-    d->item_count = 0;
+    d->itemCount = 0;
 }
 
 void medDatabaseNavigatorItemGroup::setName(const QString& name)
@@ -96,9 +96,9 @@ QRectF medDatabaseNavigatorItemGroup::boundingRect(void) const
     // 30px for the decoration
 
     if(d->orientation == Qt::Horizontal)
-        return QRectF(0, 0, d->item_count * (item_width + item_spacing) + 20, item_height + item_spacing + 30);
+        return QRectF(0, 0, d->itemCount * (item_width + item_spacing) + 20, item_height + item_spacing + 30);
     else
-        return QRectF(0, 0, item_width + 20, d->item_count * (item_height + item_spacing) + 30);
+        return QRectF(0, 0, item_width + 20, d->itemCount * (item_height + item_spacing) + 30);
 }
 
 void medDatabaseNavigatorItemGroup::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -124,7 +124,7 @@ void medDatabaseNavigatorItemGroup::setOrientation (Qt::Orientation orientation)
 
     QList<medDatabaseNavigatorItem*> items = d->items;
     d->items.clear();
-    d->item_count = 0;
+    d->itemCount = 0;
 
     foreach (medDatabaseNavigatorItem* item, items)
         addItem (item);

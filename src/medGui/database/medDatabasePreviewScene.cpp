@@ -27,12 +27,12 @@
 class medDatabasePreviewScenePrivate
 {
 public:
-    int group_count;
+    int groupCount;
 };
 
 medDatabasePreviewScene::medDatabasePreviewScene(QObject *parent) : QGraphicsScene(parent), d(new medDatabasePreviewScenePrivate)
 {
-    d->group_count = 0;
+    d->groupCount = 0;
 
     this->setBackgroundBrush(QColor(0x41, 0x41, 0x41));
 }
@@ -46,19 +46,19 @@ medDatabasePreviewScene::~medDatabasePreviewScene(void)
 
 void medDatabasePreviewScene::addGroup(medDatabasePreviewItemGroup *group)
 {
-    qreal group_height  = medDatabasePreviewController::instance()->groupHeight();
-    qreal group_spacing = medDatabasePreviewController::instance()->groupSpacing();
+    qreal groupHeight  = medDatabasePreviewController::instance()->groupHeight();
+    qreal groupSpacing = medDatabasePreviewController::instance()->groupSpacing();
 
     this->addItem(group);
 
     medDatabasePreviewController::instance()->orientation() == Qt::Horizontal
-        ? group->setPos(group_spacing, (1 - d->group_count) * (group_height + group_spacing) + group_spacing)
-        : group->setPos((1 - d->group_count) * (group_height + group_spacing) + group_spacing, group_spacing);
+        ? group->setPos(groupSpacing, (1 - d->groupCount) * (groupHeight + groupSpacing) + groupSpacing)
+        : group->setPos((1 - d->groupCount) * (groupHeight + groupSpacing) + groupSpacing, groupSpacing);
 
-    d->group_count++;
+    d->groupCount++;
 }
 
 void medDatabasePreviewScene::reset(void)
 {
-    d->group_count = 0;
+    d->groupCount = 0;
 }

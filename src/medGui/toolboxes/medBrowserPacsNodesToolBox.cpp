@@ -34,9 +34,9 @@ public:
     QPushButton *ech;
     QPushButton *rem;
 
-    QString host_title;
-    QString host_address;
-    QString host_port;
+    QString hostTitle;
+    QString hostAddress;
+    QString hostPort;
 
 };
 
@@ -98,9 +98,9 @@ void medBrowserPacsNodesToolBox::readSettings(void)
     QSettings settings;
 
     settings.beginGroup("medBrowserPacsHostToolBox");
-    d->host_title = settings.value("title").toString();
-    d->host_address = settings.value("address").toString();
-    d->host_port = settings.value("port").toString();
+    d->hostTitle = settings.value("title").toString();
+    d->hostAddress = settings.value("address").toString();
+    d->hostPort = settings.value("port").toString();
     settings.endGroup();
 
     settings.beginGroup("medBrowserPacsNodesToolBox");

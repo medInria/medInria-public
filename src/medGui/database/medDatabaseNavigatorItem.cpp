@@ -47,15 +47,15 @@ public:
     bool persistent;
     QString text;
     
-    medDatabaseNavigatorItemOverlay *item_saver;
-    medDatabaseNavigatorItemOverlay *item_exporter;
-    medDatabaseNavigatorItemOverlay *item_trasher;
+    medDatabaseNavigatorItemOverlay *itemSaver;
+    medDatabaseNavigatorItemOverlay *itemExporter;
+    medDatabaseNavigatorItemOverlay *itemTrasher;
     
-    QPropertyAnimation *item_saver_fading_animation;
-    QPropertyAnimation *item_exporter_fading_animation;
-    QPropertyAnimation *item_trasher_fading_animation;
+    QPropertyAnimation *itemSaverFadingAnimation;
+    QPropertyAnimation *itemExporterFadingAnimation;
+    QPropertyAnimation *itemTrasherFadingAnimation;
     
-    QParallelAnimationGroup *fading_animation;
+    QParallelAnimationGroup *fadingAnimation;
 };
 
 medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  QGraphicsItem *parent) : QObject(), QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabaseNavigatorItemPrivate)
@@ -88,59 +88,59 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
 
     this->setAcceptHoverEvents(true);
     
-    d->item_exporter = new medDatabaseNavigatorItemOverlay(this);
-    d->item_exporter->setToolTip("<span style=\"background: #fff8dc;\">Export data to disk</span>");
+    d->itemExporter = new medDatabaseNavigatorItemOverlay(this);
+    d->itemExporter->setToolTip("<span style=\"background: #fff8dc;\">Export data to disk</span>");
     QPixmap pixmap(":/icons/export.png");
-    d->item_exporter->setPixmap(pixmap);
-    d->item_exporter->setPos(10, 45);
-    d->item_exporter->setOpacity(0.0);
+    d->itemExporter->setPixmap(pixmap);
+    d->itemExporter->setPos(10, 45);
+    d->itemExporter->setOpacity(0.0);
     
-    connect(d->item_exporter, SIGNAL(clicked()), this, SLOT(exportData()));
+    connect(d->itemExporter, SIGNAL(clicked()), this, SLOT(exportData()));
     
     // Setup animation        
-    d->item_exporter_fading_animation = new QPropertyAnimation(d->item_exporter, "opacity", this);
-    d->item_exporter_fading_animation->setDuration(150);
+    d->itemExporterFadingAnimation = new QPropertyAnimation(d->itemExporter, "opacity", this);
+    d->itemExporterFadingAnimation->setDuration(150);
     
-    d->fading_animation = new QParallelAnimationGroup(this);
-    d->fading_animation->addAnimation(d->item_exporter_fading_animation);    
+    d->fadingAnimation = new QParallelAnimationGroup(this);
+    d->fadingAnimation->addAnimation(d->itemExporterFadingAnimation);
     
     if (!d->persistent)
     {
-        d->item_saver = new medDatabaseNavigatorItemOverlay(this);
+        d->itemSaver = new medDatabaseNavigatorItemOverlay(this);
         QPixmap pixmapSave(":/icons/import.png");
-        d->item_saver->setToolTip("<span style=\"background: #fff8dc;\">Save data to database</span>");
-        d->item_saver->setPixmap(pixmapSave);
-        d->item_saver->setPos(10, 65);
-        d->item_saver->setOpacity(0.0);
+        d->itemSaver->setToolTip("<span style=\"background: #fff8dc;\">Save data to database</span>");
+        d->itemSaver->setPixmap(pixmapSave);
+        d->itemSaver->setPos(10, 65);
+        d->itemSaver->setOpacity(0.0);
         
-        connect(d->item_saver, SIGNAL(clicked()), this, SLOT(saveData()));
+        connect(d->itemSaver, SIGNAL(clicked()), this, SLOT(saveData()));
         
         // Setup animation        
-        d->item_saver_fading_animation = new QPropertyAnimation(d->item_saver, "opacity", this);
-        d->item_saver_fading_animation->setDuration(150);
+        d->itemSaverFadingAnimation = new QPropertyAnimation(d->itemSaver, "opacity", this);
+        d->itemSaverFadingAnimation->setDuration(150);
         
-        d->fading_animation->addAnimation(d->item_saver_fading_animation);
+        d->fadingAnimation->addAnimation(d->itemSaverFadingAnimation);
     }
     else
     {
-        d->item_saver = NULL;
-        d->item_saver_fading_animation = NULL;
+        d->itemSaver = NULL;
+        d->itemSaverFadingAnimation = NULL;
     }
     
-    d->item_trasher = new medDatabaseNavigatorItemOverlay(this);
-    d->item_trasher->setToolTip("<span style=\"background: #fff8dc;\">Remove data</span>");
+    d->itemTrasher = new medDatabaseNavigatorItemOverlay(this);
+    d->itemTrasher->setToolTip("<span style=\"background: #fff8dc;\">Remove data</span>");
     QPixmap pixmapDelete(":/icons/cross.svg");
-    d->item_trasher->setPixmap(pixmapDelete.scaledToWidth(16));
-    d->item_trasher->setPos(10, 25);
-    d->item_trasher->setOpacity(0.0);
+    d->itemTrasher->setPixmap(pixmapDelete.scaledToWidth(16));
+    d->itemTrasher->setPos(10, 25);
+    d->itemTrasher->setOpacity(0.0);
     
-    connect(d->item_trasher, SIGNAL(clicked()), this, SLOT(deleteData()));
+    connect(d->itemTrasher, SIGNAL(clicked()), this, SLOT(deleteData()));
     
     // Setup animation        
-    d->item_trasher_fading_animation = new QPropertyAnimation(d->item_trasher, "opacity", this);
-    d->item_trasher_fading_animation->setDuration(150);
+    d->itemTrasherFadingAnimation = new QPropertyAnimation(d->itemTrasher, "opacity", this);
+    d->itemTrasherFadingAnimation->setDuration(150);
     
-    d->fading_animation->addAnimation(d->item_trasher_fading_animation);
+    d->fadingAnimation->addAnimation(d->itemTrasherFadingAnimation);
 }
 
 medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)
@@ -257,34 +257,34 @@ void medDatabaseNavigatorItem::paint(QPainter *painter, const QStyleOptionGraphi
 
 void medDatabaseNavigatorItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    if (d->item_saver_fading_animation)
+    if (d->itemSaverFadingAnimation)
     {
-        d->item_saver_fading_animation->setStartValue(0.0);
-        d->item_saver_fading_animation->setEndValue(1.0);
+        d->itemSaverFadingAnimation->setStartValue(0.0);
+        d->itemSaverFadingAnimation->setEndValue(1.0);
     }
 
-    d->item_exporter_fading_animation->setStartValue(0.0);
-    d->item_exporter_fading_animation->setEndValue(1.0);
+    d->itemExporterFadingAnimation->setStartValue(0.0);
+    d->itemExporterFadingAnimation->setEndValue(1.0);
 
-    d->item_trasher_fading_animation->setStartValue(0.0);
-    d->item_trasher_fading_animation->setEndValue(1.0);
+    d->itemTrasherFadingAnimation->setStartValue(0.0);
+    d->itemTrasherFadingAnimation->setEndValue(1.0);
 
-    d->fading_animation->start();
+    d->fadingAnimation->start();
 }
 
 void medDatabaseNavigatorItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    if (d->item_saver_fading_animation)
+    if (d->itemSaverFadingAnimation)
     {
-        d->item_saver_fading_animation->setStartValue(1.0);
-        d->item_saver_fading_animation->setEndValue(0.0);
+        d->itemSaverFadingAnimation->setStartValue(1.0);
+        d->itemSaverFadingAnimation->setEndValue(0.0);
     }
     
-    d->item_exporter_fading_animation->setStartValue(1.0);
-    d->item_exporter_fading_animation->setEndValue(0.0);
+    d->itemExporterFadingAnimation->setStartValue(1.0);
+    d->itemExporterFadingAnimation->setEndValue(0.0);
     
-    d->item_trasher_fading_animation->setStartValue(1.0);
-    d->item_trasher_fading_animation->setEndValue(0.0);
+    d->itemTrasherFadingAnimation->setStartValue(1.0);
+    d->itemTrasherFadingAnimation->setEndValue(0.0);
     
-    d->fading_animation->start();
+    d->fadingAnimation->start();
 }

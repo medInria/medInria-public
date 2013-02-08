@@ -53,11 +53,11 @@ class medSegmentationSelectorToolBoxPrivate
 {
 public:
     medSegmentationSelectorToolBoxPrivate() : progression_stack(NULL), algorithmParameterLayout(NULL),
-        toolboxes(NULL), customToolBox(NULL), workspace(NULL) { }
+        toolBoxes(NULL), customToolBox(NULL), workspace(NULL) { }
 
     medProgressionStack *progression_stack;
     QBoxLayout *algorithmParameterLayout;
-    QComboBox *toolboxes;
+    QComboBox *toolBoxes;
     medSegmentationAbstractToolBox * customToolBox;
     medViewerWorkspace * workspace;
 
@@ -94,21 +94,21 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medViewerWorkspa
     // Process section
     // --- Setting up custom toolboxes list ---
 
-    d->toolboxes = new QComboBox(this);
-    d->toolboxes->addItem("Choose algorithm");
+    d->toolBoxes = new QComboBox(this);
+    d->toolBoxes->addItem("Choose algorithm");
 
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
-    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("segmentation")) {
-        medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
+    foreach(QString toolBox, tbFactory->toolBoxesFromCategory("segmentation")) {
+        medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolBox);
 
-        QByteArray toolboxIdBA( toolbox.toAscii() );
-        d->toolboxes->addItem(details->name, QVariant(toolboxIdBA));
-        d->toolboxes->setItemData(d->toolboxes->count() - 1,
+        QByteArray toolboxIdBA( toolBox.toAscii() );
+        d->toolBoxes->addItem(details->name, QVariant(toolboxIdBA));
+        d->toolBoxes->setItemData(d->toolBoxes->count() - 1,
             details->description,
             Qt::ToolTipRole);
     }
 
-    connect( d->toolboxes, SIGNAL( currentIndexChanged(int) ), this, SLOT( onToolBoxChosen( int )) );
+    connect( d->toolBoxes, SIGNAL( currentIndexChanged(int) ), this, SLOT( onToolBoxChosen( int )) );
 
 
     // /////////////////////////////////////////////////////////////////
@@ -117,7 +117,7 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medViewerWorkspa
 
 
     // ---
-    addWidget(d->toolboxes);
+    addWidget(d->toolBoxes);
 
     //Connect Message Controller:
     connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
@@ -140,7 +140,7 @@ medProgressionStack * medSegmentationSelectorToolBox::progressionStack()
 
 void medSegmentationSelectorToolBox::onAlgorithmAdded( const QString & algName )
 {
-    d->toolboxes->addItem( algName, QVariant(
+    d->toolBoxes->addItem( algName, QVariant(
         QByteArray(algName.toAscii()) ) );
 }
 
@@ -155,7 +155,7 @@ void medSegmentationSelectorToolBox::setAlgorithmParameterWidget( QWidget * widg
 
 void medSegmentationSelectorToolBox::onToolBoxChosen(int index)
 {
-    QByteArray algId =  (d->toolboxes->itemData( index ) ).toByteArray();
+    QByteArray algId =  (d->toolBoxes->itemData( index ) ).toByteArray();
     if ( !algId.isEmpty() ) {
         this->onToolBoxChosen( algId );
         emit toolBoxChosen( algId );
@@ -164,9 +164,9 @@ void medSegmentationSelectorToolBox::onToolBoxChosen(int index)
 
 void medSegmentationSelectorToolBox::onToolBoxChosen(const QByteArray& id)
 {
-    medSegmentationAbstractToolBox *toolbox = qobject_cast<medSegmentationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(QString(id), this));
+    medSegmentationAbstractToolBox *toolBox = qobject_cast<medSegmentationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(QString(id), this));
 
-    if(!toolbox) {
+    if(!toolBox) {
         dtkDebug() << "Unable to instantiate" << id << "toolbox";
         return;
     }
@@ -178,9 +178,9 @@ void medSegmentationSelectorToolBox::onToolBoxChosen(const QByteArray& id)
         emit removeToolBox(d->customToolBox);
         delete d->customToolBox;
     }
-    d->customToolBox = toolbox;
-    toolbox->show();
-    emit addToolBox(toolbox);
+    d->customToolBox = toolBox;
+    toolBox->show();
+    emit addToolBox(toolBox);
 }
 
 void medSegmentationSelectorToolBox::clear(void)

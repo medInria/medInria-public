@@ -36,9 +36,9 @@ medDiffusionAbstractToolBox::~medDiffusionAbstractToolBox(void)
     d = NULL;
 }
 
-void medDiffusionAbstractToolBox::setDiffusionToolBox(medDiffusionSelectorToolBox *toolbox)
+void medDiffusionAbstractToolBox::setDiffusionToolBox(medDiffusionSelectorToolBox *toolBox)
 {
-    d->parent = toolbox;
+    d->parent = toolBox;
 }
 
 medDiffusionSelectorToolBox *medDiffusionAbstractToolBox::parentToolBox(void)
