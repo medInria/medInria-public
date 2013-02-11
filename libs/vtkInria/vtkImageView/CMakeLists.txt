@@ -37,7 +37,7 @@ vtkSmartVolumeMapper.cxx
 )
 if(vtkInria_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
-    "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
+    "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
     ${${PROJECT_NAME}_SOURCES})
 endif(vtkInria_USE_PRECOMPILED_HEADERS)
 

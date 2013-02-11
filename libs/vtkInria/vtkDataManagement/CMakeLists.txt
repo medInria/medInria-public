@@ -32,7 +32,7 @@ INCLUDE(${ITK_USE_FILE})
 
 if(vtkInria_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(vtkDataManagement_SOURCES_PCH 
-    "vtkInria3dPch/vtkInria3dPch.h" "../vtkInria3dPch/vtkInria3dPch.cpp" 
+    "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
     ${vtkDataManagement_SRCS})
 endif(vtkInria_USE_PRECOMPILED_HEADERS)
 
