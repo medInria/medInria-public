@@ -38,11 +38,14 @@ class MEDCORE_EXPORT medMessage : public QWidget
 public:
      medMessage(QWidget *parent = 0, const QString& text=NULL, unsigned int timeout=0);
     ~medMessage(void);
+    void startTimer();
+    void stopTimer();
 
 	    
 protected:
     QLabel *icon;
     QTimer *timer;
+    int timeout;
     QLabel *info;
 
 
@@ -144,8 +147,8 @@ public slots:
     void remove(medMessage *message);
 
 signals:
-  void addMessage(QWidget * message);
-  void removeMessage(QWidget * message);
+  void addMessage(medMessage * message);
+  void removeMessage(medMessage * message);
 
 protected:
      medMessageController(void);

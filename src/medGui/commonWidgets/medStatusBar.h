@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QBoxLayout>
 #include "medGuiExport.h"
+#include "medMessageController.h"
 
 class medStatusBarPrivate;
 
@@ -42,7 +43,28 @@ public:
      */
     QBoxLayout * statusBarLayout();
 
-    void setAvailableSpace(int);
+    /**
+     *  Set the available space on the statusBar
+     *
+     * @param : int space
+     */
+    void setAvailableSpace( int space );
+
+    int getAvailableSpace( void );
+
+    void setMessageCount(int number);
+
+    int getMessageCounter();
+
+    void init_availableSpace();
+
+    void spaceManagement ( void );
+
+    void hideMessage( );
+
+    void showHiddenMessage();
+
+    void resizeEvent ( QResizeEvent* event );
 
 public slots:
     /**
@@ -51,12 +73,13 @@ public slots:
      *
      * @param : QWidget * widget
      */
-    void addMessage ( QWidget * widget );
+    void addMessage ( medMessage * message );
 
     /**
      *  Remove a widget (containing a message)
      */
-    void removeMessage ( QWidget * widget );
+    void removeMessage ( medMessage * message );
+
 
 signals:
     void initializeAvailableSpace(void);
@@ -65,7 +88,9 @@ private:
     medStatusBarPrivate * d;
     int availableSpace; //available space on the status bar
     int statusBarWidth;
-    QList<QWidget *> widgetList; // storing messages waiting to be displayed
+    QList<medMessage *> hiddenMessageList; // storing messages waiting to be displayed
+    QList<medMessage *> messageList;    // storing displayed messages
+    int message_count;
 };
 
 #endif // MEDSTATUSBAR_H

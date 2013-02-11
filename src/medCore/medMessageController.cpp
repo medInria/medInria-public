@@ -31,6 +31,8 @@ medMessage::medMessage( QWidget *parent,
                         const QString& text, 
                         unsigned int timeout) : QWidget(parent)
 {
+    this->timeout = timeout;
+
     this->setFixedWidth(400);
     icon = new QLabel(this);
 
@@ -48,7 +50,6 @@ medMessage::medMessage( QWidget *parent,
     {
         this->timer = new QTimer(this);
         connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
-        timer->start(timeout);
     }
 
     this->setLayout(layout);
@@ -59,10 +60,21 @@ medMessage::~medMessage(void)
 
 }
 
+void medMessage::startTimer()
+{
+    timer->start(timeout);
+}
+
+void medMessage::stopTimer()
+{
+    timer->stop();
+}
+
 void medMessage::remove()
 {
     medMessageController::instance()->remove(this);
 }
+
 
 // /////////////////////////////////////////////////////////////////
 // medMessageInfo
@@ -203,7 +215,6 @@ void medMessageController::showInfo(const QString& text,unsigned int timeout)
         // GUI
         medMessageInfo *message = new medMessageInfo(
                 text,0,timeout);
-
         emit addMessage(message);
     } else {
         dtkTrace() << text;
@@ -243,7 +254,7 @@ void medMessageController::remove(medMessage *message)
     if(message != NULL)
     {
         emit removeMessage(message);
-        delete message;
+        message->deleteLater();
     }
 }
 
