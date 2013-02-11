@@ -20,7 +20,7 @@
 
 #include <vtkErrorCode.h>
 #include <vtksys/SystemTools.hxx>
-
+#include "vtkDataManagementExport.h"
 #include <vtkMetaDataSet.h>
 #include <vtkMatrix4x4.h>
 
@@ -74,7 +74,7 @@ class vtkVolumeProperty;
 
 
 
-class vtkMetaImageData: public vtkMetaDataSet
+class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
 {
  public:
 

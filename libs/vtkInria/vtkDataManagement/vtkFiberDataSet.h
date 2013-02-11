@@ -19,7 +19,7 @@ PURPOSE.  See the above copyright notices for more information.
 #define _vtk_FiberDataSet_
 
 #include <vtkMultiBlockDataSet.h>
-
+#include "vtkDataManagementExport.h"
 #include <map>
 
 class vtkPolyData;
@@ -29,7 +29,7 @@ class vtkPolyData;
    as vtkPolyData as well.
  */
 
-class vtkFiberDataSet : public vtkMultiBlockDataSet
+class VTK_DATAMANAGEMENT_EXPORT vtkFiberDataSet : public vtkMultiBlockDataSet
 {
  public:
   static vtkFiberDataSet *New();

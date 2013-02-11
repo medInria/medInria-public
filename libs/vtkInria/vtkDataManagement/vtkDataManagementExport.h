@@ -2,7 +2,7 @@
 #define VTKDATAMANAGEMENTEXPORT_H
 
 #ifdef WIN32
- #if defined (vtkWidgetsAddOn_EXPORTS)
+ #if defined (vtkDataManagement_EXPORTS)
   #define VTK_DATAMANAGEMENT_EXPORT __declspec( dllexport )
  #else
   #define VTK_DATAMANAGEMENT_EXPORT __declspec( dllimport )

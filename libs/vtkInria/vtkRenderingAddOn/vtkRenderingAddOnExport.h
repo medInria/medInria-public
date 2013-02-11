@@ -2,7 +2,7 @@
 #define VTKRENDERINGADDONEXPORT_H
 
 #ifdef WIN32
- #if defined (vtkWidgetsAddOn_EXPORTS)
+ #if defined (vtkRenderingAddOn_EXPORTS)
   #define VTK_RENDERINGADDON_EXPORT __declspec( dllexport )
  #else
   #define VTK_RENDERINGADDON_EXPORT __declspec( dllimport )

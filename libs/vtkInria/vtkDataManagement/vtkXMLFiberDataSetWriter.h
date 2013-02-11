@@ -2,8 +2,9 @@
 #define __vtkXMLFiberDataSetWriter_h
 
 #include "vtkXMLCompositeDataWriter.h"
+#include "vtkDataManagementExport.h"
 
-class vtkXMLFiberDataSetWriter : public vtkXMLCompositeDataWriter
+class VTK_DATAMANAGEMENT_EXPORT vtkXMLFiberDataSetWriter : public vtkXMLCompositeDataWriter
 {
 public:
   static vtkXMLFiberDataSetWriter* New();

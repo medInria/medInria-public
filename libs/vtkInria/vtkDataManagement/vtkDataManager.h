@@ -24,7 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include <string>
 #include <vector>
 
-
+#include "vtkDataManagementExport.h"
 #include <vtkCommand.h>
 
 class vtkMetaDataSet;
@@ -44,7 +44,7 @@ class vtkMetaDataSetSequence;
 */
 
 
-class vtkDataManager: public vtkObject
+class VTK_DATAMANAGEMENT_EXPORT vtkDataManager: public vtkObject
 {
  public:
 

@@ -1,11 +1,11 @@
 #ifndef __vtkXMLFiberDataSetReader_h
 #define __vtkXMLFiberDataSetReader_h
-
+#include "vtkDataManagementExport.h"
 #include "vtkXMLCompositeDataReader.h"
 
 class vtkFiberDataSet;
 
-class vtkXMLFiberDataSetReader : public vtkXMLCompositeDataReader
+class VTK_DATAMANAGEMENT_EXPORT vtkXMLFiberDataSetReader : public vtkXMLCompositeDataReader
 {
 public:
   static vtkXMLFiberDataSetReader* New();

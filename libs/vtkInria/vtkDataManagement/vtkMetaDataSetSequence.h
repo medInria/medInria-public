@@ -19,7 +19,7 @@
 #define _vtkMetaDataSetSequence_h_
 
 #include <vtkMetaDataSet.h>
-
+#include "vtkDataManagementExport.h"
 #include <string>
 #include <vector>
 
@@ -52,7 +52,7 @@
 
 class vtkDoubleArray;
 
-class vtkMetaDataSetSequence: public vtkMetaDataSet
+class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
 {
  public:
 

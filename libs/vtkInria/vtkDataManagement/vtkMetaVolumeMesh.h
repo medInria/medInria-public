@@ -17,7 +17,7 @@ PURPOSE.  See the above copyright notices for more information.
 =========================================================================*/
 #ifndef _vtkMetaVolumeMesh_h_
 #define _vtkMetaVolumeMesh_h_
-
+#include "vtkDataManagementExport.h"
 #include <vtkMetaDataSet.h>
 
 class vtkUnstructuredGrid;
@@ -37,7 +37,7 @@ class vtkUnstructuredGrid;
 */
 
 
-class vtkMetaVolumeMesh: public vtkMetaDataSet
+class VTK_DATAMANAGEMENT_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
 {
  public:
 
