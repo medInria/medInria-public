@@ -17,4 +17,4 @@
  *
  */
 
-#include <vtkInria3dPch/vtkInria3dPch.h>
+#include <vtkInriaPch/vtkInriaPch.h>

@@ -37,14 +37,13 @@
 #include <vtkSmartPointer.h>
 #include <vtkTransform.h>
 
-#ifdef vtkINRIA3D_USE_ITK
 //ITK
 #include <itkConstNeighborhoodIterator.h>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 #include <itkImageToImageFilter.h>
 #include <itkObjectFactory.h>
-#endif // vtkINRIA3D_USE_ITK
+
 
 //STL / C++ bindings for C
 #include <cmath>
