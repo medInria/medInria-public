@@ -327,6 +327,11 @@ void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const Q
         this->setExpanded(index, true);
         emit seriesClicked(item->dataIndex());
     }
+    else if (item->dataIndex().isValidForStudy())
+    {
+        this->setExpanded(index, true);
+        emit studyClicked(item->dataIndex());
+    }
     else if (item->dataIndex().isValidForPatient())
     {
         this->setExpanded(index, true);
@@ -431,7 +436,8 @@ void medDatabaseView::onCreatePatientRequested(void)
         birthdate = editDialog.value(medMetaDataKeys::BirthDate.label()).toString();
         gender = editDialog.value(medMetaDataKeys::Gender.label()).toString();
 
-        dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
+        //dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
+        dtkSmartPointer<dtkAbstractData> dtkData = new dtkAbstractData();
 
         QString generatedPatientID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
 
@@ -488,7 +494,8 @@ void medDatabaseView::onCreateStudyRequested(void)
         {
             QString studyName = editDialog.value(medMetaDataKeys::StudyDescription.label()).toString();
 
-            dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
+            //dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
+            dtkSmartPointer<dtkAbstractData> dtkData = new dtkAbstractData();
 
             dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
             dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );

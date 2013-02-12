@@ -51,7 +51,7 @@ public:
 
     virtual int xDimension() const;
     virtual int yDimension() const;
-    virtual int zDimension() const;
+    virtual int zDimension();
     virtual int tDimension() const;
 
     virtual qreal xSpacing() const;

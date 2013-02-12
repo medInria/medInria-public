@@ -145,8 +145,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->addWidget(d->stack);
     layout->addWidget(d->toolboxContainer);
+    layout->addWidget(d->stack);
 
     // make toolboxes visible
     onSourceIndexChanged(d->stack->currentIndex());

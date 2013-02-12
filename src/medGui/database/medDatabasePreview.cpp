@@ -180,6 +180,36 @@ void medDatabasePreview::onPatientClicked(const medDataIndex& id)
         moveToItem( d->seriesGroup->item(firstSeId) );
 }
 
+void medDatabasePreview::onStudyClicked(const medDataIndex& id)
+{
+    d->seriesGroup->clear();
+    d->imageGroup->clear();
+
+    int firstSeId = -1;
+    medAbstractDbController * db =  medDataManager::instance()->controllerForDataSource(id.dataSourceId());
+    if ( db ) {
+
+        QList<medDataIndex> series = db->series(id);
+        for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
+
+            if ( firstSeId < 0)
+                firstSeId = (*seriesIt).seriesId();
+
+            d->seriesGroup->addItem(new medDatabasePreviewItem(
+                                         medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
+
+
+        }
+    }
+
+    d->scene->setSceneRect(d->seriesGroup->boundingRect());
+
+    if(d->level)
+        this->onSlideDw();
+    else
+        moveToItem( d->seriesGroup->item(firstSeId) );
+}
+
 void medDatabasePreview::onSeriesClicked(const medDataIndex& id)
 {
     medAbstractDbController * db =  medDataManager::instance()->controllerForDataSource(id.dataSourceId());
