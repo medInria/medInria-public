@@ -44,7 +44,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medRunnableProcess.h
   medAbstractViewFiberInteractor.h
   medAbstractData.h
-  medAbstractDataCollection.h
   medAbstractDataImage.h
   medAbstractDataImage2D.h
   medAbstractDataImage3D.h
@@ -91,7 +90,6 @@ set(${PROJECT_NAME}_SOURCES
   medAbstractDataSourceFactory.cpp
   medAbstractViewFiberInteractor.cpp
   medAbstractData.cpp
-  medAbstractDataCollection.cpp
   medAbstractDataImage.cpp
   medAbstractDataImage2D.cpp
   medAbstractDataImage3D.cpp
