@@ -207,6 +207,29 @@ medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
             this, SLOT(onSingleNonPersistentDataStored(const medDataIndex &, const QString &)));
     connect(db,SIGNAL(updated(const medDataIndex &)),
             this, SLOT(onPersistentDatabaseUpdated(const medDataIndex &)));
+    
+    
+    // TODO: Is it the best place to do that?
+    // TODO: Should we do the same fo readers?
+    // Set writer priorites
+    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
+    QMap<int, QString> writerPriorites;
+    
+    int startIndex = 0;
+    
+    // set itkMetaDataImageWriter as the top priority writer
+    if(writers.contains("itkMetaDataImageWriter"))
+    {
+        writerPriorites.insert(0, "itkMetaDataImageWriter");  
+        startIndex = writers.removeOne("itkMetaDataImageWriter");
+    }
+    
+    for ( int i=0; i<writers.size(); i++ )
+    {
+        writerPriorites.insert(startIndex+i, writers[i]);   
+    }
+    
+    dtkAbstractDataFactory::instance()->setWriterPriorities(writerPriorites);
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -567,6 +590,8 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
 
 void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index, const QString &uuid )
 {
+    qDebug() << "onSingleNonPersistentDataStored";
+    
     medAbstractDbController* db = d->getDbController();
     medAbstractDbController* npDb = d->getNonPersDbController();
 

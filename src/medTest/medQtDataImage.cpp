@@ -177,7 +177,7 @@ int medQtDataImage::yDimension( void ) const
     }
 }
 
-int medQtDataImage::zDimension( void ) const
+int medQtDataImage::zDimension( void )
 {
     return d->images.size();
 }

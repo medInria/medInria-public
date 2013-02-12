@@ -38,6 +38,9 @@ signals:
     /** Signal emitted when user clicks on a patient item. */
     void patientClicked(const medDataIndex &index);
 
+    /** Signal emitted when user clicks on a study item. */
+    void studyClicked(const medDataIndex &index);
+    
     /** Signal emitted when user clicks on a series item. */
     void seriesClicked(const medDataIndex &index);
 

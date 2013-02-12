@@ -108,6 +108,12 @@ target_link_libraries(${PROJECT_NAME}
 source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
+
+if (BUILD_TESTING)
+  add_subdirectory (Testing)
+endif()
+
+
 ## #################################################################
 ## Installation
 ## #################################################################

@@ -21,7 +21,6 @@
 #include <medMessageController.h>
 #include <medJobManager.h>
 
-#include "medAttachedData.h"
 #include <medMetaDataKeys.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>

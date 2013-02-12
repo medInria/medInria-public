@@ -120,10 +120,17 @@ void medDatabaseNonPersistentImporter::run()
         else
             item->d->name = "John Doe";
 
-        dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
+        //dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
+        dtkSmartPointer<medAbstractData> dtkData = new medAbstractData();
+
         dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() <<  item->d->name );
         dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
         dtkData->addMetaData ( medMetaDataKeys::Gender.key(), gender );
+       
+        /*dtkAbstractData dtkData;
+        dtkData.addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() <<  item->d->name );
+        dtkData.addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
+        dtkData.addMetaData ( medMetaDataKeys::Gender.key(), gender );*/
 
         item->d->patientId = patientId;
         item->d->index = index;
@@ -185,7 +192,8 @@ void medDatabaseNonPersistentImporter::run()
         item->d->index = index;
         item->d->studyName = studyName;
 
-        dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
+        //dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
+        dtkSmartPointer<medAbstractData> dtkData = new medAbstractData();
 
         dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
         dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
