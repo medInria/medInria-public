@@ -52,10 +52,6 @@ public:
 
     int getAvailableSpace( void );
 
-    void setMessageCount(int number);
-
-    int getMessageCounter();
-
     void init_availableSpace();
 
     void spaceManagement ( void );
@@ -90,7 +86,6 @@ private:
     int statusBarWidth;
     QList<medMessage *> hiddenMessageList; // storing messages waiting to be displayed
     QList<medMessage *> messageList;    // storing displayed messages
-    int message_count;
 };
 
 #endif // MEDSTATUSBAR_H

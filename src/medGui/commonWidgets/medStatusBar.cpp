@@ -13,7 +13,6 @@ medStatusBar::medStatusBar ( QWidget* parent ) : QStatusBar ( parent ), d ( new 
     d->statusBarLayout = NULL;
     this->statusBarWidth = this->size().width();
     this->availableSpace = -1; //value before initialization (after, always positive)
-    message_count = 0;
 }
 
 medStatusBar::~medStatusBar()
@@ -43,16 +42,6 @@ int medStatusBar::getAvailableSpace ( void )
     return this->availableSpace;
 }
 
-void medStatusBar::setMessageCount(int number)
-{
-    this->message_count = number;
-}
-
-int medStatusBar::getMessageCounter()
-{
-    return this->message_count;
-}
-
 
 /**
  * Initialize availableSpace
@@ -61,7 +50,6 @@ void medStatusBar::init_availableSpace()
 {
     if (availableSpace == -1 )
     {
-        qDebug()<<" INITIALIZATION";
         emit initializeAvailableSpace();
     } 
 }
@@ -73,10 +61,7 @@ void medStatusBar::spaceManagement()
 {
     if (availableSpace != -1)       // if availableSpace initialized
     {
-        qDebug()<<" WINDOW SIZE CHANGED";
-        qDebug()<<"       previous space = "<<availableSpace;
         availableSpace += (this->size().width()-statusBarWidth);    //update available space 
-        qDebug()<<"       new space = "<<availableSpace;
         statusBarWidth = this->size().width();                      // and statusbarWidth
     } 
 }
@@ -95,18 +80,17 @@ void medStatusBar::addMessage ( medMessage* message )
         if ( d->statusBarLayout )
         {
             if ( this->availableSpace > message->size().width()+d->statusBarLayout->spacing())      // if enough space
-            {                   
+            {                  
                 this->messageList.append(message);   // messages are stored in a list to easily hide newest messages 
-                                                    // when quit message is displayed
+                                                     // when quit message is displayed
                 this->availableSpace -= (message->size().width() +d->statusBarLayout->spacing());       //update available space
-                message_count ++;
                 message->startTimer(); // starts the countdown before removing the message
                 d->statusBarLayout->insertWidget ( 1, message );
             }
             else
             {
                 this->hiddenMessageList.append(message);    //put the message into a list 
-                qDebug()<<"hiddenMessageList.count() addMessage : "<<hiddenMessageList.count();
+                
             }
         }
     }
@@ -122,13 +106,9 @@ void medStatusBar::removeMessage ( medMessage* message )
 {
     if ( message )
     {
-        this->messageList.takeFirst()->deleteLater();
+        this->messageList.removeFirst();
         this->availableSpace += (message->size().width()+d->statusBarLayout->spacing());         //update available space
-
         d->statusBarLayout->removeWidget(message);
-        
-        message_count --;
-
         showHiddenMessage();    //space has been freed
     }
 }
@@ -138,12 +118,14 @@ void medStatusBar::removeMessage ( medMessage* message )
 */
 void medStatusBar::hideMessage( )
 {
-    qDebug()<<"   Hide Message !!";
-    medMessage* messageToHide = this->messageList.takeFirst(); //take the last notification
-    messageToHide->stopTimer();       //stop the timer for not being deleted while hidden
-    messageToHide->hide();
-    this->availableSpace += messageToHide->width() + d->statusBarLayout->spacing(); //update available space
-    this->hiddenMessageList.append(messageToHide);
+    if ( !messageList.isEmpty() )
+    {
+        medMessage* messageToHide = this->messageList.takeFirst(); //take the last notification
+        messageToHide->stopTimer();       //stop the timer for not being deleted while hidden
+        messageToHide->hide();
+        this->availableSpace += messageToHide->width() + d->statusBarLayout->spacing(); //update available space
+        this->hiddenMessageList.append(messageToHide);
+    }
 }
 
 /**
@@ -159,10 +141,26 @@ void medStatusBar::showHiddenMessage()
 }
 
 /**
- * Updates the available space on the statusBar, when window size is modified.
+ * Update the available space on the statusBar, when window size is modified.
 */
 void medStatusBar::resizeEvent ( QResizeEvent* event )
 {
     if(availableSpace != -1) // not before initialization
-    spaceManagement();
+    {
+        spaceManagement();
+
+        int diff = event->size().width() - event->oldSize().width();
+
+        if ( diff > 0 )
+        {
+            showHiddenMessage();
+        }
+        else
+        {
+            if(std::abs(diff) > availableSpace)
+            {
+                hideMessage();
+            }
+        }
+    }
 }

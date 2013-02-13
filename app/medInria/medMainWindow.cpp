@@ -666,7 +666,6 @@ void medMainWindow::onQuit ( void )
     while ( d->quitMessage->width() > d->statusBar->getAvailableSpace())
     {
         d->statusBar->hideMessage();
-        d->statusBar->setMessageCount(d->statusBar->getMessageCounter()-1);
     }
     space = d->statusBar->getAvailableSpace();
     space -= d->quitMessage->width();   //quitMessage is displayed
@@ -720,11 +719,9 @@ void medMainWindow::availableSpaceOnStatusBar()
 {
     QPoint workspaceButton_topRight = d->quickAccessButton->mapTo(d->statusBar, d->quickAccessButton->rect().topRight());
     QPoint fullscreenButton_topLeft = d->fullscreenButton->mapTo(d->statusBar, d->fullscreenButton->rect().topLeft());
-    qDebug()<<workspaceButton_topRight<<fullscreenButton_topLeft;
     //Available space = space between the spacing after workspace button and the spacing before fullscreen button
     int space = (fullscreenButton_topLeft.x()-d->statusBarLayout->spacing()) -  (workspaceButton_topRight.x()+d->statusBarLayout->spacing()); 
     d->statusBar->setAvailableSpace(space);
-    qDebug()<<"space after initialization : "<<space;
 }
 
 void medMainWindow::open ( const medDataIndex& index )
