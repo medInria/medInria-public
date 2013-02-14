@@ -71,16 +71,6 @@ QStringList medQtDataImageWriter::handled() const
 
 QStringList medQtDataImageWriter::supportedFileExtensions() const
 {
-    //TODO: test GPR
-    /*dtkAbstractData * dtkdata = const_cast<medQtDataImageWriter*>(this)->data();
-
-    if ( !const_cast<medQtDataImageWriter*>(this)->data() ) {
-        return QStringList();
-    }
-    if ( dtkdata->identifier() != medQtDataImage::s_identifier() ) {
-        return QStringList();
-    }
-    */
     QStringList extensions;
 #if QT_VERSION > 0x0406FF
     extensions.reserve( m_supportedExtensionList.size());
@@ -110,8 +100,6 @@ bool medQtDataImageWriter::write( const QString& path )
 
 bool medQtDataImageWriter::canWrite( const QString& path )
 {
-    // with this implementation we canno test if we can write wihout setting the data
-    //return this->writeOrTest(path, true);
     QFileInfo fi ( path );
     QString suffix = fi.suffix();
 
@@ -170,7 +158,7 @@ bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= tru
         writer->setFormat( fmtString );
     }
 
-    medAbstractDataImage * dtkdataIm = dynamic_cast< medAbstractDataImage *>( this->data() );
+    medAbstractDataImage * dtkdataIm = dynamic_cast< medAbstractDataImage *>( dtkdata );
 
     // Set metadata
     const QStringList keys = dtkdata->metaDataList();
