@@ -1,7 +1,9 @@
 PROJECT(PolydataToFiberXML)
 
-FIND_PACKAGE(vtkInria REQUIRED)
-INCLUDE(${vtkInria_USE_FILE})
+include_directories(
+../../vtkRenderingAddOn
+../../vtkDataManagement
+)
 
 ADD_EXECUTABLE(PolydataToFiberXML
 PolydataToFiberXML.cxx

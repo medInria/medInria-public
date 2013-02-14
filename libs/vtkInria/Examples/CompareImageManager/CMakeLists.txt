@@ -1,7 +1,9 @@
 PROJECT(CompareImageManager)
 
-FIND_PACKAGE(vtkInria REQUIRED)
-INCLUDE(${vtkInria_USE_FILE})
+include_directories(
+../../vtkRenderingAddOn
+../../vtkVisuManagement
+)
 
 ADD_EXECUTABLE(CompareImageManager
 CompareImageManager.cxx

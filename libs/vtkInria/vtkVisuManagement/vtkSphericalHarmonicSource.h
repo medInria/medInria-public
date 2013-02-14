@@ -10,7 +10,7 @@
 
 #ifndef VTKSPHERICALHARMONICSOURCE_HPP
 #define VTKSPHERICALHARMONICSOURCE_HPP
-#include "vtkINRIA3DConfigure.h"
+#include "vtkVisuManagementExport.h"
 
 #include <vtkPolyDataAlgorithm.h>
 #include <vtkMatrix4x4.h>

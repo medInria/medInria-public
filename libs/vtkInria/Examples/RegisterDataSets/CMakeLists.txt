@@ -1,7 +1,9 @@
 PROJECT(RegisterDataSets)
 
-FIND_PACKAGE(vtkInria REQUIRED)
-INCLUDE(${vtkInria_USE_FILE})
+include_directories(
+../../vtkImageView
+../../vtkDataManagement
+)
 
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 

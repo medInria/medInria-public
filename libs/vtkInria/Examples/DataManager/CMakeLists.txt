@@ -1,7 +1,10 @@
 PROJECT(DataManager)
 
-FIND_PACKAGE(vtkInria REQUIRED)
-INCLUDE(${vtkInria_USE_FILE})
+include_directories(
+../../vtkRenderingAddOn
+../../vtkDataManagement
+../../vtkVisuManagement
+)
 
 IF(APPLE)
 SET(GUI_EXECUTABLE MACOSX_BUNDLE)

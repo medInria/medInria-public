@@ -1,7 +1,9 @@
 PROJECT(FibersManager)
 
-FIND_PACKAGE(vtkInria REQUIRED)
-INCLUDE(${vtkInria_USE_FILE})
+include_directories(
+../../vtkRenderingAddOn
+../../vtkVisuManagement
+)
 
 IF(APPLE)
 SET(GUI_EXECUTABLE MACOSX_BUNDLE)

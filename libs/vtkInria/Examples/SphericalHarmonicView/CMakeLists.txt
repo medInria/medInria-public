@@ -1,7 +1,8 @@
 PROJECT(SHVisu)
 
-FIND_PACKAGE(vtkInria REQUIRED)
-INCLUDE(${vtkInria_USE_FILE})
+include_directories(
+../../vtkVisuManagement
+../../vtkRenderingAddOn)
 
 IF(APPLE)
 SET(GUI_EXECUTABLE MACOSX_BUNDLE)

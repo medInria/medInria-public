@@ -1,7 +1,11 @@
 PROJECT(TensorManager)
 
-FIND_PACKAGE(vtkInria REQUIRED)
-INCLUDE(${vtkInria_USE_FILE})
+include_directories(
+../../vtkImageView
+../../vtkRenderingAddOn
+../../vtkDataManagement
+../../vtkVisuManagement
+)
 
 ADD_EXECUTABLE(TensorManager
 TensorManager.cxx

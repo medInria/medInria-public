@@ -20,7 +20,6 @@
 
 #include "itkImage.h"
 #include "itkImageToImageFilter.h"
-#include "vtkINRIA3DConfigure.h"
 
 class vtkImageData;
 class vtkMatrix4x4;

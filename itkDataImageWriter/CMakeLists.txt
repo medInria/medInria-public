@@ -94,8 +94,6 @@ target_link_libraries(${PROJECT_NAME}
   dtkItkLogForwarder
   dtkCore dtkLog
   medCore
-  itkDataImageBase
-  ITKIOReview
   ${ITK_LIBRARIES})
 
 # Group common files together in Visual Studio.

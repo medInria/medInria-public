@@ -9,7 +9,7 @@
 
 #ifndef vtkTessellatedSphereSource_H
 #define vtkTessellatedSphereSource_H
-#include "vtkINRIA3DConfigure.h"
+#include "vtkVisuManagementExport.h"
 
 #include <vtkPolyDataAlgorithm.h>
 
