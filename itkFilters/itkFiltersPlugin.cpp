@@ -2,6 +2,7 @@
 
 #include "itkFilters.h"
 #include "itkFiltersAddProcess.h"
+#include "itkFiltersSubtractProcess.h"
 #include "itkFiltersToolBox.h"
 #include "itkFiltersDefinitions.h"
 
@@ -31,9 +32,13 @@ bool itkFiltersPlugin::initialize ( void )
     }
     
     if ( !itkFiltersAddProcess::registered() ) {
-        dtkWarn() << "Unable to register itkFilters type";
+        dtkWarn() << "Unable to register itkFilters add process type";
     }
 
+    if ( !itkFiltersSubtractProcess::registered() ) {
+        dtkWarn() << "Unable to register itkFilters subtract process type";
+    }
+    
     if ( !itkFiltersToolBox::registered() ) {
         dtkWarn() << "Unable to register itkFilters toolbox";
     }
@@ -86,7 +91,6 @@ QStringList itkFiltersPlugin::dependencies ( void ) const
     return dtkPlugin::dependencies();
 }
 
-
 QStringList itkFiltersPlugin::tags ( void ) const
 {
     return QStringList() << "ITK" << "process" << "preprocessing" << "filtering";
@@ -94,7 +98,7 @@ QStringList itkFiltersPlugin::tags ( void ) const
 
 QStringList itkFiltersPlugin::types ( void ) const
 {
-    return QStringList() << "itkFilters" << "itkFilterAddProcess";
+    return QStringList() << "itkFilters" << "itkAddProcess" << "itkSubtractProcess";
 }
 
 Q_EXPORT_PLUGIN2 ( itkFiltersPlugin, itkFiltersPlugin )

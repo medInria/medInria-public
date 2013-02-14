@@ -49,12 +49,14 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkFiltersPlugin.h
   itkFiltersToolBox.h
   itkFiltersAddProcess.h
+  itkFiltersSubtractProcess.h
   itkFilters.h)
 
 set(${PROJECT_NAME}_SOURCES
   itkFiltersPlugin.cpp
   itkFiltersToolBox.cpp
   itkFiltersAddProcess.cpp
+  itkFiltersSubtractProcess.cpp
   itkFilters.cpp)
 
 ## #################################################################
