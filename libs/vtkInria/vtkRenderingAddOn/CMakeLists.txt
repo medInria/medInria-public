@@ -39,16 +39,9 @@ SET(vtkRenderingAddOn_LIBS
     vtkVolumeRendering
     vtkHybrid
     vtkImaging
+    ITKCommon
+    ITKBasicFilters
 )
-
-IF( vtkInria_USE_ITK )
-   SET(vtkRenderingAddOn_LIBS
-   ITKCommon
-   ITKBasicFilters
-   ${vtkRenderingAddOn_LIBS}
-   )
-ENDIF( vtkInria_USE_ITK )
-
 
   TARGET_LINK_LIBRARIES(vtkRenderingAddOn
   ${vtkRenderingAddOn_LIBS}

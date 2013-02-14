@@ -107,18 +107,9 @@ SET (${PROJECT_NAME}_BUILD_SHARED_LIBS 1)
 # -----------------------------------------------------------------------------
 # ITK
 # -----------------------------------------------------------------------------
-OPTION(vtkInria_USE_ITK "If ON, Compile ITK extensions, like itkAddOn, Needed also for vtkRenderingAddOn" ON)
-IF(vtkInria_USE_ITK)
-  FIND_PACKAGE(ITK REQUIRED)
-  INCLUDE(${ITK_USE_FILE})
-
-  IF( ITK_BUILD_SHARED )
-    SET( ITK_LIBS_STYLE "SHARED" )
-  ELSE( ITK_BUILD_SHARED )
-    SET( ITK_LIBS_STYLE "STATIC" )
-  ENDIF( ITK_BUILD_SHARED )
-ENDIF(vtkInria_USE_ITK)
-
+FIND_PACKAGE(ITK REQUIRED)
+INCLUDE(${ITK_USE_FILE})
+  
 # -----------------------------------------------------------------------------
 # The hardware shading extension by T. Peeters (BMIA - TUe)
 # -----------------------------------------------------------------------------
