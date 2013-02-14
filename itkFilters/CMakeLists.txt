@@ -50,6 +50,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkFiltersToolBox.h
   itkFiltersAddProcess.h
   itkFiltersSubtractProcess.h
+  itkFiltersMultiplyProcess.h
+  itkFiltersDivideProcess.h
   itkFilters.h)
 
 set(${PROJECT_NAME}_SOURCES
@@ -57,6 +59,8 @@ set(${PROJECT_NAME}_SOURCES
   itkFiltersToolBox.cpp
   itkFiltersAddProcess.cpp
   itkFiltersSubtractProcess.cpp
+  itkFiltersMultiplyProcess.cpp
+  itkFiltersDivideProcess.cpp
   itkFilters.cpp)
 
 ## #################################################################

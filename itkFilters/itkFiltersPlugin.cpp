@@ -3,7 +3,8 @@
 #include "itkFilters.h"
 #include "itkFiltersAddProcess.h"
 #include "itkFiltersSubtractProcess.h"
-#include "itkFiltersToolBox.h"
+#include "itkFiltersMultiplyProcess.h"
+#include "itkFiltersDivideProcess.h"#include "itkFiltersToolBox.h"
 #include "itkFiltersDefinitions.h"
 
 #include <dtkLog/dtkLog.h>
@@ -27,21 +28,12 @@ itkFiltersPlugin::~itkFiltersPlugin ( void )
 
 bool itkFiltersPlugin::initialize ( void )
 {
-    if ( !itkFilters::registered() ) {
-        dtkWarn() << "Unable to register itkFilters type";
-    }
-    
-    if ( !itkFiltersAddProcess::registered() ) {
-        dtkWarn() << "Unable to register itkFilters add process type";
-    }
-
-    if ( !itkFiltersSubtractProcess::registered() ) {
-        dtkWarn() << "Unable to register itkFilters subtract process type";
-    }
-    
-    if ( !itkFiltersToolBox::registered() ) {
-        dtkWarn() << "Unable to register itkFilters toolbox";
-    }
+    if ( !itkFilters::registered() )                { dtkWarn() << "Unable to register itkFilters type";                  }
+    if ( !itkFiltersAddProcess::registered() )      { dtkWarn() << "Unable to register itkFilters add process type";      }
+    if ( !itkFiltersSubtractProcess::registered() ) { dtkWarn() << "Unable to register itkFilters subtract process type"; }
+    if ( !itkFiltersMultiplyProcess::registered() ) { dtkWarn() << "Unable to register itkFilters multiply process type"; }
+    if ( !itkFiltersDivideProcess::registered() )   { dtkWarn() << "Unable to register itkFilters divide process type";   }
+    if ( !itkFiltersToolBox::registered() )         { dtkWarn() << "Unable to register itkFilters toolbox";               }
 
     return true;
 }
@@ -98,7 +90,11 @@ QStringList itkFiltersPlugin::tags ( void ) const
 
 QStringList itkFiltersPlugin::types ( void ) const
 {
-    return QStringList() << "itkFilters" << "itkAddProcess" << "itkSubtractProcess";
+    return QStringList() << "itkFilters"
+                         << "itkAddProcess"
+                         << "itkSubtractProcess"
+                         << "itkMultiplyProcess" 
+                         << "itkDivideProcess";
 }
 
 Q_EXPORT_PLUGIN2 ( itkFiltersPlugin, itkFiltersPlugin )
