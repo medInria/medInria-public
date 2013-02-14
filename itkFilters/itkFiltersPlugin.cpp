@@ -1,5 +1,7 @@
-#include "itkFilters.h"
 #include "itkFiltersPlugin.h"
+
+#include "itkFilters.h"
+#include "itkFiltersAddProcess.h"
 #include "itkFiltersToolBox.h"
 #include "itkFiltersDefinitions.h"
 
@@ -24,11 +26,17 @@ itkFiltersPlugin::~itkFiltersPlugin ( void )
 
 bool itkFiltersPlugin::initialize ( void )
 {
-    if ( !itkFilters::registered() )
+    if ( !itkFilters::registered() ) {
         dtkWarn() << "Unable to register itkFilters type";
+    }
+    
+    if ( !itkFiltersAddProcess::registered() ) {
+        dtkWarn() << "Unable to register itkFilters type";
+    }
 
-    if ( !itkFiltersToolBox::registered() )
+    if ( !itkFiltersToolBox::registered() ) {
         dtkWarn() << "Unable to register itkFilters toolbox";
+    }
 
     return true;
 }
@@ -86,7 +94,7 @@ QStringList itkFiltersPlugin::tags ( void ) const
 
 QStringList itkFiltersPlugin::types ( void ) const
 {
-    return QStringList() << "itkFilters";
+    return QStringList() << "itkFilters" << "itkFilterAddProcess";
 }
 
 Q_EXPORT_PLUGIN2 ( itkFiltersPlugin, itkFiltersPlugin )

@@ -48,11 +48,13 @@ include(${medInria_USE_FILE})
 set(${PROJECT_NAME}_HEADERS_MOC
   itkFiltersPlugin.h
   itkFiltersToolBox.h
+  itkFiltersAddProcess.h
   itkFilters.h)
 
 set(${PROJECT_NAME}_SOURCES
   itkFiltersPlugin.cpp
   itkFiltersToolBox.cpp
+  itkFiltersAddProcess.cpp
   itkFilters.cpp)
 
 ## #################################################################
