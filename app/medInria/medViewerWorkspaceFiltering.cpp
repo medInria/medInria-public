@@ -13,11 +13,12 @@
 
 #include <medViewerToolBoxViewProperties.h>
 #include <medToolBoxFiltering.h>
-
+#include <medToolBoxFactory.h>
 #include <medViewContainer.h>
 #include <medViewContainerMulti.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFilteringCustom.h>
+
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -148,4 +149,9 @@ void medViewerWorkspaceFiltering::onViewRemoved ()
 QString medViewerWorkspaceFiltering::description(void) const
 {
     return "Filtering";
+}
+
+bool medViewerWorkspaceFiltering::isUsable(){
+    medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
+    return (tbFactory->toolBoxesFromCategory("filtering").size()!=0); 
 }

@@ -473,8 +473,10 @@ void medDatabaseImporter::populateMissingMetadata ( dtkAbstractData* dtkData, co
     if ( !dtkData->hasMetaData ( medMetaDataKeys::SeriesID.key() ) )
       dtkData->addMetaData ( medMetaDataKeys::SeriesID.key(), QStringList() << generatedSeriesId);
 
+    QString generatedSeriesDicomID = QUuid::createUuid().toString().replace("{","").replace("}","");
+
     if ( !dtkData->hasMetaData ( medMetaDataKeys::SeriesDicomID.key() ) )
-        dtkData->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << "" );
+        dtkData->addMetaData ( medMetaDataKeys::SeriesDicomID.key(), QStringList() << generatedSeriesDicomID );
 
     if ( !dtkData->hasMetaData ( medMetaDataKeys::Orientation.key() ) )
         dtkData->addMetaData ( medMetaDataKeys::Orientation.key(), QStringList() << "" );

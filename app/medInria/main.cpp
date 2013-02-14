@@ -86,18 +86,18 @@ int main(int argc,char* argv[]) {
     // foreground, hiding all other windows. This makes debugging the startup
     // operations difficult.
 
-    #if !defined(_DEBUG)
-    bool show_splash = true;
+    #if defined(_DEBUG)
+    #define SHOW_SPLASH_DEFAULT false
     #else
-    bool show_splash = false;
+    #define SHOW_SPLASH_DEFAULT true
     #endif
 
     medSettingsManager* mnger = medSettingsManager::instance();
 
     const QString& FileToView = dtkApplicationArgumentsValue(&application,"--view");
     const bool DirectView = (FileToView!=QString());
-    if (DirectView)
-        show_splash = false;
+
+    const bool show_splash = (DirectView) ? false : SHOW_SPLASH_DEFAULT;
 
     medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
     if (show_splash) {
@@ -171,6 +171,12 @@ int main(int argc,char* argv[]) {
 
     if (show_splash)
         splash.finish(&mainwindow);
+
+    if (medPluginManager::instance()->plugins().isEmpty()) {
+        QMessageBox::warning(&mainwindow,
+                             QObject::tr("No plugin loaded"),
+                             QObject::tr("Warning : no plugin loaded successfully."));
+    }
 
     const int status = application.exec();
 

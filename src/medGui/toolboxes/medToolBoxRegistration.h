@@ -67,6 +67,10 @@ public slots:
     void onSaveImage(void);
     void onSaveTrans(void);
     void onSuccess(void);
+
+    void synchroniseWindowLevel(QObject * sender = NULL);
+    void synchronisePosition(const QVector3D &position);
+
 private:
     medToolBoxRegistrationPrivate *d;
 };

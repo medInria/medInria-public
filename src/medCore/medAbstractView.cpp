@@ -141,6 +141,10 @@ QWidget *medAbstractView::receiverWidget(void)
 void medAbstractView::setLinkPosition (bool value)
 {
     d->linkPosition = value;
+    if (value)
+        setProperty("PositionLinked","true");
+    else
+        setProperty("PositionLinked","false");
 }
 
 bool medAbstractView::positionLinked (void) const

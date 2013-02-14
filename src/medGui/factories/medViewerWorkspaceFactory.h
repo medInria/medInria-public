@@ -17,7 +17,7 @@ class MEDGUI_EXPORT medViewerWorkspaceFactory : public dtkAbstractFactory
 
 public:
     typedef medViewerWorkspace *(*medViewerWorkspaceCreator)(QWidget* parent);
-
+    typedef bool (*medViewerWorkspaceIsUsable)();
 
 public:
     static medViewerWorkspaceFactory *instance(void);
@@ -45,7 +45,7 @@ public:
                          QString description){
         //we must keep the templated part in the .h file for library users
         medViewerWorkspaceCreator creator = create<workspaceType>;
-        return registerWorkspace(identifier,name,description,creator);
+        return registerWorkspace(identifier,name,description,creator,workspaceType::isUsable);
     }
 
     /**
@@ -63,7 +63,8 @@ public:
     bool registerWorkspace(QString identifier,
                          QString name,
                          QString description,
-                         medViewerWorkspaceCreator creator);
+                         medViewerWorkspaceCreator creator,
+                         medViewerWorkspaceIsUsable isUsable=NULL);
 
     /**
      * @brief Gives the details of all workspaces.
@@ -76,6 +77,8 @@ public:
      *
      */
     medViewerWorkspaceDetails * workspaceDetailsFromId(QString identifier) const;
+
+    bool isUsable(QString identifier) const;
 
 public slots:
     /**
@@ -114,9 +117,9 @@ struct MEDGUI_EXPORT medViewerWorkspaceDetails{
     QString name; /** Readable name*/
     QString description; /** (tooltip) short description of the workspace */
     medViewerWorkspaceFactory::medViewerWorkspaceCreator creator; /** function pointer allocating memory for the workspace*/
-    medViewerWorkspaceDetails(QString name,QString description,
-                                  medViewerWorkspaceFactory::medViewerWorkspaceCreator creator):
-        name(name),description(description), creator(creator){}
+    medViewerWorkspaceFactory::medViewerWorkspaceIsUsable isUsable;
+    medViewerWorkspaceDetails(QString name,QString description,medViewerWorkspaceFactory::medViewerWorkspaceCreator creator, medViewerWorkspaceFactory::medViewerWorkspaceIsUsable isUsable = NULL):
+        name(name),description(description),creator(creator),isUsable(isUsable){}
 };
 
 #endif // MEDVIEWERWORKSPACEFACTORY_H
