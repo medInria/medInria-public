@@ -149,7 +149,7 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
         vtkIdList* cellPts = cell->GetPointIds();
 
         const int  npts    = cellPts->GetNumberOfIds();
-        vtkIdType  pts[npts];
+        vtkIdType * pts = new vtkIdType[npts];
 
         for (int dir=0;dir<numDirs;++dir) {
           const vtkIdType subIncr = ptIncr+dir*numSourcePts;
@@ -181,7 +181,7 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
       const vtkIdType ptIncr = numDirs*inPtIdReal*numSourcePts;
 
       // Get the Spherical Harmonic vector.
-      double sh[inScalars->GetNumberOfComponents()];
+      double * sh = new double[inScalars->GetNumberOfComponents()];
       inScalars->GetTuple(inPtId,sh);
 
       // Set harmonics and compute spherical function.
