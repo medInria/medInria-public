@@ -49,10 +49,10 @@ public:
     virtual int   Dimension() const;
     virtual const PixId& PixelType() const;
 
-    virtual int xDimension() const;
-    virtual int yDimension() const;
+    virtual int xDimension();
+    virtual int yDimension();
     virtual int zDimension();
-    virtual int tDimension() const;
+    virtual int tDimension();
 
     virtual qreal xSpacing() const;
     virtual qreal ySpacing() const;

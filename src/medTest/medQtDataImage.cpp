@@ -159,7 +159,7 @@ void * medQtDataImage::output( void )
     return this->data();
 }
 
-int medQtDataImage::xDimension( void ) const
+int medQtDataImage::xDimension( void )
 {
     if ( d->images.isEmpty() ) {
         return 0;
@@ -168,7 +168,7 @@ int medQtDataImage::xDimension( void ) const
     }
 }
 
-int medQtDataImage::yDimension( void ) const
+int medQtDataImage::yDimension( void )
 {
     if ( d->images.isEmpty() ) {
         return 0;
@@ -182,7 +182,7 @@ int medQtDataImage::zDimension( void )
     return d->images.size();
 }
 
-int medQtDataImage::tDimension( void ) const
+int medQtDataImage::tDimension( void )
 {
     if ( d->images.isEmpty() ) {
         return 0;
