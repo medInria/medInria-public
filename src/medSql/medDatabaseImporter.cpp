@@ -36,6 +36,13 @@ medDatabaseImporter::medDatabaseImporter ( const QString& file, bool indexWithou
 
 //-----------------------------------------------------------------------------------------------------------
 
+medDatabaseImporter::medDatabaseImporter ( dtkAbstractData* dtkData, const QString& callerUuid ) : medAbstractDatabaseImporter(dtkData,false, callerUuid)
+{
+
+}
+
+//-----------------------------------------------------------------------------------------------------------
+
 medDatabaseImporter::~medDatabaseImporter ( void )
 {
 
@@ -397,6 +404,9 @@ int medDatabaseImporter::getOrCreateSeries ( const dtkAbstractData* dtkData, QSq
     query.bindValue ( ":sliceThickness", sliceThickness );
     query.bindValue ( ":rows", rows );
     query.bindValue ( ":columns", columns );
+    
+    if( seriesName=="EmptySerie" )
+        return seriesDbId; 
 
     if ( !query.exec() )
         qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
@@ -412,8 +422,10 @@ int medDatabaseImporter::getOrCreateSeries ( const dtkAbstractData* dtkData, QSq
 
         QString seriesPath = "";
         if ( !indexWithoutImporting() )
-            //seriesPath = dtkData->metaDataValues (medMetaDataKeys::FilePaths.key())[0];
-            seriesPath = dtkData->metaDataValues ( "FileName" ) [0];
+        {
+            QStringList fileNames  = dtkData->metaDataValues( "FileName" );
+            seriesPath = fileNames.count()>0 ? fileNames[0] : "" ;
+        }
         int size               = medMetaDataKeys::Size.getFirstValue(dtkData).toInt();
         QString refThumbPath   = medMetaDataKeys::ThumbnailPath.getFirstValue(dtkData);
         QString age            = medMetaDataKeys::Age.getFirstValue(dtkData);
@@ -540,7 +552,8 @@ void medDatabaseImporter::createMissingImages ( dtkAbstractData* dtkData, QSqlDa
 
                 // if we are indexing we want to leave the 'instance_path' column blank
                 // as we will use the full path in 'path' column to load them
-                QString relativeFilePath = dtkData->metaDataValues ( "FileName" ) [0];
+                QStringList fileNames  = dtkData->metaDataValues ( "FileName" );
+                QString relativeFilePath = fileNames.count()>0 ? fileNames[0] : "" ;
                 query.bindValue ( ":instance_path", indexWithoutImporting() ? "" : relativeFilePath );
 
                 if ( i < thumbPaths.count() )

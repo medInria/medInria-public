@@ -18,6 +18,7 @@
 #include "medDatabaseNonPersistentImporter.h"
 
 #include <medAbstractDataImage.h>
+#include <medMetaDataKeys.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -26,68 +27,77 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 
-class medDatabaseNonPersistentImporterPrivate
-{
-public:
-    medDatabaseNonPersistentImporterPrivate ( const QString& uuid ) :
-        callerUuid ( uuid ) {}
-    dtkSmartPointer<dtkAbstractData> data;
-    QString callerUuid;
-    bool isCancelled;
-};
 
-medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter ( dtkAbstractData *data,
-        const QString& callerUuid )
-    : medJobItem(), d ( new medDatabaseNonPersistentImporterPrivate ( callerUuid ) )
+
+medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter ( const QString& file, const QString& callerUuid )
+: medAbstractDatabaseImporter(file, true, callerUuid)
 {
-    qDebug() << "DEBUG : entering medDatabaseNonPersistentImporter constructor";
-    d->data = data;
-    d->isCancelled = false;
-    qDebug() << d->data;
+    qDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
 }
 
-medDatabaseNonPersistentImporter::~medDatabaseNonPersistentImporter()
-{
-    delete d;
+//-----------------------------------------------------------------------------------------------------------
 
-    d = NULL;
+medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter ( dtkAbstractData* dtkData, const QString& callerUuid )
+: medAbstractDatabaseImporter(dtkData, true, callerUuid)
+{
+    qDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
 }
 
-void medDatabaseNonPersistentImporter::run()
-{
-    medDataIndex index;
+//-----------------------------------------------------------------------------------------------------------
 
-    dtkAbstractData *data = d->data;
-    if ( !data )
+medDatabaseNonPersistentImporter::~medDatabaseNonPersistentImporter ()
+{
+    
+}
+
+//-----------------------------------------------------------------------------------------------------------
+
+QString medDatabaseNonPersistentImporter::getPatientID(QString patientName, QString birthDate)
+{
+    QPointer<medDatabaseNonPersistentControllerImpl> npdc =
+            medDatabaseNonPersistentController::instance();
+            
+    QList<medDatabaseNonPersistentItem*> items = npdc->items();
+    
+    bool patientExists = false;
+    QString patientID;
+    
+    foreach(medDatabaseNonPersistentItem* item, items)
     {
-        emit failure ( this );
-        return;
+        if(item->name() == patientName && item->birthdate() == birthDate)
+        {
+            patientExists = true;
+            patientID = item->patientId();
+            break;
+        }
     }
-
-    // when creating empty patient or studies, we need to continue
-    /*if ( !data->hasMetaData ( medMetaDataKeys::PatientName.key() ) ||
-         !data->hasMetaData ( medMetaDataKeys::StudyDescription.key() ) ||
-         !data->hasMetaData ( medMetaDataKeys::SeriesDescription.key() ) )
+    
+    if(!patientExists)
     {
-        qDebug() << "metaData PatientName or StudyDescription or SeriesDescription are missing, cannot proceed";
-        emit failure ( this );
-        return;
-    }*/
+        patientID = QUuid::createUuid().toString().replace("{","").replace("}",""); 
+    }
+    
+    return patientID;
+}
 
-    QList<medDatabaseNonPersistentItem*> items = medDatabaseNonPersistentController::instance()->items();
+//-----------------------------------------------------------------------------------------------------------
 
-    int patientDbId = -1;
+medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbnails ( dtkAbstractData* data, QString pathToStoreThumbnails )
+{
+    QPointer<medDatabaseNonPersistentControllerImpl> npdc =
+            medDatabaseNonPersistentController::instance();
+            
+    QList<medDatabaseNonPersistentItem*> items = npdc->items();
+
+    int     patientDbId   = -1;
     QString patientName = medMetaDataKeys::PatientName.getFirstValue(data);
-
-    // These metadata may be missing, in which case you get an empty QString.
-    QString birthdate = medMetaDataKeys::BirthDate.getFirstValue(data);
     QString patientId = medMetaDataKeys::PatientID.getFirstValue(data);
-    QString gender = medMetaDataKeys::Gender.getFirstValue(data);
-
-    qDebug() << "in database non persistent importer: " << patientId;
+    QString birthdate = medMetaDataKeys::BirthDate.getFirstValue(data);
 
     // check if patient is already in the persistent database
     medDataIndex databaseIndex = medDatabaseController::instance()->indexForPatient ( patientName );
+    medDatabaseNonPersistentItem *patientItem = NULL;
+    
     if ( databaseIndex.isValid() )
     {
         qDebug() << "Patient exists in the database, I reuse his Id";
@@ -96,59 +106,50 @@ void medDatabaseNonPersistentImporter::run()
     else
     {
         for ( int i=0; i<items.count(); i++ )
-        {
-            QString itemPatientName = medDatabaseNonPersistentController::instance()->metaData(items[i]->index(),medMetaDataKeys::PatientName.key() );
-
-            if ( itemPatientName == patientName )
+            //if ( items[i]->name() ==patientName )
+            if ( medMetaDataKeys::PatientName.getFirstValue(items[i]->data()) == patientName )
             {
                 patientDbId = items[i]->index().patientId();
+                patientItem = items[i];
                 break;
             }
-        }
     }
 
     if ( patientDbId==-1 )
     {
-        patientDbId = medDatabaseNonPersistentController::instance()->patientId ( true );
-
-        // create an item for patient
-        medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
-        medDataIndex index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, -1, -1, -1 );
-
-        if ( !patientName.isEmpty() )
-            item->d->name = patientName;
-        else
-            item->d->name = "John Doe";
-
-        //dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
-        dtkSmartPointer<medAbstractData> dtkData = new medAbstractData();
-
-        dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() <<  item->d->name );
-        dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
-        dtkData->addMetaData ( medMetaDataKeys::Gender.key(), gender );
-       
-        /*dtkAbstractData dtkData;
-        dtkData.addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() <<  item->d->name );
-        dtkData.addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
-        dtkData.addMetaData ( medMetaDataKeys::Gender.key(), gender );*/
-
-        item->d->patientId = patientId;
-        item->d->index = index;
-        item->d->data = dtkData;
-
-        medDatabaseNonPersistentController::instance()->insert ( index, item );
-        
-        emit nonPersistentImported ( index, d->callerUuid );
+        patientDbId = npdc->patientId ( true );
     }
 
+    medDataIndex index;
+    
+    if ( patientItem == NULL )
+    {
+        // create an item for patient
+        patientItem = new medDatabaseNonPersistentItem;
+        index = medDataIndex ( npdc->dataSourceId(), patientDbId, -1, -1, -1 );
+
+        dtkSmartPointer<medAbstractData> dtkData = new medAbstractData();
+        dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() <<  patientName );
+        dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
+
+        patientItem->d->name = patientName;
+        patientItem->d->patientId = patientId;
+        patientItem->d->index = index;
+        patientItem->d->birthdate = birthdate;
+        patientItem->d->data = dtkData;
+
+        npdc->insert ( index, patientItem );
+    }
+    
+
     int     studyDbId   = -1;
-
-    // Optional, will use empty string otherwise.
     QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(data);
-    QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(data);
     QString studyId = medMetaDataKeys::StudyID.getFirstValue(data);
+    QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(data);
 
-    databaseIndex = medDatabaseController::instance()->indexForStudy ( patientName, studyName );
+    databaseIndex = medDatabaseController::instance()->indexForStudy ( patientName, studyName );    
+    medDatabaseNonPersistentItem *studyItem = NULL;
+    
     if ( databaseIndex.isValid() )
     {
         qDebug() << "Study exists in the database, I reuse its Id";
@@ -157,101 +158,188 @@ void medDatabaseNonPersistentImporter::run()
     else
     {
         for ( int i=0; i<items.count(); i++ )
-        {
-            QString itemPatientName = medDatabaseNonPersistentController::instance()->metaData(items[i]->index(),medMetaDataKeys::PatientName.key() );
-            QString itemStudyName = medDatabaseNonPersistentController::instance()->metaData(items[i]->index(),medMetaDataKeys::StudyDescription.key() );
-
-            if ( itemPatientName == patientName && itemStudyName == studyName )
+            if ( items[i]->name() ==patientName && items[i]->studyName() ==studyName )
             {
                 studyDbId = items[i]->index().studyId();
+                studyItem = items[i];
                 break;
             }
-        }
     }
 
-    int     serieDbId   = -1;
-    QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
-    QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(data);
-    QString seriesId = medMetaDataKeys::SeriesID.getFirstValue(data);
-
-    if ( studyDbId==-1 && ( !studyName.isEmpty() ) )
+    if ( studyDbId==-1 )
     {
-        //the study is defined and is not in the db, let's generate a new id
-        studyDbId = medDatabaseNonPersistentController::instance()->studyId ( true );
-
+        studyDbId = npdc->studyId ( true );
+    }
+    if ( studyItem == NULL )
+    {
         // create an item for study
-        medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
-        medDataIndex index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, studyDbId, -1, -1 );
+        studyItem = new medDatabaseNonPersistentItem;
+        index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, -1, -1 );
 
-        if ( !patientName.isEmpty() )
-            item->d->name = patientName;
-        else
-            item->d->name = "John Doe";
-
-        item->d->patientId = patientId;
-        item->d->index = index;
-        item->d->studyName = studyName;
-
-        //dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
         dtkSmartPointer<medAbstractData> dtkData = new medAbstractData();
 
         dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
         dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
-        dtkData->addMetaData ( medMetaDataKeys::Gender.key(), gender );
         dtkData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
-        dtkData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
-        dtkData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "0" ); 
+        dtkData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << studyId );
+        dtkData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << studyUid );
 
-        item->d->data = dtkData;
+        studyItem->d->name = patientName;
+        studyItem->d->patientId = patientId;
+        studyItem->d->birthdate = birthdate;
+        studyItem->d->studyName = studyName;
+        studyItem->d->index = index;
+        studyItem->d->data = dtkData;
+        studyItem->d->studyId = studyId;
+        studyItem->d->studyUid = studyUid;
 
-        medDatabaseNonPersistentController::instance()->insert ( index, item );
+        npdc->insert ( index, studyItem );
+    }
         
-        emit nonPersistentImported ( index, d->callerUuid );
-    }
 
-    // the study is defined
-    if ( studyDbId!=-1 && !seriesName.isEmpty() )
+    QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
+        
+    if(seriesName != "EmptySerie")
     {
-        // and the serie is defined, let's generate a new id
-        serieDbId = medDatabaseNonPersistentController::instance()->seriesId ( true );
-    }
+        index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, npdc->seriesId ( true ), -1 );
 
-    index = medDataIndex ( medDatabaseNonPersistentController::instance()->dataSourceId(), patientDbId, studyDbId, serieDbId, -1 );
+        QString seriesId = medMetaDataKeys::SeriesID.getFirstValue(data);
+        QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(data);
+        QString orientation = medMetaDataKeys::Orientation.getFirstValue(data);
+        QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(data);
+        QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(data);
+        QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(data);
+        QString rows = medMetaDataKeys::Rows.getFirstValue(data);
+        QString columns = medMetaDataKeys::Columns.getFirstValue(data);
 
+        QFileInfo info (file() );
 
-    if( serieDbId!=-1)
-    {
         medDatabaseNonPersistentItem *item = new medDatabaseNonPersistentItem;
 
         if ( !patientName.isEmpty() )
             item->d->name = patientName;
         else
-            item->d->name = "John Doe";
+            item->d->name = info.baseName();
 
-        item->d->birthdate  = birthdate;
-        item->d->patientId  = patientId;
-        item->d->studyName  = studyName;
-        item->d->studyId    = studyId;
-        item->d->studyUid    = studyUid;
+        item->d->patientId = patientId;
+        item->d->studyName = studyName;
         item->d->seriesName = seriesName;
-        item->d->seriesId   = seriesId;
-        item->d->seriesUid   = seriesUid;
-        item->d->file       = "";
-        item->d->thumb      = data->thumbnail();
-        item->d->index      = index;
-        item->d->data       = data;
+        item->d->seriesId = seriesId;
+        item->d->file = file();
+        item->d->thumb = data->thumbnail();
+        item->d->index = index;
+        item->d->data = data;
+        item->d->orientation = orientation;
+        item->d->seriesNumber = seriesNumber;
+        item->d->sequenceName = sequenceName;
+        item->d->sliceThickness = sliceThickness;
+        item->d->rows = rows;
+        item->d->columns = columns;
+        item->d->seriesUid = seriesUid;
+        item->d->studyUid = studyUid;
 
-        medDatabaseNonPersistentController::instance()->insert ( index, item );
-        
-        emit nonPersistentImported ( index, d->callerUuid );
+        npdc->insert ( index, item );
+    }
+    
+    return index;
+}
+
+
+//-----------------------------------------------------------------------------------------------------------
+
+bool medDatabaseNonPersistentImporter::checkIfExists ( dtkAbstractData* dtkdata, QString imageName )
+{
+    bool imageExists = false;
+
+    QPointer<medDatabaseNonPersistentControllerImpl> npdc =
+            medDatabaseNonPersistentController::instance();
+            
+    QList<medDatabaseNonPersistentItem*> items = npdc->items();
+    
+    foreach(medDatabaseNonPersistentItem* item, items)
+    {
+        imageExists = item->file() == imageName;
+        if (imageExists)
+            break;
+    }
+    
+    return imageExists;
+}
+
+//-----------------------------------------------------------------------------------------------------------
+
+QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName ( const QString seriesName )
+{
+    QPointer<medDatabaseNonPersistentControllerImpl> npdc =
+        medDatabaseNonPersistentController::instance();
+
+    QList<medDatabaseNonPersistentItem*> items = npdc->items();
+
+    QStringList seriesNames;
+    foreach(medDatabaseNonPersistentItem* item, items)
+    {
+        QString sname = item->seriesName();
+        if(sname.startsWith(seriesName) )
+            seriesNames << sname;
     }
 
-    emit progress ( this, 100 );
-    emit success ( this );
-    
+    QString originalSeriesName = seriesName;
+    QString newSeriesName = seriesName;
+    int suffix = 0;
+
+    while (seriesNames.contains(newSeriesName))
+    {
+        // it exist
+        suffix++;
+        newSeriesName = originalSeriesName + "_" + QString::number(suffix);
+    }
+
+    return newSeriesName;
 }
 
-void medDatabaseNonPersistentImporter::onCancel ( QObject* )
+//-----------------------------------------------------------------------------------------------------------
+
+bool medDatabaseNonPersistentImporter::isPartialImportAttempt ( dtkAbstractData* dtkData )
 {
-    d->isCancelled = true;
+    // here we check if the series we try to import is already in the database
+
+    // if the image didn't provide basic information like patient, study or series
+    // we cannot tell whether we are importing the same file twice or
+    // if we want to import now a file with a path that was previously imported before
+    // see http://pm-med.inria.fr/issues/292 for more details
+    QString containsBasicInfo = medMetaDataKeys::ContainsBasicInfo.getFirstValue(dtkData);
+    if (containsBasicInfo.compare("true", Qt::CaseInsensitive) != 0)
+        return false;
+
+    QPointer<medDatabaseNonPersistentControllerImpl> npdc =
+        medDatabaseNonPersistentController::instance();
+
+    QList<medDatabaseNonPersistentItem*> items = npdc->items();
+    
+    QString patientName = medMetaDataKeys::PatientName.getFirstValue(dtkData).simplified();
+    QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(dtkData).simplified();
+    QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
+    QStringList filePaths = dtkData->metaDataValues ( medMetaDataKeys::FilePaths.key() );
+
+    bool isPartialImport;
+    foreach(medDatabaseNonPersistentItem* item, items)
+    {
+        isPartialImport = item->Match(dtkData);
+        
+        if(isPartialImport)
+        {
+            (*partialAttemptsInfo()) << ( QStringList() << patientName << studyName << seriesName << filePaths[0] );
+            break;
+        }
+    }
+   
+    return isPartialImport;
 }
+
+
+
+
+
+
+
+

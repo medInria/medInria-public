@@ -35,6 +35,7 @@ class medAbstractDatabaseImporterPrivate
 {
 public:
     QString file;
+    dtkSmartPointer<dtkAbstractData> data;
     static QMutex mutex;
     QString lastSuccessfulReaderDescription;
     QString lastSuccessfulWriterDescription;
@@ -60,6 +61,20 @@ medAbstractDatabaseImporter::medAbstractDatabaseImporter ( const QString& file, 
     d->lastSuccessfulReaderDescription = "";
     d->lastSuccessfulWriterDescription = "";
     d->file = file;
+    d->data = NULL;
+    d->indexWithoutImporting = indexWithoutImporting;
+    d->callerUuid = callerUuid;
+}
+
+//-----------------------------------------------------------------------------------------------------------
+
+medAbstractDatabaseImporter::medAbstractDatabaseImporter ( dtkAbstractData* dtkData, bool indexWithoutImporting, const QString& callerUuid ) : medJobItem(), d ( new medAbstractDatabaseImporterPrivate )
+{
+    d->isCancelled = false;
+    d->lastSuccessfulReaderDescription = "";
+    d->lastSuccessfulWriterDescription = "";
+    d->data = dtkData;
+    d->file = QString("");
     d->indexWithoutImporting = indexWithoutImporting;
     d->callerUuid = callerUuid;
 }
@@ -119,7 +134,17 @@ QString medAbstractDatabaseImporter::callerUuid()
     return d->callerUuid;
 }
     
+
 void medAbstractDatabaseImporter::run ( void )
+{
+    if(!d->file.isEmpty())
+        importFile();
+    else if ( d->data )
+        importData();
+}
+
+
+void medAbstractDatabaseImporter::importFile ( void )
 {
     QMutexLocker locker ( &d->mutex );
 
@@ -400,6 +425,107 @@ void medAbstractDatabaseImporter::run ( void )
     
     emit progress ( this,100 );
     emit success ( this );
+}
+
+
+
+
+void medAbstractDatabaseImporter::importData()
+{   
+    QMutexLocker locker ( &d->mutex );
+     
+    if ( !d->data )
+    {
+        emit failure ( this );
+        return;
+    }
+
+    populateMissingMetadata(d->data, "EmptySerie");
+    
+    if ( !d->data->hasMetaData ( medMetaDataKeys::FilePaths.key() ) )
+        d->data->addMetaData ( medMetaDataKeys::FilePaths.key(), QStringList() << "generated with medInria" );
+        
+
+    QString size ="";
+    if ( medAbstractDataImage *imagedata = dynamic_cast<medAbstractDataImage*> ( d->data.data() ) )
+        size = QString::number ( imagedata->zDimension() );
+    d->data->addMetaData ( medMetaDataKeys::Size.key(), size );
+
+    QString patientName = medMetaDataKeys::PatientName.getFirstValue(d->data).simplified();
+    QString birthDate   = medMetaDataKeys::BirthDate.getFirstValue(d->data);
+    QString seriesId    = medMetaDataKeys::SeriesID.getFirstValue(d->data);
+        
+    QString patientId  = getPatientID(patientName, birthDate);
+
+    d->data->setMetaData ( medMetaDataKeys::PatientID.key(), QStringList() << patientId );
+ 
+
+    // Check if PATIENT/STUDY/SERIES already exists in the database
+    bool dataExists = isPartialImportAttempt(d->data);
+
+    if ( dataExists )
+    {
+        qDebug() << "data is already in the database, skipping";
+        emit failure ( this );
+        return;
+    }
+
+    QString subDirName = "/" + patientId;
+    QString imageFileNameBase =  subDirName + "/" +  seriesId;
+
+    QDir dir ( medStorage::dataLocation() + subDirName );
+    if ( !dir.exists() )
+    {
+        if ( !medStorage::mkpath ( medStorage::dataLocation() + subDirName ) )
+        {
+            qWarning() << "Unable to create directory for images";
+            emit failure ( this );
+            return ;
+        }
+    }
+
+    QString extension  = determineFutureImageExtensionByDataType ( d->data ); 
+    QString imageFileName = imageFileNameBase + extension;
+        
+    bool writeSuccess = true;
+
+    if ( !d->indexWithoutImporting )
+    {
+        // writing file
+        writeSuccess = tryWriteImage (  medStorage::dataLocation()+imageFileName, d->data );
+
+        if ( !writeSuccess  )
+        {
+            //emit failure ( this );
+            //return;
+
+            // when creating empty patients or studies, we need to continue to populate the database
+
+            qWarning() << "Unable to write image " + imageFileName;
+            qWarning() << "Either there is nothing to write or a problem occured when writing.";
+        }
+        else 
+        {
+            //d->data->addMetaData ( "FileName", imageFileName );
+            d->data->setMetaData ( "FileName", imageFileName );
+        }
+    }
+    
+    QFileInfo   seriesInfo ( imageFileName );
+    QString     thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.completeBaseName() + "/";
+    
+
+    // Now, populate the database
+   medDataIndex index = this->populateDatabaseAndGenerateThumbnails (  d->data, thumb_dir );
+
+    emit progress(this, 100);
+    emit success(this);
+
+    if (d->callerUuid == "")
+        emit addedIndex(index);
+    else
+        emit addedIndex(index,d->callerUuid);
+    
 }
 
 //-----------------------------------------------------------------------------------------------------------
@@ -723,29 +849,27 @@ QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( c
 {
     QString identifier = dtkdata->identifier();
     QString extension = "";
+     
+    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
 
-     // Determine the appropriate extension to use according to the type of data.
-     // TODO: The image and CompositeDatasets types are weakly recognized (contains("Image/CompositeData")). to be improved
-     if (identifier == "vtkDataMesh") {
-         extension = ".vtk";
-         qDebug() << "vtkDataMesh";
-     } else if (identifier == "vtkDataMesh4D") {
-         extension = ".v4d";
-         qDebug() << "vtkDataMesh4D";
-     } else if (identifier == "v3dDataFibers") {
-         extension = ".xml";
-         qDebug() << "vtkDataMesh4D";
-     } else if (identifier.contains("vistal")) {
-         extension = ".dim";
-         qDebug() << "Vistal Image";
-     } else if (identifier.contains ("CompositeData")) {
-        extension = ".cds";
-        qDebug() << "composite Dataset";
-     } else if (identifier.contains ("Image")) {
-         extension = ".mha";
-         //qDebug() << identifier;
-     }
+    dtkSmartPointer<dtkAbstractDataWriter> dataWriter;
+   
+    // cycle all
+    for ( int i=0; i<writers.size(); i++ )
+    {
+        dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer ( writers[i] );
 
+        if (dataWriter->handled().contains(dtkdata->identifier()) )
+        {
+            QStringList extensions = dataWriter->supportedFileExtensions();
+            if(!extensions.isEmpty())
+            {
+                extension = extensions[0];
+                break;
+            }
+        }
+    }
+     
     return extension;
 }
 

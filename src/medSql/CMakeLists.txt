@@ -41,8 +41,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medDatabaseNonPersistentController.h
   medDatabaseNonPersistentControllerImpl.h
   medDatabaseNonPersistentItem.h
-  medDatabaseNonPersistentReader.h
-  medDatabaseNonPersistentImporter.h  
+  medDatabaseNonPersistentImporter.h
   medDatabaseProxyModel.h
   medDatabaseReader.h
   medDatabaseRemover.h
@@ -65,8 +64,7 @@ set(${PROJECT_NAME}_SOURCES
   medDatabaseNonPersistentController.cpp
   medDatabaseNonPersistentControllerImpl.cpp
   medDatabaseNonPersistentItem.cpp
-  medDatabaseNonPersistentReader.cpp
-  medDatabaseNonPersistentImporter.cpp  
+  medDatabaseNonPersistentImporter.cpp
   medDatabaseProxyModel.cpp
   medDatabaseReader.cpp
   medDatabaseRemover.cpp

@@ -47,6 +47,7 @@ class MEDSQL_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter
 
 public:
     medDatabaseImporter ( const QString& file, bool indexWithoutImporting = false, const QString& callerUuid = QString() );
+    medDatabaseImporter ( dtkAbstractData* dtkData, const QString& callerUuid );
     ~medDatabaseImporter ( void );
 
 

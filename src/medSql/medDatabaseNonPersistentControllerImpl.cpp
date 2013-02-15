@@ -14,7 +14,6 @@
 #include "medDatabaseNonPersistentItem.h"
 #include "medDatabaseNonPersistentItem_p.h"
 #include "medDatabaseNonPersistentControllerImpl.h"
-#include "medDatabaseNonPersistentReader.h"
 #include "medDatabaseNonPersistentImporter.h"
 
 #include <medDataIndex.h>
@@ -94,9 +93,8 @@ void medDatabaseNonPersistentControllerImpl::insert(medDataIndex index, medDatab
 void medDatabaseNonPersistentControllerImpl::import(const QString& file,QString importUuid)
 {
     qDebug() << "DEBUG : entering medDatabaseNonPersistentControllerImpl::import(const QString& file,const QString& importUuid)";
-    medDatabaseNonPersistentReader *reader =
-            new medDatabaseNonPersistentReader(file,importUuid);
-
+    medDatabaseNonPersistentImporter *reader =
+            new medDatabaseNonPersistentImporter(file,importUuid);
 	medMessageProgress *message = medMessageController::instance()->showProgress(tr("Opening file item"));
 
     connect(reader, SIGNAL(progressed(int)),
@@ -164,7 +162,7 @@ void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
     medMessageProgress *message = medMessageController::instance()->showProgress("Importing data item");
 
     connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-    connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &, QString)));
+    connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &, QString)));
     connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
 
@@ -457,17 +455,20 @@ QList<medDataIndex> medDatabaseNonPersistentControllerImpl::moveStudy(const medD
 
     if(dataPatient==NULL)
     {
-        // let's try to get patient information from its series
+        // let's try to get patient information from its series  
         QList<medDataIndex> studiesIndexList = studies(toPatient);
-        if(!studiesIndexList.isEmpty())
+        foreach(medDataIndex tempStudy, studiesIndexList)
         {
-            QList<medDataIndex> seriesIndexList = series(studiesIndexList[0]);
+            QList<medDataIndex> seriesIndexList = series(tempStudy);
 
             if(!seriesIndexList.isEmpty())
+            {
                 dataPatient = read(seriesIndexList[0]);
-            else return newIndexList;
+                break;
+            }      
         }
-        else return newIndexList;
+        if( dataPatient == NULL )
+            return newIndexList;     
     }
 
     dtkAbstractData *dataStudy = read(indexStudy);
@@ -500,13 +501,6 @@ QList<medDataIndex> medDatabaseNonPersistentControllerImpl::moveStudy(const medD
 
         if(dataStudy!=NULL)
         {
-            /*dataStudy->setMetaData ( medMetaDataKeys::PatientName.key(),
-                                     QStringList() <<  dataPatient->metadata( medMetaDataKeys::PatientName.key()) );
-            dataStudy->setMetaData ( medMetaDataKeys::PatientID.key(),
-                                     QStringList() <<  dataPatient->metadata( medMetaDataKeys::PatientID.key()) );
-            dataStudy->setMetaData ( medMetaDataKeys::BirthDate.key(),
-                                     QStringList() <<  dataPatient->metadata( medMetaDataKeys::BirthDate.key()) );*/
-
             medDataIndex newSerieIndex = moveSerie(serie, newIndex);
 
             if(newSerieIndex.isValid())
@@ -514,8 +508,13 @@ QList<medDataIndex> medDatabaseNonPersistentControllerImpl::moveStudy(const medD
         }
     }
 
-    d->items.remove(indexStudy);
-
+    //d->items.remove(indexStudy);
+    //remove(indexStudy);
+    typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType DataHashMapType;
+    DataHashMapType::iterator itemIt(d->items.find(indexStudy));
+    //delete itemIt.value();
+    d->items.erase(itemIt);
+        
     return newIndexList;
 }
 
@@ -566,8 +565,13 @@ medDataIndex medDatabaseNonPersistentControllerImpl::moveSerie(const medDataInde
     }
   
     insert(newIndex, d->items[indexSerie]);
-    d->items.remove(indexSerie);
-
+    //d->items.remove(indexSerie);
+    //remove(indexSerie);
+    typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType DataHashMapType;
+    DataHashMapType::iterator itemIt(d->items.find(indexSerie));
+    //delete itemIt.value();
+    d->items.erase(itemIt);
+    
     return newIndex;
 }
 
