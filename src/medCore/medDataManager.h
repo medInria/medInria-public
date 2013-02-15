@@ -196,6 +196,7 @@ public:
      * Clear all items stored in the data manager
      */
     void clearCache();
+   
 
 signals:
     /**
@@ -267,12 +268,17 @@ protected:
      */
     void printMemoryStatus(size_t requiredMemoryInKb = 0);
 
-        /**
+    /**
     * Releases all own references to let all stored smartpointers get out of scope
     * All remaining references will be restored (probably not thread safe)
     * @return void
     */
     bool tryFreeMemory(size_t memoryLimit);
+    
+    /**
+    * Defines writers priorities
+    */
+    void setWriterPriorities();
 
 
 protected:

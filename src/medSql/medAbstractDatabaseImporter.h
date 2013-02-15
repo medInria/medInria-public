@@ -25,6 +25,7 @@
 #include <QtCore>
 #include <QtSql>
 
+#include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medJobItem.h>
@@ -53,6 +54,8 @@ class MEDSQL_EXPORT medAbstractDatabaseImporter : public medJobItem
 
 public:
     medAbstractDatabaseImporter ( const QString& file, bool indexWithoutImporting, const QString& callerUuid = QString() );
+    medAbstractDatabaseImporter ( dtkAbstractData* dtkData, bool writePersistentFile, const QString& callerUuid = QString() );
+    
     ~medAbstractDatabaseImporter ( void ); 
 
     /**
@@ -266,6 +269,10 @@ protected:
     **/
     QStringList generateThumbnails ( dtkAbstractData* dtkData, QString pathToStoreThumbnails );
     
+    
+    
+    void importData();
+    void importFile();
     
     medAbstractDatabaseImporterPrivate *d;
 

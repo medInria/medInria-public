@@ -209,27 +209,9 @@ medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
             this, SLOT(onPersistentDatabaseUpdated(const medDataIndex &)));
     
     
-    // TODO: Is it the best place to do that?
-    // TODO: Should we do the same fo readers?
-    // Set writer priorites
-    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
-    QMap<int, QString> writerPriorites;
+    //TODO: Is it the best place to do that?
+    setWriterPriorities();
     
-    int startIndex = 0;
-    
-    // set itkMetaDataImageWriter as the top priority writer
-    if(writers.contains("itkMetaDataImageWriter"))
-    {
-        writerPriorites.insert(0, "itkMetaDataImageWriter");  
-        startIndex = writers.removeOne("itkMetaDataImageWriter");
-    }
-    
-    for ( int i=0; i<writers.size(); i++ )
-    {
-        writerPriorites.insert(startIndex+i, writers[i]);   
-    }
-    
-    dtkAbstractDataFactory::instance()->setWriterPriorities(writerPriorites);
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -455,11 +437,37 @@ quint64 medDataManager::getUpperMemoryThreshold()
 
 //-------------------------------------------------------------------------------------------------------
 
+void medDataManager::setWriterPriorities()
+{ 
+    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
+    QMap<int, QString> writerPriorites;
+    
+    int startIndex = 0;
+    
+    // set itkMetaDataImageWriter as the top priority writer
+    if(writers.contains("itkMetaDataImageWriter"))
+    {
+        writerPriorites.insert(0, "itkMetaDataImageWriter");  
+        startIndex = writers.removeOne("itkMetaDataImageWriter");
+    }
+    
+    for ( int i=0; i<writers.size(); i++ )
+    {
+        writerPriorites.insert(startIndex+i, writers[i]);   
+    }
+    
+    dtkAbstractDataFactory::instance()->setWriterPriorities(writerPriorites);
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 void medDataManager::importNonPersistent( dtkAbstractData *data )
 {
     QString uuid = QUuid::createUuid().toString();
     this->importNonPersistent (data, uuid);
 }
+
+//-------------------------------------------------------------------------------------------------------
 
 void medDataManager::importNonPersistent( dtkAbstractData *data, QString uuid)
 {
@@ -487,6 +495,8 @@ void medDataManager::importNonPersistent( dtkAbstractData *data, QString uuid)
         npDb->import(data, uuid);
     }
 }
+
+//-------------------------------------------------------------------------------------------------------
 
 void medDataManager::onNonPersistentDataImported(const medDataIndex &index, QString uuid)
 {
@@ -572,6 +582,8 @@ void medDataManager::storeNonPersistentMultipleDataToDatabase( const medDataInde
         this->storeNonPersistentSingleDataToDatabase(tmpIndex);
 }
 
+//-------------------------------------------------------------------------------------------------------
+
 void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex &index )
 {
     if (d->volatileDataCache.count(index) > 0)
@@ -587,6 +599,8 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
             db->import(dtkdata.data(),tmpUid);
     }
 }
+
+//-------------------------------------------------------------------------------------------------------
 
 void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index, const QString &uuid )
 {
@@ -736,6 +750,7 @@ void medDataManager::removeData( const medDataIndex& index )
     }
 }
 
+//-------------------------------------------------------------------------------------------------------
 
 QList<medDataIndex> medDataManager::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
 {
@@ -759,7 +774,7 @@ QList<medDataIndex> medDataManager::moveStudy(const medDataIndex& indexStudy, co
       // Could be nice to have this feature
       // Would need to call storeNonPersistentSingleDataToDatabase(indexStudy);
       // and then to wait for correct signals since the command is asynchronuous (with QEventLoop),
-      // retrieve inserted index et then realize the move      
+      // retrieve inserted index and then realize the move      
 
     } 
     else
@@ -776,6 +791,8 @@ QList<medDataIndex> medDataManager::moveStudy(const medDataIndex& indexStudy, co
     return newIndexList;
 
 }
+
+//-------------------------------------------------------------------------------------------------------
 
 medDataIndex medDataManager::moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy)
 {
@@ -813,6 +830,7 @@ medDataIndex medDataManager::moveSerie(const medDataIndex& indexSerie, const med
     return newIndex;
 
 }
+
 //-------------------------------------------------------------------------------------------------------
 
 void medDataManager::removeDataFromCache( const medDataIndex &index )

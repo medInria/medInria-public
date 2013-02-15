@@ -71,11 +71,10 @@ public:
     
     void setData(dtkAbstractData* );
 
-	bool Match(dtkAbstractData *);
+    bool Match(dtkAbstractData *);
 
 private:
     friend class medDatabaseNonPersistentControllerImpl;
-    friend class medDatabaseNonPersistentReader;
     friend class medDatabaseNonPersistentImporter;
 
 private:
