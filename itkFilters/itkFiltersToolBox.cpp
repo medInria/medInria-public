@@ -58,6 +58,17 @@ public:
 
     QComboBox * filters;
     dtkSmartPointer <dtkAbstractProcess> process;
+//    dtkSmartPointer <dtkAbstractProcess> addProcess;
+//    dtkSmartPointer <dtkAbstractProcess> subtractProcess;
+//    dtkSmartPointer <dtkAbstractProcess> multiplyProcess;
+//    dtkSmartPointer <dtkAbstractProcess> divideProcess;
+//    dtkSmartPointer <dtkAbstractProcess> gaussianProcess;
+//    dtkSmartPointer <dtkAbstractProcess> medianProcess;
+//    dtkSmartPointer <dtkAbstractProcess> normalizeProcess;
+//    dtkSmartPointer <dtkAbstractProcess> shrinkProcess;
+//    dtkSmartPointer <dtkAbstractProcess> invertProcess;
+//    dtkSmartPointer <dtkAbstractProcess> windowingProcess;
+    
     medProgressionStack * progression_stack;
 };
 
@@ -67,9 +78,17 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     //Filters selection combobox
     d->filters = new QComboBox;
     QStringList filtersList;
-    filtersList << "Add Constant to Image" << "Substract Constant from Image" << "Multiply image by constant" << "Divide image by constant"
-    << "Gaussian blur" << "Normalize image filter" << "Median filter" << "Invert intensity filter"
-    << "Shrink image filter" << "Intensity windowing filter";
+    filtersList << "Add Constant to Image" 
+                << "Substract Constant from Image" 
+                << "Multiply image by constant" 
+                << "Divide image by constant"
+                << "Gaussian blur" 
+                << "Normalize image filter" 
+                << "Median filter" 
+                << "Invert intensity filter"
+                << "Shrink image filter" 
+                << "Intensity windowing filter";
+    
     d->filters->addItems ( filtersList );
 
     QObject::connect ( d->filters, SIGNAL ( activated ( int ) ), this, SLOT ( onFiltersActivated ( int ) ) );
@@ -567,12 +586,8 @@ void itkFiltersToolBox::run ( void )
     if ( !this->parentToolBox() )
         return;
 
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkFilters" );
-
     if ( !this->parentToolBox()->data() )
         return;
-
-    d->process->setInput ( this->parentToolBox()->data() );
 
     //Set parameters :
     //   channel 0 : filter type
@@ -580,47 +595,60 @@ void itkFiltersToolBox::run ( void )
     switch ( d->filters->currentIndex() )
     {
     case 0: // add filter
-        d->process->setParameter ( 0.0,0 );
-        d->process->setParameter ( d->addFiltersValue->value(),1 );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkAddProcess" );
+        d->process->setInput ( this->parentToolBox()->data() );
+        d->process->setParameter ( d->addFiltersValue->value(), 0 );
         break;
     case 1: // subtract filter
         qDebug() << "Subtract parameter (run) : " << d->subtractFiltersValue->value();
-        d->process->setParameter ( 1.0,0 );
-        d->process->setParameter ( d->subtractFiltersValue->value(),1 );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkSubtractProcess" );
+        d->process->setInput ( this->parentToolBox()->data() );
+        d->process->setParameter ( d->subtractFiltersValue->value(), 0 );
         break;
     case 2: // multiply filter
-        d->process->setParameter ( 2.0,0 );
-        d->process->setParameter ( d->multiplyFiltersValue->value(),1 );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkMultiplyProcess" );
+        d->process->setInput ( this->parentToolBox()->data() );
+        d->process->setParameter ( d->multiplyFiltersValue->value(), 0 );
         break;
     case 3: // divide filter
-        d->process->setParameter ( 3.0,0 );
-        d->process->setParameter ( d->divideFiltersValue->value(),1 );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkDivideProcess" );
+        d->process->setInput ( this->parentToolBox()->data() );
+        d->process->setParameter ( d->divideFiltersValue->value(), 0 );
         break;
     case 4: // gaussian filter
-        d->process->setParameter ( 4.0,0 );
-        d->process->setParameter ( d->gaussianFiltersValue->value(),1 );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkGaussianProcess" );
+        d->process->setInput ( this->parentToolBox()->data() );
+        d->process->setParameter ( d->gaussianFiltersValue->value(), 0);
         break;
     case 5: // normalize filter
-        d->process->setParameter ( 5.0,0 );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkNormalizeProcess" );
+        d->process->setInput ( this->parentToolBox()->data() );
         break;
     case 6: // median filter
-        d->process->setParameter ( 6.0,0 );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkMedianProcess" );
+        
+        qDebug() << "####### process is null:" << (d->process.data() == NULL);
+        
+        d->process->setInput ( this->parentToolBox()->data() );
         break;
     case 7: // invert intensity filter
-        d->process->setParameter ( 7.0,0 );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkInvertProcess" );
+        d->process->setInput ( this->parentToolBox()->data() );
         break;
     case 8: // shrink filter
-        d->process->setParameter ( 8.0,0 );
-        d->process->setParameter ( ( double ) d->shrink0Value->value(),1 );
-        d->process->setParameter ( ( double ) d->shrink1Value->value(),2 );
-        d->process->setParameter ( ( double ) d->shrink2Value->value(),3 );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkShrinkProcess" );
+        d->process->setInput ( this->parentToolBox()->data() );
+        d->process->setParameter ( ( double ) d->shrink0Value->value(), 0 );
+        d->process->setParameter ( ( double ) d->shrink1Value->value(), 1 );
+        d->process->setParameter ( ( double ) d->shrink2Value->value(), 2 );
         break;
     case 9: // intensity windowing filter
-        d->process->setParameter ( 9.0,0 );
-        d->process->setParameter ( d->intensityMinimumValue->value(),1 );
-        d->process->setParameter ( d->intensityMaximumValue->value(),2 );
-        d->process->setParameter ( d->intensityOutputMinimumValue->value(),3 );
-        d->process->setParameter ( d->intensityOutputMaximumValue->value(),4 );
+        d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkWindowingProcess" );
+        d->process->setInput ( this->parentToolBox()->data() );
+        d->process->setParameter ( d->intensityMinimumValue->value(), 0);
+        d->process->setParameter ( d->intensityMaximumValue->value(), 1);
+        d->process->setParameter ( d->intensityOutputMinimumValue->value(), 2 );
+        d->process->setParameter ( d->intensityOutputMaximumValue->value(), 3 );
         break;
     }
 
