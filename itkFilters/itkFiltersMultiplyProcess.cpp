@@ -14,7 +14,7 @@ class itkFiltersMultiplyProcessPrivate
 {
 public:
     itk::CStyleCommand::Pointer callback;
-    dtkSmartPointer<itkFiltersMultiplyProcess> filter;
+    itkFiltersMultiplyProcess *filter;
     
     dtkSmartPointer<dtkAbstractData> input;
     dtkSmartPointer<dtkAbstractData> output;

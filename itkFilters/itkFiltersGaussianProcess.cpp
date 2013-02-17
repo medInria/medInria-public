@@ -14,7 +14,7 @@ class itkFiltersGaussianProcessPrivate
 {
 public:
     itk::CStyleCommand::Pointer callback;
-    dtkSmartPointer<itkFiltersGaussianProcess> filter;
+    itkFiltersGaussianProcess *filter;
     
     dtkSmartPointer<dtkAbstractData> input;
     dtkSmartPointer<dtkAbstractData> output;

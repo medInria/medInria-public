@@ -14,7 +14,7 @@ class itkFiltersAddProcessPrivate
 {
 public:
     itk::CStyleCommand::Pointer callback;
-    dtkSmartPointer<itkFiltersAddProcess> filter;
+    itkFiltersAddProcess *filter;
     
     dtkSmartPointer<dtkAbstractData> input;
     dtkSmartPointer<dtkAbstractData> output;

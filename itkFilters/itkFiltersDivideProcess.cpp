@@ -14,7 +14,7 @@ class itkFiltersDivideProcessPrivate
 {
 public:
     itk::CStyleCommand::Pointer callback;
-    dtkSmartPointer<itkFiltersDivideProcess> filter;
+    itkFiltersDivideProcess *filter;
     
     dtkSmartPointer<dtkAbstractData> input;
     dtkSmartPointer<dtkAbstractData> output;

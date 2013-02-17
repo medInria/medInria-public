@@ -14,7 +14,7 @@ class itkFiltersSubtractProcessPrivate
 {
 public:
     itk::CStyleCommand::Pointer callback;
-    dtkSmartPointer<itkFiltersSubtractProcess> filter;
+    itkFiltersSubtractProcess *filter;
     
     dtkSmartPointer<dtkAbstractData> input;
     dtkSmartPointer<dtkAbstractData> output;
