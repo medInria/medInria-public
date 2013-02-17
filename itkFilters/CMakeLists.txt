@@ -53,7 +53,12 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkFiltersMultiplyProcess.h
   itkFiltersDivideProcess.h
   itkFiltersGaussianProcess.h
-  itkFilters.h)
+  itkFiltersNormalizeProcess.h
+  itkFiltersMedianProcess.h
+  itkFiltersInvertProcess.h
+  itkFiltersShrinkProcess.h
+  itkFiltersWindowingProcess.h
+)
 
 set(${PROJECT_NAME}_SOURCES
   itkFiltersPlugin.cpp
@@ -63,7 +68,12 @@ set(${PROJECT_NAME}_SOURCES
   itkFiltersMultiplyProcess.cpp
   itkFiltersDivideProcess.cpp
   itkFiltersGaussianProcess.cpp
-  itkFilters.cpp)
+  itkFiltersNormalizeProcess.cpp
+  itkFiltersMedianProcess.cpp
+  itkFiltersInvertProcess.cpp
+  itkFiltersShrinkProcess.cpp
+  itkFiltersWindowingProcess.cpp
+)
 
 ## #################################################################
 ## Build rules
