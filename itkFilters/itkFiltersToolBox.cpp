@@ -58,16 +58,6 @@ public:
 
     QComboBox * filters;
     dtkSmartPointer <dtkAbstractProcess> process;
-//    dtkSmartPointer <dtkAbstractProcess> addProcess;
-//    dtkSmartPointer <dtkAbstractProcess> subtractProcess;
-//    dtkSmartPointer <dtkAbstractProcess> multiplyProcess;
-//    dtkSmartPointer <dtkAbstractProcess> divideProcess;
-//    dtkSmartPointer <dtkAbstractProcess> gaussianProcess;
-//    dtkSmartPointer <dtkAbstractProcess> medianProcess;
-//    dtkSmartPointer <dtkAbstractProcess> normalizeProcess;
-//    dtkSmartPointer <dtkAbstractProcess> shrinkProcess;
-//    dtkSmartPointer <dtkAbstractProcess> invertProcess;
-//    dtkSmartPointer <dtkAbstractProcess> windowingProcess;
     
     medProgressionStack * progression_stack;
 };
