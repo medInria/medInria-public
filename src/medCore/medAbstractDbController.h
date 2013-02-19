@@ -25,6 +25,7 @@
 
 class medImportJobWatcher;
 class medDataIndex;
+class medJobItem;
 
 /**
  * Abstract dbController class. Implementation needs to adhere to the common interface
@@ -84,10 +85,16 @@ signals:
      * signal each time the db gets modified, giving the dataindex that was involved
      */
     void updated(const medDataIndex &);
+    
     /**
      * signal each time the db gets modified, giving the dataindex that was involved, and the unique identifier linked with the caller.
      */
     void updated(const medDataIndex &,const QString&);
+    
+    /**
+     * signal each time a job starts (import, export,...)
+     */
+    void jobStarted(medJobItem *, QString);
 
 public slots:
 

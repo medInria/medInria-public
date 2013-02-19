@@ -106,8 +106,6 @@ signals:
      */
     void copyMessage(QString, int, QColor);
 
-    void displayJobItem(medJobItem *, QString);
-
     /**
      * This signal is emitted when the import/index process
      * detects an attempt of partial importing. That is when the user

@@ -104,7 +104,10 @@ void medDatabaseNonPersistentControllerImpl::import(const QString& file,QString 
     connect(reader, SIGNAL(success(QObject *)),
             message, SLOT(success()));
     connect(reader, SIGNAL(failure(QObject *)),
-            message, SLOT(failure()));
+             message, SLOT(failure()));
+
+    QFileInfo info(file);
+    emit(jobStarted(reader, info.baseName()));
 
     medJobManager::instance()->registerJobItem(reader);
     QThreadPool::globalInstance()->start(reader);
@@ -160,11 +163,14 @@ void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
 
     medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data,callerUuid);
     medMessageProgress *message = medMessageController::instance()->showProgress("Importing data item");
+    QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data).simplified();
 
-    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
+    connect(importer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
     connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &, QString)));
     connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+
+    emit(jobStarted(importer, seriesName));
 
     medJobManager::instance()->registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
