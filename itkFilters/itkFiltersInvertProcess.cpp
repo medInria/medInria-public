@@ -93,7 +93,7 @@ bool itkFiltersInvertProcess::registered( void )
 
 QString itkFiltersInvertProcess::description() const
 {
-    return tr("ITK multiply by constant filter");
+    return tr("ITK invert intensity filter");
 }
 
 //-------------------------------------------------------------------------------------------

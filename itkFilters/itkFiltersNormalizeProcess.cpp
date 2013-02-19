@@ -93,7 +93,7 @@ bool itkFiltersNormalizeProcess::registered( void )
 
 QString itkFiltersNormalizeProcess::description() const
 {
-    return tr("ITK multiply by constant filter");
+    return tr("ITK normalize filter");
 }
 
 //-------------------------------------------------------------------------------------------

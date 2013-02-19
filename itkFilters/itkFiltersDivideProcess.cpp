@@ -96,7 +96,7 @@ bool itkFiltersDivideProcess::registered( void )
 
 QString itkFiltersDivideProcess::description() const
 {
-    return tr("ITK multiply by constant filter");
+    return tr("ITK divide by constant filter");
 }
 
 //-------------------------------------------------------------------------------------------

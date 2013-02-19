@@ -103,7 +103,7 @@ bool itkFiltersWindowingProcess::registered( void )
 
 QString itkFiltersWindowingProcess::description() const
 {
-    return tr("ITK multiply by constant filter");
+    return tr("ITK intensity windowing filter");
 }
 
 //-------------------------------------------------------------------------------------------

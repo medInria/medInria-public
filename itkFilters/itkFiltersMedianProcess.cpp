@@ -93,7 +93,7 @@ bool itkFiltersMedianProcess::registered( void )
 
 QString itkFiltersMedianProcess::description() const
 {
-    return tr("ITK multiply by constant filter");
+    return tr("ITK median filter");
 }
 
 //-------------------------------------------------------------------------------------------

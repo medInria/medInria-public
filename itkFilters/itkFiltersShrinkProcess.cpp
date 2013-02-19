@@ -96,7 +96,7 @@ bool itkFiltersShrinkProcess::registered( void )
 
 QString itkFiltersShrinkProcess::description() const
 {
-    return tr("ITK multiply by constant filter");
+    return tr("ITK shrink filter");
 }
 
 //-------------------------------------------------------------------------------------------

@@ -96,7 +96,7 @@ bool itkFiltersGaussianProcess::registered( void )
 
 QString itkFiltersGaussianProcess::description() const
 {
-    return tr("ITK multiply by constant filter");
+    return tr("ITK gaussian filter");
 }
 
 //-------------------------------------------------------------------------------------------
