@@ -31,6 +31,18 @@ public slots:
     void run(void);
 
 private:
+    void setupItkAddProcess();
+    void setupItkSubtractProcess();
+    void setupItkMultiplyProcess();
+    void setupItkDivideProcess();
+    void setupItkGaussianProcess();
+    void setupItkMedianProcess();
+    void setupItkInvertProcess();
+    void setupItkNormalizeProcess();
+    void setupItkShrinkProcess();
+    void setupItkWindowingProcess();
+    
+    
     itkFiltersToolBoxPrivate *d;
 };
 
