@@ -474,6 +474,7 @@ void medDataManager::importNonPersistent( dtkAbstractData *data, QString uuid)
     if (!data)
         return;
 
+    /*
     foreach (dtkSmartPointer<dtkAbstractData> dtkdata, d->dataCache) {
         if (data == dtkdata.data()) {
             qWarning() << "data already in manager, skipping";
@@ -486,7 +487,7 @@ void medDataManager::importNonPersistent( dtkAbstractData *data, QString uuid)
             qWarning() << "data already in manager, skipping";
             return;
         }
-    }
+    }*/
 
     medAbstractDbController* npDb = d->getNonPersDbController();
 

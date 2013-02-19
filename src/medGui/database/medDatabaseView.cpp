@@ -76,7 +76,6 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
 class medDatabaseViewPrivate
 {
 public:
-    QList<int> failedToOpenSeriesIds;
     QAction *viewAction;
     QAction *exportAction;
     QAction *saveAction;
