@@ -218,13 +218,6 @@ signals:
     void failedToOpen(const medDataIndex&);
 
     /**
-     * @brief Emitted when an image fails to import
-     * @param index the @medDataIndex of the image
-     * @param uuid the identifier linked to this import request
-    */
-    void importFailed(const medDataIndex& index, QString uuid);
-
-    /**
      * This signal is emitted when the operation has progressed
      * @param QObject *obj Pointer to the operating QObject
      * @param int value Progress bar's current value
