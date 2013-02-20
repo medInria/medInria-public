@@ -348,6 +348,11 @@ int medDatabaseImporter::getOrCreateStudy ( const dtkAbstractData* dtkData, QSql
     QString studyName   = medMetaDataKeys::StudyDescription.getFirstValue(dtkData).simplified();
     QString studyUid    = medMetaDataKeys::StudyDicomID.getFirstValue(dtkData);
     QString studyId    = medMetaDataKeys::StudyID.getFirstValue(dtkData);
+    
+    QString serieName   = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
+    
+    if( studyName=="EmptyStudy" && serieName=="EmptySerie" )
+        return studyDbId; 
 
     query.prepare ( "SELECT id FROM study WHERE patient = :patient AND name = :studyName AND uid = :studyUid" );
     query.bindValue ( ":patient", patientDbId );
@@ -398,6 +403,9 @@ int medDatabaseImporter::getOrCreateSeries ( const dtkAbstractData* dtkData, QSq
     QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(dtkData);
     QString rows           = medMetaDataKeys::Rows.getFirstValue(dtkData);
     QString columns        = medMetaDataKeys::Columns.getFirstValue(dtkData);
+    
+    if( seriesName=="EmptySerie" )
+        return seriesDbId; 
 
     query.prepare ( "SELECT * FROM series WHERE study = :study AND name = :seriesName AND uid = :seriesUid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns" );
     query.bindValue ( ":study", studyDbId );
