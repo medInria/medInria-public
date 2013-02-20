@@ -51,10 +51,14 @@ include(medInria-pluginsMacros)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
+include(dtkPlugin)
 
+#directories to include to the project
+include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeIncludeDirectories.cmake)
 
-# Export medinriq-plugins_DIR variable so that internal project can automatically find i
+# Export medinriq-plugins_DIR variable so that internal project can automatically find it
 set(medInria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
+
 
 ## #################################################################
 ## Dashboard settings
@@ -160,6 +164,7 @@ if (MEDINRIA_BUILD_ALL_PLUGINS OR
     MEDINRIA_BUILD_VTKDATAMESH_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN OR
     MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN OR
+    MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
     MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
     set(MEDINRIA_REQUIRES_VTK TRUE)
 endif()
@@ -182,7 +187,7 @@ endif()
 
 ## Needs MEDINRIA_REQUIRES_ITK and MEDINRIA_REQUIRES_VTK
 ## to be set before  being included.
-add_subdirectory(src)
+add_subdirectory(libs)
 
 option(MEDINRIA_BUILD_TOOLS  "Build Tools" "OFF")
 if (MEDINRIA_BUILD_TOOLS)

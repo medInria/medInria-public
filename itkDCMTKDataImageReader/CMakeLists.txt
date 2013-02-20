@@ -39,9 +39,6 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-find_package(vtkINRIA3D REQUIRED) # for itkMultiThreadedImageIO
-include(${vtkINRIA3D_USE_FILE})
-
 find_package(medInria REQUIRED)
 include(${medInria_USE_FILE})
 
@@ -73,7 +70,7 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
-    "medPluginsPch.h" "../src/medPluginsPch/medPluginsItkPch.cpp"
+    "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES})
 endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)

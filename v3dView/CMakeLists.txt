@@ -40,21 +40,18 @@ include(dtkPlugin)
 find_package(medInria REQUIRED)
 include(${medInria_USE_FILE})
 
-# find_package(VTK REQUIRED)
-# include(${VTK_USE_FILE})
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
 
-find_package(vtkINRIA3D REQUIRED)
-include(${vtkINRIA3D_USE_FILE})
+find_package(ITK REQUIRED)
+include(${ITK_USE_FILE})
 
 if ( VTK_MAJOR_VERSION LESS 5 OR
      VTK_MINOR_VERSION LESS 8)
     message (SEND_ERROR "VTK 5.8.0 version is needed for the annotations in v3dView, please update to generate the v3dView project.")
 endif()
 
-# if(vtkINRIA3D_USE_ITK)
-#   find_package(ITK REQUIRED)
-#   include(${ITK_USE_FILE})
-# endif(vtkINRIA3D_USE_ITK)
+
 
 if ( MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
     # the Tensor ToolKit is required by the tensor interactor: v3dViewTensorInteractor
@@ -126,7 +123,7 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
-    "medPluginsPch.h" "../src/medPluginsPch/medPluginsVtkPch.cpp"
+    "medPluginsPch.h" "../libs/medPluginsPch/medPluginsVtkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES})
 endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
@@ -141,6 +138,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  ${ITK_LIBRARIES}
   ${${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES}
   dtkCore dtkLog
   medCore
@@ -153,13 +151,8 @@ target_link_libraries(${PROJECT_NAME}
   vtkVolumeRendering
   QVTK)
 
-if (vtkINRIA3D_USE_ITK)
   target_link_libraries(${PROJECT_NAME} ${ITK_LIBRARIES})
-endif (vtkINRIA3D_USE_ITK)
-
-if (vtkINRIA3D_USE_HWSHADING)
   target_link_libraries(${PROJECT_NAME} vtkHWShading vtkHelpers)
-endif (vtkINRIA3D_USE_HWSHADING)
 
 if (BUILD_TESTING)
   add_subdirectory(Testing)

@@ -78,7 +78,7 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
-    "medPluginsPch.h" "../src/medPluginsPch/medPluginsItkPch.cpp"
+    "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC})
 endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
@@ -94,9 +94,10 @@ target_link_libraries(${PROJECT_NAME}
   dtkItkLogForwarder
   dtkCore dtkLog
   medCore
-  itkDataImageBase
+  ${ITK_LIBRARIES}
   ITKIOReview
-  ${ITK_LIBRARIES})
+  itkDataImageBase
+  )
 
 # Group common files together in Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)

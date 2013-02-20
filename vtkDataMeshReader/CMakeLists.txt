@@ -37,11 +37,12 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-find_package(vtkINRIA3D REQUIRED)
-include(${vtkINRIA3D_USE_FILE})
-
 find_package(VTK)
 include(${VTK_USE_FILE})
+
+find_package(ITK REQUIRED)
+include (${ITK_USE_FILE})
+
 
 #include_directories(../dtkVtkLogForwarder)
 find_package(medInria-plugins REQUIRED)
@@ -71,7 +72,7 @@ qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
-    "medPluginsPch.h" "../src/medPluginsPch/medPluginsVtkPch.cpp"
+    "medPluginsPch.h" "../libs/medPluginsPch/medPluginsVtkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES})
 endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
@@ -85,6 +86,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
+  ${ITK_LIBRARIES}
   dtkVtkLogForwarder
   dtkCore dtkLog
   vtkCommon

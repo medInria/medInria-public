@@ -31,9 +31,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 find_package(dtk REQUIRED)
 find_package(medInria REQUIRED)
-find_package(vtkINRIA3D REQUIRED)
 
-include(${vtkINRIA3D_USE_FILE})
 include(${dtk_USE_FILE})
 include(${medInria_USE_FILE})
 include(dtkPlugin)
@@ -46,6 +44,9 @@ find_package(ITK REQUIRED)
     message(FATAL_ERROR "ITK must be build with option ITK_USE_REVIEW_STATISTICS to ON")
   endif(NOT ITK_USE_REVIEW_STATISTICS)
 include(${ITK_USE_FILE})
+
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
 
 include_directories(../dtkItkLogForwarder)
 include_directories(../v3dView)
@@ -84,7 +85,8 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore dtkLog
   medCore
   medGui
-  ${ITK_LIBRARIES})
+  ${ITK_LIBRARIES}
+  ${VTK_LIBRARIES})
 
 dtk_build_doc(exampleProcessImageFilterPlugin)
 
