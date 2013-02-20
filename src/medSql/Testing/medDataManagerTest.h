@@ -45,7 +45,6 @@ private slots:
     void testStoreNonPersistentDataToDatabase (void);
     void testStoreNonPersistentMultipleDataToDatabase(void);
     void testStoreNonPersistentSingleDataToDatabase(void);
-    void testNonPersistentDataCount(void);
     void testRemoveData(void);
     void testMoveStudy(void);
     void testMoveSerie(void);

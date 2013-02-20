@@ -72,7 +72,6 @@ void medDataManagerTestObject::init(void)
 
 void medDataManagerTestObject::cleanup(void)
 {
-    //removeDir(m_storagePath);
 }
 
 void medDataManagerTestObject::cleanupTestCase(void)
@@ -86,7 +85,7 @@ dtkSmartPointer<dtkAbstractData> medDataManagerTestObject::createTestData(void)
     dtkAbstractDataFactory *dataFactory = dtkAbstractDataFactory::instance();
     dtkSmartPointer<dtkAbstractData> testData = dataFactory->createSmartPointer(medQtDataImage::s_description());
     
-    QString sDatetime = QDateTime::currentDateTime().toString("hms");
+    QString sDatetime = QDateTime::currentDateTime().toString();
 
     medMetaDataKeys::PatientName.set(testData,"TestPatient" + QString::number(m_currentId));
     medMetaDataKeys::StudyDescription.set(testData,"TestStudy" + QString::number(m_currentId));
@@ -113,10 +112,13 @@ void medDataManagerTestObject::testImport(void)
     m_currentData = createTestData();
     
     IndexList prevPatients = db->patients();
+    IndexList prevNPPatients = npDb->patients();
 
     medDataManager::instance()->import(m_currentData);
 
     waitForInsertions();
+    
+    QVERIFY(m_lastInsertedIndex.isValid());
    
     IndexList patients = db->patients();
     QCOMPARE(patients.size(), prevPatients.size()+1);
@@ -125,7 +127,7 @@ void medDataManagerTestObject::testImport(void)
     IndexList series = db->series(studies[0]);
     QCOMPARE(series.size(), 1);
     
-    QCOMPARE( npDb->patients().size(), 0 );
+    QCOMPARE( npDb->patients().size(), prevNPPatients.size() );
 
     const medDataIndex importedIndex = series[0];
     QVERIFY(importedIndex.isValid());
@@ -144,6 +146,8 @@ void medDataManagerTestObject::testImportNonPersistent(void)
     
     waitForInsertions();
     
+    QVERIFY(m_lastInsertedIndex.isValid());
+    
     IndexList patients = npDb->patients();
     QCOMPARE(patients.size(), prevNPPatients.size()+1);
     IndexList studies = npDb->studies(m_lastInsertedIndex);
@@ -153,19 +157,18 @@ void medDataManagerTestObject::testImportNonPersistent(void)
 
     const medDataIndex importedIndex = series[0];
     QVERIFY(importedIndex.isValid());
-    QVERIFY(m_lastInsertedIndex.isValid());
 
     compareData();
 }
 
 void medDataManagerTestObject::testImport2NonPersistentSeries(void)
 {
-    // import a first serie
+    // first, import a serie
     testImportNonPersistent();
     
     IndexList prevNPPatients = npDb->patients();
     
-    //and import a second serie, copied from the first one just changing series description
+    //and import a second serie, copied from the first one, just changing series description
     
     //going back by one to dupplicate the data
     m_currentId--;
@@ -192,23 +195,27 @@ void medDataManagerTestObject::testImport2NonPersistentSeries(void)
 void medDataManagerTestObject::testImportFile(void)
 {    
     //create a file to be imported 
-    medQtDataImageWriter writer;
     m_currentData = createTestData();
+    
+    medQtDataImageWriter writer;
     writer.setData(m_currentData);
     m_fileToImport = m_storagePath + "/fileToImport.png";
+    
     QVERIFY( writer.write(m_fileToImport) == true );
     
-    IndexList currentPatients = db->patients();
+    IndexList prevPatients = db->patients();
 
     medDataManager::instance()->import(m_fileToImport, false);
     
     waitForInsertions();
+    
+    QVERIFY(m_lastInsertedIndex.isValid());
   
     IndexList patients = db->patients();
-    QCOMPARE(patients.size(), currentPatients.size()+1);
-    IndexList studies = db->studies(patients[patients.size()-1]);
+    QCOMPARE(patients.size(), prevPatients.size()+1);
+    IndexList studies = db->studies(m_lastInsertedIndex);
     QCOMPARE(studies.size(), 1);
-    IndexList series = db->series(studies[studies.size()-1]);
+    IndexList series = db->series(studies[0]);
     QCOMPARE(series.size(), 1);
 
     const medDataIndex importedIndex = series[0];
@@ -217,28 +224,49 @@ void medDataManagerTestObject::testImportFile(void)
     // Check data in db matches original.
     compareData();
     
+    dtkSmartPointer<dtkAbstractData> insertedData = medDataManager::instance()->data( m_lastInsertedIndex );
+    QString patientID = medMetaDataKeys::PatientID.getFirstValue(insertedData);
+    QString serieID = medMetaDataKeys::SeriesID.getFirstValue(insertedData);
+    QFileInfo fileInfo(m_storagePath + "/" + patientID + "/" + serieID );
+    
+    //check that image file is created
+    QDir dir(m_storagePath + "/" + patientID);
+    QFileInfoList fileInfoList = dir.entryInfoList( QDir::Files );
+    
+    QStringList fileList;
+    foreach(QFileInfo file, fileInfoList)
+        fileList.append(file.fileName());
+    
+    //filename is no exactly serie's ID
+    QStringList filter = fileList.filter(fileInfo.fileName());
+    
+    QVERIFY( filter.size() == 1 );   
 }
 
 void medDataManagerTestObject::testIndexFile(void)
 {
     //create a file to be indexed 
-    medQtDataImageWriter writer;
     m_currentData = createTestData();
+    
+    medQtDataImageWriter writer;
     writer.setData(m_currentData);
     m_fileToImport = m_storagePath + "/fileToIndex.png";
-    QVERIFY(  writer.write(m_fileToImport) == true );
     
-    IndexList currentPatients = db->patients();
+    QVERIFY( writer.write(m_fileToImport) == true );
     
+    IndexList prevPatients = db->patients();
+   
     medDataManager::instance()->import(m_fileToImport, true);
     
     waitForInsertions();
+    
+    QVERIFY(m_lastInsertedIndex.isValid());
    
     IndexList patients = db->patients();
-    QCOMPARE(patients.size(), currentPatients.size()+1);
-    IndexList studies = db->studies(patients[patients.size()-1]);
+    QCOMPARE(patients.size(), prevPatients.size()+1);
+    IndexList studies = db->studies(m_lastInsertedIndex);
     QCOMPARE(studies.size(), 1);
-    IndexList series = db->series(studies[studies.size()-1]);
+    IndexList series = db->series(studies[0]);
     QCOMPARE(series.size(), 1);
 
     const medDataIndex importedIndex = series[0];
@@ -246,29 +274,43 @@ void medDataManagerTestObject::testIndexFile(void)
 
     // Check data in db matches original.
     compareData();
+    
+    dtkSmartPointer<dtkAbstractData> insertedData = medDataManager::instance()->data( m_lastInsertedIndex );
+    QString patientID = medMetaDataKeys::PatientID.getFirstValue(insertedData);
+    QString serieID = medMetaDataKeys::SeriesID.getFirstValue(insertedData);
+    
+    QDir dir(m_storagePath + "/" + patientID);
+    QFileInfoList fileInfoList = dir.entryInfoList( QDir::Files );
+    
+    //check that there is no image file created
+    QCOMPARE(fileInfoList.size(), 0);
     
 }
 
 void medDataManagerTestObject::testImportNonPersistentFile(void)
 {
     //create a file to be indexed 
-    medQtDataImageWriter writer;
     m_currentData = createTestData();
+    
+    medQtDataImageWriter writer;
     writer.setData(m_currentData);
     m_fileToImport = m_storagePath + "/fileToImportInNPDb.png";
+    
     QVERIFY(  writer.write(m_fileToImport) == true );
     
-    IndexList currentPatients = npDb->patients();
+    IndexList prevPatients = npDb->patients();
     
     medDataManager::instance()->importNonPersistent(m_fileToImport);
     
     waitForInsertions();
+    
+    QVERIFY(m_lastInsertedIndex.isValid());
    
     IndexList patients = npDb->patients();
-    QCOMPARE(patients.size(), currentPatients.size()+1);
-    IndexList studies = npDb->studies(patients[patients.size()-1]);
+    QCOMPARE(patients.size(), prevPatients.size()+1);
+    IndexList studies = npDb->studies(m_lastInsertedIndex);
     QCOMPARE(studies.size(), 1);
-    IndexList series = npDb->series(studies[studies.size()-1]);
+    IndexList series = npDb->series(studies[0]);
     QCOMPARE(series.size(), 1);
 
     const medDataIndex importedIndex = series[0];
@@ -307,7 +349,7 @@ void medDataManagerTestObject::testStoreNonPersistentDataToDatabase (void)
 {   
     IndexList prevNPPatients = npDb->patients();
     
-    if( prevNPPatients.size() == 0)
+    if( prevNPPatients.size() == 0 )
     {
         testImportNonPersistent();
         testImportNonPersistentFile();   
@@ -329,12 +371,8 @@ void medDataManagerTestObject::testStoreNonPersistentDataToDatabase (void)
     QCOMPARE( currentNPPatients.size(), 0);
     
     QCOMPARE( medDataManager::instance()->nonPersistentDataCount(), 0);
-    
-    //TODO: to complete  
+      
 }
-
-
-
 
 void medDataManagerTestObject::testStoreNonPersistentMultipleDataToDatabase(void)
 {  
@@ -417,14 +455,19 @@ void medDataManagerTestObject::testStoreNonPersistentMultipleDataToDatabase(void
     else QVERIFY( false );
 }
 
+
 void medDataManagerTestObject::testStoreNonPersistentSingleDataToDatabase(void)
 {
-   /* IndexList prevNPPatients = npDb->patients();
-    
+    IndexList prevNPPatients = npDb->patients();
+    medDataIndex indexFor1Serie;
+    medDataIndex indexFor2Series;
+     
     if( prevNPPatients.size() == 0)
     {
         testImportNonPersistent();
-        testImportNonPersistentFile();   
+        indexFor1Serie = m_lastInsertedIndex;
+        testImport2NonPersistentSeries();   
+        indexFor2Series = m_lastInsertedIndex;
     }
     
     IndexList prevPatients = db->patients();
@@ -432,36 +475,27 @@ void medDataManagerTestObject::testStoreNonPersistentSingleDataToDatabase(void)
     
     QVERIFY( prevNPPatients.size() > 1 );
     
-    medDataIndex patient1 = npDb->patients()[0];
+    // retrieve indexes for patient, study,serie 
+    medDataIndex patient1;
+    patient1.setDataSourceId(indexFor1Serie.dataSourceId());
+    patient1.setPatientId(indexFor1Serie.patientId());
     medDataIndex study1 = npDb->studies(patient1)[0];
     medDataIndex serie1 = npDb->series(study1)[0];
-    medDataIndex patient2 = npDb->patients()[1];
     
-    //store just a serie
-    medDataManager::instance()->storeNonPersistentSingleDataToDatabase(serie1);
-    m_timer.start(5000);
-    m_eventLoop.exec();
+    QCOMPARE(serie1, indexFor1Serie);
     
-    //store just a study
-    medDataManager::instance()->storeNonPersistentSingleDataToDatabase(study1);
-    m_eventLoop.exec();
+    dtkSmartPointer<dtkAbstractData> originalData = medDataManager::instance()->data( serie1 );
     
-    //store just a patient
-    medDataManager::instance()->storeNonPersistentSingleDataToDatabase(patient1);
-    m_eventLoop.exec();
+    medDataManager::instance()->storeNonPersistentMultipleDataToDatabase(serie1);
     
-    //store patient + study + serie
-    medDataManager::instance()->storeNonPersistentSingleDataToDatabase(patient2);
-    m_timer.start(5000);
-    m_eventLoop.exec();*/
-       
+    waitForInsertions();
+    
+    QVERIFY( m_lastInsertedIndex.isValidForSeries());
+    dtkSmartPointer<dtkAbstractData> insertedData = medDataManager::instance()->data( m_lastInsertedIndex );
+    
+    compareData(originalData, insertedData);
+  
 }
-
-void medDataManagerTestObject::testNonPersistentDataCount(void)
-{
-
-}
-
 
 
 void medDataManagerTestObject::testRemoveData(void)
@@ -489,7 +523,7 @@ void medDataManagerTestObject::testRemoveData(void)
         {
             medDataIndex study, serie;
             IndexList studies = controller->studies(patient);
-            if( studies.size()>0 )
+            if( studies.size( )> 0 )
             {
                 study = controller->studies(patient)[0];
                 if( controller->series(study).size() > 0 )
@@ -512,17 +546,14 @@ void medDataManagerTestObject::testRemoveData(void)
             data = medDataManager::instance()->data( serie );
             QVERIFY(!data);
         }
-        
-        if( controller->isPersistent())
-        {
-            // let's check that image files are deleted
-            QDir dir(m_storagePath);
-            QFileInfoList fileInfoList = dir.entryInfoList( QDir::AllDirs );
-            
-            // TODO: this should pass
-            //QCOMPARE (fileInfoList.size(), 0);  
-        }   
     }
+
+    // let's check that image files are deleted
+    QDir dir(m_storagePath);
+    QFileInfoList fileInfoList = dir.entryInfoList( QDir::Dirs | QDir::NoDotAndDotDot );
+
+    QCOMPARE (fileInfoList.size(), 0); 
+    
 }
 
 void medDataManagerTestObject::testMoveStudy(void)
@@ -569,6 +600,7 @@ void medDataManagerTestObject::testMoveSerie(void)
 {
     //let's clean up everything
     testRemoveData();
+    
     IndexList testPatients = db->patients();
     IndexList testPatients1 = npDb->patients();
     
@@ -619,9 +651,10 @@ void medDataManagerTestObject::testMoveSerie(void)
         
         compareData(originalData, movedData);
         
-        // TODO: check this
-        //QVERIFY( originalPatientName != newPatientName );
     } 
+    
+    //test to see if everything is deleted properly
+    testRemoveData();
 }
    
    
@@ -681,24 +714,20 @@ void medDataManagerTestObject::compareData()
     QCOMPARE(medMetaDataKeys::StudyDescription.getFirstValue(insertedData),
         medMetaDataKeys::StudyDescription.getFirstValue(m_currentData));
     QCOMPARE(medMetaDataKeys::SeriesDescription.getFirstValue(insertedData), 
-        medMetaDataKeys::SeriesDescription.getFirstValue(m_currentData));   
+        medMetaDataKeys::SeriesDescription.getFirstValue(m_currentData));      
 }
 
 void medDataManagerTestObject::compareData(dtkSmartPointer<dtkAbstractData> data1, dtkSmartPointer<dtkAbstractData> data2)
 {
     QVERIFY(data1);
     QVERIFY(data2);
-    //QCOMPARE(data1->identifier(), data2->identifier());
+    QCOMPARE(data1->identifier(), data2->identifier());
     QCOMPARE(medMetaDataKeys::PatientName.getFirstValue(data1),
         medMetaDataKeys::PatientName.getFirstValue(data2));
     QCOMPARE(medMetaDataKeys::StudyDescription.getFirstValue(data1), 
         medMetaDataKeys::StudyDescription.getFirstValue(data2));
     QCOMPARE(medMetaDataKeys::SeriesDescription.getFirstValue(data1), 
         medMetaDataKeys::SeriesDescription.getFirstValue(data2)); 
-    
-    qDebug() << medMetaDataKeys::PatientName.getFirstValue(data1) << " "
-            << medMetaDataKeys::StudyDescription.getFirstValue(data1) << " "
-            << medMetaDataKeys::SeriesDescription.getFirstValue(data1);
 }
 
 void medDataManagerTestObject::waitForInsertions(int numberOfInsertions, int timeout )

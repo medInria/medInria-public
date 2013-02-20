@@ -320,7 +320,12 @@ int medDatabaseImporter::getOrCreatePatient ( const dtkAbstractData* dtkData, QS
 
         query.prepare ( "INSERT INTO patient (name, thumbnail, birthdate, gender, patientId) VALUES (:name, :thumbnail, :birthdate, :gender, :patientId)" );
         query.bindValue ( ":name", patientName );
-        query.bindValue ( ":thumbnail", refThumbPath );
+        
+        // actually, in the database preview, thumbnails are retrieved from the series and not from this field
+        // when this field is set, it can causes problems when moving studies or series and deleting a patient
+        //query.bindValue ( ":thumbnail", refThumbPath );        
+        query.bindValue ( ":thumbnail", QString("") );
+        
         query.bindValue ( ":birthdate", birthdate );
         query.bindValue ( ":gender",    gender );
         query.bindValue ( ":patientId", patientId);
@@ -363,8 +368,8 @@ int medDatabaseImporter::getOrCreateStudy ( const dtkAbstractData* dtkData, QSql
         query.prepare ( "INSERT INTO study (patient, name, uid, thumbnail, studyId) VALUES (:patient, :studyName, :studyUid, :thumbnail, :studyId)" );
         query.bindValue ( ":patient", patientDbId );
         query.bindValue ( ":studyName", studyName );
-        query.bindValue ( ":studyUid", studyUid );
-        query.bindValue ( ":thumbnail", refThumbPath );
+        query.bindValue ( ":studyUid", studyUid );  
+        query.bindValue ( ":thumbnail", refThumbPath );       
         query.bindValue ( ":studyId", studyId);
 
         query.exec();
