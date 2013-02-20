@@ -469,28 +469,29 @@ void medAbstractDatabaseImporter::importData()
         emit failure ( this );
         return;
     }
-
-    QString subDirName = "/" + patientId;
-    QString imageFileNameBase =  subDirName + "/" +  seriesId;
-
-    QDir dir ( medStorage::dataLocation() + subDirName );
-    if ( !dir.exists() )
-    {
-        if ( !medStorage::mkpath ( medStorage::dataLocation() + subDirName ) )
-        {
-            qWarning() << "Unable to create directory for images";
-            emit failure ( this );
-            return ;
-        }
-    }
-
-    QString extension  = determineFutureImageExtensionByDataType ( d->data ); 
-    QString imageFileName = imageFileNameBase + extension;
-        
+     
     bool writeSuccess = true;
+    QString     thumb_dir;
 
     if ( !d->indexWithoutImporting )
     {
+        QString subDirName = "/" + patientId;
+        QString imageFileNameBase =  subDirName + "/" +  seriesId;
+
+        QDir dir ( medStorage::dataLocation() + subDirName );
+        if ( !dir.exists() )
+        {
+            if ( !medStorage::mkpath ( medStorage::dataLocation() + subDirName ) )
+            {
+                qWarning() << "Unable to create directory for images";
+                emit failure ( this );
+                return ;
+            }
+        }
+
+        QString extension  = determineFutureImageExtensionByDataType ( d->data );
+        QString imageFileName = imageFileNameBase + extension;
+
         // writing file
         writeSuccess = tryWriteImage (  medStorage::dataLocation()+imageFileName, d->data );
 
@@ -504,15 +505,15 @@ void medAbstractDatabaseImporter::importData()
             qWarning() << "Unable to write image " + imageFileName;
             qWarning() << "Either there is nothing to write or a problem occured when writing.";
         }
-        else 
+        else
         {
             //d->data->addMetaData ( "FileName", imageFileName );
             d->data->setMetaData ( "FileName", imageFileName );
         }
+        
+         QFileInfo   seriesInfo ( imageFileName );
+         thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.completeBaseName() + "/";
     }
-    
-    QFileInfo   seriesInfo ( imageFileName );
-    QString     thumb_dir = seriesInfo.dir().path() + "/" + seriesInfo.completeBaseName() + "/";
     
 
     // Now, populate the database
