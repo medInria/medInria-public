@@ -105,6 +105,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
     }
     else
     {
+        // check if patient is already in the non persistent database
         for ( int i=0; i<items.count(); i++ )
             //if ( items[i]->name() ==patientName )
             if ( medMetaDataKeys::PatientName.getFirstValue(items[i]->data()) == patientName )
@@ -141,63 +142,68 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
         npdc->insert ( index, patientItem );
     }
     
-
+    
     int     studyDbId   = -1;
     QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(data);
     QString studyId = medMetaDataKeys::StudyID.getFirstValue(data);
     QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(data);
-
-    databaseIndex = medDatabaseController::instance()->indexForStudy ( patientName, studyName );    
-    medDatabaseNonPersistentItem *studyItem = NULL;
     
-    if ( databaseIndex.isValid() )
+    QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
+    
+
+    if( studyName!="EmptyStudy" || seriesName!="EmptySerie" )
     {
-        qDebug() << "Study exists in the database, I reuse its Id";
-        studyDbId = databaseIndex.studyId();
-    }
-    else
-    {
-        for ( int i=0; i<items.count(); i++ )
-            if ( items[i]->name() ==patientName && items[i]->studyName() ==studyName )
-            {
-                studyDbId = items[i]->index().studyId();
-                studyItem = items[i];
-                break;
-            }
-    }
+        // check if study is already in the persistent database
+        databaseIndex = medDatabaseController::instance()->indexForStudy ( patientName, studyName );
+        medDatabaseNonPersistentItem *studyItem = NULL;
 
-    if ( studyDbId==-1 )
-    {
-        studyDbId = npdc->studyId ( true );
-    }
-    if ( studyItem == NULL )
-    {
-        // create an item for study
-        studyItem = new medDatabaseNonPersistentItem;
-        index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, -1, -1 );
+        if ( databaseIndex.isValid() )
+        {
+            qDebug() << "Study exists in the database, I reuse its Id";
+            studyDbId = databaseIndex.studyId();
+        }
+        else
+        {
+            for ( int i=0; i<items.count(); i++ )
+                if ( items[i]->name()==patientName && items[i]->studyName()==studyName )
+                {
+                    studyDbId = items[i]->index().studyId();
+                    studyItem = items[i];
+                    break;
+                }
+        }
 
-        dtkSmartPointer<medAbstractData> dtkData = new medAbstractData();
+        if ( studyDbId==-1 )
+        {
+            studyDbId = npdc->studyId ( true );
+        }
+        if ( studyItem == NULL )
+        {
+            // create an item for study
+            studyItem = new medDatabaseNonPersistentItem;
+            index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, -1, -1 );
 
-        dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
-        dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
-        dtkData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
-        dtkData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << studyId );
-        dtkData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << studyUid );
+            dtkSmartPointer<medAbstractData> dtkData = new medAbstractData();
 
-        studyItem->d->name = patientName;
-        studyItem->d->patientId = patientId;
-        studyItem->d->birthdate = birthdate;
-        studyItem->d->studyName = studyName;
-        studyItem->d->index = index;
-        studyItem->d->data = dtkData;
-        studyItem->d->studyId = studyId;
-        studyItem->d->studyUid = studyUid;
+            dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
+            dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
+            dtkData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
+            dtkData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << studyId );
+            dtkData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << studyUid );
 
-        npdc->insert ( index, studyItem );
+            studyItem->d->name = patientName;
+            studyItem->d->patientId = patientId;
+            studyItem->d->birthdate = birthdate;
+            studyItem->d->studyName = studyName;
+            studyItem->d->index = index;
+            studyItem->d->data = dtkData;
+            studyItem->d->studyId = studyId;
+            studyItem->d->studyUid = studyUid;
+
+            npdc->insert ( index, studyItem );
+        }
     }
         
-
-    QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data);
         
     if(seriesName != "EmptySerie")
     {
