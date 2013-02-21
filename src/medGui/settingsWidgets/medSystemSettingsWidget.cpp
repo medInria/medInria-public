@@ -5,8 +5,6 @@
 #include <QDir>
 #include <QtCore>
 
-#include <dtkScript/dtkScriptManager.h>
-
 #include <medPluginManager.h>
 #include <medSettingsManager.h>
 

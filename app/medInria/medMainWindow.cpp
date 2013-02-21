@@ -26,7 +26,6 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkScript/dtkScriptInterpreter.h>
-#include <dtkScript/dtkScriptInterpreterPool.h>
 #include <dtkScript/dtkScriptInterpreterPython.h>
 #include <dtkScript/dtkScriptInterpreterTcl.h>
 
