@@ -8,7 +8,7 @@
 #define medFilteringWorkspace_H
 
 #include <QtCore>
-#include <medViewerWorkspace.h>
+#include <medWorkspace.h>
 
 class medFilteringWorkspacePrivate;
 class medViewContainerStack;
@@ -18,7 +18,7 @@ class dtkAbstractView;
 /**
  * @brief Workspace providing a comparative display of the input and output of image-to-image filtering process plugins
  */
-class medFilteringWorkspace : public medViewerWorkspace
+class medFilteringWorkspace : public medWorkspace
 {
     Q_OBJECT
 

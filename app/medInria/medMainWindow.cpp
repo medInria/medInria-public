@@ -48,7 +48,7 @@
 #include <medDatabaseModel.h>
 #include <medDatabaseItem.h>
 
-#include <medViewerWorkspace.h>
+#include <medWorkspace.h>
 #include <medToolBoxFactory.h>
 #include <medWorkspaceFactory.h>
 #include <medSettingsWidgetFactory.h>
@@ -399,7 +399,7 @@ void medMainWindow::writeSettings()
 
 void medMainWindow::updateQuickAccessMenu ( void )
 {
-     QHash<QString,medViewerWorkspaceDetails*> workspaceDetails =
+     QHash<QString,medWorkspaceDetails*> workspaceDetails =
              medWorkspaceFactory::instance()->workspaceDetails();
     QVBoxLayout * workspaceButtonsLayout = new QVBoxLayout;
     workspaceButtonsLayout->setMargin(0);
@@ -449,7 +449,7 @@ void medMainWindow::updateQuickAccessMenu ( void )
     foreach ( QString id, workspaceDetails.keys() )
     {
         medHomepagePushButton * button = new medHomepagePushButton ( this );
-        medViewerWorkspaceDetails* detail = workspaceDetails.value(id);
+        medWorkspaceDetails* detail = workspaceDetails.value(id);
         button->setText ( detail->name );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setCursor(Qt::PointingHandCursor);
@@ -602,7 +602,7 @@ void medMainWindow::onShowWorkspace ( QString workspace )
     d->quickAccessButton->setMinimumWidth(170);
     d->workspaceArea->setupWorkspace(workspace);
     this->switchToWorkspaceArea();
-    medViewerWorkspaceDetails* details =
+    medWorkspaceDetails* details =
             medWorkspaceFactory::instance()->workspaceDetailsFromId(workspace);
 
     d->quickAccessButton->setText(tr("Workspace: ") + details->name);

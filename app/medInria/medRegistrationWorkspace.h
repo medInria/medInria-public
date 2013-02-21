@@ -4,12 +4,12 @@
 
 #include <QtCore>
 
-#include <medViewerWorkspace.h>
+#include <medWorkspace.h>
 
 class medTabbedViewContainers;
 class medRegistrationWorkspacePrivate;
 
-class medRegistrationWorkspace : public medViewerWorkspace
+class medRegistrationWorkspace : public medWorkspace
 {
     Q_OBJECT
 

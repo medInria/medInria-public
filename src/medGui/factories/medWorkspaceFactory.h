@@ -7,17 +7,17 @@
 
 #include <QtCore>
 
-class medViewerWorkspace;
+class medWorkspace;
 class medWorkspaceFactoryPrivate;
-struct medViewerWorkspaceDetails;
+struct medWorkspaceDetails;
 
 class MEDGUI_EXPORT medWorkspaceFactory : public dtkAbstractFactory
 {
     Q_OBJECT
 
 public:
-    typedef medViewerWorkspace *(*medViewerWorkspaceCreator)(QWidget* parent);
-    typedef bool (*medViewerWorkspaceIsUsable)();
+    typedef medWorkspace *(*medWorkspaceCreator)(QWidget* parent);
+    typedef bool (*medWorkspaceIsUsable)();
 
 public:
     static medWorkspaceFactory *instance(void);
@@ -44,7 +44,7 @@ public:
                          QString name,
                          QString description){
         //we must keep the templated part in the .h file for library users
-        medViewerWorkspaceCreator creator = create<workspaceType>;
+        medWorkspaceCreator creator = create<workspaceType>;
         return registerWorkspace(identifier,name,description,creator,workspaceType::isUsable);
     }
 
@@ -63,30 +63,30 @@ public:
     bool registerWorkspace(QString identifier,
                          QString name,
                          QString description,
-                         medViewerWorkspaceCreator creator,
-                         medViewerWorkspaceIsUsable isUsable=NULL);
+                         medWorkspaceCreator creator,
+                         medWorkspaceIsUsable isUsable=NULL);
 
     /**
      * @brief Gives the details of all workspaces.
      *
      */
-    QHash<QString, medViewerWorkspaceDetails *> workspaceDetails() const;
+    QHash<QString, medWorkspaceDetails *> workspaceDetails() const;
 
     /**
      * @brief Gives the details of one workspace.
      *
      */
-    medViewerWorkspaceDetails * workspaceDetailsFromId(QString identifier) const;
+    medWorkspaceDetails * workspaceDetailsFromId(QString identifier) const;
 
     bool isUsable(QString identifier) const;
 
 public slots:
     /**
-     * @brief allocates the memory for a medViewerWorkspace.
+     * @brief allocates the memory for a medWorkspace.
      * @param type identifier for the Workspace type.
      * @param parent the parentWidget for all the Widget created in the workspace, even if the workspace is not a widget, its children can be destroyed by the qobject hierarchy.
      */
-    medViewerWorkspace *createWorkspace(QString type,QWidget* parent=0);
+    medWorkspace *createWorkspace(QString type,QWidget* parent=0);
 
 protected:
      medWorkspaceFactory(void);
@@ -100,7 +100,7 @@ private:
      * @warning keep it static if you don't want to freeze your brain (solution in http://www.parashift.com/c++-faq-lite/pointers-to-members.html#faq-33.5 for those interested)
      */
     template < typename T >
-    static medViewerWorkspace* create ( QWidget* parent ) {
+    static medWorkspace* create ( QWidget* parent ) {
     return ( new T(parent) );
     }
 
@@ -113,12 +113,12 @@ private:
  * and a function to allocate memory.
  *
  */
-struct MEDGUI_EXPORT medViewerWorkspaceDetails{
+struct MEDGUI_EXPORT medWorkspaceDetails{
     QString name; /** Readable name*/
     QString description; /** (tooltip) short description of the workspace */
     medWorkspaceFactory::medWorkspaceCreator creator; /** function pointer allocating memory for the workspace*/
     medWorkspaceFactory::medWorkspaceIsUsable isUsable;
-    medWorkspaceDetails(QString name,QString description,medViewerWorkspaceFactory::medViewerWorkspaceCreator creator, medViewerWorkspaceFactory::medViewerWorkspaceIsUsable isUsable = NULL):
+    medWorkspaceDetails(QString name,QString description,medWorkspaceFactory::medWorkspaceCreator creator, medWorkspaceFactory::medWorkspaceIsUsable isUsable = NULL):
         name(name),description(description),creator(creator),isUsable(isUsable){}
 };
 

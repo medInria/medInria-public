@@ -32,7 +32,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medPacsSelector.h
   medViewPool.h
   medTabbedViewContainers.h
-  medViewerWorkspace.h
+  medWorkspace.h
   medImageFileLoader.h
 
   # db related items
@@ -137,7 +137,7 @@ set(${PROJECT_NAME}_SOURCES
   medPacsSelector.cpp
   medToolBoxContainer.cpp
   medTabbedViewContainers.cpp
-  medViewerWorkspace.cpp
+  medWorkspace.cpp
 
   medPacsSelector.cpp
   medViewPool.cpp

@@ -22,12 +22,12 @@
 
 #include <QtCore>
 
-#include <medViewerWorkspace.h>
+#include <medWorkspace.h>
 
 
 class medVisualizationWorkspacePrivate;
 
-class medVisualizationWorkspace : public medViewerWorkspace
+class medVisualizationWorkspace : public medWorkspace
 {
     Q_OBJECT
 

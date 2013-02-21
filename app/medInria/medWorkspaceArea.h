@@ -3,7 +3,7 @@
 
 #include <QtGui>
 
-#include <medViewerWorkspace.h>
+#include <medWorkspace.h>
 
 class dtkAbstractView;
 
@@ -60,7 +60,7 @@ public slots:
      * @brief Sets up the newly chosen workspace.
      *
      * When a workspace is switched to, sets up all the signal/slot connections
-     * to raise the new medViewerWorkspace.
+     * to raise the new medWorkspace.
      * This calls the factory if the workspace is not yet in the private
      * hash table of workspaces
      *
@@ -181,14 +181,14 @@ public slots:
     void removeToolBox(medToolBox *toolbox);
 
     /**
-     * @brief Switches from a medViewerWorkspace::LayoutType to an other.
+     * @brief Switches from a medWorkspace::LayoutType to an other.
      *
      * This can't be done by the workspace which has no access to the
      * medWorkspaceArea Widget and its internal organisation.
      *
      * @param layout
     */
-    void switchToLayout (medViewerWorkspace::LayoutType layout);
+    void switchToLayout (medWorkspace::LayoutType layout);
 
 //    void onFileOpened(const medDataIndex &index);
     void onFileOpenedInTab(const medDataIndex &index);
@@ -246,7 +246,7 @@ signals:
     /**
      * @brief Emitted when the patient has changed
      *
-     * Allows to clear all patient related data in a medViewerWorkspace.
+     * Allows to clear all patient related data in a medWorkspace.
      * Only emitted if the setting "system/clearOnPatientChange" is set to true.
      *
     */

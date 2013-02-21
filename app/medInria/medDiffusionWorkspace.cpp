@@ -34,7 +34,7 @@ public:
     QString uuid;
 };
 
-medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medViewerWorkspace(parent), d(new medDiffusionWorkspacePrivate)
+medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(parent), d(new medDiffusionWorkspacePrivate)
 {
     d->viewPropertiesToolBox = new medViewPropertiesToolBox(parent);
 

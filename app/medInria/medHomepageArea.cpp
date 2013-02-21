@@ -29,7 +29,7 @@
 #include "medHomepageArea.h"
 
 #include <medHomepageButton.h>
-#include <medViewerWorkspace.h>
+#include <medWorkspace.h>
 #include <medToolBoxFactory.h>
 #include <medWorkspaceFactory.h>
 #include <medSettingsManager.h>
@@ -368,7 +368,7 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
 void medHomepageArea::initPage ( void )
 {
     //Initialization of the navigation widget with available workspaces
-    QHash<QString,medViewerWorkspaceDetails*> workspaceDetails =
+    QHash<QString,medWorkspaceDetails*> workspaceDetails =
             medWorkspaceFactory::instance()->workspaceDetails();
     QVBoxLayout * workspaceButtonsLayout = new QVBoxLayout;
     workspaceButtonsLayout->setSpacing ( 10 );
@@ -391,7 +391,7 @@ void medHomepageArea::initPage ( void )
     foreach ( QString id, workspaceDetails.keys())
     {
         medHomepageButton * button = new medHomepageButton ( this );
-        medViewerWorkspaceDetails* detail = workspaceDetails.value(id);
+        medWorkspaceDetails* detail = workspaceDetails.value(id);
         button->setText ( detail->name );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setToolButtonStyle ( Qt::ToolButtonTextUnderIcon );

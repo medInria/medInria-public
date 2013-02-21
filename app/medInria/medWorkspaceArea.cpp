@@ -54,7 +54,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->currentPatient = medDataIndex();
     d->currentWorkspaceName = "";
     d->currentWorkspace = 0;
-    d->currentLayout = medViewerWorkspace::LeftDbRightTb;
+    d->currentLayout = medWorkspace::LeftDbRightTb;
 
     d->splitter = new QSplitter(this);
     d->splitter->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
@@ -691,7 +691,7 @@ void medWorkspaceArea::setupWorkspace(QString name)
     }
 */
 
-    medViewerWorkspace *workspace = NULL;
+    medWorkspace *workspace = NULL;
 
     if (d->workspaces.contains(name))
         workspace = d->workspaces[name];
@@ -773,7 +773,7 @@ void medWorkspaceArea::setupWorkspace(QString name)
     connect(workspace, SIGNAL(toolboxRemoved(medToolBox*)),this, SLOT(removeToolBox(medToolBox*)), Qt::UniqueConnection);
 }
 
-void medWorkspaceArea::switchToLayout (medViewerWorkspace::LayoutType layout)
+void medWorkspaceArea::switchToLayout (medWorkspace::LayoutType layout)
 {
     if (d->currentLayout==layout)
         return;
@@ -786,8 +786,8 @@ void medWorkspaceArea::switchToLayout (medViewerWorkspace::LayoutType layout)
 
     //setup orientation
     switch (layout){
-        case medViewerWorkspace::TopDbBottomTb:
-        case medViewerWorkspace::TopTbBottomDb:
+        case medWorkspace::TopDbBottomTb:
+        case medWorkspace::TopTbBottomDb:
            {
 
          d->navigatorContainerLayout->removeWidget ( d->patientToolBox );
@@ -811,8 +811,8 @@ void medWorkspaceArea::switchToLayout (medViewerWorkspace::LayoutType layout)
            }
             break;
 
-        case medViewerWorkspace::LeftDbRightTb:
-        case medViewerWorkspace::LeftTbRightDb:
+        case medWorkspace::LeftDbRightTb:
+        case medWorkspace::LeftTbRightDb:
         default:
            {
 
@@ -839,14 +839,14 @@ void medWorkspaceArea::switchToLayout (medViewerWorkspace::LayoutType layout)
 
 
     switch (layout){
-        case medViewerWorkspace::TopDbBottomTb:
-        case medViewerWorkspace::LeftDbRightTb:
+        case medWorkspace::TopDbBottomTb:
+        case medWorkspace::LeftDbRightTb:
             d->splitter->insertWidget(0,d->navigatorContainer);
             d->splitter->insertWidget(2,d->toolBoxContainer);
         break;
 
-        case medViewerWorkspace::TopTbBottomDb:
-        case medViewerWorkspace::LeftTbRightDb:
+        case medWorkspace::TopTbBottomDb:
+        case medWorkspace::LeftTbRightDb:
         default:
             d->splitter->insertWidget(0,d->toolBoxContainer);
             d->splitter->insertWidget(2,d->navigatorContainer);
@@ -856,10 +856,10 @@ void medWorkspaceArea::switchToLayout (medViewerWorkspace::LayoutType layout)
 }
 
 
-void medWorkspaceAreaPrivate::saveSplitterSize(medViewerWorkspace::LayoutType layout)
+void medWorkspaceAreaPrivate::saveSplitterSize(medWorkspace::LayoutType layout)
 {
-    if (layout == medViewerWorkspace::TopDbBottomTb ||
-        layout == medViewerWorkspace::TopTbBottomDb)
+    if (layout == medWorkspace::TopDbBottomTb ||
+        layout == medWorkspace::TopTbBottomDb)
     {
         medSettingsManager::instance()->setValue("application","ViewerSplitterSizeVertical",
             splitter->saveState());

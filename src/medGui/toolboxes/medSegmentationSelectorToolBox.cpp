@@ -38,7 +38,7 @@
 #include <medToolBoxTab.h>
 #include <medSegmentationAbstractToolBox.h>
 #include <medViewManager.h>
-#include <medViewerWorkspace.h>
+#include <medWorkspace.h>
 #include <medViewEventFilter.h>
 
 #include <QtGui>
@@ -59,7 +59,7 @@ public:
     QBoxLayout *algorithmParameterLayout;
     QComboBox *toolBoxes;
     medSegmentationAbstractToolBox * customToolBox;
-    medViewerWorkspace * workspace;
+    medWorkspace * workspace;
 
     dtkSmartPointer<dtkAbstractProcess> process;
 
@@ -73,7 +73,7 @@ public:
 
 };
 
-medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medViewerWorkspace * workspace, QWidget *parent) : medToolBox(parent), d(new medSegmentationSelectorToolBoxPrivate)
+medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medWorkspace * workspace, QWidget *parent) : medToolBox(parent), d(new medSegmentationSelectorToolBoxPrivate)
 {
     d->workspace = workspace;
     QWidget *displayWidget = new QWidget(this);

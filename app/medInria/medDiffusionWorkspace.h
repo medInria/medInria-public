@@ -4,7 +4,7 @@
 
 #include <QtCore>
 
-#include <medViewerWorkspace.h>
+#include <medWorkspace.h>
 #include <medTensorViewToolBox.h>
 #include <medFiberViewToolBox.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
@@ -13,7 +13,7 @@
 class medTabbedViewContainers;
 class medDiffusionWorkspacePrivate;
 
-class medDiffusionWorkspace : public medViewerWorkspace
+class medDiffusionWorkspace : public medWorkspace
 {
     Q_OBJECT
 
@@ -42,7 +42,7 @@ public slots:
     /**
       * @brief Adds a new tab to a workspace
       *
-      * Re-implemented, replaces default implementation in medViewerWorkspace
+      * Re-implemented, replaces default implementation in medWorkspace
       */
     void onAddTabClicked();
 

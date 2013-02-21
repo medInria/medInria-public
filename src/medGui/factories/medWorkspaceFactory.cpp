@@ -1,14 +1,14 @@
 #include "medWorkspaceFactory.h"
 
 #include <medToolBoxFactory.h>
-#include "medViewerWorkspace.h"
+#include "medWorkspace.h"
 #include "medWorkspaceFactory.h"
 
 class medWorkspaceFactoryPrivate
 {
 public:
-    typedef QHash<QString, medViewerWorkspaceDetails*> medViewerWorkspaceCreatorHash;
-    medViewerWorkspaceCreatorHash creators;
+    typedef QHash<QString, medWorkspaceDetails*> medWorkspaceCreatorHash;
+    medWorkspaceCreatorHash creators;
 };
 
 medWorkspaceFactory *medWorkspaceFactory::instance(void)
@@ -22,12 +22,12 @@ medWorkspaceFactory *medWorkspaceFactory::instance(void)
 bool medWorkspaceFactory::registerWorkspace(QString identifier,
                                                           QString name,
                                                           QString description,
-                                                          medViewerWorkspaceCreator creator,
-                                                          medViewerWorkspaceIsUsable isUsable)
+                                                          medWorkspaceCreator creator,
+                                                          medWorkspaceIsUsable isUsable)
 {
     if(!d->creators.contains(identifier))
     {
-        medViewerWorkspaceDetails* holder = new medViewerWorkspaceDetails
+        medWorkspaceDetails* holder = new medWorkspaceDetails
                 (name,
                  description,
                  creator,
@@ -45,17 +45,17 @@ QList<QString> medWorkspaceFactory::workspaces(void)
     return d->creators.keys();
 }
 
-medViewerWorkspace *medWorkspaceFactory::createWorkspace(QString type,QWidget* parent)
+medWorkspace *medWorkspaceFactory::createWorkspace(QString type,QWidget* parent)
 {
     if(!d->creators.contains(type))
         return NULL;
 
-    medViewerWorkspace * workspace = d->creators[type]->creator(parent);
+    medWorkspace * workspace = d->creators[type]->creator(parent);
 
     return workspace;
 }
 
-QHash<QString, medViewerWorkspaceDetails *> medWorkspaceFactory::workspaceDetails() const
+QHash<QString, medWorkspaceDetails *> medWorkspaceFactory::workspaceDetails() const
 {
     return d->creators;
 }
@@ -67,7 +67,7 @@ medWorkspaceFactory::medWorkspaceFactory(void) : dtkAbstractFactory(), d(new med
 
 medWorkspaceFactory::~medWorkspaceFactory(void)
 {
-    foreach (medViewerWorkspaceDetails * detail, d->creators.values())
+    foreach (medWorkspaceDetails * detail, d->creators.values())
     {
         delete detail;
         detail = NULL;
@@ -79,7 +79,7 @@ medWorkspaceFactory::~medWorkspaceFactory(void)
 }
 
 
-medViewerWorkspaceDetails * medWorkspaceFactory::workspaceDetailsFromId(QString identifier) const
+medWorkspaceDetails * medWorkspaceFactory::workspaceDetailsFromId(QString identifier) const
 {
     return d->creators.value(identifier);
 }
@@ -88,7 +88,7 @@ medWorkspaceFactory *medWorkspaceFactory::s_instance = NULL;
 
 
 
-bool medViewerWorkspaceFactory::isUsable(QString identifier) const
+bool medWorkspaceFactory::isUsable(QString identifier) const
 {
     if (d->creators.contains(identifier))
         if (d->creators.value(identifier)->isUsable==NULL)

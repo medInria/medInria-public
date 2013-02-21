@@ -36,7 +36,7 @@ public:
     QString importUuid;
 };
 
-medFilteringWorkspace::medFilteringWorkspace ( QWidget *parent ) : medViewerWorkspace ( parent ), d ( new medFilteringWorkspacePrivate )
+medFilteringWorkspace::medFilteringWorkspace ( QWidget *parent ) : medWorkspace ( parent ), d ( new medFilteringWorkspacePrivate )
 {
     d->viewPropertiesToolBox = new medViewPropertiesToolBox ( parent );
 

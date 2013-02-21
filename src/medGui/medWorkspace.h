@@ -1,4 +1,4 @@
-/* medViewerWorkspace.h ---
+/* medWorkspace.h ---
  *
  * Author: Julien Wintz
  * Copyright (C) 2008 - Julien Wintz, Inria.
@@ -17,8 +17,8 @@
  *
  */
 
-#ifndef MEDVIEWERWORKSPACE_H
-#define MEDVIEWERWORKSPACE_H
+#ifndef MEDWORKSPACE_H
+#define MEDWORKSPACE_H
 
 #include <QtCore>
 #include "medViewContainer.h"
@@ -27,7 +27,7 @@
 #include "medGuiExport.h"
 
 class medToolBox;
-class medViewerWorkspacePrivate;
+class medWorkspacePrivate;
 class medTabbedViewContainers;
 class medDataIndex;
 
@@ -42,7 +42,7 @@ class medDataIndex;
  * medWorkspaceArea::setupWorkspace is called.
  *
 */
-class MEDGUI_EXPORT medViewerWorkspace : public QObject
+class MEDGUI_EXPORT medWorkspace : public QObject
 {
     Q_OBJECT
 
@@ -52,13 +52,13 @@ public:
      *
      * @param parent
     */
-    medViewerWorkspace(QWidget *parent=0);
+    medWorkspace(QWidget *parent=0);
     /**
      * @brief
      *
      * @param void
     */
-    ~medViewerWorkspace(void);
+    ~medWorkspace(void);
 
     /**
      * @brief Identifies a workspace in the factory.
@@ -360,7 +360,7 @@ protected:
     void clearToolBoxes();
 
 private:
-    medViewerWorkspacePrivate *d;
+    medWorkspacePrivate *d;
 };
 
 #endif

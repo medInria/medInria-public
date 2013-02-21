@@ -45,7 +45,7 @@ static QString msegWorkspaceSegmentationDescription = "Segmentation";
 
 
 medSegmentationWorkspace::medSegmentationWorkspace(QWidget * parent /* = NULL */ ) :
-medViewerWorkspace(parent), d(new medSegmentationWorkspacePrivate)
+medWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 {
     d->segmentationToolBox = new medSegmentationSelectorToolBox(this, parent );
 

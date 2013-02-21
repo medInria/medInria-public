@@ -34,7 +34,7 @@ public:
     medViewPropertiesToolBox *viewPropertiesToolBox;
 };
 
-medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medViewerWorkspace(parent), d(new medVisualizationWorkspacePrivate)
+medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medWorkspace(parent), d(new medVisualizationWorkspacePrivate)
 {
     // -- Layout toolbox --
     d->layoutToolBox = new medVisualizationLayoutToolBox(parent);
