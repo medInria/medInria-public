@@ -213,6 +213,9 @@ signals:
      */
     void progressed(QObject* obj,int value);
 
+    void open(const medDataIndex& index, int slice);
+
+
 public slots:
     void onNonPersistentDataImported(const medDataIndex &index, QString uuid);
     void onPersistentDatabaseUpdated(const medDataIndex &index);

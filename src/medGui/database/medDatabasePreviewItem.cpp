@@ -26,12 +26,14 @@ class medDatabasePreviewItemPrivate
 {
 public:
     medDataIndex index;
+    int slice;  // Slice number of the item
     bool isDraggingAllowed;
 };
 
 medDatabasePreviewItem::medDatabasePreviewItem(const medDataIndex &index, QGraphicsItem *parent) : QGraphicsPixmapItem(QPixmap(":/pixmap/thumbnail_default.tiff"), parent), d(new medDatabasePreviewItemPrivate)
 {
     d->index = index;
+    d->slice = 0;
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
     QString thumbpath = dbc->metaData(index,medMetaDataKeys::ThumbnailPath);
 
@@ -51,7 +53,7 @@ medDatabasePreviewItem::medDatabasePreviewItem(const medDataIndex &index, QGraph
         connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
         QThreadPool::globalInstance()->start(loader);
     }
-
+    connect(this, SIGNAL(open(const medDataIndex&, int)), medDataManager::instance(), SIGNAL(open(const medDataIndex&, int)));
     // we allow dragging by default;
     d->isDraggingAllowed = true;
 }
@@ -88,6 +90,11 @@ void medDatabasePreviewItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
     Q_UNUSED(event);
 }
 
+void medDatabasePreviewItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
+{
+    emit open(d->index, d->slice);
+}
+
 void medDatabasePreviewItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
     if(!d->isDraggingAllowed)
@@ -115,4 +122,13 @@ void medDatabasePreviewItem::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
 void medDatabasePreviewItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
 {
     emit hoverLeft(event, this);
+}
+
+/**
+* @brief Allow to specify the slice number of the item
+* @param nb - slice number
+*/
+void medDatabasePreviewItem::setSlice(int nb)
+{
+    d->slice = nb;
 }

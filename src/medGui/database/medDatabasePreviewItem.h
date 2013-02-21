@@ -35,11 +35,14 @@ public:
 
     void setAllowDragging(bool isDraggingAllowed);
 
+    void setSlice(int nb);
+
 signals:
     void patientClicked(int id);
     void   studyClicked(int id);
     void  seriesClicked(int id);
     void   imageClicked(int id);
+    void open(const medDataIndex &, int);
 
     void hoverEntered(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
     void hoverLeft(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
@@ -48,6 +51,7 @@ protected slots:
     void setImage(const QImage& image);
 
     void mousePressEvent(QGraphicsSceneMouseEvent* event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
     void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent* event);
