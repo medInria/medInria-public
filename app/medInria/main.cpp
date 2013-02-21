@@ -28,8 +28,6 @@
 
 #include <dtkCore/dtkGlobal.h>
 
-#include <dtkScript/dtkScriptManager.h>
-
 #include <medPluginManager.h>
 #include <medDataIndex.h>
 #include <medDatabaseController.h>
@@ -147,7 +145,6 @@ int main(int argc,char* argv[]) {
     // END OF DATABASE INITIALISATION
 
     medPluginManager::instance()->initialize();
-    dtkScriptManager::instance()->initialize();
 
     medMainWindow mainwindow;
     if (DirectView)
@@ -181,7 +178,6 @@ int main(int argc,char* argv[]) {
     const int status = application.exec();
 
     medPluginManager::instance()->uninitialize();
-    dtkScriptManager::instance()->uninitialize();
 
     return status;
 }
