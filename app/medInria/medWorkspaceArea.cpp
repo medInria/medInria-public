@@ -159,6 +159,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->patientToolBox,
              SLOT (setPatientIndex (const medDataIndex&)));
 
+    connect (medDataManager::instance(), SIGNAL(onItemDoubleClicked(const medDataIndex&)), this, SLOT(openInTab(const medDataIndex&)));
 /*
 //------------- MEM LEAK TEST BEGIN -----------------//
     int memusage = 0;

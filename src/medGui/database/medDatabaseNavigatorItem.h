@@ -51,6 +51,12 @@ public slots:
 signals:
     void itemClicked(const medDataIndex&);
 
+    /**
+     * @brief Emitted when the user double clicks on a medDatabasenavigatorItem (thumbnail)
+     * @param the @medDataIndex of the image
+    */
+    void onItemDoubleClicked(const medDataIndex& index);
+
 protected slots:
     void setImage(const QImage& image);
 
@@ -58,7 +64,8 @@ protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void  mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     medDatabaseNavigatorItemPrivate *d;
