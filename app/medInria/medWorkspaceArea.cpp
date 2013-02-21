@@ -253,10 +253,11 @@ bool medWorkspaceArea::openInTab(const medDataIndex &index)
 bool medWorkspaceArea::open(const medDataIndex& index)
 {
     bool succeeded = false;
+            connect (this, SIGNAL(specifySlice(int)), view, SLOT(setSlider(int)));
+
 
     if( !index.isValid() )
         return false;
-
     if( index.isValidForSeries() )
     {
         //get the root container, to see if there is an available view to dump our data in.

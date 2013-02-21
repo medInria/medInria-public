@@ -49,6 +49,14 @@ signals:
     void open(const medDataIndex& index);
 
     /**
+    * Signal emitted when the user chooses to open an image
+    * from the database browser (double click on a thumbnail)
+    * @param index - the @medDataIndex of the image
+    * @param slice - the slice number corresponding to the image
+    **/
+    void open(const medDataIndex& index, int slice);
+
+    /**
     * Signal emitted when the user chooses to open a file or
     * directory in the file browser.
     * @param path - the path of the image or directory

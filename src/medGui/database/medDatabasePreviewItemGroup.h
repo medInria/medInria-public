@@ -14,6 +14,8 @@
 #pragma once
 
 #include <QtGui>
+#include <medCore/medDataIndex.h>
+
 
 class medDatabasePreviewItem;
 class medDatabasePreviewItemGroupPrivate;

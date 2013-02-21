@@ -95,11 +95,11 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->dbSource = new medDatabaseDataSource(this);
     addDataSource(d->dbSource);
-    connect(d->dbSource, SIGNAL(open(const medDataIndex&)), this,SIGNAL(open(const medDataIndex&)));
+    connect(d->dbSource, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
 
     connect(medDataManager::instance(), SIGNAL(dataAdded(const medDataIndex &)),d->dbSource,SLOT(update(const medDataIndex&)));
     connect(medDataManager::instance(), SIGNAL(dataRemoved(const medDataIndex &)),d->dbSource,SLOT(update(const medDataIndex&)));
-
+    connect(medDataManager::instance(), SIGNAL(open(const medDataIndex &, int)), this, SIGNAL(open(const medDataIndex&, int)));
     // This remains to be checked
     connect(medDatabaseController::instance(), SIGNAL(displayJobItem(medJobItem *, QString)),this,SLOT(displayJobItem(medJobItem *, QString)));
 

@@ -267,6 +267,14 @@ signals:
     */
     void clearOnPatientChange();
 
+     /**
+     * @brief Emitted to specify the slice to display
+     *
+     *  @param slice - the slice number
+     *
+    */
+    void specifySlice ( int slice );
+
 private:
     friend class medMessageController;
 
