@@ -215,6 +215,11 @@ signals:
 
     void open(const medDataIndex& index, int slice);
 
+    /**
+     * @brief Emitted when the user double clicks on a medDatabasenavigatorItem (thumbnail)
+     * @param the @medDataIndex of the image
+    */
+    void onItemDoubleClicked(const medDataIndex& index);
 
 public slots:
     void onNonPersistentDataImported(const medDataIndex &index, QString uuid);
