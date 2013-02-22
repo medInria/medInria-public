@@ -20,7 +20,7 @@
 #include "medHomepageButton.h"
 #include "medBrowserArea.h"
 #include "medMainWindow.h"
-#include "medViewerArea.h"
+#include "medWorkspaceArea.h"
 #include "medHomepageArea.h"
 
 #include <dtkCore/dtkGlobal.h>
@@ -48,9 +48,9 @@
 #include <medDatabaseModel.h>
 #include <medDatabaseItem.h>
 
-#include <medViewerWorkspace.h>
+#include <medWorkspace.h>
 #include <medToolBoxFactory.h>
-#include <medViewerWorkspaceFactory.h>
+#include <medWorkspaceFactory.h>
 #include <medSettingsWidgetFactory.h>
 #include <medSystemSettingsWidget.h>
 #include <medStartupSettingsWidget.h>
@@ -61,11 +61,11 @@
 
 #include "medSeedPointAnnotationData.h"
 
-#include "medViewerWorkspaceVisualization.h"
-#include "medViewerWorkspaceRegistration.h"
-#include "medViewerWorkspaceDiffusion.h"
-#include "medViewerWorkspaceFiltering.h"
-#include "medViewerWorkspaceSegmentation.h"
+#include "medVisualizationWorkspace.h"
+#include "medRegistrationWorkspace.h"
+#include "medDiffusionWorkspace.h"
+#include "medFilteringWorkspace.h"
+#include "medSegmentationWorkspace.h"
 
 #include "medSaveModifiedDialog.h"
 
@@ -108,7 +108,7 @@ public:
     QList<QString> importUuids;
 
     medBrowserArea *browserArea;
-    medViewerArea  *viewerArea;
+    medWorkspaceArea  *workspaceArea;
     medHomepageArea * homepageArea;
 
     medSettingsEditor * settingsEditor;
@@ -167,18 +167,18 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     // Setting up widgets
     d->settingsEditor = NULL;
     d->browserArea = new medBrowserArea ( this );
-    d->viewerArea = new medViewerArea ( this );
+    d->workspaceArea = new medWorkspaceArea ( this );
     d->homepageArea = new medHomepageArea ( this );
 
     d->browserArea->setObjectName ( "Browser" );
-    d->viewerArea->setObjectName ( "Viewer" );
+    d->workspaceArea->setObjectName ( "Viewer" );
     d->homepageArea->setObjectName ( "Homepage" );
 
 
     d->stack = new QStackedWidget ( this );
     d->stack->addWidget ( d->homepageArea );
     d->stack->addWidget ( d->browserArea );
-    d->stack->addWidget ( d->viewerArea );
+    d->stack->addWidget ( d->workspaceArea );
 
     d->statusBarLayout = new QHBoxLayout;
     d->statusBarLayout->setMargin ( 0 );
@@ -327,7 +327,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QObject::connect(medMessageController::instance(), SIGNAL(addMessage(QWidget*)), d->statusBar, SLOT(addMessage(QWidget*)));
     QObject::connect(medMessageController::instance(), SIGNAL(removeMessage(QWidget*)), d->statusBar, SLOT(removeMessage(QWidget*)));
 
-    d->viewerArea->setupWorkspace ( "Visualization" );
+    d->workspaceArea->setupWorkspace ( "Visualization" );
 
     connect ( qApp, SIGNAL ( aboutToQuit() ), this, SLOT ( close() ) );
 
@@ -366,7 +366,7 @@ void medMainWindow::readSettings ( void )
         break;
 
     case 2:
-        this->switchToViewerArea();
+        this->switchToWorkspaceArea();
         break;
 
     default:
@@ -399,8 +399,8 @@ void medMainWindow::writeSettings()
 
 void medMainWindow::updateQuickAccessMenu ( void )
 {
-     QHash<QString,medViewerWorkspaceDetails*> workspaceDetails =
-             medViewerWorkspaceFactory::instance()->workspaceDetails();
+     QHash<QString,medWorkspaceDetails*> workspaceDetails =
+             medWorkspaceFactory::instance()->workspaceDetails();
     QVBoxLayout * workspaceButtonsLayout = new QVBoxLayout;
     workspaceButtonsLayout->setMargin(0);
     workspaceButtonsLayout->setSpacing ( 0 );
@@ -449,7 +449,7 @@ void medMainWindow::updateQuickAccessMenu ( void )
     foreach ( QString id, workspaceDetails.keys() )
     {
         medHomepagePushButton * button = new medHomepagePushButton ( this );
-        medViewerWorkspaceDetails* detail = workspaceDetails.value(id);
+        medWorkspaceDetails* detail = workspaceDetails.value(id);
         button->setText ( detail->name );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setCursor(Qt::PointingHandCursor);
@@ -461,7 +461,7 @@ void medMainWindow::updateQuickAccessMenu ( void )
         button->setIdentifier(id);
         workspaceButtonsLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowWorkspace ( QString ) ) );
-        if (!(medViewerWorkspaceFactory::instance()->isUsable(id)))
+        if (!(medWorkspaceFactory::instance()->isUsable(id)))
         {
             button->setDisabled(true);
             button->setToolTip("No useful plugin has been found for this workspace.");
@@ -560,19 +560,19 @@ void medMainWindow::switchToBrowserArea ( void )
     if (d->quickAccessVisible)
         this->onHideQuickAccess();
     d->browserArea->setup ( this->statusBar() );
-    d->viewerArea->setdw ( this->statusBar() );
+    d->workspaceArea->setdw ( this->statusBar() );
 
     d->stack->setCurrentWidget ( d->browserArea );
 }
 
-void medMainWindow::switchToViewerArea ( void )
+void medMainWindow::switchToWorkspaceArea ( void )
 {
     if (d->quickAccessVisible)
         this->onHideQuickAccess();
     d->browserArea->setdw ( this->statusBar() );
-    d->viewerArea->setup ( this->statusBar() );
+    d->workspaceArea->setup ( this->statusBar() );
 
-    d->stack->setCurrentWidget ( d->viewerArea );
+    d->stack->setCurrentWidget ( d->workspaceArea );
 
     // Dialog window to recall users if database is empty
     //but only if the warning is enabled in medSettings
@@ -600,10 +600,10 @@ void medMainWindow::switchToViewerArea ( void )
 void medMainWindow::onShowWorkspace ( QString workspace )
 {
     d->quickAccessButton->setMinimumWidth(170);
-    d->viewerArea->setupWorkspace(workspace);
-    this->switchToViewerArea();
-    medViewerWorkspaceDetails* details =
-            medViewerWorkspaceFactory::instance()->workspaceDetailsFromId(workspace);
+    d->workspaceArea->setupWorkspace(workspace);
+    this->switchToWorkspaceArea();
+    medWorkspaceDetails* details =
+            medWorkspaceFactory::instance()->workspaceDetailsFromId(workspace);
 
     d->quickAccessButton->setText(tr("Workspace: ") + details->name);
 }
@@ -637,7 +637,7 @@ void medMainWindow::onHideQuickAccess ( void )
 
 void medMainWindow::onWorkspaceTriggered ( QAction *action )
 {
-    d->viewerArea->setupWorkspace ( action->text() );
+    d->workspaceArea->setupWorkspace ( action->text() );
 }
 
 void medMainWindow::onNoQuit ( void )
@@ -693,11 +693,11 @@ void medMainWindow::onEditSettings()
 
 void medMainWindow::open ( const medDataIndex& index )
 {
-   if(d->viewerArea->openInTab(index))
+   if(d->workspaceArea->openInTab(index))
     {
         d->quickAccessButton->setText(tr("Workspace: Visualization"));
         d->quickAccessButton->setMinimumWidth(170);
-        this->switchToViewerArea();
+        this->switchToWorkspaceArea();
     }
 }
 
@@ -718,8 +718,8 @@ void medMainWindow::onOpenFile(const medDataIndex & index,const QString& importU
     {
         if (index.isValid())
         {
-            this->switchToViewerArea();
-            d->viewerArea->openInTab(index);
+            this->switchToWorkspaceArea();
+            d->workspaceArea->openInTab(index);
             d->quickAccessButton->setText(tr("Workspace: Visualization"));
             d->quickAccessButton->setMinimumWidth(170);
         }
@@ -825,28 +825,28 @@ void medMainWindow::registerToFactories()
 #endif
 
     // Registering different workspaces
-    medViewerWorkspaceFactory * viewerWSpaceFactory = medViewerWorkspaceFactory::instance();
+    medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();
     //TODO: move the register method to the classes maybe??
     viewerWSpaceFactory->
-            registerWorkspace<medViewerWorkspaceVisualization>
+            registerWorkspace<medVisualizationWorkspace>
             ("Visualization",tr("Visualization"),
              tr("Visualize images, Mesh and other data types"));
     viewerWSpaceFactory->
-            registerWorkspace<medViewerWorkspaceRegistration>
+            registerWorkspace<medRegistrationWorkspace>
             ("Registration", tr("Registration"),
              tr("Register a moving image to a fixed image"));
     viewerWSpaceFactory->registerWorkspace
-            <medViewerWorkspaceDiffusion>("Diffusion",
+            <medDiffusionWorkspace>("Diffusion",
                                               tr("Diffusion"),
                                               tr("Diffusion Tensor Images"));
     viewerWSpaceFactory->registerWorkspace
-            <medViewerWorkspaceFiltering>("Filtering",
+            <medFilteringWorkspace>("Filtering",
                                               tr("Filtering"),
                                               tr("Filter workspace"));
-    medViewerWorkspaceSegmentation::registerWithViewerWorkspaceFactory();
+    medSegmentationWorkspace::registerWithViewerWorkspaceFactory();
 
     //Register settingsWidgets
-    //TODO: get rid of the setTabName, or make it staic and use it here...
+    //TODO: get rid of the setTabName, or make it static and use it here...
     //or else create a static register method in the widgets...
     medSettingsWidgetFactory * settingsWidgetFactory = medSettingsWidgetFactory::instance();
     settingsWidgetFactory->registerSettingsWidget

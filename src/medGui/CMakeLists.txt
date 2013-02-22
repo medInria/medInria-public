@@ -32,7 +32,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medPacsSelector.h
   medViewPool.h
   medTabbedViewContainers.h
-  medViewerWorkspace.h
+  medWorkspace.h
   medImageFileLoader.h
 
   # db related items
@@ -66,7 +66,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   # factories
   factories/medSettingsWidgetFactory.h
   factories/medToolBoxFactory.h
-  factories/medViewerWorkspaceFactory.h
+  factories/medWorkspaceFactory.h
 
   # LUT
   LUT/medClutEditor.h
@@ -88,36 +88,36 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medToolBoxTab.h
 
   # specific toolbox classes
-  toolboxes/medToolBoxDiffusion.h
-  toolboxes/medToolBoxDiffusionCustom.h
-  toolboxes/medToolBoxDiffusionFiberView.h
-  toolboxes/medToolBoxDiffusionFiberBundling.h
-  toolboxes/medToolBoxRegistration.h
-  toolboxes/medToolBoxRegistrationCustom.h
-  toolboxes/medToolBoxSegmentation.h
-  toolboxes/medToolBoxSegmentationCustom.h
-  toolboxes/medToolBoxDiffusionTensorView.h
-  toolboxes/medToolBoxFiltering.h
-  toolboxes/medToolBoxFilteringCustom.h
-  toolboxes/medBrowserToolBoxJobs.h
-  toolboxes/medViewerToolBoxLayout.h
-  toolboxes/medViewerToolBoxTime.h
-  toolboxes/medViewerToolBoxViewProperties.h
-  toolboxes/medBrowserToolBoxPacsHost.h
-  toolboxes/medBrowserToolBoxPacsNodes.h
-  toolboxes/medBrowserToolBoxPacsSearch.h
-  toolboxes/medViewerToolBoxPatient.h
-  toolboxes/medToolBoxCompositeDataSetImporter.h
-  toolboxes/medToolBoxCompositeDataSetImporterCustom.h
-  toolboxes/medToolBoxActions.h
+  toolboxes/medDiffusionSelectorToolBox.h
+  toolboxes/medDiffusionAbstractToolBox.h
+  toolboxes/medFiberViewToolBox.h
+  toolboxes/medFiberBundlingToolBox.h
+  toolboxes/medRegistrationSelectorToolBox.h
+  toolboxes/medRegistrationAbstractToolBox.h
+  toolboxes/medSegmentationSelectorToolBox.h
+  toolboxes/medSegmentationAbstractToolBox.h
+  toolboxes/medTensorViewToolBox.h
+  toolboxes/medFilteringSelectorToolBox.h
+  toolboxes/medFilteringAbstractToolBox.h
+  toolboxes/medBrowserJobsToolBox.h
+  toolboxes/medVisualizationLayoutToolBox.h
+  toolboxes/medTimeLineToolBox.h
+  toolboxes/medViewPropertiesToolBox.h
+  toolboxes/medBrowserPacsHostToolBox.h
+  toolboxes/medBrowserPacsNodesToolBox.h
+  toolboxes/medBrowserPacsSearchToolBox.h
+  toolboxes/medPatientSelectorToolBox.h
+  toolboxes/medCompositeDataSetImporterSelectorToolBox.h
+  toolboxes/medCompositeDataSetImporterAbstractToolBox.h
+  toolboxes/medActionsToolBox.h
 
 
   # viewContainers:
-  viewContainers/medViewContainerCompare.h
-  viewContainers/medViewContainerMulti.h
-  viewContainers/medViewContainerCustom.h
-  viewContainers/medViewContainerSingle.h
-  viewContainers/medViewContainerFiltering.h
+  viewContainers/medCompareViewContainer.h
+  viewContainers/medMultiViewContainer.h
+  viewContainers/medCustomViewContainer.h
+  viewContainers/medSingleViewContainer.h
+  viewContainers/medFilteringViewContainer.h
   viewContainers/medViewContainer.h
 )
 
@@ -137,7 +137,7 @@ set(${PROJECT_NAME}_SOURCES
   medPacsSelector.cpp
   medToolBoxContainer.cpp
   medTabbedViewContainers.cpp
-  medViewerWorkspace.cpp
+  medWorkspace.cpp
 
   medPacsSelector.cpp
   medViewPool.cpp
@@ -178,7 +178,7 @@ set(${PROJECT_NAME}_SOURCES
   # factories
   factories/medSettingsWidgetFactory.cpp
   factories/medToolBoxFactory.cpp
-  factories/medViewerWorkspaceFactory.cpp
+  factories/medWorkspaceFactory.cpp
 
   # LUT
   LUT/medClutEditor.cpp
@@ -202,36 +202,36 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medToolBoxTab.cpp
 
   # specific toolbox classes
-  toolboxes/medToolBoxDiffusion.cpp
-  toolboxes/medToolBoxDiffusionCustom.cpp
-  toolboxes/medToolBoxDiffusionFiberView.cpp
-  toolboxes/medToolBoxDiffusionFiberBundling.cpp
-  toolboxes/medToolBoxRegistration.cpp
-  toolboxes/medToolBoxRegistrationCustom.cpp
-  toolboxes/medToolBoxSegmentation.cpp
-  toolboxes/medToolBoxSegmentationCustom.cpp
-  toolboxes/medToolBoxDiffusionTensorView.cpp
-  toolboxes/medToolBoxFiltering.cpp
-  toolboxes/medToolBoxFilteringCustom.cpp
-  toolboxes/medBrowserToolBoxJobs.cpp
-  toolboxes/medViewerToolBoxLayout.cpp
-  toolboxes/medViewerToolBoxTime.cpp
-  toolboxes/medViewerToolBoxViewProperties.cpp
-  toolboxes/medBrowserToolBoxPacsHost.cpp
-  toolboxes/medBrowserToolBoxPacsNodes.cpp
-  toolboxes/medBrowserToolBoxPacsSearch.cpp
-  toolboxes/medViewerToolBoxPatient.cpp
-  toolboxes/medToolBoxCompositeDataSetImporter.cpp
-  toolboxes/medToolBoxCompositeDataSetImporterCustom.cpp
-  toolboxes/medToolBoxActions.cpp
+  toolboxes/medDiffusionSelectorToolBox.cpp
+  toolboxes/medDiffusionAbstractToolBox.cpp
+  toolboxes/medFiberViewToolBox.cpp
+  toolboxes/medFiberBundlingToolBox.cpp
+  toolboxes/medRegistrationSelectorToolBox.cpp
+  toolboxes/medRegistrationAbstractToolBox.cpp
+  toolboxes/medSegmentationSelectorToolBox.cpp
+  toolboxes/medSegmentationAbstractToolBox.cpp
+  toolboxes/medTensorViewToolBox.cpp
+  toolboxes/medFilteringSelectorToolBox.cpp
+  toolboxes/medFilteringAbstractToolBox.cpp
+  toolboxes/medBrowserJobsToolBox.cpp
+  toolboxes/medVisualizationLayoutToolBox.cpp
+  toolboxes/medTimeLineToolBox.cpp
+  toolboxes/medViewPropertiesToolBox.cpp
+  toolboxes/medBrowserPacsHostToolBox.cpp
+  toolboxes/medBrowserPacsNodesToolBox.cpp
+  toolboxes/medBrowserPacsSearchToolBox.cpp
+  toolboxes/medPatientSelectorToolBox.cpp
+  toolboxes/medCompositeDataSetImporterSelectorToolBox.cpp
+  toolboxes/medCompositeDataSetImporterAbstractToolBox.cpp
+  toolboxes/medActionsToolBox.cpp
 
 
   # viewContainers:
-  viewContainers/medViewContainerCompare.cpp
-  viewContainers/medViewContainerMulti.cpp
-  viewContainers/medViewContainerCustom.cpp
-  viewContainers/medViewContainerSingle.cpp
-  viewContainers/medViewContainerFiltering.cpp
+  viewContainers/medCompareViewContainer.cpp
+  viewContainers/medMultiViewContainer.cpp
+  viewContainers/medCustomViewContainer.cpp
+  viewContainers/medSingleViewContainer.cpp
+  viewContainers/medFilteringViewContainer.cpp
   viewContainers/medViewContainer.cpp
 )
 

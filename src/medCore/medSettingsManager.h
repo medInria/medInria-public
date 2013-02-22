@@ -16,7 +16,7 @@ class MEDCORE_EXPORT medSettingsManager : public QObject
 
 public:
     /**
-    * instance - singleton access method, returns a single static instance of the manager
+    * instance - singleton access method, returns a singleViewContainer static instance of the manager
     * @return   medSettingsManager * - the manager
     */
     static medSettingsManager *instance(void);

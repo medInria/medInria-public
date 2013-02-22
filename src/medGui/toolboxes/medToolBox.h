@@ -92,7 +92,7 @@ public:
     /**
      * @brief Sets the orientation of the toolbox.
      * Given the orientation, lays the widgets vertically or horizontally.
-     * Usually used by the medViewerWorkspace.
+     * Usually used by the medWorkspace.
      *
      * @param orientation
     */

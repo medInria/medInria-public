@@ -28,14 +28,14 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medHomepageArea.h
   medHomepageButton.h
   medBrowserArea.h
-  medBrowserToolBoxSource.h
+  medBrowserSourceSelectorToolBox.h
   medMainWindow.h
-  medViewerArea.h
-  medViewerWorkspaceDiffusion.h
-  medViewerWorkspaceVisualization.h
-  medViewerWorkspaceRegistration.h
-  medViewerWorkspaceSegmentation.h
-  medViewerWorkspaceFiltering.h
+  medWorkspaceArea.h
+  medDiffusionWorkspace.h
+  medVisualizationWorkspace.h
+  medRegistrationWorkspace.h
+  medSegmentationWorkspace.h
+  medFilteringWorkspace.h
   medPacsDataSource.h
   medFileSystemDataSource.h
   medDatabaseDataSource.h
@@ -46,7 +46,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   )
 
 set(${PROJECT_NAME}_HEADERS
-  medViewerArea_p.h
+  medWorkspaceArea_p.h
   ${${PROJECT_NAME}_HEADERS_MOC}
 )
 
@@ -56,14 +56,14 @@ set(${PROJECT_NAME}_SOURCES
   medHomepageArea.cpp
   medHomepageButton.cpp
   medBrowserArea.cpp
-  medBrowserToolBoxSource.cpp
+  medBrowserSourceSelectorToolBox.cpp
   medMainWindow.cpp
-  medViewerArea.cpp
-  medViewerWorkspaceDiffusion.cpp
-  medViewerWorkspaceVisualization.cpp
-  medViewerWorkspaceRegistration.cpp
-  medViewerWorkspaceSegmentation.cpp  
-  medViewerWorkspaceFiltering.cpp
+  medWorkspaceArea.cpp
+  medDiffusionWorkspace.cpp
+  medVisualizationWorkspace.cpp
+  medRegistrationWorkspace.cpp
+  medSegmentationWorkspace.cpp
+  medFilteringWorkspace.cpp
   medPacsDataSource.cpp
   medFileSystemDataSource.cpp
   medDatabaseDataSource.cpp

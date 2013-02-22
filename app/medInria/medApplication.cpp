@@ -30,7 +30,7 @@ public:
     /*
       fix the settings filename in the move 2.0.0 -> 2.0.1
     */
-    inline void fix_settings_path(const QString & organization,
+    inline void fixSettingsPath(const QString & organization,
                            const QString & applicationName)
     {
     #ifdef Q_OS_WIN
@@ -98,7 +98,7 @@ medApplication::medApplication(int & argc, char**argv) :
     this->setOrganizationDomain("fr");
     this->setWindowIcon(QIcon(":/medInria.ico"));
 
-    d->fix_settings_path(this->organizationName(),this->applicationName());
+    d->fixSettingsPath(this->organizationName(),this->applicationName());
 
     qDebug() <<  "default data location:" << QDesktopServices::storageLocation(QDesktopServices::DataLocation);
     //The ownership of the style object is transferred.

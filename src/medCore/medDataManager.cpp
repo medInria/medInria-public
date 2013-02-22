@@ -49,8 +49,8 @@ public:
 
     medDataManagerPrivate()
     {
-        dbController = NULL;
-        nonPersDbController = NULL;
+        m_dbController = NULL;
+        m_nonPersDbController = NULL;
     }
 
     // this is the data cache for persistent and non-persistent data
@@ -62,24 +62,24 @@ public:
 
     medAbstractDbController* getDbController()
     {
-        if (dbController == NULL)
+        if (m_dbController == NULL)
         {
-         dbController = medDbControllerFactory::instance()->createDbController("DbController");
-         if (!dbController)
+         m_dbController = medDbControllerFactory::instance()->createDbController("DbController");
+         if (!m_dbController)
              qWarning() << "No dbController registered!";
         }
-        return dbController;
+        return m_dbController;
     }
 
     medAbstractDbController* getNonPersDbController()
     {
-        if (nonPersDbController == NULL)
+        if (m_nonPersDbController == NULL)
         {
-            nonPersDbController  = medDbControllerFactory::instance()->createDbController("NonPersistentDbController");
-            if (!nonPersDbController)
+            m_nonPersDbController  = medDbControllerFactory::instance()->createDbController("NonPersistentDbController");
+            if (!m_nonPersDbController)
                 qWarning() << "No nonPersistentDbController registered!";
         }
-        return nonPersDbController ;
+        return m_nonPersDbController ;
     }
 
     QList<medAbstractDbController*> controllerStack()
@@ -93,9 +93,9 @@ public:
     static QMutex mutex;
 
 private:
-    medAbstractDbController* dbController;
-    medAbstractDbController* nonPersDbController;
-    QList<medAbstractDbController*> _controllerStack;
+    medAbstractDbController* m_dbController;
+    medAbstractDbController* m_nonPersDbController;
+    QList<medAbstractDbController*> m_controllerStack;
 };
 
 QMutex medDataManagerPrivate::mutex;
@@ -184,8 +184,8 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
     {
         qWarning() << "unable to open images with index:" << index.asString();
 
-        // sometimes signals are blocked before calling this functions, like in medViewerArea...
-        //medViewerArea doesn't block these signals any more... until we find why
+        // sometimes signals are blocked before calling this functions, like in medWorkspaceArea...
+        //medWorkspaceArea doesn't block these signals any more... until we find why
         //it was needed, we won't be doing any black magic signal blocking where not needed.
 //        bool prevState = this->signalsBlocked();
 //        this->blockSignals(false);

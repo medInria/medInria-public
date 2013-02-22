@@ -22,9 +22,9 @@
 #include "medTabbedViewContainers.h"
 
 #include "medViewContainer.h"
-#include "medViewContainerCustom.h"
-#include "medViewContainerMulti.h"
-#include "medViewContainerSingle.h"
+#include "medCustomViewContainer.h"
+#include "medMultiViewContainer.h"
+#include "medSingleViewContainer.h"
 
 class medTabbedViewContainersPrivate
 {
@@ -80,7 +80,7 @@ void medTabbedViewContainers::addNewTabContainer()
 
     if (!this->container(name))
     {
-        medViewContainer *new_container = new medViewContainerMulti();
+        medViewContainer *new_container = new medMultiViewContainer();
         addContainer(name, new_container);
         this->setContainer(name);
     }
@@ -97,11 +97,11 @@ void medTabbedViewContainers::deleteContainerClicked(int index)
 
         medViewContainer *newTab = NULL;
         if (name == "Single")
-            newTab = new medViewContainerSingle();
+            newTab = new medSingleViewContainer();
         else if (name == "Custom")
-            newTab = new medViewContainerCustom();
+            newTab = new medCustomViewContainer();
         else if (name == "Multi")
-            newTab = new medViewContainerMulti();
+            newTab = new medMultiViewContainer();
 
         if (newTab != NULL)
         {
@@ -193,11 +193,11 @@ void medTabbedViewContainers::changeCurrentContainerType(const QString &name)
     {
         medViewContainer *newTab = NULL;
         if (name == "Single")
-            newTab = new medViewContainerSingle();
+            newTab = new medSingleViewContainer();
         else if (name == "Custom")
-            newTab = new medViewContainerCustom();
+            newTab = new medCustomViewContainer();
         else if (name == "Multi")
-            newTab = new medViewContainerMulti();
+            newTab = new medMultiViewContainer();
 
         if (newTab != NULL)
         {

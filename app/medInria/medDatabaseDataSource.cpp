@@ -10,64 +10,64 @@
 #include <medDatabaseModel.h>
 #include <medDatabaseExporter.h>
 
-#include <medToolBoxActions.h>
+#include <medActionsToolBox.h>
 
 class medDatabaseDataSourcePrivate
 {
 public:
-    QWidget* database_widget;
+    QWidget* databaseWidget;
     medDatabasePreview *preview;
     medDatabaseModel *model;
     medDatabaseView *view;
     medDatabaseProxyModel *proxy;
 
-    QList<medToolBox*> toolboxes;
+    QList<medToolBox*> toolBoxes;
     medDatabaseSearchPanel *searchPanel;
-    medToolBoxActions* actionsTb;
+    medActionsToolBox* actionsToolBox;
 
 };
 
 medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
 {
-    d->database_widget = new QWidget(parent);
+    d->databaseWidget = new QWidget(parent);
 
     d->model = new medDatabaseModel (this);
     d->proxy = new medDatabaseProxyModel(this);
 
     d->proxy->setSourceModel(d->model);
 
-    d->preview = new medDatabasePreview(d->database_widget);
-    d->view    = new medDatabaseView(d->database_widget);
+    d->preview = new medDatabasePreview(d->databaseWidget);
+    d->view    = new medDatabaseView(d->databaseWidget);
     d->view->setModel(d->proxy);
 
-    QVBoxLayout *database_layout = new QVBoxLayout(d->database_widget);
+    QVBoxLayout *database_layout = new QVBoxLayout(d->databaseWidget);
     database_layout->setContentsMargins(0, 0, 0, 0);
     database_layout->setSpacing(0);
     database_layout->addWidget(d->view);
     database_layout->addWidget(d->preview);
 
-    d->actionsTb = new medToolBoxActions(parent);
-    d->toolboxes.push_back(d->actionsTb);
+    d->actionsToolBox = new medActionsToolBox(parent);
+    d->toolBoxes.push_back(d->actionsToolBox);
 
     d->searchPanel = new medDatabaseSearchPanel(parent);
     d->searchPanel->setColumnNames(d->model->columnNames());
-    d->toolboxes.push_back(d->searchPanel);
+    d->toolBoxes.push_back(d->searchPanel);
 
     connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->preview, SLOT(onPatientClicked(const medDataIndex&)));
     connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(onSeriesClicked(const medDataIndex&)));
-    connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->actionsTb, SLOT(patientSelected(const medDataIndex&)));
-    connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsTb, SLOT(seriesSelected(const medDataIndex&)));
-    connect(d->view, SIGNAL(noPatientOrSeriesSelected()), d->actionsTb, SLOT(noPatientOrSeriesSelected()));
+    connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->actionsToolBox, SLOT(patientSelected(const medDataIndex&)));
+    connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsToolBox, SLOT(seriesSelected(const medDataIndex&)));
+    connect(d->view, SIGNAL(noPatientOrSeriesSelected()), d->actionsToolBox, SLOT(noPatientOrSeriesSelected()));
     connect(d->view, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
     connect(d->view, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
     connect(d->view, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));
 
     connect(d->searchPanel, SIGNAL(filter(const QString &, int)),this, SLOT(onFilter(const QString &, int)));
 
-    connect(d->actionsTb, SIGNAL(removeClicked()), d->view, SLOT(onRemoveSelectedItemRequested()));
-    connect(d->actionsTb, SIGNAL(exportClicked()), d->view, SLOT(onExportSelectedItemRequested()));
-    connect(d->actionsTb, SIGNAL(viewClicked()), d->view, SLOT(onViewSelectedItemRequested()));
-    connect(d->actionsTb, SIGNAL(saveClicked()), d->view, SLOT(onSaveSelectedItemRequested()));
+    connect(d->actionsToolBox, SIGNAL(removeClicked()), d->view, SLOT(onRemoveSelectedItemRequested()));
+    connect(d->actionsToolBox, SIGNAL(exportClicked()), d->view, SLOT(onExportSelectedItemRequested()));
+    connect(d->actionsToolBox, SIGNAL(viewClicked()), d->view, SLOT(onViewSelectedItemRequested()));
+    connect(d->actionsToolBox, SIGNAL(saveClicked()), d->view, SLOT(onSaveSelectedItemRequested()));
 }
 
 medDatabaseDataSource::~medDatabaseDataSource()
@@ -78,7 +78,7 @@ medDatabaseDataSource::~medDatabaseDataSource()
 
 QWidget* medDatabaseDataSource::mainViewWidget()
 {
-    return d->database_widget;
+    return d->databaseWidget;
 }
 
 QWidget* medDatabaseDataSource::sourceSelectorWidget()
@@ -91,9 +91,9 @@ QString medDatabaseDataSource::tabName()
     return tr("Database");
 }
 
-QList<medToolBox*> medDatabaseDataSource::getToolboxes()
+QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
 {
-    return d->toolboxes;
+    return d->toolBoxes;
 }
 
 QString medDatabaseDataSource::description(void) const

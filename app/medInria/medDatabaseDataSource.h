@@ -24,7 +24,7 @@ public:
 
     QString tabName();
 
-    QList<medToolBox*> getToolboxes();
+    QList<medToolBox*> getToolBoxes();
 	
 	QString description(void) const;
 	
