@@ -36,7 +36,7 @@
 #include <medPluginManager.h>
 
 #include <medToolBoxFactory.h>
-#include <medToolBoxRegistration.h>
+#include <medRegistrationSelectorToolBox.h>
 #include <medProgressionStack.h>
 
 #include <rpiCommonTools.hxx>
@@ -55,7 +55,7 @@ public:
     QLineEdit * iterationsBox;
 };
 
-itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent) : medToolBoxRegistrationCustom(parent), d(new itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate)
+itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
 

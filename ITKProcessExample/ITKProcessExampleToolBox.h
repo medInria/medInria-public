@@ -2,11 +2,11 @@
 #ifndef ITKPROCESSEXAMPLETOOLBOX_H
 #define ITKPROCESSEXAMPLEDENOISINGTOOLBOX_H
 
-#include <medToolBoxFilteringCustom.h>
+#include <medFilteringAbstractToolBox.h>
 
 class ITKProcessExampleToolBoxPrivate;
 
-class ITKProcessExampleToolBox : public medToolBoxFilteringCustom
+class ITKProcessExampleToolBox : public medFilteringAbstractToolBox
 {
     Q_OBJECT
 

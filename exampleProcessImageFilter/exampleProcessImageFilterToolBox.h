@@ -1,5 +1,5 @@
 /* exampleProcessImageFilterToolBox.h ---
- * 
+ *
  * Author: Jaime Garcia_Guevara
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar  2 15:01:32 2011 (+0100)
@@ -9,18 +9,18 @@
  *     Update #: 10
  */
 
-/* Commentary: 
+/* Commentary:
  *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #ifndef EXAMPLEPROCESSIMAGEFILTERTOOLBOX_H
 #define EXAMPLEPROCESSIMAGEFILTERTOOLBOX_H
 
-#include <medToolBoxDiffusionCustom.h>
+#include <medDiffusionAbstractToolBox.h>
 
 class exampleProcessImageFilterToolBoxPrivate;
 
@@ -33,7 +33,7 @@ class exampleProcessImageFilterToolBoxPrivate;
 * Sets the voxel seed coordinates and LowerThreshold from QSpinBox(es)
 **/
 
-class exampleProcessImageFilterToolBox : public medToolBoxDiffusionCustom {
+class exampleProcessImageFilterToolBox : public medDiffusionAbstractToolBox {
 
     Q_OBJECT
 
@@ -82,6 +82,6 @@ private:
     exampleProcessImageFilterToolBoxPrivate *d;
 };
 
-medToolBoxDiffusionCustom *createExampleProcessImageFilterToolBox(QWidget *);
+medDiffusionAbstractToolBox *createExampleProcessImageFilterToolBox(QWidget *);
 
 #endif

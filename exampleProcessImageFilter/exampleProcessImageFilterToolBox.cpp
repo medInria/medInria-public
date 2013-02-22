@@ -1,5 +1,5 @@
 /* exampleProcessImageFilterToolBox.cpp ---
- * 
+ *
  * Author: Jaime Garcia_Guevara
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Wed Mar  2 15:04:13 2011 (+0100)
@@ -9,12 +9,12 @@
  *     Update #: 114
  */
 
-/* Commentary: 
+/* Commentary:
  *
  */
 
 /* Change log:
- * 
+ *
  */
 
 #include <exampleProcessImageFilter.h>
@@ -34,7 +34,7 @@
 #include <medAbstractView.h>
 
 #include <medDropSite.h>
-#include <medToolBoxDiffusion.h>
+#include <medDiffusionSelectorToolBox.h>
 
 #include <medProgressionStack.h>
 #include <medRunnableProcess.h>
@@ -66,7 +66,7 @@ public:
     medProgressionStack *progression_stack;
 };
 
-exampleProcessImageFilterToolBox::exampleProcessImageFilterToolBox(QWidget *parent): medToolBoxDiffusionCustom(parent), d(new exampleProcessImageFilterToolBoxPrivate)
+exampleProcessImageFilterToolBox::exampleProcessImageFilterToolBox(QWidget *parent): medDiffusionAbstractToolBox(parent), d(new exampleProcessImageFilterToolBoxPrivate)
 {
     d->process= 0;
 
@@ -215,7 +215,7 @@ void exampleProcessImageFilterToolBox::onObjectDropped(void)
 
 //    QSharedPointer<dtkAbstractData> data =  data.data(); // return dtkAbstractData *
 
-//    medDataIndex in_A_index = parent()->dataIndex();//method added in medToolBoxDiffusion MEdINria/src/medGUI 4 this to work, index from medToolBoxDiffusion dropsite
+//    medDataIndex in_A_index = parent()->dataIndex();//method added in medDiffusionSelectorToolBox MEdINria/src/medGUI 4 this to work, index from medDiffusionSelectorToolBox dropsite
     medDataIndex in_A_index = d->site->index();
     medDataIndex in_B_index = d->siteB->index();
 
@@ -253,7 +253,7 @@ void exampleProcessImageFilterToolBox::onObjectDropped(void)
 }
 
 
-medToolBoxDiffusionCustom *createExampleProcessImageFilterToolBox(QWidget * w)
+medDiffusionAbstractToolBox *createExampleProcessImageFilterToolBox(QWidget * w)
 {
     return new exampleProcessImageFilterToolBox(w);
 }

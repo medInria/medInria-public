@@ -18,8 +18,8 @@
 #include <medPluginManager.h>
 
 #include <medToolBoxFactory.h>
-#include <medToolBoxFiltering.h>
-#include <medToolBoxFilteringCustom.h>
+#include <medFilteringSelectorToolBox.h>
+#include <medFilteringAbstractToolBox.h>
 #include <medProgressionStack.h>
 
 #include <QtGui>
@@ -32,7 +32,7 @@ public:
     medProgressionStack * progression_stack;
 };
 
-ITKProcessExampleToolBox::ITKProcessExampleToolBox(QWidget *parent) : medToolBoxFilteringCustom(parent), d(new ITKProcessExampleToolBoxPrivate)
+ITKProcessExampleToolBox::ITKProcessExampleToolBox(QWidget *parent) : medFilteringAbstractToolBox(parent), d(new ITKProcessExampleToolBoxPrivate)
 {
     // Parameters:
 

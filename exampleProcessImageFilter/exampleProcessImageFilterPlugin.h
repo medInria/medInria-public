@@ -16,7 +16,7 @@ class EXAMPLEPROCESSIMAGEFILTERPLUGIN_EXPORT exampleProcessImageFilterPluginPriv
 /**
 * @class exampleProcessImageFilterPlugin
 * @brief A simple example process plugin, the input are 2 UNSIGNED SHORT 3D images that can be added, masked. Region growing can also be applyed to the first image.
-* It gets two 3D unsigned short images trough the medToolBoxDiffusionCustom and exampleProcessImageFilterToolBox.h drop sites,
+* It gets two 3D unsigned short images trough the medDiffusionAbstractToolBox and exampleProcessImageFilterToolBox.h drop sites,
 * three operations can be done to thos images:
 * 1 MASK the first image with the second one
 * 2 ADD the two images

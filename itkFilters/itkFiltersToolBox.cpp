@@ -20,8 +20,8 @@
 #include <medPluginManager.h>
 
 #include <medToolBoxFactory.h>
-#include <medToolBoxFiltering.h>
-#include <medToolBoxFilteringCustom.h>
+#include <medFilteringSelectorToolBox.h>
+#include <medFilteringAbstractToolBox.h>
 #include <medProgressionStack.h>
 
 #include <QtGui>
@@ -61,7 +61,7 @@ public:
     medProgressionStack * progression_stack;
 };
 
-itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medToolBoxFilteringCustom ( parent ), d ( new itkFiltersToolBoxPrivate )
+itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractToolBox ( parent ), d ( new itkFiltersToolBoxPrivate )
 {
     qDebug() << "itkFiltersToolBox";
     //Filters selection combobox

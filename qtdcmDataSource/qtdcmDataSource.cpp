@@ -139,7 +139,7 @@ QString qtdcmDataSource::tabName()
     return QString ( "Dicom" );
 }
 
-QList<medToolBox*> qtdcmDataSource::getToolboxes()
+QList<medToolBox*> qtdcmDataSource::getToolBoxes()
 {
     return d->additional_toolboxes;
 }

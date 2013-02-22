@@ -20,11 +20,11 @@
 #ifndef ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSTOOLBOX_H
 #define ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSTOOLBOX_H
 
-#include <medToolBoxRegistrationCustom.h>
+#include <medRegistrationAbstractToolBox.h>
 
 class itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate;
 
-class itkProcessRegistrationDiffeomorphicDemonsToolBox : public medToolBoxRegistrationCustom
+class itkProcessRegistrationDiffeomorphicDemonsToolBox : public medRegistrationAbstractToolBox
 {
     Q_OBJECT
 
