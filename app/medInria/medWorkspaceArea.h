@@ -1,24 +1,5 @@
-/* medViewerArea.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Sep 18 12:42:58 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Wed Nov 10 16:14:33 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 114
- */
-
-/* Commentary:
- *
- */
-
-/* Change log:
- *
- */
-
-#ifndef MEDVIEWERAREA_H
-#define MEDVIEWERAREA_H
+#ifndef MEDWORKSPACEAREA_H
+#define MEDWORKSPACEAREA_H
 
 #include <QtGui>
 
@@ -30,7 +11,7 @@ class medDataIndex;
 class medToolBox;
 class medViewContainer;
 class medTabbedViewContainers;
-class medViewerAreaPrivate;
+class medWorkspaceAreaPrivate;
 
 /**
  * @brief Handles all connections between all elements of the Viewer area.
@@ -38,7 +19,7 @@ class medViewerAreaPrivate;
  * The object is instantiated by the medMainWindow to display the viewer workspaces.
  *
 */
-class medViewerArea : public QWidget
+class medWorkspaceArea : public QWidget
 {
     Q_OBJECT
 
@@ -48,13 +29,13 @@ public:
       *
       * @param parent
      */
-     medViewerArea(QWidget *parent = 0);
+     medWorkspaceArea(QWidget *parent = 0);
     /**
      * @brief
      *
      * @param void
     */
-    ~medViewerArea(void);
+    ~medWorkspaceArea(void);
 
     /**
      * @brief Called whenever the viewer area is switched to. Add viewer area
@@ -203,7 +184,7 @@ public slots:
      * @brief Switches from a medViewerWorkspace::LayoutType to an other.
      *
      * This can't be done by the workspace which has no access to the
-     * medViewerArea Widget and its internal organisation.
+     * medWorkspaceArea Widget and its internal organisation.
      *
      * @param layout
     */
@@ -275,7 +256,7 @@ private:
     friend class medMessageController;
 
 private:
-    medViewerAreaPrivate *d;
+    medWorkspaceAreaPrivate *d;
 };
 
-#endif // MEDVIEWERAREA_H
+#endif // MEDWORKSPACEAREA_H

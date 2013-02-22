@@ -1,24 +1,5 @@
-/* medViewerArea.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Sep 18 12:43:06 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Thu May  5 09:53:54 2011 (+0200)
- *           By: Julien Wintz
- *     Update #: 1063
- */
-
-/* Commentary:
- *
- */
-
-/* Change log:
- *
- */
-
-#include "medViewerArea.h"
-#include "medViewerArea_p.h"
+#include "medWorkspaceArea.h"
+#include "medWorkspaceArea_p.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -51,7 +32,7 @@
 #include <medViewContainerMulti.h>
 #include <medViewContainerSingle.h>
 #include <medViewPool.h>
-#include <medViewerWorkspaceFactory.h>
+#include <medWorkspaceFactory.h>
 #include <medToolBoxDiffusion.h>
 #include <medToolBoxRegistration.h>
 #include <medTabbedViewContainers.h>
@@ -64,10 +45,10 @@
 #include <QEasingCurve>
 
 // /////////////////////////////////////////////////////////////////
-// medViewerArea
+// medWorkspaceArea
 // /////////////////////////////////////////////////////////////////
 
-medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewerAreaPrivate)
+medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new medWorkspaceAreaPrivate)
 {
     // -- Internal logic
     d->current_patient = medDataIndex();
@@ -154,17 +135,17 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
              SLOT (updateNavigator (const medDataIndex&)));
     connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->navigator,
              SLOT (updateNavigator (const medDataIndex&)));
-    
+
     connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->toolboxPatient,
              SLOT (setupDatabase ()));
     connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->toolboxPatient,
              SLOT (setupDatabase ()));
-    
+
     connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->toolboxPatient,
              SLOT (setPatientIndex (const medDataIndex&)));
     connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->toolboxPatient,
              SLOT (setPatientIndex (const medDataIndex&)));
-    
+
 /*
 //------------- MEM LEAK TEST BEGIN -----------------//
     int memusage = 0;
@@ -191,7 +172,7 @@ medViewerArea::medViewerArea(QWidget *parent) : QWidget(parent), d(new medViewer
 
 }
 
-medViewerArea::~medViewerArea(void)
+medWorkspaceArea::~medWorkspaceArea(void)
 {
 
     d->saveSplitterSize(d->current_workspace->layoutType());
@@ -201,24 +182,24 @@ medViewerArea::~medViewerArea(void)
     d = NULL;
 }
 
-void medViewerArea::setup(QStatusBar *status)
+void medWorkspaceArea::setup(QStatusBar *status)
 {
 
 }
 
-void medViewerArea::setdw(QStatusBar *status)
+void medWorkspaceArea::setdw(QStatusBar *status)
 {
 
 }
 
-void medViewerArea::split(int rows, int cols)
+void medWorkspaceArea::split(int rows, int cols)
 {
     medViewContainer * root = this->currentRootContainer();
     if ( root != NULL )
         root->split(rows, cols);
 }
 
-bool medViewerArea::openInTab(const medDataIndex &index)
+bool medWorkspaceArea::openInTab(const medDataIndex &index)
 {
     if(!((medDataIndex)index).isValid())
         return false;
@@ -240,7 +221,7 @@ bool medViewerArea::openInTab(const medDataIndex &index)
     return this->open(index);
 }
 
-bool medViewerArea::open(const medDataIndex& index)
+bool medWorkspaceArea::open(const medDataIndex& index)
 {
     if(!((medDataIndex)index).isValid())
         return false;
@@ -348,29 +329,29 @@ bool medViewerArea::open(const medDataIndex& index)
     return true;
 }
 
-void medViewerArea::openInTab(const QString& file)
+void medWorkspaceArea::openInTab(const QString& file)
 {
     medDataManager::instance()->importNonPersistent (file);
 }
 
-void medViewerArea::open(const QString& file)
+void medWorkspaceArea::open(const QString& file)
 {
     medDataManager::instance()->importNonPersistent (file);
 }
 
-//void medViewerArea::onFileOpened(const medDataIndex &index)
+//void medWorkspaceArea::onFileOpened(const medDataIndex &index)
 //{
 //    qDebug()<< "onFileOpened";
 //    this->open(index);
 //}
 
-void medViewerArea::onFileOpenedInTab(const medDataIndex &index)
+void medWorkspaceArea::onFileOpenedInTab(const medDataIndex &index)
 {
 //    qDebug()<<"onFileOpenInTab";
     this->openInTab(index);
 }
 
-void medViewerArea::onViewClosed(void)
+void medWorkspaceArea::onViewClosed(void)
 {
     if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
         QList<medToolBox *> toolboxes = d->toolbox_container->toolBoxes();
@@ -383,7 +364,7 @@ void medViewerArea::onViewClosed(void)
     }
 }
 
-void medViewerArea::onDataRemoved(int layer)
+void medWorkspaceArea::onDataRemoved(int layer)
 {
     //JGG qDebug()<< "Removing layer ";
     Q_UNUSED(layer);
@@ -395,7 +376,7 @@ void medViewerArea::onDataRemoved(int layer)
 }
 
 
-void medViewerArea::switchToPatient(const medDataIndex& id )
+void medWorkspaceArea::switchToPatient(const medDataIndex& id )
 {
     if(!id.isValid()  || d->current_patient.patientId() == id.patientId() ||
        id.patientId() < 0)
@@ -456,7 +437,7 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
         d->navigator->onItemClicked(d->current_patient);
         // We can't use the animation here:
         // if a volume is opened from the browser
-        // and the viewerArea has never been shown, the navigator goes outside
+        // and the workspaceArea has never been shown, the navigator goes outside
         // of the screen.
 //        QRect endGeometry = d->navigator->geometry();
 //        QRect startGeometry = endGeometry;
@@ -480,7 +461,7 @@ void medViewerArea::switchToPatient(const medDataIndex& id )
     d->toolboxPatient->blockSignals (false);
 }
 
-void medViewerArea::switchToStackedViewContainers(medTabbedViewContainers* stack)
+void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* stack)
 {
     if(!stack )
     {
@@ -499,7 +480,7 @@ void medViewerArea::switchToStackedViewContainers(medTabbedViewContainers* stack
 }
 
 
-void medViewerArea::switchToContainer(const QString& name)
+void medWorkspaceArea::switchToContainer(const QString& name)
 {
 //    qDebug() << "switching from"
 //             << d->current_workspace->currentViewContainerName()
@@ -531,7 +512,7 @@ void medViewerArea::switchToContainer(const QString& name)
 }
 
 
-void medViewerArea::switchToContainerPreset(int index)
+void medWorkspaceArea::switchToContainerPreset(int index)
 {
     if(index < 0)
         return;
@@ -547,20 +528,20 @@ void medViewerArea::switchToContainerPreset(int index)
     }
 }
 
-void medViewerArea::addToolBox(medToolBox *toolbox)
+void medWorkspaceArea::addToolBox(medToolBox *toolbox)
 {
     d->toolbox_container->addToolBox(toolbox);
 }
 
-void medViewerArea::removeToolBox(medToolBox *toolbox)
+void medWorkspaceArea::removeToolBox(medToolBox *toolbox)
 {
     d->toolbox_container->removeToolBox(toolbox);
 }
 
-void medViewerArea::onViewFocused(dtkAbstractView *view)
+void medWorkspaceArea::onViewFocused(dtkAbstractView *view)
 {
     // set head recognizer
-//    qDebug() << "medViewerAreaOnViewFocused";
+//    qDebug() << "medWorkspaceAreaOnViewFocused";
     if (view)
     { //Note to Julien from Ben: not sure the head recognizer works for view==NULL, so I put it inside this iftake it out if needed.
         static dtkVrHeadRecognizer *head_recognizer = NULL;
@@ -606,7 +587,7 @@ void medViewerArea::onViewFocused(dtkAbstractView *view)
     }
 }
 
-medViewContainer *medViewerArea::currentRootContainer(void)
+medViewContainer *medWorkspaceArea::currentRootContainer(void)
 {
     if ( d->current_workspace == NULL )
         return NULL;
@@ -614,7 +595,7 @@ medViewContainer *medViewerArea::currentRootContainer(void)
     return d->current_workspace->currentViewContainer();
 }
 
-medViewContainer *medViewerArea::currentContainerFocused(void)
+medViewContainer *medWorkspaceArea::currentContainerFocused(void)
 {
     medViewContainer * root = this->currentRootContainer();
     if ( root == NULL )
@@ -625,7 +606,7 @@ medViewContainer *medViewerArea::currentContainerFocused(void)
 
 // view settings
 /*
-void medViewerArea::setupForegroundLookupTable(QString table)
+void medWorkspaceArea::setupForegroundLookupTable(QString table)
 {
     if(!d->view_stacks.count())
         return;
@@ -635,7 +616,7 @@ void medViewerArea::setupForegroundLookupTable(QString table)
 
     this->updateTransferFunction();
 }
-void medViewerArea::setupLUTPreset(QString table)
+void medWorkspaceArea::setupLUTPreset(QString table)
 {
     if(!d->view_stacks.count())
         return;
@@ -648,7 +629,7 @@ void medViewerArea::setupLUTPreset(QString table)
 }
 */
 
-void medViewerArea::bringUpTransferFunction(bool checked)
+void medWorkspaceArea::bringUpTransferFunction(bool checked)
 {
     if (!checked)
     {
@@ -676,7 +657,7 @@ void medViewerArea::bringUpTransferFunction(bool checked)
     }
 }
 
-void medViewerArea::updateTransferFunction()
+void medWorkspaceArea::updateTransferFunction()
 {
     medViewContainer * current = this->currentContainerFocused();
     if ( current == NULL )
@@ -691,7 +672,7 @@ void medViewerArea::updateTransferFunction()
 }
 
 
-void medViewerArea::setupWorkspace(QString name)
+void medWorkspaceArea::setupWorkspace(QString name)
 {
     //    qDebug() << "setupWorkspace to :" << name;
     if (d->current_workspace_name == name)
@@ -715,7 +696,7 @@ void medViewerArea::setupWorkspace(QString name)
     if (d->workspaces.contains(name))
         workspace = d->workspaces[name];
     else {
-        if (workspace = medViewerWorkspaceFactory::instance()->createWorkspace(name, this)) {
+        if (workspace = medWorkspaceFactory::instance()->createWorkspace(name, this)) {
             connect(this, SIGNAL(clearOnPatientChange()), workspace, SLOT(clear()));
             d->workspaces.insert(name, workspace);
         }
@@ -792,7 +773,7 @@ void medViewerArea::setupWorkspace(QString name)
     connect(workspace, SIGNAL(toolboxRemoved(medToolBox*)),this, SLOT(removeToolBox(medToolBox*)), Qt::UniqueConnection);
 }
 
-void medViewerArea::switchToLayout (medViewerWorkspace::LayoutType layout)
+void medWorkspaceArea::switchToLayout (medViewerWorkspace::LayoutType layout)
 {
     if (d->current_layout==layout)
         return;
@@ -875,7 +856,7 @@ void medViewerArea::switchToLayout (medViewerWorkspace::LayoutType layout)
 }
 
 
-void medViewerAreaPrivate::saveSplitterSize(medViewerWorkspace::LayoutType layout)
+void medWorkspaceAreaPrivate::saveSplitterSize(medViewerWorkspace::LayoutType layout)
 {
     if (layout == medViewerWorkspace::TopDbBottomTb ||
         layout == medViewerWorkspace::TopTbBottomDb)
@@ -891,7 +872,7 @@ void medViewerAreaPrivate::saveSplitterSize(medViewerWorkspace::LayoutType layou
 
 }
 
-void medViewerAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
+void medWorkspaceAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
 {
     if (orientation == Qt::Horizontal)
     {

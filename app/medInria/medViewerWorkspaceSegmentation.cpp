@@ -11,7 +11,7 @@
 #include <medProgressionStack.h>
 #include <medTabbedViewContainers.h>
 #include <medViewContainer.h>
-#include <medViewerWorkspaceFactory.h>
+#include <medWorkspaceFactory.h>
 #include <medViewerToolBoxLayout.h>
 #include <medViewerToolBoxViewProperties.h>
 #include <medToolBoxFactory.h>
@@ -91,7 +91,7 @@ medViewerWorkspaceSegmentation::~medViewerWorkspaceSegmentation(void)
 
 bool medViewerWorkspaceSegmentation::registerWithViewerWorkspaceFactory()
 {
-    return medViewerWorkspaceFactory::instance()->registerWorkspace
+    return medWorkspaceFactory::instance()->registerWorkspace
             <medViewerWorkspaceSegmentation>(
                 medViewerWorkspaceSegmentation::s_identifier(),
                 tr("Segmentation"),

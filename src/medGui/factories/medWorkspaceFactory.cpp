@@ -1,25 +1,25 @@
-#include "medViewerWorkspaceFactory.h"
+#include "medWorkspaceFactory.h"
 
 #include <medToolBoxFactory.h>
 #include "medViewerWorkspace.h"
-#include "medViewerWorkspaceFactory.h"
+#include "medWorkspaceFactory.h"
 
-class medViewerWorkspaceFactoryPrivate
+class medWorkspaceFactoryPrivate
 {
 public:
     typedef QHash<QString, medViewerWorkspaceDetails*> medViewerWorkspaceCreatorHash;
     medViewerWorkspaceCreatorHash creators;
 };
 
-medViewerWorkspaceFactory *medViewerWorkspaceFactory::instance(void)
+medWorkspaceFactory *medWorkspaceFactory::instance(void)
 {
     if(!s_instance)
-        s_instance = new medViewerWorkspaceFactory;
+        s_instance = new medWorkspaceFactory;
 
     return s_instance;
 }
 
-bool medViewerWorkspaceFactory::registerWorkspace(QString identifier,
+bool medWorkspaceFactory::registerWorkspace(QString identifier,
                                                           QString name,
                                                           QString description,
                                                           medViewerWorkspaceCreator creator,
@@ -40,12 +40,12 @@ bool medViewerWorkspaceFactory::registerWorkspace(QString identifier,
     return false;
 }
 
-QList<QString> medViewerWorkspaceFactory::workspaces(void)
+QList<QString> medWorkspaceFactory::workspaces(void)
 {
     return d->creators.keys();
 }
 
-medViewerWorkspace *medViewerWorkspaceFactory::createWorkspace(QString type,QWidget* parent)
+medViewerWorkspace *medWorkspaceFactory::createWorkspace(QString type,QWidget* parent)
 {
     if(!d->creators.contains(type))
         return NULL;
@@ -55,17 +55,17 @@ medViewerWorkspace *medViewerWorkspaceFactory::createWorkspace(QString type,QWid
     return workspace;
 }
 
-QHash<QString, medViewerWorkspaceDetails *> medViewerWorkspaceFactory::workspaceDetails() const
+QHash<QString, medViewerWorkspaceDetails *> medWorkspaceFactory::workspaceDetails() const
 {
     return d->creators;
 }
 
-medViewerWorkspaceFactory::medViewerWorkspaceFactory(void) : dtkAbstractFactory(), d(new medViewerWorkspaceFactoryPrivate)
+medWorkspaceFactory::medWorkspaceFactory(void) : dtkAbstractFactory(), d(new medWorkspaceFactoryPrivate)
 {
 
 }
 
-medViewerWorkspaceFactory::~medViewerWorkspaceFactory(void)
+medWorkspaceFactory::~medWorkspaceFactory(void)
 {
     foreach (medViewerWorkspaceDetails * detail, d->creators.values())
     {
@@ -79,12 +79,12 @@ medViewerWorkspaceFactory::~medViewerWorkspaceFactory(void)
 }
 
 
-medViewerWorkspaceDetails * medViewerWorkspaceFactory::workspaceDetailsFromId(QString identifier) const
+medViewerWorkspaceDetails * medWorkspaceFactory::workspaceDetailsFromId(QString identifier) const
 {
     return d->creators.value(identifier);
 }
 
-medViewerWorkspaceFactory *medViewerWorkspaceFactory::s_instance = NULL;
+medWorkspaceFactory *medWorkspaceFactory::s_instance = NULL;
 
 
 

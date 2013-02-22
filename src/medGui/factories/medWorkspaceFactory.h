@@ -1,5 +1,5 @@
-#ifndef MEDVIEWERWORKSPACEFACTORY_H
-#define MEDVIEWERWORKSPACEFACTORY_H
+#ifndef MEDWORKSPACEFACTORY_H
+#define MEDWORKSPACEFACTORY_H
 
 #include "medGuiExport.h"
 
@@ -8,10 +8,10 @@
 #include <QtCore>
 
 class medViewerWorkspace;
-class medViewerWorkspaceFactoryPrivate;
+class medWorkspaceFactoryPrivate;
 struct medViewerWorkspaceDetails;
 
-class MEDGUI_EXPORT medViewerWorkspaceFactory : public dtkAbstractFactory
+class MEDGUI_EXPORT medWorkspaceFactory : public dtkAbstractFactory
 {
     Q_OBJECT
 
@@ -20,7 +20,7 @@ public:
     typedef bool (*medViewerWorkspaceIsUsable)();
 
 public:
-    static medViewerWorkspaceFactory *instance(void);
+    static medWorkspaceFactory *instance(void);
 
     QList<QString> workspaces(void);
 
@@ -89,11 +89,11 @@ public slots:
     medViewerWorkspace *createWorkspace(QString type,QWidget* parent=0);
 
 protected:
-     medViewerWorkspaceFactory(void);
-    ~medViewerWorkspaceFactory(void);
+     medWorkspaceFactory(void);
+    ~medWorkspaceFactory(void);
 
 private:
-    static medViewerWorkspaceFactory *s_instance;
+    static medWorkspaceFactory *s_instance;
     /**
      * @brief Templated method returning a pointer to an allocated workspace.
      * @see template<class workspaceType> registerWorkspace
@@ -105,7 +105,7 @@ private:
     }
 
 private:
-    medViewerWorkspaceFactoryPrivate *d;
+    medWorkspaceFactoryPrivate *d;
 };
 
 /**
@@ -116,10 +116,10 @@ private:
 struct MEDGUI_EXPORT medViewerWorkspaceDetails{
     QString name; /** Readable name*/
     QString description; /** (tooltip) short description of the workspace */
-    medViewerWorkspaceFactory::medViewerWorkspaceCreator creator; /** function pointer allocating memory for the workspace*/
-    medViewerWorkspaceFactory::medViewerWorkspaceIsUsable isUsable;
-    medViewerWorkspaceDetails(QString name,QString description,medViewerWorkspaceFactory::medViewerWorkspaceCreator creator, medViewerWorkspaceFactory::medViewerWorkspaceIsUsable isUsable = NULL):
+    medWorkspaceFactory::medWorkspaceCreator creator; /** function pointer allocating memory for the workspace*/
+    medWorkspaceFactory::medWorkspaceIsUsable isUsable;
+    medWorkspaceDetails(QString name,QString description,medViewerWorkspaceFactory::medViewerWorkspaceCreator creator, medViewerWorkspaceFactory::medViewerWorkspaceIsUsable isUsable = NULL):
         name(name),description(description),creator(creator),isUsable(isUsable){}
 };
 
-#endif // MEDVIEWERWORKSPACEFACTORY_H
+#endif // MEDWORKSPACEFACTORY_H

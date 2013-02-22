@@ -31,7 +31,7 @@
 #include <medHomepageButton.h>
 #include <medViewerWorkspace.h>
 #include <medToolBoxFactory.h>
-#include <medViewerWorkspaceFactory.h>
+#include <medWorkspaceFactory.h>
 #include <medSettingsManager.h>
 #include "medPluginWidget.h"
 #include <medSettingsEditor.h>
@@ -369,7 +369,7 @@ void medHomepageArea::initPage ( void )
 {
     //Initialization of the navigation widget with available workspaces
     QHash<QString,medViewerWorkspaceDetails*> workspaceDetails =
-            medViewerWorkspaceFactory::instance()->workspaceDetails();
+            medWorkspaceFactory::instance()->workspaceDetails();
     QVBoxLayout * workspaceButtonsLayout = new QVBoxLayout;
     workspaceButtonsLayout->setSpacing ( 10 );
     QLabel * workspaceLabel = new QLabel ( "<b>Available workspaces</b>" );
@@ -402,7 +402,7 @@ void medHomepageArea::initPage ( void )
         button->setIdentifier(id);
         workspaceButtonsLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SLOT ( onShowWorkspace ( QString ) ) );
-        if (!(medViewerWorkspaceFactory::instance()->isUsable(id)))
+        if (!(medWorkspaceFactory::instance()->isUsable(id)))
         {
             button->setDisabled(true);
             button->setToolTip("No useful plugin has been found for this workspace.");

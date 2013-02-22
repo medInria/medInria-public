@@ -38,8 +38,8 @@ class medDataIndex;
  *
  * A workspace is usually instantiated by a factory.
  * It owns several medViewContainers in a medTabbedViewContainers.
- * It also owns toolboxes, but does not place them, the medViewerArea does it when
- * medViewerArea::setupWorkspace is called.
+ * It also owns toolboxes, but does not place them, the medWorkspaceArea does it when
+ * medWorkspaceArea::setupWorkspace is called.
  *
 */
 class MEDGUI_EXPORT medViewerWorkspace : public QObject
@@ -318,8 +318,8 @@ signals:
     /**
      * @brief Tells the world the layout toolbox has changed the container.
      *
-     * This signal is mainly intended for the medViewerArea,
-     * that connects it with its medViewerArea::switchToContainer slot.
+     * This signal is mainly intended for the medWorkspaceArea,
+     * that connects it with its medWorkspaceArea::switchToContainer slot.
      * @todo rename this signal when changing the medViewerToolBoxLayout API.
      *
      * @param mode

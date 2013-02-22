@@ -170,7 +170,7 @@ void medViewerToolBoxPatient::setPatientIndex(const medDataIndex &index)
     baseIndex.setStudyId(-1);
     baseIndex.setSeriesId(-1);
     baseIndex.setImageId(-1);
-    
+
     typedef QHash< medDataIndex, int  > IndexHashType;
     IndexHashType::const_iterator it = d->indexMap.find( baseIndex );
     if ( it != d->indexMap.end() ) {
@@ -256,8 +256,8 @@ void medViewerToolBoxPatient::setupDatabase(void)
 
 void medViewerToolBoxPatient::onDbControllerRegistered( const QString& )
 {
-    // Connections are moved to medViewerArea for now, the reason is that otherwise setupDatabase is called too late
+    // Connections are moved to medWorkspaceArea for now, the reason is that otherwise setupDatabase is called too late
     // This method stays only to call the first setupDatabase method
-    
+
     this->setupDatabase();
 }

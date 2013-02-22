@@ -66,7 +66,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   # factories
   factories/medSettingsWidgetFactory.h
   factories/medToolBoxFactory.h
-  factories/medViewerWorkspaceFactory.h
+  factories/medWorkspaceFactory.h
 
   # LUT
   LUT/medClutEditor.h
@@ -178,7 +178,7 @@ set(${PROJECT_NAME}_SOURCES
   # factories
   factories/medSettingsWidgetFactory.cpp
   factories/medToolBoxFactory.cpp
-  factories/medViewerWorkspaceFactory.cpp
+  factories/medWorkspaceFactory.cpp
 
   # LUT
   LUT/medClutEditor.cpp
