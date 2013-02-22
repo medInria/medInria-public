@@ -436,7 +436,7 @@ void medDiffusionWorkspace::onAddTabClicked()
     this->stackedViewContainers()->setContainer(realName);
 }
 
-bool medViewerWorkspaceDiffusion::isUsable(){
+bool medDiffusionWorkspace::isUsable(){
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
     return (tbFactory->toolBoxesFromCategory("diffusion").size()!=0); 
 }

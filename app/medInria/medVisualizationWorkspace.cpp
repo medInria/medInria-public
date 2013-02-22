@@ -102,6 +102,6 @@ QString medVisualizationWorkspace::description() const {
     return tr("Visualization");
 }
 
-bool medViewerWorkspaceVisualization::isUsable(){
+bool medVisualizationWorkspace::isUsable(){
     return true; // for the time being, no test is defined.
 }
