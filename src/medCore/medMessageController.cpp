@@ -156,46 +156,6 @@ void medMessageProgress::failure(void)
 }
 
 // /////////////////////////////////////////////////////////////////
-// medMessageQuestion
-// /////////////////////////////////////////////////////////////////
-
-class medMessageQuestionPrivate
-{
-public:
-};
-
-medMessageQuestion::medMessageQuestion(const QString& text, QWidget *parent) : medMessage(parent), d(new medMessageQuestionPrivate)
-{
-    QLabel *icon = new QLabel(this);
-    icon->setPixmap(QPixmap(":/icons/information.png"));
-
-    QLabel *info = new QLabel(this);
-    info->setText(text);
-
-    QPushButton *ok_button = new QPushButton("Yes", this);
-    QPushButton *no_button = new QPushButton("No", this);
-
-    QHBoxLayout *layout = new QHBoxLayout(this);
-    layout->setAlignment(Qt::AlignLeft);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(5);
-    layout->addWidget(icon);
-    layout->addWidget(info);
-    layout->addWidget(ok_button);
-    layout->addWidget(no_button);
-
-    connect(ok_button, SIGNAL(clicked()), this, SIGNAL(accepted()));
-    connect(no_button, SIGNAL(clicked()), this, SIGNAL(rejected()));
-
-    this->setLayout(layout);
-}
-
-medMessageQuestion::~medMessageQuestion(void)
-{
-    delete d;
-}
-
-// /////////////////////////////////////////////////////////////////
 // medMessageController
 // /////////////////////////////////////////////////////////////////
 

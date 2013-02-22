@@ -106,27 +106,6 @@ public slots:
 
 };
 
-// /////////////////////////////////////////////////////////////////
-// medMessageQuestion
-// /////////////////////////////////////////////////////////////////
-
-class medMessageQuestionPrivate;
-
-class MEDCORE_EXPORT medMessageQuestion : public medMessage
-{
-    Q_OBJECT
-
-public:
-     medMessageQuestion(const QString& text, QWidget *parent = 0);
-    ~medMessageQuestion(void);
-
-signals:
-    void accepted(void);
-    void rejected(void);
-
-private:
-    medMessageQuestionPrivate *d;
-};
 
 // /////////////////////////////////////////////////////////////////
 // medMessageController
