@@ -27,8 +27,8 @@ if(ITK_BUILD_SHARED)
   set(ITK_LIB_STYLE "SHARED")
 endif (ITK_BUILD_SHARED)
 
-find_package(DCMTK2 REQUIRED)
-include_directories(${DCMTK_INCLUDE_DIR})
+find_package(DCMTK REQUIRED)
+include_directories(${DCMTK_INCLUDE_DIRS})
 
 set(MEDINRIA_REQUIRES_VTK TRUE) # for itkMultiThreadedImageIO in vtkInria3d
 
