@@ -54,8 +54,6 @@ include(medInria-pluginsMacros)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-include(dtkPlugin)
-
 # Export medinriq-plugins_DIR variable so that internal project can automatically find it
 set(medInria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 
