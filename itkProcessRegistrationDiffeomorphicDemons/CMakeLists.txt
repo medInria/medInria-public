@@ -44,8 +44,6 @@ include(${RPI_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-include_directories(../libs/itkProcessRegistration)
-
 ## #################################################################
 ## Input
 ## #################################################################
