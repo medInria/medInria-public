@@ -43,7 +43,7 @@ void medDatabasePreviewItemGroup::addItem(medDatabasePreviewItem *item)
     qreal itemSpacing = medDatabasePreviewController::instance()->itemSpacing();
 
     item->setParentItem(this);
-    item->setSlice(d->item_count); //associate an item with its slice number
+    item->setSlice(d->itemCount); //associate an item with its slice number
     medDatabasePreviewController::instance()->orientation() == Qt::Horizontal
         ? item->setPos(d->itemCount * (itemWidth + itemSpacing), 0)
         : item->setPos(0, d->itemCount * (itemWidth + itemSpacing));
