@@ -521,7 +521,7 @@ void medMainWindow::switchFullScreen ( )
 
 void medMainWindow::captureScreenshot()
 {
-    QPixmap screenshot = d->viewerArea->grabScreenshot();    
+    QPixmap screenshot = d->workspaceArea->grabScreenshot();
     QString fileName = QFileDialog::getSaveFileName(NULL, tr("Save screenshot as"), "", "*.png");
     
     QImage transparentImage = screenshot.toImage();

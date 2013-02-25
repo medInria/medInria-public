@@ -1,5 +1,5 @@
 #include "medQuickAccessMenu.h"
-#include <medViewerWorkspaceFactory.h>
+#include <medWorkspaceFactory.h>
 
 /**
  * Constructor, parameter vertical chooses if the layout will be vertical (bottom left menu) or horizontal (alt-tab like menu)
@@ -260,7 +260,7 @@ void medQuickAccessMenu::onMouseMovedInWidget(unsigned int identifier)
 void medQuickAccessMenu::createVerticalQuickAccessMenu ( void )
 {
     buttonsList.clear();
-    QHash<QString,medViewerWorkspaceDetails*> workspaceDetails = medViewerWorkspaceFactory::instance()->workspaceDetails();
+    QHash<QString,medWorkspaceDetails*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetails();
 
     QVBoxLayout * workspaceButtonsLayout = new QVBoxLayout;
     workspaceButtonsLayout->setMargin(0);
@@ -314,7 +314,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu ( void )
     foreach ( QString id, workspaceDetails.keys() )
     {
         medHomepagePushButton * button = new medHomepagePushButton ( this );
-        medViewerWorkspaceDetails* detail = workspaceDetails.value(id);
+        medWorkspaceDetails* detail = workspaceDetails.value(id);
         button->setText ( detail->name );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setCursor(Qt::PointingHandCursor);
@@ -339,7 +339,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu ( void )
 void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
 {
     buttonsList.clear();
-    QHash<QString,medViewerWorkspaceDetails*> workspaceDetails = medViewerWorkspaceFactory::instance()->workspaceDetails();
+    QHash<QString,medWorkspaceDetails*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetails();
 
     backgroundFrame = new QFrame(this);
     backgroundFrame->setStyleSheet("border-radius: 10px;background-color: rgba(200,200,200,150);");
@@ -378,7 +378,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
     foreach ( QString id, workspaceDetails.keys() )
     {
         medHomepagePushButton * button = new medHomepagePushButton ( this );
-        medViewerWorkspaceDetails* detail = workspaceDetails.value(id);
+        medWorkspaceDetails* detail = workspaceDetails.value(id);
         button->setText ( detail->name );
         button->setFocusPolicy ( Qt::NoFocus );
         button->setCursor(Qt::PointingHandCursor);
