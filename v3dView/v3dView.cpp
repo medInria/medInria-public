@@ -1287,16 +1287,10 @@ void v3dView::onUseLODPropertySet ( const QString &value )
 void v3dView::onShowScalarBarPropertySet ( const QString &value )
 {
     if ( value == "true" )
-    {
-        //d->collection->SyncSetShowScalarBar(true);
-        d->view2d->SetShowScalarBar ( true );
-    }
-
+        d->collection->SyncSetShowScalarBar(true);
+    
     if ( value == "false" )
-    {
-        //d->collection->SyncSetShowScalarBar(false);
-        d->view2d->SetShowScalarBar ( false );
-    }
+        d->collection->SyncSetShowScalarBar(false);
 }
 
 QString v3dView::getLUT ( int layer ) const
@@ -1335,6 +1329,7 @@ void v3dView::onLookupTablePropertySet ( const QString &value )
     //if (this->currentLayer()==0)
     //{
     d->view3d->SetTransferFunctions ( rgb, alpha, this->currentLayer() );
+    d->view3d->SetLookupTable(vtkLookupTableManager::GetLookupTable ( value.toStdString()),this->currentLayer());
     //}
 
     rgb->Delete();
@@ -2458,4 +2453,5 @@ void v3dView::setCurrentLayer(int layer)
 //    qDebug()<<"setCurrentLayer" << layer;
     medAbstractView::setCurrentLayer(layer);
     d->view2d->SetCurrentLayer(layer);
+    d->view3d->SetCurrentLayer(layer);
 }
