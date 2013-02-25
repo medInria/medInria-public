@@ -823,12 +823,12 @@ void medMainWindow::onEditSettings()
 
 void medMainWindow::open ( const medDataIndex& index , int slice )
 {
-   connect (this, SIGNAL(specifySlice(int)), d->viewerArea, SIGNAL(specifySlice(int)));
-   if(d->viewerArea->openInTab(index))
+   connect (this, SIGNAL(specifySlice(int)), d->workspaceArea, SIGNAL(specifySlice(int)));
+   if(d->workspaceArea->openInTab(index))
     {
         d->quickAccessButton->setText(tr("Workspace: Visualization"));
         d->quickAccessButton->setMinimumWidth(170);
-        this->switchToViewerArea();
+        this->switchToWorkspaceArea();
         emit specifySlice(slice);  //to display the selected slice
     }
 }
