@@ -223,10 +223,10 @@ bool medWorkspaceArea::openInTab(const medDataIndex &index)
     if ((this->currentRootContainer()->views().isEmpty()))
     {
         medDataManager *dataManager = medDataManager::instance();
-        d->current_workspace->stackedViewContainers()->changeCurrentContainerType(defaultLayout);
+        d->currentWorkspace->stackedViewContainers()->changeCurrentContainerType(defaultLayout);
         medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
         QString realName = dbc->metaData(index,medMetaDataKeys::PatientName.key());
-        d->current_workspace->stackedViewContainers()->changeCurrentContainerName(realName);
+        d->currentWorkspace->stackedViewContainers()->changeCurrentContainerName(realName);
     }
     
     return this->open(index);
