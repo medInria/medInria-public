@@ -62,12 +62,15 @@ medMessage::~medMessage(void)
 
 void medMessage::startTimer()
 {
-    timer->start(timeout);
+    if (timeout>0)
+        timer->start(timeout);
+    qDebug()<<"BLOUP";
 }
 
 void medMessage::stopTimer()
 {
-    timer->stop();
+    if (timeout>0)
+        timer->stop();
 }
 
 void medMessage::remove()
