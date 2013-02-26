@@ -49,6 +49,9 @@ public:
     dtkAbstractProcess * process();
     void setProcess(dtkAbstractProcess* process);
 
+    dtkAbstractProcess * undoRedoProcess();
+    void setUndoRedoProcess(dtkAbstractProcess *proc);
+
 signals:
     void setupLayoutCompare(void);
     void setupLayoutFuse(void);
@@ -67,6 +70,7 @@ public slots:
     void onSaveImage(void);
     void onSaveTrans(void);
     void onSuccess(void);
+    void onUndoRedo(void);
 
     void synchroniseWindowLevel(QObject * sender = NULL);
     void synchronisePosition(const QVector3D &position);
