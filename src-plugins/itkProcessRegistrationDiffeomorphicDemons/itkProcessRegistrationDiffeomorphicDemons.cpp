@@ -30,6 +30,8 @@
 
 #include <DiffeomorphicDemons/rpiDiffeomorphicDemons.hxx>
 #include <rpiCommonTools.hxx>
+#include <itkImageRegistrationFactory.h>
+#include <hRegistrationFactory\hRegistrationFactory.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkProcessRegistrationDiffeomorphicDemonsDiffeomorphicDemonsPrivate
@@ -119,11 +121,10 @@ template <typename PixelType>
     typedef itk::Image< PixelType, 3 >  FixedImageType;
     typedef itk::Image< PixelType, 3 >  MovingImageType;
 
-
     //unfortunately diffeomorphic demons only work with double or float types...
     // so we need to use a cast filter.
     typedef itk::Image< float, 3 > RegImageType;
-    typedef float TransformScalarType;
+    typedef double TransformScalarType;
     typedef rpi::DiffeomorphicDemons< RegImageType, RegImageType,
                     TransformScalarType > RegistrationType;
     RegistrationType * registration = new RegistrationType;
@@ -139,53 +140,58 @@ template <typename PixelType>
     registration->SetDisplacementFieldStandardDeviation(displacementFieldStandardDeviation);
     registration->SetUseHistogramMatching(useHistogramMatching);
 
+    QStringList * methodParameters = new QStringList();
+    methodParameters->append(QString("DiffeomorphicDemons"));
+    methodParameters->append(QString("  Max number of iterations   : ") + QString::fromStdString(rpi::VectorToString(registration->GetNumberOfIterations())));
 
     // Set update rule
     switch( updateRule )
     {
     case 0:
+        methodParameters->append(QString("  Update rule   : ") + QString("DIFFEOMORPHIC"));
         registration->SetUpdateRule( RegistrationType::UPDATE_DIFFEOMORPHIC ); break;
     case 1:
+        methodParameters->append(QString("  Update rule   : ") + QString("ADDITIVE"));
         registration->SetUpdateRule( RegistrationType::UPDATE_ADDITIVE );      break;
     case 2:
+        methodParameters->append(QString("  Update rule   : ") + QString("COMPOSITIVE"));
         registration->SetUpdateRule( RegistrationType::UPDATE_COMPOSITIVE );   break;
     default:
         throw std::runtime_error( "Update rule must fit in the range [0,2]." );
     }
-
 
     // Set gradient type
     switch( gradientType )
     {
     case 0:
         registration->SetGradientType( RegistrationType::GRADIENT_SYMMETRIZED );
+        methodParameters->append(QString("  Gradient type   : ") + QString("SYMMETRIZED"));
         break;
     case 1:
         registration->SetGradientType( RegistrationType::GRADIENT_FIXED_IMAGE );
+        methodParameters->append(QString("  Gradient type   : ") + QString("FIXED_IMAGE"));
         break;
     case 2:
         registration->SetGradientType( RegistrationType::GRADIENT_WARPED_MOVING_IMAGE );
+        methodParameters->append(QString("  Gradient type   : ") + QString("WARPED_MOVING_IMAGE"));
         break;
     case 3:
         registration->SetGradientType( RegistrationType::GRADIENT_MAPPED_MOVING_IMAGE );
+        methodParameters->append(QString("  Gradient type   : ") + QString("MAPPED_MOVING_IMAGE"));
         break;
     default:
         throw std::runtime_error( "Gradient type must fit in the range [0,3]." );
     }
 
     // Print method parameters
+    methodParameters->append(QString("  Maximum step length   : ") + QString::number(registration->GetMaximumUpdateStepLength())+ QString(" (voxel unit)"));
+    methodParameters->append(QString("  Update field standard deviation   : ") + QString::number(registration->GetUpdateFieldStandardDeviation())         + QString(" (voxel unit)"));
+    methodParameters->append(QString("  Displacement field standard deviation   : ") + QString::number(registration->GetDisplacementFieldStandardDeviation())   + QString(" (voxel unit)"));
+    methodParameters->append(QString("  Use histogram matching?   : ") + QString(registration->GetUseHistogramMatching() ? "TRUE" : "FALSE"));
+    
     qDebug() << "METHOD PARAMETERS";
-
-    qDebug() << "  Max number of iterations   : " << QString::fromStdString(rpi::VectorToString(registration->GetNumberOfIterations()));
-
-    qDebug() << "  Update rule                           : " << registration->GetUpdateRule();
-    qDebug() << "  Maximum step length                   : " << registration->GetMaximumUpdateStepLength()<< " (voxel unit)";
-    qDebug() << "  Gradient type                         : " << registration->GetGradientType();
-    qDebug() << "  Update field standard deviation       : " << registration->GetUpdateFieldStandardDeviation()         << " (voxel unit)";
-    qDebug() << "  Displacement field standard deviation : " << registration->GetDisplacementFieldStandardDeviation()   << " (voxel unit)";
-    qDebug() << "  Use histogram matching?               : " << registration->GetUseHistogramMatching();
-
-
+    for(int qDebugInd = 0;qDebugInd<methodParameters->size();qDebugInd++)
+        qDebug() << methodParameters->at(qDebugInd);
 
     // Run the registration
     time_t t1 = clock();
@@ -197,13 +203,12 @@ template <typename PixelType>
         qDebug() << "ExceptionObject caught ! (startRegistration)" << err.what();
         return 1;
     }
-
     time_t t2 = clock();
 
     qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
 
     emit proc->progressed(80);
-
+    
     typedef itk::ResampleImageFilter< MovingImageType,MovingImageType,TransformScalarType >    ResampleFilterType;
     typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
     resampler->SetTransform(registration->GetTransformation());
@@ -214,6 +219,10 @@ template <typename PixelType>
     resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
     resampler->SetDefaultPixelValue( 0 );
 
+    // ADD TRANSFORM TO THE MEDREGISTRATION FACTORY //////////////////////
+    hRegistrationFactory::instance()->addTransformation<RegImageType>(registration->GetTransformation(),methodParameters);
+    //////////////////////////////////////////////////////////////////////
+    
     try {
         resampler->Update();
     }
@@ -225,11 +234,10 @@ template <typename PixelType>
     itk::ImageBase<3>::Pointer result = resampler->GetOutput();
     qDebug() << "Resampled? ";
     result->DisconnectPipeline();
-
-
+    
     if (proc->output())
-    proc->output()->setData (result);
-
+        proc->output()->setData (result);
+    
     return 0;
 }
 
