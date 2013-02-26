@@ -127,6 +127,6 @@ SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 ## #################################################################
 
 install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION bin
+    RUNTIME DESTINATION plugins
     LIBRARY DESTINATION plugins
     ARCHIVE DESTINATION lib)
