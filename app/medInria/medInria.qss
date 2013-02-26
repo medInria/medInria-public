@@ -1129,7 +1129,7 @@ medToolBoxBody {
     border-right-width: 16px;
     border-top-width: 0px;
     border-bottom-width: 16px;
-
+    
     padding-left: -6px;
     padding-right: -6px;
     padding-bottom: 6px;
@@ -1516,9 +1516,11 @@ medViewContainer [isEmpty="false"][clicked="true"] {
  */
 
 QPushButton#actionToolBoxButton {
-    width: 40px;
-    height: 30px;
+    min-height: 30px;
+    padding-left: 2px;
+    padding-right: 2px;
 }
+
 
 QLabel#actionToolBoxLabel {
     height: 52px;
