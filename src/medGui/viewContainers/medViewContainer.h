@@ -24,6 +24,7 @@
 
 #include <QtGui/QFrame>
 
+class dtkAbstractData;
 class dtkAbstractView;
 class medDataIndex;
 class medViewPool;
@@ -314,6 +315,9 @@ public:
 
     void setMultiLayer( bool enable = true);
     virtual bool multiLayer ( void );
+    
+    bool open(const medDataIndex& index);
+    bool open(dtkAbstractData * data);
 
 signals:
     /**
@@ -422,6 +426,8 @@ protected:
      * @param void
     */
     void recomputeStyleSheet();
+    
+   
 
 protected:
     /**

@@ -120,6 +120,7 @@ public slots:
      * @param void
     */
     void onViewClosed(void);
+    void onViewClosed(dtkAbstractView *);
 
     /**
      * @brief  Updates the medToolBoxes when a layer (data) has been removed from a view.

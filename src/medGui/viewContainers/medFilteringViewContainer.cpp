@@ -31,8 +31,6 @@ medFilteringViewContainer::medFilteringViewContainer ( QWidget * parent ) :
 
     connect(d3->inputViewContainer,SIGNAL(dropped(medDataIndex)),
             this,SIGNAL(droppedInput(medDataIndex)));
-    connect(d3->inputViewContainer,SIGNAL(viewRemoved(dtkAbstractView*)),
-            this,SIGNAL(inputViewRemoved()));
 }
 
 medFilteringViewContainer::~medFilteringViewContainer()
@@ -41,29 +39,13 @@ medFilteringViewContainer::~medFilteringViewContainer()
     d3 = NULL;
 }
 
-void medFilteringViewContainer::updateInput ( const medDataIndex& index )
-{
-    if ( !index.isValid() )
-        return;
-    emit droppedInput(index);
-}
 
 void medFilteringViewContainer::updateOutput ( dtkAbstractData *data )
 {
     if ( !data )
         return;
-    medAbstractView* outputView = dynamic_cast<medAbstractView*>
-            (d3->outputViewContainer->view());
-    if (!outputView )
-    {
-        outputView = dynamic_cast<medAbstractView*>
-                           (dtkAbstractViewFactory::instance()->create("v3dView"));
-        d3->outputViewContainer->setView(outputView);
-        d3->outputViewContainer->update();
-    }
-    outputView->setData(data,0);
-    outputView->reset();
-    outputView->update();
+    
+    d3->outputViewContainer->open(data);
 }
 
 void medFilteringViewContainer::dropEvent ( QDropEvent *event )

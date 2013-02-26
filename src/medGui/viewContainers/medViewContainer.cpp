@@ -20,11 +20,17 @@
 #include "medViewContainer.h"
 #include "medViewContainer_p.h"
 #include "medViewPool.h"
+#include <medDataManager.h>
+#include <medViewManager.h>
+#include <medAbstractView.h>
+#include <medDataIndex.h>
 
 #include <QtGui>
 
+#include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
-#include <medDataIndex.h>
+#include <dtkCore/dtkAbstractData.h>
+
 
 medViewContainer::medViewContainer ( QWidget *parent )
         : QFrame ( parent )
@@ -294,10 +300,13 @@ void medViewContainer::dropEvent ( QDropEvent *event )
     medDataIndex index = medDataIndex::readMimeData ( mimeData );
     if ( index.isValid() )
     {
+        open ( index );
+        
         emit dropped ( index );
     }
 
     event->acceptProposedAction();
+      
 }
 
 void medViewContainer::focusInEvent ( QFocusEvent *event )
@@ -446,3 +455,80 @@ bool medViewContainer::multiLayer( void )
 {
     return d->multiLayer;
 }
+
+bool medViewContainer::open(const medDataIndex& index)
+{
+    bool res = false;
+    
+    if(!index.isValid())
+        return false;
+        
+    if( index.isValidForSeries() )
+    {
+        dtkSmartPointer<dtkAbstractData> data;
+        dtkSmartPointer<medAbstractView> view;
+
+        data = medDataManager::instance()->data(index);
+        
+        res = open(data);   
+        
+        if(res)
+        {
+            // add the view to the viewManager
+            medViewManager::instance()->insert(index, view);
+        }
+    }
+    
+    return res;
+}
+
+bool medViewContainer::open(dtkAbstractData * data)
+{
+    bool res = false;
+
+    if ( data == NULL )
+        return false;
+
+
+    dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
+    bool newView = view.isNull();
+
+    if( newView)
+    {
+        //container empty, or multi with no extendable view
+        view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"));
+    }
+
+    if( view.isNull() ) {
+        qWarning() << "Unable to create a v3dView";
+        return false;
+    }
+
+    // set the data to the view
+    if (!this->multiLayer())
+    {
+        view->removeOverlay(0);
+        view->setSharedDataPointer(data,0);
+        newView = true;
+    }
+    else
+    {
+        view->setSharedDataPointer(data);
+    }
+
+    //set the view to the current container
+    this->setView(view);
+    //only call reset if the view is a new one or with only one layer.
+    if (newView)
+    {
+        qDebug() << "medViewContainer: Reset view";
+        view->reset();
+    }
+    view->update();
+
+    res = true;
+
+
+    return res;
+}
+
