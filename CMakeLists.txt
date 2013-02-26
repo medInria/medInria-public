@@ -73,6 +73,8 @@ option(MEDINRIA_BUILD_DOCUMENTATION "Build documentation"    false)
 if (MSVC)
   include(dtkPch)
   option(MEDINRIA_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        false)
+        itkProcessRegistrationDiffeomorphicDemons ON
+        undoRedoRegistration                      ON)
 endif()
 
 add_subdirectory(src)

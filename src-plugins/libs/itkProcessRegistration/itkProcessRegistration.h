@@ -94,7 +94,7 @@ public:
      * @param data: Pointer to an itkDataImageXXY.
      * @param channel: 0 for the fixed image, 1 for the moving one.
     */
-    void setInput(dtkAbstractData *data, int channel);
+    virtual void setInput(dtkAbstractData *data, int channel);
 
     /**
      * @brief Gets the registered image.
