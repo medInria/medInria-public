@@ -93,7 +93,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
         
         if (!details->name.compare(QString("undoRedoRegistration")))
         {
-            medToolBoxRegistrationCustom * tb = qobject_cast<medToolBoxRegistrationCustom*>(medToolBoxFactory::instance()->createToolBox(toolbox));
+            medRegistrationAbstractToolBox * tb = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(toolbox));
             if(!tb) 
                 qWarning() << "Unable to instantiate" << details->name << "toolbox";
             else
@@ -379,12 +379,12 @@ void medRegistrationSelectorToolBox::setProcess(dtkAbstractProcess* proc)
     d->process = proc;
 }
 
-dtkAbstractProcess * medToolBoxRegistration::undoRedoProcess()
+dtkAbstractProcess * medRegistrationSelectorToolBox::undoRedoProcess()
 {
     return d->undoRedoProcess;
 }
 
-void medToolBoxRegistration::setUndoRedoProcess(dtkAbstractProcess *proc)
+void medRegistrationSelectorToolBox::setUndoRedoProcess(dtkAbstractProcess *proc)
 {
     d->undoRedoProcess = proc;
 }
@@ -529,7 +529,7 @@ void medRegistrationSelectorToolBox::onSuccess()
     }
 }
 
-void medToolBoxRegistration::onUndoRedo()
+void medRegistrationSelectorToolBox::onUndoRedo()
 {
     dtkSmartPointer<dtkAbstractData> output(d->undoRedoProcess->output());
 
