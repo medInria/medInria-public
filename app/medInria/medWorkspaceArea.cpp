@@ -257,7 +257,7 @@ bool medWorkspaceArea::open(const medDataIndex& index)
         medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
 
         QList<medDataIndex> studiesForSource = dbc->studies(index);
-        bool succeeded = true;
+        succeeded = true;
         for ( QList<medDataIndex>::const_iterator studyIt(studiesForSource.begin()); studyIt != studiesForSource.end(); ++studyIt) {
             QList<medDataIndex> seriesForSource = dbc->series((*studyIt));
 
