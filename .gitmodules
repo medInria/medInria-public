@@ -1,0 +1,3 @@
+[submodule "medinria-plugins"]
+	path = medinria-plugins
+	url = git@github.com:medInria/medInria-plugins.git
