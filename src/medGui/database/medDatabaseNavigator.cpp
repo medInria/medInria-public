@@ -120,9 +120,9 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
     baseIndex.setStudyId(-1);
     baseIndex.setSeriesId(-1);
     baseIndex.setImageId(-1);
-    
+
     //qDebug()<< "resetting Navigator" << index << baseIndex;
-    
+
     this->reset();
 
     if  (!baseIndex.isValidForPatient()) {
@@ -161,7 +161,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
         }
 
         //qDebug() << "patients for source" << patientsForSource;
-        
+
         foreach (const medDataIndex& patient, patientsForSource ) {
             //qDebug() << "patient:" << patient;
             IndexList studiesForSource = dbc->studies(patient);

@@ -50,12 +50,12 @@
         <file>icons/magifier_zoom_out.png</file>
         <file>icons/magnifier.png</file>
         <file>icons/magnifier_zoom_in.png</file>
-        <file>icons/medViewContainerCustomA.png</file>
-        <file>icons/medViewContainerCustomB.png</file>
-        <file>icons/medViewContainerCustomC.png</file>
-        <file>icons/medViewContainerCustomD.png</file>
-        <file>icons/medViewContainerCustomE.png</file>
-        <file>icons/medViewContainerCustomF.png</file>
+        <file>icons/medCustomViewContainerA.png</file>
+        <file>icons/medCustomViewContainerB.png</file>
+        <file>icons/medCustomViewContainerC.png</file>
+        <file>icons/medCustomViewContainerD.png</file>
+        <file>icons/medCustomViewContainerE.png</file>
+        <file>icons/medCustomViewContainerF.png</file>
         <file>icons/mouse.png</file>
         <file>icons/mouse_add.png</file>
         <file>icons/mouse_delete.png</file>

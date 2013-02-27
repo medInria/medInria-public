@@ -15,10 +15,10 @@ public:
     QList<int> columnsInUse;
 };
 
-EditCombo::EditCombo( QString _text, int _column )
+EditCombo::EditCombo( QString txt, int clmn )
 {
-    this->label.setText(_text);
-    this->column = _column;
+    this->label.setText(txt);
+    this->column = clmn;
 
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->addWidget(&edit);

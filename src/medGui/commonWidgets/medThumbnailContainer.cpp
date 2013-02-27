@@ -53,9 +53,9 @@ public:
     medDatabasePreviewSelector *selector;
     medDeleteButton* deleteButton;
 
-    QPropertyAnimation *selector_position_animation;
-    QPropertyAnimation *selector_rect_animation;
-    QParallelAnimationGroup *selector_animation;
+    QPropertyAnimation *selectorPositionAnimation;
+    QPropertyAnimation *selectorRectAnimation;
+    QParallelAnimationGroup *selectorAnimation;
 
     medDatabasePreviewItem* currentSelectedItem;
     QList<medDataIndex> previouslyContainedIndexes;
@@ -92,9 +92,9 @@ medThumbnailContainer::medThumbnailContainer(QList<medDataIndex>& previouslyCont
     viewLayout->addWidget(d->view);
     this->setLayout(viewLayout);
 
-    d->selector_position_animation = NULL;
-    d->selector_rect_animation = NULL;
-    d->selector_animation = NULL;
+    d->selectorPositionAnimation = NULL;
+    d->selectorRectAnimation = NULL;
+    d->selectorAnimation = NULL;
 
     d->deleteButton = new medDeleteButton();
     d->scene->addItem(d->deleteButton);
@@ -275,29 +275,29 @@ void medThumbnailContainer::moveSelectorToItem(medDatabasePreviewItem* targetIte
 
     updateSelectorLegend(targetItem->dataIndex());
 
-    if(!d->selector_position_animation)
-        d->selector_position_animation = new QPropertyAnimation(d->selector, "pos");
+    if(!d->selectorPositionAnimation)
+        d->selectorPositionAnimation = new QPropertyAnimation(d->selector, "pos");
 
-    d->selector_position_animation->setDuration(100);
-    d->selector_position_animation->setStartValue(d->selector->pos());
-    d->selector_position_animation->setEndValue(targetItem->scenePos() + selector_offset);
-    d->selector_position_animation->setEasingCurve(QEasingCurve::OutQuad);
+    d->selectorPositionAnimation->setDuration(100);
+    d->selectorPositionAnimation->setStartValue(d->selector->pos());
+    d->selectorPositionAnimation->setEndValue(targetItem->scenePos() + selector_offset);
+    d->selectorPositionAnimation->setEasingCurve(QEasingCurve::OutQuad);
 
-    if(!d->selector_rect_animation)
-        d->selector_rect_animation = new QPropertyAnimation(d->selector, "rect");
+    if(!d->selectorRectAnimation)
+        d->selectorRectAnimation = new QPropertyAnimation(d->selector, "rect");
 
-    d->selector_rect_animation->setDuration(100);
-    d->selector_rect_animation->setStartValue(d->selector->rect());
-    d->selector_rect_animation->setEndValue(QRectF(0, 0, item_width + item_margins, item_height + item_margins + item_spacing));
-    d->selector_rect_animation->setEasingCurve(QEasingCurve::Linear);
+    d->selectorRectAnimation->setDuration(100);
+    d->selectorRectAnimation->setStartValue(d->selector->rect());
+    d->selectorRectAnimation->setEndValue(QRectF(0, 0, item_width + item_margins, item_height + item_margins + item_spacing));
+    d->selectorRectAnimation->setEasingCurve(QEasingCurve::Linear);
 
-    if(!d->selector_animation) {
-        d->selector_animation = new QParallelAnimationGroup(this);
-        d->selector_animation->addAnimation(d->selector_position_animation);
-        d->selector_animation->addAnimation(d->selector_rect_animation);
+    if(!d->selectorAnimation) {
+        d->selectorAnimation = new QParallelAnimationGroup(this);
+        d->selectorAnimation->addAnimation(d->selectorPositionAnimation);
+        d->selectorAnimation->addAnimation(d->selectorRectAnimation);
     }
 
-    d->selector_animation->start();
+    d->selectorAnimation->start();
 }
 
 void medThumbnailContainer::onItemHovered(medDatabasePreviewItem* item)
@@ -326,31 +326,31 @@ void medThumbnailContainer::onItemHovered(medDatabasePreviewItem* item)
     // if the selector is visible, and not already where we want, we animate the movement
     if(d->selector->isVisible())
     {
-        if(!d->selector_position_animation)
-            d->selector_position_animation = new QPropertyAnimation(d->selector, "pos");
+        if(!d->selectorPositionAnimation)
+            d->selectorPositionAnimation = new QPropertyAnimation(d->selector, "pos");
 
-        d->selector_position_animation->setDuration(100);
-        d->selector_position_animation->setStartValue(d->selector->pos());
-        d->selector_position_animation->setEndValue(item->scenePos() + selector_offset);
-        d->selector_position_animation->setEasingCurve(QEasingCurve::Linear);
+        d->selectorPositionAnimation->setDuration(100);
+        d->selectorPositionAnimation->setStartValue(d->selector->pos());
+        d->selectorPositionAnimation->setEndValue(item->scenePos() + selector_offset);
+        d->selectorPositionAnimation->setEasingCurve(QEasingCurve::Linear);
 
-        if(!d->selector_rect_animation)
-            d->selector_rect_animation = new QPropertyAnimation(d->selector, "rect");
+        if(!d->selectorRectAnimation)
+            d->selectorRectAnimation = new QPropertyAnimation(d->selector, "rect");
 
-        d->selector_rect_animation->setDuration(100);
-        d->selector_rect_animation->setStartValue(d->selector->rect());
-        d->selector_rect_animation->setEndValue(QRectF(item->boundingRect().x(), item->boundingRect().y(), item->boundingRect().width() + item_margins, item->boundingRect().height() + item_margins + item_spacing));
-        d->selector_rect_animation->setEasingCurve(QEasingCurve::Linear);
+        d->selectorRectAnimation->setDuration(100);
+        d->selectorRectAnimation->setStartValue(d->selector->rect());
+        d->selectorRectAnimation->setEndValue(QRectF(item->boundingRect().x(), item->boundingRect().y(), item->boundingRect().width() + item_margins, item->boundingRect().height() + item_margins + item_spacing));
+        d->selectorRectAnimation->setEasingCurve(QEasingCurve::Linear);
 
-        if(!d->selector_animation) {
-            d->selector_animation = new QParallelAnimationGroup(this);
-            d->selector_animation->addAnimation(d->selector_position_animation);
-            d->selector_animation->addAnimation(d->selector_rect_animation);
+        if(!d->selectorAnimation) {
+            d->selectorAnimation = new QParallelAnimationGroup(this);
+            d->selectorAnimation->addAnimation(d->selectorPositionAnimation);
+            d->selectorAnimation->addAnimation(d->selectorRectAnimation);
         }
 
-        connect(d->selector_animation, SIGNAL(finished()), this, SLOT(tryShowDeleteButton()));
+        connect(d->selectorAnimation, SIGNAL(finished()), this, SLOT(tryShowDeleteButton()));
 
-        d->selector_animation->start();
+        d->selectorAnimation->start();
     }
     else
     {

@@ -5,9 +5,9 @@
 #include "medViewContainersTest.h"
 
 #include <medAbstractView.h>
-#include <medViewContainerSingle.h>
-#include <medViewContainerMulti.h>
-#include <medViewContainerCustom.h>
+#include <medSingleViewContainer.h>
+#include <medMultiViewContainer.h>
+#include <medCustomViewContainer.h>
 
 #include <QtGui>
 #include <QtTest/QSignalSpy>
@@ -94,8 +94,8 @@ void medViewContainersTestObject::testFoo_data()
 
 void medViewContainersTestObject::testSingle()
 {
-    // create a view container single
-    medViewContainerSingle *container = new medViewContainerSingle;
+    // create a view container singleViewContainer
+    medSingleViewContainer *container = new medSingleViewContainer;
     container->setFixedSize(500, 500);
     container->show();
 
@@ -168,7 +168,7 @@ void medViewContainersTestObject::testSingle()
 void medViewContainersTestObject::testMulti()
 {
     // create a multi container
-    medViewContainerMulti *container = new medViewContainerMulti;
+    medMultiViewContainer *container = new medMultiViewContainer;
     container->setFixedSize(500, 500);
     container->show();
 
@@ -260,13 +260,13 @@ void medViewContainersTestObject::testMulti()
 void medViewContainersTestObject::testCustom()
 {
     // create the custom container
-    medViewContainerCustom *container = new medViewContainerCustom;
+    medCustomViewContainer *container = new medCustomViewContainer;
     container->setFixedSize(500, 500);
-    container->setPreset (medViewContainerCustom::A);
+    container->setPreset (medCustomViewContainer::A);
     container->show();
 
-    for (int preset = medViewContainerCustom::A;
-         preset <= medViewContainerCustom::E; preset++) {
+    for (int preset = medCustomViewContainer::A;
+         preset <= medCustomViewContainer::E; preset++) {
         container->setPreset (preset);
         foreach (medViewContainer *c, container->leaves()) {
             c->setFocus (Qt::MouseFocusReason);
@@ -279,7 +279,7 @@ void medViewContainersTestObject::testCustom()
     }
 
     // my favorite: let's try to set NULL view to preset E:
-    container->setPreset (medViewContainerCustom::E);
+    container->setPreset (medCustomViewContainer::E);
     foreach (medViewContainer *c, container->leaves()) {
         c->setFocus (Qt::MouseFocusReason);
         c->setView (NULL);

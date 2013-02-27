@@ -1129,7 +1129,7 @@ medToolBoxBody {
     border-right-width: 16px;
     border-top-width: 0px;
     border-bottom-width: 16px;
-
+    
     padding-left: -6px;
     padding-right: -6px;
     padding-bottom: 6px;
@@ -1390,11 +1390,11 @@ dtkFinderTreeView::branch:open:has-children:has-siblings  {
 
 
 /**
- * medViewerToolBoxViewProperties QTreeWidget
+ * medViewPropertiesToolBox QTreeWidget
  *
  */
 
-medViewerToolBoxViewProperties QTreeWidget {
+medViewPropertiesToolBox QTreeWidget {
     alternate-background-color: #505050;
 
     border-top-width: 0px;
@@ -1414,30 +1414,30 @@ medViewerToolBoxViewProperties QTreeWidget {
     background: #313131;
 }
 
-medViewerToolBoxViewProperties QTreeWidget::branch:has-siblings:!adjoins-item {
+medViewPropertiesToolBox QTreeWidget::branch:has-siblings:!adjoins-item {
     image: none;
 }
 
-medViewerToolBoxViewProperties QTreeWidget::branch:has-siblings:adjoins-item {
+medViewPropertiesToolBox QTreeWidget::branch:has-siblings:adjoins-item {
     image: none;
 }
 
-medViewerToolBoxViewProperties QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
+medViewPropertiesToolBox QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
     image: none;
 }
 
-medViewerToolBoxViewProperties QTreeWidget::branch:has-children:!has-siblings:closed,
-medViewerToolBoxViewProperties QTreeWidget::branch:closed:has-children:has-siblings {
+medViewPropertiesToolBox QTreeWidget::branch:has-children:!has-siblings:closed,
+medViewPropertiesToolBox QTreeWidget::branch:closed:has-children:has-siblings {
     border-image: none;
     image: url(:pixmaps/treeview-branch-closed.png);
 }
 
-medViewerToolBoxViewProperties QTreeWidget::branch:open:has-children  {
+medViewPropertiesToolBox QTreeWidget::branch:open:has-children  {
     border-image: none;
     image: url(:pixmaps/treeview-branch-open.png);
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);
 }
-medViewerToolBoxViewProperties QTreeWidget::item:open:has-children  {
+medViewPropertiesToolBox QTreeWidget::item:open:has-children  {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);
     color: white;
 }
@@ -1516,9 +1516,11 @@ medViewContainer [isEmpty="false"][clicked="true"] {
  */
 
 QPushButton#actionToolBoxButton {
-    width: 40px;
-    height: 30px;
+    min-height: 30px;
+    padding-left: 2px;
+    padding-right: 2px;
 }
+
 
 QLabel#actionToolBoxLabel {
     height: 52px;

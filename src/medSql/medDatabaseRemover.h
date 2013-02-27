@@ -1,5 +1,5 @@
-/* medDatabaseRemover.h --- 
- * 
+/* medDatabaseRemover.h ---
+ *
  * Author: John Stark
  * Copyright (C) 2008 - Julien Wintz, Inria.
  * Created: Tue Jun 29 15:25:31 2010 (+0200)
@@ -9,8 +9,8 @@
  *     Update #: 12
  */
 
-/* Commentary: 
- * 
+/* Commentary:
+ *
  */
 
 #ifndef MEDDATABASEREMOVER_H

@@ -13,7 +13,7 @@ class dtkAbstractData;
  * @class medAbstractDataSource
  * @brief Abstract base class for dynamic data sources, e.g. plugins that act as database clients
  * This class defines access methods to the following widgets: a mainViewWidget,
- * a source selection widget and several toolboxes.
+ * a source selection widget and several ToolBoxes.
  * All dynamic data source implementation should derive from this class.
  **/
 class MEDCORE_EXPORT medAbstractDataSource : public QObject
@@ -39,8 +39,8 @@ public:
     /** Returns the tab name for the plugin using the data source*/
     virtual QString tabName() = 0;
 
-    /** Returns all toolboxes owned by the source data plugin*/
-    virtual QList<medToolBox*> getToolboxes() = 0;
+    /** Returns all ToolBoxes owned by the source data plugin*/
+    virtual QList<medToolBox*> getToolBoxes() = 0;
 	
 	/** Returns a short description of the data source */
 	virtual QString description(void) const = 0;

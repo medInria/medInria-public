@@ -5,7 +5,7 @@
 class medDbControllerFactoryPrivate
 {
 public:
-    medDbControllerFactory::medDbControllerCreatorHash dbController_creators;
+    medDbControllerFactory::medDbControllerCreatorHash dbControllerCreators;
 };
 
 medDbControllerFactory * medDbControllerFactory::instance( void )
@@ -18,8 +18,8 @@ medDbControllerFactory * medDbControllerFactory::instance( void )
 
 bool medDbControllerFactory::registerDbController( const QString& type, medDbControllerCreator func )
 {
-    if(!d->dbController_creators.contains(type)) {
-        d->dbController_creators.insert(type, func);
+    if(!d->dbControllerCreators.contains(type)) {
+        d->dbControllerCreators.insert(type, func);
         //qDebug() << "registering " << type;
         emit dbControllerRegistered(type);
         return true;
@@ -33,25 +33,25 @@ bool medDbControllerFactory::registerDbController( const QString& type, medDbCon
 medAbstractDbController * medDbControllerFactory::createDbController( QString type )
 {
     // if we can't find the concrete controller we use the first we can get
-    if(!d->dbController_creators.contains(type))
+    if(!d->dbControllerCreators.contains(type))
     {
         return NULL;
 
         // check if we have one at least
-//        if (d->dbController_creators.isEmpty())
+//        if (d->dbControllerCreators.isEmpty())
 //            return NULL;
         // return the first element of the hash
-//       return d->dbController_creators.begin().value()();
+//       return d->dbControllerCreators.begin().value()();
     }
 
-    medAbstractDbController *controller = d->dbController_creators[type]();
+    medAbstractDbController *controller = d->dbControllerCreators[type]();
 
     return controller;
 }
 
 QList <QString> medDbControllerFactory::controllers()
 {
-    return d->dbController_creators.keys();
+    return d->dbControllerCreators.keys();
 }
 
 

@@ -4,7 +4,7 @@
 class medAbstractDataSourceFactoryPrivate
 {
 public:
-    medAbstractDataSourceFactory::medAbstractDataSourceCreatorHash dataSource_creators;
+    medAbstractDataSourceFactory::medAbstractDataSourceCreatorHash dataSourceCreators;
 };
 
 medAbstractDataSourceFactory *medAbstractDataSourceFactory::instance(void)
@@ -17,8 +17,8 @@ medAbstractDataSourceFactory *medAbstractDataSourceFactory::instance(void)
 
 bool medAbstractDataSourceFactory::registerDataSource(QString type, medAbstractDataSourceCreator func)
 {
-    if(!d->dataSource_creators.contains(type)) {
-        d->dataSource_creators.insert(type, func);
+    if(!d->dataSourceCreators.contains(type)) {
+        d->dataSourceCreators.insert(type, func);
         return true;
     }
 
@@ -27,15 +27,15 @@ bool medAbstractDataSourceFactory::registerDataSource(QString type, medAbstractD
 
 QList<QString> medAbstractDataSourceFactory::dataSourcePlugins(void)
 {
-    return d->dataSource_creators.keys();
+    return d->dataSourceCreators.keys();
 }
 
 medAbstractDataSource *medAbstractDataSourceFactory::create(QString type,QWidget * parent)
 {
-    if(!d->dataSource_creators.contains(type))
+    if(!d->dataSourceCreators.contains(type))
         return NULL;
 
-    medAbstractDataSource *conf = d->dataSource_creators[type](parent);
+    medAbstractDataSource *conf = d->dataSourceCreators[type](parent);
 
     return conf;
 }

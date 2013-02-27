@@ -23,68 +23,60 @@
 #include <QtGui/QMainWindow>
 #include <QUuid>
 #include <QUrl>
-
 class medDataIndex;
 class medMainWindowPrivate;
 
-class medMainWindow: public QMainWindow {
+class medMainWindow : public QMainWindow
+{
     Q_OBJECT
 
 public:
+     medMainWindow(QWidget *parent = 0);
+    ~medMainWindow(void);
 
-    medMainWindow(QWidget *parent = 0);
-    ~medMainWindow();
-
-    void readSettings();
+    void readSettings(void);
     void writeSettings();
 
-    void setStartup(const int areaIndex,const QString& filename);
-
-    void updateQuickAccessMenu();
-    void resizeEvent(QResizeEvent* event);
+    void updateQuickAccessMenu(void);
+    void resizeEvent( QResizeEvent * event );
 
 public slots:
-
-    void setWallScreen(const bool full);
-    void setFullScreen(const bool full);
+    void setWallScreen(bool full);
+    void setFullScreen(bool full);
 
     /**
      * @brief Switches from the Fullscreen mode to the normal mode.
      *
      */
+    void switchFullScreen(void);
 
-    void switchFullScreen();
+    void switchToBrowserArea(void);
+    void switchToWorkspaceArea(void);
+    void switchToHomepageArea(void);
 
-    void switchToArea(const int areaIndex);
-    void switchToBrowserArea();
-    void switchToViewerArea();
-    void switchToHomepageArea();
-
-    void onShowWorkspace(const QString& workspace);
-    void onShowQuickAccess();
-    void onHideQuickAccess();
+    void onShowWorkspace(QString workspace);
+    void onShowQuickAccess(void);
+    void onHideQuickAccess(void);
     void onWorkspaceTriggered(QAction *action);
-    void onQuit();
-    void onSaveModified();
-    void onNoQuit();
-    void onEditSettings();
+    void onQuit(void);
+    void onSaveModified(void);
+    void onNoQuit(void);
+    void onEditSettings(void);
 
     /**
      * @brief: Decides what to do when the importer returned a medDataIndex after importation.
      *
      * @param index the medDataIndex returned by the importer. May be invalid if iportation was not successful.
      * @param importUuid This string is the representation of a QUuid.
-     * If the QUuid identifies a request made by this object, then the action is triggered. Here we call openInTab in the viewerArea.
+     * If the QUuid identifies a request made by this object, then the action is triggered. Here we call openInTab in the workspaceArea.
      */
-
-    void onOpenFile(const medDataIndex& index,const QString& importUuid);
+    void onOpenFile(const medDataIndex & index,const QString& importUuid);
 
     /**
     * Opens an image (which is already in the database)
     * in the viewer area.
     * @param index - the @medDataIndex of the image
     **/
-
     void open(const medDataIndex& index);
 
     /**
@@ -92,7 +84,6 @@ public slots:
     * and the opens it in the viewer area and switches to it.
     * @param path - the path to the file or directory
     **/
-
     void open(const QString& path);
 
     /**
@@ -100,7 +91,6 @@ public slots:
     * but does not switch to the viewer area.
     * @param path - the path to the file or directory
     **/
-
     void load(const QString& path);
 
     /**
@@ -108,7 +98,6 @@ public slots:
      *
      * Allows the update of the fullScreen button.
      */
-
     void showFullScreen();
 
     /**
@@ -116,7 +105,6 @@ public slots:
      *
      * Allows the update of the fullScreen button.
      */
-
     void showNormal();
 
     /**
@@ -124,11 +112,9 @@ public slots:
      *
      * Allows the update of the fullScreen button.
      */
-
     void showMaximized();
 
 protected:
-
     void closeEvent(QCloseEvent *event);
 
     void mousePressEvent(QMouseEvent * event);
@@ -136,11 +122,9 @@ protected:
     /**
      * all initial registering should be done here
      */
-
     void registerToFactories();
 
 private:
-
     medMainWindowPrivate *d;
 };
 
