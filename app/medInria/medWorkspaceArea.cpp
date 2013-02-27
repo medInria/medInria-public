@@ -655,7 +655,7 @@ void medWorkspaceArea::setupWorkspace(QString name)
             d->workspaces.insert(name, workspace);
         }
         else
-            qWarning()<< "Workspace" << name << "couldn't be created";
+            qWarning()<< "Workspace " << name << " couldn't be created";
     }
 
     if (!workspace)

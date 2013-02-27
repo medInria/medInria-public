@@ -20,24 +20,15 @@ public:
 
     medToolBoxContainer *toolBoxContainer;
     QFrame *navigatorContainer;
-    QWidget *viewContainer;
-    
-    medPatientSelectorToolBox *patientToolBox;
-    
+    QWidget *viewContainer;  
+    medPatientSelectorToolBox *patientToolBox;   
     medDatabaseNavigator *navigator;
-
     QPointer<medClutEditor>  transFun;
-
-    QStackedWidget *stack;
-    
-    //QGridLayout *layout;
+    QStackedWidget *stack; 
     QSplitter * splitter;
     QGridLayout *navigatorContainerLayout;
-
     QMutex mutex;
-  
     QHash<QString,medWorkspace*> workspaces;
-
     QPropertyAnimation *navigatorAnimation;
 
     void restoreSplitterSize(Qt::Orientation orientation);

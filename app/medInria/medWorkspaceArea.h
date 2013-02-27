@@ -191,7 +191,7 @@ public slots:
     */
     void switchToLayout (medWorkspace::LayoutType layout);
 
-//    void onFileOpened(const medDataIndex &index);
+
     void onFileOpenedInTab(const medDataIndex &index);
 
 protected slots:

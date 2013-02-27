@@ -466,7 +466,6 @@ bool medViewContainer::open(const medDataIndex& index)
     if( index.isValidForSeries() )
     {
         dtkSmartPointer<dtkAbstractData> data;
-        dtkSmartPointer<medAbstractView> view;
 
         data = medDataManager::instance()->data(index);
         
@@ -475,6 +474,7 @@ bool medViewContainer::open(const medDataIndex& index)
         if(res)
         {
             // add the view to the viewManager
+            dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
             medViewManager::instance()->insert(index, view);
         }
     }
@@ -484,8 +484,6 @@ bool medViewContainer::open(const medDataIndex& index)
 
 bool medViewContainer::open(dtkAbstractData * data)
 {
-    bool res = false;
-
     if ( data == NULL )
         return false;
 
@@ -500,7 +498,7 @@ bool medViewContainer::open(dtkAbstractData * data)
     }
 
     if( view.isNull() ) {
-        qWarning() << "Unable to create a v3dView";
+        qWarning() << "medViewContainer: Unable to create a v3dView";
         return false;
     }
 
@@ -526,9 +524,6 @@ bool medViewContainer::open(dtkAbstractData * data)
     }
     view->update();
 
-    res = true;
-
-
-    return res;
+    return true;
 }
 
