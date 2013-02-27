@@ -43,13 +43,13 @@ public:
 undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medToolBoxRegistrationCustom(parent), d(new undoRedoRegistrationToolBoxPrivate)
 {
     // Undo/redo Buttons
-    d->undoButton = new QPushButton(QIcon("C:/Users/mfadil/dev/projects/medInria/app/medInria/icons/FlecheBas.png"),tr("Undo"),this);
-    d->redoButton = new QPushButton(QIcon("C:/Users/mfadil/dev/projects/medInria/app/medInria/icons/FlecheHaut.png"),tr("Redo"),this);
+    d->undoButton = new QPushButton(QIcon(":undoRedoRegistration/icons/ArrowDown.png"),tr("Undo"),this);
+    d->redoButton = new QPushButton(QIcon(":undoRedoRegistration/icons/ArrowUp.png"),tr("Redo"),this);
     
     connect(d->undoButton,SIGNAL(clicked()),this,SLOT(onUndo()));
     connect(d->redoButton,SIGNAL(clicked()),this,SLOT(onRedo()));
     
-    d->arrowCurrentStep = QIcon("C:/Users/mfadil/dev/projects/medInria/app/medInria/icons/blueArrowRight.png");
+    d->arrowCurrentStep = QIcon(":undoRedoRegistration/icons/BlueArrowRight.png");
     d->currentStep = -1;
 
     d->m_UndoRedo = new undoRedoRegistration();
