@@ -37,8 +37,7 @@ qtdcmDataSourcePlugin::~qtdcmDataSourcePlugin ( void )
 
 bool qtdcmDataSourcePlugin::initialize ( void )
 {
-    if ( !qtdcmDataSource::registered() )
-        dtkWarn() << "Unable to register qtdcmDataSource type";
+    if ( !qtdcmDataSource::registered() ) { dtkWarn() << "Unable to register qtdcmDataSource type"; }
 
     return true;
 }

@@ -43,19 +43,19 @@ v3dViewPlugin::~v3dViewPlugin(void)
 
 bool v3dViewPlugin::initialize(void)
 {
-    if (!v3dView::registered()) dtkWarn() << "Unable to register v3dView type";
+    if (!v3dView::registered())                     { dtkWarn() << "Unable to register v3dView type";                     }
 
 #ifndef DISABLE_TTK_DEPENDENT_CODE
-    if (!v3dViewFiberInteractor::registered()) dtkWarn() << "Unable to register v3dViewFiberInteractor type";
+    if (!v3dViewFiberInteractor::registered())      { dtkWarn() << "Unable to register v3dViewFiberInteractor type";      }
 #endif
 
-    if (!v3dViewFuseInteractor::registered()) dtkWarn() << "Unable to register v3dViewFuseInteractor type";
-    if (!v3dViewMeshInteractor::registered()) dtkWarn() << "Unable to register v3dViewMeshInteractor type";
-    if (!v3dView4DInteractor::registered()) dtkWarn() << "Unable to register v3dView4DInteractor type";
-    if (!v3dViewAnnotationInteractor::registered()) dtkWarn() << "Unable to register v3dViewAnnotationInteractor type";
+    if (!v3dViewFuseInteractor::registered())       { dtkWarn() << "Unable to register v3dViewFuseInteractor type";       }
+    if (!v3dViewMeshInteractor::registered())       { dtkWarn() << "Unable to register v3dViewMeshInteractor type";       }
+    if (!v3dView4DInteractor::registered())         { dtkWarn() << "Unable to register v3dView4DInteractor type";         }
+    if (!v3dViewAnnotationInteractor::registered()) { dtkWarn() << "Unable to register v3dViewAnnotationInteractor type"; }
 
 #ifndef DISABLE_TTK_DEPENDENT_CODE
-    if (!v3dViewTensorInteractor::registered()) dtkWarn() << "Unable to register v3dViewTensorInteractor type";
+    if (!v3dViewTensorInteractor::registered())     { dtkWarn() << "Unable to register v3dViewTensorInteractor type";     }
 #endif
 
     return true;

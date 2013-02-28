@@ -43,9 +43,9 @@ vtkDataMeshReaderPlugin::~vtkDataMeshReaderPlugin(void)
 
 bool vtkDataMeshReaderPlugin::initialize(void)
 {
-  if(!vtkDataMeshReader::registered())     dtkWarn() << "Unable to register vtkDataMeshReader type";
-  if(!vtkDataMesh4DReader::registered())     dtkWarn() << "Unable to register vtkDataMeshReader type";
-  return true;
+    if (!vtkDataMeshReader::registered())   { dtkWarn() << "Unable to register vtkDataMeshReader type"; }
+    if (!vtkDataMesh4DReader::registered()) { dtkWarn() << "Unable to register vtkDataMeshReader type"; }
+    return true;
 }
 
 bool vtkDataMeshReaderPlugin::uninitialize(void)

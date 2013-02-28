@@ -35,8 +35,7 @@ itkDCMTKDataImageReaderPlugin::~itkDCMTKDataImageReaderPlugin(void)
 
 bool itkDCMTKDataImageReaderPlugin::initialize(void)
 {
-    if(!itkDCMTKDataImageReader::registered())
-	dtkWarn() << "Unable to register itkDCMTKDataImageReader type";
+    if (!itkDCMTKDataImageReader::registered()) { dtkWarn() << "Unable to register itkDCMTKDataImageReader type"; }
 
     return true;
 }
