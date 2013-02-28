@@ -81,6 +81,8 @@ target_link_libraries(${PROJECT_NAME}
 
 #dtk_build_doc(ITKProcessExamplePlugin)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
+
 add_executable(${PROJECT_NAME}Testing
   ITKProcessExampleTestingApp.cpp
 )
