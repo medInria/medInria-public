@@ -41,10 +41,10 @@ vtkDataMeshWriterPlugin::~vtkDataMeshWriterPlugin(void)
 
 bool vtkDataMeshWriterPlugin::initialize(void)
 {
-  if(!vtkDataMeshWriter::registered()) dtkWarn() << "Unable to register vtkDataMeshWriter type";
-  if(!vtkDataMesh4DWriter::registered()) dtkWarn() << "Unable to register vtkDataMeshWriter type";
-
-  return true;
+    if (!vtkDataMeshWriter::registered())   { dtkWarn() << "Unable to register vtkDataMeshWriter type"; }
+    if (!vtkDataMesh4DWriter::registered()) { dtkWarn() << "Unable to register vtkDataMeshWriter type"; }
+    
+    return true;
 }
 
 bool vtkDataMeshWriterPlugin::uninitialize(void)
