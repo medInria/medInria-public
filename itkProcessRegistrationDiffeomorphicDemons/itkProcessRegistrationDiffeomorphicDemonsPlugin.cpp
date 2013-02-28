@@ -36,11 +36,8 @@ itkProcessRegistrationDiffeomorphicDemonsPlugin::~itkProcessRegistrationDiffeomo
 
 bool itkProcessRegistrationDiffeomorphicDemonsPlugin::initialize(void)
 {
-    if(!itkProcessRegistrationDiffeomorphicDemons::registered())
-        dtkWarn() << "Unable to register itkProcessRegistrationDiffeomorphicDemons type";
-
-    if(!itkProcessRegistrationDiffeomorphicDemonsToolBox::registered())
-        dtkWarn() << "Unable to register itkProcessRegistrationDiffeomorphicDemons toolbox";
+    if (!itkProcessRegistrationDiffeomorphicDemons::registered())        { dtkWarn() << "Unable to register itkProcessRegistrationDiffeomorphicDemons type";    }
+    if (!itkProcessRegistrationDiffeomorphicDemonsToolBox::registered()) { dtkWarn() << "Unable to register itkProcessRegistrationDiffeomorphicDemons toolbox"; }
 
     return true;
 }
