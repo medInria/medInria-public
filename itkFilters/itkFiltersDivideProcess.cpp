@@ -64,7 +64,7 @@ template <class PixelType> void itkFiltersDivideProcessPrivate::update ( void )
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersDivideProcess::itkFiltersDivideProcess( void ) : dtkAbstractProcess(), d(new itkFiltersDivideProcessPrivate)
+itkFiltersDivideProcess::itkFiltersDivideProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersDivideProcessPrivate)
 {
     d->filter = this;
     d->output = NULL;
@@ -76,13 +76,6 @@ itkFiltersDivideProcess::~itkFiltersDivideProcess( void )
 {
     delete d;
     d = NULL;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersDivideProcess::emitProgress(int progress)
-{
-    emit progressed(progress);
 }
 
 //-------------------------------------------------------------------------------------------

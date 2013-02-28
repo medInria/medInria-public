@@ -61,7 +61,7 @@ template <class PixelType> void itkFiltersMedianProcessPrivate::update ( void )
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersMedianProcess::itkFiltersMedianProcess( void ) : dtkAbstractProcess(), d(new itkFiltersMedianProcessPrivate)
+itkFiltersMedianProcess::itkFiltersMedianProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersMedianProcessPrivate)
 {
     d->filter = this;
     d->output = NULL;
@@ -73,13 +73,6 @@ itkFiltersMedianProcess::~itkFiltersMedianProcess( void )
 {
     delete d;
     d = NULL;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersMedianProcess::emitProgress(int progress)
-{
-    emit progressed(progress);
 }
 
 //-------------------------------------------------------------------------------------------

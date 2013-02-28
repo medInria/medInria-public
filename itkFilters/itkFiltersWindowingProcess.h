@@ -1,7 +1,7 @@
 #ifndef ITKFILTERSWINDOWINGPROCESS_H
 #define ITKFILTERSWINDOWINGPROCESS_H
 
-#include <dtkCore/dtkAbstractProcess.h>
+#include "itkFiltersProcessBase.h"
 #include <dtkCore/dtkAbstractData.h>
 
 #include "itkFiltersPluginExport.h"
@@ -9,7 +9,7 @@
 class itkFiltersWindowingProcessPrivate;
 class dtkAbstractData;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersWindowingProcess : public dtkAbstractProcess
+class ITKFILTERSPLUGIN_EXPORT itkFiltersWindowingProcess : public itkFiltersProcessBase
 {
     Q_OBJECT
     
@@ -20,8 +20,6 @@ public:
     virtual QString description ( void ) const;
 
     static bool registered ( void );
-
-    void emitProgress(int progress);
     
 public slots:
 

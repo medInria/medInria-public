@@ -1,7 +1,7 @@
 #ifndef ITKFILTERSMEDIANPROCESS_H
 #define ITKFILTERSMEDIANPROCESS_H
 
-#include <dtkCore/dtkAbstractProcess.h>
+#include "itkFiltersProcessBase.h"
 #include <dtkCore/dtkAbstractData.h>
 
 #include "itkFiltersPluginExport.h"
@@ -9,7 +9,7 @@
 class itkFiltersMedianProcessPrivate;
 class dtkAbstractData;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersMedianProcess : public dtkAbstractProcess
+class ITKFILTERSPLUGIN_EXPORT itkFiltersMedianProcess : public itkFiltersProcessBase
 {
     Q_OBJECT
     
@@ -20,8 +20,6 @@ public:
     virtual QString description ( void ) const;
 
     static bool registered ( void );
-
-    void emitProgress(int progress);
     
 public slots:
 

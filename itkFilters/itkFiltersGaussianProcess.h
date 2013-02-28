@@ -1,7 +1,7 @@
 #ifndef ITKFILTERSGAUSSIANPROCESS_H
 #define ITKFILTERSGAUSSIANPROCESS_H
 
-#include <dtkCore/dtkAbstractProcess.h>
+#include "itkFiltersProcessBase.h"
 #include <dtkCore/dtkAbstractData.h>
 
 #include "itkFiltersPluginExport.h"
@@ -9,7 +9,7 @@
 class itkFiltersGaussianProcessPrivate;
 class dtkAbstractData;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersGaussianProcess : public dtkAbstractProcess
+class ITKFILTERSPLUGIN_EXPORT itkFiltersGaussianProcess : public itkFiltersProcessBase
 {
     Q_OBJECT
     
@@ -20,8 +20,6 @@ public:
     virtual QString description ( void ) const;
 
     static bool registered ( void );
-
-    void emitProgress(int progress);
     
 public slots:
 

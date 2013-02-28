@@ -61,7 +61,7 @@ template <class PixelType> void itkFiltersNormalizeProcessPrivate::update ( void
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersNormalizeProcess::itkFiltersNormalizeProcess( void ) : dtkAbstractProcess(), d(new itkFiltersNormalizeProcessPrivate)
+itkFiltersNormalizeProcess::itkFiltersNormalizeProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersNormalizeProcessPrivate)
 {
     d->filter = this;
     d->output = NULL;
@@ -73,13 +73,6 @@ itkFiltersNormalizeProcess::~itkFiltersNormalizeProcess( void )
 {
     delete d;
     d = NULL;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersNormalizeProcess::emitProgress(int progress)
-{
-    emit progressed(progress);
 }
 
 //-------------------------------------------------------------------------------------------

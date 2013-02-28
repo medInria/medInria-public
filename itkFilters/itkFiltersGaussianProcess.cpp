@@ -64,7 +64,7 @@ template <class PixelType> void itkFiltersGaussianProcessPrivate::update ( void 
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersGaussianProcess::itkFiltersGaussianProcess( void ) : dtkAbstractProcess(), d(new itkFiltersGaussianProcessPrivate)
+itkFiltersGaussianProcess::itkFiltersGaussianProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersGaussianProcessPrivate)
 {
     d->filter = this;
     d->output = NULL;
@@ -76,13 +76,6 @@ itkFiltersGaussianProcess::~itkFiltersGaussianProcess( void )
 {
     delete d;
     d = NULL;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersGaussianProcess::emitProgress(int progress)
-{
-    emit progressed(progress);
 }
 
 //-------------------------------------------------------------------------------------------

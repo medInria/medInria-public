@@ -71,7 +71,7 @@ template <class PixelType> void itkFiltersWindowingProcessPrivate::update ( void
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersWindowingProcess::itkFiltersWindowingProcess( void ) : dtkAbstractProcess(), d(new itkFiltersWindowingProcessPrivate)
+itkFiltersWindowingProcess::itkFiltersWindowingProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersWindowingProcessPrivate)
 {
     d->filter = this;
     d->output = NULL;
@@ -83,13 +83,6 @@ itkFiltersWindowingProcess::~itkFiltersWindowingProcess( void )
 {
     delete d;
     d = NULL;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersWindowingProcess::emitProgress(int progress)
-{
-    emit progressed(progress);
 }
 
 //-------------------------------------------------------------------------------------------

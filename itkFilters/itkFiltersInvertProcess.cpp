@@ -61,7 +61,7 @@ template <class PixelType> void itkFiltersInvertProcessPrivate::update ( void )
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersInvertProcess::itkFiltersInvertProcess( void ) : dtkAbstractProcess(), d(new itkFiltersInvertProcessPrivate)
+itkFiltersInvertProcess::itkFiltersInvertProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersInvertProcessPrivate)
 {
     d->filter = this;
     d->output = NULL;
@@ -73,13 +73,6 @@ itkFiltersInvertProcess::~itkFiltersInvertProcess( void )
 {
     delete d;
     d = NULL;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersInvertProcess::emitProgress(int progress)
-{
-    emit progressed(progress);
 }
 
 //-------------------------------------------------------------------------------------------

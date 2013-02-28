@@ -1,15 +1,15 @@
 #ifndef ITKFILTERSADDPROCESS_H
 #define ITKFILTERSADDPROCESS_H
 
-#include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractData.h>
+#include "itkFiltersProcessBase.h"
 
 #include "itkFiltersPluginExport.h"
 
 class itkFiltersAddProcessPrivate;
 class dtkAbstractData;
 
-class ITKFILTERSPLUGIN_EXPORT itkFiltersAddProcess : public dtkAbstractProcess
+class ITKFILTERSPLUGIN_EXPORT itkFiltersAddProcess : public itkFiltersProcessBase
 {
     Q_OBJECT
     
@@ -20,8 +20,6 @@ public:
     virtual QString description ( void ) const;
 
     static bool registered ( void );
-
-    void emitProgress(int progress);
     
 public slots:
 

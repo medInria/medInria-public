@@ -64,7 +64,7 @@ template <class PixelType> void itkFiltersShrinkProcessPrivate::update ( void )
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersShrinkProcess::itkFiltersShrinkProcess( void ) : dtkAbstractProcess(), d(new itkFiltersShrinkProcessPrivate)
+itkFiltersShrinkProcess::itkFiltersShrinkProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersShrinkProcessPrivate)
 {
     d->filter = this;
     d->output = NULL;
@@ -76,13 +76,6 @@ itkFiltersShrinkProcess::~itkFiltersShrinkProcess( void )
 {
     delete d;
     d = NULL;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersShrinkProcess::emitProgress(int progress)
-{
-    emit progressed(progress);
 }
 
 //-------------------------------------------------------------------------------------------
