@@ -94,7 +94,7 @@ class VTK_IMAGEVIEW_EXPORT vtkInteractorStyleImageView2D : public vtkInteractorS
   virtual void DefaultMoveAction();
   
   vtkGetMacro (SliceStep, int);
-  vtkGetVector3Macro (RequestedPosition, int);
+  vtkGetVector2Macro (RequestedPosition, int);
   
   
  protected:

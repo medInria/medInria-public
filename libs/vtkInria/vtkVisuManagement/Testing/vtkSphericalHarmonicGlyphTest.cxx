@@ -43,7 +43,7 @@ typedef itk::VectorImage<float, 3>    ShImageTypeFloat;
 
 int Compare( vtkPoints* verticesA, vtkPoints* verticesB)
 {
-  double pointA[3], pointB[3], pointC[3], tempPoint[3];
+  double pointA[3], pointB[3];
   int nPointsA = verticesA->GetNumberOfPoints();
   int nPointsB = verticesB->GetNumberOfPoints();
 
@@ -187,7 +187,6 @@ int vtkSphericalHarmonicGlyphTest(int argc, char *argv[])
     SHGlyph->SetColorGlyphs(false);
 
   SHGlyph->Update();
-  vtkPolyData * odf = SHGlyph->GetOutput();
 
   vtkPolyDataReader * shReaderB = vtkPolyDataReader::New();
   shReaderB->SetFileName(argv[2]);

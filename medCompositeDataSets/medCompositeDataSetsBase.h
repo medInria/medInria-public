@@ -64,8 +64,9 @@ namespace MedInria {
             QStringList& ql = known_types();
             for (Registery::const_iterator i=registery().begin();i!=registery().end();++i) {
                 const QString desc = i->second->identifier();
-                if (!(i->second->registered()))
+                if (!(i->second->registered())) {
                     dtkWarn() << "Unable to register " << desc << " type";
+                }
                 ql << desc;
             }
             qDebug() << ql;
