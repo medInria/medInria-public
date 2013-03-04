@@ -48,7 +48,7 @@ if(WIN32)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
 
-option(BUILD_TESTING       "Build testing"          true)
+option(MEDINRIA_BUILD_TESTING       "Build testing"          false)
 
 enable_testing()
 
@@ -61,30 +61,38 @@ include(${dtk_USE_FILE})
 include(medInriaPack)
 
 #configure ctest variables
-option(BUILD_REPORTING "Build Reporting")
-if(BUILD_REPORTING)
+option(MEDINRIA_BUILD_REPORTING "Build Reporting")
+if(MEDINRIA_BUILD_REPORTING)
   include(dtkReporting)
-endif(BUILD_REPORTING)
+endif(MEDINRIA_BUILD_REPORTING)
 
-option(BUILD_DOCUMENTATION "Build documentation"    true)
+option(MEDINRIA_BUILD_DOCUMENTATION "Build documentation"    false)
 
 if(MSVC)
   include(dtkPch)
-  option(MEDINRIA_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
+  option(MEDINRIA_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        false)
 endif(MSVC)
 
 add_subdirectory(src)
 add_subdirectory(app)
 
-if(BUILD_TESTING)
+if(MEDINRIA_BUILD_TESTING)
   add_subdirectory(tests)
-endif(BUILD_TESTING)
+endif(MEDINRIA_BUILD_TESTING)
 
-if(BUILD_DOCUMENTATION)
+if(MEDINRIA_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
-endif(BUILD_DOCUMENTATION)
+endif(MEDINRIA_BUILD_DOCUMENTATION)
+
+option(BUILD_PLUGINS "Build medinria-plugins"    false)
+
+if(BUILD_PLUGINS)
+  add_subdirectory(medinria-plugins)
+endif()
 
 if (APPLE)
   configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in
                  ${PROJECT_BINARY_DIR}/mac_packager.sh)
 endif()
+
+
