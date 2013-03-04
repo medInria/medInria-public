@@ -24,6 +24,8 @@
 #include <medFilteringAbstractToolBox.h>
 #include <medProgressionStack.h>
 
+#include "itkFiltersProcessBase.h"
+
 #include <QtGui>
 
 class itkFiltersToolBoxPrivate
@@ -57,7 +59,8 @@ public:
     QDoubleSpinBox * intensityOutputMaximumValue;
 
     QComboBox * filters;
-    dtkSmartPointer <dtkAbstractProcess> process;
+//    dtkSmartPointer <dtkAbstractProcess> process;
+    dtkSmartPointer <itkFiltersProcessBase> process;
     
     medProgressionStack * progression_stack;
 };
