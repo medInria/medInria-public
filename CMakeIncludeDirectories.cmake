@@ -1,4 +1,4 @@
-include_directories(
+SET(${PROJECT_NAME}_INCLUDE_DIR
         ${CMAKE_CURRENT_SOURCE_DIR}/libs
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/ITKDCMTKIO
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/dtkVtkLogForwarder
@@ -13,5 +13,8 @@ include_directories(
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/vtkWidgetsAddOn
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/vtkImageView    
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/vtkInria/itkAddOn/IO/
-        )
+)
 
+include_directories(
+        ${${PROJECT_NAME}_INCLUDE_DIR}
+)
