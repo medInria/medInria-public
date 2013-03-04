@@ -457,7 +457,6 @@ void medAbstractView::addDataType(const QString & dataDescription)
     }
     else
         d->DataTypes.insert(dataDescription, 1);
-    d->DataTypes;
 
     QHash<QString, unsigned int>::const_iterator i = d->DataTypes.constBegin();
     while (i != d->DataTypes.constEnd()) {

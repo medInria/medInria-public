@@ -231,12 +231,6 @@ void medDatabasePreview::onSlideUp(void)
     if(d->level)
         return;
 
-    qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
-    qreal item_width = medDatabasePreviewController::instance()->itemWidth();
-    qreal item_height = medDatabasePreviewController::instance()->itemHeight();
-    qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
-    qreal item_margins = selector_width - item_width;
-    qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
 
     d->level++;
 
@@ -278,12 +272,6 @@ void medDatabasePreview::onSlideDw(void)
     if(!d->level)
         return;
 
-    qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
-    qreal item_width = medDatabasePreviewController::instance()->itemWidth();
-    qreal item_height = medDatabasePreviewController::instance()->itemHeight();
-    qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
-    qreal item_margins = selector_width - item_width;
-    qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
 
     d->level--;
 
@@ -321,11 +309,8 @@ void medDatabasePreview::onSlideDw(void)
 
 void medDatabasePreview::onMoveRt(void)
 {
-    qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
-    qreal item_height = medDatabasePreviewController::instance()->itemHeight();
     qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
-    qreal item_margins = selector_width - item_width;
     qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
 
     QPoint selector_offset((medDatabasePreviewController::instance()->selectorWidth()  - medDatabasePreviewController::instance()->itemWidth())/-2,
@@ -341,11 +326,8 @@ void medDatabasePreview::onMoveRt(void)
 
 void medDatabasePreview::onMoveLt(void)
 {
-    qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
-    qreal item_height = medDatabasePreviewController::instance()->itemHeight();
     qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
-    qreal item_margins = selector_width - item_width;
     qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
 
     QPoint selector_offset((medDatabasePreviewController::instance()->selectorWidth()  - medDatabasePreviewController::instance()->itemWidth())/-2,
@@ -399,7 +381,6 @@ void medDatabasePreview::moveToItem(medDatabasePreviewItem *target) // move to b
     qreal item_height = medDatabasePreviewController::instance()->itemHeight();
     qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
     qreal item_margins = selector_width - item_width;
-    qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
 
     QPoint selector_offset((medDatabasePreviewController::instance()->selectorWidth()  - medDatabasePreviewController::instance()->itemWidth())/-2,
                            (medDatabasePreviewController::instance()->selectorHeight() - medDatabasePreviewController::instance()->itemHeight())/-2);
@@ -450,10 +431,8 @@ void medDatabasePreview::onHovered(medDatabasePreviewItem *item)
 
     qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
-    qreal item_height = medDatabasePreviewController::instance()->itemHeight();
     qreal item_spacing = medDatabasePreviewController::instance()->itemSpacing();
     qreal item_margins = selector_width - item_width;
-    qreal query_offset = medDatabasePreviewController::instance()->queryOffset();
 
     d->currentIndex = item->dataIndex();
 

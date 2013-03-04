@@ -54,7 +54,7 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
 
         if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(m_view->model()))
             item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-        else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(m_view->model()))
+        else if (dynamic_cast<QAbstractItemModel *>(m_view->model()))
             item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
         // items that failed to open will have a pinkish background
@@ -87,7 +87,7 @@ public:
     QMenu *contextMenu;
 };
 
-medDatabaseView::medDatabaseView(QWidget *parent) : d(new medDatabaseViewPrivate), QTreeView(parent)
+medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new medDatabaseViewPrivate)
 {
     this->setAcceptDrops(true);
     this->setFrameStyle(QFrame::NoFrame);
@@ -177,7 +177,7 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
 
     if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-    else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(this->model()))
+    else if (dynamic_cast<QAbstractItemModel *>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     if (item) {
@@ -207,7 +207,7 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 
     if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-    else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(this->model()))
+    else if (dynamic_cast<QAbstractItemModel *>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     if (item)
@@ -269,7 +269,7 @@ void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const Q
 
     if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-    else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(this->model()))
+    else if (dynamic_cast<QAbstractItemModel *>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     if (!item)

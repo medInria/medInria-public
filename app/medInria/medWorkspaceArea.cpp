@@ -695,8 +695,11 @@ void medWorkspaceArea::setupWorkspace(QString name)
 
     if (d->workspaces.contains(name))
         workspace = d->workspaces[name];
-    else {
-        if (workspace = medWorkspaceFactory::instance()->createWorkspace(name, this)) {
+    else
+    {
+        workspace = medWorkspaceFactory::instance()->createWorkspace(name, this);
+        if (workspace)
+        {
             connect(this, SIGNAL(clearOnPatientChange()), workspace, SLOT(clear()));
             d->workspaces.insert(name, workspace);
         }

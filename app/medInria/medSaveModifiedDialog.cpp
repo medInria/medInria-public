@@ -76,10 +76,9 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     layout->addWidget(d->treeWidget);
     layout->addLayout(hlayout);
 
-    medSaveModifiedDialogCheckListItem * checkListItem;
-
+    //TODO a little bit ugly the way medSaveModifiedDialogCheckListItem are parented no ?
     foreach(medDatabaseNonPersistentItem *item, medDatabaseNonPersistentController::instance()->items())
-        checkListItem = new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), item->name(), item->studyName(), item->seriesName(), item->file(), item->thumb());
+        new medSaveModifiedDialogCheckListItem(d->treeWidget->invisibleRootItem(), item->index(), item->name(), item->studyName(), item->seriesName(), item->file(), item->thumb());
 
     d->treeWidget->resizeColumnToContents(0);
 

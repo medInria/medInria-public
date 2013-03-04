@@ -65,7 +65,6 @@ void medPluginWidgetPrivate::resetTypesTree()
     typesTree->clear();
 
     //get the list of plugins
-    medPluginManager* mpm = medPluginManager::instance();
 
     dtkAbstractDataFactory * dataFactory = dtkAbstractDataFactory::instance();
     QTreeWidgetItem * dataItem = new QTreeWidgetItem(typesTree);
@@ -74,7 +73,7 @@ void medPluginWidgetPrivate::resetTypesTree()
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(dataItem);
         item->setText(1,data);
-//        item->setText(2,mpm->);
+
     }
     typesTree->addTopLevelItem(dataItem);
 
@@ -84,7 +83,7 @@ void medPluginWidgetPrivate::resetTypesTree()
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(readerItem);
         item->setText(1,data);
-//        item->setText(1,plugin->version());
+
     }
     typesTree->addTopLevelItem(readerItem);
 
@@ -94,7 +93,7 @@ void medPluginWidgetPrivate::resetTypesTree()
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(writerItem);
         item->setText(1,data);
-//        item->setText(1,plugin->version());
+
     }
     typesTree->addTopLevelItem(writerItem);
 
@@ -108,9 +107,7 @@ void medPluginWidgetPrivate::resetTypesTree()
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(viewItem);
         item->setText(1,view);
-//        item->setText(1,plugin->version());
 
-        //typesTree->addTopLevelItem(item);
     }
     typesTree->addTopLevelItem(viewItem);
 
@@ -123,9 +120,7 @@ void medPluginWidgetPrivate::resetTypesTree()
     {
         QTreeWidgetItem * item = new QTreeWidgetItem(processItem);
         item->setText(1,process);
-//        item->setText(1,plugin->version());
 
-        //typesTree->addTopLevelItem(item);
     }
     typesTree->addTopLevelItem(processItem);
 
@@ -134,7 +129,6 @@ void medPluginWidgetPrivate::resetTypesTree()
     typesTree->sortByColumn(1,Qt::AscendingOrder);
     typesTree->sortByColumn(0,Qt::AscendingOrder);
 
-//    typesTree->setSortingEnabled(true);
 }
 
 void medPluginWidgetPrivate::resetFailedPluginsTree()

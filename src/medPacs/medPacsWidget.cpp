@@ -350,8 +350,6 @@ void medPacsWidget::updateContextMenu(const QPoint& point)
     if(!index.isValid())
         return;
 
-    QTreeWidgetItem *item = itemFromIndex(index);
-
     QMenu menu(this);
     menu.addAction("Import", this, SLOT(onItemImported()));
     menu.exec(mapToGlobal(point));
