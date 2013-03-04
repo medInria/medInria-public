@@ -27,7 +27,7 @@ public:
              medRegistrationAbstractToolBox(QWidget *parentToolBox = 0);
     virtual ~medRegistrationAbstractToolBox();
 
-    void setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox);
+    virtual void setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox);
 
 protected:
     medRegistrationSelectorToolBox *parentToolBox();
