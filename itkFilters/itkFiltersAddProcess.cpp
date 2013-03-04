@@ -10,73 +10,47 @@
 #include "itkCommand.h"
 #include "itkAddConstantToImageFilter.h"
 
-class itkFiltersAddProcessPrivate
-{
-public:
-    itk::CStyleCommand::Pointer callback;
-    itkFiltersAddProcess *filter;
-    
-    dtkSmartPointer<dtkAbstractData> input;
-    dtkSmartPointer<dtkAbstractData> output;
-    
-    double addValue;
-    
-    template <class PixelType> void update ( void );
-    
-    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData);
-};
-
-void itkFiltersAddProcessPrivate::eventCallback ( itk::Object* caller, const itk::EventObject& event, void* clientData )
-{
-    itkFiltersAddProcessPrivate * source = reinterpret_cast<itkFiltersAddProcessPrivate *> ( clientData );
-    itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
-
-    if ( !source )
-        qDebug() << "Source est null";
-
-    source->filter->emitProgress((int) (processObject->GetProgress() * 100));
-}
-
-template <class PixelType> void itkFiltersAddProcessPrivate::update ( void )
-{
-    typedef itk::Image< PixelType, 3 > ImageType;
-    typedef itk::AddConstantToImageFilter< ImageType, double, ImageType >  AddFilterType;
-    typename AddFilterType::Pointer addFilter = AddFilterType::New();
-
-    addFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-    addFilter->SetConstant ( addValue );
-    
-    callback = itk::CStyleCommand::New();
-    callback->SetClientData ( ( void * ) this );
-    callback->SetCallback ( itkFiltersAddProcessPrivate::eventCallback );
-
-    addFilter->AddObserver ( itk::ProgressEvent(), callback );
-
-    addFilter->Update();
-    output->setData ( addFilter->GetOutput() );
-
-    //Set output description metadata
-    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-    newSeriesDescription += " add filter (" + QString::number(addValue) + ")";
-
-    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-}
+#include "itkFiltersAddProcess_p.h"
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersAddProcess::itkFiltersAddProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersAddProcessPrivate)
+itkFiltersAddProcess::itkFiltersAddProcess(itkFiltersAddProcess *parent) 
+    : itkFiltersProcessBase(*new itkFiltersAddProcessPrivate(this), parent)
 {
+    DTK_D(itkFiltersAddProcess);
+    
     d->filter = this;
     d->output = NULL;
-    d->addValue = 100.0;
+    d->addValue = 100.0;    
+}
+
+
+itkFiltersAddProcess::itkFiltersAddProcess(const itkFiltersAddProcess& other) 
+    : itkFiltersProcessBase(*new itkFiltersAddProcessPrivate(*other.d_func()), other)
+{
+}
+
+itkFiltersAddProcess& itkFiltersAddProcess::operator = (const itkFiltersAddProcess& other)
+{
+    itkFiltersProcessBase::operator=(other);
+
+    DTK_D(itkFiltersAddProcess);
+    d->callback = other.d_func()->callback;
+    d->filter = other.d_func()->filter;
+    d->input = other.d_func()->input;
+    d->output = other.d_func()->output;
+
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersAddProcess::~itkFiltersAddProcess( void )
 {
+    DTK_D(itkFiltersAddProcess);
+    
     delete d;
-    d = NULL;
+//    d = NULL;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -99,6 +73,8 @@ void itkFiltersAddProcess::setInput(dtkAbstractData *data)
 {
     if (!data)
         return;
+ 
+    DTK_D(itkFiltersAddProcess);
     
     QString identifier = data->identifier();
     
@@ -113,6 +89,8 @@ void itkFiltersAddProcess::setParameter(double data, int channel)
     if (channel != 0)
         return;
     
+    DTK_D(itkFiltersAddProcess);
+    
     d->addValue = data;
 }
 
@@ -120,6 +98,8 @@ void itkFiltersAddProcess::setParameter(double data, int channel)
 
 int itkFiltersAddProcess::update ( void )
 {
+    DTK_D(itkFiltersAddProcess);
+    
     if ( !d->input )
         return -1;
 
@@ -183,6 +163,8 @@ int itkFiltersAddProcess::update ( void )
 
 dtkAbstractData * itkFiltersAddProcess::output ( void )
 {
+    DTK_D(itkFiltersAddProcess);
+    
     return ( d->output );
 }
 

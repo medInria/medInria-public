@@ -14,8 +14,11 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersAddProcess : public itkFiltersProcessBas
     Q_OBJECT
     
 public:
-    itkFiltersAddProcess(void);
+    itkFiltersAddProcess(itkFiltersAddProcess * parent = 0);
+    itkFiltersAddProcess(const itkFiltersAddProcess& other);
     virtual ~itkFiltersAddProcess(void);
+    
+    itkFiltersAddProcess& operator = (const itkFiltersAddProcess& other);
     
     virtual QString description ( void ) const;
 
@@ -29,8 +32,11 @@ public slots:
     dtkAbstractData *output ( void );
 
 private:
-    itkFiltersAddProcessPrivate *d;
+    DTK_DECLARE_PRIVATE(itkFiltersAddProcess)
 };
+
+ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug, const itkFiltersAddProcess& process);
+ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug,       itkFiltersAddProcess *process);
 
 
 dtkAbstractProcess * createitkFiltersAddProcess(void);
