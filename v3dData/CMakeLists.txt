@@ -41,10 +41,6 @@ INCLUDE(${VTK_USE_FILE})
 FIND_PACKAGE(ITK REQUIRED)
 INCLUDE(${ITK_USE_FILE})
 
-find_package(medInria REQUIRED)
-include(${medInria_USE_FILE})
-
-
 ## #################################################################
 ## Input
 ## #################################################################
@@ -75,13 +71,13 @@ set(${PROJECT_NAME}_RESOURCES v3dData.qrc)
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
-if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsVtkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES_QRC}
     ${${PROJECT_NAME}_SOURCES})
-endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+endif(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}
@@ -100,8 +96,8 @@ target_link_libraries(${PROJECT_NAME}
   vtkRendering
   itkIOAddOn
   ITKIOReview
-  dtkItkLogForwarder
   dtkVtkLogForwarder
+  dtkItkLogForwarder
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES})
 

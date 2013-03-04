@@ -39,14 +39,12 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+
 find_package(DCMTK REQUIRED)
 IF(APPLE)
   include(FixDCMTKMacInstall)
   FixDCMTKMacInstall()
 ENDIF(APPLE)
-
-find_package(medInria REQUIRED)
-include(${medInria_USE_FILE})
 
 find_package(VTK)
 include(${VTK_USE_FILE})
@@ -74,12 +72,12 @@ set(${PROJECT_NAME}_SOURCES
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES})
-endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+endif(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}
@@ -94,17 +92,17 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore dtkLog
 )
 
-if (BUILD_TESTING)
+if (MEDINRIA-PLUGINS_BUILD_TESTING)
   add_subdirectory(Testing)
-endif (BUILD_TESTING)
+endif (MEDINRIA-PLUGINS_BUILD_TESTING)
 
-IF(BUILD_EXAMPLES)
+IF(MEDINRIA-PLUGINS_BUILD_EXAMPLES)
         subdirs(Examples)
-ENDIF(BUILD_EXAMPLES)
+ENDIF(MEDINRIA-PLUGINS_BUILD_EXAMPLES)
 
-if(BUILD_DOCUMENTATION)
+if(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
 	dtk_build_doc(${PROJECT_NAME})
-endif(BUILD_DOCUMENTATION)
+endif(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
 
 ## ###################################################################
 ## 

@@ -1,6 +1,6 @@
 project(vtkWidgetsAddOn)
 
-SET(vtkWidgetsAddOn_SRCS
+SET(${PROJECT_NAME}_SRCS
 vtkDistanceWidget2.cxx
 vtkImageOrientedPointWidget.cxx
 vtkOrientationAnnotation.cxx
@@ -9,46 +9,19 @@ vtkRulerWidget.cxx
 vtkInteractorStyleTrackballCamera2.cxx
 )
 
-SET(vtkWidgetsAddOn_LIBS
+SET(${PROJECT_NAME}_LIBS
  vtkCommon
  vtkFiltering 
  vtkRendering
  vtkWidgets
 )
 
-
-    
 # C++ library for the InterfaceManagers
-ADD_LIBRARY(vtkWidgetsAddOn SHARED
- ${vtkWidgetsAddOn_SRCS}
+ADD_LIBRARY(${PROJECT_NAME} SHARED
+ ${${PROJECT_NAME}_SRCS}
 )
   
-TARGET_LINK_LIBRARIES(vtkWidgetsAddOn  
- ${vtkWidgetsAddOn_LIBS}
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}  
+ ${${PROJECT_NAME}_LIBS}
 )
-
-
-  IF (VTK_WRAP_TCL)
-   
-    VTK_WRAP_TCL3( vtkWidgetsAddOnLib
-      vtkWidgetsAddOnTCL_SRCS
-      "${vtkWidgetsAddOn_SRCS}"
-      ""
-      "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
-    )
-
-    ADD_LIBRARY(vtkWidgetsAddOnTCL ${vtkINRIA3D_LIBS_STYLE}
-    ${vtkWidgetsAddOnTCL_SRCS}
-    )
-    TARGET_LINK_LIBRARIES(vtkWidgetsAddOnTCL
-    vtkWidgetsAddOn
-    vtkFilteringTCL
-    vtkRenderingTCL
-    vtkWidgetsTCL
-    )
- 
-    INSTALL_TARGETS(/lib vtkWidgetsAddOnTCL)
-
-  ENDIF(VTK_WRAP_TCL)
-
 

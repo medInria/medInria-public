@@ -1,6 +1,6 @@
-SET(KIT vtkImageView)
+SET(KIT ${PROJECT_NAME})
 
-SET(vtkImageViewTests
+SET(${PROJECT_NAME}Tests
   vtkImageViewTest1.cxx
   vtkImageViewTest2.cxx
   vtkImageViewTest3.cxx
@@ -8,7 +8,7 @@ SET(vtkImageViewTests
   )
 
 CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
-  ${vtkImageViewTests}
+  ${${PROJECT_NAME}Tests}
   )
 
 ADD_EXECUTABLE(${KIT}CxxTests 
@@ -16,12 +16,12 @@ ADD_EXECUTABLE(${KIT}CxxTests
   )
 
 TARGET_LINK_LIBRARIES(${KIT}CxxTests 
-  vtkImageView
+  ${PROJECT_NAME}
   vtkRendering 
   vtkImaging
   )
 
-FOREACH (test ${vtkImageViewTests})
+FOREACH (test ${${PROJECT_NAME}Tests})
   GET_FILENAME_COMPONENT(TName ${test} NAME_WE)
   ADD_TEST(${TName} ${CXX_TEST_PATH}/${KIT}CxxTests ${TName}) 
 ENDFOREACH (test) 

@@ -1,19 +1,19 @@
-SET(KIT vtkVisuManagement)
+SET(KIT ${PROJECT_NAME})
 
-SET(vtkVisuManagementTests
+SET(${PROJECT_NAME}Tests
   vtkImageFromBoundsSourceTest.cxx
   )
 
-IF( vtkInria_USE_SPHERICALHARMONICS )
+IF( VTKINRIA_USE_SPHERICALHARMONICS )
   CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
-    ${vtkVisuManagementTests}
+    ${${PROJECT_NAME}Tests}
     vtkSphericalHarmonicGlyphTest.cxx
     )
-ELSE( vtkInria_USE_SPHERICALHARMONICS )
+ELSE( VTKINRIA_USE_SPHERICALHARMONICS )
   CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
-    ${vtkVisuManagementTests}
+    ${${PROJECT_NAME}Tests}
     )
-ENDIF(vtkInria_USE_SPHERICALHARMONICS )
+ENDIF(VTKINRIA_USE_SPHERICALHARMONICS )
 
 
 ADD_EXECUTABLE(${KIT}CxxTests 
@@ -21,18 +21,18 @@ ADD_EXECUTABLE(${KIT}CxxTests
   )
 
 TARGET_LINK_LIBRARIES(${KIT}CxxTests 
-  vtkVisuManagement
+  ${PROJECT_NAME}
   vtkRendering 
   vtkImaging
   vtkRenderingAddOn
   )
 
 
-FOREACH (test ${vtkVisuManagementTests})
+FOREACH (test ${${PROJECT_NAME}Tests})
   GET_FILENAME_COMPONENT(TName ${test} NAME_WE)
   ADD_TEST(${TName} ${CXX_TEST_PATH}/${KIT}CxxTests ${TName})
 ENDFOREACH (test) 
 
-IF( vtkInria_USE_SPHERICALHARMONICS )
+IF( VTKINRIA_USE_SPHERICALHARMONICS )
   ADD_TEST(NAME vtkSphericalHarmonicGlyphTest COMMAND ${CXX_TEST_PATH}/${KIT}CxxTests vtkSphericalHarmonicGlyphTest "${vtkInria_DATA_DIR}/odf.nrrd" "${vtkInria_DATA_DIR}/SHTest.vtk" )
-ENDIF(vtkInria_USE_SPHERICALHARMONICS )
+ENDIF(VTKINRIA_USE_SPHERICALHARMONICS )

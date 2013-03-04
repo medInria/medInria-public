@@ -35,9 +35,6 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-find_package(medInria REQUIRED)
-include(${medInria_USE_FILE})
-
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
 
@@ -77,10 +74,6 @@ target_link_libraries(${PROJECT_NAME}
   medCore
   medGui
   ITKCommon
-  #ITKIO
-  #ITKStatistics
-  #ITKNumerics
-  #ITKAlgorithms
 )
 
 dtk_build_doc(${PROJECT_NAME})

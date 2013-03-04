@@ -1,37 +1,37 @@
 PROJECT(DataManager)
 
 include_directories(
-../../vtkRenderingAddOn
-../../vtkDataManagement
-../../vtkVisuManagement
-)
+  ../../vtkRenderingAddOn
+  ../../vtkDataManagement
+  ../../vtkVisuManagement
+  )
 
 IF(APPLE)
-SET(GUI_EXECUTABLE MACOSX_BUNDLE)
+  SET(GUI_EXECUTABLE MACOSX_BUNDLE)
 ENDIF(APPLE)
 
-ADD_EXECUTABLE(DataManager ${GUI_EXECUTABLE}
-DataManager.cxx
-)
+ADD_EXECUTABLE(${PROJECT_NAME} ${GUI_EXECUTABLE}
+  DataManager.cxx
+  )
 
-TARGET_LINK_LIBRARIES(DataManager
-vtkDataManagement
-vtkRenderingAddOn
-vtkVisuManagement
-vtkRendering
-vtkIO
-)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+  vtkDataManagement
+  vtkRenderingAddOn
+  vtkVisuManagement
+  vtkRendering
+  vtkIO
+  )
 
 ADD_EXECUTABLE(FiberDataSetReader
-FiberDataSetReader.cxx
-)
+  FiberDataSetReader.cxx
+  )
 
 TARGET_LINK_LIBRARIES(FiberDataSetReader
-vtkDataManagement
-vtkRenderingAddOn
-vtkVisuManagement
-vtkRendering
-vtkIO
-)
+  vtkDataManagement
+  vtkRenderingAddOn
+  vtkVisuManagement
+  vtkRendering
+  vtkIO
+  )
 
 

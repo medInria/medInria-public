@@ -1,8 +1,5 @@
 SET(PLUGIN_NAME itkDataImagePlugin)
 
-find_package(medInria REQUIRED)
-include(${medInria_USE_FILE})
-
 SET(itkDataImagePluginTests
   itkDataImageTest.cxx
   itkDataImageDouble3Test.cxx

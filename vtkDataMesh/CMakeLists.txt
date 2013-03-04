@@ -37,13 +37,6 @@ include(${VTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-find_package(medInria REQUIRED)
-include(${medInria_USE_FILE})
-
-#include_directories(../dtkVtkLogForwarder)
-#find_package(medInria-plugins REQUIRED)
-#include(${medInria-plugins_USE_FILE})
-
 
 ## #################################################################
 ## Input
@@ -67,12 +60,12 @@ set(${PROJECT_NAME}_SOURCES
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsVtkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES})
-endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+endif(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}
@@ -91,9 +84,9 @@ target_link_libraries(${PROJECT_NAME}
   itksys
   )
 
-#if (BUILD_TESTING)
+#if (MEDINRIA-PLUGINS_BUILD_TESTING)
 #  add_subdirectory(Testing)
-#endif (BUILD_TESTING)
+#endif (MEDINRIA-PLUGINS_BUILD_TESTING)
 
 # Group common files together in Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)

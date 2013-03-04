@@ -1,9 +1,8 @@
-
 set ( itkRegistrationAddOnSRCS
   itkRegistrationFactory-explicit-template.cxx
 )
 
-add_library ( itkRegistrationAddOn SHARED
+add_library (itkRegistrationAddOn SHARED
   ${itkRegistrationAddOnSRCS} 
   )
 

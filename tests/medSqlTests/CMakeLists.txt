@@ -13,14 +13,11 @@ if(NOT MEDINRIA_TEST_DATA_ROOT)
     message(WARNING "Please set MEDINRIA_TEST_DATA_ROOT to the directory where MedINRIA test data is located. It is required by the Testing tree.")
 else()
     # path where the tests will be
-    SET(MEDINRIA_PLUGINS_PATH ${CMAKE_BINARY_DIR}/plugins)
+    SET(MEDINRIA_PLUGINS_PATH ${CMAKE_BINARY_DIR}/bin)
     SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 
     # configure file with defines for MEDINRIA_TEST_DATA_ROOT
     CONFIGURE_FILE( medSqlTest.config.h.cmake.in medSqlTest.config.h )
-
-    find_package(medInria REQUIRED)
-    include(${medInria_USE_FILE})
 
     ## #################################################################
     ## Setup CTest test wrapping a QTest (test with Qt testing framework)
