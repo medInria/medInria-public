@@ -10,72 +10,41 @@
 #include "itkCommand.h"
 #include "itkSmoothingRecursiveGaussianImageFilter.h"
 
-class itkFiltersGaussianProcessPrivate
+#include "itkFiltersGaussianProcess_p.h"
+
+itkFiltersGaussianProcess::itkFiltersGaussianProcess(itkFiltersGaussianProcess *parent) 
+    : itkFiltersProcessBase(*new itkFiltersGaussianProcessPrivate(this), parent)
 {
-public:
-    itk::CStyleCommand::Pointer callback;
-    itkFiltersGaussianProcess *filter;
+    DTK_D(itkFiltersGaussianProcess);
     
-    dtkSmartPointer<dtkAbstractData> input;
-    dtkSmartPointer<dtkAbstractData> output;
-    
-    double sigma;
-    
-    template <class PixelType> void update ( void );
-    
-    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData);
-};
-
-void itkFiltersGaussianProcessPrivate::eventCallback ( itk::Object* caller, const itk::EventObject& event, void* clientData )
-{
-    itkFiltersGaussianProcessPrivate * source = reinterpret_cast<itkFiltersGaussianProcessPrivate *> ( clientData );
-    itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
-
-    if ( !source )
-        qDebug() << "Source est null";
-
-    source->filter->emitProgress((int) (processObject->GetProgress() * 100));
-}
-
-template <class PixelType> void itkFiltersGaussianProcessPrivate::update ( void )
-{
-    typedef itk::Image< PixelType, 3 > ImageType;
-    typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  GaussianFilterType;
-    typename GaussianFilterType::Pointer gaussianFilter = GaussianFilterType::New();
-
-    gaussianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-    gaussianFilter->SetSigma( sigma );
-    
-    callback = itk::CStyleCommand::New();
-    callback->SetClientData ( ( void * ) this );
-    callback->SetCallback ( itkFiltersGaussianProcessPrivate::eventCallback );
-
-    gaussianFilter->AddObserver ( itk::ProgressEvent(), callback );
-
-    gaussianFilter->Update();
-    output->setData ( gaussianFilter->GetOutput() );
-
-    //Set output description metadata
-    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-    newSeriesDescription += " add filter (" + QString::number(sigma) + ")";
-
-    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-}
-
-//-------------------------------------------------------------------------------------------
-
-itkFiltersGaussianProcess::itkFiltersGaussianProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersGaussianProcessPrivate)
-{
     d->filter = this;
-    d->output = NULL;
+    d->output = NULL; 
 }
 
-//-------------------------------------------------------------------------------------------
+
+itkFiltersGaussianProcess::itkFiltersGaussianProcess(const itkFiltersGaussianProcess& other) 
+    : itkFiltersProcessBase(*new itkFiltersGaussianProcessPrivate(*other.d_func()), other)
+{
+}
+
+itkFiltersGaussianProcess& itkFiltersGaussianProcess::operator = (const itkFiltersGaussianProcess& other)
+{
+    itkFiltersProcessBase::operator=(other);
+
+    DTK_D(itkFiltersGaussianProcess);
+    d->callback = other.d_func()->callback;
+    d->filter = other.d_func()->filter;
+    d->input = other.d_func()->input;
+    d->output = other.d_func()->output;
+
+    return *this;
+}
 
 itkFiltersGaussianProcess::~itkFiltersGaussianProcess( void )
 {
+    DTK_D(itkFiltersGaussianProcess);
+    
     delete d;
-    d = NULL;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -99,6 +68,8 @@ void itkFiltersGaussianProcess::setInput(dtkAbstractData *data)
     if (!data)
         return;
     
+    DTK_D(itkFiltersGaussianProcess);
+    
     QString identifier = data->identifier();
     
     d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
@@ -112,6 +83,8 @@ void itkFiltersGaussianProcess::setParameter(double data, int channel)
     if (channel != 0)
         return;
     
+    DTK_D(itkFiltersGaussianProcess);
+    
     d->sigma = data;
 }
 
@@ -119,6 +92,8 @@ void itkFiltersGaussianProcess::setParameter(double data, int channel)
 
 int itkFiltersGaussianProcess::update ( void )
 {
+    DTK_D(itkFiltersGaussianProcess);
+    
     if ( !d->input )
         return -1;
 
@@ -182,6 +157,8 @@ int itkFiltersGaussianProcess::update ( void )
 
 dtkAbstractData * itkFiltersGaussianProcess::output ( void )
 {
+    DTK_D(itkFiltersGaussianProcess);
+    
     return ( d->output );
 }
 

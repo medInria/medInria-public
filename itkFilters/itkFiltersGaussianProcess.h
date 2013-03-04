@@ -14,9 +14,12 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersGaussianProcess : public itkFiltersProce
     Q_OBJECT
     
 public:
-    itkFiltersGaussianProcess(void);
+    itkFiltersGaussianProcess(itkFiltersGaussianProcess * parent = 0);
+    itkFiltersGaussianProcess(const itkFiltersGaussianProcess& other);
     virtual ~itkFiltersGaussianProcess(void);
     
+    itkFiltersGaussianProcess& operator = (const itkFiltersGaussianProcess& other);
+
     virtual QString description ( void ) const;
 
     static bool registered ( void );
@@ -29,9 +32,12 @@ public slots:
     dtkAbstractData *output ( void );
 
 private:
-    itkFiltersGaussianProcessPrivate *d;
+    DTK_DECLARE_PRIVATE(itkFiltersGaussianProcess)
 };
 
+
+ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug, const itkFiltersGaussianProcess& process);
+ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug,       itkFiltersGaussianProcess *process);
 
 dtkAbstractProcess * createitkFiltersGaussianProcess(void);
 
