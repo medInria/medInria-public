@@ -106,6 +106,12 @@ else(WIN32)
   medGui)
 endif(WIN32)
 
+# Only doing a fix mac link since qtdcm should already have been compiled and therefore run the FixDCMTKMacInstall
+if(APPLE)
+  include(FixDCMTKMacLink)
+  FixDCMTKMacLink(${PROJECT_NAME})
+endif(APPLE)
+
 dtk_build_doc(qtdcmDataSourcePlugin)
 
 ## #################################################################

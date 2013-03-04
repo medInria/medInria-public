@@ -39,6 +39,12 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+find_package(DCMTK REQUIRED)
+IF(APPLE)
+  include(FixDCMTKMacInstall)
+  FixDCMTKMacInstall()
+ENDIF(APPLE)
+
 find_package(medInria REQUIRED)
 include(${medInria_USE_FILE})
 
@@ -99,6 +105,15 @@ ENDIF(BUILD_EXAMPLES)
 if(BUILD_DOCUMENTATION)
 	dtk_build_doc(${PROJECT_NAME})
 endif(BUILD_DOCUMENTATION)
+
+## ###################################################################
+## 
+## ###################################################################
+
+if(APPLE)
+  include(FixDCMTKMacLink)
+  FixDCMTKMacLink(${PROJECT_NAME})
+endif(APPLE)
 
 ## #################################################################
 ## Source file layout in development environments like Visual Studio
