@@ -44,6 +44,11 @@ include(${medInria_USE_FILE})
 ## #################################################################
 ## Input
 ## #################################################################
+set(${PROJECT_NAME}_HEADERS
+  itkFiltersProcessBase_p.h
+  itkFiltersAddProcess_p.h
+  itkFiltersGaussianProcess_p.h
+)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   itkFiltersPlugin.h
@@ -65,6 +70,7 @@ set(${PROJECT_NAME}_SOURCES
   itkFiltersPlugin.cpp
   itkFiltersToolBox.cpp
   itkFiltersProcessBase.cpp
+  #itkFiltersProcessBasePrivate.cpp
   itkFiltersAddProcess.cpp
   itkFiltersSubtractProcess.cpp
   itkFiltersMultiplyProcess.cpp
@@ -90,6 +96,7 @@ configure_file(
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
+  ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_SOURCES})
 
