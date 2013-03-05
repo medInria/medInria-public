@@ -162,7 +162,7 @@ medTimeLineToolBox::medTimeLineToolBox(QWidget *parent) : medToolBox(parent), d(
     this->hide();
 }
 
-medTimeLineToolBox::~medTimeLineToolBox(void)
+medTimeLineToolBox::~medTimeLineToolBox()
 {
     delete d;
 
@@ -313,7 +313,7 @@ unsigned int medTimeLineToolBox::getSliderValueFromTime (double t)
     return value;
 }
 
-void medTimeLineToolBox::updateRange (void)
+void medTimeLineToolBox::updateRange()
 {
     if (!d->interactors.size())
         return;

@@ -86,7 +86,7 @@ QList<medToolBox*> medPacsDataSource::getToolBoxes()
     return d->toolBoxes;
 }
 
-QString medPacsDataSource::description(void) const
+QString medPacsDataSource::description() const
 {
 	return tr("Browse PACS server");
 }

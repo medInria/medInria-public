@@ -26,9 +26,9 @@
 class medWorkspaceShifterPainter : public QPainter
 {
 public:
-     medWorkspaceShifterPainter(void);
+     medWorkspaceShifterPainter();
      medWorkspaceShifterPainter(QPaintDevice *device);
-    ~medWorkspaceShifterPainter(void);
+    ~medWorkspaceShifterPainter();
 
     static QPainterPath roundRectangle(const QRectF& rect, qreal radius);
     static QPainterPath roundRectangle(const QRectF& rect, qreal leftRadius, qreal rightRadius);
@@ -43,7 +43,7 @@ public:
     void fillRoundRect(const QRectF& rect, qreal leftTopRadius, qreal leftBottomRadius, qreal rightTopRadius, qreal rightBottomRadius, const QBrush& brush);
 };
 
-medWorkspaceShifterPainter::medWorkspaceShifterPainter(void) : QPainter()
+medWorkspaceShifterPainter::medWorkspaceShifterPainter() : QPainter()
 {
     setRenderHint(QPainter::Antialiasing);
     setRenderHint(QPainter::TextAntialiasing);
@@ -55,7 +55,7 @@ medWorkspaceShifterPainter::medWorkspaceShifterPainter(QPaintDevice *device) : Q
     setRenderHint(QPainter::TextAntialiasing);
 }
 
-medWorkspaceShifterPainter::~medWorkspaceShifterPainter(void)
+medWorkspaceShifterPainter::~medWorkspaceShifterPainter()
 {
 
 }
@@ -173,7 +173,7 @@ medWorkspaceShifterMenu::medWorkspaceShifterMenu(QWidget *parent) : QWidget(pare
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 }
 
-medWorkspaceShifterMenu::~medWorkspaceShifterMenu(void)
+medWorkspaceShifterMenu::~medWorkspaceShifterMenu()
 {
     delete d;
 }
@@ -193,7 +193,7 @@ QAction *medWorkspaceShifterMenu::addAction(const QString& text)
     return(action);
 }
 
-QSize medWorkspaceShifterMenu::sizeHint(void) const
+QSize medWorkspaceShifterMenu::sizeHint() const
 {
     if (d->size.isEmpty())
         d->size = d->calculateSizeHint(fontMetrics());
@@ -309,22 +309,22 @@ medWorkspaceShifterAction::medWorkspaceShifterAction(const QIcon& icon, const QS
     d->menu = NULL;
 }
 
-medWorkspaceShifterAction::~medWorkspaceShifterAction(void)
+medWorkspaceShifterAction::~medWorkspaceShifterAction()
 {
     delete d;
 }
 
-bool medWorkspaceShifterAction::isChecked(void) const
+bool medWorkspaceShifterAction::isChecked() const
 {
     return d->isChecked;
 }
 
-bool medWorkspaceShifterAction::isHovered(void) const
+bool medWorkspaceShifterAction::isHovered() const
 {
     return d->isHovered;
 }
 
-QIcon medWorkspaceShifterAction::icon(void) const
+QIcon medWorkspaceShifterAction::icon() const
 {
     return d->icon;
 }
@@ -334,7 +334,7 @@ void medWorkspaceShifterAction::setIcon(const QIcon& icon)
     d->icon = icon;
 }
 
-QString medWorkspaceShifterAction::text(void) const
+QString medWorkspaceShifterAction::text() const
 {
     return d->text;
 }
@@ -344,7 +344,7 @@ void medWorkspaceShifterAction::setText(const QString& text)
     d->text = text;
 }
 
-medWorkspaceShifterMenu *medWorkspaceShifterAction::menu(void)
+medWorkspaceShifterMenu *medWorkspaceShifterAction::menu()
 {
     return d->menu;
 }
@@ -368,12 +368,12 @@ void medWorkspaceShifterAction::hover(bool isHovered)
         emit hovered();
 }
 
-void medWorkspaceShifterAction::toggle(void)
+void medWorkspaceShifterAction::toggle()
 {
     emit toggled(d->isChecked);
 }
 
-void medWorkspaceShifterAction::trigger(void)
+void medWorkspaceShifterAction::trigger()
 {
     emit triggered(d->isChecked);
 }
@@ -403,7 +403,7 @@ medWorkspaceShifter::medWorkspaceShifter(QWidget *parent) : QWidget(parent), d(n
     d->checkedAction = NULL;
 }
 
-medWorkspaceShifter::~medWorkspaceShifter(void)
+medWorkspaceShifter::~medWorkspaceShifter()
 {
     delete d;
 }
@@ -424,7 +424,7 @@ medWorkspaceShifterAction *medWorkspaceShifter::addAction(const QString& text)
     return action;
 }
 
-QSize medWorkspaceShifter::minimumSizeHint(void) const
+QSize medWorkspaceShifter::minimumSizeHint() const
 {
     int itemsWidth = calculateButtonWidth() * d->actionList.size();
     return(QSize(30 + itemsWidth, 28));
@@ -540,7 +540,7 @@ medWorkspaceShifterAction *medWorkspaceShifter::hoveredAction(const QPoint& pos)
     return(d->actionList[buttonIndex]);
 }
 
-int medWorkspaceShifter::calculateButtonWidth(void) const
+int medWorkspaceShifter::calculateButtonWidth() const
 {
     QFontMetrics fontMetrics(QFont("Arial", 8, QFont::Bold));
     int tmpItemWidth, itemWidth = 0;

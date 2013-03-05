@@ -33,7 +33,7 @@
 
 const char* medAbstractDataImage::PixelMeaningMetaData = "PixelMeaning";
 
-medAbstractDataImage::medAbstractDataImage(void) : medAbstractData()
+medAbstractDataImage::medAbstractDataImage() : medAbstractData()
 {
     qDebug() << "constructing medAbstractDataImage";
 }
@@ -42,12 +42,12 @@ medAbstractDataImage::medAbstractDataImage(const medAbstractDataImage& other): m
 {
 }
 
-medAbstractDataImage::~medAbstractDataImage(void)
+medAbstractDataImage::~medAbstractDataImage()
 {
     qDebug() << "deleting medAbstractDataImage";
 }
 
-void *medAbstractDataImage::image(void)
+void *medAbstractDataImage::image()
 {
     return this->data();
 }
@@ -66,42 +66,42 @@ const medAbstractDataImage::PixId& medAbstractDataImage::PixelType() const
     return typeid(void);
 }
 
-int medAbstractDataImage::xDimension(void)
+int medAbstractDataImage::xDimension()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return 0;
 }
 
-int medAbstractDataImage::yDimension(void)
+int medAbstractDataImage::yDimension()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return 0;
 }
 
-int medAbstractDataImage::zDimension(void)
+int medAbstractDataImage::zDimension()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return 0;
 }
 
-int medAbstractDataImage::tDimension(void)
+int medAbstractDataImage::tDimension()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 	
     return 0;
 }
 
-int medAbstractDataImage::minRangeValue(void)
+int medAbstractDataImage::minRangeValue()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return 0;
 }
 
-int medAbstractDataImage::maxRangeValue(void)
+int medAbstractDataImage::maxRangeValue()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
@@ -116,14 +116,14 @@ int medAbstractDataImage::scalarValueCount(int value)
     return 0;
 }
 
-int medAbstractDataImage::scalarValueMinCount(void)
+int medAbstractDataImage::scalarValueMinCount()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
     return 0;
 }
 
-int medAbstractDataImage::scalarValueMaxCount(void)
+int medAbstractDataImage::scalarValueMaxCount()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 

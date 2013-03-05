@@ -34,7 +34,7 @@ medQuickAccessPushButton::medQuickAccessPushButton ( QWidget * parent )
     QObject::connect ( this, SIGNAL ( clicked() ), this, SLOT ( onClick() ) );
 }
 
-void medQuickAccessPushButton::onClick(void)
+void medQuickAccessPushButton::onClick()
 {
     emit clicked (this->text());
 }
@@ -44,7 +44,7 @@ medHomepagePushButton::medHomepagePushButton ( QWidget * parent ) : QPushButton 
     QObject::connect ( this, SIGNAL ( clicked() ), this, SLOT ( onClick() ) );
 }
 
-void medHomepagePushButton::onClick ( void )
+void medHomepagePushButton::onClick()
 {
     emit clicked ( this->identifier() );
 }
@@ -54,7 +54,7 @@ medHomepageButton::medHomepageButton ( QWidget * parent ) : QToolButton ( parent
     QObject::connect ( this, SIGNAL ( clicked() ), this, SLOT ( onClick() ) );
 }
 
-void medHomepageButton::onClick ( void )
+void medHomepageButton::onClick()
 {
     emit clicked ( this->identifier() );
 }

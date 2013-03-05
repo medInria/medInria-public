@@ -39,8 +39,8 @@ class MEDSQL_EXPORT medDatabaseNonPersistentControllerImpl: public medAbstractDb
 
 public:
 
-    medDatabaseNonPersistentControllerImpl(void);
-    ~medDatabaseNonPersistentControllerImpl(void);
+    medDatabaseNonPersistentControllerImpl();
+    ~medDatabaseNonPersistentControllerImpl();
 
 
     /**
@@ -58,10 +58,10 @@ public:
     * @params void
     * @return int
     */
-    int nonPersistentDataStartingIndex(void) const;
+    int nonPersistentDataStartingIndex() const;
 
     /* proprietary method, should be avoided */
-    QList<medDatabaseNonPersistentItem *> items(void);
+    QList<medDatabaseNonPersistentItem *> items();
 
     /* proprietary method, should be avoided */
     void insert(medDataIndex index, medDatabaseNonPersistentItem *item);
@@ -137,7 +137,7 @@ public slots:
     /**
     * Removes any reference to non-persistent data. Do not actually free memory.
     */
-    void clear (void);
+    void clear();
 
     /** true if the given data index matches one in our db*/
     bool contains( const medDataIndex& index) const;

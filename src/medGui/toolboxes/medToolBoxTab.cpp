@@ -29,7 +29,7 @@ medToolBoxTab::medToolBoxTab(QWidget *parent) : QTabWidget(parent), d(new medToo
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 }
 
-medToolBoxTab::~medToolBoxTab(void)
+medToolBoxTab::~medToolBoxTab()
 {
     delete d;
 

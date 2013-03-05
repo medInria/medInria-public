@@ -68,7 +68,7 @@ medToolBox::medToolBox(QWidget *parent) : QWidget(parent), d(new medToolBoxPriva
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 }
 
-medToolBox::~medToolBox(void)
+medToolBox::~medToolBox()
 {
     delete d;
 
@@ -95,12 +95,12 @@ void medToolBox::setTitleOffset(const QPoint & titleOffset)
     d->header->setTitleOffset(titleOffset);
 }
 
-medToolBoxHeader *medToolBox::header(void) const
+medToolBoxHeader *medToolBox::header() const
 {
     return d->header;
 }
 
-medToolBoxBody *medToolBox::body(void) const
+medToolBoxBody *medToolBox::body() const
 {
     return d->body;
 }
@@ -120,7 +120,7 @@ void medToolBox::update(dtkAbstractView *view)
     //DTK_UNUSED(view);
 }
 
-void medToolBox::clear(void)
+void medToolBox::clear()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
@@ -145,7 +145,7 @@ void medToolBox::setOrientation(Qt::Orientation orientation)
    }
 }
 
-Qt::Orientation medToolBox::orientation (void) const
+Qt::Orientation medToolBox::orientation() const
 {
     if(d->layout->direction() == QBoxLayout::LeftToRight)
         return Qt::Horizontal;

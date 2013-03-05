@@ -83,7 +83,7 @@ medBrowserPacsNodesToolBox::medBrowserPacsNodesToolBox(QWidget *parent) : medToo
     this->readSettings();
 }
 
-medBrowserPacsNodesToolBox::~medBrowserPacsNodesToolBox(void)
+medBrowserPacsNodesToolBox::~medBrowserPacsNodesToolBox()
 {
     this->writeSettings();
     delete d;
@@ -91,7 +91,7 @@ medBrowserPacsNodesToolBox::~medBrowserPacsNodesToolBox(void)
     d = NULL;
 }
 
-void medBrowserPacsNodesToolBox::readSettings(void)
+void medBrowserPacsNodesToolBox::readSettings()
 {
     QList<QVariant> nodes;
 
@@ -111,7 +111,7 @@ void medBrowserPacsNodesToolBox::readSettings(void)
 
 }
 
-void medBrowserPacsNodesToolBox::writeSettings(void)
+void medBrowserPacsNodesToolBox::writeSettings()
 {
     QList<QVariant> nodes;
 
@@ -130,7 +130,7 @@ void medBrowserPacsNodesToolBox::writeSettings(void)
     settings.endGroup();
 }
 
-void medBrowserPacsNodesToolBox::addNode(void)
+void medBrowserPacsNodesToolBox::addNode()
 {
     int row = d->table->rowCount(); d->table->insertRow(row);
 
@@ -142,7 +142,7 @@ void medBrowserPacsNodesToolBox::addNode(void)
     emit nodesUpdated();
 }
 
-void medBrowserPacsNodesToolBox::remNode(void)
+void medBrowserPacsNodesToolBox::remNode()
 {
     d->table->removeRow(d->table->currentRow());
 

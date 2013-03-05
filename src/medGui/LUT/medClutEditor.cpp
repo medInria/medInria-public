@@ -99,7 +99,7 @@ medClutEditorVertex::medClutEditorVertex( const medClutEditorVertex & other,
     this->setFlag(QGraphicsItem::ItemIsSelectable, true);
 }
 
-medClutEditorVertex::~medClutEditorVertex(void)
+medClutEditorVertex::~medClutEditorVertex()
 {
     delete d;
 }
@@ -175,13 +175,13 @@ void medClutEditorVertex::paint(QPainter *painter,
                           2 * d->innerRadius, 2 * d->innerRadius );
 }
 
-QRectF medClutEditorVertex::boundingRect(void) const
+QRectF medClutEditorVertex::boundingRect() const
 {
     return QRectF( QPointF( -d->outerRadius, -d->outerRadius ),
                    QPointF(  d->outerRadius,  d->outerRadius ) );
 }
 
-QColor medClutEditorVertex::color(void) const
+QColor medClutEditorVertex::color() const
 {
     return d->color;
 }
@@ -378,7 +378,7 @@ medClutEditorTable::medClutEditorTable(const medClutEditorTable & table)
     this->setZValue(0);
 }
 
-medClutEditorTable::~medClutEditorTable(void)
+medClutEditorTable::~medClutEditorTable()
 {
     delete d;
 }
@@ -393,7 +393,7 @@ void medClutEditorTable::setTitle(const QString & title)
     d->title = title;
 }
 
-QRectF medClutEditorTable::boundingRect(void) const
+QRectF medClutEditorTable::boundingRect() const
 {
     if ( d->vertices.count() == 0 )
         return QRectF( 0.0, 0.0, 0.0, 0.0 );
@@ -931,13 +931,13 @@ medClutEditorHistogram::medClutEditorHistogram(QGraphicsItem *parent)
     this->setZValue(-1000);
 }
 
-medClutEditorHistogram::~medClutEditorHistogram(void)
+medClutEditorHistogram::~medClutEditorHistogram()
 {
     delete d;
     d = NULL;
 }
 
-QRectF medClutEditorHistogram::boundingRect(void) const
+QRectF medClutEditorHistogram::boundingRect() const
 {
     medClutEditorScene * scene =
     dynamic_cast< medClutEditorScene * >( this->scene() );
@@ -958,12 +958,12 @@ void medClutEditorHistogram::range( qreal & min, qreal & max ) const
     max = this->getRangeMax();
 }
 
-qreal medClutEditorHistogram::getRangeMin(void) const
+qreal medClutEditorHistogram::getRangeMin() const
 {
     return d->values.size() > 0 ? d->values.begin().key() : 0.0;
 }
 
-qreal medClutEditorHistogram::getRangeMax(void) const
+qreal medClutEditorHistogram::getRangeMax() const
 {
     qreal max = 0.0;
     if ( d->values.size() > 0 ) {
@@ -1096,7 +1096,7 @@ medClutEditorScene::medClutEditorScene( QObject * parent )
     this->setSceneRect( 0.0, 0.0, d->size.width(), d->size.height() );
 }
 
-medClutEditorScene::~medClutEditorScene(void)
+medClutEditorScene::~medClutEditorScene()
 {
     delete d;
 }
@@ -1266,7 +1266,7 @@ medClutEditorView::medClutEditorView(QWidget *parent)
     this->setDragMode(QGraphicsView::RubberBandDrag);
 }
 
-medClutEditorView::~medClutEditorView(void)
+medClutEditorView::~medClutEditorView()
 {
 }
 
@@ -1505,7 +1505,7 @@ medClutEditor::medClutEditor(QWidget *parent) : QWidget(parent)
 
 }
 
-medClutEditor::~medClutEditor(void)
+medClutEditor::~medClutEditor()
 {
     delete d->newAction;
     delete d->loadTableAction;
@@ -1578,7 +1578,7 @@ void medClutEditor::setView( medAbstractView *view, bool force )
     }
 }
 
-void medClutEditor::initializeTable(void)
+void medClutEditor::initializeTable()
 {
     this->deleteTable();
 
@@ -1612,7 +1612,7 @@ void medClutEditor::initializeTable(void)
     lut->blockSignals(false);
 }
 
-void medClutEditor::deleteTable(void)
+void medClutEditor::deleteTable()
 {
     medClutEditorTable * table;
     while ( table = d->scene->table() ) {
@@ -1621,7 +1621,7 @@ void medClutEditor::deleteTable(void)
     }
 }
 
-void medClutEditor::applyTable(void)
+void medClutEditor::applyTable()
 {
     // if (medAbstractDataImage *image =
     //     dynamic_cast<medAbstractDataImage *>(d->dtk_data)) {
@@ -1662,44 +1662,44 @@ void medClutEditor::mousePressEvent(QMouseEvent *event)
     }
 }
 
-void medClutEditor::onNewTableAction(void)
+void medClutEditor::onNewTableAction()
 {
     this->initializeTable();
     if ( medClutEditorTable * table = d->scene->table() )
         table->triggerVertexChanged();
 }
 
-// void medClutEditor::onColorAction(void)
+// void medClutEditor::onColorAction()
 // {
 //     if ( medClutEditorTable * table = d->scene->table() )
 //         table->setColorOfSelection();
 // }
 
-// void medClutEditor::onDeleteAction(void)
+// void medClutEditor::onDeleteAction()
 // {
 //     if ( medClutEditorTable * table = d->scene->table() )
 //         table->deleteSelection();
 // }
 
-void medClutEditor::onVertexMoved(void)
+void medClutEditor::onVertexMoved()
 {
     if ( medClutEditorTable * table = d->scene->table() )
         if ( d->toggleDirectUpdateAction->isChecked() )
             this->applyTable();
 }
 
-void medClutEditor::onApplyTablesAction(void)
+void medClutEditor::onApplyTablesAction()
 {
     this->applyTable();
 }
 
-void medClutEditor::onToggleDirectUpdateAction(void)
+void medClutEditor::onToggleDirectUpdateAction()
 {
     if  ( d->toggleDirectUpdateAction->isChecked() )
         this->applyTable();
 }
 
-void medClutEditor::onLoadTableAction(void)
+void medClutEditor::onLoadTableAction()
 {
     QStringList titles;
     foreach (medClutEditorTable * table,*d->tables ) {
@@ -1722,7 +1722,7 @@ void medClutEditor::onLoadTableAction(void)
 
 }
 
-void medClutEditor::onSaveTableAction(void)
+void medClutEditor::onSaveTableAction()
 {
 
     if ( medClutEditorTable * table = d->scene->table() ) {
@@ -1761,7 +1761,7 @@ void medClutEditor::onSaveTableAction(void)
     }
 }
 
-// void medClutEditor::onDeleteTableAction(void)
+// void medClutEditor::onDeleteTableAction()
 // {
 
 // }

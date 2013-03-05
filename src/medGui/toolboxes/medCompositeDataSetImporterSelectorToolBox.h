@@ -11,7 +11,7 @@ class MEDGUI_EXPORT medCompositeDataSetImporterSelectorToolBox : public medToolB
 
 public:
      medCompositeDataSetImporterSelectorToolBox(QWidget *parent = 0);
-    ~medCompositeDataSetImporterSelectorToolBox(void);
+    ~medCompositeDataSetImporterSelectorToolBox();
     /**
      * @brief initialize layout
      */

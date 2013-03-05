@@ -1,6 +1,6 @@
 #include "medDatabaseController.h"
 
-QPointer<medDatabaseControllerImpl> medDatabaseController::instance(void)
+QPointer<medDatabaseControllerImpl> medDatabaseController::instance()
 {
     if(!s_instance)
         s_instance = new medDatabaseControllerImpl();
@@ -8,7 +8,7 @@ QPointer<medDatabaseControllerImpl> medDatabaseController::instance(void)
     return s_instance;
 }
 
-void medDatabaseController::destroy(void)
+void medDatabaseController::destroy()
 {
     if (s_instance) {
         delete s_instance;

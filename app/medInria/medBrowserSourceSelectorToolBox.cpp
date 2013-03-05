@@ -38,7 +38,7 @@ medBrowserSourceSelectorToolBox::medBrowserSourceSelectorToolBox(QWidget *parent
     this->setTabWidget(d->tab);
 }
 
-medBrowserSourceSelectorToolBox::~medBrowserSourceSelectorToolBox(void)
+medBrowserSourceSelectorToolBox::~medBrowserSourceSelectorToolBox()
 {
     delete d;
     d = NULL;

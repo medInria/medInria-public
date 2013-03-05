@@ -29,11 +29,11 @@ class medDatabasePreviewScene : public QGraphicsScene
 {
 public:
      medDatabasePreviewScene(QObject *parent = 0);
-    ~medDatabasePreviewScene(void);
+    ~medDatabasePreviewScene();
 
     void addGroup(medDatabasePreviewItemGroup *group);
 
-    void reset(void);
+    void reset();
 
 private:
     medDatabasePreviewScenePrivate *d;

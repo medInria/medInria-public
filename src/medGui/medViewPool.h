@@ -52,18 +52,18 @@ class MEDGUI_EXPORT medViewPool : public QObject
 
 public:
              medViewPool (QObject *parent = 0);
-    virtual ~medViewPool (void);    
+    virtual ~medViewPool();    
 
     /**
        The daddy is the reference view, i.e., the target when performing automatic
        registration.
     **/
-    medAbstractView *daddy (void);
+    medAbstractView *daddy();
 
     /**
        Returns the number of views in the pool.
      **/
-    int count (void);
+    int count();
 
 signals:
     void showInfo(QObject*,const QString&,unsigned int timeout);

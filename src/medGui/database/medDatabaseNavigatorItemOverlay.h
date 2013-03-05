@@ -19,7 +19,7 @@ class medDatabaseNavigatorItemOverlay : public QObject, public QGraphicsPixmapIt
     
 public:
     medDatabaseNavigatorItemOverlay(QGraphicsItem *parent = 0);
-    ~medDatabaseNavigatorItemOverlay(void);
+    ~medDatabaseNavigatorItemOverlay();
             
 signals:
     //! Signal emitted when the overlay button is clicked on

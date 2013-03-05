@@ -196,12 +196,12 @@ QList<medToolBox*> medFileSystemDataSource::getToolBoxes()
     return d->toolBoxes;
 }
 
-QString medFileSystemDataSource::description(void) const
+QString medFileSystemDataSource::description() const
 {
 	return tr("Browse the file system");
 }
 
-void medFileSystemDataSource::onFileSystemImportRequested(void)
+void medFileSystemDataSource::onFileSystemImportRequested()
 {
     // remove paths that are subpaths of some other path in the list
     QStringList purgedList = removeNestedPaths(d->finder->selectedPaths());
@@ -213,7 +213,7 @@ void medFileSystemDataSource::onFileSystemImportRequested(void)
     }
 }
 
-void medFileSystemDataSource::onFileSystemIndexRequested(void)
+void medFileSystemDataSource::onFileSystemIndexRequested()
 {
     // remove paths that are subpaths of some other path in the list
     QStringList purgedList = removeNestedPaths(d->finder->selectedPaths());
@@ -312,7 +312,7 @@ QString medFileSystemDataSource::formatByteSize(qint64 bytes)
         return QString::number(qIntCast((qreal)(bytes))) + " Bytes";
 }
 
-void medFileSystemDataSource::onNothingSelected(void)
+void medFileSystemDataSource::onNothingSelected()
 {
     d->infoText->setVisible(false);
     d->infoText->setText("");

@@ -56,7 +56,7 @@ medWorkspace::medWorkspace(QWidget *parent) : QObject(parent), d(new medWorkspac
     d->toolBoxesVisibility = true;
 }
 
-medWorkspace::~medWorkspace(void)
+medWorkspace::~medWorkspace()
 {
     delete d;
     d = NULL;
@@ -82,7 +82,7 @@ void medWorkspace::removeToolBox(medToolBox *toolbox)
     }
 }
 
-QList<medToolBox*> medWorkspace::toolBoxes(void) const
+QList<medToolBox*> medWorkspace::toolBoxes() const
 {
     return d->toolboxes;
 }
@@ -92,7 +92,7 @@ void medWorkspace::setLayoutType(medWorkspace::LayoutType type)
     d->layoutType = type;
 }
 
-medWorkspace::LayoutType medWorkspace::layoutType(void) const
+medWorkspace::LayoutType medWorkspace::layoutType() const
 {
     return d->layoutType;
 }
@@ -116,7 +116,7 @@ void medWorkspace::setCustomPreset(int type)
     d->customLayoutType = type;
 }
 
-int medWorkspace::customLayoutPreset(void) const
+int medWorkspace::customLayoutPreset() const
 {
     return d->customLayoutType;
 }
@@ -126,7 +126,7 @@ void medWorkspace::setDatabaseVisibility(bool visibility)
     d->databaseVisibility = visibility;
 }
 
-bool medWorkspace::isDatabaseVisible(void) const
+bool medWorkspace::isDatabaseVisible() const
 {
     return d->databaseVisibility;
 }
@@ -244,7 +244,7 @@ void medWorkspace::setToolBoxesVisibility (bool value)
     d->toolBoxesVisibility = value;
 }
 
-bool medWorkspace::areToolBoxesVisible (void) const
+bool medWorkspace::areToolBoxesVisible() const
 {
     return d->toolBoxesVisibility;
 }

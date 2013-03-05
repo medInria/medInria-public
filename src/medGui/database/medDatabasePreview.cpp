@@ -117,14 +117,14 @@ medDatabasePreview::medDatabasePreview(QWidget *parent) : QFrame(parent), d(new 
     this->init();
 }
 
-medDatabasePreview::~medDatabasePreview(void)
+medDatabasePreview::~medDatabasePreview()
 {
     delete d;
 
     d = NULL;
 }
 
-void medDatabasePreview::reset(void)
+void medDatabasePreview::reset()
 {
     d->scene->reset();
 
@@ -148,7 +148,7 @@ void medDatabasePreview::reset(void)
         d->imageAnimation = NULL;
 }
 
-void medDatabasePreview::init(void)
+void medDatabasePreview::init()
 {
     d->selector->hide();
 }
@@ -226,7 +226,7 @@ void medDatabasePreview::onSeriesClicked(const medDataIndex& id)
         moveToItem( d->imageGroup->item(firstImageId) );
 }
 
-void medDatabasePreview::onSlideUp(void)
+void medDatabasePreview::onSlideUp()
 {
     if(d->level)
         return;
@@ -273,7 +273,7 @@ void medDatabasePreview::onSlideUp(void)
     d->animation->start();
 }
 
-void medDatabasePreview::onSlideDw(void)
+void medDatabasePreview::onSlideDw()
 {
     if(!d->level)
         return;
@@ -319,7 +319,7 @@ void medDatabasePreview::onSlideDw(void)
     d->animation->start();
 }
 
-void medDatabasePreview::onMoveRt(void)
+void medDatabasePreview::onMoveRt()
 {
     qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
@@ -339,7 +339,7 @@ void medDatabasePreview::onMoveRt(void)
     moveToItem( target );
 }
 
-void medDatabasePreview::onMoveLt(void)
+void medDatabasePreview::onMoveLt()
 {
     qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
@@ -356,19 +356,19 @@ void medDatabasePreview::onMoveLt(void)
     moveToItem( target );
 }
 
-void medDatabasePreview::onMoveUp(void)
+void medDatabasePreview::onMoveUp()
 {
     if(d->level)
         this->onPatientClicked(d->currentIndex);
 }
 
-void medDatabasePreview::onMoveDw(void)
+void medDatabasePreview::onMoveDw()
 {
     if(!d->level)
         this->onSeriesClicked(d->currentIndex);
 }
 
-void medDatabasePreview::onMoveBg(void) // move to beginning of the current line
+void medDatabasePreview::onMoveBg() // move to beginning of the current line
 {
     if(!d->selector->isVisible())
         d->selector->show();

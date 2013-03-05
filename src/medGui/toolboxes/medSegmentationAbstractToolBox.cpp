@@ -31,13 +31,13 @@ medSegmentationAbstractToolBox::medSegmentationAbstractToolBox(QWidget *parent) 
     d->segmentationToolBox = qobject_cast<medSegmentationSelectorToolBox*>(parent);
 }
 
-medSegmentationAbstractToolBox::~medSegmentationAbstractToolBox(void)
+medSegmentationAbstractToolBox::~medSegmentationAbstractToolBox()
 {
     delete d;
     d = NULL;
 }
 
-medSegmentationSelectorToolBox *medSegmentationAbstractToolBox::segmentationToolBox(void)
+medSegmentationSelectorToolBox *medSegmentationAbstractToolBox::segmentationToolBox()
 {
     return d->segmentationToolBox;
 }

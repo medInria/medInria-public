@@ -13,7 +13,7 @@ medDatabaseNavigatorItemOverlay::medDatabaseNavigatorItemOverlay(QGraphicsItem *
 {
 }
 
-medDatabaseNavigatorItemOverlay::~medDatabaseNavigatorItemOverlay(void)
+medDatabaseNavigatorItemOverlay::~medDatabaseNavigatorItemOverlay()
 {
     delete d;
     

@@ -30,7 +30,7 @@ public:
     QHash<medDataIndex, QList<dtkSmartPointer<medAbstractView> > > views;
 };
 
-medViewManager *medViewManager::instance(void)
+medViewManager *medViewManager::instance()
 {
     if(!s_instance)
         s_instance = new medViewManager;
@@ -127,12 +127,12 @@ QList<medDataIndex> medViewManager::indices(medAbstractView *view) const
     return indices;
 }
 
-medViewManager::medViewManager(void) : d(new medViewManagerPrivate)
+medViewManager::medViewManager() : d(new medViewManagerPrivate)
 {
 
 }
 
-medViewManager::~medViewManager(void)
+medViewManager::~medViewManager()
 {
     delete d;
 

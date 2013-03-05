@@ -126,7 +126,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
             medMessageController::instance(),SLOT(showInfo(QObject*,const QString&,unsigned int)));
 }
 
-medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
+medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox()
 {
     delete d;
 
@@ -134,31 +134,31 @@ medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
 }
 
 //! Gets the fixedView.
-dtkAbstractView *medRegistrationSelectorToolBox::fixedView(void)
+dtkAbstractView *medRegistrationSelectorToolBox::fixedView()
 {
     return d->fixedView;
 }
 
 //! Gets the movingView.
-dtkAbstractView *medRegistrationSelectorToolBox::movingView(void)
+dtkAbstractView *medRegistrationSelectorToolBox::movingView()
 {
     return d->movingView;
 }
 
 //! Gets the fuseView.
-dtkAbstractView *medRegistrationSelectorToolBox::fuseView(void)
+dtkAbstractView *medRegistrationSelectorToolBox::fuseView()
 {
     return d->fuseView;
 }
 
 //! Gets the fixedData.
-medAbstractDataImage *medRegistrationSelectorToolBox::fixedData(void)
+medAbstractDataImage *medRegistrationSelectorToolBox::fixedData()
 {
     return d->fixedData;
 }
 
 //! Gets the movingData.
-medAbstractDataImage *medRegistrationSelectorToolBox::movingData(void)
+medAbstractDataImage *medRegistrationSelectorToolBox::movingData()
 {
     return d->movingData;
 }
@@ -208,11 +208,11 @@ void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& in
         d->fuseView->blockSignals(false);
     }
     connect(d->fixedView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
-    connect(d->fixedView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+    connect(d->fixedView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel()));
     if (!d->movingView)
     {
         connect(d->fuseView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
-        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel()));
     }
 }
 
@@ -264,11 +264,11 @@ void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& i
 
     
     connect(d->movingView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
-    connect(d->movingView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+    connect(d->movingView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel()));
     if (!d->fixedView)
     {
         connect(d->fuseView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
-        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
+        connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel()));
     }
 }
 
@@ -319,7 +319,7 @@ void medRegistrationSelectorToolBox::setFuseView(dtkAbstractView *view)
 }
 
 //! Clears the toolbox.
-void medRegistrationSelectorToolBox::clear(void)
+void medRegistrationSelectorToolBox::clear()
 {
 
     //maybe clear the customtoolbox?
@@ -328,7 +328,7 @@ void medRegistrationSelectorToolBox::clear(void)
 }
 
 //! Gets the process.
-dtkAbstractProcess * medRegistrationSelectorToolBox::process(void)
+dtkAbstractProcess * medRegistrationSelectorToolBox::process()
 {
     return d->process;
 }

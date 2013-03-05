@@ -40,14 +40,14 @@ medBrowserJobsToolBox::medBrowserJobsToolBox(QWidget *parent) : medToolBox(paren
     this->addWidget(d->stack);
 }
 
-medBrowserJobsToolBox::~medBrowserJobsToolBox(void)
+medBrowserJobsToolBox::~medBrowserJobsToolBox()
 {
     delete d;
 
     d = NULL;
 }
 
-medProgressionStack *medBrowserJobsToolBox::stack(void)
+medProgressionStack *medBrowserJobsToolBox::stack()
 {
     return d->stack;
 }

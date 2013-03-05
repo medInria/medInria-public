@@ -59,7 +59,7 @@ medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent),
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 }
 
-medToolBoxContainer::~medToolBoxContainer(void)
+medToolBoxContainer::~medToolBoxContainer()
 {
     delete d;
 
@@ -111,7 +111,7 @@ void medToolBoxContainer::clear()
     d->toolboxes.clear();
 }
 
-QList<medToolBox*> medToolBoxContainer::toolBoxes(void) const
+QList<medToolBox*> medToolBoxContainer::toolBoxes() const
 {
     return d->toolboxes;
 }
@@ -134,7 +134,7 @@ void medToolBoxContainer::setOrientation(Qt::Orientation orient)
 //    }
 }
 
-Qt::Orientation medToolBoxContainer::orientation (void) const
+Qt::Orientation medToolBoxContainer::orientation() const
 {
     return d->layoutOrientation;
 }

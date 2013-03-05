@@ -28,7 +28,7 @@ medQtView::~medQtView()
     delete d;
 }
 
-QWidget *medQtView::widget(void)
+QWidget *medQtView::widget()
 {
     return d->label;
 }
@@ -48,7 +48,7 @@ void medQtView::setData (dtkAbstractData *data)
     }
 }
 
-void *medQtView::data(void)
+void *medQtView::data()
 {
     return d->data;
 }
@@ -69,7 +69,7 @@ QString medQtView::s_description()
     return description;
 }
 
-QString medQtView::description( void ) const
+QString medQtView::description() const
 {
     return s_description();
 }

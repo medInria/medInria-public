@@ -38,7 +38,7 @@ medDatabaseNavigatorScene::medDatabaseNavigatorScene(QObject *parent) : QGraphic
     d->orientation = medDatabaseNavigatorController::instance()->orientation();
 }
 
-medDatabaseNavigatorScene::~medDatabaseNavigatorScene(void)
+medDatabaseNavigatorScene::~medDatabaseNavigatorScene()
 {
     delete d;
 
@@ -69,7 +69,7 @@ void medDatabaseNavigatorScene::addGroup(medDatabaseNavigatorItemGroup *group)
         : this->setSceneRect(QRectF(20, 0, 128, d->position.y()));
 }
 
-void medDatabaseNavigatorScene::reset(void)
+void medDatabaseNavigatorScene::reset()
 {
     foreach(medDatabaseNavigatorItemGroup *group, d->groups) {
         this->removeItem(group);
@@ -102,7 +102,7 @@ void medDatabaseNavigatorScene::setOrientation (Qt::Orientation orientation)
     }
 }
 
-Qt::Orientation medDatabaseNavigatorScene::orientation (void) const
+Qt::Orientation medDatabaseNavigatorScene::orientation() const
 {
     return d->orientation;
 }

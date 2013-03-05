@@ -32,7 +32,7 @@ public:
 
 };
 
-medToolBoxFactory *medToolBoxFactory::instance(void)
+medToolBoxFactory *medToolBoxFactory::instance()
 {
     if(!s_instance)
         s_instance = new medToolBoxFactory;
@@ -112,12 +112,12 @@ QHash<QString, medToolBoxDetails *> medToolBoxFactory::toolBoxDetailsFromCategor
     return tbsDetails;
 }
 
-medToolBoxFactory::medToolBoxFactory(void) : dtkAbstractFactory(), d(new medToolBoxFactoryPrivate)
+medToolBoxFactory::medToolBoxFactory() : dtkAbstractFactory(), d(new medToolBoxFactoryPrivate)
 {
 
 }
 
-medToolBoxFactory::~medToolBoxFactory(void)
+medToolBoxFactory::~medToolBoxFactory()
 {
     //delete details.
     foreach (medToolBoxDetails * detail, d->creators.values())

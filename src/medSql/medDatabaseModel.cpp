@@ -149,7 +149,7 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
     connect(medDbControllerFactory::instance(), SIGNAL(dbControllerRegistered(const QString&)), this, SLOT(repopulate()));
 }
 
-medDatabaseModel::~medDatabaseModel(void)
+medDatabaseModel::~medDatabaseModel()
 {
     delete d->root;
     delete d;
@@ -442,12 +442,12 @@ bool medDatabaseModel::removeRows(int position, int rows, const QModelIndex& par
 // Drag and drop support
 // /////////////////////////////////////////////////////////////////
 
-QStringList medDatabaseModel::mimeTypes(void) const
+QStringList medDatabaseModel::mimeTypes() const
 {
     return QAbstractItemModel::mimeTypes() << "text/uri-list";
 }
 
-Qt::DropActions medDatabaseModel::supportedDropActions(void) const
+Qt::DropActions medDatabaseModel::supportedDropActions() const
 {
     return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction;
 }
@@ -487,7 +487,7 @@ bool medDatabaseModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 // Initialization
 // /////////////////////////////////////////////////////////////////
 
-void medDatabaseModel::repopulate(void)
+void medDatabaseModel::repopulate()
 {
     beginRemoveRows(QModelIndex(),0,rowCount());
     if (rowCount() > 0)

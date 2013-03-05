@@ -3,12 +3,12 @@
 
 #include <dtkCore/dtkGlobal.h>
 
-medAbstractPacsFindScu::medAbstractPacsFindScu(void)
+medAbstractPacsFindScu::medAbstractPacsFindScu()
 {
 
 }
 
-medAbstractPacsFindScu::~medAbstractPacsFindScu(void)
+medAbstractPacsFindScu::~medAbstractPacsFindScu()
 {
 
 }

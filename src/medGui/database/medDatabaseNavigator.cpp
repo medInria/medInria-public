@@ -89,14 +89,14 @@ medDatabaseNavigator::medDatabaseNavigator(QWidget *parent) : QFrame(parent), d(
         : this->setFixedWidth(medDatabaseNavigatorController::instance()->groupWidth() + medDatabaseNavigatorController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
 }
 
-medDatabaseNavigator::~medDatabaseNavigator(void)
+medDatabaseNavigator::~medDatabaseNavigator()
 {
     delete d;
 
     d = NULL;
 }
 
-void medDatabaseNavigator::reset(void)
+void medDatabaseNavigator::reset()
 {
     d->scene->reset();
 }
@@ -244,7 +244,7 @@ void medDatabaseNavigator::setOrientation (Qt::Orientation orientation)
     d->scene->setOrientation (d->orientation);
 }
 
-Qt::Orientation medDatabaseNavigator::orientation (void) const
+Qt::Orientation medDatabaseNavigator::orientation() const
 {
   return d->orientation;
 }

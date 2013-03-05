@@ -78,7 +78,7 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
     this->addToolBox( d->fiberBundlingToolBox );
 }
 
-medDiffusionWorkspace::~medDiffusionWorkspace(void)
+medDiffusionWorkspace::~medDiffusionWorkspace()
 {
     delete d;
     d = NULL;
@@ -163,14 +163,14 @@ void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
         // TODO we need to unify the view->update() as now some updates are done here and some
         // are performed in the 'translate' function of the signal emitted by the toolbox
         // (e.g. onFlipXChanged) ... maybe after dtk is extended to support QVariant properties
-        connect(d->tensorViewToolBox, SIGNAL(sampleRateChanged(int)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(eigenVectorChanged(int)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(glyphResolutionChanged(int)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(reverseBackgroundColor(bool)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(scalingChanged(double)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(hideShowAxial(bool)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(hideShowCoronal(bool)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(hideShowSagittal(bool)), view, SLOT(update(void)));
+        connect(d->tensorViewToolBox, SIGNAL(sampleRateChanged(int)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(eigenVectorChanged(int)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(glyphResolutionChanged(int)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(reverseBackgroundColor(bool)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(scalingChanged(double)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(hideShowAxial(bool)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(hideShowCoronal(bool)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(hideShowSagittal(bool)), view, SLOT(update()));
 
         updateTensorInteractorWithToolboxValues(interactor, d->tensorViewToolBox);
     }
@@ -335,7 +335,7 @@ void medDiffusionWorkspace::onTubeModeSelected (bool value)
     }
 }
 
-void medDiffusionWorkspace::onTBDiffusionSuccess(void)
+void medDiffusionWorkspace::onTBDiffusionSuccess()
 {
     foreach (dtkAbstractView *view, d->views) {
         view->setData( d->diffusionToolBox->output(), 0 );
@@ -409,7 +409,7 @@ void medDiffusionWorkspace::onFlipZChanged(bool flipZ)
 
 // end of tensor interaction related methods
 
-void medDiffusionWorkspace::refreshInteractors (void)
+void medDiffusionWorkspace::refreshInteractors()
 {
     foreach (dtkAbstractView *view, d->views) {
         if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {

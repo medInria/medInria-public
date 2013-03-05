@@ -27,7 +27,7 @@ medDeleteButton::medDeleteButton() : QGraphicsPixmapItem()
     setZValue(100); // this item should always be on top of all the others
 }
 
-medDeleteButton::~medDeleteButton(void)
+medDeleteButton::~medDeleteButton()
 {
 }
 

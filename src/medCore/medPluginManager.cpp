@@ -31,7 +31,7 @@ public:
     QStringList loadErrors;
 };
 
-medPluginManager *medPluginManager::instance(void)
+medPluginManager *medPluginManager::instance()
 {
     if(!s_instance)
         s_instance = new medPluginManager;
@@ -43,7 +43,7 @@ void medPluginManager::uninitialize()
     //do nothing, setting the path only brings about problems when the dtkSettingsEditor is used.
 }
 
-void medPluginManager::readSettings(void)
+void medPluginManager::readSettings()
 {
     QDir plugins_dir;
     QString defaultPath;
@@ -82,7 +82,7 @@ void medPluginManager::readSettings(void)
     }
 }
 
-void medPluginManager::writeSettings(void)
+void medPluginManager::writeSettings()
 {
 
     QSettings settings;
@@ -115,13 +115,13 @@ void medPluginManager::onPluginLoaded(const QString& name)
         d->handlers[category] << plug->types();
 }
 
-medPluginManager::medPluginManager(void) : dtkPluginManager(), d(new medPluginManagerPrivate)
+medPluginManager::medPluginManager() : dtkPluginManager(), d(new medPluginManagerPrivate)
 {
     connect(this, SIGNAL(loaded(const QString&)), this, SLOT(onPluginLoaded(const QString&)));
     connect(this, SIGNAL(loadError(QString)), this, SLOT(onLoadError(QString)));
 }
 
-medPluginManager::~medPluginManager(void)
+medPluginManager::~medPluginManager()
 {
     delete d;
 

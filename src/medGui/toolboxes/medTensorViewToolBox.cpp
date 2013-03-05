@@ -220,32 +220,32 @@ medTensorViewToolBox::~medTensorViewToolBox()
     d = NULL;
 }
 
-QString medTensorViewToolBox::glyphShape(void)
+QString medTensorViewToolBox::glyphShape()
 {
     return d->glyphShapeComboBox->currentText();
 }
 
-int medTensorViewToolBox::sampleRate(void)
+int medTensorViewToolBox::sampleRate()
 {
     return d->sampleRateSlider->value();
 }
 
-bool medTensorViewToolBox::isFlipX(void)
+bool medTensorViewToolBox::isFlipX()
 {
     return d->flipXCheckBox->checkState() == Qt::Checked;
 }
 
-bool medTensorViewToolBox::isFlipY(void)
+bool medTensorViewToolBox::isFlipY()
 {
     return d->flipYCheckBox->checkState() == Qt::Checked;
 }
 
-bool medTensorViewToolBox::isFlipZ(void)
+bool medTensorViewToolBox::isFlipZ()
 {
     return d->flipZCheckBox->checkState() == Qt::Checked;
 }
 
-int medTensorViewToolBox::eigenVector(void)
+int medTensorViewToolBox::eigenVector()
 {
     if (d->eigenVectorV1RadioButton->isChecked())
     {
@@ -263,12 +263,12 @@ int medTensorViewToolBox::eigenVector(void)
     return 1;
 }
 
-int medTensorViewToolBox::glyphResolution(void)
+int medTensorViewToolBox::glyphResolution()
 {
     return d->glyphResolutionSlider->value();
 }
 
-double medTensorViewToolBox::scale(void)
+double medTensorViewToolBox::scale()
 {
     int minorScale = d->scaleBase->value();
     int majorScaleExponent = d->scaleExp->value();
@@ -277,17 +277,17 @@ double medTensorViewToolBox::scale(void)
     return scale;
 }
 
-bool medTensorViewToolBox::isShowAxial(void)
+bool medTensorViewToolBox::isShowAxial()
 {
     return d->hideShowAxialCheckBox->checkState() == Qt::Checked;
 }
 
-bool medTensorViewToolBox::isShowCoronal(void)
+bool medTensorViewToolBox::isShowCoronal()
 {
     return d->hideShowCoronalCheckBox->checkState() == Qt::Checked;
 }
 
-bool medTensorViewToolBox::isShowSagittal(void)
+bool medTensorViewToolBox::isShowSagittal()
 {
     return d->hideShowSagittalCheckBox->checkState() == Qt::Checked;
 }

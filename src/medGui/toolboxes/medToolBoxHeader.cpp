@@ -53,14 +53,14 @@ medToolBoxHeader::medToolBoxHeader(QWidget *parent) : QFrame(parent), d(new medT
 
 }
 
-medToolBoxHeader::~medToolBoxHeader(void)
+medToolBoxHeader::~medToolBoxHeader()
 {
     delete d;
 
     d = NULL;
 }
 
-QSize medToolBoxHeader::sizeHint(void) const
+QSize medToolBoxHeader::sizeHint() const
 {
     return QSize(100, 32);
 }

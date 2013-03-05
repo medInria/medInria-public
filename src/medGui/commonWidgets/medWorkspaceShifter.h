@@ -36,12 +36,12 @@ class MEDGUI_EXPORT medWorkspaceShifterMenu : public QWidget
     
 public:
      medWorkspaceShifterMenu(QWidget *parent = 0);
-    ~medWorkspaceShifterMenu(void);
+    ~medWorkspaceShifterMenu();
 
     void addAction(QAction *action);
     QAction *addAction(const QString& text);
 
-    QSize sizeHint(void) const;
+    QSize sizeHint() const;
 
 signals:
     void triggered(QAction *action);
@@ -72,29 +72,29 @@ public:
      medWorkspaceShifterAction(QObject *parent = 0);
      medWorkspaceShifterAction(const QString& text, QObject *parent = 0);
      medWorkspaceShifterAction(const QIcon& icon, const QString& text = "", QObject *parent = 0);
-    ~medWorkspaceShifterAction(void);
+    ~medWorkspaceShifterAction();
 
 signals:
     void triggered(bool checked = false);
     void toggled(bool checked);
-    void hovered(void);
+    void hovered();
 
 public:
-    bool isChecked(void) const;
-    bool isHovered(void) const;
+    bool isChecked() const;
+    bool isHovered() const;
 
-    QIcon icon(void) const;
+    QIcon icon() const;
     void setIcon(const QIcon& icon);
 
-    QString text(void) const;
+    QString text() const;
     void setText(const QString& text);
 
-    medWorkspaceShifterMenu *menu(void);
+    medWorkspaceShifterMenu *menu();
     void setMenu(medWorkspaceShifterMenu *menu);
     
 public slots:
-    void toggle(void);
-    void trigger(void);
+    void toggle();
+    void trigger();
     void hover(bool isHovered = false);
     void setChecked(bool checked);
 
@@ -110,13 +110,13 @@ class MEDGUI_EXPORT medWorkspaceShifter : public QWidget
 
 public:
      medWorkspaceShifter(QWidget *parent = 0);
-    ~medWorkspaceShifter(void);
+    ~medWorkspaceShifter();
 
 public:
     medWorkspaceShifterAction *addAction(medWorkspaceShifterAction *action);
     medWorkspaceShifterAction *addAction(const QString& text);
 
-    QSize minimumSizeHint(void) const;
+    QSize minimumSizeHint() const;
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -133,7 +133,7 @@ private:
 
     medWorkspaceShifterAction *hoveredAction(const QPoint& pos) const;
 
-    int calculateButtonWidth(void) const;
+    int calculateButtonWidth() const;
 
 private:
     medWorkspaceShifterPrivate *d;

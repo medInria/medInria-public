@@ -27,11 +27,11 @@
 
 QString medStorage::m_dataLocation = NULL;
 
-medStorage::medStorage(void)
+medStorage::medStorage()
 {
 }
 
-medStorage::~medStorage(void)
+medStorage::~medStorage()
 {
 }
 
@@ -45,7 +45,7 @@ bool medStorage::rmpath(const QString& dirPath)
     QDir dir; return(dir.rmpath(dirPath));
 }
 
-QString medStorage::dataLocation(void)
+QString medStorage::dataLocation()
 {
     QString vDbLoc;
 
@@ -74,7 +74,7 @@ QString medStorage::dataLocation(void)
     return vDbLoc;
 }
 
-QString medStorage::configLocation(void)
+QString medStorage::configLocation()
 {
 #ifdef Q_WS_MAC
     return(QDir::homePath() + "/Library/Preferences/" + "com" + "." + QCoreApplication::organizationName() + "." + QCoreApplication::applicationName() + "." + "plist");

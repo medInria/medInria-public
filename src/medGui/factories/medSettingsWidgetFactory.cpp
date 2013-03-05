@@ -8,7 +8,7 @@ public:
     medSettingsWidgetFactory::medSettingsWidgetCreatorHash creators;
 };
 
-medSettingsWidgetFactory *medSettingsWidgetFactory::instance(void)
+medSettingsWidgetFactory *medSettingsWidgetFactory::instance()
 {
     if(!s_instance)
         s_instance = new medSettingsWidgetFactory;
@@ -33,7 +33,7 @@ bool medSettingsWidgetFactory::registerSettingsWidget(const QString& type,
     return false;
 }
 
-QList<QString> medSettingsWidgetFactory::settingsWidgets(void)
+QList<QString> medSettingsWidgetFactory::settingsWidgets()
 {
     return d->creators.keys();
 }
@@ -55,12 +55,12 @@ medSettingDetails * medSettingsWidgetFactory::settingDetailsFromId(
 }
 
 
-medSettingsWidgetFactory::medSettingsWidgetFactory(void) : dtkAbstractFactory(), d(new medSettingsWidgetFactoryPrivate)
+medSettingsWidgetFactory::medSettingsWidgetFactory() : dtkAbstractFactory(), d(new medSettingsWidgetFactoryPrivate)
 {
 
 }
 
-medSettingsWidgetFactory::~medSettingsWidgetFactory(void)
+medSettingsWidgetFactory::~medSettingsWidgetFactory()
 {
     delete d;
 

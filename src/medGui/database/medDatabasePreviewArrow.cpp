@@ -34,7 +34,7 @@ medDatabasePreviewArrow::medDatabasePreviewArrow(QPixmap pixmap, QPixmap pressed
     this->setZValue(10);
 }
 
-medDatabasePreviewArrow::~medDatabasePreviewArrow(void)
+medDatabasePreviewArrow::~medDatabasePreviewArrow()
 {
     delete d;
 

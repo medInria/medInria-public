@@ -62,19 +62,19 @@ medDatabasePreviewItem::medDatabasePreviewItem(const medDataIndex &index, QGraph
     d->isDraggingAllowed = true;
 }
 
-medDatabasePreviewItem::~medDatabasePreviewItem(void)
+medDatabasePreviewItem::~medDatabasePreviewItem()
 {
     delete d;
 
     d = NULL;
 }
 
-medDatabasePreviewItem *medDatabasePreviewItem::clone(void)
+medDatabasePreviewItem *medDatabasePreviewItem::clone()
 {
     return new medDatabasePreviewItem(d->index);
 }
 
-medDataIndex medDatabasePreviewItem::dataIndex(void) const
+medDataIndex medDatabasePreviewItem::dataIndex() const
 {
     return d->index;
 }

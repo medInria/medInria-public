@@ -12,8 +12,8 @@ class medViewContainersTestObject : public QObject
     Q_OBJECT
 
 public:
-             medViewContainersTestObject(void);
-    virtual ~medViewContainersTestObject(void);
+             medViewContainersTestObject();
+    virtual ~medViewContainersTestObject();
 
 
 private slots:

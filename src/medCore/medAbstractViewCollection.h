@@ -32,12 +32,12 @@ class MEDCORE_EXPORT medAbstractViewCollection : public medAbstractView
 public:
              medAbstractViewCollection (medAbstractViewCollection * parent = 0);
              medAbstractViewCollection (const medAbstractViewCollection& view);
-    virtual ~medAbstractViewCollection (void);
+    virtual ~medAbstractViewCollection();
 
     /**
     * Returns the list of view carried by the view. Must be reimplemented in subclass.
     */
-    virtual QList <medAbstractView*> views (void) const;
+    virtual QList <medAbstractView*> views() const;
 
 signals:
     void viewAdded   (medAbstractView *);

@@ -14,18 +14,18 @@ medSettingsManager* medSettingsManager::instance() {
     return s_instance;
 }
 
-medSettingsManager::medSettingsManager( void ): d(new medSettingsManagerPrivate)
+medSettingsManager::medSettingsManager(): d(new medSettingsManagerPrivate)
 {
 
 }
 
-medSettingsManager::~medSettingsManager( void )
+medSettingsManager::~medSettingsManager()
 {
     delete d;
     d = NULL;
 }
 
-void medSettingsManager::destroy( void )
+void medSettingsManager::destroy()
 {
     if (s_instance) {
         delete s_instance;

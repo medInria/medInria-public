@@ -49,31 +49,31 @@ medDataIndex::medDataIndex()
 }
 
 
-medDataIndex::~medDataIndex(void)
+medDataIndex::~medDataIndex()
 {
 }
 
-bool medDataIndex::isValid(void) const
-{
-    return (m_dataSourceId != NOT_VALID && m_patientId != NOT_VALID);
-}
-
-bool medDataIndex::isValidForPatient(void) const
+bool medDataIndex::isValid() const
 {
     return (m_dataSourceId != NOT_VALID && m_patientId != NOT_VALID);
 }
 
-bool medDataIndex::isValidForStudy(void) const
+bool medDataIndex::isValidForPatient() const
+{
+    return (m_dataSourceId != NOT_VALID && m_patientId != NOT_VALID);
+}
+
+bool medDataIndex::isValidForStudy() const
 {
     return (isValidForPatient() && (m_studyId != NOT_VALID));
 }
 
-bool medDataIndex::isValidForSeries(void) const
+bool medDataIndex::isValidForSeries() const
 {
     return (isValidForStudy() && (m_seriesId != NOT_VALID));
 }
 
-bool medDataIndex::isValidForImage(void) const
+bool medDataIndex::isValidForImage() const
 {
     return (isValidForSeries() && (m_imageId != NOT_VALID));
 }

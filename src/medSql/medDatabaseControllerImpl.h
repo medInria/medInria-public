@@ -23,10 +23,10 @@ public:
     medDatabaseControllerImpl();
     ~medDatabaseControllerImpl();
 
-    QSqlDatabase *database(void);
+    QSqlDatabase *database();
 
-    bool createConnection(void);
-    bool  closeConnection(void);
+    bool createConnection();
+    bool  closeConnection();
 
     /* create dataIndices out of partial ids */
     medDataIndex indexForPatient(int id);
@@ -156,10 +156,10 @@ protected slots:
 
 private:
     // helper to create tables
-    void createPatientTable(void);
-    void   createStudyTable(void);
-    void  createSeriesTable(void);
-    void   createImageTable(void);
+    void createPatientTable();
+    void   createStudyTable();
+    void  createSeriesTable();
+    void   createImageTable();
 
     QSqlDatabase m_database;
 

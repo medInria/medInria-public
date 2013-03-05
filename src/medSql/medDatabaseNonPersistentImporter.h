@@ -45,9 +45,9 @@ class medDatabaseNonPersistentImporter : public medJobItem
 public:
      medDatabaseNonPersistentImporter(dtkAbstractData *data,
                                       const QString& callerUuid);
-    ~medDatabaseNonPersistentImporter(void);
+    ~medDatabaseNonPersistentImporter();
 
-    void run(void);
+    void run();
 
 public slots:
     void onCancel(QObject*);

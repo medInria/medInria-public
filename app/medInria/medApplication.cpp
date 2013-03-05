@@ -116,7 +116,7 @@ medApplication::medApplication(int & argc, char**argv) :
                      this, SLOT(redirectMessageToLog(QString)) );
 }
 
-medApplication::~medApplication(void)
+medApplication::~medApplication()
 {
     delete d;
     d = NULL;

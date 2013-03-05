@@ -32,12 +32,12 @@ class medMainWindow : public QMainWindow
 
 public:
      medMainWindow(QWidget *parent = 0);
-    ~medMainWindow(void);
+    ~medMainWindow();
 
-    void readSettings(void);
+    void readSettings();
     void writeSettings();
 
-    void updateQuickAccessMenu(void);
+    void updateQuickAccessMenu();
     void resizeEvent( QResizeEvent * event );
 
 public slots:
@@ -48,20 +48,20 @@ public slots:
      * @brief Switches from the Fullscreen mode to the normal mode.
      *
      */
-    void switchFullScreen(void);
+    void switchFullScreen();
 
-    void switchToBrowserArea(void);
-    void switchToWorkspaceArea(void);
-    void switchToHomepageArea(void);
+    void switchToBrowserArea();
+    void switchToWorkspaceArea();
+    void switchToHomepageArea();
 
     void onShowWorkspace(QString workspace);
-    void onShowQuickAccess(void);
-    void onHideQuickAccess(void);
+    void onShowQuickAccess();
+    void onHideQuickAccess();
     void onWorkspaceTriggered(QAction *action);
-    void onQuit(void);
-    void onSaveModified(void);
-    void onNoQuit(void);
-    void onEditSettings(void);
+    void onQuit();
+    void onSaveModified();
+    void onNoQuit();
+    void onEditSettings();
 
     /**
      * @brief: Decides what to do when the importer returned a medDataIndex after importation.

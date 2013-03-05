@@ -15,13 +15,13 @@ medAbstractViewCollection::medAbstractViewCollection(const medAbstractViewCollec
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-medAbstractViewCollection::~medAbstractViewCollection(void)
+medAbstractViewCollection::~medAbstractViewCollection()
 {
     delete d;
     d = NULL;
 }
 
-QList <medAbstractView *> medAbstractViewCollection::views (void) const
+QList <medAbstractView *> medAbstractViewCollection::views() const
 {
     return QList <medAbstractView *> ();
 }

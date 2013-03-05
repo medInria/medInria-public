@@ -38,7 +38,7 @@ medDatabaseItem::medDatabaseItem(medDataIndex index, const QList<QVariant>& attr
     d->parentItem = dynamic_cast<medDatabaseItem*>(parent);
 }
 
-medDatabaseItem::~medDatabaseItem(void)
+medDatabaseItem::~medDatabaseItem()
 {
     qDeleteAll(d->childItems);
     d->childItems.clear();
@@ -51,7 +51,7 @@ medAbstractDatabaseItem *medDatabaseItem::child(int row)
     return d->childItems.value(row);
 }
 
-medAbstractDatabaseItem *medDatabaseItem::parent(void)
+medAbstractDatabaseItem *medDatabaseItem::parent()
 {
     return d->parentItem;
 }
@@ -61,7 +61,7 @@ void medDatabaseItem::append(medAbstractDatabaseItem *item)
     d->childItems.append(static_cast<medDatabaseItem*>(item));
 }
 
-int medDatabaseItem::row(void) const
+int medDatabaseItem::row() const
 {
     if (d->parentItem)
         return d->parentItem->d->childItems.indexOf(const_cast<medDatabaseItem*>(this));
@@ -69,12 +69,12 @@ int medDatabaseItem::row(void) const
     return 0;
 }
 
-int medDatabaseItem::childCount(void) const
+int medDatabaseItem::childCount() const
 {
     return d->childItems.count();
 }
 
-int medDatabaseItem::childNumber(void) const
+int medDatabaseItem::childNumber() const
 {
     if (d->parentItem)
         return d->parentItem->d->childItems.indexOf(const_cast<medDatabaseItem *>(this));
@@ -82,7 +82,7 @@ int medDatabaseItem::childNumber(void) const
     return 0;
 }
 
-int medDatabaseItem::columnCount(void) const
+int medDatabaseItem::columnCount() const
 {
     return d->itemData.count();
 }

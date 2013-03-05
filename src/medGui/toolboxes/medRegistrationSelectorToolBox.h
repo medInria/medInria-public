@@ -35,23 +35,23 @@ class MEDGUI_EXPORT medRegistrationSelectorToolBox : public medToolBox
 
 public:
      medRegistrationSelectorToolBox(QWidget *parent = 0);
-    ~medRegistrationSelectorToolBox(void);
+    ~medRegistrationSelectorToolBox();
 
-    dtkAbstractView *fixedView(void);
-    dtkAbstractView *movingView(void);
+    dtkAbstractView *fixedView();
+    dtkAbstractView *movingView();
 
-    medAbstractDataImage *fixedData(void);
-    medAbstractDataImage *movingData(void);
+    medAbstractDataImage *fixedData();
+    medAbstractDataImage *movingData();
 
     void setFuseView(dtkAbstractView *view);
-    dtkAbstractView *fuseView(void);
+    dtkAbstractView *fuseView();
 
     dtkAbstractProcess * process();
     void setProcess(dtkAbstractProcess* process);
 
 signals:
-    void setupLayoutCompare(void);
-    void setupLayoutFuse(void);
+    void setupLayoutCompare();
+    void setupLayoutFuse();
     void showError (QObject*,const QString&,unsigned int timeout);
     void showInfo(QObject*,const QString&,unsigned int timeout);
 
@@ -63,10 +63,10 @@ public slots:
 //    void onCheckerboardModeSet(bool value);
 
     void onToolBoxChosen(int index);
-    void clear(void);
-    void onSaveImage(void);
-    void onSaveTrans(void);
-    void onSuccess(void);
+    void clear();
+    void onSaveImage();
+    void onSaveTrans();
+    void onSuccess();
 
     void synchroniseWindowLevel(QObject * sender = NULL);
     void synchronisePosition(const QVector3D &position);

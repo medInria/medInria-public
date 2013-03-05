@@ -20,7 +20,7 @@ public:
    * @brief This function pointer designates functions allocating memory
    *
   */
-  typedef medAbstractDbController*(*medDbControllerCreator)(void);
+  typedef medAbstractDbController*(*medDbControllerCreator)();
 
   /**
    * @brief Type designating the internal has table containing the creator functions.
@@ -35,7 +35,7 @@ public:
    * @param void
    * @return medDbControllerFactory * Factory instance
   */
-  static medDbControllerFactory * instance(void);
+  static medDbControllerFactory * instance();
 
   /**
    * @brief Registers a new widget type, and its creator function.
@@ -51,7 +51,7 @@ public:
    *
    * @returns a QStringList of Controllers' names.
    */
-  QList<QString> controllers(void);
+  QList<QString> controllers();
 
 signals:
   /** @brief Emitted when a controller is registered.
@@ -77,7 +77,7 @@ protected:
    *
    * @param void
   */
-  medDbControllerFactory(void);
+  medDbControllerFactory();
 
   /**
    * @brief Destructor, not to be used by users.
@@ -86,7 +86,7 @@ protected:
    *
    * @param void
   */
-  ~medDbControllerFactory(void);
+  ~medDbControllerFactory();
 
 private:
 

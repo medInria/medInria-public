@@ -61,7 +61,7 @@ public slots:
     /**
      * @brief adds metadata to the output and emits a signal outputDataChanged(dtkAbstractData *)
      */
-    void onProcessSuccess ( void );
+    void onProcessSuccess();
 
     /**
      * @brief Imports output data in non persistent database

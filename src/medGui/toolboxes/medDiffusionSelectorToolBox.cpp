@@ -87,7 +87,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent) : medT
     this->addWidget(tractographyPage);
 }
 
-medDiffusionSelectorToolBox::~medDiffusionSelectorToolBox(void)
+medDiffusionSelectorToolBox::~medDiffusionSelectorToolBox()
 {
     delete d;
     d = NULL;
@@ -148,7 +148,7 @@ void medDiffusionSelectorToolBox::onToolBoxChosen(int id)
     d->currentToolBox = toolbox;
 }
 
-dtkAbstractData *medDiffusionSelectorToolBox::output(void) const
+dtkAbstractData *medDiffusionSelectorToolBox::output() const
 {
     if (d->currentToolBox)
         return d->currentToolBox->output();
@@ -157,7 +157,7 @@ dtkAbstractData *medDiffusionSelectorToolBox::output(void) const
 }
 
 
-void medDiffusionSelectorToolBox::clear(void)
+void medDiffusionSelectorToolBox::clear()
 {
     foreach (medDiffusionAbstractToolBox *tb, d->toolBoxes)
         tb->deleteLater();

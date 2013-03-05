@@ -46,7 +46,7 @@ medDatabaseNavigatorItemGroup::medDatabaseNavigatorItemGroup(QGraphicsItem *pare
     d->orientation = medDatabaseNavigatorController::instance()->orientation();
 }
 
-medDatabaseNavigatorItemGroup::~medDatabaseNavigatorItemGroup(void)
+medDatabaseNavigatorItemGroup::~medDatabaseNavigatorItemGroup()
 {
     delete d;
 
@@ -73,7 +73,7 @@ void medDatabaseNavigatorItemGroup::addItem(medDatabaseNavigatorItem *item)
     d->itemCount++;
 }
 
-void medDatabaseNavigatorItemGroup::clear(void)
+void medDatabaseNavigatorItemGroup::clear()
 {
     foreach(QGraphicsItem *item, this->childItems())
         delete item;
@@ -86,7 +86,7 @@ void medDatabaseNavigatorItemGroup::setName(const QString& name)
     d->name = name;
 }
 
-QRectF medDatabaseNavigatorItemGroup::boundingRect(void) const
+QRectF medDatabaseNavigatorItemGroup::boundingRect() const
 {
     qreal item_width   = medDatabaseNavigatorController::instance()->itemWidth();
     qreal item_height  = medDatabaseNavigatorController::instance()->itemHeight();
@@ -130,7 +130,7 @@ void medDatabaseNavigatorItemGroup::setOrientation (Qt::Orientation orientation)
         addItem (item);
 }
 
-Qt::Orientation medDatabaseNavigatorItemGroup::orientation (void) const
+Qt::Orientation medDatabaseNavigatorItemGroup::orientation() const
 {
     return d->orientation;
 }

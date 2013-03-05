@@ -8,6 +8,6 @@ medAbstractDataSource::medAbstractDataSource(QWidget *parent) : QObject(parent)
 {
 }
 
-medAbstractDataSource::~medAbstractDataSource(void)
+medAbstractDataSource::~medAbstractDataSource()
 {
 }

@@ -19,14 +19,14 @@ public:
      testView();
     ~testView();
 
-    QString identifier(void) const;
+    QString identifier() const;
 
 public:
-    QWidget *widget(void);
+    QWidget *widget();
     virtual medAbstractViewCoordinates * coordinates() {return NULL;}
 
 public slots:
-    void close(void);
+    void close();
 
 private:
     QWidget *m_widget;
@@ -61,12 +61,12 @@ void testView::close()
 }
 
 
-medViewContainersTestObject::medViewContainersTestObject(void)
+medViewContainersTestObject::medViewContainersTestObject()
 {
     qRegisterMetaType<dtkAbstractView*>("dtkAbstractView*");
 }
 
-medViewContainersTestObject::~medViewContainersTestObject(void)
+medViewContainersTestObject::~medViewContainersTestObject()
 {
 }
 

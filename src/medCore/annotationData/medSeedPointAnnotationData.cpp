@@ -59,7 +59,7 @@ QString medSeedPointAnnotationData::s_description()
     return desc;
 }
 
-QString medSeedPointAnnotationData::description( void ) const 
+QString medSeedPointAnnotationData::description() const 
 {
     return medSeedPointAnnotationData::s_description();
 }
@@ -70,7 +70,7 @@ QString medSeedPointAnnotationData::s_identifier()
     return id;
 }
 
-QString medSeedPointAnnotationData::identifier( void ) const 
+QString medSeedPointAnnotationData::identifier() const 
 {
     return medSeedPointAnnotationData::s_identifier();
 }

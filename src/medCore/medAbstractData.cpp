@@ -22,7 +22,7 @@ medAbstractData::medAbstractData( dtkAbstractData *parent )
 }
 
 
-medAbstractData::~medAbstractData( void )
+medAbstractData::~medAbstractData()
 {
     qDebug() << "deleting data with index " << d->index.asString();
     delete d;

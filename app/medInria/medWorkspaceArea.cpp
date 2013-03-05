@@ -172,7 +172,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
 }
 
-medWorkspaceArea::~medWorkspaceArea(void)
+medWorkspaceArea::~medWorkspaceArea()
 {
 
     d->saveSplitterSize(d->currentWorkspace->layoutType());
@@ -351,7 +351,7 @@ void medWorkspaceArea::onFileOpenedInTab(const medDataIndex &index)
     this->openInTab(index);
 }
 
-void medWorkspaceArea::onViewClosed(void)
+void medWorkspaceArea::onViewClosed()
 {
     if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
         QList<medToolBox *> toolboxes = d->toolBoxContainer->toolBoxes();
@@ -587,7 +587,7 @@ void medWorkspaceArea::onViewFocused(dtkAbstractView *view)
     }
 }
 
-medViewContainer *medWorkspaceArea::currentRootContainer(void)
+medViewContainer *medWorkspaceArea::currentRootContainer()
 {
     if ( d->currentWorkspace == NULL )
         return NULL;
@@ -595,7 +595,7 @@ medViewContainer *medWorkspaceArea::currentRootContainer(void)
     return d->currentWorkspace->currentViewContainer();
 }
 
-medViewContainer *medWorkspaceArea::currentContainerFocused(void)
+medViewContainer *medWorkspaceArea::currentContainerFocused()
 {
     medViewContainer * root = this->currentRootContainer();
     if ( root == NULL )

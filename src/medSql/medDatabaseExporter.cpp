@@ -37,14 +37,14 @@ medDatabaseExporter::medDatabaseExporter(dtkAbstractData *data, const QString &f
     d->filename = filename;
 }
 
-medDatabaseExporter::~medDatabaseExporter(void)
+medDatabaseExporter::~medDatabaseExporter()
 {
     delete d;
 
     d = NULL;
 }
 
-void medDatabaseExporter::run(void)
+void medDatabaseExporter::run()
 {
     if (d->data.isNull()) {
         emit showError(this, "Cannot export data", 3000);

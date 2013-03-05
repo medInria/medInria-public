@@ -34,7 +34,7 @@ public:
     medAbstractPacsFactory::medAbstractPacsStoreScpCreatorHash storeScpCreators;
 };
 
-medAbstractPacsFactory *medAbstractPacsFactory::instance(void)
+medAbstractPacsFactory *medAbstractPacsFactory::instance()
 {
     if(!s_instance)
         s_instance = new medAbstractPacsFactory;
@@ -142,12 +142,12 @@ bool medAbstractPacsFactory::registerStoreScuType( QString type, medAbstractPacs
     return false;
 }
 
-medAbstractPacsFactory::medAbstractPacsFactory(void) : dtkAbstractFactory(), d(new medAbstractPacsFactoryPrivate)
+medAbstractPacsFactory::medAbstractPacsFactory() : dtkAbstractFactory(), d(new medAbstractPacsFactoryPrivate)
 {
 
 }
 
-medAbstractPacsFactory::~medAbstractPacsFactory(void)
+medAbstractPacsFactory::~medAbstractPacsFactory()
 {
     delete d;
 

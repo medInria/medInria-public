@@ -70,17 +70,17 @@ void medSingleViewContainer::setView(dtkAbstractView *view)
     }
 }
 
-dtkAbstractView *medSingleViewContainer::view (void) const
+dtkAbstractView *medSingleViewContainer::view() const
 {
     return d->view;
 }
 
-bool medSingleViewContainer::isLeaf(void) const
+bool medSingleViewContainer::isLeaf() const
 {
     return true;
 }
 
-void medSingleViewContainer::onViewClosing (void)
+void medSingleViewContainer::onViewClosing()
 {
     if (d->view) {
         d->layout->removeWidget (d->view->widget());

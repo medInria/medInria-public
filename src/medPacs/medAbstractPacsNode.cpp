@@ -4,12 +4,12 @@
 
 #include <QtCore>
 
-medAbstractPacsNode::medAbstractPacsNode( void )
+medAbstractPacsNode::medAbstractPacsNode()
 {
 
 }
 
-medAbstractPacsNode::~medAbstractPacsNode( void )
+medAbstractPacsNode::~medAbstractPacsNode()
 {
 
 }

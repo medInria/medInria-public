@@ -33,12 +33,12 @@ class MEDGUI_EXPORT medToolBoxBody : public QFrame
 
 public:
      medToolBoxBody(QWidget *parent = 0);
-    ~medToolBoxBody(void);
+    ~medToolBoxBody();
 
     void addWidget(QWidget *widget);
 
     void setTabWidget(medToolBoxTab * tab);
-    void clear(void);
+    void clear();
 
     void setOrientation(Qt::Orientation);
 

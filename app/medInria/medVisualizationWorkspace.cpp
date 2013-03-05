@@ -88,7 +88,7 @@ void medVisualizationWorkspace::connectToolboxesToCurrentContainer(const QString
             d->timeToolBox, SLOT(onViewRemoved(dtkAbstractView*)));
 }
 
-medVisualizationWorkspace::~medVisualizationWorkspace(void)
+medVisualizationWorkspace::~medVisualizationWorkspace()
 {
     delete d;
     d = NULL;

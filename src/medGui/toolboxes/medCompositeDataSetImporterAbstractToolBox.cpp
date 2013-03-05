@@ -33,7 +33,7 @@ medCompositeDataSetImporterAbstractToolBox::medCompositeDataSetImporterAbstractT
     d->parent  = NULL;
 }
 
-medCompositeDataSetImporterAbstractToolBox::~medCompositeDataSetImporterAbstractToolBox(void)
+medCompositeDataSetImporterAbstractToolBox::~medCompositeDataSetImporterAbstractToolBox()
 {
     delete d;
 
@@ -45,12 +45,12 @@ void medCompositeDataSetImporterAbstractToolBox::setCompositeDataSetImporterTool
     d->parent = toolbox;
 }
 
-medCompositeDataSetImporterSelectorToolBox *medCompositeDataSetImporterAbstractToolBox::parent(void)
+medCompositeDataSetImporterSelectorToolBox *medCompositeDataSetImporterAbstractToolBox::parent()
 {
     return d->parent;
 }
 
-dtkAbstractData *medCompositeDataSetImporterAbstractToolBox::output (void) const
+dtkAbstractData *medCompositeDataSetImporterAbstractToolBox::output() const
 {
     DTK_DEFAULT_IMPLEMENTATION;
     return NULL;

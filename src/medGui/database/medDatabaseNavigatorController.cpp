@@ -19,7 +19,7 @@
 
 #include "medDatabaseNavigatorController.h"
 
-medDatabaseNavigatorController *medDatabaseNavigatorController::instance(void)
+medDatabaseNavigatorController *medDatabaseNavigatorController::instance()
 {
     if(!s_instance)
         s_instance = new medDatabaseNavigatorController;
@@ -27,57 +27,57 @@ medDatabaseNavigatorController *medDatabaseNavigatorController::instance(void)
     return s_instance;
 }
 
-Qt::Orientation medDatabaseNavigatorController::orientation(void)
+Qt::Orientation medDatabaseNavigatorController::orientation()
 {
     return m_orientation;
 }
 
-qreal medDatabaseNavigatorController::itemWidth(void) const
+qreal medDatabaseNavigatorController::itemWidth() const
 {
     return this->m_width;
 }
 
-qreal medDatabaseNavigatorController::itemHeight(void) const
+qreal medDatabaseNavigatorController::itemHeight() const
 {
     return this->m_height;
 }
 
-qreal medDatabaseNavigatorController::itemSpacing(void) const
+qreal medDatabaseNavigatorController::itemSpacing() const
 {
     return 10;
 }
 
-qreal medDatabaseNavigatorController::groupWidth(void) const
+qreal medDatabaseNavigatorController::groupWidth() const
 {
     return this->itemWidth() + 2 * this->itemSpacing();
 }
 
-qreal medDatabaseNavigatorController::groupHeight(void) const
+qreal medDatabaseNavigatorController::groupHeight() const
 {
     return this->itemHeight() + 2 * this->itemSpacing();
 }
 
-qreal medDatabaseNavigatorController::groupSpacing(void) const
+qreal medDatabaseNavigatorController::groupSpacing() const
 {
     return 10;
 }
 
-qreal medDatabaseNavigatorController::selectorWidth(void) const
+qreal medDatabaseNavigatorController::selectorWidth() const
 {
     return this->itemWidth() + 8;
 }
 
-qreal medDatabaseNavigatorController::selectorHeight(void) const
+qreal medDatabaseNavigatorController::selectorHeight() const
 {
     return this->itemHeight() + 8;
 }
 
-qreal medDatabaseNavigatorController::selectorSpacing(void) const
+qreal medDatabaseNavigatorController::selectorSpacing() const
 {
     return 10;
 }
 
-qreal medDatabaseNavigatorController::queryOffset(void) const
+qreal medDatabaseNavigatorController::queryOffset() const
 {
     return this->itemWidth()/2;
 }
@@ -93,7 +93,7 @@ void medDatabaseNavigatorController::setOrientation(Qt::Orientation orientation)
     this->m_orientation = orientation;
 }
 
-medDatabaseNavigatorController::medDatabaseNavigatorController(void)
+medDatabaseNavigatorController::medDatabaseNavigatorController()
 {
     this->m_width = 72;
     this->m_height = 72;
@@ -101,7 +101,7 @@ medDatabaseNavigatorController::medDatabaseNavigatorController(void)
     this->m_orientation = Qt::Horizontal;
 }
 
-medDatabaseNavigatorController::~medDatabaseNavigatorController(void)
+medDatabaseNavigatorController::~medDatabaseNavigatorController()
 {
 
 }

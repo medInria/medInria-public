@@ -25,7 +25,7 @@ public:
     /**
      * Destructor
      */
-    ~medStatusBar(void);
+    ~medStatusBar();
 
     /**
      *  Set the status bar layout containing the widgets

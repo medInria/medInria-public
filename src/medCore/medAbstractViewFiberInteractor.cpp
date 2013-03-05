@@ -141,7 +141,7 @@ void medAbstractViewFiberInteractor::computeBundleLengthStatistics(const QString
 {
 }
 
-void medAbstractViewFiberInteractor::clearStatistics(void)
+void medAbstractViewFiberInteractor::clearStatistics()
 {
     d2->meanFAList.clear();
     d2->minFAList.clear();

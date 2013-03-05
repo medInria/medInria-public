@@ -25,8 +25,8 @@ public:
     virtual ~medSeedPointAnnotationData();
 
     //! Implement dtkAbstractObject
-    QString description(void) const;
-    QString identifier(void) const;
+    QString description() const;
+    QString identifier() const;
 
     //! static methods returning description and id
     static QString s_description();

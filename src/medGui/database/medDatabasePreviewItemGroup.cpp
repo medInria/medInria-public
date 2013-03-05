@@ -38,7 +38,7 @@ medDatabasePreviewItemGroup::medDatabasePreviewItemGroup(QGraphicsItem *parent) 
     d->itemCount = 0;
 }
 
-medDatabasePreviewItemGroup::~medDatabasePreviewItemGroup(void)
+medDatabasePreviewItemGroup::~medDatabasePreviewItemGroup()
 {
     delete d;
 
@@ -68,7 +68,7 @@ void medDatabasePreviewItemGroup::addItem(medDatabasePreviewItem *item)
     d->itemCount++;
 }
 
-void medDatabasePreviewItemGroup::clear(void)
+void medDatabasePreviewItemGroup::clear()
 {
     foreach(QGraphicsItem *item, this->childItems())
         delete item;
@@ -85,7 +85,7 @@ medDatabasePreviewItem *medDatabasePreviewItemGroup::item(int index)
     return NULL;
 }
 
-QRectF medDatabasePreviewItemGroup::boundingRect(void) const
+QRectF medDatabasePreviewItemGroup::boundingRect() const
 {
     qreal itemWidth   = medDatabasePreviewController::instance()->itemWidth();
     qreal itemHeight  = medDatabasePreviewController::instance()->itemHeight();

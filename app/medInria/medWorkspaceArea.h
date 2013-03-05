@@ -35,7 +35,7 @@ public:
      *
      * @param void
     */
-    ~medWorkspaceArea(void);
+    ~medWorkspaceArea();
 
     /**
      * @brief Called whenever the viewer area is switched to. Add viewer area
@@ -119,7 +119,7 @@ public slots:
      * Removes the view from the medViewManager
      * @param void
     */
-    void onViewClosed(void);
+    void onViewClosed();
 
     /**
      * @brief  Updates the medToolBoxes when a layer (data) has been removed from a view.
@@ -214,7 +214,7 @@ protected:
      * @param void
      * @return medViewContainer *
     */
-    medViewContainer      *currentRootContainer(void);
+    medViewContainer      *currentRootContainer();
 
     /**
      * @brief Returns the currently focused child container.
@@ -226,7 +226,7 @@ protected:
      * @param void
      * @return medViewContainer *
     */
-    medViewContainer      *currentContainerFocused(void);
+    medViewContainer      *currentContainerFocused();
 
 protected slots:
     /**

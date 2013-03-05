@@ -58,7 +58,7 @@ public:
      *
      * @param void
     */
-    ~medWorkspace(void);
+    ~medWorkspace();
 
     /**
      * @brief Identifies a workspace in the factory.
@@ -90,7 +90,7 @@ public:
      * @param void
      * @return QList<medToolBox *>
     */
-    QList<medToolBox*> toolBoxes(void) const;
+    QList<medToolBox*> toolBoxes() const;
 
     /**
      * @brief Sets the LayoutType.
@@ -107,7 +107,7 @@ public:
      * @param void
      * @return LayoutType
     */
-    LayoutType layoutType(void) const;
+    LayoutType layoutType() const;
 
     /**
      * @brief Switches to an other container.
@@ -132,7 +132,7 @@ public:
      * @param void
      * @return int
     */
-    int customLayoutPreset(void) const;
+    int customLayoutPreset() const;
 
     /**
      * @brief Sets the Database navigator's visibility.
@@ -149,7 +149,7 @@ public:
      * @param void
      * @return bool
     */
-    bool isDatabaseVisible(void) const;
+    bool isDatabaseVisible() const;
 
     /**
      * @brief Sets the toolbox containers's visibility.
@@ -166,7 +166,7 @@ public:
      * @param void
      * @return bool
     */
-    bool areToolBoxesVisible(void) const;
+    bool areToolBoxesVisible() const;
 
     /**
      * @brief Sets up the medTabbedViewContainers.

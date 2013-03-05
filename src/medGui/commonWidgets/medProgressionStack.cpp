@@ -65,14 +65,14 @@ medProgressionStack::medProgressionStack(QWidget *parent) : QWidget(parent), d(n
     d->layout->setSpacing(4);
 }
 
-medProgressionStack::~medProgressionStack(void)
+medProgressionStack::~medProgressionStack()
 {
     delete d;
 
     d = NULL;
 }
 
-QSize medProgressionStack::sizeHint(void) const
+QSize medProgressionStack::sizeHint() const
 {
     if(d->bars.count())
         return QSize(d->bars.values().first()->width(), (d->bars.values().first()->height()+4) * d->bars.values().count());

@@ -17,12 +17,12 @@ int medAbstractPacsEchoScu::sendEchoRequest( const char* peerTitle, const char* 
     return 0;
 }
 
-medAbstractPacsEchoScu::medAbstractPacsEchoScu( void )
+medAbstractPacsEchoScu::medAbstractPacsEchoScu()
 {
 
 }
 
-medAbstractPacsEchoScu::~medAbstractPacsEchoScu( void )
+medAbstractPacsEchoScu::~medAbstractPacsEchoScu()
 {
 
 }

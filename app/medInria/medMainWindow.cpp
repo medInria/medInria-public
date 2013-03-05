@@ -129,7 +129,7 @@ public:
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
-extern "C" int init_core ( void );               // -- Initialization core layer python wrapped functions
+extern "C" int init_core();               // -- Initialization core layer python wrapped functions
 #endif
 
 #if defined(HAVE_SWIG) && defined(HAVE_TCL)
@@ -333,7 +333,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
 }
 
-medMainWindow::~medMainWindow ( void )
+medMainWindow::~medMainWindow()
 {
     delete d;
 
@@ -346,7 +346,7 @@ void medMainWindow::mousePressEvent ( QMouseEvent* event )
     this->onHideQuickAccess();
 }
 
-void medMainWindow::readSettings ( void )
+void medMainWindow::readSettings()
 {
     // if the user configured a default area we need to show it
     medSettingsManager * mnger = medSettingsManager::instance();
@@ -396,7 +396,7 @@ void medMainWindow::writeSettings()
     }
 }
 
-void medMainWindow::updateQuickAccessMenu ( void )
+void medMainWindow::updateQuickAccessMenu()
 {
      QHash<QString,medWorkspaceDetails*> workspaceDetails =
              medWorkspaceFactory::instance()->workspaceDetails();
@@ -539,7 +539,7 @@ void medMainWindow::showMaximized()
     QMainWindow::showMaximized();
 }
 
-void medMainWindow::switchToHomepageArea ( void )
+void medMainWindow::switchToHomepageArea()
 {
     d->quickAccessButton->setText(tr("Workspaces access menu"));
     d->quickAccessButton->setMinimumWidth(170);
@@ -552,7 +552,7 @@ void medMainWindow::switchToHomepageArea ( void )
         d->homepageArea->getAnimation()->start();
 }
 
-void medMainWindow::switchToBrowserArea ( void )
+void medMainWindow::switchToBrowserArea()
 {
     d->quickAccessButton->setText(tr("Workspace: Browser"));
     d->quickAccessButton->setMinimumWidth(170);
@@ -564,7 +564,7 @@ void medMainWindow::switchToBrowserArea ( void )
     d->stack->setCurrentWidget ( d->browserArea );
 }
 
-void medMainWindow::switchToWorkspaceArea ( void )
+void medMainWindow::switchToWorkspaceArea()
 {
     if (d->quickAccessVisible)
         this->onHideQuickAccess();
@@ -607,7 +607,7 @@ void medMainWindow::onShowWorkspace ( QString workspace )
     d->quickAccessButton->setText(tr("Workspace: ") + details->name);
 }
 
-void medMainWindow::onShowQuickAccess ( void )
+void medMainWindow::onShowQuickAccess()
 {
     if ( d->quickAccessVisible )
     {
@@ -623,7 +623,7 @@ void medMainWindow::onShowQuickAccess ( void )
     d->quickAccessAnimation->start();
 }
 
-void medMainWindow::onHideQuickAccess ( void )
+void medMainWindow::onHideQuickAccess()
 {
     if (!d->quickAccessVisible)
         return;
@@ -639,19 +639,19 @@ void medMainWindow::onWorkspaceTriggered ( QAction *action )
     d->workspaceArea->setupWorkspace ( action->text() );
 }
 
-void medMainWindow::onNoQuit ( void )
+void medMainWindow::onNoQuit()
 {
     d->quitMessage->hide();
     d->rightEndButtons->show();
 }
 
-void medMainWindow::onQuit ( void )
+void medMainWindow::onQuit()
 {
     d->quitMessage->show();
     d->rightEndButtons->hide();
 }
 
-void medMainWindow::onSaveModified( void )
+void medMainWindow::onSaveModified()
 {
     QList<medDataIndex> indexes =
             medDatabaseNonPersistentController::instance()->availableItems();

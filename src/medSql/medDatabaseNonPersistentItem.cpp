@@ -20,80 +20,80 @@
 #include "medDatabaseNonPersistentItem.h"
 #include "medDatabaseNonPersistentItem_p.h"
 
-medDatabaseNonPersistentItem::medDatabaseNonPersistentItem(void) : QObject(), d(new medDatabaseNonPersistentItemPrivate)
+medDatabaseNonPersistentItem::medDatabaseNonPersistentItem() : QObject(), d(new medDatabaseNonPersistentItemPrivate)
 {
     //d->data = NULL;
 }
 
-medDatabaseNonPersistentItem::~medDatabaseNonPersistentItem(void)
+medDatabaseNonPersistentItem::~medDatabaseNonPersistentItem()
 {
     delete d;
 
     d = NULL;
 }
 
-const QString& medDatabaseNonPersistentItem::name(void) const
+const QString& medDatabaseNonPersistentItem::name() const
 {
     return d->name;
 }
 
-const QString& medDatabaseNonPersistentItem::birthdate ( void ) const
+const QString& medDatabaseNonPersistentItem::birthdate() const
 {
     return d->birthdate;
 }
 
-const QString& medDatabaseNonPersistentItem::patientId ( void ) const
+const QString& medDatabaseNonPersistentItem::patientId() const
 {
   return d->patientId;
 }
 
-const QString& medDatabaseNonPersistentItem::studyName(void) const
+const QString& medDatabaseNonPersistentItem::studyName() const
 {
     return d->studyName;
 }
 
-const QString& medDatabaseNonPersistentItem::studyId ( void ) const
+const QString& medDatabaseNonPersistentItem::studyId() const
 {
   return d->studyId;
 }
 
-const QString& medDatabaseNonPersistentItem::studyUid ( void ) const
+const QString& medDatabaseNonPersistentItem::studyUid() const
 {
   return d->studyUid;
 }
 
 
-const QString& medDatabaseNonPersistentItem::seriesName(void) const
+const QString& medDatabaseNonPersistentItem::seriesName() const
 {
     return d->seriesName;
 }
 
-const QString& medDatabaseNonPersistentItem::seriesId ( void ) const
+const QString& medDatabaseNonPersistentItem::seriesId() const
 {
     return d->seriesId;
 }
 
-const QString& medDatabaseNonPersistentItem::seriesUid ( void ) const
+const QString& medDatabaseNonPersistentItem::seriesUid() const
 {
   return d->seriesUid;
 }
 
-const QString& medDatabaseNonPersistentItem::file(void) const
+const QString& medDatabaseNonPersistentItem::file() const
 {
     return d->file;
 }
 
-const QImage& medDatabaseNonPersistentItem::thumb(void) const
+const QImage& medDatabaseNonPersistentItem::thumb() const
 {
     return d->thumb;
 }
 
-const medDataIndex& medDatabaseNonPersistentItem::index(void) const
+const medDataIndex& medDatabaseNonPersistentItem::index() const
 {
     return d->index;
 }
 
-dtkAbstractData *medDatabaseNonPersistentItem::data(void)
+dtkAbstractData *medDatabaseNonPersistentItem::data()
 {
     return d->data;
 }

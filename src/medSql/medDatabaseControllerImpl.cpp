@@ -141,12 +141,12 @@ void medDatabaseControllerImplPrivate::buildMetaDataLookup()
 }
 
 
-QSqlDatabase *medDatabaseControllerImpl::database(void)
+QSqlDatabase *medDatabaseControllerImpl::database()
 {
     return &m_database;
 }
 
-bool medDatabaseControllerImpl::createConnection(void)
+bool medDatabaseControllerImpl::createConnection()
 {
     medStorage::mkpath(medStorage::dataLocation() + "/");
 
@@ -182,7 +182,7 @@ bool medDatabaseControllerImpl::createConnection(void)
     return true;
 }
 
-bool medDatabaseControllerImpl::closeConnection(void)
+bool medDatabaseControllerImpl::closeConnection()
 {
     m_database.close();
     QSqlDatabase::removeDatabase("QSQLITE");
@@ -459,7 +459,7 @@ void medDatabaseControllerImpl::showOpeningError(QObject *sender)
     medMessageController::instance()->showError(sender, "Opening item failed.", 3000);
 }
 
-void medDatabaseControllerImpl::createPatientTable(void)
+void medDatabaseControllerImpl::createPatientTable()
 {
     QSqlQuery query(*(this->database()));
     query.exec(
@@ -474,7 +474,7 @@ void medDatabaseControllerImpl::createPatientTable(void)
             );
 }
 
-void medDatabaseControllerImpl::createStudyTable(void)
+void medDatabaseControllerImpl::createStudyTable()
 {
     QSqlQuery query(*(this->database()));
 
@@ -490,7 +490,7 @@ void medDatabaseControllerImpl::createStudyTable(void)
             );
 }
 
-void medDatabaseControllerImpl::createSeriesTable(void)
+void medDatabaseControllerImpl::createSeriesTable()
 {
     QSqlQuery query(*(this->database()));
     query.exec(
@@ -525,7 +525,7 @@ void medDatabaseControllerImpl::createSeriesTable(void)
             );
 }
 
-void medDatabaseControllerImpl::createImageTable(void)
+void medDatabaseControllerImpl::createImageTable()
 {
     // Note to the reader who came here looking for the 'size' column:
     // it was removed because it was always filled with a

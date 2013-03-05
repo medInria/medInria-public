@@ -175,7 +175,7 @@ protected:
     /**
       * Clear the statistics (removes pre-computed from the cache).
       */
-    void clearStatistics (void);
+    void clearStatistics();
 
 private:
     medAbstractViewFiberInteractorPrivate *d2;

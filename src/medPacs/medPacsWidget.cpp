@@ -37,7 +37,7 @@
 class medPacsWidgetPrivate : public QThread
 {
 protected:
-    void run(void);
+    void run();
 
 public:
     int index(medAbstractPacsNode& node);
@@ -56,7 +56,7 @@ public:
 
 };
 
-void medPacsWidgetPrivate::run(void)
+void medPacsWidgetPrivate::run()
 {
     if(!this->server) {
         qWarning() << "DICOM server could not be started! pacsmodule not loaded?";
@@ -117,7 +117,7 @@ medPacsWidget::medPacsWidget(QWidget *parent) : QTreeWidget(parent), d(new medPa
 
 }
 
-medPacsWidget::~medPacsWidget(void)
+medPacsWidget::~medPacsWidget()
 {
     if (d->find) delete d->find;
     if (d->echo) delete d->echo;
@@ -132,7 +132,7 @@ medPacsWidget::~medPacsWidget(void)
     d = NULL;
 }
 
-void medPacsWidget::readSettings(void)
+void medPacsWidget::readSettings()
 {
     QSettings settings;
     settings.beginGroup("medBrowserPacsHostToolBox");
@@ -359,7 +359,7 @@ void medPacsWidget::updateContextMenu(const QPoint& point)
 
 
 
-void medPacsWidget::onItemImported(void)
+void medPacsWidget::onItemImported()
 {
     this->readSettings();
     QList<QTreeWidgetItem*> itemList = this->selectedItems();

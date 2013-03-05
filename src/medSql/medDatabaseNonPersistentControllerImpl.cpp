@@ -84,7 +84,7 @@ int medDatabaseNonPersistentControllerImpl::imageId(bool increment)
         return d->imageIndex;
 }
 
-QList<medDatabaseNonPersistentItem *> medDatabaseNonPersistentControllerImpl::items(void)
+QList<medDatabaseNonPersistentItem *> medDatabaseNonPersistentControllerImpl::items()
 {
     return d->items.values();
 }
@@ -129,12 +129,12 @@ dtkSmartPointer<dtkAbstractData> medDatabaseNonPersistentControllerImpl::read( c
     return ret;
 }
 
-int medDatabaseNonPersistentControllerImpl::nonPersistentDataStartingIndex(void) const
+int medDatabaseNonPersistentControllerImpl::nonPersistentDataStartingIndex() const
 {
     return 100000000;
 }
 
-medDatabaseNonPersistentControllerImpl::medDatabaseNonPersistentControllerImpl(void): d(new medDatabaseNonPersistentControllerImplPrivate)
+medDatabaseNonPersistentControllerImpl::medDatabaseNonPersistentControllerImpl(): d(new medDatabaseNonPersistentControllerImplPrivate)
 {
     d->patientIndex = nonPersistentDataStartingIndex();
     d->studyIndex = nonPersistentDataStartingIndex();
@@ -142,7 +142,7 @@ medDatabaseNonPersistentControllerImpl::medDatabaseNonPersistentControllerImpl(v
     d->imageIndex = nonPersistentDataStartingIndex();
 }
 
-medDatabaseNonPersistentControllerImpl::~medDatabaseNonPersistentControllerImpl(void)
+medDatabaseNonPersistentControllerImpl::~medDatabaseNonPersistentControllerImpl()
 {
     foreach(medDatabaseNonPersistentItem *item, d->items)
         delete item;
@@ -176,7 +176,7 @@ void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
     QThreadPool::globalInstance()->start(importer);
 }
 
-void medDatabaseNonPersistentControllerImpl::clear(void)
+void medDatabaseNonPersistentControllerImpl::clear()
 {
     // objects are reference counted.
     // We could check if the item is still in use... but we just remove our reference here.

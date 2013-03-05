@@ -139,7 +139,7 @@ public slots:
     /**
     * This method clears data already loaded in the database.
     */
-    virtual void clear (void);
+    virtual void clear();
 
     /**
      * @brief Checks if a medDataIndex is in the db.

@@ -33,7 +33,7 @@ public:
 // medAbstractDataMesh
 // /////////////////////////////////////////////////////////////////
 
-medAbstractDataMesh::medAbstractDataMesh(void) : medAbstractData(), d(new medAbstractDataMeshPrivate)
+medAbstractDataMesh::medAbstractDataMesh() : medAbstractData(), d(new medAbstractDataMeshPrivate)
 {
 
 }
@@ -43,14 +43,14 @@ medAbstractDataMesh::medAbstractDataMesh(const  medAbstractDataMesh& other): med
 
 }
 
-medAbstractDataMesh::~medAbstractDataMesh(void)
+medAbstractDataMesh::~medAbstractDataMesh()
 {
     delete d;
 
     d = NULL;
 }
 
-void *medAbstractDataMesh::mesh(void)
+void *medAbstractDataMesh::mesh()
 {
     return this->data();
 }

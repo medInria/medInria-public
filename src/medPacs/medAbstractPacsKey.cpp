@@ -1,11 +1,11 @@
 #include "medAbstractPacsKey.h"
 
-medAbstractPacsKey::medAbstractPacsKey( void )
+medAbstractPacsKey::medAbstractPacsKey()
 {
 
 }
 
-medAbstractPacsKey::~medAbstractPacsKey( void )
+medAbstractPacsKey::~medAbstractPacsKey()
 {
 
 }

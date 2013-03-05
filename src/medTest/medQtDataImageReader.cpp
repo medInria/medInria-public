@@ -21,7 +21,7 @@
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
-dtkAbstractDataReader *createMedQtDataImageReader(void)
+dtkAbstractDataReader *createMedQtDataImageReader()
 {
     return new medQtDataImageReader;
 }
@@ -35,7 +35,7 @@ medQtDataImageReader::~medQtDataImageReader()
 {
 }
 
-bool medQtDataImageReader::registered(void)
+bool medQtDataImageReader::registered()
 {
     return dtkAbstractDataFactory::instance()->registerDataReaderType(
         medQtDataImageReader::s_description(),

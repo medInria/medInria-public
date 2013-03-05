@@ -143,29 +143,29 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
     d->fadingAnimation->addAnimation(d->itemTrasherFadingAnimation);
 }
 
-medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)
+medDatabaseNavigatorItem::~medDatabaseNavigatorItem()
 {
     delete d;
 
     d = NULL;
 }
 
-medDatabaseNavigatorItem *medDatabaseNavigatorItem::clone(void)
+medDatabaseNavigatorItem *medDatabaseNavigatorItem::clone()
 {
     return new medDatabaseNavigatorItem(d->index, 0);
 }
 
-void medDatabaseNavigatorItem::setup(void)
+void medDatabaseNavigatorItem::setup()
 {
     // Retrieve attributes from the database
 }
 
-medDataIndex medDatabaseNavigatorItem::dataIndex(void) const
+medDataIndex medDatabaseNavigatorItem::dataIndex() const
 {
     return d->index;
 }
 
-QString medDatabaseNavigatorItem::text(void) const
+QString medDatabaseNavigatorItem::text() const
 {
     return d->text;
 }

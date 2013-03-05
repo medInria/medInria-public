@@ -17,12 +17,12 @@ int medAbstractPacsMoveScu::sendMoveRequest( const char* peerTitle, const char* 
     return 0;
 }
 
-medAbstractPacsMoveScu::medAbstractPacsMoveScu( void )
+medAbstractPacsMoveScu::medAbstractPacsMoveScu()
 {
 
 }
 
-medAbstractPacsMoveScu::~medAbstractPacsMoveScu( void )
+medAbstractPacsMoveScu::~medAbstractPacsMoveScu()
 {
 
 }

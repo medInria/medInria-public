@@ -171,7 +171,7 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     }
  }
 
-medBrowserArea::~medBrowserArea(void)
+medBrowserArea::~medBrowserArea()
 {
     foreach(medAbstractDataSource* source, d->dataSources)
     {

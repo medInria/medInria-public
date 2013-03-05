@@ -41,7 +41,7 @@ class medBrowserArea : public QWidget
 
 public:
      medBrowserArea(QWidget *parent = 0);
-    ~medBrowserArea(void);
+    ~medBrowserArea();
 
     void setup(QStatusBar *status);
     void setdw(QStatusBar *status);

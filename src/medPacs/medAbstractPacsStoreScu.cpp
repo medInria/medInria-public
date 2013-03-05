@@ -2,12 +2,12 @@
 
 #include <dtkCore/dtkGlobal.h>
 
-medAbstractPacsStoreScu::medAbstractPacsStoreScu( void )
+medAbstractPacsStoreScu::medAbstractPacsStoreScu()
 {
 
 }
 
-medAbstractPacsStoreScu::~medAbstractPacsStoreScu( void )
+medAbstractPacsStoreScu::~medAbstractPacsStoreScu()
 {
 
 }

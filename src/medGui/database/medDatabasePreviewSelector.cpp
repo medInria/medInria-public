@@ -32,24 +32,24 @@ medDatabasePreviewSelector::medDatabasePreviewSelector(QGraphicsItem *parent) : 
     d->rect = QRectF(0, 0, medDatabasePreviewController::instance()->selectorWidth(), medDatabasePreviewController::instance()->selectorHeight());
 }
 
-medDatabasePreviewSelector::~medDatabasePreviewSelector(void)
+medDatabasePreviewSelector::~medDatabasePreviewSelector()
 {
     delete d;
 
     d = NULL;
 }
 
-QRectF medDatabasePreviewSelector::rect(void) const
+QRectF medDatabasePreviewSelector::rect() const
 {
     return d->rect;
 }
 
-QRectF medDatabasePreviewSelector::boundingRect(void) const
+QRectF medDatabasePreviewSelector::boundingRect() const
 {
     return QRectF(0, 0, medDatabasePreviewController::instance()->selectorWidth(), medDatabasePreviewController::instance()->selectorHeight());
 }
 
-QString medDatabasePreviewSelector::text(void) const
+QString medDatabasePreviewSelector::text() const
 {
     return d->text;
 }

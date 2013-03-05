@@ -2,7 +2,7 @@
 
 #include <medAbstractDbController.h>
 
-QPointer<medDatabaseNonPersistentControllerImpl> medDatabaseNonPersistentController::instance(void)
+QPointer<medDatabaseNonPersistentControllerImpl> medDatabaseNonPersistentController::instance()
 {
     if(!s_instance)
         s_instance = new medDatabaseNonPersistentControllerImpl();
@@ -10,7 +10,7 @@ QPointer<medDatabaseNonPersistentControllerImpl> medDatabaseNonPersistentControl
     return s_instance;
 }
 
-void medDatabaseNonPersistentController::destroy(void)
+void medDatabaseNonPersistentController::destroy()
 {
     if (s_instance) {
         delete s_instance;

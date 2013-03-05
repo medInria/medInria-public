@@ -8,7 +8,7 @@ public:
     medDbControllerFactory::medDbControllerCreatorHash dbControllerCreators;
 };
 
-medDbControllerFactory * medDbControllerFactory::instance( void )
+medDbControllerFactory * medDbControllerFactory::instance()
 {
     if(!s_instance)
         s_instance = new medDbControllerFactory();
@@ -55,12 +55,12 @@ QList <QString> medDbControllerFactory::controllers()
 }
 
 
-medDbControllerFactory::medDbControllerFactory( void ): dtkAbstractFactory(), d(new medDbControllerFactoryPrivate)
+medDbControllerFactory::medDbControllerFactory(): dtkAbstractFactory(), d(new medDbControllerFactoryPrivate)
 {
 
 }
 
-medDbControllerFactory::~medDbControllerFactory( void )
+medDbControllerFactory::~medDbControllerFactory()
 {
     delete d;
     d = NULL;

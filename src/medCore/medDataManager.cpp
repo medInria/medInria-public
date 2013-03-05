@@ -102,7 +102,7 @@ QMutex medDataManagerPrivate::mutex;
 
 //-------------------------------------------------------------------------------------------------------
 
-medDataManager *medDataManager::instance(void)
+medDataManager *medDataManager::instance()
 {
     if(!s_instance)
         s_instance = new medDataManager;
@@ -198,7 +198,7 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
 
 //-------------------------------------------------------------------------------------------------------
 
-medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
+medDataManager::medDataManager() : d(new medDataManagerPrivate)
 {
     medAbstractDbController* db = d->getDbController();
     medAbstractDbController* npDb = d->getNonPersDbController();
@@ -217,7 +217,7 @@ medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
 
 //-------------------------------------------------------------------------------------------------------
 
-medDataManager::~medDataManager(void)
+medDataManager::~medDataManager()
 {
     tryFreeMemory(getUpperMemoryThreshold());
     delete d;
@@ -227,7 +227,7 @@ medDataManager::~medDataManager(void)
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::destroy( void )
+void medDataManager::destroy()
 {
     if (s_instance) {
         delete s_instance;
@@ -528,7 +528,7 @@ void medDataManager::exportDataToFile(dtkAbstractData *data, const QString &file
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::storeNonPersistentDataToDatabase( void )
+void medDataManager::storeNonPersistentDataToDatabase()
 {
     foreach (medDataIndex index, d->volatileDataCache.keys()) {
         this->storeNonPersistentSingleDataToDatabase (index);
@@ -586,14 +586,14 @@ void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index,
 
 //-------------------------------------------------------------------------------------------------------
 
-int medDataManager::nonPersistentDataCount( void ) const
+int medDataManager::nonPersistentDataCount() const
 {
     return d->volatileDataCache.count();
 }
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::clearNonPersistentData( void )
+void medDataManager::clearNonPersistentData()
 {
     if (medAbstractDbController* npDb = d->getNonPersDbController())
         npDb->clear();
@@ -603,7 +603,7 @@ void medDataManager::clearNonPersistentData( void )
 
 //-------------------------------------------------------------------------------------------------------
 
-bool medDataManager::is32Bit( void )
+bool medDataManager::is32Bit()
 {
     if ( sizeof(void *) == 4 )
         return true;

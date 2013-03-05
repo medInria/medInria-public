@@ -53,14 +53,14 @@ medDatabaseNonPersistentReader::medDatabaseNonPersistentReader ( const QString& 
     qDebug() << "npr created with uuid:"<< d->callerUuid;
 }
 
-medDatabaseNonPersistentReader::~medDatabaseNonPersistentReader ( void )
+medDatabaseNonPersistentReader::~medDatabaseNonPersistentReader()
 {
     delete d;
 
     d = NULL;
 }
 
-void medDatabaseNonPersistentReader::run ( void )
+void medDatabaseNonPersistentReader::run()
 {
     qDebug() << DTK_PRETTY_FUNCTION;
 

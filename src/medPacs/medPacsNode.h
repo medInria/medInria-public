@@ -20,15 +20,15 @@ class medPacsNode : public medAbstractPacsNode
             m_port = port;
         }
 
-        QString title(void) {
+        QString title() {
             return m_title;
         }
 
-        QString ip(void) {
+        QString ip() {
             return m_ip;
         }
 
-        unsigned int port(void) {
+        unsigned int port() {
             return m_port;
         }
 		

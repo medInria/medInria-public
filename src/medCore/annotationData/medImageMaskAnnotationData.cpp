@@ -25,7 +25,7 @@ QString medImageMaskAnnotationData::s_description()
     return desc;
 }
 
-QString medImageMaskAnnotationData::description( void ) const
+QString medImageMaskAnnotationData::description() const
 {
     return medImageMaskAnnotationData::s_description();
 }
@@ -36,12 +36,12 @@ QString medImageMaskAnnotationData::s_identifier()
     return id;
 }
 
-QString medImageMaskAnnotationData::identifier( void ) const
+QString medImageMaskAnnotationData::identifier() const
 {
     return medImageMaskAnnotationData::s_identifier();
 }
 
-void * medImageMaskAnnotationData::data( void )
+void * medImageMaskAnnotationData::data()
 {
     return (QObject *)this->maskData();
 }

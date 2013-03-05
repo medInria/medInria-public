@@ -4,12 +4,12 @@
 
 #include <QtCore>
 
-medAbstractPacsBaseScu::medAbstractPacsBaseScu(void)
+medAbstractPacsBaseScu::medAbstractPacsBaseScu()
 {
 
 }
 
-medAbstractPacsBaseScu::~medAbstractPacsBaseScu(void)
+medAbstractPacsBaseScu::~medAbstractPacsBaseScu()
 {
 
 }
@@ -33,12 +33,12 @@ void medAbstractPacsBaseScu::setQueryLevel( eQueryLevel level )
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-void medAbstractPacsBaseScu::clearAllQueryAttributes(void)
+void medAbstractPacsBaseScu::clearAllQueryAttributes()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-QVector<medAbstractPacsNode*> medAbstractPacsBaseScu::getNodeContainer( void )
+QVector<medAbstractPacsNode*> medAbstractPacsBaseScu::getNodeContainer()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 

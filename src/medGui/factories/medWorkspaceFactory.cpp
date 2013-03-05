@@ -11,7 +11,7 @@ public:
     medWorkspaceCreatorHash creators;
 };
 
-medWorkspaceFactory *medWorkspaceFactory::instance(void)
+medWorkspaceFactory *medWorkspaceFactory::instance()
 {
     if(!s_instance)
         s_instance = new medWorkspaceFactory;
@@ -40,7 +40,7 @@ bool medWorkspaceFactory::registerWorkspace(QString identifier,
     return false;
 }
 
-QList<QString> medWorkspaceFactory::workspaces(void)
+QList<QString> medWorkspaceFactory::workspaces()
 {
     return d->creators.keys();
 }
@@ -60,12 +60,12 @@ QHash<QString, medWorkspaceDetails *> medWorkspaceFactory::workspaceDetails() co
     return d->creators;
 }
 
-medWorkspaceFactory::medWorkspaceFactory(void) : dtkAbstractFactory(), d(new medWorkspaceFactoryPrivate)
+medWorkspaceFactory::medWorkspaceFactory() : dtkAbstractFactory(), d(new medWorkspaceFactoryPrivate)
 {
 
 }
 
-medWorkspaceFactory::~medWorkspaceFactory(void)
+medWorkspaceFactory::~medWorkspaceFactory()
 {
     foreach (medWorkspaceDetails * detail, d->creators.values())
     {

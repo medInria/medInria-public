@@ -142,12 +142,12 @@ const medAbstractViewCoordinates * medAbstractAnnotationViewInteractor::coordina
 
 
 
-QString medAbstractAnnotationViewInteractor::description( void ) const
+QString medAbstractAnnotationViewInteractor::description() const
 {
     return QString("medAbstractAnnotationRepresentation");
 }
 
-QString medAbstractAnnotationViewInteractor::identifier( void ) const
+QString medAbstractAnnotationViewInteractor::identifier() const
 {
     return QString("medAbstractAnnotationRepresentation");
 }

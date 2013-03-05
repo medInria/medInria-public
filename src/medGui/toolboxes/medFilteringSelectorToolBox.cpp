@@ -82,7 +82,7 @@ medFilteringSelectorToolBox::~medFilteringSelectorToolBox()
     d = NULL;
 }
 
-medFilteringAbstractToolBox* medFilteringSelectorToolBox::customToolbox ( void )
+medFilteringAbstractToolBox* medFilteringSelectorToolBox::customToolbox()
 {
 
     return d->customToolBox;
@@ -148,7 +148,7 @@ void medFilteringSelectorToolBox::onInputSelected ( const medDataIndex& index )
     }
 }
 
-void medFilteringSelectorToolBox::clear ( void )
+void medFilteringSelectorToolBox::clear()
 {
     if ( d->customToolBox )
         d->customToolBox->clear();
@@ -164,7 +164,7 @@ void medFilteringSelectorToolBox::setDataIndex ( medDataIndex index )
     d->index = index;
 }
 
-void medFilteringSelectorToolBox::onSavedImage ( void )
+void medFilteringSelectorToolBox::onSavedImage()
 {
     medDataManager::instance()->storeNonPersistentSingleDataToDatabase ( d->index );
 }

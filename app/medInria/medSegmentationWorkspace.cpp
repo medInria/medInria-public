@@ -83,7 +83,7 @@ medWorkspace(parent), d(new medSegmentationWorkspacePrivate)
     this->addToolBox( d->viewPropertiesToolBox );
 }
 
-medSegmentationWorkspace::~medSegmentationWorkspace(void)
+medSegmentationWorkspace::~medSegmentationWorkspace()
 {
     delete d;
     d = NULL;
@@ -113,7 +113,7 @@ void medSegmentationWorkspace::setupViewContainerStack()
 }
 
 //static
-QString medSegmentationWorkspace::description( void ) const
+QString medSegmentationWorkspace::description() const
 {
     return msegWorkspaceSegmentationDescription;
 }
@@ -162,7 +162,7 @@ QString medSegmentationWorkspace::s_identifier()
     return "msegWorkspace";
 }
 
-QString medSegmentationWorkspace::identifier( void ) const
+QString medSegmentationWorkspace::identifier() const
 {
     return s_identifier();
 }

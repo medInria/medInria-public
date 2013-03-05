@@ -131,7 +131,7 @@ void medAbstractView::getTransferFunctions( QList<double> & scalars,
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-QWidget *medAbstractView::receiverWidget(void)
+QWidget *medAbstractView::receiverWidget()
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
@@ -147,7 +147,7 @@ void medAbstractView::setLinkPosition (bool value)
         setProperty("PositionLinked","false");
 }
 
-bool medAbstractView::positionLinked (void) const
+bool medAbstractView::positionLinked() const
 {
     return d->linkPosition;
 }
@@ -157,7 +157,7 @@ void medAbstractView::setLinkWindowing (bool value)
     d->linkWindowing = value;
 }
 
-bool medAbstractView::windowingLinked (void) const
+bool medAbstractView::windowingLinked() const
 {
     return d->linkWindowing;
 }
@@ -167,7 +167,7 @@ void medAbstractView::setLinkCamera (bool value)
     d->linkCamera = value;
 }
 
-bool medAbstractView::cameraLinked (void) const
+bool medAbstractView::cameraLinked() const
 {
     return d->linkCamera;
 }
@@ -188,7 +188,7 @@ void medAbstractView::setPosition (const QVector3D &position)
     emit positionChanged (position, d->linkPosition);
 }
 
-QVector3D medAbstractView::position(void) const
+QVector3D medAbstractView::position() const
 {
     return d->position;
 }
@@ -203,7 +203,7 @@ void medAbstractView::setZoom (double zoom)
     emit zoomChanged (zoom, d->linkCamera);
 }
 
-double medAbstractView::zoom(void) const
+double medAbstractView::zoom() const
 {
     return d->zoom;
 }
@@ -218,7 +218,7 @@ void medAbstractView::setPan (const QVector2D &pan)
     emit panChanged (pan, d->linkCamera);
 }
 
-QVector2D medAbstractView::pan(void) const
+QVector2D medAbstractView::pan() const
 {
     return d->pan;
 }
@@ -320,17 +320,17 @@ void medAbstractView::setCurrentLayer(int layer)
     d->currentLayer = layer;
 }
 
-int medAbstractView::currentLayer(void) const
+int medAbstractView::currentLayer() const
 {
     return d->currentLayer;
 }
 
-bool medAbstractView::hasImage(void) const
+bool medAbstractView::hasImage() const
 {
     return d->hasImage;
 }
 
-int medAbstractView::layerCount(void) const
+int medAbstractView::layerCount() const
 {
     DTK_DEFAULT_IMPLEMENTATION;
     return 0;
@@ -341,7 +341,7 @@ void medAbstractView::setCurrentMeshLayer(int meshLayer)
     d->currentMeshLayer = meshLayer;
 }
 
-int medAbstractView::currentMeshLayer(void) const
+int medAbstractView::currentMeshLayer() const
 {
     return d->currentMeshLayer;
 }
@@ -351,7 +351,7 @@ void medAbstractView::setMeshLayerCount(int meshLayerCount)
     d->meshLayerCount = meshLayerCount;
 }
 
-int medAbstractView::meshLayerCount(void) const
+int medAbstractView::meshLayerCount() const
 {
     return d->meshLayerCount;
 }
@@ -598,7 +598,7 @@ void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> dat
     this->setData(data,layer);
 }
 
-medAbstractView::~medAbstractView( void )
+medAbstractView::~medAbstractView()
 {
     delete d;
     d = NULL;

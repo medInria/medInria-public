@@ -44,7 +44,7 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medWorkspa
     this->setLayoutType(medWorkspace::LeftDbRightTb);
 }
 
-medRegistrationWorkspace::~medRegistrationWorkspace(void)
+medRegistrationWorkspace::~medRegistrationWorkspace()
 {
     delete d;
     d = NULL;

@@ -4,12 +4,12 @@
 
 #include <QtCore>
 
-medAbstractPacsStoreScp::medAbstractPacsStoreScp( void )
+medAbstractPacsStoreScp::medAbstractPacsStoreScp()
 {
 
 }
 
-medAbstractPacsStoreScp::~medAbstractPacsStoreScp( void )
+medAbstractPacsStoreScp::~medAbstractPacsStoreScp()
 {
 
 }

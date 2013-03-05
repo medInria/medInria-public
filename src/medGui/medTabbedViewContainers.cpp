@@ -1,21 +1,21 @@
 /* medTabbedViewContainers.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Thu May 13 12:39:09 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Tue Jun 15 22:12:57 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 8
- */
+   *
+   * Author: Julien Wintz
+   * Copyright (C) 2008 - Julien Wintz, Inria.
+   * Created: Thu May 13 12:39:09 2010 (+0200)
+   * Version: $Id$
+   * Last-Updated: Tue Jun 15 22:12:57 2010 (+0200)
+   *           By: Julien Wintz
+   *     Update #: 8
+   */
 
 /* Commentary:
- *
- */
+   *
+   */
 
 /* Change log:
- *
- */
+   *
+   */
 
 #include <QtCore>
 
@@ -26,17 +26,16 @@
 #include "medMultiViewContainer.h"
 #include "medSingleViewContainer.h"
 
-class medTabbedViewContainersPrivate
-{
+class medTabbedViewContainersPrivate {
 public:
-   QHash<QString, medViewContainer*> containers;
-   QString currentName;
 
-   QPushButton *addButton;
+    QHash<QString,medViewContainer*> containers;
+    QString currentName;
+
+    QPushButton* addButton;
 };
 
-medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(parent), d(new medTabbedViewContainersPrivate)
-{
+medTabbedViewContainers::medTabbedViewContainers(QWidget* parent): QTabWidget(parent),d(new medTabbedViewContainersPrivate) {
     this->setTabsClosable(true);
     this->setMovable(true);
 
@@ -50,30 +49,27 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
     connect(d->addButton,SIGNAL(clicked()),this,SIGNAL(addTabButtonClicked()));
 }
 
-medTabbedViewContainers::~medTabbedViewContainers(void)
-{
+medTabbedViewContainers::~medTabbedViewContainers(void) {
     delete d;
 
     d = NULL;
 }
 
-void medTabbedViewContainers::lockTabs()
-{
+void medTabbedViewContainers::lockTabs() {
     this->setTabsClosable(false);
     this->setMovable(false);
     d->addButton->hide();
 }
 
-void medTabbedViewContainers::unlockTabs()
-{
+void medTabbedViewContainers::unlockTabs() {
     this->setTabsClosable(true);
     this->setMovable(true);
     d->addButton->show();
 }
 
 /*
-void medTabbedViewContainers::addNewTabContainer()
-{
+   void medTabbedViewContainers::addNewTabContainer()
+   {
     // This slot should disappear, instead the creation signal should be sent to the parent who should call for the creation of a new tab
     QString name = "Tab ";
     name += QString::number(this->count());
@@ -86,25 +82,22 @@ void medTabbedViewContainers::addNewTabContainer()
     }
     else
         qDebug() << "Container" << name << "already exists in this workspaces";
-}
-*/
+   }
+   */
 
-void medTabbedViewContainers::deleteContainerClicked(int index)
-{
-    if (this->count() == 1)
-    {
+void medTabbedViewContainers::deleteContainerClicked(int index) {
+    if (this->count()==1) {
         QString name = this->current()->identifier();
 
-        medViewContainer *newTab = NULL;
-        if (name == "Single")
+        medViewContainer* newTab = NULL;
+        if (name=="Single")
             newTab = new medSingleViewContainer();
-        else if (name == "Custom")
+        else if (name=="Custom")
             newTab = new medCustomViewContainer();
-        else if (name == "Multi")
+        else if (name=="Multi")
             newTab = new medMultiViewContainer();
 
-        if (newTab != NULL)
-        {
+        if (newTab!=NULL) {
             this->blockSignals(true);
             QString tabName = this->tabText(index);
             this->removeTab(index);
@@ -114,93 +107,84 @@ void medTabbedViewContainers::deleteContainerClicked(int index)
 
             this->onCurrentContainerChanged(index);
         }
-    }
-    else
-    {
+    } else {
         d->containers.remove(this->tabText(index));
         this->removeTab(index);
     }
 }
 
-void medTabbedViewContainers::addContainer(const QString &name, medViewContainer *container)
-{
+void medTabbedViewContainers::addContainer(const QString& name,medViewContainer* container) {
     if (!container)
         return;
 
     d->containers[name] = container;
 
-    connect( container, SIGNAL( focused( dtkAbstractView * ) ),
-             this,      SIGNAL( focused( dtkAbstractView * ) ) );
-    connect( container, SIGNAL( dropped( const medDataIndex & ) ),
-             this,      SIGNAL( dropped( const medDataIndex & ) ) );
-    connect( container, SIGNAL( viewAdded( dtkAbstractView * ) ),
-             this,      SIGNAL( viewAdded( dtkAbstractView * ) ) );
-    connect( container, SIGNAL( viewRemoved( dtkAbstractView * ) ),
-             this,      SIGNAL( viewRemoved( dtkAbstractView * ) ) );
+    connect(container,SIGNAL(focused(dtkAbstractView*)),
+            this,SIGNAL(focused(dtkAbstractView*)));
+    connect(container,SIGNAL(dropped(const medDataIndex &)),
+            this,SIGNAL(dropped(const medDataIndex &)));
+    connect(container,SIGNAL(viewAdded(dtkAbstractView*)),
+            this,SIGNAL(viewAdded(dtkAbstractView*)));
+    connect(container,SIGNAL(viewRemoved(dtkAbstractView*)),
+            this,SIGNAL(viewRemoved(dtkAbstractView*)));
 
     if (!this->count())
         d->currentName = name;
 
-    this->addTab(container, name);
+    this->addTab(container,name);
 }
 
-void medTabbedViewContainers::insertContainer(int index, const QString &name, medViewContainer *container)
-{
+void medTabbedViewContainers::insertContainer(int index,const QString& name,medViewContainer* container) {
     if (!container)
         return;
 
     d->containers[name] = container;
 
-    connect( container, SIGNAL( focused( dtkAbstractView * ) ),
-             this,      SIGNAL( focused( dtkAbstractView * ) ) );
-    connect( container, SIGNAL( dropped( const medDataIndex & ) ),
-             this,      SIGNAL( dropped( const medDataIndex & ) ) );
+    connect(container,SIGNAL(focused(dtkAbstractView*)),
+            this,SIGNAL(focused(dtkAbstractView*)));
+    connect(container,SIGNAL(dropped(const medDataIndex &)),
+            this,SIGNAL(dropped(const medDataIndex &)));
 
-    connect( container, SIGNAL( viewAdded( dtkAbstractView * ) ),
-             this,      SIGNAL( viewAdded( dtkAbstractView * ) ) );
-    connect( container, SIGNAL( viewRemoved( dtkAbstractView * ) ),
-             this,      SIGNAL( viewRemoved( dtkAbstractView * ) ) );
+    connect(container,SIGNAL(viewAdded(dtkAbstractView*)),
+            this,SIGNAL(viewAdded(dtkAbstractView*)));
+    connect(container,SIGNAL(viewRemoved(dtkAbstractView*)),
+            this,SIGNAL(viewRemoved(dtkAbstractView*)));
 
     if (!this->count())
         d->currentName = name;
 
-    this->insertTab(index,container, name);
+    this->insertTab(index,container,name);
 }
 
-void medTabbedViewContainers::changeCurrentContainerType(const QString &name)
-{
-    //qDebug() << "Changing container type to " << name << " from " << this->current()->identifier();
-    //qDebug() << "Current index is " << this->currentIndex() << " and tab name " << this->tabText(this->currentIndex());
+void medTabbedViewContainers::changeCurrentContainerType(const QString& name) {
+    // qDebug() << "Changing container type to " << name << " from " << this->current()->identifier();
+    // qDebug() << "Current index is " << this->currentIndex() << " and tab name " << this->tabText(this->currentIndex());
 
-    if ((!this->current()->views().isEmpty()) && (name != this->current()->identifier()))
-    {
-        QMessageBox msgBox ( this );
-        msgBox.setIcon ( QMessageBox::Warning );
+    if ((!this->current()->views().isEmpty()) && (name!=this->current()->identifier())) {
+        QMessageBox msgBox(this);
+        msgBox.setIcon(QMessageBox::Warning);
         msgBox.setText(tr("Current tab is not empty. Changing tab type will delete current views."));
         msgBox.setInformativeText(tr("Are you sure you wish to change tab type?"));
         msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
         msgBox.setDefaultButton(QMessageBox::No);
         int reply = msgBox.exec();
 
-        if( reply == QMessageBox::No )
-        {
+        if (reply==QMessageBox::No) {
             this->onCurrentContainerChanged(this->currentIndex());
             return;
         }
     }
 
-    if (name != this->current()->identifier())
-    {
-        medViewContainer *newTab = NULL;
-        if (name == "Single")
+    if (name!=this->current()->identifier()) {
+        medViewContainer* newTab = NULL;
+        if (name=="Single")
             newTab = new medSingleViewContainer();
-        else if (name == "Custom")
+        else if (name=="Custom")
             newTab = new medCustomViewContainer();
-        else if (name == "Multi")
+        else if (name=="Multi")
             newTab = new medMultiViewContainer();
 
-        if (newTab != NULL)
-        {
+        if (newTab!=NULL) {
             this->blockSignals(true);
             int index = this->currentIndex();
             QString tabName = this->tabText(index);
@@ -214,24 +198,20 @@ void medTabbedViewContainers::changeCurrentContainerType(const QString &name)
     }
 }
 
-medViewContainer* medTabbedViewContainers::container(const QString &name) const
-{
+medViewContainer* medTabbedViewContainers::container(const QString& name) const {
     if (!d->containers.contains(name))
         return NULL;
 
     return d->containers[name];
 }
 
-void medTabbedViewContainers::hideTabBar()
-{
-    QTabBar *tabBar = this->tabBar();
+void medTabbedViewContainers::hideTabBar() {
+    QTabBar* tabBar = this->tabBar();
     tabBar->hide();
 }
 
-void medTabbedViewContainers::setContainer(const QString &name)
-{
-    if (!d->containers.contains(name))
-    {
+void medTabbedViewContainers::setContainer(const QString& name) {
+    if (!d->containers.contains(name)) {
         qWarning()<<"container does not contain any container of name:" << name;
         return;
     }
@@ -240,42 +220,36 @@ void medTabbedViewContainers::setContainer(const QString &name)
     this->setCurrentWidget(d->containers[name]);
 }
 
-medViewContainer *medTabbedViewContainers::current(void) const
-{
+medViewContainer* medTabbedViewContainers::current(void) const {
     return qobject_cast<medViewContainer*> (currentWidget());
 }
 
-QString medTabbedViewContainers::currentName(void) const
-{
+QString medTabbedViewContainers::currentName(void) const {
     return d->currentName;
 }
 
-QList<QString> medTabbedViewContainers::keys()
-{
+QList<QString> medTabbedViewContainers::keys() {
     return d->containers.keys();
 }
 
-void medTabbedViewContainers::removeContainer(const QString& name)
-{
-    if (d->containers.contains(name))
-    {
+void medTabbedViewContainers::removeContainer(const QString& name) {
+    if (d->containers.contains(name)) {
         medViewContainer* container = d->containers[name];
-        //removeWidget(container);
+
+        // removeWidget(container);
         container->deleteLater();
         d->containers.remove(name);
 
         this->blockSignals(true); // to prevent emission of currentChanged (int)
-        this->removeTab( this->indexOf(container) );
+        this->removeTab(this->indexOf(container));
         this->blockSignals(false);
     }
 }
 
-void medTabbedViewContainers::onCurrentContainerChanged(int index)
-{
+void medTabbedViewContainers::onCurrentContainerChanged(int index) {
     QString name = this->tabText(index);
     if (d->containers.contains(name) &&
-            d->containers[name]->current())
-    {
+        d->containers[name]->current()) {
         d->containers[name]->current()->setFocus(Qt::MouseFocusReason);
         qDebug() << "giving focus to:"<< d->containers[name]->current();
     }

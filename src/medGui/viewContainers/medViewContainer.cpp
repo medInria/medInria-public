@@ -55,7 +55,7 @@ medViewContainer::medViewContainer ( QWidget *parent )
     this->setSizePolicy ( QSizePolicy::Expanding,QSizePolicy::Expanding );
 }
 
-medViewContainer::~medViewContainer ( void )
+medViewContainer::~medViewContainer()
 {
     if ( d->view )
     {
@@ -68,7 +68,7 @@ medViewContainer::~medViewContainer ( void )
 }
 
 
-const medViewContainer *medViewContainer::current ( void ) const
+const medViewContainer *medViewContainer::current() const
 {
     const medViewContainer * root = this->root();
     if ( root != this )
@@ -77,7 +77,7 @@ const medViewContainer *medViewContainer::current ( void ) const
     return d->current;
 }
 
-medViewContainer *medViewContainer::current ( void )
+medViewContainer *medViewContainer::current()
 {
     medViewContainer * root = this->root();
     if ( root != this )
@@ -86,33 +86,33 @@ medViewContainer *medViewContainer::current ( void )
     return d->current;
 }
 
-bool medViewContainer::isClicked ( void ) const
+bool medViewContainer::isClicked() const
 {
     return d->clicked;
 }
 
-bool medViewContainer::isCurrent ( void ) const
+bool medViewContainer::isCurrent() const
 {
     return const_cast< medViewContainer * > ( this )->current() == this;
 }
 
-bool medViewContainer::isRoot ( void ) const
+bool medViewContainer::isRoot() const
 {
     return this->parentContainer() == NULL;
 }
 
-bool medViewContainer::isLeaf ( void ) const
+bool medViewContainer::isLeaf() const
 {
     return false;
 }
 
-bool medViewContainer::isEmpty ( void ) const
+bool medViewContainer::isEmpty() const
 {
     return ( this->view() == NULL &&
              this->childContainers().isEmpty());
 }
 
-bool medViewContainer::isDaddy ( void ) const
+bool medViewContainer::isDaddy() const
 {
     return ( this->view() != NULL &&
              this->view()->property ( "Daddy" ) == "true" );
@@ -170,12 +170,12 @@ void medViewContainer::split ( int rows, int cols )
     Q_UNUSED ( cols );
 }
 
-dtkAbstractView *medViewContainer::view ( void ) const
+dtkAbstractView *medViewContainer::view() const
 {
     return d->view;
 }
 
-QList<dtkAbstractView *> medViewContainer::views ( void ) const
+QList<dtkAbstractView *> medViewContainer::views() const
 {
     QList<dtkAbstractView *> views;
     if ( d->view )
@@ -184,7 +184,7 @@ QList<dtkAbstractView *> medViewContainer::views ( void ) const
     return views;
 }
 
-medViewPool *medViewContainer::pool ( void )
+medViewPool *medViewContainer::pool()
 {
     return d->pool;
 }
@@ -249,7 +249,7 @@ void medViewContainer::onViewFocused ( bool value )
     this->update();
 }
 
-void medViewContainer::onContainerClicked ( void )
+void medViewContainer::onContainerClicked()
 {
     d->clicked = false;
     this->recomputeStyleSheet();
@@ -403,7 +403,7 @@ void medViewContainer::onDaddyChanged ( bool state )
     this->recomputeStyleSheet();
 }
 
-// void medViewContainer::clear ( void )
+// void medViewContainer::clear()
 // {
 //     if ( d->view )
 //     {
@@ -442,7 +442,7 @@ void medViewContainer::setMultiLayer(bool enable)
     d->multiLayer = enable;
 }
 
-bool medViewContainer::multiLayer( void )
+bool medViewContainer::multiLayer()
 {
     return d->multiLayer;
 }

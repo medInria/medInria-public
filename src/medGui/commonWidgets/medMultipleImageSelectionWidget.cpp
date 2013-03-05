@@ -89,14 +89,14 @@ medMultipleImageSelectionWidget::medMultipleImageSelectionWidget(QList<medDataIn
     connect(d->btCancel, SIGNAL(clicked()), this, SLOT(onCancelButtonClicked()));
 }
 
-medMultipleImageSelectionWidget::~medMultipleImageSelectionWidget(void)
+medMultipleImageSelectionWidget::~medMultipleImageSelectionWidget()
 {
     delete d;
 
     d = NULL;
 }
 
-QSize medMultipleImageSelectionWidget::sizeHint(void) const
+QSize medMultipleImageSelectionWidget::sizeHint() const
 {
     const int width = QApplication::desktop()->screen(0)->width();
     const int height = QApplication::desktop()->screen(0)->width();

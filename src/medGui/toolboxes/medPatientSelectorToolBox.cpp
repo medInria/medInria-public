@@ -65,7 +65,7 @@ medPatientSelectorToolBox::medPatientSelectorToolBox(QWidget *parent) : medToolB
 
 }
 
-medPatientSelectorToolBox::~medPatientSelectorToolBox(void)
+medPatientSelectorToolBox::~medPatientSelectorToolBox()
 {
     delete d;
 
@@ -116,7 +116,7 @@ int medPatientSelectorToolBox::addItem(const QString& item, const medDataIndex& 
  *
  */
 
-void medPatientSelectorToolBox::clear(void)
+void medPatientSelectorToolBox::clear()
 {
     d->nextItemId = 0;
     d->itemMap.clear();
@@ -130,7 +130,7 @@ void medPatientSelectorToolBox::clear(void)
  *  in the combo box, that is not necessarily the same.
  */
 
-QSet<medDataIndex> medPatientSelectorToolBox::patientIndex(void) const
+QSet<medDataIndex> medPatientSelectorToolBox::patientIndex() const
 {
     int itemId = d->combo->itemData(d->combo->currentIndex()).toInt();
 
@@ -209,7 +209,7 @@ void medPatientSelectorToolBox::onCurrentIndexChanged(int index)
  *  corresponds to the one of the patient in the database.
  */
 
-void medPatientSelectorToolBox::setupDatabase(void)
+void medPatientSelectorToolBox::setupDatabase()
 {
     dtkSignalBlocker( d->combo );
 

@@ -96,7 +96,7 @@ QList<medToolBox*> medDatabaseDataSource::getToolBoxes()
     return d->toolBoxes;
 }
 
-QString medDatabaseDataSource::description(void) const
+QString medDatabaseDataSource::description() const
 {
 	return tr("Browse the medInria Database");
 }

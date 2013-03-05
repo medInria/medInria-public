@@ -130,7 +130,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : d(new medDatabaseViewPrivate
     connect(d->removeAction, SIGNAL(triggered()), this, SLOT(onRemoveSelectedItemRequested()));
 }
 
-medDatabaseView::~medDatabaseView(void)
+medDatabaseView::~medDatabaseView()
 {
     //TreeViews don't take ownership of delegates
     delete this->itemDelegate();
@@ -214,7 +214,7 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
         emit (open(item->dataIndex()));
 }
 
-void medDatabaseView::onViewSelectedItemRequested(void)
+void medDatabaseView::onViewSelectedItemRequested()
 {
     if(!this->selectedIndexes().count())
         return;
@@ -235,7 +235,7 @@ void medDatabaseView::onViewSelectedItemRequested(void)
     }
 }
 
-void medDatabaseView::onExportSelectedItemRequested(void)
+void medDatabaseView::onExportSelectedItemRequested()
 {
     if(!this->selectedIndexes().count())
         return;
@@ -291,7 +291,7 @@ void medDatabaseView::onSelectionChanged(const QItemSelection& selected, const Q
     }
 }
 
-void medDatabaseView::onRemoveSelectedItemRequested( void )
+void medDatabaseView::onRemoveSelectedItemRequested()
 {
     int reply = QMessageBox::question(this, tr("Remove item"),
             tr("Are you sure you want to continue?\n""This cannot be undone."),
@@ -319,7 +319,7 @@ void medDatabaseView::onRemoveSelectedItemRequested( void )
     }
 }
 
-void medDatabaseView::onSaveSelectedItemRequested(void)
+void medDatabaseView::onSaveSelectedItemRequested()
 {
         QModelIndexList indexes = this->selectedIndexes();
         if(!indexes.count())

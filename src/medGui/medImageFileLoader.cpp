@@ -33,14 +33,14 @@ medImageFileLoader::medImageFileLoader(const QString& path) : d(new medImageFile
     d->path = path;
 }
 
-medImageFileLoader::~medImageFileLoader(void)
+medImageFileLoader::~medImageFileLoader()
 {
     delete d;
 
     d = NULL;
 }
 
-void medImageFileLoader::run(void)
+void medImageFileLoader::run()
 {
     if(!d->path.isEmpty()) {
         QImageReader reader(d->path);

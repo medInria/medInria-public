@@ -25,7 +25,7 @@ public:
 
     QList<medToolBox*> getToolBoxes();
 
-    QString description(void) const;
+    QString description() const;
 
     void view(const QString& filename) {
         emit open(filename);
@@ -54,7 +54,7 @@ private slots:
     void onFileSystemViewRequested();
     void onFileDoubleClicked(const QString& filename);
     void onFileClicked(const QFileInfo& info);
-    void onNothingSelected(void);
+    void onNothingSelected();
 
 private:
 

@@ -33,12 +33,12 @@ medButton::medButton( QWidget *parent, QPixmap pixmap, QString toolTip ):
     setToolTip(toolTip);
 }
 
-medButton::~medButton( void )
+medButton::~medButton()
 {
     delete d;
 }
 
-QSize medButton::sizeHint( void ) const
+QSize medButton::sizeHint() const
 {
     return d->icon->sizeHint();
 }

@@ -18,7 +18,7 @@ protected:
   void focusOutEvent(QFocusEvent * event);
 
 signals:
-  void hideMenu(void);
+  void hideMenu();
   
 };
 

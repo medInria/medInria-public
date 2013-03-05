@@ -50,7 +50,7 @@ medDatabasePreviewView::medDatabasePreviewView(QWidget *parent) : QGraphicsView(
     this->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 }
 
-medDatabasePreviewView::~medDatabasePreviewView(void)
+medDatabasePreviewView::~medDatabasePreviewView()
 {
     delete d;
 

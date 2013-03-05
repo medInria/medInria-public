@@ -86,7 +86,7 @@ void medQtDataImage::setData( void* data, int channel )
     d->images[channel] = image;
 }
 
-void * medQtDataImage::data( void )
+void * medQtDataImage::data()
 {
     if ( d->images.isEmpty() )
         return NULL;
@@ -102,7 +102,7 @@ void * medQtDataImage::data( int channel )
     return &(d->images[channel]);
 }
 
-QImage & medQtDataImage::thumbnail( void )
+QImage & medQtDataImage::thumbnail()
 {
     if ( !d->thumbnailValid )
         this->generateThumbnails();
@@ -110,7 +110,7 @@ QImage & medQtDataImage::thumbnail( void )
     return this->medAbstractDataImage::thumbnails()[0];
 }
 
-QList<QImage>& medQtDataImage::thumbnails( void )
+QList<QImage>& medQtDataImage::thumbnails()
 {
     if ( !d->thumbnailValid )
         this->generateThumbnails();
@@ -148,12 +148,12 @@ bool medQtDataImage::registered()
     return dtkAbstractDataFactory::instance()->registerDataType(s_identifier(), createMedQtDataImage);
 }
 
-void * medQtDataImage::output( void )
+void * medQtDataImage::output()
 {
     return this->data();
 }
 
-int medQtDataImage::xDimension( void ) const
+int medQtDataImage::xDimension() const
 {
     if ( d->images.isEmpty() ) {
         return 0;
@@ -162,7 +162,7 @@ int medQtDataImage::xDimension( void ) const
     }
 }
 
-int medQtDataImage::yDimension( void ) const
+int medQtDataImage::yDimension() const
 {
     if ( d->images.isEmpty() ) {
         return 0;
@@ -171,12 +171,12 @@ int medQtDataImage::yDimension( void ) const
     }
 }
 
-int medQtDataImage::zDimension( void ) const
+int medQtDataImage::zDimension() const
 {
     return d->images.size();
 }
 
-int medQtDataImage::tDimension( void ) const
+int medQtDataImage::tDimension() const
 {
     if ( d->images.isEmpty() ) {
         return 0;
@@ -185,7 +185,7 @@ int medQtDataImage::tDimension( void ) const
     }
 }
 
-qreal medQtDataImage::xSpacing( void ) const
+qreal medQtDataImage::xSpacing() const
 {
     if ( d->images.isEmpty() ) {
         return 0.0;
@@ -194,7 +194,7 @@ qreal medQtDataImage::xSpacing( void ) const
     }
 }
 
-qreal medQtDataImage::ySpacing( void ) const
+qreal medQtDataImage::ySpacing() const
 {
     if ( d->images.isEmpty() ) {
         return 0.0;
@@ -203,7 +203,7 @@ qreal medQtDataImage::ySpacing( void ) const
     }
 }
 
-qreal medQtDataImage::zSpacing( void ) const
+qreal medQtDataImage::zSpacing() const
 {
     if ( d->images.isEmpty() ) {
         return 0.0;
@@ -212,7 +212,7 @@ qreal medQtDataImage::zSpacing( void ) const
     }
 }
 
-qreal medQtDataImage::tSpacing( void ) const
+qreal medQtDataImage::tSpacing() const
 {
     if ( d->images.isEmpty() ) {
         return 0.0;
@@ -221,7 +221,7 @@ qreal medQtDataImage::tSpacing( void ) const
     }
 }
 
-int medQtDataImage::Dimension( void ) const
+int medQtDataImage::Dimension() const
 {
     if ( d->images.isEmpty() ) {
         return 0;
@@ -230,7 +230,7 @@ int medQtDataImage::Dimension( void ) const
     }
 }
 
-const medQtDataImage::PixId& medQtDataImage::PixelType( void ) const
+const medQtDataImage::PixId& medQtDataImage::PixelType() const
 {
     if ( d->images.isEmpty() ) {
         return typeid(void); ;
@@ -265,12 +265,12 @@ const medQtDataImage::PixId& medQtDataImage::PixelType( void ) const
     return typeid(void);
 }
 
-int medQtDataImage::minRangeValue( void )
+int medQtDataImage::minRangeValue()
 {
     return 0;
 }
 
-int medQtDataImage::maxRangeValue( void )
+int medQtDataImage::maxRangeValue()
 {
     return 255;
 }
@@ -280,35 +280,35 @@ int medQtDataImage::scalarValueCount( int value )
     return 0;
 }
 
-int medQtDataImage::scalarValueMinCount( void )
+int medQtDataImage::scalarValueMinCount()
 {
     return 0;
 }
 
-int medQtDataImage::scalarValueMaxCount( void )
+int medQtDataImage::scalarValueMaxCount()
 {
     return 0;
 }
 
-QString medQtDataImage::s_description( void )
+QString medQtDataImage::s_description()
 {
     static const QString description = "medQtDataImage";
     return description;
 }
 
-QString medQtDataImage::description( void ) const
+QString medQtDataImage::description() const
 {
     return s_description();
 }
 
 
-QString medQtDataImage::s_identifier( void )
+QString medQtDataImage::s_identifier()
 {
     static const QString identifier = "medQtDataImage";
     return identifier;
 }
 
-QString medQtDataImage::identifier( void ) const
+QString medQtDataImage::identifier() const
 {
     return s_identifier();
 }

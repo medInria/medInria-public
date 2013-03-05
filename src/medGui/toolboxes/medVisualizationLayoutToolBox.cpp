@@ -103,34 +103,34 @@ medVisualizationLayoutToolBox::medVisualizationLayoutToolBox(QWidget *parent) : 
     connect(layoutChooser, SIGNAL(selected(int,int)), this, SIGNAL(split(int,int)));
 }
 
-medVisualizationLayoutToolBox::~medVisualizationLayoutToolBox(void)
+medVisualizationLayoutToolBox::~medVisualizationLayoutToolBox()
 {
     delete d;
 
     d = NULL;
 }
 
-void medVisualizationLayoutToolBox::onButtonAClicked(void)
+void medVisualizationLayoutToolBox::onButtonAClicked()
 {
     emit presetClicked(1);
 }
 
-void medVisualizationLayoutToolBox::onButtonBClicked(void)
+void medVisualizationLayoutToolBox::onButtonBClicked()
 {
     emit presetClicked(2);
 }
 
-void medVisualizationLayoutToolBox::onButtonCClicked(void)
+void medVisualizationLayoutToolBox::onButtonCClicked()
 {
     emit presetClicked(3);
 }
 
-void medVisualizationLayoutToolBox::onButtonDClicked(void)
+void medVisualizationLayoutToolBox::onButtonDClicked()
 {
     emit presetClicked(4);
 }
 
-void medVisualizationLayoutToolBox::onButtonEClicked(void)
+void medVisualizationLayoutToolBox::onButtonEClicked()
 {
     emit presetClicked(5);
 }

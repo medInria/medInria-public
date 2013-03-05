@@ -35,7 +35,7 @@ medMessageControllerMessage::medMessageControllerMessage(QObject* sender,
     widget->setFixedWidth(400);
 }
 
-medMessageControllerMessage::~medMessageControllerMessage(void)
+medMessageControllerMessage::~medMessageControllerMessage()
 {
 
 }
@@ -79,7 +79,7 @@ void medMessageControllerMessageSimple::remove(){
 }
 
 
-medMessageControllerMessageSimple::~medMessageControllerMessageSimple(void)
+medMessageControllerMessageSimple::~medMessageControllerMessageSimple()
 {
 
 }
@@ -95,7 +95,7 @@ medMessageControllerMessageInfo::medMessageControllerMessageInfo(
     icon->setPixmap(QPixmap(":/icons/information.png"));
 }
 
-medMessageControllerMessageInfo::~medMessageControllerMessageInfo(void)
+medMessageControllerMessageInfo::~medMessageControllerMessageInfo()
 {
 
 }
@@ -111,7 +111,7 @@ medMessageControllerMessageError::medMessageControllerMessageError(
     icon->setPixmap(QPixmap(":/icons/exclamation.png"));
 }
 
-medMessageControllerMessageError::~medMessageControllerMessageError(void)
+medMessageControllerMessageError::~medMessageControllerMessageError()
 {
 
 }
@@ -151,7 +151,7 @@ medMessageControllerMessageProgress::medMessageControllerMessageProgress(
     widget->setLayout(layout);
 }
 
-medMessageControllerMessageProgress::~medMessageControllerMessageProgress(void)
+medMessageControllerMessageProgress::~medMessageControllerMessageProgress()
 {
     delete d;
     d = NULL;
@@ -197,7 +197,7 @@ medMessageControllerMessageQuestion::medMessageControllerMessageQuestion(QObject
     widget->setLayout(layout);
 }
 
-medMessageControllerMessageQuestion::~medMessageControllerMessageQuestion(void)
+medMessageControllerMessageQuestion::~medMessageControllerMessageQuestion()
 {
     delete d;
 }
@@ -212,7 +212,7 @@ public:
     QHash<QObject *, medMessageControllerMessage *> messages;
 };
 
-medMessageController *medMessageController::instance(void)
+medMessageController *medMessageController::instance()
 {
     if(!s_instance)
         s_instance = new medMessageController;
@@ -287,11 +287,11 @@ void medMessageController::remove(QObject *sender)
     }
 }
 
-medMessageController::medMessageController(void) : QObject(), d(new medMessageControllerPrivate)
+medMessageController::medMessageController() : QObject(), d(new medMessageControllerPrivate)
 {
 }
 
-medMessageController::~medMessageController(void)
+medMessageController::~medMessageController()
 {
     delete d;
 

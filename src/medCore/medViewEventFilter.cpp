@@ -38,17 +38,17 @@ medViewEventFilter::medViewEventFilter(dtkAbstractObject * parent)
 {
 }
 
-medViewEventFilter::~medViewEventFilter(void)
+medViewEventFilter::~medViewEventFilter()
 {
     removeFromAllViews();
 }
 
-QString medViewEventFilter::description(void) const
+QString medViewEventFilter::description() const
 {
     return s_description();
 }
 
-QString medViewEventFilter::identifier(void) const
+QString medViewEventFilter::identifier() const
 {
     return s_description();
 }

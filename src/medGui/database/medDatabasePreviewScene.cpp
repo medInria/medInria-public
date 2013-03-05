@@ -37,7 +37,7 @@ medDatabasePreviewScene::medDatabasePreviewScene(QObject *parent) : QGraphicsSce
     this->setBackgroundBrush(QColor(0x41, 0x41, 0x41));
 }
 
-medDatabasePreviewScene::~medDatabasePreviewScene(void)
+medDatabasePreviewScene::~medDatabasePreviewScene()
 {
     delete d;
 
@@ -58,7 +58,7 @@ void medDatabasePreviewScene::addGroup(medDatabasePreviewItemGroup *group)
     d->groupCount++;
 }
 
-void medDatabasePreviewScene::reset(void)
+void medDatabasePreviewScene::reset()
 {
     d->groupCount = 0;
 }

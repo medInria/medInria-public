@@ -129,13 +129,13 @@ medFiberBundlingToolBox::medFiberBundlingToolBox(QWidget *parent) : medToolBox(p
     bundlingLayout->addWidget(d->bundlingList);
     bundlingLayout->addWidget(d->bundlingShowCheckBox);
 
-    connect (d->bundlingButtonVdt,     SIGNAL(clicked(void)),            this, SLOT (onBundlingButtonVdtClicked (void)));
+    connect (d->bundlingButtonVdt,     SIGNAL(clicked()),            this, SLOT (onBundlingButtonVdtClicked (void)));
     connect (d->bundleBoxCheckBox,     SIGNAL(toggled(bool)),            this, SLOT (onBundleBoxCheckBoxToggled (bool)));
     connect (d->bundlingButtonAdd,     SIGNAL(toggled(bool)),            this, SLOT (onBundlingButtonAndToggled(bool)));
 
     connect (d->bundlingShowCheckBox,  SIGNAL(toggled(bool)),            this, SLOT (onBundlingShowCheckBoxToggled (bool)));
-    connect (d->bundlingButtonTag,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionTagged(void)));
-    connect (d->bundlingButtonRst,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionReset(void)));
+    connect (d->bundlingButtonTag,     SIGNAL(clicked()),            this, SIGNAL (fiberSelectionTagged(void)));
+    connect (d->bundlingButtonRst,     SIGNAL(clicked()),            this, SIGNAL (fiberSelectionReset(void)));
 
     connect (d->bundlingModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(onBundlingItemChanged(QStandardItem*)));
 
@@ -186,7 +186,7 @@ void medFiberBundlingToolBox::setData(dtkAbstractData *data)
     }
 }
 
-void medFiberBundlingToolBox::onBundlingButtonVdtClicked (void)
+void medFiberBundlingToolBox::onBundlingButtonVdtClicked()
 {
     if (!d->data)
         return;
@@ -340,7 +340,7 @@ void medFiberBundlingToolBox::onRoiImported(const medDataIndex& index)
     }
 }
 
-void medFiberBundlingToolBox::onClearRoiButtonClicked(void)
+void medFiberBundlingToolBox::onClearRoiButtonClicked()
 {
     if (!d->view)
         return;
@@ -432,7 +432,7 @@ void medFiberBundlingToolBox::onNullButtonToggled (bool value)
     d->view->update();
 }
 
-void medFiberBundlingToolBox::clear(void)
+void medFiberBundlingToolBox::clear()
 {
     // clear ROIs and related GUI elements
     onClearRoiButtonClicked();

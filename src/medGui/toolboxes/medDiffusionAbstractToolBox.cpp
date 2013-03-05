@@ -29,7 +29,7 @@ medDiffusionAbstractToolBox::medDiffusionAbstractToolBox(QWidget *parent) : medT
     d->parent  = NULL;
 }
 
-medDiffusionAbstractToolBox::~medDiffusionAbstractToolBox(void)
+medDiffusionAbstractToolBox::~medDiffusionAbstractToolBox()
 {
     delete d;
 
@@ -41,13 +41,13 @@ void medDiffusionAbstractToolBox::setDiffusionToolBox(medDiffusionSelectorToolBo
     d->parent = toolBox;
 }
 
-medDiffusionSelectorToolBox *medDiffusionAbstractToolBox::parentToolBox(void)
+medDiffusionSelectorToolBox *medDiffusionAbstractToolBox::parentToolBox()
 {
     return d->parent;
 }
 
 
-dtkAbstractData *medDiffusionAbstractToolBox::output (void) const
+dtkAbstractData *medDiffusionAbstractToolBox::output() const
 {
     DTK_DEFAULT_IMPLEMENTATION;
     return NULL;

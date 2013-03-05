@@ -126,7 +126,7 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medWorkspace * w
             medMessageController::instance(),SLOT(showInfo(QObject*,const QString&,unsigned int)));
 }
 
-medSegmentationSelectorToolBox::~medSegmentationSelectorToolBox(void)
+medSegmentationSelectorToolBox::~medSegmentationSelectorToolBox()
 {
     delete d;
 
@@ -183,14 +183,14 @@ void medSegmentationSelectorToolBox::onToolBoxChosen(const QByteArray& id)
     emit addToolBox(toolBox);
 }
 
-void medSegmentationSelectorToolBox::clear(void)
+void medSegmentationSelectorToolBox::clear()
 {
     //maybe clear the customtoolbox?
     if (d->customToolBox)
         d->customToolBox->clear();
 }
 
-dtkAbstractProcess * medSegmentationSelectorToolBox::process(void)
+dtkAbstractProcess * medSegmentationSelectorToolBox::process()
 {
     return d->process;
 }

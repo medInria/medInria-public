@@ -21,8 +21,8 @@ class MEDTEST_EXPORT medQtDataImage : public medAbstractDataImage
 public:
     medQtDataImage();
     virtual ~medQtDataImage();
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
 
     static QString s_description();
     static QString s_identifier();
@@ -31,35 +31,35 @@ public:
     // Implement dtkAbstractData
     virtual void setData(void* data);
     virtual void setData(void* data, int channel);
-    virtual void *output(void);
-    virtual void *data(void);
+    virtual void *output();
+    virtual void *data();
     virtual void *data(int channel);
 
-    virtual       QImage & thumbnail(void)  ;
-    virtual QList<QImage>& thumbnails(void) ;
+    virtual       QImage & thumbnail()  ;
+    virtual QList<QImage>& thumbnails() ;
 
     // Implement dtkAbstractDataImage
-    void *image(void);
+    void *image();
 
-    virtual int   Dimension(void) const;
-    virtual const PixId& PixelType(void) const;
+    virtual int   Dimension() const;
+    virtual const PixId& PixelType() const;
 
-    virtual int xDimension(void) const;
-    virtual int yDimension(void) const;
-    virtual int zDimension(void) const;
-    virtual int tDimension(void) const;
+    virtual int xDimension() const;
+    virtual int yDimension() const;
+    virtual int zDimension() const;
+    virtual int tDimension() const;
 
-    virtual qreal xSpacing(void) const;
-    virtual qreal ySpacing(void) const;
-    virtual qreal zSpacing(void) const;
-    virtual qreal tSpacing(void) const;
+    virtual qreal xSpacing() const;
+    virtual qreal ySpacing() const;
+    virtual qreal zSpacing() const;
+    virtual qreal tSpacing() const;
 
-    virtual int minRangeValue(void);
-    virtual int maxRangeValue(void);
+    virtual int minRangeValue();
+    virtual int maxRangeValue();
 
     virtual int scalarValueCount(int value);
-    virtual int scalarValueMinCount(void);
-    virtual int scalarValueMaxCount(void);
+    virtual int scalarValueMinCount();
+    virtual int scalarValueMaxCount();
 public:
 protected:
     void generateThumbnails();

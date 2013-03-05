@@ -389,7 +389,7 @@ medToolBox(parent), d(new medViewPropertiesToolBoxPrivate)
     this->addWidget(d->propView);
 }
 
-medViewPropertiesToolBox::~medViewPropertiesToolBox(void)
+medViewPropertiesToolBox::~medViewPropertiesToolBox()
 {
     delete d;
     d = NULL;
@@ -765,7 +765,7 @@ void medViewPropertiesToolBox::onDataAdded(dtkAbstractData* data,
     raiseSlider(d->view->layerCount() == 2);
 }
 
-void medViewPropertiesToolBox::clear(void)
+void medViewPropertiesToolBox::clear()
 {
     d->currentLayer = 0;
     d->meshInteractor = 0;

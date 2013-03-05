@@ -33,11 +33,11 @@ class medDatabaseNavigatorView : public QGraphicsView
 
 public:
      medDatabaseNavigatorView(QWidget *parent = 0);
-    ~medDatabaseNavigatorView(void);
+    ~medDatabaseNavigatorView();
 
     void setScene(QGraphicsScene *scene);
 
-    Qt::Orientation orientation (void) const;
+    Qt::Orientation orientation() const;
     
 public slots:
     void setOrientation (Qt::Orientation orientation);

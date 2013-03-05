@@ -52,7 +52,7 @@ public:
     QString identifier ();
 
 public slots:
-    void onClick ( void );
+    void onClick();
 
 signals:
     /**
@@ -72,7 +72,7 @@ public:
     medQuickAccessPushButton ( QWidget * parent = 0 );
 
 public slots:
-    void onClick ( void );
+    void onClick();
 
 signals:
     void clicked ( QString text );
@@ -99,7 +99,7 @@ public:
      */
     QString identifier ();
 public slots:
-    void onClick ( void );
+    void onClick();
 
 signals:
     /**

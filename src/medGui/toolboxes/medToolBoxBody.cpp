@@ -38,7 +38,7 @@ medToolBoxBody::medToolBoxBody(QWidget *parent) : QFrame(parent), d(new medToolB
     d->tab = NULL;
 }
 
-medToolBoxBody::~medToolBoxBody(void)
+medToolBoxBody::~medToolBoxBody()
 {
     delete d;
 

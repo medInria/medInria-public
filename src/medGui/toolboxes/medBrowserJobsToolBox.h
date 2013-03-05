@@ -32,9 +32,9 @@ class MEDGUI_EXPORT medBrowserJobsToolBox : public medToolBox
 
 public:
      medBrowserJobsToolBox(QWidget *parent = 0);
-    ~medBrowserJobsToolBox(void);
+    ~medBrowserJobsToolBox();
 
-    medProgressionStack *stack(void);
+    medProgressionStack *stack();
 
 private:
     medBrowserJobsToolBoxPrivate *d;

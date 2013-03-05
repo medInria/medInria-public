@@ -15,7 +15,7 @@ class medRegistrationWorkspace : public medWorkspace
 
 public:
      medRegistrationWorkspace(QWidget *parent = 0);
-    ~medRegistrationWorkspace(void);
+    ~medRegistrationWorkspace();
 
     virtual QString identifier()  const;
     virtual QString description() const;

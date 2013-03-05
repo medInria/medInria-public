@@ -4,12 +4,12 @@
 
 #include <QtCore>
 
-medAbstractPacsResultDataset::medAbstractPacsResultDataset( void )
+medAbstractPacsResultDataset::medAbstractPacsResultDataset()
 {
 
 }
 
-medAbstractPacsResultDataset::~medAbstractPacsResultDataset( void )
+medAbstractPacsResultDataset::~medAbstractPacsResultDataset()
 {
 
 }

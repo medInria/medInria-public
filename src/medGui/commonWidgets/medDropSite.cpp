@@ -42,14 +42,14 @@ medDropSite::medDropSite(QWidget *parent) : QLabel(parent), d(new medDropSitePri
     d->canAutomaticallyChangeAppereance = true;
 }
 
-medDropSite::~medDropSite(void)
+medDropSite::~medDropSite()
 {
     delete d;
 
     d = NULL;
 }
 
-QSize medDropSite::sizeHint(void) const
+QSize medDropSite::sizeHint() const
 {
     return QSize(128, 128);
 }
@@ -59,7 +59,7 @@ void medDropSite::setCanAutomaticallyChangeAppereance(bool can)
     d->canAutomaticallyChangeAppereance = can;
 }
 
-medDataIndex medDropSite::index(void) const
+medDataIndex medDropSite::index() const
 {
     return d->index;
 }

@@ -41,7 +41,7 @@ medCompositeDataSetImporterSelectorToolBox::medCompositeDataSetImporterSelectorT
     this->initialize();
 }
 
-medCompositeDataSetImporterSelectorToolBox::~medCompositeDataSetImporterSelectorToolBox(void)
+medCompositeDataSetImporterSelectorToolBox::~medCompositeDataSetImporterSelectorToolBox()
 {
     delete d;
     d = NULL;

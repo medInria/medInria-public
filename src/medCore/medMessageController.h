@@ -37,7 +37,7 @@ class MEDCORE_EXPORT medMessageControllerMessage : public QWidget
 
 public:
      medMessageControllerMessage(QObject* sender, QWidget *parent = 0);
-    ~medMessageControllerMessage(void);
+    ~medMessageControllerMessage();
 
     QWidget * getWidget();
     
@@ -59,14 +59,14 @@ class medMessageControllerMessageSimple : public medMessageControllerMessage
 
 public:
      medMessageControllerMessageSimple(QObject* sender,const QString& text, QWidget *parent = 0, unsigned int timeout=0);
-    ~medMessageControllerMessageSimple(void);
+    ~medMessageControllerMessageSimple();
 
 protected:
     QLabel *icon;
     QTimer *timer;
 
 protected slots:
-    void remove(void);
+    void remove();
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -80,7 +80,7 @@ class medMessageControllerMessageInfo : public medMessageControllerMessageSimple
 public:
      medMessageControllerMessageInfo(QObject* sender,const QString& text, QWidget *parent = 0,
                                      unsigned int timeout=0);
-    ~medMessageControllerMessageInfo(void);
+    ~medMessageControllerMessageInfo();
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ class medMessageControllerMessageError : public medMessageControllerMessageSimpl
 public:
      medMessageControllerMessageError(QObject* sender,const QString& text, QWidget *parent = 0,
                                       unsigned int timeout=0);
-    ~medMessageControllerMessageError(void);
+    ~medMessageControllerMessageError();
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -108,7 +108,7 @@ class MEDCORE_EXPORT medMessageControllerMessageProgress : public medMessageCont
 
 public:
      medMessageControllerMessageProgress(QObject* sender,const QString& text, QWidget *parent = 0);
-    ~medMessageControllerMessageProgress(void);
+    ~medMessageControllerMessageProgress();
 
 public slots:
     void setProgress(int value);
@@ -129,11 +129,11 @@ class MEDCORE_EXPORT medMessageControllerMessageQuestion : public medMessageCont
 
 public:
      medMessageControllerMessageQuestion(QObject* sender, const QString& text, QWidget *parent = 0);
-    ~medMessageControllerMessageQuestion(void);
+    ~medMessageControllerMessageQuestion();
 
 signals:
-    void accepted(void);
-    void rejected(void);
+    void accepted();
+    void rejected();
 
 private:
     medMessageControllerMessageQuestionPrivate *d;
@@ -148,7 +148,7 @@ class MEDCORE_EXPORT medMessageController : public QObject
     Q_OBJECT
 
 public:
-    static medMessageController *instance(void);
+    static medMessageController *instance();
 
 public slots:
     void     showInfo(QObject *sender, const QString& text,unsigned int timeout=0);
@@ -164,8 +164,8 @@ signals:
   void removeMessage(QWidget * message);
 
 protected:
-     medMessageController(void);
-    ~medMessageController(void);
+     medMessageController();
+    ~medMessageController();
 
 protected:
     static medMessageController *s_instance;
