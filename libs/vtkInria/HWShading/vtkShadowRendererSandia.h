@@ -43,7 +43,7 @@ public:
   bool GetShadows() {return SHADOW_RENDER;}
   
 protected:
-  virtual void DeviceRender(void);
+  virtual void DeviceRender();
   vtkShadowRenderer();
   ~vtkShadowRenderer();
 

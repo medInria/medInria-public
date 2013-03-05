@@ -302,7 +302,7 @@ vtkLookupTable* vtkLookupTableManager::GetPValueLookupTable()
 }
 
 
-vtkLookupTable*  vtkLookupTableManager::GetRedBlackAlphaLookupTable(void)
+vtkLookupTable*  vtkLookupTableManager::GetRedBlackAlphaLookupTable()
 {  vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(256);
   lut->Build();
@@ -317,7 +317,7 @@ vtkLookupTable*  vtkLookupTableManager::GetRedBlackAlphaLookupTable(void)
   return lut;
 }
 
-vtkLookupTable*   vtkLookupTableManager::GetGreenBlackAlphaLookupTable(void)
+vtkLookupTable*   vtkLookupTableManager::GetGreenBlackAlphaLookupTable()
 {
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(256);
@@ -334,7 +334,7 @@ vtkLookupTable*   vtkLookupTableManager::GetGreenBlackAlphaLookupTable(void)
 
 }
 
-vtkLookupTable* vtkLookupTableManager::GetBlueBlackAlphaLookupTable(void)
+vtkLookupTable* vtkLookupTableManager::GetBlueBlackAlphaLookupTable()
 {
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(256);
@@ -352,7 +352,7 @@ vtkLookupTable* vtkLookupTableManager::GetBlueBlackAlphaLookupTable(void)
 }
 
 
-vtkLookupTable* vtkLookupTableManager::GetVRMusclesBonesLookupTable(void)
+vtkLookupTable* vtkLookupTableManager::GetVRMusclesBonesLookupTable()
 {
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(256);
@@ -464,7 +464,7 @@ vtkLookupTable* vtkLookupTableManager::GetROILookupTable()
 }
 
 
-vtkLookupTable* vtkLookupTableManager::GetCardiacLookupTable(void)
+vtkLookupTable* vtkLookupTableManager::GetCardiacLookupTable()
 {
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(256);
@@ -480,7 +480,7 @@ vtkLookupTable* vtkLookupTableManager::GetCardiacLookupTable(void)
 }
 
 
-vtkLookupTable* vtkLookupTableManager::GetGrayRainbowLookupTable(void)
+vtkLookupTable* vtkLookupTableManager::GetGrayRainbowLookupTable()
 {
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(256);
@@ -496,7 +496,7 @@ vtkLookupTable* vtkLookupTableManager::GetGrayRainbowLookupTable(void)
 }
 
 
-vtkLookupTable* vtkLookupTableManager::GetHotGreenLookupTable(void)
+vtkLookupTable* vtkLookupTableManager::GetHotGreenLookupTable()
 {
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(256);
@@ -512,7 +512,7 @@ vtkLookupTable* vtkLookupTableManager::GetHotGreenLookupTable(void)
 }
 
 
-vtkLookupTable* vtkLookupTableManager::GetHotIronLookupTable(void)
+vtkLookupTable* vtkLookupTableManager::GetHotIronLookupTable()
 {
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(256);
@@ -528,7 +528,7 @@ vtkLookupTable* vtkLookupTableManager::GetHotIronLookupTable(void)
 }
 
 
-vtkLookupTable* vtkLookupTableManager::GetSternLookupTable(void)
+vtkLookupTable* vtkLookupTableManager::GetSternLookupTable()
 {
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(256);
@@ -544,7 +544,7 @@ vtkLookupTable* vtkLookupTableManager::GetSternLookupTable(void)
 }
 
 
-vtkLookupTable* vtkLookupTableManager::GetVRBonesLookupTable(void)
+vtkLookupTable* vtkLookupTableManager::GetVRBonesLookupTable()
 {
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(256);
@@ -560,7 +560,7 @@ vtkLookupTable* vtkLookupTableManager::GetVRBonesLookupTable(void)
 }
 
 
-vtkLookupTable* vtkLookupTableManager::GetVRRedVesselsLookupTable(void)
+vtkLookupTable* vtkLookupTableManager::GetVRRedVesselsLookupTable()
 {
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(256);
@@ -576,7 +576,7 @@ vtkLookupTable* vtkLookupTableManager::GetVRRedVesselsLookupTable(void)
 }
 
 
-vtkLookupTable* vtkLookupTableManager::GetBlackBodyLookupTable(void)
+vtkLookupTable* vtkLookupTableManager::GetBlackBodyLookupTable()
 {
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(256);
@@ -592,7 +592,7 @@ vtkLookupTable* vtkLookupTableManager::GetBlackBodyLookupTable(void)
 }
 
 
-vtkLookupTable* vtkLookupTableManager::GetJetLookupTable(void)
+vtkLookupTable* vtkLookupTableManager::GetJetLookupTable()
 {
   vtkLookupTable* lut = vtkLookupTable::New();
   lut->SetNumberOfTableValues(64);

@@ -38,7 +38,7 @@ GISImageIOFactory::~GISImageIOFactory()
 }
 
 const char* 
-GISImageIOFactory::GetITKSourceVersion(void) const
+GISImageIOFactory::GetITKSourceVersion() const
 {
   return ITK_SOURCE_VERSION;
 }

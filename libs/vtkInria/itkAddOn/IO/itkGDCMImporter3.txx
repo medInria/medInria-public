@@ -190,7 +190,7 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  bool GDCMVolume<TPixelType>::IsVolumeDWIs (void)
+  bool GDCMVolume<TPixelType>::IsVolumeDWIs()
   {
     // here we want to figure out weither or not the current loaded volume
     // contains any relevant diffusion information.
@@ -331,7 +331,7 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  void GDCMVolume<TPixelType>::Build(void)
+  void GDCMVolume<TPixelType>::Build()
   {
     // building the (4D) volume using the filelist map
     
@@ -531,7 +531,7 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  typename GDCMVolume<TPixelType>::DicomEntryList GDCMVolume<TPixelType>::GetDicomEntryList (void) const
+  typename GDCMVolume<TPixelType>::DicomEntryList GDCMVolume<TPixelType>::GetDicomEntryList() const
   {
     const gdcm::Global &g = gdcm::Global::GetInstance();
     const gdcm::Dicts &dicts = g.GetDicts();
@@ -593,7 +593,7 @@ namespace itk
   
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  unsigned int* GDCMVolume<TPixelType>::GetSize (void) const
+  unsigned int* GDCMVolume<TPixelType>::GetSize() const
   {
     unsigned int* size = new unsigned int[4];
     size[0] = size[1] = size[2] = size[3] = 0;
@@ -724,7 +724,7 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  void GDCMImporter3<TPixelType>::Scan (void)
+  void GDCMImporter3<TPixelType>::Scan()
   {
 
     if (m_IsScanned)
@@ -1299,7 +1299,7 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  void GDCMImporter3<TPixelType>::GenerateOutputs  (void)
+  void GDCMImporter3<TPixelType>::GenerateOutputs()
   {
     // release memory
     this->PrepareOutputs();

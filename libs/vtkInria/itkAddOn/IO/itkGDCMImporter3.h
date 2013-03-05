@@ -93,7 +93,7 @@ namespace itk
        This list will then be used by Build() for reconstructing
        the volume image.
     */
-    FileListMapType GetFileListMap (void) const
+    FileListMapType GetFileListMap() const
     { return this->m_FileListMap; }
     /**
        Set/Get the name of the image. This attribute can
@@ -105,7 +105,7 @@ namespace itk
        Build() will actually fill the volume image considering
        the FileListMap (SetFileListMap())
     */
-    void Build(void);
+    void Build();
     /**
        Write the volume (or 4D volume) in a file
        This only depends on the FileMap currently present in the volume.
@@ -119,7 +119,7 @@ namespace itk
        Release memory. The Build() method has to be re-called to
        be able to get the volume back.
     */
-    void Initialize (void)
+    void Initialize()
     {
       this->Superclass::Initialize();
       this->m_IsBuilt = 0;
@@ -128,15 +128,15 @@ namespace itk
        Ask the filemap files if there is any gradient present,
        and if they are coherent (one null gradient and > 1 non-null gradients
     */
-    bool IsVolumeDWIs (void);
+    bool IsVolumeDWIs();
     /**
        Write the gradient orientations in a file
     */
     void WriteGradients (std::string filename);
 
-    unsigned int* GetSize (void) const;
+    unsigned int* GetSize() const;
 
-    DicomEntryList GetDicomEntryList (void) const;
+    DicomEntryList GetDicomEntryList() const;
     
   protected:
 
@@ -264,14 +264,14 @@ namespace itk
        A cache system is used by the internal Scanner (from GDCM library). Thus
        a second call of Scan() will be faster.
     */
-    void Scan (void);
+    void Scan();
 
   protected:
 
     /** Internal methods for mmultithreading. */
     virtual int SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion);
     void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, int threadId );
-    void GenerateOutputs (void);
+    void GenerateOutputs();
     /** default constructor */
     GDCMImporter3();
     /** default destructor, release memory */

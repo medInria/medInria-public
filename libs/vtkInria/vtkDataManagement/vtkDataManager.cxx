@@ -235,7 +235,7 @@ unsigned int vtkDataManager::GetSequencesMaxNumber()
 }
 
 //----------------------------------------------------------------------------
-unsigned int vtkDataManager::GetNumberOfMetaDataSet (void) const
+unsigned int vtkDataManager::GetNumberOfMetaDataSet() const
 {
   return this->MetaDataSetList.size();
 }

@@ -253,10 +253,10 @@ class CommandIterationUpdate : public itk::Command
 
 
     /** Initialize by setting the interconnects between the components. */
-    virtual void Initialize(void);
+    virtual void Initialize();
 
     /** Check if inputs are present or not. */
-    virtual bool CheckInputs(void);
+    virtual bool CheckInputs();
 
     /** Returns the transform resulting from the registration process  */
     virtual ImageType * GetOutput();
@@ -283,11 +283,11 @@ class CommandIterationUpdate : public itk::Command
     /** Undo the last registration step. The method only un-plugs the last transformation from the
 	"transform pipeline" and calls a Modified(). The user might need to call Update()
 	to have an up to date output image. */
-    virtual void Undo (void);
+    virtual void Undo();
     /** Redo the last registration step. The method only re-plug the last transformation to the
 	"transform pipeline" and calls a Modified(). The user might need to call Update()
 	to have an up to date output image. */
-    virtual void Redo (void);
+    virtual void Redo();
     /** Applies a specific registration method. After the method is performed, output
 	transform is plugged into the "transformation pipeline", and a call of Modified() is done.
 	The user might need to call Update() to have an up to date output image */
@@ -322,7 +322,7 @@ class CommandIterationUpdate : public itk::Command
     /** Resets the transformation pipeline, removes all transformations from pipeline,
 	actually destroy them. A call of Modified() is done. Call Update() to get an
 	up to date output image */
-    virtual void Reset (void);
+    virtual void Reset();
     /** Writes the output image into file. The output image is resampled and transformed. */
     virtual void ReadFixedImage (const char* filename);
     /** Writes the output image into file. The output image is resampled and transformed. */
@@ -342,13 +342,13 @@ class CommandIterationUpdate : public itk::Command
     /** Attempts to concatenate all transforms in linear forms and write the linear matrix
 	into file. If one or more transforms of the pipeline are not linear (such as a deformation field),
 	then an exception is thrown. */
-    virtual LinearTransformPointerType ExportGlobalLinearTransform (void);
+    virtual LinearTransformPointerType ExportGlobalLinearTransform();
     /** This method concatenates all transforms into a global deformation field. It does not
 	care if transforms are linear or not */
-    virtual DisplacementFieldPointerType ExportGlobalDisplacementField (void);
+    virtual DisplacementFieldPointerType ExportGlobalDisplacementField();
     /** Warps a regular grid (its size can be set using SetWarperGridSize()) with the
 	current global deformation field */
-    virtual WarpedImagePointerType ExportWarpedImage (void);
+    virtual WarpedImagePointerType ExportWarpedImage();
 
     /** Convenient method to deep copy an image into another image. output image has to be instanciated
 	outside the method */
@@ -388,7 +388,7 @@ class CommandIterationUpdate : public itk::Command
      * possible region. */
     virtual void EnlargeOutputRequestedRegion( DataObject *ptr );
 
-    virtual bool CheckForceResampling (void);
+    virtual bool CheckForceResampling();
     
     ImagePointer m_MovingImage;
     ImagePointer m_FixedImage;

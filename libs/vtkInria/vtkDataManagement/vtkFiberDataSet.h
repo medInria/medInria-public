@@ -51,7 +51,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkFiberDataSet : public vtkMultiBlockDataSet
   typedef std::map< std::string, vtkFiberBundleType > vtkFiberBundleListType;
 
   void         SetFibers (vtkPolyData *fibers);
-  vtkPolyData *GetFibers (void);
+  vtkPolyData *GetFibers();
   
   void AddBundle    (const std::string &name, vtkPolyData *bundle, double color[3]);
   void RemoveBundle (const std::string &name);
@@ -59,12 +59,12 @@ class VTK_DATAMANAGEMENT_EXPORT vtkFiberDataSet : public vtkMultiBlockDataSet
   /**
      Remove all bundles.
    */
-  void Clear (void);
+  void Clear();
 
-  int GetNumberOfBundles (void) const;
+  int GetNumberOfBundles() const;
   
   vtkFiberBundleType     GetBundle (const std::string &name);
-  vtkFiberBundleListType GetBundleList (void) const;
+  vtkFiberBundleListType GetBundleList() const;
     
   void SetBundleColor (const std::string &name, double color[3]);
   void GetBundleColor (const std::string &name, double color[3]);

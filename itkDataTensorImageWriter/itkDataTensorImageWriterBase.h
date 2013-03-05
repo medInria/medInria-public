@@ -10,12 +10,12 @@ class ITKDATATENSORIMAGEWRITERPLUGIN_EXPORT itkDataTensorImageWriterBase : publi
     Q_OBJECT
 
 public:
-    itkDataTensorImageWriterBase(void);
-    virtual ~itkDataTensorImageWriterBase(void);
+    itkDataTensorImageWriterBase();
+    virtual ~itkDataTensorImageWriterBase();
 
-    virtual QStringList handled(void) const;
+    virtual QStringList handled() const;
 
-    static QStringList s_handled (void);
+    static QStringList s_handled();
 
 public slots:
     bool write    (const QString& path);

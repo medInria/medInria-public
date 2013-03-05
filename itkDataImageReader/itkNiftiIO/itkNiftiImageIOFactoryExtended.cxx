@@ -38,7 +38,7 @@ NiftiImageIOExtendedFactory::~NiftiImageIOExtendedFactory()
 {}
 
 const char *
-NiftiImageIOExtendedFactory::GetITKSourceVersion(void) const
+NiftiImageIOExtendedFactory::GetITKSourceVersion() const
 {
   return ITK_SOURCE_VERSION;
 }

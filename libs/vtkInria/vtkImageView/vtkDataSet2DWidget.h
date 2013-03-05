@@ -106,7 +106,7 @@ class VTK_IMAGEVIEW_EXPORT vtkDataSet2DWidgetCommand : public vtkCommand
 
   void SetWidget (vtkDataSet2DWidget* w)
   { this->Widget = w; }
-  vtkDataSet2DWidget* GetWidget (void)
+  vtkDataSet2DWidget* GetWidget()
   { return this->Widget; }
   
  protected:

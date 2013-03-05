@@ -65,7 +65,7 @@ GeneralTransform<TScalarType, NDimensions>
 template <class TScalarType, unsigned int NDimensions>
 const typename GeneralTransform<TScalarType, NDimensions>::ParametersType &
 GeneralTransform<TScalarType, NDimensions>
-::GetParameters( void ) const
+::GetParameters() const
 {
   itkExceptionMacro("GeneralTransform<TScalarType, NDimensions> does not handle any parameter system yet");
 
@@ -166,10 +166,8 @@ TransformCovariantVector(const InputCovariantVectorType &vect) const
 template<class TScalarType, unsigned int NDimensions>
 bool
 GeneralTransform<TScalarType, NDimensions>::
-GetInverse( Self* inverse) const
+GetInverse(Self*) const
 {
-  (void) inverse;
-
   return false;
 }
 
@@ -188,7 +186,7 @@ SetIdentity()
 template<class TScalarType, unsigned int NDimensions>
 bool
 GeneralTransform<TScalarType, NDimensions>::
-Redo (void)
+Redo()
 {
    if (!m_RemovedTransformList.size())
       return false;
@@ -200,7 +198,7 @@ Redo (void)
 template<class TScalarType, unsigned int NDimensions>
 bool
 GeneralTransform<TScalarType, NDimensions>::
-Undo (void)
+Undo()
 {
    if (!m_TransformList.size())
       return false;
@@ -235,7 +233,7 @@ GetTransform (unsigned int i)
 template<class TScalarType, unsigned int NDimensions>
 void
 GeneralTransform<TScalarType, NDimensions>::
-RemoveAllTransforms (void)
+RemoveAllTransforms()
 {
    m_TransformList.clear();
    m_RemovedTransformList.clear();
@@ -245,7 +243,7 @@ RemoveAllTransforms (void)
 template<class TScalarType, unsigned int NDimensions>
 typename GeneralTransform<TScalarType, NDimensions>::MatrixOffsetTransformPointerType
 GeneralTransform<TScalarType, NDimensions>::
-GetGlobalLinearTransform (void) const
+GetGlobalLinearTransform() const
 {
 
   if (!this->IsLinear())
@@ -278,7 +276,7 @@ GetGlobalLinearTransform (void) const
 template<class TScalarType, unsigned int NDimensions>
 bool
 GeneralTransform<TScalarType, NDimensions>::
-IsLinear (void) const
+IsLinear() const
 {
 
   typename TransformListType::const_iterator it = m_TransformList.begin();

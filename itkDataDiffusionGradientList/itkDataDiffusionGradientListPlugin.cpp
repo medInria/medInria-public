@@ -37,14 +37,14 @@ itkDataDiffusionGradientListPlugin::itkDataDiffusionGradientListPlugin(QObject *
 
 }
 
-itkDataDiffusionGradientListPlugin::~itkDataDiffusionGradientListPlugin(void)
+itkDataDiffusionGradientListPlugin::~itkDataDiffusionGradientListPlugin()
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkDataDiffusionGradientListPlugin::initialize(void)
+bool itkDataDiffusionGradientListPlugin::initialize()
 {
     if (!itkDataDiffusionGradientList::registered()) {
         dtkWarn() << "Unable to register itkDataDiffusionGradientList type";
@@ -53,37 +53,37 @@ bool itkDataDiffusionGradientListPlugin::initialize(void)
     return true;
 }
 
-bool itkDataDiffusionGradientListPlugin::uninitialize(void)
+bool itkDataDiffusionGradientListPlugin::uninitialize()
 {
     return true;
 }
 
-QString itkDataDiffusionGradientListPlugin::name(void) const
+QString itkDataDiffusionGradientListPlugin::name() const
 {
     return "itkDataDiffusionGradientListPlugin";
 }
 
-QString itkDataDiffusionGradientListPlugin::description(void) const
+QString itkDataDiffusionGradientListPlugin::description() const
 {
     return tr("List of gradients for Diffusion Weighted Images");
 }
 
-QString itkDataDiffusionGradientListPlugin::identifier(void) const
+QString itkDataDiffusionGradientListPlugin::identifier() const
 {
     return "itkDataDiffusionGradientListPlugin";
 }
 
-QString itkDataDiffusionGradientListPlugin::version(void) const
+QString itkDataDiffusionGradientListPlugin::version() const
 {
     return ITKDATADIFFUSIONGRADIENTLISTPLUGIN_VERSION;
 }
 
-QStringList itkDataDiffusionGradientListPlugin::tags(void) const
+QStringList itkDataDiffusionGradientListPlugin::tags() const
 {
     return QStringList() << "itk" << "data" << "diffusion" << "gradients";
 }
 
-QStringList itkDataDiffusionGradientListPlugin::types(void) const
+QStringList itkDataDiffusionGradientListPlugin::types() const
 {
     return QStringList() << "itkDataDiffusionGradientList";
 }

@@ -50,7 +50,7 @@ protected:
   ExtractImageBufferFilter();
   ~ExtractImageBufferFilter() {};
 
-  void GenerateData(void);
+  void GenerateData();
 
 private:
   ExtractImageBufferFilter(const Self&); //purposely not implemented

@@ -102,7 +102,7 @@ namespace itk
     std::string GetColumns() const;
 
 
-    const StringVectorType& GetOrderedFileNames (void) const
+    const StringVectorType& GetOrderedFileNames() const
     { return m_OrderedFileNames; }
 
 
@@ -153,12 +153,12 @@ namespace itk
     void SwapBytesIfNecessary(void* buffer, unsigned long numberOfPixels);
 
 
-    void DetermineNumberOfPixelComponents (void);
-    void DeterminePixelType (void);
-    void DetermineSpacing (void);
-    void DetermineDimensions (void);
-    void DetermineOrigin (void);
-    void DetermineOrientation (void);
+    void DetermineNumberOfPixelComponents();
+    void DeterminePixelType();
+    void DetermineSpacing();
+    void DetermineDimensions();
+    void DetermineOrigin();
+    void DetermineOrientation();
 
     double GetZPositionForImage (int);
 

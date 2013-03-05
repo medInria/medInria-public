@@ -425,7 +425,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
      Use with care.
   */
   //BTX
-  std::vector<vtkMetaDataSet*> GetMetaDataSetList (void) const
+  std::vector<vtkMetaDataSet*> GetMetaDataSetList() const
   { return MetaDataSetList; }
   //ETX
 
@@ -445,27 +445,27 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   */
   vtkGetMacro (SequenceDuration, double);
 
-  virtual const char* GetDataSetType (void) const
+  virtual const char* GetDataSetType() const
   {
     return "Sequence";
   }
   /**
      Size of the vtkMetaDataSet list.
   */
-  int GetNumberOfMetaDataSets (void) const
+  int GetNumberOfMetaDataSets() const
   { return MetaDataSetList.size(); }
   /**
      Access to the minimal time flag of the sequence.
   */
-  double GetMinTime (void) const;
+  double GetMinTime() const;
   /**
      Access to the maximal time flag of the sequence.
   */
-  double GetMaxTime (void) const;
+  double GetMaxTime() const;
   /**
      Access to the resolution of the sequence, i.e. the time step used.
   */
-  double GetTimeResolution (void);
+  double GetTimeResolution();
   /**
      Internal use : Compute the time in case of loop.
   */
@@ -473,8 +473,8 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   /**
      Internal use : Compute the time duration of the sequence.
   */
-  virtual void ComputeSequenceDuration (void);
-  virtual void ComputeTimesFromDuration(void);
+  virtual void ComputeSequenceDuration();
+  virtual void ComputeTimesFromDuration();
   /**
      Use this method to colorize the actors of this metadata by a given vtkDataArray
      The array must be contained by the member vtkDataSet of this metadataset.
@@ -496,7 +496,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
      Set to true only if you are sure that the topology is unchanged between the
      different frames of the sequence.
   */
-   bool GetSameGeometryFlag (void)
+   bool GetSameGeometryFlag()
   { return this->SameGeometryFlag; }
   void SetSameGeometryFlag ( bool flag)
   { this->SameGeometryFlag = flag; }
@@ -533,7 +533,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   */
   virtual void CopyInformation (vtkMetaDataSet* metadataset);
 
-  virtual double* GetCurrentScalarRange(void);
+  virtual double* GetCurrentScalarRange();
 
   vtkGetMacro (CurrentId, int);
   
@@ -544,7 +544,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   /**
      Internal use : Initialize sequence, not used yet.
   */
-  virtual void Initialize (void);
+  virtual void Initialize();
   /**
      Internal use : Build the output from a given vtkMetaDataSet.
   */

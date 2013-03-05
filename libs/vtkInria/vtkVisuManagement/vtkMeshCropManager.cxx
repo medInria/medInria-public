@@ -188,7 +188,7 @@ void vtkMeshCropManager::SetVisibility (bool isVisible)
     this->SetBoxWidget (this->BoxWidgetVisibility);
 }
 
-void vtkMeshCropManager::Initialize (void)
+void vtkMeshCropManager::Initialize()
 {
   if (this->Callback->GetMeshLimiter()->GetOutput())
     this->Callback->GetMeshLimiter()->GetOutput()->Initialize();

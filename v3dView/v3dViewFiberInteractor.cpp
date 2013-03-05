@@ -74,7 +74,7 @@ v3dViewFiberInteractor::~v3dViewFiberInteractor()
     d = 0;
 }
 
-QString v3dViewFiberInteractor::description(void) const
+QString v3dViewFiberInteractor::description() const
 {
     return tr("Interactor to help visualising Fibers");
 }
@@ -84,12 +84,12 @@ QString v3dViewFiberInteractor::identifier() const
     return "v3dViewFiberInteractor";
 }
 
-QStringList v3dViewFiberInteractor::handled(void) const
+QStringList v3dViewFiberInteractor::handled() const
 {
     return QStringList () << "v3dView";
 }
 
-bool v3dViewFiberInteractor::registered(void)
+bool v3dViewFiberInteractor::registered()
 {
     return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewFiberInteractor", QStringList() << "v3dView", createV3dViewFiberInteractor);
 }
@@ -126,7 +126,7 @@ void v3dViewFiberInteractor::setData(dtkAbstractData *data)
     }
 }
 
-dtkAbstractData *v3dViewFiberInteractor::data (void)
+dtkAbstractData *v3dViewFiberInteractor::data()
 {
     return d->data;
 }
@@ -142,12 +142,12 @@ void v3dViewFiberInteractor::setView(dtkAbstractView *view)
     }
 }
 
-dtkAbstractView *v3dViewFiberInteractor::view (void)
+dtkAbstractView *v3dViewFiberInteractor::view()
 {
     return d->view;
 }
 
-void v3dViewFiberInteractor::enable(void)
+void v3dViewFiberInteractor::enable()
 {
     if (this->enabled())
         return;
@@ -171,7 +171,7 @@ void v3dViewFiberInteractor::enable(void)
     dtkAbstractViewInteractor::enable();
 }
 
-void v3dViewFiberInteractor::disable(void)
+void v3dViewFiberInteractor::disable()
 {
     if (!this->enabled())
         return;
@@ -303,12 +303,12 @@ void v3dViewFiberInteractor::onBoxBooleanOperationPropertySet (const QString& va
     d->manager->GetVOILimiter()->Modified();
 }
 
-void v3dViewFiberInteractor::onSelectionTagged(void)
+void v3dViewFiberInteractor::onSelectionTagged()
 {
     d->manager->SwapInputOutput();
 }
 
-void v3dViewFiberInteractor::onSelectionReset(void)
+void v3dViewFiberInteractor::onSelectionReset()
 {
     d->manager->Reset();
 }
@@ -526,7 +526,7 @@ void v3dViewFiberInteractor::onBundlingBoxBooleanOperatorChanged(int value)
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractViewInteractor *createV3dViewFiberInteractor(void)
+dtkAbstractViewInteractor *createV3dViewFiberInteractor()
 {
     return new v3dViewFiberInteractor;
 }

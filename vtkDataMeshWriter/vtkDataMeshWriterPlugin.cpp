@@ -33,13 +33,13 @@ vtkDataMeshWriterPlugin::vtkDataMeshWriterPlugin(QObject *parent) : dtkPlugin(pa
 {
 }
 
-vtkDataMeshWriterPlugin::~vtkDataMeshWriterPlugin(void)
+vtkDataMeshWriterPlugin::~vtkDataMeshWriterPlugin()
 {
     delete d;
     d = NULL;
 }
 
-bool vtkDataMeshWriterPlugin::initialize(void)
+bool vtkDataMeshWriterPlugin::initialize()
 {
     if (!vtkDataMeshWriter::registered())   { dtkWarn() << "Unable to register vtkDataMeshWriter type"; }
     if (!vtkDataMesh4DWriter::registered()) { dtkWarn() << "Unable to register vtkDataMeshWriter type"; }
@@ -47,32 +47,32 @@ bool vtkDataMeshWriterPlugin::initialize(void)
     return true;
 }
 
-bool vtkDataMeshWriterPlugin::uninitialize(void)
+bool vtkDataMeshWriterPlugin::uninitialize()
 {
   return true;
 }
 
-QString vtkDataMeshWriterPlugin::name(void) const
+QString vtkDataMeshWriterPlugin::name() const
 {
     return "vtkDataMeshWriterPlugin";
 }
 
-QString vtkDataMeshWriterPlugin::description(void) const
+QString vtkDataMeshWriterPlugin::description() const
 {
   return "Writers for any VTK mesh data type.";
 }
 
-QString vtkDataMeshWriterPlugin::version(void) const
+QString vtkDataMeshWriterPlugin::version() const
 {
     return VTKDATAMESHWRITERPLUGIN_VERSION;
 }
 
-QStringList vtkDataMeshWriterPlugin::tags(void) const
+QStringList vtkDataMeshWriterPlugin::tags() const
 {
     return QStringList() << "vtk" << "data" << "mesh" << "writer";
 }
 
-QStringList vtkDataMeshWriterPlugin::types(void) const
+QStringList vtkDataMeshWriterPlugin::types() const
 {
   return QStringList() << "vtkDataMeshWriter";
 }

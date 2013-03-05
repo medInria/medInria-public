@@ -15,28 +15,28 @@ class V3DDATAPLUGIN_EXPORT v3dDataFibers : public dtkAbstractData
     Q_OBJECT
 
 public:
-             v3dDataFibers(void);
-    virtual ~v3dDataFibers(void);
+             v3dDataFibers();
+    virtual ~v3dDataFibers();
 
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
-    static bool registered(void);
+    virtual QString description() const;
+    virtual QString identifier() const;
+    static bool registered();
 
-    virtual QImage        &thumbnail  (void) const;
-    virtual QList<QImage> &thumbnails (void) const;
+    virtual QImage        &thumbnail() const;
+    virtual QList<QImage> &thumbnails() const;
 
 public:
-    void *data(void);
+    void *data();
 
     void setData(void *data);
 
 protected:
-    void generateThumbnails(void) const;
+    void generateThumbnails() const;
 
 private:
     v3dDataFibersPrivate *d;
 };
 
-dtkAbstractData *createV3dDataFibers(void);
+dtkAbstractData *createV3dDataFibers();
 
 

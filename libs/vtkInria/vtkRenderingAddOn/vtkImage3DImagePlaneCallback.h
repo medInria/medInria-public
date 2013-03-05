@@ -45,13 +45,13 @@ class VTK_RENDERINGADDON_EXPORT vtkImage3DImagePlaneCallback: public vtkCommand
     this->FirstRender = true;
     }*/
 
-  vtkImageData* GetOutput (void) const
+  vtkImageData* GetOutput() const
   {
     return this->Reslice->GetOutput();
   }
   
 
-  virtual void Reset (void)
+  virtual void Reset()
   {
     this->Reslice->SetInput (NULL);
     //this->FirstRender = true;

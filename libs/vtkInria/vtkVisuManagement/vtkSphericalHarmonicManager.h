@@ -73,10 +73,10 @@ public:
   void GetSphericalHarmonicDimensions (int * dims);
 
   /** Generate the glyph and add them to the RenderWindowInteractor */
-  void Update (void);
+  void Update();
 
   /** Remove the actors from the renderer. */
-  void Initialize (void);
+  void Initialize();
 
   /** Set the current position in voxel coordinates. */
   void SetCurrentPosition (const int&, const int&, const int&);
@@ -85,7 +85,7 @@ public:
   void SetCurrentPosition (int pos[3]);
 
   /** Get the current position. */
-  const int* GetCurrentPosition (void) const
+  const int* GetCurrentPosition() const
   { return this->CurrentPosition; }
 
   /** Get the current position. */
@@ -96,7 +96,7 @@ public:
   }
 
   /** Reset the position to the center of the dataset. */
-  void ResetPosition (void);
+  void ResetPosition();
 
   /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
   void SetAxialSliceVisibility (int);

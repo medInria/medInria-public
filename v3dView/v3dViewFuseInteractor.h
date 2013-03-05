@@ -20,17 +20,17 @@ public:
     v3dViewFuseInteractor();
     virtual ~v3dViewFuseInteractor();
 
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
-    virtual QStringList handled(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
+    virtual QStringList handled() const;
 
-    static bool registered(void);
+    static bool registered();
 
     virtual void setData(dtkAbstractData *data, int channel);
     virtual void setView(dtkAbstractView *view);
 
-    virtual void enable(void);
-    virtual void disable(void);
+    virtual void enable();
+    virtual void disable();
 
 public slots:
     virtual void onPropertySet                       (const QString& key, const QString& value);
@@ -45,6 +45,6 @@ private:
 
 };
 
-dtkAbstractViewInteractor *createV3dViewFuseInteractor(void);
+dtkAbstractViewInteractor *createV3dViewFuseInteractor();
 
 

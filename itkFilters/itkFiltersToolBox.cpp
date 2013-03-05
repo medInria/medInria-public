@@ -272,7 +272,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
 
 }
 
-itkFiltersToolBox::~itkFiltersToolBox ( void )
+itkFiltersToolBox::~itkFiltersToolBox()
 {
     d->process.releasePointer();
     
@@ -280,7 +280,7 @@ itkFiltersToolBox::~itkFiltersToolBox ( void )
     d = NULL;
 }
 
-bool itkFiltersToolBox::registered ( void )
+bool itkFiltersToolBox::registered()
 {
     medToolBoxFactory* factory = medToolBoxFactory::instance();
     return factory->registerToolBox<itkFiltersToolBox> (
@@ -292,7 +292,7 @@ bool itkFiltersToolBox::registered ( void )
 }
 
 
-dtkAbstractData* itkFiltersToolBox::processOutput ( void )
+dtkAbstractData* itkFiltersToolBox::processOutput()
 {
     if ( !d->process )
         return NULL;
@@ -300,7 +300,7 @@ dtkAbstractData* itkFiltersToolBox::processOutput ( void )
     return d->process->output();
 }
 
-void itkFiltersToolBox::clear ( void )
+void itkFiltersToolBox::clear()
 {
     qDebug() << "Clear itk filters toolbox";
 

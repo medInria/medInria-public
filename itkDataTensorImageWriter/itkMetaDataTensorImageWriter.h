@@ -9,18 +9,18 @@ class ITKDATATENSORIMAGEWRITERPLUGIN_EXPORT itkMetaDataTensorImageWriter : publi
     Q_OBJECT
 
 public:
-    itkMetaDataTensorImageWriter(void);
-    virtual ~itkMetaDataTensorImageWriter(void);
+    itkMetaDataTensorImageWriter();
+    virtual ~itkMetaDataTensorImageWriter();
 
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
 
-    static bool registered(void);
+    static bool registered();
 
 private:
     static const char ID[];
 };
 
-dtkAbstractDataWriter *createItkMetaDataTensorImageWriter(void);
+dtkAbstractDataWriter *createItkMetaDataTensorImageWriter();
 
 

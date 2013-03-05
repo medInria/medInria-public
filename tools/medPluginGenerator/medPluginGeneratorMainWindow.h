@@ -29,20 +29,20 @@ class medPluginGeneratorMainWindow : public QMainWindow
 
 public:
      medPluginGeneratorMainWindow(QWidget *parent = 0);
-    ~medPluginGeneratorMainWindow(void);
+    ~medPluginGeneratorMainWindow();
 
 public slots:
-    void generate(void);
+    void generate();
 
 public slots:
-    void about(void);
-    void onOutputPathClicked(void);
-    void onOutputPathChanged(void);
-    void onPluginTypeChanged(void);
-    void onNameChanged(void);
+    void about();
+    void onOutputPathClicked();
+    void onOutputPathChanged();
+    void onPluginTypeChanged();
+    void onNameChanged();
     void onDescriptionChanged();
     void onPluginLicenseChanged();
-    void update(void);
+    void update();
     void onFamilyChanged(int);
     void onSetDefaultPath();
 private:

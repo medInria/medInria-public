@@ -17,16 +17,16 @@ class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medCompositeDataSetsPlugin : public dtkP
 public:
 
      medCompositeDataSetsPlugin(QObject *parent = 0);
-    ~medCompositeDataSetsPlugin(void);
+    ~medCompositeDataSetsPlugin();
 
-    virtual bool initialize(void);
-    virtual bool uninitialize(void);
+    virtual bool initialize();
+    virtual bool uninitialize();
 
-    virtual QString name(void) const;
-    virtual QString description(void) const;
+    virtual QString name() const;
+    virtual QString description() const;
 
-    virtual QStringList tags(void) const;
-    virtual QStringList types(void) const;
+    virtual QStringList tags() const;
+    virtual QStringList types() const;
 
 private:
     

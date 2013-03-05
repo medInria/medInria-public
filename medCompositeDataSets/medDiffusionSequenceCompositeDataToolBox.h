@@ -14,7 +14,7 @@ public:
      medDiffusionSequenceCompositeDataToolBox(QWidget* parent=0);
     ~medDiffusionSequenceCompositeDataToolBox();
 
-    static bool registered(void);
+    static bool registered();
 
     QString description() const;
 

@@ -12,7 +12,7 @@ SeedPointAnnotation::SeedPointAnnotation(QObject * parent /* = 0 */) :
 }
 
 
-SeedPointAnnotation::~SeedPointAnnotation(void)
+SeedPointAnnotation::~SeedPointAnnotation()
 {
 }
 
@@ -59,7 +59,7 @@ void SeedPointAnnotation::initializeSceneCoordinates()
     m_isInitialized = true;
 }
 
-QRectF SeedPointAnnotation::boundingRect( void ) const
+QRectF SeedPointAnnotation::boundingRect() const
 {
     const qreal penWidth = 1;
     const qreal radiusScene = seedPointAnnotationData()->radiusScene();

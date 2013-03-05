@@ -28,14 +28,14 @@ itkDataTensorImageWriterPlugin::itkDataTensorImageWriterPlugin(QObject *parent) 
 
 }
 
-itkDataTensorImageWriterPlugin::~itkDataTensorImageWriterPlugin(void)
+itkDataTensorImageWriterPlugin::~itkDataTensorImageWriterPlugin()
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkDataTensorImageWriterPlugin::initialize(void)
+bool itkDataTensorImageWriterPlugin::initialize()
 {
     if (!itkMetaDataTensorImageWriter::registered())  { dtkWarn() << "Unable to register itkMetaDataTensorImageWriter type";  }
     if (!itkNiftiDataTensorImageWriter::registered()) { dtkWarn() << "Unable to register itkNiftiDataTensorImageWriter type"; }
@@ -44,32 +44,32 @@ bool itkDataTensorImageWriterPlugin::initialize(void)
     return true;
 }
 
-bool itkDataTensorImageWriterPlugin::uninitialize(void)
+bool itkDataTensorImageWriterPlugin::uninitialize()
 {
     return true;
 }
 
-QString itkDataTensorImageWriterPlugin::name(void) const
+QString itkDataTensorImageWriterPlugin::name() const
 {
     return "itkDataTensorImageWriterPlugin";
 }
 
-QString itkDataTensorImageWriterPlugin::description(void) const
+QString itkDataTensorImageWriterPlugin::description() const
 {
     return "ITK tensor data image writers";
 }
 
-QString itkDataTensorImageWriterPlugin::version(void) const
+QString itkDataTensorImageWriterPlugin::version() const
 {
     return ITKDATATENSORIMAGEWRITERPLUGIN_VERSION;
 }
 
-QStringList itkDataTensorImageWriterPlugin::tags(void) const
+QStringList itkDataTensorImageWriterPlugin::tags() const
 {
     return QStringList() << "itk" << "data" << "tensor" << "image" << "writers";
 }
 
-QStringList itkDataTensorImageWriterPlugin::types(void) const
+QStringList itkDataTensorImageWriterPlugin::types() const
 {
     return QStringList() << "itkMetaDataTensorImageWriter"
                          << "itkNiftiDataTensorImageWriter"

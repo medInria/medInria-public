@@ -65,13 +65,13 @@ medPluginGeneratorMainWindow::medPluginGeneratorMainWindow(QWidget *parent) : QM
     Q_UNUSED(statusBar());
 }
 
-medPluginGeneratorMainWindow::~medPluginGeneratorMainWindow(void)
+medPluginGeneratorMainWindow::~medPluginGeneratorMainWindow()
 {
     delete this->d;
     this->d = NULL;
 }
 
-void medPluginGeneratorMainWindow::about(void)
+void medPluginGeneratorMainWindow::about()
 {
     QMessageBox::about(this, "medPluginGenerator v0.1.0",
                        "<b>medPluginGenerator</b> aims at helping developer "
@@ -79,7 +79,7 @@ void medPluginGeneratorMainWindow::about(void)
                        "the development of new plugins.");
 }
 
-void medPluginGeneratorMainWindow::onOutputPathClicked(void)
+void medPluginGeneratorMainWindow::onOutputPathClicked()
 {
     d->output = QFileDialog::getExistingDirectory(this, tr("Choose Directory"),
     d->ui.pathLineEdit->text(),
@@ -90,14 +90,14 @@ void medPluginGeneratorMainWindow::onOutputPathClicked(void)
     update();
 }
 
-void medPluginGeneratorMainWindow::onOutputPathChanged(void)
+void medPluginGeneratorMainWindow::onOutputPathChanged()
 {
     d->output = d->ui.pathLineEdit->text();
 
     update();
 }
 
-void medPluginGeneratorMainWindow::onPluginTypeChanged(void)
+void medPluginGeneratorMainWindow::onPluginTypeChanged()
 {
     if(d->ui.pluginTypeCombo->currentIndex() > 0) {
         d->type = d->ui.pluginTypeCombo->currentText();
@@ -105,7 +105,7 @@ void medPluginGeneratorMainWindow::onPluginTypeChanged(void)
     }
 }
 
-void medPluginGeneratorMainWindow::onNameChanged(void)
+void medPluginGeneratorMainWindow::onNameChanged()
 {
     d->name = d->ui.nameLineEdit->text();
 
@@ -123,7 +123,7 @@ void medPluginGeneratorMainWindow::onPluginLicenseChanged()
         d->license = d->ui.pluginLicenseCombo->currentText();
 }
 
-void medPluginGeneratorMainWindow::update(void)
+void medPluginGeneratorMainWindow::update()
 {
     d->ui.outputNameLabel->setText(
         QString("%1")
@@ -131,7 +131,7 @@ void medPluginGeneratorMainWindow::update(void)
     );
 }
 
-void medPluginGeneratorMainWindow::generate(void)
+void medPluginGeneratorMainWindow::generate()
 {
     QDir outputParentDirectory(d->output);
 

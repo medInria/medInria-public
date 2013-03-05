@@ -106,7 +106,7 @@ protected:
   ~NiftiImageIOExtended();
   void PrintSelf(std::ostream & os, Indent indent) const;
 
-  virtual bool GetUseLegacyModeForTwoFileWriting(void) const { return false; }
+  virtual bool GetUseLegacyModeForTwoFileWriting() const { return false; }
 private:
   bool  MustRescale();
 

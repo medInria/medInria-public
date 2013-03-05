@@ -34,7 +34,7 @@ class %1Private
 public:
     %1 * proc;
     template <class PixelType>
-    int update(void);
+    int update();
     template <typename PixelType>
     bool writeTransform(const QString& file);
     
@@ -46,13 +46,13 @@ public:
 // %1
 // /////////////////////////////////////////////////////////////////
 
-%1::%1(void) : itkProcessRegistration(), d(new %1Private)
+%1::%1() : itkProcessRegistration(), d(new %1Private)
 {
     d->proc = this;
     d->registrationMethod = NULL;
 }
 
-%1::~%1(void)
+%1::~%1()
 {
     d->proc = NULL;
 
@@ -67,13 +67,13 @@ public:
     d = 0;
 }
 
-bool %1::registered(void)
+bool %1::registered()
 {
     return dtkAbstractProcessFactory::instance()->register%2Type("%1",
                                                                  create%3);
 }
 
-QString %1::description(void) const
+QString %1::description() const
 {
     return "%1";
 }
@@ -86,7 +86,7 @@ QString %1::description(void) const
 
 
 template <typename PixelType>
-int %1Private::update(void)
+int %1Private::update()
 {
     typedef itk::Image< PixelType, 3 >  FixedImageType;
     typedef itk::Image< PixelType, 3 >  MovingImageType;
@@ -190,7 +190,7 @@ bool %1::writeTransform(const QString& file)
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstract%2 *create%3(void)
+dtkAbstract%2 *create%3()
 {
     return new %1;
 }

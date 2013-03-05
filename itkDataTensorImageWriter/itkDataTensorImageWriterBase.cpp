@@ -11,22 +11,22 @@
 #include <itkVectorImage.h>
 #include <itkVector.h>
 
-itkDataTensorImageWriterBase::itkDataTensorImageWriterBase(void) : dtkAbstractDataWriter()
+itkDataTensorImageWriterBase::itkDataTensorImageWriterBase() : dtkAbstractDataWriter()
 {
     this->io = 0;
 }
 
-itkDataTensorImageWriterBase::~itkDataTensorImageWriterBase(void)
+itkDataTensorImageWriterBase::~itkDataTensorImageWriterBase()
 {
 }
 
-QStringList itkDataTensorImageWriterBase::handled(void) const
+QStringList itkDataTensorImageWriterBase::handled() const
 {
     return QStringList() << "itkDataTensorImageDouble3"
                          << "itkDataTensorImageFloat3";
 }
 
-QStringList itkDataTensorImageWriterBase::s_handled(void)
+QStringList itkDataTensorImageWriterBase::s_handled()
 {
     return QStringList() << "itkDataTensorImageDouble3"
                          << "itkDataTensorImageFloat3";

@@ -205,7 +205,7 @@ void vtkAxes2DWidget::SetEnabled(int enabling)
 }
 
 //----------------------------------------------------------------------
-void vtkAxes2DWidget::ComputePlanes(void)
+void vtkAxes2DWidget::ComputePlanes()
 {
   if (!this->ImageView || !this->ImageView->GetRenderer() || !this->ImageView->GetImageActor())
     return;

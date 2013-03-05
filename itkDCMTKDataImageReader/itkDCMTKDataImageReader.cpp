@@ -109,14 +109,14 @@ const char itkDCMTKDataImageReader::ID[] = "itkDCMTKDataImageReader";
 itkDCMTKDataImageReader::itkDCMTKDataImageReader(): dtkAbstractDataReader(),d(new itkDCMTKDataImageReaderPrivate) { }
 
 
-itkDCMTKDataImageReader::~itkDCMTKDataImageReader(void)
+itkDCMTKDataImageReader::~itkDCMTKDataImageReader()
 {
     delete d;
     d = 0;
 }
 
 
-bool itkDCMTKDataImageReader::registered(void)
+bool itkDCMTKDataImageReader::registered()
 {
     return dtkAbstractDataFactory::instance()->registerDataReaderType("itkDCMTKDataImageReader", QStringList() << "itkDataImageDouble3"
                                                                       << "itkDataImageFloat3"
@@ -141,7 +141,7 @@ bool itkDCMTKDataImageReader::registered(void)
 }
 
 
-QStringList itkDCMTKDataImageReader::handled(void) const
+QStringList itkDCMTKDataImageReader::handled() const
 {
     return QStringList() << "itkDataImageDouble3"
                          << "itkDataImageFloat3"
@@ -483,7 +483,7 @@ void itkDCMTKDataImageReader::setProgress (int value)
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkDCMTKDataImageReader(void)
+dtkAbstractDataReader *createItkDCMTKDataImageReader()
 {
     return new itkDCMTKDataImageReader;
 }

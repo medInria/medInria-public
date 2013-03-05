@@ -12,10 +12,10 @@ class ITKDATAIMAGEBASE_EXPORT itkDataImageReaderBase:
 
 public:
 
-    itkDataImageReaderBase(void);
-    virtual ~itkDataImageReaderBase(void);
+    itkDataImageReaderBase();
+    virtual ~itkDataImageReaderBase();
 
-    virtual QStringList handled(void) const = 0;
+    virtual QStringList handled() const = 0;
 
 public slots:
 

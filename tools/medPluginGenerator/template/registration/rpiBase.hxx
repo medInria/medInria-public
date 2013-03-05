@@ -6,7 +6,7 @@ namespace rpi
     
     template < class TFixedImage, class TMovingImage, class TTransformScalarType >
     %1 < TFixedImage, TMovingImage, TTransformScalarType >
-    ::%1(void)
+    ::%1()
     {
         // Initialize parameters
         
@@ -16,7 +16,7 @@ namespace rpi
     
     template < class TFixedImage, class TMovingImage, class TTransformScalarType >
     %1< TFixedImage, TMovingImage, TTransformScalarType >
-    ::~%1(void)
+    ::~%1()
     {
         // Do nothing
     }
@@ -24,7 +24,7 @@ namespace rpi
     template < class TFixedImage, class TMovingImage, class TTransformScalarType >
     void
     %1< TFixedImage, TMovingImage, TTransformScalarType >
-    ::StartRegistration(void)
+    ::StartRegistration()
     {
         
         // Check if fixed image has been set

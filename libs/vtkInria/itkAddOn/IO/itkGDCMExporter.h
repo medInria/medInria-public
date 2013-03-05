@@ -93,19 +93,19 @@ namespace itk
     void SetOutputDirectory (const char* path)
     { this->OutputDirectory = path; }
     /* accessor */
-    const char* GetOutputDirectory (void) const
+    const char* GetOutputDirectory() const
     { return this->OutputDirectory.c_str(); }
 
     void SetFilePrefix (const char* prefix)
     { this->Prefix = prefix; }
     /* accessor */
-    const char* GetFilePrefix (void) const
+    const char* GetFilePrefix() const
     { return this->Prefix.c_str(); }
     
     /**
        Save all volumes in a given directory
     */
-    void WriteAll(void);
+    void WriteAll();
     
     /**
        Add an image to the exam
@@ -115,7 +115,7 @@ namespace itk
     /**
       Access to the output reconstructed images
     */    
-    std::vector<ImageType::Pointer> GetInputVolumes(void) const
+    std::vector<ImageType::Pointer> GetInputVolumes() const
     { return this->InputVolumeList; }
     
 

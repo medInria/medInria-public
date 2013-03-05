@@ -34,46 +34,46 @@ vtkDataMeshReaderPlugin::vtkDataMeshReaderPlugin(QObject *parent) : dtkPlugin(pa
 
 }
 
-vtkDataMeshReaderPlugin::~vtkDataMeshReaderPlugin(void)
+vtkDataMeshReaderPlugin::~vtkDataMeshReaderPlugin()
 {
   delete d;
 
   d = NULL;
 }
 
-bool vtkDataMeshReaderPlugin::initialize(void)
+bool vtkDataMeshReaderPlugin::initialize()
 {
     if (!vtkDataMeshReader::registered())   { dtkWarn() << "Unable to register vtkDataMeshReader type"; }
     if (!vtkDataMesh4DReader::registered()) { dtkWarn() << "Unable to register vtkDataMeshReader type"; }
     return true;
 }
 
-bool vtkDataMeshReaderPlugin::uninitialize(void)
+bool vtkDataMeshReaderPlugin::uninitialize()
 {
   return true;
 }
 
-QString vtkDataMeshReaderPlugin::name(void) const
+QString vtkDataMeshReaderPlugin::name() const
 {
   return "vtkDataMeshReaderPlugin";
 }
 
-QString vtkDataMeshReaderPlugin::description(void) const
+QString vtkDataMeshReaderPlugin::description() const
 {
   return "Readers for any VTK point data type.";
 }
 
-QString vtkDataMeshReaderPlugin::version(void) const
+QString vtkDataMeshReaderPlugin::version() const
 {
   return VTKDATAMESHREADERPLUGIN_VERSION;
 }
 
-QStringList vtkDataMeshReaderPlugin::tags(void) const
+QStringList vtkDataMeshReaderPlugin::tags() const
 {
   return QStringList() << "vtk" << "data" << "mesh" << "reader";
 }
 
-QStringList vtkDataMeshReaderPlugin::types(void) const
+QStringList vtkDataMeshReaderPlugin::types() const
 {
   return QStringList() << "vtkDataMeshReader";
 }

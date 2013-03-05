@@ -15,33 +15,33 @@ class V3DDATAPLUGIN_EXPORT v3dDataImage : public medAbstractDataImage
     Q_OBJECT
 
 public:
-             v3dDataImage(void);
-    virtual ~v3dDataImage(void);
+             v3dDataImage();
+    virtual ~v3dDataImage();
 
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
-    static bool registered(void);
+    virtual QString description() const;
+    virtual QString identifier() const;
+    static bool registered();
 
 public:
     bool read(const QString& file);
     bool write(const QString& file);
 
-    void *output(void);
-    void *data(void);
+    void *output();
+    void *data();
 
     void setData(void *data);
 
 public:
     // derived from medAbstractDataImage
-    int xDimension(void);
-    int yDimension(void);
-    int zDimension(void);
+    int xDimension();
+    int yDimension();
+    int zDimension();
 
 
 private:
     v3dDataImagePrivate *d;
 };
 
-dtkAbstractData *createV3dDataImage(void);
+dtkAbstractData *createV3dDataImage();
 
 

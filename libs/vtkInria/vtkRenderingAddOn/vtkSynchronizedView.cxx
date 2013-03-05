@@ -296,7 +296,7 @@ void vtkSynchronizedView::Uninitialize()
 
 
 #ifndef VTK_LEGACY_REMOVE
-std::vector < vtkSynchronizedView* > vtkSynchronizedView::GetViewToObserve(void) const
+std::vector < vtkSynchronizedView* > vtkSynchronizedView::GetViewToObserve() const
 { 
   return this->GetChildren(); 
 }
@@ -832,7 +832,7 @@ void vtkSynchronizedView::AddChildren (std::vector<vtkSynchronizedView*> childre
 }
 
 
-int vtkSynchronizedView::GetNumberOfChildren (void) const
+int vtkSynchronizedView::GetNumberOfChildren() const
 {
   return (int)this->Children.size();
 }
@@ -874,7 +874,7 @@ void vtkSynchronizedView::RemoveAllChildren()
 }
 
 
-void vtkSynchronizedView::Detach (void)
+void vtkSynchronizedView::Detach()
 {
   
   vtkSynchronizedView* parent = this->GetParent();

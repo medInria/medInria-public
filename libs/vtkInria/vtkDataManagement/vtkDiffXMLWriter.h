@@ -47,11 +47,11 @@ public:
   vtkDataManager *GetInput();
 
   // see algorithm for more info
-  virtual void Update (void);
+  virtual void Update();
   
   void SetFileName (const char* file)
   { this->FileName = file; }
-  const char* GetFileName (void)
+  const char* GetFileName()
   { return this->FileName.c_str(); }
 	
   

@@ -14,13 +14,13 @@
 #include <itkObjectFactoryBase.h>
 #include <itkMetaDataObject.h>
 
-itkDataImageReaderBase::itkDataImageReaderBase(void) : dtkAbstractDataReader()
+itkDataImageReaderBase::itkDataImageReaderBase() : dtkAbstractDataReader()
 {
     this->io = 0;
 }
 
 
-itkDataImageReaderBase::~itkDataImageReaderBase(void)
+itkDataImageReaderBase::~itkDataImageReaderBase()
 {
 }
 

@@ -24,7 +24,7 @@
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractViewInteractor *createV3dViewAnnotationInteractor(void)
+dtkAbstractViewInteractor *createV3dViewAnnotationInteractor()
 {
     return new v3dViewAnnotationInteractor;
 }
@@ -57,7 +57,7 @@ v3dViewAnnotationInteractor::~v3dViewAnnotationInteractor()
     d = NULL;
 }
 
-QString v3dViewAnnotationInteractor::description(void) const
+QString v3dViewAnnotationInteractor::description() const
 {
     return tr("Interactor displaying annotations");
 }
@@ -67,12 +67,12 @@ QString v3dViewAnnotationInteractor::identifier() const
     return s_identifier();
 }
 
-QStringList v3dViewAnnotationInteractor::handled(void) const
+QStringList v3dViewAnnotationInteractor::handled() const
 {
     return QStringList () << v3dView::s_identifier();
 }
 
-bool v3dViewAnnotationInteractor::registered(void)
+bool v3dViewAnnotationInteractor::registered()
 {
     return dtkAbstractViewFactory::instance()->registerViewInteractorType(
         v3dViewAnnotationInteractor::s_identifier(),
@@ -86,7 +86,7 @@ bool v3dViewAnnotationInteractor::isAutoEnabledWith ( dtkAbstractData * data )
     return false;
 }
 
-void v3dViewAnnotationInteractor::enable(void)
+void v3dViewAnnotationInteractor::enable()
 {
     dtkWarn() << "enabling " << this->identifier() ;
 
@@ -99,7 +99,7 @@ void v3dViewAnnotationInteractor::enable(void)
 }
 
 
-void v3dViewAnnotationInteractor::disable(void)
+void v3dViewAnnotationInteractor::disable()
 {
     if (!this->enabled())
         return;

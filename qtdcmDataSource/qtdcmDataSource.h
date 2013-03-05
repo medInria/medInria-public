@@ -15,12 +15,12 @@ class QTDCMDATASOURCEPLUGIN_EXPORT qtdcmDataSource : public medAbstractDataSourc
     Q_OBJECT
 
 public:
-    qtdcmDataSource ( void );
-    virtual ~qtdcmDataSource ( void );
+    qtdcmDataSource();
+    virtual ~qtdcmDataSource();
 
-    virtual QString description ( void ) const;
+    virtual QString description() const;
 
-    static bool registered ( void );
+    static bool registered();
 
     QWidget *mainViewWidget();
     QWidget *sourceSelectorWidget();
@@ -35,7 +35,7 @@ public slots:
 private:
     qtdcmDataSourcePrivate *d;
 
-    void initWidgets(void);
+    void initWidgets();
 };
 
 medAbstractDataSource *createQtdcmDataSource ( QWidget* );

@@ -1283,7 +1283,7 @@ inline mat44 mat44_transpose(mat44 in)
  */
 void
 NiftiImageIOExtended
-::WriteImageInformation(void)
+::WriteImageInformation()
 {
   //  MetaDataDictionary &thisDic=this->GetMetaDataDictionary();
   //

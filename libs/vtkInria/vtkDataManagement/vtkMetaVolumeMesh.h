@@ -58,7 +58,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
   
   virtual void Write (const char* filename);
   
-  vtkUnstructuredGrid* GetUnstructuredGrid (void) const;
+  vtkUnstructuredGrid* GetUnstructuredGrid() const;
 
   
   static bool         IsVtkExtension (const char* ext);
@@ -66,7 +66,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
   static bool         IsGMeshExtension (const char* ext);
   static unsigned int CanReadFile (const char* filename);
 
-  virtual const char* GetDataSetType (void) const
+  virtual const char* GetDataSetType() const
   {
     return "VolumeMesh";
   }
@@ -75,7 +75,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
   vtkMetaVolumeMesh();
   ~vtkMetaVolumeMesh();
 
-  virtual void Initialize (void);
+  virtual void Initialize();
   virtual void ReadVtkFile(const char* filename);
   virtual void ReadMeshFile(const char* filename);
   virtual void ReadGMeshFile(const char* filename);

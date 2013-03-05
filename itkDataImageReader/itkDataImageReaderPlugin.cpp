@@ -51,13 +51,13 @@ itkDataImageReaderPlugin::itkDataImageReaderPlugin(QObject *parent) : dtkPlugin(
 
 }
 
-itkDataImageReaderPlugin::~itkDataImageReaderPlugin(void)
+itkDataImageReaderPlugin::~itkDataImageReaderPlugin()
 {
     delete d;
     d = NULL;
 }
 
-bool itkDataImageReaderPlugin::initialize(void)
+bool itkDataImageReaderPlugin::initialize()
 {
     if (!itkMetaDataImageReader::registered())       { dtkWarn() << "Unable to register itkMetaDataImageReader type";       }
 #ifdef ITK_USE_SYSTEM_GDCM
@@ -78,32 +78,32 @@ bool itkDataImageReaderPlugin::initialize(void)
     return true;
 }
 
-bool itkDataImageReaderPlugin::uninitialize(void)
+bool itkDataImageReaderPlugin::uninitialize()
 {
     return true;
 }
 
-QString itkDataImageReaderPlugin::name(void) const
+QString itkDataImageReaderPlugin::name() const
 {
     return "itkDataImageReaderPlugin";
 }
 
-QString itkDataImageReaderPlugin::description(void) const
+QString itkDataImageReaderPlugin::description() const
 {
     return "Readers for any ITK image data type.";
 }
 
-QString itkDataImageReaderPlugin::version(void) const
+QString itkDataImageReaderPlugin::version() const
 {
     return ITKDATAIMAGEREADERPLUGIN_VERSION;
 }
 
-QStringList itkDataImageReaderPlugin::tags(void) const
+QStringList itkDataImageReaderPlugin::tags() const
 {
     return QStringList() << "itk" << "data" << "image" << "reader";
 }
 
-QStringList itkDataImageReaderPlugin::types(void) const
+QStringList itkDataImageReaderPlugin::types() const
 {
     return QStringList() << "itkMetaDataImageReader"
 #ifdef ITK_USE_SYSTEM_GDCM

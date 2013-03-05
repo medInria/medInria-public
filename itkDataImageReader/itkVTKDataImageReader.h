@@ -6,23 +6,23 @@
 
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkVTKDataImageReader: public itkDataImageReaderBase {
 public:
-    itkVTKDataImageReader(void);
-    virtual ~itkVTKDataImageReader(void);
+    itkVTKDataImageReader();
+    virtual ~itkVTKDataImageReader();
 
-    virtual QString identifier(void) const;
-    virtual QString description(void) const;
+    virtual QString identifier() const;
+    virtual QString description() const;
 
-    QStringList handled(void) const;
+    QStringList handled() const;
 
-    static QStringList s_handled (void);
+    static QStringList s_handled();
 
-    static bool registered(void);
+    static bool registered();
 
 private:
 
     static const char ID[];
 };
 
-dtkAbstractDataReader *createItkVTKDataImageReader(void);
+dtkAbstractDataReader *createItkVTKDataImageReader();
 
 

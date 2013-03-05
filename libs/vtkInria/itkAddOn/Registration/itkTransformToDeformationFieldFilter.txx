@@ -198,7 +198,7 @@ TransformToDeformationFieldFilter<TOutputImage,TTransformScalarType>
 template <class TOutputImage, class TTransformScalarType>
 unsigned long 
 TransformToDeformationFieldFilter<TOutputImage,TTransformScalarType>
-::GetMTime( void ) const
+::GetMTime() const
 {
   unsigned long latestTime = Object::GetMTime(); 
 

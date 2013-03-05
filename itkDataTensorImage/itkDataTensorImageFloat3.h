@@ -15,34 +15,34 @@ class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageFloat3 : public medAbstr
     Q_OBJECT
 
 public:
-             itkDataTensorImageFloat3(void);
-    virtual ~itkDataTensorImageFloat3(void);
+             itkDataTensorImageFloat3();
+    virtual ~itkDataTensorImageFloat3();
 
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
-    static bool registered(void);
+    virtual QString description() const;
+    virtual QString identifier() const;
+    static bool registered();
 
 
 public slots:
     // derived from dtkAbstractData
-    void *output(void);
-    void *data(void);
+    void *output();
+    void *data();
     void setData(void* data);
 
 public:
     // derived from medAbstractDataImage
-    int xDimension(void);
-    int yDimension(void);
-    int zDimension(void);
+    int xDimension();
+    int yDimension();
+    int zDimension();
 
     /** TODO the image which is being returned right now is JUST A STUB to allow drag and drop */
-    virtual QImage        &thumbnail  (void) const;
-    virtual QList<QImage> &thumbnails (void) const;
+    virtual QImage        &thumbnail() const;
+    virtual QList<QImage> &thumbnails() const;
 
 private:
     itkDataTensorImageFloat3Private *d;
 };
 
-dtkAbstractData *createItkDataTensorImageFloat3(void);
+dtkAbstractData *createItkDataTensorImageFloat3();
 
 

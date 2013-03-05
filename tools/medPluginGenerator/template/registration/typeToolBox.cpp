@@ -57,14 +57,14 @@ public:
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 }
 
-%1ToolBox::~%1ToolBox(void)
+%1ToolBox::~%1ToolBox()
 {
     delete d;
     
     d = NULL;
 }
 
-bool %1ToolBox::registered(void)
+bool %1ToolBox::registered()
 {
     return medToolBoxFactory::instance()->
     registerToolBox<%1ToolBox>("%1ToolBox",
@@ -73,7 +73,7 @@ bool %1ToolBox::registered(void)
                                QStringList() << "registration");
 }
 
-void %1ToolBox::run(void)
+void %1ToolBox::run()
 {
     
     if(!this->parentToolBox())

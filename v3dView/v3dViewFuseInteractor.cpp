@@ -67,7 +67,7 @@ v3dViewFuseInteractor::~v3dViewFuseInteractor()
 }
 
 
-QString v3dViewFuseInteractor::description(void) const
+QString v3dViewFuseInteractor::description() const
 {
     return tr("Interactor used to fuse 2 views together");
 }
@@ -77,12 +77,12 @@ QString v3dViewFuseInteractor::identifier() const
     return "v3dViewFuseInteractor";
 }
 
-QStringList v3dViewFuseInteractor::handled(void) const
+QStringList v3dViewFuseInteractor::handled() const
 {
     return QStringList () << v3dView::s_identifier();
 }
 
-bool v3dViewFuseInteractor::registered(void)
+bool v3dViewFuseInteractor::registered()
 {
     return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewFuseInteractor",
                                                                           QStringList() << v3dView::s_identifier(), createV3dViewFuseInteractor);
@@ -478,7 +478,7 @@ void v3dViewFuseInteractor::setView(dtkAbstractView *view)
     }
 }
 
-void v3dViewFuseInteractor::enable(void)
+void v3dViewFuseInteractor::enable()
 {
     if (this->enabled())
         return;
@@ -491,7 +491,7 @@ void v3dViewFuseInteractor::enable(void)
     dtkAbstractViewInteractor::enable();
 }
 
-void v3dViewFuseInteractor::disable(void)
+void v3dViewFuseInteractor::disable()
 {
     if (!this->enabled())
         return;
@@ -503,7 +503,7 @@ void v3dViewFuseInteractor::disable(void)
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractViewInteractor *createV3dViewFuseInteractor(void)
+dtkAbstractViewInteractor *createV3dViewFuseInteractor()
 {
     return new v3dViewFuseInteractor;
 }

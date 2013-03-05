@@ -60,7 +60,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkCompareImageManager: public vtkObject
   { m_ComparisonMode = mode; }
   
   /** Get the comparison mode */
-  ComparisonModeIds GetComparisonMode (void) const
+  ComparisonModeIds GetComparisonMode() const
   { return m_ComparisonMode; }
 
   /** Set the image input 1 */
@@ -70,13 +70,13 @@ class VTK_VISUMANAGEMENT_EXPORT vtkCompareImageManager: public vtkObject
   void SetInput2 (vtkImageData* im);
   
   /** Generate the output image (just an update */
-  void GenerateData(void);
+  void GenerateData();
 
   /** Reset data */
-  void ResetData (void);
+  void ResetData();
   
   /** Specify the Lookup Table to use (not available yet) */
-  void SetLUTValues(void);
+  void SetLUTValues();
 
   /** set thw window and levels */
   void SetWindowLevel (float window1, float level1,
@@ -94,18 +94,18 @@ class VTK_VISUMANAGEMENT_EXPORT vtkCompareImageManager: public vtkObject
   { m_FuseOpacity = val; }
 
   /** Get the opacity of the fusefilter */
-  double GetFuseOpacity (void) const
+  double GetFuseOpacity() const
   { return m_FuseOpacity; }
 
   /** Get the output : combination of the 2 input images */
-  vtkImageData* GetOutput (void);
+  vtkImageData* GetOutput();
   
  protected:
   
   vtkCompareImageManager();
   ~vtkCompareImageManager();
 
-  void SetProperties(void);
+  void SetProperties();
 
  private:
 

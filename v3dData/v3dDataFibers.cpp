@@ -36,25 +36,25 @@ public:
 // v3dDataFibers
 // /////////////////////////////////////////////////////////////////
 
-v3dDataFibers::v3dDataFibers(void) : dtkAbstractData(), d(new v3dDataFibersPrivate)
+v3dDataFibers::v3dDataFibers() : dtkAbstractData(), d(new v3dDataFibersPrivate)
 {
     d->data = 0;
     d->thumbnail = QImage(":v3dData/icons/fibers.png");
     d->thumbnails.push_back (d->thumbnail);
 }
 
-v3dDataFibers::~v3dDataFibers(void)
+v3dDataFibers::~v3dDataFibers()
 {
     delete d;
     d = 0;
 }
 
-bool v3dDataFibers::registered(void)
+bool v3dDataFibers::registered()
 {
     return dtkAbstractDataFactory::instance()->registerDataType("v3dDataFibers", createV3dDataFibers);
 }
 
-QString v3dDataFibers::description(void) const
+QString v3dDataFibers::description() const
 {
     return tr("v3d fibers data") ;
 }
@@ -70,12 +70,12 @@ void v3dDataFibers::setData(void *data)
       d->data = dataset;
 }
 
-void *v3dDataFibers::data(void)
+void *v3dDataFibers::data()
 {
     return d->data;
 }
 
-QImage & v3dDataFibers::thumbnail (void) const
+QImage & v3dDataFibers::thumbnail() const
 {
     /*
     if (d->thumbnails.count()==0)
@@ -84,7 +84,7 @@ QImage & v3dDataFibers::thumbnail (void) const
     return d->thumbnail;
 }
 
-QList<QImage> &v3dDataFibers::thumbnails(void) const
+QList<QImage> &v3dDataFibers::thumbnails() const
 {
     /*
     if (d->thumbnails.count()==0)
@@ -93,7 +93,7 @@ QList<QImage> &v3dDataFibers::thumbnails(void) const
     return d->thumbnails;
 }
 
-void v3dDataFibers::generateThumbnails (void) const
+void v3dDataFibers::generateThumbnails() const
 {
     d->thumbnails.clear();
 
@@ -155,7 +155,7 @@ void v3dDataFibers::generateThumbnails (void) const
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractData *createV3dDataFibers(void)
+dtkAbstractData *createV3dDataFibers()
 {
     return new v3dDataFibers;
 }

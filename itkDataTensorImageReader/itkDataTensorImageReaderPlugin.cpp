@@ -39,14 +39,14 @@ itkDataTensorImageReaderPlugin::itkDataTensorImageReaderPlugin(QObject *parent) 
 
 }
 
-itkDataTensorImageReaderPlugin::~itkDataTensorImageReaderPlugin(void)
+itkDataTensorImageReaderPlugin::~itkDataTensorImageReaderPlugin()
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkDataTensorImageReaderPlugin::initialize(void)
+bool itkDataTensorImageReaderPlugin::initialize()
 {
     if (!itkMetaDataTensorImageReader::registered())  { dtkWarn() << "Unable to register itkMetaDataTensorImageReader type";  }
     if (!itkNiftiDataTensorImageReader::registered()) { dtkWarn() << "Unable to register itkNiftiDataTensorImageReader type"; }
@@ -55,32 +55,32 @@ bool itkDataTensorImageReaderPlugin::initialize(void)
     return true;
 }
 
-bool itkDataTensorImageReaderPlugin::uninitialize(void)
+bool itkDataTensorImageReaderPlugin::uninitialize()
 {
     return true;
 }
 
-QString itkDataTensorImageReaderPlugin::name(void) const
+QString itkDataTensorImageReaderPlugin::name() const
 {
     return "itkDataTensorImageReaderPlugin";
 }
 
-QString itkDataTensorImageReaderPlugin::description(void) const
+QString itkDataTensorImageReaderPlugin::description() const
 {
     return "ITK tensor data image readers";
 }
 
-QString itkDataTensorImageReaderPlugin::version(void) const
+QString itkDataTensorImageReaderPlugin::version() const
 {
     return ITKDATATENSORIMAGEREADERPLUGIN_VERSION;
 }
 
-QStringList itkDataTensorImageReaderPlugin::tags(void) const
+QStringList itkDataTensorImageReaderPlugin::tags() const
 {
     return QStringList() << "itk" << "data" << "tensor" << "image" << "reader";
 }
 
-QStringList itkDataTensorImageReaderPlugin::types(void) const
+QStringList itkDataTensorImageReaderPlugin::types() const
 {
     return QStringList() << "itkMetaDataTensorImageReader"
 			 << "itkNiftiDataTensorImageReader"

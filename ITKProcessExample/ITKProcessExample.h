@@ -17,19 +17,19 @@ class ITKPROCESSEXAMPLEPLUGIN_EXPORT ITKProcessExample : public dtkAbstractProce
     Q_OBJECT
 
 public:
-             ITKProcessExample(void);
-    virtual ~ITKProcessExample(void);
+             ITKProcessExample();
+    virtual ~ITKProcessExample();
 
-    virtual QString description(void) const;
+    virtual QString description() const;
 
-    static bool registered(void);
+    static bool registered();
 
 public slots:
 
     void setInput(dtkAbstractData *data);
     void setParameter(double  data, int channel);
-    int update(void);
-    dtkAbstractData *output(void);
+    int update();
+    dtkAbstractData *output();
 
     //bool write(QString file);
 
@@ -37,6 +37,6 @@ private:
     ITKProcessExamplePrivate *d;
 };
 
-dtkAbstractProcess *createITKProcessExample(void);
+dtkAbstractProcess *createITKProcessExample();
 
 

@@ -89,7 +89,7 @@ vtkMetaDataSet::~vtkMetaDataSet()
 
 
 //----------------------------------------------------------------------------
-void vtkMetaDataSet::Initialize (void)
+void vtkMetaDataSet::Initialize()
 {  
   this->ActorList->RemoveAllItems();
 //   if (this->DataSet)
@@ -97,19 +97,19 @@ void vtkMetaDataSet::Initialize (void)
 }
 			    
 //----------------------------------------------------------------------------
-const char* vtkMetaDataSet::GetName (void) const
+const char* vtkMetaDataSet::GetName() const
 { return this->Name.c_str(); }
 //----------------------------------------------------------------------------
 void vtkMetaDataSet::SetName (const char* name)
 { this->Name = name; }
 //----------------------------------------------------------------------------
-const char* vtkMetaDataSet::GetTag (void) const
+const char* vtkMetaDataSet::GetTag() const
 { return this->Tag.c_str(); }
 //----------------------------------------------------------------------------
 void vtkMetaDataSet::SetTag (const char* tag)
 { this->Tag = tag; }
 //----------------------------------------------------------------------------
-const char* vtkMetaDataSet::GetFilePath (void) const
+const char* vtkMetaDataSet::GetFilePath() const
 { return this->FilePath.c_str(); }
 //----------------------------------------------------------------------------
 void vtkMetaDataSet::SetFilePath (const char* path)
@@ -212,7 +212,7 @@ vtkActor* vtkMetaDataSet::GetActor(unsigned int i)
 }
 
 //----------------------------------------------------------------------------
-unsigned int vtkMetaDataSet::GetNumberOfActors(void) const
+unsigned int vtkMetaDataSet::GetNumberOfActors() const
 {
   return this->ActorList->GetNumberOfItems();
 }
@@ -225,7 +225,7 @@ void vtkMetaDataSet::SetVisibility (bool visible)
 }
 
 //----------------------------------------------------------------------------
-int vtkMetaDataSet::GetVisibility (void)
+int vtkMetaDataSet::GetVisibility()
 {
   bool ret = false;
   for (unsigned int i=0; i<this->GetNumberOfActors(); i++)
@@ -537,7 +537,7 @@ void vtkMetaDataSet::Write (const char* filename)
 }
 
 
-void vtkMetaDataSet::LinkFilters (void)
+void vtkMetaDataSet::LinkFilters()
 {
   
 }
@@ -568,7 +568,7 @@ void vtkMetaDataSet::CopyInformation (vtkMetaDataSet* metadataset)
 
 
 //----------------------------------------------------------------------------
-double* vtkMetaDataSet::GetCurrentScalarRange (void)
+double* vtkMetaDataSet::GetCurrentScalarRange()
 {
   double* val = new double[2];
   val[0] = VTK_DOUBLE_MAX;
@@ -671,7 +671,7 @@ void vtkMetaDataSet::ColorByArray(vtkDataArray* array)
 
 
 //----------------------------------------------------------------------------
-bool vtkMetaDataSet::GetScalarVisibility(void)
+bool vtkMetaDataSet::GetScalarVisibility()
 {
   if (this->GetNumberOfActors() && this->GetActor (0))
     return this->GetActor (0)->GetMapper()->GetScalarVisibility();
@@ -693,12 +693,12 @@ void vtkMetaDataSet::SetScalarVisibility(bool val)
 }
 
 //----------------------------------------------------------------------------
-void vtkMetaDataSet::ScalarVisibilityOn(void)
+void vtkMetaDataSet::ScalarVisibilityOn()
 {
   this->SetScalarVisibility (true);
 }
 //----------------------------------------------------------------------------
-void vtkMetaDataSet::ScalarVisibilityOff(void)
+void vtkMetaDataSet::ScalarVisibilityOff()
 {
   this->SetScalarVisibility (false);
 }

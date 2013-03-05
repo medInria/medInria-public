@@ -38,16 +38,16 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSetManager : public vtkFibersManager
   vtkGetObjectMacro (FiberDataSet, vtkFiberDataSet);
  
   // derived from vtkFibersManager
-  virtual void Enable (void);
-  virtual void Disable (void);
+  virtual void Enable();
+  virtual void Disable();
   
   // virtual void SetRenderWindowInteractor (vtkRenderWindowInteractor *);
-  // virtual void RemoveAllActors (void);
-  virtual void SetRenderingModeToPolyLines (void);
-  virtual void SetRenderingModeToTubes (void);
-  virtual void SetRenderingModeToRibbons (void);
-  virtual void ChangeMapperToUseHardwareShaders(void);
-  virtual void ChangeMapperToDefault(void);
+  // virtual void RemoveAllActors();
+  virtual void SetRenderingModeToPolyLines();
+  virtual void SetRenderingModeToTubes();
+  virtual void SetRenderingModeToRibbons();
+  virtual void ChangeMapperToUseHardwareShaders();
+  virtual void ChangeMapperToDefault();
 
   //BTX
   virtual void SetBundleVisibility(const std::string &name, int visibility);
@@ -55,12 +55,12 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSetManager : public vtkFibersManager
   virtual vtkActor *GetBundleActor(const std::string &name);
   //ETX
   
-  virtual void ShowAllBundles(void);
-  virtual void HideAllBundles(void);
+  virtual void ShowAllBundles();
+  virtual void HideAllBundles();
 
   /*
-    virtual void SetColorModeToLocalFiberOrientation (void);
-    virtual void SetColorModelToGlobalFiberOrientation (void);
+    virtual void SetColorModeToLocalFiberOrientation();
+    virtual void SetColorModelToGlobalFiberOrientation();
     virtual void SetColorModeToPointArray (const int& id);
   */
 
@@ -73,13 +73,13 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSetManager : public vtkFibersManager
   vtkFiberDataSetManager();
   ~vtkFiberDataSetManager();
 
-  void CreateBundleRenderingPipeline (void);
+  void CreateBundleRenderingPipeline();
   //BTX
   inline void CreateRenderingPipelineForBundle (const std::string &name);
   //ETX
   
-  void AddBundleActors (void);
-  void RemoveBundleActors (void);
+  void AddBundleActors();
+  void RemoveBundleActors();
   
  private:
 

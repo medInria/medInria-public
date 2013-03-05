@@ -339,7 +339,7 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <typename TImage>
-  void GDCMImporter2<TImage>::AutoOrganization (void)
+  void GDCMImporter2<TImage>::AutoOrganization()
   {
     // Retrieve the entire list of files
     DICOMFileListMap buffermap = this->GetGlobalDicomFileListMap();
@@ -423,7 +423,7 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <typename TImage>
-  void GDCMImporter2<TImage>::AutoOrganizationPositionBased (void)
+  void GDCMImporter2<TImage>::AutoOrganizationPositionBased()
   {
 
     DICOMFileListMap buffermap = this->GetGlobalDicomFileListMap();
@@ -474,7 +474,7 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <typename TImage>
-  void GDCMImporter2<TImage>::Scan (void)
+  void GDCMImporter2<TImage>::Scan()
   {
     if (!this->GetInputDirectory() || !(*this->GetInputDirectory()))
     {
@@ -533,7 +533,7 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <typename TImage>
-  void GDCMImporter2<TImage>::InitializeOutputs (void)
+  void GDCMImporter2<TImage>::InitializeOutputs()
   {
 
     std::vector<std::string> UIDs;
@@ -590,7 +590,7 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <typename TImage>
-  void GDCMImporter2<TImage>::GenerateData (void)
+  void GDCMImporter2<TImage>::GenerateData()
   {
     this->UpdateProgress(0.0);
     try
@@ -616,7 +616,7 @@ namespace itk
 //----------------------------------------------------------------------------
   template <typename TImage>
   typename GDCMImporter2<TImage>::DICOMFileListMap
-  GDCMImporter2<TImage>::GetGlobalDicomFileListMap (void)
+  GDCMImporter2<TImage>::GetGlobalDicomFileListMap()
   {
     DICOMFileListMap retmap;
     for (unsigned int i=0; i<this->GetNumberOfOutputs(); i++)

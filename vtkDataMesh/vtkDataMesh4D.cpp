@@ -67,27 +67,27 @@ void vtkDataMesh4D::setData(void *data)
   d->meshsequence = sequence;
 }
 
-void *vtkDataMesh4D::output(void)
+void *vtkDataMesh4D::output()
 {
   return d->meshsequence;
 }
 
-void *vtkDataMesh4D::data(void)
+void *vtkDataMesh4D::data()
 {
   return d->meshsequence;
 }
 
-void vtkDataMesh4D::update(void)
+void vtkDataMesh4D::update()
 {
 
 }
 
-dtkAbstractData *createVtkDataMesh4D(void)
+dtkAbstractData *createVtkDataMesh4D()
 {
   return new vtkDataMesh4D;
 }
 
-QImage & vtkDataMesh4D::thumbnail (void)
+QImage & vtkDataMesh4D::thumbnail()
 {
   if (!d->thumbnails.size())
     return medAbstractDataMesh::thumbnail();
@@ -95,7 +95,7 @@ QImage & vtkDataMesh4D::thumbnail (void)
   return (d->thumbnails[0]);
 }
 
-QList<QImage> & vtkDataMesh4D::thumbnails (void)
+QList<QImage> & vtkDataMesh4D::thumbnails()
 {
   d->thumbnails.clear();
 
@@ -151,12 +151,12 @@ void vtkDataMesh4D::onPropertySet(const QString& key, const QString& value)
   Q_UNUSED(value);
 }
 
-int vtkDataMesh4D::countVertices(void)
+int vtkDataMesh4D::countVertices()
 {
   return 0;
 }
 
-int vtkDataMesh4D::countEdges(void)
+int vtkDataMesh4D::countEdges()
 {
     return 0;
 }

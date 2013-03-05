@@ -17,20 +17,20 @@ public:
     v3dViewFiberInteractor();
     virtual ~v3dViewFiberInteractor();
 
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
-    virtual QStringList handled(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
+    virtual QStringList handled() const;
 
-    static bool registered(void);
+    static bool registered();
 
     virtual void setData(dtkAbstractData *data);
-    dtkAbstractData *data (void);
+    dtkAbstractData *data();
 
     virtual void setView(dtkAbstractView *view);
-    dtkAbstractView *view (void);
+    dtkAbstractView *view();
 
-    virtual void enable(void);
-    virtual void disable(void);
+    virtual void enable();
+    virtual void disable();
 
     virtual void setROI(dtkAbstractData *data);
 
@@ -54,8 +54,8 @@ public slots:
     virtual void onProjectionPropertySet (const QString& value);
     virtual void onRadiusSet (int value);
 
-    virtual void onSelectionTagged (void);
-    virtual void onSelectionReset (void);
+    virtual void onSelectionTagged();
+    virtual void onSelectionReset();
     virtual void onSelectionValidated (const QString &name, const QColor &color);
 
     virtual void onBundlingBoxBooleanOperatorChanged(int value);
@@ -83,6 +83,6 @@ private:
 
 };
 
-dtkAbstractViewInteractor *createV3dViewFiberInteractor(void);
+dtkAbstractViewInteractor *createV3dViewFiberInteractor();
 
 

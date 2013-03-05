@@ -156,7 +156,7 @@ void vtkLandmark::ConfigureComment ()
 }
 
 
-void vtkLandmark::Initialize (void)
+void vtkLandmark::Initialize()
 {
   
   if (this->GetLandmarkType() == vtkLandmark::LANDMARK_SPHERE)
@@ -295,14 +295,14 @@ double* vtkLandmark::GetPosition()
 }
 
 
-void vtkLandmark::UpdateCommentPosition (void)
+void vtkLandmark::UpdateCommentPosition()
 {
   this->TextActor->SetPosition (this->GetPosition());  
   this->TextActor->SetScale (this->GetScale());  
 }
 
 
-void vtkLandmark::UpdateCrossPosition (void)
+void vtkLandmark::UpdateCrossPosition()
 {
   double* position = this->GetPosition();
   
@@ -364,7 +364,7 @@ void vtkLandmark::UpdateCrossPosition (void)
 }
 
 
-void vtkLandmark::UpdateSpherePosition (void)
+void vtkLandmark::UpdateSpherePosition()
 {
   this->Source->SetCenter (this->GetPosition());
   this->Source->SetRadius (this->GetScale());
@@ -464,7 +464,7 @@ bool vtkLandmark::HasFlag (const char* key)
   return (this->FlagMap.find(key) != this->FlagMap.end());
 }
 
-std::vector<std::string> vtkLandmark::GetFlagKeys (void)
+std::vector<std::string> vtkLandmark::GetFlagKeys()
 {
   std::vector<std::string> ans;
 
@@ -499,7 +499,7 @@ void vtkLandmark::RemoveActor (vtkActor* actor)
   
 }
 
-void vtkLandmark::RemoveAllActors (void)
+void vtkLandmark::RemoveAllActors()
 {
   this->ActorList->RemoveAllItems ();
   this->Actor2DList->RemoveAllItems ();
@@ -529,7 +529,7 @@ void vtkLandmark::SetScale (double scale)
   
 }
 
-double vtkLandmark::GetScale (void)
+double vtkLandmark::GetScale()
 {
   return this->Scale;
 }
@@ -557,7 +557,7 @@ void vtkLandmark::Select (bool changecolor)
   this->SelectFlag = 1;
 }
 
-void vtkLandmark::UnSelect (void)
+void vtkLandmark::UnSelect()
 {
   for (int i=0; i<this->ActorList->GetNumberOfItems(); i++)
   {

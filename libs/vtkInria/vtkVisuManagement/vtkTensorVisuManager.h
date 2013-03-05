@@ -75,25 +75,25 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
   vtkGetMacro (ShapeMode, unsigned int);
   
   /** Set a specific glyph shape */
-  void SetGlyphShapeToLine (void);
+  void SetGlyphShapeToLine();
   
   /** Set a specific glyph shape */
-  void SetGlyphShapeToDisk (void);
+  void SetGlyphShapeToDisk();
     
   /** Set a specific glyph shape */
-  void SetGlyphShapeToArrow (void);
+  void SetGlyphShapeToArrow();
   
   /** Set a specific glyph shape */
-  void SetGlyphShapeToCube (void);
+  void SetGlyphShapeToCube();
   
   /** Set a specific glyph shape */
-  void SetGlyphShapeToCylinder (void);
+  void SetGlyphShapeToCylinder();
   
   /** Set a specific glyph shape */
-  void SetGlyphShapeToSphere (void);
+  void SetGlyphShapeToSphere();
   
   /** Set a specific glyph shape */
-  void SetGlyphShapeToSuperquadric (void);
+  void SetGlyphShapeToSuperquadric();
   
   /** Get the inputed dataset. */
   vtkGetObjectMacro (Input, vtkDataSet);
@@ -107,7 +107,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
 
   /** Set a scaling factor for the glyhs. */
   void SetGlyphScale(const float& f);
-  double GetGlyphScale (void);
+  double GetGlyphScale();
   
   
   /** Set a maximum size for the glyphs. The size
@@ -150,19 +150,19 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
   void SetColorModeToEigenvalue( const int& );
   
   /** Set the colormode to map the volume. */
-  void SetColorModeToVolume( void );
+  void SetColorModeToVolume();
   
   /** Set the colormode to map the trace. */
-  void SetColorModeToTrace( void );
+  void SetColorModeToTrace();
   
   /** Set the colormode to map the distance to the identity. */
-  void SetColorModeToDistanceToIdentity( void );
+  void SetColorModeToDistanceToIdentity();
   
   /** Set the colormode. */
   void SetColorMode( const int& );
   
   /** Get the vtkPolyData. */
-  vtkPolyData* GetPolyData(void) const
+  vtkPolyData* GetPolyData() const
   { return this->Normals->GetOutput(); }
   
   /** Get the vtkMapper. */
@@ -198,12 +198,12 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
   ~vtkTensorVisuManager();
   
   /** Internal use only. */
-  void SetUpLUTToMapEigenVector(void);
-  void SetUpLUTToMapEigenValue(void);
-  void SetUpLUTToMapVolume(void);
-  void SetUpLUTToMapTrace(void);
-  void SetUpLUTToMapDistanceToIdentity(void);
-  void SetUpLUTToMapScalars(void);
+  void SetUpLUTToMapEigenVector();
+  void SetUpLUTToMapEigenValue();
+  void SetUpLUTToMapVolume();
+  void SetUpLUTToMapTrace();
+  void SetUpLUTToMapDistanceToIdentity();
+  void SetUpLUTToMapScalars();
   
  private:
   

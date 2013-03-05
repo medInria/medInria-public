@@ -18,22 +18,22 @@
 // itkDataTensorImageReader
 // /////////////////////////////////////////////////////////////////
 
-itkDataTensorImageReaderBase::itkDataTensorImageReaderBase(void) : dtkAbstractDataReader()
+itkDataTensorImageReaderBase::itkDataTensorImageReaderBase() : dtkAbstractDataReader()
 {
     this->io = 0;
 }
 
-itkDataTensorImageReaderBase::~itkDataTensorImageReaderBase(void)
+itkDataTensorImageReaderBase::~itkDataTensorImageReaderBase()
 {
 }
 
-QStringList itkDataTensorImageReaderBase::handled(void) const
+QStringList itkDataTensorImageReaderBase::handled() const
 {
     return QStringList() << "itkDataTensorImageDouble3"
 			 << "itkDataTensorImageFloat3";
 }
 
-QStringList itkDataTensorImageReaderBase::s_handled(void)
+QStringList itkDataTensorImageReaderBase::s_handled()
 {
     return QStringList() << "itkDataTensorImageDouble3"
 			 << "itkDataTensorImageFloat3";

@@ -149,14 +149,14 @@ itkProcessRegistrationDiffeomorphicDemonsToolBox::itkProcessRegistrationDiffeomo
     connect(runButton, SIGNAL(clicked()), this, SLOT(run()));
 }
 
-itkProcessRegistrationDiffeomorphicDemonsToolBox::~itkProcessRegistrationDiffeomorphicDemonsToolBox(void)
+itkProcessRegistrationDiffeomorphicDemonsToolBox::~itkProcessRegistrationDiffeomorphicDemonsToolBox()
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered(void)
+bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered()
 {
     return medToolBoxFactory::instance()->
             registerToolBox<itkProcessRegistrationDiffeomorphicDemonsToolBox>(
@@ -166,7 +166,7 @@ bool itkProcessRegistrationDiffeomorphicDemonsToolBox::registered(void)
                 QStringList()<< "registration");
 }
 
-void itkProcessRegistrationDiffeomorphicDemonsToolBox::run(void)
+void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
 {
 
     if(!this->parentToolBox())

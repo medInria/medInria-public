@@ -49,21 +49,21 @@ class VTK_VISUMANAGEMENT_EXPORT vtkPolyDataManager: public vtkObject
 
   //BTX
   /** Get PolyDatas as vtkActorList */
-  std::vector<vtkActor*> GetActorList (void) const
+  std::vector<vtkActor*> GetActorList() const
   { return ActorList; }
-  std::vector<vtkPolyData*> GetPolyDataList (void) const
+  std::vector<vtkPolyData*> GetPolyDataList() const
   { return PolyDataList; }
   //ETX
   vtkActor*    GetActor    (unsigned int i);
   vtkPolyData* GetPolyData (unsigned int id);
   /** Reset all data from the manager */
-  void ResetData(void);
+  void ResetData();
   /** Specify the visibility of a polydata */
   void SetVisibility (int IsVisible);
   /** Specify the visibility of a polydata */
   void SetVisibility (unsigned int i, int IsVisible);
   /** Get the visibility of the polydatas */
-  int GetVisibility (void) const
+  int GetVisibility() const
   { return Visibility; }
   /** Get the visibility of the polydata i */
   int GetVisibility (unsigned int i) const;
@@ -72,7 +72,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkPolyDataManager: public vtkObject
   /** Set the opacity of a specific polydata */
   void SetOpacity (unsigned int i, double val);
   /** Get the opacity used for polydatas */
-  double GetOpacity(void) const
+  double GetOpacity() const
   { return Opacity; }
   /** Get the opacity used for polydata i */
   double GetOpacity(unsigned int i) const;

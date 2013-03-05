@@ -32,8 +32,8 @@ public:
         REGISTRATION /** registration plugin*/
     };
 public:
-    medPluginGenerator(void);
-   ~medPluginGenerator(void);
+    medPluginGenerator();
+   ~medPluginGenerator();
 
    void setOutputDirectory(const QString& directory);
    void setName(const QString& suffix);
@@ -41,24 +41,24 @@ public:
    void setDescription(const QString& desc);
    void setLicense(const QString& desc);
    void setPluginFamily(const PluginFamily family);
-   bool run(void);
+   bool run();
 
 protected:
-   bool generateCMakeLists(void);
-   bool generateTypeHeaderFile(void);
-   bool generateTypeSourceFile(void);
-   bool generateTypeToolBoxHeaderFile(void);
-   bool generateTypeToolBoxSourceFile(void);
-   bool generateRPIHeaderFile(void);
-   bool generateRPISourceFile(void);
-   bool generatePluginHeaderFile(void);
-   bool generatePluginSourceFile(void);
-   bool generateExportHeaderFile(void);
-   bool generateHelpCollectionFile(void);
-   bool generateHelpConfigurationFile(void);
+   bool generateCMakeLists();
+   bool generateTypeHeaderFile();
+   bool generateTypeSourceFile();
+   bool generateTypeToolBoxHeaderFile();
+   bool generateTypeToolBoxSourceFile();
+   bool generateRPIHeaderFile();
+   bool generateRPISourceFile();
+   bool generatePluginHeaderFile();
+   bool generatePluginSourceFile();
+   bool generateExportHeaderFile();
+   bool generateHelpCollectionFile();
+   bool generateHelpConfigurationFile();
 
-   bool generateReadmeFile(void);
-   bool generateCopyingFile(void);
+   bool generateReadmeFile();
+   bool generateCopyingFile();
 
 private:
    medPluginGeneratorPrivate *d;

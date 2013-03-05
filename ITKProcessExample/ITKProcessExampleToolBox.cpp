@@ -76,14 +76,14 @@ ITKProcessExampleToolBox::ITKProcessExampleToolBox(QWidget *parent) : medFilteri
 
 }
 
-ITKProcessExampleToolBox::~ITKProcessExampleToolBox(void)
+ITKProcessExampleToolBox::~ITKProcessExampleToolBox()
 {
     delete d;
 
     d = NULL;
 }
 
-bool ITKProcessExampleToolBox::registered(void)
+bool ITKProcessExampleToolBox::registered()
 {
     return medToolBoxFactory::instance()->registerToolBox
             <ITKProcessExampleToolBox>(
@@ -94,7 +94,7 @@ bool ITKProcessExampleToolBox::registered(void)
 }
 
 
-dtkAbstractData* ITKProcessExampleToolBox::processOutput(void)
+dtkAbstractData* ITKProcessExampleToolBox::processOutput()
 {
     if(!d->process)
         return NULL;
@@ -103,7 +103,7 @@ dtkAbstractData* ITKProcessExampleToolBox::processOutput(void)
 }
 
 
-void ITKProcessExampleToolBox::run(void)
+void ITKProcessExampleToolBox::run()
 {
     if(!this->parentToolBox())
         return;

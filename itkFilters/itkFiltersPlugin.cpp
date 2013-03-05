@@ -1,6 +1,5 @@
 #include "itkFiltersPlugin.h"
 
-//#include "itkFilters.h"
 #include "itkFiltersAddProcess.h"
 #include "itkFiltersSubtractProcess.h"
 #include "itkFiltersMultiplyProcess.h"
@@ -26,14 +25,14 @@ itkFiltersPlugin::itkFiltersPlugin ( QObject* parent ) : dtkPlugin ( parent ), d
 
 }
 
-itkFiltersPlugin::~itkFiltersPlugin ( void )
+itkFiltersPlugin::~itkFiltersPlugin()
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkFiltersPlugin::initialize ( void )
+bool itkFiltersPlugin::initialize()
 {
 //    if ( !itkFilters::registered() )                 { dtkWarn() << "Unable to register itkFilters type";                         }
     if ( !itkFiltersAddProcess::registered() )       { dtkWarn() << "Unable to register itkFilters add process type";             }
@@ -51,12 +50,12 @@ bool itkFiltersPlugin::initialize ( void )
     return true;
 }
 
-bool itkFiltersPlugin::uninitialize ( void )
+bool itkFiltersPlugin::uninitialize()
 {
     return true;
 }
 
-QString itkFiltersPlugin::description ( void ) const
+QString itkFiltersPlugin::description() const
 {
   QString description;
   description = "This plugin implements some basic filters of ITK:      \
@@ -66,42 +65,42 @@ QString itkFiltersPlugin::description ( void ) const
   return description;
 }
 
-QString itkFiltersPlugin::name ( void ) const
+QString itkFiltersPlugin::name() const
 {
     return "itkFiltersPlugin";
 }
 
-QString itkFiltersPlugin::contact(void) const
+QString itkFiltersPlugin::contact() const
 {
     return QString::fromUtf8("Alexandre Abadie <Alexandre.Abadie@inria.fr>");
 }
 
-QString itkFiltersPlugin::version(void) const
+QString itkFiltersPlugin::version() const
 {
     return PLUGIN_VERSION;
 }
 
-QStringList itkFiltersPlugin::authors ( void ) const
+QStringList itkFiltersPlugin::authors() const
 {
     return QStringList() << "Alexandre Abadie <Alexandre.Abadie@inria.fr>";
 }
 
-QStringList itkFiltersPlugin::contributors ( void ) const
+QStringList itkFiltersPlugin::contributors() const
 {
     return QStringList() << QString::fromUtf8("Benoit Bleuzé <Benoit.Bleuze@inria.fr>");
 }
 
-QStringList itkFiltersPlugin::dependencies ( void ) const
+QStringList itkFiltersPlugin::dependencies() const
 {
     return dtkPlugin::dependencies();
 }
 
-QStringList itkFiltersPlugin::tags ( void ) const
+QStringList itkFiltersPlugin::tags() const
 {
     return QStringList() << "ITK" << "process" << "preprocessing" << "filtering";
 }
 
-QStringList itkFiltersPlugin::types ( void ) const
+QStringList itkFiltersPlugin::types() const
 {
     return QStringList() << "itkAddProcess"
                          << "itkSubtractProcess"

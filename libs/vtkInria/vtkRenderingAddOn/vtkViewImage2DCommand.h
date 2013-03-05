@@ -66,20 +66,20 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2DCommand : public vtkCommand
   void Windowing(vtkInteractorStyleImage2D* p_isi);
   void StartWindowing();  
   void StartPicking(vtkInteractorStyle* p_isi);
-  void EndPicking (void);
+  void EndPicking();
   void Zoom (vtkInteractorStyleImage2D* p_isi);
   void DefaultMove (vtkInteractorStyle*);
 
-  void PropagateWindowLevel (void);
-  void PropagateResetWindowLevel (void);
-  void PropagateStartWindowing (void);
-  void PropagateEndWindowing (void);
+  void PropagateWindowLevel();
+  void PropagateResetWindowLevel();
+  void PropagateStartWindowing();
+  void PropagateEndWindowing();
   
-  void PropagateCurrentPoint (void);
-  void PropagateResetCurrentPoint (void);
+  void PropagateCurrentPoint();
+  void PropagateResetCurrentPoint();
 
-  void PropagateZoom (void);
-  void PropagateResetZoom (void);
+  void PropagateZoom();
+  void PropagateResetZoom();
   
   
  private:

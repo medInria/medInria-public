@@ -36,12 +36,12 @@ public:
 };
 
 
-medPluginGenerator::medPluginGenerator(void)
+medPluginGenerator::medPluginGenerator()
 {
     this->d = new medPluginGeneratorPrivate;
 }
 
-medPluginGenerator::~medPluginGenerator(void)
+medPluginGenerator::~medPluginGenerator()
 {
     delete this->d;
     this->d = NULL;
@@ -92,7 +92,7 @@ void medPluginGenerator::setLicense(const QString& license)
     d->license = license;
 }
 
-bool medPluginGenerator::run(void)
+bool medPluginGenerator::run()
 {
     d->parent = QDir(d->output);
     
@@ -161,7 +161,7 @@ bool medPluginGenerator::run(void)
 // CMakeLists.txt
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generateCMakeLists(void)
+bool medPluginGenerator::generateCMakeLists()
 {
     QFile targetFile(d->target.absoluteFilePath("CMakeLists.txt"));
     
@@ -192,7 +192,7 @@ bool medPluginGenerator::generateCMakeLists(void)
 // Type header file
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generateTypeHeaderFile(void)
+bool medPluginGenerator::generateTypeHeaderFile()
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append(".h")));
     
@@ -227,7 +227,7 @@ bool medPluginGenerator::generateTypeHeaderFile(void)
 // Type source file
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generateTypeSourceFile(void)
+bool medPluginGenerator::generateTypeSourceFile()
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append(".cpp")));
     
@@ -272,7 +272,7 @@ bool medPluginGenerator::generateTypeSourceFile(void)
 // RPI header file
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generateRPIHeaderFile(void)
+bool medPluginGenerator::generateRPIHeaderFile()
 {
     QString baseName = QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper());
     QFile targetFile(d->target.absoluteFilePath(QString("rpi" + baseName).append(".h")));
@@ -306,7 +306,7 @@ bool medPluginGenerator::generateRPIHeaderFile(void)
 // RPI source file
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generateRPISourceFile(void)
+bool medPluginGenerator::generateRPISourceFile()
 {
     QString baseName = QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper());
     QFile targetFile(d->target.absoluteFilePath(QString("rpi" + baseName).append(".hxx")));
@@ -340,7 +340,7 @@ bool medPluginGenerator::generateRPISourceFile(void)
 // Type ToolBox header file
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generateTypeToolBoxHeaderFile(void)
+bool medPluginGenerator::generateTypeToolBoxHeaderFile()
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("ToolBox.h")));
     
@@ -373,7 +373,7 @@ bool medPluginGenerator::generateTypeToolBoxHeaderFile(void)
 // Type ToolBox source file
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generateTypeToolBoxSourceFile(void)
+bool medPluginGenerator::generateTypeToolBoxSourceFile()
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("ToolBox.cpp")));
     
@@ -407,7 +407,7 @@ bool medPluginGenerator::generateTypeToolBoxSourceFile(void)
 // Plugin header file
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generatePluginHeaderFile(void)
+bool medPluginGenerator::generatePluginHeaderFile()
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("Plugin.h")));
     
@@ -440,7 +440,7 @@ bool medPluginGenerator::generatePluginHeaderFile(void)
 // Plugin source file
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generatePluginSourceFile(void)
+bool medPluginGenerator::generatePluginSourceFile()
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("Plugin.cpp")));
     
@@ -474,7 +474,7 @@ bool medPluginGenerator::generatePluginSourceFile(void)
 // Export file
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generateExportHeaderFile(void)
+bool medPluginGenerator::generateExportHeaderFile()
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("PluginExport.h")));
     
@@ -505,7 +505,7 @@ bool medPluginGenerator::generateExportHeaderFile(void)
 // Help collection file
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generateHelpCollectionFile(void)
+bool medPluginGenerator::generateHelpCollectionFile()
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("Plugin.qhcp.in")));
     
@@ -537,7 +537,7 @@ bool medPluginGenerator::generateHelpCollectionFile(void)
 // Help configuration file
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generateHelpConfigurationFile(void)
+bool medPluginGenerator::generateHelpConfigurationFile()
 {
     QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("Plugin.doxyfile.in")));
     
@@ -568,7 +568,7 @@ bool medPluginGenerator::generateHelpConfigurationFile(void)
 // README file
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generateReadmeFile(void)
+bool medPluginGenerator::generateReadmeFile()
 {
     QFile targetFile(d->target.absoluteFilePath("README.txt"));
     
@@ -590,7 +590,7 @@ bool medPluginGenerator::generateReadmeFile(void)
 // COPYING file
 // /////////////////////////////////////////////////////////////////
 
-bool medPluginGenerator::generateCopyingFile(void)
+bool medPluginGenerator::generateCopyingFile()
 {
     QFile targetFile(d->target.absoluteFilePath("COPYING.txt"));
     

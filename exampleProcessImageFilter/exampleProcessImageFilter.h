@@ -21,8 +21,8 @@ class EXAMPLEPROCESSIMAGEFILTERPLUGIN_EXPORT exampleProcessImageFilter: public d
     Q_OBJECT
 
 public:
-             exampleProcessImageFilter(void);
-    virtual ~exampleProcessImageFilter(void);
+             exampleProcessImageFilter();
+    virtual ~exampleProcessImageFilter();
 
     enum Option {
         optionA,
@@ -30,9 +30,9 @@ public:
         optionC
     };
 
-    virtual QString description(void) const;
+    virtual QString description() const;
 
-    static bool registered(void);
+    static bool registered();
 
 public:
 
@@ -58,14 +58,14 @@ public:
     **/
     void setOption(Option option);
 
-    dtkAbstractData *output(void);
+    dtkAbstractData *output();
 
-    int update(void);
+    int update();
 
 private:
     exampleProcessImageFilterPrivate *d;
 };
 
-dtkAbstractProcess *createExampleProcessImageFilter(void);
+dtkAbstractProcess *createExampleProcessImageFilter();
 
 

@@ -8,18 +8,18 @@
 
 const char itkNrrdDataTensorImageWriter::ID[] = "itkNrrdDataTensorImageWriter";
 
-itkNrrdDataTensorImageWriter::itkNrrdDataTensorImageWriter(void) : itkDataTensorImageWriterBase()
+itkNrrdDataTensorImageWriter::itkNrrdDataTensorImageWriter() : itkDataTensorImageWriterBase()
 {
     this->io = itk::NrrdImageIO::New();
 }
 
 
-itkNrrdDataTensorImageWriter::~itkNrrdDataTensorImageWriter(void)
+itkNrrdDataTensorImageWriter::~itkNrrdDataTensorImageWriter()
 {
 }
 
 
-bool itkNrrdDataTensorImageWriter::registered(void)
+bool itkNrrdDataTensorImageWriter::registered()
 {
   return dtkAbstractDataFactory::instance()->registerDataWriterType(
               "itkNrrdDataTensorImageWriter",
@@ -27,12 +27,12 @@ bool itkNrrdDataTensorImageWriter::registered(void)
               createitkNrrdDataTensorImageWriter);
 }
 
-QString itkNrrdDataTensorImageWriter::description( void ) const
+QString itkNrrdDataTensorImageWriter::description() const
 {
     return tr( "Nrrd writer for Tensor images" );
 }
 
-QString itkNrrdDataTensorImageWriter::identifier( void ) const
+QString itkNrrdDataTensorImageWriter::identifier() const
 {
     return ID;
 }
@@ -41,7 +41,7 @@ QString itkNrrdDataTensorImageWriter::identifier( void ) const
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createitkNrrdDataTensorImageWriter(void)
+dtkAbstractDataWriter *createitkNrrdDataTensorImageWriter()
 {
     return new itkNrrdDataTensorImageWriter;
 }

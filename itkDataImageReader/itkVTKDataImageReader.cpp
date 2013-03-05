@@ -7,22 +7,22 @@
 
 const char itkVTKDataImageReader::ID[] = "itkVTKDataImageReader";
 
-itkVTKDataImageReader::itkVTKDataImageReader(void) : itkDataImageReaderBase()
+itkVTKDataImageReader::itkVTKDataImageReader() : itkDataImageReaderBase()
 {
     this->io = itk::VTKImageIO::New();
 }
 
 
-itkVTKDataImageReader::~itkVTKDataImageReader(void)
+itkVTKDataImageReader::~itkVTKDataImageReader()
 {
 }
 
-QStringList itkVTKDataImageReader::handled(void) const
+QStringList itkVTKDataImageReader::handled() const
 {
     return s_handled();
 }
 
-QStringList itkVTKDataImageReader::s_handled(void)
+QStringList itkVTKDataImageReader::s_handled()
 {
     return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
             << "itkDataImageUChar3" << "itkDataImageUChar4"
@@ -37,18 +37,18 @@ QStringList itkVTKDataImageReader::s_handled(void)
             << "itkDataImageRGB3" << "itkDataImageRGB3";
 }
 
-bool itkVTKDataImageReader::registered(void)
+bool itkVTKDataImageReader::registered()
 {
     return dtkAbstractDataFactory::instance()->registerDataReaderType(ID, s_handled(),
                                                                       createItkVTKDataImageReader);
 }
 
-QString itkVTKDataImageReader::identifier(void) const
+QString itkVTKDataImageReader::identifier() const
 {
     return ID;
 }
 
-QString itkVTKDataImageReader::description(void) const
+QString itkVTKDataImageReader::description() const
 {
     return "Reader for VTK images";
 }
@@ -59,7 +59,7 @@ QString itkVTKDataImageReader::description(void) const
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkVTKDataImageReader(void)
+dtkAbstractDataReader *createItkVTKDataImageReader()
 {
     return new itkVTKDataImageReader;
 }

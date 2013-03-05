@@ -75,38 +75,38 @@ namespace itk
     void SetImage(ImageType::Pointer image)
     { this->Image = image; }
     
-    ImageType::Pointer GetImage(void) const
+    ImageType::Pointer GetImage() const
     { return this->Image; }
 
     void SetFileList(std::vector<std::string> list)
     { this->FileList = list; }
 
-    std::vector<std::string> GetFileList (void) const
+    std::vector<std::string> GetFileList() const
     { return this->FileList; }
 
     void SetDescription(std::string description)
     { this->Description = description; }
 
-    std::string GetDescription (void) const
+    std::string GetDescription() const
     { return this->Description; }
 
     void SetSerieHelper(gdcm::SerieHelper* helper)
     { this->SerieHelper = helper; }
 
-    gdcm::SerieHelper* GetSerieHelper (void) const
+    gdcm::SerieHelper* GetSerieHelper() const
     { return this->SerieHelper; }
 
     void SetgdcmFileList(std::vector<gdcm::File*> *list)
     { this->gdcmFileList = list; }
 
-    std::vector<gdcm::File*> *GetgdcmFileList (void) const
+    std::vector<gdcm::File*> *GetgdcmFileList() const
     { return this->gdcmFileList; }
 
-    unsigned int* GetDimensions(void);
+    unsigned int* GetDimensions();
 
-    ImageType::Pointer TemporaryBuild (void);
+    ImageType::Pointer TemporaryBuild();
     
-    void Build(void);
+    void Build();
     
     void Save (const char*);
 
@@ -115,17 +115,17 @@ namespace itk
       return this->TagManager;
     }
 
-    void FillDicomTagManager(void);
+    void FillDicomTagManager();
     
     void SetSequenceFlag (bool val)
     { this->SequenceFlag = val; }
-    bool IsSequence (void)
+    bool IsSequence()
     { return this->SequenceFlag; }
 
     /**
        Use this method to release memory after volume parsing
     */
-    void ReleaseMemory (void);
+    void ReleaseMemory();
 
   protected:
 
@@ -206,7 +206,7 @@ namespace itk
 
     typedef DICOMVolume::FlipFilterType FlipFilterType;
 
-/*     DicomDictionary* GetDictionary (void) */
+/*     DicomDictionary* GetDictionary() */
 /*     { return this->Dictionary; } */
     
 
@@ -240,7 +240,7 @@ namespace itk
     void SetInputDirectory (const char* path)
     { this->InputDirectory = path; }
     /* accessor */
-    const char* GetInputDirectory (void) const
+    const char* GetInputDirectory() const
     { return this->InputDirectory.c_str(); }    
 
     /**
@@ -252,12 +252,12 @@ namespace itk
        Reset all buid volumes and filelists.
        dosen't reset the InputDirectory, so that the scanning would be faster afterward.
     */
-    void Reset (void);
+    void Reset();
     /**
        Scan the directory respecting the GDCMSeriesFileNames strategy, plus some rules the user may have added.
        it will create a list of DICOMVolume that can be access by GetDICOMVolumeList(). 
     */
-    void Scan (void);
+    void Scan();
 
     /**
        Read a single file, attemp to add content to the volume list
@@ -298,19 +298,19 @@ namespace itk
     /**
        Use this method to release memory after volume parsing
     */
-    void ReleaseMemory (void);
+    void ReleaseMemory();
     
     /**
       Access to the output reconstructed images
     */    
-    std::vector<ImageType::Pointer> GetOutputVolumes(void) const
+    std::vector<ImageType::Pointer> GetOutputVolumes() const
     { return this->OutputVolumeList; }
 
     /**
       Pointers to DICOM volume objects
       Use with care
     */    
-    std::vector<DICOMVolume::Pointer> GetDICOMVolumeList(void) const
+    std::vector<DICOMVolume::Pointer> GetDICOMVolumeList() const
     { return this->DICOMVolumeList; }
     /**
        Access a dicom volume by its id in list
@@ -336,7 +336,7 @@ namespace itk
     /**
       Build 3D volumic images from 2D DICOM files
     */    
-    void BuildAllVolumes (void);
+    void BuildAllVolumes();
     
     /** DEPRECATED */
     enum SplitModeIds

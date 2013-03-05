@@ -27,7 +27,7 @@ v3dDataFibersWriter::~v3dDataFibersWriter()
    d = NULL;
 }
 
-QStringList v3dDataFibersWriter::handled(void) const
+QStringList v3dDataFibersWriter::handled() const
 {
     return QStringList() << "v3dDataFibers";
 }
@@ -70,14 +70,14 @@ QString v3dDataFibersWriter::description() const {
     return "v3dDataFibersWriter";
 }
 
-bool v3dDataFibersWriter::registered(void)
+bool v3dDataFibersWriter::registered()
 {
   return dtkAbstractDataFactory::instance()->registerDataWriterType("v3dDataFibersWriter",
 								    QStringList() << "v3dDataFibers",
 								    createV3dDataFibersWriter);
 }
 
-QStringList v3dDataFibersWriter::supportedFileExtensions( void ) const
+QStringList v3dDataFibersWriter::supportedFileExtensions() const
 {
     QStringList ret;
     vtkSmartPointer<vtkXMLFiberDataSetWriter> writer = vtkSmartPointer<vtkXMLFiberDataSetWriter>::New();
@@ -91,7 +91,7 @@ QStringList v3dDataFibersWriter::supportedFileExtensions( void ) const
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createV3dDataFibersWriter(void)
+dtkAbstractDataWriter *createV3dDataFibersWriter()
 {
   return new v3dDataFibersWriter;
 }

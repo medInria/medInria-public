@@ -29,14 +29,14 @@ exampleProcessImageFilterPlugin::exampleProcessImageFilterPlugin(QObject *parent
 
 }
 
-exampleProcessImageFilterPlugin::~exampleProcessImageFilterPlugin(void)
+exampleProcessImageFilterPlugin::~exampleProcessImageFilterPlugin()
 {
     delete d;
 
     d = NULL;
 }
 
-bool exampleProcessImageFilterPlugin::initialize(void) {
+bool exampleProcessImageFilterPlugin::initialize() {
 
     //  Register the process
 
@@ -56,27 +56,27 @@ bool exampleProcessImageFilterPlugin::initialize(void) {
     return true;
 }
 
-bool exampleProcessImageFilterPlugin::uninitialize(void)
+bool exampleProcessImageFilterPlugin::uninitialize()
 {
     return true;
 }
 
-QString exampleProcessImageFilterPlugin::name(void) const
+QString exampleProcessImageFilterPlugin::name() const
 {
     return "exampleProcessImageFilterPlugin";
 }
 
-QString exampleProcessImageFilterPlugin::description(void) const
+QString exampleProcessImageFilterPlugin::description() const
 {
     return "";
 }
 
-QStringList exampleProcessImageFilterPlugin::tags(void) const
+QStringList exampleProcessImageFilterPlugin::tags() const
 {
     return QStringList();
 }
 
-QStringList exampleProcessImageFilterPlugin::types(void) const
+QStringList exampleProcessImageFilterPlugin::types() const
 {
     return QStringList() << "exampleProcessImageFilter";
 }

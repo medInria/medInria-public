@@ -653,7 +653,7 @@ void vtkDataManagerWriter::SetInput (vtkDataManager* manager)
 }
 
 //----------------------------------------------------------------------------
-vtkDataManager* vtkDataManagerWriter::GetInput (void)
+vtkDataManager* vtkDataManagerWriter::GetInput()
 {
   return this->Input;
 }

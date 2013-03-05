@@ -127,7 +127,7 @@ namespace itk
   }
 
 
-  void GDCMImporter::Reset(void)
+  void GDCMImporter::Reset()
   {
     this->DICOMVolumeList.clear();
     this->OutputVolumeList.clear();
@@ -177,7 +177,7 @@ namespace itk
   
 
   
-  void GDCMImporter::Scan (void)
+  void GDCMImporter::Scan()
   {
     this->UpdateProgress(0.05);
     
@@ -598,7 +598,7 @@ namespace itk
   
   
 
-  void GDCMImporter::BuildAllVolumes (void)
+  void GDCMImporter::BuildAllVolumes()
   {
 
     this->UpdateProgress(0.0);
@@ -703,7 +703,7 @@ namespace itk
   }
   
   
-  void DICOMVolume::Build (void)
+  void DICOMVolume::Build()
   {
 
     /*
@@ -985,7 +985,7 @@ namespace itk
     return CoherentFileSet;
   }
   
-  unsigned int* DICOMVolume::GetDimensions(void)
+  unsigned int* DICOMVolume::GetDimensions()
   {
     
     unsigned int* ret = new unsigned int[3];
@@ -1004,7 +1004,7 @@ namespace itk
     return ret;
   }
 
-  void DICOMVolume::ReleaseMemory(void)
+  void DICOMVolume::ReleaseMemory()
   {
     this->SetImage (0);
   }
@@ -1012,7 +1012,7 @@ namespace itk
 
 
     
-  void DICOMVolume::FillDicomTagManager(void)
+  void DICOMVolume::FillDicomTagManager()
   {
 
     if (!this->GetgdcmFileList()->size())

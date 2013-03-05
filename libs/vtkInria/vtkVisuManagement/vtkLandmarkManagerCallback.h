@@ -55,11 +55,11 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmarkManagerCallback : public vtkComma
   {
     this->ViewList = collection;
   }
-  vtkImageViewCollection* GetViewList (void)
+  vtkImageViewCollection* GetViewList()
   {
     return this->ViewList;
   }
-  vtkLandmarkManager* GetLandmarkManager (void)
+  vtkLandmarkManager* GetLandmarkManager()
   {
     return this->LandmarkManager;
   }
@@ -68,7 +68,7 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmarkManagerCallback : public vtkComma
     this->LandmarkManager = manager;
   }
 
-  vtkLandmark* GetSelectedLandmark (void) const
+  vtkLandmark* GetSelectedLandmark() const
   { return this->SelectedLandmark; }
   
   

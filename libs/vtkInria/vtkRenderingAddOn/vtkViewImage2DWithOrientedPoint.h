@@ -50,19 +50,19 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2DWithOrientedPoint: public vtkViewI
 
   virtual void SetImage (vtkImageData* image);
 
-  void PrepareForDelete (void);
+  void PrepareForDelete();
 
   /** Activate the manual registering interactor */
-  void SetManualRegisteringOn (void);
+  void SetManualRegisteringOn();
   
   /** De-activate the manual registering interactor */
-  void SetManualRegisteringOff (void);
+  void SetManualRegisteringOff();
   
   /** Switch on/off the manual registering */
   void SetManualRegisteringMode (bool a);
 
   /** Get the manual registering state */
-  int GetManualRegisteringMode(void) const
+  int GetManualRegisteringMode() const
   {
     return this->OrientedPointWidget->GetEnabled();
   }
@@ -73,8 +73,8 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2DWithOrientedPoint: public vtkViewI
      widget and transform it into registering data : a position
      and a direction.
   */
-  void ValidateRegistering (void);
-  void UpdateRegistrationData (void);
+  void ValidateRegistering();
+  void UpdateRegistrationData();
 
   
   /** Do not use these methods */
@@ -98,7 +98,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2DWithOrientedPoint: public vtkViewI
   //ETX
 
   /** outputs the user set position and direction */
-  RegistrationData GetRegistrationData (void) const
+  RegistrationData GetRegistrationData() const
   { return this->RegistrationData; }
   
  protected:

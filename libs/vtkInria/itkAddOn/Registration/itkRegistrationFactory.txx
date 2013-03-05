@@ -363,7 +363,7 @@ RegistrationFactory<TImage>
 template <typename TImage>
 void
 RegistrationFactory<TImage>
-::Undo (void)
+::Undo()
 {
   if (m_GeneralTransform->Undo())
     this->Modified();
@@ -374,7 +374,7 @@ RegistrationFactory<TImage>
 template <typename TImage>
 void
 RegistrationFactory<TImage>
-::Redo (void)
+::Redo()
 {
   if (m_GeneralTransform->Redo())
     this->Modified();
@@ -561,7 +561,7 @@ RegistrationFactory<TImage>
 template <typename TImage>
 typename RegistrationFactory<TImage>::WarpedImagePointerType
 RegistrationFactory<TImage>
-::ExportWarpedImage (void)
+::ExportWarpedImage()
 {
 
 //   if (!this->CheckInputs())
@@ -658,7 +658,7 @@ RegistrationFactory<TImage>
 template <typename TImage>
 typename RegistrationFactory<TImage>::DisplacementFieldPointerType
 RegistrationFactory<TImage>
-::ExportGlobalDisplacementField (void)
+::ExportGlobalDisplacementField()
 {
 
   // Set up the TransformToDeformationFieldFilter
@@ -762,7 +762,7 @@ RegistrationFactory<TImage>
 template <typename TImage>
 typename RegistrationFactory<TImage>::LinearTransformPointerType
 RegistrationFactory<TImage>
-::ExportGlobalLinearTransform (void)
+::ExportGlobalLinearTransform()
 {
   return m_GeneralTransform->GetGlobalLinearTransform();
 }
@@ -955,7 +955,7 @@ RegistrationFactory<TImage>
 template <typename TImage>
 bool
 RegistrationFactory<TImage>
-::CheckForceResampling(void)
+::CheckForceResampling()
 {
   bool ret = false;
   ret = ret || this->GetSkipResampling();

@@ -269,14 +269,14 @@ public:
     By default (if not set) the method uses 3 different levels
   */
   void SetRegistrationNumberOfLevels (unsigned int n);
-  unsigned int GetRegistrationNumberOfLevels (void) const;
+  unsigned int GetRegistrationNumberOfLevels() const;
   /**
      Get/Set the maximum number of iterations used in each level of the registration process.
 
      By default this list is set to {50,25,10}.
   */
   void SetRegistrationNumberOfIterationsList (unsigned int* n_list);
-  const unsigned int* GetRegistrationNumberOfIterationsList (void) const;
+  const unsigned int* GetRegistrationNumberOfIterationsList() const;
   /**
      Set the translation scaling.
 
@@ -291,11 +291,11 @@ public:
      By default this scale is 1.0/1'000.
   */
   void SetTranslationScale (double scale);
-  double GetTranslationScale (void) const;
+  double GetTranslationScale() const;
 
   
   /** Initialize by setting the interconnects between the components. */
-  virtual void Initialize(void);
+  virtual void Initialize();
 
     /**
      Default is false.

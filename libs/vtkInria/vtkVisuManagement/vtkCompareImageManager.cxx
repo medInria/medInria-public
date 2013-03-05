@@ -202,7 +202,7 @@ void vtkCompareImageManager::SetLUTValues()
 
 }
 
-vtkImageData* vtkCompareImageManager::GetOutput (void)
+vtkImageData* vtkCompareImageManager::GetOutput()
 {
   switch(m_ComparisonMode)
   {

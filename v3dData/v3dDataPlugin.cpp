@@ -44,14 +44,14 @@ v3dDataPlugin::v3dDataPlugin(QObject *parent) : dtkPlugin(parent), d(new v3dData
 
 }
 
-v3dDataPlugin::~v3dDataPlugin(void)
+v3dDataPlugin::~v3dDataPlugin()
 {
     delete d;
 
     d = NULL;
 }
 
-bool v3dDataPlugin::initialize(void)
+bool v3dDataPlugin::initialize()
 {
     itk::GDCMImageIOFactory::RegisterOneFactory();
     itk::AnalyzeImageIOFactory::RegisterOneFactory();
@@ -76,34 +76,34 @@ bool v3dDataPlugin::initialize(void)
     return true;
 }
 
-bool v3dDataPlugin::uninitialize(void)
+bool v3dDataPlugin::uninitialize()
 {
     return true;
 }
 
-QString v3dDataPlugin::name(void) const
+QString v3dDataPlugin::name() const
 {
     return "v3dDataPlugin";
 }
 
-QString v3dDataPlugin::description(void) const
+QString v3dDataPlugin::description() const
 {
     return "v3dData";
 }
 
-QString v3dDataPlugin::version(void) const
+QString v3dDataPlugin::version() const
 {
     return V3DDATAPLUGIN_VERSION;
 }
 
-QStringList v3dDataPlugin::tags(void) const
+QStringList v3dDataPlugin::tags() const
 {
     return QStringList() << "v3d" << "data";
 }
 
 
 
-QStringList v3dDataPlugin::types(void) const
+QStringList v3dDataPlugin::types() const
 {
     return QStringList() << "v3dDataImage"
                          << "v3dDataFibers"

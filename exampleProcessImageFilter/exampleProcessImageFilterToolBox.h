@@ -73,8 +73,8 @@ protected slots:
     * When an image is drop in one of the medDropSite(s) it set it as an input for the process
     **/
 
-    void onObjectDropped(void);
-    void run(void);
+    void onObjectDropped();
+    void run();
 
 private:
 

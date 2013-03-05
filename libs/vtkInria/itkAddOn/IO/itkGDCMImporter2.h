@@ -114,7 +114,7 @@ namespace itk
        This list will then be used by Build() for reconstructing
        the volume image.
     */
-    virtual DICOMFileList* GetFileList (void) const
+    virtual DICOMFileList* GetFileList() const
     { return this->m_FileList; }
     /**
        Set/Get the name of the image. This attribute can
@@ -130,11 +130,11 @@ namespace itk
        Build() will actually fill the volume image considering
        the FileList (SetFileList())
     */
-    virtual void Build(void);
+    virtual void Build();
     /**
        Use this method to release memory after volume parsing (e.g. to a filter)
     */
-    virtual void Initialize (void)
+    virtual void Initialize()
     {
       this->Superclass::Initialize();
       this->m_IsBuilt = 0;
@@ -318,7 +318,7 @@ namespace itk
        Remove (release memory) of all output images.
        dosen't reset the InputDirectory, so that the scanning might be faster afterward.
     */
-    virtual void Initialize(void)
+    virtual void Initialize()
     {
       this->PrepareOutputs();
     }
@@ -327,11 +327,11 @@ namespace itk
        The scan might be slow, it is linearly dependant on the number of
        files present in the SetInputDirectory() (or the size of DICOMDIR file).
     */
-    virtual void Scan (void);
+    virtual void Scan();
     /**
        Restoring/Setting output states according to the helper.
     */
-    virtual void InitializeOutputs (void);
+    virtual void InitializeOutputs();
     /**
        This method can be used to re-organise the outputs automatically.
        The strategy follows the following rules:
@@ -349,7 +349,7 @@ namespace itk
        NB: no effect if called before Scan().
     */
     ///\todo implement the second rule
-    virtual void AutoOrganization (void);
+    virtual void AutoOrganization();
     /**
        This method can be used to re-organise the outputs automatically in a more restrictive way.
        The strategy follows an additionnal rule in comparison to AutoOrganization():
@@ -362,7 +362,7 @@ namespace itk
 
        NB: no effect if called before Scan().
     */
-    virtual void AutoOrganizationPositionBased (void);
+    virtual void AutoOrganizationPositionBased();
     /**
        Explicitally removes the given output from the output list. It will release memory
        involved by this output if any.
@@ -376,7 +376,7 @@ namespace itk
   protected:
 
     /** Overload of the ImageSource process */
-    virtual void GenerateData (void);
+    virtual void GenerateData();
     /**
        INTERNAL:
 
@@ -410,7 +410,7 @@ namespace itk
 
        Returns a file set map containing all the outputs' file sets.
     */
-    virtual DICOMFileListMap GetGlobalDicomFileListMap (void);
+    virtual DICOMFileListMap GetGlobalDicomFileListMap();
     /**
        INTERNAL:
 

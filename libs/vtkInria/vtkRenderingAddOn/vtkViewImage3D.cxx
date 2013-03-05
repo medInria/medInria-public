@@ -1397,7 +1397,7 @@ void vtkViewImage3D::SetCropping ( int value )
 }
 
 
-void vtkViewImage3D::SetVRQualityToLow (void)
+void vtkViewImage3D::SetVRQualityToLow()
 {
   if ( vtkVolumeTextureMapper3D* mapper2 = vtkVolumeTextureMapper3D::SafeDownCast ( this->VolumeMapper3D ) )
   {
@@ -1415,7 +1415,7 @@ void vtkViewImage3D::SetVRQualityToLow (void)
 }
 
 
-void vtkViewImage3D::SetVRQualityToMed (void)
+void vtkViewImage3D::SetVRQualityToMed()
 {
   if ( vtkVolumeTextureMapper3D* mapper2 = vtkVolumeTextureMapper3D::SafeDownCast ( this->VolumeMapper3D ) )
   {
@@ -1433,7 +1433,7 @@ void vtkViewImage3D::SetVRQualityToMed (void)
 }
 
 
-void vtkViewImage3D::SetVRQualityToHigh (void)
+void vtkViewImage3D::SetVRQualityToHigh()
 {
   if ( vtkVolumeTextureMapper3D* mapper2 = vtkVolumeTextureMapper3D::SafeDownCast ( this->VolumeMapper3D ) )
   {

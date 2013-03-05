@@ -10,13 +10,13 @@ class ITKDATAIMAGEBASE_EXPORT itkDataImageWriterBase: public dtkAbstractDataWrit
 
 public:
 
-    itkDataImageWriterBase(void);
-    virtual ~itkDataImageWriterBase(void);
+    itkDataImageWriterBase();
+    virtual ~itkDataImageWriterBase();
 
-    virtual QStringList handled(void) const = 0;
+    virtual QStringList handled() const = 0;
 
     /** Override base class */
-    virtual QStringList supportedFileExtensions(void) const;
+    virtual QStringList supportedFileExtensions() const;
 
 public slots:
 

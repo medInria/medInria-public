@@ -35,25 +35,25 @@ public:
 // itkDataTensorImage
 // /////////////////////////////////////////////////////////////////
 
-itkDataTensorImageDouble3::itkDataTensorImageDouble3(void) : medAbstractDataTypedImage<3,double>(), d(new itkDataTensorImageDouble3Private)
+itkDataTensorImageDouble3::itkDataTensorImageDouble3() : medAbstractDataTypedImage<3,double>(), d(new itkDataTensorImageDouble3Private)
 {
     d->tensors = 0;
     d->thumbnail = QImage(":/itkDataTensorImage/icons/tensors.png");
     d->thumbnails << d->thumbnail;
 }
 
-itkDataTensorImageDouble3::~itkDataTensorImageDouble3(void)
+itkDataTensorImageDouble3::~itkDataTensorImageDouble3()
 {
     delete d;
     d = 0;
 }
 
-bool itkDataTensorImageDouble3::registered(void)
+bool itkDataTensorImageDouble3::registered()
 {
     return dtkAbstractDataFactory::instance()->registerDataType("itkDataTensorImageDouble3", createItkDataTensorImageDouble3);
 }
 
-QString itkDataTensorImageDouble3::description(void) const
+QString itkDataTensorImageDouble3::description() const
 {
     return tr("itk tensor 3d image data (double)");
 }
@@ -64,12 +64,12 @@ QString itkDataTensorImageDouble3::identifier() const
     return "itkDataTensorImageDouble3";
 }
 
-void *itkDataTensorImageDouble3::data(void)
+void *itkDataTensorImageDouble3::data()
 {
     return d->tensors.GetPointer();
 }
 
-void *itkDataTensorImageDouble3::output(void)
+void *itkDataTensorImageDouble3::output()
 {
     return d->tensors.GetPointer();
 }
@@ -85,34 +85,34 @@ void itkDataTensorImageDouble3::setData(void *data)
       qDebug() << "Cannot cast pointer to correct tensor type";
 }
 
-int itkDataTensorImageDouble3::xDimension (void)
+int itkDataTensorImageDouble3::xDimension()
 {
     if (!d->tensors.IsNull())
       return d->tensors->GetLargestPossibleRegion().GetSize()[0];
     return -1;
 }
 
-int itkDataTensorImageDouble3::yDimension (void)
+int itkDataTensorImageDouble3::yDimension()
 {
     if (!d->tensors.IsNull())
         return d->tensors->GetLargestPossibleRegion().GetSize()[1];
     return -1;
 }
 
-int itkDataTensorImageDouble3::zDimension (void)
+int itkDataTensorImageDouble3::zDimension()
 {
     if (!d->tensors.IsNull())
         return d->tensors->GetLargestPossibleRegion().GetSize()[2];
     return -1;
 }
 
-QImage& itkDataTensorImageDouble3::thumbnail  (void) const
+QImage& itkDataTensorImageDouble3::thumbnail() const
 {
     // TODO: TEMPORARY black image just to allow drag and drop
     return d->thumbnail;
 }
 
-QList<QImage>& itkDataTensorImageDouble3::thumbnails (void) const
+QList<QImage>& itkDataTensorImageDouble3::thumbnails() const
 {
     return d->thumbnails;
 }
@@ -121,7 +121,7 @@ QList<QImage>& itkDataTensorImageDouble3::thumbnails (void) const
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractData *createItkDataTensorImageDouble3(void)
+dtkAbstractData *createItkDataTensorImageDouble3()
 {
     return new itkDataTensorImageDouble3;
 }

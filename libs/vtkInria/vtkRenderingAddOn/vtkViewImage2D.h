@@ -154,19 +154,19 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
      Get the id of the first slice available relative to the current orientation.
      Returns 0 no matter what.
   */
-  virtual int GetWholeZMin(void);
+  virtual int GetWholeZMin();
 
   
   /**
      Get the id of the last slice available relative to the current orientation.
   */
-  virtual int GetWholeZMax(void);
+  virtual int GetWholeZMax();
 
   
    /**
       Get the current slice. Z is relative to the view orientation.
    */
-  virtual int GetZSlice(void);
+  virtual int GetZSlice();
 
   
   /**
@@ -178,13 +178,13 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
   /**
      Set/Get window/level for mapping pixels to colors.
   */
-  virtual double GetColorWindow(void);
+  virtual double GetColorWindow();
 
   
   /**
      Set/Get window/level for mapping pixels to colors.
   */
-  virtual double GetColorLevel(void);
+  virtual double GetColorLevel();
 
   
   /**
@@ -210,7 +210,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
   /**
      Set/Get the interpolation method (1: linear, 0: nearest neighbor).
   */
-  virtual int GetInterpolationMode(void);
+  virtual int GetInterpolationMode();
 
   
   /**
@@ -306,7 +306,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
   /**
      Remove the mask image (if any).
   */
-  virtual void RemoveMaskImage (void);
+  virtual void RemoveMaskImage();
 
   
   /**
@@ -320,13 +320,13 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
      Set/Get the overlapping image opacity
    */
   virtual void SetOverlappingImageOpacity (double val);
-  virtual double GetOverlappingImageOpacity (void);
+  virtual double GetOverlappingImageOpacity();
   
   
   /**
      Remove the overlapping image (if any).
   */
-  virtual void RemoveOverlappingImage (void);
+  virtual void RemoveOverlappingImage();
 
   
   /**
@@ -339,14 +339,14 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
      Set/Get a user-defined lookup table to color the background image with.
   */
   virtual void SetBGLookupTable (vtkScalarsToColors* lut);
-  virtual vtkScalarsToColors* GetBGLookupTable (void) const;
+  virtual vtkScalarsToColors* GetBGLookupTable() const;
 
   
   /**
     Update the position of the image. Convenient method to make sure that
     the displayed point it up to date.
   */
-  virtual void UpdatePosition (void);
+  virtual void UpdatePosition();
 
   
   /**
@@ -359,7 +359,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
      Set/Get the opacity of the principale ImageActor
   */
   virtual void SetOpacity(double opacity);
-  virtual double GetOpacity (void) const;
+  virtual double GetOpacity() const;
   
   
   /**
@@ -391,7 +391,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
   /**
      Reset the zoom factor of the view to its initial value and center the camera.
   */
-  virtual void ResetZoom (void);
+  virtual void ResetZoom();
 
   
   /**
@@ -399,21 +399,21 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
      The call to ResetZoom() is sometimes usefull to force VTK to update the bounding box of all
      objects in the scene so that everything becomes visible.
    */
-  virtual void ResetAndRestablishZoomAndCamera (void);
+  virtual void ResetAndRestablishZoomAndCamera();
 
   
   /**
      Switch between radiological (left is right and right is left) and
      neurological (left is left and right is right) conventions.
   */
-  virtual void SetConventionsToRadiological (void);
+  virtual void SetConventionsToRadiological();
 
   
   /**
      Switch between radiological (left is right and right is left) and
      neurological (left is left and right is right) conventions.
   */
-  virtual void SetConventionsToNeurological (void);
+  virtual void SetConventionsToNeurological();
 
   
   /**
@@ -429,9 +429,9 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
      by calling only once vtkViewImage2D::SetViewImage2DDisplayConventions(0/1).
   */
   static void SetViewImage2DDisplayConventions(int val);
-  static void SetViewImage2DDisplayConventionsToRadiologic(void) {vtkViewImage2D::SetViewImage2DDisplayConventions(0);};
-  static void SetViewImage2DDisplayConventionsToNeurologic(void) {vtkViewImage2D::SetViewImage2DDisplayConventions(1);};
-  static int  GetViewImage2DDisplayConventions(void);
+  static void SetViewImage2DDisplayConventionsToRadiologic() {vtkViewImage2D::SetViewImage2DDisplayConventions(0);};
+  static void SetViewImage2DDisplayConventionsToNeurologic() {vtkViewImage2D::SetViewImage2DDisplayConventions(1);};
+  static int  GetViewImage2DDisplayConventions();
 
   /**
      Add an imagebackground image. You can apply to the image actor a transformation transform, and choose a slice if it is a volume.
@@ -443,20 +443,20 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
   /**
      Remove the background image (if any).
   */
-  virtual void RemoveBGImage (void);
+  virtual void RemoveBGImage();
 
   
   /**
      Set the opacity of the background Actor
   */
   virtual void SetBGImageOpacity(double opacity);
-  double GetBGImageOpacity (void) const;
+  double GetBGImageOpacity() const;
 
 
   /**
      A complete reset: a classical reset and also cancel all the transformations.
   */
-  virtual void Clear(void);
+  virtual void Clear();
 
   
   /**
@@ -541,17 +541,17 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
      and RenderWindow are set. For example, vtkSynchronizedView will add the corner annotations
      during the call to the Initialize function.
   */
-  virtual void Initialize(void);
+  virtual void Initialize();
 
   
   /**
      Remove any actor set by the class into the Renderer. Remove any added dataset.
    */
-  virtual void Uninitialize(void);
+  virtual void Uninitialize();
 
 
-  virtual void InitializeInteractor (void);
-  virtual void UninitializeInteractor (void);
+  virtual void InitializeInteractor();
+  virtual void UninitializeInteractor();
 
   
  protected:
@@ -563,13 +563,13 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
      Initialize rendering parameters only once. m_FirstRender controls if the
      initialization has been done or not.
   */
-  virtual void InitializeImagePositionAndSize(void);
+  virtual void InitializeImagePositionAndSize();
 
   
   /**
      Draw the annotations. For internal use only.
   */
-  //virtual void SetupAnnotations (void);
+  //virtual void SetupAnnotations();
 
   /**
      Get the ScreenToRealWorldMatrix. For internal use only. It does not correspond to
@@ -590,10 +590,10 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
      It is mainly for internal used should in general not be used. See Reset() if you only want to reset position, zoom and
      window/level.
   */
-  virtual void InternalUpdate(void);
+  virtual void InternalUpdate();
 
 
-  virtual void SetupAnnotations (void);
+  virtual void SetupAnnotations();
 
   vtkSetMacro (SliceNavigation, int);
 
@@ -601,7 +601,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2D : public vtkViewImage
 
   // Update data information and set the update and display extents.
   // Reset the camera position.
-  void           UpdateImageActor(void);
+  void           UpdateImageActor();
 
 
   /// internal use: image to input to the mask filter or image blender

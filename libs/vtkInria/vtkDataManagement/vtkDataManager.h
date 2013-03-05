@@ -115,7 +115,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkDataManager: public vtkObject
   /**
      returns the number of metadatasets referenced in the manager
   */
-  virtual unsigned int GetNumberOfMetaDataSet (void) const;
+  virtual unsigned int GetNumberOfMetaDataSet() const;
   /**
      returns the number of metadatasets referenced in the manager for a specific type.
      This type can be : VTK_META_IMAGE_DATA, VTK_META_SURFACE_MESH or VTK_META_VOLUME_MESH.     
@@ -154,7 +154,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkDataManager: public vtkObject
      access to the list of metadatasets referenced in the manager.
      Use this method carefully.
   */
-  std::vector<vtkMetaDataSet*> GetMetaDataSetList (void) const
+  std::vector<vtkMetaDataSet*> GetMetaDataSetList() const
   { return MetaDataSetList; }
   /**
      access to the list of metadatasets of a specific type referenced in the manager.

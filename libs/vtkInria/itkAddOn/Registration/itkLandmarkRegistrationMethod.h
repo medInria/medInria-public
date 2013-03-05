@@ -135,7 +135,7 @@ public:
      The user can choose between supported types : TRANSFORM_RIGID and TRANSFORM_NON_LINEAR_KERNEL,
      the affine type is not supported by the itk  landmark based transform initializer.
   */
-  unsigned int GetExportTransformType (void)
+  unsigned int GetExportTransformType()
   { return m_ExportTransformType; }
   /**
      insert a pair of landmark into the transform initializers
@@ -155,7 +155,7 @@ public:
     this->Modified();
   }
   /** Initialize by setting the interconnects between the components. */
-  virtual void Initialize(void);
+  virtual void Initialize();
   
 protected:
   LandmarkRegistrationMethod();

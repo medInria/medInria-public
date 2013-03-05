@@ -37,22 +37,22 @@ class V3DVIEWPLUGIN_EXPORT v3dView : public medAbstractView, public medAbstractV
     Q_OBJECT
 
 public:
-             v3dView(void);
-    virtual ~v3dView(void);
+             v3dView();
+    virtual ~v3dView();
 
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
 
-    static bool registered(void);
+    static bool registered();
     static QString s_identifier();
 
 public:
     // inherited from medAbstractView
-    void reset(void);
-    void clear(void);
-    void update(void);
+    void reset();
+    void clear();
+    void update();
 
-    void *view(void);
+    void *view();
 
     /**
      * Inputs the data to the vtkImageView2D/3D.
@@ -77,36 +77,36 @@ public:
      */
     void setData(dtkAbstractData *data);
 
-    void *data (void);
+    void *data();
 
-    QWidget *receiverWidget(void);
-    QWidget *widget(void);
+    QWidget *receiverWidget();
+    QWidget *widget();
 
-    void close(void);
+    void close();
 
     // access method to internal members for v3dView**Interactor classes
 
     /**
      * Returns pointers to internal instances of vtkImageView2D/3D.
      */
-    vtkImageView2D *view2d(void);
-    vtkImageView3D *view3d(void);
+    vtkImageView2D *view2d();
+    vtkImageView3D *view3d();
 
     /**
      * Returns a pointer to the current view, being 2D or 3D.
      */
-    vtkImageView *currentView(void);
+    vtkImageView *currentView();
 
     /**
      * Returns the vtkRenderWindowInteractor instance.
      */
-    vtkRenderWindowInteractor *interactor(void);
+    vtkRenderWindowInteractor *interactor();
 
     /**
      * Access methods to vtkRenderer members.
      */
-    vtkRenderer *renderer2d(void);
-    vtkRenderer *renderer3d(void);
+    vtkRenderer *renderer2d();
+    vtkRenderer *renderer3d();
 
     virtual QStringList getAvailableTransferFunctionPresets();
     virtual void getTransferFunctions( QList<double> & scalars,
@@ -129,7 +129,7 @@ public:
     /**
      * Returns the total number of layers of the vtkImageView* instance.
      */
-    virtual int layerCount(void) const;
+    virtual int layerCount() const;
 
     /**
      * Removes an overlay given the layer id.
@@ -180,21 +180,21 @@ public slots:
     void onMetaDataSet         (const QString &key, const QString &value);
 
 public slots: // Menu interface
-    void onMenu3DVRTriggered                (void);
-    void onMenu3DMaxIPTriggered             (void);
-    void onMenu3DMinIPTriggered             (void);
-    void onMenu3DMPRTriggered               (void);
-    void onMenu3DOffTriggered               (void);
-    void onMenuVRGPUTriggered               (void);
-    void onMenuVRRayCastAndTextureTriggered (void);
-    void onMenuVRRayCastTriggered           (void);
-    void onMenuVRDefaultTriggered           (void);
-    void onMenu3DLODTriggered               (void);
-    void onMenuZoomTriggered                (void);
-    void onMenuWindowLevelTriggered         (void);
+    void onMenu3DVRTriggered();
+    void onMenu3DMaxIPTriggered();
+    void onMenu3DMinIPTriggered();
+    void onMenu3DMPRTriggered();
+    void onMenu3DOffTriggered();
+    void onMenuVRGPUTriggered();
+    void onMenuVRRayCastAndTextureTriggered();
+    void onMenuVRRayCastTriggered();
+    void onMenuVRDefaultTriggered();
+    void onMenu3DLODTriggered();
+    void onMenuZoomTriggered();
+    void onMenuWindowLevelTriggered();
 public:
-    void  enableInteraction(void);
-    void disableInteraction(void);
+    void  enableInteraction();
+    void disableInteraction();
     void bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax);
     void cameraUp(double *coordinates);
     void cameraPosition(double *coordinates);
@@ -202,9 +202,9 @@ public:
     void setCameraPosition(double x, double y, double z);
     void setCameraClippingRange(double nearRange, double farRange);
 
-    QString cameraProjectionMode(void);
-    double cameraViewAngle(void);
-    double cameraZoom(void);
+    QString cameraProjectionMode();
+    double cameraViewAngle();
+    double cameraZoom();
     void setCurrentLayer(int layer);
 
 public :
@@ -226,7 +226,7 @@ public :
     virtual qreal scale() const;
 
 protected slots:
-    void widgetDestroyed(void);
+    void widgetDestroyed();
 
 protected:
 
@@ -243,6 +243,6 @@ private:
     friend class v3dViewObserver;
 };
 
-dtkAbstractView *createV3dView(void);
+dtkAbstractView *createV3dView();
 
 

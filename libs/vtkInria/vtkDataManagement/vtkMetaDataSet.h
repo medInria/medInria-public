@@ -60,7 +60,7 @@ class vtkMetaDataSet: public vtkDataObject
      Access to the metadataset dictionary
      The dictionary can be used to hold some arbitrary types of flags
   */
-  DictionaryType GetMetaDataDictionary (void)
+  DictionaryType GetMetaDataDictionary()
   { return this->MetaDataDictionary; }
   /**
      Set the metadataset dictionary
@@ -101,7 +101,7 @@ class vtkMetaDataSet: public vtkDataObject
   }
 
 
-  std::vector<std::string> GetMetaDataKeyList (void)
+  std::vector<std::string> GetMetaDataKeyList()
   {
     std::vector<std::string> ret;
     ret = this->MetaDataDictionary.GetKeys();
@@ -171,7 +171,7 @@ class vtkMetaDataSet: public vtkDataObject
   /**
      returns the amount of actors handled by this metadataset
   */
-  unsigned int GetNumberOfActors(void) const;
+  unsigned int GetNumberOfActors() const;
   /**
      returns true if the actor is handled by this metadataset
   */
@@ -183,7 +183,7 @@ class vtkMetaDataSet: public vtkDataObject
   /**
      Get/Set the visibility of the metadataset : to be used with AddActor()
   */
-  int GetVisibility (void);
+  int GetVisibility();
   /**
      Get/Set the visibility of the metadataset : to be used with AddActor()
   */
@@ -205,18 +205,18 @@ class vtkMetaDataSet: public vtkDataObject
   /**
      Get/Set methods fot the metadataset name
   */ 
-  virtual const char* GetName (void) const;
+  virtual const char* GetName() const;
   virtual void        SetName (const char* name);
   /**
      Get/Set methods fot the metadataset current file path
   */ 
-  virtual const char* GetFilePath (void) const;
+  virtual const char* GetFilePath() const;
   virtual void        SetFilePath (const char* path);
   /**
      Get/Set methods for the metadataset tag
       You can associate several metadataset to a single tag to retrieve them easily
   */
-  virtual const char* GetTag (void) const;
+  virtual const char* GetTag() const;
   virtual void        SetTag (const char* path);
   /**
      Overridden methods for read and write the dataset
@@ -248,7 +248,7 @@ class vtkMetaDataSet: public vtkDataObject
   /**
      Get the type of the metadataset as string
   */
-  virtual const char* GetDataSetType (void) const
+  virtual const char* GetDataSetType() const
   {
     return "MetaDataSet";
   }
@@ -260,7 +260,7 @@ class vtkMetaDataSet: public vtkDataObject
     this->Time = time;
     this->SetMetaData<double>("Time", time);
   }
-  double GetTime(void)
+  double GetTime()
   {
     double tmp = this->Time;
     bool isvalid = this->GetMetaData<double>("Time", tmp);
@@ -287,7 +287,7 @@ class vtkMetaDataSet: public vtkDataObject
      These arrays do not have any colorization purpose. They are stored for the user
      convenience. 
   */
-  virtual vtkDataArrayCollection* GetArrayCollection(void)
+  virtual vtkDataArrayCollection* GetArrayCollection()
   {
     return this->ArrayCollection;
   }
@@ -317,16 +317,16 @@ class vtkMetaDataSet: public vtkDataObject
   /**
      Get/Set the scalar visibility, operates on the actors
   */
-  virtual bool GetScalarVisibility(void);
+  virtual bool GetScalarVisibility();
   
   /**
      Get/Set the scalar visibility, operates on the actors
   */
-  virtual void ScalarVisibilityOn(void);
+  virtual void ScalarVisibilityOn();
   /**
      Get/Set the scalar visibility, operates on the actors
   */
-  virtual void ScalarVisibilityOff(void);
+  virtual void ScalarVisibilityOff();
   /**
      Get the currently used scalar array for visualization
   */
@@ -336,7 +336,7 @@ class vtkMetaDataSet: public vtkDataObject
     this->CurrentScalarArray = array;
   }
 
-  virtual double* GetCurrentScalarRange(void);
+  virtual double* GetCurrentScalarRange();
   
   
   /**
@@ -348,7 +348,7 @@ class vtkMetaDataSet: public vtkDataObject
   vtkBooleanMacro(Lock, int);
   
 
-  virtual void CreateWirePolyData(void){};
+  virtual void CreateWirePolyData(){};
   
   vtkGetObjectMacro (WirePolyData, vtkPolyData);
   void SetWirePolyData(vtkPolyData* data);
@@ -360,11 +360,11 @@ class vtkMetaDataSet: public vtkDataObject
   /**
      Method called everytime the dataset changes for connexion updates
    */
-  virtual void LinkFilters (void);
+  virtual void LinkFilters();
   /**
      Method called everytime the dataset changes for initialization
   */
-  virtual void Initialize (void);
+  virtual void Initialize();
 
   /**
      Internal use : read and assign positions to the dataset (should be point set). 

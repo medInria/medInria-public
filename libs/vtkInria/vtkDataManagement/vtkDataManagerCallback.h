@@ -32,7 +32,7 @@ class vtkDataManagerCallback : public vtkCommand
 
 
   void SetDataManager (vtkDataManager* manager);
-  vtkDataManager* GetDataManager (void) const
+  vtkDataManager* GetDataManager() const
   { return this->DataManager; }
   
 

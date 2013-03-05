@@ -105,11 +105,11 @@ namespace itk
        Directly access to the entire tag list
        To be used with care
     */
-    std::vector<itk::DicomTag> GetTagList (void);
+    std::vector<itk::DicomTag> GetTagList();
     /**
        Initialize list, clear all tags
     */
-    void ClearTags (void);
+    void ClearTags();
     /**
        Static method to access a tag from the dictionary
        \arg i has to be lower than GetDictionarySize()

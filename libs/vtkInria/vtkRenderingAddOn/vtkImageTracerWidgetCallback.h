@@ -39,12 +39,12 @@ class VTK_RENDERINGADDON_EXPORT vtkImageTracerWidgetCallback : public vtkCommand
   
   void SetView ( vtkViewImage2DWithTracer* view);
   
-  vtkViewImage2DWithTracer* GetView (void) const
+  vtkViewImage2DWithTracer* GetView() const
   {
     return this->View;
   }
 
-  vtkPolyData* GetPolyData (void) const
+  vtkPolyData* GetPolyData() const
   {
     return this->PathPoly;
   }

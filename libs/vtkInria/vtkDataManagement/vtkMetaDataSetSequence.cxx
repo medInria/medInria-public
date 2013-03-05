@@ -76,7 +76,7 @@ vtkMetaDataSetSequence::~vtkMetaDataSetSequence()
 
 
 //----------------------------------------------------------------------------
-void vtkMetaDataSetSequence::Initialize (void)
+void vtkMetaDataSetSequence::Initialize()
 {
   this->Superclass::Initialize();
   
@@ -674,7 +674,7 @@ void vtkMetaDataSetSequence::RemoveMetaDataSet (vtkMetaDataSet* metadataset)
 }
 
 //----------------------------------------------------------------------------
-void vtkMetaDataSetSequence::RemoveAllMetaDataSets (void)
+void vtkMetaDataSetSequence::RemoveAllMetaDataSets()
 {
   for (unsigned int i=0; i<this->MetaDataSetList.size(); i++)  
     this->MetaDataSetList[i]->UnRegister(this);
@@ -853,7 +853,7 @@ double vtkMetaDataSetSequence::GetTimeResolution()
 
 
 //----------------------------------------------------------------------------
-void vtkMetaDataSetSequence::ComputeSequenceDuration (void)
+void vtkMetaDataSetSequence::ComputeSequenceDuration()
 {
   if (this->MetaDataSetList.size() < 2)
   {
@@ -1077,7 +1077,7 @@ void vtkMetaDataSetSequence::UpdateToIndex (unsigned int id)
 
 
 //----------------------------------------------------------------------------
-double* vtkMetaDataSetSequence::GetCurrentScalarRange (void)
+double* vtkMetaDataSetSequence::GetCurrentScalarRange()
 {
   static double * val = new double[2];
   val[0] = VTK_DOUBLE_MAX;
@@ -1580,7 +1580,7 @@ void vtkMetaDataSetSequence::CopyInformation (vtkMetaDataSet* metadataset)
 
 
 //----------------------------------------------------------------------------
-void vtkMetaDataSetSequence::ComputeTimesFromDuration(void)
+void vtkMetaDataSetSequence::ComputeTimesFromDuration()
 {
 
   for (int i=0; i<this->GetNumberOfMetaDataSets(); i++)

@@ -12,19 +12,19 @@ class ITKProcessExampleToolBox : public medFilteringAbstractToolBox
 
 public:
      ITKProcessExampleToolBox(QWidget *parentToolBox = 0);
-    ~ITKProcessExampleToolBox(void);
+    ~ITKProcessExampleToolBox();
 
 public:
-    static bool registered(void);
+    static bool registered();
     dtkAbstractData* processOutput();
 
 signals:
-    void success(void);
-    void failure(void);
+    void success();
+    void failure();
 
 public slots:
 
-    void run(void);
+    void run();
 
 private:
     ITKProcessExampleToolBoxPrivate *d;

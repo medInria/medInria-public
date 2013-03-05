@@ -93,7 +93,7 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
   virtual void SetName (const char* name) 
   { this->Name = name; }
   /** Get/Set the name of the landmark */
-  virtual const char* GetName (void)
+  virtual const char* GetName()
   { return this->Name.c_str(); }
   /**
      Set/Access to the voxel-coordinates of the landmark. This information
@@ -133,7 +133,7 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
     double xyz[3] = {x, y, z};
     this->SetPosition (xyz);
   }
-  virtual double* GetCoord (void)
+  virtual double* GetCoord()
   { return this->GetPosition(); }
   virtual void SetCoord (const double val[3])
   { this->SetPosition (val); }
@@ -190,7 +190,7 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
   /** Test if a given key exists. */
   virtual bool HasFlag (const char* key);
   /** access to the list of keys that are present in flags */
-  virtual std::vector<std::string> GetFlagKeys (void);
+  virtual std::vector<std::string> GetFlagKeys();
   /**
      Set the color of the landmark representation. This methods
      affects the vtkProperty given by GetProperty(), and all actors that share
@@ -205,13 +205,13 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
   */
   virtual void SetSelectedColor(double r, double g, double b);
   /** access to the color of the landmark (given by the landmark's property : GetProperty()). */ 
-  virtual double* GetColor (void)
+  virtual double* GetColor()
   { return this->Property->GetColor();}
   /**
      access to the selected color of the landmark, the one that is used when landmark is selected (Select(),
      given by the landmark's selected property : GetSelectedProperty().
   */ 
-  virtual double* GetSelectedColor (void)
+  virtual double* GetSelectedColor()
   { return this->SelectedProperty->GetColor(); }
   /**
      Register an actor to be associated to the landmark. This means that the visualization
@@ -226,7 +226,7 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
   /** Remove a specific actor associated to the landmark. */
   virtual void RemoveActor (vtkActor* actor);
   /** Remove all actorsassociated to the landmark. */
-  virtual void RemoveAllActors (void);
+  virtual void RemoveAllActors();
   /**
      Set/Get the scaling factor of the landmark. The argument has to be provided in mm.
      This factor is used to compute the size of the graphic representation of the landmark.
@@ -240,7 +240,7 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
      It corresponds to the radius of the sphere, or the size of the cross, depending on the
      visualization type : SetLandmarkType().
   */
-  virtual double GetScale (void);
+  virtual double GetScale();
   /**
      Turn Off/On the selected flag of the landmark. Visualization properties will then be
      changed in consequences. Use SetSelectedColor() or SetColor() to control these properties.
@@ -254,7 +254,7 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
   */
   virtual void UnSelect();
   /** Check the current selected flag of the landmark */ 
-  bool IsSelected (void)
+  bool IsSelected()
   { return this->SelectFlag; }
   /**
      Set/Get the current representation type of the landmark. Two representations are
@@ -281,7 +281,7 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
      and after the SphereWidget has been set with SetSphereWidget(). This is automatically
      the case when one of the vtkImageView is a vtkImageView3D. 
   */
-  virtual const char* GetComment(void)
+  virtual const char* GetComment()
   { return this->Comment.c_str(); }
   /**
      Get/Set the comment associated to this landmark. Use this method in combination
@@ -312,7 +312,7 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
   vtkGetObjectMacro (TextActor, vtkFollower);
 
   
-  virtual void Initialize(void);
+  virtual void Initialize();
   
   
  protected:
@@ -320,10 +320,10 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
   vtkLandmark();
   ~vtkLandmark();
 
-  virtual void UpdateCrossPosition (void);
-  virtual void UpdateSpherePosition (void);
-  virtual void UpdateCommentPosition (void);
-  virtual void ConfigureComment (void);
+  virtual void UpdateCrossPosition();
+  virtual void UpdateSpherePosition();
+  virtual void UpdateCommentPosition();
+  virtual void ConfigureComment();
   
   
  private:

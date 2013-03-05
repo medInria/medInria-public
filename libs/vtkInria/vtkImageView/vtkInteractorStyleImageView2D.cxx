@@ -466,7 +466,7 @@ void vtkInteractorStyleImageView2D::OnChar()
 }
 
 //----------------------------------------------------------------------------
-void vtkInteractorStyleImageView2D::OnKeyDown(void)
+void vtkInteractorStyleImageView2D::OnKeyDown()
 {
   // Apparently there is a problem here.
   // The event vtkCommand::CharEvent and vtkCommand::KeyPressEvent seem
@@ -478,7 +478,7 @@ void vtkInteractorStyleImageView2D::OnKeyDown(void)
 }
 
 //----------------------------------------------------------------------------
-void vtkInteractorStyleImageView2D::OnKeyUp(void)
+void vtkInteractorStyleImageView2D::OnKeyUp()
 {
   this->Superclass::OnKeyUp();
 }

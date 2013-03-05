@@ -40,24 +40,24 @@ class VTK_RENDERINGADDON_EXPORT vtkImageOrientedPointWidgetCallback : public vtk
   void SetView ( vtkViewImage2DWithOrientedPoint* view);
 
   
-  vtkViewImage2DWithOrientedPoint* GetView (void) const
+  vtkViewImage2DWithOrientedPoint* GetView() const
   {
     return this->View;
   }
 
-  vtkPolyData* GetPolyData (void) const
+  vtkPolyData* GetPolyData() const
   {
     return this->PathPoly;
   }
 
 /*   void SetPositionText (wxStaticText* text) */
 /*   { this->PositionText = text; } */
-/*   wxStaticText* GetPositionText (void) const */
+/*   wxStaticText* GetPositionText() const */
 /*   { return this->PositionText; } */
     
 /*   void SetDirectionText (wxStaticText* text) */
 /*   { this->DirectionText = text; } */
-/*   wxStaticText* GetDirectionText (void) const */
+/*   wxStaticText* GetDirectionText() const */
 /*   { return this->DirectionText; } */
 
  
@@ -65,11 +65,11 @@ class VTK_RENDERINGADDON_EXPORT vtkImageOrientedPointWidgetCallback : public vtk
   
   void UpdatePoints(vtkObject* caller);
 
-  const double* GetPosition (void) const
+  const double* GetPosition() const
   {
     return this->Position;
   }
-  const double* GetDirection (void) const
+  const double* GetDirection() const
   {
     return this->Direction;
   }

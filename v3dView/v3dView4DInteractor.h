@@ -33,28 +33,28 @@ public:
     v3dView4DInteractor();
     virtual ~v3dView4DInteractor();
 
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
-    virtual QStringList handled(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
+    virtual QStringList handled() const;
 
-    static bool registered(void);
+    static bool registered();
 
     virtual void setData(dtkAbstractData *data);
     virtual void setView(dtkAbstractView *view);
 
-    virtual void enable(void);
-    virtual void disable(void);
+    virtual void enable();
+    virtual void disable();
 
     /** Override dtkAbstractViewInteractor method */
     virtual bool isAutoEnabledWith ( dtkAbstractData * data );
 
     void setCurrentTime (double time);
-    double getCurrentTime (void)
+    double getCurrentTime()
     { return this->currentTime; }
     /** Assigns ranfe array the minimum and maximum time of the sequence */
     void sequencesRange (double* range);
     /** Returns minimum time step for the sequence */
-    double sequencesMinTimeStep (void);
+    double sequencesMinTimeStep();
 
 public slots:
     void onDataAdded (dtkAbstractData* data);
@@ -74,6 +74,6 @@ private:
     double currentTime;
 };
 
-dtkAbstractViewInteractor *createV3dView4DInteractor(void);
+dtkAbstractViewInteractor *createV3dView4DInteractor();
 
 

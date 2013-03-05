@@ -15,13 +15,13 @@ class %2PLUGIN_EXPORT %1ToolBox : public medRegistrationAbstractToolBox
     
 public:
     %1ToolBox(QWidget *parent = 0);
-    ~%1ToolBox(void);
+    ~%1ToolBox();
     
 public:
-    static bool registered(void);
+    static bool registered();
     
 public slots:
-    void run(void);
+    void run();
     
 private:
     %1ToolBoxPrivate *d;

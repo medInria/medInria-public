@@ -59,56 +59,56 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLookupTableManager: public vtkObject
   static vtkLookupTableManager* New();
   vtkTypeRevisionMacro (vtkLookupTableManager, vtkObject);
 
-  static vtkLookupTable* GetBWLookupTable (void);
+  static vtkLookupTable* GetBWLookupTable();
 
-  static vtkLookupTable* GetBWInverseLookupTable (void);
+  static vtkLookupTable* GetBWInverseLookupTable();
 
-  static vtkLookupTable* GetSpectrumLookupTable (void);
+  static vtkLookupTable* GetSpectrumLookupTable();
 
-  static vtkLookupTable* GetHotMetalLookupTable (void);
+  static vtkLookupTable* GetHotMetalLookupTable();
 
-  static vtkLookupTable* GetGEColorLookupTable (void);
+  static vtkLookupTable* GetGEColorLookupTable();
 
-  static vtkLookupTable* GetFlowLookupTable (void);
+  static vtkLookupTable* GetFlowLookupTable();
 
-  static vtkLookupTable* GetLONILookupTable (void);
+  static vtkLookupTable* GetLONILookupTable();
 
-  static vtkLookupTable* GetLONI2LookupTable (void);
+  static vtkLookupTable* GetLONI2LookupTable();
 
-  static vtkLookupTable* GetAsymmetryLookupTable (void);
+  static vtkLookupTable* GetAsymmetryLookupTable();
 
-  static vtkLookupTable* GetPValueLookupTable (void);
+  static vtkLookupTable* GetPValueLookupTable();
 
-  static vtkLookupTable* GetRedBlackAlphaLookupTable(void);
+  static vtkLookupTable* GetRedBlackAlphaLookupTable();
 
-  static vtkLookupTable* GetGreenBlackAlphaLookupTable(void);
+  static vtkLookupTable* GetGreenBlackAlphaLookupTable();
 
-  static vtkLookupTable* GetBlueBlackAlphaLookupTable(void);
+  static vtkLookupTable* GetBlueBlackAlphaLookupTable();
 
-  static vtkLookupTable* GetROILookupTable (void);
+  static vtkLookupTable* GetROILookupTable();
 
-  static vtkLookupTable* GetVRMusclesBonesLookupTable (void);
+  static vtkLookupTable* GetVRMusclesBonesLookupTable();
 
-  static vtkLookupTable* GetCardiacLookupTable (void);
+  static vtkLookupTable* GetCardiacLookupTable();
 
-  static vtkLookupTable* GetGrayRainbowLookupTable (void);
+  static vtkLookupTable* GetGrayRainbowLookupTable();
   
-  static vtkLookupTable* GetHotGreenLookupTable (void);
+  static vtkLookupTable* GetHotGreenLookupTable();
   
-  static vtkLookupTable* GetHotIronLookupTable (void);
+  static vtkLookupTable* GetHotIronLookupTable();
   
-  static vtkLookupTable* GetSternLookupTable (void);
+  static vtkLookupTable* GetSternLookupTable();
   
-  static vtkLookupTable* GetVRBonesLookupTable (void);
+  static vtkLookupTable* GetVRBonesLookupTable();
   
-  static vtkLookupTable* GetVRRedVesselsLookupTable (void);
+  static vtkLookupTable* GetVRRedVesselsLookupTable();
   
-  static vtkLookupTable* GetBlackBodyLookupTable (void);
+  static vtkLookupTable* GetBlackBodyLookupTable();
   
-  static vtkLookupTable* GetJetLookupTable (void);
+  static vtkLookupTable* GetJetLookupTable();
   
   //BTX
-  static std::vector<std::string> GetAvailableLookupTables(void);
+  static std::vector<std::string> GetAvailableLookupTables();
   //ETX
   
   static vtkLookupTable* GetLookupTable(const int &);

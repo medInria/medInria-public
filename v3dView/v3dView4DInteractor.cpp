@@ -72,7 +72,7 @@ v3dView4DInteractor::~v3dView4DInteractor()
   d = 0;
 }
 
-QString v3dView4DInteractor::description(void) const
+QString v3dView4DInteractor::description() const
 {
     return tr("Interactor displaying 4d images (temporal sequence)");
 }
@@ -83,12 +83,12 @@ QString v3dView4DInteractor::identifier() const
     return "v3dView4DInteractor";
 }
 
-QStringList v3dView4DInteractor::handled(void) const
+QStringList v3dView4DInteractor::handled() const
 {
   return QStringList () << v3dView::s_identifier();
 }
 
-bool v3dView4DInteractor::registered(void)
+bool v3dView4DInteractor::registered()
 {
   return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dView4DInteractor", QStringList() << v3dView::s_identifier(), createV3dView4DInteractor);
 }
@@ -175,7 +175,7 @@ bool v3dView4DInteractor::isAutoEnabledWith ( dtkAbstractData * data )
   return false;
 }
 
-void v3dView4DInteractor::enable(void)
+void v3dView4DInteractor::enable()
 {
   if (this->enabled())
     return;
@@ -183,7 +183,7 @@ void v3dView4DInteractor::enable(void)
   med4DAbstractViewInteractor::enable();
 }
 
-void v3dView4DInteractor::disable(void)
+void v3dView4DInteractor::disable()
 {
     if (!this->enabled())
         return;
@@ -208,7 +208,7 @@ void v3dView4DInteractor::disable(void)
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractViewInteractor *createV3dView4DInteractor(void)
+dtkAbstractViewInteractor *createV3dView4DInteractor()
 {
   return new v3dView4DInteractor;
 }
@@ -263,7 +263,7 @@ void v3dView4DInteractor::sequencesRange (double* range)
   range[1] = maxtime;
 }
 
-double v3dView4DInteractor::sequencesMinTimeStep (void)
+double v3dView4DInteractor::sequencesMinTimeStep()
 {
   if (!d->sequenceList->GetNumberOfItems())
   {

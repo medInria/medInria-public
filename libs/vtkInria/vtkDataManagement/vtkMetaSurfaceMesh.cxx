@@ -66,7 +66,7 @@ vtkMetaSurfaceMesh::~vtkMetaSurfaceMesh()
 }
 
 //----------------------------------------------------------------------------
-void vtkMetaSurfaceMesh::Initialize (void)
+void vtkMetaSurfaceMesh::Initialize()
 {
   this->Superclass::Initialize();
   if (!this->DataSet)
@@ -82,7 +82,7 @@ void vtkMetaSurfaceMesh::Initialize (void)
 }
 
 //----------------------------------------------------------------------------
-vtkPolyData* vtkMetaSurfaceMesh::GetPolyData (void) const
+vtkPolyData* vtkMetaSurfaceMesh::GetPolyData() const
 {
   if (!this->DataSet)
     return NULL;
@@ -442,7 +442,7 @@ void vtkMetaSurfaceMesh::ReadMeshFile (const char* filename)
     
 }
 
-// void vtkMetaSurfaceMesh::CreateWirePolyDataOld(void)
+// void vtkMetaSurfaceMesh::CreateWirePolyDataOld()
 // {
 //   if (this->GetWirePolyData())
 //     return;
@@ -496,7 +496,7 @@ void vtkMetaSurfaceMesh::ReadMeshFile (const char* filename)
 // }
 
 
-void vtkMetaSurfaceMesh::CreateWirePolyData(void)
+void vtkMetaSurfaceMesh::CreateWirePolyData()
 {
   if (this->GetWirePolyData())
     return;

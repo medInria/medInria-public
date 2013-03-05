@@ -142,19 +142,19 @@ exampleProcessImageFilterToolBox::exampleProcessImageFilterToolBox(QWidget *pare
     connect(d->ButtonRun, SIGNAL(clicked()), this, SLOT(run()));
 }
 
-exampleProcessImageFilterToolBox::~exampleProcessImageFilterToolBox(void)
+exampleProcessImageFilterToolBox::~exampleProcessImageFilterToolBox()
 {
     delete d;
 
     d = NULL;
 }
 
-QString exampleProcessImageFilterToolBox::description(void) const
+QString exampleProcessImageFilterToolBox::description() const
 {
     return QString("exampleProcessImageFilter");
 }
 
-dtkAbstractProcess *exampleProcessImageFilterToolBox::create(void)
+dtkAbstractProcess *exampleProcessImageFilterToolBox::create()
 {
     return new exampleProcessImageFilter;
 }
@@ -207,7 +207,7 @@ void exampleProcessImageFilterToolBox::onOptionClicked(QAbstractButton *button)
 
 }
 
-void exampleProcessImageFilterToolBox::onObjectDropped(void)
+void exampleProcessImageFilterToolBox::onObjectDropped()
 {
     dtkAbstractData *in_A = NULL;
     dtkAbstractData *in_B = NULL;
@@ -258,7 +258,7 @@ medDiffusionAbstractToolBox *createExampleProcessImageFilterToolBox(QWidget * w)
     return new exampleProcessImageFilterToolBox(w);
 }
 
-void exampleProcessImageFilterToolBox::run(void)
+void exampleProcessImageFilterToolBox::run()
 {
     exampleProcessImageFilter *process = dynamic_cast<exampleProcessImageFilter *>(d->process);
 
@@ -280,7 +280,7 @@ void exampleProcessImageFilterToolBox::run(void)
    //  process->update();
 }
 
-dtkAbstractData* exampleProcessImageFilterToolBox::output (void) const
+dtkAbstractData* exampleProcessImageFilterToolBox::output() const
 {
     if (d->process && d->process->output()) {
         // fill out Pateint/Study/Series for proper inclusion in the database

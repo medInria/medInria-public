@@ -60,25 +60,25 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorManager: public vtkObject
   void SetGlyphShape (int i);
   
   /** Set a specific glyph shape */
-  void SetGlyphShapeToLine (void);
+  void SetGlyphShapeToLine();
   
   /** Set a specific glyph shape */
-  void SetGlyphShapeToDisk (void);
+  void SetGlyphShapeToDisk();
     
   /** Set a specific glyph shape */
-  void SetGlyphShapeToArrow (void);
+  void SetGlyphShapeToArrow();
   
   /** Set a specific glyph shape */
-  void SetGlyphShapeToCube (void);
+  void SetGlyphShapeToCube();
   
   /** Set a specific glyph shape */
-  void SetGlyphShapeToCylinder (void);
+  void SetGlyphShapeToCylinder();
   
   /** Set a specific glyph shape */
-  void SetGlyphShapeToSphere (void);
+  void SetGlyphShapeToSphere();
   
   /** Set a specific glyph shape */
-  void SetGlyphShapeToSuperquadric (void);
+  void SetGlyphShapeToSuperquadric();
 
     /** Set a scaling factor for the glyhs. */
   void SetGlyphScale(const float& f);
@@ -105,13 +105,13 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorManager: public vtkObject
   void SetColorModeToEigenvalue( const int& );
   
   /** Set the colormode to map the volume. */
-  void SetColorModeToVolume( void );
+  void SetColorModeToVolume();
   
   /** Set the colormode to map the trace. */
-  void SetColorModeToTrace( void );
+  void SetColorModeToTrace();
   
   /** Set the colormode to map the distance to the identity. */
-  void SetColorModeToDistanceToIdentity( void );
+  void SetColorModeToDistanceToIdentity();
   
   /** Set the colormode. */
   void SetColorMode( const int& );
@@ -133,11 +133,11 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorManager: public vtkObject
 
 
   /** Generate the glyph and add them to the RenderWindowInteractor */
-  void Update (void);
+  void Update();
   
   
   /** Remove the actors from the renderer. */
-  void Initialize (void);
+  void Initialize();
 
   /** Set the current position in voxel coordinates. */
   void SetCurrentPosition (const int&, const int&, const int&);
@@ -152,7 +152,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorManager: public vtkObject
   void SetCurrentPosition(double pos[3]);
 
   /** Get the current position. */
-  const int* GetCurrentPosition (void) const
+  const int* GetCurrentPosition() const
   { return this->CurrentPosition; }
 
   /** Get the current position. */
@@ -163,7 +163,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorManager: public vtkObject
 
 
   /** Reset the position to the center of the dataset. */
-  void ResetPosition (void);
+  void ResetPosition();
 
   /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
   void SetAxialSliceVisibility (int);
