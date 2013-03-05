@@ -30,8 +30,8 @@
 
 #include <DiffeomorphicDemons/rpiDiffeomorphicDemons.hxx>
 #include <rpiCommonTools.hxx>
-#include <itkImageRegistrationFactory.h>
 #include <hRegistrationFactory\hRegistrationFactory.h>
+
 
 // /////////////////////////////////////////////////////////////////
 // itkProcessRegistrationDiffeomorphicDemonsDiffeomorphicDemonsPrivate
@@ -220,7 +220,7 @@ template <typename PixelType>
     resampler->SetDefaultPixelValue( 0 );
 
     // ADD TRANSFORM TO THE MEDREGISTRATION FACTORY //////////////////////
-    hRegistrationFactory::instance()->addTransformation<RegImageType>(registration->GetTransformation(),methodParameters);
+    hRegistrationFactory::instance()->addTransformation(registration->GetTransformation(),methodParameters);
     //////////////////////////////////////////////////////////////////////
     
     try {

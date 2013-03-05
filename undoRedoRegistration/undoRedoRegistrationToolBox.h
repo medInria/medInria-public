@@ -5,13 +5,13 @@
 #ifndef UNDOREDOREGISTRATIONTOOLBOX_H
 #define UNDOREDOREGISTRATIONTOOLBOX_H
 
-#include <medToolBoxRegistrationCustom.h>
+#include <medRegistrationAbstractToolBox.h>
 #include "undoRedoRegistration.h"
 #include "undoRedoRegistrationPluginExport.h"
 
 class undoRedoRegistrationToolBoxPrivate;
 
-class UNDOREDOREGISTRATIONPLUGIN_EXPORT undoRedoRegistrationToolBox : public medToolBoxRegistrationCustom
+class UNDOREDOREGISTRATIONPLUGIN_EXPORT undoRedoRegistrationToolBox : public medRegistrationAbstractToolBox
 {
     Q_OBJECT
     
@@ -24,7 +24,7 @@ public:
     void updatePositionArrow(int);
     undoRedoRegistration::RegImageType::Pointer output(void);
 
-    virtual void setRegistrationToolBox(medToolBoxRegistration *toolbox);
+    virtual void setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox);
 
 public slots:
     void onUndo(void);
