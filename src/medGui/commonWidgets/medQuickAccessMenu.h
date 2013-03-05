@@ -16,6 +16,7 @@ public:
     
     void updateCurrentlySelectedRight();
     void updateCurrentlySelectedLeft();
+    void updateSelected (QString workspace);
     
     void switchToCurrentlySelected ();
     

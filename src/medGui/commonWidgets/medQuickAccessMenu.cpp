@@ -1,12 +1,15 @@
 #include "medQuickAccessMenu.h"
 #include <medWorkspaceFactory.h>
+#include <medSettingsManager.h>
 
 /**
  * Constructor, parameter vertical chooses if the layout will be vertical (bottom left menu) or horizontal (alt-tab like menu)
  */
 medQuickAccessMenu::medQuickAccessMenu ( bool vertical, QWidget* parent, Qt::WindowFlags f ) : QWidget ( parent, f )
 {
-    currentSelected = 0;
+    QVariant startupWorkspace = medSettingsManager::instance()->value("startup","default_starting_area");
+
+    currentSelected = startupWorkspace.toInt();
     if (vertical)
         this->createVerticalQuickAccessMenu();
     else
@@ -73,6 +76,23 @@ void medQuickAccessMenu::mouseMoveEvent (QMouseEvent *event)
     }
     
     QWidget::mouseMoveEvent(event);
+}
+
+/**
+ * Updates the currently selected item when current workspace was changed from somewhere else
+ */
+void medQuickAccessMenu::updateSelected (QString workspace)
+{
+    currentSelected = 0;
+    
+    for (unsigned int i = 0;i < buttonsList.size();++i)
+    {
+        if (buttonsList[i]->identifier() == workspace)
+        {
+            currentSelected = i;
+            break;
+        }
+    }
 }
 
 /**
@@ -183,7 +203,6 @@ void medQuickAccessMenu::reset(bool optimizeLayout)
         unsigned int width = ((QWidget *)this->parent())->size().width();
         unsigned int numberOfWidgetsPerLine = floor((width - 40.0) / 180.0);
         unsigned int optimalSizeLayout = ceil((float)buttonsList.size() / numberOfWidgetsPerLine);
-        //numberOfWidgetsPerLine = ceil((float)buttonsList.size() / optimalSizeLayout);
         
         if (backgroundFrame->layout())
             delete backgroundFrame->layout();
@@ -272,7 +291,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu ( void )
     workspaceLabel->setFixedHeight(25);
     workspaceLabel->setAlignment(Qt::AlignHCenter);
     workspaceLabel->setTextFormat(Qt::RichText);
-    //It's more easy to set the stylesheet here than in the qss file
+    //It's easier to set the stylesheet here than in the qss file
     workspaceLabel->setStyleSheet("border-image: url(:/pixmaps/toolbox-header.png) 16 16 0 16 repeat-x;\
                                   border-left-width: 0px;\
                                   border-right-width: 0px;\

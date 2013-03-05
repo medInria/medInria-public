@@ -389,7 +389,10 @@ void medMainWindow::mousePressEvent ( QMouseEvent* event )
 void medMainWindow::keyPressEvent( QKeyEvent *event )
 {
     if (event->key() == Qt::Key_Control)
+    {
         d->controlPressed = true;
+        return;
+    }
     
     if ((event->key() == Qt::Key_Shift)&&(d->controlPressed))
     {
@@ -397,6 +400,8 @@ void medMainWindow::keyPressEvent( QKeyEvent *event )
             this->onShowShortcutAccess();
         else
             d->shortcutAccessWidget->updateCurrentlySelectedRight();
+        
+        return;
     }
 
     QMainWindow::keyPressEvent(event);
@@ -565,6 +570,9 @@ void medMainWindow::showMaximized()
 
 void medMainWindow::switchToHomepageArea ( void )
 {
+    d->shortcutAccessWidget->updateSelected("Homepage");
+    d->quickAccessWidget->updateSelected("Homepage");
+
     d->quickAccessButton->setText(tr("Workspaces access menu"));
     d->quickAccessButton->setMinimumWidth(170);
     if (d->quickAccessVisible)
@@ -584,6 +592,9 @@ void medMainWindow::switchToHomepageArea ( void )
 
 void medMainWindow::switchToBrowserArea ( void )
 {
+    d->shortcutAccessWidget->updateSelected("Browser");
+    d->quickAccessWidget->updateSelected("Browser");
+
     d->quickAccessButton->setText(tr("Workspace: Browser"));
     d->quickAccessButton->setMinimumWidth(170);
     if (d->quickAccessVisible)
@@ -647,6 +658,8 @@ void medMainWindow::onShowWorkspace ( QString workspace )
             medWorkspaceFactory::instance()->workspaceDetailsFromId(workspace);
 
     d->quickAccessButton->setText(tr("Workspace: ") + details->name);
+    d->shortcutAccessWidget->updateSelected(workspace);
+    d->quickAccessWidget->updateSelected(workspace);
 }
 
 /**
