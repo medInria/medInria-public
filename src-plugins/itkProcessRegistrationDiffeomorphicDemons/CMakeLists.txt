@@ -35,9 +35,6 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-find_package(vtkINRIA3D REQUIRED)
-include(${vtkINRIA3D_USE_FILE})
-
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
 
@@ -77,7 +74,6 @@ target_link_libraries(${PROJECT_NAME}
   ${RPI_LIBRARIES}
   hRegistrationFactory
   itkProcessRegistration
-  itkRegistrationAddOn
   ${QT_LIBRARIES}
   dtkCore dtkLog
   medCore

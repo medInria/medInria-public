@@ -22,7 +22,7 @@
 #include <medAbstractDataImage.h>
 
 #include <medToolBoxFactory.h>
-#include <medToolBoxRegistration.h>
+#include <medRegistrationSelectorToolbox.h>
 #include <hRegistrationFactory\hRegistrationFactory.h>
 
 #include <rpiCommonTools.hxx>
@@ -40,7 +40,7 @@ public:
    // RegistrationFactoryType::Pointer m_Factory;
 };
 
-undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medToolBoxRegistrationCustom(parent), d(new undoRedoRegistrationToolBoxPrivate)
+undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new undoRedoRegistrationToolBoxPrivate)
 {
     // Undo/redo Buttons
     d->undoButton = new QPushButton(QIcon(":undoRedoRegistration/icons/ArrowDown.png"),tr("Undo"),this);
@@ -102,7 +102,6 @@ void undoRedoRegistrationToolBox::onUndo()
 {
     if(!this->parentToolBox())
             return;
-    this->parentToolBox()->setUndoRedoProcess(d->m_UndoRedo);
     
     if ((d->currentStep >= 0) && (d->currentStep < d->transformationStack->count()))
     {
@@ -116,7 +115,6 @@ void undoRedoRegistrationToolBox::onRedo()
 {
     if(!this->parentToolBox())
             return;
-    this->parentToolBox()->setUndoRedoProcess(d->m_UndoRedo);
     if (d->currentStep>0)
     {
         updatePositionArrow(d->currentStep-1);
@@ -168,8 +166,8 @@ void undoRedoRegistrationToolBox::updatePositionArrow(int newStep){
     }
 }
 
-void undoRedoRegistrationToolBox::setRegistrationToolBox(medToolBoxRegistration *toolbox)
+void undoRedoRegistrationToolBox::setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox)
 {
-    medToolBoxRegistrationCustom::setRegistrationToolBox(toolbox);
+    medRegistrationAbstractToolBox::setRegistrationToolBox(toolbox);
     toolbox->setUndoRedoProcess(d->m_UndoRedo);
 }
