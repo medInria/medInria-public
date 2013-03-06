@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkAffineRegistrationMethod_h
-#define __itkAffineRegistrationMethod_h
+#pragma once
 
 #include "itkRegistrationMethod.h"
 
@@ -340,6 +339,6 @@ private:
 #include "itkAffineRegistrationMethod.txx"
 #endif
   
-#endif
+
 
 

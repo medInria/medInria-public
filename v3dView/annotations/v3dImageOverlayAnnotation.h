@@ -1,5 +1,4 @@
-#ifndef MSEGImageOverlayAnnotation_H
-#define MSEGImageOverlayAnnotation_H
+#pragma once
 
 #include "msegPluginExport.h"
 
@@ -48,5 +47,5 @@ private:
 
 } // namespace mseg
 
-#endif // MSEGImageOverlayAnnotation_H
+
 

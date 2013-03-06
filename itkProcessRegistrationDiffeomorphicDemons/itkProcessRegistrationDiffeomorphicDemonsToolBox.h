@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSTOOLBOX_H
-#define ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSTOOLBOX_H
+#pragma once
 
 #include <medRegistrationAbstractToolBox.h>
 
@@ -43,4 +42,4 @@ private:
 };
 
 
-#endif
+

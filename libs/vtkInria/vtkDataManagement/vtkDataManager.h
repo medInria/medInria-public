@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtkDataManager_h_
-#define _vtkDataManager_h_
+#pragma once
 
 
 #include <vtkObject.h>
@@ -218,5 +217,5 @@ class VTK_DATAMANAGEMENT_EXPORT vtkDataManager: public vtkObject
 };
 
 
-#endif
+
 

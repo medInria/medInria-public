@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 // version vtkRenderingAddOn
-#ifndef _vtk_InteractorStyleImage2D_h_
-#define _vtk_InteractorStyleImage2D_h__
+#pragma once
 
 #include "vtkRenderingAddOnExport.h"
 
@@ -102,4 +101,4 @@ class VTK_RENDERINGADDON_EXPORT vtkInteractorStyleImage2D : public vtkInteractor
   
 };
 
-#endif
+

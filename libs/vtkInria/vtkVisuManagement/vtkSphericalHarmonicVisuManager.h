@@ -1,5 +1,4 @@
-#ifndef _vtk_SPHERICALHARMONICVisuManager_h_
-#define _vtk_SPHERICALHARMONICVisuManager_h_
+#pragma once
 
 #include <vtkSphericalHarmonicSource.h>
 
@@ -93,4 +92,4 @@ private:
 };
 
 
-#endif
+

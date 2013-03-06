@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 // version vtkRenderingAddOn
-#ifndef _vtk_Image3DImagePlaneCallback_h_
-#define _vtk_Image3DImagePlaneCallback_h_
+#pragma once
 
 #include "vtkRenderingAddOnExport.h"
 
@@ -97,4 +96,4 @@ class VTK_RENDERINGADDON_EXPORT vtkImage3DImagePlaneCallback: public vtkCommand
 };
 
 
-#endif
+

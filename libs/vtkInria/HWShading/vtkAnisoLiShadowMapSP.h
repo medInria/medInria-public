@@ -40,8 +40,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Added support for parameters {Ambient,Diffuse,Specular}ContributionShadow.
  */
 
-#ifndef bmia_vtkAnisoLiShadowMapSP_h
-#define bmia_vtkAnisoLiShadowMapSP_h
+#pragma once
 
 //#include "vtkBMIAShaderProgram.h"
 #include "vtkAnisotropicLightingSP.h"
@@ -79,4 +78,4 @@ private:
 
 }; // class vtkAnisotropicLightingSP
 
-#endif // bmia_vtkAnisoLiShadowMapSP_h
+

@@ -1,5 +1,4 @@
-#ifndef VTKLOGFORWARDER_H
-#define VTKLOGFORWARDER_H
+#pragma once
 
 #include "dtkVtkLogForwarderExport.h"
 #include <vtkOutputWindow.h>
@@ -41,4 +40,4 @@ protected:
     ~vtkLogForwarder();
 };
 
-#endif //VTKLOGFORWARDER_H
+

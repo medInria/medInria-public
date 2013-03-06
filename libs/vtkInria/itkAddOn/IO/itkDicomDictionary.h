@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itk_DicomDictionary_h
-#define _itk_DicomDictionary_h
+#pragma once
 
 #include <gdcmCommon.h>
 
@@ -720,5 +719,5 @@ namespace itk
 
 
 
-#endif
+
 

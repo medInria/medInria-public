@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _lut_Flow_h_
-#define _lut_Flow_h_
+#pragma once
 
 static const int Flow[3*256]={
 
@@ -803,4 +802,4 @@ static const int Flow[3*256]={
   255
 };
 
-#endif
+

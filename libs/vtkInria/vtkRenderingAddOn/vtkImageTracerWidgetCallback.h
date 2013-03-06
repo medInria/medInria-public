@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 // version vtkRenderingAddOn
-#ifndef _vtkImageTracerWidgetCallback_h_
-#define _vtkImageTracerWidgetCallback_h_
+#pragma once
 
 #include "vtkRenderingAddOnExport.h"
 
@@ -74,4 +73,4 @@ class VTK_RENDERINGADDON_EXPORT vtkImageTracerWidgetCallback : public vtkCommand
 
 
 
-#endif
+

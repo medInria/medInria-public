@@ -32,8 +32,7 @@ PURPOSE.  See the above copyright notices for more information.
  * 2005-05-04	Tim Peeters	First version
  */
 
-#ifndef bmia_vtkShaderObjectCollection_h
-#define bmia_vtkShaderObjectCollection_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -81,4 +80,4 @@ private:
 
 };
 
-#endif // bmia_vtkShaderObjectCollection_h
+

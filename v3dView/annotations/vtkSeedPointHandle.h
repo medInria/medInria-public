@@ -5,8 +5,7 @@
  *      Author: jstark
  */
 
-#ifndef VTKSEEDPOINTACTOR2D_H_
-#define VTKSEEDPOINTACTOR2D_H_
+#pragma once
 
 #include <vtkOrientedPolygonalHandleRepresentation3D.h>
 #include <vtkSmartPointer.h>
@@ -54,5 +53,5 @@ private:
 
 };
 
-#endif /* VTKSEEDPOINTACTOR2D_H_ */
+
 

@@ -14,8 +14,7 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkSphericalHarmonicITKToVTKFilter_h
-#define __itkSphericalHarmonicITKToVTKFilter_h
+#pragma once
 
 
 #include "itkImage.h"
@@ -96,7 +95,7 @@ private:
 #include "itkSphericalHarmonicITKToVTKFilter.txx"
 #endif
 
-#endif
+
 
 
 

@@ -1,5 +1,4 @@
-#ifndef ITKMETADATATENSORIMAGEREADER_H
-#define ITKMETADATATENSORIMAGEREADER_H
+#pragma once
 
 #include <itkDataTensorImageReaderBase.h>
 #include <itkDataTensorImageReaderPluginExport.h>
@@ -23,4 +22,4 @@ private:
 
 dtkAbstractDataReader *createItkMetaDataTensorImageReader();
 
-#endif
+

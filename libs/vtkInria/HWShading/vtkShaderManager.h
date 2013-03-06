@@ -41,8 +41,7 @@ PURPOSE.  See the above copyright notices for more information.
  *   and the vtkBMIAShaderProgram->Activate() function.
  */
 
-#ifndef bmia_vtkShaderManager_h
-#define bmia_vtkShaderManager_h
+#pragma once
 
 #include "vtkShaderBase.h"
 
@@ -127,4 +126,4 @@ private:
   void GetGlVersion(int *major, int *minor);
 };
 
-#endif // bmia_vtkShaderManager_h
+

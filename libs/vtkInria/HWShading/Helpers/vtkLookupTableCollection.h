@@ -32,8 +32,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version
  */
 
-#ifndef bmia_vtkLookupTableCollection_h
-#define bmia_vtkLookupTableCollection_h
+#pragma once
 
 #include <vtkCollection.h>
 class vtkLookupTable;
@@ -69,4 +68,4 @@ private:
 
 }; // class vtkLookupTableCollection
 
-#endif // bmia_vtkLookupTableCollection_h
+

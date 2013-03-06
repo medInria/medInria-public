@@ -36,8 +36,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Renamed glCreateObject() to CreateGlShader()
  */
 
-#ifndef bmia_vtkFragmentShader_h
-#define bmia_vtkFragmentShader_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -62,4 +61,4 @@ private:
 
 };
 
-#endif
+

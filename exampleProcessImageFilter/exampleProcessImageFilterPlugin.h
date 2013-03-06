@@ -4,8 +4,7 @@
 
 
 
-#ifndef EXAMPLEPROCESSIMAGEFILTERPLUGIN_H
-#define EXAMPLEPROCESSIMAGEFILTERPLUGIN_H
+#pragma once
 
 #include <dtkCore/dtkPlugin.h>
 
@@ -50,4 +49,4 @@ private:
      exampleProcessImageFilterPluginPrivate *d;
 };
 
-#endif
+

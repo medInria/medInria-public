@@ -33,8 +33,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version
  */
 
-#ifndef bmia_vtkShadowMappingHelperLines_h
-#define bmia_vtkShadowMappingHelperLines_h
+#pragma once
 
 #include "vtkShadowMappingHelper.h"
 
@@ -57,4 +56,4 @@ private:
 
 }; // class vtkShadowMappingHelperLines
 
-#endif // bmia_vtkShadowMappingHelperLines_h
+

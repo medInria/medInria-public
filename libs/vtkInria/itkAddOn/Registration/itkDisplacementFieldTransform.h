@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkDisplacementFieldTransform_h_
-#define _itkDisplacementFieldTransform_h_
+#pragma once
 
 #include "itkTransform.h"
 #include "itkProcessObject.h"
@@ -267,4 +266,4 @@ namespace itk
 #endif
   
 
-#endif
+

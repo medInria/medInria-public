@@ -1,5 +1,4 @@
-#ifndef VTKHELPERSEXPORT_H
-#define VTKHELPERSEXPORT_H
+#pragma once
 
 #ifdef WIN32
  #if defined (vtkHelpers_EXPORTS)
@@ -11,6 +10,6 @@
     #define VTK_HELPERS_EXPORT
 #endif
 
-#endif // VTKHELPERSEXPORT_H
+
  
 

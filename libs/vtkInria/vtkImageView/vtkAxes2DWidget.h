@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtkAxes2DWidget_h_
-#define _vtkAxes2DWidget_h_
+#pragma once
 
 #include "vtkImageViewExport.h"
 #include "vtkObject.h"
@@ -142,4 +141,4 @@ class VTK_IMAGEVIEW_EXPORT vtkAxes2DWidgetCommand : public vtkCommand
 
 
 
-#endif
+

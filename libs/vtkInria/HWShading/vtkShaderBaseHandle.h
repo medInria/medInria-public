@@ -38,8 +38,7 @@ PURPOSE.  See the above copyright notices for more information.
  *   and vtkBMIAShaderProgram as DeleteGlShader() and DeleteGlProgram().
  */
 
-#ifndef bmia_vtkShaderBaseHandle_h
-#define bmia_vtkShaderBaseHandle_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -92,4 +91,4 @@ private:
 
 };
 
-#endif // __vtkShaderBaseHandle_h
+

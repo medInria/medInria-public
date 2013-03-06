@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _lut_LONI2_h_
-#define _lut_LONI2_h_
+#pragma once
 
 static const float LONI2[120][3] = 
 { { 0.0      ,  0.0      ,  1.0      },
@@ -140,4 +139,4 @@ static const float LONI2[120][3] =
   { 1.0      ,  0.0      ,  0.947368 },
   { 1.0      ,  0.0      ,  1.0      } };
 
-#endif
+

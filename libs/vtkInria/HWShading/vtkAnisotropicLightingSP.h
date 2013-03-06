@@ -36,8 +36,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Add support for tone shading
  */
 
-#ifndef bmia_vtkAnisotropicLightingSP_h
-#define bmia_vtkAnisotropicLightingSP_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -130,4 +129,4 @@ private:
 
 }; // class vtkAnisotropicLightingSP
 
-#endif // bmia_vtkAnisotropicLightingSP_h
+

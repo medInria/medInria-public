@@ -1,5 +1,4 @@
-#ifndef _vtk_SPHERICALHARMONICManager_h_
-#define _vtk_SPHERICALHARMONICManager_h_
+#pragma once
 
 #include <vtkObject.h>
 #include <vtkRenderWindowInteractor.h>
@@ -130,4 +129,4 @@ private:
 };
 
 
-#endif
+

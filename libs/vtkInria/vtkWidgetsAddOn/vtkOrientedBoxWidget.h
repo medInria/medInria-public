@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtkOrientedBoxWidget_h_
-#define _vtkOrientedBoxWidget_h_
+#pragma once
 
 #include "vtkWidgetsAddOnExport.h"
 #include "vtkBoxWidget.h"
@@ -62,4 +61,4 @@ class VTK_WIDGETSADDON_EXPORT vtkOrientedBoxWidget : public vtkBoxWidget
 
 };
 
-#endif /* _vtkOrientedBoxWidget_h_ */
+

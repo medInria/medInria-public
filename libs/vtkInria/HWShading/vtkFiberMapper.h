@@ -66,8 +66,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Add support for tone shading.
  */
 
-#ifndef bmia_vtkFiberMapper_h
-#define bmia_vtkFiberMapper_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -228,4 +227,4 @@ private:
 }; // class vtkFiberMapper
 
 
-#endif
+

@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef EXAMPLEPROCESSIMAGEFILTERTOOLBOX_H
-#define EXAMPLEPROCESSIMAGEFILTERTOOLBOX_H
+#pragma once
 
 #include <medDiffusionAbstractToolBox.h>
 
@@ -84,4 +83,4 @@ private:
 
 medDiffusionAbstractToolBox *createExampleProcessImageFilterToolBox(QWidget *);
 
-#endif
+

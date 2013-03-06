@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
-#ifndef __vtkImageClamp_h
-#define __vtkImageClamp_h
+#pragma once
 
 #include "vtkVisuManagementExport.h"
 
@@ -125,4 +124,4 @@ private:
   void operator=(const vtkImageClamp&);  // Not implemented.
 };
 
-#endif
+

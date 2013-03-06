@@ -1,6 +1,5 @@
 
-#ifndef VTKDATAMESHPLUGINEXPORT_H
-#define VTKDATAMESHPLUGINEXPORT_H
+#pragma once
 
 #ifdef WIN32
     #ifdef vtkDataMeshPlugin_EXPORTS
@@ -12,5 +11,5 @@
     #define VTKDATAMESHPLUGIN_EXPORT
 #endif
 
-#endif
+
 

@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _lut_cardiac_h_
-#define _lut_cardiac_h_
+#pragma once
 
 static const int Cardiac[256*3] = {
 
@@ -792,4 +791,4 @@ static const int Cardiac[256*3] = {
   3 
 };
 
-#endif
+

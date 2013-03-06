@@ -15,8 +15,7 @@
   PURPOSE.  See the above copyright notices for more information.
 
   =========================================================================*/
-#ifndef __itkImageSeriesReshapeFilter_h
-#define __itkImageSeriesReshapeFilter_h
+#pragma once
 
 #include "itkObjectFactory.h"
 #include "itkImageToImageFilter.h"
@@ -114,4 +113,4 @@ namespace itk
 #include "itkImageSeriesReshapeFilter.txx"
 #endif
   
-#endif
+

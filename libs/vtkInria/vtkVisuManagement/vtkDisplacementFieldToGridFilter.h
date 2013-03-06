@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtk_DisplacementFieldToGridFilter_h_
-#define _vtk_DisplacementFieldToGridFilter_h_
+#pragma once
 
 #include "vtkVisuManagementExport.h"
 
@@ -113,7 +112,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkDisplacementFieldToGridFilter: public vtkPoly
 };
 
 
-#endif
+
 
 
 

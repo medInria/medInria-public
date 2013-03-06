@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtk_InteractorStyleImageView2D_h_
-#define _vtk_InteractorStyleImageView2D_h_
+#pragma once
 
 #include "vtkImageViewExport.h"
 
@@ -117,4 +116,4 @@ class VTK_IMAGEVIEW_EXPORT vtkInteractorStyleImageView2D : public vtkInteractorS
   
 };
 
-#endif
+

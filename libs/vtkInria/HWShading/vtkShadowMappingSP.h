@@ -33,8 +33,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version
  */
 
-#ifndef bmia_vtkShadowMappingSP_h
-#define bmia_vtkShadowMappingSP_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -64,4 +63,4 @@ private:
 
 }; // class vtkShadowMappingSP
 
-#endif // bmia_vtkShadowMappingSP_h
+

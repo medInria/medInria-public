@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtk_LandmarkManagerCallback_h_
-#define _vtk_LandmarkManagerCallback_h_
+#pragma once
 
 #include "vtkLandmarkManagementExport.h"
 
@@ -94,4 +93,4 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmarkManagerCallback : public vtkComma
 
 
 
-#endif
+

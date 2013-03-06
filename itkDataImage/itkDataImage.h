@@ -1,5 +1,4 @@
-#ifndef _med_ITKDataImage_h_
-#define _med_ITKDataImage_h_
+#pragma once
 
 #include <itkVector.h>
 #include <itkImage.h>
@@ -692,4 +691,4 @@ QImage& itkDataImage<DIM,T,ID>::thumbnail() {
         return medAbstractDataImage::thumbnail();
 }
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef ITKGIPLDATAIMAGEWRITER_H
-#define ITKGIPLDATAIMAGEWRITER_H
+#pragma once
 
 #include <itkDataImageBase/itkDataImageWriterBase.h>
 #include <itkDataImageWriterPluginExport.h>
@@ -25,4 +24,4 @@ private:
 
 dtkAbstractDataWriter *createItkGiplDataImageWriter();
 
-#endif
+

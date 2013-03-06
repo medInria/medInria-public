@@ -5,8 +5,7 @@
  *      Author: jstark
  */
 
-#ifndef V3DVIEWANNINTSEEDPOINTHELPER_H_
-#define V3DVIEWANNINTSEEDPOINTHELPER_H_
+#pragma once
 
 #include "v3dViewAnnotationInteractor.h"
 
@@ -49,5 +48,5 @@ private:
     v3dViewAnnIntSeedPointHelperPrivate * d;
 };
 
-#endif /* V3DVIEWANNINTSEEDPOINTHELPER_H_ */
+
 

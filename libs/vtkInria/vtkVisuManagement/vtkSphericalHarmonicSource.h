@@ -8,8 +8,7 @@
 //   Copyright (c) 2007-2011, INRIA Sophia Antipolis, France, groups Odyssee, Athena.
 //   Please see the copyright notice included in this distribution for full details.
 
-#ifndef VTKSPHERICALHARMONICSOURCE_HPP
-#define VTKSPHERICALHARMONICSOURCE_HPP
+#pragma once
 #include "vtkVisuManagementExport.h"
 
 #include <vtkPolyDataAlgorithm.h>
@@ -238,4 +237,4 @@ private:
     void operator=(const vtkSphericalHarmonicSource&);  // Not implemented.
 };
 
-#endif  //  ! VTKSPHERICALHARMONICSOURCE_HPP
+

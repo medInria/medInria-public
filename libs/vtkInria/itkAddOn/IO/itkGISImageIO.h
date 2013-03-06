@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
-#ifndef _itk_GISImageIO_h_
-#define _itk_GISImageIO_h_
+#pragma once
 
 #ifdef _MSC_VER
 #pragma warning ( disable : 4786 )
@@ -85,4 +84,4 @@ namespace itk
 } // end of namespace
 
 
-#endif
+

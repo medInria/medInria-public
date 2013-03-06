@@ -1,5 +1,4 @@
-#ifndef ITKDCMTKIOEXPORT_H
-#define ITKDCMTKIOEXPORT_H
+#pragma once
 
 #if defined(WIN32) && defined(ITK_BUILD_SHARED)
     #ifdef ITKDCMTKIO_EXPORTS
@@ -11,4 +10,4 @@
     #define ITKDCMTKIO_EXPORT 
 #endif
 
-#endif
+

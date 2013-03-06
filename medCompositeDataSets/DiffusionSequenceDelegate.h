@@ -1,5 +1,4 @@
-#ifndef DIFFUSIONSEQUENCEDELEGATE_H
-#define DIFFUSIONSEQUENCEDELEGATE_H
+#pragma once
 
 #include <QItemDelegate>
 #include <QModelIndex>
@@ -34,4 +33,4 @@ public:
     }
 };
 
-#endif  // ! DIFFUSIONSEQUENCEDELEGATE_H
+

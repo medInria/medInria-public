@@ -98,8 +98,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef __vtkSmartVolumeMapper_h
-#define __vtkSmartVolumeMapper_h
+#pragma once
 
 #include "vtkVolumeMapper.h"
 #include "vtkImageReslice.h" // for VTK_RESLICE_NEAREST, VTK_RESLICE_CUBIC
@@ -341,4 +340,4 @@ private:
   void operator=(const vtkSmartVolumeMapper&);  // Not implemented.
 };
 
-#endif
+

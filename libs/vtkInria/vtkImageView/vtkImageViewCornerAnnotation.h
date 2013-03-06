@@ -1,5 +1,4 @@
-#ifndef _vtk_ImageViewCornerAnnotation_h_
-#define _vtk_ImageViewCornerAnnotation_h_
+#pragma once
 
 #include "vtkCornerAnnotation.h"
 
@@ -55,4 +54,4 @@ class VTK_IMAGEVIEW_EXPORT vtkImageViewCornerAnnotation : public vtkCornerAnnota
 };
 
 
-#endif
+

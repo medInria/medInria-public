@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkRigidRegistrationMethod_h
-#define __itkRigidRegistrationMethod_h
+#pragma once
 
 
 #if defined(_MSC_VER)
@@ -94,6 +93,6 @@ private:
 #include "itkRigidRegistrationMethod.txx"
 #endif
   
-#endif
+
 
 

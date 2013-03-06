@@ -1,5 +1,4 @@
-#ifndef ITKPHILIPSRECDATAIMAGEWRITER_H
-#define ITKPHILIPSRECDATAIMAGEWRITER_H
+#pragma once
 
 #include <itkDataImageBase/itkDataImageWriterBase.h>
 #include <itkDataImageWriterPluginExport.h>
@@ -24,4 +23,4 @@ private:
     static dtkAbstractDataWriter* create();
 };
 
-#endif  //  ! ITKPHILIPSRECDATAIMAGEWRITER_H
+

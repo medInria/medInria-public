@@ -1,5 +1,4 @@
-#ifndef ITKMSEGPROGRESSOBSERVERCOMMAND_H
-#define ITKMSEGPROGRESSOBSERVERCOMMAND_H
+#pragma once
 
 #include "msegAlgorithmGeneric.h"
 
@@ -38,4 +37,4 @@ namespace itk
   };
 }
 
-#endif // ITKMSEGPROGRESSOBSERVERCOMMAND_H
+

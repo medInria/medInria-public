@@ -1,5 +1,4 @@
-#ifndef _vtk_InteractorStyleTrackballCamera2_h_
-#define _vtk_InteractorStyleTrackballCamera2_h_
+#pragma once
 
 // This class behaves like vtkInteractorStyleTrackballCamera except that the right click
 // is canceled (no effect). This is particularly usefull when one wants a menu to popup
@@ -40,4 +39,4 @@ class VTK_WIDGETSADDON_EXPORT vtkInteractorStyleTrackballCamera2 : public vtkInt
 
 
 
-#endif
+

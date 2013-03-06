@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _lut_GEColor_h_
-#define _lut_GEColor_h_
+#pragma once
 
 static const int GEColor[3*256]={
 
@@ -803,4 +802,4 @@ static const int GEColor[3*256]={
 
 };
 
-#endif
+

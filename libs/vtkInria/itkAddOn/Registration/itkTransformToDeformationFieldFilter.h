@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
-#ifndef __itkTransformToDeformationFieldFilter_h
-#define __itkTransformToDeformationFieldFilter_h
+#pragma once
 
 #include "itkImageSource.h"
 #include "itkKernelTransform.h"
@@ -169,4 +168,4 @@ private:
 #include "itkTransformToDeformationFieldFilter.txx"
 #endif
   
-#endif
+

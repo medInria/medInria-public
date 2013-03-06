@@ -32,8 +32,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version
  */
 
-#ifndef bmia_vtkUniformVec3_h
-#define bmia_vtkUniformVec3_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -61,4 +60,4 @@ private:
   float Value[3];
 };
 
-#endif //bmia_vtkUniformVec3_h
+

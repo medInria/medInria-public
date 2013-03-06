@@ -1,5 +1,4 @@
-#ifndef VTKDATAMESHREADERPLUGIN_H
-#define VTKDATAMESHREADERPLUGIN_H
+#pragma once
 
 #include <dtkCore/dtkPlugin.h>
 
@@ -29,4 +28,4 @@ private:
      vtkDataMeshReaderPluginPrivate *d;
 };
 
-#endif
+

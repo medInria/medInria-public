@@ -1,5 +1,4 @@
-#ifndef VTKHWSHADINGEXPORT_H
-#define VTKHWSHADINGEXPORT_H
+#pragma once
 
 #ifdef WIN32
  #if defined (vtkHWShading_EXPORTS)
@@ -11,6 +10,6 @@
     #define VTK_HWSHADING_EXPORT
 #endif
 
-#endif // VTKHWSHADINGEXPORT_H
+
  
 

@@ -1,5 +1,4 @@
-#ifndef VTKRENDERINGADDONEXPORT_H
-#define VTKRENDERINGADDONEXPORT_H
+#pragma once
 
 #ifdef WIN32
  #if defined (vtkRenderingAddOn_EXPORTS)
@@ -11,6 +10,6 @@
     #define VTK_RENDERINGADDON_EXPORT
 #endif
 
-#endif // VTKVISUMANAGEMENTEXPORT_H
+
  
 

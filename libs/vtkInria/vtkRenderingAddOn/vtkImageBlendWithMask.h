@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 // version vtkRenderingAddOn
-#ifndef _vtk_ImageBlendWithMask_h_
-#define _vtk_ImageBlendWithMask_h_
+#pragma once
 
 #include "vtkRenderingAddOnExport.h"
 
@@ -79,4 +78,4 @@ class VTK_RENDERINGADDON_EXPORT vtkImageBlendWithMask : public vtkThreadedImageA
 
 
 
-#endif
+

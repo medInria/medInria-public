@@ -49,8 +49,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Removed inclusion of vtkImageData.h
  */
 
-#ifndef bmia_vtkImageDataInterpolator_h
-#define bmia_vtkImageDataInterpolator_h
+#pragma once
 
 #include "vtkHelpersExport.h"
 
@@ -154,4 +153,4 @@ private:
 };
 
 
-#endif
+

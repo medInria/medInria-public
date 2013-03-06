@@ -5,8 +5,7 @@
  * Change log:
  *
  */
-#ifndef V3DVIEW4DINTERACTOR_H
-#define V3DVIEW4DINTERACTOR_H
+#pragma once
 
 #include <med4DAbstractViewInteractor.h>
 #include "v3dViewPluginExport.h"
@@ -77,4 +76,4 @@ private:
 
 dtkAbstractViewInteractor *createV3dView4DInteractor(void);
 
-#endif // V3DVIEWMESHINTERACTOR_H
+

@@ -1,5 +1,4 @@
-#ifndef V3DVIEWTENSORINTERACTOR_H
-#define V3DVIEWTENSORINTERACTOR_H
+#pragma once
 
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
@@ -92,4 +91,4 @@ private:
 
 dtkAbstractViewInteractor *createV3dViewTensorInteractor(void);
 
-#endif
+

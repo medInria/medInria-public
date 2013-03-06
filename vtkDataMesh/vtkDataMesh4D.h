@@ -1,5 +1,4 @@
-#ifndef _vtk_DataMesh4D_h_
-#define _vtk_DataMesh4D_h_
+#pragma once
 
 #include <medAbstractDataMesh.h>
 #include <dtkCore/dtkGlobal.h>
@@ -70,4 +69,4 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractDataMesh
 
 dtkAbstractData* createVtkDataMesh4D (void);
 
-#endif
+

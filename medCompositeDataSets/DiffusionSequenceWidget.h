@@ -1,5 +1,4 @@
-#ifndef DIFFUSIONSEQUENCEWIDGET_H
-#define DIFFUSIONSEQUENCEWIDGET_H
+#pragma once
 
 #include <QtGui>
 #include <DiffusionSequenceDelegate.h>
@@ -80,4 +79,4 @@ public slots:
     }
 };
 
-#endif  //  ! DIFFUSIONSEQUENCEWIDGET_H
+

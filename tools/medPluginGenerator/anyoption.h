@@ -1,5 +1,4 @@
-#ifndef _ANYOPTION_H
-#define _ANYOPTION_H
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -267,4 +266,4 @@ private:
 
 };
 
-#endif /* ! _ANYOPTION_H */
+

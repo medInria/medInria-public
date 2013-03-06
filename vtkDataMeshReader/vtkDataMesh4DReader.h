@@ -1,5 +1,4 @@
-#ifndef VTKDATAMESH4DREADER_H
-#define VTKDATAMESH4DREADER_H
+#pragma once
 
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <vtkDataMeshReaderPluginExport.h>
@@ -64,4 +63,4 @@ private:
 dtkAbstractDataReader *createVtkDataMesh4DReader();
 
 
-#endif
+

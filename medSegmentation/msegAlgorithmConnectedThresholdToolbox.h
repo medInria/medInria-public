@@ -1,5 +1,4 @@
-#ifndef MSEGALGORITHMCONNECTEDTHRESHOLDTOOLBOX_H
-#define MSEGALGORITHMCONNECTEDTHRESHOLDTOOLBOX_H
+#pragma once
 
 #include "medSegmentationAbstractToolBox.h"
 
@@ -96,4 +95,4 @@ private:
 
 } // namespace mseg
 
-#endif // MSEGALGORITHMCONNECTEDTHRESHOLDTOOLBOX_H
+

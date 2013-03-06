@@ -1,5 +1,4 @@
-#ifndef MSEGAlgorithmPaintToolbox_H
-#define MSEGAlgorithmPaintToolbox_H
+#pragma once
 
 #include "medSegmentationAbstractToolBox.h"
 
@@ -155,4 +154,4 @@ private:
 
 } // namespace mseg
 
-#endif // MSEGAlgorithmPaintToolbox_H
+

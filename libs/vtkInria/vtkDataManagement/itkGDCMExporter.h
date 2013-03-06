@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 
-#ifndef _itk_GDCMExporter_h_
-#define _itk_GDCMExporter_h_
+#pragma once
 
 #include <itkProcessObject.h>
 #include <itkImage.h>
@@ -142,7 +141,7 @@ namespace itk
 } // end of namespace itk
 
 
-#endif
+
 
 
 

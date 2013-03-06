@@ -1,5 +1,4 @@
-#ifndef V3DVIEWMESHINTERACTOR_H
-#define V3DVIEWMESHINTERACTOR_H
+#pragma once
 
 #include <dtkCore/dtkAbstractViewInteractor.h>
 #include <medMeshAbstractViewInteractor.h>
@@ -74,4 +73,4 @@ private:
 
 dtkAbstractViewInteractor * createV3dViewMeshInteractor(void);
 
-#endif // V3DVIEWMESHINTERACTOR_H
+

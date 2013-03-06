@@ -14,8 +14,7 @@
   PURPOSE.  See the above copyright notices for more information.
   
 =========================================================================*/
-#ifndef __itkExtractImageBufferFilter_h
-#define __itkExtractImageBufferFilter_h
+#pragma once
 
 #include "itkExtractImageFilter.h"
 #include "itkSmartPointer.h"
@@ -66,4 +65,4 @@ private:
 #include "itkExtractImageBufferFilter.txx"
 #endif
   
-#endif
+

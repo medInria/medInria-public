@@ -1,5 +1,4 @@
-#ifndef MEDCOMPOSITEDATASETSREADER_H
-#define MEDCOMPOSITEDATASETSREADER_H
+#pragma once
 
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -58,4 +57,4 @@ private:
     MedInria::medCompositeDataSetsBase* reader;
 };
 
-#endif
+

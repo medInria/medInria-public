@@ -1,5 +1,4 @@
-#ifndef MEDCOMPOSITEDATASETSWRITER_H
-#define MEDCOMPOSITEDATASETSWRITER_H
+#pragma once
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -38,4 +37,4 @@ private:
     MedInria::medCompositeDataSetsBase* writer;
 };
 
-#endif
+

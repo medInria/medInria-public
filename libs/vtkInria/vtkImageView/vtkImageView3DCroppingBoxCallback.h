@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtk_ImageView3DCroppingBoxCallback_h_
-#define _vtk_ImageView3DCroppingBoxCallback_h_
+#pragma once
 
 #include "vtkImageViewExport.h"
 
@@ -58,4 +57,4 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView3DCroppingBoxCallback: public vtkCommand
 };
 
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef QTDCMDATASOURCESERIETOOLBOX_H
-#define QTDCMDATASOURCESERIETOOLBOX_H
+#pragma once
 
 #include <medToolBox.h>
 
@@ -24,4 +23,4 @@ private:
     qtdcmDataSourceSerieToolBoxPrivate * d;
 };
 
-#endif // QTDCMDATASOURCEPREVIEWTOOLBOX_H
+

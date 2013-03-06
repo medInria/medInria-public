@@ -45,8 +45,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Added static void printShaderInfoLog()
  */
 
-#ifndef bmia_vtkShaderObject_h
-#define bmia_vtkShaderObject_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -125,4 +124,4 @@ private:
 };
 
 
-#endif // bmia_vtkShaderObject_h
+

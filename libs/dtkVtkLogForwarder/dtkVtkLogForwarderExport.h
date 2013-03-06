@@ -1,5 +1,4 @@
-#ifndef DTKVTKLOGFORWARDEREXPORT_H
-#define DTKVTKLOGFORWARDEREXPORT_H
+#pragma once
 
 #ifdef WIN32
     #ifdef dtkVtkLogForwarder_EXPORTS
@@ -11,5 +10,5 @@
     #define DTKVTKLOGFORWARDER_EXPORT
 #endif
 
-#endif
+
 

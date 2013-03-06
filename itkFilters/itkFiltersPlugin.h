@@ -1,5 +1,4 @@
-#ifndef ITKFILTERSPLUGIN_H
-#define ITKFILTERSPLUGIN_H
+#pragma once
 
 #include <dtkCore/dtkPlugin.h>
 
@@ -34,4 +33,4 @@ private:
     itkFiltersPluginPrivate *d;
 };
 
-#endif // ITKFILTERSPLUGIN_H
+

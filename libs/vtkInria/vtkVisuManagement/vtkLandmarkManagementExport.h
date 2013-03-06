@@ -1,5 +1,4 @@
-#ifndef VTKLANDMARKMANAGEMENTEXPORT_H
-#define VTKLANDMARKMANAGEMENTEXPORT_H
+#pragma once
 
 #ifdef WIN32
  #if defined (vtkLandmarkManagement_EXPORTS)
@@ -11,5 +10,5 @@
     #define VTK_LANDMARKMANAGEMENT_EXPORT
 #endif
 
-#endif // VTKLANDMARKMANAGEMENTEXPORT_H
+
  

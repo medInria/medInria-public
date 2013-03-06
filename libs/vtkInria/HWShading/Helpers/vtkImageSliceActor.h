@@ -36,8 +36,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Added double GetSliceLocation() function.
  */
 
-#ifndef bmia_vtkImageSliceActor_h
-#define bmia_vtkImageSliceActor_h
+#pragma once
 
 #include "vtkHelpersExport.h"
 
@@ -185,4 +184,4 @@ private:
   void operator=(const vtkImageSliceActor&);  // Not implemented.
 }; // vtkImageSliceActor
 
-#endif // bmia_vtkImageSliceActor
+

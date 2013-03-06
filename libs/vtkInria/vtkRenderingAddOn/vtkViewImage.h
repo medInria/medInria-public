@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 // version vtkRenderingAddOn
-#ifndef _vtkViewImage_h_
-#define _vtkViewImage_h_
+#pragma once
 
 #include "vtkRenderingAddOnExport.h"
 
@@ -776,4 +775,4 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
 
 };
 
-#endif /* _vtkViewImage_h_ */
+

@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 // version vtkRenderingAddOn
-#ifndef _vtkViewImage2DWithTracer_h_
-#define _vtkViewImage2DWithTracer_h_
+#pragma once
 
 #include "vtkRenderingAddOnExport.h"
 
@@ -139,4 +138,4 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2DWithTracer: public vtkViewImage2D
   
 
 
-#endif
+

@@ -33,8 +33,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version
  */
 
-#ifndef bmia_vtkImageOrthogonalSlicesActor_h
-#define bmia_vtkImageOrthogonalSlicesActor_h
+#pragma once
 
 #include "vtkHelpersExport.h"
 
@@ -167,4 +166,4 @@ private:
   void operator=(const vtkImageOrthogonalSlicesActor&);  // Not implemented.
 }; // class vtkImageOrthogonalSlicesActor
 
-#endif // bmia_vtkImageOrthogonalSlicesActor_h
+

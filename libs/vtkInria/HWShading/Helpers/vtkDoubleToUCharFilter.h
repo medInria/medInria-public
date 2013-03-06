@@ -36,8 +36,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Use bmia namespace
  */
 
-#ifndef bmia_vtkDoubleToUCharFilter_h
-#define bmia_vtkDoubleToUCharFilter_h
+#pragma once
 
 #include "vtkHelpersExport.h"
 
@@ -68,4 +67,4 @@ private:
   void operator=(const vtkDoubleToUCharFilter&); // Not implemented
 };
 
-#endif
+

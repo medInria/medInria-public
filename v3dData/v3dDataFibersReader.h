@@ -1,5 +1,4 @@
-#ifndef V3DDATAFIBERSREADER_H
-#define V3DDATAFIBERSREADER_H
+#pragma once
 
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <v3dDataPluginExport.h>
@@ -41,4 +40,4 @@ private:
 
 dtkAbstractDataReader *createV3dDataFibersReader();
 
-#endif
+

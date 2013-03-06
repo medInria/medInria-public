@@ -1,5 +1,4 @@
-#ifndef VECTORWIDGET_H
-#define VECTORWIDGET_H
+#pragma once
 
 #include <QHBoxLayout>
 #include <QDoubleSpinBox>
@@ -55,4 +54,4 @@ public:
     QDoubleSpinBox* editors;
 };
 
-#endif  //  !VECTORWIDGET_H
+

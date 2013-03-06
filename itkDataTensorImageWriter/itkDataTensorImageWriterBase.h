@@ -1,5 +1,4 @@
-#ifndef ITKDATATENSORIMAGEWRITERBASE_H
-#define ITKDATATENSORIMAGEWRITERBASE_H
+#pragma once
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
@@ -30,4 +29,4 @@ protected:
     itk::ImageIOBase::Pointer io;
 };
 
-#endif // ITKDATATENSORIMAGEWRITERBASE_H
+
