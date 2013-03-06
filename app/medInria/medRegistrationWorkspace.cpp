@@ -69,6 +69,7 @@ void medRegistrationWorkspace::setupViewContainerStack()
                 this->stackedViewContainers());
         if (dtkSmartPointer<dtkAbstractView> view = dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"))
         {
+            view->setProperty("Closable","false"); 
             fuseContainer->setView (view);
             d->registrationToolBox->setFuseView (view);
         }
