@@ -149,7 +149,7 @@ int main(int argc,char* argv[]) {
 
     medMainWindow mainwindow;
     if (DirectView)
-        mainwindow.setStartup(2,FileToView);
+        mainwindow.setStartup(medMainWindow::WorkSpace,FileToView);
 
     forceShow(mainwindow);
 

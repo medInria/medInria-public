@@ -174,7 +174,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->browserArea,SIGNAL(load(const QString&)),this,SLOT(load(const QString&)));
     connect(d->browserArea,SIGNAL(open(const medDataIndex&)),this,SLOT(open(const medDataIndex&)));
 
-    //  Viewer area.
+    //  Workspace area.
 
     d->workspaceArea = new medWorkspaceArea ( this );
     d->workspaceArea->setObjectName ( "Viewer" );
@@ -364,7 +364,7 @@ void medMainWindow::readSettings ( void )
 
     //  If nothing is configured then Browser is the default area
 
-    const int areaIndex = mnger->value("startup","default_starting_area",0).toInt();
+    const AreaType areaIndex = static_cast<AreaType>(mnger->value("startup","default_starting_area",0).toInt());
 
     switchToArea(areaIndex);
 
@@ -390,12 +390,12 @@ void medMainWindow::writeSettings() {
     }
 }
 
-void medMainWindow::setStartup(const int areaIndex,const QString& filename) {
+void medMainWindow::setStartup(const AreaType areaIndex,const QString& filename) {
     switchToArea(areaIndex);
     open(filename);
 }
 
-void medMainWindow::switchToArea(const int areaIndex) {
+void medMainWindow::switchToArea(const AreaType areaIndex) {
     switch (areaIndex) {
         case 0:
             this->switchToHomepageArea();
@@ -501,7 +501,7 @@ void medMainWindow::resizeEvent ( QResizeEvent* event )
 }
 
 
-void medMainWindow::setWallScreen ( bool full )
+void medMainWindow::setWallScreen (const bool full )
 {
     if ( full )
     {
@@ -514,7 +514,7 @@ void medMainWindow::setWallScreen ( bool full )
     }
 }
 
-void medMainWindow::setFullScreen ( bool full )
+void medMainWindow::setFullScreen (const bool full )
 {
     if ( full )
         this->showFullScreen();
