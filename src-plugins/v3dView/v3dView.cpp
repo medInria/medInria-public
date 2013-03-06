@@ -348,6 +348,7 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     }
 
     d->setPropertyFunctions["Daddy"] = &v3dView::onDaddyPropertySet;
+    d->setPropertyFunctions["Closable"] = &v3dView::onClosablePropertySet;
     d->setPropertyFunctions["Orientation"] =  &v3dView::onOrientationPropertySet;
     d->setPropertyFunctions["ShowScalarBar"] = &v3dView::onShowScalarBarPropertySet;
     d->setPropertyFunctions["LookupTable"] = &v3dView::onLookupTablePropertySet;
@@ -619,6 +620,7 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     this->setProperty ("ShowAnnotations",       "true");
     this->setProperty ("LookupTable",           "Default");
 
+
     //get default Mouse interaction from medSettings
     medSettingsManager * mnger = medSettingsManager::instance();
     QString mouseInteraction = mnger->value("interactions","mouse",
@@ -638,6 +640,7 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     this->setProperty ( "PositionLinked",   "false" );
     this->setProperty ( "WindowingLinked",  "false" );
     this->setProperty ( "Daddy",            "false" );
+    this->setProperty ( "Closable",         "true"  );
 
     int colorIndex = d->nextColorIndex;
     if ( colorIndex >= d->presetColors.size() )
@@ -1649,6 +1652,14 @@ void v3dView::onDaddyPropertySet ( const QString &value )
 //    d->anchorButton->setChecked ( boolValue );
     emit ( changeDaddy ( boolValue ) );
 }
+void v3dView::onClosablePropertySet( const QString &value ){
+
+    if ( value == "true" )
+        d->closeButton->show();
+    else if ( value == "false" )
+        d->closeButton->hide();
+}
+
 
 void v3dView::onPositionLinkedPropertySet ( const QString &value )
 {
