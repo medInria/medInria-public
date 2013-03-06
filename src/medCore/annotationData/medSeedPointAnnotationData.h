@@ -5,8 +5,7 @@
  *      Author: jstark
  */
 
-#ifndef MSEGSEEDPOINTANNOTATIONDATA_H_
-#define MSEGSEEDPOINTANNOTATIONDATA_H_
+#pragma once
 
 #include "medCoreExport.h"
 
@@ -72,5 +71,5 @@ protected:
     int m_selectedSeed;
 };
 
-#endif /* MSEGSEEDPOINTANNOTATIONDATA_H_ */
+
 

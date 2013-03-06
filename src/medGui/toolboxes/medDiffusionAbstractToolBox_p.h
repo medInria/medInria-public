@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef medDiffusionAbstractToolBox_P_H
-#define medDiffusionAbstractToolBox_P_H
+#pragma once
 
 #include <QtGui>
 
@@ -30,4 +29,4 @@ public:
     medDiffusionSelectorToolBox *parent;
 };
 
-#endif
+

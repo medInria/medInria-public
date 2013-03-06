@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATABASEREADER_H
-#define MEDDATABASEREADER_H
+#pragma once
 
 #include <QtCore/QObject>
 #include <dtkCore/dtkSmartPointer.h>
@@ -54,4 +53,4 @@ private:
     medDatabaseReaderPrivate *d;
 };
 
-#endif
+

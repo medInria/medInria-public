@@ -16,8 +16,7 @@
  *
  */
 
-#ifndef MEDPLUGINMANAGER_H
-#define MEDPLUGINMANAGER_H
+#pragma once
 
 #include <QtCore>
 
@@ -118,4 +117,4 @@ private:
     medPluginManagerPrivate *d; /**< TODO */
 };
 
-#endif // MEDPLUGINMANAGER_H
+

@@ -1,5 +1,4 @@
-#ifndef medDbController_h__
-#define medDbController_h__
+#pragma once
 
 
 #include "medSqlExport.h"
@@ -166,4 +165,4 @@ private:
     medDatabaseControllerImplPrivate * d;
 };
 
-#endif
+

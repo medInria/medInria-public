@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATABASENONPERSISTENTREADER_H
-#define MEDDATABASENONPERSISTENTREADER_H
+#pragma once
 
 #include "medSqlExport.h"
 
@@ -76,4 +75,4 @@ private:
     medDatabaseNonPersistentReaderPrivate *d;
 };
 
-#endif
+

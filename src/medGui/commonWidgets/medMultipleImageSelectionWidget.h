@@ -1,5 +1,4 @@
-#ifndef MEDMULTIPLEIMAGESELECTIONWIDGET_H
-#define MEDMULTIPLEIMAGESELECTIONWIDGET_H
+#pragma once
 
 #include <QtGui>
 
@@ -76,4 +75,4 @@ private:
     medMultipleImageSelectionWidgetPrivate *d;
 };
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef MEDWORKSPACEAREA_P_H
-#define MEDWORKSPACEAREA_P_H
+#pragma once
 
 #include <QtCore/QHash>
 #include <medDataIndex.h>
@@ -42,4 +41,4 @@ public:
     medWorkspace::LayoutType currentLayout;
 };
 
-#endif
+

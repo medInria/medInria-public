@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEEXPORTER_H
-#define MEDDATABASEEXPORTER_H
+#pragma once
 
 #include "medSqlExport.h"
 #include <QtCore>
@@ -48,4 +47,4 @@ private:
     medDatabaseExporterPrivate *d;
 };
 
-#endif // MEDDATABASEEXPORTER_H
+

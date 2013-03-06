@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medMultiViewContainer_H
-#define medMultiViewContainer_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -98,4 +97,4 @@ private:
     friend void medSingleViewContainer2::onViewFocused(bool);
 };
 
-#endif
+

@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDVIEWCONTAINER_H
-#define MEDVIEWCONTAINER_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -501,4 +500,4 @@ protected:
     medViewContainerPrivate *d;
 };
 
-#endif // MEDVIEWCONTAINER_H
+

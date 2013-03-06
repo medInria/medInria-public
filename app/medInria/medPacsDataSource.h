@@ -1,5 +1,4 @@
-#ifndef medPacsDataSource_h__
-#define medPacsDataSource_h__
+#pragma once
 
 #include <medAbstractDataSource.h>
 #include <medMoveCommandItem.h>
@@ -37,4 +36,4 @@ private:
 
 };
 
-#endif // medPacsDataSource_h__
+

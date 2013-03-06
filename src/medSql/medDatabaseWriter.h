@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATABASEWRITER_H
-#define MEDDATABASEWRITER_H
+#pragma once
 
 #include <QtCore/QObject>
 
@@ -60,4 +59,4 @@ private:
     medDatabaseWriterPrivate *d;
 };
 
-#endif
+

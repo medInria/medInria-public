@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDWORKSPACE_H
-#define MEDWORKSPACE_H
+#pragma once
 
 #include <QtCore>
 #include "medViewContainer.h"
@@ -366,4 +365,4 @@ private:
     medWorkspacePrivate *d;
 };
 
-#endif
+

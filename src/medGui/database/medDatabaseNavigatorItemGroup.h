@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASENAVIGATORITEMGROUP_H
-#define MEDDATABASENAVIGATORITEMGROUP_H
+#pragma once
 
 #include <QtGui>
 
@@ -57,4 +56,4 @@ private:
     medDatabaseNavigatorItemGroupPrivate *d;
 };
 
-#endif // MEDDATABASENAVIGATORITEMGROUP_H
+

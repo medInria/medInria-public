@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medBrowserJobsToolBox_H
-#define medBrowserJobsToolBox_H
+#pragma once
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -40,4 +39,4 @@ private:
     medBrowserJobsToolBoxPrivate *d;
 };
 
-#endif
+

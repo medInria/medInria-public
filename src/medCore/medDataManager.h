@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATAMANAGER_H
-#define MEDDATAMANAGER_H
+#pragma once
 
 #include <QtCore/QObject>
 
@@ -264,4 +263,4 @@ private:
     medDataManagerPrivate *d;
 };
 
-#endif // MEDDATAMANAGER_H
+

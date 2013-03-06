@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medSingleViewContainer_H
-#define medSingleViewContainer_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -64,4 +63,4 @@ protected:
     void dropEvent(QDropEvent *event);
 };
 
-#endif
+

@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDPACSWIDGET_H
-#define MEDPACSWIDGET_H
+#pragma once
 
 #include <QtGui/QTreeWidget>
 
@@ -70,4 +69,4 @@ private:
 int  tryToInt(QString value);
 
 
-#endif
+

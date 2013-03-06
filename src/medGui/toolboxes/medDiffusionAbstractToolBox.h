@@ -18,8 +18,7 @@
  */
 
 
-#ifndef medDiffusionAbstractToolBox_H
-#define medDiffusionAbstractToolBox_H
+#pragma once
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -57,4 +56,4 @@ protected:
     medDiffusionAbstractToolBoxPrivate *d;
 };
 
-#endif // medDiffusionAbstractToolBox_H
+

@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTVIEWFIBERINTERACTOR_H
-#define MEDABSTRACTVIEWFIBERINTERACTOR_H
+#pragma once
 
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
@@ -181,4 +180,4 @@ private:
     medAbstractViewFiberInteractorPrivate *d2;
 };
 
-#endif
+

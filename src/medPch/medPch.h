@@ -18,8 +18,7 @@
  */
 
 
-#ifndef MEDPCH_H
-#define MEDPCH_H
+#pragma once
 
 #include <QtCore>
 #include <QtDebug>
@@ -41,4 +40,4 @@
 #include <list>
 #include <vector>
 
-#endif //MEDPCH_H
+

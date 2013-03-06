@@ -1,5 +1,4 @@
-#ifndef medDatabaseNonPersistentController_h__
-#define medDatabaseNonPersistentController_h__
+#pragma once
 
 #include "medSqlExport.h"
 #include "medDatabaseNonPersistentControllerImpl.h"
@@ -32,4 +31,3 @@ private:
 
 MEDSQL_EXPORT medAbstractDbController* createNonPersistentDbController();
 
-#endif // medDatabaseNonPersistentController_h__

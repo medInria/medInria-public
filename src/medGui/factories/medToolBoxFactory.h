@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDTOOLBOXFACTORY_H
-#define MEDTOOLBOXFACTORY_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -168,4 +167,4 @@ struct MEDGUI_EXPORT medToolBoxDetails{
         creator(creator){}
 };
 
-#endif
+

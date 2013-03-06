@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDMESSAGECONTROLLER_H
-#define MEDMESSAGECONTROLLER_H
+#pragma once
 
 #include <QtCore>
 #include <QtGui>
@@ -140,4 +139,4 @@ private:
     medMessageControllerPrivate *d;
 };
 
-#endif
+

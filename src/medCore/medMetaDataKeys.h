@@ -1,5 +1,4 @@
-#ifndef MEDMETADATAHELPER_H
-#define MEDMETADATAHELPER_H
+#pragma once
 
 #include <vector>
 #include <medAbstractData.h>
@@ -113,5 +112,5 @@ namespace medMetaDataKeys {
     extern MEDCORE_EXPORT const Key ThumbnailPath;
 };
 
-#endif // MEDMETADATAHELPER_H
+
 

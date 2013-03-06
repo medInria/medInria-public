@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTPACSMOVESCU_H
-#define MEDABSTRACTPACSMOVESCU_H
+#pragma once
 
 #include "medAbstractPacsBaseScu.h"
 #include "medPacsExport.h"
@@ -32,4 +31,4 @@ signals:
 
 };
 
-#endif
+

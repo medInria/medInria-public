@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEPREVIEWITEMGROUP_H
-#define MEDDATABASEPREVIEWITEMGROUP_H
+#pragma once
 
 #include <QtGui>
 
@@ -54,4 +53,4 @@ private:
     medDatabasePreviewItemGroupPrivate *d;
 };
 
-#endif // MEDDATABASEPREVIEWITEMGROUP_H
+

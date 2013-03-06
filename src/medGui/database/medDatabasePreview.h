@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEPREVIEW_H
-#define MEDDATABASEPREVIEW_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -65,4 +64,4 @@ private:
     medDatabasePreviewPrivate *d;
 };
 
-#endif // MEDDATABASEPREVIEW_H
+

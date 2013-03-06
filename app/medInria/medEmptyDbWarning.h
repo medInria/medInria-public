@@ -1,5 +1,4 @@
-#ifndef MEDEMPTYDBWARNING_H
-#define MEDEMPTYDBWARNING_H
+#pragma once
 
 #include <QDialog>
 
@@ -39,4 +38,4 @@ private:
     medEmptyDbWarningPrivate* d; /**< TODO */
 };
 
-#endif // MEDEMPTYDBWARNING_H
+

@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATABASENONPERSISTENTCONTROLLERIMPL_H
-#define MEDDATABASENONPERSISTENTCONTROLLERIMPL_H
+#pragma once
 
 #include <medAbstractDbController.h>
 #include "medSqlExport.h"
@@ -147,4 +146,4 @@ private:
     medDatabaseNonPersistentControllerImplPrivate *d;
 };
 
-#endif
+

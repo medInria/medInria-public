@@ -1,6 +1,5 @@
 
-#ifndef MEDABSTRACTPACSSTORESCP_H
-#define MEDABSTRACTPACSSTORESCP_H
+#pragma once
 
 #include <QtCore/QObject>
 #include "medPacsExport.h"
@@ -24,4 +23,4 @@ signals:
 
 };
 
-#endif
+

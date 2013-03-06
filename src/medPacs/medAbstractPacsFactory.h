@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDABSTRACTPACSFACTORY_H
-#define MEDABSTRACTPACSFACTORY_H
+#pragma once
 
 #include "medPacsExport.h"
 
@@ -77,4 +76,4 @@ private:
     medAbstractPacsFactoryPrivate *d;
 };
 
-#endif
+

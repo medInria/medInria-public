@@ -1,5 +1,4 @@
-#ifndef MEDPACSMOVER_H
-#define MEDPACSMOVER_H
+#pragma once
 
 
 #include <medJobItem.h>
@@ -34,4 +33,4 @@ private:
     medPacsMoverPrivate *d;
 };
 
-#endif 
+

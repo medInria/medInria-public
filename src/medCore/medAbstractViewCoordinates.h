@@ -1,5 +1,4 @@
-#ifndef _medAbstractViewScene_h_
-#define _medAbstractViewScene_h_
+#pragma once
 
 #include "medCoreExport.h"
 
@@ -60,5 +59,5 @@ private:
 
 };
 
-#endif // _medAbstractViewScene_h_
+
 

@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDROPSITE_H
-#define MEDDROPSITE_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -75,4 +74,4 @@ private:
     medDropSitePrivate *d;
 };
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef medDiffusionWorkspace_H
-#define medDiffusionWorkspace_H
+#pragma once
 
 
 #include <QtCore>
@@ -72,4 +71,4 @@ private:
 };
 
 
-#endif // medDiffusionWorkspace_H
+

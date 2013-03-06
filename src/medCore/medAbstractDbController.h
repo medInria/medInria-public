@@ -1,5 +1,4 @@
-#ifndef medAbstractDbController_h__
-#define medAbstractDbController_h__
+#pragma once
 
 
 #include <medCoreExport.h>
@@ -151,4 +150,4 @@ public slots:
 
 };
 
-#endif // medAbstractDbController_h__
+

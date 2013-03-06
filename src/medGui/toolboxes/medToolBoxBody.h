@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDTOOLBOXBODY_H
-#define MEDTOOLBOXBODY_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -46,4 +45,4 @@ private:
     medToolBoxBodyPrivate *d;
 };
 
-#endif
+

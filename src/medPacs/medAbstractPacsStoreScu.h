@@ -1,6 +1,5 @@
 
-#ifndef MEDABSTRACTPACSSTORESCU_H
-#define MEDABSTRACTPACSSTORESCU_H
+#pragma once
 
 #include <QtCore/QObject>
 #include "medPacsExport.h"
@@ -18,4 +17,4 @@ public:
 
 };
 
-#endif
+

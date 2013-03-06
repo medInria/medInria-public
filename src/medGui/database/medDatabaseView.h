@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATABASEVIEW_H
-#define MEDDATABASEVIEW_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -87,4 +86,4 @@ private:
     medDatabaseViewPrivate *d;
 };
 
-#endif
+

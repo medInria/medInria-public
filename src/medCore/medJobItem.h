@@ -1,6 +1,5 @@
 
-#ifndef medJobItem_h__
-#define medJobItem_h__
+#pragma once
 
 #include <QtCore>
 
@@ -77,4 +76,4 @@ protected slots:
 
 };
 
-#endif // medJobItem_h__
+

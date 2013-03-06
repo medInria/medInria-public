@@ -1,5 +1,4 @@
-#ifndef medJobManager_h__
-#define medJobManager_h__
+#pragma once
 
 #include <QtCore/QObject>
 
@@ -66,4 +65,4 @@ private:
     medJobManagerPrivate *d;
 };
 
-#endif // medJobManager_h__
+

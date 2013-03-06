@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDTABBEDVIEWCONTAINERS_H
-#define MEDTABBEDVIEWCONTAINERS_H
+#pragma once
 
 #include <QtGui>
 
@@ -219,4 +218,4 @@ private:
     medTabbedViewContainersPrivate *d;
 };
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef MEDSTATUSBAR_H
-#define MEDSTATUSBAR_H
+#pragma once
 
 #include <QStatusBar>
 #include <QWidget>
@@ -88,4 +87,4 @@ private:
     QList<medMessage *> messageList;    // storing displayed messages
 };
 
-#endif // MEDSTATUSBAR_H
+

@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTPACSKEY_H
-#define MEDABSTRACTPACSKEY_H
+#pragma once
 
 #include <QtCore/QObject>
 #include <QString>
@@ -19,4 +18,3 @@ public:
 
 };
 
-#endif

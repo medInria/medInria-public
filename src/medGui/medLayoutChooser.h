@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDLAYOUTCHOOSER_H
-#define MEDLAYOUTCHOOSER_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -53,4 +52,4 @@ private:
     medLayoutChooserPrivate *d;
 };
 
-#endif // MEDLAYOUTCHOOSER_H
+

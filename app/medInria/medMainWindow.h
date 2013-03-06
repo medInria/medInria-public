@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDMAINWINDOW_H
-#define MEDMAINWINDOW_H
+#pragma once
 
 #include <QtGui/QMainWindow>
 #include <QUuid>
@@ -147,4 +146,4 @@ private:
     medMainWindowPrivate *d;
 };
 
-#endif // MEDMAINWINDOW_H
+

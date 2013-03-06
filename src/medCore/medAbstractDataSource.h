@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTDATASOURCE_H
-#define MEDABSTRACTDATASOURCE_H
+#pragma once
 
 #include <QWidget>
 #include <QtCore>
@@ -70,4 +69,4 @@ signals:
     void dataRemoved(const medDataIndex& index);
 };
 
-#endif
+

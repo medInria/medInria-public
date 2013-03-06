@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEPREVIEWCONTROLLER_H
-#define MEDDATABASEPREVIEWCONTROLLER_H
+#pragma once
 
 #include <Qt>
 #include <QtCore>
@@ -64,4 +63,4 @@ private:
     Qt::Orientation m_orientation;
 };
 
-#endif // MEDDATABASEPREVIEWCONTROLLER_H
+

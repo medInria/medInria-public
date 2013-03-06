@@ -1,5 +1,4 @@
-#ifndef medAbstractDatabaseItem_h__
-#define medAbstractDatabaseItem_h__
+#pragma once
 
 #include <QVariant>
 #include "medCoreExport.h"
@@ -38,4 +37,4 @@ public:
     virtual QVariant     value(int column) = 0;
 
 };
-#endif // medAbstractDatabaseItem_h__
+

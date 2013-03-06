@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medBrowserSourceSelectorToolBox_H
-#define medBrowserSourceSelectorToolBox_H
+#pragma once
 
 #include <medToolBox.h>
 
@@ -43,4 +42,4 @@ private:
     medBrowserSourceSelectorToolBoxPrivate *d;
 };
 
-#endif
+

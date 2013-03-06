@@ -5,8 +5,7 @@
  *      Author: John Stark
  */
 
-#ifndef MEDQTDATAIMAGEWRITER_H_
-#define MEDQTDATAIMAGEWRITER_H_
+#pragma once
 
 #include "medTestExport.h"
 
@@ -55,5 +54,5 @@ protected:
 
 };
 
-#endif /* MEDQTDATAIMAGEWRITER_H_ */
+
 

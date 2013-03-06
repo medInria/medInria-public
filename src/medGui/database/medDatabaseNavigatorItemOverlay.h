@@ -1,5 +1,4 @@
-#ifndef medDatabaseNavigatorItemOverlay_h
-#define medDatabaseNavigatorItemOverlay_h
+#pragma once
 
 #include <QtGui/QGraphicsPixmapItem>
 
@@ -33,4 +32,3 @@ private:
     medDatabaseNavigatorItemOverlayPrivate *d;
 };
 
-#endif

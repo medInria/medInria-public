@@ -1,5 +1,4 @@
-#ifndef MEDQTVIEW_H
-#define MEDQTVIEW_H
+#pragma once
 
 #include "medTestExport.h"
 
@@ -36,4 +35,4 @@ private:
     medQtViewPrivate *d;
 };
 
-#endif
+

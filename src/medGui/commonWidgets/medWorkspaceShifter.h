@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDWORKSPACESHIFTER_H
-#define MEDWORKSPACESHIFTER_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -139,4 +138,4 @@ private:
     medWorkspaceShifterPrivate *d;
 };
 
-#endif
+

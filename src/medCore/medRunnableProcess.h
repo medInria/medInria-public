@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDRUNNABLEPROCESS_H
-#define MEDRUNNABLEPROCESS_H
+#pragma once
 
 #include "medJobItem.h"
 
@@ -76,4 +75,4 @@ private:
     medRunnableProcessPrivate *d;
 };
 
-#endif // MEDRUNNABLEPROCESS_H
+

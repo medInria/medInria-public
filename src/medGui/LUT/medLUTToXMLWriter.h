@@ -1,5 +1,4 @@
-#ifndef MEDLUTTOXMLWRITER_H
-#define MEDLUTTOXMLWRITER_H
+#pragma once
 
 #include "medClutEditor.h"
 #include <qiodevice.h>
@@ -19,4 +18,4 @@ private:
 
 
 
-#endif // MEDLUTTOXMLWRITER_H
+

@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDVIEWMANAGER_H
-#define MEDVIEWMANAGER_H
+#pragma once
 
 #include <QtCore/QObject>
 
@@ -60,4 +59,4 @@ private:
     medViewManagerPrivate *d;
 };
 
-#endif // MEDVIEWMANAGER_H
+

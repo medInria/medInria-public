@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDVIEWPOOL_H
-#define MEDVIEWPOOL_H
+#pragma once
 
 #include <QtCore>
 
@@ -100,4 +99,4 @@ private:
   
 };
 
-#endif
+

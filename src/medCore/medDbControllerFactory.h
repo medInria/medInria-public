@@ -1,5 +1,4 @@
-#ifndef medDbControllerFactory_h__
-#define medDbControllerFactory_h__
+#pragma once
 
 #include "medCoreExport.h"
 #include <dtkCore/dtkAbstractFactory.h>
@@ -95,4 +94,4 @@ private:
   medDbControllerFactoryPrivate* d;
 };
 
-#endif
+

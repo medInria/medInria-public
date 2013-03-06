@@ -1,5 +1,4 @@
-#ifndef medCompositeDataSetImporterSelectorToolBox_H
-#define medCompositeDataSetImporterSelectorToolBox_H
+#pragma once
 
 #include <medToolBox.h>
 
@@ -83,4 +82,4 @@ public slots:
 
 };
 
-#endif
+

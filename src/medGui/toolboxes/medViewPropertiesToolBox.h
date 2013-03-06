@@ -5,8 +5,7 @@
  *      Author: aabadie
  */
 
-#ifndef MEDVIEWERTOOLBOXVIEWPROPERTIES_H_
-#define MEDVIEWERTOOLBOXVIEWPROPERTIES_H_
+#pragma once
 
 #include "medGuiExport.h"
 #include <medToolBox.h>
@@ -100,4 +99,4 @@ private:
     QIcon createIcon(QString colorName);
 };
 
-#endif /* MEDVIEWERTOOLBOXVIEWPROPERTIES_H_ */
+

@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATABASEIMPORTER_H
-#define MEDDATABASEIMPORTER_H
+#pragma once
 
 #include "medSqlExport.h"
 
@@ -222,4 +221,4 @@ private:
 
 };
 
-#endif // MEDDATABASEIMPORTER_H
+

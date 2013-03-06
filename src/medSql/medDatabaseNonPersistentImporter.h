@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATABASENONPERSISTENTIMPORTER_H
-#define MEDDATABASENONPERSISTENTIMPORTER_H
+#pragma once
 
 #include <QtCore/QObject>
 
@@ -61,4 +60,4 @@ private:
 };
 
 
-#endif
+

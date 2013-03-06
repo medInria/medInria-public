@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medBrowserPacsNodesToolBox_H
-#define medBrowserPacsNodesToolBox_H
+#pragma once
 
 #include <medToolBox.h>
 #include "medGuiExport.h"
@@ -53,4 +52,4 @@ private:
     medBrowserPacsNodesToolBoxPrivate *d;
 };
 
-#endif
+

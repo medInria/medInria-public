@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medVisualizationWorkspace_H
-#define medVisualizationWorkspace_H
+#pragma once
 
 #include <QtCore>
 
@@ -53,4 +52,4 @@ private:
     medVisualizationWorkspacePrivate *d;
 };
 
-#endif
+

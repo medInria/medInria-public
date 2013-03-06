@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASECONTROLLER_H
-#define MEDDATABASECONTROLLER_H
+#pragma once
 
 #include "medSqlExport.h"
 #include "medDatabaseControllerImpl.h"
@@ -51,4 +50,4 @@ private:
 
 MEDSQL_EXPORT medAbstractDbController* createDbController();
 
-#endif
+
