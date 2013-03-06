@@ -36,8 +36,6 @@ public:
     QIcon arrowCurrentStep; 
     int currentStep;
     undoRedoRegistration * m_UndoRedo;
-    
-   // RegistrationFactoryType::Pointer m_Factory;
 };
 
 undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new undoRedoRegistrationToolBoxPrivate)
@@ -55,25 +53,12 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
     d->m_UndoRedo = new undoRedoRegistration();
     // Transformation Stack
     d->transformationStack = new QListWidget(this);
-   /* d->transformationStack->addItem(new QListWidgetItem(d->arrowCurrentStep,"TransAffine"));
-    d->transformationStack->addItem("transf1");
-    d->transformationStack->addItem("transf41");
-    d->transformationStack->addItem("transf471");*/
-    
-     //QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
-
-    //layoutButtonGroup->addButton(d->undoButton);
-    //layoutButtonGroup->addButton(d->redoButton);
-
+   
     QHBoxLayout *layoutButtonUndoRedo = new QHBoxLayout;
     layoutButtonUndoRedo->addWidget(d->undoButton);
     layoutButtonUndoRedo->addWidget(d->redoButton);
 
-    //QVBoxLayout *layoutLayout = new QVBoxLayout;
-    //layoutLayout->addLayout(layoutButtonUndoRedo);
-
     QWidget * layoutSection = new QWidget(this);
-    //layoutSection->setLayout(layoutLayout);
     layoutSection->setLayout(layoutButtonUndoRedo);
     addWidget(layoutSection);
     addWidget(d->transformationStack);
@@ -145,7 +130,6 @@ void undoRedoRegistrationToolBox::addTransformationIntoList(unsigned int i, QStr
             QListWidgetItem * tmp = d->transformationStack->takeItem(k);
             delete tmp;
         }  
-        // supprimer les transformation qui precede dans la pile, cette transfor doit etre au dessus de la pile. supprimer aussi dans generaltransform
         d->currentStep = 0;
         d->transformationStack->insertItem(d->currentStep,methodParameters->at(0)); 
         d->transformationStack->item(d->currentStep)->setToolTip(buffer);

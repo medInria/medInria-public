@@ -10,49 +10,13 @@
 #include <hRegistrationFactory\hRegistrationFactory.h>
 #include "itkImage.h"
 
-
-// /////////////////////////////////////////////////////////////////
-// undoRedoRegistrationPrivate
-// /////////////////////////////////////////////////////////////////
-
-class undoRedoRegistrationPrivate
-{
-public:
-
-    
-    /*undoRedoRegistration * proc;
-    template <class PixelType>
-    int update(void);
-    template <typename PixelType>
-    bool writeTransform(const QString& file);
-    
-    void * registrationMethod;*/
-    
-};
-
 // /////////////////////////////////////////////////////////////////
 // undoRedoRegistration
 // /////////////////////////////////////////////////////////////////
 
-undoRedoRegistration::undoRedoRegistration(void) : itkProcessRegistration(), d(new undoRedoRegistrationPrivate)
-{
-    //connect(hRegistrationFactory::instance(),SIGNAL(),this,SLOT());
-}
+undoRedoRegistration::undoRedoRegistration(void) : itkProcessRegistration(){}
 
-undoRedoRegistration::~undoRedoRegistration(void)
-{
-    /*d->proc = NULL;
-
-    typedef itk::Image< float, 3 >  RegImageType;
-    
-    if (d->registrationMethod)
-        delete static_cast<rpi::UndoRedoRegistration< RegImageType, RegImageType,float > *>(d->registrationMethod);
-
-    d->registrationMethod = NULL;
-    
-    delete d;
-    d = 0;*/
-}
+undoRedoRegistration::~undoRedoRegistration(void){}
 
 bool undoRedoRegistration::registered(void)
 {
@@ -65,114 +29,8 @@ QString undoRedoRegistration::description(void) const
     return "undoRedoRegistration";
 }
 
-
-
-// /////////////////////////////////////////////////////////////////
-// Templated Version of update
-// /////////////////////////////////////////////////////////////////
-
-
-/*template <typename PixelType>
-int undoRedoRegistrationPrivate::update(void)
-{
-    typedef itk::Image< PixelType, 3 >  FixedImageType;
-    typedef itk::Image< PixelType, 3 >  MovingImageType;
-    
-    
-    typename rpi::UndoRedoRegistration<FixedImageType,MovingImageType> * registration =
-    new rpi::UndoRedoRegistration<FixedImageType,MovingImageType> ();
-    
-    registrationMethod = registration;
-    
-    registration->SetFixedImage((const FixedImageType*) proc->fixedImage().GetPointer());
-    registration->SetMovingImage((const MovingImageType*) proc->movingImages()[0].GetPointer());
-    
-    
-    // Run the registration
-    time_t t1 = clock();
-    try {
-        registration->StartRegistration();
-    }
-    catch( std::exception & err )
-    {
-        qDebug() << "ExceptionObject caught ! (startRegistration)" << err.what();
-        return 1;
-    }
-    
-    time_t t2 = clock();
-    
-    qDebug() << "Elasped time: " << (double)(t2-t1)/(double)CLOCKS_PER_SEC;
-    
-    typedef itk::ResampleImageFilter< MovingImageType,MovingImageType >    ResampleFilterType;
-    typename ResampleFilterType::Pointer resampler = ResampleFilterType::New();
-    resampler->SetTransform(registration->GetTransformation());
-    resampler->SetInput((const MovingImageType*)proc->movingImages()[0].GetPointer());
-    resampler->SetSize( proc->fixedImage()->GetLargestPossibleRegion().GetSize() );
-    resampler->SetOutputOrigin( proc->fixedImage()->GetOrigin() );
-    resampler->SetOutputSpacing( proc->fixedImage()->GetSpacing() );
-    resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
-    resampler->SetDefaultPixelValue( 0 );
-    
-    
-    try {
-        resampler->Update();
-    }
-    catch (itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
-        return 1;
-    }
-    
-    itk::ImageBase<3>::Pointer result = resampler->GetOutput();
-    result->DisconnectPipeline();
-    
-    if (proc->output())
-        proc->output()->setData (result);
-    return 0;
-}*/
-
-int undoRedoRegistration::update(itkProcessRegistration::ImageType imgType)
-{
-    /*if(fixedImage().IsNull() || movingImages()[0].IsNull())
-        return 1;
-
-    return d->update<float>();*/
-    return 0;
-}
-
-
-/*template <typename PixelType>
-bool undoRedoRegistrationPrivate::writeTransform(const QString& file)
-{
-    typedef double TransformScalarType;
-    typedef itk::Image< PixelType, 3 > RegImageType;
-    
-    if (rpi::UndoRedoRegistration<RegImageType,RegImageType,TransformScalarType> * registration =
-        static_cast<rpi::UndoRedoRegistration<RegImageType,RegImageType,TransformScalarType> *>(registrationMethod))
-    {
-        try{
-            rpi::writeDisplacementFieldTransformation<TransformScalarType, 3>(registration->GetTransformation(),
-                                                                              file.toStdString());
-        }
-        catch (std::exception)
-        {
-            return false;
-        }
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-    
-    return false;
-}*/
-
 bool undoRedoRegistration::writeTransform(const QString& file)
 {
-    /*if(d->registrationMethod == NULL)
-        return 1;
-    
-    return d->writeTransform<float>(file);*/
     return false;
 }
 
@@ -199,8 +57,6 @@ void undoRedoRegistration::setInput(dtkAbstractData *data, int channel){
     itkProcessRegistration::setInput(data,channel);
     hRegistrationFactory * medRegFac = hRegistrationFactory::instance();
     typedef itk::Image< float, 3 > RegImageType;
-    //itk::ImageRegistrationFactory<RegImageType>::Pointer factory = itk::ImageRegistrationFactory<RegImageType>::New(); 
-    //medRegFac->setItkRegistrationFactory<RegImageType>(factory);
     if (channel==0)
         medRegFac->getItkRegistrationFactory()->SetFixedImage((RegImageType*)this->fixedImage().GetPointer());
     else if (channel==1)
