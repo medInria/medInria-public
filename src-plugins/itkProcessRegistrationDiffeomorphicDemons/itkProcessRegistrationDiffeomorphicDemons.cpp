@@ -30,7 +30,7 @@
 
 #include <DiffeomorphicDemons/rpiDiffeomorphicDemons.hxx>
 #include <rpiCommonTools.hxx>
-#include <hRegistrationFactory/hRegistrationFactory.h>
+#include <registrationFactory/registrationFactory.h>
 
 
 // /////////////////////////////////////////////////////////////////
@@ -220,7 +220,7 @@ template <typename PixelType>
     resampler->SetDefaultPixelValue( 0 );
 
     // ADD TRANSFORM TO THE MEDREGISTRATION FACTORY //////////////////////
-    hRegistrationFactory::instance()->addTransformation(registration->GetTransformation(),methodParameters);
+    registrationFactory::instance()->addTransformation(registration->GetTransformation(),methodParameters);
     //////////////////////////////////////////////////////////////////////
     
     try {

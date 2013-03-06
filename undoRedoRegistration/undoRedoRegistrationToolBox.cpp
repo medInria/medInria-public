@@ -20,7 +20,7 @@
 
 #include <medToolBoxFactory.h>
 #include <medRegistrationSelectorToolbox.h>
-#include <hRegistrationFactory/hRegistrationFactory.h>
+#include <registrationFactory/registrationFactory.h>
 
 
 class undoRedoRegistrationToolBoxPrivate
@@ -59,8 +59,8 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
     addWidget(layoutSection);
     addWidget(d->transformationStack);
     this->setTitle(tr("Stack of transformations"));
-    connect(hRegistrationFactory::instance(),SIGNAL(transformationAdded(unsigned int,QStringList*)),this,SLOT(addTransformationIntoList(unsigned int, QStringList*)));
-    connect(hRegistrationFactory::instance(),SIGNAL(transformationStackReset()),this,SLOT(onTransformationStackReset()));
+    connect(registrationFactory::instance(),SIGNAL(transformationAdded(unsigned int,QStringList*)),this,SLOT(addTransformationIntoList(unsigned int, QStringList*)));
+    connect(registrationFactory::instance(),SIGNAL(transformationStackReset()),this,SLOT(onTransformationStackReset()));
 }
 
 undoRedoRegistrationToolBox::~undoRedoRegistrationToolBox(void)

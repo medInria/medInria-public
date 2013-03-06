@@ -72,7 +72,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${RPI_LIBRARIES}
-  hRegistrationFactory
+  registrationFactory
   itkProcessRegistration
   ${QT_LIBRARIES}
   dtkCore dtkLog

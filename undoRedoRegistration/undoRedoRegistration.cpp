@@ -7,7 +7,7 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <hRegistrationFactory/hRegistrationFactory.h>
+#include <registrationFactory/registrationFactory.h>
 #include "itkImage.h"
 
 // /////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ bool undoRedoRegistration::writeTransform(const QString& file)
 }
 
 void undoRedoRegistration::undo(){
-    itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = hRegistrationFactory::instance()->getItkRegistrationFactory();
+    itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
     m_factory->Undo();
     m_factory->Update();
     itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
@@ -45,7 +45,7 @@ void undoRedoRegistration::undo(){
 }
     
 void undoRedoRegistration::redo(){
-    itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = hRegistrationFactory::instance()->getItkRegistrationFactory();
+    itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
     m_factory->Redo();
     m_factory->Update();
     itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
@@ -55,7 +55,7 @@ void undoRedoRegistration::redo(){
 
 void undoRedoRegistration::setInput(dtkAbstractData *data, int channel){
     itkProcessRegistration::setInput(data,channel);
-    hRegistrationFactory * medRegFac = hRegistrationFactory::instance();
+    registrationFactory * medRegFac = registrationFactory::instance();
     typedef itk::Image< float, 3 > RegImageType;
     if (channel==0)
         medRegFac->getItkRegistrationFactory()->SetFixedImage((RegImageType*)this->fixedImage().GetPointer());
