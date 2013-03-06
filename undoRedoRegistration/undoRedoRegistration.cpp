@@ -7,7 +7,7 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <hRegistrationFactory\hRegistrationFactory.h>
+#include <hRegistrationFactory/hRegistrationFactory.h>
 #include "itkImage.h"
 
 // /////////////////////////////////////////////////////////////////

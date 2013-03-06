@@ -16,16 +16,12 @@
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medAbstractView.h>
-#include <medRunnableProcess.h>
-#include <medJobManager.h>
-
 #include <medAbstractDataImage.h>
 
 #include <medToolBoxFactory.h>
 #include <medRegistrationSelectorToolbox.h>
-#include <hRegistrationFactory\hRegistrationFactory.h>
+#include <hRegistrationFactory/hRegistrationFactory.h>
 
-#include <rpiCommonTools.hxx>
 
 class undoRedoRegistrationToolBoxPrivate
 {
