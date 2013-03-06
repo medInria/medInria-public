@@ -61,16 +61,6 @@ public:
     
     void redo();
 
-public:
-    /**
-     * @brief Runs the process.
-     *
-     * @param ImageType the fixed image image type.
-     * @return int successful or not.
-     */
-    virtual int update(ImageType);
-    
-    
 protected :
     /**
      * @brief
