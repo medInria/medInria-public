@@ -30,7 +30,7 @@
 
 #include <DiffeomorphicDemons/rpiDiffeomorphicDemons.hxx>
 #include <rpiCommonTools.hxx>
-#include <hRegistrationFactory\hRegistrationFactory.h>
+#include <hRegistrationFactory/hRegistrationFactory.h>
 
 
 // /////////////////////////////////////////////////////////////////
