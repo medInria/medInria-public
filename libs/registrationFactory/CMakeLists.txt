@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(hRegistrationFactory)
+project(registrationFactory)
 
 ## #################################################################
 ## Setup version numbering
@@ -36,9 +36,6 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-find_package(medInria REQUIRED)
-include(${medInria_USE_FILE})
-
 find_package(ITK REQUIRED)
 if(ITK_FOUND)
    include(${ITK_USE_FILE})
@@ -52,17 +49,15 @@ include(${RPI_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  hRegistrationFactoryPlugin.h
-  hRegistrationFactory.h
+  registrationFactory.h
 )
 
 set(${PROJECT_NAME}_HEADERS
-  hRegistrationFactoryExport.h  
+  registrationFactoryExport.h  
   ${${PROJECT_NAME}_HEADERS_MOC})
 
 set(${PROJECT_NAME}_SOURCES
-  hRegistrationFactoryPlugin.cpp
-  hRegistrationFactory.cpp
+  registrationFactory.cpp
   )
 
 ## #################################################################
@@ -81,13 +76,8 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkLog
   dtkCore
-  medCore
-  medGui
   ${ITK_LIBRARIES}
   )
-#not useful if plugin in the medInria-plugins directory
-#dtk_build_doc(hRegistrationFactoryPlugin)
-
 ## #################################################################
 ## Source file layout in development environments like Visual Studio
 ## #################################################################
@@ -100,8 +90,8 @@ SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 ## #################################################################
 
 install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib)
   
   install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
