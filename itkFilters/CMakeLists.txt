@@ -47,6 +47,7 @@ include(${medInria_USE_FILE})
 set(${PROJECT_NAME}_HEADERS
   itkFiltersProcessBase_p.h
   itkFiltersAddProcess_p.h
+  itkFiltersDivideProcess_p.h
   itkFiltersGaussianProcess_p.h
 )
 

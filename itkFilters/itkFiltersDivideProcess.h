@@ -14,8 +14,11 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersDivideProcess : public itkFiltersProcess
     Q_OBJECT
     
 public:
-    itkFiltersDivideProcess(void);
+    itkFiltersDivideProcess(itkFiltersDivideProcess * parent = 0);
+    itkFiltersDivideProcess(const itkFiltersDivideProcess& other);
     virtual ~itkFiltersDivideProcess(void);
+    
+    itkFiltersDivideProcess& operator = (const itkFiltersDivideProcess& other);
     
     virtual QString description ( void ) const;
 
@@ -29,7 +32,7 @@ public slots:
     dtkAbstractData *output ( void );
 
 private:
-    itkFiltersDivideProcessPrivate *d;
+    DTK_DECLARE_PRIVATE(itkFiltersDivideProcess)
 };
 
 

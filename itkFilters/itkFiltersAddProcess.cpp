@@ -6,10 +6,6 @@
 
 #include <medMetaDataKeys.h>
 
-#include "itkImage.h"
-#include "itkCommand.h"
-#include "itkAddConstantToImageFilter.h"
-
 #include "itkFiltersAddProcess_p.h"
 
 //-------------------------------------------------------------------------------------------

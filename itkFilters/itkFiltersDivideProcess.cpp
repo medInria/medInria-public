@@ -6,76 +6,43 @@
 
 #include <medMetaDataKeys.h>
 
-#include "itkImage.h"
-#include "itkCommand.h"
-#include "itkDivideByConstantImageFilter.h"
-
-class itkFiltersDivideProcessPrivate
-{
-public:
-    itk::CStyleCommand::Pointer callback;
-    itkFiltersDivideProcess *filter;
-    
-    dtkSmartPointer<dtkAbstractData> input;
-    dtkSmartPointer<dtkAbstractData> output;
-    
-    double divideFactor;
-    
-    template <class PixelType> void update ( void );
-    
-    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData);
-};
-
-void itkFiltersDivideProcessPrivate::eventCallback ( itk::Object* caller, const itk::EventObject& event, void* clientData )
-{
-    itkFiltersDivideProcessPrivate * source = reinterpret_cast<itkFiltersDivideProcessPrivate *> ( clientData );
-    itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
-
-    if ( !source )
-        qDebug() << "Source est null";
-
-    source->filter->emitProgress((int) (processObject->GetProgress() * 100));
-}
-
-template <class PixelType> void itkFiltersDivideProcessPrivate::update ( void )
-{
-    typedef itk::Image< PixelType, 3 > ImageType;
-    typedef itk::DivideByConstantImageFilter< ImageType, double, ImageType >  DivideFilterType;
-    typename DivideFilterType::Pointer divideFilter = DivideFilterType::New();
-
-    divideFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-    divideFilter->SetConstant ( divideFactor );
-    
-    callback = itk::CStyleCommand::New();
-    callback->SetClientData ( ( void * ) this );
-    callback->SetCallback ( itkFiltersDivideProcessPrivate::eventCallback );
-
-    divideFilter->AddObserver ( itk::ProgressEvent(), callback );
-
-    divideFilter->Update();
-    output->setData ( divideFilter->GetOutput() );
-
-    //Set output description metadata
-    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-    newSeriesDescription += " add filter (" + QString::number(divideFactor) + ")";
-
-    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-}
+#include <itkFiltersDivideProcess_p.h>
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersDivideProcess::itkFiltersDivideProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersDivideProcessPrivate)
+itkFiltersDivideProcess::itkFiltersDivideProcess(itkFiltersDivideProcess *parent) 
+    : itkFiltersProcessBase(*new itkFiltersDivideProcessPrivate(this), parent)
 {
+    DTK_D(itkFiltersDivideProcess);
+    
     d->filter = this;
     d->output = NULL;
+    d->divideFactor = 100.0;    
+}
+
+
+itkFiltersDivideProcess::itkFiltersDivideProcess(const itkFiltersDivideProcess& other) 
+    : itkFiltersProcessBase(*new itkFiltersDivideProcessPrivate(*other.d_func()), other)
+{
+}
+
+itkFiltersDivideProcess& itkFiltersDivideProcess::operator = (const itkFiltersDivideProcess& other)
+{
+    itkFiltersProcessBase::operator=(other);
+
+    DTK_D(itkFiltersDivideProcess);
+    d->callback = other.d_func()->callback;
+    d->filter = other.d_func()->filter;
+    d->input = other.d_func()->input;
+    d->output = other.d_func()->output;
+
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersDivideProcess::~itkFiltersDivideProcess( void )
 {
-    delete d;
-    d = NULL;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -101,6 +68,8 @@ void itkFiltersDivideProcess::setInput(dtkAbstractData *data)
     
     QString identifier = data->identifier();
     
+    DTK_D(itkFiltersDivideProcess);
+    
     d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
     d->input = data;
 }
@@ -112,6 +81,7 @@ void itkFiltersDivideProcess::setParameter(double data, int channel)
     if (channel != 0)
         return;
     
+    DTK_D(itkFiltersDivideProcess);
     d->divideFactor = data;
 }
 
@@ -119,6 +89,8 @@ void itkFiltersDivideProcess::setParameter(double data, int channel)
 
 int itkFiltersDivideProcess::update ( void )
 {
+    DTK_D(itkFiltersDivideProcess);
+    
     if ( !d->input )
         return -1;
 
@@ -182,6 +154,8 @@ int itkFiltersDivideProcess::update ( void )
 
 dtkAbstractData * itkFiltersDivideProcess::output ( void )
 {
+    DTK_D(itkFiltersDivideProcess);
+    
     return ( d->output );
 }
 
