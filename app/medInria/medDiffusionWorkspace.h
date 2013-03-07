@@ -18,6 +18,7 @@
 
 #include <medWorkspace.h>
 #include <medTensorViewToolBox.h>
+#include <medToolBoxDiffusionShView.h>
 #include <medFiberViewToolBox.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
@@ -73,12 +74,35 @@ public slots:
     /** Event called when user wants to flip Z axis */
     void onFlipZChanged(bool flipZ);
 
+    // slots for Sh interactions
+
+    /** Event called when a new polyhedron type to be tesselated is selected in the sh toolbox */
+    void onTesselationTypeChanged(const QString& tesselationType);
+
+    /** Event called when a new spherical harmonics basis is selected in the sh toolbox */
+    void onTesselationBasisChanged(const QString& tesselationBais);
+
+    /** Event called when user wants to flip X axis */
+    void onShFlipXChanged(bool flipX);
+
+    /** Event called when user wants to flip Y axis */
+    void onShFlipYChanged(bool flipY);
+
+    /** Event called when user wants to flip Z axis */
+    void onShFlipZChanged(bool flipZ);
+
+    /** Event called when user wants to switch in between Spherical Harmonic Basis  */
+    void onShMaxThesisFuncChanged(bool MaxThesis);
+
 private:
     medDiffusionWorkspacePrivate *d;
 
     /** Updates the tensor interactor with the current values in the tensor toolbox. */
     void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medTensorViewToolBox* tensorViewToolBox);
 
+    /** Updates the controls in the Sh toolbox with the current values of the interactor. */
+    void updateShInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionShView* ShViewToolBox);
+    
     /** Updates the fiber interactor with the current values in the fiber toolbox. */
     void updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medFiberViewToolBox* fiberViewToolBox);
 };
