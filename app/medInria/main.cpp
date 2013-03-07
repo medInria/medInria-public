@@ -137,10 +137,11 @@ int main(int argc, char *argv[])
 
     bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
 
-    #ifdef MEDINRIA_WALL_OPTION
-    if (application.arguments().contains("--wall")) {
-    mainwindow.setWallScreen(true);
-    fullScreen = false;
+    #ifdef ACTIVATE_WALL_OPTION
+    if (application.arguments().contains("--wall"))
+    {
+        mainwindow.setWallScreen(true);
+        fullScreen = false;
     }
     #endif
 
