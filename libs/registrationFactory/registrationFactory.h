@@ -6,7 +6,7 @@
 #define REGISTRATIONFACTORY_H
 
 #include <dtkCore/dtkAbstractProcess.h>
-#include "itkRegistrationAddOn/itkImageRegistrationFactory.h"
+#include "itkImageRegistrationFactory.h"
 #include "itkTransform.h"
 #include "registrationFactoryExport.h"
 
