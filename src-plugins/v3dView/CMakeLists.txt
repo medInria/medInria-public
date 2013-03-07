@@ -81,6 +81,17 @@ else()
     add_definitions(-DDISABLE_TTK_DEPENDENT_CODE)
 endif()
 
+if ( vtkINRIA3D_USE_SPHERICALHARMONICS )
+  set(${PROJECT_NAME}_SH_DEPENDENT_HEADERS_MOC
+  v3dViewShInteractor.h
+    )
+    set(${PROJECT_NAME}_SH_DEPENDENT_SOURCES
+  v3dViewShInteractor.cpp
+    )
+else( vtkINRIA3D_USE_SPHERICALHARMONICS )
+    add_definitions(-DDISABLE_vtkINRIA3D_USE_SPHERICALHARMONICS)
+endif (vtkINRIA3D_USE_SPHERICALHARMONICS )
+
 set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPlugin.h
   v3dView.h
@@ -89,6 +100,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dView4DInteractor.h
   v3dViewAnnotationInteractor.h
   ${${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC}
+  ${${PROJECT_NAME}_SH_DEPENDENT_HEADERS_MOC}
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -109,6 +121,7 @@ set(${PROJECT_NAME}_SOURCES
   annotations/v3dViewAnnIntImageMaskHelper.cpp
   annotations/v3dViewAnnIntSeedPointHelper.cpp
   annotations/vtkSeedPointHandle.cpp
+  ${${PROJECT_NAME}_SH_DEPENDENT_SOURCES}
   ${${PROJECT_NAME}_TTK_DEPENDENT_SOURCES}
   )
 
