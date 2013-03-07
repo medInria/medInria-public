@@ -1,26 +1,26 @@
-#ifndef MEDTOOLBOXDIFFUSIONSHVIEW_H
-#define MEDTOOLBOXDIFFUSIONSHVIEW_H
+#ifndef medShViewToolBox_H
+#define medShViewToolBox_H
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
 
-class medToolBoxDiffusionShViewPrivate;
+class medShViewToolBoxPrivate;
 
 /**
- * @class medToolBoxDiffusionShView
+ * @class medShViewToolBox
  * @brief Toolbox with widgets to control settings of Spherical Harmonics image visualization.
  * A toolbox with widgets that allow the user to change values which are used by
  * later SH visualizers.
  * For instance, users can change the scale, or choose to calculate
  * more or less polygons for each glyph.
  */
-class MEDGUI_EXPORT medToolBoxDiffusionShView : public medToolBox
+class MEDGUI_EXPORT medShViewToolBox : public medToolBox
 {
 	Q_OBJECT
 
 public:
-        medToolBoxDiffusionShView(QWidget *parent);
-        ~medToolBoxDiffusionShView();
+        medShViewToolBox(QWidget *parent);
+        ~medShViewToolBox();
 
         /** Returns the currently selected polyhedron that is going to be tesselated */
         QString tesselationType(void);
@@ -146,7 +146,7 @@ private slots:
     void onHideShowSagittalChanged(int checkBoxState);
 
 protected:
-    medToolBoxDiffusionShViewPrivate *d;
+    medShViewToolBoxPrivate *d;
 };
 
-#endif // MEDTOOLBOXDIFFUSIONSHVIEW_H
+#endif // medShViewToolBox_H
