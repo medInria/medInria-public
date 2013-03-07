@@ -18,7 +18,7 @@
 
 #include <medWorkspace.h>
 #include <medTensorViewToolBox.h>
-#include <medToolBoxDiffusionShView.h>
+#include <medShViewToolBox.h>
 #include <medFiberViewToolBox.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
@@ -101,7 +101,7 @@ private:
     void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medTensorViewToolBox* tensorViewToolBox);
 
     /** Updates the controls in the Sh toolbox with the current values of the interactor. */
-    void updateShInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionShView* ShViewToolBox);
+    void updateShInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medShViewToolBox* ShViewToolBox);
     
     /** Updates the fiber interactor with the current values in the fiber toolbox. */
     void updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medFiberViewToolBox* fiberViewToolBox);

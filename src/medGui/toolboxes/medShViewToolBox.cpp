@@ -1,10 +1,10 @@
-#include "medToolBoxDiffusionShView.h"
+#include "medShViewToolBox.h"
 #include <medCore/medShAbstractViewInteractor.h>
 //#include <dtkCore/dtkAbstractViewInteractor.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <math.h>
 
-class medToolBoxDiffusionShViewPrivate
+class medShViewToolBoxPrivate
 {
 public:
     QComboBox*    tesselationTypeComboBox;
@@ -43,7 +43,7 @@ public:
 
 };
 
-medToolBoxDiffusionShView::medToolBoxDiffusionShView(QWidget *parent) : medToolBox(parent), d(new medToolBoxDiffusionShViewPrivate)
+medShViewToolBox::medShViewToolBox(QWidget *parent) : medToolBox(parent), d(new medShViewToolBoxPrivate)
 {
 
     QWidget* displayWidget = new QWidget(this);
@@ -309,48 +309,48 @@ medToolBoxDiffusionShView::medToolBoxDiffusionShView(QWidget *parent) : medToolB
     this->addWidget(displayWidget);
 }
 
-medToolBoxDiffusionShView::~medToolBoxDiffusionShView()
+medShViewToolBox::~medShViewToolBox()
 {
     delete d;
     d = NULL;
 }
 
-QString medToolBoxDiffusionShView::tesselationType(void)
+QString medShViewToolBox::tesselationType(void)
 {
     return d->tesselationTypeComboBox->currentText();
 }
 
-QString medToolBoxDiffusionShView::tesselationBasis(void)
+QString medShViewToolBox::tesselationBasis(void)
 {
     return d->tesselationBasisComboBox->currentText();
 }
 
-int medToolBoxDiffusionShView::sampleRate(void)
+int medShViewToolBox::sampleRate(void)
 {
     return d->sampleRateSlider->value();
 }
 
-bool medToolBoxDiffusionShView::isFlipX(void)
+bool medShViewToolBox::isFlipX(void)
 {
     return d->flipXCheckBox->checkState() == Qt::Checked;
 }
 
-bool medToolBoxDiffusionShView::isFlipY(void)
+bool medShViewToolBox::isFlipY(void)
 {
     return d->flipYCheckBox->checkState() == Qt::Checked;
 }
 
-bool medToolBoxDiffusionShView::isFlipZ(void)
+bool medShViewToolBox::isFlipZ(void)
 {
     return d->flipZCheckBox->checkState() == Qt::Checked;
 }
 
-bool medToolBoxDiffusionShView::isMaxThesisFunc(void)
+bool medShViewToolBox::isMaxThesisFunc(void)
 {
     return d->MaxThesisFuncCheckBox->checkState() == Qt::Checked;
 }
 
-//int medToolBoxDiffusionShView::eigenVector(void)
+//int medShViewToolBox::eigenVector(void)
 //{
 //    if (d->eigenVectorV1RadioButton->isChecked())
 //    {
@@ -368,12 +368,12 @@ bool medToolBoxDiffusionShView::isMaxThesisFunc(void)
 //    return 1;
 //}
 
-int medToolBoxDiffusionShView::glyphResolution(void)
+int medShViewToolBox::glyphResolution(void)
 {
     return d->glyphResolutionSlider->value();
 }
 
-double medToolBoxDiffusionShView::scale(void)
+double medShViewToolBox::scale(void)
 {
     int minorScale = d->minorScalingSlider->value();
     int majorScaleExponent = d->majorScalingSlider->value();
@@ -382,22 +382,22 @@ double medToolBoxDiffusionShView::scale(void)
     return scale;
 }
 
-bool medToolBoxDiffusionShView::isShowAxial(void)
+bool medShViewToolBox::isShowAxial(void)
 {
     return d->hideShowAxialCheckBox->checkState() == Qt::Checked;
 }
 
-bool medToolBoxDiffusionShView::isShowCoronal(void)
+bool medShViewToolBox::isShowCoronal(void)
 {
     return d->hideShowCoronalCheckBox->checkState() == Qt::Checked;
 }
 
-bool medToolBoxDiffusionShView::isShowSagittal(void)
+bool medShViewToolBox::isShowSagittal(void)
 {
     return d->hideShowSagittalCheckBox->checkState() == Qt::Checked;
 }
 
-void medToolBoxDiffusionShView::onFlipXCheckBoxStateChanged(int checkBoxState)
+void medShViewToolBox::onFlipXCheckBoxStateChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit flipX(false);
@@ -405,7 +405,7 @@ void medToolBoxDiffusionShView::onFlipXCheckBoxStateChanged(int checkBoxState)
         emit flipX(true);
 }
 
-void medToolBoxDiffusionShView::onFlipYCheckBoxStateChanged(int checkBoxState)
+void medShViewToolBox::onFlipYCheckBoxStateChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit flipY(false);
@@ -413,7 +413,7 @@ void medToolBoxDiffusionShView::onFlipYCheckBoxStateChanged(int checkBoxState)
         emit flipY(true);
 }
 
-void medToolBoxDiffusionShView::onFlipZCheckBoxStateChanged(int checkBoxState)
+void medShViewToolBox::onFlipZCheckBoxStateChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit flipZ(false);
@@ -421,7 +421,7 @@ void medToolBoxDiffusionShView::onFlipZCheckBoxStateChanged(int checkBoxState)
         emit flipZ(true);
 }
 
-void medToolBoxDiffusionShView::onMaxThesisFuncCheckBoxStateChanged(int checkBoxState)
+void medShViewToolBox::onMaxThesisFuncCheckBoxStateChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit maxThesisFunc(false);
@@ -429,7 +429,7 @@ void medToolBoxDiffusionShView::onMaxThesisFuncCheckBoxStateChanged(int checkBox
         emit maxThesisFunc(true);
 }
 
-//void medToolBoxDiffusionShView::onReverseBackgroundColorChanged(int checkBoxState)
+//void medShViewToolBox::onReverseBackgroundColorChanged(int checkBoxState)
 //{
 //    if (checkBoxState == Qt::Unchecked)
 //        emit reverseBackgroundColor(false);
@@ -437,25 +437,25 @@ void medToolBoxDiffusionShView::onMaxThesisFuncCheckBoxStateChanged(int checkBox
 //        emit reverseBackgroundColor(true);
 //}
 
-//void medToolBoxDiffusionShView::onEigenVectorV1Toggled(bool isSelected)
+//void medShViewToolBox::onEigenVectorV1Toggled(bool isSelected)
 //{
 //    if (isSelected)
 //        emit eigenVectorChanged(3);
 //}
 
-//void medToolBoxDiffusionShView::onEigenVectorV2Toggled(bool isSelected)
+//void medShViewToolBox::onEigenVectorV2Toggled(bool isSelected)
 //{
 //    if (isSelected)
 //        emit eigenVectorChanged(2);
 //}
 
-//void medToolBoxDiffusionShView::onEigenVectorV3Toggled(bool isSelected)
+//void medShViewToolBox::onEigenVectorV3Toggled(bool isSelected)
 //{
 //    if (isSelected)
 //        emit eigenVectorChanged(1);
 //}
 
-void medToolBoxDiffusionShView::onMinorScalingChanged(int minorScale)
+void medShViewToolBox::onMinorScalingChanged(int minorScale)
 {
     int majorScaleExponent = d->majorScalingSlider->value();
     double majorScale = pow(10.0, majorScaleExponent);
@@ -463,7 +463,7 @@ void medToolBoxDiffusionShView::onMinorScalingChanged(int minorScale)
     emit scalingChanged(scale);
 }
 
-void medToolBoxDiffusionShView::onMajorScalingChanged(int majorScaleExponent)
+void medShViewToolBox::onMajorScalingChanged(int majorScaleExponent)
 {
     int minorScale = d->minorScalingSlider->value();
     double majorScale = pow(10.0, majorScaleExponent);
@@ -471,22 +471,22 @@ void medToolBoxDiffusionShView::onMajorScalingChanged(int majorScaleExponent)
     emit scalingChanged(scale);
 }
 
-//void medToolBoxDiffusionShView::onXVoiChanged(int xVoi)
+//void medShViewToolBox::onXVoiChanged(int xVoi)
 //{
 //    d->position->setX(xVoi);
 //    emit positionChanged(/*(const)*/ *(d->position), true);
 //}
 
-//void medToolBoxDiffusionShView::onYVoiChanged(int yVoi)
+//void medShViewToolBox::onYVoiChanged(int yVoi)
 //{
 //}
 
-//void medToolBoxDiffusionShView::onZVoiChanged(int zVoi)
+//void medShViewToolBox::onZVoiChanged(int zVoi)
 //{
 //}
 
 
-void medToolBoxDiffusionShView::onHideShowAxialChanged(int checkBoxState)
+void medShViewToolBox::onHideShowAxialChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit hideShowAxial(false);
@@ -494,7 +494,7 @@ void medToolBoxDiffusionShView::onHideShowAxialChanged(int checkBoxState)
         emit hideShowAxial(true);
 }
 
-void medToolBoxDiffusionShView::onHideShowCoronalChanged(int checkBoxState)
+void medShViewToolBox::onHideShowCoronalChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit hideShowCoronal(false);
@@ -502,7 +502,7 @@ void medToolBoxDiffusionShView::onHideShowCoronalChanged(int checkBoxState)
         emit hideShowCoronal(true);
 }
 
-void medToolBoxDiffusionShView::onHideShowSagittalChanged(int checkBoxState)
+void medShViewToolBox::onHideShowSagittalChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
         emit hideShowSagittal(false);
@@ -510,7 +510,7 @@ void medToolBoxDiffusionShView::onHideShowSagittalChanged(int checkBoxState)
         emit hideShowSagittal(true);
 }
 
-void medToolBoxDiffusionShView::update (dtkAbstractView *view)
+void medShViewToolBox::update (dtkAbstractView *view)
 {
     if (!view)
         return;
@@ -534,7 +534,7 @@ void medToolBoxDiffusionShView::update (dtkAbstractView *view)
 //    }
 }
 
-void medToolBoxDiffusionShView::updateWithInteractor (dtkAbstractView *view)
+void medShViewToolBox::updateWithInteractor (dtkAbstractView *view)
 {
 
     if (!view)

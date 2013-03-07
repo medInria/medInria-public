@@ -23,7 +23,7 @@
 
 #include "medViewPropertiesToolBox.h"
 #include "medTensorViewToolBox.h"
-#include "medToolBoxDiffusionShView.h"
+#include "medShViewToolBox.h"
 #include "medDiffusionSelectorToolBox.h"
 #include "medFiberViewToolBox.h"
 #include "medFiberBundlingToolBox.h"
@@ -42,7 +42,7 @@ public:
     medFiberBundlingToolBox    *fiberBundlingToolBox;
     medDiffusionSelectorToolBox                 *diffusionToolBox;
     medTensorViewToolBox       *tensorViewToolBox;
-    medToolBoxDiffusionShView       *shViewToolBox;
+    medShViewToolBox       *shViewToolBox;
 
     QList<dtkSmartPointer<dtkAbstractView> > views;
 
@@ -73,7 +73,7 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
     connect(d->tensorViewToolBox, SIGNAL(flipZ(bool)),                       this, SLOT(onFlipZChanged(bool)));
 
     // -- Sh tb --
-    d->shViewToolBox = new medToolBoxDiffusionShView(parent);
+    d->shViewToolBox = new medShViewToolBox(parent);
     connect(d->shViewToolBox, SIGNAL(tesselationTypeChanged(const QString&)), this, SLOT(onTesselationTypeChanged(const QString&)));
     connect(d->shViewToolBox, SIGNAL(flipX(bool)),                       this, SLOT(onShFlipXChanged(bool)));
     connect(d->shViewToolBox, SIGNAL(flipY(bool)),                       this, SLOT(onShFlipYChanged(bool)));
@@ -325,7 +325,7 @@ void medDiffusionWorkspace::updateFiberInteractorWithToolboxValues(dtkAbstractVi
         interactor->setProperty ("RenderingMode", "tubes");
 }
 
-void medDiffusionWorkspace::updateShInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medToolBoxDiffusionShView* shViewToolBox)
+void medDiffusionWorkspace::updateShInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medShViewToolBox* shViewToolBox)
 {
     // we are temporary using Qt's reflection in this function to call the slots in the interactor
     // without casting to a specific type (which is in a plugin)
