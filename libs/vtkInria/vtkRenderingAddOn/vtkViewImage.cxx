@@ -1759,8 +1759,6 @@ inline void vtkViewImage::SetITKImage4 (typename itk::Image<T, 4> *itkImage)
     
     unsigned int volumeIndex = this->VolumeIndex;
     unsigned int volumeLimit = itkImage->GetLargestPossibleRegion().GetSize()[3]-1;
-    if (volumeIndex<0)
-        volumeIndex = 0;
     if (volumeIndex>volumeLimit)
         volumeIndex = volumeLimit;
     

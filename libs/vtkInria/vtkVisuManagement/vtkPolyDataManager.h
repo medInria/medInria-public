@@ -81,15 +81,11 @@ class VTK_VISUMANAGEMENT_EXPORT vtkPolyDataManager: public vtkObject
   /** Specify the color of a polydata */
   void SetColor (unsigned int i, double color[3])
   {
-    if (i<0 || i>this->ActorList.size())
+    if (i>this->ActorList.size())
       return;
     double c[4] = {color[0],color[1],color[2],1};
     this->ActorList[i]->GetProperty()->SetColor(c);
   }
-  
-    
-    
-
   
  protected:
   
