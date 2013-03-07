@@ -134,14 +134,19 @@ int main(int argc, char *argv[])
     medMainWindow mainwindow;
     forceShow(mainwindow);
 
-    if(!dtkApplicationArgumentsContain(&application, "--no-fullscreen")
-    && !dtkApplicationArgumentsContain(&application, "--wall")){
-        bool fullScreen  = medSettingsManager::instance()->value("startup", "fullscreen", true).toBool();
+    if(application.arguments().contains("--wall"))
+        mainwindow.setWallScreen(true);
+    if (application.arguments().contains("--no-fullscreen") ||
+             application.arguments().contains("--wall"))
+        mainwindow.setFullScreen(false);
+    else if (application.arguments().contains("--fullscreen"))
+        mainwindow.setFullScreen(true);
+    else
+    {
+        bool fullScreen  = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
         mainwindow.setFullScreen(fullScreen);
     }
 
-    if(application.arguments().contains("--wall"))
-        mainwindow.setWallScreen(true);
 
     if(application.arguments().contains("--stereo")) {
        QGLFormat format;
