@@ -19,13 +19,19 @@ project(medCore)
 
 set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
   med4DAbstractViewInteractor.h
+<<<<<<< HEAD
   medAbstractAnnotationViewInteractor.h
+=======
+  medShAbstractViewInteractor.h
+  medDbControllerFactory.h
+  medAbstractDbController.h
+  medAbstractDataSource.h
+  medAbstractDataSourceFactory.h
   medAbstractData.h
   medAbstractDataImage.h
   medAbstractDataMesh.h
   medAbstractDataSourceFactory.h
   medAbstractDataSource.h
-  medAbstractDbController.h
   medAbstractViewFiberInteractor.h
   medAbstractView.h
   medAnnotationData.h
