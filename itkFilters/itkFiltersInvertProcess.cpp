@@ -6,73 +6,40 @@
 
 #include <medMetaDataKeys.h>
 
-#include "itkImage.h"
-#include "itkCommand.h"
-#include "itkInvertIntensityImageFilter.h"
+#include "itkFiltersInvertProcess_p.h"
 
-class itkFiltersInvertProcessPrivate
+itkFiltersInvertProcess::itkFiltersInvertProcess(itkFiltersInvertProcess *parent) 
+    : itkFiltersProcessBase(*new itkFiltersInvertProcessPrivate(this), parent)
 {
-public:
-    itk::CStyleCommand::Pointer callback;
-    itkFiltersInvertProcess *filter;
+    DTK_D(itkFiltersInvertProcess);
     
-    dtkSmartPointer<dtkAbstractData> input;
-    dtkSmartPointer<dtkAbstractData> output;
-    
-    template <class PixelType> void update ( void );
-    
-    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData);
-};
-
-void itkFiltersInvertProcessPrivate::eventCallback ( itk::Object* caller, const itk::EventObject& event, void* clientData )
-{
-    itkFiltersInvertProcessPrivate * source = reinterpret_cast<itkFiltersInvertProcessPrivate *> ( clientData );
-    itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
-
-    if ( !source )
-        qDebug() << "Source est null";
-
-    source->filter->emitProgress((int) (processObject->GetProgress() * 100));
-}
-
-template <class PixelType> void itkFiltersInvertProcessPrivate::update ( void )
-{
-    typedef itk::Image< PixelType, 3 > ImageType;
-    typedef itk::InvertIntensityImageFilter< ImageType, ImageType >  InvertFilterType;
-    typename InvertFilterType::Pointer invertFilter = InvertFilterType::New();
-
-    invertFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-    
-    callback = itk::CStyleCommand::New();
-    callback->SetClientData ( ( void * ) this );
-    callback->SetCallback ( itkFiltersInvertProcessPrivate::eventCallback );
-
-    invertFilter->AddObserver ( itk::ProgressEvent(), callback );
-
-    invertFilter->Update();
-    output->setData ( invertFilter->GetOutput() );
-
-    //Set output description metadata
-    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-    newSeriesDescription += " invert filter";
-
-    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-}
-
-//-------------------------------------------------------------------------------------------
-
-itkFiltersInvertProcess::itkFiltersInvertProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersInvertProcessPrivate)
-{
     d->filter = this;
     d->output = NULL;
+}
+
+
+itkFiltersInvertProcess::itkFiltersInvertProcess(const itkFiltersInvertProcess& other) 
+    : itkFiltersProcessBase(*new itkFiltersInvertProcessPrivate(*other.d_func()), other)
+{
+}
+
+itkFiltersInvertProcess& itkFiltersInvertProcess::operator = (const itkFiltersInvertProcess& other)
+{
+    itkFiltersProcessBase::operator=(other);
+
+    DTK_D(itkFiltersInvertProcess);
+    d->callback = other.d_func()->callback;
+    d->filter = other.d_func()->filter;
+    d->input = other.d_func()->input;
+    d->output = other.d_func()->output;
+
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersInvertProcess::~itkFiltersInvertProcess( void )
 {
-    delete d;
-    d = NULL;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -98,6 +65,7 @@ void itkFiltersInvertProcess::setInput(dtkAbstractData *data)
     
     QString identifier = data->identifier();
     
+    DTK_D(itkFiltersInvertProcess);
     d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
     d->input = data;
 }
@@ -106,6 +74,8 @@ void itkFiltersInvertProcess::setInput(dtkAbstractData *data)
 
 int itkFiltersInvertProcess::update ( void )
 {
+    DTK_D(itkFiltersInvertProcess);
+    
     if ( !d->input )
         return -1;
 
@@ -169,6 +139,8 @@ int itkFiltersInvertProcess::update ( void )
 
 dtkAbstractData * itkFiltersInvertProcess::output ( void )
 {
+    DTK_D(itkFiltersInvertProcess);
+    
     return ( d->output );
 }
 

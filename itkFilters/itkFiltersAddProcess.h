@@ -35,9 +35,5 @@ private:
     DTK_DECLARE_PRIVATE(itkFiltersAddProcess)
 };
 
-ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug, const itkFiltersAddProcess& process);
-ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug,       itkFiltersAddProcess *process);
-
-
 dtkAbstractProcess * createitkFiltersAddProcess(void);
 #endif // ITKFILTERSADDPROCESS_H

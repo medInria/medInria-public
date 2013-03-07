@@ -35,10 +35,6 @@ private:
     DTK_DECLARE_PRIVATE(itkFiltersGaussianProcess)
 };
 
-
-ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug, const itkFiltersGaussianProcess& process);
-ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug,       itkFiltersGaussianProcess *process);
-
 dtkAbstractProcess * createitkFiltersGaussianProcess(void);
 
 #endif // ITKFILTERSGAUSSIANPROCESS_H

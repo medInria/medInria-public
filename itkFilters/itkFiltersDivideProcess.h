@@ -35,7 +35,6 @@ private:
     DTK_DECLARE_PRIVATE(itkFiltersDivideProcess)
 };
 
-
 dtkAbstractProcess * createitkFiltersDivideProcess(void);
 
 #endif // ITKFILTERSDIVIDEPROCESS_H

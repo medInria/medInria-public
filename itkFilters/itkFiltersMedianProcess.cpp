@@ -6,73 +6,43 @@
 
 #include <medMetaDataKeys.h>
 
-#include "itkImage.h"
-#include "itkCommand.h"
-#include "itkMedianImageFilter.h"
-
-class itkFiltersMedianProcessPrivate
-{
-public:
-    itk::CStyleCommand::Pointer callback;
-    itkFiltersMedianProcess *filter;
-    
-    dtkSmartPointer<dtkAbstractData> input;
-    dtkSmartPointer<dtkAbstractData> output;
-    
-    template <class PixelType> void update ( void );
-    
-    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData);
-};
-
-void itkFiltersMedianProcessPrivate::eventCallback ( itk::Object* caller, const itk::EventObject& event, void* clientData )
-{
-    itkFiltersMedianProcessPrivate * source = reinterpret_cast<itkFiltersMedianProcessPrivate *> ( clientData );
-    itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
-
-    if ( !source )
-        qDebug() << "Source est null";
-
-    source->filter->emitProgress((int) (processObject->GetProgress() * 100));
-}
-
-template <class PixelType> void itkFiltersMedianProcessPrivate::update ( void )
-{
-    typedef itk::Image< PixelType, 3 > ImageType;
-    typedef itk::MedianImageFilter< ImageType, ImageType >  MedianFilterType;
-    typename MedianFilterType::Pointer medianFilter = MedianFilterType::New();
-
-    medianFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-    
-    callback = itk::CStyleCommand::New();
-    callback->SetClientData ( ( void * ) this );
-    callback->SetCallback ( itkFiltersMedianProcessPrivate::eventCallback );
-
-    medianFilter->AddObserver ( itk::ProgressEvent(), callback );
-
-    medianFilter->Update();
-    output->setData ( medianFilter->GetOutput() );
-
-    //Set output description metadata
-    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-    newSeriesDescription += " median filter";
-
-    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-}
+#include "itkFiltersMedianProcess_p.h"
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersMedianProcess::itkFiltersMedianProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersMedianProcessPrivate)
+itkFiltersMedianProcess::itkFiltersMedianProcess(itkFiltersMedianProcess *parent) 
+    : itkFiltersProcessBase(*new itkFiltersMedianProcessPrivate(this), parent)
 {
+    DTK_D(itkFiltersMedianProcess);
+    
     d->filter = this;
     d->output = NULL;
+    d->addValue = 100.0;    
+}
+
+
+itkFiltersMedianProcess::itkFiltersMedianProcess(const itkFiltersMedianProcess& other) 
+    : itkFiltersProcessBase(*new itkFiltersMedianProcessPrivate(*other.d_func()), other)
+{
+}
+
+itkFiltersMedianProcess& itkFiltersMedianProcess::operator = (const itkFiltersMedianProcess& other)
+{
+    itkFiltersProcessBase::operator=(other);
+
+    DTK_D(itkFiltersMedianProcess);
+    d->callback = other.d_func()->callback;
+    d->filter = other.d_func()->filter;
+    d->input = other.d_func()->input;
+    d->output = other.d_func()->output;
+
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersMedianProcess::~itkFiltersMedianProcess( void )
 {
-    delete d;
-    d = NULL;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -98,6 +68,8 @@ void itkFiltersMedianProcess::setInput(dtkAbstractData *data)
     
     QString identifier = data->identifier();
     
+    DTK_D(itkFiltersMedianProcess);
+    
     d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
     d->input = data;
 }
@@ -106,6 +78,8 @@ void itkFiltersMedianProcess::setInput(dtkAbstractData *data)
 
 int itkFiltersMedianProcess::update ( void )
 {
+    DTK_D(itkFiltersMedianProcess);
+    
     if ( !d->input )
         return -1;
 
@@ -169,6 +143,8 @@ int itkFiltersMedianProcess::update ( void )
 
 dtkAbstractData * itkFiltersMedianProcess::output ( void )
 {
+    DTK_D(itkFiltersMedianProcess);
+    
     return ( d->output );
 }
 

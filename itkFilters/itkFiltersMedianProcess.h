@@ -14,8 +14,11 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersMedianProcess : public itkFiltersProcess
     Q_OBJECT
     
 public:
-    itkFiltersMedianProcess(void);
+    itkFiltersMedianProcess(itkFiltersMedianProcess * parent = 0);
+    itkFiltersMedianProcess(const itkFiltersMedianProcess& other);
     virtual ~itkFiltersMedianProcess(void);
+    
+    itkFiltersMedianProcess& operator = (const itkFiltersMedianProcess& other);
     
     virtual QString description ( void ) const;
 
@@ -28,7 +31,7 @@ public slots:
     dtkAbstractData *output ( void );
 
 private:
-    itkFiltersMedianProcessPrivate *d;
+    DTK_DECLARE_PRIVATE(itkFiltersMedianProcess)
 };
 
 

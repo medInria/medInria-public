@@ -14,8 +14,11 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersInvertProcess : public itkFiltersProcess
     Q_OBJECT
     
 public:
-    itkFiltersInvertProcess(void);
+    itkFiltersInvertProcess(itkFiltersInvertProcess * parent = 0);
+    itkFiltersInvertProcess(const itkFiltersInvertProcess& other);
     virtual ~itkFiltersInvertProcess(void);
+    
+    itkFiltersInvertProcess& operator = (const itkFiltersInvertProcess& other);
     
     virtual QString description ( void ) const;
 
@@ -28,7 +31,7 @@ public slots:
     dtkAbstractData *output ( void );
 
 private:
-    itkFiltersInvertProcessPrivate *d;
+    DTK_DECLARE_PRIVATE(itkFiltersInvertProcess)
 };
 
 
