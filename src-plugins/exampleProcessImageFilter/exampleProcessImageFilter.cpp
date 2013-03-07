@@ -80,7 +80,7 @@ exampleProcessImageFilter::~exampleProcessImageFilter()
 
 bool exampleProcessImageFilter::registered()
 {
-    qDebug() << "HOLAS able to register exampleProcessImageFilter toolbox";
+    qDebug() << "able to register exampleProcessImageFilter toolbox";
     return dtkAbstractProcessFactory::instance()->registerProcessType("exampleProcessImageFilter", createExampleProcessImageFilter);
 }
 
