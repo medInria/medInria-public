@@ -813,8 +813,13 @@ void v3dView::setSharedDataPointer ( dtkSmartPointer<dtkAbstractData> data )
 
 void v3dView::setData ( dtkAbstractData *data )
 {
-    //if ( !data )
-    //    return;
+    if(!data)
+        return;
+
+    /*
+    if(medAbstractView::isInList(data)) // called in setData(data, layer) !
+        return;
+*/
 
     ///*
     //if(medAbstractView::isInList(data)) // called in setData(data, layer) !
@@ -959,7 +964,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             // This will add the data to the interactor.
             dtkAbstractView::setData ( data );
         }
-        else if ( data->description() == "vtkDataMesh4D" )
+        else if ( data->identifier() == "vtkDataMesh4D" )
         {
             this->enableInteractor ( "v3dViewMeshInteractor" );
             this->enableInteractor("v3dView4DInteractor");
@@ -979,9 +984,14 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             // This will add the data to the interactor.
             dtkAbstractView::setData ( data );
         }
-        else
-        {
-            // if ( data->identifier() == "vtkDataMesh" )
+        else if ( data->identifier().contains("itkDataShImage", Qt::CaseSensitive)) {
+
+             this->enableInteractor ( "v3dViewShInteractor" );
+             // This will add the data to the interactor.
+             dtkAbstractView::setData(data);
+         }
+        else {
+            // if ( data->description() == "vtkDataMesh" )
             //     this->enableInteractor ( "v3dViewMeshInteractor" );
             // else if ( data->identifier() == "v3dDataFibers" )
             //     this->enableInteractor ( "v3dViewFiberInteractor" );

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QHelpCollectionProject version="1.0">
+  <assistant>
+    <startPage>qthelp://fr.inria/@PROJECT_NAME@/index.html</startPage>
+  </assistant>
+  <docFiles>
+    <register>
+      <file>@PROJECT_NAME@.qch</file>
+    </register>
+  </docFiles>
+</QHelpCollectionProject>
