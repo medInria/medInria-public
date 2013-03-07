@@ -76,7 +76,9 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkLog
   dtkCore
-  ${ITK_LIBRARIES}
+  RegistrationAddOn
+  ITKCommon
+  ITKIO
   )
 ## #################################################################
 ## Source file layout in development environments like Visual Studio
