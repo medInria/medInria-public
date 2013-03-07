@@ -42,9 +42,6 @@ itkFiltersGaussianProcess& itkFiltersGaussianProcess::operator = (const itkFilte
 
 itkFiltersGaussianProcess::~itkFiltersGaussianProcess( void )
 {
-    DTK_D(itkFiltersGaussianProcess);
-    
-    delete d;
 }
 
 //-------------------------------------------------------------------------------------------

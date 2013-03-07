@@ -47,10 +47,6 @@ itkFiltersAddProcess& itkFiltersAddProcess::operator = (const itkFiltersAddProce
 
 itkFiltersAddProcess::~itkFiltersAddProcess( void )
 {
-    DTK_D(itkFiltersAddProcess);
-    
-    delete d;
-//    d = NULL;
 }
 
 //-------------------------------------------------------------------------------------------
