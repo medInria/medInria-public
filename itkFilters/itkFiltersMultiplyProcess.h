@@ -14,8 +14,11 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersMultiplyProcess : public itkFiltersProce
     Q_OBJECT
     
 public:
-    itkFiltersMultiplyProcess(void);
+    itkFiltersMultiplyProcess(itkFiltersMultiplyProcess * parent = 0);
+    itkFiltersMultiplyProcess(const itkFiltersMultiplyProcess& other);
     virtual ~itkFiltersMultiplyProcess(void);
+    
+    itkFiltersMultiplyProcess& operator = (const itkFiltersMultiplyProcess& other);
     
     virtual QString description ( void ) const;
 
@@ -29,7 +32,7 @@ public slots:
     dtkAbstractData *output ( void );
 
 private:
-    itkFiltersMultiplyProcessPrivate *d;
+    DTK_DECLARE_PRIVATE(itkFiltersMultiplyProcess)
 };
 
 

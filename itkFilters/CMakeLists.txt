@@ -50,6 +50,7 @@ set(${PROJECT_NAME}_HEADERS
   itkFiltersDivideProcess_p.h
   itkFiltersInvertProcess_p.h
   itkFiltersMedianProcess_p.h
+  itkFiltersMultiplyProcess_p.h
   itkFiltersGaussianProcess_p.h
 )
 

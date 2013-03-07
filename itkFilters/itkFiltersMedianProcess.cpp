@@ -17,7 +17,6 @@ itkFiltersMedianProcess::itkFiltersMedianProcess(itkFiltersMedianProcess *parent
     
     d->filter = this;
     d->output = NULL;
-    d->addValue = 100.0;    
 }
 
 
