@@ -22,7 +22,7 @@
 #include <medAbstractDataImage.h>
 
 #include <medToolBoxFactory.h>
-#include <medToolBoxRegistration.h>
+#include <medRegistrationSelectorToolBox.h>
 #include <medProgressionStack.h>
 
 #include <rpiCommonTools.hxx>
@@ -34,7 +34,7 @@ public:
     medProgressionStack * progression_stack;
 };
 
-%1ToolBox::%1ToolBox(QWidget *parent) : medToolBoxRegistrationCustom(parent), d(new %1ToolBoxPrivate)
+%1ToolBox::%1ToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new %1ToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
     
@@ -78,7 +78,7 @@ void %1ToolBox::run(void)
     
     if(!this->parentToolBox())
         return;
-    medToolBoxRegistration * parentTB = this->parentToolBox();
+    medRegistrationSelectorToolBox * parentTB = this->parentToolBox();
     dtkSmartPointer <dtkAbstractProcess> process;
     
     if (this->parentToolBox()->process() &&

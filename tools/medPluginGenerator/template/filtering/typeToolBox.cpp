@@ -22,7 +22,7 @@
 #include <medAbstractDataImage.h>
 
 #include <medToolBoxFactory.h>
-#include <medToolBoxFiltering.h>
+#include <medFilteringSelectorToolBox.h>
 #include <medProgressionStack.h>
 
 class %1ToolBoxPrivate
@@ -33,7 +33,7 @@ public:
     medProgressionStack * progression_stack;
 };
 
-%1ToolBox::%1ToolBox(QWidget *parent) : medToolBoxFilteringCustom(parent), d(new %1ToolBoxPrivate)
+%1ToolBox::%1ToolBox(QWidget *parent) : medFilteringAbstractToolBox(parent), d(new %1ToolBoxPrivate)
 {
     QWidget *widget = new QWidget(this);
     
