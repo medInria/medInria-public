@@ -70,11 +70,13 @@ void medDatabasePreviewView::setAcceptWheelEvent(bool accept)
 void medDatabasePreviewView::keyPressEvent(QKeyEvent *event)
 {
     switch(event->key()) {
-    case Qt::Key_Up: emit moveUp(); break;
-    case Qt::Key_Down: emit moveDw(); break;
-    case Qt::Key_Left: emit moveLt(); break;
-    case Qt::Key_Right: emit moveRt(); break;
-    default: break;
+        case Qt::Key_Up: emit moveUp(); break;
+        case Qt::Key_Down: emit moveDw(); break;
+        case Qt::Key_Left: emit moveLt(); break;
+        case Qt::Key_Right: emit moveRt(); break;
+        default:
+            QGraphicsView::keyPressEvent(event);
+            break;
     }
 }
 
