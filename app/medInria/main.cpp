@@ -109,12 +109,16 @@ int main(int argc,char* argv[]) {
     }
 
     const bool DirectView = dtkApplicationArgumentsContain(&application,"--view") || posargs.size()!=0;
-    if (DirectView)
+    if (DirectView) {
         show_splash = false;
-
-    const QString& message = (DirectView) ? QString("/open ")+posargs.join(";") : QString("");
-    if (application.sendMessage(message))
-        return 0;
+        int runningMedInria = 0;
+        for (QStringList::const_iterator i=posargs.constBegin();i!=posargs.constEnd();++i) {
+            const QString& message = QString("/open ")+*i;
+            runningMedInria = application.sendMessage(message);
+        }
+        if (runningMedInria)
+            return 0;
+    }
 
     medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
     if (show_splash) {

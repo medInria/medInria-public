@@ -744,11 +744,9 @@ void medMainWindow::availableSpaceOnStatusBar()
 }
 
 void medMainWindow::onNewInstance(const QString& message) {
-    QString filename = message;
     if (message.toLower().startsWith("/open ")) {
-        const QStringList filenames = filename.mid(6).split(';');
-        for (QStringList::const_iterator i=filenames.constBegin();i!=filenames.constEnd();++i)
-            open(*i);
+        const QString filename = message.mid(6);
+        open(filename);
     }
 }
 
