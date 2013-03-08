@@ -40,7 +40,7 @@ public:
     void readSettings(void);
     void writeSettings();
 
-    void setStartup(const AreaType areaIndex,const QString& filename);
+    void setStartup(const AreaType areaIndex,const QStringList& filenames);
     void updateQuickAccessMenu(void);
     void resizeEvent( QResizeEvent * event );
 

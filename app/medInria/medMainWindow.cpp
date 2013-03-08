@@ -390,9 +390,10 @@ void medMainWindow::writeSettings() {
     }
 }
 
-void medMainWindow::setStartup(const AreaType areaIndex,const QString& filename) {
+void medMainWindow::setStartup(const AreaType areaIndex,const QStringList& filenames) {
     switchToArea(areaIndex);
-    open(filename);
+    for (QStringList::const_iterator i= filenames.constBegin();i!=filenames.constEnd();++i)
+        open(i->toLocal8Bit().constData());
 }
 
 void medMainWindow::switchToArea(const AreaType areaIndex) {
@@ -745,8 +746,9 @@ void medMainWindow::availableSpaceOnStatusBar()
 void medMainWindow::onNewInstance(const QString& message) {
     QString filename = message;
     if (message.toLower().startsWith("/open ")) {
-        filename = filename.mid(6);
-        open(filename);
+        const QStringList filenames = filename.mid(6).split(';');
+        for (QStringList::const_iterator i=filenames.constBegin();i!=filenames.constEnd();++i)
+            open(*i);
     }
 }
 

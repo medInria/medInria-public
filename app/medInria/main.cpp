@@ -77,7 +77,7 @@ int main(int argc,char* argv[]) {
     medApplication application(argc,argv);
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
-        qDebug() << "Usage: medInria [--no-fullscreen] [--stereo] [--view file]";
+        qDebug() << "Usage: medInria [--no-fullscreen] [--stereo] [--view] [files]]";
         return 1;
     }
 
@@ -93,12 +93,26 @@ int main(int argc,char* argv[]) {
 
     medSettingsManager* mnger = medSettingsManager::instance();
 
-    const QString& FileToView = dtkApplicationArgumentsValue(&application,"--view");
-    const bool DirectView = (FileToView!=QString());
+    QStringList posargs;
+    for (unsigned i=1;i<application.argc();++i) {
+        const QString arg = application.argv()[i];
+        if (arg.startsWith("--")) {
+            bool valid_option = false;
+            const QStringList options = (QStringList() << "--no-fullscreen" << "--stereo" << "--view");
+            for (QStringList::const_iterator i=options.constBegin();i!=options.constEnd();++i)
+                if (arg==*i)
+                    valid_option = true;
+            if (!valid_option) { qDebug() << "Ignoring unknowm option " << arg; }
+            continue;
+        }
+        posargs.append(arg);
+    }
+
+    const bool DirectView = dtkApplicationArgumentsContain(&application,"--view") || posargs.size()!=0;
     if (DirectView)
         show_splash = false;
 
-    const QString& message = (DirectView) ? QString("/open ")+FileToView : QString("");
+    const QString& message = (DirectView) ? QString("/open ")+posargs.join(";") : QString("");
     if (application.sendMessage(message))
         return 0;
 
@@ -153,7 +167,7 @@ int main(int argc,char* argv[]) {
 
     medMainWindow mainwindow;
     if (DirectView)
-        mainwindow.setStartup(medMainWindow::WorkSpace,FileToView);
+        mainwindow.setStartup(medMainWindow::WorkSpace,posargs);
 
     forceShow(mainwindow);
 
