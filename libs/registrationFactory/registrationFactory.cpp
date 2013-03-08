@@ -4,8 +4,6 @@
 
 #include "registrationFactory.h"
 
-#include <dtkCore/dtkAbstractProcessFactory.h>
-
 // /////////////////////////////////////////////////////////////////
 // registrationFactoryPrivate
 // /////////////////////////////////////////////////////////////////
@@ -27,7 +25,7 @@ registrationFactory * registrationFactory::instance(){
     return s_instance;
 }
 
-registrationFactory::registrationFactory( void ): dtkAbstractProcess(),d(new registrationFactoryPrivate()){d->m_Factory = itk::ImageRegistrationFactory<RegImageType>::New();}
+registrationFactory::registrationFactory( void ): d(new registrationFactoryPrivate()){d->m_Factory = itk::ImageRegistrationFactory<RegImageType>::New();}
 
 
 registrationFactory::~registrationFactory( void ){

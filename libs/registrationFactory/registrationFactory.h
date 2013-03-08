@@ -4,8 +4,7 @@
 
 #ifndef REGISTRATIONFACTORY_H
 #define REGISTRATIONFACTORY_H
-
-#include <dtkCore/dtkAbstractProcess.h>
+#include <QObject.h>
 #include "itkImageRegistrationFactory.h"
 #include "itkTransform.h"
 #include "registrationFactoryExport.h"
@@ -13,8 +12,8 @@
 
 class registrationFactoryPrivate;
 
-class REGISTRATIONFACTORY_EXPORT registrationFactory : public dtkAbstractProcess
-{
+class REGISTRATIONFACTORY_EXPORT registrationFactory : public QObject {
+
     Q_OBJECT;
 
 public:
