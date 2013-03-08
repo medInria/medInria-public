@@ -59,7 +59,7 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
     addWidget(layoutSection);
     addWidget(d->transformationStack);
     this->setTitle(tr("Stack of transformations"));
-    connect(registrationFactory::instance(),SIGNAL(transformationAdded(unsigned int,QStringList*)),this,SLOT(addTransformationIntoList(unsigned int, QStringList*)));
+    connect(registrationFactory::instance(),SIGNAL(transformationAdded(int,QStringList*)),this,SLOT(addTransformationIntoList(int, QStringList*)));
     connect(registrationFactory::instance(),SIGNAL(transformationStackReset()),this,SLOT(onTransformationStackReset()));
 }
 
@@ -114,7 +114,7 @@ void undoRedoRegistrationToolBox::onTransformationStackReset(void)
     }
 }
 
-void undoRedoRegistrationToolBox::addTransformationIntoList(unsigned int i, QStringList * methodParameters){
+void undoRedoRegistrationToolBox::addTransformationIntoList(int i, QStringList * methodParameters){
     if (i!=-1){
         QString buffer = methodParameters->at(0);
         for(int k = 1;k<methodParameters->size();k++)

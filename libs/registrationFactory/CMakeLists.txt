@@ -31,11 +31,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## Resolve dependencies
 ## #################################################################
 
-find_package(dtk REQUIRED)
-
-include(${dtk_USE_FILE})
-include(dtkPlugin)
-
 find_package(ITK REQUIRED)
 if(ITK_FOUND)
    include(${ITK_USE_FILE})
@@ -74,8 +69,6 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
   itkRegistrationAddOn
   ${QT_LIBRARIES}
-  dtkLog
-  dtkCore
   RegistrationAddOn
   ITKCommon
   ITKIO
