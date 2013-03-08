@@ -33,7 +33,7 @@ public:
     void reset();
 
     signals:
-        void transformationAdded(unsigned int,QStringList*);
+        void transformationAdded(int,QStringList*);
         void transformationStackReset();
 
 protected:

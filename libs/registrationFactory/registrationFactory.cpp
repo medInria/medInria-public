@@ -51,7 +51,7 @@ itk::GeneralTransform<double,3>::Pointer registrationFactory::getGeneralTransfor
 }
     
 unsigned int registrationFactory::addTransformation(itk::Transform<double,3,3>::Pointer arg,QStringList * methodParameters){
-    unsigned int i= -1;
+    int i= -1;
     i = getGeneralTransform()->InsertTransform(static_cast<itk::Transform<double,3,3>::ConstPointer>(arg));
     if (i!=-1)
         emit transformationAdded(i,methodParameters);
