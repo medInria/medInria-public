@@ -14,8 +14,11 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersNormalizeProcess : public itkFiltersProc
     Q_OBJECT
     
 public:
-    itkFiltersNormalizeProcess(void);
+    itkFiltersNormalizeProcess(itkFiltersNormalizeProcess * parent = 0);
+    itkFiltersNormalizeProcess(const itkFiltersNormalizeProcess& other);
     virtual ~itkFiltersNormalizeProcess(void);
+    
+    itkFiltersNormalizeProcess& operator = (const itkFiltersNormalizeProcess& other);
     
     virtual QString description ( void ) const;
 
@@ -28,9 +31,8 @@ public slots:
     dtkAbstractData *output ( void );
 
 private:
-    itkFiltersNormalizeProcessPrivate *d;
+    DTK_DECLARE_PRIVATE(itkFiltersNormalizeProcess)
 };
-
 
 dtkAbstractProcess * createitkFiltersNormalizeProcess(void);
 

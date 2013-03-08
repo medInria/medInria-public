@@ -51,6 +51,8 @@ set(${PROJECT_NAME}_HEADERS
   itkFiltersInvertProcess_p.h
   itkFiltersMedianProcess_p.h
   itkFiltersMultiplyProcess_p.h
+  itkFiltersNormalizeProcess_p.h
+  itkFiltersShrinkProcess_p.h
   itkFiltersGaussianProcess_p.h
 )
 

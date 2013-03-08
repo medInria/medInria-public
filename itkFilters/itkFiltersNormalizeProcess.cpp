@@ -6,73 +6,42 @@
 
 #include <medMetaDataKeys.h>
 
-#include "itkImage.h"
-#include "itkCommand.h"
-#include "itkNormalizeImageFilter.h"
-
-class itkFiltersNormalizeProcessPrivate
-{
-public:
-    itk::CStyleCommand::Pointer callback;
-    itkFiltersNormalizeProcess *filter;
-    
-    dtkSmartPointer<dtkAbstractData> input;
-    dtkSmartPointer<dtkAbstractData> output;
-    
-    template <class PixelType> void update ( void );
-    
-    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData);
-};
-
-void itkFiltersNormalizeProcessPrivate::eventCallback ( itk::Object* caller, const itk::EventObject& event, void* clientData )
-{
-    itkFiltersNormalizeProcessPrivate * source = reinterpret_cast<itkFiltersNormalizeProcessPrivate *> ( clientData );
-    itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
-
-    if ( !source )
-        qDebug() << "Source est null";
-
-    source->filter->emitProgress((int) (processObject->GetProgress() * 100));
-}
-
-template <class PixelType> void itkFiltersNormalizeProcessPrivate::update ( void )
-{
-    typedef itk::Image< PixelType, 3 > ImageType;
-    typedef itk::NormalizeImageFilter< ImageType, ImageType >  NormalizeFilterType;
-    typename NormalizeFilterType::Pointer normalizeFilter = NormalizeFilterType::New();
-
-    normalizeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-    
-    callback = itk::CStyleCommand::New();
-    callback->SetClientData ( ( void * ) this );
-    callback->SetCallback ( itkFiltersNormalizeProcessPrivate::eventCallback );
-
-    normalizeFilter->AddObserver ( itk::ProgressEvent(), callback );
-
-    normalizeFilter->Update();
-    output->setData ( normalizeFilter->GetOutput() );
-
-    //Set output description metadata
-    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-    newSeriesDescription += " normalize filter";
-
-    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-}
+#include "itkFiltersNormalizeProcess_p.h"
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersNormalizeProcess::itkFiltersNormalizeProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersNormalizeProcessPrivate)
+itkFiltersNormalizeProcess::itkFiltersNormalizeProcess(itkFiltersNormalizeProcess *parent) 
+    : itkFiltersProcessBase(*new itkFiltersNormalizeProcessPrivate(this), parent)
 {
+    DTK_D(itkFiltersNormalizeProcess);
+    
     d->filter = this;
     d->output = NULL;
+}
+
+
+itkFiltersNormalizeProcess::itkFiltersNormalizeProcess(const itkFiltersNormalizeProcess& other) 
+    : itkFiltersProcessBase(*new itkFiltersNormalizeProcessPrivate(*other.d_func()), other)
+{
+}
+
+itkFiltersNormalizeProcess& itkFiltersNormalizeProcess::operator = (const itkFiltersNormalizeProcess& other)
+{
+    itkFiltersProcessBase::operator=(other);
+
+    DTK_D(itkFiltersNormalizeProcess);
+    d->callback = other.d_func()->callback;
+    d->filter = other.d_func()->filter;
+    d->input = other.d_func()->input;
+    d->output = other.d_func()->output;
+
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersNormalizeProcess::~itkFiltersNormalizeProcess( void )
 {
-    delete d;
-    d = NULL;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -98,6 +67,8 @@ void itkFiltersNormalizeProcess::setInput(dtkAbstractData *data)
     
     QString identifier = data->identifier();
     
+    DTK_D(itkFiltersNormalizeProcess);
+    
     d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
     d->input = data;
 }
@@ -106,6 +77,8 @@ void itkFiltersNormalizeProcess::setInput(dtkAbstractData *data)
 
 int itkFiltersNormalizeProcess::update ( void )
 {
+    DTK_D(itkFiltersNormalizeProcess);
+    
     if ( !d->input )
         return -1;
 
@@ -169,6 +142,8 @@ int itkFiltersNormalizeProcess::update ( void )
 
 dtkAbstractData * itkFiltersNormalizeProcess::output ( void )
 {
+    DTK_D(itkFiltersNormalizeProcess);
+    
     return ( d->output );
 }
 

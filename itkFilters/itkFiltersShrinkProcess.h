@@ -14,8 +14,11 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersShrinkProcess : public itkFiltersProcess
     Q_OBJECT
     
 public:
-    itkFiltersShrinkProcess(void);
+    itkFiltersShrinkProcess(itkFiltersShrinkProcess * parent = 0);
+    itkFiltersShrinkProcess(const itkFiltersShrinkProcess& other);
     virtual ~itkFiltersShrinkProcess(void);
+    
+    itkFiltersShrinkProcess& operator = (const itkFiltersShrinkProcess& other);
     
     virtual QString description ( void ) const;
 
@@ -29,9 +32,8 @@ public slots:
     dtkAbstractData *output ( void );
 
 private:
-    itkFiltersShrinkProcessPrivate *d;
+    DTK_DECLARE_PRIVATE(itkFiltersShrinkProcess)
 };
-
 
 dtkAbstractProcess * createitkFiltersShrinkProcess(void);
 
