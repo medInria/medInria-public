@@ -13,9 +13,12 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersSubtractProcess : public itkFiltersProce
 {
     Q_OBJECT
 public:
-    itkFiltersSubtractProcess(void);
+    itkFiltersSubtractProcess(itkFiltersSubtractProcess * parent = 0);
+    itkFiltersSubtractProcess(const itkFiltersSubtractProcess& other);
     virtual ~itkFiltersSubtractProcess(void);
     
+    itkFiltersSubtractProcess& operator = (const itkFiltersSubtractProcess& other);
+   
     virtual QString description(void) const;
     
     static bool registered(void);
@@ -28,7 +31,7 @@ public slots:
     dtkAbstractData *output(void);
     
 private:
-    itkFiltersSubtractProcessPrivate *d;
+    DTK_DECLARE_PRIVATE(itkFiltersSubtractProcess)
 };
 
 

@@ -14,8 +14,11 @@ class ITKFILTERSPLUGIN_EXPORT itkFiltersWindowingProcess : public itkFiltersProc
     Q_OBJECT
     
 public:
-    itkFiltersWindowingProcess(void);
+    itkFiltersWindowingProcess(itkFiltersWindowingProcess * parent = 0);
+    itkFiltersWindowingProcess(const itkFiltersWindowingProcess& other);
     virtual ~itkFiltersWindowingProcess(void);
+    
+    itkFiltersWindowingProcess& operator = (const itkFiltersWindowingProcess& other);
     
     virtual QString description ( void ) const;
 
@@ -29,7 +32,7 @@ public slots:
     dtkAbstractData *output ( void );
 
 private:
-    itkFiltersWindowingProcessPrivate *d;
+    DTK_DECLARE_PRIVATE(itkFiltersWindowingProcess)
 };
 
 

@@ -7,82 +7,42 @@
 
 #include <medMetaDataKeys.h>
 
-#include "itkImage.h"
-#include "itkCommand.h"
-#include "itkIntensityWindowingImageFilter.h"
-
-class itkFiltersWindowingProcessPrivate
-{
-public:
-    itk::CStyleCommand::Pointer callback;
-    itkFiltersWindowingProcess *filter;
-    
-    dtkSmartPointer<dtkAbstractData> input;
-    dtkSmartPointer<dtkAbstractData> output;
-    
-    double minimumIntensityValue;
-    double maximumIntensityValue;
-    double minimumOutputIntensityValue;
-    double maximumOutputIntensityValue;
-    
-    template <class PixelType> void update ( void );
-    
-    static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData);
-};
-
-void itkFiltersWindowingProcessPrivate::eventCallback ( itk::Object* caller, const itk::EventObject& event, void* clientData )
-{
-    itkFiltersWindowingProcessPrivate * source = reinterpret_cast<itkFiltersWindowingProcessPrivate *> ( clientData );
-    itk::ProcessObject * processObject = ( itk::ProcessObject* ) caller;
-
-    if ( !source )
-        qDebug() << "Source est null";
-
-    source->filter->emitProgress((int) (processObject->GetProgress() * 100));
-}
-
-template <class PixelType> void itkFiltersWindowingProcessPrivate::update ( void )
-{
-    typedef itk::Image< PixelType, 3 > ImageType;
-    typedef itk::IntensityWindowingImageFilter< ImageType, ImageType >  WindowingFilterType;
-    typename WindowingFilterType::Pointer windowingFilter = WindowingFilterType::New();
-
-    windowingFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
-    windowingFilter->SetWindowMinimum ( ( PixelType ) minimumIntensityValue );
-    windowingFilter->SetWindowMaximum ( ( PixelType ) maximumIntensityValue );
-    windowingFilter->SetOutputMinimum ( ( PixelType ) minimumOutputIntensityValue );
-    windowingFilter->SetOutputMaximum ( ( PixelType ) maximumOutputIntensityValue );
-    
-    callback = itk::CStyleCommand::New();
-    callback->SetClientData ( ( void * ) this );
-    callback->SetCallback ( itkFiltersWindowingProcessPrivate::eventCallback );
-
-    windowingFilter->AddObserver ( itk::ProgressEvent(), callback );
-
-    windowingFilter->Update();
-    output->setData ( windowingFilter->GetOutput() );
-
-    //Set output description metadata
-    QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-    newSeriesDescription += " intensity filter";
-    
-    output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-}
+#include "itkFiltersWindowingProcess_p.h"
 
 //-------------------------------------------------------------------------------------------
 
-itkFiltersWindowingProcess::itkFiltersWindowingProcess( void ) : itkFiltersProcessBase(), d(new itkFiltersWindowingProcessPrivate)
+itkFiltersWindowingProcess::itkFiltersWindowingProcess(itkFiltersWindowingProcess *parent) 
+    : itkFiltersProcessBase(*new itkFiltersWindowingProcessPrivate(this), parent)
 {
+    DTK_D(itkFiltersWindowingProcess);
+    
     d->filter = this;
     d->output = NULL;
+}
+
+
+itkFiltersWindowingProcess::itkFiltersWindowingProcess(const itkFiltersWindowingProcess& other) 
+    : itkFiltersProcessBase(*new itkFiltersWindowingProcessPrivate(*other.d_func()), other)
+{
+}
+
+itkFiltersWindowingProcess& itkFiltersWindowingProcess::operator = (const itkFiltersWindowingProcess& other)
+{
+    itkFiltersProcessBase::operator=(other);
+
+    DTK_D(itkFiltersWindowingProcess);
+    d->callback = other.d_func()->callback;
+    d->filter = other.d_func()->filter;
+    d->input = other.d_func()->input;
+    d->output = other.d_func()->output;
+
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 
 itkFiltersWindowingProcess::~itkFiltersWindowingProcess( void )
 {
-    delete d;
-    d = NULL;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -108,6 +68,8 @@ void itkFiltersWindowingProcess::setInput(dtkAbstractData *data)
     
     QString identifier = data->identifier();
     
+    DTK_D(itkFiltersWindowingProcess);
+    
     d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
     d->input = data;
 }
@@ -116,8 +78,11 @@ void itkFiltersWindowingProcess::setInput(dtkAbstractData *data)
 
 void itkFiltersWindowingProcess::setParameter(double data, int channel)
 {
-    if (channel != 0)
+    if (channel > 3)
         return;
+ 
+    DTK_D(itkFiltersWindowingProcess);
+    
     switch ( channel )
     {
     case 0:
@@ -139,6 +104,8 @@ void itkFiltersWindowingProcess::setParameter(double data, int channel)
 
 int itkFiltersWindowingProcess::update ( void )
 {
+    DTK_D(itkFiltersWindowingProcess);
+    
     if ( !d->input )
         return -1;
 
@@ -202,6 +169,8 @@ int itkFiltersWindowingProcess::update ( void )
 
 dtkAbstractData * itkFiltersWindowingProcess::output ( void )
 {
+    DTK_D(itkFiltersWindowingProcess);
+    
     return ( d->output );
 }
 

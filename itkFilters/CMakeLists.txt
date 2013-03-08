@@ -48,12 +48,14 @@ set(${PROJECT_NAME}_HEADERS
   itkFiltersProcessBase_p.h
   itkFiltersAddProcess_p.h
   itkFiltersDivideProcess_p.h
+  itkFiltersGaussianProcess_p.h
   itkFiltersInvertProcess_p.h
   itkFiltersMedianProcess_p.h
   itkFiltersMultiplyProcess_p.h
   itkFiltersNormalizeProcess_p.h
   itkFiltersShrinkProcess_p.h
-  itkFiltersGaussianProcess_p.h
+  itkFiltersSubtractProcess_p.h
+  itkFiltersWindowingProcess_p.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC

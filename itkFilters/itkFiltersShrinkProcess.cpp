@@ -18,10 +18,6 @@ itkFiltersShrinkProcess::itkFiltersShrinkProcess(itkFiltersShrinkProcess *parent
     d->filter = this;
     d->input = NULL;
     d->output = NULL;
-    
-    d->shrinkFactors[0] = 1;
-    d->shrinkFactors[1] = 1;
-    d->shrinkFactors[2] = 1;
 }
 
 
@@ -39,10 +35,6 @@ itkFiltersShrinkProcess& itkFiltersShrinkProcess::operator = (const itkFiltersSh
     d->filter = other.d_func()->filter;
     d->input = other.d_func()->input;
     d->output = other.d_func()->output;
-    
-    d->shrinkFactors[0] = other.d_func()->shrinkFactors[0];
-    d->shrinkFactors[1] = other.d_func()->shrinkFactors[1];
-    d->shrinkFactors[2] = other.d_func()->shrinkFactors[2];
 
     return *this;
 }

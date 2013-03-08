@@ -17,7 +17,6 @@ itkFiltersAddProcess::itkFiltersAddProcess(itkFiltersAddProcess *parent)
     
     d->filter = this;
     d->output = NULL;
-    d->addValue = 100.0;    
 }
 
 

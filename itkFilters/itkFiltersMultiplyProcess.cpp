@@ -16,7 +16,6 @@ itkFiltersMultiplyProcess::itkFiltersMultiplyProcess(itkFiltersMultiplyProcess *
     
     d->filter = this;
     d->output = NULL;
-    d->multiplyFactor = 100.0;    
 }
 
 

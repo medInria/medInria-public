@@ -22,8 +22,6 @@ public:
 
     virtual ~itkFiltersNormalizeProcessPrivate(void) {}
     
-    double addValue;
-    
     template <class PixelType> void update ( void )
     {
         this->setupFilter<PixelType>();

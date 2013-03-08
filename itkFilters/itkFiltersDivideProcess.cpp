@@ -17,7 +17,6 @@ itkFiltersDivideProcess::itkFiltersDivideProcess(itkFiltersDivideProcess *parent
     
     d->filter = this;
     d->output = NULL;
-    d->divideFactor = 100.0;    
 }
 
 
