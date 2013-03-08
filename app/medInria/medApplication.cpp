@@ -108,20 +108,20 @@ medApplication::medApplication(int & argc, char**argv) :
     this->setStyle( new QPlastiqueStyle() );
     this->setStyleSheet(dtkReadFile(":/medInria.qss"));
 
-    //Set some splash screen properties:
+    //  Set some splash screen properties:
+
     setMsgColor(Qt::black);
     setMsgAlignment(Qt::AlignLeft);
 
-    //redirect medPluginManager msgs to the logs
+    //  Redirect msgs to the logs
+
     QObject::connect(medPluginManager::instance(), SIGNAL(loadError(const QString &)),
                      this, SLOT(redirectErrorMessageToLog(const QString&)) );
     QObject::connect(medPluginManager::instance(), SIGNAL(loaded(QString)),
                      this, SLOT(redirectMessageToLog(QString)) );
 
-    //  React if anothe medInria instance is launched.
-
     QObject::connect(this,SIGNAL(messageReceived(const QString&)),
-                     this,SLOT(onNewInstance(const QString& message)));
+                     this,SLOT(redirectMessageToLog(QString)));
 }
 
 medApplication::~medApplication(void)
