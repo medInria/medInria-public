@@ -54,7 +54,9 @@ enable_testing()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+include(medInriaGitHooks)
 include(medInriaBuild)
+
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
