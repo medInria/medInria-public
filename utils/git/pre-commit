@@ -60,9 +60,8 @@ files=$(git diff --cached --name-only $against)
 
 uncrustify=$(git config uncrustify.command)
 for file in $files; do
-    echo "Processing $file"
     case $file in (*.cpp | *.h)
-        echo "$uncrustify -c $cwd/config --replace --mtime -lCPP $file";;
+        $uncrustify -c $PWD/utils/uncrustify.cfg --replace --mtime -lCPP $file;;
     esac
 done
 
