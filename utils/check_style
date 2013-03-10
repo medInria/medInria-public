@@ -1,0 +1,65 @@
+#!/usr/bin/python
+
+import os,sys,optparse,subprocess,fnmatch,filecmp
+
+fnull = open(os.devnull,"w")
+uncrustify_command = subprocess.check_output(["git","config","uncrustify.command"]).strip(" \t\n\r")
+uncrustify_config  = os.path.dirname(sys.argv[0])+"/uncrustify.cfg"
+
+if uncrustify_command.startswith("error: key does not contain a section:"):
+    print "uncrustify should be installed on the computer,"
+    print "If this is true and you see this message, reconfigure with cmake."
+    print "This should define the proper git configs."
+
+def select_files(files,patterns):
+    for filename in files:
+        for pattern in patterns:
+            if fnmatch.fnmatch(filename, pattern):
+                yield filename
+
+def find_files(directory,patterns):
+    for root, dirs, files in os.walk(directory):
+        for basename in files:
+            for pattern in patterns:
+                if fnmatch.fnmatch(basename, pattern):
+                    filename = os.path.join(root, basename)
+                    yield filename
+
+def check_style(file,force):
+    output = file+".restyled"
+    if subprocess.call([uncrustify_command,'-c',uncrustify_config,'-l','CPP','-o',output,'-f',file],stdout=fnull,stderr=fnull)!=0:
+        print "Warning: uncrustify problem with file",file
+    if not filecmp.cmp(file,output):
+        print "Style of file",file,"is not correct"
+    if force:
+        os.rename(output,file)
+    else:
+        os.unlink(output)
+
+def main():
+
+    usage  = "usage: %prog [options] [files]"
+    parser = optparse.OptionParser(usage)
+
+    parser.add_option("-F",action="store_true",default=False,help='Force restyling of all files')
+    parser.add_option("-f",action="store_true",default=False,help='Force file restyling')
+
+    (options, args) = parser.parse_args()
+
+    force_style = options.f
+
+    if len(args)==0 and force_style:
+        print "To force restyling of all files use the -F option."
+        sys.stdout.flush()
+        sys.exit(1)
+
+    CPPFilesPattern = ('*.cpp','*.h')
+    if len(args)>0:
+        for filename in select_files(sys.argv,CPPFilesPattern):
+            check_style(filename,force_style)
+    else:
+        for filename in find_files('.',CPPFilesPattern):
+            check_style(filename,options.F)
+
+if __name__ == '__main__':
+    main()
