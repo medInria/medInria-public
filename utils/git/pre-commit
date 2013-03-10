@@ -56,7 +56,7 @@ if [ "$restyle" == false ]; then
     echo "committing again"
 fi
 
-files = $(git diff --cached --name-only $against)
+files=$(git diff --cached --name-only $against)
 
 uncrustify=$(git config uncrustify.command)
 for file in $files; do
