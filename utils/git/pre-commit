@@ -16,11 +16,13 @@ else
 fi
 
 # If you want to allow non-ascii filenames set this variable to true.
+
 allownonascii=$(git config hooks.allownonascii)
 
 # Cross platform projects tend to avoid non-ascii filenames; prevent
 # them from being added to the repository. We exploit the fact that the
 # printable range starts at the space character and ends with tilde.
+
 if [ "$allownonascii" != "true" ] &&
 	# Note that the use of brackets around a tr range is ok here, (it's
 	# even required, for portability to Solaris 10's /usr/bin/tr), since
@@ -42,5 +44,25 @@ then
 	echo
 	exit 1
 fi
+
+#   Impose style of C++ files.
+
+restyle=$(git config hooks.uncrustify)
+
+if [ "$restyle" == false ]; then
+    echo "Before committing to this repository, you must install"
+    echo "uncrustify on this computer so that the code is beautified"
+    echo "before committing. Then, reconfigure with cmake before"
+    echo "committing again"
+fi
+
+files = $(git diff --cached --name-only $against)
+
+uncrustify=$(git config uncrustify.command)
+for file in $files; do
+    case $file in (*.cpp | *.h)
+        echo "$uncrustify -c $cwd/config --replace --mtime -lCPP $file"
+    esac
+done
 
 exec git diff-index --check --cached $against --
