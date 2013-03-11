@@ -695,7 +695,7 @@ void vtkMetaDataSetSequence::RemoveAllMetaDataSets (void)
 //----------------------------------------------------------------------------
 vtkMetaDataSet* vtkMetaDataSetSequence::GetMetaDataSet (unsigned int i)
 {
-  if (i<0 || i>=this->MetaDataSetList.size())
+  if (i>=this->MetaDataSetList.size())
     return NULL;
   return this->MetaDataSetList[i];
 }

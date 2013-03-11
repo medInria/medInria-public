@@ -61,7 +61,7 @@ vtkDataManager::~vtkDataManager()
 //----------------------------------------------------------------------------
 vtkMetaDataSet* vtkDataManager::GetMetaDataSet (unsigned int id) const
 {
-  if (id<0 || id >= this->MetaDataSetList.size())
+  if (id >= this->MetaDataSetList.size())
     return NULL;
   return this->MetaDataSetList[id];
 }

@@ -150,7 +150,7 @@ void vtkPolyDataManager::SetVisibility (int IsVisible)
 
 void vtkPolyDataManager::SetVisibility (unsigned int i, int IsVisible)
 {
-  if (i<0 || i>this->ActorList.size())
+  if (i>this->ActorList.size())
     return;
   this->ActorList[i]->SetVisibility (IsVisible);
 }
@@ -158,7 +158,7 @@ void vtkPolyDataManager::SetVisibility (unsigned int i, int IsVisible)
 
 int vtkPolyDataManager::GetVisibility (unsigned int i) const
 {
-  if (i<0 || i>this->ActorList.size())
+  if (i>this->ActorList.size())
     return -1;  
   return this->ActorList[i]->GetVisibility();
 }
@@ -174,7 +174,7 @@ void vtkPolyDataManager::SetOpacity (double val)
 
 void vtkPolyDataManager::SetOpacity (unsigned int i, double val)
 {
-  if (i<0 || i>this->ActorList.size())
+  if (i>this->ActorList.size())
     return;
   this->ActorList[i]->GetProperty()->SetOpacity (val);
 
@@ -183,7 +183,7 @@ void vtkPolyDataManager::SetOpacity (unsigned int i, double val)
 
 double vtkPolyDataManager::GetOpacity(unsigned int i) const
 {
-  if (i<0 || i>this->ActorList.size())
+  if (i>this->ActorList.size())
     return -1;  
   return this->ActorList[i]->GetProperty()->GetOpacity();
 }
@@ -193,7 +193,7 @@ double vtkPolyDataManager::GetOpacity(unsigned int i) const
 
 vtkActor* vtkPolyDataManager::GetActor (unsigned int i)
 {
-  if (i<0 || i>this->ActorList.size())
+  if (i>this->ActorList.size())
     return NULL;  
   return this->ActorList[i];
 }
@@ -202,7 +202,7 @@ vtkActor* vtkPolyDataManager::GetActor (unsigned int i)
 
 vtkPolyData* vtkPolyDataManager::GetPolyData (unsigned int i)
 {
-  if (i<0 || i>this->PolyDataList.size())
+  if (i>this->PolyDataList.size())
     return NULL;  
   return this->PolyDataList[i];
 }
