@@ -1,5 +1,9 @@
 project(vtkVisuManagement)
 
+  IF (CMAKE_CXX_COMPILER MATCHES clang)
+    add_definitions(-DCLANG)
+  ENDIF()
+
 SET(vtkVisuManagement_SRCS
  vtkLimitFibersToVOI.cxx
  vtkLimitFibersToMesh.cxx
@@ -65,6 +69,7 @@ IF( vtkInria_USE_HWSHADING )
 ENDIF(vtkInria_USE_HWSHADING )
 
 IF( vtkInria_USE_SPHERICALHARMONICS )
+
     SET(vtkVisuManagement_SRCS
         ${vtkVisuManagement_SRCS}
         vtkSphericalHarmonicVisuManager.cxx

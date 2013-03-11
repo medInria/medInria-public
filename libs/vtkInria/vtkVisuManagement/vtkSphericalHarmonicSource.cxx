@@ -28,13 +28,13 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Compute spherical associated Legendre function
-#if (defined __APPLE__ || defined WIN32)
+#if (defined __APPLE__ || defined WIN32 || defined CLANG)
 #include <boost/math/special_functions/legendre.hpp>
 #else
 #include <tr1/cmath>
 #endif //WIN32
 
-#if (defined __APPLE__ || defined WIN32)
+#if (defined __APPLE__ || defined WIN32 || defined CLANG)
 double sphLegendre(int _l, int _m, double theta) {
   double factor = sqrt(((double)(2*_l+1) / (4.0*vtkMath::DoublePi()))*(boost::math::factorial<double>((unsigned int)(_l - _m))
                                                         / boost::math::factorial<double>((unsigned int)(_l + _m))))*boost::math::legendre_p (_l, _m, cos(theta));
