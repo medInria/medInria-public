@@ -18,25 +18,14 @@ itkFiltersWindowingProcess::itkFiltersWindowingProcess(itkFiltersWindowingProces
     
     d->filter = this;
     d->output = NULL;
+    
+    d->description = tr("ITK intensity windowing filter");
 }
 
 
 itkFiltersWindowingProcess::itkFiltersWindowingProcess(const itkFiltersWindowingProcess& other) 
     : itkFiltersProcessBase(*new itkFiltersWindowingProcessPrivate(*other.d_func()), other)
 {
-}
-
-itkFiltersWindowingProcess& itkFiltersWindowingProcess::operator = (const itkFiltersWindowingProcess& other)
-{
-    itkFiltersProcessBase::operator=(other);
-
-    DTK_D(itkFiltersWindowingProcess);
-    d->callback = other.d_func()->callback;
-    d->filter = other.d_func()->filter;
-    d->input = other.d_func()->input;
-    d->output = other.d_func()->output;
-
-    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -50,28 +39,6 @@ itkFiltersWindowingProcess::~itkFiltersWindowingProcess( void )
 bool itkFiltersWindowingProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkWindowingProcess", createitkFiltersWindowingProcess);
-}
-
-//-------------------------------------------------------------------------------------------
-
-QString itkFiltersWindowingProcess::description() const
-{
-    return tr("ITK intensity windowing filter");
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersWindowingProcess::setInput(dtkAbstractData *data)
-{
-    if (!data)
-        return;
-    
-    QString identifier = data->identifier();
-    
-    DTK_D(itkFiltersWindowingProcess);
-    
-    d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
-    d->input = data;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -162,16 +129,6 @@ int itkFiltersWindowingProcess::update ( void )
     }
 
     return EXIT_SUCCESS;
-}
-
-//-------------------------------------------------------------------------------------------
-
-
-dtkAbstractData * itkFiltersWindowingProcess::output ( void )
-{
-    DTK_D(itkFiltersWindowingProcess);
-    
-    return ( d->output );
 }
 
 // /////////////////////////////////////////////////////////////////

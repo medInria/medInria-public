@@ -17,19 +17,13 @@ public:
     itkFiltersShrinkProcess(itkFiltersShrinkProcess * parent = 0);
     itkFiltersShrinkProcess(const itkFiltersShrinkProcess& other);
     virtual ~itkFiltersShrinkProcess(void);
-    
-    itkFiltersShrinkProcess& operator = (const itkFiltersShrinkProcess& other);
-    
-    virtual QString description ( void ) const;
 
     static bool registered ( void );
     
 public slots:
 
-    void setInput ( dtkAbstractData *data );
     void setParameter ( double  data, int channel );
     int update ( void );
-    dtkAbstractData *output ( void );
 
 private:
     DTK_DECLARE_PRIVATE(itkFiltersShrinkProcess)

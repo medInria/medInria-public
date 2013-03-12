@@ -17,25 +17,14 @@ itkFiltersMedianProcess::itkFiltersMedianProcess(itkFiltersMedianProcess *parent
     
     d->filter = this;
     d->output = NULL;
+    
+     d->description = tr("ITK median filter");
 }
 
 
 itkFiltersMedianProcess::itkFiltersMedianProcess(const itkFiltersMedianProcess& other) 
     : itkFiltersProcessBase(*new itkFiltersMedianProcessPrivate(*other.d_func()), other)
 {
-}
-
-itkFiltersMedianProcess& itkFiltersMedianProcess::operator = (const itkFiltersMedianProcess& other)
-{
-    itkFiltersProcessBase::operator=(other);
-
-    DTK_D(itkFiltersMedianProcess);
-    d->callback = other.d_func()->callback;
-    d->filter = other.d_func()->filter;
-    d->input = other.d_func()->input;
-    d->output = other.d_func()->output;
-
-    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -49,28 +38,6 @@ itkFiltersMedianProcess::~itkFiltersMedianProcess( void )
 bool itkFiltersMedianProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkMedianProcess", createitkFiltersMedianProcess);
-}
-
-//-------------------------------------------------------------------------------------------
-
-QString itkFiltersMedianProcess::description() const
-{
-    return tr("ITK median filter");
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersMedianProcess::setInput(dtkAbstractData *data)
-{
-    if (!data)
-        return;
-    
-    QString identifier = data->identifier();
-    
-    DTK_D(itkFiltersMedianProcess);
-    
-    d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
-    d->input = data;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -135,16 +102,6 @@ int itkFiltersMedianProcess::update ( void )
     }
 
     return EXIT_SUCCESS;
-}
-
-//-------------------------------------------------------------------------------------------
-
-
-dtkAbstractData * itkFiltersMedianProcess::output ( void )
-{
-    DTK_D(itkFiltersMedianProcess);
-    
-    return ( d->output );
 }
 
 // /////////////////////////////////////////////////////////////////

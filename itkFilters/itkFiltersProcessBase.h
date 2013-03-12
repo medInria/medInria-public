@@ -18,17 +18,20 @@ public:
     
 public:
     itkFiltersProcessBase& operator = (const itkFiltersProcessBase& other);
+
+    QString description ( void );
+    
+    void setInput ( dtkAbstractData *data );
+    dtkAbstractData *output ( void );
     
     void emitProgress(int progress);
-
-//    int update ( void );
     
 private:
     DTK_DECLARE_PRIVATE(itkFiltersProcessBase)
 };
 
-ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug, const itkFiltersProcessBase& process);
-ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug,       itkFiltersProcessBase *process);
+//ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug, const itkFiltersProcessBase& process);
+//ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug,       itkFiltersProcessBase *process);
 
 
 #endif // ITKFILTERSPROCESSBASE_H

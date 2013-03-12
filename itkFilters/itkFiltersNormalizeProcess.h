@@ -17,18 +17,12 @@ public:
     itkFiltersNormalizeProcess(itkFiltersNormalizeProcess * parent = 0);
     itkFiltersNormalizeProcess(const itkFiltersNormalizeProcess& other);
     virtual ~itkFiltersNormalizeProcess(void);
-    
-    itkFiltersNormalizeProcess& operator = (const itkFiltersNormalizeProcess& other);
-    
-    virtual QString description ( void ) const;
 
     static bool registered ( void );
     
 public slots:
 
-    void setInput ( dtkAbstractData *data );
     int update ( void );
-    dtkAbstractData *output ( void );
 
 private:
     DTK_DECLARE_PRIVATE(itkFiltersNormalizeProcess)

@@ -17,18 +17,12 @@ public:
     itkFiltersMedianProcess(itkFiltersMedianProcess * parent = 0);
     itkFiltersMedianProcess(const itkFiltersMedianProcess& other);
     virtual ~itkFiltersMedianProcess(void);
-    
-    itkFiltersMedianProcess& operator = (const itkFiltersMedianProcess& other);
-    
-    virtual QString description ( void ) const;
 
     static bool registered ( void );
     
 public slots:
 
-    void setInput ( dtkAbstractData *data );
     int update ( void );
-    dtkAbstractData *output ( void );
 
 private:
     DTK_DECLARE_PRIVATE(itkFiltersMedianProcess)

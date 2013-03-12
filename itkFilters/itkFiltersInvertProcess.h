@@ -17,18 +17,12 @@ public:
     itkFiltersInvertProcess(itkFiltersInvertProcess * parent = 0);
     itkFiltersInvertProcess(const itkFiltersInvertProcess& other);
     virtual ~itkFiltersInvertProcess(void);
-    
-    itkFiltersInvertProcess& operator = (const itkFiltersInvertProcess& other);
-    
-    virtual QString description ( void ) const;
 
     static bool registered ( void );
     
 public slots:
 
-    void setInput ( dtkAbstractData *data );
     int update ( void );
-    dtkAbstractData *output ( void );
 
 private:
     DTK_DECLARE_PRIVATE(itkFiltersInvertProcess)

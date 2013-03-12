@@ -27,12 +27,6 @@ public:
     
     template <class PixelType> void update ( void )
     {
-        this->setupFilter<PixelType>();
-        this->setFilterDescription();
-    }
-    
-    template <class PixelType> void setupFilter() 
-    {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::MultiplyByConstantImageFilter< ImageType, double, ImageType >  MultiplyFilterType;
         typename MultiplyFilterType::Pointer multiplyFilter = MultiplyFilterType::New();
@@ -48,16 +42,14 @@ public:
     
         multiplyFilter->Update();
         output->setData ( multiplyFilter->GetOutput() );
-    }
-    
-    void setFilterDescription()
-    {    
+        
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " add filter (" + QString::number(multiplyFactor) + ")";
     
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
+
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersMultiplyProcess, itkFiltersProcessBase)

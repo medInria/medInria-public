@@ -18,25 +18,14 @@ itkFiltersShrinkProcess::itkFiltersShrinkProcess(itkFiltersShrinkProcess *parent
     d->filter = this;
     d->input = NULL;
     d->output = NULL;
+    
+    d->description = tr("ITK shrink filter");
 }
 
 
 itkFiltersShrinkProcess::itkFiltersShrinkProcess(const itkFiltersShrinkProcess& other) 
     : itkFiltersProcessBase(*new itkFiltersShrinkProcessPrivate(*other.d_func()), other)
 {
-}
-
-itkFiltersShrinkProcess& itkFiltersShrinkProcess::operator = (const itkFiltersShrinkProcess& other)
-{
-    itkFiltersProcessBase::operator=(other);
-
-    DTK_D(itkFiltersShrinkProcess);
-    d->callback = other.d_func()->callback;
-    d->filter = other.d_func()->filter;
-    d->input = other.d_func()->input;
-    d->output = other.d_func()->output;
-
-    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -50,28 +39,6 @@ itkFiltersShrinkProcess::~itkFiltersShrinkProcess( void )
 bool itkFiltersShrinkProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkShrinkProcess", createitkFiltersShrinkProcess);
-}
-
-//-------------------------------------------------------------------------------------------
-
-QString itkFiltersShrinkProcess::description() const
-{
-    return tr("ITK shrink filter");
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersShrinkProcess::setInput(dtkAbstractData *data)
-{
-    if (!data)
-        return;
-    
-    QString identifier = data->identifier();
-    
-    DTK_D(itkFiltersShrinkProcess);
-    
-    d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
-    d->input = data;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -157,16 +124,6 @@ int itkFiltersShrinkProcess::update ( void )
     }
 
     return EXIT_SUCCESS;
-}
-
-//-------------------------------------------------------------------------------------------
-
-
-dtkAbstractData * itkFiltersShrinkProcess::output ( void )
-{
-    DTK_D(itkFiltersShrinkProcess);
-    
-    return ( d->output );
 }
 
 // /////////////////////////////////////////////////////////////////

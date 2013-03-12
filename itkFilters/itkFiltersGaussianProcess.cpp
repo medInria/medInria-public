@@ -19,25 +19,14 @@ itkFiltersGaussianProcess::itkFiltersGaussianProcess(itkFiltersGaussianProcess *
     
     d->filter = this;
     d->output = NULL; 
+    
+     d->description = tr("ITK gaussian filter");
 }
 
 
 itkFiltersGaussianProcess::itkFiltersGaussianProcess(const itkFiltersGaussianProcess& other) 
     : itkFiltersProcessBase(*new itkFiltersGaussianProcessPrivate(*other.d_func()), other)
 {
-}
-
-itkFiltersGaussianProcess& itkFiltersGaussianProcess::operator = (const itkFiltersGaussianProcess& other)
-{
-    itkFiltersProcessBase::operator=(other);
-
-    DTK_D(itkFiltersGaussianProcess);
-    d->callback = other.d_func()->callback;
-    d->filter = other.d_func()->filter;
-    d->input = other.d_func()->input;
-    d->output = other.d_func()->output;
-
-    return *this;
 }
 
 itkFiltersGaussianProcess::~itkFiltersGaussianProcess( void )
@@ -49,28 +38,6 @@ itkFiltersGaussianProcess::~itkFiltersGaussianProcess( void )
 bool itkFiltersGaussianProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkGaussianProcess", createitkFiltersGaussianProcess);
-}
-
-//-------------------------------------------------------------------------------------------
-
-QString itkFiltersGaussianProcess::description() const
-{
-    return tr("ITK gaussian filter");
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersGaussianProcess::setInput(dtkAbstractData *data)
-{
-    if (!data)
-        return;
-    
-    DTK_D(itkFiltersGaussianProcess);
-    
-    QString identifier = data->identifier();
-    
-    d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
-    d->input = data;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -147,16 +114,6 @@ int itkFiltersGaussianProcess::update ( void )
     }
 
     return EXIT_SUCCESS;
-}
-
-//-------------------------------------------------------------------------------------------
-
-
-dtkAbstractData * itkFiltersGaussianProcess::output ( void )
-{
-    DTK_D(itkFiltersGaussianProcess);
-    
-    return ( d->output );
 }
 
 // /////////////////////////////////////////////////////////////////

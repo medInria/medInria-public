@@ -17,25 +17,14 @@ itkFiltersAddProcess::itkFiltersAddProcess(itkFiltersAddProcess *parent)
     
     d->filter = this;
     d->output = NULL;
+    
+    d->description = tr("ITK add constant filter");
 }
 
 
 itkFiltersAddProcess::itkFiltersAddProcess(const itkFiltersAddProcess& other) 
     : itkFiltersProcessBase(*new itkFiltersAddProcessPrivate(*other.d_func()), other)
 {
-}
-
-itkFiltersAddProcess& itkFiltersAddProcess::operator = (const itkFiltersAddProcess& other)
-{
-    itkFiltersProcessBase::operator=(other);
-
-    DTK_D(itkFiltersAddProcess);
-    d->callback = other.d_func()->callback;
-    d->filter = other.d_func()->filter;
-    d->input = other.d_func()->input;
-    d->output = other.d_func()->output;
-
-    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -49,28 +38,6 @@ itkFiltersAddProcess::~itkFiltersAddProcess( void )
 bool itkFiltersAddProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkAddProcess", createitkFiltersAddProcess);
-}
-
-//-------------------------------------------------------------------------------------------
-
-QString itkFiltersAddProcess::description() const
-{
-    return tr("ITK add constant filter");
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersAddProcess::setInput(dtkAbstractData *data)
-{
-    if (!data)
-        return;
- 
-    DTK_D(itkFiltersAddProcess);
-    
-    QString identifier = data->identifier();
-    
-    d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
-    d->input = data;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -149,15 +116,6 @@ int itkFiltersAddProcess::update ( void )
     return EXIT_SUCCESS;
 }
 
-//-------------------------------------------------------------------------------------------
-
-
-dtkAbstractData * itkFiltersAddProcess::output ( void )
-{
-    DTK_D(itkFiltersAddProcess);
-    
-    return ( d->output );
-}
 
 // /////////////////////////////////////////////////////////////////
 // Type instanciation

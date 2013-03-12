@@ -17,25 +17,14 @@ itkFiltersDivideProcess::itkFiltersDivideProcess(itkFiltersDivideProcess *parent
     
     d->filter = this;
     d->output = NULL;
+    
+    d->description = tr("ITK divide by constant filter");
 }
 
 
 itkFiltersDivideProcess::itkFiltersDivideProcess(const itkFiltersDivideProcess& other) 
     : itkFiltersProcessBase(*new itkFiltersDivideProcessPrivate(*other.d_func()), other)
 {
-}
-
-itkFiltersDivideProcess& itkFiltersDivideProcess::operator = (const itkFiltersDivideProcess& other)
-{
-    itkFiltersProcessBase::operator=(other);
-
-    DTK_D(itkFiltersDivideProcess);
-    d->callback = other.d_func()->callback;
-    d->filter = other.d_func()->filter;
-    d->input = other.d_func()->input;
-    d->output = other.d_func()->output;
-
-    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -49,28 +38,6 @@ itkFiltersDivideProcess::~itkFiltersDivideProcess( void )
 bool itkFiltersDivideProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkDivideProcess", createitkFiltersDivideProcess);
-}
-
-//-------------------------------------------------------------------------------------------
-
-QString itkFiltersDivideProcess::description() const
-{
-    return tr("ITK divide by constant filter");
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersDivideProcess::setInput(dtkAbstractData *data)
-{
-    if (!data)
-        return;
-    
-    QString identifier = data->identifier();
-    
-    DTK_D(itkFiltersDivideProcess);
-    
-    d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
-    d->input = data;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -146,16 +113,6 @@ int itkFiltersDivideProcess::update ( void )
     }
 
     return EXIT_SUCCESS;
-}
-
-//-------------------------------------------------------------------------------------------
-
-
-dtkAbstractData * itkFiltersDivideProcess::output ( void )
-{
-    DTK_D(itkFiltersDivideProcess);
-    
-    return ( d->output );
 }
 
 // /////////////////////////////////////////////////////////////////

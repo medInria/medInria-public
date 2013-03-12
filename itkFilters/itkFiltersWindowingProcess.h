@@ -17,19 +17,13 @@ public:
     itkFiltersWindowingProcess(itkFiltersWindowingProcess * parent = 0);
     itkFiltersWindowingProcess(const itkFiltersWindowingProcess& other);
     virtual ~itkFiltersWindowingProcess(void);
-    
-    itkFiltersWindowingProcess& operator = (const itkFiltersWindowingProcess& other);
-    
-    virtual QString description ( void ) const;
 
     static bool registered ( void );
     
 public slots:
 
-    void setInput ( dtkAbstractData *data );
     void setParameter ( double  data, int channel );
     int update ( void );
-    dtkAbstractData *output ( void );
 
 private:
     DTK_DECLARE_PRIVATE(itkFiltersWindowingProcess)

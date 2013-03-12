@@ -25,13 +25,7 @@ public:
     double addValue;
     
     template <class PixelType> void update ( void )
-    {
-        this->setupFilter<PixelType>();
-        this->setFilterDescription();
-    }
-    
-    template <class PixelType> void setupFilter() 
-    {
+    {        
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::AddConstantToImageFilter< ImageType, double, ImageType >  AddFilterType;
         typename AddFilterType::Pointer addFilter = AddFilterType::New();
@@ -47,10 +41,7 @@ public:
         
         addFilter->Update();
         output->setData ( addFilter->GetOutput() );
-    }
-    
-    void setFilterDescription()
-    {    
+        
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " add filter (" + QString::number(addValue) + ")";
         

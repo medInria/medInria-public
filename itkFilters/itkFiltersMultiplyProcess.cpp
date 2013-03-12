@@ -16,25 +16,14 @@ itkFiltersMultiplyProcess::itkFiltersMultiplyProcess(itkFiltersMultiplyProcess *
     
     d->filter = this;
     d->output = NULL;
+    
+     d->description = tr("ITK multiply by constant filter");
 }
 
 
 itkFiltersMultiplyProcess::itkFiltersMultiplyProcess(const itkFiltersMultiplyProcess& other) 
     : itkFiltersProcessBase(*new itkFiltersMultiplyProcessPrivate(*other.d_func()), other)
 {
-}
-
-itkFiltersMultiplyProcess& itkFiltersMultiplyProcess::operator = (const itkFiltersMultiplyProcess& other)
-{
-    itkFiltersProcessBase::operator=(other);
-
-    DTK_D(itkFiltersMultiplyProcess);
-    d->callback = other.d_func()->callback;
-    d->filter = other.d_func()->filter;
-    d->input = other.d_func()->input;
-    d->output = other.d_func()->output;
-
-    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -48,28 +37,6 @@ itkFiltersMultiplyProcess::~itkFiltersMultiplyProcess( void )
 bool itkFiltersMultiplyProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkMultiplyProcess", createitkFiltersMultiplyProcess);
-}
-
-//-------------------------------------------------------------------------------------------
-
-QString itkFiltersMultiplyProcess::description() const
-{
-    return tr("ITK multiply by constant filter");
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersMultiplyProcess::setInput(dtkAbstractData *data)
-{
-    if (!data)
-        return;
-    
-    QString identifier = data->identifier();
-    
-    DTK_D(itkFiltersMultiplyProcess);
-    
-    d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
-    d->input = data;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -146,16 +113,6 @@ int itkFiltersMultiplyProcess::update ( void )
     }
 
     return EXIT_SUCCESS;
-}
-
-//-------------------------------------------------------------------------------------------
-
-
-dtkAbstractData * itkFiltersMultiplyProcess::output ( void )
-{
-    DTK_D(itkFiltersMultiplyProcess);
-    
-    return ( d->output );
 }
 
 // /////////////////////////////////////////////////////////////////

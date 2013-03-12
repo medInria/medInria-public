@@ -24,12 +24,6 @@ public:
     
     template <class PixelType> void update ( void )
     {
-        this->setupFilter<PixelType>();
-        this->setFilterDescription();
-    }
-    
-    template <class PixelType> void setupFilter() 
-    {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::NormalizeImageFilter< ImageType, ImageType >  NormalizeFilterType;
         typename NormalizeFilterType::Pointer normalizeFilter = NormalizeFilterType::New();
@@ -44,16 +38,14 @@ public:
     
         normalizeFilter->Update();
         output->setData ( normalizeFilter->GetOutput() );
-    }
-    
-    void setFilterDescription()
-    {    
+        
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " normalize filter";
     
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
+    
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersNormalizeProcess, itkFiltersProcessBase)

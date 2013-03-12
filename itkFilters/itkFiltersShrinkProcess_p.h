@@ -26,12 +26,6 @@ public:
     
     template <class PixelType> void update ( void )
     {
-        this->setupFilter<PixelType>();
-        this->setFilterDescription();
-    }
-    
-    template <class PixelType> void setupFilter() 
-    {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::ShrinkImageFilter< ImageType, ImageType >  ShrinkFilterType;
         typename ShrinkFilterType::Pointer shrinkFilter = ShrinkFilterType::New();
@@ -47,16 +41,14 @@ public:
     
         shrinkFilter->Update();
         output->setData ( shrinkFilter->GetOutput() );
-    }
-    
-    void setFilterDescription()
-    {    
+        
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " shrink filter (" + QString::number(shrinkFactors[0]) + "," + QString::number(shrinkFactors[1]) + "," + QString::number(shrinkFactors[2]) + ")";
 
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
+    
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersShrinkProcess, itkFiltersProcessBase)

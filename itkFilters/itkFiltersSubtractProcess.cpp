@@ -18,25 +18,14 @@ itkFiltersSubtractProcess::itkFiltersSubtractProcess(itkFiltersSubtractProcess *
     
     d->filter = this;
     d->output = NULL;
+    
+    d->description = tr("ITK subtract constant filter");
 }
 
 
 itkFiltersSubtractProcess::itkFiltersSubtractProcess(const itkFiltersSubtractProcess& other) 
     : itkFiltersProcessBase(*new itkFiltersSubtractProcessPrivate(*other.d_func()), other)
 {
-}
-
-itkFiltersSubtractProcess& itkFiltersSubtractProcess::operator = (const itkFiltersSubtractProcess& other)
-{
-    itkFiltersProcessBase::operator=(other);
-
-    DTK_D(itkFiltersSubtractProcess);
-    d->callback = other.d_func()->callback;
-    d->filter = other.d_func()->filter;
-    d->input = other.d_func()->input;
-    d->output = other.d_func()->output;
-
-    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -50,28 +39,6 @@ itkFiltersSubtractProcess::~itkFiltersSubtractProcess( void )
 bool itkFiltersSubtractProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkSubtractProcess", createitkFiltersSubtractProcess);
-}
-
-//-------------------------------------------------------------------------------------------
-
-QString itkFiltersSubtractProcess::description() const
-{
-    return tr("ITK subtract constant filter");
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersSubtractProcess::setInput(dtkAbstractData *data)
-{
-    if (!data)
-        return;
-    
-    QString identifier = data->identifier();
-    
-    DTK_D(itkFiltersSubtractProcess);
-    
-    d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
-    d->input = data;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -148,16 +115,6 @@ int itkFiltersSubtractProcess::update ( void )
     }
 
     return EXIT_SUCCESS;
-}
-
-//-------------------------------------------------------------------------------------------
-
-
-dtkAbstractData * itkFiltersSubtractProcess::output ( void )
-{
-    DTK_D(itkFiltersSubtractProcess);
-    
-    return ( d->output );
 }
 
 // /////////////////////////////////////////////////////////////////

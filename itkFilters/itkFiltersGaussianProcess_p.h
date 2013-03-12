@@ -26,12 +26,6 @@ public:
     
     template <class PixelType> void update ( void )
     {
-        this->setupFilter<PixelType>();
-        this->setFilterDescription();
-    }
-    
-    template <class PixelType> void setupFilter() 
-    {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::SmoothingRecursiveGaussianImageFilter< ImageType, ImageType >  GaussianFilterType;
         typename GaussianFilterType::Pointer gaussianFilter = GaussianFilterType::New();
@@ -48,10 +42,6 @@ public:
         gaussianFilter->Update();
         output->setData ( gaussianFilter->GetOutput() );
         
-    }
-    
-    void setFilterDescription()
-    {    
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " add filter (" + QString::number(sigma) + ")";
     

@@ -22,6 +22,9 @@ public:
 
     virtual ~itkFiltersProcessBasePrivate(void) {}
     
+    QString description;
+    QString filterType;
+    
     itk::CStyleCommand::Pointer callback;
     itkFiltersProcessBase *filter;
     
@@ -30,11 +33,6 @@ public:
     
     template <class PixelType> void setupFilter() {}
     virtual void setFilterDescription() {}
-    
-//    template <class PixelType> void update ( void ) {
-//        this->setupFilter<PixelType>();
-//        this->setFilterDescription();
-//    }
     
     static void eventCallback ( itk::Object *caller, const itk::EventObject& event, void *clientData) {
         itkFiltersProcessBasePrivate * source = reinterpret_cast<itkFiltersProcessBasePrivate *> ( clientData );

@@ -26,12 +26,6 @@ public:
     
     template <class PixelType> void update ( void )
     {
-        this->setupFilter<PixelType>();
-        this->setFilterDescription();
-    }
-    
-    template <class PixelType> void setupFilter() 
-    {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::MedianImageFilter< ImageType, ImageType >  MedianFilterType;
         typename MedianFilterType::Pointer medianFilter = MedianFilterType::New();
@@ -46,14 +40,11 @@ public:
     
         medianFilter->Update();
         output->setData ( medianFilter->GetOutput() );
-    }
-    
-    void setFilterDescription()
-    {    
+        
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " median filter";
-    
+        
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
 };

@@ -15,25 +15,14 @@ itkFiltersInvertProcess::itkFiltersInvertProcess(itkFiltersInvertProcess *parent
     
     d->filter = this;
     d->output = NULL;
+    
+     d->description = tr("ITK invert intensity filter");
 }
 
 
 itkFiltersInvertProcess::itkFiltersInvertProcess(const itkFiltersInvertProcess& other) 
     : itkFiltersProcessBase(*new itkFiltersInvertProcessPrivate(*other.d_func()), other)
 {
-}
-
-itkFiltersInvertProcess& itkFiltersInvertProcess::operator = (const itkFiltersInvertProcess& other)
-{
-    itkFiltersProcessBase::operator=(other);
-
-    DTK_D(itkFiltersInvertProcess);
-    d->callback = other.d_func()->callback;
-    d->filter = other.d_func()->filter;
-    d->input = other.d_func()->input;
-    d->output = other.d_func()->output;
-
-    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -47,27 +36,6 @@ itkFiltersInvertProcess::~itkFiltersInvertProcess( void )
 bool itkFiltersInvertProcess::registered( void )
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkInvertProcess", createitkFiltersInvertProcess);
-}
-
-//-------------------------------------------------------------------------------------------
-
-QString itkFiltersInvertProcess::description() const
-{
-    return tr("ITK invert intensity filter");
-}
-
-//-------------------------------------------------------------------------------------------
-
-void itkFiltersInvertProcess::setInput(dtkAbstractData *data)
-{
-    if (!data)
-        return;
-    
-    QString identifier = data->identifier();
-    
-    DTK_D(itkFiltersInvertProcess);
-    d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
-    d->input = data;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -132,16 +100,6 @@ int itkFiltersInvertProcess::update ( void )
     }
 
     return EXIT_SUCCESS;
-}
-
-//-------------------------------------------------------------------------------------------
-
-
-dtkAbstractData * itkFiltersInvertProcess::output ( void )
-{
-    DTK_D(itkFiltersInvertProcess);
-    
-    return ( d->output );
 }
 
 // /////////////////////////////////////////////////////////////////

@@ -17,19 +17,13 @@ public:
     itkFiltersMultiplyProcess(itkFiltersMultiplyProcess * parent = 0);
     itkFiltersMultiplyProcess(const itkFiltersMultiplyProcess& other);
     virtual ~itkFiltersMultiplyProcess(void);
-    
-    itkFiltersMultiplyProcess& operator = (const itkFiltersMultiplyProcess& other);
-    
-    virtual QString description ( void ) const;
 
     static bool registered ( void );
     
 public slots:
 
-    void setInput ( dtkAbstractData *data );
     void setParameter ( double  data, int channel );
     int update ( void );
-    dtkAbstractData *output ( void );
 
 private:
     DTK_DECLARE_PRIVATE(itkFiltersMultiplyProcess)

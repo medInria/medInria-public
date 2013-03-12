@@ -30,12 +30,6 @@ public:
     
     template <class PixelType> void update ( void )
     {
-        this->setupFilter<PixelType>();
-        this->setFilterDescription();
-    }
-    
-    template <class PixelType> void setupFilter() 
-    {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::IntensityWindowingImageFilter< ImageType, ImageType >  WindowingFilterType;
         typename WindowingFilterType::Pointer windowingFilter = WindowingFilterType::New();
@@ -54,16 +48,14 @@ public:
     
         windowingFilter->Update();
         output->setData ( windowingFilter->GetOutput() );
-    }
-    
-    void setFilterDescription()
-    {    
+        
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " intensity filter";
         
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
+
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersWindowingProcess, itkFiltersProcessBase)

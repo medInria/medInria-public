@@ -26,12 +26,6 @@ public:
     
     template <class PixelType> void update ( void )
     {
-        this->setupFilter<PixelType>();
-        this->setFilterDescription();
-    }
-    
-    template <class PixelType> void setupFilter() 
-    {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::DivideByConstantImageFilter< ImageType, double, ImageType >  DivideFilterType;
         typename DivideFilterType::Pointer divideFilter = DivideFilterType::New();
@@ -47,10 +41,7 @@ public:
     
         divideFilter->Update();
         output->setData ( divideFilter->GetOutput() );
-    }
-    
-    void setFilterDescription()
-    {    
+        
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
         newSeriesDescription += " add filter (" + QString::number(divideFactor) + ")";
     
