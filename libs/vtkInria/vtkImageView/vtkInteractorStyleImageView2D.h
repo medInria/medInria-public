@@ -102,7 +102,7 @@ class VTK_IMAGEVIEW_EXPORT vtkInteractorStyleImageView2D : public vtkInteractorS
   ~vtkInteractorStyleImageView2D();
   
   int SliceStep;
-  int RequestedPosition[2];
+  int RequestedPosition[3];
 
  private: 
   vtkInteractorStyleImageView2D(const vtkInteractorStyleImageView2D&);  // Not implemented.

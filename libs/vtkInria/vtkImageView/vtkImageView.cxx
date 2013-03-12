@@ -1727,8 +1727,7 @@ inline void vtkImageView::SetITKInput4 (typename itk::Image<T, 4>::Pointer itkIm
 
   unsigned int timeIndex = this->TimeIndex;
   unsigned int timeLimit = itkImage->GetLargestPossibleRegion().GetSize()[3]-1;
-  if (timeIndex<0)
-    timeIndex = 0;
+
   if (timeIndex>timeLimit)
     timeIndex = timeLimit;
 
