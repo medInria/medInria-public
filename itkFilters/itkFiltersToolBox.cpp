@@ -1,4 +1,3 @@
-#include "itkFilters.h"
 #include "itkFiltersToolBox.h"
 
 #include <limits>
