@@ -790,8 +790,6 @@ void medDataManager::printMemoryStatus(size_t requiredMemoryInKb)
     quint64 processMem = getProcessMemoryUsage();
     quint64 maxMem = getUpperMemoryThreshold();
     quint64 availableMem = (maxMem - processMem) / divider;
-    if (availableMem < 0)
-        availableMem = 0;
 
     if( requiredMemoryInKb == 0 )
         qDebug() << "Available memory:" << availableMem << "mb ";

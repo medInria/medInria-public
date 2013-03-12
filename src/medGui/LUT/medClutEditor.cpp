@@ -1619,7 +1619,7 @@ void medClutEditor::initializeTable(void)
 void medClutEditor::deleteTable(void)
 {
     medClutEditorTable * table;
-    while ( table = d->scene->table() ) {
+    while ( (table = d->scene->table()) ) {
         d->scene->removeItem( table );
         delete table;
     }
