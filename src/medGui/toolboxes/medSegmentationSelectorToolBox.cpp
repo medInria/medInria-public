@@ -232,16 +232,6 @@ void medSegmentationSelectorToolBox::onSuccess( QObject * sender )
         return;
     dtkAbstractProcess * alg = d->runningProcesses.value( sender );
 
-#pragma message DTK_COMPILER_WARNING("JDS : Need to complete this")
-//#error
-    /*
-    Create a segmentation algorithm, pass it the data and
-        run it.
-        gather the output.
-        register the output in the non-persistent db
-        Add the output as a layer to the view
-    */
-
     dtkSmartPointer<dtkAbstractData> outputData = alg->output();
 
     medDataManager::instance()->importNonPersistent( outputData.data() );
