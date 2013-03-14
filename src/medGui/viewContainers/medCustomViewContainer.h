@@ -68,6 +68,7 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event);
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
+    void mousePressEvent(QMouseEvent * event);
 
     void synchronize_2 (dtkAbstractView *view);
     void desynchronize_2 (dtkAbstractView *view);

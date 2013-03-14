@@ -35,6 +35,7 @@ medFilteringViewContainer::medFilteringViewContainer ( QWidget * parent ) :
     d3->outputViewContainer->setInfo ( tr ( "Result of filtering" ) );
 
     d3->outputViewContainer->setAcceptDrops(false);
+    setCurrent(d3->inputViewContainer);
 
     connect(d3->inputViewContainer,SIGNAL(dropped(medDataIndex)),
             this,SIGNAL(droppedInput(medDataIndex)));
