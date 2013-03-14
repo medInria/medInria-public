@@ -23,11 +23,19 @@ project(medSql)
 ## Sources
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
+set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
   medDatabaseController.h
   medDatabaseControllerImpl.h
-  medDatabaseExporter.h
   medDatabaseImporter.h
+)
+
+set(${PROJECT_NAME}_DEVEL_HEADERS
+  medSqlExport.h
+)
+
+set(${PROJECT_NAME}_HEADERS_MOC
+  ${${PROJECT_NAME}_DEVEL_HEADERS_MOC}
+  medDatabaseExporter.h
   medDatabaseModel.h  
   medDatabaseNonPersistentController.h
   medDatabaseNonPersistentControllerImpl.h
@@ -41,6 +49,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   )
 
 set(${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_DEVEL_HEADERS}
   ${${PROJECT_NAME}_HEADERS_MOC}
   medDatabaseItem.h
   )
