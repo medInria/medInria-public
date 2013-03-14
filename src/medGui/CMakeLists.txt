@@ -23,7 +23,24 @@ project(medGui)
 ## Sources
 ## #################################################################
 
+set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
+  commonWidgets/medProgressionStack.h
+  factories/medToolBoxFactory.h
+  toolboxes/medFilteringAbstractToolBox.h
+  toolboxes/medFilteringSelectorToolBox.h
+  toolboxes/medRegistrationAbstractToolBox.h
+  toolboxes/medRegistrationSelectorToolBox.h
+  toolboxes/medSegmentationAbstractToolBox.h
+  toolboxes/medSegmentationSelectorToolBox.h
+  toolboxes/medToolBox.h
+)
+
+set(${PROJECT_NAME}_DEVEL_HEADERS
+  medGuiExport.h
+)
+
 set(${PROJECT_NAME}_HEADERS_MOC
+  ${${PROJECT_NAME}_DEVEL_HEADERS_MOC}
   medLayoutChooser.h
   medPacsSelector.h
   medToolBoxContainer.h
@@ -55,7 +72,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   commonWidgets/medDropSite.h
   commonWidgets/medWorkspaceShifter.h
   commonWidgets/medButton.h
-  commonWidgets/medProgressionStack.h
   commonWidgets/medFlicker.h
   commonWidgets/medStatusBar.h
   commonWidgets/medQuickAccessMenu.h
@@ -65,7 +81,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
   # factories
   factories/medSettingsWidgetFactory.h
-  factories/medToolBoxFactory.h
   factories/medWorkspaceFactory.h
 
   # LUT
@@ -82,7 +97,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   settingsWidgets/medInteractionSettingsWidget.h
 
   # general toolbox classes
-  toolboxes/medToolBox.h
   toolboxes/medToolBoxBody.h
   toolboxes/medToolBoxHeader.h
   toolboxes/medToolBoxTab.h
@@ -92,13 +106,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medDiffusionAbstractToolBox.h
   toolboxes/medFiberViewToolBox.h
   toolboxes/medFiberBundlingToolBox.h
-  toolboxes/medRegistrationSelectorToolBox.h
-  toolboxes/medRegistrationAbstractToolBox.h
-  toolboxes/medSegmentationSelectorToolBox.h
-  toolboxes/medSegmentationAbstractToolBox.h
   toolboxes/medTensorViewToolBox.h
-  toolboxes/medFilteringSelectorToolBox.h
-  toolboxes/medFilteringAbstractToolBox.h
   toolboxes/medBrowserJobsToolBox.h
   toolboxes/medVisualizationLayoutToolBox.h
   toolboxes/medTimeLineToolBox.h
@@ -122,11 +130,11 @@ set(${PROJECT_NAME}_HEADERS_MOC
 )
 
 set(${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_DEVEL_HEADERS}
   #LUT
   LUT/medLUTToXMLWriter.h
   LUT/medXMLToLUTReader.h
 
-  medGuiExport.h
   database/medDatabaseNavigatorController.h
   database/medDatabasePreviewController.h
   ${${PROJECT_NAME}_HEADERS_MOC}
