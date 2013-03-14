@@ -23,47 +23,56 @@ project(medCore)
 ## Sources
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  medDataManager.h
-  medMessageController.h
-  medViewManager.h
-  medPluginManager.h
-  medAbstractView.h
-  medAbstractViewCollection.h
+set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
   med4DAbstractViewInteractor.h
-  medMeshAbstractViewInteractor.h
-  medJobItem.h
-  medJobManager.h
-  medSettingsManager.h
-  medDbControllerFactory.h
-  medAbstractDbController.h
-  medAbstractDataSource.h
-  medAbstractDataSourceFactory.h
-  medStorage.h
-  medRunnableProcess.h
-  medAbstractViewFiberInteractor.h
+  medAbstractAnnotationViewInteractor.h
   medAbstractData.h
   medAbstractDataImage.h
   medAbstractDataMesh.h
-  medAttachedData.h
+  medAbstractDataSourceFactory.h
+  medAbstractDataSource.h
+  medAbstractDbController.h
+  medAbstractViewFiberInteractor.h
+  medAbstractView.h
   medAnnotationData.h
-  medAbstractAnnotationViewInteractor.h
+  medAttachedData.h
+  medJobItem.h
+  medJobManager.h
+  medMeshAbstractViewInteractor.h
+  medMessageController.h
+  medMetaDataKeys.h
+  medPluginManager.h
+  medRunnableProcess.h
+  medSettingsManager.h
   medViewEventFilter.h
   annotationData/medImageMaskAnnotationData.h
   annotationData/medSeedPointAnnotationData.h
 )
 
-set(${PROJECT_NAME}_HEADERS
-  ${${PROJECT_NAME}_HEADERS_MOC}
+set(${PROJECT_NAME}_DEVEL_HEADERS
+  medAbstractDataTypedImage.h
+  medAbstractViewCoordinates.h
   medCoreExport.h
   medDataIndex.h
-  medMetaDataKeys.h
-  medDataReaderWriter.h
-  medAbstractDataTypedImage.h
-  medAbstractDatabaseItem.h
-  medAbstractViewCoordinates.h
 )
 
+set(${PROJECT_NAME}_HEADERS_MOC
+  ${${PROJECT_NAME}_DEVEL_HEADERS_MOC}
+  medDataManager.h
+  medViewManager.h
+  medPluginManager.h
+  medAbstractViewCollection.h
+  medDbControllerFactory.h
+  medStorage.h
+)
+
+set(${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_HEADERS_MOC}
+  ${${PROJECT_NAME}_DEVEL_HEADERS}
+  medMetaDataKeys.h
+  medDataReaderWriter.h
+  medAbstractDatabaseItem.h
+)
 
 set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
