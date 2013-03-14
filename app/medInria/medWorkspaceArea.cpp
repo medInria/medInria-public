@@ -158,8 +158,6 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
              SLOT (setPatientIndex (const medDataIndex&)));
     connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->patientToolBox,
              SLOT (setPatientIndex (const medDataIndex&)));
-
-    connect (medDataManager::instance(), SIGNAL(onItemDoubleClicked(const medDataIndex&)), this, SLOT(openInTab(const medDataIndex&)));
 /*
 //------------- MEM LEAK TEST BEGIN -----------------//
     int memusage = 0;
@@ -748,6 +746,18 @@ void medWorkspaceArea::setupWorkspace(QString name)
     connect(workspace, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)), Qt::UniqueConnection);
     connect(workspace, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)), Qt::UniqueConnection);
     connect(workspace, SIGNAL(toolboxRemoved(medToolBox*)),this, SLOT(removeToolBox(medToolBox*)), Qt::UniqueConnection);
+
+    // double-click on a thumbnail launches its visualization in the current workspace (disabled for Registration)
+    if (d->currentWorkspaceName != "Registration")
+    {
+        connect (medDataManager::instance(), SIGNAL(onItemDoubleClicked(const medDataIndex&)), 
+            this, SLOT(open(const medDataIndex&)), Qt::UniqueConnection);
+    }
+    else
+    {
+        disconnect (medDataManager::instance(), SIGNAL(onItemDoubleClicked(const medDataIndex&)), 
+            this, SLOT(open(const medDataIndex&)));
+    }
 }
 
 void medWorkspaceArea::switchToLayout (medWorkspace::LayoutType layout)

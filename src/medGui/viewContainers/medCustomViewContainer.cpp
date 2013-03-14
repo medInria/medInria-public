@@ -57,6 +57,8 @@ void medCustomViewContainer::split ( int rows, int cols )
         for ( int j = 0 ; j < cols ; j++ )
         {
             medCustomViewContainer *container = new medCustomViewContainer ( this );
+            if ( i == 0 && j == 0)
+                this->setCurrent ( container ); // current view is in the top left corner
             connect ( container, SIGNAL ( viewAdded ( dtkAbstractView* ) ),   this, SIGNAL ( viewAdded ( dtkAbstractView* ) ) );
             connect ( container, SIGNAL ( viewRemoved ( dtkAbstractView* ) ), this, SIGNAL ( viewRemoved ( dtkAbstractView* ) ) );
             d->layout->addWidget ( container, i, j );
@@ -67,7 +69,6 @@ void medCustomViewContainer::split ( int rows, int cols )
     // in split, the preset is no valid anymore
     d2->preset = 0;
 
-    this->setCurrent ( NULL );
 }
 
 void medCustomViewContainer::setPreset ( int preset )
@@ -76,9 +77,8 @@ void medCustomViewContainer::setPreset ( int preset )
         return;
 
     d2->preset = preset;
-
     this->clear();
-
+    this->setCurrent ( NULL );
     medCustomViewContainer *custom1 = NULL;
     medCustomViewContainer *custom2 = NULL;
     medCustomViewContainer *custom3 = NULL;
@@ -160,7 +160,8 @@ void medCustomViewContainer::setPreset ( int preset )
                   this,      SIGNAL ( viewRemoved ( dtkAbstractView * ) ) );
     }
 
-    this->setCurrent ( NULL );
+    if (this->current() == NULL)    // if current view has not been set (no splitting)
+        this->setCurrent ( custom1 );
 }
 
 void medCustomViewContainer::setView ( dtkAbstractView *view )
@@ -401,6 +402,11 @@ void medCustomViewContainer::dropEvent ( QDropEvent *event )
     this->setCurrent ( this );
     this->setAttribute ( Qt::WA_UpdatesDisabled, false );
     medViewContainer::dropEvent ( event );
+}
+
+void medCustomViewContainer::mousePressEvent(QMouseEvent * event)
+{
+    this->setCurrent ( this );
 }
 
 void medCustomViewContainer::clear()
