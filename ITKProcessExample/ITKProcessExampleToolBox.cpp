@@ -12,6 +12,7 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
+#include <dtkCore/dtkSmartPointer.h>
 
 #include <medRunnableProcess.h>
 #include <medJobManager.h>
@@ -28,7 +29,7 @@ class ITKProcessExampleToolBoxPrivate
 {
 public:
     QLineEdit *variance;
-    dtkAbstractProcess *process;
+    dtkSmartPointer <dtkAbstractProcess> process;
     medProgressionStack * progression_stack;
 };
 
