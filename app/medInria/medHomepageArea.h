@@ -53,7 +53,6 @@ public slots:
     void onShowAbout(void);
     void onShowPlugin(void);
     void onShowHelp(void);
-    void onStartWithHomepage(int state);
     void onShowInfo();
 
 signals:
