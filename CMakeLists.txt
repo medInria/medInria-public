@@ -75,6 +75,7 @@ endif(MSVC)
 
 add_subdirectory(src)
 add_subdirectory(app)
+add_subdirectory(medinria-plugins)
 
 if(MEDINRIA_BUILD_TESTING)
   add_subdirectory(tests)
@@ -83,12 +84,6 @@ endif(MEDINRIA_BUILD_TESTING)
 if(MEDINRIA_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(MEDINRIA_BUILD_DOCUMENTATION)
-
-option(BUILD_PLUGINS "Build medinria-plugins"    false)
-
-if(BUILD_PLUGINS)
-  add_subdirectory(medinria-plugins)
-endif()
 
 if (APPLE)
   configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in
