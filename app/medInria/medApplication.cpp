@@ -61,21 +61,24 @@ public:
         }
         userPath += QLatin1Char('/');
 
-        QString oldUserPath= userPath + organization +
-                "/medinria.conf";//app.applicationName();
+        const QString& newUserPath = userPath+organization+"/medInria.conf";
 
-        if (QFile::exists(oldUserPath) )
+        if (!QFile::exists(newUserPath))
         {
-            qWarning() << "Updating old medinria.conf file";
-            QFile oldSettings (oldUserPath);
-            bool result = oldSettings.rename(userPath + organization +
-                                             QLatin1Char('/') +
-                               applicationName + ".conf" );
-            if (!result)
+            const QString& oldUserPath = userPath+organization+"/medinria.conf";
+
+            if (QFile::exists(oldUserPath) )
             {
-                qWarning() << "Could not rename medinria.conf\n"
-                           << "Either you don't have write access\n"
-                           << "or medInria.conf already exists.";
+                qWarning() << "Updating old medinria.conf file";
+                QFile oldSettings (oldUserPath);
+                const bool result = oldSettings.rename(userPath+organization+QLatin1Char('/')+
+                                    applicationName+".conf" );
+                if (!result)
+                {
+                    qWarning() << "Could not rename medinria.conf\n"
+                               << "Either you don't have write access\n"
+                               << "or medInria.conf already exists.";
+                }
             }
         }
     #endif //Q_OS_LINUX
