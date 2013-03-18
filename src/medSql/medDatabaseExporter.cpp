@@ -47,12 +47,12 @@ medDatabaseExporter::~medDatabaseExporter(void)
 void medDatabaseExporter::run(void)
 {
     if (d->data.isNull()) {
-        emit showError(this, "Cannot export data", 3000);
+        emit showError("Cannot export data", 3000);
         return;
     }
 
     if (d->filename.isEmpty()) {
-        emit showError(this, "File name is empty", 3000);
+        emit showError("File name is empty", 3000);
         return;
     }
 
@@ -76,6 +76,6 @@ void medDatabaseExporter::run(void)
     }
 
     if (!written) {
-        emit showError(this, tr("Could not find suitable writer for file: ") + d->filename, 3000);
+        emit showError(tr("Could not find suitable writer for file: ") + d->filename, 3000);
     }
 }

@@ -216,6 +216,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     //Setup quit message
     d->quitMessage = new QWidget ( this );
+    d->quitMessage->setFixedWidth(250);
     QHBoxLayout * quitLayout = new QHBoxLayout;
     QLabel *icon = new QLabel ( this );
     icon->setMinimumHeight ( 30 );
@@ -298,6 +299,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->statusBar->addPermanentWidget ( statusBarWidget, 1 );
 
     this->setStatusBar(d->statusBar);
+    QObject::connect(d->statusBar, SIGNAL(initializeAvailableSpace()), this,  SLOT(availableSpaceOnStatusBar()));
 
 //     this->statusBar()->setSizeGripEnabled ( false );
 //     this->statusBar()->setContentsMargins ( 5, 0, 5, 0 );
@@ -323,8 +325,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     this->setWindowTitle ( "medInria" );
 
     //Connect the messageController with the status for notification messages management
-    QObject::connect(medMessageController::instance(), SIGNAL(addMessage(QWidget*)), d->statusBar, SLOT(addMessage(QWidget*)));
-    QObject::connect(medMessageController::instance(), SIGNAL(removeMessage(QWidget*)), d->statusBar, SLOT(removeMessage(QWidget*)));
+    QObject::connect(medMessageController::instance(), SIGNAL(addMessage(medMessage*)), d->statusBar, SLOT(addMessage(medMessage*)));
+    QObject::connect(medMessageController::instance(), SIGNAL(removeMessage(medMessage*)), d->statusBar, SLOT(removeMessage(medMessage*)));
 
     d->workspaceArea->setupWorkspace ( "Visualization" );
 
@@ -643,10 +645,32 @@ void medMainWindow::onNoQuit ( void )
 {
     d->quitMessage->hide();
     d->rightEndButtons->show();
+
+    d->statusBar->init_availableSpace();
+
+    int space = d->statusBar->getAvailableSpace();
+    int diff = d->quitMessage->width() - d->rightEndButtons->width();
+    space += diff;
+    d->statusBar->setAvailableSpace(space);
+    d->statusBar->showHiddenMessage();  //space has been freed
 }
 
 void medMainWindow::onQuit ( void )
 {
+    d->statusBar->init_availableSpace();
+    int space = d->statusBar->getAvailableSpace();
+    space += d->rightEndButtons->width(); //rightEndButtons are hidden
+    d->statusBar->setAvailableSpace( space );
+
+    // As long as there's not enough space for the quitMessage to be displayed, we hide messages
+    while ( d->quitMessage->width() > d->statusBar->getAvailableSpace())
+    {
+        d->statusBar->hideMessage();
+    }
+    space = d->statusBar->getAvailableSpace();
+    space -= d->quitMessage->width();   //quitMessage is displayed
+    d->statusBar->setAvailableSpace( space );
+
     d->quitMessage->show();
     d->rightEndButtons->hide();
 }
@@ -688,6 +712,15 @@ void medMainWindow::onEditSettings()
     connect ( d->settingsEditor, SIGNAL ( finished() ), dialog, SLOT ( close() ) );
 
     dialog->exec();
+}
+
+void medMainWindow::availableSpaceOnStatusBar()
+{
+    QPoint workspaceButton_topRight = d->quickAccessButton->mapTo(d->statusBar, d->quickAccessButton->rect().topRight());
+    QPoint fullscreenButton_topLeft = d->fullscreenButton->mapTo(d->statusBar, d->fullscreenButton->rect().topLeft());
+    //Available space = space between the spacing after workspace button and the spacing before fullscreen button
+    int space = (fullscreenButton_topLeft.x()-d->statusBarLayout->spacing()) -  (workspaceButton_topRight.x()+d->statusBarLayout->spacing()); 
+    d->statusBar->setAvailableSpace(space);
 }
 
 void medMainWindow::open ( const medDataIndex& index )

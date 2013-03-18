@@ -140,8 +140,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     // Jobs should be added as the last item so that they appear at the bottom
     d->toolboxContainer->addToolBox(d->jobsToolBox);
 
-    connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
+    connect(this,SIGNAL(showError(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
 
     d->toolboxCompositeimporter = new medCompositeDataSetImporterSelectorToolBox(this);
     d->toolboxCompositeimporter->setVisible(true);
@@ -249,7 +249,7 @@ void medBrowserArea::onDataImport(dtkAbstractData *data)
 
 void medBrowserArea::onDataReceivingFailed(QString fileName)
 {
-  emit(showError(this, tr("Unable to get from source the data named ") + fileName,3000));
+  emit(showError(tr("Unable to get from source the data named ") + fileName,3000));
 }
 
 void medBrowserArea::onSourceIndexChanged(int index)

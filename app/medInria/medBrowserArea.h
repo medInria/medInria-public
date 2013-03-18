@@ -69,7 +69,7 @@ signals:
     **/
     void load(const QString& path);
 
-    void showError (QObject*,const QString&,unsigned int timeout);
+    void showError (const QString&,unsigned int timeout);
 
 public slots:
     void onSourceIndexChanged(int index);

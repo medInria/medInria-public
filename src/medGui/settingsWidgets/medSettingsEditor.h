@@ -49,7 +49,7 @@ signals:
      * @param text The error message.
      * @param timeout The timeout before the message disapears.
     */
-    void showError(QObject *sender, const QString& text,unsigned int timeout=0);
+    void showError(const QString& text,unsigned int timeout=0);
 
     /**
      * @brief Emits an info message for the medMessageController to display.
@@ -59,7 +59,7 @@ signals:
      * @param text The error message.
      * @param timeout The timeout before the message disapears.
     */
-    void showInfo(QObject *sender, const QString& text,unsigned int timeout=0);
+    void showInfo(const QString& text,unsigned int timeout=0);
 
     /**
     * Emitted if the dialog should disappear

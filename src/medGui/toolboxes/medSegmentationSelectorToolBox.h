@@ -72,10 +72,10 @@ signals:
     void toolBoxChosen(const QByteArray & algName);
 
     //! Emitted when an error should be shown.
-    void showError (QObject*,const QString&,unsigned int timeout);
+    void showError (const QString&,unsigned int timeout);
 
     //! Emitted when info should be shown.
-    void showInfo(QObject*,const QString&,unsigned int timeout);
+    void showInfo(const QString&,unsigned int timeout);
 
 public slots:
     // Override base class

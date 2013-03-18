@@ -7,7 +7,7 @@ medDataReaderWriter::Reader medDataReaderWriter::reader(const QString& path) {
 
     if (readers.size()==0) {
 #if 0
-        emit showError(this,tr("No reader plugin"),5000);
+        emit showError(tr("No reader plugin"),5000);
         emit failure(this);
 #endif
         return Reader();

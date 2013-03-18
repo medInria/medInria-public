@@ -63,6 +63,8 @@ public slots:
     void onNoQuit(void);
     void onEditSettings(void);
 
+    void availableSpaceOnStatusBar();
+
     /**
      * @brief: Decides what to do when the importer returned a medDataIndex after importation.
      *

@@ -66,8 +66,8 @@ public:
     int count (void);
 
 signals:
-    void showInfo(QObject*,const QString&,unsigned int timeout);
-    void showError(QObject*,const QString&,unsigned int timeout);
+    void showInfo(const QString&,unsigned int timeout);
+    void showError(const QString&,unsigned int timeout);
 
     void viewAppended (medAbstractView *view);
     void viewRemoved  (medAbstractView *view);
