@@ -157,7 +157,7 @@ void medStatusBar::resizeEvent ( QResizeEvent* event )
         }
         else
         {
-            if(std::abs(diff) > availableSpace)
+            if(qAbs(diff) > availableSpace)
             {
                 hideMessage();
             }

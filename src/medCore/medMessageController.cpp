@@ -64,7 +64,6 @@ void medMessage::startTimer()
 {
     if (timeout>0)
         timer->start(timeout);
-    qDebug()<<"BLOUP";
 }
 
 void medMessage::stopTimer()
@@ -125,6 +124,7 @@ medMessageProgress::medMessageProgress(
     progress = new QProgressBar(this);
     progress->setMinimum(0);
     progress->setMaximum(100);
+    progress->setValue(100);
     this->layout()->addWidget(progress);
 }
 
@@ -140,10 +140,7 @@ void medMessageProgress::setProgress(int value)
 void medMessageProgress::success(void)
 {
     progress->setStyleSheet("QProgressBar::chunk {background-color: lime;}");
-    this->timer = new QTimer(this);
-    int timeout = 2000;
-    connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
-    timer->start(timeout);
+    this->associateTimer();
     info->setText("Operation succeeded");
 
 }
@@ -151,11 +148,15 @@ void medMessageProgress::success(void)
 void medMessageProgress::failure(void)
 {
     progress->setStyleSheet("QProgressBar::chunk {background-color: red;}");
+    this->associateTimer();
+    info->setText("Operation aborted");
+}
+void medMessageProgress::associateTimer(void)
+{
     this->timer = new QTimer(this);
     int timeout = 2000;
     connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
     timer->start(timeout);
-    info->setText("Operation aborted");
 }
 
 // /////////////////////////////////////////////////////////////////

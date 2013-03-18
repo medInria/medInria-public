@@ -94,6 +94,7 @@ class MEDCORE_EXPORT medMessageProgress : public medMessage
 public:
      medMessageProgress(const QString& text, QWidget *parent = 0);
     ~medMessageProgress(void);
+    void associateTimer(void);
 
 protected:
     QProgressBar *progress;
@@ -103,7 +104,6 @@ public slots:
     void setProgress(int value);
     void success(void);
     void failure(void);
-
 };
 
 
