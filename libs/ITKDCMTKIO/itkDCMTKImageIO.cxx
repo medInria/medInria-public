@@ -869,42 +869,34 @@ namespace itk
 
 
     size_t length = pixelCount;
-    int bitsPerSample = 8;
     switch( this->GetComponentType() )
     {
     case CHAR:
         length *= sizeof(char);
-        bitsPerSample = 8;
         break;
 
     case UCHAR:
         length *= sizeof(Uint8);
-        bitsPerSample = 8;
         break;
 
     case SHORT:
         length *= sizeof(Sint16);
-        bitsPerSample = 16;
         break;
 
     case USHORT:
         length *= sizeof(Uint16);
-        bitsPerSample = 16;
         break;
 
     case INT:
         length *= sizeof(Sint32);
-        bitsPerSample = 32;
         break;
 
     case UINT:
         length *= sizeof(Uint32);
-        bitsPerSample = 32;
         break;
 
     case DOUBLE:
         length *= sizeof(Float64);
-        bitsPerSample = 64;
         break;
 
     default:
@@ -933,7 +925,6 @@ namespace itk
 	if (!dmp)
 	  itkExceptionMacro ( << "DiPixel object is null" );
 
-	// copyBuffer = (Uint8 *)(image->getOutputData(bitsPerSample));
 	copyBuffer = (Uint8 *)dmp->getData();
 	if (!copyBuffer)
 	{

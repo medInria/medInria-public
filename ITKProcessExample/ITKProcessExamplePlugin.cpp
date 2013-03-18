@@ -37,11 +37,13 @@ ITKProcessExamplePlugin::~ITKProcessExamplePlugin(void)
 
 bool ITKProcessExamplePlugin::initialize(void)
 {
-    if(!ITKProcessExample::registered())
+    if(!ITKProcessExample::registered()) {
         dtkWarn() << "Unable to register ITKProcessExample type";
+    }
 
-    if(!ITKProcessExampleToolBox::registered())
+    if(!ITKProcessExampleToolBox::registered()) {
         dtkWarn() << "Unable to register ITKProcessExample toolbox";
+    }
 
     return true;
 }
