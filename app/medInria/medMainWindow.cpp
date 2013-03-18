@@ -388,7 +388,11 @@ void medMainWindow::mousePressEvent ( QMouseEvent* event )
  */
 void medMainWindow::keyPressEvent( QKeyEvent *event )
 {
+#ifdef __APPLE__
+    if (event->key() == Qt::Key_Meta)
+#else
     if (event->key() == Qt::Key_Control)
+#endif
     {
         d->controlPressed = true;
         return;
@@ -412,7 +416,11 @@ void medMainWindow::keyPressEvent( QKeyEvent *event )
  */
 void medMainWindow::keyReleaseEvent( QKeyEvent * event )
 {
+#ifdef __APPLE__
+    if (event->key() == Qt::Key_Meta)
+#else
     if (event->key() == Qt::Key_Control)
+#endif
     {
         if (d->shortcutAccessVisible)
         {
