@@ -104,9 +104,9 @@ void medSegmentationWorkspace::setupViewContainerStack()
     const QString description(this->description());
     if (!stackedViewContainers()->count())
     {
-        addDefaultTypeContainer(description);
+        QString createdTab = addDefaultTypeContainer(description);
         //Default container:
-        this->connectToolboxesToCurrentContainer(description);
+        this->connectToolboxesToCurrentContainer(createdTab);
     }
 
     this->stackedViewContainers()->unlockTabs();

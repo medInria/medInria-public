@@ -187,16 +187,18 @@ public:
      * @param name identifier/description. If the string is empty, Defaults to :
      * "Single", "Multi", or "Custom"
      * which makes sense in most simple cases.
+     * @return name of the created container
     */
-    void addDefaultTypeContainer(const QString& name = "");
+    QString addDefaultTypeContainer(const QString& name = "");
 
     /**
      * @brief Convenience method to add a medSingleViewContainer.
      *
      * @param name identifier/description. By Default "Single",
      * which makes sense in most simple cases.
+     * @return name of the created container
     */
-    void addSingleContainer(const QString& name="Single");
+    QString addSingleContainer(const QString& name="Single");
 
     /**
      * @brief Convenience method to add a medMultiViewContainer.
@@ -212,8 +214,9 @@ public:
      *
      * @param name identifier/description. By Default "Custom",
      * which makes sense in most simple cases.
+     * @return name of the created container
     */
-    void addCustomContainer(const QString& name="Custom");
+    QString addCustomContainer(const QString& name="Custom");
 
     /**
      * @brief Gets the currently displayed container.

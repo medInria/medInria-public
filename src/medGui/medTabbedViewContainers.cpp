@@ -18,6 +18,7 @@
  */
 
 #include <QtCore>
+#include <QShortcut>
 
 #include "medTabbedViewContainers.h"
 
@@ -29,10 +30,11 @@
 class medTabbedViewContainersPrivate
 {
 public:
-   QHash<QString, medViewContainer*> containers;
-   QString currentName;
-
-   QPushButton *addButton;
+    QHash<QString, medViewContainer*> containers;
+    QString currentName;
+    QShortcut *closeShortcut;
+    
+    QPushButton *addButton;
 };
 
 medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(parent), d(new medTabbedViewContainersPrivate)
@@ -43,11 +45,16 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
     connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(deleteContainerClicked(int)));
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(onCurrentContainerChanged(int)));
 
-    d->addButton = new QPushButton();
+    d->addButton = new QPushButton(this);
     d->addButton->setStyleSheet("background-image: url(:medGui/pixmaps/plus_button.png);background-position: center;background-repeat: no-repeat;");
+    d->addButton->setShortcut(Qt::ControlModifier + Qt::Key_T);
     this->setCornerWidget(d->addButton);
 
     connect(d->addButton,SIGNAL(clicked()),this,SIGNAL(addTabButtonClicked()));
+    
+    d->closeShortcut = new QShortcut(this);
+    d->closeShortcut->setKey(Qt::ControlModifier + Qt::Key_W);
+    connect(d->closeShortcut,SIGNAL(activated()),this,SLOT(deleteContainerShortcutActivated()));
 }
 
 medTabbedViewContainers::~medTabbedViewContainers(void)
@@ -89,6 +96,12 @@ void medTabbedViewContainers::addNewTabContainer()
 }
 */
 
+void medTabbedViewContainers::deleteContainerShortcutActivated()
+{
+    int index = this->currentIndex();
+    this->deleteContainerClicked(index);
+}
+
 void medTabbedViewContainers::deleteContainerClicked(int index)
 {
     if (this->count() == 1)
@@ -126,7 +139,7 @@ void medTabbedViewContainers::addContainer(const QString &name, medViewContainer
 {
     if (!container)
         return;
-
+    
     d->containers[name] = container;
 
     connect( container, SIGNAL( focused( dtkAbstractView * ) ),
@@ -165,6 +178,31 @@ void medTabbedViewContainers::insertContainer(int index, const QString &name, me
         d->currentName = name;
 
     this->insertTab(index,container, name);
+}
+
+void medTabbedViewContainers::changeCurrentContainerName(const QString &name)
+{
+    unsigned int index = this->currentIndex();
+    QString currentName = this->tabText(index);
+    medViewContainer *currentContainer = d->containers[currentName];
+    d->containers.remove(currentName);
+    
+    QString newName = name;
+    if (this->container(newName))
+    {
+        unsigned int i = 1;
+        newName = name + " ";
+        newName += QString::number(i);
+        while (this->container(newName))
+        {
+            ++i;
+            newName = name + " ";
+            newName += QString::number(i);
+        }
+    }
+    
+    this->setTabText(index,newName);
+    d->containers[newName] = currentContainer;
 }
 
 void medTabbedViewContainers::changeCurrentContainerType(const QString &name)

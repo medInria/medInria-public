@@ -146,38 +146,61 @@ medTabbedViewContainers* medWorkspace::stackedViewContainers() const
     return d->viewContainerStack;
 }
 
-void medWorkspace::addDefaultTypeContainer(const QString& name)
+QString medWorkspace::addDefaultTypeContainer(const QString& name)
 {
     //Default container:
     //get default Layout type from settings:
     medSettingsManager * mnger = medSettingsManager::instance();
     QString layout = mnger->value("startup","default_container_layout",
                                        "Multi").toString();
+    
+    QString createdName = name;
     if (layout == "Custom")
     {
         if (name.isEmpty())
-            addCustomContainer();
-        else addCustomContainer(name);
+            createdName = addCustomContainer();
+        else
+            createdName = addCustomContainer(name);
     } else if (layout == "Single")
     {
         if(name.isEmpty())
-            addSingleContainer();
-        else addSingleContainer(name);
+            createdName = addSingleContainer();
+        else
+            createdName = addSingleContainer(name);
     }
     else
     {
         if(name.isEmpty())
-            addMultiContainer();
-        else addMultiContainer(name);
+            createdName = addMultiContainer();
+        else
+            createdName = addMultiContainer(name);
     }
+    
+    return createdName;
 }
 
-void medWorkspace::addSingleContainer(const QString& name)
+QString medWorkspace::addSingleContainer(const QString& name)
 {
     if (!this->stackedViewContainers()->container(name))
+    {
         this->stackedViewContainers()->addContainer (name, new medSingleViewContainer());
+        return name;
+    }
     else
-        qDebug() << "Container" << name << "already exists in this workspaces";
+    {
+        unsigned int i = 1;
+        QString newName = name + " ";
+        newName += QString::number(i);
+        while (this->stackedViewContainers()->container(newName))
+        {
+            ++i;
+            newName = name + " ";
+            newName += QString::number(i);
+        }
+        
+        this->stackedViewContainers()->addContainer (newName, new medSingleViewContainer());
+        return newName;
+    }
 }
 
 QString medWorkspace::addMultiContainer(const QString& name)
@@ -204,12 +227,28 @@ QString medWorkspace::addMultiContainer(const QString& name)
     }
 }
 
-void medWorkspace::addCustomContainer(const QString& name)
+QString medWorkspace::addCustomContainer(const QString& name)
 {
     if (!this->stackedViewContainers()->container(name))
+    {
         this->stackedViewContainers()->addContainer (name, new medCustomViewContainer());
+        return name;
+    }
     else
-        qDebug() << "Container" << name << "already exists in this workspace";
+    {
+        unsigned int i = 1;
+        QString newName = name + " ";
+        newName += QString::number(i);
+        while (this->stackedViewContainers()->container(newName))
+        {
+            ++i;
+            newName = name + " ";
+            newName += QString::number(i);
+        }
+        
+        this->stackedViewContainers()->addContainer (newName, new medCustomViewContainer());
+        return newName;
+    }
 }
 
 
@@ -261,16 +300,7 @@ void medWorkspace::clearToolBoxes()
 void medWorkspace::onAddTabClicked()
 {
     QString name = this->description();
-    QString realName = name;
 
-    unsigned int suppTag = 0;
-    while (this->stackedViewContainers()->container(realName))
-    {
-        suppTag++;
-        realName = name + " ";
-        realName += QString::number(suppTag);
-    }
-
-    this->addDefaultTypeContainer(realName);
+    QString realName = this->addDefaultTypeContainer(name);
     this->stackedViewContainers()->setContainer(realName);
 }
