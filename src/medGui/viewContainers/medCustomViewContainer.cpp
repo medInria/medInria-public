@@ -210,7 +210,6 @@ void medCustomViewContainer::setView ( dtkAbstractView *view )
                 connect ( view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
                 connect ( view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
 
-                this->recomputeStyleSheet();
                 emit viewAdded ( view );
             }
             // END FIXME
@@ -322,7 +321,6 @@ void medCustomViewContainer::onViewClosing()
         parent = parent->parentContainer();
     }
 
-    this->recomputeStyleSheet();
 
     // qDebug() << this << __func__;
     // qDebug() << "isRoot:    " << this->isRoot();
@@ -404,10 +402,6 @@ void medCustomViewContainer::dropEvent ( QDropEvent *event )
     medViewContainer::dropEvent ( event );
 }
 
-void medCustomViewContainer::mousePressEvent(QMouseEvent * event)
-{
-    this->setCurrent ( this );
-}
 
 void medCustomViewContainer::clear()
 {

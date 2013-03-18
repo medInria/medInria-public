@@ -220,7 +220,6 @@ void medViewContainer::setView ( dtkAbstractView *view )
             ++it;
         }
         connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
-        this->recomputeStyleSheet();
     }
     setFocus(Qt::MouseFocusReason);
 }
@@ -231,8 +230,7 @@ void medViewContainer::onViewFocused ( bool value )
 
     if ( !value )
         return;
-
-    if ( !this->isEmpty() )
+    if ( this ->acceptDrops()) // excluding containers that don't accept inputs (e.g Filtering result container)
         this->setCurrent ( this );
 
     if (!current() || !current()->view())
@@ -264,7 +262,6 @@ void medViewContainer::setCurrent ( medViewContainer *container )
     else
         d->current = container;
 
-    //this->recomputeStyleSheet();
 }
 
 void medViewContainer::recomputeStyleSheet()
@@ -310,7 +307,6 @@ void medViewContainer::focusInEvent ( QFocusEvent *event )
     medViewContainer * former = this->current();
 
     d->clicked = true;
-//    qDebug()<< "focusInEvent";
     this->onViewFocused( true );
 //    qDebug()<< this->isDaddy() << isEmpty() << isLeaf() << isClicked();
     this->recomputeStyleSheet();
@@ -324,9 +320,8 @@ void medViewContainer::focusInEvent ( QFocusEvent *event )
 void medViewContainer::focusOutEvent ( QFocusEvent *event )
 {
     Q_UNUSED(event);
-    //d->clicked = false;
-
-    //this->recomputeStyleSheet();
+    d->clicked = false;
+    this->recomputeStyleSheet();
 }
 
 void medViewContainer::paintEvent ( QPaintEvent *event )
