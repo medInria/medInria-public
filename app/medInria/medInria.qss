@@ -1501,7 +1501,7 @@ medViewContainer[isEmpty="false"][clicked="false"] {
     background: #313131;
 }
 
-medViewContainer [isEmpty="false"][clicked="true"] {
+medViewContainer [clicked="true"] {
     border: 1px solid red;
     background: #313131;
 }
