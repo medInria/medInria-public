@@ -5,12 +5,12 @@
 #ifndef %2TOOLBOX_H
 #define %2TOOLBOX_H
 
-#include <medToolBoxFilteringCustom.h>
+#include <medFilteringAbstractToolBox.h>
 #include "%1PluginExport.h"
 
 class %1ToolBoxPrivate;
 
-class %2PLUGIN_EXPORT %1ToolBox : public medToolBoxFilteringCustom
+class %2PLUGIN_EXPORT %1ToolBox : public medFilteringAbstractToolBox
 {
     Q_OBJECT
     
