@@ -25,7 +25,8 @@
 #include "medApplication.h"
 #include "medSplashScreen.h"
 
-#include <dtkCore/dtkGlobal.h>
+
+#include <dtkCore>
 
 #include <medPluginManager.h>
 #include <medDataIndex.h>
@@ -134,14 +135,29 @@ int main(int argc, char *argv[])
     medMainWindow mainwindow;
     forceShow(mainwindow);
 
-    if(!dtkApplicationArgumentsContain(&application, "--no-fullscreen")
-    && !dtkApplicationArgumentsContain(&application, "--wall")){
-        bool fullScreen  = medSettingsManager::instance()->value("startup", "fullscreen", true).toBool();
-        mainwindow.setFullScreen(fullScreen);
-    }
+    bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
 
-    if(application.arguments().contains("--wall"))
+    #ifdef ACTIVATE_WALL_OPTION
+    if (application.arguments().contains("--wall"))
+    {
         mainwindow.setWallScreen(true);
+        fullScreen = false;
+    }
+    #endif
+
+    const bool hasFullScreenArg = application.arguments().contains("--fullscreen");
+    const bool hasNoFullScreenArg = application.arguments().contains("--no-fullscreen");
+
+    if (hasFullScreenArg && hasNoFullScreenArg)
+        dtkWarn() << "Conflicting command line parameters --fullscreen and --no-fullscren. Ignoring.";
+
+    else if (hasNoFullScreenArg)
+        fullScreen = false;
+    else if (hasFullScreenArg)
+        fullScreen = true;
+
+    mainwindow.setFullScreen(fullScreen);
+
 
     if(application.arguments().contains("--stereo")) {
        QGLFormat format;
