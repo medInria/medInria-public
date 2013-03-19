@@ -39,14 +39,9 @@ signals:
      * @brief signals emitted whenever an image has been dropped in the input view container
      */
     void droppedInput (const medDataIndex& index);
-    void inputViewRemoved( void );
+    
 public slots:
 
-    /**
-     * @brief refresh input view according to the data index given in parameter
-     * @param index
-     */
-    void updateInput ( const medDataIndex& index );
     /**
      * @brief update output view according to the data in parameter
      * @param data
@@ -54,6 +49,7 @@ public slots:
     void updateOutput ( dtkAbstractData *data );
 
     void dropEvent ( QDropEvent *event );
+    
 private:
     medFilteringViewContainerPrivate *d3;
 };

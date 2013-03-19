@@ -120,6 +120,7 @@ public slots:
      * @param void
     */
     void onViewClosed(void);
+    void onViewClosed(dtkAbstractView *);
 
     /**
      * @brief  Updates the medToolBoxes when a layer (data) has been removed from a view.
@@ -190,7 +191,7 @@ public slots:
     */
     void switchToLayout (medWorkspace::LayoutType layout);
 
-//    void onFileOpened(const medDataIndex &index);
+
     void onFileOpenedInTab(const medDataIndex &index);
 
 protected slots:

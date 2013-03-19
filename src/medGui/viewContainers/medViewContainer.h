@@ -24,6 +24,7 @@
 
 #include <QtGui/QFrame>
 
+class dtkAbstractData;
 class dtkAbstractView;
 class medDataIndex;
 class medViewPool;
@@ -314,6 +315,24 @@ public:
 
     void setMultiLayer( bool enable = true);
     virtual bool multiLayer ( void );
+    
+    /**
+     * @brief Opens data at corresponding index using DataManager and creates a new view 
+     * or adds data to the current view if multiLayer is enabled. 
+     * Index must be valid for serie. 
+     *
+     * @param index
+     * @return bool
+    */
+    bool open(const medDataIndex& index);
+     
+    /**
+     * @brief Creates a new view  or adds data to the current view if multiLayer is enabled. 
+     *
+     * @param data
+     * @return bool
+    */
+    bool open(dtkAbstractData * data);
 
 signals:
     /**
@@ -422,6 +441,8 @@ protected:
      * @param void
     */
     void recomputeStyleSheet();
+    
+   
 
 protected:
     /**
