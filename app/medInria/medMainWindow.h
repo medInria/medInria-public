@@ -37,7 +37,7 @@ public:
     void resizeEvent( QResizeEvent * event );
 
 signals:
-    void specifySlice(int slice);
+    void sliceSelected(int slice);
 
 public slots:
     void setWallScreen(const bool full);

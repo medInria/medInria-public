@@ -273,7 +273,7 @@ signals:
      *  @param slice - the slice number
      *
     */
-    void specifySlice ( int slice );
+    void sliceSelected ( int slice );
 
 private:
     friend class medMessageController;
