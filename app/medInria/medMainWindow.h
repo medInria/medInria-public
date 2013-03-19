@@ -62,11 +62,11 @@ private slots:
     void switchToWorkspaceArea(void);
     void switchToHomepageArea(void);
 
-    void onShowWorkspace(QString workspace);
-    void onShowQuickAccess(void);
-    void onHideQuickAccess(void);
-    void onShowShortcutAccess(void);
-    void onHideShortcutAccess(void);
+    void showWorkspace(QString workspace);
+    void showQuickAccess(void);
+    void hideQuickAccess(void);
+    void showShortcutAccess(void);
+    void hideShortcutAccess(void);
     void onWorkspaceTriggered(QAction *action);
     void onQuit(void);
     void onSaveModified(void);

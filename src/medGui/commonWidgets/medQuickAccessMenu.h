@@ -21,10 +21,10 @@ public:
     void switchToCurrentlySelected ();
     
 protected:
-  /**
-   *  emit the hideMenu() signal when the widget lost the focus
-   */
-  void focusOutEvent(QFocusEvent * event);
+    /**
+     *  emit the hideMenu() signal when the widget lost the focus
+     */
+    void focusOutEvent(QFocusEvent * event);
     
     void mouseMoveEvent (QMouseEvent * event);
     
@@ -34,13 +34,13 @@ protected:
     void createHorizontalQuickAccessMenu();
     void createVerticalQuickAccessMenu();
     
-    void onMouseMovedInWidget(unsigned int identifier);
+    void mouseSelectWidget(unsigned int identifier);
     
 signals:
-    void hideMenu(void);
-    void switchToHomepageArea(void);
-    void switchToBrowserArea(void);
-    void showWorkspace(QString);
+    void menuHidden(void);
+    void homepageSelected(void);
+    void browserSelected(void);
+    void workspaceSelected(QString);
 
 private:
     int currentSelected;

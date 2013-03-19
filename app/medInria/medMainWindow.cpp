@@ -205,16 +205,16 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quickAccessButton->setIcon(QIcon(":medInria.ico"));
     d->quickAccessButton->setCursor(Qt::PointingHandCursor);
     d->quickAccessButton->setText ( tr("Workspaces access menu") );
-    connect ( d->quickAccessButton,  SIGNAL ( clicked() ), this, SLOT ( onShowQuickAccess() ) );
+    connect ( d->quickAccessButton,  SIGNAL ( clicked() ), this, SLOT ( showQuickAccess() ) );
 
     d->quickAccessWidget = new medQuickAccessMenu( true, this );
     d->quickAccessWidget->setFocusPolicy(Qt::ClickFocus);
     d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, -500 ) );
     d->quickAccessWidget->setMinimumWidth(180);
-    connect(d->quickAccessWidget, SIGNAL(hideMenu()), this, SLOT(onHideQuickAccess()));
-    connect(d->quickAccessWidget, SIGNAL(switchToHomepageArea()), this, SLOT(switchToHomepageArea()));
-    connect(d->quickAccessWidget, SIGNAL(switchToBrowserArea()), this, SLOT(switchToBrowserArea()));
-    connect(d->quickAccessWidget, SIGNAL(showWorkspace(QString)), this, SLOT(onShowWorkspace(QString)));
+    connect(d->quickAccessWidget, SIGNAL(menuHidden()), this, SLOT(hideQuickAccess()));
+    connect(d->quickAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
+    connect(d->quickAccessWidget, SIGNAL(browserSelected()), this, SLOT(switchToBrowserArea()));
+    connect(d->quickAccessWidget, SIGNAL(workspaceSelected(QString)), this, SLOT(showWorkspace(QString)));
 
     d->quickAccessVisible = false;
     d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos",this );
@@ -223,10 +223,10 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->shortcutAccessWidget->setFocusPolicy(Qt::ClickFocus);
     d->shortcutAccessWidget->setProperty ( "pos", QPoint ( 0, -500 ) );
     d->shortcutAccessWidget->setStyleSheet("border-radius: 10px;background-color: rgba(200,200,200,150);");
-    connect(d->shortcutAccessWidget, SIGNAL(hideMenu()), this, SLOT(onHideShortcutAccess()));
-    connect(d->shortcutAccessWidget, SIGNAL(switchToHomepageArea()), this, SLOT(switchToHomepageArea()));
-    connect(d->shortcutAccessWidget, SIGNAL(switchToBrowserArea()), this, SLOT(switchToBrowserArea()));
-    connect(d->shortcutAccessWidget, SIGNAL(showWorkspace(QString)), this, SLOT(onShowWorkspace(QString)));
+    connect(d->shortcutAccessWidget, SIGNAL(menuHidden()), this, SLOT(hideShortcutAccess()));
+    connect(d->shortcutAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
+    connect(d->shortcutAccessWidget, SIGNAL(browserSelected()), this, SLOT(switchToBrowserArea()));
+    connect(d->shortcutAccessWidget, SIGNAL(workspaceSelected(QString)), this, SLOT(showWorkspace(QString)));
     
     d->shortcutAccessVisible = false;
     d->controlPressed = false;
@@ -350,7 +350,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     d->homepageArea->initPage();
     QObject::connect ( d->homepageArea, SIGNAL ( showBrowser() ), this, SLOT ( switchToBrowserArea() ) );
-    QObject::connect ( d->homepageArea, SIGNAL ( showWorkspace ( QString ) ), this, SLOT ( onShowWorkspace ( QString ) ) );
+    QObject::connect ( d->homepageArea, SIGNAL ( showWorkspace ( QString ) ), this, SLOT ( showWorkspace ( QString ) ) );
     QObject::connect ( d->homepageArea,SIGNAL ( showSettings() ), this, SLOT ( onEditSettings() ) );
 
     this->setCentralWidget ( d->stack );
@@ -381,7 +381,7 @@ medMainWindow::~medMainWindow ( void )
 void medMainWindow::mousePressEvent ( QMouseEvent* event )
 {
     QWidget::mousePressEvent ( event );
-    this->onHideQuickAccess();
+    this->hideQuickAccess();
 }
 
 /**
@@ -402,7 +402,7 @@ void medMainWindow::keyPressEvent( QKeyEvent *event )
     if ((event->key() == Qt::Key_Shift)&&(d->controlPressed))
     {
         if (!d->shortcutAccessVisible)
-            this->onShowShortcutAccess();
+            this->showShortcutAccess();
         else
             d->shortcutAccessWidget->updateCurrentlySelectedRight();
         
@@ -426,7 +426,7 @@ void medMainWindow::keyReleaseEvent( QKeyEvent * event )
         if (d->shortcutAccessVisible)
         {
             d->shortcutAccessWidget->switchToCurrentlySelected();
-            this->onHideShortcutAccess();
+            this->hideShortcutAccess();
         }
         d->controlPressed = false;
     }
@@ -500,7 +500,7 @@ void medMainWindow::resizeEvent ( QResizeEvent* event )
 {
     QWidget::resizeEvent ( event );
     d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, this->height() - 30 ));
-    this->onHideQuickAccess();
+    this->hideQuickAccess();
 }
 
 
@@ -588,10 +588,10 @@ void medMainWindow::switchToHomepageArea ( void )
     d->quickAccessButton->setText(tr("Workspaces access menu"));
     d->quickAccessButton->setMinimumWidth(170);
     if (d->quickAccessVisible)
-        this->onHideQuickAccess();
+        this->hideQuickAccess();
     
     if (d->shortcutAccessVisible)
-        this->onHideShortcutAccess();
+        this->hideShortcutAccess();
 
     d->stack->setCurrentWidget ( d->homepageArea );
     d->homepageArea->onShowInfo();
@@ -610,10 +610,10 @@ void medMainWindow::switchToBrowserArea ( void )
     d->quickAccessButton->setText(tr("Workspace: Browser"));
     d->quickAccessButton->setMinimumWidth(170);
     if (d->quickAccessVisible)
-        this->onHideQuickAccess();
+        this->hideQuickAccess();
 
     if (d->shortcutAccessVisible)
-        this->onHideShortcutAccess();
+        this->hideShortcutAccess();
 
     d->browserArea->setup ( this->statusBar() );
     d->workspaceArea->setdw ( this->statusBar() );
@@ -626,10 +626,10 @@ void medMainWindow::switchToBrowserArea ( void )
 void medMainWindow::switchToWorkspaceArea ( void )
 {
     if (d->quickAccessVisible)
-        this->onHideQuickAccess();
+        this->hideQuickAccess();
     
     if (d->shortcutAccessVisible)
-        this->onHideShortcutAccess();
+        this->hideShortcutAccess();
 
     d->browserArea->setdw ( this->statusBar() );
     d->workspaceArea->setup ( this->statusBar() );
@@ -661,7 +661,7 @@ void medMainWindow::switchToWorkspaceArea ( void )
     }
 }
 
-void medMainWindow::onShowWorkspace ( QString workspace )
+void medMainWindow::showWorkspace ( QString workspace )
 {
     d->quickAccessButton->setMinimumWidth(170);
     d->workspaceArea->setupWorkspace(workspace);
@@ -677,11 +677,11 @@ void medMainWindow::onShowWorkspace ( QString workspace )
 /**
  * Slot to show bottom left menu
  */
-void medMainWindow::onShowQuickAccess ( void )
+void medMainWindow::showQuickAccess ( void )
 {
     if ( d->quickAccessVisible )
     {
-        this->onHideQuickAccess();
+        this->hideQuickAccess();
         return;
     }
     d->quickAccessWidget->reset(false);
@@ -698,7 +698,7 @@ void medMainWindow::onShowQuickAccess ( void )
 /**
  * Slot to hide bottom left menu
  */
-void medMainWindow::onHideQuickAccess ( void )
+void medMainWindow::hideQuickAccess ( void )
 {
     if (!d->quickAccessVisible)
         return;
@@ -713,11 +713,11 @@ void medMainWindow::onHideQuickAccess ( void )
 /**
  * Slot to show alt-tab like menu
  */
-void medMainWindow::onShowShortcutAccess ( void )
+void medMainWindow::showShortcutAccess ( void )
 {
     if ( d->shortcutAccessVisible )
     {
-        this->onHideShortcutAccess();
+        this->hideShortcutAccess();
         return;
     }
     
@@ -737,7 +737,7 @@ void medMainWindow::onShowShortcutAccess ( void )
 /**
  * Slot to hide alt-tab like menu
  */
-void medMainWindow::onHideShortcutAccess ( void )
+void medMainWindow::hideShortcutAccess ( void )
 {
     if (!d->shortcutAccessVisible)
         return;

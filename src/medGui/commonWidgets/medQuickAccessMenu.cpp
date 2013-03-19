@@ -23,7 +23,7 @@ medQuickAccessMenu::medQuickAccessMenu ( bool vertical, QWidget* parent, Qt::Win
 void medQuickAccessMenu::focusOutEvent ( QFocusEvent* event )
 {
     QWidget::focusOutEvent ( event );
-    emit hideMenu();
+    emit menuHidden();
 }
 
 /**
@@ -70,7 +70,7 @@ void medQuickAccessMenu::mouseMoveEvent (QMouseEvent *event)
         QRect widgetRect = buttonsList[i]->geometry();
         if (widgetRect.contains(event->pos()))
         {
-            this->onMouseMovedInWidget(i);
+            this->mouseSelectWidget(i);
             break;
         }
     }
@@ -102,25 +102,25 @@ void medQuickAccessMenu::switchToCurrentlySelected ( void )
 {
     if (currentSelected < 0)
     {
-        emit hideMenu();
+        emit menuHidden();
         return;
     }
     
     if (currentSelected == 0)
     {
-        emit switchToHomepageArea();
+        emit homepageSelected();
         return;
     }
     
     if (currentSelected == 1)
     {
-        emit switchToBrowserArea();
+        emit browserSelected();
         return;
     }
 
     if (currentSelected >= 2)
     {
-        emit showWorkspace(buttonsList[currentSelected]->identifier());
+        emit workspaceSelected(buttonsList[currentSelected]->identifier());
         return;
     }
 }
@@ -234,7 +234,7 @@ void medQuickAccessMenu::reset(bool optimizeLayout)
 /**
  * Mouse over slot to select widget in menu
  */
-void medQuickAccessMenu::onMouseMovedInWidget(unsigned int identifier)
+void medQuickAccessMenu::mouseSelectWidget(unsigned int identifier)
 {
     unsigned int newSelection = identifier;
     
@@ -286,7 +286,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu ( void )
     homeButton->setFocusPolicy ( Qt::NoFocus );
     homeButton->setCursor(Qt::PointingHandCursor);
     workspaceButtonsLayout->addWidget ( homeButton );
-    QObject::connect ( homeButton, SIGNAL ( clicked() ), this, SIGNAL ( switchToHomepageArea() ) );
+    QObject::connect ( homeButton, SIGNAL ( clicked() ), this, SIGNAL ( homepageSelected() ) );
     buttonsList.push_back(homeButton);
     
     //Setup browser access button
@@ -301,7 +301,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu ( void )
     browserButton->setIdentifier("Browser");
     browserButton->setFocusPolicy ( Qt::NoFocus );
     workspaceButtonsLayout->addWidget ( browserButton );
-    QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SIGNAL ( switchToBrowserArea()) );
+    QObject::connect ( browserButton, SIGNAL ( clicked() ),this, SIGNAL ( browserSelected()) );
     buttonsList.push_back(browserButton);
     
     //Dynamically setup workspaces access button
@@ -319,7 +319,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu ( void )
         button->setToolTip( detail->description);
         button->setIdentifier(id);
         workspaceButtonsLayout->addWidget ( button );
-        QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( showWorkspace ( QString ) ) );
+        QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( workspaceSelected ( QString ) ) );
         buttonsList.push_back(button);
     }
     workspaceButtonsLayout->addStretch();
@@ -353,7 +353,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
     smallHomeButton->setText("Homepage");
     smallHomeButton->setSelected(true);
     shortcutAccessLayout->addWidget (smallHomeButton);
-    QObject::connect ( smallHomeButton, SIGNAL ( clicked() ), this, SIGNAL ( switchToHomepageArea() ) );
+    QObject::connect ( smallHomeButton, SIGNAL ( clicked() ), this, SIGNAL ( homepageSelected() ) );
     buttonsList.push_back(smallHomeButton);
     
     //Setup browser access button
@@ -366,7 +366,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
     smallBrowserButton->setText("Browser");
     smallBrowserButton->setIdentifier("Browser");
     shortcutAccessLayout->addWidget ( smallBrowserButton );
-    QObject::connect ( smallBrowserButton, SIGNAL ( clicked() ),this, SIGNAL ( switchToBrowserArea()) );
+    QObject::connect ( smallBrowserButton, SIGNAL ( clicked() ),this, SIGNAL ( browserSelected()) );
     buttonsList.push_back(smallBrowserButton);
 
     foreach ( QString id, workspaceDetails.keys() )
@@ -381,7 +381,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
         button->setStyleSheet("border-radius: 5px;font-size:12px;color: #ffffff;background-image: url(:icons/workspace_" + detail->name + ".png) no-repeat;");
         button->setIdentifier(id);
         shortcutAccessLayout->addWidget ( button );
-        QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( showWorkspace ( QString ) ) );
+        QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( workspaceSelected ( QString ) ) );
         buttonsList.push_back(button);
     }
     
