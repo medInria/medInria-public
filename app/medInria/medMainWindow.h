@@ -31,24 +31,31 @@ class medMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
+
+     typedef enum { HomePage, Browser, WorkSpace } AreaType;
+
      medMainWindow(QWidget *parent = 0);
     ~medMainWindow(void);
 
     void readSettings(void);
     void writeSettings();
 
+    void setStartup(const AreaType areaIndex,const QStringList& filenames);
     void updateQuickAccessMenu(void);
     void resizeEvent( QResizeEvent * event );
 
 public slots:
-    void setWallScreen(bool full);
-    void setFullScreen(bool full);
+    void setWallScreen(const bool full);
+    void setFullScreen(const bool full);
 
     /**
      * @brief Switches from the Fullscreen mode to the normal mode.
      *
      */
     void switchFullScreen(void);
+    void switchToArea(const AreaType areaIndex);
+
+private slots:
 
     void switchToBrowserArea(void);
     void switchToWorkspaceArea(void);
@@ -64,6 +71,10 @@ public slots:
     void onEditSettings(void);
 
     void availableSpaceOnStatusBar();
+    //  @brief React to to new medInria instance.
+    //  @param message
+
+    void onNewInstance(const QString& message);
 
     /**
      * @brief: Decides what to do when the importer returned a medDataIndex after importation.

@@ -16,7 +16,7 @@
 #ifndef MEDAPPLICATION_H
 #define MEDAPPLICATION_H
 
-#include <QApplication>
+#include <QtSingleApplication>
 #include <QColor>
 
 class medApplicationPrivate;
@@ -29,7 +29,7 @@ class medApplicationPrivate;
  * @brief Sets the style for the application and redirects some messages to logs or splash-screen.
  *
  */
-class medApplication : public QApplication
+class medApplication : public QtSingleApplication
 {
     Q_OBJECT
     /**  Font color for messages redirected to the Splash screen.*/
