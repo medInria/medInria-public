@@ -20,6 +20,9 @@ medQuickAccessMenu::medQuickAccessMenu ( bool vertical, QWidget* parent, Qt::Win
     }
 }
 
+/**
+ *  emit the menuHidden() signal when the widget lost the focus
+ */
 void medQuickAccessMenu::focusOutEvent ( QFocusEvent* event )
 {
     QWidget::focusOutEvent ( event );

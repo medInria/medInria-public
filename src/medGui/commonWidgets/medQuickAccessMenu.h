@@ -21,9 +21,6 @@ public:
     void switchToCurrentlySelected ();
     
 protected:
-    /**
-     *  emit the hideMenu() signal when the widget lost the focus
-     */
     void focusOutEvent(QFocusEvent * event);
     
     void mouseMoveEvent (QMouseEvent * event);
