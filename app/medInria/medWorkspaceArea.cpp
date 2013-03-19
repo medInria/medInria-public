@@ -252,7 +252,7 @@ bool medWorkspaceArea::openInTab(const medDataIndex &index)
 bool medWorkspaceArea::open(const medDataIndex& index)
 {
     bool succeeded = false;
-            connect (this, SIGNAL(specifySlice(int)), view, SLOT(setSlider(int)));
+            connect (this, SIGNAL(sliceSelected(int)), view, SLOT(setSlider(int)));
 
 
     if( !index.isValid() )
@@ -750,12 +750,12 @@ void medWorkspaceArea::setupWorkspace(QString name)
     // double-click on a thumbnail launches its visualization in the current workspace (disabled for Registration)
     if (d->currentWorkspaceName != "Registration")
     {
-        connect (medDataManager::instance(), SIGNAL(onItemDoubleClicked(const medDataIndex&)), 
+        connect (medDataManager::instance(), SIGNAL(itemDoubleClicked(const medDataIndex&)), 
             this, SLOT(open(const medDataIndex&)), Qt::UniqueConnection);
     }
     else
     {
-        disconnect (medDataManager::instance(), SIGNAL(onItemDoubleClicked(const medDataIndex&)), 
+        disconnect (medDataManager::instance(), SIGNAL(itemDoubleClicked(const medDataIndex&)), 
             this, SLOT(open(const medDataIndex&)));
     }
 }
