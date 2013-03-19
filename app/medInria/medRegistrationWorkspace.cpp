@@ -23,8 +23,6 @@ public:
 
 medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medWorkspace(parent), d(new medRegistrationWorkspacePrivate)
 {
-
-
     d->viewPropertiesToolBox = new medViewPropertiesToolBox(parent);
     this->addToolBox(d->viewPropertiesToolBox);
 
@@ -39,8 +37,6 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medWorkspa
 
     this->addToolBox( d->registrationToolBox );
 
-
-    //this->setLayoutType(medWorkspace::TopDbBottomTb);
     this->setLayoutType(medWorkspace::LeftDbRightTb);
 }
 
