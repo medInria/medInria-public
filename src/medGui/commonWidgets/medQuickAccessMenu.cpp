@@ -15,7 +15,7 @@ medQuickAccessMenu::medQuickAccessMenu ( bool vertical, QWidget* parent, Qt::Win
     else
     {
         this->createHorizontalQuickAccessMenu();
-        this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+        this->setWindowFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
         this->setAttribute(Qt::WA_TranslucentBackground, true);
     }
 }
@@ -133,27 +133,17 @@ void medQuickAccessMenu::updateCurrentlySelectedLeft ( void )
     if (currentSelected <= 0)
     {
         if (currentSelected == 0)
-        {
             buttonsList[currentSelected]->setSelected(false);
-            buttonsList[currentSelected]->style()->unpolish(buttonsList[currentSelected]);
-            buttonsList[currentSelected]->style()->polish(buttonsList[currentSelected]);
-        }
         
         currentSelected = buttonsList.size() - 1;
         buttonsList[currentSelected]->setSelected(true);
-        buttonsList[currentSelected]->style()->unpolish(buttonsList[currentSelected]);
-        buttonsList[currentSelected]->style()->polish(buttonsList[currentSelected]);
         
         return;
     }
     
     buttonsList[currentSelected]->setSelected(false);
-    buttonsList[currentSelected]->style()->unpolish(buttonsList[currentSelected]);
-    buttonsList[currentSelected]->style()->polish(buttonsList[currentSelected]);
     currentSelected--;
     buttonsList[currentSelected]->setSelected(true);
-    buttonsList[currentSelected]->style()->unpolish(buttonsList[currentSelected]);
-    buttonsList[currentSelected]->style()->polish(buttonsList[currentSelected]);
 }
 
 /**
@@ -165,22 +155,16 @@ void medQuickAccessMenu::updateCurrentlySelectedRight ( void )
     {
         currentSelected = 0;
         buttonsList[currentSelected]->setSelected(true);
-        buttonsList[currentSelected]->style()->unpolish(buttonsList[currentSelected]);
-        buttonsList[currentSelected]->style()->polish(buttonsList[currentSelected]);        
         return;
     }
 
     buttonsList[currentSelected]->setSelected(false);
-    buttonsList[currentSelected]->style()->unpolish(buttonsList[currentSelected]);
-    buttonsList[currentSelected]->style()->polish(buttonsList[currentSelected]);
 
     currentSelected++;
     if (currentSelected >= buttonsList.size())
         currentSelected = 0;
     
     buttonsList[currentSelected]->setSelected(true);
-    buttonsList[currentSelected]->style()->unpolish(buttonsList[currentSelected]);
-    buttonsList[currentSelected]->style()->polish(buttonsList[currentSelected]);
 }
 
 /**
@@ -194,10 +178,8 @@ void medQuickAccessMenu::reset(bool optimizeLayout)
             buttonsList[i]->setSelected(true);
         else
             buttonsList[i]->setSelected(false);
-        buttonsList[i]->style()->unpolish(buttonsList[i]);
-        buttonsList[i]->style()->polish(buttonsList[i]);
     }
-    
+
     if ((optimizeLayout)&&(backgroundFrame))
     {
         unsigned int width = ((QWidget *)this->parent())->size().width();
@@ -260,16 +242,9 @@ void medQuickAccessMenu::onMouseMovedInWidget(unsigned int identifier)
         return;
     
     if (currentSelected >= 0)
-    {
         buttonsList[currentSelected]->setSelected(false);
-        buttonsList[currentSelected]->style()->unpolish(buttonsList[currentSelected]);
-        buttonsList[currentSelected]->style()->polish(buttonsList[currentSelected]);
-    }
     
-    buttonsList[newSelection]->setSelected(true);
-    buttonsList[newSelection]->style()->unpolish(buttonsList[newSelection]);
-    buttonsList[newSelection]->style()->polish(buttonsList[newSelection]);
-    
+    buttonsList[newSelection]->setSelected(true);    
     currentSelected = newSelection;
 }
 
@@ -371,20 +346,20 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
     medHomepagePushButton * smallHomeButton = new medHomepagePushButton ( this );
     smallHomeButton->setFixedHeight ( 100 );
     smallHomeButton->setFixedWidth ( 160 );
-    smallHomeButton->setStyleSheet("border-radius: 5px;font-size:12px;background-image: url(:icons/home_sc.png) no-repeat;");
+    smallHomeButton->setStyleSheet("border-radius: 5px;font-size:12px;color: #ffffff;background-image: url(:icons/home_sc.png) no-repeat;");
     smallHomeButton->setFocusPolicy ( Qt::NoFocus );
     smallHomeButton->setCursor(Qt::PointingHandCursor);
     smallHomeButton->setIdentifier("Homepage");
     smallHomeButton->setText("Homepage");
     smallHomeButton->setSelected(true);
-    shortcutAccessLayout->addWidget ( smallHomeButton );
+    shortcutAccessLayout->addWidget (smallHomeButton);
     QObject::connect ( smallHomeButton, SIGNAL ( clicked() ), this, SIGNAL ( switchToHomepageArea() ) );
     buttonsList.push_back(smallHomeButton);
     
     //Setup browser access button
     medHomepagePushButton * smallBrowserButton = new medHomepagePushButton ( this );
     smallBrowserButton->setCursor(Qt::PointingHandCursor);
-    smallBrowserButton->setStyleSheet("border-radius: 5px;font-size:12px;background-image: url(:icons/database.png) no-repeat;");
+    smallBrowserButton->setStyleSheet("border-radius: 5px;font-size:12px;color: #ffffff;background-image: url(:icons/database.png) no-repeat;");
     smallBrowserButton->setFixedHeight ( 100 );
     smallBrowserButton->setFixedWidth ( 160 );
     smallBrowserButton->setFocusPolicy ( Qt::NoFocus );
@@ -393,7 +368,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
     shortcutAccessLayout->addWidget ( smallBrowserButton );
     QObject::connect ( smallBrowserButton, SIGNAL ( clicked() ),this, SIGNAL ( switchToBrowserArea()) );
     buttonsList.push_back(smallBrowserButton);
-    
+
     foreach ( QString id, workspaceDetails.keys() )
     {
         medHomepagePushButton * button = new medHomepagePushButton ( this );
@@ -403,7 +378,7 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
         button->setCursor(Qt::PointingHandCursor);
         button->setFixedHeight ( 100 );
         button->setFixedWidth ( 160 );
-        button->setStyleSheet("border-radius: 5px;font-size:12px;background-image: url(:icons/workspace_" + detail->name + ".png) no-repeat;");
+        button->setStyleSheet("border-radius: 5px;font-size:12px;color: #ffffff;background-image: url(:icons/workspace_" + detail->name + ".png) no-repeat;");
         button->setIdentifier(id);
         shortcutAccessLayout->addWidget ( button );
         QObject::connect ( button, SIGNAL ( clicked ( QString ) ),this, SIGNAL ( showWorkspace ( QString ) ) );
@@ -412,10 +387,10 @@ void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
     
     backgroundFrame->setLayout(shortcutAccessLayout);
     backgroundFrame->setFixedWidth ( 40 + 180 * ( 2 + workspaceDetails.size() ) );
-    backgroundFrame->setFixedHeight ( 130 );
+    backgroundFrame->setFixedHeight ( 240 );
     backgroundFrame->setMouseTracking(true);
     mainWidgetLayout->addWidget(backgroundFrame);
     this->setFixedWidth ( 40 + 180 * ( 2 + workspaceDetails.size() ) );
-    this->setFixedHeight ( 130 );
+    this->setFixedHeight ( 240 );
     this->setLayout(mainWidgetLayout);
 }

@@ -83,6 +83,8 @@ bool medHomepagePushButton::isSelected() const
 void medHomepagePushButton::setSelected(bool value)
 {
     m_selected = value;
+    this->style()->unpolish(this);
+    this->style()->polish(this);
 }
 
 QString medHomepageButton::identifier()

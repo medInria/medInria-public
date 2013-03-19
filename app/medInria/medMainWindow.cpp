@@ -291,11 +291,12 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
                        this, SLOT ( setFullScreen(bool) ) );
 
     QIcon cameraIcon;
-    cameraIcon.addPixmap(QPixmap(":icons/camera.png"));
+    cameraIcon.addPixmap(QPixmap(":icons/camera.png"),QIcon::Normal);
+    cameraIcon.addPixmap(QPixmap(":icons/camera_grey.png"),QIcon::Disabled);
     d->screenshotButton = new QToolButton(this);
     d->screenshotButton->setIcon(cameraIcon);
     d->screenshotButton->setObjectName("screenshotButton");
-    d->screenshotButton->setShortcut(Qt::ControlModifier + Qt::Key_S);
+    d->screenshotButton->setShortcut(Qt::AltModifier + Qt::Key_S);
     d->screenshotButton->setToolTip(tr("Capture screenshot"));
     QObject::connect ( d->screenshotButton, SIGNAL ( clicked() ),
                       this, SLOT ( captureScreenshot() ) );
@@ -388,7 +389,7 @@ void medMainWindow::mousePressEvent ( QMouseEvent* event )
  */
 void medMainWindow::keyPressEvent( QKeyEvent *event )
 {
-#ifdef __APPLE__
+#ifdef Q_OS_MAC
     if (event->key() == Qt::Key_Meta)
 #else
     if (event->key() == Qt::Key_Control)
@@ -416,7 +417,7 @@ void medMainWindow::keyPressEvent( QKeyEvent *event )
  */
 void medMainWindow::keyReleaseEvent( QKeyEvent * event )
 {
-#ifdef __APPLE__
+#ifdef Q_OS_MAC
     if (event->key() == Qt::Key_Meta)
 #else
     if (event->key() == Qt::Key_Control)
@@ -536,6 +537,9 @@ void medMainWindow::captureScreenshot()
 {
     QPixmap screenshot = d->workspaceArea->grabScreenshot();
     QString fileName = QFileDialog::getSaveFileName(NULL, tr("Save screenshot as"), "", "*.png");
+    
+    if (!fileName.endsWith(".png"))
+        fileName += ".png";
     
     QImage transparentImage = screenshot.toImage();
     QImage outImage(transparentImage.size(), QImage::Format_RGB32);
