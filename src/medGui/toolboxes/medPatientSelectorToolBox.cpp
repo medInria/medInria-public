@@ -172,10 +172,18 @@ void medPatientSelectorToolBox::setPatientIndex(const medDataIndex &index)
     baseIndex.setImageId(-1);
 
     typedef QHash< medDataIndex, int  > IndexHashType;
-    IndexHashType::const_iterator it = d->indexMap.find( baseIndex );
-    if ( it != d->indexMap.end() ) {
-        int itemId =it.value();
-        d->combo->setCurrentIndex(d->combo->findData(itemId));
+    QList<int> dataSources = medDataManager::instance()->dataSourceIds();
+    
+    foreach (const int dataSourceId, dataSources )
+    {
+        baseIndex.setDataSourceId(dataSourceId);
+        IndexHashType::const_iterator it = d->indexMap.find( baseIndex );
+        if ( it != d->indexMap.end() )
+        {
+            int itemId =it.value();
+            d->combo->setCurrentIndex(d->combo->findData(itemId));
+            break;
+        }
     }
 }
 
