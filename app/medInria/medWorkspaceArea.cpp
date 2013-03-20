@@ -252,8 +252,6 @@ bool medWorkspaceArea::openInTab(const medDataIndex &index)
 bool medWorkspaceArea::open(const medDataIndex& index)
 {
     bool succeeded = false;
-            connect (this, SIGNAL(sliceSelected(int)), view, SLOT(setSlider(int)));
-
 
     if( !index.isValid() )
         return false;
@@ -263,7 +261,15 @@ bool medWorkspaceArea::open(const medDataIndex& index)
         medViewContainer * root = this->currentRootContainer();
         succeeded = root->open(index);
         this->switchToPatient(index);
+
+        dtkSmartPointer<medAbstractView> view;
+        if (root != NULL)
+            view = qobject_cast<medAbstractView*>(root->view());
+
+        if (view.isNull())
+            connect (this, SIGNAL(sliceSelected(int)), view, SLOT(setSlider(int)));
     }
+
 
     else if( index.isValidForPatient() )
     {
