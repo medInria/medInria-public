@@ -296,32 +296,35 @@ void medWorkspaceArea::onFileOpenedInTab(const medDataIndex &index)
 
 void medWorkspaceArea::onViewClosed(void)
 {
-    if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
-       onViewClosed(view);
+    medAbstractView * medView = dynamic_cast<medAbstractView *> (this->sender());
+    if (medView) {
+       onViewClosed(medView);
     }
 }
 
 void medWorkspaceArea::onViewClosed(dtkAbstractView *view)
-{
-    if (medAbstractView *view = dynamic_cast<medAbstractView*> (view)) {
+{ 
+    medAbstractView * medView = dynamic_cast<medAbstractView *> (view);
+    if( medView )
+    {
         QList<medToolBox *> toolboxes = d->toolBoxContainer->toolBoxes();
         foreach( medToolBox *tb, toolboxes)
             tb->update(NULL);
 
-        QList<medDataIndex> indices = medViewManager::instance()->indices( view );
+        QList<medDataIndex> indices = medViewManager::instance()->indices( medView );
         foreach (medDataIndex index, indices)
-            medViewManager::instance()->remove(index, view); // deletes the view
+            medViewManager::instance()->remove(index, medView); // deletes the view
     }
 }
 
 void medWorkspaceArea::onDataRemoved(int layer)
 {
-    //JGG qDebug()<< "Removing layer ";
     Q_UNUSED(layer);
-    if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
+    medAbstractView * medView = dynamic_cast<medAbstractView *> (this->sender());
+    if (medView) {
         QList<medToolBox *> toolboxes = d->toolBoxContainer->toolBoxes();
         foreach( medToolBox *tb, toolboxes)
-            tb->update(view);
+            tb->update(medView);
     }
 }
 
