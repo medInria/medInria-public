@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtk_FiberDataSet_
-#define _vtk_FiberDataSet_
+#pragma once
 
 #include <vtkMultiBlockDataSet.h>
 #include "vtkDataManagementExport.h"
@@ -80,5 +79,3 @@ class VTK_DATAMANAGEMENT_EXPORT vtkFiberDataSet : public vtkMultiBlockDataSet
   
 };
 
-
-#endif

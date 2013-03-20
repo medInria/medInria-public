@@ -1,5 +1,5 @@
-#ifndef IOUTILS_H
-#define IOUTILS_H
+#pragma once
+
 
 #include <iostream>
 #include <string>
@@ -424,4 +424,3 @@ namespace io_utils {
 
 }
 
-#endif  //  !IOUTILS_H
