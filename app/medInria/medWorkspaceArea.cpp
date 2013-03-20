@@ -259,15 +259,10 @@ bool medWorkspaceArea::open(const medDataIndex& index)
     {
         //get the root container, to see if there is an available view to dump our data in.
         medViewContainer * root = this->currentRootContainer();
+        connect(this, SIGNAL(sliceSelected(int)), root, SIGNAL(sliceSelected(int)));
         succeeded = root->open(index);
         this->switchToPatient(index);
 
-        dtkSmartPointer<medAbstractView> view;
-        if (root != NULL)
-            view = qobject_cast<medAbstractView*>(root->view());
-
-        if (view.isNull())
-            connect (this, SIGNAL(sliceSelected(int)), view, SLOT(setSlider(int)));
     }
 
 
