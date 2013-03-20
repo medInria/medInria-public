@@ -1,22 +1,3 @@
-### CMakeLists.txt ---
-##
-## Author: Julien Wintz
-## Copyright (C) 2008 - Julien Wintz, Inria.
-## Created: Wed Sep 16 17:20:13 2009 (+0200)
-## Version: $Id$
-## Last-Updated: Wed May  4 14:43:36 2011 (+0200)
-##           By: Julien Wintz
-##     Update #: 168
-######################################################################
-##
-### Commentary:
-##
-######################################################################
-##
-### Change log:
-##
-######################################################################
-
 project(medGui)
 
 ## #################################################################
@@ -248,6 +229,7 @@ set(${PROJECT_NAME}_RESOURCES medGui.qrc)
 ## #################################################################
 ## Build rules
 ## #################################################################
+
 add_definitions(${QT_DEFINITIONS})
 add_definitions(-DQT_SHARED)
 add_definitions(-DQT_NO_DEBUG)
@@ -283,15 +265,17 @@ SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 if (BUILD_TESTING)
-  add_subdirectory (Testing)
+    add_subdirectory(Testing)
 endif()
 
 ## #################################################################
 ## Installation
 ## #################################################################
 
-install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
+install(FILES ${${PROJECT_NAME}_DEVEL_HEADERS_MOC} ${${PROJECT_NAME}_DEVEL_HEADERS}
+        DESTINATION include/medInria/${PROJECT_NAME}
+        COMPONENT headers)
+
 install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
+    DESTINATION ${INSTALL_LIB_DIR}
+    COMPONENT libraries)
