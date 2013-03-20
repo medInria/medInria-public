@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkGeneralTransform_cxx
-#define _itkGeneralTransform_cxx
+#pragma once
 
 #include "itkGeneralTransform.h"
 
@@ -300,4 +299,4 @@ IsLinear (void) const
 
 } // namespace
 
-#endif
+

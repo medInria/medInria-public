@@ -14,9 +14,7 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkSphericalHarmonicITKToVTKFilter_tpp
-#define _itkSphericalHarmonicITKToVTKFilter_tpp
-
+#pragma once
 
 #include <vtkPointData.h>
 #include <vtkImageData.h>
@@ -210,5 +208,5 @@ SphericalHarmonicITKToVTKFilter< TSHImage >
 
 } // end namespace itk
 
-#endif
+
 

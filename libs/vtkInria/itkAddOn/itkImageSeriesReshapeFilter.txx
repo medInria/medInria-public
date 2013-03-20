@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkImageSeriesReshapeFilter_txx
-#define _itkImageSeriesReshapeFilter_txx
+#pragma once
 
 #include "itkImageSeriesReshapeFilter.h"
 #include "itkImageRegionIterator.h"
@@ -236,4 +235,4 @@ namespace itk
   
 } // end namespace itk
 
-#endif
+

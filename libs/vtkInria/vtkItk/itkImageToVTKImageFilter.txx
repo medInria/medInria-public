@@ -14,8 +14,7 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkImageToVTKImageFilter_txx
-#define _itkImageToVTKImageFilter_txx
+#pragma once
 
 #include "itkImageToVTKImageFilter.h"
 
@@ -139,5 +138,5 @@ ImageToVTKImageFilter<TInputImage>
 
 } // end namespace itk
 
-#endif
+
 

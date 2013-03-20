@@ -1,5 +1,4 @@
-#ifndef _RPI%2_HXX_
-#define _RPI%2_HXX_
+#pragma once
 
 // Namespace RPI : Registration Programming Interface
 namespace rpi
@@ -58,4 +57,4 @@ namespace rpi
 } // End of namespace
 
 
-#endif // _RPI%2_HXX_
+

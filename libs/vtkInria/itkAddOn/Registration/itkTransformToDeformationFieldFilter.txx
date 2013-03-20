@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkTransformToDeformationFieldFilter_txx
-#define _itkTransformToDeformationFieldFilter_txx
+#pragma once
 
 #include "itkTransformToDeformationFieldFilter.h"
 #include "itkProgressReporter.h"
@@ -216,4 +215,4 @@ TransformToDeformationFieldFilter<TOutputImage,TTransformScalarType>
 
 } // end namespace itk
 
-#endif
+
