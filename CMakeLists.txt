@@ -1,23 +1,3 @@
-### CMakeLists.txt ---
-##
-## Author: Julien Wintz
-## Copyright (C) 2008 - Julien Wintz, Inria.
-## Created: Wed Sep 16 17:14:33 2009 (+0200)
-## Version: $Id$
-## Last-Updated: Tue May  3 16:59:29 2011 (+0200)
-##           By: Julien Wintz
-##     Update #: 39
-######################################################################
-##
-### Commentary:
-##
-######################################################################
-##
-### Change log:
-##
-######################################################################
-
-# Require 2.8 for correct behaviour of if( FALSE ).
 cmake_minimum_required(VERSION 2.8)
 
 project(medInria)
@@ -28,10 +8,10 @@ set(${PROJECT_NAME}_VERSION_BUILD 2 CACHE STRING "medInria build version number.
 set(${PROJECT_NAME}_VERSION_BUGFIX 0 CACHE STRING "medInria bug-fix version number." FORCE)
 
 if (${${PROJECT_NAME}_VERSION_BUGFIX} GREATER 0)
-  set(${PROJECT_NAME}_VERSION
+    set(${PROJECT_NAME}_VERSION
     "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}-${${PROJECT_NAME}_VERSION_BUGFIX}")
 else()
-  set(${PROJECT_NAME}_VERSION
+    set(${PROJECT_NAME}_VERSION
     "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
 endif()
 
@@ -42,15 +22,17 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_BUGFIX)
 
 add_definitions(-DMEDINRIA_VERSION="${${PROJECT_NAME}_VERSION}")
 
-if(WIN32)
-  option(MED_SHOW_CONSOLE "Show console at runtime (mainly for debugging)" "FALSE")
-  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+if (WIN32)
+    option(MED_SHOW_CONSOLE "Show console at runtime (mainly for debugging)" "FALSE")
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
 
-option(MEDINRIA_BUILD_TESTING       "Build testing"          false)
-
-enable_testing()
+option(MEDINRIA_BUILD_TESTING "Build testing" OFF)
+if (MEDINRIA_BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
@@ -62,32 +44,29 @@ include(medInriaPack)
 
 #configure ctest variables
 option(MEDINRIA_BUILD_REPORTING "Build Reporting")
-if(MEDINRIA_BUILD_REPORTING)
-  include(dtkReporting)
+if (MEDINRIA_BUILD_REPORTING)
+    include(dtkReporting)
 endif(MEDINRIA_BUILD_REPORTING)
 
-option(MEDINRIA_BUILD_DOCUMENTATION "Build documentation"    false)
-
-if(MSVC)
-  include(dtkPch)
-  option(MEDINRIA_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        false)
-endif(MSVC)
+if (MSVC)
+    include(dtkPch)
+    option(MEDINRIA_USE_PRECOMPILED_HEADERS "Use precompiled headers" OFF)
+endif()
 
 add_subdirectory(src)
 add_subdirectory(app)
 add_subdirectory(src-plugins)
 
-if(MEDINRIA_BUILD_TESTING)
-  add_subdirectory(tests)
-endif(MEDINRIA_BUILD_TESTING)
-
-if(MEDINRIA_BUILD_DOCUMENTATION)
-  add_subdirectory(doc)
-endif(MEDINRIA_BUILD_DOCUMENTATION)
+option(MEDINRIA_BUILD_DOCUMENTATION "Build documentation" OFF)
+if (MEDINRIA_BUILD_DOCUMENTATION)
+    add_subdirectory(doc)
+endif()
 
 if (APPLE)
-  configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in
+    configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in
                  ${PROJECT_BINARY_DIR}/mac_packager.sh)
 endif()
 
-
+install(FILES LICENSE.txt README.txt
+        DESTINATION share/doc/medInria
+        COMPONENT doc)

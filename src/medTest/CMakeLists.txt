@@ -1,22 +1,3 @@
-### CMakeLists.txt ---
-##
-## Author: John Stark
-## Copyright (C) 2011 - Thibaud Kloczko, Inria.
-## Created: Wed May 25 16:00:00 2011 (+0100)
-## Version: $Id$
-## Last-Updated: Mon Jun 20 18:17:39 2011 (+0200)
-##           By: Julien Wintz
-##     Update #: 2
-######################################################################
-##
-### Commentary:
-##
-######################################################################
-##
-### Change log:
-##
-######################################################################
-
 project(medTest)
 
 ## #################################################################
@@ -74,8 +55,10 @@ SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 ## Install rules
 ## #################################################################
 
-install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
+install(FILES ${${PROJECT_NAME}_HEADERS}
+        DESTINATION include/medInria/${PROJECT_NAME}
+        COMPONENT headers)
+
 install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
+        DESTINATION ${INSTALL_LIB_DIR}
+        COMPONENT libraries)

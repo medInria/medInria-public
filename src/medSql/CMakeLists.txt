@@ -112,8 +112,10 @@ SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 ## Installation
 ## #################################################################
 
-install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
+install(FILES ${${PROJECT_NAME}_DEVEL_HEADERS_MOC} ${${PROJECT_NAME}_DEVEL_HEADERS}
+        DESTINATION include/medInria/${PROJECT_NAME}
+        COMPONENT headers)
+
 install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
+        DESTINATION ${INSTALL_LIB_DIR}
+        COMPONENT libraries)
