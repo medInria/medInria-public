@@ -747,17 +747,10 @@ void medWorkspaceArea::setupWorkspace(QString name)
     connect(workspace, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)), Qt::UniqueConnection);
     connect(workspace, SIGNAL(toolboxRemoved(medToolBox*)),this, SLOT(removeToolBox(medToolBox*)), Qt::UniqueConnection);
 
-    // double-click on a thumbnail launches its visualization in the current workspace (disabled for Registration)
-    if (d->currentWorkspaceName != "Registration")
-    {
-        connect (medDataManager::instance(), SIGNAL(itemDoubleClicked(const medDataIndex&)), 
-            this, SLOT(open(const medDataIndex&)), Qt::UniqueConnection);
-    }
-    else
-    {
-        disconnect (medDataManager::instance(), SIGNAL(itemDoubleClicked(const medDataIndex&)), 
-            this, SLOT(open(const medDataIndex&)));
-    }
+    // double-click on a thumbnail launches its visualization in the current workspace
+
+    connect (medDataManager::instance(), SIGNAL(itemDoubleClicked(const medDataIndex&)), 
+        this, SLOT(open(const medDataIndex&)), Qt::UniqueConnection);
 }
 
 void medWorkspaceArea::switchToLayout (medWorkspace::LayoutType layout)
