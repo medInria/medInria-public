@@ -19,16 +19,14 @@ cd @PROJECT_BINARY_DIR@
 make install
 
 cd @CMAKE_INSTALL_PREFIX@/bin/
-@QT_BINARY_DIR@/macdeployqt medInria.app
 
 #Run sub-packagers
+injectDirs=''
 for i in $*; do
-	resultRootDir=`/bin/bash $i`
-	echo Copying plugins from $resultRootDir
-	
-	\cp -r $resultRootDir/Applications/medInria.app/Contents/Frameworks @CMAKE_INSTALL_PREFIX@/bin/medInria.app/Contents/
-	\cp -r $resultRootDir/Applications/medInria.app/Contents/PlugIns @CMAKE_INSTALL_PREFIX@/bin/medInria.app/Contents/
+	injectDirs="$injectDirs -inject-dir=$i"
 done
+
+@dtk_DIR@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
 
 cd @CMAKE_INSTALL_PREFIX@/bin/medInria.app/Contents
 
