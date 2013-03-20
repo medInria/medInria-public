@@ -140,12 +140,21 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
 
     QMap<StudyDataKey, medDatabaseNavigatorItemGroup*> groupMap;
 
-    medAbstractDbController *dbc = dataManager->controllerForDataSource(baseIndex.dataSourceId());
-    if ( !dbc )
-        return;
     PatientDataKey referencePatientKey;
-    referencePatientKey.name = dbc->metaData(baseIndex,medMetaDataKeys::PatientName);
-
+    referencePatientKey.name = "";
+    
+    foreach (const int dataSourceId, dataSources )
+    {
+        medAbstractDbController *dbc = dataManager->controllerForDataSource(dataSourceId);
+        if ( !dbc )
+            continue;
+        
+        if (dbc->metaData(baseIndex,medMetaDataKeys::PatientName) != "")
+        {
+            referencePatientKey.name = dbc->metaData(baseIndex,medMetaDataKeys::PatientName);
+            break;
+        }
+    }
 
     foreach (const int dataSourceId, dataSources ) {
         //qDebug() << "dataSource:" << dataSourceId;
