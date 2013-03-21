@@ -133,6 +133,18 @@ medApplication::~medApplication(void)
     d = NULL;
 }
 
+bool medApplication::event(QEvent *event)
+{
+    switch (event->type())
+    {
+        case QEvent::FileOpen:
+            emit messageReceived(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
+            return true;
+        default:
+            return QApplication::event(event);
+    }
+}
+
 void medApplication::setMsgColor(const QColor& color)
 {
     d->msgColor = color;
