@@ -30,6 +30,12 @@ done
 
 cd @CMAKE_INSTALL_PREFIX@/bin/medInria.app/Contents
 
+infoSize=`cat Info.plist | wc -l | awk '{print $1;exit}'`
+let infoSize=$infoSize-2
+head -n $infoSize Info.plist > tmp.plist
+cat @CMAKE_SOURCE_DIR@/utils/osx_packaging/Info_AddOn.plist >> tmp.plist
+\mv -f tmp.plist Info.plist
+
 mkdir -p PlugIns/sqldrivers
 
 cp -p @QT_PLUGINS_DIR@/sqldrivers/libqsqlite.dylib PlugIns/sqldrivers/libqsqlite.dylib
