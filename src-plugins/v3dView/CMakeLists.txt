@@ -89,16 +89,16 @@ else()
     add_definitions(-DDISABLE_TTK_DEPENDENT_CODE)
 endif()
 
-if ( vtkINRIA3D_USE_SPHERICALHARMONICS )
+if ( vtkInria_USE_SPHERICALHARMONICS )
   set(${PROJECT_NAME}_SH_DEPENDENT_HEADERS_MOC
   v3dViewShInteractor.h
     )
     set(${PROJECT_NAME}_SH_DEPENDENT_SOURCES
   v3dViewShInteractor.cpp
     )
-else( vtkINRIA3D_USE_SPHERICALHARMONICS )
-    add_definitions(-DDISABLE_vtkINRIA3D_USE_SPHERICALHARMONICS)
-endif (vtkINRIA3D_USE_SPHERICALHARMONICS )
+else( vtkInria_USE_SPHERICALHARMONICS )
+    add_definitions(-DDISABLE_vtkInria_USE_SPHERICALHARMONICS)
+endif (vtkInria_USE_SPHERICALHARMONICS )
 
 set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPlugin.h
