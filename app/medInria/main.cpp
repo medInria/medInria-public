@@ -132,7 +132,7 @@ int main(int argc,char* argv[]) {
                          &application,SLOT(redirectMessageToSplash(QString)) );
         QObject::connect(&application,SIGNAL(showMessage(const QString&, int, const QColor&)),
                          &splash,SLOT(showMessage(const QString&, int, const QColor&)) );
-        splash.show();
+        //splash.show();
         splash.showMessage("Loading plugins...",Qt::AlignLeft|Qt::AlignBottom,Qt::white);
     }
 

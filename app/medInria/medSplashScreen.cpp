@@ -77,7 +77,6 @@ void medSplashScreen::repaint()
     QApplication::flush();
 }
 
-
 void medSplashScreen::finish(QWidget *mainWin)
 
 {

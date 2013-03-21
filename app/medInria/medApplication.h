@@ -74,6 +74,8 @@ public:
      * @param alignment
      */
     void setMsgAlignment(int alignment);
+    
+    bool event(QEvent *event);
 
 signals:
     /**
