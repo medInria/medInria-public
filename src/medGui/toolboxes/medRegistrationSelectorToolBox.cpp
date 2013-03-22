@@ -22,12 +22,13 @@
 
 #include <medDataManager.h>
 #include <medViewManager.h>
+#include <medJobManager.h>
 #include <medMessageController.h>
 #include <medMetaDataKeys.h>
 #include <medAbstractView.h>
 
 #include <medAbstractDataImage.h>
-
+#include <medRunnableProcess.h>
 #include <medToolBoxTab.h>
 #include <medToolBoxFactory.h>
 
@@ -65,7 +66,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     d->fixedView  = NULL;
     d->movingView = NULL;
     d->process = NULL;
-
+    
     // Process section
     d->saveImageButton = new QPushButton(tr("Export Image"),this);
     d->saveImageButton->setToolTip(tr("Save registered image to the File System"));
@@ -149,6 +150,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
             medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
     connect(this,SIGNAL(showInfo(const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showInfo(const QString&,unsigned int)));
+    connect(medJobManager::instance(),SIGNAL(jobRegistered(medJobItem*,QString)),this,SLOT(onJobAdded(medJobItem*,QString)));
 }
 
 medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
@@ -337,8 +339,12 @@ void medRegistrationSelectorToolBox::onToolBoxChosen(int index)
     toolbox->show();
     emit addToolBox(toolbox);
 
-    connect (toolbox, SIGNAL (success()), this, SLOT (onSuccess()));
+
+    connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));
     connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
+    
+    connect (toolbox, SIGNAL (success()),this,SLOT(enableUndoRedoToolBox()));
+    connect (toolbox, SIGNAL (failure()),this,SLOT(enableUndoRedoToolBox()));
 }
 
 /** 
@@ -493,26 +499,40 @@ void medRegistrationSelectorToolBox::onSaveTrans()
     }
 }
 
+// TODO CHANGE COMMENTARY
 //! If the registration has ended well, it sets the output's metaData and reset the movingView and fuseView with the registered image.
-void medRegistrationSelectorToolBox::onSuccess()
+void medRegistrationSelectorToolBox::handleOutput(QString type,QString algoName)
 {
-    dtkSmartPointer<dtkAbstractData> output(d->process->output());
-
+    dtkSmartPointer<dtkAbstractData> output(d->undoRedoProcess->output()); //initialisation
+        
     foreach(QString metaData, d->fixedData->metaDataList())
         output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
 
     foreach(QString property, d->fixedData->propertyList())
         output->addProperty(property,d->fixedData->propertyValues(property));
 
+    // We manage the new description of the image
     QString newDescription = d->movingData->metadata(medMetaDataKeys::SeriesDescription.key());
-    newDescription += " registered";
+    if (type=="algorithm" || type=="redo")
+        if (newDescription.contains("registered"))
+            newDescription += "-"+algoName + "\n";
+        else
+            newDescription += " registered\n-" + algoName+ "\n";
+    else
+    {
+        newDescription.remove(newDescription.lastIndexOf("-"),newDescription.size()-1); 
+        if (newDescription.count("-") == 0)
+            newDescription.remove(" registered");
+    }
     output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
+    //
 
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
     output->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
-    medDataManager::instance()->importNonPersistent(output);
-
+    if (type=="algorithm")
+        medDataManager::instance()->importNonPersistent(output);
+    
     if(output)
     {
         d->movingView->setData(output,0);
@@ -529,38 +549,16 @@ void medRegistrationSelectorToolBox::onSuccess()
     }
 }
 
-void medRegistrationSelectorToolBox::onUndoRedo()
-{
-    dtkSmartPointer<dtkAbstractData> output(d->undoRedoProcess->output());
+void medRegistrationSelectorToolBox::enableUndoRedoToolBox(bool enable){
+    if (d->undoRedoToolBox)
+        d->undoRedoToolBox->setEnabled(enable);
+}
 
-    foreach(QString metaData, d->fixedData->metaDataList())
-        output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
-
-    foreach(QString property, d->fixedData->propertyList())
-        output->addProperty(property,d->fixedData->propertyValues(property));
-
-    QString newDescription = d->movingData->metadata(medMetaDataKeys::SeriesDescription.key());
-    newDescription.remove(newDescription.size()-11,newDescription.size()-1); // to remove " registered"
-    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
-
-    QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
-    output->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
-
-    medDataManager::instance()->importNonPersistent(output);
-
-    if(output)
-    {
-        d->movingView->setData(output,0);
-        d->movingData = output;
-        // calling reset() will reset all the view parameters (position - zoom - window/level) to default
-        d->movingView->reset();
-        d->movingView->update();
-        d->fuseView->setData(output,1);
-        d->fuseView->update();
-        d->fixedView->setLinkPosition(true);
-        d->fixedView->setLinkCamera(true);
-        d->movingView->setLinkPosition(true);
-        d->movingView->setLinkCamera(true);
+void medRegistrationSelectorToolBox::onJobAdded(medJobItem* item, QString jobName){
+    if (jobName == d->process->identifier()){
+        dtkAbstractProcess * proc = static_cast<medRunnableProcess*>(item)->getProcess();
+        if (proc==d->process)
+            enableUndoRedoToolBox(false);
     }
 }
 

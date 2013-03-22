@@ -44,6 +44,7 @@ public:
     * Specify which dtk process to run.
     */
     void setProcess (dtkAbstractProcess *proc);
+    dtkAbstractProcess * getProcess();
 
 public slots:
     /**

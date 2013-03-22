@@ -47,6 +47,11 @@ void medRunnableProcess::setProcess (dtkAbstractProcess *proc)
     }
 }
 
+dtkAbstractProcess * medRunnableProcess::getProcess()
+{
+    return d->process;
+}
+
 void medRunnableProcess::run()
 {
     if (d->process) {
