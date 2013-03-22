@@ -5,7 +5,7 @@
 			<string>Viewer</string>
 			<key>CFBundleTypeExtensions</key>
 			<array>
-				<string>gis</string>
+				<string>dim</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>GIS files</string>
