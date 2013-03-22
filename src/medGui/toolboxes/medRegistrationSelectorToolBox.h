@@ -15,6 +15,7 @@
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
+#include <medJobItem.h>
 
 class dtkAbstractView;
 class dtkAbstractProcess;
@@ -62,9 +63,10 @@ public slots:
     void clear();
     void onSaveImage();
     void onSaveTrans();
-    void onSuccess();
-    void onUndoRedo(void);
-
+    void handleOutput(QString type="algorithm",QString algoName="");
+    void enableUndoRedoToolBox(bool enable = true);
+    void onJobAdded(medJobItem* item, QString jobName);
+    
     void synchroniseWindowLevel(QObject * sender = NULL);
     void synchronisePosition(const QVector3D &position);
 
