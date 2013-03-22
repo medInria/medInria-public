@@ -29,10 +29,9 @@ QString undoRedoRegistration::description(void) const
     return "undoRedoRegistration";
 }
 
-bool undoRedoRegistration::writeTransform(const QString& file)
-{
-    return false;
-}
+bool undoRedoRegistration::writeTransform(const QString& file){return false;}
+itk::Transform<double,3,3>::Pointer undoRedoRegistration::getTransform(){return NULL;}
+QStringList * undoRedoRegistration::getTitleAndParameters(){return NULL;}
 
 void undoRedoRegistration::undo(){
     itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
@@ -41,7 +40,6 @@ void undoRedoRegistration::undo(){
     itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
     if (this->output())
         this->output()->setData (result);
-    
 }
     
 void undoRedoRegistration::redo(){

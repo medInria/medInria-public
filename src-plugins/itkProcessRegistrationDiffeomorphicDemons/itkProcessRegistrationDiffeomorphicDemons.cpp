@@ -219,10 +219,6 @@ template <typename PixelType>
     resampler->SetOutputDirection( proc->fixedImage()->GetDirection() );
     resampler->SetDefaultPixelValue( 0 );
 
-    // ADD TRANSFORM TO THE MEDREGISTRATION FACTORY //////////////////////
-    registrationFactory::instance()->addTransformation(registration->GetTransformation(),methodParameters);
-    //////////////////////////////////////////////////////////////////////
-    
     try {
         resampler->Update();
     }
@@ -237,6 +233,8 @@ template <typename PixelType>
     
     if (proc->output())
         proc->output()->setData (result);
+    
+    delete methodParameters;
     
     return 0;
 }
@@ -259,7 +257,25 @@ int itkProcessRegistrationDiffeomorphicDemons::update(itkProcessRegistration::Im
     return d->update<float>();
 }
 
+itk::Transform<double,3,3>::Pointer itkProcessRegistrationDiffeomorphicDemons::getTransform(){
+    typedef float PixelType;
+    typedef double TransformScalarType;
+    typedef itk::Image< PixelType, 3 > RegImageType;
+    //normaly should use long switch cases, but here we know we work with float3 data.
+    if (rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> * registration =
+            static_cast<rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> *>(d->registrationMethod))
+    {
+        return registration->GetTransformation();
+    }
+    else
+        return NULL;
+}
 
+QStringList * itkProcessRegistrationDiffeomorphicDemons::getTitleAndParameters(){
+    QStringList * titleAndParameters = new QStringList();
+    titleAndParameters->append(QString("DiffeomorphicDemons"));
+    return titleAndParameters;
+}
 
 bool itkProcessRegistrationDiffeomorphicDemons::writeTransform(const QString& file)
 {
@@ -271,7 +287,6 @@ bool itkProcessRegistrationDiffeomorphicDemons::writeTransform(const QString& fi
             static_cast<rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> *>(d->registrationMethod))
     {
         try{
-
             rpi::writeDisplacementFieldTransformation<TransformScalarType, RegImageType::ImageDimension>(
                         registration->GetTransformation(),
                         file.toStdString());

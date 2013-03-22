@@ -19,7 +19,7 @@
 #include <medAbstractDataImage.h>
 
 #include <medToolBoxFactory.h>
-#include <medRegistrationSelectorToolbox.h>
+#include <medRegistrationSelectorToolBox.h>
 #include <registrationFactory/registrationFactory.h>
 
 
@@ -28,6 +28,7 @@ class undoRedoRegistrationToolBoxPrivate
 public:
     QPushButton * undoButton;
     QPushButton * redoButton;
+    QPushButton * resetButton;
     QListWidget * transformationStack;
     QIcon arrowCurrentStep; 
     int currentStep;
@@ -39,9 +40,13 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
     // Undo/redo Buttons
     d->undoButton = new QPushButton(QIcon(":undoRedoRegistration/icons/ArrowDown.png"),tr("Undo"),this);
     d->redoButton = new QPushButton(QIcon(":undoRedoRegistration/icons/ArrowUp.png"),tr("Redo"),this);
-    
+    d->undoButton->setEnabled(false);
+    d->redoButton->setEnabled(false);
+    d->resetButton = new QPushButton(tr("Reset"),this);
+    d->resetButton->setEnabled(false);
     connect(d->undoButton,SIGNAL(clicked()),this,SLOT(onUndo()));
     connect(d->redoButton,SIGNAL(clicked()),this,SLOT(onRedo()));
+    connect(d->resetButton,SIGNAL(clicked()),registrationFactory::instance(),SLOT(reset()));
     
     d->arrowCurrentStep = QIcon(":undoRedoRegistration/icons/BlueArrowRight.png");
     d->currentStep = -1;
@@ -50,14 +55,20 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
     // Transformation Stack
     d->transformationStack = new QListWidget(this);
    
-    QHBoxLayout *layoutButtonUndoRedo = new QHBoxLayout;
-    layoutButtonUndoRedo->addWidget(d->undoButton);
+    QVBoxLayout *layoutButtonUndoRedo = new QVBoxLayout;
     layoutButtonUndoRedo->addWidget(d->redoButton);
-
+    layoutButtonUndoRedo->addWidget(d->undoButton);
+    layoutButtonUndoRedo->addWidget(d->resetButton);
+    QHBoxLayout *layoutButtonsStack = new QHBoxLayout;
+    layoutButtonsStack->addLayout(layoutButtonUndoRedo);
+    layoutButtonsStack->addWidget(d->transformationStack);
+    d->transformationStack->setMaximumHeight(180);
+    d->transformationStack->setMaximumWidth(200);
     QWidget * layoutSection = new QWidget(this);
-    layoutSection->setLayout(layoutButtonUndoRedo);
+    layoutSection->setLayout(layoutButtonsStack);
+
     addWidget(layoutSection);
-    addWidget(d->transformationStack);
+    
     this->setTitle(tr("Stack of transformations"));
     connect(registrationFactory::instance(),SIGNAL(transformationAdded(int,QStringList*)),this,SLOT(addTransformationIntoList(int, QStringList*)));
     connect(registrationFactory::instance(),SIGNAL(transformationStackReset()),this,SLOT(onTransformationStackReset()));
@@ -88,8 +99,12 @@ void undoRedoRegistrationToolBox::onUndo()
     {
         updatePositionArrow(d->currentStep+1);
         d->m_UndoRedo->undo();
-        emit this->parentToolBox()->onUndoRedo();
+        this->parentToolBox()->handleOutput("undo");
+        d->redoButton->setEnabled(true);
     }
+    
+    if (d->currentStep>=d->transformationStack->count())
+        d->undoButton->setEnabled(false);
 }
 
 void undoRedoRegistrationToolBox::onRedo()
@@ -100,8 +115,12 @@ void undoRedoRegistrationToolBox::onRedo()
     {
         updatePositionArrow(d->currentStep-1);
         d->m_UndoRedo->redo();
-        emit this->parentToolBox()->onUndoRedo();
+        this->parentToolBox()->handleOutput("redo",d->transformationStack->item(d->currentStep)->text().remove(" "));
+        d->undoButton->setEnabled(true);
     }
+
+    if (d->currentStep<=0)
+        d->redoButton->setEnabled(false);
 }
 
 void undoRedoRegistrationToolBox::onTransformationStackReset(void)
@@ -112,13 +131,20 @@ void undoRedoRegistrationToolBox::onTransformationStackReset(void)
         QListWidgetItem * tmp = d->transformationStack->takeItem(0);    
         delete tmp;
     }
+    d->undoButton->setEnabled(false);
+    d->redoButton->setEnabled(false);
+    d->resetButton->setEnabled(false);
 }
 
 void undoRedoRegistrationToolBox::addTransformationIntoList(int i, QStringList * methodParameters){
     if (i!=-1){
-        QString buffer = methodParameters->at(0);
-        for(int k = 1;k<methodParameters->size();k++)
-            buffer = buffer + QString("\n") + methodParameters->at(k);
+        QString buffer = "";
+        if (methodParameters)
+        {
+            buffer = methodParameters->at(0);
+            for(int k = 1;k<methodParameters->size();k++)
+                buffer = buffer + QString("\n") + methodParameters->at(k);
+        }
         if ((d->currentStep >= 0) && (d->currentStep < d->transformationStack->count()))
             d->transformationStack->item(d->currentStep)->setIcon(QIcon());
         for(int k = d->currentStep-1;k>=0;k--)
@@ -127,10 +153,14 @@ void undoRedoRegistrationToolBox::addTransformationIntoList(int i, QStringList *
             delete tmp;
         }  
         d->currentStep = 0;
-        d->transformationStack->insertItem(d->currentStep,methodParameters->at(0)); 
+        d->transformationStack->insertItem(d->currentStep,QString::number(d->transformationStack->count()+1)+ ". " + methodParameters->at(0)); 
         d->transformationStack->item(d->currentStep)->setToolTip(buffer);
         d->transformationStack->item(d->currentStep)->setIcon(d->arrowCurrentStep);
+        d->transformationStack->item(d->currentStep)->setForeground(QColor(0,200,0));
     }
+    d->undoButton->setEnabled(true);
+    d->redoButton->setEnabled(false);
+    d->resetButton->setEnabled(true);
 }
 
 void undoRedoRegistrationToolBox::updatePositionArrow(int newStep){
@@ -141,13 +171,29 @@ void undoRedoRegistrationToolBox::updatePositionArrow(int newStep){
             d->transformationStack->item(d->currentStep)->setIcon(QIcon());
         }
         d->currentStep = newStep;
-        if (!(d->transformationStack->count()==d->currentStep))
+        if (!(d->transformationStack->count()==d->currentStep)){
             d->transformationStack->item(d->currentStep)->setIcon(d->arrowCurrentStep);
+            d->transformationStack->item(d->currentStep)->setForeground(QColor(0,200,0));
+        }
+    }
+    for(int k = d->currentStep-1;k>=0;k--){
+        d->transformationStack->item(k)->setForeground(QColor(255,255,255));
     }
 }
 
-void undoRedoRegistrationToolBox::setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox)
-{
+void undoRedoRegistrationToolBox::setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox){
     medRegistrationAbstractToolBox::setRegistrationToolBox(toolbox);
     toolbox->setUndoRedoProcess(d->m_UndoRedo);
+    connect(this->parentToolBox(),SIGNAL(success()),this,SLOT(onRegistrationSuccess()));
+}
+
+void undoRedoRegistrationToolBox::onRegistrationSuccess(){
+    registrationFactory::instance()->addTransformation(static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTransform(),static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTitleAndParameters());
+    registrationFactory::instance()->getItkRegistrationFactory()->Modified();
+    registrationFactory::instance()->getItkRegistrationFactory()->Update();
+    itk::ImageBase<3>::Pointer result = registrationFactory::instance()->getItkRegistrationFactory()->GetOutput();
+    result->DisconnectPipeline();
+    if (d->m_UndoRedo->output())
+        d->m_UndoRedo->output()->setData(result);
+    this->parentToolBox()->handleOutput("algorithm",d->transformationStack->item(d->currentStep)->text().remove(" "));
 }

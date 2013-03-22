@@ -394,7 +394,6 @@ itkProcessRegistration::ImageType itkProcessRegistration::movingImageType()
     return d->movingImageType;
 }
 
-
 bool itkProcessRegistration::write(const QStringList& files)
 {
     if (files.count()!=2)

@@ -31,6 +31,7 @@ public slots:
     void onRedo(void);
     void onTransformationStackReset(void);
     void addTransformationIntoList(int, QStringList*);
+    void onRegistrationSuccess();
 
 private:
     undoRedoRegistrationToolBoxPrivate *d;
