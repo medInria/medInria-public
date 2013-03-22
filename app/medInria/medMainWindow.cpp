@@ -403,8 +403,8 @@ void medMainWindow::keyPressEvent( QKeyEvent *event )
     {
         if (!d->shortcutAccessVisible)
             this->showShortcutAccess();
-        else
-            d->shortcutAccessWidget->updateCurrentlySelectedRight();
+
+        d->shortcutAccessWidget->updateCurrentlySelectedRight();
         
         return;
     }
