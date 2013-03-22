@@ -128,6 +128,9 @@ public:
     */
     void setUseHistogramMatching(bool useHistogramMatching);
 
+    virtual itk::Transform<double,3,3>::Pointer getTransform();
+    virtual QStringList * getTitleAndParameters();
+
 protected :
     /**
      * @brief Writes the transformation, in this case the displacement field,

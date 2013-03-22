@@ -16,7 +16,7 @@
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <itkImage.h>
-
+#include "itkTransform.h"
 #include "itkProcessRegistrationExport.h"
 
 
@@ -139,7 +139,8 @@ public:
     */
     itkProcessRegistration::ImageType movingImageType();
 
-
+    virtual itk::Transform<double,3,3>::Pointer getTransform() = 0;
+    virtual QStringList * getTitleAndParameters() = 0;
 
 
 public slots:

@@ -4,7 +4,7 @@
 
 #ifndef REGISTRATIONFACTORY_H
 #define REGISTRATIONFACTORY_H
-#include <QObject.h>
+#include <QObject>
 #include "itkImageRegistrationFactory.h"
 #include "itkTransform.h"
 #include "registrationFactoryExport.h"
@@ -30,7 +30,8 @@ public:
     
     unsigned int addTransformation(itk::Transform<double,3,3>::Pointer arg,QStringList * methodParameters);
     
-    void reset();
+    public slots:
+        void reset();
 
     signals:
         void transformationAdded(int,QStringList*);

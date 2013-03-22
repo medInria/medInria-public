@@ -239,6 +239,6 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     connect (runProcess, SIGNAL(activate(QObject*,bool)),
              d->progression_stack, SLOT(setActive(QObject*,bool)));
 
-    medJobManager::instance()->registerJobItem(runProcess);
+    medJobManager::instance()->registerJobItem(runProcess,process->identifier());
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
 }

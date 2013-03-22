@@ -61,6 +61,9 @@ public:
     
     void redo();
 
+    virtual itk::Transform<double,3,3>::Pointer getTransform();
+    virtual QStringList * getTitleAndParameters();
+
 protected :
     /**
      * @brief
