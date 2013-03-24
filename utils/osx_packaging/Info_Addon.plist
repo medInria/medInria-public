@@ -31,6 +31,7 @@
 			<array>
 				<string>inr</string>
 				<string>inr.gz</string>
+				<string>gz</string>
 			</array>
 			<key>CFBundleTypeName</key>
 			<string>Inrimage</string>
@@ -50,6 +51,7 @@
 				<string>nhdr</string>
 				<string>mha</string>
 				<string>hdr</string>
+				<string>gz</string>
 			</array>
 			<key>LSHandlerRank</key>
 			<string>Default</string>
