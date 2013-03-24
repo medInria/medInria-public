@@ -141,7 +141,7 @@ bool medApplication::event(QEvent *event)
             emit messageReceived(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
             return true;
         default:
-            return QApplication::event(event);
+            return QtSingleApplication::event(event);
     }
 }
 
