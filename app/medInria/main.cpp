@@ -10,7 +10,6 @@
   PURPOSE.
 
 =========================================================================*/
-
 #include <QtGui>
 #include <QtOpenGL>
 #include <QtDebug>
@@ -18,6 +17,7 @@
 #include "medMainWindow.h"
 #include "medApplication.h"
 #include "medSplashScreen.h"
+
 
 #include <dtkCore>
 
@@ -68,6 +68,9 @@ int main(int argc,char* argv[]) {
 
     qRegisterMetaType<medDataIndex>("medDataIndex");
 
+    // this needs to be done before creating the QApplication object, as per the
+    // Qt doc, otherwise there are some edge cases where the style is not fully applied
+    QApplication::setStyle("plastique");
     medApplication application(argc,argv);
     medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
     setlocale(LC_NUMERIC, "C");
@@ -119,6 +122,7 @@ int main(int argc,char* argv[]) {
     if (runningMedInria)
         return 0;
 
+    medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
     if (show_splash) {
 
         QObject::connect(medDatabaseController::instance().data(),
@@ -196,6 +200,7 @@ int main(int argc,char* argv[]) {
 
     mainwindow.setFullScreen(fullScreen);
 
+
     if(application.arguments().contains("--stereo")) {
        QGLFormat format;
        format.setAlpha(true);
@@ -223,6 +228,7 @@ int main(int argc,char* argv[]) {
     application.setMainWindow(&mainwindow);
 
     //  Start main loop.
+
     const int status = application.exec();
 
     medPluginManager::instance()->uninitialize();

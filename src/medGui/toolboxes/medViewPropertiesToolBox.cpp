@@ -172,7 +172,6 @@ medToolBox(parent), d(new medViewPropertiesToolBoxPrivate)
     QStringList headers;
     headers << tr("Object") << tr("Name") << tr("Value");
     d->propertiesTree->setHeaderLabels(headers);
-    d->propertiesTree->setAnimated(true);
     d->propertiesTree->setAlternatingRowColors(true);
     d->propertiesTree->setRootIsDecorated(true);
     d->propertiesTree->setContextMenuPolicy(Qt::CustomContextMenu);
