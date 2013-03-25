@@ -1,22 +1,6 @@
-/* medInria.qss ---
-;;
-;; Author: Julien Wintz
-;; Copyright (C) 2008 - Julien Wintz, Inria.
-;; Created: Fri May 21 09:46:29 2010 (+0200)
-;; Version: $Id$
-;; Last-Updated: Tue Nov  2 15:17:54 2010 (+0100)
-;;           By: Julien Wintz
-;;     Update #: 47
-*/
+/* medInria.qss
 
-/* Commentary:
-;;
 */
-
-/* Change log:
-;;
-*/
-
 
 /**
 * QToolTip
@@ -131,15 +115,15 @@ QCheckBox::indicator,QTreeView::indicator {
     height: 15px;
 }
 
-QCheckBox::indicator:unchecked {
+.QCheckBox::indicator:unchecked {
     image: url(:/pixmaps/checkbox.png);
 }
 
-QCheckBox::indicator:checked {
+.QCheckBox::indicator:checked {
     image: url(:/pixmaps/checkbox-checked.png);
 }
 
-QCheckBox::indicator:indeterminate {
+.QCheckBox::indicator:indeterminate {
     image: url(:/pixmaps/checkbox-partial.png);
 }
 
@@ -148,17 +132,18 @@ QTreeView::indicator:indeterminate {
 }
 
 
+
+
 QTreeView::indicator:checked
 {
      background: url(:/pixmaps/checkbox-checked.png);
-     /*background: url(":checkbox/checked");*/
 }
 
 QTreeView::indicator:unchecked
 {
     image: url(:/pixmaps/checkbox.png);
-     /*background: url(":checkbox/unchecked");*/
 }
+
 
 /**
  * QLabel
@@ -220,13 +205,17 @@ QHeaderView::section {
 
 QLineEdit {
     color: #b2b8b2;
-    border: 1px solid gray;
-    border-radius: 9px;
-    padding: 0 8px;
-    background: #4b4b4b;
+    border-radius: 4px;
+    padding: 0 2px;
+    background: #6B6B6B;
     selection-background-color: #9eabc6;
 }
 
+
+QLineEdit::disabled {
+    background: #4B4B4B;
+    border-color: #6a6a6a;
+}
 /**
  * QProgressBar
  *
@@ -234,21 +223,18 @@ QLineEdit {
 
 QProgressBar {
     border: 1px solid #6b6b6b;
-    border-radius: 8px;
+    border-radius: 3px;
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #5e5e5e, stop: 1 #2b2b2b);
     color: #b2b8b2;
     font-size: 10px;
     height: 14px;
-    text-align: right;
-    padding-left: 1px;
-    padding-right: 25px;
+    text-align: center;
 }
 
 QProgressBar::chunk {
-    border: 1px solid #6b6b6b;
-    border-radius: 6px;
+/*    border: 1px solid #6b6b6b;*/
+    border-radius: 1px;
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #a0b0ce, stop: 1 #466096);
-    margin: 1px;
 }
 
 /**
@@ -479,19 +465,19 @@ QTreeWidget::branch:open:has-children:has-siblings  {
  */
 
 QPushButton, QComboBox {
-    border: 1px solid #6b6b6b;
-    border-radius: 11px;
+/*    border: 1px solid #6b6b6b;*/
+    border-radius: 4px;
     background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #5e5e5e, stop: 1 #2b2b2b);
     color: #b2b8b2;
     font-size: 10px;
     height: 20px;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding-left: 1px;
+/*    padding-right: 1px; */
     min-width: 20px;
 }
 
 QPushButton:hover, QComboBox::hover {
-    border: 1px solid #a7b6d3;
+    /*border: 1px solid #a7b6d3;*/
 }
 
 QPushButton:pressed, QPushButton:checked {
@@ -625,11 +611,11 @@ QGroupBox::title {
     font-size: 10pt;
 }
 
-QGroupBox::indicator::checked {
+.QGroupBox::indicator::checked {
     image: url(:/pixmaps/checkbox-checked.png);
 }
 
-QGroupBox::indicator::unchecked {
+.QGroupBox::indicator::unchecked {
     image: url(:/pixmaps/checkbox.png);
 }
 
@@ -973,6 +959,16 @@ medMainWindow {
     background: #313131;
 }
 
+medMainWindow QPushButton{
+    border: 1px solid #a7b6d3;
+}
+
+medMainWindow QPushButton,
+medMainWindow QComboBox,
+medMainWindow QLineEdit {
+    border: 1px solid #2A2A2A;
+}
+
 /**
  * medHomepageArea
  *
@@ -1094,17 +1090,22 @@ medHomepagePushButton:pressed {
 }
 
 
+medToolBox {border: 5px solid white;}
+
 /**
  * medToolBoxHeader
  *
  */
 
 medToolBoxHeader {
+    /*
     border-image: url(:/pixmaps/toolbox-header.png) 16 16 0 16 repeat-x;
     border-left-width: 16px;
     border-right-width: 16px;
     border-top-width: 16px;
     border-bottom-width: 0px;
+	*/
+    border-top: 1px solid #2a2a2a;
 
     padding-top: -6px;
 
@@ -1120,11 +1121,13 @@ medToolBoxHeader {
  */
 
 medToolBoxBody {
+    /*
     border-image: url(:/pixmaps/toolbox-body.png) 0 16 16 16 repeat-y;
     border-left-width: 16px;
     border-right-width: 16px;
     border-top-width: 0px;
     border-bottom-width: 16px;
+    */
     
     padding-left: -6px;
     padding-right: -6px;
