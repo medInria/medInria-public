@@ -87,18 +87,13 @@ endif(MSVC)
 
 set(DEPENDS_ON_DTK 1)
 
-option(BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individual selections)" OFF)
+option(BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individual selections)" ON)
 
 OPTION(MEDINRIA-PLUGINS_BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
-if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
-  set (EXAMPLE_PLUGINS
-    exampleProcessImageFilter      OFF
-    ITKProcessExample              OFF
-    )      
-endif()
-
+q
 ## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
 set(PLUGIN_LIST
+  ${EXAMPLE_PLUGINS}
   v3dData                        ON
   v3dView                        ON
   itkDataImage                   ON
@@ -117,6 +112,14 @@ set(PLUGIN_LIST
   itkFilters                     ON
   qtdcmDataSource                ON
   )
+
+if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
+  set (PLUGIN_LIST
+    ${PLUGIN_LIST}
+    exampleProcessImageFilter      ON
+    ITKProcessExample              ON
+    )
+endif()
 
 #MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
 
