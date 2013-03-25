@@ -973,10 +973,6 @@ medMainWindow {
     background: #313131;
 }
 
-medMainWindow QPushButton{
-    border: 1px solid #a7b6d3;
-}
-
 /**
  * medHomepageArea
  *
@@ -1081,16 +1077,16 @@ medQuickAccessPushButton:pressed {
 medHomepagePushButton {
     background-color:#3a3a3a;
     border-radius: 0px;
-    border: none;
+    border: 2px solid #3a3a3a;
     color: #b2b8b2;
     font-size: 10px;
     padding-left: 5px;
     padding-right: 5px;
-    min-width: 20px;
 }
 
-medHomepagePushButton:hover {
+medHomepagePushButton[selected="true"] {
     background-color:#4e4e4e;
+    border: 2px solid red;
 }
 
 medHomepagePushButton:pressed {

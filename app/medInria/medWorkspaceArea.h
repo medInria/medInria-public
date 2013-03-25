@@ -54,6 +54,8 @@ public:
      * @param status
     */
     void setdw(QStatusBar *status);
+    
+    QPixmap grabScreenshot();
 
 public slots:
     /**

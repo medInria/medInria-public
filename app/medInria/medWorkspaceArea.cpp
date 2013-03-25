@@ -192,6 +192,11 @@ void medWorkspaceArea::setdw(QStatusBar *status)
 
 }
 
+QPixmap medWorkspaceArea::grabScreenshot()
+{
+    return QPixmap::grabWidget(this->currentRootContainer());
+}
+
 void medWorkspaceArea::split(int rows, int cols)
 {
     medViewContainer * root = this->currentRootContainer();

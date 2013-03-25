@@ -5,3 +5,4 @@ build
 *.orig
 .directory
 CMakeLists.txt.user.*
+.DS_Store

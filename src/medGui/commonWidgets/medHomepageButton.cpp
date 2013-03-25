@@ -42,6 +42,9 @@ void medQuickAccessPushButton::onClick(void)
 medHomepagePushButton::medHomepagePushButton ( QWidget * parent ) : QPushButton ( parent )
 {
     QObject::connect ( this, SIGNAL ( clicked() ), this, SLOT ( onClick() ) );
+    m_selected = false;
+    
+    this->setMouseTracking(true);
 }
 
 void medHomepagePushButton::onClick ( void )
@@ -65,6 +68,23 @@ QString medHomepagePushButton::identifier()
         return this->text();
     else
         return this->id;
+}
+
+bool medHomepagePushButton::selected() const
+{
+    return m_selected;
+}
+
+bool medHomepagePushButton::isSelected() const
+{
+    return m_selected;
+}
+
+void medHomepagePushButton::setSelected(bool value)
+{
+    m_selected = value;
+    this->style()->unpolish(this);
+    this->style()->polish(this);
 }
 
 QString medHomepageButton::identifier()

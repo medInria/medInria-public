@@ -41,7 +41,6 @@ public:
     void writeSettings();
 
     void setStartup(const AreaType areaIndex,const QStringList& filenames);
-    void updateQuickAccessMenu(void);
     void resizeEvent( QResizeEvent * event );
 
 public slots:
@@ -57,13 +56,17 @@ public slots:
 
 private slots:
 
+    void captureScreenshot(void);
+
     void switchToBrowserArea(void);
     void switchToWorkspaceArea(void);
     void switchToHomepageArea(void);
 
-    void onShowWorkspace(QString workspace);
-    void onShowQuickAccess(void);
-    void onHideQuickAccess(void);
+    void showWorkspace(QString workspace);
+    void showQuickAccess(void);
+    void hideQuickAccess(void);
+    void showShortcutAccess(void);
+    void hideShortcutAccess(void);
     void onWorkspaceTriggered(QAction *action);
     void onQuit(void);
     void onSaveModified(void);
@@ -131,6 +134,9 @@ protected:
     void closeEvent(QCloseEvent *event);
 
     void mousePressEvent(QMouseEvent * event);
+    
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
     /**
      * all initial registering should be done here
