@@ -79,13 +79,13 @@ PURPOSE.  See the above copyright notices for more information.
 /*#ifndef _WIN32
 #include <sys/cdefs.h>
 #include <unistd.h>
-
+#endif*/
 
 #ifdef _WIN32
 # if !defined(GETOPT_API)
 #  define GETOPT_API //__declspec(dllimport)
 # endif
-
+#endif
 
 /*
  * Gnu like getopt_long() and BSD4.4 getsubopt()/optreset extensions
@@ -113,7 +113,7 @@ __BEGIN_DECLS
 GETOPT_API int getopt_long __P((int, char * const *, const char *,
     const struct option *, int *));
 __END_DECLS
-
+#endif
 
 #ifdef _WIN32
 /* These are global getopt variables */
@@ -129,6 +129,5 @@ GETOPT_API extern char* optarg;   /* argument associated with option */
 GETOPT_API int getopt __P((int, char * const *, const char *));
 
 __END_DECLS
-
+#endif
  
-#endif /* !_GETOPT_H_ */
