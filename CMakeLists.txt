@@ -66,9 +66,6 @@ set(${PROJECT_NAME}_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 ## Dashboard settings
 ## #################################################################
 
-enable_testing()
-OPTION(MEDINRIA-PLUGINS_BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
-
 #configure ctest variables
 option(MEDINRIA-PLUGINS_BUILD_REPORTING "Build Reporting")
 if(MEDINRIA-PLUGINS_BUILD_REPORTING)
@@ -92,27 +89,33 @@ set(DEPENDS_ON_DTK 1)
 
 option(BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individual selections)" OFF)
 
+OPTION(MEDINRIA-PLUGINS_BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
+if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
+  set (EXAMPLE_PLUGINS
+    exampleProcessImageFilter      OFF
+    ITKProcessExample              OFF
+    )      
+endif()
+
 ## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
 set(PLUGIN_LIST
-  v3dData                        OFF
-  v3dView                        OFF
-  itkDataImage                   OFF
-  itkDataImageReader             OFF
-  itkDataImageWriter             OFF
-  itkDCMTKDataImageReader        OFF
-  vtkDataMesh                    OFF
-  vtkDataMeshReader              OFF
-  vtkDataMeshWriter              OFF
-  itkDataDiffusionGradientList   OFF
-  itkDataTensorImage             OFF
-  itkDataTensorImageWriter       OFF
-  itkDataTensorImageReader       OFF
-  medSegmentation                OFF
-  medCompositeDataSets           OFF
-  ITKProcessExample              OFF
-  itkFilters                     OFF
-  exampleProcessImageFilter      OFF  
-  qtdcmDataSource                OFF
+  v3dData                        ON
+  v3dView                        ON
+  itkDataImage                   ON
+  itkDataImageReader             ON
+  itkDataImageWriter             ON
+  itkDCMTKDataImageReader        ON
+  vtkDataMesh                    ON
+  vtkDataMeshReader              ON
+  vtkDataMeshWriter              ON
+  itkDataDiffusionGradientList   ON
+  itkDataTensorImage             ON
+  itkDataTensorImageWriter       ON
+  itkDataTensorImageReader       ON
+  medSegmentation                ON
+  medCompositeDataSets           ON
+  itkFilters                     ON
+  qtdcmDataSource                ON
   )
 
 #MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
@@ -137,7 +140,7 @@ endwhile()
 
 ## Registration plugins, registration plugins are only built if this option is
 ## enabled or MEDINRIA_BUILD_ALL_PLUGINS is ON.
-option(ENABLE_REGISTRATION_PLUGINS "Build Registration plugins" "OFF")
+option(ENABLE_REGISTRATION_PLUGINS "Build Registration plugins" "ON")
 if (ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
   #Put here your registration plugin directory/project name.
   set(REG_PLUGIN_LIST itkProcessRegistrationDiffeomorphicDemons ON)
@@ -224,12 +227,12 @@ endif()
 ## to be set before  being included.
 add_subdirectory(libs)
 
-option(MEDINRIA-PLUGINS_BUILD_TOOLS  "Build Tools" "OFF")
+option(MEDINRIA-PLUGINS_BUILD_TOOLS  "Build Tools" "ON")
 if (MEDINRIA-PLUGINS_BUILD_TOOLS)
     add_subdirectory(tools)
 endif()
 
-option(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION "Build documentation"    false)
+option(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION "Build documentation"    OFF)
 if(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)

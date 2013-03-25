@@ -5,7 +5,6 @@ project(vtkVisuManagement)
   ENDIF()
 
 SET(${PROJECT_NAME}_SRCS
->>>>>>> This commit allow to medinria-plugins directly from medinria and clean one more time vtkInria
  vtkLimitFibersToVOI.cxx
  vtkLimitFibersToMesh.cxx
  vtkLimitFibersToROI.cxx
