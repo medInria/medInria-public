@@ -90,7 +90,7 @@ set(DEPENDS_ON_DTK 1)
 option(BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individual selections)" ON)
 
 OPTION(MEDINRIA-PLUGINS_BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
-q
+
 ## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
 set(PLUGIN_LIST
   ${EXAMPLE_PLUGINS}
