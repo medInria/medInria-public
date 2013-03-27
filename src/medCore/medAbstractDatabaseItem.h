@@ -55,6 +55,8 @@ public:
     
     virtual QList<QVariant> attributes() = 0;
     virtual QList<QVariant> values() = 0;
+    
+    virtual int rowOf(medAbstractDatabaseItem *child) const = 0;
 
 };
 

@@ -192,6 +192,23 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
 
 //-------------------------------------------------------------------------------------------------------
 
+bool medDataManager::setMetaData( const medDataIndex& index, const QString& key, const QString& value )
+{
+    medAbstractDbController * dbc = controllerForDataSource( index.dataSourceId() );
+
+    bool result =  dbc->setMetaData( index, key, value );
+     
+    if(result)
+    {
+        // it's not really a new data but we need the signal to update the view
+        emit dataAdded (index);
+    }
+    
+    return result;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
 {
     medAbstractDbController* db = d->getDbController();

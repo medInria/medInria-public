@@ -493,7 +493,6 @@ void medDatabaseView::onCreateStudyRequested(void)
         {
             QString studyName = editDialog.value(medMetaDataKeys::StudyDescription.label()).toString();
 
-            //dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
             dtkSmartPointer<dtkAbstractData> dtkData = new dtkAbstractData();
 
             dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
@@ -542,6 +541,7 @@ void medDatabaseView::onEditRequested(void)
         medDatabaseEditItemDialog editDialog(labels,values,this);
         
         int res =  editDialog.exec();
+        medDataIndex index = item->dataIndex();
 
         if(res == QDialog::Accepted)
         {
@@ -549,11 +549,11 @@ void medDatabaseView::onEditRequested(void)
             foreach(QString label, labels)
             {
                 QVariant data = editDialog.value(label);
-                QModelIndex tmpIndex = index.sibling(index.row(), i);
-                this->model()->setData(tmpIndex, data, Qt::EditRole);
+                QVariant variant = item->attribute(i);
+                medDataManager::instance()->setMetaData(index,item->attribute(i).toString(),data.toString());
                 i++;    
             }
-        }       
+        } 
     }
 
 }

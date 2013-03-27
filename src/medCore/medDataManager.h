@@ -45,6 +45,8 @@ public:
     * @return dtkAbstractData * the data
     */
     dtkSmartPointer<dtkAbstractData> data(const medDataIndex& index);
+    
+    bool setMetaData( const medDataIndex& index, const QString& key, const QString& value );
 
     /**
     * Use this function to insert data into the database,

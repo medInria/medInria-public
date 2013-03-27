@@ -57,6 +57,8 @@ public:
     const medDataIndex & dataIndex () const;
     
     void setDataIndex (const medDataIndex &);
+    
+    int rowOf(medAbstractDatabaseItem *child) const;
 
 public:
     QVariant attribute(int column);
