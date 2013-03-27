@@ -36,32 +36,38 @@ QStringList * undoRedoRegistration::getTitleAndParameters(){return NULL;}
 void undoRedoRegistration::undo(){
     itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
     m_factory->Undo();
-    m_factory->Update();
-    itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
-    if (this->output())
-        this->output()->setData (result);
+    generateOutput();
 }
     
 void undoRedoRegistration::redo(){
     itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
     m_factory->Redo();
-    m_factory->Update();
-    itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
-    if (this->output())
-        this->output()->setData (result);
+    generateOutput();
 }
 
 void undoRedoRegistration::setInput(dtkAbstractData *data, int channel){
     itkProcessRegistration::setInput(data,channel);
-    registrationFactory * medRegFac = registrationFactory::instance();
     typedef itk::Image< float, 3 > RegImageType;
+    itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
     if (channel==0)
-        medRegFac->getItkRegistrationFactory()->SetFixedImage((RegImageType*)this->fixedImage().GetPointer());
+        m_factory->SetFixedImage((RegImageType*)this->fixedImage().GetPointer());
     else if (channel==1)
-        medRegFac->getItkRegistrationFactory()->SetMovingImage((RegImageType*)this->movingImages()[0].GetPointer());
-    medRegFac->reset();
+        m_factory->SetMovingImage((RegImageType*)this->movingImages()[0].GetPointer());
+    registrationFactory::instance()->reset();
 }
 
+void undoRedoRegistration::generateOutput(){
+    typedef itk::Image< float, 3 > RegImageType;
+    itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
+    if (m_factory->GetFixedImage()!=NULL && m_factory->GetMovingImage()!=NULL){
+        m_factory->Update();
+        itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
+        result->DisconnectPipeline();
+        this->setOutput(dtkAbstractDataFactory::instance()->create ("itkDataImageFloat3")); // this initialisation permits the output to be considered as new
+        if (this->output())
+            this->output()->setData(result);
+    }
+}
 // /////////////////////////////////////////////////////////////////
 // Type instanciation
 // /////////////////////////////////////////////////////////////////

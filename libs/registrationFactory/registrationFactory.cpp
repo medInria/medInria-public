@@ -34,8 +34,10 @@ registrationFactory::~registrationFactory( void ){
 }
 
 void registrationFactory::reset(){
-    d->m_Factory->Reset();
-    emit transformationStackReset();
+    if (getGeneralTransform()->GetNumberOfTransformsInStack()>0){
+        d->m_Factory->Reset();
+        emit transformationStackReset();
+    }
 }
 
 void registrationFactory::setItkRegistrationFactory(itk::ImageRegistrationFactory<RegImageType>::Pointer registrationFactory){

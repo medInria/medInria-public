@@ -104,6 +104,7 @@ public:
     */
     dtkAbstractData *output();
 
+    void setOutput(dtkAbstractData * output);
 
     /**
      * @brief Gets an itk smart pointer to the fixed image.
