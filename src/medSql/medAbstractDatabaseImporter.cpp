@@ -269,7 +269,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         // we care whether we can write the image or not if we are importing
         if (!d->indexWithoutImporting && futureExtension.isEmpty()) {
-            emit showError(this, tr("Could not save file due to unhandled data type: ") + dtkData->identifier(), 5000);
+            emit showError(tr("Could not save file due to unhandled data type: ") + dtkData->identifier(), 5000);
             continue;
         }
 
@@ -290,7 +290,7 @@ void medAbstractDatabaseImporter::importFile ( void )
     // some checks to see if the user cancelled or something failed
     if ( d->isCancelled )
     {
-        emit showError ( this, tr ( "User cancelled import process" ), 5000 );
+        emit showError (tr ( "User cancelled import process" ), 5000 );
         emit cancelled ( this );
         return;
     }
@@ -310,7 +310,7 @@ void medAbstractDatabaseImporter::importFile ( void )
     if ( it == imagesGroupedByVolume.end() )
     {
         // TODO we know if it's either one or the other error, we can make this error better...
-        emit showError ( this, tr ( "No compatible image found or all of them had been already imported." ), 5000 );
+        emit showError (tr ( "No compatible image found or all of them had been already imported." ), 5000 );
         emit failure ( this );
         return;
     }
@@ -358,7 +358,7 @@ void medAbstractDatabaseImporter::importFile ( void )
         else
         {
             qWarning() << "Could not repopulate data!";
-            emit showError ( this, tr ( "Could not read data: " ) + filesPaths[0], 5000 );
+            emit showError (tr ( "Could not read data: " ) + filesPaths[0], 5000 );
             continue;
         }
 
@@ -381,7 +381,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
             if ( !writeSuccess )
             {
-                emit showError ( this, tr ( "Could not save data file: " ) + filesPaths[0], 5000 );
+                emit showError (tr ( "Could not save data file: " ) + filesPaths[0], 5000 );
                 continue;
             }
         }
@@ -695,7 +695,7 @@ dtkSmartPointer<dtkAbstractDataReader> medAbstractDatabaseImporter::getSuitableR
 
     if ( readers.size() ==0 )
     {
-        emit showError ( this, tr ( "No reader plugin" ), 5000 );
+        emit showError (tr ( "No reader plugin" ), 5000 );
         emit failure ( this );
         return NULL;
     }
