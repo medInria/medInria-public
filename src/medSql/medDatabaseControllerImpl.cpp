@@ -706,6 +706,11 @@ QList<medDataIndex> medDatabaseControllerImpl::moveStudy( const medDataIndex& in
         }
     }
 
+    if(!newIndexList.isEmpty())
+    {
+        emit updated(indexStudy);
+        emit updated(newIndexList[0]);
+    }
     return newIndexList;
 }
 
@@ -732,6 +737,9 @@ medDataIndex medDatabaseControllerImpl::moveSerie( const medDataIndex& indexSeri
             newIndex.setStudyId(toStudy.studyId());
         }
     }
+    
+    emit updated(indexSerie);
+    emit updated(newIndex);
     return newIndex;
 }
 
@@ -954,42 +962,40 @@ bool medDatabaseControllerImpl::contains(const medDataIndex &index) const
         QVariant imageId = index.imageId();
 
         QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
-        query.prepare("SELECT id FROM patient WHERE id = :id");
-        query.bindValue(":id", patientId);
-        if(!query.exec())
-            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-        if (query.first())
+        QString fromRequest = "SELECT * FROM patient";
+        QString whereRequest = " WHERE patient.id = :id";
+
+        if (studyId != -1)
         {
-            //patient exists.
-            if (studyId == -1) //we don't care about studies.
-                return true;
-            query.prepare("SELECT id FROM study WHERE id = :id");
-            query.bindValue(":id", studyId);
-            if(!query.exec())
-                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-            if (query.first())
+            fromRequest += " INNER JOIN study ON (patient.id = study.patient)";
+            whereRequest += " AND study.id = :stID";
+            if (seriesId != -1)
             {
-                //study exists.
-                if (seriesId == -1)  //we don't care about series
-                    return true;
-                query.prepare("SELECT id FROM series WHERE id = :id");
-                query.bindValue(":id", seriesId);
-                if(!query.exec())
-                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-                if (query.first())
+                fromRequest += " INNER JOIN series ON (study.id = series.study)";
+                whereRequest +=  " AND series.id = :seID";
+                if (imageId != -1)
                 {
-                    //series exists
-                    if (imageId == -1) //we don't care about image
-                        return true;
-                    query.prepare("SELECT id FROM image WHERE series = :series");
-                    query.bindValue(":series", seriesId);
-                    if(!query.exec())
-                        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-                    if(query.first())
-                        return true;
+                    fromRequest += " INNER JOIN image ON (series.id = image.series)";
+                    whereRequest +=  " AND image.id = :imID";
                 }
             }
         }
+        QString request = fromRequest + whereRequest;
+        
+        query.prepare(request);
+        query.bindValue(":id", patientId);
+        if (studyId != -1)
+            query.bindValue(":stID", studyId);
+        if (seriesId != -1)
+            query.bindValue(":seID", seriesId);
+        if (imageId != -1)
+            query.bindValue(":imID", imageId);
+
+        if(!query.exec())
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        if(query.first())
+            return true;
+
     }
     return false;
 }

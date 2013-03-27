@@ -514,12 +514,15 @@ QList<medDataIndex> medDatabaseNonPersistentControllerImpl::moveStudy(const medD
         }
     }
 
-    //d->items.remove(indexStudy);
-    //remove(indexStudy);
     typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType DataHashMapType;
     DataHashMapType::iterator itemIt(d->items.find(indexStudy));
-    //delete itemIt.value();
     d->items.erase(itemIt);
+    
+    if(!newIndexList.isEmpty())
+    {
+        emit updated(indexStudy); // to signal the study has been removed
+        emit updated(newIndexList[0]); // to signal the study has been added
+    }
         
     return newIndexList;
 }
@@ -571,12 +574,13 @@ medDataIndex medDatabaseNonPersistentControllerImpl::moveSerie(const medDataInde
     }
   
     insert(newIndex, d->items[indexSerie]);
-    //d->items.remove(indexSerie);
-    //remove(indexSerie);
+
     typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType DataHashMapType;
     DataHashMapType::iterator itemIt(d->items.find(indexSerie));
-    //delete itemIt.value();
     d->items.erase(itemIt);
+    
+    emit updated(indexSerie); // to signal the serie has been removed
+    emit updated(newIndex); // to signal the serie has been added
     
     return newIndex;
 }

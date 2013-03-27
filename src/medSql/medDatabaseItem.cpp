@@ -132,7 +132,9 @@ bool medDatabaseItem::removeChildren(int position, int count,  bool deleteChildr
     for (int row = 0 ; row < count ; ++row)
     {
         if (deleteChildren)
+        {
           delete d->childItems.takeAt(position);
+        }
         else
         {
             d->childItems.removeAt(position);
@@ -200,4 +202,26 @@ const medDataIndex & medDatabaseItem::dataIndex() const
 void medDatabaseItem::setDataIndex (const medDataIndex &index)
 {
     d->index = index;
+}
+
+int medDatabaseItem::rowOf(medAbstractDatabaseItem *child) const
+{
+    int row = 0;
+    bool found = false;
+    
+    foreach(medDatabaseItem *item, d->childItems)
+    {
+        if(item==child)
+        {
+            found = true;
+            break;
+        }
+        else row++;
+    }
+    
+    if(!found)
+        row = -1;
+    
+    return row;
+    
 }
