@@ -850,12 +850,12 @@ QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( c
 {
     QString identifier = dtkdata->identifier();
     QString extension = "";
-     
+
     QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
 
     dtkSmartPointer<dtkAbstractDataWriter> dataWriter;
-   
-    // cycle all
+
+    // first let's try to retrieve extension for writer information
     for ( int i=0; i<writers.size(); i++ )
     {
         dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer ( writers[i] );
@@ -870,7 +870,28 @@ QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( c
             }
         }
     }
-     
+
+    // and if it fails, let's do it manually
+    // but this could be avoided by updating writers implementation (supportedFileExtensions)
+    if(extension.isEmpty())
+    {
+        // Determine the appropriate extension to use according to the type of data.
+        // TODO: The image and CompositeDatasets types are weakly recognized (contains("Image/CompositeData")). to be improved
+        if (identifier == "vtkDataMesh") {
+            extension = ".vtk";
+        } else if (identifier == "vtkDataMesh4D") {
+            extension = ".v4d";
+        } else if (identifier == "v3dDataFibers") {
+            extension = ".xml";
+        } else if (identifier.contains("vistal")) {
+            extension = ".dim";
+        } else if (identifier.contains ("CompositeData")) {
+            extension = ".cds";
+        } else if (identifier.contains ("Image")) {
+            extension = ".mha";
+        }
+    }
+
     return extension;
 }
 
