@@ -83,11 +83,11 @@ undoRedoRegistrationToolBox::~undoRedoRegistrationToolBox(void)
 
 bool undoRedoRegistrationToolBox::registered(void)
 {
-    return medToolBoxFactory::instance()->
-    registerToolBox<undoRedoRegistrationToolBox>("undoRedoRegistrationToolBox",
-                               tr("undoRedoRegistration"),
-                               tr("short tooltip description"),
-                               QStringList() << "registration");
+    return medToolBoxFactory::instance()-> registerToolBox<undoRedoRegistrationToolBox>
+        ("undoRedoRegistrationToolBox", 
+        tr("undoRedoRegistration"), 
+        tr("short tooltip description"), 
+        QStringList() << "UndoRedoRegistration");
 }
 
 void undoRedoRegistrationToolBox::onUndo()
@@ -103,8 +103,10 @@ void undoRedoRegistrationToolBox::onUndo()
         d->redoButton->setEnabled(true);
     }
     
-    if (d->currentStep>=d->transformationStack->count())
+    if (d->currentStep>=d->transformationStack->count()){
         d->undoButton->setEnabled(false);
+        d->resetButton->setEnabled(false);
+    }
 }
 
 void undoRedoRegistrationToolBox::onRedo()
@@ -117,6 +119,7 @@ void undoRedoRegistrationToolBox::onRedo()
         d->m_UndoRedo->redo();
         this->parentToolBox()->handleOutput("redo",d->transformationStack->item(d->currentStep)->text().remove(" "));
         d->undoButton->setEnabled(true);
+        d->resetButton->setEnabled(true);
     }
 
     if (d->currentStep<=0)
@@ -134,6 +137,10 @@ void undoRedoRegistrationToolBox::onTransformationStackReset(void)
     d->undoButton->setEnabled(false);
     d->redoButton->setEnabled(false);
     d->resetButton->setEnabled(false);
+    
+    registrationFactory::instance()->getItkRegistrationFactory()->Modified();
+    d->m_UndoRedo->generateOutput();
+    this->parentToolBox()->handleOutput("reset");
 }
 
 void undoRedoRegistrationToolBox::addTransformationIntoList(int i, QStringList * methodParameters){
@@ -190,10 +197,7 @@ void undoRedoRegistrationToolBox::setRegistrationToolBox(medRegistrationSelector
 void undoRedoRegistrationToolBox::onRegistrationSuccess(){
     registrationFactory::instance()->addTransformation(static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTransform(),static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTitleAndParameters());
     registrationFactory::instance()->getItkRegistrationFactory()->Modified();
-    registrationFactory::instance()->getItkRegistrationFactory()->Update();
-    itk::ImageBase<3>::Pointer result = registrationFactory::instance()->getItkRegistrationFactory()->GetOutput();
-    result->DisconnectPipeline();
-    if (d->m_UndoRedo->output())
-        d->m_UndoRedo->output()->setData(result);
+    d->m_UndoRedo->generateOutput();
     this->parentToolBox()->handleOutput("algorithm",d->transformationStack->item(d->currentStep)->text().remove(" "));
 }
+

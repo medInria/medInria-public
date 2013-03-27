@@ -61,6 +61,8 @@ public:
     
     void redo();
 
+    void generateOutput();
+
     virtual itk::Transform<double,3,3>::Pointer getTransform();
     virtual QStringList * getTitleAndParameters();
 
@@ -72,7 +74,7 @@ protected :
      * @return bool successful or not.
      */
     virtual bool writeTransform(const QString& file);
-    
+
 private:
     undoRedoRegistrationPrivate *d;
     
