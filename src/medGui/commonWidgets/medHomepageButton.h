@@ -16,7 +16,7 @@
 #include <QtGui>
 #include "medGuiExport.h"
 
-class medHomepagePushButton : public QPushButton
+class MEDGUI_EXPORT medHomepagePushButton : public QPushButton
 {
     Q_OBJECT
     

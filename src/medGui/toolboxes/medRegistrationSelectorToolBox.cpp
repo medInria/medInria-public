@@ -50,7 +50,7 @@ public:
 
     dtkSmartPointer<medAbstractDataImage> fixedData;
     dtkSmartPointer<medAbstractDataImage> movingData;
-
+    
     dtkSmartPointer<dtkAbstractProcess> process;
     dtkSmartPointer<dtkAbstractProcess> undoRedoProcess;
 
@@ -88,31 +88,30 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     d->toolboxes->setStyleSheet("QComboBox{margin-top: 5px}");
     medToolBoxFactory* tbFactory =medToolBoxFactory::instance();
     int i=1;
+    
+    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("UndoRedoRegistration")){
+        medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
+        medRegistrationAbstractToolBox * tb = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(toolbox));
+        if(!tb) 
+            qWarning() << "Unable to instantiate" << details->name << "toolbox";
+        else
+        {
+            d->undoRedoToolBox = tb;
+            d->undoRedoToolBox->setRegistrationToolBox(this);
+        }
+    }
+    
     foreach(QString toolbox, tbFactory->toolBoxesFromCategory("registration"))
     {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
-        
-        if (!details->name.compare(QString("undoRedoRegistration")))
-        {
-            medRegistrationAbstractToolBox * tb = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(toolbox));
-            if(!tb) 
-                qWarning() << "Unable to instantiate" << details->name << "toolbox";
-            else
-            {
-                d->undoRedoToolBox = tb;
-                d->undoRedoToolBox->setRegistrationToolBox(this);
-            }
-        }
-        else
-        {
-            d->toolboxes->addItem(details->name, toolbox);
-            d->toolboxes->setItemData(i,
+//        qDebug() << "Added registration toolbox" << name;
+        d->toolboxes->addItem(details->name, toolbox);
+        d->toolboxes->setItemData(i,
                                   details->description,
                                   Qt::ToolTipRole);
-            i++;
-        }
-    }
-
+        i++;
+    }  
+    
     connect(d->toolboxes, SIGNAL(activated(int)), this, SLOT(onToolBoxChosen(int)));
 
 
@@ -518,12 +517,17 @@ void medRegistrationSelectorToolBox::handleOutput(QString type,QString algoName)
             newDescription += "-"+algoName + "\n";
         else
             newDescription += " registered\n-" + algoName+ "\n";
-    else
+    else if (type=="undo")
     {
         newDescription.remove(newDescription.lastIndexOf("-"),newDescription.size()-1); 
         if (newDescription.count("-") == 0)
-            newDescription.remove(" registered");
+            newDescription.remove(" registered\n");
     }
+    else if (type=="reset")
+        if (newDescription.lastIndexOf(" registered")!=-1)
+            newDescription.remove(newDescription.lastIndexOf(" registered"),newDescription.size()-1);
+        else
+            return;
     output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
     //
 
@@ -534,19 +538,22 @@ void medRegistrationSelectorToolBox::handleOutput(QString type,QString algoName)
         medDataManager::instance()->importNonPersistent(output);
     
     if(output)
-    {
-        d->movingView->setData(output,0);
+    {   
         d->movingData = output;
+
+        d->movingView->setData(output,0);
         // calling reset() will reset all the view parameters (position - zoom - window/level) to default
         d->movingView->reset();
         d->movingView->update();
+        
         d->fuseView->setData(output,1);
         d->fuseView->update();
+                       
         d->fixedView->setLinkPosition(true);
         d->fixedView->setLinkCamera(true);
         d->movingView->setLinkPosition(true);
         d->movingView->setLinkCamera(true);
-    }
+     }
 }
 
 void medRegistrationSelectorToolBox::enableUndoRedoToolBox(bool enable){
