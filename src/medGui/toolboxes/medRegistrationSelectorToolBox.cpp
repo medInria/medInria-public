@@ -506,7 +506,9 @@ void medRegistrationSelectorToolBox::onSaveTrans()
 void medRegistrationSelectorToolBox::handleOutput(QString type,QString algoName)
 {
     dtkSmartPointer<dtkAbstractData> output(d->undoRedoProcess->output()); //initialisation
-        
+    if (type=="algorithm")
+        output = d->process->output();
+
     foreach(QString metaData, d->fixedData->metaDataList())
         output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
 
