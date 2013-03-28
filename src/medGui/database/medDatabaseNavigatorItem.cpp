@@ -136,7 +136,7 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
     
     d->fadingAnimation->addAnimation(d->itemTrasherFadingAnimation);
 
-    connect(this, SIGNAL(itemDoubleClicked(const medDataIndex&)), medDataManager::instance(), SIGNAL(itemDoubleClicked(const medDataIndex&)));
+    connect(this, SIGNAL(itemDoubleClicked(const medDataIndex&)), medDataManager::instance(), SIGNAL(openRequested(const medDataIndex&)));
 }
 
 medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)

@@ -750,7 +750,7 @@ void medWorkspaceArea::setupWorkspace(QString name)
 
     // double-click on a thumbnail launches its visualization in the current workspace
 
-    connect (medDataManager::instance(), SIGNAL(itemDoubleClicked(const medDataIndex&)), 
+    connect (medDataManager::instance(), SIGNAL(openRequested(const medDataIndex&)),
         this, SLOT(open(const medDataIndex&)), Qt::UniqueConnection);
 }
 

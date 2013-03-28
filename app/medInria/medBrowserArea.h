@@ -54,7 +54,7 @@ signals:
     * @param index - the @medDataIndex of the image
     * @param slice - the slice number corresponding to the image
     **/
-    void open(const medDataIndex& index, int slice);
+    void openRequested(const medDataIndex& index, int slice);
 
     /**
     * Signal emitted when the user chooses to open a file or

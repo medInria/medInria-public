@@ -53,7 +53,7 @@ medDatabasePreviewItem::medDatabasePreviewItem(const medDataIndex &index, QGraph
         connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
         QThreadPool::globalInstance()->start(loader);
     }
-    connect(this, SIGNAL(open(const medDataIndex&, int)), medDataManager::instance(), SIGNAL(open(const medDataIndex&, int)));
+    connect(this, SIGNAL(openRequested(const medDataIndex&, int)), medDataManager::instance(), SIGNAL(openRequested(const medDataIndex&, int)));
     // we allow dragging by default;
     d->isDraggingAllowed = true;
 }
@@ -92,7 +92,7 @@ void medDatabasePreviewItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 
 void medDatabasePreviewItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
-    emit open(d->index, d->slice);
+    emit openRequested(d->index, d->slice);
 }
 
 void medDatabasePreviewItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)

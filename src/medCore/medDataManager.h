@@ -213,13 +213,13 @@ signals:
      */
     void progressed(QObject* obj,int value);
 
-    void open(const medDataIndex& index, int slice);
+    void openRequested(const medDataIndex& index, int slice);
 
     /**
      * @brief Emitted when the user double clicks on a medDatabasenavigatorItem (thumbnail)
      * @param the @medDataIndex of the image
     */
-    void itemDoubleClicked(const medDataIndex& index);
+    void openRequested(const medDataIndex& index);
 
 public slots:
     void onNonPersistentDataImported(const medDataIndex &index, QString uuid);
