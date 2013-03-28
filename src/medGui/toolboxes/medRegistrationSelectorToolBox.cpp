@@ -31,6 +31,7 @@
 #include <medRunnableProcess.h>
 #include <medToolBoxTab.h>
 #include <medToolBoxFactory.h>
+#include <medToolBoxHeader.h>
 
 #include <medRegistrationAbstractToolBox.h>
 
@@ -96,6 +97,8 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
             qWarning() << "Unable to instantiate" << details->name << "toolbox";
         else
         {
+            tb->setStyleSheet("medToolBoxBody {border:none}");
+            tb->header()->hide();
             d->undoRedoToolBox = tb;
             d->undoRedoToolBox->setRegistrationToolBox(this);
         }
