@@ -10,11 +10,17 @@
 #include <registrationFactory/registrationFactory.h>
 #include "itkImage.h"
 
+class undoRedoRegistrationPrivate
+{
+public:
+    bool memoryForOutputAvailable; // bool to keep track of memory allocation
+};
+
 // /////////////////////////////////////////////////////////////////
 // undoRedoRegistration
 // /////////////////////////////////////////////////////////////////
 
-undoRedoRegistration::undoRedoRegistration(void) : itkProcessRegistration(){}
+undoRedoRegistration::undoRedoRegistration(void) : itkProcessRegistration(),d(new undoRedoRegistrationPrivate){d->memoryForOutputAvailable = false;}
 
 undoRedoRegistration::~undoRedoRegistration(void){}
 
@@ -54,16 +60,27 @@ void undoRedoRegistration::setInput(dtkAbstractData *data, int channel){
     else if (channel==1)
         m_factory->SetMovingImage((RegImageType*)this->movingImages()[0].GetPointer());
     registrationFactory::instance()->reset();
+    d->memoryForOutputAvailable = true; 
 }
 
-void undoRedoRegistration::generateOutput(){
+void undoRedoRegistration::generateOutput(QString type){
     typedef itk::Image< float, 3 > RegImageType;
     itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
     if (m_factory->GetFixedImage()!=NULL && m_factory->GetMovingImage()!=NULL){
         m_factory->Update();
         itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
         result->DisconnectPipeline();
-        this->setOutput(dtkAbstractDataFactory::instance()->create ("itkDataImageFloat3")); // this initialisation permits the output to be considered as new
+        if (!d->memoryForOutputAvailable && (type=="algorithm" || type=="reset")) 
+        {// it is necessary to allocate a new memory space in the case of "reset" otherwise the output of the last algorithm will be replaced.
+            if (type=="reset")
+                d->memoryForOutputAvailable = true; 
+            else
+                d->memoryForOutputAvailable = false; 
+            this->setOutput(dtkAbstractDataFactory::instance()->create ("itkDataImageFloat3")); // this initialisation permits the output to be considered as new
+        }
+        else
+            if (type=="algorithm")
+                d->memoryForOutputAvailable = false; 
         if (this->output())
             this->output()->setData(result);
     }
