@@ -32,7 +32,7 @@ public:
     QListWidget * transformationStack;
     QIcon arrowCurrentStep; 
     int currentStep;
-    undoRedoRegistration * m_UndoRedo;
+    dtkSmartPointer<undoRedoRegistration> m_UndoRedo;
 };
 
 undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medRegistrationAbstractToolBox(parent), d(new undoRedoRegistrationToolBoxPrivate)
@@ -139,7 +139,7 @@ void undoRedoRegistrationToolBox::onTransformationStackReset(void)
     d->resetButton->setEnabled(false);
     
     registrationFactory::instance()->getItkRegistrationFactory()->Modified();
-    d->m_UndoRedo->generateOutput();
+    d->m_UndoRedo->generateOutput("reset");
     this->parentToolBox()->handleOutput("reset");
 }
 
@@ -197,7 +197,7 @@ void undoRedoRegistrationToolBox::setRegistrationToolBox(medRegistrationSelector
 void undoRedoRegistrationToolBox::onRegistrationSuccess(){
     registrationFactory::instance()->addTransformation(static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTransform(),static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTitleAndParameters());
     registrationFactory::instance()->getItkRegistrationFactory()->Modified();
-    d->m_UndoRedo->generateOutput();
+    d->m_UndoRedo->generateOutput("algorithm");
     this->parentToolBox()->handleOutput("algorithm",d->transformationStack->item(d->currentStep)->text().remove(" "));
 }
 

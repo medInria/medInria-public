@@ -61,7 +61,7 @@ public:
     
     void redo();
 
-    void generateOutput();
+    void generateOutput(QString type="");
 
     virtual itk::Transform<double,3,3>::Pointer getTransform();
     virtual QStringList * getTitleAndParameters();
