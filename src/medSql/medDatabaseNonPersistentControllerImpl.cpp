@@ -449,6 +449,12 @@ QList<medDataIndex> medDatabaseNonPersistentControllerImpl::moveStudy(const medD
     medDataIndex newIndex(indexStudy);
     newIndex.setPatientId(toPatient.patientId());
     
+    if(indexStudy == newIndex)
+    {
+        //the study is being moved to the same patient, nothing to do
+        return newIndexList;
+    }
+    
     medDatabaseNonPersistentItem * studyItem = NULL;
     
     studyItem = d->items.find(indexStudy).value();
@@ -533,6 +539,12 @@ medDataIndex medDatabaseNonPersistentControllerImpl::moveSerie(const medDataInde
     newIndex.setStudyId(toStudy.studyId());
     newIndex.setPatientId(toStudy.patientId());
 
+    if(indexSerie == newIndex)
+    {
+        //the serie is being moved to the same study, nothing to do
+        return indexSerie;
+    }
+    
     // we need to update metadatas (patient, study) of the serie to move
     dtkAbstractData *dataSerie = read(indexSerie);
 
