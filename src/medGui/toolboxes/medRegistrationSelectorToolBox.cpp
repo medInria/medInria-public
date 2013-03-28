@@ -540,6 +540,8 @@ void medRegistrationSelectorToolBox::handleOutput(QString type,QString algoName)
     if (type=="algorithm")
         medDataManager::instance()->importNonPersistent(output);
     
+    d->process = NULL; // will trigger a deleteLater
+    
     if(output)
     {   
         d->movingData = output;
@@ -565,11 +567,12 @@ void medRegistrationSelectorToolBox::enableUndoRedoToolBox(bool enable){
 }
 
 void medRegistrationSelectorToolBox::onJobAdded(medJobItem* item, QString jobName){
-    if (jobName == d->process->identifier()){
-        dtkAbstractProcess * proc = static_cast<medRunnableProcess*>(item)->getProcess();
-        if (proc==d->process)
-            enableUndoRedoToolBox(false);
-    }
+    if (d->process)
+        if (jobName == d->process->identifier()){
+            dtkAbstractProcess * proc = static_cast<medRunnableProcess*>(item)->getProcess();
+            if (proc==d->process)
+                enableUndoRedoToolBox(false);
+        }
 }
 
 //! Synchronises the window/level of the layer 0 of the fixedView with the layer 0 of the fuseView, and the layer 0 of the movingView with the layer 1 of the fuseView. 
