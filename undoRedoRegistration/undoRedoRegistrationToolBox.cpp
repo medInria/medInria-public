@@ -197,7 +197,7 @@ void undoRedoRegistrationToolBox::setRegistrationToolBox(medRegistrationSelector
 void undoRedoRegistrationToolBox::onRegistrationSuccess(){
     registrationFactory::instance()->addTransformation(static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTransform(),static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTitleAndParameters());
     registrationFactory::instance()->getItkRegistrationFactory()->Modified();
-    d->m_UndoRedo->generateOutput("algorithm");
+    d->m_UndoRedo->generateOutput("algorithm",this->parentToolBox()->process());
     this->parentToolBox()->handleOutput("algorithm",d->transformationStack->item(d->currentStep)->text().remove(" "));
 }
 
