@@ -40,6 +40,7 @@ medMessage::medMessage( QWidget *parent,
     layout->addWidget(icon);
     layout->addWidget(info);
 
+
     this->timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
 
@@ -48,7 +49,6 @@ medMessage::medMessage( QWidget *parent,
 
 medMessage::~medMessage(void)
 {
-
 }
 
 void medMessage::startTimer()
@@ -133,13 +133,14 @@ void medMessageProgress::success(void)
     progress->setStyleSheet("QProgressBar::chunk {background-color: lime;}");
     this->associateTimer();
     info->setText("Operation succeeded");
-
 }
 
 void medMessageProgress::failure(void)
 {
     progress->setStyleSheet("QProgressBar::chunk {background-color: red;}");
+
     this->associateTimer();
+
     info->setText("Operation aborted");
 }
 void medMessageProgress::associateTimer(void)
