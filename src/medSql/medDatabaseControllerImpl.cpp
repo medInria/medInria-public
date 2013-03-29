@@ -394,20 +394,20 @@ void medDatabaseControllerImpl::import(const QString& file, QString importUuid)
 
 void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopying)
 {
-    qDebug() << "DEBUG : entering medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopying)";
-
     QFileInfo info(file);
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(),indexWithoutCopying);
+    medMessageProgress *message = medMessageController::instance()->showProgress("Importing " + info.fileName());
+ 
+    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
+    
     //if we want to add importUuid support to permanent db,
     //we need to change the importer and its addedIndex signal to support importUuid
     //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
     connect(importer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &))); 
     connect(importer, SIGNAL(partialImportAttempted ( const QString& )), this, SIGNAL(partialImportAttempted ( const QString& )));
     
-    connect(importer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(importer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-
-    emit(jobStarted(importer, info.baseName()));
+    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
 
     medJobManager::instance()->registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
@@ -417,7 +417,6 @@ void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUui
 {    
     medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid);
     medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
-    QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(data).simplified();
   
     connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
 
@@ -429,7 +428,6 @@ void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUui
     connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
 
-    emit(jobStarted(importer, seriesName));
 
     medJobManager::instance()->registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);

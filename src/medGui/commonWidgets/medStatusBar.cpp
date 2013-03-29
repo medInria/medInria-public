@@ -93,7 +93,7 @@ void medStatusBar::addMessage ( medMessage* message )
         if ( d->statusBarLayout )
         {
             if ( this->availableSpace > message->size().width()+d->statusBarLayout->spacing())      // if enough space
-            {                  
+            {      
                 this->messageList.append(message);   // messages are stored in a list to easily hide newest messages 
                                                      // when quit message is displayed
                 this->availableSpace -= (message->size().width() +d->statusBarLayout->spacing());       //update available space
