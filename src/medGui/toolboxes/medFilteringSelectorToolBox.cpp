@@ -105,7 +105,7 @@ void medFilteringSelectorToolBox::onToolBoxChosen ( int index )
     //get identifier for toolbox.
     QString id = d->chooseFilter->itemData( index ).toString();
 
-    medFilteringAbstractToolBox *toolbox = qobject_cast<medFilteringAbstractToolBox *>(medToolBoxFactory::instance()->createToolBox ( id ));
+    medFilteringAbstractToolBox *toolbox = qobject_cast<medFilteringAbstractToolBox *>(medToolBoxFactory::instance()->createToolBox ( id, this ));
 
     if ( !toolbox )
     {

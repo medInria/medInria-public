@@ -290,7 +290,7 @@ void medRegistrationSelectorToolBox::onToolBoxChosen(int index)
     //get identifier for toolbox.
     QString id = d->toolboxes->itemData(index).toString();
 
-    medRegistrationAbstractToolBox *toolbox = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id));
+    medRegistrationAbstractToolBox *toolbox = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id,this));
 
 
     if(!toolbox) {
