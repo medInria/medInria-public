@@ -20,6 +20,7 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 #include <medPluginManager.h>
+#include <medMainWindow.h>
 
 
 class medApplicationPrivate
@@ -27,7 +28,9 @@ class medApplicationPrivate
 public:
     QColor msgColor;
     int msgAlignment;
-
+    medMainWindow *mainWindow;
+    QStringList systemOpenInstructions;
+    
     /*
       fix the settings filename in the move 2.0.0 -> 2.0.1
     */
@@ -95,6 +98,7 @@ medApplication::medApplication(int & argc, char**argv) :
         QtSingleApplication(argc,argv),
         d(new medApplicationPrivate)
 {
+    d->mainWindow = NULL;
     setlocale(LC_NUMERIC, "C");
 
     this->setApplicationName("medInria");
@@ -137,12 +141,29 @@ bool medApplication::event(QEvent *event)
 {
     switch (event->type())
     {
+        // Handle file system open requests, but only if the main window has been created and set
         case QEvent::FileOpen:
-            emit messageReceived(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
+            if (d->mainWindow)
+                emit messageReceived(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
+            else
+                d->systemOpenInstructions.append(QString("/open ") + static_cast<QFileOpenEvent *>(event)->file());
             return true;
         default:
             return QtSingleApplication::event(event);
     }
+}
+
+void medApplication::setMainWindow(medMainWindow *mw)
+{
+    d->mainWindow = mw;
+    
+    // If there are any requests to open files not yet treated, send signal to do so
+    foreach(QString openInstruction, d->systemOpenInstructions)
+    {
+        emit messageReceived(openInstruction);
+    }
+    
+    d->systemOpenInstructions.clear();
 }
 
 void medApplication::setMsgColor(const QColor& color)
