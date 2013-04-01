@@ -551,6 +551,7 @@ void medMainWindow::showFullScreen()
     d->fullscreenButton->setChecked(true);
     d->fullscreenButton->blockSignals(false);
     QMainWindow::showFullScreen();
+    this->setAcceptDrops(true);
 }
 
 void medMainWindow::showNormal()
