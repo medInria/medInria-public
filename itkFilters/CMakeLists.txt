@@ -44,16 +44,52 @@ include(${medInria_USE_FILE})
 ## #################################################################
 ## Input
 ## #################################################################
+set(${PROJECT_NAME}_HEADERS
+  itkFiltersProcessBase_p.h
+  itkFiltersAddProcess_p.h
+  itkFiltersDivideProcess_p.h
+  itkFiltersGaussianProcess_p.h
+  itkFiltersInvertProcess_p.h
+  itkFiltersMedianProcess_p.h
+  itkFiltersMultiplyProcess_p.h
+  itkFiltersNormalizeProcess_p.h
+  itkFiltersShrinkProcess_p.h
+  itkFiltersSubtractProcess_p.h
+  itkFiltersWindowingProcess_p.h
+)
 
 set(${PROJECT_NAME}_HEADERS_MOC
   itkFiltersPlugin.h
   itkFiltersToolBox.h
-  itkFilters.h)
+  itkFiltersProcessBase.h
+  itkFiltersAddProcess.h
+  itkFiltersSubtractProcess.h
+  itkFiltersMultiplyProcess.h
+  itkFiltersDivideProcess.h
+  itkFiltersGaussianProcess.h
+  itkFiltersNormalizeProcess.h
+  itkFiltersMedianProcess.h
+  itkFiltersInvertProcess.h
+  itkFiltersShrinkProcess.h
+  itkFiltersWindowingProcess.h
+)
 
 set(${PROJECT_NAME}_SOURCES
   itkFiltersPlugin.cpp
   itkFiltersToolBox.cpp
-  itkFilters.cpp)
+  itkFiltersProcessBase.cpp
+  #itkFiltersProcessBasePrivate.cpp
+  itkFiltersAddProcess.cpp
+  itkFiltersSubtractProcess.cpp
+  itkFiltersMultiplyProcess.cpp
+  itkFiltersDivideProcess.cpp
+  itkFiltersGaussianProcess.cpp
+  itkFiltersNormalizeProcess.cpp
+  itkFiltersMedianProcess.cpp
+  itkFiltersInvertProcess.cpp
+  itkFiltersShrinkProcess.cpp
+  itkFiltersWindowingProcess.cpp
+)
 
 ## #################################################################
 ## Build rules
@@ -68,6 +104,7 @@ configure_file(
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
 add_library(${PROJECT_NAME} SHARED
+  ${${PROJECT_NAME}_HEADERS}
   ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_SOURCES})
 

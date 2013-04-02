@@ -1,5 +1,16 @@
-#include "itkFilters.h"
 #include "itkFiltersPlugin.h"
+
+//#include "itkFilters.h"
+#include "itkFiltersAddProcess.h"
+#include "itkFiltersSubtractProcess.h"
+#include "itkFiltersMultiplyProcess.h"
+#include "itkFiltersDivideProcess.h"
+#include "itkFiltersGaussianProcess.h"
+#include "itkFiltersMedianProcess.h"
+#include "itkFiltersNormalizeProcess.h"
+#include "itkFiltersInvertProcess.h"
+#include "itkFiltersShrinkProcess.h"
+#include "itkFiltersWindowingProcess.h"
 #include "itkFiltersToolBox.h"
 #include "itkFiltersDefinitions.h"
 
@@ -24,11 +35,18 @@ itkFiltersPlugin::~itkFiltersPlugin ( void )
 
 bool itkFiltersPlugin::initialize ( void )
 {
-    if ( !itkFilters::registered() )
-        dtkWarn() << "Unable to register itkFilters type";
-
-    if ( !itkFiltersToolBox::registered() )
-        dtkWarn() << "Unable to register itkFilters toolbox";
+//    if ( !itkFilters::registered() )                 { dtkWarn() << "Unable to register itkFilters type";                         }
+    if ( !itkFiltersAddProcess::registered() )       { dtkWarn() << "Unable to register itkFilters add process type";             }
+    if ( !itkFiltersSubtractProcess::registered() )  { dtkWarn() << "Unable to register itkFilters subtract process type";        }
+    if ( !itkFiltersMultiplyProcess::registered() )  { dtkWarn() << "Unable to register itkFilters multiply process type";        }
+    if ( !itkFiltersDivideProcess::registered() )    { dtkWarn() << "Unable to register itkFilters divide process type";          }
+    if ( !itkFiltersGaussianProcess::registered() )  { dtkWarn() << "Unable to register itkFilters gaussian filter process type"; }
+    if ( !itkFiltersMedianProcess::registered() )  { dtkWarn() << "Unable to register itkFilters median filter process type"; }
+    if ( !itkFiltersNormalizeProcess::registered() ) { dtkWarn() << "Unable to register itkFilters normalize filter process type"; }
+    if ( !itkFiltersWindowingProcess::registered() ) { dtkWarn() << "Unable to register itkFilters windowing filter process type"; }
+    if ( !itkFiltersInvertProcess::registered() )    { dtkWarn() << "Unable to register itkFilters invert filter process type"; }
+    if ( !itkFiltersShrinkProcess::registered() )    { dtkWarn() << "Unable to register itkFilters shrink filter process type"; }
+    if ( !itkFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkFilters toolbox";                      }
 
     return true;
 }
@@ -78,7 +96,6 @@ QStringList itkFiltersPlugin::dependencies ( void ) const
     return dtkPlugin::dependencies();
 }
 
-
 QStringList itkFiltersPlugin::tags ( void ) const
 {
     return QStringList() << "ITK" << "process" << "preprocessing" << "filtering";
@@ -86,7 +103,16 @@ QStringList itkFiltersPlugin::tags ( void ) const
 
 QStringList itkFiltersPlugin::types ( void ) const
 {
-    return QStringList() << "itkFilters";
+    return QStringList() << "itkAddProcess"
+                         << "itkSubtractProcess"
+                         << "itkMultiplyProcess"
+                         << "itkDivideProcess"
+                         << "itkGaussianProcess"
+                         << "itkMedianProcess"
+                         << "itkNormalizeProcess"
+                         << "itkInvertProcess"
+                         << "itkShrinkProcess"
+                         << "itkWindowingProcess";
 }
 
 Q_EXPORT_PLUGIN2 ( itkFiltersPlugin, itkFiltersPlugin )
