@@ -20,7 +20,7 @@ if (ENABLE_PACKAGING)
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_NAME} Project")
     set(CPACK_PACKAGE_DESCRIPTION ${PROJECT_NAME})
 
-    set(CPACK_PACKAGE_VENDOR "http://www.inria.fr/")
+    set(CPACK_PACKAGE_VENDOR "http://med.inria.fr/")
     set(CPACK_PACKAGE_CONTACT "medinria-userfeedback@inria.fr")
     set(CPACK_PACKAGE_RELOCATABLE TRUE)
 
@@ -30,7 +30,7 @@ if (ENABLE_PACKAGING)
     set(CPACK_PACKAGE_VERSION_PATCH    ${${PROJECT_NAME}_VERSION_BUILD})
     set(CPACK_RESOURCE_FILE_LICENSE    ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.txt)
 
-    set(CPACK_COMPONENTS_ALL application libraries headers devel config tools python doc)
+    set(CPACK_COMPONENTS_ALL application libraries headers config tools python doc)
 
     set(CPACK_COMPONENT_APPLICATION_DISPLAY_NAME "medInria application")
     set(CPACK_COMPONENT_LIBRARIES_DISPLAY_NAME   "medInria libraries")
@@ -72,8 +72,9 @@ if (ENABLE_PACKAGING)
         set(CPACK_BINARY_RPM ON)
         set(CPACK_RPM_PACKAGE_LICENSE "Berkeley")
         set(CPACK_RPM_PACKAGE_GROUP "Applications")
-        #set(CPACK_RPM_USER_BINARY_SPECFILE ${CMAKE_CURRENT_SOURCE_DIR}/packaging/medInria.spec.in)
-        #set(CPACK_RPM_PACKAGE_DEBUG TRUE)
+        set(CPACK_RPM_runtime_USER_BINARY_SPECFILE ${CMAKE_CURRENT_SOURCE_DIR}/packaging/medInria.spec.in)
+        set(CPACK_RPM_devel_USER_BINARY_SPECFILE ${CMAKE_CURRENT_SOURCE_DIR}/packaging/medInria-devel.spec.in)
+        set(CPACK_RPM_PACKAGE_DEBUG TRUE)
     endif()
 
     add_custom_target(packaging
