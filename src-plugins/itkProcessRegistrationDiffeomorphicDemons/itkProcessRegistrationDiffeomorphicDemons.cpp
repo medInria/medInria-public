@@ -140,21 +140,14 @@ template <typename PixelType>
     registration->SetDisplacementFieldStandardDeviation(displacementFieldStandardDeviation);
     registration->SetUseHistogramMatching(useHistogramMatching);
 
-    QStringList * methodParameters = new QStringList();
-    methodParameters->append(QString("DiffeomorphicDemons"));
-    methodParameters->append(QString("  Max number of iterations   : ") + QString::fromStdString(rpi::VectorToString(registration->GetNumberOfIterations())));
-
     // Set update rule
     switch( updateRule )
     {
     case 0:
-        methodParameters->append(QString("  Update rule   : ") + QString("DIFFEOMORPHIC"));
         registration->SetUpdateRule( RegistrationType::UPDATE_DIFFEOMORPHIC ); break;
     case 1:
-        methodParameters->append(QString("  Update rule   : ") + QString("ADDITIVE"));
         registration->SetUpdateRule( RegistrationType::UPDATE_ADDITIVE );      break;
     case 2:
-        methodParameters->append(QString("  Update rule   : ") + QString("COMPOSITIVE"));
         registration->SetUpdateRule( RegistrationType::UPDATE_COMPOSITIVE );   break;
     default:
         throw std::runtime_error( "Update rule must fit in the range [0,2]." );
@@ -165,29 +158,22 @@ template <typename PixelType>
     {
     case 0:
         registration->SetGradientType( RegistrationType::GRADIENT_SYMMETRIZED );
-        methodParameters->append(QString("  Gradient type   : ") + QString("SYMMETRIZED"));
         break;
     case 1:
         registration->SetGradientType( RegistrationType::GRADIENT_FIXED_IMAGE );
-        methodParameters->append(QString("  Gradient type   : ") + QString("FIXED_IMAGE"));
         break;
     case 2:
         registration->SetGradientType( RegistrationType::GRADIENT_WARPED_MOVING_IMAGE );
-        methodParameters->append(QString("  Gradient type   : ") + QString("WARPED_MOVING_IMAGE"));
         break;
     case 3:
         registration->SetGradientType( RegistrationType::GRADIENT_MAPPED_MOVING_IMAGE );
-        methodParameters->append(QString("  Gradient type   : ") + QString("MAPPED_MOVING_IMAGE"));
         break;
     default:
         throw std::runtime_error( "Gradient type must fit in the range [0,3]." );
     }
 
     // Print method parameters
-    methodParameters->append(QString("  Maximum step length   : ") + QString::number(registration->GetMaximumUpdateStepLength())+ QString(" (voxel unit)"));
-    methodParameters->append(QString("  Update field standard deviation   : ") + QString::number(registration->GetUpdateFieldStandardDeviation())         + QString(" (voxel unit)"));
-    methodParameters->append(QString("  Displacement field standard deviation   : ") + QString::number(registration->GetDisplacementFieldStandardDeviation())   + QString(" (voxel unit)"));
-    methodParameters->append(QString("  Use histogram matching?   : ") + QString(registration->GetUseHistogramMatching() ? "TRUE" : "FALSE"));
+    QStringList * methodParameters = proc->getTitleAndParameters();
     
     qDebug() << "METHOD PARAMETERS";
     for(int qDebugInd = 0;qDebugInd<methodParameters->size();qDebugInd++)
@@ -272,8 +258,54 @@ itk::Transform<double,3,3>::Pointer itkProcessRegistrationDiffeomorphicDemons::g
 }
 
 QStringList * itkProcessRegistrationDiffeomorphicDemons::getTitleAndParameters(){
+    typedef float PixelType;
+    typedef double TransformScalarType;
+    typedef itk::Image< PixelType, 3 > RegImageType;
+    //normaly should use long switch cases, but here we know we work with float3 data.
+    typedef rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> RegistrationType;
+    RegistrationType * registration = static_cast<RegistrationType *>(d->registrationMethod);
+
     QStringList * titleAndParameters = new QStringList();
     titleAndParameters->append(QString("DiffeomorphicDemons"));
+    titleAndParameters->append(QString("  Max number of iterations   : ") + QString::fromStdString(rpi::VectorToString(registration->GetNumberOfIterations())));
+    switch (registration->GetUpdateRule())
+    {
+        case 0:
+            titleAndParameters->append(QString("  Update rule   : DIFFEOMORPHIC"));
+            break;
+        case 1:
+            titleAndParameters->append(QString("  Update rule   : ADDITIVE"));
+            break;
+        case 2:
+            titleAndParameters->append(QString("  Update rule   : COMPOSITIVE"));
+            break;
+        default:
+            titleAndParameters->append(QString("  Update rule   : Unknown"));
+    }
+
+    switch( registration->GetGradientType() )
+    {
+        case 0:
+            titleAndParameters->append(QString("  Gradient type   : SYMMETRIZED"));
+            break;
+        case 1:
+            titleAndParameters->append(QString("  Gradient type   : FIXED_IMAGE"));
+            break;
+        case 2:
+            titleAndParameters->append(QString("  Gradient type   : WARPED_MOVING_IMAGE"));
+            break;
+        case 3:
+            titleAndParameters->append(QString("  Gradient type   : MAPPED_MOVING_IMAGE"));
+            break;
+        default:
+            titleAndParameters->append(QString("  Gradient type   : Unknown"));
+    }
+
+    titleAndParameters->append(QString("  Maximum step length   : ") + QString::number(registration->GetMaximumUpdateStepLength())+ QString(" (voxel unit)"));
+    titleAndParameters->append(QString("  Update field standard deviation   : ") + QString::number(registration->GetUpdateFieldStandardDeviation())         + QString(" (voxel unit)"));
+    titleAndParameters->append(QString("  Displacement field standard deviation   : ") + QString::number(registration->GetDisplacementFieldStandardDeviation())   + QString(" (voxel unit)"));
+    titleAndParameters->append(QString("  Use histogram matching   : ") + QString::fromStdString(rpi::BooleanToString(registration->GetUseHistogramMatching())));
+
     return titleAndParameters;
 }
 
