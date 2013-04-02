@@ -1,20 +1,22 @@
-#######################################################################
-#
-# medInria
-#
-# Copyright (c) INRIA 2013. All rights reserved.
-# See LICENSE.txt for details.
-# 
-#  This software is distributed WITHOUT ANY WARRANTY; without even
-#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-#  PURPOSE.
-#
-#######################################################################
+### CMakeLists.txt --- 
+## 
+
+######################################################################
+## 
+### Commentary: 
+## 
+######################################################################
+## 
+### Change log:
+## 
+######################################################################
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(medTestDb)
+add_subdirectory(medQSSParserTest)
 add_subdirectory(medPluginGenerator)
+
 enable_testing()
 
 add_test(medTestDb ${CMAKE_BINARY_DIR}/bin/medTestDb ${CMAKE_BINARY_DIR}/CMakeFiles/CMakeTmp)
