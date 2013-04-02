@@ -15,9 +15,6 @@
 
 =========================================================================*/
 #pragma once
-_itkImageToVTKImageFilter_txx
-
-#include "itkImageToVTKImageFilter.h"
 
 namespace itk
 {
@@ -133,10 +130,6 @@ ImageToVTKImageFilter<TInputImage>
 {
   m_Importer->Update();
 }
-
-
-
-
 
 } // end namespace itk
 
