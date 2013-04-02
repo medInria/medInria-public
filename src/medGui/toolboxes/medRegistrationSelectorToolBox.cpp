@@ -67,7 +67,9 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     d->fixedView  = NULL;
     d->movingView = NULL;
     d->process = NULL;
-    
+    d->undoRedoProcess = NULL;
+    d->undoRedoToolBox = NULL;
+
     // Process section
     d->saveImageButton = new QPushButton(tr("Export Image"),this);
     d->saveImageButton->setToolTip(tr("Save registered image to the File System"));
@@ -93,7 +95,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     foreach(QString toolbox, tbFactory->toolBoxesFromCategory("UndoRedoRegistration")){
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
         medRegistrationAbstractToolBox * tb = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(toolbox));
-        if(!tb) 
+        if(!tb)
             qWarning() << "Unable to instantiate" << details->name << "toolbox";
         else
         {
@@ -341,7 +343,6 @@ void medRegistrationSelectorToolBox::onToolBoxChosen(int index)
     toolbox->show();
     emit addToolBox(toolbox);
 
-
     connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));
     connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
     
@@ -506,9 +507,10 @@ void medRegistrationSelectorToolBox::onSaveTrans()
 void medRegistrationSelectorToolBox::handleOutput(QString type,QString algoName)
 {
     dtkSmartPointer<dtkAbstractData> output(d->undoRedoProcess->output()); //initialisation
+    
     if (type=="algorithm")
         output = d->process->output();
-
+    
     foreach(QString metaData, d->fixedData->metaDataList())
         output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
 
