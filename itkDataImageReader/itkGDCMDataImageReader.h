@@ -2,8 +2,7 @@
 // @author Nicolas Toussaint, INRIA, 2010
 // /////////////////////////////////////////////////////////////////
 
-#ifndef ITKGDCMIMAGEDATAREADER_H
-#define ITKGDCMIMAGEDATAREADER_H
+#pragma once
 
 #include <dtkCore/dtkAbstractDataReader.h>
 
@@ -72,4 +71,4 @@ private:
 
 dtkAbstractDataReader *createItkGDCMDataImageReader(void);
 
-#endif
+

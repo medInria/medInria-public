@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _lut_blackBody_h_
-#define _lut_blackBody_h_
+#pragma once
 
 static const int BlackBody[256*3]={
 		0,
@@ -789,4 +788,4 @@ static const int BlackBody[256*3]={
 		255
 };
 
-#endif
+

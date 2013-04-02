@@ -15,8 +15,7 @@
   PURPOSE.  See the above copyright notices for more information.
 
   =========================================================================*/
-#ifndef _vtkMetaDataSetSequence_h_
-#define _vtkMetaDataSetSequence_h_
+#pragma once
 
 #include <vtkMetaDataSet.h>
 #include "vtkDataManagementExport.h"
@@ -574,5 +573,5 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   //ETX
 };
 
-#endif //_vtkMetaDataSetSequence_h_
+
 

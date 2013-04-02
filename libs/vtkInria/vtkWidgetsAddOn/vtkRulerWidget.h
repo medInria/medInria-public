@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtkRulerWidget_h_
-#define _vtkRulerWidget_h_
+#pragma once
 
 #include "vtkWidgetsAddOnExport.h"
 #include <vtkInteractorObserver.h>
@@ -61,4 +60,4 @@ class VTK_WIDGETSADDON_EXPORT vtkRulerWidget : public vtkInteractorObserver
 };
 
 
-#endif
+

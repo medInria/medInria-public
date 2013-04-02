@@ -1,5 +1,4 @@
-#ifndef VTKDATAMANAGEMENTEXPORT_H
-#define VTKDATAMANAGEMENTEXPORT_H
+#pragma once
 
 #ifdef WIN32
  #if defined (vtkDataManagement_EXPORTS)
@@ -11,6 +10,6 @@
     #define VTK_DATAMANAGEMENT_EXPORT
 #endif
 
-#endif // VTKDATAMANAGEMENTEXPORT_H
+
  
 

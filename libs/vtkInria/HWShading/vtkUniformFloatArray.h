@@ -32,8 +32,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version, not finished/working yet!
  */
 
-#ifndef bmia_vtkUniformFloatArray_h
-#define bmia_vtkUniformFloatArray_h
+#pragma once
 
 #include "vtkShaderUniform.h"
 
@@ -63,4 +62,4 @@ private:
   vtkFloatArray* Value;
 };
 
-#endif
+

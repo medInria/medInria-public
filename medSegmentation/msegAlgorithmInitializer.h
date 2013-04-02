@@ -5,8 +5,7 @@
  *      Author: jstark
  */
 
-#ifndef MSEGALGORITHMINITIALIZER_H_
-#define MSEGALGORITHMINITIALIZER_H_
+#pragma once
 
 namespace mseg {
     class Controller;
@@ -26,5 +25,5 @@ private:
 };
 
 } // namespace mseg
-#endif /* MSEGALGORITHMINITIALIZER_H_ */
+
 

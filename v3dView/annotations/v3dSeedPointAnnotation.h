@@ -1,5 +1,4 @@
-#ifndef MSEGSEEDPOINTANNOTATION_H
-#define MSEGSEEDPOINTANNOTATION_H
+#pragma once
 
 #include "v3dViewPluginExport.h"
 
@@ -40,5 +39,5 @@ private:
 
 } // namespace mseg
 
-#endif // MSEGSEEDPOINTANNOTATION_H
+
 

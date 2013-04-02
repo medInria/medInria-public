@@ -1,5 +1,4 @@
-#ifndef ITKFILTERSTOOLBOX_H
-#define ITKFILTERSTOOLBOX_H
+#pragma once
 
 #include <medFilteringAbstractToolBox.h>
 
@@ -48,4 +47,4 @@ private:
 
 medToolBox *createitkFiltersToolBox(QWidget *parent);
 
-#endif // ITKFILTERSTOOLBOX_H
+

@@ -1,6 +1,5 @@
 
-#ifndef _msegAlgorithmConnectedThreshold_h_
-#define _msegAlgorithmConnectedThreshold_h_
+#pragma once
 
 #include "msegAlgorithmGeneric.h"
 
@@ -65,4 +64,4 @@ private:
 
 } // namespace mseg
 
-#endif // _msegAlgorithmConnectedThreshold_h_
+

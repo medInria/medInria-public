@@ -1,5 +1,4 @@
-#ifndef _itk_DataImageRGB3_h_
-#define _itk_DataImageRGB3_h_
+#pragma once
 
 #include <itkRGBPixel.h>
 #include "itkDataImage.h"
@@ -9,4 +8,4 @@ extern const char itkDataImageRGB3Name[] = "itkDataImageRGB3";
 typedef itk::RGBPixel<unsigned char>     RGBPixelType;
 typedef ITKDATAIMAGEPLUGIN_EXPORT itkDataImage<3,RGBPixelType,itkDataImageRGB3Name> itkDataImageRGB3;
 
-#endif
+

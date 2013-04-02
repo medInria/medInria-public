@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 // version vtkRenderingAddOn
-#ifndef _vtk_ImageOrientedPointWidgetCallback_h_
-#define _vtk_ImageOrientedPointWidgetCallback_h_
+#pragma once
 
 #include "vtkRenderingAddOnExport.h"
 
@@ -103,4 +102,4 @@ class VTK_RENDERINGADDON_EXPORT vtkImageOrientedPointWidgetCallback : public vtk
 
 
 
-#endif
+

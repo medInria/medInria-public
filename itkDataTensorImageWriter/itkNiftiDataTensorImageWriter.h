@@ -1,5 +1,4 @@
-#ifndef itkNiftiDataTensorImageWriter_H_
-#define itkNiftiDataTensorImageWriter_H_
+#pragma once
 
 #include "itkDataTensorImageWriterBase.h"
 
@@ -24,4 +23,4 @@ private:
 
 dtkAbstractDataWriter *createitkNiftiDataTensorImageWriter(void);
 
-#endif /* itkNiftiDataTensorImageWriter_H_ */
+

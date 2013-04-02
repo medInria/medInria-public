@@ -22,8 +22,7 @@ PURPOSE.  See the above copyright notices for more information.
 // subclasses provide actual writer implementations calling upon this
 // functionality.
 
-#ifndef __vtkDataManagerWriter_h
-#define __vtkDataManagerWriter_h
+#pragma once
 
 #include "vtkXMLWriter.h"
 #include "vtkDataManagementExport.h"
@@ -164,4 +163,4 @@ private:
   
 };
 
-#endif
+

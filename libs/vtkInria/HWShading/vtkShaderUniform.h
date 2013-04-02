@@ -38,8 +38,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Renamed glSpecificUniform() to SetGlUniformSpecific()
  */
 
-#ifndef bmia_vtkShaderUniform_h
-#define bmia_vtkShaderUniform_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -101,4 +100,4 @@ private:
 
 };
 
-#endif // bmia_vtkShaderUniform_h
+

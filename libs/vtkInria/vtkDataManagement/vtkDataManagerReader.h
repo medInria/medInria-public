@@ -21,8 +21,7 @@ PURPOSE.  See the above copyright notices for more information.
 // Concrete subclasses then traverse the parsed file structure and
 // extract data.
 
-#ifndef __vtkDataManagerReader_h
-#define __vtkDataManagerReader_h
+#pragma once
 
 #include "vtkXMLReader.h"
 #include "vtkDataManagementExport.h"
@@ -95,4 +94,4 @@ private:
   
 };
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef V3DVIEWANNOTATIONINTERACTOR_H
-#define V3DVIEWANNOTATIONINTERACTOR_H
+#pragma once
 
 #include "medAbstractAnnotationViewInteractor.h"
 
@@ -90,4 +89,4 @@ inline v3dView * v3dViewAnnIntHelper::getV3dView()
     return m_v3dViewAnnInt->getV3dView();
 }
 
-#endif // V3DVIEWANNOTATIONINTERACTOR_H
+

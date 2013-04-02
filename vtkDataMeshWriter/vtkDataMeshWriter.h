@@ -1,5 +1,4 @@
-#ifndef VTKDATAMESHWRITERBASE_H
-#define VTKDATAMESHWRITERBASE_H
+#pragma once
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
@@ -34,4 +33,4 @@ private:
 
 dtkAbstractDataWriter *createVtkDataMeshWriter(void);
 
-#endif
+

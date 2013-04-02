@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkLandmarkRegistrationMethod_cxx
-#define _itkLandmarkRegistrationMethod_cxx
+#pragma once
 
 #include "itkLandmarkRegistrationMethod.h"
 
@@ -204,4 +203,4 @@ LandmarkRegistrationMethod<TImage>
 } // end namespace itk
 
 
-#endif
+

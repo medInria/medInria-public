@@ -55,8 +55,7 @@ PURPOSE.  See the above copyright notices for more information.
 // Sept. 2006, by Nicolas Toussaint, ASCLEPIOS research team, INRIA, France
 
 // version vtkRenderingAddOn
-#ifndef __vtkImageOrientedPointWidget_h
-#define __vtkImageOrientedPointWidget_h
+#pragma once
 
 #include "vtkWidgetsAddOnExport.h"
 
@@ -359,4 +358,4 @@ private:
   void operator=(const vtkImageOrientedPointWidget&);  //Not implemented
 };
 
-#endif
+

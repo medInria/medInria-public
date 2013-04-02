@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDPLUGINGENERATOR_H
-#define MEDPLUGINGENERATOR_H
+#pragma once
 
 #include <QtCore>
 
@@ -65,4 +64,4 @@ private:
    medPluginGeneratorPrivate *d;
 };
 
-#endif
+

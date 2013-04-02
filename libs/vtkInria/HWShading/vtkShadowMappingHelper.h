@@ -43,8 +43,7 @@ PURPOSE.  See the above copyright notices for more information.
  *   GLdouble StoredTextureMatrix[16] variable.
  */
 
-#ifndef bmia_vtkShadowMappingHelper_h
-#define bmia_vtkShadowMappingHelper_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -162,4 +161,4 @@ private:
 
 }; // class vtkShadowMappingHelper
 
-#endif // bmia_vtkShadowMappingHelper_h
+

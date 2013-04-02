@@ -1,5 +1,4 @@
-#ifndef __vtkXMLFiberDataSetWriter_h
-#define __vtkXMLFiberDataSetWriter_h
+#pragma once
 
 #include "vtkXMLCompositeDataWriter.h"
 #include "vtkDataManagementExport.h"
@@ -34,6 +33,6 @@ private:
 //ETX
 };
 
-#endif
+
 
 

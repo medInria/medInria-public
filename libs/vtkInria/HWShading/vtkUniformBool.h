@@ -35,8 +35,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Renamed glSpecificUniform() to SetGlUniformSpecific().
  */
 
-#ifndef bmia_vtkUniformBool_h
-#define bmia_vtkUniformBool_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -65,4 +64,4 @@ private:
   bool Value;
 };
 
-#endif
+

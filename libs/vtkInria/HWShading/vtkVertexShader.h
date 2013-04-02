@@ -32,8 +32,7 @@ PURPOSE.  See the above copyright notices for more information.
  * 2005-05-03	Tim Peeters	First version
  */
 
-#ifndef bmia_vtkVertexShader_h
-#define bmia_vtkVertexShader_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -58,4 +57,4 @@ private:
 
 };
 
-#endif // bmia_vtkVertexShader_h
+

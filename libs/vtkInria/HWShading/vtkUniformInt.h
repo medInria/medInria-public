@@ -32,8 +32,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version
  */
 
-#ifndef bmia_vtkUniformInt_h
-#define bmia_vtkUniformInt_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -61,4 +60,4 @@ private:
   int Value;
 };
 
-#endif
+

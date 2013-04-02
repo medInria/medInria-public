@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _VTK_TENSOR_VISU_MANAGER_H_
-#define _VTK_TENSOR_VISU_MANAGER_H_
+#pragma once
 
 #include "vtkVisuManagementExport.h"
 
@@ -241,4 +240,4 @@ class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
 };
 
 
-#endif
+

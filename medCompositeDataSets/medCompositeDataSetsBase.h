@@ -1,5 +1,4 @@
-#ifndef MEDCOMPOSITEDATESETBASE_H
-#define MEDCOMPOSITEDATESETBASE_H
+#pragma once
 
 #include <map>
 #include <string>
@@ -97,4 +96,4 @@ namespace MedInria {
     };
 }
 
-#endif  //  ! MEDCOMPOSITEDATESETBASE_H
+

@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtkDistanceWidget2_h_
-#define _vtkDistanceWidget2_h_
+#pragma once
 
 #include "vtkWidgetsAddOnExport.h"
 #include <vtkLineWidget.h>
@@ -53,4 +52,4 @@ class VTK_WIDGETSADDON_EXPORT vtkDistanceWidget2 : public vtkLineWidget
 
 };
 
-#endif /* _vtkDistanceWidget2_h_ */
+

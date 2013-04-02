@@ -1,5 +1,4 @@
-#ifndef V3DVIEWFIBERINTERACTOR_H
-#define V3DVIEWFIBERINTERACTOR_H
+#pragma once
 
 #include <medAbstractViewFiberInteractor.h>
 
@@ -86,4 +85,4 @@ private:
 
 dtkAbstractViewInteractor *createV3dViewFiberInteractor(void);
 
-#endif
+

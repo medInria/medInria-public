@@ -1,5 +1,4 @@
-#ifndef ITKMETADATATENSORIMAGEWRITER_H_
-#define ITKMETADATATENSORIMAGEWRITER_H_
+#pragma once
 
 #include "itkDataTensorImageWriterBase.h"
 
@@ -24,4 +23,4 @@ private:
 
 dtkAbstractDataWriter *createItkMetaDataTensorImageWriter(void);
 
-#endif /* ITKMETADATATENSORIMAGEWRITER_H_ */
+

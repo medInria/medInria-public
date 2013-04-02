@@ -1,5 +1,4 @@
-#ifndef MSEGALGORITHMGENERIC_H
-#define MSEGALGORITHMGENERIC_H
+#pragma once
 
 #include "msegPluginExport.h"
 
@@ -92,4 +91,4 @@ private:
     this->addHandler( "itkDataImageRGB3", new handlerName<RGBPixelType,3>(constructorParameters) ); \
     this->addHandler( "itkDataImageRGBA3", new handlerName<RGBAPixelType,3>(constructorParameters) )
 
-#endif // MSEGALGORITHMGENERIC_H
+

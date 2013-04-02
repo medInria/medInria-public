@@ -1,5 +1,4 @@
-#ifndef __vtkXMLFiberDataSetReader_h
-#define __vtkXMLFiberDataSetReader_h
+#pragma once
 #include "vtkDataManagementExport.h"
 #include "vtkXMLCompositeDataReader.h"
 
@@ -42,4 +41,4 @@ private:
   void operator=(const vtkXMLFiberDataSetReader&);  // Not implemented.
 };
 
-#endif
+

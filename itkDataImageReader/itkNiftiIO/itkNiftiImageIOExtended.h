@@ -22,8 +22,7 @@
  *         The University of Iowa 2002
  */
 
-#ifndef __itkNiftiImageIOExtended_h
-#define __itkNiftiImageIOExtended_h
+#pragma once
 
 #ifdef _MSC_VER
 #pragma warning ( disable : 4786 )
@@ -133,4 +132,4 @@ private:
 };
 } // end namespace itk
 
-#endif // __itkNiftiImageIOExtended_h
+

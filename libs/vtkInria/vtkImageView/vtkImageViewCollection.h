@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtkImageViewCollection_h_
-#define _vtkImageViewCollection_h_
+#pragma once
 
 #include "vtkImageViewExport.h"
 
@@ -396,4 +395,4 @@ class VTK_IMAGEVIEW_EXPORT vtkImageViewCollectionCommand : public vtkCommand
 
 
 
-#endif /* _vtkImageViewCollection_h_ */
+

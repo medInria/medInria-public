@@ -1,5 +1,4 @@
-#ifndef VTKDATAMESHPLUGIN_H
-#define VTKDATAMESHPLUGIN_H
+#pragma once
 
 #include <dtkCore/dtkPlugin.h>
 
@@ -30,4 +29,4 @@ private:
      vtkDataMeshPluginPrivate *d;
 };
 
-#endif
+

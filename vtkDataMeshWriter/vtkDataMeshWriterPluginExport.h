@@ -1,5 +1,4 @@
-#ifndef VTKDATAMESHWRITERPLUGINEXPORT_H
-#define VTKDATAMESHWRITERPLUGINEXPORT_H
+#pragma once
 
 #ifdef WIN32
     #ifdef vtkDataMeshWriterPlugin_EXPORTS
@@ -11,5 +10,5 @@
     #define VTKDATAMESHWRITERPLUGIN_EXPORT
 #endif
 
-#endif
+
 

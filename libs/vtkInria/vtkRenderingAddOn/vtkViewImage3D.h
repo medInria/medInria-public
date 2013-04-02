@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 // version vtkRenderingAddOn
-#ifndef _vtkViewImage3D_h_
-#define _vtkViewImage3D_h_
+#pragma once
 
 #include "vtkRenderingAddOnExport.h"
 
@@ -478,4 +477,4 @@ private:
 };
   
 
-#endif
+

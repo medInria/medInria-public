@@ -1,5 +1,4 @@
-#ifndef VTKWIDGETSADDONEXPORT_H
-#define VTKWIDGETSADDONEXPORT_H
+#pragma once
 
 #ifdef WIN32
  #if defined (vtkWidgetsAddOn_EXPORTS)
@@ -11,6 +10,6 @@
     #define VTK_WIDGETSADDON_EXPORT
 #endif
 
-#endif // VTKWIDGETSADDONEXPORT_H
+
  
 

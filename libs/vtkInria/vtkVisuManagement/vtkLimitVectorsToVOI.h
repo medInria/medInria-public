@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtk_LimitVectorsToVOI_h_
-#define _vtk_LimitVectorsToVOI_h_
+#pragma once
 
 #include "vtkVisuManagementExport.h"
 
@@ -71,4 +70,4 @@ virtual int RequestInformation(
 
 
 
-#endif
+

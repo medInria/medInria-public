@@ -40,8 +40,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Removed #include <GL/glew.h>
  */
 
-#ifndef bmia_vtkShadowRenderer_h
-#define bmia_vtkShadowRenderer_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -150,4 +149,4 @@ private:
 
 };
 
-#endif // bmia_vtkShadowRenderer_h
+

@@ -7,8 +7,7 @@
 //   Copyright (c) 2007-2011, INRIA Sophia Antipolis, France, groups Odyssee, Athena.
 //   Please see the copyright notice included in this distribution for full details.
 
-#ifndef VTKSPHERICALHARMONICGLYPH_HPP
-#define VTKSPHERICALHARMONICGLYPH_HPP
+#pragma once
 
 #include <vtkPolyDataAlgorithm.h>
 #include <vtkObjectFactory.h>
@@ -111,4 +110,4 @@ private:
   void operator=(const vtkSphericalHarmonicGlyph&);  // Not implemented.
 };
 
-#endif // ! VTKSPHERICALHARMONICGLYPH_HPP
+

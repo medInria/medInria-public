@@ -15,8 +15,7 @@
   PURPOSE.  See the above copyright notices for more information.
 
   =========================================================================*/
-#ifndef _vtkMetaImageData_h_
-#define _vtkMetaImageData_h_
+#pragma once
 
 #include <vtkErrorCode.h>
 #include <vtksys/SystemTools.hxx>
@@ -462,5 +461,5 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
 
 };
 
-#endif // _vtkMetaImageData_h_
+
 

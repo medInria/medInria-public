@@ -1,5 +1,4 @@
-#ifndef QTDCMDATASOURCESERVERSSETTINGSTOOLBOX_H
-#define QTDCMDATASOURCESERVERSSETTINGSTOOLBOX_H
+#pragma once
 
 #include <medToolBox.h>
 
@@ -22,4 +21,4 @@ private:
   qtdcmDataSourceServersSettingsToolBoxPrivate * d;
 };
 
-#endif // QTDCMDATASOURCESERVERSSETTINGSTOOLBOX_H
+

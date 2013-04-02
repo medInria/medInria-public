@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 // version vtkRenderingAddOn
-#ifndef _vtk_DataSet3DCroppingPlaneCallback_h_
-#define _vtk_DataSet3DCroppingPlaneCallback_h_
+#pragma once
 
 #include "vtkRenderingAddOnExport.h"
 
@@ -85,4 +84,4 @@ class VTK_RENDERINGADDON_EXPORT vtkDataSet3DCroppingPlaneCallback: public vtkCom
 };
 
 
-#endif
+

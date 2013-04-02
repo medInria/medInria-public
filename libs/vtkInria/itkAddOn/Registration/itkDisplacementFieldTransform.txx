@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkDisplacementFieldTransform_cxx
-#define _itkDisplacementFieldTransform_cxx
+#pragma once
 
 #include "itkDisplacementFieldTransform.h"
 #include "itkNeighborhoodAlgorithm.h"
@@ -188,4 +187,4 @@ GetJacobianWithRespectToCoordinates( const InputPointType & point) const
   
 } // namespace
 
-#endif
+

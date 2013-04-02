@@ -1,5 +1,5 @@
 
-#ifndef ITKPROCESSEXAMPLETOOLBOX_H
+#pragma once
 #define ITKPROCESSEXAMPLEDENOISINGTOOLBOX_H
 
 #include <medFilteringAbstractToolBox.h>
@@ -30,5 +30,5 @@ private:
     ITKProcessExampleToolBoxPrivate *d;
 };
 
-#endif
+
 

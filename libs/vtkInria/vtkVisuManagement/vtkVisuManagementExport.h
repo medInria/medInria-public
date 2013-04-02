@@ -1,5 +1,4 @@
-#ifndef VTKVISUMANAGEMENTEXPORT_H
-#define VTKVISUMANAGEMENTEXPORT_H
+#pragma once
 
 #ifdef WIN32
  #if defined (vtkVisuManagement_EXPORTS)
@@ -11,6 +10,6 @@
     #define VTK_VISUMANAGEMENT_EXPORT
 #endif
 
-#endif // VTKVISUMANAGEMENTEXPORT_H
+
  
 

@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _lut_vrMusclesBones_h_
-#define _lut_vrMusclesBones_h_
+#pragma once
 
 static const int VRMusclesBones[256*3] = {
 
@@ -792,4 +791,4 @@ static const int VRMusclesBones[256*3] = {
   251
 };
 
-#endif
+

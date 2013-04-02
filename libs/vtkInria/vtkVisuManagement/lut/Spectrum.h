@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _lut_Spectrum_h_
-#define _lut_Spectrum_h_
+#pragma once
 
 static const int Spectrum[256*3]=
 {
@@ -790,4 +789,4 @@ static const int Spectrum[256*3]=
 		0
 };
 
-#endif
+

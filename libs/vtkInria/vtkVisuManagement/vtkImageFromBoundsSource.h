@@ -33,8 +33,7 @@ PURPOSE.  See the above copyright notices for more information.
    vtkImageFuse vtkImageAlgorithm
 */
 
-#ifndef __vtkImageFromBoundsSource_h
-#define __vtkImageFromBoundsSource_h
+#pragma once
 
 #include "vtkVisuManagementExport.h"
 
@@ -156,6 +155,6 @@ private:
 };
 
 
-#endif
+
 
 

@@ -18,8 +18,7 @@
  */
 
 
-#ifndef VTKPCH_H
-#define VTKPCH_H
+#pragma once
 
 //VTK
 #include <vtkActor.h>
@@ -54,4 +53,4 @@
 #include <string>
 #include <vector>
 
-#endif //VTKPCH_H
+

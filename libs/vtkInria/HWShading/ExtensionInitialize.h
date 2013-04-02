@@ -33,8 +33,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version
  */
 
-#ifndef _extension_initialize_h_
-#define _extension_initialize_h_
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -42,4 +41,4 @@ class vtkRenderWindow;
 
 bool VTK_HWSHADING_EXPORT InitializeExtensions(vtkRenderWindow* rw);
 
-#endif //_extension_initialize_h_
+

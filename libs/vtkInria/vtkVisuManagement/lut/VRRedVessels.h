@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _lut_vrRedVessels_h_
-#define _lut_vrRedVessels_h_
+#pragma once
 
 static const int VRRedVessels[256*3]={
 				0,
@@ -789,4 +788,4 @@ static const int VRRedVessels[256*3]={
 				247
 };
 
-#endif
+

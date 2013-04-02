@@ -1,5 +1,4 @@
-#ifndef _RPI%2_H_
-#define _RPI%2_H_
+#pragma once
 
 // This example class implements a non rigid algorithm with a displacement field transform, change for rigid or affine.
 
@@ -81,4 +80,4 @@ namespace rpi
 #include "rpi%1.hxx"
 
 
-#endif // _RPI%2_H_
+

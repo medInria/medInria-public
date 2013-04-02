@@ -59,8 +59,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - added ReadDouble
  */
 
-#ifndef bmia_vtkBetterDataReader_h
-#define bmia_vtkBetterDataReader_h
+#pragma once
 
 #include "vtkHelpersExport.h"
 
@@ -171,4 +170,4 @@ private:
     int CurrentLineNumber;
 };
 
-#endif
+

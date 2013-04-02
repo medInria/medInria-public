@@ -11,8 +11,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtk_TransferFunctionPresets_h_
-#define _vtk_TransferFunctionPresets_h_
+#pragma once
 
 #include "vtkVisuManagementExport.h"
 
@@ -103,4 +102,4 @@ protected:
 
 
 
-#endif
+

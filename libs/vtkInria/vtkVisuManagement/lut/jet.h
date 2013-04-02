@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _lut_JET_h_
-#define _lut_JET_h_
+#pragma once
 
 static const float jet[64][3] ={
   {  0,         0,    0.5625},
@@ -85,4 +84,4 @@ static const float jet[64][3] ={
   {  0.5000,         0,         0} };
 
   
-#endif
+

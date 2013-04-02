@@ -15,8 +15,7 @@
   PURPOSE.  See the above copyright notices for more information.
 
   =========================================================================*/
-#ifndef _vtk_ImageClippingPlane_h_
-#define _vtk_ImageClippingPlane_h_
+#pragma once
 
 #include <vtkImplicitPlaneWidget.h>
 #include <vtkImageData.h>
@@ -135,4 +134,4 @@ class VTK_EXPORT vtkImageClippingPlane : public vtkObject
 };
 
 
-#endif
+

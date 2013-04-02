@@ -56,8 +56,7 @@ PURPOSE.  See the above copyright notices for more information.
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _GETOPT_H_
-#define _GETOPT_H_
+#pragma once
 
 #ifdef WIN32
 #ifndef _WIN32
@@ -132,4 +131,3 @@ GETOPT_API int getopt __P((int, char * const *, const char *));
 __END_DECLS
 #endif
  
-#endif /* !_GETOPT_H_ */

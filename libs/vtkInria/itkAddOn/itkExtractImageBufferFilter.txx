@@ -14,8 +14,8 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkExtractImageBufferFilter_txx
-#define __itkExtractImageBufferFilter_txx
+#pragma once
+
 
 #include "itkExtractImageBufferFilter.h"
 #include "itkImageRegionIterator.h"
@@ -63,4 +63,4 @@ ExtractImageBufferFilter<TInputImage,TOutputImage>
 
 } // end namespace itk
 
-#endif
+

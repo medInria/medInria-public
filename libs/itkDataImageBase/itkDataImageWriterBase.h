@@ -1,5 +1,4 @@
-#ifndef ITKDATAIMAGEWRITERBASE_H
-#define ITKDATAIMAGEWRITERBASE_H
+#pragma once
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
@@ -34,4 +33,4 @@ private:
     bool write_image(const QString& path,const char* type);
 };
 
-#endif
+

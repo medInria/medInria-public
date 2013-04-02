@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef DTKPLUGINGENERATORMAINWINDOW_H
-#define DTKPLUGINGENERATORMAINWINDOW_H
+#pragma once
 
 #include <QtGui>
 
@@ -50,4 +49,4 @@ private:
     medPluginGeneratorMainWindowPrivate *d;
 };
 
-#endif
+

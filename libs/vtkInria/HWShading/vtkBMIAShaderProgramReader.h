@@ -32,8 +32,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - First version
  */
 
-#ifndef bmia_vtkBMIAShaderProgramReader_h
-#define bmia_vtkBMIAShaderProgramReader_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -80,4 +79,4 @@ private:
 
 };
 
-#endif // bmia_vtkBMIAShaderProgramReader_h
+

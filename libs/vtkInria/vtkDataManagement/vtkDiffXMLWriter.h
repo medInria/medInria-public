@@ -22,8 +22,7 @@ PURPOSE.  See the above copyright notices for more information.
 // subclasses provide actual writer implementations calling upon this
 // functionality.
 
-#ifndef __vtkDiffXMLWriter_h
-#define __vtkDiffXMLWriter_h
+#pragma once
 
 #include "vtkObject.h"
 
@@ -70,4 +69,4 @@ private:
   //ETX
 };
 
-#endif
+

@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtk_Landmark_h_
-#define _vtk_Landmark_h_
+#pragma once
 
 #include "vtkLandmarkManagementExport.h"
 
@@ -357,4 +356,4 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmark : public vtkPolyData
 };
 //ETX
 
-#endif //_vtk_Landmark_h_
+

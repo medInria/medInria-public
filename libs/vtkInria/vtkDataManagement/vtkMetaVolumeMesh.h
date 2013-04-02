@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtkMetaVolumeMesh_h_
-#define _vtkMetaVolumeMesh_h_
+#pragma once
 #include "vtkDataManagementExport.h"
 #include <vtkMetaDataSet.h>
 
@@ -90,5 +89,5 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
 
 };
 
-#endif
+
 

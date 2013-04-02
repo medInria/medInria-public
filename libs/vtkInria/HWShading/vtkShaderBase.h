@@ -50,8 +50,7 @@ PURPOSE.  See the above copyright notices for more information.
  * - Removed #include <GL/glew.h>
  */
 
-#ifndef bmia_vtkShaderBase_h
-#define bmia_vtkShaderBase_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -91,4 +90,4 @@ private:
 
 };
 
-#endif // bmia_vtkShaderBase_h
+

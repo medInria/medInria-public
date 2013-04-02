@@ -15,8 +15,7 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkNiftiImageIOExtendedFactory_h
-#define __itkNiftiImageIOExtendedFactory_h
+#pragma once
 
 #ifdef _MSC_VER
 #pragma warning ( disable : 4786 )
@@ -69,4 +68,4 @@ private:
 };
 } // end namespace itk
 
-#endif
+

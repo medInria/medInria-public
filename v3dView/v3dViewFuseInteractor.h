@@ -1,5 +1,4 @@
-#ifndef V3DVIEWFUSEINTERACTOR_H
-#define V3DVIEWFUSEINTERACTOR_H
+#pragma once
 
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
@@ -48,4 +47,4 @@ private:
 
 dtkAbstractViewInteractor *createV3dViewFuseInteractor(void);
 
-#endif
+

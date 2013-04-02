@@ -25,8 +25,7 @@ PURPOSE.  See the above copyright notices for more information.
  * statement of authorship are reproduced on all copies.
  */
 
-#ifndef __vtkShadowRenderer_h
-#define __vtkShadowRenderer_h
+#pragma once
 
 //#include "vtksnlRenderingWin32Header.h"
 #include <vtkOpenGLRenderer.h>
@@ -61,4 +60,4 @@ private:
  
 };
 
-#endif
+

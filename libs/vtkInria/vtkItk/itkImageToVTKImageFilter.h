@@ -14,8 +14,7 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkImageToVTKImageFilter_h
-#define __itkImageToVTKImageFilter_h
+#pragma once
 
 #include "itkVTKImageExport.h"
 #include "vtkImageImport.h"
@@ -97,7 +96,7 @@ private:
 #include "itkImageToVTKImageFilter.txx"
 #endif
 
-#endif
+
 
 
 

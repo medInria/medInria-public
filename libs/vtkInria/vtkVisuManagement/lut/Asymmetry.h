@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _lut_asymmetry_h_
-#define _lut_asymmetry_h_
+#pragma once
 
 
 static const float AsymmetryLUT[256][3] =
@@ -285,4 +284,4 @@ static const float AsymmetryLUT[256][3] =
 };
 
 
-#endif
+

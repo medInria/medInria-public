@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtk_DatasetToImageGenerator_h_
-#define _vtk_DatasetToImageGenerator_h_
+#pragma once
 
 #include "vtkVisuManagementExport.h"
 
@@ -112,4 +111,4 @@ class VTK_VISUMANAGEMENT_EXPORT vtkDatasetToImageGenerator: public vtkImageAlgor
 };
 
 
-#endif
+

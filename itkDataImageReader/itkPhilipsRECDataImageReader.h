@@ -1,5 +1,4 @@
-#ifndef ITKPHILIPSRECDATAIMAGEREADER_H
-#define ITKPHILIPSRECDATAIMAGEREADER_H
+#pragma once
 
 #include <itkDataImageBase/itkDataImageReaderBase.h>
 #include <itkDataImageReaderPluginExport.h>
@@ -53,4 +52,4 @@ private:
     FloatImageType::DirectionType ExtractPARRECImageOrientation ();
 };
 
-#endif  //  ! ITKPHILIPSRECDATAIMAGEREADER_H
+

@@ -16,8 +16,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
 // version vtkRenderingAddOn
-#ifndef _vtkViewImage2DWithOrientedPoint_h_
-#define _vtkViewImage2DWithOrientedPoint_h_
+#pragma once
 
 #include "vtkRenderingAddOnExport.h"
 
@@ -119,4 +118,4 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2DWithOrientedPoint: public vtkViewI
   
 
 
-#endif
+

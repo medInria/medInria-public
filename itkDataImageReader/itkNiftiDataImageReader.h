@@ -1,5 +1,4 @@
-#ifndef ITKNIFTIDATAIMAGEREADER_H
-#define ITKNIFTIDATAIMAGEREADER_H
+#pragma once
 
 #include <itkDataImageBase/itkDataImageReaderBase.h>
 #include <itkDataImageReaderPluginExport.h>
@@ -25,4 +24,4 @@ private:
 
 dtkAbstractDataReader *createItkNiftiDataImageReader();
 
-#endif
+

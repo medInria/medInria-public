@@ -7,8 +7,7 @@
 //   Copyright (c) 2007-2011, INRIA Sophia Antipolis, France, groups Odyssee, Athena.
 //   Please see the copyright notice included in this distribution for full details.
 
-#ifndef vtkTessellatedSphereSource_H
-#define vtkTessellatedSphereSource_H
+#pragma once
 #include "vtkVisuManagementExport.h"
 
 #include <vtkPolyDataAlgorithm.h>
@@ -64,5 +63,5 @@ private:
   void initializeTesselation(vtkPoints* vertices, vtkCellArray* triangles);
 };
 
-#endif
+
 

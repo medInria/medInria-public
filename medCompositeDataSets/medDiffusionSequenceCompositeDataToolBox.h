@@ -1,5 +1,4 @@
-#ifndef MEDDIFFUSIONSEQUENCECOMPOSITEDATATOOLBOX_H
-#define MEDDIFFUSIONSEQUENCECOMPOSITEDATATOOLBOX_H
+#pragma once
 
 #include <medCompositeDataSetImporterAbstractToolBox.h>
 
@@ -36,4 +35,4 @@ private:
     bool import(const bool persistent);
 };
 
-#endif
+

@@ -24,8 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
 // vtkActor2D vtkTextMapper
 
 
-#ifndef __vtkOrientationAnnotation_h
-#define __vtkOrientationAnnotation_h
+#pragma once
 
 #include "vtkWidgetsAddOnExport.h"
 
@@ -56,7 +55,7 @@ private:
 };
 
 
-#endif
+
 
 
 

@@ -18,8 +18,7 @@
  */
 
 
-#ifndef MEDPLUGINSPCH_H
-#define MEDPLUGINSPCH_H
+#pragma once
 
 #include <QtCore>
 #include <QtDebug>
@@ -84,4 +83,4 @@
 #include <string>
 #include <vector>
 
-#endif //MEDPLUGINSPCH_H
+

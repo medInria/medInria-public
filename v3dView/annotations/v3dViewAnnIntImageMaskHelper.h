@@ -5,8 +5,7 @@
  *      Author: jstark
  */
 
-#ifndef v3dViewAnnIntImageMaskHelper_H_
-#define v3dViewAnnIntImageMaskHelper_H_
+#pragma once
 
 #include "v3dViewAnnotationInteractor.h"
 
@@ -29,5 +28,5 @@ private:
     v3dViewAnnIntImageMaskHelperPrivate * d;
 };
 
-#endif /* v3dViewAnnIntImageMaskHelper_H_ */
+
 

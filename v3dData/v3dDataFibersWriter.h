@@ -1,5 +1,4 @@
-#ifndef V3DDATAFIBERSWRITERBASE_H
-#define V3DDATAFIBERSWRITERBASE_H
+#pragma once
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
@@ -36,4 +35,4 @@ public slots:
 
 dtkAbstractDataWriter *createV3dDataFibersWriter(void);
 
-#endif
+

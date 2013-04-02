@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itk_GDCMImporter2_h_
-#define _itk_GDCMImporter2_h_
+#pragma once
 
 #include <itkImageSource.h>
 #include <itkImage.h>
@@ -498,5 +497,5 @@ namespace itk
 #endif
 
 
-#endif
+
 

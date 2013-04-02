@@ -59,8 +59,7 @@ PURPOSE.  See the above copyright notices for more information.
  *   is now no longer needed for activating a shader program.
  */
 
-#ifndef bmia_vtkBMIAShaderProgram_h
-#define bmia_vtkBMIAShaderProgram_h
+#pragma once
 
 #include "vtkHWShadingExport.h"
 
@@ -180,4 +179,4 @@ private:
 
 };
 
-#endif // bmia_vtkBMIAShaderProgram_h
+

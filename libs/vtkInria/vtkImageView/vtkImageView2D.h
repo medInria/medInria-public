@@ -16,8 +16,7 @@
  PURPOSE.  See the above copyright notices for more information.
 
  =========================================================================*/
-#ifndef _vtkImageView2D_h_
-#define _vtkImageView2D_h_
+#pragma once
 
 #include "vtkImageViewExport.h"
 #include "vtkImageView.h"
@@ -723,4 +722,4 @@ private:
 };
 
 
-#endif
+

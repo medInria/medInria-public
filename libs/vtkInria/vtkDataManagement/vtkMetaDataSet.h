@@ -15,8 +15,7 @@ the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _vtkMetaDataSet_h_
-#define _vtkMetaDataSet_h_
+#pragma once
 
 #include <vtkDataObject.h>
 #include <string>
@@ -416,5 +415,5 @@ class vtkMetaDataSet: public vtkDataObject
  
 };
 
-#endif //_vtkMetaDataSet_h_
+
 

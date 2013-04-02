@@ -1,5 +1,4 @@
-#ifndef _V3D_FIBERBUNDLE_H_
-#define _V3D_FIBERBUNDLE_H_
+#pragma once
 
 // vtk include
 #include <vtkFibersManager.h>
@@ -141,4 +140,4 @@ class V3DFIBERBUNDLE_EXPORT v3dFiberBundle : public vtkObject
 };
 
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef _itk_DCMTKImageIO_h_
-#define _itk_DCMTKImageIO_h_
+#pragma once
 
 #ifdef _MSC_VER
 #pragma warning ( disable : 4786 )
@@ -187,4 +186,4 @@ namespace itk
 } // end of namespace
 
 
-#endif
+

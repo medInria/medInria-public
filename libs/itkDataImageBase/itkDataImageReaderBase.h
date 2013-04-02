@@ -1,5 +1,4 @@
-#ifndef ITKDATAIMAGEREADERBASE_H
-#define ITKDATAIMAGEREADERBASE_H
+#pragma once
 
 #include <dtkCore/dtkAbstractDataReader.h>
 
@@ -40,4 +39,4 @@ private:
     bool read_image(const QString& path,const char* type);
 };
 
-#endif
+
