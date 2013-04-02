@@ -141,6 +141,12 @@ public:
     itkProcessRegistration::ImageType movingImageType();
 
     virtual itk::Transform<double,3,3>::Pointer getTransform() = 0;
+
+    /**
+    * @brief Returns a pointer on a QStringList containing the title of the algorithm and its parameters. The first element of the list is the title.
+    * 
+    * @return QStringList *
+    */
     virtual QStringList * getTitleAndParameters() = 0;
 
 
