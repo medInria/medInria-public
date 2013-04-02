@@ -258,7 +258,7 @@ void medAbstractDatabaseImporter::importFile ( void )
         #ifdef Q_OS_WIN32
                 if ( (medStorage::dataLocation() + "/" + imageFileName).length() > 255 )
                 {
-                    emit showError ( this, tr ( "Your database path is too long" ), 5000 );
+                    emit showError ( tr ( "Your database path is too long" ), 5000 );
                 emit failure ( this );
                 return;
                 }
