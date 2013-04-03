@@ -98,16 +98,88 @@ class itkDCMTKDataImageReaderPrivate
 {
 public:
     itkDCMTKDataImageReaderPrivate();
-    ~itkDCMTKDataImageReaderPrivate(){};
+    ~itkDCMTKDataImageReaderPrivate();
 
     itk::DCMTKImageIO::Pointer io;
+
+
+    /* All this below is to workaround the fact that deallocating a itk::DCMTKImageIO
+     * calls a static method cleanup(), which should not be called if other threads
+     * may still be reading DICOM data. So we keep pointers around until all threads
+     * are done.
+     *
+     * See : http://pm-med.inria.fr/issues/1604
+     */
+
+    static itk::DCMTKImageIO::Pointer getNewIO();
+    static void threadDone(itk::DCMTKImageIO::Pointer io);
+    static void initialiseStatic();
+
+    static QList<itk::DCMTKImageIO::Pointer> * ioPointers;
+    static QList<QThread*> * ioThreads;
+    static QAtomicPointer<QMutex> mutex;
 };
 
+QList<itk::DCMTKImageIO::Pointer> * itkDCMTKDataImageReaderPrivate::ioPointers = NULL;
+QList<QThread*> * itkDCMTKDataImageReaderPrivate::ioThreads = NULL;
+QAtomicPointer<QMutex> itkDCMTKDataImageReaderPrivate::mutex;
 
 itkDCMTKDataImageReaderPrivate::itkDCMTKDataImageReaderPrivate()
 {
-    io = itk::DCMTKImageIO::New();
+    io = getNewIO();
 }
+
+itkDCMTKDataImageReaderPrivate::~itkDCMTKDataImageReaderPrivate()
+{
+    threadDone(io);
+}
+
+itk::DCMTKImageIO::Pointer itkDCMTKDataImageReaderPrivate::getNewIO()
+{
+    initialiseStatic();
+
+    QMutexLocker lock(mutex);
+
+    itk::DCMTKImageIO::Pointer io = itk::DCMTKImageIO::New();
+
+    ioThreads->append(QThread::currentThread());
+    ioPointers->append(io);
+
+    qDebug() << "***************************** New Thread ?" << ioThreads->size();
+
+    return io;
+}
+
+void itkDCMTKDataImageReaderPrivate::threadDone(itk::DCMTKImageIO::Pointer io)
+{
+    QMutexLocker lock(mutex);
+
+    QThread * thread = QThread::currentThread();
+    ioThreads->removeOne(thread);
+
+    if (ioThreads->size() == 0)
+        ioPointers->clear();
+
+    qDebug() << "***************************** Thread Done !" << ioThreads->size();
+}
+
+void itkDCMTKDataImageReaderPrivate::initialiseStatic()
+{
+    if ( ! mutex) {
+        QMutex * m = new QMutex();
+        if ( ! mutex.testAndSetOrdered(NULL, m))
+            delete m;
+    }
+
+    QMutexLocker lock(mutex);
+
+    if ( ! ioThreads )
+        ioThreads = new QList<QThread*>();
+
+    if ( ! ioPointers )
+        ioPointers = new QList<itk::DCMTKImageIO::Pointer>();
+}
+
 
 // /////////////////////////////////////////////////////////////////
 // itkDCMTKDataImageReader
