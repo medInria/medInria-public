@@ -59,7 +59,7 @@ public:
     typedef medToolBox *(*medToolBoxCreator)(QWidget *parent);
 
 public:
-    static medToolBoxFactory *instance(void);
+    static medToolBoxFactory *instance();
     /**
      * @brief Registers a medToolBox type with the factory.
      *
@@ -134,8 +134,8 @@ public slots:
 
 
 protected:
-     medToolBoxFactory(void);
-    ~medToolBoxFactory(void);
+     medToolBoxFactory();
+    ~medToolBoxFactory();
 
 private:
     static medToolBoxFactory *s_instance; /** Singleton holder.*/

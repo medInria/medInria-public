@@ -28,7 +28,7 @@ class MEDGUI_EXPORT medViewPropertiesToolBox : public medToolBox
 
 public:
      medViewPropertiesToolBox(QWidget *parent = 0);
-    ~medViewPropertiesToolBox(void);
+    ~medViewPropertiesToolBox();
     /**
     Whenever the view is changed, update metdhod is triggered.
     */
@@ -41,13 +41,13 @@ public:
      *
      * Uses the medSettingsManager to push the right interaction button;
      */
-    void setCurrentInteractionFromSettings( void );
+    void setCurrentInteractionFromSettings();
 
 public slots:
     void onDataAdded(int layer);
     void onDataAdded(dtkAbstractData*);
     void onDataAdded(dtkAbstractData *data, int layer);
-    void clear(void);
+    void clear();
     void onVisibilitySet(int state);
     void onOpacitySliderSet(int opacity);
     void on2LayersOpacitySliderSet(int opacity);

@@ -98,7 +98,7 @@ public:
      *
      * @param void
     */
-    ~medViewContainer(void);
+    ~medViewContainer();
 
 
 
@@ -112,8 +112,8 @@ public:
      * @param void
      * @return medViewContainer *
     */
-    const medViewContainer *current(void) const;
-    medViewContainer *current(void);
+    const medViewContainer *current() const;
+    medViewContainer *current();
 
      /**
      * @brief Does this container has focus?
@@ -123,7 +123,7 @@ public:
      * @param void
      * @return bool
     */
-    virtual bool isClicked(void) const;
+    virtual bool isClicked() const;
 
     /**
      * @brief Is this the current container?
@@ -133,7 +133,7 @@ public:
      * @param void
      * @return bool
     */
-    virtual bool isCurrent(void) const;
+    virtual bool isCurrent() const;
 
     /**
      * @brief Is this the root container?
@@ -145,7 +145,7 @@ public:
      * @param void
      * @return bool
     */
-    virtual bool isRoot(void) const;
+    virtual bool isRoot() const;
 
     /**
      * @brief Is this a leaf container?
@@ -156,7 +156,7 @@ public:
      * @param void
      * @return bool
     */
-    virtual bool isLeaf(void) const;
+    virtual bool isLeaf() const;
 
     /**
      * @brief Is this container empty?
@@ -167,7 +167,7 @@ public:
      * @param void
      * @return bool
     */
-    virtual bool isEmpty(void) const;
+    virtual bool isEmpty() const;
 
     /**
      * @brief Does this container contain a daddy view?
@@ -177,7 +177,7 @@ public:
      * @param void
      * @return bool
     */
-    virtual bool isDaddy(void) const;
+    virtual bool isDaddy() const;
 
     /**
      * @brief Get the parent container
@@ -238,7 +238,7 @@ public:
      * @param void
      * @return medViewPool *
     */
-    medViewPool *pool (void);
+    medViewPool *pool();
 
     /**
      * @brief Sets the view of this container.
@@ -271,7 +271,7 @@ public:
      * @param void
      * @return dtkAbstractView * or NULL if there is no editable view attached to this container, or its current leaf.
     */
-    virtual dtkAbstractView         *view  (void) const;
+    virtual dtkAbstractView         *view() const;
 
     /**
      * @brief Gets the views contained here.
@@ -282,7 +282,7 @@ public:
      * @param void
      * @return QList<dtkAbstractView *>
     */
-    virtual QList<dtkAbstractView *> views (void) const;
+    virtual QList<dtkAbstractView *> views() const;
 
     /**
      * @brief Gets the value of from a viewProperty key.
@@ -308,13 +308,13 @@ public:
      * @param void
      * @return QString
     */
-    QString info(void);
+    QString info();
 
     virtual QString identifier() {return "";}
     virtual QString description() {return "";}
 
     void setMultiLayer( bool enable = true);
-    virtual bool multiLayer ( void );
+    virtual bool multiLayer();
     
     /**
      * @brief Opens data at corresponding index using DataManager and creates a new view 
@@ -352,7 +352,7 @@ signals:
     /**
      * @brief The container has been clicked.
     */
-    void clicked (void);
+    void clicked();
 
     /**
      * @brief A view has been added to the container.
@@ -413,7 +413,7 @@ public slots:
      * @brief This slot is called when another container has been clicked.
      * The current container changes its "clicked" property to false.
     */
-    virtual void onContainerClicked (void);
+    virtual void onContainerClicked();
 
 
 protected:

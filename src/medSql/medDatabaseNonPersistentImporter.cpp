@@ -52,14 +52,14 @@ medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter ( dtkAbstract
     qDebug() << d->data;
 }
 
-medDatabaseNonPersistentImporter::~medDatabaseNonPersistentImporter ( void )
+medDatabaseNonPersistentImporter::~medDatabaseNonPersistentImporter()
 {
     delete d;
 
     d = NULL;
 }
 
-void medDatabaseNonPersistentImporter::run ( void )
+void medDatabaseNonPersistentImporter::run()
 {
     medDataIndex index;
 

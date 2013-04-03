@@ -45,7 +45,7 @@ public:
 			QGraphicsItem *parent = 0);
     medClutEditorVertex( const medClutEditorVertex & other,
                          QGraphicsItem *parent = 0);
-    ~medClutEditorVertex(void);
+    ~medClutEditorVertex();
 
     const QPointF & value() const;
     void shiftValue( qreal amount, bool forceConstraints = true );
@@ -53,8 +53,8 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget = 0);
 
-    QRectF boundingRect(void) const;
-    QColor color(void) const;
+    QRectF boundingRect() const;
+    QColor color() const;
     void setColor(QColor color);
 
     void initiateMove();
@@ -99,7 +99,7 @@ public:
     //medClutEditorTable(QGraphicsItem *parent = 0);
     medClutEditorTable(const medClutEditorTable & table);
     medClutEditorTable(const QString & title = "Unknown", QGraphicsItem *parent = 0);
-    ~medClutEditorTable(void);
+    ~medClutEditorTable();
 
     const QString & title() const;
     void setTitle(const QString & title);
@@ -120,7 +120,7 @@ public:
     void finalizeMoveSelection();
     void updateCoordinates();
 
-    QRectF boundingRect(void) const;
+    QRectF boundingRect() const;
     void range( qreal & min, qreal & max ) const;
 
     void setSelectedAllVertices( bool isSelected );
@@ -147,9 +147,9 @@ public:
     // void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 signals:
-    void vertexChanged(void);
-    void vertexRemoved(void);
-    void vertexAdded(void);
+    void vertexChanged();
+    void vertexRemoved();
+    void vertexAdded();
     
 // public slots:
 //     void onDeleteVertex(medClutEditorVertex * v);
@@ -170,9 +170,9 @@ class medClutEditorHistogram : public QGraphicsItem
 {
 public:
      medClutEditorHistogram(QGraphicsItem *parent = 0);
-    ~medClutEditorHistogram(void);
+    ~medClutEditorHistogram();
 
-    // QSizeF size(void) const;
+    // QSizeF size() const;
     // void setSize( QSizeF s );
 
     void range( qreal & min, qreal & max ) const;
@@ -192,7 +192,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget = 0);
 
-    QRectF boundingRect(void) const;
+    QRectF boundingRect() const;
 
 private:
     medClutEditorHistogramPrivate * d;
@@ -209,7 +209,7 @@ class medClutEditorScene : public QGraphicsScene
 {
 public:
      medClutEditorScene(QObject *parent = 0);
-    ~medClutEditorScene(void);
+    ~medClutEditorScene();
 
     medClutEditorTable * table();
     medClutEditorHistogram * histogram();
@@ -239,7 +239,7 @@ class medClutEditorView : public QGraphicsView
 {
 public:
      medClutEditorView(QWidget *parent = 0);
-    ~medClutEditorView(void);
+    ~medClutEditorView();
 
 protected:
     medClutEditorTable * table();
@@ -266,28 +266,28 @@ class MEDGUI_EXPORT medClutEditor : public QWidget
 
 public:
      medClutEditor(QWidget *parent = 0);
-    ~medClutEditor(void);
+    ~medClutEditor();
 
     void setData(dtkAbstractData *data);
     void setView(medAbstractView *view, bool force = false);
-    void applyTable(void);
+    void applyTable();
 
 protected:
-    void initializeTable(void);
-    void deleteTable(void);
+    void initializeTable();
+    void deleteTable();
 
     void mousePressEvent(QMouseEvent *event);
 
 protected slots:
-    void onNewTableAction(void);
-    void onLoadTableAction(void);
-    void onSaveTableAction(void);
-    // void onDeleteTableAction(void);
-    void onApplyTablesAction(void);
-    // void onColorAction(void);
-    // void onDeleteAction(void);
-    void onVertexMoved(void);
-    void onToggleDirectUpdateAction(void);
+    void onNewTableAction();
+    void onLoadTableAction();
+    void onSaveTableAction();
+    // void onDeleteTableAction();
+    void onApplyTablesAction();
+    // void onColorAction();
+    // void onDeleteAction();
+    void onVertexMoved();
+    void onToggleDirectUpdateAction();
 private:
     medClutEditorPrivate *d;
 };

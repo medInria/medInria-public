@@ -192,7 +192,7 @@ void medViewPool::removeView (medAbstractView *vview)
     }
 }
 
-medAbstractView *medViewPool::daddy (void)
+medAbstractView *medViewPool::daddy()
 {
     QList< dtkSmartPointer<medAbstractView> >::iterator it = d->views.begin();
     for( ; it!=d->views.end(); it++) {
@@ -445,7 +445,7 @@ void medViewPool::onViewWindowingChanged (double level, double window, bool prop
     }
 }
 
-int medViewPool::count (void)
+int medViewPool::count()
 {
     return d->views.count();
 }

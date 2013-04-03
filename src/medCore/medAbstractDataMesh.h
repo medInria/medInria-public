@@ -32,20 +32,20 @@ class MEDCORE_EXPORT medAbstractDataMesh : public medAbstractData
     Q_OBJECT
 
 public:
-             medAbstractDataMesh(void);
+             medAbstractDataMesh();
              medAbstractDataMesh(const  medAbstractDataMesh& other);
-    virtual ~medAbstractDataMesh(void);
+    virtual ~medAbstractDataMesh();
 
-    void *mesh(void);
+    void *mesh();
 
 public:
-    virtual int countVertices(void)
+    virtual int countVertices()
     { return 0; }
-    virtual int countEdges(void)
+    virtual int countEdges()
     { return 0; }
 
-    //    virtual QList<medAbstractDataVertex *> vertices(void);
-    //    virtual QList<medAbstractDataEdge *> edges(void);
+    //    virtual QList<medAbstractDataVertex *> vertices();
+    //    virtual QList<medAbstractDataEdge *> edges();
     
 
 private:

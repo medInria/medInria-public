@@ -32,7 +32,7 @@ class MEDGUI_EXPORT medMultipleImageSelectionWidget : public QDialog
 
 public:
     medMultipleImageSelectionWidget(QList<medDataIndex> previouslySelectedIndexes, QWidget *parent = 0);
-    ~medMultipleImageSelectionWidget(void);
+    ~medMultipleImageSelectionWidget();
 
     QSize sizeHint() const;
 

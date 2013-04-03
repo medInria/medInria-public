@@ -32,8 +32,8 @@ public:
     virtual ~medAbstractAnnotationViewInteractor();
 
     //! Implement dtkAbstractObject
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
 
     //! Implement dtkAbstractViewInteractor
     virtual void setData(dtkAbstractData *data);

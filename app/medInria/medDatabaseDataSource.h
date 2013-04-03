@@ -26,7 +26,7 @@ public:
 
     QList<medToolBox*> getToolBoxes();
 	
-	QString description(void) const;
+	QString description() const;
 	
 public slots:
     void update(const medDataIndex &);

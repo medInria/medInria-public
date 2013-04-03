@@ -34,11 +34,11 @@ class medDatabasePreviewItem : public QObject, public QGraphicsPixmapItem
 
 public:
      medDatabasePreviewItem(const medDataIndex &index, QGraphicsItem *parent = 0);
-    ~medDatabasePreviewItem(void);
+    ~medDatabasePreviewItem();
 
-    medDatabasePreviewItem *clone(void);
+    medDatabasePreviewItem *clone();
 
-    medDataIndex dataIndex(void) const;
+    medDataIndex dataIndex() const;
 
     void setAllowDragging(bool isDraggingAllowed);
 

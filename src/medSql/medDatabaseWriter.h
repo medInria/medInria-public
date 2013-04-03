@@ -45,9 +45,9 @@ class medDatabaseWriter : public medJobItem
 
 public:
      medDatabaseWriter(dtkAbstractData *data, const QString& callerUuid = QString());
-    ~medDatabaseWriter(void);
+    ~medDatabaseWriter();
 
-    void run ( void );
+    void run();
 
 public slots:
     void onCancel ( QObject* );

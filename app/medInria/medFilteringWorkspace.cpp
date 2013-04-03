@@ -51,7 +51,7 @@ medFilteringWorkspace::medFilteringWorkspace ( QWidget *parent ) : medWorkspace 
     this->addToolBox( d->filteringToolBox );
 }
 
-medFilteringWorkspace::~medFilteringWorkspace ( void )
+medFilteringWorkspace::~medFilteringWorkspace()
 {
     delete d;
     d = NULL;

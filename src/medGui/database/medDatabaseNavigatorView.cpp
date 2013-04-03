@@ -89,7 +89,7 @@ void medDatabaseNavigatorView::setOrientation (Qt::Orientation orientation)
     }
 }
 
-Qt::Orientation medDatabaseNavigatorView::orientation (void) const
+Qt::Orientation medDatabaseNavigatorView::orientation() const
 {
     return d->orientation;
 }

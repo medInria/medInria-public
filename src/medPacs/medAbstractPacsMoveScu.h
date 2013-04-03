@@ -11,8 +11,8 @@ class MEDPACS_EXPORT medAbstractPacsMoveScu : public medAbstractPacsBaseScu
     Q_OBJECT
 
 public:
-             medAbstractPacsMoveScu(void);
-    virtual ~medAbstractPacsMoveScu(void);
+             medAbstractPacsMoveScu();
+    virtual ~medAbstractPacsMoveScu();
 
     virtual int sendMoveRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, 
                                 const char* ourTitle, const char* ourIP, unsigned int ourPort);

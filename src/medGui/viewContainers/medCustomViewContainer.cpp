@@ -231,7 +231,7 @@ void medCustomViewContainer::setView ( dtkAbstractView *view )
     }
 }
 
-dtkAbstractView *medCustomViewContainer::view ( void ) const
+dtkAbstractView *medCustomViewContainer::view() const
 {
     const medCustomViewContainer* currentContainer =
             qobject_cast<const medCustomViewContainer*> ( current() );
@@ -245,7 +245,7 @@ dtkAbstractView *medCustomViewContainer::view ( void ) const
     return d->view;
 }
 
-QList<dtkAbstractView *> medCustomViewContainer::views ( void ) const
+QList<dtkAbstractView *> medCustomViewContainer::views() const
 {
     QList<dtkAbstractView *> views;
     if ( this->childContainers().count() ==0 )
@@ -261,7 +261,7 @@ QList<dtkAbstractView *> medCustomViewContainer::views ( void ) const
     return views;
 }
 
-bool medCustomViewContainer::isLeaf ( void ) const
+bool medCustomViewContainer::isLeaf() const
 {
     // this implementation relies on the fact that for the root custom
     // container the leaf custom containers are already set (in setPreset)
@@ -298,7 +298,7 @@ void medCustomViewContainer::desynchronize_2 ( dtkAbstractView *view )
     }
 }
 
-void medCustomViewContainer::onViewClosing ( void )
+void medCustomViewContainer::onViewClosing()
 {
     if ( d->view )
     {
@@ -409,7 +409,7 @@ void medCustomViewContainer::dropEvent ( QDropEvent *event )
     medViewContainer::dropEvent ( event );
 }
 
-void medCustomViewContainer::clear ( void )
+void medCustomViewContainer::clear()
 {
     if ( d->view )
         this->onViewClosing();

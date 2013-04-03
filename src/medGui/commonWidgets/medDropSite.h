@@ -34,9 +34,9 @@ class MEDGUI_EXPORT medDropSite : public QLabel
 
 public:
      medDropSite(QWidget *parent = 0);
-    ~medDropSite(void);
+    ~medDropSite();
 
-    QSize sizeHint(void) const;
+    QSize sizeHint() const;
 
     /**
      * Whenever an object is dropped on the @medDropSite it
@@ -47,10 +47,10 @@ public:
     void setCanAutomaticallyChangeAppereance(bool can);
 
 public:
-    medDataIndex index(void) const;
+    medDataIndex index() const;
 
 public slots:
-    void clear(void);
+    void clear();
 
 signals:
 

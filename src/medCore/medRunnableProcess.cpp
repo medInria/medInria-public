@@ -34,7 +34,7 @@ medRunnableProcess::medRunnableProcess(void): medJobItem(), d (new medRunnablePr
     // d->process = 0; // automatic.
 }
 
-medRunnableProcess::~medRunnableProcess (void)
+medRunnableProcess::~medRunnableProcess()
 {
     delete d;
     d = NULL;
@@ -53,7 +53,7 @@ void medRunnableProcess::setProcess (dtkAbstractProcess *proc)
     }
 }
 
-void medRunnableProcess::run (void)
+void medRunnableProcess::run()
 {
     if (d->process) {
         if (d->process->update()==0)
@@ -63,12 +63,12 @@ void medRunnableProcess::run (void)
     }
 }
 
-void medRunnableProcess::onSuccess (void)
+void medRunnableProcess::onSuccess()
 {
     emit success (this);
 }
 
-void medRunnableProcess::onFailure (void)
+void medRunnableProcess::onFailure()
 {
     emit failure (this);
 }

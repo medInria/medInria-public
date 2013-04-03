@@ -32,15 +32,15 @@ class MEDGUI_EXPORT medToolBoxContainer : public QScrollArea
     Q_OBJECT
 public:
      medToolBoxContainer(QWidget *parent = 0);
-    ~medToolBoxContainer(void);
+    ~medToolBoxContainer();
 
     void addToolBox(medToolBox *toolBox);
     void removeToolBox(medToolBox *toolBox);
-    void clear(void);
+    void clear();
     
-    QList<medToolBox*> toolBoxes(void) const;
+    QList<medToolBox*> toolBoxes() const;
 
-    Qt::Orientation orientation (void) const;
+    Qt::Orientation orientation() const;
 
     /**
      * @brief Set margin and spacing of the layout

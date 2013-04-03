@@ -66,14 +66,14 @@ medDatabaseRemover::medDatabaseRemover ( const medDataIndex &index_ ) : medJobIt
     d->isCancelled = false;
 }
 
-medDatabaseRemover::~medDatabaseRemover ( void )
+medDatabaseRemover::~medDatabaseRemover()
 {
     delete d;
 
     d = NULL;
 }
 
-void medDatabaseRemover::run ( void )
+void medDatabaseRemover::run()
 {
 
     QSqlDatabase & db ( *d->db );

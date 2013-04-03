@@ -47,10 +47,10 @@ public:
      * @param void
      * @return bool
     */
-    virtual bool isLeaf(void) const;
+    virtual bool isLeaf() const;
 
 public slots:
-    virtual void onViewClosing (void);
+    virtual void onViewClosing();
 
     virtual void onViewFocused (bool value);
 };
@@ -69,9 +69,9 @@ public:
 
     void split(int rows, int cols);
 
-    dtkAbstractView *view(void) const;
+    dtkAbstractView *view() const;
 
-    QList<dtkAbstractView*> views (void) const;
+    QList<dtkAbstractView*> views() const;
 
     /**
      * @brief Overrides medViewContainer::setView.
@@ -87,7 +87,7 @@ public:
     virtual QString identifier() {return "Multi";}
 
 public slots:
-    void onViewClosing    (void);
+    void onViewClosing();
     void onViewFullScreen (bool value);
 
 private:

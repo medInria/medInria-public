@@ -233,17 +233,17 @@ int medQtDataImage::Dimension( void ) const
 const medQtDataImage::PixId& medQtDataImage::PixelType( void ) const
 {
     if ( d->images.isEmpty() ) {
-        return typeid(void); ;
+        return typeid(); ;
     }
 
     switch ( d->imageFormat ) {
     case QImage::Format_Invalid:
-        return typeid(void);
+        return typeid();
     case QImage::Format_Mono:
     case QImage::Format_MonoLSB:
         return typeid(char);
     case QImage::Format_Indexed8:
-        return typeid(void);
+        return typeid();
     case QImage::Format_RGB32:
     case QImage::Format_ARGB32:
     case QImage::Format_ARGB32_Premultiplied:
@@ -257,12 +257,12 @@ const medQtDataImage::PixId& medQtDataImage::PixelType( void ) const
     case QImage::Format_RGB888:
     case QImage::Format_RGB444:
     case QImage::Format_ARGB4444_Premultiplied:
-        return typeid(void);
+        return typeid();
     default:
-        return typeid(void);
+        return typeid();
 
     }
-    return typeid(void);
+    return typeid();
 }
 
 int medQtDataImage::minRangeValue( void )

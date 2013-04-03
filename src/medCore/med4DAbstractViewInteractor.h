@@ -13,7 +13,7 @@ public:
   virtual ~med4DAbstractViewInteractor(){};
 
   virtual void sequencesRange(double* range) = 0;
-  virtual double sequencesMinTimeStep (void) = 0;
+  virtual double sequencesMinTimeStep() = 0;
   virtual void setCurrentTime (double time) = 0;
   
 protected:

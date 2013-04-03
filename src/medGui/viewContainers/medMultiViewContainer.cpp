@@ -70,7 +70,7 @@ bool medSingleViewContainer2::isLeaf(void) const
     return true;
 }
 
-void medSingleViewContainer2::onViewClosing (void)
+void medSingleViewContainer2::onViewClosing()
 {
     qDebug()<<"closing single2";
     if (d->view) {
@@ -146,7 +146,7 @@ dtkAbstractView *medMultiViewContainer::view(void) const
     return NULL;
 }
 
-QList<dtkAbstractView*> medMultiViewContainer::views (void) const
+QList<dtkAbstractView*> medMultiViewContainer::views() const
 {
     QList<dtkAbstractView *> views;
     foreach(dtkAbstractView *view, d2->views)
@@ -247,7 +247,7 @@ void medMultiViewContainer::layout(QList<QWidget *> content)
     }
 }
 
-void medMultiViewContainer::onViewClosing (void)
+void medMultiViewContainer::onViewClosing()
 {
 //    qDebug()<<"containerMulti closing a view";
     if (dtkAbstractView *view =

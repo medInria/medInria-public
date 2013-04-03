@@ -34,9 +34,9 @@ protected:
     void mouseSelectWidget(unsigned int identifier);
     
 signals:
-    void menuHidden(void);
-    void homepageSelected(void);
-    void browserSelected(void);
+    void menuHidden();
+    void homepageSelected();
+    void browserSelected();
     void workspaceSelected(QString);
 
 private:

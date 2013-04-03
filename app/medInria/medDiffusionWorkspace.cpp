@@ -408,7 +408,7 @@ void medDiffusionWorkspace::onFlipZChanged(bool flipZ)
 }
 
 // end of tensor interaction related methods
-void medDiffusionWorkspace::refreshInteractors (void)
+void medDiffusionWorkspace::refreshInteractors()
 {
     foreach (dtkAbstractView *view, d->views) {
         if(view->interactor ("v3dViewFiberInteractor"))

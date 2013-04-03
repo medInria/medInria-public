@@ -10,8 +10,8 @@ class MEDPACS_EXPORT medAbstractPacsStoreScp : public QObject
     Q_OBJECT
 
 public:
-    medAbstractPacsStoreScp(void);
-    virtual ~medAbstractPacsStoreScp(void);
+    medAbstractPacsStoreScp();
+    virtual ~medAbstractPacsStoreScp();
 
     virtual  int start(const char* ourTitle, const char* ourIP, unsigned int ourPort);
 

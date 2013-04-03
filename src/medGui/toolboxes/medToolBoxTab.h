@@ -33,7 +33,7 @@ class MEDGUI_EXPORT medToolBoxTab : public QTabWidget
 
 public:
      medToolBoxTab(QWidget *parent = NULL);
-    ~medToolBoxTab(void);
+    ~medToolBoxTab();
 
 protected:
     void paintEvent(QPaintEvent *event);
