@@ -33,15 +33,15 @@ public:
     typedef std::map<std::string, FileList> FileListMapType;
     typedef std::map<double, FileList>      SortedMapType;
 
-    itkGDCMDataImageReader(void);
-    virtual ~itkGDCMDataImageReader(void);
+    itkGDCMDataImageReader();
+    virtual ~itkGDCMDataImageReader();
 
     
     virtual QString identifier()  const;
-    virtual QString description(void) const;
+    virtual QString description() const;
 
-    virtual QStringList handled(void) const;
-    static bool registered(void);
+    virtual QStringList handled() const;
+    static bool registered();
 
     friend class itk::SliceReadCommand;
 
@@ -69,6 +69,6 @@ private:
     static const char ID[];
 };
 
-dtkAbstractDataReader *createItkGDCMDataImageReader(void);
+dtkAbstractDataReader *createItkGDCMDataImageReader();
 
 

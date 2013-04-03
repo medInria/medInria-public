@@ -63,7 +63,7 @@ public:
   typedef itk::LinearInterpolateImageFunction<ImageType,double>                InterpolatorType;
   typedef itk::ImageRegistrationMethod< ImageType, ImageType>                  RegistrationType;
   
-  virtual void Initialize(void);
+  virtual void Initialize();
 
 protected:
            RigidRegistrationMethod();

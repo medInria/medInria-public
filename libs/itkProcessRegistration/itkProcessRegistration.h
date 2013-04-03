@@ -43,14 +43,14 @@ public:
      *
      * @param void
      */
-    itkProcessRegistration(void);
+    itkProcessRegistration();
 
     /**
      * @brief
      *
      * @param void
     */
-    virtual ~itkProcessRegistration(void);
+    virtual ~itkProcessRegistration();
 
 public:
     /**
@@ -75,7 +75,7 @@ public:
      * @param void
      * @return int 0 if it succeeded, any other value is an error. (could be used as error code)
     */
-    int update(void);
+    int update();
 
     /**
      * @brief Sets the fixed or moving image paramters of the process.
@@ -93,7 +93,7 @@ public:
      * @param void
      * @return dtkAbstractData *: itkDataImageXXY, same type as the moving input image.
     */
-    dtkAbstractData *output(void);
+    dtkAbstractData *output();
 
 
     /**
@@ -190,6 +190,6 @@ private:
 
 //Implement this function only in actual implementation of registration Plugins
 // This class is abstracted, so we won't register it in the factory.
-//dtkAbstractProcess *createItkProcessRegistration(void);
+//dtkAbstractProcess *createItkProcessRegistration();
 
 

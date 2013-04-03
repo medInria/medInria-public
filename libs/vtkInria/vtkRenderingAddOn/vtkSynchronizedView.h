@@ -150,7 +150,7 @@ class VTK_RENDERINGADDON_EXPORT vtkSynchronizedView : public vtkObject
      down-left text area. Overload this method to change the default behaviour.
   */
   virtual void SetAboutData (const char* str);
-  virtual const char* GetAboutData(void) const;
+  virtual const char* GetAboutData() const;
 
 
   /**
@@ -194,7 +194,7 @@ class VTK_RENDERINGADDON_EXPORT vtkSynchronizedView : public vtkObject
   /**
      Update the annotations. Make sure they are up to date.
   */
-  VTK_LEGACY (virtual void UpdateAnnotations( void ));
+  VTK_LEGACY (virtual void UpdateAnnotations());
   
   
   virtual void PrintSelf(ostream& os, vtkIndent indent);
@@ -203,16 +203,16 @@ class VTK_RENDERINGADDON_EXPORT vtkSynchronizedView : public vtkObject
   /**
      Call the RenderWindow's Render() method.
   */
-  virtual void Render (void);
-  virtual void SyncRender (void);
+  virtual void Render();
+  virtual void SyncRender();
   
 
   /**
      Synonym of Render(), except that the rendering is acutally made
      only if needed, i.e., if view is not up to date.
   */
-  virtual void Update (void);
-  virtual void SyncUpdate (void);
+  virtual void Update();
+  virtual void SyncUpdate();
 
 
   /**
@@ -245,7 +245,7 @@ class VTK_RENDERINGADDON_EXPORT vtkSynchronizedView : public vtkObject
   /**
      In the tree-structure of the view, returns the View's parent.
    */
-  vtkSynchronizedView* GetParent (void) const;
+  vtkSynchronizedView* GetParent() const;
 
   
   /**
@@ -259,7 +259,7 @@ class VTK_RENDERINGADDON_EXPORT vtkSynchronizedView : public vtkObject
   void AddChildren (std::vector<vtkSynchronizedView*> p_viewlist);
   //ETX
 
-  int GetNumberOfChildren (void) const;
+  int GetNumberOfChildren() const;
 
   /**
      Returns true if the view has this child in its list.
@@ -276,19 +276,19 @@ class VTK_RENDERINGADDON_EXPORT vtkSynchronizedView : public vtkObject
   /**
      Remove all children of the view.
    */
-  void RemoveAllChildren (void);
+  void RemoveAllChildren();
 
   
   /**
      Detach the view, i.e. add its own children (if any) to its parent's children (if any).
   */
-  void Detach (void);
+  void Detach();
   
 
   //BTX
-  std::vector < vtkSynchronizedView* > GetChildren(void) const
+  std::vector < vtkSynchronizedView* > GetChildren() const
   { return this->Children;}
-  VTK_LEGACY(std::vector < vtkSynchronizedView* > GetViewToObserve(void) const);
+  VTK_LEGACY(std::vector < vtkSynchronizedView* > GetViewToObserve() const);
   //ETX
   
 
@@ -304,20 +304,20 @@ class VTK_RENDERINGADDON_EXPORT vtkSynchronizedView : public vtkObject
      called, the view does not transmit the function to its children (and does
      not do anything in fact).
    */
-  void Lock (void);
+  void Lock();
 
 
   /**
      Returns whether the view is Locked or not.
    */
-  int IsLocked (void)
+  int IsLocked()
   { return this->GetIsProcessed(); }
 
     
   /**
      A call to UnLock() permits to transmit function calls to the view's children.
    */
-  void UnLock (void);
+  void UnLock();
 
 
   /**
@@ -340,12 +340,12 @@ class VTK_RENDERINGADDON_EXPORT vtkSynchronizedView : public vtkObject
      and RenderWindow are set. For example, vtkSynchronizedView will add the corner annotations
      during the call to the Initialize function.
   */
-  virtual void Initialize(void);
-  virtual void Uninitialize(void);
+  virtual void Initialize();
+  virtual void Uninitialize();
 
 
-  virtual void InitializeInteractor(void){};
-  virtual void UninitializeInteractor(void){};
+  virtual void InitializeInteractor(){};
+  virtual void UninitializeInteractor(){};
 
   
  protected:

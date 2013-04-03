@@ -38,8 +38,8 @@ public:
   typedef SmartPointer<const Self> ConstPointer;
   
   /** Class methods used to interface with the registered factories. */
-  virtual const char* GetITKSourceVersion(void) const;
-  virtual const char* GetDescription(void) const;
+  virtual const char* GetITKSourceVersion() const;
+  virtual const char* GetDescription() const;
   
   /** Method for class instantiation. */
   itkFactorylessNewMacro(Self);
@@ -48,7 +48,7 @@ public:
   itkTypeMacro(GISImageIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void RegisterOneFactory(void)
+  static void RegisterOneFactory()
     {
     GISImageIOFactory::Pointer GISFactory = GISImageIOFactory::New();
     ObjectFactoryBase::RegisterFactory(GISFactory);

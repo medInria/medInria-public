@@ -27,23 +27,23 @@ public:
 // v3dDataImage
 // /////////////////////////////////////////////////////////////////
 
-v3dDataImage::v3dDataImage(void) : medAbstractDataImage(), d(new v3dDataImagePrivate)
+v3dDataImage::v3dDataImage() : medAbstractDataImage(), d(new v3dDataImagePrivate)
 {
     d->image = NULL;
 }
 
-v3dDataImage::~v3dDataImage(void)
+v3dDataImage::~v3dDataImage()
 {
     delete d;
     d = 0;
 }
 
-bool v3dDataImage::registered(void)
+bool v3dDataImage::registered()
 {
     return dtkAbstractDataFactory::instance()->registerDataType("v3dDataImage", createV3dDataImage);
 }
 
-QString v3dDataImage::description(void) const
+QString v3dDataImage::description() const
 {
     return tr("vtk 3d image data");
 }
@@ -95,17 +95,17 @@ void v3dDataImage::setData(void *data)
         d->image = image;
 }
 
-void *v3dDataImage::data(void)
+void *v3dDataImage::data()
 {
     return d->image;
 }
 
-void *v3dDataImage::output(void)
+void *v3dDataImage::output()
 {
     return d->image;
 }
 
-int v3dDataImage::xDimension (void)
+int v3dDataImage::xDimension()
 {
   if (!d->image)
     return -1;
@@ -114,7 +114,7 @@ int v3dDataImage::xDimension (void)
   return dimensions[0];
 }
 
-int v3dDataImage::yDimension (void)
+int v3dDataImage::yDimension()
 {
   if (!d->image)
     return -1;
@@ -123,7 +123,7 @@ int v3dDataImage::yDimension (void)
   return dimensions[1];
 }
 
-int v3dDataImage::zDimension (void)
+int v3dDataImage::zDimension()
 {
   if (!d->image)
     return -1;
@@ -136,7 +136,7 @@ int v3dDataImage::zDimension (void)
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractData *createV3dDataImage(void)
+dtkAbstractData *createV3dDataImage()
 {
     return new v3dDataImage;
 }

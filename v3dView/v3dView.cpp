@@ -80,7 +80,7 @@ inline void qtColorToDouble ( const QColor & color, double * cv )
 class v3dViewObserver : public vtkCommand
 {
 public:
-    static v3dViewObserver* New ( void )
+    static v3dViewObserver* New()
     {
         return new v3dViewObserver;
     }
@@ -97,18 +97,18 @@ public:
         this->view = view;
     }
 
-    inline void   lock ( void )
+    inline void   lock()
     {
         this->m_lock = 1;
     }
-    inline void unlock ( void )
+    inline void unlock()
     {
         this->m_lock = 0;
     }
 
 protected:
-    v3dViewObserver ( void );
-    ~v3dViewObserver ( void );
+    v3dViewObserver();
+    ~v3dViewObserver();
 
 private:
     int             m_lock;
@@ -116,13 +116,13 @@ private:
     v3dView        *view;
 };
 
-v3dViewObserver::v3dViewObserver ( void )
+v3dViewObserver::v3dViewObserver()
 {
     this->slider = 0;
     this->m_lock = 0;
 }
 
-v3dViewObserver::~v3dViewObserver ( void )
+v3dViewObserver::~v3dViewObserver()
 {
 
 }
@@ -317,7 +317,7 @@ medMaximizeIcon v3dViewPrivate::maximizeIcon;
 // v3dView
 // /////////////////////////////////////////////////////////////////
 
-v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
+v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 {
     if ( d->nextColorIndex < 0 )
     {
@@ -646,7 +646,7 @@ v3dView::v3dView ( void ) : medAbstractView(), d ( new v3dViewPrivate )
     connect ( d->widget, SIGNAL ( destroyed() ), this, SLOT ( widgetDestroyed() ) );
 }
 
-v3dView::~v3dView ( void )
+v3dView::~v3dView()
 {
     foreach ( dtkAbstractViewInteractor *interactor, this->interactors() )
     {
@@ -696,12 +696,12 @@ v3dView::~v3dView ( void )
     d = NULL;
 }
 
-bool v3dView::registered ( void )
+bool v3dView::registered()
 {
     return dtkAbstractViewFactory::instance()->registerViewType ( v3dView::s_identifier(), createV3dView );
 }
 
-QString v3dView::description ( void ) const
+QString v3dView::description() const
 {
     return tr ( "A view based on vtkInria3d" );
 }
@@ -716,12 +716,12 @@ QString v3dView::identifier() const
 //
 // /////////////////////////////////////////////////////////////////
 
-void v3dView::clear ( void )
+void v3dView::clear()
 {
     d->collection->SyncSetInput ( 0 ); // to be tested
 }
 
-void v3dView::reset ( void )
+void v3dView::reset()
 {
     if ( !d->collection )
         return;
@@ -733,7 +733,7 @@ void v3dView::reset ( void )
         d->currentView->GetInteractorStyle()->InvokeEvent ( vtkImageView2DCommand::SliceMoveEvent, NULL );
 }
 
-void v3dView::update ( void )
+void v3dView::update()
 {
     if ( d->currentView )
     {
@@ -742,37 +742,37 @@ void v3dView::update ( void )
     d->vtkWidget->update();
 }
 
-void *v3dView::view ( void )
+void *v3dView::view()
 {
     return d->currentView;
 }
 
-vtkImageView2D *v3dView::view2d ( void )
+vtkImageView2D *v3dView::view2d()
 {
     return d->view2d;
 }
 
-vtkImageView3D *v3dView::view3d ( void )
+vtkImageView3D *v3dView::view3d()
 {
     return d->view3d;
 }
 
-vtkImageView *v3dView::currentView ( void )
+vtkImageView *v3dView::currentView()
 {
     return d->currentView;
 }
 
-vtkRenderWindowInteractor *v3dView::interactor ( void )
+vtkRenderWindowInteractor *v3dView::interactor()
 {
     return d->renWin->GetInteractor();
 }
 
-vtkRenderer *v3dView::renderer2d ( void )
+vtkRenderer *v3dView::renderer2d()
 {
     return d->renderer2d;
 }
 
-vtkRenderer *v3dView::renderer3d ( void )
+vtkRenderer *v3dView::renderer3d()
 {
     return d->renderer3d;
 }
@@ -1053,17 +1053,17 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         this->enableInteractor(v3dViewAnnotationInteractor::s_identifier());
 }
 
-void *v3dView::data ( void )
+void *v3dView::data()
 {
     return d->data;
 }
 
-QWidget *v3dView::receiverWidget ( void )
+QWidget *v3dView::receiverWidget()
 {
     return d->vtkWidget;
 }
 
-QWidget *v3dView::widget ( void )
+QWidget *v3dView::widget()
 {
     return d->widget;
 }
@@ -1668,7 +1668,7 @@ void v3dView::onMetaDataSet ( const QString &key, const QString &value )
     //     d->view3d->SetVRQuality((float)(value.toInt())/100.0);
 }
 
-void v3dView::onMenu3DVRTriggered ( void )
+void v3dView::onMenu3DVRTriggered()
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
         d->renWin->SetStereoRender ( 1 );
@@ -1678,7 +1678,7 @@ void v3dView::onMenu3DVRTriggered ( void )
     d->view3d->Render();
 }
 
-void v3dView::onMenu3DMPRTriggered ( void )
+void v3dView::onMenu3DMPRTriggered()
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
         d->renWin->SetStereoRender ( 1 );
@@ -1688,7 +1688,7 @@ void v3dView::onMenu3DMPRTriggered ( void )
     d->view3d->Render();
 }
 
-void v3dView::onMenu3DMaxIPTriggered ( void )
+void v3dView::onMenu3DMaxIPTriggered()
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
         d->renWin->SetStereoRender ( 1 );
@@ -1698,7 +1698,7 @@ void v3dView::onMenu3DMaxIPTriggered ( void )
     d->view3d->Render();
 }
 
-void v3dView::onMenu3DMinIPTriggered ( void )
+void v3dView::onMenu3DMinIPTriggered()
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
         d->renWin->SetStereoRender ( 1 );
@@ -1708,7 +1708,7 @@ void v3dView::onMenu3DMinIPTriggered ( void )
     d->view3d->Render();
 }
 
-void v3dView::onMenu3DOffTriggered ( void )
+void v3dView::onMenu3DOffTriggered()
 {
     if ( qApp->arguments().contains ( "--stereo" ) )
         d->renWin->SetStereoRender ( 1 );
@@ -1717,31 +1717,31 @@ void v3dView::onMenu3DOffTriggered ( void )
     d->view3d->Render();
 }
 
-void v3dView::onMenuVRGPUTriggered ( void )
+void v3dView::onMenuVRGPUTriggered()
 {
     this->setProperty ( "Renderer", "GPU" );
     d->view3d->Render();
 }
 
-void v3dView::onMenuVRRayCastAndTextureTriggered ( void )
+void v3dView::onMenuVRRayCastAndTextureTriggered()
 {
     this->setProperty ( "Renderer", "Ray Cast / Texture" );
     d->view3d->Render();
 }
 
-void v3dView::onMenuVRRayCastTriggered ( void )
+void v3dView::onMenuVRRayCastTriggered()
 {
     this->setProperty ( "Renderer", "Ray Cast" );
     d->view3d->Render();
 }
 
-void v3dView::onMenuVRDefaultTriggered ( void )
+void v3dView::onMenuVRDefaultTriggered()
 {
     this->setProperty ( "Renderer", "Default" );
     d->view3d->Render();
 }
 
-void v3dView::onMenu3DLODTriggered ( void )
+void v3dView::onMenu3DLODTriggered()
 {
     if ( this->property ( "UseLOD" ) == "On" )
         this->setProperty ( "UseLOD", "Off" );
@@ -1750,12 +1750,12 @@ void v3dView::onMenu3DLODTriggered ( void )
     d->view3d->Render();
 }
 
-void v3dView::onMenuZoomTriggered ( void )
+void v3dView::onMenuZoomTriggered()
 {
     this->setProperty ( "MouseInteraction", "Zooming" );
 }
 
-void v3dView::onMenuWindowLevelTriggered ( void )
+void v3dView::onMenuWindowLevelTriggered()
 {
     this->setProperty ( "MouseInteraction", "Windowing" );
 }
@@ -1764,7 +1764,7 @@ void v3dView::onMenuWindowLevelTriggered ( void )
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractView *createV3dView ( void )
+dtkAbstractView *createV3dView()
 {
     return new v3dView;
 }
@@ -1905,7 +1905,7 @@ double v3dView::opacity ( int layer ) const
     return d->view2d->GetOpacity ( layer );
 }
 
-int v3dView::layerCount ( void ) const
+int v3dView::layerCount() const
 {
     return d->view2d->GetNumberOfLayers();
 }
@@ -1919,7 +1919,7 @@ void v3dView::removeOverlay ( int layer )
 
 // -- head tracking support
 
-void v3dView::enableInteraction ( void )
+void v3dView::enableInteraction()
 {
     if ( this->property ( "Orientation" ) != "3D" )
         return;
@@ -1927,7 +1927,7 @@ void v3dView::enableInteraction ( void )
     d->widget->setAttribute ( Qt::WA_TransparentForMouseEvents, false );
 }
 
-void v3dView::disableInteraction ( void )
+void v3dView::disableInteraction()
 {
     if ( this->property ( "Orientation" ) != "3D" )
         return;
@@ -2111,7 +2111,7 @@ void v3dView::setCameraClippingRange ( double nearRange, double farRange )
     camera->SetClippingRange ( nearRange, farRange );
 }
 
-QString v3dView::cameraProjectionMode ( void )
+QString v3dView::cameraProjectionMode()
 {
     vtkCamera *camera = NULL;
 
@@ -2136,7 +2136,7 @@ QString v3dView::cameraProjectionMode ( void )
         return QString ( "Perspective" );
 }
 
-double v3dView::cameraViewAngle ( void )
+double v3dView::cameraViewAngle()
 {
     vtkCamera *camera = NULL;
 
@@ -2158,7 +2158,7 @@ double v3dView::cameraViewAngle ( void )
         return camera->GetViewAngle();
 }
 
-double v3dView::cameraZoom ( void )
+double v3dView::cameraZoom()
 {
     vtkImageView *view = NULL;
 
@@ -2180,7 +2180,7 @@ double v3dView::cameraZoom ( void )
         return view->GetZoom();
 }
 
-void v3dView::close ( void )
+void v3dView::close()
 {
     d->widget->close();
     medAbstractView::close();
@@ -2278,7 +2278,7 @@ void v3dView::onOpacityChanged ( double opacity, int layer )
     d->view3d->SetOpacity ( opacity, layer );
 }
 
-void v3dView::widgetDestroyed ( void )
+void v3dView::widgetDestroyed()
 {
     d->widget = NULL;
 }

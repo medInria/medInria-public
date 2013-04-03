@@ -19,7 +19,7 @@ class V3DVIEWPLUGIN_EXPORT SeedPointAnnotation : public medAbstractAnnotationRep
 
 public:
     SeedPointAnnotation( );
-    virtual ~SeedPointAnnotation(void);
+    virtual ~SeedPointAnnotation();
 
     static medAbstractAnnotationRepresentation * s_create( );
     static QString s_description();

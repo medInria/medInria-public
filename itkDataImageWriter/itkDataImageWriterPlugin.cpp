@@ -47,14 +47,14 @@ itkDataImageWriterPlugin::itkDataImageWriterPlugin(QObject *parent) : dtkPlugin(
 
 }
 
-itkDataImageWriterPlugin::~itkDataImageWriterPlugin(void)
+itkDataImageWriterPlugin::~itkDataImageWriterPlugin()
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkDataImageWriterPlugin::initialize(void)
+bool itkDataImageWriterPlugin::initialize()
 {
 #if 0
     if (!itkDataImageChar3Writer::registered())   { dtkWarn() << "Unable to register itkDataImageChar3Writer type";   }
@@ -86,33 +86,33 @@ bool itkDataImageWriterPlugin::initialize(void)
     return true;
 }
 
-bool itkDataImageWriterPlugin::uninitialize(void)
+bool itkDataImageWriterPlugin::uninitialize()
 {
     return true;
 }
 
-QString itkDataImageWriterPlugin::name(void) const
+QString itkDataImageWriterPlugin::name() const
 {
     return "itkDataImageWriterPlugin";
 }
 
-QString itkDataImageWriterPlugin::description(void) const
+QString itkDataImageWriterPlugin::description() const
 {
     return "Writers for any ITK image data type.";
 }
 
-QString itkDataImageWriterPlugin::version(void) const
+QString itkDataImageWriterPlugin::version() const
 {
     return ITKDATAIMAGEWRITERPLUGIN_VERSION;
 }
 
 
-QStringList itkDataImageWriterPlugin::tags(void) const
+QStringList itkDataImageWriterPlugin::tags() const
 {
     return QStringList() << "itk" << "data" << "image" << "writer";
 }
 
-QStringList itkDataImageWriterPlugin::types(void) const
+QStringList itkDataImageWriterPlugin::types() const
 {
     return QStringList() << "itkMetaDataImageWriter"
             << "itkNiftiDataImageWriter"

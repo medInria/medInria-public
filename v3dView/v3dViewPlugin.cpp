@@ -34,14 +34,14 @@ v3dViewPlugin::v3dViewPlugin(QObject *parent) : dtkPlugin(parent), d(new v3dView
 
 }
 
-v3dViewPlugin::~v3dViewPlugin(void)
+v3dViewPlugin::~v3dViewPlugin()
 {
     delete d;
 
     d = NULL;
 }
 
-bool v3dViewPlugin::initialize(void)
+bool v3dViewPlugin::initialize()
 {
     if (!v3dView::registered())                     { dtkWarn() << "Unable to register v3dView type";                     }
 
@@ -61,29 +61,29 @@ bool v3dViewPlugin::initialize(void)
     return true;
 }
 
-bool v3dViewPlugin::uninitialize(void)
+bool v3dViewPlugin::uninitialize()
 {
     return true;
 }
 
-QString v3dViewPlugin::name(void) const
+QString v3dViewPlugin::name() const
 {
     return "v3dViewPlugin";
 }
 
-QString v3dViewPlugin::contact(void) const
+QString v3dViewPlugin::contact() const
 {
     return "";
 }
 
-QStringList v3dViewPlugin::authors(void) const
+QStringList v3dViewPlugin::authors() const
 {
     QStringList list;
     list << QString::fromUtf8("Pierre Fillard");
     return list;
 }
 
-QStringList v3dViewPlugin::contributors(void) const
+QStringList v3dViewPlugin::contributors() const
 {
     QStringList list;
     list <<  "Nicolas Toussaint"
@@ -96,23 +96,23 @@ QStringList v3dViewPlugin::contributors(void) const
     return list;
 }
 
-QString v3dViewPlugin::version(void) const
+QString v3dViewPlugin::version() const
 {
     return V3DVIEWPLUGIN_VERSION;
 }
 
-QString v3dViewPlugin::description(void) const
+QString v3dViewPlugin::description() const
 {
     return tr("View Plugin\n<br/>"
               "Contains view and interactors based on vtkinria3d");
 }
 
-QStringList v3dViewPlugin::tags(void) const
+QStringList v3dViewPlugin::tags() const
 {
     return QStringList() << "v3d" << "view";
 }
 
-QStringList v3dViewPlugin::types(void) const
+QStringList v3dViewPlugin::types() const
 {
     return QStringList() << v3dView::s_identifier() << "v3dViewFiberInteractor"
         << "v3dViewFuseInteractor" << "v3dViewMeshInteractor"

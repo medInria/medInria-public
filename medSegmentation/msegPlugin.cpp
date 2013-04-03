@@ -32,28 +32,28 @@ Plugin::Plugin(QObject *parent) : dtkPlugin(parent), d(new PluginPrivate)
 
 }
 
-Plugin::~Plugin(void)
+Plugin::~Plugin()
 {
     delete d;
     d = NULL;
 }
 
-bool Plugin::initialize(void)
+bool Plugin::initialize()
 {
     return AlgorithmInitializer::initialize();
 }
 
-bool Plugin::uninitialize(void)
+bool Plugin::uninitialize()
 {
     return true;
 }
 
-QString Plugin::name(void) const
+QString Plugin::name() const
 {
     return PluginPrivate::s_Name;
 }
 
-QString Plugin::description(void) const
+QString Plugin::description() const
 {
     return tr("Segmentation plugin\n<br/>"
               "Manual painting of regions: inside, and outside."
@@ -62,24 +62,24 @@ QString Plugin::description(void) const
               "for simple binary masks.");
 }
 
-QString Plugin::version(void) const
+QString Plugin::version() const
 {
     return MEDSEGMENTATIONPLUGIN_VERSION;
 }
 
-QString Plugin::contact(void) const
+QString Plugin::contact() const
 {
     return "John.Stark@inria.fr";
 }
 
-QStringList Plugin::authors(void) const
+QStringList Plugin::authors() const
 {
     QStringList list;
     list << "John Stark";
     return list;
 }
 
-QStringList Plugin::contributors(void) const
+QStringList Plugin::contributors() const
 {
     QStringList list;
     list <<  QString::fromUtf8("Benoît Bleuzé")
@@ -87,17 +87,17 @@ QStringList Plugin::contributors(void) const
     return list;
 }
 
-QString Plugin::identifier(void) const
+QString Plugin::identifier() const
 {
     return PluginPrivate::s_Name;
 }
 
-QStringList Plugin::tags(void) const
+QStringList Plugin::tags() const
 {
     return QStringList();
 }
 
-QStringList Plugin::types(void) const
+QStringList Plugin::types() const
 {
     return QStringList() << AlgorithmConnectedThreshold::s_identifier()
                          << medProcessPaintSegm::s_identifier();

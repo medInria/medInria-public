@@ -66,7 +66,7 @@ public:
 
   vtkGetObjectMacro (ColorArray, vtkUnsignedCharArray);
   void ComputeLyingPoints (double* pos);
-  void ComputePlanes (void);
+  void ComputePlanes();
 
   vtkSetMacro (Radius, double);
   vtkGetMacro (Radius, double);
@@ -121,7 +121,7 @@ class VTK_IMAGEVIEW_EXPORT vtkAxes2DWidgetCommand : public vtkCommand
 
   void SetWidget (vtkAxes2DWidget* w)
   { this->Widget = w; }
-  vtkAxes2DWidget* GetWidget (void)
+  vtkAxes2DWidget* GetWidget()
   { return this->Widget; }
   
  protected:

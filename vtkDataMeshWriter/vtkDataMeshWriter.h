@@ -10,17 +10,17 @@ class VTKDATAMESHWRITERPLUGIN_EXPORT vtkDataMeshWriter : public dtkAbstractDataW
     Q_OBJECT
 
 public:
-             vtkDataMeshWriter(void);
-    virtual ~vtkDataMeshWriter(void);
+             vtkDataMeshWriter();
+    virtual ~vtkDataMeshWriter();
 
-    virtual QStringList handled(void) const;
-    static  QStringList s_handled (void);
+    virtual QStringList handled() const;
+    static  QStringList s_handled();
 
 
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
 
-    static bool registered(void);
+    static bool registered();
 
 public slots:
     bool write    (const QString& path);
@@ -31,6 +31,6 @@ private:
 };
 
 
-dtkAbstractDataWriter *createVtkDataMeshWriter(void);
+dtkAbstractDataWriter *createVtkDataMeshWriter();
 
 

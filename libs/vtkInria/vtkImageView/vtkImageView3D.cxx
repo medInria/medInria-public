@@ -268,72 +268,72 @@ unsigned long vtkImageView3D::GetMTime()
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetVolumeMapperTo3DTexture (void)
+void vtkImageView3D::SetVolumeMapperTo3DTexture()
 {
   this->VolumeMapper->SetRequestedRenderMode(
                                              vtkSmartVolumeMapper::TextureRenderMode );
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetVolumeMapperToRayCast (void)
+void vtkImageView3D::SetVolumeMapperToRayCast()
 {
   this->VolumeMapper->SetRequestedRenderMode(
                                              vtkSmartVolumeMapper::RayCastRenderMode );
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetVolumeMapperToRayCastAndTexture (void)
+void vtkImageView3D::SetVolumeMapperToRayCastAndTexture()
 {
   this->VolumeMapper->SetRequestedRenderMode(
                                              vtkSmartVolumeMapper::RayCastAndTextureRenderMode );
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetVolumeMapperToGPU (void)
+void vtkImageView3D::SetVolumeMapperToGPU()
 {
   this->VolumeMapper->SetRequestedRenderMode(
                                              vtkSmartVolumeMapper::GPURenderMode );
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetVolumeMapperToDefault (void)
+void vtkImageView3D::SetVolumeMapperToDefault()
 {
   this->VolumeMapper->SetRequestedRenderMode(
                                              vtkSmartVolumeMapper::DefaultRenderMode );
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetVolumeRayCastFunctionToComposite (void)
+void vtkImageView3D::SetVolumeRayCastFunctionToComposite()
 {
   this->VolumeMapper->SetBlendModeToComposite();
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetVolumeRayCastFunctionToMaximumIntensityProjection (void)
+void vtkImageView3D::SetVolumeRayCastFunctionToMaximumIntensityProjection()
 {
   this->VolumeMapper->SetBlendModeToMaximumIntensity();
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetVolumeRayCastFunctionToMinimumIntensityProjection (void)
+void vtkImageView3D::SetVolumeRayCastFunctionToMinimumIntensityProjection()
 {
   this->VolumeMapper->SetBlendModeToMinimumIntensity();
 }
 
 //----------------------------------------------------------------------------
-// void vtkImageView3D::SetVolumeRayCastFunctionToAdditive (void)
+// void vtkImageView3D::SetVolumeRayCastFunctionToAdditive()
 // {
 //   this->VolumeMapper->SetBlendModeToAdditive();
 // }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetInterpolationToNearestNeighbor (void)
+void vtkImageView3D::SetInterpolationToNearestNeighbor()
 {
   this->VolumeProperty->SetInterpolationTypeToNearest();
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::SetInterpolationToLinear (void)
+void vtkImageView3D::SetInterpolationToLinear()
 {
   this->VolumeProperty->SetInterpolationTypeToLinear();
 }
@@ -615,7 +615,7 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::InternalUpdate (void)
+void vtkImageView3D::InternalUpdate()
 {
   vtkSmartPointer<vtkImageData> input = this->GetInput();
   bool multiLayers = false;
@@ -967,19 +967,19 @@ void vtkImageView3D::SetOrientationMarkerViewport(double x1, double x2, double x
 }
 
 //---------------------------------------------------------------------------
-void vtkImageView3D::SetCroppingModeToOff( void )
+void vtkImageView3D::SetCroppingModeToOff()
 {
   this->SetCroppingMode( CROPPING_OFF );
 }
 
 //---------------------------------------------------------------------------
-void vtkImageView3D::SetCroppingModeToInside( void )
+void vtkImageView3D::SetCroppingModeToInside()
 {
   this->SetCroppingMode( CROPPING_INSIDE );
 }
 
 //---------------------------------------------------------------------------
-void vtkImageView3D::SetCroppingModeToOutside( void )
+void vtkImageView3D::SetCroppingModeToOutside()
 {
   this->SetCroppingMode( CROPPING_OUTSIDE );
 }
@@ -1023,7 +1023,7 @@ void vtkImageView3D::SetCurrentPoint (double pos[3])
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::UpdateDisplayExtent (void)
+void vtkImageView3D::UpdateDisplayExtent()
 {
   vtkImageData *input = this->GetInput();
   if (!input)
@@ -1147,7 +1147,7 @@ void vtkImageView3D::AddLayer (int layer)
 
 
 //----------------------------------------------------------------------------
-int vtkImageView3D::GetNumberOfLayers(void) const
+int vtkImageView3D::GetNumberOfLayers() const
 {
   return this->LayerInfoVec.size();
 }
@@ -1169,7 +1169,7 @@ void vtkImageView3D::RemoveLayer (int layer)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView3D::RemoveAllLayers (void)
+void vtkImageView3D::RemoveAllLayers()
 {
   while (this->LayerInfoVec.size() > 1)
   {

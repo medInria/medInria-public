@@ -27,7 +27,7 @@ void vtkFiberDataSet::SetFibers (vtkPolyData *fibers)
   this->SetBlock (0, fibers);
 }
 
-vtkPolyData *vtkFiberDataSet::GetFibers (void)
+vtkPolyData *vtkFiberDataSet::GetFibers()
 {
   return vtkPolyData::SafeDownCast ( this->GetBlock (0) );
 }
@@ -74,7 +74,7 @@ void vtkFiberDataSet::RemoveBundle (const std::string &name)
   }
 }
 
-void vtkFiberDataSet::Clear (void)
+void vtkFiberDataSet::Clear()
 {
   vtkFiberBundleListType::iterator it = this->Bundles.begin();
   while (it!=this->Bundles.end())
@@ -85,7 +85,7 @@ void vtkFiberDataSet::Clear (void)
   this->Bundles.clear();
 }
 
-int vtkFiberDataSet::GetNumberOfBundles (void) const
+int vtkFiberDataSet::GetNumberOfBundles() const
 {
   return (int)this->Bundles.size();
 }
@@ -95,7 +95,7 @@ vtkFiberDataSet::vtkFiberBundleType vtkFiberDataSet::GetBundle (const std::strin
   return this->Bundles[name];
 }
 
-vtkFiberDataSet::vtkFiberBundleListType vtkFiberDataSet::GetBundleList (void) const
+vtkFiberDataSet::vtkFiberBundleListType vtkFiberDataSet::GetBundleList() const
 {
   return this->Bundles;
 }

@@ -20,19 +20,19 @@ class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medProcessPaintSegm : public dtkAbstractP
 public:
     typedef itk::Image<unsigned char,3> SegmType;
 
-             medProcessPaintSegm(void);
-    virtual ~medProcessPaintSegm(void);
+             medProcessPaintSegm();
+    virtual ~medProcessPaintSegm();
 
     // Create function, using new.
-    static dtkAbstractProcess *create(void);
+    static dtkAbstractProcess *create();
 
     //! Implement dtkAbstractObject
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
 
-    static bool registered(void);
+    static bool registered();
 
-    static QString s_identifier(void);
+    static QString s_identifier();
 
     static QString MaskImageTypeIdentifier();
     // Input channels
@@ -40,8 +40,8 @@ public:
 
     //! Override dtkAbstractProcess
     virtual void setInput(dtkAbstractData *data, int channel);
-    virtual  int update(void);
-    virtual void *data (void);
+    virtual  int update();
+    virtual void *data();
     dtkAbstractData * output();
 
 protected:

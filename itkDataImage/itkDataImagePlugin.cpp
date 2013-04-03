@@ -59,14 +59,14 @@ itkDataImagePlugin::itkDataImagePlugin(QObject *parent) : dtkPlugin(parent), d(n
 
 }
 
-itkDataImagePlugin::~itkDataImagePlugin(void)
+itkDataImagePlugin::~itkDataImagePlugin()
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkDataImagePlugin::initialize(void)
+bool itkDataImagePlugin::initialize()
 {
     if(!itkDataImageChar3::registered()) qDebug() << "Unable to register itkDataImageChar3 type";
     if(!itkDataImageChar4::registered()) qDebug() << "Unable to register itkDataImageChar4 type";
@@ -96,32 +96,32 @@ bool itkDataImagePlugin::initialize(void)
     return true;
 }
 
-bool itkDataImagePlugin::uninitialize(void)
+bool itkDataImagePlugin::uninitialize()
 {
     return true;
 }
 
-QString itkDataImagePlugin::name(void) const
+QString itkDataImagePlugin::name() const
 {
     return "itkDataImagePlugin";
 }
 
-QString itkDataImagePlugin::description(void) const
+QString itkDataImagePlugin::description() const
 {
     return "Plugin containing all types of ITK images";
 }
 
-QString itkDataImagePlugin::version(void) const
+QString itkDataImagePlugin::version() const
 {
     return ITKDATAIMAGEPLUGIN_VERSION;
 }
 
-QStringList itkDataImagePlugin::tags(void) const
+QStringList itkDataImagePlugin::tags() const
 {
     return QStringList() << "itk" << "data" << "image";
 }
 
-QStringList itkDataImagePlugin::types(void) const
+QStringList itkDataImagePlugin::types() const
 {
     return QStringList() << "itkDataImageChar3"
             << "itkDataImageChar4"

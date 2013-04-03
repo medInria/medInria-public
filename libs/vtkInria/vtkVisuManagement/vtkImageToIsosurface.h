@@ -42,24 +42,24 @@ class VTK_VISUMANAGEMENT_EXPORT vtkImageToIsosurface: public vtkObject
   vtkSetObjectMacro (Input, vtkImageData);
   vtkGetObjectMacro (Input, vtkImageData);
   
-  vtkActor* GetActor (void) const
+  vtkActor* GetActor() const
   { return this->Actor; }
 
-  vtkPolyData* GetPolyData (void) const
+  vtkPolyData* GetPolyData() const
   { return this->Mapper->GetInput(); }
 
   void SetParameters (int val, double color[4]);
 
-  void ReverseNormals (void);
+  void ReverseNormals();
   
-  void Update(void);
+  void Update();
 
-  void SetDecimationOff (void)
+  void SetDecimationOff()
   {
     this->Mapper->SetInput (this->Smoother->GetOutput());
   }
 
-  void SetDecimationOn (void)
+  void SetDecimationOn()
   {
     this->Mapper->SetInput (this->Decimate->GetOutput());
   }

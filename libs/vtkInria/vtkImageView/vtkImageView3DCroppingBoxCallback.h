@@ -37,7 +37,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView3DCroppingBoxCallback: public vtkCommand
   {
     this->VolumeMapper = mapper;
   }
-  vtkVolumeMapper* GetVolumeMapper (void) const
+  vtkVolumeMapper* GetVolumeMapper() const
   {
     return this->VolumeMapper;
   }

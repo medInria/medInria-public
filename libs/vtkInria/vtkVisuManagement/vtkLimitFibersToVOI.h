@@ -51,7 +51,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLimitFibersToVOI: public vtkPolyDataAlgorithm
      Set the boolean operator: switch between concatenating the fibers (AND - 0)
      and removing the fibers (NOT - 1).
    */
-  void SetBooleanOperationToAND (void)
+  void SetBooleanOperationToAND()
   {
     this->BooleanOperation = 1;
   }
@@ -61,7 +61,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkLimitFibersToVOI: public vtkPolyDataAlgorithm
      Set the boolean operator: switch between concatenating the fibers (AND - 0)
      and removing the fibers (NOT - 1).
    */
-  void SetBooleanOperationToNOT (void)
+  void SetBooleanOperationToNOT()
   {
     this->BooleanOperation = 0;
   }

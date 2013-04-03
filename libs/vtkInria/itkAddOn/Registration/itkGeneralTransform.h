@@ -139,15 +139,15 @@ namespace itk
        * Not Supported
 
        */
-    virtual void SetParametersByValue ( const ParametersType & p )
-    { (void) p; itkExceptionMacro("GeneralTransform<TScalarType, NDimensions> does not handle any parameter system yet"); };
+    virtual void SetParametersByValue (const ParametersType&)
+    { itkExceptionMacro("GeneralTransform<TScalarType, NDimensions> does not handle any parameter system yet"); };
 
     /**
      * Get the Transformation Parameters.
      *
      * Not Supported
      */
-    virtual const ParametersType& GetParameters(void) const;
+    virtual const ParametersType& GetParameters() const;
     /**
      * Compute the Jacobian of the transformation
      *
@@ -198,13 +198,13 @@ namespace itk
        Careful : you will not be able to recover transforms from the pipeline
        after calling SetIdentity()
     */
-    virtual void SetIdentity(void);
+    virtual void SetIdentity();
 
-    virtual MatrixOffsetTransformPointerType GetGlobalLinearTransform (void) const;
+    virtual MatrixOffsetTransformPointerType GetGlobalLinearTransform() const;
     /**
        Get the number of transform currently in stack
     */
-    unsigned int GetNumberOfTransformsInStack (void) const
+    unsigned int GetNumberOfTransformsInStack() const
     { return this->m_TransformList.size(); }
     /**
        Indicates if the transforms is linear or not.
@@ -219,14 +219,14 @@ namespace itk
 
        Hence the return value can be different after or befor a call of Push().
     */
-    virtual bool IsLinear(void) const;
+    virtual bool IsLinear() const;
     
-    bool Undo(void);
-    bool Redo(void);
+    bool Undo();
+    bool Redo();
 
     unsigned int InsertTransform(TransformConstPointerType arg);
     TransformConstPointerType GetTransform(unsigned int i);
-    void RemoveAllTransforms(void);
+    void RemoveAllTransforms();
     protected:
 
     /** Print contents of an TranslationTransform. */

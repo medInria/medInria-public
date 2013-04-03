@@ -1801,7 +1801,7 @@ vtkImplementSetITKImageMacro (RGBAPixelType);
 vtkImplementSetITKImageMacro (UCharVector3Type);
 vtkImplementSetITKImageMacro (FloatVector3Type);
 
-itk::ImageBase<3>* vtkViewImage::GetITKImage (void) const
+itk::ImageBase<3>* vtkViewImage::GetITKImage() const
 {
     return this->ITKImage;
 }
@@ -1827,7 +1827,7 @@ vtkImplementSetITKImage4Macro (RGBAPixelType);
 vtkImplementSetITKImage4Macro (UCharVector3Type);
 vtkImplementSetITKImage4Macro (FloatVector3Type);
 
-itk::ImageBase<4>* vtkViewImage::GetTemporalITKImage (void) const
+itk::ImageBase<4>* vtkViewImage::GetTemporalITKImage() const
 {
     return this->ITKImage4;
 }

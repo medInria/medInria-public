@@ -63,7 +63,7 @@ qtdcmDataSourcePrivate::~qtdcmDataSourcePrivate()
 // qtdcmDataSource
 // /////////////////////////////////////////////////////////////////
 
-qtdcmDataSource::qtdcmDataSource ( void ) : medAbstractDataSource(), d ( new qtdcmDataSourcePrivate )
+qtdcmDataSource::qtdcmDataSource() : medAbstractDataSource(), d ( new qtdcmDataSourcePrivate )
 {
     d->mainWidget = NULL;
     d->rightWidget = NULL;
@@ -100,18 +100,18 @@ qtdcmDataSource::qtdcmDataSource ( void ) : medAbstractDataSource(), d ( new qtd
     d->additional_toolboxes.push_back ( d->serieToolBox );
 }
 
-qtdcmDataSource::~qtdcmDataSource ( void )
+qtdcmDataSource::~qtdcmDataSource()
 {
     delete d;
     d = NULL;
 }
 
-bool qtdcmDataSource::registered ( void )
+bool qtdcmDataSource::registered()
 {
     return medAbstractDataSourceFactory::instance()->registerDataSource ( "qtdcmDataSource", createQtdcmDataSource );
 }
 
-QString qtdcmDataSource::description ( void ) const
+QString qtdcmDataSource::description() const
 {
     return "Browse DICOM workstation";
 }
@@ -144,7 +144,7 @@ QList<medToolBox*> qtdcmDataSource::getToolBoxes()
     return d->additional_toolboxes;
 }
 
-void qtdcmDataSource::initWidgets ( void )
+void qtdcmDataSource::initWidgets()
 {
     if ( d->mainWidget && d->rightWidget )
         return;

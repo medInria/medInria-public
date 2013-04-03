@@ -86,32 +86,32 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmarkManager : public vtkObject
   vtkLandmark* FindLandmark (const char* name);
   void AddLandmark(vtkLandmark* landmark);
   void RemoveLandmark(vtkLandmark* landmark);
-  void RemoveAllLandmarks(void);
-  vtkLandmark* GetLastLandmark (void);
+  void RemoveAllLandmarks();
+  vtkLandmark* GetLastLandmark();
   
-  vtkLandmark* CreateAndAddLandmark (void);
+  vtkLandmark* CreateAndAddLandmark();
 
   /** Set the render window interactor */
   void AddView (vtkImageView* view);
   void RemoveView (vtkImageView* view);
-  void InteractionOn(void);
-  void InteractionOff(void);
+  void InteractionOn();
+  void InteractionOff();
   bool HasView(vtkImageView* view);
-  void RemoveAllViews(void);
+  void RemoveAllViews();
 
-  vtkImageView* GetFirstView (void);
+  vtkImageView* GetFirstView();
   vtkSetMacro (ViewIdToTrust, unsigned int);
   vtkGetMacro (ViewIdToTrust, unsigned int);
   
   void Update();
-  void Reset (void);
-  void ShowAll(void);
-  void HideAll(void);
+  void Reset();
+  void ShowAll();
+  void HideAll();
   void SelectLandmark (vtkLandmark* landmark);
 
-  vtkLandmark* GetFirstSelectedLandmark (void);
+  vtkLandmark* GetFirstSelectedLandmark();
   
-  unsigned int GetNumberOfLandmarks (void) const
+  unsigned int GetNumberOfLandmarks() const
   {
     return this->LandmarkList->GetNumberOfItems();
   }
@@ -136,7 +136,7 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmarkManager : public vtkObject
   // Change the color of the selected item
   void SetSelectedColor(double r, double g, double b);
   void SetSelectedColor(double c[3]);
-  double* GetSelectedColor (void)
+  double* GetSelectedColor()
   { return this->SelectedProperty->GetColor(); }
   
   void ScaleAll (double scale);
@@ -146,8 +146,8 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmarkManager : public vtkObject
   void AddLandmarkToLinker (vtkLandmark* landmark);
 
   
-  void LinkerOn(void);
-  void LinkerOff(void);
+  void LinkerOn();
+  void LinkerOff();
 
   void SetLinkerVisibility (bool val)
   {
@@ -158,7 +158,7 @@ class VTK_LANDMARKMANAGEMENT_EXPORT vtkLandmarkManager : public vtkObject
   }
   
   
-  void UpdateLinker(void);
+  void UpdateLinker();
 
   vtkGetObjectMacro (LandmarkBeingRemoved, vtkLandmark);
 

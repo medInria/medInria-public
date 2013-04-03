@@ -17,10 +17,10 @@ class MEDVIEWSEGMENTATIONPLUGIN_EXPORT ImageOverlayAnnotation : public medAnnota
     Q_OBJECT;
 public:
     ImageOverlayAnnotation( QGraphicsItem * parent = 0 );
-    virtual ~ImageOverlayAnnotation(void);
+    virtual ~ImageOverlayAnnotation();
 
     void paint ( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 ) MED_OVERRIDE;
-    QRectF boundingRect(void) const MED_OVERRIDE;
+    QRectF boundingRect() const MED_OVERRIDE;
 
     static medAnnotationGraphicsObject * s_create( );
     /** Get name to use for this when registering with a factory.*/
@@ -28,8 +28,8 @@ public:
 
     static QString s_description();
 
-    QString description(void) const;
-    QString identifier(void) const;
+    QString description() const;
+    QString identifier() const;
 
 
 protected:

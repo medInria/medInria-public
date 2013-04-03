@@ -9,18 +9,18 @@ class ITKDATATENSORIMAGEWRITERPLUGIN_EXPORT itkNiftiDataTensorImageWriter : publ
     Q_OBJECT
 
 public:
-    itkNiftiDataTensorImageWriter(void);
-    virtual ~itkNiftiDataTensorImageWriter(void);
+    itkNiftiDataTensorImageWriter();
+    virtual ~itkNiftiDataTensorImageWriter();
 
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
 
-    static bool registered(void);
+    static bool registered();
 
 private:
     static const char ID[];
 };
 
-dtkAbstractDataWriter *createitkNiftiDataTensorImageWriter(void);
+dtkAbstractDataWriter *createitkNiftiDataTensorImageWriter();
 
 

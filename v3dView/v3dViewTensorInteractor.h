@@ -27,20 +27,20 @@ public:
     v3dViewTensorInteractor();
     virtual ~v3dViewTensorInteractor();
 
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
-    virtual QStringList handled(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
+    virtual QStringList handled() const;
 
-    static bool registered(void);
+    static bool registered();
 
     virtual void setData(dtkAbstractData *data);
-    dtkAbstractData *data (void);
+    dtkAbstractData *data();
 
     virtual void setView(dtkAbstractView *view);
-    dtkAbstractView *view (void);
+    dtkAbstractView *view();
 
-    virtual void enable(void);
-    virtual void disable(void);
+    virtual void enable();
+    virtual void disable();
 
 public slots:
     virtual void onPropertySet (const QString& key, const QString& value);
@@ -89,6 +89,6 @@ private:
 
 };
 
-dtkAbstractViewInteractor *createV3dViewTensorInteractor(void);
+dtkAbstractViewInteractor *createV3dViewTensorInteractor();
 
 

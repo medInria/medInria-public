@@ -34,45 +34,45 @@ vtkDataMeshPlugin::vtkDataMeshPlugin(QObject *parent) : dtkPlugin(parent), d(new
 
 }
 
-vtkDataMeshPlugin::~vtkDataMeshPlugin(void)
+vtkDataMeshPlugin::~vtkDataMeshPlugin()
 {
     delete d;
     d = NULL;
 }
 
-bool vtkDataMeshPlugin::initialize(void)
+bool vtkDataMeshPlugin::initialize()
 {
   if(!vtkDataMesh::registered()) qDebug() << "Unable to register vtkDataMesh type";
   if(!vtkDataMesh4D::registered()) qDebug() << "Unable to register vtkDataMesh4D type";
   return true;
 }
 
-bool vtkDataMeshPlugin::uninitialize(void)
+bool vtkDataMeshPlugin::uninitialize()
 {
     return true;
 }
 
-QString vtkDataMeshPlugin::name(void) const
+QString vtkDataMeshPlugin::name() const
 {
     return "vtkDataMeshPlugin";
 }
 
-QString vtkDataMeshPlugin::description(void) const
+QString vtkDataMeshPlugin::description() const
 {
     return "Plugin containing all types of VTK meshes";
 }
 
-QString vtkDataMeshPlugin::version(void) const
+QString vtkDataMeshPlugin::version() const
 {
     return VTKDATAMESHPLUGIN_VERSION;
 }
 
-QStringList vtkDataMeshPlugin::tags(void) const
+QStringList vtkDataMeshPlugin::tags() const
 {
   return QStringList() << "vtk" << "data" << "mesh" << "4D";
 }
 
-QStringList vtkDataMeshPlugin::types(void) const
+QStringList vtkDataMeshPlugin::types() const
 {
   return QStringList() << "vtkDataMesh";
 }

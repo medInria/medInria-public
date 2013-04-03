@@ -92,7 +92,7 @@ public:
   vtkSetMacro(ClampRatio, double);
   vtkGetMacro(ClampRatio, double);
 
-  double* GetWindow (void)
+  double* GetWindow()
   { return this->Window; }
   
   

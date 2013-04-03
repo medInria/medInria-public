@@ -251,7 +251,7 @@ void vtkImageViewCollection::SyncReset(vtkImageView *caller)
   }
 }
 
-void vtkImageViewCollection::SyncStart(void)
+void vtkImageViewCollection::SyncStart()
 {
 
   this->InitTraversal();
@@ -314,7 +314,7 @@ void vtkImageViewCollection::SyncResetCamera(vtkImageView *caller)
 ///////////////////////////////////////////////////////////////////////
 
 /*
-void vtkImageViewCollection::SyncStart(void)
+void vtkImageViewCollection::SyncStart()
 {
   this->InitTraversal();
   vtkImageView* item = this->GetNextItem();

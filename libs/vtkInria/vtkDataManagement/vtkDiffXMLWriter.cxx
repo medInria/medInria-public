@@ -62,14 +62,14 @@ void vtkDiffXMLWriter::SetInput (vtkDataManager* manager)
 }
 
 //----------------------------------------------------------------------------
-vtkDataManager* vtkDiffXMLWriter::GetInput (void)
+vtkDataManager* vtkDiffXMLWriter::GetInput()
 {
   return this->Input;
 }
 
 
 //----------------------------------------------------------------------------
-void vtkDiffXMLWriter::Update(void)
+void vtkDiffXMLWriter::Update()
 {
   std::cout<<"writing DIFF XML type"<<std::endl;
   

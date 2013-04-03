@@ -23,14 +23,14 @@ public:
   void SetTesselationType (const int& type);
 
   /** Set the Polyhedron type to be tesselated */
-  int GetTesselationType (void) const
+  int GetTesselationType() const
   { return this->SHSource->GetTesselationType(); }
 
   /** Get the spherical harmonics basis to be used*/
   void SetTesselationBasis (const int& type);
 
   /** Set the spherical harmonics basis to be used */
-  int GetTesselationBasis (void) const
+  int GetTesselationBasis() const
   { return this->SHSource->GetTesselationBasis(); }
 
   void SetGlyphResolution (const int&);

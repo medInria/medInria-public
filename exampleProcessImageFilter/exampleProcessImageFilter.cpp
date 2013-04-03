@@ -41,7 +41,7 @@ public:
 // exampleProcessImageFilter
 // /////////////////////////////////////////////////////////////////
 
-exampleProcessImageFilter::exampleProcessImageFilter(void) : dtkAbstractProcess(), d(new exampleProcessImageFilterPrivate)
+exampleProcessImageFilter::exampleProcessImageFilter() : dtkAbstractProcess(), d(new exampleProcessImageFilterPrivate)
 {
     d->inputA = 0;
     d->inputB = 0;
@@ -56,7 +56,7 @@ exampleProcessImageFilter::exampleProcessImageFilter(void) : dtkAbstractProcess(
    // this->addMetaData("category","tractography");
 }
 
-exampleProcessImageFilter::~exampleProcessImageFilter(void)
+exampleProcessImageFilter::~exampleProcessImageFilter()
 {
     if (d->inputA)
         delete d->inputA;
@@ -69,13 +69,13 @@ exampleProcessImageFilter::~exampleProcessImageFilter(void)
     d = NULL;
 }
 
-bool exampleProcessImageFilter::registered(void)
+bool exampleProcessImageFilter::registered()
 {
     qDebug() << "HOLAS able to register exampleProcessImageFilter toolbox";
     return dtkAbstractProcessFactory::instance()->registerProcessType("exampleProcessImageFilter", createExampleProcessImageFilter);
 }
 
-QString exampleProcessImageFilter::description(void) const
+QString exampleProcessImageFilter::description() const
 {
     return "exampleProcessImageFilter";
 }
@@ -119,12 +119,12 @@ void exampleProcessImageFilter::setOption(Option option)
     d->option = option;
 }
 
-dtkAbstractData *exampleProcessImageFilter::output(void)
+dtkAbstractData *exampleProcessImageFilter::output()
 {
     return d->output;
 }
 
-int exampleProcessImageFilter::update(void)
+int exampleProcessImageFilter::update()
 {
     typedef unsigned short PixelType;
     const unsigned int Dimension = 3;
@@ -242,7 +242,7 @@ int exampleProcessImageFilter::update(void)
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractProcess *createExampleProcessImageFilter(void)
+dtkAbstractProcess *createExampleProcessImageFilter()
 {
     return new exampleProcessImageFilter;
 }

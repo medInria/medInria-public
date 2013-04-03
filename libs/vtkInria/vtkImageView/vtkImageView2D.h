@@ -128,8 +128,8 @@ public:
   // Description:
   // Start/Stop the interactor relation with the view.
   // it basically plug or unplug the interactor.
-  virtual void InstallInteractor(void);
-  virtual void UnInstallInteractor(void);
+  virtual void InstallInteractor();
+  virtual void UnInstallInteractor();
 
 //  /**
 //   * This function is equivalent to setTransferFunctions(color, opacity, 0)
@@ -223,7 +223,7 @@ public:
   // Description:
   // Set/Get the current slice to display (depending on the orientation
   // this can be in X, Y or Z).
-  virtual int  GetSlice(void) const;
+  virtual int  GetSlice() const;
   virtual void SetSlice(int s);
   /**
    The wolrd is not always what we think it is ...
@@ -290,22 +290,22 @@ public:
   /**
    Reset position - zoom - window/level to default
    */
-  virtual void Reset(void);
+  virtual void Reset();
   /**
    Get/Set the zoom factor of the view
    */
   //virtual void SetZoom(double arg); // already in vtkImageView
-  //virtual double GetZoom(void); // already in vtkImageView
+  //virtual double GetZoom(); // already in vtkImageView
   /**
    Get/Set the pan factor of the view
    */
   virtual void SetPan(double* arg);
-  virtual double* GetPan(void);
+  virtual double* GetPan();
   virtual void GetPan(double pan[2]);
   /**
    Reset the camera in a nice way for the 2D view
    */
-  virtual void ResetCamera (void);
+  virtual void ResetCamera();
   /**
    Useful method that transform a display position into a world corrdinate point
    */
@@ -356,7 +356,7 @@ public:
     if (t)
       t->SetLeftButtonInteraction (arg);
   }
-  int GetLeftButtonInteractionStyle (void)
+  int GetLeftButtonInteractionStyle()
   {
     vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
     if (t)
@@ -378,7 +378,7 @@ public:
     if (t)
       t->SetKeyboardInteraction (arg);
   }
-  int GetKeyboardInteractionStyle (void)
+  int GetKeyboardInteractionStyle()
   {
     vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
     if (t)
@@ -400,7 +400,7 @@ public:
     if (t)
       t->SetRightButtonInteraction (arg);
   }
-  int GetRightButtonInteractionStyle (void)
+  int GetRightButtonInteractionStyle()
   {
     vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
     if (t)
@@ -421,7 +421,7 @@ public:
     if (t)
       t->SetMiddleButtonInteraction (arg);
   }
-  int GetMiddleButtonInteractionStyle (void)
+  int GetMiddleButtonInteractionStyle()
   {
     vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
     if (t)
@@ -442,7 +442,7 @@ public:
     if (t)
       t->SetWheelButtonInteraction (arg);
   }
-  int GetWheelInteractionStyle (void)
+  int GetWheelInteractionStyle()
   {
     vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
     if (t)
@@ -473,7 +473,7 @@ public:
    InteractionTypeZoom : changes the zoom level.
    InteractionTypePan : translate the view in-plane.
    */
-  int GetInteractionStyle (void)
+  int GetInteractionStyle()
   { vtkInteractorStyleImageView2D* t = vtkInteractorStyleImageView2D::SafeDownCast (this->InteractorStyle);
     if (t)
       return t->GetLeftButtonInteraction();
@@ -534,8 +534,8 @@ public:
 
   virtual void AddLayer(int);
   virtual void RemoveLayer(int layer);
-  virtual void RemoveAllLayers (void);
-  virtual int GetNumberOfLayers(void) const;
+  virtual void RemoveAllLayers();
+  virtual int GetNumberOfLayers() const;
 
   using vtkImageView::GetColorLevel;
   virtual double GetColorLevel(int layer) const;
@@ -572,7 +572,7 @@ protected:
    UpdateSlicePlane() is thus called each time we change slice
    or change orientation.
    */
-  virtual void UpdateSlicePlane (void);
+  virtual void UpdateSlicePlane();
   /**
    The ViewCenter instance follows the center of the view
    in world coordinates. It is updated UpdateCenter() each
@@ -581,7 +581,7 @@ protected:
    CAUTION: for the moment it is de-activated to speed up the
    visualization. (The ViewCenter is not used anywhere else).
    */
-  virtual void UpdateCenter (void);
+  virtual void UpdateCenter();
   /**
    After the orientation has changed, it is crucial to adapt
    a couple of things according to new orientation.
@@ -595,7 +595,7 @@ protected:
    In UpdateOrientation() the SlicePlane, the Camera settings,
    the CornerAnnotation are modified.
    */
-  virtual void SetSlicePlaneFromOrientation (void);
+  virtual void SetSlicePlaneFromOrientation();
   /**
    Returns the estimated View-Orientation corresponding
    to a given Slice-Orientation, and outputs the camera's parameters
@@ -609,14 +609,14 @@ protected:
    In UpdateOrientation() the SlicePlane, the Camera settings,
    the CornerAnnotation are modified.
    */
-  virtual int  SetCameraFromOrientation (void);
+  virtual int  SetCameraFromOrientation();
   /**
    After the orientation has changed, it is crucial to adapt
    a couple of things according to new orientation.
    In UpdateOrientation() the SlicePlane, the Camera settings,
    the CornerAnnotation are modified.
    */
-  virtual void SetAnnotationsFromOrientation(void);
+  virtual void SetAnnotationsFromOrientation();
   /**
    This method is called each time the orientation changes (SetViewOrientation())
    and sets the appropriate color to the slice plane.
@@ -627,17 +627,17 @@ protected:
 
    Blue: I-S direction --> axial orientation
    */
-  virtual void InitializeSlicePlane (void);
+  virtual void InitializeSlicePlane();
   /**
    Overwrite of the Superclass InstallPipeline() method in order to set up the
    home made InteractorStyle, and make it observe all events we need
    */
-  virtual void InstallPipeline(void);
+  virtual void InstallPipeline();
   /**
    Overwrite of the Superclass UnInstallPipeline() method in order to set up the
    home made InteractorStyle, and make it observe all events we need
    */
-  virtual void UnInstallPipeline(void);
+  virtual void UnInstallPipeline();
   /**
    The ViewConvention instance explains where to place the camera around
    the patient. Default behaviour is Radiological convention, meaning

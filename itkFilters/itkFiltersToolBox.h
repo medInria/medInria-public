@@ -10,24 +10,24 @@ class itkFiltersToolBox : public medFilteringAbstractToolBox
 
 public:
     itkFiltersToolBox(QWidget *parentToolBox = 0);
-    ~itkFiltersToolBox(void);
+    ~itkFiltersToolBox();
 
 public:
-    static bool registered(void);
+    static bool registered();
     dtkAbstractData* processOutput();
 
 signals:
-    void success(void);
-    void failure(void);
+    void success();
+    void failure();
 
 public slots:
 
     void onFiltersActivated(int index);
 
-    void clear(void);
+    void clear();
     void update(dtkAbstractView *view);
 
-    void run(void);
+    void run();
 
 private:
     void setupItkAddProcess();

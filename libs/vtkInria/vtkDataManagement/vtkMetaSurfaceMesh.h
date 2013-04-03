@@ -69,7 +69,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
   /**
      Get method to get the vtkDataSet as a vtkPolyData
   */
-  vtkPolyData* GetPolyData (void) const;
+  vtkPolyData* GetPolyData() const;
 
   /**
      Static methods for I/O
@@ -82,12 +82,12 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
   /**
      Get the type of the metadataset as string
   */
-  virtual const char* GetDataSetType (void) const
+  virtual const char* GetDataSetType() const
   {
     return "SurfaceMesh";
   }
 
-  virtual void CreateWirePolyData(void);
+  virtual void CreateWirePolyData();
 
  protected:
   vtkMetaSurfaceMesh();
@@ -102,7 +102,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
   /**
      Method called everytime the dataset changes for initialization
   */
-  virtual void Initialize (void);
+  virtual void Initialize();
   
  private:
   

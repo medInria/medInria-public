@@ -28,27 +28,27 @@ public:
 // itkDataDiffusionGradientList
 // /////////////////////////////////////////////////////////////////
 
-itkDataDiffusionGradientList::itkDataDiffusionGradientList(void) : dtkAbstractData(), d(new itkDataDiffusionGradientListPrivate)
+itkDataDiffusionGradientList::itkDataDiffusionGradientList() : dtkAbstractData(), d(new itkDataDiffusionGradientListPrivate)
 {
 
 }
 
-itkDataDiffusionGradientList::~itkDataDiffusionGradientList(void)
+itkDataDiffusionGradientList::~itkDataDiffusionGradientList()
 {
 
 }
 
-bool itkDataDiffusionGradientList::registered(void)
+bool itkDataDiffusionGradientList::registered()
 {
     return dtkAbstractDataFactory::instance()->registerDataType("itkDataDiffusionGradientList", createItkDataDiffusionGradientList);
 }
 
-QString itkDataDiffusionGradientList::description(void) const
+QString itkDataDiffusionGradientList::description() const
 {
     return "itkDataDiffusionGradientList";
 }
 
-void *itkDataDiffusionGradientList::data (void)
+void *itkDataDiffusionGradientList::data()
 {
     return d->gradients.data();
 }
@@ -209,7 +209,7 @@ bool itkDataDiffusionGradientList::write (const QString& file)
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractData *createItkDataDiffusionGradientList(void)
+dtkAbstractData *createItkDataDiffusionGradientList()
 {
     return new itkDataDiffusionGradientList;
 }

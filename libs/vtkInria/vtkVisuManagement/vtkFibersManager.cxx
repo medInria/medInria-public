@@ -76,13 +76,13 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManagerCallback: public vtkCommand
 
   virtual void Execute ( vtkObject *caller, unsigned long, void* );
 
-  vtkPolyData* GetOutput (void) const
+  vtkPolyData* GetOutput() const
   { return this->FiberLimiter->GetOutput(); }
 
-  vtkLimitFibersToVOI* GetFiberLimiter (void) const
+  vtkLimitFibersToVOI* GetFiberLimiter() const
   { return this->FiberLimiter; }
   
-  vtkLimitFibersToROI* GetROIFiberLimiter (void) const
+  vtkLimitFibersToROI* GetROIFiberLimiter() const
   { return this->ROIFiberLimiter; }
   
     
@@ -158,19 +158,19 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberPickerCallback: public vtkCommand
   void SetInput (vtkPolyData* input)
   { this->Input = input; }
   
-  vtkPolyData* GetInput (void) const
+  vtkPolyData* GetInput() const
   { return this->Input; }
   
   void SetFiberImage (vtkPolyData* image)
   { this->FiberImage = image; }
   
-  vtkPolyData* GetFiberImage (void) const
+  vtkPolyData* GetFiberImage() const
   { return this->FiberImage; }
   
   void SetFibersManager (vtkFibersManager* manager)
   { this->FibersManager = manager; }
   
-  vtkActor* GetPickedActor (void) const
+  vtkActor* GetPickedActor() const
   { return this->PickedActor; }
   
   void DeletePickedCell();
@@ -825,7 +825,7 @@ void vtkFibersManager::SetVisibility (bool isVisible)
   }
 }
 
-void vtkFibersManager::Initialize (void)
+void vtkFibersManager::Initialize()
 {    
   this->Callback->GetFiberLimiter()->GetOutput()->Initialize();
   this->Callback->GetROIFiberLimiter()->GetOutput()->Initialize();
@@ -883,7 +883,7 @@ void vtkFibersManager::SetRenderingModeToRibbons()
 #endif 
 }
 
-void vtkFibersManager::SetRenderingModeToPolyLines (void)
+void vtkFibersManager::SetRenderingModeToPolyLines()
 {
   vtkFiberRenderingStyle = RENDER_IS_POLYLINES;
   
@@ -927,7 +927,7 @@ void vtkFibersManager::SetRenderingMode(int mode)
   }	
 }
 
-void vtkFibersManager::ChangeMapperToUseHardwareShaders(void)
+void vtkFibersManager::ChangeMapperToUseHardwareShaders()
 {
 #ifdef vtkINRIA3D_USE_HWSHADING
   vtkDebugMacro(<<"Hardware shading is activated.");
@@ -969,7 +969,7 @@ void vtkFibersManager::ChangeMapperToUseHardwareShaders(void)
 #endif
 }
 
-void vtkFibersManager::ChangeMapperToDefault(void)
+void vtkFibersManager::ChangeMapperToDefault()
 {
 #ifdef vtkINRIA3D_USE_HWSHADING
   if( !vtkFiberMapper::SafeDownCast( this->Mapper ) )
@@ -1017,35 +1017,35 @@ vtkActor *vtkFibersManager::GetOutput() const
   return this->Actor;
 }
 
-vtkLimitFibersToROI* vtkFibersManager::GetROILimiter(void) const
+vtkLimitFibersToROI* vtkFibersManager::GetROILimiter() const
 {
   return this->Callback->GetROIFiberLimiter();
 }
 
-vtkLimitFibersToVOI* vtkFibersManager::GetVOILimiter(void) const
+vtkLimitFibersToVOI* vtkFibersManager::GetVOILimiter() const
 {
   return this->Callback->GetFiberLimiter();
 }
 
-void vtkFibersManager::UseHardwareShadersOn(void)
+void vtkFibersManager::UseHardwareShadersOn()
 {
   vtkFibersManager::SetUseHardwareShaders(1);
 }
   
-void vtkFibersManager::UseHardwareShadersOff(void)
+void vtkFibersManager::UseHardwareShadersOff()
 {
   vtkFibersManager::SetUseHardwareShaders(0);
 }
 
 
-void vtkFibersManager::BoxWidgetOn (void)
+void vtkFibersManager::BoxWidgetOn()
 {
   this->BoxWidgetVisibility = true;
   this->BoxWidget->On();
 }
 
 
-void vtkFibersManager::BoxWidgetOff (void)
+void vtkFibersManager::BoxWidgetOff()
 {
   this->BoxWidgetVisibility = false;
   this->BoxWidget->Off();
@@ -1067,17 +1067,17 @@ void vtkFibersManager::SetRadius (double r)
   this->RibbonFilter->SetWidth (r);
 }
 
-double vtkFibersManager::GetRadius (void) const
+double vtkFibersManager::GetRadius() const
 {
   return this->TubeFilter->GetRadius ();
 }
 
-vtkCellArray* vtkFibersManager::GetSelectedCells (void) const
+vtkCellArray* vtkFibersManager::GetSelectedCells() const
 {
   return this->Callback->GetFiberLimiter()->GetOutput()->GetLines();
 }
 
-vtkPolyData *vtkFibersManager::GetCallbackOutput(void) const
+vtkPolyData *vtkFibersManager::GetCallbackOutput() const
 {
   return this->Callback->GetOutput();
 }
@@ -1088,12 +1088,12 @@ void vtkFibersManager::SetMaskImage (vtkImageData* image)
   this->Callback->GetROIFiberLimiter()->Modified();
 }
 
-void vtkFibersManager::SetColorModeToLocalFiberOrientation (void)
+void vtkFibersManager::SetColorModeToLocalFiberOrientation()
 {
   this->Mapper->SetScalarModeToUsePointData();
 }
 
-void vtkFibersManager::SetColorModelToGlobalFiberOrientation (void)
+void vtkFibersManager::SetColorModelToGlobalFiberOrientation()
 {
   this->Mapper->SetScalarModeToUseCellData();
 }
@@ -1119,7 +1119,7 @@ const char* vtkFibersManager::GetPointArrayName (const int& id) const
   return this->Mapper->GetInput()->GetPointData()->GetArrayName (id);
 }
 
-int vtkFibersManager::GetNumberOfPointArrays (void) const
+int vtkFibersManager::GetNumberOfPointArrays() const
 {
   return this->Mapper->GetInput()->GetPointData()->GetNumberOfArrays();
 }
@@ -1129,7 +1129,7 @@ void vtkFibersManager::SetLookupTable (vtkScalarsToColors* lut)
   this->Mapper->SetLookupTable (lut);
 }
 
-vtkScalarsToColors* vtkFibersManager::GetLookupTable (void) const
+vtkScalarsToColors* vtkFibersManager::GetLookupTable() const
 {
   return this->Mapper->GetLookupTable();
 }
@@ -1139,17 +1139,17 @@ void vtkFibersManager::SetMaximumNumberOfFibers(int num)
   this->MaximumNumberOfFibers = num;
 }
 
-int vtkFibersManager::GetMaximumNumberOfFibers(void) const
+int vtkFibersManager::GetMaximumNumberOfFibers() const
 {
   return this->MaximumNumberOfFibers;
 }
 
-void vtkFibersManager::ShowHelpMessage (void)
+void vtkFibersManager::ShowHelpMessage()
 {
   this->HelpMessage->SetVisibility (1);
 }
 
-void vtkFibersManager::HideHelpMessage (void)
+void vtkFibersManager::HideHelpMessage()
 {
   this->HelpMessage->SetVisibility (0);
 }
@@ -1166,12 +1166,12 @@ void vtkFibersManager::SetHelpMessageVisibility (int a)
   }
 }
 
-int vtkFibersManager::GetHelpMessageVisibility (void) const
+int vtkFibersManager::GetHelpMessageVisibility() const
 {
   return this->HelpMessage->GetVisibility();
 }
 
-void vtkFibersManager::Execute (void)
+void vtkFibersManager::Execute()
 {
   this->Callback->GetROIFiberLimiter()->Modified();
   this->Callback->GetFiberLimiter()->Modified();

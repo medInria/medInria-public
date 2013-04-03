@@ -26,22 +26,22 @@ public:
 // %1
 // /////////////////////////////////////////////////////////////////
 
-%1::%1(void) : dtkAbstract%2(), d(new %1Private)
+%1::%1() : dtkAbstract%2(), d(new %1Private)
 {
     
 }
 
-%1::~%1(void)
+%1::~%1()
 {
     
 }
 
-bool %1::registered(void)
+bool %1::registered()
 {
     return dtkAbstract%2Factory::instance()->register%2Type("%1", create%3);
 }
 
-QString %1::description(void) const
+QString %1::description() const
 {
     return "%1";
 }
@@ -63,7 +63,7 @@ void %1::setParameter ( double  data, int channel )
     // Here comes a switch over channel to handle parameters
 }
 
-int %1::update ( void )
+int %1::update()
 {
     if ( !d->input )
         return -1;
@@ -73,7 +73,7 @@ int %1::update ( void )
     return EXIT_SUCCESS;
 }        
 
-dtkAbstractData * %1::output ( void )
+dtkAbstractData * %1::output()
 {
     return ( d->output );
 }
@@ -82,7 +82,7 @@ dtkAbstractData * %1::output ( void )
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstract%2 *create%3(void)
+dtkAbstract%2 *create%3()
 {
     return new %1;
 }

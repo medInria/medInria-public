@@ -12,7 +12,7 @@ ImageOverlayAnnotation::ImageOverlayAnnotation(QGraphicsItem * parent /* = 0 */)
 }
 
 
-ImageOverlayAnnotation::~ImageOverlayAnnotation(void)
+ImageOverlayAnnotation::~ImageOverlayAnnotation()
 {
 }
 
@@ -35,7 +35,7 @@ void ImageOverlayAnnotation::initializeSceneCoordinates()
     m_isInitialized = true;
 }
 
-QRectF ImageOverlayAnnotation::boundingRect( void ) const
+QRectF ImageOverlayAnnotation::boundingRect() const
 {
     return QRectF();
 }

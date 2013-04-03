@@ -15,14 +15,14 @@ class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientList : p
     Q_OBJECT
 
 public:
-             itkDataDiffusionGradientList(void);
-    virtual ~itkDataDiffusionGradientList(void);
+             itkDataDiffusionGradientList();
+    virtual ~itkDataDiffusionGradientList();
 
-    virtual QString description(void) const;
+    virtual QString description() const;
 
-    static bool registered(void);
+    static bool registered();
 
-    virtual void *data(void);
+    virtual void *data();
     virtual void *data(int channel);
     virtual void setData(void *data);
 
@@ -34,6 +34,6 @@ private:
     itkDataDiffusionGradientListPrivate *d;
 };
 
-dtkAbstractData *createItkDataDiffusionGradientList(void);
+dtkAbstractData *createItkDataDiffusionGradientList();
 
 

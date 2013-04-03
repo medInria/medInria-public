@@ -198,7 +198,7 @@ static void combinercode()
 
 //----------------------------------------------------------------------------
 // Okay this is the real stuff
-void vtkShadowRenderer::DeviceRender(void)
+void vtkShadowRenderer::DeviceRender()
 {
   static bool INIT=true;
   static vtkCamera *light_cam = vtkCamera::New();

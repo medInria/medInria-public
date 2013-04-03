@@ -8,18 +8,18 @@
 
 const char itkNiftiDataTensorImageWriter::ID[] = "itkNiftiDataTensorImageWriter";
 
-itkNiftiDataTensorImageWriter::itkNiftiDataTensorImageWriter(void) : itkDataTensorImageWriterBase()
+itkNiftiDataTensorImageWriter::itkNiftiDataTensorImageWriter() : itkDataTensorImageWriterBase()
 {
     this->io = itk::NiftiImageIO::New();
 }
 
 
-itkNiftiDataTensorImageWriter::~itkNiftiDataTensorImageWriter(void)
+itkNiftiDataTensorImageWriter::~itkNiftiDataTensorImageWriter()
 {
 }
 
 
-bool itkNiftiDataTensorImageWriter::registered(void)
+bool itkNiftiDataTensorImageWriter::registered()
 {
   return dtkAbstractDataFactory::instance()->registerDataWriterType(
               "itkNiftiDataTensorImageWriter",
@@ -27,12 +27,12 @@ bool itkNiftiDataTensorImageWriter::registered(void)
               createitkNiftiDataTensorImageWriter);
 }
 
-QString itkNiftiDataTensorImageWriter::description( void ) const
+QString itkNiftiDataTensorImageWriter::description() const
 {
     return tr( "Nifti writer for Tensor images" );
 }
 
-QString itkNiftiDataTensorImageWriter::identifier( void ) const
+QString itkNiftiDataTensorImageWriter::identifier() const
 {
     return ID;
 }
@@ -41,7 +41,7 @@ QString itkNiftiDataTensorImageWriter::identifier( void ) const
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createitkNiftiDataTensorImageWriter(void)
+dtkAbstractDataWriter *createitkNiftiDataTensorImageWriter()
 {
     return new itkNiftiDataTensorImageWriter;
 }

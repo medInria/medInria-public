@@ -63,12 +63,12 @@ public:
      *  image */
   void CopyVTKSphericalHarmonic( vtkImageData* );
 
-  vtkImageData* GetVTKSphericalHarmonic(void) const
+  vtkImageData* GetVTKSphericalHarmonic() const
   { return m_VTKSphericalHarmonic; }
 
   /** Get the VTKMatrix4x4 obtained from the Itk image transformation that
      *  defines the image coordinate system*/ vtkMatrix4x4*
-  GetDirectionMatrix(void) const;
+  GetDirectionMatrix() const;
 
 protected:
   SphericalHarmonicITKToVTKFilter();

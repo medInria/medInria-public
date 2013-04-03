@@ -8,18 +8,18 @@
 
 const char itkMetaDataTensorImageWriter::ID[] = "itkMetaDataTensorImageWriter";
 
-itkMetaDataTensorImageWriter::itkMetaDataTensorImageWriter(void) : itkDataTensorImageWriterBase()
+itkMetaDataTensorImageWriter::itkMetaDataTensorImageWriter() : itkDataTensorImageWriterBase()
 {
     this->io = itk::MetaImageIO::New();
 }
 
 
-itkMetaDataTensorImageWriter::~itkMetaDataTensorImageWriter(void)
+itkMetaDataTensorImageWriter::~itkMetaDataTensorImageWriter()
 {
 }
 
 
-bool itkMetaDataTensorImageWriter::registered(void)
+bool itkMetaDataTensorImageWriter::registered()
 {
   return dtkAbstractDataFactory::instance()->registerDataWriterType(
               "itkMetaDataTensorImageWriter",
@@ -27,12 +27,12 @@ bool itkMetaDataTensorImageWriter::registered(void)
               createItkMetaDataTensorImageWriter);
 }
 
-QString itkMetaDataTensorImageWriter::description( void ) const
+QString itkMetaDataTensorImageWriter::description() const
 {
     return tr( "MetaData writer for Tensor images" );
 }
 
-QString itkMetaDataTensorImageWriter::identifier( void ) const
+QString itkMetaDataTensorImageWriter::identifier() const
 {
     return ID;
 }
@@ -41,7 +41,7 @@ QString itkMetaDataTensorImageWriter::identifier( void ) const
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkMetaDataTensorImageWriter(void)
+dtkAbstractDataWriter *createItkMetaDataTensorImageWriter()
 {
     return new itkMetaDataTensorImageWriter;
 }

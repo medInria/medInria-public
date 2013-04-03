@@ -205,7 +205,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   void SetITKImage (itk::Image<RGBAPixelType, 3>*);
   void SetITKImage (itk::Image<UCharVector3Type, 3>*);
   void SetITKImage (itk::Image<FloatVector3Type, 3>*);
-  itk::ImageBase<3>* GetITKImage (void) const;
+  itk::ImageBase<3>* GetITKImage() const;
 
   virtual void SetITKImage4 (itk::Image<double, 4> *input);
   virtual void SetITKImage4 (itk::Image<float, 4> *input);
@@ -221,14 +221,14 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   virtual void SetITKImage4 (itk::Image<RGBAPixelType, 4> *input);
   virtual void SetITKImage4 (itk::Image<UCharVector3Type, 4> *input);
   virtual void SetITKImage4 (itk::Image<FloatVector3Type, 4> *input);
-  itk::ImageBase<4>* GetTemporalITKImage (void) const;
+  itk::ImageBase<4>* GetTemporalITKImage() const;
   //ETX
 
 
   /**
      Ensure that the displayed point is up to date. Should be overriden by subclasses.
   */
-  virtual void UpdatePosition(void) {};
+  virtual void UpdatePosition() {};
 
   
   /**
@@ -250,7 +250,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   void SetScalarBarVisibility (int v)
   { this->ScalarBar->SetVisibility(v);
     this->Modified(); }
-  int GetScalarBarVisibility (void) const
+  int GetScalarBarVisibility() const
   { return this->ScalarBar->GetVisibility(); }
   vtkBooleanMacro (ScalarBarVisibility, int);
   
@@ -265,7 +265,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
     this->Modified();
   }
   void SyncSetLookupTable (vtkScalarsToColors* lut);
-  virtual vtkScalarsToColors* GetLookupTable (void) const
+  virtual vtkScalarsToColors* GetLookupTable() const
   { return this->LookupTable; }
 
   
@@ -286,15 +286,15 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   /**
      This method is called just before windowing. Subclass should give it a meaning.
    */
-  virtual void StartWindowing (void){};
-  void SyncStartWindowing (void);
+  virtual void StartWindowing(){};
+  void SyncStartWindowing();
 
 
   /**
      This method is called just after windowing. Subclass should give it a meaning.
    */
-  virtual void EndWindowing (void){};
-  void SyncEndWindowing (void);
+  virtual void EndWindowing(){};
+  void SyncEndWindowing();
   
   /**
      Set/Get the window/level/zoom parameter.
@@ -371,8 +371,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   /**
      Set the Slice to display. Z is relative to the displayed plan.
   */
-  virtual void SetZSlice(int p_slice)
-  { (void) p_slice; this->Modified(); }
+  virtual void SetZSlice(int) { this->Modified(); }
   void SyncSetZSlice (int p_slice);
   // GetZSlice() ??
 
@@ -426,7 +425,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   /**
      Reset Window-Level, current point and zoom. This method is synchronized.
   */
-  virtual void Reset (void)
+  virtual void Reset()
   {
     this->ResetWindowLevel();
     this->ResetCurrentPoint();
@@ -496,7 +495,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
      top left corner of the window.
   */
   virtual void SetSizeData (const char* str);
-  virtual const char* GetSizeData(void) const
+  virtual const char* GetSizeData() const
   { return SizeData_str.c_str(); }
 
 
@@ -509,15 +508,15 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
 
 
   virtual void SetPatientNameData (const char* str);
-  virtual const char* GetPatientNameData(void) const
+  virtual const char* GetPatientNameData() const
   { return PatientNameData.c_str(); }
 
   virtual void SetStudyNameData (const char* str);
-  virtual const char* GetStudyNameData(void) const
+  virtual const char* GetStudyNameData() const
   { return StudyNameData.c_str(); }
 
   virtual void SetSerieNameData (const char* str);
-  virtual const char* GetSerieNameData(void) const
+  virtual const char* GetSerieNameData() const
   { return SerieNameData.c_str(); }
 
   
@@ -541,7 +540,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   /**
      Remove the mask image (if any)
   */
-  virtual void RemoveMaskImage (void){};
+  virtual void RemoveMaskImage(){};
   void SyncRemoveMaskImage ();
   
 
@@ -559,7 +558,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
   /**
      Remove the overlapping image (if any)
   */
-  virtual void RemoveOverlappingImage (void){};
+  virtual void RemoveOverlappingImage(){};
   void SyncRemoveOverlappingImage ();
   
   
@@ -635,13 +634,13 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
     this->Modified();
   }
 
-  void SetResetWindowLevelModeToFullRange( void )
+  void SetResetWindowLevelModeToFullRange()
   {
     this->ResetWindowLevelMode = FullRange;
     this->Modified();
   }
 
-  void SetResetWindowLevelModeToUserDefinedPercentage( void )
+  void SetResetWindowLevelModeToUserDefinedPercentage()
   {
     this->ResetWindowLevelMode = UserDefinedPercentage;
     this->Modified();
@@ -668,8 +667,8 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage : public vtkSynchronizedView
 
   
   // derived from vtkSynchronizedView
-  virtual void Initialize(void);
-  virtual void Uninitialize(void);
+  virtual void Initialize();
+  virtual void Uninitialize();
   
   
  protected:

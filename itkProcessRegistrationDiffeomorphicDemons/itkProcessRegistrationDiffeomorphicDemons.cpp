@@ -31,7 +31,7 @@ class itkProcessRegistrationDiffeomorphicDemonsPrivate
 public:
     itkProcessRegistrationDiffeomorphicDemons * proc;
     template <class PixelType>
-            int update(void);
+            int update();
     template < typename TFixedImage, typename TMovingImage >
            bool write(const QString&);
     void * registrationMethod ;
@@ -49,7 +49,7 @@ public:
 // itkProcessRegistrationDiffeomorphicDemons
 // /////////////////////////////////////////////////////////////////
 
-itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDemons(void) : itkProcessRegistration(), d(new itkProcessRegistrationDiffeomorphicDemonsPrivate)
+itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDemons() : itkProcessRegistration(), d(new itkProcessRegistrationDiffeomorphicDemonsPrivate)
 {
     d->proc = this;
     d->registrationMethod = NULL ;
@@ -63,7 +63,7 @@ itkProcessRegistrationDiffeomorphicDemons::itkProcessRegistrationDiffeomorphicDe
     this->setProperty("transformType","nonRigid");
 }
 
-itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicDemons(void)
+itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicDemons()
 {
     d->proc = NULL;
     switch(fixedImageType()){
@@ -82,18 +82,18 @@ itkProcessRegistrationDiffeomorphicDemons::~itkProcessRegistrationDiffeomorphicD
     d = NULL;
 }
 
-bool itkProcessRegistrationDiffeomorphicDemons::registered(void)
+bool itkProcessRegistrationDiffeomorphicDemons::registered()
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("itkProcessRegistrationDiffeomorphicDemons",
               createitkProcessRegistrationDiffeomorphicDemons);
 }
 
-QString itkProcessRegistrationDiffeomorphicDemons::description(void) const
+QString itkProcessRegistrationDiffeomorphicDemons::description() const
 {
     return "itkProcessRegistrationDiffeomorphicDemons";
 }
 
-QString itkProcessRegistrationDiffeomorphicDemons::identifier(void) const
+QString itkProcessRegistrationDiffeomorphicDemons::identifier() const
 {
     return "itkProcessRegistrationDiffeomorphicDemons";
 }
@@ -105,7 +105,7 @@ QString itkProcessRegistrationDiffeomorphicDemons::identifier(void) const
 
 
 template <typename PixelType>
-        int itkProcessRegistrationDiffeomorphicDemonsPrivate::update(void)
+        int itkProcessRegistrationDiffeomorphicDemonsPrivate::update()
 {
     typedef itk::Image< PixelType, 3 >  FixedImageType;
     typedef itk::Image< PixelType, 3 >  MovingImageType;
@@ -315,7 +315,7 @@ void itkProcessRegistrationDiffeomorphicDemons::setNumberOfIterations(std::vecto
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractProcess *createitkProcessRegistrationDiffeomorphicDemons(void)
+dtkAbstractProcess *createitkProcessRegistrationDiffeomorphicDemons()
 {
     return new itkProcessRegistrationDiffeomorphicDemons;
 }

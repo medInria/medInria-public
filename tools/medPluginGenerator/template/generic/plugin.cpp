@@ -29,14 +29,14 @@ const char * %1PluginPrivate::s_Name = "%1";
     
 }
 
-%1Plugin::~%1Plugin(void)
+%1Plugin::~%1Plugin()
 {
     delete d;
     
     d = NULL;
 }
 
-bool %1Plugin::initialize(void)
+bool %1Plugin::initialize()
 {
     if(!%1::registered())
         dtkWarn() << "Unable to register %1 type";
@@ -44,59 +44,59 @@ bool %1Plugin::initialize(void)
     return true;
 }
 
-bool %1Plugin::uninitialize(void)
+bool %1Plugin::uninitialize()
 {
     return true;
 }
 
-QString %1Plugin::name(void) const
+QString %1Plugin::name() const
 {
     return "%1Plugin";
 }
 
-QString %1Plugin::description(void) const
+QString %1Plugin::description() const
 {
     return tr("%3");
 }
 
-QString %1Plugin::version(void) const
+QString %1Plugin::version() const
 {
     return %2PLUGIN_VERSION;
 }
 
-QString %1Plugin::contact(void) const
+QString %1Plugin::contact() const
 {
     return "";
 }
 
-QStringList %1Plugin::authors(void) const
+QStringList %1Plugin::authors() const
 {
     QStringList list;
     return list;
 }
 
-QStringList %1Plugin::contributors(void) const
+QStringList %1Plugin::contributors() const
 {
     QStringList list;
     return list;
 }
 
-QString %1Plugin::identifier(void) const
+QString %1Plugin::identifier() const
 {
     return %1PluginPrivate::s_Name;
 }
 
 
-QStringList %1Plugin::tags(void) const
+QStringList %1Plugin::tags() const
 {
     return QStringList();
 }
 
-QStringList %1Plugin::types(void) const
+QStringList %1Plugin::types() const
 {
     return QStringList() << "%1";
 }
-QStringList %1Plugin::dependencies(void) const
+QStringList %1Plugin::dependencies() const
 {
     return QStringList();
 }

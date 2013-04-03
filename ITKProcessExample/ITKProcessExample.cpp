@@ -21,10 +21,10 @@ public:
     dtkAbstractData *input;
     dtkAbstractData *output;
     double sigma;
-    template <class PixelType> int update(void);
+    template <class PixelType> int update();
 };
 
-template <class PixelType> int ITKProcessExamplePrivate::update(void)
+template <class PixelType> int ITKProcessExamplePrivate::update()
 {
     qDebug() << "entering method d->update<" << typeid(PixelType).name() << ">";
 
@@ -53,24 +53,24 @@ template <class PixelType> int ITKProcessExamplePrivate::update(void)
 // ITKProcessExample
 // /////////////////////////////////////////////////////////////////
 
-ITKProcessExample::ITKProcessExample(void) : dtkAbstractProcess(), d(new ITKProcessExamplePrivate)
+ITKProcessExample::ITKProcessExample() : dtkAbstractProcess(), d(new ITKProcessExamplePrivate)
 {
     d->output = NULL;
     d->sigma = 4.0;
 }
 
-ITKProcessExample::~ITKProcessExample(void)
+ITKProcessExample::~ITKProcessExample()
 {
     delete d;
     d = NULL;
 }
 
-bool ITKProcessExample::registered(void)
+bool ITKProcessExample::registered()
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType("ITKProcessExampleGaussianBlur", createITKProcessExample);
 }
 
-QString ITKProcessExample::description(void) const
+QString ITKProcessExample::description() const
 {
     return "ITKProcessExampleGaussianBlur";
 }
@@ -100,7 +100,7 @@ void ITKProcessExample::setParameter(double  data, int channel)
         }
 }
 
-int ITKProcessExample::update (void)
+int ITKProcessExample::update()
 {
     qDebug() << "entering method update";
 
@@ -153,7 +153,7 @@ int ITKProcessExample::update (void)
     return EXIT_SUCCESS;
 }
 
-dtkAbstractData * ITKProcessExample::output(void)
+dtkAbstractData * ITKProcessExample::output()
 {
     return (d->output);
 }
@@ -162,7 +162,7 @@ dtkAbstractData * ITKProcessExample::output(void)
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractProcess * createITKProcessExample(void)
+dtkAbstractProcess * createITKProcessExample()
 {
     return new ITKProcessExample;
 }

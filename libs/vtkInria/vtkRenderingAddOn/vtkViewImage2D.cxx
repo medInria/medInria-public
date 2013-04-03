@@ -1093,7 +1093,7 @@ void vtkViewImage2D::SetBGLookupTable (vtkScalarsToColors* lut)
 }
 
 
-vtkScalarsToColors* vtkViewImage2D::GetBGLookupTable (void) const
+vtkScalarsToColors* vtkViewImage2D::GetBGLookupTable() const
 {
     return this->BGLookupTable;
 }
@@ -1354,7 +1354,7 @@ void vtkViewImage2D::SetInterpolationMode(int i)
 }
 
 
-int vtkViewImage2D::GetInterpolationMode(void)
+int vtkViewImage2D::GetInterpolationMode()
 {
   return this->ImageActor->GetInterpolate();
 }
@@ -1520,7 +1520,7 @@ void vtkViewImage2D::SetOverlappingImageOpacity (double val)
 }
 
 
-double vtkViewImage2D::GetOverlappingImageOpacity (void)
+double vtkViewImage2D::GetOverlappingImageOpacity()
 {
   return this->Blender->GetOpacity (1);
 }
@@ -2213,7 +2213,7 @@ double vtkViewImage2D::GetOpacity() const
 }
 
 
-void vtkViewImage2D::Clear(void)
+void vtkViewImage2D::Clear()
 {
   // maybe containing some bugs or missing process
   this->Reset();

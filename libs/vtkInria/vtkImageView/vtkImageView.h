@@ -171,7 +171,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
 
   // Description:
   // Render the resulting image.
-  virtual void Render(void);
+  virtual void Render();
 
   // Description:
   // Set/Get the input image to the viewer.
@@ -335,7 +335,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   /**
      Reset the 3D position to center of the image
   */
-  virtual void ResetCurrentPoint(void);
+  virtual void ResetCurrentPoint();
 
   /**
      Convert an indices coordinate point (image coordinates) into a world coordinate point
@@ -365,42 +365,42 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
     double rgb[3] = {r,g,b};
     this->SetBackground (rgb);
   }
-  virtual double* GetBackground(void) const;
+  virtual double* GetBackground() const;
 
   /**
      Get/Set the camera settings, position
   */
   void    SetCameraPosition (double* arg);
-  double* GetCameraPosition (void) const;
+  double* GetCameraPosition() const;
 
   /**
      Get/Set the camera settings, focal point
   */
   void    SetCameraFocalPoint (double* arg);
-  double* GetCameraFocalPoint (void) const;
+  double* GetCameraFocalPoint() const;
 
   /**
      Get/Set the camera settings, ViewUp
   */
   void    SetCameraViewUp (double* arg);
-  double* GetCameraViewUp (void) const;
+  double* GetCameraViewUp() const;
 
   /**
      Get/Set the camera settings, parallel scale
   */
   void   SetCameraParallelScale (double arg);
-  double GetCameraParallelScale (void) const;
+  double GetCameraParallelScale() const;
 
   /**
      Get/Set the zoom factor of the view
   */
   virtual void   SetZoom(double arg);
-  virtual double GetZoom(void);
+  virtual double GetZoom();
 
   /**
      Reset the camera in a nice way for the 2D view
   */
-  virtual void ResetCamera (void);
+  virtual void ResetCamera();
 
   // Description:
   // Set window and level for mapping pixels to colors.
@@ -442,12 +442,12 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   /**
      Reset the window level
   */
-  virtual void ResetWindowLevel(void);
+  virtual void ResetWindowLevel();
 
   /**
      Reset position - zoom - window/level to default
   */
-  virtual void Reset(void);
+  virtual void Reset();
 
   /**
      Show/Hide the annotations.
@@ -498,22 +498,22 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   /**
      Enable or Disable interaction on the view.
   */
-  virtual void Enable (void);
+  virtual void Enable();
 
   /**
      Enable or Disable interaction on the view.
   */
-  virtual void Disable (void);
+  virtual void Disable();
 
   /**
      Enable or Disable interaction on the view.
   */
-  virtual int GetEnabled (void) const;
+  virtual int GetEnabled() const;
 
   /**
      Start the interactor.
   */
-  virtual void Start (void);
+  virtual void Start();
 
   /**
       Get the bounding box of the input image
@@ -538,7 +538,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   /**
    * Remove all layers. Should be reimplemented in subclasses.
    */
-  virtual void RemoveAllLayers (void);
+  virtual void RemoveAllLayers();
 
   /**
    * Check whether layer exists. Should be reimplemented in subclasses.
@@ -548,7 +548,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   /**
    * Returns the number of layers. Should be reimplemented in subclasses.
    */
-  virtual int GetNumberOfLayers(void) const;
+  virtual int GetNumberOfLayers() const;
 
 
   /**
@@ -621,18 +621,18 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual void SetITKInput4 (itk::Image<RGBAPixelType, 4>::Pointer input, int layer=0);
   virtual void SetITKInput4 (itk::Image<UCharVector3Type, 4>::Pointer input, int layer=0);
   virtual void SetITKInput4 (itk::Image<FloatVector3Type, 4>::Pointer input, int layer=0);
-  itk::ImageBase<4>* GetTemporalITKInput (void) const;
+  itk::ImageBase<4>* GetTemporalITKInput() const;
 
 
 
   void        SetPatientName (const char* name);
-  const char *GetPatientName (void) const;
+  const char *GetPatientName() const;
 
   void        SetStudyName (const char* name);
-  const char *GetStudyName (void) const;
+  const char *GetStudyName() const;
 
   void        SetSeriesName (const char* name);
-  const char *GetSeriesName (void) const;
+  const char *GetSeriesName() const;
 
   /**
      Abstract method to add a dataset to the view (has to be subclass of vtkPointSet).

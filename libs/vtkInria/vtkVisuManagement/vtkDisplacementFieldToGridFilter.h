@@ -39,7 +39,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkDisplacementFieldToGridFilter: public vtkPoly
   vtkTypeRevisionMacro(vtkDisplacementFieldToGridFilter, vtkPolyDataAlgorithm);
 
 
-  unsigned int* GetResolution (void)
+  unsigned int* GetResolution()
   {
     return this->Resolution;
   }

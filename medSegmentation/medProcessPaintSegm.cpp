@@ -30,35 +30,35 @@ public:
 // medProcessPaintSegm
 // /////////////////////////////////////////////////////////////////
 
-medProcessPaintSegm::medProcessPaintSegm(void) : dtkAbstractProcess(), d(new medProcessPaintSegmPrivate)
+medProcessPaintSegm::medProcessPaintSegm() : dtkAbstractProcess(), d(new medProcessPaintSegmPrivate)
 {
 
 }
 
-medProcessPaintSegm::~medProcessPaintSegm(void)
+medProcessPaintSegm::~medProcessPaintSegm()
 {
     delete d;
     d = NULL;
 }
 
-bool medProcessPaintSegm::registered(void)
+bool medProcessPaintSegm::registered()
 {
     return dtkAbstractProcessFactory::instance()->registerProcessType(
         medProcessPaintSegm::s_identifier(),
         medProcessPaintSegm::create);
 }
 
-QString medProcessPaintSegm::description(void) const
+QString medProcessPaintSegm::description() const
 {
     return tr("Paint");
 }
 
-QString medProcessPaintSegm::identifier(void) const
+QString medProcessPaintSegm::identifier() const
 {
     return medProcessPaintSegm::s_identifier();
 }
 
-QString medProcessPaintSegm::s_identifier( void )
+QString medProcessPaintSegm::s_identifier()
 {
      return "medProcessPaintSegm";
 }
@@ -78,13 +78,13 @@ void medProcessPaintSegm::setInput( dtkAbstractData *data, int channel )
     }
 }
 
-void * medProcessPaintSegm::data( void )
+void * medProcessPaintSegm::data()
 {
 
     return NULL;
 }
 
-int medProcessPaintSegm::update( void )
+int medProcessPaintSegm::update()
 {
     if (!d->imageInput || !d->maskInput) {
         return DTK_FAILURE;
@@ -129,7 +129,7 @@ void medProcessPaintSegm::setOutputMetadata(const dtkAbstractData * inputData, d
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
-dtkAbstractProcess * medProcessPaintSegm::create( void )
+dtkAbstractProcess * medProcessPaintSegm::create()
 {
     return new medProcessPaintSegm;
 }

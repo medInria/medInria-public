@@ -93,19 +93,19 @@ public:
 
   virtual vtkImageData* GetInput(int layer = 0) const;
 
-  virtual void SetVolumeMapperTo3DTexture (void);
-  virtual void SetVolumeMapperToRayCast (void);
-  virtual void SetVolumeMapperToRayCastAndTexture (void);
-  virtual void SetVolumeMapperToGPU (void);
-  virtual void SetVolumeMapperToDefault (void);
+  virtual void SetVolumeMapperTo3DTexture();
+  virtual void SetVolumeMapperToRayCast();
+  virtual void SetVolumeMapperToRayCastAndTexture();
+  virtual void SetVolumeMapperToGPU();
+  virtual void SetVolumeMapperToDefault();
 
-  virtual void SetVolumeRayCastFunctionToComposite (void);
-  virtual void SetVolumeRayCastFunctionToMaximumIntensityProjection (void);
-  virtual void SetVolumeRayCastFunctionToMinimumIntensityProjection (void);
-  // virtual void SetVolumeRayCastFunctionToAdditive (void);
+  virtual void SetVolumeRayCastFunctionToComposite();
+  virtual void SetVolumeRayCastFunctionToMaximumIntensityProjection();
+  virtual void SetVolumeRayCastFunctionToMinimumIntensityProjection();
+  // virtual void SetVolumeRayCastFunctionToAdditive();
 
-  virtual void SetInterpolationToNearestNeighbor (void);
-  virtual void SetInterpolationToLinear (void);
+  virtual void SetInterpolationToNearestNeighbor();
+  virtual void SetInterpolationToLinear();
 
   /** Set the box widget visibility */
   void SetShowBoxWidget (int a)
@@ -114,7 +114,7 @@ public:
 if (this->Interactor)
       this->BoxWidget->SetEnabled (a);
   }
-  bool GetShowBoxWidget (void)
+  bool GetShowBoxWidget()
   {
     return this->BoxWidget->GetEnabled();
   }
@@ -126,7 +126,7 @@ if (this->Interactor)
     if (this->Interactor)
       this->PlaneWidget->SetEnabled (a);
   }
-  bool GetShowPlaneWidget (void)
+  bool GetShowPlaneWidget()
   {
     return this->PlaneWidget->GetEnabled();
   }
@@ -138,7 +138,7 @@ if (this->Interactor)
     if (this->Interactor)
       this->Marker->SetEnabled (a);
   }
-  bool GetShowCube (void)
+  bool GetShowCube()
   {
     return this->Marker->GetEnabled();
   }
@@ -148,17 +148,17 @@ if (this->Interactor)
   {
     this->VolumeProperty->SetShade (a);
   }
-  bool GetShade (void)
+  bool GetShade()
   {
     return this->VolumeProperty->GetShade();
   }
   vtkBooleanMacro (Shade, int);
 
   /** Set the rendering mode to volume rendering (VR). */
-  virtual void SetRenderingModeToVR (void)
+  virtual void SetRenderingModeToVR()
   {this->SetRenderingMode (VOLUME_RENDERING); }
   /** Set the rendering mode to planar views. */
-  virtual void SetRenderingModeToPlanar (void)
+  virtual void SetRenderingModeToPlanar()
   { this->SetRenderingMode (PLANAR_RENDERING); }
   /** Set the rendering mode. */
   virtual void SetRenderingMode (int mode);
@@ -177,9 +177,9 @@ if (this->Interactor)
   };
 
   /** Set the cropping mode */
-  virtual void SetCroppingModeToOff(void);
-  virtual void SetCroppingModeToInside(void);
-  virtual void SetCroppingModeToOutside(void);
+  virtual void SetCroppingModeToOff();
+  virtual void SetCroppingModeToInside();
+  virtual void SetCroppingModeToOutside();
   virtual void SetCroppingMode(unsigned int);
   // vtkGetMacro (CroppingMode, int);
   virtual unsigned int GetCroppingMode ();
@@ -215,11 +215,11 @@ if (this->Interactor)
   // /**
   //    Presets for VR quality.
   //  */
-  // virtual void SetVRQualityToLow (void)
+  // virtual void SetVRQualityToLow()
   // { this->SetVRQuality (0.0); };
-  // virtual void SetVRQualityToMed (void)
+  // virtual void SetVRQualityToMed()
   // { this->SetVRQuality (0.5); };
-  // virtual void SetVRQualityToHigh (void)
+  // virtual void SetVRQualityToHigh()
   // { this->SetVRQuality (1.0); };
   // virtual void SetVRQuality (float);
   // virtual float GetVRQuality ();
@@ -247,7 +247,7 @@ if (this->Interactor)
   */
   virtual void SetCurrentPoint (double pos[3]);
 
-  virtual void UpdateDisplayExtent (void);
+  virtual void UpdateDisplayExtent();
 
 
   virtual void InstallInteractor();
@@ -268,9 +268,9 @@ if (this->Interactor)
 
 
   virtual void AddLayer (int layer);
-  virtual int GetNumberOfLayers(void) const;
+  virtual int GetNumberOfLayers() const;
   virtual void RemoveLayer (int layer);
-  virtual void RemoveAllLayers (void);
+  virtual void RemoveAllLayers();
 
   //pure virtual methods from base class:
   virtual vtkColorTransferFunction * GetColorTransferFunction(int layer) const;
@@ -306,7 +306,7 @@ protected:
   virtual void ApplyColorTransferFunction(vtkScalarsToColors * colors,
                                                   int layer);
 
-  virtual void InternalUpdate (void);
+  virtual void InternalUpdate();
 
   //! Get layer specific info
   vtkImage3DDisplay * GetImage3DDisplayForLayer(int layer) const;

@@ -48,7 +48,7 @@ class V3DFIBERBUNDLE_EXPORT v3dFiberBundle : public vtkObject
   
   void SetName (const std::string& name)
   { this->Name = name; }
-  std::string GetName(void) const
+  std::string GetName() const
   { return this->Name; }
   
   
@@ -59,7 +59,7 @@ class V3DFIBERBUNDLE_EXPORT v3dFiberBundle : public vtkObject
     this->Color[2] = color[2];
     this->Actor->GetProperty()->SetColor((double)color[0], (double)color[1], (double)color[2]);
   }
-  const float* GetColor(void) const
+  const float* GetColor() const
   { return this->Color; }  
 
   void SetColorByDirection();
@@ -77,28 +77,28 @@ class V3DFIBERBUNDLE_EXPORT v3dFiberBundle : public vtkObject
 
   vtkGetObjectMacro (PolyData, vtkPolyData);
   
-  void Create (void);
+  void Create();
 
 
   void SetRenderingMode (int i);
     
   
-  void SetRenderingModeToPolyLines (void);
+  void SetRenderingModeToPolyLines();
   
   
-  void SetRenderingModeToTubes (void);
-  
-
-  void SetRenderingModeToRibbons (void);
+  void SetRenderingModeToTubes();
   
 
-  int GetRenderingMode(void) const
+  void SetRenderingModeToRibbons();
+  
+
+  int GetRenderingMode() const
   { return this->RenderingMode; }
 
 
-  void UseHardwareShadersOn(void);
+  void UseHardwareShadersOn();
 
-  void UseHardwareShadersOff(void);
+  void UseHardwareShadersOff();
 
   void SetUseHardwareShaders(int);
   

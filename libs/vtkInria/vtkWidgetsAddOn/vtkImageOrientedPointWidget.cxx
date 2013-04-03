@@ -371,7 +371,7 @@ void vtkImageOrientedPointWidget::ProcessEvents(vtkObject* vtkNotUsed(object),
     }
 }
 
-void vtkImageOrientedPointWidget::AddObservers(void)
+void vtkImageOrientedPointWidget::AddObservers()
 {
   // Listen for the following events
   vtkRenderWindowInteractor *i = this->Interactor;
@@ -1039,7 +1039,7 @@ void vtkImageOrientedPointWidget::Translate(const double *p1, const double *p2)
   this->LineData->Modified();
 }
 
-void vtkImageOrientedPointWidget::ResetHandles(void)
+void vtkImageOrientedPointWidget::ResetHandles()
 {
   if ( this->NumberOfHandles == 0 ){ return; }
 

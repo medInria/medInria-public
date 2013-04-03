@@ -82,12 +82,12 @@ namespace itk
       m_InputImageList = list;
     }
 
-    OutputImageListType GetOutputImageList(void)
+    OutputImageListType GetOutputImageList()
     {
       return m_OutputImageList;
     }
 
-    void RemoveAllOutputs(void);
+    void RemoveAllOutputs();
 
   protected:
     ImageSeriesReshapeFilter();

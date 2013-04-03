@@ -56,7 +56,7 @@ namespace itk
   
 
 
-  void GDCMExporter::WriteAll(void)
+  void GDCMExporter::WriteAll()
   {
 
     unsigned int currentindex = 1;

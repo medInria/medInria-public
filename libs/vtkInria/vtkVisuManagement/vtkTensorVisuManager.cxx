@@ -303,7 +303,7 @@ void vtkTensorVisuManager::SetGlyphScale(const float& f)
   this->Glyph->SetScaleFactor(f);
 }
 
-double vtkTensorVisuManager::GetGlyphScale(void)
+double vtkTensorVisuManager::GetGlyphScale()
 {
   return this->Glyph->GetScaleFactor();
 }
@@ -441,21 +441,21 @@ void vtkTensorVisuManager::SetColorModeToEigenvalue( const int& i )
 }
 
 
-void vtkTensorVisuManager::SetColorModeToVolume(void)
+void vtkTensorVisuManager::SetColorModeToVolume()
 {
   this->ColorMode = COLOR_BY_VOLUME;
   this->UpdateLUT();
 }
 
 
-void vtkTensorVisuManager::SetColorModeToTrace(void)
+void vtkTensorVisuManager::SetColorModeToTrace()
 {
   this->ColorMode = COLOR_BY_TRACE;
   this->UpdateLUT();
 }
 
 
-void vtkTensorVisuManager::SetColorModeToDistanceToIdentity(void)
+void vtkTensorVisuManager::SetColorModeToDistanceToIdentity()
 {
   this->ColorMode = COLOR_BY_DISTANCE_TO_IDENTITY;
   this->UpdateLUT();
@@ -465,7 +465,7 @@ void vtkTensorVisuManager::SetColorModeToDistanceToIdentity(void)
 
 
 
-void vtkTensorVisuManager::UpdateLUT( void )
+void vtkTensorVisuManager::UpdateLUT()
 {
   
   if(this->GetInput() == 0)
@@ -512,7 +512,7 @@ void vtkTensorVisuManager::UpdateLUT( void )
 
 
 
-void vtkTensorVisuManager::SetUpLUTToMapEigenVector(void)
+void vtkTensorVisuManager::SetUpLUTToMapEigenVector()
 {
   vtkDataSet* myData = this->GetInput();
   

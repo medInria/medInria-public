@@ -50,26 +50,26 @@ class VTK_VISUMANAGEMENT_EXPORT vtkIsosurfaceManager: public vtkObject
   vtkGetObjectMacro (RenderWindowInteractor, vtkRenderWindowInteractor);
 
    /** Remove all actors added by this manager. */
-  void RemoveAllActors (void);
+  void RemoveAllActors();
 
   //BTX
   /** Get Isosurfaces as vtkActors */
-  std::vector<vtkImageToIsosurface*> GetIsosurfaces (void) const
+  std::vector<vtkImageToIsosurface*> GetIsosurfaces() const
   { return this->Isosurfaces; }
   
   /** Get the recovered isovalues from input image */ 
-  std::vector<int> GetIsoValues (void) const
+  std::vector<int> GetIsoValues() const
   { return this->IsoValues; }
   //ETX
   
-  unsigned int GetNumberOfIsoValues (void) const
+  unsigned int GetNumberOfIsoValues() const
   { return (unsigned int)(this->IsoValues.size()); }
 
   /** Generate isosurfaces */
-  void GenerateData(void);
+  void GenerateData();
 
   /** Reset all data from the manager */
-  void ResetData(void);
+  void ResetData();
 
   /** Specify the visibility of an isosurface */
   void SetVisibility (int IsVisible);
@@ -78,7 +78,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkIsosurfaceManager: public vtkObject
   void SetVisibility (int i, int IsVisible);
 
   /** Get the visibility of the isosurfaces */
-  int GetVisibility (void) const
+  int GetVisibility() const
   { return this->Visibility; }
 
   /** Get the visibility of the isosurfaces */
@@ -91,21 +91,21 @@ class VTK_VISUMANAGEMENT_EXPORT vtkIsosurfaceManager: public vtkObject
   void SetOpacity (int i, double val);
 
   /** Get the opacity used for isosurfaces */
-  double GetOpacity(void) const
+  double GetOpacity() const
   { return this->Opacity; }
 
   /** Get the opacity used for isosurfaces */
   double GetOpacity(int i) const;
 
   /** Set the decimation On/Off */
-  void SetDecimationOn (void);
+  void SetDecimationOn();
 
   /** Set the decimation On/Off */
-  void SetDecimationOff (void);
+  void SetDecimationOff();
 
-  void Enable(void);
+  void Enable();
 
-  void Disable(void);
+  void Disable();
   
  protected:
   
@@ -113,7 +113,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkIsosurfaceManager: public vtkObject
   ~vtkIsosurfaceManager();
 
   /** Update isosurfaces according to parameters */
-  void UpdateActors(void);
+  void UpdateActors();
 
 
  private:

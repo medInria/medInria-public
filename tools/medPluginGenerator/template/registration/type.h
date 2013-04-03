@@ -26,14 +26,14 @@ public:
      *
      * @param void
      */
-    %1(void);
+    %1();
     
     /**
      * @brief
      *
      * @param void
      */
-    virtual ~%1(void);
+    virtual ~%1();
     
     /**
      * @brief Description of the plugin.
@@ -41,7 +41,7 @@ public:
      * @param void
      * @return QString
      */
-    virtual QString description(void) const;
+    virtual QString description() const;
     
     /**
      * @brief tries to register the process with the factory.
@@ -49,7 +49,7 @@ public:
      * @param void
      * @return bool true if it succeeded, false otherwise.
      */
-    static bool registered(void);
+    static bool registered();
     
 public:
     /**
@@ -81,6 +81,6 @@ private:
  *
  * @param void
  */
-dtkAbstract%3 *create%4(void);
+dtkAbstract%3 *create%4();
 
 

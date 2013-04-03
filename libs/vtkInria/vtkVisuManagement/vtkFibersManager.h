@@ -82,12 +82,12 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
   
   vtkGetObjectMacro (BoxWidget, vtkBoxWidget);
 
-  virtual void Enable (void);
+  virtual void Enable();
 
-  virtual void Disable (void);
+  virtual void Disable();
   
   /** Reset the pipeline, deactivate the CP box and release memory.*/
-  virtual void Initialize (void);
+  virtual void Initialize();
   
   /** Set the vtkPolyData input */
   virtual void SetInput (vtkPolyData*);
@@ -96,13 +96,13 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
   vtkGetObjectMacro (Input, vtkPolyData);
 
   /** Get the generated actor */
-  virtual vtkActor* GetOutput (void) const;
+  virtual vtkActor* GetOutput() const;
 
   /** Get the ROI Limiter */
-  virtual vtkLimitFibersToROI* GetROILimiter(void) const;
+  virtual vtkLimitFibersToROI* GetROILimiter() const;
 
   /** Get the VOI Limiter */
-  virtual vtkLimitFibersToVOI* GetVOILimiter(void) const;
+  virtual vtkLimitFibersToVOI* GetVOILimiter() const;
   
   /** Set the render window interactor */
   virtual void SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin);
@@ -113,50 +113,50 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
   vtkGetObjectMacro(Renderer, vtkRenderer);
 
   /** Remove all actors added by this manager. */
-  virtual void RemoveAllActors (void);
+  virtual void RemoveAllActors();
   
   /** Set the rendering mode to poly lines */
-  virtual void SetRenderingModeToPolyLines (void);
+  virtual void SetRenderingModeToPolyLines();
 
   /** Set the rendering mode to tubes */
-  virtual void SetRenderingModeToTubes (void);
+  virtual void SetRenderingModeToTubes();
 
   /** Set the rendering mode to ribbons */
-  virtual void SetRenderingModeToRibbons (void);
+  virtual void SetRenderingModeToRibbons();
 
   /** Get the rendering mode. */
-  static int GetRenderingMode (void);
+  static int GetRenderingMode();
   
   virtual void SetRenderingMode(int);
   
-  static void UseHardwareShadersOn(void);
+  static void UseHardwareShadersOn();
   
-  static void UseHardwareShadersOff(void);
+  static void UseHardwareShadersOff();
   
   static void SetUseHardwareShaders(int);
   
-  static int GetUseHardwareShaders(void);
+  static int GetUseHardwareShaders();
 
-  virtual void ChangeMapperToUseHardwareShaders(void);
-  virtual void ChangeMapperToDefault(void);
+  virtual void ChangeMapperToUseHardwareShaders();
+  virtual void ChangeMapperToDefault();
 
   
   /** Set the ouput of the callback to ite input. Thus, users
       can extract a subsample of fibers, and then another subsample,
       and so on. */
-  virtual void SwapInputOutput(void);
+  virtual void SwapInputOutput();
 
   /** Reset the fiber manager to its first input. */
-  virtual void Reset (void);
+  virtual void Reset();
 
   /** Switch on/off the visibility of the fibers */
   virtual void SetVisibility (bool);
 
   /** Set the box widget on */
-  virtual void BoxWidgetOn (void);
+  virtual void BoxWidgetOn();
   
   /** Set the box widget on */
-  virtual void BoxWidgetOff (void);
+  virtual void BoxWidgetOff();
 
   /** Set the box widget on */
   virtual void SetBoxWidget (bool a);
@@ -167,49 +167,49 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
   /** Set Radius & ribbon width */
   virtual void SetRadius (double r);
 
-  virtual double GetRadius (void) const;
+  virtual double GetRadius() const;
 
   /** Return the fiber ids selected by the box widget */
-  virtual vtkCellArray* GetSelectedCells (void) const;
+  virtual vtkCellArray* GetSelectedCells() const;
 
-  virtual vtkPolyData *GetCallbackOutput(void) const;
+  virtual vtkPolyData *GetCallbackOutput() const;
 
   virtual void SetMaskImage (vtkImageData* image);
   
   /**
      Set the color mode to either local or global fiber orientation.
   */
-  virtual void SetColorModeToLocalFiberOrientation (void);
+  virtual void SetColorModeToLocalFiberOrientation();
   
   /**
      Set the color mode to either local or global fiber orientation.
    */
-  virtual void SetColorModelToGlobalFiberOrientation (void);
+  virtual void SetColorModelToGlobalFiberOrientation();
   
   virtual void SetColorModeToPointArray (const int& id);
   
   const char* GetPointArrayName (const int& id) const;
   
-  virtual int GetNumberOfPointArrays (void) const;
+  virtual int GetNumberOfPointArrays() const;
   
   virtual void SetLookupTable (vtkScalarsToColors* lut);
   
-  virtual vtkScalarsToColors* GetLookupTable (void) const;
+  virtual vtkScalarsToColors* GetLookupTable() const;
   
   virtual void SetMaximumNumberOfFibers(int num);
   
-  virtual int GetMaximumNumberOfFibers(void) const;
+  virtual int GetMaximumNumberOfFibers() const;
 
-  virtual void ShowHelpMessage (void);
+  virtual void ShowHelpMessage();
   
-  virtual void HideHelpMessage (void);
+  virtual void HideHelpMessage();
   
   virtual void SetHelpMessageVisibility (int a);
   
-  virtual int GetHelpMessageVisibility (void) const;
+  virtual int GetHelpMessageVisibility() const;
   
   /** Force a callback call to Execute() */
-  virtual void Execute (void);
+  virtual void Execute();
   
  protected:
   vtkFibersManager();

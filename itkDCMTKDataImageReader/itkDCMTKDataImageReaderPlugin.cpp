@@ -26,43 +26,43 @@ itkDCMTKDataImageReaderPlugin::itkDCMTKDataImageReaderPlugin(QObject *parent) : 
 
 }
 
-itkDCMTKDataImageReaderPlugin::~itkDCMTKDataImageReaderPlugin(void)
+itkDCMTKDataImageReaderPlugin::~itkDCMTKDataImageReaderPlugin()
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkDCMTKDataImageReaderPlugin::initialize(void)
+bool itkDCMTKDataImageReaderPlugin::initialize()
 {
     if (!itkDCMTKDataImageReader::registered()) { dtkWarn() << "Unable to register itkDCMTKDataImageReader type"; }
 
     return true;
 }
 
-bool itkDCMTKDataImageReaderPlugin::uninitialize(void)
+bool itkDCMTKDataImageReaderPlugin::uninitialize()
 {
     return true;
 }
 
-QString itkDCMTKDataImageReaderPlugin::name(void) const
+QString itkDCMTKDataImageReaderPlugin::name() const
 {
     return "itkDCMTKDataImageReaderPlugin";
 }
 
-QString itkDCMTKDataImageReaderPlugin::description(void) const
+QString itkDCMTKDataImageReaderPlugin::description() const
 {
     return "ITK DICOM reader using DCMTK";
 }
 
-QStringList itkDCMTKDataImageReaderPlugin::authors(void) const
+QStringList itkDCMTKDataImageReaderPlugin::authors() const
 {
     QStringList list;
     list << QString::fromUtf8("Pierre Fillard");
     return list;
 }
 
-QStringList itkDCMTKDataImageReaderPlugin::contributors(void) const
+QStringList itkDCMTKDataImageReaderPlugin::contributors() const
 {
     QStringList list;
     list <<  "Michael Knopke";
@@ -70,18 +70,18 @@ QStringList itkDCMTKDataImageReaderPlugin::contributors(void) const
 }
 
 
-QString itkDCMTKDataImageReaderPlugin::version(void) const
+QString itkDCMTKDataImageReaderPlugin::version() const
 {
     return ITKDCMTKDATAIMAGEREADERPLUGIN_VERSION;
 }
 
 
-QStringList itkDCMTKDataImageReaderPlugin::tags(void) const
+QStringList itkDCMTKDataImageReaderPlugin::tags() const
 {
     return QStringList() << "itk" << "dcmtk" << "data" << "image" << "reader";
 }
 
-QStringList itkDCMTKDataImageReaderPlugin::types(void) const
+QStringList itkDCMTKDataImageReaderPlugin::types() const
 {
     return QStringList() << "itkDCMTKDataImageReader";
 }

@@ -15,17 +15,17 @@ class %2PLUGIN_EXPORT %1 : public dtkAbstract%3
     Q_OBJECT
     
 public:
-    %1(void);
-    virtual ~%1(void);
+    %1();
+    virtual ~%1();
     
-    virtual QString description(void) const;
+    virtual QString description() const;
     
-    static bool registered(void);
+    static bool registered();
     
 private:
     %1Private *d;
 };
 
-dtkAbstract%3 *create%4(void);
+dtkAbstract%3 *create%4();
 
 

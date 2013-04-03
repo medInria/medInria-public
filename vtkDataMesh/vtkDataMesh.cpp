@@ -67,27 +67,27 @@ void vtkDataMesh::setData(void *data)
   d->mesh = mesh;
 }
 
-void *vtkDataMesh::output(void)
+void *vtkDataMesh::output()
 {
   return d->mesh;
 }
 
-void *vtkDataMesh::data(void)
+void *vtkDataMesh::data()
 {
   return d->mesh;
 }
 
-void vtkDataMesh::update(void)
+void vtkDataMesh::update()
 {
 
 }
 
-dtkAbstractData *createVtkDataMesh(void)
+dtkAbstractData *createVtkDataMesh()
 {
   return new vtkDataMesh;
 }
 
-QImage & vtkDataMesh::thumbnail (void)
+QImage & vtkDataMesh::thumbnail()
 {
     if (d->thumbnails.empty())
     {
@@ -99,7 +99,7 @@ QImage & vtkDataMesh::thumbnail (void)
   return (d->thumbnails[0]);
 }
 
-QList<QImage> & vtkDataMesh::thumbnails (void)
+QList<QImage> & vtkDataMesh::thumbnails()
 {
   d->thumbnails.clear();
 
@@ -156,12 +156,12 @@ void vtkDataMesh::onPropertySet(const QString& key, const QString& value)
   Q_UNUSED(value);
 }
 
-int vtkDataMesh::countVertices(void)
+int vtkDataMesh::countVertices()
 {
   return 0;
 }
 
-int vtkDataMesh::countEdges(void)
+int vtkDataMesh::countEdges()
 {
     return 0;
 }

@@ -40,7 +40,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2DWithTracer: public vtkViewImage2D
   vtkTypeRevisionMacro(vtkViewImage2DWithTracer, vtkViewImage2D);
   
 
-  virtual void PrepareForDelete(void);
+  virtual void PrepareForDelete();
 
 
   /**
@@ -67,7 +67,7 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2DWithTracer: public vtkViewImage2D
      widget and transform it into a binary image, with the
      label/color specified by the user.
   */
-  virtual void ValidateTracing (void);
+  virtual void ValidateTracing();
 
 
   /** Set a new entry in the LUT */
@@ -106,13 +106,13 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2DWithTracer: public vtkViewImage2D
      Switch between radiological (left is right and right is left) and
      neurological (left is left and right is right) conventions.
   */
-  virtual void SetConventionsToRadiological (void);
+  virtual void SetConventionsToRadiological();
 
   /**
      Switch between radiological (left is right and right is left) and
      neurological (left is left and right is right) conventions.
   */
-  virtual void SetConventionsToNeurological (void);
+  virtual void SetConventionsToNeurological();
   
  protected:
   vtkViewImage2DWithTracer();

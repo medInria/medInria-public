@@ -61,7 +61,7 @@ public:
       this->OutputImageSize[i] = size[i];
   }
 
-  const unsigned int* GetOutputImageSize(void) const
+  const unsigned int* GetOutputImageSize() const
   {
     return this->OutputImageSize;
   }
@@ -71,7 +71,7 @@ public:
       this->OutputImageSpacing[i] = spacing[i];
     this->SpacingSet = 1;
   }
-  const double* GetOutputImageSpacing(void) const
+  const double* GetOutputImageSpacing() const
   {
     return this->OutputImageSpacing;
   }
@@ -81,7 +81,7 @@ public:
       this->OutputImageOrigin[i] = origin[i];
     this->OriginSet = 1;
   }
-  const double* GetOutputImageOrigin(void) const
+  const double* GetOutputImageOrigin() const
   {
     return this->OutputImageOrigin;
   }

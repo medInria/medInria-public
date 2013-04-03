@@ -40,14 +40,14 @@ itkDataTensorImagePlugin::itkDataTensorImagePlugin(QObject *parent) : dtkPlugin(
 
 }
 
-itkDataTensorImagePlugin::~itkDataTensorImagePlugin(void)
+itkDataTensorImagePlugin::~itkDataTensorImagePlugin()
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkDataTensorImagePlugin::initialize(void)
+bool itkDataTensorImagePlugin::initialize()
 {
     if (!itkDataTensorImageDouble3::registered()) { dtkWarn() << "Unable to register itkDataTensorImageDouble3 type"; }
     if (!itkDataTensorImageFloat3::registered())  { dtkWarn() << "Unable to register itkDataTensorImageFloat3 type";  }
@@ -55,33 +55,33 @@ bool itkDataTensorImagePlugin::initialize(void)
     return true;
 }
 
-bool itkDataTensorImagePlugin::uninitialize(void)
+bool itkDataTensorImagePlugin::uninitialize()
 {
     return true;
 }
 
-QString itkDataTensorImagePlugin::name(void) const
+QString itkDataTensorImagePlugin::name() const
 {
     return "itkDataTensorImagePlugin";
 }
 
-QString itkDataTensorImagePlugin::description(void) const
+QString itkDataTensorImagePlugin::description() const
 {
     return "Handle ITK tensor image types";
 }
 
-QStringList itkDataTensorImagePlugin::tags(void) const
+QStringList itkDataTensorImagePlugin::tags() const
 {
     return QStringList() << "itk" << "data" << "tensor" << "image";
 }
 
-QString itkDataTensorImagePlugin::version(void) const
+QString itkDataTensorImagePlugin::version() const
 {
     return ITKDATATENSORIMAGEPLUGIN_VERSION;
 }
 
 
-QStringList itkDataTensorImagePlugin::types(void) const
+QStringList itkDataTensorImagePlugin::types() const
 {
     return QStringList() << "itkDataTensorImageFloat3"
 			 << "itkDataTensorImageDouble3";

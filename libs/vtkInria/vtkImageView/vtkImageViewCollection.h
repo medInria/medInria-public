@@ -262,7 +262,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageViewCollection : public vtkCollection
   /// Description: Synchronize reset between views
   virtual void SyncReset (vtkImageView* caller = NULL);
   /// Description: Synchronize reset between views
-  virtual void SyncStart (void);
+  virtual void SyncStart();
 
   /// Description: Synchronize add dataset
   virtual void SyncAddDataSet (vtkPointSet* arg, vtkProperty* prop = NULL);
@@ -371,7 +371,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageViewCollectionCommand : public vtkCommand
   static vtkImageViewCollectionCommand *New()
     {return new vtkImageViewCollectionCommand;};
 
-  vtkImageViewCollection* GetCollection (void)
+  vtkImageViewCollection* GetCollection()
   { return this->Collection;};
   void SetCollection (vtkImageViewCollection* p);
 

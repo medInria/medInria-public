@@ -39,11 +39,11 @@ class VTK_VISUMANAGEMENT_EXPORT vtkImageMerge: public vtkObject
   vtkSetObjectMacro (Input2, vtkImageData);
   vtkGetObjectMacro (Input2, vtkImageData);
 
-  vtkImageData* GetOutput (void) const
+  vtkImageData* GetOutput() const
   { return Output; }
 
   /** Call this function to compute the data */
-  void Update(void);
+  void Update();
 
  protected:
   

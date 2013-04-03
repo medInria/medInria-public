@@ -14,12 +14,12 @@ class ITKDATATENSORIMAGEREADERPLUGIN_EXPORT itkDataTensorImageReaderBase : publi
     Q_OBJECT
 
 public:
-             itkDataTensorImageReaderBase(void);
-    virtual ~itkDataTensorImageReaderBase(void);
+             itkDataTensorImageReaderBase();
+    virtual ~itkDataTensorImageReaderBase();
 
-    virtual QStringList handled(void) const;
+    virtual QStringList handled() const;
 
-    static QStringList s_handled (void);
+    static QStringList s_handled();
 
 public slots:
     virtual bool canRead (const QString &path);

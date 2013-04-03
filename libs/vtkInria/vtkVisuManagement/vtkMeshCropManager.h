@@ -52,12 +52,12 @@ class VTK_VISUMANAGEMENT_EXPORT vtkMeshCropManagerCallback: public vtkCommand
 
   virtual void Execute ( vtkObject *caller, unsigned long, void* );
 
-  vtkUnstructuredGrid* GetOutput (void) const
+  vtkUnstructuredGrid* GetOutput() const
   { return this->MeshLimiter->GetOutput(); }  
 
-/*   vtkLimitVectorsToVOI* GetMeshLimiter (void) const */
+/*   vtkLimitVectorsToVOI* GetMeshLimiter() const */
 /*   { return this->MeshLimiter; }   */
-  vtkExtractGeometry* GetMeshLimiter (void) const
+  vtkExtractGeometry* GetMeshLimiter() const
   { return this->MeshLimiter; }  
 
   
@@ -107,24 +107,24 @@ class VTK_VISUMANAGEMENT_EXPORT vtkMeshCropManager : public vtkObject
   //ETX
 
   /** Reset the pipeline, deactivate the CP box and release memory.*/
-  void Initialize (void);
+  void Initialize();
   
   /** Set the vtkDataSet input */
   void SetInput (vtkDataSet*);
     
   /** Get the vtkDataSet input */
-  vtkDataSet* GetInput (void) const
+  vtkDataSet* GetInput() const
   { return this->Input; }
 
   /** Set the generated actor */
-  vtkDataSet* GetOutput (void) const
+  vtkDataSet* GetOutput() const
   { return this->Callback->GetOutput(); }
-  vtkPolyData* GetOutput2 (void) const
+  vtkPolyData* GetOutput2() const
   { return this->VectorFilter->GetOutput(); }
-  vtkActor* GetActor(void)
+  vtkActor* GetActor()
   { return this->Actor; }
 
-  vtkRenderWindowInteractor* GetRenderWindowInteractor (void)
+  vtkRenderWindowInteractor* GetRenderWindowInteractor()
   {
     return this->RWin;
   }
@@ -154,14 +154,14 @@ class VTK_VISUMANAGEMENT_EXPORT vtkMeshCropManager : public vtkObject
   }
 
   /** Set the rendering mode to poly lines */
-  void SetRenderingModeToPolyLines (void)
+  void SetRenderingModeToPolyLines()
   {
     this->RenderingMode = RENDER_IS_POLYLINES;
     this->Mapper->SetInput (this->Callback->GetOutput());
   }
 
 /*   /\** Set the rendering mode to tubes *\/ */
-/*   void SetRenderingModeToTubes (void) */
+/*   void SetRenderingModeToTubes() */
 /*   { */
 /*     m_RenderingMode = RENDER_IS_TUBES;     */
 /*     m_TubeFilter->Update(); */
@@ -169,7 +169,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkMeshCropManager : public vtkObject
 /*   } */
 
 /*     /\** Set the rendering mode to tubes *\/ */
-/*   void SetRenderingModeToRibbons (void) */
+/*   void SetRenderingModeToRibbons() */
 /*   { */
 /*     m_RenderingMode = RENDER_IS_RIBBONS; */
 /*     m_RibbonFilter->Update(); */
@@ -179,23 +179,23 @@ class VTK_VISUMANAGEMENT_EXPORT vtkMeshCropManager : public vtkObject
   /** Set the ouput of the callback to ite input. Thus, users
       can extract a subsample of fibers, and then another subsample,
       and so on. */
-  void SwapInputOutput(void);
+  void SwapInputOutput();
 
   /** Reset the fiber manager to its first input. */
-  void Reset (void);
+  void Reset();
 
   /** Switch on/off the visibility of the fibers */
   void SetVisibility (bool);
 
   /** Set the box widget on */
-  void BoxWidgetOn (void)
+  void BoxWidgetOn()
   {
     this->BoxWidgetVisibility = true;
     this->BoxWidget->On();
   }
 
   /** Set the box widget on */
-  void BoxWidgetOff (void)
+  void BoxWidgetOff()
   {
     this->BoxWidgetVisibility = false;
     this->BoxWidget->Off();
@@ -212,7 +212,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkMeshCropManager : public vtkObject
   }
 
   /** Get the box widget visibility */
-  bool GetBoxWidgetVisibility (void) const
+  bool GetBoxWidgetVisibility() const
   { return this->BoxWidgetVisibility; }
 
   /** Set Radius & ribbon width */
@@ -223,7 +223,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkMeshCropManager : public vtkObject
   }
 
 /*   /\** Return the fiber ids selected by the box widget *\/ */
-/*   vtkCellArray* GetSelectedCells (void) const */
+/*   vtkCellArray* GetSelectedCells() const */
 /*   { return this->Callback->GetMeshLimiter()->GetOutput()->GetLines(); } */
   
  protected:

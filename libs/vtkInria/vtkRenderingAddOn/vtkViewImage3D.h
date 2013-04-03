@@ -95,7 +95,7 @@ public:
      In some cases, we would like to call some cleaning
      functions before going into the unregister vtk stuff.
   */
-  virtual void PrepareForDelete (void);
+  virtual void PrepareForDelete();
   
 
   virtual void PrintSelf(ostream& os, vtkIndent indent);
@@ -112,8 +112,8 @@ public:
   */
   virtual void SetWindow (double w);
 
-  virtual void StartWindowing (void);
-  virtual void EndWindowing (void);
+  virtual void StartWindowing();
+  virtual void EndWindowing();
   
   /**
      Set/Get window/level for mapping pixels to colors.
@@ -124,7 +124,7 @@ public:
   /**
      Set the rendering mode to volume rendering (VR).
   */
-  virtual void SetRenderingModeToVR (void)
+  virtual void SetRenderingModeToVR()
   {
     this->SetRenderingMode (VOLUME_RENDERING);
     this->Modified();
@@ -134,7 +134,7 @@ public:
   /**
      Set the rendering mode to planar views.
   */
-  virtual void SetRenderingModeToPlanar (void)
+  virtual void SetRenderingModeToPlanar()
   {
     this->SetRenderingMode (PLANAR_RENDERING);
     this->Modified();
@@ -151,7 +151,7 @@ public:
   /**
    * Set/Get rendering mapper type to texture
    */
-  virtual void SetVRMapperTypeToTexture(void)
+  virtual void SetVRMapperTypeToTexture()
   {
       this->SetVRMapperType(TextureMapper3D);
       this->Modified();
@@ -161,7 +161,7 @@ public:
   /**
    * Set/Get rendering mapper type to GPU
    */
-  virtual void SetVRMapperTypeToGPU(void)
+  virtual void SetVRMapperTypeToGPU()
   {
       this->SetVRMapperType(GPUMapper3D);
       this->Modified();
@@ -178,7 +178,7 @@ public:
   /**
      Center the view and reset the camera clipping range.
   */
-  VTK_LEGACY (virtual void Center (void));
+  VTK_LEGACY (virtual void Center());
   
   
   /**
@@ -236,13 +236,13 @@ public:
   /**
      Change the Ray Cast function to composite (default).
    */  
-  virtual void SetVolumeRayCastFunctionToComposite (void);
+  virtual void SetVolumeRayCastFunctionToComposite();
   
 
   /**
      Change the Ray Cast function to MIP.
    */
-  virtual void SetVolumeRayCastFunctionToMIP (void);
+  virtual void SetVolumeRayCastFunctionToMIP();
   
 
   /**
@@ -256,9 +256,9 @@ public:
   /**
      Presets for VR quality.
    */  
-  virtual void SetVRQualityToLow (void);
-  virtual void SetVRQualityToMed (void);
-  virtual void SetVRQualityToHigh (void);
+  virtual void SetVRQualityToLow();
+  virtual void SetVRQualityToMed();
+  virtual void SetVRQualityToHigh();
   virtual void SetVRQuality (int);
   vtkGetMacro (VRQuality, int);
   
@@ -269,7 +269,7 @@ public:
   
 
   /** Remove the overlapping image */
-  virtual void RemoveOverlappingImage (void);
+  virtual void RemoveOverlappingImage();
 
   
   /**
@@ -281,7 +281,7 @@ public:
   /**
      Returns the Color transfer function object.
    */
-  vtkScalarsToColors* GetColorFunction(void) const;
+  vtkScalarsToColors* GetColorFunction() const;
 
   
   /**
@@ -316,7 +316,7 @@ public:
   vtkGetObjectMacro (BoxWidget, vtkOrientedBoxWidget);
 
   
-  virtual void UpdatePosition (void);
+  virtual void UpdatePosition();
   
 
   /**
@@ -361,11 +361,11 @@ public:
 
   virtual void SetDirectionMatrix (vtkMatrix4x4*);
 
-  virtual void Initialize(void);
-  virtual void Uninitialize(void);
+  virtual void Initialize();
+  virtual void Uninitialize();
 
-  virtual void InitializeInteractor (void);
-  virtual void UninitializeInteractor (void);
+  virtual void InitializeInteractor();
+  virtual void UninitializeInteractor();
   
 protected:
 

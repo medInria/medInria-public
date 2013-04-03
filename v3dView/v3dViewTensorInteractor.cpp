@@ -67,7 +67,7 @@ v3dViewTensorInteractor::~v3dViewTensorInteractor()
     d = 0;
 }
 
-QString v3dViewTensorInteractor::description(void) const
+QString v3dViewTensorInteractor::description() const
 {
     return tr("Interactor helping display Tensors");
 }
@@ -77,12 +77,12 @@ QString v3dViewTensorInteractor::identifier() const
     return "v3dViewTensorInteractor";
 }
 
-QStringList v3dViewTensorInteractor::handled(void) const
+QStringList v3dViewTensorInteractor::handled() const
 {
     return QStringList () << "v3dView";
 }
 
-bool v3dViewTensorInteractor::registered(void)
+bool v3dViewTensorInteractor::registered()
 {
     return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewTensorInteractor", QStringList() << "v3dView", createV3dViewTensorInteractor);
 }
@@ -168,7 +168,7 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
     }
 }
 
-dtkAbstractData *v3dViewTensorInteractor::data (void)
+dtkAbstractData *v3dViewTensorInteractor::data()
 {
     return d->data;
 }
@@ -193,12 +193,12 @@ void v3dViewTensorInteractor::setView(dtkAbstractView *view)
     }
 }
 
-dtkAbstractView *v3dViewTensorInteractor::view (void)
+dtkAbstractView *v3dViewTensorInteractor::view()
 {
     return d->view;
 }
 
-void v3dViewTensorInteractor::enable(void)
+void v3dViewTensorInteractor::enable()
 {
     if (this->enabled())
         return;
@@ -206,7 +206,7 @@ void v3dViewTensorInteractor::enable(void)
     dtkAbstractViewInteractor::enable();
 }
 
-void v3dViewTensorInteractor::disable(void)
+void v3dViewTensorInteractor::disable()
 {
     if (!this->enabled())
         return;
@@ -355,7 +355,7 @@ void v3dViewTensorInteractor::onPositionChanged(const QVector3D& position, bool 
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractViewInteractor *createV3dViewTensorInteractor(void)
+dtkAbstractViewInteractor *createV3dViewTensorInteractor()
 {
     return new v3dViewTensorInteractor;
 }

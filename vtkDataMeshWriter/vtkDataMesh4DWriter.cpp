@@ -21,12 +21,12 @@ vtkDataMesh4DWriter::~vtkDataMesh4DWriter()
   this->writer->Delete();
 }
 
-QStringList vtkDataMesh4DWriter::handled(void) const
+QStringList vtkDataMesh4DWriter::handled() const
 {
     return QStringList() << "vtkDataMesh4D";
 }
 
-QStringList vtkDataMesh4DWriter::s_handled(void)
+QStringList vtkDataMesh4DWriter::s_handled()
 {
     return QStringList() << "vtkDataMesh4D";
 }
@@ -67,17 +67,17 @@ bool vtkDataMesh4DWriter::write(const QString& path)
   return true;
 }
 
-QString vtkDataMesh4DWriter::description( void ) const
+QString vtkDataMesh4DWriter::description() const
 {
     return tr( "VTK 4D Mesh Writer" );
 }
 
-QString vtkDataMesh4DWriter::identifier( void ) const
+QString vtkDataMesh4DWriter::identifier() const
 {
     return ID;
 }
 
-bool vtkDataMesh4DWriter::registered(void)
+bool vtkDataMesh4DWriter::registered()
 {
   return dtkAbstractDataFactory::instance()->registerDataWriterType("vtkDataMesh4DWriter", vtkDataMesh4DWriter::s_handled(), createVtkDataMesh4DWriter);
 }
@@ -86,7 +86,7 @@ bool vtkDataMesh4DWriter::registered(void)
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createVtkDataMesh4DWriter(void)
+dtkAbstractDataWriter *createVtkDataMesh4DWriter()
 {
   return new vtkDataMesh4DWriter;
 }

@@ -140,7 +140,7 @@ vtkVectorVisuManager::~vtkVectorVisuManager()
 }
 
 
-void vtkVectorVisuManager::ProvideColorsToVectors (void)
+void vtkVectorVisuManager::ProvideColorsToVectors()
 {
   if(!this->Input)
     return;
@@ -189,7 +189,7 @@ void vtkVectorVisuManager::ProvideColorsToVectors (void)
 }
 
 
-void vtkVectorVisuManager::NormalizeVectors (void)
+void vtkVectorVisuManager::NormalizeVectors()
 {
   bool is_in_points = true;
   
@@ -355,7 +355,7 @@ void vtkVectorVisuManager::SetVisibility (bool isVisible)
     this->SetBoxWidget (this->BoxWidgetVisibility);
 }
 
-void vtkVectorVisuManager::Initialize (void)
+void vtkVectorVisuManager::Initialize()
 {
   if (this->Callback->GetVectorLimiter()->GetOutput())
     this->Callback->GetVectorLimiter()->GetOutput()->Initialize();
@@ -366,7 +366,7 @@ void vtkVectorVisuManager::Initialize (void)
 }
 
 
-void vtkVectorVisuManager::ParseVectorFromCellsToPoints (void)
+void vtkVectorVisuManager::ParseVectorFromCellsToPoints()
 {
   vtkFloatArray* vectors = vtkFloatArray::SafeDownCast (this->Input->GetPointData()->GetVectors());
   if (vectors)

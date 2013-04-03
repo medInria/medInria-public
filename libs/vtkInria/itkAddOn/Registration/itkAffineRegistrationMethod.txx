@@ -211,7 +211,7 @@ AffineRegistrationMethod<TImage>
 template <typename TImage>
 unsigned int
 AffineRegistrationMethod<TImage>
-::GetRegistrationNumberOfLevels (void) const
+::GetRegistrationNumberOfLevels() const
 {
   return this->Parameters.NumberOfLevels;
 }
@@ -234,7 +234,7 @@ AffineRegistrationMethod<TImage>
 template <typename TImage>
 const unsigned int*
 AffineRegistrationMethod<TImage>
-::GetRegistrationNumberOfIterationsList (void) const
+::GetRegistrationNumberOfIterationsList() const
 {
   
   return this->Parameters.NumberOfIterationList;
@@ -260,7 +260,7 @@ AffineRegistrationMethod<TImage>
 template <typename TImage>
 double
 AffineRegistrationMethod<TImage>
-::GetTranslationScale (void) const
+::GetTranslationScale() const
 {
   return this->Parameters.OptimizationScale;
 }

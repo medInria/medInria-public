@@ -27,14 +27,14 @@ itkProcessRegistrationDiffeomorphicDemonsPlugin::itkProcessRegistrationDiffeomor
 
 }
 
-itkProcessRegistrationDiffeomorphicDemonsPlugin::~itkProcessRegistrationDiffeomorphicDemonsPlugin(void)
+itkProcessRegistrationDiffeomorphicDemonsPlugin::~itkProcessRegistrationDiffeomorphicDemonsPlugin()
 {
     delete d;
 
     d = NULL;
 }
 
-bool itkProcessRegistrationDiffeomorphicDemonsPlugin::initialize(void)
+bool itkProcessRegistrationDiffeomorphicDemonsPlugin::initialize()
 {
     if (!itkProcessRegistrationDiffeomorphicDemons::registered())        { dtkWarn() << "Unable to register itkProcessRegistrationDiffeomorphicDemons type";    }
     if (!itkProcessRegistrationDiffeomorphicDemonsToolBox::registered()) { dtkWarn() << "Unable to register itkProcessRegistrationDiffeomorphicDemons toolbox"; }
@@ -42,42 +42,42 @@ bool itkProcessRegistrationDiffeomorphicDemonsPlugin::initialize(void)
     return true;
 }
 
-bool itkProcessRegistrationDiffeomorphicDemonsPlugin::uninitialize(void)
+bool itkProcessRegistrationDiffeomorphicDemonsPlugin::uninitialize()
 {
     return true;
 }
 
-QString itkProcessRegistrationDiffeomorphicDemonsPlugin::name(void) const
+QString itkProcessRegistrationDiffeomorphicDemonsPlugin::name() const
 {
     return "itkProcessRegistrationDiffeomorphicDemonsPlugin";
 }
 
-QString itkProcessRegistrationDiffeomorphicDemonsPlugin::contact(void) const
+QString itkProcessRegistrationDiffeomorphicDemonsPlugin::contact() const
 {
     return QString::fromUtf8("benoit.bleuze@inria.fr");
 }
 
-QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::authors(void) const
+QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::authors() const
 {
     QStringList list;
     list << QString::fromUtf8("Benoît Bleuzé");
     return list;
 }
 
-QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::contributors(void) const
+QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::contributors() const
 {
     QStringList list;
     list <<  "Vincent Garcia";
     return list;
 }
 
-QString itkProcessRegistrationDiffeomorphicDemonsPlugin::description(void) const
+QString itkProcessRegistrationDiffeomorphicDemonsPlugin::description() const
 {
     return tr("Applies the diffeomorphic demons as they can be found in itk. Converts any type of image to float before applying the change, since the diffeomorphic demons only work on float images <br/> see: <a href=\"http://www.insight-journal.org/browse/publication/154\" > http://www.insight-journal.org/browse/publication/154 </a>");
 }
 
 
-QString itkProcessRegistrationDiffeomorphicDemonsPlugin::version(void) const
+QString itkProcessRegistrationDiffeomorphicDemonsPlugin::version() const
 {
     return ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_VERSION;
 }
@@ -88,13 +88,13 @@ QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::dependencies() cons
 }
 
 
-QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::tags(void) const
+QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::tags() const
 {
     return QStringList();
 }
 
 
-QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::types(void) const
+QStringList itkProcessRegistrationDiffeomorphicDemonsPlugin::types() const
 {
     return QStringList() << "itkProcessRegistrationDiffeomorphicDemons";
 }

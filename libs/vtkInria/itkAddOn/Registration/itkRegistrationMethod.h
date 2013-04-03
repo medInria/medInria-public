@@ -100,7 +100,7 @@ public:
   /** Set/Get the name (description name) of this method */
   void SetName (const char* name)
   { m_Name = name; }
-  const char* GetName (void) const
+  const char* GetName() const
   { return m_Name; }
   
   /** Set/Get the Fixed image. */
@@ -124,7 +124,7 @@ public:
   itkGetConstReferenceMacro( LastTransformParameters, ParametersType );
 
   /** Initialize by setting the interconnects between the components. */
-  virtual void Initialize(void);
+  virtual void Initialize();
 
   void SetInitialTransform (TransformConstPointerType transform);
   itkGetConstObjectMacro( InitialTransform, TransformType );

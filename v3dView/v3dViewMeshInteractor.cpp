@@ -70,7 +70,7 @@ v3dViewMeshInteractor::~v3dViewMeshInteractor()
 }
 
 
-QString v3dViewMeshInteractor::description(void) const
+QString v3dViewMeshInteractor::description() const
 {
     return tr("Interactor displaying Meshes");
 }
@@ -82,13 +82,13 @@ QString v3dViewMeshInteractor::identifier() const
 }
 
 
-QStringList v3dViewMeshInteractor::handled(void) const
+QStringList v3dViewMeshInteractor::handled() const
 {
     return QStringList () << v3dView::s_identifier();
 }
 
 
-bool v3dViewMeshInteractor::registered(void)
+bool v3dViewMeshInteractor::registered()
 {
     return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewMeshInteractor", QStringList() << v3dView::s_identifier(), createV3dViewMeshInteractor);
 }
@@ -119,7 +119,7 @@ void v3dViewMeshInteractor::setView(dtkAbstractView *view)
 }
 
 
-void v3dViewMeshInteractor::enable(void)
+void v3dViewMeshInteractor::enable()
 {
     dtkWarn() << "enabling v3dViewMeshInteractor";
     if (this->enabled())
@@ -129,7 +129,7 @@ void v3dViewMeshInteractor::enable(void)
 }
 
 
-void v3dViewMeshInteractor::disable(void)
+void v3dViewMeshInteractor::disable()
 {
     if (!this->enabled())
         return;
@@ -477,7 +477,7 @@ void v3dViewMeshInteractor::setLut(int meshLayer, vtkLookupTable * lut)
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractViewInteractor *createV3dViewMeshInteractor(void)
+dtkAbstractViewInteractor *createV3dViewMeshInteractor()
 {
     return new v3dViewMeshInteractor;
 }

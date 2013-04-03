@@ -212,7 +212,7 @@ vtkImageClippingPlane::~vtkImageClippingPlane()
 // -----------------------------------------------------------------------------
 // CreateClippingPlane
 
-void vtkImageClippingPlane::CreateClippingPlane(void)
+void vtkImageClippingPlane::CreateClippingPlane()
 {
 
   if ( !this->IRen1 || !this->IRen2 || !this->IRen3 || !this->IRen4 )

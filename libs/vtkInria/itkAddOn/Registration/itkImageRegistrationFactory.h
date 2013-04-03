@@ -110,7 +110,7 @@ namespace itk
 	the reference image size and spacing */
     void SetInterpolationStyle (unsigned int style)
     { m_InterpolationStyle = style; }
-    unsigned int GetInterpolationStyle (void) const
+    unsigned int GetInterpolationStyle() const
     { return m_InterpolationStyle; }
 
     

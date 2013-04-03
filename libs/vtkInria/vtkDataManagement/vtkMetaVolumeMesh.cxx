@@ -58,7 +58,7 @@ vtkMetaVolumeMesh::~vtkMetaVolumeMesh()
 }
 
 //----------------------------------------------------------------------------
-void vtkMetaVolumeMesh::Initialize (void)
+void vtkMetaVolumeMesh::Initialize()
 {
   this->Superclass::Initialize();
   
@@ -77,7 +77,7 @@ void vtkMetaVolumeMesh::Initialize (void)
 }
 
 //----------------------------------------------------------------------------
-vtkUnstructuredGrid* vtkMetaVolumeMesh::GetUnstructuredGrid (void) const
+vtkUnstructuredGrid* vtkMetaVolumeMesh::GetUnstructuredGrid() const
 {
   if (!this->DataSet)
     return NULL;

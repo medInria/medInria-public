@@ -16,17 +16,17 @@ class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkDataImageWriterPlugin: public dtkPlugin
 
 public:
             itkDataImageWriterPlugin(QObject *parent = 0);
-    ~itkDataImageWriterPlugin(void);
+    ~itkDataImageWriterPlugin();
 
-    virtual bool initialize(void);
-    virtual bool uninitialize(void);
+    virtual bool initialize();
+    virtual bool uninitialize();
 
-    virtual QString name(void) const;
-    virtual QString description(void) const;
-    virtual QString version(void) const;
+    virtual QString name() const;
+    virtual QString description() const;
+    virtual QString version() const;
 
-    virtual QStringList tags(void) const;
-    virtual QStringList types(void) const;
+    virtual QStringList tags() const;
+    virtual QStringList types() const;
 
 private:
     itkDataImageWriterPluginPrivate *d;

@@ -105,7 +105,7 @@ class VTK_EXPORT vtkImageClippingPlane : public vtkObject
   void GetMask(vtkImageData* image);
 
   /// Create the clipping plane
-  void CreateClippingPlane(void);
+  void CreateClippingPlane();
 
  private:
 

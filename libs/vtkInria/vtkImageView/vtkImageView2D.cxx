@@ -420,7 +420,7 @@ int vtkImageView2D::GetSliceMax() const
 }
 
 //----------------------------------------------------------------------------
-int vtkImageView2D::GetSlice (void) const
+int vtkImageView2D::GetSlice() const
 {
   return this->Slice;
 }
@@ -760,7 +760,7 @@ void vtkImageView2D::SetOrientationMatrix (vtkMatrix4x4* matrix)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::InitializeSlicePlane(void)
+void vtkImageView2D::InitializeSlicePlane()
 {
   vtkPoints* points = vtkPoints::New();
   this->SlicePlane->SetPoints (points);
@@ -908,7 +908,7 @@ int vtkImageView2D::GetViewOrientationFromSliceOrientation(int sliceorientation,
 
 
 //----------------------------------------------------------------------------
-int vtkImageView2D::SetCameraFromOrientation(void)
+int vtkImageView2D::SetCameraFromOrientation()
 {
   // We entirely rely on the slice orientation this->SliceOrientation
   // The ViewOrientation is "estimated", returned as id
@@ -1006,7 +1006,7 @@ void vtkImageView2D::SetAnnotationStyle(unsigned int arg)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::SetAnnotationsFromOrientation(void)
+void vtkImageView2D::SetAnnotationsFromOrientation()
 {
   // This method has to be called after the camera
   // has been set according to orientation and convention.
@@ -1134,7 +1134,7 @@ void vtkImageView2D::SetAnnotationsFromOrientation(void)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::SetSlicePlaneFromOrientation(void)
+void vtkImageView2D::SetSlicePlaneFromOrientation()
 {
   if (this->ViewOrientation < VIEW_ORIENTATION_SAGITTAL || this->ViewOrientation > VIEW_ORIENTATION_AXIAL)
     return;
@@ -1157,7 +1157,7 @@ void vtkImageView2D::SetSlicePlaneFromOrientation(void)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::UpdateSlicePlane (void)
+void vtkImageView2D::UpdateSlicePlane()
 {
   if( !this->GetInput() ) // if input is not set yet, no way we can now the display bounds
     return;
@@ -1185,7 +1185,7 @@ void vtkImageView2D::UpdateSlicePlane (void)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::UpdateCenter (void)
+void vtkImageView2D::UpdateCenter()
 {
   if (!this->GetInput())
     return;
@@ -1322,7 +1322,7 @@ void vtkImageView2D::GetPan (double pan[2])
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::ResetCamera (void)
+void vtkImageView2D::ResetCamera()
 {
   this->Superclass::ResetCamera();
   // this->SetZoom (1.0); // already called in Superclass method
@@ -1331,7 +1331,7 @@ void vtkImageView2D::ResetCamera (void)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::Reset (void)
+void vtkImageView2D::Reset()
 {
   this->Superclass::Reset();
   this->UpdateDisplayExtent();
@@ -1939,7 +1939,7 @@ void vtkImageView2D::RemoveLayer(int layer)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView2D::RemoveAllLayers (void)
+void vtkImageView2D::RemoveAllLayers()
 {
   while ( this->LayerInfoVec.size()>1 )
   {
@@ -1948,7 +1948,7 @@ void vtkImageView2D::RemoveAllLayers (void)
 }
 
 //----------------------------------------------------------------------------
-int vtkImageView2D::GetNumberOfLayers(void) const
+int vtkImageView2D::GetNumberOfLayers() const
 {
   return this->LayerInfoVec.size();
 }

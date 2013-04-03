@@ -52,13 +52,13 @@ namespace rpi
         /**
          * Class constructor.
          */
-        %1(void);
+        %1();
         
         
         /**
          * Class destructor.
          */
-        virtual ~%1(void);
+        virtual ~%1();
         
         
         /**
@@ -69,7 +69,7 @@ namespace rpi
         /**
          * Performs the image registration. Must be called before GetTransformation().
          */
-        virtual void StartRegistration(void);
+        virtual void StartRegistration();
         
     };
     

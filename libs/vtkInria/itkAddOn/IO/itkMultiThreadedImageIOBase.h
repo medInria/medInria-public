@@ -59,7 +59,7 @@ namespace itk
     virtual void SetFileNames (FileNameVectorType filenames);
 
     
-    virtual FileNameVectorType GetFileNames (void) const
+    virtual FileNameVectorType GetFileNames() const
     { return m_FileNames; }
 
     

@@ -100,7 +100,7 @@ bool itkDataImageWriterBase::write(const QString& path)
     return true;
 }
 
-QStringList itkDataImageWriterBase::supportedFileExtensions( void ) const
+QStringList itkDataImageWriterBase::supportedFileExtensions() const
 {
     QStringList ret;
 

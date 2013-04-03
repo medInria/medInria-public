@@ -102,13 +102,13 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
      Access directly to the itk image in float scalar component type
      For other use please refer to templated method GetItkImage()
   */
-  itk::ImageBase<3>* GetItkImage (void);
+  itk::ImageBase<3>* GetItkImage();
   /**
      Access to the DICOM dictionary of this image
      Note that this dictionary is not filled automatically when ITK image is set.
      You have to explicitally call SetDicomDictionary() for that
   */
-  DictionaryType GetDicomDictionary (void)
+  DictionaryType GetDicomDictionary()
   { return this->DicomDictionary; }
   /**
      Set the DICOM dictionary of this image.
@@ -123,7 +123,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
      Note that this dictionary is not filled automatically when ITK image is set.
      You have to explicitally call SetDicomDictionary() for that
   */
-  DicomEntryList GetDicomEntryList (void)
+  DicomEntryList GetDicomEntryList()
   { return this->DicomTagList; }
   /**
      Set the DICOM tag list of this image.
@@ -420,12 +420,12 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
   /**
      Get mehtod to get the vtkDataSet as an vtkImageData
   */
-  vtkImageData* GetImageData (void) const;
+  vtkImageData* GetImageData() const;
 
   /**
      Get the type of the metadataset as string
   */
-  virtual const char* GetDataSetType (void) const
+  virtual const char* GetDataSetType() const
   {
     return "ImageData";
   }
@@ -435,7 +435,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
   
   static unsigned int CanReadFile (const char* filename);
 
-  unsigned long GetComponentType (void);
+  unsigned long GetComponentType();
   
  protected:
   vtkMetaImageData();

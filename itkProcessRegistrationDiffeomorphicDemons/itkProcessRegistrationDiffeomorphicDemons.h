@@ -26,14 +26,14 @@ public:
      *
      * @param void
      */
-    itkProcessRegistrationDiffeomorphicDemons(void);
+    itkProcessRegistrationDiffeomorphicDemons();
 
     /**
      * @brief
      *
      * @param void
     */
-    virtual ~itkProcessRegistrationDiffeomorphicDemons(void);
+    virtual ~itkProcessRegistrationDiffeomorphicDemons();
 
     /**
      * @brief Description of the plugin.
@@ -41,7 +41,7 @@ public:
      * @param void
      * @return QString
      */
-    virtual QString description(void) const;
+    virtual QString description() const;
 
     /**
      * @brief Identifier of the plugin.
@@ -49,7 +49,7 @@ public:
      * @param void
      * @return QString
      */
-    virtual QString identifier(void) const;
+    virtual QString identifier() const;
 
     /**
      * @brief tries to register the process with the factory.
@@ -57,7 +57,7 @@ public:
      * @param void
      * @return bool true if it succeeded, false otherwise.
     */
-    static bool registered(void);
+    static bool registered();
 
 public:
     /**
@@ -140,6 +140,6 @@ private:
  *
  * @param void
 */
-dtkAbstractProcess *createitkProcessRegistrationDiffeomorphicDemons(void);
+dtkAbstractProcess *createitkProcessRegistrationDiffeomorphicDemons();
 
 

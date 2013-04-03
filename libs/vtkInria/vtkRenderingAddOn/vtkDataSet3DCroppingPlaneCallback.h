@@ -44,7 +44,7 @@ class VTK_RENDERINGADDON_EXPORT vtkDataSet3DCroppingPlaneCallback: public vtkCom
     this->PlaneWidget = widget;
   }
 
-  vtkPlane* GetPlane(void)
+  vtkPlane* GetPlane()
   {
     return this->Plane;
   }

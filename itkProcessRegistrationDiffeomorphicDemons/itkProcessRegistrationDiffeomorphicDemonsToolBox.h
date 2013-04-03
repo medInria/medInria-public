@@ -29,13 +29,13 @@ class itkProcessRegistrationDiffeomorphicDemonsToolBox : public medRegistrationA
 
 public:
      itkProcessRegistrationDiffeomorphicDemonsToolBox(QWidget *parentToolBox = 0);
-    ~itkProcessRegistrationDiffeomorphicDemonsToolBox(void);
+    ~itkProcessRegistrationDiffeomorphicDemonsToolBox();
 
 public:
-    static bool registered(void);
+    static bool registered();
 
 public slots:
-    void run(void);
+    void run();
 
 private:
     itkProcessRegistrationDiffeomorphicDemonsToolBoxPrivate *d;

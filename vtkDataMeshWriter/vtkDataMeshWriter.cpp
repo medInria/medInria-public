@@ -17,12 +17,12 @@ vtkDataMeshWriter::~vtkDataMeshWriter()
 {
 }
 
-QStringList vtkDataMeshWriter::handled(void) const
+QStringList vtkDataMeshWriter::handled() const
 {
     return QStringList() << "vtkDataMesh";
 }
 
-QStringList vtkDataMeshWriter::s_handled(void)
+QStringList vtkDataMeshWriter::s_handled()
 {
     return QStringList() << "vtkDataMesh";
 }
@@ -55,17 +55,17 @@ bool vtkDataMeshWriter::write(const QString& path)
   return true;
 }
 
-QString vtkDataMeshWriter::description(void) const
+QString vtkDataMeshWriter::description() const
 {
     return tr( "VTK Mesh Writer" );
 }
 
-QString vtkDataMeshWriter::identifier(void) const
+QString vtkDataMeshWriter::identifier() const
 {
     return ID;
 }
 
-bool vtkDataMeshWriter::registered(void)
+bool vtkDataMeshWriter::registered()
 {
   return dtkAbstractDataFactory::instance()->registerDataWriterType("vtkDataMeshWriter", vtkDataMeshWriter::s_handled(), createVtkDataMeshWriter);
 }
@@ -74,7 +74,7 @@ bool vtkDataMeshWriter::registered(void)
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createVtkDataMeshWriter(void)
+dtkAbstractDataWriter *createVtkDataMeshWriter()
 {
   return new vtkDataMeshWriter;
 }

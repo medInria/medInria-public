@@ -121,7 +121,7 @@ public:
         {this->SetInterpolationType(VTK_NEAREST_INTERPOLATION);};
   void SetInterpolationTypeToLinear() 
         {this->SetInterpolationType(VTK_LINEAR_INTERPOLATION);};
-  //const char *GetInterpolationTypeAsString(void);
+  //const char *GetInterpolationTypeAsString();
 
   void SetMinTupleSize(int tupleSize);
 

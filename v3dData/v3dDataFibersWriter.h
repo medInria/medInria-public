@@ -11,18 +11,18 @@ class V3DDATAPLUGIN_EXPORT v3dDataFibersWriter : public dtkAbstractDataWriter
     Q_OBJECT
 
 public:
-             v3dDataFibersWriter(void);
-    virtual ~v3dDataFibersWriter(void);
+             v3dDataFibersWriter();
+    virtual ~v3dDataFibersWriter();
 
-    virtual QStringList handled(void) const;
+    virtual QStringList handled() const;
     
-    virtual QString identifier(void)  const;
-    virtual QString description(void) const;
+    virtual QString identifier()  const;
+    virtual QString description() const;
 
-    static bool registered(void);
+    static bool registered();
 
     /** Override base class */
-    virtual QStringList supportedFileExtensions(void) const;
+    virtual QStringList supportedFileExtensions() const;
 
 public slots:
     bool write    (const QString& path);
@@ -33,6 +33,6 @@ public slots:
 };
 
 
-dtkAbstractDataWriter *createV3dDataFibersWriter(void);
+dtkAbstractDataWriter *createV3dDataFibersWriter();
 
 

@@ -164,7 +164,7 @@ namespace itk
        
        ######## NOT SUPPORTED ############ 
     */
-    virtual const ParametersType& GetParameters(void) const
+    virtual const ParametersType& GetParameters() const
     {
       itkExceptionMacro ("this type of transform does not handle any parameters yet !");
     }
@@ -228,7 +228,7 @@ namespace itk
        Set the transform to identity. Basically remove (and unregister)
        the displacement field from the transform
     */
-    virtual void SetIdentity(void)
+    virtual void SetIdentity()
     {
       m_DisplacementField = NULL;
     }

@@ -61,7 +61,7 @@ public:
 // itkProcessRegistration
 // /////////////////////////////////////////////////////////////////
 
-itkProcessRegistration::itkProcessRegistration(void) : dtkAbstractProcess(), d(new itkProcessRegistrationPrivate)
+itkProcessRegistration::itkProcessRegistration() : dtkAbstractProcess(), d(new itkProcessRegistrationPrivate)
 {
     d->fixedImage = NULL;
     d->output = NULL;
@@ -74,7 +74,7 @@ itkProcessRegistration::itkProcessRegistration(void) : dtkAbstractProcess(), d(n
     this->addMetaData("category","registration");
 }
 
-itkProcessRegistration::~itkProcessRegistration(void)
+itkProcessRegistration::~itkProcessRegistration()
 {
     delete d;
     d = 0;
@@ -346,7 +346,7 @@ int itkProcessRegistration::update(itkProcessRegistration::ImageType)
 }
 
 
-int itkProcessRegistration::update(void)
+int itkProcessRegistration::update()
 {
     if (!d->mutex.tryLock())
     {
@@ -361,7 +361,7 @@ int itkProcessRegistration::update(void)
     return retval;
 }
 
-dtkAbstractData *itkProcessRegistration::output(void)
+dtkAbstractData *itkProcessRegistration::output()
 {
     return d->output;
 }

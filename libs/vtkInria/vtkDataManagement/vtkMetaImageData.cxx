@@ -70,7 +70,7 @@ void vtkMetaImageData::SetDataSet(vtkDataSet* dataset)
 }
 
 //----------------------------------------------------------------------------
-vtkImageData* vtkMetaImageData::GetImageData (void) const
+vtkImageData* vtkMetaImageData::GetImageData() const
 {
   if (!this->DataSet)
     return NULL;
@@ -151,7 +151,7 @@ unsigned int vtkMetaImageData::CanReadFile (const char* filename)
 }
 
 
-unsigned long vtkMetaImageData::GetComponentType (void)
+unsigned long vtkMetaImageData::GetComponentType()
 {
   if (!this->GetImageData())
     return 0;
@@ -162,7 +162,7 @@ unsigned long vtkMetaImageData::GetComponentType (void)
 
 
 
-itk::ImageBase<3>* vtkMetaImageData::GetItkImage(void)
+itk::ImageBase<3>* vtkMetaImageData::GetItkImage()
 {
   if (!this->GetImageData())
   {

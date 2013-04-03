@@ -393,7 +393,7 @@ void vtkLandmarkManager::AddLandmark (vtkLandmark* landmark)
 }
 
 
-vtkLandmark* vtkLandmarkManager::CreateAndAddLandmark (void)
+vtkLandmark* vtkLandmarkManager::CreateAndAddLandmark()
 {
 
   if( !this->ViewList->GetNumberOfItems() )
@@ -544,7 +544,7 @@ void vtkLandmarkManager::AddSphereWidgetToLandmark (vtkLandmark* landmark)
 }
 
 
-void vtkLandmarkManager::RemoveAllLandmarks(void)
+void vtkLandmarkManager::RemoveAllLandmarks()
 {
 
   for (int i=0; i<this->LandmarkList->GetNumberOfItems(); i++)
@@ -648,14 +648,14 @@ void vtkLandmarkManager::RemoveView (vtkImageView* view)
 }
 
 
-void vtkLandmarkManager::RemoveAllViews (void)
+void vtkLandmarkManager::RemoveAllViews()
 {
   this->ViewList->RemoveAllItems();
 }
 
 
 
-vtkImageView* vtkLandmarkManager::GetFirstView (void)
+vtkImageView* vtkLandmarkManager::GetFirstView()
 {
   vtkImageView* view = vtkImageView::SafeDownCast (this->ViewList->GetItemAsObject (0));
   return view;  
@@ -675,7 +675,7 @@ vtkLandmark* vtkLandmarkManager::GetLandmark (unsigned int i)
   return vtkLandmark::SafeDownCast (this->LandmarkList->GetItemAsObject (i));
 }
 
-vtkLandmark* vtkLandmarkManager::GetLastLandmark (void)
+vtkLandmark* vtkLandmarkManager::GetLastLandmark()
 {
   if (!this->GetNumberOfLandmarks())
     return NULL;
@@ -695,7 +695,7 @@ vtkLandmark* vtkLandmarkManager::FindLandmark(const char* name)
   return NULL;
 }
   
-void vtkLandmarkManager::ShowAll(void)
+void vtkLandmarkManager::ShowAll()
 {
   for (int j=0; j<this->ViewList->GetNumberOfItems(); j++)
   {
@@ -710,7 +710,7 @@ void vtkLandmarkManager::ShowAll(void)
   }
 }
 
-void vtkLandmarkManager::HideAll(void)
+void vtkLandmarkManager::HideAll()
 {
   for (int j=0; j<this->ViewList->GetNumberOfItems(); j++)
   {
@@ -736,7 +736,7 @@ void vtkLandmarkManager::ScaleAll (double scale)
   this->Scale = scale;
 }
 
-void vtkLandmarkManager::InteractionOn(void)
+void vtkLandmarkManager::InteractionOn()
 {
   for (int i=0; i<this->ViewList->GetNumberOfItems(); i++)
   {
@@ -761,7 +761,7 @@ void vtkLandmarkManager::InteractionOn(void)
   }
 }
 
-void vtkLandmarkManager::InteractionOff(void)
+void vtkLandmarkManager::InteractionOff()
 {
   for (int i=0; i<this->ViewList->GetNumberOfItems(); i++)
   {
@@ -806,7 +806,7 @@ void vtkLandmarkManager::SelectLandmark(vtkLandmark* landmark)
 }
 
 
-vtkLandmark* vtkLandmarkManager::GetFirstSelectedLandmark (void)
+vtkLandmark* vtkLandmarkManager::GetFirstSelectedLandmark()
 {
   for (unsigned int i=0; i<this->GetNumberOfLandmarks(); i++)
   {
@@ -887,7 +887,7 @@ void vtkLandmarkManager::AddLandmarkToLinker (vtkLandmark* landmark)
 }
 
 
-void vtkLandmarkManager::LinkerOn(void)
+void vtkLandmarkManager::LinkerOn()
 {
   this->LinkerVisibility = true;
   
@@ -904,7 +904,7 @@ void vtkLandmarkManager::LinkerOn(void)
 
 }
 
-void vtkLandmarkManager::LinkerOff(void)
+void vtkLandmarkManager::LinkerOff()
 {
   this->LinkerVisibility = false;
   
@@ -920,7 +920,7 @@ void vtkLandmarkManager::LinkerOff(void)
   }
 }
 
-void vtkLandmarkManager::UpdateLinker(void)
+void vtkLandmarkManager::UpdateLinker()
 {
   if (!this->LinkerVisibility)
     return;

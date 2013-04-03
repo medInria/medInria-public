@@ -130,7 +130,7 @@ itkGDCMDataImageReaderPrivate::itkGDCMDataImageReaderPrivate()
     io = itk::GDCMImageIO::New();
 }
 
-itkGDCMDataImageReader::itkGDCMDataImageReader(void) : dtkAbstractDataReader(), d(new itkGDCMDataImageReaderPrivate)
+itkGDCMDataImageReader::itkGDCMDataImageReader() : dtkAbstractDataReader(), d(new itkGDCMDataImageReaderPrivate)
 {
     this->m_Scanner.AddTag( gdcm::Tag(0x0010,0x0010) );
     this->m_Scanner.AddTag( gdcm::Tag(0x0008,0x0130) );
@@ -150,14 +150,14 @@ itkGDCMDataImageReader::itkGDCMDataImageReader(void) : dtkAbstractDataReader(), 
 }
 
 
-itkGDCMDataImageReader::~itkGDCMDataImageReader(void)
+itkGDCMDataImageReader::~itkGDCMDataImageReader()
 {
     delete d;
     d = 0;
 }
 
 
-bool itkGDCMDataImageReader::registered(void)
+bool itkGDCMDataImageReader::registered()
 {
     return dtkAbstractDataFactory::instance()->registerDataReaderType(
                 "itkGDCMDataImageReader",
@@ -184,7 +184,7 @@ bool itkGDCMDataImageReader::registered(void)
 }
 
 
-QStringList itkGDCMDataImageReader::handled(void) const
+QStringList itkGDCMDataImageReader::handled() const
 {
     return QStringList() << "itkDataImageDouble3"
                          << "itkDataImageFloat3"
@@ -664,7 +664,7 @@ void itkGDCMDataImageReader::setProgress (int value)
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkGDCMDataImageReader(void)
+dtkAbstractDataReader *createItkGDCMDataImageReader()
 {
     return new itkGDCMDataImageReader;
 }

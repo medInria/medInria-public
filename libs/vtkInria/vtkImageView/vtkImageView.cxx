@@ -543,7 +543,7 @@ void vtkImageView::SetCurrentPoint (double pos[3])
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::ResetCurrentPoint (void)
+void vtkImageView::ResetCurrentPoint()
 {
   if (!this->GetInput())
     return;
@@ -1191,19 +1191,19 @@ int* vtkImageView::GetSize() const
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::Enable (void)
+void vtkImageView::Enable()
 {
   if (this->Interactor)
     this->Interactor->Enable();
 }
 //----------------------------------------------------------------------------
-void vtkImageView::Disable (void)
+void vtkImageView::Disable()
 {
   if (this->Interactor)
     this->Interactor->Disable();
 }
 //----------------------------------------------------------------------------
-int vtkImageView::GetEnabled (void) const
+int vtkImageView::GetEnabled() const
 {
   if (this->Interactor)
     return this->Interactor->GetEnabled();
@@ -1211,7 +1211,7 @@ int vtkImageView::GetEnabled (void) const
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::Start (void)
+void vtkImageView::Start()
 {
   if (this->Interactor)
     this->Interactor->Start();
@@ -1265,7 +1265,7 @@ void vtkImageView::SetZoom (double arg)
 }
 
 //----------------------------------------------------------------------------
-double vtkImageView::GetZoom (void)
+double vtkImageView::GetZoom()
 {
   if (!this->GetInput())
     return 1.0;
@@ -1291,7 +1291,7 @@ double vtkImageView::GetZoom (void)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::ResetCamera (void)
+void vtkImageView::ResetCamera()
 {
   if (this->Renderer)
   {
@@ -1324,7 +1324,7 @@ void vtkImageView::SetCameraPosition (double* arg)
 }
 
 //----------------------------------------------------------------------------
-double* vtkImageView::GetCameraPosition (void) const
+double* vtkImageView::GetCameraPosition() const
 {
   vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
   if (!cam)
@@ -1344,7 +1344,7 @@ void vtkImageView::SetCameraFocalPoint (double* arg)
 }
 
 //----------------------------------------------------------------------------
-double* vtkImageView::GetCameraFocalPoint (void) const
+double* vtkImageView::GetCameraFocalPoint() const
 {
   vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
   if (!cam)
@@ -1364,7 +1364,7 @@ void vtkImageView::SetCameraViewUp (double* arg)
 }
 
 //----------------------------------------------------------------------------
-double* vtkImageView::GetCameraViewUp (void) const
+double* vtkImageView::GetCameraViewUp() const
 {
   vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
   if (!cam)
@@ -1385,7 +1385,7 @@ void vtkImageView::SetCameraParallelScale (double arg)
 }
 
 //----------------------------------------------------------------------------
-double vtkImageView::GetCameraParallelScale (void) const
+double vtkImageView::GetCameraParallelScale() const
 {
   vtkCamera *cam = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
   if (!cam)
@@ -1394,7 +1394,7 @@ double vtkImageView::GetCameraParallelScale (void) const
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::Reset (void)
+void vtkImageView::Reset()
 {
   this->ResetCurrentPoint();
   this->ResetWindowLevel();
@@ -1494,7 +1494,7 @@ void vtkImageView::RemoveLayer(int layer)
 }
 
 //----------------------------------------------------------------------------
-void vtkImageView::RemoveAllLayers(void)
+void vtkImageView::RemoveAllLayers()
 {
 }
 
@@ -1505,7 +1505,7 @@ bool vtkImageView::HasLayer(int layer) const
 }
 
 //----------------------------------------------------------------------------
-int vtkImageView::GetNumberOfLayers(void) const
+int vtkImageView::GetNumberOfLayers() const
 {
   return 0;
 }
@@ -1798,7 +1798,7 @@ vtkImplementSetITKInput4Macro (RGBAPixelType);
 vtkImplementSetITKInput4Macro (UCharVector3Type);
 vtkImplementSetITKInput4Macro (FloatVector3Type);
 
-itk::ImageBase<4>* vtkImageView::GetTemporalITKInput (void) const
+itk::ImageBase<4>* vtkImageView::GetTemporalITKInput() const
 {
   return this->ITKInput4;
 }

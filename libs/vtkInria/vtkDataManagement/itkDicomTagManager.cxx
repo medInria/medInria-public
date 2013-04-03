@@ -189,12 +189,12 @@ namespace itk
   }
   
   
-  std::vector<itk::DicomTag> DicomTagManager::GetTagList (void)
+  std::vector<itk::DicomTag> DicomTagManager::GetTagList()
   {
     return this->TagList;
   }
     
-  void DicomTagManager::ClearTags (void)
+  void DicomTagManager::ClearTags()
   {
 //     this->TagList.clear();
   }
