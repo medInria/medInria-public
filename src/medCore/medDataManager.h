@@ -43,8 +43,8 @@ class MEDCORE_EXPORT medDataManager : public QObject
     Q_OBJECT
 
 public:
-      static medDataManager *instance(void);
-      static void destroy(void);
+      static medDataManager *instance();
+      static void destroy();
 
     /**
     * Ask the data-manager to provide the data belonging to this index using its registered controllers.
@@ -111,7 +111,7 @@ public:
     * The list of non-persistent data will then be cleared, and any subsequent
     * access to those data will trigger a reading from the database.
     */
-    void storeNonPersistentDataToDatabase (void);
+    void storeNonPersistentDataToDatabase();
 
     /**
      * Use this function to save a set of non-persistent data (e.g. from the same patient, study or series) to the sql database.
@@ -128,12 +128,12 @@ public:
     /**
     * Returns the number of non-persistent data contained in the data manager
     */
-    int nonPersistentDataCount (void) const;
+    int nonPersistentDataCount() const;
 
     /**
     * Clear the list of non-persistent data
     */
-    void clearNonPersistentData (void);
+    void clearNonPersistentData();
 
 
     /** Remove an item or items from the database
@@ -151,7 +151,7 @@ public:
     /**
      * Check if the program was compiled using 32bit compiler
      */
-    static bool is32Bit(void);
+    static bool is32Bit();
 
     /**
     * Returns the memory usage of the current process in bytes.
@@ -226,8 +226,8 @@ public slots:
     void onSingleNonPersistentDataStored(const medDataIndex &index, const QString &uuid);
 
 protected:
-     medDataManager(void);
-    ~medDataManager(void);
+     medDataManager();
+    ~medDataManager();
 
 
     /**

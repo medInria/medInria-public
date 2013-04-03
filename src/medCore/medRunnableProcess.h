@@ -42,10 +42,10 @@ class MEDCORE_EXPORT medRunnableProcess : public medJobItem
     Q_OBJECT
 
 public:
-     medRunnableProcess(void);
-    ~medRunnableProcess(void);
+     medRunnableProcess();
+    ~medRunnableProcess();
 
-    void run(void);
+    void run();
 
     /**
     * Specify which dtk process to run.
@@ -59,8 +59,8 @@ public slots:
     * in argument the pointer of the object. This is the role of those
     * slots.
     */
-    virtual void onSuccess    (void);
-    virtual void onFailure    (void);
+    virtual void onSuccess();
+    virtual void onFailure();
     virtual void onProgressed (int);
 
     /**

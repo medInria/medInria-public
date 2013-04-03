@@ -145,7 +145,7 @@ void medToolBox::setOrientation(Qt::Orientation orientation)
    }
 }
 
-Qt::Orientation medToolBox::orientation (void) const
+Qt::Orientation medToolBox::orientation() const
 {
     if(d->layout->direction() == QBoxLayout::LeftToRight)
         return Qt::Horizontal;

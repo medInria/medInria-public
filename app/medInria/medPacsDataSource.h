@@ -27,7 +27,7 @@ public:
 
     QList<medToolBox*> getToolBoxes();
 
-    QString description(void) const;
+    QString description() const;
 
 private slots:
     void onPacsMove( const QVector<medMoveCommandItem>& cmdList);

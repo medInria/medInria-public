@@ -35,7 +35,7 @@ class MEDCORE_EXPORT medViewManager : public QObject
     Q_OBJECT
 
 public:
-    static medViewManager *instance(void);
+    static medViewManager *instance();
 
     void insert(const medDataIndex& index, medAbstractView *view);
     void remove(const medDataIndex& index, medAbstractView *view);
@@ -50,8 +50,8 @@ public:
     QList<medDataIndex> indices(medAbstractView *view) const; 
 
 protected:
-     medViewManager(void);
-    ~medViewManager(void);
+     medViewManager();
+    ~medViewManager();
 
 protected:
     static medViewManager *s_instance;

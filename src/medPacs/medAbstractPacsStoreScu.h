@@ -11,8 +11,8 @@ class MEDPACS_EXPORT medAbstractPacsStoreScu : public medAbstractPacsBaseScu
     Q_OBJECT
 
 public:
-    medAbstractPacsStoreScu(void);
-    virtual ~medAbstractPacsStoreScu(void);
+    medAbstractPacsStoreScu();
+    virtual ~medAbstractPacsStoreScu();
 
     virtual int  sendStoreRequest(const char* peerTitle, const char* peerIP, unsigned int peerPort, const char* ourTitle, const char* ourIP, unsigned int ourPort);
 

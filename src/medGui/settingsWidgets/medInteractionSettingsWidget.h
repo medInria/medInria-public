@@ -28,7 +28,7 @@ protected:
      * @param void
      * @return true is the validation is successful, false otherwise.
     */
-    bool validate(void);
+    bool validate();
 
     bool write();
 private:

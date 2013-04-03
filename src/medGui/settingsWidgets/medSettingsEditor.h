@@ -64,7 +64,7 @@ signals:
     /**
     * Emitted if the dialog should disappear
     */
-    void finished(void);
+    void finished();
 
 public slots:
     /**

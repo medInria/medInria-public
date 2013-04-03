@@ -36,8 +36,8 @@ public slots:
     void onLineModeSelected(bool);
     void onRibbonModeSelected(bool);
     void onTubeModeSelected(bool);
-    void onTBDiffusionSuccess(void);
-    void refreshInteractors (void);
+    void onTBDiffusionSuccess();
+    void refreshInteractors();
 
     /**
       * @brief Adds a new tab to a workspace

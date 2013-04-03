@@ -30,7 +30,7 @@ class medBrowserSourceSelectorToolBox : public medToolBox
 
 public:
      medBrowserSourceSelectorToolBox(QWidget *parent = 0);
-    ~medBrowserSourceSelectorToolBox(void);
+    ~medBrowserSourceSelectorToolBox();
 
 	void addTab(QString tabName, QWidget *widget, QString description = "");
 

@@ -19,7 +19,7 @@ class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
 
 public:
     medAbstractData( dtkAbstractData * parent = NULL );
-    virtual ~medAbstractData(void);
+    virtual ~medAbstractData();
 
     /**
     * Attach a meddataindex to the data to carry it arround

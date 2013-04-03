@@ -46,14 +46,14 @@ medDatabaseWriter::medDatabaseWriter(dtkAbstractData *data, const QString &calle
     d->isCancelled = false;
 }
 
-medDatabaseWriter::~medDatabaseWriter ( void )
+medDatabaseWriter::~medDatabaseWriter()
 {
     delete d;
 
     d = NULL;
 }
 
-void medDatabaseWriter::run ( void )
+void medDatabaseWriter::run()
 {
     if ( !d->data )
     {

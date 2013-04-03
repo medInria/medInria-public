@@ -12,16 +12,16 @@ class MEDPACS_EXPORT medAbstractPacsResultDataset : public QObject
     Q_OBJECT
 
 public:
-             medAbstractPacsResultDataset(void);
-    virtual ~medAbstractPacsResultDataset(void);
+             medAbstractPacsResultDataset();
+    virtual ~medAbstractPacsResultDataset();
 
-    virtual const char* getStudyInstanceUID(void);
+    virtual const char* getStudyInstanceUID();
 
-    virtual const char* getSeriesInstanceUID(void);
+    virtual const char* getSeriesInstanceUID();
 
-    virtual const char* getSOPInstanceUID(void);
+    virtual const char* getSOPInstanceUID();
 
-    virtual QVector<medAbstractPacsKey*> getKeyContainer(void);
+    virtual QVector<medAbstractPacsKey*> getKeyContainer();
 
     virtual const char* findKeyValue(int group, int elem);
 

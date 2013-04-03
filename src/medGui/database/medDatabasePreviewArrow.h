@@ -30,10 +30,10 @@ class medDatabasePreviewArrow : public QObject, public QGraphicsPixmapItem
 
 public:
      medDatabasePreviewArrow(QPixmap pixmap, QPixmap pressed, QGraphicsItem *parent = 0);
-    ~medDatabasePreviewArrow(void);
+    ~medDatabasePreviewArrow();
 
 signals:
-    void clicked(void);
+    void clicked();
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);

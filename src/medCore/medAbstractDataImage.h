@@ -31,26 +31,26 @@ class MEDCORE_EXPORT medAbstractDataImage: public medAbstractData
 public:
     typedef std::type_info PixId;
 
-             medAbstractDataImage(void);
+             medAbstractDataImage();
              medAbstractDataImage(const medAbstractDataImage& other);
-    virtual ~medAbstractDataImage(void);
+    virtual ~medAbstractDataImage();
 
-    void *image(void);
+    void *image();
 
-    virtual int   Dimension(void) const;
-    virtual const PixId& PixelType(void) const;
+    virtual int   Dimension() const;
+    virtual const PixId& PixelType() const;
 
-    virtual int xDimension(void);
-    virtual int yDimension(void);
-    virtual int zDimension(void);
-    virtual int tDimension(void);
+    virtual int xDimension();
+    virtual int yDimension();
+    virtual int zDimension();
+    virtual int tDimension();
 
-    virtual int minRangeValue(void);
-    virtual int maxRangeValue(void);
+    virtual int minRangeValue();
+    virtual int maxRangeValue();
 
     virtual int scalarValueCount(int value);
-    virtual int scalarValueMinCount(void);
-    virtual int scalarValueMaxCount(void);
+    virtual int scalarValueMinCount();
+    virtual int scalarValueMaxCount();
 
     static const char* PixelMeaningMetaData;
 };

@@ -34,13 +34,13 @@ class MEDGUI_EXPORT medDiffusionSelectorToolBox : public medToolBox
     Q_OBJECT
 public:
      medDiffusionSelectorToolBox(QWidget *parent = 0);
-    ~medDiffusionSelectorToolBox(void);
+    ~medDiffusionSelectorToolBox();
 
-    dtkAbstractData *output(void) const;
+    dtkAbstractData *output() const;
 
 public slots:
-    // void run (void);
-    void clear(void);
+    // void run();
+    void clear();
 
     void onToolBoxChosen(int id);
 

@@ -31,7 +31,7 @@ class MEDGUI_EXPORT medVisualizationLayoutToolBox : public medToolBox
 
 public:
      medVisualizationLayoutToolBox(QWidget *parent = 0);
-    ~medVisualizationLayoutToolBox(void);
+    ~medVisualizationLayoutToolBox();
 
 signals:
     void modeChanged(const QString&);
@@ -39,7 +39,7 @@ signals:
     void presetClicked(int);
 
 public slots:
-    void clear(void);
+    void clear();
     /**
      * @brief Sets the current tab according to container type
      *
@@ -48,11 +48,11 @@ public slots:
     void setTab(const QString &name);
 
 protected slots:
-    void onButtonAClicked(void);
-    void onButtonBClicked(void);
-    void onButtonCClicked(void);
-    void onButtonDClicked(void);
-    void onButtonEClicked(void);
+    void onButtonAClicked();
+    void onButtonBClicked();
+    void onButtonCClicked();
+    void onButtonDClicked();
+    void onButtonEClicked();
     void modeChanged(int);
 
 private:

@@ -51,7 +51,7 @@ public:
      *
      * @param void
     */
-    ~medTabbedViewContainers(void);
+    ~medTabbedViewContainers();
 
     /**
      * @brief Gets the currently displayed container.
@@ -59,7 +59,7 @@ public:
      * @param void
      * @return medViewContainer *
     */
-    medViewContainer *current(void) const;
+    medViewContainer *current() const;
     
     /**
      * @brief Gets the name of the current container.
@@ -68,7 +68,7 @@ public:
      * @param void
      * @return QString
     */
-    QString currentName(void) const;
+    QString currentName() const;
 
     /**
      * @brief Adds a container to the stack.

@@ -15,9 +15,9 @@ class MEDPACS_EXPORT medPacsMover : public medJobItem
 
 public:
      medPacsMover(const QVector<medMoveCommandItem>& cmdList);
-    ~medPacsMover(void);
+    ~medPacsMover();
 
-    void run(void);
+    void run();
 
     void doQueuedMove();
 

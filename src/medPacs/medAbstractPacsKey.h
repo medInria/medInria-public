@@ -10,8 +10,8 @@ class MEDPACS_EXPORT medAbstractPacsKey : public QObject
     Q_OBJECT
 
 public:
-   medAbstractPacsKey(void);
-   virtual ~medAbstractPacsKey(void);
+   medAbstractPacsKey();
+   virtual ~medAbstractPacsKey();
     
    int group;
    int elem;

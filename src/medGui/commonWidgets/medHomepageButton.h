@@ -59,7 +59,7 @@ public:
     bool isSelected() const;
 
 public slots:
-    void onClick ( void );
+    void onClick();
     void setSelected(bool value);
 
 signals:
@@ -82,7 +82,7 @@ public:
     medQuickAccessPushButton ( QWidget * parent = 0 );
 
 public slots:
-    void onClick ( void );
+    void onClick();
 
 signals:
     void clicked ( QString text );
@@ -108,7 +108,7 @@ public:
      */
     QString identifier ();
 public slots:
-    void onClick ( void );
+    void onClick();
 
 signals:
     /**
