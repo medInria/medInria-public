@@ -1,5 +1,7 @@
 #   System identification
 
+set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
+
 if (UNIX AND NOT APPLE)
 
     get_property(LIB64 GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)
@@ -11,7 +13,6 @@ if (UNIX AND NOT APPLE)
     endif()
 
     set(INSTALL_LIB_DIR lib${LIBSUFFIX}/medInria CACHE PATH "Installation directory for libraries")
-    mark_as_advanced(INSTALL_LIB_DIR)
 
     find_program(LSB_RELEASE_EXECUTABLE lsb_release)
     if (LSB_RELEASE_EXECUTABLE)
@@ -61,3 +62,5 @@ else()
     set(CPACK_PACKAGE_TYPE NSIS)
     set(CPACK_PACKAGING_INSTALL_PREFIX "TODO")
 endif()
+
+mark_as_advanced(INSTALL_LIB_DIR)
