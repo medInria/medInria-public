@@ -1,5 +1,4 @@
-#ifndef MEDPACSNODE_H
-#define MEDPACSNODE_H
+#pragma once
 
 #include "medAbstractPacsNode.h"
 
@@ -48,4 +47,4 @@ class medPacsNode : public medAbstractPacsNode
 
 };
 
-#endif
+

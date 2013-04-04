@@ -1,5 +1,4 @@
-#ifndef MEDLOADLUTDIALOG_H
-#define MEDLOADLUTDIALOG_H
+#pragma once
 
 #include <QInputDialog>
 
@@ -15,4 +14,4 @@ public slots:
 
 };
 
-#endif // MEDLOADLUTDIALOG_H
+

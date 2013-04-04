@@ -1,5 +1,4 @@
-#ifndef medSegmentationWorkspace_H
-#define medSegmentationWorkspace_H
+#pragma once
 
 
 // /////////////////////////////////////////////////////////////////
@@ -69,4 +68,4 @@ private:
     medSegmentationWorkspacePrivate *d;
 };
 
-#endif // medSegmentationWorkspace_H
+

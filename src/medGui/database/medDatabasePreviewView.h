@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEPREVIEWVIEW_H
-#define MEDDATABASEPREVIEWVIEW_H
+#pragma once
 
 #include <QtCore>
 #include <QtGui>
@@ -65,4 +64,4 @@ private:
     medDatabasePreviewViewPrivate *d;
 };
 
-#endif // MEDDATABASEPREVIEWVIEW_H
+

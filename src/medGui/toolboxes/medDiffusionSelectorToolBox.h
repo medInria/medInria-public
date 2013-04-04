@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medDiffusionSelectorToolBox_H
-#define medDiffusionSelectorToolBox_H
+#pragma once
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -49,4 +48,4 @@ private:
 
 };
 
-#endif // medDiffusionSelectorToolBox_H
+

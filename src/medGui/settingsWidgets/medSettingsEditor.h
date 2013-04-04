@@ -1,5 +1,4 @@
-#ifndef MEDSETTINGSEDITOR_H
-#define MEDSETTINGSEDITOR_H
+#pragma once
 
 #include "medGuiExport.h"
 #include <QWidget>
@@ -120,4 +119,4 @@ private:
 
 };
 
-#endif // MEDSETTINGSEDITOR_H
+

@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTANNOTATIONREPRESENTATION_H
-#define MEDABSTRACTANNOTATIONREPRESENTATION_H
+#pragma once
 
 #include "medCoreExport.h"
 
@@ -82,4 +81,4 @@ private:
     Impl * d;
 };
 
-#endif // MEDABSTRACTANNOTATIONREPRESENTATION_H
+

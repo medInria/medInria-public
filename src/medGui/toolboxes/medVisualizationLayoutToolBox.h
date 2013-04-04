@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDVIEWERTOOLBOXLAYOUT_H
-#define MEDVIEWERTOOLBOXLAYOUT_H
+#pragma once
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
@@ -59,4 +58,4 @@ private:
     medVisualizationLayoutToolBoxPrivate *d;
 };
 
-#endif
+

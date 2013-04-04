@@ -1,5 +1,4 @@
-#ifndef MEDMOVECOMMANDITEM_H
-#define MEDMOVECOMMANDITEM_H
+#pragma once
 
 struct medMoveCommandItem
 {
@@ -20,4 +19,4 @@ struct medMoveCommandItem
 };
 Q_DECLARE_METATYPE(medMoveCommandItem);
 
-#endif // MEDMOVECOMMANDITEM_H
+

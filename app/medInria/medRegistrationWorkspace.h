@@ -1,5 +1,4 @@
-#ifndef medRegistrationWorkspace_H
-#define medRegistrationWorkspace_H
+#pragma once
 
 
 #include <QtCore>
@@ -29,4 +28,4 @@ private:
     medRegistrationWorkspacePrivate *d;
 };
 
-#endif // medRegistrationWorkspace_H
+

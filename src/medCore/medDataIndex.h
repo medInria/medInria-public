@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATAINDEX_H
-#define MEDDATAINDEX_H
+#pragma once
 
 #include <QtCore>
 
@@ -123,4 +122,4 @@ MEDCORE_EXPORT uint qHash(const medDataIndex &key);
 
 Q_DECLARE_METATYPE(medDataIndex)
 
-#endif // MEDDATAINDEX_H
+

@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDCLUTEDITOR_H
-#define MEDCLUTEDITOR_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -292,4 +291,4 @@ private:
     medClutEditorPrivate *d;
 };
 
-#endif // MEDCLUTEDITOR_H
+

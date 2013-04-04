@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEITEM_H
-#define MEDDATABASEITEM_H
+#pragma once
 
 #include "medSqlExport.h"
 
@@ -69,4 +68,4 @@ private:
     medDatabaseItemPrivate *d;
 };
 
-#endif
+

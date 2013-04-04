@@ -1,5 +1,4 @@
-#ifndef MEDTESTDBAPP_H
-#define MEDTESTDBAPP_H
+#pragma once
 
 #include <QMutex>
 #include <dtkCore/dtkAbstractData.h>
@@ -60,4 +59,4 @@ private:
     medAbstractDbController * npDb;
 };
 
-#endif // MEDTESTDBAPP_H
+

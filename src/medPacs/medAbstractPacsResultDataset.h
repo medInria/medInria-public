@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTPACSRESULTDATASET_H
-#define MEDABSTRACTPACSRESULTDATASET_H
+#pragma once
 
 #include <QtCore/QObject>
 #include <QVector>
@@ -27,4 +26,4 @@ public:
 
 };
 
-#endif
+

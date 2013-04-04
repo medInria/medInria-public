@@ -1,5 +1,4 @@
-#ifndef MEDVIEWERTOOLBOXTIME_H
-#define MEDVIEWERTOOLBOXTIME_H
+#pragma once
 
 #include <medToolBox.h>
 
@@ -97,4 +96,4 @@ public slots:
     QString DoubleToQString(double);
 };
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef medAbstractData_h__
-#define medAbstractData_h__
+#pragma once
 
 #include <dtkCore/dtkAbstractData.h>
 
@@ -102,4 +101,4 @@ private:
 
 };
 
-#endif // medAbstractData_h__
+

@@ -13,8 +13,7 @@
  *
  */
 
-#ifndef MEDDATABASEREMOVER_H
-#define MEDDATABASEREMOVER_H
+#pragma once
 
 #include <QtCore/QObject>
 
@@ -71,4 +70,4 @@ private:
     medDatabaseRemoverPrivate *d;
 };
 
-#endif
+

@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASENAVIGATORVIEW_H
-#define MEDDATABASENAVIGATORVIEW_H
+#pragma once
 
 #include <QtCore>
 #include <QtGui>
@@ -52,4 +51,4 @@ private:
     medDatabaseNavigatorViewPrivate *d;
 };
 
-#endif // MEDDATABASENAVIGATORVIEW_H
+

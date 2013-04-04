@@ -1,5 +1,4 @@
-#ifndef MEDSETTINGSWIDGETFACTORY_H
-#define MEDSETTINGSWIDGETFACTORY_H
+#pragma once
 
 #include "medGuiExport.h"
 #include <dtkCore/dtkAbstractFactory.h>
@@ -144,4 +143,4 @@ struct MEDGUI_EXPORT medSettingDetails{
         creator(creator){}
 };
 
-#endif // MEDSETTINGSWIDGETFACTORY_H
+

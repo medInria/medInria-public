@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDIMAGEFILELOADER_H
-#define MEDIMAGEFILELOADER_H
+#pragma once
 
 #include <QtCore>
 #include <QtGui>
@@ -47,4 +46,4 @@ private:
     medImageFileLoaderPrivate *d;
 };
 
-#endif // MEDIMAGEFILELOADER_H
+

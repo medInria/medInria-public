@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDABSTRACTMESHDATA_H
-#define MEDABSTRACTMESHDATA_H
+#pragma once
 
 #include "medCoreExport.h"
 #include <medAbstractData.h>
@@ -52,4 +51,4 @@ private:
     medAbstractDataMeshPrivate *d;
 };
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef medTensorViewToolBox_H
-#define medTensorViewToolBox_H
+#pragma once
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
@@ -123,4 +122,4 @@ protected:
     medTensorViewToolBoxPrivate *d;
 };
 
-#endif // medTensorViewToolBox_H
+

@@ -1,5 +1,4 @@
-#ifndef MEDSYSTEMSETTINGSWIDGET_H
-#define MEDSYSTEMSETTINGSWIDGET_H
+#pragma once
 
 #include "medGuiExport.h"
 #include "medSettingsWidget.h"
@@ -50,4 +49,4 @@ private:
 };
 
 MEDGUI_EXPORT medSettingsWidget* createSystemSettingsWidget(QWidget *parent);
-#endif // MEDSYSTEMSETTINGSWIDGET_H
+

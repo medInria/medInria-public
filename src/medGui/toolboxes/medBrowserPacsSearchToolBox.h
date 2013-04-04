@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medBrowserPacsSearchToolBox_H
-#define medBrowserPacsSearchToolBox_H
+#pragma once
 
 #include <medToolBox.h>
 #include "medGuiExport.h"
@@ -43,4 +42,4 @@ private:
     medBrowserPacsSearchToolBoxPrivate *d;
 };
 
-#endif
+

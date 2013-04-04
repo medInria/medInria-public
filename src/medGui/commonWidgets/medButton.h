@@ -1,5 +1,4 @@
-#ifndef medButton_h__
-#define medButton_h__
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -75,4 +74,4 @@ protected:
 private:
     medButtonPrivate * d;
 };
-#endif // medButton_h__
+

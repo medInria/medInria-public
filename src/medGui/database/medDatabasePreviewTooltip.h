@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEPREVIEWTOOLTIP_H
-#define MEDDATABASEPREVIEWTOOLTIP_H
+#pragma once
 
 #include <QtCore>
 #include <QtGui>
@@ -33,4 +32,4 @@ public:
     medDatabasePreviewTooltip(const QPixmap& pixmap, QGraphicsItem *parent = 0);
 };
 
-#endif // MEDDATABASEPREVIEWTOOLTIP_H
+

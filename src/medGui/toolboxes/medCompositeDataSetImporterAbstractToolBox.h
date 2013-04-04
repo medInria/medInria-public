@@ -12,8 +12,7 @@
  */
 
 
-#ifndef medCompositeDataSetImporterAbstractToolBox_H
-#define medCompositeDataSetImporterAbstractToolBox_H
+#pragma once
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -47,4 +46,4 @@ protected:
     medCompositeDataSetImporterAbstractToolBoxPrivate *d;
 };
 
-#endif // medCompositeDataSetImporterAbstractToolBox_H
+

@@ -5,8 +5,7 @@
  *      Author: John Stark
  */
 
-#ifndef MEDQTDATAIMAGEREADER_H_
-#define MEDQTDATAIMAGEREADER_H_
+#pragma once
 
 #include "medTestExport.h"
 
@@ -63,5 +62,5 @@ private:
     bool m_lastSuccess;
 };
 
-#endif /* MEDQTDATAIMAGEREADER_H_ */
+
 

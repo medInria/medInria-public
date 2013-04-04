@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDTOOLBOXHEADER_H
-#define MEDTOOLBOXHEADER_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -121,4 +120,4 @@ private:
     medToolBoxHeaderPrivate *d;
 };
 
-#endif
+

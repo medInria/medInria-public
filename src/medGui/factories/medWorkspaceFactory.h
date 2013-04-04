@@ -1,5 +1,4 @@
-#ifndef MEDWORKSPACEFACTORY_H
-#define MEDWORKSPACEFACTORY_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -122,4 +121,4 @@ struct MEDGUI_EXPORT medWorkspaceDetails{
         name(name),description(description),creator(creator),isUsable(isUsable){}
 };
 
-#endif // MEDWORKSPACEFACTORY_H
+

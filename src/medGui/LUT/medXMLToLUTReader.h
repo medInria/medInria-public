@@ -1,5 +1,4 @@
-#ifndef MEDXMLTOLUTREADER_H
-#define MEDXMLTOLUTREADER_H
+#pragma once
 
 #include "medClutEditor.h"
 #include <qiodevice.h>
@@ -20,4 +19,4 @@ private:
 };
 
 
-#endif // MEDXMLTOLUTREADER_H
+

@@ -1,5 +1,4 @@
-#ifndef MEDGROUPBOX_H
-#define MEDGROUPBOX_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -43,4 +42,4 @@ private:
     medGroupBoxPrivate * d;
 };
 
-#endif // MEDGROUPBOX_H
+

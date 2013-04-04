@@ -1,5 +1,4 @@
-#ifndef MEDWORKSPACEAREA_H
-#define MEDWORKSPACEAREA_H
+#pragma once
 
 #include <QtGui>
 
@@ -262,4 +261,4 @@ private:
     medWorkspaceAreaPrivate *d;
 };
 
-#endif // MEDWORKSPACEAREA_H
+

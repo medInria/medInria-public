@@ -1,5 +1,4 @@
-#ifndef MEDSPLASHSCREEN_H
-#define MEDSPLASHSCREEN_H
+#pragma once
 
 #include <QtGui>
 
@@ -68,4 +67,4 @@ private:
 
     medSplashScreenPrivate * d;
 };
-#endif // MEDSPLASHSCREEN_H
+

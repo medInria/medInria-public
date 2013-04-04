@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEMODEL_H
-#define MEDDATABASEMODEL_H
+#pragma once
 
 #include "medSqlExport.h"
 
@@ -85,4 +84,4 @@ private:
     medDatabaseModelPrivate *d;
 };
 
-#endif
+

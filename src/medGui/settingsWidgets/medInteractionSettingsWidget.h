@@ -1,5 +1,4 @@
-#ifndef MEDINTERACTIONSETTINGSWIDGET_H
-#define MEDINTERACTIONSETTINGSWIDGET_H
+#pragma once
 
 #include "medGuiExport.h"
 #include "medSettingsWidget.h"
@@ -37,4 +36,4 @@ private:
 };
 MEDGUI_EXPORT medSettingsWidget* createInteractionSettingsWidget(
         QWidget *parent);
-#endif // MEDINTERACTIONSETTINGSWIDGET_H
+

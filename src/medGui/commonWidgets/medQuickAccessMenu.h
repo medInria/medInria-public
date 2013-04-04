@@ -1,5 +1,4 @@
-#ifndef MEDQUICKACCESSMENU_H
-#define MEDQUICKACCESSMENU_H
+#pragma once
 
 #include "medGuiExport.h"
 #include <medHomepageButton.h>
@@ -48,4 +47,4 @@ private:
     QFrame *backgroundFrame;
 };
 
-#endif // MEDQUICKACCESSMENU_H
+

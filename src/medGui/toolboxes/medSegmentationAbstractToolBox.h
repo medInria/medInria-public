@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medSegmentationAbstractToolBox_H
-#define medSegmentationAbstractToolBox_H
+#pragma once
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -44,4 +43,4 @@ private:
     medSegmentationAbstractToolBoxPrivate *d;
 };
 
-#endif
+

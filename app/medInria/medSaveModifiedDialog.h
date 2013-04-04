@@ -1,5 +1,4 @@
-#ifndef MEDSAVEMODIFIEDDIALOG_H
-#define MEDSAVEMODIFIEDDIALOG_H
+#pragma once
 
 #include <QFileDialog>
 #include <QTreeWidget>
@@ -84,7 +83,7 @@ private:
 
 
 
-#endif // MEDSAVEMODIFIEDDIALOG_H
+
 
 
 

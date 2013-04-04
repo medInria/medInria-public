@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDVIEWERTOOLBOXPATIENT_H
-#define MEDVIEWERTOOLBOXPATIENT_H
+#pragma once
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
@@ -64,4 +63,4 @@ private:
     medPatientSelectorToolBoxPrivate *d;
 };
 
-#endif
+

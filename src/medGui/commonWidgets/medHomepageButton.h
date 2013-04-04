@@ -26,8 +26,7 @@
 */
 
 
-#ifndef MEDHOMEPAGEBUTTON_H
-#define MEDHOMEPAGEBUTTON_H
+#pragma once
 
 #include <QtGui>
 #include "medGuiExport.h"
@@ -122,4 +121,4 @@ private:
 
 };
 
-#endif // MEDHOMEPAGEBUTTON_H
+

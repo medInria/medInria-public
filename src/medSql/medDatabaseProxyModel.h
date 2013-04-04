@@ -1,5 +1,4 @@
-#ifndef medDatabaseProxyModel_h__
-#define medDatabaseProxyModel_h__
+#pragma once
 
 
 #include "medSqlExport.h"
@@ -34,4 +33,4 @@ private:
     mutable int currentKey;
     mutable QRegExp currentValue;
 };
-#endif // medDatabaseProxyModel_h__
+

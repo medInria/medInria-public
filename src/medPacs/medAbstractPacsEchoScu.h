@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTPACSECHOSCU_H
-#define MEDABSTRACTPACSECHOSCU_H
+#pragma once
 
 #include "medAbstractPacsBaseScu.h"
 #include "medPacsExport.h"
@@ -17,4 +16,4 @@ public:
 
 };
 
-#endif
+

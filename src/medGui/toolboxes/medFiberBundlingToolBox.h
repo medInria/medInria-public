@@ -1,5 +1,4 @@
-#ifndef medFiberBundlingToolBox_H
-#define medFiberBundlingToolBox_H
+#pragma once
 
 #include "medToolBox.h"
 
@@ -114,4 +113,4 @@ private:
 };
 
 
-#endif
+

@@ -1,6 +1,5 @@
 
-#ifndef medSettingsManager_h__
-#define medSettingsManager_h__
+#pragma once
 
 #include <QtCore>
 
@@ -56,4 +55,4 @@ private:
 
     medSettingsManagerPrivate *d;
 };
-#endif // medSettingsManager_h__
+

@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTPACSBASESCU_H
-#define MEDABSTRACTPACSBASESCU_H
+#pragma once
 
 #include <QtCore/QObject>
 #include <QVector>
@@ -34,4 +33,4 @@ public:
 
 };
 
-#endif
+

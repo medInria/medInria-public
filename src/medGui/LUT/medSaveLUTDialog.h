@@ -1,5 +1,4 @@
-#ifndef MEDSAVELUTDIALOG_H
-#define MEDSAVELUTDIALOG_H
+#pragma once
 
 #include <QInputDialog>
 #include <QWidget>
@@ -16,4 +15,4 @@ public slots:
 
 };
 
-#endif // MEDSAVELUTDIALOG_H
+
