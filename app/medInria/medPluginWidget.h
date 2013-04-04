@@ -1,5 +1,4 @@
-#ifndef MEDPLUGINWIDGET_H
-#define MEDPLUGINWIDGET_H
+#pragma once
 
 #include <QTabWidget>
 #include <QTreeWidgetItem>
@@ -25,4 +24,4 @@ private:
     medPluginWidgetPrivate * d;
 };
 
-#endif // MEDPLUGINWIDGET_H
+

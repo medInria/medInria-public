@@ -1,5 +1,4 @@
-#ifndef MED4DABSTRACTVIEWINTERACTOR_H
-#define MED4DABSTRACTVIEWINTERACTOR_H
+#pragma once
 
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
@@ -25,4 +24,4 @@ private:
 
 };
 
-#endif // MED4DABSTRACTVIEWINTERACTOR_H
+

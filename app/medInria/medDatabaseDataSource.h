@@ -1,5 +1,4 @@
-#ifndef medDatabaseDataSource_h__
-#define medDatabaseDataSource_h__
+#pragma once
 
 #include <medAbstractDataSource.h>
 #include <medDataIndex.h>
@@ -44,4 +43,4 @@ private:
 
 };
 
-#endif // medDatabaseDataSource_h__
+

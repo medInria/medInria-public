@@ -4,8 +4,7 @@
  *
  */
 
-#ifndef medFilteringWorkspace_H
-#define medFilteringWorkspace_H
+#pragma once
 
 #include <QtCore>
 #include <medWorkspace.h>
@@ -81,4 +80,4 @@ private:
     medFilteringWorkspacePrivate *d;
 };
 
-#endif
+

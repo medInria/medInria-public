@@ -1,6 +1,5 @@
 
-#ifndef medAttachedData_h__
-#define medAttachedData_h__
+#pragma once
 
 #include <medCore/medAbstractData.h>
 #include "medCoreExport.h"
@@ -29,5 +28,5 @@ private:
     medAttachedDataPrivate* d;
 };
 
-#endif // medAttachedData_h__
+
 

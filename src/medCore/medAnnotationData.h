@@ -1,5 +1,4 @@
-#ifndef MEDANNOTATIONDATA_H
-#define MEDANNOTATIONDATA_H
+#pragma once
 
 #include "medCoreExport.h"
 
@@ -33,5 +32,5 @@ private:
     medAnnotationDataPrivate * d;
 };
 
-#endif // MEDANNOTATIONDATA_H
+
 

@@ -1,5 +1,4 @@
-#ifndef medActionsToolBox_H
-#define medActionsToolBox_H
+#pragma once
 
 #include <medDataIndex.h>
 #include <medToolBox.h>
@@ -81,4 +80,4 @@ private:
     medActionsToolBoxPrivate* d;
 };
 
-#endif // medActionsToolBox_H
+

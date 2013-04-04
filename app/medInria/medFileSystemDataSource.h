@@ -1,5 +1,4 @@
-#ifndef medFileSystemDataSource_h__
-#define medFileSystemDataSource_h__
+#pragma once
 
 #include <medAbstractDataSource.h>
 
@@ -64,4 +63,4 @@ private:
     QString formatByteSize(qint64 bytes);
 };
 
-#endif // medFileSystemDataSource_h__
+

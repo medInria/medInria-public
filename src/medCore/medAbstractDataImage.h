@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDABSTRACTIMAGEDATA_H
-#define MEDABSTRACTIMAGEDATA_H
+#pragma once
 
 #include <typeinfo>
 #include "medCoreExport.h"
@@ -55,4 +54,4 @@ public:
     static const char* PixelMeaningMetaData;
 };
 
-#endif
+

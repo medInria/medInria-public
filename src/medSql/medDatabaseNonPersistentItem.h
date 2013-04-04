@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASENONPERSISTENTITEM_H
-#define MEDDATABASENONPERSISTENTITEM_H
+#pragma once
 
 #include "medSqlExport.h"
 
@@ -64,4 +63,4 @@ private:
     medDatabaseNonPersistentItemPrivate *d;
 };
 
-#endif
+

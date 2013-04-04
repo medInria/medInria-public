@@ -26,8 +26,7 @@
 */
 
 
-#ifndef MEDHOMEPAGEAREA_H
-#define MEDHOMEPAGEAREA_H
+#pragma once
 
 #include <QtGui>
 
@@ -77,4 +76,4 @@ private:
     medHomepageAreaPrivate * d;
 };
 
-#endif // MEDHOMEPAGEAREA_H
+

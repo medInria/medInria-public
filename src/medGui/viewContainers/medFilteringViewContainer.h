@@ -4,8 +4,7 @@
  *
  */
 
-#ifndef medFilteringViewContainer_H
-#define medFilteringViewContainer_H
+#pragma once
 
 #include <medCore/medDataIndex.h>
 #include <medCore/medDataManager.h>
@@ -54,4 +53,4 @@ private:
     medFilteringViewContainerPrivate *d3;
 };
 
-#endif // medFilteringViewContainer_H
+

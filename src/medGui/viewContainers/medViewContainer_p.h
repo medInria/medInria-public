@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDVIEWCONTAINER_P_H
-#define MEDVIEWCONTAINER_P_H
+#pragma once
 
 #include <QtGui>
 
@@ -51,4 +50,4 @@ public:
     bool clicked;
 };
 
-#endif
+

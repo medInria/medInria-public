@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDSTORAGE_H
-#define MEDSTORAGE_H
+#pragma once
 
 #include <QtCore>
 #include <QString>
@@ -63,4 +62,4 @@ private:
 
 };
 
-#endif // MEDSTORAGE_H
+

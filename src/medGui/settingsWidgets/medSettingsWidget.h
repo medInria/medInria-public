@@ -1,5 +1,4 @@
-#ifndef MEDSETTINGSWIDGET_H
-#define MEDSETTINGSWIDGET_H
+#pragma once
 
 #include "medGuiExport.h"
 #include <QWidget>
@@ -77,4 +76,4 @@ private:
     medSettingsWidgetPrivate *d; /**< TODO */
 };
 
-#endif // MEDSETTINGSWIDGET_H
+

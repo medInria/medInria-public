@@ -1,5 +1,4 @@
-#ifndef MEDSTARTUPSETTINGSWIDGET_H
-#define MEDSTARTUPSETTINGSWIDGET_H
+#pragma once
 
 #include "medGuiExport.h"
 #include "medSettingsWidget.h"
@@ -37,4 +36,4 @@ private:
 };
 
 MEDGUI_EXPORT medSettingsWidget* createStartupSettingsWidget(QWidget *parent);
-#endif // MEDSTARTUPSETTINGSWIDGET_H
+

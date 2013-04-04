@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTVIEWCOLLECTION_H
-#define MEDABSTRACTVIEWCOLLECTION_H
+#pragma once
 
 #include "medAbstractView.h"
 
@@ -49,4 +48,4 @@ private:
     medAbstractViewCollectionPrivate *d;
 };
 
-#endif
+

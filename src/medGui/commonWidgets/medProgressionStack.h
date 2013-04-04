@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDPROGRESSIONSTACK_H
-#define MEDPROGRESSIONSTACK_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -96,4 +95,4 @@ private:
     medProgressionStackPrivate *d;
 };
 
-#endif // MEDPROGRESSIONSTACK_H
+

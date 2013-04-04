@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASENAVIGATORITEM_H
-#define MEDDATABASENAVIGATORITEM_H
+#pragma once
 
 #include <QtGui/QGraphicsPixmapItem>
 
@@ -71,4 +70,4 @@ private:
     medDatabaseNavigatorItemPrivate *d;
 };
 
-#endif // MEDDATABASENAVIGATORITEM_H
+

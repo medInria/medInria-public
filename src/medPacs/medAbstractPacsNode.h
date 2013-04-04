@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTPACSNODE_H
-#define MEDABSTRACTPACSNODE_H
+#pragma once
 
 #include <QtCore/QObject>
 #include <QVector>
@@ -36,4 +35,4 @@ public:
     virtual QVector<medAbstractPacsResultDataset*> getResultDatasetContainer();
 };
 
-#endif
+

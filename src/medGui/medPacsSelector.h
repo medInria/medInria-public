@@ -1,5 +1,4 @@
-#ifndef MEDPACSSELECTOR_H
-#define MEDPACSSELECTOR_H
+#pragma once
 
 class medToolBoxPacsSelectorPrivate;
 
@@ -32,4 +31,3 @@ private:
     medToolBoxPacsSelectorPrivate *d;
 };
 
-#endif 

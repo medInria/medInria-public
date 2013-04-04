@@ -4,8 +4,7 @@
  *
  */
 
-#ifndef medFilteringSelectorToolBox_H
-#define medFilteringSelectorToolBox_H
+#pragma once
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
@@ -76,4 +75,4 @@ protected:
     medFilteringSelectorToolBoxPrivate *d;
 };
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef MEDTEST_H
-#define MEDTEST_H
+#pragma once
 
 #include "medTestExport.h"
 
@@ -43,4 +42,4 @@ namespace medTest
 
 } // end of namespace
 
-#endif
+

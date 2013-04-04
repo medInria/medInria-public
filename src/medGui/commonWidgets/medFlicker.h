@@ -18,8 +18,7 @@
  * 
  */
 
-#ifndef MEDFLICKER_H
-#define MEDFLICKER_H
+#pragma once
 
 #include <QtCore>
 #include <QtGui>
@@ -46,7 +45,7 @@ private:
     medFlickerPrivate *d;
 };
 
-#endif
+
 
 // /////////////////////////////////////////////////////////////////
 // Credits

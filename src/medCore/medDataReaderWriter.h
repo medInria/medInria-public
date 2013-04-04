@@ -1,5 +1,4 @@
-#ifndef MED_DATA_READER_WRITER_H
-#define MED_DATA_READER_WRITER_H
+#pragma once
 
 #include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -21,4 +20,4 @@ struct MEDCORE_EXPORT medDataReaderWriter {
     static bool write(const QString& path,dtkAbstractData* data);
     };
 
-#endif  //  ! MED_DATA_READER_WRITER_H
+

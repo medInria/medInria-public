@@ -1,5 +1,4 @@
-#ifndef MEDMESHABSTRACTVIEWINTERACTOR_H
-#define MEDMESHABSTRACTVIEWINTERACTOR_H
+#pragma once
 
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
@@ -38,4 +37,4 @@ public:
   virtual QStringList getAllLUTs() const = 0;
 };
 
-#endif // MED4DABSTRACTVIEWINTERACTOR_H
+

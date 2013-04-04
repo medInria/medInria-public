@@ -1,5 +1,4 @@
-#ifndef MEDDATABASESETTINGSWIDGET_H
-#define MEDDATABASESETTINGSWIDGET_H
+#pragma once
 
 #include "medGuiExport.h"
 #include "medSettingsWidget.h"
@@ -40,4 +39,4 @@ private:
 };
 
 MEDGUI_EXPORT medSettingsWidget* createDatabaseSettingsWidget(QWidget *parent);
-#endif // MEDDATABASESETTINGSWIDGET_H
+

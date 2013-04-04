@@ -13,8 +13,7 @@
  *
  */
 
-#ifndef MEDAPPLICATION_H
-#define MEDAPPLICATION_H
+#pragma once
 
 #include <QtSingleApplication>
 #include <QColor>
@@ -118,4 +117,4 @@ private:
     medApplicationPrivate *d;
 };
 
-#endif // MEDAPPLICATION_H
+

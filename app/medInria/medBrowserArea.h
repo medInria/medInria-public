@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDBROWSERAREA_H
-#define MEDBROWSERAREA_H
+#pragma once
 
 #include <QtGui>
 
@@ -127,4 +126,4 @@ private:
     medBrowserAreaPrivate *d;
 };
 
-#endif // MEDBROWSERAREA_H
+

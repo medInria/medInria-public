@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEPREVIEWITEM_H
-#define MEDDATABASEPREVIEWITEM_H
+#pragma once
 
 #include <QtGui>
 #include <QtGui/QGraphicsPixmapItem>
@@ -63,4 +62,4 @@ private:
     medDatabasePreviewItemPrivate *d;
 };
 
-#endif // MEDDATABASEPREVIEWITEM_H
+

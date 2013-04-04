@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASENONPERSISTENTITEM_P_H
-#define MEDDATABASENONPERSISTENTITEM_P_H
+#pragma once
 
 #include <medDataIndex.h>
 
@@ -50,4 +49,4 @@ public:
     dtkSmartPointer<dtkAbstractData> data;
 };
 
-#endif
+

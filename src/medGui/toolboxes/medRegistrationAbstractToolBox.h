@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medRegistrationSelectorToolBoxCUSTOM_H
-#define medRegistrationSelectorToolBoxCUSTOM_H
+#pragma once
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -43,4 +42,4 @@ private:
     medRegistrationAbstractToolBoxPrivate *d;
 };
 
-#endif
+

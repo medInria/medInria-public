@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTDATASOURCEFACTORY_H
-#define MEDABSTRACTDATASOURCEFACTORY_H
+#pragma once
 
 #include "medCoreExport.h"
 #include <dtkCore/dtkAbstractFactory.h>
@@ -44,4 +43,4 @@ private:
     medAbstractDataSourceFactoryPrivate *d;
 };
 
-#endif
+

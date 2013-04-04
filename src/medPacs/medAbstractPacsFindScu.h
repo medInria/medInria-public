@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDABSTRACTPACSFINDSCU_H
-#define MEDABSTRACTPACSFINDSCU_H
+#pragma once
 
 #include "medAbstractPacsBaseScu.h"
 #include "medPacsExport.h"
@@ -35,4 +34,4 @@ public:
 
 };
 
-#endif
+

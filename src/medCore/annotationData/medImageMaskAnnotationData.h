@@ -5,8 +5,7 @@
  *      Author: jstark
  */
 
-#ifndef MSEGSEEDPOINTANNOTATIONDATA_H_
-#define MSEGSEEDPOINTANNOTATIONDATA_H_
+#pragma once
 
 #include "medCoreExport.h"
 
@@ -56,5 +55,5 @@ protected:
     dtkSmartPointer<medAbstractDataImage> m_maskData;
 };
 
-#endif /* MSEGSEEDPOINTANNOTATIONDATA_H_ */
+
 

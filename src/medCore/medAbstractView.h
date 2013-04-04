@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDABSTRACTVIEW_H
-#define MEDABSTRACTVIEW_H
+#pragma once
 
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -372,4 +371,4 @@ private:
     medAbstractViewPrivate *d;
 };
 
-#endif
+
