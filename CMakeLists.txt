@@ -75,7 +75,7 @@ endif(MSVC)
 
 add_subdirectory(src)
 add_subdirectory(app)
-add_subdirectory(medinria-plugins)
+add_subdirectory(src-plugins)
 
 if(MEDINRIA_BUILD_TESTING)
   add_subdirectory(tests)
