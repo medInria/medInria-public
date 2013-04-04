@@ -1,0 +1,20 @@
+/*! \page medInria-plugins-modules medInria Modules
+
+  medInria-plugins contains these plugins: 
+
+  <ul>
+  <li> \subpage itkDataDiffusionGradientList... </li>
+  <li> \subpage itkDataImage ...</li>
+  <li> \subpage itkDataImageReader ...</li>
+  <li> \subpage itkDataImageWriter ...</li>
+  <li> \subpage itkDataTensorImage ...</li>
+  <li> \subpage itkDataTensorImageReader ...</li>
+  <li> \subpage iv3dData ...</li>
+  <li> \subpage v3dView ...</li>
+  <li> \subpage v3dViewPublic ...</li>
+  <li> \subpage vtkDataMesh ...</li>
+  <li> \subpage vtkDataMeshReader ...</li>
+  <li> \subpage vtkDataMeshWriter ...</li>
+  </ul>
+and others... see class hierarcy for the rest.
+ */

@@ -1,0 +1,6 @@
+  <hr/>
+  Documentation built $datetime, git commit: @GIT_SHA1@
+  <img src="img/inria.png" align="right"/>
+
+  </body>
+</html>

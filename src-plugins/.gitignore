@@ -1,0 +1,6 @@
+*~
+*.swp
+build
+.project
+.DS_Store
+*.user*
