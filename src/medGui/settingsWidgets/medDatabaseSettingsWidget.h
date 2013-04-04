@@ -22,7 +22,7 @@ public slots:
     void read();
 
 private slots:
-    void selectDbDirectory(void);
+    void selectDbDirectory();
 
 protected:
     /**
@@ -31,7 +31,7 @@ protected:
      * @param void
      * @return true is the validation is successful, false otherwise.
     */
-    bool validate(void);
+    bool validate();
 
     bool write();
 private:

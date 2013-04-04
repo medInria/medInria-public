@@ -27,11 +27,11 @@ class MEDCORE_EXPORT medViewEventFilter : public dtkAbstractObject
 
 public:
              medViewEventFilter(dtkAbstractObject * parent = NULL);
-    virtual ~medViewEventFilter(void);
+    virtual ~medViewEventFilter();
 
     //! Implement dtkAbstractObject.
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
 
     //! Installs the eventFilter(this) in the given view
     void installOnView(medAbstractView * view);

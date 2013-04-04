@@ -34,7 +34,7 @@ class MEDSQL_EXPORT medDatabaseExporter : public medJobItem
 
 public:
      medDatabaseExporter(dtkAbstractData *data, const QString &filename);
-    ~medDatabaseExporter(void);
+    ~medDatabaseExporter();
     
     /**
      * @brief Starts the job and writes to the file system. 
@@ -42,7 +42,7 @@ public:
      * @param void
      * @todo enrich the signals in the exporter (the writer progress signal is not forwarded to the explorer)
     */
-    void run(void);
+    void run();
 
 private:
     medDatabaseExporterPrivate *d;

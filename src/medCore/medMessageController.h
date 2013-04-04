@@ -37,7 +37,7 @@ class MEDCORE_EXPORT medMessage : public QWidget
 
 public:
      medMessage(QWidget *parent = 0, const QString& text=NULL, unsigned int timeout=0);
-    ~medMessage(void);
+    ~medMessage();
     void startTimer();
     void stopTimer();
 
@@ -50,7 +50,7 @@ protected:
 
 
 protected slots:
-    void remove(void);
+    void remove();
 };
 
 
@@ -66,7 +66,7 @@ class medMessageInfo : public medMessage
 public:
      medMessageInfo(const QString& text, QWidget *parent = 0,
                                      unsigned int timeout=0);
-    ~medMessageInfo(void);
+    ~medMessageInfo();
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -79,7 +79,7 @@ class medMessageError : public medMessage
 public:
      medMessageError(const QString& text, QWidget *parent = 0,
                                       unsigned int timeout=0);
-    ~medMessageError(void);
+    ~medMessageError();
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -93,8 +93,8 @@ class MEDCORE_EXPORT medMessageProgress : public medMessage
 
 public:
      medMessageProgress(const QString& text, QWidget *parent = 0);
-    ~medMessageProgress(void);
-    void associateTimer(void);
+    ~medMessageProgress();
+    void associateTimer();
 
 protected:
     QProgressBar *progress;
@@ -102,8 +102,8 @@ protected:
 
 public slots:
     void setProgress(int value);
-    void success(void);
-    void failure(void);
+    void success();
+    void failure();
 };
 
 
@@ -116,7 +116,7 @@ class MEDCORE_EXPORT medMessageController : public QObject
     Q_OBJECT
 
 public:
-    static medMessageController *instance(void);
+    static medMessageController *instance();
 
 public slots:
     void     showInfo(const QString& text,unsigned int timeout=0);
@@ -130,8 +130,8 @@ signals:
   void removeMessage(medMessage * message);
 
 protected:
-     medMessageController(void);
-    ~medMessageController(void);
+     medMessageController();
+    ~medMessageController();
 
 protected:
     static medMessageController *s_instance;

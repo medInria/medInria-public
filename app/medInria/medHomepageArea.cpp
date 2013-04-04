@@ -354,7 +354,7 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 }
 
-void medHomepageArea::initPage ( void )
+void medHomepageArea::initPage()
 {
     //Initialization of the navigation widget with available workspaces
     QHash<QString,medWorkspaceDetails*> workspaceDetails =
@@ -403,12 +403,12 @@ void medHomepageArea::initPage ( void )
     d->navigationWidget->setMinimumHeight ( 55 * ( 1 + workspaceDetails.size() ) );
 }
 
-QParallelAnimationGroup* medHomepageArea::getAnimation ( void )
+QParallelAnimationGroup* medHomepageArea::getAnimation()
 {
     return d->animation;
 }
 
-void medHomepageArea::onShowBrowser ( void )
+void medHomepageArea::onShowBrowser()
 {
     emit showBrowser();
 }
@@ -418,13 +418,13 @@ void medHomepageArea::onShowWorkspace ( QString workspace )
     emit showWorkspace ( workspace );
 }
 
-void medHomepageArea::onShowAbout ( void )
+void medHomepageArea::onShowAbout()
 {
     d->stackedWidget->setCurrentWidget(d->aboutWidget);
     d->aboutWidget->setFocus();
 }
 
-void medHomepageArea::onShowPlugin ( void )
+void medHomepageArea::onShowPlugin()
 {
     d->stackedWidget->setCurrentWidget(d->pluginWidget);
 
@@ -439,7 +439,7 @@ void medHomepageArea::onShowInfo()
     d->infoWidget->setFocus();
 }
 
-void medHomepageArea::onShowHelp ( void )
+void medHomepageArea::onShowHelp()
 {
     QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
 //     QMessageBox * msgBox = new QMessageBox ( QApplication::activeWindow() );
@@ -449,7 +449,7 @@ void medHomepageArea::onShowHelp ( void )
 //     delete msgBox;
 }
 
-void medHomepageArea::onShowSettings ( void )
+void medHomepageArea::onShowSettings()
 {
     // emit showSettings is not deprecated here
 //    emit showSettings();

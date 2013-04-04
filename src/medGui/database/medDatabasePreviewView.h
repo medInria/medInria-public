@@ -34,17 +34,17 @@ class medDatabasePreviewView : public QGraphicsView
 
 public:
      medDatabasePreviewView(QWidget *parent = 0);
-    ~medDatabasePreviewView(void);
+    ~medDatabasePreviewView();
 
     void setScene(QGraphicsScene *scene);
 
     void setAcceptWheelEvent(bool accept);
 
 signals:
-    void moveUp(void);
-    void moveDw(void);
-    void moveRt(void);
-    void moveLt(void);
+    void moveUp();
+    void moveDw();
+    void moveRt();
+    void moveLt();
     void hovered(medDatabasePreviewItem *item);
 
     void objectDropped (const medDataIndex& index);

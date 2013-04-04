@@ -44,13 +44,13 @@ signals:
       * This signal is emitted when the user wants to navigate into the
       * subset of visible fibers (usefull for recursive fiber bundling).
       */
-    void fiberSelectionTagged    (void);
+    void fiberSelectionTagged();
 
     /**
       * This signal is emitted when the user wants to reset the fiber
       * navigation to the entire set of fibers.
       */
-    void fiberSelectionReset     (void);
+    void fiberSelectionReset();
 
     /**
       * This signal is emitted when the user wants to change the
@@ -72,7 +72,7 @@ protected slots:
      * Clears the toolbox. Removes any bundle in the fiber bundle treeview,
      * any ROI previously loaded (if any), etc.
      */
-    virtual void clear (void);
+    virtual void clear();
 
     /**
       * Add a bundle (identified by a name and a color) to the list of bundles.
@@ -95,12 +95,12 @@ protected slots:
     void setImage(const QImage& thumbnail);
 
     // internal method, doc to come
-    virtual void onBundlingButtonVdtClicked (void);
+    virtual void onBundlingButtonVdtClicked();
     virtual void onBundlingButtonAndToggled (bool);
     virtual void onBundleBoxCheckBoxToggled (bool);
     virtual void onBundlingShowCheckBoxToggled (bool);
 
-    virtual void onClearRoiButtonClicked (void);
+    virtual void onClearRoiButtonClicked();
     virtual void onRoiComboIndexChanged  (int value);
     virtual void onAddButtonToggled      (bool value);
     virtual void onNotButtonToggled      (bool value);

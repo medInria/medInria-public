@@ -37,16 +37,16 @@ class medDatabasePreviewItemGroup : public QObject, public QGraphicsItem
 
 public:
      medDatabasePreviewItemGroup(QGraphicsItem *parent = 0);
-    ~medDatabasePreviewItemGroup(void);
+    ~medDatabasePreviewItemGroup();
 
     void addItem(medDatabasePreviewItem *item);
 
-    void clear(void);
+    void clear();
 
     medDatabasePreviewItem *item(int index);
 
 public:
-    QRectF boundingRect(void) const;
+    QRectF boundingRect() const;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 

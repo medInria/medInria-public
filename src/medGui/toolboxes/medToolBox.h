@@ -58,7 +58,7 @@ public:
      *
      * @param void
     */
-    virtual ~medToolBox(void);
+    virtual ~medToolBox();
 
     /**
      * @brief Adds a widget to the toolbox.
@@ -104,7 +104,7 @@ public:
      * @param void
      * @return Qt::Orientation
     */
-    Qt::Orientation orientation(void) const;
+    Qt::Orientation orientation() const;
 
     /**
      * @brief Gets the Toolbox's header.
@@ -112,7 +112,7 @@ public:
      * @param void
      * @return medToolBoxHeader *
     */
-    medToolBoxHeader *header(void) const;
+    medToolBoxHeader *header() const;
 
     /**
      * @brief Gets the toolbox's body.
@@ -120,7 +120,7 @@ public:
      * @param void
      * @return medToolBoxBody *
     */
-    medToolBoxBody   *body(void)   const;
+    medToolBoxBody   *body()   const;
 
     /**
      * @brief Uncheck all buttons in this toolbox belonging to buttonGroup
@@ -145,7 +145,7 @@ public:
      * @brief Returns the aboutPlugin button visibility.
      *
      */
-    bool aboutPluginVisibility(void);
+    bool aboutPluginVisibility();
 
     /**
      * @brief Sets up the plugin this button is refering to.
@@ -176,7 +176,7 @@ signals:
      *
      * @param void
     */
-    void success(void);
+    void success();
 
     /**
      * @brief Emitted when an action from the toolbox failed.
@@ -184,7 +184,7 @@ signals:
      * Typically used when a dtkProcess returned.
      * @param void
     */
-    void failure(void);
+    void failure();
 
     /**
      * @brief Use this if buttons in different toolboxes are mutually exclusive
@@ -205,7 +205,7 @@ public slots:
      *
      * @param void
     */
-    virtual void clear(void);
+    virtual void clear();
 
     /**
      * @brief Updates the content of the toolbox when a new view is selected.
@@ -243,7 +243,7 @@ public slots:
      * @see setValidDataTypes
      * @param void
     */
-    const QStringList ValidDataTypes(void);
+    const QStringList ValidDataTypes();
 
     /**
      * @brief Add a valid data type to the toolbox's valid data types.
@@ -269,14 +269,14 @@ public slots:
      *
      * @param void
     */
-    bool ContextVisible(void);
+    bool ContextVisible();
 
     /**
      * @brief Show the toolbox, "overloads" the QWidget show
      *
      * @param void
     */
-    void show(void);
+    void show();
 
 
 protected slots:

@@ -26,7 +26,7 @@ public:
     /**
      * Destructor
      */
-    ~medStatusBar(void);
+    ~medStatusBar();
 
     /**
      *  Set the status bar layout containing the widgets
@@ -50,11 +50,11 @@ public:
      */
     void setAvailableSpace( int space );
 
-    int getAvailableSpace( void );
+    int getAvailableSpace();
 
     void init_availableSpace();
 
-    void spaceManagement ( void );
+    void spaceManagement();
 
     void hideMessage( );
 
@@ -78,7 +78,7 @@ public slots:
 
 
 signals:
-    void initializeAvailableSpace(void);
+    void initializeAvailableSpace();
 
 private:
     medStatusBarPrivate * d;

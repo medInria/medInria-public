@@ -62,7 +62,7 @@ medDatabaseImporter::medDatabaseImporter ( const QString& file, bool indexWithou
 
 //-----------------------------------------------------------------------------------------------------------
 
-medDatabaseImporter::~medDatabaseImporter ( void )
+medDatabaseImporter::~medDatabaseImporter()
 {
     delete d;
 
@@ -71,7 +71,7 @@ medDatabaseImporter::~medDatabaseImporter ( void )
 
 //-----------------------------------------------------------------------------------------------------------
 
-void medDatabaseImporter::run ( void )
+void medDatabaseImporter::run()
 {
     QMutexLocker locker ( &d->mutex );
 

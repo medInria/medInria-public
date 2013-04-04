@@ -19,12 +19,12 @@ public:
     * get an instance of medDatabaseControllerImpl, not of medDatabaseController
     * @return QPointer<medDbController>
     */
-    static QPointer<medDatabaseNonPersistentControllerImpl> instance(void);
+    static QPointer<medDatabaseNonPersistentControllerImpl> instance();
     
     /**
     * destroy instance of medDbController
     */
-    static void destroy(void);
+    static void destroy();
 
 private:
     static medDatabaseNonPersistentControllerImpl *s_instance;

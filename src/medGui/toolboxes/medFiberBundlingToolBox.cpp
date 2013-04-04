@@ -129,7 +129,7 @@ medFiberBundlingToolBox::medFiberBundlingToolBox(QWidget *parent) : medToolBox(p
     bundlingLayout->addWidget(d->bundlingList);
     bundlingLayout->addWidget(d->bundlingShowCheckBox);
 
-    connect (d->bundlingButtonVdt,     SIGNAL(clicked(void)),            this, SLOT (onBundlingButtonVdtClicked (void)));
+    connect (d->bundlingButtonVdt,     SIGNAL(clicked(void)),            this, SLOT (onBundlingButtonVdtClicked()));
     connect (d->bundleBoxCheckBox,     SIGNAL(toggled(bool)),            this, SLOT (onBundleBoxCheckBoxToggled (bool)));
     connect (d->bundlingButtonAdd,     SIGNAL(toggled(bool)),            this, SLOT (onBundlingButtonAndToggled(bool)));
 
@@ -186,7 +186,7 @@ void medFiberBundlingToolBox::setData(dtkAbstractData *data)
     }
 }
 
-void medFiberBundlingToolBox::onBundlingButtonVdtClicked (void)
+void medFiberBundlingToolBox::onBundlingButtonVdtClicked()
 {
     if (!d->data)
         return;

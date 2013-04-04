@@ -283,7 +283,7 @@ void medWorkspace::setToolBoxesVisibility (bool value)
     d->toolBoxesVisibility = value;
 }
 
-bool medWorkspace::areToolBoxesVisible (void) const
+bool medWorkspace::areToolBoxesVisible() const
 {
     return d->toolBoxesVisibility;
 }

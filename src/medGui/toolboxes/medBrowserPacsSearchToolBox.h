@@ -31,13 +31,13 @@ class MEDGUI_EXPORT medBrowserPacsSearchToolBox : public medToolBox
 
 public:
      medBrowserPacsSearchToolBox(QWidget *parent = 0);
-    ~medBrowserPacsSearchToolBox(void);
+    ~medBrowserPacsSearchToolBox();
 
 signals:
     void search(QString query);
 
 protected slots:
-    void onSearch(void);
+    void onSearch();
 
 private:
     medBrowserPacsSearchToolBoxPrivate *d;

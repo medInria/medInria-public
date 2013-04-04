@@ -32,12 +32,12 @@ class MEDGUI_EXPORT medRegistrationAbstractToolBox : public medToolBox
 
 public:
              medRegistrationAbstractToolBox(QWidget *parentToolBox = 0);
-    virtual ~medRegistrationAbstractToolBox(void);
+    virtual ~medRegistrationAbstractToolBox();
 
     void setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox);
 
 protected:
-    medRegistrationSelectorToolBox *parentToolBox(void);
+    medRegistrationSelectorToolBox *parentToolBox();
 
 private:
     medRegistrationAbstractToolBoxPrivate *d;

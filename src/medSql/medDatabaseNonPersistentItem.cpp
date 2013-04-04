@@ -37,12 +37,12 @@ const QString& medDatabaseNonPersistentItem::name(void) const
     return d->name;
 }
 
-const QString& medDatabaseNonPersistentItem::birthdate ( void ) const
+const QString& medDatabaseNonPersistentItem::birthdate() const
 {
     return d->birthdate;
 }
 
-const QString& medDatabaseNonPersistentItem::patientId ( void ) const
+const QString& medDatabaseNonPersistentItem::patientId() const
 {
   return d->patientId;
 }
@@ -52,12 +52,12 @@ const QString& medDatabaseNonPersistentItem::studyName(void) const
     return d->studyName;
 }
 
-const QString& medDatabaseNonPersistentItem::studyId ( void ) const
+const QString& medDatabaseNonPersistentItem::studyId() const
 {
   return d->studyId;
 }
 
-const QString& medDatabaseNonPersistentItem::studyUid ( void ) const
+const QString& medDatabaseNonPersistentItem::studyUid() const
 {
   return d->studyUid;
 }
@@ -68,12 +68,12 @@ const QString& medDatabaseNonPersistentItem::seriesName(void) const
     return d->seriesName;
 }
 
-const QString& medDatabaseNonPersistentItem::seriesId ( void ) const
+const QString& medDatabaseNonPersistentItem::seriesId() const
 {
     return d->seriesId;
 }
 
-const QString& medDatabaseNonPersistentItem::seriesUid ( void ) const
+const QString& medDatabaseNonPersistentItem::seriesUid() const
 {
   return d->seriesUid;
 }

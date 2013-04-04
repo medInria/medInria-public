@@ -47,7 +47,7 @@ medHomepagePushButton::medHomepagePushButton ( QWidget * parent ) : QPushButton 
     this->setMouseTracking(true);
 }
 
-void medHomepagePushButton::onClick ( void )
+void medHomepagePushButton::onClick()
 {
     emit clicked ( this->identifier() );
 }
@@ -57,7 +57,7 @@ medHomepageButton::medHomepageButton ( QWidget * parent ) : QToolButton ( parent
     QObject::connect ( this, SIGNAL ( clicked() ), this, SLOT ( onClick() ) );
 }
 
-void medHomepageButton::onClick ( void )
+void medHomepageButton::onClick()
 {
     emit clicked ( this->identifier() );
 }

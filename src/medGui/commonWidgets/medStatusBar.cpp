@@ -37,7 +37,7 @@ void medStatusBar::setAvailableSpace ( int space )
     this->availableSpace = space;
 }
 
-int medStatusBar::getAvailableSpace ( void )
+int medStatusBar::getAvailableSpace()
 {
     return this->availableSpace;
 }

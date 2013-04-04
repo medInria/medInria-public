@@ -32,7 +32,7 @@ class medFlicker: public QObject
 
 public:
      medFlicker(QObject *parent = 0);
-    ~medFlicker(void);
+    ~medFlicker();
 
     void activateOn(QWidget *widget);
     void deactivateFrom(QWidget *widget);

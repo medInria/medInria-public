@@ -33,7 +33,7 @@ class medVisualizationWorkspace : public medWorkspace
 
 public:
      medVisualizationWorkspace(QWidget *parent = 0);
-    ~medVisualizationWorkspace(void);
+    ~medVisualizationWorkspace();
 
     virtual void setupViewContainerStack();
 

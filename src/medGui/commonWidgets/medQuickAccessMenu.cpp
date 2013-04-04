@@ -101,7 +101,7 @@ void medQuickAccessMenu::updateSelected (QString workspace)
 /**
  * Actually emits signal to switch to selected workspace
  */
-void medQuickAccessMenu::switchToCurrentlySelected ( void )
+void medQuickAccessMenu::switchToCurrentlySelected()
 {
     if (currentSelected < 0)
     {
@@ -131,7 +131,7 @@ void medQuickAccessMenu::switchToCurrentlySelected ( void )
 /**
  * Move selected widget one position to the left
  */
-void medQuickAccessMenu::updateCurrentlySelectedLeft ( void )
+void medQuickAccessMenu::updateCurrentlySelectedLeft()
 {
     if (currentSelected <= 0)
     {
@@ -152,7 +152,7 @@ void medQuickAccessMenu::updateCurrentlySelectedLeft ( void )
 /**
  * Move selected widget one position to the right
  */
-void medQuickAccessMenu::updateCurrentlySelectedRight ( void )
+void medQuickAccessMenu::updateCurrentlySelectedRight()
 {
     if (currentSelected < 0)
     {
@@ -254,7 +254,7 @@ void medQuickAccessMenu::mouseSelectWidget(unsigned int identifier)
 /**
  * Vertical menu layout creation method
  */
-void medQuickAccessMenu::createVerticalQuickAccessMenu ( void )
+void medQuickAccessMenu::createVerticalQuickAccessMenu()
 {
     buttonsList.clear();
     QHash<QString,medWorkspaceDetails*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetails();
@@ -333,7 +333,7 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu ( void )
 /**
  * Horizontal menu layout creation method
  */
-void medQuickAccessMenu::createHorizontalQuickAccessMenu ( void )
+void medQuickAccessMenu::createHorizontalQuickAccessMenu()
 {
     buttonsList.clear();
     QHash<QString,medWorkspaceDetails*> workspaceDetails = medWorkspaceFactory::instance()->workspaceDetails();

@@ -35,7 +35,7 @@ public:
     void split(int rows, int cols);
 
     virtual void setView(dtkAbstractView *view);
-    virtual dtkAbstractView *view (void) const;
+    virtual dtkAbstractView *view() const;
 
     /**
      * @brief Is this a leaf container?
@@ -48,14 +48,14 @@ public:
      * @param void
      * @return bool
     */
-    virtual bool isLeaf(void) const;
+    virtual bool isLeaf() const;
 
     virtual QString identifier() {return "Single";}
 
     virtual QString description() {return "Single";}
 
 public slots:
-    virtual void onViewClosing (void);
+    virtual void onViewClosing();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);

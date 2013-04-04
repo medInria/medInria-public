@@ -34,17 +34,17 @@ class MEDSQL_EXPORT medDatabaseItem : public medAbstractDatabaseItem
 {
 public:
      medDatabaseItem(medDataIndex index, const QList<QVariant>& attributes, const QList<QVariant>& data, medAbstractDatabaseItem *parent = 0);
-    ~medDatabaseItem(void);
+    ~medDatabaseItem();
 
     medAbstractDatabaseItem *child(int row);
-    medAbstractDatabaseItem *parent(void);
+    medAbstractDatabaseItem *parent();
 
     void append(medAbstractDatabaseItem *child);
 
-    int row(void) const;
-    int childCount(void) const;
-    int childNumber(void) const;
-    int columnCount(void) const;
+    int row() const;
+    int childCount() const;
+    int childNumber() const;
+    int columnCount() const;
 
     QVariant data(int column) const;
 

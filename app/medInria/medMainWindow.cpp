@@ -131,7 +131,7 @@ public:
 };
 
 #if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
-extern "C" int init_core ( void );               // -- Initialization core layer python wrapped functions
+extern "C" int init_core();               // -- Initialization core layer python wrapped functions
 #endif
 
 #if defined(HAVE_SWIG) && defined(HAVE_TCL)
@@ -371,7 +371,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect ( qApp, SIGNAL ( aboutToQuit() ), this, SLOT ( close() ) );
 }
 
-medMainWindow::~medMainWindow ( void )
+medMainWindow::~medMainWindow()
 {
     delete d;
 
@@ -434,7 +434,7 @@ void medMainWindow::keyReleaseEvent( QKeyEvent * event )
     QMainWindow::keyReleaseEvent(event);
 }
 
-void medMainWindow::readSettings ( void )
+void medMainWindow::readSettings()
 {
     //  If the user configured a default area we need to show it
 
@@ -583,7 +583,7 @@ void medMainWindow::showMaximized()
     QMainWindow::showMaximized();
 }
 
-void medMainWindow::switchToHomepageArea ( void )
+void medMainWindow::switchToHomepageArea()
 {
     d->shortcutAccessWidget->updateSelected("Homepage");
     d->quickAccessWidget->updateSelected("Homepage");
@@ -605,7 +605,7 @@ void medMainWindow::switchToHomepageArea ( void )
         d->homepageArea->getAnimation()->start();
 }
 
-void medMainWindow::switchToBrowserArea ( void )
+void medMainWindow::switchToBrowserArea()
 {
     d->shortcutAccessWidget->updateSelected("Browser");
     d->quickAccessWidget->updateSelected("Browser");
@@ -626,7 +626,7 @@ void medMainWindow::switchToBrowserArea ( void )
     d->stack->setCurrentWidget ( d->browserArea );
 }
 
-void medMainWindow::switchToWorkspaceArea ( void )
+void medMainWindow::switchToWorkspaceArea()
 {
     if (d->quickAccessVisible)
         this->hideQuickAccess();
@@ -680,7 +680,7 @@ void medMainWindow::showWorkspace ( QString workspace )
 /**
  * Slot to show bottom left menu
  */
-void medMainWindow::showQuickAccess ( void )
+void medMainWindow::showQuickAccess()
 {
     if ( d->quickAccessVisible )
     {
@@ -701,7 +701,7 @@ void medMainWindow::showQuickAccess ( void )
 /**
  * Slot to hide bottom left menu
  */
-void medMainWindow::hideQuickAccess ( void )
+void medMainWindow::hideQuickAccess()
 {
     if (!d->quickAccessVisible)
         return;
@@ -716,7 +716,7 @@ void medMainWindow::hideQuickAccess ( void )
 /**
  * Slot to show alt-tab like menu
  */
-void medMainWindow::showShortcutAccess ( void )
+void medMainWindow::showShortcutAccess()
 {
     if ( d->shortcutAccessVisible )
     {
@@ -740,7 +740,7 @@ void medMainWindow::showShortcutAccess ( void )
 /**
  * Slot to hide alt-tab like menu
  */
-void medMainWindow::hideShortcutAccess ( void )
+void medMainWindow::hideShortcutAccess()
 {
     if (!d->shortcutAccessVisible)
         return;
@@ -756,7 +756,7 @@ void medMainWindow::onWorkspaceTriggered ( QAction *action )
     d->workspaceArea->setupWorkspace ( action->text() );
 }
 
-void medMainWindow::onNoQuit ( void )
+void medMainWindow::onNoQuit()
 {
     d->quitMessage->hide();
     d->rightEndButtons->show();
@@ -770,7 +770,7 @@ void medMainWindow::onNoQuit ( void )
     d->statusBar->showHiddenMessage();  //space has been freed
 }
 
-void medMainWindow::onQuit ( void )
+void medMainWindow::onQuit()
 {
     d->statusBar->init_availableSpace();
     int space = d->statusBar->getAvailableSpace();

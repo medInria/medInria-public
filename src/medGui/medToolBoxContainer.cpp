@@ -134,7 +134,7 @@ void medToolBoxContainer::setOrientation(Qt::Orientation orient)
 //    }
 }
 
-Qt::Orientation medToolBoxContainer::orientation (void) const
+Qt::Orientation medToolBoxContainer::orientation() const
 {
     return d->layoutOrientation;
 }

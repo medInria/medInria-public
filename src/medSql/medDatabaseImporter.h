@@ -53,13 +53,13 @@ class MEDSQL_EXPORT medDatabaseImporter : public medJobItem
 
 public:
     medDatabaseImporter ( const QString& file, bool indexWithoutImporting );
-    ~medDatabaseImporter ( void );
+    ~medDatabaseImporter();
 
     /**
     * Runs the import process based on the input file
     * or directory given in the constructor
     **/
-    void run ( void );
+    void run();
 
 signals:
     /**
