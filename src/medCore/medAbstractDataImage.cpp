@@ -63,7 +63,7 @@ const medAbstractDataImage::PixId& medAbstractDataImage::PixelType() const
 {
     DTK_DEFAULT_IMPLEMENTATION;
 
-    return typeid();
+    return typeid(void);
 }
 
 int medAbstractDataImage::xDimension(void)

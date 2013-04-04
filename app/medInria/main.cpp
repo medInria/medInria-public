@@ -94,7 +94,7 @@ int main(int argc,char* argv[]) {
     medSettingsManager* mnger = medSettingsManager::instance();
 
     QStringList posargs;
-    for (unsigned i=1;i<application.argc();++i) {
+    for (int i=1;i<application.argc();++i) {
         const QString arg = application.argv()[i];
         if (arg.startsWith("--")) {
             bool valid_option = false;
@@ -102,7 +102,7 @@ int main(int argc,char* argv[]) {
             for (QStringList::const_iterator i=options.constBegin();i!=options.constEnd();++i)
                 if (arg==*i)
                     valid_option = true;
-            if (!valid_option) { qDebug() << "Ignoring unknowm option " << arg; }
+            if (!valid_option) { qDebug() << "Ignoring unknown option " << arg; }
             continue;
         }
         posargs.append(arg);

@@ -68,7 +68,7 @@ void medQuickAccessMenu::keyReleaseEvent ( QKeyEvent * event )
  */
 void medQuickAccessMenu::mouseMoveEvent (QMouseEvent *event)
 {
-    for (unsigned int i = 0;i < buttonsList.size();++i)
+    for (int i = 0;i < buttonsList.size();++i)
     {
         QRect widgetRect = buttonsList[i]->geometry();
         if (widgetRect.contains(event->pos()))
@@ -88,7 +88,7 @@ void medQuickAccessMenu::updateSelected (QString workspace)
 {
     currentSelected = 0;
     
-    for (unsigned int i = 0;i < buttonsList.size();++i)
+    for (int i = 0;i < buttonsList.size();++i)
     {
         if (buttonsList[i]->identifier() == workspace)
         {
@@ -175,7 +175,7 @@ void medQuickAccessMenu::updateCurrentlySelectedRight()
  */
 void medQuickAccessMenu::reset(bool optimizeLayout)
 {
-    for (unsigned int i = 0;i < buttonsList.size();++i)
+    for (int i = 0;i < buttonsList.size();++i)
     {
         if (currentSelected == i)
             buttonsList[i]->setSelected(true);
@@ -203,11 +203,11 @@ void medQuickAccessMenu::reset(bool optimizeLayout)
                     layout->addWidget(buttonsList[totalAdded],i,j);
                     ++totalAdded;
                     
-                    if (totalAdded == buttonsList.size())
+                    if (totalAdded == (unsigned int)buttonsList.size())
                         break;
                 }
                 
-                if (totalAdded == buttonsList.size())
+                if (totalAdded == (unsigned int)buttonsList.size())
                     break;
             }
             
@@ -220,8 +220,7 @@ void medQuickAccessMenu::reset(bool optimizeLayout)
         else
         {
             QHBoxLayout *layout = new QHBoxLayout;
-            unsigned int totalAdded = 0;
-            for (unsigned int i = 0;i < buttonsList.size();++i)
+            for (int i = 0;i < buttonsList.size();++i)
                 layout->addWidget(buttonsList[i]);
             
             backgroundFrame->setLayout(layout);
@@ -241,7 +240,7 @@ void medQuickAccessMenu::mouseSelectWidget(unsigned int identifier)
 {
     unsigned int newSelection = identifier;
     
-    if (newSelection == currentSelected)
+    if (newSelection == (unsigned int)currentSelected)
         return;
     
     if (currentSelected >= 0)

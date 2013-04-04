@@ -724,7 +724,7 @@ void medClutEditorTable::setTransferFunction( QList<double> &scalars,
 
 void medClutEditorTable::simplifyTransferFunction()
 {
-    qreal threshold;
+    qreal threshold = 1.0;
     bool foundThreshold = false;
 
     d->vertices.first()->setSelected( false );
