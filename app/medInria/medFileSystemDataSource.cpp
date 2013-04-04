@@ -276,7 +276,7 @@ QStringList medFileSystemDataSource::removeNestedPaths(const QStringList& paths)
         }
     }
 
-    QStringList purgedList = *(new QStringList(paths));
+    QStringList purgedList;
 
     foreach(QString path, toRemove)
         purgedList.removeAll(path);

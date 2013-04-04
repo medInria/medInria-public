@@ -26,7 +26,6 @@ project(medCore)
 set(${PROJECT_NAME}_HEADERS_MOC
   medDataManager.h
   medMessageController.h
-  medMetaDataKeys.h
   medViewManager.h
   medPluginManager.h
   medAbstractView.h
@@ -58,6 +57,7 @@ set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
   medCoreExport.h
   medDataIndex.h
+  medMetaDataKeys.h
   medDataReaderWriter.h
   medAbstractDataTypedImage.h
   medAbstractDatabaseItem.h
