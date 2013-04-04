@@ -1,10 +1,12 @@
+
+
 SET(Helpers_classes
-vtkImageDataInterpolator
-vtkBetterDataReader
-vtkDoubleToUCharFilter
-vtkImageSliceActor
-vtkImageOrthogonalSlicesActor
-)
+    vtkImageDataInterpolator
+    vtkBetterDataReader
+    vtkDoubleToUCharFilter
+    vtkImageSliceActor
+    vtkImageOrthogonalSlicesActor
+    )
 
 FOREACH(class ${Helpers_classes})
   SET(Helpers_SRCS    ${Helpers_SRCS}    ${class}.cxx)
@@ -14,15 +16,15 @@ ENDFOREACH(class)
 ADD_LIBRARY(vtkHelpers SHARED ${Helpers_SRCS})
 
 TARGET_LINK_LIBRARIES(vtkHelpers
-vtkCommon
-vtkIO
-vtkFiltering
-vtkImaging
-vtkGraphics
-vtkRendering
-)
+  vtkCommon
+  vtkIO
+  vtkFiltering
+  vtkImaging
+  vtkGraphics
+  vtkRendering
+  )
 
-IF( BUILD_TESTING )
+IF( VTKINRIA_BUILD_TESTING )
   ADD_SUBDIRECTORY( Testing )
 ENDIF()
 

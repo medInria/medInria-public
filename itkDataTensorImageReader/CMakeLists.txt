@@ -41,11 +41,6 @@ include(${TTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-#include_directories(../dtkItkLogForwarder)
-find_package(medInria-plugins REQUIRED)
-include(${medInria-plugins_USE_FILE})
-
-
 ## #################################################################
 ## Input
 ## #################################################################
@@ -70,12 +65,12 @@ set(${PROJECT_NAME}_SOURCES
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES})
-endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+endif(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}

@@ -1,18 +1,18 @@
 PROJECT(PolydataToFiberXML)
 
 include_directories(
-../../vtkRenderingAddOn
-../../vtkDataManagement
-)
+  ../../vtkRenderingAddOn
+  ../../vtkDataManagement
+  )
 
-ADD_EXECUTABLE(PolydataToFiberXML
-PolydataToFiberXML.cxx
-)
+ADD_EXECUTABLE(${PROJECT_NAME}
+  PolydataToFiberXML.cxx
+  )
 
-TARGET_LINK_LIBRARIES(PolydataToFiberXML
-vtkDataManagement
-vtkRendering
-vtkIO
-)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+  vtkDataManagement
+  vtkRendering
+  vtkIO
+  )
 
 

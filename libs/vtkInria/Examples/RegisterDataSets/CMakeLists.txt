@@ -1,23 +1,23 @@
 PROJECT(RegisterDataSets)
 
 include_directories(
-../../vtkImageView
-../../vtkDataManagement
-)
+  ../../vtkImageView
+  ../../vtkDataManagement
+  )
 
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 
 if (APPLE)
-  ADD_EXECUTABLE(RegisterDataSets MACOSX_BUNDLE
+  ADD_EXECUTABLE(${PROJECT_NAME} MACOSX_BUNDLE
     RegisterDataSets.cxx
-  )  
+    )  
 else(APPLE)
-  ADD_EXECUTABLE(RegisterDataSets
+  ADD_EXECUTABLE(${PROJECT_NAME}
     RegisterDataSets.cxx
-  )  
+    )  
 endif()
 
-TARGET_LINK_LIBRARIES(RegisterDataSets
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   vtkImageView
   vtkDataManagement
-)
+  )

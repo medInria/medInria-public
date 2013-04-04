@@ -36,11 +36,6 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-# medInria
-find_package(medInria REQUIRED)
-include(${medInria_USE_FILE})
-
-
 ## #################################################################
 ## Input
 ## #################################################################

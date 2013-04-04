@@ -54,26 +54,27 @@ include(medInria-pluginsMacros)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
+
+#directories to include to the project
+include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeIncludeDirectories.cmake)
+
 # Export medinriq-plugins_DIR variable so that internal project can automatically find it
-set(medInria-plugins_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
+set(${PROJECT_NAME}_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 
 
 ## #################################################################
 ## Dashboard settings
 ## #################################################################
 
-enable_testing()
-OPTION(BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
-
 #configure ctest variables
-option(BUILD_REPORTING "Build Reporting")
-if(BUILD_REPORTING)
+option(MEDINRIA-PLUGINS_BUILD_REPORTING "Build Reporting")
+if(MEDINRIA-PLUGINS_BUILD_REPORTING)
   include(dtkReporting)
-endif(BUILD_REPORTING)
+endif(MEDINRIA-PLUGINS_BUILD_REPORTING)
 
-if (BUILD_TESTING)
+if (MEDINRIA-PLUGINS_BUILD_TESTING)
   add_subdirectory(tests)
-endif (BUILD_TESTING)
+endif (MEDINRIA-PLUGINS_BUILD_TESTING)
 
 ## #################################################################
 ## Input
@@ -81,15 +82,18 @@ endif (BUILD_TESTING)
 if(MSVC)
   #Macros that enable precompiled headers to be added, defined by dtk.
   include(dtkPch)
-  option(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
+  option(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
 endif(MSVC)
 
 set(DEPENDS_ON_DTK 1)
 
-option(MEDINRIA_BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individual selections)" OFF)
+option(BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individual selections)" ON)
+
+OPTION(MEDINRIA-PLUGINS_BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
 
 ## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
 set(PLUGIN_LIST
+  ${EXAMPLE_PLUGINS}
   v3dData                        ON
   v3dView                        ON
   itkDataImage                   ON
@@ -104,12 +108,18 @@ set(PLUGIN_LIST
   itkDataTensorImageWriter       ON
   itkDataTensorImageReader       ON
   medSegmentation                ON
-  medCompositeDataSets           OFF
-  ITKProcessExample              OFF
+  medCompositeDataSets           ON
   itkFilters                     ON
-  exampleProcessImageFilter      OFF  
   qtdcmDataSource                ON
   )
+
+if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
+  set (PLUGIN_LIST
+    ${PLUGIN_LIST}
+    exampleProcessImageFilter      ON
+    ITKProcessExample              ON
+    )
+endif()
 
 #MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
 
@@ -133,73 +143,106 @@ endwhile()
 
 ## Registration plugins, registration plugins are only built if this option is
 ## enabled or MEDINRIA_BUILD_ALL_PLUGINS is ON.
-option(MEDINRIA_ENABLE_REGISTRATION_PLUGINS "Build Registration plugins" "ON")
-if (MEDINRIA_ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
+option(ENABLE_REGISTRATION_PLUGINS "Build Registration plugins" "ON")
+if (ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
+  #Put here your registration plugin directory/project name.
+  set(REG_PLUGIN_LIST itkProcessRegistrationDiffeomorphicDemons ON)
+  list(LENGTH REG_PLUGIN_LIST N)
+  set(INDEX 0)
+  while(INDEX LESS N)
+    MATH( EXPR INDEX_BOOL "${INDEX} + 1" )
 
-    #Put here your registration plugin directory/project name.
-    set(REG_PLUGIN_LIST
-      itkProcessRegistrationDiffeomorphicDemons ON)
+    list(GET REG_PLUGIN_LIST ${INDEX} PLUGIN_ITEM)
+    list(GET REG_PLUGIN_LIST ${INDEX_BOOL} BUILD_VALUE)
 
-list(LENGTH REG_PLUGIN_LIST N)
-set(INDEX 0)
-while(INDEX LESS N)
-  MATH( EXPR INDEX_BOOL "${INDEX} + 1" )
+    MACRO_ADD_PLUGIN (${PLUGIN_ITEM} ${BUILD_VALUE})
+    #message(${PLUGIN_ITEM} " " ${BUILD_VALUE})
 
-  list(GET REG_PLUGIN_LIST ${INDEX} PLUGIN_ITEM)
-  list(GET REG_PLUGIN_LIST ${INDEX_BOOL} BUILD_VALUE)
-
-  MACRO_ADD_PLUGIN (${PLUGIN_ITEM} ${BUILD_VALUE})
-  #message(${PLUGIN_ITEM} " " ${BUILD_VALUE})
-
-  MATH( EXPR INDEX "${INDEX} + 2" )
-endwhile()
-
+    MATH( EXPR INDEX "${INDEX} + 2" )
+  endwhile()
 endif()
 
-if (MEDINRIA_BUILD_ALL_PLUGINS OR
-    MEDINRIA_BUILD_V3DDATA_PLUGIN OR
-    MEDINRIA_BUILD_V3DVIEW_PLUGIN OR
-    MEDINRIA_BUILD_VTKDATAMESH_PLUGIN OR
-    MEDINRIA_BUILD_VTKDATAMESHREADER_PLUGIN OR
-    MEDINRIA_BUILD_VTKDATAMESHWRITER_PLUGIN OR
-    MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
-    MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN)
-    set(MEDINRIA_REQUIRES_VTK TRUE)
+if(BUILD_ALL_PLUGINS OR
+  BUILD_VTKDATAMESHWRITER_PLUGIN OR
+  BUILD_VTKDATAMESHREADER_PLUGIN OR
+  BUILD_VTKDATAMESH_PLUGIN OR
+  BUILD_V3DVIEW_PLUGIN OR
+  BUILD_V3DDATA_PLUGIN OR
+  BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
+  BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN 
+  )
+  set(MEDINRIA_REQUIRES_VTK TRUE)
 endif()
 
-if (MEDINRIA_BUILD_ALL_PLUGINS OR
-    MEDINRIA_BUILD_ITKDATAIMAGE_PLUGIN OR
-    MEDINRIA_BUILD_ITKDATAIMAGEREADER_PLUGIN OR
-    MEDINRIA_BUILD_ITKDATAIMAGEWRITER_PLUGIN OR
-    MEDINRIA_BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN OR
-    MEDINRIA_BUILD_ITKDATATENSORIMAGE_PLUGIN OR
-    MEDINRIA_BUILD_ITKDATATENSORIMAGEREADER_PLUGIN OR
-    MEDINRIA_BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN OR
-    MEDINRIA_BUILD_SEGMENTATION_PLUGIN OR
-    MEDINRIA_BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
-    MEDINRIA_BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN OR
-    MEDINRIA_BUILD_ITKPROCESSEXAMPLE_PLUGIN OR
-    MEDINRIA_BUILD_ITKFILTERS_PLUGIN)
-    set(MEDINRIA_REQUIRES_ITK TRUE)
+if(BUILD_ALL_PLUGINS OR
+  BUILD_VTKDATAMESHWRITER_PLUGIN OR
+  BUILD_VTKDATAMESHREADER_PLUGIN OR
+  BUILD_VTKDATAMESH_PLUGIN OR
+  BUILD_V3DVIEW_PLUGIN OR
+  BUILD_V3DDATA_PLUGIN OR
+  BUILD_QTDCMDATASOURCE_PLUGIN OR
+  BUILD_SEGMENTATION_PLUGIN OR
+  BUILD_MEDCOMPOSITEDATASET_PLUGIN OR
+  BUILD_ITKPROCESSEXAMPLE_PLUGIN OR
+  BUILD_ITKFILTERS_PLUGIN OR
+  BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
+  BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN OR
+  BUILD_ITKDATATENSORIMAGEREADER_PLUGIN OR
+  BUILD_ITKDATATENSORIMAGE_PLUGIN OR
+  BUILD_ITKDATAIMAGEWRITER_PLUGIN OR
+  BUILD_ITKDATAIMAGEREADER_PLUGIN OR
+  BUILD_ITKDATAIMAGE_PLUGIN OR
+  BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN OR
+  BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
+  BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN 
+  )                   
+  set(MEDINRIA_REQUIRES_ITK TRUE)
+endif()
+
+if (BUILD_ALL_PLUGINS OR
+  ENABLE_REGISTRATION_PLUGINS
+  )
+  set(MEDINRIA_REQUIERS_ITKPROCESSREGISTRATION TRUE)
+endif()
+
+if(BUILD_ALL_PLUGINS OR
+  BUILD_ITKDATAIMAGEWRITER_PLUGIN OR
+  BUILD_ITKDATAIMAGEREADER_PLUGIN
+  )
+  set(MEDINRIA_REQUIERS_ITKDATAIMAGEBASE TRUE)
+endif()
+
+if(BUILD_ALL_PLUGINS OR
+  BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN
+  )
+  set(MEDINRIA_REQUIERS_ITKDCMTKIO TRUE)
+endif()
+
+
+if(BUILD_ALL_PLUGINS OR
+  BUILD_V3DVIEW_PLUGIN OR
+  BUILD_V3DDATA_PLUGIN     
+  )
+  set(MEDINRIA_REQUIRES_VTKINRIA TRUE)
 endif()
 
 ## Needs MEDINRIA_REQUIRES_ITK and MEDINRIA_REQUIRES_VTK
 ## to be set before  being included.
 add_subdirectory(libs)
 
-option(MEDINRIA_BUILD_TOOLS  "Build Tools" "OFF")
-if (MEDINRIA_BUILD_TOOLS)
+option(MEDINRIA-PLUGINS_BUILD_TOOLS  "Build Tools" "ON")
+if (MEDINRIA-PLUGINS_BUILD_TOOLS)
     add_subdirectory(tools)
 endif()
 
-option(BUILD_DOCUMENTATION "Build documentation"    true)
-if(BUILD_DOCUMENTATION)
+option(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION "Build documentation"    OFF)
+if(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
-endif(BUILD_DOCUMENTATION)
+endif(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
 
 
-
-include(${PROJECT_NAME}Pack)
+#already did in medinria-pluginsPack.cmake
+#include(${PROJECT_NAME}Pack)
 
 ## #################################################################
 ## Mac packaging tools

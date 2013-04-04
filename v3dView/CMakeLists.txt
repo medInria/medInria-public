@@ -31,14 +31,11 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## Resolve dependencies
 ## #################################################################
 
-option(MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE "Include TTK dependent code in ${PROJECT_NAME}" "ON")
+option(V3DVIEW_BUILD_TTK_DEPENDENT_CODE "Include TTK dependent code in ${PROJECT_NAME}" "OFF")
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
-
-find_package(medInria REQUIRED)
-include(${medInria_USE_FILE})
 
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
@@ -53,11 +50,11 @@ endif()
 
 
 
-if ( MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
+if ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
     # the Tensor ToolKit is required by the tensor interactor: v3dViewTensorInteractor
     find_package(TTK REQUIRED)
     include(${TTK_USE_FILE})
-endif ( MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
+endif ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
 
 if (NOT VTK_USE_QT)
   message(WARNING "VTK has to be compiled with the option VTK_USE_QT:ON in order to compile this project. Please consider setting correctly your VTK.")
@@ -67,7 +64,7 @@ endif(NOT VTK_USE_QT)
 ## Input
 ## #################################################################
 
-if ( MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
+if ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
     set(${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC
       v3dViewFiberInteractor.h
       v3dViewTensorInteractor.h
@@ -79,9 +76,9 @@ if ( MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
     set(${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES
        ttkAlgorithms
     )
-else( MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
+else( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
     add_definitions(-DDISABLE_TTK_DEPENDENT_CODE)
-endif ( MEDINRIA_V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
+endif ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
 
 set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPlugin.h
@@ -154,9 +151,9 @@ target_link_libraries(${PROJECT_NAME}
   target_link_libraries(${PROJECT_NAME} ${ITK_LIBRARIES})
   target_link_libraries(${PROJECT_NAME} vtkHWShading vtkHelpers)
 
-if (BUILD_TESTING)
+if (MEDINRIA-PLUGINS_BUILD_TESTING)
   add_subdirectory(Testing)
-endif (BUILD_TESTING)
+endif (MEDINRIA-PLUGINS_BUILD_TESTING)
 
 # Include header files for Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)

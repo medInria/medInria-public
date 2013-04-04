@@ -11,19 +11,13 @@ else()
     # path where the tests will be
     SET(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 
-    find_package(medInria REQUIRED)
-    include(${medInria_USE_FILE})
-
-    find_package(medInria-plugins REQUIRED)
-    include(${medInria-plugins_USE_FILE})
-
     find_package(ITK REQUIRED)
     include(${ITK_USE_FILE})
 
     find_package(TTK REQUIRED)
     include(${TTK_USE_FILE})
 
-   SET(MEDINRIA_PLUGINS_PATH "${medInria-plugins_DIR}/plugins")
+   SET(MEDINRIA_PLUGINS_PATH "${medInria-plugins_DIR}/bin")
 
     # configure file with defines for MEDINRIA_TEST_DATA_ROOT
     CONFIGURE_FILE( itkDataTensorImageTestConfig.h.in itkDataTensorImageTestConfig.h )

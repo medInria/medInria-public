@@ -1,26 +1,27 @@
 PROJECT(TensorManager)
 
 include_directories(
-../../vtkImageView
-../../vtkRenderingAddOn
-../../vtkDataManagement
-../../vtkVisuManagement
-)
+  ../../vtkImageView
+  ../../vtkRenderingAddOn
+  ../../vtkDataManagement
+  ../../vtkVisuManagement
+  )
 
-ADD_EXECUTABLE(TensorManager
-TensorManager.cxx
-)
+ADD_EXECUTABLE(${PROJECT_NAME}
+  TensorManager.cxx
+  )
 
-TARGET_LINK_LIBRARIES(TensorManager
-vtkRenderingAddOn
-vtkVisuManagement
-vtkRendering
-vtkIO
-)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+  vtkRenderingAddOn
+  vtkVisuManagement
+  vtkRendering
+  vtkIO
+  )
 
 ADD_EXECUTABLE(SyncTensors
   SyncTensors.cxx
-  )	      
+  )	    
+    
 TARGET_LINK_LIBRARIES(SyncTensors
   vtkRendering
   vtkIO

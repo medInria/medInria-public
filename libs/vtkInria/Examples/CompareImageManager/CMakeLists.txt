@@ -1,20 +1,20 @@
 PROJECT(CompareImageManager)
 
 include_directories(
-../../vtkRenderingAddOn
-../../vtkVisuManagement
-)
+  ../../vtkRenderingAddOn
+  ../../vtkVisuManagement
+  )
 
-ADD_EXECUTABLE(CompareImageManager
+ADD_EXECUTABLE(${PROJECT_NAME}
 CompareImageManager.cxx
 )
 
-TARGET_LINK_LIBRARIES(CompareImageManager
-vtkRenderingAddOn
-vtkVisuManagement
-vtkRendering
-vtkIO
-)
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+  vtkRenderingAddOn
+  vtkVisuManagement
+  vtkRendering
+  vtkIO
+  )
 
 
 

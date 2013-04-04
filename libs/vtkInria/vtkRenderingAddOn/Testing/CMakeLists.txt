@@ -1,13 +1,13 @@
-SET(KIT vtkRenderingAddOn)
+SET(KIT ${PROJECT_NAME})
 
-SET(vtkRenderingAddOnTests
+SET(${PROJECT_NAME}Tests
   SynchronizedViewsTest.cxx
   TestViewImage2D.cxx
   TestViewImage2DWithTracer.cxx
   )
 
 CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
-  ${vtkRenderingAddOnTests}
+  ${${PROJECT_NAME}Tests}
   )
 
 ADD_EXECUTABLE(${KIT}CxxTests 
@@ -15,13 +15,13 @@ ADD_EXECUTABLE(${KIT}CxxTests
   )
 
 TARGET_LINK_LIBRARIES(${KIT}CxxTests 
-  vtkRenderingAddOn 
+  ${PROJECT_NAME} 
   vtkRendering 
   vtkImaging
   )
 
 
-FOREACH (test ${vtkRenderingAddOnTests})
+FOREACH (test ${${PROJECT_NAME}Tests})
   GET_FILENAME_COMPONENT(TName ${test} NAME_WE)
   ADD_TEST(${TName} ${CXX_TEST_PATH}/${KIT}CxxTests ${TName}) 
 ENDFOREACH (test) 

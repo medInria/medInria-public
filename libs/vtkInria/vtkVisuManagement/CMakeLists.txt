@@ -4,7 +4,7 @@ project(vtkVisuManagement)
     add_definitions(-DCLANG)
   ENDIF()
 
-SET(vtkVisuManagement_SRCS
+SET(${PROJECT_NAME}_SRCS
  vtkLimitFibersToVOI.cxx
  vtkLimitFibersToMesh.cxx
  vtkLimitFibersToROI.cxx
@@ -29,8 +29,6 @@ SET(vtkVisuManagement_SRCS
  vtkImageClippingPlane.cxx
  vtkDisplacementFieldToGridFilter.cxx
  vtkMeshCropManager.cxx
-# vtkLandmarkManager.cxx
-# vtkLandmarkManagerCallback.cxx
  vtkFiberDataSetManager.cxx
 )
 
@@ -40,12 +38,13 @@ SET(vtkLandmarkManagement_SRCS
  vtkLandmarkManagerCallback.cxx
 )
 
-SET(vtkVisuManagement_LIBS
+SET(${PROJECT_NAME}_LIBS
  vtkCommon
  vtkFiltering 
  vtkRendering
  vtkWidgets
  vtkDataManagement
+ vtkHWShading
 )
 
 SET(vtkLandmarkManagement_LIBS
@@ -55,46 +54,35 @@ SET(vtkLandmarkManagement_LIBS
  vtkWidgets
  vtkDataManagement
  vtkImageView
+ vtkHWShading
 )
 
-IF( vtkInria_USE_HWSHADING )
-  SET(vtkVisuManagement_LIBS
-    ${vtkVisuManagement_LIBS}
-    vtkHWShading
-    )
-  SET(vtkLandmarkManagement_LIBS
-    ${vtkLandmarkManagement_LIBS}
-    vtkHWShading
-    )
-ENDIF(vtkInria_USE_HWSHADING )
-
-IF( vtkInria_USE_SPHERICALHARMONICS )
-
-    SET(vtkVisuManagement_SRCS
-        ${vtkVisuManagement_SRCS}
+IF( VTKINRIA_USE_SPHERICALHARMONICS )
+    SET(${PROJECT_NAME}_SRCS
+        ${${PROJECT_NAME}_SRCS}
         vtkSphericalHarmonicVisuManager.cxx
         vtkSphericalHarmonicManager.cxx
         vtkTessellatedSphereSource.cxx
         vtkSphericalHarmonicSource.cxx
         vtkSphericalHarmonicGlyph.cxx
         )
-    SET(vtkVisuManagement_LIBS
-        ${vtkVisuManagement_LIBS}
+    SET(${PROJECT_NAME}_LIBS
+        ${${PROJECT_NAME}_LIBS}
         itkIOAddOn
         )
-ENDIF(vtkInria_USE_SPHERICALHARMONICS )
+ENDIF(VTKINRIA_USE_SPHERICALHARMONICS )
 
-if(vtkInria_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(vtkVisuManagement_SOURCES_PCH 
+if(VTKINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
     "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
-      ${vtkVisuManagement_SRCS}
+      ${${PROJECT_NAME}_SRCS}
     )
-endif(vtkInria_USE_PRECOMPILED_HEADERS)
+endif(VTKINRIA_USE_PRECOMPILED_HEADERS)
 
 # C++ library for the InterfaceManagers
-ADD_LIBRARY(vtkVisuManagement SHARED
-  ${vtkVisuManagement_SOURCES_PCH}
-  ${vtkVisuManagement_SRCS}
+ADD_LIBRARY(${PROJECT_NAME} SHARED
+  ${${PROJECT_NAME}_SOURCES_PCH}
+  ${${PROJECT_NAME}_SRCS}
 )
   
 # C++ library for the InterfaceManagers
@@ -102,8 +90,8 @@ ADD_LIBRARY(vtkLandmarkManagement SHARED
   ${vtkLandmarkManagement_SRCS}
 )
   
-TARGET_LINK_LIBRARIES(vtkVisuManagement  
-  ${vtkVisuManagement_LIBS}
+TARGET_LINK_LIBRARIES(${PROJECT_NAME}  
+  ${${PROJECT_NAME}_LIBS}
 )
 
   
@@ -113,61 +101,6 @@ TARGET_LINK_LIBRARIES(vtkLandmarkManagement
 
 INSTALL_TARGETS(/lib vtkLandmarkManagement)
 
-
-IF(VTK_WRAP_TCL)
-  SET_SOURCE_FILES_PROPERTIES(
-     vtkLandmarkManagerCallback.cxx
-     vtkLandmark.cxx
-     vtkTessellatedSphereSource.cxx
-     vtkSphericalHarmonicSource.cxx
-     vtkSphericalHarmonicGlyph.cxx
-     WRAP_EXCLUDE
-    )
-    
-  VTK_WRAP_TCL3( vtkVisuManagementLib
-      vtkVisuManagementTCL_SRCS
-      "${vtkVisuManagement_SRCS}"
-      ""
-      "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
-    )
-  ADD_LIBRARY(vtkVisuManagementTCL SHARED
-    ${vtkVisuManagementTCL_SRCS}
-    )
-  TARGET_LINK_LIBRARIES(vtkVisuManagementTCL
-    vtkVisuManagement
-    vtkCommonTCL
-    vtkRenderingTCL
-    vtkWidgetsTCL
-    vtkVolumeRenderingTCL
-    vtkHybridTCL
-    vtkImagingTCL
-    )
- 
-  INSTALL_TARGETS(/lib vtkVisuManagementTCL)
-
-  VTK_WRAP_TCL3( vtkLandmarkManagementLib
-      vtkLandmarkManagementTCL_SRCS
-      "${vtkLandmarkManagement_SRCS}"
-      ""
-      "${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}"
-    )
-  ADD_LIBRARY(vtkLandmarkManagementTCL SHARED
-    ${vtkLandmarkManagementTCL_SRCS}
-    )
-  TARGET_LINK_LIBRARIES(vtkLandmarkManagementTCL
-    vtkLandmarkManagement
-    vtkCommonTCL
-    vtkRenderingTCL
-    vtkWidgetsTCL
-    vtkVolumeRenderingTCL
-    vtkHybridTCL
-    vtkImagingTCL
-    )
- 
-  INSTALL_TARGETS(/lib vtkLandmarkManagementTCL)
-ENDIF(VTK_WRAP_TCL)
-
-
-IF(BUILD_TESTING)
+IF(VTKINRIA_BUILD_TESTING)
   ADD_SUBDIRECTORY(Testing)
-ENDIF(BUILD_TESTING)
+ENDIF(VTKINRIA_BUILD_TESTING)

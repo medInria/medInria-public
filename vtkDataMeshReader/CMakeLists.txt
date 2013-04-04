@@ -44,11 +44,6 @@ find_package(ITK REQUIRED)
 include (${ITK_USE_FILE})
 
 
-#include_directories(../dtkVtkLogForwarder)
-find_package(medInria-plugins REQUIRED)
-include(${medInria-plugins_USE_FILE})
-
-
 set(${PROJECT_NAME}_HEADERS_MOC
   vtkDataMeshReaderPlugin.h
   vtkDataMeshReader.h
@@ -70,12 +65,12 @@ set(${PROJECT_NAME}_SOURCES
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsVtkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES})
-endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+endif(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}

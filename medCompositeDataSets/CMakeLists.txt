@@ -33,9 +33,6 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-find_package(medInria REQUIRED)
-include(${medInria_USE_FILE})
-
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
 

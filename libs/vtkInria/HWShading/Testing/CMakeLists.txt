@@ -1,47 +1,46 @@
-
 SET(COPYFILES
-testshader.frag
-testshader.vert
-testshader.prog
-average.shad
-DirectionalLight.vert
-standard.vert
-standard.prog
-ppshader.vert
-ppshader.frag
-ppshader.prog
-alshader.vert
-alshader.prog
-alshaderpp.prog
-alshaderpp.vert
-alshaderpp.frag
-texture.prog
-texture.vert
-texture.frag
-LogoVTK.jpg
-fibers.vtk
-)
+  testshader.frag
+  testshader.vert
+  testshader.prog
+  average.shad
+  DirectionalLight.vert
+  standard.vert
+  standard.prog
+  ppshader.vert
+  ppshader.frag
+  ppshader.prog
+  alshader.vert
+  alshader.prog
+  alshaderpp.prog
+  alshaderpp.vert
+  alshaderpp.frag
+  texture.prog
+  texture.vert
+  texture.frag
+  LogoVTK.jpg
+  fibers.vtk
+  )
 
 FOREACH(copyfile ${COPYFILES})
-CONFIGURE_FILE(	${CMAKE_CURRENT_SOURCE_DIR}/${copyfile}
+  CONFIGURE_FILE(	${CMAKE_CURRENT_SOURCE_DIR}/${copyfile}
 		${CMAKE_CURRENT_BINARY_DIR}/${copyfile}
 		COPYONLY
-	      )
+	  )
 ENDFOREACH(copyfile)
 
-SET(KIT vtkHWShading)
+SET(KIT ${PROJECT_NAME})
 
-SET(vtkHWShadingTests
-NoShader.cxx
-TestShader.cxx
-texturemap.cxx
-shadows.cxx
-fibermapper.cxx
-fibershadows.cxx
-)
+SET(${PROJECT_NAME}Tests
+  NoShader.cxx
+  TestShader.cxx
+  texturemap.cxx
+  shadows.cxx
+  fibermapper.cxx
+  fibershadows.cxx
+  )
 
 CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
-  ${vtkHWShadingTests}
+  ${${PROJECT_NAME}Tests}
   )
 
 ADD_EXECUTABLE(${KIT}CxxTests 
@@ -49,8 +48,8 @@ ADD_EXECUTABLE(${KIT}CxxTests
   )
 
 TARGET_LINK_LIBRARIES(${KIT}CxxTests 
+  ${PROJECT_NAME}
   vtkRendering 
-  vtkHWShading
   vtkIO
   )
 

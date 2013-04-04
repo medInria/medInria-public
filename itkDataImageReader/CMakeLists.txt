@@ -43,21 +43,10 @@ include(${ITK_USE_FILE})
 if(ITK_USE_SYSTEM_GDCM)
   add_definitions(-DITK_USE_SYSTEM_GDCM)
 endif()
+
 #else(ITK_USE_SYSTEM_GDCM)
 #  message(WARNING "The DICOM GDCM reader plugin needs ITK to compile with SYSTEM_GDCM. If you don't want to use GDCM, discard this warning. Otherwise, #please set the option ITK_USE_SYSTEM_GDCM:ON in ITK and re-compile")
 #endif(ITK_USE_SYSTEM_GDCM)
-
-find_package(VTK)
-include(${VTK_USE_FILE})
-
-find_package(medInria REQUIRED)
-include(${medInria_USE_FILE})
-
-#include_directories(../dtkItkLogForwarder)
-find_package(medInria-plugins REQUIRED)
-include(${medInria-plugins_USE_FILE})
-
-
 
 
 ## #################################################################
@@ -107,12 +96,12 @@ endif(ITK_USE_SYSTEM_GDCM)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC})
-endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+endif(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_HEADERS}
@@ -129,13 +118,13 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOReview
   ${ITK_LIBRARIES})
 
-if (BUILD_TESTING)
+if (MEDINRIA-PLUGINS_BUILD_TESTING)
   add_subdirectory(Testing)
-endif (BUILD_TESTING)
+endif (MEDINRIA-PLUGINS_BUILD_TESTING)
 
-if (BUILD_EXAMPLES)
+if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
   add_subdirectory(Examples)
- endif (BUILD_EXAMPLES)
+endif (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
 
 # Group common files together in Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)

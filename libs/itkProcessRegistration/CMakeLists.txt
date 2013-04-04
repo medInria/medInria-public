@@ -31,9 +31,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-#find_package(medInria REQUIRED)
-#include(${medInria_USE_FILE})
-
 find_package(ITK REQUIRED)
 if(ITK_FOUND)
    include(${ITK_USE_FILE})
