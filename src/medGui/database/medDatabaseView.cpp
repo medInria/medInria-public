@@ -56,7 +56,14 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
 
         // items that failed to open will have a pinkish background
         if(item)
-        {
+        {               
+            if(index.column()>0)
+            {
+                QPen pen;
+                pen.setColor(Qt::darkGray);
+                painter->setPen(pen);
+                painter->drawLine(option.rect.x(), option.rect.y(), option.rect.x(), (option.rect.y()+option.rect.height()));
+            }
             if (m_indexes.contains(item->dataIndex()))
                painter->fillRect(option.rect, QColor::fromRgb(qRgb(201, 121, 153)));
 
@@ -435,7 +442,6 @@ void medDatabaseView::onCreatePatientRequested(void)
         birthdate = editDialog.value(medMetaDataKeys::BirthDate.label()).toString();
         gender = editDialog.value(medMetaDataKeys::Gender.label()).toString();
 
-        //dtkSmartPointer<dtkAbstractData> dtkData = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageUChar3");
         dtkSmartPointer<dtkAbstractData> dtkData = new dtkAbstractData();
 
         QString generatedPatientID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
@@ -533,7 +539,7 @@ void medDatabaseView::onEditRequested(void)
         foreach(QVariant attrib, attributes)
         {
             const medMetaDataKeys::Key* key =  medMetaDataKeys::Key::fromKeyName(attrib.toString().toStdString().c_str());
-            if(key)
+            if(key && key->isEditable())
                 labels << key->label();
             else labels << "";
         }

@@ -61,7 +61,9 @@ medDatabaseEditItemDialog::medDatabaseEditItemDialog(QList<QString> attributes, 
         if(attrib.isEmpty())
             continue;
         
-        QLineEdit *textEdit;
+        QLineEdit *textEdit = NULL;
+        QSpinBox *spinbox = NULL;
+        QDateEdit *dateEdit = NULL;
 
         switch(data.type())
         {
@@ -73,9 +75,30 @@ medDatabaseEditItemDialog::medDatabaseEditItemDialog(QList<QString> attributes, 
             formLayout->addRow(attrib, textEdit);
             connect(textEdit, SIGNAL(textChanged(const QString &)), this, SLOT(setValue(const QString &)));
             break;  
+        case QVariant::Char:
+            textEdit = new QLineEdit(this);
+            textEdit->setObjectName(attrib);
+            textEdit->setText(data.toString());
+            textEdit->setMaxLength(1);
+            formLayout->addRow(attrib, textEdit);
+            connect(textEdit, SIGNAL(textChanged(const QString &)), this, SLOT(setValue(const QString &)));
+            break;  
+        case QVariant::Int:
+            spinbox = new QSpinBox(this);
+            spinbox->setObjectName(attrib);
+            spinbox->setValue(data.toInt());
+            formLayout->addRow(attrib, spinbox);
+            connect(spinbox, SIGNAL(valueChanged(int)), this, SLOT(setValue(const int &)));
+            break;  
+         case QVariant::Date:
+            dateEdit = new QDateEdit(this);
+            dateEdit->setObjectName(attrib);
+            dateEdit->setDate(data.toDate());
+            formLayout->addRow(attrib, dateEdit);
+            connect(dateEdit, SIGNAL(dateChanged(QDate)), this, SLOT(setValue(const QDate &)));
+            break;
         default:
             break;
-
         }
     }
 
@@ -105,6 +128,38 @@ void medDatabaseEditItemDialog::setValue(const QString & text)
         if(index>-1 && index<d->values.length())
         {
             d->values[index] = QVariant(text);
+        }
+    }
+}
+
+void medDatabaseEditItemDialog::setValue(const int & value)
+{
+    QWidget *currentWidget = QApplication::focusWidget();
+    QString objectName = currentWidget->objectName();
+
+    if(!objectName.isEmpty())
+    {
+        int index = d->attributes.indexOf(objectName);
+
+        if(index>-1 && index<d->values.length())
+        {
+            d->values[index] = QVariant(value);
+        }
+    }
+}
+
+void medDatabaseEditItemDialog::setValue(const QDate & value)
+{
+    QWidget *currentWidget = QApplication::focusWidget();
+    QString objectName = currentWidget->objectName();
+
+    if(!objectName.isEmpty())
+    {
+        int index = d->attributes.indexOf(objectName);
+
+        if(index>-1 && index<d->values.length())
+        {
+            d->values[index] = QVariant(value);
         }
     }
 }

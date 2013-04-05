@@ -29,7 +29,8 @@ namespace medMetaDataKeys {
     public:
         typedef std::vector<const Key*> Registery;
 
-        Key(const char* name, const char* label=""): KEY(name), LABEL(label)
+        Key(const char* name, const char* label="",
+            QVariant::Type type=QVariant::String, bool isEditable = true): KEY(name), LABEL(label), TYPE(type), ISEDITABLE(isEditable)
         { 
             if(QString(label)=="") LABEL=QString(name);
             registery.push_back(this); 
@@ -39,6 +40,8 @@ namespace medMetaDataKeys {
 
         const QString& key() const { return KEY; }
         const QString& label() const { return LABEL; }
+        const QVariant::Type& type() const { return TYPE; }
+        const bool isEditable() const { return ISEDITABLE; }
 
         bool is_set_in(const dtkAbstractData *d) const { return d->hasMetaData(KEY) ; }
 
@@ -75,6 +78,8 @@ namespace medMetaDataKeys {
 
         const QString KEY;
         QString LABEL;
+        QVariant::Type TYPE;
+        bool ISEDITABLE;
     };
 
 
