@@ -15,11 +15,14 @@
 
 #include "medApplication.h"
 
+#include <locale.h>
+
 #include <QtGui>
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 #include <medPluginManager.h>
+
 
 class medApplicationPrivate
 {
@@ -94,6 +97,8 @@ medApplication::medApplication(int & argc, char**argv) :
         QtSingleApplication(argc,argv),
         d(new medApplicationPrivate)
 {
+    setlocale(LC_NUMERIC, "C");
+
     this->setApplicationName("medInria");
     qDebug() << "Version:" << MEDINRIA_VERSION;
     this->setApplicationVersion(MEDINRIA_VERSION);
