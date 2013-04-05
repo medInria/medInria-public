@@ -25,7 +25,6 @@
 #include "medApplication.h"
 #include "medSplashScreen.h"
 
-
 #include <dtkCore>
 
 #include <medPluginManager.h>
@@ -200,7 +199,6 @@ int main(int argc,char* argv[]) {
         fullScreen = true;
 
     mainwindow.setFullScreen(fullScreen);
-
 
     if(application.arguments().contains("--stereo")) {
        QGLFormat format;
