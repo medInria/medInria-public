@@ -106,7 +106,7 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
         d->ptAttributes.append(NulString);
         d->stAttributes.append(NulString);
         d->seAttributes.append(NulString);
-        d->data.append(NulString);
+        d->data.append(".");
         //by default all fields are editable
         d->editFlags.append(true);
     }
@@ -116,13 +116,13 @@ medDatabaseModel::medDatabaseModel(QObject *parent, bool justBringStudies) : QAb
     d->stAttributes[i] = medMetaDataKeys::StudyDescription.key();
     d->seAttributes[i++] = medMetaDataKeys::SeriesDescription.key();
     
+    d->ptAttributes[i++] = medMetaDataKeys::BirthDate.key();
+    d->ptAttributes[i++] = medMetaDataKeys::Gender.key();
+    
     // the number of slice is not supposed to be edited
     d->editFlags[i] = false;
     d->seAttributes[i++] = medMetaDataKeys::Size.key();
     d->seAttributes[i++] = medMetaDataKeys::Age.key();
-    
-    d->ptAttributes[i++] = medMetaDataKeys::BirthDate.key();
-    d->ptAttributes[i++] = medMetaDataKeys::Gender.key();
  
     d->seAttributes[i++] = medMetaDataKeys::Modality.key();
     d->seAttributes[i++] = medMetaDataKeys::AcquisitionDate.key();
@@ -200,9 +200,12 @@ QVariant medDatabaseModel::data(const QModelIndex& index, int role) const
     if (!index.isValid())
         return QVariant();
 
+    if( role==Qt::TextAlignmentRole && index.column() > 0)
+        return Qt::AlignHCenter;
+    
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return QVariant();
-
+    
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     return item->data(index.column());
@@ -620,8 +623,9 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
                 if ( !attribute.isNull() )
                 {
                     QString value =  dbc->metaData(patient, attribute.toString() );
-                    if ( !value.isEmpty() )
-                        ptData[i] = value;
+                    QVariant data = convertQStringToQVariant(attribute.toString(),value);
+                    if ( data.isValid() )
+                        ptData[i] = data;
                 }
             }
             medAbstractDatabaseItem *ptItem = new medDatabaseItem(patient, d->ptAttributes, ptData, root);
@@ -638,10 +642,9 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
                     if ( !attribute.isNull() )
                     {
                         QString value =  dbc->metaData(study, attribute.toString() );
-                        if ( !value.isEmpty() )
-                        {
-                            stData[i] = value;
-                        }
+                        QVariant data = convertQStringToQVariant(attribute.toString(),value);
+                        if ( data.isValid() )
+                            stData[i] = data;
                     }
                 }
 
@@ -664,8 +667,9 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
                             if ( !attribute.isNull() )
                             {
                                 QString value =  dbc->metaData(serie, attribute.toString() );
-                                if ( !value.isEmpty() )
-                                    seData[i] = value;
+                                QVariant data = convertQStringToQVariant(attribute.toString(),value);
+                                if ( data.isValid() )
+                                    seData[i] = data;
                             }
                         }
                         medAbstractDatabaseItem *seItem = new medDatabaseItem(serie, d->seAttributes, seData, stItem);
@@ -684,9 +688,7 @@ void medDatabaseModel::populate(medAbstractDatabaseItem *root)
 
 
 void medDatabaseModel::update(const medDataIndex& dataIndex)
-{
-    emit layoutAboutToBeChanged();
-    
+{   
     if(dataIndex.isValidForSeries())
     {
         updateSerie(dataIndex);
@@ -698,10 +700,7 @@ void medDatabaseModel::update(const medDataIndex& dataIndex)
     else if(dataIndex.isValidForPatient())
     {
         updatePatient(dataIndex);
-    }
-   
-    emit layoutChanged();
-    
+    }   
 }
 
 void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
@@ -732,8 +731,10 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
             }
             else
             {
+                emit layoutAboutToBeChanged();
                 parent->removeChildren(/*index.row()*/parent->rowOf(item), 1);
                 d->medIndexMap.remove(dataIndex);
+                emit layoutChanged();
             }
         }
 
@@ -749,11 +750,12 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
             if ( !attribute.isNull() )
             {
                 QString value =  dbc->metaData(dataIndex, attribute.toString() );
-                if ( !value.isEmpty() )
+                QVariant data = convertQStringToQVariant(attribute.toString(),value);
+                if ( data.isValid() )
                 {
-                    seData[i] = value;
+                    seData[i] = data;
                     if(item)
-                        item->setData(i, value);
+                        item->setData(i, data);
                 }
             }
         }
@@ -783,7 +785,9 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
             medAbstractDatabaseItem *seItem = new medDatabaseItem(dataIndex, d->seAttributes, seData, stItem);
 
             //and append it to the parent study
+            emit layoutAboutToBeChanged();
             stItem->append(seItem);
+            emit layoutChanged();
             
             //calling index() to update medIndexMap
             this->index(stItem->childCount()-1,0,stIndex);
@@ -812,6 +816,7 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
 
         if(item)
         {
+            emit layoutAboutToBeChanged();
             item->removeChildren(0, item->childCount());
 
             // data is not present in the database anymore,
@@ -832,6 +837,7 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
                 parent->removeChildren(/*index.row()*/parent->rowOf(item), 1);
                 d->medIndexMap.remove(dataIndex);
             }
+            emit layoutChanged();
         }
 
         return;    
@@ -846,11 +852,12 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
             if ( !attribute.isNull() )
             {
                 QString value =  dbc->metaData(dataIndex, attribute.toString() );
-                if ( !value.isEmpty() )
+                QVariant data = convertQStringToQVariant(attribute.toString(),value);
+                if ( data.isValid() )
                 {
-                    stData[i] = value;
+                    stData[i] = data;
                     if(item)
-                        item->setData(i, value);
+                        item->setData(i, data);
                 }
             }
         }
@@ -881,10 +888,12 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
             if(ptItem)
             {
                 medAbstractDatabaseItem *stItem = new medDatabaseItem(dataIndex, d->stAttributes, stData, ptItem);
+                emit layoutAboutToBeChanged();
                 ptItem->append(stItem);
-                
+
                 //calling index() to update medIndexMap
                 this->index(ptItem->childCount()-1,0,ptIndex);
+                emit layoutChanged();
             }    
         }
 
@@ -922,6 +931,7 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
             }
             else
             {
+                emit layoutAboutToBeChanged();
                 item->removeChildren(0, item->childCount());
 
                 // data is not present in the database anymore,
@@ -929,6 +939,7 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
 
                 item->parent()->removeChildren(index.row(), 1);
                 d->medIndexMap.remove(dataIndex);
+                emit layoutChanged();
             }
         }
 
@@ -944,11 +955,12 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
             if ( !attribute.isNull() )
             {
                 QString value =  dbc->metaData(dataIndex, attribute.toString() );
-                if ( !value.isEmpty() )
+                QVariant data = convertQStringToQVariant(attribute.toString(),value);
+                if ( data.isValid() )
                 {
-                    ptData[i] = value;
+                    ptData[i] = data;
                      if(item)
-                        item->setData(i, value);
+                        item->setData(i, data);
                 }
             }
         }
@@ -956,11 +968,12 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
         if(!item)
         {
             // we must create a new item
-            // and append it to the parent patientId           
-            //beginInsertRows(QModelIndex(),rowCount(),rowCount());
+            // and append it to the parent patientId 
+            
             medAbstractDatabaseItem *ptItem = new medDatabaseItem(dataIndex, d->ptAttributes, ptData,  d->root);
+            emit layoutAboutToBeChanged();
             d->root->append(ptItem);
-            //endInsertRows();
+            emit layoutChanged();
             
             //calling index() to update medIndexMap
             this->index(d->root->childCount()-1,0,QModelIndex());
@@ -982,10 +995,10 @@ QStringList medDatabaseModel::columnNames() const
 
         int i=0;
         ret[i++] = tr("Patient / Study / Serie");
-        ret[i++] = tr("Slice Count");
-        ret[i++] = tr("Age");
         ret[i++] = tr("Date of birth");
         ret[i++] = tr("Gender");
+        ret[i++] = tr("Slice Count");
+        ret[i++] = tr("Age");
         ret[i++] = tr("Modality");
         ret[i++] = tr("Date acquired");
         ret[i++] = tr("Date imported");
@@ -998,4 +1011,30 @@ QStringList medDatabaseModel::columnNames() const
     return d->columnNames;
 }
 
+
+QVariant medDatabaseModel::convertQStringToQVariant(QString keyName, QString value)
+{
+    const medMetaDataKeys::Key *key = medMetaDataKeys::Key::fromKeyName(keyName.toStdString().c_str());
+    QVariant res;
+    QDate date;
+    
+    switch(key->type())
+    {
+        case QVariant::Int:
+            res = value.toInt();
+            break;
+        case QVariant::Date:
+            //TODO: ne marche pas pour tous les formats de date
+            date = QDate::fromString(value);
+            res = date;
+            break;
+        case QVariant::Char:
+            res = value.at(0);
+            break;
+        default:
+            res = value;      
+    }
+    
+    return res;
+}
 

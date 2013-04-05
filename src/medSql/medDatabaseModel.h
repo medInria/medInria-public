@@ -81,6 +81,7 @@ private:
     void updateSerie(const medDataIndex&);
     void updateStudy(const medDataIndex&, bool updateChildren = true);
     void updatePatient(const medDataIndex&, bool updateChildren = true);
+    QVariant convertQStringToQVariant(QString key, QString value);
 };
 
 
