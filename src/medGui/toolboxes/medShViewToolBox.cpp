@@ -180,17 +180,17 @@ medShViewToolBox::medShViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
 
     // slider to control glyph resolution
     d->glyphResolutionSlider =  new QSlider(Qt::Horizontal, displayWidget);
-    d->glyphResolutionSlider->setMinimum(6);
+    d->glyphResolutionSlider->setMinimum(4);
     d->glyphResolutionSlider->setMaximum(10);
     d->glyphResolutionSlider->setSingleStep(2);
-    d->glyphResolutionSlider->setValue(6);
+    d->glyphResolutionSlider->setValue(4);
     d->glyphResolutionSlider->setPageStep(2);
 
     QSpinBox* glyphResolutionSpinBox = new QSpinBox(displayWidget);
-    glyphResolutionSpinBox->setMinimum(6);
+    glyphResolutionSpinBox->setMinimum(4);
     glyphResolutionSpinBox->setMaximum(10);
     glyphResolutionSpinBox->setSingleStep(2);
-    glyphResolutionSpinBox->setValue(6);
+    glyphResolutionSpinBox->setValue(4);
 
     QHBoxLayout* glyphResolutionLayout = new QHBoxLayout;
     glyphResolutionLayout->addWidget(d->glyphResolutionSlider);
