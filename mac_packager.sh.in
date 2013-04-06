@@ -15,9 +15,6 @@
 # The bundle medInria.app will contain all plugins and will be standalone, packaged into MedINRIA.dmg in the install dir
 
 cd @PROJECT_BINARY_DIR@
-\rm -fr @CMAKE_INSTALL_PREFIX@
-make install
-
 cd @CMAKE_INSTALL_PREFIX@/bin/
 
 #Run sub-packagers

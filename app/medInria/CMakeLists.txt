@@ -180,7 +180,10 @@ install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION bin)
 
 if (APPLE)
-  install(CODE "execute_process(COMMAND macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app)")
+  install(CODE "
+	execute_process(COMMAND macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app)
+	execute_process(COMMAND \${CMAKE_CURRENT_BINARY_DIR}/mac_packager.sh \${CMAKE_CURRENT_BINARY_DIR}/plugins)
+  ")
 endif()
 
 option(MEDINRIA_ACTIVATE_WALL_OPTION "Activate the command line option --wall (INRIA Sophia, immersive room)")
