@@ -749,7 +749,8 @@ void v3dView::update()
 {
     if ( d->currentView )
     {
-        d->currentView->Render();
+        // this doesn't seem necessary and can result in a quite important memory comsumation
+        //d->currentView->Render();
     }
     d->vtkWidget->update();
 }

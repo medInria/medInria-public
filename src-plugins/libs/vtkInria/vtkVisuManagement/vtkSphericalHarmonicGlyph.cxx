@@ -161,6 +161,9 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
             pts[i] = cellPts->GetId(i)+subIncr;
           output->InsertNextCell(cell->GetCellType(),npts,pts);
         }
+        
+        delete pts;
+        
       }
       inPtIdReal++;
     }
@@ -225,6 +228,8 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
         }
       }
       inPtIdReal++;
+      
+      delete sh;
     }
   }
   output->SetPoints(newPts);
