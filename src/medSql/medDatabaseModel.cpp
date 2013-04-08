@@ -810,13 +810,14 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
 
     if(!dbc->contains(dataIndex))
     { 
-        QList<medDataIndex> series = dbc->series(dataIndex);
-        foreach(medDataIndex serie, series)
-            d->medIndexMap.remove(serie);
-
         if(item)
         {
             emit layoutAboutToBeChanged();
+
+            QList<medDataIndex> series = dbc->series(dataIndex);
+            foreach(medDataIndex serie, series)
+                d->medIndexMap.remove(serie);
+        
             item->removeChildren(0, item->childCount());
 
             // data is not present in the database anymore,
@@ -915,13 +916,7 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(dataIndex.dataSourceId());
     
     if(!dbc->contains(dataIndex))
-    {
-        foreach(medDataIndex tempIndex, d->medIndexMap.keys())
-        {
-            if( tempIndex.patientId() == dataIndex.patientId() )
-                d->medIndexMap.remove(tempIndex); 
-        }
-        
+    {       
         if(item)
         {
             medAbstractDatabaseItem *parent = item->parent();
@@ -932,6 +927,12 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
             else
             {
                 emit layoutAboutToBeChanged();
+                
+                foreach(medDataIndex tempIndex, d->medIndexMap.keys())
+                {
+                    if( tempIndex.patientId() == dataIndex.patientId() )
+                        d->medIndexMap.remove(tempIndex);
+                }
                 item->removeChildren(0, item->childCount());
 
                 // data is not present in the database anymore,
@@ -939,6 +940,7 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
 
                 item->parent()->removeChildren(index.row(), 1);
                 d->medIndexMap.remove(dataIndex);
+                
                 emit layoutChanged();
             }
         }

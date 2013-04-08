@@ -26,7 +26,7 @@ namespace medMetaDataKeys {
     MEDCORE_EXPORT const Key PatientID("PatientID");
     MEDCORE_EXPORT const Key PatientName("PatientName", "Patient Name");
     MEDCORE_EXPORT const Key Age("Age", "Age", QVariant::Int);
-    MEDCORE_EXPORT const Key BirthDate("BirthDate", "Birth Date", QVariant::Date);
+    MEDCORE_EXPORT const Key BirthDate("BirthDate", "Birth Date"/*, QVariant::Date*/);
     MEDCORE_EXPORT const Key Gender("Gender", "Gender", QVariant::Char);
     MEDCORE_EXPORT const Key Description("Description"); //what?
 
@@ -36,8 +36,8 @@ namespace medMetaDataKeys {
     MEDCORE_EXPORT const Key StudyDescription("StudyDescription", "Study Description");
     MEDCORE_EXPORT const Key Institution("Institution");
     MEDCORE_EXPORT const Key Referee("Referee");
-    MEDCORE_EXPORT const Key StudyDate("StudyDate", "Study Date", QVariant::Date);
-    MEDCORE_EXPORT const Key StudyTime("StudyTime", "Study Time", QVariant::Date);
+    MEDCORE_EXPORT const Key StudyDate("StudyDate", "Study Date"/*, QVariant::Date*/);
+    MEDCORE_EXPORT const Key StudyTime("StudyTime", "Study Time"/*, QVariant::Date*/);
 
     // SERIES
     MEDCORE_EXPORT const Key SeriesID("SeriesID", "Series ID");
@@ -48,8 +48,8 @@ namespace medMetaDataKeys {
     MEDCORE_EXPORT const Key Report("Report");
     MEDCORE_EXPORT const Key Protocol("Protocol");
     MEDCORE_EXPORT const Key SeriesDescription("SeriesDescription", "Series Description");
-    MEDCORE_EXPORT const Key SeriesDate("SeriesDate", "Series Date", QVariant::Date);
-    MEDCORE_EXPORT const Key SeriesTime("SeriesTime", "Series Time", QVariant::Date);
+    MEDCORE_EXPORT const Key SeriesDate("SeriesDate", "Series Date"/*, QVariant::Date*/);
+    MEDCORE_EXPORT const Key SeriesTime("SeriesTime", "Series Time"/*, QVariant::Date*/);
     MEDCORE_EXPORT const Key SeriesThumbnail("SeriesThumbnail", "Series Thumbnail");
 
     // IMAGE
