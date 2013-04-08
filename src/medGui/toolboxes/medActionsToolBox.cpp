@@ -112,13 +112,13 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/ ) : medToolBox(par
     
     d->newPatientBt = new QPushButton(d->buttonsWidget);
     d->newPatientBt->setAccessibleName("New Patient");
-    d->newPatientBt->setText("New Patient");
+    d->newPatientBt->setText("Patient");
     d->newPatientBt->setToolTip(tr("Create a new patient."));
     d->newPatientBt->setIcon(QIcon(":/icons/user_add.png"));
     
     d->newStudyBt = new QPushButton(d->buttonsWidget);
     d->newStudyBt->setAccessibleName("New Study");
-    d->newStudyBt->setText("New Study");
+    d->newStudyBt->setText("Study");
     d->newStudyBt->setToolTip(tr("Create a new study."));
     d->newStudyBt->setIcon(QIcon(":/icons/page_add.png"));
     
@@ -135,7 +135,7 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/ ) : medToolBox(par
     d->buttonsList << d->removeBt << d->saveBt << d->exportBt << d->bookmarkBt;
     d->buttonsList << d->newPatientBt << d->newStudyBt << d->editBt;
 
-    int COLUMNS = 3; // we will use 4 rows of 3 buttons each
+    int COLUMNS = 4; // we will use 3 rows of 4 buttons each
     int i = 0;
     QGridLayout *gridLayout = new QGridLayout(d->buttonsWidget);
     gridLayout->setHorizontalSpacing(4);
@@ -174,7 +174,7 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/ ) : medToolBox(par
 
     // we keep the size of the toolbox fixed so as it doesn't not resize
     // constantly due to the exchange of the widgets
-    this->body()->setFixedHeight(38 + 38 + 38 + 38 + 35);
+    this->body()->setFixedHeight(38 + 38 + 38 + 35);
 
     this->setTitle(tr("Actions"));
 }
