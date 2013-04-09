@@ -25,7 +25,7 @@ namespace medMetaDataKeys {
     // PATIENT
     MEDCORE_EXPORT const Key PatientID("PatientID");
     MEDCORE_EXPORT const Key PatientName("PatientName", "Patient Name");
-    MEDCORE_EXPORT const Key Age("Age", "Age", QVariant::Int);
+    MEDCORE_EXPORT const Key Age("Age", "Age", QVariant::UInt);
     MEDCORE_EXPORT const Key BirthDate("BirthDate", "Birth Date"/*, QVariant::Date*/);
     MEDCORE_EXPORT const Key Gender("Gender", "Gender", QVariant::Char);
     MEDCORE_EXPORT const Key Description("Description"); //what?
@@ -55,8 +55,8 @@ namespace medMetaDataKeys {
     // IMAGE
 
     MEDCORE_EXPORT const Key SOPInstanceUID("SOPInstanceUID", "SOP Instance UID");
-    MEDCORE_EXPORT const Key Columns("Columns","Columns",QVariant::Int);
-    MEDCORE_EXPORT const Key Rows("Rows","Rows",QVariant::Int);
+    MEDCORE_EXPORT const Key Columns("Columns","Columns",QVariant::UInt);
+    MEDCORE_EXPORT const Key Rows("Rows","Rows",QVariant::UInt);
     MEDCORE_EXPORT const Key Dimensions("Dimensions","Dimensions",QVariant::Int);
     MEDCORE_EXPORT const Key NumberOfDimensions("NumberOfDimensions", "Number Of Dimensions");
     MEDCORE_EXPORT const Key Orientation("Orientation");
@@ -69,7 +69,7 @@ namespace medMetaDataKeys {
     MEDCORE_EXPORT const Key FilePaths("FilePaths", "File Paths");
     MEDCORE_EXPORT const Key Status("Status");
     MEDCORE_EXPORT const Key SequenceName("SequenceName", "Sequence Name");
-    MEDCORE_EXPORT const Key Size("Size","Size",QVariant::Int, false);
+    MEDCORE_EXPORT const Key Size("Size","Size",QVariant::UInt, false);
     MEDCORE_EXPORT const Key VolumeUID("VolumeUID", "Volume UID");
     MEDCORE_EXPORT const Key Spacing("Spacing");
     MEDCORE_EXPORT const Key XSpacing("XSpacing", "X Spacing");
