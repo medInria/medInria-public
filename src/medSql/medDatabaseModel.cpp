@@ -1025,6 +1025,9 @@ QVariant medDatabaseModel::convertQStringToQVariant(QString keyName, QString val
         case QVariant::Int:
             res = value.toInt();
             break;
+        case QVariant::UInt:
+            res = value.toUInt();
+            break;
         case QVariant::Date:
             //TODO: ne marche pas pour tous les formats de date
             date = QDate::fromString(value);
