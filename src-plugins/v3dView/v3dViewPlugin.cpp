@@ -68,7 +68,7 @@ bool v3dViewPlugin::initialize()
     if (!v3dViewTensorInteractor::registered())     { dtkWarn() << "Unable to register v3dViewTensorInteractor type";     }
 #endif
     
-#ifndef DISABLE_vtkInria_USE_SPHERICALHARMONICS
+#ifndef DISABLE_VTKINRIA_USE_SPHERICALHARMONICS
     if (!v3dViewShInteractor::registered())         { dtkWarn() << "Unable to register v3dViewShInteractor type"; }
 #endif
 
