@@ -13,7 +13,7 @@ ELSE( VTKINRIA_USE_SPHERICALHARMONICS )
   CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
     ${${PROJECT_NAME}Tests}
     )
-endif(VTKINRIA_USE_SPHERICALHARMONICS )
+endif()
 
 
 ADD_EXECUTABLE(${KIT}CxxTests 
@@ -35,4 +35,4 @@ ENDFOREACH (test)
 
 IF( VTKINRIA_USE_SPHERICALHARMONICS )
   ADD_TEST(NAME vtkSphericalHarmonicGlyphTest COMMAND ${CXX_TEST_PATH}/${KIT}CxxTests vtkSphericalHarmonicGlyphTest "${vtkInria_DATA_DIR}/odf.nrrd" "${vtkInria_DATA_DIR}/SHTest.vtk" )
-endif(VTKINRIA_USE_SPHERICALHARMONICS )
+endif()

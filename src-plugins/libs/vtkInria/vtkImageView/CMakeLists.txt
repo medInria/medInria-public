@@ -51,7 +51,7 @@ target_link_libraries(${PROJECT_NAME}
 
 IF(VTKINRIA_BUILD_TESTING)
     ADD_SUBDIRECTORY(Testing)
-endif(VTKINRIA_BUILD_TESTING)
+endif()
 
 # include header files in group for visual studio
 SOURCE_GROUP( "Header Files" FILES ${${PROJECT_NAME}_HEADERS})

@@ -5,7 +5,7 @@ IF(WIN32 AND NOT CYGWIN AND NOT MINGW)
     getoptcompat/getopt.c
     getoptcompat/getopt_long.c
   )
-endif(WIN32 AND NOT CYGWIN AND NOT MINGW)
+endif()
 
 ADD_EXECUTABLE(itkReshaper
 itkReshaper.cxx
@@ -20,7 +20,7 @@ ELSE(WIN32 AND NOT CYGWIN AND NOT MINGW)
  TARGET_LINK_LIBRARIES(itkReshaper
   itkIOAddOn
  )
-endif(WIN32 AND NOT CYGWIN AND NOT MINGW)
+endif()
 
 subdirs(
   Registration

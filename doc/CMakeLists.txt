@@ -69,8 +69,8 @@ IF( DOXYGEN_FOUND )
     MESSAGE( WARNING
       "Warning: Dot not found - Documentation will not be created"
       )
-  endif( DOXYGEN_DOT_FOUND )
+  endif()
  ELSE( DOXYGEN_FOUND )
   MESSAGE(WARNING
      "Warning: Doxygen not found - Documentation will not be created")
-endif( DOXYGEN_FOUND )
+endif()
