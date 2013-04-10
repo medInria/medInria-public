@@ -107,7 +107,7 @@ endif()
 # Create the list of include directories needed for vtkInria header files.
 INCLUDE(${${PROJECT_NAME}_SOURCE_DIR}/IncludeDirectories.cmake)
 
-INCLUDE_DIRECTORIES(
+include_directories(
 ${${PROJECT_NAME}_INCLUDE_DIRS_BUILD_TREE}
 ${${PROJECT_NAME}_INCLUDE_DIRS_SOURCE_TREE}
 )
