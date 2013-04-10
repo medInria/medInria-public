@@ -9,7 +9,7 @@ IF( VTKINRIA_USE_SPHERICALHARMONICS )
     ${${PROJECT_NAME}Tests}
     vtkSphericalHarmonicGlyphTest.cxx
     )
-else( VTKINRIA_USE_SPHERICALHARMONICS )
+else()
   CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
     ${${PROJECT_NAME}Tests}
     )

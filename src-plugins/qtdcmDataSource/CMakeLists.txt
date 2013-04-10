@@ -91,7 +91,7 @@ if (WIN32)
   medGui
   netapi32
   )
-else(WIN32)
+else()
   target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${ITK_LIBRARIES}

@@ -19,7 +19,7 @@ if (WIN32 AND NOT CYGWIN AND NOT MINGW)
   itkRegistrationAddOn 
   getoptcompatlib
   )
-else (WIN32 AND NOT CYGWIN AND NOT MINGW)
+else()
  target_link_libraries(RegistrationFactory
    itkRegistrationAddOn
    )
