@@ -24,8 +24,8 @@ IF (VTK_MAJOR_VERSION GREATER 4)
     vtkDataManagerWriter.cxx
     vtkDataManagerReader.cxx
     )
-  endif (VTK_MINOR_VERSION GREATER 0)
-endif (VTK_MAJOR_VERSION GREATER 4)
+  endif()
+endif()
 
 if (VTKINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
@@ -63,6 +63,6 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME}
 
 IF( VTKINRIA_BUILD_TESTING )
   ADD_SUBDIRECTORY(Testing)
-endif( VTKINRIA_BUILD_TESTING )
+endif()
 
 

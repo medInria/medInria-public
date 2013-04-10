@@ -11,14 +11,14 @@ IF (NOT ITK_USE_SYSTEM_GDCM)
     itkGDCMImporter.cxx
     itkGDCMExporter.cxx
     )
-endif(NOT ITK_USE_SYSTEM_GDCM)
+endif()
 
 IF( VTKINRIA_USE_SPHERICALHARMONICS )
   SET (itkIOAddOnSRCS
     ${itkIOAddOnSRCS}
     itkSphericalHarmonicITKToVTKFilter.txx
     )
-endif(VTKINRIA_USE_SPHERICALHARMONICS )
+endif()
 
 IF( WIN32 )
   ADD_LIBRARY(itkIOAddOn STATIC
@@ -28,7 +28,7 @@ ELSE( WIN32 )
   ADD_LIBRARY( itkIOAddOn SHARED
     ${itkIOAddOnSRCS} 
   )
-endif( WIN32 )
+endif()
 
 TARGET_LINK_LIBRARIES(itkIOAddOn
   ${ITK_LIBRARIES}
@@ -56,7 +56,7 @@ set(SYSTEM_GDCM_LIBRARIES
       ${ITK_LIBRARIES}
       ${SYSTEM_GDCM_LIBRARIES}
       )
-  endif(WIN32 AND NOT CYGWIN AND NOT MINGW)
+  endif()
   
-endif (ITK_USE_SYSTEM_GDCM)
+endif()
 

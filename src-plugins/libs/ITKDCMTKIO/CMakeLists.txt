@@ -27,7 +27,7 @@ include_directories(${DCMTK_INCLUDE_DIRS})
 IF(APPLE)
   include(FixDCMTKMacInstall)
   FixDCMTKMacInstall()
-endif(APPLE)
+endif()
 
 set(MEDINRIA_REQUIRES_VTK TRUE) # for itkMultiThreadedImageIO in vtkInria3d
 
