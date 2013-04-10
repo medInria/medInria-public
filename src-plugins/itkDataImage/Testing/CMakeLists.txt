@@ -38,6 +38,6 @@ if (ITK_SOURCE_DIR)
 endif()
 
 foreach (test ${itkDataImagePluginTests})
-  GET_FILENAME_COMPONENT(TName ${test} NAME_WE)
+  get_filename_component(TName ${test} NAME_WE)
   add_test(${TName} ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests ${TName} ${CXX_TEST_PLUGIN_PATH} ${ITK_DATA_ROOT})
 endforeach() 

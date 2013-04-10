@@ -22,6 +22,6 @@ target_link_libraries(${KIT}CxxTests
 
 
 foreach (test ${${PROJECT_NAME}Tests})
-  GET_FILENAME_COMPONENT(TName ${test} NAME_WE)
+  get_filename_component(TName ${test} NAME_WE)
   add_test(${TName} ${CXX_TEST_PATH}/${KIT}CxxTests ${TName}) 
 endforeach() 
