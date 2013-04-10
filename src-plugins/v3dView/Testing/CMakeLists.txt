@@ -42,5 +42,5 @@ endif()
 
 FOREACH (test ${v3dViewPluginTests})
   GET_FILENAME_COMPONENT(TName ${test} NAME_WE)
-  ADD_TEST(${TName} ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests ${TName} ${CXX_TEST_PLUGIN_PATH} ${ITK_DATA_ROOT})
+  add_test(${TName} ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests ${TName} ${CXX_TEST_PLUGIN_PATH} ${ITK_DATA_ROOT})
 ENDFOREACH (test) 

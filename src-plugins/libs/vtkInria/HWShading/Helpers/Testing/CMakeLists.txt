@@ -32,5 +32,5 @@ target_link_libraries(${KIT}CxxTests
   )
 
 
-ADD_TEST(interpolation ${CXX_TEST_PATH}/${KIT}CxxTests interpolation "${CMAKE_CURRENT_BINARY_DIR}/simplevolume.vtk")
-ADD_TEST(sliceactor    ${CXX_TEST_PATH}/${KIT}CxxTests sliceactor    "${CMAKE_CURRENT_BINARY_DIR}/simplevolume.vtk")
+add_test(interpolation ${CXX_TEST_PATH}/${KIT}CxxTests interpolation "${CMAKE_CURRENT_BINARY_DIR}/simplevolume.vtk")
+add_test(sliceactor    ${CXX_TEST_PATH}/${KIT}CxxTests sliceactor    "${CMAKE_CURRENT_BINARY_DIR}/simplevolume.vtk")
