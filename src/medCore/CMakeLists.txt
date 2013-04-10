@@ -155,7 +155,7 @@ endif()
 
 IF(WIN32)
   target_link_libraries(${PROJECT_NAME} psapi.lib)
-ENDIF(WIN32)
+endif(WIN32)
 
 # Include header files for Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)

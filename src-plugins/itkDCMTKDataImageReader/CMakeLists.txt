@@ -44,7 +44,7 @@ find_package(DCMTK REQUIRED)
 IF(APPLE)
   include(FixDCMTKMacInstall)
   FixDCMTKMacInstall()
-ENDIF(APPLE)
+endif(APPLE)
 
 find_package(VTK)
 include(${VTK_USE_FILE})
@@ -98,7 +98,7 @@ endif()
 
 IF(MEDINRIA-PLUGINS_BUILD_EXAMPLES)
         subdirs(Examples)
-ENDIF(MEDINRIA-PLUGINS_BUILD_EXAMPLES)
+endif(MEDINRIA-PLUGINS_BUILD_EXAMPLES)
 
 if (MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
 	dtk_build_doc(${PROJECT_NAME})

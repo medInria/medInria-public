@@ -9,7 +9,7 @@ IF( DOXYGEN_FOUND )
     SET(all_arg)
     IF (DOCUMENTATION_TARGET_IN_ALL)
       SET(all_arg "ALL")
-    ENDIF()
+    endif()
 
     find_package(Qt4 4.6.0 REQUIRED)
     include(${QT_USE_FILE})
@@ -69,8 +69,8 @@ IF( DOXYGEN_FOUND )
     MESSAGE( WARNING
       "Warning: Dot not found - Documentation will not be created"
       )
-  ENDIF( DOXYGEN_DOT_FOUND )
+  endif( DOXYGEN_DOT_FOUND )
  ELSE( DOXYGEN_FOUND )
   MESSAGE(WARNING
      "Warning: Doxygen not found - Documentation will not be created")
-ENDIF( DOXYGEN_FOUND )
+endif( DOXYGEN_FOUND )

@@ -8,7 +8,7 @@ include_directories(
 
 IF(APPLE)
   SET(GUI_EXECUTABLE MACOSX_BUNDLE)
-ENDIF(APPLE)
+endif(APPLE)
 
 ADD_EXECUTABLE(${PROJECT_NAME} ${GUI_EXECUTABLE}
   DataManager.cxx
