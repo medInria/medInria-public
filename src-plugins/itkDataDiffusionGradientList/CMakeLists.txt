@@ -61,7 +61,7 @@ set(${PROJECT_NAME}_SOURCES
 add_definitions(${QT_DEFINITIONS})
 add_definitions(-DQT_PLUGIN)
 add_definitions(-DQT_SHARED)
-if(NOT MSVC)
+if (NOT MSVC)
   # Shouldn't the QT_USE_FILE set this appropriately?
   add_definitions(-DQT_NO_DEBUG)
 endif()

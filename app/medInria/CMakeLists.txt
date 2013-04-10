@@ -107,14 +107,14 @@ set(DEPLOYMENT_SYSTEM)
 IF(APPLE)
   set(DEPLOYMENT_SYSTEM MACOSX_BUNDLE)
 endif()
-if(WIN32)
-  if( NOT ${MED_SHOW_CONSOLE} )
+if (WIN32)
+  if ( NOT ${MED_SHOW_CONSOLE} )
     set(DEPLOYMENT_SYSTEM WIN32)
   endif()
   set(${PROJECT_NAME}_SOURCES ${${PROJECT_NAME}_SOURCES} ${PROJECT_NAME}.rc)
 endif()
 
-if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPch.h" "../../src/medPch/medPch.cpp"
     ${${PROJECT_NAME}_SOURCES_WRAP}
@@ -151,7 +151,7 @@ SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 ## Bundle setup
 ## #################################################################
 
-if(APPLE)
+if (APPLE)
   set(MACOSX_BUNDLE_ICON_FILE ${PROJECT_NAME}.icns)
   SET(MACOSX_BUNDLE_SHORT_VERSION_STRING 0.1.0)
   SET(MACOSX_BUNDLE_VERSION 0.1.0)
@@ -167,7 +167,7 @@ endif()
 ## #################################################################
 
 # medInria.desktop file is used by Linux xdg compliant systems to add the app to the OS menu
-if(UNIX AND NOT APPLE)
+if (UNIX AND NOT APPLE)
   configure_file(medInria.desktop.in medInria.desktop)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/medInria.desktop DESTINATION share/applications)
   # once the new icon is ready we need to change this
@@ -178,7 +178,7 @@ install(TARGETS ${PROJECT_NAME}
    BUNDLE DESTINATION bin
   RUNTIME DESTINATION bin)
 
-if(APPLE)
+if (APPLE)
   install(CODE "execute_process(COMMAND macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app)")
 endif()
 

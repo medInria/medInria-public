@@ -102,12 +102,12 @@ set(${PROJECT_NAME}_SOURCES
 ## Wrapping
 ## #################################################################
 
-if(SWIG_FOUND)
+if (SWIG_FOUND)
     set(${PROJECT_NAME}_WRAP_DEPENDS ${${PROJECT_NAME}_HEADERS})
-    if(PYTHONLIBS_FOUND)
+    if (PYTHONLIBS_FOUND)
         dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medcore python ${CMAKE_CURRENT_SOURCE_DIR}/medCore.i ${${PROJECT_NAME}_WRAP_DEPENDS})
     endif()
-    if(TCL_FOUND)
+    if (TCL_FOUND)
         dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medcore tcl    ${CMAKE_CURRENT_SOURCE_DIR}/medCore.i ${${PROJECT_NAME}_WRAP_DEPENDS})
     endif()
 endif()
@@ -115,7 +115,7 @@ endif()
 ## Build rules
 ## #################################################################
 
-if(NOT MSVC)
+if (NOT MSVC)
 add_definitions(-Wno-write-strings)
 add_definitions(-Wformat=0)
 endif()
@@ -126,7 +126,7 @@ add_definitions(-DQT_NO_DEBUG)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPch.h" "../medPch/medPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
@@ -145,11 +145,11 @@ target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
     dtkCore
     dtkLog)
-if(TCL_FOUND)
+if (TCL_FOUND)
   target_link_libraries(${PROJECT_NAME} ${TCL_LIBRARY})
 endif()
 
-if(PYTHONLIBS_FOUND)
+if (PYTHONLIBS_FOUND)
   target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES})
 endif()
 

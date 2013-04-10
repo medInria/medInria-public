@@ -56,7 +56,7 @@ OPTION(VTKINRIA_BUILD_EXAMPLES "Build vtkInria examples." OFF)
 # -----------------------------------------------------------------------------
 # Add in the option for precompiled headers, default to ON
 # -----------------------------------------------------------------------------
-if(MSVC)
+if (MSVC)
   option(VTKINRIA_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
   # include the cmake macro to add precompiled headers.
   include(AddPch)

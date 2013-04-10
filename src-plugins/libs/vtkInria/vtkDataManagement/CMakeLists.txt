@@ -27,7 +27,7 @@ IF (VTK_MAJOR_VERSION GREATER 4)
   ENDIF (VTK_MINOR_VERSION GREATER 0)
 ENDIF (VTK_MAJOR_VERSION GREATER 4)
 
-if(VTKINRIA_USE_PRECOMPILED_HEADERS)
+if (VTKINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
     "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
     ${vtkDataManagement_SRCS})

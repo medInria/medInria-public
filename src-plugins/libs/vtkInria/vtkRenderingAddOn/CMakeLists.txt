@@ -19,7 +19,7 @@ SET(${PROJECT_NAME}_SRCS
   vtkViewImage2DWithTracer.cxx
 )
 
-if(VTKINRIA_USE_PRECOMPILED_HEADERS)
+if (VTKINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
     "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
     ${${PROJECT_NAME}_SRCS})

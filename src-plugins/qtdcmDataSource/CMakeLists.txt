@@ -29,7 +29,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## #################################################################
 
 find_package(ITK REQUIRED)
-if(ITK_FOUND)
+if (ITK_FOUND)
 	include(${ITK_USE_FILE})
 endif()
 
@@ -79,7 +79,7 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_HEADERS})
 
-if(WIN32)
+if (WIN32)
   target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${ITK_LIBRARIES}
@@ -104,7 +104,7 @@ else(WIN32)
 endif()
 
 # Only doing a fix mac link since qtdcm should already have been compiled and therefore run the FixDCMTKMacInstall
-if(APPLE)
+if (APPLE)
   include(FixDCMTKMacLink)
   FixDCMTKMacLink(${PROJECT_NAME})
 endif()

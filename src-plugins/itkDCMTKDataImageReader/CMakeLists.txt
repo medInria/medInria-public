@@ -72,7 +72,7 @@ set(${PROJECT_NAME}_SOURCES
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
@@ -100,7 +100,7 @@ IF(MEDINRIA-PLUGINS_BUILD_EXAMPLES)
         subdirs(Examples)
 ENDIF(MEDINRIA-PLUGINS_BUILD_EXAMPLES)
 
-if(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
+if (MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
 	dtk_build_doc(${PROJECT_NAME})
 endif()
 
@@ -108,7 +108,7 @@ endif()
 ## 
 ## ###################################################################
 
-if(APPLE)
+if (APPLE)
   include(FixDCMTKMacLink)
   FixDCMTKMacLink(${PROJECT_NAME})
 endif()
