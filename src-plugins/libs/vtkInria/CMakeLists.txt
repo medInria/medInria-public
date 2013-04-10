@@ -165,7 +165,7 @@ if (DOXYGEN)
     )
   endif()
 
-  ADD_CUSTOM_TARGET(${PROJECT_NAME}-doc
+  add_custom_target(${PROJECT_NAME}-doc
     ${DOXYGEN}
     ${MY_DOXYGEN_BUILD_DIR}/doxygen.config
   )
