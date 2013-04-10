@@ -46,7 +46,7 @@ if ( DOXYGEN_FOUND )
     set(doc_output "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html")
 
     # Run doxygen as a custom command driven by a custom target.
-    ADD_CUSTOM_COMMAND(
+    add_custom_command(
       OUTPUT ${doc_output}
       #COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenHeader.html ${CMAKE_CURRENT_BINARY_DIR}/DoxygenHeader.html
       #COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenFooter.html ${CMAKE_CURRENT_BINARY_DIR}/DoxygenFooter.html
