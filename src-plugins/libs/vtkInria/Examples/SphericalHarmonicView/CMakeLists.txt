@@ -5,7 +5,7 @@ include_directories(
   ../../vtkRenderingAddOn
   )
 
-IF(APPLE)
+if (APPLE)
 set(GUI_EXECUTABLE MACOSX_BUNDLE)
 endif()
 
