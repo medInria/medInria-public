@@ -5,7 +5,7 @@
 project(medSqlTests)
 
 # we need the directory with the test data
-FIND_PATH(MEDINRIA_TEST_DATA_ROOT MedINRIA_test_data.txt
+find_path(MEDINRIA_TEST_DATA_ROOT MedINRIA_test_data.txt
   DOC "The directory where medInria test data is located. It is required by the Testing tree."
   )
 
