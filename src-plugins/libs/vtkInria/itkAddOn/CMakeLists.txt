@@ -12,12 +12,12 @@ itkReshaper.cxx
 )
 
 if (WIN32 AND NOT CYGWIN AND NOT MINGW)
- TARGET_LINK_LIBRARIES(itkReshaper 
+ target_link_libraries(itkReshaper 
   itkIOAddOn 
   getoptcompatlib
  )
 else()
- TARGET_LINK_LIBRARIES(itkReshaper
+ target_link_libraries(itkReshaper
   itkIOAddOn
  )
 endif()

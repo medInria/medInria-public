@@ -16,7 +16,7 @@ ADD_EXECUTABLE(${KIT}CxxTests
   ${Tests}
   )
 
-TARGET_LINK_LIBRARIES(${KIT}CxxTests 
+target_link_libraries(${KIT}CxxTests 
   ${PROJECT_NAME}
   vtkCommon
   )

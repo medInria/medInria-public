@@ -45,7 +45,7 @@ else()
 
     ADD_DEPENDENCIES(${PROJECT_NAME}_itkDataTensorImageTest ${PROJECT_NAME}_itkDataTensorImageTest_moc)
 
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME}_itkDataTensorImageTest
+    target_link_libraries(${PROJECT_NAME}_itkDataTensorImageTest
         ${QT_QTCORE_LIBRARY}
         ${QT_QTTEST_LIBRARY}
         ${QT_QTLOCATION_LIBRARY}

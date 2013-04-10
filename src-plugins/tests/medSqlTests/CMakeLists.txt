@@ -42,7 +42,7 @@ else()
 
     ADD_DEPENDENCIES(${PROJECT_NAME}_medDatabaseImporterTest ${PROJECT_NAME}_medDatabaseImporterTest_moc)
 
-    TARGET_LINK_LIBRARIES(${PROJECT_NAME}_medDatabaseImporterTest
+    target_link_libraries(${PROJECT_NAME}_medDatabaseImporterTest
         ${QT_QTCORE_LIBRARY}
         ${QT_QTTEST_LIBRARY}
         ${QT_QTLOCATION_LIBRARY}

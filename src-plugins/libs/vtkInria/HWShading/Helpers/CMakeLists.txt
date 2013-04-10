@@ -15,7 +15,7 @@ ENDFOREACH(class)
 
 ADD_LIBRARY(vtkHelpers SHARED ${Helpers_SRCS})
 
-TARGET_LINK_LIBRARIES(vtkHelpers
+target_link_libraries(vtkHelpers
   vtkCommon
   vtkIO
   vtkFiltering
