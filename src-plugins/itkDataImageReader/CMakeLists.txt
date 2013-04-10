@@ -40,7 +40,7 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-if(ITK_USE_SYSTEM_GDCM)
+if (ITK_USE_SYSTEM_GDCM)
   add_definitions(-DITK_USE_SYSTEM_GDCM)
 endif()
 
@@ -57,7 +57,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImageReaderPlugin.h
 )
 
-if(ITK_USE_SYSTEM_GDCM)
+if (ITK_USE_SYSTEM_GDCM)
   set(${PROJECT_NAME}_HEADERS_MOC
     ${${PROJECT_NAME}_HEADERS_MOC}
     itkGDCMDataImageReader.h
@@ -82,7 +82,7 @@ set(${PROJECT_NAME}_SOURCES
   itkVTKDataImageReader.cpp
   itkPhilipsRECDataImageReader.cpp
   )
-if(ITK_USE_SYSTEM_GDCM)
+if (ITK_USE_SYSTEM_GDCM)
   set(${PROJECT_NAME}_SOURCES
     ${${PROJECT_NAME}_SOURCES}
     itkGDCMDataImageReader.cpp
@@ -96,7 +96,7 @@ endif()
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES}

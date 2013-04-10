@@ -36,10 +36,10 @@ include(${dtk_USE_FILE})
 include(dtkPlugin)
 
 find_package(ITK REQUIRED)
-  if(NOT ITK_USE_REVIEW)
+  if (NOT ITK_USE_REVIEW)
     message(FATAL_ERROR "ITK must be build with option ITK_USE_REVIEW to ON")
   endif()
-  if(NOT ITK_USE_REVIEW_STATISTICS)
+  if (NOT ITK_USE_REVIEW_STATISTICS)
     message(FATAL_ERROR "ITK must be build with option ITK_USE_REVIEW_STATISTICS to ON")
   endif()
 include(${ITK_USE_FILE})
@@ -86,7 +86,7 @@ set(${PROJECT_NAME}_SOURCES itkDataImagePlugin.cpp)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES}

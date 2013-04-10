@@ -32,7 +32,7 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
 find_package(ITK REQUIRED)
-if(ITK_FOUND)
+if (ITK_FOUND)
    include(${ITK_USE_FILE})
 endif()
 

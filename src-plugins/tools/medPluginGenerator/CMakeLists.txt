@@ -70,7 +70,7 @@ SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC} ${${PROJECT_
 ## Bundle setup
 ## #################################################################
 
-if(APPLE)
+if (APPLE)
   set(MACOSX_BUNDLE_ICON_FILE ${PROJECT_NAME}.icns)
   set(MACOSX_BUNDLE_SHORT_VERSION_STRING 0.1.0)
   set(MACOSX_BUNDLE_VERSION 0.1.0)
@@ -89,6 +89,6 @@ install(TARGETS ${PROJECT_NAME}
    BUNDLE DESTINATION bin
   RUNTIME DESTINATION bin)
 
-if(APPLE)
+if (APPLE)
   install(CODE "execute_process(COMMAND macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app)")
 endif()

@@ -68,7 +68,7 @@ set(${PROJECT_NAME}_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 
 #configure ctest variables
 option(MEDINRIA-PLUGINS_BUILD_REPORTING "Build Reporting")
-if(MEDINRIA-PLUGINS_BUILD_REPORTING)
+if (MEDINRIA-PLUGINS_BUILD_REPORTING)
   include(dtkReporting)
 endif()
 
@@ -79,7 +79,7 @@ endif()
 ## #################################################################
 ## Input
 ## #################################################################
-if(MSVC)
+if (MSVC)
   #Macros that enable precompiled headers to be added, defined by dtk.
   include(dtkPch)
   option(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
@@ -162,7 +162,7 @@ if (ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
   endwhile()
 endif()
 
-if(BUILD_ALL_PLUGINS OR
+if (BUILD_ALL_PLUGINS OR
   BUILD_VTKDATAMESHWRITER_PLUGIN OR
   BUILD_VTKDATAMESHREADER_PLUGIN OR
   BUILD_VTKDATAMESH_PLUGIN OR
@@ -174,7 +174,7 @@ if(BUILD_ALL_PLUGINS OR
   set(MEDINRIA_REQUIRES_VTK TRUE)
 endif()
 
-if(BUILD_ALL_PLUGINS OR
+if (BUILD_ALL_PLUGINS OR
   BUILD_VTKDATAMESHWRITER_PLUGIN OR
   BUILD_VTKDATAMESHREADER_PLUGIN OR
   BUILD_VTKDATAMESH_PLUGIN OR
@@ -205,21 +205,21 @@ if (BUILD_ALL_PLUGINS OR
   set(MEDINRIA_REQUIERS_ITKPROCESSREGISTRATION TRUE)
 endif()
 
-if(BUILD_ALL_PLUGINS OR
+if (BUILD_ALL_PLUGINS OR
   BUILD_ITKDATAIMAGEWRITER_PLUGIN OR
   BUILD_ITKDATAIMAGEREADER_PLUGIN
   )
   set(MEDINRIA_REQUIERS_ITKDATAIMAGEBASE TRUE)
 endif()
 
-if(BUILD_ALL_PLUGINS OR
+if (BUILD_ALL_PLUGINS OR
   BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN
   )
   set(MEDINRIA_REQUIERS_ITKDCMTKIO TRUE)
 endif()
 
 
-if(BUILD_ALL_PLUGINS OR
+if (BUILD_ALL_PLUGINS OR
   BUILD_V3DVIEW_PLUGIN OR
   BUILD_V3DDATA_PLUGIN     
   )
@@ -236,7 +236,7 @@ if (MEDINRIA-PLUGINS_BUILD_TOOLS)
 endif()
 
 option(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION "Build documentation"    OFF)
-if(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
+if (MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
 
@@ -258,11 +258,11 @@ endif()
 ## #################################################################
 
 # On Visual Studio 8 MS deprecated C. This removes all 1.276E1265 security warnings
-if(WIN32)
-  if(NOT BORLAND)
-    if(NOT CYGWIN)
-      if(NOT MINGW)
-        if(NOT ITK_ENABLE_VISUAL_STUDIO_DEPRECATED_C_WARNINGS)
+if (WIN32)
+  if (NOT BORLAND)
+    if (NOT CYGWIN)
+      if (NOT MINGW)
+        if (NOT ITK_ENABLE_VISUAL_STUDIO_DEPRECATED_C_WARNINGS)
           add_definitions(
             -D_CRT_FAR_MAPPINGS_NO_DEPRECATE
             -D_CRT_IS_WCTYPE_NO_DEPRECATE

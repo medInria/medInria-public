@@ -69,7 +69,7 @@ set(${PROJECT_NAME}_SOURCES
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
@@ -87,7 +87,7 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore dtkLog)
 
-if(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
+if (MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
 	dtk_build_doc(${PROJECT_NAME})
 endif()
 

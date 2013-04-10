@@ -73,7 +73,7 @@ add_definitions(-DQT_NO_DEBUG)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
     "medPch.h" "../medPch/medPch.cpp" 
     ${${PROJECT_NAME}_SOURCES}
