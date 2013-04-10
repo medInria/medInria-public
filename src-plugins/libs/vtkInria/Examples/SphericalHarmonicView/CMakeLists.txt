@@ -1,4 +1,4 @@
-PROJECT(SHVisu)
+project(SHVisu)
 
 include_directories(
   ../../vtkVisuManagement

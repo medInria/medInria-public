@@ -1,4 +1,4 @@
-PROJECT(PolydataToFiberXML)
+project(PolydataToFiberXML)
 
 include_directories(
   ../../vtkRenderingAddOn

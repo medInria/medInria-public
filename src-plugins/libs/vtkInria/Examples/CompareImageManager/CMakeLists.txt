@@ -1,4 +1,4 @@
-PROJECT(CompareImageManager)
+project(CompareImageManager)
 
 include_directories(
   ../../vtkRenderingAddOn

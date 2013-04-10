@@ -1,4 +1,4 @@
-PROJECT(RegisterDataSets)
+project(RegisterDataSets)
 
 include_directories(
   ../../vtkImageView

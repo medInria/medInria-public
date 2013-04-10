@@ -1,4 +1,4 @@
-PROJECT(TensorManager)
+project(TensorManager)
 
 include_directories(
   ../../vtkImageView

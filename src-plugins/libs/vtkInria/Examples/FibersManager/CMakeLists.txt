@@ -1,4 +1,4 @@
-PROJECT(FibersManager)
+project(FibersManager)
 
 include_directories(
   ../../vtkRenderingAddOn

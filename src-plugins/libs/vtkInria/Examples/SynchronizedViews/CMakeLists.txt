@@ -1,4 +1,4 @@
-PROJECT(SynchronizedViews)
+project(SynchronizedViews)
 
 include_directories(
   ../../vtkImageView
