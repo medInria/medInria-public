@@ -26,7 +26,7 @@ FOREACH(copyfile ${COPYFILES})
 		${CMAKE_CURRENT_BINARY_DIR}/${copyfile}
 		COPYONLY
 	  )
-ENDFOREACH(copyfile)
+endforeach()
 
 set(KIT ${PROJECT_NAME})
 

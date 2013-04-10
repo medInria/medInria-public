@@ -11,7 +11,7 @@ set(Helpers_classes
 FOREACH(class ${Helpers_classes})
   set(Helpers_SRCS    ${Helpers_SRCS}    ${class}.cxx)
   set(Helpers_Headers ${Helpers_Headers} ${class}.h)
-ENDFOREACH(class)
+endforeach()
 
 ADD_LIBRARY(vtkHelpers SHARED ${Helpers_SRCS})
 
