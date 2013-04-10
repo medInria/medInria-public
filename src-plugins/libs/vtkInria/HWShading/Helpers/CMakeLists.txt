@@ -8,7 +8,7 @@ set(Helpers_classes
     vtkImageOrthogonalSlicesActor
     )
 
-FOREACH(class ${Helpers_classes})
+foreach (class ${Helpers_classes})
   set(Helpers_SRCS    ${Helpers_SRCS}    ${class}.cxx)
   set(Helpers_Headers ${Helpers_Headers} ${class}.h)
 endforeach()

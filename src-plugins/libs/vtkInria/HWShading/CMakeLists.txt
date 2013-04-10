@@ -33,7 +33,7 @@ set(${PROJECT_NAME}_classes
   )
 
 
-FOREACH(class ${${PROJECT_NAME}_classes})
+foreach (class ${${PROJECT_NAME}_classes})
   set(${PROJECT_NAME}_SRCS    ${${PROJECT_NAME}_SRCS}    ${class}.cxx)
   set(${PROJECT_NAME}_HEADERS ${${PROJECT_NAME}_HEADERS} ${class}.h)
 endforeach()

@@ -21,7 +21,7 @@ set(COPYFILES
   fibers.vtk
   )
 
-FOREACH(copyfile ${COPYFILES})
+foreach (copyfile ${COPYFILES})
   configure_file(	${CMAKE_CURRENT_SOURCE_DIR}/${copyfile}
 		${CMAKE_CURRENT_BINARY_DIR}/${copyfile}
 		COPYONLY
