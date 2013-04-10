@@ -66,11 +66,11 @@ IF( DOXYGEN_FOUND )
     SET_TARGET_PROPERTIES(${PROJECT_NAME}-doc PROPERTIES LABELS Documentation)
  
   else()
-    MESSAGE( WARNING
+    message( WARNING
       "Warning: Dot not found - Documentation will not be created"
       )
   endif()
  else()
-  MESSAGE(WARNING
+  message(WARNING
      "Warning: Doxygen not found - Documentation will not be created")
 endif()

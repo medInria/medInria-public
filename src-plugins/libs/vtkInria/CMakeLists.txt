@@ -85,7 +85,7 @@ INCLUDE(${ITK_USE_FILE})
 # The hardware shading extension by T. Peeters (BMIA - TUe)
 # -----------------------------------------------------------------------------
 IF( NOT VTK_USE_GLSL_SHADERS )
-    MESSAGE(FATAL_ERROR " VTK must be compiled with VTK_USE_GLSL_SHADERS at ON to use the HWShading library. This option is only available with VTK>=5.1.")
+    message(FATAL_ERROR " VTK must be compiled with VTK_USE_GLSL_SHADERS at ON to use the HWShading library. This option is only available with VTK>=5.1.")
 endif()
 
 
