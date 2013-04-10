@@ -36,7 +36,7 @@ else()
 
     QT4_WRAP_CPP(${PROJECT_NAME}_MOC_SRCS ${${PROJECT_NAME}_MOC_CPPS})
 
-    ADD_CUSTOM_TARGET(${PROJECT_NAME}_medDatabaseImporterTest_moc ALL DEPENDS ${${PROJECT_NAME}_MOC_SRCS})
+    add_custom_target(${PROJECT_NAME}_medDatabaseImporterTest_moc ALL DEPENDS ${${PROJECT_NAME}_MOC_SRCS})
 
     add_executable(${PROJECT_NAME}_medDatabaseImporterTest ${${PROJECT_NAME}_QTESTS_SRCS})
 

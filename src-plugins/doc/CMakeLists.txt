@@ -62,7 +62,7 @@ if ( DOXYGEN_FOUND )
               "${CMAKE_CURRENT_BINARY_DIR}/medInria-plugins.qhcp"
       )
 
-    ADD_CUSTOM_TARGET(${PROJECT_NAME}-doc ${all_arg} DEPENDS ${doc_output})
+    add_custom_target(${PROJECT_NAME}-doc ${all_arg} DEPENDS ${doc_output})
     set_target_properties(${PROJECT_NAME}-doc PROPERTIES LABELS Documentation)
  
   else()
