@@ -31,7 +31,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 find_package(ITK REQUIRED)
 if(ITK_FOUND)
 	include(${ITK_USE_FILE})
-endif(ITK_FOUND)
+endif()
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
@@ -40,7 +40,7 @@ include(dtkPlugin)
 find_package(QtDCM REQUIRED)
 if (QTDCM_FOUND)
   include(${QTDCM_USE_FILE})
-endif (QTDCM_FOUND)
+endif()
 
 ## #################################################################
 ## Input
@@ -101,13 +101,13 @@ else(WIN32)
   dtkLog
   medCore
   medGui)
-endif(WIN32)
+endif()
 
 # Only doing a fix mac link since qtdcm should already have been compiled and therefore run the FixDCMTKMacInstall
 if(APPLE)
   include(FixDCMTKMacLink)
   FixDCMTKMacLink(${PROJECT_NAME})
-endif(APPLE)
+endif()
 
 dtk_build_doc(qtdcmDataSourcePlugin)
 

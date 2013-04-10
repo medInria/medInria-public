@@ -75,7 +75,7 @@ set(${PROJECT_NAME}_SOURCES
 if(NOT MSVC)
 add_definitions(-Wno-write-strings)
 add_definitions(-Wformat=0)
-endif(NOT MSVC)
+endif()
 
 add_definitions(-DQT_SHARED)
 add_definitions(${QT_DEFINITIONS})
@@ -89,7 +89,7 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES_WRAP})
-endif(MEDINRIA_USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}

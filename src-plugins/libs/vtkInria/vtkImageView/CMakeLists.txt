@@ -31,7 +31,7 @@ if(VTKINRIA_USE_PRECOMPILED_HEADERS)
     add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
     "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
     ${${PROJECT_NAME}_SOURCES})
-endif(VTKINRIA_USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
     ${${PROJECT_NAME}_SOURCES_PCH}

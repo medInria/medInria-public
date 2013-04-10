@@ -55,5 +55,5 @@ if(UNIX AND NOT APPLE)
 
   include(CPack)
 
-endif(UNIX AND NOT APPLE)
+endif()
 

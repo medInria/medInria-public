@@ -79,7 +79,7 @@ if(APPLE)
   add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${PROJECT_NAME}_RESOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} ARGS -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.icns ${${PROJECT_NAME}_RESOURCE_DIR})
-endif(APPLE)
+endif()
 
 ## #################################################################
 ## Installation
@@ -91,4 +91,4 @@ install(TARGETS ${PROJECT_NAME}
 
 if(APPLE)
   install(CODE "execute_process(COMMAND macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app)")
-endif(APPLE)
+endif()

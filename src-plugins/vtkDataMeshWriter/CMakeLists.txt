@@ -62,7 +62,7 @@ if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsVtkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES})
-endif(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}

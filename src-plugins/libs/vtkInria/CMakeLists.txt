@@ -60,7 +60,7 @@ if(MSVC)
   option(VTKINRIA_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
   # include the cmake macro to add precompiled headers.
   include(AddPch)
-endif(MSVC)
+endif()
 
 
 # -----------------------------------------------------------------------------

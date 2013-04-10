@@ -52,7 +52,7 @@ foreach(fileIt ${${PROJECT_NAME}_HEADERS})
     string(LENGTH "${foundString}" foundLength)
     if( ${foundLength} GREATER 0 )
         set(${PROJECT_NAME}_HEADERS_MOC ${${PROJECT_NAME}_HEADERS_MOC} ${fileIt})
-    endif( ${foundLength} GREATER 0 )
+    endif()
 endforeach(fileIt)
 
 set(${PROJECT_NAME}_RESOURCES medSegmentation.qrc)
@@ -69,7 +69,7 @@ if(MEDINRIA-PLUGINS__USE_PRECOMPILED_HEADERS)
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC})
-endif(MEDINRIA-PLUGINS__USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}

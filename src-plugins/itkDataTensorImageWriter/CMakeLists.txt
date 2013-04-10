@@ -74,7 +74,7 @@ if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES})
-endif(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}
@@ -89,7 +89,7 @@ target_link_libraries(${PROJECT_NAME}
 
 if(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
 	dtk_build_doc(${PROJECT_NAME})
-endif(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
+endif()
 
 ## #################################################################
 ## Source file layout in development environments like Visual Studio
