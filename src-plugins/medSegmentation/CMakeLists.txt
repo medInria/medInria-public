@@ -53,7 +53,7 @@ foreach(fileIt ${${PROJECT_NAME}_HEADERS})
     if( ${foundLength} GREATER 0 )
         set(${PROJECT_NAME}_HEADERS_MOC ${${PROJECT_NAME}_HEADERS_MOC} ${fileIt})
     endif()
-endforeach(fileIt)
+endforeach()
 
 set(${PROJECT_NAME}_RESOURCES medSegmentation.qrc)
 
