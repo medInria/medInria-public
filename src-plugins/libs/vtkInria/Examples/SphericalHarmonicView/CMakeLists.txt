@@ -9,7 +9,7 @@ if (APPLE)
 set(GUI_EXECUTABLE MACOSX_BUNDLE)
 endif()
 
-ADD_EXECUTABLE(${PROJECT_NAME} 
+add_execitable(${PROJECT_NAME} 
   ${GUI_EXECUTABLE}
   SHManager.cxx
   )

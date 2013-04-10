@@ -5,7 +5,7 @@ include_directories(
   ../../vtkVisuManagement
   )
 
-ADD_EXECUTABLE(${PROJECT_NAME}
+add_execitable(${PROJECT_NAME}
 CompareImageManager.cxx
 )
 

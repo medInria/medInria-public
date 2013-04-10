@@ -42,7 +42,7 @@ set(SYSTEM_GDCM_LIBRARIES
   gdcmDICT
 )
 
-  ADD_EXECUTABLE(GDCMImport
+  add_execitable(GDCMImport
     GDCMImport.cxx
     )
   if (WIN32 AND NOT CYGWIN AND NOT MINGW)
