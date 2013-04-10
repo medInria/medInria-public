@@ -34,7 +34,7 @@ else()
       medDatabaseImporterTest.cxx
       )
 
-    QT4_WRAP_CPP(${PROJECT_NAME}_MOC_SRCS ${${PROJECT_NAME}_MOC_CPPS})
+    qt4_wrap_cpp(${PROJECT_NAME}_MOC_SRCS ${${PROJECT_NAME}_MOC_CPPS})
 
     add_custom_target(${PROJECT_NAME}_medDatabaseImporterTest_moc ALL DEPENDS ${${PROJECT_NAME}_MOC_SRCS})
 
