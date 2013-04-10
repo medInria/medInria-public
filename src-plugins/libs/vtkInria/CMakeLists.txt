@@ -144,23 +144,23 @@ if (DOXYGEN)
   )
 
   if (MY_LINK_EXTERNAL_DOC)
-    EXEC_PROGRAM(${CMAKE_COMMAND} ${MY_DOXYGEN_BUILD_DIR}
+    exec_program(${CMAKE_COMMAND} ${MY_DOXYGEN_BUILD_DIR}
       ARGS -E tar xvz ${PROJECT_SOURCE_DIR}/Doxygen/vtkNightlyDoc.tag.tar.gz
     )
-    EXEC_PROGRAM(${CMAKE_COMMAND} ${MY_DOXYGEN_BUILD_DIR}
+    exec_program(${CMAKE_COMMAND} ${MY_DOXYGEN_BUILD_DIR}
       ARGS -E tar xvz ${PROJECT_SOURCE_DIR}/Doxygen/KWWidgetsNightlyDoc.tag.tar.gz
     )
-    EXEC_PROGRAM(${CMAKE_COMMAND} ${MY_DOXYGEN_BUILD_DIR}
+    exec_program(${CMAKE_COMMAND} ${MY_DOXYGEN_BUILD_DIR}
       ARGS -E tar xvz ${PROJECT_SOURCE_DIR}/Doxygen/InsightDoxygen.tag.tar.gz
     )
   else()
-    EXEC_PROGRAM(${CMAKE_COMMAND}
+    exec_program(${CMAKE_COMMAND}
       ARGS -E remove ${MY_DOXYGEN_BUILD_DIR}/vtkNightlyDoc.tag
     )
-    EXEC_PROGRAM(${CMAKE_COMMAND}
+    exec_program(${CMAKE_COMMAND}
       ARGS -E remove ${MY_DOXYGEN_BUILD_DIR}/KWWidgetsNightlyDoc.tag
     )
-    EXEC_PROGRAM(${CMAKE_COMMAND}
+    exec_program(${CMAKE_COMMAND}
       ARGS -E remove ${MY_DOXYGEN_BUILD_DIR}/InsightDoxygen.tag
     )
   endif()
