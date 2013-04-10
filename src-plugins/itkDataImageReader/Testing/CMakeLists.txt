@@ -32,5 +32,5 @@ set(ITK_DATA_ROOT
 
 if (ITK_SOURCE_DIR)
   set(ITK_DATA_ROOT ${ITK_SOURCE_DIR}/Examples/Data)
-  ADD_TEST(itkMetaDataImageReaderTest ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests itkMetaDataImageReaderTest ${CXX_TEST_PLUGIN_PATH} ${ITK_DATA_ROOT})
+  add_test(itkMetaDataImageReaderTest ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests itkMetaDataImageReaderTest ${CXX_TEST_PLUGIN_PATH} ${ITK_DATA_ROOT})
 endif()

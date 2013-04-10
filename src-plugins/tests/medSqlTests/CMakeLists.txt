@@ -52,5 +52,5 @@ else()
         medCore
         )
 
-    ADD_TEST(${PROJECT_NAME}_medDatabaseImporterTest ${CXX_TEST_PATH}/${PROJECT_NAME}_medDatabaseImporterTest)
+    add_test(${PROJECT_NAME}_medDatabaseImporterTest ${CXX_TEST_PATH}/${PROJECT_NAME}_medDatabaseImporterTest)
 endif()

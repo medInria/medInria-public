@@ -57,6 +57,6 @@ else()
         ${ITK_LIBRARIES}
         )
 
-    ADD_TEST(${PROJECT_NAME}_itkDataTensorImageTest ${CXX_TEST_PATH}/${PROJECT_NAME}_itkDataTensorImageTest)
+    add_test(${PROJECT_NAME}_itkDataTensorImageTest ${CXX_TEST_PATH}/${PROJECT_NAME}_itkDataTensorImageTest)
 endif()
 

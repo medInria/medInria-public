@@ -54,11 +54,11 @@ target_link_libraries(${KIT}CxxTests
   )
 
 
-ADD_TEST(NoShader     ${CXX_TEST_PATH}/${KIT}CxxTests NoShader)
-ADD_TEST(TestShader   ${CXX_TEST_PATH}/${KIT}CxxTests TestShader   "${CMAKE_CURRENT_BINARY_DIR}/testshader.prog")
-#ADD_TEST(TestShader2  ${CXX_TEST_PATH}/${KIT}CxxTests TestShader   "${CMAKE_CURRENT_BINARY_DIR}/alshaderpp.prog")
-ADD_TEST(texturemap   ${CXX_TEST_PATH}/${KIT}CxxTests texturemap   "${CMAKE_CURRENT_BINARY_DIR}/LogoVTK.jpg")
-ADD_TEST(shadows      ${CXX_TEST_PATH}/${KIT}CxxTests shadows)
-ADD_TEST(fibermapper  ${CXX_TEST_PATH}/${KIT}CxxTests fibermapper  "${CMAKE_CURRENT_BINARY_DIR}/fibers.vtk")
-ADD_TEST(fibershadows ${CXX_TEST_PATH}/${KIT}CxxTests fibershadows "${CMAKE_CURRENT_BINARY_DIR}/fibers.vtk")
+add_test(NoShader     ${CXX_TEST_PATH}/${KIT}CxxTests NoShader)
+add_test(TestShader   ${CXX_TEST_PATH}/${KIT}CxxTests TestShader   "${CMAKE_CURRENT_BINARY_DIR}/testshader.prog")
+#add_test(TestShader2  ${CXX_TEST_PATH}/${KIT}CxxTests TestShader   "${CMAKE_CURRENT_BINARY_DIR}/alshaderpp.prog")
+add_test(texturemap   ${CXX_TEST_PATH}/${KIT}CxxTests texturemap   "${CMAKE_CURRENT_BINARY_DIR}/LogoVTK.jpg")
+add_test(shadows      ${CXX_TEST_PATH}/${KIT}CxxTests shadows)
+add_test(fibermapper  ${CXX_TEST_PATH}/${KIT}CxxTests fibermapper  "${CMAKE_CURRENT_BINARY_DIR}/fibers.vtk")
+add_test(fibershadows ${CXX_TEST_PATH}/${KIT}CxxTests fibershadows "${CMAKE_CURRENT_BINARY_DIR}/fibers.vtk")
 
