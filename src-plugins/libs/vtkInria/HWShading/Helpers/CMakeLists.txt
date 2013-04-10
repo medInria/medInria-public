@@ -25,7 +25,7 @@ target_link_libraries(vtkHelpers
   )
 
 if ( VTKINRIA_BUILD_TESTING )
-  ADD_SUBDIRECTORY( Testing )
+  add_subdirectory( Testing )
 endif()
 
 

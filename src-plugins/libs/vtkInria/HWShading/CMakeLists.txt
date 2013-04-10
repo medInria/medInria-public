@@ -2,7 +2,7 @@ project(vtkHWShading)
 
 INCLUDE(ShaderText.cmake)
 
-ADD_SUBDIRECTORY(Helpers)
+add_subdirectory(Helpers)
 
 set(${PROJECT_NAME}_classes
   ExtensionInitialize
@@ -111,5 +111,5 @@ target_link_libraries(${PROJECT_NAME}
   )
 
 if ( VTKINRIA_BUILD_TESTING )
-  ADD_SUBDIRECTORY( Testing )
+  add_subdirectory( Testing )
 endif()

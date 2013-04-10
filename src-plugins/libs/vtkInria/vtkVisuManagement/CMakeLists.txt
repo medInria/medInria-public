@@ -102,5 +102,5 @@ target_link_libraries(vtkLandmarkManagement
 INSTALL_TARGETS(/lib vtkLandmarkManagement)
 
 if (VTKINRIA_BUILD_TESTING)
-  ADD_SUBDIRECTORY(Testing)
+  add_subdirectory(Testing)
 endif()

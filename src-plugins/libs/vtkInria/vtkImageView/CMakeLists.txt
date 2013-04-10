@@ -50,7 +50,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 if (VTKINRIA_BUILD_TESTING)
-    ADD_SUBDIRECTORY(Testing)
+    add_subdirectory(Testing)
 endif()
 
 # include header files in group for visual studio
