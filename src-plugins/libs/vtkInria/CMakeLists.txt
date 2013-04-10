@@ -10,7 +10,7 @@ if (WIN32)
   if (NOT BORLAND)
     if (NOT CYGWIN)
       if (NOT MINGW)
-          ADD_DEFINITIONS(
+          add_definitions(
             -D_CRT_FAR_MAPPINGS_NO_DEPRECATE
             -D_CRT_IS_WCTYPE_NO_DEPRECATE
             -D_CRT_MANAGED_FP_NO_DEPRECATE
