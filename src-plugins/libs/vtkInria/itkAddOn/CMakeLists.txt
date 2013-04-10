@@ -7,7 +7,7 @@ if (WIN32 AND NOT CYGWIN AND NOT MINGW)
   )
 endif()
 
-add_execitable(itkReshaper
+add_executable(itkReshaper
 itkReshaper.cxx
 )
 

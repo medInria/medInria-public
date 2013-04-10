@@ -5,7 +5,7 @@ include_directories(
   ../../vtkVisuManagement
   )
 
-add_execitable(${PROJECT_NAME}
+add_executable(${PROJECT_NAME}
   IsosurfacesManager.cxx
   )
 

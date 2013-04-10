@@ -8,11 +8,11 @@ include_directories(
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
 
 if (APPLE)
-  add_execitable(${PROJECT_NAME} MACOSX_BUNDLE
+  add_executable(${PROJECT_NAME} MACOSX_BUNDLE
     RegisterDataSets.cxx
     )  
 else()
-  add_execitable(${PROJECT_NAME}
+  add_executable(${PROJECT_NAME}
     RegisterDataSets.cxx
     )  
 endif()
