@@ -20,7 +20,7 @@ if ( DOXYGEN_FOUND )
     set( DOCUMENTATION_HTML_TARZ TRUE)
     set( DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
-    CONFIGURE_FILE( Doxyfile.txt.in
+    configure_file( Doxyfile.txt.in
       ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.txt
       )
 
@@ -28,17 +28,17 @@ if ( DOXYGEN_FOUND )
     get_git_head_revision(GIT_REFSPEC GIT_SHA1)
     #message ("cmake revision?: " ${GIT_SHA1})
 
-    CONFIGURE_FILE( 
+    configure_file( 
       ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenFooter.html.in
       ${CMAKE_CURRENT_BINARY_DIR}/DoxygenFooter.html
       )
 
-    CONFIGURE_FILE(
+    configure_file(
       ${CMAKE_CURRENT_SOURCE_DIR}/generate_doc.cmake.in
       ${CMAKE_CURRENT_BINARY_DIR}/generate_doc.cmake
       @ONLY
       )
-    CONFIGURE_FILE(
+    configure_file(
       ${CMAKE_CURRENT_SOURCE_DIR}/qhc/medInria.qhcp.in 
       ${CMAKE_CURRENT_BINARY_DIR}/medInria.qhcp IMMEDIATE @ONLY)
  

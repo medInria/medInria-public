@@ -54,7 +54,7 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
-CONFIGURE_FILE(
+configure_file(
       ${CMAKE_CURRENT_SOURCE_DIR}/ITKProcessExampleDefinitions.h.in
       ${CMAKE_CURRENT_BINARY_DIR}/ITKProcessExampleDefinitions.h
       )
