@@ -1,6 +1,6 @@
 
 
-SET(Helpers_classes
+set(Helpers_classes
     vtkImageDataInterpolator
     vtkBetterDataReader
     vtkDoubleToUCharFilter
@@ -9,8 +9,8 @@ SET(Helpers_classes
     )
 
 FOREACH(class ${Helpers_classes})
-  SET(Helpers_SRCS    ${Helpers_SRCS}    ${class}.cxx)
-  SET(Helpers_Headers ${Helpers_Headers} ${class}.h)
+  set(Helpers_SRCS    ${Helpers_SRCS}    ${class}.cxx)
+  set(Helpers_Headers ${Helpers_Headers} ${class}.h)
 ENDFOREACH(class)
 
 ADD_LIBRARY(vtkHelpers SHARED ${Helpers_SRCS})

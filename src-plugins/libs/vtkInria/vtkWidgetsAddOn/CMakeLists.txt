@@ -1,6 +1,6 @@
 project(vtkWidgetsAddOn)
 
-SET(${PROJECT_NAME}_SRCS
+set(${PROJECT_NAME}_SRCS
 vtkDistanceWidget2.cxx
 vtkImageOrientedPointWidget.cxx
 vtkOrientationAnnotation.cxx
@@ -9,7 +9,7 @@ vtkRulerWidget.cxx
 vtkInteractorStyleTrackballCamera2.cxx
 )
 
-SET(${PROJECT_NAME}_LIBS
+set(${PROJECT_NAME}_LIBS
  vtkCommon
  vtkFiltering 
  vtkRendering

@@ -1,6 +1,6 @@
-SET(PLUGIN_NAME itkDataImageReaderPlugin)
+set(PLUGIN_NAME itkDataImageReaderPlugin)
 
-SET(itkDataImageReaderPluginTests
+set(itkDataImageReaderPluginTests
   itkMetaDataImageReaderTest.cxx
   )
 

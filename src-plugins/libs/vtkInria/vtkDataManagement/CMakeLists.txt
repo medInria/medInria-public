@@ -3,7 +3,7 @@ project(vtkDataManagement)
 FIND_PACKAGE(ITK REQUIRED)
 INCLUDE(${ITK_USE_FILE})
 
-SET(vtkDataManagement_SRCS
+set(vtkDataManagement_SRCS
   vtkDataManagerCallback.cxx
   vtkMetaDataSet.cxx
   vtkMetaImageData.cxx
@@ -19,7 +19,7 @@ SET(vtkDataManagement_SRCS
 
 IF (VTK_MAJOR_VERSION GREATER 4)
   IF (VTK_MINOR_VERSION GREATER 0)
-    SET(${PROJECT_NAME}_SRCS
+    set(${PROJECT_NAME}_SRCS
     ${${PROJECT_NAME}_SRCS}
     vtkDataManagerWriter.cxx
     vtkDataManagerReader.cxx
@@ -39,7 +39,7 @@ ADD_LIBRARY(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SRCS}
   )
   
-SET(${PROJECT_NAME}_LIBS
+set(${PROJECT_NAME}_LIBS
   ITKCommon
   vtkCommon
   vtkRendering

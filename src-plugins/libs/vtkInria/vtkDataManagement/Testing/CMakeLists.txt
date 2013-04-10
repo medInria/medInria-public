@@ -1,6 +1,6 @@
-SET(KIT ${PROJECT_NAME})
+set(KIT ${PROJECT_NAME})
 
-SET(${PROJECT_NAME}Tests
+set(${PROJECT_NAME}Tests
   vtkMetaDataSetTest.cxx
   vtkMetaImageDataTest.cxx
   vtkMetaSurfaceMeshTest.cxx

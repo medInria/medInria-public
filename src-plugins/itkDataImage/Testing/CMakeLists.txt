@@ -1,6 +1,6 @@
-SET(PLUGIN_NAME itkDataImagePlugin)
+set(PLUGIN_NAME itkDataImagePlugin)
 
-SET(itkDataImagePluginTests
+set(itkDataImagePluginTests
   itkDataImageTest.cxx
   itkDataImageDouble3Test.cxx
   )

@@ -1,11 +1,11 @@
-SET (itkIOAddOnSRCS
+set(itkIOAddOnSRCS
   itkGISImageIO.cxx
   itkGISImageIOFactory.cxx
   itkMultiThreadedImageIOBase.cxx
 )
 
 IF (NOT ITK_USE_SYSTEM_GDCM)
-  SET (itkIOAddOnSRCS
+  set(itkIOAddOnSRCS
     ${itkIOAddOnSRCS}
     itkDicomTagManager.cxx
     itkGDCMImporter.cxx
@@ -14,7 +14,7 @@ IF (NOT ITK_USE_SYSTEM_GDCM)
 endif()
 
 IF( VTKINRIA_USE_SPHERICALHARMONICS )
-  SET (itkIOAddOnSRCS
+  set(itkIOAddOnSRCS
     ${itkIOAddOnSRCS}
     itkSphericalHarmonicITKToVTKFilter.txx
     )
