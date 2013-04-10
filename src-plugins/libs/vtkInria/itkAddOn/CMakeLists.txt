@@ -1,7 +1,7 @@
 project(itkAddOn)
 
 if (WIN32 AND NOT CYGWIN AND NOT MINGW)
-  ADD_LIBRARY(getoptcompatlib STATIC
+  add_library(getoptcompatlib STATIC
     getoptcompat/getopt.c
     getoptcompat/getopt_long.c
   )

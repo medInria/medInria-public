@@ -34,7 +34,7 @@ if (VTKINRIA_USE_PRECOMPILED_HEADERS)
 endif()
 
 # C++ library for the InterfaceManagers
-ADD_LIBRARY(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_PCH}
   ${${PROJECT_NAME}_SRCS}
   )

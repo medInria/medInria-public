@@ -13,7 +13,7 @@ foreach (class ${Helpers_classes})
   set(Helpers_Headers ${Helpers_Headers} ${class}.h)
 endforeach()
 
-ADD_LIBRARY(vtkHelpers SHARED ${Helpers_SRCS})
+add_library(vtkHelpers SHARED ${Helpers_SRCS})
 
 target_link_libraries(vtkHelpers
   vtkCommon
