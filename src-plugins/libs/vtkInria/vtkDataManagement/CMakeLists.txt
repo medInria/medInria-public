@@ -1,7 +1,7 @@
 project(vtkDataManagement)
 
 find_package(ITK REQUIRED)
-INCLUDE(${ITK_USE_FILE})
+include(${ITK_USE_FILE})
 
 set(vtkDataManagement_SRCS
   vtkDataManagerCallback.cxx

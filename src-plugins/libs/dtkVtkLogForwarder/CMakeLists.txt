@@ -6,7 +6,7 @@ include(${dtk_USE_FILE})
 
 # find vtk
 find_package(VTK REQUIRED)
-INCLUDE(${VTK_USE_FILE})
+include(${VTK_USE_FILE})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
