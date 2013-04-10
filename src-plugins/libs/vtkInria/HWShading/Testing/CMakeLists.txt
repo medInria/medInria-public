@@ -1,4 +1,4 @@
-SET(COPYFILES
+set(COPYFILES
   testshader.frag
   testshader.vert
   testshader.prog
@@ -28,9 +28,9 @@ FOREACH(copyfile ${COPYFILES})
 	  )
 ENDFOREACH(copyfile)
 
-SET(KIT ${PROJECT_NAME})
+set(KIT ${PROJECT_NAME})
 
-SET(${PROJECT_NAME}Tests
+set(${PROJECT_NAME}Tests
   NoShader.cxx
   TestShader.cxx
   texturemap.cxx

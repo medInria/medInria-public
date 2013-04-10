@@ -1,7 +1,7 @@
 
-SET(PLUGIN_NAME v3dView)
+set(PLUGIN_NAME v3dView)
 
-SET(v3dViewPluginTests
+set(v3dViewPluginTests
   v3dViewTest.cxx
   )
 

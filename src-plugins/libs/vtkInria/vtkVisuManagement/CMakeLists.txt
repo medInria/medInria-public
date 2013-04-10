@@ -4,7 +4,7 @@ project(vtkVisuManagement)
     add_definitions(-DCLANG)
   endif()
 
-SET(${PROJECT_NAME}_SRCS
+set(${PROJECT_NAME}_SRCS
  vtkLimitFibersToVOI.cxx
  vtkLimitFibersToMesh.cxx
  vtkLimitFibersToROI.cxx
@@ -32,13 +32,13 @@ SET(${PROJECT_NAME}_SRCS
  vtkFiberDataSetManager.cxx
 )
 
-SET(vtkLandmarkManagement_SRCS
+set(vtkLandmarkManagement_SRCS
  vtkLandmark.cxx
  vtkLandmarkManager.cxx
  vtkLandmarkManagerCallback.cxx
 )
 
-SET(${PROJECT_NAME}_LIBS
+set(${PROJECT_NAME}_LIBS
  vtkCommon
  vtkFiltering 
  vtkRendering
@@ -47,7 +47,7 @@ SET(${PROJECT_NAME}_LIBS
  vtkHWShading
 )
 
-SET(vtkLandmarkManagement_LIBS
+set(vtkLandmarkManagement_LIBS
  vtkCommon
  vtkFiltering
  vtkRendering
@@ -58,7 +58,7 @@ SET(vtkLandmarkManagement_LIBS
 )
 
 IF( VTKINRIA_USE_SPHERICALHARMONICS )
-    SET(${PROJECT_NAME}_SRCS
+    set(${PROJECT_NAME}_SRCS
         ${${PROJECT_NAME}_SRCS}
         vtkSphericalHarmonicVisuManager.cxx
         vtkSphericalHarmonicManager.cxx
@@ -66,7 +66,7 @@ IF( VTKINRIA_USE_SPHERICALHARMONICS )
         vtkSphericalHarmonicSource.cxx
         vtkSphericalHarmonicGlyph.cxx
         )
-    SET(${PROJECT_NAME}_LIBS
+    set(${PROJECT_NAME}_LIBS
         ${${PROJECT_NAME}_LIBS}
         itkIOAddOn
         )

@@ -6,9 +6,9 @@ IF( DOXYGEN_FOUND )
   IF( DOXYGEN_DOT_FOUND )
 
     # Automatically generate documentation at build time
-    SET(all_arg)
+    set(all_arg)
     IF (DOCUMENTATION_TARGET_IN_ALL)
-      SET(all_arg "ALL")
+      set(all_arg "ALL")
     endif()
 
     find_package(Qt4 4.6.0 REQUIRED)
@@ -17,8 +17,8 @@ IF( DOXYGEN_FOUND )
     #
     # Documentation
     #
-    SET( DOCUMENTATION_HTML_TARZ TRUE)
-    SET( DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+    set( DOCUMENTATION_HTML_TARZ TRUE)
+    set( DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
     CONFIGURE_FILE( Doxyfile.txt.in
       ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.txt
@@ -43,7 +43,7 @@ IF( DOXYGEN_FOUND )
       ${CMAKE_CURRENT_BINARY_DIR}/medInria.qhcp IMMEDIATE @ONLY)
  
 
-    SET(doc_output "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html")
+    set(doc_output "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html")
 
     # Run doxygen as a custom command driven by a custom target.
     ADD_CUSTOM_COMMAND(

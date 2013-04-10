@@ -1,6 +1,6 @@
 project(vtkRenderingAddOn)
 
-SET(${PROJECT_NAME}_SRCS
+set(${PROJECT_NAME}_SRCS
   vtkFillImageWithPolyData.cxx
   vtkImageBlendWithMask.cxx
   vtkInteractorStyleImage2D.cxx
@@ -31,7 +31,7 @@ endif()
   ${${PROJECT_NAME}_SRCS}
   )
   
-SET(${PROJECT_NAME}_LIBS
+set(${PROJECT_NAME}_LIBS
   vtkWidgetsAddOn
   vtkCommon
   vtkRendering

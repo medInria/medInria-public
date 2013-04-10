@@ -1,6 +1,6 @@
-SET(KIT ${PROJECT_NAME})
+set(KIT ${PROJECT_NAME})
 
-SET(${PROJECT_NAME}Tests
+set(${PROJECT_NAME}Tests
   vtkImageViewTest1.cxx
   vtkImageViewTest2.cxx
   vtkImageViewTest3.cxx

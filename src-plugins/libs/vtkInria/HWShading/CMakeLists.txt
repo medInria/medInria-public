@@ -4,7 +4,7 @@ INCLUDE(ShaderText.cmake)
 
 ADD_SUBDIRECTORY(Helpers)
 
-SET(${PROJECT_NAME}_classes
+set(${PROJECT_NAME}_classes
   ExtensionInitialize
   vtkShaderBase
   vtkShaderBaseHandle
@@ -34,8 +34,8 @@ SET(${PROJECT_NAME}_classes
 
 
 FOREACH(class ${${PROJECT_NAME}_classes})
-  SET(${PROJECT_NAME}_SRCS    ${${PROJECT_NAME}_SRCS}    ${class}.cxx)
-  SET(${PROJECT_NAME}_HEADERS ${${PROJECT_NAME}_HEADERS} ${class}.h)
+  set(${PROJECT_NAME}_SRCS    ${${PROJECT_NAME}_SRCS}    ${class}.cxx)
+  set(${PROJECT_NAME}_HEADERS ${${PROJECT_NAME}_HEADERS} ${class}.h)
 ENDFOREACH()
 
 

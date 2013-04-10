@@ -9,9 +9,9 @@ CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/tensors.vtk
 		)
 
 
-SET(KIT vtkHelpers)
+set(KIT vtkHelpers)
 
-SET(vtkHelpersTests
+set(vtkHelpersTests
 interpolation.cxx
 sliceactor.cxx
 )
