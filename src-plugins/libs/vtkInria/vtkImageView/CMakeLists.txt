@@ -49,7 +49,7 @@ target_link_libraries(${PROJECT_NAME}
     ITKBasicFilters
 )
 
-IF(VTKINRIA_BUILD_TESTING)
+if (VTKINRIA_BUILD_TESTING)
     ADD_SUBDIRECTORY(Testing)
 endif()
 

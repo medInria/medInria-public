@@ -2,12 +2,12 @@ FIND_PACKAGE( Doxygen QUIET)
 
 # inpired by work done on the CTK and the dtk source.
 
-IF( DOXYGEN_FOUND )
-  IF( DOXYGEN_DOT_FOUND )
+if ( DOXYGEN_FOUND )
+  if ( DOXYGEN_DOT_FOUND )
 
     # Automatically generate documentation at build time
     set(all_arg)
-    IF (DOCUMENTATION_TARGET_IN_ALL)
+    if (DOCUMENTATION_TARGET_IN_ALL)
       set(all_arg "ALL")
     endif()
 

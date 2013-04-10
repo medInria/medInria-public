@@ -153,7 +153,7 @@ if (PYTHONLIBS_FOUND)
   target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES})
 endif()
 
-IF(WIN32)
+if (WIN32)
   target_link_libraries(${PROJECT_NAME} psapi.lib)
 endif()
 

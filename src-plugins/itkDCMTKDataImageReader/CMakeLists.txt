@@ -41,7 +41,7 @@ include(${ITK_USE_FILE})
 
 
 find_package(DCMTK REQUIRED)
-IF(APPLE)
+if (APPLE)
   include(FixDCMTKMacInstall)
   FixDCMTKMacInstall()
 endif()
@@ -96,7 +96,7 @@ if (MEDINRIA-PLUGINS_BUILD_TESTING)
   add_subdirectory(Testing)
 endif()
 
-IF(MEDINRIA-PLUGINS_BUILD_EXAMPLES)
+if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
         subdirs(Examples)
 endif()
 

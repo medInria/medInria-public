@@ -4,7 +4,7 @@ set(itkIOAddOnSRCS
   itkMultiThreadedImageIOBase.cxx
 )
 
-IF (NOT ITK_USE_SYSTEM_GDCM)
+if (NOT ITK_USE_SYSTEM_GDCM)
   set(itkIOAddOnSRCS
     ${itkIOAddOnSRCS}
     itkDicomTagManager.cxx
@@ -13,14 +13,14 @@ IF (NOT ITK_USE_SYSTEM_GDCM)
     )
 endif()
 
-IF( VTKINRIA_USE_SPHERICALHARMONICS )
+if ( VTKINRIA_USE_SPHERICALHARMONICS )
   set(itkIOAddOnSRCS
     ${itkIOAddOnSRCS}
     itkSphericalHarmonicITKToVTKFilter.txx
     )
 endif()
 
-IF( WIN32 )
+if ( WIN32 )
   ADD_LIBRARY(itkIOAddOn STATIC
     ${itkIOAddOnSRCS}
   )
@@ -34,7 +34,7 @@ TARGET_LINK_LIBRARIES(itkIOAddOn
   ${ITK_LIBRARIES}
 )
 
-IF (ITK_USE_SYSTEM_GDCM)
+if (ITK_USE_SYSTEM_GDCM)
 
 set(SYSTEM_GDCM_LIBRARIES
   gdcmCommon
@@ -45,7 +45,7 @@ set(SYSTEM_GDCM_LIBRARIES
   ADD_EXECUTABLE(GDCMImport
     GDCMImport.cxx
     )
-  IF(WIN32 AND NOT CYGWIN AND NOT MINGW)
+  if (WIN32 AND NOT CYGWIN AND NOT MINGW)
     TARGET_LINK_LIBRARIES(GDCMImport 
       ${ITK_LIBRARIES}
       ${SYSTEM_GDCM_LIBRARIES}

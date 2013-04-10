@@ -24,7 +24,7 @@ TARGET_LINK_LIBRARIES(vtkHelpers
   vtkRendering
   )
 
-IF( VTKINRIA_BUILD_TESTING )
+if ( VTKINRIA_BUILD_TESTING )
   ADD_SUBDIRECTORY( Testing )
 endif()
 

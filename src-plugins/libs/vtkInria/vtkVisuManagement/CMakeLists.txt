@@ -1,6 +1,6 @@
 project(vtkVisuManagement)
 
-  IF (CMAKE_CXX_COMPILER MATCHES clang)
+  if (CMAKE_CXX_COMPILER MATCHES clang)
     add_definitions(-DCLANG)
   endif()
 
@@ -57,7 +57,7 @@ set(vtkLandmarkManagement_LIBS
  vtkHWShading
 )
 
-IF( VTKINRIA_USE_SPHERICALHARMONICS )
+if ( VTKINRIA_USE_SPHERICALHARMONICS )
     set(${PROJECT_NAME}_SRCS
         ${${PROJECT_NAME}_SRCS}
         vtkSphericalHarmonicVisuManager.cxx
@@ -101,6 +101,6 @@ TARGET_LINK_LIBRARIES(vtkLandmarkManagement
 
 INSTALL_TARGETS(/lib vtkLandmarkManagement)
 
-IF(VTKINRIA_BUILD_TESTING)
+if (VTKINRIA_BUILD_TESTING)
   ADD_SUBDIRECTORY(Testing)
 endif()

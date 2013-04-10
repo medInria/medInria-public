@@ -24,7 +24,7 @@ include(${ITK_USE_FILE})
 
 find_package(DCMTK REQUIRED)
 include_directories(${DCMTK_INCLUDE_DIRS})
-IF(APPLE)
+if (APPLE)
   include(FixDCMTKMacInstall)
   FixDCMTKMacInstall()
 endif()

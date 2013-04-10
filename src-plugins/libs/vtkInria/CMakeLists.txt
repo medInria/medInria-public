@@ -6,10 +6,10 @@ PROJECT(vtkInria)
 # On Visual Studio 8 MS deprecated C. This removes all 1.276E1265 security
 # warnings. Copied from ITK CMakeLists.
 # -------------------------------------------------------------------------------------
-IF(WIN32)
-  IF(NOT BORLAND)
-    IF(NOT CYGWIN)
-      IF(NOT MINGW)
+if (WIN32)
+  if (NOT BORLAND)
+    if (NOT CYGWIN)
+      if (NOT MINGW)
           ADD_DEFINITIONS(
             -D_CRT_FAR_MAPPINGS_NO_DEPRECATE
             -D_CRT_IS_WCTYPE_NO_DEPRECATE
@@ -84,7 +84,7 @@ INCLUDE(${ITK_USE_FILE})
 # -----------------------------------------------------------------------------
 # The hardware shading extension by T. Peeters (BMIA - TUe)
 # -----------------------------------------------------------------------------
-IF( NOT VTK_USE_GLSL_SHADERS )
+if ( NOT VTK_USE_GLSL_SHADERS )
     message(FATAL_ERROR " VTK must be compiled with VTK_USE_GLSL_SHADERS at ON to use the HWShading library. This option is only available with VTK>=5.1.")
 endif()
 
@@ -94,9 +94,9 @@ endif()
 # -----------------------------------------------------------------------------
 OPTION (VTKINRIA_USE_SPHERICALHARMONICS "If ON, compile the SPHERICAL HARMONICS extension of vtkInria." OFF)
 
-IF( VTKINRIA_USE_SPHERICALHARMONICS )
+if ( VTKINRIA_USE_SPHERICALHARMONICS )
 
-  IF(APPLE OR WIN32)
+  if (APPLE OR WIN32)
     find_package( Boost REQUIRED)
   endif()
 
@@ -125,7 +125,7 @@ add_subdirectory(HWShading)
 add_subdirectory(vtkItk)
 add_subdirectory(itkAddOn)
 
-IF(VTKINRIA_BUILD_EXAMPLES)
+if (VTKINRIA_BUILD_EXAMPLES)
   add_subdirectory(Examples)
 endif()
 
@@ -133,7 +133,7 @@ endif()
 # doxygen (and other?) documentation
 
 FIND_PACKAGE(Doxygen)
-IF (DOXYGEN)
+if (DOXYGEN)
   OPTION( LINK_EXTERNAL_DOC "Should the documentation be linked with external sources such as ITK?" NO )
   set(MY_LINK_EXTERNAL_DOC ${LINK_EXTERNAL_DOC})
   set(MY_DOXYGEN_BUILD_DIR ${PROJECT_BINARY_DIR}/Doxygen)
@@ -143,7 +143,7 @@ IF (DOXYGEN)
     ${MY_DOXYGEN_BUILD_DIR}/doxygen.config
   )
 
-  IF (MY_LINK_EXTERNAL_DOC)
+  if (MY_LINK_EXTERNAL_DOC)
     EXEC_PROGRAM(${CMAKE_COMMAND} ${MY_DOXYGEN_BUILD_DIR}
       ARGS -E tar xvz ${PROJECT_SOURCE_DIR}/Doxygen/vtkNightlyDoc.tag.tar.gz
     )
