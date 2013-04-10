@@ -36,7 +36,7 @@ set(${PROJECT_NAME}_classes
 FOREACH(class ${${PROJECT_NAME}_classes})
   set(${PROJECT_NAME}_SRCS    ${${PROJECT_NAME}_SRCS}    ${class}.cxx)
   set(${PROJECT_NAME}_HEADERS ${${PROJECT_NAME}_HEADERS} ${class}.h)
-ENDFOREACH()
+endforeach()
 
 
 SHADER_TO_HEADER("AnisotropicLightingVertexText"
