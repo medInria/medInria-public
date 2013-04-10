@@ -64,7 +64,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
                 "selection-color: #b2b8b2;"
                 );
 
-    d->actionsToolBox = new medActionsToolBox(parent);
+    d->actionsToolBox = new medActionsToolBox(parent, true);
     d->toolBoxes.push_back(d->actionsToolBox);
 
     d->side = new dtkFinderSideView;

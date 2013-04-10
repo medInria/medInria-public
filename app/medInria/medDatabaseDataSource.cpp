@@ -59,7 +59,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
     database_layout->addWidget(d->view);
     database_layout->addWidget(d->preview);
 
-    d->actionsToolBox = new medActionsToolBox(parent);
+    d->actionsToolBox = new medActionsToolBox(parent, false);
     d->toolBoxes.push_back(d->actionsToolBox);
 
     d->searchPanel = new medDatabaseSearchPanel(parent);

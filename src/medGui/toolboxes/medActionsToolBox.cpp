@@ -42,7 +42,7 @@ public:
     QMultiMap<QString, QString> itemToActions;
 };
 
-medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/ ) : medToolBox(parent), d(new medActionsToolBoxPrivate)
+medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM ) : medToolBox(parent), d(new medActionsToolBoxPrivate)
 {
     /**
      * This toolbox will show possible action buttons depending on the
@@ -60,80 +60,97 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/ ) : medToolBox(par
 
     initializeItemToActionsMap();
 
-    /* Begin create buttons */
-
-    d->removeBt = new QPushButton(d->buttonsWidget);
-    d->removeBt->setAccessibleName("Remove");
-    d->removeBt->setText(tr("Remove"));
-    d->removeBt->setToolTip(tr("Remove selected item from the database."));
-    d->removeBt->setIcon(QIcon(":/icons/cross.svg"));
 
     d->viewBt = new QPushButton(d->buttonsWidget);
     d->viewBt->setAccessibleName("View");
     d->viewBt->setText(tr("View"));
     d->viewBt->setToolTip(tr("Load and visualize the currently selected item."));
     d->viewBt->setIcon(QIcon(":/icons/eye.png"));
+    connect(d->viewBt, SIGNAL(clicked()), this, SIGNAL(viewClicked()));
 
-    d->exportBt = new QPushButton(d->buttonsWidget);
-    d->exportBt->setAccessibleName("Export");
-    d->exportBt->setText(tr("Export"));
-    d->exportBt->setToolTip(tr("Export the series."));
-    d->exportBt->setIcon(QIcon(":/icons/export.png"));
 
-    d->importBt = new QPushButton(d->buttonsWidget);
-    d->importBt->setAccessibleName("Import");
-    d->importBt->setText(tr("Import"));
-    d->importBt->setToolTip(tr("Import (copy) item(s) into medInria's database."));
-    d->importBt->setIcon(QIcon(":/icons/import.png"));
+    if (FILE_SYSTEM)
+    {
+        d->loadBt = new QPushButton(d->buttonsWidget);
+        d->loadBt->setAccessibleName("Load");
+        d->loadBt->setText(tr("Load"));
+        d->loadBt->setToolTip(tr("Temporary load the item(s) so as they can be used inside medInria,\nbut do not include them in the database."));
+        d->loadBt->setIcon(QIcon(":/icons/document-open.png"));
 
-    d->loadBt = new QPushButton(d->buttonsWidget);
-    d->loadBt->setAccessibleName("Load");
-    d->loadBt->setText(tr("Load"));
-    d->loadBt->setToolTip(tr("Temporary load the item(s) so as they can be used inside medInria,\nbut do not include them in the database."));
-    d->loadBt->setIcon(QIcon(":/icons/document-open.png"));
+        d->importBt = new QPushButton(d->buttonsWidget);
+        d->importBt->setAccessibleName("Import");
+        d->importBt->setText(tr("Import"));
+        d->importBt->setToolTip(tr("Import (copy) item(s) into medInria's database."));
+        d->importBt->setIcon(QIcon(":/icons/import.png"));
 
-    d->indexBt = new QPushButton(d->buttonsWidget);
-    d->indexBt->setAccessibleName("Index");
-    d->indexBt->setText(tr("Index"));
-    d->indexBt->setToolTip(tr("Include the item(s) into medInria's database but do not import (copy) them."));
-    d->indexBt->setIcon(QIcon(":/icons/finger.png"));
+        d->indexBt = new QPushButton(d->buttonsWidget);
+        d->indexBt->setAccessibleName("Index");
+        d->indexBt->setText(tr("Index"));
+        d->indexBt->setToolTip(tr("Include the item(s) into medInria's database but do not import (copy) them."));
+        d->indexBt->setIcon(QIcon(":/icons/finger.png"));
 
-    d->bookmarkBt = new QPushButton(d->buttonsWidget);
-    d->bookmarkBt->setAccessibleName("Bookmark");
-    d->bookmarkBt->setText(tr("Bookmark"));
-    d->bookmarkBt->setToolTip(tr("Bookmark selected folder/resource."));
-    d->bookmarkBt->setIcon(QIcon(":/icons/star.svg"));
+        d->bookmarkBt = new QPushButton(d->buttonsWidget);
+        d->bookmarkBt->setAccessibleName("Bookmark");
+        d->bookmarkBt->setText(tr("Bookmark"));
+        d->bookmarkBt->setToolTip(tr("Bookmark selected folder/resource."));
+        d->bookmarkBt->setIcon(QIcon(":/icons/star.svg"));
+        
+        connect(d->bookmarkBt, SIGNAL(clicked()), this, SIGNAL(bookmarkClicked()));
+        connect(d->importBt, SIGNAL(clicked()), this, SIGNAL(importClicked()));
+        connect(d->loadBt, SIGNAL(clicked()), this, SIGNAL(loadClicked()));
+        connect(d->indexBt, SIGNAL(clicked()), this, SIGNAL(indexClicked()));
 
-    d->saveBt = new QPushButton(d->buttonsWidget);
-    d->saveBt->setAccessibleName("Save");
-    d->saveBt->setText(tr("Save"));
-    d->saveBt->setToolTip(tr("Save selected item into the database."));
-    d->saveBt->setIcon(QIcon(":/icons/save.png"));
+        // the order of the buttons in this list determines the order used to place them in the grid layout
+        d->buttonsList << d->viewBt << d->loadBt << d->importBt << d->indexBt <<d->bookmarkBt;}
+
+    else //IF DATABASE
+    {
+        d->saveBt = new QPushButton(d->buttonsWidget);
+        d->saveBt->setAccessibleName("Save");
+        d->saveBt->setText(tr("Save"));
+        d->saveBt->setToolTip(tr("Save selected item into the database."));
+        d->saveBt->setIcon(QIcon(":/icons/save.png"));
     
-    d->newPatientBt = new QPushButton(d->buttonsWidget);
-    d->newPatientBt->setAccessibleName("New Patient");
-    d->newPatientBt->setText("Patient");
-    d->newPatientBt->setToolTip(tr("Create a new patient."));
-    d->newPatientBt->setIcon(QIcon(":/icons/user_add.png"));
+        d->newPatientBt = new QPushButton(d->buttonsWidget);
+        d->newPatientBt->setAccessibleName("New Patient");
+        d->newPatientBt->setText("Patient");
+        d->newPatientBt->setToolTip(tr("Create a new patient."));
+        d->newPatientBt->setIcon(QIcon(":/icons/user_add.png"));
     
-    d->newStudyBt = new QPushButton(d->buttonsWidget);
-    d->newStudyBt->setAccessibleName("New Study");
-    d->newStudyBt->setText("Study");
-    d->newStudyBt->setToolTip(tr("Create a new study."));
-    d->newStudyBt->setIcon(QIcon(":/icons/page_add.png"));
+        d->newStudyBt = new QPushButton(d->buttonsWidget);
+        d->newStudyBt->setAccessibleName("New Study");
+        d->newStudyBt->setText("Study");
+        d->newStudyBt->setToolTip(tr("Create a new study."));
+        d->newStudyBt->setIcon(QIcon(":/icons/page_add.png"));
     
-    d->editBt = new QPushButton(d->buttonsWidget);
-    d->editBt->setAccessibleName("Edit");
-    d->editBt->setText("Edit");
-    d->editBt->setToolTip(tr("Edit item."));
-    d->editBt->setIcon(QIcon(":/icons/page_edit.png"));
+        d->editBt = new QPushButton(d->buttonsWidget);
+        d->editBt->setAccessibleName("Edit");
+        d->editBt->setText("Edit");
+        d->editBt->setToolTip(tr("Edit item."));
+        d->editBt->setIcon(QIcon(":/icons/page_edit.png"));
 
-    /* End create buttons */
+        d->exportBt = new QPushButton(d->buttonsWidget);
+        d->exportBt->setAccessibleName("Export");
+        d->exportBt->setText(tr("Export"));
+        d->exportBt->setToolTip(tr("Export the series."));
+        d->exportBt->setIcon(QIcon(":/icons/export.png"));
 
-    // the order of the buttons in this list determines the order used to place them in the grid layout
-    d->buttonsList << d->viewBt << d->loadBt << d->importBt << d->indexBt;
-    d->buttonsList << d->removeBt << d->saveBt << d->exportBt << d->bookmarkBt;
-    d->buttonsList << d->newPatientBt << d->newStudyBt << d->editBt;
+        d->removeBt = new QPushButton(d->buttonsWidget);
+        d->removeBt->setAccessibleName("Remove");
+        d->removeBt->setText(tr("Remove"));
+        d->removeBt->setToolTip(tr("Remove selected item from the database."));
+        d->removeBt->setIcon(QIcon(":/icons/cross.svg"));
+
+        connect(d->removeBt, SIGNAL(clicked()), this, SIGNAL(removeClicked()));
+        connect(d->exportBt, SIGNAL(clicked()), this, SIGNAL(exportClicked()));
+        connect(d->saveBt, SIGNAL(clicked()), this, SIGNAL(saveClicked()));
+        connect(d->newPatientBt, SIGNAL(clicked()), this, SIGNAL(newPatientClicked()));
+        connect(d->newStudyBt, SIGNAL(clicked()), this, SIGNAL(newStudyClicked()));
+        connect(d->editBt, SIGNAL(clicked()), this, SIGNAL(editClicked()));
+        
+        d->buttonsList << d->viewBt << d->saveBt << d->exportBt << d->removeBt;
+        d->buttonsList << d->newPatientBt << d->newStudyBt << d->editBt;
+    }
 
     int COLUMNS = 4; // we will use 3 rows of 4 buttons each
     int i = 0;
@@ -160,21 +177,11 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/ ) : medToolBox(par
     noButtonsSelectedLayout->addWidget(noButtonsSelectedLabel, 0, Qt::AlignCenter);
     this->addWidget(d->noButtonsSelectedWidget);
 
-    connect(d->removeBt, SIGNAL(clicked()), this, SIGNAL(removeClicked()));
-    connect(d->viewBt, SIGNAL(clicked()), this, SIGNAL(viewClicked()));
-    connect(d->exportBt, SIGNAL(clicked()), this, SIGNAL(exportClicked()));
-    connect(d->bookmarkBt, SIGNAL(clicked()), this, SIGNAL(bookmarkClicked()));
-    connect(d->importBt, SIGNAL(clicked()), this, SIGNAL(importClicked()));
-    connect(d->loadBt, SIGNAL(clicked()), this, SIGNAL(loadClicked()));
-    connect(d->indexBt, SIGNAL(clicked()), this, SIGNAL(indexClicked()));
-    connect(d->saveBt, SIGNAL(clicked()), this, SIGNAL(saveClicked()));
-    connect(d->newPatientBt, SIGNAL(clicked()), this, SIGNAL(newPatientClicked()));
-    connect(d->newStudyBt, SIGNAL(clicked()), this, SIGNAL(newStudyClicked()));
-    connect(d->editBt, SIGNAL(clicked()), this, SIGNAL(editClicked()));
+
 
     // we keep the size of the toolbox fixed so as it doesn't not resize
     // constantly due to the exchange of the widgets
-    this->body()->setFixedHeight(38 + 38 + 38 + 35);
+    this->body()->setFixedHeight(38 + 38 + 35);
 
     this->setTitle(tr("Actions"));
 }
