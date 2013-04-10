@@ -1,4 +1,4 @@
-PROJECT(IsosurfacesManager)
+project(IsosurfacesManager)
 
 include_directories(
   ../../vtkRenderingAddOn

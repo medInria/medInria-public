@@ -1,4 +1,4 @@
-PROJECT(DataManager)
+project(DataManager)
 
 include_directories(
   ../../vtkRenderingAddOn
