@@ -35,10 +35,10 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-FIND_PACKAGE(VTK REQUIRED)
+find_package(VTK REQUIRED)
 INCLUDE(${VTK_USE_FILE})
 
-FIND_PACKAGE(ITK REQUIRED)
+find_package(ITK REQUIRED)
 INCLUDE(${ITK_USE_FILE})
 
 ## #################################################################

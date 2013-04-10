@@ -66,7 +66,7 @@ endif()
 # -----------------------------------------------------------------------------
 # We need vtk, no matter what
 # -----------------------------------------------------------------------------
-FIND_PACKAGE(VTK REQUIRED)
+find_package(VTK REQUIRED)
 INCLUDE(${VTK_USE_FILE})
 
 # -----------------------------------------------------------------------------
@@ -78,7 +78,7 @@ set(${PROJECT_NAME}_BUILD_SHARED_LIBS 1)
 # -----------------------------------------------------------------------------
 # ITK
 # -----------------------------------------------------------------------------
-FIND_PACKAGE(ITK REQUIRED)
+find_package(ITK REQUIRED)
 INCLUDE(${ITK_USE_FILE})
   
 # -----------------------------------------------------------------------------
@@ -132,7 +132,7 @@ endif()
 #-----------------------------------------------------------------------------
 # doxygen (and other?) documentation
 
-FIND_PACKAGE(Doxygen)
+find_package(Doxygen)
 if (DOXYGEN)
   option( LINK_EXTERNAL_DOC "Should the documentation be linked with external sources such as ITK?" NO )
   set(MY_LINK_EXTERNAL_DOC ${LINK_EXTERNAL_DOC})

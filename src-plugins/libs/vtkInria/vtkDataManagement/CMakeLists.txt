@@ -1,6 +1,6 @@
 project(vtkDataManagement)
 
-FIND_PACKAGE(ITK REQUIRED)
+find_package(ITK REQUIRED)
 INCLUDE(${ITK_USE_FILE})
 
 set(vtkDataManagement_SRCS
