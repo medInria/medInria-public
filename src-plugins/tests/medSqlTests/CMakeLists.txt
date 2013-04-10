@@ -40,7 +40,7 @@ else()
 
     add_execitable(${PROJECT_NAME}_medDatabaseImporterTest ${${PROJECT_NAME}_QTESTS_SRCS})
 
-    ADD_DEPENDENCIES(${PROJECT_NAME}_medDatabaseImporterTest ${PROJECT_NAME}_medDatabaseImporterTest_moc)
+    add_dependencies(${PROJECT_NAME}_medDatabaseImporterTest ${PROJECT_NAME}_medDatabaseImporterTest_moc)
 
     target_link_libraries(${PROJECT_NAME}_medDatabaseImporterTest
         ${QT_QTCORE_LIBRARY}

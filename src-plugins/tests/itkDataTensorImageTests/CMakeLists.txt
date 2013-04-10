@@ -43,7 +43,7 @@ else()
 
     add_execitable(${PROJECT_NAME}_itkDataTensorImageTest ${${PROJECT_NAME}_QTESTS_SRCS})
 
-    ADD_DEPENDENCIES(${PROJECT_NAME}_itkDataTensorImageTest ${PROJECT_NAME}_itkDataTensorImageTest_moc)
+    add_dependencies(${PROJECT_NAME}_itkDataTensorImageTest ${PROJECT_NAME}_itkDataTensorImageTest_moc)
 
     target_link_libraries(${PROJECT_NAME}_itkDataTensorImageTest
         ${QT_QTCORE_LIBRARY}
