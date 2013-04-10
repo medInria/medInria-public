@@ -63,7 +63,7 @@ if ( DOXYGEN_FOUND )
       )
 
     ADD_CUSTOM_TARGET(${PROJECT_NAME}-doc ${all_arg} DEPENDS ${doc_output})
-    SET_TARGET_PROPERTIES(${PROJECT_NAME}-doc PROPERTIES LABELS Documentation)
+    set_target_properties(${PROJECT_NAME}-doc PROPERTIES LABELS Documentation)
  
   else()
     message( WARNING
