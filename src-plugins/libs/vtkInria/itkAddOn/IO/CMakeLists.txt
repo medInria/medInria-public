@@ -21,11 +21,11 @@ if ( VTKINRIA_USE_SPHERICALHARMONICS )
 endif()
 
 if ( WIN32 )
-  ADD_LIBRARY(itkIOAddOn STATIC
+  add_library(itkIOAddOn STATIC
     ${itkIOAddOnSRCS}
   )
 else()
-  ADD_LIBRARY( itkIOAddOn SHARED
+  add_library( itkIOAddOn SHARED
     ${itkIOAddOnSRCS} 
   )
 endif()

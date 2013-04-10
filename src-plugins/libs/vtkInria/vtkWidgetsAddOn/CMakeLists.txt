@@ -17,7 +17,7 @@ set(${PROJECT_NAME}_LIBS
 )
 
 # C++ library for the InterfaceManagers
-ADD_LIBRARY(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} SHARED
  ${${PROJECT_NAME}_SRCS}
 )
   

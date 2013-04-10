@@ -7,7 +7,7 @@ include_directories(
   )
 
 if (APPLE)
-  set(GUI_EXECUTABLE MACOSX_BUNDLE)
+    set(GUI_EXECUTABLE MACOSX_BUNDLE)
 endif()
 
 add_executable(${PROJECT_NAME} ${GUI_EXECUTABLE}
