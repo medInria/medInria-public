@@ -56,7 +56,7 @@ set(${PROJECT_NAME}_LIBS
   ITKIOReview
   )
     
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
   ${${PROJECT_NAME}_LIBS}
   )

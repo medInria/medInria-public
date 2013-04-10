@@ -11,7 +11,7 @@ ADD_EXECUTABLE(${PROJECT_NAME}
   TensorManager.cxx
   )
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}
   vtkRenderingAddOn
   vtkVisuManagement
   vtkRendering
@@ -22,7 +22,7 @@ ADD_EXECUTABLE(SyncTensors
   SyncTensors.cxx
   )	    
     
-TARGET_LINK_LIBRARIES(SyncTensors
+target_link_libraries(SyncTensors
   vtkRendering
   vtkIO
   vtkImageView

@@ -9,7 +9,7 @@ ADD_EXECUTABLE(${PROJECT_NAME}
 CompareImageManager.cxx
 )
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}
   vtkRenderingAddOn
   vtkVisuManagement
   vtkRendering

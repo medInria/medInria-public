@@ -14,7 +14,7 @@ ADD_EXECUTABLE(${PROJECT_NAME} ${GUI_EXECUTABLE}
   DataManager.cxx
   )
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}
   vtkDataManagement
   vtkRenderingAddOn
   vtkVisuManagement
@@ -26,7 +26,7 @@ ADD_EXECUTABLE(FiberDataSetReader
   FiberDataSetReader.cxx
   )
 
-TARGET_LINK_LIBRARIES(FiberDataSetReader
+target_link_libraries(FiberDataSetReader
   vtkDataManagement
   vtkRenderingAddOn
   vtkVisuManagement

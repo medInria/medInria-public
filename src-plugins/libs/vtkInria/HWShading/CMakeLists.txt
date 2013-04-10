@@ -104,7 +104,7 @@ ADD_LIBRARY(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_HEADERS}
 )
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} 
+target_link_libraries(${PROJECT_NAME} 
   vtkRendering
   vtkHelpers
   ${OPENGL_LIBRARIES}

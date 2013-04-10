@@ -13,7 +13,7 @@ ADD_EXECUTABLE(${PLUGIN_NAME}CxxTests
   ${Tests}
   )
 
-TARGET_LINK_LIBRARIES(${PLUGIN_NAME}CxxTests
+target_link_libraries(${PLUGIN_NAME}CxxTests
   dtkCore dtkLog
   medCore
   ${ITK_LIBRARIES}

@@ -90,12 +90,12 @@ ADD_LIBRARY(vtkLandmarkManagement SHARED
   ${vtkLandmarkManagement_SRCS}
 )
   
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}  
+target_link_libraries(${PROJECT_NAME}  
   ${${PROJECT_NAME}_LIBS}
 )
 
   
-TARGET_LINK_LIBRARIES(vtkLandmarkManagement  
+target_link_libraries(vtkLandmarkManagement  
   ${vtkLandmarkManagement_LIBS}
 )
 

@@ -43,7 +43,7 @@ set(${PROJECT_NAME}_LIBS
   ITKBasicFilters
 )
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}
 ${${PROJECT_NAME}_LIBS}
 )
 
