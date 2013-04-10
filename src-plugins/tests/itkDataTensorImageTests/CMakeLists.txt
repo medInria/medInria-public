@@ -20,7 +20,7 @@ else()
    set(MEDINRIA_PLUGINS_PATH "${medInria-plugins_DIR}/bin")
 
     # configure file with defines for MEDINRIA_TEST_DATA_ROOT
-    CONFIGURE_FILE( itkDataTensorImageTestConfig.h.in itkDataTensorImageTestConfig.h )
+    configure_file( itkDataTensorImageTestConfig.h.in itkDataTensorImageTestConfig.h )
 
     ## #################################################################
     ## Setup CTest test wrapping a QTest (test with Qt testing framework)

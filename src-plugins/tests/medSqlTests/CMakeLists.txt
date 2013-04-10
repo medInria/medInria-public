@@ -17,7 +17,7 @@ else()
     set(CXX_TEST_PATH ${EXECUTABLE_OUTPUT_PATH})
 
     # configure file with defines for MEDINRIA_TEST_DATA_ROOT
-    CONFIGURE_FILE( medSqlTest.config.h.cmake.in medSqlTest.config.h )
+    configure_file( medSqlTest.config.h.cmake.in medSqlTest.config.h )
 
     ## #################################################################
     ## Setup CTest test wrapping a QTest (test with Qt testing framework)

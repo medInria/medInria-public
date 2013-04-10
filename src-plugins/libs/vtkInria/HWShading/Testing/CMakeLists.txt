@@ -22,7 +22,7 @@ set(COPYFILES
   )
 
 FOREACH(copyfile ${COPYFILES})
-  CONFIGURE_FILE(	${CMAKE_CURRENT_SOURCE_DIR}/${copyfile}
+  configure_file(	${CMAKE_CURRENT_SOURCE_DIR}/${copyfile}
 		${CMAKE_CURRENT_BINARY_DIR}/${copyfile}
 		COPYONLY
 	  )

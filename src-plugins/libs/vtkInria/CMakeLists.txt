@@ -138,7 +138,7 @@ if (DOXYGEN)
   set(MY_LINK_EXTERNAL_DOC ${LINK_EXTERNAL_DOC})
   set(MY_DOXYGEN_BUILD_DIR ${PROJECT_BINARY_DIR}/Doxygen)
 
-  CONFIGURE_FILE (
+  configure_file(
     ${PROJECT_SOURCE_DIR}/Doxygen/doxygen.config.in
     ${MY_DOXYGEN_BUILD_DIR}/doxygen.config
   )
