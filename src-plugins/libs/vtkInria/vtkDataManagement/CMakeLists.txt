@@ -31,7 +31,7 @@ if(VTKINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
     "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
     ${vtkDataManagement_SRCS})
-endif(VTKINRIA_USE_PRECOMPILED_HEADERS)
+endif()
 
 # C++ library for the InterfaceManagers
 ADD_LIBRARY(${PROJECT_NAME} SHARED

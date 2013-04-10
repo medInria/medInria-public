@@ -121,7 +121,7 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
     ${${PROJECT_NAME}_SOURCES_QRC}
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES})
-endif(MEDINRIA_USE_PRECOMPILED_HEADERS)
+endif()
 
 include_directories(${PROJECT_NAME}_BINARY_DIR)
 
@@ -160,7 +160,7 @@ if(APPLE)
   add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${PROJECT_NAME}_RESOURCE_DIR}
     COMMAND ${CMAKE_COMMAND} ARGS -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.icns ${${PROJECT_NAME}_RESOURCE_DIR})
-endif(APPLE)
+endif()
 
 ## #################################################################
 ## Installation
@@ -172,7 +172,7 @@ if(UNIX AND NOT APPLE)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/medInria.desktop DESTINATION share/applications)
   # once the new icon is ready we need to change this
   install(FILES medInria.png DESTINATION share/icons)
-endif(UNIX AND NOT APPLE)
+endif()
 
 install(TARGETS ${PROJECT_NAME}
    BUNDLE DESTINATION bin
@@ -180,9 +180,9 @@ install(TARGETS ${PROJECT_NAME}
 
 if(APPLE)
   install(CODE "execute_process(COMMAND macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app)")
-endif(APPLE)
+endif()
 
 option(MEDINRIA_ACTIVATE_WALL_OPTION "Activate the command line option --wall (INRIA Sophia, immersive room)")
 if (MEDINRIA_ACTIVATE_WALL_OPTION)
   add_definitions(-DACTIVATE_WALL_OPTION)
-endif ()
+endif()

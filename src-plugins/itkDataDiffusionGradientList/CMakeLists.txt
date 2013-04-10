@@ -64,7 +64,7 @@ add_definitions(-DQT_SHARED)
 if(NOT MSVC)
   # Shouldn't the QT_USE_FILE set this appropriately?
   add_definitions(-DQT_NO_DEBUG)
-endif(NOT MSVC)
+endif()
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 

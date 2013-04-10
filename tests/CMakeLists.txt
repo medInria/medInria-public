@@ -30,7 +30,7 @@ if(MSVC)
   set(PATH_STRING_FOR_TESTS "${PATH_STRING_FOR_TESTS};${QT_LIBRARY_DIR}")
 else(MSVC)
   set(PATH_STRING_FOR_TESTS "$ENV{PATH}")
-endif(MSVC)
+endif()
 
 # ';' deliminates stringlists in CMake, but here we want to preserve them.)
 string(REPLACE ";" "\\;" PATH_STRING_FOR_TESTS "${PATH_STRING_FOR_TESTS}")

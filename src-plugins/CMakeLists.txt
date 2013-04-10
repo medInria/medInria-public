@@ -70,11 +70,11 @@ set(${PROJECT_NAME}_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 option(MEDINRIA-PLUGINS_BUILD_REPORTING "Build Reporting")
 if(MEDINRIA-PLUGINS_BUILD_REPORTING)
   include(dtkReporting)
-endif(MEDINRIA-PLUGINS_BUILD_REPORTING)
+endif()
 
 if (MEDINRIA-PLUGINS_BUILD_TESTING)
   add_subdirectory(tests)
-endif (MEDINRIA-PLUGINS_BUILD_TESTING)
+endif()
 
 ## #################################################################
 ## Input
@@ -83,7 +83,7 @@ if(MSVC)
   #Macros that enable precompiled headers to be added, defined by dtk.
   include(dtkPch)
   option(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
-endif(MSVC)
+endif()
 
 set(DEPENDS_ON_DTK 1)
 
@@ -238,7 +238,7 @@ endif()
 option(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION "Build documentation"    OFF)
 if(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
-endif(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
+endif()
 
 
 #already did in medinria-pluginsPack.cmake
@@ -276,8 +276,8 @@ if(WIN32)
             -D_SCL_SECURE_NO_DEPRECATE
             -D_SCL_SECURE_NO_WARNINGS
           )
-        endif(NOT ITK_ENABLE_VISUAL_STUDIO_DEPRECATED_C_WARNINGS)
-      endif(NOT MINGW)
-    endif(NOT CYGWIN)
-  endif(NOT BORLAND)
-endif(WIN32)
+        endif()
+      endif()
+    endif()
+  endif()
+endif()

@@ -38,4 +38,4 @@ target_link_libraries(ITKDCMTKIO
 
 if(ITK_BUILD_SHARED)
     install (TARGETS ITKDCMTKIO  LIBRARY DESTINATION lib)
-endif(ITK_BUILD_SHARED)
+endif()

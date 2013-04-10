@@ -64,14 +64,14 @@ include(medInriaPack)
 option(MEDINRIA_BUILD_REPORTING "Build Reporting")
 if(MEDINRIA_BUILD_REPORTING)
   include(dtkReporting)
-endif(MEDINRIA_BUILD_REPORTING)
+endif()
 
 option(MEDINRIA_BUILD_DOCUMENTATION "Build documentation"    false)
 
 if(MSVC)
   include(dtkPch)
   option(MEDINRIA_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        false)
-endif(MSVC)
+endif()
 
 add_subdirectory(src)
 add_subdirectory(app)
@@ -79,11 +79,11 @@ add_subdirectory(src-plugins)
 
 if(MEDINRIA_BUILD_TESTING)
   add_subdirectory(tests)
-endif(MEDINRIA_BUILD_TESTING)
+endif()
 
 if(MEDINRIA_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
-endif(MEDINRIA_BUILD_DOCUMENTATION)
+endif()
 
 if (APPLE)
   configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in

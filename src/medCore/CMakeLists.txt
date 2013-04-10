@@ -106,11 +106,11 @@ if(SWIG_FOUND)
     set(${PROJECT_NAME}_WRAP_DEPENDS ${${PROJECT_NAME}_HEADERS})
     if(PYTHONLIBS_FOUND)
         dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medcore python ${CMAKE_CURRENT_SOURCE_DIR}/medCore.i ${${PROJECT_NAME}_WRAP_DEPENDS})
-    endif(PYTHONLIBS_FOUND)
+    endif()
     if(TCL_FOUND)
         dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medcore tcl    ${CMAKE_CURRENT_SOURCE_DIR}/medCore.i ${${PROJECT_NAME}_WRAP_DEPENDS})
-    endif(TCL_FOUND)
-endif(SWIG_FOUND)
+    endif()
+endif()
 ## #################################################################
 ## Build rules
 ## #################################################################
@@ -118,7 +118,7 @@ endif(SWIG_FOUND)
 if(NOT MSVC)
 add_definitions(-Wno-write-strings)
 add_definitions(-Wformat=0)
-endif(NOT MSVC)
+endif()
 
 add_definitions(${QT_DEFINITIONS})
 add_definitions(-DQT_SHARED)
@@ -132,7 +132,7 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES_WRAP})
-endif(MEDINRIA_USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
@@ -147,11 +147,11 @@ target_link_libraries(${PROJECT_NAME}
     dtkLog)
 if(TCL_FOUND)
   target_link_libraries(${PROJECT_NAME} ${TCL_LIBRARY})
-endif(TCL_FOUND)
+endif()
 
 if(PYTHONLIBS_FOUND)
   target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES})
-endif(PYTHONLIBS_FOUND)
+endif()
 
 IF(WIN32)
   target_link_libraries(${PROJECT_NAME} psapi.lib)
@@ -173,8 +173,8 @@ if (SWIG_FOUND)
           COMMENT "-- Moving python modules to ${CMAKE_BINARY_DIR}/modules"
         )
     set(${PROJECT_NAME}_MODULES ${CMAKE_BINARY_DIR}/modules/medcore.py)
-    endif(PYTHONLIBS_FOUND)
-endif(SWIG_FOUND)
+    endif()
+endif()
 
 # Include header files for Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)

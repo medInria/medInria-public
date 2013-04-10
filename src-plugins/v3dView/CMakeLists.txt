@@ -54,11 +54,11 @@ if ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
     # the Tensor ToolKit is required by the tensor interactor: v3dViewTensorInteractor
     find_package(TTK REQUIRED)
     include(${TTK_USE_FILE})
-endif ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
+endif()
 
 if (NOT VTK_USE_QT)
   message(WARNING "VTK has to be compiled with the option VTK_USE_QT:ON in order to compile this project. Please consider setting correctly your VTK.")
-endif(NOT VTK_USE_QT)
+endif()
 
 ## #################################################################
 ## Input
@@ -78,7 +78,7 @@ if ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
     )
 else( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
     add_definitions(-DDISABLE_TTK_DEPENDENT_CODE)
-endif ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
+endif()
 
 set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPlugin.h
@@ -123,7 +123,7 @@ if(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsVtkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES})
-endif(MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
+endif()
 
 include_directories(annotations)
 
@@ -153,7 +153,7 @@ target_link_libraries(${PROJECT_NAME}
 
 if (MEDINRIA-PLUGINS_BUILD_TESTING)
   add_subdirectory(Testing)
-endif (MEDINRIA-PLUGINS_BUILD_TESTING)
+endif()
 
 # Include header files for Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)

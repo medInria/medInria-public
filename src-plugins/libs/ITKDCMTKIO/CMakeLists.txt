@@ -56,5 +56,5 @@ target_link_libraries(ITKDCMTKIO
 if(APPLE)
   include(FixDCMTKMacLink)
   FixDCMTKMacLink(ITKDCMTKIO)
-endif(APPLE)
+endif()
 

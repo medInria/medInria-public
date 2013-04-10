@@ -23,6 +23,6 @@ else (WIN32 AND NOT CYGWIN AND NOT MINGW)
  target_link_libraries(RegistrationFactory
    itkRegistrationAddOn
    )
-endif(WIN32 AND NOT CYGWIN AND NOT MINGW)
+endif()
 
 

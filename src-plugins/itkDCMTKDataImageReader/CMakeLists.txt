@@ -77,7 +77,7 @@ if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES})
-endif(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}
@@ -94,7 +94,7 @@ target_link_libraries(${PROJECT_NAME}
 
 if (MEDINRIA-PLUGINS_BUILD_TESTING)
   add_subdirectory(Testing)
-endif (MEDINRIA-PLUGINS_BUILD_TESTING)
+endif()
 
 IF(MEDINRIA-PLUGINS_BUILD_EXAMPLES)
         subdirs(Examples)
@@ -102,7 +102,7 @@ ENDIF(MEDINRIA-PLUGINS_BUILD_EXAMPLES)
 
 if(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
 	dtk_build_doc(${PROJECT_NAME})
-endif(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
+endif()
 
 ## ###################################################################
 ## 
@@ -111,7 +111,7 @@ endif(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
 if(APPLE)
   include(FixDCMTKMacLink)
   FixDCMTKMacLink(${PROJECT_NAME})
-endif(APPLE)
+endif()
 
 ## #################################################################
 ## Source file layout in development environments like Visual Studio

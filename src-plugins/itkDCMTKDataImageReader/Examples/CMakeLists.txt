@@ -21,4 +21,4 @@ target_link_libraries(itkDCMTKConvert
   ${ITK_LIBRARIES}
   ${QT_LIBRARIES})
 
-#endif(MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT)
+#endif()

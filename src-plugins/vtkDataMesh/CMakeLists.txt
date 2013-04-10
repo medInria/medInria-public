@@ -65,7 +65,7 @@ if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsVtkPch.cpp"
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES})
-endif(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}
@@ -86,7 +86,7 @@ target_link_libraries(${PROJECT_NAME}
 
 #if (MEDINRIA-PLUGINS_BUILD_TESTING)
 #  add_subdirectory(Testing)
-#endif (MEDINRIA-PLUGINS_BUILD_TESTING)
+#endif()
 
 # Group common files together in Visual Studio.
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
