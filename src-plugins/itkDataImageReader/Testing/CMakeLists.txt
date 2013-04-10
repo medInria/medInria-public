@@ -4,7 +4,7 @@ set(itkDataImageReaderPluginTests
   itkMetaDataImageReaderTest.cxx
   )
 
-CREATE_TEST_SOURCELIST(Tests ${PLUGIN_NAME}CxxTests.cxx
+create_test_sourcelist(Tests ${PLUGIN_NAME}CxxTests.cxx
   ${itkDataImageReaderPluginTests}
   )
 

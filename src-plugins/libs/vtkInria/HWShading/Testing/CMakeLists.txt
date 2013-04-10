@@ -39,7 +39,7 @@ set(${PROJECT_NAME}Tests
   fibershadows.cxx
   )
 
-CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
+create_test_sourcelist(Tests ${KIT}CxxTests.cxx
   ${${PROJECT_NAME}Tests}
   )
 
