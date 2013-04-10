@@ -128,10 +128,6 @@ public:
 extern "C" int init_core();               // -- Initialization core layer python wrapped functions
 #endif
 
-#if defined(HAVE_SWIG) && defined(HAVE_TCL)
-extern "C" int Core_Init ( Tcl_Interp *interp ); // -- Initialization core layer tcl    wrapped functions
-#endif
-
 medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( new medMainWindowPrivate )
 {
 
@@ -950,23 +946,6 @@ void medMainWindow::registerToFactories()
         );
     dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
         "pluginManager  = core.dtkPluginManager.instance()"
-        );
-#endif
-#if defined(HAVE_SWIG) && defined(HAVE_TCL)
-    // Setting up core tcl module
-
-    dtkScriptInterpreterTclModuleManager::instance()->registerInitializer(&Core_Init);
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set dataFactory    [dtkAbstractDataFactory_instance]"
-        );
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set processFactory [dtkAbstractProcessFactory_instance]"
-        );
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set viewFactory    [dtkAbstractViewFactory_instance]"
-        );
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set pluginManager  [dtkPluginManager_instance]"
         );
 #endif
 

@@ -107,9 +107,6 @@ if (SWIG_FOUND)
     if (PYTHONLIBS_FOUND)
         dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medcore python ${CMAKE_CURRENT_SOURCE_DIR}/medCore.i ${${PROJECT_NAME}_WRAP_DEPENDS})
     endif()
-    if (TCL_FOUND)
-        dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medcore tcl    ${CMAKE_CURRENT_SOURCE_DIR}/medCore.i ${${PROJECT_NAME}_WRAP_DEPENDS})
-    endif()
 endif()
 ## #################################################################
 ## Build rules
@@ -145,9 +142,6 @@ target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
     dtkCore
     dtkLog)
-if (TCL_FOUND)
-  target_link_libraries(${PROJECT_NAME} ${TCL_LIBRARY})
-endif()
 
 if (PYTHONLIBS_FOUND)
   target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES})
