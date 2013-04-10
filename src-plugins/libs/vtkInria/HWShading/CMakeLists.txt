@@ -39,51 +39,51 @@ foreach (class ${${PROJECT_NAME}_classes})
 endforeach()
 
 
-SHADER_TO_HEADER("AnisotropicLightingVertexText"
+shader_to_header("AnisotropicLightingVertexText"
 	   "Shaders/AnisotropicLighting.vert"
      "${vtkInria_BINARY_DIR}/Shaders/AnisotropicLightingVertexText.h"
 	  )
-SHADER_TO_HEADER("AnisotropicLightingFragmentText"
+shader_to_header("AnisotropicLightingFragmentText"
 	   "Shaders/AnisotropicLighting.frag"
      "${vtkInria_BINARY_DIR}/Shaders/AnisotropicLightingFragmentText.h"
 	  )
-SHADER_TO_HEADER("ShadowMappingVertexText"
+shader_to_header("ShadowMappingVertexText"
 	   "Shaders/ShadowMapping.vert"
 	   "${vtkInria_BINARY_DIR}/Shaders/ShadowMappingVertexText.h"
 	  )
-SHADER_TO_HEADER("ShadowMappingFragmentText"
+shader_to_header("ShadowMappingFragmentText"
 	   "Shaders/ShadowMapping.frag"
 	   "${vtkInria_BINARY_DIR}/Shaders/ShadowMappingFragmentText.h"
 	  )
-SHADER_TO_HEADER("SpotlightFunctionsText"
+shader_to_header("SpotlightFunctionsText"
 	   "Shaders/Spotlight.func"
 	   "${vtkInria_BINARY_DIR}/Shaders/SpotlightFunctionsText.h"
 	  )
-SHADER_TO_HEADER("AnisotropicLightingFunctionsText"
+shader_to_header("AnisotropicLightingFunctionsText"
 	   "Shaders/AnisotropicLighting.func"
 	   "${vtkInria_BINARY_DIR}/Shaders/AnisotropicLightingFunctionsText.h"
 	  )
-SHADER_TO_HEADER("AnisotropicLightingShadowMappingFragmentText"
+shader_to_header("AnisotropicLightingShadowMappingFragmentText"
 	   "Shaders/AnisoLiShadowMap.frag"
 	   "${vtkInria_BINARY_DIR}/Shaders/AnisotropicLightingShadowMappingFragmentText.h"
 	  )
-SHADER_TO_HEADER("AnisotropicLightingShadowMappingVertexText"
+shader_to_header("AnisotropicLightingShadowMappingVertexText"
 	   "Shaders/AnisoLiShadowMap.vert"
 	   "${vtkInria_BINARY_DIR}/Shaders/AnisotropicLightingShadowMappingVertexText.h"
 	  )
-SHADER_TO_HEADER("BuildShadowMapVertexText"
+shader_to_header("BuildShadowMapVertexText"
 	   "Shaders/BuildShadowMap.vert"
 	   "${vtkInria_BINARY_DIR}/Shaders/BuildShadowMapVertexText.h"
 	  )
-SHADER_TO_HEADER("BuildShadowMapFragmentText"
+shader_to_header("BuildShadowMapFragmentText"
 	   "Shaders/BuildShadowMap.frag"
 	   "${vtkInria_BINARY_DIR}/Shaders/BuildShadowMapFragmentText.h"
 	  )
-SHADER_TO_HEADER("BuildShadowMapLinesVertexText"
+shader_to_header("BuildShadowMapLinesVertexText"
 	   "Shaders/BuildShadowMapLines.vert"
 	   "${vtkInria_BINARY_DIR}/Shaders/BuildShadowMapLinesVertexText.h"
 	  )
-SHADER_TO_HEADER("BuildShadowMapLinesFragmentText"
+shader_to_header("BuildShadowMapLinesFragmentText"
 	   "Shaders/BuildShadowMapLines.frag"
 	   "${vtkInria_BINARY_DIR}/Shaders/BuildShadowMapLinesFragmentText.h"
 	  )
@@ -110,6 +110,6 @@ target_link_libraries(${PROJECT_NAME}
   ${OPENGL_LIBRARIES}
   )
 
-if ( VTKINRIA_BUILD_TESTING )
-  add_subdirectory( Testing )
+if (VTKINRIA_BUILD_TESTING)
+    add_subdirectory(Testing)
 endif()
