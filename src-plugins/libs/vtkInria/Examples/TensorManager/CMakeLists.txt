@@ -7,7 +7,7 @@ include_directories(
   ../../vtkVisuManagement
   )
 
-ADD_EXECUTABLE(${PROJECT_NAME}
+add_execitable(${PROJECT_NAME}
   TensorManager.cxx
   )
 
@@ -18,7 +18,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkIO
   )
 
-ADD_EXECUTABLE(SyncTensors
+add_execitable(SyncTensors
   SyncTensors.cxx
   )	    
     

@@ -8,7 +8,7 @@ CREATE_TEST_SOURCELIST(Tests ${PLUGIN_NAME}CxxTests.cxx
   ${${PLUGIN_NAME}Tests}
   )
 
-ADD_EXECUTABLE(${PLUGIN_NAME}CxxTests 
+add_execitable(${PLUGIN_NAME}CxxTests 
   ${Tests}
   )
 

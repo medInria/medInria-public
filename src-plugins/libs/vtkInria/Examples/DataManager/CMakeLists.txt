@@ -10,7 +10,7 @@ if (APPLE)
   set(GUI_EXECUTABLE MACOSX_BUNDLE)
 endif()
 
-ADD_EXECUTABLE(${PROJECT_NAME} ${GUI_EXECUTABLE}
+add_execitable(${PROJECT_NAME} ${GUI_EXECUTABLE}
   DataManager.cxx
   )
 
@@ -22,7 +22,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkIO
   )
 
-ADD_EXECUTABLE(FiberDataSetReader
+add_execitable(FiberDataSetReader
   FiberDataSetReader.cxx
   )
 

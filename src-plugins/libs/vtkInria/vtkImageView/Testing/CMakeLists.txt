@@ -11,7 +11,7 @@ CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
   ${${PROJECT_NAME}Tests}
   )
 
-ADD_EXECUTABLE(${KIT}CxxTests 
+add_execitable(${KIT}CxxTests 
   ${Tests}
   )
 
