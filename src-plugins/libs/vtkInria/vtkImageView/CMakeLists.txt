@@ -54,6 +54,6 @@ if (VTKINRIA_BUILD_TESTING)
 endif()
 
 # include header files in group for visual studio
-SOURCE_GROUP( "Header Files" FILES ${${PROJECT_NAME}_HEADERS})
+source_group( "Header Files" FILES ${${PROJECT_NAME}_HEADERS})
 
 
