@@ -16,7 +16,7 @@ IF(WIN32 AND NOT CYGWIN AND NOT MINGW)
   itkIOAddOn 
   getoptcompatlib
  )
-else(WIN32 AND NOT CYGWIN AND NOT MINGW)
+else()
  TARGET_LINK_LIBRARIES(itkReshaper
   itkIOAddOn
  )

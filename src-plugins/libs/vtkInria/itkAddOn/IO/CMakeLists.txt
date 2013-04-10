@@ -24,7 +24,7 @@ IF( WIN32 )
   ADD_LIBRARY(itkIOAddOn STATIC
     ${itkIOAddOnSRCS}
   )
-else( WIN32 )
+else()
   ADD_LIBRARY( itkIOAddOn SHARED
     ${itkIOAddOnSRCS} 
   )
@@ -51,7 +51,7 @@ set(SYSTEM_GDCM_LIBRARIES
       ${SYSTEM_GDCM_LIBRARIES}
       getoptcompatlib
       )
-  else(WIN32 AND NOT CYGWIN AND NOT MINGW)
+  else()
     TARGET_LINK_LIBRARIES(GDCMImport
       ${ITK_LIBRARIES}
       ${SYSTEM_GDCM_LIBRARIES}

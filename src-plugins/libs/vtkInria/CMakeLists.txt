@@ -153,7 +153,7 @@ IF (DOXYGEN)
     EXEC_PROGRAM(${CMAKE_COMMAND} ${MY_DOXYGEN_BUILD_DIR}
       ARGS -E tar xvz ${PROJECT_SOURCE_DIR}/Doxygen/InsightDoxygen.tag.tar.gz
     )
-  else(MY_LINK_EXTERNAL_DOC)
+  else()
     EXEC_PROGRAM(${CMAKE_COMMAND}
       ARGS -E remove ${MY_DOXYGEN_BUILD_DIR}/vtkNightlyDoc.tag
     )

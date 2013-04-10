@@ -11,7 +11,7 @@ if (APPLE)
   ADD_EXECUTABLE(${PROJECT_NAME} MACOSX_BUNDLE
     RegisterDataSets.cxx
     )  
-else(APPLE)
+else()
   ADD_EXECUTABLE(${PROJECT_NAME}
     RegisterDataSets.cxx
     )  

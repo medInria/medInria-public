@@ -44,7 +44,7 @@ if (ITK_USE_SYSTEM_GDCM)
   add_definitions(-DITK_USE_SYSTEM_GDCM)
 endif()
 
-#else(ITK_USE_SYSTEM_GDCM)
+#else()
 #  message(WARNING "The DICOM GDCM reader plugin needs ITK to compile with SYSTEM_GDCM. If you don't want to use GDCM, discard this warning. Otherwise, #please set the option ITK_USE_SYSTEM_GDCM:ON in ITK and re-compile")
 #endif()
 

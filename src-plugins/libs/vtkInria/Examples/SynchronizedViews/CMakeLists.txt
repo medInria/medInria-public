@@ -11,7 +11,7 @@ if (APPLE)
   ADD_EXECUTABLE(${PROJECT_NAME} MACOSX_BUNDLE
     SynchronizedViews.cxx
     )  
-else(APPLE)
+else()
   ADD_EXECUTABLE(${PROJECT_NAME}
     SynchronizedViews.cxx
     )  
