@@ -90,7 +90,7 @@ endif()
 set(${PROJECT_NAME}_RESOURCES medInria.qrc)
 
 # Include header files for Visual Studio.
-FILE(GLOB ${PROJECT_NAME}_HEADERS_ALL *.h )
+file(GLOB ${PROJECT_NAME}_HEADERS_ALL *.h )
 set(${PROJECT_NAME}_SOURCES
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_HEADERS_MOC}
