@@ -22,10 +22,10 @@ IF(WIN32)
             -D_CRT_VCCLRIT_NO_DEPRECATE
             -D_SCL_SECURE_NO_DEPRECATE
             )
-      ENDIF(NOT MINGW)
-    ENDIF(NOT CYGWIN)
-  ENDIF(NOT BORLAND)
-ENDIF(WIN32)
+      endif(NOT MINGW)
+    endif(NOT CYGWIN)
+  endif(NOT BORLAND)
+endif(WIN32)
 
 # -------------------------------------------------------------------------------------
 # vtkInria version number.
@@ -86,7 +86,7 @@ INCLUDE(${ITK_USE_FILE})
 # -----------------------------------------------------------------------------
 IF( NOT VTK_USE_GLSL_SHADERS )
     MESSAGE(FATAL_ERROR " VTK must be compiled with VTK_USE_GLSL_SHADERS at ON to use the HWShading library. This option is only available with VTK>=5.1.")
-ENDIF( NOT VTK_USE_GLSL_SHADERS )
+endif( NOT VTK_USE_GLSL_SHADERS )
 
 
 # -----------------------------------------------------------------------------
@@ -98,11 +98,11 @@ IF( VTKINRIA_USE_SPHERICALHARMONICS )
 
   IF(APPLE OR WIN32)
     find_package( Boost REQUIRED)
-  ENDIF(APPLE OR WIN32)
+  endif(APPLE OR WIN32)
 
   find_path(${PROJECT_NAME}_DATA_DIR NAMES SHTest.vtk DOC "vtkInria Data directory")
 
-ENDIF( VTKINRIA_USE_SPHERICALHARMONICS )
+endif( VTKINRIA_USE_SPHERICALHARMONICS )
 
 # Create the list of include directories needed for vtkInria header files.
 INCLUDE(${${PROJECT_NAME}_SOURCE_DIR}/IncludeDirectories.cmake)
@@ -127,7 +127,7 @@ add_subdirectory(itkAddOn)
 
 IF(VTKINRIA_BUILD_EXAMPLES)
   add_subdirectory(Examples)
-ENDIF(VTKINRIA_BUILD_EXAMPLES)
+endif(VTKINRIA_BUILD_EXAMPLES)
 
 #-----------------------------------------------------------------------------
 # doxygen (and other?) documentation
@@ -163,11 +163,11 @@ IF (DOXYGEN)
     EXEC_PROGRAM(${CMAKE_COMMAND}
       ARGS -E remove ${MY_DOXYGEN_BUILD_DIR}/InsightDoxygen.tag
     )
-  ENDIF (MY_LINK_EXTERNAL_DOC)
+  endif (MY_LINK_EXTERNAL_DOC)
 
   ADD_CUSTOM_TARGET(${PROJECT_NAME}-doc
     ${DOXYGEN}
     ${MY_DOXYGEN_BUILD_DIR}/doxygen.config
   )
-ENDIF(DOXYGEN)
+endif(DOXYGEN)
 
