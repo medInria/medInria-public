@@ -65,12 +65,12 @@ IF( DOXYGEN_FOUND )
     ADD_CUSTOM_TARGET(${PROJECT_NAME}-doc ${all_arg} DEPENDS ${doc_output})
     SET_TARGET_PROPERTIES(${PROJECT_NAME}-doc PROPERTIES LABELS Documentation)
  
-  ELSE( DOXYGEN_DOT_FOUND )
+  else( DOXYGEN_DOT_FOUND )
     MESSAGE( WARNING
       "Warning: Dot not found - Documentation will not be created"
       )
   endif()
- ELSE( DOXYGEN_FOUND )
+ else( DOXYGEN_FOUND )
   MESSAGE(WARNING
      "Warning: Doxygen not found - Documentation will not be created")
 endif()
