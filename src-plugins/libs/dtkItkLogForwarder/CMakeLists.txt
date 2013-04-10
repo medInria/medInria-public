@@ -5,7 +5,7 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
 # find itk
-FIND_PACKAGE(ITK REQUIRED)
+find_package(ITK REQUIRED)
 INCLUDE(${ITK_USE_FILE})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})

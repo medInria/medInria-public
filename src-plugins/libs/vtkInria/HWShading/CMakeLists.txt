@@ -88,7 +88,7 @@ SHADER_TO_HEADER("BuildShadowMapLinesFragmentText"
 	   "${vtkInria_BINARY_DIR}/Shaders/BuildShadowMapLinesFragmentText.h"
 	  )
 
-FIND_PACKAGE(OpenGL REQUIRED)
+find_package(OpenGL REQUIRED)
 
 set(${PROJECT_NAME}_SOURCES_PCH)
 if (VTKINRIA_USE_PRECOMPILED_HEADERS)

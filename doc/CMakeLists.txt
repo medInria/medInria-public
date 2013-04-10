@@ -1,4 +1,4 @@
-FIND_PACKAGE( Doxygen QUIET)
+find_package( Doxygen QUIET)
 
 # inpired by work done on the CTK and the dtk source.
 
