@@ -1,6 +1,6 @@
 project(vtkHWShading)
 
-INCLUDE(ShaderText.cmake)
+include(ShaderText.cmake)
 
 add_subdirectory(Helpers)
 

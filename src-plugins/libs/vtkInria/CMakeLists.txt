@@ -67,7 +67,7 @@ endif()
 # We need vtk, no matter what
 # -----------------------------------------------------------------------------
 find_package(VTK REQUIRED)
-INCLUDE(${VTK_USE_FILE})
+include(${VTK_USE_FILE})
 
 # -----------------------------------------------------------------------------
 # SHARED LIBRARY
@@ -79,7 +79,7 @@ set(${PROJECT_NAME}_BUILD_SHARED_LIBS 1)
 # ITK
 # -----------------------------------------------------------------------------
 find_package(ITK REQUIRED)
-INCLUDE(${ITK_USE_FILE})
+include(${ITK_USE_FILE})
   
 # -----------------------------------------------------------------------------
 # The hardware shading extension by T. Peeters (BMIA - TUe)
@@ -105,7 +105,7 @@ if ( VTKINRIA_USE_SPHERICALHARMONICS )
 endif()
 
 # Create the list of include directories needed for vtkInria header files.
-INCLUDE(${${PROJECT_NAME}_SOURCE_DIR}/IncludeDirectories.cmake)
+include(${${PROJECT_NAME}_SOURCE_DIR}/IncludeDirectories.cmake)
 
 include_directories(
 ${${PROJECT_NAME}_INCLUDE_DIRS_BUILD_TREE}

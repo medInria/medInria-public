@@ -36,10 +36,10 @@ include(${dtk_USE_FILE})
 include(dtkPlugin)
 
 find_package(VTK REQUIRED)
-INCLUDE(${VTK_USE_FILE})
+include(${VTK_USE_FILE})
 
 find_package(ITK REQUIRED)
-INCLUDE(${ITK_USE_FILE})
+include(${ITK_USE_FILE})
 
 ## #################################################################
 ## Input
