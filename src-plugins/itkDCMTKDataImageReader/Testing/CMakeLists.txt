@@ -30,7 +30,7 @@ endif()
 
 find_path(DICOM_DATA_ROOT "dicom.lst")
 
-GET_FILENAME_COMPONENT(TName ${${PLUGIN_NAME}Tests} NAME_WE)
+get_filename_component(TName ${${PLUGIN_NAME}Tests} NAME_WE)
 
 if (DICOM_DATA_ROOT)
   file(STRINGS "${DICOM_DATA_ROOT}/dicom.lst" DICOM_LIST)
