@@ -21,7 +21,7 @@ CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
   ${vtkHelpersTests}
   )
 
-add_execitable(${KIT}CxxTests 
+add_executable(${KIT}CxxTests 
   ${Tests}
   )
 

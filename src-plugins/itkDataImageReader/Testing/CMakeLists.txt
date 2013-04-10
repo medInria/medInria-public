@@ -8,7 +8,7 @@ CREATE_TEST_SOURCELIST(Tests ${PLUGIN_NAME}CxxTests.cxx
   ${itkDataImageReaderPluginTests}
   )
 
-add_execitable(${PLUGIN_NAME}CxxTests 
+add_executable(${PLUGIN_NAME}CxxTests 
   ${Tests}
   )
 

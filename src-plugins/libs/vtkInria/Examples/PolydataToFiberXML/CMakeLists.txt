@@ -5,7 +5,7 @@ include_directories(
   ../../vtkDataManagement
   )
 
-add_execitable(${PROJECT_NAME}
+add_executable(${PROJECT_NAME}
   PolydataToFiberXML.cxx
   )
 

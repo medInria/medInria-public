@@ -41,7 +41,7 @@ else()
 
     ADD_CUSTOM_TARGET(${PROJECT_NAME}_itkDataTensorImageTest_moc ALL DEPENDS ${${PROJECT_NAME}_MOC_SRCS})
 
-    add_execitable(${PROJECT_NAME}_itkDataTensorImageTest ${${PROJECT_NAME}_QTESTS_SRCS})
+    add_executable(${PROJECT_NAME}_itkDataTensorImageTest ${${PROJECT_NAME}_QTESTS_SRCS})
 
     add_dependencies(${PROJECT_NAME}_itkDataTensorImageTest ${PROJECT_NAME}_itkDataTensorImageTest_moc)
 

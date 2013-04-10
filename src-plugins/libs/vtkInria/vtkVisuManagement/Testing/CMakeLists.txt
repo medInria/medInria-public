@@ -16,7 +16,7 @@ else()
 endif()
 
 
-add_execitable(${KIT}CxxTests 
+add_executable(${KIT}CxxTests 
   ${Tests}
   )
 

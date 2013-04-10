@@ -9,7 +9,7 @@ CREATE_TEST_SOURCELIST(Tests ${PLUGIN_NAME}CxxTests.cxx
   ${v3dViewPluginTests}
   )
 
-add_execitable(${PLUGIN_NAME}CxxTests 
+add_executable(${PLUGIN_NAME}CxxTests 
   ${Tests}
   )
 
