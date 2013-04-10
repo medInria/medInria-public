@@ -51,7 +51,7 @@ include(CTest)
 # -----------------------------------------------------------------------------
 # Add in the option for building examples, default to ON
 # -----------------------------------------------------------------------------
-OPTION(VTKINRIA_BUILD_EXAMPLES "Build vtkInria examples." OFF)
+option(VTKINRIA_BUILD_EXAMPLES "Build vtkInria examples." OFF)
 
 # -----------------------------------------------------------------------------
 # Add in the option for precompiled headers, default to ON
@@ -92,7 +92,7 @@ endif()
 # -----------------------------------------------------------------------------
 # The SPHERICAL HARMONICS extension by Athena - INRIA Sophia Antipolis to use SphericalHarmonicVisualization of Maxime Descoteaux
 # -----------------------------------------------------------------------------
-OPTION (VTKINRIA_USE_SPHERICALHARMONICS "If ON, compile the SPHERICAL HARMONICS extension of vtkInria." OFF)
+option(VTKINRIA_USE_SPHERICALHARMONICS "If ON, compile the SPHERICAL HARMONICS extension of vtkInria." OFF)
 
 if ( VTKINRIA_USE_SPHERICALHARMONICS )
 
@@ -134,7 +134,7 @@ endif()
 
 FIND_PACKAGE(Doxygen)
 if (DOXYGEN)
-  OPTION( LINK_EXTERNAL_DOC "Should the documentation be linked with external sources such as ITK?" NO )
+  option( LINK_EXTERNAL_DOC "Should the documentation be linked with external sources such as ITK?" NO )
   set(MY_LINK_EXTERNAL_DOC ${LINK_EXTERNAL_DOC})
   set(MY_DOXYGEN_BUILD_DIR ${PROJECT_BINARY_DIR}/Doxygen)
 
