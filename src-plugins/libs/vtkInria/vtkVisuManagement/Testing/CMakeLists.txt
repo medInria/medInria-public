@@ -5,12 +5,12 @@ set(${PROJECT_NAME}Tests
   )
 
 if ( VTKINRIA_USE_SPHERICALHARMONICS )
-  CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
+  create_test_sourcelist(Tests ${KIT}CxxTests.cxx
     ${${PROJECT_NAME}Tests}
     vtkSphericalHarmonicGlyphTest.cxx
     )
 else()
-  CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
+  create_test_sourcelist(Tests ${KIT}CxxTests.cxx
     ${${PROJECT_NAME}Tests}
     )
 endif()

@@ -4,7 +4,7 @@ set(${PLUGIN_NAME}Tests
   itkDCMTKDataImageReaderTest.cxx
 )
 
-CREATE_TEST_SOURCELIST(Tests ${PLUGIN_NAME}CxxTests.cxx
+create_test_sourcelist(Tests ${PLUGIN_NAME}CxxTests.cxx
   ${${PLUGIN_NAME}Tests}
   )
 

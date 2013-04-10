@@ -17,7 +17,7 @@ sliceactor.cxx
 )
 
 
-CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
+create_test_sourcelist(Tests ${KIT}CxxTests.cxx
   ${vtkHelpersTests}
   )
 
