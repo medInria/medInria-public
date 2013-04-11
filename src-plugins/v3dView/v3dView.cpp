@@ -1613,7 +1613,6 @@ void v3dView::onCroppingPropertySet ( const QString &value )
  {
     d->slider->setSliderPosition(value);
     disconnect(sender(), SIGNAL(sliceSelected(int)), this, 0);
-    qDebug()<<"          !!! BLOUP  !!!!!";
  }
 
 void v3dView::onZSliderValueChanged ( int value )
