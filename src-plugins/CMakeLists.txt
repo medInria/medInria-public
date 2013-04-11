@@ -47,16 +47,10 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
 mark_as_advanced(${PROJECT_NAME}_VERSION_BUGFIX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-#directories to include to the project
-include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeIncludeDirectories.cmake)
 
 include(medInria-pluginsMacros)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
-
-
-#directories to include to the project
-include(${CMAKE_CURRENT_SOURCE_DIR}/CMakeIncludeDirectories.cmake)
 
 # Export medinriq-plugins_DIR variable so that internal project can automatically find it
 set(${PROJECT_NAME}_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
