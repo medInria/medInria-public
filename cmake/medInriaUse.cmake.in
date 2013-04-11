@@ -21,7 +21,7 @@ if(NOT medInria_USE_FILE_INCLUDED)
 
    set(medInria_USE_FILE_INCLUDED 1)
 
-   include_directories(${medInria_INCLUDE_DIR})
+   include_directories(${medInria_INCLUDE_DIR} ${medInria-plugins_INCLUDE_DIR})
 
    link_directories(${medInria_LIBRARY_DIR})
 

@@ -48,6 +48,8 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_BUGFIX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
+include_directories(${${PROJECT_NAME}_INCLUDE_DIR})
+
 include(medInria-pluginsMacros)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})

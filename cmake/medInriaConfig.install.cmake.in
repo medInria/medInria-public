@@ -23,6 +23,7 @@ set(medInria_VERSION_BUILD  "@medInria_VERSION_BUILD@")
 set(medInria_VERSION        "@medInria_VERSION@")
 
 set(medInria_INCLUDE_DIR "@medInria_INSTALL_INCLUDE_DIR@")
+set(medInria-plugins_INCLUDE_DIR "@medInria-plugins_INSTALL_INCLUDE_DIR@")
 set(medInria_LIBRARY_DIR "@medInria_INSTALL_LIBRARY_DIR@")
 set(medInria_CMAKE_DIR   "@medInria_INSTALL_CMAKE_DIR@")
 
