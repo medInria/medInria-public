@@ -55,6 +55,8 @@ enable_testing()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(medInriaBuild)
+include(medInria-pluginsBuild)
+
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
