@@ -98,9 +98,7 @@ set(${PROJECT_NAME}_SOURCES
   annotationData/medSeedPointAnnotationData.cpp
 )
 
-## #################################################################
-## Wrapping
-## #################################################################
+#   Wrapping
 
 if (SWIG_FOUND)
     set(${PROJECT_NAME}_WRAP_DEPENDS ${${PROJECT_NAME}_HEADERS})
@@ -108,9 +106,8 @@ if (SWIG_FOUND)
         dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medcore python ${CMAKE_CURRENT_SOURCE_DIR}/medCore.i ${${PROJECT_NAME}_WRAP_DEPENDS})
     endif()
 endif()
-## #################################################################
-## Build rules
-## #################################################################
+
+#   Build rules
 
 if (NOT MSVC)
 add_definitions(-Wno-write-strings)
