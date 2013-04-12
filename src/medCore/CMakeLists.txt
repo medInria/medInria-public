@@ -69,11 +69,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
   ${${PROJECT_NAME}_DEVEL_HEADERS}
-  medMetaDataKeys.h
   medDataReaderWriter.h
   medAbstractDatabaseItem.h
 )
-
 set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
   medDataManager.cpp
