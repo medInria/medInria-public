@@ -7,65 +7,65 @@ project(medInria)
 include_directories(QSingleApplication)
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  medApplication.h
-  medHomepageArea.h
-  medBrowserArea.h
-  medBrowserSourceSelectorToolBox.h
-  medMainWindow.h
-  medWorkspaceArea.h
-  medDiffusionWorkspace.h
-  medVisualizationWorkspace.h
-  medRegistrationWorkspace.h
-  medSegmentationWorkspace.h
-  medFilteringWorkspace.h
-  medPacsDataSource.h
-  medFileSystemDataSource.h
-  medDatabaseDataSource.h
-  medSaveModifiedDialog.h
-  medSplashScreen.h
-  medEmptyDbWarning.h
-  medPluginWidget.h
-  QSingleApplication/qtlocalpeer.h
-  QSingleApplication/qtsingleapplication.h
-  QSingleApplication/qtsinglecoreapplication.h
+    medApplication.h
+    medHomepageArea.h
+    medBrowserArea.h
+    medBrowserSourceSelectorToolBox.h
+    medMainWindow.h
+    medWorkspaceArea.h
+    medDiffusionWorkspace.h
+    medVisualizationWorkspace.h
+    medRegistrationWorkspace.h
+    medSegmentationWorkspace.h
+    medFilteringWorkspace.h
+    medPacsDataSource.h
+    medFileSystemDataSource.h
+    medDatabaseDataSource.h
+    medSaveModifiedDialog.h
+    medSplashScreen.h
+    medEmptyDbWarning.h
+    medPluginWidget.h
+    QSingleApplication/qtlocalpeer.h
+    QSingleApplication/qtsingleapplication.h
+    QSingleApplication/qtsinglecoreapplication.h
 )
 
 set(${PROJECT_NAME}_HEADERS
-  medWorkspaceArea_p.h
-  QSingleApplication/qtlockedfile.h
-  ${${PROJECT_NAME}_HEADERS_MOC}
+    medWorkspaceArea_p.h
+    QSingleApplication/qtlockedfile.h
+    ${${PROJECT_NAME}_HEADERS_MOC}
 )
 
 set(${PROJECT_NAME}_SOURCES
-  main.cpp
-  medApplication.cpp
-  medHomepageArea.cpp
-  medBrowserArea.cpp
-  medBrowserSourceSelectorToolBox.cpp
-  medMainWindow.cpp
-  medWorkspaceArea.cpp
-  medDiffusionWorkspace.cpp
-  medVisualizationWorkspace.cpp
-  medRegistrationWorkspace.cpp
-  medSegmentationWorkspace.cpp
-  medFilteringWorkspace.cpp
-  medPacsDataSource.cpp
-  medFileSystemDataSource.cpp
-  medDatabaseDataSource.cpp
-  medSaveModifiedDialog.cpp
-  medSplashScreen.cpp
-  medEmptyDbWarning.cpp
-  medPluginWidget.cpp
-  QSingleApplication/qtlocalpeer.cpp
-  QSingleApplication/qtsingleapplication.cpp
-  QSingleApplication/qtsinglecoreapplication.cpp
+    main.cpp
+    medApplication.cpp
+    medHomepageArea.cpp
+    medBrowserArea.cpp
+    medBrowserSourceSelectorToolBox.cpp
+    medMainWindow.cpp
+    medWorkspaceArea.cpp
+    medDiffusionWorkspace.cpp
+    medVisualizationWorkspace.cpp
+    medRegistrationWorkspace.cpp
+    medSegmentationWorkspace.cpp
+    medFilteringWorkspace.cpp
+    medPacsDataSource.cpp
+    medFileSystemDataSource.cpp
+    medDatabaseDataSource.cpp
+    medSaveModifiedDialog.cpp
+    medSplashScreen.cpp
+    medEmptyDbWarning.cpp
+    medPluginWidget.cpp
+    QSingleApplication/qtlocalpeer.cpp
+    QSingleApplication/qtsingleapplication.cpp
+    QSingleApplication/qtsinglecoreapplication.cpp
 )
 
 set_source_files_properties(QSingleApplication/qtlocalpeer.cpp DEPENDS QSingleApplication/qtlockedfile.cpp)
 if (WIN)
-  set_source_files_properties(QSingleApplication/qtlocalpeer.cpp DEPENDS QSingleApplication/qtlockedfile_win.cpp)
+    set_source_files_properties(QSingleApplication/qtlocalpeer.cpp DEPENDS QSingleApplication/qtlockedfile_win.cpp)
 else()
-  set_source_files_properties(QSingleApplication/qtlocalpeer.cpp DEPENDS QSingleApplication/qtlockedfile_unix.cpp)
+    set_source_files_properties(QSingleApplication/qtlocalpeer.cpp DEPENDS QSingleApplication/qtlockedfile_unix.cpp)
 endif()
 
 set(${PROJECT_NAME}_RESOURCES medInria.qrc)

@@ -46,7 +46,7 @@ include(medInriaPack)
 option(MEDINRIA_BUILD_REPORTING "Build Reporting")
 if (MEDINRIA_BUILD_REPORTING)
     include(dtkReporting)
-endif(MEDINRIA_BUILD_REPORTING)
+endif()
 
 if (MSVC)
     include(dtkPch)
