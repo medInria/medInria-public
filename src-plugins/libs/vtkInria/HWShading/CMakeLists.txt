@@ -113,3 +113,14 @@ target_link_libraries(${PROJECT_NAME}
 if (VTKINRIA_BUILD_TESTING)
     add_subdirectory(Testing)
 endif()
+
+
+## #################################################################
+## Install rules
+## #################################################################
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
+
+install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME}) 

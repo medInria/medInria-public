@@ -28,4 +28,12 @@ if ( VTKINRIA_BUILD_TESTING )
   add_subdirectory( Testing )
 endif()
 
+## #################################################################
+## Install rules
+## #################################################################
+install(TARGETS vtkHelpers
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
 
+install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME}) 

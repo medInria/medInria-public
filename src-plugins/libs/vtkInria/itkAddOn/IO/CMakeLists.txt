@@ -60,3 +60,13 @@ set(SYSTEM_GDCM_LIBRARIES
   
 endif()
 
+
+## #################################################################
+## Install rules
+## #################################################################
+install(TARGETS itkIOAddOn
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
+
+install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME}) 
