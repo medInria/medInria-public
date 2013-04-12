@@ -837,9 +837,9 @@ void medMainWindow::open ( const medDataIndex& index , int slice )
 void medMainWindow::availableSpaceOnStatusBar()
 {
     QPoint workspaceButton_topRight = d->quickAccessButton->mapTo(d->statusBar, d->quickAccessButton->rect().topRight());
-    QPoint fullscreenButton_topLeft = d->fullscreenButton->mapTo(d->statusBar, d->fullscreenButton->rect().topLeft());
-    //Available space = space between the spacing after workspace button and the spacing before fullscreen button
-    int space = (fullscreenButton_topLeft.x()-d->statusBarLayout->spacing()) -  (workspaceButton_topRight.x()+d->statusBarLayout->spacing()); 
+    QPoint screenshotButton_topLeft = d->screenshotButton->mapTo(d->statusBar, d->screenshotButton->rect().topLeft());
+    //Available space = space between the spacing after workspace button and the spacing before screenshot button
+    int space = (screenshotButton_topLeft.x()-d->statusBarLayout->spacing()) -  (workspaceButton_topRight.x()+d->statusBarLayout->spacing()); 
     d->statusBar->setAvailableSpace(space);
 }
 
