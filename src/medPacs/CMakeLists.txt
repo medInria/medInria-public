@@ -1,22 +1,3 @@
-### CMakeLists.txt --- 
-## 
-## Author: Julien Wintz
-## Copyright (C) 2008 - Julien Wintz, Inria.
-## Created: Sat Oct  3 18:22:21 2009 (+0200)
-## Version: $Id$
-## Last-Updated: Tue Oct  5 18:03:15 2010 (+0200)
-##           By: Julien Wintz
-##     Update #: 41
-######################################################################
-## 
-### Commentary: 
-## 
-######################################################################
-## 
-### Change log:
-## 
-######################################################################
-
 project(medPacs)
 
 ## #################################################################
@@ -72,10 +53,10 @@ set(${PROJECT_NAME}_SOURCES
 ## Build rules
 ## #################################################################
 
-if(NOT MSVC)
-add_definitions(-Wno-write-strings)
-add_definitions(-Wformat=0)
-endif(NOT MSVC)
+if (NOT MSVC)
+    add_definitions(-Wno-write-strings)
+    add_definitions(-Wformat=0)
+endif()
 
 add_definitions(-DQT_SHARED)
 add_definitions(${QT_DEFINITIONS})
@@ -83,26 +64,24 @@ add_definitions(-DQT_NO_DEBUG)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
-    "medPch.h" "../medPch/medPch.cpp" 
-    ${${PROJECT_NAME}_SOURCES}
-    ${${PROJECT_NAME}_SOURCES_MOC}
-    ${${PROJECT_NAME}_SOURCES_WRAP})
-endif(MEDINRIA_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA_USE_PRECOMPILED_HEADERS)
+    add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
+        "medPch.h" "../medPch/medPch.cpp" 
+        ${${PROJECT_NAME}_SOURCES}
+        ${${PROJECT_NAME}_SOURCES_MOC}
+        ${${PROJECT_NAME}_SOURCES_WRAP})
+endif()
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_SOURCES_PCH}
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES_WRAP})
+    ${${PROJECT_NAME}_SOURCES}
+    ${${PROJECT_NAME}_SOURCES_PCH}
+    ${${PROJECT_NAME}_SOURCES_MOC}
+    ${${PROJECT_NAME}_SOURCES_WRAP})
 
-target_link_libraries(${PROJECT_NAME} 
-  ${QT_LIBRARIES}
-  dtkCore
-  medCore)
+target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES} dtkCore medCore)
 
 # Include header files for Visual Studio.
+
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
@@ -110,8 +89,10 @@ SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 ## Installation
 ## #################################################################
 
-install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
+install(FILES ${${PROJECT_NAME}_DEVEL_HEADERS_MOC} ${${PROJECT_NAME}_DEVEL_HEADERS}
+        DESTINATION include/medInria/${PROJECT_NAME}
+        COMPONENT headers)
+
 install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
+        DESTINATION ${INSTALL_LIB_DIR}
+        COMPONENT libraries)
