@@ -88,6 +88,7 @@ public:
      medMessageProgress(const QString& text, QWidget *parent = 0);
     ~medMessageProgress();
     void associateTimer();
+    void paintEvent ( QPaintEvent * event );
 
 protected:
     QProgressBar *progress;
