@@ -476,7 +476,7 @@ void medThumbnailContainer::setAllowDeleting(bool isDeletingAllowed)
 
 QList<medDataIndex> medThumbnailContainer::getContainedIndexes()
 {
-    QList<medDataIndex> getContainedIndexes = *(new QList<medDataIndex>());
+    QList<medDataIndex> getContainedIndexes;
     foreach(medDatabasePreviewItem* item, d->containedItems)
     {
         getContainedIndexes << item->dataIndex();

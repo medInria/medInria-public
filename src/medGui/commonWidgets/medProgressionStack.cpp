@@ -211,8 +211,8 @@ void medProgressionStack::addJobItem(medJobItem* job, QString label)
     connect(job, SIGNAL(success(QObject*)), this, SLOT(onSuccess(QObject*)), Qt::QueuedConnection);
     connect(job, SIGNAL(failure(QObject*)), this, SLOT(onFailure(QObject*)), Qt::QueuedConnection);
 
-    connect(job, SIGNAL(showError(QObject*, const QString&, unsigned int)),
-        medMessageController::instance(), SLOT(showError(QObject*, const QString&, unsigned int)), Qt::QueuedConnection);
+    connect(job, SIGNAL(showError(const QString&, unsigned int)),
+        medMessageController::instance(), SLOT(showError(const QString&, unsigned int)), Qt::QueuedConnection);
 
     connect(job, SIGNAL(cancelled(QObject*)), this,SLOT(onCancel(QObject*)), Qt::QueuedConnection);
     connect(this, SIGNAL(cancelRequest(QObject*)),job, SLOT(onCancel(QObject*)), Qt::QueuedConnection);

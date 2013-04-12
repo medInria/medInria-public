@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEPREVIEW_H
-#define MEDDATABASEPREVIEW_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -35,10 +34,10 @@ class MEDGUI_EXPORT medDatabasePreview : public QFrame
 
 public:
      medDatabasePreview(QWidget *parent = 0);
-    ~medDatabasePreview(void);
+    ~medDatabasePreview();
 
-    void init(void);
-    void reset(void);
+    void init();
+    void reset();
 
 signals:
     void seriesClicked(const medDataIndex& id);
@@ -49,13 +48,13 @@ public slots:
     void  onSeriesClicked(const medDataIndex& id);
 
 protected slots:
-    void onSlideUp(void);
-    void onSlideDw(void);
-    void onMoveRt(void);
-    void onMoveLt(void);
-    void onMoveUp(void);
-    void onMoveDw(void);
-    void onMoveBg(void);
+    void onSlideUp();
+    void onSlideDw();
+    void onMoveRt();
+    void onMoveLt();
+    void onMoveUp();
+    void onMoveDw();
+    void onMoveBg();
     void onHovered(medDatabasePreviewItem *item);
     
 protected:
@@ -65,4 +64,4 @@ private:
     medDatabasePreviewPrivate *d;
 };
 
-#endif // MEDDATABASEPREVIEW_H
+

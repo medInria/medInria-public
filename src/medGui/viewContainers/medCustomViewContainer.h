@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDVIEWCONTAINERCUSTOM_H
-#define MEDVIEWCONTAINERCUSTOM_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -40,7 +39,7 @@ public:
     };
 
     medCustomViewContainer(QWidget *parent = 0);
-    ~medCustomViewContainer(void);
+    ~medCustomViewContainer();
 
 
     void split(int rows, int cols);
@@ -48,8 +47,8 @@ public:
     void setPreset(int preset);
     void setView(dtkAbstractView *view);
 
-    dtkAbstractView *view (void) const;
-    QList<dtkAbstractView*> views (void) const;
+    dtkAbstractView *view() const;
+    QList<dtkAbstractView*> views() const;
 
     /**
      * @brief Is this a leaf container?
@@ -61,14 +60,14 @@ public:
      * @param void
      * @return bool
     */
-    virtual bool isLeaf(void) const;
+    virtual bool isLeaf() const;
 
     virtual QString identifier() {return "Custom";}
 
 public slots:
-    void onViewClosing  (void);
+    void onViewClosing();
     void onViewFullScreen (bool value);
-    void clear (void);
+    void clear();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -86,4 +85,4 @@ protected:
     medCustomViewContainerPrivate *d2;
 };
 
-#endif
+

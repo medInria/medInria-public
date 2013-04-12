@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medSegmentationSelectorToolBox_H
-#define medSegmentationSelectorToolBox_H
+#pragma once
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -42,7 +41,7 @@ public:
     struct MaskPixelValues { enum E { Unset = 0, Foreground = 1, Background = 2 };  };
 
      medSegmentationSelectorToolBox(medWorkspace * workspace, QWidget *parent = 0);
-    ~medSegmentationSelectorToolBox(void);
+    ~medSegmentationSelectorToolBox();
 
     //! Get/Set the currently running process.
     dtkAbstractProcess * process();
@@ -72,10 +71,10 @@ signals:
     void toolBoxChosen(const QByteArray & algName);
 
     //! Emitted when an error should be shown.
-    void showError (QObject*,const QString&,unsigned int timeout);
+    void showError (const QString&,unsigned int timeout);
 
     //! Emitted when info should be shown.
-    void showInfo(QObject*,const QString&,unsigned int timeout);
+    void showInfo(const QString&,unsigned int timeout);
 
 public slots:
     // Override base class
@@ -91,7 +90,7 @@ public slots:
     void onToolBoxChosen(const QByteArray & id);
 
     //! Reset selection
-    void clear(void);
+    void clear();
 
     //! Callbacks from running a process.
     void onSuccess(QObject * sender);
@@ -113,4 +112,4 @@ private:
     medSegmentationSelectorToolBoxPrivate *d;
 };
 
-#endif
+

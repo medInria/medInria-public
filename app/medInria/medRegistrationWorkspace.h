@@ -1,5 +1,4 @@
-#ifndef medRegistrationWorkspace_H
-#define medRegistrationWorkspace_H
+#pragma once
 
 
 #include <QtCore>
@@ -15,7 +14,7 @@ class medRegistrationWorkspace : public medWorkspace
 
 public:
      medRegistrationWorkspace(QWidget *parent = 0);
-    ~medRegistrationWorkspace(void);
+    ~medRegistrationWorkspace();
 
     virtual QString identifier()  const;
     virtual QString description() const;
@@ -29,4 +28,4 @@ private:
     medRegistrationWorkspacePrivate *d;
 };
 
-#endif // medRegistrationWorkspace_H
+

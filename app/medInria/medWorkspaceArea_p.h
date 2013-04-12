@@ -1,5 +1,4 @@
-#ifndef MEDWORKSPACEAREA_P_H
-#define MEDWORKSPACEAREA_P_H
+#pragma once
 
 #include <QtCore/QHash>
 #include <medDataIndex.h>
@@ -20,24 +19,15 @@ public:
 
     medToolBoxContainer *toolBoxContainer;
     QFrame *navigatorContainer;
-    QWidget *viewContainer;
-    
-    medPatientSelectorToolBox *patientToolBox;
-    
+    QWidget *viewContainer;  
+    medPatientSelectorToolBox *patientToolBox;   
     medDatabaseNavigator *navigator;
-
     QPointer<medClutEditor>  transFun;
-
-    QStackedWidget *stack;
-    
-    //QGridLayout *layout;
+    QStackedWidget *stack; 
     QSplitter * splitter;
     QGridLayout *navigatorContainerLayout;
-
     QMutex mutex;
-  
     QHash<QString,medWorkspace*> workspaces;
-
     QPropertyAnimation *navigatorAnimation;
 
     void restoreSplitterSize(Qt::Orientation orientation);
@@ -51,4 +41,4 @@ public:
     medWorkspace::LayoutType currentLayout;
 };
 
-#endif
+

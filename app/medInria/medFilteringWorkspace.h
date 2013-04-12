@@ -4,8 +4,7 @@
  *
  */
 
-#ifndef medFilteringWorkspace_H
-#define medFilteringWorkspace_H
+#pragma once
 
 #include <QtCore>
 #include <medWorkspace.h>
@@ -61,7 +60,7 @@ public slots:
     /**
      * @brief adds metadata to the output and emits a signal outputDataChanged(dtkAbstractData *)
      */
-    void onProcessSuccess ( void );
+    void onProcessSuccess();
 
     /**
      * @brief Imports output data in non persistent database
@@ -81,4 +80,4 @@ private:
     medFilteringWorkspacePrivate *d;
 };
 
-#endif
+

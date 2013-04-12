@@ -1,5 +1,4 @@
-#ifndef MEDWORKSPACEAREA_H
-#define MEDWORKSPACEAREA_H
+#pragma once
 
 #include <QtGui>
 
@@ -35,7 +34,7 @@ public:
      *
      * @param void
     */
-    ~medWorkspaceArea(void);
+    ~medWorkspaceArea();
 
     /**
      * @brief Called whenever the viewer area is switched to. Add viewer area
@@ -54,6 +53,8 @@ public:
      * @param status
     */
     void setdw(QStatusBar *status);
+    
+    QPixmap grabScreenshot();
 
 public slots:
     /**
@@ -119,7 +120,8 @@ public slots:
      * Removes the view from the medViewManager
      * @param void
     */
-    void onViewClosed(void);
+    void onViewClosed();
+    void onViewClosed(dtkAbstractView *);
 
     /**
      * @brief  Updates the medToolBoxes when a layer (data) has been removed from a view.
@@ -190,7 +192,7 @@ public slots:
     */
     void switchToLayout (medWorkspace::LayoutType layout);
 
-//    void onFileOpened(const medDataIndex &index);
+
     void onFileOpenedInTab(const medDataIndex &index);
 
 protected slots:
@@ -214,7 +216,7 @@ protected:
      * @param void
      * @return medViewContainer *
     */
-    medViewContainer      *currentRootContainer(void);
+    medViewContainer      *currentRootContainer();
 
     /**
      * @brief Returns the currently focused child container.
@@ -226,7 +228,7 @@ protected:
      * @param void
      * @return medViewContainer *
     */
-    medViewContainer      *currentContainerFocused(void);
+    medViewContainer      *currentContainerFocused();
 
 protected slots:
     /**
@@ -259,4 +261,4 @@ private:
     medWorkspaceAreaPrivate *d;
 };
 
-#endif // MEDWORKSPACEAREA_H
+

@@ -41,14 +41,14 @@ medDatabaseReader::medDatabaseReader ( const medDataIndex& index ) : QObject(), 
     d->index = index;
 }
 
-medDatabaseReader::~medDatabaseReader ( void )
+medDatabaseReader::~medDatabaseReader()
 {
     delete d;
 
     d = NULL;
 }
 
-dtkSmartPointer<dtkAbstractData> medDatabaseReader::run ( void )
+dtkSmartPointer<dtkAbstractData> medDatabaseReader::run()
 {
     QVariant patientDbId = d->index.patientId();
     QVariant   studyDbId = d->index.studyId();

@@ -1,5 +1,4 @@
-#ifndef MEDTEST_H
-#define MEDTEST_H
+#pragma once
 
 #include "medTestExport.h"
 
@@ -21,12 +20,12 @@ namespace medTest
      * in MEDINRIA_PLUGINS_PATH. Test will fail is environment
      * variable is not defined or empty.
      */
-    MEDTEST_EXPORT void initializePlugins(void);
+    MEDTEST_EXPORT void initializePlugins();
 
     /**
      * Clean-up medPluginManager.
      */
-    MEDTEST_EXPORT void uninitializePlugins(void);
+    MEDTEST_EXPORT void uninitializePlugins();
 
     /**
      * Initialize Qt resource system with resource file defined
@@ -43,4 +42,4 @@ namespace medTest
 
 } // end of namespace
 
-#endif
+

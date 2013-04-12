@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDABSTRACTVIEW_H
-#define MEDABSTRACTVIEW_H
+#pragma once
 
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -58,7 +57,7 @@ class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
 public:
     medAbstractView(medAbstractView * parent = 0);
     medAbstractView(const medAbstractView& view);
-    virtual ~medAbstractView(void);
+    virtual ~medAbstractView();
 
     virtual void setColorLookupTable(int min_range,
                                      int max_range,
@@ -72,7 +71,7 @@ public:
     virtual void getTransferFunctions( QList<double> & scalars,
                        QList<QColor> & colors );
 
-    virtual QWidget *receiverWidget(void);
+    virtual QWidget *receiverWidget();
 
     /**
        Set the view slice.
@@ -84,19 +83,19 @@ public:
        @position is expressed in real world coordinates.
      **/
     void setPosition    (const QVector3D &position);
-    QVector3D position(void) const;
+    QVector3D position() const;
 
     /**
        Set the view zoom factor.
     **/
     void setZoom        (double zoom);
-    double zoom(void) const;
+    double zoom() const;
 
     /**
        Set the view pan.
     **/
     void setPan         (const QVector2D &pan);
-    QVector2D pan(void) const;
+    QVector2D pan() const;
 
     /**
        Set the window/level of the view.
@@ -136,17 +135,17 @@ public:
      * Get the current layer. The current layer is used to determine which layer will receive
      * property changed.
      */
-    virtual int currentLayer(void) const;
+    virtual int currentLayer() const;
 
     /**
      * Get the flag that indicates if the view has an image loaded
      */
-    virtual bool hasImage(void) const;
+    virtual bool hasImage() const;
 
     /**
      * Get the number of layers of the view.
      */
-    virtual int layerCount(void) const;
+    virtual int layerCount() const;
 
     /**
      * Remove an overlay.
@@ -161,9 +160,9 @@ public:
                                                 int layer);
 
     void setCurrentMeshLayer(int meshLayer);
-    virtual int currentMeshLayer(void) const;
+    virtual int currentMeshLayer() const;
     void setMeshLayerCount(int meshLayerCount);
-    virtual int meshLayerCount(void) const;
+    virtual int meshLayerCount() const;
 
     bool isInList(dtkAbstractData * data, int layer);
 
@@ -194,7 +193,7 @@ signals:
     /**
        This signal is emitted when a view is about to close.
      **/
-    void closing       (void);
+    void closing();
 
     /**
        In medInria, the daddy is the reference view (contoured in red). Only one
@@ -220,7 +219,7 @@ signals:
     /**
        This signal is emitted when the color lookup table has changed.
      **/
-    void lutChanged    (void);
+    void lutChanged();
 
     /**
        This signal is emitted when the view wants to be displayed in full screen.
@@ -308,19 +307,19 @@ public slots:
        Tells the view (not to) synchronize its position with other views.
      **/
     virtual void setLinkPosition (bool value);
-    bool positionLinked (void) const;
+    bool positionLinked() const;
 
     /**
        Tells the view (not to) synchronize its window/level with other views.
      **/
     virtual void setLinkWindowing (bool value);
-    bool windowingLinked (void) const;
+    bool windowingLinked() const;
 
     /**
        Tells the view (not to) synchronize its camera settings with other views.
     **/
     virtual void setLinkCamera (bool value);
-    bool cameraLinked (void) const;
+    bool cameraLinked() const;
 
     virtual void onSliceChanged     (int slice);
     virtual void onPositionChanged  (const QVector3D &position);
@@ -372,4 +371,4 @@ private:
     medAbstractViewPrivate *d;
 };
 
-#endif
+

@@ -20,11 +20,17 @@
 #include "medViewContainer.h"
 #include "medViewContainer_p.h"
 #include "medViewPool.h"
+#include <medDataManager.h>
+#include <medViewManager.h>
+#include <medAbstractView.h>
+#include <medDataIndex.h>
 
 #include <QtGui>
 
+#include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
-#include <medDataIndex.h>
+#include <dtkCore/dtkAbstractData.h>
+
 
 medViewContainer::medViewContainer ( QWidget *parent )
         : QFrame ( parent )
@@ -55,7 +61,7 @@ medViewContainer::medViewContainer ( QWidget *parent )
     this->setSizePolicy ( QSizePolicy::Expanding,QSizePolicy::Expanding );
 }
 
-medViewContainer::~medViewContainer ( void )
+medViewContainer::~medViewContainer()
 {
     if ( d->view )
     {
@@ -68,7 +74,7 @@ medViewContainer::~medViewContainer ( void )
 }
 
 
-const medViewContainer *medViewContainer::current ( void ) const
+const medViewContainer *medViewContainer::current() const
 {
     const medViewContainer * root = this->root();
     if ( root != this )
@@ -77,7 +83,7 @@ const medViewContainer *medViewContainer::current ( void ) const
     return d->current;
 }
 
-medViewContainer *medViewContainer::current ( void )
+medViewContainer *medViewContainer::current()
 {
     medViewContainer * root = this->root();
     if ( root != this )
@@ -86,33 +92,33 @@ medViewContainer *medViewContainer::current ( void )
     return d->current;
 }
 
-bool medViewContainer::isClicked ( void ) const
+bool medViewContainer::isClicked() const
 {
     return d->clicked;
 }
 
-bool medViewContainer::isCurrent ( void ) const
+bool medViewContainer::isCurrent() const
 {
     return const_cast< medViewContainer * > ( this )->current() == this;
 }
 
-bool medViewContainer::isRoot ( void ) const
+bool medViewContainer::isRoot() const
 {
     return this->parentContainer() == NULL;
 }
 
-bool medViewContainer::isLeaf ( void ) const
+bool medViewContainer::isLeaf() const
 {
     return false;
 }
 
-bool medViewContainer::isEmpty ( void ) const
+bool medViewContainer::isEmpty() const
 {
     return ( this->view() == NULL &&
              this->childContainers().isEmpty());
 }
 
-bool medViewContainer::isDaddy ( void ) const
+bool medViewContainer::isDaddy() const
 {
     return ( this->view() != NULL &&
              this->view()->property ( "Daddy" ) == "true" );
@@ -170,12 +176,12 @@ void medViewContainer::split ( int rows, int cols )
     Q_UNUSED ( cols );
 }
 
-dtkAbstractView *medViewContainer::view ( void ) const
+dtkAbstractView *medViewContainer::view() const
 {
     return d->view;
 }
 
-QList<dtkAbstractView *> medViewContainer::views ( void ) const
+QList<dtkAbstractView *> medViewContainer::views() const
 {
     QList<dtkAbstractView *> views;
     if ( d->view )
@@ -184,7 +190,7 @@ QList<dtkAbstractView *> medViewContainer::views ( void ) const
     return views;
 }
 
-medViewPool *medViewContainer::pool ( void )
+medViewPool *medViewContainer::pool()
 {
     return d->pool;
 }
@@ -249,7 +255,7 @@ void medViewContainer::onViewFocused ( bool value )
     this->update();
 }
 
-void medViewContainer::onContainerClicked ( void )
+void medViewContainer::onContainerClicked()
 {
     d->clicked = false;
     this->recomputeStyleSheet();
@@ -294,10 +300,13 @@ void medViewContainer::dropEvent ( QDropEvent *event )
     medDataIndex index = medDataIndex::readMimeData ( mimeData );
     if ( index.isValid() )
     {
+        open ( index );
+        
         emit dropped ( index );
     }
 
     event->acceptProposedAction();
+      
 }
 
 void medViewContainer::focusInEvent ( QFocusEvent *event )
@@ -403,7 +412,7 @@ void medViewContainer::onDaddyChanged ( bool state )
     this->recomputeStyleSheet();
 }
 
-// void medViewContainer::clear ( void )
+// void medViewContainer::clear()
 // {
 //     if ( d->view )
 //     {
@@ -446,3 +455,75 @@ bool medViewContainer::multiLayer( void )
 {
     return d->multiLayer;
 }
+
+bool medViewContainer::open(const medDataIndex& index)
+{
+    bool res = false;
+    
+    if(!index.isValid())
+        return false;
+        
+    if( index.isValidForSeries() )
+    {
+        dtkSmartPointer<dtkAbstractData> data;
+
+        data = medDataManager::instance()->data(index);
+        
+        res = open(data);   
+        
+        if(res)
+        {
+            // add the view to the viewManager
+            dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
+            medViewManager::instance()->insert(index, view);
+        }
+    }
+    
+    return res;
+}
+
+bool medViewContainer::open(dtkAbstractData * data)
+{
+    if ( data == NULL )
+        return false;
+
+
+    dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
+    bool newView = view.isNull();
+
+    if( newView)
+    {
+        //container empty, or multi with no extendable view
+        view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"));
+    }
+
+    if( view.isNull() ) {
+        qWarning() << "medViewContainer: Unable to create a v3dView";
+        return false;
+    }
+
+    // set the data to the view
+    if (!this->multiLayer())
+    {
+        view->removeOverlay(0);
+        view->setSharedDataPointer(data,0);
+        newView = true;
+    }
+    else
+    {
+        view->setSharedDataPointer(data);
+    }
+
+    //set the view to the current container
+    this->setView(view);
+    //only call reset if the view is a new one or with only one layer.
+    if (newView)
+    {
+        qDebug() << "medViewContainer: Reset view";
+        view->reset();
+    }
+    view->update();
+
+    return true;
+}
+

@@ -1,5 +1,4 @@
-#ifndef medDatabaseSearchPanel_h__
-#define medDatabaseSearchPanel_h__
+#pragma once
 
 #include <medToolBox.h>
 #include "medGuiExport.h"
@@ -48,4 +47,4 @@ private:
     medDatabaseSearchPanelPrivate* d;
 };
 
-#endif // medDatabaseSearchPanel_h__
+

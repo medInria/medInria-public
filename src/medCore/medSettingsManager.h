@@ -1,6 +1,5 @@
 
-#ifndef medSettingsManager_h__
-#define medSettingsManager_h__
+#pragma once
 
 #include <QtCore>
 
@@ -19,12 +18,12 @@ public:
     * instance - singleton access method, returns a singleViewContainer static instance of the manager
     * @return   medSettingsManager * - the manager
     */
-    static medSettingsManager *instance(void);
+    static medSettingsManager *instance();
 
     /**
     * destroy - should be called on closing the application, to destroy the singleton
     */
-    static void destroy(void);
+    static void destroy();
 
     /**
     * setValue
@@ -47,8 +46,8 @@ signals:
     void settingsChanged( const QString & );
 
 protected:
-    medSettingsManager(void);
-    ~medSettingsManager(void);
+    medSettingsManager();
+    ~medSettingsManager();
 
 private:
 
@@ -56,4 +55,4 @@ private:
 
     medSettingsManagerPrivate *d;
 };
-#endif // medSettingsManager_h__
+

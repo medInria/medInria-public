@@ -1,5 +1,4 @@
-#ifndef MEDVIEWCONTAINERCOMPARE_H
-#define MEDVIEWCONTAINERCOMPARE_H
+#pragma once
 
 
 #include <medCustomViewContainer.h>
@@ -26,4 +25,4 @@ private:
     medCompareViewContainerPrivate *d3;
 };
 
-#endif // MEDVIEWCONTAINERCOMPARE_H
+

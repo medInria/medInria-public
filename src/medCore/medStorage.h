@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDSTORAGE_H
-#define MEDSTORAGE_H
+#pragma once
 
 #include <QtCore>
 #include <QString>
@@ -42,14 +41,14 @@ signals:
 class MEDCORE_EXPORT medStorage
 {
 public:
-     medStorage(void);
-    ~medStorage(void);
+     medStorage();
+    ~medStorage();
 
     static bool mkpath(const QString& dirPath);
     static bool rmpath(const QString& dirPath);
 
-    static QString   dataLocation(void);
-    static QString configLocation(void);
+    static QString   dataLocation();
+    static QString configLocation();
 
     static void setDataLocation(QString);
 
@@ -63,4 +62,4 @@ private:
 
 };
 
-#endif // MEDSTORAGE_H
+

@@ -12,8 +12,7 @@
  */
 
 
-#ifndef medCompositeDataSetImporterAbstractToolBox_H
-#define medCompositeDataSetImporterAbstractToolBox_H
+#pragma once
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -28,12 +27,12 @@ class MEDGUI_EXPORT medCompositeDataSetImporterAbstractToolBox : public medToolB
     Q_OBJECT
 public:
              medCompositeDataSetImporterAbstractToolBox(QWidget *parent = 0);
-    virtual ~medCompositeDataSetImporterAbstractToolBox(void);
+    virtual ~medCompositeDataSetImporterAbstractToolBox();
     virtual void setCompositeDataSetImporterToolBox(medCompositeDataSetImporterSelectorToolBox *toolbox);
 
-    virtual QString description (void) const = 0;
+    virtual QString description() const = 0;
 
-    virtual dtkAbstractData *output (void) const;
+    virtual dtkAbstractData *output() const;
 
 public slots:
     virtual bool import() = 0;
@@ -41,10 +40,10 @@ public slots:
     virtual void load() {};
 
 protected:
-    medCompositeDataSetImporterSelectorToolBox *parent(void);
+    medCompositeDataSetImporterSelectorToolBox *parent();
 
 protected:
     medCompositeDataSetImporterAbstractToolBoxPrivate *d;
 };
 
-#endif // medCompositeDataSetImporterAbstractToolBox_H
+

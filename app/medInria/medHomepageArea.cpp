@@ -40,7 +40,6 @@
 class medHomepageAreaPrivate
 {
 public:
-    QCheckBox * showOnStartupCheckBox;
     QStackedWidget* stackedWidget;
     QWidget * navigationWidget;
     QPropertyAnimation * navigationAnimation;
@@ -316,15 +315,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     d->animation->addAnimation ( d->userAnimation );
     d->animation->addAnimation ( d->infoAnimation );
 
-    //Setup the startup checkbox
-    d->showOnStartupCheckBox = new QCheckBox ( this );
-    d->showOnStartupCheckBox->setCheckState(Qt::Checked);
-    d->showOnStartupCheckBox->setText ( "Start medInria on the homepage?" );
-    d->showOnStartupCheckBox->setFocusPolicy ( Qt::NoFocus );
-    d->showOnStartupCheckBox->setProperty ( "pos", QPoint ( this->width() - 200 ,  this->height() - 30 ) );
-    if ( medSettingsManager::instance()->value ( "startup","default_starting_area" ).toInt() )
-        d->showOnStartupCheckBox->setCheckState ( Qt::Unchecked );
-    QObject::connect ( d->showOnStartupCheckBox, SIGNAL ( stateChanged ( int ) ), this, SLOT ( onStartWithHomepage ( int ) ) );
 }
 
 medHomepageArea::~medHomepageArea()
@@ -340,7 +330,6 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
     d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
     d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
-    d->showOnStartupCheckBox->setProperty ( "pos", QPoint ( this->width() - 200 ,  this->height() - 30 ) );
 
     int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
     if (d->stackedWidget->minimumHeight() > stackedWidgetHeight)
@@ -365,7 +354,7 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
     d->infoAnimation->setEndValue ( QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 }
 
-void medHomepageArea::initPage ( void )
+void medHomepageArea::initPage()
 {
     //Initialization of the navigation widget with available workspaces
     QHash<QString,medWorkspaceDetails*> workspaceDetails =
@@ -414,12 +403,12 @@ void medHomepageArea::initPage ( void )
     d->navigationWidget->setMinimumHeight ( 55 * ( 1 + workspaceDetails.size() ) );
 }
 
-QParallelAnimationGroup* medHomepageArea::getAnimation ( void )
+QParallelAnimationGroup* medHomepageArea::getAnimation()
 {
     return d->animation;
 }
 
-void medHomepageArea::onShowBrowser ( void )
+void medHomepageArea::onShowBrowser()
 {
     emit showBrowser();
 }
@@ -429,13 +418,13 @@ void medHomepageArea::onShowWorkspace ( QString workspace )
     emit showWorkspace ( workspace );
 }
 
-void medHomepageArea::onShowAbout ( void )
+void medHomepageArea::onShowAbout()
 {
     d->stackedWidget->setCurrentWidget(d->aboutWidget);
     d->aboutWidget->setFocus();
 }
 
-void medHomepageArea::onShowPlugin ( void )
+void medHomepageArea::onShowPlugin()
 {
     d->stackedWidget->setCurrentWidget(d->pluginWidget);
 
@@ -450,7 +439,7 @@ void medHomepageArea::onShowInfo()
     d->infoWidget->setFocus();
 }
 
-void medHomepageArea::onShowHelp ( void )
+void medHomepageArea::onShowHelp()
 {
     QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
 //     QMessageBox * msgBox = new QMessageBox ( QApplication::activeWindow() );
@@ -460,7 +449,7 @@ void medHomepageArea::onShowHelp ( void )
 //     delete msgBox;
 }
 
-void medHomepageArea::onShowSettings ( void )
+void medHomepageArea::onShowSettings()
 {
     // emit showSettings is not deprecated here
 //    emit showSettings();
@@ -470,18 +459,6 @@ void medHomepageArea::onShowSettings ( void )
     d->stackedWidget->setCurrentWidget(d->settingsWidget);
 
     d->settingsWidget->setFocus();
-}
-
-void medHomepageArea::onStartWithHomepage ( int state )
-{
-    if ( state == Qt::Checked )
-    {
-        medSettingsManager::instance()->setValue ( "startup","default_starting_area", 0 );
-    }
-    else
-    {
-        medSettingsManager::instance()->setValue ( "startup","default_starting_area", 1 );
-    }
 }
 
 

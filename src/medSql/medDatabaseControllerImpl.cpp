@@ -402,21 +402,20 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
 void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUuid)
 {
     medDatabaseWriter *writer = new medDatabaseWriter(data, importUuid);
+    medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
     //if we want to add importUuid support to permanent db,
     //we need to change the importer and its addedIndex signal to suppot importUuid
     //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
 
-    connect(writer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(writer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
 
     if (importUuid == "")
         connect(writer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
     else
         connect(writer, SIGNAL(addedIndex(const medDataIndex &, const QString &)), this, SIGNAL(updated(const medDataIndex &, const QString &)));
 
-    connect(writer, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(writer, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-
-    medMessageController::instance()->showProgress(writer, "Saving database item");
+    connect(writer, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(writer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
 
     medJobManager::instance()->registerJobItem(writer);
     QThreadPool::globalInstance()->start(writer);
@@ -428,7 +427,7 @@ void medDatabaseControllerImpl::exportDataToFile(dtkAbstractData *data, const QS
     medDatabaseExporter *exporter = new medDatabaseExporter (data, filename);
 
     connect(exporter, SIGNAL(progress(QObject*,int)), medDataManager::instance(), SIGNAL(progressed(QObject*,int)));
-    connect(exporter, SIGNAL(showError(QObject*, const QString&, unsigned int)), medMessageController::instance(), SLOT(showError(QObject*, const QString&, unsigned int)));
+    connect(exporter, SIGNAL(showError(const QString&, unsigned int)), medMessageController::instance(), SLOT(showError(const QString&, unsigned int)));
 
     //medMessageController::instance()->showProgress(exporter, "Saving database item");
 
@@ -438,16 +437,15 @@ void medDatabaseControllerImpl::exportDataToFile(dtkAbstractData *data, const QS
 dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIndex& index) const
 {
     QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
+    medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
 
-    connect(reader.data(), SIGNAL(progressed(int)), medMessageController::instance(), SLOT(setProgress(int)));
-    connect(reader.data(), SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(reader.data(), SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(reader.data(), SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
+    connect(reader.data(), SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(reader.data(), SIGNAL(failure(QObject *)), message, SLOT(failure()));
     //connect(reader.data(), SIGNAL(success(QObject *)), reader.data(), SLOT(deleteLater()));
     //connect(reader.data(), SIGNAL(failure(QObject *)), reader.data(), SLOT(deleteLater()));
 
     connect(reader.data(), SIGNAL(failure(QObject *)), this, SLOT(showOpeningError(QObject *)));
-
-    medMessageController::instance()->showProgress(reader.data(), "Opening database item");
 
     dtkSmartPointer<dtkAbstractData> data;
     data = reader->run();
@@ -456,7 +454,7 @@ dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIn
 
 void medDatabaseControllerImpl::showOpeningError(QObject *sender)
 {
-    medMessageController::instance()->showError(sender, "Opening item failed.", 3000);
+    medMessageController::instance()->showError("Opening item failed.", 3000);
 }
 
 void medDatabaseControllerImpl::createPatientTable(void)
@@ -645,13 +643,12 @@ qint64 medDatabaseControllerImpl::getEstimatedSize( const medDataIndex& index ) 
 void medDatabaseControllerImpl::remove( const medDataIndex& index )
 {
     medDatabaseRemover *remover = new medDatabaseRemover(index);
+    medMessageProgress *message = medMessageController::instance()->showProgress("Removing item");
 
-    connect(remover, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
-    connect(remover, SIGNAL(success(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
-    connect(remover, SIGNAL(failure(QObject *)), medMessageController::instance(), SLOT(remove(QObject *)));
+    connect(remover, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
+    connect(remover, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(remover, SIGNAL(failure(QObject *)), message, SLOT(failure()));
     connect(remover, SIGNAL(removed(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
-
-    medMessageController::instance()->showProgress(remover, "Removing item");
 
     medJobManager::instance()->registerJobItem(remover);
     QThreadPool::globalInstance()->start(remover);

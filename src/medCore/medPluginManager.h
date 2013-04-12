@@ -16,8 +16,7 @@
  *
  */
 
-#ifndef MEDPLUGINMANAGER_H
-#define MEDPLUGINMANAGER_H
+#pragma once
 
 #include <QtCore>
 
@@ -43,7 +42,7 @@ public:
      * @param void
      * @return medPluginManager * a pointer to an instance of the singleton.
     */
-    static medPluginManager *instance(void);
+    static medPluginManager *instance();
 
     /**
      * @brief Gets the path to the plugins, from the settings.
@@ -53,7 +52,7 @@ public:
      *
      * @param void
     */
-    void  readSettings(void);
+    void  readSettings();
 
     /**
      * @brief Uninitialize the manager.
@@ -70,7 +69,7 @@ public:
      *
      * @param void
     */
-    void writeSettings(void);
+    void writeSettings();
 
     /**
      * @brief Gets a list of plugins belonging to 'category'
@@ -98,7 +97,7 @@ protected:
       * Use instance() instead.
       * @param void
      */
-     medPluginManager(void);
+     medPluginManager();
 
 
     /**
@@ -106,7 +105,7 @@ protected:
      *
      * @param void
     */
-    ~medPluginManager(void);
+    ~medPluginManager();
 
 protected slots:
      void onLoadError(const QString& errorMessage);
@@ -118,4 +117,4 @@ private:
     medPluginManagerPrivate *d; /**< TODO */
 };
 
-#endif // MEDPLUGINMANAGER_H
+

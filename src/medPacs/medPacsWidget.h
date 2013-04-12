@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDPACSWIDGET_H
-#define MEDPACSWIDGET_H
+#pragma once
 
 #include <QtGui/QTreeWidget>
 
@@ -33,7 +32,7 @@ class MEDPACS_EXPORT medPacsWidget : public QTreeWidget
 
 public:
      medPacsWidget(QWidget* parent = NULL);
-    ~medPacsWidget(void);
+    ~medPacsWidget();
     
     /*
      * Check if the server was correctly instantiated at construction. If not, this means that the pacs plugin doesn't exist or had problems being loaded
@@ -54,12 +53,12 @@ public slots:
 
 protected slots:
     void onItemExpanded(QTreeWidgetItem *);
-    void onItemImported(void);
+    void onItemImported();
     void updateContextMenu(const QPoint&);
 
 protected:
 
-  void readSettings(void);
+  void readSettings();
   void findSeriesLevel(QTreeWidgetItem* item);
   void findImageLevel(QTreeWidgetItem* item);
 
@@ -70,4 +69,4 @@ private:
 int  tryToInt(QString value);
 
 
-#endif
+

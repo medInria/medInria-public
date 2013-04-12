@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEPREVIEWCONTROLLER_H
-#define MEDDATABASEPREVIEWCONTROLLER_H
+#pragma once
 
 #include <Qt>
 #include <QtCore>
@@ -28,23 +27,23 @@
 class MEDGUI_EXPORT medDatabasePreviewController : public QObject
 {
 public:
-    static medDatabasePreviewController *instance(void);
+    static medDatabasePreviewController *instance();
 
-    Qt::Orientation orientation(void);
+    Qt::Orientation orientation();
 
-    qreal itemWidth(void) const;
-    qreal itemHeight(void) const;
-    qreal itemSpacing(void) const;
+    qreal itemWidth() const;
+    qreal itemHeight() const;
+    qreal itemSpacing() const;
 
-    qreal groupWidth(void) const;
-    qreal groupHeight(void) const;
-    qreal groupSpacing(void) const;
+    qreal groupWidth() const;
+    qreal groupHeight() const;
+    qreal groupSpacing() const;
 
-    qreal selectorWidth(void) const;
-    qreal selectorHeight(void) const;
-    qreal selectorSpacing(void) const;
+    qreal selectorWidth() const;
+    qreal selectorHeight() const;
+    qreal selectorSpacing() const;
 
-    qreal queryOffset(void) const;
+    qreal queryOffset() const;
 
     void setItemSize(qreal width, qreal height);
 
@@ -54,8 +53,8 @@ protected:
     static medDatabasePreviewController *s_instance;
 
 private:
-     medDatabasePreviewController(void);
-    ~medDatabasePreviewController(void);
+     medDatabasePreviewController();
+    ~medDatabasePreviewController();
 
 private:
     qreal m_width;
@@ -64,4 +63,4 @@ private:
     Qt::Orientation m_orientation;
 };
 
-#endif // MEDDATABASEPREVIEWCONTROLLER_H
+

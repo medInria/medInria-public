@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTPACSNODE_H
-#define MEDABSTRACTPACSNODE_H
+#pragma once
 
 #include <QtCore/QObject>
 #include <QVector>
@@ -12,8 +11,8 @@ class MEDPACS_EXPORT medAbstractPacsNode : public QObject
     Q_OBJECT
     
 public:
-             medAbstractPacsNode(void);
-    virtual ~medAbstractPacsNode(void);
+             medAbstractPacsNode();
+    virtual ~medAbstractPacsNode();
 
     virtual void setTitle(QString title);
     
@@ -21,19 +20,19 @@ public:
 
     virtual void setPort(unsigned int port);
 
-    virtual QString title(void) {
+    virtual QString title() {
         return "default title";
     }
 
-    virtual QString ip(void) {
+    virtual QString ip() {
          return "default ip";
     }
     
-    virtual unsigned int port(void) {
+    virtual unsigned int port() {
         return 22;
     }
 
     virtual QVector<medAbstractPacsResultDataset*> getResultDatasetContainer();
 };
 
-#endif
+

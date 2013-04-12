@@ -1,5 +1,4 @@
-#ifndef MEDPACSMOVER_H
-#define MEDPACSMOVER_H
+#pragma once
 
 
 #include <medJobItem.h>
@@ -15,9 +14,9 @@ class MEDPACS_EXPORT medPacsMover : public medJobItem
 
 public:
      medPacsMover(const QVector<medMoveCommandItem>& cmdList);
-    ~medPacsMover(void);
+    ~medPacsMover();
 
-    void run(void);
+    void run();
 
     void doQueuedMove();
 
@@ -34,4 +33,4 @@ private:
     medPacsMoverPrivate *d;
 };
 
-#endif 
+

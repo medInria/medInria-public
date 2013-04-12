@@ -1,6 +1,5 @@
 
-#ifndef medJobItem_h__
-#define medJobItem_h__
+#pragma once
 
 #include <QtCore>
 
@@ -52,7 +51,7 @@ signals:
     void success   (QObject* sender);
     void failure   (QObject* sender);
     void cancelled (QObject* sender);
-    void showError (QObject* sender, const QString& message, unsigned int timeout);
+    void showError (const QString& message, unsigned int timeout);
     void activate(QObject* sender,bool active);
 
     /**
@@ -77,4 +76,4 @@ protected slots:
 
 };
 
-#endif // medJobItem_h__
+

@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTVIEWFIBERINTERACTOR_H
-#define MEDABSTRACTVIEWFIBERINTERACTOR_H
+#pragma once
 
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
@@ -175,10 +174,10 @@ protected:
     /**
       * Clear the statistics (removes pre-computed from the cache).
       */
-    void clearStatistics (void);
+    void clearStatistics();
 
 private:
     medAbstractViewFiberInteractorPrivate *d2;
 };
 
-#endif
+

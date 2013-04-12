@@ -1,5 +1,4 @@
-#ifndef medAbstractDatabaseItem_h__
-#define medAbstractDatabaseItem_h__
+#pragma once
 
 #include <QVariant>
 #include "medCoreExport.h"
@@ -13,14 +12,14 @@ public:
     virtual ~medAbstractDatabaseItem(){}//we need a virtual destructor here if we want the children to be deleted in the implementation of this class.
 
     virtual medAbstractDatabaseItem *child(int row) = 0;
-    virtual medAbstractDatabaseItem *parent(void) = 0;
+    virtual medAbstractDatabaseItem *parent() = 0;
 
     virtual void append(medAbstractDatabaseItem *child) = 0;
 
-    virtual int row(void) const = 0;
-    virtual int childCount(void) const = 0;
-    virtual int childNumber(void) const = 0;
-    virtual int columnCount(void) const = 0;
+    virtual int row() const = 0;
+    virtual int childCount() const = 0;
+    virtual int childNumber() const = 0;
+    virtual int columnCount() const = 0;
 
     virtual QVariant data(int column) const = 0;
 
@@ -38,4 +37,4 @@ public:
     virtual QVariant     value(int column) = 0;
 
 };
-#endif // medAbstractDatabaseItem_h__
+

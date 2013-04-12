@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATABASEREADER_H
-#define MEDDATABASEREADER_H
+#pragma once
 
 #include <QtCore/QObject>
 #include <dtkCore/dtkSmartPointer.h>
@@ -33,9 +32,9 @@ class medDatabaseReader : public QObject
 
 public:
     medDatabaseReader(const medDataIndex& index);
-    ~medDatabaseReader(void);
+    ~medDatabaseReader();
 
-    dtkSmartPointer<dtkAbstractData> run(void);
+    dtkSmartPointer<dtkAbstractData> run();
 
     QString getFilePath();
 
@@ -54,4 +53,4 @@ private:
     medDatabaseReaderPrivate *d;
 };
 
-#endif
+

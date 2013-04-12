@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medSegmentationAbstractToolBox_H
-#define medSegmentationAbstractToolBox_H
+#pragma once
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -34,14 +33,14 @@ class MEDGUI_EXPORT medSegmentationAbstractToolBox : public medToolBox
 public:
     //! Parent should be a medSegmentationSelectorToolBox
              medSegmentationAbstractToolBox(QWidget *parent = 0);
-    virtual ~medSegmentationAbstractToolBox(void);
+    virtual ~medSegmentationAbstractToolBox();
 
 protected:
     //! Get the segmentationToolbox (usually one instance)
-    medSegmentationSelectorToolBox *segmentationToolBox(void);
+    medSegmentationSelectorToolBox *segmentationToolBox();
 
 private:
     medSegmentationAbstractToolBoxPrivate *d;
 };
 
-#endif
+

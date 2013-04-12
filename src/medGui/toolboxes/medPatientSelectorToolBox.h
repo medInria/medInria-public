@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDVIEWERTOOLBOXPATIENT_H
-#define MEDVIEWERTOOLBOXPATIENT_H
+#pragma once
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
@@ -32,10 +31,10 @@ class MEDGUI_EXPORT medPatientSelectorToolBox : public medToolBox
 
 public:
      medPatientSelectorToolBox(QWidget *parent = 0);
-    ~medPatientSelectorToolBox(void);
+    ~medPatientSelectorToolBox();
 
 
-    QSet<medDataIndex> patientIndex(void) const;
+    QSet<medDataIndex> patientIndex() const;
     QSet<medDataIndex> patientIndex(QString patient) const;
     QSet<medDataIndex> patientIndex(int itemId) const;
 
@@ -46,7 +45,7 @@ signals:
 
 public slots:
     void setPatientIndex(const medDataIndex& index);
-    void setupDatabase(void);
+    void setupDatabase();
 
 protected slots:
     void onCurrentIndexChanged(int);
@@ -58,10 +57,10 @@ protected:
 
     int addItem(const QString& item, const medDataIndex& data);
 
-    void clear(void);
+    void clear();
 
 private:
     medPatientSelectorToolBoxPrivate *d;
 };
 
-#endif
+

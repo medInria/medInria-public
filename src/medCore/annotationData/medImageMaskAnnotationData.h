@@ -5,8 +5,7 @@
  *      Author: jstark
  */
 
-#ifndef MSEGSEEDPOINTANNOTATIONDATA_H_
-#define MSEGSEEDPOINTANNOTATIONDATA_H_
+#pragma once
 
 #include "medCoreExport.h"
 
@@ -31,11 +30,11 @@ public:
     virtual ~medImageMaskAnnotationData();
 
     //! Implement dtkAbstractObject
-    QString description(void) const;
-    QString identifier(void) const;
+    QString description() const;
+    QString identifier() const;
 
     // Implement dtkAbstractData
-    virtual void *data(void);
+    virtual void *data();
     virtual void setData(void* data);
 
     //! Set the color map to be used.
@@ -56,5 +55,5 @@ protected:
     dtkSmartPointer<medAbstractDataImage> m_maskData;
 };
 
-#endif /* MSEGSEEDPOINTANNOTATIONDATA_H_ */
+
 

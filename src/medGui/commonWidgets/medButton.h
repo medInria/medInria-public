@@ -1,5 +1,4 @@
-#ifndef medButton_h__
-#define medButton_h__
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -39,7 +38,7 @@ public:
      *
      * @param void
     */
-    ~medButton(void);
+    ~medButton();
 
     /**
      * @brief Returns the pixmap's size.
@@ -47,7 +46,7 @@ public:
      * @param void
      * @return QSize
     */
-    QSize sizeHint(void) const;
+    QSize sizeHint() const;
 
     /**
      * @brief Sets a new existing pixmap as an icon.
@@ -62,7 +61,7 @@ signals:
      *
      * @param void
     */
-    void triggered(void);
+    void triggered();
 
 protected:
     /**
@@ -75,4 +74,4 @@ protected:
 private:
     medButtonPrivate * d;
 };
-#endif // medButton_h__
+

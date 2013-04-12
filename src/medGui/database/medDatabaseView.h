@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATABASEVIEW_H
-#define MEDDATABASEVIEW_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -34,7 +33,7 @@ class MEDGUI_EXPORT medDatabaseView : public QTreeView
 
 public:
      medDatabaseView(QWidget *parent = 0);
-    ~medDatabaseView(void);
+    ~medDatabaseView();
 
     virtual int sizeHintForColumn(int column) const;
 
@@ -64,16 +63,16 @@ signals:
 public slots:
 
     /** Opens the currently selected item. */
-    virtual void onViewSelectedItemRequested(void);
+    virtual void onViewSelectedItemRequested();
 
     /** Exports the currently selected item. */
-    virtual void onExportSelectedItemRequested(void);
+    virtual void onExportSelectedItemRequested();
 
     /** Removes the currently selected item. */
-    virtual void onRemoveSelectedItemRequested(void);
+    virtual void onRemoveSelectedItemRequested();
 
     /** Saves the currently selected item. */
-    virtual void onSaveSelectedItemRequested(void);
+    virtual void onSaveSelectedItemRequested();
 
     /** Called after having failed to open a file. Will add a visual indicator of the failed file. */
     void onOpeningFailed(const medDataIndex& index);
@@ -87,4 +86,4 @@ private:
     medDatabaseViewPrivate *d;
 };
 
-#endif
+

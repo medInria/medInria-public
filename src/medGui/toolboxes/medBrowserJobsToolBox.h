@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medBrowserJobsToolBox_H
-#define medBrowserJobsToolBox_H
+#pragma once
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -32,12 +31,12 @@ class MEDGUI_EXPORT medBrowserJobsToolBox : public medToolBox
 
 public:
      medBrowserJobsToolBox(QWidget *parent = 0);
-    ~medBrowserJobsToolBox(void);
+    ~medBrowserJobsToolBox();
 
-    medProgressionStack *stack(void);
+    medProgressionStack *stack();
 
 private:
     medBrowserJobsToolBoxPrivate *d;
 };
 
-#endif
+

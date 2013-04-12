@@ -18,8 +18,7 @@
  * 
  */
 
-#ifndef MEDFLICKER_H
-#define MEDFLICKER_H
+#pragma once
 
 #include <QtCore>
 #include <QtGui>
@@ -32,7 +31,7 @@ class medFlicker: public QObject
 
 public:
      medFlicker(QObject *parent = 0);
-    ~medFlicker(void);
+    ~medFlicker();
 
     void activateOn(QWidget *widget);
     void deactivateFrom(QWidget *widget);
@@ -46,7 +45,7 @@ private:
     medFlickerPrivate *d;
 };
 
-#endif
+
 
 // /////////////////////////////////////////////////////////////////
 // Credits

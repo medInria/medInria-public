@@ -1,5 +1,4 @@
-#ifndef MEDSETTINGSWIDGET_H
-#define MEDSETTINGSWIDGET_H
+#pragma once
 
 #include "medGuiExport.h"
 #include <QWidget>
@@ -30,7 +29,7 @@ public:
     * Should be used as the section name (QSettings) when using the setttingsmanager
     * @return   QString
     */
-    virtual QString description( void ) const = 0;
+    virtual QString description() const = 0;
 
 
     /**
@@ -46,7 +45,7 @@ public:
      * @param void
      * @return bool true if saving worked, false otherwise.
     */
-    virtual bool write(void)=0;
+    virtual bool write()=0;
 
 public slots:
     /**
@@ -61,7 +60,7 @@ public slots:
      * @param void
      * @return bool true is succeeded, false otherwise.
     */
-    virtual bool validate(void);
+    virtual bool validate();
 
 protected:
 
@@ -77,4 +76,4 @@ private:
     medSettingsWidgetPrivate *d; /**< TODO */
 };
 
-#endif // MEDSETTINGSWIDGET_H
+

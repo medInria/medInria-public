@@ -19,7 +19,7 @@ void medAbstractDbController::exportDataToFile(dtkAbstractData *data, const QStr
     //qDebug() << "DEBUG : entering medAbstractDbController::exportDataToFile(dtkAbstractData *data, const QString &filename)";
 }
 
-void medAbstractDbController::clear (void)
+void medAbstractDbController::clear()
 {
 }
 

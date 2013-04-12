@@ -1,5 +1,4 @@
-#ifndef MEDTHUMBNAILCONTAINER_H
-#define MEDTHUMBNAILCONTAINER_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -121,4 +120,4 @@ private:
     medThumbnailContainerPrivate *d;
 };
 
-#endif // MEDTHUMBNAILCONTAINER_H
+

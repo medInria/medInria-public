@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASENONPERSISTENTITEM_H
-#define MEDDATABASENONPERSISTENTITEM_H
+#pragma once
 
 #include "medSqlExport.h"
 
@@ -36,24 +35,24 @@ class MEDSQL_EXPORT medDatabaseNonPersistentItem : public QObject
     Q_OBJECT
 
 public:
-     medDatabaseNonPersistentItem(void);
-    ~medDatabaseNonPersistentItem(void);
+     medDatabaseNonPersistentItem();
+    ~medDatabaseNonPersistentItem();
 
-    const QString& name(void) const;
-    const QString& birthdate(void) const;
-    const QString& patientId(void) const;
-    const QString& studyName(void) const;
-    const QString& seriesName(void) const;
-    const QString& file(void) const;
-    const QString& studyId(void) const;
-    const QString& studyUid(void) const;
-    const QString& seriesId(void) const;
-    const QString& seriesUid(void) const;
-    const QImage& thumb(void) const;
+    const QString& name() const;
+    const QString& birthdate() const;
+    const QString& patientId() const;
+    const QString& studyName() const;
+    const QString& seriesName() const;
+    const QString& file() const;
+    const QString& studyId() const;
+    const QString& studyUid() const;
+    const QString& seriesId() const;
+    const QString& seriesUid() const;
+    const QImage& thumb() const;
 
-    const medDataIndex& index(void) const;
+    const medDataIndex& index() const;
     
-    dtkAbstractData *data(void);
+    dtkAbstractData *data();
 
 private:
     friend class medDatabaseNonPersitentController;
@@ -64,4 +63,4 @@ private:
     medDatabaseNonPersistentItemPrivate *d;
 };
 
-#endif
+

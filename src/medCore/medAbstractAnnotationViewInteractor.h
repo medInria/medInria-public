@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTANNOTATIONREPRESENTATION_H
-#define MEDABSTRACTANNOTATIONREPRESENTATION_H
+#pragma once
 
 #include "medCoreExport.h"
 
@@ -32,8 +31,8 @@ public:
     virtual ~medAbstractAnnotationViewInteractor();
 
     //! Implement dtkAbstractObject
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
 
     //! Implement dtkAbstractViewInteractor
     virtual void setData(dtkAbstractData *data);
@@ -82,4 +81,4 @@ private:
     Impl * d;
 };
 
-#endif // MEDABSTRACTANNOTATIONREPRESENTATION_H
+

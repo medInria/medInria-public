@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDIMAGEFILELOADER_H
-#define MEDIMAGEFILELOADER_H
+#pragma once
 
 #include <QtCore>
 #include <QtGui>
@@ -32,10 +31,10 @@ class medImageFileLoader: public QObject, public QRunnable {
 public:
     //! Constructor : Supply the image path as \a path.
     medImageFileLoader(const QString& path);
-    ~medImageFileLoader(void);
+    ~medImageFileLoader();
 
     //! Implement QRunnable
-    void run(void);
+    void run();
 
     signals:
     /** Emitted when reading is successful.
@@ -47,4 +46,4 @@ private:
     medImageFileLoaderPrivate *d;
 };
 
-#endif // MEDIMAGEFILELOADER_H
+

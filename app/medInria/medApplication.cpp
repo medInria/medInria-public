@@ -61,21 +61,24 @@ public:
         }
         userPath += QLatin1Char('/');
 
-        QString oldUserPath= userPath + organization +
-                "/medinria.conf";//app.applicationName();
+        const QString& newUserPath = userPath+organization+"/medInria.conf";
 
-        if (QFile::exists(oldUserPath) )
+        if (!QFile::exists(newUserPath))
         {
-            qWarning() << "Updating old medinria.conf file";
-            QFile oldSettings (oldUserPath);
-            bool result = oldSettings.rename(userPath + organization +
-                                             QLatin1Char('/') +
-                               applicationName + ".conf" );
-            if (!result)
+            const QString& oldUserPath = userPath+organization+"/medinria.conf";
+
+            if (QFile::exists(oldUserPath) )
             {
-                qWarning() << "Could not rename medinria.conf\n"
-                           << "Either you don't have write access\n"
-                           << "or medInria.conf already exists.";
+                qWarning() << "Updating old medinria.conf file";
+                QFile oldSettings (oldUserPath);
+                const bool result = oldSettings.rename(userPath+organization+QLatin1Char('/')+
+                                    applicationName+".conf" );
+                if (!result)
+                {
+                    qWarning() << "Could not rename medinria.conf\n"
+                               << "Either you don't have write access\n"
+                               << "or medInria.conf already exists.";
+                }
             }
         }
     #endif //Q_OS_LINUX
@@ -88,7 +91,7 @@ public:
 // /////////////////////////////////////////////////////////////////
 
 medApplication::medApplication(int & argc, char**argv) :
-        QApplication(argc,argv),
+        QtSingleApplication(argc,argv),
         d(new medApplicationPrivate)
 {
     this->setApplicationName("medInria");
@@ -105,15 +108,20 @@ medApplication::medApplication(int & argc, char**argv) :
     this->setStyle( new QPlastiqueStyle() );
     this->setStyleSheet(dtkReadFile(":/medInria.qss"));
 
-    //Set some splash screen properties:
+    //  Set some splash screen properties:
+
     setMsgColor(Qt::black);
     setMsgAlignment(Qt::AlignLeft);
 
-    //redirect medPluginManager msgs to the logs
+    //  Redirect msgs to the logs
+
     QObject::connect(medPluginManager::instance(), SIGNAL(loadError(const QString &)),
                      this, SLOT(redirectErrorMessageToLog(const QString&)) );
     QObject::connect(medPluginManager::instance(), SIGNAL(loaded(QString)),
                      this, SLOT(redirectMessageToLog(QString)) );
+
+    QObject::connect(this,SIGNAL(messageReceived(const QString&)),
+                     this,SLOT(redirectMessageToLog(QString)));
 }
 
 medApplication::~medApplication(void)

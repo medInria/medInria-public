@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTPACSBASESCU_H
-#define MEDABSTRACTPACSBASESCU_H
+#pragma once
 
 #include <QtCore/QObject>
 #include <QVector>
@@ -12,8 +11,8 @@ class MEDPACS_EXPORT medAbstractPacsBaseScu : public QObject
     Q_OBJECT
     
 public:
-             medAbstractPacsBaseScu(void);
-    virtual ~medAbstractPacsBaseScu(void);
+             medAbstractPacsBaseScu();
+    virtual ~medAbstractPacsBaseScu();
 
    /**
     * Enum defining the query level (search hierarchy)
@@ -28,10 +27,10 @@ public:
 
     virtual bool addQueryAttribute(int group, int elem, const char* value);
 
-    virtual void clearAllQueryAttributes(void);
+    virtual void clearAllQueryAttributes();
 
-    virtual QVector<medAbstractPacsNode*> getNodeContainer(void);
+    virtual QVector<medAbstractPacsNode*> getNodeContainer();
 
 };
 
-#endif
+

@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATABASEWRITER_H
-#define MEDDATABASEWRITER_H
+#pragma once
 
 #include <QtCore/QObject>
 
@@ -45,9 +44,9 @@ class medDatabaseWriter : public medJobItem
 
 public:
      medDatabaseWriter(dtkAbstractData *data, const QString& callerUuid = QString());
-    ~medDatabaseWriter(void);
+    ~medDatabaseWriter();
 
-    void run ( void );
+    void run();
 
 public slots:
     void onCancel ( QObject* );
@@ -60,4 +59,4 @@ private:
     medDatabaseWriterPrivate *d;
 };
 
-#endif
+

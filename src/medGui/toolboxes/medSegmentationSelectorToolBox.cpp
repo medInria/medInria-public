@@ -120,10 +120,10 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medWorkspace * w
     addWidget(d->toolBoxes);
 
     //Connect Message Controller:
-    connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
-    connect(this,SIGNAL(showInfo(QObject*,const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showInfo(QObject*,const QString&,unsigned int)));
+    connect(this,SIGNAL(showError(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
+    connect(this,SIGNAL(showInfo(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showInfo(const QString&,unsigned int)));
 }
 
 medSegmentationSelectorToolBox::~medSegmentationSelectorToolBox(void)
@@ -231,16 +231,6 @@ void medSegmentationSelectorToolBox::onSuccess( QObject * sender )
     if (! d->runningProcesses.contains(sender) )
         return;
     dtkAbstractProcess * alg = d->runningProcesses.value( sender );
-
-#pragma message DTK_COMPILER_WARNING("JDS : Need to complete this")
-//#error
-    /*
-    Create a segmentation algorithm, pass it the data and
-        run it.
-        gather the output.
-        register the output in the non-persistent db
-        Add the output as a layer to the view
-    */
 
     dtkSmartPointer<dtkAbstractData> outputData = alg->output();
 

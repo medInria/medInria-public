@@ -62,7 +62,7 @@ medDatabaseImporter::medDatabaseImporter ( const QString& file, bool indexWithou
 
 //-----------------------------------------------------------------------------------------------------------
 
-medDatabaseImporter::~medDatabaseImporter ( void )
+medDatabaseImporter::~medDatabaseImporter()
 {
     delete d;
 
@@ -71,7 +71,7 @@ medDatabaseImporter::~medDatabaseImporter ( void )
 
 //-----------------------------------------------------------------------------------------------------------
 
-void medDatabaseImporter::run ( void )
+void medDatabaseImporter::run()
 {
     QMutexLocker locker ( &d->mutex );
 
@@ -201,7 +201,7 @@ void medDatabaseImporter::run ( void )
         #ifdef Q_OS_WIN32
 	        if ( (medStorage::dataLocation() + "/" + imageFileName).length() > 255 )
 	        {
-	            emit showError ( this, tr ( "Your database path is too long" ), 5000 );
+	            emit showError (tr ( "Your database path is too long" ), 5000 );
                 emit failure ( this );
                 return;
 	        }
@@ -212,7 +212,7 @@ void medDatabaseImporter::run ( void )
 
         // we care whether we can write the image or not if we are importing
         if (!d->indexWithoutImporting && futureExtension.isEmpty()) {
-            emit showError(this, tr("Could not save file due to unhandled data type: ") + dtkData->identifier(), 5000);
+            emit showError(tr("Could not save file due to unhandled data type: ") + dtkData->identifier(), 5000);
             continue;
         }
 
@@ -233,7 +233,7 @@ void medDatabaseImporter::run ( void )
     // some checks to see if the user cancelled or something failed
     if ( d->isCancelled )
     {
-        emit showError ( this, tr ( "User cancelled import process" ), 5000 );
+        emit showError ( tr ( "User cancelled import process" ), 5000 );
         emit cancelled ( this );
         return;
     }
@@ -253,7 +253,7 @@ void medDatabaseImporter::run ( void )
     if ( it == imagesGroupedByVolume.end() )
     {
         // TODO we know if it's either one or the other error, we can make this error better...
-        emit showError ( this, tr ( "No compatible image found or all of them had been already imported." ), 5000 );
+        emit showError ( tr ( "No compatible image found or all of them had been already imported." ), 5000 );
         emit failure ( this );
         return;
     }
@@ -301,7 +301,7 @@ void medDatabaseImporter::run ( void )
         else
         {
             qWarning() << "Could not repopulate data!";
-            emit showError ( this, tr ( "Could not read data: " ) + filesPaths[0], 5000 );
+            emit showError ( tr ( "Could not read data: " ) + filesPaths[0], 5000 );
             continue;
         }
 
@@ -324,7 +324,7 @@ void medDatabaseImporter::run ( void )
 
             if ( !writeSuccess )
             {
-                emit showError ( this, tr ( "Could not save data file: " ) + filesPaths[0], 5000 );
+                emit showError (tr ( "Could not save data file: " ) + filesPaths[0], 5000 );
                 continue;
             }
         }
@@ -942,7 +942,7 @@ dtkSmartPointer<dtkAbstractDataReader> medDatabaseImporter::getSuitableReader ( 
 
     if ( readers.size() ==0 )
     {
-        emit showError ( this, tr ( "No reader plugin" ), 5000 );
+        emit showError (tr ( "No reader plugin" ), 5000 );
         emit failure ( this );
         return NULL;
     }

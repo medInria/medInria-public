@@ -5,8 +5,7 @@
  *      Author: John Stark
  */
 
-#ifndef MEDQTDATAIMAGEWRITER_H_
-#define MEDQTDATAIMAGEWRITER_H_
+#pragma once
 
 #include "medTestExport.h"
 
@@ -28,9 +27,9 @@ public:
     static QString s_identifier();
     static QStringList s_handled();
 
-    virtual QStringList supportedFileExtensions(void) const;
+    virtual QStringList supportedFileExtensions() const;
 
-    static bool registered(void);
+    static bool registered();
 
 public slots:
     bool write    (const QString& path);
@@ -55,5 +54,5 @@ protected:
 
 };
 
-#endif /* MEDQTDATAIMAGEWRITER_H_ */
+
 

@@ -1,5 +1,4 @@
-#ifndef medDatabaseDataSource_h__
-#define medDatabaseDataSource_h__
+#pragma once
 
 #include <medAbstractDataSource.h>
 #include <medDataIndex.h>
@@ -26,7 +25,7 @@ public:
 
     QList<medToolBox*> getToolBoxes();
 	
-	QString description(void) const;
+	QString description() const;
 	
 public slots:
     void update(const medDataIndex &);
@@ -44,4 +43,4 @@ private:
 
 };
 
-#endif // medDatabaseDataSource_h__
+

@@ -5,8 +5,7 @@
  *      Author: John Stark
  */
 
-#ifndef MEDTESTAPPLICATION_H_
-#define MEDTESTAPPLICATION_H_
+#pragma once
 
 #include <QCoreApplication>
 
@@ -29,5 +28,5 @@ public:
 #define CHECK_TEST_RESULT(cond) medTestApplication::CheckTestResult((cond), DTK_STRINGIZE(cond), __FILE__, __LINE__)
 
 
-#endif /* MEDTESTAPPLICATION_H_ */
+
 

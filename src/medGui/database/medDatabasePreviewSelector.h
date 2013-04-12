@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEPREVIEWSELECTOR_H
-#define MEDDATABASEPREVIEWSELECTOR_H
+#pragma once
 
 #include <QtCore>
 #include <QtGui>
@@ -39,11 +38,11 @@ class medDatabasePreviewSelector : public QObject, public QGraphicsItem
 
 public:
      medDatabasePreviewSelector(QGraphicsItem *parent = 0);
-    ~medDatabasePreviewSelector(void);
+    ~medDatabasePreviewSelector();
 
-    QRectF rect(void) const;
-    QRectF boundingRect(void) const;
-    QString text(void) const;
+    QRectF rect() const;
+    QRectF boundingRect() const;
+    QString text() const;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
@@ -54,4 +53,4 @@ private:
     medDatabasePreviewSelectorPrivate *d;
 };
 
-#endif // MEDDATABASEPREVIEWSELECTOR_H
+

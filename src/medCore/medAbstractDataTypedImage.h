@@ -12,8 +12,7 @@
  * 
  */
 
-#ifndef MEDABSTRACTDATATYPEDIMAGE2D_H
-#define MEDABSTRACTDATATYPEDIMAGE2D_H
+#pragma once
 
 #include "medCoreExport.h"
 #include <medAbstractDataImage.h>
@@ -35,4 +34,4 @@ public:
     }
 };
 
-#endif
+

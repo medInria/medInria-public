@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDWORKSPACE_H
-#define MEDWORKSPACE_H
+#pragma once
 
 #include <QtCore>
 #include "medViewContainer.h"
@@ -58,7 +57,7 @@ public:
      *
      * @param void
     */
-    ~medWorkspace(void);
+    ~medWorkspace();
 
     /**
      * @brief Identifies a workspace in the factory.
@@ -90,7 +89,7 @@ public:
      * @param void
      * @return QList<medToolBox *>
     */
-    QList<medToolBox*> toolBoxes(void) const;
+    QList<medToolBox*> toolBoxes() const;
 
     /**
      * @brief Sets the LayoutType.
@@ -107,7 +106,7 @@ public:
      * @param void
      * @return LayoutType
     */
-    LayoutType layoutType(void) const;
+    LayoutType layoutType() const;
 
     /**
      * @brief Switches to an other container.
@@ -132,7 +131,7 @@ public:
      * @param void
      * @return int
     */
-    int customLayoutPreset(void) const;
+    int customLayoutPreset() const;
 
     /**
      * @brief Sets the Database navigator's visibility.
@@ -149,7 +148,7 @@ public:
      * @param void
      * @return bool
     */
-    bool isDatabaseVisible(void) const;
+    bool isDatabaseVisible() const;
 
     /**
      * @brief Sets the toolbox containers's visibility.
@@ -166,7 +165,7 @@ public:
      * @param void
      * @return bool
     */
-    bool areToolBoxesVisible(void) const;
+    bool areToolBoxesVisible() const;
 
     /**
      * @brief Sets up the medTabbedViewContainers.
@@ -187,16 +186,18 @@ public:
      * @param name identifier/description. If the string is empty, Defaults to :
      * "Single", "Multi", or "Custom"
      * which makes sense in most simple cases.
+     * @return name of the created container
     */
-    void addDefaultTypeContainer(const QString& name = "");
+    QString addDefaultTypeContainer(const QString& name = "");
 
     /**
      * @brief Convenience method to add a medSingleViewContainer.
      *
      * @param name identifier/description. By Default "Single",
      * which makes sense in most simple cases.
+     * @return name of the created container
     */
-    void addSingleContainer(const QString& name="Single");
+    QString addSingleContainer(const QString& name="Single");
 
     /**
      * @brief Convenience method to add a medMultiViewContainer.
@@ -212,8 +213,9 @@ public:
      *
      * @param name identifier/description. By Default "Custom",
      * which makes sense in most simple cases.
+     * @return name of the created container
     */
-    void addCustomContainer(const QString& name="Custom");
+    QString addCustomContainer(const QString& name="Custom");
 
     /**
      * @brief Gets the currently displayed container.
@@ -363,4 +365,4 @@ private:
     medWorkspacePrivate *d;
 };
 
-#endif
+

@@ -1,5 +1,4 @@
-#ifndef medFiberViewToolBox_H
-#define medFiberViewToolBox_H
+#pragma once
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -49,4 +48,4 @@ protected:
     medFiberViewToolBoxPrivate *d;
 };
 
-#endif
+

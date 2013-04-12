@@ -54,6 +54,7 @@ set(${PROJECT_NAME}_DEVEL_HEADERS
   medAbstractViewCoordinates.h
   medCoreExport.h
   medDataIndex.h
+  medDataReaderWriter.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
@@ -69,7 +70,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
   ${${PROJECT_NAME}_DEVEL_HEADERS}
-  medDataReaderWriter.h
   medAbstractDatabaseItem.h
 )
 

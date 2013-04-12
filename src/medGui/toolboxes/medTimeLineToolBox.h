@@ -1,5 +1,4 @@
-#ifndef MEDVIEWERTOOLBOXTIME_H
-#define MEDVIEWERTOOLBOXTIME_H
+#pragma once
 
 #include <medToolBox.h>
 
@@ -42,7 +41,7 @@ class MEDGUI_EXPORT medTimeLineToolBox : public medToolBox
 
 public:
      medTimeLineToolBox(QWidget *parent = 0);
-    ~medTimeLineToolBox(void);
+    ~medTimeLineToolBox();
 
     void update(dtkAbstractView *view);
 
@@ -81,7 +80,7 @@ public slots:
        The function will question the interactors concerning
        time ranges and then will adapt the slider accordingly.
     */
-    void updateRange (void);
+    void updateRange();
 
     /** recover time information from slider (integer) value and vice-versa */
     double getTimeFromSliderValue (int);
@@ -97,4 +96,4 @@ public slots:
     QString DoubleToQString(double);
 };
 
-#endif
+

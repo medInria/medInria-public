@@ -23,10 +23,11 @@ project(medInria)
 ## Sources
 ## #################################################################
 
+include_directories(QSingleApplication)
+
 set(${PROJECT_NAME}_HEADERS_MOC
   medApplication.h
   medHomepageArea.h
-  medHomepageButton.h
   medBrowserArea.h
   medBrowserSourceSelectorToolBox.h
   medMainWindow.h
@@ -43,10 +44,14 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medSplashScreen.h
   medEmptyDbWarning.h
   medPluginWidget.h
-  )
+  QSingleApplication/qtlocalpeer.h
+  QSingleApplication/qtsingleapplication.h
+  QSingleApplication/qtsinglecoreapplication.h
+)
 
 set(${PROJECT_NAME}_HEADERS
   medWorkspaceArea_p.h
+  QSingleApplication/qtlockedfile.h
   ${${PROJECT_NAME}_HEADERS_MOC}
 )
 
@@ -54,7 +59,6 @@ set(${PROJECT_NAME}_SOURCES
   main.cpp
   medApplication.cpp
   medHomepageArea.cpp
-  medHomepageButton.cpp
   medBrowserArea.cpp
   medBrowserSourceSelectorToolBox.cpp
   medMainWindow.cpp
@@ -71,7 +75,17 @@ set(${PROJECT_NAME}_SOURCES
   medSplashScreen.cpp
   medEmptyDbWarning.cpp
   medPluginWidget.cpp
-  )
+  QSingleApplication/qtlocalpeer.cpp
+  QSingleApplication/qtsingleapplication.cpp
+  QSingleApplication/qtsinglecoreapplication.cpp
+)
+
+set_source_files_properties(QSingleApplication/qtlocalpeer.cpp DEPENDS QSingleApplication/qtlockedfile.cpp)
+if (WIN)
+  set_source_files_properties(QSingleApplication/qtlocalpeer.cpp DEPENDS QSingleApplication/qtlockedfile_win.cpp)
+else()
+  set_source_files_properties(QSingleApplication/qtlocalpeer.cpp DEPENDS QSingleApplication/qtlockedfile_unix.cpp)
+endif()
 
 set(${PROJECT_NAME}_RESOURCES medInria.qrc)
 
@@ -167,3 +181,8 @@ install(TARGETS ${PROJECT_NAME}
 if(APPLE)
   install(CODE "execute_process(COMMAND macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app)")
 endif(APPLE)
+
+option(MEDINRIA_ACTIVATE_WALL_OPTION "Activate the command line option --wall (INRIA Sophia, immersive room)")
+if (MEDINRIA_ACTIVATE_WALL_OPTION)
+  add_definitions(-DACTIVATE_WALL_OPTION)
+endif ()

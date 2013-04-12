@@ -5,8 +5,7 @@
  *      Author: aabadie
  */
 
-#ifndef MEDVIEWERTOOLBOXVIEWPROPERTIES_H_
-#define MEDVIEWERTOOLBOXVIEWPROPERTIES_H_
+#pragma once
 
 #include "medGuiExport.h"
 #include <medToolBox.h>
@@ -28,7 +27,7 @@ class MEDGUI_EXPORT medViewPropertiesToolBox : public medToolBox
 
 public:
      medViewPropertiesToolBox(QWidget *parent = 0);
-    ~medViewPropertiesToolBox(void);
+    ~medViewPropertiesToolBox();
     /**
     Whenever the view is changed, update metdhod is triggered.
     */
@@ -41,13 +40,13 @@ public:
      *
      * Uses the medSettingsManager to push the right interaction button;
      */
-    void setCurrentInteractionFromSettings( void );
+    void setCurrentInteractionFromSettings();
 
 public slots:
     void onDataAdded(int layer);
     void onDataAdded(dtkAbstractData*);
     void onDataAdded(dtkAbstractData *data, int layer);
-    void clear(void);
+    void clear();
     void onVisibilitySet(int state);
     void onOpacitySliderSet(int opacity);
     void on2LayersOpacitySliderSet(int opacity);
@@ -100,4 +99,4 @@ private:
     QIcon createIcon(QString colorName);
 };
 
-#endif /* MEDVIEWERTOOLBOXVIEWPROPERTIES_H_ */
+

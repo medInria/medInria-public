@@ -404,18 +404,15 @@ void medViewPropertiesToolBox::update(dtkAbstractView *view)
         return;
     }
 
-    if ((d->view) && (d->view != dynamic_cast<medAbstractView *> (view)) )
+    medAbstractView * medView = dynamic_cast<medAbstractView *> (view);
+    if ( !medView )
+        return;
+
+    if ((d->view) && (d->view != medView) )
     {
         d->view->disconnect(this,0);
         clear();
     }
-
-    medAbstractView * medView = dynamic_cast<medAbstractView *> (view);
-    if ( ! medView )
-        return;
-
-    if ((d->view == dynamic_cast<medAbstractView *> (view)))
-        return;
 
     d->view = medView;
     d->propertiesTree->clear();

@@ -192,6 +192,11 @@ void medWorkspaceArea::setdw(QStatusBar *status)
 
 }
 
+QPixmap medWorkspaceArea::grabScreenshot()
+{
+    return QPixmap::grabWidget(this->currentRootContainer());
+}
+
 void medWorkspaceArea::split(int rows, int cols)
 {
     medViewContainer * root = this->currentRootContainer();
@@ -212,100 +217,42 @@ bool medWorkspaceArea::openInTab(const medDataIndex &index)
         medDataManager *dataManager = medDataManager::instance();
         medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
         QString createdName = dbc->metaData(index,medMetaDataKeys::PatientName.key());
-        createdName = d->currentWorkspace->addMultiContainer(createdName);
+        createdName = d->currentWorkspace->addDefaultTypeContainer(createdName);
         d->currentWorkspace->stackedViewContainers()->setContainer(createdName);
     }
-    else
-        d->currentWorkspace->stackedViewContainers()->changeCurrentContainerType("Multi");
-
+    
+    medSettingsManager * mnger = medSettingsManager::instance();
+    QString defaultLayout = mnger->value("startup","default_container_layout",
+                                  "Multi").toString();
+    
+    if ((this->currentRootContainer()->views().isEmpty()))
+    {
+        medDataManager *dataManager = medDataManager::instance();
+        d->currentWorkspace->stackedViewContainers()->changeCurrentContainerType(defaultLayout);
+        medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
+        QString realName = dbc->metaData(index,medMetaDataKeys::PatientName.key());
+        d->currentWorkspace->stackedViewContainers()->changeCurrentContainerName(realName);
+    }
+    
     return this->open(index);
 }
 
 bool medWorkspaceArea::open(const medDataIndex& index)
 {
-    if(!((medDataIndex)index).isValid())
+    bool succeeded = false;
+
+    if( !index.isValid() )
         return false;
 
-
-
-    if(((medDataIndex)index).isValidForSeries())
+    if( index.isValidForSeries() )
     {
-        dtkSmartPointer<dtkAbstractData> data;
-        dtkSmartPointer<medAbstractView> view;
-
-        /** test to check for reference counting problems, here the datamanager should be able to drop the data */
-        //medDataManager::instance()->data(index);
-        //medDataManager::instance()->clearCache();
-        //return;
-
-
-        // the data-manager should be used to read data
-        //We can'see wy the dataManager had signals blocked here: put it back on
-        //only if it solves an obvious bug.
-//        medDataManager::instance()->blockSignals (true);
-        data = medDataManager::instance()->data(index);
-//        medDataManager::instance()->blockSignals (false);
-        if ( data.isNull() )
-        {
-            return false;
-        }
-
         //get the root container, to see if there is an available view to dump our data in.
         medViewContainer * root = this->currentRootContainer();
-        if ( root != NULL )
-        {
-            view = qobject_cast<medAbstractView*>(root->view());
-        }
-        bool newView = view.isNull();
-        if( newView)
-        {
-            //container empty, or multi with no extendable view
-            view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"));
-            connect (view, SIGNAL(closed()), this, SLOT(onViewClosed()));
-            connect (view, SIGNAL(dataRemoved(int )), this, SLOT(onDataRemoved(int )));
-        }
-
-        if( view.isNull() ) {
-            qWarning() << "Unable to create a v3dView";
-            return false;
-        }
-
-        // add the view to the viewManager. Not much used nowadays
-        medViewManager::instance()->insert(index, view);
-
-        // set the data to the view
-        if (!root->multiLayer())
-        {
-            //TODO: move the whole opening of indices to the medViewContainer itself one day.
-            view->removeOverlay(0);
-            view->setSharedDataPointer(data,0);
-            newView = true;
-        }
-        else
-        {
-            view->setSharedDataPointer(data);
-        }
-
-        // call update
-        QMutexLocker ( &d->mutex );
-        if ( root != NULL )
-        {
-            //set the view to the current container
-            root->setView(view);
-            //only call reset if the view is a new one or with only one layer.
-            if (newView)
-            {
-                qDebug() << "reset view";
-                view->reset();
-            }
-            view->update();
-//            qDebug() <<  QApplication::focusWidget();
-        }
+        succeeded = root->open(index);
         this->switchToPatient(index);
-        return true;
     }
 
-    if(index.isValidForPatient())
+    else if( index.isValidForPatient() )
     {
         // For the moment switch to visualization, later we will be cleverer
         this->setupWorkspace("Visualization");
@@ -315,7 +262,7 @@ bool medWorkspaceArea::open(const medDataIndex& index)
         medAbstractDbController *dbc = dataManager->controllerForDataSource(index.dataSourceId());
 
         QList<medDataIndex> studiesForSource = dbc->studies(index);
-        bool succeeded = true;
+        succeeded = true;
         for ( QList<medDataIndex>::const_iterator studyIt(studiesForSource.begin()); studyIt != studiesForSource.end(); ++studyIt) {
             QList<medDataIndex> seriesForSource = dbc->series((*studyIt));
 
@@ -324,9 +271,10 @@ bool medWorkspaceArea::open(const medDataIndex& index)
                 succeeded = couldOpen && succeeded;
             }
         }
-        return succeeded;
     }
-    return true;
+    
+    return succeeded;
+
 }
 
 void medWorkspaceArea::openInTab(const QString& file)
@@ -353,25 +301,35 @@ void medWorkspaceArea::onFileOpenedInTab(const medDataIndex &index)
 
 void medWorkspaceArea::onViewClosed(void)
 {
-    if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
+    medAbstractView * medView = dynamic_cast<medAbstractView *> (this->sender());
+    if (medView) {
+       onViewClosed(medView);
+    }
+}
+
+void medWorkspaceArea::onViewClosed(dtkAbstractView *view)
+{ 
+    medAbstractView * medView = dynamic_cast<medAbstractView *> (view);
+    if( medView )
+    {
         QList<medToolBox *> toolboxes = d->toolBoxContainer->toolBoxes();
         foreach( medToolBox *tb, toolboxes)
             tb->update(NULL);
 
-        QList<medDataIndex> indices = medViewManager::instance()->indices( view );
+        QList<medDataIndex> indices = medViewManager::instance()->indices( medView );
         foreach (medDataIndex index, indices)
-            medViewManager::instance()->remove(index, view); // deletes the view
+            medViewManager::instance()->remove(index, medView); // deletes the view
     }
 }
 
 void medWorkspaceArea::onDataRemoved(int layer)
 {
-    //JGG qDebug()<< "Removing layer ";
     Q_UNUSED(layer);
-    if (medAbstractView *view = dynamic_cast<medAbstractView*> (this->sender())) {
+    medAbstractView * medView = dynamic_cast<medAbstractView *> (this->sender());
+    if (medView) {
         QList<medToolBox *> toolboxes = d->toolBoxContainer->toolBoxes();
         foreach( medToolBox *tb, toolboxes)
-            tb->update(view);
+            tb->update(medView);
     }
 }
 
@@ -471,9 +429,10 @@ void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* st
 
     if (-1 == d->stack->indexOf(stack))
     {
-        connect(stack, SIGNAL(dropped(medDataIndex)), this, SLOT(open(medDataIndex)));
         connect(stack, SIGNAL(focused(dtkAbstractView*)),
                 this,  SLOT(onViewFocused(dtkAbstractView*)));
+        connect (stack, SIGNAL(viewRemoved(dtkAbstractView *)),
+                 this, SLOT(onViewClosed(dtkAbstractView *)));
         d->stack->addWidget(stack);
     }
     d->stack->setCurrentWidget(stack);
@@ -704,7 +663,7 @@ void medWorkspaceArea::setupWorkspace(QString name)
             d->workspaces.insert(name, workspace);
         }
         else
-            qWarning()<< "Workspace" << name << "couldn't be created";
+            qWarning()<< "Workspace " << name << " couldn't be created";
     }
 
     if (!workspace)

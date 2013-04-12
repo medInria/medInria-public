@@ -1,5 +1,4 @@
-#ifndef MEDPACSNODE_H
-#define MEDPACSNODE_H
+#pragma once
 
 #include "medAbstractPacsNode.h"
 
@@ -20,15 +19,15 @@ class medPacsNode : public medAbstractPacsNode
             m_port = port;
         }
 
-        QString title(void) {
+        QString title() {
             return m_title;
         }
 
-        QString ip(void) {
+        QString ip() {
             return m_ip;
         }
 
-        unsigned int port(void) {
+        unsigned int port() {
             return m_port;
         }
 		
@@ -48,4 +47,4 @@ class medPacsNode : public medAbstractPacsNode
 
 };
 
-#endif
+

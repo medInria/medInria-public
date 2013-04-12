@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEMODEL_H
-#define MEDDATABASEMODEL_H
+#pragma once
 
 #include "medSqlExport.h"
 
@@ -35,7 +34,7 @@ class MEDSQL_EXPORT medDatabaseModel : public QAbstractItemModel
   
 public:
      medDatabaseModel(QObject *parent = 0, bool justBringStudies = false);
-    ~medDatabaseModel(void);
+    ~medDatabaseModel();
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
@@ -64,9 +63,9 @@ public:
     bool removeRows(int position, int rows, const QModelIndex& parent = QModelIndex());
     bool removeAllRows();
 
-    QStringList mimeTypes(void) const;
+    QStringList mimeTypes() const;
 
-    Qt::DropActions supportedDropActions(void) const;
+    Qt::DropActions supportedDropActions() const;
 
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex& parent);
 
@@ -76,7 +75,7 @@ public:
     QStringList columnNames() const;
 
 protected slots:
-    void repopulate(void);
+    void repopulate();
 
 protected:
     void populate(medAbstractDatabaseItem *parent);
@@ -85,4 +84,4 @@ private:
     medDatabaseModelPrivate *d;
 };
 
-#endif
+

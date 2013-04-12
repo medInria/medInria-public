@@ -1,5 +1,4 @@
-#ifndef medJobManager_h__
-#define medJobManager_h__
+#pragma once
 
 #include <QtCore/QObject>
 
@@ -25,7 +24,7 @@ class MEDCORE_EXPORT medJobManager : public QObject
     Q_OBJECT
 
 public:
-    static medJobManager *instance(void);
+    static medJobManager *instance();
 
     /**
     * registerJobItem - register a job item if you want that the manager sends cancel events to them (highly suggested!)
@@ -56,8 +55,8 @@ signals:
     void jobRegistered(medJobItem* item, QString jobName);
 
 protected:
-    medJobManager(void);
-    ~medJobManager(void);
+    medJobManager();
+    ~medJobManager();
 
 protected:
     static medJobManager *s_instance;
@@ -66,4 +65,4 @@ private:
     medJobManagerPrivate *d;
 };
 
-#endif // medJobManager_h__
+

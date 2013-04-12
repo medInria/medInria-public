@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASENAVIGATORITEMGROUP_H
-#define MEDDATABASENAVIGATORITEMGROUP_H
+#pragma once
 
 #include <QtGui>
 
@@ -37,19 +36,19 @@ class medDatabaseNavigatorItemGroup : public QObject, public QGraphicsItem
 
 public:
      medDatabaseNavigatorItemGroup(QGraphicsItem *parent = 0);
-    ~medDatabaseNavigatorItemGroup(void);
+    ~medDatabaseNavigatorItemGroup();
 
     void addItem(medDatabaseNavigatorItem *item);
 
-    void clear(void);
+    void clear();
 
     void setName(const QString& name);
 
     void setOrientation (Qt::Orientation orientation);
-    Qt::Orientation orientation (void) const;
+    Qt::Orientation orientation() const;
 
 public:
-    QRectF boundingRect(void) const;
+    QRectF boundingRect() const;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
@@ -57,4 +56,4 @@ private:
     medDatabaseNavigatorItemGroupPrivate *d;
 };
 
-#endif // MEDDATABASENAVIGATORITEMGROUP_H
+

@@ -1,5 +1,4 @@
-#ifndef MEDPACSSELECTOR_H
-#define MEDPACSSELECTOR_H
+#pragma once
 
 class medToolBoxPacsSelectorPrivate;
 
@@ -12,7 +11,7 @@ class MEDGUI_EXPORT medPacsSelector : public QWidget
 
 public:
     medPacsSelector(QWidget *parent = 0);
-    ~medPacsSelector(void);
+    ~medPacsSelector();
 
 signals:
     void selectionChanged(QVector<int> list);
@@ -25,11 +24,10 @@ signals:
 
 private:
 
-    void readSettings(void);
+    void readSettings();
 
     void fillWidget( QList<QVariant> nodes );
 
     medToolBoxPacsSelectorPrivate *d;
 };
 
-#endif 

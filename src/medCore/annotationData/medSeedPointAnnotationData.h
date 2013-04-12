@@ -5,8 +5,7 @@
  *      Author: jstark
  */
 
-#ifndef MSEGSEEDPOINTANNOTATIONDATA_H_
-#define MSEGSEEDPOINTANNOTATIONDATA_H_
+#pragma once
 
 #include "medCoreExport.h"
 
@@ -25,8 +24,8 @@ public:
     virtual ~medSeedPointAnnotationData();
 
     //! Implement dtkAbstractObject
-    QString description(void) const;
-    QString identifier(void) const;
+    QString description() const;
+    QString identifier() const;
 
     //! static methods returning description and id
     static QString s_description();
@@ -72,5 +71,5 @@ protected:
     int m_selectedSeed;
 };
 
-#endif /* MSEGSEEDPOINTANNOTATIONDATA_H_ */
+
 

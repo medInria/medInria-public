@@ -51,7 +51,7 @@ void medCompositeDataSetImporterSelectorToolBoxPrivate::read(QString filename) {
 
 void medCompositeDataSetImporterSelectorToolBox::onImportClicked() {
     if (!d->currentToolBox) {
-        this->showError(this,tr("Select a type first"),3000);
+        this->showError(tr("Select a type first"),3000);
         return;
     }
     d->currentToolBox->import();
@@ -139,10 +139,10 @@ void medCompositeDataSetImporterSelectorToolBox::initialize()
     this->addWidget (mainwidget);
 
     // connections
-    connect(this,SIGNAL(showError(QObject*,const        QString&,unsigned int)),
-        medMessageController::instance(),SLOT(showError (QObject*,const QString&,unsigned int)));
-    connect(this,SIGNAL(showInfo(QObject*,const        QString&,unsigned int)),
-        medMessageController::instance(),SLOT(showInfo (QObject*,const QString&,unsigned int)));
+    connect(this,SIGNAL(showError(const        QString&,unsigned int)),
+        medMessageController::instance(),SLOT(showError (const QString&,unsigned int)));
+    connect(this,SIGNAL(showInfo(const        QString&,unsigned int)),
+        medMessageController::instance(),SLOT(showInfo (const QString&,unsigned int)));
     //connect(this,SIGNAL(success()),this,SLOT(onSuccess()));
 
     d->isInitialized = true;

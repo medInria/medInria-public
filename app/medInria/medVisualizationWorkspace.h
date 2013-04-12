@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medVisualizationWorkspace_H
-#define medVisualizationWorkspace_H
+#pragma once
 
 #include <QtCore>
 
@@ -33,7 +32,7 @@ class medVisualizationWorkspace : public medWorkspace
 
 public:
      medVisualizationWorkspace(QWidget *parent = 0);
-    ~medVisualizationWorkspace(void);
+    ~medVisualizationWorkspace();
 
     virtual void setupViewContainerStack();
 
@@ -53,4 +52,4 @@ private:
     medVisualizationWorkspacePrivate *d;
 };
 
-#endif
+

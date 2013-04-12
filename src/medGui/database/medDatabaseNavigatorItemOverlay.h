@@ -1,5 +1,4 @@
-#ifndef medDatabaseNavigatorItemOverlay_h
-#define medDatabaseNavigatorItemOverlay_h
+#pragma once
 
 #include <QtGui/QGraphicsPixmapItem>
 
@@ -19,7 +18,7 @@ class medDatabaseNavigatorItemOverlay : public QObject, public QGraphicsPixmapIt
     
 public:
     medDatabaseNavigatorItemOverlay(QGraphicsItem *parent = 0);
-    ~medDatabaseNavigatorItemOverlay(void);
+    ~medDatabaseNavigatorItemOverlay();
             
 signals:
     //! Signal emitted when the overlay button is clicked on
@@ -33,4 +32,3 @@ private:
     medDatabaseNavigatorItemOverlayPrivate *d;
 };
 
-#endif

@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDLAYOUTCHOOSER_H
-#define MEDLAYOUTCHOOSER_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -32,9 +31,9 @@ class MEDGUI_EXPORT medLayoutChooser : public QTableWidget
 
 public:
      medLayoutChooser(QWidget *parent = 0);
-    ~medLayoutChooser(void);
+    ~medLayoutChooser();
 
-    QSize sizeHint(void) const;
+    QSize sizeHint() const;
 
     int sizeHintForRow(int row) const;
     int sizeHintForColumn(int column) const;
@@ -53,4 +52,4 @@ private:
     medLayoutChooserPrivate *d;
 };
 
-#endif // MEDLAYOUTCHOOSER_H
+

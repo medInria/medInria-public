@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATAINDEX_H
-#define MEDDATAINDEX_H
+#pragma once
 
 #include <QtCore>
 
@@ -43,13 +42,13 @@ public:
      medDataIndex(int dataSourceId, int patientId, int studyId, int seriesId, int imageId);
      medDataIndex();
      medDataIndex(const medDataIndex& index);
-    ~medDataIndex(void);
+    ~medDataIndex();
 
-    bool isValid          (void) const;
-    bool isValidForPatient(void) const;
-    bool isValidForStudy  (void) const;
-    bool isValidForSeries (void) const;
-    bool isValidForImage  (void) const;
+    bool isValid() const;
+    bool isValidForPatient() const;
+    bool isValidForStudy() const;
+    bool isValidForSeries() const;
+    bool isValidForImage() const;
 
     QString asString() const;
 
@@ -60,11 +59,11 @@ public:
     void setSeriesId  (int id) { m_seriesId = id; }
     void setImageId   (int id) { m_imageId = id; }
 
-    int dataSourceId(void) const { return m_dataSourceId; }
-    int patientId(void) const { return m_patientId; }
-    int   studyId(void) const { return m_studyId; }
-    int  seriesId(void) const { return m_seriesId; }
-    int   imageId(void) const { return m_imageId; }
+    int dataSourceId() const { return m_dataSourceId; }
+    int patientId() const { return m_patientId; }
+    int   studyId() const { return m_studyId; }
+    int  seriesId() const { return m_seriesId; }
+    int   imageId() const { return m_imageId; }
 
     medDataIndex& operator=(const medDataIndex& index);
 
@@ -123,4 +122,4 @@ MEDCORE_EXPORT uint qHash(const medDataIndex &key);
 
 Q_DECLARE_METATYPE(medDataIndex)
 
-#endif // MEDDATAINDEX_H
+

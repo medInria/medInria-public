@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDVIEWPOOL_H
-#define MEDVIEWPOOL_H
+#pragma once
 
 #include <QtCore>
 
@@ -52,22 +51,22 @@ class MEDGUI_EXPORT medViewPool : public QObject
 
 public:
              medViewPool (QObject *parent = 0);
-    virtual ~medViewPool (void);    
+    virtual ~medViewPool();    
 
     /**
        The daddy is the reference view, i.e., the target when performing automatic
        registration.
     **/
-    medAbstractView *daddy (void);
+    medAbstractView *daddy();
 
     /**
        Returns the number of views in the pool.
      **/
-    int count (void);
+    int count();
 
 signals:
-    void showInfo(QObject*,const QString&,unsigned int timeout);
-    void showError(QObject*,const QString&,unsigned int timeout);
+    void showInfo(const QString&,unsigned int timeout);
+    void showError(const QString&,unsigned int timeout);
 
     void viewAppended (medAbstractView *view);
     void viewRemoved  (medAbstractView *view);
@@ -100,4 +99,4 @@ private:
   
 };
 
-#endif
+

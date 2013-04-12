@@ -1,5 +1,4 @@
-#ifndef medFileSystemDataSource_h__
-#define medFileSystemDataSource_h__
+#pragma once
 
 #include <medAbstractDataSource.h>
 
@@ -25,7 +24,7 @@ public:
 
     QList<medToolBox*> getToolBoxes();
 
-    QString description(void) const;
+    QString description() const;
 
 signals:
 
@@ -50,7 +49,7 @@ private slots:
     void onFileSystemViewRequested();
     void onFileDoubleClicked(const QString& filename);
     void onFileClicked(const QFileInfo& info);
-    void onNothingSelected(void);
+    void onNothingSelected();
 
 private:
 
@@ -64,4 +63,4 @@ private:
     QString formatByteSize(qint64 bytes);
 };
 
-#endif // medFileSystemDataSource_h__
+

@@ -120,10 +120,10 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     d->customToolBox = NULL;
 
     //Connect Message Controller:
-    connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
-    connect(this,SIGNAL(showInfo(QObject*,const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showInfo(QObject*,const QString&,unsigned int)));
+    connect(this,SIGNAL(showError(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
+    connect(this,SIGNAL(showInfo(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showInfo(const QString&,unsigned int)));
 }
 
 medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
@@ -348,12 +348,12 @@ void medRegistrationSelectorToolBox::onSaveImage()
 {
     if ( !d->movingData)
     {
-        emit showError(this, tr  ("Please Select a moving image before saving"),3000);
+        emit showError(tr  ("Please Select a moving image before saving"),3000);
         return;
     }
     if (!d->process )
     {
-        emit showError(this, tr  ("Please run the registration before saving"),3000);
+        emit showError(tr  ("Please run the registration before saving"),3000);
         return;
     }
     QFileDialog dialog(this, tr("Save Image"),
@@ -373,11 +373,11 @@ void medRegistrationSelectorToolBox::onSaveImage()
         //qDebug()<<  d->movingView->data();
         if (d->process->write(fileName[0]))
         {
-            emit(showInfo(this, tr  ("Registered Image Saved"),3000));
+            emit(showInfo(tr  ("Registered Image Saved"),3000));
         }
         else
         {
-            emit(showError(this, tr  ("Image saving failed, no suitable writer found"),3000));
+            emit(showError(tr  ("Image saving failed, no suitable writer found"),3000));
         }
     }
 
@@ -388,12 +388,12 @@ void medRegistrationSelectorToolBox::onSaveTrans()
 {
     if (!d->movingData)
     {
-        emit showError(this, tr  ("Please Select a moving image before saving"),3000);
+        emit showError(tr  ("Please Select a moving image before saving"),3000);
         return;
     }
     if (!d->process )
     {
-        emit showError(this, tr  ("Please run the registration before saving"),3000);
+        emit showError(tr  ("Please run the registration before saving"),3000);
         return;
     }
 
@@ -438,11 +438,11 @@ void medRegistrationSelectorToolBox::onSaveTrans()
         transformFileName << ""<< fileName[0];
         if (d->process->write(transformFileName))
         {
-            emit(showInfo(this, tr  ("Transformation saved"),3000));
+            emit(showInfo(tr  ("Transformation saved"),3000));
         }
         else
         {
-            emit(showError(this, tr  ("Transformation saving failed, no suitable writer found"),3000));
+            emit(showError(tr  ("Transformation saving failed, no suitable writer found"),3000));
         }
     }
 }

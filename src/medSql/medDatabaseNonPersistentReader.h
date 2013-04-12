@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATABASENONPERSISTENTREADER_H
-#define MEDDATABASENONPERSISTENTREADER_H
+#pragma once
 
 #include "medSqlExport.h"
 
@@ -49,15 +48,15 @@ public:
     * @param callerUuid The string representation of a unique identifier. The caller will react to link the final signal with this id to know whether it should react to it or not.
     */
     medDatabaseNonPersistentReader(const QString& file,const QString& callerUuid = QString());
-    ~medDatabaseNonPersistentReader(void);
+    ~medDatabaseNonPersistentReader();
 
-    void run(void);
+    void run();
 
     /**
       Returns the index of the data which has been read. Index is not
       valid if reading was not successful.
     */
-    medDataIndex index(void) const;
+    medDataIndex index() const;
 
 signals:
 
@@ -76,4 +75,4 @@ private:
     medDatabaseNonPersistentReaderPrivate *d;
 };
 
-#endif
+

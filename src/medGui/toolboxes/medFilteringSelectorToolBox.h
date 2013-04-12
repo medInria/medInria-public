@@ -4,8 +4,7 @@
  *
  */
 
-#ifndef medFilteringSelectorToolBox_H
-#define medFilteringSelectorToolBox_H
+#pragma once
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
@@ -30,12 +29,12 @@ public:
     /**
      * @brief returns input data
      */
-    dtkAbstractData* data(void);
+    dtkAbstractData* data();
 
     /**
      * @brief returns current selected toolbox
      */
-    medFilteringAbstractToolBox* customToolbox(void);
+    medFilteringAbstractToolBox* customToolbox();
 
     /**
      * @brief set data index
@@ -58,12 +57,12 @@ public slots:
     /**
      * @brief clear input data and the current process toolbox
      */
-    void clear(void);
+    void clear();
 
     /**
      * @brief stores output image to the persistent database
      */
-    void onSavedImage(void);
+    void onSavedImage();
 
     /**
      * @brief retrieve data from the selected input image index
@@ -76,4 +75,4 @@ protected:
     medFilteringSelectorToolBoxPrivate *d;
 };
 
-#endif
+

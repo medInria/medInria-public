@@ -1,5 +1,4 @@
-#ifndef MEDMETADATAHELPER_H
-#define MEDMETADATAHELPER_H
+#pragma once
 
 #include <vector>
 #include <medAbstractData.h>
@@ -13,10 +12,8 @@ namespace medMetaDataKeys {
     * It allows compile-time verification that the keyword is correct.
     */
 
-    class MEDCORE_EXPORT Key : public QObject{
-      Q_OBJECT
+    class MEDCORE_EXPORT Key {
     public:
-
         typedef std::vector<const Key*> Registery;
 
         Key(const char* name): KEY(name) { registery.push_back(this); }
@@ -113,5 +110,5 @@ namespace medMetaDataKeys {
     extern MEDCORE_EXPORT const Key ThumbnailPath;
 };
 
-#endif // MEDMETADATAHELPER_H
+
 

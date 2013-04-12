@@ -1,5 +1,4 @@
-#ifndef MEDMULTIPLEIMAGESELECTIONWIDGET_H
-#define MEDMULTIPLEIMAGESELECTIONWIDGET_H
+#pragma once
 
 #include <QtGui>
 
@@ -32,7 +31,7 @@ class MEDGUI_EXPORT medMultipleImageSelectionWidget : public QDialog
 
 public:
     medMultipleImageSelectionWidget(QList<medDataIndex> previouslySelectedIndexes, QWidget *parent = 0);
-    ~medMultipleImageSelectionWidget(void);
+    ~medMultipleImageSelectionWidget();
 
     QSize sizeHint() const;
 
@@ -76,4 +75,4 @@ private:
     medMultipleImageSelectionWidgetPrivate *d;
 };
 
-#endif
+

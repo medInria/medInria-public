@@ -1,5 +1,4 @@
-#ifndef medPacsDataSource_h__
-#define medPacsDataSource_h__
+#pragma once
 
 #include <medAbstractDataSource.h>
 #include <medMoveCommandItem.h>
@@ -27,7 +26,7 @@ public:
 
     QList<medToolBox*> getToolBoxes();
 
-    QString description(void) const;
+    QString description() const;
 
 private slots:
     void onPacsMove( const QVector<medMoveCommandItem>& cmdList);
@@ -37,4 +36,4 @@ private:
 
 };
 
-#endif // medPacsDataSource_h__
+

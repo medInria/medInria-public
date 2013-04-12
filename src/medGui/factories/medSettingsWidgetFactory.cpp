@@ -62,6 +62,8 @@ medSettingsWidgetFactory::medSettingsWidgetFactory(void) : dtkAbstractFactory(),
 
 medSettingsWidgetFactory::~medSettingsWidgetFactory(void)
 {
+    qDeleteAll(d->creators);
+    d->creators.clear();
     delete d;
 
     d = NULL;

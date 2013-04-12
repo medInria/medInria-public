@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medBrowserSourceSelectorToolBox_H
-#define medBrowserSourceSelectorToolBox_H
+#pragma once
 
 #include <medToolBox.h>
 
@@ -30,7 +29,7 @@ class medBrowserSourceSelectorToolBox : public medToolBox
 
 public:
      medBrowserSourceSelectorToolBox(QWidget *parent = 0);
-    ~medBrowserSourceSelectorToolBox(void);
+    ~medBrowserSourceSelectorToolBox();
 
 	void addTab(QString tabName, QWidget *widget, QString description = "");
 
@@ -43,4 +42,4 @@ private:
     medBrowserSourceSelectorToolBoxPrivate *d;
 };
 
-#endif
+

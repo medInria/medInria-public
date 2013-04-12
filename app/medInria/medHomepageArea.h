@@ -26,8 +26,7 @@
 */
 
 
-#ifndef MEDHOMEPAGEAREA_H
-#define MEDHOMEPAGEAREA_H
+#pragma once
 
 #include <QtGui>
 
@@ -40,42 +39,41 @@ public:
     medHomepageArea(QWidget * parent = 0);
     virtual ~medHomepageArea();
 
-    void initPage(void);
+    void initPage();
 
-    QParallelAnimationGroup * getAnimation(void);
+    QParallelAnimationGroup * getAnimation();
 
     void resizeEvent( QResizeEvent * event );
 
 public slots:
-    void onShowBrowser(void);
+    void onShowBrowser();
     void onShowWorkspace(QString workspace);
-    void onShowSettings(void);
-    void onShowAbout(void);
-    void onShowPlugin(void);
-    void onShowHelp(void);
-    void onStartWithHomepage(int state);
+    void onShowSettings();
+    void onShowAbout();
+    void onShowPlugin();
+    void onShowHelp();
     void onShowInfo();
 
 signals:
     /**
      * @deprecated Doesn't use the medMainWindow's slots anymore.
      */
-    void showSettings(void);
+    void showSettings();
     /**
      * @deprecated Doesn't use the medMainWindow's slots anymore.
      */
-    void showAbout(void);
+    void showAbout();
     /**
      * @deprecated Doesn't use the medMainWindow's slots anymore.
      */
-    void showHelp(void);
+    void showHelp();
 
-    void showBrowser(void);
-    void showViewer(void);
+    void showBrowser();
+    void showViewer();
     void showWorkspace(QString workspace);
 
 private:
     medHomepageAreaPrivate * d;
 };
 
-#endif // MEDHOMEPAGEAREA_H
+

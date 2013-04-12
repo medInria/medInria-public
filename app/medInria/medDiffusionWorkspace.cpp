@@ -408,7 +408,7 @@ void medDiffusionWorkspace::onFlipZChanged(bool flipZ)
 }
 
 // end of tensor interaction related methods
-void medDiffusionWorkspace::refreshInteractors (void)
+void medDiffusionWorkspace::refreshInteractors()
 {
     foreach (dtkAbstractView *view, d->views) {
         if(view->interactor ("v3dViewFiberInteractor"))
@@ -422,17 +422,7 @@ void medDiffusionWorkspace::refreshInteractors (void)
 void medDiffusionWorkspace::onAddTabClicked()
 {
     QString name = this->identifier();
-    QString realName = name;
-
-    unsigned int suppTag = 0;
-    while (this->stackedViewContainers()->container(realName))
-    {
-        suppTag++;
-        realName = name + " ";
-        realName += QString::number(suppTag);
-    }
-
-    this->addSingleContainer(realName);
+    QString realName = this->addSingleContainer(name);
     this->stackedViewContainers()->setContainer(realName);
 }
 

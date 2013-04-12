@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medBrowserPacsHostToolBox_H
-#define medBrowserPacsHostToolBox_H
+#pragma once
 
 #include <medToolBox.h>
 #include "medGuiExport.h"
@@ -31,19 +30,19 @@ class MEDGUI_EXPORT medBrowserPacsHostToolBox : public medToolBox
 
 public:
      medBrowserPacsHostToolBox(QWidget *parent = 0);
-    ~medBrowserPacsHostToolBox(void);
+    ~medBrowserPacsHostToolBox();
 
-    void readSettings(void);
-    void writeSettings(void);
+    void readSettings();
+    void writeSettings();
 
-    QString title(void);
-    QString port(void);
+    QString title();
+    QString port();
 
 protected slots:
-    void onSettingsApplied(void);
+    void onSettingsApplied();
 
 private:
     medBrowserPacsHostToolBoxPrivate *d;
 };
 
-#endif
+

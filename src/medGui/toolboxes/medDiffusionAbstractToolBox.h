@@ -18,8 +18,7 @@
  */
 
 
-#ifndef medDiffusionAbstractToolBox_H
-#define medDiffusionAbstractToolBox_H
+#pragma once
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
@@ -35,13 +34,13 @@ class MEDGUI_EXPORT medDiffusionAbstractToolBox : public medToolBox
     Q_OBJECT
 public:
              medDiffusionAbstractToolBox(QWidget *parentToolBox = 0);
-    virtual ~medDiffusionAbstractToolBox(void);
+    virtual ~medDiffusionAbstractToolBox();
 
     virtual void setDiffusionToolBox(medDiffusionSelectorToolBox *toolbox);
 
-    virtual QString description (void) const=0;
+    virtual QString description() const=0;
 
-    virtual dtkAbstractData *output (void) const;
+    virtual dtkAbstractData *output() const;
 
     /**
      * @brief Returns the plugin this custom Toolbox comes from.
@@ -49,12 +48,12 @@ public:
      * Used to fill the aboutPlugin button in the parent toolbox.
      *
      */
-    virtual dtkPlugin *plugin( void )const = 0 ;
+    virtual dtkPlugin *plugin()const = 0 ;
 
 protected:
-    medDiffusionSelectorToolBox *parentToolBox(void);
+    medDiffusionSelectorToolBox *parentToolBox();
 
     medDiffusionAbstractToolBoxPrivate *d;
 };
 
-#endif // medDiffusionAbstractToolBox_H
+

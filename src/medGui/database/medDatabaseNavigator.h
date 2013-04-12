@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATABASENAVIGATOR_H
-#define MEDDATABASENAVIGATOR_H
+#pragma once
 
 #include <QtCore>
 #include <QtGui>
@@ -35,11 +34,11 @@ class MEDGUI_EXPORT medDatabaseNavigator : public QFrame
 
 public:
      medDatabaseNavigator(QWidget *parent = 0);
-    ~medDatabaseNavigator(void);
+    ~medDatabaseNavigator();
 
-    void reset(void);
+    void reset();
 
-    Qt::Orientation orientation (void) const;
+    Qt::Orientation orientation() const;
 
 signals:
     void itemClicked(const medDataIndex& id);
@@ -78,4 +77,4 @@ private:
     medDatabaseNavigatorPrivate *d;
 };
 
-#endif // MEDDATABASENAVIGATOR_H
+

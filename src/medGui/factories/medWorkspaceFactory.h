@@ -1,5 +1,4 @@
-#ifndef MEDWORKSPACEFACTORY_H
-#define MEDWORKSPACEFACTORY_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -20,9 +19,9 @@ public:
     typedef bool (*medWorkspaceIsUsable)();
 
 public:
-    static medWorkspaceFactory *instance(void);
+    static medWorkspaceFactory *instance();
 
-    QList<QString> workspaces(void);
+    QList<QString> workspaces();
 
     /**
      * @brief Registers a medWorkspace type with the factory.
@@ -89,8 +88,8 @@ public slots:
     medWorkspace *createWorkspace(QString type,QWidget* parent=0);
 
 protected:
-     medWorkspaceFactory(void);
-    ~medWorkspaceFactory(void);
+     medWorkspaceFactory();
+    ~medWorkspaceFactory();
 
 private:
     static medWorkspaceFactory *s_instance;
@@ -122,4 +121,4 @@ struct MEDGUI_EXPORT medWorkspaceDetails{
         name(name),description(description),creator(creator),isUsable(isUsable){}
 };
 
-#endif // MEDWORKSPACEFACTORY_H
+

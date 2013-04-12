@@ -1,5 +1,4 @@
-#ifndef medTensorViewToolBox_H
-#define medTensorViewToolBox_H
+#pragma once
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
@@ -23,41 +22,41 @@ public:
 	~medTensorViewToolBox();
 
 	/** Returns the currently selected glyph shape */
-	QString glyphShape(void);
+	QString glyphShape();
 
 	/** Returns the currently selected sample rate */
-	int sampleRate(void);
+	int sampleRate();
 
 	/** Returns true is 'Flip X' checkbox is selected, false otherwise */
-	bool isFlipX(void);
+	bool isFlipX();
 
     /** Returns true is 'Flip Y' checkbox is selected, false otherwise */
-    bool isFlipY(void);
+    bool isFlipY();
 
     /** Returns true is 'Flip Z' checkbox is selected, false otherwise */
-    bool isFlipZ(void);
+    bool isFlipZ();
 
     /** Returns the currently selected eigen vector for color coding.
      * Note that is not the eigen vector index which is being returned,
      * hence the possible values are 1, 2 or 3.
      * @return the currently selected eigen vector (either 1, 2 or 3)
      */
-    int eigenVector(void);
+    int eigenVector();
 
     /** Returns the currently selected glyph resolution */
-    int glyphResolution(void);
+    int glyphResolution();
 
     /** Returns the current scale */
-    double scale(void);
+    double scale();
 
     /** Returns true is 'Hide/Show Axial' checkbox is selected, false otherwise */
-    bool isShowAxial(void);
+    bool isShowAxial();
 
     /** Returns true is 'Hide/Show Coronal' checkbox is selected, false otherwise */
-    bool isShowCoronal(void);
+    bool isShowCoronal();
 
     /** Returns true is 'Hide/Show Sagittal' checkbox is selected, false otherwise */
-    bool isShowSagittal(void);
+    bool isShowSagittal();
 
 signals:
     /** Emitted when a glyph shape is selected from the combobox */
@@ -123,4 +122,4 @@ protected:
     medTensorViewToolBoxPrivate *d;
 };
 
-#endif // medTensorViewToolBox_H
+

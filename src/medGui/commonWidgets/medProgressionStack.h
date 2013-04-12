@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDPROGRESSIONSTACK_H
-#define MEDPROGRESSIONSTACK_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -39,13 +38,13 @@ class MEDGUI_EXPORT medProgressionStack : public QWidget
 
 public:
      medProgressionStack(QWidget *parent = 0);
-    ~medProgressionStack(void);
+    ~medProgressionStack();
 
-    QSize sizeHint(void) const;
+    QSize sizeHint() const;
 
 signals:
-    void shown(void);
-    void hidden(void);
+    void shown();
+    void hidden();
     void cancelRequest(QObject*);
 
 public slots:
@@ -96,4 +95,4 @@ private:
     medProgressionStackPrivate *d;
 };
 
-#endif // MEDPROGRESSIONSTACK_H
+

@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASENAVIGATORITEM_H
-#define MEDDATABASENAVIGATORITEM_H
+#pragma once
 
 #include <QtGui/QGraphicsPixmapItem>
 
@@ -38,15 +37,15 @@ class medDatabaseNavigatorItem : public QObject, public QGraphicsPixmapItem
 
 public:
      medDatabaseNavigatorItem(const medDataIndex &index = medDataIndex(), QGraphicsItem *parent = 0);
-    ~medDatabaseNavigatorItem(void);
+    ~medDatabaseNavigatorItem();
 
-    medDatabaseNavigatorItem *clone(void);
+    medDatabaseNavigatorItem *clone();
 
     medDataIndex dataIndex() const;
 
-    QString text (void) const;
+    QString text() const;
 
-    void setup(void);
+    void setup();
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
@@ -71,4 +70,4 @@ private:
     medDatabaseNavigatorItemPrivate *d;
 };
 
-#endif // MEDDATABASENAVIGATORITEM_H
+

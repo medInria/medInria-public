@@ -1,5 +1,4 @@
-#ifndef medAbstractDbController_h__
-#define medAbstractDbController_h__
+#pragma once
 
 
 #include <medCoreExport.h>
@@ -139,7 +138,7 @@ public slots:
     /**
     * This method clears data already loaded in the database.
     */
-    virtual void clear (void);
+    virtual void clear();
 
     /**
      * @brief Checks if a medDataIndex is in the db.
@@ -151,4 +150,4 @@ public slots:
 
 };
 
-#endif // medAbstractDbController_h__
+

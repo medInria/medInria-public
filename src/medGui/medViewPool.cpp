@@ -39,10 +39,10 @@ public:
 
 medViewPool::medViewPool(QObject *parent) : QObject (parent), d (new medViewPoolPrivate)
 {
-    connect(this,SIGNAL(showInfo(QObject*,const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showInfo(QObject*,const QString&,unsigned int)));
-    connect(this,SIGNAL(showError(QObject*,const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(QObject*,const QString&,unsigned int)));
+    connect(this,SIGNAL(showInfo(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showInfo(const QString&,unsigned int)));
+    connect(this,SIGNAL(showError(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
 }
 
 medViewPool::~medViewPool(void)
@@ -192,7 +192,7 @@ void medViewPool::removeView (medAbstractView *vview)
     }
 }
 
-medAbstractView *medViewPool::daddy (void)
+medAbstractView *medViewPool::daddy()
 {
     QList< dtkSmartPointer<medAbstractView> >::iterator it = d->views.begin();
     for( ; it!=d->views.end(); it++) {
@@ -270,10 +270,10 @@ void medViewPool::onViewReg(bool value)
                         view->blockSignals(false);
                         if (view->widget()->isVisible())
                             view->update();
-                        emit showInfo (this, tr ("Automatic registration successful"),3000);
+                        emit showInfo (tr ("Automatic registration successful"),3000);
                     }
                     else {
-                        emit showError(this, tr  ("Automatic registration failed"),3000);
+                        emit showError(tr  ("Automatic registration failed"),3000);
                     }
                     process->deleteLater();
                 }
@@ -445,7 +445,7 @@ void medViewPool::onViewWindowingChanged (double level, double window, bool prop
     }
 }
 
-int medViewPool::count (void)
+int medViewPool::count()
 {
     return d->views.count();
 }

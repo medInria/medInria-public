@@ -1,5 +1,4 @@
-#ifndef medSegmentationWorkspace_H
-#define medSegmentationWorkspace_H
+#pragma once
 
 
 // /////////////////////////////////////////////////////////////////
@@ -26,12 +25,12 @@ class medSegmentationWorkspace : public medWorkspace
 public:
     medSegmentationWorkspace(QWidget * parent = NULL);
 
-    virtual ~medSegmentationWorkspace(void);
+    virtual ~medSegmentationWorkspace();
 
     //! Overrides base class.
-    QString description(void) const;
+    QString description() const;
     //! Implement base class
-    QString identifier(void) const;
+    QString identifier() const;
 
     static bool isUsable();
 
@@ -69,4 +68,4 @@ private:
     medSegmentationWorkspacePrivate *d;
 };
 
-#endif // medSegmentationWorkspace_H
+

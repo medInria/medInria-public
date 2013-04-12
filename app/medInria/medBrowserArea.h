@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDBROWSERAREA_H
-#define MEDBROWSERAREA_H
+#pragma once
 
 #include <QtGui>
 
@@ -41,7 +40,7 @@ class medBrowserArea : public QWidget
 
 public:
      medBrowserArea(QWidget *parent = 0);
-    ~medBrowserArea(void);
+    ~medBrowserArea();
 
     void setup(QStatusBar *status);
     void setdw(QStatusBar *status);
@@ -69,7 +68,7 @@ signals:
     **/
     void load(const QString& path);
 
-    void showError (QObject*,const QString&,unsigned int timeout);
+    void showError (const QString&,unsigned int timeout);
 
 public slots:
     void onSourceIndexChanged(int index);
@@ -127,4 +126,4 @@ private:
     medBrowserAreaPrivate *d;
 };
 
-#endif // MEDBROWSERAREA_H
+

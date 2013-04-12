@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASEPREVIEWITEM_H
-#define MEDDATABASEPREVIEWITEM_H
+#pragma once
 
 #include <QtGui>
 #include <QtGui/QGraphicsPixmapItem>
@@ -34,11 +33,11 @@ class medDatabasePreviewItem : public QObject, public QGraphicsPixmapItem
 
 public:
      medDatabasePreviewItem(const medDataIndex &index, QGraphicsItem *parent = 0);
-    ~medDatabasePreviewItem(void);
+    ~medDatabasePreviewItem();
 
-    medDatabasePreviewItem *clone(void);
+    medDatabasePreviewItem *clone();
 
-    medDataIndex dataIndex(void) const;
+    medDataIndex dataIndex() const;
 
     void setAllowDragging(bool isDraggingAllowed);
 
@@ -63,4 +62,4 @@ private:
     medDatabasePreviewItemPrivate *d;
 };
 
-#endif // MEDDATABASEPREVIEWITEM_H
+

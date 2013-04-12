@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medFilteringSelectorToolBoxCUSTOM_H
-#define medFilteringSelectorToolBoxCUSTOM_H
+#pragma once
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
@@ -33,17 +32,17 @@ class MEDGUI_EXPORT medFilteringAbstractToolBox : public medToolBox
 
 public:
              medFilteringAbstractToolBox(QWidget *parentToolBox = 0);
-    virtual ~medFilteringAbstractToolBox(void);
+    virtual ~medFilteringAbstractToolBox();
 
     void setFilteringToolBox(medFilteringSelectorToolBox *toolbox);
 
     virtual dtkAbstractData* processOutput() = 0;
 
 protected:
-    medFilteringSelectorToolBox *parentToolBox(void);
+    medFilteringSelectorToolBox *parentToolBox();
 
 private:
     medFilteringAbstractToolBoxPrivate *d;
 };
 
-#endif
+

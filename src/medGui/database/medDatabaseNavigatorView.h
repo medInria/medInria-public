@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASENAVIGATORVIEW_H
-#define MEDDATABASENAVIGATORVIEW_H
+#pragma once
 
 #include <QtCore>
 #include <QtGui>
@@ -33,11 +32,11 @@ class medDatabaseNavigatorView : public QGraphicsView
 
 public:
      medDatabaseNavigatorView(QWidget *parent = 0);
-    ~medDatabaseNavigatorView(void);
+    ~medDatabaseNavigatorView();
 
     void setScene(QGraphicsScene *scene);
 
-    Qt::Orientation orientation (void) const;
+    Qt::Orientation orientation() const;
     
 public slots:
     void setOrientation (Qt::Orientation orientation);
@@ -52,4 +51,4 @@ private:
     medDatabaseNavigatorViewPrivate *d;
 };
 
-#endif // MEDDATABASENAVIGATORVIEW_H
+

@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASENAVIGATORSCENE_H
-#define MEDDATABASENAVIGATORSCENE_H
+#pragma once
 
 #include <QtGui>
 
@@ -29,17 +28,17 @@ class medDatabaseNavigatorScene : public QGraphicsScene
 {
 public:
      medDatabaseNavigatorScene(QObject *parent = 0);
-    ~medDatabaseNavigatorScene(void);
+    ~medDatabaseNavigatorScene();
 
     void addGroup(medDatabaseNavigatorItemGroup *group);
 
-    void reset(void);
+    void reset();
 
     void setOrientation (Qt::Orientation orientation);
-    Qt::Orientation orientation (void) const;
+    Qt::Orientation orientation() const;
 
 private:
     medDatabaseNavigatorScenePrivate *d;
 };
 
-#endif // MEDDATABASENAVIGATORSCENE_H
+

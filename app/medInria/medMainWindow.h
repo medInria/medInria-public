@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDMAINWINDOW_H
-#define MEDMAINWINDOW_H
+#pragma once
 
 #include <QtGui/QMainWindow>
 #include <QUuid>
@@ -31,37 +30,53 @@ class medMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-     medMainWindow(QWidget *parent = 0);
-    ~medMainWindow(void);
 
-    void readSettings(void);
+     typedef enum { HomePage, Browser, WorkSpace } AreaType;
+
+     medMainWindow(QWidget *parent = 0);
+    ~medMainWindow();
+
+    void readSettings();
     void writeSettings();
 
-    void updateQuickAccessMenu(void);
+    void setStartup(const AreaType areaIndex,const QStringList& filenames);
     void resizeEvent( QResizeEvent * event );
 
 public slots:
-    void setWallScreen(bool full);
-    void setFullScreen(bool full);
+    void setWallScreen(const bool full);
+    void setFullScreen(const bool full);
 
     /**
      * @brief Switches from the Fullscreen mode to the normal mode.
      *
      */
-    void switchFullScreen(void);
+    void switchFullScreen();
+    void switchToArea(const AreaType areaIndex);
 
-    void switchToBrowserArea(void);
-    void switchToWorkspaceArea(void);
-    void switchToHomepageArea(void);
+private slots:
 
-    void onShowWorkspace(QString workspace);
-    void onShowQuickAccess(void);
-    void onHideQuickAccess(void);
+    void captureScreenshot();
+
+    void switchToBrowserArea();
+    void switchToWorkspaceArea();
+    void switchToHomepageArea();
+
+    void showWorkspace(QString workspace);
+    void showQuickAccess();
+    void hideQuickAccess();
+    void showShortcutAccess();
+    void hideShortcutAccess();
     void onWorkspaceTriggered(QAction *action);
-    void onQuit(void);
-    void onSaveModified(void);
-    void onNoQuit(void);
-    void onEditSettings(void);
+    void onQuit();
+    void onSaveModified();
+    void onNoQuit();
+    void onEditSettings();
+
+    void availableSpaceOnStatusBar();
+    //  @brief React to to new medInria instance.
+    //  @param message
+
+    void onNewInstance(const QString& message);
 
     /**
      * @brief: Decides what to do when the importer returned a medDataIndex after importation.
@@ -118,6 +133,9 @@ protected:
     void closeEvent(QCloseEvent *event);
 
     void mousePressEvent(QMouseEvent * event);
+    
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
     /**
      * all initial registering should be done here
@@ -128,4 +146,4 @@ private:
     medMainWindowPrivate *d;
 };
 
-#endif // MEDMAINWINDOW_H
+

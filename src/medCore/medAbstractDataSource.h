@@ -1,5 +1,4 @@
-#ifndef MEDABSTRACTDATASOURCE_H
-#define MEDABSTRACTDATASOURCE_H
+#pragma once
 
 #include <QWidget>
 #include <QtCore>
@@ -22,7 +21,7 @@ class MEDCORE_EXPORT medAbstractDataSource : public QObject
 
 public:
     medAbstractDataSource(QWidget *parent = 0);
-    ~medAbstractDataSource(void);
+    ~medAbstractDataSource();
 
     /**
     * Returns the main view widget
@@ -43,7 +42,7 @@ public:
     virtual QList<medToolBox*> getToolBoxes() = 0;
 	
 	/** Returns a short description of the data source */
-	virtual QString description(void) const = 0;
+	virtual QString description() const = 0;
 	
 signals:
     /** A source data may emit a signal to a file on disk when it successfully received the data and is ready for importing*/
@@ -70,4 +69,4 @@ signals:
     void dataRemoved(const medDataIndex& index);
 };
 
-#endif
+

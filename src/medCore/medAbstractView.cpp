@@ -147,7 +147,7 @@ void medAbstractView::setLinkPosition (bool value)
         setProperty("PositionLinked","false");
 }
 
-bool medAbstractView::positionLinked (void) const
+bool medAbstractView::positionLinked() const
 {
     return d->linkPosition;
 }
@@ -157,7 +157,7 @@ void medAbstractView::setLinkWindowing (bool value)
     d->linkWindowing = value;
 }
 
-bool medAbstractView::windowingLinked (void) const
+bool medAbstractView::windowingLinked() const
 {
     return d->linkWindowing;
 }
@@ -167,7 +167,7 @@ void medAbstractView::setLinkCamera (bool value)
     d->linkCamera = value;
 }
 
-bool medAbstractView::cameraLinked (void) const
+bool medAbstractView::cameraLinked() const
 {
     return d->linkCamera;
 }

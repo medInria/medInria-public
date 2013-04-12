@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDDATABASENONPERSISTENTIMPORTER_H
-#define MEDDATABASENONPERSISTENTIMPORTER_H
+#pragma once
 
 #include <QtCore/QObject>
 
@@ -45,9 +44,9 @@ class medDatabaseNonPersistentImporter : public medJobItem
 public:
      medDatabaseNonPersistentImporter(dtkAbstractData *data,
                                       const QString& callerUuid);
-    ~medDatabaseNonPersistentImporter(void);
+    ~medDatabaseNonPersistentImporter();
 
-    void run(void);
+    void run();
 
 public slots:
     void onCancel(QObject*);
@@ -61,4 +60,4 @@ private:
 };
 
 
-#endif
+

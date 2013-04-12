@@ -130,7 +130,7 @@ void medDatabaseNavigatorItemGroup::setOrientation (Qt::Orientation orientation)
         addItem (item);
 }
 
-Qt::Orientation medDatabaseNavigatorItemGroup::orientation (void) const
+Qt::Orientation medDatabaseNavigatorItemGroup::orientation() const
 {
     return d->orientation;
 }

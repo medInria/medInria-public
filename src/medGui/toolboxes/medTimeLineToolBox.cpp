@@ -313,7 +313,7 @@ unsigned int medTimeLineToolBox::getSliderValueFromTime (double t)
     return value;
 }
 
-void medTimeLineToolBox::updateRange (void)
+void medTimeLineToolBox::updateRange()
 {
     if (!d->interactors.size())
         return;

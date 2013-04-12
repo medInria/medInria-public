@@ -78,6 +78,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   commonWidgets/medGroupBox.h
   commonWidgets/medMultipleImageSelectionWidget.h
   commonWidgets/medThumbnailContainer.h
+  commonWidgets/medHomepageButton.h
 
   # factories
   factories/medSettingsWidgetFactory.h
@@ -162,6 +163,7 @@ set(${PROJECT_NAME}_SOURCES
   commonWidgets/medGroupBox.cpp
   commonWidgets/medMultipleImageSelectionWidget.cpp
   commonWidgets/medThumbnailContainer.cpp
+  commonWidgets/medHomepageButton.cpp
 
   # db related items
   database/medDatabaseSearchPanel.cpp
@@ -282,7 +284,7 @@ target_link_libraries(${PROJECT_NAME}
 SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
 SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
-if (BUILD_TESTING)
+if (MEDINRIA_BUILD_TESTING)
   add_subdirectory (Testing)
 endif()
 

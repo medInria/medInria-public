@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medBrowserPacsNodesToolBox_H
-#define medBrowserPacsNodesToolBox_H
+#pragma once
 
 #include <medToolBox.h>
 #include "medGuiExport.h"
@@ -31,19 +30,19 @@ class MEDGUI_EXPORT medBrowserPacsNodesToolBox : public medToolBox
 
 public:
      medBrowserPacsNodesToolBox(QWidget *parent = 0);
-    ~medBrowserPacsNodesToolBox(void);
+    ~medBrowserPacsNodesToolBox();
 
-    void readSettings(void);
+    void readSettings();
 
-    void writeSettings(void);
+    void writeSettings();
 
 signals:
     void nodesUpdated();
     void echoRequest();
 
 public slots:
-    void addNode(void);
-    void remNode(void);
+    void addNode();
+    void remNode();
     void onEchoResponse(QVector<bool>);
 
 private:
@@ -53,4 +52,4 @@ private:
     medBrowserPacsNodesToolBoxPrivate *d;
 };
 
-#endif
+

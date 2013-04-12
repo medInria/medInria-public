@@ -1,5 +1,4 @@
-#ifndef MEDQTVIEW_H
-#define MEDQTVIEW_H
+#pragma once
 
 #include "medTestExport.h"
 
@@ -18,17 +17,17 @@ public:
              medQtView();
     virtual ~medQtView();
 
-    virtual QString description(void) const;
+    virtual QString description() const;
 
     static QString s_description();
     static bool registered();
 
-    QWidget *widget(void);
+    QWidget *widget();
 
     void setData (dtkAbstractData *data);
     void setData (dtkAbstractData *data, int layer);
 
-    void *data(void);
+    void *data();
     void *data(int layer);
     virtual medAbstractViewCoordinates * coordinates() {return NULL;}
 protected:
@@ -36,4 +35,4 @@ private:
     medQtViewPrivate *d;
 };
 
-#endif
+

@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDTABBEDVIEWCONTAINERS_H
-#define MEDTABBEDVIEWCONTAINERS_H
+#pragma once
 
 #include <QtGui>
 
@@ -51,7 +50,7 @@ public:
      *
      * @param void
     */
-    ~medTabbedViewContainers(void);
+    ~medTabbedViewContainers();
 
     /**
      * @brief Gets the currently displayed container.
@@ -59,7 +58,7 @@ public:
      * @param void
      * @return medViewContainer *
     */
-    medViewContainer *current(void) const;
+    medViewContainer *current() const;
     
     /**
      * @brief Gets the name of the current container.
@@ -68,7 +67,7 @@ public:
      * @param void
      * @return QString
     */
-    QString currentName(void) const;
+    QString currentName() const;
 
     /**
      * @brief Adds a container to the stack.
@@ -187,14 +186,27 @@ public slots:
      * @param index the tab index.
     */
     void onCurrentContainerChanged(int index);
-
+    
     /**
      * @brief Changes the type of the current container to name.
      *
      * @param name the container description.
-    */
+     */
     void changeCurrentContainerType(const QString &name);
+    
+    /**
+     * @brief Changes the name of the current tab.
+     *
+     * @param name the new tab name.
+     */
+    void changeCurrentContainerName(const QString &name);
 
+    /**
+     * @brief Deletes the container at current index (connected from close shortcut).
+     *
+     */
+    void deleteContainerShortcutActivated();
+    
     /**
      * @brief Deletes the container at index (if not the last one in the stack).
      *
@@ -206,4 +218,4 @@ private:
     medTabbedViewContainersPrivate *d;
 };
 
-#endif
+

@@ -1,6 +1,5 @@
 
-#ifndef MEDABSTRACTPACSSTORESCP_H
-#define MEDABSTRACTPACSSTORESCP_H
+#pragma once
 
 #include <QtCore/QObject>
 #include "medPacsExport.h"
@@ -10,8 +9,8 @@ class MEDPACS_EXPORT medAbstractPacsStoreScp : public QObject
     Q_OBJECT
 
 public:
-    medAbstractPacsStoreScp(void);
-    virtual ~medAbstractPacsStoreScp(void);
+    medAbstractPacsStoreScp();
+    virtual ~medAbstractPacsStoreScp();
 
     virtual  int start(const char* ourTitle, const char* ourIP, unsigned int ourPort);
 
@@ -24,4 +23,4 @@ signals:
 
 };
 
-#endif
+

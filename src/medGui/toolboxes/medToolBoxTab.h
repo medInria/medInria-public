@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDTOOLBOXTAB_H
-#define MEDTOOLBOXTAB_H
+#pragma once
 
 #include "medGuiExport.h"
 
@@ -33,7 +32,7 @@ class MEDGUI_EXPORT medToolBoxTab : public QTabWidget
 
 public:
      medToolBoxTab(QWidget *parent = NULL);
-    ~medToolBoxTab(void);
+    ~medToolBoxTab();
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -42,4 +41,4 @@ private:
     medToolBoxTabPrivate *d;
 };
 
-#endif
+

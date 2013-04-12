@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef medBrowserPacsSearchToolBox_H
-#define medBrowserPacsSearchToolBox_H
+#pragma once
 
 #include <medToolBox.h>
 #include "medGuiExport.h"
@@ -31,16 +30,16 @@ class MEDGUI_EXPORT medBrowserPacsSearchToolBox : public medToolBox
 
 public:
      medBrowserPacsSearchToolBox(QWidget *parent = 0);
-    ~medBrowserPacsSearchToolBox(void);
+    ~medBrowserPacsSearchToolBox();
 
 signals:
     void search(QString query);
 
 protected slots:
-    void onSearch(void);
+    void onSearch();
 
 private:
     medBrowserPacsSearchToolBoxPrivate *d;
 };
 
-#endif
+

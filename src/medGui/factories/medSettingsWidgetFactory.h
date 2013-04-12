@@ -1,5 +1,4 @@
-#ifndef MEDSETTINGSWIDGETFACTORY_H
-#define MEDSETTINGSWIDGETFACTORY_H
+#pragma once
 
 #include "medGuiExport.h"
 #include <dtkCore/dtkAbstractFactory.h>
@@ -37,7 +36,7 @@ public:
    * @param void
    * @return medSettingsWidgetFactory * Factory instance
   */
-  static medSettingsWidgetFactory * instance(void);
+  static medSettingsWidgetFactory * instance();
   /**
    * @brief Registers a new widget type, and its creator function.
    *
@@ -97,7 +96,7 @@ protected:
    *
    * @param void
   */
-  medSettingsWidgetFactory(void);
+  medSettingsWidgetFactory();
 
   /**
    * @brief Destructor, not to be used by users.
@@ -106,7 +105,7 @@ protected:
    *
    * @param void
   */
-  ~medSettingsWidgetFactory(void);
+  ~medSettingsWidgetFactory();
 
 private:
   static medSettingsWidgetFactory * s_instance; /**< TODO */
@@ -144,4 +143,4 @@ struct MEDGUI_EXPORT medSettingDetails{
         creator(creator){}
 };
 
-#endif // MEDSETTINGSWIDGETFACTORY_H
+

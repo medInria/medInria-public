@@ -17,8 +17,7 @@
  * 
  */
 
-#ifndef MEDDATABASECONTROLLER_H
-#define MEDDATABASECONTROLLER_H
+#pragma once
 
 #include "medSqlExport.h"
 #include "medDatabaseControllerImpl.h"
@@ -38,12 +37,12 @@ public:
     * get an instance of medDatabaseControllerImpl, not of medDatabaseController
     * @return QPointer<medDbController>
     */
-    static QPointer<medDatabaseControllerImpl> instance(void);
+    static QPointer<medDatabaseControllerImpl> instance();
     
     /**
     * destroy instance of medDbController
     */
-    static void destroy(void);
+    static void destroy();
 
 private:
     static medDatabaseControllerImpl *s_instance;
@@ -51,4 +50,4 @@ private:
 
 MEDSQL_EXPORT medAbstractDbController* createDbController();
 
-#endif
+
