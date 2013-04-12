@@ -20,17 +20,8 @@ Please install this program and reconfigure.")
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     endif()
 
-    #   Silently ignore the error if the hooks directory is read-only.
+    #   Install the git pre-commit hook.
 
-    execute_process(
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/utils/git/pre-commit
-                                         ${CMAKE_SOURCE_DIR}/.git/hooks/pre-commit
-        OUTPUT_VARIABLE _output
-        ERROR_VARIABLE  _output
-        RESULT_VARIABLE _result
-    )
-
-    if(_result AND NOT "${_output}" MATCHES "Error copying file")
-        message("${_output}")
-    endif()
+    set(WARNING_MESSAGE "WARNING: DO NOT MODIFY\n# This file has been automatically generated from utils/git/pre-commit.")
+    configure_file(${CMAKE_SOURCE_DIR}/utils/git/pre-commit ${CMAKE_SOURCE_DIR}/.git/hooks/pre-commit @ONLY)
 endif()

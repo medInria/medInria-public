@@ -1,11 +1,8 @@
 #!/bin/sh
 #
-# An example hook script to verify what is about to be committed.
-# Called by "git commit" with no arguments.  The hook should
-# exit with non-zero status after issuing an appropriate message if
-# it wants to stop the commit.
-#
-# To enable this hook, rename this file to "pre-commit".
+# @WARNING_MESSAGE@
+# If you just want to add another hook, add it to
+# utils/git/medInria-hooks.sh
 
 if git rev-parse --verify HEAD >/dev/null 2>&1
 then
