@@ -99,7 +99,19 @@ target_link_libraries(vtkLandmarkManagement
   ${vtkLandmarkManagement_LIBS}
 )
 
-INSTALL_TARGETS(/lib vtkLandmarkManagement)
+
+## #################################################################
+## Install rules
+## #################################################################
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
+  
+  install(TARGETS vtkLandmarkManagement
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
 
 if (VTKINRIA_BUILD_TESTING)
   add_subdirectory(Testing)
