@@ -1,0 +1,2 @@
+5 21   * * * /home/dashboardBuilds/vtkINRIA3D/src/Scripts/open_dashboard.sh
+0,15,30,45 * * * * /home/dashboardBuilds/vtkINRIA3D/src/Scripts/rollupdashboard.sh
