@@ -561,7 +561,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type,QString a
     if (type==algorithm)
         medDataManager::instance()->importNonPersistent(output);
 
-    d->process = NULL; // will trigger to a deleteLater
+    d->process = NULL; // will trigger a deleteLater
     
     if(output)
     {   
