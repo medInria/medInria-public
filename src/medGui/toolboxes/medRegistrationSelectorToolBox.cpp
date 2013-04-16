@@ -57,6 +57,7 @@ public:
 
     medRegistrationAbstractToolBox * undoRedoToolBox;
     medRegistrationAbstractToolBox * customToolBox;
+    QString nameOfCurrentAlgorithm;
 };
 
 medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medRegistrationSelectorToolBoxPrivate)
@@ -69,6 +70,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     d->process = NULL;
     d->undoRedoProcess = NULL;
     d->undoRedoToolBox = NULL;
+    d->nameOfCurrentAlgorithm = "";
 
     // Process section
     d->saveImageButton = new QPushButton(tr("Export Image"),this);
@@ -90,7 +92,6 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
                     " amongst the loaded plugins" ));
     d->toolboxes->setStyleSheet("QComboBox{margin-top: 5px}");
     medToolBoxFactory* tbFactory =medToolBoxFactory::instance();
-    int i=1;
     
     foreach(QString toolbox, tbFactory->toolBoxesFromCategory("UndoRedoRegistration")){
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
@@ -105,7 +106,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
             d->undoRedoToolBox->setRegistrationToolBox(this);
         }
     }
-    
+    int i=1;
     foreach(QString toolbox, tbFactory->toolBoxesFromCategory("registration"))
     {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
@@ -325,12 +326,13 @@ void medRegistrationSelectorToolBox::onToolBoxChosen(int index)
     QString id = d->toolboxes->itemData(index).toString();
 
     medRegistrationAbstractToolBox *toolbox = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id,this));
-
-
+    
     if(!toolbox) {
         qWarning() << "Unable to instantiate" << id << "toolbox";
         return;
     }
+
+    d->nameOfCurrentAlgorithm = medToolBoxFactory::instance()->toolBoxDetailsFromId(id)->name;
 
     toolbox->setRegistrationToolBox(this);
     //get rid of old toolBox
@@ -345,9 +347,11 @@ void medRegistrationSelectorToolBox::onToolBoxChosen(int index)
 
     connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));
     connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
-    
-    connect (toolbox, SIGNAL (success()),this,SLOT(enableUndoRedoToolBox()));
-    connect (toolbox, SIGNAL (failure()),this,SLOT(enableUndoRedoToolBox()));
+    connect (toolbox, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
+    connect (toolbox, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
+
+    if (!d->undoRedoProcess && !d->undoRedoToolBox)
+        connect(toolbox,SIGNAL(success()),this,SLOT(handleOutput()));
 }
 
 /** 
@@ -396,6 +400,11 @@ dtkAbstractProcess * medRegistrationSelectorToolBox::undoRedoProcess()
 void medRegistrationSelectorToolBox::setUndoRedoProcess(dtkAbstractProcess *proc)
 {
     d->undoRedoProcess = proc;
+}
+
+QString medRegistrationSelectorToolBox::getNameOfCurrentAlgorithm()
+{
+    return d->nameOfCurrentAlgorithm;
 }
 
 //! Saves the registered image.
@@ -504,12 +513,14 @@ void medRegistrationSelectorToolBox::onSaveTrans()
 
 // TODO CHANGE COMMENTARY
 //! If the registration has ended well, it sets the output's metaData and reset the movingView and fuseView with the registered image.
-void medRegistrationSelectorToolBox::handleOutput(QString type,QString algoName)
-{
-    dtkSmartPointer<dtkAbstractData> output(d->undoRedoProcess->output()); //initialisation
+void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type,QString algoName)
+{   
+    dtkSmartPointer<dtkAbstractData> output(NULL); //initialisation : UGLY but necessary
     
-    if (type=="algorithm")
+    if (type==algorithm)
         output = d->process->output();
+    else
+        output = d->undoRedoProcess->output();
     
     foreach(QString metaData, d->fixedData->metaDataList())
         output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
@@ -519,32 +530,36 @@ void medRegistrationSelectorToolBox::handleOutput(QString type,QString algoName)
 
     // We manage the new description of the image
     QString newDescription = d->movingData->metadata(medMetaDataKeys::SeriesDescription.key());
-    if (type=="algorithm" || type=="redo")
+    if (type==algorithm || type==redo)
+    {
+        if (type==algorithm)
+        {
+            algoName = d->nameOfCurrentAlgorithm.remove(" "); // we remove the spaces to reduce the size of the QString as much as possible
+        }
         if (newDescription.contains("registered"))
-            newDescription += "-"+algoName + "\n";
+            newDescription += "-"+ algoName + "\n";
         else
             newDescription += " registered\n-" + algoName+ "\n";
-    else if (type=="undo")
+    }
+    else if (type==undo)
     {
         newDescription.remove(newDescription.lastIndexOf("-"),newDescription.size()-1); 
         if (newDescription.count("-") == 0)
             newDescription.remove(" registered\n");
     }
-    else if (type=="reset")
+    else if (type==reset)
         if (newDescription.lastIndexOf(" registered")!=-1)
             newDescription.remove(newDescription.lastIndexOf(" registered"),newDescription.size()-1);
         else
             return;
-    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
-    //
 
+    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
+    
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
     output->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
-    if (type=="algorithm")
+    if (type==algorithm)
         medDataManager::instance()->importNonPersistent(output);
-    
-    d->process = NULL; // will trigger a deleteLater
     
     if(output)
     {   
@@ -565,9 +580,8 @@ void medRegistrationSelectorToolBox::handleOutput(QString type,QString algoName)
      }
 }
 
-void medRegistrationSelectorToolBox::enableUndoRedoToolBox(bool enable){
-    if (d->undoRedoToolBox)
-        d->undoRedoToolBox->setEnabled(enable);
+void medRegistrationSelectorToolBox::enableSelectorToolBox(bool enable){
+    this->setEnabled(enable);
 }
 
 void medRegistrationSelectorToolBox::onJobAdded(medJobItem* item, QString jobName){
@@ -575,7 +589,7 @@ void medRegistrationSelectorToolBox::onJobAdded(medJobItem* item, QString jobNam
         if (jobName == d->process->identifier()){
             dtkAbstractProcess * proc = static_cast<medRunnableProcess*>(item)->getProcess();
             if (proc==d->process)
-                enableUndoRedoToolBox(false);
+                enableSelectorToolBox(false);
         }
 }
 
