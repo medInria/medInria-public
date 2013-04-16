@@ -99,7 +99,7 @@ void undoRedoRegistrationToolBox::onUndo()
     {
         updatePositionArrow(d->currentStep+1);
         d->m_UndoRedo->undo();
-        this->parentToolBox()->handleOutput("undo");
+        this->parentToolBox()->handleOutput(medRegistrationSelectorToolBox::undo);
         d->redoButton->setEnabled(true);
     }
     
@@ -117,7 +117,7 @@ void undoRedoRegistrationToolBox::onRedo()
     {
         updatePositionArrow(d->currentStep-1);
         d->m_UndoRedo->redo();
-        this->parentToolBox()->handleOutput("redo",d->transformationStack->item(d->currentStep)->text().remove(" "));
+        this->parentToolBox()->handleOutput(medRegistrationSelectorToolBox::redo,d->transformationStack->item(d->currentStep)->text().remove(" "));
         d->undoButton->setEnabled(true);
         d->resetButton->setEnabled(true);
     }
@@ -139,8 +139,8 @@ void undoRedoRegistrationToolBox::onTransformationStackReset(void)
     d->resetButton->setEnabled(false);
     
     registrationFactory::instance()->getItkRegistrationFactory()->Modified();
-    d->m_UndoRedo->generateOutput("reset");
-    this->parentToolBox()->handleOutput("reset");
+    d->m_UndoRedo->generateOutput();
+    this->parentToolBox()->handleOutput(medRegistrationSelectorToolBox::reset);
 }
 
 void undoRedoRegistrationToolBox::addTransformationIntoList(int i, QStringList * methodParameters){
@@ -160,7 +160,8 @@ void undoRedoRegistrationToolBox::addTransformationIntoList(int i, QStringList *
             delete tmp;
         }  
         d->currentStep = 0;
-        d->transformationStack->insertItem(d->currentStep,QString::number(d->transformationStack->count()+1)+ ". " + methodParameters->at(0)); 
+        
+        d->transformationStack->insertItem(d->currentStep,QString::number(d->transformationStack->count()+1)+ ". " + this->parentToolBox()->getNameOfCurrentAlgorithm().remove(" ")); 
         d->transformationStack->item(d->currentStep)->setToolTip(buffer);
         d->transformationStack->item(d->currentStep)->setIcon(d->arrowCurrentStep);
         d->transformationStack->item(d->currentStep)->setForeground(QColor(0,200,0));
@@ -197,7 +198,7 @@ void undoRedoRegistrationToolBox::setRegistrationToolBox(medRegistrationSelector
 void undoRedoRegistrationToolBox::onRegistrationSuccess(){
     registrationFactory::instance()->addTransformation(static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTransform(),static_cast<itkProcessRegistration*>(this->parentToolBox()->process())->getTitleAndParameters());
     registrationFactory::instance()->getItkRegistrationFactory()->Modified();
-    d->m_UndoRedo->generateOutput("algorithm",this->parentToolBox()->process());
-    this->parentToolBox()->handleOutput("algorithm",d->transformationStack->item(d->currentStep)->text().remove(" "));
+    d->m_UndoRedo->generateOutput(true,this->parentToolBox()->process());
+    this->parentToolBox()->handleOutput();
 }
 
