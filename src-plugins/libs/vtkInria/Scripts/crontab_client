@@ -1,3 +1,0 @@
-0 8  * * * /home/dashboardBuilds/vtkINRIA3D/src/Scripts/continuous.sh
-0 22 * * * /home/dashboardBuilds/vtkINRIA3D/src/Scripts/nightly.sh
-0 23 * * * /home/dashboardBuilds/vtkINRIA3D/src/Scripts/experimental.sh
