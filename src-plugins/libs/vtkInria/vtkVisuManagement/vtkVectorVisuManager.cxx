@@ -1,20 +1,16 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkVectorVisuManager.cxx 1112 2009-03-06 16:04:12Z ntoussaint $
-Language:  C++
-Author:    $Author: ntoussaint $
-Date:      $Date: 2009-03-06 17:04:12 +0100 (Fri, 06 Mar 2009) $
-Version:   $Revision: 1112 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
+
 #include "vtkVectorVisuManager.h"
 
 #include <vtkProperty.h>

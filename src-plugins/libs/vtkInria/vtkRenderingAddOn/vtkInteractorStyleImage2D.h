@@ -1,21 +1,17 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkInteractorStyleImage2D.h 1223 2009-08-06 07:21:42Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2009-08-06 09:21:42 +0200 (Thu, 06 Aug 2009) $
-Version:   $Revision: 1223 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
-// version vtkRenderingAddOn
+
+
 #pragma once
 
 #include "vtkRenderingAddOnExport.h"

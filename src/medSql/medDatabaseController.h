@@ -1,21 +1,15 @@
-/* medDatabaseController.h --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Mar 31 11:05:10 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Sun Jun 27 17:39:21 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 19
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ MedInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

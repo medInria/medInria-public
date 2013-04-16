@@ -1,21 +1,15 @@
-/* medToolBox.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Oct  9 19:41:48 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Mon Dec 20 12:51:04 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 83
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

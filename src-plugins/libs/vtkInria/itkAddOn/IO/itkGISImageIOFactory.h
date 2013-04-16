@@ -1,18 +1,13 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: CodeCopyright.txt 1182 2009-06-30 09:19:05Z acanale $
-Language:  C++
-Author:    $Author: $
-Date:      $Date: 2009-06-30 11:19:05 +0200 (mar, 30 jun 2009) $
-Version:   $Revision: 1182 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
 

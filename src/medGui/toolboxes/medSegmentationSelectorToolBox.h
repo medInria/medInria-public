@@ -1,21 +1,15 @@
-/* medSegmentationSelectorToolBox.h ---
- *
- * Author: John Stark
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Feb 19 09:02:09 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Nov 10 16:36:24 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 47
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

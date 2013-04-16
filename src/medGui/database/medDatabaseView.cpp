@@ -1,21 +1,15 @@
-/* medDatabaseView.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Mar 31 13:18:20 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Wed Oct  6 19:08:51 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 126
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medDatabaseView.h"
 #include <medDataManager.h>

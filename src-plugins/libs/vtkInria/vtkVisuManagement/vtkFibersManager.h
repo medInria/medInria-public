@@ -1,20 +1,16 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkFibersManager.h 1467 2010-02-17 23:31:08Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2010-02-18 00:31:08 +0100 (Thu, 18 Feb 2010) $
-Version:   $Revision: 1467 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
+
 #pragma once
 
 #include "vtkVisuManagementExport.h"

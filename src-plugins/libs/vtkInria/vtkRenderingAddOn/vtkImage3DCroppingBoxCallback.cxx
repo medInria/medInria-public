@@ -1,21 +1,17 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkImage3DCroppingBoxCallback.cxx 1133 2009-03-18 17:37:24Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2009-03-18 18:37:24 +0100 (Wed, 18 Mar 2009) $
-Version:   $Revision: 1133 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
-// version vtkRenderingAddOn
+
+
 #include <vtkRenderingAddOn/vtkImage3DCroppingBoxCallback.h>
 
 #include <vtkBoxWidget.h>

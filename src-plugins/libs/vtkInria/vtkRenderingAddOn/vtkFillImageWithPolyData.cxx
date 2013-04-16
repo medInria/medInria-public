@@ -1,21 +1,17 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkFillImageWithPolyData.cxx 1209 2009-07-28 15:39:04Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2009-07-28 17:39:04 +0200 (Tue, 28 Jul 2009) $
-Version:   $Revision: 1209 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
-// version vtkRenderingAddOn
+
+
 #include <vtkRenderingAddOn/vtkFillImageWithPolyData.h>
 
 #include "vtkImageData.h"

@@ -1,20 +1,16 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: itkRigidRegistrationMethod.cxx 1 2008-01-22 19:01:33Z fdru, dbarbeau $
-Language:  C++
-Author:    $Author: fdru, dbarbeau $
-Date:      $Date: 2008-01-22 20:01:33 +0100 (Tue, 22 Jan 2008) $
-Version:   $Revision: 1 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
+
 #pragma once
 
 #include "itkRigidRegistrationMethod.h"

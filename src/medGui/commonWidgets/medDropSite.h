@@ -1,21 +1,15 @@
-/* medDropSite.h --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Feb 19 17:39:32 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Mar  2 15:44:37 2011 (+0100)
- *           By: Jaime Garcia_Guevara
- *     Update #: 10
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ MedInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

@@ -1,21 +1,15 @@
-/* medViewManager.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Mon Dec 21 12:47:51 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Mon Dec 20 08:52:49 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 38
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medViewManager.h"
 

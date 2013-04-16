@@ -1,21 +1,15 @@
-/* medVisualizationWorkspace.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Thu May 13 14:11:43 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Thu May 13 14:22:37 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 5
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

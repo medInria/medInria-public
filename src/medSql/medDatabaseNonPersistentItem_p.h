@@ -1,21 +1,15 @@
-/* medDatabaseNonPersitentItem_p.h --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Sun Jun 27 18:51:32 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Sun Jun 27 18:54:12 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 7
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ MedInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

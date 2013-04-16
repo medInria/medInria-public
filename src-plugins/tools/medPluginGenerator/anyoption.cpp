@@ -1,63 +1,15 @@
-/*
- * AnyOption 1.3  
- *
- * kishan at hackorama dot com  www.hackorama.com JULY 2001 
- *
- * + Acts as a common facade class for reading 
- *   commandline options as well as options from
- *   an optionfile with delimited type value pairs 
- *
- * + Handles the POSIX style single character options ( -w )
- *   as well as the newer GNU long options ( --width )
- * 
- * + The option file assumes the traditional format of
- *   first character based comment lines and type value
- *   pairs with a delimiter , and flags which are not pairs
- * 
- *  	# this is a coment
- *  	# next line is an option value pair
- *  	width : 100
- *     	# next line is a flag 
- *      noimages   
- * 
- * + Supports printing out Help and Usage  
- * 
- * + Why not just use getopt() ? 
- *
- *   getopt() Its a POSIX standard not part of ANSI-C. 
- *   So it may not be available on platforms like Windows.
- *
- * + Why it is so long ?
- *
- *   The actual code which does command line parsing 
- *   and option file parsing are done in  few methods. 
- *   Most of the extra code are for providing a flexible
- *   common public interface to both a resourcefile and
- *   and command line supporting POSIX style and  
- *   GNU long option as well as mixing of both. 
- * 
- * + Please see "anyoption.h" for public method descriptions 
- *   
- */
+/*=========================================================================
 
-/* Updated Auguest 2004 
- * Fix from  Michael D Peters (mpeters at sandia.gov) 
- * to remove static local variables, allowing multiple instantiations 
- * of the reader (for using multiple configuration files).  There is
- * an error in the destructor when using multiple instances, so you
- * cannot delete your objects (it will crash), but not calling the 
- * destructor only introduces a small memory leak, so I
- * have not bothered tracking it down.
- *
- * Also updated to use modern C++ style headers, rather than
- * depricated iostream.h (it was causing my compiler problems)
- */
+ MedInria
 
-/* 
- * Updated September 2006  
- * Fix from Boyan Asenov for a bug in mixing up option indexes 
- * leading to exception when mixing different options types
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "anyoption.h"
 

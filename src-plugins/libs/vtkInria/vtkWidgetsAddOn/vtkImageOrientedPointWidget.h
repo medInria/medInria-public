@@ -1,60 +1,52 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkImageOrientedPointWidget.h 1284 2009-10-13 15:19:31Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2009-10-13 17:19:31 +0200 (Tue, 13 Oct 2009) $
-Version:   $Revision: 1284 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
-// .NAME vtkImageOrientedPointWidget - 3D widget for tracing on planar props.
-// .SECTION Description
-// vtkImageOrientedPointWidget is different from other widgets in three distinct ways:
-// 1) any sub-class of vtkProp can be input rather than just vtkProp3D, so that
-// vtkImageActor can be set as the prop and then traced over, 2) the widget fires
-// pick events at the input prop to decide where to move its handles, 3) the
-// widget has 2D glyphs for handles instead of 3D spheres as is done in other
-// sub-classes of vtk3DWidget. This widget is primarily designed for manually
-// tracing over image data.
-// The button actions and key modifiers are as follows for controlling the
-// widget:
-// 1) left button click over the image, hold and drag draws a free hand line.
-// 2) left button click and release erases the widget line,
-// if it exists, and repositions the first handle.
-// 3) middle button click starts a snap drawn line.  The line is terminated by 
-// clicking the middle button while depressing the ctrl key.
-// 4) when tracing a continuous or snap drawn line, if the last cursor position
-// is within a specified tolerance to the first handle, the widget line will form
-// a closed loop.
-// 5) right button clicking and holding on any handle that is part of a snap
-// drawn line allows handle dragging: existing line segments are updated
-// accordingly.  If the path is open and AutoClose is set to On, the path can
-// be closed by repositioning the first and last points over one another.
-// 6) ctrl key + right button down on any handle will erase it: existing
-// snap drawn line segments are updated accordingly.  If the line was formed by
-// continous tracing, the line is deleted leaving one handle.
-// 7) shift key + right button down on any snap drawn line segment will insert
-// a handle at the cursor position.  The line segment is split accordingly.
 
-// .SECTION Caveats
-// the input vtkDataSet should be vtkImageData.
 
-// .SECTION See Also
-// vtk3DWidget vtkBoxWidget vtkLineWidget vtkPointWidget vtkSphereWidget
-// vtkImagePlaneWidget vtkImplicitPlaneWidget vtkPlaneWidget
 
-// Rewrote for more simple interactions
-// Sept. 2006, by Nicolas Toussaint, ASCLEPIOS research team, INRIA, France
 
-// version vtkRenderingAddOn
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #pragma once
 
 #include "vtkWidgetsAddOnExport.h"

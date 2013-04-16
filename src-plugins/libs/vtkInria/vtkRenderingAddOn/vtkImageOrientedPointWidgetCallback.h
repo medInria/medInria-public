@@ -1,21 +1,17 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkImageOrientedPointWidgetCallback.h 1080 2009-02-18 13:27:02Z acanale $
-Language:  C++
-Author:    $Author: acanale $
-Date:      $Date: 2009-02-18 14:27:02 +0100 (Wed, 18 Feb 2009) $
-Version:   $Revision: 1080 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
-// version vtkRenderingAddOn
+
+
 #pragma once
 
 #include "vtkRenderingAddOnExport.h"

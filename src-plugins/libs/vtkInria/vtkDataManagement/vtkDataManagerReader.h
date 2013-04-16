@@ -1,25 +1,20 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkDataManagerReader.h 765 2008-03-31 17:27:00Z ntoussaint $
-Language:  C++
-Author:    $Author: ntoussaint $
-Date:      $Date: 2008-03-31 19:27:00 +0200 (Mon, 31 Mar 2008) $
-Version:   $Revision: 765 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
-// .NAME vtkXMLReader - Superclass for VTK's XML format readers.
-// .SECTION Description
-// vtkXMLReader uses vtkXMLDataParser to parse a VTK XML input file.
-// Concrete subclasses then traverse the parsed file structure and
-// extract data.
+
+
+
+
+
 
 #pragma once
 

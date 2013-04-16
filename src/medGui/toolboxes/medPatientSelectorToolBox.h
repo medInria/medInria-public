@@ -1,21 +1,15 @@
-/* medPatientSelectorToolBox.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Feb 19 09:02:09 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Sun Jun 27 18:16:49 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 28
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

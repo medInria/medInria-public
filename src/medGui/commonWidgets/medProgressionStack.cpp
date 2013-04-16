@@ -1,21 +1,15 @@
-/* medProgressionStack.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Jan 19 13:39:47 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Tue Jun 15 20:01:36 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 71
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medProgressionStack.h"
 

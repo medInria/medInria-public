@@ -1,21 +1,15 @@
-/* medDropSite.cpp --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Feb 19 17:41:43 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Mon Feb 22 21:15:03 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 18
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ MedInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medViewPool.h"
 #include <medMessageController.h>

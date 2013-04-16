@@ -1,26 +1,21 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkDiffXMLWriter.h 801 2008-04-17 16:29:56Z ntoussaint $
-Language:  C++
-Author:    $Author: ntoussaint $
-Date:      $Date: 2008-04-17 18:29:56 +0200 (Thu, 17 Apr 2008) $
-Version:   $Revision: 801 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
-// .NAME vtkXMLWriter - Superclass for VTK's XML file writers.
-// .SECTION Description
-// vtkXMLWriter provides methods implementing most of the
-// functionality needed to write VTK XML file formats.  Concrete
-// subclasses provide actual writer implementations calling upon this
-// functionality.
+
+
+
+
+
+
 
 #pragma once
 

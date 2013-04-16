@@ -1,20 +1,16 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: IsosurfacesManager.cxx 1282 2009-10-08 17:00:40Z acanale $
-Language:  C++
-Author:    $Author: acanale $
-Date:      $Date: 2009-10-08 19:00:40 +0200 (Thu, 08 Oct 2009) $
-Version:   $Revision: 1282 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
+
 #include <vtkRenderingAddOn/vtkViewImage3D.h>
 #include <vtkRenderingAddOn/vtkViewImage2D.h>
 #include <vtkRenderer.h>

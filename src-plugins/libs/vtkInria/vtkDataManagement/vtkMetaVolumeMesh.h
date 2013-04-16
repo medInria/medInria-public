@@ -1,20 +1,16 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkMetaVolumeMesh.h 836 2008-05-20 08:53:15Z tmansi $
-Language:  C++
-Author:    $Author: tmansi $
-Date:      $Date: 2008-05-20 10:53:15 +0200 (Tue, 20 May 2008) $
-Version:   $Revision: 836 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
+
 #pragma once
 #include "vtkDataManagementExport.h"
 #include <vtkMetaDataSet.h>

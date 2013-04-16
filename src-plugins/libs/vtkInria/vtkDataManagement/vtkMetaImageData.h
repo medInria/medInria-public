@@ -1,20 +1,16 @@
 /*=========================================================================
 
-  Program:   vtkINRIA3D
-  Module:    $Id: vtkMetaImageData.h 1452 2010-01-27 19:15:29Z ntoussaint $
-  Language:  C++
-  Author:    $Author: ntoussaint $
-  Date:      $Date: 2010-01-27 19:15:29 +0000 (Wed, 27 Jan 2010) $
-  Version:   $Revision: 1452 $
+ MedInria
 
-  Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-  See Copyright.txt for details.
-
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.  See the above copyright notices for more information.
+  PURPOSE.
 
-  =========================================================================*/
+=========================================================================*/
+
 #pragma once
 
 #include <vtkErrorCode.h>

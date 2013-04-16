@@ -1,20 +1,16 @@
 /*=========================================================================
 
-  Program:   vtkINRIA3D
-  Module:    $Id: vtkLandmarkManager.cxx 1315 2009-11-03 12:13:28Z acanale $
-  Language:  C++
-  Author:    $Author: acanale $
-  Date:      $Date: 2009-11-03 13:13:28 +0100 (Tue, 03 Nov 2009) $
-  Version:   $Revision: 1315 $
+ MedInria
 
-  Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-  See Copyright.txt for details.
-
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.  See the above copyright notices for more information.
+  PURPOSE.
 
-  =========================================================================*/
+=========================================================================*/
+
 #include "vtkLandmarkManager.h"
 #include <vtkLandmarkManagerCallback.h>
 

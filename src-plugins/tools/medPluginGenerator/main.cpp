@@ -1,21 +1,15 @@
-/* main.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Jan 30 00:19:02 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Sun Feb  7 16:35:52 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 116
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include <QApplication>
 

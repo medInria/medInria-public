@@ -1,19 +1,16 @@
 /*=========================================================================
 
-  Program:   SphericalHarmonic ToolKit - SphericalHarmonicInria
-  Module:    Jaime Garcia Guevara based on "itkTensorViewerFactory.h"
-  Language:  C++
-  Date:      $Date: 2011-04-08 12:28:58 +0200 (Fri, 08 Apr 2011) $
-  Version:   $Revision: 151 $
+ MedInria
 
-  Copyright (c) INRIA 2010. All rights reserved.
-  See LICENSE.txt for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-     PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
+
 #pragma once
 
 

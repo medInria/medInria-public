@@ -1,18 +1,13 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: itkGDCMExporter.h 607 2008-01-13 14:04:48Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2008-01-13 15:04:48 +0100 (Sun, 13 Jan 2008) $
-Version:   $Revision: 607 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
 

@@ -1,21 +1,15 @@
-/* medMultiViewContainer.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Wed Mar 17 10:58:53 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Mar 17 18:47:49 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 9
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

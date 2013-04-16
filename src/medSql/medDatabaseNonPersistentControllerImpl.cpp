@@ -1,21 +1,15 @@
-/* medDatabaseNonPersitentController.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Sun Jun 27 17:58:04 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Tue Jun 29 16:30:50 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 99
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medDatabaseNonPersistentItem.h"
 #include "medDatabaseNonPersistentControllerImpl.h"

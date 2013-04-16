@@ -1,21 +1,15 @@
-/* medDiffusionSelectorToolBox.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Feb 19 09:06:02 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Mar  2 16:57:02 2011 (+0100)
- *           By: Jaime Garcia_Guevara
- *     Update #: 133
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>

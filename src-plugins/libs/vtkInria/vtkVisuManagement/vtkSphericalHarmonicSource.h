@@ -1,12 +1,24 @@
-//   Authors:		Maxime Descoteaux, Jaime Garcia Guevara, Theodore Papadopoulo.
-//
-//
-//  Description:     SH == SphericalHarmonic
-//  Spherical function viewer when parameterised with a SH basis
-//  Tesselation decides the resolution of the sphere
-//  In charge of drawing a single spherical function
-//   Copyright (c) 2007-2011, INRIA Sophia Antipolis, France, groups Odyssee, Athena.
-//   Please see the copyright notice included in this distribution for full details.
+/*=========================================================================
+
+ MedInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+
+
+
+
+
+
+
+
 
 #pragma once
 #include "vtkVisuManagementExport.h"

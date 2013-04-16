@@ -1,21 +1,16 @@
-/* medDatabaseItem.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Oct 17 12:08:53 2008 (+0200)
- * Version: $Id$
- * Last-Updated: Mon Sep 28 16:04:30 2009 (+0200)
- *           By: Julien Wintz
- *     Update #: 62
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include <medDataIndex.h>
 #include <medDatabaseItem.h>
 

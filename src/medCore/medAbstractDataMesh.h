@@ -1,21 +1,15 @@
-/* medAbstractDataMesh.h --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Mon Feb  2 09:08:09 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Mon Feb  1 22:19:21 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 43
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ MedInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

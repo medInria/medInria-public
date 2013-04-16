@@ -1,21 +1,15 @@
-/* medClutEditor.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue May  5 12:20:38 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Tue Feb  9 23:11:38 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 274
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include <dtkCore/dtkAbstractData.h>
 #include <medAbstractDataImage.h>

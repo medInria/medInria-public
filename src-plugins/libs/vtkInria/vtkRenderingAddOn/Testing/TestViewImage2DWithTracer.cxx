@@ -1,21 +1,17 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: TestViewImage2DWithTracer.cxx 1226 2009-08-07 16:13:44Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2009-08-07 18:13:44 +0200 (Fri, 07 Aug 2009) $
-Version:   $Revision: 1226 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
-// version vtkRenderingAddOn
+
+
 #include "vtkInteractorEventRecorder.h"
 
 #include <vtkRenderingAddOn/vtkViewImage2DWithTracer.h>

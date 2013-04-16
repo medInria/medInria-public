@@ -1,21 +1,15 @@
-/* medWorkspaceShifter.cpp --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Dec 15 11:11:53 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Thu Jun 10 12:24:50 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 93
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ MedInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medWorkspaceShifter.h"
 

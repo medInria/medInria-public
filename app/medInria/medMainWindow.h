@@ -1,21 +1,15 @@
-/* medMainWindow.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Sep 18 12:47:51 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Thu Oct  7 12:31:41 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 32
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

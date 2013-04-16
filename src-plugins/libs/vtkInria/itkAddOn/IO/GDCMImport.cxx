@@ -1,31 +1,15 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: GDCMImport.cxx 1 2008-01-22 19:01:33Z ntoussaint $
-Language:  C++
-Author:    $Author: ntoussaint $
-Date:      $Date: 2008-01-22 20:01:33 +0100 (Tue, 22 Jan 2008) $
-Version:   $Revision: 1 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
-
-/**
- * This is a small tool that shows how to use the GDCM DICOM import
- * 
- *
- * The user chooses the inpu directory where all DICOM files are located.
- * The tool outputs all series in 3D or 4D image file (itk-mmetaimage format .mha)
- * 
- *
- * \author Nicolas Toussaint, INRIA
- */
 
 #include <itkGDCMImporter3.h>
 

@@ -1,20 +1,15 @@
-/* dtkPch.cpp ---
- *
- * Author: John Stark
- * Copyright (C) 2011 - John Stark, Inria.
- * Created: August 2011
- * Version: $Id$
- * Last-Updated:
- *           By: John Stark
- *     Update #: 1
- */
+/*=========================================================================
 
-/* Commentary:
- * Precompiled header file
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #define MEDINRIA_PLUGINS_PCH_USE_VTK
 #include "medPluginsPch.h"

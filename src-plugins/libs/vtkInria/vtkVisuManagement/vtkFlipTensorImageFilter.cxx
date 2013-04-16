@@ -1,20 +1,16 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkFlipTensorImageFilter.cxx 477 2007-11-20 17:46:10Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2007-11-20 18:46:10 +0100 (Tue, 20 Nov 2007) $
-Version:   $Revision: 477 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
+
 #include "vtkFlipTensorImageFilter.h"
 
 #include "vtkImageData.h"

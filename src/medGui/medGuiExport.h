@@ -1,21 +1,15 @@
-/* medGuiExport.h --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Wed Oct 21 15:16:21 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Wed Oct 21 15:16:36 2009 (+0200)
- *           By: Julien Wintz
- *     Update #: 1
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ MedInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #ifdef WIN32
     #ifdef medGui_EXPORTS
