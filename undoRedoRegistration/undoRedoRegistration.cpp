@@ -56,20 +56,20 @@ void undoRedoRegistration::setInput(dtkAbstractData *data, int channel){
     registrationFactory::instance()->reset();
 }
 
-void undoRedoRegistration::generateOutput(QString type,dtkAbstractProcess * process){
+void undoRedoRegistration::generateOutput(bool algorithm,dtkAbstractProcess * process){
     typedef itk::Image< float, 3 > RegImageType;
     itk::ImageRegistrationFactory<RegImageType>::Pointer m_factory = registrationFactory::instance()->getItkRegistrationFactory();
     if (m_factory->GetFixedImage()!=NULL && m_factory->GetMovingImage()!=NULL){
         m_factory->Update();
         itk::ImageBase<3>::Pointer result = m_factory->GetOutput();
         result->DisconnectPipeline();
-        if (type=="algorithm" && process)
+        if (algorithm && process)
         { 
             if (process->output())
                 process->output()->setData(result);
         }
         else
-            if ((type != "algorithm") && (this->output()))
+            if ((!algorithm) && (this->output()))
                 this->output()->setData(result);
     }
 }
