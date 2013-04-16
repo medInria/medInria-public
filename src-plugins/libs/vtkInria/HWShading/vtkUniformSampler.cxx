@@ -1,13 +1,6 @@
 /*============================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: HWShading 480 2007-11-21 08:48:21Z $
-Language:  C++
-Author:    $Author: Tim Peeters $
-Date:      $Date: 2007-11-21 09:48:21 +0100 (Wed, 21 Nov 2007) $
-Version:   $Revision: 480 $
-
-The Hardware Shading (HWShading) module of vtkINRIA3D is protected by the
+The Hardware Shading (HWShading) module is protected by the
 following copyright:
 
 Copyright (c) 2007 Biomedical Image Analysis (BMIA) - Department of
