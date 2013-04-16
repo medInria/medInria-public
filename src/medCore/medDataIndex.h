@@ -1,21 +1,15 @@
-/* medDataIndex.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Mon Dec 21 09:29:10 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Thu Mar  4 10:37:12 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 23
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

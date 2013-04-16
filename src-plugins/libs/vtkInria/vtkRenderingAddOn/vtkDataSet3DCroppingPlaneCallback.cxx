@@ -1,38 +1,17 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkDataSet3DCroppingPlaneCallback.cxx 1290 2009-10-14 17:02:04Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2009-10-14 19:02:04 +0200 (Wed, 14 Oct 2009) $
-Version:   $Revision: 1290 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
-/*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkDataSet3DCroppingPlaneCallback.cxx 1290 2009-10-14 17:02:04Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2009-10-14 19:02:04 +0200 (Wed, 14 Oct 2009) $
-Version:   $Revision: 1290 $
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
-
-=========================================================================*/
-// version vtkRenderingAddOn
 #include <vtkRenderingAddOn/vtkDataSet3DCroppingPlaneCallback.h>
 
 #include <vtkPlaneWidget.h>

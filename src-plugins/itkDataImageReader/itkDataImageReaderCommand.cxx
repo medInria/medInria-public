@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ MedInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include <cstddef> // For ITK 3.20 that does not define correctly ptrdiff_t
 
 #include "itkDataImageReaderCommand.h"

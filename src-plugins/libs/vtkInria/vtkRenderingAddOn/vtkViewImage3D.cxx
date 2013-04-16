@@ -1,21 +1,17 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkViewImage3D.cxx 1469 2010-02-18 10:22:11Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2010-02-18 11:22:11 +0100 (Thu, 18 Feb 2010) $
-Version:   $Revision: 1469 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
-// version vtkRenderingAddOn
+
+
 #include <vtkRenderingAddOn/vtkViewImage3D.h>
 
 #ifndef VTK_MAJOR_VERSION

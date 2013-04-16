@@ -1,21 +1,15 @@
-/* exampleProcessImageFilterToolBox.cpp ---
- *
- * Author: Jaime Garcia_Guevara
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Wed Mar  2 15:04:13 2011 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Mar  2 16:51:44 2011 (+0100)
- *           By: Jaime Garcia_Guevara
- *     Update #: 114
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include <exampleProcessImageFilter.h>
 #include <exampleProcessImageFilterToolBox.h>

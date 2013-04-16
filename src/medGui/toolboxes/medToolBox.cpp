@@ -1,21 +1,16 @@
-/* medToolBox.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Oct  9 19:46:22 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Mon Dec 20 12:57:48 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 254
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include <dtkCore/dtkAbstractData.h>
 
 #include <medCore/medAbstractView.h>

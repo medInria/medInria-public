@@ -1,21 +1,15 @@
-/* medBrowserJobsToolBox.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Thu May 13 15:21:29 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Wed Nov 10 11:13:47 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 7
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

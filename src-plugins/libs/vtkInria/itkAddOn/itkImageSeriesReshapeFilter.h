@@ -1,20 +1,16 @@
 /*=========================================================================
 
-  Program:   vtkINRIA3D
-  Module:    $Id: itkImageSeriesReshapeFilter.h 967 2008-09-30 09:40:16Z ntoussaint $
-  Language:  C++
-  Author:    $Author: ntoussaint $
-  Date:      $Date: 2008-09-30 11:40:16 +0200 (Tue, 30 Sep 2008) $
-  Version:   $Revision: 967 $
+ MedInria
 
-  Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-  See Copyright.txt for details.
-
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.  See the above copyright notices for more information.
+  PURPOSE.
 
-  =========================================================================*/
+=========================================================================*/
+
 #pragma once
 
 #include "itkObjectFactory.h"

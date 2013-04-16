@@ -1,20 +1,16 @@
 /*=========================================================================
 
- Program:   vtkINRIA3D
- Module:    $Id: SynchronizedViewsTest.cxx 1211 2009-07-29 14:57:22Z filus $
- Language:  C++
- Author:    $Author: filus $
- Date:      $Date: 2009-07-29 15:57:22 +0100 (Wed, 29 Jul 2009) $
- Version:   $Revision: 1211 $
+ MedInria
 
- Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
- See Copyright.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
- This software is distributed WITHOUT ANY WARRANTY; without even
- the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- PURPOSE.  See the above copyright notices for more information.
+=========================================================================*/
 
- =========================================================================*/
 #include <vtkConeSource.h>
 #include <vtkImageData.h>
 #include <vtkMatrix4x4.h>

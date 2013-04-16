@@ -1,17 +1,13 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkImageFromBoundsSource.h 724 2008-03-03 14:55:36Z jgarcia $
-Language:  C++
-Author:    $Author: jgarcia $
-Date:      $Date: 2012-02-19 15:55:36 +0100 (Mon, 19 Jan 2012) $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
 

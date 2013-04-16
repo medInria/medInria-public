@@ -1,20 +1,16 @@
 /*=========================================================================
 
- Program:   vtkINRIA3D
- Module:    $Id: vtkImageView2D.cxx 1367 2009-11-30 11:23:21Z ntoussaint $
- Language:  C++
- Author:    $Author: ntoussaint $
- Date:      $Date: 2009-11-30 12:23:21 +0100 (lun, 30 nov 2009) $
- Version:   $Revision: 1367 $
+ MedInria
 
- Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
- See Copyright.txt for details.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
- This software is distributed WITHOUT ANY WARRANTY; without even
- the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
- PURPOSE.  See the above copyright notices for more information.
+=========================================================================*/
 
- =========================================================================*/
 #include "vtkImageView2D.h"
 
 #include "vtkBoundingBox.h"

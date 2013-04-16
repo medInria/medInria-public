@@ -1,31 +1,15 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: ImageRegistrationFactory.cxx 1 2008-01-22 19:01:33Z ntoussaint $
-Language:  C++
-Author:    $Author: ntoussaint $
-Date:      $Date: 2008-01-22 20:01:33 +0100 (Tue, 22 Jan 2008) $
-Version:   $Revision: 1 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
-
-/**
- * This is a small tool that shows how to use the Registration Factory
- * Mostly inspired by Tom Vercauteren DemonsRegistration test code.
- * 
- * The user can choose between different registration methods.
- * The user can also choose input transform file or input displacement field;
- * 
- *
- * \author Nicolas Toussaint, INRIA
- */
 
 #include <cstddef> // For ITK 3.20 that does not define correctly ptrdiff_t
 

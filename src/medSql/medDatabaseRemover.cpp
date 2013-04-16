@@ -1,17 +1,15 @@
-/* medDatabaseRemover.cpp ---
- *
- * Author: John Stark
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Jun 29 15:27:20 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Tue Jun 29 15:46:20 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 19
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medDatabaseRemover.h"
 

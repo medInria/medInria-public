@@ -1,20 +1,16 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id: vtkOrientationAnnotation.cxx 1284 2009-10-13 15:19:31Z filus $
-Language:  C++
-Author:    $Author: filus $
-Date:      $Date: 2009-10-13 17:19:31 +0200 (Tue, 13 Oct 2009) $
-Version:   $Revision: 1284 $
+ MedInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
+
 #include <vtkOrientationAnnotation.h>
 #include "vtkObjectFactory.h"
 #include "vtkTextProperty.h"

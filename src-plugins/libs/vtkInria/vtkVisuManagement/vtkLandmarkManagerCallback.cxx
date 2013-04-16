@@ -1,20 +1,16 @@
 /*=========================================================================
 
-  Program:   vtkINRIA3D
-  Module:    $Id: vtkLandmarkManagerCallback.cxx 1306 2009-10-28 18:51:32Z ntoussaint $
-  Language:  C++
-  Author:    $Author: ntoussaint $
-  Date:      $Date: 2009-10-28 19:51:32 +0100 (Wed, 28 Oct 2009) $
-  Version:   $Revision: 1306 $
+ MedInria
 
-  Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-  See Copyright.txt for details.
-
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.  See the above copyright notices for more information.
+  PURPOSE.
 
-  =========================================================================*/
+=========================================================================*/
+
 #include <vtkLandmarkManagerCallback.h>
 
 #include <vtkObjectFactory.h>

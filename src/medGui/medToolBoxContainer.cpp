@@ -1,21 +1,15 @@
-/* medToolBoxContainer.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Mon Oct 26 21:51:08 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Fri Feb 19 18:25:16 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 16
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medToolBoxContainer.h"
 

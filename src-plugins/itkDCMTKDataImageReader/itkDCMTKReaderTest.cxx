@@ -1,21 +1,15 @@
-/* itkDcmtkReaderTest.cxx --- 
- * 
- * Author: Pierre Fillard
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Oct  2 21:46:08 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Fri Oct  2 21:47:00 2009 (+0200)
- *           By: Julien Wintz
- *     Update #: 3
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ MedInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include <iostream>
 

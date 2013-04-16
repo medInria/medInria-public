@@ -1,21 +1,15 @@
-/* medCustomViewContainer.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Wed Mar 17 10:59:36 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Fri May 21 15:08:08 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 15
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

@@ -1,21 +1,15 @@
-/* medAbstractView.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Thu Oct 21 19:54:36 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Tue Oct 26 10:46:04 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 9
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

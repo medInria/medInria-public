@@ -1,7 +1,15 @@
-/**
- * This class defines the registration toolbox and manages the changes in the different views.
- * It also manages the saving of the transformation and registered image.
- */
+/*=========================================================================
+
+ MedInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medRegistrationSelectorToolBox.h"
 

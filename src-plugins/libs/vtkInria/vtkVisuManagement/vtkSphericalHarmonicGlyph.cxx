@@ -1,11 +1,23 @@
-//   Authors:	   Maxime Descoteaux, Jaime Garcia Guevara, Theodore Papadopoulo.
-//
-//   Description:  scale and orient glyph according to spherical harmonic representation   
-//   vtkSphericalHarmonicGlyph is a filter that copies a SH representation (specified
-//   as polygonal data) to every input point. 
-//	
-//   Copyright (c) 2007-2011, INRIA Sophia Antipolis, France, groups Odyssee, Athena.
-//   Please see the copyright notice included in this distribution for full details.
+/*=========================================================================
+
+ MedInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+
+
+
+
+
+
+
 
 #include <vtkPolyData.h>
 #include <vtkCellArray.h>

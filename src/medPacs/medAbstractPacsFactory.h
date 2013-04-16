@@ -1,21 +1,15 @@
-/* medAbstractPacsFactory.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Nov  7 15:48:10 2008 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Nov 10 13:16:17 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 52
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

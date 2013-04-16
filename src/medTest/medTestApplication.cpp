@@ -1,9 +1,15 @@
-/*
- * medTestApplication.cpp
- *
- *  Created on: 4 juil. 2011 17:48:22
- *      Author: John Stark
- */
+/*=========================================================================
+
+ MedInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medTestApplication.h"
 #include <stdexcept>

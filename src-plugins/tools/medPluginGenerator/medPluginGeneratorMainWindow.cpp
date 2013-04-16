@@ -1,21 +1,15 @@
-/* medPluginGeneratorMainWindow.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Mon Mar  9 22:23:06 2009 (+0100)
- * Version: $Id$
- * Last-Updated:  Tue Mar 24 08:46:36 2009
- *           By: Jean-Christophe Lombardo
- *     Update #: 72
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include    "medPluginGenerator.h"
 #include    "medPluginGeneratorMainWindow.h"

@@ -1,21 +1,15 @@
-/* medViewContainer.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Mon Oct 26 21:54:57 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Tue Jun 15 16:26:36 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 425
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medViewContainer.h"
 #include "medViewContainer_p.h"

@@ -1,20 +1,16 @@
 /*=========================================================================
 
-  Program:   vtkINRIA3D
-  Module:    $Id: vtkMetaDataSetSequence.h 1296 2009-10-21 17:25:16Z ntoussaint $
-  Language:  C++
-  Author:    $Author: ntoussaint $
-  Date:      $Date: 2009-10-21 19:25:16 +0200 (Wed, 21 Oct 2009) $
-  Version:   $Revision: 1296 $
+ MedInria
 
-  Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-  See Copyright.txt for details.
-
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.  See the above copyright notices for more information.
+  PURPOSE.
 
-  =========================================================================*/
+=========================================================================*/
+
 #pragma once
 
 #include <vtkMetaDataSet.h>

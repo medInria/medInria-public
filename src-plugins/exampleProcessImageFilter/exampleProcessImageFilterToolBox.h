@@ -1,21 +1,15 @@
-/* exampleProcessImageFilterToolBox.h ---
- *
- * Author: Jaime Garcia_Guevara
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Wed Mar  2 15:01:32 2011 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Mar  2 16:39:24 2011 (+0100)
- *           By: Jaime Garcia_Guevara
- *     Update #: 10
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 

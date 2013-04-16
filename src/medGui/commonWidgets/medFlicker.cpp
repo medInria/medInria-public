@@ -1,22 +1,15 @@
-/* medFlicker.cpp --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Feb 19 18:18:36 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Fri Feb 19 18:23:43 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 7
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- * See credits at EOF.
- */
+ MedInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medFlicker.h"
 

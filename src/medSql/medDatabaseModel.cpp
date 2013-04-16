@@ -1,21 +1,16 @@
-/* medDatabaseModel.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Oct 14 22:57:50 2008 (+0200)
- * Version: $Id$
- * Last-Updated: Fri Mar 19 20:43:04 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 447
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ MedInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include <QtGui>
 #include <QtCore>
 #include <QtSql>
