@@ -46,6 +46,10 @@ public:
     dtkAbstractProcess * undoRedoProcess();
     void setUndoRedoProcess(dtkAbstractProcess *proc);
 
+    QString getNameOfCurrentAlgorithm();
+
+    enum typeOfOperation { algorithm, undo, redo, reset };
+
 signals:
     void setupLayoutCompare();
     void setupLayoutFuse();
@@ -63,12 +67,14 @@ public slots:
     void clear();
     void onSaveImage();
     void onSaveTrans();
-    void handleOutput(QString type="algorithm",QString algoName="");
-    void enableUndoRedoToolBox(bool enable = true);
+    void handleOutput(typeOfOperation type=algorithm,QString algoName="");
+    void enableSelectorToolBox(bool enable = true);
     void onJobAdded(medJobItem* item, QString jobName);
     
     void synchroniseWindowLevel(QObject * sender = NULL);
     void synchronisePosition(const QVector3D &position);
+
+    
 
 private:
     medRegistrationSelectorToolBoxPrivate *d;
