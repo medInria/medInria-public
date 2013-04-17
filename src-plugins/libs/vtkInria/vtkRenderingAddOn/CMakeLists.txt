@@ -1,6 +1,6 @@
 project(vtkRenderingAddOn)
 
-SET(${PROJECT_NAME}_SRCS
+set(${PROJECT_NAME}_SRCS
   vtkFillImageWithPolyData.cxx
   vtkImageBlendWithMask.cxx
   vtkInteractorStyleImage2D.cxx
@@ -19,19 +19,19 @@ SET(${PROJECT_NAME}_SRCS
   vtkViewImage2DWithTracer.cxx
 )
 
-if(VTKINRIA_USE_PRECOMPILED_HEADERS)
+if (VTKINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
     "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
     ${${PROJECT_NAME}_SRCS})
-endif(VTKINRIA_USE_PRECOMPILED_HEADERS)
+endif()
 
   # C++ library for the InterfaceManagers
-  ADD_LIBRARY(${PROJECT_NAME} SHARED
+  add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_PCH}
   ${${PROJECT_NAME}_SRCS}
   )
   
-SET(${PROJECT_NAME}_LIBS
+set(${PROJECT_NAME}_LIBS
   vtkWidgetsAddOn
   vtkCommon
   vtkRendering
@@ -43,11 +43,11 @@ SET(${PROJECT_NAME}_LIBS
   ITKBasicFilters
 )
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}
 ${${PROJECT_NAME}_LIBS}
 )
 
-IF(VTKINRIA_BUILD_TESTING)
-  ADD_SUBDIRECTORY(Testing)
-ENDIF(VTKINRIA_BUILD_TESTING)
+if (VTKINRIA_BUILD_TESTING)
+  add_subdirectory(Testing)
+endif()
 

@@ -1,4 +1,4 @@
-SET(COPYFILES
+set(COPYFILES
   testshader.frag
   testshader.vert
   testshader.prog
@@ -21,16 +21,16 @@ SET(COPYFILES
   fibers.vtk
   )
 
-FOREACH(copyfile ${COPYFILES})
-  CONFIGURE_FILE(	${CMAKE_CURRENT_SOURCE_DIR}/${copyfile}
+foreach (copyfile ${COPYFILES})
+  configure_file(	${CMAKE_CURRENT_SOURCE_DIR}/${copyfile}
 		${CMAKE_CURRENT_BINARY_DIR}/${copyfile}
 		COPYONLY
 	  )
-ENDFOREACH(copyfile)
+endforeach()
 
-SET(KIT ${PROJECT_NAME})
+set(KIT ${PROJECT_NAME})
 
-SET(${PROJECT_NAME}Tests
+set(${PROJECT_NAME}Tests
   NoShader.cxx
   TestShader.cxx
   texturemap.cxx
@@ -39,26 +39,26 @@ SET(${PROJECT_NAME}Tests
   fibershadows.cxx
   )
 
-CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
+create_test_sourcelist(Tests ${KIT}CxxTests.cxx
   ${${PROJECT_NAME}Tests}
   )
 
-ADD_EXECUTABLE(${KIT}CxxTests 
+add_executable(${KIT}CxxTests 
   ${Tests}
   )
 
-TARGET_LINK_LIBRARIES(${KIT}CxxTests 
+target_link_libraries(${KIT}CxxTests 
   ${PROJECT_NAME}
   vtkRendering 
   vtkIO
   )
 
 
-ADD_TEST(NoShader     ${CXX_TEST_PATH}/${KIT}CxxTests NoShader)
-ADD_TEST(TestShader   ${CXX_TEST_PATH}/${KIT}CxxTests TestShader   "${CMAKE_CURRENT_BINARY_DIR}/testshader.prog")
-#ADD_TEST(TestShader2  ${CXX_TEST_PATH}/${KIT}CxxTests TestShader   "${CMAKE_CURRENT_BINARY_DIR}/alshaderpp.prog")
-ADD_TEST(texturemap   ${CXX_TEST_PATH}/${KIT}CxxTests texturemap   "${CMAKE_CURRENT_BINARY_DIR}/LogoVTK.jpg")
-ADD_TEST(shadows      ${CXX_TEST_PATH}/${KIT}CxxTests shadows)
-ADD_TEST(fibermapper  ${CXX_TEST_PATH}/${KIT}CxxTests fibermapper  "${CMAKE_CURRENT_BINARY_DIR}/fibers.vtk")
-ADD_TEST(fibershadows ${CXX_TEST_PATH}/${KIT}CxxTests fibershadows "${CMAKE_CURRENT_BINARY_DIR}/fibers.vtk")
+add_test(NoShader     ${CXX_TEST_PATH}/${KIT}CxxTests NoShader)
+add_test(TestShader   ${CXX_TEST_PATH}/${KIT}CxxTests TestShader   "${CMAKE_CURRENT_BINARY_DIR}/testshader.prog")
+#add_test(TestShader2  ${CXX_TEST_PATH}/${KIT}CxxTests TestShader   "${CMAKE_CURRENT_BINARY_DIR}/alshaderpp.prog")
+add_test(texturemap   ${CXX_TEST_PATH}/${KIT}CxxTests texturemap   "${CMAKE_CURRENT_BINARY_DIR}/LogoVTK.jpg")
+add_test(shadows      ${CXX_TEST_PATH}/${KIT}CxxTests shadows)
+add_test(fibermapper  ${CXX_TEST_PATH}/${KIT}CxxTests fibermapper  "${CMAKE_CURRENT_BINARY_DIR}/fibers.vtk")
+add_test(fibershadows ${CXX_TEST_PATH}/${KIT}CxxTests fibershadows "${CMAKE_CURRENT_BINARY_DIR}/fibers.vtk")
 

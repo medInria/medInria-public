@@ -1,10 +1,10 @@
 project(vtkVisuManagement)
 
-  IF (CMAKE_CXX_COMPILER MATCHES clang)
+  if (CMAKE_CXX_COMPILER MATCHES clang)
     add_definitions(-DCLANG)
-  ENDIF()
+  endif()
 
-SET(${PROJECT_NAME}_SRCS
+set(${PROJECT_NAME}_SRCS
  vtkLimitFibersToVOI.cxx
  vtkLimitFibersToMesh.cxx
  vtkLimitFibersToROI.cxx
@@ -32,13 +32,13 @@ SET(${PROJECT_NAME}_SRCS
  vtkFiberDataSetManager.cxx
 )
 
-SET(vtkLandmarkManagement_SRCS
+set(vtkLandmarkManagement_SRCS
  vtkLandmark.cxx
  vtkLandmarkManager.cxx
  vtkLandmarkManagerCallback.cxx
 )
 
-SET(${PROJECT_NAME}_LIBS
+set(${PROJECT_NAME}_LIBS
  vtkCommon
  vtkFiltering 
  vtkRendering
@@ -47,7 +47,7 @@ SET(${PROJECT_NAME}_LIBS
  vtkHWShading
 )
 
-SET(vtkLandmarkManagement_LIBS
+set(vtkLandmarkManagement_LIBS
  vtkCommon
  vtkFiltering
  vtkRendering
@@ -57,8 +57,8 @@ SET(vtkLandmarkManagement_LIBS
  vtkHWShading
 )
 
-IF( VTKINRIA_USE_SPHERICALHARMONICS )
-    SET(${PROJECT_NAME}_SRCS
+if ( VTKINRIA_USE_SPHERICALHARMONICS )
+    set(${PROJECT_NAME}_SRCS
         ${${PROJECT_NAME}_SRCS}
         vtkSphericalHarmonicVisuManager.cxx
         vtkSphericalHarmonicManager.cxx
@@ -66,41 +66,41 @@ IF( VTKINRIA_USE_SPHERICALHARMONICS )
         vtkSphericalHarmonicSource.cxx
         vtkSphericalHarmonicGlyph.cxx
         )
-    SET(${PROJECT_NAME}_LIBS
+    set(${PROJECT_NAME}_LIBS
         ${${PROJECT_NAME}_LIBS}
         itkIOAddOn
         )
-ENDIF(VTKINRIA_USE_SPHERICALHARMONICS )
+endif()
 
-if(VTKINRIA_USE_PRECOMPILED_HEADERS)
+if (VTKINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
     "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
       ${${PROJECT_NAME}_SRCS}
     )
-endif(VTKINRIA_USE_PRECOMPILED_HEADERS)
+endif()
 
 # C++ library for the InterfaceManagers
-ADD_LIBRARY(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_PCH}
   ${${PROJECT_NAME}_SRCS}
 )
   
 # C++ library for the InterfaceManagers
-ADD_LIBRARY(vtkLandmarkManagement SHARED
+add_library(vtkLandmarkManagement SHARED
   ${vtkLandmarkManagement_SRCS}
 )
   
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}  
+target_link_libraries(${PROJECT_NAME}  
   ${${PROJECT_NAME}_LIBS}
 )
 
   
-TARGET_LINK_LIBRARIES(vtkLandmarkManagement  
+target_link_libraries(vtkLandmarkManagement  
   ${vtkLandmarkManagement_LIBS}
 )
 
 INSTALL_TARGETS(/lib vtkLandmarkManagement)
 
-IF(VTKINRIA_BUILD_TESTING)
-  ADD_SUBDIRECTORY(Testing)
-ENDIF(VTKINRIA_BUILD_TESTING)
+if (VTKINRIA_BUILD_TESTING)
+  add_subdirectory(Testing)
+endif()

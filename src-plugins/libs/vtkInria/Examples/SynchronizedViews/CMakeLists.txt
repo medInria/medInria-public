@@ -1,23 +1,23 @@
-PROJECT(SynchronizedViews)
+project(SynchronizedViews)
 
 include_directories(
   ../../vtkImageView
   ../../vtkDataManagement
   )
 
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR})
+include_directories(${PROJECT_SOURCE_DIR})
 
 if (APPLE)
-  ADD_EXECUTABLE(${PROJECT_NAME} MACOSX_BUNDLE
+  add_executable(${PROJECT_NAME} MACOSX_BUNDLE
     SynchronizedViews.cxx
     )  
-else(APPLE)
-  ADD_EXECUTABLE(${PROJECT_NAME}
+else()
+  add_executable(${PROJECT_NAME}
     SynchronizedViews.cxx
     )  
 endif()
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}
   vtkImageView
   vtkDataManagement
   )

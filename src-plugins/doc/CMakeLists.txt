@@ -1,15 +1,15 @@
-FIND_PACKAGE( Doxygen QUIET)
+find_package( Doxygen QUIET)
 
 # inpired by work done on the CTK and the dtk source.
 
-IF( DOXYGEN_FOUND )
-  IF( DOXYGEN_DOT_FOUND )
+if ( DOXYGEN_FOUND )
+  if ( DOXYGEN_DOT_FOUND )
 
     # Automatically generate documentation at build time
-    SET(all_arg)
-    IF (DOCUMENTATION_TARGET_IN_ALL)
-      SET(all_arg "ALL")
-    ENDIF()
+    set(all_arg)
+    if (DOCUMENTATION_TARGET_IN_ALL)
+      set(all_arg "ALL")
+    endif()
 
     find_package(Qt4 4.6.0 REQUIRED)
     include(${QT_USE_FILE})
@@ -17,10 +17,10 @@ IF( DOXYGEN_FOUND )
     #
     # Documentation
     #
-    SET( DOCUMENTATION_HTML_TARZ TRUE)
-    SET( DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+    set( DOCUMENTATION_HTML_TARZ TRUE)
+    set( DOCUMENTATION_ARCHIVES_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 
-    CONFIGURE_FILE( Doxyfile.txt.in
+    configure_file( Doxyfile.txt.in
       ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.txt
       )
 
@@ -28,25 +28,25 @@ IF( DOXYGEN_FOUND )
     get_git_head_revision(GIT_REFSPEC GIT_SHA1)
     #message ("cmake revision?: " ${GIT_SHA1})
 
-    CONFIGURE_FILE( 
+    configure_file( 
       ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenFooter.html.in
       ${CMAKE_CURRENT_BINARY_DIR}/DoxygenFooter.html
       )
 
-    CONFIGURE_FILE(
+    configure_file(
       ${CMAKE_CURRENT_SOURCE_DIR}/generate_doc.cmake.in
       ${CMAKE_CURRENT_BINARY_DIR}/generate_doc.cmake
       @ONLY
       )
-    CONFIGURE_FILE(
+    configure_file(
       ${CMAKE_CURRENT_SOURCE_DIR}/qhc/medInria-plugins.qhcp.in 
       ${CMAKE_CURRENT_BINARY_DIR}/medInria-plugins.qhcp IMMEDIATE @ONLY)
  
 
-    SET(doc_output "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html")
+    set(doc_output "${CMAKE_CURRENT_BINARY_DIR}/doc/html/index.html")
 
     # Run doxygen as a custom command driven by a custom target.
-    ADD_CUSTOM_COMMAND(
+    add_custom_command(
       OUTPUT ${doc_output}
       #COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenHeader.html ${CMAKE_CURRENT_BINARY_DIR}/DoxygenHeader.html
       #COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenFooter.html ${CMAKE_CURRENT_BINARY_DIR}/DoxygenFooter.html
@@ -62,15 +62,15 @@ IF( DOXYGEN_FOUND )
               "${CMAKE_CURRENT_BINARY_DIR}/medInria-plugins.qhcp"
       )
 
-    ADD_CUSTOM_TARGET(${PROJECT_NAME}-doc ${all_arg} DEPENDS ${doc_output})
-    SET_TARGET_PROPERTIES(${PROJECT_NAME}-doc PROPERTIES LABELS Documentation)
+    add_custom_target(${PROJECT_NAME}-doc ${all_arg} DEPENDS ${doc_output})
+    set_target_properties(${PROJECT_NAME}-doc PROPERTIES LABELS Documentation)
  
-  ELSE( DOXYGEN_DOT_FOUND )
-    MESSAGE( WARNING
+  else()
+    message( WARNING
       "Warning: Dot not found - Documentation will not be created"
       )
-  ENDIF( DOXYGEN_DOT_FOUND )
- ELSE( DOXYGEN_FOUND )
-  MESSAGE(WARNING
+  endif()
+ else()
+  message(WARNING
      "Warning: Doxygen not found - Documentation will not be created")
-ENDIF( DOXYGEN_FOUND )
+endif()

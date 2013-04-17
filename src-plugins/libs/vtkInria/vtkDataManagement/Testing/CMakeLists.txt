@@ -1,6 +1,6 @@
-SET(KIT ${PROJECT_NAME})
+set(KIT ${PROJECT_NAME})
 
-SET(${PROJECT_NAME}Tests
+set(${PROJECT_NAME}Tests
   vtkMetaDataSetTest.cxx
   vtkMetaImageDataTest.cxx
   vtkMetaSurfaceMeshTest.cxx
@@ -8,21 +8,21 @@ SET(${PROJECT_NAME}Tests
   vtkDataManagerTest.cxx
 )
 
-CREATE_TEST_SOURCELIST(Tests ${KIT}CxxTests.cxx
+create_test_sourcelist(Tests ${KIT}CxxTests.cxx
   ${${PROJECT_NAME}Tests}
   )
 
-ADD_EXECUTABLE(${KIT}CxxTests 
+add_executable(${KIT}CxxTests 
   ${Tests}
   )
 
-TARGET_LINK_LIBRARIES(${KIT}CxxTests 
+target_link_libraries(${KIT}CxxTests 
   ${PROJECT_NAME}
   vtkCommon
   )
 
 
-FOREACH (test ${${PROJECT_NAME}Tests})
-  GET_FILENAME_COMPONENT(TName ${test} NAME_WE)
-  ADD_TEST(${TName} ${CXX_TEST_PATH}/${KIT}CxxTests ${TName}) 
-ENDFOREACH (test) 
+foreach (test ${${PROJECT_NAME}Tests})
+  get_filename_component(TName ${test} NAME_WE)
+  add_test(${TName} ${CXX_TEST_PATH}/${KIT}CxxTests ${TName}) 
+endforeach() 

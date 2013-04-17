@@ -249,13 +249,13 @@ add_definitions(-DQT_NO_DEBUG)
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
-if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPch.h" "../medPch/medPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES_WRAP})
-endif(MEDINRIA_USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
@@ -273,8 +273,8 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 if (MEDINRIA_BUILD_TESTING)
   add_subdirectory (Testing)

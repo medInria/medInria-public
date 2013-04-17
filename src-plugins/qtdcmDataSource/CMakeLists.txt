@@ -29,9 +29,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## #################################################################
 
 find_package(ITK REQUIRED)
-if(ITK_FOUND)
+if (ITK_FOUND)
 	include(${ITK_USE_FILE})
-endif(ITK_FOUND)
+endif()
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
@@ -40,7 +40,7 @@ include(dtkPlugin)
 find_package(QtDCM REQUIRED)
 if (QTDCM_FOUND)
   include(${QTDCM_USE_FILE})
-endif (QTDCM_FOUND)
+endif()
 
 ## #################################################################
 ## Input
@@ -79,7 +79,7 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_HEADERS})
 
-if(WIN32)
+if (WIN32)
   target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${ITK_LIBRARIES}
@@ -91,7 +91,7 @@ if(WIN32)
   medGui
   netapi32
   )
-else(WIN32)
+else()
   target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${ITK_LIBRARIES}
@@ -101,13 +101,13 @@ else(WIN32)
   dtkLog
   medCore
   medGui)
-endif(WIN32)
+endif()
 
 # Only doing a fix mac link since qtdcm should already have been compiled and therefore run the FixDCMTKMacInstall
-if(APPLE)
+if (APPLE)
   include(FixDCMTKMacLink)
   FixDCMTKMacLink(${PROJECT_NAME})
-endif(APPLE)
+endif()
 
 dtk_build_doc(qtdcmDataSourcePlugin)
 
@@ -115,8 +115,8 @@ dtk_build_doc(qtdcmDataSourcePlugin)
 ## Source file layout in development environments like Visual Studio
 ## #################################################################
 
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules

@@ -36,12 +36,12 @@ include(${dtk_USE_FILE})
 include(dtkPlugin)
 
 find_package(ITK REQUIRED)
-  if(NOT ITK_USE_REVIEW)
+  if (NOT ITK_USE_REVIEW)
     message(FATAL_ERROR "ITK must be build with option ITK_USE_REVIEW to ON")
-  endif(NOT ITK_USE_REVIEW)
-  if(NOT ITK_USE_REVIEW_STATISTICS)
+  endif()
+  if (NOT ITK_USE_REVIEW_STATISTICS)
     message(FATAL_ERROR "ITK must be build with option ITK_USE_REVIEW_STATISTICS to ON")
-  endif(NOT ITK_USE_REVIEW_STATISTICS)
+  endif()
 include(${ITK_USE_FILE})
 
 ## #################################################################
@@ -86,12 +86,12 @@ set(${PROJECT_NAME}_SOURCES itkDataImagePlugin.cpp)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC})
-endif(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}
@@ -108,11 +108,11 @@ target_link_libraries(${PROJECT_NAME}
 
 if (BUILD_TESTING)
   add_subdirectory(Testing)
-endif (BUILD_TESTING)
+endif()
 
 # Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 # Due to the large number of template functions, windows needs an extra compile flag.
 if (MSVC)
@@ -120,17 +120,17 @@ if (MSVC)
     get_source_file_property(bigobjFile_COMPILE_FLAGS ${bigobjFile} COMPILE_FLAGS)
     if (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
         set_source_files_properties(${bigobjFile} PROPERTIES COMPILE_FLAGS "/bigobj")
-    else (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
+    else()
         set_source_files_properties(${bigobjFile} PROPERTIES COMPILE_FLAGS "${bigobjFile_COMPILE_FLAGS} /bigobj")
-    endif (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
-endif (MSVC)
+    endif()
+endif()
 
 #Prevent compiler warnings about valid std::copy.
 if (MSVC)
     add_definitions(
         -D_SCL_SECURE_NO_WARNINGS
     )
-endif (MSVC)
+endif()
 
 ## #################################################################
 ## Install rules

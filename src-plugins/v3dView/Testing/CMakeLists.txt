@@ -1,19 +1,19 @@
 
-SET(PLUGIN_NAME v3dView)
+set(PLUGIN_NAME v3dView)
 
-SET(v3dViewPluginTests
+set(v3dViewPluginTests
   v3dViewTest.cxx
   )
 
-CREATE_TEST_SOURCELIST(Tests ${PLUGIN_NAME}CxxTests.cxx
+create_test_sourcelist(Tests ${PLUGIN_NAME}CxxTests.cxx
   ${v3dViewPluginTests}
   )
 
-ADD_EXECUTABLE(${PLUGIN_NAME}CxxTests 
+add_executable(${PLUGIN_NAME}CxxTests 
   ${Tests}
   )
 
-TARGET_LINK_LIBRARIES(${PLUGIN_NAME}CxxTests
+target_link_libraries(${PLUGIN_NAME}CxxTests
   medGui
   medCore
   dtkCore dtkLog  
@@ -30,17 +30,17 @@ RUNTIME_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
 
 set(CXX_TEST_PATH        ${EXECUTABLE_OUTPUT_PATH})
 set(CXX_TEST_PLUGIN_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-if(MSVC)
+if (MSVC)
   set(CXX_TEST_PLUGIN_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release)
-endif(MSVC)
+endif()
 
   set(ITK_DATA_ROOT
   )
 if (ITK_SOURCE_DIR)
   set(ITK_DATA_ROOT ${ITK_SOURCE_DIR}/Examples/Data)
-endif (ITK_SOURCE_DIR)
+endif()
 
-FOREACH (test ${v3dViewPluginTests})
-  GET_FILENAME_COMPONENT(TName ${test} NAME_WE)
-  ADD_TEST(${TName} ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests ${TName} ${CXX_TEST_PLUGIN_PATH} ${ITK_DATA_ROOT})
-ENDFOREACH (test) 
+foreach (test ${v3dViewPluginTests})
+  get_filename_component(TName ${test} NAME_WE)
+  add_test(${TName} ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests ${TName} ${CXX_TEST_PLUGIN_PATH} ${ITK_DATA_ROOT})
+endforeach() 

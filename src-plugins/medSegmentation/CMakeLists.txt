@@ -50,10 +50,10 @@ file(GLOB ${PROJECT_NAME}_SOURCES *.cpp )
 foreach(fileIt ${${PROJECT_NAME}_HEADERS})
     file(STRINGS ${fileIt} foundString REGEX "^[ \\t]*Q_OBJECT([^0-9A-Za-z_]|$)")
     string(LENGTH "${foundString}" foundLength)
-    if( ${foundLength} GREATER 0 )
+    if ( ${foundLength} GREATER 0 )
         set(${PROJECT_NAME}_HEADERS_MOC ${${PROJECT_NAME}_HEADERS_MOC} ${fileIt})
-    endif( ${foundLength} GREATER 0 )
-endforeach(fileIt)
+    endif()
+endforeach()
 
 set(${PROJECT_NAME}_RESOURCES medSegmentation.qrc)
 
@@ -64,12 +64,12 @@ set(${PROJECT_NAME}_RESOURCES medSegmentation.qrc)
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
-if(MEDINRIA-PLUGINS__USE_PRECOMPILED_HEADERS)
+if (MEDINRIA-PLUGINS__USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC})
-endif(MEDINRIA-PLUGINS__USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_MOC}
@@ -92,8 +92,8 @@ dtk_build_doc(msegPlugin)
 ## Source file layout in development environments like Visual Studio
 ## #################################################################
 
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules

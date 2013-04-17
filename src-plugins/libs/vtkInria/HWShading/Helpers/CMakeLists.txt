@@ -1,6 +1,6 @@
 
 
-SET(Helpers_classes
+set(Helpers_classes
     vtkImageDataInterpolator
     vtkBetterDataReader
     vtkDoubleToUCharFilter
@@ -8,14 +8,14 @@ SET(Helpers_classes
     vtkImageOrthogonalSlicesActor
     )
 
-FOREACH(class ${Helpers_classes})
-  SET(Helpers_SRCS    ${Helpers_SRCS}    ${class}.cxx)
-  SET(Helpers_Headers ${Helpers_Headers} ${class}.h)
-ENDFOREACH(class)
+foreach (class ${Helpers_classes})
+  set(Helpers_SRCS    ${Helpers_SRCS}    ${class}.cxx)
+  set(Helpers_Headers ${Helpers_Headers} ${class}.h)
+endforeach()
 
-ADD_LIBRARY(vtkHelpers SHARED ${Helpers_SRCS})
+add_library(vtkHelpers SHARED ${Helpers_SRCS})
 
-TARGET_LINK_LIBRARIES(vtkHelpers
+target_link_libraries(vtkHelpers
   vtkCommon
   vtkIO
   vtkFiltering
@@ -24,8 +24,8 @@ TARGET_LINK_LIBRARIES(vtkHelpers
   vtkRendering
   )
 
-IF( VTKINRIA_BUILD_TESTING )
-  ADD_SUBDIRECTORY( Testing )
-ENDIF()
+if ( VTKINRIA_BUILD_TESTING )
+  add_subdirectory( Testing )
+endif()
 
 
