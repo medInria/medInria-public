@@ -518,9 +518,13 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type,QString a
     dtkSmartPointer<dtkAbstractData> output(NULL); //initialisation : UGLY but necessary
     
     if (type==algorithm)
-        output = d->process->output();
+        if (d->process)
+            output = d->process->output();
+        else return;
     else
-        output = d->undoRedoProcess->output();
+        if (d->undoRedoProcess)
+            output = d->undoRedoProcess->output();
+        else return;
     
     foreach(QString metaData, d->fixedData->metaDataList())
         output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
