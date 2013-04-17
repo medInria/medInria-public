@@ -1,5 +1,5 @@
 
-INCLUDE_DIRECTORIES("..")
+include_directories("..")
 
 
 add_executable(itkGenerateThumbnails

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.4) 
 
 project(medInria-all)
-if(UNIX AND NOT APPLE)
+if (UNIX AND NOT APPLE)
   set(CPACK_COMPONENTS_ALL_IN_ONE_PACKAGE 1)
   
   set(CPACK_PACKAGE_NAME "medInria-all")
@@ -55,5 +55,5 @@ if(UNIX AND NOT APPLE)
 
   include(CPack)
 
-endif(UNIX AND NOT APPLE)
+endif()
 

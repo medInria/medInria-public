@@ -14,15 +14,15 @@ add_executable(RegistrationFactory
   RegistrationFactory.cxx
 )
 
-if(WIN32 AND NOT CYGWIN AND NOT MINGW)
+if (WIN32 AND NOT CYGWIN AND NOT MINGW)
  target_link_libraries(RegistrationFactory 
   itkRegistrationAddOn 
   getoptcompatlib
   )
-else (WIN32 AND NOT CYGWIN AND NOT MINGW)
+else()
  target_link_libraries(RegistrationFactory
    itkRegistrationAddOn
    )
-endif(WIN32 AND NOT CYGWIN AND NOT MINGW)
+endif()
 
 

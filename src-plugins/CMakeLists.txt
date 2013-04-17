@@ -68,28 +68,28 @@ set(${PROJECT_NAME}_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
 
 #configure ctest variables
 option(MEDINRIA-PLUGINS_BUILD_REPORTING "Build Reporting")
-if(MEDINRIA-PLUGINS_BUILD_REPORTING)
+if (MEDINRIA-PLUGINS_BUILD_REPORTING)
   include(dtkReporting)
-endif(MEDINRIA-PLUGINS_BUILD_REPORTING)
+endif()
 
 if (MEDINRIA-PLUGINS_BUILD_TESTING)
   add_subdirectory(tests)
-endif (MEDINRIA-PLUGINS_BUILD_TESTING)
+endif()
 
 ## #################################################################
 ## Input
 ## #################################################################
-if(MSVC)
+if (MSVC)
   #Macros that enable precompiled headers to be added, defined by dtk.
   include(dtkPch)
   option(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
-endif(MSVC)
+endif()
 
 set(DEPENDS_ON_DTK 1)
 
 option(BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individual selections)" ON)
 
-OPTION(MEDINRIA-PLUGINS_BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
+option(MEDINRIA-PLUGINS_BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
 
 ## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
 set(PLUGIN_LIST
@@ -128,8 +128,8 @@ set (INDEX 0)
 #message(${PLUGIN_LIST})
 while(INDEX LESS N)
   MATH( EXPR INDEX_BOOL "${INDEX} + 1" )
-  #MESSAGE ("index:" ${INDEX})
-  #MESSAGE ("index_bool:" ${INDEX_BOOL})
+  #message("index:" ${INDEX})
+  #message("index_bool:" ${INDEX_BOOL})
 
   list(GET PLUGIN_LIST ${INDEX} PLUGIN_ITEM)
   list(GET PLUGIN_LIST ${INDEX_BOOL} BUILD_VALUE)
@@ -162,7 +162,7 @@ if (ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
   endwhile()
 endif()
 
-if(BUILD_ALL_PLUGINS OR
+if (BUILD_ALL_PLUGINS OR
   BUILD_VTKDATAMESHWRITER_PLUGIN OR
   BUILD_VTKDATAMESHREADER_PLUGIN OR
   BUILD_VTKDATAMESH_PLUGIN OR
@@ -174,7 +174,7 @@ if(BUILD_ALL_PLUGINS OR
   set(MEDINRIA_REQUIRES_VTK TRUE)
 endif()
 
-if(BUILD_ALL_PLUGINS OR
+if (BUILD_ALL_PLUGINS OR
   BUILD_VTKDATAMESHWRITER_PLUGIN OR
   BUILD_VTKDATAMESHREADER_PLUGIN OR
   BUILD_VTKDATAMESH_PLUGIN OR
@@ -205,21 +205,21 @@ if (BUILD_ALL_PLUGINS OR
   set(MEDINRIA_REQUIERS_ITKPROCESSREGISTRATION TRUE)
 endif()
 
-if(BUILD_ALL_PLUGINS OR
+if (BUILD_ALL_PLUGINS OR
   BUILD_ITKDATAIMAGEWRITER_PLUGIN OR
   BUILD_ITKDATAIMAGEREADER_PLUGIN
   )
   set(MEDINRIA_REQUIERS_ITKDATAIMAGEBASE TRUE)
 endif()
 
-if(BUILD_ALL_PLUGINS OR
+if (BUILD_ALL_PLUGINS OR
   BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN
   )
   set(MEDINRIA_REQUIERS_ITKDCMTKIO TRUE)
 endif()
 
 
-if(BUILD_ALL_PLUGINS OR
+if (BUILD_ALL_PLUGINS OR
   BUILD_V3DVIEW_PLUGIN OR
   BUILD_V3DDATA_PLUGIN     
   )
@@ -236,9 +236,9 @@ if (MEDINRIA-PLUGINS_BUILD_TOOLS)
 endif()
 
 option(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION "Build documentation"    OFF)
-if(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
+if (MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
-endif(MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
+endif()
 
 
 #already did in medinria-pluginsPack.cmake
@@ -258,11 +258,11 @@ endif()
 ## #################################################################
 
 # On Visual Studio 8 MS deprecated C. This removes all 1.276E1265 security warnings
-if(WIN32)
-  if(NOT BORLAND)
-    if(NOT CYGWIN)
-      if(NOT MINGW)
-        if(NOT ITK_ENABLE_VISUAL_STUDIO_DEPRECATED_C_WARNINGS)
+if (WIN32)
+  if (NOT BORLAND)
+    if (NOT CYGWIN)
+      if (NOT MINGW)
+        if (NOT ITK_ENABLE_VISUAL_STUDIO_DEPRECATED_C_WARNINGS)
           add_definitions(
             -D_CRT_FAR_MAPPINGS_NO_DEPRECATE
             -D_CRT_IS_WCTYPE_NO_DEPRECATE
@@ -276,8 +276,8 @@ if(WIN32)
             -D_SCL_SECURE_NO_DEPRECATE
             -D_SCL_SECURE_NO_WARNINGS
           )
-        endif(NOT ITK_ENABLE_VISUAL_STUDIO_DEPRECATED_C_WARNINGS)
-      endif(NOT MINGW)
-    endif(NOT CYGWIN)
-  endif(NOT BORLAND)
-endif(WIN32)
+        endif()
+      endif()
+    endif()
+  endif()
+endif()

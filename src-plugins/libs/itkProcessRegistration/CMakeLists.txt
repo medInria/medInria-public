@@ -32,9 +32,9 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
 find_package(ITK REQUIRED)
-if(ITK_FOUND)
+if (ITK_FOUND)
    include(${ITK_USE_FILE})
-endif(ITK_FOUND)
+endif()
 
 ## #################################################################
 ## Input
@@ -74,8 +74,8 @@ target_link_libraries(${PROJECT_NAME}
 ## Source file layout in development environments like Visual Studio
 ## #################################################################
 
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules

@@ -27,11 +27,11 @@ set(${PROJECT_NAME}_SOURCES
     vtkImageView3DCroppingBoxCallback.cxx
     vtkSmartVolumeMapper.cxx
 )
-if(VTKINRIA_USE_PRECOMPILED_HEADERS)
+if (VTKINRIA_USE_PRECOMPILED_HEADERS)
     add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
     "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
     ${${PROJECT_NAME}_SOURCES})
-endif(VTKINRIA_USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
     ${${PROJECT_NAME}_SOURCES_PCH}
@@ -49,11 +49,11 @@ target_link_libraries(${PROJECT_NAME}
     ITKBasicFilters
 )
 
-IF(VTKINRIA_BUILD_TESTING)
-    ADD_SUBDIRECTORY(Testing)
-ENDIF(VTKINRIA_BUILD_TESTING)
+if (VTKINRIA_BUILD_TESTING)
+    add_subdirectory(Testing)
+endif()
 
 # include header files in group for visual studio
-SOURCE_GROUP( "Header Files" FILES ${${PROJECT_NAME}_HEADERS})
+source_group( "Header Files" FILES ${${PROJECT_NAME}_HEADERS})
 
 

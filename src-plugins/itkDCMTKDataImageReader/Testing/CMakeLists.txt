@@ -1,18 +1,18 @@
-SET(PLUGIN_NAME itkDCMTKDataImageReaderPlugin)
+set(PLUGIN_NAME itkDCMTKDataImageReaderPlugin)
 
-SET(${PLUGIN_NAME}Tests
+set(${PLUGIN_NAME}Tests
   itkDCMTKDataImageReaderTest.cxx
 )
 
-CREATE_TEST_SOURCELIST(Tests ${PLUGIN_NAME}CxxTests.cxx
+create_test_sourcelist(Tests ${PLUGIN_NAME}CxxTests.cxx
   ${${PLUGIN_NAME}Tests}
   )
 
-ADD_EXECUTABLE(${PLUGIN_NAME}CxxTests 
+add_executable(${PLUGIN_NAME}CxxTests 
   ${Tests}
   )
 
-TARGET_LINK_LIBRARIES(${PLUGIN_NAME}CxxTests
+target_link_libraries(${PLUGIN_NAME}CxxTests
   dtkCore dtkLog
   medCore
   ${QT_LIBRARIES}
@@ -24,17 +24,17 @@ RUNTIME_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
 
 set(CXX_TEST_PATH        ${EXECUTABLE_OUTPUT_PATH})
 set(CXX_TEST_PLUGIN_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-if(MSVC)
+if (MSVC)
   set(CXX_TEST_PLUGIN_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release)
-endif(MSVC)
+endif()
 
 find_path(DICOM_DATA_ROOT "dicom.lst")
 
-GET_FILENAME_COMPONENT(TName ${${PLUGIN_NAME}Tests} NAME_WE)
+get_filename_component(TName ${${PLUGIN_NAME}Tests} NAME_WE)
 
 if (DICOM_DATA_ROOT)
   file(STRINGS "${DICOM_DATA_ROOT}/dicom.lst" DICOM_LIST)
   foreach(DICOM_DIR ${DICOM_LIST})
-    ADD_TEST(${PLUGIN_NAME}_${DICOM_DIR} ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests ${TName} ${CXX_TEST_PLUGIN_PATH} "${DICOM_DATA_ROOT}/${DICOM_DIR}")
+    add_test(${PLUGIN_NAME}_${DICOM_DIR} ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests ${TName} ${CXX_TEST_PLUGIN_PATH} "${DICOM_DATA_ROOT}/${DICOM_DIR}")
   endforeach()
-endif(DICOM_DATA_ROOT)
+endif()
