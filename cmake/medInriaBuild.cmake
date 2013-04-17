@@ -1,22 +1,3 @@
-### medBuild.cmake ---
-##
-## Author: Julien Wintz
-## Copyright (C) 2008 - Julien Wintz, Inria.
-## Created: Tue Apr  6 21:41:29 2010 (+0200)
-## Version: $Id$
-## Last-Updated: Tue May  3 16:50:17 2011 (+0200)
-##           By: Julien Wintz
-##     Update #: 2
-######################################################################
-##
-### Commentary:
-##
-######################################################################
-##
-### Change log:
-##
-######################################################################
-
 if (WIN32)
   SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
@@ -38,7 +19,8 @@ set(${PROJECT_NAME}_INCLUDE_DIR
     ${PROJECT_SOURCE_DIR}/src/medGui/settingsWidgets
     ${PROJECT_SOURCE_DIR}/src/medGui/toolboxes
     ${PROJECT_SOURCE_DIR}/src/medGui/viewContainers
-	${PROJECT_SOURCE_DIR}/src/medGui/database)
+    ${PROJECT_SOURCE_DIR}/src/medGui/database
+)
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIR})
 
@@ -55,7 +37,8 @@ set(${PROJECT_NAME}_INSTALL_INCLUDE_DIR
     ${CMAKE_INSTALL_PREFIX}/include/medGui/settingsWidgets
     ${CMAKE_INSTALL_PREFIX}/include/medGui/toolboxes
     ${CMAKE_INSTALL_PREFIX}/include/medGui/viewContainers
-	${CMAKE_INSTALL_PREFIX}/include/medGui/database)
+    ${CMAKE_INSTALL_PREFIX}/include/medGui/database
+)
 
 
 ## ###################################################################
