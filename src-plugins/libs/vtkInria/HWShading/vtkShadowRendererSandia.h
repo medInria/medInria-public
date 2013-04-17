@@ -7,6 +7,7 @@
  * statement of authorship are reproduced on all copies.
  */
 
+
 #pragma once
 
 //#include "vtksnlRenderingWin32Header.h"

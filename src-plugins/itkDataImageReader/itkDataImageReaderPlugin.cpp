@@ -1,6 +1,6 @@
 /*=========================================================================
 
- MedInria
+ medInria
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
@@ -10,10 +10,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-
-
-
 
 #ifdef ITK_USE_SYSTEM_GDCM
 #include "itkGDCMDataImageReader.h"

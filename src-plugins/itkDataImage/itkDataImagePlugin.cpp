@@ -1,6 +1,6 @@
 /*=========================================================================
 
- MedInria
+ medInria
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
@@ -10,9 +10,6 @@
   PURPOSE.
 
 =========================================================================*/
-
-
-
 
 #include "itkDataImagePlugin.h"
 #include "itkDataImageChar3.h"

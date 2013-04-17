@@ -1,6 +1,6 @@
 /*=========================================================================
 
- MedInria
+ medInria
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.

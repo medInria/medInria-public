@@ -37,6 +37,7 @@
 **
 ****************************************************************************/
 
+
 #ifndef QTSINGLEAPPLICATION_H
 #define QTSINGLEAPPLICATION_H
 
