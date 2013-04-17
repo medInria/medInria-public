@@ -24,10 +24,10 @@ include(${ITK_USE_FILE})
 
 find_package(DCMTK REQUIRED)
 include_directories(${DCMTK_INCLUDE_DIRS})
-if (APPLE)
+IF(APPLE)
   include(FixDCMTKMacInstall)
   FixDCMTKMacInstall()
-endif()
+ENDIF(APPLE)
 
 set(MEDINRIA_REQUIRES_VTK TRUE) # for itkMultiThreadedImageIO in vtkInria3d
 
@@ -53,8 +53,8 @@ target_link_libraries(ITKDCMTKIO
   ${ITK_LIBRARIES}
 )
 
-if (APPLE)
+if(APPLE)
   include(FixDCMTKMacLink)
   FixDCMTKMacLink(ITKDCMTKIO)
-endif()
+endif(APPLE)
 
