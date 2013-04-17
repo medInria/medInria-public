@@ -1,22 +1,3 @@
-/*=========================================================================
-
-Program:   vtkINRIA3D
-Module:    $Id: CodeCopyright.txt 1182 2009-06-30 09:19:05Z acanale $
-Language:  C++
-Author:    $Author: $
-Date:      $Date: 2009-06-30 11:19:05 +0200 (mar, 30 jun 2009) $
-Version:   $Revision: 1182 $
-
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
-
-=========================================================================*/
-
-
 /*      $NetBSD: getopt.h,v 1.4 2000/07/07 10:43:54 ad Exp $    */
 /*      $FreeBSD: src/include/getopt.h,v 1.1 2002/09/29 04:14:30 eric Exp $ */
 
