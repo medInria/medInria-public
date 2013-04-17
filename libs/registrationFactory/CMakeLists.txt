@@ -67,7 +67,6 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_HEADERS})
 
 target_link_libraries(${PROJECT_NAME}
-  itkRegistrationAddOn
   ${QT_LIBRARIES}
   RegistrationAddOn
   ITKCommon
