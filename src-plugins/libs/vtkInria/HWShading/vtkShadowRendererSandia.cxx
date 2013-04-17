@@ -6,6 +6,8 @@
  * or without modification, are permitted provided that this Notice and any
  * statement of authorship are reproduced on all copies.
  */
+
+
 #include <vtkObjectFactory.h>
 #include <vtkRenderWindow.h>
 #include <vtkLightCollection.h>
