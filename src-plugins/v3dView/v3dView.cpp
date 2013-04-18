@@ -1608,16 +1608,6 @@ void v3dView::onCroppingPropertySet ( const QString &value )
 * Slot called to visualize a specific slice
 * @param value - the slice number
 **/
- void v3dView::setSlider( int value)
- {
-    d->slider->setSliderPosition(value);
-    disconnect(sender(), SIGNAL(sliceSelected(int)), this, 0);
- }
-
-/**
-* Slot called to visualize a specific slice
-* @param value - the slice number
-**/
 void v3dView::setSlider( int value)
 {
     d->slider->setSliderPosition(value);
