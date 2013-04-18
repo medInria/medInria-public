@@ -40,11 +40,8 @@ medMessage::medMessage( QWidget *parent,
     layout->addWidget(icon);
     layout->addWidget(info);
 
-    if ( timeout > 0 )
-    {
-        this->timer = new QTimer(this);
-        connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
-    }
+    this->timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
 
     this->setLayout(layout);
 }
@@ -148,9 +145,16 @@ void medMessageProgress::failure(void)
 void medMessageProgress::associateTimer(void)
 {
     this->timer = new QTimer(this);
-    int timeout = 2000;
+    timeout = 2000;
     connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
-    timer->start(timeout);
+}
+
+void medMessageProgress::paintEvent ( QPaintEvent * event)
+{
+    if (timeout > 0)
+    {
+        timer->start(timeout);
+    }
 }
 
 // /////////////////////////////////////////////////////////////////
