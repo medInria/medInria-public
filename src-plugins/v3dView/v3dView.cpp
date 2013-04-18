@@ -1207,7 +1207,6 @@ void v3dView::onOrientationPropertySet ( const QString &value )
      */
 
     //d->observer->setView ( d->currentView );
-
     d->currentView->SetCurrentPoint ( pos );
     //for the moment only act when going to 3d mode:
     //update the color level and window
@@ -1614,6 +1613,16 @@ void v3dView::onCroppingPropertySet ( const QString &value )
     d->slider->setSliderPosition(value);
     disconnect(sender(), SIGNAL(sliceSelected(int)), this, 0);
  }
+
+/**
+* Slot called to visualize a specific slice
+* @param value - the slice number
+**/
+void v3dView::setSlider( int value)
+{
+    d->slider->setSliderPosition(value);
+    disconnect(sender(), SIGNAL(sliceSelected(int)), this, 0);
+}
 
 void v3dView::onZSliderValueChanged ( int value )
 {
