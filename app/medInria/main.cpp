@@ -218,6 +218,7 @@ int main(int argc,char* argv[]) {
 		             &mainwindow,SLOT(onNewInstance(const QString&)));
 
     application.setActivationWindow(&mainwindow);
+    application.setMainWindow(&mainwindow);
 
     //  Start main loop.
 
