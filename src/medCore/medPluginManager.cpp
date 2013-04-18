@@ -52,22 +52,13 @@ void medPluginManager::readSettings(void)
     const char PLUGIN_PATH_VAR_NAME[] = "MEDINRIA_PLUGIN_PATH";
     QByteArray pluginVarArray = qgetenv(PLUGIN_PATH_VAR_NAME);
 
-    if ( !pluginVarArray.isEmpty() ) {
+    if ( !pluginVarArray.isEmpty() )
+    {
         setPath( QString(pluginVarArray.constData()));
     }
     else
     {
-        QSettings settings;
-        settings.beginGroup("plugins");
-        if (!settings.contains("path"))
-        {
-            qDebug()<<"Filling in empty path in settings with default path:"
-                   << plugins_dir.absolutePath();
-            settings.setValue("path", plugins_dir.absolutePath());
-        }
-        qDebug()<< "path:" << settings.value("path", defaultPath).toString();
-        setPath (settings.value("path", defaultPath).toString());
-        settings.endGroup();
+        setPath(defaultPath);
     }
 
     if(path().isEmpty()) {
@@ -77,14 +68,6 @@ void medPluginManager::readSettings(void)
     }
 }
 
-void medPluginManager::writeSettings(void)
-{
-
-    QSettings settings;
-    settings.beginGroup("plugins");
-    settings.setValue("path", path());
-    settings.endGroup();
-}
 
 
 QStringList medPluginManager::handlers(const QString& category)

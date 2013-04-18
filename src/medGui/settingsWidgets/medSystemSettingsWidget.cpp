@@ -25,7 +25,6 @@ class medSystemSettingsWidgetPrivate {
 
 public:
   QWidget* parent;
-  QLineEdit* pluginsPathField;
   QLineEdit* modulesPathField;
   QLineEdit* scriptsPathField;
   QCheckBox* clearOnPatientField;
@@ -48,12 +47,10 @@ medSystemSettingsWidget::medSystemSettingsWidget(QWidget *parent) :
         d(new medSystemSettingsWidgetPrivate())
 {
     setTabName(tr("System"));
-    d->pluginsPathField = new QLineEdit(this);
     d->modulesPathField = new QLineEdit(this);
     d->scriptsPathField = new QLineEdit(this);
     d->clearOnPatientField = new QCheckBox(this);
     QFormLayout* layout = new QFormLayout;
-    layout->addRow(tr("Plugins Path"),d->pluginsPathField);
     layout->addRow(tr("Modules Path"),d->modulesPathField);
     layout->addRow(tr("Scripts Path"),d->scriptsPathField);
     layout->addRow(tr("Clear on patient change"),d->clearOnPatientField);
@@ -67,9 +64,6 @@ medSettingsWidget* createSystemSettingsWidget(QWidget *parent){
 
 bool medSystemSettingsWidget::validate()
 {
-    if (!validatePaths(d->pluginsPathField->text()))
-        return false;
-
     if (!validatePaths(d->modulesPathField->text()))
         return false;
 
@@ -105,7 +99,6 @@ bool medSystemSettingsWidget::validatePaths(QString paths)
 void medSystemSettingsWidget::read()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
-    d->pluginsPathField->setText(mnger->value("plugins","path").toString());
     d->modulesPathField->setText(mnger->value("scripts","modules_path").toString());
     d->scriptsPathField->setText(mnger->value("scripts","script_path").toString());
     bool clear = mnger->value("system","clearOnPatientChange").toBool();
@@ -115,7 +108,6 @@ void medSystemSettingsWidget::read()
 bool medSystemSettingsWidget::write()
 {
     medSettingsManager * mnger = medSettingsManager::instance();
-    mnger->setValue("plugins","path",d->pluginsPathField->text());
     mnger->setValue("scripts","modules_path",d->modulesPathField->text());
     mnger->setValue("scripts","script_path",d->scriptsPathField->text());
     mnger->setValue("system","clearOnPatientChange",d->clearOnPatientField->isChecked());

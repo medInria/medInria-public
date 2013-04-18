@@ -59,14 +59,6 @@ public:
     void uninitialize();
 
     /**
-     * @brief Writes the plugin path to the settings.
-     *
-     *
-     * @param void
-    */
-    void writeSettings();
-
-    /**
      * @brief Gets a list of plugins belonging to 'category'
      *
      * @param category The category to use as a filter
