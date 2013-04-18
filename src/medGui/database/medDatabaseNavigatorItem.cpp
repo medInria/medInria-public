@@ -135,6 +135,8 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
     d->itemTrasherFadingAnimation->setDuration(150);
     
     d->fadingAnimation->addAnimation(d->itemTrasherFadingAnimation);
+
+    connect(this, SIGNAL(itemDoubleClicked(const medDataIndex&)), medDataManager::instance(), SIGNAL(openRequested(const medDataIndex&)));
 }
 
 medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)
@@ -216,6 +218,11 @@ void medDatabaseNavigatorItem::setImage(const QImage& image)
 void medDatabaseNavigatorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event);
+}
+
+void medDatabaseNavigatorItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
+{
+    emit itemDoubleClicked(d->index);
 }
 
 void medDatabaseNavigatorItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)

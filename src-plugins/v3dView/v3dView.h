@@ -185,6 +185,7 @@ public slots:
     void onWindowingLinkedPropertySet       (const QString &value);
 
 public slots:
+    void setSlider                          ( int value );
     void onZSliderValueChanged              (int value);
     void onMetaDataSet         (const QString &key, const QString &value);
 

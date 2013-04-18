@@ -158,7 +158,6 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
              SLOT (setPatientIndex (const medDataIndex&)));
     connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->patientToolBox,
              SLOT (setPatientIndex (const medDataIndex&)));
-
 /*
 //------------- MEM LEAK TEST BEGIN -----------------//
     int memusage = 0;
@@ -256,14 +255,16 @@ bool medWorkspaceArea::open(const medDataIndex& index)
 
     if( !index.isValid() )
         return false;
-
     if( index.isValidForSeries() )
     {
         //get the root container, to see if there is an available view to dump our data in.
         medViewContainer * root = this->currentRootContainer();
+        connect(this, SIGNAL(sliceSelected(int)), root, SIGNAL(sliceSelected(int)));
         succeeded = root->open(index);
         this->switchToPatient(index);
+
     }
+
 
     else if( index.isValidForPatient() )
     {
@@ -746,6 +747,11 @@ void medWorkspaceArea::setupWorkspace(QString name)
     connect(workspace, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)), Qt::UniqueConnection);
     connect(workspace, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)), Qt::UniqueConnection);
     connect(workspace, SIGNAL(toolboxRemoved(medToolBox*)),this, SLOT(removeToolBox(medToolBox*)), Qt::UniqueConnection);
+
+    // double-click on a thumbnail launches its visualization in the current workspace
+
+    connect (medDataManager::instance(), SIGNAL(openRequested(const medDataIndex&)),
+        this, SLOT(open(const medDataIndex&)), Qt::UniqueConnection);
 }
 
 void medWorkspaceArea::switchToLayout (medWorkspace::LayoutType layout)
