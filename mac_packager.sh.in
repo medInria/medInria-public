@@ -15,22 +15,23 @@
 # The bundle medInria.app will contain all plugins and will be standalone, packaged into MedINRIA.dmg in the install dir
 
 cd @PROJECT_BINARY_DIR@
-\rm -fr @CMAKE_INSTALL_PREFIX@
-make install
-
 cd @CMAKE_INSTALL_PREFIX@/bin/
-@QT_BINARY_DIR@/macdeployqt medInria.app
 
 #Run sub-packagers
+injectDirs=''
 for i in $*; do
-	resultRootDir=`/bin/bash $i`
-	echo Copying plugins from $resultRootDir
-	
-	\cp -r $resultRootDir/Applications/medInria.app/Contents/Frameworks @CMAKE_INSTALL_PREFIX@/bin/medInria.app/Contents/
-	\cp -r $resultRootDir/Applications/medInria.app/Contents/PlugIns @CMAKE_INSTALL_PREFIX@/bin/medInria.app/Contents/
+	injectDirs="$injectDirs -inject-dir=$i"
 done
 
+@dtk_DIR@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
+
 cd @CMAKE_INSTALL_PREFIX@/bin/medInria.app/Contents
+
+infoSize=`cat Info.plist | wc -l | awk '{print $1;exit}'`
+let infoSize=$infoSize-2
+head -n $infoSize Info.plist > tmp.plist
+cat @CMAKE_SOURCE_DIR@/utils/osx_packaging/Info_AddOn.plist >> tmp.plist
+\mv -f tmp.plist Info.plist
 
 mkdir -p PlugIns/sqldrivers
 

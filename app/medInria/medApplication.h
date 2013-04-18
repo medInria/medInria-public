@@ -17,6 +17,7 @@
 #include <QColor>
 
 class medApplicationPrivate;
+class medMainWindow;
 
 // /////////////////////////////////////////////////////////////////
 // medApplication
@@ -74,6 +75,9 @@ public:
      * @param alignment
      */
     void setMsgAlignment(int alignment);
+    
+    bool event(QEvent *event);
+    void setMainWindow(medMainWindow *mw);
 
 signals:
     /**

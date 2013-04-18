@@ -152,10 +152,11 @@ source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 ## #################################################################
 
 if (APPLE)
+  set(MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME})
   set(MACOSX_BUNDLE_ICON_FILE ${PROJECT_NAME}.icns)
-  set(MACOSX_BUNDLE_SHORT_VERSION_STRING 0.1.0)
-  set(MACOSX_BUNDLE_VERSION 0.1.0)
-  set(MACOSX_BUNDLE_LONG_VERSION_STRING Version 0.1.0)
+  set(MACOSX_BUNDLE_SHORT_VERSION_STRING ${${PROJECT_NAME}_VERSION})
+  set(MACOSX_BUNDLE_BUNDLE_VERSION ${${PROJECT_NAME}_VERSION})
+  set(MACOSX_BUNDLE_LONG_VERSION_STRING "Version ${${PROJECT_NAME}_VERSION}")
   set(${PROJECT_NAME}_RESOURCE_DIR ${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME}.app/Contents/Resources)
   add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${PROJECT_NAME}_RESOURCE_DIR}
@@ -179,7 +180,10 @@ install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION bin)
 
 if (APPLE)
-  install(CODE "execute_process(COMMAND macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app)")
+  install(CODE "
+	execute_process(COMMAND macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app)
+	execute_process(COMMAND \${CMAKE_CURRENT_BINARY_DIR}/mac_packager.sh \${CMAKE_CURRENT_BINARY_DIR}/plugins)
+  ")
 endif()
 
 option(MEDINRIA_ACTIVATE_WALL_OPTION "Activate the command line option --wall (INRIA Sophia, immersive room)")
