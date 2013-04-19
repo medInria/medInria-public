@@ -199,6 +199,9 @@ void medDatabaseView::setModel(QAbstractItemModel *model)
     //connect( this->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), SLOT(onSelectionChanged(const QModelIndex&, const QModelIndex&)));
 
     connect( this->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(onSelectionChanged(const QItemSelection&, const QItemSelection&)) );
+    
+    connect( model, SIGNAL(dataChanged ( const QModelIndex &, const QModelIndex & )),
+             this, SLOT( setCurrentIndex(QModelIndex)));
 }
 
 void medDatabaseView::updateContextMenu(const QPoint& point)
@@ -429,8 +432,8 @@ void medDatabaseView::onCreatePatientRequested(void)
 
     QList<QVariant> ptValues;
     ptValues << patientName;
-    ptValues << "";
-    ptValues << "";
+    ptValues << QString("");
+    ptValues << QChar();
 
     medDatabaseEditItemDialog editDialog(ptAttributes, ptValues, this, true, isPersistent);
 

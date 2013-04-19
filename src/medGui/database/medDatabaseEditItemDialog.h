@@ -30,6 +30,7 @@ public:
 public slots:
     
     void setValue(const QString &value);
+    void setCharValue(const QString &value);
     void setValue(const int &value);
     void setValue(const QDate &value);
     

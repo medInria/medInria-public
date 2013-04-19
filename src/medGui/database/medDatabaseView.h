@@ -75,13 +75,13 @@ public slots:
     void onOpeningFailed(const medDataIndex& index);
 
     /** Creates a new patient */
-    void onCreatePatientRequested(void);
+    void onCreatePatientRequested();
     
     /** Creates a new study */
-    void onCreateStudyRequested(void);
+    void onCreateStudyRequested();
 
     /** Edits selected item */
-    void onEditRequested(void);
+    void onEditRequested();
 
 protected slots:
     virtual void updateContextMenu(const QPoint&);

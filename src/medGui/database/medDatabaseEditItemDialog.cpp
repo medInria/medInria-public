@@ -78,10 +78,12 @@ medDatabaseEditItemDialog::medDatabaseEditItemDialog(QList<QString> attributes, 
         case QVariant::Char:
             textEdit = new QLineEdit(this);
             textEdit->setObjectName(attrib);
-            textEdit->setText(data.toString());
+            if(data.isNull())
+                 textEdit->setText("");
+            else textEdit->setText(QString(data.toChar()));
             textEdit->setMaxLength(1);
             formLayout->addRow(attrib, textEdit);
-            connect(textEdit, SIGNAL(textChanged(const QString &)), this, SLOT(setValue(const QString &)));
+            connect(textEdit, SIGNAL(textChanged(const QString &)), this, SLOT(setCharValue(const QString &)));
             break;  
         case QVariant::Int:
             spinbox = new QSpinBox(this);
@@ -128,6 +130,23 @@ void medDatabaseEditItemDialog::setValue(const QString & text)
         if(index>-1 && index<d->values.length())
         {
             d->values[index] = QVariant(text);
+        }
+    }
+}
+
+void medDatabaseEditItemDialog::setCharValue(const QString & text)
+{
+    QWidget *currentWidget = QApplication::focusWidget();
+    QString objectName = currentWidget->objectName();
+    QChar chartext(text.at(0));
+
+    if(!objectName.isEmpty())
+    {
+        int index = d->attributes.indexOf(objectName);
+
+        if(index>-1 && index<d->values.length())
+        {
+            d->values[index] = QVariant(chartext);
         }
     }
 }

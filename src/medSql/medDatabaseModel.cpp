@@ -252,11 +252,6 @@ QModelIndex medDatabaseModel::parent(const QModelIndex& index) const
 {
     if (!index.isValid())
         return QModelIndex();
-    
-    if(!d->medIndexMap.values().contains(index))
-    {
-        return QModelIndex();   
-    }
 
     medAbstractDatabaseItem *child = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
     medAbstractDatabaseItem *parent = child->parent();
@@ -711,6 +706,7 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
     //    - the serie is present and there is an item: we need to update the data
 
     QModelIndex index = d->medIndexMap[dataIndex];
+    QModelIndex parentIndex = index.parent();
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(dataIndex.dataSourceId());
 
@@ -732,9 +728,12 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
             else
             {
                 emit layoutAboutToBeChanged();
+                changePersistenIndexAndSubIndex(index);
                 parent->removeChildren(/*index.row()*/parent->rowOf(item), 1);
                 d->medIndexMap.remove(dataIndex);
                 emit layoutChanged();
+                
+                emit dataChanged(parentIndex, parentIndex);
             }
         }
 
@@ -790,7 +789,11 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
             emit layoutChanged();
             
             //calling index() to update medIndexMap
-            this->index(stItem->childCount()-1,0,stIndex);
+            QModelIndex newIndex = this->index(stItem->childCount()-1,0,stIndex);
+            
+             emit dataChanged(newIndex.parent().parent(), newIndex.parent().parent());
+             emit dataChanged(newIndex.parent(), newIndex.parent());
+             emit dataChanged(newIndex, newIndex);
         }
     }
     
@@ -805,23 +808,21 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
     //    - the study is present and there is an item: we need to update the data and its series (in case of a move)
     //    
     QModelIndex index = d->medIndexMap.value(dataIndex);
+    QModelIndex parentIndex = index.parent();
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(dataIndex.dataSourceId());
 
     if(!dbc->contains(dataIndex))
     { 
         if(item)
-        {
-            emit layoutAboutToBeChanged();
-
+        {           
             QList<medDataIndex> series = dbc->series(dataIndex);
             foreach(medDataIndex serie, series)
-                d->medIndexMap.remove(serie);
+                updateSerie(serie);
         
-            item->removeChildren(0, item->childCount());
-
-            // data is not present in the database anymore,
-            // we need to update the parent to update its children
+            emit layoutAboutToBeChanged();
+            
+            changePersistenIndexAndSubIndex(index);
 
             medDataIndex ptDataIndex(dataIndex);
             ptDataIndex.setStudyId(-1);
@@ -838,7 +839,10 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
                 parent->removeChildren(/*index.row()*/parent->rowOf(item), 1);
                 d->medIndexMap.remove(dataIndex);
             }
+            
             emit layoutChanged();
+            
+            emit dataChanged(parentIndex, parentIndex);
         }
 
         return;    
@@ -893,8 +897,12 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
                 ptItem->append(stItem);
 
                 //calling index() to update medIndexMap
-                this->index(ptItem->childCount()-1,0,ptIndex);
+                QModelIndex newIndex = this->index(ptItem->childCount()-1,0,ptIndex);
+                
                 emit layoutChanged();
+                
+                emit dataChanged(newIndex.parent(), newIndex.parent());
+                emit dataChanged(newIndex, newIndex);
             }    
         }
 
@@ -926,7 +934,11 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
             }
             else
             {
+                // you can't do that, studies are already deleted at this stage
+                // QList<medDataIndex> studies = dbc->studies(dataIndex);              
                 emit layoutAboutToBeChanged();
+                
+                changePersistenIndexAndSubIndex(index);
                 
                 foreach(medDataIndex tempIndex, d->medIndexMap.keys())
                 {
@@ -961,7 +973,7 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
                 if ( data.isValid() )
                 {
                     ptData[i] = data;
-                     if(item)
+                    if(item)
                         item->setData(i, data);
                 }
             }
@@ -971,15 +983,15 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
         {
             // we must create a new item
             // and append it to the parent patientId 
-            
             medAbstractDatabaseItem *ptItem = new medDatabaseItem(dataIndex, d->ptAttributes, ptData,  d->root);
+                   
             emit layoutAboutToBeChanged();
             d->root->append(ptItem);
-            emit layoutChanged();
-            
-            //calling index() to update medIndexMap
-            this->index(d->root->childCount()-1,0,QModelIndex());
+            QModelIndex newIndex = this->index(d->root->childCount()-1,0,QModelIndex());
+            emit layoutChanged(); 
+            emit dataChanged(newIndex,newIndex);
         }
+        
     }
 }
 
@@ -1041,5 +1053,24 @@ QVariant medDatabaseModel::convertQStringToQVariant(QString keyName, QString val
     }
     
     return res;
+}
+
+void medDatabaseModel::changePersistenIndexAndSubIndex(QModelIndex index)
+{
+    for(int i=0; i<columnCount(); i++)
+    {
+        QModelIndex tempIndex = index.sibling(index.row(),i);
+        
+        if(i==0)
+        {
+            int j=0;
+            while(tempIndex.child(j,0).isValid())
+            {
+                changePersistenIndexAndSubIndex(tempIndex.child(j,0));   
+                j++;
+            }          
+        }
+        changePersistentIndex(tempIndex, QModelIndex());
+    }
 }
 
