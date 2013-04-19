@@ -146,7 +146,7 @@ void medMessageProgress::failure(void)
 void medMessageProgress::associateTimer(void)
 {
     this->timer = new QTimer(this);
-    int timeout = 2000;
+    timeout = 2000;
     connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
 }
 
