@@ -82,6 +82,7 @@ private:
     void updateStudy(const medDataIndex&, bool updateChildren = true);
     void updatePatient(const medDataIndex&, bool updateChildren = true);
     QVariant convertQStringToQVariant(QString key, QString value);
+    void changePersistenIndexAndSubIndex(QModelIndex index);
 };
 
 

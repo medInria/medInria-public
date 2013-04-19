@@ -105,8 +105,8 @@ medDatabasePreview::medDatabasePreview(QWidget *parent) : QFrame(parent), d(new 
     layout->addWidget(d->view);
 
     medDatabasePreviewController::instance()->orientation() == Qt::Horizontal
-        ? this->setFixedHeight(medDatabasePreviewController::instance()->groupHeight() + medDatabasePreviewController::instance()->itemSpacing() + 36) // 26 pixels for the scroller
-        : this->setFixedWidth(medDatabasePreviewController::instance()->groupWidth() + medDatabasePreviewController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
+    ? this->setFixedHeight(medDatabasePreviewController::instance()->groupHeight() + medDatabasePreviewController::instance()->itemSpacing() + 36) // 26 pixels for the scroller
+    : this->setFixedWidth(medDatabasePreviewController::instance()->groupWidth() + medDatabasePreviewController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
 
     this->init();
 }
@@ -166,7 +166,7 @@ void medDatabasePreview::onPatientClicked(const medDataIndex& id)
                     firstSeId = (*seriesIt).seriesId();
 
                 d->seriesGroup->addItem(new medDatabasePreviewItem(
-                    medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
+                                            medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
             }
 
         }
@@ -174,7 +174,7 @@ void medDatabasePreview::onPatientClicked(const medDataIndex& id)
 
     d->scene->setSceneRect(d->seriesGroup->boundingRect());
 
-    if(d->level)
+    if(d->level &&  !d->seriesGroup->childItems().isEmpty())
         this->onSlideDw();
     else
         moveToItem( d->seriesGroup->item(firstSeId) );
@@ -196,7 +196,7 @@ void medDatabasePreview::onStudyClicked(const medDataIndex& id)
                 firstSeId = (*seriesIt).seriesId();
 
             d->seriesGroup->addItem(new medDatabasePreviewItem(
-                                         medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
+                                        medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
 
 
         }
@@ -204,7 +204,7 @@ void medDatabasePreview::onStudyClicked(const medDataIndex& id)
 
     d->scene->setSceneRect(d->seriesGroup->boundingRect());
 
-    if(d->level)
+    if(d->level &&  !d->seriesGroup->childItems().isEmpty())
         this->onSlideDw();
     else
         moveToItem( d->seriesGroup->item(firstSeId) );
@@ -221,7 +221,7 @@ void medDatabasePreview::onSeriesClicked(const medDataIndex& id)
         for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
 
             d->seriesGroup->addItem(new medDatabasePreviewItem(
-                medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
+                                        medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
         }
     }
 
@@ -398,7 +398,10 @@ void medDatabasePreview::moveToItem(medDatabasePreviewItem *target) // move to b
         d->selector->show();
 
     if (!target)
+    {
+        d->selector->hide();
         return;
+    }
 
     qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();
