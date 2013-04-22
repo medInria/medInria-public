@@ -17,6 +17,7 @@
 
 #include <dtkCore/dtkPluginManager.h>
 #include <dtkCore/dtkPlugin.h>
+#include <medStorage.h>
 
 
 class medPluginManagerPrivate
@@ -52,13 +53,17 @@ void medPluginManager::readSettings(void)
     const char PLUGIN_PATH_VAR_NAME[] = "MEDINRIA_PLUGIN_PATH";
     QByteArray pluginVarArray = qgetenv(PLUGIN_PATH_VAR_NAME);
 
+    // Path for extra plugins
+    QString extraPlugins_path = medStorage::dataLocation() + "/../medInria-plugins";
+
+
     if ( !pluginVarArray.isEmpty() )
     {
         setPath( QString(pluginVarArray.constData()));
     }
     else
     {
-        setPath(defaultPath);
+        setPath(defaultPath + ":" + extraPlugins_path);
     }
 
     if(path().isEmpty()) {
