@@ -62,8 +62,8 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
     QHBoxLayout *layoutButtonsStack = new QHBoxLayout;
     layoutButtonsStack->addLayout(layoutButtonUndoRedo);
     layoutButtonsStack->addWidget(d->transformationStack);
-    d->transformationStack->setMaximumHeight(180);
-    d->transformationStack->setMaximumWidth(200);
+    d->transformationStack->setFixedSize(180,160);
+    
     QWidget * layoutSection = new QWidget(this);
     layoutSection->setLayout(layoutButtonsStack);
 
