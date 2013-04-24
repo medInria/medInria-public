@@ -142,7 +142,9 @@ endwhile()
 option(ENABLE_REGISTRATION_PLUGINS "Build Registration plugins" "ON")
 if (ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
   #Put here your registration plugin directory/project name.
-  set(REG_PLUGIN_LIST itkProcessRegistrationDiffeomorphicDemons ON)
+  set(REG_PLUGIN_LIST 
+		undoRedoRegistration ON
+		itkProcessRegistrationDiffeomorphicDemons ON)
   list(LENGTH REG_PLUGIN_LIST N)
   set(INDEX 0)
   while(INDEX LESS N)
