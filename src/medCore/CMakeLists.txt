@@ -40,7 +40,6 @@ set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
   medJobManager.h
   medMeshAbstractViewInteractor.h
   medMessageController.h
-  medMetaDataKeys.h
   medPluginManager.h
   medRunnableProcess.h
   medSettingsManager.h
