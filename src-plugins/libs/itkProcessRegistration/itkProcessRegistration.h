@@ -16,7 +16,7 @@
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <itkImage.h>
-
+#include "itkTransform.h"
 #include "itkProcessRegistrationExport.h"
 
 
@@ -94,7 +94,7 @@ public:
      * @param data: Pointer to an itkDataImageXXY.
      * @param channel: 0 for the fixed image, 1 for the moving one.
     */
-    void setInput(dtkAbstractData *data, int channel);
+    virtual void setInput(dtkAbstractData *data, int channel);
 
     /**
      * @brief Gets the registered image.
@@ -104,6 +104,7 @@ public:
     */
     dtkAbstractData *output();
 
+    void setOutput(dtkAbstractData * output);
 
     /**
      * @brief Gets an itk smart pointer to the fixed image.
@@ -139,7 +140,14 @@ public:
     */
     itkProcessRegistration::ImageType movingImageType();
 
+    virtual itk::Transform<double,3,3>::Pointer getTransform() = 0;
 
+    /**
+    * @brief Returns a pointer on a QStringList containing the title of the algorithm and its parameters. The first element of the list is the title.
+    * 
+    * @return QStringList *
+    */
+    virtual QStringList * getTitleAndParameters() = 0;
 
 
 public slots:

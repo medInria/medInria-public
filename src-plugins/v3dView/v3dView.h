@@ -181,6 +181,7 @@ public slots:
     void onMouseInteractionPropertySet      (const QString &value);
     void onCroppingPropertySet              (const QString &value);
     void onDaddyPropertySet                 (const QString &value);
+    void onClosablePropertySet              (const QString &value);
     void onPositionLinkedPropertySet        (const QString &value);
     void onWindowingLinkedPropertySet       (const QString &value);
 

@@ -22,14 +22,16 @@
 
 #include <medDataManager.h>
 #include <medViewManager.h>
+#include <medJobManager.h>
 #include <medMessageController.h>
 #include <medMetaDataKeys.h>
 #include <medAbstractView.h>
 
 #include <medAbstractDataImage.h>
-
+#include <medRunnableProcess.h>
 #include <medToolBoxTab.h>
 #include <medToolBoxFactory.h>
+#include <medToolBoxHeader.h>
 
 #include <medRegistrationAbstractToolBox.h>
 
@@ -49,10 +51,13 @@ public:
 
     dtkSmartPointer<medAbstractDataImage> fixedData;
     dtkSmartPointer<medAbstractDataImage> movingData;
-
+    
     dtkSmartPointer<dtkAbstractProcess> process;
+    dtkSmartPointer<dtkAbstractProcess> undoRedoProcess;
 
+    medRegistrationAbstractToolBox * undoRedoToolBox;
     medRegistrationAbstractToolBox * customToolBox;
+    QString nameOfCurrentAlgorithm;
 };
 
 medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medRegistrationSelectorToolBoxPrivate)
@@ -63,6 +68,9 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     d->fixedView  = NULL;
     d->movingView = NULL;
     d->process = NULL;
+    d->undoRedoProcess = NULL;
+    d->undoRedoToolBox = NULL;
+    d->nameOfCurrentAlgorithm = "";
 
     // Process section
     d->saveImageButton = new QPushButton(tr("Export Image"),this);
@@ -84,6 +92,20 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
                     " amongst the loaded plugins" ));
     d->toolboxes->setStyleSheet("QComboBox{margin-top: 5px}");
     medToolBoxFactory* tbFactory =medToolBoxFactory::instance();
+    
+    foreach(QString toolbox, tbFactory->toolBoxesFromCategory("UndoRedoRegistration")){
+        medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
+        medRegistrationAbstractToolBox * tb = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(toolbox));
+        if(!tb)
+            qWarning() << "Unable to instantiate" << details->name << "toolbox";
+        else
+        {
+            tb->setStyleSheet("medToolBoxBody {border:none}");
+            tb->header()->hide();
+            d->undoRedoToolBox = tb;
+            d->undoRedoToolBox->setRegistrationToolBox(this);
+        }
+    }
     int i=1;
     foreach(QString toolbox, tbFactory->toolBoxesFromCategory("registration"))
     {
@@ -94,8 +116,8 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
                                   details->description,
                                   Qt::ToolTipRole);
         i++;
-    }
-
+    }  
+    
     connect(d->toolboxes, SIGNAL(activated(int)), this, SLOT(onToolBoxChosen(int)));
 
 
@@ -119,7 +141,8 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     QWidget * layoutSection = new QWidget(this);
     layoutSection->setLayout(layoutLayout);
 
-
+    if (d->undoRedoToolBox)
+        addWidget(d->undoRedoToolBox);
     addWidget(d->toolboxes);
     addWidget(layoutSection);
 
@@ -132,6 +155,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
             medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
     connect(this,SIGNAL(showInfo(const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showInfo(const QString&,unsigned int)));
+    connect(medJobManager::instance(),SIGNAL(jobRegistered(medJobItem*,QString)),this,SLOT(onJobAdded(medJobItem*,QString)));
 }
 
 medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
@@ -203,6 +227,11 @@ void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& in
             //only the moving view has been set: shift it to layer 1
             d->fuseView->setData(d->fixedData,0);
             d->fuseView->setData(d->movingData,1);
+            if(d->undoRedoProcess)
+            {
+                d->undoRedoProcess->setInput(d->fixedData,  0);
+                d->undoRedoProcess->setInput(d->movingData, 1);
+            }
         }
         else
         {
@@ -222,6 +251,7 @@ void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& in
         connect(d->fuseView,SIGNAL(positionChanged(QVector3D,bool)),this,SLOT(synchronisePosition(QVector3D)));
         connect(d->fuseView,SIGNAL(windowingChanged(double,double,bool)),this,SLOT(synchroniseWindowLevel(void)));
     }
+
 }
 
 /** 
@@ -258,6 +288,11 @@ void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& i
     {
         //already one layer present
         d->fuseView->setData(d->movingData,1);
+        if(d->undoRedoProcess)
+        { 
+            d->undoRedoProcess->setInput(d->fixedData,  0);
+            d->undoRedoProcess->setInput(d->movingData, 1);
+        }
     }
     else
     {
@@ -291,12 +326,13 @@ void medRegistrationSelectorToolBox::onToolBoxChosen(int index)
     QString id = d->toolboxes->itemData(index).toString();
 
     medRegistrationAbstractToolBox *toolbox = qobject_cast<medRegistrationAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id,this));
-
-
+    
     if(!toolbox) {
         qWarning() << "Unable to instantiate" << id << "toolbox";
         return;
     }
+
+    d->nameOfCurrentAlgorithm = medToolBoxFactory::instance()->toolBoxDetailsFromId(id)->name;
 
     toolbox->setRegistrationToolBox(this);
     //get rid of old toolBox
@@ -309,8 +345,13 @@ void medRegistrationSelectorToolBox::onToolBoxChosen(int index)
     toolbox->show();
     emit addToolBox(toolbox);
 
-    connect (toolbox, SIGNAL (success()), this, SLOT (onSuccess()));
+    connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));
     connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
+    connect (toolbox, SIGNAL (success()),this,SLOT(enableSelectorToolBox()));
+    connect (toolbox, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
+
+    if (!d->undoRedoProcess && !d->undoRedoToolBox)
+        connect(toolbox,SIGNAL(success()),this,SLOT(handleOutput()));
 }
 
 /** 
@@ -349,6 +390,21 @@ dtkAbstractProcess * medRegistrationSelectorToolBox::process(void)
 void medRegistrationSelectorToolBox::setProcess(dtkAbstractProcess* proc)
 {
     d->process = proc;
+}
+
+dtkAbstractProcess * medRegistrationSelectorToolBox::undoRedoProcess()
+{
+    return d->undoRedoProcess;
+}
+
+void medRegistrationSelectorToolBox::setUndoRedoProcess(dtkAbstractProcess *proc)
+{
+    d->undoRedoProcess = proc;
+}
+
+QString medRegistrationSelectorToolBox::getNameOfCurrentAlgorithm()
+{
+    return d->nameOfCurrentAlgorithm;
 }
 
 //! Saves the registered image.
@@ -455,39 +511,92 @@ void medRegistrationSelectorToolBox::onSaveTrans()
     }
 }
 
+// TODO CHANGE COMMENTARY
 //! If the registration has ended well, it sets the output's metaData and reset the movingView and fuseView with the registered image.
-void medRegistrationSelectorToolBox::onSuccess()
-{
-    dtkSmartPointer<dtkAbstractData> output(d->process->output());
-
+void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type,QString algoName)
+{   
+    dtkSmartPointer<dtkAbstractData> output(NULL); //initialisation : UGLY but necessary
+    
+    if (type==algorithm)
+        if (d->process)
+            output = d->process->output();
+        else return;
+    else
+        if (d->undoRedoProcess)
+            output = d->undoRedoProcess->output();
+        else return;
+    
     foreach(QString metaData, d->fixedData->metaDataList())
         output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
 
     foreach(QString property, d->fixedData->propertyList())
         output->addProperty(property,d->fixedData->propertyValues(property));
 
+    // We manage the new description of the image
     QString newDescription = d->movingData->metadata(medMetaDataKeys::SeriesDescription.key());
-    newDescription += " registered";
-    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
+    if (type==algorithm || type==redo)
+    {
+        if (type==algorithm)
+        {
+            algoName = d->nameOfCurrentAlgorithm.remove(" "); // we remove the spaces to reduce the size of the QString as much as possible
+        }
+        if (newDescription.contains("registered"))
+            newDescription += "-"+ algoName + "\n";
+        else
+            newDescription += " registered\n-" + algoName+ "\n";
+    }
+    else if (type==undo)
+    {
+        newDescription.remove(newDescription.lastIndexOf("-"),newDescription.size()-1); 
+        if (newDescription.count("-") == 0)
+            newDescription.remove(" registered\n");
+    }
+    else if (type==reset)
+        if (newDescription.lastIndexOf(" registered")!=-1)
+            newDescription.remove(newDescription.lastIndexOf(" registered"),newDescription.size()-1);
+        else
+            return;
 
+    output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
+    
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
     output->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
-    medDataManager::instance()->importNonPersistent(output);
+    if (type==algorithm)
+        medDataManager::instance()->importNonPersistent(output);
 
+    d->process = NULL; // will trigger a deleteLater
+    
     if(output)
-    {
+    {   
+        d->movingData = output;
+
         d->movingView->setData(output,0);
         // calling reset() will reset all the view parameters (position - zoom - window/level) to default
         d->movingView->reset();
         d->movingView->update();
+        
         d->fuseView->setData(output,1);
         d->fuseView->update();
+                       
         d->fixedView->setLinkPosition(true);
         d->fixedView->setLinkCamera(true);
         d->movingView->setLinkPosition(true);
         d->movingView->setLinkCamera(true);
-    }
+     }
+}
+
+void medRegistrationSelectorToolBox::enableSelectorToolBox(bool enable){
+    this->setEnabled(enable);
+}
+
+void medRegistrationSelectorToolBox::onJobAdded(medJobItem* item, QString jobName){
+    if (d->process)
+        if (jobName == d->process->identifier()){
+            dtkAbstractProcess * proc = static_cast<medRunnableProcess*>(item)->getProcess();
+            if (proc==d->process)
+                enableSelectorToolBox(false);
+        }
 }
 
 //! Synchronises the window/level of the layer 0 of the fixedView with the layer 0 of the fuseView, and the layer 0 of the movingView with the layer 1 of the fuseView. 

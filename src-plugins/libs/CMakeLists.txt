@@ -7,6 +7,7 @@
 
 if (MEDINRIA_REQUIERS_ITKPROCESSREGISTRATION)
     add_subdirectory(itkProcessRegistration)
+    add_subdirectory(registrationFactory)
 endif()
 
 if (MEDINRIA_REQUIERS_ITKDATAIMAGEBASE)

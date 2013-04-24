@@ -59,7 +59,7 @@ public:
     //itk::ImageBase<3>::Pointer movingImage;
     itkProcessRegistration::ImageType fixedImageType;
     itkProcessRegistration::ImageType movingImageType;
-    dtkAbstractData *output;
+    dtkSmartPointer<dtkAbstractData> output;
 
     template <class PixelType>
             void setInput(dtkAbstractData * data,int channel);
@@ -374,6 +374,10 @@ dtkAbstractData *itkProcessRegistration::output()
 {
     return d->output;
 }
+void itkProcessRegistration::setOutput(dtkAbstractData * output)
+{
+    d->output = output;
+}
 
 itk::ImageBase<3>::Pointer itkProcessRegistration::fixedImage()
 {
@@ -393,7 +397,6 @@ itkProcessRegistration::ImageType itkProcessRegistration::movingImageType()
 {
     return d->movingImageType;
 }
-
 
 bool itkProcessRegistration::write(const QStringList& files)
 {
