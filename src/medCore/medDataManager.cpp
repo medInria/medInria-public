@@ -747,19 +747,10 @@ void medDataManager::removeData( const medDataIndex& index )
     // Remove from cache first
     this->removeDataFromCache(index);
 
-    qDebug() << "Removing from db";
-
-    // try to load the data from db
-    medAbstractDbController* db = d->getDbController();
-    if (db)
+    medAbstractDbController * dbc = controllerForDataSource( index.dataSourceId() );
+    if (dbc)
     {
-        db->remove(index);
-    }
-
-    medAbstractDbController* npDb = d->getNonPersDbController();
-    if(npDb)
-    {
-        npDb->remove(index);
+        dbc->remove(index);
     }
 }
 
