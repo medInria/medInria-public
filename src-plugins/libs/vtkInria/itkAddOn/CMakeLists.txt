@@ -23,6 +23,5 @@ else()
 endif()
 
 subdirs(
-  Registration
   IO
 )
