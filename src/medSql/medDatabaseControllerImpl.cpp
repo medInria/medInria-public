@@ -34,7 +34,6 @@
 #include <medDatabaseExporter.h>
 #include <medDatabaseReader.h>
 #include <medDatabaseRemover.h>
-#include <medDatabaseWriter.h>
 
 #define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
 namespace {
@@ -395,43 +394,43 @@ void medDatabaseControllerImpl::import(const QString& file, QString importUuid)
 
 void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopying)
 {
-    qDebug() << "DEBUG : entering medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopying)";
-
     QFileInfo info(file);
     medDatabaseImporter *importer = new medDatabaseImporter(info.absoluteFilePath(),indexWithoutCopying);
+    medMessageProgress *message = medMessageController::instance()->showProgress("Importing " + info.fileName());
+ 
+    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
+    
     //if we want to add importUuid support to permanent db,
     //we need to change the importer and its addedIndex signal to support importUuid
     //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
-    connect(importer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
-    //connect(importer, SIGNAL(failure(QObject*)), this, SLOT(onFileImported()), Qt::QueuedConnection);
+    connect(importer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &))); 
     connect(importer, SIGNAL(partialImportAttempted ( const QString& )), this, SIGNAL(partialImportAttempted ( const QString& )));
-
-    emit(displayJobItem(importer, info.baseName()));
+    
+    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
 
     medJobManager::instance()->registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
 }
 
 void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUuid)
-{
-    medDatabaseWriter *writer = new medDatabaseWriter(data, importUuid);
+{    
+    medDatabaseImporter *importer = new medDatabaseImporter(data, importUuid);
     medMessageProgress *message = medMessageController::instance()->showProgress("Saving database item");
-    //if we want to add importUuid support to permanent db,
-    //we need to change the importer and its addedIndex signal to suppot importUuid
-    //connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &,const QString&)));
-
-    connect(writer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
+  
+    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
 
     if (importUuid == "")
-        connect(writer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
+        connect(importer, SIGNAL(addedIndex(const medDataIndex &)), this, SIGNAL(updated(const medDataIndex &)));
     else
-        connect(writer, SIGNAL(addedIndex(const medDataIndex &, const QString &)), this, SIGNAL(updated(const medDataIndex &, const QString &)));
+        connect(importer, SIGNAL(addedIndex(const medDataIndex &, const QString &)), this, SIGNAL(updated(const medDataIndex &, const QString &)));
 
-    connect(writer, SIGNAL(success(QObject *)), message, SLOT(success()));
-    connect(writer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+    connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
 
-    medJobManager::instance()->registerJobItem(writer);
-    QThreadPool::globalInstance()->start(writer);
+
+    medJobManager::instance()->registerJobItem(importer);
+    QThreadPool::globalInstance()->start(importer);
 }
 
 
@@ -442,7 +441,8 @@ void medDatabaseControllerImpl::exportDataToFile(dtkAbstractData *data, const QS
     connect(exporter, SIGNAL(progress(QObject*,int)), medDataManager::instance(), SIGNAL(progressed(QObject*,int)));
     connect(exporter, SIGNAL(showError(const QString&, unsigned int)), medMessageController::instance(), SLOT(showError(const QString&, unsigned int)));
 
-    //medMessageController::instance()->showProgress(exporter, "Saving database item");
+    QFileInfo info(filename);
+    emit(jobStarted(exporter, info.baseName()));
 
     QThreadPool::globalInstance()->start(exporter);
 }
@@ -667,6 +667,80 @@ void medDatabaseControllerImpl::remove( const medDataIndex& index )
     QThreadPool::globalInstance()->start(remover);
 }
 
+
+QList<medDataIndex> medDatabaseControllerImpl::moveStudy( const medDataIndex& indexStudy, const medDataIndex& toPatient)
+{
+    QSqlDatabase & db (*(this->database()));
+    QSqlQuery query(db);
+
+    bool result = false;
+    QList<medDataIndex> newIndexList;
+    medDataIndex newIndex;
+
+    if(indexStudy.isValidForStudy() && toPatient.isValidForPatient())
+    {
+        query.prepare("UPDATE study SET patient=:patientId  WHERE id=:studyId");
+        query.bindValue(":patientId", toPatient.patientId());
+        query.bindValue(":studyId", indexStudy.studyId());
+
+        result = EXEC_QUERY(query);
+
+        if(result)
+        {
+            // we need to update patient id in study index
+            newIndex = indexStudy;
+            newIndex.setPatientId(toPatient.patientId());
+
+            newIndexList << newIndex;
+            
+            // and update patient id in series indexes
+            QList<medDataIndex> seriesIndexList = series(indexStudy);
+            foreach(medDataIndex newSerieIndex, seriesIndexList)
+            {
+                newSerieIndex.setPatientId(toPatient.patientId());
+                newIndexList << newSerieIndex;
+                
+            }
+        }
+    }
+
+    if(!newIndexList.isEmpty())
+    {
+        emit updated(indexStudy);
+        emit updated(newIndexList[0]);
+    }
+    return newIndexList;
+}
+
+medDataIndex medDatabaseControllerImpl::moveSerie( const medDataIndex& indexSerie, const medDataIndex& toStudy)
+{
+    QSqlDatabase & db (*(this->database()));
+    QSqlQuery query(db);
+
+    bool result = false;
+    medDataIndex newIndex;
+
+    if(indexSerie.isValidForSeries() && toStudy.isValidForStudy())
+    {
+        query.prepare("UPDATE series SET study=:studyId  WHERE id=:serieId");
+        query.bindValue(":studyId", toStudy.studyId());
+        query.bindValue(":serieId", indexSerie.seriesId());
+
+        result = EXEC_QUERY(query);
+
+        if(result)
+        {
+            newIndex = indexSerie;
+            newIndex.setPatientId(toStudy.patientId());
+            newIndex.setStudyId(toStudy.studyId());
+        }
+    }
+    
+    emit updated(indexSerie);
+    emit updated(newIndex);
+    return newIndex;
+}
+
 QString medDatabaseControllerImpl::metaData(const medDataIndex& index,const QString& key) const
 {
     typedef medDatabaseControllerImplPrivate::MetaDataMap MetaDataMap;
@@ -786,6 +860,7 @@ QList<medDataIndex> medDatabaseControllerImpl::patients() const
     return ret;
 }
 
+
 QList<medDataIndex> medDatabaseControllerImpl::studies( const medDataIndex& index ) const
 {
     QList<medDataIndex> ret;
@@ -885,42 +960,40 @@ bool medDatabaseControllerImpl::contains(const medDataIndex &index) const
         QVariant imageId = index.imageId();
 
         QSqlQuery query(*(const_cast<medDatabaseControllerImpl*>(this)->database()));
-        query.prepare("SELECT id FROM patient WHERE id = :id");
-        query.bindValue(":id", patientId);
-        if(!query.exec())
-            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-        if (query.first())
+        QString fromRequest = "SELECT * FROM patient";
+        QString whereRequest = " WHERE patient.id = :id";
+
+        if (studyId != -1)
         {
-            //patient exists.
-            if (studyId == -1) //we don't care about studies.
-                return true;
-            query.prepare("SELECT id FROM study WHERE id = :id");
-            query.bindValue(":id", studyId);
-            if(!query.exec())
-                qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-            if (query.first())
+            fromRequest += " INNER JOIN study ON (patient.id = study.patient)";
+            whereRequest += " AND study.id = :stID";
+            if (seriesId != -1)
             {
-                //study exists.
-                if (seriesId == -1)  //we don't care about series
-                    return true;
-                query.prepare("SELECT id FROM series WHERE id = :id");
-                query.bindValue(":id", seriesId);
-                if(!query.exec())
-                    qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-                if (query.first())
+                fromRequest += " INNER JOIN series ON (study.id = series.study)";
+                whereRequest +=  " AND series.id = :seID";
+                if (imageId != -1)
                 {
-                    //series exists
-                    if (imageId == -1) //we don't care about image
-                        return true;
-                    query.prepare("SELECT id FROM image WHERE series = :series");
-                    query.bindValue(":series", seriesId);
-                    if(!query.exec())
-                        qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
-                    if(query.first())
-                        return true;
+                    fromRequest += " INNER JOIN image ON (series.id = image.series)";
+                    whereRequest +=  " AND image.id = :imID";
                 }
             }
         }
+        QString request = fromRequest + whereRequest;
+        
+        query.prepare(request);
+        query.bindValue(":id", patientId);
+        if (studyId != -1)
+            query.bindValue(":stID", studyId);
+        if (seriesId != -1)
+            query.bindValue(":seID", seriesId);
+        if (imageId != -1)
+            query.bindValue(":imID", imageId);
+
+        if(!query.exec())
+            qDebug() << DTK_COLOR_FG_RED << query.lastError() << DTK_NO_COLOR;
+        if(query.first())
+            return true;
+
     }
     return false;
 }
