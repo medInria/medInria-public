@@ -90,6 +90,9 @@ endif()
 if (APPLE)
   configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in
                  ${PROJECT_BINARY_DIR}/mac_packager.sh)
+
+  configure_file(${PROJECT_SOURCE_DIR}/utils/osx_packaging/medinria_full_packaging_script.sh.in
+		 ${PROJECT_BINARY_DIR}/medinria_full_packaging_script.sh)
 endif()
 
 
