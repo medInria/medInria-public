@@ -81,6 +81,7 @@ set(${PROJECT_NAME}_SOURCES
   itkGiplDataImageReader.cpp
   itkVTKDataImageReader.cpp
   itkPhilipsRECDataImageReader.cpp
+  itkGISDataImageReader.cpp
   )
 if (ITK_USE_SYSTEM_GDCM)
   set(${PROJECT_NAME}_SOURCES
@@ -116,6 +117,7 @@ target_link_libraries(${PROJECT_NAME}
   medCore
   itkDataImageBase
   ITKIOReview
+  itkIOAddOn
   ${ITK_LIBRARIES})
 
 if (MEDINRIA-PLUGINS_BUILD_TESTING)

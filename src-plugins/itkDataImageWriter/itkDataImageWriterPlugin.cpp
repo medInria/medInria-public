@@ -23,6 +23,7 @@
 #include "itkGiplDataImageWriter.h"
 #include "itkVTKDataImageWriter.h"
 #include "itkPhilipsRECDataImageWriter.h"
+#include "itkGISDataImageWriter.h"
 
 #include <dtkLog/dtkLog.h>
 #include <dtkItkLogForwarder/itkLogForwarder.h>
@@ -90,6 +91,8 @@ bool itkDataImageWriterPlugin::initialize()
     if (!itkJPEGDataImageWriter::registered())       { dtkWarn() << "Unable to register itkJPEGDataImageWriter type";       }
     if (!itkTIFFDataImageWriter::registered())       { dtkWarn() << "Unable to register itkTIFFDataImageWriter type";       }
     if (!itkPhilipsRECDataImageWriter::registered()) { dtkWarn() << "Unable to register itkPhilipsRECDataImageWriter type"; }
+    if (!itkGISDataImageWriter::registered())        { dtkWarn() << "Unable to register itkGISDataImageWriter type"; }
+
 
     return true;
 }
@@ -131,7 +134,8 @@ QStringList itkDataImageWriterPlugin::types() const
             << "itkPNGDataImageWriter"
             << "itkBMPDataImageWriter"
             << "itkJPEGDataImageWriter"
-            << "itkTIFFDataImageWriter";
+            << "itkTIFFDataImageWriter"
+            << "itkGISDataImageWriter";
 }
 
 Q_EXPORT_PLUGIN2(itkDataImageWriterPlugin, itkDataImageWriterPlugin)
