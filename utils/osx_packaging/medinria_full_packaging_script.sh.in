@@ -1,4 +1,8 @@
 #!/bin/bash
+# This script has to be run by a root sudoer for now (sudo medinria_full_packaging_script.sh). 
+# This script takes as inputs paths to the various pkg files containing plugins to include in the final bundle
+# The initial bundle is found by the script
+# The script copies all plugins into the PlugIns dir of the bundle and repackages it
 
 medDMG=medInria-@medInria_VERSION@.dmg
 
