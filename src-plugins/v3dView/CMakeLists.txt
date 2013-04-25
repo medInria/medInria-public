@@ -31,7 +31,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 ## Resolve dependencies
 ## #################################################################
 
-option(V3DVIEW_BUILD_TTK_DEPENDENT_CODE "Include TTK dependent code in ${PROJECT_NAME}" "OFF")
+option(V3DVIEW_BUILD_TTK_DEPENDENT_CODE "Include TTK dependent code in ${PROJECT_NAME}" "ON")
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
