@@ -216,7 +216,3 @@ bool medDatabaseEditItemDialog::isPersistent()
     else return false;
 
 }
-
-
-
-
