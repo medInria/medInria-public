@@ -1,0 +1,34 @@
+#!/bin/bash
+
+medDMG=medInria-@medInria_VERSION@.dmg
+
+\rm -f /Library/Application\ Support/inria/medInria-plugins/*.dylib
+
+cd @CMAKE_INSTALL_PREFIX@
+
+for f in $*
+do
+	# Process f as a package
+	installer -pkg $f -target /
+done
+
+# Now everything is installed, group everything in DMG
+
+\cp -f @CMAKE_SOURCE_DIR@/utils/osx_packaging/BaseMedinriaPackage.sparseimage.gz MedinriaFullPackage.sparseimage.gz
+gunzip -f MedinriaFullPackage.sparseimage.gz
+devNameBase=`hdiutil attach -readwrite -noverify -noautoopen MedinriaFullPackage.sparseimage | egrep '^/dev/' | sed 1q | awk '{print $1}'`
+
+devName=`hdiutil attach -noverify -noautoopen $medDMG | egrep '^/dev/' | sed 1q | awk '{print $1}'`
+
+\cp -rf /Volumes/"medInria @medInria_VERSION@"/medInria.app /Volumes/"medInria base"/
+\cp -f /Library/Application\ Support/inria/medInria-plugins/*.dylib /Volumes/"medInria base"/medInria.app/Contents/PlugIns/
+
+diskutil rename "medInria base" "medInria @medInria_VERSION@ Full"
+
+sync
+hdiutil detach $devName
+hdiutil detach $devNameBase
+
+hdiutil convert MedinriaFullPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "medInria-@medInria_VERSION@-Full.dmg" 1>/dev/null 2>/dev/null
+
+\rm -fr /Library/Application\ Support/inria MedinriaFullPackage.sparseimage
