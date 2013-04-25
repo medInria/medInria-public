@@ -12,13 +12,15 @@
 =========================================================================*/
 
 #include "medDatabaseNonPersistentItem.h"
+#include "medDatabaseNonPersistentItem_p.h"
 #include "medDatabaseNonPersistentControllerImpl.h"
-#include "medDatabaseNonPersistentReader.h"
 #include "medDatabaseNonPersistentImporter.h"
 
 #include <medDataIndex.h>
 #include <medMessageController.h>
 #include <medJobManager.h>
+
+#include <medMetaDataKeys.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -90,20 +92,18 @@ void medDatabaseNonPersistentControllerImpl::insert(medDataIndex index, medDatab
 
 void medDatabaseNonPersistentControllerImpl::import(const QString& file,QString importUuid)
 {
-    qDebug() << "DEBUG : entering medDatabaseNonPersistentControllerImpl::import(const QString& file,const QString& importUuid)";
-    medDatabaseNonPersistentReader *reader =
-            new medDatabaseNonPersistentReader(file,importUuid);
-
+    medDatabaseNonPersistentImporter *reader =
+            new medDatabaseNonPersistentImporter(file,importUuid);
 	medMessageProgress *message = medMessageController::instance()->showProgress(tr("Opening file item"));
 
     connect(reader, SIGNAL(progressed(int)),
             message, SLOT(setProgress(int)));
-    connect(reader, SIGNAL(nonPersistentRead(const medDataIndex &,const QString &)),
-            this, SIGNAL(updated(const medDataIndex &, const QString&)));
+    connect(reader, SIGNAL(addedIndex(const medDataIndex &,const QString&)),
+            this, SIGNAL(updated(const medDataIndex &, QString)));
     connect(reader, SIGNAL(success(QObject *)),
             message, SLOT(success()));
     connect(reader, SIGNAL(failure(QObject *)),
-            message, SLOT(failure()));
+             message, SLOT(failure()));
 
     medJobManager::instance()->registerJobItem(reader);
     QThreadPool::globalInstance()->start(reader);
@@ -115,7 +115,7 @@ dtkSmartPointer<dtkAbstractData> medDatabaseNonPersistentControllerImpl::read( c
     medDatabaseNonPersistentControllerImplPrivate::DataHashMapType::const_iterator it( d->items.find(index) );
 
     // Is item in our table ? if not, return null.
-    if ( it == d->items.end() )
+    if ( it == d->items.end() || it.value() == NULL )
         return dtkSmartPointer<dtkAbstractData> ();
 
     dtkSmartPointer<dtkAbstractData> ret(it.value()->data());
@@ -155,13 +155,11 @@ bool medDatabaseNonPersistentControllerImpl::isConnected() const
 void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
                                                     QString callerUuid)
 {
-    qDebug() << "DEBUG : entering medDatabaseNonPersistentControllerImpl::import";
-
     medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data,callerUuid);
     medMessageProgress *message = medMessageController::instance()->showProgress("Importing data item");
 
-    connect(importer, SIGNAL(progressed(int)),    message, SLOT(setProgress(int)));
-    connect(importer, SIGNAL(nonPersistentImported(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &, QString)));
+    connect(importer, SIGNAL(progressed(int)),    medMessageController::instance(), SLOT(setProgress(int)));
+    connect(importer, SIGNAL(addedIndex(const medDataIndex &,const QString&)), this, SIGNAL(updated(const medDataIndex &, QString)));
     connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
 
@@ -265,7 +263,7 @@ QImage medDatabaseNonPersistentControllerImpl::thumbnail( const medDataIndex &in
             }
         }
     }
-    if ( item ) {
+    if ( item && item->data()) {
         return item->data()->thumbnail();
     }
     else
@@ -384,7 +382,7 @@ QString medDatabaseNonPersistentControllerImpl::metaData( const medDataIndex& in
     typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType MapType;
 
     MapType::const_iterator it(d->items.find(index));
-    if (it != d->items.end() ) {
+    if (it != d->items.end()  && it.value()!=NULL ) {
         dtkAbstractData *data = it.value()->data();
         if (data &&  data->hasMetaData(key) )
             return data->metadata(key);
@@ -392,7 +390,7 @@ QString medDatabaseNonPersistentControllerImpl::metaData( const medDataIndex& in
         // Cannot find an exact match for the given index. Find first data that may match
         // using ordered map.
         it = d->items.lowerBound( index );
-        if (it != d->items.end() && medDataIndex::isMatch( it.key(), index) ) {
+        if (it != d->items.end() && medDataIndex::isMatch( it.key(), index) && it.value()!=NULL ) {
             dtkAbstractData *data = it.value()->data();
             if (data &&  data->hasMetaData(key) )
                 return data->metadata(key);
@@ -435,4 +433,158 @@ bool medDatabaseNonPersistentControllerImpl::isPersistent( ) const
     return false;
 }
 
+
+QList<medDataIndex> medDatabaseNonPersistentControllerImpl::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
+{
+    QList<medDataIndex> newIndexList;
+    medDataIndex newIndex(indexStudy);
+    newIndex.setPatientId(toPatient.patientId());
+    
+    if(indexStudy == newIndex)
+    {
+        //the study is being moved to the same patient, nothing to do
+        return newIndexList;
+    }
+    
+    medDatabaseNonPersistentItem * studyItem = NULL;
+    
+    studyItem = d->items.find(indexStudy).value();
+
+    insert(newIndex, studyItem);
+    newIndexList << newIndex;
+
+    //retrieve destination patient information
+    dtkAbstractData *dataPatient = read(toPatient);
+
+    if(dataPatient==NULL)
+    {
+        // let's try to get patient information from its series  
+        QList<medDataIndex> studiesIndexList = studies(toPatient);
+        foreach(medDataIndex tempStudy, studiesIndexList)
+        {
+            QList<medDataIndex> seriesIndexList = series(tempStudy);
+
+            if(!seriesIndexList.isEmpty())
+            {
+                dataPatient = read(seriesIndexList[0]);
+                break;
+            }      
+        }
+        if( dataPatient == NULL )
+            return newIndexList;     
+    }
+
+    dtkAbstractData *dataStudy = read(indexStudy);
+
+    if(dataStudy!=NULL)
+    {
+        //update metadata
+        dataStudy->setMetaData ( medMetaDataKeys::PatientName.key(),
+                                 QStringList() <<  dataPatient->metadata( medMetaDataKeys::PatientName.key()) );
+        dataStudy->setMetaData ( medMetaDataKeys::PatientID.key(),
+                                 QStringList() <<  dataPatient->metadata( medMetaDataKeys::PatientID.key()) );
+        dataStudy->setMetaData ( medMetaDataKeys::BirthDate.key(),
+                                 QStringList() <<  dataPatient->metadata( medMetaDataKeys::BirthDate.key()) );
+    
+        if(studyItem)
+        {
+            //update item properties
+            studyItem->setName(dataPatient->metadata( medMetaDataKeys::PatientName.key()));
+            studyItem->setPatientId(dataPatient->metadata( medMetaDataKeys::PatientID.key()));
+            studyItem->setBirthdate(dataPatient->metadata( medMetaDataKeys::BirthDate.key()));
+        }
+    }
+
+    // we also have to update the series of the study
+    QList<medDataIndex> seriesIndexList = series(indexStudy);
+
+    foreach(medDataIndex serie, seriesIndexList)
+    {
+        dataStudy = read(serie);
+
+        if(dataStudy!=NULL)
+        {
+            medDataIndex newSerieIndex = moveSerie(serie, newIndex);
+
+            if(newSerieIndex.isValid())
+                newIndexList << newSerieIndex;
+        }
+    }
+
+    typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType DataHashMapType;
+    DataHashMapType::iterator itemIt(d->items.find(indexStudy));
+    d->items.erase(itemIt);
+    
+    if(!newIndexList.isEmpty())
+    {
+        emit updated(indexStudy); // to signal the study has been removed
+        emit updated(newIndexList[0]); // to signal the study has been added
+    }
+        
+    return newIndexList;
+}
+
+medDataIndex medDatabaseNonPersistentControllerImpl::moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy)
+{
+    medDataIndex newIndex(indexSerie);
+    newIndex.setStudyId(toStudy.studyId());
+    newIndex.setPatientId(toStudy.patientId());
+
+    if(indexSerie == newIndex)
+    {
+        //the serie is being moved to the same study, nothing to do
+        return indexSerie;
+    }
+    
+    // we need to update metadatas (patient, study) of the serie to move
+    dtkAbstractData *dataSerie = read(indexSerie);
+
+    //retrieve destination study information
+    dtkAbstractData *dataStudy = read(toStudy);
+    
+    medDatabaseNonPersistentItem * serieItem = NULL;
+    serieItem = d->items.find(indexSerie).value();
+    
+    if(dataStudy == NULL)
+    {
+        // let's try to get study information from its series
+        QList<medDataIndex> seriesIndexList = series(toStudy);
+        if(!seriesIndexList.isEmpty())
+            dataStudy = read(seriesIndexList[0]);
+        else return newIndex;
+    }
+    
+    if(dataSerie && serieItem)
+    {
+        dataSerie->setMetaData ( medMetaDataKeys::PatientName.key(),
+                                 QStringList() <<  dataStudy->metadata( medMetaDataKeys::PatientName.key()) );
+        dataSerie->setMetaData ( medMetaDataKeys::PatientID.key(),
+                                 QStringList() <<  dataStudy->metadata( medMetaDataKeys::PatientID.key()) );
+        dataSerie->setMetaData ( medMetaDataKeys::BirthDate.key(),
+                                 QStringList() <<  dataStudy->metadata( medMetaDataKeys::BirthDate.key()) );
+        dataSerie->setMetaData ( medMetaDataKeys::StudyDescription.key(),
+                                 QStringList() <<  dataStudy->metadata( medMetaDataKeys::StudyDescription.key()) );
+        dataSerie->setMetaData ( medMetaDataKeys::StudyID.key(),
+                                 QStringList() <<  dataStudy->metadata( medMetaDataKeys::StudyID.key()) );
+        dataSerie->setMetaData ( medMetaDataKeys::StudyDicomID.key(),
+                                 QStringList() <<  dataStudy->metadata( medMetaDataKeys::StudyDicomID.key()) );
+
+        serieItem->setName(dataStudy->metadata( medMetaDataKeys::PatientName.key()));
+        serieItem->setPatientId(dataStudy->metadata( medMetaDataKeys::PatientID.key()));
+        serieItem->setBirthdate(dataStudy->metadata( medMetaDataKeys::BirthDate.key()));
+        serieItem->setStudyName(dataStudy->metadata( medMetaDataKeys::StudyDescription.key()));
+        serieItem->setStudyId(dataStudy->metadata( medMetaDataKeys::StudyID.key()));
+    }
+  
+    insert(newIndex, d->items[indexSerie]);
+
+    typedef medDatabaseNonPersistentControllerImplPrivate::DataHashMapType DataHashMapType;
+    DataHashMapType::iterator itemIt(d->items.find(indexSerie));
+    d->items.erase(itemIt);
+    
+    emit updated(indexSerie); // to signal the serie has been removed
+    emit updated(newIndex); // to signal the serie has been added
+    
+    return newIndex;
+}
 

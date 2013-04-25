@@ -24,8 +24,8 @@ class MEDGUI_EXPORT medActionsToolBox : public medToolBox
     Q_OBJECT
 
 public:
-    medActionsToolBox(QWidget *parent = 0);
-    ~medActionsToolBox();
+    medActionsToolBox(QWidget *parent = 0, bool ok = false); // second parameter used to differentiate if we
+    ~medActionsToolBox();                                    // are looking into db or File System
 
 signals:
 
@@ -52,6 +52,15 @@ signals:
 
     /** Emitted when the 'Save' button is clicked. */
     void saveClicked();
+    
+    /** Emitted when the 'new Patient' button is clicked. */   
+    void newPatientClicked();
+    
+    /** Emitted when the 'new Study' button is clicked. */   
+    void newStudyClicked();
+    
+    /** Emitted when the 'Edit' button is clicked. */   
+    void editClicked();
 
 public slots:
 

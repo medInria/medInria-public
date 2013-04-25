@@ -59,7 +59,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
     database_layout->addWidget(d->view);
     database_layout->addWidget(d->preview);
 
-    d->actionsToolBox = new medActionsToolBox(parent);
+    d->actionsToolBox = new medActionsToolBox(parent, false);
     d->toolBoxes.push_back(d->actionsToolBox);
 
     d->searchPanel = new medDatabaseSearchPanel(parent);
@@ -67,6 +67,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
     d->toolBoxes.push_back(d->searchPanel);
 
     connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->preview, SLOT(onPatientClicked(const medDataIndex&)));
+    connect(d->view, SIGNAL(studyClicked(const medDataIndex&)), d->preview, SLOT(onStudyClicked(const medDataIndex&)));
     connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(onSeriesClicked(const medDataIndex&)));
     connect(d->view, SIGNAL(patientClicked(const medDataIndex&)), d->actionsToolBox, SLOT(patientSelected(const medDataIndex&)));
     connect(d->view, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsToolBox, SLOT(seriesSelected(const medDataIndex&)));
@@ -81,6 +82,9 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
     connect(d->actionsToolBox, SIGNAL(exportClicked()), d->view, SLOT(onExportSelectedItemRequested()));
     connect(d->actionsToolBox, SIGNAL(viewClicked()), d->view, SLOT(onViewSelectedItemRequested()));
     connect(d->actionsToolBox, SIGNAL(saveClicked()), d->view, SLOT(onSaveSelectedItemRequested()));
+    connect(d->actionsToolBox, SIGNAL(newPatientClicked()), d->view, SLOT(onCreatePatientRequested()));
+    connect(d->actionsToolBox, SIGNAL(newStudyClicked()), d->view, SLOT(onCreateStudyRequested()));
+    connect(d->actionsToolBox, SIGNAL(editClicked()), d->view, SLOT(onEditRequested()));
 }
 
 medDatabaseDataSource::~medDatabaseDataSource()

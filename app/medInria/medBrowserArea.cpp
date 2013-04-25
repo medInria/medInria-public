@@ -101,8 +101,9 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(medDataManager::instance(), SIGNAL(dataRemoved(const medDataIndex &)),d->dbSource,SLOT(update(const medDataIndex&)));
     connect(medDataManager::instance(), SIGNAL(openRequested(const medDataIndex &, int)), this, SIGNAL(openRequested(const medDataIndex&, int)));
     // This remains to be checked
-    connect(medDatabaseController::instance(), SIGNAL(displayJobItem(medJobItem *, QString)),this,SLOT(displayJobItem(medJobItem *, QString)));
-
+    connect(medDatabaseController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),this,SLOT(displayJobItem(medJobItem *, QString)));
+    connect(medDatabaseNonPersistentController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),this,SLOT(displayJobItem(medJobItem *, QString)));
+    
     d->fsSource = new medFileSystemDataSource(this);
     addDataSource(d->fsSource);
     connect(d->fsSource, SIGNAL(open(QString)), this, SIGNAL(open(QString)));
@@ -145,8 +146,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->addWidget(d->stack);
     layout->addWidget(d->toolboxContainer);
+    layout->addWidget(d->stack);
 
     // make toolboxes visible
     onSourceIndexChanged(d->stack->currentIndex());
