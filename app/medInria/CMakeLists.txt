@@ -181,8 +181,7 @@ install(TARGETS ${PROJECT_NAME}
 
 if (APPLE)
   install(CODE "
-	execute_process(COMMAND macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app)
-	execute_process(COMMAND \${CMAKE_CURRENT_BINARY_DIR}/mac_packager.sh \${CMAKE_CURRENT_BINARY_DIR}/plugins)
+	execute_process(COMMAND \${dtk_DIR}/bin/dtkDeploy \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app -inject-dir=\${CMAKE_CURRENT_BINARY_DIR}/plugins)
   ")
 endif()
 
