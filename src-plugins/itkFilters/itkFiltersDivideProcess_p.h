@@ -56,7 +56,7 @@ public:
         output->setData ( divideFilter->GetOutput() );
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " add filter (" + QString::number(divideFactor) + ")";
+        newSeriesDescription += " divide filter (" + QString::number(divideFactor) + ")";
     
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }

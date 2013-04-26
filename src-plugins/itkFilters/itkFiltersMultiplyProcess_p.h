@@ -58,7 +58,7 @@ public:
         
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " add filter (" + QString::number(multiplyFactor) + ")";
+        newSeriesDescription += " multiply filter (" + QString::number(multiplyFactor) + ")";
     
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }

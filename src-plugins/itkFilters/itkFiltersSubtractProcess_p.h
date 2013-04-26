@@ -57,7 +57,7 @@ public:
         
         //Set output description metadata
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " add filter (" + QString::number(subtractValue) + ")";
+        newSeriesDescription += " subtract filter (" + QString::number(subtractValue) + ")";
     
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }

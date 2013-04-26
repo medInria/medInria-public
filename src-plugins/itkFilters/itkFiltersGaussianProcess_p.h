@@ -56,7 +56,7 @@ public:
         output->setData ( gaussianFilter->GetOutput() );
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " add filter (" + QString::number(sigma) + ")";
+        newSeriesDescription += " gaussian filter (" + QString::number(sigma) + ")";
     
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
