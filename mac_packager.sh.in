@@ -14,8 +14,12 @@
 
 # The bundle medInria.app will contain all plugins and will be standalone, packaged into MedINRIA.dmg in the install dir
 
-cd @PROJECT_BINARY_DIR@
-cd @CMAKE_INSTALL_PREFIX@/bin/
+cd @PROJECT_BINARY_DIR@/bin
+
+mkdir TmpInstall
+cp -r medInria.app TmpInstall
+
+cd TmpInstall
 
 #Run sub-packagers
 injectDirs=''
@@ -51,19 +55,21 @@ do
 done
 
 # Remove useless plugins
-\rm -fr PlugIns/{accessible,bearer,codecs,graphicssystems}
+#\rm -fr PlugIns/{accessible,bearer,codecs,graphicssystems}
 
 #Run fancy packaging apple script
 
-\cp -f @CMAKE_SOURCE_DIR@/utils/osx_packaging/BaseMedinriaPackage.sparseimage.gz @CMAKE_INSTALL_PREFIX@/MedinriaPackage.sparseimage.gz
-cd @CMAKE_INSTALL_PREFIX@
+\cp -f @CMAKE_SOURCE_DIR@/utils/osx_packaging/BaseMedinriaPackage.sparseimage.gz @PROJECT_BINARY_DIR@/bin/MedinriaPackage.sparseimage.gz
+cd @PROJECT_BINARY_DIR@/bin
 gunzip -f MedinriaPackage.sparseimage.gz
 
 devName=`hdiutil attach -readwrite -noverify -noautoopen MedinriaPackage.sparseimage | egrep '^/dev/' | sed 1q | awk '{print $1}'`
 diskutil rename "medInria base" "medInria @medInria_VERSION@"
-\cp -rf bin/medInria.app /Volumes/"medInria @medInria_VERSION@"/
+\cp -rf TmpInstall/bin/medInria.app /Volumes/"medInria @medInria_VERSION@"/
 
 sync
 hdiutil detach $devName
 hdiutil convert MedinriaPackage.sparseimage -format UDZO -imagekey zlib-level=9 -o "medInria-@medInria_VERSION@.dmg" 1>/dev/null 2>/dev/null
 \rm -f MedinriaPackage.sparseimage
+
+mv "medInria-@medInria_VERSION@.dmg" ../
