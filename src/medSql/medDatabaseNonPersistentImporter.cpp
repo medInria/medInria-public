@@ -327,7 +327,7 @@ bool medDatabaseNonPersistentImporter::isPartialImportAttempt ( dtkAbstractData*
     QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
     QStringList filePaths = dtkData->metaDataValues ( medMetaDataKeys::FilePaths.key() );
 
-    bool isPartialImport;
+    bool isPartialImport = false;
     foreach(medDatabaseNonPersistentItem* item, items)
     {
         isPartialImport = item->Match(dtkData);
