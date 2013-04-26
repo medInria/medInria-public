@@ -141,7 +141,7 @@ void medMessageProgress::failure(void)
 
     this->associateTimer();
 
-    info->setText("Operation aborted");
+    info->setText("Operation failed");
 }
 void medMessageProgress::associateTimer(void)
 {
