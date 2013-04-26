@@ -392,7 +392,12 @@ namespace itk
     std::string extension = itksys::SystemTools::GetFilenameLastExtension(m_FileName);   
     if( extension!=".dim")
     {
-      header_file = itksys::SystemTools::GetFilenameWithoutLastExtension(m_FileName)+".dim";
+        std::string path = itksys::SystemTools::GetFilenamePath(m_FileName);
+        if (path=="")
+        {
+           path = ".";
+        }
+        header_file = path + "/" + itksys::SystemTools::GetFilenameWithoutLastExtension(m_FileName) + ".dim";
     }
     
     
@@ -537,7 +542,12 @@ namespace itk
     
     if( extension != ".ima" )
     {
-      s_filename = itksys::SystemTools::GetFilenameWithoutLastExtension(m_FileName)+".ima";
+        std::string path = itksys::SystemTools::GetFilenamePath(m_FileName);
+        if (path=="")
+        {
+           path = ".";
+        }
+        s_filename = path + "/" + itksys::SystemTools::GetFilenameWithoutLastExtension(m_FileName) + ".ima";
     }
     
     std::ofstream ofs(s_filename.c_str());
