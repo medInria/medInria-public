@@ -58,3 +58,13 @@ if(APPLE)
   FixDCMTKMacLink(ITKDCMTKIO)
 endif(APPLE)
 
+## #################################################################
+## Install rules
+## #################################################################
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
+
+install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME}) 
+
