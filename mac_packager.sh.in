@@ -22,6 +22,8 @@ cp -r medInria.app TmpInstall
 
 cd TmpInstall
 
+@QT_BINARY_DIR@/macdeployqt medInria.app
+
 #Run sub-packagers
 injectDirs=''
 for i in $*; do
