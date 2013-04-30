@@ -28,7 +28,7 @@ cd TmpInstall
 injectDirs=''
 for i in $*; do
 	echo $i
-	injectDirs="$injectDirs -inject-dir=$i"
+	injectDirs="$injectDirs -inject-dir=$i/plugins"
 done
 
 @dtk_DIR@/bin/dtkDeploy medInria.app $injectDirs &>/dev/null
