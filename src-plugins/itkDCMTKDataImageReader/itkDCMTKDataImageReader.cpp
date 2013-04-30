@@ -145,8 +145,6 @@ itk::DCMTKImageIO::Pointer itkDCMTKDataImageReaderPrivate::getNewIO()
     ioThreads->append(QThread::currentThread());
     ioPointers->append(io);
 
-    qDebug() << "***************************** New Thread ?" << ioThreads->size();
-
     return io;
 }
 
@@ -159,8 +157,6 @@ void itkDCMTKDataImageReaderPrivate::threadDone(itk::DCMTKImageIO::Pointer io)
 
     if (ioThreads->size() == 0)
         ioPointers->clear();
-
-    qDebug() << "***************************** Thread Done !" << ioThreads->size();
 }
 
 void itkDCMTKDataImageReaderPrivate::initialiseStatic()
