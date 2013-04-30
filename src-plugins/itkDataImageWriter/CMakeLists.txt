@@ -60,7 +60,8 @@ set(${PROJECT_NAME}_SOURCES
   itkNrrdDataImageWriter.cpp
   itkGiplDataImageWriter.cpp
   itkVTKDataImageWriter.cpp
-  itkPhilipsRECDataImageWriter.cpp)
+  itkPhilipsRECDataImageWriter.cpp
+  itkGISDataImageWriter.cpp)
 
 ## #################################################################
 ## Build rules
@@ -89,6 +90,7 @@ target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
   ITKIOReview
   itkDataImageBase
+  itkIOAddOn
   )
 
 # Group common files together in Visual Studio.
