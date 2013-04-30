@@ -220,28 +220,31 @@ void medViewContainer::setView ( dtkAbstractView *view )
             ++it;
         }
         connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
+        this->recomputeStyleSheet();
     }
     setFocus(Qt::MouseFocusReason);
 }
 
 void medViewContainer::onViewFocused ( bool value )
 {
-//    qDebug()<<"medViewerContainer::onViewFocused";
-
     if ( !value )
         return;
-    if ( this ->acceptDrops()) // excluding containers that don't accept inputs (e.g Filtering result container)
+
+    // excluding containers that don't accept inputs (e.g Filtering result container)
+    if ( this ->acceptDrops()  || !(this->isEmpty() && !this ->acceptDrops()) )
+    {
         this->setCurrent ( this );
+    }
 
     if (!current() || !current()->view())
-    { //focusing on an empty container, reset the toolboxes.
-//        qDebug()<< "focusing on empty container";
+    {
+        //focusing on an empty container, reset the toolboxes.
         emit focused(NULL);
         return;
     }
+
     if (dtkAbstractView *view = current()->view())
     {
-//        qDebug() << "focusing on view"<<view;
         emit focused(view);
     }
     this->update();
@@ -308,7 +311,7 @@ void medViewContainer::focusInEvent ( QFocusEvent *event )
 
     d->clicked = true;
     this->onViewFocused( true );
-//    qDebug()<< this->isDaddy() << isEmpty() << isLeaf() << isClicked();
+
     this->recomputeStyleSheet();
 
     if ( former )
@@ -320,8 +323,8 @@ void medViewContainer::focusInEvent ( QFocusEvent *event )
 void medViewContainer::focusOutEvent ( QFocusEvent *event )
 {
     Q_UNUSED(event);
-    d->clicked = false;
-    this->recomputeStyleSheet();
+    //d->clicked = false;
+    //this->recomputeStyleSheet();
 }
 
 void medViewContainer::paintEvent ( QPaintEvent *event )
@@ -329,30 +332,8 @@ void medViewContainer::paintEvent ( QPaintEvent *event )
     if ( this->layout()->count() > 1 )
         return;
 
-    // QFrame::paintEvent(event);
-
-    // QColor borderColor = Qt::darkGray;
-    // if ( this->current() == this )
-    //     borderColor.setRgb( 0x9a, 0xb3, 0xd5 );
-
-    // qreal borderWidth = 1;
-
     QPainter painter;
     painter.begin ( this );
-
-    // painter.setPen( QPen( borderColor, borderWidth ) );
-    // // painter.setBrush(QColor(0x38, 0x38, 0x38));
-    // painter.setBrush( Qt::transparent );
-    // painter.drawRect(this->rect().adjusted(0, 0, -1, -1));
-
-    // if ( this->view() != NULL &&
-    //      this->view()->property( "Daddy" ) == "true" ) {
-    //     // painter.setPen( Qt::red );
-    //     painter.setPen(
-    //         QPen( QColor( 255, 0, 0, 127 ), borderWidth, Qt::DotLine ) );
-    //     painter.setBrush( Qt::transparent );
-    //     painter.drawRect( this->rect().adjusted( 0, 0, -1, -1 ) );
-    // }
 
     if ( !this->view() && ( d->viewProperties.count() ||
                             !d->viewInfo.isEmpty() ) )
@@ -401,29 +382,6 @@ void medViewContainer::onDaddyChanged ( bool state )
     this->recomputeStyleSheet();
 }
 
-// void medViewContainer::clear()
-// {
-//     if ( d->view )
-//     {
-// // //         this->fu( false, d->view ); // in case view is full screen
-//         d->layout->removeWidget ( d->view->widget() );
-// // // //         this->desynchronize_2 ( d->view );
-// //         disconnect ( d->view, SIGNAL ( closing() ),         this, SLOT ( onViewClosing() ) );
-// // //         disconnect ( d->view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
-// // //         disconnect ( d->view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
-// //
-//         emit viewRemoved ( d->view );
-// //
-//         d->view->close();
-//         d->view = NULL;
-//     }
-//
-//     foreach ( medViewContainer *container, this->childContainers() )
-//     {
-//         d->layout->removeWidget ( container );
-//         container->deleteLater(); // safer than delete container
-//     }
-// }
 
 void medViewContainer::setInfo ( const QString& info )
 {

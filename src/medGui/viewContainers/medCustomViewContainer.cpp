@@ -35,6 +35,21 @@ medCustomViewContainer::medCustomViewContainer ( QWidget *parent ) : medViewCont
     d2->rowMax    = 5;
     d2->columnMax = 5;
     d2->preset = 0;
+
+    //TODO: need to check if we still need the same piece of code in setView
+    medViewContainer *root = this->root();
+    if ( root )
+    {
+        QList<medViewContainer *> containers = root->childContainers();
+        foreach ( medViewContainer *container, containers )
+        {
+            if ( container->isLeaf() && container!=this )
+            {
+                connect ( this,      SIGNAL ( clicked() ), container, SLOT ( onContainerClicked() ), Qt::UniqueConnection );
+                connect ( container, SIGNAL ( clicked() ), this,      SLOT ( onContainerClicked() ), Qt::UniqueConnection );
+            }
+        }
+    }
 }
 
 medCustomViewContainer::~medCustomViewContainer()
@@ -210,6 +225,7 @@ void medCustomViewContainer::setView ( dtkAbstractView *view )
                 connect ( view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
                 connect ( view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
 
+                this->recomputeStyleSheet();
                 emit viewAdded ( view );
             }
             // END FIXME
@@ -321,6 +337,7 @@ void medCustomViewContainer::onViewClosing()
         parent = parent->parentContainer();
     }
 
+    this->recomputeStyleSheet();
 
     // qDebug() << this << __func__;
     // qDebug() << "isRoot:    " << this->isRoot();
