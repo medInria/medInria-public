@@ -86,10 +86,3 @@ endif()
 if (MEDINRIA_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
-
-if (APPLE)
-  configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in
-                 ${PROJECT_BINARY_DIR}/mac_packager.sh)
-endif()
-
-
