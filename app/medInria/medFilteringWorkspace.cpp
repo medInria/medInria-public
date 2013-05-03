@@ -112,15 +112,8 @@ void medFilteringWorkspace::onProcessSuccess()
     foreach ( QString property, inputData->propertyList() )
       d->filterOutput->addProperty ( property,inputData->propertyValues ( property ) );
 
-//     QString newSeriesDescription = d->filterOutput->metadata ( medMetaDataKeys::SeriesDescription.key() );
-//     newSeriesDescription += " filtered";
-
-//     d->filterOutput->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
-
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
     d->filterOutput->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
-
-    //     d->filteringToolBox->setDataIndex(medDataManager::instance()->importNonPersistent(d->filterOutput));
 
     QObject::connect ( medDatabaseNonPersistentController::instance(),
                        SIGNAL ( updated ( const medDataIndex&,const QString& ) ),
