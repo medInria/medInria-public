@@ -359,6 +359,7 @@ void medDiffusionWorkspace::onTBDiffusionSuccess(void)
     if (d->diffusionToolBox->output()->identifier()=="v3dDataFibers")
         d->fiberBundlingToolBox->setData( d->diffusionToolBox->output() );
 
+    d->uuid = QUuid::createUuid().toString();
     medDataManager::instance()->importNonPersistent ( d->diffusionToolBox->output(), d->uuid);
 }
 
