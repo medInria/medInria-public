@@ -296,7 +296,7 @@ void medViewContainer::dropEvent ( QDropEvent *event )
     {
         open ( index );
         
-        emit dropped ( index );
+        //emit dropped ( index );
     }
 
     event->acceptProposedAction();
@@ -420,12 +420,14 @@ bool medViewContainer::open(const medDataIndex& index)
         
         if(res)
         {
+            qDebug()<<index;
             // add the view to the viewManager
             dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
             medViewManager::instance()->insert(index, view);
         }
+        qDebug()<<this;
+        emit dropped(index);
     }
-    
     return res;
 }
 
