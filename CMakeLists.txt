@@ -60,8 +60,6 @@ include(medInria-pluginsBuild)
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-include(medInriaPack)
-
 #configure ctest variables
 option(MEDINRIA_BUILD_REPORTING "Build Reporting")
 if (MEDINRIA_BUILD_REPORTING)
