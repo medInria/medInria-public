@@ -1,6 +1,6 @@
 #medInria
 
-is a visualisation and image/mesh processing tool developed at Inria by the teams Asclepios, Athena, Parietal and Visages.
+is a medical image visualisation and processing tool developed at Inria by the teams Asclepios, Athena, Parietal and Visages.
 
 ###Deploying
 
