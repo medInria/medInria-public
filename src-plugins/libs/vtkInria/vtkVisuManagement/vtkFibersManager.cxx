@@ -47,10 +47,8 @@
 
 #include <stdio.h>
 
-#ifdef vtkINRIA3D_USE_HWSHADING
 #include "vtkFiberMapper.h"
 //using namespace bmia;
-#endif
 
 vtkCxxRevisionMacro(vtkFibersManager, "$Revision: 1467 $");
 vtkStandardNewMacro(vtkFibersManager);
@@ -525,7 +523,6 @@ vtkFibersManager::vtkFibersManager()
   this->PickerCallback->SetFibersManager (this);
   
 
-#ifdef vtkINRIA3D_USE_HWSHADING
   if( vtkFibersManager::GetUseHardwareShaders() )
   {
     vtkFiberMapper* mapper = vtkFiberMapper::New();
@@ -542,12 +539,8 @@ vtkFibersManager::vtkFibersManager()
     mapper->ImmediateModeRenderingOn();
     this->Mapper = mapper;
   }
-#else
-    vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
-    mapper->ImmediateModeRenderingOn();
-    this->Mapper = mapper;   
-#endif
-    
+
+
   this->Mapper->SetInput ( this->Callback->GetOutput() );
   this->Mapper->SetScalarModeToUsePointData();
   // this->Actor->SetMapper (this->Mapper); // only when input is set
@@ -840,7 +833,6 @@ void vtkFibersManager::SetRenderingModeToTubes()
 {
   vtkFiberRenderingStyle = RENDER_IS_TUBES;
   
-#ifdef vtkINRIA3D_USE_HWSHADING
   vtkFiberMapper* mapper = vtkFiberMapper::SafeDownCast (this->Mapper);
   if( mapper )
   {
@@ -852,18 +844,13 @@ void vtkFibersManager::SetRenderingModeToTubes()
   {
     this->Mapper->SetInput (this->TubeFilter->GetOutput());
   }
-  
-#else
-  // no shading support
-  this->Mapper->SetInput (this->TubeFilter->GetOutput());
-#endif
+
 }
 
 void vtkFibersManager::SetRenderingModeToRibbons()
 {
   vtkFiberRenderingStyle = RENDER_IS_RIBBONS;
   
-#ifdef vtkINRIA3D_USE_HWSHADING
   vtkFiberMapper* mapper = vtkFiberMapper::SafeDownCast (this->Mapper);
   if( mapper )
   {
@@ -874,16 +861,13 @@ void vtkFibersManager::SetRenderingModeToRibbons()
   {
     this->Mapper->SetInput (this->RibbonFilter->GetOutput());
   }
-#else
-  this->Mapper->SetInput (this->RibbonFilter->GetOutput());
-#endif 
+
 }
 
 void vtkFibersManager::SetRenderingModeToPolyLines()
 {
   vtkFiberRenderingStyle = RENDER_IS_POLYLINES;
   
-#ifdef vtkINRIA3D_USE_HWSHADING
   vtkFiberMapper* mapper = vtkFiberMapper::SafeDownCast (this->Mapper);
   if( mapper )
   {
@@ -895,10 +879,6 @@ void vtkFibersManager::SetRenderingModeToPolyLines()
     this->PickerCallback->SetInput (this->Callback->GetOutput());
     this->Mapper->SetInput (this->Callback->GetOutput());
   }
-#else
-  this->PickerCallback->SetInput (this->Callback->GetOutput());
-  this->Mapper->SetInput (this->Callback->GetOutput());
-#endif
 }
 
 void vtkFibersManager::SetRenderingMode(int mode)
@@ -925,7 +905,6 @@ void vtkFibersManager::SetRenderingMode(int mode)
 
 void vtkFibersManager::ChangeMapperToUseHardwareShaders()
 {
-#ifdef vtkINRIA3D_USE_HWSHADING
   vtkDebugMacro(<<"Hardware shading is activated.");
   
   if( vtkFiberMapper::SafeDownCast( this->Mapper ) )
@@ -962,12 +941,10 @@ void vtkFibersManager::ChangeMapperToUseHardwareShaders()
   this->Mapper = mapper;
   
   this->SetRenderingMode( vtkFibersManager::GetRenderingMode() );
-#endif
 }
 
 void vtkFibersManager::ChangeMapperToDefault()
 {
-#ifdef vtkINRIA3D_USE_HWSHADING
   if( !vtkFiberMapper::SafeDownCast( this->Mapper ) )
   {
     return;
@@ -989,7 +966,6 @@ void vtkFibersManager::ChangeMapperToDefault()
   this->Mapper = mapper;
   
   this->SetRenderingMode( vtkFibersManager::GetRenderingMode() );
-#endif
 }
 
 

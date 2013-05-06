@@ -150,7 +150,6 @@ void v3dFiberBundle::Create()
 void v3dFiberBundle::UseHardwareShadersOn()
 {
   
-#ifdef vtkINRIA3D_USE_HWSHADING
 
   vtkDebugMacro(<<"Hardware shading is activated.");
   
@@ -186,13 +185,11 @@ void v3dFiberBundle::UseHardwareShadersOn()
   
   this->SetRenderingMode( this->GetRenderingMode() );
   
-#endif
 }
 
 void v3dFiberBundle::UseHardwareShadersOff()
 {
 
-#ifdef vtkINRIA3D_USE_HWSHADING
   if( !vtkFiberMapper::SafeDownCast( this->Mapper ) )
   {
     return;
@@ -209,7 +206,6 @@ void v3dFiberBundle::UseHardwareShadersOff()
   this->Mapper = mapper;
 
   this->SetRenderingMode( this->GetRenderingMode() );
-#endif
 }
 
 
@@ -229,7 +225,6 @@ void v3dFiberBundle::SetUseHardwareShaders(int i)
 void v3dFiberBundle::SetRenderingModeToPolyLines()
 {
     this->RenderingMode = vtkFibersManager::RENDER_IS_POLYLINES;
-#ifdef vtkINRIA3D_USE_HWSHADING
     vtkFiberMapper* mapper = vtkFiberMapper::SafeDownCast (this->Mapper);
     if( mapper )
     {
@@ -240,16 +235,12 @@ void v3dFiberBundle::SetRenderingModeToPolyLines()
     {
       this->Mapper->SetInput( this->Bundle );
     }
-#else
-    this->Mapper->SetInput( this->Bundle );
-#endif
   }
 
 
 void v3dFiberBundle::SetRenderingModeToTubes()
 {
     this->RenderingMode = vtkFibersManager::RENDER_IS_TUBES;
-#ifdef vtkINRIA3D_USE_HWSHADING
     vtkFiberMapper* mapper = vtkFiberMapper::SafeDownCast (this->Mapper);
     if( mapper )
     {
@@ -261,17 +252,12 @@ void v3dFiberBundle::SetRenderingModeToTubes()
       //this->TubeFilter->Update();
       this->Mapper->SetInput ( this->TubeFilter->GetOutput() );
     }
-#else
-    //this->TubeFilter->Update();
-    this->Mapper->SetInput ( this->TubeFilter->GetOutput() );
-#endif
 }
 
 
 void v3dFiberBundle::SetRenderingModeToRibbons()
 {
   this->RenderingMode = vtkFibersManager::RENDER_IS_RIBBONS;
-#ifdef vtkINRIA3D_USE_HWSHADING
   vtkFiberMapper* mapper = vtkFiberMapper::SafeDownCast (this->Mapper);
   if( mapper )
   {
@@ -281,13 +267,8 @@ void v3dFiberBundle::SetRenderingModeToRibbons()
   else
   {
     //this->RibbonFilter->Update();
-    this->Mapper->SetInput ( this->RibbonFilter->GetOutput() );
-    
-    }
-#else
-  //this->RibbonFilter->Update();
-  this->Mapper->SetInput ( this->RibbonFilter->GetOutput() );
-#endif
+    this->Mapper->SetInput ( this->RibbonFilter->GetOutput() );  
+  }
 }
 
 

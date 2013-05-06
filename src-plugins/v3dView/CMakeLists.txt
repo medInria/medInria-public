@@ -146,10 +146,10 @@ target_link_libraries(${PROJECT_NAME}
   vtkVisuManagement
   vtkDataManagement
   vtkVolumeRendering
-  QVTK)
+  QVTK
+  vtkHWShading
+  vtkHelpers)
 
-  target_link_libraries(${PROJECT_NAME} ${ITK_LIBRARIES})
-  target_link_libraries(${PROJECT_NAME} vtkHWShading vtkHelpers)
 
 if (MEDINRIA-PLUGINS_BUILD_TESTING)
   add_subdirectory(Testing)
