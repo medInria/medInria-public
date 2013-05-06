@@ -15,7 +15,8 @@ set(${PROJECT_NAME}-plugins_INCLUDE_DIR
     ${PROJECT_SOURCE_DIR}/src-plugins/libs/vtkInria/vtkVisuManagement        
     ${PROJECT_SOURCE_DIR}/src-plugins/libs/vtkInria/vtkWidgetsAddOn
     ${PROJECT_SOURCE_DIR}/src-plugins/libs/vtkInria/vtkImageView    
-    ${PROJECT_SOURCE_DIR}/src-plugins/libs/vtkInria/itkAddOn/IO/
+    ${PROJECT_SOURCE_DIR}/src-plugins/libs/vtkInria/itkAddOn/IO
+    ${PROJECT_SOURCE_DIR}/src-plugins/libs/vtkInria/HWShading
 )
 
 set(${PROJECT_NAME}-plugins_INSTALL_INCLUDE_DIR 
@@ -33,4 +34,6 @@ set(${PROJECT_NAME}-plugins_INSTALL_INCLUDE_DIR
     ${CMAKE_INSTALL_PREFIX}/include/libs/vtkInria/vtkWidgetsAddOn
     ${CMAKE_INSTALL_PREFIX}/include/libs/vtkInria/vtkImageView    
     ${CMAKE_INSTALL_PREFIX}/include/libs/vtkInria/itkAddOn/IO/
+    ${CMAKE_INSTALL_PREFIX}/include/libs/vtkInria/HWShading
 )
+
