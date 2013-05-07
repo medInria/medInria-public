@@ -1,21 +1,15 @@
-/* medDatabaseModel.h ---
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Oct 14 22:54:51 2008 (+0200)
- * Version: $Id$
- * Last-Updated: Wed Oct 21 15:18:16 2009 (+0200)
- *           By: Julien Wintz
- *     Update #: 123
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ medInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -43,11 +37,6 @@ public:
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
-    QModelIndex indexForPatient(int id) const;
-    QModelIndex indexForStudy(int id) const;
-    QModelIndex indexForSeries(int id) const;
-    QModelIndex indexForImage(int id) const;
-
     QModelIndex index(int row, int colum, const QModelIndex& parent = QModelIndex()) const;
     QModelIndex parent(const QModelIndex& index = QModelIndex()) const;
 
@@ -69,10 +58,13 @@ public:
 
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex& parent);
 
+    QMimeData *mimeData(const QModelIndexList &indexes) const;
     /**
      * return a list of strings that represents the currently shown columns
      */
     QStringList columnNames() const;
+
+    bool hasChildren ( const QModelIndex & parent = QModelIndex() ) const;
 
 protected slots:
     void repopulate();
@@ -82,6 +74,15 @@ protected:
 
 private:
     medDatabaseModelPrivate *d;
+public slots:
+    void update(const medDataIndex&);
+    
+private:
+    void updateSerie(const medDataIndex&);
+    void updateStudy(const medDataIndex&, bool updateChildren = true);
+    void updatePatient(const medDataIndex&, bool updateChildren = true);
+    QVariant convertQStringToQVariant(QString key, QString value);
+    void changePersistenIndexAndSubIndex(QModelIndex index);
 };
 
 

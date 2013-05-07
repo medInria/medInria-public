@@ -1,21 +1,15 @@
-/* medBrowserArea.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Sep 25 12:23:43 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Wed Nov 10 11:15:55 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 461
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medBrowserArea.h"
 
@@ -101,14 +95,15 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     d->dbSource = new medDatabaseDataSource(this);
     addDataSource(d->dbSource);
-    connect(d->dbSource, SIGNAL(open(const medDataIndex&)), this,SIGNAL(open(const medDataIndex&)));
+    connect(d->dbSource, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
 
     connect(medDataManager::instance(), SIGNAL(dataAdded(const medDataIndex &)),d->dbSource,SLOT(update(const medDataIndex&)));
     connect(medDataManager::instance(), SIGNAL(dataRemoved(const medDataIndex &)),d->dbSource,SLOT(update(const medDataIndex&)));
-
+    connect(medDataManager::instance(), SIGNAL(openRequested(const medDataIndex &, int)), this, SIGNAL(openRequested(const medDataIndex&, int)));
     // This remains to be checked
-    connect(medDatabaseController::instance(), SIGNAL(displayJobItem(medJobItem *, QString)),this,SLOT(displayJobItem(medJobItem *, QString)));
-
+    connect(medDatabaseController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),this,SLOT(displayJobItem(medJobItem *, QString)));
+    connect(medDatabaseNonPersistentController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),this,SLOT(displayJobItem(medJobItem *, QString)));
+    
     d->fsSource = new medFileSystemDataSource(this);
     addDataSource(d->fsSource);
     connect(d->fsSource, SIGNAL(open(QString)), this, SIGNAL(open(QString)));
@@ -151,8 +146,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
-    layout->addWidget(d->stack);
     layout->addWidget(d->toolboxContainer);
+    layout->addWidget(d->stack);
 
     // make toolboxes visible
     onSourceIndexChanged(d->stack->currentIndex());

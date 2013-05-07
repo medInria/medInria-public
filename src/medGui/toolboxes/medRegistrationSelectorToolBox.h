@@ -1,26 +1,21 @@
-/* medRegistrationSelectorToolBox.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Feb 19 09:02:09 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Nov 10 16:36:24 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 47
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
 #include "medToolBox.h"
 #include "medGuiExport.h"
+#include <medJobItem.h>
 
 class dtkAbstractView;
 class dtkAbstractProcess;
@@ -48,6 +43,13 @@ public:
     dtkAbstractProcess * process();
     void setProcess(dtkAbstractProcess* process);
 
+    dtkAbstractProcess * undoRedoProcess();
+    void setUndoRedoProcess(dtkAbstractProcess *proc);
+
+    QString getNameOfCurrentAlgorithm();
+
+    enum typeOfOperation { algorithm, undo, redo, reset };
+
 signals:
     void setupLayoutCompare();
     void setupLayoutFuse();
@@ -65,10 +67,14 @@ public slots:
     void clear();
     void onSaveImage();
     void onSaveTrans();
-    void onSuccess();
-
+    void handleOutput(typeOfOperation type=algorithm,QString algoName="");
+    void enableSelectorToolBox(bool enable = true);
+    void onJobAdded(medJobItem* item, QString jobName);
+    
     void synchroniseWindowLevel(QObject * sender = NULL);
     void synchronisePosition(const QVector3D &position);
+
+    
 
 private:
     medRegistrationSelectorToolBoxPrivate *d;

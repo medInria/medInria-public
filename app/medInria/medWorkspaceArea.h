@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #pragma once
 
 #include <QtGui>
@@ -253,6 +266,14 @@ signals:
      *
     */
     void clearOnPatientChange();
+
+     /**
+     * @brief Emitted to specify the slice to display
+     *
+     *  @param slice - the slice number
+     *
+    */
+    void sliceSelected ( int slice );
 
 private:
     friend class medMessageController;

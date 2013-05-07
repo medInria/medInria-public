@@ -1,21 +1,15 @@
-/* medCustomViewContainer.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Wed Mar 17 11:01:46 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Mon Dec 20 11:26:53 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 69
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medViewContainer_p.h"
 #include "medCustomViewContainer.h"
@@ -63,6 +57,8 @@ void medCustomViewContainer::split ( int rows, int cols )
         for ( int j = 0 ; j < cols ; j++ )
         {
             medCustomViewContainer *container = new medCustomViewContainer ( this );
+            if ( i == 0 && j == 0)
+                this->setCurrent ( container ); // current view is in the top left corner
             connect ( container, SIGNAL ( viewAdded ( dtkAbstractView* ) ),   this, SIGNAL ( viewAdded ( dtkAbstractView* ) ) );
             connect ( container, SIGNAL ( viewRemoved ( dtkAbstractView* ) ), this, SIGNAL ( viewRemoved ( dtkAbstractView* ) ) );
             d->layout->addWidget ( container, i, j );
@@ -73,7 +69,6 @@ void medCustomViewContainer::split ( int rows, int cols )
     // in split, the preset is no valid anymore
     d2->preset = 0;
 
-    this->setCurrent ( NULL );
 }
 
 void medCustomViewContainer::setPreset ( int preset )
@@ -82,9 +77,8 @@ void medCustomViewContainer::setPreset ( int preset )
         return;
 
     d2->preset = preset;
-
     this->clear();
-
+    this->setCurrent ( NULL );
     medCustomViewContainer *custom1 = NULL;
     medCustomViewContainer *custom2 = NULL;
     medCustomViewContainer *custom3 = NULL;
@@ -166,7 +160,8 @@ void medCustomViewContainer::setPreset ( int preset )
                   this,      SIGNAL ( viewRemoved ( dtkAbstractView * ) ) );
     }
 
-    this->setCurrent ( NULL );
+    if (this->current() == NULL)    // if current view has not been set (no splitting)
+        this->setCurrent ( custom1 );
 }
 
 void medCustomViewContainer::setView ( dtkAbstractView *view )
@@ -215,7 +210,6 @@ void medCustomViewContainer::setView ( dtkAbstractView *view )
                 connect ( view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
                 connect ( view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
 
-                this->recomputeStyleSheet();
                 emit viewAdded ( view );
             }
             // END FIXME
@@ -327,7 +321,6 @@ void medCustomViewContainer::onViewClosing()
         parent = parent->parentContainer();
     }
 
-    this->recomputeStyleSheet();
 
     // qDebug() << this << __func__;
     // qDebug() << "isRoot:    " << this->isRoot();
@@ -408,6 +401,7 @@ void medCustomViewContainer::dropEvent ( QDropEvent *event )
     this->setAttribute ( Qt::WA_UpdatesDisabled, false );
     medViewContainer::dropEvent ( event );
 }
+
 
 void medCustomViewContainer::clear()
 {

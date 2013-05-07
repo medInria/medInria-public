@@ -1,21 +1,15 @@
-/* medDatabasePreviewItem.h --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Dec 15 09:42:56 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Tue Dec 15 09:42:57 2009 (+0100)
- *           By: Julien Wintz
- *     Update #: 1
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ medInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -41,11 +35,14 @@ public:
 
     void setAllowDragging(bool isDraggingAllowed);
 
+    void setSlice(int nb);
+
 signals:
     void patientClicked(int id);
     void   studyClicked(int id);
     void  seriesClicked(int id);
     void   imageClicked(int id);
+    void openRequested(const medDataIndex &, int);
 
     void hoverEntered(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
     void hoverLeft(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
@@ -54,6 +51,7 @@ protected slots:
     void setImage(const QImage& image);
 
     void mousePressEvent(QGraphicsSceneMouseEvent* event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent* event);
     void hoverEnterEvent(QGraphicsSceneHoverEvent* event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent* event);

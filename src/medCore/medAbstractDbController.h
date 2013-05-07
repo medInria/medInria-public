@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #pragma once
 
 
@@ -12,6 +25,7 @@
 
 class medImportJobWatcher;
 class medDataIndex;
+class medJobItem;
 
 /**
  * Abstract dbController class. Implementation needs to adhere to the common interface
@@ -71,10 +85,16 @@ signals:
      * signal each time the db gets modified, giving the dataindex that was involved
      */
     void updated(const medDataIndex &);
+    
     /**
      * signal each time the db gets modified, giving the dataindex that was involved, and the unique identifier linked with the caller.
      */
     void updated(const medDataIndex &,const QString&);
+    
+    /**
+     * signal each time a job starts (import, export,...)
+     */
+    void jobStarted(medJobItem *, QString);
 
 public slots:
 
@@ -134,6 +154,20 @@ public slots:
      * @params const medDataIndex & index The data index to be removed in the db
      */
     virtual void remove(const medDataIndex& index) = 0;
+    
+    /**
+     * Moves study and its series from one patient to another and returns the list of new indexes
+     * @params const medDataIndex & indexStudy The data index of the study to be moved
+     * @params const medDataIndex & toPatient The data index to move the study to.
+     */
+    virtual QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient) =  0;
+    
+    /**
+     * Moves serie from one study to another and returns the new index of the serie
+     * @params const medDataIndex & indexSerie The data index of the serie to be moved
+     * @params const medDataIndex & toStudy The data index to move the serie to.
+     */
+    virtual medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy) =  0;
 
     /**
     * This method clears data already loaded in the database.

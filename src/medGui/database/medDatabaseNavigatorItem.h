@@ -1,21 +1,15 @@
-/* medDatabaseNavigatorItem.h --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Dec 15 09:39:28 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Thu May 13 20:12:20 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 9
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ medInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -57,6 +51,12 @@ public slots:
 signals:
     void itemClicked(const medDataIndex&);
 
+    /**
+     * @brief Emitted when the user double clicks on a medDatabasenavigatorItem (thumbnail)
+     * @param the @medDataIndex of the image
+    */
+    void itemDoubleClicked(const medDataIndex& index);
+
 protected slots:
     void setImage(const QImage& image);
 
@@ -64,7 +64,8 @@ protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void  mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     medDatabaseNavigatorItemPrivate *d;

@@ -1,20 +1,15 @@
-/* medPluginManager.cpp ---
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Wed Oct 28 18:09:54 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Mon Feb 22 21:28:17 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 52
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medPluginManager.h"
 
@@ -22,6 +17,7 @@
 
 #include <dtkCore/dtkPluginManager.h>
 #include <dtkCore/dtkPlugin.h>
+#include <medStorage.h>
 
 
 class medPluginManagerPrivate
@@ -57,22 +53,17 @@ void medPluginManager::readSettings(void)
     const char PLUGIN_PATH_VAR_NAME[] = "MEDINRIA_PLUGIN_PATH";
     QByteArray pluginVarArray = qgetenv(PLUGIN_PATH_VAR_NAME);
 
-    if ( !pluginVarArray.isEmpty() ) {
+    // Path for extra plugins
+    QString extraPlugins_path = medStorage::dataLocation() + "/../medInria-plugins";
+
+
+    if ( !pluginVarArray.isEmpty() )
+    {
         setPath( QString(pluginVarArray.constData()));
     }
     else
     {
-        QSettings settings;
-        settings.beginGroup("plugins");
-        if (!settings.contains("path"))
-        {
-            qDebug()<<"Filling in empty path in settings with default path:"
-                   << plugins_dir.absolutePath();
-            settings.setValue("path", plugins_dir.absolutePath());
-        }
-        qDebug()<< "path:" << settings.value("path", defaultPath).toString();
-        setPath (settings.value("path", defaultPath).toString());
-        settings.endGroup();
+        setPath(defaultPath + ":" + extraPlugins_path);
     }
 
     if(path().isEmpty()) {
@@ -82,14 +73,6 @@ void medPluginManager::readSettings(void)
     }
 }
 
-void medPluginManager::writeSettings(void)
-{
-
-    QSettings settings;
-    settings.beginGroup("plugins");
-    settings.setValue("path", path());
-    settings.endGroup();
-}
 
 
 QStringList medPluginManager::handlers(const QString& category)

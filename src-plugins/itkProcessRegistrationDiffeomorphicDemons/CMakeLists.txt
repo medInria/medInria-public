@@ -50,6 +50,10 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkProcessRegistrationDiffeomorphicDemonsToolBox.h
   itkProcessRegistrationDiffeomorphicDemons.h)
 
+set(${PROJECT_NAME}_HEADERS
+    itkProcessRegistrationDiffeomorphicDemonsPluginExport.h
+    ${${PROJECT_NAME}_HEADERS_MOC})
+
 set(${PROJECT_NAME}_SOURCES
   itkProcessRegistrationDiffeomorphicDemonsPlugin.cpp
   itkProcessRegistrationDiffeomorphicDemonsToolBox.cpp
@@ -68,6 +72,7 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${RPI_LIBRARIES}
+  registrationFactory
   itkProcessRegistration
   ${QT_LIBRARIES}
   dtkCore dtkLog

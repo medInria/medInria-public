@@ -36,6 +36,6 @@ target_link_libraries(ITKDCMTKIO
   itkIOAddOn
   ${ITK_LIBRARIES})
 
-if(ITK_BUILD_SHARED)
+if (ITK_BUILD_SHARED)
     install (TARGETS ITKDCMTKIO  LIBRARY DESTINATION lib)
-endif(ITK_BUILD_SHARED)
+endif()

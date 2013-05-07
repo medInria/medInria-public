@@ -1,21 +1,15 @@
-/* medDatabasePreview.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Dec 15 09:42:18 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Tue Jun 15 20:02:12 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 132
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medDatabasePreview.h"
 #include "medDatabasePreviewController.h"
@@ -111,8 +105,8 @@ medDatabasePreview::medDatabasePreview(QWidget *parent) : QFrame(parent), d(new 
     layout->addWidget(d->view);
 
     medDatabasePreviewController::instance()->orientation() == Qt::Horizontal
-        ? this->setFixedHeight(medDatabasePreviewController::instance()->groupHeight() + medDatabasePreviewController::instance()->itemSpacing() + 36) // 26 pixels for the scroller
-        : this->setFixedWidth(medDatabasePreviewController::instance()->groupWidth() + medDatabasePreviewController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
+    ? this->setFixedHeight(medDatabasePreviewController::instance()->groupHeight() + medDatabasePreviewController::instance()->itemSpacing() + 36) // 26 pixels for the scroller
+    : this->setFixedWidth(medDatabasePreviewController::instance()->groupWidth() + medDatabasePreviewController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
 
     this->init();
 }
@@ -172,7 +166,7 @@ void medDatabasePreview::onPatientClicked(const medDataIndex& id)
                     firstSeId = (*seriesIt).seriesId();
 
                 d->seriesGroup->addItem(new medDatabasePreviewItem(
-                    medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
+                                            medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
             }
 
         }
@@ -180,7 +174,37 @@ void medDatabasePreview::onPatientClicked(const medDataIndex& id)
 
     d->scene->setSceneRect(d->seriesGroup->boundingRect());
 
-    if(d->level)
+    if(d->level &&  !d->seriesGroup->childItems().isEmpty())
+        this->onSlideDw();
+    else
+        moveToItem( d->seriesGroup->item(firstSeId) );
+}
+
+void medDatabasePreview::onStudyClicked(const medDataIndex& id)
+{
+    d->seriesGroup->clear();
+    d->imageGroup->clear();
+
+    int firstSeId = -1;
+    medAbstractDbController * db =  medDataManager::instance()->controllerForDataSource(id.dataSourceId());
+    if ( db ) {
+
+        QList<medDataIndex> series = db->series(id);
+        for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
+
+            if ( firstSeId < 0)
+                firstSeId = (*seriesIt).seriesId();
+
+            d->seriesGroup->addItem(new medDatabasePreviewItem(
+                                        medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
+
+
+        }
+    }
+
+    d->scene->setSceneRect(d->seriesGroup->boundingRect());
+
+    if(d->level &&  !d->seriesGroup->childItems().isEmpty())
         this->onSlideDw();
     else
         moveToItem( d->seriesGroup->item(firstSeId) );
@@ -197,7 +221,7 @@ void medDatabasePreview::onSeriesClicked(const medDataIndex& id)
         for (QList<medDataIndex>::const_iterator seriesIt( series.begin() ); seriesIt != series.end(); ++seriesIt ) {
 
             d->seriesGroup->addItem(new medDatabasePreviewItem(
-                medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
+                                        medDataIndex::makeSeriesIndex((*seriesIt).dataSourceId(), (*seriesIt).patientId(), (*seriesIt).studyId(), (*seriesIt).seriesId()) ) );
         }
     }
 
@@ -374,7 +398,10 @@ void medDatabasePreview::moveToItem(medDatabasePreviewItem *target) // move to b
         d->selector->show();
 
     if (!target)
+    {
+        d->selector->hide();
         return;
+    }
 
     qreal selector_width = medDatabasePreviewController::instance()->selectorWidth();
     qreal item_width = medDatabasePreviewController::instance()->itemWidth();

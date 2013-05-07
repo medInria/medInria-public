@@ -1,17 +1,15 @@
-/* medDatabaseRemover.cpp ---
- *
- * Author: John Stark
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Jun 29 15:27:20 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Tue Jun 29 15:46:20 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 19
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medDatabaseRemover.h"
 
@@ -237,7 +235,22 @@ void medDatabaseRemover::removeSeries ( int patientDbId, int studyDbId, int seri
     // we want to remove the directory if empty
     QFileInfo seriesFi ( medStorage::dataLocation() + thumbnail );
     if ( seriesFi.dir().exists() )
-        seriesFi.dir().rmdir ( seriesFi.absolutePath() ); // only removes if empty
+    {
+        bool res = seriesFi.dir().rmdir ( seriesFi.absolutePath() ); // only removes if empty
+
+        // the serie's directory has been deleted, let's check if the patient directory is empty
+        // this can happen after moving series
+        if(res)
+        {
+            QDir parentDir = seriesFi.dir();
+            res = parentDir.cdUp();
+
+            if ( res && parentDir.exists() )
+            {
+                res = seriesFi.dir().rmdir ( parentDir.absolutePath() ); // only removes if empty
+            }
+        }
+    }
 }
 
 bool medDatabaseRemover::isStudyEmpty ( int studyDbId )
@@ -259,9 +272,10 @@ void medDatabaseRemover::removeStudy ( int patientDbId, int studyDbId )
     query.prepare ( "SELECT thumbnail, name, uid FROM " + d->T_STUDY + " WHERE id = :id " );
     query.bindValue ( ":id", studyDbId );
     EXEC_QUERY ( query );
+    QString thumbnail;
     if ( query.next() )
     {
-        QString thumbnail = query.value ( 0 ).toString();
+        thumbnail = query.value ( 0 ).toString();
         this->removeFile ( thumbnail );
     }
     removeTableRow ( d->T_STUDY, studyDbId );
@@ -300,7 +314,7 @@ void medDatabaseRemover::removePatient ( int patientDbId )
 
     medDatabaseControllerImpl * dbi = medDatabaseController::instance();
     QDir patientDir ( medStorage::dataLocation() + "/" + dbi->stringForPath ( patientId ) );
-
+    
     if ( patientDir.exists() )
         patientDir.rmdir ( patientDir.path() ); // only removes if empty
 }

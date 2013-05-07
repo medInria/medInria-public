@@ -1,21 +1,15 @@
-/* medRunnableProcess.h --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Dec 15 09:40:14 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Tue Dec 15 09:40:15 2009 (+0100)
- *           By: Julien Wintz
- *     Update #: 1
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ medInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -50,6 +44,7 @@ public:
     * Specify which dtk process to run.
     */
     void setProcess (dtkAbstractProcess *proc);
+    dtkAbstractProcess * getProcess();
 
 public slots:
     /**

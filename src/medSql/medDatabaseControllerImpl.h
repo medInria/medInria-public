@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #pragma once
 
 
@@ -93,8 +106,6 @@ signals:
      */
     void copyMessage(QString, int, QColor);
 
-    void displayJobItem(medJobItem *, QString);
-
     /**
      * This signal is emitted when the import/index process
      * detects an attempt of partial importing. That is when the user
@@ -115,12 +126,11 @@ public slots:
 
     /**
     * Import data into the db read from file
-    * @Note _NOT_IMPLEMENTED_YET
     * @params const QString & file The file containing the data
     * @params bool indexWithoutCopying true if the file must only be indexed by its current path,
     * false if the file will be imported (copied or converted to the internal storage format)
     */
-    void import(const QString& file,bool indexWithoutCopying);
+    void import(const QString& file, bool indexWithoutCopying);
 
     /**
      * Calls import(const QString& file,bool indexWithoutCopying) with indexWithoutCopying = false.
@@ -142,6 +152,21 @@ public slots:
 
     /** override base class */
     virtual void remove(const medDataIndex& index);
+
+    /**
+     * Moves study and its series from one patient to another and returns the list of new indexes
+     * @params const medDataIndex & indexStudy The data index of the study to be moved
+     * @params const medDataIndex & toPatient The data index to move the study to.
+     */
+    QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
+
+    /**
+     * Moves serie from one study to another and returns the new index of the serie
+     * @params const medDataIndex & indexSerie The data index of the serie to be moved
+     * @params const medDataIndex & toStudy The data index to move the serie to.
+     */
+    medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
+
     virtual QImage thumbnail( const medDataIndex& index) const;
 
     /**Implement base class */

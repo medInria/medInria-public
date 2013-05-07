@@ -98,14 +98,6 @@
 %typemap(out) QString { // C++ -> Python
     $result = PyString_FromString($1.toAscii().constData());
 }
-#elif SWIGTCL
-%typemap(in) QString { // Tcl -> C++
-    $1 = QString(Tcl_GetString($input));
-}
-
-%typemap(out) QString { // C++ -> Tcl
-    Tcl_SetStringObj($result, $1.toAscii().constData(), $1.size());
-}
 #endif
 
 // /////////////////////////////////////////////////////////////////

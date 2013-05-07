@@ -1,21 +1,15 @@
-/* medMainWindow.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Sep 18 12:48:07 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Wed Nov 10 15:25:37 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 503
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medBrowserArea.h"
 #include "medMainWindow.h"
@@ -134,10 +128,6 @@ public:
 extern "C" int init_core();               // -- Initialization core layer python wrapped functions
 #endif
 
-#if defined(HAVE_SWIG) && defined(HAVE_TCL)
-extern "C" int Core_Init ( Tcl_Interp *interp ); // -- Initialization core layer tcl    wrapped functions
-#endif
-
 medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( new medMainWindowPrivate )
 {
 
@@ -196,6 +186,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->stack->addWidget ( d->browserArea );
     d->stack->addWidget ( d->workspaceArea );
 
+    connect(d->browserArea, SIGNAL(openRequested(const medDataIndex&, int)), this, SLOT(open(const medDataIndex&, int)));
+    
     //  Setup quick access menu
 
     d->quickAccessButton = new medQuickAccessPushButton ( this );
@@ -561,6 +553,7 @@ void medMainWindow::showFullScreen()
     d->fullscreenButton->setChecked(true);
     d->fullscreenButton->blockSignals(false);
     QMainWindow::showFullScreen();
+    this->setAcceptDrops(true);
 }
 
 void medMainWindow::showNormal()
@@ -829,12 +822,24 @@ void medMainWindow::onEditSettings()
     dialog->exec();
 }
 
+void medMainWindow::open ( const medDataIndex& index , int slice )
+{
+   connect (this, SIGNAL(sliceSelected(int)), d->workspaceArea, SIGNAL(sliceSelected(int)));
+   if(d->workspaceArea->openInTab(index))
+    {
+        d->quickAccessButton->setText(tr("Workspace: Visualization"));
+        d->quickAccessButton->setMinimumWidth(170);
+        this->switchToWorkspaceArea();
+        emit sliceSelected(slice);  //to display the selected slice
+    }
+}
+
 void medMainWindow::availableSpaceOnStatusBar()
 {
     QPoint workspaceButton_topRight = d->quickAccessButton->mapTo(d->statusBar, d->quickAccessButton->rect().topRight());
-    QPoint fullscreenButton_topLeft = d->fullscreenButton->mapTo(d->statusBar, d->fullscreenButton->rect().topLeft());
-    //Available space = space between the spacing after workspace button and the spacing before fullscreen button
-    int space = (fullscreenButton_topLeft.x()-d->statusBarLayout->spacing()) -  (workspaceButton_topRight.x()+d->statusBarLayout->spacing()); 
+    QPoint screenshotButton_topLeft = d->screenshotButton->mapTo(d->statusBar, d->screenshotButton->rect().topLeft());
+    //Available space = space between the spacing after workspace button and the spacing before screenshot button
+    int space = (screenshotButton_topLeft.x()-d->statusBarLayout->spacing()) -  (workspaceButton_topRight.x()+d->statusBarLayout->spacing()); 
     d->statusBar->setAvailableSpace(space);
 }
 
@@ -956,23 +961,6 @@ void medMainWindow::registerToFactories()
         );
     dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
         "pluginManager  = core.dtkPluginManager.instance()"
-        );
-#endif
-#if defined(HAVE_SWIG) && defined(HAVE_TCL)
-    // Setting up core tcl module
-
-    dtkScriptInterpreterTclModuleManager::instance()->registerInitializer(&Core_Init);
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set dataFactory    [dtkAbstractDataFactory_instance]"
-        );
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set processFactory [dtkAbstractProcessFactory_instance]"
-        );
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set viewFactory    [dtkAbstractViewFactory_instance]"
-        );
-    dtkScriptInterpreterTclModuleManager::instance()->registerCommand(
-        "set pluginManager  [dtkPluginManager_instance]"
         );
 #endif
 

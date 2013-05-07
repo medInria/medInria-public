@@ -1,21 +1,15 @@
-/* medDatabaseNonPersitentController.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Sun Jun 27 17:45:07 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Tue Jun 29 16:07:23 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 58
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -132,6 +126,20 @@ public slots:
      * @params const medDataIndex & index : data index
      */
     void remove(const medDataIndex& index);
+
+    /**
+     * Moves study and its series from one patient to another and returns the list of new indexes
+     * @params const medDataIndex & indexStudy The data index of the study to be moved
+     * @params const medDataIndex & toPatient The data index to move the study to.
+     */
+    QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
+   
+    /**
+     * Moves serie from one study to another and returns the new index of the serie
+     * @params const medDataIndex & indexSerie The data index of the serie to be moved
+     * @params const medDataIndex & toStudy The data index to move the serie to.
+     */
+    medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
 
     /**
     * Removes any reference to non-persistent data. Do not actually free memory.

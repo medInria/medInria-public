@@ -1,21 +1,15 @@
-/* medBrowserArea.h --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Oct  9 08:28:09 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Wed Oct  6 15:51:28 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 20
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ medInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -53,6 +47,14 @@ signals:
     * @param index - the @medDataIndex of the image
     **/
     void open(const medDataIndex& index);
+
+    /**
+    * Signal emitted when the user chooses to open an image
+    * from the database browser (double click on a thumbnail)
+    * @param index - the @medDataIndex of the image
+    * @param slice - the slice number corresponding to the image
+    **/
+    void openRequested(const medDataIndex& index, int slice);
 
     /**
     * Signal emitted when the user chooses to open a file or

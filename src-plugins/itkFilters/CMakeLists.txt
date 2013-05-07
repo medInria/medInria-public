@@ -129,10 +129,10 @@ if (MSVC)
     get_source_file_property(bigobjFile_COMPILE_FLAGS ${bigobjFile} COMPILE_FLAGS)
     if (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
         set_source_files_properties(${bigobjFile} PROPERTIES COMPILE_FLAGS "/bigobj")
-    else (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
+    else()
         set_source_files_properties(${bigobjFile} PROPERTIES COMPILE_FLAGS "${bigobjFile_COMPILE_FLAGS} /bigobj")
-    endif (${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
-endif (MSVC)
+    endif()
+endif()
 
 ## #################################################################
 ## Install rules

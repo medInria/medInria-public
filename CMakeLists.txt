@@ -17,7 +17,7 @@
 ##
 ######################################################################
 
-# Require 2.8 for correct behaviour of if( FALSE ).
+# Require 2.8 for correct behaviour of if ( FALSE ).
 cmake_minimum_required(VERSION 2.8)
 
 project(medInria)
@@ -42,10 +42,10 @@ mark_as_advanced(${PROJECT_NAME}_VERSION_BUGFIX)
 
 add_definitions(-DMEDINRIA_VERSION="${${PROJECT_NAME}_VERSION}")
 
-if(WIN32)
+if (WIN32)
   option(MED_SHOW_CONSOLE "Show console at runtime (mainly for debugging)" "FALSE")
-  SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
 
 option(MEDINRIA_BUILD_TESTING       "Build testing"          false)
@@ -55,35 +55,35 @@ enable_testing()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include(medInriaBuild)
+include(medInria-pluginsBuild)
+
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-include(medInriaPack)
-
 #configure ctest variables
 option(MEDINRIA_BUILD_REPORTING "Build Reporting")
-if(MEDINRIA_BUILD_REPORTING)
+if (MEDINRIA_BUILD_REPORTING)
   include(dtkReporting)
-endif(MEDINRIA_BUILD_REPORTING)
+endif()
 
 option(MEDINRIA_BUILD_DOCUMENTATION "Build documentation"    false)
 
-if(MSVC)
+if (MSVC)
   include(dtkPch)
   option(MEDINRIA_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        false)
-endif(MSVC)
+endif()
 
 add_subdirectory(src)
-add_subdirectory(app)
 add_subdirectory(src-plugins)
+add_subdirectory(app)
 
-if(MEDINRIA_BUILD_TESTING)
+if (MEDINRIA_BUILD_TESTING)
   add_subdirectory(tests)
-endif(MEDINRIA_BUILD_TESTING)
+endif()
 
-if(MEDINRIA_BUILD_DOCUMENTATION)
+if (MEDINRIA_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
-endif(MEDINRIA_BUILD_DOCUMENTATION)
+endif()
 
 if (APPLE)
   configure_file(${PROJECT_SOURCE_DIR}/mac_packager.sh.in

@@ -1,17 +1,15 @@
-/* medApplication.h ---
- *
- * Author: John Stark
- * Copyright (C) 2011 - John Stark, Inria.
- * Created: May 2011
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -19,6 +17,7 @@
 #include <QColor>
 
 class medApplicationPrivate;
+class medMainWindow;
 
 // /////////////////////////////////////////////////////////////////
 // medApplication
@@ -76,6 +75,9 @@ public:
      * @param alignment
      */
     void setMsgAlignment(int alignment);
+    
+    bool event(QEvent *event);
+    void setMainWindow(medMainWindow *mw);
 
 signals:
     /**

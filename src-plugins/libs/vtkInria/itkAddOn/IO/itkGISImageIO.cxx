@@ -1,20 +1,16 @@
 /*=========================================================================
 
-Program:   vtkINRIA3D
-Module:    $Id:  1182 2009-06-30 09:19:05Z  $
-Language:  C++
-Author:    $Author:  $
-Date:      $Date: 2009-06-30 11:19:05 +0200 (mar, 30 jun 2009) $
-Version:   $Revision: 1182 $
+ medInria
 
-Copyright (c) 2007 INRIA - Asclepios Project. All rights reserved.
-See Copyright.txt for details.
-
-This software is distributed WITHOUT ANY WARRANTY; without even
-the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-PURPOSE.  See the above copyright notices for more information.
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
 =========================================================================*/
+
 #include "itkGISImageIO.h"
 
 #include <itksys/SystemTools.hxx>
@@ -49,31 +45,35 @@ namespace itk
 
   bool GISImageIO::CanReadFile(const char* filename)
   {
-    
-    std::string extension = itksys::SystemTools::GetFilenameLastExtension(filename);
 
-    if( extension!=".ima" && extension!=".dim" )
+      std::string extension = itksys::SystemTools::GetFilenameLastExtension(filename);
+
+      if( extension!=".ima" && extension!=".dim" )
       {
-	return false;
+          return false;
       }
 
-
-    // look if the header file exists
-    std::string header_file = filename;
-    if( extension==".ima")
+      // look if the header file exists
+      std::string header_file = filename;
+      if( extension==".ima")
       {
-	header_file = itksys::SystemTools::GetFilenameWithoutLastExtension(filename)+".dim";
+          std::string path = itksys::SystemTools::GetFilenamePath(filename);
+          if (path=="")
+          {
+             path = ".";
+          }
+          header_file = path + "/" + itksys::SystemTools::GetFilenameWithoutLastExtension(filename) + ".dim";
       }
 
 //     if ( !itksys::SystemTools::FileExists(header_file.c_str(), true) )
-    if ( !itksys::SystemTools::FileExists(header_file.c_str()) )
+      if ( !itksys::SystemTools::FileExists(header_file.c_str()) )
       {
-	std::cerr << "Error: Header file does not exist." << std::endl;
-	return false;
+          std::cerr << "Error: Header file does not exist." << std::endl;
+          return false;
       }
-    
-    return true;
-  }
+
+      return true;
+}
 
 
   
@@ -91,9 +91,14 @@ namespace itk
     // look if the header file exists
     std::string header_file = m_FileName;
     if( extension!=".dim")
-      {
-	header_file = itksys::SystemTools::GetFilenameWithoutLastExtension(m_FileName)+".dim";
-      }
+    {
+        std::string path = itksys::SystemTools::GetFilenamePath(m_FileName);
+        if (path=="")
+        {
+           path = ".";
+        }
+        header_file = path + "/" + itksys::SystemTools::GetFilenameWithoutLastExtension(m_FileName) + ".dim";
+    }
 
 //     if ( !itksys::SystemTools::FileExists(header_file.c_str(), true) )
     if ( !itksys::SystemTools::FileExists(header_file.c_str()) )
@@ -387,7 +392,12 @@ namespace itk
     std::string extension = itksys::SystemTools::GetFilenameLastExtension(m_FileName);   
     if( extension!=".dim")
     {
-      header_file = itksys::SystemTools::GetFilenameWithoutLastExtension(m_FileName)+".dim";
+        std::string path = itksys::SystemTools::GetFilenamePath(m_FileName);
+        if (path=="")
+        {
+           path = ".";
+        }
+        header_file = path + "/" + itksys::SystemTools::GetFilenameWithoutLastExtension(m_FileName) + ".dim";
     }
     
     
@@ -532,7 +542,12 @@ namespace itk
     
     if( extension != ".ima" )
     {
-      s_filename = itksys::SystemTools::GetFilenameWithoutLastExtension(m_FileName)+".ima";
+        std::string path = itksys::SystemTools::GetFilenamePath(m_FileName);
+        if (path=="")
+        {
+           path = ".";
+        }
+        s_filename = path + "/" + itksys::SystemTools::GetFilenameWithoutLastExtension(m_FileName) + ".ima";
     }
     
     std::ofstream ofs(s_filename.c_str());

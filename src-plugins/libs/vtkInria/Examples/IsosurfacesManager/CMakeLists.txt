@@ -1,15 +1,15 @@
-PROJECT(IsosurfacesManager)
+project(IsosurfacesManager)
 
 include_directories(
   ../../vtkRenderingAddOn
   ../../vtkVisuManagement
   )
 
-ADD_EXECUTABLE(${PROJECT_NAME}
+add_executable(${PROJECT_NAME}
   IsosurfacesManager.cxx
   )
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}
   vtkRenderingAddOn
   vtkVisuManagement
   vtkRendering

@@ -1,9 +1,15 @@
-/*
- * medQtDataImageWriter.cpp
- *
- *  Created on: 4 juil. 2011 10:47:30
- *      Author: John Stark
- */
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medQtDataImageWriter.h"
 #include "medQtDataImage.h"
@@ -65,14 +71,6 @@ QStringList medQtDataImageWriter::handled() const
 
 QStringList medQtDataImageWriter::supportedFileExtensions() const
 {
-    dtkAbstractData * dtkdata = const_cast<medQtDataImageWriter*>(this)->data();
-
-    if ( !const_cast<medQtDataImageWriter*>(this)->data() ) {
-        return QStringList();
-    }
-    if ( dtkdata->identifier() != medQtDataImage::s_identifier() ) {
-        return QStringList();
-    }
     QStringList extensions;
 #if QT_VERSION > 0x0406FF
     extensions.reserve( m_supportedExtensionList.size());
@@ -102,12 +100,35 @@ bool medQtDataImageWriter::write( const QString& path )
 
 bool medQtDataImageWriter::canWrite( const QString& path )
 {
-    return this->writeOrTest(path, true);
+    QFileInfo fi ( path );
+    QString suffix = fi.suffix();
+
+    QByteArray fmtString;
+    const QString lowerSuffix = suffix.toLower();
+    FormatInfoList::const_iterator formatToUse = m_supportedExtensionList.begin();
+    for ( ; formatToUse != m_supportedExtensionList.end() ; ++formatToUse ){
+        if (formatToUse->fileExtension == suffix )
+            break;
+    }
+    if ( formatToUse != m_supportedExtensionList.end() ) {
+        fmtString = formatToUse->formatName;
+    } else {
+        dtkDebug() << "Filename does not have a supported extension";
+        return false;
+    }
+
+    QScopedPointer<QImageWriter> writer(new QImageWriter( path ) );
+    if ( fmtString.size() ) {
+        writer->setFormat( fmtString );
+    }
+    
+    return writer->canWrite();
 }
 
 bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= true*/ )
 {
     dtkAbstractData * dtkdata = this->data();
+
     if ( !dtkdata )
         return false;
 

@@ -1,11 +1,11 @@
-SET(TEST 
+set(TEST 
   TestSynchronizedViews
 )
 
-SET(EXE_NAME ${TEST})
-ADD_EXECUTABLE(${EXE_NAME} ${TEST}.cxx)
+set(EXE_NAME ${TEST})
+add_executable(${EXE_NAME} ${TEST}.cxx)
 
-TARGET_LINK_LIBRARIES(${EXE_NAME}
+target_link_libraries(${EXE_NAME}
   vtkRenderingAddOn
 )
 

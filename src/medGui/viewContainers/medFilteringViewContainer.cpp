@@ -1,8 +1,15 @@
-/* medFilteringViewContainer.cpp ---
- *
- * @author Clément Philipot <clement.philipot@inria.fr>
- *
- */
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medFilteringViewContainer.h"
 #include <medAbstractView.h>
@@ -28,6 +35,7 @@ medFilteringViewContainer::medFilteringViewContainer ( QWidget * parent ) :
     d3->outputViewContainer->setInfo ( tr ( "Result of filtering" ) );
 
     d3->outputViewContainer->setAcceptDrops(false);
+    setCurrent(d3->inputViewContainer);
 
     connect(d3->inputViewContainer,SIGNAL(dropped(medDataIndex)),
             this,SIGNAL(droppedInput(medDataIndex)));

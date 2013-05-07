@@ -1,21 +1,16 @@
-/* medDatabaseItem.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Oct 17 12:08:53 2008 (+0200)
- * Version: $Id$
- * Last-Updated: Mon Sep 28 16:04:30 2009 (+0200)
- *           By: Julien Wintz
- *     Update #: 62
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include <medDataIndex.h>
 #include <medDatabaseItem.h>
 
@@ -54,6 +49,11 @@ medAbstractDatabaseItem *medDatabaseItem::child(int row)
 medAbstractDatabaseItem *medDatabaseItem::parent(void)
 {
     return d->parentItem;
+}
+
+void medDatabaseItem::setParent(medAbstractDatabaseItem *parent)
+{
+    d->parentItem = static_cast<medDatabaseItem*>(parent);
 }
 
 void medDatabaseItem::append(medAbstractDatabaseItem *item)
@@ -124,13 +124,22 @@ bool medDatabaseItem::insertColumns(int position, int columns)
     return true;
 }
 
-bool medDatabaseItem::removeChildren(int position, int count)
+bool medDatabaseItem::removeChildren(int position, int count,  bool deleteChildren)
 {
     if (position < 0 || position + count > d->childItems.size())
         return false;
 
     for (int row = 0 ; row < count ; ++row)
-        delete d->childItems.takeAt(position);
+    {
+        if (deleteChildren)
+        {
+          delete d->childItems.takeAt(position);
+        }
+        else
+        {
+            d->childItems.removeAt(position);
+        }
+    }
 
     return true;
 }
@@ -175,7 +184,44 @@ QVariant medDatabaseItem::value(int column)
     return d->itemData.at(column);
 }
 
+QList<QVariant> medDatabaseItem::attributes()
+{
+    return d->attrData;       
+}
+
+QList<QVariant> medDatabaseItem::values()
+{
+    return d->itemData;  
+}
+
 const medDataIndex & medDatabaseItem::dataIndex() const
 {
     return d->index;
+}
+
+void medDatabaseItem::setDataIndex (const medDataIndex &index)
+{
+    d->index = index;
+}
+
+int medDatabaseItem::rowOf(medAbstractDatabaseItem *child) const
+{
+    int row = 0;
+    bool found = false;
+    
+    foreach(medDatabaseItem *item, d->childItems)
+    {
+        if(item==child)
+        {
+            found = true;
+            break;
+        }
+        else row++;
+    }
+    
+    if(!found)
+        row = -1;
+    
+    return row;
+    
 }

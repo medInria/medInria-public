@@ -40,13 +40,13 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-if(ITK_USE_SYSTEM_GDCM)
+if (ITK_USE_SYSTEM_GDCM)
   add_definitions(-DITK_USE_SYSTEM_GDCM)
 endif()
 
-#else(ITK_USE_SYSTEM_GDCM)
+#else()
 #  message(WARNING "The DICOM GDCM reader plugin needs ITK to compile with SYSTEM_GDCM. If you don't want to use GDCM, discard this warning. Otherwise, #please set the option ITK_USE_SYSTEM_GDCM:ON in ITK and re-compile")
-#endif(ITK_USE_SYSTEM_GDCM)
+#endif()
 
 
 ## #################################################################
@@ -57,12 +57,12 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImageReaderPlugin.h
 )
 
-if(ITK_USE_SYSTEM_GDCM)
+if (ITK_USE_SYSTEM_GDCM)
   set(${PROJECT_NAME}_HEADERS_MOC
     ${${PROJECT_NAME}_HEADERS_MOC}
     itkGDCMDataImageReader.h
     )
-endif(ITK_USE_SYSTEM_GDCM)
+endif()
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})
@@ -81,13 +81,14 @@ set(${PROJECT_NAME}_SOURCES
   itkGiplDataImageReader.cpp
   itkVTKDataImageReader.cpp
   itkPhilipsRECDataImageReader.cpp
+  itkGISDataImageReader.cpp
   )
-if(ITK_USE_SYSTEM_GDCM)
+if (ITK_USE_SYSTEM_GDCM)
   set(${PROJECT_NAME}_SOURCES
     ${${PROJECT_NAME}_SOURCES}
     itkGDCMDataImageReader.cpp
     )
-endif(ITK_USE_SYSTEM_GDCM)
+endif()
 
 
 ## #################################################################
@@ -96,12 +97,12 @@ endif(ITK_USE_SYSTEM_GDCM)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC})
-endif(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_HEADERS}
@@ -116,19 +117,20 @@ target_link_libraries(${PROJECT_NAME}
   medCore
   itkDataImageBase
   ITKIOReview
+  itkIOAddOn
   ${ITK_LIBRARIES})
 
 if (MEDINRIA-PLUGINS_BUILD_TESTING)
   add_subdirectory(Testing)
-endif (MEDINRIA-PLUGINS_BUILD_TESTING)
+endif()
 
 if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
   add_subdirectory(Examples)
-endif (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
+endif()
 
 # Group common files together in Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Install rules

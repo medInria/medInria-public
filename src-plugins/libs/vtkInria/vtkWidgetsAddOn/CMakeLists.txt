@@ -1,6 +1,6 @@
 project(vtkWidgetsAddOn)
 
-SET(${PROJECT_NAME}_SRCS
+set(${PROJECT_NAME}_SRCS
 vtkDistanceWidget2.cxx
 vtkImageOrientedPointWidget.cxx
 vtkOrientationAnnotation.cxx
@@ -9,7 +9,7 @@ vtkRulerWidget.cxx
 vtkInteractorStyleTrackballCamera2.cxx
 )
 
-SET(${PROJECT_NAME}_LIBS
+set(${PROJECT_NAME}_LIBS
  vtkCommon
  vtkFiltering 
  vtkRendering
@@ -17,11 +17,20 @@ SET(${PROJECT_NAME}_LIBS
 )
 
 # C++ library for the InterfaceManagers
-ADD_LIBRARY(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} SHARED
  ${${PROJECT_NAME}_SRCS}
 )
   
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}  
+target_link_libraries(${PROJECT_NAME}  
  ${${PROJECT_NAME}_LIBS}
 )
 
+## #################################################################
+## Install rules
+## #################################################################
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
+
+install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME}) 

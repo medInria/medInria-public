@@ -1,21 +1,15 @@
-/* medDatabasePreview.h --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Dec 15 09:42:06 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Apr 21 09:35:09 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 5
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ medInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -45,7 +39,8 @@ signals:
 
 public slots:
     void onPatientClicked(const medDataIndex& id);
-    void  onSeriesClicked(const medDataIndex& id);
+    void onStudyClicked(const medDataIndex& id);
+    void onSeriesClicked(const medDataIndex& id);
 
 protected slots:
     void onSlideUp();

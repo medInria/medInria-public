@@ -1,21 +1,15 @@
-/* medMessageController.h --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Mon Jun 28 09:57:25 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Thu Oct  7 12:33:38 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 56
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ medInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -94,6 +88,7 @@ public:
      medMessageProgress(const QString& text, QWidget *parent = 0);
     ~medMessageProgress();
     void associateTimer();
+    void paintEvent ( QPaintEvent * event );
 
 protected:
     QProgressBar *progress;

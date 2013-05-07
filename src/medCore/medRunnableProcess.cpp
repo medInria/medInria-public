@@ -1,21 +1,15 @@
-/* medRunnableProcess.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Dec 15 09:40:14 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Tue Dec 15 09:40:15 2009 (+0100)
- *           By: Julien Wintz
- *     Update #: 1
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medRunnableProcess.h"
 
@@ -51,6 +45,11 @@ void medRunnableProcess::setProcess (dtkAbstractProcess *proc)
         // connect (d->process, SIGNAL (failure()),       this, SLOT (onFailure()), Qt::QueuedConnection);
 	connect (d->process, SIGNAL (progressed(int)), this, SLOT (onProgressed(int)), Qt::QueuedConnection);
     }
+}
+
+dtkAbstractProcess * medRunnableProcess::getProcess()
+{
+    return d->process;
 }
 
 void medRunnableProcess::run()

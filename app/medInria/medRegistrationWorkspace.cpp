@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include "medRegistrationWorkspace.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -65,6 +78,7 @@ void medRegistrationWorkspace::setupViewContainerStack()
                 this->stackedViewContainers());
         if (dtkSmartPointer<dtkAbstractView> view = dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"))
         {
+            view->setProperty("Closable","false"); 
             fuseContainer->setView (view);
             d->registrationToolBox->setFuseView (view);
         }

@@ -1,9 +1,9 @@
 project(vtkDataManagement)
 
-FIND_PACKAGE(ITK REQUIRED)
-INCLUDE(${ITK_USE_FILE})
+find_package(ITK REQUIRED)
+include(${ITK_USE_FILE})
 
-SET(vtkDataManagement_SRCS
+set(vtkDataManagement_SRCS
   vtkDataManagerCallback.cxx
   vtkMetaDataSet.cxx
   vtkMetaImageData.cxx
@@ -17,29 +17,29 @@ SET(vtkDataManagement_SRCS
   vtkXMLFiberDataSetWriter.cxx
 )
 
-IF (VTK_MAJOR_VERSION GREATER 4)
-  IF (VTK_MINOR_VERSION GREATER 0)
-    SET(${PROJECT_NAME}_SRCS
+if (VTK_MAJOR_VERSION GREATER 4)
+  if (VTK_MINOR_VERSION GREATER 0)
+    set(${PROJECT_NAME}_SRCS
     ${${PROJECT_NAME}_SRCS}
     vtkDataManagerWriter.cxx
     vtkDataManagerReader.cxx
     )
-  ENDIF (VTK_MINOR_VERSION GREATER 0)
-ENDIF (VTK_MAJOR_VERSION GREATER 4)
+  endif()
+endif()
 
-if(VTKINRIA_USE_PRECOMPILED_HEADERS)
+if (VTKINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
     "vtkInriaPch/vtkInriaPch.h" "../vtkInriaPch/vtkInriaPch.cpp" 
     ${vtkDataManagement_SRCS})
-endif(VTKINRIA_USE_PRECOMPILED_HEADERS)
+endif()
 
 # C++ library for the InterfaceManagers
-ADD_LIBRARY(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_PCH}
   ${${PROJECT_NAME}_SRCS}
   )
   
-SET(${PROJECT_NAME}_LIBS
+set(${PROJECT_NAME}_LIBS
   ITKCommon
   vtkCommon
   vtkRendering
@@ -56,13 +56,21 @@ SET(${PROJECT_NAME}_LIBS
   ITKIOReview
   )
     
-TARGET_LINK_LIBRARIES(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME}
   ${ITK_LIBRARIES}
   ${${PROJECT_NAME}_LIBS}
   )
 
-IF( VTKINRIA_BUILD_TESTING )
-  ADD_SUBDIRECTORY(Testing)
-ENDIF( VTKINRIA_BUILD_TESTING )
+if ( VTKINRIA_BUILD_TESTING )
+  add_subdirectory(Testing)
+endif()
 
+## #################################################################
+## Install rules
+## #################################################################
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
 
+install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME}) 

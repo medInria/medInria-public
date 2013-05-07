@@ -1,40 +1,40 @@
-SET (itkIOAddOnSRCS
+set(itkIOAddOnSRCS
   itkGISImageIO.cxx
   itkGISImageIOFactory.cxx
   itkMultiThreadedImageIOBase.cxx
 )
 
-IF (NOT ITK_USE_SYSTEM_GDCM)
-  SET (itkIOAddOnSRCS
+if (NOT ITK_USE_SYSTEM_GDCM)
+  set(itkIOAddOnSRCS
     ${itkIOAddOnSRCS}
     itkDicomTagManager.cxx
     itkGDCMImporter.cxx
     itkGDCMExporter.cxx
     )
-ENDIF(NOT ITK_USE_SYSTEM_GDCM)
+endif()
 
-IF( VTKINRIA_USE_SPHERICALHARMONICS )
-  SET (itkIOAddOnSRCS
+if ( VTKINRIA_USE_SPHERICALHARMONICS )
+  set(itkIOAddOnSRCS
     ${itkIOAddOnSRCS}
     itkSphericalHarmonicITKToVTKFilter.txx
     )
-ENDIF(VTKINRIA_USE_SPHERICALHARMONICS )
+endif()
 
-IF( WIN32 )
-  ADD_LIBRARY(itkIOAddOn STATIC
+if ( WIN32 )
+  add_library(itkIOAddOn STATIC
     ${itkIOAddOnSRCS}
   )
-ELSE( WIN32 )
-  ADD_LIBRARY( itkIOAddOn SHARED
+else()
+  add_library( itkIOAddOn SHARED
     ${itkIOAddOnSRCS} 
   )
-ENDIF( WIN32 )
+endif()
 
-TARGET_LINK_LIBRARIES(itkIOAddOn
+target_link_libraries(itkIOAddOn
   ${ITK_LIBRARIES}
 )
 
-IF (ITK_USE_SYSTEM_GDCM)
+if (ITK_USE_SYSTEM_GDCM)
 
 set(SYSTEM_GDCM_LIBRARIES
   gdcmCommon
@@ -42,21 +42,31 @@ set(SYSTEM_GDCM_LIBRARIES
   gdcmDICT
 )
 
-  ADD_EXECUTABLE(GDCMImport
+  add_executable(GDCMImport
     GDCMImport.cxx
     )
-  IF(WIN32 AND NOT CYGWIN AND NOT MINGW)
-    TARGET_LINK_LIBRARIES(GDCMImport 
+  if (WIN32 AND NOT CYGWIN AND NOT MINGW)
+    target_link_libraries(GDCMImport 
       ${ITK_LIBRARIES}
       ${SYSTEM_GDCM_LIBRARIES}
       getoptcompatlib
       )
-  ELSE(WIN32 AND NOT CYGWIN AND NOT MINGW)
-    TARGET_LINK_LIBRARIES(GDCMImport
+  else()
+    target_link_libraries(GDCMImport
       ${ITK_LIBRARIES}
       ${SYSTEM_GDCM_LIBRARIES}
       )
-  ENDIF(WIN32 AND NOT CYGWIN AND NOT MINGW)
+  endif()
   
-ENDIF (ITK_USE_SYSTEM_GDCM)
+endif()
 
+
+## #################################################################
+## Install rules
+## #################################################################
+install(TARGETS itkIOAddOn
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib)
+
+install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME}) 

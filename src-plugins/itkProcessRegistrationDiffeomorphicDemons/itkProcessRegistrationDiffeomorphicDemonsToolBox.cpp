@@ -1,21 +1,15 @@
-/* itkProcessRegistrationDiffeomorphicDemonsToolBox.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Wed Nov 10 15:39:49 2010 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Nov 10 16:42:22 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 71
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "itkProcessRegistrationDiffeomorphicDemons.h"
 #include "itkProcessRegistrationDiffeomorphicDemonsToolBox.h"
@@ -245,6 +239,6 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
     connect (runProcess, SIGNAL(activate(QObject*,bool)),
              d->progression_stack, SLOT(setActive(QObject*,bool)));
 
-    medJobManager::instance()->registerJobItem(runProcess);
+    medJobManager::instance()->registerJobItem(runProcess,process->identifier());
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
 }

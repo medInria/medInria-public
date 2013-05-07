@@ -1,27 +1,19 @@
-/* medDatabasePreviewItemGroup.cpp --- 
- * 
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Dec 15 09:43:19 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Tue Dec 15 09:43:19 2009 (+0100)
- *           By: Julien Wintz
- *     Update #: 1
- */
+/*=========================================================================
 
-/* Commentary: 
- * 
- */
+ medInria
 
-/* Change log:
- * 
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medDatabasePreviewController.h"
 #include "medDatabasePreviewItem.h"
 #include "medDatabasePreviewItemGroup.h"
-
-#include <medCore/medDataIndex.h>
 
 #include <QtCore>
 
@@ -51,7 +43,7 @@ void medDatabasePreviewItemGroup::addItem(medDatabasePreviewItem *item)
     qreal itemSpacing = medDatabasePreviewController::instance()->itemSpacing();
 
     item->setParentItem(this);
-
+    item->setSlice(d->itemCount); //associate an item with its slice number
     medDatabasePreviewController::instance()->orientation() == Qt::Horizontal
         ? item->setPos(d->itemCount * (itemWidth + itemSpacing), 0)
         : item->setPos(0, d->itemCount * (itemWidth + itemSpacing));

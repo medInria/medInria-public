@@ -1,21 +1,15 @@
-/* medDatabaseNavigatorItem.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Dec 15 09:39:35 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Thu May 13 20:12:12 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 25
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medDatabaseNavigatorItem.h"
 #include <medDatabaseNavigatorItemOverlay.h>
@@ -141,6 +135,8 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
     d->itemTrasherFadingAnimation->setDuration(150);
     
     d->fadingAnimation->addAnimation(d->itemTrasherFadingAnimation);
+
+    connect(this, SIGNAL(itemDoubleClicked(const medDataIndex&)), medDataManager::instance(), SIGNAL(openRequested(const medDataIndex&)));
 }
 
 medDatabaseNavigatorItem::~medDatabaseNavigatorItem(void)
@@ -222,6 +218,11 @@ void medDatabaseNavigatorItem::setImage(const QImage& image)
 void medDatabaseNavigatorItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event);
+}
+
+void medDatabaseNavigatorItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
+{
+    emit itemDoubleClicked(d->index);
 }
 
 void medDatabaseNavigatorItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)

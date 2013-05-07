@@ -1,21 +1,15 @@
-/* medDataManager.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Mon Dec 21 08:34:45 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Mar 17 18:25:19 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 5
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -51,6 +45,8 @@ public:
     * @return dtkAbstractData * the data
     */
     dtkSmartPointer<dtkAbstractData> data(const medDataIndex& index);
+    
+    bool setMetaData( const medDataIndex& index, const QString& key, const QString& value );
 
     /**
     * Use this function to insert data into the database,
@@ -140,6 +136,23 @@ public:
      */
     void removeData(const medDataIndex& index);
 
+    /**
+     * Moves study and its series from one patient to another and returns the list of new indexes.
+     * Moves across different datasources are not supported.
+     * @params const medDataIndex & indexStudy The data index of the study to be moved
+     * @params const medDataIndex & toPatient The data index to move the study to.
+     */
+    QList<medDataIndex> moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient);
+
+    /**
+     * Moves serie from one study to another and returns the new index of the serie.
+     * Moves across different datasources are not supported.
+     * @params const medDataIndex & indexSerie The data index of the serie to be moved
+     * @params const medDataIndex & toStudy The data index to move the serie to.
+     */    
+    medDataIndex moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy);
+
+
     /** return the DB controller for given data source. */
     medAbstractDbController *controllerForDataSource( int dataSource );
     const medAbstractDbController *controllerForDataSource( int dataSource ) const;
@@ -185,6 +198,7 @@ public:
      * Clear all items stored in the data manager
      */
     void clearCache();
+   
 
 signals:
     /**
@@ -206,18 +220,19 @@ signals:
     void failedToOpen(const medDataIndex&);
 
     /**
-     * @brief Emitted when an image fails to import
-     * @param index the @medDataIndex of the image
-     * @param uuid the identifier linked to this import request
-    */
-    void importFailed(const medDataIndex& index, QString uuid);
-
-    /**
      * This signal is emitted when the operation has progressed
      * @param QObject *obj Pointer to the operating QObject
      * @param int value Progress bar's current value
      */
     void progressed(QObject* obj,int value);
+
+    void openRequested(const medDataIndex& index, int slice);
+
+    /**
+     * @brief Emitted when the user double clicks on a medDatabasenavigatorItem (thumbnail)
+     * @param the @medDataIndex of the image
+    */
+    void openRequested(const medDataIndex& index);
 
 public slots:
     void onNonPersistentDataImported(const medDataIndex &index, QString uuid);
@@ -248,12 +263,17 @@ protected:
      */
     void printMemoryStatus(size_t requiredMemoryInKb = 0);
 
-        /**
+    /**
     * Releases all own references to let all stored smartpointers get out of scope
     * All remaining references will be restored (probably not thread safe)
     * @return void
     */
     bool tryFreeMemory(size_t memoryLimit);
+    
+    /**
+    * Defines writers priorities
+    */
+    void setWriterPriorities();
 
 
 protected:

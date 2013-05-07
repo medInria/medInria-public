@@ -1,9 +1,15 @@
-/*
- * medQtDataImage.cpp
- *
- *  Created on: 4 juil. 2011 10:29:14
- *      Author: John Stark
- */
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medQtDataImage.h"
 
@@ -153,7 +159,7 @@ void * medQtDataImage::output( void )
     return this->data();
 }
 
-int medQtDataImage::xDimension( void ) const
+int medQtDataImage::xDimension( void )
 {
     if ( d->images.isEmpty() ) {
         return 0;
@@ -162,7 +168,7 @@ int medQtDataImage::xDimension( void ) const
     }
 }
 
-int medQtDataImage::yDimension( void ) const
+int medQtDataImage::yDimension( void )
 {
     if ( d->images.isEmpty() ) {
         return 0;
@@ -171,12 +177,12 @@ int medQtDataImage::yDimension( void ) const
     }
 }
 
-int medQtDataImage::zDimension( void ) const
+int medQtDataImage::zDimension( void )
 {
     return d->images.size();
 }
 
-int medQtDataImage::tDimension( void ) const
+int medQtDataImage::tDimension( void )
 {
     if ( d->images.isEmpty() ) {
         return 0;

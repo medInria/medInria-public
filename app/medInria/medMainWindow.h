@@ -1,21 +1,15 @@
-/* medMainWindow.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Fri Sep 18 12:47:51 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Thu Oct  7 12:31:41 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 32
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -41,6 +35,9 @@ public:
 
     void setStartup(const AreaType areaIndex,const QStringList& filenames);
     void resizeEvent( QResizeEvent * event );
+
+signals:
+    void sliceSelected(int slice);
 
 public slots:
     void setWallScreen(const bool full);
@@ -93,6 +90,14 @@ private slots:
     * @param index - the @medDataIndex of the image
     **/
     void open(const medDataIndex& index);
+
+    /**
+    * Opens an image (which is already in the database)
+    * in the viewer area (when the user double-clicks on a thumbnail)
+    * @param index - the @medDataIndex of the image
+    * @param slice - the slice number corresponding to the image
+    **/
+    void open(const medDataIndex& index, int slice);
 
     /**
     * Imports the image/s in the non-persistent database

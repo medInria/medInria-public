@@ -1,21 +1,15 @@
-/* medDatabaseView.h ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Tue Mar 31 13:16:32 2009 (+0200)
- * Version: $Id$
- * Last-Updated: Mon Jun 14 13:37:53 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 42
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -35,7 +29,7 @@ public:
      medDatabaseView(QWidget *parent = 0);
     ~medDatabaseView();
 
-    virtual int sizeHintForColumn(int column) const;
+    //virtual int sizeHintForColumn(int column) const;
 
     void setModel(QAbstractItemModel *model);
 
@@ -44,6 +38,9 @@ signals:
     /** Signal emitted when user clicks on a patient item. */
     void patientClicked(const medDataIndex &index);
 
+    /** Signal emitted when user clicks on a study item. */
+    void studyClicked(const medDataIndex &index);
+    
     /** Signal emitted when user clicks on a series item. */
     void seriesClicked(const medDataIndex &index);
 
@@ -76,6 +73,15 @@ public slots:
 
     /** Called after having failed to open a file. Will add a visual indicator of the failed file. */
     void onOpeningFailed(const medDataIndex& index);
+
+    /** Creates a new patient */
+    void onCreatePatientRequested();
+    
+    /** Creates a new study */
+    void onCreateStudyRequested();
+
+    /** Edits selected item */
+    void onEditRequested();
 
 protected slots:
     virtual void updateContextMenu(const QPoint&);

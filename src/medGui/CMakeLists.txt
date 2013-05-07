@@ -23,7 +23,24 @@ project(medGui)
 ## Sources
 ## #################################################################
 
+set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
+  commonWidgets/medProgressionStack.h
+  factories/medToolBoxFactory.h
+  toolboxes/medFilteringAbstractToolBox.h
+  toolboxes/medFilteringSelectorToolBox.h
+  toolboxes/medRegistrationAbstractToolBox.h
+  toolboxes/medRegistrationSelectorToolBox.h
+  toolboxes/medSegmentationAbstractToolBox.h
+  toolboxes/medSegmentationSelectorToolBox.h
+  toolboxes/medToolBox.h
+)
+
+set(${PROJECT_NAME}_DEVEL_HEADERS
+  medGuiExport.h
+)
+
 set(${PROJECT_NAME}_HEADERS_MOC
+  ${${PROJECT_NAME}_DEVEL_HEADERS_MOC}
   medLayoutChooser.h
   medPacsSelector.h
   medToolBoxContainer.h
@@ -50,12 +67,12 @@ set(${PROJECT_NAME}_HEADERS_MOC
   database/medDatabasePreviewSelector.h
   database/medDatabasePreviewTooltip.h
   database/medDatabasePreviewView.h
+  database/medDatabaseEditItemDialog.h
 
   # commonWidgets:
   commonWidgets/medDropSite.h
   commonWidgets/medWorkspaceShifter.h
   commonWidgets/medButton.h
-  commonWidgets/medProgressionStack.h
   commonWidgets/medFlicker.h
   commonWidgets/medStatusBar.h
   commonWidgets/medQuickAccessMenu.h
@@ -66,7 +83,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
   # factories
   factories/medSettingsWidgetFactory.h
-  factories/medToolBoxFactory.h
   factories/medWorkspaceFactory.h
 
   # LUT
@@ -83,7 +99,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   settingsWidgets/medInteractionSettingsWidget.h
 
   # general toolbox classes
-  toolboxes/medToolBox.h
   toolboxes/medToolBoxBody.h
   toolboxes/medToolBoxHeader.h
   toolboxes/medToolBoxTab.h
@@ -93,13 +108,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medDiffusionAbstractToolBox.h
   toolboxes/medFiberViewToolBox.h
   toolboxes/medFiberBundlingToolBox.h
-  toolboxes/medRegistrationSelectorToolBox.h
-  toolboxes/medRegistrationAbstractToolBox.h
-  toolboxes/medSegmentationSelectorToolBox.h
-  toolboxes/medSegmentationAbstractToolBox.h
   toolboxes/medTensorViewToolBox.h
-  toolboxes/medFilteringSelectorToolBox.h
-  toolboxes/medFilteringAbstractToolBox.h
   toolboxes/medBrowserJobsToolBox.h
   toolboxes/medVisualizationLayoutToolBox.h
   toolboxes/medTimeLineToolBox.h
@@ -123,11 +132,11 @@ set(${PROJECT_NAME}_HEADERS_MOC
 )
 
 set(${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_DEVEL_HEADERS}
   #LUT
   LUT/medLUTToXMLWriter.h
   LUT/medXMLToLUTReader.h
 
-  medGuiExport.h
   database/medDatabaseNavigatorController.h
   database/medDatabasePreviewController.h
   ${${PROJECT_NAME}_HEADERS_MOC}
@@ -176,6 +185,7 @@ set(${PROJECT_NAME}_SOURCES
   database/medDatabasePreviewSelector.cpp
   database/medDatabasePreviewTooltip.cpp
   database/medDatabasePreviewView.cpp
+  database/medDatabaseEditItemDialog.cpp
 
   # factories
   factories/medSettingsWidgetFactory.cpp
@@ -249,13 +259,13 @@ add_definitions(-DQT_NO_DEBUG)
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
-if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPch.h" "../medPch/medPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES_WRAP})
-endif(MEDINRIA_USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
@@ -273,8 +283,8 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 # Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 if (MEDINRIA_BUILD_TESTING)
   add_subdirectory (Testing)

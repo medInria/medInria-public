@@ -1,8 +1,15 @@
-/* medFilteringSelectorToolBox.cpp ---
- *
- * @author Clément Philipot <clement.philipot@inria.fr>
- *
- */
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medFilteringSelectorToolBox.h"
 #include "medFilteringAbstractToolBox.h"
@@ -98,7 +105,7 @@ void medFilteringSelectorToolBox::onToolBoxChosen ( int index )
     //get identifier for toolbox.
     QString id = d->chooseFilter->itemData( index ).toString();
 
-    medFilteringAbstractToolBox *toolbox = qobject_cast<medFilteringAbstractToolBox *>(medToolBoxFactory::instance()->createToolBox ( id ));
+    medFilteringAbstractToolBox *toolbox = qobject_cast<medFilteringAbstractToolBox *>(medToolBoxFactory::instance()->createToolBox ( id, this ));
 
     if ( !toolbox )
     {

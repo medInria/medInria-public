@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include "medStatusBar.h"
 
 #include <QtCore>
@@ -80,7 +93,7 @@ void medStatusBar::addMessage ( medMessage* message )
         if ( d->statusBarLayout )
         {
             if ( this->availableSpace > message->size().width()+d->statusBarLayout->spacing())      // if enough space
-            {                  
+            {      
                 this->messageList.append(message);   // messages are stored in a list to easily hide newest messages 
                                                      // when quit message is displayed
                 this->availableSpace -= (message->size().width() +d->statusBarLayout->spacing());       //update available space

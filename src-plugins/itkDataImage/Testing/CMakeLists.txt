@@ -1,19 +1,19 @@
-SET(PLUGIN_NAME itkDataImagePlugin)
+set(PLUGIN_NAME itkDataImagePlugin)
 
-SET(itkDataImagePluginTests
+set(itkDataImagePluginTests
   itkDataImageTest.cxx
   itkDataImageDouble3Test.cxx
   )
 
-CREATE_TEST_SOURCELIST(Tests ${PLUGIN_NAME}CxxTests.cxx
+create_test_sourcelist(Tests ${PLUGIN_NAME}CxxTests.cxx
   ${itkDataImagePluginTests}
   )
 
-ADD_EXECUTABLE(${PLUGIN_NAME}CxxTests 
+add_executable(${PLUGIN_NAME}CxxTests 
   ${Tests}
   )
 
-TARGET_LINK_LIBRARIES(${PLUGIN_NAME}CxxTests
+target_link_libraries(${PLUGIN_NAME}CxxTests
   dtkCore dtkLog
   medCore
   ${ITK_LIBRARIES}
@@ -26,18 +26,18 @@ RUNTIME_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
 
 set(CXX_TEST_PATH        ${EXECUTABLE_OUTPUT_PATH})
 set(CXX_TEST_PLUGIN_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-if(MSVC)
+if (MSVC)
   set(CXX_TEST_PLUGIN_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release)
-endif(MSVC)
+endif()
 
 
   set(ITK_DATA_ROOT
   )
 if (ITK_SOURCE_DIR)
   set(ITK_DATA_ROOT ${ITK_SOURCE_DIR}/Examples/Data)
-endif (ITK_SOURCE_DIR)
+endif()
 
-FOREACH (test ${itkDataImagePluginTests})
-  GET_FILENAME_COMPONENT(TName ${test} NAME_WE)
-  ADD_TEST(${TName} ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests ${TName} ${CXX_TEST_PLUGIN_PATH} ${ITK_DATA_ROOT})
-ENDFOREACH (test) 
+foreach (test ${itkDataImagePluginTests})
+  get_filename_component(TName ${test} NAME_WE)
+  add_test(${TName} ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests ${TName} ${CXX_TEST_PLUGIN_PATH} ${ITK_DATA_ROOT})
+endforeach() 

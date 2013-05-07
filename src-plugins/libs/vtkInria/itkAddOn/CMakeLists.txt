@@ -1,28 +1,27 @@
 project(itkAddOn)
 
-IF(WIN32 AND NOT CYGWIN AND NOT MINGW)
-  ADD_LIBRARY(getoptcompatlib STATIC
+if (WIN32 AND NOT CYGWIN AND NOT MINGW)
+  add_library(getoptcompatlib STATIC
     getoptcompat/getopt.c
     getoptcompat/getopt_long.c
   )
-ENDIF(WIN32 AND NOT CYGWIN AND NOT MINGW)
+endif()
 
-ADD_EXECUTABLE(itkReshaper
+add_executable(itkReshaper
 itkReshaper.cxx
 )
 
-IF(WIN32 AND NOT CYGWIN AND NOT MINGW)
- TARGET_LINK_LIBRARIES(itkReshaper 
+if (WIN32 AND NOT CYGWIN AND NOT MINGW)
+ target_link_libraries(itkReshaper 
   itkIOAddOn 
   getoptcompatlib
  )
-ELSE(WIN32 AND NOT CYGWIN AND NOT MINGW)
- TARGET_LINK_LIBRARIES(itkReshaper
+else()
+ target_link_libraries(itkReshaper
   itkIOAddOn
  )
-ENDIF(WIN32 AND NOT CYGWIN AND NOT MINGW)
+endif()
 
 subdirs(
-  Registration
   IO
 )

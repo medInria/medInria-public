@@ -1,9 +1,15 @@
-/*
- * medQtDataImage.h
- *
- *  Created on: 4 juil. 2011 10:29:14
- *      Author: John Stark
- */
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #pragma once
 
@@ -43,10 +49,10 @@ public:
     virtual int   Dimension() const;
     virtual const PixId& PixelType() const;
 
-    virtual int xDimension() const;
-    virtual int yDimension() const;
-    virtual int zDimension() const;
-    virtual int tDimension() const;
+    virtual int xDimension();
+    virtual int yDimension();
+    virtual int zDimension();
+    virtual int tDimension();
 
     virtual qreal xSpacing() const;
     virtual qreal ySpacing() const;

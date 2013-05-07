@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include "medFileSystemDataSource.h"
 
 #include <dtkCore/dtkGlobal.h>
@@ -51,7 +64,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
                 "selection-color: #b2b8b2;"
                 );
 
-    d->actionsToolBox = new medActionsToolBox(parent);
+    d->actionsToolBox = new medActionsToolBox(parent, true);
     d->toolBoxes.push_back(d->actionsToolBox);
 
     d->side = new dtkFinderSideView;

@@ -1,21 +1,15 @@
-/* medDataManager.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Mon Dec 21 08:34:55 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Wed Mar 17 18:48:48 2010 (+0100)
- *           By: Julien Wintz
- *     Update #: 17
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medDataManager.h"
 
@@ -198,6 +192,23 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
 
 //-------------------------------------------------------------------------------------------------------
 
+bool medDataManager::setMetaData( const medDataIndex& index, const QString& key, const QString& value )
+{
+    medAbstractDbController * dbc = controllerForDataSource( index.dataSourceId() );
+
+    bool result =  dbc->setMetaData( index, key, value );
+     
+    if(result)
+    {
+        // it's not really a new data but we need the signal to update the view
+        emit dataAdded (index);
+    }
+    
+    return result;
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
 {
     medAbstractDbController* db = d->getDbController();
@@ -213,6 +224,11 @@ medDataManager::medDataManager(void) : d(new medDataManagerPrivate)
             this, SLOT(onSingleNonPersistentDataStored(const medDataIndex &, const QString &)));
     connect(db,SIGNAL(updated(const medDataIndex &)),
             this, SLOT(onPersistentDatabaseUpdated(const medDataIndex &)));
+    
+    
+    //TODO: Is it the best place to do that?
+    setWriterPriorities();
+    
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -438,17 +454,44 @@ quint64 medDataManager::getUpperMemoryThreshold()
 
 //-------------------------------------------------------------------------------------------------------
 
+void medDataManager::setWriterPriorities()
+{ 
+    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
+    QMap<int, QString> writerPriorites;
+    
+    int startIndex = 0;
+    
+    // set itkMetaDataImageWriter as the top priority writer
+    if(writers.contains("itkMetaDataImageWriter"))
+    {
+        writerPriorites.insert(0, "itkMetaDataImageWriter");  
+        startIndex = writers.removeOne("itkMetaDataImageWriter");
+    }
+    
+    for ( int i=0; i<writers.size(); i++ )
+    {
+        writerPriorites.insert(startIndex+i, writers[i]);   
+    }
+    
+    dtkAbstractDataFactory::instance()->setWriterPriorities(writerPriorites);
+}
+
+//-------------------------------------------------------------------------------------------------------
+
 void medDataManager::importNonPersistent( dtkAbstractData *data )
 {
     QString uuid = QUuid::createUuid().toString();
     this->importNonPersistent (data, uuid);
 }
 
+//-------------------------------------------------------------------------------------------------------
+
 void medDataManager::importNonPersistent( dtkAbstractData *data, QString uuid)
 {
     if (!data)
         return;
 
+    
     foreach (dtkSmartPointer<dtkAbstractData> dtkdata, d->dataCache) {
         if (data == dtkdata.data()) {
             qWarning() << "data already in manager, skipping";
@@ -471,11 +514,13 @@ void medDataManager::importNonPersistent( dtkAbstractData *data, QString uuid)
     }
 }
 
+//-------------------------------------------------------------------------------------------------------
+
 void medDataManager::onNonPersistentDataImported(const medDataIndex &index, QString uuid)
-{
-    if (!index.isValid()) {
-        qWarning() << "index is not valid";
-        emit importFailed(index, uuid);
+{   
+    if (!index.isValid())
+    {
+        qWarning() << "Non Persistent Data Imported: Index is not valid";
         return;
     }
 
@@ -484,15 +529,12 @@ void medDataManager::onNonPersistentDataImported(const medDataIndex &index, QStr
 
     if (!data.isNull())
     {
-        // It might happen that the data was already loaded by a concurrent call to open the data
-        if (!d->volatileDataCache.contains (index))
+        // d->volatileDataCache[index] = data is only done in data(), but we need it at this stage as well to be able to save data
+        // in the persistent database, so i try to comment out the following line
+        //if (d->volatileDataCache.contains (index))
             d->volatileDataCache[index] = data;
 
         emit dataAdded (index);
-    }
-    else
-    {
-        emit(failedToOpen(index));
     }
 }
 
@@ -553,11 +595,13 @@ void medDataManager::storeNonPersistentMultipleDataToDatabase( const medDataInde
         this->storeNonPersistentSingleDataToDatabase(tmpIndex);
 }
 
+//-------------------------------------------------------------------------------------------------------
+
 void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex &index )
 {
     if (d->volatileDataCache.count(index) > 0)
     {
-        qDebug() << "method storeNonPersistentSingleDataToDatabase, IF";
+        qDebug() << "storing non persistent single data to database";
         dtkSmartPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
         QUuid tmpUid = QUuid::createUuid().toString();
         d->npDataIndexBeingSaved[tmpUid] = index;
@@ -569,8 +613,12 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
     }
 }
 
+//-------------------------------------------------------------------------------------------------------
+
 void medDataManager::onSingleNonPersistentDataStored( const medDataIndex &index, const QString &uuid )
 {
+    qDebug() << "onSingleNonPersistentDataStored";
+    
     medAbstractDbController* db = d->getDbController();
     medAbstractDbController* npDb = d->getNonPersDbController();
 
@@ -699,20 +747,92 @@ void medDataManager::removeData( const medDataIndex& index )
     // Remove from cache first
     this->removeDataFromCache(index);
 
-    qDebug() << "Removing from db";
-
-    // try to load the data from db
-    medAbstractDbController* db = d->getDbController();
-    if (db)
+    medAbstractDbController * dbc = controllerForDataSource( index.dataSourceId() );
+    if (dbc)
     {
-        db->remove(index);
+        dbc->remove(index);
     }
+}
 
-    medAbstractDbController* npDb = d->getNonPersDbController();
-    if(npDb)
+//-------------------------------------------------------------------------------------------------------
+
+QList<medDataIndex> medDataManager::moveStudy(const medDataIndex& indexStudy, const medDataIndex& toPatient)
+{
+    medAbstractDbController *dbcSource = controllerForDataSource(indexStudy.dataSourceId());
+    medAbstractDbController *dbcDest = controllerForDataSource(toPatient.dataSourceId());
+    
+    QList<medDataIndex> newIndexList;
+    
+    if(!dbcSource || !dbcDest)
     {
-        npDb->remove(index);
+      qWarning() << "Incorrect controllers";
     }
+    else if( dbcSource->isPersistent() && !dbcDest->isPersistent() )
+    {
+      qWarning() << "Move from persistent to non persistent controller not allowed";
+    }
+    else if( !dbcSource->isPersistent() && dbcDest->isPersistent() )
+    {
+      qWarning() << "Move from non persistent to persistent controller not allowed. Please save data first.";
+      
+      // Could be nice to have this feature
+      // Would need to call storeNonPersistentSingleDataToDatabase(indexStudy);
+      // and then to wait for correct signals since the command is asynchronuous (with QEventLoop),
+      // retrieve inserted index and then realize the move      
+
+    } 
+    else
+    {
+      newIndexList = dbcSource->moveStudy(indexStudy,toPatient);
+      
+        if(!dbcSource->isPersistent())
+        {
+            foreach(medDataIndex newIndex, newIndexList)
+                d->volatileDataCache[newIndex] = dbcSource->read(newIndex);
+        }
+    }
+    
+    return newIndexList;
+
+}
+
+//-------------------------------------------------------------------------------------------------------
+
+medDataIndex medDataManager::moveSerie(const medDataIndex& indexSerie, const medDataIndex& toStudy)
+{
+    medAbstractDbController *dbcSource = controllerForDataSource(indexSerie.dataSourceId());
+    medAbstractDbController *dbcDest = controllerForDataSource(toStudy.dataSourceId());
+    
+    medDataIndex newIndex;
+    
+    if(!dbcSource || !dbcDest)
+    {
+      qWarning() << "Incorrect controllers";
+    }
+    else if( dbcSource->isPersistent() && !dbcDest->isPersistent() )
+    {
+      qWarning() << "Move from persistent to non persistent controller not allowed";
+    }
+    else if( !dbcSource->isPersistent() && dbcDest->isPersistent() )
+    {
+      qWarning() << "Move from non persistent to persistent controller not allowed. Please save data first.";
+      
+      // Could be cool to have this feature
+      // Would need to call storeNonPersistentSingleDataToDatabase(indexSerie);
+      // and then to wait for correct signals since the command is asynchronuous (with QEventLoop),
+      // retrieve inserted index et then realize the move      
+
+    } 
+    else
+    {
+      newIndex =  dbcSource->moveSerie(indexSerie,toStudy);
+      
+      if(!dbcSource->isPersistent())
+        d->volatileDataCache[newIndex] = dbcSource->read(newIndex);
+    }
+    
+    return newIndex;
+
 }
 
 //-------------------------------------------------------------------------------------------------------

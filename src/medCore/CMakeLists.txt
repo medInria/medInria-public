@@ -23,48 +23,54 @@ project(medCore)
 ## Sources
 ## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  medDataManager.h
-  medMessageController.h
-  medViewManager.h
-  medPluginManager.h
-  medAbstractView.h
-  medAbstractViewCollection.h
+set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
   med4DAbstractViewInteractor.h
-  medMeshAbstractViewInteractor.h
-  medJobItem.h
-  medJobManager.h
-  medSettingsManager.h
-  medDbControllerFactory.h
-  medAbstractDbController.h
-  medAbstractDataSource.h
-  medAbstractDataSourceFactory.h
-  medStorage.h
-  medRunnableProcess.h
-  medAbstractViewFiberInteractor.h
+  medAbstractAnnotationViewInteractor.h
   medAbstractData.h
   medAbstractDataImage.h
   medAbstractDataMesh.h
-  medAttachedData.h
+  medAbstractDataSourceFactory.h
+  medAbstractDataSource.h
+  medAbstractDbController.h
+  medAbstractViewFiberInteractor.h
+  medAbstractView.h
   medAnnotationData.h
-  medAbstractAnnotationViewInteractor.h
+  medAttachedData.h
+  medJobItem.h
+  medJobManager.h
+  medMeshAbstractViewInteractor.h
+  medMessageController.h
+  medPluginManager.h
+  medRunnableProcess.h
+  medSettingsManager.h
   medViewEventFilter.h
   annotationData/medImageMaskAnnotationData.h
   annotationData/medSeedPointAnnotationData.h
 )
 
-set(${PROJECT_NAME}_HEADERS
-  ${${PROJECT_NAME}_HEADERS_MOC}
+set(${PROJECT_NAME}_DEVEL_HEADERS
+  medAbstractDataTypedImage.h
+  medAbstractViewCoordinates.h
   medCoreExport.h
   medDataIndex.h
-  medMetaDataKeys.h
-  medDataReaderWriter.h
-  medAbstractDataTypedImage.h
-  medAbstractDatabaseItem.h
-  medAbstractViewCoordinates.h
 )
 
+set(${PROJECT_NAME}_HEADERS_MOC
+  ${${PROJECT_NAME}_DEVEL_HEADERS_MOC}
+  medDataManager.h
+  medViewManager.h
+  medPluginManager.h
+  medAbstractViewCollection.h
+  medDbControllerFactory.h
+  medStorage.h
+)
 
+set(${PROJECT_NAME}_HEADERS
+  ${${PROJECT_NAME}_HEADERS_MOC}
+  ${${PROJECT_NAME}_DEVEL_HEADERS}
+  medDataReaderWriter.h
+  medAbstractDatabaseItem.h
+)
 set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
   medDataManager.cpp
@@ -98,27 +104,21 @@ set(${PROJECT_NAME}_SOURCES
   annotationData/medSeedPointAnnotationData.cpp
 )
 
-## #################################################################
-## Wrapping
-## #################################################################
+#   Wrapping
 
-if(SWIG_FOUND)
+if (SWIG_FOUND)
     set(${PROJECT_NAME}_WRAP_DEPENDS ${${PROJECT_NAME}_HEADERS})
-    if(PYTHONLIBS_FOUND)
+    if (PYTHONLIBS_FOUND)
         dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medcore python ${CMAKE_CURRENT_SOURCE_DIR}/medCore.i ${${PROJECT_NAME}_WRAP_DEPENDS})
-    endif(PYTHONLIBS_FOUND)
-    if(TCL_FOUND)
-        dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medcore tcl    ${CMAKE_CURRENT_SOURCE_DIR}/medCore.i ${${PROJECT_NAME}_WRAP_DEPENDS})
-    endif(TCL_FOUND)
-endif(SWIG_FOUND)
-## #################################################################
-## Build rules
-## #################################################################
+    endif()
+endif()
 
-if(NOT MSVC)
+#   Build rules
+
+if (NOT MSVC)
 add_definitions(-Wno-write-strings)
 add_definitions(-Wformat=0)
-endif(NOT MSVC)
+endif()
 
 add_definitions(${QT_DEFINITIONS})
 add_definitions(-DQT_SHARED)
@@ -126,13 +126,13 @@ add_definitions(-DQT_NO_DEBUG)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
     "medPch.h" "../medPch/medPch.cpp"
     ${${PROJECT_NAME}_SOURCES}
     ${${PROJECT_NAME}_SOURCES_MOC}
     ${${PROJECT_NAME}_SOURCES_WRAP})
-endif(MEDINRIA_USE_PRECOMPILED_HEADERS)
+endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES}
@@ -145,21 +145,18 @@ target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
     dtkCore
     dtkLog)
-if(TCL_FOUND)
-  target_link_libraries(${PROJECT_NAME} ${TCL_LIBRARY})
-endif(TCL_FOUND)
 
-if(PYTHONLIBS_FOUND)
+if (PYTHONLIBS_FOUND)
   target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES})
-endif(PYTHONLIBS_FOUND)
+endif()
 
-IF(WIN32)
+if (WIN32)
   target_link_libraries(${PROJECT_NAME} psapi.lib)
-ENDIF(WIN32)
+endif()
 
 # Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Handling of generated script modules
@@ -173,12 +170,12 @@ if (SWIG_FOUND)
           COMMENT "-- Moving python modules to ${CMAKE_BINARY_DIR}/modules"
         )
     set(${PROJECT_NAME}_MODULES ${CMAKE_BINARY_DIR}/modules/medcore.py)
-    endif(PYTHONLIBS_FOUND)
-endif(SWIG_FOUND)
+    endif()
+endif()
 
 # Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Installation

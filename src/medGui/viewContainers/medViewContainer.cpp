@@ -1,21 +1,15 @@
-/* medViewContainer.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Mon Oct 26 21:54:57 2009 (+0100)
- * Version: $Id$
- * Last-Updated: Tue Jun 15 16:26:36 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 425
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include "medViewContainer.h"
 #include "medViewContainer_p.h"
@@ -226,7 +220,6 @@ void medViewContainer::setView ( dtkAbstractView *view )
             ++it;
         }
         connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
-        this->recomputeStyleSheet();
     }
     setFocus(Qt::MouseFocusReason);
 }
@@ -237,8 +230,7 @@ void medViewContainer::onViewFocused ( bool value )
 
     if ( !value )
         return;
-
-    if ( !this->isEmpty() )
+    if ( this ->acceptDrops()) // excluding containers that don't accept inputs (e.g Filtering result container)
         this->setCurrent ( this );
 
     if (!current() || !current()->view())
@@ -270,7 +262,6 @@ void medViewContainer::setCurrent ( medViewContainer *container )
     else
         d->current = container;
 
-    //this->recomputeStyleSheet();
 }
 
 void medViewContainer::recomputeStyleSheet()
@@ -316,7 +307,6 @@ void medViewContainer::focusInEvent ( QFocusEvent *event )
     medViewContainer * former = this->current();
 
     d->clicked = true;
-//    qDebug()<< "focusInEvent";
     this->onViewFocused( true );
 //    qDebug()<< this->isDaddy() << isEmpty() << isLeaf() << isClicked();
     this->recomputeStyleSheet();
@@ -330,9 +320,8 @@ void medViewContainer::focusInEvent ( QFocusEvent *event )
 void medViewContainer::focusOutEvent ( QFocusEvent *event )
 {
     Q_UNUSED(event);
-    //d->clicked = false;
-
-    //this->recomputeStyleSheet();
+    d->clicked = false;
+    this->recomputeStyleSheet();
 }
 
 void medViewContainer::paintEvent ( QPaintEvent *event )
@@ -495,6 +484,7 @@ bool medViewContainer::open(dtkAbstractData * data)
     {
         //container empty, or multi with no extendable view
         view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"));
+        connect (this, SIGNAL(sliceSelected(int)), view, SLOT(setSlider(int)));
     }
 
     if( view.isNull() ) {

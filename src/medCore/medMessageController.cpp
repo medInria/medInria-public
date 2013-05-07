@@ -1,21 +1,15 @@
-/* medMessageController.cpp ---
- *
- * Author: Julien Wintz
- * Copyright (C) 2008 - Julien Wintz, Inria.
- * Created: Mon Jun 28 09:59:08 2010 (+0200)
- * Version: $Id$
- * Last-Updated: Thu Oct  7 12:41:07 2010 (+0200)
- *           By: Julien Wintz
- *     Update #: 143
- */
+/*=========================================================================
 
-/* Commentary:
- *
- */
+ medInria
 
-/* Change log:
- *
- */
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
 
 #include <dtkCore/dtkGlobal.h>
 
@@ -46,18 +40,15 @@ medMessage::medMessage( QWidget *parent,
     layout->addWidget(icon);
     layout->addWidget(info);
 
-    if ( timeout > 0 )
-    {
-        this->timer = new QTimer(this);
-        connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
-    }
+
+    this->timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
 
     this->setLayout(layout);
 }
 
 medMessage::~medMessage(void)
 {
-
 }
 
 void medMessage::startTimer()
@@ -142,21 +133,29 @@ void medMessageProgress::success(void)
     progress->setStyleSheet("QProgressBar::chunk {background-color: lime;}");
     this->associateTimer();
     info->setText("Operation succeeded");
-
 }
 
 void medMessageProgress::failure(void)
 {
     progress->setStyleSheet("QProgressBar::chunk {background-color: red;}");
+
     this->associateTimer();
-    info->setText("Operation aborted");
+
+    info->setText("Operation failed");
 }
 void medMessageProgress::associateTimer(void)
 {
     this->timer = new QTimer(this);
-    int timeout = 2000;
+    timeout = 2000;
     connect(timer, SIGNAL(timeout()), this, SLOT(remove()));
-    timer->start(timeout);
+}
+
+void medMessageProgress::paintEvent ( QPaintEvent * event)
+{
+    if (timeout > 0)
+    {
+        timer->start(timeout);
+    }
 }
 
 // /////////////////////////////////////////////////////////////////
