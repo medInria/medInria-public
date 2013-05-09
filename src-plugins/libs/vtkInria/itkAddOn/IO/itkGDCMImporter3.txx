@@ -261,7 +261,15 @@ namespace itk
       gr[0] = std::atof (sf.ToString (gdcm::Tag(0x0019,0x10bb)).c_str());
       gr[1] = std::atof (sf.ToString (gdcm::Tag(0x0019,0x10bc)).c_str());
       gr[2] = std::atof (sf.ToString (gdcm::Tag(0x0019,0x10bd)).c_str());
-      
+
+      // The GE gradient directions seem to suffer from a flip in the x and y direction
+      // because their frame of reference has its x-axis running right-to-left and 
+      // its y-axis running anterior-posterior
+      // see http://www.nitrc.org/pipermail/mrtrix-discussion/2013-April/000688.html
+      // we flip the directions back:
+      gr[0] = -gr[0];
+      gr[1] = -gr[1];
+
       ret = 1;
       
       if (!engaged && NumericTraits<double>::IsPositive (gr.GetNorm()))
