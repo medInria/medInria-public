@@ -1,20 +1,15 @@
-## 
-## Author: Julien Wintz
-## Copyright (C) 2008 - Julien Wintz, Inria.
-## Created: Sun Nov 28 17:25:43 2010 (+0100)
-## Version: $Id$
-## Last-Updated: Sun Nov 28 17:35:37 2010 (+0100)
-##           By: Julien Wintz
-##     Update #: 5
-######################################################################
-## 
-### Commentary: 
-## 
-######################################################################
-## 
-### Change log:
-## 
-######################################################################
+#######################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA 2013. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+#######################################################################
 
 project(ITKNIFIIO)
 
