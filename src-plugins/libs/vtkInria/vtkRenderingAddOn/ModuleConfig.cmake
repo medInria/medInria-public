@@ -1,9 +1,13 @@
+#######################################################################
 #
-# check dependencies for this module
-# and define its presency
+# medInria
 #
-# This file is INCLUDEd from the main CMakeLists.txt file, 
-# even if the module is used prebuilt.
-# You can use the Variables CURRENT_MODULE_CONFIG_SOURCE_DIR
-# and CURRENT_MODULE_CONFIG_BINARY_DIR to find out about the actual
-# position of this module.
+# Copyright (c) INRIA 2013. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+#######################################################################
+

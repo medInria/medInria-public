@@ -1,3 +1,16 @@
+#######################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA 2013. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+#######################################################################
+
 find_package( Doxygen QUIET)
 
 # inpired by work done on the CTK and the dtk source.

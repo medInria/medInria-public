@@ -1,10 +1,15 @@
-###############################################################################
+#######################################################################
 #
-# Macros used by medInria-plugins
+# medInria
 #
-# Author: Benoît Bleuzé
+# Copyright (c) INRIA 2013. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
 #
-###############################################################################
+#######################################################################
 
 MACRO(MACRO_ADD_PLUGIN  P_NAME DEFAULT_BUILD_VALUE)
 

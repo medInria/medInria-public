@@ -1,20 +1,14 @@
-### CMakeLists.txt --- 
-## 
-## Author: Julien Wintz
-## Copyright (C) 2008 - Julien Wintz, Inria.
-## Created: Thu Sep 17 07:52:32 2009 (+0200)
-## Version: $Id$
-## Last-Updated: Mon Sep 21 14:42:32 2009 (+0200)
-##           By: Julien Wintz
-##     Update #: 7
-######################################################################
-## 
-### Commentary: 
-## 
-######################################################################
-## 
-### Change log:
-## 
-######################################################################
+#######################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA 2013. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+#######################################################################
 
 add_subdirectory(medInria)

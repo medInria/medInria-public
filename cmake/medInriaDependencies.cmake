@@ -1,19 +1,13 @@
-### medDependencies.cmake --- 
-## 
-## Author: Julien Wintz
-## Copyright (C) 2008 - Julien Wintz, Inria.
-## Created: Tue Apr  6 21:41:07 2010 (+0200)
-## Version: $Id$
-## Last-Updated: Tue Apr  6 21:41:09 2010 (+0200)
-##           By: Julien Wintz
-##     Update #: 1
-######################################################################
-## 
-### Commentary: 
-## 
-######################################################################
-## 
-### Change log:
-## 
-######################################################################
+#######################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA 2013. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+#######################################################################
 

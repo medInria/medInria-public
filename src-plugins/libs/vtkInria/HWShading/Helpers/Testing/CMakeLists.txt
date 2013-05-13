@@ -1,3 +1,16 @@
+#######################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA 2013. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+#######################################################################
+
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/simplevolume.vtk
 		${CMAKE_CURRENT_BINARY_DIR}/simplevolume.vtk
 		COPYONLY

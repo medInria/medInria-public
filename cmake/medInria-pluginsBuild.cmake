@@ -1,6 +1,16 @@
-## ###################################################################
-## INCLUDE RULES
-## ###################################################################
+#######################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA 2013. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+#######################################################################
+
 set(${PROJECT_NAME}-plugins_INCLUDE_DIR 
     ${PROJECT_SOURCE_DIR}/src-plugins/libs
     ${PROJECT_SOURCE_DIR}/src-plugins/libs/ITKDCMTKIO
