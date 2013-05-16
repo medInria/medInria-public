@@ -28,8 +28,6 @@
 #include <medMetaDataKeys.h>
 #include <medImageFileLoader.h>
 
-#include <medDatabaseNonPersistentController.h>
-
 class medFiberBundlingToolBoxPrivate
 {
 public:
