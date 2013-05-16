@@ -749,7 +749,7 @@ void v3dView::update()
 {
     if ( d->currentView )
     {
-        //d->currentView->Render();
+        d->currentView->Render();
     }
     d->vtkWidget->update();
 }
