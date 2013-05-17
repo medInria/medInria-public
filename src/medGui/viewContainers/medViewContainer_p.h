@@ -41,7 +41,7 @@ public:
     QHash<QString, QString> viewProperties;
     QString viewInfo;
     bool multiLayer;
-    bool clicked;
+    bool selected;
 };
 
 

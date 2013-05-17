@@ -36,7 +36,7 @@ medViewContainer::medViewContainer ( QWidget *parent )
 
     d->view = NULL;
     d->current = this;
-    d->clicked = false;
+    d->selected = false;
     d->multiLayer = true;
 
     d->pool = new medViewPool ( this );
@@ -53,6 +53,8 @@ medViewContainer::medViewContainer ( QWidget *parent )
     this->setFocusPolicy ( Qt::ClickFocus );
     this->setMouseTracking ( true );
     this->setSizePolicy ( QSizePolicy::Expanding,QSizePolicy::Expanding );
+
+    qDebug() << "constructing " << this;
 }
 
 medViewContainer::~medViewContainer()
@@ -86,9 +88,9 @@ medViewContainer *medViewContainer::current()
     return d->current;
 }
 
-bool medViewContainer::isClicked() const
+bool medViewContainer::isSelected() const
 {
-    return d->clicked;
+    return d->selected;
 }
 
 bool medViewContainer::isCurrent() const
@@ -225,16 +227,14 @@ void medViewContainer::setView ( dtkAbstractView *view )
     setFocus(Qt::MouseFocusReason);
 }
 
-void medViewContainer::onViewFocused ( bool value )
+void medViewContainer::focus ( bool value )
 {
     if ( !value )
         return;
 
-    // excluding containers that don't accept inputs (e.g Filtering result container)
-    if ( this ->acceptDrops()  || !(this->isEmpty() && !this ->acceptDrops()) )
-    {
-        this->setCurrent ( this );
-    }
+    qDebug() << "onViewFocused - setCurrent - " << this;
+    this->setCurrent ( this );
+
 
     if (!current() || !current()->view())
     {
@@ -247,17 +247,19 @@ void medViewContainer::onViewFocused ( bool value )
     {
         emit focused(view);
     }
+
     this->update();
 }
 
-void medViewContainer::onContainerClicked()
+void medViewContainer::onOtherContainerSelected()
 {
-    d->clicked = false;
+    d->selected = false;
     this->recomputeStyleSheet();
 }
 
 void medViewContainer::setCurrent ( medViewContainer *container )
 {
+    qDebug() << "setCurrent - " << container;
     medViewContainer * parent =
         qobject_cast<medViewContainer *>( this->parentWidget() );
     if ( parent != NULL )
@@ -309,22 +311,20 @@ void medViewContainer::focusInEvent ( QFocusEvent *event )
 
     medViewContainer * former = this->current();
 
-    d->clicked = true;
-    this->onViewFocused( true );
+    d->selected = true;
+    this->focus( true );
 
     this->recomputeStyleSheet();
 
     if ( former )
         former->update();
 
-    emit clicked();
+    emit selected();
 }
 
 void medViewContainer::focusOutEvent ( QFocusEvent *event )
 {
     Q_UNUSED(event);
-    //d->clicked = false;
-    //this->recomputeStyleSheet();
 }
 
 void medViewContainer::paintEvent ( QPaintEvent *event )
@@ -409,26 +409,36 @@ bool medViewContainer::open(const medDataIndex& index)
     
     if(!index.isValid())
         return false;
-        
-    if( index.isValidForSeries() )
-    {
-        dtkSmartPointer<dtkAbstractData> data;
 
-        data = medDataManager::instance()->data(index);
-        
-        res = open(data);   
-        
-        if(res)
-        {
-            qDebug()<<index;
-            // add the view to the viewManager
-            dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
-            medViewManager::instance()->insert(index, view);
-        }
-        qDebug()<<this;
-        emit dropped(index);
+    if( !isCurrent() )
+    {
+        return this->current()->open(index);
     }
-    return res;
+    else
+    {
+        if(!this->current()->acceptDrops())
+            return false;
+        
+        if( index.isValidForSeries() )
+        {
+            dtkSmartPointer<dtkAbstractData> data;
+
+            data = medDataManager::instance()->data(index);
+
+            res = open(data);
+
+            if(res)
+            {
+                qDebug()<<index;
+                // add the view to the viewManager
+                dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
+                medViewManager::instance()->insert(index, view);
+            }
+            qDebug()<<this;
+            emit dropped(index);
+        }
+        return res;
+    }
 }
 
 bool medViewContainer::open(dtkAbstractData * data)

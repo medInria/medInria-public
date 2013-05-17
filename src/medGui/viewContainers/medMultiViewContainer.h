@@ -45,7 +45,7 @@ public:
 public slots:
     virtual void onViewClosing();
 
-    virtual void onViewFocused (bool value);
+    virtual void focus (bool value);
 };
 
 
@@ -88,7 +88,7 @@ private:
 
     //Needed to access the setCurrent protected method
     //from within medSingleViewContainer2
-    friend void medSingleViewContainer2::onViewFocused(bool);
+    friend void medSingleViewContainer2::focus(bool);
 };
 
 

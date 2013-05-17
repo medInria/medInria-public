@@ -85,7 +85,7 @@ void medSingleViewContainer2::onViewClosing()
     // qDebug() << "isCurrent: " << this->isCurrent();
 }
 
-void medSingleViewContainer2::onViewFocused (bool value)
+void medSingleViewContainer2::focus (bool value)
 {
     if ( !value )
         return;
@@ -178,8 +178,8 @@ void medMultiViewContainer::setView(dtkAbstractView *view)
 
     foreach (medViewContainer *cont, containers) {
         if (cont->isLeaf()) {
-            connect (container, SIGNAL (clicked()), cont, SLOT (onContainerClicked()), Qt::UniqueConnection);
-            connect (cont, SIGNAL (clicked()), container, SLOT (onContainerClicked()), Qt::UniqueConnection);
+            connect (container, SIGNAL (selected()), cont, SLOT (onOtherContainerSelected()), Qt::UniqueConnection);
+            connect (cont, SIGNAL (selected()), container, SLOT (onOtherContainerSelected()), Qt::UniqueConnection);
         }
     }
 
