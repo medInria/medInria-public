@@ -36,7 +36,8 @@ medCustomViewContainer::medCustomViewContainer ( QWidget *parent ) : medViewCont
     d2->columnMax = 5;
     d2->preset = 0;
 
-    //TODO: need to check if we still need the same piece of code in setView
+    // retrieve the list of child containers and connect clicked signal
+    // to warn other containers that another one was clicked
     medViewContainer *root = this->root();
     if ( root )
     {
@@ -181,7 +182,6 @@ void medCustomViewContainer::setPreset ( int preset )
 
 void medCustomViewContainer::setView ( dtkAbstractView *view )
 {
-    qDebug() << "Set view";
     if ( this->isLeaf() )
     {
         if ( view != d->view )
@@ -199,25 +199,6 @@ void medCustomViewContainer::setView ( dtkAbstractView *view )
             if (d->view) {
                 d->layout->setContentsMargins ( 0, 0, 0, 0 );
                 d->layout->addWidget ( view->widget(), 0, 0 );
-
-                //d->view = view; // already called in medViewContainer::setView()
-                // d->view->reset();
-
-                // retrieve the list of child containers and connect clicked signal
-                // to warn other containers that another one was clicked
-                medViewContainer *root = this->root();
-                if ( root )
-                {
-                    QList<medViewContainer *> containers = root->childContainers();
-                    foreach ( medViewContainer *container, containers )
-                    {
-                        if ( container->isLeaf() && container!=this )
-                        {
-                            connect ( this,      SIGNAL ( selected() ), container, SLOT ( onOtherContainerSelected() ), Qt::UniqueConnection );
-                            connect ( container, SIGNAL ( selected() ), this,      SLOT ( onOtherContainerSelected() ), Qt::UniqueConnection );
-                        }
-                    }
-                }
 
                 this->synchronize_2 ( view );
 

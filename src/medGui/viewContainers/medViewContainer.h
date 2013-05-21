@@ -327,13 +327,17 @@ public:
     */
     bool open(dtkAbstractData * data);
 
+
+    void emitImageSet(const medDataIndex& index);
+
+
 signals:
     /**
-     * @brief A new medDataIndex has been dropped onto the container.
+     * @brief A new medDataIndex has been set onto the container.
      *
      * @param index
     */
-    void dropped(const medDataIndex& index);
+    void imageSet(const medDataIndex& index);
 
     /**
      * @brief The focus has been placed on the view this container is hosting.
