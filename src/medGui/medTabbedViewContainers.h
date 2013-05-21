@@ -135,7 +135,7 @@ signals:
      *
      * @param 
     */
-    void dropped(const medDataIndex&);
+    void imageSet(const medDataIndex&);
     
     /**
      * @brief Emits this signal when one of the containers has emitted 

@@ -43,8 +43,8 @@ medViewContainer::medViewContainer ( QWidget *parent )
 
     medViewContainer *container = qobject_cast<medViewContainer *>(parent);
     if ( container != NULL ) {
-        connect(this,      SIGNAL(dropped(const medDataIndex&)),
-                container, SIGNAL(dropped(const medDataIndex&)));
+        connect(this,      SIGNAL(imageSet(const medDataIndex&)),
+                container, SIGNAL(imageSet(const medDataIndex&)));
         connect(this,      SIGNAL(focused(dtkAbstractView*)),
                 container, SIGNAL(focused(dtkAbstractView*)));
     }
@@ -54,7 +54,6 @@ medViewContainer::medViewContainer ( QWidget *parent )
     this->setMouseTracking ( true );
     this->setSizePolicy ( QSizePolicy::Expanding,QSizePolicy::Expanding );
 
-    qDebug() << "constructing " << this;
 }
 
 medViewContainer::~medViewContainer()
@@ -232,9 +231,9 @@ void medViewContainer::focus ( bool value )
     if ( !value )
         return;
 
-    qDebug() << "onViewFocused - setCurrent - " << this;
-    this->setCurrent ( this );
+    d->selected = true;
 
+    this->setCurrent ( this );
 
     if (!current() || !current()->view())
     {
@@ -249,6 +248,9 @@ void medViewContainer::focus ( bool value )
     }
 
     this->update();
+
+    this->recomputeStyleSheet();
+    emit selected();
 }
 
 void medViewContainer::onOtherContainerSelected()
@@ -259,7 +261,6 @@ void medViewContainer::onOtherContainerSelected()
 
 void medViewContainer::setCurrent ( medViewContainer *container )
 {
-    qDebug() << "setCurrent - " << container;
     medViewContainer * parent =
         qobject_cast<medViewContainer *>( this->parentWidget() );
     if ( parent != NULL )
@@ -297,8 +298,6 @@ void medViewContainer::dropEvent ( QDropEvent *event )
     if ( index.isValid() )
     {
         open ( index );
-        
-        //emit dropped ( index );
     }
 
     event->acceptProposedAction();
@@ -309,17 +308,11 @@ void medViewContainer::focusInEvent ( QFocusEvent *event )
 {
     Q_UNUSED ( event );
 
-    medViewContainer * former = this->current();
-
-    d->selected = true;
     this->focus( true );
 
     this->recomputeStyleSheet();
-
-    if ( former )
-        former->update();
-
     emit selected();
+
 }
 
 void medViewContainer::focusOutEvent ( QFocusEvent *event )
@@ -410,35 +403,34 @@ bool medViewContainer::open(const medDataIndex& index)
     if(!index.isValid())
         return false;
 
-    if( !isCurrent() )
+    if(!this->current()->acceptDrops())
+        return false;
+
+    if( index.isValidForSeries() )
     {
-        return this->current()->open(index);
-    }
-    else
-    {
-        if(!this->current()->acceptDrops())
-            return false;
-        
-        if( index.isValidForSeries() )
+        dtkSmartPointer<dtkAbstractData> data;
+
+        data = medDataManager::instance()->data(index);
+
+        res = open(data);
+
+        if(res)
         {
-            dtkSmartPointer<dtkAbstractData> data;
-
-            data = medDataManager::instance()->data(index);
-
-            res = open(data);
-
-            if(res)
-            {
-                qDebug()<<index;
-                // add the view to the viewManager
-                dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
-                medViewManager::instance()->insert(index, view);
-            }
-            qDebug()<<this;
-            emit dropped(index);
+            // add the view to the viewManager
+            dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
+            medViewManager::instance()->insert(index, view);
         }
-        return res;
+
+        this->current()->emitImageSet(index);
+
     }
+    return res;
+
+}
+
+void medViewContainer::emitImageSet(const medDataIndex& index)
+{
+    emit imageSet(index);
 }
 
 bool medViewContainer::open(dtkAbstractData * data)

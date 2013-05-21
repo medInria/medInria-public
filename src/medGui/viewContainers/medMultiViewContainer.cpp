@@ -173,7 +173,7 @@ void medMultiViewContainer::setView(dtkAbstractView *view)
     QList <medViewContainer *> containers = this->childContainers();
 
     medViewContainer *container = new medSingleViewContainer2(this);
-    container->setAcceptDrops(false);
+    //container->setAcceptDrops(false);
     container->setView(view);
 
     foreach (medViewContainer *cont, containers) {

@@ -138,8 +138,8 @@ void medTabbedViewContainers::addContainer(const QString &name, medViewContainer
 
     connect( container, SIGNAL( focused( dtkAbstractView * ) ),
              this,      SIGNAL( focused( dtkAbstractView * ) ) );
-    connect( container, SIGNAL( dropped( const medDataIndex & ) ),
-             this,      SIGNAL( dropped( const medDataIndex & ) ) );
+    connect( container, SIGNAL( imageSet( const medDataIndex & ) ),
+             this,      SIGNAL( imageSet( const medDataIndex & ) ) );
     connect( container, SIGNAL( viewAdded( dtkAbstractView * ) ),
              this,      SIGNAL( viewAdded( dtkAbstractView * ) ) );
     connect( container, SIGNAL( viewRemoved( dtkAbstractView * ) ),
@@ -160,8 +160,8 @@ void medTabbedViewContainers::insertContainer(int index, const QString &name, me
 
     connect( container, SIGNAL( focused( dtkAbstractView * ) ),
              this,      SIGNAL( focused( dtkAbstractView * ) ) );
-    connect( container, SIGNAL( dropped( const medDataIndex & ) ),
-             this,      SIGNAL( dropped( const medDataIndex & ) ) );
+    connect( container, SIGNAL( imageSet( const medDataIndex & ) ),
+             this,      SIGNAL( imageSet( const medDataIndex & ) ) );
 
     connect( container, SIGNAL( viewAdded( dtkAbstractView * ) ),
              this,      SIGNAL( viewAdded( dtkAbstractView * ) ) );
