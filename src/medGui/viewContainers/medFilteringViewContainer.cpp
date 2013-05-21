@@ -39,7 +39,7 @@ medFilteringViewContainer::medFilteringViewContainer ( QWidget * parent ) :
 
     /*connect(d3->inputViewContainer,SIGNAL(dropped(medDataIndex)),
             this,SIGNAL(droppedInput(medDataIndex)));*/
-    connect(this,SIGNAL(dropped(medDataIndex)),
+    connect(this,SIGNAL(imageSet(medDataIndex)),
             this,SIGNAL(droppedInput(medDataIndex)));
 }
 
