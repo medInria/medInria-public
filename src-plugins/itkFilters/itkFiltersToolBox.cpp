@@ -107,7 +107,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
 
     //Initialise filters widget (probably need to find a dynamic way of doing this, Factory ?)
     //Add filter widgets
-    d->addFilterWidget = new QWidget;
+    d->addFilterWidget = new QWidget(this);
     d->addFiltersValue = new QDoubleSpinBox;
     d->addFiltersValue->setMaximum ( 1000000000 );
     d->addFiltersValue->setValue ( 100.0 );
@@ -118,8 +118,8 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     addFilterLayout->addStretch ( 1 );
     d->addFilterWidget->setLayout ( addFilterLayout );
 
-    //Add filter widgets
-    d->subtractFilterWidget = new QWidget;
+    //Substract filter widgets
+    d->subtractFilterWidget = new QWidget(this);
     d->subtractFiltersValue = new QDoubleSpinBox;
     d->subtractFiltersValue->setMaximum ( 1000000000 );
     d->subtractFiltersValue->setValue ( 100.0 );
@@ -131,7 +131,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     d->subtractFilterWidget->setLayout ( subtractFilterLayout );
 
     //Multiply filter widgets
-    d->multiplyFilterWidget = new QWidget;
+    d->multiplyFilterWidget = new QWidget(this);
     d->multiplyFiltersValue = new QDoubleSpinBox;
     d->multiplyFiltersValue->setValue ( 2.0 );
     d->multiplyFiltersValue->setMaximum ( 1000000000 );
@@ -143,7 +143,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     d->multiplyFilterWidget->setLayout ( multiplyFilterLayout );
 
     //Divide filter widgets
-    d->divideFilterWidget = new QWidget;
+    d->divideFilterWidget = new QWidget(this);
     d->divideFiltersValue = new QDoubleSpinBox;
     d->divideFiltersValue->setValue ( 2.0 );
     d->divideFiltersValue->setMaximum ( 1000000000 );
@@ -155,7 +155,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     d->divideFilterWidget->setLayout ( divideFilterLayout );
 
     //Gaussian filter widgets
-    d->gaussianFilterWidget = new QWidget;
+    d->gaussianFilterWidget = new QWidget(this);
     d->gaussianFiltersValue = new QDoubleSpinBox;
     d->gaussianFiltersValue->setValue ( 1.0 );
     d->gaussianFiltersValue->setMaximum ( 10.0 );
@@ -166,9 +166,9 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     gaussianFilterLayout->addStretch ( 1 );
     d->gaussianFilterWidget->setLayout ( gaussianFilterLayout );
 
-    d->normalizeFilterWidget = new QWidget;
-    d->medianFilterWidget = new QWidget;
-    d->invertFilterWidget = new QWidget;
+    d->normalizeFilterWidget = new QWidget(this);
+    d->medianFilterWidget = new QWidget(this);
+    d->invertFilterWidget = new QWidget(this);
 
     //Shrink filter widgets
     d->shrinkFilterWidget = new QWidget;
@@ -196,7 +196,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     d->shrinkFilterWidget->setLayout ( shrinkFilterLayout );
 
     //Intensity windowing filter widget
-    d->intensityFilterWidget = new QWidget;
+    d->intensityFilterWidget = new QWidget(this);
     d->intensityMinimumValue = new QDoubleSpinBox;
     d->intensityMinimumValue->setMaximum ( 255 );
     d->intensityMinimumValue->setValue ( 0 );
@@ -267,8 +267,6 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     layout->addStretch ( 1 );
 
     this->onFiltersActivated ( 0 );
-//     d->addFilterWidget->show();
-
     widget->setLayout ( layout );
 
     // Main toolbox:
