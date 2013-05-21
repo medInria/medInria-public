@@ -309,7 +309,7 @@ void medTabbedViewContainers::onCurrentContainerChanged(int index)
             d->containers[name]->current())
     {
         d->containers[name]->current()->setFocus(Qt::MouseFocusReason);
-        qDebug() << "giving focus to:"<< d->containers[name]->current();
+        //qDebug() << "giving focus to:"<< d->containers[name]->current();
     }
     emit currentChanged(name);
 }
