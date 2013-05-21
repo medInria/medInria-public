@@ -13,63 +13,70 @@
 
 #include <QApplication>
 
-#include "anyoption.h"
+#include <iostream>
 
 #include "medPluginGeneratorMainWindow.h"
 #include "medPluginGenerator.h"
+
+void printUsage() {
+    std::cout <<
+    QString("Usage: %1 --help | --console | [--output path --name name --type typeName\n").arg(qApp->argv()[0]).toStdString() <<
+    "--help                Displays this message.\n"
+    "--console             Run the console version.\n"
+    "--output [path]       Output directory for the plugin skeleton.\n"
+    "--name [name] name to use for the plugin.\n"
+    "--type [typeName]     Type to use for the plugin.\n"
+    "--quiet               Process quietly (non gui generation only).\n";
+}
+
+
+QString getArgValue(QString arg)
+{
+    QStringList args = qApp->arguments();
+    QString value;
+    for(int i = 0; i < args.size() - 1; ++i) {
+        if (args.at(i) == arg) {
+            value = args.at(i + 1);
+        }
+    }
+    return value;
+}
+
 
 int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
 
-    AnyOption options;
-    options.addUsage(QString("Usage: %1 --help | --console | [--output path --name name --type typeName").arg(argv[0]).toAscii());
-    options.addUsage("");
-    options.addUsage("--help                Displays this message.");
-    options.addUsage("--console             Run the gui version.");
-    options.addUsage("--output [path]       Output directory for the plugin skeleton.");
-    options.addUsage("--name [name] name to use for the plugin.");
-    options.addUsage("--type [typeName]     Type to use for the plugin.");
-    options.addUsage("--quiet               Process quietly (non gui generation only).");
-
-    options.setFlag("help");
-    options.setFlag("console");
-
-    options.setOption("output");
-    options.setOption("name");
-    options.setOption("type");
-    options.setOption("quiet");
-
-    options.processCommandArgs(argc, argv);
-
-    if(options.getFlag("help")) {
-        options.printUsage();
+    if (app.arguments().contains("--help")) {
+        printUsage();
         return 0;
     }
 
-    if(options.getFlag("console")) {
+    if(app.arguments().contains("--console")) {
+        QString output = getArgValue("output");
+        QString type = getArgValue("type");
+        QString name = getArgValue("name");
+        bool paramsMissing = output.isNull() || type.isNull() || name.isNull();
 
-        bool paramsOk = options.getValue("output") && options.getValue("type") && options.getValue("name");
-
-        if( !paramsOk ) {
-            options.printUsage();
+        if( paramsMissing ) {
+            printUsage();
             return 1;
         }
 
-        if(!options.getFlag("quiet")) {
-            qDebug() << "output = " << options.getValue("output");
-            qDebug() << "name = " << options.getValue("name");
-            qDebug() << "type = " << options.getValue("type");
+        if( ! app.arguments().contains("--quiet")) {
+            qDebug() << "output = " << output;
+            qDebug() << "name = " << name;
+            qDebug() << "type = " << type;
         }
 
-        medPluginGenerator generator;
-	generator.setOutputDirectory(options.getValue("output"));
-	generator.setName(options.getValue("name"));
-	generator.setType(options.getValue("type"));
+    medPluginGenerator generator;
+    generator.setOutputDirectory(output);
+    generator.setName(name);
+    generator.setType(type);
 
 	bool resultGenerator = generator.run();
 
-	if(!options.getFlag("quiet")) {
+    if( ! app.arguments().contains("--quiet")) {
             if(resultGenerator)
                 qDebug() << "Generation succeeded.";
             else
@@ -77,7 +84,6 @@ int main(int argc, char** argv)
 	}
 
     } else {
-
         medPluginGeneratorMainWindow generator;
         generator.show();
         return app.exec();
