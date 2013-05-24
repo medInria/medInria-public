@@ -81,9 +81,10 @@ option(BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individual selec
 
 option(MEDINRIA-PLUGINS_BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
 
+option(MEDINRIA-PLUGINS_BUILD_COMPOSITEDATASET "Enable this if you want to build compositeDataSet plugin" OFF)
+
 ## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
 set(PLUGIN_LIST
-  ${EXAMPLE_PLUGINS}
   v3dData                        ON
   v3dView                        ON
   itkDataImage                   ON
@@ -98,9 +99,11 @@ set(PLUGIN_LIST
   itkDataTensorImageWriter       ON
   itkDataTensorImageReader       ON
   medSegmentation                ON
-  medCompositeDataSets           ON
   itkFilters                     ON
   qtdcmDataSource                ON
+  itkDataSHImage                 ON
+  itkDataSHImageWriter           ON
+  itkDataSHImageReader           ON
   )
 
 if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
@@ -110,6 +113,13 @@ if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
     ITKProcessExample              ON
     )
 endif()
+
+if(MEDINRIA-PLUGINS_BUILD_COMPOSITEDATASET)
+  set (PLUGIN_LIST
+    ${PLUGIN_LIST}
+    medCompositeDataSets           ON
+    )
+endif()    
 
 #MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
 
@@ -186,6 +196,9 @@ if (BUILD_ALL_PLUGINS OR
   BUILD_ITKDATAIMAGE_PLUGIN OR
   BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN OR
   BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
+  BUILD_ITKDATASHIMAGE_PLUGIN OR
+  BUILD_ITKDATASHIMAGEREADER_PLUGIN OR
+  BUILD_ITKDATASHIMAGEWRITER_PLUGIN OR
   BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN 
   )                   
   set(MEDINRIA_REQUIRES_ITK TRUE)

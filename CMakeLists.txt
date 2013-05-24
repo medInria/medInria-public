@@ -41,7 +41,7 @@ if (WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
 
-option(MEDINRIA_BUILD_TESTING       "Build testing"          false)
+option(MEDINRIA_BUILD_TESTING "Build testing" false)
 
 enable_testing()
 
@@ -59,144 +59,11 @@ if (MEDINRIA_BUILD_REPORTING)
   include(dtkReporting)
 endif()
 
-if (MEDINRIA-PLUGINS_BUILD_TESTING)
-  add_subdirectory(tests)
-endif ()
-
-## #################################################################
-## Input
-## #################################################################
-if(MSVC)
-  #Macros that enable precompiled headers to be added, defined by dtk.
-  include(dtkPch)
-  option(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        true)
-endif()
-
-set(DEPENDS_ON_DTK 1)
-
-option(BUILD_ALL_PLUGINS "Build all Medinria plugins (overrides individual selections)" ON)
-
-OPTION(MEDINRIA-PLUGINS_BUILD_EXAMPLES "Enable this if you want to build the examples" OFF)
-
-## ADD here any new plugin you want to include in the build, except for registration plugins, see below.
-set(PLUGIN_LIST
-  ${EXAMPLE_PLUGINS}
-  v3dData                        ON
-  v3dView                        ON
-  itkDataImage                   ON
-  itkDataImageReader             ON
-  itkDataImageWriter             ON
-  itkDCMTKDataImageReader        ON
-  vtkDataMesh                    ON
-  vtkDataMeshReader              ON
-  vtkDataMeshWriter              ON
-  itkDataDiffusionGradientList   ON
-  itkDataTensorImage             ON
-  itkDataTensorImageWriter       ON
-  itkDataTensorImageReader       ON
-  medSegmentation                ON
-  medCompositeDataSets           ON
-  itkFilters                     ON
-  qtdcmDataSource                ON
-  itkDataShImage                 ON
-  itkDataShImageWriter           ON
-  itkDataShImageReader           ON
-  )
-
-if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
-  set (PLUGIN_LIST
-    ${PLUGIN_LIST}
-    exampleProcessImageFilter      ON
-    ITKProcessExample              ON
-    )
-endif()
-
-#MACRO_ADD_PLUGIN_LIST ("${PLUGIN_LIST}")
-
-list(LENGTH PLUGIN_LIST N)
-set (INDEX 0)
-#message(${PLUGIN_LIST})
-while(INDEX LESS N)
-  MATH( EXPR INDEX_BOOL "${INDEX} + 1" )
-  #MESSAGE ("index:" ${INDEX})
-  #MESSAGE ("index_bool:" ${INDEX_BOOL})
-
-  list(GET PLUGIN_LIST ${INDEX} PLUGIN_ITEM)
-  list(GET PLUGIN_LIST ${INDEX_BOOL} BUILD_VALUE)
-
-  #message("Item: " ${PLUGIN_ITEM} "; value: " ${BUILD_VALUE})
-
-  MACRO_ADD_PLUGIN (${PLUGIN_ITEM} ${BUILD_VALUE})
-  MATH( EXPR INDEX "${INDEX} + 2" )
-endwhile()
-
-
-## Registration plugins, registration plugins are only built if this option is
-## enabled or MEDINRIA_BUILD_ALL_PLUGINS is ON.
-option(ENABLE_REGISTRATION_PLUGINS "Build Registration plugins" "ON")
-if (ENABLE_REGISTRATION_PLUGINS OR MEDINRIA_BUILD_ALL_PLUGINS)
-  #Put here your registration plugin directory/project name.
-  set(REG_PLUGIN_LIST itkProcessRegistrationDiffeomorphicDemons ON)
-  list(LENGTH REG_PLUGIN_LIST N)
-  set(INDEX 0)
-  while(INDEX LESS N)
-    MATH( EXPR INDEX_BOOL "${INDEX} + 1" )
-
-    list(GET REG_PLUGIN_LIST ${INDEX} PLUGIN_ITEM)
-    list(GET REG_PLUGIN_LIST ${INDEX_BOOL} BUILD_VALUE)
-
-    MACRO_ADD_PLUGIN (${PLUGIN_ITEM} ${BUILD_VALUE})
-    #message(${PLUGIN_ITEM} " " ${BUILD_VALUE})
-
-    MATH( EXPR INDEX "${INDEX} + 2" )
-  endwhile()
-endif()
-
-if(BUILD_ALL_PLUGINS OR
-  BUILD_VTKDATAMESHWRITER_PLUGIN OR
-  BUILD_VTKDATAMESHREADER_PLUGIN OR
-  BUILD_VTKDATAMESH_PLUGIN OR
-  BUILD_V3DVIEW_PLUGIN OR
-  BUILD_V3DDATA_PLUGIN OR
-  BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
-  BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN 
-  )
-  set(MEDINRIA_REQUIRES_VTK TRUE)
-endif()
-
-if(BUILD_ALL_PLUGINS OR
-  BUILD_VTKDATAMESHWRITER_PLUGIN OR
-  BUILD_VTKDATAMESHREADER_PLUGIN OR
-  BUILD_VTKDATAMESH_PLUGIN OR
-  BUILD_V3DVIEW_PLUGIN OR
-  BUILD_V3DDATA_PLUGIN OR
-  BUILD_QTDCMDATASOURCE_PLUGIN OR
-  BUILD_SEGMENTATION_PLUGIN OR
-  BUILD_MEDCOMPOSITEDATASET_PLUGIN OR
-  BUILD_ITKPROCESSEXAMPLE_PLUGIN OR
-  BUILD_ITKFILTERS_PLUGIN OR
-  BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
-  BUILD_ITKDATATENSORIMAGEWRITER_PLUGIN OR
-  BUILD_ITKDATATENSORIMAGEREADER_PLUGIN OR
-  BUILD_ITKDATATENSORIMAGE_PLUGIN OR
-  BUILD_ITKDATAIMAGEWRITER_PLUGIN OR
-  BUILD_ITKDATAIMAGEREADER_PLUGIN OR
-  BUILD_ITKDATAIMAGE_PLUGIN OR
-  BUILD_ITKDATADIFFUSIONGRADIENTLIST_PLUGIN OR
-  BUILD_ITKDCMTKDATAIMAGEREADER_PLUGIN OR
-  BUILD_ITKDATASHIMAGE_PLUGIN OR
-  BUILD_ITKDATASHIMAGEREADER_PLUGIN OR
-  BUILD_ITKDATASHIMAGEWRITER_PLUGIN OR
-  BUILD_EXAMPLEPROCESSIMAGEFILTER_PLUGIN 
-  )                   
-  set(MEDINRIA_REQUIRES_ITK TRUE)
-endif()
-
-option(MEDINRIA_BUILD_DOCUMENTATION "Build documentation"    false)
+option(MEDINRIA_BUILD_DOCUMENTATION "Build documentation" false)
 
 if (MSVC)
   include(dtkPch)
-  option(MEDINRIA_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        false)
+  option(MEDINRIA_USE_PRECOMPILED_HEADERS "Use precompiled headers" false)
 endif()
 
 add_subdirectory(src)

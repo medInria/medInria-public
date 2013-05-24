@@ -13,9 +13,9 @@
 
 project(vtkVisuManagement)
 
-  if (CMAKE_CXX_COMPILER MATCHES clang)
+if (CMAKE_CXX_COMPILER MATCHES clang)
     add_definitions(-DCLANG)
-  endif()
+endif()
 
 set(${PROJECT_NAME}_SRCS
  vtkLimitFibersToVOI.cxx
@@ -70,7 +70,7 @@ set(vtkLandmarkManagement_LIBS
  vtkHWShading
 )
 
-if ( VTKINRIA_USE_SPHERICALHARMONICS )
+if (VTKINRIA_USE_SPHERICALHARMONICS )
     set(${PROJECT_NAME}_SRCS
         ${${PROJECT_NAME}_SRCS}
         vtkSphericalHarmonicVisuManager.cxx

@@ -394,7 +394,7 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->renderer3d->GetActiveCamera()->SetViewUp ( 0, 0, 1 );
     d->renderer3d->GetActiveCamera()->SetFocalPoint ( 0, 0, 0 );
 
-    // Activate depth-peeling to have a proper opacity rendering
+    // Activate depth-peeling to have a proper opacity 
     d->renderer3d->SetUseDepthPeeling(1);
     d->renderer3d->SetMaximumNumberOfPeels(100);
     d->renderer3d->SetOcclusionRatio(0.01);
