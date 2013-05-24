@@ -104,7 +104,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medFiberBundlingToolBox.h
   toolboxes/medTensorViewToolBox.h
 
-  toolboxes/medToolBoxDiffusionShView.h
   toolboxes/medShViewToolBox.h
   toolboxes/medFilteringSelectorToolBox.h
   toolboxes/medFilteringAbstractToolBox.h
