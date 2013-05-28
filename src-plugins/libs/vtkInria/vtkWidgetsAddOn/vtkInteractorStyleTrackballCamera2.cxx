@@ -57,14 +57,13 @@ void vtkInteractorStyleTrackballCamera2::OnLeftButtonDown()
       (this->UpAxis)[2] = 1;
   }
 }
-void vtkInteractorStyleTrackballCamera2::OnRightButtonDown()
-{
 
+void vtkInteractorStyleTrackballCamera2::OnMouseWheelForward()
+{
 }
 
-void vtkInteractorStyleTrackballCamera2::OnRightButtonUp()
+void vtkInteractorStyleTrackballCamera2::OnMouseWheelBackward()
 {
-
 }
 
 void vtkInteractorStyleTrackballCamera2::Rotate()
