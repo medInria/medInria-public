@@ -27,31 +27,25 @@ medSingleViewContainer2::~medSingleViewContainer2()
 
 void medSingleViewContainer2::setView (dtkAbstractView *view)
 {
-//    Never replace an existing view: we are in multi, we always add a new one.
-//    if (d->view==view)
-//        return;
-//
-//    if (d->view) {
-//        this->onViewClosing();
-//    }
+    // Never replace an existing view: we are in multi, we always add a new one.
 
+    // if we already have a view, we should transfer the request to the root.
     if (d->view)
-    //if we already have a view, we should transfer the request to the root.
     {
         if (medMultiViewContainer* container =
                 qobject_cast<medMultiViewContainer*>(parentContainer()))
         {
-            qDebug() << "let set the parent's container" << container;
             container->setView( view );
             return;
         }
-        qWarning() << "should find parent container, we're in a multi... ";
+
         return;
     }
-//    qDebug() << "setting the view" << view << "in container" << this;
+
     d->view = view;
 
-    if (view) {
+    if (view)
+    {
         d->layout->addWidget(view->widget(), 0, 0);
         // d->pool->appendView (view); // only difference with medSingleViewContainer: do not add the view to the pool
         connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
@@ -59,14 +53,9 @@ void medSingleViewContainer2::setView (dtkAbstractView *view)
     this->setFocus(Qt::MouseFocusReason);
 }
 
-bool medSingleViewContainer2::isLeaf(void) const
-{
-    return true;
-}
 
 void medSingleViewContainer2::onViewClosing()
 {
-    qDebug()<<"closing single2";
     if (d->view) {
         d->layout->removeWidget(d->view->widget());
         //d->view->widget()->hide();
@@ -78,30 +67,8 @@ void medSingleViewContainer2::onViewClosing()
         d->view = NULL;
     }
 
-    // qDebug() << this << __func__;
-    // qDebug() << "isRoot:    " << this->isRoot();
-    // qDebug() << "isLeaf:    " << this->isLeaf();
-    // qDebug() << "isEmpty:   " << this->isEmpty();
-    // qDebug() << "isCurrent: " << this->isCurrent();
 }
 
-void medSingleViewContainer2::focus (bool value)
-{
-    if ( !value )
-        return;
-
-    if ( !this->isEmpty() )
-    {
-        qobject_cast<medMultiViewContainer*>( parentContainer() )->setCurrent( this );
-    }
-
-    if (dtkAbstractView *view = d->view)
-    {
-        emit focused(view);
-    }
-
-    this->update();
-}
 
 class medMultiViewContainerPrivate
 {

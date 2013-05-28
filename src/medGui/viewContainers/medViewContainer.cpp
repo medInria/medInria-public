@@ -412,7 +412,7 @@ bool medViewContainer::open(const medDataIndex& index)
 
         data = medDataManager::instance()->data(index);
 
-        res = open(data);
+        res = this->root()->open(data);
 
         if(res)
         {
@@ -449,7 +449,8 @@ bool medViewContainer::open(dtkAbstractData * data)
         connect (this, SIGNAL(sliceSelected(int)), view, SLOT(setSlider(int)));
     }
 
-    if( view.isNull() ) {
+    if( view.isNull() )
+    {
         qWarning() << "medViewContainer: Unable to create a v3dView";
         return false;
     }
