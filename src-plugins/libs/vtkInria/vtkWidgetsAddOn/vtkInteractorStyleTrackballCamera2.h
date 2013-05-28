@@ -30,8 +30,8 @@ class VTK_WIDGETSADDON_EXPORT vtkInteractorStyleTrackballCamera2 : public vtkInt
   vtkTypeRevisionMacro(vtkInteractorStyleTrackballCamera2,vtkInteractorStyleTrackballCamera);
 
   virtual void OnLeftButtonDown();
-  virtual void OnRightButtonDown();
-  virtual void OnRightButtonUp();
+  virtual void OnMouseWheelForward();
+  virtual void OnMouseWheelBackward();
   virtual void Rotate();
 
   void Azimuth(double angle);
