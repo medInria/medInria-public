@@ -241,6 +241,9 @@ protected slots:
 
 protected:
 
+signals:
+    void timeCalculated(int);
+
 private:
 
     template <typename IMAGE>

@@ -28,6 +28,7 @@
 #include <med4DAbstractViewInteractor.h>
 #include <medToolBoxTab.h>
 #include <medButton.h>
+#include <medDataManager.h>
 
 
 
@@ -59,6 +60,7 @@ public:
 
 medTimeLineToolBox::medTimeLineToolBox(QWidget *parent) : medToolBox(parent), d(new medTimeLineToolBoxPrivate)
 {
+    connect(medDataManager::instance(), SIGNAL(timeCalculated(int)), this, SLOT(setTime(int)));
     QWidget *box = new QWidget (this);
     d->labelmin = new QLabel(this);
     d->labelmax = new QLabel(this);
@@ -173,7 +175,6 @@ medTimeLineToolBox::~medTimeLineToolBox(void)
 
     d = NULL;
 }
-
 
 void medTimeLineToolBox::onViewAdded (dtkAbstractView *view)
 {
@@ -348,6 +349,11 @@ void medTimeLineToolBox::updateRange()
 
     d->labelmin->setText( DoubleToQString(( mintime ) / (d->spinBox->value()/100.0)) + QString(" sec"));
     d->labelmax->setText( DoubleToQString(( maxtime ) / (d->spinBox->value()/100.0)) + QString(" sec"));
+}
+
+void medTimeLineToolBox::setTime(int time)
+{
+    d->timeSlider->setSliderPosition(time);
 }
 
 QString medTimeLineToolBox::DoubleToQString (double val)

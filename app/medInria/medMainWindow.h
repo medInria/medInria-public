@@ -91,13 +91,6 @@ private slots:
     **/
     void open(const medDataIndex& index);
 
-    /**
-    * Opens an image (which is already in the database)
-    * in the viewer area (when the user double-clicks on a thumbnail)
-    * @param index - the @medDataIndex of the image
-    * @param slice - the slice number corresponding to the image
-    **/
-    void open(const medDataIndex& index, int slice);
 
     /**
     * Imports the image/s in the non-persistent database

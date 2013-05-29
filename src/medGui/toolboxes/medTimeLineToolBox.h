@@ -81,6 +81,7 @@ public slots:
     void onStepIncreased( );
 
     void clear();
+    void setTime(int);
 
  protected:
 
