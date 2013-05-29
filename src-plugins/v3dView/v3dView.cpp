@@ -658,7 +658,7 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 
     connect ( d->widget, SIGNAL ( destroyed() ), this, SLOT ( widgetDestroyed() ) );
 
-    connect(medDataManager::instance(), SIGNAL(openRequested(int)), this, SLOT(setSlider(int)));
+    connect(medDataManager::instance(), SIGNAL(visualizationRequested(int)), this, SLOT(setSlider(int)));
 
     connect(this, SIGNAL(timeCalculated(int)), medDataManager::instance(), SIGNAL(timeCalculated(int)));
 }
@@ -1628,7 +1628,7 @@ void v3dView::setSlider( int value)
     emit timeCalculated(time);
 
     d->slider->setSliderPosition(slice_to_display);
-    disconnect(sender(), SIGNAL(openRequested(int)), this, 0);
+    disconnect(sender(), SIGNAL(visualizationRequested(int)), this, 0);
 }
 
 void v3dView::onZSliderValueChanged ( int value )

@@ -226,8 +226,8 @@ signals:
      */
     void progressed(QObject* obj,int value);
 
-    void openRequested2(const medDataIndex& index);
-    void openRequested(int slice);
+    void visualizationRequested(const medDataIndex& index);
+    void visualizationRequested(int slice);
     void timeCalculated(int time);
 
     /**

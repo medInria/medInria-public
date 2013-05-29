@@ -186,7 +186,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->stack->addWidget ( d->browserArea );
     d->stack->addWidget ( d->workspaceArea );
 
-    connect(medDataManager::instance(), SIGNAL(openRequested2(const medDataIndex &)), this, SLOT(open(const medDataIndex&)));
+    connect(medDataManager::instance(), SIGNAL(visualizationRequested(const medDataIndex &)), this, SLOT(open(const medDataIndex&)));
     
     //  Setup quick access menu
 

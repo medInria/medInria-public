@@ -60,7 +60,6 @@ public:
 
 medTimeLineToolBox::medTimeLineToolBox(QWidget *parent) : medToolBox(parent), d(new medTimeLineToolBoxPrivate)
 {
-    connect(medDataManager::instance(), SIGNAL(timeCalculated(int)), this, SLOT(setTime(int)));
     QWidget *box = new QWidget (this);
     d->labelmin = new QLabel(this);
     d->labelmax = new QLabel(this);
@@ -155,6 +154,8 @@ medTimeLineToolBox::medTimeLineToolBox(QWidget *parent) : medToolBox(parent), d(
     connect(d->previousFrameButton, SIGNAL(triggered()), this, SLOT(onPreviousFrame()));
     connect(d->spinBox, SIGNAL(valueChanged(int)),this, SLOT(onSpinBoxChanged(int)));
     connect(d->stopButton, SIGNAL(triggered()),this, SLOT(onStopButton()));
+
+    connect(medDataManager::instance(), SIGNAL(timeCalculated(int)), this, SLOT(setTime(int)));
 
     this->setTitle(tr("Time Management"));
     box->setLayout (boxlayout);
