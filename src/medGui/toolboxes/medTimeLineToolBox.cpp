@@ -354,6 +354,8 @@ void medTimeLineToolBox::updateRange()
 void medTimeLineToolBox::setTime(int time)
 {
     d->timeSlider->setSliderPosition(time);
+    double time_in_sec = this->getTimeFromSliderValue (time);
+    d->labelcurr->setText( DoubleToQString(( time_in_sec ) / (d->spinBox->value()/100.0)) + QString(" sec") );
 }
 
 QString medTimeLineToolBox::DoubleToQString (double val)
