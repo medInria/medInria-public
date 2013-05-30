@@ -1018,25 +1018,6 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             d->data = data;
             d->imageData = imageData;
 
-            if ( d->view2d )
-            {
-                switch ( d->view2d->GetViewOrientation() )
-                {
-                case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
-					this->setProperty("Orientation","Sagittal");
-                    d->orientation = "Sagittal";
-                    break;
-                case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
-					this->setProperty("Orientation","Coronal");
-                    d->orientation = "Coronal";
-                    break;
-                case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
-					this->setProperty("Orientation","Axial");
-                    d->orientation = "Axial";
-                    break;
-                }
-            }
-
             if ( data->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
             {
                 const QString patientName = data->metaDataValues ( medMetaDataKeys::PatientName.key() ) [0];
@@ -1076,6 +1057,29 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
     setCurrentLayer(layer);
     emit dataAdded ( data );
     emit dataAdded ( data, layer );
+
+    if ( medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> ( data ) )
+    {
+        if ( d->view2d )
+        {
+            switch ( d->view2d->GetViewOrientation() )
+            {
+            case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
+				this->setProperty("Orientation","Sagittal");
+                d->orientation = "Sagittal";
+                break;
+            case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
+				this->setProperty("Orientation","Coronal");
+                d->orientation = "Coronal";
+                break;
+            case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
+				this->setProperty("Orientation","Axial");
+                d->orientation = "Axial";
+                break;
+            }
+        }
+    }
+
     if (layer ==0 )
         this->enableInteractor(v3dViewAnnotationInteractor::s_identifier());
 }
