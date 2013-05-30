@@ -1058,30 +1058,31 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
     emit dataAdded ( data );
     emit dataAdded ( data, layer );
 
-    if ( medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> ( data ) )
+    if (layer ==0 )
     {
-        if ( d->view2d )
+        if ( medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> ( data ) )
         {
-            switch ( d->view2d->GetViewOrientation() )
+            if ( d->view2d )
             {
-            case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
-				this->setProperty("Orientation","Sagittal");
-                d->orientation = "Sagittal";
-                break;
-            case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
-				this->setProperty("Orientation","Coronal");
-                d->orientation = "Coronal";
-                break;
-            case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
-				this->setProperty("Orientation","Axial");
-                d->orientation = "Axial";
-                break;
+                switch ( d->view2d->GetViewOrientation() )
+                {
+                case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
+				    this->setProperty("Orientation","Sagittal");
+                    d->orientation = "Sagittal";
+                    break;
+                case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
+				    this->setProperty("Orientation","Coronal");
+                    d->orientation = "Coronal";
+                    break;
+                case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
+				    this->setProperty("Orientation","Axial");
+                    d->orientation = "Axial";
+                    break;
+                }
             }
         }
-    }
-
-    if (layer ==0 )
         this->enableInteractor(v3dViewAnnotationInteractor::s_identifier());
+    }
 }
 
 void *v3dView::data()
