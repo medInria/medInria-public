@@ -1060,7 +1060,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
 
     if (layer ==0 )
     {
-        if ( medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> ( data ) )
+        if ( dynamic_cast<medAbstractDataImage*> ( data ) )
         {
             if ( d->view2d )
             {
