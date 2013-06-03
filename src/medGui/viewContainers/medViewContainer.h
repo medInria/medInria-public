@@ -411,13 +411,13 @@ public slots:
      *
      * @param value
     */
-    virtual void focus( bool value );
+    virtual void select();
 
     /**
      * @brief This slot is called when another container has been clicked.
      * The current container changes its "selected" property to false.
     */
-    virtual void onOtherContainerSelected();
+    virtual void unselect();
 
 
 protected:

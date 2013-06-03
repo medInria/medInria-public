@@ -46,8 +46,8 @@ medCustomViewContainer::medCustomViewContainer ( QWidget *parent ) : medViewCont
         {
             if ( container->isLeaf() && container!=this )
             {
-                connect ( this,      SIGNAL ( selected() ), container, SLOT ( onOtherContainerSelected() ), Qt::UniqueConnection );
-                connect ( container, SIGNAL ( selected() ), this,      SLOT ( onOtherContainerSelected() ), Qt::UniqueConnection );
+                connect ( this,      SIGNAL ( selected() ), container, SLOT ( unselect() ), Qt::UniqueConnection );
+                connect ( container, SIGNAL ( selected() ), this,      SLOT ( unselect() ), Qt::UniqueConnection );
             }
         }
     }
@@ -312,7 +312,7 @@ void medCustomViewContainer::onViewClosing()
         QList< medViewContainer * > leaves = parent->leaves ( true );
         if ( leaves.count() > 0 )
         {
-            leaves.first()->focus ( true );
+            leaves.first()->select();
             break;
         }
         parent = parent->parentContainer();
