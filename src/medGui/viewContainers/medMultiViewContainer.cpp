@@ -20,6 +20,13 @@
 #include <medAbstractView.h>
 #include <medViewManager.h>
 
+
+medSingleViewContainer2::medSingleViewContainer2(QWidget *parent) :
+    medSingleViewContainer(parent)
+{
+    d->multiLayer = false;
+}
+
 medSingleViewContainer2::~medSingleViewContainer2()
 {
     d->layout->setContentsMargins(0, 0, 0, 0);
