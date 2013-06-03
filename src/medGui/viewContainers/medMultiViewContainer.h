@@ -23,8 +23,7 @@ class MEDGUI_EXPORT medSingleViewContainer2 : public medSingleViewContainer
     Q_OBJECT
 
 public:
-     medSingleViewContainer2(QWidget *parent = 0) :
-         medSingleViewContainer(parent) {}
+     medSingleViewContainer2(QWidget *parent = 0);
     ~medSingleViewContainer2();
 
     void setView(dtkAbstractView *view);

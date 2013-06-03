@@ -396,12 +396,19 @@ bool medViewContainer::multiLayer( void )
 bool medViewContainer::open(const medDataIndex& index)
 {
     bool res = false;
-    
-    if(!index.isValid())
-        return false;
 
-    if(!this->current()->acceptDrops())
-        return false;
+    if(!index.isValid())
+        return res;
+
+    if( this != this->current() )
+    {
+        // opening should be done by current container
+        res = this->current()->open(index);
+        return res;
+    }
+
+    if(!this->acceptDrops())
+        return res;
 
     if( index.isValidForSeries() )
     {
@@ -409,7 +416,7 @@ bool medViewContainer::open(const medDataIndex& index)
 
         data = medDataManager::instance()->data(index);
 
-        res = this->root()->open(data);
+        res = this->open(data);
 
         if(res)
         {
@@ -418,16 +425,11 @@ bool medViewContainer::open(const medDataIndex& index)
             medViewManager::instance()->insert(index, view);
         }
 
-        this->current()->emitImageSet(index);
+        emit imageSet(index);
 
     }
     return res;
 
-}
-
-void medViewContainer::emitImageSet(const medDataIndex& index)
-{
-    emit imageSet(index);
 }
 
 bool medViewContainer::open(dtkAbstractData * data)
@@ -437,7 +439,7 @@ bool medViewContainer::open(dtkAbstractData * data)
 
 
     dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
-    bool newView = view.isNull();
+    bool newView = view.isNull() || !this->multiLayer();
 
     if( newView)
     {
