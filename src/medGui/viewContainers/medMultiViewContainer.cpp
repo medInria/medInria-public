@@ -140,13 +140,12 @@ void medMultiViewContainer::setView(dtkAbstractView *view)
     QList <medViewContainer *> containers = this->childContainers();
 
     medViewContainer *container = new medSingleViewContainer2(this);
-    //container->setAcceptDrops(false);
     container->setView(view);
 
     foreach (medViewContainer *cont, containers) {
         if (cont->isLeaf()) {
-            connect (container, SIGNAL (selected()), cont, SLOT (onOtherContainerSelected()), Qt::UniqueConnection);
-            connect (cont, SIGNAL (selected()), container, SLOT (onOtherContainerSelected()), Qt::UniqueConnection);
+            connect (container, SIGNAL (selected()), cont, SLOT (unselect()), Qt::UniqueConnection);
+            connect (cont, SIGNAL (selected()), container, SLOT (unselect()), Qt::UniqueConnection);
         }
     }
 

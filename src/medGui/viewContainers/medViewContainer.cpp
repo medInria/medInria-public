@@ -226,11 +226,8 @@ void medViewContainer::setView ( dtkAbstractView *view )
     setFocus(Qt::MouseFocusReason);
 }
 
-void medViewContainer::focus ( bool value )
+void medViewContainer::select()
 {
-    if ( !value )
-        return;
-
     d->selected = true;
 
     this->setCurrent ( this );
@@ -253,7 +250,7 @@ void medViewContainer::focus ( bool value )
     emit selected();
 }
 
-void medViewContainer::onOtherContainerSelected()
+void medViewContainer::unselect()
 {
     d->selected = false;
     this->recomputeStyleSheet();
@@ -308,7 +305,7 @@ void medViewContainer::focusInEvent ( QFocusEvent *event )
 {
     Q_UNUSED ( event );
 
-    this->focus( true );
+    this->select();
 
     this->recomputeStyleSheet();
     emit selected();
