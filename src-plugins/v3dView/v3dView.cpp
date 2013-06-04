@@ -1068,15 +1068,12 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
                 {
                 case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
 				    this->setProperty("Orientation","Sagittal");
-                    d->orientation = "Sagittal";
                     break;
                 case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
 				    this->setProperty("Orientation","Coronal");
-                    d->orientation = "Coronal";
                     break;
                 case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
 				    this->setProperty("Orientation","Axial");
-                    d->orientation = "Axial";
                     break;
                 }
             }
