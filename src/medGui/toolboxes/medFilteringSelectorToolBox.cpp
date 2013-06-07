@@ -133,6 +133,7 @@ void medFilteringSelectorToolBox::onToolBoxChosen ( int index )
 
 void medFilteringSelectorToolBox::onInputSelected ( const medDataIndex& index )
 {
+
     if ( !index.isValid() )
         return;
 
