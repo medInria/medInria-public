@@ -1,22 +1,15 @@
-### medPack.cmake --- 
-## 
-## Author: Julien Wintz
-## Copyright (C) 2008 - Julien Wintz, Inria.
-## Created: Thu Jun 10 10:21:17 2010 (+0200)
-## Version: $Id$
-## Last-Updated: Thu Jun 10 10:41:55 2010 (+0200)
-##           By: Julien Wintz
-##     Update #: 12
-######################################################################
-## 
-### Commentary: 
-## 
-######################################################################
-## 
-### Change log:
-## 
-######################################################################
-
+#######################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA 2013. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+#######################################################################
 
 include (InstallRequiredSystemLibraries)
 

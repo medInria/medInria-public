@@ -1,5 +1,16 @@
-#-----------------------------------------------------------------------------
-# Include directories for other projects installed on the system.
+#######################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA 2013. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+#######################################################################
+
 SET(${PROJECT_NAME}_INCLUDE_DIRS_SYSTEM "")
 
 
