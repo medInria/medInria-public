@@ -408,6 +408,10 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->view3d->ShadeOn();
 
     d->currentView = d->view2d;
+    
+    vtkInteractorStyleTrackballCamera2 *interactorStyle = vtkInteractorStyleTrackballCamera2::New();
+    d->view3d->SetInteractorStyle ( interactorStyle );
+    interactorStyle->Delete();
 
     QMainWindow * mainWindow = dynamic_cast< QMainWindow * >(
         qApp->property( "MainWindow" ).value< QObject * >() );

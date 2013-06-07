@@ -19,6 +19,7 @@
 #include "vtkRenderWindow.h"
 #include "vtkRenderer.h"
 #include "vtkCamera.h"
+#include "vtkCallbackCommand.h"
 
 vtkCxxRevisionMacro(vtkInteractorStyleTrackballCamera2, "$Revision: 1.0 $");
 vtkStandardNewMacro(vtkInteractorStyleTrackballCamera2);
@@ -57,14 +58,17 @@ void vtkInteractorStyleTrackballCamera2::OnLeftButtonDown()
       (this->UpAxis)[2] = 1;
   }
 }
-void vtkInteractorStyleTrackballCamera2::OnRightButtonDown()
-{
 
+void vtkInteractorStyleTrackballCamera2::OnMouseWheelForward()
+{
+    vtkInteractorStyleTrackballCamera::OnMouseWheelForward();
+    this->InvokeEvent(vtkCommand::InteractionEvent, NULL);
 }
 
-void vtkInteractorStyleTrackballCamera2::OnRightButtonUp()
+void vtkInteractorStyleTrackballCamera2::OnMouseWheelBackward()
 {
-
+    vtkInteractorStyleTrackballCamera::OnMouseWheelBackward();
+    this->InvokeEvent(vtkCommand::InteractionEvent, NULL);
 }
 
 void vtkInteractorStyleTrackballCamera2::Rotate()
