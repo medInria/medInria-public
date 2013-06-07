@@ -35,6 +35,22 @@ medCustomViewContainer::medCustomViewContainer ( QWidget *parent ) : medViewCont
     d2->rowMax    = 5;
     d2->columnMax = 5;
     d2->preset = 0;
+
+    // retrieve the list of child containers and connect clicked signal
+    // to warn other containers that another one was clicked
+    medViewContainer *root = this->root();
+    if ( root )
+    {
+        QList<medViewContainer *> containers = root->childContainers();
+        foreach ( medViewContainer *container, containers )
+        {
+            if ( container->isLeaf() && container!=this )
+            {
+                connect ( this,      SIGNAL ( selected() ), container, SLOT ( unselect() ), Qt::UniqueConnection );
+                connect ( container, SIGNAL ( selected() ), this,      SLOT ( unselect() ), Qt::UniqueConnection );
+            }
+        }
+    }
 }
 
 medCustomViewContainer::~medCustomViewContainer()
@@ -166,7 +182,6 @@ void medCustomViewContainer::setPreset ( int preset )
 
 void medCustomViewContainer::setView ( dtkAbstractView *view )
 {
-    qDebug() << "Set view";
     if ( this->isLeaf() )
     {
         if ( view != d->view )
@@ -185,31 +200,13 @@ void medCustomViewContainer::setView ( dtkAbstractView *view )
                 d->layout->setContentsMargins ( 0, 0, 0, 0 );
                 d->layout->addWidget ( view->widget(), 0, 0 );
 
-                //d->view = view; // already called in medViewContainer::setView()
-                // d->view->reset();
-
-                // retrieve the list of child containers and connect clicked signal
-                // to warn other containers that another one was clicked
-                medViewContainer *root = this->root();
-                if ( root )
-                {
-                    QList<medViewContainer *> containers = root->childContainers();
-                    foreach ( medViewContainer *container, containers )
-                    {
-                        if ( container->isLeaf() && container!=this )
-                        {
-                            connect ( this,      SIGNAL ( clicked() ), container, SLOT ( onContainerClicked() ), Qt::UniqueConnection );
-                            connect ( container, SIGNAL ( clicked() ), this,      SLOT ( onContainerClicked() ), Qt::UniqueConnection );
-                        }
-                    }
-                }
-
                 this->synchronize_2 ( view );
 
                 connect ( view, SIGNAL ( closing() ),         this, SLOT ( onViewClosing() ) );
                 connect ( view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
                 connect ( view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
 
+                this->recomputeStyleSheet();
                 emit viewAdded ( view );
             }
             // END FIXME
@@ -315,12 +312,13 @@ void medCustomViewContainer::onViewClosing()
         QList< medViewContainer * > leaves = parent->leaves ( true );
         if ( leaves.count() > 0 )
         {
-            leaves.first()->onViewFocused ( true );
+            leaves.first()->select();
             break;
         }
         parent = parent->parentContainer();
     }
 
+    this->recomputeStyleSheet();
 
     // qDebug() << this << __func__;
     // qDebug() << "isRoot:    " << this->isRoot();

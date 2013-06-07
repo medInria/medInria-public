@@ -30,9 +30,9 @@ medCompareViewContainer::medCompareViewContainer(QWidget * parent):
     split(1, 2);
     d3->fixedContainer = this->childContainers()[0];
     d3->movingContainer = this->childContainers()[1];
-    connect(d3->fixedContainer,SIGNAL(dropped(medDataIndex)),
+    connect(d3->fixedContainer,SIGNAL(imageSet(medDataIndex)),
             this,SIGNAL(droppedFixed(medDataIndex)));
-    connect(d3->movingContainer,SIGNAL(dropped(medDataIndex)),
+    connect(d3->movingContainer,SIGNAL(imageSet(medDataIndex)),
             this,SIGNAL(droppedMoving(medDataIndex)));
     //Set cues for the user:
     d3->fixedContainer->setInfo(tr("Fixed"));

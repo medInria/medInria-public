@@ -23,29 +23,14 @@ class MEDGUI_EXPORT medSingleViewContainer2 : public medSingleViewContainer
     Q_OBJECT
 
 public:
-     medSingleViewContainer2(QWidget *parent = 0) :
-         medSingleViewContainer(parent) {}
+     medSingleViewContainer2(QWidget *parent = 0);
     ~medSingleViewContainer2();
 
     void setView(dtkAbstractView *view);
 
-    /**
-     * @brief Is this a leaf container?
-     *
-     * This method is useful in the case of a custom or multi
-     * container.  Returns true if this object is supposed to contain
-     * only views and no other containers (like
-     * medSingleViewContainer2).
-     *
-     * @param void
-     * @return bool
-    */
-    virtual bool isLeaf() const;
-
 public slots:
-    virtual void onViewClosing();
 
-    virtual void onViewFocused (bool value);
+    virtual void onViewClosing();
 };
 
 
@@ -86,9 +71,6 @@ public slots:
 private:
     medMultiViewContainerPrivate *d2;
 
-    //Needed to access the setCurrent protected method
-    //from within medSingleViewContainer2
-    friend void medSingleViewContainer2::onViewFocused(bool);
 };
 
 
