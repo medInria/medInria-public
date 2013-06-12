@@ -4,8 +4,8 @@ Name=MedInria
 GenericName=Medical Imaging Platform
 Comment=Process and Visualize Medical Images
 Icon=@CMAKE_INSTALL_PREFIX@/share/icons/medInria.png
-Exec=@CMAKE_INSTALL_PREFIX@/bin/medInria
-TryExec=@CMAKE_INSTALL_PREFIX@/bin/medInria
+Exec=@CMAKE_INSTALL_PREFIX@/bin/medInria.sh
+TryExec=@CMAKE_INSTALL_PREFIX@/bin/medInria.sh
 Terminal=false
 Categories=Graphics;Science;MedicalSoftware;Qt;Viewer;
 
