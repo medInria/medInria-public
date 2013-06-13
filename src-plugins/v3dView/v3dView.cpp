@@ -396,8 +396,8 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 
     // Activate depth-peeling to have a proper opacity rendering
     d->renderer3d->SetUseDepthPeeling(1);
-    d->renderer3d->SetMaximumNumberOfPeels(100);
-    d->renderer3d->SetOcclusionRatio(0.01);
+    d->renderer3d->SetMaximumNumberOfPeels(10);
+    d->renderer3d->SetOcclusionRatio(0.5);
 
     d->view3d = vtkImageView3D::New();
     d->view3d->SetRenderer ( d->renderer3d );
