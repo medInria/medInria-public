@@ -98,6 +98,7 @@ public:
     QComboBox * view3dVRModeComboBox;
     QSlider * view3dLODSlider;
     QPushButton * croppingPushButton;
+    QCheckBox * view3dDepthPeelingCheckBox;
     QWidget * view3dToolBoxWidget;
 
     QString thumbLocation;
@@ -344,10 +345,15 @@ medToolBox(parent), d(new medViewPropertiesToolBoxPrivate)
     d->croppingPushButton->setMinimumWidth ( 20 );
     d->croppingPushButton->setToolTip(tr("Crop volume tool"));
 
+    d->view3dDepthPeelingCheckBox = new QCheckBox ("", this);
+    d->view3dDepthPeelingCheckBox->setFocusPolicy(Qt::NoFocus);
+    d->view3dDepthPeelingCheckBox->setToolTip(tr("Activate depth-peeling to have a proper opacity rendering"));
+
     connect(d->view3dModeComboBox,   SIGNAL(currentIndexChanged(QString)), this, SLOT(onModeChanged(QString)));
     connect(d->view3dVRModeComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onVRModeChanged(QString)));
     connect(d->view3dLODSlider,      SIGNAL(valueChanged(int)),            this, SLOT(onLodChanged(int)));
     connect(d->croppingPushButton,   SIGNAL(toggled(bool)),                this, SLOT(onCroppingChanged(bool)));
+    connect(d->view3dDepthPeelingCheckBox,   SIGNAL(toggled(bool)),        this, SLOT(onDepthPeelingChanged(bool)));
 
     d->view3dToolBoxWidget = new QWidget(this);
     QFormLayout *view3dToolBoxWidgetLayout = new QFormLayout(d->view3dToolBoxWidget);
@@ -355,6 +361,7 @@ medToolBox(parent), d(new medViewPropertiesToolBoxPrivate)
     view3dToolBoxWidgetLayout->addRow(tr("Renderer:"), d->view3dVRModeComboBox);
     view3dToolBoxWidgetLayout->addRow(tr("LOD:"), d->view3dLODSlider);
     view3dToolBoxWidgetLayout->addRow(tr("Cropping:"), d->croppingPushButton);
+    view3dToolBoxWidgetLayout->addRow(tr("Depth Peeling:"), d->view3dDepthPeelingCheckBox);
     view3dToolBoxWidgetLayout->setFormAlignment(Qt::AlignHCenter);
 
     //add 2 layers opacity slider and switcher.
@@ -1255,6 +1262,15 @@ void medViewPropertiesToolBox::onCroppingChanged(bool checked)
     }
 }
 
+void medViewPropertiesToolBox::onDepthPeelingChanged(bool checked)
+{
+    if (d->view) {
+        d->view->blockSignals (true);
+        d->view->setProperty("DepthPeeling", (checked ? "true" : "false"));
+        d->view->blockSignals (false);
+        d->view->update();
+    }
+}
 
 void  medViewPropertiesToolBox::setCurrentInteractionFromSettings()
 {

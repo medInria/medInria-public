@@ -363,6 +363,7 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->setPropertyFunctions["Cropping"] = &v3dView::onCroppingPropertySet;
     d->setPropertyFunctions["PositionLinked"] = &v3dView::onPositionLinkedPropertySet;
     d->setPropertyFunctions["WindowingLinked"] = &v3dView::onWindowingLinkedPropertySet;
+    d->setPropertyFunctions["DepthPeeling"] = &v3dView::onDepthPeelingPropertySet;
 
     d->data       = 0;
     d->imageData  = 0;
@@ -393,11 +394,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->renderer3d->GetActiveCamera()->SetPosition ( 0, -1, 0 );
     d->renderer3d->GetActiveCamera()->SetViewUp ( 0, 0, 1 );
     d->renderer3d->GetActiveCamera()->SetFocalPoint ( 0, 0, 0 );
-
-    // Activate depth-peeling to have a proper opacity 
-    d->renderer3d->SetUseDepthPeeling(1);
-    d->renderer3d->SetMaximumNumberOfPeels(100);
-    d->renderer3d->SetOcclusionRatio(0.01);
 
     d->view3d = vtkImageView3D::New();
     d->view3d->SetRenderer ( d->renderer3d );
@@ -1302,6 +1298,21 @@ void v3dView::onRendererPropertySet ( const QString &value )
 
     if ( value=="Default" )
         d->view3d->SetVolumeMapperToDefault();
+}
+
+
+void v3dView::onDepthPeelingPropertySet ( const QString &value )
+{
+    if ( value == "true" )
+    {
+        // Activate depth-peeling to have a proper opacity rendering
+        d->renderer3d->SetUseDepthPeeling(1);
+        d->renderer3d->SetMaximumNumberOfPeels(100);
+        d->renderer3d->SetOcclusionRatio(0.01);
+    }
+
+    if ( value == "false" )
+        d->renderer3d->SetUseDepthPeeling(0);
 }
 
 void v3dView::onUseLODPropertySet ( const QString &value )

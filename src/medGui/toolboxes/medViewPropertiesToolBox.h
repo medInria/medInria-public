@@ -92,6 +92,7 @@ public slots:
     void onVRModeChanged(QString mode);
     void onLodChanged(int value);
     void onCroppingChanged(bool checked);
+    void onDepthPeelingChanged(bool checked);
 
 signals:
     /** setVisibility is both for images and meshes*/
