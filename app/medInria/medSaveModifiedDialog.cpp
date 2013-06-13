@@ -106,8 +106,8 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     d->treeWidget->resizeColumnToContents(0);
 
     connect (d->saveQuitButton, SIGNAL(clicked()), this, SLOT(saveAndQuit()));
-    connect (d->cancelButton,SIGNAL(clicked()), this, SLOT(close()));
-    connect (d->quitButton,SIGNAL(clicked()), this, SLOT(quit()));
+    connect (d->cancelButton,SIGNAL(clicked()), this, SLOT(reject()));
+    connect (d->quitButton,SIGNAL(clicked()), this, SLOT(accept()));
 
     connect (medDataManager::instance(), SIGNAL(dataAdded(const medDataIndex &)),this, SLOT(updateCounter()));
 
@@ -138,20 +138,15 @@ void medSaveModifiedDialog::saveAndQuit()
 
     foreach(medDataIndex index, list)
         medDataManager::instance()->storeNonPersistentSingleDataToDatabase(index);
-        
-    d->quitRequested = true;
-}
-
-void medSaveModifiedDialog::quit()
-{
-    this->close();
     
-    emit quitApplication();
+    if (d->counter != 0)
+        d->quitRequested = true;
+    else
+        this->accept();
 }
 
 void medSaveModifiedDialog::updateCounter()
 {
-    qDebug() << "DEUBG  d->counter" << d->counter;
     d->mutex.lock();
     d->counter--;
     d->mutex.unlock();
@@ -159,7 +154,7 @@ void medSaveModifiedDialog::updateCounter()
     if(d->counter == 0)
     {
         if (d->quitRequested)
-            this->quit();
+            this->accept();
         else
             this->onUpdateTree();
     }

@@ -44,11 +44,6 @@ public slots:
     void saveAndQuit();
 
     /**
-     * Method to request application quit without saving
-     */
-    void quit();
-
-    /**
      * Method to decrement a counter (i.e. the number of checked items that remain to be saved).
      */
     void updateCounter();
@@ -57,12 +52,6 @@ public slots:
      * This method rebuilds the treewidget.
      */
     void onUpdateTree();
-    
-signals:
-    /**
-     * Signal to request application quit
-     */
-    void quitApplication();
 
 private:
   
