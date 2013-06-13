@@ -102,6 +102,7 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     this->addProperty ("Renderer",              QStringList() << "GPU" << "Ray Cast / Texture" << "Ray Cast" << "Texture" << "Default");
     this->addProperty ("UseLOD",                QStringList() << "On" << "Off" );
     this->addProperty ("Cropping",              QStringList() << "true" << "false");
+    this->addProperty ("DepthPeeling",          QStringList() << "true" << "false");
     this->addProperty ("Preset",                QStringList() << "None" << "VR Muscles&Bones"
                        << "Vascular I" << "Vascular II" << "Vascular III" << "Vascular IV"
                        << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
