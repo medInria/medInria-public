@@ -41,7 +41,12 @@ public slots:
     /**
      * Method to store non-persistent data (according to the tree widget items that are checked) into the database.
      */
-    void Save();
+    void saveAndQuit();
+
+    /**
+     * Method to request application quit without saving
+     */
+    void quit();
 
     /**
      * Method to decrement a counter (i.e. the number of checked items that remain to be saved).
@@ -52,6 +57,12 @@ public slots:
      * This method rebuilds the treewidget.
      */
     void onUpdateTree();
+    
+signals:
+    /**
+     * Signal to request application quit
+     */
+    void quitApplication();
 
 private:
   

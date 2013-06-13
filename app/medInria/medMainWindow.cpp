@@ -120,7 +120,7 @@ public:
     
     medQuickAccessMenu *shortcutAccessWidget;
     bool shortcutAccessVisible;
-
+    
     QToolButton *screenshotButton;
 };
 
@@ -225,7 +225,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     
     //Add quit button
     d->quitButton = new medButton ( this,":/icons/quit.png", tr ( "Quit Application" ) );
-    connect ( d->quitButton, SIGNAL ( triggered() ), this, SLOT ( onQuit() ) );
     connect(d->quitButton, SIGNAL( triggered()), this, SLOT (onSaveModified()));
     d->quitButton->setMaximumWidth ( 31 );
     d->quitButton->setToolTip(tr("Close medInria"));
@@ -785,14 +784,17 @@ void medMainWindow::onQuit()
 
 void medMainWindow::onSaveModified( void )
 {
-    QList<medDataIndex> indexes =
-            medDatabaseNonPersistentController::instance()->availableItems();
+    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
 
-    if(!indexes.isEmpty())
+    if(indexes.isEmpty())
     {
-        medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
-        saveDialog->show();
+        this->onQuit();
+        return;
     }
+    
+    medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
+    connect(saveDialog,SIGNAL(quitApplication()),this,SLOT(close()));
+    saveDialog->show();
 }
 
 void medMainWindow::onEditSettings()
