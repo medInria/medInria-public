@@ -109,7 +109,6 @@ public:
     medStatusBar*             statusBar;
     medQuickAccessPushButton* quickAccessButton;
     QPropertyAnimation*       quickAccessAnimation;
-    QWidget*                  quitMessage;
     medButton*                quitButton;
     QToolButton*              fullscreenButton;
     QList<QString>            importUuids;
@@ -120,7 +119,7 @@ public:
     
     medQuickAccessMenu *shortcutAccessWidget;
     bool shortcutAccessVisible;
-
+    
     QToolButton *screenshotButton;
 };
 
@@ -225,36 +224,9 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     
     //Add quit button
     d->quitButton = new medButton ( this,":/icons/quit.png", tr ( "Quit Application" ) );
-    connect ( d->quitButton, SIGNAL ( triggered() ), this, SLOT ( onQuit() ) );
-    connect(d->quitButton, SIGNAL( triggered()), this, SLOT (onSaveModified()));
+    connect(d->quitButton, SIGNAL( triggered()), this, SLOT (close()));
     d->quitButton->setMaximumWidth ( 31 );
     d->quitButton->setToolTip(tr("Close medInria"));
-
-    //  Setup quit message
-
-    d->quitMessage = new QWidget ( this );
-    d->quitMessage->setFixedWidth(250);
-    QHBoxLayout * quitLayout = new QHBoxLayout;
-
-    QLabel *icon = new QLabel ( this );
-    icon->setMinimumHeight ( 30 );
-    icon->setPixmap ( QPixmap ( ":/icons/information.png" ) );
-    QLabel *info = new QLabel ( this );
-    info->setMinimumHeight ( 30 );
-    info->setText ( tr("Are you sure you want to quit ?") );
-    QPushButton *ok_button = new QPushButton ( tr("Yes"), this );
-    ok_button->setFocusPolicy ( Qt::NoFocus );
-    QObject::connect ( ok_button, SIGNAL ( clicked() ), this, SLOT ( close() ) );
-    QPushButton *no_button = new QPushButton ( tr("No"), this );
-    no_button->setFocusPolicy ( Qt::NoFocus );
-    QObject::connect ( no_button, SIGNAL ( clicked() ), this, SLOT ( onNoQuit() ) );
-
-    quitLayout->setContentsMargins ( 5, 0, 5, 0 );
-    quitLayout->setSpacing ( 5 );
-    quitLayout->addWidget ( icon );
-    quitLayout->addWidget ( info );
-    quitLayout->addWidget ( ok_button );
-    quitLayout->addWidget ( no_button );
 
     //  Setup Fullscreen Button
 
@@ -293,8 +265,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QObject::connect ( d->screenshotButton, SIGNAL ( clicked() ),
                       this, SLOT ( captureScreenshot() ) );
 
-    d->quitMessage->setLayout ( quitLayout );
-
     //  QuitMessage and rightEndButtons will switch hidden and shown statuses.
 
     d->rightEndButtons = new QWidget(this);
@@ -313,10 +283,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     d->statusBarLayout->addWidget ( d->quickAccessButton );
     d->statusBarLayout->addStretch();
-    d->statusBarLayout->addWidget ( d->quitMessage );
     d->statusBarLayout->addWidget( d->rightEndButtons );
-
-    d->quitMessage->hide();
 
     //  Create a container widget for the status bar
 
@@ -749,50 +716,18 @@ void medMainWindow::onWorkspaceTriggered ( QAction *action )
     d->workspaceArea->setupWorkspace ( action->text() );
 }
 
-void medMainWindow::onNoQuit()
+int medMainWindow::saveModified( void )
 {
-    d->quitMessage->hide();
-    d->rightEndButtons->show();
+    QList<medDataIndex> indexes = medDatabaseNonPersistentController::instance()->availableItems();
 
-    d->statusBar->init_availableSpace();
-
-    int space = d->statusBar->getAvailableSpace();
-    int diff = d->quitMessage->width() - d->rightEndButtons->width();
-    space += diff;
-    d->statusBar->setAvailableSpace(space);
-    d->statusBar->showHiddenMessage();  //space has been freed
-}
-
-void medMainWindow::onQuit()
-{
-    d->statusBar->init_availableSpace();
-    int space = d->statusBar->getAvailableSpace();
-    space += d->rightEndButtons->width(); //rightEndButtons are hidden
-    d->statusBar->setAvailableSpace( space );
-
-    // As long as there's not enough space for the quitMessage to be displayed, we hide messages
-    while ( d->quitMessage->width() > d->statusBar->getAvailableSpace())
-    {
-        d->statusBar->hideMessage();
-    }
-    space = d->statusBar->getAvailableSpace();
-    space -= d->quitMessage->width();   //quitMessage is displayed
-    d->statusBar->setAvailableSpace( space );
-
-    d->quitMessage->show();
-    d->rightEndButtons->hide();
-}
-
-void medMainWindow::onSaveModified( void )
-{
-    QList<medDataIndex> indexes =
-            medDatabaseNonPersistentController::instance()->availableItems();
-
-    if(!indexes.isEmpty())
-    {
-        medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
-        saveDialog->show();
-    }
+    if(indexes.isEmpty())
+        return QDialog::Accepted;
+    
+    medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
+    saveDialog->show();
+    saveDialog->exec();
+    
+    return saveDialog->result();
 }
 
 void medMainWindow::onEditSettings()
@@ -897,7 +832,6 @@ void medMainWindow::load(const QString& file)
 
 void medMainWindow::closeEvent(QCloseEvent *event)
 {
-
     if ( QThreadPool::globalInstance()->activeThreadCount() > 0 )
     {
         switch ( QMessageBox::information ( this, tr("System message"),
@@ -908,17 +842,13 @@ void medMainWindow::closeEvent(QCloseEvent *event)
         case 0:
             // send cancel request to all running jobs, then wait for them
             // Note: most Jobs don't have the cancel method implemented, so this will be effectively the same as waitfordone.
-            this->hide();
             medJobManager::instance()->dispatchGlobalCancelEvent();
             QThreadPool::globalInstance()->waitForDone();
-            event->accept();
             break;
 
         case 1:
             // just hide the window and wait
-            this->hide();
             QThreadPool::globalInstance()->waitForDone();
-            event->accept();
             break;
 
         default:
@@ -928,6 +858,15 @@ void medMainWindow::closeEvent(QCloseEvent *event)
         }
 
     }
+    
+    if (this->saveModified() != QDialog::Accepted)
+    {
+        event->ignore();
+        return;
+    }
+    
+    this->hide();
+    event->accept();
 
     this->writeSettings();
 
