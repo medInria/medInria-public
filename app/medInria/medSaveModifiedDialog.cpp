@@ -70,7 +70,7 @@ class medSaveModifiedDialogCheckListItem : public QTreeWidgetItem
 medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent), d (new medSaveModifiedDialogPrivate)
 {
     QLabel *label = new QLabel(this);
-    label->setText(tr("The following data has been created. Do you want to save them ?"));
+    label->setText(tr("The following datasets have been created. Do you want to save them ?"));
 
     d->saveQuitButton = new QPushButton(tr("Save and Quit"),this);
     d->cancelButton = new QPushButton(tr("Cancel"),this);
