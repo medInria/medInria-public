@@ -49,7 +49,7 @@ void medDatabaseNavigatorScene::addGroup(medDatabaseNavigatorItemGroup *group)
 
     d->groups << group;
 
-//    qDebug()<<"position of new group:" << d->position;
+    //qDebug()<<"position of new group:" << d->position;
     d->orientation == Qt::Horizontal
         ? group->setPos(d->position + QPointF(10,  0))
         : group->setPos(d->position + QPointF( 0, 10));
@@ -57,10 +57,17 @@ void medDatabaseNavigatorScene::addGroup(medDatabaseNavigatorItemGroup *group)
     d->orientation == Qt::Horizontal
         ? d->position = group->pos() + group->boundingRect().topRight() + QPointF(group_spacing, 0)
         : d->position = group->pos() + group->boundingRect().bottomLeft() + QPointF(0, group_spacing);
-//    qDebug()<<"group position: " << d->position;
+    //qDebug()<<"group position: " << d->position;
+    
+#if (QT_VERSION == QT_VERSION_CHECK(4, 7, 0)) && (defined(Q_OS_MAC))
+    d->orientation == Qt::Horizontal
+    ? this->setSceneRect(QRectF(0, 10, d->position.x(), 128))
+    : this->setSceneRect(QRectF(10, 0, 128, d->position.y()));
+#else
     d->orientation == Qt::Horizontal
         ? this->setSceneRect(QRectF(0, 20, d->position.x(), 128))
         : this->setSceneRect(QRectF(20, 0, 128, d->position.y()));
+#endif
 }
 
 void medDatabaseNavigatorScene::reset(void)
