@@ -429,8 +429,14 @@ void medViewPropertiesToolBox::update(dtkAbstractView *view)
 
     d->view = medView;
     d->propertiesTree->clear();
+
+
+    double layer1Opacity = 0.5;
+    //retrieve layer1 opacity, if possible
+    if(d->view->layerCount() == 2)
+        layer1Opacity =  d->view->opacity(1);
     //decide whether to show the 2 layers slider
-    raiseSlider(d->view->layerCount() == 2);
+    raiseSlider(d->view->layerCount() == 2, layer1Opacity);
 
     if ( ! d->meshInteractor )
         d->meshInteractor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor"));
