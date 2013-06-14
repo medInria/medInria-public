@@ -32,9 +32,8 @@
 #include <vector>
 #include <string>
 
-#ifdef vtkINRIA3D_USE_HWSHADING
 #include <vtkFiberMapper.h>
-#endif
+
 
 #include "v3dViewPluginExport.h"
 

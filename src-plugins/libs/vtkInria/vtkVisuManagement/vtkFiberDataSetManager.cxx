@@ -261,7 +261,6 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
     }
     
     vtkPolyDataMapper *mapper = 0;
-#ifdef vtkINRIA3D_USE_HWSHADING
     if (vtkFibersManager::GetUseHardwareShaders())
     {
       vtkFiberMapper *fiberMapper = vtkFiberMapper::New();
@@ -273,7 +272,7 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
       mapper = fiberMapper;
     }
     else
-#endif
+
     {
       mapper = vtkPolyDataMapper::New();
     }
@@ -286,7 +285,6 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
     switch (this->GetRenderingMode())
     {    
 	case RENDER_IS_TUBES:
-#ifdef vtkINRIA3D_USE_HWSHADING
 	  if (vtkFiberMapper* fiberMapper = vtkFiberMapper::SafeDownCast (mapper))
 	  {
 	    fiberMapper->LightingOn();
@@ -294,7 +292,7 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
 	    fiberMapper->SetInput (bundle);
 	  }
 	  else
-#endif
+
 	  {   
 	    vtkTubeFilter *tubeFilter = d->FiberBundlePipelineList[name]->TubeFilter;
 	    tubeFilter->SetRadius ( this->GetRadius() );
@@ -308,7 +306,6 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
 	  break;
 	  
 	case RENDER_IS_RIBBONS:
-#ifdef vtkINRIA3D_USE_HWSHADING
 	  if (vtkFiberMapper* fiberMapper = vtkFiberMapper::SafeDownCast (mapper))
 	  {
 	    fiberMapper->LightingOn();
@@ -316,7 +313,6 @@ void vtkFiberDataSetManager::CreateRenderingPipelineForBundle (const std::string
 	    fiberMapper->SetInput (bundle);
 	  }
 	  else
-#endif
 	  {
 	    vtkRibbonFilter *ribbonFilter = d->FiberBundlePipelineList[name]->RibbonFilter;
 	    ribbonFilter->SetWidth ( this->GetRadius() );
