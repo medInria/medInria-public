@@ -429,8 +429,14 @@ void medViewPropertiesToolBox::update(dtkAbstractView *view)
 
     d->view = medView;
     d->propertiesTree->clear();
+
+
+    double layer1Opacity = 0.5;
+    //retrieve layer1 opacity, if possible
+    if(d->view->layerCount() == 2)
+        layer1Opacity =  d->view->opacity(1);
     //decide whether to show the 2 layers slider
-    raiseSlider(d->view->layerCount() == 2);
+    raiseSlider(d->view->layerCount() == 2, layer1Opacity);
 
     if ( ! d->meshInteractor )
         d->meshInteractor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor"));
@@ -450,9 +456,10 @@ void medViewPropertiesToolBox::update(dtkAbstractView *view)
         }
     }
 
-    //select the first layer, since we don't have more information
-    if (d->propertiesTree->topLevelItem(0))
-        d->propertiesTree->topLevelItem(0)->setExpanded(true);
+    // select the current layer
+    if (d->propertiesTree->topLevelItem(d->currentLayer))
+            d->propertiesTree->topLevelItem(d->currentLayer)->setExpanded(true);
+
 
     QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)),
                      this, SLOT(onDataAdded(dtkAbstractData*, int)),
