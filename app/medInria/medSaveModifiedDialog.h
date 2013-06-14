@@ -41,7 +41,7 @@ public slots:
     /**
      * Method to store non-persistent data (according to the tree widget items that are checked) into the database.
      */
-    void Save();
+    void saveAndQuit();
 
     /**
      * Method to decrement a counter (i.e. the number of checked items that remain to be saved).

@@ -64,9 +64,6 @@ private slots:
     void showShortcutAccess();
     void hideShortcutAccess();
     void onWorkspaceTriggered(QAction *action);
-    void onQuit();
-    void onSaveModified();
-    void onNoQuit();
     void onEditSettings();
 
     void availableSpaceOnStatusBar();
@@ -141,6 +138,8 @@ protected:
     
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
+    
+    int saveModified();
 
     /**
      * all initial registering should be done here
