@@ -434,7 +434,7 @@ void medViewPropertiesToolBox::update(dtkAbstractView *view)
     double layer1Opacity = 0.5;
     //retrieve layer1 opacity, if possible
     if(d->view->layerCount() == 2)
-        layer1Opacity =  d->view->opacity(1);
+        layer1Opacity = d->view->opacity(1) / (d->view->opacity(0) + d->view->opacity(1));
     //decide whether to show the 2 layers slider
     raiseSlider(d->view->layerCount() == 2, layer1Opacity);
 
