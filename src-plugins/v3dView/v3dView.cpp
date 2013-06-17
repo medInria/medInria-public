@@ -395,6 +395,11 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->renderer3d->GetActiveCamera()->SetViewUp ( 0, 0, 1 );
     d->renderer3d->GetActiveCamera()->SetFocalPoint ( 0, 0, 0 );
 
+    // Activate depth-peeling to have a proper opacity 
+    d->renderer3d->SetUseDepthPeeling(1);
+    d->renderer3d->SetMaximumNumberOfPeels(100);
+    d->renderer3d->SetOcclusionRatio(0.01);
+
     d->view3d = vtkImageView3D::New();
     d->view3d->SetRenderer ( d->renderer3d );
     d->view3d->SetShowBoxWidget ( 0 );
@@ -749,7 +754,8 @@ void v3dView::update()
 {
     if ( d->currentView )
     {
-        d->currentView->Render();
+        // this doesn't seem necessary and can result in a quite important memory comsumation
+        //d->currentView->Render();
     }
     d->vtkWidget->update();
 }
@@ -813,8 +819,13 @@ void v3dView::setSharedDataPointer ( dtkSmartPointer<dtkAbstractData> data )
 
 void v3dView::setData ( dtkAbstractData *data )
 {
-    //if ( !data )
-    //    return;
+    if(!data)
+        return;
+
+    /*
+    if(medAbstractView::isInList(data)) // called in setData(data, layer) !
+        return;
+*/
 
     ///*
     //if(medAbstractView::isInList(data)) // called in setData(data, layer) !
@@ -959,7 +970,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             // This will add the data to the interactor.
             dtkAbstractView::setData ( data );
         }
-        else if ( data->description() == "vtkDataMesh4D" )
+        else if ( data->identifier() == "vtkDataMesh4D" )
         {
             this->enableInteractor ( "v3dViewMeshInteractor" );
             this->enableInteractor("v3dView4DInteractor");
@@ -979,9 +990,14 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             // This will add the data to the interactor.
             dtkAbstractView::setData ( data );
         }
-        else
-        {
-            // if ( data->identifier() == "vtkDataMesh" )
+        else if ( data->identifier().contains("itkDataShImage", Qt::CaseSensitive)) {
+
+             this->enableInteractor ( "v3dViewShInteractor" );
+             // This will add the data to the interactor.
+             dtkAbstractView::setData(data);
+         }
+        else {
+            // if ( data->description() == "vtkDataMesh" )
             //     this->enableInteractor ( "v3dViewMeshInteractor" );
             // else if ( data->identifier() == "v3dDataFibers" )
             //     this->enableInteractor ( "v3dViewFiberInteractor" );
