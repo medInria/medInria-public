@@ -542,7 +542,8 @@ void medDatabaseView::onEditRequested(void)
         foreach(QVariant attrib, attributes)
         {
             const medMetaDataKeys::Key* key =  medMetaDataKeys::Key::fromKeyName(attrib.toString().toStdString().c_str());
-            if(key && key->isEditable())
+            if(key)// && key->isEditable()) ==> all existing labels should be rewriten
+                   //                           otherwise non editable fields are reset
                 labels << key->label();
             else labels << "";
         }
