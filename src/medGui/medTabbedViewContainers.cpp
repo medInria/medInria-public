@@ -149,6 +149,8 @@ void medTabbedViewContainers::addContainer(const QString &name, medViewContainer
         d->currentName = name;
 
     this->addTab(container, name);
+    
+    emit focused(NULL);
 }
 
 void medTabbedViewContainers::insertContainer(int index, const QString &name, medViewContainer *container)
@@ -306,5 +308,6 @@ void medTabbedViewContainers::onCurrentContainerChanged(int index)
 {
     QString name = this->tabText(index);
 
+    emit focused(container(name)->current()->view());
     emit currentChanged(name);
 }
