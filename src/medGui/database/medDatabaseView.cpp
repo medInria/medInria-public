@@ -544,6 +544,8 @@ void medDatabaseView::onEditRequested(void)
             const medMetaDataKeys::Key* key =  medMetaDataKeys::Key::fromKeyName(attrib.toString().toStdString().c_str());
             if(key && key->isEditable())
                 labels << key->label();
+            else if (key) // Apply existing if any
+                labels << key->label();
             else labels << "";
         }
         
