@@ -228,6 +228,9 @@ void medViewContainer::setView ( dtkAbstractView *view )
 
 void medViewContainer::select()
 {
+    if (d->selected)
+	return;
+
     d->selected = true;
 
     this->setCurrent ( this );
@@ -252,6 +255,9 @@ void medViewContainer::select()
 
 void medViewContainer::unselect()
 {
+    if (!d->selected)
+	return;
+
     d->selected = false;
     this->recomputeStyleSheet();
 }
