@@ -542,7 +542,7 @@ void medDatabaseView::onEditRequested(void)
         foreach(QVariant attrib, attributes)
         {
             const medMetaDataKeys::Key* key =  medMetaDataKeys::Key::fromKeyName(attrib.toString().toStdString().c_str());
-            if(key && key->isEditable())
+            if(key)
                 labels << key->label();
             else labels << "";
         }
