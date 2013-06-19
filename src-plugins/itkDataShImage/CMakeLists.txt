@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(itkDataShImagePlugin)
+project(itkDataSHImagePlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -44,16 +44,16 @@ include(${ITK_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkDataShImagePlugin.h
-  itkDataShImageDouble3.h
-  itkDataShImageFloat3.h)
+  itkDataSHImagePlugin.h
+  itkDataSHImageDouble3.h
+  itkDataSHImageFloat3.h)
 
 set(${PROJECT_NAME}_SOURCES
-  itkDataShImagePlugin.cpp
-  itkDataShImageDouble3.cpp
-  itkDataShImageFloat3.cpp)
+  itkDataSHImagePlugin.cpp
+  itkDataSHImageDouble3.cpp
+  itkDataSHImageFloat3.cpp)
 
-set(${PROJECT_NAME}_RESOURCES itkDataShImage.qrc)
+set(${PROJECT_NAME}_RESOURCES itkDataSHImage.qrc)
 
 ## #################################################################
 ## Build rules

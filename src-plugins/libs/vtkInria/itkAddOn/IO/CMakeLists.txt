@@ -26,11 +26,8 @@ if (NOT ITK_USE_SYSTEM_GDCM)
     )
 endif()
 
-if ( VTKINRIA_USE_SPHERICALHARMONICS )
-  set(itkIOAddOnSRCS
-    ${itkIOAddOnSRCS}
-    itkSphericalHarmonicITKToVTKFilter.txx
-    )
+if (VTKINRIA_USE_SPHERICALHARMONICS)
+  set(itkIOAddOnSRCS ${itkIOAddOnSRCS} itkSphericalHarmonicITKToVTKFilter.txx)
 endif()
 
 if ( WIN32 )

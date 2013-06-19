@@ -7,17 +7,17 @@
 
 #include <medCore/medAbstractDataTypedImage.h>
 
-#include "itkDataShImagePluginExport.h"
+#include "itkDataSHImagePluginExport.h"
 
-class itkDataShImageDouble3Private;
+class itkDataSHImageDouble3Private;
 
-class ITKDATASHIMAGEPLUGIN_EXPORT itkDataShImageDouble3 : public medAbstractDataTypedImage<3,double>
+class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageDouble3 : public medAbstractDataTypedImage<3,double>
 {
     Q_OBJECT
 
 public:
-             itkDataShImageDouble3(void);
-    virtual ~itkDataShImageDouble3(void);
+             itkDataSHImageDouble3(void);
+    virtual ~itkDataSHImageDouble3(void);
 
     virtual QString description(void) const;
     virtual QString identifier(void) const;
@@ -40,9 +40,9 @@ public:
     virtual QList<QImage> &thumbnails (void) const;
 
 private:
-    itkDataShImageDouble3Private *d;
+    itkDataSHImageDouble3Private *d;
 };
 
-dtkAbstractData *createItkDataShImageDouble3(void);
+dtkAbstractData *createItkDataSHImageDouble3(void);
 
 #endif
