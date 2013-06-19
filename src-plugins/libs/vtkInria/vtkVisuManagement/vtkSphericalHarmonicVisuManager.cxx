@@ -26,95 +26,92 @@
 vtkCxxRevisionMacro(vtkSphericalHarmonicVisuManager, "$Revision: 0 $");
 vtkStandardNewMacro(vtkSphericalHarmonicVisuManager);
 
-vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager()
-{
-  this->SHSource = vtkSphericalHarmonicSource::New();
-  this->SHGlyph  = vtkSphericalHarmonicGlyph::New();
-  this->Normals  = vtkPolyDataNormals::New();
-  this->VOI    = vtkExtractVOI::New();
-  this->Mapper = vtkPolyDataMapper::New();
-  this->Actor  = vtkActor::New();
+vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager() {
 
-  this->SHSource->SetTesselationType( vtkSphericalHarmonicSource::Icosahedron );
-  this->SHSource->SetTesselationBasis( vtkSphericalHarmonicSource::SHMatrix );
+    SHSource = vtkSphericalHarmonicSource::New();
+    SHGlyph  = vtkSphericalHarmonicGlyph::New();
+    Normals  = vtkPolyDataNormals::New();
+    VOI    = vtkExtractVOI::New();
+    Mapper = vtkPolyDataMapper::New();
+    Actor  = vtkActor::New();
 
-  this->SHSource->SetTesselation( 3 );
-  this->SHSource->UpdateSphericalHarmonicSource();
+    SHSource->SetTesselationType(vtkSphericalHarmonicSource::Icosahedron);
+    SHSource->SetTesselationBasis(vtkSphericalHarmonicSource::SHMatrix);
 
-  this->SHSource->SetNormalize(true);
-  this->SHGlyph->SetSource ( this->SHSource->GetOutput() );
-  this->SHGlyph->SetScaleFactor( 1.0 );
-  this->SHGlyph->SetSphericalHarmonicSource( this->SHSource );
-  this->SHGlyph->SetColorModeToDirections();
-  this->SHGlyph->GetOutput()->GetPointData()
-      ->SetActiveScalars(vtkSphericalHarmonicGlyph::GetRGBArrayName());
+    SHSource->SetTesselation(3);
+    SHSource->UpdateSphericalHarmonicSource();
 
-  this->VOI->ReleaseDataFlagOn();
+    SHSource->SetNormalize(true);
+    SHGlyph->SetSource (SHSource->GetOutput());
+    SHGlyph->SetScaleFactor(1.0);
+    SHGlyph->SetSphericalHarmonicSource(SHSource);
+    SHGlyph->SetColorModeToDirections();
+    SHGlyph->GetOutput()->GetPointData()
+        ->SetActiveScalars(vtkSphericalHarmonicGlyph::GetRGBArrayName());
 
-  this->SHGlyph->SetInput( this->VOI->GetOutput() );
+    VOI->ReleaseDataFlagOn();
 
-  this->Normals->SetInput( this->SHGlyph->GetOutput() );
+    SHGlyph->SetInput(VOI->GetOutput());
 
-  vtkLookupTable *lut = vtkLookupTable::New();
-  //lut->SetHueRange(0.667, 0.0);
-  lut->SetHueRange(0.0, 1.0);
-  lut->SetRange(0.0, 1.0);
-  lut->Build();
+    Normals->SetInput(SHGlyph->GetOutput());
 
-  this->Mapper->SetInput( this->Normals->GetOutput() );
-  this->Mapper->ScalarVisibilityOn();
-  this->Mapper->SetColorModeToMapScalars();
-  this->Mapper->SetScalarModeToUsePointData();
-  this->Mapper->SetLookupTable(lut);
+    vtkLookupTable *lut = vtkLookupTable::New();
+    //lut->SetHueRange(0.667, 0.0);
+    lut->SetHueRange(0.0, 1.0);
+    lut->SetRange(0.0, 1.0);
+    lut->Build();
 
-  this->Mapper->SetScalarRange (0.0, 256);
+    Mapper->SetInput(Normals->GetOutput());
+    Mapper->ScalarVisibilityOn();
+    Mapper->SetColorModeToMapScalars();
+    Mapper->SetScalarModeToUsePointData();
+    Mapper->SetLookupTable(lut);
 
-  lut->Delete();
+    Mapper->SetScalarRange (0.0, 256);
 
-  this->MatrixT=0;
+    lut->Delete();
 
-  this->Actor->SetMapper( this->Mapper );
-  this->Actor->GetProperty()->SetSpecular(0.7);
-  this->Actor->GetProperty()->SetSpecularPower(10.0);
-  this->Actor->GetProperty()->SetInterpolationToGouraud();
-  this->Actor->GetProperty()->SetOpacity(1);
+    MatrixT=0;
+
+    Actor->SetMapper(Mapper);
+    Actor->GetProperty()->SetSpecular(0.7);
+    Actor->GetProperty()->SetSpecularPower(10.0);
+    Actor->GetProperty()->SetInterpolationToGouraud();
+    Actor->GetProperty()->SetOpacity(1);
 }
 
-vtkSphericalHarmonicVisuManager::~vtkSphericalHarmonicVisuManager()
-{
-  if(this->SHGlyph)
-    this->SHGlyph->Delete();
-  if(this->SHSource)
-    this->SHSource->Delete();
-  if(this->Normals)
-    this->Normals->Delete();
-  if(this->VOI)
-    this->VOI->Delete();
-  if(this->Mapper)
-    this->Mapper->Delete();
-  if(this->Actor)
-    this->Actor->Delete();
-  if(this->MatrixT)
-    this->MatrixT->Delete();
+vtkSphericalHarmonicVisuManager::~vtkSphericalHarmonicVisuManager() {
+
+    if (SHGlyph)
+        SHGlyph->Delete();
+    if (SHSource)
+        SHSource->Delete();
+    if (Normals)
+        Normals->Delete();
+    if (VOI)
+        VOI->Delete();
+    if (Mapper)
+        Mapper->Delete();
+    if (Actor)
+        Actor->Delete();
+    if (MatrixT)
+        MatrixT->Delete();
 }
 
-void vtkSphericalHarmonicVisuManager::SetInput (vtkImageData* vtkSH)
-{
-  this->SHGlyph->SetTMatrix(MatrixT);
+void vtkSphericalHarmonicVisuManager::SetInput (vtkImageData* vtkSH) {
 
-  if( !vtkSH )
-  {
-    return;
-  }
+    SHGlyph->SetTMatrix(MatrixT);
 
-  int number =
-      vtkSH->GetPointData()
-      ->GetArray(vtkSphericalHarmonicGlyph::GetSphericalHarmonicCoefficientsArrayName())
-      ->GetNumberOfComponents();
+    if (!vtkSH)
+        return;
 
-  this->SHSource->SetNumberOfSphericalHarmonics( number );
+    const int number = vtkSH->GetPointData()->
+                       GetArray(vtkSphericalHarmonicGlyph::GetSphericalHarmonicCoefficientsArrayName())->
+                       GetNumberOfComponents();
 
-  this->VOI->SetInput ( vtkSH );
+    SHSource->SetNumberOfSphericalHarmonics(number);
+
+    VOI->SetInput (vtkSH);
 }
 
 
@@ -122,85 +119,63 @@ void vtkSphericalHarmonicVisuManager::SetVOI(const int& imin, const int& imax,
                                              const int& jmin, const int& jmax,
                                              const int& kmin, const int& kmax)
 {
-  this->VOI->SetVOI(imin,imax,jmin,jmax,kmin,kmax);
+    VOI->SetVOI(imin,imax,jmin,jmax,kmin,kmax);
 }
 
-void vtkSphericalHarmonicVisuManager::SetGlyphScale (const float& scale)
-{
-  this->SHGlyph->SetScaleFactor(scale);
+void vtkSphericalHarmonicVisuManager::SetGlyphScale (const float& scale) {
+    SHGlyph->SetScaleFactor(scale);
 }
 
-void vtkSphericalHarmonicVisuManager::SetTesselationType (const int& type)
-{
-  this->SHSource->SetTesselationType (type);
-  this->SHSource->UpdateSphericalHarmonicSource();
+void vtkSphericalHarmonicVisuManager::SetTesselationType (const int& type) {
+    SHSource->SetTesselationType (type);
+    SHSource->UpdateSphericalHarmonicSource();
 }
 
-void vtkSphericalHarmonicVisuManager::SetTesselationBasis (const int& type)
-{
-  this->SHSource->SetTesselationBasis(type);
-  this->SHSource->UpdateSphericalHarmonicSource();
+void vtkSphericalHarmonicVisuManager::SetTesselationBasis (const int& type) {
+    SHSource->SetTesselationBasis(type);
+    SHSource->UpdateSphericalHarmonicSource();
 }
 
-void vtkSphericalHarmonicVisuManager::SetGlyphResolution (const int& res)
-{
-  this->SHSource->SetTesselation( res/2 );
-  this->SHSource->UpdateSphericalHarmonicSource();
+void vtkSphericalHarmonicVisuManager::SetGlyphResolution (const int& res) {
+    SHSource->SetTesselation(res/2);
+    SHSource->UpdateSphericalHarmonicSource();
 }
 
-void vtkSphericalHarmonicVisuManager::SetOrder (const int& order)
-{
-  this->SHSource->SetOrder(order);
-  this->SHSource->UpdateSphericalHarmonicSource();
+void vtkSphericalHarmonicVisuManager::SetOrder (const int& order) {
+    SHSource->SetOrder(order);
+    SHSource->UpdateSphericalHarmonicSource();
 }
 
-void vtkSphericalHarmonicVisuManager::SetSampleRate (const int& n1,const int& n2, const int& n3)
-{
-  this->VOI->SetSampleRate(n1, n2, n3);
+void vtkSphericalHarmonicVisuManager::SetSampleRate (const int& n1,const int& n2,const int& n3) {
+    VOI->SetSampleRate(n1,n2,n3);
 }
 
-void vtkSphericalHarmonicVisuManager::FlipX (const int& a)
-{
-  if (a)
-    this->SHSource->FlipXOn();
-  else
-    this->SHSource->FlipXOff();
-  this->SHSource->UpdateSphericalHarmonicSource();
+void vtkSphericalHarmonicVisuManager::FlipX (const int& a) {
+    bool* flip = SHSource->GetFlipVector();
+    flip[0] = a;
+    SHSource->SetFlipVector(flip);
+    SHSource->UpdateSphericalHarmonicSource();
 }
 
-void vtkSphericalHarmonicVisuManager::FlipY (const int& a)
-{
-  if (a)
-    this->SHSource->FlipYOn();
-  else
-    this->SHSource->FlipYOff();
-  this->SHSource->UpdateSphericalHarmonicSource();
+void vtkSphericalHarmonicVisuManager::FlipY (const int& a) {
+    bool* flip = SHSource->GetFlipVector();
+    flip[1] = a;
+    SHSource->SetFlipVector(flip);
+    SHSource->UpdateSphericalHarmonicSource();
 }
 
-void vtkSphericalHarmonicVisuManager::FlipZ (const int& a)
-{
-  if( a )
-    this->SHSource->FlipZOn();
-  else
-    this->SHSource->FlipZOff();
-  this->SHSource->UpdateSphericalHarmonicSource();
+void vtkSphericalHarmonicVisuManager::FlipZ (const int& a) {
+    bool* flip = SHSource->GetFlipVector();
+    flip[2] = a;
+    SHSource->SetFlipVector(flip);
+    SHSource->UpdateSphericalHarmonicSource();
 }
 
-void vtkSphericalHarmonicVisuManager::ColorGlyphs (const int& a)
-{
-  if( a )
-    this->SHGlyph->SetColorGlyphs(true);
-  else
-    this->SHGlyph->SetColorGlyphs(false);
-//  this->SHSource->UpdateSphericalHarmonicSource();
+void vtkSphericalHarmonicVisuManager::ColorGlyphs (const int& a) {
+    SHGlyph->SetColorGlyphs(a);
 }
 
-void vtkSphericalHarmonicVisuManager::SetNormalization (const int& a)
-{
-    if (a)
-        this->SHSource->NormalizeOn();
-      else
-        this->SHSource->NormalizeOff();
-//      this->SHSource->UpdateSphericalHarmonicSource();
+void vtkSphericalHarmonicVisuManager::SetNormalization (const int& a) {
+    SHSource->SetNormalize(a);
 }
 

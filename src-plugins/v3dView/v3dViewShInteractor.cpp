@@ -15,13 +15,13 @@
 #include <itkImage.h>
 #include <itkVectorImage.h>
 
-typedef itk::VectorImage<float,3>   ShImageTypeFloat;
-typedef ShImageTypeFloat::PixelType ShTypeFloat;
-typedef ShImageTypeFloat::Pointer   ShImagePointerFloat;
+typedef itk::VectorImage<float,3>   SHImageTypeFloat;
+typedef SHImageTypeFloat::PixelType ShTypeFloat;
+typedef SHImageTypeFloat::Pointer   SHImagePointerFloat;
 
-typedef itk::VectorImage<double,3>   ShImageTypeDouble;
-typedef ShImageTypeDouble::PixelType ShTypeDouble;
-typedef ShImageTypeDouble::Pointer   ShImagePointerDouble;
+typedef itk::VectorImage<double,3>   SHImageTypeDouble;
+typedef SHImageTypeDouble::PixelType ShTypeDouble;
+typedef SHImageTypeDouble::Pointer   SHImagePointerDouble;
 
 class v3dViewShInteractorPrivate {
 public:
@@ -31,11 +31,11 @@ public:
     vtkSphericalHarmonicManager       *manager;
 
     // the filters will convert from itk SH image format to vtkStructuredPoint (format handled by the SH manager)
-    itk::SphericalHarmonicITKToVTKFilter<ShImageTypeFloat>::Pointer filterFloat;
-    ShImagePointerFloat      datasetFloat;
+    itk::SphericalHarmonicITKToVTKFilter<SHImageTypeFloat>::Pointer filterFloat;
+    SHImagePointerFloat      datasetFloat;
 
-    itk::SphericalHarmonicITKToVTKFilter<ShImageTypeDouble>::Pointer filterDouble;
-    ShImagePointerDouble      datasetDouble;
+    itk::SphericalHarmonicITKToVTKFilter<SHImageTypeDouble>::Pointer filterDouble;
+    SHImagePointerDouble      datasetDouble;
 };
 
 v3dViewShInteractor::v3dViewShInteractor(): medShAbstractViewInteractor(),d(new v3dViewShInteractorPrivate) {
@@ -95,104 +95,74 @@ bool v3dViewShInteractor::registered() {
 
 void v3dViewShInteractor::setData(dtkAbstractData *data) {
 
-    if (!data)
+    if (!data || !data->data())
         return;
 
     QString identifier = data->identifier();
 
     // up to the moment 2 itk SH image formats are supported
     // we need to convert them to vtkStructuredPoints so it's understood by the SH manager
-    if (identifier.compare("itkDataShImageFloat3") == 0) {
-        if (ShImageTypeFloat *dataset = static_cast<ShImageTypeFloat *>(data->data())) {
+    if (identifier=="itkDataSHImageFloat3") {
+        SHImageTypeFloat* dataset = static_cast<SHImageTypeFloat*>(data->data());
 
-            QTime timer;
-            timer.start();
-            d->datasetFloat = dataset;
+        d->datasetFloat = dataset;
 
-            d->filterFloat = itk::SphericalHarmonicITKToVTKFilter<ShImageTypeFloat>::New();
+        d->filterFloat = itk::SphericalHarmonicITKToVTKFilter<SHImageTypeFloat>::New();
 
-            qDebug() << "Time 1:" << timer.elapsed();
+        d->filterFloat->SetInput(dataset);
 
-            d->filterFloat->SetInput(dataset);
+//            typename SHImageTypeFloat::DirectionType directions = dataset->GetDirection();
+//            typename SHImageTypeFloat::PointType i_origin = dataset->GetOrigin();
 
-//            typename ShImageTypeFloat::DirectionType directions = dataset->GetDirection();
-//            typename ShImageTypeFloat::PointType i_origin = dataset->GetOrigin();
+        // this line generates the vtkShs, otherwise is not generated, even if the next filter
+        // in the pipeline is connected and Update() is called
+        d->filterFloat->Update();
 
-            // this line generates the vtkShs, otherwise is not generated, even if the next filter
-            // in the pipeline is connected and Update() is called
-            qDebug() << "Time 2:" << timer.elapsed();
-            d->filterFloat->Update();
-
-            // we need to call this function because GetOutput() just returns the input
+        // we need to call this function because GetOutput() just returns the input
 //            vtkStructuredPoints *shs = d->filterFloat->GetVTKSphericalHarmonic();
 //            vtkMatrix4x4 *matrix = d->filterFloat->GetDirectionMatrix();
 
-            qDebug() << "Time 3:" << timer.elapsed();
-            d->manager->SetInput(d->filterFloat->GetVTKSphericalHarmonic());
-            qDebug() << "Time 4:" << timer.elapsed();
-            d->manager->SetMatrixT(d->filterFloat->GetDirectionMatrix());
-            //TODO:JGG This has to be changed the order has to be a property saved inside the image
-            qDebug() << "Time 5:" << timer.elapsed();
-            int number = dataset->GetNumberOfComponentsPerPixel();
-            int Order = (int)(-1.5+std::sqrt((float)(0.25+2*number)));
-            qDebug() << "Time 6:" << timer.elapsed();
-            d->manager->SetOrder(Order);
+        d->manager->SetInput(d->filterFloat->GetVTKSphericalHarmonic());
+        d->manager->SetMatrixT(d->filterFloat->GetDirectionMatrix());
 
-            // TODO this should not be here once the toolbox is coded
-//            d->manager->ResetPosition();
+    } else if (identifier=="itkDataSHImageDouble3") {
+        SHImageTypeDouble *dataset = static_cast<SHImageTypeDouble *>(data->data());
 
-            qDebug() << "Time 7:" << timer.elapsed();
-            d->manager->Update();
-            qDebug() << "Time 8:" << timer.elapsed();
+        d->datasetDouble = dataset;
 
-            d->data = data;
-        }
-    } else if (identifier.compare("itkDataShImageDouble3") == 0) {
-        if (ShImageTypeDouble *dataset = static_cast<ShImageTypeDouble *>(data->data())) {
+        d->filterDouble = itk::SphericalHarmonicITKToVTKFilter<SHImageTypeDouble>::New();
 
-            QTime timer;
-            timer.start();
-            d->datasetDouble = dataset;
+        d->filterDouble->SetInput(dataset);
 
-            d->filterDouble = itk::SphericalHarmonicITKToVTKFilter<ShImageTypeDouble>::New();
+        // this line generates the vtkShs, otherwise is not generated, even if the next filter
+        // in the pipeline is connected and Update() is called
+        d->filterDouble->Update();
 
-            qDebug() << "time 1:" << timer.elapsed();
-
-            d->filterDouble->SetInput(dataset);
-
-            // this line generates the vtkShs, otherwise is not generated, even if the next filter
-            // in the pipeline is connected and Update() is called
-            qDebug() << "time 2:" << timer.elapsed();
-            d->filterDouble->Update();
-
-            // we need to call this function because GetOutput() just returns the input
+        // we need to call this function because GetOutput() just returns the input
 //            vtkStructuredPoints* shs = d->filterDouble->GetVTKSphericalHarmonic();
 
 //            vtkMatrix4x4 *matrix = d->filterDouble->GetDirectionMatrix();
 
-            qDebug() << "time 3:" << timer.elapsed();
-            d->manager->SetInput(d->filterDouble->GetVTKSphericalHarmonic());
-            qDebug() << "time 4:" << timer.elapsed();
-            d->manager->SetMatrixT(d->filterDouble->GetDirectionMatrix());
+        d->manager->SetInput(d->filterDouble->GetVTKSphericalHarmonic());
+        d->manager->SetMatrixT(d->filterDouble->GetDirectionMatrix());
 
-            //TODO: This has to be changed the order has to be a property saved inside the image
-            qDebug() << "time 5:" << timer.elapsed();
-            int number = dataset->GetNumberOfComponentsPerPixel();
-            int Order = (int)(-6.5+std::sqrt((float)(0.25+2*number)));
-            qDebug() << "time 7:" << timer.elapsed();
-            d->manager->SetOrder(Order);
-
-            // TODO this should not be here once the toolbox is coded
-            d->manager->ResetPosition();
-
-            qDebug() << "time 8:" << timer.elapsed();
-            d->manager->Update();
-
-            d->data = data;
-        }
     } else {
         qDebug() << "Unrecognized SH data type: " << identifier;
     }
+
+    //TODO:JGG This has to be changed the order has to be a property saved inside the image
+
+    const int number = dataset->GetNumberOfComponentsPerPixel();
+    const int Order  = -1.5+std::sqrt((float)(0.25+2*number));
+    d->manager->SetOrder(Order);
+
+    // TODO this should not be here once the toolbox is coded
+    //            d->manager->ResetPosition();
+
+    std::cerr << "A" << std::endl;
+    d->manager->Update();
+    std::cerr << "B" << std::endl;
+    d->data = data;
 }
 
 dtkAbstractData *v3dViewShInteractor::data() {

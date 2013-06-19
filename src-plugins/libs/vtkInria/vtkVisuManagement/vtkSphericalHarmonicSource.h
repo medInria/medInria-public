@@ -118,37 +118,13 @@ public:
       *  If On, spherical values are (0,1) normalized*/
     vtkGetMacro(Normalize,bool);
     
-    /** Set Flip{X} On/Off If On, x direction is flipped in the
+    /** Set FlipVector On/Off If On, x direction is flipped in the
       * reconstruction directions defining the basis function*/
-    vtkSetMacro(FlipX,bool);
+    vtkSetVector3Macro(FlipVector,const bool);
 
-    vtkBooleanMacro(FlipX,bool);
-
-    /** Get Flip{X} On/Off If On, x direction is flipped in the reconstruction
+    /** Get FlipVector On/Off If On, x direction is flipped in the reconstruction
       * directions defining the basis function*/
-    vtkGetMacro(FlipX,bool);
-
-    /** Set Flip{Y} On/Off If On, y direction is flipped in the reconstruction
-      * directions defining the basis function*/
-    vtkSetMacro(FlipY,bool);
-
-    vtkBooleanMacro(FlipY,bool);
-
-    /** Get Flip{Y} On/Off If On, y direction is flipped in the reconstruction
-      * directions defining the basis function*/
-    vtkGetMacro(FlipY,bool);
-    
-    /** Set Flip{Z} On/Off If On, z direction is flipped in the reconstruction
-      * directions defining the basis function
-      * By default we need to flip Z to have glyphs correctly aligned*/
-    vtkSetMacro(FlipZ,bool);
-
-    vtkBooleanMacro(FlipZ,bool);
-
-    /** Get Flip{Z} On/Off If On, z direction is flipped in the reconstruction
-      * directions defining the basis function
-      * By default we need to flip Z to have glyphs correctly aligned*/
-    vtkGetMacro(FlipZ,bool);
+    vtkGetVector3Macro(FlipVector,bool);
 
     vtkSetMacro(MaxThesisFunc,bool);
     vtkBooleanMacro(MaxThesisFunc,bool);
@@ -176,7 +152,7 @@ public:
     
 protected:
 
-    vtkSphericalHarmonicSource(int tess=3);
+    vtkSphericalHarmonicSource(const int tess=3);
     ~vtkSphericalHarmonicSource();
     
     int RequestData(vtkInformation*,vtkInformationVector**,vtkInformationVector*);
@@ -220,12 +196,11 @@ protected:
       *  If On, spherical values are (0,1) normalized*/
     bool Normalize;
     
-    /** Flip{X,Y,Z} On/Off
-      * If On, x direction is flipped in the reconstruction directions defining
-      * the basis function By default we need to flip Z to have glyphs correctly aligned*/
-    bool FlipX;
-    bool FlipY;
-    bool FlipZ;
+    /** FlipVector {X,Y,Z} On/Off
+      * If On, the correponding direction is flipped in the reconstruction directions defining
+      * the basis function By default we need to flip Z to have glyphs correctly aligned.      */
+
+    bool FlipVector[3];
 
     /** MaximeDescoteaux Thesis On/Off
       * If On, spherical values are (0,1) normalized*/

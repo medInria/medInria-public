@@ -167,7 +167,7 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
                     output->InsertNextCell(cell->GetCellType(),npts,pts);
                 }
                 
-                delete pts;
+                delete[] pts;
                 
             }
             inPtIdReal++;
@@ -190,7 +190,7 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
             const vtkIdType ptIncr = numDirs*inPtIdReal*numSourcePts;
 
             // Get the Spherical Harmonic vector.
-            double * sh = new double[inScalars->GetNumberOfComponents()];
+            double* sh = new double[inScalars->GetNumberOfComponents()];
             inScalars->GetTuple(inPtId,sh);
 
             // Set harmonics and compute spherical function.
@@ -231,27 +231,22 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
             }
             inPtIdReal++;
               
-            delete sh;
+            delete[] sh;
         }
     }
     output->SetPoints(newPts);
 
     // Assigning color to PointData
-    if (newScalars) {
-        if(ColorMode==COLOR_BY_SCALARS) {
-            cout << "Color by anisotropy...\n";
-            newScalars->SetName(GetAnisotropyMeasureArrayName());
-        } else {
-            cout << "Color by RGB direction...\n";
-            newScalars->SetName(GetRGBArrayName());
-        }
 
+    if (newScalars) {
+        newScalars->SetName((ColorMode==COLOR_BY_SCALARS) ? GetAnisotropyMeasureArrayName() : GetRGBArrayName());
         const int idx = outPD->AddArray(newScalars);
         outPD->SetActiveAttribute(idx,vtkDataSetAttributes::SCALARS);
         newScalars->Delete();
     }
 
     // Assigning spherical values
+
     if (newPointScalars) {
         newPointScalars->SetName(GetSphericalHarmonicValuesArrayName());
         //const int idx = outPD->AddArray(newPointScalars);
