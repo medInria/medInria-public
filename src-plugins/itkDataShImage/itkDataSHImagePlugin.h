@@ -7,18 +7,18 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "itkDataShImagePluginExport.h"
+#include "itkDataSHImagePluginExport.h"
 
-class ITKDATASHIMAGEPLUGIN_EXPORT itkDataShImagePluginPrivate;
+class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImagePluginPrivate;
 
-class ITKDATASHIMAGEPLUGIN_EXPORT itkDataShImagePlugin : public dtkPlugin
+class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImagePlugin : public dtkPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
 
 public:
-     itkDataShImagePlugin(QObject *parent = 0);
-    ~itkDataShImagePlugin(void);
+     itkDataSHImagePlugin(QObject *parent = 0);
+    ~itkDataSHImagePlugin(void);
 
     virtual bool initialize(void);
     virtual bool uninitialize(void);
@@ -30,7 +30,7 @@ public:
     virtual QStringList types(void) const;
 
 private:
-     itkDataShImagePluginPrivate *d;
+     itkDataSHImagePluginPrivate *d;
 };
 
 #endif

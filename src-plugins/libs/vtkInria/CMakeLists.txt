@@ -107,7 +107,7 @@ endif()
 # -----------------------------------------------------------------------------
 option(VTKINRIA_USE_SPHERICALHARMONICS "If ON, compile the SPHERICAL HARMONICS extension of vtkInria." OFF)
 
-if ( VTKINRIA_USE_SPHERICALHARMONICS )
+if (VTKINRIA_USE_SPHERICALHARMONICS)
 
   if (APPLE OR WIN32)
     find_package( Boost REQUIRED)

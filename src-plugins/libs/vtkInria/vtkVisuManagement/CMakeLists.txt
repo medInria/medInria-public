@@ -70,7 +70,7 @@ set(vtkLandmarkManagement_LIBS
  vtkHWShading
 )
 
-if (VTKINRIA_USE_SPHERICALHARMONICS )
+if (VTKINRIA_USE_SPHERICALHARMONICS)
     set(${PROJECT_NAME}_SRCS
         ${${PROJECT_NAME}_SRCS}
         vtkSphericalHarmonicVisuManager.cxx
@@ -79,10 +79,7 @@ if (VTKINRIA_USE_SPHERICALHARMONICS )
         vtkSphericalHarmonicSource.cxx
         vtkSphericalHarmonicGlyph.cxx
         )
-    set(${PROJECT_NAME}_LIBS
-        ${${PROJECT_NAME}_LIBS}
-        itkIOAddOn
-        )
+    set(${PROJECT_NAME}_LIBS ${${PROJECT_NAME}_LIBS} itkIOAddOn)
 endif()
 
 if (VTKINRIA_USE_PRECOMPILED_HEADERS)
@@ -107,7 +104,6 @@ target_link_libraries(${PROJECT_NAME}
   ${${PROJECT_NAME}_LIBS}
 )
 
-  
 target_link_libraries(vtkLandmarkManagement  
   ${vtkLandmarkManagement_LIBS}
 )
