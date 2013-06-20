@@ -58,8 +58,6 @@ bool itkDataSHImageReaderBase::canRead (const QString &path)
             qDebug() << e.GetDescription();
             return false;
         }
-        const unsigned int compo = this->io->GetNumberOfComponents();
-        //JGG qDebug() << "number of components sh image" << compo;
         if (this->io->GetNumberOfComponents/*PerPixel*/() != 15 && this->io->GetNumberOfComponents/*PerPixel*/() != 28)
             return false;
 
