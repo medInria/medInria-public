@@ -613,7 +613,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     QString mouseInteraction = mnger->value("interactions","mouse",
                                             "Windowing").toString();
     this->setProperty ("MouseInteraction", mouseInteraction);
-//     this->setProperty ("3DMode",                "VR");
     this->setProperty ("3DMode",                "MPR");
 #ifdef __APPLE__
     this->setProperty ( "Renderer", "Ray Cast" );
@@ -880,22 +879,6 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         return;
     }
 
-
-//    if(medAbstractView::hasImage()){
-//        if (data->identifier().contains( "vtkDataMesh" ) && medAbstractView::meshLayerCount()>1)
-//        {
-//            medMessageController::instance()->showError ( this, tr ( "By now only 2 mesh layers are possible :(, improvements in progress" ), 5000 );
-//            return;
-//        }
-//    }
-//    else
-//    {
-//        if (data->identifier().contains( "vtkDataMesh" ) && medAbstractView::meshLayerCount()>=1)
-//        {
-//            medMessageController::instance()->showError ( this, tr ( "By now only 2 mesh layers are possible :(, improvements in progress" ), 5000 );
-//            return;
-//        }
-//    }
 
     if (SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
         SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3",data,layer) ||

@@ -261,7 +261,7 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 
     if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-    else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(this->model()))
+    else if (dynamic_cast<QAbstractItemModel *>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     if (item)
