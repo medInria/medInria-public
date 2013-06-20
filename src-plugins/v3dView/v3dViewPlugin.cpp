@@ -12,7 +12,6 @@
 =========================================================================*/
 
 #include "v3dView.h"
-#include "v3dViewFuseInteractor.h"
 #include "v3dViewMeshInteractor.h"
 #include "v3dView4DInteractor.h"
 #include "v3dViewAnnotationInteractor.h"
@@ -58,7 +57,6 @@ bool v3dViewPlugin::initialize()
     if (!v3dViewFiberInteractor::registered())      { dtkWarn() << "Unable to register v3dViewFiberInteractor type";      }
 #endif
 
-    if (!v3dViewFuseInteractor::registered())       { dtkWarn() << "Unable to register v3dViewFuseInteractor type";       }
     if (!v3dViewMeshInteractor::registered())       { dtkWarn() << "Unable to register v3dViewMeshInteractor type";       }
     if (!v3dView4DInteractor::registered())         { dtkWarn() << "Unable to register v3dView4DInteractor type";         }
     if (!v3dViewAnnotationInteractor::registered()) { dtkWarn() << "Unable to register v3dViewAnnotationInteractor type"; }
@@ -123,8 +121,8 @@ QStringList v3dViewPlugin::tags() const
 
 QStringList v3dViewPlugin::types() const
 {
-    return QStringList() << v3dView::s_identifier() << "v3dViewFiberInteractor"
-        << "v3dViewFuseInteractor" << "v3dViewMeshInteractor"
+    return QStringList() << v3dView::s_identifier()
+        << "v3dViewFiberInteractor" << "v3dViewMeshInteractor"
         << "v3dViewTensorInteractor" << "v3dView4DInteractor"
         << v3dViewAnnotationInteractor::s_identifier();
 }
