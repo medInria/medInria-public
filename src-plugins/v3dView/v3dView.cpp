@@ -377,7 +377,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 // For full list see   ${QT_DIR}/src/gui/painting/qcolor_p.cpp
     }
 
-    d->setPropertyFunctions["Daddy"] = &v3dView::onDaddyPropertySet;
     d->setPropertyFunctions["Closable"] = &v3dView::onClosablePropertySet;
     d->setPropertyFunctions["Orientation"] =  &v3dView::onOrientationPropertySet;
     d->setPropertyFunctions["ShowScalarBar"] = &v3dView::onShowScalarBarPropertySet;
@@ -451,18 +450,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->slider = new QSlider ( Qt::Horizontal, d->widget );
     d->slider->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Fixed );
     d->slider->setFocusPolicy ( Qt::NoFocus );
-
-//    d->anchorButton = new QPushButton ( d->widget );
-//    d->anchorButton->setIcon ( QIcon ( ":/icons/anchor.png" ) );
-//    //d->anchorButton->setText("a");
-//    d->anchorButton->setCheckable ( true );
-//    d->anchorButton->setMaximumHeight ( 16 );
-//    d->anchorButton->setMaximumWidth ( 16 );
-//    d->anchorButton->setFocusPolicy ( Qt::NoFocus );
-//    d->anchorButton->setSizePolicy ( QSizePolicy::Fixed, QSizePolicy::Fixed );
-//    d->anchorButton->setObjectName ( "tool" );
-
-//    connect ( d->anchorButton, SIGNAL ( clicked ( bool ) ), this, SIGNAL ( becomeDaddy ( bool ) ) );
 
     d->linkButton = new QPushButton ( d->widget );
     d->linkButton->setIcon (d->linkIcon );
@@ -681,7 +668,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 
     this->setProperty ( "PositionLinked",   "false" );
     this->setProperty ( "WindowingLinked",  "false" );
-    this->setProperty ( "Daddy",            "false" );
     this->setProperty ( "Closable",         "true"  );
 
     this->addProperty ("ZoomMode",QStringList() << "Normal" << "RubberBand" );
@@ -1727,19 +1713,7 @@ void v3dView::onZSliderValueChanged ( int value )
 
 }
 
-void v3dView::onDaddyPropertySet ( const QString &value )
-{
-//    QSignalBlocker anchorBlocker ( d->anchorButton );
 
-    bool boolValue = false;
-    if ( value == "true" )
-    {
-        boolValue = true;
-    }
-
-//    d->anchorButton->setChecked ( boolValue );
-    emit ( changeDaddy ( boolValue ) );
-}
 void v3dView::onClosablePropertySet( const QString &value ){
 
     if ( value == "true" )

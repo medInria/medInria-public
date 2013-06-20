@@ -113,12 +113,6 @@ bool medViewContainer::isEmpty() const
              this->childContainers().isEmpty());
 }
 
-bool medViewContainer::isDaddy() const
-{
-    return ( this->view() != NULL &&
-             this->view()->property ( "Daddy" ) == "true" );
-}
-
 medViewContainer * medViewContainer::parentContainer() const
 {
     return qobject_cast< medViewContainer * >( this->parentWidget() );
@@ -221,7 +215,6 @@ void medViewContainer::setView ( dtkAbstractView *view )
             view->setProperty ( it.key(), it.value() );
             ++it;
         }
-        connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
         medAbstractView * medView = qobject_cast<medAbstractView*>(view);
         if (medView) {
             connect(medView, SIGNAL(selected()), this, SLOT(select()));
@@ -367,13 +360,6 @@ void medViewContainer::onViewFullScreen ( bool value )
 {
     Q_UNUSED ( value );
 }
-
-void medViewContainer::onDaddyChanged ( bool state )
-{
-    Q_UNUSED ( state );
-    this->recomputeStyleSheet();
-}
-
 
 void medViewContainer::setInfo ( const QString& info )
 {

@@ -85,7 +85,6 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     // by subclass
 
     // properties to keep up to date synchronization
-    this->addProperty ("Daddy",                 QStringList() << "true" << "false");
     this->addProperty ("Closable",              QStringList() << "true" << "false");
     this->addProperty ("PositionLinked",        QStringList() << "true" << "false");
     this->addProperty ("CameraLinked",          QStringList() << "true" << "false");
