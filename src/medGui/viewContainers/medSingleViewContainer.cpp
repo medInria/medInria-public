@@ -56,8 +56,6 @@ void medSingleViewContainer::setView(dtkAbstractView *view)
             d->pool->appendView (medView);
 
         connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
-        connect (view, SIGNAL (changeDaddy(bool)),
-                 this, SLOT (onDaddyChanged(bool)));
 
         this->recomputeStyleSheet();
         emit viewAdded (view);
@@ -79,8 +77,6 @@ void medSingleViewContainer::onViewClosing()
     if (d->view) {
         d->layout->removeWidget (d->view->widget());
         disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
-        disconnect (d->view, SIGNAL (changeDaddy(bool)),
-                    this,    SLOT (onDaddyChanged(bool)));
         if (medAbstractView *medView = qobject_cast<medAbstractView*> (d->view))
             d->pool->removeView (medView);
 

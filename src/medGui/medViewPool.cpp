@@ -60,11 +60,6 @@ void medViewPool::appendView (medAbstractView *vview)
     else
         viewsToAdd << vview;
 
-    if (d->views.count()==0 && viewsToAdd.count()) { // view will become daddy      
-        // vview->setProperty ("Daddy", "true");
-        viewsToAdd[0]->setProperty ("Daddy", "true");
-    }    
-
     foreach (medAbstractView *view, viewsToAdd) {
 
         if (d->views.contains (view)) {
@@ -74,8 +69,6 @@ void medViewPool::appendView (medAbstractView *vview)
         d->views.append (view);
     
         connect (view, SIGNAL (propertySet(const QString&, const QString&)), this, SLOT (onViewPropertySet(const QString&, const QString &)));        
-        connect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));
-        connect (view, SIGNAL (reg(bool)),                     this, SLOT (onViewReg(bool)));
         
         connect (view, SIGNAL (positionChanged  (const QVector3D  &, bool)), this, SLOT (onViewPositionChanged  (const QVector3D  &, bool)));
         connect (view, SIGNAL (zoomChanged      (double, bool)),             this, SLOT (onViewZoomChanged      (double, bool)));
@@ -93,14 +86,6 @@ void medViewPool::appendView (medAbstractView *vview)
 
         connect (this, SIGNAL (viewRemoved (medAbstractView *)),
                  view, SLOT (onRemoveViewFromPool (medAbstractView *)));
-
-        // Tell any interested views that one is appended.
-        /*
-        foreach(medAbstractView * it , d->views ){
-            if ( it != view ){
-                it->onAppendViewToPool( view );
-            }
-        }*/
 
         // set properties
         QHashIterator<QString, QString> it(d->propertySet);
@@ -127,43 +112,15 @@ void medViewPool::removeView (medAbstractView *vview)
     }
     else
         viewsToRemove << vview;
-    
-    // look if a view is a daddy
-    medAbstractView *refView = this->daddy();
-    
-    if (refView) {
-        if (viewsToRemove.contains(refView)) { // we are daddy, we need to find a new daddy
-                                               // change daddy
-            foreach(medAbstractView *lview, d->views) {
-                if (!viewsToRemove.contains(lview) && lview->property ("Daddy")=="false") {
-                    lview->setProperty ("Daddy", "true");
-                    break;
-                }
-            }
-            medAbstractView *oldDaddy = refView;
-            oldDaddy->setProperty ("Daddy", "false"); // not necessary
-        }
-    }
 
     foreach(medAbstractView *view, viewsToRemove) {
 
         if (!d->views.contains (view)) {
             continue;
-            }
-
-        // Tell any interested views that one is leaving.
-        /*
-        foreach(medAbstractView * it , d->views ){
-            if ( it != view ) {
-            it->onRemoveViewFromPool( view );
-            }
         }
-        */        
 
         disconnect (view, SIGNAL (propertySet(const QString&, const QString&)), this, SLOT (onViewPropertySet(const QString&, const QString &)));
-        disconnect (view, SIGNAL (becomeDaddy(bool)),             this, SLOT (onViewDaddy(bool)));
-        disconnect (view, SIGNAL (reg(bool)),                     this, SLOT (onViewReg(bool)));
-    
+
         disconnect (view, SIGNAL (positionChanged  (const QVector3D  &, bool)), this, SLOT (onViewPositionChanged  (const QVector3D  &, bool)));
         disconnect (view, SIGNAL (zoomChanged      (double, bool)),             this, SLOT (onViewZoomChanged      (double, bool)));
         disconnect (view, SIGNAL (panChanged       (const QVector2D &, bool)),  this, SLOT (onViewPanChanged       (const QVector2D  &, bool)));
@@ -186,122 +143,10 @@ void medViewPool::removeView (medAbstractView *vview)
     }
 }
 
-medAbstractView *medViewPool::daddy()
-{
-    QList< dtkSmartPointer<medAbstractView> >::iterator it = d->views.begin();
-    for( ; it!=d->views.end(); it++) {
-        if ((*it)->property ("Daddy")=="true")
-            return (*it);
-    }
-    return NULL;
-}
-
-void medViewPool::onViewDaddy (bool daddy)
-{
-    if (medAbstractView *view = dynamic_cast<medAbstractView *>(this->sender())) {
-        
-        if (daddy) { // view wants to become daddy
-            
-            // tell all views that they are not daddys
-            QList< dtkSmartPointer<medAbstractView> >::iterator it = d->views.begin();
-            for( ; it!=d->views.end(); it++)
-                (*it)->setProperty ("Daddy", "false");
-            
-            // tell the sender it is now daddy
-            view->setProperty ("Daddy", "true");
-            
-            // restore the previous data (if any)
-            if ( d->viewData[view] ) {
-                view->setData (d->viewData[view], 0);
-                d->viewData[view] = NULL;
-		if (view->widget()->isVisible())
-		    view->update();
-            }
-        }
-        else { // view does not want to become daddy
-            view->setProperty ("Daddy", "false");
-        }
-    }
-}
-
-void medViewPool::onViewReg(bool value)
-{
-    if (medAbstractView *view = dynamic_cast<medAbstractView *>(this->sender())) {
-        
-        medAbstractView *refView = this->daddy();
-        
-        if (value) {
-            
-            if (refView==view) // do not register the view with itself
-                return;
-            
-            if (refView) {
-                
-                dtkAbstractData *data1 = static_cast<dtkAbstractData *>(refView->data());
-                dtkAbstractData *data2 = static_cast<dtkAbstractData *>(view->data());
-                
-                if (data1!=data2) {// do not register the same data
-                    
-                    dtkAbstractProcess *process = dtkAbstractProcessFactory::instance()->create("itkProcessRegistration");
-                    if (!process)
-                        return;
-                    
-                    process->setInput (data1, 0);
-                    process->setInput (data2, 1);
-                    
-                    if (process->run()==0) {
-                        dtkAbstractData *output = process->output();
-                        d->viewData[view] = data2;
-                        view->setData (output, 0);
-                        view->blockSignals(true);
-                        view->setPosition(refView->position());
-                        view->setZoom(refView->zoom());
-                        view->setPan(refView->pan());
-                        QVector3D position, viewup, focal;
-                        double parallelScale;
-                        refView->camera(position, viewup, focal, parallelScale);
-                        view->setCamera(position, viewup, focal, parallelScale);
-                        view->blockSignals(false);
-                        if (view->widget()->isVisible())
-                            view->update();
-                        emit showInfo (tr ("Automatic registration successful"),3000);
-                    }
-                    else {
-                        emit showError(tr  ("Automatic registration failed"),3000);
-                    }
-                    process->deleteLater();
-                }
-                
-            }
-        }
-        else { // restore the previous data (if any)
-            if ( d->viewData[view] ) {
-                dtkAbstractData *oldData = static_cast<dtkAbstractData*>( view->data() );
-                view->setData (d->viewData[view], 0);
-                view->blockSignals(true);
-                view->setPosition(refView->position());
-                view->setZoom(refView->zoom());
-                view->setPan(refView->pan());
-                QVector3D position, viewup, focal;
-                double parallelScale;
-                refView->camera(position, viewup, focal, parallelScale);
-                view->setCamera(position, viewup, focal, parallelScale);
-                view->blockSignals(false);
-                d->viewData[view] = NULL;
-                if (oldData)
-                    oldData->deleteLater();
-                if (view->widget()->isVisible())
-                    view->update();
-            }
-        }
-    }
-}
-
 void medViewPool::onViewPropertySet (const QString &key, const QString &value)
 {
     // property that we do not want to synchronize
-    if (key == "Daddy"           ||
-        key == "PositionLinked"  ||
+    if (key == "PositionLinked"  ||
         key == "CameraLinked"    ||
         key == "WindowingLinked" ||
         key == "Orientation"     ||
