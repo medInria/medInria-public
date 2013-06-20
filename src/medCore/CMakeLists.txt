@@ -20,7 +20,7 @@ project(medCore)
 set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
   med4DAbstractViewInteractor.h
   medAbstractAnnotationViewInteractor.h
-  medShAbstractViewInteractor.h
+  medSHAbstractViewInteractor.h
   medDbControllerFactory.h
   medAbstractDbController.h
   medAbstractDataSource.h

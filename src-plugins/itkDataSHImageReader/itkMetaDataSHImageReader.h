@@ -1,17 +1,17 @@
 #ifndef ITKMETADATASHIMAGEREADER_H
 #define ITKMETADATASHIMAGEREADER_H
 
-#include "itkDataShImageReaderBase.h"
+#include "itkDataSHImageReaderBase.h"
 
-#include "itkDataShImageReaderPluginExport.h"
+#include "itkDataSHImageReaderPluginExport.h"
 
-class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkMetaDataShImageReader : public itkDataShImageReaderBase
+class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkMetaDataSHImageReader : public itkDataSHImageReaderBase
 {
     Q_OBJECT
 	
 public:
-    itkMetaDataShImageReader(void);
-    virtual ~itkMetaDataShImageReader(void);
+    itkMetaDataSHImageReader(void);
+    virtual ~itkMetaDataSHImageReader(void);
 	
     virtual QString description(void) const;
     virtual QString identifier(void) const;
@@ -19,6 +19,6 @@ public:
     static bool registered(void);	
 };
 
-dtkAbstractDataReader *createItkMetaDataShImageReader(void);
+dtkAbstractDataReader *createItkMetaDataSHImageReader(void);
 
 #endif

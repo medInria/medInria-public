@@ -985,9 +985,9 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             // This will add the data to the interactor.
             dtkAbstractView::setData ( data );
         }
-        else if ( data->identifier().contains("itkDataShImage", Qt::CaseSensitive)) {
+        else if ( data->identifier().contains("itkDataSHImage", Qt::CaseSensitive)) {
 
-             this->enableInteractor ( "v3dViewShInteractor" );
+             this->enableInteractor ( "v3dViewSHInteractor" );
              // This will add the data to the interactor.
              dtkAbstractView::setData(data);
          }

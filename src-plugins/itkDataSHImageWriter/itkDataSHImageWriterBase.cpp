@@ -1,4 +1,4 @@
-#include "itkDataShImageWriterBase.h"
+#include "itkDataSHImageWriterBase.h"
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -10,28 +10,28 @@
 #include <itkVectorImage.h>
 #include <itkVector.h>
 
-itkDataShImageWriterBase::itkDataShImageWriterBase(void) : dtkAbstractDataWriter()
+itkDataSHImageWriterBase::itkDataSHImageWriterBase(void) : dtkAbstractDataWriter()
 {
     this->io = 0;
 }
 
-itkDataShImageWriterBase::~itkDataShImageWriterBase(void)
+itkDataSHImageWriterBase::~itkDataSHImageWriterBase(void)
 {
 }
 
-QStringList itkDataShImageWriterBase::handled(void) const
+QStringList itkDataSHImageWriterBase::handled(void) const
 {
-    return QStringList() << "itkDataShImageDouble3"
-                         << "itkDataShImageFloat3";
+    return QStringList() << "itkDataSHImageDouble3"
+                         << "itkDataSHImageFloat3";
 }
 
-QStringList itkDataShImageWriterBase::s_handled(void)
+QStringList itkDataSHImageWriterBase::s_handled(void)
 {
-    return QStringList() << "itkDataShImageDouble3"
-                         << "itkDataShImageFloat3";
+    return QStringList() << "itkDataSHImageDouble3"
+                         << "itkDataSHImageFloat3";
 }
 
-bool itkDataShImageWriterBase::canWrite(const QString& path)
+bool itkDataSHImageWriterBase::canWrite(const QString& path)
 {
     if (this->io.IsNull())
         return false;
@@ -39,7 +39,7 @@ bool itkDataShImageWriterBase::canWrite(const QString& path)
     return this->io->CanWriteFile ( path.toAscii().constData() );
 }
 
-bool itkDataShImageWriterBase::write(const QString& path)
+bool itkDataSHImageWriterBase::write(const QString& path)
 {
 	 if (!this->data())
 		 return false;
@@ -49,13 +49,13 @@ bool itkDataShImageWriterBase::write(const QString& path)
 
 	if (dtkAbstractData *dtkdata = this->data() ) {
 
-                if(dtkdata->identifier()=="itkDataShImageFloat3") {
+                if(dtkdata->identifier()=="itkDataSHImageFloat3") {
 
 		    float dummy = 0;
 		    write(path, dummy);
 		}
 
-                else if(dtkdata->identifier()=="itkDataShImageDouble3") {
+                else if(dtkdata->identifier()=="itkDataSHImageDouble3") {
 
 		    double dummy = 0;
 		    write(path, dummy);
@@ -71,17 +71,17 @@ bool itkDataShImageWriterBase::write(const QString& path)
 }
 
 template <class PixelType>
-bool itkDataShImageWriterBase::write(const QString& path, PixelType dummyArgument)
+bool itkDataSHImageWriterBase::write(const QString& path, PixelType dummyArgument)
 {
-    typedef typename itk::VectorImage<PixelType, 3>     ShImageType;
+    typedef typename itk::VectorImage<PixelType, 3>     SHImageType;
 
-    typedef typename ShImageType::Pointer ShImageTypePointer;
-    ShImageTypePointer image = dynamic_cast< ShImageType* >( (itk::Object*)(this->data()->output()) );
+    typedef typename SHImageType::Pointer SHImageTypePointer;
+    SHImageTypePointer image = dynamic_cast< SHImageType* >( (itk::Object*)(this->data()->output()) );
 
-    typedef typename itk::ImageFileWriter<ShImageType>::Pointer ImageFileWriterPointer;
-    ImageFileWriterPointer myWriter = itk::ImageFileWriter<ShImageType>::New();
+    typedef typename itk::ImageFileWriter<SHImageType>::Pointer ImageFileWriterPointer;
+    ImageFileWriterPointer myWriter = itk::ImageFileWriter<SHImageType>::New();
     myWriter->SetFileName(path.toAscii().constData());
-    myWriter->SetInput(/*mySh*/image);
+    myWriter->SetInput(/*mySH*/image);
     try {
         myWriter->Write();
     }

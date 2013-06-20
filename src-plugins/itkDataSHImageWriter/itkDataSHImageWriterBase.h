@@ -3,16 +3,16 @@
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
-#include "itkDataShImageWriterPluginExport.h"
+#include "itkDataSHImageWriterPluginExport.h"
 #include "itkImageIOBase.h"
 
-class ITKDATASHIMAGEWRITERPLUGIN_EXPORT itkDataShImageWriterBase : public dtkAbstractDataWriter
+class ITKDATASHIMAGEWRITERPLUGIN_EXPORT itkDataSHImageWriterBase : public dtkAbstractDataWriter
 {
     Q_OBJECT
 
 public:
-                        itkDataShImageWriterBase(void);
-    virtual ~itkDataShImageWriterBase(void);
+                        itkDataSHImageWriterBase(void);
+    virtual ~itkDataSHImageWriterBase(void);
 
     virtual QStringList handled(void) const;
 

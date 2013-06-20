@@ -20,7 +20,7 @@
 #ifndef DISABLE_TTK_DEPENDENT_CODE
 #include "v3dViewFiberInteractor.h"
 #include "v3dViewTensorInteractor.h"
-#include "v3dViewShInteractor.h"
+#include "v3dViewSHInteractor.h"
 #endif
 
 #include <dtkLog/dtkLog.h>
@@ -69,7 +69,7 @@ bool v3dViewPlugin::initialize()
 #endif
     
 #ifndef DISABLE_VTKINRIA_USE_SPHERICALHARMONICS
-    if (!v3dViewShInteractor::registered())         { dtkWarn() << "Unable to register v3dViewShInteractor type"; }
+    if (!v3dViewSHInteractor::registered())         { dtkWarn() << "Unable to register v3dViewSHInteractor type"; }
 #endif
 
     return true;
@@ -130,7 +130,7 @@ QStringList v3dViewPlugin::types() const
 {
     return QStringList() << v3dView::s_identifier() << "v3dViewFiberInteractor"
         << "v3dViewFuseInteractor" << "v3dViewMeshInteractor"
-        << "v3dViewTensorInteractor"<< "v3dViewShInteractor"  << "v3dView4DInteractor"
+        << "v3dViewTensorInteractor"<< "v3dViewSHInteractor"  << "v3dView4DInteractor"
         << v3dViewAnnotationInteractor::s_identifier();
 }
 

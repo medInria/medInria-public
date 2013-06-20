@@ -67,7 +67,7 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
   double spacing_x = 0.0, spacing_y = 0.0, spacing_z = 0.0;
   double pos[3]={0.0, 0.0, 0.0};
   double pos_x = 0.0, pos_y = 0.0, pos_z = 0.0;
-  int coord[3]={0.0, 0.0, 0.0};
+  int coord[3] = { 0, 0, 0 };
   int coord_x = 0, coord_y = 0, coord_z = 0;
   double value = 0.0, zoom = 100.0;
   std::string patient_name, study_name, series_name;

@@ -7,18 +7,18 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "itkDataShImageWriterPluginExport.h"
+#include "itkDataSHImageWriterPluginExport.h"
 
-class ITKDATASHIMAGEWRITERPLUGIN_EXPORT itkDataShImageWriterPluginPrivate;
+class ITKDATASHIMAGEWRITERPLUGIN_EXPORT itkDataSHImageWriterPluginPrivate;
 
-class ITKDATASHIMAGEWRITERPLUGIN_EXPORT itkDataShImageWriterPlugin : public dtkPlugin
+class ITKDATASHIMAGEWRITERPLUGIN_EXPORT itkDataSHImageWriterPlugin : public dtkPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
 
 public:
-     itkDataShImageWriterPlugin(QObject *parent = 0);
-    ~itkDataShImageWriterPlugin(void);
+     itkDataSHImageWriterPlugin(QObject *parent = 0);
+    ~itkDataSHImageWriterPlugin(void);
 
     virtual bool initialize(void);
     virtual bool uninitialize(void);
@@ -30,7 +30,7 @@ public:
     virtual QStringList types(void) const;
 
 private:
-     itkDataShImageWriterPluginPrivate *d;
+     itkDataSHImageWriterPluginPrivate *d;
 };
 
 #endif

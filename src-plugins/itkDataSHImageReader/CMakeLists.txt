@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(itkDataShImageReaderPlugin)
+project(itkDataSHImageReaderPlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -44,18 +44,18 @@ include(${ITK_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkDataShImageReaderPlugin.h
-  itkDataShImageReaderBase.h
-  itkNrrdDataShImageReader.h
-  itkNiftiDataShImageReader.h
-  itkMetaDataShImageReader.h)
+  itkDataSHImageReaderPlugin.h
+  itkDataSHImageReaderBase.h
+  itkNrrdDataSHImageReader.h
+  itkNiftiDataSHImageReader.h
+  itkMetaDataSHImageReader.h)
 
 set(${PROJECT_NAME}_SOURCES
-  itkDataShImageReaderPlugin.cpp
-  itkDataShImageReaderBase.cpp
-  itkNrrdDataShImageReader.cpp
-  itkNiftiDataShImageReader.cpp
-  itkMetaDataShImageReader.cpp)
+  itkDataSHImageReaderPlugin.cpp
+  itkDataSHImageReaderBase.cpp
+  itkNrrdDataSHImageReader.cpp
+  itkNiftiDataSHImageReader.cpp
+  itkMetaDataSHImageReader.cpp)
 
 ## #################################################################
 ## Build rules

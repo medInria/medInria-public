@@ -42,8 +42,8 @@ double sphLegendre(const int l,const int m,const double theta) {
     const unsigned lmm = l-m;
     const unsigned lpm = l+m;
     const double fact   = boost::math::factorial<double>(lmm)/boost::math::factorial<double>(lpm);
-    const double factor = (static_cast<double>(2*l+1)/(4.0*vtkMath::DoublePi()))*fact;
-    return sqrt(factor*boost::math::legendre_p(l,m,cos(theta));
+    const double factor = static_cast<double>(2*l+1)/(4.0*vtkMath::DoublePi())*fact;
+    return sqrt(factor*boost::math::legendre_p(l,m,cos(theta)));
 }
 #else
 double sphLegendre(const int l,const int m,const double theta) {
@@ -114,8 +114,8 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(const int tess) {
     TesselationBasis = SHMatrix;
     Tesselation = tess;
     sphereT = vtkTessellatedSphereSource::New();
-    SphericalHarmonics = 0;
     Order = 4;
+    SphericalHarmonics = 0;
     SetNumberOfSphericalHarmonics (15);
 }
 
@@ -126,6 +126,9 @@ vtkSphericalHarmonicSource::~vtkSphericalHarmonicSource() {
 
     if(RotationMatrix)
         RotationMatrix->Delete();
+
+    if (SphericalHarmonics)
+        delete[] SphericalHarmonics;
 
     SphericalHarmonics = 0;
 }
@@ -193,8 +196,7 @@ RequestData(vtkInformation *vtkNotUsed(request),vtkInformationVector **vtkNotUse
     for (int i=0;i<NumberOfSphericalHarmonics;++i)
         C(0,i) = SphericalHarmonics[i];
 
-    itk::VariableSizeMatrix<double> S/*(1,BasisFunction.GetVnlMatrix().size())*/;
-    S = C*BasisFunction;
+    itk::VariableSizeMatrix<double> S = C*BasisFunction;
 
     if (Normalize) {
 
@@ -440,10 +442,6 @@ void
 TranslateAndDeformShell(vtkPolyData *shell,vtkPoints* outPts,double center[3],bool deform,vtkMatrix4x4* transform) {
     vtkPoints* inPts = shell->GetPoints();
     const int  n     = inPts->GetNumberOfPoints();
-
-    //  double range[2];
-    //  shell->GetPointData()->GetScalars()->GetRange(range);
-    //  const double rangeDiff = (range[0]!=range[1]) ? range[1]-range[0] : 1.;
 
     vtkDataArray* sValues  = shell->GetPointData()->GetScalars();
 

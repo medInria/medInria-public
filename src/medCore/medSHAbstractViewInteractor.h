@@ -7,17 +7,17 @@
 
 
 /**
- * @class medShAbstractViewInteractor
+ * @class medSHAbstractViewInteractor
  * @author Jaime Garcia
  * @brief Abstract base class for Spherical Harmonics visualization view interactor. Somehow works like te med4DAbstractViewInteractor
  *
  */
-class MEDCORE_EXPORT medShAbstractViewInteractor: public dtkAbstractViewInteractor
+class MEDCORE_EXPORT medSHAbstractViewInteractor: public dtkAbstractViewInteractor
 {
     Q_OBJECT
 public:
-  medShAbstractViewInteractor(){};
-  virtual ~medShAbstractViewInteractor(){};
+  medSHAbstractViewInteractor(){};
+  virtual ~medSHAbstractViewInteractor(){};
 
   /** Virtual class to be implemented at the interactor to get the image size it is used to set med gui slider appropiate size*/
   virtual void imageSize(int* imageSize) = 0;

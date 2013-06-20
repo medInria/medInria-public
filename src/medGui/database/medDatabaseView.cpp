@@ -257,11 +257,11 @@ void medDatabaseView::updateContextMenu(const QPoint& point)
 
 void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
 {
-    medAbstractDatabaseItem *item = NULL;
+    medAbstractDatabaseItem *item = 0;
 
-    if(QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel *>(this->model()))
+    if (QSortFilterProxyModel *proxy = dynamic_cast<QSortFilterProxyModel*>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(proxy->mapToSource(index).internalPointer());
-    else if (QAbstractItemModel *model = dynamic_cast<QAbstractItemModel *>(this->model()))
+    else if (dynamic_cast<QAbstractItemModel*>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     if (item)

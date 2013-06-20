@@ -1,32 +1,32 @@
 #ifndef V3DVIEWSHINTERACTOR_H
 #define V3DVIEWSHINTERACTOR_H
 
-#include <medCore/medShAbstractViewInteractor.h>
+#include <medCore/medSHAbstractViewInteractor.h>
 
 #include "v3dViewPluginExport.h"
 
-class v3dViewShInteractorPrivate;
+class v3dViewSHInteractorPrivate;
 
 class dtkAbstractData;
 class dtkAbstractView;
 
 /**
- * @class v3dViewShInteractor
+ * @class v3dViewSHInteractor
  * @brief Extents a view by providing Spherical harmonics viewing/managing capabilities.
  *
  * An interactor is an extension to a view (v3dView in this case)
  * that provides additional functionality. This class extents the view by
- * adding Sh handling capabilities like visualization and Sh-specific
+ * adding SH handling capabilities like visualization and SH-specific
  * properties.
  */
-class V3DVIEWPLUGIN_EXPORT v3dViewShInteractor: public medShAbstractViewInteractor
+class V3DVIEWPLUGIN_EXPORT v3dViewSHInteractor: public medSHAbstractViewInteractor
 {
 
     Q_OBJECT
 
 public:
-    v3dViewShInteractor();
-    virtual ~v3dViewShInteractor();
+    v3dViewSHInteractor();
+    virtual ~v3dViewSHInteractor();
 
     virtual QString description(void) const;
     virtual QString identifier(void) const;
@@ -58,13 +58,13 @@ public slots:
     /** Modify sample rate */
     void onSampleRatePropertySet (int sampleRate);
 
-    /** Flip Shs along the X axis */
+    /** Flip SHs along the X axis */
     void onFlipXPropertySet (const QString& flipX);
 
-    /** Flip Shs along the Y axis */
+    /** Flip SHs along the Y axis */
     void onFlipYPropertySet (const QString& flipY);
 
-    /** Flip Shs along the Z axis */
+    /** Flip SHs along the Z axis */
     void onFlipZPropertySet (const QString& flipZ);
 
     /** Turn on/off coloring of glyph with input scalar data or directions. If false, or input scalar data not present, then the
@@ -108,10 +108,10 @@ public slots:
     void onPositionChanged(const QVector3D& position, bool propagate);
 
 private:
-    v3dViewShInteractorPrivate *d;
 
+    v3dViewSHInteractorPrivate* d;
 };
 
-dtkAbstractViewInteractor *createV3dViewShInteractor(void);
+dtkAbstractViewInteractor *createV3dViewSHInteractor(void);
 
 #endif

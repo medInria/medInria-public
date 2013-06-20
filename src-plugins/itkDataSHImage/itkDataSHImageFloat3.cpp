@@ -21,7 +21,7 @@ class itkDataSHImageFloat3Private
 {
 public:
     typedef itk::VectorImage<float, 3> SHImageType;
-    typedef SHImageType::PixelType    ShType;
+    typedef SHImageType::PixelType    SHType;
   
     SHImageType::Pointer shs;
 
@@ -78,7 +78,7 @@ void itkDataSHImageFloat3::setData(void *data)
         d->shs = shs;
     }
     else
-      qDebug() << "Cannot cast pointer to correct Sh float type";
+      qDebug() << "Cannot cast pointer to correct SH float type";
 }
 
 int itkDataSHImageFloat3::xDimension (void)

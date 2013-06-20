@@ -1,17 +1,17 @@
 #ifndef ITKMETADATASHIMAGEWRITER_H_
 #define ITKMETADATASHIMAGEWRITER_H_
 
-#include "itkDataShImageWriterBase.h"
+#include "itkDataSHImageWriterBase.h"
 
-#include "itkDataShImageWriterPluginExport.h"
+#include "itkDataSHImageWriterPluginExport.h"
 
-class ITKDATASHIMAGEWRITERPLUGIN_EXPORT itkMetaDataShImageWriter : public itkDataShImageWriterBase
+class ITKDATASHIMAGEWRITERPLUGIN_EXPORT itkMetaDataSHImageWriter : public itkDataSHImageWriterBase
 {
     Q_OBJECT
 
 public:
-    itkMetaDataShImageWriter(void);
-    virtual ~itkMetaDataShImageWriter(void);
+    itkMetaDataSHImageWriter(void);
+    virtual ~itkMetaDataSHImageWriter(void);
 
     virtual QString description(void) const;
     virtual QString identifier(void) const;
@@ -19,6 +19,6 @@ public:
     static bool registered(void);
 };
 
-dtkAbstractDataWriter *createItkMetaDataShImageWriter(void);
+dtkAbstractDataWriter *createItkMetaDataSHImageWriter(void);
 
 #endif /* ITKMETADATASHIMAGEWRITER_H_ */
