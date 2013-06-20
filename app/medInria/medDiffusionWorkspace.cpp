@@ -21,12 +21,12 @@
 
 #include <medDataManager.h>
 
-#include "medViewPropertiesToolBox.h"
-#include "medTensorViewToolBox.h"
-#include "medSHViewToolBox.h"
-#include "medDiffusionSelectorToolBox.h"
-#include "medFiberViewToolBox.h"
-#include "medFiberBundlingToolBox.h"
+#include <medViewPropertiesToolBox.h>
+#include <medTensorViewToolBox.h>
+#include <medSHViewToolBox.h>
+#include <medDiffusionSelectorToolBox.h>
+#include <medFiberViewToolBox.h>
+#include <medFiberBundlingToolBox.h>
 #include <medViewContainer.h>
 #include <medSingleViewContainer.h>
 #include <medTabbedViewContainers.h>
@@ -68,16 +68,16 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
     d->tensorViewToolBox = new medTensorViewToolBox(parent);
 
     connect(d->tensorViewToolBox, SIGNAL(glyphShapeChanged(const QString&)), this, SLOT(onGlyphShapeChanged(const QString&)));
-    connect(d->tensorViewToolBox, SIGNAL(flipX(bool)),                       this, SLOT(onFlipXChanged(bool)));
-    connect(d->tensorViewToolBox, SIGNAL(flipY(bool)),                       this, SLOT(onFlipYChanged(bool)));
-    connect(d->tensorViewToolBox, SIGNAL(flipZ(bool)),                       this, SLOT(onFlipZChanged(bool)));
+    connect(d->tensorViewToolBox, SIGNAL(flipX(bool)),                       this, SLOT(onFlipXChanged(const bool)));
+    connect(d->tensorViewToolBox, SIGNAL(flipY(bool)),                       this, SLOT(onFlipYChanged(const bool)));
+    connect(d->tensorViewToolBox, SIGNAL(flipZ(bool)),                       this, SLOT(onFlipZChanged(const bool)));
 
     // -- SH tb --
     d->shViewToolBox = new medSHViewToolBox(parent);
     connect(d->shViewToolBox, SIGNAL(tesselationTypeChanged(const QString&)), this, SLOT(onTesselationTypeChanged(const QString&)));
-    connect(d->shViewToolBox, SIGNAL(flipX(bool)),                       this, SLOT(onSHFlipXChanged(bool)));
-    connect(d->shViewToolBox, SIGNAL(flipY(bool)),                       this, SLOT(onSHFlipYChanged(bool)));
-    connect(d->shViewToolBox, SIGNAL(flipZ(bool)),                       this, SLOT(onSHFlipZChanged(bool)));
+    connect(d->shViewToolBox, SIGNAL(flipX(bool)),                       this, SLOT(onSHFlipXChanged(const bool)));
+    connect(d->shViewToolBox, SIGNAL(flipY(bool)),                       this, SLOT(onSHFlipYChanged(const bool)));
+    connect(d->shViewToolBox, SIGNAL(flipZ(bool)),                       this, SLOT(onSHFlipZChanged(const bool)));
     connect(d->shViewToolBox, SIGNAL(maxThesisFunc(bool)),               this, SLOT(onSHMaxThesisFuncChanged(bool)));
     connect(d->shViewToolBox, SIGNAL(tesselationBasisChanged(const QString&)), this, SLOT(onTesselationBasisChanged(const QString&)));
 
@@ -260,13 +260,13 @@ void medDiffusionWorkspace::updateTensorInteractorWithToolboxValues(dtkAbstractV
     int sampleRate = tensorViewToolBox->sampleRate();
     QMetaObject::invokeMethod( interactor, "onSampleRatePropertySet", Qt::QueuedConnection, Q_ARG( int, sampleRate ) );
 
-    bool isFlipX = tensorViewToolBox->isFlipX();
+    const bool isFlipX = tensorViewToolBox->isFlipX();
     interactor->setProperty("FlipX", isFlipX ? "true" : "false");
 
-    bool isFlipY = tensorViewToolBox->isFlipY();
+    const bool isFlipY = tensorViewToolBox->isFlipY();
     interactor->setProperty("FlipY", isFlipY ? "true" : "false");
 
-    bool isFlipZ = tensorViewToolBox->isFlipZ();
+    const bool isFlipZ = tensorViewToolBox->isFlipZ();
     interactor->setProperty("FlipZ", isFlipZ ? "true" : "false");
 
     int eigenVector = tensorViewToolBox->eigenVector();
@@ -339,34 +339,34 @@ void medDiffusionWorkspace::updateSHInteractorWithToolboxValues(dtkAbstractViewI
     int sampleRate = shViewToolBox->sampleRate();
     QMetaObject::invokeMethod( interactor, "onSampleRatePropertySet", Qt::QueuedConnection, Q_ARG( int, sampleRate ) );
     
-    bool isFlipX = shViewToolBox->isFlipX();
+    const bool isFlipX = shViewToolBox->isFlipX();
     interactor->setProperty("FlipX", isFlipX ? "true" : "false");
     
-    bool isFlipY = shViewToolBox->isFlipY();
+    const bool isFlipY = shViewToolBox->isFlipY();
     interactor->setProperty("FlipY", isFlipY ? "true" : "false");
     
-    bool isFlipZ = shViewToolBox->isFlipZ();
+    const bool isFlipZ = shViewToolBox->isFlipZ();
     interactor->setProperty("FlipZ", isFlipZ ? "true" : "false");
     
-    bool isMaxThesis = shViewToolBox->isMaxThesisFunc();
+    const bool isMaxThesis = shViewToolBox->isMaxThesisFunc();
     interactor->setProperty("MaxThesisFunc", isMaxThesis ? "true" : "false");
     
     //    int eigenVector = shViewToolBox->eigenVector();
     //    QMetaObject::invokeMethod( interactor, "onEigenVectorPropertySet", Qt::QueuedConnection, Q_ARG( int, eigenVector ) );
     
-    int glyphResolution = shViewToolBox->glyphResolution();
+    const int glyphResolution = shViewToolBox->glyphResolution();
     QMetaObject::invokeMethod( interactor, "onGlyphResolutionPropertySet", Qt::QueuedConnection, Q_ARG( int, glyphResolution ) );
     
-    double scale = shViewToolBox->scale();
+    const double scale = shViewToolBox->scale();
     QMetaObject::invokeMethod( interactor, "onScalingPropertySet", Qt::QueuedConnection, Q_ARG( double, scale ) );
     
-    bool isShowAxial = shViewToolBox->isShowAxial();
+    const bool isShowAxial = shViewToolBox->isShowAxial();
     QMetaObject::invokeMethod( interactor, "onHideShowAxialPropertySet", Qt::QueuedConnection, Q_ARG( bool, isShowAxial ) );
     
-    bool isShowCoronal = shViewToolBox->isShowCoronal();
+    const bool isShowCoronal = shViewToolBox->isShowCoronal();
     QMetaObject::invokeMethod( interactor, "onHideShowCoronalPropertySet", Qt::QueuedConnection, Q_ARG( bool, isShowCoronal ) );
     
-    bool isShowSagittal = shViewToolBox->isShowSagittal();
+    const bool isShowSagittal = shViewToolBox->isShowSagittal();
     QMetaObject::invokeMethod( interactor, "onHideShowSagittalPropertySet", Qt::QueuedConnection, Q_ARG( bool, isShowSagittal ) );
 }
 
@@ -479,7 +479,7 @@ void medDiffusionWorkspace::onGlyphShapeChanged(const QString& glyphShape)
     }
 }
 
-void medDiffusionWorkspace::onFlipXChanged(bool flipX)
+void medDiffusionWorkspace::onFlipXChanged(const bool flipX)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
@@ -494,7 +494,7 @@ void medDiffusionWorkspace::onFlipXChanged(bool flipX)
     }
 }
 
-void medDiffusionWorkspace::onFlipYChanged(bool flipY)
+void medDiffusionWorkspace::onFlipYChanged(const bool flipY)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
@@ -509,7 +509,7 @@ void medDiffusionWorkspace::onFlipYChanged(bool flipY)
     }
 }
 
-void medDiffusionWorkspace::onFlipZChanged(bool flipZ)
+void medDiffusionWorkspace::onFlipZChanged(const bool flipZ)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
@@ -550,7 +550,7 @@ void medDiffusionWorkspace::onTesselationBasisChanged(const QString& tesselation
     }
 }
 
-void medDiffusionWorkspace::onSHFlipXChanged(bool flipX)
+void medDiffusionWorkspace::onSHFlipXChanged(const bool flipX)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
@@ -565,7 +565,7 @@ void medDiffusionWorkspace::onSHFlipXChanged(bool flipX)
     }
 }
 
-void medDiffusionWorkspace::onSHFlipYChanged(bool flipY)
+void medDiffusionWorkspace::onSHFlipYChanged(const bool flipY)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
@@ -580,7 +580,7 @@ void medDiffusionWorkspace::onSHFlipYChanged(bool flipY)
     }
 }
 
-void medDiffusionWorkspace::onSHFlipZChanged(bool flipZ)
+void medDiffusionWorkspace::onSHFlipZChanged(const bool flipZ)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {

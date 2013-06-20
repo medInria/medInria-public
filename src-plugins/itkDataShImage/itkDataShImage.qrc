@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/itkDataShImage">
+        <file>icons/shs.png</file>
+    </qresource>
+</RCC>

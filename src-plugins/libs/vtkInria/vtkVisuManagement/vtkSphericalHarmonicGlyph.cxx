@@ -128,7 +128,7 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     const vtkIdType numPts = input->GetNumberOfPoints();  //number of points in the data
     std::cerr << "Num points: " << numPts << std::endl;
 
-    if (numPts<1) {
+    if (!numPts) {
         vtkErrorMacro(<<"No data to glyph!");
         return 1;
     }
