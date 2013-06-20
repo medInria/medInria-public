@@ -55,7 +55,6 @@ public:
     static bool registered();
     static QString s_identifier();
 
-public:
     // inherited from medAbstractView
     void reset();
     void clear();

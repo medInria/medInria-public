@@ -69,9 +69,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent) : medT
     {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
         d->tractographyMethodCombo->addItem(details->name, toolbox);
-        d->tractographyMethodCombo->setItemData(i,
-                                  details->description,
-                                  Qt::ToolTipRole);
+        d->tractographyMethodCombo->setItemData(i, details->description, Qt::ToolTipRole);
         i++;
     }
 
@@ -95,8 +93,7 @@ void medDiffusionSelectorToolBox::onToolBoxChosen(int id)
     if (d->toolBoxes.contains (identifier))
         toolbox = d->toolBoxes[identifier];
     else {
-        medToolBox* tb = medToolBoxFactory::instance()->createToolBox(
-                    identifier, this);
+        medToolBox* tb = medToolBoxFactory::instance()->createToolBox(identifier, this);
         toolbox = qobject_cast<medDiffusionAbstractToolBox*>(tb);
         if (toolbox) {
             toolbox->setStyleSheet("medToolBoxBody {border:none}");

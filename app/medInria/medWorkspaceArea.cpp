@@ -145,44 +145,20 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
     //Avoid double triggering between update and dataAdded/Removed.
     //And dataRemoved is triggered too early: the data has not been actually removed yet.
-    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator,
-             SLOT (updateNavigator (const medDataIndex&)));
-    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->navigator,
-             SLOT (updateNavigator (const medDataIndex&)), Qt::QueuedConnection);
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)),
+             d->navigator, SLOT (updateNavigator (const medDataIndex&)));
+    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)),
+             d->navigator, SLOT (updateNavigator (const medDataIndex&)), Qt::QueuedConnection);
 
-    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->patientToolBox,
-             SLOT (setupDatabase ()));
-    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->patientToolBox,
-             SLOT (setupDatabase ()));
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)),
+             d->patientToolBox, SLOT (setupDatabase ()));
+    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)),
+             d->patientToolBox, SLOT (setupDatabase ()));
 
-    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->patientToolBox,
-             SLOT (setPatientIndex (const medDataIndex&)));
-    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->patientToolBox,
-             SLOT (setPatientIndex (const medDataIndex&)));
-/*
-//------------- MEM LEAK TEST BEGIN -----------------//
-    int memusage = 0;
-    int leak = 0;
-    // creating one that loads the dll
-    medAbstractView* dummy = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
-    dtkAbstractViewFactory::instance()->destroy(dummy);
-
-    int beforeMem = medDataManager::getProcessMemoryUsage();
-    for (int i = 0; i < 20; i++)
-    {
-        memusage = medDataManager::getProcessMemoryUsage();
-        medAbstractView* view = dynamic_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->create("v3dView"));
-        dtkAbstractViewFactory::instance()->destroy(view);
-        leak = medDataManager::getProcessMemoryUsage() - memusage;
-        qDebug() << "leaking: " << leak / 1000 << " Kbytes";
-    }
-    int afterMem = medDataManager::getProcessMemoryUsage();
-    qDebug() << "total leakage" << (afterMem-beforeMem)  / 1000 << " Kbytes";
-
-//--------------MEM LEAK TEST END ------------------//
-*/
-
-
+    connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)),
+             d->patientToolBox, SLOT (setPatientIndex (const medDataIndex&)));
+    connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)),
+             d->patientToolBox, SLOT (setPatientIndex (const medDataIndex&)));
 }
 
 medWorkspaceArea::~medWorkspaceArea(void)
