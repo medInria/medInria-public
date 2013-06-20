@@ -1,26 +1,26 @@
-#ifndef medShViewToolBox_H
-#define medShViewToolBox_H
+#ifndef medSHViewToolBox_H
+#define medSHViewToolBox_H
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
 
-class medShViewToolBoxPrivate;
+class medSHViewToolBoxPrivate;
 
 /**
- * @class medShViewToolBox
+ * @class medSHViewToolBox
  * @brief Toolbox with widgets to control settings of Spherical Harmonics image visualization.
  * A toolbox with widgets that allow the user to change values which are used by
  * later SH visualizers.
  * For instance, users can change the scale, or choose to calculate
  * more or less polygons for each glyph.
  */
-class MEDGUI_EXPORT medShViewToolBox : public medToolBox
+class MEDGUI_EXPORT medSHViewToolBox : public medToolBox
 {
 	Q_OBJECT
 
 public:
-        medShViewToolBox(QWidget *parent);
-        ~medShViewToolBox();
+        medSHViewToolBox(QWidget *parent);
+        ~medSHViewToolBox();
 
         /** Returns the currently selected polyhedron that is going to be tesselated */
         QString tesselationType(void);
@@ -65,7 +65,7 @@ public:
     /** Returns true is 'Hide/Show Sagittal' checkbox is selected, false otherwise */
     bool isShowSagittal(void);
 
-    /** The Sh toolbox widgets (slider size and steps) are updated accordingly with the SH image size by using the interactor*/
+    /** The SH toolbox widgets (slider size and steps) are updated accordingly with the SH image size by using the interactor*/
     void updateWithInteractor(dtkAbstractView *view);
 
 
@@ -146,7 +146,7 @@ private slots:
     void onHideShowSagittalChanged(int checkBoxState);
 
 protected:
-    medShViewToolBoxPrivate *d;
+    medSHViewToolBoxPrivate *d;
 };
 
-#endif // medShViewToolBox_H
+#endif // medSHViewToolBox_H

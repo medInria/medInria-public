@@ -1,41 +1,41 @@
-#include "itkMetaDataShImageReader.h"
+#include "itkMetaDataSHImageReader.h"
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkMetaImageIO.h>
 
-itkMetaDataShImageReader::itkMetaDataShImageReader(void) : itkDataShImageReaderBase()
+itkMetaDataSHImageReader::itkMetaDataSHImageReader(void) : itkDataSHImageReaderBase()
 {
     this->io = itk::MetaImageIO::New();
 }
 
-itkMetaDataShImageReader::~itkMetaDataShImageReader(void)
+itkMetaDataSHImageReader::~itkMetaDataSHImageReader(void)
 {
 }
 
-bool itkMetaDataShImageReader::registered(void)
+bool itkMetaDataSHImageReader::registered(void)
 {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkMetaDataShImageReader", itkDataShImageReaderBase::s_handled(),
-                                                                    createItkMetaDataShImageReader);
+  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkMetaDataSHImageReader", itkDataSHImageReaderBase::s_handled(),
+                                                                    createItkMetaDataSHImageReader);
 }
 
-QString itkMetaDataShImageReader::description(void) const
+QString itkMetaDataSHImageReader::description(void) const
 {
     return tr("itk SH 3d image reader");
 }
 
-QString itkMetaDataShImageReader::identifier() const
+QString itkMetaDataSHImageReader::identifier() const
 {
-    return "itkMetaDataShImageReader";
+    return "itkMetaDataSHImageReader";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkMetaDataShImageReader(void)
+dtkAbstractDataReader *createItkMetaDataSHImageReader(void)
 {
-    return new itkMetaDataShImageReader;
+    return new itkMetaDataSHImageReader;
 }
 

@@ -21,7 +21,7 @@ class itkDataSHImageDouble3Private
 {
 public:
     typedef itk::VectorImage<double, 3> SHImageType;
-    typedef SHImageType::PixelType    ShType;
+    typedef SHImageType::PixelType    SHType;
 
     SHImageType::Pointer shs;
 
@@ -78,7 +78,7 @@ void itkDataSHImageDouble3::setData(void *data)
         d->shs = shs;
     }
     else
-      qDebug() << "Cannot cast pointer to correct Sh double type";
+      qDebug() << "Cannot cast pointer to correct SH double type";
 }
 
 int itkDataSHImageDouble3::xDimension (void)

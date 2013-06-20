@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 2.8.1)
 
-project(itkDataShImageWriterPlugin)
+project(itkDataSHImageWriterPlugin)
 
 ## #################################################################
 ## Setup version numbering
@@ -44,17 +44,17 @@ include(${ITK_USE_FILE})
 ## #################################################################
 
 set(${PROJECT_NAME}_HEADERS_MOC
-  itkDataShImageWriterPlugin.h
-  itkDataShImageWriterBase.h
-  itkMetaDataShImageWriter.h)
+  itkDataSHImageWriterPlugin.h
+  itkDataSHImageWriterBase.h
+  itkMetaDataSHImageWriter.h)
 
 set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC})
 
 set(${PROJECT_NAME}_SOURCES
-  itkDataShImageWriterPlugin.cpp
-  itkDataShImageWriterBase.cpp
-  itkMetaDataShImageWriter.cpp)
+  itkDataSHImageWriterPlugin.cpp
+  itkDataSHImageWriterBase.cpp
+  itkMetaDataSHImageWriter.cpp)
 
 ## #################################################################
 ## Build rules

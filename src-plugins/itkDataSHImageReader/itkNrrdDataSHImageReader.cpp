@@ -1,42 +1,42 @@
-#include "itkNrrdDataShImageReader.h"
+#include "itkNrrdDataSHImageReader.h"
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkNrrdImageIO.h>
 
-itkNrrdDataShImageReader::itkNrrdDataShImageReader(void) : itkDataShImageReaderBase()
+itkNrrdDataSHImageReader::itkNrrdDataSHImageReader(void) : itkDataSHImageReaderBase()
 {
     this->io = itk::NrrdImageIO::New();
 }
 
-itkNrrdDataShImageReader::~itkNrrdDataShImageReader(void)
+itkNrrdDataSHImageReader::~itkNrrdDataSHImageReader(void)
 {
 }
 
 
-bool itkNrrdDataShImageReader::registered(void)
+bool itkNrrdDataSHImageReader::registered(void)
 {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkNrrdDataShImageReader", itkDataShImageReaderBase::s_handled(),
-                                                                    createItkNrrdDataShImageReader);
+  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkNrrdDataSHImageReader", itkDataSHImageReaderBase::s_handled(),
+                                                                    createItkNrrdDataSHImageReader);
 }
 
-QString itkNrrdDataShImageReader::description(void) const
+QString itkNrrdDataSHImageReader::description(void) const
 {
     return tr("itk Nrrd SH reader");
 }
 
-QString itkNrrdDataShImageReader::identifier() const
+QString itkNrrdDataSHImageReader::identifier() const
 {
-    return "itkNrrdDataShImageReader";
+    return "itkNrrdDataSHImageReader";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkNrrdDataShImageReader(void)
+dtkAbstractDataReader *createItkNrrdDataSHImageReader(void)
 {
-    return new itkNrrdDataShImageReader;
+    return new itkNrrdDataSHImageReader;
 }
 

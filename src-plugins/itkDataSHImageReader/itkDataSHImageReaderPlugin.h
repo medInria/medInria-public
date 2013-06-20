@@ -7,18 +7,18 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "itkDataShImageReaderPluginExport.h"
+#include "itkDataSHImageReaderPluginExport.h"
 
-class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkDataShImageReaderPluginPrivate;
+class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkDataSHImageReaderPluginPrivate;
 
-class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkDataShImageReaderPlugin : public dtkPlugin
+class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkDataSHImageReaderPlugin : public dtkPlugin
 {
     Q_OBJECT
     Q_INTERFACES(dtkPlugin)
 
 public:
-     itkDataShImageReaderPlugin(QObject *parent = 0);
-    ~itkDataShImageReaderPlugin(void);
+     itkDataSHImageReaderPlugin(QObject *parent = 0);
+    ~itkDataSHImageReaderPlugin(void);
 
     virtual bool initialize(void);
     virtual bool uninitialize(void);
@@ -30,7 +30,7 @@ public:
     virtual QStringList types(void) const;
 
 private:
-     itkDataShImageReaderPluginPrivate *d;
+     itkDataSHImageReaderPluginPrivate *d;
 };
 
 #endif

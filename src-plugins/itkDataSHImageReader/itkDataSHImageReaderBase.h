@@ -7,16 +7,16 @@
 
 #include <dtkCore/dtkAbstractDataReader.h>
 
-#include "itkDataShImageReaderPluginExport.h"
+#include "itkDataSHImageReaderPluginExport.h"
 #include "itkImageIOBase.h"
 
-class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkDataShImageReaderBase : public dtkAbstractDataReader
+class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkDataSHImageReaderBase : public dtkAbstractDataReader
 {
     Q_OBJECT
 
 public:
-             itkDataShImageReaderBase(void);
-    virtual ~itkDataShImageReaderBase(void);
+             itkDataSHImageReaderBase(void);
+    virtual ~itkDataSHImageReaderBase(void);
 
     virtual QStringList handled(void) const;
 
@@ -28,7 +28,7 @@ public slots:
     virtual bool canRead (const QString &path);
     virtual bool canRead (const QStringList &paths);
 
-    /** it reads the information of vector itkDataShImageFloat3 or itkDataShImageDoublet3*/
+    /** it reads the information of vector itkDataSHImageFloat3 or itkDataSHImageDoublet3*/
     virtual bool readInformation (const QString &path);
     virtual bool readInformation (const QStringList &paths);
 

@@ -23,7 +23,7 @@
 
 #include "medViewPropertiesToolBox.h"
 #include "medTensorViewToolBox.h"
-#include "medShViewToolBox.h"
+#include "medSHViewToolBox.h"
 #include "medDiffusionSelectorToolBox.h"
 #include "medFiberViewToolBox.h"
 #include "medFiberBundlingToolBox.h"
@@ -42,7 +42,7 @@ public:
     medFiberBundlingToolBox    *fiberBundlingToolBox;
     medDiffusionSelectorToolBox                 *diffusionToolBox;
     medTensorViewToolBox       *tensorViewToolBox;
-    medShViewToolBox       *shViewToolBox;
+    medSHViewToolBox       *shViewToolBox;
 
     QList<dtkSmartPointer<dtkAbstractView> > views;
 
@@ -72,13 +72,13 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
     connect(d->tensorViewToolBox, SIGNAL(flipY(bool)),                       this, SLOT(onFlipYChanged(bool)));
     connect(d->tensorViewToolBox, SIGNAL(flipZ(bool)),                       this, SLOT(onFlipZChanged(bool)));
 
-    // -- Sh tb --
-    d->shViewToolBox = new medShViewToolBox(parent);
+    // -- SH tb --
+    d->shViewToolBox = new medSHViewToolBox(parent);
     connect(d->shViewToolBox, SIGNAL(tesselationTypeChanged(const QString&)), this, SLOT(onTesselationTypeChanged(const QString&)));
-    connect(d->shViewToolBox, SIGNAL(flipX(bool)),                       this, SLOT(onShFlipXChanged(bool)));
-    connect(d->shViewToolBox, SIGNAL(flipY(bool)),                       this, SLOT(onShFlipYChanged(bool)));
-    connect(d->shViewToolBox, SIGNAL(flipZ(bool)),                       this, SLOT(onShFlipZChanged(bool)));
-    connect(d->shViewToolBox, SIGNAL(maxThesisFunc(bool)),               this, SLOT(onShMaxThesisFuncChanged(bool)));
+    connect(d->shViewToolBox, SIGNAL(flipX(bool)),                       this, SLOT(onSHFlipXChanged(bool)));
+    connect(d->shViewToolBox, SIGNAL(flipY(bool)),                       this, SLOT(onSHFlipYChanged(bool)));
+    connect(d->shViewToolBox, SIGNAL(flipZ(bool)),                       this, SLOT(onSHFlipZChanged(bool)));
+    connect(d->shViewToolBox, SIGNAL(maxThesisFunc(bool)),               this, SLOT(onSHMaxThesisFuncChanged(bool)));
     connect(d->shViewToolBox, SIGNAL(tesselationBasisChanged(const QString&)), this, SLOT(onTesselationBasisChanged(const QString&)));
 
     // -- Fiber view tb --
@@ -165,7 +165,7 @@ void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
 
     view->enableInteractor ("v3dViewFiberInteractor");
     view->enableInteractor ("v3dViewTensorInteractor");
-    view->enableInteractor ("v3dViewShInteractor");
+    view->enableInteractor ("v3dViewSHInteractor");
 
     if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
     {
@@ -201,7 +201,7 @@ void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
         updateTensorInteractorWithToolboxValues(interactor, d->tensorViewToolBox);
     }
 
-    if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewShInteractor"))
+    if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor"))
     {
         connect(d->shViewToolBox, SIGNAL(sampleRateChanged(int)), interactor, SLOT(onSampleRatePropertySet(int)));
         connect(d->shViewToolBox, SIGNAL(glyphResolutionChanged(int)), interactor, SLOT(onGlyphResolutionPropertySet(int)));
@@ -241,7 +241,7 @@ void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
 
         connect(view, SIGNAL(positionChanged(const QVector3D&,bool)), interactor, SLOT(onPositionChanged(const QVector3D&,bool)));
 
-        updateShInteractorWithToolboxValues(interactor, d->shViewToolBox);
+        updateSHInteractorWithToolboxValues(interactor, d->shViewToolBox);
         d->shViewToolBox->updateWithInteractor(view);
     }
 
@@ -325,7 +325,7 @@ void medDiffusionWorkspace::updateFiberInteractorWithToolboxValues(dtkAbstractVi
         interactor->setProperty ("RenderingMode", "tubes");
 }
 
-void medDiffusionWorkspace::updateShInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medShViewToolBox* shViewToolBox)
+void medDiffusionWorkspace::updateSHInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medSHViewToolBox* shViewToolBox)
 {
     // we are temporary using Qt's reflection in this function to call the slots in the interactor
     // without casting to a specific type (which is in a plugin)
@@ -526,12 +526,12 @@ void medDiffusionWorkspace::onFlipZChanged(bool flipZ)
 
 // end of tensor interaction related methods
 
-// Sh interaction related methods
+// SH interaction related methods
 
 void medDiffusionWorkspace::onTesselationTypeChanged(const QString& tesselationType)
 {
     foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewShInteractor")) {
+        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
             interactor->setProperty("TesselationType", tesselationType);
             
             view->update();
@@ -542,7 +542,7 @@ void medDiffusionWorkspace::onTesselationTypeChanged(const QString& tesselationT
 void medDiffusionWorkspace::onTesselationBasisChanged(const QString& tesselationBasis)
 {
     foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewShInteractor")) {
+        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
             interactor->setProperty("TesselationBasis", tesselationBasis);
             
             view->update();
@@ -550,10 +550,10 @@ void medDiffusionWorkspace::onTesselationBasisChanged(const QString& tesselation
     }
 }
 
-void medDiffusionWorkspace::onShFlipXChanged(bool flipX)
+void medDiffusionWorkspace::onSHFlipXChanged(bool flipX)
 {
     foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewShInteractor")) {
+        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
             
             if (flipX)
                 interactor->setProperty("FlipX", "true");
@@ -565,10 +565,10 @@ void medDiffusionWorkspace::onShFlipXChanged(bool flipX)
     }
 }
 
-void medDiffusionWorkspace::onShFlipYChanged(bool flipY)
+void medDiffusionWorkspace::onSHFlipYChanged(bool flipY)
 {
     foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewShInteractor")) {
+        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
             
             if (flipY)
                 interactor->setProperty("FlipY", "true");
@@ -580,10 +580,10 @@ void medDiffusionWorkspace::onShFlipYChanged(bool flipY)
     }
 }
 
-void medDiffusionWorkspace::onShFlipZChanged(bool flipZ)
+void medDiffusionWorkspace::onSHFlipZChanged(bool flipZ)
 {
     foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewShInteractor")) {
+        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
             
             if (flipZ)
                 interactor->setProperty("FlipZ", "true");
@@ -595,10 +595,10 @@ void medDiffusionWorkspace::onShFlipZChanged(bool flipZ)
     }
 }
 
-void medDiffusionWorkspace::onShMaxThesisFuncChanged(bool MaxThesis)
+void medDiffusionWorkspace::onSHMaxThesisFuncChanged(bool MaxThesis)
 {
     foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewShInteractor")) {
+        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
             
             if (MaxThesis)
                 interactor->setProperty("MaxThesisFunc", "true");
@@ -610,7 +610,7 @@ void medDiffusionWorkspace::onShMaxThesisFuncChanged(bool MaxThesis)
     }
 }
 
-// end of Sh interaction related methods
+// end of SH interaction related methods
 
 void medDiffusionWorkspace::refreshInteractors ()
 {

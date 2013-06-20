@@ -91,10 +91,10 @@ endif()
 
 if ( VTKINRIA_USE_SPHERICALHARMONICS )
   set(${PROJECT_NAME}_SH_DEPENDENT_HEADERS_MOC
-  v3dViewShInteractor.h
+  v3dViewSHInteractor.h
     )
     set(${PROJECT_NAME}_SH_DEPENDENT_SOURCES
-  v3dViewShInteractor.cpp
+  v3dViewSHInteractor.cpp
     )
 else( VTKINRIA_USE_SPHERICALHARMONICS )
     add_definitions(-DDISABLE_VTKINRIA_USE_SPHERICALHARMONICS)

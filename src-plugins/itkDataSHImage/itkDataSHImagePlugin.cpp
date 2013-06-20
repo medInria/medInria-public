@@ -54,11 +54,11 @@ QString itkDataSHImagePlugin::name() const {
 }
 
 QString itkDataSHImagePlugin::description() const {
-    return "Handle ITK Sh image types";
+    return "Handle ITK SH image types";
 }
 
 QStringList itkDataSHImagePlugin::tags() const {
-    return QStringList() << "itk" << "data" << "Sh" << "image";
+    return QStringList() << "itk" << "data" << "SH" << "image";
 }
 
 QStringList itkDataSHImagePlugin::types() const {

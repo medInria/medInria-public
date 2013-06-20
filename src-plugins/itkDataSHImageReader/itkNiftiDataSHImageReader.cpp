@@ -1,4 +1,4 @@
-#include "itkNiftiDataShImageReader.h"
+#include "itkNiftiDataSHImageReader.h"
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -6,37 +6,37 @@
 #include <itkNiftiImageIO.h>
 
 
-itkNiftiDataShImageReader::itkNiftiDataShImageReader(void) : itkDataShImageReaderBase()
+itkNiftiDataSHImageReader::itkNiftiDataSHImageReader(void) : itkDataSHImageReaderBase()
 {
     this->io = itk::NiftiImageIO::New();
 }
 
-itkNiftiDataShImageReader::~itkNiftiDataShImageReader(void)
+itkNiftiDataSHImageReader::~itkNiftiDataSHImageReader(void)
 {
 }
 
-bool itkNiftiDataShImageReader::registered(void)
+bool itkNiftiDataSHImageReader::registered(void)
 {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkNiftiDataShImageReader", itkDataShImageReaderBase::s_handled(),
-                                                                    createItkNiftiDataShImageReader);
+  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkNiftiDataSHImageReader", itkDataSHImageReaderBase::s_handled(),
+                                                                    createItkNiftiDataSHImageReader);
 }
 
-QString itkNiftiDataShImageReader::description(void) const
+QString itkNiftiDataSHImageReader::description(void) const
 {
     return tr("itk Nifti SH image reader");
 }
 
-QString itkNiftiDataShImageReader::identifier() const
+QString itkNiftiDataSHImageReader::identifier() const
 {
-    return "itkNiftiDataShImageReader";
+    return "itkNiftiDataSHImageReader";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkNiftiDataShImageReader(void)
+dtkAbstractDataReader *createItkNiftiDataSHImageReader(void)
 {
-    return new itkNiftiDataShImageReader;
+    return new itkNiftiDataSHImageReader;
 }
 
