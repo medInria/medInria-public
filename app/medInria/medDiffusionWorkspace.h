@@ -110,17 +110,9 @@ private:
     /** Updates the tensor interactor with the current values in the tensor toolbox. */
     void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medTensorViewToolBox* tensorViewToolBox);
 
-<<<<<<< HEAD
     /** Updates the controls in the SH toolbox with the current values of the interactor. */
     void updateSHInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medSHViewToolBox* SHViewToolBox);
-=======
-    /** Updates the controls in the Sh toolbox with the current values of the interactor. */
-    void updateShInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medShViewToolBox* ShViewToolBox);
->>>>>>> 0375bd54e079d0640a558c07018c8388add2146d
     
     /** Updates the fiber interactor with the current values in the fiber toolbox. */
     void updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medFiberViewToolBox* fiberViewToolBox);
 };
-
-
-
