@@ -438,19 +438,20 @@ void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUui
 void medDatabaseControllerImpl::exportDataToFile(dtkAbstractData *data, const QString &filename)
 {
     medDatabaseExporter *exporter = new medDatabaseExporter (data, filename);
-
-    connect(exporter, SIGNAL(progress(QObject*,int)), medDataManager::instance(), SIGNAL(progressed(QObject*,int)));
-    connect(exporter, SIGNAL(showError(const QString&, unsigned int)), medMessageController::instance(), SLOT(showError(const QString&, unsigned int)));
-
     QFileInfo info(filename);
-    emit(jobStarted(exporter, info.baseName()));
+    medMessageProgress *message = medMessageController::instance()->showProgress("Exporting data to " + info.baseName());
 
-    QThreadPool::globalInstance()->start(exporter);
+    connect(exporter, SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
+    connect(exporter, SIGNAL(success(QObject *)), message, SLOT(success()));
+    connect(exporter, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+
+    medJobManager::instance()->registerJobItem(exporter);
+    QThreadPool::globalInstance()->start(exporter);    
 }
 
 dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIndex& index) const
 {
-    QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));
+    QScopedPointer<medDatabaseReader> reader(new medDatabaseReader(index));   
     medMessageProgress *message = medMessageController::instance()->showProgress("Opening database item");
 
     connect(reader.data(), SIGNAL(progressed(int)), message, SLOT(setProgress(int)));

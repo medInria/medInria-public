@@ -69,7 +69,10 @@ void medDatabaseExporter::run(void)
         }
     }
 
-    if (!written) {
+    if (!written)
+    {
         emit showError(tr("Could not find suitable writer for file: ") + d->filename, 3000);
+        emit failure(this);
     }
+    else  emit success ( this );
 }

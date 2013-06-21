@@ -174,7 +174,6 @@ void medDatabaseRemover::run()
 
     } // ptQuery.next
 
-    emit removed ( index );
     if ( d->isCancelled )
         emit failure ( this );
     else
@@ -230,7 +229,9 @@ void medDatabaseRemover::removeSeries ( int patientDbId, int studyDbId, int seri
         if ( !path.isNull() && !path.isEmpty() )
             this->removeDataFile ( medDataIndex::makeSeriesIndex ( d->index.dataSourceId(), patientDbId, studyDbId, seriesDbId ) , path );
     }
-    removeTableRow ( d->T_SERIES, seriesDbId );
+
+    if( removeTableRow ( d->T_SERIES, seriesDbId ) )
+        emit removed(medDataIndex(1, patientDbId, studyDbId, seriesDbId, -1));
 
     // we want to remove the directory if empty
     QFileInfo seriesFi ( medStorage::dataLocation() + thumbnail );
@@ -278,7 +279,8 @@ void medDatabaseRemover::removeStudy ( int patientDbId, int studyDbId )
         thumbnail = query.value ( 0 ).toString();
         this->removeFile ( thumbnail );
     }
-    removeTableRow ( d->T_STUDY, studyDbId );
+    if( removeTableRow ( d->T_STUDY, studyDbId ) )
+        emit removed(medDataIndex(1, patientDbId, studyDbId, -1, -1));
 }
 
 bool medDatabaseRemover::isPatientEmpty ( int patientDbId )
@@ -310,7 +312,8 @@ void medDatabaseRemover::removePatient ( int patientDbId )
         this->removeFile ( thumbnail );
         patientId = query.value ( 1 ).toString();
     }
-    removeTableRow ( d->T_PATIENT, patientDbId );
+    if( removeTableRow ( d->T_PATIENT, patientDbId ) )
+        emit removed(medDataIndex(1, patientDbId, -1, -1, -1));
 
     medDatabaseControllerImpl * dbi = medDatabaseController::instance();
     QDir patientDir ( medStorage::dataLocation() + "/" + dbi->stringForPath ( patientId ) );
@@ -319,13 +322,15 @@ void medDatabaseRemover::removePatient ( int patientDbId )
         patientDir.rmdir ( patientDir.path() ); // only removes if empty
 }
 
-void medDatabaseRemover::removeTableRow ( const QString &table, int id )
+bool medDatabaseRemover::removeTableRow ( const QString &table, int id )
 {
     QSqlDatabase & db ( *d->db );
     QSqlQuery query ( db );
     query.prepare ( "DELETE FROM " + table + " WHERE id = :id" );
     query.bindValue ( ":id", id );
     EXEC_QUERY ( query );
+
+    return (query.numRowsAffected()==1);
 }
 
 void medDatabaseRemover::removeFile ( const QString & filename )

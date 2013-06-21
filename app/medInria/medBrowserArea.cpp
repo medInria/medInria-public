@@ -308,7 +308,6 @@ void medBrowserArea::onExportData(const medDataIndex &index)
 
     medDataManager::instance()->exportDataToFile(data,fileName);
 
-    connect(medDataManager::instance(),SIGNAL(progressed(QObject*,int)),d->jobsToolBox->stack(), SLOT(setProgress(QObject*,int)));
 }
 
 void medBrowserArea::addToolBox(medToolBox *toolbox)

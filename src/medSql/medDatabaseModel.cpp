@@ -240,7 +240,9 @@ QModelIndex medDatabaseModel::index(int row, int column, const QModelIndex& pare
         
         // we only need index with column 0 in index map
         if(column==0)
+        {
             d->medIndexMap[childItem->dataIndex()] = newIndex;
+        }
         
         return newIndex;
     }
@@ -706,7 +708,6 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
     //    - the serie is present and there is an item: we need to update the data
 
     QModelIndex index = d->medIndexMap[dataIndex];
-    QModelIndex parentIndex = index.parent();
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(dataIndex.dataSourceId());
 
@@ -715,7 +716,7 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
         if(item)
         {
             // data is not present in the database anymore,
-
+            QModelIndex parentIndex = index.parent();
             medDataIndex stDataIndex(dataIndex);
             stDataIndex.setSeriesId(-1);
             QModelIndex stIndex = d->medIndexMap.value(stDataIndex);
@@ -808,7 +809,6 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
     //    - the study is present and there is an item: we need to update the data and its series (in case of a move)
     //    
     QModelIndex index = d->medIndexMap.value(dataIndex);
-    QModelIndex parentIndex = index.parent();
     medAbstractDatabaseItem *item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(dataIndex.dataSourceId());
 
@@ -816,6 +816,7 @@ void medDatabaseModel::updateStudy(const medDataIndex& dataIndex, bool updateChi
     { 
         if(item)
         {           
+            QModelIndex parentIndex = index.parent();
             QList<medDataIndex> series = dbc->series(dataIndex);
             foreach(medDataIndex serie, series)
                 updateSerie(serie);

@@ -532,9 +532,20 @@ void medDataManagerTestObject::testRemoveData(void)
                 }
                 
             }
-            medDataManager::instance()->removeData(patient);
+            int nbDeletions = 0;
+            foreach(medDataIndex tmpStudy, studies)
+            {
+                nbDeletions += controller->series(tmpStudy).count();
+            }
+            nbDeletions += studies.count() + 1;
 
-            waitForDeletions();
+            medDataManager::instance()->removeData(patient);
+            if(datasource==1)
+            {
+                //this only work for persisitent controller, since, NPcontroller remove() is synchronous
+                waitForDeletions(nbDeletions);
+            }
+
 
             IndexList patients = controller->patients();
             QCOMPARE( patients.size(), nbPatients-1 );
@@ -769,7 +780,7 @@ void medDataManagerTestObject::waitForDeletions(int numberOfDeletions, int timeo
         m_eventLoop.exec();
     }
     
-    QVERIFY(spy1.count() >= numberOfDeletions);  
+    QVERIFY(spy1.count() >= numberOfDeletions);
 }
 
 DTKTEST_MAIN(medDataManagerTest,medDataManagerTestObject)
