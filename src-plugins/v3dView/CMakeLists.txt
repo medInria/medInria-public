@@ -98,6 +98,8 @@ endif()
 set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewPlugin.h
   v3dView.h
+  medAbstractVtkViewInteractor.h
+  medVtkView.h
   v3dViewMeshInteractor.h
   v3dView4DInteractor.h
   v3dViewAnnotationInteractor.h
@@ -116,6 +118,7 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   v3dViewPlugin.cpp
   v3dView.cpp
+  medVtkView.cpp
   v3dViewMeshInteractor.cpp
   v3dView4DInteractor.cpp
   v3dFiberBundle.cpp

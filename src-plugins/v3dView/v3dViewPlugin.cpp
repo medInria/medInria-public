@@ -12,6 +12,12 @@
 =========================================================================*/
 
 #include "v3dView.h"
+#include "medVtkView.h"
+#include "medFiberBundlingToolBox.h"
+#include "medViewPropertiesToolBox.h"
+#include "medTimeLineToolBox.h"
+#include "medTensorViewToolBox.h"
+#include "medFiberViewToolBox.h"
 #include "v3dViewMeshInteractor.h"
 #include "v3dView4DInteractor.h"
 #include "v3dViewAnnotationInteractor.h"
@@ -51,6 +57,12 @@ v3dViewPlugin::~v3dViewPlugin()
 
 bool v3dViewPlugin::initialize()
 {
+    if (!medVtkView::registered())                     { dtkWarn() << "Unable to register medVtkView type";              }
+    if (!medFiberBundlingToolBox::registered())        { dtkWarn() << "Unable to register medFiberBundlingToolBox type"; }
+    if (!medTimeLineToolBox::registered())        { dtkWarn() << "Unable to register medTimeLineToolBox type"; }
+    if (!medViewPropertiesToolBox::registered())        { dtkWarn() << "Unable to register medViewPropertiesToolBox type"; }
+    if (!medTensorViewToolBox::registered())        { dtkWarn() << "Unable to register medTensorViewToolBox type"; }
+    if (!medFiberViewToolBox::registered())        { dtkWarn() << "Unable to register medFiberViewToolBox type"; }
     if (!v3dView::registered())                     { dtkWarn() << "Unable to register v3dView type";                     }
 
 #ifndef DISABLE_TTK_DEPENDENT_CODE
