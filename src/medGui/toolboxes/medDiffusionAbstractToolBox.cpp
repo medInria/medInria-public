@@ -15,12 +15,14 @@
 
 #include "medDiffusionAbstractToolBox.h"
 #include "medDiffusionAbstractToolBox_p.h"
+#include <medDataManager.h>
 
 #include <dtkCore/dtkAbstractObject.h>
 
 medDiffusionAbstractToolBox::medDiffusionAbstractToolBox(QWidget *parent) : medToolBox(parent), d(new medDiffusionAbstractToolBoxPrivate)
 {
     d->parent  = NULL;
+    connect(this, SIGNAL(success()), this, SLOT(processSuccess()));
 }
 
 medDiffusionAbstractToolBox::~medDiffusionAbstractToolBox(void)
@@ -45,4 +47,11 @@ dtkAbstractData *medDiffusionAbstractToolBox::output() const
 {
     DTK_DEFAULT_IMPLEMENTATION;
     return NULL;
+}
+
+
+void medDiffusionAbstractToolBox::processSuccess()
+{
+    medDataManager::instance()->importNonPersistent ( this->output());
+    emit newOutput(this->output());
 }
