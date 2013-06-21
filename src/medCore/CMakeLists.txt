@@ -18,7 +18,6 @@ project(medCore)
 ## #################################################################
 
 set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
-  medAbstractAnnotationViewInteractor.h
   medAbstractData.h
   medAbstractDataImage.h
   medAbstractDataMesh.h
@@ -30,7 +29,6 @@ set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
   medAttachedData.h
   medJobItem.h
   medJobManager.h
-  medMeshAbstractViewInteractor.h
   medMessageController.h
   medPluginManager.h
   medRunnableProcess.h
@@ -89,7 +87,6 @@ set(${PROJECT_NAME}_SOURCES
   medAttachedData.cpp
   medAbstractDatabaseItem.cpp
   medAnnotationData.cpp
-  medAbstractAnnotationViewInteractor.cpp
   medViewEventFilter.cpp
   annotationData/medImageMaskAnnotationData.cpp
   annotationData/medSeedPointAnnotationData.cpp
