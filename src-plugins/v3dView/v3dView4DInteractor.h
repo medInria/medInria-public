@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <med4DAbstractViewInteractor.h>
+#include <medAbstractVtkViewInteractor.h>
 #include "v3dViewPluginExport.h"
 
 class v3dView4DInteractorPrivate;
@@ -30,7 +30,7 @@ class dtkAbstractView;
     \author Nicolas Toussaint and Fatih Arslan
 */
 
-class V3DVIEWPLUGIN_EXPORT v3dView4DInteractor: public med4DAbstractViewInteractor
+class V3DVIEWPLUGIN_EXPORT v3dView4DInteractor: public medAbstractVtkViewInteractor
 {
 
     Q_OBJECT
@@ -42,6 +42,8 @@ public:
     virtual QString description() const;
     virtual QString identifier() const;
     virtual QStringList handled() const;
+    
+    virtual bool isDataTypeHandled(QString dataType) const;
 
     static bool registered();
 
@@ -63,9 +65,17 @@ public:
     double sequencesMinTimeStep();
 
 public slots:
+    // Mandatory implementations from medVtkViewInteractor
+    virtual void setOpacity(dtkAbstractData * data, double opacity);
+    virtual double opacity(dtkAbstractData * data) const;
+
+    virtual void setVisible(dtkAbstractData * data, bool visible);
+    virtual bool isVisible(dtkAbstractData * data) const;
+
+public slots:
     void onDataAdded (dtkAbstractData* data);
-
-
+    void checkViewProperty(QString name, QString value);
+    
 protected:
 
 signals:
