@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractViewInteractor.h>
+#include <medAbstractVtkViewInteractor.h>
 
 #include "v3dViewPluginExport.h"
 
@@ -31,7 +31,7 @@ class dtkAbstractView;
  * adding tensor handling capabilities like visualization and tensor-specific
  * properties.
  */
-class V3DVIEWPLUGIN_EXPORT v3dViewTensorInteractor: public dtkAbstractViewInteractor
+class V3DVIEWPLUGIN_EXPORT v3dViewTensorInteractor: public medAbstractVtkViewInteractor
 {
 
     Q_OBJECT
@@ -43,6 +43,8 @@ public:
     virtual QString description() const;
     virtual QString identifier() const;
     virtual QStringList handled() const;
+    
+    virtual bool isDataTypeHandled(QString dataType) const;
 
     static bool registered();
 
@@ -55,47 +57,63 @@ public:
     virtual void enable();
     virtual void disable();
 
-public slots:
-    virtual void onPropertySet (const QString& key, const QString& value);
+    enum GlyphShapeType {
+        Lines,
+        Disks,
+        Arrows,
+        Cubes,
+        Cylinders,
+        Ellipsoids,
+        Superquadrics
+    };
 
+public slots:
+    // Mandatory implementations from medVtkViewInteractor
+    virtual void setOpacity(dtkAbstractData * data, double opacity);
+    virtual double opacity(dtkAbstractData * data) const;
+
+    virtual void setVisible(dtkAbstractData * data, bool visible);
+    virtual bool isVisible(dtkAbstractData * data) const;
+    
+public slots:
     /** Change glyph shape */
-    void onGlyphShapePropertySet (const QString& glyphShape);
+    void setGlyphShape(GlyphShapeType glyphShape);
 
     /** Modify sample rate */
-    void onSampleRatePropertySet (int sampleRate);
+    void setSampleRate(int sampleRate);
 
     /** Flip tensors along the X axis */
-    void onFlipXPropertySet (const QString& flipX);
+    void setFlipX(bool flip);
 
     /** Flip tensors along the Y axis */
-    void onFlipYPropertySet (const QString& flipY);
+    void setFlipY(bool flip);
 
     /** Flip tensors along the Z axis */
-    void onFlipZPropertySet (const QString& flipZ);
+    void setFlipZ(bool flip);
 
     /** A new eigenvector for mapping the color mode is set */
-    void onEigenVectorPropertySet (int eigenVector);
+    void setEigenVector(int eigenVector);
 
     /** Glyph resolution changed */
-    void onGlyphResolutionPropertySet (int glyphResolution);
+    void setGlyphResolution(int glyphResolution);
 
     /** Background color reverted */
-    void onReverseBackgroundColorPropertySet (bool isWhite);
+    void setReverseBackgroundColor(bool isWhite);
 
     /** Scaling changed */
-    void onScalingPropertySet (double scale);
+    void setScale(double scale);
 
     /** Hide or show axial slice */
-    void onHideShowAxialPropertySet(bool show);
+    void setShowAxial(bool show);
 
     /** Hide or show coronal slice */
-    void onHideShowCoronalPropertySet(bool show);
+    void setShowCoronal(bool show);
 
     /** Hide or show sagittal slice */
-    void onHideShowSagittalPropertySet(bool show);
+    void setShowSagittal(bool show);
 
     /** Change position of the slices */
-    void onPositionChanged(const QVector3D& position, bool propagate);
+    void changePosition(const QVector3D& position, bool propagate);
 
 private:
     v3dViewTensorInteractorPrivate *d;

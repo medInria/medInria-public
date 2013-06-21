@@ -22,7 +22,7 @@
 #include <vtkTensorManager.h>
 #include <vtkStructuredPoints.h>
 
-#include "v3dView.h"
+#include "medVtkView.h"
 
 #include <itkITKTensorsToVTKTensorsFilter.h>
 #include <itkImage.h>
@@ -51,7 +51,7 @@ public:
     TensorImagePointerDouble      datasetDouble;
 };
 
-v3dViewTensorInteractor::v3dViewTensorInteractor(): dtkAbstractViewInteractor(), d(new v3dViewTensorInteractorPrivate)
+v3dViewTensorInteractor::v3dViewTensorInteractor(): medAbstractVtkViewInteractor(), d(new v3dViewTensorInteractorPrivate)
 {
     d->manager = vtkTensorManager::New();
 
@@ -61,14 +61,8 @@ v3dViewTensorInteractor::v3dViewTensorInteractor(): dtkAbstractViewInteractor(),
     d->datasetDouble = 0;
     d->filterDouble = 0;
 
-    this->addProperty("GlyphShape", QStringList() << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics");
-    this->addProperty("FlipX", QStringList() << "true" << "false");
-    this->addProperty("FlipY", QStringList() << "true" << "false");
-    this->addProperty("FlipZ", QStringList() << "true" << "false");
-
     // set default properties
     d->manager->SetGlyphShapeToLine();
-    this->setProperty("GlyphShape", "Lines");
 }
 
 v3dViewTensorInteractor::~v3dViewTensorInteractor()
@@ -92,12 +86,22 @@ QString v3dViewTensorInteractor::identifier() const
 
 QStringList v3dViewTensorInteractor::handled() const
 {
-    return QStringList () << "v3dView";
+    return QStringList () << v3dView::s_identifier() << medVtkView::s_identifier();
+}
+
+bool v3dViewTensorInteractor::isDataTypeHandled(QString dataType) const
+{
+    if (dataType == "itkDataTensorImage")
+        return true;
+    
+    return false;
 }
 
 bool v3dViewTensorInteractor::registered()
 {
-    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewTensorInteractor", QStringList() << "v3dView", createV3dViewTensorInteractor);
+    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewTensorInteractor",
+                                                                          QStringList () << v3dView::s_identifier() << medVtkView::s_identifier(),
+                                                                          createV3dViewTensorInteractor);
 }
 
 void v3dViewTensorInteractor::setData(dtkAbstractData *data)
@@ -190,7 +194,7 @@ void v3dViewTensorInteractor::setView(dtkAbstractView *view)
 {
     if (d->view) {
         disconnect(d->view, SIGNAL(positionChanged(const QVector3D&,bool)),
-                   this,    SLOT(onPositionChanged(const QVector3D&,bool)));
+                   this,    SLOT(changePosition(const QVector3D&,bool)));
         d->view = 0;
     }
 
@@ -202,7 +206,7 @@ void v3dViewTensorInteractor::setView(dtkAbstractView *view)
         d->manager->SetRenderWindowInteractor( d->view->interactor(), d->view->renderer3d() );
 
         connect(d->view, SIGNAL(positionChanged(const QVector3D&,bool)),
-                this,    SLOT(onPositionChanged(const QVector3D&,bool)));
+                this,    SLOT(changePosition(const QVector3D&,bool)));
     }
 }
 
@@ -227,75 +231,75 @@ void v3dViewTensorInteractor::disable()
     dtkAbstractViewInteractor::disable();
 }
 
-void v3dViewTensorInteractor::onPropertySet(const QString& key, const QString& value)
+void v3dViewTensorInteractor::setOpacity(dtkAbstractData * /*data*/, double /*opacity*/)
 {
-    if (key=="GlyphShape")
+    //TODO
+}
+
+double v3dViewTensorInteractor::opacity(dtkAbstractData * /*data*/) const
+{
+    //TODO
+    return 100;
+}
+
+void v3dViewTensorInteractor::setVisible(dtkAbstractData * /*data*/, bool /*visible*/)
+{
+    //TODO
+}
+
+bool v3dViewTensorInteractor::isVisible(dtkAbstractData * /*data*/) const
+{
+    //TODO
+    return true;
+}
+
+void v3dViewTensorInteractor::setGlyphShape(GlyphShapeType glyphShape)
+{
+    switch(glyphShape)
     {
-        this->onGlyphShapePropertySet (value);
-    }
-    else if (key=="FlipX")
-    {
-        this->onFlipXPropertySet (value);
-    }
-    else if (key=="FlipY")
-    {
-        this->onFlipYPropertySet (value);
-    }
-    else if (key=="FlipZ")
-    {
-        this->onFlipZPropertySet (value);
+        case v3dViewTensorInteractor::Lines:
+            d->manager->SetGlyphShapeToLine();
+            break;
+        case v3dViewTensorInteractor::Disks:
+            d->manager->SetGlyphShapeToDisk();
+            break;
+        case v3dViewTensorInteractor::Arrows:
+            d->manager->SetGlyphShapeToArrow();
+            break;
+        case v3dViewTensorInteractor::Cubes:
+            d->manager->SetGlyphShapeToCube();
+            break;
+        case v3dViewTensorInteractor::Cylinders:
+            d->manager->SetGlyphShapeToCylinder();
+            break;
+        case v3dViewTensorInteractor::Ellipsoids:
+            d->manager->SetGlyphShapeToSphere();
+            break;
+        case v3dViewTensorInteractor::Superquadrics:
+            d->manager->SetGlyphShapeToSuperquadric();
+            break;
+        default:
+            qDebug() << "Unknown glyph type";
     }
 }
 
-void v3dViewTensorInteractor::onGlyphShapePropertySet (const QString& value)
-{
-    if (value == "Lines")
-    {
-        d->manager->SetGlyphShapeToLine();
-    }
-    else if (value == "Disks")
-    {
-        d->manager->SetGlyphShapeToDisk();
-    }
-    else if (value == "Arrows")
-    {
-        d->manager->SetGlyphShapeToArrow();
-    }
-    else if (value == "Cubes")
-    {
-        d->manager->SetGlyphShapeToCube();
-    }
-    else if (value == "Cylinders")
-    {
-        d->manager->SetGlyphShapeToCylinder();
-    }
-    else if (value == "Ellipsoids")
-    {
-        d->manager->SetGlyphShapeToSphere();
-    }
-    else if (value == "Superquadrics")
-    {
-        d->manager->SetGlyphShapeToSuperquadric();
-    }
-}
-
-void v3dViewTensorInteractor::onSampleRatePropertySet (int sampleRate)
+void v3dViewTensorInteractor::setSampleRate(int sampleRate)
 {
     d->manager->SetSampleRate(sampleRate, sampleRate, sampleRate);
 }
 
-void v3dViewTensorInteractor::onEigenVectorPropertySet (int eigenVector)
+void v3dViewTensorInteractor::setEigenVector(int eigenVector)
 {
     // we need to substract 1 because the manager receives an index
     d->manager->SetColorModeToEigenvector(eigenVector-1);
 }
 
-void v3dViewTensorInteractor::onGlyphResolutionPropertySet (int glyphResolution)
+void v3dViewTensorInteractor::setGlyphResolution(int glyphResolution)
 {
     d->manager->SetGlyphResolution(glyphResolution);
 }
 
-void v3dViewTensorInteractor::onReverseBackgroundColorPropertySet (bool isWhite)
+void v3dViewTensorInteractor::setReverseBackgroundColor(bool isWhite)
 {
     if (!d->view)
         return;
@@ -306,12 +310,12 @@ void v3dViewTensorInteractor::onReverseBackgroundColorPropertySet (bool isWhite)
         d->view->setBackgroundColor(0.0,0.0,0.0);
 }
 
-void v3dViewTensorInteractor::onScalingPropertySet (double scale)
+void v3dViewTensorInteractor::setScale(double scale)
 {
     d->manager->SetGlyphScale((float)scale);
 }
 
-void v3dViewTensorInteractor::onHideShowAxialPropertySet(bool show)
+void v3dViewTensorInteractor::setShowAxial(bool show)
 {
     if(show)
         d->manager->SetAxialSliceVisibility(1);
@@ -319,7 +323,7 @@ void v3dViewTensorInteractor::onHideShowAxialPropertySet(bool show)
         d->manager->SetAxialSliceVisibility(0);
 }
 
-void v3dViewTensorInteractor::onHideShowCoronalPropertySet(bool show)
+void v3dViewTensorInteractor::setShowCoronal(bool show)
 {
     if(show)
         d->manager->SetCoronalSliceVisibility(1);
@@ -327,7 +331,7 @@ void v3dViewTensorInteractor::onHideShowCoronalPropertySet(bool show)
         d->manager->SetCoronalSliceVisibility(0);
 }
 
-void v3dViewTensorInteractor::onHideShowSagittalPropertySet(bool show)
+void v3dViewTensorInteractor::setShowSagittal(bool show)
 {
     if(show)
         d->manager->SetSagittalSliceVisibility(1);
@@ -335,31 +339,22 @@ void v3dViewTensorInteractor::onHideShowSagittalPropertySet(bool show)
         d->manager->SetSagittalSliceVisibility(0);
 }
 
-void v3dViewTensorInteractor::onFlipXPropertySet (const QString& flipX)
+void v3dViewTensorInteractor::setFlipX(bool flip)
 {
-    if (flipX == "true")
-        d->manager->FlipX(true);
-    else
-        d->manager->FlipX(false);
+    d->manager->FlipX(flip);
 }
 
-void v3dViewTensorInteractor::onFlipYPropertySet (const QString& flipY)
+void v3dViewTensorInteractor::setFlipY(bool flip)
 {
-    if (flipY == "true")
-        d->manager->FlipY(true);
-    else
-        d->manager->FlipY(false);
+    d->manager->FlipY(flip);
 }
 
-void v3dViewTensorInteractor::onFlipZPropertySet (const QString& flipZ)
+void v3dViewTensorInteractor::setFlipZ(bool flip)
 {
-    if (flipZ == "true")
-        d->manager->FlipZ(true);
-    else
-        d->manager->FlipZ(false);
+    d->manager->FlipZ(flip);
 }
 
-void v3dViewTensorInteractor::onPositionChanged(const QVector3D& position, bool propagate)
+void v3dViewTensorInteractor::changePosition(const QVector3D& position, bool propagate)
 {
     d->manager->SetCurrentPosition(position.x(), position.y(), position.z());
 }
