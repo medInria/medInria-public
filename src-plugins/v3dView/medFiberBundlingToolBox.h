@@ -38,6 +38,8 @@ public:
      medFiberBundlingToolBox(QWidget *parent);
     ~medFiberBundlingToolBox();
 
+    static bool registered();
+
     /**
       * Set input fibers as a dtkAbstractData object. Subclass should
       * inherit it and cass it into proper fiber data type.
@@ -71,6 +73,10 @@ signals:
       */
     void bundlingBoxBooleanOperatorChanged (int value);
 
+public slots:
+
+    void setInput(dtkAbstractData * data);
+
 protected slots:
 
     /**
@@ -92,7 +98,7 @@ protected slots:
     virtual void addBundle (const QString &name, const QColor &color);
 
     /** Slot called when external ROI image finishes being imported. */
-    virtual void onRoiImported(const medDataIndex &index);
+    virtual void importROI(const medDataIndex &index);
 
     /**
      * Slot called when the @meDropSite is clicked.
@@ -107,10 +113,10 @@ protected slots:
     void setImage(const QImage& thumbnail);
 
     // internal method, doc to come
-    virtual void onBundlingButtonVdtClicked();
+    virtual void validateBundling();
     virtual void onBundlingButtonAndToggled (bool);
-    virtual void onBundleBoxCheckBoxToggled (bool);
-    virtual void onBundlingShowCheckBoxToggled (bool);
+    virtual void showBundlingBox (bool);
+    virtual void showBundling (bool show);
 
     virtual void onClearRoiButtonClicked();
     virtual void onRoiComboIndexChanged  (int value);
@@ -118,7 +124,7 @@ protected slots:
     virtual void onNotButtonToggled      (bool value);
     virtual void onNullButtonToggled     (bool value);
 
-    virtual void onBundlingItemChanged (QStandardItem *item);
+    virtual void changeBundlingItem (QStandardItem *item);
 
 private:
     medFiberBundlingToolBoxPrivate *d;
