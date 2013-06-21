@@ -101,6 +101,7 @@ void medDiffusionSelectorToolBox::onToolBoxChosen(int id)
 
             connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));
             connect (toolbox, SIGNAL (failure()), this, SIGNAL (failure()));
+            connect (toolbox, SIGNAL (newOutput(dtkAbstractData *)), this, SIGNAL (newOutput(dtkAbstractData*)));
 
             d->toolBoxes[identifier] = toolbox;
         }
