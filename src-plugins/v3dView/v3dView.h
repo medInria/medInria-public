@@ -59,6 +59,8 @@ public:
     void reset();
     void clear();
     void update();
+    
+    void initializeInteractors();
 
     void *view();
 
