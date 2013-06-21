@@ -23,7 +23,7 @@ public:
     static bool registered(void);
     void updatePositionArrow(int);
     undoRedoRegistration::RegImageType::Pointer output(void);
-
+    
     virtual void setRegistrationToolBox(medRegistrationSelectorToolBox *toolbox);
 
 public slots:
@@ -32,6 +32,7 @@ public slots:
     void onTransformationStackReset(void);
     void addTransformationIntoList(int, QStringList*);
     void onRegistrationSuccess();
+    void onSaveAllTransf();
 
 private:
     undoRedoRegistrationToolBoxPrivate *d;
