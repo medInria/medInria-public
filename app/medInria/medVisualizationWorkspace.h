@@ -34,14 +34,6 @@ public:
     virtual QString description() const;
     static bool isUsable();
 
-public slots:
-    /**
-     * @brief Connects toolboxes to the current container
-     *
-     * @param name the container name
-    */
-    virtual void connectToolboxesToCurrentContainer(const QString &name);
-
 private:
     medVisualizationWorkspacePrivate *d;
 };
