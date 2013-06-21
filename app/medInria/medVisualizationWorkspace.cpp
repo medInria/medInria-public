@@ -13,19 +13,18 @@
 
 #include "medVisualizationWorkspace.h"
 
-#include <medViewPropertiesToolBox.h>
 #include <medViewContainer.h>
 #include <medTabbedViewContainers.h>
-#include <medTimeLineToolBox.h>
 #include <medVisualizationLayoutToolBox.h>
 #include <medSettingsManager.h>
+#include <medToolBoxFactory.h>
 
 class medVisualizationWorkspacePrivate
 {
 public:
-    medVisualizationLayoutToolBox *layoutToolBox;
-    medTimeLineToolBox *timeToolBox;
-    medViewPropertiesToolBox *viewPropertiesToolBox;
+    medVisualizationLayoutToolBox * layoutToolBox;
+    medToolBox * timeToolBox;
+    medToolBox * viewPropertiesToolBox;
 };
 
 medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medWorkspace(parent), d(new medVisualizationWorkspacePrivate)
@@ -46,19 +45,14 @@ medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medWorks
 
     // -- View toolbox --
 
-    d->viewPropertiesToolBox = new medViewPropertiesToolBox(parent);
-    d->timeToolBox           = new medTimeLineToolBox(parent);
-
+    d->viewPropertiesToolBox = medToolBoxFactory::instance()->createToolBox("medViewPropertiesToolBox", parent);
+    d->timeToolBox           = medToolBoxFactory::instance()->createToolBox("medTimeLineToolBox", parent);
 
     this->addToolBox( d->viewPropertiesToolBox );
     this->addToolBox( d->timeToolBox );
 
-    connect ( this, SIGNAL(layoutModeChanged(const QString&)),
-              d->timeToolBox, SLOT(onStopButton()));
     connect ( this, SIGNAL(layoutModeChanged(const QString &)),
               stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));
-    connect ( stackedViewContainers(), SIGNAL(currentChanged(const QString &)),
-              this, SLOT(connectToolboxesToCurrentContainer(const QString &)));
 }
 
 void medVisualizationWorkspace::setupViewContainerStack()
@@ -67,19 +61,8 @@ void medVisualizationWorkspace::setupViewContainerStack()
     {
         const QString description = this->description();
         QString createdTab = addDefaultTypeContainer(description);
-        this->connectToolboxesToCurrentContainer(createdTab);
     }
     this->stackedViewContainers()->unlockTabs();
-}
-
-void medVisualizationWorkspace::connectToolboxesToCurrentContainer(const QString &name)
-{
-    connect(stackedViewContainers()->container(name),
-            SIGNAL(viewAdded(dtkAbstractView*)),
-            d->timeToolBox, SLOT(onViewAdded(dtkAbstractView*)));
-    connect(stackedViewContainers()->container(name),
-            SIGNAL(viewRemoved(dtkAbstractView*)),
-            d->timeToolBox, SLOT(onViewRemoved(dtkAbstractView*)));
 }
 
 medVisualizationWorkspace::~medVisualizationWorkspace(void)

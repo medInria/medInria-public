@@ -13,7 +13,10 @@
 
 #pragma once
 
-#include "medAbstractAnnotationViewInteractor.h"
+#include "medAbstractVtkViewInteractor.h"
+
+#include <medAnnotationData.h>
+#include <medAttachedData.h>
 
 #include "v3dViewPluginExport.h"
 
@@ -38,9 +41,9 @@ protected:
 
 
 //! Interface between annotations and the v3dview.
-class V3DVIEWPLUGIN_EXPORT v3dViewAnnotationInteractor: public medAbstractAnnotationViewInteractor
+class V3DVIEWPLUGIN_EXPORT v3dViewAnnotationInteractor: public medAbstractVtkViewInteractor
 {
-    typedef medAbstractAnnotationViewInteractor BaseClass;
+    typedef medAbstractVtkViewInteractor BaseClass;
 
     Q_OBJECT
 
@@ -53,6 +56,8 @@ public:
     virtual QString identifier() const;
     virtual QStringList handled() const;
 
+    virtual bool isDataTypeHandled(QString dataType) const;
+
     static bool registered();
 
     virtual void enable();
@@ -61,38 +66,68 @@ public:
     //! Override dtkAbstractViewInteractor.
     virtual bool isAutoEnabledWith ( dtkAbstractData * data );
 
-    void setView(dtkAbstractView* view);
+    //! Implement dtkAbstractViewInteractor
+    virtual void setData(dtkAbstractData *data);
+    virtual void setView(dtkAbstractView* view);
+    
+    //! Whether the interactor should be on when the view is in 2d and 3d mode.
+    virtual bool showIn2dView() const;
+    virtual bool showIn3dView() const;
+
+    //! Return true if the annotation should be shown in the given slice.
+    virtual bool isInSlice( const QVector3D & slicePoint, const QVector3D & sliceNormal, qreal thickness) const;
 
     static QString s_identifier();
-
-protected:
-
-    void onPropertySet(const QString& key, const QString& value);
-
-    void onVisibilityPropertySet (const QString& value);
-
-    v3dView * getV3dView();
-
-    void initialize(medAbstractView * view, medAbstractData* data);
-
-public slots:
-    virtual void onDataModified(medAbstractData* data);
 
 signals:
 
 public slots:
-
     virtual bool onAddAnnotation( medAnnotationData * annItem );
     virtual void onRemoveAnnotation( medAnnotationData * annItem );
 
+    //! Respond to add / removal of attached data to data items viewed.
+    virtual void onAttachedDataAdded(medAttachedData* data);
+    virtual void onAttachedDataRemoved(medAttachedData* data);
+    
+    //! Called when the annotation data is altered.
+    virtual void onDataModified(medAbstractData* data);
+
+    // Mandatory implementations from medVtkViewInteractor
+    virtual void setOpacity(dtkAbstractData * data, double opacity);
+    virtual double opacity(dtkAbstractData * data) const;
+
+    virtual void setVisible(dtkAbstractData * data, bool visible);
+    virtual bool isVisible(dtkAbstractData * data) const;
+
 protected:
+    void onPropertySet(const QString& key, const QString& value);
+    
+    void onVisibilityPropertySet (const QString& value);
+    
+    v3dView * getV3dView();
+    
+    void initialize(medAbstractView * view, medAbstractData* data);
+
+    virtual QPointF worldToScene( const QVector3D & worldVec ) const;
+    virtual QVector3D sceneToWorld( const QPointF & sceneVec ) const;
+    
+    //! Get the view plane up vector in world space.
+    virtual QVector3D viewUp() const;
+    
+    bool isPointInSlice( const QVector3D & testPoint, const QVector3D & slicePoint, const QVector3D & sliceNormal,  qreal thickness) const;
+    bool isPointInCurrentSlice( const QVector3D & testPoint) const;
+    
+    virtual medAbstractViewCoordinates * coordinates();
+    virtual const medAbstractViewCoordinates * coordinates() const;
+    
+    void addAnnotation( medAnnotationData * annData );
+    void removeAnnotation( medAnnotationData * annData );
+
     friend class v3dViewAnnotationInteractorPrivate;
     friend class v3dViewAnnIntHelper;
 
 private:
     v3dViewAnnotationInteractorPrivate *d;
-
-
 };
 
 

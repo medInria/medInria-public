@@ -17,7 +17,6 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medViewPropertiesToolBox.h>
 #include <medRegistrationSelectorToolBox.h>
 #include <medViewContainer.h>
 #include <medSingleViewContainer.h>
@@ -31,12 +30,12 @@ class medRegistrationWorkspacePrivate
 {
 public:
     medRegistrationSelectorToolBox * registrationToolBox;
-    medViewPropertiesToolBox      *viewPropertiesToolBox;
+    medToolBox *viewPropertiesToolBox;
 };
 
 medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medWorkspace(parent), d(new medRegistrationWorkspacePrivate)
 {
-    d->viewPropertiesToolBox = new medViewPropertiesToolBox(parent);
+    d->viewPropertiesToolBox = medToolBoxFactory::instance()->createToolBox("medViewPropertiesToolBox", parent);
     this->addToolBox(d->viewPropertiesToolBox);
 
     // -- Registration toolbox --
@@ -76,7 +75,7 @@ void medRegistrationWorkspace::setupViewContainerStack()
         //create the fuse container
         medSingleViewContainer *fuseContainer = new medSingleViewContainer(
                 this->stackedViewContainers());
-        if (dtkSmartPointer<dtkAbstractView> view = dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"))
+        if (dtkSmartPointer<dtkAbstractView> view = dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView"))
         {
             view->setProperty("Closable","false"); 
             fuseContainer->setView (view);

@@ -34,7 +34,7 @@
 #include <vtkSmartPointer.h>
 #include <vtkBoundingBox.h>
 #include <vtkPolyDataManager.h>
-#include <v3dView.h>
+#include <medVtkView.h>
 #include <vtkImageFromBoundsSource.h>
 #include <vtkImageData.h>
 #include <vtkImageActor.h>
@@ -66,7 +66,7 @@ public:
 };
 
 
-v3dViewMeshInteractor::v3dViewMeshInteractor(): medMeshAbstractViewInteractor(), d(new v3dViewMeshInteractorPrivate)
+v3dViewMeshInteractor::v3dViewMeshInteractor(): medAbstractVtkViewInteractor(), d(new v3dViewMeshInteractorPrivate)
 {
     for (int i=0; i<6; i++)
         d->imageBounds[i] = 0;
@@ -97,13 +97,23 @@ QString v3dViewMeshInteractor::identifier() const
 
 QStringList v3dViewMeshInteractor::handled() const
 {
-    return QStringList () << v3dView::s_identifier();
+    return QStringList () << v3dView::s_identifier() << medVtkView::s_identifier();
 }
 
 
+bool v3dViewMeshInteractor::isDataTypeHandled(QString dataType) const
+{
+    if (dataType.contains("Mesh"))
+        return true;
+    
+    return false;
+}
+
 bool v3dViewMeshInteractor::registered()
 {
-    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewMeshInteractor", QStringList() << v3dView::s_identifier(), createV3dViewMeshInteractor);
+    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewMeshInteractor",
+                                                                          QStringList () << v3dView::s_identifier() << medVtkView::s_identifier(),
+                                                                          createV3dViewMeshInteractor);
 }
 
 
@@ -369,6 +379,34 @@ QStringList v3dViewMeshInteractor::getAllLUTs() const
     return luts;
 }
 
+void v3dViewMeshInteractor::setOpacity(dtkAbstractData * data, double opacity)
+{
+    if ( ! data->identifier().startsWith("vtkDataMesh"))
+        return;
+    vtkMetaDataSet * dataset = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
+    for(int i = 0; i < d->dataList.size(); i++) {
+        if (dataset == d->dataList.at(i)) {
+            setOpacity(i, opacity);
+        }
+    }
+}
+
+double v3dViewMeshInteractor::opacity(dtkAbstractData * /*data*/) const
+{
+    //TODO
+    return 100;
+}
+
+void v3dViewMeshInteractor::setVisible(dtkAbstractData * /*data*/, bool /*visible*/)
+{
+    //TODO
+}
+
+bool v3dViewMeshInteractor::isVisible(dtkAbstractData * /*data*/) const
+{
+    //TODO
+    return true;
+}
 
 // ---------------------------------------------------------------------------
 

@@ -31,6 +31,9 @@ public:
 
     dtkAbstractData *output() const;
 
+signals:
+    void newOutput(dtkAbstractData * data);
+
 public slots:
     // void run();
     void clear();

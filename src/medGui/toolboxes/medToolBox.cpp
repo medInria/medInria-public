@@ -102,13 +102,11 @@ medToolBoxBody *medToolBox::body(void) const
 
 void medToolBox::update(dtkAbstractView *view)
 {
-    //JGG qDebug()<<"update TB" ;
     medAbstractView* medView = dynamic_cast<medAbstractView*>(view);
     if (medView)
         setContextVisibility(medView->dataTypes());
     else
     {
-        //JGG qDebug()<<"update on NULL";
         setContextVisibility(QHash<QString, unsigned int> ());
     }
     //DTK_DEFAULT_IMPLEMENTATION;

@@ -204,7 +204,6 @@ void medCustomViewContainer::setView ( dtkAbstractView *view )
 
                 connect ( view, SIGNAL ( closing() ),         this, SLOT ( onViewClosing() ) );
                 connect ( view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
-                connect ( view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
 
                 this->recomputeStyleSheet();
                 emit viewAdded ( view );
@@ -269,7 +268,6 @@ void medCustomViewContainer::synchronize_2 ( dtkAbstractView *view )
     { // top level medCustomViewContainer
         if ( medAbstractView *medView = qobject_cast<medAbstractView*> ( view ) )
             d->pool->appendView ( medView );
-        connect ( view, SIGNAL ( becomeDaddy ( bool ) ), this, SLOT ( repaint() ) );
     }
 }
 
@@ -284,7 +282,6 @@ void medCustomViewContainer::desynchronize_2 ( dtkAbstractView *view )
         if ( medAbstractView *medView = qobject_cast<medAbstractView*> ( view ) )
         {
             d->pool->removeView ( medView );
-            disconnect ( view, SIGNAL ( becomeDaddy ( bool ) ), this, SLOT ( repaint() ) );
         }
     }
 }
@@ -298,7 +295,6 @@ void medCustomViewContainer::onViewClosing()
         this->desynchronize_2 ( d->view );
         disconnect ( d->view, SIGNAL ( closing() ),         this, SLOT ( onViewClosing() ) );
         disconnect ( d->view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
-        disconnect ( d->view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
 
         emit viewRemoved ( d->view );
 

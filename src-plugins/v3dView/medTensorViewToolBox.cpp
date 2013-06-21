@@ -15,6 +15,10 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <math.h>
+#include <medToolBoxFactory.h>
+
+#include <v3dViewTensorInteractor.h>
+#include <v3dView.h>
 
 class medTensorViewToolBoxPrivate
 {
@@ -36,11 +40,19 @@ public:
     QCheckBox*    hideShowSagittalCheckBox;
 
     QStringList glyphShapesList;
+
+    v3dViewTensorInteractor * interactor;
+    v3dView * view;
 };
 
-medTensorViewToolBox::medTensorViewToolBox(QWidget *parent) : medToolBox(parent), d(new medTensorViewToolBoxPrivate)
+medTensorViewToolBox::medTensorViewToolBox(QWidget *parent)
+    : medToolBox(parent)
+    , d(new medTensorViewToolBoxPrivate)
 {
     QWidget* displayWidget = new QWidget(this);
+
+    d->view = 0;
+    d->interactor = 0;
 
     d->glyphShapesList = QStringList();
     d->glyphShapesList << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics";
@@ -225,6 +237,10 @@ medTensorViewToolBox::medTensorViewToolBox(QWidget *parent) : medToolBox(parent)
 
     this->setTitle("Tensor View");
     this->addWidget(displayWidget);
+
+    this->setValidDataTypes(QStringList() << "itkDataTensorImage");
+
+    this->hide();
 }
 
 medTensorViewToolBox::~medTensorViewToolBox()
@@ -307,52 +323,40 @@ bool medTensorViewToolBox::isShowSagittal(void)
 
 void medTensorViewToolBox::onFlipXCheckBoxStateChanged(int checkBoxState)
 {
-    if (checkBoxState == Qt::Unchecked)
-        emit flipX(false);
-    else if (checkBoxState == Qt::Checked)
-        emit flipX(true);
+    d->interactor->setFlipX(checkBoxState == Qt::Checked);
 }
 
 void medTensorViewToolBox::onFlipYCheckBoxStateChanged(int checkBoxState)
 {
-    if (checkBoxState == Qt::Unchecked)
-        emit flipY(false);
-    else if (checkBoxState == Qt::Checked)
-        emit flipY(true);
+    d->interactor->setFlipY(checkBoxState == Qt::Checked);
 }
 
 void medTensorViewToolBox::onFlipZCheckBoxStateChanged(int checkBoxState)
 {
-    if (checkBoxState == Qt::Unchecked)
-        emit flipZ(false);
-    else if (checkBoxState == Qt::Checked)
-        emit flipZ(true);
+    d->interactor->setFlipZ(checkBoxState == Qt::Checked);
 }
 
 void medTensorViewToolBox::onReverseBackgroundColorChanged(int checkBoxState)
 {
-    if (checkBoxState == Qt::Unchecked)
-        emit reverseBackgroundColor(false);
-    else if (checkBoxState == Qt::Checked)
-        emit reverseBackgroundColor(true);
+    d->interactor->setReverseBackgroundColor(checkBoxState == Qt::Checked);
 }
 
 void medTensorViewToolBox::onEigenVectorV1Toggled(bool isSelected)
 {
-    if (isSelected)
-        emit eigenVectorChanged(3);
+    if(isSelected)
+        d->interactor->setEigenVector(3);
 }
 
 void medTensorViewToolBox::onEigenVectorV2Toggled(bool isSelected)
 {
-    if (isSelected)
-        emit eigenVectorChanged(2);
+    if(isSelected)
+        d->interactor->setEigenVector(2);
 }
 
 void medTensorViewToolBox::onEigenVectorV3Toggled(bool isSelected)
 {
-    if (isSelected)
-        emit eigenVectorChanged(1);
+    if(isSelected)
+        d->interactor->setEigenVector(1);
 }
 
 void medTensorViewToolBox::onMinorScalingChanged(int minorScale)
@@ -360,7 +364,7 @@ void medTensorViewToolBox::onMinorScalingChanged(int minorScale)
     int majorScaleExponent = d->scaleExp->value();
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
-    emit scalingChanged(scale);
+    d->interactor->setScale(scale);
 }
 
 void medTensorViewToolBox::onMajorScalingChanged(int majorScaleExponent)
@@ -368,53 +372,42 @@ void medTensorViewToolBox::onMajorScalingChanged(int majorScaleExponent)
     int minorScale = d->scaleBase->value();
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
-    emit scalingChanged(scale);
+    d->interactor->setScale(scale);
 }
 
 void medTensorViewToolBox::onHideShowAxialChanged(int checkBoxState)
 {
-    if (checkBoxState == Qt::Unchecked)
-        emit hideShowAxial(false);
-    else if (checkBoxState == Qt::Checked)
-        emit hideShowAxial(true);
+    d->interactor->setShowAxial(checkBoxState == Qt::Checked);
 }
 
 void medTensorViewToolBox::onHideShowCoronalChanged(int checkBoxState)
 {
-    if (checkBoxState == Qt::Unchecked)
-        emit hideShowCoronal(false);
-    else if (checkBoxState == Qt::Checked)
-        emit hideShowCoronal(true);
+    d->interactor->setShowCoronal(checkBoxState == Qt::Checked);
 }
 
 void medTensorViewToolBox::onHideShowSagittalChanged(int checkBoxState)
 {
-    if (checkBoxState == Qt::Unchecked)
-        emit hideShowSagittal(false);
-    else if (checkBoxState == Qt::Checked)
-        emit hideShowSagittal(true);
+    d->interactor->setShowSagittal(checkBoxState == Qt::Checked);
 }
 
 void medTensorViewToolBox::update (dtkAbstractView *view)
 {
+    medToolBox::update(view);
     if (!view)
+    {
+        d->view = 0;
+        d->interactor = 0;
         return;
+    }
 
-    // the tensor view toolbox is expected to control all tensors
-    // i.e. is general to all tensors, hence we do not update its values
-    // for every view
+    d->view = qobject_cast<v3dView*>(view);
+    d->interactor = qobject_cast<v3dViewTensorInteractor*>(d->view->dtkAbstractView::interactor("v3dViewTensorInteractor"));
+}
 
-//    //dtkAbstractViewInteractor* interactor = view->interactor("Tensor");
-//    dtkAbstractViewInteractor* interactor = view->interactor("v3dViewTensorInteractor");
-//
-//    if(interactor)
-//    {
-//        QString glyphShape = interactor->property("GlyphShape");
-//
-//        int index = d->glyphShapes.indexOf(glyphShape);
-//
-//        d->glyphShape->blockSignals(true);
-//        d->glyphShape->setCurrentIndex(index);
-//        d->glyphShape->blockSignals(false);
-//    }
+bool medTensorViewToolBox::registered()
+{
+    return medToolBoxFactory::instance()->registerToolBox<medTensorViewToolBox>("medTensorViewToolBox",
+                                                                                "medTensorViewToolBox",
+                                                                                "Tensor View ToolBox",
+                                                                                QStringList()<<"view"<<"tensors");
 }

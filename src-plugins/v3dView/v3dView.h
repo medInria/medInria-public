@@ -55,11 +55,12 @@ public:
     static bool registered();
     static QString s_identifier();
 
-public:
     // inherited from medAbstractView
     void reset();
     void clear();
     void update();
+    
+    void initializeInteractors();
 
     void *view();
 
@@ -180,7 +181,6 @@ public slots:
     void onShowAnnotationsPropertySet       (const QString &value);
     void onMouseInteractionPropertySet      (const QString &value);
     void onCroppingPropertySet              (const QString &value);
-    void onDaddyPropertySet                 (const QString &value);
     void onClosablePropertySet              (const QString &value);
     void onPositionLinkedPropertySet        (const QString &value);
     void onWindowingLinkedPropertySet       (const QString &value);

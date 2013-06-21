@@ -71,42 +71,7 @@ public:
     /** Returns true is 'Hide/Show Sagittal' checkbox is selected, false otherwise */
     bool isShowSagittal();
 
-signals:
-    /** Emitted when a glyph shape is selected from the combobox */
-    void glyphShapeChanged(const QString& shape);
-
-    /** Emitted when the sample rate change */
-    void sampleRateChanged(int sampleRate);
-
-    /** Emitted when the user wants to flip the X axis */
-    void flipX(bool flipX);
-
-    /** Emitted when the user wants to flip the Y axis */
-    void flipY(bool flipY);
-
-    /** Emitted when the user wants to flip the Z axis */
-    void flipZ(bool flipZ);
-
-    /** Emitted when a new eigen vector is selected */
-    void eigenVectorChanged(int eigenVector);
-
-    /** Emitted when a new eigen vector is selected */
-    void reverseBackgroundColor(bool reverseBackgroundColor);
-
-    /** Emitted when the glyph resolution change */
-    void glyphResolutionChanged(int glyphResolution);
-
-    /** Emitted when the minor scaling change */
-    void scalingChanged(double scale);
-
-    /** Emitted when user wants to hide or show axial plane */
-    void hideShowAxial(bool show);
-
-    /** Emitted when user wants to hide or show coronal plane */
-    void hideShowCoronal(bool show);
-
-    /** Emitted when user wants to hide or show Sagittal plane */
-    void hideShowSagittal(bool show);
+    static bool registered();
 
 public slots:
     void update (dtkAbstractView *view);
