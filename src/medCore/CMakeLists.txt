@@ -19,17 +19,12 @@ project(medCore)
 
 set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
   medAbstractAnnotationViewInteractor.h
-  medSHAbstractViewInteractor.h
-  medDbControllerFactory.h
-  medAbstractDbController.h
-  medAbstractDataSource.h
-  medAbstractDataSourceFactory.h
   medAbstractData.h
   medAbstractDataImage.h
   medAbstractDataMesh.h
   medAbstractDataSourceFactory.h
   medAbstractDataSource.h
-  medAbstractViewFiberInteractor.h
+  medAbstractDbController.h
   medAbstractView.h
   medAnnotationData.h
   medAttachedData.h
@@ -91,7 +86,6 @@ set(${PROJECT_NAME}_SOURCES
   medRunnableProcess.cpp
   medAbstractDataSource.cpp
   medAbstractDataSourceFactory.cpp
-  medAbstractViewFiberInteractor.cpp
   medAbstractData.cpp
   medAbstractDataImage.cpp
   medAbstractDataMesh.cpp
