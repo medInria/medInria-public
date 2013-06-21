@@ -18,7 +18,6 @@
 #include <medMetaDataKeys.h>
 #include <medStorage.h>
 
-#include <medViewPropertiesToolBox.h>
 #include <medFilteringSelectorToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medViewContainer.h>
@@ -37,7 +36,7 @@
 class medFilteringWorkspacePrivate
 {
 public:
-    medViewPropertiesToolBox  *viewPropertiesToolBox;
+    medToolBox *viewPropertiesToolBox;
     medFilteringSelectorToolBox *filteringToolBox;
     dtkSmartPointer<dtkAbstractData> filterOutput;
     QString importUuid;
@@ -45,7 +44,7 @@ public:
 
 medFilteringWorkspace::medFilteringWorkspace ( QWidget *parent ) : medWorkspace ( parent ), d ( new medFilteringWorkspacePrivate )
 {
-    d->viewPropertiesToolBox = new medViewPropertiesToolBox ( parent );
+    d->viewPropertiesToolBox = medToolBoxFactory::instance()->createToolBox("medViewPropertiesToolBox", parent);
 
     this->addToolBox ( d->viewPropertiesToolBox );
 

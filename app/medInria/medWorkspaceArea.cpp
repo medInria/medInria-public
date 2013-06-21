@@ -46,12 +46,9 @@
 #include <medSingleViewContainer.h>
 #include <medViewPool.h>
 #include <medWorkspaceFactory.h>
-#include <medDiffusionSelectorToolBox.h>
-#include <medRegistrationSelectorToolBox.h>
 #include <medTabbedViewContainers.h>
 #include <medVisualizationLayoutToolBox.h>
 #include <medPatientSelectorToolBox.h>
-#include <medViewPropertiesToolBox.h>
 
 #include <QtGui>
 #include <QPropertyAnimation>
@@ -93,7 +90,6 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     QVBoxLayout *viewContainerLayout = new QVBoxLayout(d->viewContainer);
     viewContainerLayout->setContentsMargins(0, 0, 0, 0);
     viewContainerLayout->addWidget(d->stack);
-
 
     // Setting up navigator container
     d->navigatorContainer = new QFrame(this);
@@ -238,10 +234,7 @@ bool medWorkspaceArea::open(const medDataIndex& index)
         connect(this, SIGNAL(sliceSelected(int)), root, SIGNAL(sliceSelected(int)));
         succeeded = root->open(index);
         this->switchToPatient(index);
-
     }
-
-
     else if( index.isValidForPatient() )
     {
         // For the moment switch to visualization, later we will be cleverer

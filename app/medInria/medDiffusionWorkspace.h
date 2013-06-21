@@ -17,8 +17,6 @@
 #include <QtCore>
 
 #include <medWorkspace.h>
-#include <medTensorViewToolBox.h>
-#include <medFiberViewToolBox.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 

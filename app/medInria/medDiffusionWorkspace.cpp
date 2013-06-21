@@ -21,26 +21,22 @@
 
 #include <medDataManager.h>
 
-#include "medViewPropertiesToolBox.h"
-#include "medTensorViewToolBox.h"
-#include "medDiffusionSelectorToolBox.h"
-#include "medFiberViewToolBox.h"
-#include "medFiberBundlingToolBox.h"
 #include <medViewContainer.h>
 #include <medSingleViewContainer.h>
 #include <medTabbedViewContainers.h>
+#include <medToolBox.h>
 #include <medToolBoxFactory.h>
-
+#include <medDiffusionSelectorToolBox.h>
 
 class medDiffusionWorkspacePrivate
 {
 public:
 
-    medViewPropertiesToolBox      *viewPropertiesToolBox;
-    medFiberViewToolBox        *fiberViewToolBox;
-    medFiberBundlingToolBox    *fiberBundlingToolBox;
-    medDiffusionSelectorToolBox                 *diffusionToolBox;
-    medTensorViewToolBox       *tensorViewToolBox;
+    medToolBox * diffusionToolBox;
+    medToolBox * fiberBundlingToolBox;
+    medToolBox * viewPropertiesToolBox;
+    medToolBox * fiberViewToolBox;
+    medToolBox * tensorViewToolBox;
 
     QList<dtkSmartPointer<dtkAbstractView> > views;
 
@@ -49,29 +45,24 @@ public:
 
 medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(parent), d(new medDiffusionWorkspacePrivate)
 {
-    d->viewPropertiesToolBox = new medViewPropertiesToolBox(parent);
 
-    // -- Bundling  toolbox --
-    d->fiberBundlingToolBox = new medFiberBundlingToolBox(parent);
+    d->diffusionToolBox =  new medDiffusionSelectorToolBox(parent);
 
-    // -- Diffusion toolbox --
-    d->diffusionToolBox = new medDiffusionSelectorToolBox(parent);
+    d->viewPropertiesToolBox = medToolBoxFactory::instance()->createToolBox("medViewPropertiesToolBox", parent);
+    d->fiberBundlingToolBox = medToolBoxFactory::instance()->createToolBox("medFiberBundlingToolBox", parent);
 
     connect(d->diffusionToolBox, SIGNAL(addToolBox(medToolBox *)),
             this, SLOT(addToolBox(medToolBox *)));
     connect(d->diffusionToolBox, SIGNAL(removeToolBox(medToolBox *)),
             this, SLOT(removeToolBox(medToolBox *)));
 
-    // -- Tensor tb --
-    d->tensorViewToolBox = new medTensorViewToolBox(parent);
+    d->tensorViewToolBox = medToolBoxFactory::instance()->createToolBox("medTensorViewToolBox", parent);
+    d->fiberViewToolBox = medToolBoxFactory::instance()->createToolBox("medFiberViewToolBox", parent);
 
     connect(d->tensorViewToolBox, SIGNAL(glyphShapeChanged(const QString&)), this, SLOT(onGlyphShapeChanged(const QString&)));
     connect(d->tensorViewToolBox, SIGNAL(flipX(bool)),                       this, SLOT(onFlipXChanged(bool)));
     connect(d->tensorViewToolBox, SIGNAL(flipY(bool)),                       this, SLOT(onFlipYChanged(bool)));
     connect(d->tensorViewToolBox, SIGNAL(flipZ(bool)),                       this, SLOT(onFlipZChanged(bool)));
-
-    // -- Fiber view tb --
-    d->fiberViewToolBox = new medFiberViewToolBox(parent);
 
     connect(d->fiberViewToolBox, SIGNAL(fiberColorModeChanged(int)), this, SLOT(onFiberColorModeChanged(int)));
     connect(d->fiberViewToolBox, SIGNAL(GPUActivated(bool)),         this, SLOT(onGPUActivated(bool)));
