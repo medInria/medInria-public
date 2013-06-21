@@ -69,10 +69,16 @@ if ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
     set(${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC
       v3dViewFiberInteractor.h
       v3dViewTensorInteractor.h
+      medFiberBundlingToolBox.h
+      medFiberViewToolBox.h
+      medTensorViewToolBox.h
     )
     set(${PROJECT_NAME}_TTK_DEPENDENT_SOURCES
        v3dViewFiberInteractor.cpp
        v3dViewTensorInteractor.cpp
+       medFiberBundlingToolBox.cpp
+       medFiberViewToolBox.cpp
+       medTensorViewToolBox.cpp
     )
     set(${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES
        ttkAlgorithms
@@ -88,6 +94,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewMeshInteractor.h
   v3dView4DInteractor.h
   v3dViewAnnotationInteractor.h
+  medViewPropertiesToolBox.h
+  medTimeLineToolBox.h
   ${${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC}
   v3dViewSHInteractor.h
   )
@@ -106,6 +114,8 @@ set(${PROJECT_NAME}_SOURCES
   v3dView4DInteractor.cpp
   v3dFiberBundle.cpp
   v3dViewAnnotationInteractor.cpp
+  medViewPropertiesToolBox.cpp
+  medTimeLineToolBox.cpp
   annotations/v3dViewAnnIntImageMaskHelper.cpp
   annotations/v3dViewAnnIntSeedPointHelper.cpp
   annotations/vtkSeedPointHandle.cpp
@@ -140,6 +150,7 @@ target_link_libraries(${PROJECT_NAME}
   ${${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES}
   dtkCore dtkLog
   medCore
+  medGui
   vtkCommon
   vtkRendering
   vtkImageView

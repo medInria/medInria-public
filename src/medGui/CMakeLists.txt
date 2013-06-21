@@ -66,6 +66,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
 
   # commonWidgets:
   commonWidgets/medDropSite.h
+  commonWidgets/medWorkspaceShifter.h
   commonWidgets/medButton.h
   commonWidgets/medStatusBar.h
   commonWidgets/medQuickAccessMenu.h
@@ -99,17 +100,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   # specific toolbox classes
   toolboxes/medDiffusionSelectorToolBox.h
   toolboxes/medDiffusionAbstractToolBox.h
-  toolboxes/medFiberViewToolBox.h
-  toolboxes/medFiberBundlingToolBox.h
-  toolboxes/medTensorViewToolBox.h
-
-  toolboxes/medSHViewToolBox.h
-  toolboxes/medFilteringSelectorToolBox.h
-  toolboxes/medFilteringAbstractToolBox.h
   toolboxes/medBrowserJobsToolBox.h
   toolboxes/medVisualizationLayoutToolBox.h
-  toolboxes/medTimeLineToolBox.h
-  toolboxes/medViewPropertiesToolBox.h
   toolboxes/medBrowserPacsHostToolBox.h
   toolboxes/medBrowserPacsNodesToolBox.h
   toolboxes/medBrowserPacsSearchToolBox.h
@@ -152,6 +144,7 @@ set(${PROJECT_NAME}_SOURCES
 
   # commonWidgets:
   commonWidgets/medDropSite.cpp
+  commonWidgets/medWorkspaceShifter.cpp
   commonWidgets/medButton.cpp
   commonWidgets/medProgressionStack.cpp
   commonWidgets/medStatusBar.cpp
@@ -211,20 +204,14 @@ set(${PROJECT_NAME}_SOURCES
   # specific toolbox classes
   toolboxes/medDiffusionSelectorToolBox.cpp
   toolboxes/medDiffusionAbstractToolBox.cpp
-  toolboxes/medFiberViewToolBox.cpp
-  toolboxes/medFiberBundlingToolBox.cpp
   toolboxes/medRegistrationSelectorToolBox.cpp
   toolboxes/medRegistrationAbstractToolBox.cpp
   toolboxes/medSegmentationSelectorToolBox.cpp
   toolboxes/medSegmentationAbstractToolBox.cpp
-  toolboxes/medTensorViewToolBox.cpp
-  toolboxes/medSHViewToolBox.cpp
   toolboxes/medFilteringSelectorToolBox.cpp
   toolboxes/medFilteringAbstractToolBox.cpp
   toolboxes/medBrowserJobsToolBox.cpp
   toolboxes/medVisualizationLayoutToolBox.cpp
-  toolboxes/medTimeLineToolBox.cpp
-  toolboxes/medViewPropertiesToolBox.cpp
   toolboxes/medBrowserPacsHostToolBox.cpp
   toolboxes/medBrowserPacsNodesToolBox.cpp
   toolboxes/medBrowserPacsSearchToolBox.cpp
