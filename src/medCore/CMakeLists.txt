@@ -18,7 +18,6 @@ project(medCore)
 ## #################################################################
 
 set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
-  med4DAbstractViewInteractor.h
   medAbstractAnnotationViewInteractor.h
   medAbstractData.h
   medAbstractDataImage.h

@@ -25,12 +25,11 @@
 #include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <med4DAbstractViewInteractor.h>
+#include <v3dView4DInteractor.h>
+
+#include <medToolBoxFactory.h>
 #include <medToolBoxTab.h>
 #include <medButton.h>
-
-
-
 
 class medTimeLineToolBoxPrivate
 {
@@ -42,8 +41,8 @@ public:
     medButton *stopButton;
 
     QList <QAction*> actionlist;
-    QList< dtkSmartPointer<dtkAbstractView> > views;
-    QList<med4DAbstractViewInteractor*> interactors;
+    dtkSmartPointer<dtkAbstractView> view;
+    v3dView4DInteractor* interactor;
     QTimeLine *timeLine;
     QSpinBox *spinBox;
     QLabel *labelmin;
@@ -59,6 +58,9 @@ public:
 
 medTimeLineToolBox::medTimeLineToolBox(QWidget *parent) : medToolBox(parent), d(new medTimeLineToolBoxPrivate)
 {
+    d->view = NULL;
+    d->interactor = NULL;
+    
     QWidget *box = new QWidget (this);
     d->labelmin = new QLabel(this);
     d->labelmax = new QLabel(this);
@@ -145,14 +147,14 @@ medTimeLineToolBox::medTimeLineToolBox(QWidget *parent) : medToolBox(parent), d(
     d->actionlist.insert(3,new QAction("25",this));
     d->actionlist.insert(4,new QAction("50",this));
 
-    connect(d->timeSlider, SIGNAL(sliderMoved(int)), this, SLOT(onTimeChanged(int)));
-    connect(d->timeSlider, SIGNAL(valueChanged(int)), this, SLOT(onTimeChanged(int)));
-    connect(d->playSequencesButton, SIGNAL(triggered()), this, SLOT(onPlaySequences()));
+    connect(d->timeSlider, SIGNAL(sliderMoved(int)), this, SLOT(changeTime(int)));
+    connect(d->timeSlider, SIGNAL(valueChanged(int)), this, SLOT(changeTime(int)));
+    connect(d->playSequencesButton, SIGNAL(triggered()), this, SLOT(play()));
 
-    connect(d->nextFrameButton, SIGNAL(triggered()), this, SLOT(onNextFrame()));
-    connect(d->previousFrameButton, SIGNAL(triggered()), this, SLOT(onPreviousFrame()));
-    connect(d->spinBox, SIGNAL(valueChanged(int)),this, SLOT(onSpinBoxChanged(int)));
-    connect(d->stopButton, SIGNAL(triggered()),this, SLOT(onStopButton()));
+    connect(d->nextFrameButton, SIGNAL(triggered()), this, SLOT(nextFrame()));
+    connect(d->previousFrameButton, SIGNAL(triggered()), this, SLOT(previousFrame()));
+    connect(d->spinBox, SIGNAL(valueChanged(int)),this, SLOT(changeSpeed(int)));
+    connect(d->stopButton, SIGNAL(triggered()),this, SLOT(stop()));
 
     this->setTitle(tr("Time Management"));
     box->setLayout (boxlayout);
@@ -161,8 +163,6 @@ medTimeLineToolBox::medTimeLineToolBox(QWidget *parent) : medToolBox(parent), d(
     d->minTime = 0.0;
     d->minTimeStep = 1.0;
     d->maxTime = 0.0;
-
-    this->isViewAdded = false;
 
     this->hide();
 }
@@ -174,26 +174,14 @@ medTimeLineToolBox::~medTimeLineToolBox(void)
     d = NULL;
 }
 
-
-void medTimeLineToolBox::onViewAdded (dtkAbstractView *view)
+bool medTimeLineToolBox::registered()
 {
-    if (!view)
-        return;
-
-    if (med4DAbstractViewInteractor *interactor = dynamic_cast<med4DAbstractViewInteractor*>(view->interactor ("v3dView4DInteractor")))
-    {
-        if (!d->views.contains (view))
-            d->views.append (view);
-        if (!d->interactors.contains (interactor))
-            d->interactors.append (interactor);
-        connect (view, SIGNAL ( dataAdded(dtkAbstractData*)),   this, SLOT (onDataAdded (dtkAbstractData*)));
-    }
-
-    this->updateRange();
-    this->isViewAdded = true;
+    return medToolBoxFactory::instance()->registerToolBox<medTimeLineToolBox>("medTimeLineToolBox","medTimeLineToolBox",
+                                                                              "Time line management toolbox",
+                                                                              QStringList() << "view" << "timeline");
 }
 
-void medTimeLineToolBox::onDataAdded (dtkAbstractData *data)
+void medTimeLineToolBox::addData (dtkAbstractData *data)
 {
     if (!data)
         return;
@@ -201,72 +189,52 @@ void medTimeLineToolBox::onDataAdded (dtkAbstractData *data)
     this->updateRange();
 }
 
-void medTimeLineToolBox::onViewRemoved (dtkAbstractView *view)
-{
-    d->timeLine->stop();
-    d->timeSlider->setValue(0);
-
-    if (!view)
-        return;
-
-    if (!d->views.contains(view))
-        return;
-
-    if (med4DAbstractViewInteractor *interactor = dynamic_cast<med4DAbstractViewInteractor*>(view->interactor ("v3dView4DInteractor")))
-    {
-        d->views.removeOne (view);
-        d->interactors.removeOne (interactor);
-    }
-
-    this->updateRange();
-    this->isViewAdded = false;
-}
-
-void medTimeLineToolBox::AddInteractor (med4DAbstractViewInteractor* interactor)
-{
-    d->interactors.removeOne (interactor);
-    d->interactors.append (interactor);
-}
-void medTimeLineToolBox::RemoveInteractor (med4DAbstractViewInteractor* interactor)
-{
-    d->interactors.removeOne (interactor);
-}
-
 void medTimeLineToolBox::update(dtkAbstractView *view)
 {
-    //JGG qDebug()<<"updating time tb";
     medToolBox::update(view);
+    
+    if (!view)
+    {
+        this->stop();
+        return;
+    }
+    
+    d->view->disconnect(this);
+    d->view = view;
+    
+    d->interactor = dynamic_cast<v3dView4DInteractor*>(view->interactor ("v3dView4DInteractor"));
+    
+    connect (d->view, SIGNAL (dataAdded (dtkAbstractData*)), this, SLOT (addData (dtkAbstractData*)));
+    
+    this->updateRange();
 }
 
 
-void medTimeLineToolBox::onPlaySequences ()
+void medTimeLineToolBox::play()
 {
-    if ( this->isViewAdded)
+    this->updateRange();
+    d->timeLine->setDuration((d->maxTime + d->minTimeStep)*(1000/(d->spinBox->value()/100.0)));
+    if(d->timeLine->state() == QTimeLine::NotRunning)
     {
-        this->updateRange();
-        d->timeLine->setDuration((d->maxTime + d->minTimeStep)*(1000/(d->spinBox->value()/100.0)));
-        if(d->timeLine->state() == QTimeLine::NotRunning)
-        {
-            d->timeLine->start();
-            d->playSequencesButton->setIcon (QPixmap(":/icons/pause.png"));
-            d->playSequencesButton->setToolTip( tr("Pause Sequence"));
-        }
-        else if(d->timeLine->state() == QTimeLine::Paused )
-        {
-            d->timeLine->resume();
-            d->playSequencesButton->setIcon (QPixmap(":/icons/pause.png"));
-            d->playSequencesButton->setToolTip( tr("Pause Sequence"));
-        }
-        else if(d->timeLine->state() == QTimeLine::Running)
-        {
-            d->timeLine->setPaused(true);
-            d->playSequencesButton->setIcon (QPixmap(":/icons/play.png"));
-            d->playSequencesButton->setToolTip( tr("Play Sequence"));
-        }
+        d->timeLine->start();
+        d->playSequencesButton->setIcon (QPixmap(":/icons/pause.png"));
+        d->playSequencesButton->setToolTip( tr("Pause Sequence"));
+    }
+    else if(d->timeLine->state() == QTimeLine::Paused )
+    {
+        d->timeLine->resume();
+        d->playSequencesButton->setIcon (QPixmap(":/icons/pause.png"));
+        d->playSequencesButton->setToolTip( tr("Pause Sequence"));
+    }
+    else if(d->timeLine->state() == QTimeLine::Running)
+    {
+        d->timeLine->setPaused(true);
+        d->playSequencesButton->setIcon (QPixmap(":/icons/play.png"));
+        d->playSequencesButton->setToolTip( tr("Play Sequence"));
     }
 }
 
-void medTimeLineToolBox::onStopButton ()
+void medTimeLineToolBox::stop ()
 {
     if (d->timeLine->state() == QTimeLine::Running)
     {
@@ -277,29 +245,24 @@ void medTimeLineToolBox::onStopButton ()
     d->timeSlider->setValue(0);
 }
 
-void medTimeLineToolBox::onNextFrame ()
+void medTimeLineToolBox::nextFrame ()
 {
-    if ( this->isViewAdded)
 	d->timeSlider->setValue(d->timeSlider->value()+1);
 }
-void medTimeLineToolBox::onPreviousFrame ()
+void medTimeLineToolBox::previousFrame ()
 {
-    if ( this->isViewAdded)
 	d->timeSlider->setValue(d->timeSlider->value()-1);
 }
 
-void medTimeLineToolBox::onTimeChanged (int val)
+void medTimeLineToolBox::changeTime (int val)
 {
     double time = this->getTimeFromSliderValue (val);
-    for (int i=0; i<d->interactors.size(); i++)
-    {
-        d->interactors[i]->setCurrentTime (time);
-    }
+    d->interactor->setCurrentTime (time);
 
     d->labelcurr->setText( DoubleToQString(( time ) / (d->spinBox->value()/100.0)) + QString(" sec") );
 }
 
-void medTimeLineToolBox::onSpinBoxChanged(int time)
+void medTimeLineToolBox::changeSpeed(int time)
 {
     this->updateRange();
 
@@ -320,20 +283,14 @@ unsigned int medTimeLineToolBox::getSliderValueFromTime (double t)
 
 void medTimeLineToolBox::updateRange()
 {
-    if (!d->interactors.size())
+    if (!d->interactor)
         return;
-    double mintime = 3000;
-    double maxtime = -3000;
-    double mintimestep = 3000;
-
-    for (int i=0; i<d->interactors.size(); i++)
-    {
-        double range[2]={0,0};
-        d->interactors[i]->sequencesRange (range);
-        mintimestep = std::min (mintimestep, d->interactors[i]->sequencesMinTimeStep ());
-        mintime = std::min (mintime, range[0]);
-        maxtime = std::max (maxtime, range[1]);
-    }
+    
+    double range[2]={0,0};
+    d->interactor->sequencesRange (range);
+    double mintimestep = d->interactor->sequencesMinTimeStep ();
+    double mintime = range[0];
+    double maxtime = range[1];
 
     unsigned int numberofsteps = std::ceil ((maxtime - mintime) / (mintimestep) + 1.0);
 
@@ -380,7 +337,7 @@ void medTimeLineToolBox::mouseReleaseEvent ( QMouseEvent *  mouseEvent)
         menu->exec(mouseEvent->globalPos());
     }
 }
-void medTimeLineToolBox::onStepIncreased()
+void medTimeLineToolBox::increaseStep()
 {
     if (QObject::sender() == d->actionlist[0])
         d->spinBox->setSingleStep(1);
@@ -399,7 +356,4 @@ void medTimeLineToolBox::clear()
     d->minTime = 0.0;
     d->minTimeStep = 1.0;
     d->maxTime = 0.0;
-
-    d->interactors.clear();
-    d->views.clear();
 }
