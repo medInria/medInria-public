@@ -20,7 +20,8 @@
 #include <medMetaDataKeys.h>
 #include <medAbstractView.h>
 #include <medToolBoxTab.h>
-#include <medMeshAbstractViewInteractor.h>
+#include <medToolBoxFactory.h>
+#include <v3dViewMeshInteractor.h>
 
 #define LAYER_NUMBER_ROLE (Qt::UserRole+1)
 #define LAYER_IS_MESH_ROLE (Qt::UserRole+2)
@@ -75,7 +76,7 @@ public:
     QString textLayer0;
     QString textLayer1;
     QPushButton * switchLayersButton;
-    medMeshAbstractViewInteractor * meshInteractor;
+    v3dViewMeshInteractor * meshInteractor;
     medAbstractView *view;
 
     QButtonGroup *mouseGroup;
@@ -417,6 +418,14 @@ medViewPropertiesToolBox::~medViewPropertiesToolBox(void)
     d = NULL;
 }
 
+bool medViewPropertiesToolBox::registered()
+{
+    return medToolBoxFactory::instance()->registerToolBox<medViewPropertiesToolBox>("medViewPropertiesToolBox",
+                                                                                    "medViewPropertiesToolBox",
+                                                                                    "View properties toolbox",
+                                                                                QStringList()<<"view"<<"properties");
+}
+
 void medViewPropertiesToolBox::update(dtkAbstractView *view)
 {
     medToolBox::update(view);
@@ -448,7 +457,7 @@ void medViewPropertiesToolBox::update(dtkAbstractView *view)
     raiseSlider(d->view->layerCount() == 2, layer1Opacity);
 
     if ( ! d->meshInteractor )
-        d->meshInteractor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor"));
+        d->meshInteractor = dynamic_cast<v3dViewMeshInteractor*>(d->view->interactor ("v3dViewMeshInteractor"));
 
     //Loop all layers and create a layer icon on the toolbox with respect to the fact that it is a mesh or an image
     for (int i = 0, meshNumber = 0, imageNumber = 0; i < d->view->layerCount() + d->view->meshLayerCount(); i++)
@@ -748,6 +757,7 @@ void medViewPropertiesToolBox::onDataAdded( int layer)
 {
 
 }
+
 void medViewPropertiesToolBox::onDataAdded(dtkAbstractData* data,
                                                  int layer)
 {
@@ -761,7 +771,7 @@ void medViewPropertiesToolBox::onDataAdded(dtkAbstractData* data,
     if(data->identifier().contains("vtkDataMesh"))
     {
         if ( ! d->meshInteractor )
-            d->meshInteractor = dynamic_cast<medMeshAbstractViewInteractor*>(d->view->interactor ("v3dViewMeshInteractor"));
+            d->meshInteractor = dynamic_cast<v3dViewMeshInteractor*>(d->view->interactor ("v3dViewMeshInteractor"));
 
         //this solves the layering updating issue and crashes, it is not counting
         //correctly the meshes coz onDataAdded is not connected when the first mesh is
