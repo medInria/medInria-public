@@ -41,7 +41,6 @@
 class medRegistrationSelectorToolBoxPrivate
 {
 public:
-    QPushButton * saveImageButton;
     QPushButton * saveTransButton;
 
     QComboBox *toolboxes;
@@ -73,13 +72,10 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     d->nameOfCurrentAlgorithm = "";
 
     // Process section
-    d->saveImageButton = new QPushButton(tr("Export Image"),this);
-    d->saveImageButton->setToolTip(tr("Save registered image to the File System"));
-    connect (d->saveImageButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
-
-    d->saveTransButton = new QPushButton(tr("Export Transf."),this);
+    
+    d->saveTransButton = new QPushButton(tr("Export Last Transf."),this);
     d->saveTransButton->setToolTip(
-                tr("Export the resulting transformation to the File System"));
+                tr("Export the resulting transformation of the last algorithm to the File System"));
     connect (d->saveTransButton, SIGNAL(clicked()), this, SLOT(onSaveTrans()));
 
 
@@ -128,11 +124,9 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
 
     // ---
     QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
-    layoutButtonGroup->addButton(d->saveImageButton);
     layoutButtonGroup->addButton(d->saveTransButton);
 
     QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
-    layoutButtonLayout->addWidget(d->saveImageButton);
     layoutButtonLayout->addWidget(d->saveTransButton);
 
     QVBoxLayout *layoutLayout = new QVBoxLayout;
@@ -565,7 +559,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type,QString a
     if (type==algorithm)
         medDataManager::instance()->importNonPersistent(output);
 
-    d->process = NULL; // will trigger a deleteLater
+    //d->process = NULL; // will trigger a deleteLater
     
     if(output)
     {   
