@@ -48,6 +48,8 @@ public:
      */
     void setCurrentInteractionFromSettings();
 
+    static bool registered();
+
 public slots:
     void onDataAdded(int layer);
     void onDataAdded(dtkAbstractData*);
