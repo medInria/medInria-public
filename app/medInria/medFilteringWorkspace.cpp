@@ -18,7 +18,6 @@
 #include <medMetaDataKeys.h>
 #include <medStorage.h>
 
-#include <medViewPropertiesToolBox.h>
 #include <medFilteringSelectorToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medViewContainer.h>
@@ -37,15 +36,15 @@
 class medFilteringWorkspacePrivate
 {
 public:
-    medViewPropertiesToolBox        *viewPropertiesToolBox;
-    medFilteringSelectorToolBox     *filteringToolBox;
+    medToolBox *viewPropertiesToolBox;
+    medFilteringSelectorToolBox *filteringToolBox;
     dtkSmartPointer<dtkAbstractData> filterOutput;
     QString importUuid;
 };
 
 medFilteringWorkspace::medFilteringWorkspace ( QWidget *parent ) : medWorkspace ( parent ), d ( new medFilteringWorkspacePrivate )
 {
-    d->viewPropertiesToolBox = new medViewPropertiesToolBox ( parent );
+    d->viewPropertiesToolBox = medToolBoxFactory::instance()->createToolBox("medViewPropertiesToolBox", parent);
 
     this->addToolBox ( d->viewPropertiesToolBox );
 
@@ -73,7 +72,8 @@ void medFilteringWorkspace::setupViewContainerStack()
         connect(filteringViewContainer,SIGNAL(droppedInput(medDataIndex)), d->filteringToolBox,SLOT(onInputSelected(medDataIndex)));
         connect(this,SIGNAL(outputDataChanged(dtkAbstractData *)),
                 filteringViewContainer,SLOT(updateOutput(dtkAbstractData *)));
-        connect(filteringViewContainer, SIGNAL(inputViewRemoved(dtkAbstractView *)),this, SLOT(onInputViewRemoved()));
+        connect(filteringViewContainer, SIGNAL(viewRemoved(dtkAbstractView *)),
+                this, SLOT(onViewRemoved()));
 
         this->stackedViewContainers()->addContainer ( "Filtering",filteringViewContainer );
 
@@ -91,7 +91,7 @@ void medFilteringWorkspace::patientChanged ( int patientId )
 
 void medFilteringWorkspace::onProcessSuccess()
 {
-    d->filterOutput = d->filteringToolBox->currentToolBox()->processOutput();
+    d->filterOutput = d->filteringToolBox->customToolbox()->processOutput();
     if ( !d->filterOutput )
         return;
 
@@ -139,7 +139,7 @@ QString medFilteringWorkspace::identifier() const {
     return "Filtering";
 }
 
-void medFilteringWorkspace::onInputViewRemoved ()
+void medFilteringWorkspace::onViewRemoved ()
 {
     d->filteringToolBox->clear();
 }

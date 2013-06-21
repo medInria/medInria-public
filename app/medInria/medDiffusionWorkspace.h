@@ -17,9 +17,6 @@
 #include <QtCore>
 
 #include <medWorkspace.h>
-#include <medTensorViewToolBox.h>
-#include <medSHViewToolBox.h>
-#include <medFiberViewToolBox.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
 
@@ -116,3 +113,6 @@ private:
     /** Updates the fiber interactor with the current values in the fiber toolbox. */
     void updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medFiberViewToolBox* fiberViewToolBox);
 };
+
+
+

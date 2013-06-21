@@ -22,7 +22,6 @@
 #include <medViewContainer.h>
 #include <medWorkspaceFactory.h>
 #include <medVisualizationLayoutToolBox.h>
-#include <medViewPropertiesToolBox.h>
 #include <medToolBoxFactory.h>
 
 #include <dtkLog/dtkLog.h>
@@ -41,7 +40,7 @@ public:
     {}
 
     medVisualizationLayoutToolBox *layoutToolBox;
-    medViewPropertiesToolBox *viewPropertiesToolBox;
+    medToolBox *viewPropertiesToolBox;
 
     medSegmentationSelectorToolBox *segmentationToolBox;
 };
@@ -79,7 +78,7 @@ medWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 
     // -- View toolbox --
 
-    d->viewPropertiesToolBox = new medViewPropertiesToolBox(parent);
+    d->viewPropertiesToolBox = medToolBoxFactory::instance()->createToolBox("medViewPropertiesToolBox", parent);
 
 
     connect ( this, SIGNAL(layoutModeChanged(const QString &)),
