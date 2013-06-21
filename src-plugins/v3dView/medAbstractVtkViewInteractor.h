@@ -33,11 +33,6 @@ public:
         return QStringList () << v3dView::s_identifier() << medVtkView::s_identifier();
     }
 
-    virtual QList<int> getParameters() const = 0;
-
-protected:
-    QList<int> parameters;
-
 public slots:
     virtual void setOpacity(dtkAbstractData * data, double opacity) = 0;
     virtual double opacity(dtkAbstractData * data) const = 0;
