@@ -20,8 +20,6 @@ class medFilteringSelectorToolBox;
 class medFilteringAbstractToolBoxPrivate;
 class dtkAbstractData;
 
-
-
 class MEDGUI_EXPORT medFilteringAbstractToolBox : public medToolBox
 {
     Q_OBJECT

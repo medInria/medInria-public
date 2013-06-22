@@ -29,6 +29,7 @@
 class medFilteringSelectorToolBoxPrivate
 {
 public:
+
     QComboBox    *chooseFilter;
     medAbstractView *inputView;
     dtkAbstractData *inputData;
@@ -45,14 +46,10 @@ medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) :
 {
     d->inputView = NULL;
 
-    QWidget *displayWidget = new QWidget ( this );
 
-    d->chooseFilter = new QComboBox ( this );
+    d->chooseFilter = new QComboBox;
     d->chooseFilter->addItem ( tr ( "Choose filter" ) );
 	d->chooseFilter->setToolTip(tr("Browse through the list of available filters"));
-
-    d->filterLayout = new QVBoxLayout ( displayWidget );
-    d->filterLayout->addWidget ( d->chooseFilter );
 
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
     int i = 1; //account for the choose Filter item
@@ -69,13 +66,17 @@ medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) :
 
     connect ( d->chooseFilter, SIGNAL ( activated ( int ) ), this, SLOT ( onToolBoxChosen ( int ) ) );
 
+    QWidget *displayWidget = new QWidget;
+    d->filterLayout = new QVBoxLayout;
+    d->filterLayout->addWidget ( d->chooseFilter );
+    displayWidget->setLayout(d->filterLayout);
+
     this->setTitle ( tr ( "Filtering View" ) );
     this->addWidget ( displayWidget );
+    displayWidget->setStyleSheet("QListView {border:none}");
 
     d->inputData = NULL;
     d->currentToolBox = NULL;
-
-
 }
 
 medFilteringSelectorToolBox::~medFilteringSelectorToolBox()
@@ -140,7 +141,6 @@ void medFilteringSelectorToolBox::onToolBoxChosen ( int index )
     d->currentToolBox->show();
 
     d->filterLayout->addWidget ( toolbox );
-
 
     if ( d->inputView )
         d->currentToolBox->update ( d->inputView );
