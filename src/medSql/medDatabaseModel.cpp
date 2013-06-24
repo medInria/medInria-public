@@ -732,8 +732,8 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
                 changePersistenIndexAndSubIndex(index);
                 parent->removeChildren(/*index.row()*/parent->rowOf(item), 1);
                 d->medIndexMap.remove(dataIndex);
-                emit layoutChanged();
-                
+
+                emit layoutChanged();                
                 emit dataChanged(parentIndex, parentIndex);
             }
         }
@@ -797,7 +797,7 @@ void medDatabaseModel::updateSerie(const medDataIndex& dataIndex)
              emit dataChanged(newIndex, newIndex);
         }
     }
-    
+
     return;
 }
 
@@ -935,7 +935,7 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
             }
             else
             {
-                // you can't do that, studies are already deleted at this stage
+                // we can't do that, studies are already deleted at this stage
                 // QList<medDataIndex> studies = dbc->studies(dataIndex);              
                 emit layoutAboutToBeChanged();
                 
@@ -943,7 +943,7 @@ void medDatabaseModel::updatePatient(const medDataIndex& dataIndex, bool updateC
                 
                 foreach(medDataIndex tempIndex, d->medIndexMap.keys())
                 {
-                    if( tempIndex.patientId() == dataIndex.patientId() )
+                    if(medDataIndex::isMatch(dataIndex, tempIndex))
                         d->medIndexMap.remove(tempIndex);
                 }
                 item->removeChildren(0, item->childCount());
