@@ -480,7 +480,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
                                QDir::homePath(),
                                fileTypeSuggestion);
 
-    dialog.setDefaultSuffix("mha");
+    dialog.setDefaultSuffix(defaultSuffix);
     dialog.setAcceptMode(QFileDialog::AcceptSave);
     QStringList fileName;
     if (dialog.exec())
