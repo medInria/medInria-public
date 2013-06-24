@@ -190,13 +190,8 @@ void medDatabaseNonPersistentControllerImpl::remove(const medDataIndex &index)
     for (DataHashMapType::const_iterator it(d->items.begin()); it != d->items.end(); ++it ) {
         if (medDataIndex::isMatch( it.key(), index)) {
             indexesToRemove.push_back(it.key());
-            qDebug() << "DEBUG : indexesToRemove.size() = " << indexesToRemove.size();
-            qDebug() << "it.key() = " << it.key();
         }
     }
-
-    if (indexesToRemove.size() == 0)
-        return;
 
     for (medDataIndexList::const_iterator it(indexesToRemove.begin()); it != indexesToRemove.end(); ++it)
     {
@@ -206,6 +201,11 @@ void medDatabaseNonPersistentControllerImpl::remove(const medDataIndex &index)
     }
 
     emit medAbstractDbController::updated(index);
+
+    if( index.isValidForSeries() && series(index).isEmpty() )
+        remove(medDataIndex(index.dataSourceId(), index.patientId(), index.isValidForStudy(), -1, -1));
+    else if( index.isValidForStudy() && series(index).isEmpty() )
+        remove(medDataIndex(index.dataSourceId(), index.patientId(),-1, -1, -1));
 }
 
 qint64 medDatabaseNonPersistentControllerImpl::getEstimatedSize( const medDataIndex& index ) const
