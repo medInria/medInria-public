@@ -41,3 +41,8 @@ medFilteringSelectorToolBox *medFilteringAbstractToolBox::parentToolBox(void)
 {
     return d->parent;
 }
+
+dtkPlugin* medFilteringAbstractToolBox::plugin()
+{
+    return NULL;
+}

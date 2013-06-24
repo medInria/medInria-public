@@ -137,6 +137,12 @@ void medFilteringSelectorToolBox::onToolBoxChosen ( int index )
 
     d->currentToolBox = toolbox;
     d->currentToolBox->header()->hide();
+
+    dtkPlugin* plugin = d->currentToolBox->plugin();
+    this->setAboutPluginButton(plugin);
+    this->setAboutPluginVisibility(true);
+
+
     d->currentToolBox->show();
 
     d->filterLayout->addWidget ( toolbox );
