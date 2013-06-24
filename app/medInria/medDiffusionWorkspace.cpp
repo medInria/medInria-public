@@ -37,10 +37,10 @@ class medDiffusionWorkspacePrivate
 public:
 
     medViewPropertiesToolBox      *viewPropertiesToolBox;
-    medFiberViewToolBox        *fiberViewToolBox;
-    medFiberBundlingToolBox    *fiberBundlingToolBox;
-    medDiffusionSelectorToolBox                 *diffusionToolBox;
-    medTensorViewToolBox       *tensorViewToolBox;
+    medFiberViewToolBox           *fiberViewToolBox;
+    medFiberBundlingToolBox       *fiberBundlingToolBox;
+    medDiffusionSelectorToolBox   *diffusionToolBox;
+    medTensorViewToolBox          *tensorViewToolBox;
 
     QList<dtkSmartPointer<dtkAbstractView> > views;
 

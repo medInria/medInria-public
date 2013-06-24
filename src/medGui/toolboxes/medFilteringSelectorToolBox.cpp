@@ -136,7 +136,6 @@ void medFilteringSelectorToolBox::onToolBoxChosen ( int index )
     }
 
     d->currentToolBox = toolbox;
-    emit addToolBox (d->currentToolBox);
     d->currentToolBox->header()->hide();
     d->currentToolBox->show();
 
@@ -175,8 +174,16 @@ void medFilteringSelectorToolBox::onInputSelected ( const medDataIndex& index )
 
 void medFilteringSelectorToolBox::clear()
 {
-    if ( d->currentToolBox )
-        d->currentToolBox->clear();
+    foreach (medFilteringAbstractToolBox *tb, d->toolBoxes)
+        tb->deleteLater();
+
+    d->toolBoxes.clear();
+
+    d->currentToolBox = NULL;
+
+    d->chooseFilter->blockSignals (true);
+    d->chooseFilter->setCurrentIndex (0);
+    d->chooseFilter->blockSignals (false);
 
     d->inputData = NULL;
     d->inputView = NULL;

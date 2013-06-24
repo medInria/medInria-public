@@ -37,8 +37,8 @@
 class medFilteringWorkspacePrivate
 {
 public:
-    medViewPropertiesToolBox  *viewPropertiesToolBox;
-    medFilteringSelectorToolBox *filteringToolBox;
+    medViewPropertiesToolBox        *viewPropertiesToolBox;
+    medFilteringSelectorToolBox     *filteringToolBox;
     dtkSmartPointer<dtkAbstractData> filterOutput;
     QString importUuid;
 };
