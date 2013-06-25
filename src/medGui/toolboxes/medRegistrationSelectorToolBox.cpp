@@ -468,7 +468,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
         else
         {
             defaultSuffix = "mha";
-            fileTypeSuggestion = tr("MetaFile (*.mha *.mhd);;Nifty (*.nii);;"
+            fileTypeSuggestion = tr("MetaFile (*.mha *.mhd);;Nifti (*.nii);;"
                                     "Analyse (*.hdr);;Nrrd (*.nrrd);;"
                                     "VTK (*.vtk);;"
                                     "All supported files "
@@ -483,9 +483,11 @@ void medRegistrationSelectorToolBox::onSaveTrans()
     dialog.setDefaultSuffix(defaultSuffix);
     dialog.setAcceptMode(QFileDialog::AcceptSave);
     QStringList fileName;
+    dialog.setLabelText(QFileDialog::DialogLabel::FileName,"if a suffix is not specified in the filename, will save by default in ." + defaultSuffix);
+    
     if (dialog.exec())
         fileName = dialog.selectedFiles();
-
+    qDebug() << "default suffix = " << dialog.defaultSuffix();
     qDebug() << fileName;
 
     if (!fileName.isEmpty())
