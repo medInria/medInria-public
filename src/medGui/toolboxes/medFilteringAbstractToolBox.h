@@ -32,7 +32,7 @@ public:
 
     virtual dtkAbstractData* processOutput() = 0;
 
-    virtual dtkPlugin* plugin();
+    virtual dtkPlugin* plugin() = 0;
 
 protected:
     medFilteringSelectorToolBox *parentToolBox();

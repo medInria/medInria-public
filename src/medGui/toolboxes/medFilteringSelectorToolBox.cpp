@@ -68,12 +68,13 @@ medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) :
 
     QWidget *displayWidget = new QWidget;
     d->filterLayout = new QVBoxLayout;
+
+    d->chooseFilter->adjustSize();
     d->filterLayout->addWidget ( d->chooseFilter );
     displayWidget->setLayout(d->filterLayout);
 
     this->setTitle ( tr ( "Filtering View" ) );
     this->addWidget ( displayWidget );
-    displayWidget->setStyleSheet("QListView {border:none}");
 
     d->inputData = NULL;
     d->currentToolBox = NULL;
