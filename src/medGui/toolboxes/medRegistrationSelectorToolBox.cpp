@@ -457,45 +457,38 @@ void medRegistrationSelectorToolBox::onSaveTrans()
 
     //get the transformation type: affine or deformation field.
     QString fileTypeSuggestion;
-    QString defaultSuffix;
+    QString filterSelected;
     if (d->process->hasProperty("transformType"))
     {
         if ( d->process->property("transformType") == "rigid")
-        {
             fileTypeSuggestion = tr("Transformation (*.txt)");
-            defaultSuffix = "txt";
-        }
         else
-        {
-            defaultSuffix = "mha";
             fileTypeSuggestion = tr("MetaFile (*.mha *.mhd);;Nifti (*.nii);;"
                                     "Analyse (*.hdr);;Nrrd (*.nrrd);;"
                                     "VTK (*.vtk);;"
                                     "All supported files "
                                     "(*.mha *.mhd *.nii *.hdr *.nrrd)");
-        }
     }
 
-    QFileDialog dialog(this, tr("Save Transformation"),
-                               QDir::homePath(),
-                               fileTypeSuggestion);
+    QString fileName;
 
-    dialog.setDefaultSuffix(defaultSuffix);
-    dialog.setAcceptMode(QFileDialog::AcceptSave);
-    QStringList fileName;
-    dialog.setLabelText(QFileDialog::FileName,"if a suffix is not specified in the filename, will save by default in ." + defaultSuffix);
-    
-    if (dialog.exec())
-        fileName = dialog.selectedFiles();
-    qDebug() << "default suffix = " << dialog.defaultSuffix();
-    qDebug() << fileName;
+    fileName = QFileDialog::getSaveFileName(this,tr("Save Transformation"),
+                               QDir::homePath(),
+                               fileTypeSuggestion,&filterSelected,QFileDialog::Option::DontUseNativeDialog);
 
     if (!fileName.isEmpty())
     {
+        filterSelected = filterSelected.mid(filterSelected.indexOf('*'));
+
+        if (filterSelected.indexOf('*')!=filterSelected.lastIndexOf('*'))
+            filterSelected = filterSelected.left(filterSelected.indexOf(' '));
+        else
+            filterSelected = filterSelected.left(filterSelected.indexOf(')'));
+        fileName = fileName + filterSelected.mid(filterSelected.indexOf('*')+1);
         //qDebug()<< (void *) d->movingData;
         //qDebug()<<  d->movingView->data();
         QStringList transformFileName;
-        transformFileName << ""<< fileName[0];
+        transformFileName << ""<< fileName;
         if (d->process->write(transformFileName))
         {
             emit(showInfo(tr  ("Transformation saved"),3000));
