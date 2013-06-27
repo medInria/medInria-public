@@ -29,7 +29,6 @@ public:
     QPushButton * undoButton;
     QPushButton * redoButton;
     QPushButton * resetButton;
-    QPushButton * exportAllTransButton;
     QListWidget * transformationStack;
     QIcon arrowCurrentStep; 
     int currentStep;
@@ -50,11 +49,6 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
     connect(d->redoButton,SIGNAL(clicked()),this,SLOT(onRedo()));
     connect(d->resetButton,SIGNAL(clicked()),registrationFactory::instance(),SLOT(reset()));
 
-    // exportAllTransButton
-    d->exportAllTransButton = new QPushButton(QIcon(),tr("Export all the transformation if the stack in a single file"),this);
-    d->exportAllTransButton->setEnabled(false);
-    connect(d->exportAllTransButton,SIGNAL(clicked()),this,SLOT(onSaveAllTransf()));
-
     d->arrowCurrentStep = QIcon(":undoRedoRegistration/icons/BlueArrowRight.png");
     d->currentStep = -1;
 
@@ -66,7 +60,6 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
     layoutButtonUndoRedo->addWidget(d->redoButton);
     layoutButtonUndoRedo->addWidget(d->undoButton);
     layoutButtonUndoRedo->addWidget(d->resetButton);
-    layoutButtonUndoRedo->addWidget(d->exportAllTransButton);
     QHBoxLayout *layoutButtonsStack = new QHBoxLayout;
     layoutButtonsStack->addLayout(layoutButtonUndoRedo);
     layoutButtonsStack->addWidget(d->transformationStack);
@@ -114,7 +107,6 @@ void undoRedoRegistrationToolBox::onUndo()
     if (d->currentStep>=d->transformationStack->count()){
         d->undoButton->setEnabled(false);
         d->resetButton->setEnabled(false);
-        d->exportAllTransButton->setEnabled(false);
     }
 }
 
@@ -129,7 +121,6 @@ void undoRedoRegistrationToolBox::onRedo()
         this->parentToolBox()->handleOutput(medRegistrationSelectorToolBox::redo,d->transformationStack->item(d->currentStep)->text().remove(" "));
         d->undoButton->setEnabled(true);
         d->resetButton->setEnabled(true);
-        d->exportAllTransButton->setEnabled(true);
     }
 
     if (d->currentStep<=0)
@@ -147,8 +138,7 @@ void undoRedoRegistrationToolBox::onTransformationStackReset(void)
     d->undoButton->setEnabled(false);
     d->redoButton->setEnabled(false);
     d->resetButton->setEnabled(false);
-    d->exportAllTransButton->setEnabled(true);
-
+    
     registrationFactory::instance()->getItkRegistrationFactory()->Modified();
     d->m_UndoRedo->generateOutput();
     this->parentToolBox()->handleOutput(medRegistrationSelectorToolBox::reset);
@@ -179,7 +169,6 @@ void undoRedoRegistrationToolBox::addTransformationIntoList(int i, QStringList *
     }
     d->undoButton->setEnabled(true);
     d->resetButton->setEnabled(true);
-    d->exportAllTransButton->setEnabled(true);
     d->redoButton->setEnabled(false);
 }
 
@@ -212,62 +201,4 @@ void undoRedoRegistrationToolBox::onRegistrationSuccess(){
     registrationFactory::instance()->getItkRegistrationFactory()->Modified();
     d->m_UndoRedo->generateOutput(true,this->parentToolBox()->process());
     this->parentToolBox()->handleOutput();
-}
-
-void undoRedoRegistrationToolBox::onSaveAllTransf(){
-
-
-    /*
-    QString fileTypeSuggestion;
-    QString defaultSuffix;
-    if (d->process->hasProperty("transformType"))
-    {
-    if ( d->process->property("transformType") == "rigid")
-    {
-    fileTypeSuggestion = tr("Transformation (*.txt)");
-    defaultSuffix = "txt";
-    }
-    else
-    {
-    defaultSuffix = "mha";
-    fileTypeSuggestion = tr("MetaFile (*.mha *.mhd);;Nifty (*.nii);;"
-    "Analyse (*.hdr);;Nrrd (*.nrrd);;"
-    "VTK (*.vtk);;"
-    "All supported files "
-    "(*.mha *.mhd *.nii *.hdr *.nrrd)");
-    }
-    }*/
-
-    QFileDialog dialog(this, tr("Save Transformation"),
-        QDir::homePath());
-
-    //dialog.setDefaultSuffix("mha");
-    dialog.setAcceptMode(QFileDialog::AcceptSave);
-    QStringList fileName;
-    if (dialog.exec())
-        fileName = dialog.selectedFiles();
-
-    qDebug() << fileName;
-    if (!fileName.isEmpty())
-    {
-
-        QByteArray ba = fileName[0].toLatin1();
-        const char *name = ba.data();
-        //qDebug()<< (void *) d->movingData;
-        //qDebug()<<  d->movingView->data();
-        QStringList transformFileName;
-        transformFileName << ""<< fileName[0];
-        try{
-            registrationFactory::instance()->getItkRegistrationFactory()->WriteGlobalLinearTransform(name);
-        }catch (itk::ExceptionObject &e)
-        {
-            qDebug() << "here we gooo" ;
-            registrationFactory::instance()->getItkRegistrationFactory()->WriteGlobalDisplacementField(name);
-
-        }
-        //  emit(showInfo(tr  ("Transformation saved"),3000));
-
-        //  emit(showError(tr  ("Transformation saving failed, no suitable writer found"),3000));
-        //    registrationFactory::instance()->getItkRegistrationFactory()->GetGeneralTransform()->GetTransform();
-    }
 }
