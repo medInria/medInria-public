@@ -483,7 +483,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
     dialog.setDefaultSuffix(defaultSuffix);
     dialog.setAcceptMode(QFileDialog::AcceptSave);
     QStringList fileName;
-    dialog.setLabelText(QFileDialog::DialogLabel::FileName,"if a suffix is not specified in the filename, will save by default in ." + defaultSuffix);
+    dialog.setLabelText(QFileDialog::FileName,"if a suffix is not specified in the filename, will save by default in ." + defaultSuffix);
     
     if (dialog.exec())
         fileName = dialog.selectedFiles();
