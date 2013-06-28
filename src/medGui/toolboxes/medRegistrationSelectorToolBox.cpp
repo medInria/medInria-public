@@ -416,7 +416,7 @@ void medRegistrationSelectorToolBox::onSaveImage()
     }
     QFileDialog dialog(this, tr("Save Image"),
                                QDir::homePath(),
-                               tr("MetaFile (*.mha *.mhd);;Nifty (*.nii);;Analyse (*.hdr);;Nrrd (*.nrrd);;VTK (*.vtk);;All supported files (*.mha *.mhd *.nii *.hdr *.nrrd *.vtk)"));
+                               tr("MetaFile (*.mha *.mhd);;Nifti (*.nii);;Analyse (*.hdr);;Nrrd (*.nrrd);;VTK (*.vtk);;All supported files (*.mha *.mhd *.nii *.hdr *.nrrd *.vtk)"));
     dialog.setDefaultSuffix("mha");
     dialog.setAcceptMode(QFileDialog::AcceptSave);
     QStringList fileName;
@@ -465,7 +465,8 @@ void medRegistrationSelectorToolBox::onSaveTrans()
             suffix[ tr("Transformation (*.txt)") ] = ".txt";
         else
         {
-            suffix[ tr("MetaFile (*.mha *.mhd)") ] = ".mha";
+            suffix[ tr("MetaFile (*.mha)") ] = ".mha";
+            suffix[ tr("MetaFile (*.mhd)") ] = ".mhd";
             suffix[ tr("Nifti (*.nii)") ] = ".nii";
             suffix[ tr("Analyse (*.hdr)") ] = ".hdr";
             suffix[ tr("Nrrd (*.nrrd)") ] = ".nrrd";
@@ -482,43 +483,54 @@ void medRegistrationSelectorToolBox::onSaveTrans()
                 fileTypeSuggestion += ";;";
         }
     }
+    QFileInfo file;
     QString fileName;
+    
+    file = QFileDialog::getSaveFileName(this,tr("Save Transformation"),
+        QDir::homePath(),
+        fileTypeSuggestion,&filterSelected,QFileDialog::DontUseNativeDialog);
 
-    fileName = QFileDialog::getSaveFileName(this,tr("Save Transformation"),
-                               QDir::homePath(),
-                               fileTypeSuggestion,&filterSelected,QFileDialog::DontUseNativeDialog);
-
-    if (!fileName.isEmpty())
+    if (!file.filePath().isEmpty())
     {   
-        if (!filterSelected.isEmpty())
+        if (!file.completeSuffix().isEmpty())
         {
-            QString fileEnd;
-            fileEnd = fileName.right(fileName.lastIndexOf('/'));
-
-            if (fileEnd.contains('.'))
+            if(!suffix.values().contains("."+file.completeSuffix()))
             {
-                QString suffixAdded = fileEnd.right('.');
-                if(!suffix.values().contains(suffixAdded))
-                {
-                    QMessageBox::warning(this,tr("Error"),tr("The save did not occur, you have to choose a format within the types suggested."));
+                QMessageBox::warning(this,tr("Save Transformation"),tr("The save did not occur, you have to choose a format within the types suggested."));
+                onSaveTrans(); // call again the function.
+                return;
+            }
+            fileName = file.filePath();
+        }
+        else
+        {
+            fileName = file.filePath() + suffix[filterSelected];
+            file.setFile(fileName);
+            if (file.exists())
+            {
+                QMessageBox msgBox;
+                 int res = QMessageBox::warning(this, tr("Save Transformation"),
+                                tr("The file ") + file.fileName() + tr(" already exists.\nDo you want to replace it?"),
+                                QMessageBox::Yes | QMessageBox::No);
+                                
+                if (res==QMessageBox::No){
+                    onSaveTrans(); // call again the function.
                     return;
                 }
             }
-
-            fileName = fileName + suffix[filterSelected];
-            //qDebug()<< (void *) d->movingData;
-            //qDebug()<<  d->movingView->data();
-            QStringList transformFileName;
-            transformFileName << ""<< fileName;
-            if (d->process->write(transformFileName))
-            {
-                emit(showInfo(tr  ("Transformation saved"),3000));
-            }
-            else
-            {
-                emit(showError(tr  ("Transformation saving failed, no suitable writer found"),3000));
-            }
         }
+
+        QStringList transformFileName;
+        transformFileName << ""<< fileName;
+        if (d->process->write(transformFileName))
+        {
+            emit(showInfo(tr  ("Transformation saved"),3000));
+        }
+        else
+        {
+            emit(showError(tr  ("Transformation saving failed, no suitable writer found"),3000));
+        }
+
     }
 }
 
