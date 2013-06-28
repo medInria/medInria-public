@@ -508,7 +508,6 @@ void medRegistrationSelectorToolBox::onSaveTrans()
             file.setFile(fileName);
             if (file.exists())
             {
-                QMessageBox msgBox;
                  int res = QMessageBox::warning(this, tr("Save Transformation"),
                                 tr("The file ") + file.fileName() + tr(" already exists.\nDo you want to replace it?"),
                                 QMessageBox::Yes | QMessageBox::No);
