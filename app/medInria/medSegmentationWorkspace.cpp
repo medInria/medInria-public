@@ -87,9 +87,9 @@ medWorkspace(parent), d(new medSegmentationWorkspacePrivate)
     connect ( stackedViewContainers(), SIGNAL(currentChanged(const QString &)),
         this, SLOT(connectToolboxesToCurrentContainer(const QString &)));
 
-    this->addToolBox( d->segmentationToolBox );
     this->addToolBox( d->layoutToolBox );
     this->addToolBox( d->viewPropertiesToolBox );
+    this->addToolBox( d->segmentationToolBox );
 }
 
 medSegmentationWorkspace::~medSegmentationWorkspace(void)

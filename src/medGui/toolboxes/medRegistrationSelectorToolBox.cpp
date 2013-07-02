@@ -57,6 +57,8 @@ public:
     medRegistrationAbstractToolBox * undoRedoToolBox;
     medRegistrationAbstractToolBox * customToolBox;
     QString nameOfCurrentAlgorithm;
+    QString savePath;
+
 };
 
 medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medRegistrationSelectorToolBoxPrivate)
@@ -70,7 +72,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     d->undoRedoProcess = NULL;
     d->undoRedoToolBox = NULL;
     d->nameOfCurrentAlgorithm = "";
-
+    d->savePath = QDir::homePath();
     // Process section
     
     d->saveTransButton = new QPushButton(tr("Export Last Transf."),this);
@@ -487,7 +489,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
     QString fileName;
     
     file = QFileDialog::getSaveFileName(this,tr("Save Transformation"),
-        QDir::homePath(),
+        d->savePath,
         fileTypeSuggestion,&filterSelected,QFileDialog::DontUseNativeDialog);
 
     if (!file.filePath().isEmpty())
@@ -497,6 +499,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
             if(!suffix.values().contains("."+file.completeSuffix()))
             {
                 QMessageBox::warning(this,tr("Save Transformation"),tr("The save did not occur, you have to choose a format within the types suggested."));
+                d->savePath = file.absolutePath();
                 onSaveTrans(); // call again the function.
                 return;
             }
@@ -513,6 +516,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
                                 QMessageBox::Yes | QMessageBox::No);
                                 
                 if (res==QMessageBox::No){
+                    d->savePath = file.absolutePath();
                     onSaveTrans(); // call again the function.
                     return;
                 }
@@ -531,6 +535,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
         }
 
     }
+    d->savePath = QDir::homePath();
 }
 
 // TODO CHANGE COMMENTARY
