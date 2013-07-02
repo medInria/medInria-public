@@ -403,46 +403,6 @@ QString medRegistrationSelectorToolBox::getNameOfCurrentAlgorithm()
     return d->nameOfCurrentAlgorithm;
 }
 
-//! Saves the registered image.
-void medRegistrationSelectorToolBox::onSaveImage()
-{
-    if ( !d->movingData)
-    {
-        emit showError(tr  ("Please Select a moving image before saving"),3000);
-        return;
-    }
-    if (!d->process )
-    {
-        emit showError(tr  ("Please run the registration before saving"),3000);
-        return;
-    }
-    QFileDialog dialog(this, tr("Save Image"),
-                               QDir::homePath(),
-                               tr("MetaFile (*.mha *.mhd);;Nifti (*.nii);;Analyse (*.hdr);;Nrrd (*.nrrd);;VTK (*.vtk);;All supported files (*.mha *.mhd *.nii *.hdr *.nrrd *.vtk)"));
-    dialog.setDefaultSuffix("mha");
-    dialog.setAcceptMode(QFileDialog::AcceptSave);
-    QStringList fileName;
-    if (dialog.exec())
-        fileName = dialog.selectedFiles();
-
-    qDebug() << fileName;
-
-    if (!fileName.isEmpty())
-    {
-        //qDebug()<< (void *) d->movingData;
-        //qDebug()<<  d->movingView->data();
-        if (d->process->write(fileName[0]))
-        {
-            emit(showInfo(tr  ("Registered Image Saved"),3000));
-        }
-        else
-        {
-            emit(showError(tr  ("Image saving failed, no suitable writer found"),3000));
-        }
-    }
-
-}
-
 //! Saves the transformation.
 void medRegistrationSelectorToolBox::onSaveTrans()
 {
