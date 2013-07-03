@@ -102,11 +102,23 @@ class ClickAndMoveEventFilter : public medViewEventFilter
 public:
     ClickAndMoveEventFilter(medSegmentationSelectorToolBox * controller, AlgorithmPaintToolbox *cb ) :
         medViewEventFilter(),
-        m_cb(cb)
+        m_cb(cb),
+        m_paintState(m_cb->paintState())
         {}
 
     virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
     {
+        if (m_paintState == PaintState::Stroke)
+        {
+            if(mouseEvent->button() == Qt::RightButton)
+            {
+                m_cb->forcePaintState(PaintState::DeleteStroke);
+            }
+            else if(mouseEvent->button() == Qt::LeftButton)
+            {
+                m_cb->forcePaintState(PaintState::Stroke);
+            }
+        }
         medAbstractViewCoordinates * coords = view->coordinates();
 
         mouseEvent->accept();
@@ -168,6 +180,7 @@ private :
     AlgorithmPaintToolbox *m_cb;
     std::vector<QVector3D> m_points;
     State::E m_state;
+    PaintState::E m_paintState;
 };
 
 AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
@@ -248,7 +261,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_brushSizeSlider = new QSlider(Qt::Horizontal, displayWidget);
     m_brushSizeSlider->setToolTip(tr("Changes the brush radius."));
     m_brushSizeSlider->setValue(this->m_strokeRadius);
-    m_brushSizeSlider->setMinimum(0);
+    m_brushSizeSlider->setRange(1, 10);
     m_brushSizeSpinBox = new QSpinBox(displayWidget);
     m_brushSizeSpinBox->setToolTip(tr("Changes the brush radius."));
     m_brushSizeSpinBox->setValue(this->m_strokeRadius);
@@ -1073,11 +1086,6 @@ void AlgorithmPaintToolbox::setPaintState( PaintState::E value )
 
     m_paintState = value;
 }
-
-
-
-
-
 
 
 

@@ -43,14 +43,16 @@ namespace mseg {
     class ClickEventFilter;
     class SelectDataEventFilter;
 
+struct PaintState {
+    enum E{ None, Wand, Stroke, DeleteStroke, BoundaryStroke };
+};
+
 //! Segmentation toolbox to allow manual painting of pixels
 class MEDVIEWSEGMENTATIONPLUGIN_EXPORT AlgorithmPaintToolbox : public medSegmentationAbstractToolBox
 {
     Q_OBJECT;
 public:
-    struct PaintState {
-        enum E{ None, Wand, Stroke, DeleteStroke, BoundaryStroke };
-    };
+
 
     AlgorithmPaintToolbox( QWidget *parent );
     ~AlgorithmPaintToolbox();
@@ -69,6 +71,9 @@ public:
     //! Get a human readable name for this widget.
     /** \param trObj : Provide an object for the tr() function. If NULL qApp will be used. */
     static QString s_name(const QObject * trObj =  NULL);
+
+    inline void forcePaintState(PaintState::E state){m_paintState = state;}
+    inline PaintState::E paintState(){return m_paintState;}
 
 public slots:
     void onStrokePressed();
