@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -30,7 +30,7 @@ public:
     int msgAlignment;
     medMainWindow *mainWindow;
     QStringList systemOpenInstructions;
-    
+
     /*
       fix the settings filename in the move 2.0.0 -> 2.0.1
     */
@@ -99,7 +99,6 @@ medApplication::medApplication(int & argc, char**argv) :
         d(new medApplicationPrivate)
 {
     d->mainWindow = NULL;
-    setlocale(LC_NUMERIC, "C");
 
     this->setApplicationName("medInria");
     qDebug() << "Version:" << MEDINRIA_VERSION;
@@ -156,13 +155,13 @@ bool medApplication::event(QEvent *event)
 void medApplication::setMainWindow(medMainWindow *mw)
 {
     d->mainWindow = mw;
-    
+
     // If there are any requests to open files not yet treated, send signal to do so
     foreach(QString openInstruction, d->systemOpenInstructions)
     {
         emit messageReceived(openInstruction);
     }
-    
+
     d->systemOpenInstructions.clear();
 }
 
