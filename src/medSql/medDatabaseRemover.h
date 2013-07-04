@@ -62,7 +62,7 @@ protected:
     void removeFile( const QString & filename );
     //! Remove a data image file. Includes special cases for some file types.
     void removeDataFile( const medDataIndex &index, const QString & filename );
-    void removeTableRow( const QString &table, int id );
+    bool removeTableRow( const QString &table, int id );
 
 private:
     medDatabaseRemoverPrivate *d;
