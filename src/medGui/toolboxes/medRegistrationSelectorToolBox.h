@@ -65,7 +65,6 @@ public slots:
 
     void onToolBoxChosen(int index);
     void clear();
-    void onSaveImage();
     void onSaveTrans();
     void handleOutput(typeOfOperation type=algorithm,QString algoName="");
     void enableSelectorToolBox(bool enable = true);
