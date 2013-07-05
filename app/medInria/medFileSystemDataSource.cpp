@@ -17,6 +17,7 @@
 #include <dtkGui/dtkFinder.h>
 
 #include <medActionsToolBox.h>
+#include<medSettingsManager.h>
 
 class medFileSystemDataSourcePrivate
 {
@@ -154,7 +155,10 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
 
     connect(d->finder, SIGNAL(listView()), d->toolbar, SLOT(onListView()));
     connect(d->finder, SIGNAL(treeView()), d->toolbar, SLOT(onTreeView()));
+    connect(d->finder, SIGNAL(listView()), this, SLOT(saveListViewSettings()));
+    connect(d->finder, SIGNAL(treeView()), this, SLOT(saveTreeViewSettings()));
     connect(d->finder, SIGNAL(showHiddenFiles(bool)), d->toolbar, SLOT(onShowHiddenFiles(bool)));
+    connect(d->finder, SIGNAL(showHiddenFiles(bool)), d->toolbar, SLOT(saveHiddenFilesSettings(bool)));
 
     connect(d->path, SIGNAL(changed(QString)), d->finder, SLOT(setPath(QString)));
     connect(d->path, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
@@ -181,6 +185,18 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     connect(d->actionsToolBox, SIGNAL(loadClicked()), this, SLOT(onFileSystemLoadRequested()));
 
     connect (d->toolbar, SIGNAL(showHiddenFiles(bool)), d->finder, SLOT(onShowHiddenFiles(bool)));
+    connect (d->toolbar, SIGNAL(showHiddenFiles(bool)), this, SLOT(saveHiddenFilesSettings(bool)));
+
+    // set default values
+    medSettingsManager* mng = medSettingsManager::instance();
+    bool showHiddenFiles = mng->value("medFileSystemDataSource", "showHiddenFiles", true).toBool();
+    bool listViewOn = mng->value("medFileSystemDataSource", "listView", true).toBool();
+
+    d->toolbar->onShowHiddenFiles(showHiddenFiles);
+
+    // our "list view" corresponds to the "tree view" of dtkFinder
+    if(listViewOn)
+      d->finder->switchToTreeView();
 }
 
 medFileSystemDataSource::~medFileSystemDataSource()
@@ -329,4 +345,22 @@ void medFileSystemDataSource::onNothingSelected(void)
 {
     d->infoText->setVisible(false);
     d->infoText->setText("");
+}
+
+void medFileSystemDataSource::saveHiddenFilesSettings(bool show)
+{
+    medSettingsManager* mng = medSettingsManager::instance();
+    mng->setValue("medFileSystemDataSource", "showHiddenFiles", show);
+}
+
+void medFileSystemDataSource::saveListViewSettings()
+{
+    medSettingsManager* mng = medSettingsManager::instance();
+    mng->setValue("medFileSystemDataSource", "listView", false);
+}
+
+void medFileSystemDataSource::saveTreeViewSettings()
+{
+    medSettingsManager* mng = medSettingsManager::instance();
+    mng->setValue("medFileSystemDataSource", "listView", true);
 }
