@@ -553,42 +553,46 @@ void medViewPropertiesToolBox::constructImageLayer(dtkAbstractData* data, int im
     opacityBox->setValue(d->view->opacity(imageLayer) * 100);
     d->propertiesTree->setItemWidget(opacityItem, 2, opacityBox);
 
-
-    QTreeWidgetItem * lutItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    lutItem->setText(1, tr("LUT"));
-    //No need to parent this widget, setItemWidget takes ownership of the widget
-    QComboBox * lutBox = new QComboBox();
-    lutBox->setFocusPolicy(Qt::NoFocus);
-    foreach (QString lut,d->lutList)
+    if(medMetaDataKeys::SeriesType.getFirstValue(data)!="Mask")
     {
-        lutBox->addItem(lut);
+        QTreeWidgetItem * lutItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
+        lutItem->setText(1, tr("LUT"));
+        //No need to parent this widget, setItemWidget takes ownership of the widget
+        QComboBox * lutBox = new QComboBox();
+        lutBox->setFocusPolicy(Qt::NoFocus);
+        foreach (QString lut,d->lutList)
+        {
+            lutBox->addItem(lut);
+        }
+
+        d->propertiesTree->setItemWidget(lutItem, 2, lutBox);
+        lutBox->setCurrentIndex(lutBox->findText(d->view->getLUT(imageLayer)));
+
+        QTreeWidgetItem * presetItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
+        presetItem->setText(1, tr("Preset"));
+        QComboBox * presetBox = new QComboBox();
+        presetBox->setFocusPolicy(Qt::NoFocus);
+        foreach(QString preset,d->presetList)
+        {
+             presetBox->addItem(preset);
+        }
+
+        d->propertiesTree->setItemWidget(presetItem, 2, presetBox);
+        presetBox->blockSignals(true);
+        presetBox->setCurrentIndex(presetBox->findText(d->view->getPreset(imageLayer)));
+        presetBox->blockSignals(false);
+
+        QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)),
+                         this, SLOT(onLUTChanged(int)));
+        QObject::connect(presetBox, SIGNAL(currentIndexChanged(int)),
+                         this, SLOT(onPresetChanged(int)));
+
     }
-
-    d->propertiesTree->setItemWidget(lutItem, 2, lutBox);
-    lutBox->setCurrentIndex(lutBox->findText(d->view->getLUT(imageLayer)));
-
-    QTreeWidgetItem * presetItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    presetItem->setText(1, tr("Preset"));
-    QComboBox * presetBox = new QComboBox();
-    presetBox->setFocusPolicy(Qt::NoFocus);
-    foreach(QString preset,d->presetList)
-    {
-         presetBox->addItem(preset);
-    }
-
-    d->propertiesTree->setItemWidget(presetItem, 2, presetBox);
-    presetBox->blockSignals(true);
-    presetBox->setCurrentIndex(presetBox->findText(d->view->getPreset(imageLayer)));
-    presetBox->blockSignals(false);
 
     QObject::connect(visibleBox, SIGNAL(stateChanged(int)),
                      this, SLOT(onVisibilitySet(int)));
     QObject::connect(opacityBox, SIGNAL(valueChanged(int)),
                      this, SLOT(onOpacitySliderSet(int)));
-    QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)),
-                     this, SLOT(onLUTChanged(int)));
-    QObject::connect(presetBox, SIGNAL(currentIndexChanged(int)),
-                     this, SLOT(onPresetChanged(int)));
     //d->propertiesTree->collapseAll();
 }
 
