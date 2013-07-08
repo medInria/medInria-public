@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -67,7 +67,10 @@ void forceShow(medMainWindow& mainwindow )
 int main(int argc,char* argv[]) {
 
     qRegisterMetaType<medDataIndex>("medDataIndex");
+
     medApplication application(argc,argv);
+    medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
+    setlocale(LC_NUMERIC, "C");
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
         qDebug() << "Usage: medInria [--no-fullscreen] [--stereo] [--view] [files]]";
@@ -110,13 +113,12 @@ int main(int argc,char* argv[]) {
             runningMedInria = application.sendMessage(message);
         }
     } else {
-        runningMedInria = application.sendMessage("");    
+        runningMedInria = application.sendMessage("");
     }
 
     if (runningMedInria)
         return 0;
 
-    medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
     if (show_splash) {
 
         QObject::connect(medDatabaseController::instance().data(),
@@ -215,13 +217,12 @@ int main(int argc,char* argv[]) {
     //  Handle signals for multiple medInria instances.
 
     QObject::connect(&application,SIGNAL(messageReceived(const QString&)),
-		             &mainwindow,SLOT(onNewInstance(const QString&)));
+                     &mainwindow,SLOT(onNewInstance(const QString&)));
 
     application.setActivationWindow(&mainwindow);
     application.setMainWindow(&mainwindow);
 
     //  Start main loop.
-
     const int status = application.exec();
 
     medPluginManager::instance()->uninitialize();
