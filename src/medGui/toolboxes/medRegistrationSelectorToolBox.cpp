@@ -41,7 +41,6 @@
 class medRegistrationSelectorToolBoxPrivate
 {
 public:
-    QPushButton * saveImageButton;
     QPushButton * saveTransButton;
 
     QComboBox *toolboxes;
@@ -58,6 +57,8 @@ public:
     medRegistrationAbstractToolBox * undoRedoToolBox;
     medRegistrationAbstractToolBox * customToolBox;
     QString nameOfCurrentAlgorithm;
+    QString savePath;
+
 };
 
 medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medRegistrationSelectorToolBoxPrivate)
@@ -71,15 +72,12 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     d->undoRedoProcess = NULL;
     d->undoRedoToolBox = NULL;
     d->nameOfCurrentAlgorithm = "";
-
+    d->savePath = QDir::homePath();
     // Process section
-    d->saveImageButton = new QPushButton(tr("Export Image"),this);
-    d->saveImageButton->setToolTip(tr("Save registered image to the File System"));
-    connect (d->saveImageButton, SIGNAL(clicked()), this, SLOT(onSaveImage()));
-
-    d->saveTransButton = new QPushButton(tr("Export Transf."),this);
+    
+    d->saveTransButton = new QPushButton(tr("Export Last Transf."),this);
     d->saveTransButton->setToolTip(
-                tr("Export the resulting transformation to the File System"));
+                tr("Export the resulting transformation of the last algorithm to the File System"));
     connect (d->saveTransButton, SIGNAL(clicked()), this, SLOT(onSaveTrans()));
 
 
@@ -128,11 +126,9 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
 
     // ---
     QButtonGroup *layoutButtonGroup = new QButtonGroup(this);
-    layoutButtonGroup->addButton(d->saveImageButton);
     layoutButtonGroup->addButton(d->saveTransButton);
 
     QHBoxLayout *layoutButtonLayout = new QHBoxLayout;
-    layoutButtonLayout->addWidget(d->saveImageButton);
     layoutButtonLayout->addWidget(d->saveTransButton);
 
     QVBoxLayout *layoutLayout = new QVBoxLayout;
@@ -407,46 +403,6 @@ QString medRegistrationSelectorToolBox::getNameOfCurrentAlgorithm()
     return d->nameOfCurrentAlgorithm;
 }
 
-//! Saves the registered image.
-void medRegistrationSelectorToolBox::onSaveImage()
-{
-    if ( !d->movingData)
-    {
-        emit showError(tr  ("Please Select a moving image before saving"),3000);
-        return;
-    }
-    if (!d->process )
-    {
-        emit showError(tr  ("Please run the registration before saving"),3000);
-        return;
-    }
-    QFileDialog dialog(this, tr("Save Image"),
-                               QDir::homePath(),
-                               tr("MetaFile (*.mha *.mhd);;Nifty (*.nii);;Analyse (*.hdr);;Nrrd (*.nrrd);;VTK (*.vtk);;All supported files (*.mha *.mhd *.nii *.hdr *.nrrd)"));
-    dialog.setDefaultSuffix("mha");
-    dialog.setAcceptMode(QFileDialog::AcceptSave);
-    QStringList fileName;
-    if (dialog.exec())
-        fileName = dialog.selectedFiles();
-
-    qDebug() << fileName;
-
-    if (!fileName.isEmpty())
-    {
-        //qDebug()<< (void *) d->movingData;
-        //qDebug()<<  d->movingView->data();
-        if (d->process->write(fileName[0]))
-        {
-            emit(showInfo(tr  ("Registered Image Saved"),3000));
-        }
-        else
-        {
-            emit(showError(tr  ("Image saving failed, no suitable writer found"),3000));
-        }
-    }
-
-}
-
 //! Saves the transformation.
 void medRegistrationSelectorToolBox::onSaveTrans()
 {
@@ -463,43 +419,72 @@ void medRegistrationSelectorToolBox::onSaveTrans()
 
     //get the transformation type: affine or deformation field.
     QString fileTypeSuggestion;
-    QString defaultSuffix;
+    QString filterSelected;
+    QHash<QString,QString> suffix;
     if (d->process->hasProperty("transformType"))
     {
         if ( d->process->property("transformType") == "rigid")
+            suffix[ tr("Transformation (*.txt)") ] = ".txt";
+        else
         {
-            fileTypeSuggestion = tr("Transformation (*.txt)");
-            defaultSuffix = "txt";
+            suffix[ tr("MetaFile (*.mha)") ] = ".mha";
+            suffix[ tr("MetaFile (*.mhd)") ] = ".mhd";
+            suffix[ tr("Nifti (*.nii)") ] = ".nii";
+            suffix[ tr("Analyse (*.hdr)") ] = ".hdr";
+            suffix[ tr("Nrrd (*.nrrd)") ] = ".nrrd";
+            suffix[ tr("VTK (*.vtk)") ] = ".vtk";
+            suffix[ tr("All supported files "
+                "(*.mha *.mhd *.nii *.hdr *.nrrd *.vtk)") ] = ".mha";
+        }
+        QHashIterator<QString, QString> i(suffix);
+        while (i.hasNext()) 
+        {
+            i.next();
+            fileTypeSuggestion += i.key();
+            if (i.hasNext()) 
+                fileTypeSuggestion += ";;";
+        }
+    }
+    QFileInfo file;
+    QString fileName;
+    
+    file = QFileDialog::getSaveFileName(this,tr("Save Transformation"),
+        d->savePath,
+        fileTypeSuggestion,&filterSelected,QFileDialog::DontUseNativeDialog);
+
+    if (!file.filePath().isEmpty())
+    {   
+        if (!file.completeSuffix().isEmpty())
+        {
+            if(!suffix.values().contains("."+file.completeSuffix()))
+            {
+                QMessageBox::warning(this,tr("Save Transformation"),tr("The save did not occur, you have to choose a format within the types suggested."));
+                d->savePath = file.absolutePath();
+                onSaveTrans(); // call again the function.
+                return;
+            }
+            fileName = file.filePath();
         }
         else
         {
-            defaultSuffix = "mha";
-            fileTypeSuggestion = tr("MetaFile (*.mha *.mhd);;Nifty (*.nii);;"
-                                    "Analyse (*.hdr);;Nrrd (*.nrrd);;"
-                                    "VTK (*.vtk);;"
-                                    "All supported files "
-                                    "(*.mha *.mhd *.nii *.hdr *.nrrd)");
+            fileName = file.filePath() + suffix[filterSelected];
+            file.setFile(fileName);
+            if (file.exists())
+            {
+                 int res = QMessageBox::warning(this, tr("Save Transformation"),
+                                tr("The file ") + file.fileName() + tr(" already exists.\nDo you want to replace it?"),
+                                QMessageBox::Yes | QMessageBox::No);
+                                
+                if (res==QMessageBox::No){
+                    d->savePath = file.absolutePath();
+                    onSaveTrans(); // call again the function.
+                    return;
+                }
+            }
         }
-    }
 
-    QFileDialog dialog(this, tr("Save Transformation"),
-                               QDir::homePath(),
-                               fileTypeSuggestion);
-
-    dialog.setDefaultSuffix("mha");
-    dialog.setAcceptMode(QFileDialog::AcceptSave);
-    QStringList fileName;
-    if (dialog.exec())
-        fileName = dialog.selectedFiles();
-
-    qDebug() << fileName;
-
-    if (!fileName.isEmpty())
-    {
-        //qDebug()<< (void *) d->movingData;
-        //qDebug()<<  d->movingView->data();
         QStringList transformFileName;
-        transformFileName << ""<< fileName[0];
+        transformFileName << ""<< fileName;
         if (d->process->write(transformFileName))
         {
             emit(showInfo(tr  ("Transformation saved"),3000));
@@ -508,7 +493,9 @@ void medRegistrationSelectorToolBox::onSaveTrans()
         {
             emit(showError(tr  ("Transformation saving failed, no suitable writer found"),3000));
         }
+
     }
+    d->savePath = QDir::homePath();
 }
 
 // TODO CHANGE COMMENTARY
@@ -565,8 +552,6 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type,QString a
     if (type==algorithm)
         medDataManager::instance()->importNonPersistent(output);
 
-    d->process = NULL; // will trigger a deleteLater
-    
     if(output)
     {   
         d->movingData = output;

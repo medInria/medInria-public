@@ -312,7 +312,7 @@ QStringList * itkProcessRegistrationDiffeomorphicDemons::getTitleAndParameters()
 bool itkProcessRegistrationDiffeomorphicDemons::writeTransform(const QString& file)
 {
     typedef float PixelType;
-    typedef float TransformScalarType;
+    typedef double TransformScalarType;
     typedef itk::Image< PixelType, 3 > RegImageType;
     //normaly should use long switch cases, but here we know we work with float3 data.
     if (rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> * registration =

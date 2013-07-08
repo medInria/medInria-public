@@ -84,8 +84,8 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
     connect(d->diffusionToolBox, SIGNAL(success()),                  this, SLOT(onTBDiffusionSuccess()));
 
 
-    this->addToolBox( d->diffusionToolBox );
     this->addToolBox( d->viewPropertiesToolBox );
+    this->addToolBox( d->diffusionToolBox );
     this->addToolBox( d->tensorViewToolBox );
     this->addToolBox( d->fiberViewToolBox );
     this->addToolBox( d->fiberBundlingToolBox );
