@@ -38,6 +38,7 @@ public:
         filter = itk::SphericalHarmonicITKToVTKFilter<SH_IMAGE>::New();
 
         filter->SetInput(dataset);
+        filter->DebugOn();
 
         // typename SH_IMAGE::DirectionType directions = dataset->GetDirection();
         // typename SH_IMAGE::PointType i_origin = dataset->GetOrigin();

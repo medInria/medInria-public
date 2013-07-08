@@ -57,8 +57,9 @@ static itkVector3 Cartesian2Spherical(const itkVector3 vITK) {
 
     const double r = vITK.GetNorm();
     if (r==0) {
-        std::cerr << "Cannot have a 0 radius in spherical coordinates!\n" << std::endl;
-        exit(1);
+        std::cerr << "Warning: 0 radius in spherical coordinates!\n" << std::endl;
+        const double spherical [3] = { 0.0, 0.0, 0.0};
+        return itkVector3(spherical);
     }
 
     // r, phi [0, PI), theta [0, PI) computation

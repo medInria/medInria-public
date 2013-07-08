@@ -11,6 +11,8 @@
 
 =========================================================================*/
 
+extern "C" void STOP() { }
+
 #include <vtkRenderingAddOn/vtkViewImage2D.h>
 
 #include "vtkInteractorObserver.h"
@@ -541,10 +543,14 @@ void vtkViewImage2D::SetZSlice(int p_zslice)
 
 void vtkViewImage2D::UpdatePosition ()
 {
+  STOP();
+  std::cerr << "HERE" << std::endl;
   if( !this->GetImage() )
   {
     return;
   }
+
+  std::cerr << "THERE" << std::endl;
 
   double x=0;
   double y=0;
@@ -592,21 +598,19 @@ void vtkViewImage2D::UpdatePosition ()
   min_x = min_bounds[0];
   min_y = min_bounds[1];
 
-
   this->HorizontalLineSource->SetPoint1(min_x, y, 0.001);
   this->HorizontalLineSource->SetPoint2(max_x, y, 0.001);
   this->VerticalLineSource->SetPoint1(x, min_y, 0.001);
   this->VerticalLineSource->SetPoint2(x, max_y, 0.001);
-  
 
   this->ImageReslice->Update(); // needed to update input Extent
-
 
   int imCoor[3];
   this->GetCurrentVoxelCoordinates(imCoor);
   
   int dims[3];
   this->GetImage()->GetDimensions (dims);
+  std::cerr << "AAAA" << dims[0] << ' ' << dims[1] << ' ' << dims[2] << std::endl;
   
   std::ostringstream os;
   std::ostringstream os2;
@@ -650,7 +654,6 @@ void vtkViewImage2D::UpdatePosition ()
   
   this->SetUpLeftAnnotation( os.str().c_str() );
   this->SetDownLeftAnnotation( os2.str().c_str() );
-
 
   vtkMatrix4x4 *t_direction = this->GetDirectionMatrix();
   t_direction->MultiplyPoint (reslice, reslice);

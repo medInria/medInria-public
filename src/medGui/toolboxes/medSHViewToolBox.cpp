@@ -42,15 +42,11 @@ public:
 
 };
 
-medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new medSHViewToolBoxPrivate)
-{
+medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new medSHViewToolBoxPrivate) {
 
     QWidget* displayWidget = new QWidget(this);
 
-    d->tesselationTypeList = *(new QStringList());
     d->tesselationTypeList << "Icosahedron" << "Octahedron" << "Tetrahedron";
-
-    d->tesselationBasisList = *(new QStringList());
     d->tesselationBasisList << "SHMatrix" << "SHMatrixMaxThesis" << "SHMatrixTournier" << "SHMatrixRshBasis";
 
     // combobox to control the glyph shape
