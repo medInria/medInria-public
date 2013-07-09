@@ -884,8 +884,16 @@ void medViewPropertiesToolBox::on2LayersOpacitySliderSet(int opacity)
         return;
 
     double d_opacity = static_cast<double> (opacity) / 100.0;
-    d->view->setOpacity(d_opacity, 1);
-    d->view->setOpacity(1.0 - d_opacity, 0);
+
+    // layer1_op  = 1 if slider > 0.5
+    //              2xslider if slider <= 0.5
+    double d_opacity1 = std::min(0.5, d_opacity);
+    d->view->setOpacity(d_opacity1*2, 1);
+
+    // layer0_op  = 1 if slider < 0.5
+    //              1-2x(slider-0.5) if slider >= 0.5
+    double d_opacity0 = std::max(0.5, d_opacity);
+    d->view->setOpacity(1-(d_opacity0-0.5)*2, 0);
     d->view->update();
 }
 
