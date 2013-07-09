@@ -111,6 +111,7 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medWorkspace * w
 
 
     // ---
+    d->toolBoxes->adjustSize();
     addWidget(d->toolBoxes);
 
     //Connect Message Controller:

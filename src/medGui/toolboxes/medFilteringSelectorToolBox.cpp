@@ -16,6 +16,7 @@
 
 #include <medToolBoxFactory.h>
 #include <medDropSite.h>
+#include <medToolBoxHeader.h>
 
 #include <medCore/medDataManager.h>
 #include <medViewManager.h>
@@ -28,35 +29,27 @@
 class medFilteringSelectorToolBoxPrivate
 {
 public:
+
     QComboBox    *chooseFilter;
-    QPushButton *saveInDatabaseButton;
-//    QPushButton *saveToDiskButton;
-    medFilteringAbstractToolBox *customToolBox;
     medAbstractView *inputView;
     dtkAbstractData *inputData;
     medDataIndex index;
+    QHash<QString, medFilteringAbstractToolBox*> toolBoxes;
+    QVBoxLayout *filterLayout;
+    medFilteringAbstractToolBox *currentToolBox;
+
 };
 
-medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) : medToolBox ( parent ), d ( new medFilteringSelectorToolBoxPrivate )
+medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) :
+    medToolBox ( parent ),
+    d ( new medFilteringSelectorToolBoxPrivate )
 {
     d->inputView = NULL;
 
-    QWidget *displayWidget = new QWidget ( this );
 
-    d->saveInDatabaseButton = new QPushButton ( tr ( "Store in Database" ),this );
-	d->saveInDatabaseButton->setToolTip(tr("Save result of filtering into the medInria database"));
-    d->saveInDatabaseButton->setFocusPolicy(Qt::NoFocus);
-
-//    d->saveToDiskButton = new QPushButton(tr("Save to Disk"),this);
-
-    d->chooseFilter = new QComboBox ( this );
+    d->chooseFilter = new QComboBox;
     d->chooseFilter->addItem ( tr ( "Choose filter" ) );
 	d->chooseFilter->setToolTip(tr("Browse through the list of available filters"));
-
-    QVBoxLayout *filterLayout = new QVBoxLayout ( displayWidget );
-    filterLayout->addWidget ( d->saveInDatabaseButton );
-//    filterLayout->addWidget(d->saveToDiskButton);
-    filterLayout->addWidget ( d->chooseFilter );
 
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
     int i = 1; //account for the choose Filter item
@@ -64,7 +57,6 @@ medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) : m
     {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
 
-//        qDebug() << "Added registration toolbox" << name;
         d->chooseFilter->addItem( details->name, toolbox );
         d->chooseFilter->setItemData( i,
                                   details->description,
@@ -73,14 +65,19 @@ medFilteringSelectorToolBox::medFilteringSelectorToolBox ( QWidget *parent ) : m
     }
 
     connect ( d->chooseFilter, SIGNAL ( activated ( int ) ), this, SLOT ( onToolBoxChosen ( int ) ) );
-    connect ( d->saveInDatabaseButton,SIGNAL ( clicked() ), this, SLOT ( onSavedImage() ) );
 
+    QWidget *displayWidget = new QWidget;
+    d->filterLayout = new QVBoxLayout;
+
+    d->chooseFilter->adjustSize();
+    d->filterLayout->addWidget ( d->chooseFilter );
+    displayWidget->setLayout(d->filterLayout);
 
     this->setTitle ( tr ( "Filtering View" ) );
     this->addWidget ( displayWidget );
 
-    d->customToolBox = NULL;
     d->inputData = NULL;
+    d->currentToolBox = NULL;
 }
 
 medFilteringSelectorToolBox::~medFilteringSelectorToolBox()
@@ -89,10 +86,10 @@ medFilteringSelectorToolBox::~medFilteringSelectorToolBox()
     d = NULL;
 }
 
-medFilteringAbstractToolBox* medFilteringSelectorToolBox::customToolbox()
+medFilteringAbstractToolBox* medFilteringSelectorToolBox::currentToolBox()
 {
 
-    return d->customToolBox;
+    return d->currentToolBox;
 }
 
 dtkAbstractData*  medFilteringSelectorToolBox::data()
@@ -101,39 +98,65 @@ dtkAbstractData*  medFilteringSelectorToolBox::data()
 }
 
 void medFilteringSelectorToolBox::onToolBoxChosen ( int index )
-{
+{    
+    medFilteringAbstractToolBox *toolbox = NULL;
     //get identifier for toolbox.
-    QString id = d->chooseFilter->itemData( index ).toString();
+    QString identifier = d->chooseFilter->itemData(index).toString();
+    if (d->toolBoxes.contains (identifier))
+        toolbox = d->toolBoxes[identifier];
+    else {
+        medToolBox* tb = medToolBoxFactory::instance()->createToolBox(
+                    identifier, this);
+        toolbox = qobject_cast<medFilteringAbstractToolBox *>(tb);
+        if (toolbox) {
+            toolbox->setStyleSheet("medToolBoxBody {border:none}");
+            d->toolBoxes[identifier] = toolbox;
+        }
+    }
 
-    medFilteringAbstractToolBox *toolbox = qobject_cast<medFilteringAbstractToolBox *>(medToolBoxFactory::instance()->createToolBox ( id, this ));
-
-    if ( !toolbox )
-    {
-        qWarning() << "Unable to instantiate" << id << "toolbox";
+    if(!toolbox) {
+        if (d->currentToolBox) {
+            d->currentToolBox->hide();
+            d->filterLayout->removeWidget ( d->currentToolBox );
+            d->currentToolBox = 0;
+            this->setAboutPluginVisibility(false);
+        }
         return;
     }
 
-    toolbox->setFilteringToolBox ( this );
+    toolbox->setFilteringToolBox(this);
+
     //get rid of old toolBox
-    if ( d->customToolBox )
+    if (d->currentToolBox)
     {
-        emit removeToolBox ( d->customToolBox );
-        delete d->customToolBox;
+        d->currentToolBox->hide();
+        emit removeToolBox ( d->currentToolBox );
+        d->filterLayout->removeWidget ( d->currentToolBox );
+        d->currentToolBox = NULL;
+
     }
-    d->customToolBox = toolbox;
-    toolbox->show();
-    emit addToolBox ( toolbox );
+
+    d->currentToolBox = toolbox;
+    d->currentToolBox->header()->hide();
+
+    dtkPlugin* plugin = d->currentToolBox->plugin();
+    this->setAboutPluginButton(plugin);
+    this->setAboutPluginVisibility(true);
+
+
+    d->currentToolBox->show();
+
+    d->filterLayout->addWidget ( toolbox );
 
     if ( d->inputView )
-        d->customToolBox->update ( d->inputView );
+        d->currentToolBox->update ( d->inputView );
 
-    connect ( d->customToolBox,SIGNAL ( success() ),this,SIGNAL ( processFinished() ) );
+    connect ( d->currentToolBox,SIGNAL ( success() ),this,SIGNAL ( processFinished() ) );
 }
 
 
 void medFilteringSelectorToolBox::onInputSelected ( const medDataIndex& index )
 {
-
     if ( !index.isValid() )
         return;
 
@@ -151,16 +174,13 @@ void medFilteringSelectorToolBox::onInputSelected ( const medDataIndex& index )
     }
     else
     {
-        if ( d->customToolBox )
-            d->customToolBox->update ( d->inputView );
+        if ( d->currentToolBox )
+            d->currentToolBox->update ( d->inputView );
     }
 }
 
 void medFilteringSelectorToolBox::clear()
 {
-    if ( d->customToolBox )
-        d->customToolBox->clear();
-
     d->inputData = NULL;
     d->inputView = NULL;
     d->index = medDataIndex();
@@ -172,7 +192,3 @@ void medFilteringSelectorToolBox::setDataIndex ( medDataIndex index )
     d->index = index;
 }
 
-void medFilteringSelectorToolBox::onSavedImage()
-{
-    medDataManager::instance()->storeNonPersistentSingleDataToDatabase ( d->index );
-}

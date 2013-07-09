@@ -81,7 +81,7 @@ public slots:
      * @brief Clear the filtering toolboxes when the input view is closed
      *
      */
-    void onViewRemoved();
+    void onInputViewRemoved();
 
 private:
     medFilteringWorkspacePrivate *d;

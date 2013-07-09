@@ -41,7 +41,7 @@ public:
     /**
      * @brief returns current selected toolbox
      */
-    medFilteringAbstractToolBox* customToolbox();
+    medFilteringAbstractToolBox* currentToolBox();
 
     /**
      * @brief set data index
@@ -65,11 +65,6 @@ public slots:
      * @brief clear input data and the current process toolbox
      */
     void clear();
-
-    /**
-     * @brief stores output image to the persistent database
-     */
-    void onSavedImage();
 
     /**
      * @brief retrieve data from the selected input image index

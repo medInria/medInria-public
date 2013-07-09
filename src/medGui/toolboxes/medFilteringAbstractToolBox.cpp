@@ -41,3 +41,4 @@ medFilteringSelectorToolBox *medFilteringAbstractToolBox::parentToolBox(void)
 {
     return d->parent;
 }
+

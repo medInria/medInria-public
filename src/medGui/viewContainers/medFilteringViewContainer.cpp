@@ -30,6 +30,9 @@ medFilteringViewContainer::medFilteringViewContainer ( QWidget * parent ) :
     d3->inputViewContainer = this->childContainers()[0];
     d3->outputViewContainer = this->childContainers()[1];
 
+    d3->inputViewContainer->setMultiLayer(false);
+    d3->outputViewContainer->setMultiLayer(false);
+
     //Set cues for the user:
     d3->inputViewContainer->setInfo ( tr ( "Input to be filtered" ) );
     d3->outputViewContainer->setInfo ( tr ( "Result of filtering" ) );
@@ -39,6 +42,9 @@ medFilteringViewContainer::medFilteringViewContainer ( QWidget * parent ) :
 
     connect(this,SIGNAL(imageSet(medDataIndex)),
             this,SIGNAL(droppedInput(medDataIndex)));
+
+    connect(d3->inputViewContainer, SIGNAL(viewRemoved(dtkAbstractView *)),
+            this, SIGNAL(inputViewRemoved(dtkAbstractView*)));
 }
 
 medFilteringViewContainer::~medFilteringViewContainer()

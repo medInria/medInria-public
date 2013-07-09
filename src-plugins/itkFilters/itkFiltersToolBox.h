@@ -28,6 +28,7 @@ public:
 public:
     static bool registered();
     dtkAbstractData* processOutput();
+    dtkPlugin* plugin();
 
 signals:
     void success();
