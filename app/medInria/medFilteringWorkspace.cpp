@@ -37,8 +37,8 @@
 class medFilteringWorkspacePrivate
 {
 public:
-    medViewPropertiesToolBox  *viewPropertiesToolBox;
-    medFilteringSelectorToolBox *filteringToolBox;
+    medViewPropertiesToolBox        *viewPropertiesToolBox;
+    medFilteringSelectorToolBox     *filteringToolBox;
     dtkSmartPointer<dtkAbstractData> filterOutput;
     QString importUuid;
 };
@@ -73,8 +73,7 @@ void medFilteringWorkspace::setupViewContainerStack()
         connect(filteringViewContainer,SIGNAL(droppedInput(medDataIndex)), d->filteringToolBox,SLOT(onInputSelected(medDataIndex)));
         connect(this,SIGNAL(outputDataChanged(dtkAbstractData *)),
                 filteringViewContainer,SLOT(updateOutput(dtkAbstractData *)));
-        connect(filteringViewContainer, SIGNAL(viewRemoved(dtkAbstractView *)),
-                this, SLOT(onViewRemoved()));
+        connect(filteringViewContainer, SIGNAL(inputViewRemoved(dtkAbstractView *)),this, SLOT(onInputViewRemoved()));
 
         this->stackedViewContainers()->addContainer ( "Filtering",filteringViewContainer );
 
@@ -92,7 +91,7 @@ void medFilteringWorkspace::patientChanged ( int patientId )
 
 void medFilteringWorkspace::onProcessSuccess()
 {
-    d->filterOutput = d->filteringToolBox->customToolbox()->processOutput();
+    d->filterOutput = d->filteringToolBox->currentToolBox()->processOutput();
     if ( !d->filterOutput )
         return;
 
@@ -140,7 +139,7 @@ QString medFilteringWorkspace::identifier() const {
     return "Filtering";
 }
 
-void medFilteringWorkspace::onViewRemoved ()
+void medFilteringWorkspace::onInputViewRemoved ()
 {
     d->filteringToolBox->clear();
 }

@@ -811,6 +811,13 @@ void itkFiltersToolBox::onFiltersActivated ( int index )
     }
 }
 
+dtkPlugin* itkFiltersToolBox::plugin()
+{
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin ( "itkFiltersPlugin" );
+    return plugin;
+}
+
 
 medToolBox *createitkFiltersToolBox ( QWidget *parent )
 {
