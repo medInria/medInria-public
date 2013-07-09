@@ -15,25 +15,38 @@ cmake_minimum_required(VERSION 2.8)
 
 project(medInria)
 
-set(${PROJECT_NAME}_VERSION_MAJOR 2 CACHE STRING "medInria major version number." FORCE)
-set(${PROJECT_NAME}_VERSION_MINOR 0 CACHE STRING "medInria minor version number." FORCE)
-set(${PROJECT_NAME}_VERSION_BUILD 2 CACHE STRING "medInria build version number." FORCE)
-set(${PROJECT_NAME}_VERSION_BUGFIX 0 CACHE STRING "medInria bug-fix version number." FORCE)
+set(${PROJECT_NAME}_VERSION_MAJOR 2 CACHE STRING 
+  "medInria major version number." 
+  )
+mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
 
-if (${${PROJECT_NAME}_VERSION_BUGFIX} GREATER 0)
-  set(${PROJECT_NAME}_VERSION
-    "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}-${${PROJECT_NAME}_VERSION_BUGFIX}")
+set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING 
+  "medInria minor version number." 
+  )
+mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
+
+set(${PROJECT_NAME}_VERSION_PATCH 0 CACHE STRING 
+  "medInria build version number." 
+  )
+mark_as_advanced(${PROJECT_NAME}_VERSION_PATCH)
+
+set(${PROJECT_NAME}_VERSION_TWEAK git CACHE STRING 
+  "medInria development marker." 
+  )
+mark_as_advanced(${PROJECT_NAME}_VERSION_TWEAK)
+
+if (NOT ${${PROJECT_NAME}_VERSION_TWEAK} STREQUAL "")
+  set(${PROJECT_NAME}_VERSION 
+    ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}.${${PROJECT_NAME}_VERSION_TWEAK}
+    )
 else()
   set(${PROJECT_NAME}_VERSION
-    "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
+    ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}
+    )
 endif()
 
-mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
-mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
-mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
-mark_as_advanced(${PROJECT_NAME}_VERSION_BUGFIX)
-
-add_definitions(-DMEDINRIA_VERSION="${${PROJECT_NAME}_VERSION}")
+string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
+add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
 if (WIN32)
   option(MED_SHOW_CONSOLE "Show console at runtime (mainly for debugging)" "FALSE")
