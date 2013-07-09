@@ -19,35 +19,7 @@ project(itkDCMTKDataImageReaderPlugin)
 ## Setup version numbering
 ## #################################################################
 
-set(${PROJECT_NAME}_VERSION_MAJOR ${medInria_VERSION_MAJOR} CACHE STRING 
-  "medInria major version number." FORCE
-  )
-mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
-
-set(${PROJECT_NAME}_VERSION_MINOR ${medInria_VERSION_MINOR} CACHE STRING 
-  "medInria minor version number." FORCE
-  )
-mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
-
-set(${PROJECT_NAME}_VERSION_PATCH ${medInria_VERSION_PATCH} CACHE STRING 
-  "medInria build version number." FORCE
-  )
-mark_as_advanced(${PROJECT_NAME}_VERSION_PATCH)
-
-set(${PROJECT_NAME}_VERSION_TWEAK ${medInria_VERSION_TWEAK} CACHE STRING 
-  "medInria development marker." FORCE
-  )
-mark_as_advanced(${PROJECT_NAME}_VERSION_TWEAK)
-
-if (NOT ${${PROJECT_NAME}_VERSION_TWEAK} STREQUAL "")
-  set(${PROJECT_NAME}_VERSION 
-    ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}.${${PROJECT_NAME}_VERSION_TWEAK}
-    )
-else()
-  set(${PROJECT_NAME}_VERSION
-    ${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_PATCH}
-    )
-endif()
+set(${PROJECT_NAME}_VERSION ${medInria_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
