@@ -126,7 +126,6 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
             qDebug() << e.GetDescription();
             return;
         }
-
         img = extractor->GetOutput();
         size = img->GetLargestPossibleRegion().GetSize();
         img->DisconnectPipeline();
@@ -254,7 +253,7 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
             }
 
             QImage *qimage = new QImage (newSize[0],newSize[1],QImage::Format_ARGB32);
-            qimage->fill(QColor::fromRgbF(0,0,0));
+            qimage->fill( QColor::fromRgbF(0,0,0).rgba());
             uchar  *qImageBuffer = qimage->bits();
 
             unsigned int baseX = 0;
@@ -323,7 +322,7 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
                 // qDebug() << "Time elapsed: " << time.elapsed();
 
                 QImage *qimage = new QImage (newSize[0],newSize[1],QImage::Format_ARGB32);
-                qimage->fill(QColor::fromRgbF(0,0,0));
+                qimage->fill(QColor::fromRgbF(0,0,0).rgba());
                 uchar  *qImageBuffer = qimage->bits();
 
                 unsigned int baseX = 0;
@@ -533,7 +532,6 @@ public:
 template <unsigned DIM,typename T>
 QList<QImage>& itkDataImagePrivate<DIM,T,1>::make_thumbnails(const int sz,const bool singlez) {
     typedef itk::Image<T,2> Image2DType;
-
     typename ImageType::Pointer im = image;
     typename ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize();
     typename ImageType::SizeType newSize = size;
@@ -569,7 +567,7 @@ QList<QImage>& itkDataImagePrivate<DIM,T,1>::make_thumbnails(const int sz,const 
     unsigned long nvoxels_per_slice = size[0]*size[1];
     unsigned long voxelCount = 0;
     QImage *qimage = new QImage (newSize[0],newSize[1],QImage::Format_ARGB32);
-    qimage->fill(QColor::fromRgbF(0,0,0));
+    qimage->fill(QColor::fromRgbF(0,0,0).rgba());
     uchar *qImageBuffer = qimage->bits();
     while(!it.IsAtEnd()) {
         typename ImageType::IndexType tmpIndex = it.GetIndex();
@@ -583,7 +581,7 @@ QList<QImage>& itkDataImagePrivate<DIM,T,1>::make_thumbnails(const int sz,const 
         if ((voxelCount%nvoxels_per_slice)==0) {
             thumbnails.push_back (*qimage);
             qimage = new QImage (newSize[0],newSize[1],QImage::Format_ARGB32);
-            qimage->fill(QColor::fromRgbF(0,0,0));
+            qimage->fill(QColor::fromRgbF(0,0,0).rgba());
             qImageBuffer = qimage->bits();
         }
     }
