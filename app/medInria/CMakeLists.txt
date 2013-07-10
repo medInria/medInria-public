@@ -163,9 +163,6 @@ endif()
 
 # medInria.desktop file is used by Linux xdg compliant systems to add the app to the OS menu
 if (UNIX AND NOT APPLE)
-  configure_file(medInria.desktop.in medInria.desktop)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/medInria.desktop DESTINATION share/applications)
-  # once the new icon is ready we need to change this
   install(FILES medInria.png DESTINATION share/icons)
 endif()
 
