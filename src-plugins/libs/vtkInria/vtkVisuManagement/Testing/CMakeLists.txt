@@ -16,10 +16,8 @@ set(testname ${PROJECT_NAME}CxxTests)
 set(${PROJECT_NAME}Tests vtkImageFromBoundsSourceTest.cxx)
 
 set(tests ${testname}.cxx ${${PROJECT_NAME}Tests})
-if (VTKINRIA_USE_SPHERICALHARMONICS)
-    set(vtkSphericalHarmonicGlyphTestARGS "${vtkInria_DATA_DIR}/odf.nrrd" "${vtkInria_DATA_DIR}/SHTest.vtk")
-    set(${PROJECT_NAME}Tests ${${PROJECT_NAME}Tests} vtkSphericalHarmonicGlyphTest.cxx)
-endif()
+set(vtkSphericalHarmonicGlyphTestARGS "${vtkInria_DATA_DIR}/odf.nrrd" "${vtkInria_DATA_DIR}/SHTest.vtk")
+set(${PROJECT_NAME}Tests ${${PROJECT_NAME}Tests} vtkSphericalHarmonicGlyphTest.cxx)
 create_test_sourcelist(Tests ${test})
 
 add_executable(${testname} ${Tests})

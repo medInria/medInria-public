@@ -62,6 +62,7 @@ QString itkDataSHImageFloat3::identifier(void) const
 
 void *itkDataSHImageFloat3::data(void)
 {
+    std::cerr << "Image float: " << xDimension() << 'x' << yDimension() << 'x' << zDimension() << std::endl;
     return d->shs.GetPointer();
 }
 

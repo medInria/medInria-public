@@ -62,6 +62,7 @@ QString itkDataSHImageDouble3::identifier(void) const
 
 void *itkDataSHImageDouble3::data(void)
 {
+    std::cerr << "Image: " << xDimension() << 'x' << yDimension() << 'x' << zDimension() << std::endl;
     return d->shs.GetPointer();
 }
 
