@@ -264,10 +264,8 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
 
             // Set harmonics and compute spherical function.
 
-            if (inPtId%2) {
-                SphericalHarmonicSource->SetSphericalHarmonics(sh);
-                SphericalHarmonicSource->Update();
-            }
+            SphericalHarmonicSource->SetSphericalHarmonics(sh);
+            SphericalHarmonicSource->Update();
 
             vtkPointData* sourcePointData = SphericalHarmonicSource->GetOutput()->GetPointData();
             vtkPoints*    deformPts       = SphericalHarmonicSource->GetOutput()->GetPoints();
