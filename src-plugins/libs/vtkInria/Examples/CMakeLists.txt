@@ -21,6 +21,4 @@ SUBDIRS(SynchronizedViews
         RegisterDataSets
   )
 
-if (VTKINRIA_USE_SPHERICALHARMONICS)
-    add_subdirectory(SphericalHarmonicView)
-endif()
+add_subdirectory(SphericalHarmonicView)
