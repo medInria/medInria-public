@@ -241,7 +241,9 @@ void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
 
         connect(view, SIGNAL(positionChanged(const QVector3D&,bool)), interactor, SLOT(onPositionChanged(const QVector3D&,bool)));
 
-        updateSHInteractorWithToolboxValues(interactor, d->shViewToolBox);
+        // updateSHInteractorWithToolboxValues(interactor, d->shViewToolBox);
+	// -- initSHToolBoxValues();
+
         d->shViewToolBox->updateWithInteractor(view);
     }
 

@@ -43,7 +43,7 @@ double sphLegendre(const int l,const int m,const double theta) {
     const unsigned lpm = l+m;
     const double fact   = boost::math::factorial<double>(lmm)/boost::math::factorial<double>(lpm);
     const double factor = static_cast<double>(2*l+1)/(4.0*vtkMath::DoublePi())*fact;
-    return sqrt(factor*boost::math::legendre_p(l,m,cos(theta)));
+    return sqrt(factor)*boost::math::legendre_p(l,m,cos(theta));
 }
 #else
 double sphLegendre(const int l,const int m,const double theta) {
@@ -114,8 +114,12 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(const int tess) {
     TesselationType = Icosahedron;
     TesselationBasis = SHMatrix;
     Tesselation = tess;
+
     sphereT = vtkTessellatedSphereSource::New();
+    sphereT->SetResolution(Tesselation);
+
     Order = 4;
+
     SphericalHarmonics = 0;
     SetNumberOfSphericalHarmonics (15);
 }

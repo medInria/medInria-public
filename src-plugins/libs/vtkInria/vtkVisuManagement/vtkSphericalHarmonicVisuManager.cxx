@@ -14,7 +14,6 @@
 #include <vtkSphericalHarmonicVisuManager.h>
 
 #include <vtkSphericalHarmonicGlyph.h>
-#include <vtkPolyDataNormals.h>
 #include <vtkExtractVOI.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkActor.h>
@@ -30,20 +29,19 @@ vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager() {
 
     SHSource = vtkSphericalHarmonicSource::New();
     SHGlyph  = vtkSphericalHarmonicGlyph::New();
-    Normals  = vtkPolyDataNormals::New();
     VOI    = vtkExtractVOI::New();
     Mapper = vtkPolyDataMapper::New();
     Actor  = vtkActor::New();
 
     SHSource->SetTesselationType(vtkSphericalHarmonicSource::Icosahedron);
     SHSource->SetTesselationBasis(vtkSphericalHarmonicSource::SHMatrix);
-
-    SHSource->SetTesselation(3);
+    SHSource->SetTesselation(2);
     SHSource->UpdateSphericalHarmonicSource();
 
     SHSource->SetNormalize(true);
+
     SHGlyph->SetSource (SHSource->GetOutput());
-    SHGlyph->SetScaleFactor(1.0);
+    SHGlyph->SetScaleFactor(10.0);
     SHGlyph->SetSphericalHarmonicSource(SHSource);
     SHGlyph->SetColorModeToDirections();
     SHGlyph->GetOutput()->GetPointData()
@@ -53,15 +51,13 @@ vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager() {
 
     SHGlyph->SetInput(VOI->GetOutput());
 
-    Normals->SetInput(SHGlyph->GetOutput());
-
     vtkLookupTable *lut = vtkLookupTable::New();
     //lut->SetHueRange(0.667, 0.0);
     lut->SetHueRange(0.0, 1.0);
     lut->SetRange(0.0, 1.0);
     lut->Build();
 
-    Mapper->SetInput(Normals->GetOutput());
+    Mapper->SetInput(SHGlyph->GetOutput());
     Mapper->ScalarVisibilityOn();
     Mapper->SetColorModeToMapScalars();
     Mapper->SetScalarModeToUsePointData();
@@ -86,8 +82,6 @@ vtkSphericalHarmonicVisuManager::~vtkSphericalHarmonicVisuManager() {
         SHGlyph->Delete();
     if (SHSource)
         SHSource->Delete();
-    if (Normals)
-        Normals->Delete();
     if (VOI)
         VOI->Delete();
     if (Mapper)
