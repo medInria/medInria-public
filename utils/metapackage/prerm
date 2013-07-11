@@ -1,8 +1,0 @@
-#!/bin/sh
-# prerm script
-
-# TODO: configure this file with CMake and change the hardcoded install path
-# test if the files are symbolic links first: important especially for the executable, in case the user has medInria1 in its /usr/bin path
-[ -h /usr/share/applications/medInria.desktop ] && rm -f /usr/share/applications/medInria.desktop
-
-[ -h /usr/bin/medInria ]  && rm -f /usr/bin/medInria
