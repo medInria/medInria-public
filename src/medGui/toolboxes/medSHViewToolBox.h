@@ -88,8 +88,8 @@ signals:
     /** Emitted when the user wants to flip the Z axis */
     void flipZ(bool flipZ);
 
-    /** Emitted when the user wants to select spherical harmonics basis */
-    void maxThesisFunc(bool MaxThesis);
+    /** Emitted when the checks the normalize check box */
+    void normalize(bool normalize);
 
 //    /** Emitted when a new eigen vector is selected */
 //    void eigenVectorChanged(int eigenVector);
@@ -126,7 +126,7 @@ private slots:
     void onFlipYCheckBoxStateChanged(int state);
     void onFlipZCheckBoxStateChanged(int state);
 
-    void onMaxThesisFuncCheckBoxStateChanged(int state);
+    void onNormalizeCheckBoxStateChanged(int state);
 
 
 //    void onEigenVectorV1Toggled(bool isSelected);
