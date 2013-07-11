@@ -17,7 +17,6 @@
 
 class vtkSphericalHarmonicSource;
 class vtkSphericalHarmonicGlyph;
-class vtkPolyDataNormals;
 class vtkExtractVOI;
 class vtkPolyDataMapper;
 class vtkActor;
@@ -75,10 +74,6 @@ public:
 
     vtkGetObjectMacro (SHGlyph,  vtkSphericalHarmonicGlyph);
 
-    /** Get the normals used to display the spherical harmonic glyph*/
-
-    vtkGetObjectMacro (Normals,  vtkPolyDataNormals);
-
     /** Get the VOI to be displayed as spherical harmonic glyph*/
 
     vtkGetObjectMacro (VOI,      vtkExtractVOI);
@@ -108,7 +103,6 @@ private:
 
     vtkSphericalHarmonicSource* SHSource;
     vtkSphericalHarmonicGlyph*  SHGlyph;
-    vtkPolyDataNormals *        Normals;
     vtkExtractVOI*              VOI;
     vtkPolyDataMapper*          Mapper;
     vtkActor*                   Actor;

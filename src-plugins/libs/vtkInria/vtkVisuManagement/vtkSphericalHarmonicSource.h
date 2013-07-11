@@ -164,7 +164,7 @@ public:
     
 protected:
 
-    vtkSphericalHarmonicSource(const int tess=3);
+     vtkSphericalHarmonicSource(const int tess=2);
     ~vtkSphericalHarmonicSource();
     
     int RequestData(vtkInformation*,vtkInformationVector**,vtkInformationVector*);
