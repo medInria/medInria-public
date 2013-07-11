@@ -36,15 +36,11 @@
 
 vtkStandardNewMacro(vtkTessellatedSphereSource);
 
-vtkTessellatedSphereSource::vtkTessellatedSphereSource() {
-    PolyhedraType = icosahedron;
-    Resolution=4;
+vtkTessellatedSphereSource::vtkTessellatedSphereSource(): Resolution(2),PolyhedraType(icosahedron) {
     SetNumberOfInputPorts(0);
 }
 
-vtkTessellatedSphereSource::vtkTessellatedSphereSource(const int ip) {
-    PolyhedraType = ip;
-    Resolution=4;
+vtkTessellatedSphereSource::vtkTessellatedSphereSource(const int ip): Resolution(2),PolyhedraType(ip) {
     SetNumberOfInputPorts(0);
 }
 
@@ -173,8 +169,8 @@ void TesselateTriangles(vtkPoints* oldVertices,vtkCellArray* oldTriangles,
     //              c = (0+1)/2
     //      1
     //      /\         Normalize a, b, c
-    //     /  \
-    //   c/____\a    Construct new triangles
+    //     /  \        Construct new triangles: 
+    //   c/____\a
     //   /\    /\       [a,b,c]
     //  /  \  /  \      [1,a,c]
     // /____\/____\     [b,0,c]
@@ -205,9 +201,6 @@ void TesselateTriangles(vtkPoints* oldVertices,vtkCellArray* oldTriangles,
         for (unsigned i=0,l=2;i<3;++i)
             for (unsigned j=i+1;j<3;++j,--l) {
                 const BiPoint key = (pts[i]<pts[j]) ? std::make_pair(pts[i],pts[j]) : std::make_pair(pts[j],pts[i]);
-                #ifdef DEBUG
-                std::cerr << "Midpoint of " << key.first << ' ' << key.second << " -> ";
-                #endif
                 const MidPointIds::const_iterator iter = ids.find(key);
 
                 if (iter!=ids.end()) {
@@ -215,9 +208,6 @@ void TesselateTriangles(vtkPoints* oldVertices,vtkCellArray* oldTriangles,
                     //  The point has already been built, get its id and continue.
 
                     triPointsIds[l] = iter->second;
-                    #ifdef DEBUG
-                    std::cerr << iter->second << " (existing)" << std::endl;
-                    #endif
                     continue;
                 }
                     
@@ -227,10 +217,6 @@ void TesselateTriangles(vtkPoints* oldVertices,vtkCellArray* oldTriangles,
                 GetMiddleNormalizedPoint(points[i],points[j],midPoint);
                 triPointsIds[l] = current2P;
                 ids.insert(std::make_pair(key,current2P));
-                #ifdef DEBUG
-                std::cerr << current2P << " (created)" << std::endl;
-                std::cerr << "Creating point: " << current2P << ' ' << midPoint[0] << ' ' << midPoint[1] << ' ' << midPoint[2] << std::endl;
-                #endif
                 vertices->SetPoint(current2P++,midPoint);
             }
 
@@ -247,45 +233,6 @@ void TesselateTriangles(vtkPoints* oldVertices,vtkCellArray* oldTriangles,
             std::swap(triPointsIds[j],pts[j]);
         }
     }
-
-    #ifdef DEBUG
-    vtkSmartPointer<vtkUnstructuredGrid> unstructuredGrid = vtkSmartPointer<vtkUnstructuredGrid>::New();
-    unstructuredGrid->SetPoints(vertices);
-    unstructuredGrid->SetCells(VTK_TRIANGLE,triangles);
- 
-    // Write file
-
-    static int counter = 0;
-
-    if (counter==0) {
-        vtkSmartPointer<vtkUnstructuredGrid> orig = vtkSmartPointer<vtkUnstructuredGrid>::New();
-        orig->SetPoints(oldVertices);
-        orig->SetCells(VTK_TRIANGLE,oldTriangles);
-
-        vtkSmartPointer<vtkUnstructuredGridWriter> writer = vtkSmartPointer<vtkUnstructuredGridWriter>::New();
-        writer->SetFileName("mesh.vtk");
-        #if VTK_MAJOR_VERSION <= 5
-        writer->SetInput(orig);
-        #else
-        writer->SetInputData(orig);
-        #endif
-        writer->Write();
-    }
-
-    std::ostringstream ost;
-    ost << "mesh" << counter++ << ".vtk";
-    vtkSmartPointer<vtkUnstructuredGridWriter> writer = vtkSmartPointer<vtkUnstructuredGridWriter>::New();
-    writer->SetFileName(ost.str().c_str());
-    #if VTK_MAJOR_VERSION <= 5
-    std::cerr << "Writing !" << std::endl;
-    writer->SetInput(unstructuredGrid);
-    #else
-    writer->SetInputData(unstructuredGrid);
-    #endif
-    writer->Write();
-
-    std::cerr << "END" << std::endl;
-    #endif
 }
 
 int
