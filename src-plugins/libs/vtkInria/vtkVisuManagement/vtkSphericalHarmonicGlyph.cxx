@@ -126,7 +126,6 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
 
     vtkDataSet*  input     = vtkDataSet::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
     const vtkIdType numPts = input->GetNumberOfPoints();  //number of points in the data
-    std::cerr << "Num points: " << numPts << std::endl;
 
     if (!numPts) {
         vtkErrorMacro(<<"No data to glyph!");
@@ -147,13 +146,11 @@ vtkSphericalHarmonicGlyph::RequestData(vtkInformation*,vtkInformationVector** in
     // Number of points on the shell
 
     const vtkIdType numSourcePts   = sourcePts->GetNumberOfPoints();
-    std::cerr << "numSourcePts: " << numSourcePts << std::endl;
 
     // Number of cells is the number of triangles in shell
 
     const vtkIdType numSourceCells = source->GetNumberOfCells();
     const unsigned newpts_sz = numDirs*numPts*numSourcePts;
-    std::cerr << "numSourceCells: " << numSourceCells << std::endl;
 
     vtkPoints* newPts = vtkPoints::New();
     newPts->Allocate(newpts_sz);
