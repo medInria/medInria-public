@@ -135,15 +135,18 @@ private slots:
 
 //    void onReverseBackgroundColorChanged(int state);
 
+    void onScaleChanged(const double scale);
+    void onScaleChanged(const double mantissa,const int exponent);
+
     /** Changes the Major scaling M of the glyph visualization m*10^M */
-    void onMinorScalingChanged(int minorScale);
+    void onMinorScalingChanged(const double minorScale);
 
     /** Changes the minor scaling m of the glyph visualization  m*10^M*/
-    void onMajorScalingChanged(int majorScaleExponent);
+    void onMajorScalingChanged(const int majorScaleExponent);
 
-    void onHideShowAxialChanged(int checkBoxState);
-    void onHideShowCoronalChanged(int checkBoxState);
-    void onHideShowSagittalChanged(int checkBoxState);
+    void onHideShowAxialChanged(const int checkBoxState);
+    void onHideShowCoronalChanged(const int checkBoxState);
+    void onHideShowSagittalChanged(const int checkBoxState);
 
 protected:
     medSHViewToolBoxPrivate *d;

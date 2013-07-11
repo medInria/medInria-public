@@ -3,8 +3,7 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <math.h>
 
-class medSHViewToolBoxPrivate
-{
+class medSHViewToolBoxPrivate {
 public:
     QComboBox*    tesselationTypeComboBox;
     QComboBox*    tesselationBasisComboBox;
@@ -22,27 +21,18 @@ public:
     QSlider*      minorScalingSlider;
     QSlider*      majorScalingSlider;
 
-    QSlider*      xSliceSlider;
-    QSlider*      ySliceSlider;
-    QSlider*      zSliceSlider;
-
-    QSpinBox* xSliceSpinBox;
-    QSpinBox* ySliceSpinBox;
-    QSpinBox* zSliceSpinBox;
-
-
-//    QVector3D* position;
+    QSlider*      SliceSlider[3];
+    QSpinBox*     SliceSpinBox[3];
 
     QCheckBox*    hideShowAxialCheckBox;
     QCheckBox*    hideShowCoronalCheckBox;
     QCheckBox*    hideShowSagittalCheckBox;
 
-    QStringList tesselationTypeList;
-    QStringList tesselationBasisList;
-
+    QStringList   tesselationTypeList;
+    QStringList   tesselationBasisList;
 };
 
-medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new medSHViewToolBoxPrivate) {
+medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new medSHViewToolBoxPrivate) {
 
     QWidget* displayWidget = new QWidget(this);
 
@@ -50,14 +40,17 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
     d->tesselationBasisList << "SHMatrix" << "SHMatrixMaxThesis" << "SHMatrixTournier" << "SHMatrixRshBasis";
 
     // combobox to control the glyph shape
+
     d->tesselationTypeComboBox = new QComboBox(displayWidget);
     d->tesselationTypeComboBox->addItems(d->tesselationTypeList);
 
     // combobox to control the spherical Harmonics basis
+
     d->tesselationBasisComboBox = new QComboBox(displayWidget);
     d->tesselationBasisComboBox->addItems(d->tesselationBasisList);
 
     // slider to control sample rate
+
     d->sampleRateSlider =  new QSlider(Qt::Horizontal, displayWidget);
     d->sampleRateSlider->setMinimum(1);
     d->sampleRateSlider->setMaximum(10);
@@ -75,72 +68,33 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
     sampleRateLayout->addWidget(d->sampleRateSlider);
     sampleRateLayout->addWidget(sampleRateSpinBox);
 
-    connect(d->sampleRateSlider, SIGNAL(valueChanged(int)), sampleRateSpinBox, SLOT(setValue(int)));
-    connect(sampleRateSpinBox, SIGNAL(valueChanged(int)), d->sampleRateSlider, SLOT(setValue(int)));
+    connect(d->sampleRateSlider,SIGNAL(valueChanged(int)),sampleRateSpinBox,  SLOT(setValue(int)));
+    connect(sampleRateSpinBox,  SIGNAL(valueChanged(int)),d->sampleRateSlider,SLOT(setValue(int)));
 
     // slider to control x SLICE
-    d->xSliceSlider =  new QSlider(Qt::Horizontal, displayWidget);
-    d->xSliceSlider->setMinimum(0);
-    d->xSliceSlider->setMaximum(100);
-    d->xSliceSlider->setSingleStep(1);
-    d->xSliceSlider->setValue(0);
-    d->xSliceSlider->setTracking(false);
 
-    d->xSliceSpinBox = new QSpinBox(displayWidget);
-    d->xSliceSpinBox->setMinimum(0);
-    d->xSliceSpinBox->setMaximum(100);
-    d->xSliceSpinBox->setSingleStep(1);
-    d->xSliceSpinBox->setValue(0);
+    QHBoxLayout* SliceLayout[3];
+    for (unsigned i=0;i<3;++i) {
+        d->SliceSlider[i] = new QSlider(Qt::Horizontal,displayWidget);
+        d->SliceSlider[i]->setMinimum(0);
+        d->SliceSlider[i]->setMaximum(100);
+        d->SliceSlider[i]->setSingleStep(1);
+        d->SliceSlider[i]->setValue(0);
+        d->SliceSlider[i]->setTracking(false);
 
-    QHBoxLayout* xSliceLayout = new QHBoxLayout;
-    xSliceLayout->addWidget(d->xSliceSlider);
-    xSliceLayout->addWidget(d->xSliceSpinBox);
+        d->SliceSpinBox[i] = new QSpinBox(displayWidget);
+        d->SliceSpinBox[i]->setMinimum(0);
+        d->SliceSpinBox[i]->setMaximum(100);
+        d->SliceSpinBox[i]->setSingleStep(1);
+        d->SliceSpinBox[i]->setValue(0);
 
-    connect(d->xSliceSlider, SIGNAL(valueChanged(int)), d->xSliceSpinBox, SLOT(setValue(int)));
-    connect(d->xSliceSpinBox, SIGNAL(valueChanged(int)), d->xSliceSlider, SLOT(setValue(int)));
+        SliceLayout[i] = new QHBoxLayout;
+        SliceLayout[i]->addWidget(d->SliceSlider[i]);
+        SliceLayout[i]->addWidget(d->SliceSpinBox[i]);
 
-    // slider to control y SLICE
-    d->ySliceSlider =  new QSlider(Qt::Horizontal, displayWidget);
-    d->ySliceSlider->setMinimum(0);
-    d->ySliceSlider->setMaximum(100);
-    d->ySliceSlider->setSingleStep(1);
-    d->ySliceSlider->setValue(0);
-    d->ySliceSlider->setTracking(false);
-
-    d->ySliceSpinBox = new QSpinBox(displayWidget);
-    d->ySliceSpinBox->setMinimum(0);
-    d->ySliceSpinBox->setMaximum(100);
-    d->ySliceSpinBox->setSingleStep(1);
-    d->ySliceSpinBox->setValue(0);
-
-    QHBoxLayout* ySliceLayout = new QHBoxLayout;
-    ySliceLayout->addWidget(d->ySliceSlider);
-    ySliceLayout->addWidget(d->ySliceSpinBox);
-
-    connect(d->ySliceSlider, SIGNAL(valueChanged(int)), d->ySliceSpinBox, SLOT(setValue(int)));
-    connect(d->ySliceSpinBox, SIGNAL(valueChanged(int)), d->ySliceSlider, SLOT(setValue(int)));
-
-    // slider to control z SLICE
-    d->zSliceSlider =  new QSlider(Qt::Horizontal, displayWidget);
-    d->zSliceSlider->setMinimum(0);
-    d->zSliceSlider->setMaximum(100);
-    d->zSliceSlider->setSingleStep(1);
-    d->zSliceSlider->setValue(0);
-    d->zSliceSlider->setTracking(false);
-
-    d->zSliceSpinBox = new QSpinBox(displayWidget);
-    d->zSliceSpinBox->setMinimum(0);
-    d->zSliceSpinBox->setMaximum(100);
-    d->zSliceSpinBox->setSingleStep(1);
-    d->zSliceSpinBox->setValue(0);
-
-    QHBoxLayout* zSliceLayout = new QHBoxLayout;
-    zSliceLayout->addWidget(d->zSliceSlider);
-    zSliceLayout->addWidget(d->zSliceSpinBox);
-
-    connect(d->zSliceSlider, SIGNAL(valueChanged(int)), d->zSliceSpinBox, SLOT(setValue(int)));
-    connect(d->zSliceSpinBox, SIGNAL(valueChanged(int)), d->zSliceSlider, SLOT(setValue(int)));
-
+        connect(d->SliceSlider[i], SIGNAL(valueChanged(int)),d->SliceSpinBox[i],SLOT(setValue(int)));
+        connect(d->SliceSpinBox[i],SIGNAL(valueChanged(int)),d->SliceSlider[i], SLOT(setValue(int)));
+    }
 
     // flipX, flipY and flipZ checkboxes
     d->flipXCheckBox = new QCheckBox("X", displayWidget);
@@ -267,9 +221,9 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
     layout->addRow(tr("Minor scaling:"), minorScalingLayout);
     layout->addRow(tr("Major scaling:"), majorScalingLayout);
     layout->addRow(tr("Hide/show:"), slicesLayout);
-    layout->addRow(tr("Axial Slice:"), zSliceLayout);
-    layout->addRow(tr("Coronal Slice:"), ySliceLayout);
-    layout->addRow(tr("Sagital Slice:"), xSliceLayout);
+    layout->addRow(tr("Axial Slice:"),   SliceLayout[2]);
+    layout->addRow(tr("Coronal Slice:"), SliceLayout[1]);
+    layout->addRow(tr("Sagital Slice:"), SliceLayout[0]);
 
     // connect all the signals
     connect(d->tesselationTypeComboBox,              SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(tesselationTypeChanged(const QString&)));
@@ -277,9 +231,10 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
 
     connect(d->sampleRateSlider,              SIGNAL(valueChanged(int)),                   this, SIGNAL(sampleRateChanged(int)));
     connect(d->glyphResolutionSlider,         SIGNAL(valueChanged(int)),                   this, SIGNAL(glyphResolutionChanged(int)));
-    connect(d->xSliceSlider,         SIGNAL(valueChanged(int)),                   this, SIGNAL(xSliceChanged(int)));
-    connect(d->ySliceSlider,         SIGNAL(valueChanged(int)),                   this, SIGNAL(ySliceChanged(int)));
-    connect(d->zSliceSlider,         SIGNAL(valueChanged(int)),                   this, SIGNAL(zSliceChanged(int)));
+
+    connect(d->SliceSlider[0],SIGNAL(valueChanged(int)),this,SIGNAL(xSliceChanged(int)));
+    connect(d->SliceSlider[1],SIGNAL(valueChanged(int)),this,SIGNAL(ySliceChanged(int)));
+    connect(d->SliceSlider[2],SIGNAL(valueChanged(int)),this,SIGNAL(zSliceChanged(int)));
 
     // some signals (checkboxes) require one more step to translate from Qt::CheckState to bool
     connect(d->flipXCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipXCheckBoxStateChanged(int)));
@@ -434,89 +389,47 @@ void medSHViewToolBox::onNormalizeCheckBoxStateChanged(int checkBoxState)
         emit normalize(true);
 }
 
-//void medSHViewToolBox::onReverseBackgroundColorChanged(int checkBoxState)
-//{
-//    if (checkBoxState == Qt::Unchecked)
-//        emit reverseBackgroundColor(false);
-//    else if (checkBoxState == Qt::Checked)
-//        emit reverseBackgroundColor(true);
-//}
+void medSHViewToolBox::onScaleChanged(const double mantissa,const int exponent) {
+    const double scale_factor = pow(10.0,exponent);
+    onScaleChanged(mantissa*scale_factor);
+}
 
-//void medSHViewToolBox::onEigenVectorV1Toggled(bool isSelected)
-//{
-//    if (isSelected)
-//        emit eigenVectorChanged(3);
-//}
-
-//void medSHViewToolBox::onEigenVectorV2Toggled(bool isSelected)
-//{
-//    if (isSelected)
-//        emit eigenVectorChanged(2);
-//}
-
-//void medSHViewToolBox::onEigenVectorV3Toggled(bool isSelected)
-//{
-//    if (isSelected)
-//        emit eigenVectorChanged(1);
-//}
-
-void medSHViewToolBox::onMinorScalingChanged(int minorScale)
-{
-    int majorScaleExponent = d->majorScalingSlider->value();
-    double majorScale = pow(10.0, majorScaleExponent);
-    double scale = majorScale * minorScale;
+void medSHViewToolBox::onScaleChanged(const double scale) {
     emit scalingChanged(scale);
 }
 
-void medSHViewToolBox::onMajorScalingChanged(int majorScaleExponent)
-{
-    int minorScale = d->minorScalingSlider->value();
-    double majorScale = pow(10.0, majorScaleExponent);
-    double scale = majorScale * minorScale;
-    emit scalingChanged(scale);
+void medSHViewToolBox::onMinorScalingChanged(const double minorScale) {
+    const int majorScaleExponent = d->majorScalingSlider->value();
+    onScaleChanged(minorScale,majorScaleExponent);
 }
 
-//void medSHViewToolBox::onXVoiChanged(int xVoi)
-//{
-//    d->position->setX(xVoi);
-//    emit positionChanged(/*(const)*/ *(d->position), true);
-//}
+void medSHViewToolBox::onMajorScalingChanged(const int majorScaleExponent) {
+    const double minorScale = d->minorScalingSlider->value();
+    onScaleChanged(minorScale,majorScaleExponent);
+}
 
-//void medSHViewToolBox::onYVoiChanged(int yVoi)
-//{
-//}
-
-//void medSHViewToolBox::onZVoiChanged(int zVoi)
-//{
-//}
-
-
-void medSHViewToolBox::onHideShowAxialChanged(int checkBoxState)
-{
+void medSHViewToolBox::onHideShowAxialChanged(const int checkBoxState) {
     if (checkBoxState == Qt::Unchecked)
         emit hideShowAxial(false);
     else if (checkBoxState == Qt::Checked)
         emit hideShowAxial(true);
 }
 
-void medSHViewToolBox::onHideShowCoronalChanged(int checkBoxState)
-{
+void medSHViewToolBox::onHideShowCoronalChanged(const int checkBoxState) {
     if (checkBoxState == Qt::Unchecked)
         emit hideShowCoronal(false);
     else if (checkBoxState == Qt::Checked)
         emit hideShowCoronal(true);
 }
 
-void medSHViewToolBox::onHideShowSagittalChanged(int checkBoxState)
-{
+void medSHViewToolBox::onHideShowSagittalChanged(const int checkBoxState) {
     if (checkBoxState == Qt::Unchecked)
         emit hideShowSagittal(false);
     else if (checkBoxState == Qt::Checked)
         emit hideShowSagittal(true);
 }
 
-void medSHViewToolBox::update (dtkAbstractView *view)
-{
+void medSHViewToolBox::update(dtkAbstractView *view) {
     if (!view)
         return;
 
@@ -539,37 +452,21 @@ void medSHViewToolBox::update (dtkAbstractView *view)
 //    }
 }
 
-void medSHViewToolBox::updateWithInteractor (dtkAbstractView *view)
-{
+void medSHViewToolBox::updateWithInteractor(dtkAbstractView *view) {
 
     if (!view)
         return;
 
-
-    if (medSHAbstractViewInteractor *interactor = dynamic_cast<medSHAbstractViewInteractor*>(view->interactor ("v3dViewSHInteractor")))
-    {
-        int imSize[3]={0,0,0};
-        double temp[3]={0,0,0};
+    if (medSHAbstractViewInteractor* interactor = dynamic_cast<medSHAbstractViewInteractor*>(view->interactor ("v3dViewSHInteractor"))) {
+        int imSize[3];
         interactor->imageSize(imSize);
-        d->xSliceSlider->setMaximum(imSize[0]-1);
-        d->ySliceSlider->setMaximum(imSize[1]-1);
-        d->zSliceSlider->setMaximum(imSize[2]-1);
-
-        temp[0]=imSize[0]; temp[1]=imSize[1]; temp[2]=imSize[2];
-
-        d->xSliceSlider->setPageStep(ceil(temp[0]/10));
-        d->ySliceSlider->setPageStep(ceil(temp[1]/10));
-        d->zSliceSlider->setPageStep(ceil(temp[2]/10));
-
-        d->xSliceSlider->setValue(floor(temp[0]/2));
-        d->ySliceSlider->setValue(floor(temp[1]/2));
-        d->zSliceSlider->setValue(floor(temp[2]/2));
-
-        d->xSliceSpinBox->setMaximum(imSize[0]-1);
-        d->ySliceSpinBox->setMaximum(imSize[1]-1);
-        d->zSliceSpinBox->setMaximum(imSize[2]-1);
-
+        for (unsigned i=0;i<3;++i) {
+            const double sz = imSize[i];
+            d->SliceSlider[i]->setMaximum(imSize[i]-1);
+            d->SliceSpinBox[i]->setMaximum(imSize[i]-1);
+            d->SliceSlider[i]->setPageStep(ceil(sz/10));
+            d->SliceSlider[i]->setValue(floor(sz/2));
+        }
     }
-
 }
 
