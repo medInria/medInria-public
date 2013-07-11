@@ -159,8 +159,6 @@ namespace itk {
                 this->UpdateProgress(double(count)/double(numVoxels));
         }
 
-        qDebug() << "TIME: " << time.elapsed();
-
         m_VTKSphericalHarmonic->GetPointData()->AddArray(sh_array);
         m_VTKSphericalHarmonic->GetPointData()->AddArray(aniso_array);
         m_VTKSphericalHarmonic->GetPointData()->AddArray(rgb_array);
