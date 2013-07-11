@@ -74,11 +74,12 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
 
     // -- SH tb --
     d->shViewToolBox = new medSHViewToolBox(parent);
+    
     connect(d->shViewToolBox, SIGNAL(tesselationTypeChanged(const QString&)), this, SLOT(onTesselationTypeChanged(const QString&)));
     connect(d->shViewToolBox, SIGNAL(flipX(bool)),                       this, SLOT(onSHFlipXChanged(const bool)));
     connect(d->shViewToolBox, SIGNAL(flipY(bool)),                       this, SLOT(onSHFlipYChanged(const bool)));
     connect(d->shViewToolBox, SIGNAL(flipZ(bool)),                       this, SLOT(onSHFlipZChanged(const bool)));
-    connect(d->shViewToolBox, SIGNAL(maxThesisFunc(bool)),               this, SLOT(onSHMaxThesisFuncChanged(bool)));
+    connect(d->shViewToolBox, SIGNAL(normalize(bool)),               this, SLOT(onSHNormalize(bool)));
     connect(d->shViewToolBox, SIGNAL(tesselationBasisChanged(const QString&)), this, SLOT(onTesselationBasisChanged(const QString&)));
 
     // -- Fiber view tb --
@@ -215,8 +216,6 @@ void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
         //        connect(d->shViewToolBox, SIGNAL(positionChanged(const QVector3D& , bool )), interactor, SLOT(onPositionChanged(const QVector3D& , bool )));
 
 
-
-
         connect(d->shViewToolBox, SIGNAL(hideShowAxial(bool)), interactor, SLOT(onHideShowAxialPropertySet(bool)));
         connect(d->shViewToolBox, SIGNAL(hideShowCoronal(bool)), interactor, SLOT(onHideShowCoronalPropertySet(bool)));
         connect(d->shViewToolBox, SIGNAL(hideShowSagittal(bool)), interactor, SLOT(onHideShowSagittalPropertySet(bool)));
@@ -242,7 +241,7 @@ void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
         connect(view, SIGNAL(positionChanged(const QVector3D&,bool)), interactor, SLOT(onPositionChanged(const QVector3D&,bool)));
 
         // updateSHInteractorWithToolboxValues(interactor, d->shViewToolBox);
-	// -- initSHToolBoxValues();
+	// initSHToolBoxValues();
 
         d->shViewToolBox->updateWithInteractor(view);
     }
@@ -597,15 +596,15 @@ void medDiffusionWorkspace::onSHFlipZChanged(const bool flipZ)
     }
 }
 
-void medDiffusionWorkspace::onSHMaxThesisFuncChanged(bool MaxThesis)
+void medDiffusionWorkspace::onSHNormalize(bool MaxThesis)
 {
     foreach (dtkAbstractView *view, d->views) {
         if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
             
             if (MaxThesis)
-                interactor->setProperty("MaxThesisFunc", "true");
+                interactor->setProperty("Normalization", "true");
             else
-                interactor->setProperty("MaxThesisFunc", "false");
+                interactor->setProperty("Normalization", "false");
             
             view->update();
         }

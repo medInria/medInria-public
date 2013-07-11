@@ -41,7 +41,7 @@ vtkSphericalHarmonicVisuManager::vtkSphericalHarmonicVisuManager() {
     SHSource->SetNormalize(true);
 
     SHGlyph->SetSource (SHSource->GetOutput());
-    SHGlyph->SetScaleFactor(10.0);
+    SHGlyph->SetScaleFactor(3.0);
     SHGlyph->SetSphericalHarmonicSource(SHSource);
     SHGlyph->SetColorModeToDirections();
     SHGlyph->GetOutput()->GetPointData()
@@ -131,7 +131,7 @@ void vtkSphericalHarmonicVisuManager::SetTesselationBasis (const int& type) {
 }
 
 void vtkSphericalHarmonicVisuManager::SetGlyphResolution (const int& res) {
-    SHSource->SetTesselation(res/2);
+    SHSource->SetTesselation(res);
     SHSource->UpdateSphericalHarmonicSource();
 }
 

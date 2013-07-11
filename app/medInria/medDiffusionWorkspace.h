@@ -102,7 +102,7 @@ public slots:
 
     /** Event called when user wants to switch in between Spherical Harmonic Basis  */
 
-    void onSHMaxThesisFuncChanged(bool MaxThesis);
+    void onSHNormalize(bool normalize);
 
 private:
     medDiffusionWorkspacePrivate *d;

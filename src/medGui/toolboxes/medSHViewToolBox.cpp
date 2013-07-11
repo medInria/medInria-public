@@ -13,7 +13,7 @@ public:
     QCheckBox*    flipXCheckBox;
     QCheckBox*    flipYCheckBox;
     QCheckBox*    flipZCheckBox;
-    QCheckBox*    MaxThesisFuncCheckBox;
+    QCheckBox*    NormalizeCheckBox;
 //    QRadioButton* eigenVectorV1RadioButton;
 //    QRadioButton* eigenVectorV2RadioButton;
 //    QRadioButton* eigenVectorV3RadioButton;
@@ -63,6 +63,7 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
     d->sampleRateSlider->setMaximum(10);
     d->sampleRateSlider->setSingleStep(1);
     d->sampleRateSlider->setValue(1);
+    d->sampleRateSlider->setTracking(false);
 
     QSpinBox* sampleRateSpinBox = new QSpinBox(displayWidget);
     sampleRateSpinBox->setMinimum(1);
@@ -83,6 +84,7 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
     d->xSliceSlider->setMaximum(100);
     d->xSliceSlider->setSingleStep(1);
     d->xSliceSlider->setValue(0);
+    d->xSliceSlider->setTracking(false);
 
     d->xSliceSpinBox = new QSpinBox(displayWidget);
     d->xSliceSpinBox->setMinimum(0);
@@ -103,6 +105,7 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
     d->ySliceSlider->setMaximum(100);
     d->ySliceSlider->setSingleStep(1);
     d->ySliceSlider->setValue(0);
+    d->ySliceSlider->setTracking(false);
 
     d->ySliceSpinBox = new QSpinBox(displayWidget);
     d->ySliceSpinBox->setMinimum(0);
@@ -123,6 +126,7 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
     d->zSliceSlider->setMaximum(100);
     d->zSliceSlider->setSingleStep(1);
     d->zSliceSlider->setValue(0);
+    d->zSliceSlider->setTracking(false);
 
     d->zSliceSpinBox = new QSpinBox(displayWidget);
     d->zSliceSpinBox->setMinimum(0);
@@ -142,14 +146,15 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
     d->flipXCheckBox = new QCheckBox("X", displayWidget);
     d->flipYCheckBox = new QCheckBox("Y", displayWidget);
     d->flipZCheckBox = new QCheckBox("Z", displayWidget);
-    d->MaxThesisFuncCheckBox = new QCheckBox("SH Max PhD", displayWidget);
+    d->flipZCheckBox->setCheckState(Qt::Checked);
+    d->NormalizeCheckBox = new QCheckBox("Normalize", displayWidget);
 
 
     QHBoxLayout* flipAxesLayout = new QHBoxLayout;
     flipAxesLayout->addWidget(d->flipXCheckBox);
     flipAxesLayout->addWidget(d->flipYCheckBox);
     flipAxesLayout->addWidget(d->flipZCheckBox);
-    flipAxesLayout->addWidget(d->MaxThesisFuncCheckBox);
+    flipAxesLayout->addWidget(d->NormalizeCheckBox);
 
 //    // eigen vectors
 //    d->eigenVectorV1RadioButton = new QRadioButton("v1", displayWidget);
@@ -175,17 +180,17 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
 
     // slider to control glyph resolution
     d->glyphResolutionSlider =  new QSlider(Qt::Horizontal, displayWidget);
-    d->glyphResolutionSlider->setMinimum(4);
+    d->glyphResolutionSlider->setMinimum(0);
     d->glyphResolutionSlider->setMaximum(10);
-    d->glyphResolutionSlider->setSingleStep(2);
-    d->glyphResolutionSlider->setValue(4);
-    d->glyphResolutionSlider->setPageStep(2);
+    d->glyphResolutionSlider->setSingleStep(1);
+    d->glyphResolutionSlider->setValue(2);
+    d->glyphResolutionSlider->setTracking(false);
 
     QSpinBox* glyphResolutionSpinBox = new QSpinBox(displayWidget);
-    glyphResolutionSpinBox->setMinimum(4);
+    glyphResolutionSpinBox->setMinimum(0);
     glyphResolutionSpinBox->setMaximum(10);
-    glyphResolutionSpinBox->setSingleStep(2);
-    glyphResolutionSpinBox->setValue(4);
+    glyphResolutionSpinBox->setSingleStep(1);
+    glyphResolutionSpinBox->setValue(2);
 
     QHBoxLayout* glyphResolutionLayout = new QHBoxLayout;
     glyphResolutionLayout->addWidget(d->glyphResolutionSlider);
@@ -196,18 +201,17 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
 
     // minor scaling
     d->minorScalingSlider =  new QSlider(Qt::Horizontal, displayWidget);
-    d->minorScalingSlider->setMinimum(1);
+    d->minorScalingSlider->setMinimum(0);
     d->minorScalingSlider->setMaximum(9);
     d->minorScalingSlider->setSingleStep(1);
-    d->minorScalingSlider->setValue(1);
-    d->minorScalingSlider->setPageStep(1);
-
+    d->minorScalingSlider->setValue(3);
+    d->minorScalingSlider->setTracking(false);
 
     QSpinBox* minorScalingSpinBox = new QSpinBox(displayWidget);
-    minorScalingSpinBox->setMinimum(1);
+    minorScalingSpinBox->setMinimum(0);
     minorScalingSpinBox->setMaximum(9);
     minorScalingSpinBox->setSingleStep(1);
-    minorScalingSpinBox->setValue(1);
+    minorScalingSpinBox->setValue(3);
 
     QHBoxLayout* minorScalingLayout = new QHBoxLayout;
     minorScalingLayout->addWidget(d->minorScalingSlider);
@@ -221,9 +225,8 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
     d->majorScalingSlider->setMinimum(-10);
     d->majorScalingSlider->setMaximum(10);
     d->majorScalingSlider->setSingleStep(1);
-    d->majorScalingSlider->setPageStep(1);
-
     d->majorScalingSlider->setValue(0);
+    d->majorScalingSlider->setTracking(false);
 
     QSpinBox* majorScalingSpinBox = new QSpinBox(displayWidget);
     majorScalingSpinBox->setMinimum(-10);
@@ -283,7 +286,7 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent) : medToolBox(parent), d(new 
     connect(d->flipYCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipYCheckBoxStateChanged(int)));
     connect(d->flipZCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipZCheckBoxStateChanged(int)));
 
-    connect(d->MaxThesisFuncCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(onMaxThesisFuncCheckBoxStateChanged(int)));
+    connect(d->NormalizeCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(onNormalizeCheckBoxStateChanged(int)));
 
     //connect(d->reverseBackgroundColorCheckBox,  SIGNAL(stateChanged(int)),                   this, SLOT(onReverseBackgroundColorChanged(int)));
     connect(d->hideShowAxialCheckBox,           SIGNAL(stateChanged(int)),                   this, SLOT(onHideShowAxialChanged(int)));
@@ -342,7 +345,7 @@ bool medSHViewToolBox::isFlipZ(void)
 
 bool medSHViewToolBox::isMaxThesisFunc(void)
 {
-    return d->MaxThesisFuncCheckBox->checkState() == Qt::Checked;
+    return d->NormalizeCheckBox->checkState() == Qt::Checked;
 }
 
 //int medSHViewToolBox::eigenVector(void)
@@ -367,6 +370,13 @@ int medSHViewToolBox::glyphResolution(void)
 {
     return d->glyphResolutionSlider->value();
 }
+
+// void medSHViewToolBox::setGlyphResolution(const int value)
+// {
+//     d->glyphResolutionSlider->blockSignals(true);
+//     d->glyphResolutionSlider->setValue(value);
+//     d->glyphResolutionSlider->blockSignals(false);
+// }
 
 double medSHViewToolBox::scale(void)
 {
@@ -416,12 +426,12 @@ void medSHViewToolBox::onFlipZCheckBoxStateChanged(int checkBoxState)
         emit flipZ(true);
 }
 
-void medSHViewToolBox::onMaxThesisFuncCheckBoxStateChanged(int checkBoxState)
+void medSHViewToolBox::onNormalizeCheckBoxStateChanged(int checkBoxState)
 {
     if (checkBoxState == Qt::Unchecked)
-        emit maxThesisFunc(false);
+        emit normalize(false);
     else if (checkBoxState == Qt::Checked)
-        emit maxThesisFunc(true);
+        emit normalize(true);
 }
 
 //void medSHViewToolBox::onReverseBackgroundColorChanged(int checkBoxState)
