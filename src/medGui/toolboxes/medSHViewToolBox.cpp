@@ -13,6 +13,8 @@ public:
     QCheckBox*    EnhanceCheckBox;
 
     QSlider*      glyphResolutionSlider;
+    QSpinBox*     glyphResolutionSpinBox;
+
     QSlider*      minorScalingSlider;
     QSlider*      majorScalingSlider;
 
@@ -110,18 +112,15 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
     d->glyphResolutionSlider->setValue(2);
     d->glyphResolutionSlider->setTracking(false);
 
-    QSpinBox* glyphResolutionSpinBox = new QSpinBox(displayWidget);
-    glyphResolutionSpinBox->setMinimum(0);
-    glyphResolutionSpinBox->setMaximum(10);
-    glyphResolutionSpinBox->setSingleStep(1);
-    glyphResolutionSpinBox->setValue(2);
+    d->glyphResolutionSpinBox = new QSpinBox(displayWidget);
+    d->glyphResolutionSpinBox->setMinimum(0);
+    d->glyphResolutionSpinBox->setMaximum(10);
+    d->glyphResolutionSpinBox->setSingleStep(1);
+    d->glyphResolutionSpinBox->setValue(2);
 
     QHBoxLayout* glyphResolutionLayout = new QHBoxLayout;
     glyphResolutionLayout->addWidget(d->glyphResolutionSlider);
-    glyphResolutionLayout->addWidget(glyphResolutionSpinBox);
-
-    connect(d->glyphResolutionSlider,SIGNAL(valueChanged(int)),   glyphResolutionSpinBox,  SLOT(setValue(int)));
-    connect(glyphResolutionSpinBox,  SIGNAL(editingFinished(int)),d->glyphResolutionSlider,SLOT(setValue(int)));
+    glyphResolutionLayout->addWidget(d->glyphResolutionSpinBox);
 
     // minor scaling
 
@@ -197,8 +196,10 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
     connect(d->tesselationTypeComboBox, SIGNAL(currentIndexChanged(const QString&)),this,SIGNAL(tesselationTypeChanged(const QString&)));
     connect(d->tesselationBasisComboBox,SIGNAL(currentIndexChanged(const QString&)),this,SIGNAL(tesselationBasisChanged(const QString&)));
 
-    connect(d->sampleRateSlider,     SIGNAL(valueChanged(int)),this,SIGNAL(sampleRateChanged(int)));
-    connect(d->glyphResolutionSlider,SIGNAL(valueChanged(int)),this,SIGNAL(glyphResolutionChanged(int)));
+    connect(d->sampleRateSlider,SIGNAL(valueChanged(int)),this,SIGNAL(sampleRateChanged(int)));
+
+    connect(d->glyphResolutionSlider,SIGNAL(valueChanged(int)),this,SLOT(onGlyphResolutionChanged()));
+    connect(d->glyphResolutionSpinBox,SIGNAL(editingFinished()),this,SLOT(onGlyphResolutionChanged()));
 
     connect(d->SliceSlider[0],SIGNAL(valueChanged(int)),this,SIGNAL(xSliceChanged(int)));
     connect(d->SliceSlider[1],SIGNAL(valueChanged(int)),this,SIGNAL(ySliceChanged(int)));
@@ -242,9 +243,25 @@ int medSHViewToolBox::sampleRate() {
     return d->sampleRateSlider->value();
 }
 
-void medSHViewToolBox::onGlyphResolutionChanged(const int resolution) {
-    std::cerr << "Change of scale: " << resolution << std::endl;
-    emit(glyphResolutionChanged(resolution));
+void medSHViewToolBox::onGlyphResolutionChanged(void)
+{
+    int value;
+
+    if(QSpinBox *s = qobject_cast<QSpinBox *>(sender())) {
+	value = s->value();
+	d->glyphResolutionSlider->blockSignals(true);
+	d->glyphResolutionSlider->setValue(value);
+	d->glyphResolutionSlider->blockSignals(false);
+    }
+
+    if(QSlider *s = qobject_cast<QSlider *>(sender())) {
+	value = s->value();
+	d->glyphResolutionSpinBox->blockSignals(true);
+	d->glyphResolutionSpinBox->setValue(value);
+	d->glyphResolutionSpinBox->blockSignals(false);
+    }
+
+    emit glyphResolutionChanged(value);
 }
 
 bool medSHViewToolBox::isFlipX() {
@@ -266,13 +283,6 @@ bool medSHViewToolBox::isEnhanced() {
 int medSHViewToolBox::glyphResolution() {
     return d->glyphResolutionSlider->value();
 }
-
-// void medSHViewToolBox::setGlyphResolution(const int value)
-// {
-//     d->glyphResolutionSlider->blockSignals(true);
-//     d->glyphResolutionSlider->setValue(value);
-//     d->glyphResolutionSlider->blockSignals(false);
-// }
 
 double medSHViewToolBox::scale() {
     const int minorScale = d->minorScalingSlider->value();

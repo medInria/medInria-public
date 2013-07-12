@@ -115,7 +115,7 @@ public slots:
 
 private slots:
 
-    void onGlyphResolutionChanged(const int resolution);
+    void onGlyphResolutionChanged(void);
 
     // functions used to translate checkboxes from Qt::CheckState
     // to boolean values, and then emitting the signals
