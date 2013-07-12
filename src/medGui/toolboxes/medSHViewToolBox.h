@@ -1,5 +1,17 @@
-#ifndef medSHViewToolBox_H
-#define medSHViewToolBox_H
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+#pragma once
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
@@ -115,8 +127,6 @@ public slots:
 
 private slots:
 
-    void onGlyphResolutionChanged(void);
-
     // functions used to translate checkboxes from Qt::CheckState
     // to boolean values, and then emitting the signals
     void onFlipXCheckBoxStateChanged(const int state);
@@ -142,5 +152,3 @@ protected:
 
     medSHViewToolBoxPrivate *d;
 };
-
-#endif // medSHViewToolBox_H
