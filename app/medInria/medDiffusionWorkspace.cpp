@@ -104,7 +104,7 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
     this->addToolBox( d->fiberBundlingToolBox );
 }
 
-medDiffusionWorkspace::~medDiffusionWorkspace(void)
+medDiffusionWorkspace::~medDiffusionWorkspace()
 {
     delete d;
     d = NULL;
@@ -164,18 +164,18 @@ void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
 
     d->views.append (view);
 
-    view->enableInteractor ("v3dViewFiberInteractor");
-    view->enableInteractor ("v3dViewTensorInteractor");
-    view->enableInteractor ("v3dViewSHInteractor");
+    view->enableInteractor("v3dViewFiberInteractor");
+    view->enableInteractor("v3dViewTensorInteractor");
+    view->enableInteractor("v3dViewSHInteractor");
 
-    if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor"))
+    if (dtkAbstractViewInteractor *interactor = view->interactor("v3dViewFiberInteractor"))
     {
         connect(d->fiberViewToolBox, SIGNAL(fiberRadiusSet(int)), interactor, SLOT(onRadiusSet(int)));
 
         updateFiberInteractorWithToolboxValues(interactor, d->fiberViewToolBox);
     }
 
-    if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor"))
+    if (dtkAbstractViewInteractor *interactor = view->interactor("v3dViewTensorInteractor"))
     {
         connect(d->tensorViewToolBox, SIGNAL(sampleRateChanged(int)), interactor, SLOT(onSampleRatePropertySet(int)));
         connect(d->tensorViewToolBox, SIGNAL(eigenVectorChanged(int)), interactor, SLOT(onEigenVectorPropertySet(int)));
@@ -190,62 +190,54 @@ void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
         // TODO we need to unify the view->update() as now some updates are done here and some
         // are performed in the 'translate' function of the signal emitted by the toolbox
         // (e.g. onFlipXChanged) ... maybe after dtk is extended to support QVariant properties
-        connect(d->tensorViewToolBox, SIGNAL(sampleRateChanged(int)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(eigenVectorChanged(int)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(glyphResolutionChanged(int)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(reverseBackgroundColor(bool)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(scalingChanged(double)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(hideShowAxial(bool)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(hideShowCoronal(bool)), view, SLOT(update(void)));
-        connect(d->tensorViewToolBox, SIGNAL(hideShowSagittal(bool)), view, SLOT(update(void)));
+        connect(d->tensorViewToolBox, SIGNAL(sampleRateChanged(int)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(eigenVectorChanged(int)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(glyphResolutionChanged(int)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(reverseBackgroundColor(bool)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(scalingChanged(double)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(hideShowAxial(bool)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(hideShowCoronal(bool)), view, SLOT(update()));
+        connect(d->tensorViewToolBox, SIGNAL(hideShowSagittal(bool)), view, SLOT(update()));
 
         updateTensorInteractorWithToolboxValues(interactor, d->tensorViewToolBox);
     }
 
-    if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor"))
-    {
-        connect(d->shViewToolBox, SIGNAL(sampleRateChanged(int)), interactor, SLOT(onSampleRatePropertySet(int)));
-        connect(d->shViewToolBox, SIGNAL(glyphResolutionChanged(int)), interactor, SLOT(onGlyphResolutionPropertySet(int)));
-//        connect(d->shViewToolBox, SIGNAL(reverseBackgroundColor(bool)), interactor, SLOT(onReverseBackgroundColorPropertySet(bool)));
-        connect(d->shViewToolBox, SIGNAL(scalingChanged(double)), interactor, SLOT(onScalingPropertySet(double)));
+    if (dtkAbstractViewInteractor *interactor = view->interactor("v3dViewSHInteractor")) {
 
-        connect(d->shViewToolBox, SIGNAL(xSliceChanged(int)), interactor, SLOT(onXSlicePropertySet(int)));
-        connect(d->shViewToolBox, SIGNAL(ySliceChanged(int)), interactor, SLOT(onYSlicePropertySet(int)));
-        connect(d->shViewToolBox, SIGNAL(zSliceChanged(int)), interactor, SLOT(onZSlicePropertySet(int)));
+        connect(d->shViewToolBox,SIGNAL(sampleRateChanged(int)),     interactor,SLOT(onSampleRatePropertySet(int)));
+        connect(d->shViewToolBox,SIGNAL(glyphResolutionChanged(int)),interactor,SLOT(onGlyphResolutionPropertySet(int)));
+        connect(d->shViewToolBox,SIGNAL(scalingChanged(double)),     interactor,SLOT(onScalingPropertySet(double)));
 
-        //        connect(d->shViewToolBox, SIGNAL(positionChanged(const QVector3D& , bool )), interactor, SLOT(onPositionChanged(const QVector3D& , bool )));
+        connect(d->shViewToolBox,SIGNAL(xSliceChanged(int)),interactor,SLOT(onXSlicePropertySet(int)));
+        connect(d->shViewToolBox,SIGNAL(ySliceChanged(int)),interactor,SLOT(onYSlicePropertySet(int)));
+        connect(d->shViewToolBox,SIGNAL(zSliceChanged(int)),interactor,SLOT(onZSlicePropertySet(int)));
 
-
-        connect(d->shViewToolBox, SIGNAL(hideShowAxial(bool)), interactor, SLOT(onHideShowAxialPropertySet(bool)));
-        connect(d->shViewToolBox, SIGNAL(hideShowCoronal(bool)), interactor, SLOT(onHideShowCoronalPropertySet(bool)));
-        connect(d->shViewToolBox, SIGNAL(hideShowSagittal(bool)), interactor, SLOT(onHideShowSagittalPropertySet(bool)));
+        connect(d->shViewToolBox,SIGNAL(hideShowAxial(bool)),   interactor,SLOT(onHideShowAxialPropertySet(bool)));
+        connect(d->shViewToolBox,SIGNAL(hideShowCoronal(bool)), interactor,SLOT(onHideShowCoronalPropertySet(bool)));
+        connect(d->shViewToolBox,SIGNAL(hideShowSagittal(bool)),interactor,SLOT(onHideShowSagittalPropertySet(bool)));
 
         // each change triggers and update of the view
         // TODO we need to unify the view->update() as now some updates are done here and some
         // are performed in the 'translate' function of the signal emitted by the toolbox
         // (e.g. onFlipXChanged) ... maybe after dtk is extended to support QVariant properties
-        connect(d->shViewToolBox, SIGNAL(sampleRateChanged(int)), view, SLOT(update(void)));
-//        connect(d->shViewToolBox, SIGNAL(eigenVectorChanged(int)), view, SLOT(update(void)));
-        connect(d->shViewToolBox, SIGNAL(glyphResolutionChanged(int)), view, SLOT(update(void)));
-//        connect(d->shViewToolBox, SIGNAL(reverseBackgroundColor(bool)), view, SLOT(update(void)));
-        connect(d->shViewToolBox, SIGNAL(scalingChanged(double)), view, SLOT(update(void)));
-        connect(d->shViewToolBox, SIGNAL(hideShowAxial(bool)), view, SLOT(update(void)));
-        connect(d->shViewToolBox, SIGNAL(hideShowCoronal(bool)), view, SLOT(update(void)));
-        connect(d->shViewToolBox, SIGNAL(hideShowSagittal(bool)), view, SLOT(update(void)));
+        connect(d->shViewToolBox,SIGNAL(sampleRateChanged(int)),     view,SLOT(update()));
+        connect(d->shViewToolBox,SIGNAL(glyphResolutionChanged(int)),view,SLOT(update()));
+        connect(d->shViewToolBox,SIGNAL(scalingChanged(double)),     view,SLOT(update()));
+        connect(d->shViewToolBox,SIGNAL(hideShowAxial(bool)),        view,SLOT(update()));
+        connect(d->shViewToolBox,SIGNAL(hideShowCoronal(bool)),      view,SLOT(update()));
+        connect(d->shViewToolBox,SIGNAL(hideShowSagittal(bool)),     view,SLOT(update()));
 
-        connect(d->shViewToolBox, SIGNAL(xSliceChanged(int)), view, SLOT(update(void)));
-        connect(d->shViewToolBox, SIGNAL(ySliceChanged(int)), view, SLOT(update(void)));
-        connect(d->shViewToolBox, SIGNAL(zSliceChanged(int)), view, SLOT(update(void)));
+        connect(d->shViewToolBox,SIGNAL(xSliceChanged(int)),view,SLOT(update()));
+        connect(d->shViewToolBox,SIGNAL(ySliceChanged(int)),view,SLOT(update()));
+        connect(d->shViewToolBox,SIGNAL(zSliceChanged(int)),view,SLOT(update()));
 
-
-        connect(view, SIGNAL(positionChanged(const QVector3D&,bool)), interactor, SLOT(onPositionChanged(const QVector3D&,bool)));
+        connect(view,SIGNAL(positionChanged(const QVector3D&,bool)),interactor,SLOT(onPositionChanged(const QVector3D&,bool)));
 
         // updateSHInteractorWithToolboxValues(interactor, d->shViewToolBox);
-	// initSHToolBoxValues();
+        // initSHToolBoxValues();
 
         d->shViewToolBox->updateWithInteractor(view);
     }
-
 }
 
 void medDiffusionWorkspace::updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medTensorViewToolBox* tensorViewToolBox)
@@ -349,8 +341,8 @@ void medDiffusionWorkspace::updateSHInteractorWithToolboxValues(dtkAbstractViewI
     const bool isFlipZ = shViewToolBox->isFlipZ();
     interactor->setProperty("FlipZ", isFlipZ ? "true" : "false");
     
-    const bool isMaxThesis = shViewToolBox->isMaxThesisFunc();
-    interactor->setProperty("MaxThesisFunc", isMaxThesis ? "true" : "false");
+    const bool isEnhanced = shViewToolBox->isEnhanced();
+    interactor->setProperty("Enhanced",isEnhanced ? "true" : "false");
     
     //    int eigenVector = shViewToolBox->eigenVector();
     //    QMetaObject::invokeMethod( interactor, "onEigenVectorPropertySet", Qt::QueuedConnection, Q_ARG( int, eigenVector ) );
@@ -452,7 +444,7 @@ void medDiffusionWorkspace::onTubeModeSelected (bool value)
     }
 }
 
-void medDiffusionWorkspace::onTBDiffusionSuccess(void)
+void medDiffusionWorkspace::onTBDiffusionSuccess()
 {
     foreach (dtkAbstractView *view, d->views) {
         view->setData( d->diffusionToolBox->output(), 0 );
