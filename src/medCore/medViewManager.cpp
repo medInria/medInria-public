@@ -35,6 +35,7 @@ medViewManager *medViewManager::instance(void)
 void medViewManager::insert(const medDataIndex& index, medAbstractView *view)
 {
     d->views[index].prepend (dtkSmartPointer<medAbstractView>(view));
+    emit viewOpened();
 }
 
 void medViewManager::remove(const medDataIndex& index, medAbstractView *view)

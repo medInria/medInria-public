@@ -277,6 +277,8 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
 
     connect (m_applyButton,     SIGNAL(pressed()),
         this, SLOT(onApplyButtonPressed()));
+
+    connect (medViewManager::instance(), SIGNAL(viewOpened()), this, SLOT(updateMouseInteraction()));
 }
 
 AlgorithmPaintToolbox::~AlgorithmPaintToolbox()
@@ -976,6 +978,19 @@ void AlgorithmPaintToolbox::enableButtons( bool value )
     m_clearMaskButton->setEnabled(value);
 }
 
+
+void AlgorithmPaintToolbox::updateMouseInteraction() //To apply the current interaction to a new view
+{
+    if (m_paintState != PaintState::None)
+    {
+        if (m_paintState == PaintState::Wand)
+            m_viewFilter = ( new ClickEventFilter(this->segmentationToolBox(), this) );
+        else 
+            m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
+
+        this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
+    }
+}
 
 } // namespace mseg
 

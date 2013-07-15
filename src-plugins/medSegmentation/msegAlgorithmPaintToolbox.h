@@ -89,6 +89,7 @@ public slots:
 
     void updateStroke(ClickAndMoveEventFilter * filter, medAbstractView * view);
     void updateWandRegion(medAbstractView * view, QVector3D &vec);
+    void updateMouseInteraction();
 
 protected:
     friend class ClickAndMoveEventFilter;
