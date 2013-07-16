@@ -11,16 +11,16 @@
 
 =========================================================================*/
 
-#include "v3dView.h"
-#include "v3dViewFuseInteractor.h"
-#include "v3dViewMeshInteractor.h"
-#include "v3dView4DInteractor.h"
-#include "v3dViewAnnotationInteractor.h"
-#include "v3dViewPlugin.h"
+#include <v3dView.h>
+#include <v3dViewFuseInteractor.h>
+#include <v3dViewMeshInteractor.h>
+#include <v3dView4DInteractor.h>
+#include <v3dViewAnnotationInteractor.h>
+#include <v3dViewPlugin.h>
 #ifndef DISABLE_TTK_DEPENDENT_CODE
-#include "v3dViewFiberInteractor.h"
-#include "v3dViewTensorInteractor.h"
-#include "v3dViewSHInteractor.h"
+#include <v3dViewFiberInteractor.h>
+#include <v3dViewTensorInteractor.h>
+#include <v3dViewSHInteractor.h>
 #endif
 
 #include <dtkLog/dtkLog.h>
