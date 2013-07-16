@@ -19,27 +19,6 @@ project(medInria-plugins)
 ## Setup version numbering
 ## #################################################################
 
-set(${PROJECT_NAME}_VERSION_MAJOR 2 CACHE STRING "${PROJECT_NAME} major
-version number." FORCE)
-set(${PROJECT_NAME}_VERSION_MINOR 0 CACHE STRING "${PROJECT_NAME} minor
-version number." FORCE)
-set(${PROJECT_NAME}_VERSION_BUILD 2 CACHE STRING "${PROJECT_NAME} build
-version number." FORCE)
-set(${PROJECT_NAME}_VERSION_BUGFIX 0 CACHE STRING "${PROJECT_NAME} bug-fix version number." FORCE)
-
-if (${${PROJECT_NAME}_VERSION_BUGFIX} GREATER 0)
-  set(${PROJECT_NAME}_VERSION
-    "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}-${${PROJECT_NAME}_VERSION_BUGFIX}")
-else()
-  set(${PROJECT_NAME}_VERSION
-    "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}.${${PROJECT_NAME}_VERSION_BUILD}")
-endif()
-
-mark_as_advanced(${PROJECT_NAME}_VERSION_MAJOR)
-mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
-mark_as_advanced(${PROJECT_NAME}_VERSION_BUILD)
-mark_as_advanced(${PROJECT_NAME}_VERSION_BUGFIX)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIR})
@@ -50,7 +29,6 @@ include(${dtk_USE_FILE})
 
 # Export medinriq-plugins_DIR variable so that internal project can automatically find it
 set(${PROJECT_NAME}_DIR ${PROJECT_BINARY_DIR} CACHE INTERNAL "")
-
 
 ## #################################################################
 ## Dashboard settings
