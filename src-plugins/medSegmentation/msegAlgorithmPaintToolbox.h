@@ -40,7 +40,6 @@ class medSeedPointAnnotationData;
 
 namespace mseg {
     class ClickAndMoveEventFilter;
-    class ClickEventFilter;
     class SelectDataEventFilter;
 
 struct PaintState {

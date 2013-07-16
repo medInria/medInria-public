@@ -68,35 +68,6 @@ private :
     AlgorithmPaintToolbox *m_cb;
 };
 
-    class ClickEventFilter : public medViewEventFilter
-    {
-    public:
-        ClickEventFilter(medSegmentationSelectorToolBox * controller, AlgorithmPaintToolbox *cb ) :
-        medViewEventFilter(),
-        m_cb(cb)
-        {}
-
-        virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
-        {
-            medAbstractViewCoordinates * coords = view->coordinates();
-
-            mouseEvent->accept();
-
-            if (coords->is2D()) {
-                // Convert mouse click to a 3D point in the image.
-
-                QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
-
-                // handled after release
-                m_cb->updateWandRegion(view, posImage);
-            }
-            return mouseEvent->isAccepted();
-        }
-
-        private :
-        AlgorithmPaintToolbox *m_cb;
-    };
-
 class ClickAndMoveEventFilter : public medViewEventFilter
 {
 public:
@@ -108,16 +79,15 @@ public:
 
     virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
     {
-        if (m_paintState == PaintState::Stroke)
+        if(mouseEvent->button() == Qt::RightButton) // right-click for erasing
         {
-            if(mouseEvent->button() == Qt::RightButton)
-            {
-                m_cb->forcePaintState(PaintState::DeleteStroke);
-            }
-            else if(mouseEvent->button() == Qt::LeftButton)
-            {
-                m_cb->forcePaintState(PaintState::Stroke);
-            }
+            m_cb->forcePaintState(PaintState::DeleteStroke);
+            this->m_state = State::Painting;
+        }
+
+        if (m_paintState == PaintState::Stroke && mouseEvent->button() == Qt::LeftButton)
+        {
+            m_cb->forcePaintState(PaintState::Stroke);
         }
         medAbstractViewCoordinates * coords = view->coordinates();
 
@@ -127,13 +97,17 @@ public:
             // Convert mouse click to a 3D point in the image.
 
             QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
-            this->m_state = State::Painting;
 
-            //Project vector onto plane
-//            dtkAbstractData * viewData = medSegmentationSelectorToolBox::viewData( view );
-            this->m_points.push_back(posImage);
-
-            m_cb->updateStroke( this,view );
+            if (m_paintState != PaintState::Wand)
+            {
+                this->m_state = State::Painting;
+                this->m_points.push_back(posImage);
+                m_cb->updateStroke( this,view );
+            }
+            else
+            {
+                m_cb->updateWandRegion(view, posImage);
+            }
         }
         return mouseEvent->isAccepted();
     }
@@ -426,7 +400,7 @@ void AlgorithmPaintToolbox::onBoundaryStrokePressed()
             return;
         }
         setPaintState(PaintState::Wand);
-        m_viewFilter = ( new ClickEventFilter(this->segmentationToolBox(), this) );
+        m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
         this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
     }
 
