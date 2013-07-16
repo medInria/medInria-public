@@ -154,12 +154,11 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     medInriaLabel2->setPixmap ( medLogo );
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
-    QString aboutText(tr("<br/><br/>"
-                      "medInria is the medical imaging platform developed at "
+    QString aboutText = QString(tr("<br/><br/>"
+                      "medInria %1 is the medical imaging platform developed at "
                       "Inria<br/><br/>"
-                      "<center>Inria, Copyright 2011</center><br/><br/><br/>"
-                      "Version: "));
-    aboutText+= qApp->applicationVersion();
+                      "<center>Inria, Copyright 2013</center>"))
+                      .arg(qApp->applicationVersion());
     aboutTextEdit->setHtml (aboutText);
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
