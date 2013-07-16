@@ -54,6 +54,10 @@ vtkInteractorStyleImageView2D::~vtkInteractorStyleImageView2D()
 //----------------------------------------------------------------------------
 void vtkInteractorStyleImageView2D::OnMouseMove() 
 {
+  int x = this->Interactor->GetEventPosition()[0];
+  int y = this->Interactor->GetEventPosition()[1];
+  this->FindPokedRenderer(x, y);
+
   switch (this->State) 
   {
 	case VTKIS_SLICE_MOVE:
@@ -83,7 +87,9 @@ void vtkInteractorStyleImageView2D::OnMouseMove()
 	this->InvokeEvent(vtkImageView2DCommand::CameraMoveEvent, this);
 	break;
       case VTKIS_NONE:
-	this->DefaultMoveAction();
+       this->RequestedPosition[0] = x;
+       this->RequestedPosition[1] = y;
+       this->InvokeEvent (vtkImageView2DCommand::RequestedPositionEvent, this);
 	break;
       default:
 	this->Superclass::OnMouseMove();
