@@ -74,39 +74,50 @@ public:
     ClickAndMoveEventFilter(medSegmentationSelectorToolBox * controller, AlgorithmPaintToolbox *cb ) :
         medViewEventFilter(),
         m_cb(cb),
-        m_paintState(m_cb->paintState())
+        m_paintState(PaintState::None),
+        m_lastPaintState(PaintState::None)
         {}
 
     virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
     {
+        m_paintState = m_cb->paintState();
+
+        if ( this->m_paintState == PaintState::DeleteStroke )
+        {
+            m_cb->forcePaintState(m_lastPaintState);
+            m_paintState = m_lastPaintState;
+        }
+
         if(mouseEvent->button() == Qt::RightButton) // right-click for erasing
         {
+            m_lastPaintState = m_cb->paintState();
             m_cb->forcePaintState(PaintState::DeleteStroke);
-            this->m_state = State::Painting;
+            m_paintState = m_cb->paintState(); //update
         }
 
         if (m_paintState == PaintState::Stroke && mouseEvent->button() == Qt::LeftButton)
         {
             m_cb->forcePaintState(PaintState::Stroke);
+            m_paintState = m_cb->paintState(); //update paintState
         }
-        medAbstractViewCoordinates * coords = view->coordinates();
 
+        medAbstractViewCoordinates * coords = view->coordinates();
         mouseEvent->accept();
 
         if (coords->is2D()) {
+            
             // Convert mouse click to a 3D point in the image.
-
             QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
 
             if (m_paintState != PaintState::Wand)
             {
-                this->m_state = State::Painting;
                 this->m_points.push_back(posImage);
                 m_cb->updateStroke( this,view );
             }
             else
             {
                 m_cb->updateWandRegion(view, posImage);
+                m_paintState = PaintState::None; //Wand operation is over
             }
         }
         return mouseEvent->isAccepted();
@@ -114,15 +125,14 @@ public:
 
     virtual bool mouseMoveEvent( medAbstractView *view, QMouseEvent *mouseEvent )
     {
-        if ( this->m_state != State::Painting )
+        if ( this->m_paintState == PaintState::None )
             return false;
 
         medAbstractViewCoordinates * coords = view->coordinates();
         mouseEvent->accept();
 
-        if (coords->is2D()) {
-            // Convert mouse click to a 3D point in the image.
-
+        if (coords->is2D())
+        {
             QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
             //Project vector onto plane
             this->m_points.push_back(posImage);
@@ -133,28 +143,21 @@ public:
 
     virtual bool mouseReleaseEvent( medAbstractView *view, QMouseEvent *mouseEvent )
     {
-        if ( this->m_state == State::Painting )
-        {
-            this->m_state = State::Done;
-            m_cb->updateStroke(this,view);
-            this->m_points.clear();
-            return true;
-        }
-        return false;
+        if ( this->m_paintState == PaintState::None )
+            return false;
+        m_paintState = PaintState::None; //Painting is done
+        m_cb->updateStroke(this,view);
+        this->m_points.clear();
+        return true;
     }
-    struct State {
-        enum E { Start, Painting, Done };
-    };
-
-    State::E state() const { return m_state; }
 
     const std::vector<QVector3D> & points() const { return m_points; }
 
 private :
     AlgorithmPaintToolbox *m_cb;
     std::vector<QVector3D> m_points;
-    State::E m_state;
     PaintState::E m_paintState;
+    PaintState::E m_lastPaintState;
 };
 
 AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
