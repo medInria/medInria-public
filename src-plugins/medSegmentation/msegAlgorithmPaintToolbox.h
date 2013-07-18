@@ -77,7 +77,6 @@ public:
 public slots:
     void onStrokePressed();
     void onMagicWandPressed();
-    void onRemoveStrokePressed();
     void onBoundaryStrokePressed();
 
     void onSetDataPressed();
@@ -116,7 +115,6 @@ private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
 
     QPushButton *m_strokeButton;
-    QPushButton *m_removeStrokeButton;
     QPushButton *m_boundaryStrokeButton;
     QPushButton *m_labelColorWidget;
 

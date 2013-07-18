@@ -190,21 +190,17 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     dataButtonsLayout->addWidget( m_clearMaskButton );
     layout->addLayout(dataButtonsLayout);
 
-    m_strokeButton = new QPushButton( tr("Paint") , displayWidget);
-    m_strokeButton->setToolTip(tr("Start painting the ROI with specified label."));
+    m_strokeButton = new QPushButton( tr("Paint / Erase") , displayWidget);
+    m_strokeButton->setToolTip(tr("Left-click: Start painting with specified label.\nRight-click: Erase painted voxels."));
 
-    m_removeStrokeButton = new QPushButton( tr("Erase") , displayWidget);
-    m_removeStrokeButton->setToolTip(tr("Use an eraser on painted voxels."));
     m_boundaryStrokeButton = new QPushButton( tr("Boundary") , displayWidget);
     m_boundaryStrokeButton->setToolTip(tr("Select a Brush that paints boundaries between in and out (forces labels to 1 and 2)"));
 
     m_strokeButton->setCheckable(true);
-    m_removeStrokeButton->setCheckable(true);
     m_boundaryStrokeButton->setCheckable(true);
 
     QHBoxLayout * addRemoveButtonLayout = new QHBoxLayout();
     addRemoveButtonLayout->addWidget( m_strokeButton );
-    addRemoveButtonLayout->addWidget( m_removeStrokeButton );
     addRemoveButtonLayout->addWidget( m_boundaryStrokeButton );
     layout->addLayout( addRemoveButtonLayout );
 
@@ -301,8 +297,6 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
 
     connect (m_strokeButton,     SIGNAL(pressed()),
         this, SLOT(onStrokePressed ()));
-    connect (m_removeStrokeButton,     SIGNAL(pressed()),
-        this, SLOT(onRemoveStrokePressed ()));
     connect (m_boundaryStrokeButton,     SIGNAL(pressed()),
         this, SLOT(onBoundaryStrokePressed ()));
     connect (m_magicWandButton, SIGNAL(pressed()),
@@ -370,17 +364,6 @@ void AlgorithmPaintToolbox::onStrokePressed()
     this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
 }
 
-void AlgorithmPaintToolbox::onRemoveStrokePressed()
-{
-    if ( this->m_removeStrokeButton->isChecked() ) {
-        this->m_viewFilter->removeFromAllViews();
-        m_paintState = (PaintState::None);
-        return;
-    }
-    setPaintState(PaintState::DeleteStroke);
-    m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
-    this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
-}
 
 void AlgorithmPaintToolbox::onBoundaryStrokePressed()
 {
@@ -395,17 +378,17 @@ void AlgorithmPaintToolbox::onBoundaryStrokePressed()
 }
 
 
-    void AlgorithmPaintToolbox::onMagicWandPressed()
-    {
-        if ( this->m_magicWandButton->isChecked() ) {
-            this->m_viewFilter->removeFromAllViews();
-            m_paintState = (PaintState::None);
-            return;
-        }
-        setPaintState(PaintState::Wand);
-        m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
-        this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
+void AlgorithmPaintToolbox::onMagicWandPressed()
+{
+    if ( this->m_magicWandButton->isChecked() ) {
+        this->m_viewFilter->removeFromAllViews();
+        m_paintState = (PaintState::None);
+        return;
     }
+    setPaintState(PaintState::Wand);
+    m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
+    this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
+}
 
 
 void AlgorithmPaintToolbox::onApplyButtonPressed()
@@ -1035,7 +1018,6 @@ void AlgorithmPaintToolbox::updateFromGuiItems()
 void AlgorithmPaintToolbox::enableButtons( bool value )
 {
     m_strokeButton->setEnabled(value);
-    m_removeStrokeButton->setEnabled(value);
     m_boundaryStrokeButton->setEnabled(value);
     m_magicWandButton->setEnabled(value);
     m_applyButton->setEnabled(value);
@@ -1053,8 +1035,6 @@ void AlgorithmPaintToolbox::setPaintState( PaintState::E value )
             m_magicWandButton->setChecked(false); break;
         case PaintState::Stroke:
             m_strokeButton->setChecked(false); break;
-    case PaintState::DeleteStroke:
-        m_removeStrokeButton->setChecked(false); break;
     case PaintState::BoundaryStroke:
         m_boundaryStrokeButton->setChecked(false); break;
     default:
