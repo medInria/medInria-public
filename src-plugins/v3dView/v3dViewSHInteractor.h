@@ -1,9 +1,20 @@
-#ifndef V3DVIEWSHINTERACTOR_H
-#define V3DVIEWSHINTERACTOR_H
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+#pragma once
 
 #include <medCore/medSHAbstractViewInteractor.h>
-
-#include "v3dViewPluginExport.h"
+#include <v3dViewPluginExport.h>
 
 class v3dViewSHInteractorPrivate;
 
@@ -28,20 +39,20 @@ public:
     v3dViewSHInteractor();
     virtual ~v3dViewSHInteractor();
 
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
-    virtual QStringList handled(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
+    virtual QStringList handled() const;
 
-    static bool registered(void);
+    static bool registered();
 
     virtual void setData(dtkAbstractData *data);
-    dtkAbstractData *data (void);
+    dtkAbstractData *data ();
 
     virtual void setView(dtkAbstractView *view);
-    dtkAbstractView *view (void);
+    dtkAbstractView *view ();
 
-    virtual void enable(void);
-    virtual void disable(void);
+    virtual void enable();
+    virtual void disable();
 
     /** get the image size it is used to set med gui slider appropiate size*/
     virtual void imageSize(int* range);
@@ -112,6 +123,4 @@ private:
     v3dViewSHInteractorPrivate* d;
 };
 
-dtkAbstractViewInteractor *createV3dViewSHInteractor(void);
-
-#endif
+dtkAbstractViewInteractor *createV3dViewSHInteractor();

@@ -18,8 +18,8 @@
 #include <vtkImageData.h>
 #include <vtkPolyData.h>
 
-#include "vtkSphericalHarmonicManager.h"
-#include "itkSphericalHarmonicITKToVTKFilter.h"
+#include <vtkSphericalHarmonicManager.h>
+#include <itkSphericalHarmonicITKToVTKFilter.h>
 
 #include <itkVectorImage.h>
 #include <itkImageFileReader.h>

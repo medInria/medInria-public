@@ -1,24 +1,33 @@
-#ifndef ITKNRRDDATASHIMAGEREADER_H
-#define ITKNRRDDATASHIMAGEREADER_H
+/*=========================================================================
 
-#include "itkDataSHImageReaderBase.h"
+ medInria
 
-#include "itkDataSHImageReaderPluginExport.h"
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
 
-class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkNrrdDataSHImageReader : public itkDataSHImageReaderBase
+=========================================================================*/
+
+#pragma once
+
+#include <itkDataSHImageReaderBase.h>
+#include <itkDataSHImageReaderPluginExport.h>
+
+class ITKDATASHIMAGEREADERPLUGIN_EXPORT itkNrrdDataSHImageReader: public itkDataSHImageReaderBase
 {
     Q_OBJECT
 	
 public:
-    itkNrrdDataSHImageReader(void);
-    virtual ~itkNrrdDataSHImageReader(void);
+    itkNrrdDataSHImageReader();
+    virtual ~itkNrrdDataSHImageReader();
 	
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
 	
-    static bool registered(void);	
+    static bool registered();	
 };
 
-dtkAbstractDataReader *createItkNrrdDataSHImageReader(void);
-
-#endif
+dtkAbstractDataReader *createItkNrrdDataSHImageReader();

@@ -1,4 +1,17 @@
-#include "itkDataSHImageWriterBase.h"
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+#include <itkDataSHImageWriterBase.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -10,22 +23,22 @@
 #include <itkVectorImage.h>
 #include <itkVector.h>
 
-itkDataSHImageWriterBase::itkDataSHImageWriterBase(void) : dtkAbstractDataWriter()
+itkDataSHImageWriterBase::itkDataSHImageWriterBase(): dtkAbstractDataWriter()
 {
     this->io = 0;
 }
 
-itkDataSHImageWriterBase::~itkDataSHImageWriterBase(void)
+itkDataSHImageWriterBase::~itkDataSHImageWriterBase()
 {
 }
 
-QStringList itkDataSHImageWriterBase::handled(void) const
+QStringList itkDataSHImageWriterBase::handled() const
 {
     return QStringList() << "itkDataSHImageDouble3"
                          << "itkDataSHImageFloat3";
 }
 
-QStringList itkDataSHImageWriterBase::s_handled(void)
+QStringList itkDataSHImageWriterBase::s_handled()
 {
     return QStringList() << "itkDataSHImageDouble3"
                          << "itkDataSHImageFloat3";

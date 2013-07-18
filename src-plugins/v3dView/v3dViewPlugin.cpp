@@ -98,13 +98,15 @@ QStringList v3dViewPlugin::authors() const
 QStringList v3dViewPlugin::contributors() const
 {
     QStringList list;
-    list <<  "Nicolas Toussaint"
-          << "Stephan Schmitt"
-          << "John Stark"
-          << QString::fromUtf8("Benoît Bleuzé")
-          << "Jaime Garcia"
-          << "Fatih Arslan"
-          << "Sergio Medina";
+    list << "Nicolas Toussaint"
+         << "Stephan Schmitt"
+         << "John Stark"
+         << QString::fromUtf8("Benoît Bleuzé")
+         << "Jaime Garcia"
+         << "Fatih Arslan"
+         << QString::fromUtf8("Théo Papadopoulo")
+         << "Julien Wintz"
+         << "Sergio Medina";
     return list;
 }
 

@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include <v3dViewSHInteractor.h>
 
 #include <dtkCore/dtkAbstractData.h>
@@ -38,10 +51,6 @@ public:
         filter = itk::SphericalHarmonicITKToVTKFilter<SH_IMAGE>::New();
 
         filter->SetInput(dataset);
-        filter->DebugOn();
-
-        // typename SH_IMAGE::DirectionType directions = dataset->GetDirection();
-        // typename SH_IMAGE::PointType i_origin = dataset->GetOrigin();
 
         //  This line generates the vtkSHs, otherwise is not generated, even if the next filter
         //  in the pipeline is connected and Update() is called
@@ -58,9 +67,6 @@ public:
         const int number = dataset->GetNumberOfComponentsPerPixel();
         const int Order  = -1.5+std::sqrt((float)(0.25+2*number));
         manager->SetOrder(Order);
-
-        // TODO this should not be here once the toolbox is coded
-        //            manager->ResetPosition();
 
         manager->Update();
         data = d;
@@ -214,26 +220,9 @@ void v3dViewSHInteractor::onSampleRatePropertySet(int sampleRate) {
     d->manager->SetSampleRate(sampleRate,sampleRate,sampleRate);
 }
 
-//void v3dViewSHInteractor::onEigenVectorPropertySet(int eigenVector)
-//{
-//    // we need to substract 1 because the manager receives an index
-////    d->manager->SetColorModeToEigenvector(eigenVector-1);
-//}
-
 void v3dViewSHInteractor::onGlyphResolutionPropertySet(int glyphResolution) {
     d->manager->SetGlyphResolution(glyphResolution);
 }
-
-//void v3dViewSHInteractor::onReverseBackgroundColorPropertySet(bool isWhite)
-//{
-//    if (!d->view)
-//        return;
-
-//    if(isWhite)
-//        d->view->setBackgroundColor(1.0,1.0,1.0);
-//    else
-//        d->view->setBackgroundColor(0.0,0.0,0.0);
-//}
 
 void v3dViewSHInteractor::onScalingPropertySet(double scale) {
     d->manager->SetGlyphScale((float)scale);

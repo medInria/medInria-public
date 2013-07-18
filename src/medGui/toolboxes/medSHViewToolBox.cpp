@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include <cmath>
 #include <medSHViewToolBox.h>
 #include <medCore/medSHAbstractViewInteractor.h>
@@ -261,20 +274,6 @@ void medSHViewToolBox::update(dtkAbstractView *view) {
     // the SH view toolbox is expected to control all SHs
     // i.e. is general to all SHs, hence we do not update its values
     // for every view
-
-//    //dtkAbstractViewInteractor* interactor = view->interactor("SH");
-//    dtkAbstractViewInteractor* interactor = view->interactor("v3dViewSHInteractor");
-//
-//    if(interactor)
-//    {
-//        QString glyphShape = interactor->property("GlyphShape");
-//
-//        int index = d->glyphShapes.indexOf(glyphShape);
-//
-//        d->glyphShape->blockSignals(true);
-//        d->glyphShape->setCurrentIndex(index);
-//        d->glyphShape->blockSignals(false);
-//    }
 }
 
 void medSHViewToolBox::updateWithInteractor(dtkAbstractView *view) {

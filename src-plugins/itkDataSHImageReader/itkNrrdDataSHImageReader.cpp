@@ -1,27 +1,39 @@
-#include "itkNrrdDataSHImageReader.h"
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+#include <itkNrrdDataSHImageReader.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkNrrdImageIO.h>
 
-itkNrrdDataSHImageReader::itkNrrdDataSHImageReader(void) : itkDataSHImageReaderBase()
+itkNrrdDataSHImageReader::itkNrrdDataSHImageReader() : itkDataSHImageReaderBase()
 {
     this->io = itk::NrrdImageIO::New();
 }
 
-itkNrrdDataSHImageReader::~itkNrrdDataSHImageReader(void)
+itkNrrdDataSHImageReader::~itkNrrdDataSHImageReader()
 {
 }
 
-
-bool itkNrrdDataSHImageReader::registered(void)
+bool itkNrrdDataSHImageReader::registered()
 {
   return dtkAbstractDataFactory::instance()->registerDataReaderType("itkNrrdDataSHImageReader", itkDataSHImageReaderBase::s_handled(),
                                                                     createItkNrrdDataSHImageReader);
 }
 
-QString itkNrrdDataSHImageReader::description(void) const
+QString itkNrrdDataSHImageReader::description() const
 {
     return tr("itk Nrrd SH reader");
 }
@@ -35,7 +47,7 @@ QString itkNrrdDataSHImageReader::identifier() const
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataReader *createItkNrrdDataSHImageReader(void)
+dtkAbstractDataReader *createItkNrrdDataSHImageReader()
 {
     return new itkNrrdDataSHImageReader;
 }

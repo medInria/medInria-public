@@ -27,7 +27,7 @@ set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
   toolboxes/medSegmentationAbstractToolBox.h
   toolboxes/medSegmentationSelectorToolBox.h
   toolboxes/medToolBox.h
-  toolboxes/medSliderSpinboxPair.h
+  commonWidgets/medSliderSpinboxPair.h
 )
 
 set(${PROJECT_NAME}_DEVEL_HEADERS

@@ -1,24 +1,33 @@
-#ifndef ITKMETADATASHIMAGEWRITER_H_
-#define ITKMETADATASHIMAGEWRITER_H_
+/*=========================================================================
 
-#include "itkDataSHImageWriterBase.h"
+ medInria
 
-#include "itkDataSHImageWriterPluginExport.h"
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+#pragma once
+
+#include <itkDataSHImageWriterBase.h>
+#include <itkDataSHImageWriterPluginExport.h>
 
 class ITKDATASHIMAGEWRITERPLUGIN_EXPORT itkMetaDataSHImageWriter : public itkDataSHImageWriterBase
 {
     Q_OBJECT
 
 public:
-    itkMetaDataSHImageWriter(void);
-    virtual ~itkMetaDataSHImageWriter(void);
+    itkMetaDataSHImageWriter();
+    virtual ~itkMetaDataSHImageWriter();
 
-    virtual QString description(void) const;
-    virtual QString identifier(void) const;
+    virtual QString description() const;
+    virtual QString identifier() const;
 
-    static bool registered(void);
+    static bool registered();
 };
 
-dtkAbstractDataWriter *createItkMetaDataSHImageWriter(void);
-
-#endif /* ITKMETADATASHIMAGEWRITER_H_ */
+dtkAbstractDataWriter *createItkMetaDataSHImageWriter();

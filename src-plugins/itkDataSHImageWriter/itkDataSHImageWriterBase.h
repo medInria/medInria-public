@@ -1,22 +1,34 @@
-#ifndef ITKDATASHIMAGEWRITERBASE_H
-#define ITKDATASHIMAGEWRITERBASE_H
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+ 
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
+#pragma once
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
-#include "itkDataSHImageWriterPluginExport.h"
-#include "itkImageIOBase.h"
+#include <itkDataSHImageWriterPluginExport.h>
+#include <itkImageIOBase.h>
 
 class ITKDATASHIMAGEWRITERPLUGIN_EXPORT itkDataSHImageWriterBase : public dtkAbstractDataWriter
 {
     Q_OBJECT
 
 public:
-                        itkDataSHImageWriterBase(void);
-    virtual ~itkDataSHImageWriterBase(void);
+                        itkDataSHImageWriterBase();
+    virtual ~itkDataSHImageWriterBase();
 
-    virtual QStringList handled(void) const;
+    virtual QStringList handled() const;
 
-    static QStringList s_handled (void);
+    static QStringList s_handled();
 
 public slots:
 	bool write    (const QString& path);
@@ -29,5 +41,3 @@ private:
 protected:
     itk::ImageIOBase::Pointer io;
 };
-
-#endif // ITKDATASHIMAGEWRITERBASE_H
