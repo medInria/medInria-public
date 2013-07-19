@@ -441,6 +441,8 @@ void vtkSphericalHarmonicSource::UpdateSphericalHarmonicSource() {
             break;
     }
     PhiThetaShellDirections = PhiThetaDirection;
+
+    Modified();
 }
 
 void

@@ -233,10 +233,7 @@ void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
 
         connect(view,SIGNAL(positionChanged(const QVector3D&,bool)),interactor,SLOT(onPositionChanged(const QVector3D&,bool)));
 
-        // updateSHInteractorWithToolboxValues(interactor, d->shViewToolBox);
-        // initSHToolBoxValues();
-
-        d->shViewToolBox->updateWithInteractor(view);
+         updateSHInteractorWithToolboxValues(interactor, d->shViewToolBox);
     }
 }
 
@@ -342,11 +339,8 @@ void medDiffusionWorkspace::updateSHInteractorWithToolboxValues(dtkAbstractViewI
     interactor->setProperty("FlipZ", isFlipZ ? "true" : "false");
     
     const bool isEnhanced = shViewToolBox->isEnhanced();
-    interactor->setProperty("Enhanced",isEnhanced ? "true" : "false");
-    
-    //    int eigenVector = shViewToolBox->eigenVector();
-    //    QMetaObject::invokeMethod( interactor, "onEigenVectorPropertySet", Qt::QueuedConnection, Q_ARG( int, eigenVector ) );
-    
+    interactor->setProperty("Normalization",isEnhanced ? "true" : "false");
+
     const int glyphResolution = shViewToolBox->glyphResolution();
     QMetaObject::invokeMethod( interactor, "onGlyphResolutionPropertySet", Qt::QueuedConnection, Q_ARG( int, glyphResolution ) );
     
