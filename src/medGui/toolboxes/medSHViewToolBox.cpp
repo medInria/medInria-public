@@ -161,7 +161,7 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
     layout->addRow(tr("Coronal Slice:"),d->SliceControl[1]);
     layout->addRow(tr("Sagital Slice:"),d->SliceControl[0]);
 
-    this->setTitle("Spherical Harmonics View");
+    this->setTitle("Spherical Harmonics View (Experimental)");
     this->addWidget(displayWidget);
 
     //enable about plugin. Constructor called after the plugin has been registered, go ahead call it.
