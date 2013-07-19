@@ -11,8 +11,6 @@
 
 =========================================================================*/
 
-extern "C" void STOP() { }
-
 #include <vtkRenderingAddOn/vtkViewImage2D.h>
 
 #include "vtkInteractorObserver.h"
@@ -543,14 +541,10 @@ void vtkViewImage2D::SetZSlice(int p_zslice)
 
 void vtkViewImage2D::UpdatePosition ()
 {
-  STOP();
-  std::cerr << "HERE" << std::endl;
   if( !this->GetImage() )
   {
     return;
   }
-
-  std::cerr << "THERE" << std::endl;
 
   double x=0;
   double y=0;
@@ -610,7 +604,6 @@ void vtkViewImage2D::UpdatePosition ()
   
   int dims[3];
   this->GetImage()->GetDimensions (dims);
-  std::cerr << "AAAA" << dims[0] << ' ' << dims[1] << ' ' << dims[2] << std::endl;
   
   std::ostringstream os;
   std::ostringstream os2;

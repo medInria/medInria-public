@@ -37,6 +37,11 @@ public:
     virtual QStringList tags() const;
     virtual QStringList types() const;
 
+     virtual QString version() const;
+     virtual QString contact(void) const;
+     virtual QStringList authors() const;
+     virtual QStringList contributors() const;
+
 private:
      itkDataSHImageWriterPluginPrivate *d;
 };

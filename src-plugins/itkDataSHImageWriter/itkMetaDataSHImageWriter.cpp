@@ -30,25 +30,6 @@ bool itkMetaDataSHImageWriter::registered() {
                                                           createItkMetaDataSHImageWriter);
 }
 
-QString itkDataSHImageWriterPlugin::contact() const {
-    return QString::fromUtf8("Théo Papadopoulo");
-}
-
-QStringList itkDataSHImageWriterPlugin::authors() const {
-    QStringList list;
-    list << QString::fromUtf8("Jaime Garcia Guevara");
-    return list;
-}
-
-QStringList itkDataSHImageWriterPlugin::contributors() const {
-    QStringList list;
-    list << QString::fromUtf8("Théo Papadopoulo");
-    return list;
-}
-
-QString itkDataSHImageWriterPlugin::version() const {
-    return ITKDATASHIMAGEWRITEADERPLUGIN_VERSION;
-}
 
 QString itkMetaDataSHImageWriter::description() const {
     return tr("itk MetaData SH Image Writer");

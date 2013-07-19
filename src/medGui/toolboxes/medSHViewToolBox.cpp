@@ -15,7 +15,8 @@
 #include <medSHViewToolBox.h>
 #include <medCore/medSHAbstractViewInteractor.h>
 #include <dtkCore/dtkAbstractView.h>
-#include <medGui/toolboxes/medSliderSpinboxPair.h>
+#include <medGui/commonWidgets/medSliderSpinboxPair.h>
+#include <medPluginManager.h>
 
 class medSHViewToolBoxPrivate {
 public:
@@ -162,6 +163,15 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
 
     this->setTitle("Spherical Harmonics View");
     this->addWidget(displayWidget);
+
+    //enable about plugin. Constructor called after the plugin has been registered, go ahead call it.
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin("itkDataSHImagePlugin");
+    if(plugin)
+    {
+      setAboutPluginButton(plugin);
+      setAboutPluginVisibility(true);
+    }
 }
 
 medSHViewToolBox::~medSHViewToolBox() {
@@ -287,7 +297,6 @@ void medSHViewToolBox::updateWithInteractor(dtkAbstractView *view) {
         for (unsigned i=0;i<3;++i) {
             const double sz = imSize[i];
             d->SliceControl[i]->setMaximum(imSize[i]-1);
-            //d->SliceControl[i]->setPageStep(ceil(sz/10));
             d->SliceControl[i]->setValue(floor(sz/2));
         }
     }

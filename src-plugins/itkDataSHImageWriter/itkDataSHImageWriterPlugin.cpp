@@ -75,4 +75,23 @@ QStringList itkDataSHImageWriterPlugin::types() const
     return QStringList() << "itkMetaDataSHImageWriter";
 }
 
+QString itkDataSHImageWriterPlugin::contact() const {
+    return QString::fromUtf8("Théo Papadopoulo");
+}
+
+QStringList itkDataSHImageWriterPlugin::authors() const {
+    QStringList list;
+    list << QString::fromUtf8("Jaime Garcia Guevara");
+    return list;
+}
+
+QStringList itkDataSHImageWriterPlugin::contributors() const {
+    QStringList list;
+    list << QString::fromUtf8("Théo Papadopoulo");
+    return list;
+}
+
+QString itkDataSHImageWriterPlugin::version() const {
+    return ITKDATASHIMAGEWRITERPLUGIN_VERSION;
+}
 Q_EXPORT_PLUGIN2(itkDataSHImageWriterPlugin, itkDataSHImageWriterPlugin)

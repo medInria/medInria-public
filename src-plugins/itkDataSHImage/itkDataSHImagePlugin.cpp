@@ -61,7 +61,7 @@ QString itkDataSHImagePlugin::name() const {
 }
 
 QString itkDataSHImagePlugin::contact() const {
-    return QString::fromUtf8("Théo Papadopoulo");
+    return QString::fromUtf8("Théo Papadopoulo <Theodore.Papadopoulo@inria.fr>");
 }
 
 QStringList itkDataSHImagePlugin::authors() const {
@@ -81,7 +81,7 @@ QString itkDataSHImagePlugin::version() const {
 }
 
 QString itkDataSHImagePlugin::description() const {
-    return "Handle ITK SH image types";
+    return "Handle ITK SH images and their visualization. <br/> See  <a href=\"http://dx.doi.org/10.1002/mrm.21277 \">http://dx.doi.org/10.1002/mrm.21277 </a>.";
 }
 
 QStringList itkDataSHImagePlugin::tags() const {
