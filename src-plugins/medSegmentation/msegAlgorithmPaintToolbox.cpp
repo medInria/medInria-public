@@ -68,75 +68,71 @@ private :
     AlgorithmPaintToolbox *m_cb;
 };
 
-    class ClickEventFilter : public medViewEventFilter
-    {
-    public:
-        ClickEventFilter(medSegmentationSelectorToolBox * controller, AlgorithmPaintToolbox *cb ) :
-        medViewEventFilter(),
-        m_cb(cb)
-        {}
-
-        virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
-        {
-            medAbstractViewCoordinates * coords = view->coordinates();
-
-            mouseEvent->accept();
-
-            if (coords->is2D()) {
-                // Convert mouse click to a 3D point in the image.
-
-                QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
-
-                // handled after release
-                m_cb->updateWandRegion(view, posImage);
-            }
-            return mouseEvent->isAccepted();
-        }
-
-        private :
-        AlgorithmPaintToolbox *m_cb;
-    };
-
 class ClickAndMoveEventFilter : public medViewEventFilter
 {
 public:
     ClickAndMoveEventFilter(medSegmentationSelectorToolBox * controller, AlgorithmPaintToolbox *cb ) :
         medViewEventFilter(),
-        m_cb(cb)
+        m_cb(cb),
+        m_paintState(PaintState::None),
+        m_lastPaintState(PaintState::None)
         {}
 
     virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
     {
-        medAbstractViewCoordinates * coords = view->coordinates();
+        m_paintState = m_cb->paintState();
 
+        if ( this->m_paintState == PaintState::DeleteStroke )
+        {
+            m_cb->setPaintState(m_lastPaintState);
+            m_paintState = m_lastPaintState;
+        }
+
+        if(mouseEvent->button() == Qt::RightButton) // right-click for erasing
+        {
+            m_lastPaintState = m_cb->paintState();
+            m_cb->setPaintState(PaintState::DeleteStroke);
+            m_paintState = m_cb->paintState(); //update
+        }
+
+        if (m_paintState == PaintState::Stroke && mouseEvent->button() == Qt::LeftButton)
+        {
+            m_cb->setPaintState(PaintState::Stroke);
+            m_paintState = m_cb->paintState(); //update paintState
+        }
+
+        medAbstractViewCoordinates * coords = view->coordinates();
         mouseEvent->accept();
 
         if (coords->is2D()) {
+            
             // Convert mouse click to a 3D point in the image.
-
             QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
-            this->m_state = State::Painting;
 
-            //Project vector onto plane
-//            dtkAbstractData * viewData = medSegmentationSelectorToolBox::viewData( view );
-            this->m_points.push_back(posImage);
-
-            m_cb->updateStroke( this,view );
+            if (m_paintState != PaintState::Wand)
+            {
+                this->m_points.push_back(posImage);
+                m_cb->updateStroke( this,view );
+            }
+            else
+            {
+                m_cb->updateWandRegion(view, posImage);
+                m_paintState = PaintState::None; //Wand operation is over
+            }
         }
         return mouseEvent->isAccepted();
     }
 
     virtual bool mouseMoveEvent( medAbstractView *view, QMouseEvent *mouseEvent )
     {
-        if ( this->m_state != State::Painting )
+        if ( this->m_paintState == PaintState::None )
             return false;
 
         medAbstractViewCoordinates * coords = view->coordinates();
         mouseEvent->accept();
 
-        if (coords->is2D()) {
-            // Convert mouse click to a 3D point in the image.
-
+        if (coords->is2D())
+        {
             QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
             //Project vector onto plane
             this->m_points.push_back(posImage);
@@ -147,27 +143,21 @@ public:
 
     virtual bool mouseReleaseEvent( medAbstractView *view, QMouseEvent *mouseEvent )
     {
-        if ( this->m_state == State::Painting )
-        {
-            this->m_state = State::Done;
-            m_cb->updateStroke(this,view);
-            this->m_points.clear();
-            return true;
-        }
-        return false;
+        if ( this->m_paintState == PaintState::None )
+            return false;
+        m_paintState = PaintState::None; //Painting is done
+        m_cb->updateStroke(this,view);
+        this->m_points.clear();
+        return true;
     }
-    struct State {
-        enum E { Start, Painting, Done };
-    };
-
-    State::E state() const { return m_state; }
 
     const std::vector<QVector3D> & points() const { return m_points; }
 
 private :
     AlgorithmPaintToolbox *m_cb;
     std::vector<QVector3D> m_points;
-    State::E m_state;
+    PaintState::E m_paintState;
+    PaintState::E m_lastPaintState;
 };
 
 AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
@@ -200,21 +190,17 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     dataButtonsLayout->addWidget( m_clearMaskButton );
     layout->addLayout(dataButtonsLayout);
 
-    m_strokeButton = new QPushButton( tr("Paint") , displayWidget);
-    m_strokeButton->setToolTip(tr("Start painting the ROI with specified label."));
+    m_strokeButton = new QPushButton( tr("Paint / Erase") , displayWidget);
+    m_strokeButton->setToolTip(tr("Left-click: Start painting with specified label.\nRight-click: Erase painted voxels."));
 
-    m_removeStrokeButton = new QPushButton( tr("Erase") , displayWidget);
-    m_removeStrokeButton->setToolTip(tr("Use an eraser on painted voxels."));
     m_boundaryStrokeButton = new QPushButton( tr("Boundary") , displayWidget);
     m_boundaryStrokeButton->setToolTip(tr("Select a Brush that paints boundaries between in and out (forces labels to 1 and 2)"));
 
     m_strokeButton->setCheckable(true);
-    m_removeStrokeButton->setCheckable(true);
     m_boundaryStrokeButton->setCheckable(true);
 
     QHBoxLayout * addRemoveButtonLayout = new QHBoxLayout();
     addRemoveButtonLayout->addWidget( m_strokeButton );
-    addRemoveButtonLayout->addWidget( m_removeStrokeButton );
     addRemoveButtonLayout->addWidget( m_boundaryStrokeButton );
     layout->addLayout( addRemoveButtonLayout );
 
@@ -248,7 +234,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_brushSizeSlider = new QSlider(Qt::Horizontal, displayWidget);
     m_brushSizeSlider->setToolTip(tr("Changes the brush radius."));
     m_brushSizeSlider->setValue(this->m_strokeRadius);
-    m_brushSizeSlider->setMinimum(0);
+    m_brushSizeSlider->setRange(1, 10);
     m_brushSizeSpinBox = new QSpinBox(displayWidget);
     m_brushSizeSpinBox->setToolTip(tr("Changes the brush radius."));
     m_brushSizeSpinBox->setValue(this->m_strokeRadius);
@@ -311,8 +297,6 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
 
     connect (m_strokeButton,     SIGNAL(pressed()),
         this, SLOT(onStrokePressed ()));
-    connect (m_removeStrokeButton,     SIGNAL(pressed()),
-        this, SLOT(onRemoveStrokePressed ()));
     connect (m_boundaryStrokeButton,     SIGNAL(pressed()),
         this, SLOT(onBoundaryStrokePressed ()));
     connect (m_magicWandButton, SIGNAL(pressed()),
@@ -376,21 +360,12 @@ void AlgorithmPaintToolbox::onStrokePressed()
         return;
     }
     setPaintState(PaintState::Stroke);
+    this->m_boundaryStrokeButton->setChecked(false);
+    this->m_magicWandButton->setChecked(false);
     m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
     this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
 }
 
-void AlgorithmPaintToolbox::onRemoveStrokePressed()
-{
-    if ( this->m_removeStrokeButton->isChecked() ) {
-        this->m_viewFilter->removeFromAllViews();
-        m_paintState = (PaintState::None);
-        return;
-    }
-    setPaintState(PaintState::DeleteStroke);
-    m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
-    this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
-}
 
 void AlgorithmPaintToolbox::onBoundaryStrokePressed()
 {
@@ -400,22 +375,26 @@ void AlgorithmPaintToolbox::onBoundaryStrokePressed()
         return;
     }
     setPaintState(PaintState::BoundaryStroke);
+    this->m_strokeButton->setChecked(false);
+    this->m_magicWandButton->setChecked(false);
     m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
     this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
 }
 
 
-    void AlgorithmPaintToolbox::onMagicWandPressed()
-    {
-        if ( this->m_magicWandButton->isChecked() ) {
-            this->m_viewFilter->removeFromAllViews();
-            m_paintState = (PaintState::None);
-            return;
-        }
-        setPaintState(PaintState::Wand);
-        m_viewFilter = ( new ClickEventFilter(this->segmentationToolBox(), this) );
-        this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
+void AlgorithmPaintToolbox::onMagicWandPressed()
+{
+    if ( this->m_magicWandButton->isChecked() ) {
+        this->m_viewFilter->removeFromAllViews();
+        m_paintState = (PaintState::None);
+        return;
     }
+    setPaintState(PaintState::Wand);
+    this->m_strokeButton->setChecked(false);
+    this->m_boundaryStrokeButton->setChecked(false);
+    m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
+    this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
+}
 
 
 void AlgorithmPaintToolbox::onApplyButtonPressed()
@@ -1045,40 +1024,12 @@ void AlgorithmPaintToolbox::updateFromGuiItems()
 void AlgorithmPaintToolbox::enableButtons( bool value )
 {
     m_strokeButton->setEnabled(value);
-    m_removeStrokeButton->setEnabled(value);
     m_boundaryStrokeButton->setEnabled(value);
     m_magicWandButton->setEnabled(value);
     m_applyButton->setEnabled(value);
     m_clearMaskButton->setEnabled(value);
     m_resetDataButton->setEnabled(value);
 }
-
-void AlgorithmPaintToolbox::setPaintState( PaintState::E value )
-{
-    if ( m_paintState == value )
-        return;
-
-    switch( m_paintState ){
-        case PaintState::Wand:
-            m_magicWandButton->setChecked(false); break;
-        case PaintState::Stroke:
-            m_strokeButton->setChecked(false); break;
-    case PaintState::DeleteStroke:
-        m_removeStrokeButton->setChecked(false); break;
-    case PaintState::BoundaryStroke:
-        m_boundaryStrokeButton->setChecked(false); break;
-    default:
-        break;
-    }
-
-    m_paintState = value;
-}
-
-
-
-
-
-
 
 
 } // namespace mseg
