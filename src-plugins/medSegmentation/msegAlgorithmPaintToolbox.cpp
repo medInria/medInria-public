@@ -84,20 +84,20 @@ public:
 
         if ( this->m_paintState == PaintState::DeleteStroke )
         {
-            m_cb->forcePaintState(m_lastPaintState);
+            m_cb->setPaintState(m_lastPaintState);
             m_paintState = m_lastPaintState;
         }
 
         if(mouseEvent->button() == Qt::RightButton) // right-click for erasing
         {
             m_lastPaintState = m_cb->paintState();
-            m_cb->forcePaintState(PaintState::DeleteStroke);
+            m_cb->setPaintState(PaintState::DeleteStroke);
             m_paintState = m_cb->paintState(); //update
         }
 
         if (m_paintState == PaintState::Stroke && mouseEvent->button() == Qt::LeftButton)
         {
-            m_cb->forcePaintState(PaintState::Stroke);
+            m_cb->setPaintState(PaintState::Stroke);
             m_paintState = m_cb->paintState(); //update paintState
         }
 
@@ -360,6 +360,8 @@ void AlgorithmPaintToolbox::onStrokePressed()
         return;
     }
     setPaintState(PaintState::Stroke);
+    this->m_boundaryStrokeButton->setChecked(false);
+    this->m_magicWandButton->setChecked(false);
     m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
     this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
 }
@@ -373,6 +375,8 @@ void AlgorithmPaintToolbox::onBoundaryStrokePressed()
         return;
     }
     setPaintState(PaintState::BoundaryStroke);
+    this->m_strokeButton->setChecked(false);
+    this->m_magicWandButton->setChecked(false);
     m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
     this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
 }
@@ -386,6 +390,8 @@ void AlgorithmPaintToolbox::onMagicWandPressed()
         return;
     }
     setPaintState(PaintState::Wand);
+    this->m_strokeButton->setChecked(false);
+    this->m_boundaryStrokeButton->setChecked(false);
     m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
     this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
 }
@@ -1024,26 +1030,6 @@ void AlgorithmPaintToolbox::enableButtons( bool value )
     m_clearMaskButton->setEnabled(value);
     m_resetDataButton->setEnabled(value);
 }
-
-void AlgorithmPaintToolbox::setPaintState( PaintState::E value )
-{
-    if ( m_paintState == value )
-        return;
-
-    switch( m_paintState ){
-        case PaintState::Wand:
-            m_magicWandButton->setChecked(false); break;
-        case PaintState::Stroke:
-            m_strokeButton->setChecked(false); break;
-    case PaintState::BoundaryStroke:
-        m_boundaryStrokeButton->setChecked(false); break;
-    default:
-        break;
-    }
-
-    m_paintState = value;
-}
-
 
 
 } // namespace mseg

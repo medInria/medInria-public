@@ -71,7 +71,7 @@ public:
     /** \param trObj : Provide an object for the tr() function. If NULL qApp will be used. */
     static QString s_name(const QObject * trObj =  NULL);
 
-    inline void forcePaintState(PaintState::E state){m_paintState = state;}
+    inline void setPaintState( PaintState::E value){m_paintState = value;}
     inline PaintState::E paintState(){return m_paintState;}
 
 public slots:
@@ -107,8 +107,6 @@ protected:
     void updateFromGuiItems();
 
     void enableButtons( bool value);
-
-    void setPaintState( PaintState::E value);
 
     void generateLabelColorMap(unsigned int numLabels);
 private:
