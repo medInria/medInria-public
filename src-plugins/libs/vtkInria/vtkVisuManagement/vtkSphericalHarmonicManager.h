@@ -23,123 +23,120 @@
 
 #include <vtkSphericalHarmonicVisuManager.h>
 
-class VTK_VISUMANAGEMENT_EXPORT vtkSphericalHarmonicManager: public vtkObject
-{
-
+class VTK_VISUMANAGEMENT_EXPORT vtkSphericalHarmonicManager: public vtkObject {
 public:
 
-  static vtkSphericalHarmonicManager *New();
-  vtkTypeRevisionMacro (vtkSphericalHarmonicManager, vtkObject);
+    static vtkSphericalHarmonicManager *New();
+    vtkTypeRevisionMacro(vtkSphericalHarmonicManager, vtkObject);
 
-  void SetRenderWindowInteractor (vtkRenderWindowInteractor*, vtkRenderer* ren=0);
-  vtkGetObjectMacro (RenderWindowInteractor, vtkRenderWindowInteractor);
+    void SetRenderWindowInteractor(vtkRenderWindowInteractor*, vtkRenderer* ren=0);
+    vtkGetObjectMacro(RenderWindowInteractor, vtkRenderWindowInteractor);
 
-  vtkSetObjectMacro (Input, vtkImageData);
-  vtkGetObjectMacro (Input, vtkImageData);
+    vtkSetObjectMacro(Input, vtkImageData);
+    vtkGetObjectMacro(Input, vtkImageData);
 
-  /** Get/set the transformation matrix that is used to display the glyphs
+    /** Get/set the transformation matrix that is used to display the glyphs
      *  according to the image coordinate system */
-  vtkSetObjectMacro (MatrixT,vtkMatrix4x4);
-  vtkGetObjectMacro (MatrixT, vtkMatrix4x4);
+    vtkSetObjectMacro(MatrixT,vtkMatrix4x4);
+    vtkGetObjectMacro(MatrixT, vtkMatrix4x4);
 
-  vtkGetObjectMacro (SHVisuManagerAxial,    vtkSphericalHarmonicVisuManager);
-  vtkGetObjectMacro (SHVisuManagerSagittal, vtkSphericalHarmonicVisuManager);
-  vtkGetObjectMacro (SHVisuManagerCoronal,  vtkSphericalHarmonicVisuManager);
+    vtkGetObjectMacro(SHVisuManagerAxial,    vtkSphericalHarmonicVisuManager);
+    vtkGetObjectMacro(SHVisuManagerSagittal, vtkSphericalHarmonicVisuManager);
+    vtkGetObjectMacro(SHVisuManagerCoronal,  vtkSphericalHarmonicVisuManager);
 
-  /** Set a scaling factor for the glyphs. */
-  void SetGlyphScale(const float& f);
+    /** Set a scaling factor for the glyphs. */
+    void SetGlyphScale(const float& f);
 
-  /** Set the sample rate 1 over n Spherical Harmonic's will be
+    /** Set the sample rate 1 over n Spherical Harmonic's will be
      *  displayed.*/
-  void SetSampleRate(const int&,const int&,const int&);
+    void SetSampleRate(const int&,const int&,const int&);
 
-  /** Set the glyph resolution */
-  void SetGlyphResolution (int res);
+    /** Set the glyph resolution */
+    void SetGlyphResolution(const int res);
 
-  /** Set the Polyhedron type to be tesselated */
-  void SetTesselationType (const int& type);
+    /** Set the Polyhedron type to be tesselated */
+    void SetTesselationType(const int& type);
 
-  /** Set the spherical harmonics basis to be used */
-  void SetTesselationBasis (const int& type);
+    /** Set the spherical harmonics basis to be used */
+    void SetTesselationBasis(const int& type);
 
-  /** Set the spherical harmonics order to be used */
-  void SetOrder (int order);
+    /** Set the spherical harmonics order to be used */
+    void SetOrder(const int order);
 
-  /** Flip Spherical Harmonic's along the X axis */
-  void FlipX (bool a);
+    /** Flip Spherical Harmonic's along the X axis */
+    void FlipX(const bool a);
 
-  /** Flip Spherical Harmonic's along the Y axis */
-  void FlipY (bool a);
+    /** Flip Spherical Harmonic's along the Y axis */
+    void FlipY(const bool a);
 
-  /** Flip Spherical Harmonic's along the Z axis */
-  void FlipZ (bool a);
+    /** Flip Spherical Harmonic's along the Z axis */
+    void FlipZ(const bool a);
 
-  /** Turn on/off coloring of glyph with input scalar data or directions.
+    /** Turn on/off coloring of glyph with input scalar data or directions.
      *  If false, or input scalar data not present, then the
      *  scalars from the source object are passed through the filter.*/
-  void ColorGlyphs (bool a);
+    void ColorGlyphs(const bool a);
 
-  /** Turn on/off Normalizaiton.*/
-  void Normalization (bool a);
+    /** Turn on/off Normalizaiton.*/
+    void Normalization(const bool a);
 
-  /** get the image size it is used to set med gui slider appropiate size*/
-  void GetSphericalHarmonicDimensions (int * dims);
+    /** get the image size it is used to set med gui slider appropiate size*/
+    void GetSphericalHarmonicDimensions(int * dims);
 
-  /** Generate the glyph and add them to the RenderWindowInteractor */
-  void Update();
+    /** Generate the glyph and add them to the RenderWindowInteractor */
+    void Update();
 
-  /** Remove the actors from the renderer. */
-  void Initialize();
+    /** Remove the actors from the renderer. */
+    void Initialize();
 
-  /** Set the current position in voxel coordinates. */
-  void SetCurrentPosition (const int&, const int&, const int&);
+    /** Set the current position in voxel coordinates. */
+    void SetCurrentPosition(const int&, const int&, const int&);
 
-  /** Set the current position in voxel coordinates. */
-  void SetCurrentPosition (int pos[3]);
+    /** Set the current position in voxel coordinates. */
+    void SetCurrentPosition(const int pos[3]);
 
-  /** Get the current position. */
-  const int* GetCurrentPosition() const
-  { return this->CurrentPosition; }
+    /** Get the current position. */
+    const int* GetCurrentPosition() const { return this->CurrentPosition; }
 
-  /** Get the current position. */
-  void GetCurrentPosition (int pos[3]) const
-  {
-    for( int i=0; i<3; i++)
-      pos[i] = this->CurrentPosition[i];
-  }
+    /** Get the current position. */
+    void GetCurrentPosition(int pos[3]) const {
+        for(int i=0;i<3;++i)
+            pos[i] = this->CurrentPosition[i];
+    }
 
-  /** Reset the position to the center of the dataset. */
-  void ResetPosition();
+    /** Reset the position to the center of the dataset. */
+    void ResetPosition();
 
-  /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
-  void SetAxialSliceVisibility (int);
+    /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
+    void SetAxialSliceVisibility(const int);
 
-  /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
-  void SetSagittalSliceVisibility (int);
+    /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
+    void SetSagittalSliceVisibility(const int);
 
-  /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
-  void SetCoronalSliceVisibility (int);
+    /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
+    void SetCoronalSliceVisibility(const int);
 
 protected:
-  vtkSphericalHarmonicManager();
-  ~vtkSphericalHarmonicManager();
+
+    vtkSphericalHarmonicManager();
+    ~vtkSphericalHarmonicManager();
 
 private:
 
-  vtkRenderWindowInteractor* RenderWindowInteractor;
+    static int clamp(const int value,const int bound) {
+        return (value>bound-1) ? (bound-1) : value;
+    }
 
-  vtkImageData* Input;
-  vtkMatrix4x4* MatrixT;
+    vtkRenderWindowInteractor* RenderWindowInteractor;
 
-  vtkRenderer* Renderer;
+    vtkImageData* Input;
+    vtkMatrix4x4* MatrixT;
 
-  vtkSphericalHarmonicVisuManager* SHVisuManagerAxial;
-  vtkSphericalHarmonicVisuManager* SHVisuManagerSagittal;
-  vtkSphericalHarmonicVisuManager* SHVisuManagerCoronal;
+    vtkRenderer* Renderer;
 
-  int CurrentPosition[3];
+    vtkSphericalHarmonicVisuManager* SHVisuManagerAxial;
+    vtkSphericalHarmonicVisuManager* SHVisuManagerSagittal;
+    vtkSphericalHarmonicVisuManager* SHVisuManagerCoronal;
 
+    int CurrentPosition[3];
 };
-
-
-

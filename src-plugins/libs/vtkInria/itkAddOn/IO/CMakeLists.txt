@@ -23,12 +23,6 @@ if (NOT ITK_USE_SYSTEM_GDCM)
     itkDicomTagManager.cxx
     itkGDCMImporter.cxx
     itkGDCMExporter.cxx
-    )
-endif()
-
-if ( VTKINRIA_USE_SPHERICALHARMONICS )
-  set(itkIOAddOnSRCS
-    ${itkIOAddOnSRCS}
     itkSphericalHarmonicITKToVTKFilter.txx
     )
 endif()

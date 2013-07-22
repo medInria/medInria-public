@@ -674,7 +674,7 @@ namespace itk
       }
       catch (ExceptionObject &e)
       {
-	std::cerr << e; // continue to be robust to odd files
+        std::cerr << e; // continue to be robust to odd files
       }
       ++f;
     }

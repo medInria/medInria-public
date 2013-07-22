@@ -198,19 +198,17 @@ void medMessageController::showError(const QString& text,unsigned int timeout)
     }
 }
 
-medMessageProgress * medMessageController::showProgress(const QString& text)
+medMessageProgress* medMessageController::showProgress(const QString& text)
 {
-    if ( dynamic_cast<QApplication *>(QCoreApplication::instance()) ) 
-    {
+    if (dynamic_cast<QApplication *>(QCoreApplication::instance())) {
         // GUI
         medMessageProgress *message = new medMessageProgress(text);
 
         emit addMessage(message);
         return message;
-
     } 
+    return 0;
 }
-
 
 void medMessageController::remove(medMessage *message)
 {

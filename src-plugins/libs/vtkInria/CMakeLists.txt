@@ -105,17 +105,12 @@ endif()
 # -----------------------------------------------------------------------------
 # The SPHERICAL HARMONICS extension by Athena - INRIA Sophia Antipolis to use SphericalHarmonicVisualization of Maxime Descoteaux
 # -----------------------------------------------------------------------------
-option(VTKINRIA_USE_SPHERICALHARMONICS "If ON, compile the SPHERICAL HARMONICS extension of vtkInria." OFF)
 
-if ( VTKINRIA_USE_SPHERICALHARMONICS )
-
-  if (APPLE OR WIN32)
+if (APPLE OR WIN32)
     find_package( Boost REQUIRED)
-  endif()
-
-  find_path(${PROJECT_NAME}_DATA_DIR NAMES SHTest.vtk DOC "vtkInria Data directory")
-
 endif()
+
+find_path(${PROJECT_NAME}_DATA_DIR NAMES SHTest.vtk DOC "vtkInria Data directory")
 
 # Create the list of include directories needed for vtkInria header files.
 include(${${PROJECT_NAME}_SOURCE_DIR}/IncludeDirectories.cmake)

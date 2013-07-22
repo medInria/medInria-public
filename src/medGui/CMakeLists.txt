@@ -27,6 +27,7 @@ set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
   toolboxes/medSegmentationAbstractToolBox.h
   toolboxes/medSegmentationSelectorToolBox.h
   toolboxes/medToolBox.h
+  commonWidgets/medSliderSpinboxPair.h
 )
 
 set(${PROJECT_NAME}_DEVEL_HEADERS
@@ -103,6 +104,10 @@ set(${PROJECT_NAME}_HEADERS_MOC
   toolboxes/medFiberViewToolBox.h
   toolboxes/medFiberBundlingToolBox.h
   toolboxes/medTensorViewToolBox.h
+
+  toolboxes/medSHViewToolBox.h
+  toolboxes/medFilteringSelectorToolBox.h
+  toolboxes/medFilteringAbstractToolBox.h
   toolboxes/medBrowserJobsToolBox.h
   toolboxes/medVisualizationLayoutToolBox.h
   toolboxes/medTimeLineToolBox.h
@@ -217,6 +222,7 @@ set(${PROJECT_NAME}_SOURCES
   toolboxes/medSegmentationSelectorToolBox.cpp
   toolboxes/medSegmentationAbstractToolBox.cpp
   toolboxes/medTensorViewToolBox.cpp
+  toolboxes/medSHViewToolBox.cpp
   toolboxes/medFilteringSelectorToolBox.cpp
   toolboxes/medFilteringAbstractToolBox.cpp
   toolboxes/medBrowserJobsToolBox.cpp
