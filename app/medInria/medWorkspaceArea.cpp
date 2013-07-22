@@ -147,7 +147,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->navigator,
              SLOT (updateNavigator (const medDataIndex&)));
     connect (medDataManager::instance(), SIGNAL (dataRemoved (const medDataIndex&)), d->navigator,
-             SLOT (updateNavigator (const medDataIndex&)));
+             SLOT (updateNavigator (const medDataIndex&)), Qt::QueuedConnection);
 
     connect (medDataManager::instance(), SIGNAL (dataAdded (const medDataIndex&)), d->patientToolBox,
              SLOT (setupDatabase ()));
