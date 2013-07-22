@@ -39,11 +39,8 @@ undoRedoRegistrationPlugin::~undoRedoRegistrationPlugin(void)
 
 bool undoRedoRegistrationPlugin::initialize(void)
 {
-    if(!undoRedoRegistration::registered())
-        dtkWarn() << "Unable to register undoRedoRegistration type";
-    
-    if(!undoRedoRegistrationToolBox::registered())
-        dtkWarn() << "Unable to register undoRedoRegistration toolbox";
+    if (!undoRedoRegistration::registered())        { dtkWarn() << "Unable to register undoRedoRegistration type";    }
+    if (!undoRedoRegistrationToolBox::registered()) { dtkWarn() << "Unable to register undoRedoRegistration toolbox"; }
     
     return true;
 }

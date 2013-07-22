@@ -11,15 +11,16 @@
 
 =========================================================================*/
 
-#include "v3dView.h"
-#include "v3dViewFuseInteractor.h"
-#include "v3dViewMeshInteractor.h"
-#include "v3dView4DInteractor.h"
-#include "v3dViewAnnotationInteractor.h"
-#include "v3dViewPlugin.h"
+#include <v3dView.h>
+#include <v3dViewFuseInteractor.h>
+#include <v3dViewMeshInteractor.h>
+#include <v3dView4DInteractor.h>
+#include <v3dViewAnnotationInteractor.h>
+#include <v3dViewPlugin.h>
 #ifndef DISABLE_TTK_DEPENDENT_CODE
-  #include "v3dViewFiberInteractor.h"
-  #include "v3dViewTensorInteractor.h"
+#include <v3dViewFiberInteractor.h>
+#include <v3dViewTensorInteractor.h>
+#include <v3dViewSHInteractor.h>
 #endif
 
 #include <dtkLog/dtkLog.h>
@@ -66,6 +67,8 @@ bool v3dViewPlugin::initialize()
 #ifndef DISABLE_TTK_DEPENDENT_CODE
     if (!v3dViewTensorInteractor::registered())     { dtkWarn() << "Unable to register v3dViewTensorInteractor type";     }
 #endif
+    
+    if (!v3dViewSHInteractor::registered())         { dtkWarn() << "Unable to register v3dViewSHInteractor type"; }
 
     return true;
 }
@@ -95,13 +98,15 @@ QStringList v3dViewPlugin::authors() const
 QStringList v3dViewPlugin::contributors() const
 {
     QStringList list;
-    list <<  "Nicolas Toussaint"
-          << "Stephan Schmitt"
-          << "John Stark"
-          << QString::fromUtf8("Benoît Bleuzé")
-          << "Jaime Garcia"
-          << "Fatih Arslan"
-          << "Sergio Medina";
+    list << "Nicolas Toussaint"
+         << "Stephan Schmitt"
+         << "John Stark"
+         << QString::fromUtf8("Benoît Bleuzé")
+         << "Jaime Garcia"
+         << "Fatih Arslan"
+         << QString::fromUtf8("Théo Papadopoulo")
+         << "Julien Wintz"
+         << "Sergio Medina";
     return list;
 }
 
@@ -125,7 +130,7 @@ QStringList v3dViewPlugin::types() const
 {
     return QStringList() << v3dView::s_identifier() << "v3dViewFiberInteractor"
         << "v3dViewFuseInteractor" << "v3dViewMeshInteractor"
-        << "v3dViewTensorInteractor" << "v3dView4DInteractor"
+        << "v3dViewTensorInteractor"<< "v3dViewSHInteractor"  << "v3dView4DInteractor"
         << v3dViewAnnotationInteractor::s_identifier();
 }
 

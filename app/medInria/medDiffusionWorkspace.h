@@ -18,6 +18,7 @@
 
 #include <medWorkspace.h>
 #include <medTensorViewToolBox.h>
+#include <medSHViewToolBox.h>
 #include <medFiberViewToolBox.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
@@ -62,16 +63,46 @@ public slots:
     // slots for tensor interactions
 
     /** Event called when a new glyph shape is selected in the tensor toolbox */
+
     void onGlyphShapeChanged(const QString& glyphShape);
 
     /** Event called when user wants to flip X axis */
-    void onFlipXChanged(bool flipX);
+
+    void onFlipXChanged(const bool flipX);
 
     /** Event called when user wants to flip Y axis */
-    void onFlipYChanged(bool flipY);
+
+    void onFlipYChanged(const bool flipY);
 
     /** Event called when user wants to flip Z axis */
-    void onFlipZChanged(bool flipZ);
+
+    void onFlipZChanged(const bool flipZ);
+
+    // slots for SH interactions
+
+    /** Event called when a new polyhedron type to be tesselated is selected in the sh toolbox */
+
+    void onTesselationTypeChanged(const QString& tesselationType);
+
+    /** Event called when a new spherical harmonics basis is selected in the sh toolbox */
+
+    void onTesselationBasisChanged(const QString& tesselationBais);
+
+    /** Event called when user wants to flip X axis */
+
+    void onSHFlipXChanged(const bool flipX);
+
+    /** Event called when user wants to flip Y axis */
+
+    void onSHFlipYChanged(const bool flipY);
+
+    /** Event called when user wants to flip Z axis */
+
+    void onSHFlipZChanged(const bool flipZ);
+
+    /** Event called when user wants to switch in between Spherical Harmonic Basis  */
+
+    void onSHNormalize(bool normalize);
 
 private:
     medDiffusionWorkspacePrivate *d;
@@ -79,9 +110,9 @@ private:
     /** Updates the tensor interactor with the current values in the tensor toolbox. */
     void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medTensorViewToolBox* tensorViewToolBox);
 
+    /** Updates the controls in the SH toolbox with the current values of the interactor. */
+    void updateSHInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medSHViewToolBox* SHViewToolBox);
+    
     /** Updates the fiber interactor with the current values in the fiber toolbox. */
     void updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medFiberViewToolBox* fiberViewToolBox);
 };
-
-
-

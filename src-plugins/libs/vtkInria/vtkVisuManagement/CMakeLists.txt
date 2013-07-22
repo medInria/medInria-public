@@ -13,9 +13,9 @@
 
 project(vtkVisuManagement)
 
-  if (CMAKE_CXX_COMPILER MATCHES clang)
+if (CMAKE_CXX_COMPILER MATCHES clang)
     add_definitions(-DCLANG)
-  endif()
+endif()
 
 set(${PROJECT_NAME}_SRCS
  vtkLimitFibersToVOI.cxx
@@ -43,6 +43,11 @@ set(${PROJECT_NAME}_SRCS
  vtkDisplacementFieldToGridFilter.cxx
  vtkMeshCropManager.cxx
  vtkFiberDataSetManager.cxx
+ vtkSphericalHarmonicVisuManager.cxx
+ vtkSphericalHarmonicManager.cxx
+ vtkTessellatedSphereSource.cxx
+ vtkSphericalHarmonicSource.cxx
+ vtkSphericalHarmonicGlyph.cxx
 )
 
 set(vtkLandmarkManagement_SRCS
@@ -52,6 +57,7 @@ set(vtkLandmarkManagement_SRCS
 )
 
 set(${PROJECT_NAME}_LIBS
+ itkIOAddOn
  vtkCommon
  vtkFiltering 
  vtkRendering
@@ -70,20 +76,6 @@ set(vtkLandmarkManagement_LIBS
  vtkHWShading
 )
 
-if ( VTKINRIA_USE_SPHERICALHARMONICS )
-    set(${PROJECT_NAME}_SRCS
-        ${${PROJECT_NAME}_SRCS}
-        vtkSphericalHarmonicVisuManager.cxx
-        vtkSphericalHarmonicManager.cxx
-        vtkTessellatedSphereSource.cxx
-        vtkSphericalHarmonicSource.cxx
-        vtkSphericalHarmonicGlyph.cxx
-        )
-    set(${PROJECT_NAME}_LIBS
-        ${${PROJECT_NAME}_LIBS}
-        itkIOAddOn
-        )
-endif()
 
 if (VTKINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
@@ -107,7 +99,6 @@ target_link_libraries(${PROJECT_NAME}
   ${${PROJECT_NAME}_LIBS}
 )
 
-  
 target_link_libraries(vtkLandmarkManagement  
   ${vtkLandmarkManagement_LIBS}
 )

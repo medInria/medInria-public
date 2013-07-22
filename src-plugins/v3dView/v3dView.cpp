@@ -749,7 +749,8 @@ void v3dView::update()
 {
     if ( d->currentView )
     {
-        d->currentView->Render();
+        // this doesn't seem necessary and can result in a quite important memory comsumation
+        //d->currentView->Render();
     }
     d->vtkWidget->update();
 }
@@ -813,8 +814,13 @@ void v3dView::setSharedDataPointer ( dtkSmartPointer<dtkAbstractData> data )
 
 void v3dView::setData ( dtkAbstractData *data )
 {
-    //if ( !data )
-    //    return;
+    if(!data)
+        return;
+
+    /*
+    if(medAbstractView::isInList(data)) // called in setData(data, layer) !
+        return;
+*/
 
     ///*
     //if(medAbstractView::isInList(data)) // called in setData(data, layer) !
@@ -952,36 +958,39 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
                 d->view2d->SetInput(dataset, 0, layer);
                 d->view3d->SetInput(dataset, 0, layer);
             }
-        }
-        else if ( data->identifier() == "vtkDataMesh" )
-        {
+
+        } else if ( data->identifier() == "vtkDataMesh" ) {
+
             this->enableInteractor ( "v3dViewMeshInteractor" );
             // This will add the data to the interactor.
             dtkAbstractView::setData ( data );
-        }
-        else if ( data->description() == "vtkDataMesh4D" )
-        {
+
+        } else if ( data->identifier() == "vtkDataMesh4D" ) {
+
             this->enableInteractor ( "v3dViewMeshInteractor" );
             this->enableInteractor("v3dView4DInteractor");
             // This will add the data to the interactor.
 
             dtkAbstractView::setData ( data );
-        }
-        else if ( data->identifier() == "v3dDataFibers" )
-        {
+
+        } else if ( data->identifier() == "v3dDataFibers" ) {
+
             this->enableInteractor ( "v3dViewFiberInteractor" );
             // This will add the data to the interactor.
             dtkAbstractView::setData ( data );
-        }
-        else if ( data->identifier().contains("itkDataTensorImage", Qt::CaseSensitive))
-        {
+
+        } else if ( data->identifier().contains("itkDataTensorImage", Qt::CaseSensitive)) {
+
             this->enableInteractor ( "v3dViewTensorInteractor" );
             // This will add the data to the interactor.
             dtkAbstractView::setData ( data );
-        }
-        else
-        {
-            // if ( data->identifier() == "vtkDataMesh" )
+        } else if ( data->identifier().contains("itkDataSHImage", Qt::CaseSensitive)) {
+
+             this->enableInteractor ( "v3dViewSHInteractor" );
+             // This will add the data to the interactor.
+             dtkAbstractView::setData(data);
+        } else {
+            // if ( data->description() == "vtkDataMesh" )
             //     this->enableInteractor ( "v3dViewMeshInteractor" );
             // else if ( data->identifier() == "v3dDataFibers" )
             //     this->enableInteractor ( "v3dViewFiberInteractor" );

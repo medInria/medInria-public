@@ -54,7 +54,7 @@ if (WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
 
-option(MEDINRIA_BUILD_TESTING       "Build testing"          false)
+option(MEDINRIA_BUILD_TESTING "Build testing" false)
 
 enable_testing()
 
@@ -72,11 +72,11 @@ if (MEDINRIA_BUILD_REPORTING)
   include(dtkReporting)
 endif()
 
-option(MEDINRIA_BUILD_DOCUMENTATION "Build documentation"    false)
+option(MEDINRIA_BUILD_DOCUMENTATION "Build documentation" false)
 
 if (MSVC)
   include(dtkPch)
-  option(MEDINRIA_USE_PRECOMPILED_HEADERS     "Use precompiled headers"        false)
+  option(MEDINRIA_USE_PRECOMPILED_HEADERS "Use precompiled headers" false)
 endif()
 
 add_subdirectory(src)

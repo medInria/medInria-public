@@ -35,7 +35,7 @@
 #include <cstdlib>
 #include <iostream>
 
-typedef itk::VectorImage<float, 3>    ShImageTypeFloat;
+typedef itk::VectorImage<float, 3>    SHImageTypeFloat;
 
 int Compare( vtkPoints* verticesA, vtkPoints* verticesB)
 {
@@ -103,7 +103,7 @@ int vtkSphericalHarmonicGlyphTest(int argc, char *argv[])
   /**
            We read the SH coefficinets == typedef itk::VectorImage<float, 3>  with SH data.
        */
-  typedef itk::ImageFileReader<ShImageTypeFloat> ReaderType;
+  typedef itk::ImageFileReader<SHImageTypeFloat> ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName ( argv[1] );
   try {
@@ -119,8 +119,8 @@ int vtkSphericalHarmonicGlyphTest(int argc, char *argv[])
            vtkImageData. ITK image is keep and used in this example in order to keep
            the orientation of the image that can not be held by the vtkImageData.
        */
-  itk::SphericalHarmonicITKToVTKFilter<ShImageTypeFloat>::Pointer filterFloat;
-  filterFloat = itk::SphericalHarmonicITKToVTKFilter<ShImageTypeFloat>::New();
+  itk::SphericalHarmonicITKToVTKFilter<SHImageTypeFloat>::Pointer filterFloat;
+  filterFloat = itk::SphericalHarmonicITKToVTKFilter<SHImageTypeFloat>::New();
   filterFloat->SetInput(reader->GetOutput());
   filterFloat->Update();
 

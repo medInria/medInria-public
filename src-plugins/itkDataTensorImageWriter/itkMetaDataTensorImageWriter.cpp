@@ -11,13 +11,12 @@
 
 =========================================================================*/
 
-#include "itkMetaDataTensorImageWriter.h"
+#include <itkMetaDataTensorImageWriter.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkMetaImageIO.h>
-
 
 const char itkMetaDataTensorImageWriter::ID[] = "itkMetaDataTensorImageWriter";
 

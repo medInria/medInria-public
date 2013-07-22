@@ -77,9 +77,11 @@ public:
     double GetSphericalHarmonicComponent(int i) { return SphericalHarmonics[i]; }
 
     /** Get Order of the spherical harmonic basis*/
+
     vtkGetMacro(Order,int);
 
     /** Set Order of the spherical harmonic basis*/
+
     vtkSetMacro(Order,int);
 
     vtkGetMacro(NumberOfSphericalHarmonics,int);
@@ -94,61 +96,45 @@ public:
     /** Set Deform On/Off
       * If On, the radius of the sphere is deformed according to the spherical value
       * Else, the data is visualized on a sphere of radius 1*/
+
     vtkSetMacro(Deform,bool);
 
     /** Deform On/Off
       * If On, the radius of the sphere is deformed according to the spherical value
       * Else, the data is visualized on a sphere of radius 1*/
+
     vtkBooleanMacro(Deform,bool);
 
     /** Get Deform On/Off
       * If On, the radius of the sphere is deformed according to the spherical value
       * Else, the data is visualized on a sphere of radius 1*/
+
     vtkGetMacro(Deform,bool);
 
     /** Set Normalize On/Off
       *  If On, spherical values are (0,1) normalized*/
+
     vtkSetMacro(Normalize,bool);
 
     /** Set Normalize On/Off
       *  If On, spherical values are (0,1) normalized*/
+
     vtkBooleanMacro(Normalize,bool);
 
     /** Get Normalize On/Off
       *  If On, spherical values are (0,1) normalized*/
+
     vtkGetMacro(Normalize,bool);
     
-    /** Set Flip{X} On/Off If On, x direction is flipped in the
+    /** Set FlipVector On/Off If On, x direction is flipped in the
       * reconstruction directions defining the basis function*/
-    vtkSetMacro(FlipX,bool);
 
-    vtkBooleanMacro(FlipX,bool);
+    vtkSetVector3Macro(FlipVector,const bool);
 
-    /** Get Flip{X} On/Off If On, x direction is flipped in the reconstruction
+    /** Get FlipVector On/Off If On, x direction is flipped in the reconstruction
       * directions defining the basis function*/
-    vtkGetMacro(FlipX,bool);
 
-    /** Set Flip{Y} On/Off If On, y direction is flipped in the reconstruction
-      * directions defining the basis function*/
-    vtkSetMacro(FlipY,bool);
-
-    vtkBooleanMacro(FlipY,bool);
-
-    /** Get Flip{Y} On/Off If On, y direction is flipped in the reconstruction
-      * directions defining the basis function*/
-    vtkGetMacro(FlipY,bool);
-    
-    /** Set Flip{Z} On/Off If On, z direction is flipped in the reconstruction
-      * directions defining the basis function
-      * By default we need to flip Z to have glyphs correctly aligned*/
-    vtkSetMacro(FlipZ,bool);
-
-    vtkBooleanMacro(FlipZ,bool);
-
-    /** Get Flip{Z} On/Off If On, z direction is flipped in the reconstruction
-      * directions defining the basis function
-      * By default we need to flip Z to have glyphs correctly aligned*/
-    vtkGetMacro(FlipZ,bool);
+    vtkGetVector3Macro(FlipVector,bool);
 
     vtkSetMacro(MaxThesisFunc,bool);
     vtkBooleanMacro(MaxThesisFunc,bool);
@@ -156,10 +142,12 @@ public:
 
     /** Set the rotation matrix that defines the individual tesselated deformed
       *  sphere pose. virtual*/
+
     vtkSetObjectMacro(RotationMatrix,vtkMatrix4x4);
 
     /** Get the rotation matrix that defines the individual tesselated deformed
       *  sphere pose. virtual*/
+
     vtkGetObjectMacro(RotationMatrix,vtkMatrix4x4);
 
     void UpdateSphericalHarmonicSource();
@@ -176,7 +164,7 @@ public:
     
 protected:
 
-    vtkSphericalHarmonicSource(int tess=3);
+     vtkSphericalHarmonicSource(const int tess=2);
     ~vtkSphericalHarmonicSource();
     
     int RequestData(vtkInformation*,vtkInformationVector**,vtkInformationVector*);
@@ -186,53 +174,61 @@ protected:
     double Center[3];
     
     /** Spherical function */
-//    vtkPolyData* shell;
+    //    vtkPolyData* shell;
+
     vtkTessellatedSphereSource *sphereT;
 
-
     /** Spherical harmonic basis function*/
+
     itk::VariableSizeMatrix<double> BasisFunction;
 
     /** Order of the spherical harmonic basis*/
+
     int Order;
 
     /** Spherical harmonic representation of the spherical function*/
+
     double* SphericalHarmonics;
     int     NumberOfSphericalHarmonics;
 
     /** Type of tesselation : cube, dodecahedron, icosahedron, octahedron, tetrahedron
       * determines the angular sampling scheme*/
+
     int TesselationType;
 
     /** Type of basis : SHMatrix=0, SHMatrixMaxThesis=1, SHMatrixTournier=2, SHMatrixRshBasis=3,
       * determines the Spherical harmonics basis to be used*/
+
     int TesselationBasis;
 
     /** Tesselation order, determines the angular sampling*/
+
     int Tesselation;
 
     /** Deform On/Off
       * If On, the radius of the sphere is deformed according to the spherical value
       * Else, the data is visualized on a sphere of radius 1*/
+
     bool Deform;
     
     /** Normalize On/Off
       *  If On, spherical values are (0,1) normalized*/
+
     bool Normalize;
     
-    /** Flip{X,Y,Z} On/Off
-      * If On, x direction is flipped in the reconstruction directions defining
-      * the basis function By default we need to flip Z to have glyphs correctly aligned*/
-    bool FlipX;
-    bool FlipY;
-    bool FlipZ;
+    /** FlipVector {X,Y,Z} On/Off
+      * If On, the correponding direction is flipped in the reconstruction directions defining
+      * the basis function By default we need to flip Z to have glyphs correctly aligned.      */
+
+    bool FlipVector[3];
 
     /** MaximeDescoteaux Thesis On/Off
       * If On, spherical values are (0,1) normalized*/
+
     bool MaxThesisFunc;
 
     itk::VariableSizeMatrix<double> PhiThetaShellDirections;
-    vtkMatrix4x4*  RotationMatrix;
+    vtkMatrix4x4*                   RotationMatrix;
 
 private:
 
