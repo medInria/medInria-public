@@ -322,11 +322,19 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
   virtual void SetCurrentPoint (double pos[3]);
 
   /**
-     Get the current position in world coordinate.
+     Get the current position in world coordinate of
+     the lastly clicked point.
+  */
+  vtkGetVector3Macro (CurrentPoint, double);
+
+  /**
+     Get/Update the current position of the cursor
+     in world coordinate.
      This framework is only used in vtkViewImage2D to
      update corner annotations and cursor position.
   */
-  vtkGetVector3Macro (CurrentPoint, double);
+  vtkGetVector3Macro (CursorPosition, double);
+  virtual void UpdateCursorPosition (double pos[3]);
 
   /**
      Reset the 3D position to center of the image
@@ -783,6 +791,7 @@ protected:
      update corner annotations and cursor position.
   */
   double CurrentPoint[3];
+  double CursorPosition[3];
 
   int CurrentLayer;
   int IsInteractorInstalled;

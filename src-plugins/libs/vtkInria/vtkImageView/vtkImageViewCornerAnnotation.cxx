@@ -77,7 +77,7 @@ void vtkImageViewCornerAnnotation::TextReplace(vtkImageActor *ia,
   if (this->ImageView)
   {
     
-    this->ImageView->GetCurrentPoint (pos);
+    this->ImageView->GetCursorPosition (pos);
     this->ImageView->GetImageCoordinatesFromWorldCoordinates (pos, coord);
     value = this->ImageView->GetValueAtPosition(pos);
     zoom  = this->ImageView->GetZoom()*100.0;

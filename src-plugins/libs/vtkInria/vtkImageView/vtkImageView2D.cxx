@@ -1377,6 +1377,9 @@ void vtkImageView2D::InstallPipeline()
     if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::RequestedPositionEvent, this->Command) )
       this->InteractorStyle->AddObserver (vtkImageView2DCommand::RequestedPositionEvent, this->Command, 10);
 
+    if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::RequestedCursorInformationEvent, this->Command) )
+      this->InteractorStyle->AddObserver (vtkImageView2DCommand::RequestedCursorInformationEvent, this->Command, 10);
+
     if ( !this->InteractorStyle->HasObserver (vtkImageView2DCommand::ResetViewerEvent, this->Command) )
       this->InteractorStyle->AddObserver (vtkImageView2DCommand::ResetViewerEvent, this->Command, 10);
 
