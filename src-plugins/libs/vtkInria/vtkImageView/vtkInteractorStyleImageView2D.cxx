@@ -44,6 +44,7 @@ vtkInteractorStyleImageView2D::vtkInteractorStyleImageView2D()
   this->RightButtonInteraction  = InteractionTypeZoom;
   this->MiddleButtonInteraction = InteractionTypePan;
   this->WheelButtonInteraction  = InteractionTypeSlice;
+  this->KeyboardInteraction  = InteractionTypeSlice;
 }
 
 
