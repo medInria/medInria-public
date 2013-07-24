@@ -1,8 +1,27 @@
+medInria v2.1.0:
+
+- First open-source release, code available on github
+- Database edition
+- Undo-redo for registration algorithms
+- New registration algorithm: pyramidal block-matching registration
+- Experimental ODF visualization (for ODF in a spherical harmonics basis)
+- Inter-hemispheric symmetry plane computation
+- Rewritten NL-Means denoising, now includes DWI denoising
+- Improved paint segmentation tool: magic wand, multi-label segmentation, controls simplification
+- View orientation controls moved from right-click to the view properties toolbox
+- Remove, save data, double-click to view data from any workspace using patient navigator
+- Simplified ROI filtering of fiber tracts
+- Direct image file opening from command line, file type association (double click on a file in Finder to view it: Mac only)
+- Screenshot button and shortcut (Ctrl F)
+- "Alt-Tab" like shortcut to switch between workspaces (Ctrl Shift)
+- Many bug corrections and other improvements
+
 medInria v2.0.1-1:
 
 - Fix Dicom plugins load failures on Macos Mountain Lion
 
 medInria v2.0.1:
+
 - Improved UI
 - Added registration algorithms: Baloo, Super Baloo, iLogDemons
 - Registration always performed in float for now
