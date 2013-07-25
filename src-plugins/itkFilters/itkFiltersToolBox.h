@@ -55,6 +55,7 @@ private:
     void setupItkShrinkProcess();
     void setupItkWindowingProcess();
     void setupItkDilateProcess();
+    void setupItkErodeProcess();
     
     itkFiltersToolBoxPrivate *d;
 };

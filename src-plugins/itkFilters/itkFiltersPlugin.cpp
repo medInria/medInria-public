@@ -24,6 +24,7 @@
 #include "itkFiltersShrinkProcess.h"
 #include "itkFiltersWindowingProcess.h"
 #include "itkFiltersDilateProcess.h"
+#include "itkFiltersErodeProcess.h"
 #include "itkFiltersToolBox.h"
 #include "itkFiltersDefinitions.h"
 
@@ -60,6 +61,7 @@ bool itkFiltersPlugin::initialize()
     if ( !itkFiltersInvertProcess::registered() )    { dtkWarn() << "Unable to register itkFilters invert filter process type"; }
     if ( !itkFiltersShrinkProcess::registered() )    { dtkWarn() << "Unable to register itkFilters shrink filter process type"; }
     if ( !itkFiltersDilateProcess::registered() )    { dtkWarn() << "Unable to register itkFilters dilate filter process type"; }
+    if ( !itkFiltersErodeProcess::registered() )    { dtkWarn() << "Unable to register itkFilters erode filter process type"; }
     if ( !itkFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkFilters toolbox";                      }
 
     return true;
