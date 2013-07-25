@@ -55,12 +55,14 @@ public:
     QWidget * invertFilterWidget;
     QWidget * shrinkFilterWidget;
     QWidget * intensityFilterWidget;
+    QWidget * dilateFilterWidget;
 
     QDoubleSpinBox * addFiltersValue;
     QDoubleSpinBox * subtractFiltersValue;
     QDoubleSpinBox * multiplyFiltersValue;
     QDoubleSpinBox * divideFiltersValue;
     QDoubleSpinBox * gaussianFiltersValue;
+    QDoubleSpinBox * dilateFiltersValue;
     QSpinBox * shrink0Value;
     QSpinBox * shrink1Value;
     QSpinBox * shrink2Value;
@@ -92,7 +94,8 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
                 << "Median filter" 
                 << "Invert intensity filter"
                 << "Shrink image filter" 
-                << "Intensity windowing filter";
+                << "Intensity windowing filter"
+                << "Binary Dilate filter";
     
     d->filters->addItems ( filtersList );
 
@@ -239,6 +242,20 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
 
     d->intensityFilterWidget->setLayout ( intensityFilterLayout );
 
+
+    //Dilate filter widgets
+    d->dilateFilterWidget = new QWidget(this);
+    d->dilateFiltersValue = new QDoubleSpinBox;
+    d->dilateFiltersValue->setMaximum ( 20 );
+    d->dilateFiltersValue->setValue ( 5 );
+    QLabel * dilateFilterLabel = new QLabel ( tr ( "Kernel size:" ) );
+    QHBoxLayout * dilateFilterLayout = new QHBoxLayout;
+    dilateFilterLayout->addWidget ( dilateFilterLabel );
+    dilateFilterLayout->addWidget ( d->dilateFiltersValue );
+    dilateFilterLayout->addStretch ( 1 );
+    d->dilateFilterWidget->setLayout ( dilateFilterLayout );
+
+
     // Run button:
     QPushButton *runButton = new QPushButton ( tr ( "Run" ) );
     runButton->setFocusPolicy ( Qt::NoFocus );
@@ -262,6 +279,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     layout->addWidget ( d->invertFilterWidget );
     layout->addWidget ( d->shrinkFilterWidget );
     layout->addWidget ( d->intensityFilterWidget );
+    layout->addWidget ( d->dilateFilterWidget );
     layout->addWidget ( runButton );
     layout->addWidget ( d->progression_stack );
     layout->addStretch ( 1 );
@@ -589,7 +607,7 @@ void itkFiltersToolBox::setupItkAddProcess()
     
     if (!d->process)
         return;
-    
+
     d->process->setInput ( this->parentToolBox()->data() );
     d->process->setParameter ( d->addFiltersValue->value(), 0 );
 }
@@ -696,6 +714,17 @@ void itkFiltersToolBox::setupItkWindowingProcess()
     d->process->setParameter ( d->intensityOutputMaximumValue->value(), 3 );
 }
 
+void itkFiltersToolBox::setupItkDilateProcess()
+{
+    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkDilateProcess" );
+
+    if (!d->process)
+        return;
+    
+    d->process->setInput ( this->parentToolBox()->data() );
+    d->process->setParameter ( d->dilateFiltersValue->value(), 0 );
+}
+
 void itkFiltersToolBox::run ( void )
 {
     if ( !this->parentToolBox() )
@@ -743,6 +772,9 @@ void itkFiltersToolBox::run ( void )
     case 9: // intensity windowing filter
         this->setupItkWindowingProcess();
         break;
+    case 10: // dilate filter
+        this->setupItkDilateProcess();
+        break;
     }
 
     if (! d->process)
@@ -773,6 +805,7 @@ void itkFiltersToolBox::onFiltersActivated ( int index )
     d->invertFilterWidget->hide();
     d->shrinkFilterWidget->hide();
     d->intensityFilterWidget->hide();
+    d->dilateFilterWidget->hide();
 
     switch ( index )
     {
@@ -805,6 +838,9 @@ void itkFiltersToolBox::onFiltersActivated ( int index )
         break;
     case 9:
         d->intensityFilterWidget->show();
+        break;
+    case 10:
+        d->dilateFilterWidget->show();
         break;
     default:
         d->addFilterWidget->show();

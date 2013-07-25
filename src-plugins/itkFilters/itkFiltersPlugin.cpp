@@ -23,6 +23,7 @@
 #include "itkFiltersInvertProcess.h"
 #include "itkFiltersShrinkProcess.h"
 #include "itkFiltersWindowingProcess.h"
+#include "itkFiltersDilateProcess.h"
 #include "itkFiltersToolBox.h"
 #include "itkFiltersDefinitions.h"
 
@@ -58,6 +59,7 @@ bool itkFiltersPlugin::initialize()
     if ( !itkFiltersWindowingProcess::registered() ) { dtkWarn() << "Unable to register itkFilters windowing filter process type"; }
     if ( !itkFiltersInvertProcess::registered() )    { dtkWarn() << "Unable to register itkFilters invert filter process type"; }
     if ( !itkFiltersShrinkProcess::registered() )    { dtkWarn() << "Unable to register itkFilters shrink filter process type"; }
+    if ( !itkFiltersDilateProcess::registered() )    { dtkWarn() << "Unable to register itkFilters dilate filter process type"; }
     if ( !itkFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkFilters toolbox";                      }
 
     return true;
