@@ -306,10 +306,6 @@ void medViewContainer::focusInEvent ( QFocusEvent *event )
     Q_UNUSED ( event );
 
     this->select();
-
-    this->recomputeStyleSheet();
-    emit selected();
-
 }
 
 void medViewContainer::focusOutEvent ( QFocusEvent *event )
