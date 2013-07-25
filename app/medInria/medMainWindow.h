@@ -141,6 +141,8 @@ protected:
     
     int saveModified();
 
+    bool eventFilter(QObject * obj, QEvent *ev);
+
     /**
      * all initial registering should be done here
      */

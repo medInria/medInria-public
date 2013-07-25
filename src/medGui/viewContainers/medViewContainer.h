@@ -445,8 +445,6 @@ protected:
      * @param void
     */
     void recomputeStyleSheet();
-    
-   
 
 protected:
     /**
@@ -500,6 +498,8 @@ protected:
      * @param event
     */
     void paintEvent(QPaintEvent *event);
+
+    bool eventFilter(QObject * obj, QEvent *ev);
 
 protected:
     medViewContainerPrivate *d;

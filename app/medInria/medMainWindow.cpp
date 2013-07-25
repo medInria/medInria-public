@@ -365,7 +365,6 @@ void medMainWindow::keyPressEvent( QKeyEvent *event )
             this->showShortcutAccess();
 
         d->shortcutAccessWidget->updateCurrentlySelectedRight();
-        
         return;
     }
 
@@ -949,4 +948,24 @@ void medMainWindow::registerToFactories()
     //Register annotations
     dtkAbstractDataFactory * datafactory = dtkAbstractDataFactory::instance();
     datafactory->registerDataType( medSeedPointAnnotationData::s_identifier(), dtkAbstractDataCreateFunc<medSeedPointAnnotationData> );
+}
+
+bool medMainWindow::eventFilter(QObject * obj, QEvent *ev)
+{
+    if (ev->type() == QEvent::KeyPress)
+    {
+        QKeyEvent * keyEvent = static_cast<QKeyEvent*>(ev);
+        this->keyPressEvent(keyEvent);
+    }
+
+    if (ev->type()==QEvent::KeyRelease)
+    {
+        QKeyEvent * keyEvent = static_cast<QKeyEvent*>(ev);
+        this->keyReleaseEvent(keyEvent);
+    }
+    
+    // For the time being, We do not use this function to filter but only to send event to the MainWindow.
+    // Therefore, we always return false;
+
+    return false; 
 }

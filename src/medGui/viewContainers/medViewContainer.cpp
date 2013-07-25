@@ -437,7 +437,6 @@ bool medViewContainer::open(dtkAbstractData * data)
     if ( data == NULL )
         return false;
 
-
     dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
     bool newView = view.isNull() || !this->multiLayer();
 
@@ -479,3 +478,18 @@ bool medViewContainer::open(dtkAbstractData * data)
     return true;
 }
 
+bool medViewContainer::eventFilter(QObject * obj, QEvent *ev)
+{
+    if (ev->type() == QEvent::FocusIn)
+    {
+        QFocusEvent * focusEvent = static_cast<QFocusEvent*>(ev);
+        this->focusInEvent(focusEvent);
+    }
+
+    if (ev->type()==QEvent::FocusOut)
+    {
+        QFocusEvent * focusEvent = static_cast<QFocusEvent*>(ev);
+        this->focusOutEvent(focusEvent);
+    }
+    return false;   
+}

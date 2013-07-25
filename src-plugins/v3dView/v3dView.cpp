@@ -440,11 +440,11 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->view3d->SetInteractorStyle ( interactorStyle );
     interactorStyle->Delete();
 
-    QMainWindow * mainWindow = dynamic_cast< QMainWindow * >(
+    QMainWindow * mainWindowApp = dynamic_cast< QMainWindow * >(
         qApp->property( "MainWindow" ).value< QObject * >() );
-
-    d->widget = new QWidget( mainWindow );
-
+    
+    d->widget = new QWidget( mainWindowApp);
+    
     d->slider = new QSlider ( Qt::Horizontal, d->widget );
     d->slider->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Fixed );
     d->slider->setFocusPolicy ( Qt::NoFocus );
@@ -530,7 +530,8 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 
     d->vtkWidget = new QVTKWidget ( d->widget );
     d->vtkWidget->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Minimum );
-    d->vtkWidget->setFocusPolicy ( Qt::NoFocus);
+    d->vtkWidget->setFocusPolicy ( Qt::ClickFocus );
+    d->vtkWidget->installEventFilter( mainWindowApp );
     
     d->renWin = vtkRenderWindow::New();
     d->renWin->StereoCapableWindowOn();
@@ -1455,6 +1456,7 @@ void v3dView::onMouseInteractionPropertySet ( const QString &value )
     if ( value == "Zooming" )
     {
         d->collection->SyncSetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeZoom );
+        d->vtkWidget->setFocus(); // to able rbZoom from first click.
     }
 
     if ( value == "Windowing" )
