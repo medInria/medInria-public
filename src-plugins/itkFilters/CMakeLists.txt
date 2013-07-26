@@ -58,6 +58,7 @@ set(${PROJECT_NAME}_HEADERS
   itkFiltersDilateProcess_p.h
   itkFiltersErodeProcess_p.h
   itkFiltersCloseProcess_p.h
+  itkFiltersOpenProcess_p.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
@@ -77,6 +78,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   itkFiltersDilateProcess.h
   itkFiltersErodeProcess.h
   itkFiltersCloseProcess.h
+  itkFiltersOpenProcess.h
 )
 
 set(${PROJECT_NAME}_SOURCES
@@ -97,6 +99,7 @@ set(${PROJECT_NAME}_SOURCES
   itkFiltersDilateProcess.cpp
   itkFiltersErodeProcess.cpp
   itkFiltersCloseProcess.cpp
+  itkFiltersOpenProcess.cpp
 )
 
 ## #################################################################

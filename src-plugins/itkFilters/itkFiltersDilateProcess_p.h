@@ -65,7 +65,7 @@ public:
         output->setData ( dilateFilter->GetOutput() );
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " dilate filter (" + QString::number(size) + ")";
+        newSeriesDescription += " Dilate filter (" + QString::number(size) + ")";
         
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
