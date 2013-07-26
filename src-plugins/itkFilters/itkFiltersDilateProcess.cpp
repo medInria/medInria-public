@@ -31,10 +31,6 @@ itkFiltersDilateProcess::itkFiltersDilateProcess(itkFiltersDilateProcess *parent
     d->filter = this;
     d->output = NULL;
     d->size = 5; 
-    //d->ballSize.Fill(40);
-    //ball.SetRadius(ballSize);
-    //ball.CreateStructuringElement();
-
     d->description = tr("ITK Dilate filter");
 }
 
@@ -66,10 +62,6 @@ void itkFiltersDilateProcess::setParameter(double data, int channel)
     
     DTK_D(itkFiltersDilateProcess);
     d->size = data;
-    //d->ballSize.Fill(data);
-    //ball.SetRadius(ballSize);
-    //ball.CreateStructuringElement();
-
 }
 
 //-------------------------------------------------------------------------------------------
