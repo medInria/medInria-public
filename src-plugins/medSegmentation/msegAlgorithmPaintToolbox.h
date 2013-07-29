@@ -40,7 +40,6 @@ class medSeedPointAnnotationData;
 
 namespace mseg {
     class ClickAndMoveEventFilter;
-    class SelectDataEventFilter;
 
 struct PaintState {
     enum E{ None, Wand, Stroke, DeleteStroke, BoundaryStroke };
@@ -79,10 +78,8 @@ public slots:
     void onMagicWandPressed();
     void onBoundaryStrokePressed();
 
-    void onSetDataPressed();
     void onApplyButtonPressed();
     void onClearMaskPressed();
-    void onResetDataPressed();
 
     void onLabelChanged(int newVal);
     void onSelectLabelColor();
@@ -94,7 +91,7 @@ public slots:
     void updateWandRegion(medAbstractView * view, QVector3D &vec);
 
 protected:
-    friend class SelectDataEventFilter;
+    friend class ClickAndMoveEventFilter;
 
     void addStroke( medAbstractView *view, const QVector3D &vec );
     void setData( dtkAbstractData *data );
@@ -132,8 +129,6 @@ private:
 
     QPushButton *m_applyButton;
 
-    QPushButton *m_selectDataButton;
-    QPushButton *m_resetDataButton;
     QPushButton *m_clearMaskButton;
     QTextEdit *m_dataText;
 

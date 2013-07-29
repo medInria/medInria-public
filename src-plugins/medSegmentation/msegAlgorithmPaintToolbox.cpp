@@ -22,7 +22,7 @@
 #include <medMetaDataKeys.h>
 #include <medMessageController.h>
 #include <medSegmentationSelectorToolBox.h>
-#include <medMessageController.h>
+#include <medViewManager.h>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -45,28 +45,6 @@
 
 namespace mseg {
 
-class SelectDataEventFilter : public medViewEventFilter
-{
-public:
-    SelectDataEventFilter(medSegmentationSelectorToolBox * controller, AlgorithmPaintToolbox *cb ) :
-        medViewEventFilter(),
-            m_cb(cb)
-        {}
-        virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
-        {
-            mouseEvent->accept();
-
-            dtkAbstractData * viewData = medSegmentationSelectorToolBox::viewData( view );
-            if (viewData) {
-                m_cb->setData( viewData );
-                this->removeFromAllViews();
-            }
-            return mouseEvent->isAccepted();
-        }
-
-private :
-    AlgorithmPaintToolbox *m_cb;
-};
 
 class ClickAndMoveEventFilter : public medViewEventFilter
 {
@@ -104,6 +82,9 @@ public:
         medAbstractViewCoordinates * coords = view->coordinates();
         mouseEvent->accept();
 
+        dtkAbstractData * viewData = medSegmentationSelectorToolBox::viewData( view );
+        m_cb->setData( viewData ); 
+
         if (coords->is2D()) {
             
             // Convert mouse click to a 3D point in the image.
@@ -112,7 +93,6 @@ public:
             if (m_paintState != PaintState::Wand)
             {
                 this->m_points.push_back(posImage);
-                m_cb->updateStroke( this,view );
             }
             else
             {
@@ -177,16 +157,8 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     QVBoxLayout * layout = new QVBoxLayout(displayWidget);
 
     QHBoxLayout * dataButtonsLayout = new QHBoxLayout();
-    m_selectDataButton = new QPushButton( tr("Select Data") , displayWidget);
-    m_selectDataButton->setToolTip(tr("To select data, click on this button, "
-                                      "and then on a view."));
-    m_resetDataButton = new QPushButton( tr("Reset Data") , displayWidget);
-    m_resetDataButton->setToolTip(tr("Choose another view to segment."));
     m_clearMaskButton = new QPushButton( tr("Clear Mask") , displayWidget);
     m_clearMaskButton->setToolTip(tr("Resets the mask."));
-    m_selectDataButton->setCheckable(true);
-    dataButtonsLayout->addWidget( m_selectDataButton );
-    dataButtonsLayout->addWidget( m_resetDataButton );
     dataButtonsLayout->addWidget( m_clearMaskButton );
     layout->addLayout(dataButtonsLayout);
 
@@ -293,8 +265,6 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_applyButton->setToolTip(tr("Save result to the Temporary Database"));
     layout->addWidget( m_applyButton );
 
-    enableButtons(false);
-
     connect (m_strokeButton,     SIGNAL(pressed()),
         this, SLOT(onStrokePressed ()));
     connect (m_boundaryStrokeButton,     SIGNAL(pressed()),
@@ -302,10 +272,6 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     connect (m_magicWandButton, SIGNAL(pressed()),
              this,SLOT(onMagicWandPressed()));
 
-    connect (m_selectDataButton,     SIGNAL(pressed()),
-        this, SLOT(onSetDataPressed ()));
-    connect (m_resetDataButton,     SIGNAL(pressed()),
-        this, SLOT(onResetDataPressed ()));
     connect (m_clearMaskButton,     SIGNAL(pressed()),
         this, SLOT(onClearMaskPressed ()));
 
@@ -410,38 +376,6 @@ void AlgorithmPaintToolbox::onApplyButtonPressed()
     this->segmentationToolBox()->run( alg );
 }
 
-void AlgorithmPaintToolbox::onSetDataPressed()
-{
-    setPaintState(PaintState::None);
-
-    if ( this->m_selectDataButton->isChecked() ) {
-        this->m_selectDataButton->setChecked(false);
-        this->m_viewFilter->removeFromAllViews();
-        return;
-    }
-    this->m_selectDataButton->setChecked(true);
-    m_viewFilter = ( new SelectDataEventFilter(this->segmentationToolBox(), this) );
-    this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
-}
-
-void AlgorithmPaintToolbox::onResetDataPressed()
-{
-    setPaintState(PaintState::None);
-    this->setData(NULL);
-}
-
-void AlgorithmPaintToolbox::onClearMaskPressed()
-{
-    if ( m_maskData && m_itkMask ){
-        m_itkMask->FillBuffer( medSegmentationSelectorToolBox::MaskPixelValues::Unset );
-        m_itkMask->Modified();
-        m_itkMask->GetPixelContainer()->Modified();
-        m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
-
-        m_maskAnnotationData->invokeModified();
-    }
-}
-
 void AlgorithmPaintToolbox::onLabelChanged(int newVal)
 {
     QColor labelColor = m_labelColorMap[newVal-1].second;
@@ -463,6 +397,18 @@ void AlgorithmPaintToolbox::onSelectLabelColor()
         }
 
         this->onLabelChanged(m_strokeLabelSpinBox->value());
+    }
+}
+
+void AlgorithmPaintToolbox::onClearMaskPressed()
+{
+    if ( m_maskData && m_itkMask ){
+        m_itkMask->FillBuffer( medSegmentationSelectorToolBox::MaskPixelValues::Unset );
+        m_itkMask->Modified();
+        m_itkMask->GetPixelContainer()->Modified();
+        m_itkMask->SetPipelineMTime(m_itkMask->GetMTime());
+
+        m_maskAnnotationData->invokeModified();
     }
 }
 
@@ -1028,7 +974,6 @@ void AlgorithmPaintToolbox::enableButtons( bool value )
     m_magicWandButton->setEnabled(value);
     m_applyButton->setEnabled(value);
     m_clearMaskButton->setEnabled(value);
-    m_resetDataButton->setEnabled(value);
 }
 
 
