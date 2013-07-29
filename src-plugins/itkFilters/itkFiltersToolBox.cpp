@@ -60,15 +60,15 @@ public:
     QWidget * closeFilterWidget;
     QWidget * openFilterWidget;
 
-    QDoubleSpinBox * addFiltersValue;
-    QDoubleSpinBox * subtractFiltersValue;
-    QDoubleSpinBox * multiplyFiltersValue;
-    QDoubleSpinBox * divideFiltersValue;
-    QDoubleSpinBox * gaussianFiltersValue;
-    QDoubleSpinBox * dilateFiltersValue;
-    QDoubleSpinBox * erodeFiltersValue;
-    QDoubleSpinBox * closeFiltersValue;
-    QDoubleSpinBox * openFiltersValue;
+    QDoubleSpinBox * addFilterValue;
+    QDoubleSpinBox * subtractFilterValue;
+    QDoubleSpinBox * multiplyFilterValue;
+    QDoubleSpinBox * divideFilterValue;
+    QDoubleSpinBox * gaussianFilterValue;
+    QDoubleSpinBox * dilateFilterValue;
+    QDoubleSpinBox * erodeFilterValue;
+    QDoubleSpinBox * closeFilterValue;
+    QDoubleSpinBox * openFilterValue;
     QSpinBox * shrink0Value;
     QSpinBox * shrink1Value;
     QSpinBox * shrink2Value;
@@ -120,61 +120,61 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     //Initialise filters widget (probably need to find a dynamic way of doing this, Factory ?)
     //Add filter widgets
     d->addFilterWidget = new QWidget(this);
-    d->addFiltersValue = new QDoubleSpinBox;
-    d->addFiltersValue->setMaximum ( 1000000000 );
-    d->addFiltersValue->setValue ( 100.0 );
+    d->addFilterValue = new QDoubleSpinBox;
+    d->addFilterValue->setMaximum ( 1000000000 );
+    d->addFilterValue->setValue ( 100.0 );
     QLabel * addFilterLabel = new QLabel ( tr ( "Constant value:" ) );
     QHBoxLayout * addFilterLayout = new QHBoxLayout;
     addFilterLayout->addWidget ( addFilterLabel );
-    addFilterLayout->addWidget ( d->addFiltersValue );
+    addFilterLayout->addWidget ( d->addFilterValue );
     addFilterLayout->addStretch ( 1 );
     d->addFilterWidget->setLayout ( addFilterLayout );
 
     //Substract filter widgets
     d->subtractFilterWidget = new QWidget(this);
-    d->subtractFiltersValue = new QDoubleSpinBox;
-    d->subtractFiltersValue->setMaximum ( 1000000000 );
-    d->subtractFiltersValue->setValue ( 100.0 );
+    d->subtractFilterValue = new QDoubleSpinBox;
+    d->subtractFilterValue->setMaximum ( 1000000000 );
+    d->subtractFilterValue->setValue ( 100.0 );
     QLabel * subtractFilterLabel = new QLabel ( tr ( "Constant value:" ) );
     QHBoxLayout * subtractFilterLayout = new QHBoxLayout;
     subtractFilterLayout->addWidget ( subtractFilterLabel );
-    subtractFilterLayout->addWidget ( d->subtractFiltersValue );
+    subtractFilterLayout->addWidget ( d->subtractFilterValue );
     subtractFilterLayout->addStretch ( 1 );
     d->subtractFilterWidget->setLayout ( subtractFilterLayout );
 
     //Multiply filter widgets
     d->multiplyFilterWidget = new QWidget(this);
-    d->multiplyFiltersValue = new QDoubleSpinBox;
-    d->multiplyFiltersValue->setValue ( 2.0 );
-    d->multiplyFiltersValue->setMaximum ( 1000000000 );
+    d->multiplyFilterValue = new QDoubleSpinBox;
+    d->multiplyFilterValue->setValue ( 2.0 );
+    d->multiplyFilterValue->setMaximum ( 1000000000 );
     QLabel * multiplyFilterLabel = new QLabel ( tr ( "Constant value:" ) );
     QHBoxLayout * multiplyFilterLayout = new QHBoxLayout;
     multiplyFilterLayout->addWidget ( multiplyFilterLabel );
-    multiplyFilterLayout->addWidget ( d->multiplyFiltersValue );
+    multiplyFilterLayout->addWidget ( d->multiplyFilterValue );
     multiplyFilterLayout->addStretch ( 1 );
     d->multiplyFilterWidget->setLayout ( multiplyFilterLayout );
 
     //Divide filter widgets
     d->divideFilterWidget = new QWidget(this);
-    d->divideFiltersValue = new QDoubleSpinBox;
-    d->divideFiltersValue->setValue ( 2.0 );
-    d->divideFiltersValue->setMaximum ( 1000000000 );
+    d->divideFilterValue = new QDoubleSpinBox;
+    d->divideFilterValue->setValue ( 2.0 );
+    d->divideFilterValue->setMaximum ( 1000000000 );
     QLabel * divideFilterLabel = new QLabel ( tr ( "Constant value:" ) );
     QHBoxLayout * divideFilterLayout = new QHBoxLayout;
     divideFilterLayout->addWidget ( divideFilterLabel );
-    divideFilterLayout->addWidget ( d->divideFiltersValue );
+    divideFilterLayout->addWidget ( d->divideFilterValue );
     divideFilterLayout->addStretch ( 1 );
     d->divideFilterWidget->setLayout ( divideFilterLayout );
 
     //Gaussian filter widgets
     d->gaussianFilterWidget = new QWidget(this);
-    d->gaussianFiltersValue = new QDoubleSpinBox;
-    d->gaussianFiltersValue->setValue ( 1.0 );
-    d->gaussianFiltersValue->setMaximum ( 10.0 );
+    d->gaussianFilterValue = new QDoubleSpinBox;
+    d->gaussianFilterValue->setValue ( 1.0 );
+    d->gaussianFilterValue->setMaximum ( 10.0 );
     QLabel * gaussianFilterLabel = new QLabel ( tr ( "Sigma value:" ) );
     QHBoxLayout * gaussianFilterLayout = new QHBoxLayout;
     gaussianFilterLayout->addWidget ( gaussianFilterLabel );
-    gaussianFilterLayout->addWidget ( d->gaussianFiltersValue );
+    gaussianFilterLayout->addWidget ( d->gaussianFilterValue );
     gaussianFilterLayout->addStretch ( 1 );
     d->gaussianFilterWidget->setLayout ( gaussianFilterLayout );
 
@@ -254,49 +254,49 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
 
     //Dilate filter widgets
     d->dilateFilterWidget = new QWidget(this);
-    d->dilateFiltersValue = new QDoubleSpinBox;
-    d->dilateFiltersValue->setMaximum ( 20 );
-    d->dilateFiltersValue->setValue ( 5 );
+    d->dilateFilterValue = new QDoubleSpinBox;
+    d->dilateFilterValue->setMaximum ( 10 );
+    d->dilateFilterValue->setValue ( 1 );
     QLabel * dilateFilterLabel = new QLabel ( tr ( "Kernel size:" ) );
     QHBoxLayout * dilateFilterLayout = new QHBoxLayout;
     dilateFilterLayout->addWidget ( dilateFilterLabel );
-    dilateFilterLayout->addWidget ( d->dilateFiltersValue );
+    dilateFilterLayout->addWidget ( d->dilateFilterValue );
     dilateFilterLayout->addStretch ( 1 );
     d->dilateFilterWidget->setLayout ( dilateFilterLayout );
 
     //Erode filter widgets
     d->erodeFilterWidget = new QWidget(this);
-    d->erodeFiltersValue = new QDoubleSpinBox;
-    d->erodeFiltersValue->setMaximum ( 20 );
-    d->erodeFiltersValue->setValue ( 5 );
+    d->erodeFilterValue = new QDoubleSpinBox;
+    d->erodeFilterValue->setMaximum ( 10 );
+    d->erodeFilterValue->setValue ( 1 );
     QLabel * erodeFilterLabel = new QLabel ( tr ( "Kernel size:" ) );
     QHBoxLayout * erodeFilterLayout = new QHBoxLayout;
     erodeFilterLayout->addWidget ( erodeFilterLabel );
-    erodeFilterLayout->addWidget ( d->erodeFiltersValue );
+    erodeFilterLayout->addWidget ( d->erodeFilterValue );
     erodeFilterLayout->addStretch ( 1 );
     d->erodeFilterWidget->setLayout ( erodeFilterLayout );
 
     //Close filter widgets
     d->closeFilterWidget = new QWidget(this);
-    d->closeFiltersValue = new QDoubleSpinBox;
-    d->closeFiltersValue->setMaximum ( 20 );
-    d->closeFiltersValue->setValue ( 5 );
+    d->closeFilterValue = new QDoubleSpinBox;
+    d->closeFilterValue->setMaximum ( 10 );
+    d->closeFilterValue->setValue ( 1 );
     QLabel * closeFilterLabel = new QLabel ( tr ( "Kernel size:" ) );
     QHBoxLayout * closeFilterLayout = new QHBoxLayout;
     closeFilterLayout->addWidget ( closeFilterLabel );
-    closeFilterLayout->addWidget ( d->closeFiltersValue );
+    closeFilterLayout->addWidget ( d->closeFilterValue );
     closeFilterLayout->addStretch ( 1 );
     d->closeFilterWidget->setLayout ( closeFilterLayout );
 
     //Open filter widgets
     d->openFilterWidget = new QWidget(this);
-    d->openFiltersValue = new QDoubleSpinBox;
-    d->openFiltersValue->setMaximum ( 20 );
-    d->openFiltersValue->setValue ( 5 );
+    d->openFilterValue = new QDoubleSpinBox;
+    d->openFilterValue->setMaximum ( 10 );
+    d->openFilterValue->setValue ( 1 );
     QLabel * openFilterLabel = new QLabel ( tr ( "Kernel size:" ) );
     QHBoxLayout * openFilterLayout = new QHBoxLayout;
     openFilterLayout->addWidget ( openFilterLabel );
-    openFilterLayout->addWidget ( d->openFiltersValue );
+    openFilterLayout->addWidget ( d->openFilterValue );
     openFilterLayout->addStretch ( 1 );
     d->openFilterWidget->setLayout ( openFilterLayout );
 
@@ -381,8 +381,8 @@ void itkFiltersToolBox::clear()
     qDebug() << "Clear itk filters toolbox";
 
     d->dataTypeValue->setText ( "Unknown" );
-    d->addFiltersValue->setMaximum ( 100.0 );
-    d->subtractFiltersValue->setMaximum ( 100.0 );
+    d->addFilterValue->setMaximum ( 100.0 );
+    d->subtractFilterValue->setMaximum ( 100.0 );
 
     d->intensityMinimumValue->setMinimum ( 0 );
     d->intensityMinimumValue->setMaximum ( 255 );
@@ -419,8 +419,8 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
         if ( identifier == "itkDataImageChar3" )
         {
             d->dataTypeValue->setText ( "Char" );
-            d->addFiltersValue->setMaximum ( std::numeric_limits<char>::max() );
-            d->subtractFiltersValue->setMaximum ( std::numeric_limits<char>::max() );
+            d->addFilterValue->setMaximum ( std::numeric_limits<char>::max() );
+            d->subtractFilterValue->setMaximum ( std::numeric_limits<char>::max() );
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<char>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<char>::max() );
@@ -443,8 +443,8 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
         else if ( identifier == "itkDataImageUChar3" )
         {
             d->dataTypeValue->setText ( "Unsigned char" );
-            d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
-            d->subtractFiltersValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
+            d->addFilterValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
+            d->subtractFilterValue->setMaximum ( std::numeric_limits<unsigned char>::max() );
 
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<unsigned char>::min() );
@@ -466,8 +466,8 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
         else if ( identifier == "itkDataImageShort3" )
         {
             d->dataTypeValue->setText ( "Short" );
-            d->addFiltersValue->setMaximum ( std::numeric_limits<short>::max() );
-            d->subtractFiltersValue->setMaximum ( std::numeric_limits<short>::max() );
+            d->addFilterValue->setMaximum ( std::numeric_limits<short>::max() );
+            d->subtractFilterValue->setMaximum ( std::numeric_limits<short>::max() );
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<short>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<short>::max() );
@@ -488,8 +488,8 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
         else if ( identifier == "itkDataImageUShort3" )
         {
             d->dataTypeValue->setText ( "Unsigned short" );
-            d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
-            d->subtractFiltersValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
+            d->addFilterValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
+            d->subtractFilterValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<unsigned short>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<unsigned short>::max() );
@@ -510,8 +510,8 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
         else if ( identifier == "itkDataImageInt3" )
         {
             d->dataTypeValue->setText ( "Int" );
-            d->addFiltersValue->setMaximum ( std::numeric_limits<int>::max() );
-            d->subtractFiltersValue->setMaximum ( std::numeric_limits<int>::max() );
+            d->addFilterValue->setMaximum ( std::numeric_limits<int>::max() );
+            d->subtractFilterValue->setMaximum ( std::numeric_limits<int>::max() );
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<int>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<int>::max() );
@@ -532,8 +532,8 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
         else if ( identifier == "itkDataImageUInt3" )
         {
             d->dataTypeValue->setText ( "Unsigned int" );
-            d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
-            d->subtractFiltersValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
+            d->addFilterValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
+            d->subtractFilterValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<unsigned int>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<unsigned int>::max() );
@@ -554,8 +554,8 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
         else if ( identifier == "itkDataImageLong3" )
         {
             d->dataTypeValue->setText ( "Long" );
-            d->addFiltersValue->setMaximum ( std::numeric_limits<long>::max() );
-            d->subtractFiltersValue->setValue ( std::numeric_limits<long>::max() );
+            d->addFilterValue->setMaximum ( std::numeric_limits<long>::max() );
+            d->subtractFilterValue->setValue ( std::numeric_limits<long>::max() );
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<long>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<long>::max() );
@@ -576,8 +576,8 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
         else if ( identifier== "itkDataImageULong3" )
         {
             d->dataTypeValue->setText ( "Unsigned long" );
-            d->addFiltersValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
-            d->subtractFiltersValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
+            d->addFilterValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
+            d->subtractFilterValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<unsigned long>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<unsigned long>::max() );
@@ -598,8 +598,8 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
         else if ( identifier == "itkDataImageFloat3" )
         {
             d->dataTypeValue->setText ( "Float" );
-            d->addFiltersValue->setMaximum ( std::numeric_limits<float>::max() );
-            d->subtractFiltersValue->setMaximum ( std::numeric_limits<float>::max() );
+            d->addFilterValue->setMaximum ( std::numeric_limits<float>::max() );
+            d->subtractFilterValue->setMaximum ( std::numeric_limits<float>::max() );
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<float>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<float>::max() );
@@ -620,8 +620,8 @@ void itkFiltersToolBox::update ( dtkAbstractView* view )
         else if ( identifier == "itkDataImageDouble3" )
         {
             d->dataTypeValue->setText ( "Double" );
-            d->addFiltersValue->setMaximum ( std::numeric_limits<double>::max() );
-            d->subtractFiltersValue->setMaximum ( std::numeric_limits<double>::max() );
+            d->addFilterValue->setMaximum ( std::numeric_limits<double>::max() );
+            d->subtractFilterValue->setMaximum ( std::numeric_limits<double>::max() );
 
             d->intensityMinimumValue->setMinimum ( std::numeric_limits<double>::min() );
             d->intensityMinimumValue->setMaximum ( std::numeric_limits<double>::max() );
@@ -656,19 +656,19 @@ void itkFiltersToolBox::setupItkAddProcess()
         return;
 
     d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->addFiltersValue->value(), 0 );
+    d->process->setParameter ( d->addFilterValue->value(), 0 );
 }
 
 void itkFiltersToolBox::setupItkSubtractProcess()
 {
-    qDebug() << "Subtract parameter (run) : " << d->subtractFiltersValue->value();
+    qDebug() << "Subtract parameter (run) : " << d->subtractFilterValue->value();
     d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkSubtractProcess" );
     
     if (!d->process)
         return;
 
     d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->subtractFiltersValue->value(), 0 );
+    d->process->setParameter ( d->subtractFilterValue->value(), 0 );
 }
 
 void itkFiltersToolBox::setupItkMultiplyProcess()
@@ -679,7 +679,7 @@ void itkFiltersToolBox::setupItkMultiplyProcess()
         return;
     
     d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->multiplyFiltersValue->value(), 0 );
+    d->process->setParameter ( d->multiplyFilterValue->value(), 0 );
 }
 
 void itkFiltersToolBox::setupItkDivideProcess()
@@ -690,7 +690,7 @@ void itkFiltersToolBox::setupItkDivideProcess()
         return;
     
     d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->divideFiltersValue->value(), 0 );
+    d->process->setParameter ( d->divideFilterValue->value(), 0 );
 }
 
 void itkFiltersToolBox::setupItkGaussianProcess()
@@ -701,7 +701,7 @@ void itkFiltersToolBox::setupItkGaussianProcess()
         return;
     
     d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->gaussianFiltersValue->value(), 0);
+    d->process->setParameter ( d->gaussianFilterValue->value(), 0);
 }
 
 void itkFiltersToolBox::setupItkMedianProcess()
@@ -769,7 +769,7 @@ void itkFiltersToolBox::setupItkDilateProcess()
         return;
     
     d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->dilateFiltersValue->value(), 0 );
+    d->process->setParameter ( d->dilateFilterValue->value(), 0 );
 }
 
 void itkFiltersToolBox::setupItkErodeProcess()
@@ -780,7 +780,7 @@ void itkFiltersToolBox::setupItkErodeProcess()
         return;
     
     d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->erodeFiltersValue->value(), 0 );
+    d->process->setParameter ( d->erodeFilterValue->value(), 0 );
 }
 
 void itkFiltersToolBox::setupItkCloseProcess()
@@ -791,7 +791,7 @@ void itkFiltersToolBox::setupItkCloseProcess()
         return;
     
     d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->closeFiltersValue->value(), 0 );
+    d->process->setParameter ( d->closeFilterValue->value(), 0 );
 }
 
 void itkFiltersToolBox::setupItkOpenProcess()
@@ -802,7 +802,7 @@ void itkFiltersToolBox::setupItkOpenProcess()
         return;
     
     d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->openFiltersValue->value(), 0 );
+    d->process->setParameter ( d->openFilterValue->value(), 0 );
 }
 
 void itkFiltersToolBox::run ( void )
