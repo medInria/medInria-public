@@ -15,17 +15,17 @@ set(itkIOAddOnSRCS
   itkGISImageIO.cxx
   itkGISImageIOFactory.cxx
   itkMultiThreadedImageIOBase.cxx
+  itkSphericalHarmonicITKToVTKFilter.txx
 )
 
-if (NOT ITK_USE_SYSTEM_GDCM)
-  set(itkIOAddOnSRCS
-    ${itkIOAddOnSRCS}
-    itkDicomTagManager.cxx
-    itkGDCMImporter.cxx
-    itkGDCMExporter.cxx
-    itkSphericalHarmonicITKToVTKFilter.txx
-    )
-endif()
+#if (NOT ITK_USE_SYSTEM_GDCM)
+#  set(itkIOAddOnSRCS
+#    ${itkIOAddOnSRCS}
+#    itkDicomTagManager.cxx
+#    itkGDCMImporter.cxx
+#    itkGDCMExporter.cxx
+#    )
+#endif()
 
 if ( WIN32 )
   add_library(itkIOAddOn STATIC

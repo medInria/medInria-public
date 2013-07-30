@@ -22,7 +22,7 @@
 
 #include "itkImage.h"
 #include "itkCommand.h"
-#include "itkSubtractConstantFromImageFilter.h"
+#include "itkSubtractImageFilter.h"
 
 class itkFiltersSubtractProcess;
 
@@ -39,7 +39,7 @@ public:
     template <class PixelType> void update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
-        typedef itk::SubtractConstantFromImageFilter< ImageType, double, ImageType >  SubtractFilterType;
+        typedef itk::SubtractImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  SubtractFilterType;
         typename SubtractFilterType::Pointer subtractFilter = SubtractFilterType::New();
     
         subtractFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );

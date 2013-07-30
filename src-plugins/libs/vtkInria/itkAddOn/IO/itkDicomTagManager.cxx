@@ -52,7 +52,7 @@ namespace itk
     {
       itk::DicomTag dictionarytag = itk::DicomTagManager::GetDictionaryTag (i); 
       std::string found = file->GetEntryValue (dictionarytag.group,dictionarytag.element);	
-      if (found == gdcm::GDCM_UNFOUND || !found.size())
+      if (found == "GDCM_UNFOUND" || !found.size())
 	continue;
       
       itk::DicomTag tag = dictionarytag;

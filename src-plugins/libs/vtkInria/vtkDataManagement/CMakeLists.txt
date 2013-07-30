@@ -66,7 +66,6 @@ set(${PROJECT_NAME}_LIBS
   vtkIO
   vtkRendering
   itkIOAddOn
-  ITKIOReview
   )
     
 target_link_libraries(${PROJECT_NAME}

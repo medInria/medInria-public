@@ -96,7 +96,6 @@ target_link_libraries(${PROJECT_NAME}
   vtkFiltering
   vtkRendering
   itkIOAddOn
-  ITKIOReview
   dtkVtkLogForwarder
   dtkItkLogForwarder
   ${ITK_LIBRARIES}
