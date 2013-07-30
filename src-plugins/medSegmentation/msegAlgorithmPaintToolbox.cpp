@@ -529,7 +529,7 @@ QString AlgorithmPaintToolbox::s_name(const QObject * trObj)
 void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, medAbstractData * maskData )
 {
     MaskType::Pointer mask = MaskType::New();
-
+    medMetaDataKeys::SeriesType.set(maskData, "Mask");
     Q_ASSERT(mask->GetImageDimension() == 3);
 
     medAbstractDataImage * mImage = qobject_cast<medAbstractDataImage*>(imageData);

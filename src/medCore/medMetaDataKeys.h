@@ -118,6 +118,7 @@ namespace medMetaDataKeys {
     extern MEDCORE_EXPORT const Key SeriesDate;
     extern MEDCORE_EXPORT const Key SeriesTime;
     extern MEDCORE_EXPORT const Key SeriesThumbnail;
+    extern MEDCORE_EXPORT const Key SeriesType;
 
     // IMAGE
     extern MEDCORE_EXPORT const Key SOPInstanceUID;

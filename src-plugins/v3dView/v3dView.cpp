@@ -1428,10 +1428,16 @@ void v3dView::onMouseInteractionPropertySet ( const QString &value )
     if ( value == "Measuring" )
     {
         d->view2d->ShowDistanceWidgetOn();
+        d->collection->SyncSetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeNull );
     }
     else
     {
         d->view2d->ShowDistanceWidgetOff();
+    }
+
+    if ( value == "None" )
+    {
+        d->collection->SyncSetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeNull );
     }
 }
 QString v3dView::getPreset ( int layer ) const

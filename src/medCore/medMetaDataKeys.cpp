@@ -51,6 +51,7 @@ namespace medMetaDataKeys {
     MEDCORE_EXPORT const Key SeriesDate("SeriesDate", "Series Date"/*, QVariant::Date*/);
     MEDCORE_EXPORT const Key SeriesTime("SeriesTime", "Series Time"/*, QVariant::Date*/);
     MEDCORE_EXPORT const Key SeriesThumbnail("SeriesThumbnail", "Series Thumbnail");
+    MEDCORE_EXPORT const Key SeriesType("SeriesType","Series Type");
 
     // IMAGE
 
