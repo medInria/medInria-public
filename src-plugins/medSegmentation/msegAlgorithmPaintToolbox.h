@@ -42,7 +42,7 @@ namespace mseg {
     class ClickAndMoveEventFilter;
 
 struct PaintState {
-    enum E{ None, Wand, Stroke, DeleteStroke, BoundaryStroke };
+    enum E{ None, Wand, Stroke, DeleteStroke };
 };
 
 //! Segmentation toolbox to allow manual painting of pixels
@@ -76,7 +76,6 @@ public:
 public slots:
     void onStrokePressed();
     void onMagicWandPressed();
-    void onBoundaryStrokePressed();
 
     void onApplyButtonPressed();
     void onClearMaskPressed();
@@ -107,15 +106,17 @@ protected:
     void enableButtons( bool value);
 
     void generateLabelColorMap(unsigned int numLabels);
+
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
 
     QPushButton *m_strokeButton;
-    QPushButton *m_boundaryStrokeButton;
     QPushButton *m_labelColorWidget;
+    QLabel *m_colorLabel;
 
     QSlider *m_brushSizeSlider;
     QSpinBox *m_brushSizeSpinBox;
+    QLabel *m_brushRadiusLabel;
     QSpinBox *m_strokeLabelSpinBox;
 
     QPushButton *m_magicWandButton;
@@ -131,7 +132,6 @@ private:
     QPushButton *m_applyButton;
 
     QPushButton *m_clearMaskButton;
-    QTextEdit *m_dataText;
 
     dtkSmartPointer< medViewEventFilter > m_viewFilter;
 
@@ -139,8 +139,6 @@ private:
 
     dtkSmartPointer<medAbstractData> m_maskData;
     dtkSmartPointer<medAbstractData> m_imageData;
-
-    QString m_noDataText;
 
     medImageMaskAnnotationData::ColorMapType m_labelColorMap;
 
