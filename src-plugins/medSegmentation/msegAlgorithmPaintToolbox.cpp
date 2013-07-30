@@ -177,11 +177,14 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_brushSizeSlider->setToolTip(tr("Changes the brush radius."));
     m_brushSizeSlider->setValue(this->m_strokeRadius);
     m_brushSizeSlider->setRange(1, 10);
+    m_brushSizeSlider->hide();
     m_brushSizeSpinBox = new QSpinBox(displayWidget);
     m_brushSizeSpinBox->setToolTip(tr("Changes the brush radius."));
     m_brushSizeSpinBox->setValue(this->m_strokeRadius);
     m_brushSizeSpinBox->setMinimum(0);
+    m_brushSizeSpinBox->hide();
     m_brushRadiusLabel = new QLabel(tr("Brush Radius"), displayWidget);
+    m_brushRadiusLabel->hide();
 
     connect(m_brushSizeSpinBox, SIGNAL(valueChanged(int)),m_brushSizeSlider,SLOT(setValue(int)) );
     connect(m_brushSizeSlider,SIGNAL(valueChanged(int)),m_brushSizeSpinBox,SLOT(setValue(int)) );
@@ -197,11 +200,13 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_wandThresholdSizeSlider->setValue(100);
     m_wandThresholdSizeSlider->setMinimum(0);
     m_wandThresholdSizeSlider->setMaximum(1000);
+    m_wandThresholdSizeSlider->hide();
 
     m_wandThresholdSizeSpinBox = new QDoubleSpinBox(displayWidget);
     m_wandThresholdSizeSpinBox->setMinimum(0);
     m_wandThresholdSizeSpinBox->setMaximum(1000000);
     m_wandThresholdSizeSpinBox->setDecimals(2);
+    m_wandThresholdSizeSpinBox->hide();
 
     this->setWandSpinBoxValue(100);
 
@@ -210,6 +215,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
 
     m_wand3DCheckbox = new QCheckBox (tr("3D"), displayWidget);
     m_wand3DCheckbox->setCheckState(Qt::Unchecked);
+    m_wand3DCheckbox->hide();
 
     magicWandLayout->addWidget( m_wand3DCheckbox );
     magicWandLayout->addWidget( m_wandThresholdSizeSlider );
@@ -225,6 +231,7 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_strokeLabelSpinBox->setValue(this->m_strokeLabel);
     m_strokeLabelSpinBox->setMinimum(1);
     m_strokeLabelSpinBox->setMaximum(24);
+    m_strokeLabelSpinBox->hide();
     connect (m_strokeLabelSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onLabelChanged(int)));
 
     m_labelColorWidget = new QPushButton(displayWidget);
@@ -232,10 +239,13 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_labelColorWidget->setStyleSheet("background-color: rgb(255, 0, 0);border:0;border-radius: 0px;width:20px;height:20px;");
     m_labelColorWidget->setCheckable(false);
     m_labelColorWidget->setText("");
+    m_labelColorWidget->hide();
     connect(m_labelColorWidget, SIGNAL(clicked()), this, SLOT(onSelectLabelColor()));
 
-    labelSelectionLayout->addStretch();
     m_colorLabel = new QLabel(tr("Label:"), displayWidget);
+    m_colorLabel->hide();
+
+    labelSelectionLayout->addStretch();
     labelSelectionLayout->addWidget(m_colorLabel );
     labelSelectionLayout->addWidget( m_labelColorWidget );
     labelSelectionLayout->addWidget( m_strokeLabelSpinBox );
@@ -264,7 +274,10 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     connect (m_applyButton,     SIGNAL(pressed()),
         this, SLOT(onApplyButtonPressed()));
 
-    connect (medViewManager::instance(), SIGNAL(viewOpened()), this, SLOT(updateMouseInteraction()));
+    connect (medViewManager::instance(), SIGNAL(viewOpened()), 
+        this, SLOT(updateMouseInteraction()));
+
+    showButtons(false);
 }
 
 AlgorithmPaintToolbox::~AlgorithmPaintToolbox()
@@ -311,9 +324,11 @@ void AlgorithmPaintToolbox::onStrokePressed()
     if ( this->m_strokeButton->isChecked() ) {
         this->m_viewFilter->removeFromAllViews();
         m_paintState = (PaintState::None);
+        updateButtons();
         return;
     }
     setPaintState(PaintState::Stroke);
+    updateButtons();
     this->m_magicWandButton->setChecked(false);
     m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
     this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
@@ -324,14 +339,15 @@ void AlgorithmPaintToolbox::onMagicWandPressed()
     if ( this->m_magicWandButton->isChecked() ) {
         this->m_viewFilter->removeFromAllViews();
         m_paintState = (PaintState::None);
+        updateButtons();
         return;
     }
     setPaintState(PaintState::Wand);
+    updateButtons();
     this->m_strokeButton->setChecked(false);
     m_viewFilter = ( new ClickAndMoveEventFilter(this->segmentationToolBox(), this) );
     this->segmentationToolBox()->addViewEventFilter( m_viewFilter );
 }
-
 
 void AlgorithmPaintToolbox::onApplyButtonPressed()
 {
@@ -451,10 +467,10 @@ void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
 
     if ( m_imageData ) {
         m_itkMask = dynamic_cast<MaskType*>( reinterpret_cast<itk::Object*>(m_maskData->data()) );
-        this->enableButtons(true);
+        this->showButtons(true);
     } else {
         m_itkMask = NULL;
-        this->enableButtons(false);
+        this->showButtons(false);
     }
 }
 
@@ -896,12 +912,57 @@ void AlgorithmPaintToolbox::updateFromGuiItems()
     this->m_wandRadius = m_wandThresholdSizeSpinBox->value();
 }
 
-void AlgorithmPaintToolbox::enableButtons( bool value )
+void AlgorithmPaintToolbox::showButtons( bool value )
 {
-    m_strokeButton->setEnabled(value);
-    m_magicWandButton->setEnabled(value);
-    m_applyButton->setEnabled(value);
-    m_clearMaskButton->setEnabled(value);
+    if (value)
+    {
+        m_applyButton->show();
+        m_clearMaskButton->show();
+    }
+    else
+    {
+        m_applyButton->hide();
+        m_clearMaskButton->hide();
+    }
+}
+
+void AlgorithmPaintToolbox::updateButtons()
+{
+    if ( m_paintState == PaintState::None ) {
+        m_wandThresholdSizeSlider->hide();
+        m_wandThresholdSizeSpinBox->hide();
+        m_wand3DCheckbox->hide();
+        m_brushSizeSlider->hide();
+        m_brushSizeSpinBox->hide();
+        m_brushRadiusLabel->hide();
+        m_labelColorWidget->hide();
+        m_strokeLabelSpinBox->hide();
+        m_colorLabel->hide();
+        return;
+    }
+    else
+    {
+        m_labelColorWidget->show();
+        m_strokeLabelSpinBox->show();
+        m_colorLabel->show();
+
+        if ( m_paintState == PaintState::Wand ) {
+            m_brushSizeSlider->hide();
+            m_brushSizeSpinBox->hide();
+            m_brushRadiusLabel->hide();
+            m_wandThresholdSizeSlider->show();
+            m_wandThresholdSizeSpinBox->show();
+            m_wand3DCheckbox->show();
+        }
+        else if ( m_paintState == PaintState::Stroke ) {
+            m_brushSizeSlider->show();
+            m_brushSizeSpinBox->show();
+            m_brushRadiusLabel->show();
+            m_wandThresholdSizeSlider->hide();
+            m_wandThresholdSizeSpinBox->hide();
+            m_wand3DCheckbox->hide();
+        }
+    }
 }
 
 

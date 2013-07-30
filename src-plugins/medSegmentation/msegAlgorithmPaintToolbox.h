@@ -103,21 +103,23 @@ protected:
 
     void updateFromGuiItems();
 
-    void enableButtons( bool value);
+    void showButtons( bool value);
 
     void generateLabelColorMap(unsigned int numLabels);
+
+    void updateButtons();
 
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
 
     QPushButton *m_strokeButton;
     QPushButton *m_labelColorWidget;
+    QSpinBox *m_strokeLabelSpinBox;
     QLabel *m_colorLabel;
 
     QSlider *m_brushSizeSlider;
     QSpinBox *m_brushSizeSpinBox;
     QLabel *m_brushRadiusLabel;
-    QSpinBox *m_strokeLabelSpinBox;
 
     QPushButton *m_magicWandButton;
     // The slider works on percentages of a linear scale between min and max values, i.e.
