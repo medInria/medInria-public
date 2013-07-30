@@ -72,7 +72,6 @@ set(${PROJECT_NAME}_SOURCES
   itkDataImageReaderPlugin.cpp
   itkDataImageReaderCommand.cxx
   itkMetaDataImageReader.cpp
-  itkAnalyzeDataImageReader.cpp
   itkPNGDataImageReader.cpp
   itkBMPDataImageReader.cpp
   itkJPEGDataImageReader.cpp
@@ -117,7 +116,6 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore dtkLog
   medCore
   itkDataImageBase
-  ITKIOReview
   itkIOAddOn
   ${ITK_LIBRARIES})
 

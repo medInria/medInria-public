@@ -43,6 +43,24 @@ include(${dtk_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+SET(ITKIO_LIBRARIES
+  ITKIOImageBase
+  ITKIOBMP
+  ITKIOLSM
+  ITKIOJPEG
+  ITKIOPNG
+  ITKIOVTK
+  ITKIOGDCM
+  ITKNrrdIO
+  ITKIONRRD
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIOGIPL
+  ITKIOHDF5
+  ITKIOBioRad
+  ITKIOStimulate
+)
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -75,7 +93,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore dtkLog
   medCore
   ITKCommon
-  ITKIO
+  ${ITKIO_LIBRARIES}
 )
 
 ## #################################################################
