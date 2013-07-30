@@ -52,7 +52,6 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   itkDataImageWriterPlugin.cpp
   itkMetaDataImageWriter.cpp
-  itkAnalyzeDataImageWriter.cpp
   itkBMPDataImageWriter.cpp
   itkPNGDataImageWriter.cpp
   itkJPEGDataImageWriter.cpp
@@ -89,7 +88,6 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore dtkLog
   medCore
   ${ITK_LIBRARIES}
-  ITKIOReview
   itkDataImageBase
   itkIOAddOn
   )
