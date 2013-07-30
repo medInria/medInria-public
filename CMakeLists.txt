@@ -90,3 +90,10 @@ endif()
 if (MEDINRIA_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
+
+if (EXISTS ${CMAKE_BINARY_DIR}/revisions/revisions.html)
+  install(FILE ${CMAKE_BINARY_DIR}/revisions/revisions.html 
+    DESTINATION revisions
+    )
+endif()
+

@@ -154,11 +154,32 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     medInriaLabel2->setPixmap ( medLogo );
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
+    
     QString aboutText = QString(tr("<br/><br/>"
                       "medInria %1 is the medical imaging platform developed at "
                       "Inria<br/><br/>"
                       "<center>Inria, Copyright 2013</center>"))
                       .arg(qApp->applicationVersion());
+    
+    QString revisionsManifest = "";
+    QDir revisionsDir(QDir::current());
+    revisionsDir.cdUp();
+    
+    QFile revisionsFile(revisionsDir.absolutePath() + "/revisions/revisions.html");
+    if(revisionsFile.exists())
+    {
+        qDebug()<<"revisions.exists() !!";
+        if (revisionsFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        {            
+            QTextStream revisionsStream(&revisionsFile);
+            revisionsManifest = revisionsStream.readAll();
+        }
+        
+        qDebug()<<revisionsManifest;
+    }
+    
+    aboutText += revisionsManifest;
+    
     aboutTextEdit->setHtml (aboutText);
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
