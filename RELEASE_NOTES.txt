@@ -1,3 +1,7 @@
+medInria v2.1.1:
+- Win64 package was using Qt 4.7 instead of 4.8
+- Unix packages were using a dynamic boost, instead of static
+
 medInria v2.1.0:
 
 - First open-source release, code available on github
