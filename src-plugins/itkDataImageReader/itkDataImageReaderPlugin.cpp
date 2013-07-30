@@ -15,7 +15,6 @@
 #include "itkGDCMDataImageReader.h"
 #endif
 #include "itkMetaDataImageReader.h"
-#include "itkAnalyzeDataImageReader.h"
 #include "itkPNGDataImageReader.h"
 #include "itkBMPDataImageReader.h"
 #include "itkJPEGDataImageReader.h"
@@ -73,7 +72,6 @@ bool itkDataImageReaderPlugin::initialize()
     if (!itkGDCMDataImageReader::registered())       { dtkWarn() << "Unable to register  itkGDCMDataImageReader type";      }
 #endif
     if (!itkNiftiDataImageReader::registered())      { dtkWarn() << "Unable to register itkNiftiDataImageReader type";      }
-    if (!itkAnalyzeDataImageReader::registered())    { dtkWarn() << "Unable to register itkAnalyzeDataImageReader type";    }
     if (!itkNrrdDataImageReader::registered())       { dtkWarn() << "Unable to register itkNrrdDataImageReader type";       }
     if (!itkGiplDataImageReader::registered())       { dtkWarn() << "Unable to register itkGiplDataImageReader type";       }
     if (!itkVTKDataImageReader::registered())        { dtkWarn() << "Unable to register itkVTKDataImageReader type";        }

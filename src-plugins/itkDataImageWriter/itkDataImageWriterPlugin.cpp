@@ -13,7 +13,6 @@
 
 #include "itkDataImageWriterPlugin.h"
 #include "itkMetaDataImageWriter.h"
-#include "itkAnalyzeDataImageWriter.h"
 #include "itkPNGDataImageWriter.h"
 #include "itkBMPDataImageWriter.h"
 #include "itkJPEGDataImageWriter.h"
@@ -82,7 +81,6 @@ bool itkDataImageWriterPlugin::initialize()
 
     if (!itkMetaDataImageWriter::registered())       { dtkWarn() << "Unable to register itkMetaDataImageWriter type";       }
     if (!itkNiftiDataImageWriter::registered())      { dtkWarn() << "Unable to register itkNiftiDataImageWriter type";      }
-    if (!itkAnalyzeDataImageWriter::registered())    { dtkWarn() << "Unable to register itkAnalyzeDataImageWriter type";    }
     if (!itkNrrdDataImageWriter::registered())       { dtkWarn() << "Unable to register itkNrrdDataImageWriter type";       }
     if (!itkGiplDataImageWriter::registered())       { dtkWarn() << "Unable to register itkGiplDataImageWriter type";       }
     if (!itkVTKDataImageWriter::registered())        { dtkWarn() << "Unable to register itkVTKDataImageWriter type";        }
