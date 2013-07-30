@@ -12,6 +12,9 @@
 =========================================================================*/
 
 #include "medHomepageArea.h"
+#ifdef MEDINRIA_HAS_REVISIONS_MANIFEST
+    #include <medRevisions.h>
+#endif
 
 #include <medHomepageButton.h>
 #include <medWorkspace.h>
@@ -161,24 +164,10 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                       "<center>Inria, Copyright 2013</center>"))
                       .arg(qApp->applicationVersion());
     
-    QString revisionsManifest = "";
-    QDir revisionsDir(QDir::current());
-    revisionsDir.cdUp();
-    
-    QFile revisionsFile(revisionsDir.absolutePath() + "/revisions/revisions.html");
-    if(revisionsFile.exists())
-    {
-        qDebug()<<"revisions.exists() !!";
-        if (revisionsFile.open(QIODevice::ReadOnly | QIODevice::Text))
-        {            
-            QTextStream revisionsStream(&revisionsFile);
-            revisionsManifest = revisionsStream.readAll();
-        }
-        
-        qDebug()<<revisionsManifest;
-    }
-    
-    aboutText += revisionsManifest;
+#ifdef MEDINRIA_HAS_REVISIONS_MANIFEST
+    aboutText += REVISIONS_MANIFEST;
+#endif
+
     
     aboutTextEdit->setHtml (aboutText);
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
