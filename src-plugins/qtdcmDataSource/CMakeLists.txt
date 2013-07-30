@@ -86,7 +86,6 @@ add_library(${PROJECT_NAME} SHARED
 if (WIN32)
   target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  ${ITK_LIBRARIES}
   ${QTDCM_LIBS}
   ${DCMTK_LIBRARIES}
   dtkCore
@@ -98,7 +97,6 @@ if (WIN32)
 else()
   target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  ${ITK_LIBRARIES}
   ${QTDCM_LIBS}
   ${DCMTK_LIBRARIES}
   dtkCore

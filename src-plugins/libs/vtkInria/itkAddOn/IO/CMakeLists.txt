@@ -38,7 +38,8 @@ else()
 endif()
 
 target_link_libraries(itkIOAddOn
-  ${ITK_LIBRARIES}
+  ITKCommon
+  ITKIOImageBase
 )
 
 if (ITK_USE_SYSTEM_GDCM)
@@ -54,13 +55,11 @@ set(SYSTEM_GDCM_LIBRARIES
     )
   if (WIN32 AND NOT CYGWIN AND NOT MINGW)
     target_link_libraries(GDCMImport 
-      ${ITK_LIBRARIES}
       ${SYSTEM_GDCM_LIBRARIES}
       getoptcompatlib
       )
   else()
     target_link_libraries(GDCMImport
-      ${ITK_LIBRARIES}
       ${SYSTEM_GDCM_LIBRARIES}
       )
   endif()

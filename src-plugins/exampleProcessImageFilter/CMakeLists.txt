@@ -40,12 +40,6 @@ include(${medInria_USE_FILE})
 include(dtkPlugin)
 
 find_package(ITK REQUIRED)
-  if (NOT ITK_USE_REVIEW)
-    message(FATAL_ERROR "ITK must be build with option ITK_USE_REVIEW to ON")
-  endif()
-  if (NOT ITK_USE_REVIEW_STATISTICS)
-    message(FATAL_ERROR "ITK must be build with option ITK_USE_REVIEW_STATISTICS to ON")
-  endif()
 include(${ITK_USE_FILE})
 
 find_package(VTK REQUIRED)
@@ -88,8 +82,8 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore dtkLog
   medCore
   medGui
-  ${ITK_LIBRARIES}
-  ${VTK_LIBRARIES})
+  ITKCommon
+)
 
 dtk_build_doc(exampleProcessImageFilterPlugin)
 

@@ -98,7 +98,6 @@ target_link_libraries(${PROJECT_NAME}
   itkIOAddOn
   dtkVtkLogForwarder
   dtkItkLogForwarder
-  ${ITK_LIBRARIES}
   ${QT_LIBRARIES})
 
 # Group common files together in Visual Studio.

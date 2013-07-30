@@ -28,10 +28,36 @@ if (WIN32 AND NOT CYGWIN AND NOT MINGW)
  target_link_libraries(itkReshaper 
   itkIOAddOn 
   getoptcompatlib
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
  )
 else()
  target_link_libraries(itkReshaper
   itkIOAddOn
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
  )
 endif()
 

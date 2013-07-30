@@ -72,11 +72,23 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-  ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
   dtkItkLogForwarder
   dtkCore
   dtkLog
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
 )
 
 # Group common files together in Visual Studio.

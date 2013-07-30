@@ -29,8 +29,8 @@ add_executable(${PLUGIN_NAME}CxxTests
 target_link_libraries(${PLUGIN_NAME}CxxTests
   dtkCore dtkLog
   medCore
-  ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
+  ITKCommon
   )
 
 set_target_properties(${PLUGIN_NAME}CxxTests PROPERTIES 

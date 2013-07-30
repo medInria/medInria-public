@@ -80,11 +80,24 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_QRC})
 
 target_link_libraries(${PROJECT_NAME}
-  ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
   dtkItkLogForwarder
   dtkCore dtkLog
-  medCore)
+  medCore
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
+)
 
 # Group common files together in Visual Studio.
 source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)

@@ -117,7 +117,8 @@ target_link_libraries(${PROJECT_NAME}
   medCore
   itkDataImageBase
   itkIOAddOn
-  ${ITK_LIBRARIES})
+  ITKIOPhilipsREC
+)
 
 if (MEDINRIA-PLUGINS_BUILD_TESTING)
   add_subdirectory(Testing)

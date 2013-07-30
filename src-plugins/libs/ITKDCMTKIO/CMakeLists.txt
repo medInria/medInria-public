@@ -44,7 +44,6 @@ add_library(ITKDCMTKIO "SHARED"
 target_link_libraries(ITKDCMTKIO
   ${DCMTK_LIBRARIES}
   itkIOAddOn
-  ${ITK_LIBRARIES}
 )
 
 if(APPLE)

@@ -20,10 +20,6 @@
 #include <itkMaskImageFilter.h>
 #include <itkAddImageFilter.h>
 #include <itkConnectedThresholdImageFilter.h>
-#include "itkImageFileWriter.h"
-
-
-
 
 // /////////////////////////////////////////////////////////////////
 // exampleProcessImageFilterPrivate
@@ -182,12 +178,6 @@ int exampleProcessImageFilter::update()
 
             //Set the data for the output
             d->output->setData(maskFilter4->GetOutput());
-
-            typedef itk::ImageFileWriter< ImageType4 > WriterType;
-            WriterType::Pointer writer = WriterType::New();
-            writer->SetFileName("/user/jgarciag/home/AnalyzeStuff/headerModify/ResulHalfMask4D.mha");
-            writer->SetInput(/*dynamic_cast<ImageType4*>((itk::Object*)(d->output->output()))*/maskFilter4->GetOutput());
-            writer->Update();
         }
         else
             qDebug("Not the right itkDataImageUShort3 type of images");

@@ -77,7 +77,6 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-  ${ITK_LIBRARIES}
   ${QT_LIBRARIES}
   dtkItkLogForwarder
   dtkCore 

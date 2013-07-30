@@ -99,7 +99,8 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore dtkLog
   medCore
   dtkItkLogForwarder
-  ${ITK_LIBRARIES})
+  ITKStatistics
+)
 
 if (BUILD_TESTING)
   add_subdirectory(Testing)

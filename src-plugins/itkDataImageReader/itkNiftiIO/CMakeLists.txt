@@ -29,7 +29,7 @@ add_library(ITKDCMTKIO ${ITK_LIB_STYLE}
 target_link_libraries(ITKDCMTKIO
   ${DCMTK_LIBRARIES}
   itkIOAddOn
-  ${ITK_LIBRARIES})
+)
 
 if (ITK_BUILD_SHARED)
     install (TARGETS ITKDCMTKIO  LIBRARY DESTINATION lib)
