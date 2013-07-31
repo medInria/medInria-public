@@ -120,38 +120,36 @@ QList<QImage> & vtkDataMesh::thumbnails()
 
   if (!mesh || !mesh->GetNumberOfPoints())
       return d->thumbnails;
+    
+  unsigned int w=128, h=128;
+  QImage img(w, h, QImage::Format_RGB32);
+    img.fill(0);
 
-  vtkDataSetSurfaceFilter* geometryextractor = vtkDataSetSurfaceFilter::New();
-  vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
-  vtkActor* actor = vtkActor::New();
-  vtkProperty* prop = vtkProperty::New();
-  vtkRenderer* renderer = vtkRenderer::New();
-  vtkRenderWindow* window = vtkRenderWindow::New();
+#ifndef Q_WS_MAC
+  vtkSmartPointer <vtkDataSetSurfaceFilter> geometryextractor = vtkDataSetSurfaceFilter::New();
+  vtkSmartPointer <vtkPolyDataMapper> mapper = vtkPolyDataMapper::New();
+  vtkSmartPointer <vtkActor> actor = vtkActor::New();
+  vtkSmartPointer <vtkProperty> prop = vtkProperty::New();
+  vtkSmartPointer <vtkRenderer> renderer = vtkRenderer::New();
+  vtkSmartPointer <vtkRenderWindow> window = vtkRenderWindow::New();
   geometryextractor->SetInput (mesh);
   mapper->SetInput (geometryextractor->GetOutput());
   actor->SetMapper (mapper);
   actor->SetProperty (prop);
   renderer->AddViewProp(actor);
-  window->SetSize (128,128);
-  window->OffScreenRenderingOn();
+  window->SetSize (w,h);
+  window->SetOffScreenRendering(1);
   window->AddRenderer (renderer);
 
   renderer->ResetCamera();
   window->Render();
-  unsigned int w=128, h=128;
 
-  QImage img(w, h, QImage::Format_RGB32);
-
-  vtkUnsignedCharArray* pixels = vtkUnsignedCharArray::New();
+  vtkSmartPointer <vtkUnsignedCharArray> pixels = vtkUnsignedCharArray::New();
   pixels->SetArray(img.bits(), w*h*4, 1);
   window->GetRGBACharPixelData(0, 0, w-1, h-1, 1, pixels);
-  pixels->Delete();
-
-  mapper->Delete();
-  geometryextractor->Delete();
-  actor->Delete();
-  renderer->Delete();
+    
   window->Delete();
+#endif
 
   d->thumbnails.push_back (img);
 
