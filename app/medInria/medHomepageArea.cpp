@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include "medHomepageArea.h"
-#ifdef MEDINRIA_HAS_REVISIONS_MANIFEST
+#ifdef MEDINRIA_HAS_REVISIONS
     #include <medRevisions.h>
 #endif
 
@@ -164,8 +164,8 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
                       "<center>Inria, Copyright 2013</center>"))
                       .arg(qApp->applicationVersion());
     
-#ifdef MEDINRIA_HAS_REVISIONS_MANIFEST
-    aboutText += REVISIONS_MANIFEST;
+#ifdef MEDINRIA_HAS_REVISIONS
+    aboutText += QString::fromLocal8Bit(REVISIONS);
 #endif
 
     

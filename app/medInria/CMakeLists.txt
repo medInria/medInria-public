@@ -55,7 +55,7 @@ if (EXISTS ${CMAKE_BINARY_DIR}/revisions/medRevisions.h)
   medRevisions.h
   ${${PROJECT_NAME}_HEADERS}
   )
-  add_definitions(-DMEDINRIA_HAS_REVISIONS_MANIFEST)
+  add_definitions(-DMEDINRIA_HAS_REVISIONS)
 endif()
 
 set(${PROJECT_NAME}_SOURCES
