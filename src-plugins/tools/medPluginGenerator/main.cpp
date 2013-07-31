@@ -20,7 +20,7 @@
 
 void printUsage() {
     std::cout <<
-    QString("Usage: %1 --help | --console | [--output path --name name --type typeName\n").arg(qApp->argv()[0]).toStdString() <<
+    QString("Usage: %1 --help | --console [--output path --name name --type typeName\n").arg(qApp->argv()[0]).toStdString() <<
     "--help                Displays this message.\n"
     "--console             Run the console version.\n"
     "--output [path]       Output directory for the plugin skeleton.\n"
