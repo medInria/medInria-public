@@ -61,7 +61,7 @@ medDatabaseNavigatorItem::medDatabaseNavigatorItem(const medDataIndex & index,  
 
     d->persistent = dbc->isPersistent();
     d->text = dbc->metaData(index,medMetaDataKeys::SeriesDescription);
-
+    this->setToolTip("<span style=\"background: #fff8dc;\">" + d->text + "</span>");
 
     bool shouldSkipLoading = false;
     if ( thumbpath.isEmpty() ) {
