@@ -401,7 +401,7 @@ void vtkImageViewCollectionCommand::Execute(vtkObject *caller,
   // Char events
   if (event == vtkCommand::CharEvent)
   {
-    switch(rwi->GetKeyCode())
+    /*switch(rwi->GetKeyCode())
     {
 	case 'a':
 	case 'A':
@@ -420,7 +420,7 @@ void vtkImageViewCollectionCommand::Execute(vtkObject *caller,
 	break;
 	default:
 	  break;
-    }
+    }*/
   }
 
   // Reset

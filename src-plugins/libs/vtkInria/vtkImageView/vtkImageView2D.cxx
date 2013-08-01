@@ -232,7 +232,7 @@ vtkImageView2D::vtkImageView2D()
 
   this->RulerWidget->KeyPressActivationOff();
 
-  this->DistanceWidget->KeyPressActivationOn();
+  this->DistanceWidget->KeyPressActivationOff();
   this->DistanceWidget->CreateDefaultRepresentation();
   this->DistanceWidget->SetKeyPressActivationValue ('d');
   vtkDistanceRepresentation2D* rep1 = vtkDistanceRepresentation2D::SafeDownCast (this->DistanceWidget->GetRepresentation());
