@@ -298,8 +298,7 @@ public:
     vtkImageView3D *view3d;
 
     vtkInteractorStyle *interactorStyle2D;
-    vtkInteractorStyle *interactorStyle3D;
-
+    
     vtkImageView *currentView;
 
     vtkImageViewCollection *collection;
@@ -599,8 +598,7 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyReleaseEvent,d->observer,0);
 
     d->interactorStyle2D = d->view2d->GetInteractorStyle();
-    d->interactorStyle3D = d->view3d->GetInteractorStyle();
-
+    
     // 3D mode
     QAction *vrAct = new QAction ( tr ( "VR" ), d->vtkWidget );
 
