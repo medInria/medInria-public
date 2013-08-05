@@ -226,7 +226,9 @@ signals:
      */
     void progressed(QObject* obj,int value);
 
-    void openRequested(const medDataIndex& index, int slice);
+    void visualizationRequested(const medDataIndex& index);
+    void visualizationRequested(int slice);
+    void timeCalculated(int time);
 
     /**
      * @brief Emitted when the user double clicks on a medDatabasenavigatorItem (thumbnail)

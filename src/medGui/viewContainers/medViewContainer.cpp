@@ -445,7 +445,6 @@ bool medViewContainer::open(dtkAbstractData * data)
     {
         //container empty, or multi with no extendable view
         view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"));
-        connect (this, SIGNAL(sliceSelected(int)), view, SLOT(setSlider(int)));
     }
 
     if( view.isNull() )

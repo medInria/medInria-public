@@ -99,7 +99,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     connect(medDataManager::instance(), SIGNAL(dataAdded(const medDataIndex &)),d->dbSource,SLOT(update(const medDataIndex&)));
     connect(medDataManager::instance(), SIGNAL(dataRemoved(const medDataIndex &)),d->dbSource,SLOT(update(const medDataIndex&)));
-    connect(medDataManager::instance(), SIGNAL(openRequested(const medDataIndex &, int)), this, SIGNAL(openRequested(const medDataIndex&, int)));
     // This remains to be checked
     connect(medDatabaseController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),this,SLOT(displayJobItem(medJobItem *, QString)));
     connect(medDatabaseNonPersistentController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),this,SLOT(displayJobItem(medJobItem *, QString)));

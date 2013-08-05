@@ -28,6 +28,7 @@
 #include <med4DAbstractViewInteractor.h>
 #include <medToolBoxTab.h>
 #include <medButton.h>
+#include <medDataManager.h>
 
 
 
@@ -154,6 +155,8 @@ medTimeLineToolBox::medTimeLineToolBox(QWidget *parent) : medToolBox(parent), d(
     connect(d->spinBox, SIGNAL(valueChanged(int)),this, SLOT(onSpinBoxChanged(int)));
     connect(d->stopButton, SIGNAL(triggered()),this, SLOT(onStopButton()));
 
+    connect(medDataManager::instance(), SIGNAL(timeCalculated(int)), this, SLOT(setTime(int)));
+
     this->setTitle(tr("Time Management"));
     box->setLayout (boxlayout);
     this->addWidget (box);
@@ -173,7 +176,6 @@ medTimeLineToolBox::~medTimeLineToolBox(void)
 
     d = NULL;
 }
-
 
 void medTimeLineToolBox::onViewAdded (dtkAbstractView *view)
 {
@@ -348,6 +350,13 @@ void medTimeLineToolBox::updateRange()
 
     d->labelmin->setText( DoubleToQString(( mintime ) / (d->spinBox->value()/100.0)) + QString(" sec"));
     d->labelmax->setText( DoubleToQString(( maxtime ) / (d->spinBox->value()/100.0)) + QString(" sec"));
+}
+
+void medTimeLineToolBox::setTime(int time)
+{
+    d->timeSlider->setSliderPosition(time);
+    double time_in_sec = this->getTimeFromSliderValue (time);
+    d->labelcurr->setText( DoubleToQString(( time_in_sec ) / (d->spinBox->value()/100.0)) + QString(" sec") );
 }
 
 QString medTimeLineToolBox::DoubleToQString (double val)

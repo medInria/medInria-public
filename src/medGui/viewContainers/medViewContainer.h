@@ -365,12 +365,6 @@ signals:
     */
     void viewRemoved (dtkAbstractView *view);
 
-    /**
-     * @brief A slice has been selected for visualization.
-     *
-     * @param slice
-    */
-    void sliceSelected( int slice );
 
 public slots:
     /**

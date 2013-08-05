@@ -28,6 +28,7 @@
 #include <medAbstractDataImage.h>
 #include <medMetaDataKeys.h>
 #include <medAbstractAnnotationViewInteractor.h>
+#include <medDataManager.h>
 
 #include <vtkCamera.h>
 #include <vtkCommand.h>
@@ -656,6 +657,10 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     connect ( d->slider,       SIGNAL ( valueChanged ( int ) ),            this, SLOT ( onZSliderValueChanged ( int ) ) );
 
     connect ( d->widget, SIGNAL ( destroyed() ), this, SLOT ( widgetDestroyed() ) );
+
+    connect(medDataManager::instance(), SIGNAL(visualizationRequested(int)), this, SLOT(setSlider(int)));
+
+    connect(this, SIGNAL(timeCalculated(int)), medDataManager::instance(), SIGNAL(timeCalculated(int)));
 }
 
 v3dView::~v3dView()
@@ -1635,12 +1640,21 @@ void v3dView::onCroppingPropertySet ( const QString &value )
 
 /**
 * Slot called to visualize a specific slice
-* @param value - the slice number
+* @param value - the rank of the thumbnail
 **/
 void v3dView::setSlider( int value)
 {
-    d->slider->setSliderPosition(value);
-    disconnect(sender(), SIGNAL(sliceSelected(int)), this, 0);
+    /*With temporal sequences, thumbnails are displayed as shown below :
+      slice1 slice2 slice3... slice1 slice2...
+             time1                   time2    */
+
+    int nb_slices = d->slider->maximum() + 1; // number of slices in the volume
+    int slice_to_display = value % nb_slices;    //To display the correct slice
+    int time  = value / nb_slices;               // ... at the correct time
+    emit timeCalculated(time);
+
+    d->slider->setSliderPosition(slice_to_display);
+    disconnect(sender(), SIGNAL(visualizationRequested(int)), this, 0);
 }
 
 void v3dView::onZSliderValueChanged ( int value )

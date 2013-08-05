@@ -185,7 +185,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->stack->addWidget ( d->browserArea );
     d->stack->addWidget ( d->workspaceArea );
 
-    connect(d->browserArea, SIGNAL(openRequested(const medDataIndex&, int)), this, SLOT(open(const medDataIndex&, int)));
+    connect(medDataManager::instance(), SIGNAL(visualizationRequested(const medDataIndex &)), this, SLOT(open(const medDataIndex&)));
     
     //  Setup quick access menu
 
@@ -755,18 +755,6 @@ void medMainWindow::onEditSettings()
     connect ( d->settingsEditor, SIGNAL ( finished() ), dialog, SLOT ( close() ) );
 
     dialog->exec();
-}
-
-void medMainWindow::open ( const medDataIndex& index , int slice )
-{
-   connect (this, SIGNAL(sliceSelected(int)), d->workspaceArea, SIGNAL(sliceSelected(int)));
-   if(d->workspaceArea->openInTab(index))
-    {
-        d->quickAccessButton->setText(tr("Workspace: Visualization"));
-        d->quickAccessButton->setMinimumWidth(170);
-        this->switchToWorkspaceArea();
-        emit sliceSelected(slice);  //to display the selected slice
-    }
 }
 
 void medMainWindow::availableSpaceOnStatusBar()

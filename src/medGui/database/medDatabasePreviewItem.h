@@ -42,7 +42,8 @@ signals:
     void   studyClicked(int id);
     void  seriesClicked(int id);
     void   imageClicked(int id);
-    void openRequested(const medDataIndex &, int);
+    void visualizationRequested(const medDataIndex &);
+    void visualizationRequested(int);
 
     void hoverEntered(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
     void hoverLeft(QGraphicsSceneHoverEvent* event, medDatabasePreviewItem* item);
