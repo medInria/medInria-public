@@ -29,6 +29,8 @@
 #include <vtkRenderWindow.h>
 #include <vtkWindowToImageFilter.h>
 
+#include <QVTKWidget.h>
+
 class vtkDataMeshPrivate
 {
 public:
@@ -40,7 +42,7 @@ const char vtkDataMesh::ID[] = "vtkDataMesh";
 
 vtkDataMesh::vtkDataMesh(): medAbstractDataMesh(), d (new vtkDataMeshPrivate)
 {
-  this->moveToThread(QApplication::instance()->thread());
+  //this->moveToThread(QApplication::instance()->thread());
   d->mesh = 0;
 }
 vtkDataMesh::~vtkDataMesh()
@@ -122,9 +124,9 @@ QList<QImage> & vtkDataMesh::thumbnails()
     if (!mesh || !mesh->GetNumberOfPoints())
         return d->thumbnails;
 
-    if ( QThread::currentThread() != QApplication::instance()->thread())
-        QMetaObject::invokeMethod(this, "createThumbnails", Qt::BlockingQueuedConnection);
-    else
+    //if ( QThread::currentThread() != QApplication::instance()->thread())
+    //    QMetaObject::invokeMethod(this, "createThumbnails", Qt::BlockingQueuedConnection);
+    //else
         createThumbnails();
 
     return d->thumbnails;
@@ -166,11 +168,9 @@ void vtkDataMesh::createThumbnails()
     vtkSmartPointer <vtkRenderer> renderer = vtkRenderer::New();
     vtkSmartPointer <vtkRenderWindow> window = vtkRenderWindow::New();
 
-//ugly trick of doom to have no popups
-#ifdef Q_OS_LINUX || Q_OS_MAC
-    QWidget widget;
-    window->SetWindowId((void*)widget.winId());
-#endif
+    //ugly trick of doom to have no popups
+    QVTKWidget widget;
+    widget.resize(w,h);
 
     geometryextractor->SetInput (mesh);
     mapper->SetInput (geometryextractor->GetOutput());
@@ -182,13 +182,13 @@ void vtkDataMesh::createThumbnails()
     window->AddRenderer (renderer);
 
     renderer->ResetCamera();
-    window->Render();
 
+    widget.SetRenderWindow(window);
+    window->Render();
+    
     vtkSmartPointer <vtkUnsignedCharArray> pixels = vtkUnsignedCharArray::New();
     pixels->SetArray(img.bits(), w*h*4, 1);
     window->GetRGBACharPixelData(0, 0, w-1, h-1, 1, pixels);
-
-    window->Delete();
 
     d->thumbnails.push_back (img);
 }
