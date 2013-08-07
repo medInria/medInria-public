@@ -393,7 +393,7 @@ namespace itk
 	}
       }
       if (total_gap==MAXIMUM_GAP)
-	m_Spacing[2] = 1.0;
+          m_Spacing[2] = 1.0;
       else
 	m_Spacing[2] = total_gap/(double)(gapCount);
     }
@@ -617,7 +617,6 @@ namespace itk
     double sliceLocation = 0;
 
 
-
     /**
        The purpose of the next loop is to parse the DICOM header of each file, store all
        fields in the Dictionary, and order filenames depending on their sliceLocation,
@@ -666,6 +665,13 @@ namespace itk
 	  }
 	}
 	}
+    // We need the spacing between the slices
+    this->DetermineOrientation();
+    this->DetermineSpacing(); // always called after DetermineOrientation
+
+    sliceLocation = floor(sliceLocation/m_Spacing[2]+0.5)*(int)m_Spacing[2];    //Rounding sliceLocation.
+                                                                                //Prevents from some sorting issues (e.g due to
+                                                                                //extremely small differences in sliceLocations)
 
 	m_LocationSet.insert( sliceLocation );
 	m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *f ) );
@@ -679,9 +685,6 @@ namespace itk
       ++f;
     }
 
-
-
-
     /**
        In the next loop, slices are ordered according to their instance number, in case multiple
        volumes are found.
@@ -694,14 +697,14 @@ namespace itk
 
       // using that intermediate lut for instance number ordering
       IndexToNamesMapType instanceNumberToNameMap;
-
+      
       while ( n!=ne )
       {
 	int instanceNumber = 0;
 	std::string instanceNumberString = this->GetMetaDataValueString ("(0020,0013)", m_FilenameToIndexMap[ n->second ]);
 	if( instanceNumberString!="" )
 	{
-	  std::istringstream is_stream ( instanceNumberString.c_str() );
+        std::istringstream is_stream ( instanceNumberString.c_str() );
 	  is_stream >> instanceNumber;
 	}
 	// else, we assume all files have the same instance number (0), i.e.: the serie has only one volume
@@ -721,15 +724,15 @@ namespace itk
 	std::list< std::string >::const_iterator fn = in->second.begin(), fne = in->second.end();
 	while ( fn!=fne )
 	{
-	  m_LocationToFilenamesMap.insert( std::pair< double, std::string >( *l, *fn ) );
+        m_LocationToFilenamesMap.insert( std::pair< double, std::string >( *l, *fn ) );
 	  ++fn;
 	}
 	++in;
       }
       ++l;
     }
-
-
+    
+  
 
     // collecting slice count and rank count while doing sanity checks
     unsigned int sizeZ = m_LocationSet.size();
@@ -739,9 +742,9 @@ namespace itk
     SliceLocationSetType::const_iterator it = m_LocationSet.begin();
     while (it!=m_LocationSet.end())
     {
-      if ( m_LocationToFilenamesMap.count(*it)!=sizeT )
+      if (!( m_LocationToFilenamesMap.count(*it)==sizeT ))
       {
-	itkExceptionMacro (<< "Inconsistency in dicom volumes: " << m_LocationToFilenamesMap.count(*it) << " vs. " << sizeT);
+	        itkExceptionMacro (<< "Inconsistency in dicom volumes: " << m_LocationToFilenamesMap.count(*it) << " vs. " << sizeT);
       }
       ++it;
     }
@@ -756,7 +759,6 @@ namespace itk
       this->SetNumberOfDimensions (3);
     }
     m_Dimensions[2] =  sizeZ;
-
 
 
     /**
