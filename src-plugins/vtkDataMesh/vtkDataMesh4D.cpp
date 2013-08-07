@@ -29,6 +29,8 @@
 #include <vtkRenderWindow.h>
 #include <vtkWindowToImageFilter.h>
 
+#include <QVTKWidget.h>
+
 class vtkDataMesh4DPrivate
 {
 public:
@@ -40,6 +42,7 @@ const char vtkDataMesh4D::ID[] = "vtkDataMesh4D";
 
 vtkDataMesh4D::vtkDataMesh4D(): medAbstractDataMesh(), d (new vtkDataMesh4DPrivate)
 {
+  this->moveToThread(QApplication::instance()->thread());
   d->meshsequence = 0;
 }
 vtkDataMesh4D::~vtkDataMesh4D()
@@ -110,47 +113,59 @@ QImage & vtkDataMesh4D::thumbnail()
 
 QList<QImage> & vtkDataMesh4D::thumbnails()
 {
-  d->thumbnails.clear();
+    d->thumbnails.clear();
 
-  vtkPointSet* mesh = vtkPointSet::SafeDownCast (d->meshsequence->GetDataSet());
+    vtkPointSet * mesh = vtkPointSet::SafeDownCast(d->meshsequence->GetDataSet());
 
-  if (!mesh || !mesh->GetNumberOfPoints())
+    if (!mesh || !mesh->GetNumberOfPoints())
+        return d->thumbnails;
+
+    if ( QThread::currentThread() != QApplication::instance()->thread())
+        QMetaObject::invokeMethod(this, "createThumbnails", Qt::BlockingQueuedConnection);
+    else
+        createThumbnails();
+
     return d->thumbnails;
+}
 
-  vtkDataSetSurfaceFilter* geometryextractor = vtkDataSetSurfaceFilter::New();
-  vtkPolyDataMapper* mapper = vtkPolyDataMapper::New();
-  vtkActor* actor = vtkActor::New();
-  vtkProperty* prop = vtkProperty::New();
-  vtkRenderer* renderer = vtkRenderer::New();
-  vtkRenderWindow* window = vtkRenderWindow::New();
-  geometryextractor->SetInput (mesh);
-  mapper->SetInput (geometryextractor->GetOutput());
-  actor->SetMapper (mapper);
-  actor->SetProperty (prop);
-  renderer->AddViewProp(actor);
-  window->SetSize (128,128);
-  window->AddRenderer (renderer);
-  window->OffScreenRenderingOn();
-  renderer->ResetCamera();
-  window->Render();
-  unsigned int w=128, h=128;
+void vtkDataMesh4D::createThumbnails()
+{
+    vtkPointSet * mesh = vtkPointSet::SafeDownCast(d->meshsequence->GetDataSet());
 
-  QImage img(w, h, QImage::Format_RGB32);
+    unsigned int w=128, h=128;
+    QImage img(w, h, QImage::Format_RGB32);
+    img.fill(0);
 
-  vtkUnsignedCharArray* pixels = vtkUnsignedCharArray::New();
-  pixels->SetArray(img.bits(), w*h*4, 1);
-  window->GetRGBACharPixelData(0, 0, w-1, h-1, 1, pixels);
-  pixels->Delete();
+    vtkSmartPointer <vtkDataSetSurfaceFilter> geometryextractor = vtkDataSetSurfaceFilter::New();
+    vtkSmartPointer <vtkPolyDataMapper> mapper = vtkPolyDataMapper::New();
+    vtkSmartPointer <vtkActor> actor = vtkActor::New();
+    vtkSmartPointer <vtkProperty> prop = vtkProperty::New();
+    vtkSmartPointer <vtkRenderer> renderer = vtkRenderer::New();
+    vtkSmartPointer <vtkRenderWindow> window = vtkRenderWindow::New();
 
-  mapper->Delete();
-  geometryextractor->Delete();
-  actor->Delete();
-  renderer->Delete();
-  window->Delete();
+    //ugly trick of doom to have no popups
+    QVTKWidget widget;
+    widget.resize(w,h);
 
-  d->thumbnails.push_back (img);
+    geometryextractor->SetInput (mesh);
+    mapper->SetInput (geometryextractor->GetOutput());
+    actor->SetMapper (mapper);
+    actor->SetProperty (prop);
+    renderer->AddViewProp(actor);
+    window->SetSize (w,h);
+    window->SetOffScreenRendering(1);
+    window->AddRenderer (renderer);
 
-  return d->thumbnails;
+    renderer->ResetCamera();
+
+    widget.SetRenderWindow(window);
+    window->Render();
+
+    vtkSmartPointer <vtkUnsignedCharArray> pixels = vtkUnsignedCharArray::New();
+    pixels->SetArray(img.bits(), w*h*4, 1);
+    window->GetRGBACharPixelData(0, 0, w-1, h-1, 1, pixels);
+
+    d->thumbnails.push_back (img);
 }
 
 void vtkDataMesh4D::onMetaDataSet(const QString& key, const QString& value)
