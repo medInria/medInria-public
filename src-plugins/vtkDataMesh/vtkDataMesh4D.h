@@ -70,10 +70,10 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractDataMesh
     int countVertices();
     int countEdges();
 
- public:
-    // derived from medAbstractDataImage
+ private slots:
+    void createThumbnails();
 
- private:
+private:
 
     static const char ID[];
     vtkDataMesh4DPrivate* d;
