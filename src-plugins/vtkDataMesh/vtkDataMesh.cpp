@@ -42,7 +42,7 @@ const char vtkDataMesh::ID[] = "vtkDataMesh";
 
 vtkDataMesh::vtkDataMesh(): medAbstractDataMesh(), d (new vtkDataMeshPrivate)
 {
-  //this->moveToThread(QApplication::instance()->thread());
+  this->moveToThread(QApplication::instance()->thread());
   d->mesh = 0;
 }
 vtkDataMesh::~vtkDataMesh()
@@ -124,9 +124,9 @@ QList<QImage> & vtkDataMesh::thumbnails()
     if (!mesh || !mesh->GetNumberOfPoints())
         return d->thumbnails;
 
-    //if ( QThread::currentThread() != QApplication::instance()->thread())
-    //    QMetaObject::invokeMethod(this, "createThumbnails", Qt::BlockingQueuedConnection);
-    //else
+    if ( QThread::currentThread() != QApplication::instance()->thread())
+        QMetaObject::invokeMethod(this, "createThumbnails", Qt::BlockingQueuedConnection);
+    else
         createThumbnails();
 
     return d->thumbnails;
