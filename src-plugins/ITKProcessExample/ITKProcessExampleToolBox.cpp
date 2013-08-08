@@ -114,6 +114,12 @@ dtkAbstractData* ITKProcessExampleToolBox::processOutput()
     return d->process->output();
 }
 
+dtkPlugin* ITKProcessExampleToolBox::plugin()
+{
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin ( "ITKProcessExamplePlugin" );
+    return plugin;
+}
 
 void ITKProcessExampleToolBox::run()
 {
