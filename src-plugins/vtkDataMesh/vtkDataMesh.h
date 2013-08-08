@@ -70,6 +70,9 @@ class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public medAbstractDataMesh
     int countVertices();
     int countEdges();
 
+private slots:
+    void createThumbnails();
+
  public:
     // derived from medAbstractDataImage
 

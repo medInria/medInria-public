@@ -86,6 +86,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkFiltering
   vtkRendering
   vtkDataManagement
+  QVTK
   itksys
   )
 
