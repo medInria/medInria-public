@@ -359,7 +359,8 @@ void medAbstractDatabaseImporter::importFile ( void )
         {
             qWarning() << "Could not repopulate data!";
             emit showError (tr ( "Could not read data: " ) + filesPaths[0], 5000 );
-            continue;
+            emit failure(this);
+            return;
         }
 
         // check for partial import attempts
