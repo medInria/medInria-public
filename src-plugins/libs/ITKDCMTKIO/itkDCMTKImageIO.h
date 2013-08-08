@@ -25,10 +25,21 @@
 #include <map>
 #include <vector>
 #include <set>
+#include <functional>
 
 
 class DcmElement;
 
+class double_fuzzy_less : public std::binary_function<double,double,bool>
+{
+public:
+  double_fuzzy_less( double arg_ = 1e-7 ) : epsilon(arg_) {}
+  bool operator()( const double &left, const double &right  ) const
+  {
+    return (abs(left - right) > epsilon) && (left < right);
+  }
+  double epsilon;
+};
 
 namespace itk
 {
@@ -59,7 +70,7 @@ namespace itk
     typedef std::map<int, std::list<std::string> >       IndexToNamesMapType;
     typedef std::set< double >                           SliceLocationSetType;
     typedef std::set< std::string >                      NameSetType;
-    typedef std::multimap< double, std::string >         SliceLocationToNamesMultiMapType;
+    typedef std::multimap< double, std::string, double_fuzzy_less >         SliceLocationToNamesMultiMapType;
 
 
     static double MAXIMUM_GAP;

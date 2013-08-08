@@ -731,8 +731,7 @@ namespace itk
       }
       ++l;
     }
-    
-  
+
 
     // collecting slice count and rank count while doing sanity checks
     unsigned int sizeZ = m_LocationSet.size();
