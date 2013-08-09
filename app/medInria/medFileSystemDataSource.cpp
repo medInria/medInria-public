@@ -158,7 +158,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     connect(d->finder, SIGNAL(listView()), this, SLOT(saveListViewSettings()));
     connect(d->finder, SIGNAL(treeView()), this, SLOT(saveTreeViewSettings()));
     connect(d->finder, SIGNAL(showHiddenFiles(bool)), d->toolbar, SLOT(onShowHiddenFiles(bool)));
-    connect(d->finder, SIGNAL(showHiddenFiles(bool)), d->toolbar, SLOT(saveHiddenFilesSettings(bool)));
+    connect(d->finder, SIGNAL(showHiddenFiles(bool)), this, SLOT(saveHiddenFilesSettings(bool)));
 
     connect(d->path, SIGNAL(changed(QString)), d->finder, SLOT(setPath(QString)));
     connect(d->path, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
