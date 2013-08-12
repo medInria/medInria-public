@@ -665,13 +665,10 @@ namespace itk
 	  }
 	}
 	}
-    // We need the spacing between the slices
-    this->DetermineOrientation();
-    this->DetermineSpacing(); // always called after DetermineOrientation
 
-    sliceLocation = floor(sliceLocation/m_Spacing[2]+0.5)*(int)m_Spacing[2];    //Rounding sliceLocation.
-                                                                                //Prevents from some sorting issues (e.g due to
-                                                                                //extremely small differences in sliceLocations)
+    //Forcing sliceLocation to be a multiple of spacing between slices
+    //Prevents from some sorting issues (e.g due to extremely small differences in sliceLocations)
+    sliceLocation = floor(sliceLocation/m_Spacing[2]+0.5)*m_Spacing[2]; 
 
 	m_LocationSet.insert( sliceLocation );
 	m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *f ) );

@@ -36,7 +36,7 @@ public:
   double_fuzzy_less( double arg_ = 1e-7 ) : epsilon(arg_) {}
   bool operator()( const double &left, const double &right  ) const
   {
-    return (abs(left - right) > epsilon) && (left < right);
+    return (fabs(left - right) > epsilon) && (left < right);
   }
   double epsilon;
 };
@@ -57,20 +57,20 @@ namespace itk
     itkTypeMacro(DCMTKImageIO, MultiThreadedImageIOBase);
 
 
-    typedef std::map< std::string, std::vector< std::string > > StringMap;
+    typedef std::map< std::string, std::vector< std::string > >     StringMap;
 
-    typedef MetaDataObject <std::string>                 MetaDataStringType;
-    typedef MetaDataObject <std::vector<std::string> >   MetaDataVectorStringType;
+    typedef MetaDataObject <std::string>                            MetaDataStringType;
+    typedef MetaDataObject <std::vector<std::string> >              MetaDataVectorStringType;
 
-    typedef MultiThreadedImageIOBase::RegionType         RegionType;
+    typedef MultiThreadedImageIOBase::RegionType                    RegionType;
 
-    typedef std::vector<std::string>                     StringVectorType;
+    typedef std::vector<std::string>                                StringVectorType;
     
-    typedef std::map<std::string, int>                   NameToIndexMapType;
-    typedef std::map<int, std::list<std::string> >       IndexToNamesMapType;
-    typedef std::set< double >                           SliceLocationSetType;
-    typedef std::set< std::string >                      NameSetType;
-    typedef std::multimap< double, std::string, double_fuzzy_less >         SliceLocationToNamesMultiMapType;
+    typedef std::map<std::string, int>                              NameToIndexMapType;
+    typedef std::map<int, std::list<std::string> >                  IndexToNamesMapType;
+    typedef std::set< double >                                      SliceLocationSetType;
+    typedef std::set< std::string >                                 NameSetType;
+    typedef std::multimap< double, std::string, double_fuzzy_less > SliceLocationToNamesMultiMapType;
 
 
     static double MAXIMUM_GAP;
