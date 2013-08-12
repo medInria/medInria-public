@@ -839,9 +839,9 @@ void vtkImageView3D::UpdateVolumeFunctions(int layer)
     return;
 
   vtkColorTransferFunction * color   =
-  this->VolumeProperty->GetRGBTransferFunction(0);
+  this->VolumeProperty->GetRGBTransferFunction(layer);
   vtkPiecewiseFunction     * opacity =
-  this->VolumeProperty->GetScalarOpacity(0);
+  this->VolumeProperty->GetScalarOpacity(layer);
 
 
   double colorValue[6]   = { 0.0, 0.0, 0.0, 0.0, 0.5, 0.0 };
