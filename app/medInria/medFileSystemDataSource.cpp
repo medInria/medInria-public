@@ -189,7 +189,7 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
 
     // set default values
     medSettingsManager* mng = medSettingsManager::instance();
-    bool showHiddenFiles = mng->value("medFileSystemDataSource", "showHiddenFiles", true).toBool();
+    bool showHiddenFiles = mng->value("medFileSystemDataSource", "showHiddenFiles", false).toBool();
     bool listViewOn = mng->value("medFileSystemDataSource", "listView", true).toBool();
 
     d->toolbar->onShowHiddenFiles(showHiddenFiles);
