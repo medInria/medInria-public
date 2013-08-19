@@ -409,6 +409,8 @@ void medDatabaseControllerImpl::import(const QString& file,bool indexWithoutCopy
     
     connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
+    connect(importer,SIGNAL(showError(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
 
     medJobManager::instance()->registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
@@ -429,6 +431,8 @@ void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUui
     connect(importer, SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(importer, SIGNAL(failure(QObject *)), message, SLOT(failure()));
 
+    connect(importer,SIGNAL(showError(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
 
     medJobManager::instance()->registerJobItem(importer);
     QThreadPool::globalInstance()->start(importer);
