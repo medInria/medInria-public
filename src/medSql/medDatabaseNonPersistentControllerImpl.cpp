@@ -104,6 +104,8 @@ void medDatabaseNonPersistentControllerImpl::import(const QString& file,QString 
             message, SLOT(success()));
     connect(reader, SIGNAL(failure(QObject *)),
              message, SLOT(failure()));
+    connect(reader,SIGNAL(showError(const QString&,unsigned int)),
+            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
 
     medJobManager::instance()->registerJobItem(reader);
     QThreadPool::globalInstance()->start(reader);
