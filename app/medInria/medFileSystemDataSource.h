@@ -63,6 +63,9 @@ private slots:
     void onFileDoubleClicked(const QString& filename);
     void onFileClicked(const QFileInfo& info);
     void onNothingSelected();
+    void saveHiddenFilesSettings(bool show);
+    void saveListViewSettings();
+    void saveTreeViewSettings();
 
 private:
 
