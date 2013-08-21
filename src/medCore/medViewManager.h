@@ -49,6 +49,10 @@ protected:
 protected:
     static medViewManager *s_instance;
 
+signals:
+    //emitted when a new view is opened
+    void viewOpened();
+
 private:
     medViewManagerPrivate *d;
 };

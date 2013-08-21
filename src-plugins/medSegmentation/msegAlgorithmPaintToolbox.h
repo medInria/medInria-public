@@ -40,10 +40,9 @@ class medSeedPointAnnotationData;
 
 namespace mseg {
     class ClickAndMoveEventFilter;
-    class SelectDataEventFilter;
 
 struct PaintState {
-    enum E{ None, Wand, Stroke, DeleteStroke, BoundaryStroke };
+    enum E{ None, Wand, Stroke, DeleteStroke };
 };
 
 //! Segmentation toolbox to allow manual painting of pixels
@@ -77,12 +76,9 @@ public:
 public slots:
     void onStrokePressed();
     void onMagicWandPressed();
-    void onBoundaryStrokePressed();
 
-    void onSetDataPressed();
     void onApplyButtonPressed();
     void onClearMaskPressed();
-    void onResetDataPressed();
 
     void onLabelChanged(int newVal);
     void onSelectLabelColor();
@@ -92,9 +88,10 @@ public slots:
 
     void updateStroke(ClickAndMoveEventFilter * filter, medAbstractView * view);
     void updateWandRegion(medAbstractView * view, QVector3D &vec);
+    void updateMouseInteraction();
 
 protected:
-    friend class SelectDataEventFilter;
+    friend class ClickAndMoveEventFilter;
 
     void addStroke( medAbstractView *view, const QVector3D &vec );
     void setData( dtkAbstractData *data );
@@ -106,19 +103,23 @@ protected:
 
     void updateFromGuiItems();
 
-    void enableButtons( bool value);
+    void showButtons( bool value);
 
     void generateLabelColorMap(unsigned int numLabels);
+
+    void updateButtons();
+
 private:
     typedef dtkSmartPointer<medSeedPointAnnotationData> SeedPoint;
 
     QPushButton *m_strokeButton;
-    QPushButton *m_boundaryStrokeButton;
     QPushButton *m_labelColorWidget;
+    QSpinBox *m_strokeLabelSpinBox;
+    QLabel *m_colorLabel;
 
     QSlider *m_brushSizeSlider;
     QSpinBox *m_brushSizeSpinBox;
-    QSpinBox *m_strokeLabelSpinBox;
+    QLabel *m_brushRadiusLabel;
 
     QPushButton *m_magicWandButton;
     // The slider works on percentages of a linear scale between min and max values, i.e.
@@ -132,10 +133,7 @@ private:
 
     QPushButton *m_applyButton;
 
-    QPushButton *m_selectDataButton;
-    QPushButton *m_resetDataButton;
     QPushButton *m_clearMaskButton;
-    QTextEdit *m_dataText;
 
     dtkSmartPointer< medViewEventFilter > m_viewFilter;
 
@@ -143,8 +141,6 @@ private:
 
     dtkSmartPointer<medAbstractData> m_maskData;
     dtkSmartPointer<medAbstractData> m_imageData;
-
-    QString m_noDataText;
 
     medImageMaskAnnotationData::ColorMapType m_labelColorMap;
 
