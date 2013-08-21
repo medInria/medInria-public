@@ -58,6 +58,8 @@ public:
 
     virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
     {
+        if(view->property("Orientation")=="3D")
+            return false;
         m_paintState = m_cb->paintState();
 
         if ( this->m_paintState == PaintState::DeleteStroke )
@@ -181,7 +183,8 @@ AlgorithmPaintToolbox::AlgorithmPaintToolbox(QWidget *parent ) :
     m_brushSizeSpinBox = new QSpinBox(displayWidget);
     m_brushSizeSpinBox->setToolTip(tr("Changes the brush radius."));
     m_brushSizeSpinBox->setValue(this->m_strokeRadius);
-    m_brushSizeSpinBox->setMinimum(0);
+    m_brushSizeSpinBox->setMinimum(1);
+    m_brushSizeSpinBox->setMaximum(10);
     m_brushSizeSpinBox->hide();
     m_brushRadiusLabel = new QLabel(tr("Brush Radius"), displayWidget);
     m_brushRadiusLabel->hide();
