@@ -33,8 +33,6 @@
 
 #include <medButton.h>
 #include <medQuickAccessMenu.h>
-#include <medWorkspaceShifter.h>
-
 #include <medDatabaseController.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseModel.h>
