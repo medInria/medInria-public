@@ -152,7 +152,7 @@ namespace itk
       if( it!=dicomDictionary.End() )
       {
 	if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
-	{
+    {
 	  return metaData->GetMetaDataObjectValue();
 	}
 	else
@@ -185,6 +185,7 @@ namespace itk
     void DetermineOrientation();
 
     double GetZPositionForImage (int);
+    double GetSliceLocation(const StringVectorType, int, int);
 
     void ReadHeader( const std::string& name, const int& fileIndex, const int& fileCount );
     inline void ReadDicomElement(DcmElement* element, const int &fileIndex, const int &fileCount );
