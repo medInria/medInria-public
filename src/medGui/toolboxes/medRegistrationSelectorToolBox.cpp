@@ -108,7 +108,6 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     foreach(QString toolbox, tbFactory->toolBoxesFromCategory("registration"))
     {
         medToolBoxDetails* details = tbFactory->toolBoxDetailsFromId(toolbox);
-//        qDebug() << "Added registration toolbox" << name;
         d->toolboxes->addItem(details->name, toolbox);
         d->toolboxes->setItemData(i,
                                   details->description,
@@ -218,8 +217,14 @@ void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& in
     if (d->fuseView)
     {
         d->fuseView->blockSignals(true);
+
+        d->fuseView->show();
+        d->fuseView->removeOverlay(1);
+        d->fuseView->removeOverlay(0);
+
         if (d->movingView && d->fuseView->layerCount()==1)
         {
+
             //only the moving view has been set: shift it to layer 1
             d->fuseView->setData(d->fixedData,0);
             d->fuseView->setData(d->movingData,1);
@@ -270,9 +275,10 @@ void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& i
                     (medViewManager::instance()->views
                      (index).first());
 
-    if(!d->movingView) {
+    if(!d->movingView)
+    {
         qDebug() << "Unable to retrieve moving view";
-	return;
+        return;
     }
 
     if (d->fixedView) {
@@ -280,9 +286,15 @@ void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& i
     }
 
     d->fuseView->blockSignals(true);
-    if (d->fixedView)
+
+    d->fuseView->show();
+    d->fuseView->removeOverlay(1);
+    d->fuseView->removeOverlay(0);
+
+    if (d->fixedData)
     {
         //already one layer present
+        d->fuseView->setData(d->fixedData,0);
         d->fuseView->setData(d->movingData,1);
         if(d->undoRedoProcess)
         { 
@@ -649,3 +661,37 @@ void medRegistrationSelectorToolBox::synchronisePosition(const QVector3D &positi
     }
 }
 
+
+void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
+{
+    medAbstractView* closedView = dynamic_cast <medAbstractView*> (view);
+
+    if(closedView == d->movingView)
+    {
+        d->fuseView->removeOverlay(1);
+        d->movingData = NULL;
+
+        if(!d->fixedData)
+        {
+            d->fuseView->close();
+        }
+    }
+    else if(closedView == d->fixedView)
+    {
+        d->fixedData = NULL;
+
+        if(d->movingData)
+        {
+            d->fuseView->removeOverlay(1);
+            d->fuseView->removeOverlay(0);
+            d->fuseView->setData(d->movingData,0);
+        }
+        else
+        {
+            d->fuseView->removeOverlay(0);
+            d->fuseView->close();
+        }
+    }
+    d->fuseView->reset();
+    d->fuseView->update();
+}
