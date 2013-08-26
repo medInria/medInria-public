@@ -603,7 +603,7 @@ namespace itk
     is_stream1 >> pos1[0];
     is_stream1 >> pos1[1];
     is_stream1 >> pos1[2];
-    sliceLocation = fabs ( dot_product (normal, pos1) );
+    sliceLocation = dot_product (normal, pos1) ;
 
     return sliceLocation;
 }
