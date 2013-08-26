@@ -585,72 +585,26 @@ namespace itk
     return zpos;
   }
 
-double DCMTKImageIO::GetSliceLocation(const StringVectorType imagePositions, int fileIndex, int i)
+    double DCMTKImageIO::GetSliceLocation(std::string imagePosition)
 {
-    // <> Based on research on the internet, I have learnt that, as much as possible, we should not 
-    // <> entirely trust DICOM tag for sliceLocation (type3 so not mandatory and may be wrong )
+    // <> We should not trust DICOM tag for sliceLocation (type3 so not mandatory and may be wrong )
+
     double sliceLocation = 0;
-    double sliceLocation_ref = 0;
 
     this->DetermineOrientation(); //to know m_Direction
-    //Calculate the sliceLocation if more than one slice
-    if (imagePositions.size()>1)
-    {
-        vnl_vector<double> normal (3);
-        normal[0] = m_Direction[2][0];
-        normal[1] = m_Direction[2][1];
-        normal[2] = m_Direction[2][2];
 
-        std::istringstream is_stream1( imagePositions[i].c_str());
-        vnl_vector<double> pos1 (3);
-	    is_stream1 >> pos1[0];
-	    is_stream1 >> pos1[1];
-	    is_stream1 >> pos1[2];
-        sliceLocation = fabs ( dot_product (normal, pos1) );
+    vnl_vector<double> normal (3);
+    normal[0] = m_Direction[2][0];
+    normal[1] = m_Direction[2][1];
+    normal[2] = m_Direction[2][2];
 
-        // <> For the moment, the slice location is absolute. I don't know what is supposed to be the 
-        // <> reference to have a relative location, the first slice of the volume ??
+    std::istringstream is_stream1( imagePosition.c_str());
+    vnl_vector<double> pos1 (3);
+    is_stream1 >> pos1[0];
+    is_stream1 >> pos1[1];
+    is_stream1 >> pos1[2];
+    sliceLocation = fabs ( dot_product (normal, pos1) );
 
-     //   std::istringstream is_stream2( imagePositions[0].c_str());
-     //   vnl_vector<double> pos2 (3);
-	    //is_stream2 >> pos2[0];
-	    //is_stream2 >> pos2[1];
-	    //is_stream2 >> pos2[2];
-     //   sliceLocation = fabs ( dot_product (normal, pos2-pos1) );
-
-    }
-    else    // <> When there's only one slice, there's no way we can have a relative location by calculation
-            // <> so we have to trust DICOM infos
-    {
-	    std::string vecSlice = this->GetMetaDataValueString ("(0020,1041)", fileIndex );
-	    if( vecSlice!="" )
-	    {
-	      std::istringstream is_stream ( vecSlice.c_str() );
-	      is_stream >> sliceLocation;
-	    }
-	    else
-	    {
-            std::string vecSlice2 = this->GetMetaDataValueString ("(0020,0050)", fileIndex);
-            if( vecSlice2!="" )
-            {
-                std::istringstream is_stream ( vecSlice2.c_str() );
-                is_stream >> sliceLocation;
-            }
-	        else  // instance number
-	        {
-	            std::string vecSlice3 = this->GetMetaDataValueString("(0020,0013)", fileIndex);
-	            if (vecSlice3!="")
-	            {
-	                std::istringstream is_stream ( vecSlice3.c_str() );
-	                is_stream >> sliceLocation;
-	            }
-	            else // cannot find the sliceLocation information, then we rely on the order files were inputed.
-	            {
-	                sliceLocation = (double)fileIndex;
-	            }
-	        }
-	    }
-    }
     return sliceLocation;
 }
 
@@ -701,9 +655,7 @@ double DCMTKImageIO::GetSliceLocation(const StringVectorType imagePositions, int
 	this->ReadHeader( filename, fileIndex, fileCount );
     const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
 
-    //Calculate the sliceLocation of the i-th member of imagePosition
-    sliceLocation = this->GetSliceLocation(imagePositions, fileIndex, i);
-
+    sliceLocation = this->GetSliceLocation(imagePositions[i]);
     i++;
 
     //Get Spacing between slices

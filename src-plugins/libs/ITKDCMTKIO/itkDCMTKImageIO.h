@@ -185,7 +185,7 @@ namespace itk
     void DetermineOrientation();
 
     double GetZPositionForImage (int);
-    double GetSliceLocation(const StringVectorType, int, int);
+      double GetSliceLocation(std::string);
 
     void ReadHeader( const std::string& name, const int& fileIndex, const int& fileCount );
     inline void ReadDicomElement(DcmElement* element, const int &fileIndex, const int &fileCount );
