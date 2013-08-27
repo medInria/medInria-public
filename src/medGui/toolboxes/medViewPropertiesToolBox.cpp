@@ -217,31 +217,41 @@ medToolBox(parent), d(new medViewPropertiesToolBoxPrivate)
     d->mouseGroup->addButton ( d->measuringPushButton );
     d->mouseGroup->setExclusive (true);
 
+#if defined(Q_WS_MAC)
+#  define CTRL_KEY "Cmd"
+#else
+#   define CTRL_KEY "Ctrl"
+#endif
+
     // Orientation buttons //
     d->axialButton = new QPushButton(this);
     d->axialButton->setIcon(QIcon(":/icons/AxialIcon.png"));
-    d->axialButton->setToolTip(tr("Axial view"));
+    d->axialButton->setToolTip(tr("Axial view (" CTRL_KEY " + 1)"));
     d->axialButton->setCheckable(true);
     d->axialButton->setMinimumHeight(45);
     d->axialButton->setIconSize(QSize(40,40));
+    d->axialButton->setShortcut(Qt::CTRL + Qt::Key_1);
     d->coronalButton = new QPushButton(this);
     d->coronalButton->setIcon(QIcon(":/icons/CoronalIcon.png"));
-    d->coronalButton->setToolTip(tr("Coronal view"));
+    d->coronalButton->setToolTip(tr("Coronal view (" CTRL_KEY " + 2)"));
     d->coronalButton->setCheckable(true);
     d->coronalButton->setMinimumHeight(45);
     d->coronalButton->setIconSize(QSize(40,40));
+    d->coronalButton->setShortcut(Qt::CTRL + Qt::Key_2);
     d->sagittalButton = new QPushButton(this);
     d->sagittalButton->setIcon(QIcon(":/icons/SagittalIcon.png"));
-    d->sagittalButton->setToolTip(tr("Sagittal view"));
+    d->sagittalButton->setToolTip(tr("Sagittal view (" CTRL_KEY " + 3)"));
     d->sagittalButton->setCheckable(true);
     d->sagittalButton->setMinimumHeight(45);
     d->sagittalButton->setIconSize(QSize(45,45));
+    d->sagittalButton->setShortcut(Qt::CTRL + Qt::Key_3);
     d->view3DButton = new QPushButton(this);
     d->view3DButton->setIcon(QIcon(":/icons/3DIcon.png"));
-    d->view3DButton->setToolTip(tr("3D view"));
+    d->view3DButton->setToolTip(tr("3D view (" CTRL_KEY " + 4)"));
     d->view3DButton->setCheckable(true);
     d->view3DButton->setMinimumHeight(45);
     d->view3DButton->setIconSize(QSize(40,40));
+    d->view3DButton->setShortcut(Qt::CTRL + Qt::Key_4);
 
     QButtonGroup *orientationButtonGroup = new QButtonGroup(this);
     orientationButtonGroup->addButton(d->axialButton);
