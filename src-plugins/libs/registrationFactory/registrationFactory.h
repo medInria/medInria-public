@@ -28,13 +28,13 @@ public:
 
     itk::GeneralTransform<double,3>::Pointer getGeneralTransform();
     
-    unsigned int addTransformation(itk::Transform<double,3,3>::Pointer arg,QStringList * methodParameters);
+    unsigned int addTransformation(itk::Transform<double,3,3>::Pointer arg, QString methodParameters);
     
     public slots:
         void reset();
 
     signals:
-        void transformationAdded(int,QStringList*);
+        void transformationAdded(int,QString);
         void transformationStackReset();
 
 protected:

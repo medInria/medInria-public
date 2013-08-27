@@ -30,7 +30,7 @@ public slots:
     void onUndo(void);
     void onRedo(void);
     void onTransformationStackReset(void);
-    void addTransformationIntoList(int, QStringList*);
+    void addTransformationIntoList(int, QString);
     void onRegistrationSuccess();
 
 private:

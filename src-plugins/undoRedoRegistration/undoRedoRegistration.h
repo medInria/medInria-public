@@ -64,7 +64,7 @@ public:
     void generateOutput(bool algorithm = false,dtkAbstractProcess * process=NULL);
 
     virtual itk::Transform<double,3,3>::Pointer getTransform();
-    virtual QStringList * getTitleAndParameters();
+    virtual QString getTitleAndParameters();
 
 protected :
     /**

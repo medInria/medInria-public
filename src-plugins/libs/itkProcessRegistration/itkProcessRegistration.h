@@ -147,7 +147,7 @@ public:
     * 
     * @return QStringList *
     */
-    virtual QStringList * getTitleAndParameters() = 0;
+    virtual QString getTitleAndParameters() = 0;
 
 
 public slots:
