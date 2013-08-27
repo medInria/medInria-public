@@ -284,8 +284,7 @@ bool medPluginGenerator::generateRPIHeaderFile()
     QTextStream stream(&targetFile);
     
     stream << QString(templateFile.readAll())
-    .arg(QString(d->plugin).replace(0, 1, d->plugin.left(1).toUpper()))
-    .arg(d->plugin.toUpper());
+    .arg(QString(d->plugin).replace(0, 1, d->plugin.left(1).toUpper()));
     
     targetFile.close();
     
@@ -318,8 +317,7 @@ bool medPluginGenerator::generateRPISourceFile()
     QTextStream stream(&targetFile);
     
     stream << QString(templateFile.readAll())
-    .arg(QString(d->plugin).replace(0, 1, d->plugin.left(1).toUpper()))
-    .arg(d->plugin.toUpper());
+    .arg(QString(d->plugin).replace(0, 1, d->plugin.left(1).toUpper()));
     
     targetFile.close();
     

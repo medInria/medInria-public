@@ -58,8 +58,6 @@ int main(int argc, char** argv)
         QString type = getArgValue("--type");
         QString name = getArgValue("--name");
 
-        qDebug() << "############POuet";
-
         bool paramsMissing = output.isEmpty() || family.isEmpty()
                              || type.isEmpty() || name.isEmpty();
 
@@ -67,8 +65,6 @@ int main(int argc, char** argv)
             printUsage();
             return 1;
         }
-
-        qDebug() << "############Yellow";
 
         if( ! app.arguments().contains("--quiet")) {
             qDebug() << "output = " << output;

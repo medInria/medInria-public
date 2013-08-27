@@ -96,6 +96,8 @@ void medPluginGeneratorTest::testCompile()
         QFAIL("Generation step failed !");
     }
 
+    qDebug() << pGen.readAllStandardOutput();
+
     // Configuration step
     QString subdir("build-"+name);
     QDir buildDir(_tmpPath);
