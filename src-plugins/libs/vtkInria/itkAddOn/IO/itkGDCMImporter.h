@@ -1,10 +1,5 @@
 /*=========================================================================
 
- medInria
-
- Copyright (c) INRIA 2013. All rights reserved.
- See LICENSE.txt for details.
- 
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,365 +8,444 @@
 
 #pragma once
 
-#include <cstddef> // For ITK 3.20 that does not define correctly ptrdiff_t
-
-#include <itkProcessObject.h>
+#include <itkImageSource.h>
 #include <itkImage.h>
 #include <itkImageFileReader.h>
+#include <itkImageFileWriter.h>
 #include <itkImageSeriesReader.h>
-#include <itkGDCMSeriesFileNames.h>
-#include <itkFlipImageFilter.h>
-#include "itkDicomTagManager.h"
+#include <itkImageRegionSplitterBase.h>
 
-#include <string>
+#include <itksys/SystemTools.hxx>
+
+#include "gdcmScanner.h"
+
+#include <sstream>
 #include <vector>
-
-#include <gdcmFile.h>
-#include <gdcmSerieHelper.h>
+#include <string>
 
 namespace itk
 {
 
+
   /**
-     
-     \class DICOMVolume
-     \brief Internal class that represent a 3D volume image made from 2D DICOM files.
+
+     \class GDCMVolume
+     \brief Class that represents an image made from DICOM files, inherits from itk::Image.
      \author Nicolas Toussaint
-     
-     Don't use this class independently. The user may use GDCMImporter instead.
-     
-     \see GDCMImporter GDCMSeriesFileNames ImageSeriesReader
-     \ingroup   ProcessObject
-     
+
+     \see GDCMImporter ImageSeriesReader Image
+     \ingroup   ImageObjects
   */
- class ITK_EXPORT DICOMVolume : public ProcessObject
-  {
-    
-  public:
-    typedef DICOMVolume Self;
-    typedef ProcessObject            Superclass;
-    typedef SmartPointer<Self>       Pointer;
-    typedef SmartPointer<const Self> ConstPointer;
-
-/*     typedef vtkMetaImageData::ImageType   ImageType; */
-/*     typedef vtkMetaImageData::Image4DType Image4DType; */
-
-    typedef unsigned short ImageComponentType;
-    
-    typedef itk::Image<ImageComponentType, 3> ImageType;
-    typedef itk::Image<ImageComponentType, 4> Image4DType;
-
-    typedef itk::ImageFileReader<ImageType> ReaderType;
-    typedef itk::ImageSeriesReader<ImageType> SeriesReaderType;
-    typedef itk::FlipImageFilter<ImageType> FlipFilterType;
-    
-    itkNewMacro  (Self);
-    itkTypeMacro (DICOMVolume, ProcessObject);
-    
-    void SetImage(ImageType::Pointer image)
-    { this->Image = image; }
-    
-    ImageType::Pointer GetImage() const
-    { return this->Image; }
-
-    void SetFileList(std::vector<std::string> list)
-    { this->FileList = list; }
-
-    std::vector<std::string> GetFileList() const
-    { return this->FileList; }
-
-    void SetDescription(std::string description)
-    { this->Description = description; }
-
-    std::string GetDescription() const
-    { return this->Description; }
-
-    void SetSerieHelper(gdcm::SerieHelper* helper)
-    { this->SerieHelper = helper; }
-
-    gdcm::SerieHelper* GetSerieHelper() const
-    { return this->SerieHelper; }
-
-    void SetgdcmFileList(std::vector<gdcm::File*> *list)
-    { this->gdcmFileList = list; }
-
-    std::vector<gdcm::File*> *GetgdcmFileList() const
-    { return this->gdcmFileList; }
-
-    unsigned int* GetDimensions();
-
-    ImageType::Pointer TemporaryBuild();
-    
-    void Build();
-    
-    void Save (const char*);
-
-    const itk::DicomTagManager::Pointer GetTagManager()
+  template <class TPixelType=unsigned short>
+    class ITK_EXPORT GDCMVolume : public Image<TPixelType, 4>
     {
-      return this->TagManager;
-    }
-
-    void FillDicomTagManager();
+    public:
+    /// ITK typedefs
+    typedef GDCMVolume Self;
+    typedef GDCMVolume ImageType;
+    typedef Image<TPixelType, 3> SubImageType;
+    typedef typename SubImageType::Pointer SubImagePointerType;
+    typedef Image<TPixelType, 4> Superclass;
+    typedef SmartPointer<Self> Pointer;
+    typedef SmartPointer<const Self> ConstPointer;
+    typedef typename Superclass::SpacingType SpacingType;
+    typedef typename Superclass::RegionType RegionType;
+    typedef typename Superclass::PointType PointType;
+    typedef typename Superclass::DirectionType DirectionType;
     
-    void SetSequenceFlag (bool val)
-    { this->SequenceFlag = val; }
-    bool IsSequence()
-    { return this->SequenceFlag; }
+    typedef std::vector<std::string> FileList;
+    typedef std::map<std::string, FileList> FileListMapType;
+    typedef Vector<double, 3> GradientType;
+    typedef std::vector< GradientType > GradientsContainer;
+    typedef std::pair <std::string, std::string> DicomEntry;
+    typedef std::vector<DicomEntry> DicomEntryList;
+    
+    itkStaticConstMacro (ImageDimension, unsigned int, ImageType::ImageDimension);
 
+    itkNewMacro  (Self);
+    itkTypeMacro (GDCMVolume, Superclass);
+
+    /**/// serie reader typedef, reading a serie of dicom file to reconstruct a volume image
+    typedef ImageSeriesReader<SubImageType> SeriesReaderType;
+    /** Reader typedef */
+    typedef typename itk::ImageFileReader<SubImageType> ReaderType;
+    /** Writer typedef */
+    typedef typename itk::ImageFileWriter<ImageType> WriterType;    
+    /** Writer typedef */
+    typedef typename itk::ImageFileWriter<SubImageType> SubWriterType;   
+    
     /**
-       Use this method to release memory after volume parsing
+       Get/Set the FileList coming from the GDCM library.
+       This list will then be used by Build() for reconstructing
+       the volume image.
     */
-    void ReleaseMemory();
+    void SetFileListMap(FileListMapType map)
+    {
+      this->m_FileListMap = map;
+      this->Modified();
+      m_IsBuilt = 0;
+    }
+    /**
+       Get/Set the FileList coming from the GDCM library.
+       This list will then be used by Build() for reconstructing
+       the volume image.
+    */
+    FileListMapType GetFileListMap() const
+    { return this->m_FileListMap; }
+    /**
+       Set/Get the name of the image. This attribute can
+       then be used for display purposes
+    */
+    itkGetStringMacro (Name);
+    itkSetStringMacro (Name);
+    /**
+       Build() will actually fill the volume image considering
+       the FileListMap (SetFileListMap())
+    */
+    void Build();
+    /**
+       Write the volume (or 4D volume) in a file
+       This only depends on the FileMap currently present in the volume.
+       a SeriesReaderType is used to sequencially reads all DICOM files
+       that have been included in the each filemap item.
+       Each 3D image is concatenated in a 4D image with a 4th spacing of 1.
+    */
+    void Write(std::string filename);
+    /**
+       Re-Initialize the volume.
+       Release memory. The Build() method has to be re-called to
+       be able to get the volume back.
+    */
+    void Initialize()
+    {
+      this->Superclass::Initialize();
+      this->m_IsBuilt = 0;
+    }
+    /**
+       Ask the filemap files if there is any gradient present,
+       and if they are coherent (one null gradient and > 1 non-null gradients
+    */
+    bool IsVolumeDWIs();
+    /**
+       Write the gradient orientations in a file
+    */
+    void WriteGradients (std::string filename);
 
+    unsigned int* GetSize() const;
+
+    DicomEntryList GetDicomEntryList() const;
+    
   protected:
 
-    DICOMVolume()
+    FileList MapToFileList (FileListMapType map) const;
+    double Estimate4thSpacing (FileListMapType map) const;
+    void CopyMetaDataFromSubImage(ImageType::Pointer image,
+				  SubImagePointerType t_image,
+				  FileListMapType map) const;
+    
+    /**
+       default GDCMVolume constructor,
+       empty filelist and image name.
+    */
+    GDCMVolume()
     {
-      Description  = "";
-      Image        = 0;
-      SerieHelper  = 0;
-      gdcmFileList = 0;
-      this->TagManager = itk::DicomTagManager::New();
-      SequenceFlag = false;
+      this->SetName ("image");
+      m_IsBuilt = 0;
+      m_SkipMeanDiffusivity = 0;
+      m_MeanDiffusivitySkipped = 0;
+
+      // 0018 9089 Gradient Direction Information
+      m_GradientScanner.AddTag( gdcm::Tag(0x18,0x9089) );
     }
-    ~DICOMVolume(){}
-  
-    
+    ~GDCMVolume()
+    {
+      this->Initialize();
+    }
+    /**
+       Print the image information, including the name and
+       the DICOM dictionnary (displaying the dictionnary of the first
+       file contained in GetFileListMap()).
+    */
+    void PrintSelf(std::ostream& os, Indent indent) const;
+
   private :
-    DICOMVolume(const Self&);
+    GDCMVolume(const Self&);
     void operator=(const Self&);
-    
-    std::string              Description;
-    ImageType::Pointer  Image;
-    std::vector<std::string> FileList;
-    gdcm::SerieHelper*       SerieHelper;
-    std::vector<gdcm::File*> *gdcmFileList;
+    std::string m_Name;
+    FileListMapType m_FileListMap;
+    bool m_IsBuilt;
+    bool m_SkipMeanDiffusivity;
+    bool m_MeanDiffusivitySkipped;
+    GradientsContainer m_Gradients;
+    gdcm::Scanner m_GradientScanner;
 
-    itk::DicomTagManager::Pointer TagManager;
-
-    bool SequenceFlag;
-    
-    
-    
   };
   
-  
-  /**
-     
-     \class GDCMImporter
-     \brief itkProcessObject to manage DICOM files, reordering, building volumes
-     \author Nicolas Toussaint
-     
-     This class is a powerfull factory for DICOM file management.
-     It uses gdcm library from ITK to parse DICOM files and order them with respect to the GDCMSeriesFileNames strategy.
 
-     The user can simply set the input directory with SetInputDirectory(). Then the directory will be scaned by calling Scan().
-     If you enconter some issues for reconstructing volumes (especially for interlaced files), you may use SplitVolumeByPositionConsistency() to reorder correctly the problematic volumes.
-     When finished, you should call BuildAllVolumes() and recover all itkImages through the method GetDICOMVolumeList().
-
-     If for some reason you want to split a volume with respect to a certain DICOM tag, you can use SplitVolumeByTag().
-
-     This class only export 3D volume images, but they can represent 2D+t sequences for example
-     \see GDCMImporter GDCMSeriesFileNames ImageSeriesReader
-     \ingroup   ProcessObject
-     
-  */
- class ITK_EXPORT GDCMImporter : public ProcessObject
+  class ITK_EXPORT ImageRegionSplitterByOutputs
+  :public ImageRegionSplitterBase
   {
-
   public:
-
+    /** Standard class typedefs. */
+    typedef ImageRegionSplitterByOutputs Self;
+    typedef Object                       Superclass;
+    typedef SmartPointer< Self >         Pointer;
+    typedef SmartPointer< const Self >   ConstPointer;
     
+    /** Method for creation through the object factory. */
+    itkNewMacro(Self);
+    
+    /** Run-time type information (and related methods). */
+    itkTypeMacro(ImageRegionSplitterByOutputs, Object);
+    
+    /** Get the number of output to split the threads
+     * Defaults to 0.
+     */
+    itkGetConstMacro(NumberOfOutputs, unsigned int);
+    itkSetMacro(NumberOfOutputs, unsigned int);    
+    
+  protected:
+    
+    ImageRegionSplitterByOutputs()
+    {
+      this->m_NumberOfOutputs = 0;
+    }
+    
+    virtual unsigned int GetNumberOfSplitsInternal(unsigned int dim,
+						   const IndexValueType regionIndex[],
+						   const SizeValueType regionSize[],
+						   unsigned int requestedNumber) const
+    {
+      // determine the actual number of pieces that will be generated
+      SizeValueType range = this->GetNumberOfOutputs();
+      int valuesPerThread = (int)::vcl_ceil(range/(double)requestedNumber);
+      int maxThreadIdUsed = (int)::vcl_ceil(range/(double)valuesPerThread) - 1;
+      
+      return maxThreadIdUsed + 1;
+    }
+    
+    virtual unsigned int GetSplitInternal(unsigned int dim,
+					  unsigned int i,
+					  unsigned int numberOfPieces,
+					  IndexValueType regionIndex[],
+					  SizeValueType regionSize[]) const
+    {
+      // determine the actual number of pieces that will be generated
+      SizeValueType range = this->GetNumberOfOutputs();
+      int valuesPerThread = (int)::vcl_ceil(range/(double)numberOfPieces);
+      int maxThreadIdUsed = (int)::vcl_ceil(range/(double)valuesPerThread) - 1;
+      
+      regionIndex[0] = 0;
+      regionSize[0] = this->GetNumberOfOutputs();
+      
+      // Split the region
+      if (i < maxThreadIdUsed)
+      {
+	regionIndex[0] += i*valuesPerThread;
+	regionSize[0] = valuesPerThread;
+      }
+      if (i == maxThreadIdUsed)
+      {
+	regionIndex[0] += i*valuesPerThread;
+	// last thread needs to process the "rest" dimension being split
+	regionSize[0] = regionSize[0] - i*valuesPerThread;
+      }  
+      
+      return maxThreadIdUsed + 1;
+    }
+    
+    
+    void PrintSelf(std::ostream & os, Indent indent) const
+    {
+      Superclass::PrintSelf(os, indent);
+      os << indent << "NumberOfOutputs: " << m_NumberOfOutputs << std::endl;
+    }    
+    
+  private:
+    ImageRegionSplitterByOutputs(const ImageRegionSplitterByOutputs &); //purposely not implemented
+    void operator=(const ImageRegionSplitterByOutputs &);      //purposely not implemented
+    
+    unsigned int m_NumberOfOutputs;
+  };
+
+  
+
+  /**
+
+     \class GDCMImporter
+     \brief itkImageSource to manage DICOM files, reordering, building volumes
+     \author Nicolas Toussaint
+
+     \see GDCMImporter ImageSource
+     \ingroup   DataSources
+
+  */
+  template <class TPixelType=unsigned short>
+ class ITK_EXPORT GDCMImporter : public ImageSource < GDCMVolume <TPixelType> >
+    {
+    public:
+
     /** generic typedefs */
     typedef GDCMImporter Self;
-    typedef ProcessObject       Superclass;
+    /** generic typedefs */
+    typedef GDCMVolume <TPixelType> ImageType;
+    /** generic typedefs */
+    typedef ImageSource < GDCMVolume <TPixelType> > Superclass;
+    /** generic typedefs */
     typedef SmartPointer<Self>       Pointer;
+    /** generic typedefs */
     typedef SmartPointer<const Self> ConstPointer;
     
     /** generic constructors */
     itkNewMacro (Self);
-    itkTypeMacro (GDCMImporter, ProcessObject);
+    /** generic typedefs */
+    itkTypeMacro (GDCMImporter, Superclass);
+    /** ImageDimension typedef, dimension of the output Image(s) */
+    itkStaticConstMacro (ImageDimension, unsigned int, ImageType::ImageDimension);
+    /** Pixel typedef */
+    typedef typename ImageType::PixelType PixelType;
+    /** GDCMVolume typedef, corresponding to the output Image type */
+    typedef typename ImageType::Pointer ImagePointerType;
+    /** stl vector of DataObject, used for a fast access to outputs array  */
+    typedef itk::ProcessObject::DataObjectPointerArray DataObjectPointerArray;
+    typedef typename ImageType::RegionType OutputImageRegionType;
 
-    /** GDCMImporter's typedef, use GDCMImporter::ImageType as outputimage be match the templates */
-    typedef DICOMVolume::ImageComponentType ImageComponentType;
-    typedef DICOMVolume::ImageType ImageType;
-    typedef DICOMVolume::Image4DType Image4DType;
+    typedef typename ImageType::FileList FileList;
+    typedef typename ImageType::FileListMapType FileListMapType;
+    typedef std::map<std::string, FileListMapType> FileListMapofMapType;
+    typedef std::map<double, FileList> SortedMapType;
 
-    typedef itk::ImageFileReader<ImageType> ReaderType;
-    typedef itk::ImageSeriesReader<ImageType> SeriesReaderType;
-
-    typedef DICOMVolume::FlipFilterType FlipFilterType;
-
-/*     DicomDictionary* GetDictionary() */
-/*     { return this->Dictionary; } */
+    typedef GDCMVolume <TPixelType> GDCMVolumeType;
+    typedef GDCMVolumeType OutputImageType;
     
-
     /**
-       DICOM tags : they are used to let the user sorting the DICOMs respecting a specific tag.
-       More are to be added...
+       Get/Set the InputDirectory,
+       root directory where a DICOM exam can be found
     */
-    enum DICOMTag
+    itkGetStringMacro (InputDirectory);
+    void SetInputDirectory (std::string d)
     {
-      D_SERIESUID,
-      D_STUDYDESCRIPTION,
-      D_SERIESDESCRIPTION,
-      D_ACQUISITIONTIME,
-      D_MODALITY
-    };
-    
-
-    
-    /** Set the recursive mode to ON if you want to scan DICOMs recursively in the InputDirectory */
-    itkBooleanMacro(Recursive);
-    itkGetMacro (Recursive, bool);
-    itkSetMacro (Recursive, bool);
-
-    
-
+      m_InputDirectory = d;
+      m_IsScanned = 0;
+      this->Modified();
+    }
     /**
-       Set the direcory to scan in full path
-       if you set the Recursive flag to ON,
-       be careful that set the write directory before scanning
+       Use this method to save a specific volume in a file
     */
-    void SetInputDirectory (const char* path)
-    { this->InputDirectory = path; }
-    /* accessor */
-    const char* GetInputDirectory() const
-    { return this->InputDirectory.c_str(); }    
-
+    void WriteOutputInFile(unsigned int, std::string);
     /**
-      check if a file can be read by itk::GDCMImageIO
+       Save all output images in a given directory
     */
-    bool CanReadFile(const char* filename);
-
+    void WriteOutputsInDirectory(std::string);
     /**
-       Reset all buid volumes and filelists.
-       dosen't reset the InputDirectory, so that the scanning would be faster afterward.
-    */
-    void Reset();
-    /**
-       Scan the directory respecting the GDCMSeriesFileNames strategy, plus some rules the user may have added.
-       it will create a list of DICOMVolume that can be access by GetDICOMVolumeList(). 
+       Scan the directory (or the DICOMDIR file) respecting the strategies explained above,
+       The scan might be slow, it is linearly dependant on the number of
+       files present in the SetInputDirectory().
+       A cache system is used by the internal Scanner (from GDCM library). Thus
+       a second call of Scan() will be faster.
     */
     void Scan();
 
-    /**
-       Read a single file, attemp to add content to the volume list
-    */
-    void ReadFile (const char* filename);
+    itkGetMacro (UsePhilipsPrivateTagRestrictions, unsigned int);
+    itkSetClampMacro (UsePhilipsPrivateTagRestrictions, unsigned int, 0, 1);
+    itkBooleanMacro (UsePhilipsPrivateTagRestrictions);
+
+    itkGetMacro (WriteDictionaries, unsigned int);
+    itkSetClampMacro (WriteDictionaries, unsigned int, 0, 1);
+    itkBooleanMacro (WriteDictionaries);
     
-    /**
-       Use this method for splitting volume with respect to a specific DICOM tag
-    */
-    
-    void SplitVolumeByTag (DICOMVolume::Pointer inputvolume, unsigned long tag);
-    /**
-       For most cases, this method is sufficient to correctly separate interlaced volumes
-    */
-    void SplitVolumeByPositionConsistency (DICOMVolume::Pointer inputvolume);
+    itkSetStringMacro (PreferredExtension);
+    itkGetStringMacro (PreferredExtension);
 
-    /** internal use */
-    static uint16_t GetDICOMTagGroup(unsigned long tag);
-    /** internal use */
-    static uint16_t GetDICOMTagElement(unsigned long tag);
-
-    /**
-       Use this method to save a specific volume without keeping it in memory
-    */
-    void Save(int, const char*);
-    /**
-       Save all volumes in a givem directory
-    */
-    void SaveAll(const char*);
-    
-    /** internal use */
-    void AddVolume (std::string description, std::vector<std::string> filelist, std::vector<gdcm::File*> *gdcmfilelist, ImageType::Pointer itkimage = 0);
-
-
-    bool IsFileListSequence (std::vector<gdcm::File*> *gdcmfilelist);
-    
-
-    /**
-       Use this method to release memory after volume parsing
-    */
-    void ReleaseMemory();
-    
-    /**
-      Access to the output reconstructed images
-    */    
-    std::vector<ImageType::Pointer> GetOutputVolumes() const
-    { return this->OutputVolumeList; }
-
-    /**
-      Pointers to DICOM volume objects
-      Use with care
-    */    
-    std::vector<DICOMVolume::Pointer> GetDICOMVolumeList() const
-    { return this->DICOMVolumeList; }
-    /**
-       Access a dicom volume by its id in list
-    */
-    DICOMVolume::Pointer GetDICOMVolume(unsigned int index) const
-    {
-      if (index >= this->DICOMVolumeList.size())
-	return NULL;
-      
-      return this->DICOMVolumeList[index]; }
-
-    /**
-       Finds a dicom volume by its name
-    */
-    DICOMVolume::Pointer GetDICOMVolume(const char*) const;
-    
-
-    /**
-       Permanently remove a volume from the list
-    */
-    void RemoveDICOMVolume (DICOMVolume::Pointer dcmvolume);
-
-    /**
-      Build 3D volumic images from 2D DICOM files
-    */    
-    void BuildAllVolumes();
-    
-    /** DEPRECATED */
-    enum SplitModeIds
-    {
-      NOSPLIT,
-      SPLITFOLLOWED,
-      SPLITINTERLACED
-    };
-
-
-    /** internal use */
-    gdcm::XCoherentFileSetmap SplitOnPosition(gdcm::FileList *fileSet);
-
-/*     std::string GetVolumeTagValue (DICOMVolume::Pointer dcmvolume, DicomDictionary::DicomTag dicomtag); */
-    
-
+    bool IsFileDWI (const char* filename);
     
   protected:
+
+    /** Internal methods for mmultithreading. */
     
+    virtual const ImageRegionSplitterBase* GetImageRegionSplitter(void) const;
+
+    void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId );
+    void GenerateOutputs();
+    /** default constructor */
     GDCMImporter();
-    ~GDCMImporter();
-    
-    
+    /** default destructor, release memory */
+    ~GDCMImporter(){}
+    void PrintSelf(std::ostream& os, Indent indent) const;
+
   private:
     GDCMImporter(const Self&);
     void operator=(const Self&);
 
-    std::string                           InputDirectory;
-    bool                                  m_Recursive;
-    
-    itk::GDCMSeriesFileNames::Pointer    DICOMScanner;
-    std::vector<ImageType::Pointer> OutputVolumeList;
-    std::vector<DICOMVolume::Pointer>    DICOMVolumeList;
+    ImageRegionSplitterByOutputs::Pointer m_ImageRegionSplitter;
 
-/*     DicomDictionary* Dictionary; */
+    unsigned int m_UsePhilipsPrivateTagRestrictions;
+
+    unsigned int m_WriteDictionaries;
     
+    std::string m_PreferredExtension;
+    
+    std::string m_InputDirectory;
+    FileListMapofMapType m_FileListMapofMap;
+
+    gdcm::Scanner m_FirstScanner;
+    gdcm::Scanner m_SecondScanner;
+    gdcm::Scanner m_ThirdScanner;
+
+    bool m_IsScanned;
+    /**
+       Sorting system. divinded into 3 layers of sort.
+    */
+    /**
+       First layer of sorting.
+       From a list of files, the output map should have
+       a list of "volumes" which might be 2D, 3D or 4D.
+       list of discriminant tags :
+       0x0010, 0x0010
+       0x0020, 0x000d
+       0x0020, 0x0037
+       000020, 0x0011
+       0x0018, 0x0050
+       0x0028, 0x0010
+       0x0028, 0x0011
+       0x0018, 0x1312
+       0x0008, 0x0008
+    */
+    FileListMapType PrimarySort (FileList list);
+    /**
+       Second/Third layer of sorting.
+       second and third are supposed to differenciate within a 4D volume,
+       list of discriminant tags :
+       0018 0024
+       0018 9087
+       0018 9089
+       0018 1060
+    */
+    FileListMapType SecondarySort (FileList list);
+    /**
+       Second/Third layer of sorting.
+       second and third are supposed to differenciate within a 4D volume,
+       list of discriminant tags :
+       0020 0032
+       0020 0037
+    */
+    FileListMapType TertiarySort (FileList list);
+    FileListMapType TimeSort (FileListMapType map);
+    FileListMapType InstanceNumberSort (FileList map);
+    
+    FileListMapType SimpleSort (FileList list);
+    FileList Transpose (FileList list, unsigned int repetition);
+    
+    std::string GenerateUniqueName (FileListMapType map);
   };
-  
+
 } // end of namespace itk
+
+
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "itkGDCMImporter.txx"
+#endif
 
 
 

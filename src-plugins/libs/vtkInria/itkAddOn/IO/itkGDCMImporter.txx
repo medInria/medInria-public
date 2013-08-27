@@ -1,9 +1,4 @@
 /*=========================================================================
-
- medInria
-
- Copyright (c) INRIA 2013. All rights reserved.
- See LICENSE.txt for details.
  
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
@@ -13,7 +8,7 @@
 
 #pragma once
 
-#include "itkGDCMImporter3.h"
+#include "itkGDCMImporter.h"
 #include <itkGDCMImageIO.h>
 
 #include "gdcmReader.h"
@@ -246,15 +241,55 @@ namespace itk
       }
       
       // if not found in public tag (0018|9089), the diffusion information
-      // might be stored in the private PHILIPS tags (2005|10b0-1-2)
+      // might be stored in the private GE tags (0019|10bb-c-d)
       gdcm::Reader reader;
       reader.SetFileName (file.c_str());
       reader.Read ();
       gdcm::StringFilter sf;
       sf.SetFile (reader.GetFile());      
-      value = sf.ToString (gdcm::Tag(0x2005,0x10b0)).c_str();
-      if( !value ) { ret = 0; break; }
+      value = sf.ToString (gdcm::Tag(0x0019,0x10bb)).c_str();
       
+      if(value ) 
+      {
+	// found the gradient in the private tag of GE
+	GradientType gr;
+	gr[0] = std::atof (sf.ToString (gdcm::Tag(0x0019,0x10bb)).c_str());
+	gr[1] = std::atof (sf.ToString (gdcm::Tag(0x0019,0x10bc)).c_str());
+	gr[2] = std::atof (sf.ToString (gdcm::Tag(0x0019,0x10bd)).c_str());
+	
+	// The GE gradient directions seem to suffer from a flip in the x and y direction
+	// because their frame of reference has its x-axis running right-to-left and 
+	// its y-axis running anterior-posterior
+	// see http://www.nitrc.org/pipermail/mrtrix-discussion/2013-April/000688.html
+	// we flip the directions back:
+	gr[0] = -gr[0];
+	gr[1] = -gr[1];
+	
+	ret = 1;
+	
+	if (!engaged && NumericTraits<double>::IsPositive (gr.GetNorm()))
+	  engaged = 1;
+	
+	cumulatednorm += gr.GetNorm();
+	
+	if (!m_SkipMeanDiffusivity || !engaged || NumericTraits<double>::IsPositive (gr.GetNorm()) )
+	  m_Gradients.push_back (gr);
+	else
+	  m_MeanDiffusivitySkipped = 1; 
+	
+	// and go to next file
+	continue;
+      }
+
+      // if not found in public tag (0018|9089), the diffusion information
+      // might be stored in the private PHILIPS tags (2005|10b0-1-2)
+      value = sf.ToString (gdcm::Tag(0x2005,0x10b0)).c_str();
+      if(!value)
+      {
+        ret = 0; 
+        break;
+      }
+
       // found the gradient in the private tag of philips
       GradientType gr;
       gr[0] = std::atof (sf.ToString (gdcm::Tag(0x2005,0x10b0)).c_str());
@@ -271,7 +306,9 @@ namespace itk
       if (!m_SkipMeanDiffusivity || !engaged || NumericTraits<double>::IsPositive (gr.GetNorm()) )
 	m_Gradients.push_back (gr);
       else
-	m_MeanDiffusivitySkipped = 1;  
+	m_MeanDiffusivitySkipped = 1;
+
+
     }  
 
     return ret && NumericTraits<double>::IsPositive (cumulatednorm);
@@ -284,10 +321,6 @@ namespace itk
 							SubImagePointerType t_image,
 							FileListMapType map) const
   {
-    typedef typename ImageType::RegionType RegionType;
-    typedef typename ImageType::SpacingType SpacingType;
-    typedef typename ImageType::PointType PointType;
-    typedef typename ImageType::DirectionType DirectionType;
     
     RegionType region;
     region.SetSize (0, t_image->GetLargestPossibleRegion().GetSize()[0]);
@@ -333,12 +366,7 @@ namespace itk
     
     FileListMapType map = this->GetFileListMap();
 
-    typedef typename ImageType::RegionType RegionType;
-    typedef typename ImageType::SpacingType SpacingType;
-    typedef typename ImageType::PointType PointType;
-    typedef typename ImageType::DirectionType DirectionType;
     typedef ImageRegionIterator<ImageType> IteratorType;
-    typedef typename IteratorType::IndexType IndexType;    
     typename ImageType::Pointer image = ImageType::New();
     typename GDCMImageIO::Pointer io  = GDCMImageIO::New();
     typename FileListMapType::iterator it;
@@ -357,7 +385,7 @@ namespace itk
 	map.erase (last);
       }
     }
-      
+    
     std::cout<<"building volume "<<this->GetName()<<" containing "<<map.size()<<" subvolumes..."<<std::flush;
 
     for (it = map.begin(); it != map.end(); ++it)
@@ -423,7 +451,7 @@ namespace itk
     }
     std::cout<<"done"<<std::endl;
 
-    // Now simply graft the image too the GDCMVolume
+    // Now simply graft the image to the GDCMVolume
     this->Graft (image);
 
     m_IsBuilt = 1;
@@ -552,7 +580,6 @@ namespace itk
     else
     {
       typename GDCMImageIO::Pointer io  = GDCMImageIO::New();
-      typename ReaderType::Pointer reader = ReaderType::New();
       io->SetFileName ((*map.begin()).second[0].c_str());
       io->ReadImageInformation();
       dict = io->GetMetaDataDictionary();
@@ -621,17 +648,21 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  GDCMImporter3<TPixelType>::GDCMImporter3()
-  {
-    itk::MultiThreader::SetGlobalDefaultNumberOfThreads(2);
-    
+  GDCMImporter<TPixelType>::GDCMImporter()
+  { 
     m_InputDirectory  = "";
     m_IsScanned = 0;
     
+    this->m_UsePhilipsPrivateTagRestrictions = 0;
+    this->m_WriteDictionaries = 0;
+    this->m_PreferredExtension = ".mha";
+    
+    m_ImageRegionSplitter = ImageRegionSplitterByOutputs::New();
+    
     this->SetNumberOfRequiredInputs (0);
     this->SetNumberOfRequiredOutputs (0);
-    this->SetNumberOfOutputs (0);
-
+    this->SetNumberOfIndexedOutputs (0);
+    
     // Given a list of file names
     
     // A first sort will determine how many (4D) outputs the importer (IO)
@@ -717,18 +748,36 @@ namespace itk
     
   }
 
-
+  
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  void GDCMImporter3<TPixelType>::Scan()
+  bool GDCMImporter<TPixelType>::IsFileDWI(const char* filename)
+  {
+    return false;
+  }
+  
+//----------------------------------------------------------------------------
+  template <class TPixelType>
+  void GDCMImporter<TPixelType>::Scan()
   {
 
     if (m_IsScanned)
       return;
     
-    if (!itksys::SystemTools::FileExists (this->m_InputDirectory.c_str()))
+    if (!itksys::SystemTools::FileIsDirectory (this->m_InputDirectory.c_str()))
       itkExceptionMacro (<<"Directory "<<this->m_InputDirectory.c_str()<<" not found."<<std::endl);
 
+    char last = this->m_InputDirectory[this->m_InputDirectory.size()-1];
+#if defined(_WIN32) && !defined(__CYGWIN__)
+    if (last != '\\')
+      this->m_InputDirectory+="\\";
+#else
+    if (last != '/')
+      this->m_InputDirectory+="/";
+#endif
+
+    std::cout<<"input directory : "<<this->m_InputDirectory<<std::endl;
+    
     this->UpdateProgress(0.00);
 
     this->m_FileListMapofMap.clear();
@@ -846,23 +895,26 @@ namespace itk
 
   //----------------------------------------------------------------------------
   template <class TPixelType>
-  typename GDCMImporter3<TPixelType>::FileListMapType
-  GDCMImporter3<TPixelType>::PrimarySort (FileList list)
+  typename GDCMImporter<TPixelType>::FileListMapType
+  GDCMImporter<TPixelType>::PrimarySort (FileList list)
   {
 
     FileListMapType ret;
-    std::cout<<"first scanning " << list.size() << " files..."<<std::flush;
+    if (this->GetDebug())
+      std::cout<<"first scanning " << list.size() << " files..."<<std::flush;
     
     if (!this->m_FirstScanner.Scan (list))
     {
       itkExceptionMacro (<<"The first scanner did not succeed scanning directory "
 			 <<this->m_InputDirectory<<std::endl);
     }
-    std::cout<<" done"<<std::endl;
-
-    std::cout<<"the first scanner found "<<m_FirstScanner.GetKeys().size()
-	     <<" valid files"<<std::endl;
-
+    if (this->GetDebug())
+      std::cout<<" done"<<std::endl;
+    
+    if (this->GetDebug())
+      std::cout<<"the first scanner found "<<m_FirstScanner.GetKeys().size()
+	       <<" valid files"<<std::endl;
+    
     gdcm::Directory::FilenamesType::const_iterator file;
     gdcm::Scanner::TagToValue::const_iterator it;
     
@@ -878,7 +930,34 @@ namespace itk
 	std::ostringstream os;
 	os<<"firstscan.";
 	for(it = mapping.begin(); it != mapping.end(); ++it)
-	  os <<(*it).second<<".";
+	  os << (*it).second << ".";
+	
+	/**
+	   If the scan is a diffusion scan from Philips, the DWIs can sometimes
+	   be interlaced. In this case one scan UID can contain 2 sets of DWIs at
+	   different positions and different trigger delays.
+
+	   The only way to de-interlace them is also discriminate the position AND the
+	   trigger delay, to get 4 DWIs volumes, with different pairs of positions / trigger
+	*/
+	if (this->m_UsePhilipsPrivateTagRestrictions)
+	{
+	  gdcm::Reader reader; reader.SetFileName ((*file).c_str()); reader.Read ();
+	  gdcm::StringFilter sf; sf.SetFile (reader.GetFile());
+	  std::string isdiffusion = sf.ToString (gdcm::Tag(0x2005,0x1014)).c_str();
+	  std::string position = sf.ToString (gdcm::Tag(0x0020,0x0032)).c_str();
+	  unsigned int trigger = std::atoi ( sf.ToString (gdcm::Tag(0x0018,0x1060)).c_str() );
+	  
+	  if (this->GetDebug())
+	    std::cout << (*file).c_str() << " : " << isdiffusion << " : " << position.c_str() << " : " << trigger << std::endl;
+	  
+	  if (    ( isdiffusion.size() && ! std::strcmp (isdiffusion.c_str(),"Y ") )
+		  && position.size() )
+	  {
+	    os << position.c_str() << ".";
+	    os << trigger << ".";
+	  }
+	}
 	
 	if (ret.find(os.str()) == ret.end())
 	{
@@ -888,6 +967,7 @@ namespace itk
 	}
 	else
 	  ret[os.str()].push_back ((*file).c_str());
+	
       }
       else
       {
@@ -904,35 +984,36 @@ namespace itk
       }
     }
     std::cout<<"|"<<std::endl;
-
+    
     return ret;
     
   }
 
   //----------------------------------------------------------------------------
   template <class TPixelType>
-  typename GDCMImporter3<TPixelType>::FileListMapType
-  GDCMImporter3<TPixelType>::SecondarySort (FileList list)
+  typename GDCMImporter<TPixelType>::FileListMapType
+  GDCMImporter<TPixelType>::SecondarySort (FileList list)
   {
 
     FileListMapType ret;
-
-    std::cout<<"second scanning " << list.size() << " files..."<<std::flush;
+    if (this->GetDebug())
+      std::cout<<"second scanning " << list.size() << " files..."<<std::flush;
     
     if (!this->m_SecondScanner.Scan (list))
     {
       itkExceptionMacro (<<"The second scanner did not succeed scanning the list, skipping"
 			 <<std::endl);
     }
-
     
-    std::cout<<"the second scanner found "<<m_SecondScanner.GetKeys().size()
-	     <<" valid files"<<std::endl;
-
+    
+    if (this->GetDebug())
+      std::cout<<"the second scanner found "<<m_SecondScanner.GetKeys().size()
+	       <<" valid files"<<std::endl;
+    
     
     gdcm::Directory::FilenamesType::const_iterator file;
     gdcm::Scanner::TagToValue::const_iterator it;
-
+    
     for (file = list.begin(); file != list.end(); ++file)
     {
       if( this->m_SecondScanner.IsKey((*file).c_str()) )
@@ -984,8 +1065,8 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  typename GDCMImporter3<TPixelType>::FileListMapType
-  GDCMImporter3<TPixelType>::SimpleSort (FileList list)
+  typename GDCMImporter<TPixelType>::FileListMapType
+  GDCMImporter<TPixelType>::SimpleSort (FileList list)
   {
 
     FileListMapType ret;
@@ -1028,8 +1109,8 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  typename GDCMImporter3<TPixelType>::FileList
-  GDCMImporter3<TPixelType>::Transpose (FileList list, unsigned int repetition)
+  typename GDCMImporter<TPixelType>::FileList
+  GDCMImporter<TPixelType>::Transpose (FileList list, unsigned int repetition)
   {
     FileList ret;
     
@@ -1046,8 +1127,8 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  typename GDCMImporter3<TPixelType>::FileListMapType
-  GDCMImporter3<TPixelType>::TertiarySort (FileList list)
+  typename GDCMImporter<TPixelType>::FileListMapType
+  GDCMImporter<TPixelType>::TertiarySort (FileList list)
   {
 
     FileListMapType ret;
@@ -1096,9 +1177,9 @@ namespace itk
 	if( value )
         {
 	  gdcm::Element<gdcm::VR::DS,gdcm::VM::VM3> ipp;
-	  std::stringstream ss;
-	  ss.str( value );
-	  ipp.Read( ss );
+	  std::stringstream ss2;
+	  ss2.str( value );
+	  ipp.Read( ss2 );
 	  double dist = 0;
 	  for (int i = 0; i < 3; ++i)
 	    dist += normal[i]*ipp[i];
@@ -1171,8 +1252,8 @@ namespace itk
  
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  typename GDCMImporter3<TPixelType>::FileListMapType
-  GDCMImporter3<TPixelType>::TimeSort  (FileListMapType map)
+  typename GDCMImporter<TPixelType>::FileListMapType
+  GDCMImporter<TPixelType>::TimeSort  (FileListMapType map)
   {
 
     FileListMapType ret;
@@ -1248,8 +1329,8 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  typename GDCMImporter3<TPixelType>::FileListMapType
-  GDCMImporter3<TPixelType>::InstanceNumberSort  (FileList list)
+  typename GDCMImporter<TPixelType>::FileListMapType
+  GDCMImporter<TPixelType>::InstanceNumberSort  (FileList list)
   {
     FileListMapType ret;
     
@@ -1295,11 +1376,11 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  void GDCMImporter3<TPixelType>::GenerateOutputs()
+  void GDCMImporter<TPixelType>::GenerateOutputs()
   {
     // release memory
     this->PrepareOutputs();
-    this->SetNumberOfOutputs (0);
+    this->SetNumberOfIndexedOutputs (0);
 
     typename FileListMapofMapType::iterator it;
     
@@ -1311,8 +1392,11 @@ namespace itk
       
       image->SetName (this->GenerateUniqueName((*it).second));
       image->SetFileListMap ((*it).second);
+      
       this->AddOutput (image);
     }
+
+    this->m_ImageRegionSplitter->SetNumberOfOutputs (this->GetNumberOfIndexedOutputs());
 
     this->Modified();
   }
@@ -1320,7 +1404,7 @@ namespace itk
 //----------------------------------------------------------------------------
   template <class TPixelType>
   void
-  GDCMImporter3<TPixelType>::WriteOutputInFile (unsigned int i, std::string filename)
+  GDCMImporter<TPixelType>::WriteOutputInFile (unsigned int i, std::string filename)
   {
     try
     {
@@ -1337,40 +1421,45 @@ namespace itk
 //----------------------------------------------------------------------------
   template <class TPixelType>
   void
-  GDCMImporter3<TPixelType>::WriteOutputsInDirectory (std::string directory)
+  GDCMImporter<TPixelType>::WriteOutputsInDirectory (std::string directory)
   {
     for( unsigned int i=0; i<this->GetNumberOfOutputs(); i++)
     {
       std::string filename = itksys::SystemTools::AppendStrings
 	( itksys::SystemTools::ConvertToOutputPath (directory.c_str()).c_str(),
 	  this->GetOutput(i)->GetName(),
-	  ".mha");
+	  this->m_PreferredExtension.c_str());
       try
       {
 	std::cout<<"Writing "<<filename<<" ... "<<std::flush;
 	this->GetOutput(i)->Write (filename);
 	std::cout<<"done. "<<std::endl;
-
+	
 	if (this->GetOutput(i)->IsVolumeDWIs())
 	{
 	  std::string gradientsname = itksys::SystemTools::AppendStrings
 	    ( itksys::SystemTools::ConvertToOutputPath (directory.c_str()).c_str(),
 	      this->GetOutput(i)->GetName(),
 	      ".txt");
-
+	  
 	  std::cout<<"Writing "<<gradientsname<<" ... "<<std::flush;
 	  this->GetOutput(i)->WriteGradients (gradientsname);
 	  std::cout<<"done. "<<std::endl;
 	}
-	std::string dictsname = itksys::SystemTools::AppendStrings ( itksys::SystemTools::ConvertToOutputPath (directory.c_str()).c_str(), this->GetOutput(i)->GetName(), ".dict");
-	std::cout<<"Writing "<<dictsname<<" ... "<<std::flush;
-	std::ofstream file (dictsname.c_str());
-	if(file.fail()) itkExceptionMacro (<<"Unable to open file for writing dict" << std::endl);
-	typename GDCMVolumeType::DicomEntryList list = this->GetOutput(i)->GetDicomEntryList();
-	for (unsigned int i=0; i<list.size(); i++)
-	  file << list[i].first.c_str() << "\t : [" << list[i].second.c_str() <<"]"<< std::endl;
-	file.close();
-	std::cout<<"done. "<<std::endl;
+	
+	if (this->GetWriteDictionaries())
+	{
+	  std::string dictsname = itksys::SystemTools::AppendStrings ( itksys::SystemTools::ConvertToOutputPath (directory.c_str()).c_str(), this->GetOutput(i)->GetName(), ".dict");
+	  std::cout<<"Writing "<<dictsname<<" ... "<<std::flush;
+	  std::ofstream file (dictsname.c_str());
+	  if(file.fail()) itkExceptionMacro (<<"Unable to open file for writing dict" << std::endl);
+	  typename GDCMVolumeType::DicomEntryList list = this->GetOutput(i)->GetDicomEntryList();
+	  for (unsigned int j=0; j<list.size(); j++)
+	    file << list[j].first.c_str() << "\t : [" << list[j].second.c_str() <<"]"<< std::endl;
+	  file.close();
+	  std::cout<<"done. "<<std::endl;
+	}
+	
       }
       catch (itk::ExceptionObject & e)
       {
@@ -1384,7 +1473,7 @@ namespace itk
 //----------------------------------------------------------------------------
   template <class TPixelType>
   std::string
-  GDCMImporter3<TPixelType>::GenerateUniqueName (FileListMapType map)
+  GDCMImporter<TPixelType>::GenerateUniqueName (FileListMapType map)
   {
     std::string ret;
 
@@ -1503,7 +1592,7 @@ namespace itk
 //----------------------------------------------------------------------------
   template <class TPixelType>
   void 
-  GDCMImporter3<TPixelType>::ThreadedGenerateData(const OutputImageRegionType& region, int id)
+  GDCMImporter<TPixelType>::ThreadedGenerateData(const OutputImageRegionType& region, ThreadIdType id)
   {
     if (!m_IsScanned)
       itkExceptionMacro (<<"MUST call Scan() before Update()");
@@ -1527,48 +1616,18 @@ namespace itk
 
 //----------------------------------------------------------------------------
   template <class TPixelType>
-  int 
-  GDCMImporter3<TPixelType>::SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion)
+  const ImageRegionSplitterBase* 
+  GDCMImporter<TPixelType>::GetImageRegionSplitter(void) const
   {
-    typename ImageType::IndexType splitIndex;
-    splitIndex.Fill (0);
-    
-    typename ImageType::SizeType splitSize;
-    splitSize.Fill (0);
-    
-    // determine the actual number of pieces that will be generated
-    typename ImageType::SizeType::SizeValueType range = this->GetNumberOfOutputs();
-    int valuesPerThread = (int)::vcl_ceil(range/(double)num);
-    int maxThreadIdUsed = (int)::vcl_ceil(range/(double)valuesPerThread) - 1;
-
-    splitIndex[0] = 0;
-    splitSize[0] = this->GetNumberOfOutputs();
-    
-    // Split the region
-    if (i < maxThreadIdUsed)
-    {
-      splitIndex[0] += i*valuesPerThread;
-      splitSize[0] = valuesPerThread;
-    }
-    if (i == maxThreadIdUsed)
-    {
-      splitIndex[0] += i*valuesPerThread;
-      // last thread needs to process the "rest" dimension being split
-      splitSize[0] = splitSize[0] - i*valuesPerThread;
-    }  
-  
-    // set the split region ivars
-    splitRegion.SetIndex( splitIndex );
-    splitRegion.SetSize( splitSize );
-
-    return maxThreadIdUsed + 1;
+    return this->m_ImageRegionSplitter;
   }
+
 
   
 //----------------------------------------------------------------------------
   template <class TPixelType>
   void
-  GDCMImporter3<TPixelType>::PrintSelf(std::ostream& os, Indent indent) const
+  GDCMImporter<TPixelType>::PrintSelf(std::ostream& os, Indent indent) const
   {
     Superclass::PrintSelf( os, indent );
     os << indent << "Input Directory: " << m_InputDirectory.c_str() << std::endl;
