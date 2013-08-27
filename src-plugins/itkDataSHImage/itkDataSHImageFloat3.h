@@ -45,8 +45,8 @@ public:
     int zDimension();
  
     /** TODO the image which is being returned right now is JUST A STUB to allow drag and drop */
-    virtual QImage        &thumbnail()  const;
-    virtual QList<QImage> &thumbnails() const;
+    virtual QImage        &thumbnail();
+    virtual QList<QImage> &thumbnails();
 
 private:
     itkDataSHImageFloat3Private *d;
