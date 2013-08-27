@@ -79,6 +79,9 @@ protected :
      */
     virtual bool writeTransform(const QString& file);
     
+    virtual itk::Transform<double,3,3>::Pointer getTransform();
+    virtual QString getTitleAndParameters();
+
 private:
     %1Private *d;
     

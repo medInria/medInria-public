@@ -29,6 +29,7 @@ public:
     dtkAbstractData *processOutput();
     
     static bool registered();
+    dtkPlugin * plugin();
     
 signals:
     void success();
