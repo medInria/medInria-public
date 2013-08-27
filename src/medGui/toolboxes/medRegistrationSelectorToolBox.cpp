@@ -557,10 +557,14 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type,QString a
             newDescription.remove(" registered\n");
     }
     else if (type==reset)
+    {
         if (newDescription.lastIndexOf(" registered")!=-1)
+        {
             newDescription.remove(newDescription.lastIndexOf(" registered"),newDescription.size()-1);
+        }
         else
             return;
+    }
 
     output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
     
