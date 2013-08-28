@@ -336,7 +336,6 @@ namespace itk
     }
 
 
-
     m_Spacing[2] = 1.0;
 
     const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
@@ -355,6 +354,7 @@ namespace itk
       normal[1] = m_Direction[2][1];
       normal[2] = m_Direction[2][2];
 
+
       double ref_gap = MAXIMUM_GAP; // choose ref_gap as minimum gap between slices
       for (unsigned int i=1; i<imagePositions.size(); i++)
       {
@@ -371,7 +371,6 @@ namespace itk
 	is_stream2 >> pos2[2];
 
 	vnl_vector<double> v21 = pos2-pos1;
-
 	gaps[i-1] = fabs ( dot_product (normal, v21) );
 	if (gaps[i-1]<ref_gap && gaps[i-1]>0.0)
 	  ref_gap = gaps[i-1];
@@ -393,7 +392,7 @@ namespace itk
 	}
       }
       if (total_gap==MAXIMUM_GAP)
-	m_Spacing[2] = 1.0;
+          m_Spacing[2] = 1.0;
       else
 	m_Spacing[2] = total_gap/(double)(gapCount);
     }
@@ -586,11 +585,31 @@ namespace itk
     return zpos;
   }
 
+    double DCMTKImageIO::GetSliceLocation(std::string imagePosition)
+{
+    // <> We should not trust DICOM tag for sliceLocation (type3 so not mandatory and may be wrong )
 
+    double sliceLocation = 0;
+
+    this->DetermineOrientation(); //to know m_Direction
+
+    vnl_vector<double> normal (3);
+    normal[0] = m_Direction[2][0];
+    normal[1] = m_Direction[2][1];
+    normal[2] = m_Direction[2][2];
+
+    std::istringstream is_stream1( imagePosition.c_str());
+    vnl_vector<double> pos1 (3);
+    is_stream1 >> pos1[0];
+    is_stream1 >> pos1[1];
+    is_stream1 >> pos1[2];
+    sliceLocation = dot_product (normal, pos1) ;
+
+    return sliceLocation;
+}
 
   void DCMTKImageIO::ReadImageInformation()
   {
-
     /**
        Using a set, we remove any duplicate filename - should we do this?
     */
@@ -616,15 +635,13 @@ namespace itk
     int    fileIndex = 0;
     double sliceLocation = 0;
 
-
-
     /**
        The purpose of the next loop is to parse the DICOM header of each file, store all
        fields in the Dictionary, and order filenames depending on their sliceLocation,
        assuming that the sliceLocation field gives the order dicoms are obtained.
     */
     NameSetType::const_iterator f = fileNames.begin(), fe = fileNames.end();
-
+    int i = 0;
     while ( f != fe )
     {
       std::string filename;
@@ -636,37 +653,24 @@ namespace itk
       try
       {
 	this->ReadHeader( filename, fileIndex, fileCount );
+    const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
 
-	sliceLocation = 0;
-	std::string vecSlice = this->GetMetaDataValueString ("(0020,1041)", fileIndex );
-	if( vecSlice!="" )
-	{
-	  std::istringstream is_stream ( vecSlice.c_str() );
-	  is_stream >> sliceLocation;
-	}
-	else
-	{
-	  std::string vecSlice2 = this->GetMetaDataValueString ("(0020,0050)", fileIndex);
-	  if( vecSlice2!="" )
-	  {
-	    std::istringstream is_stream ( vecSlice2.c_str() );
-	    is_stream >> sliceLocation;
-	  }
-	else  // instance number
-	{
-	  std::string vecSlice3 = this->GetMetaDataValueString("(0020,0013)", fileIndex);
-	  if (vecSlice3!="")
-	  {
-	    std::istringstream is_stream ( vecSlice3.c_str() );
-	    is_stream >> sliceLocation;
-	  }
-	  else // cannot find the sliceLocation information, then we rely on the order files were inputed.
-	  {
-	    sliceLocation = (double)fileIndex;
-	  }
-	}
-	}
+    sliceLocation = this->GetSliceLocation(imagePositions[i]);
+    i++;
 
+    //Get Spacing between slices
+    double spacingBetweenSlices = 1.0;
+    const StringVectorType &spacingBetweenSlicesVec = this->GetMetaDataValueVectorString ("(0018,0088)");
+    if( spacingBetweenSlicesVec.size() )
+    {
+	    std::string spacingBetweenSlicesStr = spacingBetweenSlicesVec[0];
+	    std::istringstream is_stream( spacingBetweenSlicesStr.c_str() );
+	    is_stream>>spacingBetweenSlices;
+    }
+
+    //Forcing sliceLocation to be a multiple of spacing between slices
+    //Prevents from some sorting issues (e.g due to extremely small differences in sliceLocations)
+    sliceLocation = floor(sliceLocation/spacingBetweenSlices+0.5)*spacingBetweenSlices; 
 	m_LocationSet.insert( sliceLocation );
 	m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *f ) );
 	m_FilenameToIndexMap[ *f ] = fileIndex;
@@ -678,9 +682,6 @@ namespace itk
       }
       ++f;
     }
-
-
-
 
     /**
        In the next loop, slices are ordered according to their instance number, in case multiple
@@ -694,14 +695,14 @@ namespace itk
 
       // using that intermediate lut for instance number ordering
       IndexToNamesMapType instanceNumberToNameMap;
-
+      
       while ( n!=ne )
       {
 	int instanceNumber = 0;
 	std::string instanceNumberString = this->GetMetaDataValueString ("(0020,0013)", m_FilenameToIndexMap[ n->second ]);
 	if( instanceNumberString!="" )
 	{
-	  std::istringstream is_stream ( instanceNumberString.c_str() );
+        std::istringstream is_stream ( instanceNumberString.c_str() );
 	  is_stream >> instanceNumber;
 	}
 	// else, we assume all files have the same instance number (0), i.e.: the serie has only one volume
@@ -721,7 +722,7 @@ namespace itk
 	std::list< std::string >::const_iterator fn = in->second.begin(), fne = in->second.end();
 	while ( fn!=fne )
 	{
-	  m_LocationToFilenamesMap.insert( std::pair< double, std::string >( *l, *fn ) );
+        m_LocationToFilenamesMap.insert( std::pair< double, std::string >( *l, *fn ) );
 	  ++fn;
 	}
 	++in;
@@ -730,18 +731,16 @@ namespace itk
     }
 
 
-
     // collecting slice count and rank count while doing sanity checks
     unsigned int sizeZ = m_LocationSet.size();
     unsigned int sizeT = m_LocationToFilenamesMap.count( *m_LocationSet.begin() );
-
     // check consistency
     SliceLocationSetType::const_iterator it = m_LocationSet.begin();
     while (it!=m_LocationSet.end())
     {
-      if ( m_LocationToFilenamesMap.count(*it)!=sizeT )
+      if (!( m_LocationToFilenamesMap.count(*it)==sizeT ))
       {
-	itkExceptionMacro (<< "Inconsistency in dicom volumes: " << m_LocationToFilenamesMap.count(*it) << " vs. " << sizeT);
+          itkExceptionMacro (<< "Inconsistency in dicom volumes: " << m_LocationToFilenamesMap.count(*it) << " vs. " << sizeT);
       }
       ++it;
     }
@@ -756,7 +755,6 @@ namespace itk
       this->SetNumberOfDimensions (3);
     }
     m_Dimensions[2] =  sizeZ;
-
 
 
     /**
