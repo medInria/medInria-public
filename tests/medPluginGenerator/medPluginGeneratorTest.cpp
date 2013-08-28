@@ -76,7 +76,7 @@ void medPluginGeneratorTest::testCompile()
 #if defined(Q_OS_MAC)
     QString binaryPath = QDir(CMAKE_BINARY_DIR).absoluteFilePath("bin/medPluginGenerator.app/Contents/MacOS/medPluginGenerator");
 #elif defined(Q_OS_WIN)
-    QString binaryPath = QDir(qApp->applicationDirPath()).absoluteFilePath("medPluginGenerator");
+    QString binaryPath = QDir(qApp->applicationDirPath()).absoluteFilePath("medPluginGenerator.exe");
 #else
     QString binaryPath = QDir(CMAKE_BINARY_DIR).absoluteFilePath("bin/medPluginGenerator");
 #endif
@@ -92,7 +92,7 @@ void medPluginGeneratorTest::testCompile()
     QProcess pGen;
     pGen.setProcessChannelMode(QProcess::MergedChannels);
     pGen.start(binaryPath, args);
-    if (! pGen.waitForFinished()) {
+    if (! pGen.waitForFinished(-1)) {
         pGen.kill();
         QFAIL("Generation step took too long, killed !");
     }
@@ -120,7 +120,7 @@ void medPluginGeneratorTest::testCompile()
          << _tmpPath.absoluteFilePath(nameFirstLower);
     pGen.setWorkingDirectory(buildDir.absolutePath());
     pGen.start("cmake", args);
-    if (! pGen.waitForFinished()) {
+    if (! pGen.waitForFinished(-1)) {
         pGen.kill();
         QFAIL("Configuration step took too long, killed !");
     }
@@ -135,7 +135,7 @@ void medPluginGeneratorTest::testCompile()
     args << "--build" << ".";
     pGen.setWorkingDirectory(buildDir.absolutePath());
     pGen.start("cmake", args);
-    if (! pGen.waitForFinished()) {
+    if (! pGen.waitForFinished(-1)) {
         pGen.kill();
         QFAIL("Compilation step took too long, killed !");
     }

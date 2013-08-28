@@ -195,6 +195,16 @@ bool %1::writeTransform(const QString& file)
     return d->writeTransform<float>(file);
 }
 
+itk::Transform<double,3,3>::Pointer %1::getTransform()
+{
+    return NULL;
+}
+
+QString %1::getTitleAndParameters()
+{
+    return QString();
+}
+
 // /////////////////////////////////////////////////////////////////
 // Type instanciation
 // /////////////////////////////////////////////////////////////////
