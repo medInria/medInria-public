@@ -145,7 +145,7 @@ public:
     /**
     * @brief Returns a pointer on a QStringList containing the title of the algorithm and its parameters. The first element of the list is the title.
     * 
-    * @return QStringList *
+    * @return QString
     */
     virtual QString getTitleAndParameters() = 0;
 
