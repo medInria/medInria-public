@@ -72,6 +72,7 @@ if ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
       medFiberBundlingToolBox.h
       medFiberViewToolBox.h
       medTensorViewToolBox.h
+      medSHViewToolBox.h
     )
     set(${PROJECT_NAME}_TTK_DEPENDENT_SOURCES
        v3dViewFiberInteractor.cpp
@@ -79,6 +80,7 @@ if ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
        medFiberBundlingToolBox.cpp
        medFiberViewToolBox.cpp
        medTensorViewToolBox.cpp
+       medSHViewToolBox.cpp
     )
     set(${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES
        ttkAlgorithms

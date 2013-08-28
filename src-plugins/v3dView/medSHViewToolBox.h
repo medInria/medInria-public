@@ -31,14 +31,14 @@ class MEDGUI_EXPORT medSHViewToolBox : public medToolBox
 	Q_OBJECT
 
 public:
-        medSHViewToolBox(QWidget *parent);
-        ~medSHViewToolBox();
+    medSHViewToolBox(QWidget *parent);
+    ~medSHViewToolBox();
 
-        /** Returns the currently selected polyhedron that is going to be tesselated */
-        QString tesselationType();
+    /** Returns the currently selected polyhedron that is going to be tesselated */
+    QString tesselationType();
 
-        /** Returns the currently selected spherical harmonics basis */
-        QString tesselationBasis();
+    /** Returns the currently selected spherical harmonics basis */
+    QString tesselationBasis();
 
 	/** Returns the currently selected sample rate */
 	int sampleRate();
@@ -80,46 +80,9 @@ public:
     /** The SH toolbox widgets (slider size and steps) are updated accordingly with the SH image size by using the interactor*/
     void updateWithInteractor(dtkAbstractView *view);
 
-signals:
-    /** Emitted when a tesselation polyhedron type has is selected from the combobox */
-    void tesselationTypeChanged(const QString& shape);
 
-    /** Emitted when a spherical harmonics basis is selected from the combobox */
-    void tesselationBasisChanged(const QString& basis);
+    static bool registered();
 
-    /** Emitted when the sample rate change */
-    void sampleRateChanged(int sampleRate);
-
-    /** Emitted when the user wants to flip the X axis */
-    void flipX(const bool flipX);
-
-    /** Emitted when the user wants to flip the Y axis */
-    void flipY(const bool flipY);
-
-    /** Emitted when the user wants to flip the Z axis */
-    void flipZ(const bool flipZ);
-
-    /** Emitted when the checks the normalize check box */
-    void normalize(const bool normalize);
-
-    /** Emitted when the glyph resolution change */
-    void glyphResolutionChanged(int glyphResolution);
-
-    void xSliceChanged(const int xSlice);
-    void ySliceChanged(const int ySlice);
-    void zSliceChanged(const int zSlice);
-
-    /** Emitted when the minor scaling change */
-    void scalingChanged(const double scale);
-
-    /** Emitted when user wants to hide or show axial plane */
-    void hideShowAxial(const bool show);
-
-    /** Emitted when user wants to hide or show coronal plane */
-    void hideShowCoronal(const bool show);
-
-    /** Emitted when user wants to hide or show Sagittal plane */
-    void hideShowSagittal(const bool show);
 
 public slots:
 
@@ -127,26 +90,34 @@ public slots:
 
 private slots:
 
-    // functions used to translate checkboxes from Qt::CheckState
-    // to boolean values, and then emitting the signals
-    void onFlipXCheckBoxStateChanged(const int state);
-    void onFlipYCheckBoxStateChanged(const int state);
-    void onFlipZCheckBoxStateChanged(const int state);
+    void setTesselationType (int tesselationType);
+    void setTesselationBasis (int tesselationBasis);
+    void setSampleRate (int sampleRate);
 
-    void onEnhanceCheckBoxStateChanged(const int state);
+    void setXSlice (int xSlice);
+    void setYSlice (int ySlice);
+    void setZSlice (int zSlice);
 
-    void onScaleChanged(const double scale);
-    void onScaleChanged(const double mantissa,const int exponent);
+    void setGlyphResolution (int glyphResolution);
+
+    void flipX(const int state);
+    void flipY(const int state);
+    void flipZ(const int state);
+
+    void setEnhance(const int state);
+
+    void setScale(const double scale);
+    void setScale(const double mantissa,const int exponent);
 
     /** Changes the Major scaling M of the glyph visualization m*10^M */
-    void onMinorScalingChanged(const int minorScale);
+    void setMinorScaling(const int minorScale);
 
     /** Changes the minor scaling m of the glyph visualization  m*10^M*/
-    void onMajorScalingChanged(const int majorScaleExponent);
+    void setMajorScaling(const int majorScaleExponent);
 
-    void onHideShowAxialChanged(const int checkBoxState);
-    void onHideShowCoronalChanged(const int checkBoxState);
-    void onHideShowSagittalChanged(const int checkBoxState);
+    void setShowAxial(const int checkBoxState);
+    void setShowCoronal(const int checkBoxState);
+    void setShowSagittal(const int checkBoxState);
 
 protected:
 

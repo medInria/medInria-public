@@ -22,6 +22,7 @@
 #include <vtkStructuredPoints.h>
 
 #include <v3dView.h>
+#include <medVtkView.h>
 
 #include <itkSphericalHarmonicITKToVTKFilter.h>
 
@@ -82,22 +83,11 @@ v3dViewSHInteractor::v3dViewSHInteractor(): medSHAbstractViewInteractor(),d(new 
     d->filterFloat = 0;
     d->filterDouble = 0;
 
-    addProperty("TesselationType",QStringList() << "Icosahedron" << "Dodecahedron" << "Octahedron" << "Hexahedron" << "Tetrahedron");
-    addProperty("FlipX",QStringList() << "true" << "false");
-    addProperty("FlipY",QStringList() << "true" << "false");
-    addProperty("FlipZ",QStringList() << "true" << "false");
-    addProperty("ColorGlyphs",QStringList() << "true" << "false");
-
-    addProperty("Normalization",QStringList() << "true" << "false");
-    addProperty("TesselationBasis",QStringList() << "SHMatrix" << "SHMatrixMaxThesis" << "SHMatrixTournier" << "SHMatrixRshBasis");
-
     //  Set default properties
-
     d->manager->SetTesselationType(0);
     d->manager->SetTesselationBasis(0);
     d->manager->Normalization(false);
-    setProperty("TesselationType","Icosahedron");
-    setProperty("TesselationBasis","SHMatrix");
+
 }
 
 v3dViewSHInteractor::~v3dViewSHInteractor() {
@@ -116,8 +106,17 @@ QString v3dViewSHInteractor::identifier() const {
 }
 
 QStringList v3dViewSHInteractor::handled() const {
-    return QStringList() << "v3dView";
+    return QStringList() << v3dView::s_identifier() << medVtkView::s_identifier();
 }
+
+bool v3dViewSHInteractor::isDataTypeHandled(QString dataType) const
+{
+    if (dataType.startsWith( "itkDataSHImage"))
+        return true;
+
+    return false;
+}
+
 
 bool v3dViewSHInteractor::registered() {
     return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewSHInteractor",QStringList() << "v3dView",createV3dViewSHInteractor);
@@ -179,117 +178,84 @@ void v3dViewSHInteractor::imageSize(int* imSize) {
     d->manager->GetSphericalHarmonicDimensions(imSize);
 }
 
-void v3dViewSHInteractor::onPropertySet(const QString& key,const QString& value) {
-    if (key=="TesselationType")
-        onTesselationTypePropertySet(value);
-    else if (key=="FlipX")
-        onFlipXPropertySet(value);
-    else if (key=="FlipY")
-        onFlipYPropertySet(value);
-    else if (key=="FlipZ")
-        onFlipZPropertySet(value);
-    else if (key=="ColorGlyphs")
-        ColorGlyphsPropertySet(value);
-    else if (key=="TesselationBasis")
-        onTesselationBasisPropertySet(value);
-    else if (key=="Normalization")
-        NormalizationPropertySet(value);
+
+void v3dViewSHInteractor::setTesselationType(TesselationType tesselationType) {
+    d->manager->SetTesselationType(tesselationType);
 }
 
-void v3dViewSHInteractor::onTesselationTypePropertySet(const QString& tesselationType) {
-    if (tesselationType == "Icosahedron")
-        d->manager->SetTesselationType(0);
-    else if (tesselationType == "Octahedron")
-        d->manager->SetTesselationType(2);
-    else if (tesselationType == "Tetrahedron")
-        d->manager->SetTesselationType(4);
+void v3dViewSHInteractor::setTesselationBasis(TesselationBasis tesselationBasis) {
+    d->manager->SetTesselationBasis(tesselationBasis);
 }
 
-void v3dViewSHInteractor::onTesselationBasisPropertySet(const QString& tesselationBasis) {
-    if (tesselationBasis == "SHMatrix")
-        d->manager->SetTesselationBasis(0);
-    else if (tesselationBasis == "SHMatrixMaxThesis")
-        d->manager->SetTesselationBasis(1);
-    else if (tesselationBasis == "SHMatrixTournier")
-        d->manager->SetTesselationBasis(2);
-    else if (tesselationBasis == "SHMatrixRshBasis")
-        d->manager->SetTesselationBasis(3);
-}
-
-void v3dViewSHInteractor::onSampleRatePropertySet(int sampleRate) {
+void v3dViewSHInteractor::setSampleRate(int sampleRate) {
     d->manager->SetSampleRate(sampleRate,sampleRate,sampleRate);
 }
 
-void v3dViewSHInteractor::onGlyphResolutionPropertySet(int glyphResolution) {
+void v3dViewSHInteractor::setGlyphResolution(int glyphResolution) {
     d->manager->SetGlyphResolution(glyphResolution);
 }
 
-void v3dViewSHInteractor::onScalingPropertySet(double scale) {
+void v3dViewSHInteractor::setScaling(double scale) {
     d->manager->SetGlyphScale((float)scale);
 }
 
-void v3dViewSHInteractor::onXSlicePropertySet(int xSlice) {
+void v3dViewSHInteractor::setXSlice(int xSlice) {
     int dims[3];
     d->manager->GetCurrentPosition(dims);
     dims[0]=xSlice;
     d->manager->SetCurrentPosition((int*)dims);
 }
 
-void v3dViewSHInteractor::onYSlicePropertySet(int ySlice) {
+void v3dViewSHInteractor::setYSlice(int ySlice) {
     int dims[3];
     d->manager->GetCurrentPosition(dims);
     dims[1]=ySlice;
     d->manager->SetCurrentPosition((int*)dims);
 }
 
-void v3dViewSHInteractor::onZSlicePropertySet(int zSlice) {
+void v3dViewSHInteractor::setZSlice(int zSlice) {
     int dims[3];
     d->manager->GetCurrentPosition(dims);
     dims[2]=zSlice;
     d->manager->SetCurrentPosition((int*)dims);
 }
 
-void v3dViewSHInteractor::onHideShowAxialPropertySet(bool show) {
+void v3dViewSHInteractor::setShowAxial(bool show) {
     const int visible = show ? 1 : 0;
     d->manager->SetAxialSliceVisibility(visible);
 }
 
-void v3dViewSHInteractor::onHideShowCoronalPropertySet(bool show) {
+void v3dViewSHInteractor::setShowCoronal(bool show) {
     const int visible = show ? 1 : 0;
     d->manager->SetCoronalSliceVisibility(visible);
 }
 
-void v3dViewSHInteractor::onHideShowSagittalPropertySet(bool show) {
+void v3dViewSHInteractor::setShowSagittal(bool show) {
     const int visible = show ? 1 : 0;
     d->manager->SetSagittalSliceVisibility(visible);
 }
 
-void v3dViewSHInteractor::onFlipXPropertySet(const QString& flipX) {
-    const bool flip = (flipX=="true");
-    d->manager->FlipX(flip);
+void v3dViewSHInteractor::setFlipX(const bool flipX) {
+    d->manager->FlipX(flipX);
 }
 
-void v3dViewSHInteractor::onFlipYPropertySet(const QString& flipY) {
-    const bool flip = (flipY=="true");
-    d->manager->FlipY(flip);
+void v3dViewSHInteractor::setFlipY(const bool flipY) {
+    d->manager->FlipY(flipY);
 }
 
-void v3dViewSHInteractor::onFlipZPropertySet(const QString& flipZ) {
-    const bool flip = (flipZ=="true");
-    d->manager->FlipZ(flip);
+void v3dViewSHInteractor::setFlipZ(const bool flipZ) {
+    d->manager->FlipZ(flipZ);
 }
 
-void v3dViewSHInteractor::ColorGlyphsPropertySet(const QString& ColorGlyph) {
-    const bool colorize = (ColorGlyph=="true");
-    d->manager->ColorGlyphs(colorize);
+void v3dViewSHInteractor::setColorGlyphs(const bool ColorGlyph) {
+    d->manager->ColorGlyphs(ColorGlyph);
 }
 
-void v3dViewSHInteractor::NormalizationPropertySet(const QString& Norma) {
-    const bool normalize = (Norma=="true");
-    d->manager->Normalization(normalize);
+void v3dViewSHInteractor::setNormalization(const bool Norma) {
+    d->manager->Normalization(Norma);
 }
 
-void v3dViewSHInteractor::onPositionChanged(const QVector3D& position,bool propagate) {
+void v3dViewSHInteractor::setPosition(const QVector3D& position,bool propagate) {
     d->manager->SetCurrentPosition(position.x(),position.y(),position.z());
 }
 

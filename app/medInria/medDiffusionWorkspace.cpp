@@ -37,6 +37,7 @@ public:
     medToolBox * viewPropertiesToolBox;
     medToolBox * fiberViewToolBox;
     medToolBox * tensorViewToolBox;
+    medToolBox * shViewToolBox;
 
     medViewContainer * diffusionContainer;
 };
@@ -61,11 +62,14 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
     connect(d->diffusionToolBox, SIGNAL(newOutput(dtkAbstractData*)), d->fiberBundlingToolBox, SLOT(setInput(dtkAbstractData*)));
     connect(d->diffusionToolBox, SIGNAL(newOutput(dtkAbstractData*)), this, SLOT(addToView(dtkAbstractData*)));
 
+    d->shViewToolBox = medToolBoxFactory::instance()->createToolBox("medSHViewToolBox", parent);
+
     this->addToolBox( d->diffusionToolBox );
     this->addToolBox( d->viewPropertiesToolBox );
     this->addToolBox( d->tensorViewToolBox );
     this->addToolBox( d->fiberViewToolBox );
     this->addToolBox( d->fiberBundlingToolBox );
+    this->addToolBox( d->shViewToolBox );
 }
 
 medDiffusionWorkspace::~medDiffusionWorkspace()
