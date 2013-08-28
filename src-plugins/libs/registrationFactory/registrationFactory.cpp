@@ -12,7 +12,7 @@ class registrationFactoryPrivate
 {
     public:
         itk::ImageRegistrationFactory<registrationFactory::RegImageType>::Pointer m_Factory;
-};;
+};
 
 // /////////////////////////////////////////////////////////////////
 // registrationFactory
@@ -52,7 +52,7 @@ itk::GeneralTransform<double,3>::Pointer registrationFactory::getGeneralTransfor
     return d->m_Factory->GetGeneralTransform();
 }
     
-unsigned int registrationFactory::addTransformation(itk::Transform<double,3,3>::Pointer arg,QStringList * methodParameters){
+unsigned int registrationFactory::addTransformation(itk::Transform<double,3,3>::Pointer arg,QString methodParameters){
     int i= -1;
     i = getGeneralTransform()->InsertTransform(static_cast<itk::Transform<double,3,3>::ConstPointer>(arg));
     if (i!=-1)

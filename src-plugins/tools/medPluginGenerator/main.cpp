@@ -13,71 +13,85 @@
 
 #include <QApplication>
 
-#include "anyoption.h"
+#include <iostream>
 
 #include "medPluginGeneratorMainWindow.h"
 #include "medPluginGenerator.h"
+
+void printUsage() {
+    std::cout <<
+    QString("Usage: %1 --help | --console --output path --name name --type typeName\n").arg(qApp->argv()[0]).toStdString() <<
+    "--help                  Displays this message.\n"
+    "--console               Run the console version.\n"
+    "--output [path]         Output directory for the plugin skeleton.\n"
+    "--name [name]           Name to use for the plugin.\n"
+    "--family [familyName]   Family type to use for the plugin.\n"
+    "--type [typeName]       Type to use for the plugin.\n"
+    "--quiet                 Process quietly (non gui generation only).\n";
+}
+
+
+QString getArgValue(QString arg)
+{
+    QStringList args = qApp->arguments();
+    for(int i = 1; i < args.size() - 1; ++i) {
+        if (args.at(i) == arg) {
+            return args.at(i + 1);
+        }
+    }
+    return QString();
+}
+
 
 int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
 
-    AnyOption options;
-    options.addUsage(QString("Usage: %1 --help | --console | [--output path --name name --type typeName").arg(argv[0]).toAscii());
-    options.addUsage("");
-    options.addUsage("--help                Displays this message.");
-    options.addUsage("--console             Run the gui version.");
-    options.addUsage("--output [path]       Output directory for the plugin skeleton.");
-    options.addUsage("--name [name] name to use for the plugin.");
-    options.addUsage("--type [typeName]     Type to use for the plugin.");
-    options.addUsage("--quiet               Process quietly (non gui generation only).");
-
-    options.setFlag("help");
-    options.setFlag("console");
-
-    options.setOption("output");
-    options.setOption("name");
-    options.setOption("type");
-    options.setOption("quiet");
-
-    options.processCommandArgs(argc, argv);
-
-    if(options.getFlag("help")) {
-        options.printUsage();
+    if (app.arguments().contains("--help")) {
+        printUsage();
         return 0;
     }
 
-    if(options.getFlag("console")) {
+    if(app.arguments().contains("--console")) {
+        QString output = getArgValue("--output");
+        QString family = getArgValue("--family");
+        QString type = getArgValue("--type");
+        QString name = getArgValue("--name");
 
-        bool paramsOk = options.getValue("output") && options.getValue("type") && options.getValue("name");
+        bool paramsMissing = output.isEmpty() || family.isEmpty()
+                             || type.isEmpty() || name.isEmpty();
 
-        if( !paramsOk ) {
-            options.printUsage();
+        if( paramsMissing ) {
+            printUsage();
             return 1;
         }
 
-        if(!options.getFlag("quiet")) {
-            qDebug() << "output = " << options.getValue("output");
-            qDebug() << "name = " << options.getValue("name");
-            qDebug() << "type = " << options.getValue("type");
+        if( ! app.arguments().contains("--quiet")) {
+            qDebug() << "output = " << output;
+            qDebug() << "name = " << name;
+            qDebug() << "type = " << type;
+            qDebug() << "family = " << family;
         }
 
         medPluginGenerator generator;
-	generator.setOutputDirectory(options.getValue("output"));
-	generator.setName(options.getValue("name"));
-	generator.setType(options.getValue("type"));
+        generator.setOutputDirectory(output);
+        generator.setName(name);
+        generator.setType(type);
+        generator.setPluginFamily(family);
 
-	bool resultGenerator = generator.run();
+        bool resultGenerator = generator.run();
 
-	if(!options.getFlag("quiet")) {
-            if(resultGenerator)
+        if( ! app.arguments().contains("--quiet")) {
+            if(resultGenerator) {
                 qDebug() << "Generation succeeded.";
-            else
+            } else {
                 qDebug() << "Plugin generation: Generation failed.";
-	}
+            }
+        }
+
+        ::exit(resultGenerator ? 0 : 1);
 
     } else {
-
         medPluginGeneratorMainWindow generator;
         generator.show();
         return app.exec();

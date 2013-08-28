@@ -76,8 +76,8 @@ void medPluginGeneratorMainWindow::about()
 void medPluginGeneratorMainWindow::onOutputPathClicked()
 {
     d->output = QFileDialog::getExistingDirectory(this, tr("Choose Directory"),
-    d->ui.pathLineEdit->text(),
-                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+                                                  d->ui.pathLineEdit->text(),
+                                                  QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
     d->ui.pathLineEdit->setText(d->output);
 
@@ -145,7 +145,7 @@ void medPluginGeneratorMainWindow::generate()
     }
     
     medPluginGenerator generator;
-    generator.setPluginFamily(static_cast<medPluginGenerator::PluginFamily>(d->ui.FamilyCombo->currentIndex()));
+    generator.setPluginFamily(d->ui.FamilyCombo->currentText().toLower());
     generator.setOutputDirectory(d->output);
     generator.setName(d->name);
     generator.setType(d->type);
@@ -175,8 +175,8 @@ void medPluginGeneratorMainWindow::onFamilyChanged(int index)
 void medPluginGeneratorMainWindow::onSetDefaultPath()
 {
     d->output = QFileDialog::getExistingDirectory(this, tr("Choose default Directory"),
-    d->output,
-                                                      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+                                                  d->output,
+                                                  QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     QSettings settings;
     settings.setValue("path",d->output);
     d->ui.pathLineEdit->setText(d->output);
