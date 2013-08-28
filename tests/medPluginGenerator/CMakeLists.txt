@@ -19,6 +19,6 @@ add_definitions("-DCMAKE_DTK_DIR=\"${dtk_DIR}\""
                 "-DCMAKE_RPI_DIR=\"${RPI_DIR}\""
                 "-DCMAKE_BINARY_DIR=\"${CMAKE_BINARY_DIR}\"")
 
-target_link_libraries(${PROJECT_NAME} medCore QtTest)
+target_link_libraries(${PROJECT_NAME} medCore)
 
 add_test(medPluginGeneratorTest ${CMAKE_BINARY_DIR}/bin/medPluginGeneratorTest ${CMAKE_BINARY_DIR}/CMakeFiles/CMakeTmp)

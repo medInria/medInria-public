@@ -73,7 +73,13 @@ void medPluginGeneratorTest::testCompile()
     QFETCH(QString, type);
     QFETCH(QString, name);
 
+#if defined(Q_OS_MAC)
+    QString binaryPath = QDir(CMAKE_BINARY_DIR).absoluteFilePath("bin/medPluginGenerator.app/Contents/MacOS/medPluginGenerator");
+#elif defined(Q_OS_WIN)
+    QString binaryPath = QDir(qApp->applicationDirPath()).absoluteFilePath("medPluginGenerator");
+#else
     QString binaryPath = QDir(CMAKE_BINARY_DIR).absoluteFilePath("bin/medPluginGenerator");
+#endif
 
     QVERIFY2(QFile::exists(binaryPath), "Cannot find the path to the medPluginGenerator binary !");
 
