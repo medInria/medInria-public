@@ -213,32 +213,32 @@ medTensorViewToolBox::medTensorViewToolBox(QWidget *parent)
     layout->addRow(hideShowAxesLabel, slicesLayout);
 
     // connect all the signals
-    connect(d->glyphShapeComboBox,              SIGNAL(currentIndexChanged(const QString&)), this, SIGNAL(glyphShapeChanged(const QString&)));
-    connect(d->sampleRateSlider,              SIGNAL(valueChanged(int)),                   this, SIGNAL(sampleRateChanged(int)));
-    connect(d->glyphResolutionSlider,         SIGNAL(valueChanged(int)),                   this, SIGNAL(glyphResolutionChanged(int)));
+    connect(d->glyphShapeComboBox,              SIGNAL(currentIndexChanged(int)), this, SLOT(setGlyphShape(int)));
+    connect(d->sampleRateSlider,              SIGNAL(valueChanged(int)),                   this, SLOT(setSampleRate(int)));
+    connect(d->glyphResolutionSlider,         SIGNAL(valueChanged(int)),                   this, SLOT(setGlyphResolution(int)));
 
     // some signals (checkboxes) require one more step to translate from Qt::CheckState to bool
-    connect(d->flipXCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipXCheckBoxStateChanged(int)));
-    connect(d->flipYCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipYCheckBoxStateChanged(int)));
-    connect(d->flipZCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(onFlipZCheckBoxStateChanged(int)));
+    connect(d->flipXCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(setFlipX(int)));
+    connect(d->flipYCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(setFlipY(int)));
+    connect(d->flipZCheckBox,                   SIGNAL(stateChanged(int)),                   this, SLOT(setFlipZ(int)));
     //connect(d->reverseBackgroundColorCheckBox,  SIGNAL(stateChanged(int)),                   this, SLOT(onReverseBackgroundColorChanged(int)));
-    connect(d->hideShowAxialCheckBox,           SIGNAL(stateChanged(int)),                   this, SLOT(onHideShowAxialChanged(int)));
-    connect(d->hideShowCoronalCheckBox,         SIGNAL(stateChanged(int)),                   this, SLOT(onHideShowCoronalChanged(int)));
-    connect(d->hideShowSagittalCheckBox,        SIGNAL(stateChanged(int)),                   this, SLOT(onHideShowSagittalChanged(int)));
+    connect(d->hideShowAxialCheckBox,           SIGNAL(stateChanged(int)),                   this, SLOT(setShowAxial(int)));
+    connect(d->hideShowCoronalCheckBox,         SIGNAL(stateChanged(int)),                   this, SLOT(setShowCoronal(int)));
+    connect(d->hideShowSagittalCheckBox,        SIGNAL(stateChanged(int)),                   this, SLOT(setShowSagittal(int)));
 
     // we also need to translate radio buttons boolean states to an eigen vector
-    connect(d->eigenVectorV1RadioButton,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV1Toggled(bool)));
-    connect(d->eigenVectorV2RadioButton,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV2Toggled(bool)));
-    connect(d->eigenVectorV3RadioButton,   SIGNAL(toggled(bool)),                       this, SLOT(onEigenVectorV3Toggled(bool)));
+    connect(d->eigenVectorV1RadioButton,   SIGNAL(toggled(bool)),                       this, SLOT(setEigenVectorV1(bool)));
+    connect(d->eigenVectorV2RadioButton,   SIGNAL(toggled(bool)),                       this, SLOT(setEigenVectorV2(bool)));
+    connect(d->eigenVectorV3RadioButton,   SIGNAL(toggled(bool)),                       this, SLOT(setEigenVectorV3(bool)));
 
     // we need to calculate one single number for the scale, out of the minor and major scales
-    connect(d->scaleBase,            SIGNAL(valueChanged(int)),                   this, SLOT(onMinorScalingChanged(int)));
-    connect(d->scaleExp,            SIGNAL(valueChanged(int)),                   this, SLOT(onMajorScalingChanged(int)));
+    connect(d->scaleBase,            SIGNAL(valueChanged(int)),                   this, SLOT(setMinorScaling(int)));
+    connect(d->scaleExp,            SIGNAL(valueChanged(int)),                   this, SLOT(setMajorScaling(int)));
 
     this->setTitle("Tensor View");
     this->addWidget(displayWidget);
 
-    this->setValidDataTypes(QStringList() << "itkDataTensorImage");
+    this->setValidDataTypes(QStringList() << "itkDataTensorImage" << "itkDataTensorImageFloat3"<< "itkDataTensorImageDouble3");
 
     this->hide();
 }
@@ -321,73 +321,109 @@ bool medTensorViewToolBox::isShowSagittal(void)
     return d->hideShowSagittalCheckBox->checkState() == Qt::Checked;
 }
 
-void medTensorViewToolBox::onFlipXCheckBoxStateChanged(int checkBoxState)
+void medTensorViewToolBox::setGlyphShape(int glyphShape)
+{
+    d->interactor->setGlyphShape((v3dViewTensorInteractor::GlyphShapeType)glyphShape);
+    d->view->update();
+}
+
+void medTensorViewToolBox::setSampleRate(int sampleRate)
+{
+    d->interactor->setSampleRate(sampleRate);
+    d->view->update();
+}
+
+void medTensorViewToolBox::setGlyphResolution(int glyphResolution)
+{
+    d->interactor->setGlyphResolution(glyphResolution);
+    d->view->update();
+}
+
+void medTensorViewToolBox::setFlipX(int checkBoxState)
 {
     d->interactor->setFlipX(checkBoxState == Qt::Checked);
+    d->view->update();
 }
 
-void medTensorViewToolBox::onFlipYCheckBoxStateChanged(int checkBoxState)
+void medTensorViewToolBox::setFlipY(int checkBoxState)
 {
     d->interactor->setFlipY(checkBoxState == Qt::Checked);
+    d->view->update();
 }
 
-void medTensorViewToolBox::onFlipZCheckBoxStateChanged(int checkBoxState)
+void medTensorViewToolBox::setFlipZ(int checkBoxState)
 {
     d->interactor->setFlipZ(checkBoxState == Qt::Checked);
+    d->view->update();
 }
 
 void medTensorViewToolBox::onReverseBackgroundColorChanged(int checkBoxState)
 {
     d->interactor->setReverseBackgroundColor(checkBoxState == Qt::Checked);
+    d->view->update();
 }
 
-void medTensorViewToolBox::onEigenVectorV1Toggled(bool isSelected)
+void medTensorViewToolBox::setEigenVectorV1(bool isSelected)
 {
     if(isSelected)
+    {
         d->interactor->setEigenVector(3);
+        d->view->update();
+    }
 }
 
-void medTensorViewToolBox::onEigenVectorV2Toggled(bool isSelected)
+void medTensorViewToolBox::setEigenVectorV2(bool isSelected)
 {
     if(isSelected)
+    {
         d->interactor->setEigenVector(2);
+        d->view->update();
+    }
 }
 
-void medTensorViewToolBox::onEigenVectorV3Toggled(bool isSelected)
+void medTensorViewToolBox::setEigenVectorV3(bool isSelected)
 {
     if(isSelected)
+    {
         d->interactor->setEigenVector(1);
+        d->view->update();
+    }
 }
 
-void medTensorViewToolBox::onMinorScalingChanged(int minorScale)
+void medTensorViewToolBox::setMinorScaling(int minorScale)
 {
     int majorScaleExponent = d->scaleExp->value();
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
     d->interactor->setScale(scale);
+    d->view->update();
 }
 
-void medTensorViewToolBox::onMajorScalingChanged(int majorScaleExponent)
+void medTensorViewToolBox::setMajorScaling(int majorScaleExponent)
 {
     int minorScale = d->scaleBase->value();
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
     d->interactor->setScale(scale);
+    d->view->update();
 }
 
-void medTensorViewToolBox::onHideShowAxialChanged(int checkBoxState)
+void medTensorViewToolBox::setShowAxial(int checkBoxState)
 {
     d->interactor->setShowAxial(checkBoxState == Qt::Checked);
+    d->view->update();
 }
 
-void medTensorViewToolBox::onHideShowCoronalChanged(int checkBoxState)
+void medTensorViewToolBox::setShowCoronal(int checkBoxState)
 {
     d->interactor->setShowCoronal(checkBoxState == Qt::Checked);
+    d->view->update();
 }
 
-void medTensorViewToolBox::onHideShowSagittalChanged(int checkBoxState)
+void medTensorViewToolBox::setShowSagittal(int checkBoxState)
 {
     d->interactor->setShowSagittal(checkBoxState == Qt::Checked);
+    d->view->update();
 }
 
 void medTensorViewToolBox::update (dtkAbstractView *view)

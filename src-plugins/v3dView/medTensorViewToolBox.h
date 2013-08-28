@@ -77,24 +77,27 @@ public slots:
     void update (dtkAbstractView *view);
 
 private slots:
-    // functions used to translate checkboxes from Qt::CheckState
-    // to boolean values, and then emitting the signals
-    void onFlipXCheckBoxStateChanged(int state);
-    void onFlipYCheckBoxStateChanged(int state);
-    void onFlipZCheckBoxStateChanged(int state);
 
-    void onEigenVectorV1Toggled(bool isSelected);
-    void onEigenVectorV2Toggled(bool isSelected);
-    void onEigenVectorV3Toggled(bool isSelected);
+    void setGlyphShape(int glyphShape);
+    void setSampleRate(int SampleRate);
+    void setGlyphResolution(int glyphResolution);
+
+    void setFlipX(int state);
+    void setFlipY(int state);
+    void setFlipZ(int state);
+
+    void setEigenVectorV1(bool isSelected);
+    void setEigenVectorV2(bool isSelected);
+    void setEigenVectorV3(bool isSelected);
 
     void onReverseBackgroundColorChanged(int state);
 
-    void onMinorScalingChanged(int minorScale);
-    void onMajorScalingChanged(int majorScaleExponent);
+    void setMinorScaling(int minorScale);
+    void setMajorScaling(int majorScaleExponent);
 
-    void onHideShowAxialChanged(int checkBoxState);
-    void onHideShowCoronalChanged(int checkBoxState);
-    void onHideShowSagittalChanged(int checkBoxState);
+    void setShowAxial(int checkBoxState);
+    void setShowCoronal(int checkBoxState);
+    void setShowSagittal(int checkBoxState);
 
 protected:
     medTensorViewToolBoxPrivate *d;
