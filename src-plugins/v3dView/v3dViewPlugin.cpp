@@ -68,14 +68,9 @@ bool v3dViewPlugin::initialize()
 
 #ifndef DISABLE_TTK_DEPENDENT_CODE
     if (!v3dViewFiberInteractor::registered())      { dtkWarn() << "Unable to register v3dViewFiberInteractor type";      }
-#endif
-
-    if (!v3dViewFuseInteractor::registered())       { dtkWarn() << "Unable to register v3dViewFuseInteractor type";       }
     if (!v3dViewMeshInteractor::registered())       { dtkWarn() << "Unable to register v3dViewMeshInteractor type";       }
     if (!v3dView4DInteractor::registered())         { dtkWarn() << "Unable to register v3dView4DInteractor type";         }
     if (!v3dViewAnnotationInteractor::registered()) { dtkWarn() << "Unable to register v3dViewAnnotationInteractor type"; }
-
-#ifndef DISABLE_TTK_DEPENDENT_CODE
     if (!v3dViewTensorInteractor::registered())     { dtkWarn() << "Unable to register v3dViewTensorInteractor type";     }
 #endif
 
@@ -138,8 +133,8 @@ QStringList v3dViewPlugin::tags() const
 QStringList v3dViewPlugin::types() const
 {
     return QStringList() << v3dView::s_identifier() << "v3dViewFiberInteractor"
-        << "v3dViewFuseInteractor" << "v3dViewMeshInteractor"
-        << "v3dViewTensorInteractor"<< "v3dViewSHInteractor"  << "v3dView4DInteractor"
+        << "v3dViewMeshInteractor" << "v3dViewTensorInteractor"
+        << "v3dViewSHInteractor"  << "v3dView4DInteractor"
         << v3dViewAnnotationInteractor::s_identifier();
 }
 

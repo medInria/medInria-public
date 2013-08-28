@@ -26,6 +26,7 @@ set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
   medAbstractDbController.h
   medAbstractView.h
   medAbstractViewInteractor.h
+  medSHAbstractViewInteractor.h
   medAnnotationData.h
   medAttachedData.h
   medJobItem.h

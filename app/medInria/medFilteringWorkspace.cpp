@@ -91,7 +91,7 @@ void medFilteringWorkspace::patientChanged ( int patientId )
 
 void medFilteringWorkspace::onProcessSuccess()
 {
-    d->filterOutput = d->filteringToolBox->customToolbox()->processOutput();
+    d->filterOutput = d->filteringToolBox->currentToolBox()->processOutput();
     if ( !d->filterOutput )
         return;
 
@@ -139,7 +139,7 @@ QString medFilteringWorkspace::identifier() const {
     return "Filtering";
 }
 
-void medFilteringWorkspace::onViewRemoved ()
+void medFilteringWorkspace::onInputViewRemoved ()
 {
     d->filteringToolBox->clear();
 }
