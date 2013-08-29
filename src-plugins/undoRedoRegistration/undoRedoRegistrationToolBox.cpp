@@ -71,7 +71,7 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
     addWidget(layoutSection);
 
     this->setTitle(tr("Stack of transformations"));
-    connect(registrationFactory::instance(),SIGNAL(transformationAdded(int,QStringList*)),this,SLOT(addTransformationIntoList(int, QStringList*)));
+    connect(registrationFactory::instance(),SIGNAL(transformationAdded(int,QString)),this,SLOT(addTransformationIntoList(int, QString)));
     connect(registrationFactory::instance(),SIGNAL(transformationStackReset()),this,SLOT(onTransformationStackReset()));
 }
 
@@ -144,15 +144,8 @@ void undoRedoRegistrationToolBox::onTransformationStackReset(void)
     this->parentToolBox()->handleOutput(medRegistrationSelectorToolBox::reset);
 }
 
-void undoRedoRegistrationToolBox::addTransformationIntoList(int i, QStringList * methodParameters){
+void undoRedoRegistrationToolBox::addTransformationIntoList(int i, QString methodParameters){
     if (i!=-1){
-        QString buffer = "";
-        if (methodParameters)
-        {
-            buffer = methodParameters->at(0);
-            for(int k = 1;k<methodParameters->size();k++)
-                buffer = buffer + QString("\n") + methodParameters->at(k);
-        }
         if ((d->currentStep >= 0) && (d->currentStep < d->transformationStack->count()))
             d->transformationStack->item(d->currentStep)->setIcon(QIcon());
         for(int k = d->currentStep-1;k>=0;k--)
@@ -163,7 +156,7 @@ void undoRedoRegistrationToolBox::addTransformationIntoList(int i, QStringList *
         d->currentStep = 0;
 
         d->transformationStack->insertItem(d->currentStep,QString::number(d->transformationStack->count()+1)+ ". " + this->parentToolBox()->getNameOfCurrentAlgorithm().remove(" ")); 
-        d->transformationStack->item(d->currentStep)->setToolTip(buffer);
+        d->transformationStack->item(d->currentStep)->setToolTip(methodParameters);
         d->transformationStack->item(d->currentStep)->setIcon(d->arrowCurrentStep);
         d->transformationStack->item(d->currentStep)->setForeground(QColor(0,200,0));
     }

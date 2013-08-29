@@ -129,7 +129,7 @@ public:
     void setUseHistogramMatching(bool useHistogramMatching);
 
     virtual itk::Transform<double,3,3>::Pointer getTransform();
-    virtual QStringList * getTitleAndParameters();
+    virtual QString getTitleAndParameters();
 
 protected :
     /**

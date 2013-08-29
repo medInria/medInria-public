@@ -14,6 +14,7 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(medTestDb)
+add_subdirectory(medPluginGenerator)
 enable_testing()
 
 add_test(medTestDb ${CMAKE_BINARY_DIR}/bin/medTestDb ${CMAKE_BINARY_DIR}/CMakeFiles/CMakeTmp)

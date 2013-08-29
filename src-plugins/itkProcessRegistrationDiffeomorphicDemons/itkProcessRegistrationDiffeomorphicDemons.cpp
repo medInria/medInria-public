@@ -173,11 +173,10 @@ template <typename PixelType>
     }
 
     // Print method parameters
-    QStringList * methodParameters = proc->getTitleAndParameters();
+    QString methodParameters = proc->getTitleAndParameters();
     
     qDebug() << "METHOD PARAMETERS";
-    for(int qDebugInd = 0;qDebugInd<methodParameters->size();qDebugInd++)
-        qDebug() << methodParameters->at(qDebugInd);
+    qDebug() << methodParameters;
 
     // Run the registration
     time_t t1 = clock();
@@ -219,9 +218,7 @@ template <typename PixelType>
     
     if (proc->output())
         proc->output()->setData (result);
-    
-    delete methodParameters;
-    
+        
     return 0;
 }
 
@@ -257,7 +254,7 @@ itk::Transform<double,3,3>::Pointer itkProcessRegistrationDiffeomorphicDemons::g
         return NULL;
 }
 
-QStringList * itkProcessRegistrationDiffeomorphicDemons::getTitleAndParameters(){
+QString itkProcessRegistrationDiffeomorphicDemons::getTitleAndParameters(){
     typedef float PixelType;
     typedef double TransformScalarType;
     typedef itk::Image< PixelType, 3 > RegImageType;
@@ -265,46 +262,46 @@ QStringList * itkProcessRegistrationDiffeomorphicDemons::getTitleAndParameters()
     typedef rpi::DiffeomorphicDemons<RegImageType,RegImageType,TransformScalarType> RegistrationType;
     RegistrationType * registration = static_cast<RegistrationType *>(d->registrationMethod);
 
-    QStringList * titleAndParameters = new QStringList();
-    titleAndParameters->append(QString("DiffeomorphicDemons"));
-    titleAndParameters->append(QString("  Max number of iterations   : ") + QString::fromStdString(rpi::VectorToString(registration->GetNumberOfIterations())));
+    QString titleAndParameters;
+    titleAndParameters += "DiffeomorphicDemons\n";
+    titleAndParameters += "  Max number of iterations   : " + QString::fromStdString(rpi::VectorToString(registration->GetNumberOfIterations())) + "\n";
     switch (registration->GetUpdateRule())
     {
         case 0:
-            titleAndParameters->append(QString("  Update rule   : DIFFEOMORPHIC"));
+            titleAndParameters += "  Update rule   : DIFFEOMORPHIC\n";
             break;
         case 1:
-            titleAndParameters->append(QString("  Update rule   : ADDITIVE"));
+            titleAndParameters += "  Update rule   : ADDITIVE\n";
             break;
         case 2:
-            titleAndParameters->append(QString("  Update rule   : COMPOSITIVE"));
+            titleAndParameters += "  Update rule   : COMPOSITIVE\n";
             break;
         default:
-            titleAndParameters->append(QString("  Update rule   : Unknown"));
+            titleAndParameters += "  Update rule   : Unknown\n";
     }
 
     switch( registration->GetGradientType() )
     {
         case 0:
-            titleAndParameters->append(QString("  Gradient type   : SYMMETRIZED"));
+            titleAndParameters += "  Gradient type   : SYMMETRIZED\n";
             break;
         case 1:
-            titleAndParameters->append(QString("  Gradient type   : FIXED_IMAGE"));
+            titleAndParameters += "  Gradient type   : FIXED_IMAGE\n";
             break;
         case 2:
-            titleAndParameters->append(QString("  Gradient type   : WARPED_MOVING_IMAGE"));
+            titleAndParameters += "  Gradient type   : WARPED_MOVING_IMAGE\n";
             break;
         case 3:
-            titleAndParameters->append(QString("  Gradient type   : MAPPED_MOVING_IMAGE"));
+            titleAndParameters += "  Gradient type   : MAPPED_MOVING_IMAGE\n";
             break;
         default:
-            titleAndParameters->append(QString("  Gradient type   : Unknown"));
+            titleAndParameters += "  Gradient type   : Unknown\n";
     }
 
-    titleAndParameters->append(QString("  Maximum step length   : ") + QString::number(registration->GetMaximumUpdateStepLength())+ QString(" (voxel unit)"));
-    titleAndParameters->append(QString("  Update field standard deviation   : ") + QString::number(registration->GetUpdateFieldStandardDeviation())         + QString(" (voxel unit)"));
-    titleAndParameters->append(QString("  Displacement field standard deviation   : ") + QString::number(registration->GetDisplacementFieldStandardDeviation())   + QString(" (voxel unit)"));
-    titleAndParameters->append(QString("  Use histogram matching   : ") + QString::fromStdString(rpi::BooleanToString(registration->GetUseHistogramMatching())));
+    titleAndParameters += "  Maximum step length   : " + QString::number(registration->GetMaximumUpdateStepLength()) + " (voxel unit)\n";
+    titleAndParameters += "  Update field standard deviation   : " + QString::number(registration->GetUpdateFieldStandardDeviation()) + " (voxel unit)\n";
+    titleAndParameters += "  Displacement field standard deviation   : " + QString::number(registration->GetDisplacementFieldStandardDeviation()) + " (voxel unit)\n";
+    titleAndParameters += "  Use histogram matching   : " + QString::fromStdString(rpi::BooleanToString(registration->GetUseHistogramMatching())) + "\n";
 
     return titleAndParameters;
 }

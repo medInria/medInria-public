@@ -32,6 +32,7 @@
 #include <medToolBoxFactory.h>
 #include <medFilteringSelectorToolBox.h>
 #include <medProgressionStack.h>
+#include <medPluginManager.h>
 
 class %1ToolBoxPrivate
 {
@@ -74,6 +75,13 @@ bool %1ToolBox::registered()
                                tr("Friendly name"),
                                tr("short tooltip description"),
                                QStringList()<< "filtering");
+}
+
+dtkPlugin* %1ToolBox::plugin()
+{
+    medPluginManager* pm = medPluginManager::instance();
+    dtkPlugin* plugin = pm->plugin ( "%1Plugin" );
+    return plugin;
 }
 
 dtkAbstractData* %1ToolBox::processOutput()

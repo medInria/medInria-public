@@ -20,12 +20,6 @@ class medPluginGeneratorPrivate;
 class medPluginGenerator
 {
 public:
-    enum PluginFamily {
-        GENERIC, /** generic plugin*/
-        FILTERING, /** filtering plugin*/
-        REGISTRATION /** registration plugin*/
-    };
-public:
     medPluginGenerator();
    ~medPluginGenerator();
 
@@ -34,8 +28,11 @@ public:
    void setType(const QString& type);
    void setDescription(const QString& desc);
    void setLicense(const QString& desc);
-   void setPluginFamily(const PluginFamily family);
+   void setPluginFamily(const QString &family);
    bool run();
+
+   static QStringList pluginFamilies();
+   static QStringList pluginTypes();
 
 protected:
    bool generateCMakeLists();

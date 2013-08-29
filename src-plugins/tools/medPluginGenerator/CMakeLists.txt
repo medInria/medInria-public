@@ -19,7 +19,6 @@ project(medPluginGenerator)
 
 set(${PROJECT_NAME}_HEADERS
   medPluginGenerator.h
-  anyoption.h
   medPluginGeneratorMainWindow.h)
 
 set(${PROJECT_NAME}_HEADERS_MOC
@@ -28,7 +27,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
 set(${PROJECT_NAME}_SOURCES
   medPluginGenerator.cpp
   medPluginGeneratorMainWindow.cpp
-  anyoption.cpp
   main.cpp)
 
 set(${PROJECT_NAME}_FORMS

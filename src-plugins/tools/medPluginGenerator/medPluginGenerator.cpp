@@ -17,10 +17,9 @@ class medPluginGeneratorPrivate
 {
 public:
     QString plugin;
-    medPluginGenerator::PluginFamily pluginFamily;
-    QString pluginFamilyString;
     QString output;
     QString name;
+    QString pluginFamily;
     QString type;
     QString description;
     QString license;
@@ -41,24 +40,9 @@ medPluginGenerator::~medPluginGenerator()
     this->d = NULL;
 }
 
-void medPluginGenerator::setPluginFamily(const medPluginGenerator::PluginFamily family)
+void medPluginGenerator::setPluginFamily(const QString& family)
 {
     d->pluginFamily = family;
-    switch (family)
-    {
-        case medPluginGenerator::FILTERING:
-            d->pluginFamilyString = "filtering";
-            break;
-        case medPluginGenerator::REGISTRATION:
-            d->pluginFamilyString = "registration";
-            break;
-        case medPluginGenerator::GENERIC:
-        default:
-            d->pluginFamilyString = "generic";
-            break;
-    }
-    
-    
 }
 
 void medPluginGenerator::setOutputDirectory(const QString& directory)
@@ -95,21 +79,21 @@ bool medPluginGenerator::run()
         return false;
     }
     
-    d->plugin = QString("%1").arg(d->name.replace(0, 1, QString(d->name).left(1).toLower()));
+    d->plugin = d->name.replace(0, 1, d->name.left(1).toLower());
     
-    if(!d->parent.mkdir(QString(d->plugin))) {
+    if(!d->parent.mkdir(d->plugin)) {
         qWarning() << "medPluginGenerator: unable to create target directory.";
         return false;
     }
     
     d->target = QDir(d->parent);
     
-    if(!d->target.cd(QString(d->plugin))) {
+    if(!d->target.cd(d->plugin)) {
         qWarning() << "medPluginGenerator: unable to move to target directory.";
         return false;
     }
     
-    if (d->pluginFamily == FILTERING)
+    if (d->pluginFamily == "filtering")
         return generateCMakeLists()
         && generateTypeHeaderFile()
         && generateTypeSourceFile()
@@ -123,7 +107,7 @@ bool medPluginGenerator::run()
         && generateReadmeFile()
         && generateCopyingFile();
     
-    if (d->pluginFamily == REGISTRATION)
+    if (d->pluginFamily == "registration")
         return generateCMakeLists()
         && generateTypeHeaderFile()
         && generateTypeSourceFile()
@@ -151,6 +135,20 @@ bool medPluginGenerator::run()
     && generateCopyingFile();
 }
 
+QStringList medPluginGenerator::pluginFamilies()
+{
+    QStringList families;
+
+    return families;
+}
+
+QStringList medPluginGenerator::pluginTypes()
+{
+    QStringList types;
+
+    return types;
+}
+
 // /////////////////////////////////////////////////////////////////
 // CMakeLists.txt
 // /////////////////////////////////////////////////////////////////
@@ -164,7 +162,7 @@ bool medPluginGenerator::generateCMakeLists()
         return false;
     }
     
-    QFile templateFile(QString(":template/%1/cmake").arg(d->pluginFamilyString));
+    QFile templateFile(QString(":template/%1/cmake").arg(d->pluginFamily));
     
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -173,7 +171,7 @@ bool medPluginGenerator::generateCMakeLists()
     
     QTextStream stream(&targetFile);
     
-    stream << QString(templateFile.readAll()).arg(QString(d->plugin));
+    stream << QString(templateFile.readAll()).arg(d->plugin);
     
     targetFile.close();
     
@@ -195,7 +193,7 @@ bool medPluginGenerator::generateTypeHeaderFile()
         return false;
     }
     
-    QFile templateFile(QString(":template/%1/type.h").arg(d->pluginFamilyString));
+    QFile templateFile(QString(":template/%1/type.h").arg(d->pluginFamily));
     
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -205,10 +203,10 @@ bool medPluginGenerator::generateTypeHeaderFile()
     QTextStream stream(&targetFile);
     
     stream << QString(templateFile.readAll())
-    .arg(QString(d->plugin))
-	.arg(QString(d->plugin).toUpper())
-	.arg(QString(d->type))
-	.arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()));
+    .arg(d->plugin)
+    .arg(d->plugin.toUpper())
+    .arg(d->type)
+    .arg(QString(d->plugin).replace(0, 1, d->plugin.left(1).toUpper()));
     
     targetFile.close();
     
@@ -230,7 +228,7 @@ bool medPluginGenerator::generateTypeSourceFile()
         return false;
     }
     
-    QFile templateFile(QString(":template/%1/type.cpp").arg(d->pluginFamilyString));
+    QFile templateFile(QString(":template/%1/type.cpp").arg(d->pluginFamily));
     
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -239,20 +237,20 @@ bool medPluginGenerator::generateTypeSourceFile()
     
     QTextStream stream(&targetFile);
     
-    if (d->pluginFamily == REGISTRATION)
+    if (d->pluginFamily == "registration")
     {    
         stream << QString(templateFile.readAll())
-        .arg(QString(d->plugin))
-        .arg(QString(d->type))
-        .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
-        .arg(QString(d->name).replace(0, 1, QString(d->name).left(1).toUpper()));
+        .arg(d->plugin)
+        .arg(d->type)
+        .arg(QString(d->plugin).replace(0, 1, d->plugin.left(1).toUpper()))
+        .arg(QString(d->name).replace(0, 1, d->name.left(1).toUpper()));
     }
     else
     {
         stream << QString(templateFile.readAll())
-        .arg(QString(d->plugin))
-        .arg(QString(d->type))
-        .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()));
+        .arg(d->plugin)
+        .arg(d->type)
+        .arg(QString(d->plugin).replace(0, 1, d->plugin.left(1).toUpper()));
     }
     
     targetFile.close();
@@ -268,7 +266,7 @@ bool medPluginGenerator::generateTypeSourceFile()
 
 bool medPluginGenerator::generateRPIHeaderFile()
 {
-    QString baseName = QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper());
+    QString baseName = QString(d->plugin).replace(0, 1, d->plugin.left(1).toUpper());
     QFile targetFile(d->target.absoluteFilePath(QString("rpi" + baseName).append(".h")));
     
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -276,7 +274,7 @@ bool medPluginGenerator::generateRPIHeaderFile()
         return false;
     }
     
-    QFile templateFile(QString(":template/%1/rpiBase.h").arg(d->pluginFamilyString));
+    QFile templateFile(QString(":template/%1/rpiBase.h").arg(d->pluginFamily));
     
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -286,8 +284,7 @@ bool medPluginGenerator::generateRPIHeaderFile()
     QTextStream stream(&targetFile);
     
     stream << QString(templateFile.readAll())
-    .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
-	.arg(QString(d->plugin).toUpper());
+    .arg(QString(d->plugin).replace(0, 1, d->plugin.left(1).toUpper()));
     
     targetFile.close();
     
@@ -302,7 +299,7 @@ bool medPluginGenerator::generateRPIHeaderFile()
 
 bool medPluginGenerator::generateRPISourceFile()
 {
-    QString baseName = QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper());
+    QString baseName = QString(d->plugin).replace(0, 1, d->plugin.left(1).toUpper());
     QFile targetFile(d->target.absoluteFilePath(QString("rpi" + baseName).append(".hxx")));
     
     if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -310,7 +307,7 @@ bool medPluginGenerator::generateRPISourceFile()
         return false;
     }
     
-    QFile templateFile(QString(":template/%1/rpiBase.hxx").arg(d->pluginFamilyString));
+    QFile templateFile(QString(":template/%1/rpiBase.hxx").arg(d->pluginFamily));
     
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -320,8 +317,7 @@ bool medPluginGenerator::generateRPISourceFile()
     QTextStream stream(&targetFile);
     
     stream << QString(templateFile.readAll())
-    .arg(QString(d->plugin).replace(0, 1, QString(d->plugin).left(1).toUpper()))
-	.arg(QString(d->plugin).toUpper());
+    .arg(QString(d->plugin).replace(0, 1, d->plugin.left(1).toUpper()));
     
     targetFile.close();
     
@@ -343,7 +339,7 @@ bool medPluginGenerator::generateTypeToolBoxHeaderFile()
         return false;
     }
     
-    QFile templateFile(QString(":template/%1/typeToolBox.h").arg(d->pluginFamilyString));
+    QFile templateFile(QString(":template/%1/typeToolBox.h").arg(d->pluginFamily));
     
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -353,8 +349,8 @@ bool medPluginGenerator::generateTypeToolBoxHeaderFile()
     QTextStream stream(&targetFile);
     
     stream << QString(templateFile.readAll())
-    .arg(QString(d->plugin))
-    .arg(QString(d->plugin).toUpper());
+    .arg(d->plugin)
+    .arg(d->plugin.toUpper());
     
     targetFile.close();
     
@@ -376,7 +372,7 @@ bool medPluginGenerator::generateTypeToolBoxSourceFile()
         return false;
     }
     
-    QFile templateFile(QString(":template/%1/typeToolBox.cpp").arg(d->pluginFamilyString));
+    QFile templateFile(QString(":template/%1/typeToolBox.cpp").arg(d->pluginFamily));
     
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -386,7 +382,7 @@ bool medPluginGenerator::generateTypeToolBoxSourceFile()
     QTextStream stream(&targetFile);
     
     stream << QString(templateFile.readAll())
-    .arg(QString(d->plugin))
+    .arg(d->plugin)
     .arg(d->name);
     
     targetFile.close();
@@ -410,7 +406,7 @@ bool medPluginGenerator::generatePluginHeaderFile()
         return false;
     }
     
-    QFile templateFile(QString(":template/%1/plugin.h").arg(d->pluginFamilyString));
+    QFile templateFile(QString(":template/%1/plugin.h").arg(d->pluginFamily));
     
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -420,8 +416,8 @@ bool medPluginGenerator::generatePluginHeaderFile()
     QTextStream stream(&targetFile);
     
     stream << QString(templateFile.readAll())
-    .arg(QString(d->plugin))
-    .arg(QString(d->plugin).toUpper());
+    .arg(d->plugin)
+    .arg(d->plugin.toUpper());
     
     targetFile.close();
     
@@ -443,7 +439,7 @@ bool medPluginGenerator::generatePluginSourceFile()
         return false;
     }
     
-    QFile templateFile(QString(":template/%1/plugin.cpp").arg(d->pluginFamilyString));
+    QFile templateFile(QString(":template/%1/plugin.cpp").arg(d->pluginFamily));
     
     if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
@@ -453,9 +449,9 @@ bool medPluginGenerator::generatePluginSourceFile()
     QTextStream stream(&targetFile);
     
     stream << QString(templateFile.readAll())
-    .arg(QString(d->plugin))
-    .arg(QString(d->plugin).toUpper())
-    .arg(QString(d->description));
+    .arg(d->plugin)
+    .arg(d->plugin.toUpper())
+    .arg(d->description);
     
     targetFile.close();
     
@@ -486,7 +482,7 @@ bool medPluginGenerator::generateExportHeaderFile()
     
     QTextStream stream(&targetFile);
     
-    stream << QString(templateFile.readAll()).arg(QString(d->plugin)).arg(QString(d->plugin).toUpper());
+    stream << QString(templateFile.readAll()).arg(d->plugin).arg(d->plugin.toUpper());
     
     targetFile.close();
     
