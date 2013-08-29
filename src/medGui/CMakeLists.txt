@@ -67,7 +67,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   # commonWidgets:
   commonWidgets/medDropSite.h
   commonWidgets/medButton.h
-  commonWidgets/medFlicker.h
   commonWidgets/medStatusBar.h
   commonWidgets/medQuickAccessMenu.h
   commonWidgets/medGroupBox.h
@@ -155,7 +154,6 @@ set(${PROJECT_NAME}_SOURCES
   commonWidgets/medDropSite.cpp
   commonWidgets/medButton.cpp
   commonWidgets/medProgressionStack.cpp
-  commonWidgets/medFlicker.cpp
   commonWidgets/medStatusBar.cpp
   commonWidgets/medQuickAccessMenu.cpp
   commonWidgets/medGroupBox.cpp

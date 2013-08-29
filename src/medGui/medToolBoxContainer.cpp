@@ -11,10 +11,8 @@
 
 =========================================================================*/
 
-#include "medToolBoxContainer.h"
-
-#include "medFlicker.h"
-#include "medToolBox.h"
+#include <medToolBoxContainer.h>
+#include <medToolBox.h>
 
 #include <QtGui>
 
@@ -35,8 +33,6 @@ medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent),
     // by default create a vertical layout
     d->layoutOrientation = Qt::Vertical;
     d->layout = new QGridLayout(d->container);
-    // d->layout->setContentsMargins(2, 4, 0, 0);
-    // d->layout->setSizeConstraint(QLayout::SetNoConstraint);
     d->layout->setContentsMargins(0, 0, 0, 0);
     d->layout->setSpacing(0);
     d->layout->setSizeConstraint(QLayout::SetMinimumSize);
@@ -47,8 +43,6 @@ medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent),
     this->setWidget(d->container);
     this->setWidgetResizable(true);
 
-    medFlicker *flicker = new medFlicker(this);
-    flicker->activateOn(this);
     
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 }
@@ -118,14 +112,6 @@ void medToolBoxContainer::setOrientation(Qt::Orientation orient)
     d->layoutOrientation = orient;
 
     this->clear();
-
-    //put back toolboxes
-    //never used:   the switch of workspace is done while no tb is present...
-    //              + clear removes the tbs...
-//    foreach(medToolBox * tb, d->toolboxes ) {
-//      //addToolBox also sets the orientation of the toolboxes
-//      addToolBox (tb);
-//    }
 }
 
 Qt::Orientation medToolBoxContainer::orientation() const
