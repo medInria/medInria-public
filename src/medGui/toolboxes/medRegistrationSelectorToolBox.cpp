@@ -372,7 +372,13 @@ void medRegistrationSelectorToolBox::setFuseView(dtkAbstractView *view)
     if (!view)
         return;
 
+    if( d->fuseView )
+    {
+        disconnect(d->fuseView, SIGNAL(dataRemoved(int)), this, SLOT(closeCompareView(int)));
+    }
+
     d->fuseView = dynamic_cast <medAbstractView*> (view);
+    connect(d->fuseView, SIGNAL(dataRemoved(int)), this, SLOT(closeCompareView(int)));
 }
 
 //! Clears the toolbox.
@@ -666,6 +672,8 @@ void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
 {
     medAbstractView* closedView = dynamic_cast <medAbstractView*> (view);
 
+    d->fuseView->blockSignals(true);
+
     if(closedView == d->movingView)
     {
         d->fuseView->removeOverlay(1);
@@ -692,6 +700,23 @@ void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
             d->fuseView->close();
         }
     }
+
+    d->fuseView->blockSignals(false);
+
     d->fuseView->reset();
     d->fuseView->update();
+}
+
+
+void medRegistrationSelectorToolBox::closeCompareView(int layer)
+{
+    if(layer == 0)
+    {
+        d->fixedView->close();
+    }
+    else if(layer == 1)
+    {
+        d->movingView->close();
+    }
+
 }

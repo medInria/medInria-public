@@ -61,6 +61,7 @@ public slots:
     void onFixedImageDropped(const medDataIndex& index);
 
     void onViewRemoved(dtkAbstractView*);
+    void closeCompareView(int);
 
     void onToolBoxChosen(int index);
     void clear();
