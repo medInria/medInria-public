@@ -91,7 +91,7 @@ QStringList v3dViewTensorInteractor::handled() const
 
 bool v3dViewTensorInteractor::isDataTypeHandled(QString dataType) const
 {
-    if (dataType == "itkDataTensorImage")
+    if (dataType.startsWith("itkDataTensorImage"))
         return true;
     
     return false;

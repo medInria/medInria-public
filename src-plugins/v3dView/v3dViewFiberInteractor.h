@@ -188,8 +188,6 @@ public slots:
     virtual void resetSelection();
     virtual void validateSelection (const QString &name, const QColor &color);
 
-    virtual void onBundlingBoxBooleanOperatorChanged(int value);
-
     // Mandatory implementations from medVtkViewInteractor
     virtual void setOpacity(dtkAbstractData * data, double opacity);
     virtual double opacity(dtkAbstractData * data) const;

@@ -66,13 +66,6 @@ signals:
       */
     void fiberSelectionReset();
 
-    /**
-      * This signal is emitted when the user wants to change the
-      * boolean meaning of a ROI.
-      * @param value Value of the ROI to be changed
-      */
-    void bundlingBoxBooleanOperatorChanged (int value);
-
 public slots:
 
     void setInput(dtkAbstractData * data);
@@ -114,15 +107,15 @@ protected slots:
 
     // internal method, doc to come
     virtual void validateBundling();
-    virtual void onBundlingButtonAndToggled (bool);
+    virtual void setBoxBooleanOperation (bool);
     virtual void showBundlingBox (bool);
     virtual void showBundling (bool show);
 
-    virtual void onClearRoiButtonClicked();
-    virtual void onRoiComboIndexChanged  (int value);
-    virtual void onAddButtonToggled      (bool value);
-    virtual void onNotButtonToggled      (bool value);
-    virtual void onNullButtonToggled     (bool value);
+    virtual void clearRoi();
+    virtual void selectRoi  (int value);
+    virtual void setRoiAddOperation      (bool value);
+    virtual void setRoiNotOperation      (bool value);
+    virtual void setRoiNullOperation     (bool value);
 
     virtual void changeBundlingItem (QStandardItem *item);
 

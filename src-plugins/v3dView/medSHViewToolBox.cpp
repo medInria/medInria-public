@@ -182,7 +182,10 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
       setAboutPluginVisibility(true);
     }
 
+    this->setValidDataTypes(QStringList() << "itkDataSHImageFloat3" << "itkDataSHImageDouble3");
+
     this->hide();
+
 }
 
 medSHViewToolBox::~medSHViewToolBox() {

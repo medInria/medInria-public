@@ -146,7 +146,7 @@ medFiberBundlingToolBox::medFiberBundlingToolBox(QWidget *parent) : medToolBox(p
 
     connect (d->bundlingButtonVdt,     SIGNAL(clicked(void)),            this, SLOT (validateBundling()));
     connect (d->bundleBoxCheckBox,     SIGNAL(toggled(bool)),            this, SLOT (showBundlingBox (bool)));
-    connect (d->bundlingButtonAdd,     SIGNAL(toggled(bool)),            this, SLOT (onBundlingButtonAndToggled(bool)));
+    connect (d->bundlingButtonAdd,     SIGNAL(toggled(bool)),            this, SLOT (setBoxBooleanOperation(bool)));
 
     connect (d->bundlingShowCheckBox,  SIGNAL(toggled(bool)),            this, SLOT (showBundling (bool)));
     connect (d->bundlingButtonTag,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionTagged(void)));
@@ -156,14 +156,18 @@ medFiberBundlingToolBox::medFiberBundlingToolBox(QWidget *parent) : medToolBox(p
 
     connect (d->dropOrOpenRoi, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(importROI(const medDataIndex&)));
     connect (d->dropOrOpenRoi, SIGNAL(clicked()),                          this, SLOT(onDropSiteClicked()));
-    connect (clearRoiButton,   SIGNAL(clicked()),                          this, SLOT(onClearRoiButtonClicked()));
-    connect (d->roiComboBox,   SIGNAL(currentIndexChanged(int)),           this, SLOT(onRoiComboIndexChanged(int)));
-    connect (d->andButton,     SIGNAL(toggled(bool)),                      this, SLOT(onAddButtonToggled(bool)));
-    connect (d->notButton,     SIGNAL(toggled(bool)),                      this, SLOT(onNotButtonToggled(bool)));
-    connect (d->nullButton,    SIGNAL(toggled(bool)),                      this, SLOT(onNullButtonToggled(bool)));
+    connect (clearRoiButton,   SIGNAL(clicked()),                          this, SLOT(clearRoi()));
+    connect (d->roiComboBox,   SIGNAL(currentIndexChanged(int)),           this, SLOT(selectRoi(int)));
+    connect (d->andButton,     SIGNAL(toggled(bool)),                      this, SLOT(setRoiAddOperation(bool)));
+    connect (d->notButton,     SIGNAL(toggled(bool)),                      this, SLOT(setRoiNotOperation(bool)));
+    connect (d->nullButton,    SIGNAL(toggled(bool)),                      this, SLOT(setRoiNullOperation(bool)));
 
     this->setTitle("Fiber Bundling");
     this->addWidget(bundlingPage);
+
+    this->setValidDataTypes(QStringList() << "v3dDataFibers");
+
+    this->hide();
 }
 
 medFiberBundlingToolBox::~medFiberBundlingToolBox()
@@ -226,10 +230,7 @@ void medFiberBundlingToolBox::showBundlingBox (bool show)
         return;
 
     if (d->interactor) {
-        if (show)
-            d->interactor->setProperty ("BoxVisibility", "true");
-        else
-            d->interactor->setProperty ("BoxVisibility", "false");
+            d->interactor->setBoxVisibility(show);
 
         d->view->update();
     }
@@ -355,7 +356,7 @@ void medFiberBundlingToolBox::importROI(const medDataIndex& index)
     }
 }
 
-void medFiberBundlingToolBox::onClearRoiButtonClicked(void)
+void medFiberBundlingToolBox::clearRoi(void)
 {
     if (!d->view)
         return;
@@ -373,7 +374,7 @@ void medFiberBundlingToolBox::onClearRoiButtonClicked(void)
     d->dropOrOpenRoi->setText(tr("Click to open a ROI\nfrom your hard drive\nor drag-and-drop one\nfrom the database."));
 }
 
-void medFiberBundlingToolBox::onRoiComboIndexChanged (int value)
+void medFiberBundlingToolBox::selectRoi(int value)
 {
     if (!d->view)
         return;
@@ -405,7 +406,7 @@ void medFiberBundlingToolBox::onRoiComboIndexChanged (int value)
     d->view->update();
 }
 
-void medFiberBundlingToolBox::onAddButtonToggled (bool value)
+void medFiberBundlingToolBox::setRoiAddOperation (bool value)
 {
     if (!d->view)
         return;
@@ -419,7 +420,7 @@ void medFiberBundlingToolBox::onAddButtonToggled (bool value)
     d->view->update();
 }
 
-void medFiberBundlingToolBox::onNotButtonToggled (bool value)
+void medFiberBundlingToolBox::setRoiNotOperation (bool value)
 {
     if (!d->view)
         return;
@@ -433,7 +434,7 @@ void medFiberBundlingToolBox::onNotButtonToggled (bool value)
     d->view->update();
 }
 
-void medFiberBundlingToolBox::onNullButtonToggled (bool value)
+void medFiberBundlingToolBox::setRoiNullOperation (bool value)
 {
     if (!d->view)
         return;
@@ -450,7 +451,7 @@ void medFiberBundlingToolBox::onNullButtonToggled (bool value)
 void medFiberBundlingToolBox::clear(void)
 {
     // clear ROIs and related GUI elements
-    onClearRoiButtonClicked();
+    clearRoi();
 
     d->bundlingModel->removeRows(0, d->bundlingModel->rowCount(QModelIndex()), QModelIndex());
 
@@ -460,6 +461,8 @@ void medFiberBundlingToolBox::clear(void)
 
 void medFiberBundlingToolBox::update(dtkAbstractView *view)
 {
+    medToolBox::update(view);
+
     if (!view) {
         d->view = 0;
         d->data = 0;
@@ -477,26 +480,22 @@ void medFiberBundlingToolBox::update(dtkAbstractView *view)
 
     if (d->interactor) {
         disconnect (this, SIGNAL(fiberSelectionValidated(const QString&, const QColor&)),
-                    d->interactor, SLOT(onSelectionValidated(const QString&, const QColor&)));
+                    d->interactor, SLOT(validateSelection(QString,QColor)));
         disconnect (this, SIGNAL(fiberSelectionTagged()),
-                    d->interactor, SLOT(onSelectionTagged()));
+                    d->interactor, SLOT(tagSelection()));
         disconnect (this, SIGNAL(fiberSelectionReset()),
-                    d->interactor, SLOT(onSelectionReset()));
-        disconnect (this, SIGNAL(bundlingBoxBooleanOperatorChanged(int)),
-                    d->interactor, SLOT(onBundlingBoxBooleanOperatorChanged(int)));
+                    d->interactor, SLOT(resetSelection()));
     }
 
     d->view = qobject_cast<v3dView*>(view);
 
     if (d->interactor) {
         connect (this, SIGNAL(fiberSelectionValidated(const QString&, const QColor&)),
-                 d->interactor, SLOT(onSelectionValidated(const QString&, const QColor&)));
+                 d->interactor, SLOT(validateSelection(const QString&, const QColor&)));
         connect (this, SIGNAL(fiberSelectionTagged()),
-                 d->interactor, SLOT(onSelectionTagged()));
+                 d->interactor, SLOT(tagSelection()));
         connect (this, SIGNAL(fiberSelectionReset()),
-                 d->interactor, SLOT(onSelectionReset()));
-        connect (this, SIGNAL(bundlingBoxBooleanOperatorChanged(int)),
-                 d->interactor, SLOT(onBundlingBoxBooleanOperatorChanged(int)));
+                 d->interactor, SLOT(resetSelection()));
 
         d->bundleBoxCheckBox->blockSignals (true);
         d->bundleBoxCheckBox->setChecked(d->interactor->property("BoxVisibility")=="true" );
@@ -524,12 +523,12 @@ void medFiberBundlingToolBox::showBundling(bool show)
     }
 }
 
-void medFiberBundlingToolBox::onBundlingButtonAndToggled(bool value)
+void medFiberBundlingToolBox::setBoxBooleanOperation(bool value)
 {
     if (value)
-        emit bundlingBoxBooleanOperatorChanged (0);
+        d->interactor->setBoxBooleanOperation(v3dViewFiberInteractor::Plus);
     else
-        emit bundlingBoxBooleanOperatorChanged (1);
+        d->interactor->setBoxBooleanOperation(v3dViewFiberInteractor::Minus);
 
     if (d->view)
         d->view->update();

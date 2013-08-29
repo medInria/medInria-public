@@ -612,17 +612,6 @@ void v3dViewFiberInteractor::setAllBundlesVisibility(bool visibility)
         d->manager->HideAllBundles();
 }
 
-void v3dViewFiberInteractor::onBundlingBoxBooleanOperatorChanged(int value)
-{
-    if (value==0)
-        d->manager->GetVOILimiter()->SetBooleanOperationToNOT();
-    else
-        d->manager->GetVOILimiter()->SetBooleanOperationToAND();
-
-    d->manager->Execute();
-}
-
-
 void v3dViewFiberInteractor::setOpacity(dtkAbstractData * /*data*/, double /*opacity*/)
 {
 }
