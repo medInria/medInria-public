@@ -36,7 +36,6 @@
 class medFilteringWorkspacePrivate
 {
 public:
-    medToolBox *viewPropertiesToolBox;
     medFilteringSelectorToolBox *filteringToolBox;
     dtkSmartPointer<dtkAbstractData> filterOutput;
     QString importUuid;
@@ -44,9 +43,13 @@ public:
 
 medFilteringWorkspace::medFilteringWorkspace ( QWidget *parent ) : medWorkspace ( parent ), d ( new medFilteringWorkspacePrivate )
 {
-    d->viewPropertiesToolBox = medToolBoxFactory::instance()->createToolBox("medViewPropertiesToolBox", parent);
+    // -- View toolboxes --
 
-    this->addToolBox ( d->viewPropertiesToolBox );
+    QList<QString> toolboxes = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+    foreach(QString toolbox, toolboxes)
+    {
+       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+    }
 
     d->filteringToolBox = new medFilteringSelectorToolBox ( parent );
 

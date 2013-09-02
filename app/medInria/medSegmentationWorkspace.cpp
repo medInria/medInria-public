@@ -36,11 +36,10 @@ class medSegmentationWorkspacePrivate
 public:
     // Give values to items without a constructor.
     medSegmentationWorkspacePrivate() :
-      layoutToolBox(NULL), viewPropertiesToolBox(NULL), segmentationToolBox(NULL)
+      layoutToolBox(NULL), segmentationToolBox(NULL)
     {}
 
     medVisualizationLayoutToolBox *layoutToolBox;
-    medToolBox *viewPropertiesToolBox;
 
     medSegmentationSelectorToolBox *segmentationToolBox;
 };
@@ -76,18 +75,20 @@ medWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 
     connect(this,SIGNAL(setLayoutTab(const QString &)), d->layoutToolBox, SLOT(setTab(const QString &)));
 
-    // -- View toolbox --
-
-    d->viewPropertiesToolBox = medToolBoxFactory::instance()->createToolBox("medViewPropertiesToolBox", parent);
-
-
     connect ( this, SIGNAL(layoutModeChanged(const QString &)),
         stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));
     connect ( stackedViewContainers(), SIGNAL(currentChanged(const QString &)),
         this, SLOT(connectToolboxesToCurrentContainer(const QString &)));
 
     this->addToolBox( d->layoutToolBox );
-    this->addToolBox( d->viewPropertiesToolBox );
+
+    // -- View toolboxes --
+    QList<QString> toolboxes = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+    foreach(QString toolbox, toolboxes)
+    {
+       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+    }
+
     this->addToolBox( d->segmentationToolBox );
 }
 

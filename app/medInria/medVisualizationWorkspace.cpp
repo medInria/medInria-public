@@ -23,8 +23,7 @@ class medVisualizationWorkspacePrivate
 {
 public:
     medVisualizationLayoutToolBox * layoutToolBox;
-    medToolBox * timeToolBox;
-    medToolBox * viewPropertiesToolBox;
+
 };
 
 medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medWorkspace(parent), d(new medVisualizationWorkspacePrivate)
@@ -43,13 +42,12 @@ medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medWorks
 
     this->addToolBox( d->layoutToolBox );
 
-    // -- View toolbox --
-
-    d->viewPropertiesToolBox = medToolBoxFactory::instance()->createToolBox("medViewPropertiesToolBox", parent);
-    d->timeToolBox           = medToolBoxFactory::instance()->createToolBox("medTimeLineToolBox", parent);
-
-    this->addToolBox( d->viewPropertiesToolBox );
-    this->addToolBox( d->timeToolBox );
+    // -- View toolboxes --
+    QList<QString> toolboxes = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+    foreach(QString toolbox, toolboxes)
+    {
+       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+    }
 
     connect ( this, SIGNAL(layoutModeChanged(const QString &)),
               stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));

@@ -34,11 +34,6 @@ public:
 
     medToolBox * diffusionToolBox;
     medToolBox * fiberBundlingToolBox;
-    medToolBox * viewPropertiesToolBox;
-    medToolBox * fiberViewToolBox;
-    medToolBox * tensorViewToolBox;
-    medToolBox * shViewToolBox;
-
     medViewContainer * diffusionContainer;
 };
 
@@ -48,7 +43,6 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
 
     d->diffusionToolBox =  new medDiffusionSelectorToolBox(parent);
 
-    d->viewPropertiesToolBox = medToolBoxFactory::instance()->createToolBox("medViewPropertiesToolBox", parent);
     d->fiberBundlingToolBox = medToolBoxFactory::instance()->createToolBox("medFiberBundlingToolBox", parent);
 
     connect(d->diffusionToolBox, SIGNAL(addToolBox(medToolBox *)),
@@ -56,20 +50,20 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
     connect(d->diffusionToolBox, SIGNAL(removeToolBox(medToolBox *)),
             this, SLOT(removeToolBox(medToolBox *)));
 
-    d->tensorViewToolBox = medToolBoxFactory::instance()->createToolBox("medTensorViewToolBox", parent);
-    d->fiberViewToolBox = medToolBoxFactory::instance()->createToolBox("medFiberViewToolBox", parent);
-
     connect(d->diffusionToolBox, SIGNAL(newOutput(dtkAbstractData*)), d->fiberBundlingToolBox, SLOT(setInput(dtkAbstractData*)));
     connect(d->diffusionToolBox, SIGNAL(newOutput(dtkAbstractData*)), this, SLOT(addToView(dtkAbstractData*)));
 
-    d->shViewToolBox = medToolBoxFactory::instance()->createToolBox("medSHViewToolBox", parent);
+    // -- View toolboxes --
+
+    QList<QString> toolboxes = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+    foreach(QString toolbox, toolboxes)
+    {
+       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+    }
 
     this->addToolBox( d->diffusionToolBox );
-    this->addToolBox( d->viewPropertiesToolBox );
-    this->addToolBox( d->tensorViewToolBox );
-    this->addToolBox( d->fiberViewToolBox );
     this->addToolBox( d->fiberBundlingToolBox );
-    this->addToolBox( d->shViewToolBox );
+
 }
 
 medDiffusionWorkspace::~medDiffusionWorkspace()

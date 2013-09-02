@@ -30,13 +30,17 @@ class medRegistrationWorkspacePrivate
 {
 public:
     medRegistrationSelectorToolBox * registrationToolBox;
-    medToolBox *viewPropertiesToolBox;
 };
 
 medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medWorkspace(parent), d(new medRegistrationWorkspacePrivate)
 {
-    d->viewPropertiesToolBox = medToolBoxFactory::instance()->createToolBox("medViewPropertiesToolBox", parent);
-    this->addToolBox(d->viewPropertiesToolBox);
+    // -- View toolboxes --
+
+    QList<QString> toolboxes = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+    foreach(QString toolbox, toolboxes)
+    {
+       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+    }
 
     // -- Registration toolbox --
 
