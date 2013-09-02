@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSNORMALIZEPROCESS_H
-#define ITKFILTERSNORMALIZEPROCESS_H
+#pragma once
 
 #include "itkFiltersProcessBase.h"
 #include <dtkCore/dtkAbstractData.h>
@@ -44,4 +43,4 @@ private:
 dtkAbstractProcess * createitkFiltersNormalizeProcess(void);
 
 
-#endif // ITKFILTERSNORMALIZEPROCESS_H
+

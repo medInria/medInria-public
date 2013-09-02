@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSINVERTPROCESS_P_H
-#define ITKFILTERSINVERTPROCESS_P_H
+#pragma once
 
 
 #include <dtkCore/dtkAbstractData.h>
@@ -65,4 +64,4 @@ public:
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersInvertProcess, itkFiltersProcessBase)
 
-#endif // ITKFILTERSINVERTPROCESS_P_H
+

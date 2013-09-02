@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSMEDIANPROCESS_H
-#define ITKFILTERSMEDIANPROCESS_H
+#pragma once
 
 #include "itkFiltersProcessBase.h"
 #include <dtkCore/dtkAbstractData.h>
@@ -45,4 +44,4 @@ private:
 dtkAbstractProcess * createitkFiltersMedianProcess(void);
 
 
-#endif // ITKFILTERSMEDIANPROCESS_H
+

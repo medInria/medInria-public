@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSMEDIANPROCESS_P_H
-#define ITKFILTERSMEDIANPROCESS_P_H
+#pragma once
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -64,4 +63,4 @@ public:
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersMedianProcess, itkFiltersProcessBase)
 
-#endif // ITKFILTERSMEDIANPROCESS_P_H
+

@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSNORMALIZEPROCESS_P_H
-#define ITKFILTERSNORMALIZEPROCESS_P_H
+#pragma once
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -64,4 +63,4 @@ public:
 DTK_IMPLEMENT_PRIVATE(itkFiltersNormalizeProcess, itkFiltersProcessBase)
 
 
-#endif // ITKFILTERSNORMALIZEPROCESS_P_H
+

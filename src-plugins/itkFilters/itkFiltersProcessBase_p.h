@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSPROCESSBASE_P_H
-#define ITKFILTERSPROCESSBASE_P_H
+#pragma once
 
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcess_p.h>
@@ -60,4 +59,4 @@ public:
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersProcessBase, dtkAbstractProcess)
 
-#endif // ITKFILTERSPROCESSBASE_P_H
+

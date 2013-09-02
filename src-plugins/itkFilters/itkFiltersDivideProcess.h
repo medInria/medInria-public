@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSDIVIDEPROCESS_H
-#define ITKFILTERSDIVIDEPROCESS_H
+#pragma once
 
 #include "itkFiltersProcessBase.h"
 #include <dtkCore/dtkAbstractData.h>
@@ -44,4 +43,4 @@ private:
 
 dtkAbstractProcess * createitkFiltersDivideProcess(void);
 
-#endif // ITKFILTERSDIVIDEPROCESS_H
+
