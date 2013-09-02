@@ -15,8 +15,6 @@ project(vtkHWShading)
 
 include(ShaderText.cmake)
 
-add_subdirectory(Helpers)
-
 set(${PROJECT_NAME}_classes
   ExtensionInitialize
   vtkShaderBase
@@ -119,7 +117,6 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME} 
   vtkRendering
-  vtkHelpers
   ${OPENGL_LIBRARIES}
   )
 
