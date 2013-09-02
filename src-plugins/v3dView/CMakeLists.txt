@@ -151,7 +151,7 @@ target_link_libraries(${PROJECT_NAME}
   vtkVolumeRendering
   QVTK
   vtkHWShading
-  vtkHelpers)
+  )
 
 
 if (MEDINRIA-PLUGINS_BUILD_TESTING)
