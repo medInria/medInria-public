@@ -15,6 +15,9 @@ For more informations, please see :
 
 You are welcome to fork the project from github and make a contribution by sending us a pull request.
 
+Some easy to tackle bugs are listed here : 
+- https://github.com/medInria/medInria-public/wiki/Bugs-for-beginners
+
 You can also help us to track and correct bug by posting your issue on :
 - https://med.inria.fr/redmine.
 
