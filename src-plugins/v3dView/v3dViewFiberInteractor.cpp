@@ -240,6 +240,7 @@ void v3dViewFiberInteractor::setBoxVisibility(bool visible)
     }
 
     d->manager->SetBoxWidget(visible);
+    d->view->update();
 }
 
 void v3dViewFiberInteractor::setRenderingMode(RenderingMode mode)
@@ -260,6 +261,8 @@ void v3dViewFiberInteractor::setRenderingMode(RenderingMode mode)
         default:
             qDebug() << "v3dViewFiberInteractor: unknown rendering mode";
     }
+
+    d->view->update();
 }
 
 void v3dViewFiberInteractor::activateGPU(bool activate)
@@ -271,6 +274,8 @@ void v3dViewFiberInteractor::activateGPU(bool activate)
         vtkFibersManager::UseHardwareShadersOff();
         d->manager->ChangeMapperToDefault();
     }
+
+    d->view->update();
 }
 
 void v3dViewFiberInteractor::setColorMode(ColorMode mode)
@@ -301,6 +306,8 @@ void v3dViewFiberInteractor::setColorMode(ColorMode mode)
         default:
             qDebug() << "v3dViewFiberInteractor: unknown color mode";
     }
+
+    d->view->update();
 }
 
 void v3dViewFiberInteractor::setBoxBooleanOperation(BooleanOperation op)
@@ -320,16 +327,19 @@ void v3dViewFiberInteractor::setBoxBooleanOperation(BooleanOperation op)
     }
 
     d->manager->GetVOILimiter()->Modified();
+    d->view->update();
 }
 
 void v3dViewFiberInteractor::tagSelection()
 {
     d->manager->SwapInputOutput();
+    d->view->update();
 }
 
 void v3dViewFiberInteractor::resetSelection()
 {
     d->manager->Reset();
+    d->view->update();
 }
 
 void v3dViewFiberInteractor::validateSelection(const QString &name, const QColor &color)
@@ -348,6 +358,7 @@ void v3dViewFiberInteractor::validateSelection(const QString &name, const QColor
 
     // reset to initial navigation state
     d->manager->Reset();
+    d->view->update();
 }
 
 void v3dViewFiberInteractor::computeBundleFAStatistics (const QString &name,
@@ -582,11 +593,14 @@ void v3dViewFiberInteractor::setROI(dtkAbstractData *data)
 
         d->roiManager->ResetData();
     }
+
+    d->view->update();
 }
 
 void v3dViewFiberInteractor::setRoiBoolean(int roi, int meaning)
 {
     d->manager->GetROILimiter()->SetBooleanOperation (roi, meaning);
+    d->view->update();
 }
 
 int v3dViewFiberInteractor::roiBoolean(int roi)
@@ -597,6 +611,7 @@ int v3dViewFiberInteractor::roiBoolean(int roi)
 void v3dViewFiberInteractor::setBundleVisibility(const QString &name, bool visibility)
 {
     d->manager->SetBundleVisibility(name.toAscii().constData(), (int)visibility);
+    d->view->update();
 }
 
 bool v3dViewFiberInteractor::bundleVisibility(const QString &name) const
@@ -610,6 +625,8 @@ void v3dViewFiberInteractor::setAllBundlesVisibility(bool visibility)
         d->manager->ShowAllBundles();
     else
         d->manager->HideAllBundles();
+
+    d->view->update();
 }
 
 void v3dViewFiberInteractor::setOpacity(dtkAbstractData * /*data*/, double /*opacity*/)

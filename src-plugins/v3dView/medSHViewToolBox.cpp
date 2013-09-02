@@ -263,90 +263,73 @@ void medSHViewToolBox::setTesselationType (int tesselationType){
 
 void medSHViewToolBox::setTesselationBasis (int tesselationBasis){
     d->interactor->setTesselationBasis((v3dViewSHInteractor::TesselationBasis)tesselationBasis);
-    d->view->update();
 }
 
 void medSHViewToolBox::setSampleRate (int sampleRate){
     d->interactor->setSampleRate(sampleRate);
-    d->view->update();
 }
 
 void medSHViewToolBox::setXSlice (int xSlice){
     d->interactor->setXSlice(xSlice);
-    d->view->update();
 }
 
 void medSHViewToolBox::setYSlice (int ySlice){
     d->interactor->setYSlice(ySlice);
-    d->view->update();
 }
 
 void medSHViewToolBox::setZSlice (int zSlice){
     d->interactor->setZSlice(zSlice);
-    d->view->update();
 }
 
 void medSHViewToolBox::setGlyphResolution (int glyphResolution){
     d->interactor->setGlyphResolution(glyphResolution);
-    d->view->update();
 }
 
 void medSHViewToolBox::flipX(const int checkBoxState) {
     d->interactor->setFlipX(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medSHViewToolBox::flipY(const int checkBoxState) {
     d->interactor->setFlipY(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medSHViewToolBox::flipZ(const int checkBoxState) {
     d->interactor->setFlipZ(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medSHViewToolBox::setEnhance(const int checkBoxState) {
     d->interactor->setNormalization(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medSHViewToolBox::setScale(const double mantissa,const int exponent) {
     const double scale_factor = pow(10.0,exponent);
     setScale(mantissa*scale_factor);
-    d->view->update();
 }
 
 void medSHViewToolBox::setScale(const double scale) {
     d->interactor->setScaling(scale);
-    d->view->update();
 }
 
 void medSHViewToolBox::setMinorScaling(const int minorScale) {
     const int majorScaleExponent = d->majorScalingControl->value();
     setScale(minorScale,majorScaleExponent);
-    d->view->update();
 }
 
 void medSHViewToolBox::setMajorScaling(const int majorScaleExponent) {
     const double minorScale = d->minorScalingControl->value();
     setScale(minorScale,majorScaleExponent);
-    d->view->update();
 }
 
 void medSHViewToolBox::setShowAxial(const int checkBoxState) {
     d->interactor->setShowAxial(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medSHViewToolBox::setShowCoronal(const int checkBoxState) {
     d->interactor->setShowCoronal(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medSHViewToolBox::setShowSagittal(const int checkBoxState) {
     d->interactor->setShowSagittal(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medSHViewToolBox::update(dtkAbstractView *view) {

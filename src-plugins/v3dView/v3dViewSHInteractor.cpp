@@ -119,7 +119,9 @@ bool v3dViewSHInteractor::isDataTypeHandled(QString dataType) const
 
 
 bool v3dViewSHInteractor::registered() {
-    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewSHInteractor",QStringList() << "v3dView",createV3dViewSHInteractor);
+    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewSHInteractor",
+                                                                          QStringList () << v3dView::s_identifier() << medVtkView::s_identifier(),
+                                                                          createV3dViewSHInteractor);
 }
 
 void v3dViewSHInteractor::setData(dtkAbstractData *data) {
@@ -181,22 +183,27 @@ void v3dViewSHInteractor::imageSize(int* imSize) {
 
 void v3dViewSHInteractor::setTesselationType(TesselationType tesselationType) {
     d->manager->SetTesselationType(tesselationType);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setTesselationBasis(TesselationBasis tesselationBasis) {
     d->manager->SetTesselationBasis(tesselationBasis);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setSampleRate(int sampleRate) {
     d->manager->SetSampleRate(sampleRate,sampleRate,sampleRate);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setGlyphResolution(int glyphResolution) {
     d->manager->SetGlyphResolution(glyphResolution);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setScaling(double scale) {
     d->manager->SetGlyphScale((float)scale);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setXSlice(int xSlice) {
@@ -204,6 +211,7 @@ void v3dViewSHInteractor::setXSlice(int xSlice) {
     d->manager->GetCurrentPosition(dims);
     dims[0]=xSlice;
     d->manager->SetCurrentPosition((int*)dims);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setYSlice(int ySlice) {
@@ -211,6 +219,7 @@ void v3dViewSHInteractor::setYSlice(int ySlice) {
     d->manager->GetCurrentPosition(dims);
     dims[1]=ySlice;
     d->manager->SetCurrentPosition((int*)dims);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setZSlice(int zSlice) {
@@ -218,45 +227,55 @@ void v3dViewSHInteractor::setZSlice(int zSlice) {
     d->manager->GetCurrentPosition(dims);
     dims[2]=zSlice;
     d->manager->SetCurrentPosition((int*)dims);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setShowAxial(bool show) {
     const int visible = show ? 1 : 0;
     d->manager->SetAxialSliceVisibility(visible);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setShowCoronal(bool show) {
     const int visible = show ? 1 : 0;
     d->manager->SetCoronalSliceVisibility(visible);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setShowSagittal(bool show) {
     const int visible = show ? 1 : 0;
     d->manager->SetSagittalSliceVisibility(visible);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setFlipX(const bool flipX) {
     d->manager->FlipX(flipX);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setFlipY(const bool flipY) {
     d->manager->FlipY(flipY);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setFlipZ(const bool flipZ) {
     d->manager->FlipZ(flipZ);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setColorGlyphs(const bool ColorGlyph) {
     d->manager->ColorGlyphs(ColorGlyph);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setNormalization(const bool Norma) {
     d->manager->Normalization(Norma);
+    d->view->update();
 }
 
 void v3dViewSHInteractor::setPosition(const QVector3D& position,bool propagate) {
     d->manager->SetCurrentPosition(position.x(),position.y(),position.z());
+    d->view->update();
 }
 
 // /////////////////////////////////////////////////////////////////

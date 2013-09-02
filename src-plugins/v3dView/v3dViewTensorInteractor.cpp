@@ -281,22 +281,27 @@ void v3dViewTensorInteractor::setGlyphShape(GlyphShapeType glyphShape)
         default:
             qDebug() << "Unknown glyph type";
     }
+
+    d->view->update();
 }
 
 void v3dViewTensorInteractor::setSampleRate(int sampleRate)
 {
     d->manager->SetSampleRate(sampleRate, sampleRate, sampleRate);
+    d->view->update();
 }
 
 void v3dViewTensorInteractor::setEigenVector(int eigenVector)
 {
     // we need to substract 1 because the manager receives an index
     d->manager->SetColorModeToEigenvector(eigenVector-1);
+    d->view->update();
 }
 
 void v3dViewTensorInteractor::setGlyphResolution(int glyphResolution)
 {
     d->manager->SetGlyphResolution(glyphResolution);
+    d->view->update();
 }
 
 void v3dViewTensorInteractor::setReverseBackgroundColor(bool isWhite)
@@ -308,11 +313,14 @@ void v3dViewTensorInteractor::setReverseBackgroundColor(bool isWhite)
         d->view->setBackgroundColor(1.0,1.0,1.0);
     else
         d->view->setBackgroundColor(0.0,0.0,0.0);
+
+    d->view->update();
 }
 
 void v3dViewTensorInteractor::setScale(double scale)
 {
     d->manager->SetGlyphScale((float)scale);
+    d->view->update();
 }
 
 void v3dViewTensorInteractor::setShowAxial(bool show)
@@ -321,6 +329,8 @@ void v3dViewTensorInteractor::setShowAxial(bool show)
         d->manager->SetAxialSliceVisibility(1);
     else
         d->manager->SetAxialSliceVisibility(0);
+
+    d->view->update();
 }
 
 void v3dViewTensorInteractor::setShowCoronal(bool show)
@@ -329,6 +339,8 @@ void v3dViewTensorInteractor::setShowCoronal(bool show)
         d->manager->SetCoronalSliceVisibility(1);
     else
         d->manager->SetCoronalSliceVisibility(0);
+
+    d->view->update();
 }
 
 void v3dViewTensorInteractor::setShowSagittal(bool show)
@@ -337,26 +349,32 @@ void v3dViewTensorInteractor::setShowSagittal(bool show)
         d->manager->SetSagittalSliceVisibility(1);
     else
         d->manager->SetSagittalSliceVisibility(0);
+
+    d->view->update();
 }
 
 void v3dViewTensorInteractor::setFlipX(bool flip)
 {
     d->manager->FlipX(flip);
+    d->view->update();
 }
 
 void v3dViewTensorInteractor::setFlipY(bool flip)
 {
     d->manager->FlipY(flip);
+    d->view->update();
 }
 
 void v3dViewTensorInteractor::setFlipZ(bool flip)
 {
     d->manager->FlipZ(flip);
+    d->view->update();
 }
 
 void v3dViewTensorInteractor::changePosition(const QVector3D& position, bool propagate)
 {
     d->manager->SetCurrentPosition(position.x(), position.y(), position.z());
+    d->view->update();
 }
 
 // /////////////////////////////////////////////////////////////////

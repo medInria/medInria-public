@@ -324,43 +324,36 @@ bool medTensorViewToolBox::isShowSagittal(void)
 void medTensorViewToolBox::setGlyphShape(int glyphShape)
 {
     d->interactor->setGlyphShape((v3dViewTensorInteractor::GlyphShapeType)glyphShape);
-    d->view->update();
 }
 
 void medTensorViewToolBox::setSampleRate(int sampleRate)
 {
     d->interactor->setSampleRate(sampleRate);
-    d->view->update();
 }
 
 void medTensorViewToolBox::setGlyphResolution(int glyphResolution)
 {
     d->interactor->setGlyphResolution(glyphResolution);
-    d->view->update();
 }
 
 void medTensorViewToolBox::setFlipX(int checkBoxState)
 {
     d->interactor->setFlipX(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medTensorViewToolBox::setFlipY(int checkBoxState)
 {
     d->interactor->setFlipY(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medTensorViewToolBox::setFlipZ(int checkBoxState)
 {
     d->interactor->setFlipZ(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medTensorViewToolBox::onReverseBackgroundColorChanged(int checkBoxState)
 {
     d->interactor->setReverseBackgroundColor(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medTensorViewToolBox::setEigenVectorV1(bool isSelected)
@@ -368,7 +361,6 @@ void medTensorViewToolBox::setEigenVectorV1(bool isSelected)
     if(isSelected)
     {
         d->interactor->setEigenVector(3);
-        d->view->update();
     }
 }
 
@@ -377,7 +369,6 @@ void medTensorViewToolBox::setEigenVectorV2(bool isSelected)
     if(isSelected)
     {
         d->interactor->setEigenVector(2);
-        d->view->update();
     }
 }
 
@@ -386,7 +377,6 @@ void medTensorViewToolBox::setEigenVectorV3(bool isSelected)
     if(isSelected)
     {
         d->interactor->setEigenVector(1);
-        d->view->update();
     }
 }
 
@@ -396,7 +386,6 @@ void medTensorViewToolBox::setMinorScaling(int minorScale)
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
     d->interactor->setScale(scale);
-    d->view->update();
 }
 
 void medTensorViewToolBox::setMajorScaling(int majorScaleExponent)
@@ -405,25 +394,21 @@ void medTensorViewToolBox::setMajorScaling(int majorScaleExponent)
     double majorScale = pow(10.0, majorScaleExponent);
     double scale = majorScale * minorScale;
     d->interactor->setScale(scale);
-    d->view->update();
 }
 
 void medTensorViewToolBox::setShowAxial(int checkBoxState)
 {
     d->interactor->setShowAxial(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medTensorViewToolBox::setShowCoronal(int checkBoxState)
 {
     d->interactor->setShowCoronal(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medTensorViewToolBox::setShowSagittal(int checkBoxState)
 {
     d->interactor->setShowSagittal(checkBoxState == Qt::Checked);
-    d->view->update();
 }
 
 void medTensorViewToolBox::update (dtkAbstractView *view)

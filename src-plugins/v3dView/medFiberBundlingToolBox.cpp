@@ -231,8 +231,6 @@ void medFiberBundlingToolBox::showBundlingBox (bool show)
 
     if (d->interactor) {
             d->interactor->setBoxVisibility(show);
-
-        d->view->update();
     }
 }
 
@@ -352,7 +350,6 @@ void medFiberBundlingToolBox::importROI(const medDataIndex& index)
     if (d->interactor)
     {
         d->interactor->setROI(data);
-        d->view->update();
     }
 }
 
@@ -402,8 +399,6 @@ void medFiberBundlingToolBox::selectRoi(int value)
             break;
         }
     }
-
-    d->view->update();
 }
 
 void medFiberBundlingToolBox::setRoiAddOperation (bool value)
@@ -416,8 +411,6 @@ void medFiberBundlingToolBox::setRoiAddOperation (bool value)
         if (value)
             d->interactor->setRoiBoolean(roi+1, 2);
     }
-
-    d->view->update();
 }
 
 void medFiberBundlingToolBox::setRoiNotOperation (bool value)
@@ -430,8 +423,6 @@ void medFiberBundlingToolBox::setRoiNotOperation (bool value)
         if (value)
             d->interactor->setRoiBoolean(roi+1, 1);
     }
-
-    d->view->update();
 }
 
 void medFiberBundlingToolBox::setRoiNullOperation (bool value)
@@ -444,8 +435,6 @@ void medFiberBundlingToolBox::setRoiNullOperation (bool value)
         if (value)
             d->interactor->setRoiBoolean(roi+1, 0);
     }
-
-    d->view->update();
 }
 
 void medFiberBundlingToolBox::clear(void)
@@ -510,7 +499,6 @@ void medFiberBundlingToolBox::changeBundlingItem(QStandardItem *item)
     if (d->view) {
         if (d->interactor)
             d->interactor->setBundleVisibility(item->text(), item->checkState());
-        d->view->update();
     }
 }
 
@@ -519,7 +507,6 @@ void medFiberBundlingToolBox::showBundling(bool show)
     if (d->view) {
         if (d->interactor)
             d->interactor->setAllBundlesVisibility(show);
-        d->view->update();
     }
 }
 
@@ -529,9 +516,6 @@ void medFiberBundlingToolBox::setBoxBooleanOperation(bool value)
         d->interactor->setBoxBooleanOperation(v3dViewFiberInteractor::Plus);
     else
         d->interactor->setBoxBooleanOperation(v3dViewFiberInteractor::Minus);
-
-    if (d->view)
-        d->view->update();
 }
 
 void medFiberBundlingToolBox::onDropSiteClicked()

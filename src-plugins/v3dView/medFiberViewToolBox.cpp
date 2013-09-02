@@ -167,7 +167,6 @@ void medFiberViewToolBox::selectLineMode (bool value)
     if(value)
     {
         d->interactor->setRenderingMode(v3dViewFiberInteractor::Lines);
-        d->view->update();
     }
 }
 
@@ -176,7 +175,6 @@ void medFiberViewToolBox::selectRibbonMode (bool value)
     if(value)
     {
         d->interactor->setRenderingMode(v3dViewFiberInteractor::Ribbons);
-        d->view->update();
     }
 }
 
@@ -185,7 +183,6 @@ void medFiberViewToolBox::selectTubeMode (bool value)
     if(value)
     {
         d->interactor->setRenderingMode(v3dViewFiberInteractor::Tubes);
-        d->view->update();
     }
 }
 
