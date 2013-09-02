@@ -818,6 +818,7 @@ int vtkImageViewCornerAnnotation::RenderOpaqueGeometry(vtkViewport *viewport)
       for (i = 0; i < 4; i++)
         {
         this->TextMapper[i]->GetTextProperty()->SetFontSize(fontSize);
+        this->TextMapper[i]->GetTextProperty()->ShadowOn();
         }
 
       // Now set the position of the TextActors
