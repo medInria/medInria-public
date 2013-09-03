@@ -84,7 +84,7 @@ void *v3dDataFibers::data()
     return d->data;
 }
 
-QImage & v3dDataFibers::thumbnail() const
+QImage & v3dDataFibers::thumbnail()
 {
     /*
     if (d->thumbnails.count()==0)
@@ -93,7 +93,7 @@ QImage & v3dDataFibers::thumbnail() const
     return d->thumbnail;
 }
 
-QList<QImage> &v3dDataFibers::thumbnails() const
+QList<QImage> &v3dDataFibers::thumbnails()
 {
     /*
     if (d->thumbnails.count()==0)

@@ -31,8 +31,8 @@ public:
     virtual QString identifier() const;
     static bool registered();
 
-    virtual QImage        &thumbnail() const;
-    virtual QList<QImage> &thumbnails() const;
+    virtual QImage        &thumbnail();
+    virtual QList<QImage> &thumbnails();
 
 public:
     void *data();

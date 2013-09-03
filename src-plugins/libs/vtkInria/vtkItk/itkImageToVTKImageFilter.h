@@ -59,6 +59,7 @@ public:
       This call is delegated to the internal vtkImageImporter filter  */
   vtkImageData *  GetOutput() const;
 
+    using Superclass::SetInput;
   /** Set the input in the form of an itk::Image */
   void SetInput( const InputImageType * );
 
