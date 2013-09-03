@@ -36,8 +36,13 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medWorkspa
 {
     // -- View toolboxes --
 
-    QList<QString> toolboxes = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
-    foreach(QString toolbox, toolboxes)
+    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+    if(toolboxNames.contains("medViewPropertiesToolBox"))
+    {
+        // we want the medViewPropertiesToolBox to be the first "view" toolbox
+        toolboxNames.move(toolboxNames.indexOf("medViewPropertiesToolBox"),0);
+    }
+    foreach(QString toolbox, toolboxNames)
     {
        addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
     }
