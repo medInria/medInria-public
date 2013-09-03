@@ -76,7 +76,7 @@ void medFilteringWorkspace::setupViewContainerStack()
         connect(this,SIGNAL(outputDataChanged(dtkAbstractData *)),
                 filteringViewContainer,SLOT(updateOutput(dtkAbstractData *)));
         connect(filteringViewContainer, SIGNAL(viewRemoved(dtkAbstractView *)),
-                this, SLOT(onViewRemoved()));
+                this, SLOT(onInputViewRemoved()));
 
         this->stackedViewContainers()->addContainer ( "Filtering",filteringViewContainer );
 
