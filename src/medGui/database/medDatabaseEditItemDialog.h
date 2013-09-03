@@ -1,5 +1,4 @@
-#ifndef MEDDATABASEEDITITEMDIALOG_H
-#define MEDDATABASEEDITITEMDIALOG_H
+#pragma once
 
 #include <medCore/medDataIndex.h>
 #include <QDialog>
@@ -44,4 +43,4 @@ private:
     medDatabaseEditItemDialogPrivate *d;
 };
 
-#endif // MEDSAVEMODIFIEDDIALOG_H
+

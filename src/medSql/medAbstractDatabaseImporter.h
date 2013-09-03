@@ -17,8 +17,7 @@
  *
  */
 
-#ifndef MEDABSTRACTDATABASEIMPORTER_H
-#define MEDABSTRACTDATABASEIMPORTER_H
+#pragma once
 
 #include "medSqlExport.h"
 
@@ -279,4 +278,4 @@ protected:
 
 };
 
-#endif // MEDDATABASEIMPORTER_H
+

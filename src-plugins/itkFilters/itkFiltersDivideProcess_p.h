@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSDIVIDEPROCESS_P_H
-#define ITKFILTERSDIVIDEPROCESS_P_H
+#pragma once
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -65,4 +64,4 @@ public:
 DTK_IMPLEMENT_PRIVATE(itkFiltersDivideProcess, itkFiltersProcessBase)
 
 
-#endif // ITKFILTERSDIVIDEPROCESS_P_H
+

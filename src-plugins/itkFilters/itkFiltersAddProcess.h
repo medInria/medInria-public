@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSADDPROCESS_H
-#define ITKFILTERSADDPROCESS_H
+#pragma once
 
 #include <dtkCore/dtkAbstractData.h>
 #include "itkFiltersProcessBase.h"
@@ -43,4 +42,4 @@ private:
 };
 
 dtkAbstractProcess * createitkFiltersAddProcess(void);
-#endif // ITKFILTERSADDPROCESS_H
+

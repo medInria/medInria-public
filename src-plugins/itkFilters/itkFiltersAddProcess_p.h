@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSADDPROCESS_P_H
-#define ITKFILTERSADDPROCESS_P_H
+#pragma once
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -64,4 +63,4 @@ public:
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersAddProcess, itkFiltersProcessBase)
 
-#endif // ITKFILTERSADDPROCESS_P_H
+

@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSPROCESSBASE_H
-#define ITKFILTERSPROCESSBASE_H
+#pragma once
 
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractData.h>
@@ -47,4 +46,4 @@ private:
 //ITKFILTERSPLUGIN_EXPORT QDebug operator<<(QDebug debug,       itkFiltersProcessBase *process);
 
 
-#endif // ITKFILTERSPROCESSBASE_H
+

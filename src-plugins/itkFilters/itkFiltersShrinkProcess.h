@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSSHRINKPROCESS_H
-#define ITKFILTERSSHRINKPROCESS_H
+#pragma once
 
 #include "itkFiltersProcessBase.h"
 #include <dtkCore/dtkAbstractData.h>
@@ -44,4 +43,4 @@ private:
 
 dtkAbstractProcess * createitkFiltersShrinkProcess(void);
 
-#endif // ITKFILTERSSHRINKPROCESS_H
+
