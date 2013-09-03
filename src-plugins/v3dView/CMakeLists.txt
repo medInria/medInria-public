@@ -72,7 +72,6 @@ if ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
       medFiberBundlingToolBox.h
       medFiberViewToolBox.h
       medTensorViewToolBox.h
-      medSHViewToolBox.h
     )
     set(${PROJECT_NAME}_TTK_DEPENDENT_SOURCES
        v3dViewFiberInteractor.cpp
@@ -80,7 +79,6 @@ if ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
        medFiberBundlingToolBox.cpp
        medFiberViewToolBox.cpp
        medTensorViewToolBox.cpp
-       medSHViewToolBox.cpp
     )
     set(${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES
        ttkAlgorithms
@@ -102,6 +100,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medTimeLineToolBox.h
   ${${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC}
   v3dViewSHInteractor.h
+  medSHViewToolBox.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -125,6 +124,7 @@ set(${PROJECT_NAME}_SOURCES
   annotations/v3dViewAnnIntSeedPointHelper.cpp
   annotations/vtkSeedPointHandle.cpp
   v3dViewSHInteractor.cpp
+  medSHViewToolBox.cpp
   ${${PROJECT_NAME}_TTK_DEPENDENT_SOURCES}
   )
 
