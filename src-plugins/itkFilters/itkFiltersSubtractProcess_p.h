@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSSUBTRACTPROCESS_P_H
-#define ITKFILTERSSUBTRACTPROCESS_P_H
+#pragma once
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -67,4 +66,4 @@ public:
 DTK_IMPLEMENT_PRIVATE(itkFiltersSubtractProcess, itkFiltersProcessBase)
 
 
-#endif // ITKFILTERSSUBTRACTPROCESS_P_H
+

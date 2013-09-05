@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSMULTIPLYPROCESS_P_H
-#define ITKFILTERSMULTIPLYPROCESS_P_H
+#pragma once
 
 
 #include <dtkCore/dtkAbstractData.h>
@@ -67,4 +66,4 @@ public:
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersMultiplyProcess, itkFiltersProcessBase)
 
-#endif // ITKFILTERSMULTIPLYPROCESS_P_H
+

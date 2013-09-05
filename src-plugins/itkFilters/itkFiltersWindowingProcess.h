@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSWINDOWINGPROCESS_H
-#define ITKFILTERSWINDOWINGPROCESS_H
+#pragma once
 
 #include "itkFiltersProcessBase.h"
 #include <dtkCore/dtkAbstractData.h>
@@ -45,4 +44,4 @@ private:
 
 dtkAbstractProcess * createitkFiltersWindowingProcess(void);
 
-#endif // ITKFILTERSWINDOWINGPROCESS_H
+

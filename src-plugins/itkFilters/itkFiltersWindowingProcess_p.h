@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSWINDOWINGPROCESS_P_H
-#define ITKFILTERSWINDOWINGPROCESS_P_H
+#pragma once
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -73,4 +72,4 @@ public:
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersWindowingProcess, itkFiltersProcessBase)
 
-#endif // ITKFILTERSWINDOWINGPROCESS_P_H
+
