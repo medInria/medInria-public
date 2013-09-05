@@ -22,7 +22,6 @@
 #include <medFiberViewToolBox.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
-
 class medTabbedViewContainers;
 class medDiffusionWorkspacePrivate;
 
@@ -44,11 +43,11 @@ public slots:
     void onViewAdded   (dtkAbstractView *view);
     void onViewRemoved (dtkAbstractView *view);
 
-    void onFiberColorModeChanged(int);
-    void onGPUActivated(bool);
-    void onLineModeSelected(bool);
-    void onRibbonModeSelected(bool);
-    void onTubeModeSelected(bool);
+    void onFiberColorModeChanged(const int);
+    void onGPUActivated(const bool);
+    void onLineModeSelected(const bool);
+    void onRibbonModeSelected(const bool);
+    void onTubeModeSelected(const bool);
     void onTBDiffusionSuccess();
     void refreshInteractors();
 
@@ -102,10 +101,14 @@ public slots:
 
     /** Event called when user wants to switch in between Spherical Harmonic Basis  */
 
-    void onSHNormalize(bool normalize);
+    void onSHNormalize(const bool normalize);
 
 private:
     medDiffusionWorkspacePrivate *d;
+
+    void onBoolValueChanged(const bool b,const char* b_name,const char* interactor);
+    void onBoolValueChanged(const bool b,const char* b_name,const char* v_name,const char* interactor);
+    void onStringValueChanged(const QString& str,const char* str_name,const char* interactor);
 
     /** Updates the tensor interactor with the current values in the tensor toolbox. */
     void updateTensorInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medTensorViewToolBox* tensorViewToolBox);
@@ -115,4 +118,8 @@ private:
     
     /** Updates the fiber interactor with the current values in the fiber toolbox. */
     void updateFiberInteractorWithToolboxValues(dtkAbstractViewInteractor* interactor, medFiberViewToolBox* fiberViewToolBox);
+
+    static const char* ColorModeValues[];
+    static const char* RenderingModeValues[];
+    static const char* boolValues[];
 };

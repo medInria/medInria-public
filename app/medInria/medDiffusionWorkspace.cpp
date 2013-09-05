@@ -32,9 +32,7 @@
 #include <medTabbedViewContainers.h>
 #include <medToolBoxFactory.h>
 
-
-class medDiffusionWorkspacePrivate
-{
+class medDiffusionWorkspacePrivate {
 public:
 
     medViewPropertiesToolBox      *viewPropertiesToolBox;
@@ -48,6 +46,10 @@ public:
 
     QString uuid;
 };
+
+const char* medDiffusionWorkspace::ColorModeValues[]     = { "local", "global", "fa" };
+const char* medDiffusionWorkspace::RenderingModeValues[] = { "lines", "ribbons", "tubes" };
+const char* medDiffusionWorkspace::boolValues[]          = { "false", "true" };
 
 medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(parent), d(new medDiffusionWorkspacePrivate)
 {
@@ -96,12 +98,12 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
     connect(d->diffusionToolBox, SIGNAL(success()),                  this, SLOT(onTBDiffusionSuccess()));
 
 
-    this->addToolBox( d->viewPropertiesToolBox );
-    this->addToolBox( d->diffusionToolBox );
-    this->addToolBox( d->tensorViewToolBox );
-    this->addToolBox( d->shViewToolBox );
-    this->addToolBox( d->fiberViewToolBox );
-    this->addToolBox( d->fiberBundlingToolBox );
+    addToolBox( d->viewPropertiesToolBox );
+    addToolBox( d->diffusionToolBox );
+    addToolBox( d->tensorViewToolBox );
+    addToolBox( d->shViewToolBox );
+    addToolBox( d->fiberViewToolBox );
+    addToolBox( d->fiberBundlingToolBox );
 }
 
 medDiffusionWorkspace::~medDiffusionWorkspace()
@@ -124,23 +126,20 @@ void medDiffusionWorkspace::setupViewContainerStack()
     medViewContainer * diffusionContainer = NULL;
 
     //the stack has been instantiated in constructor
-    if (!this->stackedViewContainers()->count())
-    {
+    if (!stackedViewContainers()->count()) {
         medSingleViewContainer *singleViewContainer = new medSingleViewContainer ();
         connect (singleViewContainer, SIGNAL (viewAdded (dtkAbstractView*)),   this, SLOT (onViewAdded (dtkAbstractView*)));
         connect (singleViewContainer, SIGNAL (viewRemoved (dtkAbstractView*)), this, SLOT (onViewRemoved (dtkAbstractView*)));
 
         //ownership of singleViewContainer is transferred to the stackedWidget.
-        this->stackedViewContainers()->addContainer (identifier(), singleViewContainer);
+        stackedViewContainers()->addContainer (identifier(), singleViewContainer);
 
         diffusionContainer = singleViewContainer;
 
-        this->stackedViewContainers()->lockTabs();
-        this->stackedViewContainers()->hideTabBar();
-    }
-    else
-    {
-        diffusionContainer = this->stackedViewContainers()->container(identifier());
+        stackedViewContainers()->lockTabs();
+        stackedViewContainers()->hideTabBar();
+    } else {
+        diffusionContainer = stackedViewContainers()->container(identifier());
         //TODO: maybe clear views here too?
     }
 
@@ -150,7 +149,7 @@ void medDiffusionWorkspace::setupViewContainerStack()
     foreach(dtkAbstractView *view, diffusionContainer->views())
         d->views << view;
 
-    //this->stackedViewContainers()->setContainer (identifier());
+    //stackedViewContainers()->setContainer (identifier());
 }
 
 
@@ -168,15 +167,12 @@ void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
     view->enableInteractor("v3dViewTensorInteractor");
     view->enableInteractor("v3dViewSHInteractor");
 
-    if (dtkAbstractViewInteractor *interactor = view->interactor("v3dViewFiberInteractor"))
-    {
+    if (dtkAbstractViewInteractor *interactor = view->interactor("v3dViewFiberInteractor")) {
         connect(d->fiberViewToolBox, SIGNAL(fiberRadiusSet(int)), interactor, SLOT(onRadiusSet(int)));
-
         updateFiberInteractorWithToolboxValues(interactor, d->fiberViewToolBox);
     }
 
-    if (dtkAbstractViewInteractor *interactor = view->interactor("v3dViewTensorInteractor"))
-    {
+    if (dtkAbstractViewInteractor *interactor = view->interactor("v3dViewTensorInteractor")) {
         connect(d->tensorViewToolBox, SIGNAL(sampleRateChanged(int)), interactor, SLOT(onSampleRatePropertySet(int)));
         connect(d->tensorViewToolBox, SIGNAL(eigenVectorChanged(int)), interactor, SLOT(onEigenVectorPropertySet(int)));
         connect(d->tensorViewToolBox, SIGNAL(glyphResolutionChanged(int)), interactor, SLOT(onGlyphResolutionPropertySet(int)));
@@ -233,7 +229,7 @@ void medDiffusionWorkspace::onViewAdded (dtkAbstractView *view)
 
         connect(view,SIGNAL(positionChanged(const QVector3D&,bool)),interactor,SLOT(onPositionChanged(const QVector3D&,bool)));
 
-         updateSHInteractorWithToolboxValues(interactor, d->shViewToolBox);
+        updateSHInteractorWithToolboxValues(interactor, d->shViewToolBox);
     }
 }
 
@@ -247,34 +243,34 @@ void medDiffusionWorkspace::updateTensorInteractorWithToolboxValues(dtkAbstractV
 
     interactor->setProperty("GlyphShape", tensorViewToolBox->glyphShape());
 
-    int sampleRate = tensorViewToolBox->sampleRate();
+    const int sampleRate = tensorViewToolBox->sampleRate();
     QMetaObject::invokeMethod( interactor, "onSampleRatePropertySet", Qt::QueuedConnection, Q_ARG( int, sampleRate ) );
 
     const bool isFlipX = tensorViewToolBox->isFlipX();
-    interactor->setProperty("FlipX", isFlipX ? "true" : "false");
+    interactor->setProperty("FlipX",boolValues[isFlipX]);
 
     const bool isFlipY = tensorViewToolBox->isFlipY();
-    interactor->setProperty("FlipY", isFlipY ? "true" : "false");
+    interactor->setProperty("FlipY",boolValues[isFlipY]);
 
     const bool isFlipZ = tensorViewToolBox->isFlipZ();
-    interactor->setProperty("FlipZ", isFlipZ ? "true" : "false");
+    interactor->setProperty("FlipZ",boolValues[isFlipZ]);
 
-    int eigenVector = tensorViewToolBox->eigenVector();
+    const int eigenVector = tensorViewToolBox->eigenVector();
     QMetaObject::invokeMethod( interactor, "onEigenVectorPropertySet", Qt::QueuedConnection, Q_ARG( int, eigenVector ) );
 
-    int glyphResolution = tensorViewToolBox->glyphResolution();
+    const int glyphResolution = tensorViewToolBox->glyphResolution();
     QMetaObject::invokeMethod( interactor, "onGlyphResolutionPropertySet", Qt::QueuedConnection, Q_ARG( int, glyphResolution ) );
 
-    double scale = tensorViewToolBox->scale();
+    const double scale = tensorViewToolBox->scale();
     QMetaObject::invokeMethod( interactor, "onScalingPropertySet", Qt::QueuedConnection, Q_ARG( double, scale ) );
 
-    bool isShowAxial = tensorViewToolBox->isShowAxial();
+    const bool isShowAxial = tensorViewToolBox->isShowAxial();
     QMetaObject::invokeMethod( interactor, "onHideShowAxialPropertySet", Qt::QueuedConnection, Q_ARG( bool, isShowAxial ) );
 
-    bool isShowCoronal = tensorViewToolBox->isShowCoronal();
+    const bool isShowCoronal = tensorViewToolBox->isShowCoronal();
     QMetaObject::invokeMethod( interactor, "onHideShowCoronalPropertySet", Qt::QueuedConnection, Q_ARG( bool, isShowCoronal ) );
 
-    bool isShowSagittal = tensorViewToolBox->isShowSagittal();
+    const bool isShowSagittal = tensorViewToolBox->isShowSagittal();
     QMetaObject::invokeMethod( interactor, "onHideShowSagittalPropertySet", Qt::QueuedConnection, Q_ARG( bool, isShowSagittal ) );
 }
 
@@ -286,31 +282,24 @@ void medDiffusionWorkspace::updateFiberInteractorWithToolboxValues(dtkAbstractVi
     // (we might switch to QVariant instead of strings)
     // TODO refactor this...
 
-    int fiberRadius = d->fiberViewToolBox->fiberRadius();
+    const int fiberRadius = d->fiberViewToolBox->fiberRadius();
     QMetaObject::invokeMethod( interactor, "onRadiusSet", Qt::QueuedConnection, Q_ARG( int, fiberRadius ) );
 
-    int fiberColorMode = d->fiberViewToolBox->fiberColorMode();
+    const int fiberColorMode = d->fiberViewToolBox->fiberColorMode();
+    interactor->setProperty("ColorMode",ColorModeValues[fiberColorMode]);
 
-    if (fiberColorMode==0)
-        interactor->setProperty("ColorMode","local");
-    if (fiberColorMode==1)
-        interactor->setProperty("ColorMode","global");
-    if (fiberColorMode==2)
-        interactor->setProperty("ColorMode","fa");
+    const bool isGPUActivated = d->fiberViewToolBox->isGPUActivated();
+    interactor->setProperty ("GPUMode",boolValues[isGPUActivated]);
 
-
-    bool isGPUActivated = d->fiberViewToolBox->isGPUActivated();
-    interactor->setProperty ("GPUMode", isGPUActivated ? "true" : "false");
-
-    bool isLineModeSelected = d->fiberViewToolBox->isLineModeSelected();
+    const bool isLineModeSelected = d->fiberViewToolBox->isLineModeSelected();
     if (isLineModeSelected)
         interactor->setProperty ("RenderingMode", "lines");
 
-    bool isRibbonModeSelected = d->fiberViewToolBox->isRibbonModeSelected();
+    const bool isRibbonModeSelected = d->fiberViewToolBox->isRibbonModeSelected();
     if (isRibbonModeSelected)
         interactor->setProperty ("RenderingMode", "ribbons");
 
-    bool isTubesModeSelected = d->fiberViewToolBox->isTubesModeSelected();
+    const bool isTubesModeSelected = d->fiberViewToolBox->isTubesModeSelected();
     if (isTubesModeSelected)
         interactor->setProperty ("RenderingMode", "tubes");
 }
@@ -330,16 +319,16 @@ void medDiffusionWorkspace::updateSHInteractorWithToolboxValues(dtkAbstractViewI
     QMetaObject::invokeMethod( interactor, "onSampleRatePropertySet", Qt::QueuedConnection, Q_ARG( int, sampleRate ) );
     
     const bool isFlipX = shViewToolBox->isFlipX();
-    interactor->setProperty("FlipX", isFlipX ? "true" : "false");
+    interactor->setProperty("FlipX",boolValues[isFlipX]);
     
     const bool isFlipY = shViewToolBox->isFlipY();
-    interactor->setProperty("FlipY", isFlipY ? "true" : "false");
+    interactor->setProperty("FlipY",boolValues[isFlipY]);
     
     const bool isFlipZ = shViewToolBox->isFlipZ();
-    interactor->setProperty("FlipZ", isFlipZ ? "true" : "false");
+    interactor->setProperty("FlipZ",boolValues[isFlipZ]);
     
     const bool isEnhanced = shViewToolBox->isEnhanced();
-    interactor->setProperty("Normalization",isEnhanced ? "true" : "false");
+    interactor->setProperty("Normalization",boolValues[isEnhanced]);
 
     const int glyphResolution = shViewToolBox->glyphResolution();
     QMetaObject::invokeMethod( interactor, "onGlyphResolutionPropertySet", Qt::QueuedConnection, Q_ARG( int, glyphResolution ) );
@@ -372,70 +361,47 @@ void medDiffusionWorkspace::onViewRemoved (dtkAbstractView *view)
     d->views.removeOne (view);
 }
 
-void medDiffusionWorkspace::onFiberColorModeChanged(int index)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
-            if (index==0)
-                interactor->setProperty("ColorMode","local");
-            if (index==1)
-                interactor->setProperty("ColorMode","global");
-            if (index==2)
-                interactor->setProperty("ColorMode","fa");
+void medDiffusionWorkspace::onBoolValueChanged(const bool b,const char* b_name,const char* interactor) {
+    medDiffusionWorkspace::onStringValueChanged(QString(boolValues[b]),b_name,interactor);
+}
 
+void medDiffusionWorkspace::onBoolValueChanged(const bool b,const char* b_name,const char* v_name,const char* interactor_name) {
+    foreach (dtkAbstractView* view,d->views) {
+        if (b)
+            if (dtkAbstractViewInteractor* interactor = view->interactor(interactor_name)) {
+                interactor->setProperty(b_name,v_name);
+                view->update();
+            }
+    }
+}
+
+void medDiffusionWorkspace::onStringValueChanged(const QString& s,const char* s_name,const char* interactor_name) {
+    foreach (dtkAbstractView *view, d->views) {
+        if (dtkAbstractViewInteractor* interactor = view->interactor(interactor_name)) {
+            interactor->setProperty(s_name,s);
             view->update();
         }
     }
 }
 
-void medDiffusionWorkspace::onGPUActivated (bool value)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
-            if (value)
-                interactor->setProperty ("GPUMode", "true");
-            else
-                interactor->setProperty ("GPUMode", "false");
-
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onFiberColorModeChanged(const int index) {
+    onStringValueChanged(QString(ColorModeValues[index]),"ColorMode","v3dViewFiberInteractor");
 }
 
-void medDiffusionWorkspace::onLineModeSelected (bool value)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (value)
-            if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
-            interactor->setProperty ("RenderingMode", "lines");
-
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onGPUActivated(const bool value) {
+    onBoolValueChanged(value,"GPUMode","v3dViewFiberInteractor");
 }
 
-void medDiffusionWorkspace::onRibbonModeSelected (bool value)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (value)
-            if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
-            interactor->setProperty ("RenderingMode", "ribbons");
-
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onLineModeSelected(const bool value) {
+    onBoolValueChanged(value,"RenderingMode","lines","v3dViewFiberInteractor");
 }
 
-void medDiffusionWorkspace::onTubeModeSelected (bool value)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (value)
-            if(dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewFiberInteractor")) {
-            interactor->setProperty ("RenderingMode", "tubes");
+void medDiffusionWorkspace::onRibbonModeSelected (const bool value) {
+    onBoolValueChanged(value,"RenderingMode","ribbons","v3dViewFiberInteractor");
+}
 
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onTubeModeSelected (const bool value) {
+    onBoolValueChanged(value,"RenderingMode","tubes","v3dViewFiberInteractor");
 }
 
 void medDiffusionWorkspace::onTBDiffusionSuccess()
@@ -455,146 +421,46 @@ void medDiffusionWorkspace::onTBDiffusionSuccess()
 
 // tensor interaction related methods
 
-void medDiffusionWorkspace::onGlyphShapeChanged(const QString& glyphShape)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
-            interactor->setProperty("GlyphShape", glyphShape);
-
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onGlyphShapeChanged(const QString& glyphShape) {
+    onStringValueChanged(glyphShape,"GlyphShape","v3dViewTensorInteractor");
 }
 
-void medDiffusionWorkspace::onFlipXChanged(const bool flipX)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
-
-            if (flipX)
-                interactor->setProperty("FlipX", "true");
-            else
-                interactor->setProperty("FlipX", "false");
-
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onFlipXChanged(const bool flipX) {
+    onBoolValueChanged(flipX,"FlipX","v3dViewTensorInteractor");
 }
 
-void medDiffusionWorkspace::onFlipYChanged(const bool flipY)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
-
-            if (flipY)
-                interactor->setProperty("FlipY", "true");
-            else
-                interactor->setProperty("FlipY", "false");
-
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onFlipYChanged(const bool flipY) {
+    onBoolValueChanged(flipY,"FlipY","v3dViewTensorInteractor");
 }
 
-void medDiffusionWorkspace::onFlipZChanged(const bool flipZ)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewTensorInteractor")) {
-
-            if (flipZ)
-                interactor->setProperty("FlipZ", "true");
-            else
-                interactor->setProperty("FlipZ", "false");
-
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onFlipZChanged(const bool flipZ) {
+    onBoolValueChanged(flipZ,"FlipZ","v3dViewTensorInteractor");
 }
-
-// end of tensor interaction related methods
 
 // SH interaction related methods
 
-void medDiffusionWorkspace::onTesselationTypeChanged(const QString& tesselationType)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
-            interactor->setProperty("TesselationType", tesselationType);
-            
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onTesselationTypeChanged(const QString& tesselationType) {
+    onStringValueChanged(tesselationType,"TesselationType","v3dViewSHInteractor");
 }
 
-void medDiffusionWorkspace::onTesselationBasisChanged(const QString& tesselationBasis)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
-            interactor->setProperty("TesselationBasis", tesselationBasis);
-            
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onTesselationBasisChanged(const QString& tesselationBasis) {
+    onStringValueChanged(tesselationBasis,"TesselationBasis","v3dViewSHInteractor");
 }
 
-void medDiffusionWorkspace::onSHFlipXChanged(const bool flipX)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
-            
-            if (flipX)
-                interactor->setProperty("FlipX", "true");
-            else
-                interactor->setProperty("FlipX", "false");
-            
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onSHFlipXChanged(const bool flipX) {
+    onBoolValueChanged(flipX,"FlipX","v3dViewSHInteractor");
 }
 
-void medDiffusionWorkspace::onSHFlipYChanged(const bool flipY)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
-            
-            if (flipY)
-                interactor->setProperty("FlipY", "true");
-            else
-                interactor->setProperty("FlipY", "false");
-            
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onSHFlipYChanged(const bool flipY) {
+    onBoolValueChanged(flipY,"FlipY","v3dViewSHInteractor");
 }
 
-void medDiffusionWorkspace::onSHFlipZChanged(const bool flipZ)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
-            
-            if (flipZ)
-                interactor->setProperty("FlipZ", "true");
-            else
-                interactor->setProperty("FlipZ", "false");
-            
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onSHFlipZChanged(const bool flipZ) {
+    onBoolValueChanged(flipZ,"FlipZ","v3dViewSHInteractor");
 }
 
-void medDiffusionWorkspace::onSHNormalize(bool MaxThesis)
-{
-    foreach (dtkAbstractView *view, d->views) {
-        if (dtkAbstractViewInteractor *interactor = view->interactor ("v3dViewSHInteractor")) {
-            
-            if (MaxThesis)
-                interactor->setProperty("Normalization", "true");
-            else
-                interactor->setProperty("Normalization", "false");
-            
-            view->update();
-        }
-    }
+void medDiffusionWorkspace::onSHNormalize(const bool normalize) {
+    onBoolValueChanged(normalize,"Normalization","v3dViewSHInteractor");
 }
 
 // end of SH interaction related methods
@@ -602,8 +468,7 @@ void medDiffusionWorkspace::onSHNormalize(bool MaxThesis)
 void medDiffusionWorkspace::refreshInteractors ()
 {
     foreach (dtkAbstractView *view, d->views) {
-        if(view->interactor ("v3dViewFiberInteractor"))
-        {
+        if(view->interactor ("v3dViewFiberInteractor")) {
             // interactor->update(); // TO BE IMPLEMENTED
             view->update();
         }
@@ -612,9 +477,9 @@ void medDiffusionWorkspace::refreshInteractors ()
 
 void medDiffusionWorkspace::onAddTabClicked()
 {
-    QString name = this->identifier();
-    QString realName = this->addSingleContainer(name);
-    this->stackedViewContainers()->setContainer(realName);
+    QString name = identifier();
+    QString realName = addSingleContainer(name);
+    stackedViewContainers()->setContainer(realName);
 }
 
 bool medDiffusionWorkspace::isUsable()
