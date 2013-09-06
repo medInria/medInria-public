@@ -43,6 +43,7 @@
 #include <vtkMetaDataSet.h>
 #include <vtkMetaDataSetSequence.h>
 #include <vtkDataArrayCollection.h>
+#include <medParameter.h>
 
 #include <vector>
 
@@ -131,6 +132,33 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         d->lutList.append(LutPair(NULL, "Default"));
         d->attributeList.append(NULL);
         updatePipeline(d->dataList.size()-1);
+
+        medListParameter *attributesParam = new medListParameter("Attributes", data);
+        attributesParam->setValues(QStringList("Solid"));
+
+        medListParameter *LUTParam = new medListParameter("LUT", data);
+        LUTParam->setValues(QStringList("Default"));
+
+        medBooleanParameter *edgeVisibleParam = new medBooleanParameter("Edge Visible", data);
+
+        medListParameter *colorParam = new medListParameter("Color", data);
+        colorParam->setValues(QStringList("Default"));
+
+        medListParameter *renderingParam = new medListParameter("Rendering", data);
+        QStringList renderings = QStringList() << "WireFrame" << "Surface" << "Points";
+        renderingParam->setValues(renderings);
+
+        connect(attributesParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setAttribute(dtkAbstractData*,QString)));
+        connect(LUTParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setLut(dtkAbstractData*,QString)));
+        connect(edgeVisibleParam, SIGNAL(valueChanged(dtkAbstractData*,bool)), this, SLOT(setEdgeVisibility(dtkAbstractData*,bool)));
+        connect(colorParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setColor(dtkAbstractData*,QColor)));
+        connect(renderingParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setRenderingType(dtkAbstractData*,QString)));
+
+        parameters.insert(data, attributesParam);
+        parameters.insert(data, LUTParam);
+        parameters.insert(data, edgeVisibleParam);
+        parameters.insert(data, colorParam);
+        parameters.insert(data, renderingParam);
     }
 }
 
@@ -522,6 +550,82 @@ void v3dViewMeshInteractor::setLut(int meshLayer, vtkLookupTable * lut)
     mapper2d->UseLookupTableScalarRangeOn();
     mapper3d->SetLookupTable(lut);
     mapper3d->UseLookupTableScalarRangeOn();
+}
+
+
+void v3dViewMeshInteractor::setEdgeVisibility(dtkAbstractData * data, bool visible)
+{
+    setEdgeVisibility(getLayer(data), visible);
+}
+
+bool v3dViewMeshInteractor::edgeVisibility(dtkAbstractData * data) const
+{
+    return edgeVisibility(getLayer(data));
+}
+
+
+void v3dViewMeshInteractor::setColor(dtkAbstractData * data, QColor color)
+{
+    setColor(getLayer(data), color);
+}
+
+QColor v3dViewMeshInteractor::color(dtkAbstractData * data) const
+{
+    return color(getLayer(data));
+}
+
+
+void v3dViewMeshInteractor::setRenderingType(dtkAbstractData * data, const QString & type)
+{
+    setRenderingType(getLayer(data), type);
+}
+
+QString v3dViewMeshInteractor::renderingType(dtkAbstractData * data) const
+{
+    return renderingType(getLayer(data));
+}
+
+
+void v3dViewMeshInteractor::setAttribute(dtkAbstractData * data, const QString & attribute)
+{
+    setAttribute(getLayer(data), attribute);
+}
+
+QString v3dViewMeshInteractor::attribute(dtkAbstractData * data) const
+{
+    return attribute(getLayer(data));
+}
+
+
+QStringList v3dViewMeshInteractor::getAllAttributes(dtkAbstractData * data) const
+{
+    return getAllAttributes(getLayer(data));
+}
+
+
+void v3dViewMeshInteractor::setLut(dtkAbstractData * data, const QString & lutName)
+{
+    setLut(getLayer(data), lutName);
+}
+
+QString v3dViewMeshInteractor::lut(dtkAbstractData * data) const
+{
+    return lut(getLayer(data));
+}
+
+int v3dViewMeshInteractor::getLayer(dtkAbstractData * data) const
+{
+    if ( ! data->identifier().startsWith("vtkDataMesh"))
+        return -1;
+
+    vtkMetaDataSet * dataset = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
+    for(int i = 0; i < d->dataList.size(); i++)
+    {
+        if (dataset == d->dataList.at(i))
+            return i;
+    }
+
+    return -1;
 }
 
 // /////////////////////////////////////////////////////////////////

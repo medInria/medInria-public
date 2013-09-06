@@ -7,6 +7,7 @@ class QSlider;
 class QLabel;
 class medAbstractData;
 class medAbstractVtkViewInteractor;
+class QListWidget;
 
 class medLayerItemWidget : public QWidget
 {

@@ -46,6 +46,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medTabbedViewContainers.h
   medWorkspace.h
   medImageFileLoader.h
+  medParameter.h
 
   # db related items
   database/medDatabaseSearchPanel.h
@@ -140,6 +141,7 @@ set(${PROJECT_NAME}_SOURCES
   medPacsSelector.cpp
   medViewPool.cpp
   medImageFileLoader.cpp
+  medParameter.cpp
 
   # commonWidgets:
   commonWidgets/medDropSite.cpp

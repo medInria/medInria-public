@@ -23,6 +23,7 @@ public:
 public slots:
     void updateLayerList();
     void resetList();
+    void updateParameters(int layer);
 
 public:
     // --------------- Temporary view --------------------------
@@ -31,7 +32,10 @@ public:
 
 private:
     QListWidget * layersList;
+    QVBoxLayout * interactorsParamsLayout;
     medVtkView * vtkView;
+    QList<QWidget*> paramWidgetList;
+    int currentLayer;
 };
 
 #endif // MEDVIEWLAYERSTOOLBOX_H
