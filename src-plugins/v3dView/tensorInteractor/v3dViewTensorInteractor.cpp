@@ -27,6 +27,7 @@
 #include <itkITKTensorsToVTKTensorsFilter.h>
 #include <itkImage.h>
 #include <itkTensor.h>
+#include <medParameter.h>
 
 typedef itk::Tensor<float, 3>    TensorTypeFloat;
 typedef itk::Image<TensorTypeFloat, 3> TensorImageTypeFloat;
@@ -67,6 +68,7 @@ v3dViewTensorInteractor::v3dViewTensorInteractor(): medAbstractVtkViewInteractor
     // set default properties
     d->manager->SetGlyphShapeToLine();
 }
+
 
 v3dViewTensorInteractor::~v3dViewTensorInteractor()
 {

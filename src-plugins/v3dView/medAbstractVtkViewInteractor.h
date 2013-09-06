@@ -19,6 +19,7 @@
 #include <medVtkView.h>
 
 #include <medAbstractViewInteractor.h>
+#include <medParameter.h>
 
 class V3DVIEWPLUGIN_EXPORT medAbstractVtkViewInteractor: public medAbstractViewInteractor
 {
@@ -32,6 +33,12 @@ public:
     {
         return QStringList () << v3dView::s_identifier() << medVtkView::s_identifier();
     }
+
+    virtual QList<medAbstractParameter *> getParameters(dtkAbstractData *data) const{return parameters.values(data);}
+
+protected:
+    QMultiHash<dtkAbstractData*, medAbstractParameter*> parameters;
+
 
 public slots:
     virtual void setOpacity(medAbstractData * data, double opacity) = 0;

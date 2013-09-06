@@ -8,6 +8,7 @@
 #include <medVtkView.h>
 #include <medAbstractData.h>
 #include <medAbstractVtkViewInteractor.h>
+#include <medParameter.h>
 
 #include <QPushButton>
 
@@ -20,7 +21,18 @@ medViewLayersToolBox::medViewLayersToolBox(QWidget *parent)
     layersList = new QListWidget(this);
     layersList->setFocusPolicy(Qt::NoFocus);
 
+    connect(layersList, SIGNAL(currentRowChanged(int)), this, SLOT(updateParameters(int)));
+
+    QWidget *interactorsParamsWidget = new QWidget(this);
+    interactorsParamsLayout = new QVBoxLayout(interactorsParamsWidget);
+
     this->addWidget(layersList);
+    this->addWidget(new QSplitter);
+    this->addWidget(interactorsParamsWidget);
+
+    paramWidgetList = QList<QWidget*>();
+
+    currentLayer = -1;
 }
 
 
@@ -91,4 +103,42 @@ void medViewLayersToolBox::update(dtkAbstractView * view)
         connect(vtkView, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(updateLayerList()));
         connect(vtkView, SIGNAL(dataRemoved(dtkAbstractData*, int)), this, SLOT(updateLayerList()));
     }
+}
+
+
+void medViewLayersToolBox::updateParameters(int layer)
+{
+   /* if(layer == currentLayer)
+        return;*/
+
+    foreach(QWidget *widget, paramWidgetList)
+    {
+        qDebug() << "clear";
+        widget->close();
+    }
+    paramWidgetList.clear();
+
+    medAbstractData * layerData = qobject_cast<medAbstractData*>(vtkView->layerData(layer));
+
+    if(!layerData)
+        return;
+
+    foreach(dtkAbstractViewInteractor* i, vtkView->interactors())
+    {
+        medAbstractVtkViewInteractor * interactor = qobject_cast<medAbstractVtkViewInteractor*>(i);
+        if ( interactor && interactor->isDataTypeHandled(layerData->identifier()))
+        {
+            QList<medAbstractParameter*> paramList = interactor->getParameters(vtkView->layerData(layer));
+
+            foreach(medAbstractParameter *param, paramList)
+            {
+                QWidget *paramWidget = param->getWidget();
+                paramWidget->show();
+                paramWidgetList.append(paramWidget);
+                interactorsParamsLayout->addWidget(paramWidget);
+            }
+        }
+    }
+
+    currentLayer = layer;
 }

@@ -11,6 +11,7 @@
 #include <medAbstractData.h>
 #include <medAbstractVtkViewInteractor.h>
 
+
 medLayerItemWidget::medLayerItemWidget(QString name,
                                        QString thumbnailPath,
                                        medAbstractData * dataItem,
@@ -18,6 +19,7 @@ medLayerItemWidget::medLayerItemWidget(QString name,
                                        QWidget * parent)
     : QWidget(parent)
 {
+
     QHBoxLayout* layout = new QHBoxLayout(this);
     thumbnailButton = new QPushButton(this);
     QIcon thumbnailIcon;
