@@ -43,7 +43,7 @@ QList<QString> medAbstractDataSourceFactory::dataSourcePlugins(void)
     return d->dataSourceCreators.keys();
 }
 
-medAbstractDataSource *medAbstractDataSourceFactory::create(QString type,QWidget * parent)
+medAbstractDataSource *medAbstractDataSourceFactory::create(QString type, QObject *parent)
 {
     if(!d->dataSourceCreators.contains(type))
         return NULL;

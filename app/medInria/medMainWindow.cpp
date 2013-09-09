@@ -15,6 +15,7 @@
 #include "medMainWindow.h"
 #include "medWorkspaceArea.h"
 #include "medHomepageArea.h"
+#include "medDataSourceManager.h"
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -47,7 +48,10 @@
 #include <medDatabaseSettingsWidget.h>
 #include <medInteractionSettingsWidget.h>
 #include <medSettingsEditor.h>
-#include <medEmptyDbWarning.h>
+#include <medPacsWidget.h>
+#include <medAbstractDataSourceFactory.h>
+
+
 
 #include "medSeedPointAnnotationData.h"
 
@@ -56,8 +60,14 @@
 #include "medDiffusionWorkspace.h"
 #include "medFilteringWorkspace.h"
 #include "medSegmentationWorkspace.h"
-
+#include "medEmptyDbWarning.h"
 #include "medSaveModifiedDialog.h"
+#include "medFileSystemDataSource.h"
+#include "medDatabaseDataSource.h"
+#include "medPacsDataSource.h"
+
+
+
 
 #include <QtGui>
 
@@ -110,7 +120,6 @@ public:
     QToolButton*                quitButton;
     QToolButton*              fullscreenButton;
     QList<QString>            importUuids;
-
     medQuickAccessMenu * quickAccessWidget;
     bool quickAccessVisible;
     bool controlPressed;
@@ -159,13 +168,10 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->settingsEditor = NULL;
 
     //  Browser area.
-
     d->browserArea = new medBrowserArea(this);
     d->browserArea->setObjectName("Browser");
-    connect(d->browserArea,SIGNAL(open(const QString&)),this,SLOT(open(const QString&)));
-    connect(d->browserArea,SIGNAL(load(const QString&)),this,SLOT(load(const QString&)));
-    connect(d->browserArea,SIGNAL(open(const medDataIndex&)),this,SLOT(open(const medDataIndex&)));
-
+   
+    
     //  Workspace area.
 
     d->workspaceArea = new medWorkspaceArea ( this );
@@ -182,9 +188,10 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->stack->addWidget ( d->homepageArea );
     d->stack->addWidget ( d->browserArea );
     d->stack->addWidget ( d->workspaceArea );
-
-    connect(d->browserArea, SIGNAL(openRequested(const medDataIndex&, int)), this, SLOT(open(const medDataIndex&, int)));
     
+    medDataManager::instance();
+
+            
     //  Setup quick access menu
 
     d->quickAccessButton = new medQuickAccessPushButton ( this );
@@ -327,6 +334,19 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QObject::connect(medMessageController::instance(), SIGNAL(removeMessage(medMessage*)), d->statusBar, SLOT(removeMessage(medMessage*)));
 
     d->workspaceArea->setupWorkspace ( "Visualization" );
+    
+    medDataSourceManager::instance()->ceateDataSource();
+    
+    connect(medDataSourceManager::instance(), SIGNAL(open(QString)), 
+            this, SLOT(open(QString)));
+    connect(medDataSourceManager::instance(), SIGNAL(load(QString)), 
+            this, SLOT(load(QString)));
+    connect(medDataSourceManager::instance(), SIGNAL(open(const medDataIndex&)), 
+            this, SLOT(open(const medDataIndex&)));
+    
+    connect(medDataManager::instance(), SIGNAL(openRequested(const medDataIndex &, int)), 
+            this, SLOT(open(const medDataIndex&, int)));
+
 
     connect ( qApp, SIGNAL ( aboutToQuit() ), this, SLOT ( close() ) );
 }
@@ -334,7 +354,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 medMainWindow::~medMainWindow()
 {
     delete d;
-
     d = NULL;
 }
 
@@ -580,7 +599,6 @@ void medMainWindow::switchToBrowserArea()
         this->hideShortcutAccess();
 
     d->browserArea->setup ( this->statusBar() );
-    d->workspaceArea->setdw ( this->statusBar() );
 
     d->screenshotButton->setEnabled(false);
 
@@ -596,7 +614,6 @@ void medMainWindow::switchToWorkspaceArea()
         this->hideShortcutAccess();
 
     d->browserArea->setdw ( this->statusBar() );
-    d->workspaceArea->setup ( this->statusBar() );
 
     d->screenshotButton->setEnabled(true);
 

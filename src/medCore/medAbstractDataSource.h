@@ -33,14 +33,15 @@ class MEDCORE_EXPORT medAbstractDataSource : public QObject
     Q_OBJECT
 
 public:
-    medAbstractDataSource(QWidget *parent = 0);
+    medAbstractDataSource(QObject *parent = 0);
     ~medAbstractDataSource();
 
     /**
     * Returns the main view widget
     * This widget is used to navigate within the data, e.g. a qTreeWidget
     */
-    virtual QWidget *mainViewWidget() = 0;
+    virtual QWidget *largeViewWidget() = 0;
+    virtual QWidget *compactViewWidget() = 0;
 
     /**
     * Returns the source selector widget

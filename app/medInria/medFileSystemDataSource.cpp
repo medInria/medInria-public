@@ -54,10 +54,12 @@ medFileSystemDataSource::medFileSystemDataSource(QWidget* parent): medAbstractDa
     d->infoText->setVisible(false);
     d->infoText->setTextFormat(Qt::RichText);
 
+
     d->actionsToolBox = new medActionsToolBox(parent, true);
     d->toolBoxes.push_back(d->actionsToolBox);
 
     d->side = new dtkFinderSideView;
+
 
     QAction *importAction = new QAction(tr("Import"), this);
     importAction->setIconVisibleInMenu(true);

@@ -40,9 +40,9 @@ public:
 
 };
 
-medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
+medDatabaseDataSource::medDatabaseDataSource( QObject* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
 {
-    d->databaseWidget = new QWidget(parent);
+    d->databaseWidget = new QWidget();
 
     d->model = new medDatabaseModel (this);
     d->proxy = new medDatabaseProxyModel(this);
@@ -59,10 +59,10 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent /*= 0*/ ): medAbst
     database_layout->addWidget(d->view);
     database_layout->addWidget(d->preview);
 
-    d->actionsToolBox = new medActionsToolBox(parent, false);
+    d->actionsToolBox = new medActionsToolBox(0, false);
     d->toolBoxes.push_back(d->actionsToolBox);
 
-    d->searchPanel = new medDatabaseSearchPanel(parent);
+    d->searchPanel = new medDatabaseSearchPanel();
     d->searchPanel->setColumnNames(d->model->columnNames());
     d->toolBoxes.push_back(d->searchPanel);
 
@@ -93,9 +93,14 @@ medDatabaseDataSource::~medDatabaseDataSource()
     d = NULL;
 }
 
-QWidget* medDatabaseDataSource::mainViewWidget()
+QWidget* medDatabaseDataSource::largeViewWidget()
 {
     return d->databaseWidget;
+}
+
+QWidget* medDatabaseDataSource::compactViewWidget()
+{
+    return NULL;
 }
 
 QWidget* medDatabaseDataSource::sourceSelectorWidget()
