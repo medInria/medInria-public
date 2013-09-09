@@ -505,21 +505,25 @@ void vtkImageView3D::SetInput(vtkImageData* image, vtkMatrix4x4 *matrix, int lay
     {
       this->RemoveAllLayers();
     }
-    this->Superclass::SetInput (image, matrix, layer);
-    this->GetImage3DDisplayForLayer(0)->SetInput(image);
-//    this->GetWindowLevel(0)->SetInput(image);
-    //in order to get the right range, update the image first.
-    image->Update();
-    double *range = image->GetScalarRange();
-    this->SetColorRange(range,0);
-    this->VolumeProperty->SetShade(0, 1);
-    this->VolumeProperty->SetComponentWeight(0, 1.0);
-    vtkColorTransferFunction *rgb   = this->GetDefaultColorTransferFunction();
-    vtkPiecewiseFunction     *alpha = this->GetDefaultOpacityTransferFunction();
 
-    this->SetTransferFunctions (rgb, alpha, 0);
-    rgb->Delete();
-    alpha->Delete();
+    if(image)
+    {
+        this->Superclass::SetInput (image, matrix, layer);
+        this->GetImage3DDisplayForLayer(0)->SetInput(image);
+        //this->GetWindowLevel(0)->SetInput(image);
+        //in order to get the right range, update the image first.
+        image->Update();
+        double *range = image->GetScalarRange();
+        this->SetColorRange(range,0);
+        this->VolumeProperty->SetShade(0, 1);
+        this->VolumeProperty->SetComponentWeight(0, 1.0);
+        vtkColorTransferFunction *rgb   = this->GetDefaultColorTransferFunction();
+        vtkPiecewiseFunction     *alpha = this->GetDefaultOpacityTransferFunction();
+
+        this->SetTransferFunctions (rgb, alpha, 0);
+        rgb->Delete();
+        alpha->Delete();
+    }
   }
 
   if( !image )

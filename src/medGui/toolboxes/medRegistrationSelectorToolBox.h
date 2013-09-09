@@ -60,8 +60,8 @@ public slots:
     void onMovingImageDropped(const medDataIndex& index);
     void onFixedImageDropped(const medDataIndex& index);
 
-//    void onBlendModeSet(bool value);
-//    void onCheckerboardModeSet(bool value);
+    void onViewRemoved(dtkAbstractView*);
+    void closeCompareView(int);
 
     void onToolBoxChosen(int index);
     void clear();
