@@ -29,6 +29,7 @@ class medToolBoxTab;
 class medDatabaseDataSource;
 class medFileSystemDataSource;
 class medAbstractDataSource;
+class QTabWidget;
 
 
 class medWorkspaceAreaPrivate
@@ -36,10 +37,7 @@ class medWorkspaceAreaPrivate
 public:
 
     medToolBoxContainer *toolBoxContainer;
-    
-    medToolBoxBody *navigatorBody;
-    medToolBoxTab  *navigatorTab;
-    
+    QTabWidget *navigatorContainer;    
     QWidget *viewContainer;  
     
     medDatabaseDataSource *dbSource;

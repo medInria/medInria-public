@@ -54,6 +54,7 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
         else if (dynamic_cast<QAbstractItemModel *>(m_view->model()))
             item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
+        // items that failed to open will have a pinkish background
         if(item)
         {               
             if(index.column()>0)

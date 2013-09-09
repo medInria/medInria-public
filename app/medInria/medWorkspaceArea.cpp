@@ -54,8 +54,8 @@
 #include <medToolBoxBody.h>
 #include <medToolBoxTab.h>
 #include <medAbstractDataSource.h>
-#include <medDataSourceManager.h>
 
+#include "medDataSourceManager.h"
 
 #include <QtGui>
 #include <QPropertyAnimation>
@@ -84,7 +84,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->toolBoxContainer = new medToolBoxContainer(this);
     d->toolBoxContainer->setOrientation(Qt::Vertical);
     d->toolBoxContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-    d->toolBoxContainer->setMinimumWidth(320);
+    d->toolBoxContainer->setMinimumWidth(340);
 
     // Setting up view container
     d->viewContainer = new QWidget(this);
@@ -94,19 +94,16 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
 
     // Setting up navigator 
-    d->navigatorBody = new medToolBoxBody(this);
-    d->navigatorBody->setObjectName("mednavigatorBody");
-    d->navigatorBody->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    d->navigatorBody->setMinimumWidth(320);
-    
-    d->navigatorTab = new medToolBoxTab (this);
-    d->navigatorBody->setTabWidget(d->navigatorTab);    
+    d->navigatorContainer = new QTabWidget(this);
+    d->navigatorContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    d->navigatorContainer->setMinimumWidth(225);    
 
     //Set up viewer layout
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(d->splitter);
     setLayout(layout);
-    d->splitter->addWidget(d->navigatorBody);
+    layout->setContentsMargins(1, 0, 1, 0);
+    d->splitter->addWidget(d->navigatorContainer);
     d->splitter->addWidget(d->viewContainer);
     d->splitter->addWidget(d->toolBoxContainer);
 
@@ -506,7 +503,7 @@ void medWorkspaceArea::setupWorkspace(QString name)
     }
 
     //setup database visibility
-    d->navigatorBody->setVisible( workspace->isDatabaseVisible() );
+    d->navigatorContainer->setVisible( workspace->isDatabaseVisible() );
 
     // add toolboxes
 
@@ -546,9 +543,9 @@ void medWorkspaceArea::switchToLayout (medWorkspace::LayoutType layout)
            {
              //width must be fixed or the navigator doesn't grow
              //back when changing orientation again
-             d->navigatorBody->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-             d->navigatorBody->setFixedHeight(186);
-             d->navigatorBody->setFixedWidth(QWIDGETSIZE_MAX);
+             d->navigatorContainer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+             d->navigatorContainer->setFixedHeight(186);
+             d->navigatorContainer->setFixedWidth(QWIDGETSIZE_MAX);
 
          d->toolBoxContainer->setOrientation(Qt::Horizontal);
              d->toolBoxContainer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -563,14 +560,12 @@ void medWorkspaceArea::switchToLayout (medWorkspace::LayoutType layout)
         default:
            {
 
-             d->navigatorBody->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-             d->navigatorBody->setFixedWidth(186);
-             d->navigatorBody->setFixedHeight(QWIDGETSIZE_MAX);
+             d->navigatorContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+             d->navigatorContainer->setFixedWidth(186);
+             d->navigatorContainer->setFixedHeight(QWIDGETSIZE_MAX);
 
          d->toolBoxContainer->setOrientation(Qt::Vertical);
              d->toolBoxContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-             d->toolBoxContainer->setMinimumWidth(320);
-             d->toolBoxContainer->setMinimumHeight (QWIDGETSIZE_MAX);
              d->restoreSplitterSize(Qt::Horizontal);
            }
 
@@ -580,7 +575,7 @@ void medWorkspaceArea::switchToLayout (medWorkspace::LayoutType layout)
     switch (layout){
         case medWorkspace::TopDbBottomTb:
         case medWorkspace::LeftDbRightTb:
-            d->splitter->insertWidget(0,d->navigatorBody);
+            d->splitter->insertWidget(0,d->navigatorContainer);
             d->splitter->insertWidget(2,d->toolBoxContainer);
         break;
 
@@ -588,7 +583,7 @@ void medWorkspaceArea::switchToLayout (medWorkspace::LayoutType layout)
         case medWorkspace::LeftTbRightDb:
         default:
             d->splitter->insertWidget(0,d->toolBoxContainer);
-            d->splitter->insertWidget(2,d->navigatorBody);
+            d->splitter->insertWidget(2,d->navigatorContainer);
         break;
     }
 
@@ -621,10 +616,10 @@ void medWorkspaceAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
         {
             //viewcontainer size
             int containerSize = QWIDGETSIZE_MAX -
-                navigatorBody->minimumWidth()-
+                navigatorContainer->minimumWidth()-
                 toolBoxContainer->minimumWidth();
             QList<int> sizes;
-            sizes.append(navigatorBody->minimumWidth());
+            sizes.append(navigatorContainer->minimumWidth());
             sizes.append(containerSize);
             sizes.append(toolBoxContainer->minimumWidth());
             splitter->setSizes(sizes);
@@ -639,10 +634,10 @@ void medWorkspaceAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
         {
             //viewcontainer size
             int containerSize = QWIDGETSIZE_MAX -
-                navigatorBody->minimumHeight() -
+                navigatorContainer->minimumHeight() -
                 toolBoxContainer->minimumHeight();
             QList<int> sizes;
-            sizes.append(navigatorBody->minimumHeight());
+            sizes.append(navigatorContainer->minimumHeight());
             sizes.append(containerSize);
             sizes.append(toolBoxContainer->minimumHeight());
             splitter->setSizes(sizes);
@@ -658,5 +653,5 @@ void medWorkspaceArea::addDataSource( medAbstractDataSource* dataSource )
     if(!dataSource->compactViewWidget())    
         return
     d->dataSources.push_back(dataSource);
-    d->navigatorTab->addTab(dataSource->compactViewWidget(), dataSource->tabName());
+    d->navigatorContainer->addTab(dataSource->compactViewWidget(), dataSource->tabName());
 }

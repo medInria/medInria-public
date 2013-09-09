@@ -235,6 +235,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->quitButton->setObjectName("quitButton");
     
     connect(d->quitButton, SIGNAL( pressed()), this, SLOT (close()));
+    d->quitButton->setToolTip(tr("Close medInria"));
 
     //  Setup Fullscreen Button
 

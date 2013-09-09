@@ -92,10 +92,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(medDatabaseController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),this,SLOT(displayJobItem(medJobItem *, QString)));
     connect(medDatabaseNonPersistentController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),this,SLOT(displayJobItem(medJobItem *, QString)));
     
-
-    connect(medDataSourceManager::instance(), SIGNAL (reported(medAbstractDataSource *)),
-            this, SLOT (addDataSource(medAbstractDataSource*)));
-
     connect(medDataSourceManager::instance(), SIGNAL(registered(medAbstractDataSource*)),
             this, SLOT(addDataSource(medAbstractDataSource*)));
 

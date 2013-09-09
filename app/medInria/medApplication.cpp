@@ -20,7 +20,8 @@
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 #include <medPluginManager.h>
-#include <medMainWindow.h>
+#include "medMainWindow.h"
+#include "medStyleSheetParser.h"
 
 
 class medApplicationPrivate
