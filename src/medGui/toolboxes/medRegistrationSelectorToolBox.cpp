@@ -39,6 +39,7 @@
 
 #include <QtGui>
 
+
 class medRegistrationSelectorToolBoxPrivate
 {
 public:
@@ -138,7 +139,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
 
     if (d->undoRedoToolBox)
         addWidget(d->undoRedoToolBox);
-    addWidget(d->toolboxes);
+    
     addWidget(layoutSection);
 
 

@@ -127,13 +127,18 @@ QString qtdcmDataSource::description() const
     return "Browse DICOM workstation";
 }
 
-QWidget *qtdcmDataSource::mainViewWidget()
+QWidget *qtdcmDataSource::largeViewWidget()
 {
     if ( d->mainWidget )
         return d->mainWidget;
 
     initWidgets();
     return d->mainWidget;
+}
+
+QWidget *qtdcmDataSource::compactViewWidget()
+{
+    return NULL;
 }
 
 QWidget *qtdcmDataSource::sourceSelectorWidget()
@@ -195,7 +200,7 @@ void qtdcmDataSource::onSaveLocalSettings()
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-medAbstractDataSource *createQtdcmDataSource ( QWidget * )
+medAbstractDataSource *createQtdcmDataSource ( QObject* )
 {
     return new qtdcmDataSource;
 }

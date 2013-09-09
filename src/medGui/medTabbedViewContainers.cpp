@@ -43,7 +43,7 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
     d->addTabButton->setObjectName("addTabButton");
     d->addTabButton->setShortcut(Qt::ControlModifier + Qt::Key_T);
     this->setCornerWidget(d->addTabButton);
- 
+
     connect(d->addTabButton,SIGNAL(clicked()),this,SIGNAL(addTabButtonClicked()));
     
     d->closeShortcut = new QShortcut(this);

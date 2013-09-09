@@ -53,7 +53,6 @@ medViewContainer::medViewContainer ( QWidget *parent )
     this->setFocusPolicy ( Qt::ClickFocus );
     this->setMouseTracking ( true );
     this->setSizePolicy ( QSizePolicy::Expanding,QSizePolicy::Expanding );
-
 }
 
 medViewContainer::~medViewContainer()

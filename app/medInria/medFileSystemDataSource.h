@@ -26,10 +26,11 @@ class medFileSystemDataSource : public medAbstractDataSource
     Q_OBJECT
 
 public:
-    medFileSystemDataSource(QWidget* parent = 0);
+    medFileSystemDataSource(QObject* parent = 0);
     ~medFileSystemDataSource();
 
-    QWidget* mainViewWidget();
+    QWidget* largeViewWidget();
+    QWidget* compactViewWidget();
 
     QWidget* sourceSelectorWidget();
 

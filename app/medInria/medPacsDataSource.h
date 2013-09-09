@@ -28,10 +28,11 @@ class medPacsDataSource : public medAbstractDataSource
     Q_OBJECT
 public:
 
-    medPacsDataSource(QWidget* parent = 0);
+    medPacsDataSource(QObject *parent = 0);
     ~medPacsDataSource();
 
-    QWidget* mainViewWidget();
+    QWidget* largeViewWidget();
+    QWidget* compactViewWidget();
 
     QWidget* sourceSelectorWidget();
 

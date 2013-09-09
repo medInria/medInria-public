@@ -15,8 +15,6 @@
 
 #include <locale.h>
 
-
-
 #include <QtGui>
 
 #include <dtkCore/dtkGlobal.h>

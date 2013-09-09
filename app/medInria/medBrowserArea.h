@@ -38,6 +38,7 @@ public:
 
     void setup(QStatusBar *status);
     void setdw(QStatusBar *status);
+    
 
 signals:
 
@@ -71,6 +72,7 @@ signals:
     void load(const QString& path);
 
     void showError (const QString&,unsigned int timeout);
+    
 
 public slots:
     void onSourceIndexChanged(int index);
@@ -79,14 +81,8 @@ public slots:
     void onDataImport(dtkAbstractData *data);
     void onDataReceivingFailed(QString fileName);
     void displayJobItem(medJobItem *importer, QString infoBaseName);
-
-    /*
-     * Function to call when (after emitting opening signal)
-     * the db item fail to open. This will make changes in the GUI
-     * to let the user know.
-     */
-    void onOpeningFailed(const medDataIndex& index);
-
+    void addDataSource(medAbstractDataSource* dataSource);
+    
     /**
      * @brief Export data from a selected medDataIndex in a data source.
      *
@@ -109,9 +105,6 @@ public slots:
     */
     void removeToolBox(medToolBox *toolbox);
     
-    /** Called when data has been removed from a data source.*/
-    void onDataRemoved(const medDataIndex &index);
-
 private slots:
 
     /** This function is called when the import/index
@@ -122,7 +115,6 @@ private slots:
 
 protected:
     void setToolBoxesVisible(int index, bool visible);
-    void addDataSource(medAbstractDataSource* dataSource);
 
 private:
     medBrowserAreaPrivate *d;
