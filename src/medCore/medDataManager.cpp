@@ -396,15 +396,29 @@ size_t medDataManager::getTotalSizeOfPhysicalRam()
     statex.dwLength = sizeof (statex);
     GlobalMemoryStatusEx (&statex);
     return (size_t) statex.ullTotalPhys;
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) // verify this code
     kern_return_t kr;
     host_basic_info_data_t hostinfo;
     int count = HOST_BASIC_INFO_COUNT;
     kr = host_info(mach_host_self(), HOST_BASIC_INFO, (host_info_t)&hostinfo, (mach_msg_type_number_t*)&count);
     if(kr == KERN_SUCCESS)
-        return (size_t)hostinfo.memory_size;
+        return (size_t)hostinfo.max_mem;
     else
         return 0;
+
+    /* code to test
+
+    #include <sys/types.h>
+    #include <sys/sysctl.h>
+    ...
+    int mib[2];
+    int64_t physical_memory;
+    mib[0] = CTL_HW;
+    mib[1] = HW_MEMSIZE;
+    length = sizeof(int64_t);
+    sysctl(mib, 2, &physical_memory, &length, NULL, 0);
+    
+    */
 #else
     struct sysinfo info;
     if ( ! sysinfo( &info ) )
@@ -451,6 +465,8 @@ quint64 medDataManager::getUpperMemoryThreshold()
         return 500000000000ULL;
     }
 }
+
+
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -928,6 +944,47 @@ void medDataManager::clearCache()
 
 
 //-------------------------------------------------------------------------------------------------------
+size_t medDataManager::getAvailablePhysicalRam()
+{
+#if _MSC_VER || __MINGW32__
+    MEMORYSTATUSEX statex;
+    statex.dwLength = sizeof (statex);
+    GlobalMemoryStatusEx (&statex);
+    return (size_t) statex.ullAvailPhys;
+#elif defined(__APPLE__)
+    #include <mach/vm_statistics.h>
+    #include <mach/mach_types.h> 
+    #include <mach/mach_init.h>
+    #include <mach/mach_host.h>
 
+    vm_size_t page_size;
+    mach_port_t mach_port;
+    mach_msg_type_number_t count;
+    vm_statistics_data_t vm_stats;
+
+    mach_port = mach_host_self();
+    count = sizeof(vm_stats) / sizeof(natural_t);
+    if (KERN_SUCCESS == host_page_size(mach_port, &page_size) &&
+        KERN_SUCCESS == host_statistics(mach_port, HOST_VM_INFO, 
+                                        (host_info_t)&vm_stats, &count))
+    {
+        myFreeMemory = (int64_t)vm_stats.free_count * (int64_t)page_size;
+
+        used_memory = ((int64_t)vm_stats.active_count + 
+                       (int64_t)vm_stats.inactive_count + 
+                       (int64_t)vm_stats.wire_count) *  (int64_t)page_size;
+    }
+    return myFreeMemory;
+#else
+    struct sysinfo info;
+    if ( ! sysinfo( &info ) )
+        return info.freeram * info.mem_unit;
+    else
+        return 0;
+#endif
+}
+
+
+//-------------------------------------------------------------------------------------------------------
 
 medDataManager *medDataManager::s_instance = NULL;
