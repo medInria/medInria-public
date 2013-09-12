@@ -80,6 +80,7 @@ void medRegistrationWorkspace::setupViewContainerStack()
         {
             view->setProperty("Closable","false"); 
             fuseContainer->setView (view);
+            fuseContainer->setAcceptDrops(false);
             d->registrationToolBox->setFuseView (view);
         }
 
@@ -90,6 +91,10 @@ void medRegistrationWorkspace::setupViewContainerStack()
                 d->registrationToolBox,SLOT(onFixedImageDropped(medDataIndex)));
         connect(compareViewContainer,SIGNAL(droppedMoving(medDataIndex)),
                 d->registrationToolBox,SLOT(onMovingImageDropped(medDataIndex)));
+        connect(compareViewContainer,SIGNAL(viewRemoved(dtkAbstractView*)),
+                d->registrationToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
+        connect(fuseContainer,SIGNAL(viewRemoved(dtkAbstractView*)),
+                d->registrationToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
 
         this->stackedViewContainers()->addContainer("Compare",compareViewContainer);
         this->stackedViewContainers()->addContainer("Fuse",fuseContainer);

@@ -1486,6 +1486,10 @@ void vtkImageView::AddLayer(int layer)
 //----------------------------------------------------------------------------
 void vtkImageView::RemoveLayer(int layer)
 {
+    if( layer < (int)(this->ITKInputVector.size()) )
+    {
+        this->ITKInputVector.erase(this->ITKInputVector.begin() + layer);
+    }
 }
 
 //----------------------------------------------------------------------------
