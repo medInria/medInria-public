@@ -33,21 +33,22 @@ class DcmElement;
 class double_fuzzy_less : public std::binary_function<double,double,bool>
 {
 public:
-  double_fuzzy_less( double arg_ = 1e-7 ) : epsilon(arg_) {}
-  bool operator()( const double &left, const double &right  ) const
-  {
-    return (fabs(left - right) > epsilon) && (left < right);
-  }
-  double epsilon;
+    double_fuzzy_less( double arg_ = 1e-7 ) : epsilon(arg_) {}
+    bool operator()( const double &left, const double &right  ) const
+    {
+        return (fabs(left - right) > epsilon) && (left < right);
+    }
+    double epsilon;
 };
+
 
 namespace itk
 {
 
-  class ITKDCMTKIO_EXPORT DCMTKImageIO : public MultiThreadedImageIOBase
-  {
+class ITKDCMTKIO_EXPORT DCMTKImageIO : public MultiThreadedImageIOBase
+{
 
-  public:
+public:
     typedef DCMTKImageIO             Self;
     typedef MultiThreadedImageIOBase Superclass;
     typedef SmartPointer<Self>       Pointer;
@@ -55,7 +56,6 @@ namespace itk
 
     itkNewMacro (Self);
     itkTypeMacro(DCMTKImageIO, MultiThreadedImageIOBase);
-
 
     typedef std::map< std::string, std::vector< std::string > >     StringMap;
 
@@ -72,24 +72,14 @@ namespace itk
     typedef std::set< std::string >                                 NameSetType;
     typedef std::multimap< double, std::string, double_fuzzy_less > SliceLocationToNamesMultiMapType;
 
-
     static double MAXIMUM_GAP;
     
-    
     bool CanReadFile(const char*);
-    
-    
     void ReadImageInformation();
-    
 
     bool CanWriteFile(const char*);
-    
-
     void WriteImageInformation();
-
-    
-    void Write(const void* buffer);    
-
+    void Write(const void* buffer);
 
     // DICOM related stuff
     std::string GetPatientName() const;
@@ -125,57 +115,53 @@ namespace itk
     std::string GetRows() const;
     std::string GetColumns() const;
 
-
     const StringVectorType& GetOrderedFileNames() const
     { return m_OrderedFileNames; }
 
 
     inline std::string GetMetaDataValueString (const char* key, int index) const
     {
-      std::string value = "";
-      const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
-      MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
-      if( it!=dicomDictionary.End() )
-      {
-	if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
-	{
-	  value = metaData->GetMetaDataObjectValue()[index];
-	}
-      }
-      return value;
+        std::string value = "";
+        const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+        MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
+        if( it!=dicomDictionary.End() )
+        {
+            if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
+            {
+                value = metaData->GetMetaDataObjectValue()[index];
+            }
+        }
+        return value;
     }
     
     inline const StringVectorType& GetMetaDataValueVectorString (const char* key) const
     {
-      const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
-      MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
-      if( it!=dicomDictionary.End() )
-      {
-	if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
-    {
-	  return metaData->GetMetaDataObjectValue();
-	}
-	else
-	{
-	  return m_EmptyVector;
-	}
-      }
-      return m_EmptyVector;
+        const MetaDataDictionary& dicomDictionary = this->GetMetaDataDictionary();
+        MetaDataDictionary::ConstIterator it = dicomDictionary.Find ( key );
+        if( it!=dicomDictionary.End() )
+        {
+            if( MetaDataVectorStringType* metaData = dynamic_cast<MetaDataVectorStringType*>( it->second.GetPointer() ) )
+            {
+                return metaData->GetMetaDataObjectValue();
+            }
+            else
+            {
+                return m_EmptyVector;
+            }
+        }
+        return m_EmptyVector;
     }
 
-
-  protected:
+protected:
     
     DCMTKImageIO();
     ~DCMTKImageIO();
     void PrintSelf(std::ostream& os, Indent indent) const;
 
-    void ThreadedRead (void* buffer, RegionType region, int threadId);    
+    void ThreadedRead (void* buffer, RegionType region, int threadId);
     void InternalRead (void* buffer, int slice, unsigned long pixelCount);
 
-
     void SwapBytesIfNecessary(void* buffer, unsigned long numberOfPixels);
-
 
     void DetermineNumberOfPixelComponents();
     void DeterminePixelType();
@@ -185,30 +171,23 @@ namespace itk
     void DetermineOrientation();
 
     double GetZPositionForImage (int);
-      double GetSliceLocation(std::string);
+    double GetSliceLocation(std::string);
 
     void ReadHeader( const std::string& name, const int& fileIndex, const int& fileCount );
     inline void ReadDicomElement(DcmElement* element, const int &fileIndex, const int &fileCount );
     
-        
-  private:
+private:
     DCMTKImageIO(const Self&);
     void operator=(const Self&);
     
     StringVectorType           m_OrderedFileNames;
     std::string                m_Directory;
 
-
     SliceLocationSetType             m_LocationSet;
     NameToIndexMapType               m_FilenameToIndexMap;
     SliceLocationToNamesMultiMapType m_LocationToFilenamesMap;
     
-    
     StringVectorType           m_EmptyVector;
-  };
-  
-  
+};
+
 } // end of namespace
-
-
-
