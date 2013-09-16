@@ -45,8 +45,10 @@ itkDataSHImageWriterPlugin::~itkDataSHImageWriterPlugin()
 bool itkDataSHImageWriterPlugin::initialize()
 {
     if(!itkMetaDataSHImageWriter::registered())
+    {
         dtkWarn() << "Unable to register itkMetaDataSHImageWriter type";
-
+    }
+    
     return true;
 }
 

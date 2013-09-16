@@ -321,6 +321,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
       regionToExtract.SetIndex (3,n);
       typename ExtractImageType::Pointer myExtractor = ExtractImageType::New();
       myExtractor->SetExtractionRegion (regionToExtract);
+        myExtractor->SetDirectionCollapseToSubmatrix();
       myExtractor->SetInput (image);
       
       try
