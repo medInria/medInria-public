@@ -31,6 +31,8 @@
 #include <vtkImageViewCollection.h>
 #include "vtkDataSetReader.h"
 #include <vtkLookupTableManager.h>
+#include <vtkContourWidget.h>
+#include <vtkOrientedGlyphContourRepresentation.h>
 
 #ifdef ITK_USE_REVIEW
 #include <itkPhilipsRECImageIOFactory.h>
@@ -63,7 +65,31 @@ public:
   void SetManager (vtkDataManager* manager)
   { this->Manager = manager; };
   void SetCollection (vtkImageViewCollection* arg)
-  { this->Collection = arg; };
+  {
+    this->Collection = arg;
+  };
+  void ConfigureWidget(void)
+  {
+    if (!this->Collection)
+    {
+      std::cout<<"no collection, error"<<std::endl;
+      return;
+    }
+    if (!this->Collection->GetItem(1))
+    {
+      std::cout<<"no first item in collection, error"<<std::endl;
+      return;
+    }
+
+    vtkImageView2D* firstview = vtkImageView2D::SafeDownCast (this->Collection->GetItem (1));
+    if (firstview && firstview->GetInteractor())
+      this->ContourWidget->SetInteractor(firstview->GetInteractor());
+    else
+    {
+      std::cout<<"contour widget not configured, error"<<std::endl;
+    }
+
+  }
   void AddSequence (vtkMetaDataSetSequence* sequence)
   { this->Sequences.push_back (sequence); };
   
@@ -94,10 +120,30 @@ public:
 	this->Collection->SyncRender();
 	
       }
+      if (rwi->GetKeyCode() == 'u')
+      {
+      	if (!this->Sequences.size())
+      	  return;
+      	
+	int id = this->Sequences[0]->GetCurrentId();
+	if (id <= 0)
+	  id = this->Sequences[0]->GetNumberOfMetaDataSets() - 1;
+	else
+	  id = id-1;
+	for (unsigned int i=0; i<this->Sequences.size(); i++)
+	  this->Sequences[i]->UpdateToIndex (id);
+	this->Collection->SyncRender();
+	
+      }
       if (rwi->GetKeyCode() == 'z')
       {
 	this->Collection->SyncSetViewOrientation (orientation++);
 	if (orientation > 2) orientation = 0;
+	this->Collection->SyncRender();
+      }
+      if (rwi->GetKeyCode() == 'g')
+      {
+	this->ContourWidget->SetEnabled (!this->ContourWidget->GetEnabled());
 	this->Collection->SyncRender();
       }
     }
@@ -111,14 +157,21 @@ public:
     orientation = 0;
     this->Viewer = NULL;
     this->Collection = NULL;
+    this->ContourWidget = vtkContourWidget::New();
+    vtkOrientedGlyphContourRepresentation *contourRep = vtkOrientedGlyphContourRepresentation::New();    
+    this->ContourWidget->SetRepresentation(contourRep);
+    contourRep->Delete();
   };
-  ~vtkMyCommand(){};
+  ~vtkMyCommand()
+  {
+    this->ContourWidget->Delete();
+  };
 
  private:
   vtkImageView3D* Viewer;
   vtkDataManager* Manager;
   vtkImageViewCollection* Collection;
-  
+  vtkContourWidget* ContourWidget;
   std::vector<vtkMetaDataSetSequence*> Sequences;
   bool toggle;
   unsigned int orientation;
@@ -184,8 +237,8 @@ int main (int argc, char* argv[])
   
   vtkMyCommand* command = vtkMyCommand::New();
   command->SetViewer (view3d);
-  command->SetCollection (pool);
-  
+  command->SetCollection(pool);
+
   view3d->GetInteractor()->AddObserver(vtkCommand::CharEvent, command);
 
   pool->AddItem (view3d);
@@ -348,7 +401,7 @@ int main (int argc, char* argv[])
     view3d->SetInput (firstview->GetInput());
     view3d->SetOrientationMatrix(firstview->GetOrientationMatrix());
   }
-
+  
   pool->SyncReset();
   pool->SyncSetShowAnnotations (1);
   pool->SyncSetShowRulerWidget (0);
@@ -369,6 +422,7 @@ int main (int argc, char* argv[])
   pool->SyncSetSize (size);
   pool->SyncRender();
   
+  command->ConfigureWidget();
   
   pool->SyncStart();
   

@@ -246,15 +246,55 @@ namespace itk
       }
       
       // if not found in public tag (0018|9089), the diffusion information
-      // might be stored in the private PHILIPS tags (2005|10b0-1-2)
+      // might be stored in the private GE tags (0019|10bb-c-d)
       gdcm::Reader reader;
       reader.SetFileName (file.c_str());
       reader.Read ();
       gdcm::StringFilter sf;
       sf.SetFile (reader.GetFile());      
-      value = sf.ToString (gdcm::Tag(0x2005,0x10b0)).c_str();
-      if( !value ) { ret = 0; break; }
+      value = sf.ToString (gdcm::Tag(0x0019,0x10bb)).c_str();
       
+      if(value ) 
+      {
+      // found the gradient in the private tag of GE
+      GradientType gr;
+      gr[0] = std::atof (sf.ToString (gdcm::Tag(0x0019,0x10bb)).c_str());
+      gr[1] = std::atof (sf.ToString (gdcm::Tag(0x0019,0x10bc)).c_str());
+      gr[2] = std::atof (sf.ToString (gdcm::Tag(0x0019,0x10bd)).c_str());
+
+      // The GE gradient directions seem to suffer from a flip in the x and y direction
+      // because their frame of reference has its x-axis running right-to-left and 
+      // its y-axis running anterior-posterior
+      // see http://www.nitrc.org/pipermail/mrtrix-discussion/2013-April/000688.html
+      // we flip the directions back:
+      gr[0] = -gr[0];
+      gr[1] = -gr[1];
+
+      ret = 1;
+      
+      if (!engaged && NumericTraits<double>::IsPositive (gr.GetNorm()))
+	engaged = 1;
+      
+      cumulatednorm += gr.GetNorm();
+      
+      if (!m_SkipMeanDiffusivity || !engaged || NumericTraits<double>::IsPositive (gr.GetNorm()) )
+	m_Gradients.push_back (gr);
+      else
+	m_MeanDiffusivitySkipped = 1; 
+
+      // and go to next file
+      continue;
+      }
+
+      // if not found in public tag (0018|9089), the diffusion information
+      // might be stored in the private PHILIPS tags (2005|10b0-1-2)
+      value = sf.ToString (gdcm::Tag(0x2005,0x10b0)).c_str();
+      if(!value)
+      {
+        ret = 0; 
+        break;
+      }
+
       // found the gradient in the private tag of philips
       GradientType gr;
       gr[0] = std::atof (sf.ToString (gdcm::Tag(0x2005,0x10b0)).c_str());
@@ -271,7 +311,9 @@ namespace itk
       if (!m_SkipMeanDiffusivity || !engaged || NumericTraits<double>::IsPositive (gr.GetNorm()) )
 	m_Gradients.push_back (gr);
       else
-	m_MeanDiffusivitySkipped = 1;  
+	m_MeanDiffusivitySkipped = 1;
+
+
     }  
 
     return ret && NumericTraits<double>::IsPositive (cumulatednorm);
