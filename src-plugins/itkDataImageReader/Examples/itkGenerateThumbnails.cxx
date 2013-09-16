@@ -164,6 +164,7 @@ int main (int narg, char* arg[])
     region.SetSize ( ssize );
 
     extractor->SetExtractionRegion (region);
+      extractor->SetDirectionCollapseToSubmatrix();
     try
     {
       extractor->Update();
@@ -281,6 +282,7 @@ int main (int narg, char* arg[])
     region.SetSize ( ssize );
 
     extractor->SetExtractionRegion (region);
+      extractor->SetDirectionCollapseToSubmatrix();
     try
     {
       extractor->Update();

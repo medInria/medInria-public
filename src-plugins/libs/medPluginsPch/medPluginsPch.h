@@ -47,7 +47,6 @@
 #ifdef MEDINRIA_PLUGINS_PCH_USE_ITK
 //ITK
 #include <itkConstNeighborhoodIterator.h>
-#include <itkExtractImageFilter.h>
 #include <itkGreyColormapFunctor.h>
 #include <itkImage.h>
 #include <itkImageIOBase.h>
