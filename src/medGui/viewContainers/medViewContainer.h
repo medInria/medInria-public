@@ -316,6 +316,10 @@ public:
     void emitImageSet(const medDataIndex& index);
 
 
+    void setMultiSelection(bool enabled);
+    bool multiSelection();
+
+
 signals:
     /**
      * @brief A new medDataIndex has been set onto the container.
@@ -476,6 +480,12 @@ protected:
      * @param event
     */
     void paintEvent(QPaintEvent *event);
+
+
+    void keyPressEvent(QKeyEvent * event);
+
+    void keyReleaseEvent(QKeyEvent * event);
+
 
 protected:
     medViewContainerPrivate *d;

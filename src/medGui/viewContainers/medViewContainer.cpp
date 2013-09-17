@@ -113,12 +113,6 @@ bool medViewContainer::isEmpty() const
              this->childContainers().isEmpty());
 }
 
-bool medViewContainer::isDaddy() const
-{
-    return ( this->view() != NULL &&
-             this->view()->property ( "Daddy" ) == "true" );
-}
-
 medViewContainer * medViewContainer::parentContainer() const
 {
     return qobject_cast< medViewContainer * >( this->parentWidget() );
