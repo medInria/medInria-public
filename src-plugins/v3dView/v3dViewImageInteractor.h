@@ -50,6 +50,15 @@ public slots:
     virtual void setVisible(dtkAbstractData * data, bool visible);
     virtual bool isVisible(dtkAbstractData * data) const;
 
+    virtual void setLUT(dtkAbstractData * data, QString lut);
+    virtual QString LUT(dtkAbstractData * data) const;
+
+    virtual void setPreset(dtkAbstractData * data, QString preset);
+    virtual QString preset(dtkAbstractData * data) const;
+
+private:
+    int getLayer(dtkAbstractData * data) const;
+
 private:
     v3dViewImageInteractorPrivate * d;
 };
