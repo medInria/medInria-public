@@ -104,6 +104,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medLayerItemWidget.h
   v3dViewImageInteractor.h
   medViewLayersToolBox.h
+  medViewParamsToolBox.h
+  medView3dParamsToolBox.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -132,6 +134,8 @@ set(${PROJECT_NAME}_SOURCES
   medLayerItemWidget.cpp
   v3dViewImageInteractor.cpp
   medViewLayersToolBox.cpp
+  medViewParamsToolBox.cpp
+  medView3dParamsToolBox.cpp
   )
 
 

@@ -25,6 +25,7 @@
 #include "v3dViewImageInteractor.h"
 #include "v3dViewPlugin.h"
 #include <medViewLayersToolBox.h>
+#include <medViewParamsToolBox.h>
 #ifndef DISABLE_TTK_DEPENDENT_CODE
 #include <v3dViewFiberInteractor.h>
 #include <v3dViewTensorInteractor.h>
@@ -69,7 +70,8 @@ bool v3dViewPlugin::initialize()
     if (!medFiberViewToolBox::registered())            { dtkWarn() << "Unable to register medFiberViewToolBox type"; }
     if (!medSHViewToolBox::registered())               { dtkWarn() << "Unable to register medSHViewToolBox type"; }
     if (!v3dView::registered())                        { dtkWarn() << "Unable to register v3dView type";                     }
-    if (!medViewLayersToolBox::registered())           { dtkWarn() << "Unable to register v3dView type";                     }
+    if (!medViewLayersToolBox::registered())           { dtkWarn() << "Unable to register medViewLayersToolBox type";        }
+    if (!medViewParamsToolBox::registered())           { dtkWarn() << "Unable to register medViewParamsToolBox type";        }
 
 #ifndef DISABLE_TTK_DEPENDENT_CODE
     if (!v3dViewFiberInteractor::registered())      { dtkWarn() << "Unable to register v3dViewFiberInteractor type";      }

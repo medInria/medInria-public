@@ -9,72 +9,76 @@
 #include <medAbstractData.h>
 #include <medAbstractVtkViewInteractor.h>
 #include <medParameter.h>
+#include <medViewParamsToolBox.h>
+#include <medToolBoxHeader.h>
 
 #include <QPushButton>
 
+class medViewLayersToolBoxPrivate
+{
+public:
+
+    QListWidget * viewListWidget;
+    QListWidget * layersListWidget;
+    QVBoxLayout * interactorsParamsLayout;
+    medVtkView  * vtkView;
+    QList<QWidget*> paramWidgetList;
+    QList<medVtkView*> viewList;
+    QMap<QString,medVtkView*> viewMap;
+    QHash<QListWidgetItem*, QPair<QString,int> > layerItemHash;
+
+    QList<medAbstractParameter*> paramList;
+    QMap<QString, medAbstractParameter*> paramMap;
+
+    medParameterPool layerParamPool;
+    medParameterPool viewParamPool;
+    medViewParamsToolBox *viewParamsToolBox;
+};
+
+
+
+
 medViewLayersToolBox::medViewLayersToolBox(QWidget *parent)
-    : medToolBox(parent)
-    , vtkView(0)
+    : medToolBox(parent), d(new medViewLayersToolBoxPrivate)
 {
     this->setTitle(tr("Layers management"));
 
-    layersList = new QListWidget(this);
-    layersList->setFocusPolicy(Qt::NoFocus);
+    d->vtkView = 0;
 
-    connect(layersList, SIGNAL(currentRowChanged(int)), this, SLOT(updateParameters(int)));
+    d->viewListWidget = new QListWidget(this);
+    d->viewListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+    d->layersListWidget = new QListWidget(this);
+    d->layersListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+    QWidget *doubleListWidget = new QWidget;
+    QVBoxLayout *doubleListWidgetLayout = new QVBoxLayout(doubleListWidget);
+    doubleListWidgetLayout->addWidget(d->viewListWidget);
+    doubleListWidgetLayout->addWidget(d->layersListWidget);
+
 
     QWidget *interactorsParamsWidget = new QWidget(this);
-    interactorsParamsLayout = new QVBoxLayout(interactorsParamsWidget);
+    d->interactorsParamsLayout = new QVBoxLayout(interactorsParamsWidget);
 
-    this->addWidget(layersList);
+    d->viewParamsToolBox = new medViewParamsToolBox();
+    d->viewParamsToolBox->setStyleSheet("medToolBoxBody {border:none}");
+    d->viewParamsToolBox->header()->hide();
+
+    this->addWidget(d->viewListWidget);
+    this->addWidget(d->layersListWidget);
     this->addWidget(new QSplitter);
+    this->addWidget(d->viewParamsToolBox);
     this->addWidget(interactorsParamsWidget);
 
-    paramWidgetList = QList<QWidget*>();
 
-    currentLayer = -1;
+    d->paramWidgetList = QList<QWidget*>();
+    d->viewMap = QMap<QString, medVtkView*>();
+
+    connect(d->viewListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(updateViews()));
+    connect(d->layersListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(updateParameters()));
 }
 
 
-void medViewLayersToolBox::updateLayerList()
-{
-    resetList();
-    if ( ! vtkView) {return;}
-
-    int nbLayers = vtkView->numberOfLayers();
-
-    qDebug() << "Layers:" << nbLayers;
-
-    for (int i  = 0; i < nbLayers; i++) {
-
-        medAbstractData * layerData = qobject_cast<medAbstractData*>(vtkView->layerData(i));
-
-        QString thumbPath = medMetaDataKeys::SeriesThumbnail.getFirstValue(layerData,":icons/layer.png");
-        QString layerName = medMetaDataKeys::SeriesDescription.getFirstValue(layerData,"<i>no name</i>");
-
-        QList<medAbstractVtkViewInteractor*> interactors;
-        foreach(dtkAbstractViewInteractor* i, vtkView->interactors()) {
-            medAbstractVtkViewInteractor * interactor = qobject_cast<medAbstractVtkViewInteractor*>(i);
-            if ( interactor && interactor->isDataTypeHandled(layerData->identifier()))
-                interactors.append(interactor);
-        }
-
-        QListWidgetItem * item = new QListWidgetItem(layersList);
-        medLayerItemWidget * widget = new medLayerItemWidget(layerName, thumbPath, layerData, interactors, layersList);
-        item->setSizeHint(widget->sizeHint());
-
-        layersList->addItem(item);
-        layersList->setItemWidget(item, widget);
-    }
-}
-
-void medViewLayersToolBox::resetList()
-{
-    layersList->clear();
-}
-
-
-// ------------------ Temporary code --------------------------------------
 
 
 bool medViewLayersToolBox::registered()
@@ -88,57 +92,296 @@ bool medViewLayersToolBox::registered()
 void medViewLayersToolBox::update(dtkAbstractView * view)
 {
     // Hide this toolbox when no views
+
     if(!view)
         this->hide();
     else
         this->show();
 
-    if (vtkView)
-        vtkView->disconnect(this);
+    d->vtkView = qobject_cast<medVtkView*>(view);
 
-    vtkView = qobject_cast<medVtkView*>(view);
+    if(d->vtkView)
+    {
+        addView(d->vtkView);
+        selectView(d->vtkView);
 
-    updateLayerList();
-    if(vtkView) {
-        connect(vtkView, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(updateLayerList()));
-        connect(vtkView, SIGNAL(dataRemoved(dtkAbstractData*, int)), this, SLOT(updateLayerList()));
+        connect(d->vtkView, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(updateViews()));
+        connect(d->vtkView, SIGNAL(dataRemoved(dtkAbstractData*, int)), this, SLOT(updateViews()));
+        connect(d->vtkView, SIGNAL(closed()), this ,SLOT(removeView()));
+        connect(d->vtkView, SIGNAL(closing()), this ,SLOT(removeView()));
+
+    }
+
+    d->viewParamsToolBox->update(view);
+
+}
+
+
+void medViewLayersToolBox::addView(medVtkView *view)
+{
+    if(!view)
+        return;
+
+    if(!d->viewList.contains(view))
+    {
+        d->viewList.append(view);
+
+        d->viewMap.insert(view->name(), view);
+
+        updateViewListWidget();
     }
 }
 
 
-void medViewLayersToolBox::updateParameters(int layer)
+void medViewLayersToolBox::updateViews()
 {
-   /* if(layer == currentLayer)
-        return;*/
+    QList<medVtkView*> selectedViews;
 
-    foreach(QWidget *widget, paramWidgetList)
+    for (int i  = 0; i < d->viewList.count(); i++)
     {
-        qDebug() << "clear";
-        widget->close();
+        if( d->viewListWidget->item(i)->isSelected() )
+        {
+            selectedViews.append(d->viewList.at(i));
+        }
     }
-    paramWidgetList.clear();
 
-    medAbstractData * layerData = qobject_cast<medAbstractData*>(vtkView->layerData(layer));
+    updateLayerListWidget(selectedViews);
 
-    if(!layerData)
+    updateViewPool(selectedViews);
+
+    if( selectedViews.count() > 0 )
+    {
+      d->viewParamsToolBox->update(selectedViews[selectedViews.count()-1]);
+    }
+
+}
+
+void medViewLayersToolBox::updateViewListWidget()
+{
+    d->viewListWidget->blockSignals(true);
+    d->viewListWidget->clear();
+    d->viewListWidget->blockSignals(false);
+
+    foreach(medVtkView *vtkView, d->viewList)
+    {
+        QListWidgetItem * item = new QListWidgetItem(vtkView->name(), d->viewListWidget);
+        d->viewListWidget->addItem(item);
+    }
+}
+
+
+void medViewLayersToolBox::selectView(medVtkView *view)
+{
+    if(!view)
         return;
 
-    foreach(dtkAbstractViewInteractor* i, vtkView->interactors())
-    {
-        medAbstractVtkViewInteractor * interactor = qobject_cast<medAbstractVtkViewInteractor*>(i);
-        if ( interactor && interactor->isDataTypeHandled(layerData->identifier()))
-        {
-            QList<medAbstractParameter*> paramList = interactor->getParameters(vtkView->layerData(layer));
+    d->viewListWidget->blockSignals(true);
 
-            foreach(medAbstractParameter *param, paramList)
+    if( !(QApplication::keyboardModifiers() & Qt::ControlModifier) )
+    {
+        d->viewListWidget->clearSelection();
+    }
+
+    for (int i  = 0; i < d->viewList.count(); i++)
+    {
+        if( d->viewListWidget->item(i)->text() == view->name() )
+        {
+            d->viewListWidget->item(i)->setSelected(true);
+        }
+    }
+
+    d->viewListWidget->blockSignals(false);
+}
+
+
+void medViewLayersToolBox::updateLayerListWidget(QList<medVtkView*> vtkViews)
+{
+    resetList();
+
+    if (vtkViews.isEmpty()) {return;}
+
+    foreach(medVtkView *view, vtkViews)
+    {
+        int nbLayers = view->numberOfLayers();
+
+        for (int i  = 0; i < nbLayers; i++) {
+
+            medAbstractData * layerData = qobject_cast<medAbstractData*>(view->layerData(i));
+
+            if(layerData)
             {
-                QWidget *paramWidget = param->getWidget();
-                paramWidget->show();
-                paramWidgetList.append(paramWidget);
-                interactorsParamsLayout->addWidget(paramWidget);
+                QString thumbPath = medMetaDataKeys::SeriesThumbnail.getFirstValue(layerData,":icons/layer.png");
+                QString layerName = medMetaDataKeys::SeriesDescription.getFirstValue(layerData,"<i>no name</i>");
+
+                QList<medAbstractVtkViewInteractor*> interactors;
+                foreach(dtkAbstractViewInteractor* i, view->interactors()) {
+                    medAbstractVtkViewInteractor * interactor = qobject_cast<medAbstractVtkViewInteractor*>(i);
+                    if ( interactor && interactor->isDataTypeHandled(layerData->identifier()))
+                        interactors.append(interactor);
+                }
+
+                QListWidgetItem * item = new QListWidgetItem(d->layersListWidget);
+                medLayerItemWidget * widget = new medLayerItemWidget(layerName, thumbPath, layerData, interactors, d->layersListWidget);
+                item->setSizeHint(widget->sizeHint());
+
+                d->layersListWidget->addItem(item);
+                d->layerItemHash.insert(item, QPair<QString, int>(view->name(), i));
+                d->layersListWidget->setItemWidget(item, widget);
+            }
+        }
+    }
+}
+
+
+void medViewLayersToolBox::updateParameters()
+{
+    clearParams();
+
+    int nbLayers = d->layersListWidget->count();
+
+    QMultiMap<medVtkView*, int> selectedLayers;
+
+    for (int i  = 0; i < nbLayers; i++)
+    {
+        QListWidgetItem * item = d->layersListWidget->item(i);
+        if( item->isSelected() )
+        {
+            QPair<QString, int> itemPair = d->layerItemHash.value(item);
+            QString viewName = itemPair.first;
+            int layer = itemPair.second;
+            selectedLayers.insert(d->viewMap.value(viewName), layer);
+        }
+    }
+
+    updateParameters(selectedLayers);
+}
+
+
+void medViewLayersToolBox::updateParameters(QMultiMap<medVtkView*, int> selectedLayers)
+{
+    clearParams();
+
+    d->layerParamPool.clear();
+
+    QMap<QString, medAbstractParameter*> commonParamList;
+    commonParamList.setInsertInOrder(true);
+
+    QMapIterator<medVtkView*, int> i(selectedLayers);
+
+    int j = 0;
+
+    while (i.hasNext())
+    {
+        i.next();
+
+        medVtkView* view =  i.key();
+        int layer = i.value();
+
+        medAbstractData * layerData = qobject_cast<medAbstractData*>(view->layerData(layer));
+
+        if(!layerData)
+            return;
+
+        foreach(dtkAbstractViewInteractor* i, view->interactors())
+        {
+            medAbstractVtkViewInteractor * interactor = qobject_cast<medAbstractVtkViewInteractor*>(i);
+            if ( interactor && interactor->isDataTypeHandled(layerData->identifier()))
+            {
+                QList<medAbstractParameter*> paramList = interactor->getParameters(view->layerData(layer));
+
+                foreach(medAbstractParameter *param, paramList)
+                {
+                    bool found = false;
+
+                    foreach(medAbstractParameter *existingParam, d->paramList)
+                    {
+                        if(param->match(existingParam))
+                        {
+                            found = true;
+                            d->layerParamPool.append(param);
+                            d->layerParamPool.append(existingParam);
+
+                            if(!commonParamList.contains(param->name()))
+                              commonParamList.insert(param->name(), param);
+
+                            break;
+                        }
+                    }
+                    if(!found)
+                    {
+                        d->paramList.append(param);
+                        d->paramMap.insert(param->name(), param);
+
+                        j++;
+                    }
+                }
             }
         }
     }
 
-    currentLayer = layer;
+    QList<medAbstractParameter *> displayedParam;
+    if(selectedLayers.count() == 1)
+        displayedParam = d->paramList;
+    else displayedParam = commonParamList.values();
+
+    foreach(medAbstractParameter *param, displayedParam)
+    {
+        QWidget *paramWidget = param->getWidget();
+        paramWidget->show();
+        d->paramWidgetList.append(paramWidget);
+        d->interactorsParamsLayout->addWidget(paramWidget);
+    }
+
 }
+
+
+void medViewLayersToolBox::updateViewPool(QList<medVtkView*> selectedViews)
+{
+    d->viewParamPool.clear();
+
+    if(selectedViews.size()>0)
+    {
+        foreach(medVtkView* view, selectedViews)
+        {
+            QList<medAbstractParameter*> paramList = d->viewParamsToolBox->getParameters(view);
+            foreach(medAbstractParameter *param, paramList)
+            {
+                d->viewParamPool.append(param);
+            }
+        }
+    }
+}
+
+
+void medViewLayersToolBox::resetList()
+{
+    d->layersListWidget->clear();
+    d->layerItemHash.clear();
+}
+
+
+void medViewLayersToolBox::clearParams()
+{
+    foreach(QWidget *widget, d->paramWidgetList)
+    {
+        widget->close();
+    }
+    d->paramWidgetList.clear();
+    d->paramList.clear();
+
+}
+
+
+void medViewLayersToolBox::removeView()
+{
+    medVtkView *sender = dynamic_cast<medVtkView*>(QObject::sender());
+    if(sender)
+    {
+        d->viewMap.remove(sender->name());
+        d->viewList.removeOne(sender);
+    }
+
+    updateViewListWidget();
+}
+
+

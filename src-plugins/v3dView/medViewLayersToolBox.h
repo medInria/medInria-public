@@ -3,10 +3,14 @@
 
 #include <medGuiExport.h>
 #include <medToolBox.h>
+#include <medParameter.h>
 
 class QListWidget;
 class medVtkView;
 class medAbstractVtkViewInteractor;
+class medViewParamsToolBox;
+class medViewLayersToolBoxPrivate;
+
 /**
 
    \class medLayersPropertiesToolBox
@@ -21,21 +25,29 @@ public:
     explicit medViewLayersToolBox(QWidget *parent = 0);
 
 public slots:
-    void updateLayerList();
+    void updateViews();
+    void updateLayerListWidget(QList<medVtkView*>);
     void resetList();
-    void updateParameters(int layer);
+    void updateParameters();
+    void updateViewPool(QList<medVtkView*>);
+    void updateParameters(QMultiMap<medVtkView*, int>);
+    void removeView();
 
 public:
-    // --------------- Temporary view --------------------------
     void update(dtkAbstractView * view);
     static bool registered();
+    void clearParams();
+    void addView(medVtkView*);
+    void selectView(medVtkView*);
+    void updateViewListWidget();
+
+signals:
+    void viewSelected();
 
 private:
-    QListWidget * layersList;
-    QVBoxLayout * interactorsParamsLayout;
-    medVtkView * vtkView;
-    QList<QWidget*> paramWidgetList;
-    int currentLayer;
+
+    medViewLayersToolBoxPrivate *d;
+
 };
 
 #endif // MEDVIEWLAYERSTOOLBOX_H
