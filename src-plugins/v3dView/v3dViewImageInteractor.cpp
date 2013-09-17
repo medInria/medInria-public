@@ -60,6 +60,7 @@ QStringList v3dViewImageInteractor::handled() const
 
 bool v3dViewImageInteractor::isDataTypeHandled(QString dataType) const
 {
+    //TODO: change this, itkTensorImage should not be handled by this interactor
     if (dataType.contains("Image"))
         return true;
     
@@ -78,6 +79,30 @@ void v3dViewImageInteractor::setData(dtkAbstractData *data)
 {
     if(data->identifier().contains("Image"))
         d->dataList.append(data);
+
+
+    medListParameter *LUTParam = new medListParameter("LUT", data);
+    QStringList LUTs = QStringList() << "Default" << "Black & White" << "Black & White Inversed"
+                                     << "Spectrum" << "Hot Metal" << "Hot Green"
+                                     << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2"
+                                     << "Asymmetry" << "P-Value" << "Red Black Alpha"
+                                     << "Green Black Alpha" << "Blue Black Alpha"
+                                     << "Muscles & Bones" << "Bones" << "Red Vessels"
+                                     << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body";
+    LUTParam->setValues(LUTs);
+
+    medListParameter *presetParam = new medListParameter("Preset", data);
+    QStringList presets = QStringList() << "None" << "VR Muscles&Bones" << "Vascular I"
+                                        << "Vascular II" << "Vascular III" << "Vascular IV"
+                                        << "Standard" << "Soft" << "Soft on White"
+                                        << "Soft on Blue" << "Red on White" << "Glossy" ;
+    presetParam->setValues(presets);
+
+    connect(LUTParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setLUT(dtkAbstractData*,QString)));
+    connect(presetParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setPreset(dtkAbstractData*,QString)));
+
+    parameters.insert(data, LUTParam);
+    parameters.insert(data, presetParam);
 }
 
 
@@ -172,6 +197,45 @@ bool v3dViewImageInteractor::isVisible(dtkAbstractData *data) const
         return false;
 
     return d->view->visibility(layer);
+}
+
+void v3dViewImageInteractor::setLUT(dtkAbstractData * data, QString lut)
+{
+    d->view->setCurrentLayer(getLayer(data));
+    d->view->onLookupTablePropertySet(lut);
+    d->view->update();
+}
+
+QString v3dViewImageInteractor::LUT(dtkAbstractData * data) const
+{
+
+}
+
+void v3dViewImageInteractor::setPreset(dtkAbstractData * data, QString preset)
+{
+    d->view->setCurrentLayer(getLayer(data));
+    d->view->onPresetPropertySet(preset);
+    d->view->update();
+}
+
+QString v3dViewImageInteractor::preset(dtkAbstractData * data) const
+{
+
+}
+
+int v3dViewImageInteractor::getLayer(dtkAbstractData * data) const
+{
+    int layer = 0;
+
+    foreach (dtkAbstractData *listData, d->dataList)
+    {
+        if (listData == data)
+            return layer;
+
+        layer++;
+    }
+
+    return -1;
 }
 
 // /////////////////////////////////////////////////////////////////

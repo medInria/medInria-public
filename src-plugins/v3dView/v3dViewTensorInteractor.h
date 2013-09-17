@@ -77,7 +77,7 @@ public slots:
     
 public slots:
     /** Change glyph shape */
-    void setGlyphShape(GlyphShapeType glyphShape);
+    void setGlyphShape(int glyphShape);
 
     /** Modify sample rate */
     void setSampleRate(int sampleRate);
@@ -114,6 +114,14 @@ public slots:
 
     /** Change position of the slices */
     void changePosition(const QVector3D& position, bool propagate);
+
+
+    void setMajorScaling(int majorScalingExponent);
+
+    void setMinorScaling(int minorScaling);
+
+    void setScale(int minorScale, int majorScaleExponent);
+
 
 private:
     v3dViewTensorInteractorPrivate *d;

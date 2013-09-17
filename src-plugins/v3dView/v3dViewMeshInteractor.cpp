@@ -141,8 +141,31 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
 
         medBooleanParameter *edgeVisibleParam = new medBooleanParameter("Edge Visible", data);
 
-        medListParameter *colorParam = new medListParameter("Color", data);
-        colorParam->setValues(QStringList("Default"));
+        medColorListParameter *colorParam = new medColorListParameter("Color", data);
+        QStringList colors;
+
+        colors << "#000000";
+        colors << "#FFFFFF";
+        colors << "#808080";
+        colors << "#800000";
+        colors << "#804040";
+        colors << "#FF8080";
+        colors << "#FF0000";
+        colors << "#FFFF80";
+        colors << "#FFFF00";
+        colors << "#FF8040";
+        colors << "#FF8000";
+        colors << "#80FF80";
+        colors << "#80FF00";
+        colors << "#00FF00";
+        colors << "#80FFFF";
+        colors << "#00FFFF";
+        colors << "#004080";
+        colors << "#0000FF";
+        colors << "#0080FF";
+        colors << "#0080C0";
+
+        colorParam->setValues(colors);
 
         medListParameter *renderingParam = new medListParameter("Rendering", data);
         QStringList renderings = QStringList() << "WireFrame" << "Surface" << "Points";
@@ -151,7 +174,7 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         connect(attributesParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setAttribute(dtkAbstractData*,QString)));
         connect(LUTParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setLut(dtkAbstractData*,QString)));
         connect(edgeVisibleParam, SIGNAL(valueChanged(dtkAbstractData*,bool)), this, SLOT(setEdgeVisibility(dtkAbstractData*,bool)));
-        connect(colorParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setColor(dtkAbstractData*,QColor)));
+        connect(colorParam, SIGNAL(valueChanged(dtkAbstractData*,QColor)), this, SLOT(setColor(dtkAbstractData*,QColor)));
         connect(renderingParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setRenderingType(dtkAbstractData*,QString)));
 
         parameters.insert(data, attributesParam);
