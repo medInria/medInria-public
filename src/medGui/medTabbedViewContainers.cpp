@@ -96,7 +96,9 @@ void medTabbedViewContainers::deleteContainerClicked(int index)
         {
             this->blockSignals(true);
             QString tabName = this->tabText(index);
+            QWidget *container = this->widget(index);
             this->removeTab(index);
+            delete container;
             this->insertContainer(index,tabName,newTab);
             this->setCurrentIndex(index);
             this->blockSignals(false);
