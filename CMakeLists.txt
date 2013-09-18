@@ -25,7 +25,7 @@ set(${PROJECT_NAME}_VERSION_MINOR 1 CACHE STRING
   )
 mark_as_advanced(${PROJECT_NAME}_VERSION_MINOR)
 
-set(${PROJECT_NAME}_VERSION_PATCH 0 CACHE STRING 
+set(${PROJECT_NAME}_VERSION_PATCH 2 CACHE STRING 
   "medInria build version number." 
   )
 mark_as_advanced(${PROJECT_NAME}_VERSION_PATCH)

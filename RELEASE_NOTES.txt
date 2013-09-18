@@ -1,3 +1,13 @@
+medInria v2.1.2:
+- Bug fixes on view/layer synchronisation in the registration workspace
+- Made image annotations more legible on any background by adding text shadows
+- Fixed a crash in medPluginGenerator as well as tests
+- DICOM import fixes
+- Added keyboard shortcuts for orientation buttons
+- Simplified paint segmentation toolbox
+- File browser settings are now saved
+- Mesh thumbnails are now properly rendered on Mac, no more popups on other platforms
+
 medInria v2.1.1:
 - Win64 package was using Qt 4.7 instead of 4.8
 - Unix packages were using a dynamic boost, instead of static
