@@ -49,6 +49,15 @@ set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_HEADERS_MOC}
 )
 
+if (EXISTS ${CMAKE_BINARY_DIR}/revisions/medRevisions.h)
+  include_directories(${CMAKE_BINARY_DIR}/revisions)
+  set(${PROJECT_NAME}_HEADERS
+  medRevisions.h
+  ${${PROJECT_NAME}_HEADERS}
+  )
+  add_definitions(-DMEDINRIA_HAS_REVISIONS)
+endif()
+
 set(${PROJECT_NAME}_SOURCES
   main.cpp
   medApplication.cpp
@@ -181,3 +190,5 @@ option(MEDINRIA_ACTIVATE_WALL_OPTION "Activate the command line option --wall (I
 if (MEDINRIA_ACTIVATE_WALL_OPTION)
   add_definitions(-DACTIVATE_WALL_OPTION)
 endif()
+
+
