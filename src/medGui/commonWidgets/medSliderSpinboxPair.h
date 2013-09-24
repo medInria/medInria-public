@@ -13,9 +13,10 @@
 
 #pragma once
 
+#include "medGuiExport.h"
 #include <QtGui>
 
-class medSliderSpinboxPair: public QWidget {
+class MEDGUI_EXPORT medSliderSpinboxPair: public QWidget {
 
     Q_OBJECT
 
