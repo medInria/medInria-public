@@ -54,7 +54,6 @@ public:
     
     
     QStackedWidget *stack;
-    QStatusBar *status;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -63,16 +62,16 @@ public:
 
 medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrowserAreaPrivate)
 {
-    // /////////////////////////////////////////////////////////////////
+
 
     d->stack = new QStackedWidget(this);
 
-    // Source toolbox ///////////////////////////////////////////////
+    // Source toolbox
 
     d->sourceSelectorToolBox = new medBrowserSourceSelectorToolBox(this);
     connect(d->sourceSelectorToolBox, SIGNAL(indexChanged(int)), this, SLOT(onSourceIndexChanged(int)));
 
-    // Jobs //////////////////////////////////////////
+    // Jobs
 
     d->jobsToolBox = new medBrowserJobsToolBox(this);
     d->jobsToolBox->setVisible(false);
@@ -80,26 +79,29 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     connect(medJobManager::instance(), SIGNAL(jobRegistered(medJobItem*, QString)),
     d->jobsToolBox->stack(),SLOT(addJobItem(medJobItem*, QString)));
 
-    // Toolbox container /////////////////////////////////////////////
+    // Toolbox container
 
     d->toolboxContainer = new medToolBoxContainer(this);
-    d->toolboxContainer->setObjectName("browserContainerToolbox");
-    d->toolboxContainer->setFixedWidth(340);
+    d->toolboxContainer->setFixedWidth(300);
     d->toolboxContainer->addToolBox(d->sourceSelectorToolBox);
 
    
-    // This remains to be checked
-    connect(medDatabaseController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),this,SLOT(displayJobItem(medJobItem *, QString)));
-    connect(medDatabaseNonPersistentController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),this,SLOT(displayJobItem(medJobItem *, QString)));
-    
+   
     connect(medDataSourceManager::instance(), SIGNAL(registered(medAbstractDataSource*)),
             this, SLOT(addDataSource(medAbstractDataSource*)));
+    
+    //TODO: DatabaseController  call ?
+    connect(medDatabaseController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),
+            this, SLOT(displayJobItem(medJobItem *, QString)));
+    
+    connect(medDatabaseNonPersistentController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),
+            this, SLOT(displayJobItem(medJobItem *, QString)));
 
     // Jobs should be added as the last item so that they appear at the bottom
     d->toolboxContainer->addToolBox(d->jobsToolBox);
-
-    connect(this,SIGNAL(showError(const QString&,unsigned int)),
-            medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
+    d->toolboxCompositeimporter = new medCompositeDataSetImporterSelectorToolBox(this);
+    d->toolboxCompositeimporter->setVisible(true);
+    d->toolboxContainer->addToolBox(d->toolboxCompositeimporter);
 
     // Layout /////////////////////////////////////////////
     QHBoxLayout *layout = new QHBoxLayout(this);
@@ -129,29 +131,6 @@ medBrowserArea::~medBrowserArea(void)
     d = NULL;
 }
 
-void medBrowserArea::setup(QStatusBar *status)
-{
-    d->status = status;
-}
-
-void medBrowserArea::setdw(QStatusBar *status)
-{
-    d->status = status;
-}
-
-//TODO : Are we sure that should be there
-void medBrowserArea::onFileImport(QString path)
-{
-    medDataManager::instance()->import(path,false);
-}
-
-//TODO : Are we sure that should be there
-void medBrowserArea::onFileIndex(QString path)
-{
-    medDataManager::instance()->import(path, true);
-
-}
-
 void medBrowserArea::onPartialImportAttempted(const QString& message)
 {
     QMessageBox msgBox;
@@ -163,38 +142,6 @@ void medBrowserArea::onPartialImportAttempted(const QString& message)
 void medBrowserArea::displayJobItem(medJobItem *importer, QString infoBaseName)
 {
     d->jobsToolBox->stack()->addJobItem(importer, infoBaseName);
-}
-
-
-//TODO : Are we sure that should be there
-void medBrowserArea::onDataImport(dtkAbstractData *data)
-{
-    QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
-    QString studyName   = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
-    QString seriesName  = data->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
-
-    QString s_patientName = patientName.simplified();
-    QString s_studyName   = studyName.simplified();
-    QString s_seriesName  = seriesName.simplified();
-
-    if ((s_patientName == "")||(s_studyName == "")||(s_seriesName == ""))
-        return;
-
-    QFileInfo fileInfo (medStorage::dataLocation() + "/" + s_patientName + "/" + s_studyName   + "/");
-
-    if (!fileInfo.dir().exists() && !medStorage::mkpath (fileInfo.dir().path()))
-    {
-        qDebug() << "Cannot create directory: " << fileInfo.dir().path();
-        return;
-    }
-
-    dtkSmartPointer<dtkAbstractData> data_smart(data);
-    medDataManager::instance()->import(data_smart);
-}
-
-void medBrowserArea::onDataReceivingFailed(QString fileName)
-{
-  emit(showError(tr("Unable to get from source the data named ") + fileName,3000));
 }
 
 void medBrowserArea::onSourceIndexChanged(int index)
@@ -219,7 +166,8 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
     d->stack->addWidget(dataSource->largeViewWidget());
     d->sourceSelectorToolBox->addTab(dataSource->tabName(),dataSource->sourceSelectorWidget(),dataSource->description());
     QList<medToolBox*> toolBoxes = dataSource->getToolBoxes();
-    foreach(medToolBox* toolBox, toolBoxes) {
+    foreach(medToolBox* toolBox, toolBoxes) 
+    {
         toolBox->setVisible(false);
         d->toolboxContainer->addToolBox(toolBox);
     }
