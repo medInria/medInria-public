@@ -599,8 +599,6 @@ void medMainWindow::switchToBrowserArea()
     if (d->shortcutAccessVisible)
         this->hideShortcutAccess();
 
-    d->browserArea->setup ( this->statusBar() );
-
     d->screenshotButton->setEnabled(false);
 
     d->stack->setCurrentWidget ( d->browserArea );
@@ -613,8 +611,6 @@ void medMainWindow::switchToWorkspaceArea()
     
     if (d->shortcutAccessVisible)
         this->hideShortcutAccess();
-
-    d->browserArea->setdw ( this->statusBar() );
 
     d->screenshotButton->setEnabled(true);
 

@@ -22,6 +22,7 @@
 class medAbstractDataSource;
 class medDataSourceManagerPrivate;
 class medDataIndex;
+class dtkAbstractData;
 
 class MEDCORE_EXPORT medDataSourceManager : public QObject
 {
@@ -33,6 +34,7 @@ public:
     * @return   medSettingsManager * - the manager
     */
     static medDataSourceManager *instance();
+    
     /**
     * destroy - should be called on closing the application, to destroy the singleton
     */
@@ -40,14 +42,32 @@ public:
     
     void ceateDataSource();
     
-signals:
-    void registered(medAbstractDataSource* dataSources);
+protected slots:
     
+    /**
+     * @brief Export data from a selected medDataIndex in a data source.
+     *
+     * Opens a file dialog and tries writers based 
+     * on the file extension given by the user.
+     * @param index
+    */
+    void exportData(const medDataIndex &index);
+    void importData(dtkAbstractData *data);
+    void importFile(QString path);
+    void indexFile(QString path);
+    void emitDataReceivingFailed(QString fileName);
+    
+    
+signals:
+    void registered(medAbstractDataSource* dataSources);    
     void open(const medDataIndex&);
     void open(QString);
     void load(QString);
     
 protected:
+    void connectDataSource(medAbstractDataSource* dataSource);
+    
+
     medDataSourceManager();
     ~medDataSourceManager();
     

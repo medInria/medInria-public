@@ -36,61 +36,15 @@ public:
      medBrowserArea(QWidget *parent = 0);
     ~medBrowserArea();
 
-    void setup(QStatusBar *status);
-    void setdw(QStatusBar *status);
+
+
     
-
-signals:
-
-    /**
-    * Signal emitted when the user chooses to open an image
-    * from the database browser.
-    * @param index - the @medDataIndex of the image
-    **/
-    void open(const medDataIndex& index);
-
-    /**
-    * Signal emitted when the user chooses to open an image
-    * from the database browser (double click on a thumbnail)
-    * @param index - the @medDataIndex of the image
-    * @param slice - the slice number corresponding to the image
-    **/
-    void openRequested(const medDataIndex& index, int slice);
-
-    /**
-    * Signal emitted when the user chooses to open a file or
-    * directory in the file browser.
-    * @param path - the path of the image or directory
-    **/
-    void open(const QString& path);
-
-    /**
-    * Signal emitted when the user chooses to load a file or
-    * directory in the file browser.
-    * @param path - the path of the image or directory
-    **/
-    void load(const QString& path);
-
-    void showError (const QString&,unsigned int timeout);
     
 
 public slots:
     void onSourceIndexChanged(int index);
-    void onFileImport(QString);
-    void onFileIndex(QString);
-    void onDataImport(dtkAbstractData *data);
-    void onDataReceivingFailed(QString fileName);
     void displayJobItem(medJobItem *importer, QString infoBaseName);
     void addDataSource(medAbstractDataSource* dataSource);
-    
-    /**
-     * @brief Export data from a selected medDataIndex in a data source.
-     *
-     * Opens a file dialog and tries writers based 
-     * on the file extension given by the user.
-     * @param index
-    */
-    void onExportData(const medDataIndex &index);
 
     /**
      * @brief Adds a medToolBox to the medToolBoxContainer.
