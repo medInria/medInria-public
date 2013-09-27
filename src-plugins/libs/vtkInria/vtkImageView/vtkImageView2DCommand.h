@@ -54,7 +54,8 @@ class VTK_IMAGEVIEW_EXPORT vtkImageView2DCommand : public vtkCommand
     CameraMoveEvent,
     CameraZoomEvent,
     CameraPanEvent,
-    DefaultMoveEvent
+    DefaultMoveEvent,
+    RequestedCursorInformationEvent
   };
   //ETX
 
