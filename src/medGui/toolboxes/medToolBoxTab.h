@@ -28,9 +28,6 @@ public:
      medToolBoxTab(QWidget *parent = NULL);
     ~medToolBoxTab();
 
-protected:
-    void paintEvent(QPaintEvent *event);
-
 private:
     medToolBoxTabPrivate *d;
 };

@@ -100,7 +100,7 @@ medDatabasePreview::medDatabasePreview(QWidget *parent) : QFrame(parent), d(new 
     connect(d->view, SIGNAL(hovered(medDatabasePreviewItem*)), this, SLOT(onHovered(medDatabasePreviewItem*)));
 
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->setContentsMargins(10, 0, 10, 10);
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(d->view);
 

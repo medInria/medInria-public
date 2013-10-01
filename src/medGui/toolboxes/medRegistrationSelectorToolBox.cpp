@@ -88,7 +88,6 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
     d->toolboxes->setToolTip(
                 tr( "Choose the registration algorithm"
                     " amongst the loaded plugins" ));
-    d->toolboxes->setStyleSheet("QComboBox{margin-top: 5px}");
     medToolBoxFactory* tbFactory =medToolBoxFactory::instance();
     
     foreach(QString toolbox, tbFactory->toolBoxesFromCategory("UndoRedoRegistration")){
@@ -98,7 +97,6 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
             qWarning() << "Unable to instantiate" << details->name << "toolbox";
         else
         {
-            tb->setStyleSheet("medToolBoxBody {border:none}");
             tb->header()->hide();
             d->undoRedoToolBox = tb;
             d->undoRedoToolBox->setRegistrationToolBox(this);
@@ -132,6 +130,7 @@ medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) 
 
     QVBoxLayout *layoutLayout = new QVBoxLayout;
     layoutLayout->addLayout(layoutButtonLayout);
+    layoutLayout->addWidget(d->toolboxes);
 
     QWidget * layoutSection = new QWidget(this);
     layoutSection->setLayout(layoutLayout);

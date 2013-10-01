@@ -15,13 +15,14 @@
 
 #include <locale.h>
 
-#include "medApplication.h"
-
 #include <QtGui>
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 #include <medPluginManager.h>
+#include <medStyleSheetParser.h>
+#include <medMainWindow.h>
+
 
 class medApplicationPrivate
 {

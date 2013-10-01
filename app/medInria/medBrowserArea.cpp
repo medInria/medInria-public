@@ -54,7 +54,6 @@ public:
     medToolBoxContainer *toolboxContainer;
     medBrowserJobsToolBox *jobsToolBox;
     medBrowserSourceSelectorToolBox *sourceSelectorToolBox;
-    medCompositeDataSetImporterSelectorToolBox *toolboxCompositeimporter;
 
     QList <medAbstractDataSource *> dataSources;
 
@@ -88,7 +87,8 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     // Toolbox container /////////////////////////////////////////////
 
     d->toolboxContainer = new medToolBoxContainer(this);
-    d->toolboxContainer->setFixedWidth(300);
+    d->toolboxContainer->setObjectName("browserContainerToolbox");
+    d->toolboxContainer->setFixedWidth(340);
     d->toolboxContainer->addToolBox(d->sourceSelectorToolBox);
 
     // static data sources ////////////////
@@ -137,10 +137,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     connect(this,SIGNAL(showError(const QString&,unsigned int)),
             medMessageController::instance(),SLOT(showError(const QString&,unsigned int)));
-
-    d->toolboxCompositeimporter = new medCompositeDataSetImporterSelectorToolBox(this);
-    d->toolboxCompositeimporter->setVisible(true);
-    d->toolboxContainer->addToolBox(d->toolboxCompositeimporter);
 
     // Layout /////////////////////////////////////////////
     QHBoxLayout *layout = new QHBoxLayout(this);

@@ -77,18 +77,13 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medWorkspace * w
 
     this->setTitle("Segmentation");
 
-    // progression stack
-    d->progression_stack = new medProgressionStack(displayWidget);
-    displayLayout->addLayout( d->algorithmParameterLayout );
-    displayLayout->addWidget( d->progression_stack );
 
-    this->addWidget(displayWidget);
 
 
     // Process section
     // --- Setting up custom toolboxes list ---
-
-    d->toolBoxes = new QComboBox(this);
+    d->toolBoxes = new QComboBox(displayWidget);
+    displayLayout->addWidget(d->toolBoxes);
     d->toolBoxes->addItem("Choose algorithm");
 
     medToolBoxFactory* tbFactory = medToolBoxFactory::instance();
@@ -101,6 +96,12 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medWorkspace * w
             details->description,
             Qt::ToolTipRole);
     }
+    // progression stack
+    d->progression_stack = new medProgressionStack(displayWidget);
+    displayLayout->addLayout( d->algorithmParameterLayout );
+    displayLayout->addWidget( d->progression_stack );
+    
+    this->addWidget(displayWidget);
 
     connect( d->toolBoxes, SIGNAL( currentIndexChanged(int) ), this, SLOT( onToolBoxChosen( int )) );
 
@@ -112,7 +113,6 @@ medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medWorkspace * w
 
     // ---
     d->toolBoxes->adjustSize();
-    addWidget(d->toolBoxes);
 
     //Connect Message Controller:
     connect(this,SIGNAL(showError(const QString&,unsigned int)),

@@ -122,7 +122,6 @@ int main(int argc,char* argv[]) {
     if (runningMedInria)
         return 0;
 
-    medSplashScreen splash(QPixmap(":/pixmaps/medInria-splash.png"));
     if (show_splash) {
 
         QObject::connect(medDatabaseController::instance().data(),
