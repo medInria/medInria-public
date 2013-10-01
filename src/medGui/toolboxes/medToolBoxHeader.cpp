@@ -54,11 +54,6 @@ medToolBoxHeader::~medToolBoxHeader(void)
     d = NULL;
 }
 
-QSize medToolBoxHeader::sizeHint(void) const
-{
-    return QSize(100, 32);
-}
-
 void medToolBoxHeader::setTitle(const QString& title)
 {
     d->title = title;
@@ -84,7 +79,7 @@ void medToolBoxHeader::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     painter.translate( d->titleOffset );
 
-    painter.drawText(rect, Qt::AlignLeft, d->title);
+    painter.drawText(rect, Qt::AlignCenter, d->title);
     painter.end();
 }
 

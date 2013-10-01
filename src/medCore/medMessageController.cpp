@@ -130,14 +130,23 @@ void medMessageProgress::setProgress(int value)
 
 void medMessageProgress::success(void)
 {
-    progress->setStyleSheet("QProgressBar::chunk {background-color: lime;}");
+    progress->setProperty("success",true);
+    progress->style()->unpolish(progress);
+    progress->style()->polish(progress);
+    progress->update();
     this->associateTimer();
+    info->setText("Operation succeeded");
 }
 
 void medMessageProgress::failure(void)
 {
-    progress->setStyleSheet("QProgressBar::chunk {background-color: red;}");
+    progress->setProperty("failure",true);
+    progress->style()->unpolish(progress);
+    progress->style()->polish(progress);
+    progress->update();
     this->associateTimer();
+
+    info->setText("Operation failed");
 }
 void medMessageProgress::associateTimer(void)
 {

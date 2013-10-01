@@ -170,7 +170,6 @@ void medCompositeDataSetImporterSelectorToolBox::onCurrentTypeChanged(const int 
     else {
         toolbox = qobject_cast<medCompositeDataSetImporterAbstractToolBox*>(medToolBoxFactory::instance()->createToolBox(id, this));
         if (toolbox) {
-            toolbox->setStyleSheet("medToolBoxBody {border:none;padding:0px}");
             toolbox->header()->hide();
 
             connect (toolbox, SIGNAL (success()), this, SIGNAL (success()));

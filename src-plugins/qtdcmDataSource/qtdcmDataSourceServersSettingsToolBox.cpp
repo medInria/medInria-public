@@ -27,19 +27,6 @@ qtdcmDataSourceServersSettingsToolBox::qtdcmDataSourceServersSettingsToolBox ( Q
     d->parent = parent;
     d->serversSettingsWidget = new QtDcmServersDicomSettingsWidget ( this );
 
-    d->serversSettingsWidget->treeWidget->setStyleSheet ( "alternate-background-color: #505050;\
-                                                          border-top-width: 0px;\
-                                                          border-left-width: 0px;\
-                                                          border-right-width: 0px;\
-                                                          border-bottom-width: 0px;\
-                                                          padding-top: 0px;\
-                                                          padding-left: 0px;\
-                                                          padding-right: 0px;\
-                                                          padding-bottom: 0px;\
-                                                          font-size: 10px;\
-                                                          color: #b2b8b2;\
-                                                          background: #313131;" );
-
     d->serversSettingsWidget->treeWidget->setColumnWidth ( 0, 70 );
     d->serversSettingsWidget->treeWidget->setColumnWidth ( 1, 100 );
     d->serversSettingsWidget->treeWidget->setColumnWidth ( 2, 150 );

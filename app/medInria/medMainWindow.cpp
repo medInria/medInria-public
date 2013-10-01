@@ -107,7 +107,7 @@ public:
     medStatusBar*             statusBar;
     medQuickAccessPushButton* quickAccessButton;
     QPropertyAnimation*       quickAccessAnimation;
-    medButton*                quitButton;
+    QToolButton*                quitButton;
     QToolButton*              fullscreenButton;
     QList<QString>            importUuids;
 
@@ -221,10 +221,13 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->controlPressed = false;
     
     //Add quit button
-    d->quitButton = new medButton ( this,":/icons/quit.png", tr ( "Quit Application" ) );
-    connect(d->quitButton, SIGNAL( triggered()), this, SLOT (close()));
-    d->quitButton->setMaximumWidth ( 31 );
-    d->quitButton->setToolTip(tr("Close medInria"));
+    QIcon quitIcon;
+    quitIcon.addPixmap(QPixmap(":/icons/quit.png"), QIcon::Normal);
+    d->quitButton = new QToolButton(this);
+    d->quitButton->setIcon(quitIcon);
+    d->quitButton->setObjectName("quitButton");
+    
+    connect(d->quitButton, SIGNAL( pressed()), this, SLOT (close()));
 
     //  Setup Fullscreen Button
 

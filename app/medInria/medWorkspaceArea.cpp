@@ -79,14 +79,14 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
     d->patientToolBox = new medPatientSelectorToolBox(this);
     d->patientToolBox->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
-    d->patientToolBox->setFixedWidth(176); // 186 - 10
+    d->patientToolBox->setFixedWidth(156); // 156 - 10
 
 
     // Setting up toolbox container
     d->toolBoxContainer = new medToolBoxContainer(this);
     d->toolBoxContainer->setOrientation(Qt::Vertical);
     d->toolBoxContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-    d->toolBoxContainer->setMinimumWidth(320);
+    d->toolBoxContainer->setMinimumWidth(340);
 
     // Setting up view container
     d->viewContainer = new QWidget(this);
@@ -99,7 +99,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->navigatorContainer = new QFrame(this);
     d->navigatorContainer->setObjectName("medNavigatorContainer");
     d->navigatorContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    d->navigatorContainer->setFixedWidth(186);
+    d->navigatorContainer->setFixedWidth(156);
 
     // Setting up navigator
     medDatabaseNavigatorController::instance()->setOrientation( Qt::Vertical );
@@ -121,6 +121,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     //Set up viewer layout
     QHBoxLayout *layout = new QHBoxLayout;
     layout->addWidget(d->splitter);
+    layout->setContentsMargins(1, 0, 1, 0);
     setLayout(layout);
     d->splitter->addWidget(d->navigatorContainer);
     d->splitter->addWidget(d->viewContainer);
@@ -781,7 +782,7 @@ void medWorkspaceArea::switchToLayout (medWorkspace::LayoutType layout)
              //width must be fixed or the navigator doesn't grow
              //back when changing orientation again
              d->navigatorContainer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-             d->navigatorContainer->setFixedHeight(186);
+             d->navigatorContainer->setFixedHeight(156);
              d->navigatorContainer->setFixedWidth(QWIDGETSIZE_MAX);
 
          d->toolBoxContainer->setOrientation(Qt::Horizontal);
@@ -806,7 +807,7 @@ void medWorkspaceArea::switchToLayout (medWorkspace::LayoutType layout)
          d->navigatorContainerLayout->addWidget (d->navigator, 1, 0);
 
              d->navigatorContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-             d->navigatorContainer->setFixedWidth(186);
+             d->navigatorContainer->setFixedWidth(156);
              d->navigatorContainer->setFixedHeight(QWIDGETSIZE_MAX);
 
          d->toolBoxContainer->setOrientation(Qt::Vertical);

@@ -60,11 +60,12 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //Setup the widget with about, settings, plugins and documentation buttons
     d->userWidget = new QWidget ( this );
     d->userWidget->setMinimumWidth ( 250 );
+    d->userWidget->setMaximumWidth ( 350 ); //TODO: find the right solution
     d->userWidget->setMinimumHeight ( 40 );
 
     //Setup the about container widget (with a QTabWidget inside)
     d->aboutWidget = new QWidget ( this );
-    d->aboutWidget->setMaximumHeight ( 500 );
+    d->aboutWidget->setMinimumSize(400,300);
 
     d->aboutWidget->hide();
 
@@ -152,6 +153,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //About widget
     QVBoxLayout * aboutLayout = new QVBoxLayout(d->aboutWidget);
     d->aboutTabWidget = new QTabWidget(this);
+    d->aboutTabWidget->setObjectName("aboutTabWidget");
 
     QLabel * medInriaLabel2 = new QLabel ( this );
     medInriaLabel2->setPixmap ( medLogo );
@@ -212,8 +214,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutLayout->addWidget ( medInriaLabel2 );
     aboutLayout->addWidget ( d->aboutTabWidget );
     aboutLayout->addLayout ( aboutButtonLayout );
-    aboutLayout->addStretch();
-
 
     //Create the plugin widget.
     d->pluginWidget = new QWidget(this);
@@ -241,6 +241,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     //Create the setttings widget.
     d->settingsWidget = new QWidget(this);
+    d->settingsWidget->setObjectName("settingsWidget");
     QVBoxLayout * settingsLayout = new QVBoxLayout(d->settingsWidget);
     QHBoxLayout * settingsHideButtonLayout = new QHBoxLayout();
     QPushButton * hideSettingsButton = new QPushButton ( this );
