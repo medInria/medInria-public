@@ -81,10 +81,9 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     // Toolbox container
 
     d->toolboxContainer = new medToolBoxContainer(this);
-    d->toolboxContainer->setFixedWidth(300);
+    d->toolboxContainer->setObjectName("browserContainerToolbox");
+    d->toolboxContainer->setFixedWidth(340);
     d->toolboxContainer->addToolBox(d->sourceSelectorToolBox);
-
-   
     
     connect(medDataSourceManager::instance(), SIGNAL(registered(medAbstractDataSource*)),
             this, SLOT(addDataSource(medAbstractDataSource*)));
@@ -98,9 +97,6 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
 
     // Jobs should be added as the last item so that they appear at the bottom
     d->toolboxContainer->addToolBox(d->jobsToolBox);
-    d->toolboxCompositeimporter = new medCompositeDataSetImporterSelectorToolBox(this);
-    d->toolboxCompositeimporter->setVisible(true);
-    d->toolboxContainer->addToolBox(d->toolboxCompositeimporter);
 
     // Layout /////////////////////////////////////////////
     QHBoxLayout *layout = new QHBoxLayout(this);
@@ -163,7 +159,7 @@ void medBrowserArea::setToolBoxesVisible(int index, bool visible )
 void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
 {
     d->dataSources.push_back(dataSource);
-    d->stack->addWidget(dataSource->largeViewWidget());
+    d->stack->addWidget(dataSource->mainWidget());
     d->sourceSelectorToolBox->addTab(dataSource->tabName(),dataSource->sourceSelectorWidget(),dataSource->description());
     
     QList<medToolBox*> toolBoxes = dataSource->getToolBoxes();

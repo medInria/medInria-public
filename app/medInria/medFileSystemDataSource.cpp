@@ -32,7 +32,7 @@ public:
     QLabel * infoText;
 };
 
-medFileSystemDataSource::medFileSystemDataSource( QObject* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
+medFileSystemDataSource::medFileSystemDataSource( QObject* parent ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
 {
     d->filesystemWidget = new QWidget();
 
@@ -45,9 +45,11 @@ medFileSystemDataSource::medFileSystemDataSource( QObject* parent /*= 0*/ ): med
     d->path->setPath(QDir::homePath());
 
     d->toolbar = new dtkFinderToolBar (d->filesystemWidget);
+    d->toolbar->setObjectName("toolbarWidget");
     d->toolbar->setPath(QDir::homePath());
 
     d->infoText = new QLabel(d->filesystemWidget);
+    d->infoText->setObjectName("fileSystemInfoText");
     d->infoText->setText("");
     d->infoText->setVisible(false);
     d->infoText->setTextFormat(Qt::RichText);
@@ -81,18 +83,23 @@ medFileSystemDataSource::medFileSystemDataSource( QObject* parent /*= 0*/ ): med
     connect(  loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadRequested()));
     connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewRequested()));
 
-    QHBoxLayout *toolbar_layout = new QHBoxLayout;
-    toolbar_layout->setContentsMargins(0, 0, 0, 0);
+    QVBoxLayout *filesystem_layout = new QVBoxLayout(d->filesystemWidget);
+    QHBoxLayout *toolbar_layout = new QHBoxLayout();
+    QWidget * toolbarWidget = new QWidget;
+    toolbarWidget->setLayout(toolbar_layout);
+    toolbarWidget->setObjectName("toolbarWidget");
+    
+    toolbar_layout->setContentsMargins(0, 0, 0, 0);    
     toolbar_layout->setSpacing(0);
     toolbar_layout->addWidget  (d->toolbar);
     toolbar_layout->addWidget  (d->path);
-
-    QVBoxLayout *filesystem_layout = new QVBoxLayout(d->filesystemWidget);
+    
+    filesystem_layout->setContentsMargins(0, 0, 0, 0);    
     filesystem_layout->setSpacing(0);
-    filesystem_layout->addLayout (toolbar_layout);
+    filesystem_layout->addWidget(toolbarWidget);
     filesystem_layout->addWidget(d->finder);
     filesystem_layout->addWidget(d->infoText);
-
+    
     connect(d->finder, SIGNAL(changed(QString)), d->path, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(changed(QString)), d->toolbar, SLOT(setPath(QString)));
@@ -152,19 +159,9 @@ medFileSystemDataSource::~medFileSystemDataSource()
     d = NULL;
 }
 
-QWidget* medFileSystemDataSource::largeViewWidget()
+QWidget* medFileSystemDataSource::mainWidget()
 {
-    d->finder->setTreeViewVisible(true);
-    d->finder->setListViewVisible(true);
     return d->filesystemWidget;
-}
-
-QWidget* medFileSystemDataSource::compactViewWidget()
-{
-    /*d->finder->setTreeViewVisible(false);
-    d->finder->setListViewVisible(false);
-    return d->finder;*/
-    return NULL;
 }
 
 QWidget* medFileSystemDataSource::sourceSelectorWidget()

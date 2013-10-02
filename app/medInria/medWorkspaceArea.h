@@ -25,6 +25,7 @@ class medViewContainer;
 class medTabbedViewContainers;
 class medAbstractDataSource;
 class medWorkspaceAreaPrivate;
+class medDatabaseDataSource;
 
 /**
  * @brief Handles all connections between all elements of the Viewer area.
@@ -184,9 +185,8 @@ public slots:
 
     void onFileOpenedInTab(const medDataIndex &index);
     
-    void addDataSource(medAbstractDataSource* dataSource);
+    void addDatabaseView(medDatabaseDataSource* dataSource);
     
-
 protected slots:
     /**
      * @brief View focused callback.

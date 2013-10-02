@@ -29,9 +29,8 @@ public:
     medFileSystemDataSource(QObject* parent = 0);
     ~medFileSystemDataSource();
 
-    QWidget* largeViewWidget();
-    QWidget* compactViewWidget();
-
+    QWidget* mainWidget();
+    
     QWidget* sourceSelectorWidget();
 
     QString tabName();

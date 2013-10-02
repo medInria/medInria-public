@@ -31,12 +31,12 @@ $GREY12     = #C0C0C0;
 $GREY13     = #D0D0D0;
 $GREY14     = #E0E0E0;
 
-$GREEN      = #66FF66;
+$GREEN      = #88FF55;
 $RED        = #FF3333;
 $YELLOW     = #FFFF99;
 
-$MY_COLOR1  = #64FF32;
-$MY_COLOR2  = #88FF55;
+$MY_COLOR1  = $GREEN;
+$MY_COLOR2  = $GREEN;
 
 $DEBUG = #FF00FF;
 

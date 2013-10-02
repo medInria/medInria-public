@@ -31,8 +31,7 @@ public:
 
     static bool registered();
 
-    QWidget *largeViewWidget();
-    QWidget *compactViewWidget();
+    QWidget *mainWidget();
     QWidget *sourceSelectorWidget();
     QString tabName();
 

@@ -42,7 +42,6 @@ medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
 
 }
 
-
 void medDataSourceManager::ceateDataSource()
 {
     // Data base data source
@@ -51,6 +50,7 @@ void medDataSourceManager::ceateDataSource()
     d->dataSources.push_back(d->dbSource);
     connectDataSource(d->dbSource);
     emit registered(d->dbSource);
+    emit databaseSourceRegistered(d->dbSource);
 
     
     // File system data source
@@ -64,9 +64,9 @@ void medDataSourceManager::ceateDataSource()
     
     
     medPacsDataSource *pacsDataSource = new medPacsDataSource;
-    medPacsWidget * mainPacsWidget = qobject_cast<medPacsWidget*> (pacsDataSource->largeViewWidget());
+    medPacsWidget * mainPacsWidget = qobject_cast<medPacsWidget*> (pacsDataSource->mainWidget());
     //make the widget hide if not functional (otehrwise it flickers in and out).
-    mainPacsWidget->hide();
+//    mainPacsWidget->hide();
     if (mainPacsWidget->isServerFunctional())
     {
         d->pacsSource = new medPacsDataSource(this);
@@ -178,13 +178,11 @@ void medDataSourceManager::exportData(const medDataIndex &index)
     medDataManager::instance()->exportDataToFile(data,fileName);
 }
 
-//TODO : Are we sure that should be there
 void medDataSourceManager::importFile(QString path)
 {
     medDataManager::instance()->import(path,false);
 }
 
-//TODO : Are we sure that should be there
 void medDataSourceManager::indexFile(QString path)
 {
     medDataManager::instance()->import(path, true);
@@ -212,7 +210,8 @@ medDataSourceManager::~medDataSourceManager( void )
 
 void medDataSourceManager::destroy( void )
 {
-    if (s_instance) {
+    if (s_instance) 
+    {
         delete s_instance;
         s_instance = 0;
     }

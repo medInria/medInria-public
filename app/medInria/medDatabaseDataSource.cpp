@@ -28,7 +28,7 @@
 class medDatabaseDataSourcePrivate
 {
 public:
-    QWidget* largeWidget;
+    QWidget* mainWidget;
     QWidget* compactWidget;
     
     medDatabasePreview *preview;
@@ -37,6 +37,7 @@ public:
     medDatabaseView *compactView;
     
     medDatabaseProxyModel *proxy;
+    medDatabaseProxyModel *compactProxy;
 
     QList<medToolBox*> toolBoxes;
     medDatabaseSearchPanel *searchPanel;
@@ -44,29 +45,31 @@ public:
 
 };
 
-medDatabaseDataSource::medDatabaseDataSource( QObject* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
+medDatabaseDataSource::medDatabaseDataSource( QObject* parent ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
 {
-    d->largeWidget = new QWidget();
+    d->mainWidget = new QWidget();
 //    d->compactWidget = new QWidget();
 
     d->model = new medDatabaseModel (this);
     d->proxy = new medDatabaseProxyModel(this);
-
     d->proxy->setSourceModel(d->model);
 
-    d->preview = new medDatabasePreview(d->largeWidget);
-    d->largeView = new medDatabaseView(d->largeWidget);
+    d->compactProxy = new medDatabaseProxyModel(this);
+    d->compactProxy->setSourceModel(d->model);
+    
+    d->preview = new medDatabasePreview(d->mainWidget);
+    d->largeView = new medDatabaseView(d->mainWidget);
     d->largeView->setModel(d->proxy);
     
     d->compactView = new medDatabaseView(d->compactWidget);
-    d->compactView->setModel(d->proxy);
+    d->compactView->setModel(d->compactProxy);
     
     
     //TODO this tow things are really ugly.
     for(int i =1; i<12; ++i)
         d->compactView->hideColumn(i);
 
-    QVBoxLayout *database_layout = new QVBoxLayout(d->largeWidget);
+    QVBoxLayout *database_layout = new QVBoxLayout(d->mainWidget);
     database_layout->setContentsMargins(0, 0, 0, 0);
     database_layout->setSpacing(0);
     database_layout->addWidget(d->largeView);
@@ -99,7 +102,6 @@ medDatabaseDataSource::medDatabaseDataSource( QObject* parent /*= 0*/ ): medAbst
     connect(d->actionsToolBox, SIGNAL(newStudyClicked()), d->largeView, SLOT(onCreateStudyRequested()));
     connect(d->actionsToolBox, SIGNAL(editClicked()), d->largeView, SLOT(onEditRequested()));
     
-    connect(d->compactView, SIGNAL(open(const medDataIndex&)), this, SIGNAL(open(const medDataIndex&)));
     connect(d->compactView, SIGNAL(exportData(const medDataIndex&)), this, SIGNAL(exportData(const medDataIndex&)));
     connect(d->compactView, SIGNAL(dataRemoved(const medDataIndex&)), this, SIGNAL(dataRemoved(const medDataIndex&)));
 }
@@ -110,9 +112,9 @@ medDatabaseDataSource::~medDatabaseDataSource()
     d = NULL;
 }
 
-QWidget* medDatabaseDataSource::largeViewWidget()
+QWidget* medDatabaseDataSource::mainWidget()
 {
-    return d->largeWidget;
+    return d->mainWidget;
 }
 
 QWidget* medDatabaseDataSource::compactViewWidget()

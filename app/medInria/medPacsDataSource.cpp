@@ -79,14 +79,9 @@ medPacsDataSource::~medPacsDataSource()
     d = NULL;
 }
 
-QWidget* medPacsDataSource::largeViewWidget()
+QWidget* medPacsDataSource::mainWidget()
 {
     return d->pacsWidget;
-}
-
-QWidget* medPacsDataSource::compactViewWidget()
-{
-    return NULL;
 }
 
 QWidget* medPacsDataSource::sourceSelectorWidget()
