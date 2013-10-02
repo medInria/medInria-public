@@ -12,6 +12,9 @@
 =========================================================================*/
 
 #include "medHomepageArea.h"
+#ifdef MEDINRIA_HAS_REVISIONS
+    #include <medRevisions.h>
+#endif
 
 #include <medHomepageButton.h>
 #include <medWorkspace.h>
@@ -57,7 +60,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     //Setup the widget with about, settings, plugins and documentation buttons
     d->userWidget = new QWidget ( this );
     d->userWidget->setMinimumWidth ( 250 );
-    d->userWidget->setMaximumWidth ( 350 ); //TODO: find the right solution and beat up the author of all of this mess.
+    d->userWidget->setMaximumWidth ( 350 ); //TODO: find the right solution
     d->userWidget->setMinimumHeight ( 40 );
 
     //Setup the about container widget (with a QTabWidget inside)
@@ -113,10 +116,10 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     settingsButton->setToolButtonStyle ( Qt::ToolButtonTextBesideIcon );
     QObject::connect ( settingsButton,SIGNAL ( clicked() ),this, SLOT ( onShowSettings() ) );
 
-    userButtonsLayout->addWidget ( settingsButton );
-    userButtonsLayout->addWidget ( pluginButton );
-    userButtonsLayout->addWidget ( aboutButton );
-    userButtonsLayout->addWidget ( helpButton );
+    userButtonsLayout->insertWidget ( 0, settingsButton );
+    userButtonsLayout->insertWidget ( 1, pluginButton );
+    userButtonsLayout->insertWidget ( 2, aboutButton );
+    userButtonsLayout->insertWidget ( 3, helpButton );
     //no need to set the layout the userWidget is the parent of the layout already.
 //    d->userWidget->setLayout ( userButtonsLayout );
 
@@ -156,11 +159,18 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     medInriaLabel2->setPixmap ( medLogo );
 
     QTextEdit * aboutTextEdit = new QTextEdit(this);
+    
     QString aboutText = QString(tr("<br/><br/>"
                       "medInria %1 is the medical imaging platform developed at "
                       "Inria<br/><br/>"
                       "<center>Inria, Copyright 2013</center>"))
                       .arg(qApp->applicationVersion());
+    
+#ifdef MEDINRIA_HAS_REVISIONS
+    aboutText += QString::fromLocal8Bit(REVISIONS);
+#endif
+
+    
     aboutTextEdit->setHtml (aboutText);
     aboutTextEdit->setFocusPolicy ( Qt::NoFocus );
 
@@ -204,8 +214,6 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
     aboutLayout->addWidget ( medInriaLabel2 );
     aboutLayout->addWidget ( d->aboutTabWidget );
     aboutLayout->addLayout ( aboutButtonLayout );
-//    aboutLayout->addStretch();
-
 
     //Create the plugin widget.
     d->pluginWidget = new QWidget(this);
@@ -258,6 +266,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     //Set the position of the widgets
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
+    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
 
     //Create a Stacked Widget in which to put info widget, about widget and plugin Widget
     d->stackedWidget = new QStackedWidget( this );
@@ -265,7 +274,7 @@ medHomepageArea::medHomepageArea ( QWidget * parent ) : QWidget ( parent ), d ( 
 
     d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,
                                                     this->height() / 5) );
-    int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y() - 200;
+    int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
     if (d->stackedWidget->minimumHeight() > stackedWidgetHeight)
         stackedWidgetHeight = d->stackedWidget->minimumHeight();
     d->stackedWidget->setMaximumHeight(stackedWidgetHeight);
@@ -314,9 +323,10 @@ void medHomepageArea::resizeEvent ( QResizeEvent * event )
 {
     //Recompute the widgets position when the window is resized
     d->navigationWidget->setProperty ( "pos", QPoint ( 100 ,  this->height() / 4 ) );
+    d->userWidget->setProperty ( "pos", QPoint ( this->width() - 350 ,  this->height() - 90 ) );
     d->stackedWidget->setProperty ( "pos", QPoint ( this->width() / 2 ,  this->height() / 5 ) );
 
-    int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y() -200;
+    int stackedWidgetHeight = d->userWidget->pos().y() - d->stackedWidget->pos().y();
     if (d->stackedWidget->minimumHeight() > stackedWidgetHeight)
         stackedWidgetHeight = d->stackedWidget->minimumHeight();
     d->stackedWidget->setMaximumHeight(stackedWidgetHeight);
@@ -386,7 +396,6 @@ void medHomepageArea::initPage()
     d->navigationWidget->setLayout ( workspaceButtonsLayout );
     d->navigationWidget->setProperty ( "pos", QPoint ( 100,  100 ) );
     d->navigationWidget->setMinimumHeight ( 55 * ( 1 + workspaceDetails.size() ) );
-    
 }
 
 QParallelAnimationGroup* medHomepageArea::getAnimation()
@@ -428,17 +437,10 @@ void medHomepageArea::onShowInfo()
 void medHomepageArea::onShowHelp()
 {
     QDesktopServices::openUrl(QUrl("http://med.inria.fr/help/documentation"));
-//     QMessageBox * msgBox = new QMessageBox ( QApplication::activeWindow() );
-//     msgBox->setIcon ( QMessageBox::Information );
-//     msgBox->setText ( "Help ! Help !" );
-//     msgBox->exec();
-//     delete msgBox;
 }
 
 void medHomepageArea::onShowSettings()
 {
-    // emit showSettings is not deprecated here
-//    emit showSettings();
     d->settingsEditor->setTabPosition(QTabWidget::North);
     d->settingsEditor->initialize();
     d->settingsEditor->queryWidgets();
@@ -446,5 +448,4 @@ void medHomepageArea::onShowSettings()
 
     d->settingsWidget->setFocus();
 }
-
 

@@ -37,7 +37,7 @@ class medWorkspaceAreaPrivate
 public:
 
     medToolBoxContainer *toolBoxContainer;
-    QTabWidget *navigatorContainer;    
+    QWidget *navigatorContainer;    
     QWidget *viewContainer;  
     
     medDatabaseDataSource *dbSource;
@@ -49,7 +49,6 @@ public:
     QSplitter * splitter;
     QMutex mutex;
     QHash<QString,medWorkspace*> workspaces;
-    QPropertyAnimation *navigatorAnimation;
 
     void restoreSplitterSize(Qt::Orientation orientation);
     void saveSplitterSize(medWorkspace::LayoutType layout);

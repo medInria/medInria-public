@@ -49,15 +49,11 @@
 #include <medTabbedViewContainers.h>
 #include <medVisualizationLayoutToolBox.h>
 #include <medViewPropertiesToolBox.h>
-#include <medToolBoxBody.h>
-#include <medToolBoxTab.h>
-#include <medAbstractDataSource.h>
 
+#include "medDatabaseDataSource.h"
 #include "medDataSourceManager.h"
 
 #include <QtGui>
-#include <QPropertyAnimation>
-#include <QEasingCurve>
 
 // /////////////////////////////////////////////////////////////////
 // medWorkspaceArea
@@ -90,9 +86,8 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     viewContainerLayout->setContentsMargins(0, 0, 0, 0);
     viewContainerLayout->addWidget(d->stack);
 
-
     // Setting up navigator 
-    d->navigatorContainer = new QTabWidget(this);
+    d->navigatorContainer = new QWidget(this);
     d->navigatorContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     d->navigatorContainer->setMinimumWidth(225);    
 
@@ -118,8 +113,8 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
     this->addAction(transFunAction);
     
-    connect(medDataSourceManager::instance(), SIGNAL(registered(medAbstractDataSource*)),
-            this, SLOT(addDataSource(medAbstractDataSource*)));
+    connect(medDataSourceManager::instance(), SIGNAL(databaseSourceRegistered(medDatabaseDataSource*)),
+            this, SLOT(addDatabaseView(medDatabaseDataSource*)));
 }
 
 medWorkspaceArea::~medWorkspaceArea(void)
@@ -510,12 +505,8 @@ void medWorkspaceArea::setupWorkspace(QString name)
     connect(workspace, SIGNAL(layoutSplit(int,int)),       this, SLOT(split(int,int)), Qt::UniqueConnection);
     connect(workspace, SIGNAL(layoutPresetClicked(int)),   this, SLOT(switchToContainerPreset(int)), Qt::UniqueConnection);
     connect(workspace, SIGNAL(toolboxAdded(medToolBox*)),  this, SLOT(addToolBox(medToolBox*)), Qt::UniqueConnection);
-    connect(workspace, SIGNAL(toolboxRemoved(medToolBox*)),this, SLOT(removeToolBox(medToolBox*)), Qt::UniqueConnection);
+    connect(workspace, SIGNAL(toolboxRemoved(medToolBox*)),this, SLOT(removeToolBox(medToolBox*)), Qt::UniqueConnection);    
 
-    // double-click on a thumbnail launches its visualization in the current workspace
-
-    connect (medDataManager::instance(), SIGNAL(openRequested(const medDataIndex&)),
-        this, SLOT(open(const medDataIndex&)), Qt::UniqueConnection);
 }
 
 void medWorkspaceArea::switchToLayout (medWorkspace::LayoutType layout)
@@ -641,10 +632,17 @@ void medWorkspaceAreaPrivate::restoreSplitterSize(Qt::Orientation orientation)
 
 }
 
-void medWorkspaceArea::addDataSource( medAbstractDataSource* dataSource )
+void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
 {
-    if(!dataSource->compactViewWidget())    
-        return
-    d->dataSources.push_back(dataSource);
-    d->navigatorContainer->addTab(dataSource->compactViewWidget(), dataSource->tabName());
+    QVBoxLayout *databaseViewLayout = new QVBoxLayout;
+    databaseViewLayout->setSpacing(0);
+    databaseViewLayout->setContentsMargins(0,0,0,0);
+            
+    databaseViewLayout->addWidget(dataSource->compactViewWidget());
+    d->navigatorContainer->setLayout(databaseViewLayout);
+
+    connect(dataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
+            this, SLOT(open(const medDataIndex&)),
+            Qt::UniqueConnection);
+
 }

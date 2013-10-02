@@ -30,9 +30,9 @@ public:
     medDatabaseDataSource(QObject *parent = 0);
     ~medDatabaseDataSource();
 
-    QWidget* largeViewWidget();
+    QWidget* mainWidget();
     QWidget* compactViewWidget();
-
+    
     QWidget* sourceSelectorWidget();
 
     QString tabName();
