@@ -44,7 +44,6 @@
 #include <vnl/vnl_cross.h>
 
 #include <float.h>
-#include <fstream>
 
 namespace itk
 {
@@ -141,24 +140,49 @@ void DCMTKImageIO::ReadImageInformation()
     int    fileIndex = 0;
     double sliceLocation = 0;
 
-    /** The purpose of the next loop is to parse the DICOM header of each file, store all
-       fields in the Dictionary, and order filenames depending on their sliceLocation,
-       assuming that the sliceLocation field gives the order dicoms are obtained. */
-    NameSetType::const_iterator f = fileNames.begin(), fe = fileNames.end();
-    int i = 0;
-    while ( f != fe )
+    /** The purpose of the next loop is to parse the DICOM header of each file and to store all
+     fields in the Dictionary. */
+
+    NameSetType::const_iterator f1 = fileNames.begin(), f2 = fileNames.end();
+
+    while ( f1 != f2 )
     {
         std::string filename;
         if( m_Directory != "" )
-            filename = m_Directory + ITK_FORWARD_PATH_SLASH + *f;
+            filename = m_Directory + ITK_FORWARD_PATH_SLASH + *f1;
         else
-            filename = *f;
+            filename = *f1;
 
         try
         {
             this->ReadHeader( filename, fileIndex, fileCount );
-            const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
+        }
+        catch (ExceptionObject &e)
+        {
+            std::cerr << e; // continue to be robust to odd files
+        }
+        ++f1;
+        ++fileIndex;
+    }
 
+
+    /** Spacing between slices calculation (needs the dictionnary to be filled)*/
+
+    /*** We first need the spacing between the slices*/
+    this->DetermineOrientation();
+    this->DetermineSpacing(); // always called after DetermineOrientation
+
+    /** The purpose of the next loop is to order filenames depending on their sliceLocation,
+       assuming that the sliceLocation field gives the order dicoms are obtained. */
+    NameSetType::const_iterator f = fileNames.begin(), fe = fileNames.end();
+    int i = 0;
+    fileIndex =0;
+    const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
+
+    while ( f != fe )
+    {
+        try
+        {
             if (imagePositions.size() > 0) {
                 sliceLocation = this->GetSliceLocation(imagePositions[i]);
             } else {
@@ -166,19 +190,10 @@ void DCMTKImageIO::ReadImageInformation()
             }
             i++;
 
-            //Get Spacing between slices
-            double spacingBetweenSlices = 1.0;
-            const StringVectorType &spacingBetweenSlicesVec = this->GetMetaDataValueVectorString ("(0018,0088)");
-            if( spacingBetweenSlicesVec.size() )
-            {
-                std::string spacingBetweenSlicesStr = spacingBetweenSlicesVec[0];
-                std::istringstream is_stream( spacingBetweenSlicesStr.c_str() );
-                is_stream>>spacingBetweenSlices;
-            }
-
             //Forcing sliceLocation to be a multiple of spacing between slices
             //Prevents from some sorting issues (e.g due to extremely small differences in sliceLocations)
-//            sliceLocation = floor(sliceLocation/spacingBetweenSlices+0.5)*spacingBetweenSlices;
+
+            sliceLocation = floor(sliceLocation/m_Spacing[2]+0.5)*m_Spacing[2];
             m_LocationSet.insert( sliceLocation );
             m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *f ) );
             m_FilenameToIndexMap[ *f ] = fileIndex;
@@ -208,6 +223,7 @@ void DCMTKImageIO::ReadImageInformation()
         {
             int instanceNumber = 0;
             std::string instanceNumberString = this->GetMetaDataValueString ("(0020,0013)", m_FilenameToIndexMap[ n->second ]);
+
             if( instanceNumberString!="" )
             {
                 std::istringstream is_stream ( instanceNumberString.c_str() );
@@ -246,19 +262,7 @@ void DCMTKImageIO::ReadImageInformation()
     {
         if (!( m_LocationToFilenamesMap.count(*it)==sizeT ))
         {
-            std::string machin;
-            for (SliceLocationToNamesMultiMapType::const_iterator it1 = m_LocationToFilenamesMap.begin(), it2 = it1, end = m_LocationToFilenamesMap.end(); it1 != end; it1 = it2)
-            {
-                if (it2->first == *it) {
-                    for ( ; it2->first == it1->first; ++it2) {
-                        machin += it2->second + " ";
-                    }
-                } else {
-                    it2++;
-                }
-            }
-
-            itkExceptionMacro (<< "Inconsistency in dicom volumes: " << machin << " " << m_LocationToFilenamesMap.count(*it) << " vs. " << sizeT);
+            itkExceptionMacro (<< "Inconsistency in dicom volumes: " << m_LocationToFilenamesMap.count(*it) << " vs. " << sizeT);
         }
         ++it;
     }
@@ -282,8 +286,6 @@ void DCMTKImageIO::ReadImageInformation()
     this->DeterminePixelType();
     this->DetermineDimensions();
     this->DetermineOrigin();
-    this->DetermineOrientation();
-    this->DetermineSpacing(); // always called after DetermineOrientation
 
     /**
        Determine the slice ordering. Depending on the sliceLocation and the imagePatientPosition,
@@ -457,13 +459,12 @@ void DCMTKImageIO::DetermineSpacing()
 
     m_Spacing[2] = 1.0;
 
-    const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
-
     /**
        Z-spacing is determined by the ImagePositionPatient flag. Compute the distance between
        2 consecutive slices and project it onto the acquisition axis (normal of the ImageOrientation).
        Average it over all slices, use a 10% margin to distinguish between volumes in case of 4D images.
      */
+    const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
     if( imagePositions.size()>1 )
     {
         std::vector<double> gaps (imagePositions.size()-1, 0.0);
@@ -472,7 +473,6 @@ void DCMTKImageIO::DetermineSpacing()
         normal[0] = m_Direction[2][0];
         normal[1] = m_Direction[2][1];
         normal[2] = m_Direction[2][2];
-
 
         double ref_gap = MAXIMUM_GAP; // choose ref_gap as minimum gap between slices
         for (unsigned int i=1; i<imagePositions.size(); i++)
@@ -510,6 +510,7 @@ void DCMTKImageIO::DetermineSpacing()
                 ; //itkWarningMacro (<< "Inconsistency in slice spacing: " << ref_gap << " " << gaps[i]);
             }
         }
+
         if (total_gap==MAXIMUM_GAP)
             m_Spacing[2] = 1.0;
         else
@@ -1061,20 +1062,17 @@ void DCMTKImageIO::ReadHeader(const std::string& name, const int& fileIndex, con
         }
     }
 
-
     // reading data set
     DcmDataset* dataSet = dicomFile.getDataset();
     for ( unsigned long e = 0; e < dataSet->card(); e++ )
     {
         DcmElement* element = dataSet->getElement( e );
-
         DcmPixelData* pixelData = dynamic_cast<DcmPixelData*>(element);
         if (!pixelData) // don't want to read PixData right now
         {
             this->ReadDicomElement( element, fileIndex, fileCount );
         }
     }
-
 }
 
 
