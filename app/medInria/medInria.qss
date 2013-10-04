@@ -218,22 +218,24 @@ $GROUP_BOX_FONTSIZE             = 9px;
 /*******************************************************************************
     RADIUS
  *******************************************************************************/
-$LINE_EDIT_RADIUS               = 6px;
+$LINE_EDIT_RADIUS               = 3px;
 
-$PROGRESS_BAR_RADIUS            = 6px;
+$PROGRESS_BAR_RADIUS            = 3px;
 
 $SLIDER_RADIUS                  = 4px;
 
-$PUSH_BUTTON_RADIUS             = 4px;
+$PUSH_BUTTON_RADIUS             = 3px;
 
-$GROUP_BOX_RADIUS               = 4px;
+$GROUP_BOX_RADIUS               = 3px;
 
 $SCROLL_BAR_RADIUS              = 5px;
 
-$COMBO_BOX_RADIUS               = 9px;
-$VIEW_PROPERTY_COMBO_BOX_RADIUS = 6px;
+$COMBO_BOX_RADIUS               = 3px;
+$VIEW_PROPERTY_COMBO_BOX_RADIUS = 2px;
 
 $FINDER_TOOLBAR_RADIUS          = 2px;
+
+$VIEW_CONTAINER_BUTTON_RADIUS   = 2px;
 
 
 /*******************************************************************************
@@ -1122,6 +1124,7 @@ medTabbedViewContainers QPushButton
 {
     margin: $VIEW_CONTAINER_BUTTON_MARGIN; 
     padding: $VIEW_CONTAINER_BUTTON_PADDING; 
+    border-radius: $VIEW_CONTAINER_BUTTON_RADIUS; 
 }
  
 medTabbedViewContainers QPushButton::hover
