@@ -31,12 +31,12 @@ $GREY12     = #C0C0C0;
 $GREY13     = #D0D0D0;
 $GREY14     = #E0E0E0;
 
-$GREEN      = #66FF66;
+$GREEN      = #64FF32;
 $RED        = #FF3333;
 $YELLOW     = #FFFF99;
 
-$MY_COLOR1  = #64FF32;
-$MY_COLOR2  = #88FF55;
+$MY_COLOR1  = $GREEN;
+$MY_COLOR2  = $GREEN;
 
 $DEBUG = #FF00FF;
 
@@ -181,7 +181,7 @@ $BROWSER_CONTAINER_BORDER       = 2px solid $GREY06;
  *******************************************************************************/
 $STATUS_BAR_HEIGHT              = 34px;
 
-$PROGRESS_BAR_HEIGHT            = 15px;
+$PROGRESS_BAR_HEIGHT            = 12px;
 
 $CHECKBOX_SIZE                  = 15px;
 
@@ -206,6 +206,8 @@ $VIEW_PROPERTY_MIN_HEIGHT       = 250px;
 
 $FINDER_PATH_BAR_HEIGHT         = 28px;
 
+$LAYOUT_BUTTON_MIN_HEIGHT       = 32px;
+
 
 /*******************************************************************************
     FONT
@@ -220,7 +222,7 @@ $GROUP_BOX_FONTSIZE             = 9px;
  *******************************************************************************/
 $LINE_EDIT_RADIUS               = 3px;
 
-$PROGRESS_BAR_RADIUS            = 3px;
+$PROGRESS_BAR_RADIUS            = 5px;
 
 $SLIDER_RADIUS                  = 4px;
 
@@ -720,17 +722,17 @@ QPushButton, QPushButton:flat, QToolButton
     outline: 0px;
 }
 
-QPushButton:hover, QPushButton:flat:hover, QToolButton:hover
+QPushButton:hover, QToolButton:hover
 {
     background-color: $PUSH_BUTTON_HOVER_BACKGROUND;
 }
 
-QPushButton:pressed, QPushButton:flat:pressed, QToolButton:pressed
+QPushButton:pressed, QToolButton:pressed
 {
     background-color: $PUSH_BUTTON_PRESSED_BACKGROUND;
 }
 
-QPushButton:checked, QPushButton:flat:checked, QToolButton:checked
+QPushButton:checked, QToolButton:checked
 {
     background-color: $PUSH_BUTTON_CHECKED_BACKGROUND;
 }
@@ -748,6 +750,31 @@ QPushButton::menu-indicator:flat
     image: none;
 }
 
+
+QPushButton:flat 
+{
+    border: none;
+    background-color: none;
+    height: $LAYOUT_BUTTON_MIN_HEIGHT;
+}
+
+
+QPushButton:flat:hover 
+{
+    border: none;
+    background-color: none;
+}
+
+QPushButton:flat:pressed 
+{
+    border: none;
+    background-color: none;
+}
+
+QPushButton::menu-indicator:flat 
+{
+    image: none;
+}
 
 QToolButton#fullScreenButton:hover,
 QToolButton#screenshotButton:hover,
