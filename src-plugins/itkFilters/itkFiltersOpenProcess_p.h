@@ -46,7 +46,7 @@ public:
         typename OpenType::Pointer openFilter = OpenType::New();
         
         KernelType ball;
-        KernelType::SizeType ballSize;
+        typename KernelType::SizeType ballSize;
         ballSize.Fill(size);
         
         ball.SetRadius(ballSize);

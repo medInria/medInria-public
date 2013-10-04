@@ -46,7 +46,7 @@ public:
         typename ErodeType::Pointer erodeFilter = ErodeType::New();
         
         KernelType ball;
-        KernelType::SizeType ballSize;
+        typename KernelType::SizeType ballSize;
         ballSize.Fill(size);
         
         ball.SetRadius(ballSize);

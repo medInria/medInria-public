@@ -46,7 +46,7 @@ public:
         typename CloseType::Pointer closeFilter = CloseType::New();
         
         KernelType ball;
-        KernelType::SizeType ballSize;
+        typename KernelType::SizeType ballSize;
         ballSize.Fill(size);
         
         ball.SetRadius(ballSize);
