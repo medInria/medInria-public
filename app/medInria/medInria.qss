@@ -142,8 +142,8 @@ $TAB_SELECTED_COLOR                 = $MY_COLOR2;
 $TAB_COLOR                          = $GREY08;
 $TAB_HOVER_COLOR                    = $GREY12;
 
-$SCROLL_BAR_HORIZONTAL_COLOR        = qradialgradient(cx: 0.5, cy: 0, fx: 0.5, fy: 0, radius: 1, stop: 0 $GREY10, stop: 1 $GREY13);
-$SCROLL_BAR_VERTICAL_COLOR          = qradialgradient(cx: 0, cy: 0.5, fx: 0, fy: 0.5, radius: 1, stop: 0 $GREY10, stop: 1 $GREY13);
+$SCROLL_BAR_HORIZONTAL_COLOR        = qradialgradient(cx: 0.5, cy: 0, fx: 0.5, fy: 0, radius: 1, stop: 0 $GREY08, stop: 1 $GREY11);
+$SCROLL_BAR_VERTICAL_COLOR          = qradialgradient(cx: 0, cy: 0.5, fx: 0, fy: 0.5, radius: 1, stop: 0 $GREY08, stop: 1 $GREY11);
 
 $HOMEPAGE_TEXT_COLOR                = $GREY06;
 
