@@ -28,6 +28,7 @@
 #include "itkFiltersCloseProcess.h"
 #include "itkFiltersOpenProcess.h"
 #include "itkFiltersToolBox.h"
+#include "itkMorphologicalFiltersToolBox.h"
 #include "itkFiltersDefinitions.h"
 
 #include <dtkLog/dtkLog.h>
@@ -67,6 +68,7 @@ bool itkFiltersPlugin::initialize()
     if ( !itkFiltersCloseProcess::registered() )     { dtkWarn() << "Unable to register itkFilters close filter process type";    }
     if ( !itkFiltersOpenProcess::registered() )      { dtkWarn() << "Unable to register itkFilters open filter process type";     }
     if ( !itkFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkFilters toolbox";                      }
+    if ( !itkMorphologicalFiltersToolBox::registered() )          { dtkWarn() << "Unable to register itkMorphologicalFilters toolbox";                      }
 
     return true;
 }

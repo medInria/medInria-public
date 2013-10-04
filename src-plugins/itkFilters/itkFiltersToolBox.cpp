@@ -55,20 +55,12 @@ public:
     QWidget * invertFilterWidget;
     QWidget * shrinkFilterWidget;
     QWidget * intensityFilterWidget;
-    QWidget * dilateFilterWidget;
-    QWidget * erodeFilterWidget;
-    QWidget * closeFilterWidget;
-    QWidget * openFilterWidget;
 
     QDoubleSpinBox * addFilterValue;
     QDoubleSpinBox * subtractFilterValue;
     QDoubleSpinBox * multiplyFilterValue;
     QDoubleSpinBox * divideFilterValue;
     QDoubleSpinBox * gaussianFilterValue;
-    QDoubleSpinBox * dilateFilterValue;
-    QDoubleSpinBox * erodeFilterValue;
-    QDoubleSpinBox * closeFilterValue;
-    QDoubleSpinBox * openFilterValue;
     QSpinBox * shrink0Value;
     QSpinBox * shrink1Value;
     QSpinBox * shrink2Value;
@@ -100,11 +92,7 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
                 << "Median filter" 
                 << "Invert intensity filter"
                 << "Shrink image filter" 
-                << "Intensity windowing filter"
-                << "Binary Dilate filter"
-                << "Binary Erode filter"
-                << "Binary Close Filter"
-                << "Binary Open Filter";
+                << "Intensity windowing filter";
     
     d->filters->addItems ( filtersList );
 
@@ -251,55 +239,6 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
 
     d->intensityFilterWidget->setLayout ( intensityFilterLayout );
 
-
-    //Dilate filter widgets
-    d->dilateFilterWidget = new QWidget(this);
-    d->dilateFilterValue = new QDoubleSpinBox;
-    d->dilateFilterValue->setMaximum ( 10 );
-    d->dilateFilterValue->setValue ( 1 );
-    QLabel * dilateFilterLabel = new QLabel ( tr ( "Kernel size:" ) );
-    QHBoxLayout * dilateFilterLayout = new QHBoxLayout;
-    dilateFilterLayout->addWidget ( dilateFilterLabel );
-    dilateFilterLayout->addWidget ( d->dilateFilterValue );
-    dilateFilterLayout->addStretch ( 1 );
-    d->dilateFilterWidget->setLayout ( dilateFilterLayout );
-
-    //Erode filter widgets
-    d->erodeFilterWidget = new QWidget(this);
-    d->erodeFilterValue = new QDoubleSpinBox;
-    d->erodeFilterValue->setMaximum ( 10 );
-    d->erodeFilterValue->setValue ( 1 );
-    QLabel * erodeFilterLabel = new QLabel ( tr ( "Kernel size:" ) );
-    QHBoxLayout * erodeFilterLayout = new QHBoxLayout;
-    erodeFilterLayout->addWidget ( erodeFilterLabel );
-    erodeFilterLayout->addWidget ( d->erodeFilterValue );
-    erodeFilterLayout->addStretch ( 1 );
-    d->erodeFilterWidget->setLayout ( erodeFilterLayout );
-
-    //Close filter widgets
-    d->closeFilterWidget = new QWidget(this);
-    d->closeFilterValue = new QDoubleSpinBox;
-    d->closeFilterValue->setMaximum ( 10 );
-    d->closeFilterValue->setValue ( 1 );
-    QLabel * closeFilterLabel = new QLabel ( tr ( "Kernel size:" ) );
-    QHBoxLayout * closeFilterLayout = new QHBoxLayout;
-    closeFilterLayout->addWidget ( closeFilterLabel );
-    closeFilterLayout->addWidget ( d->closeFilterValue );
-    closeFilterLayout->addStretch ( 1 );
-    d->closeFilterWidget->setLayout ( closeFilterLayout );
-
-    //Open filter widgets
-    d->openFilterWidget = new QWidget(this);
-    d->openFilterValue = new QDoubleSpinBox;
-    d->openFilterValue->setMaximum ( 10 );
-    d->openFilterValue->setValue ( 1 );
-    QLabel * openFilterLabel = new QLabel ( tr ( "Kernel size:" ) );
-    QHBoxLayout * openFilterLayout = new QHBoxLayout;
-    openFilterLayout->addWidget ( openFilterLabel );
-    openFilterLayout->addWidget ( d->openFilterValue );
-    openFilterLayout->addStretch ( 1 );
-    d->openFilterWidget->setLayout ( openFilterLayout );
-
     // Run button:
     QPushButton *runButton = new QPushButton ( tr ( "Run" ) );
     runButton->setFocusPolicy ( Qt::NoFocus );
@@ -323,10 +262,6 @@ itkFiltersToolBox::itkFiltersToolBox ( QWidget *parent ) : medFilteringAbstractT
     layout->addWidget ( d->invertFilterWidget );
     layout->addWidget ( d->shrinkFilterWidget );
     layout->addWidget ( d->intensityFilterWidget );
-    layout->addWidget ( d->dilateFilterWidget );
-    layout->addWidget ( d->erodeFilterWidget );
-    layout->addWidget ( d->closeFilterWidget );
-    layout->addWidget ( d->openFilterWidget );
     layout->addWidget ( runButton );
     layout->addWidget ( d->progression_stack );
     layout->addStretch ( 1 );
@@ -761,50 +696,6 @@ void itkFiltersToolBox::setupItkWindowingProcess()
     d->process->setParameter ( d->intensityOutputMaximumValue->value(), 3 );
 }
 
-void itkFiltersToolBox::setupItkDilateProcess()
-{
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkDilateProcess" );
-
-    if (!d->process)
-        return;
-    
-    d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->dilateFilterValue->value(), 0 );
-}
-
-void itkFiltersToolBox::setupItkErodeProcess()
-{
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkErodeProcess" );
-
-    if (!d->process)
-        return;
-    
-    d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->erodeFilterValue->value(), 0 );
-}
-
-void itkFiltersToolBox::setupItkCloseProcess()
-{
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkCloseProcess" );
-
-    if (!d->process)
-        return;
-    
-    d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->closeFilterValue->value(), 0 );
-}
-
-void itkFiltersToolBox::setupItkOpenProcess()
-{
-    d->process = dtkAbstractProcessFactory::instance()->createSmartPointer ( "itkOpenProcess" );
-
-    if (!d->process)
-        return;
-    
-    d->process->setInput ( this->parentToolBox()->data() );
-    d->process->setParameter ( d->openFilterValue->value(), 0 );
-}
-
 void itkFiltersToolBox::run ( void )
 {
     if ( !this->parentToolBox() )
@@ -852,18 +743,6 @@ void itkFiltersToolBox::run ( void )
     case 9: // intensity windowing filter
         this->setupItkWindowingProcess();
         break;
-    case 10: // dilate filter
-        this->setupItkDilateProcess();
-        break;
-    case 11: // erode filter
-        this->setupItkErodeProcess();
-        break;
-    case 12: // close filter
-        this->setupItkCloseProcess();
-        break;
-    case 13: // open filter
-        this->setupItkOpenProcess();
-        break;
     }
 
     if (! d->process)
@@ -894,10 +773,6 @@ void itkFiltersToolBox::onFiltersActivated ( int index )
     d->invertFilterWidget->hide();
     d->shrinkFilterWidget->hide();
     d->intensityFilterWidget->hide();
-    d->dilateFilterWidget->hide();
-    d->erodeFilterWidget->hide();
-    d->closeFilterWidget->hide();
-    d->openFilterWidget->hide();
 
     switch ( index )
     {
@@ -930,18 +805,6 @@ void itkFiltersToolBox::onFiltersActivated ( int index )
         break;
     case 9:
         d->intensityFilterWidget->show();
-        break;
-    case 10:
-        d->dilateFilterWidget->show();
-        break;
-    case 11:
-        d->erodeFilterWidget->show();
-        break;
-    case 12:
-        d->closeFilterWidget->show();
-        break;
-    case 13:
-        d->openFilterWidget->show();
         break;
     default:
         d->addFilterWidget->show();
