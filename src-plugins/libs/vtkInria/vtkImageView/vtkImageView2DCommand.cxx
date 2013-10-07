@@ -228,6 +228,16 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
     return;
   }
 
+  // Cursor Position requested
+  if (event == vtkImageView2DCommand::RequestedCursorInformationEvent)
+  {
+    double position[3];
+    this->Viewer->GetWorldCoordinatesFromDisplayPosition (isi->GetRequestedPosition (), position);
+    this->Viewer->vtkImageView::UpdateCursorPosition(position);
+    this->Viewer->Render();
+    return;
+  }
+
   // default move : align cursor and update annotation accordingly
   if( event == vtkImageView2DCommand::DefaultMoveEvent)
   {
