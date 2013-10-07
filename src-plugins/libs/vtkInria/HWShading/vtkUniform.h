@@ -1,0 +1,117 @@
+/*============================================================================
+The Hardware Shading (HWShading) module is protected by the
+following copyright:
+Copyright (c) 2007 Biomedical Image Analysis (BMIA) - Department of
+Biomedical Engineering - Eindhoven University of Technology.
+All rights reserved. See Copyright.txt for details.
+The HWShading implementation was originally written by Tim Peeters (BMIA - TUe)
+and published at the "11th International Fall Workshop on Vision, Modeling,
+and Visualization 2006" (VMV'06):
+"Visualization of the Fibrous Structure of the Heart", by T. Peeters et al.
+See http://timpeeters.com/research/vmv2006 for more information.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.  See the above copyright notices for more information.
+============================================================================*/
+
+#pragma once
+
+#include "vtkHWShadingExport.h"
+#include "vtkShaderUniform.h"
+
+template <unsigned N>
+struct Vec {
+
+    Vec(const float v[N]) {
+        for (unsigned i=0;i<N;++i)
+            Value[i] = v[i];
+    }
+
+    operator const float*() {
+        return Value;
+    }
+
+    void operator=(const float& v) {
+        for (unsigned i=0;i<N;++i)
+            Value[i] = v;
+    }
+
+    float& operator[](const unsigned i)       { return Value[i]; }
+    float  operator[](const unsigned i) const { return Value[i]; }
+
+    float Value[N];
+};
+
+template <unsigned N>
+vtkOStreamWrapper& operator<<(vtkOStreamWrapper& os,const Vec<N>& V) {
+    for (unsigned i=0;i<N;++i)
+        os << V[i] << ' ';
+    return os;
+}
+
+template <typename T>
+class VTK_HWSHADING_EXPORT vtkUniform: public vtkShaderUniform {
+public:
+
+    static vtkUniform* New();
+    vtkTypeRevisionMacro(vtkUniform, vtkShaderUniform);
+
+    vtkSetMacro(Value, T);
+    vtkGetMacro(Value, T);
+
+protected:
+
+    vtkUniform(): Value(0) { }
+    ~vtkUniform() { }
+
+    virtual void SetGlUniformSpecific() {
+        vtkgl::Uniform1f(Location, Value);
+    }
+
+private:
+    T Value;
+};
+
+template <unsigned N>
+class VTK_HWSHADING_EXPORT vtkUniform<Vec<N> >: public vtkShaderUniform {
+public:
+
+    static vtkUniform* New();
+    vtkTypeRevisionMacro(vtkUniform<Vec<N> >, vtkShaderUniform);
+
+    vtkSetVectorMacro(Value,const float,N);
+    vtkGetVectorMacro(Value,const float,N);
+
+protected:
+
+    vtkUniform(): Value(0) { }
+    ~vtkUniform() { }
+
+    virtual void SetGlUniformSpecific();
+
+private:
+
+    Vec<N> Value;
+};
+
+template<>
+inline
+void vtkUniform<Vec<2> >::SetGlUniformSpecific() {
+    vtkDebugMacro(<< "Calling glUniform2f(" << Location << ", " << Value[0] << ", " << Value[1] << ").");
+    vtkgl::Uniform2f(Location,Value[0],Value[1]);
+}
+
+template<>
+inline
+void vtkUniform<Vec<3> >::SetGlUniformSpecific() {
+    vtkDebugMacro(<< "Calling glUniform3f(" << Location << ", " << Value[0] << ", " << Value[1] << ", " << Value[2] << ").");
+    vtkgl::Uniform3f(Location,Value[0],Value[1],Value[2]);
+}
+
+template<>
+inline
+void vtkUniform<Vec<4> >::SetGlUniformSpecific() {
+    vtkDebugMacro(<< "Calling glUniform4f(" << Location << ", " << Value[0] << ", " << Value[1] << ", " << Value[2] << ", " << Value[3] << ").");
+    vtkgl::Uniform4f(Location,Value[0],Value[1],Value[2],Value[3]);
+}
+
