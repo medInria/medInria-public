@@ -420,7 +420,7 @@ QComboBox
 
 QComboBox::drop-down
 {
-    padding: 0px $COMBO_BOX_PADDING;
+    padding-right: $COMBO_BOX_PADDING;
     image: url(:/pixmaps/arrow-bot.png);
     subcontrol-origin: padding;
     subcontrol-position: center right;
