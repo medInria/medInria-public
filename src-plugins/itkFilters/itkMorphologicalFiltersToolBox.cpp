@@ -79,12 +79,14 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     d->kernelSize = new QDoubleSpinBox;
     d->kernelSize->setMaximum ( 10 );
     d->kernelSize->setValue ( 1 );
-    QLabel * dilateFilterLabel = new QLabel ( tr ( "Kernel size:" ) );
-    QHBoxLayout * dilateFilterLayout = new QHBoxLayout;
-    dilateFilterLayout->addWidget ( dilateFilterLabel );
-    dilateFilterLayout->addWidget ( d->kernelSize );
-    dilateFilterLayout->addStretch ( 1 );
-    d->filterWidget->setLayout ( dilateFilterLayout );
+    QLabel * morphoFilterLabel = new QLabel ( tr ( "Kernel size:" ) );
+    QHBoxLayout * morphoFilterLayout = new QHBoxLayout;
+    QLabel * morphoFilterLabel2 = new QLabel ( tr ( " pixels" ) );
+    morphoFilterLayout->addWidget ( morphoFilterLabel );
+    morphoFilterLayout->addWidget ( d->kernelSize );
+    morphoFilterLayout->addWidget ( morphoFilterLabel2 );
+    morphoFilterLayout->addStretch ( 1 );
+    d->filterWidget->setLayout ( morphoFilterLayout );
 
 
     // Run button:
@@ -134,7 +136,7 @@ bool itkMorphologicalFiltersToolBox::registered()
     medToolBoxFactory* factory = medToolBoxFactory::instance();
     return factory->registerToolBox<itkMorphologicalFiltersToolBox> (
                 "itkMorphologicalFilters",
-                "ITK Morphological Filters",
+                "ITK Binary Morphological Filters",
                 "ITK morphological filters, processing examples",
                 QStringList()<<"filtering"/*,
                 createitkMorphologicalFiltersToolBox */);

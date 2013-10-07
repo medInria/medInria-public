@@ -39,7 +39,7 @@ public:
     int size;
 
     template <class PixelType> void update ( void )
-    {        
+    {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::BinaryBallStructuringElement < PixelType, 3> KernelType;
         typedef itk::BinaryDilateImageFilter< ImageType, ImageType,KernelType >  DilateType;
