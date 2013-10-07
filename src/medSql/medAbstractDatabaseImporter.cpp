@@ -799,12 +799,14 @@ dtkSmartPointer<dtkAbstractData> medAbstractDatabaseImporter::tryReadImages ( co
 
     if ( dataReader )
     {
+        bool readSuccessful = false;
         if ( readOnlyImageInformation )
-            dataReader->readInformation ( filesPaths );
+            readSuccessful = dataReader->readInformation ( filesPaths );
         else
-            dataReader->read ( filesPaths );
+            readSuccessful = dataReader->read ( filesPaths );
 
-        dtkData = dataReader->data();
+        if (readSuccessful)
+            dtkData = dataReader->data();
     }
     else
     {
