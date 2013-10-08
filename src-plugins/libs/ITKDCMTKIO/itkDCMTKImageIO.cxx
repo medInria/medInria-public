@@ -142,16 +142,13 @@ void DCMTKImageIO::ReadImageInformation()
 
     /** The purpose of the next loop is to parse the DICOM header of each file and to store all
      fields in the Dictionary. */
-
-    NameSetType::const_iterator f1 = fileNames.begin(), f2 = fileNames.end();
-
-    while ( f1 != f2 )
+    for (NameSetType::const_iterator it = fileNames.begin(); it!=fileNames.end(); it++)
     {
         std::string filename;
         if( m_Directory != "" )
-            filename = m_Directory + ITK_FORWARD_PATH_SLASH + *f1;
+            filename = m_Directory + ITK_FORWARD_PATH_SLASH + *it;
         else
-            filename = *f1;
+            filename = *it;
 
         try
         {
@@ -161,10 +158,8 @@ void DCMTKImageIO::ReadImageInformation()
         {
             std::cerr << e; // continue to be robust to odd files
         }
-        ++f1;
         ++fileIndex;
     }
-
 
     /** Spacing between slices calculation (needs the dictionnary to be filled)*/
 
@@ -174,12 +169,11 @@ void DCMTKImageIO::ReadImageInformation()
 
     /** The purpose of the next loop is to order filenames depending on their sliceLocation,
        assuming that the sliceLocation field gives the order dicoms are obtained. */
-    NameSetType::const_iterator f = fileNames.begin(), fe = fileNames.end();
     int i = 0;
     fileIndex =0;
     const StringVectorType &imagePositions = this->GetMetaDataValueVectorString("(0020,0032)");
 
-    while ( f != fe )
+    for (NameSetType::const_iterator it = fileNames.begin(); it!= fileNames.end(); it++)
     {
         try
         {
@@ -195,31 +189,27 @@ void DCMTKImageIO::ReadImageInformation()
 
             sliceLocation = floor(sliceLocation/m_Spacing[2]+0.5)*m_Spacing[2];
             m_LocationSet.insert( sliceLocation );
-            m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *f ) );
-            m_FilenameToIndexMap[ *f ] = fileIndex;
+            m_LocationToFilenamesMap.insert( std::pair< double, std::string >(sliceLocation, *it ) );
+            m_FilenameToIndexMap[ *it ] = fileIndex;
             ++fileIndex;
         }
         catch (ExceptionObject &e)
         {
             std::cerr << e; // continue to be robust to odd files
         }
-        ++f;
     }
 
     /**
        In the next loop, slices are ordered according to their instance number, in case multiple
        volumes are found.
      */
-    SliceLocationSetType::const_iterator l = m_LocationSet.begin(), le = m_LocationSet.end();
-    while ( l!=le )
+    for (SliceLocationSetType::const_iterator l = m_LocationSet.begin(); l!=m_LocationSet.end(); l++)
     {
-        SliceLocationToNamesMultiMapType::iterator n = m_LocationToFilenamesMap.lower_bound( *l ),
-                ne = m_LocationToFilenamesMap.upper_bound( *l );
-
         // using that intermediate lut for instance number ordering
         IndexToNamesMapType instanceNumberToNameMap;
 
-        while ( n!=ne )
+        for (SliceLocationToNamesMultiMapType::iterator n = m_LocationToFilenamesMap.lower_bound( *l );
+             n!=m_LocationToFilenamesMap.upper_bound( *l ); n++)
         {
             int instanceNumber = 0;
             std::string instanceNumberString = this->GetMetaDataValueString ("(0020,0013)", m_FilenameToIndexMap[ n->second ]);
@@ -232,39 +222,31 @@ void DCMTKImageIO::ReadImageInformation()
             // else, we assume all files have the same instance number (0), i.e.: the serie has only one volume
 
             instanceNumberToNameMap[instanceNumber].push_back( n->second );
-            ++n;
         }
 
         // We erase the filename list corresponding to the given location to fill it with the ordered filenames
         m_LocationToFilenamesMap.erase( *l );
 
-
-        IndexToNamesMapType::const_iterator in = instanceNumberToNameMap.begin(), ine = instanceNumberToNameMap.end();
-        while ( in!=ine )
+        for (IndexToNamesMapType::const_iterator in = instanceNumberToNameMap.begin(); in!=instanceNumberToNameMap.end(); in++)
         {
-            std::list< std::string >::const_iterator fn = in->second.begin(), fne = in->second.end();
-            while ( fn!=fne )
+            for (std::list< std::string >::const_iterator fn = in->second.begin(); fn!=in->second.end(); fn++)
             {
                 m_LocationToFilenamesMap.insert( std::pair< double, std::string >( *l, *fn ) );
-                ++fn;
             }
-            ++in;
         }
-        ++l;
     }
 
     // collecting slice count and rank count while doing sanity checks
     unsigned int sizeZ = m_LocationSet.size();
     unsigned int sizeT = m_LocationToFilenamesMap.count( *m_LocationSet.begin() );
     // check consistency
-    SliceLocationSetType::const_iterator it = m_LocationSet.begin();
-    while (it!=m_LocationSet.end())
+    for (SliceLocationSetType::const_iterator it = m_LocationSet.begin();
+         it!=m_LocationSet.end(); it++)
     {
         if (!( m_LocationToFilenamesMap.count(*it)==sizeT ))
         {
             itkExceptionMacro (<< "Inconsistency in dicom volumes: " << m_LocationToFilenamesMap.count(*it) << " vs. " << sizeT);
         }
-        ++it;
     }
 
     if( sizeT > 1 )
@@ -292,7 +274,7 @@ void DCMTKImageIO::ReadImageInformation()
        we may determine if the acquistion was made from feet-to-head or head-to-feet.
      */
 
-    l = m_LocationSet.begin();
+    SliceLocationSetType::const_iterator l = m_LocationSet.begin();
     SliceLocationSetType::const_reverse_iterator lle = m_LocationSet.rbegin();
 
     double startLocation = *l;
@@ -316,13 +298,12 @@ void DCMTKImageIO::ReadImageInformation()
     int location = 0;
     int rank     = 0;
 
-    while ( l!=le )
+    for (l=m_LocationSet.begin(); l!=m_LocationSet.end(); l++)
     {
-        SliceLocationToNamesMultiMapType::const_iterator n = m_LocationToFilenamesMap.lower_bound( *l ),
-                ne = m_LocationToFilenamesMap.upper_bound( *l );
-
         rank = 0;
-        while ( n!=ne )
+
+        for (SliceLocationToNamesMultiMapType::const_iterator n = m_LocationToFilenamesMap.lower_bound( *l );
+             n!=m_LocationToFilenamesMap.upper_bound( *l ); n++)
         {
             if( sliceDirection>0 )
                 m_OrderedFileNames[ rank * sizeZ + location ] = n->second;
@@ -330,10 +311,8 @@ void DCMTKImageIO::ReadImageInformation()
                 m_OrderedFileNames[ rank * sizeZ + ( sizeZ - 1 - location ) ] = n->second;
 
             ++rank;
-            ++n;
         }
         ++location;
-        ++l;
     }
 
 }
