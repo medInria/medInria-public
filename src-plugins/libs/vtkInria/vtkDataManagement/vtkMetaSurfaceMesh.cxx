@@ -24,6 +24,8 @@
 #include <vtkPointData.h>
 #include <vtkPolyDataReader.h>
 #include <vtkPolyDataWriter.h>
+#include <vtkXMLPolyDataReader.h>
+#include <vtkXMLPolyDataWriter.h>
 
 #include <vtkPoints.h>
 #include <vtkIdList.h>
@@ -104,6 +106,23 @@ void vtkMetaSurfaceMesh::ReadVtkFile (const char* filename)
   reader->Delete();
 }
 
+void vtkMetaSurfaceMesh::ReadVtpFile(const char* filename)
+{
+    vtkXMLPolyDataReader* reader = vtkXMLPolyDataReader::New();
+    reader->SetFileName (filename);
+    
+    try
+    {
+        reader->Update();
+        this->SetDataSet (reader->GetOutput());
+    }
+    catch (vtkErrorCode::ErrorIds error)
+    {
+        reader->Delete();
+        throw error;
+    }
+    reader->Delete();
+}
 
 //----------------------------------------------------------------------------
 void vtkMetaSurfaceMesh::ReadOBJFile (const char* filename)
@@ -151,6 +170,9 @@ void vtkMetaSurfaceMesh::Read (const char* filename)
 	case vtkMetaSurfaceMesh::FILE_IS_VTK :
 	  this->ReadVtkFile (filename);
 	  break;
+    case vtkMetaSurfaceMesh::FILE_IS_VTP :
+      this->ReadVtpFile (filename);
+      break;
 	case vtkMetaSurfaceMesh::FILE_IS_MESH :
 	  this->ReadMeshFile (filename);
 	  break;
@@ -210,6 +232,38 @@ void vtkMetaSurfaceMesh::WriteVtkFile (const char* filename)
 
 
 //----------------------------------------------------------------------------
+void vtkMetaSurfaceMesh::WriteVtpFile (const char* filename)
+{
+    if (!this->DataSet)
+    {
+        vtkErrorMacro(<<"No DataSet to write"<<endl);
+        throw vtkErrorCode::UserError;
+    }
+    
+    vtkPolyData* c_mesh = vtkPolyData::SafeDownCast (this->DataSet);
+    if (!c_mesh)
+    {
+        vtkErrorMacro(<<"DataSet is not a polydata object"<<endl);
+        throw vtkErrorCode::UserError;
+    }
+    
+    vtkXMLPolyDataWriter* writer = vtkXMLPolyDataWriter::New();
+    writer->SetFileName (filename);
+    
+    try
+    {
+        writer->SetInput (c_mesh);
+        writer->Write();
+        writer->Delete();
+    }
+    catch (vtkErrorCode::ErrorIds error)
+    {
+        writer->Delete();
+        throw error;
+    }
+}
+
+//----------------------------------------------------------------------------
 void vtkMetaSurfaceMesh::WriteOBJFile (const char* filename)
 {
   vtkErrorMacro(<<"Not yet implemented"<<endl);
@@ -222,7 +276,12 @@ void vtkMetaSurfaceMesh::Write (const char* filename)
   try
   {
     std::cout<<"writing "<<filename<<"... ";
-    this->WriteVtkFile (filename);
+      
+      if (vtkMetaSurfaceMesh::IsVtpExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
+          this->WriteVtpFile (filename);
+      else
+          this->WriteVtkFile (filename);
+      
     std::cout<<"done."<<std::endl;
   }
   catch (vtkErrorCode::ErrorIds error)
@@ -233,12 +292,19 @@ void vtkMetaSurfaceMesh::Write (const char* filename)
 
 }
 
+bool vtkMetaSurfaceMesh::IsVtpExtension (const char* ext)
+{
+    if (strcmp (ext, ".vtp") == 0)
+        return true;
+    
+    return false;
+}
+
 //----------------------------------------------------------------------------
 bool vtkMetaSurfaceMesh::IsVtkExtension (const char* ext)
 {
   if (strcmp (ext, ".fib") == 0 ||
-      strcmp (ext, ".vtk") == 0 ||
-      strcmp (ext, ".vtp") == 0)
+      strcmp (ext, ".vtk") == 0)
     return true;
   return false;
 }
@@ -284,6 +350,23 @@ unsigned int vtkMetaSurfaceMesh::CanReadFile (const char* filename)
     return vtkMetaSurfaceMesh::FILE_IS_OBJ;
   }
   
+    if (vtkMetaSurfaceMesh::IsVtpExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
+    {
+        vtkXMLPolyDataReader* reader = vtkXMLPolyDataReader::New();
+        reader->SetFileName (filename);
+        try
+        {
+            reader->Update();
+        }
+        catch  (vtkErrorCode::ErrorIds)
+        {
+            reader->Delete();
+            return 0;
+        }
+        reader->Delete();
+        return vtkMetaSurfaceMesh::FILE_IS_VTP;
+    }
+    
   if (!vtkMetaSurfaceMesh::IsVtkExtension(vtksys::SystemTools::GetFilenameLastExtension(filename).c_str()))
     return 0;
   

@@ -42,7 +42,7 @@ QStringList vtkDataMeshWriter::s_handled()
 
 bool vtkDataMeshWriter::canWrite(const QString& path)
 {
-  return path.endsWith (QString (".vtk"));
+  return path.endsWith (QString (".vtk")) || path.endsWith(QString (".vtp"));
 }
 
 bool vtkDataMeshWriter::write(const QString& path)

@@ -49,6 +49,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
   enum
   {
     FILE_IS_VTK = 1,
+    FILE_IS_VTP,
     FILE_IS_MESH,
     FILE_IS_OBJ,
     LAST_FILE_ID
@@ -71,6 +72,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
      Static methods for I/O
   */
   static bool         IsVtkExtension (const char* ext);
+  static bool         IsVtpExtension (const char* ext);
   static bool         IsMeshExtension (const char* ext);
   static bool         IsOBJExtension (const char* ext);
   static unsigned int CanReadFile (const char* filename);
@@ -90,10 +92,12 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
   ~vtkMetaSurfaceMesh();
 
   virtual void ReadVtkFile(const char* filename);
+  virtual void ReadVtpFile(const char* filename);
   virtual void ReadMeshFile(const char* filename);
   virtual void ReadOBJFile(const char* filename);
   virtual void WriteOBJFile(const char* filename);
   virtual void WriteVtkFile (const char* filename);
+  virtual void WriteVtpFile (const char* filename);
 
   /**
      Method called everytime the dataset changes for initialization

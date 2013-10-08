@@ -18,9 +18,12 @@
 			<key>CFBundleTypeExtensions</key>
 			<array>
 				<string>vtk</string>
+				<string>vtp</string>
+				<string>fib</string>
+				<string>xml</string>
 			</array>
 			<key>CFBundleTypeName</key>
-			<string>VTK files</string>
+			<string>VTK and special mesh files</string>
 			<key>LSHandlerRank</key>
 			<string>Default</string>
 		</dict>
