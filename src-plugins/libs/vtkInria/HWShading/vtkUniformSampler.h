@@ -25,7 +25,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkHWShadingExport.h"
 
-#include "vtkUniformInt.h"
+#include "vtkUniform.h"
 
 /**
  * Class for representing uniform sampler variables.
@@ -39,11 +39,11 @@ PURPOSE.  See the above copyright notices for more information.
  * This class may be modified in the future to also handle the loading of the
  * texture and/or check for restrictions imposed on samplers.
  */
-class VTK_HWSHADING_EXPORT vtkUniformSampler : public vtkUniformInt
+class VTK_HWSHADING_EXPORT vtkUniformSampler : public vtkUniform<int>
 {
 public:
   static vtkUniformSampler* New();
-  vtkTypeRevisionMacro(vtkUniformSampler, vtkUniformInt);
+  vtkTypeRevisionMacro(vtkUniformSampler, vtkUniform<int>);
 
 protected:
   vtkUniformSampler();
