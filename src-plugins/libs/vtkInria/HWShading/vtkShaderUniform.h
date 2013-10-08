@@ -32,6 +32,8 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkHWShadingExport.h"
 
 #include "vtkShaderBaseHandle.h"
+#include <vtkObjectFactory.h>
+
 #include <vtkgl.h> // for vtkgl::GLchar
 
 
@@ -88,5 +90,3 @@ private:
 	vtkgl::GLchar* Name;
 
 };
-
-

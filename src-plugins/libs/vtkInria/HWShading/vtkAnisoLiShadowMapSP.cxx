@@ -34,7 +34,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkVertexShader.h"
 #include "vtkFragmentShader.h"
 
-#include "vtkUniformFloat.h"
+#include "vtkUniform.h"
 
 #include <vtkObjectFactory.h>
 //#include <vtkstd/string>
@@ -51,17 +51,17 @@ vtkAnisoLiShadowMapSP::vtkAnisoLiShadowMapSP()
   this->DiffuseContributionShadow = 0.5*this->DiffuseContribution;
   this->SpecularContributionShadow = 0.0;
 
-  this->AmbientContributionShadowUniform = vtkUniformFloat::New();
+  this->AmbientContributionShadowUniform = vtkUniform<float>::New();
   this->AmbientContributionShadowUniform->SetName("AmbientContributionShadow");
   this->AmbientContributionShadowUniform->SetValue(this->AmbientContributionShadow);
   this->AddShaderUniform(this->AmbientContributionShadowUniform);
 
-  this->DiffuseContributionShadowUniform = vtkUniformFloat::New();
+  this->DiffuseContributionShadowUniform = vtkUniform<float>::New();
   this->DiffuseContributionShadowUniform->SetName("DiffuseContributionShadow");
   this->DiffuseContributionShadowUniform->SetValue(this->DiffuseContributionShadow);
   this->AddShaderUniform(this->DiffuseContributionShadowUniform);
 
-  this->SpecularContributionShadowUniform = vtkUniformFloat::New();
+  this->SpecularContributionShadowUniform = vtkUniform<float>::New();
   this->SpecularContributionShadowUniform->SetName("SpecularContributionShadow");
   this->SpecularContributionShadowUniform->SetValue(this->SpecularContributionShadow);
   this->AddShaderUniform(this->SpecularContributionShadowUniform);

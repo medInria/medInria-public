@@ -26,12 +26,6 @@ set(${PROJECT_NAME}_classes
   vtkFragmentShader
   vtkShaderObjectCollection
   vtkShaderUniform
-  vtkUniformFloat
-  vtkUniformVec2
-  vtkUniformVec3
-  vtkUniformVec4
-  vtkUniformBool
-  vtkUniformInt
   vtkUniformSampler
   vtkShaderUniformCollection
   vtkBMIAShaderProgram
