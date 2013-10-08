@@ -25,6 +25,7 @@
 #include "itkCommand.h"
 #include <itkBinaryMorphologicalOpeningImageFilter.h>
 #include "itkBinaryBallStructuringElement.h"
+#include "itkMinimumMaximumImageCalculator.h"
 
 class itkFiltersOpenProcess;
 
@@ -53,7 +54,12 @@ public:
 
         openFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         openFilter->SetKernel ( ball );
-        openFilter->SetForegroundValue(1);
+
+        typedef itk::MinimumMaximumImageCalculator <ImageType> ImageCalculatorFilterType;
+        ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New ();
+        imageCalculatorFilter->SetImage(dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ));
+        imageCalculatorFilter->ComputeMaximum();
+        openFilter->SetForegroundValue(imageCalculatorFilter->GetMaximum());
         
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );

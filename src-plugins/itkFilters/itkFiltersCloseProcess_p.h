@@ -25,6 +25,7 @@
 #include "itkCommand.h"
 #include <itkBinaryMorphologicalClosingImageFilter.h>
 #include "itkBinaryBallStructuringElement.h"
+#include "itkMinimumMaximumImageCalculator.h"
 
 class itkFiltersCloseProcess;
 
@@ -39,12 +40,12 @@ public:
     int size;
 
     template <class PixelType> void update ( void )
-    {        
+    {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::BinaryBallStructuringElement < PixelType, 3> KernelType;
         typedef itk::BinaryMorphologicalClosingImageFilter< ImageType, ImageType, KernelType >  CloseType;
         typename CloseType::Pointer closeFilter = CloseType::New();
-        
+
         KernelType ball;
         typename KernelType::SizeType ballSize;
         ballSize.Fill(size);
@@ -53,7 +54,12 @@ public:
 
         closeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         closeFilter->SetKernel ( ball );
-        closeFilter->SetForegroundValue(1);
+
+        typedef itk::MinimumMaximumImageCalculator <ImageType> ImageCalculatorFilterType;
+        ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New ();
+        imageCalculatorFilter->SetImage(dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ));
+        imageCalculatorFilter->ComputeMaximum();
+        closeFilter->SetForegroundValue(imageCalculatorFilter->GetMaximum());
         
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
