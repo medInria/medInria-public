@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSDILATEPROCESS_H
-#define ITKFILTERSDILATEPROCESS_H
+#pragma once
 
 #include <dtkCore/dtkAbstractData.h>
 #include "itkFiltersProcessBase.h"
@@ -43,4 +42,3 @@ private:
 };
 
 dtkAbstractProcess * createitkFiltersDilateProcess(void);
-#endif // ITKFILTERSDILATEPROCESS_H

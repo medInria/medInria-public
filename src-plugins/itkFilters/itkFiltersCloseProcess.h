@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSCLOSEEPROCESS_H
-#define ITKFILTERSCLOSEPROCESS_H
+#pragma once
 
 #include <dtkCore/dtkAbstractData.h>
 #include "itkFiltersProcessBase.h"
@@ -43,4 +42,3 @@ private:
 };
 
 dtkAbstractProcess * createitkFiltersCloseProcess(void);
-#endif // ITKFILTERSCLOSEPROCESS_H

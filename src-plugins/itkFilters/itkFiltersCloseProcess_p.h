@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSCLOSEPROCESS_P_H
-#define ITKFILTERSCLOSEPROCESS_P_H
+#pragma once
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -69,5 +68,3 @@ public:
 };
 
 DTK_IMPLEMENT_PRIVATE(itkFiltersCloseProcess, itkFiltersProcessBase)
-
-#endif // ITKFILTERSCLOSEPROCESS_P_H

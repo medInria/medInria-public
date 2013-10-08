@@ -11,8 +11,7 @@
 
 =========================================================================*/
 
-#ifndef ITKFILTERSERODEPROCESS_H
-#define ITKFILTERSERODEPROCESS_H
+#pragma once
 
 #include <dtkCore/dtkAbstractData.h>
 #include "itkFiltersProcessBase.h"
@@ -43,4 +42,3 @@ private:
 };
 
 dtkAbstractProcess * createitkFiltersErodeProcess(void);
-#endif // ITKFILTERSERODEPROCESS_H
