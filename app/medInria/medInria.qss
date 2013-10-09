@@ -566,7 +566,7 @@ QHeaderView::section
     background-color: $HEADER_BACKGROUND;
     color: $HEADER_COLOR;
     padding: $HEADER_PADDING;
-    padding-left: $HEADER_LEFT_PADDING;
+    padding-left: $HEADER_RIGHT_PADDING;
     padding-right:$HEADER_RIGHT_PADDING;
     min-height: $HEADER_HEIGHT;
     border: none;

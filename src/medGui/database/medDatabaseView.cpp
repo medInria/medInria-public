@@ -109,6 +109,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new med
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->header()->setStretchLastSection(true);
+    this->header()->setDefaultAlignment(Qt::AlignCenter);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
 
     this->setEditTriggers(QAbstractItemView:: SelectedClicked);
@@ -166,23 +167,7 @@ medDatabaseView::~medDatabaseView(void)
     delete d;
 }
 
-/*
-int medDatabaseView::sizeHintForColumn(int column) const
-{
-    if (column<2)
-        return 150;
 
-    if (column == 2) // series description/filename
-        return 250;
-
-    if (column == 3) // slices count
-        return 70;
-
-    if (column == 5) // date of birth
-        return 80;
-
-    return 50;
-}*/
 
 void medDatabaseView::setModel(QAbstractItemModel *model)
 {
@@ -190,8 +175,9 @@ void medDatabaseView::setModel(QAbstractItemModel *model)
 
     this->expandAll();
     
+    
     this->header()->setMinimumSectionSize(60);
-    this->header()->resizeSections(QHeaderView::ResizeToContents);
+//    this->header()->resizeSections(QHeaderView::ResizeToContents);
      
     this->collapseAll();
 
