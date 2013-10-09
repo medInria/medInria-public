@@ -25,6 +25,7 @@ set(${PROJECT_NAME}_HEADERS
     vtkImageViewCollection.h
     vtkImageView3DCroppingBoxCallback.h
     vtkSmartVolumeMapper.h
+    vtkInriaInteractorStyleRubberBandZoom.h
     medVtkViewBackend.h
 )
 
@@ -40,6 +41,7 @@ set(${PROJECT_NAME}_SOURCES
     vtkImageViewCollection.cxx
     vtkImageView3DCroppingBoxCallback.cxx
     vtkSmartVolumeMapper.cxx
+    vtkInriaInteractorStyleRubberBandZoom.cxx
     medVtkViewBackend.cpp
 )
 if (VTKINRIA_USE_PRECOMPILED_HEADERS)

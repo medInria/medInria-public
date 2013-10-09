@@ -975,16 +975,20 @@ bool medMainWindow::event(QEvent * e)
     switch(e->type())
     {
         // ...
-        case QEvent::WindowActivate :
+    case QEvent::WindowActivate :
+        {
             // gained focus
             emit mainWindowActivated();
             break ;
+        }
 
-        case QEvent::WindowDeactivate :
+    case QEvent::WindowDeactivate :
+        {
             // lost focus
             emit mainWindowDeactivated();
             break ;
+        }
         // ...
     } ;
     return QMainWindow::event(e) ;
-}
+}   

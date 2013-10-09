@@ -49,7 +49,7 @@
 #include <vtkInteractorStyleImageView2D.h>
 #include <vtkInteractorStyleTrackballCamera2.h>
 #include <vtkInteractorStyleTrackballActor.h>
-#include <vtkInteractorStyleRubberBandZoom.h>
+#include <vtkInriaInteractorStyleRubberBandZoom.h>
 #include <vtkImageViewCollection.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkPiecewiseFunction.h>
@@ -207,8 +207,10 @@ void v3dViewObserver::Execute ( vtkObject *caller, unsigned long event, void *ca
         vtkRenderWindowInteractor *iren = static_cast<vtkRenderWindowInteractor*>(caller);
         if (iren->GetControlKey())
         {
-            if (view->property("MouseInteraction")=="Zooming")
-                view->setProperty( "ZoomMode" , "RubberBand" );
+            view->setProperty( "ZoomMode" , "RubberBand" );
+            dynamic_cast<vtkInriaInteractorStyleRubberBandZoom*>(view->view2d()->GetInteractor()->GetInteractorStyle())->RightButtonModeOn();
+            if (view->property("MouseInteraction")!="Zooming")
+                dynamic_cast<vtkInriaInteractorStyleRubberBandZoom*>(view->view2d()->GetInteractor()->GetInteractorStyle())->LeftButtonModeOff();
         }
     }
 
@@ -1482,7 +1484,7 @@ void v3dView::onZoomModePropertySet ( const QString &value )
 {
     if ( value=="RubberBand" )
     {
-        vtkInteractorStyleRubberBandZoom * interactorStyle = vtkInteractorStyleRubberBandZoom::New();
+        vtkInriaInteractorStyleRubberBandZoom * interactorStyle = vtkInriaInteractorStyleRubberBandZoom::New();
         d->view2d->GetInteractor()->SetInteractorStyle(interactorStyle);
         interactorStyle->Delete();
     }
