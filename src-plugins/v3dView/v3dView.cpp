@@ -441,6 +441,8 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 
     QMainWindow * mainWindowApp = dynamic_cast< QMainWindow * >(
         qApp->property( "MainWindow" ).value< QObject * >() );
+
+    connect(mainWindowApp,SIGNAL(mainWindowDeactivated()),this,SLOT(onMainWindowDeactivated()));
     
     d->widget = new QWidget( mainWindowApp);
     
@@ -2567,4 +2569,11 @@ void v3dView::setCurrentLayer(int layer)
     medAbstractView::setCurrentLayer(layer);
     d->view2d->SetCurrentLayer(layer);
     d->view3d->SetCurrentLayer(layer);
+}
+
+void v3dView::onMainWindowDeactivated()
+{
+    //This function must contains all the different actions that we want to happen in case the software loses the focus
+    if (property("ZoomMode")=="RubberBand")
+        onZoomModePropertySet("Normal"); 
 }

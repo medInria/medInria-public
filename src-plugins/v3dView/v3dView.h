@@ -194,6 +194,8 @@ public slots:
     void onZSliderValueChanged              (int value);
     void onMetaDataSet         (const QString &key, const QString &value);
 
+    void onMainWindowDeactivated();
+
 public slots: // Menu interface
     void onMenu3DVRTriggered();
     void onMenu3DMaxIPTriggered();

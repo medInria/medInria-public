@@ -969,3 +969,22 @@ bool medMainWindow::eventFilter(QObject * obj, QEvent *ev)
 
     return false; 
 }
+
+bool medMainWindow::event(QEvent * e)
+{
+    switch(e->type())
+    {
+        // ...
+        case QEvent::WindowActivate :
+            // gained focus
+            emit mainWindowActivated();
+            break ;
+
+        case QEvent::WindowDeactivate :
+            // lost focus
+            emit mainWindowDeactivated();
+            break ;
+        // ...
+    } ;
+    return QMainWindow::event(e) ;
+}
