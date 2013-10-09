@@ -322,20 +322,54 @@ bool medDatabaseNonPersistentImporter::isPartialImportAttempt ( dtkAbstractData*
 
     QList<medDatabaseNonPersistentItem*> items = npdc->items();
     
-    QString patientName = medMetaDataKeys::PatientName.getFirstValue(dtkData).simplified();
-    QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(dtkData).simplified();
-    QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
-    QStringList filePaths = dtkData->metaDataValues ( medMetaDataKeys::FilePaths.key() );
+    
 
+            
     bool isPartialImport = false;
     foreach(medDatabaseNonPersistentItem* item, items)
     {
         isPartialImport = item->Match(dtkData);
-        
         if(isPartialImport)
         {
+            QString patientName = medMetaDataKeys::PatientName.getFirstValue(item->data()).simplified();
+            QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(item->data()).simplified();
+            QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(item->data()).simplified();
+            QStringList filePaths = item->data()->metaDataValues ( medMetaDataKeys::FilePaths.key() );
             (*partialAttemptsInfo()) << ( QStringList() << patientName << studyName << seriesName << filePaths[0] );
             break;
+        }
+    }
+    
+    // If PATIENT/STUDY/SERIES already exists in the database,
+    // Add '(copy x) at the end of the serie name.
+    if (isPartialImport)
+    {
+        int i = 1;
+        bool notLastCopy = true;
+        while (notLastCopy)
+        {
+            
+            QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
+            QRegExp rx("copy \\d+");
+            if (seriesName.contains(rx))
+            {
+                rx.indexIn(seriesName);
+                QString nb = rx.cap(0);
+                seriesName.replace(nb, "copy " + QString::number(i));
+            }
+            else
+                seriesName += " (copy 1)";
+            
+            dtkData->setMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList()<< seriesName );
+            
+            notLastCopy = false;
+            foreach(medDatabaseNonPersistentItem* item, items)
+            {
+                notLastCopy = item->Match(dtkData);
+                if(notLastCopy)
+                    break;
+            }
+            i++;
         }
     }
    
