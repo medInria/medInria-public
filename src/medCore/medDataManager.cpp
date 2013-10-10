@@ -382,7 +382,7 @@ size_t medDataManager::getProcessMemoryUsage()
 #else
     int size, res, shared, text, sharedLibs, stack, dirtyPages;
     if ( ! ReadStatmFromProcFS( &size, &res, &shared, &text, &sharedLibs, &stack, &dirtyPages ) )
-        return (size_t) size * getpagesize();
+        return (size_t) res * getpagesize();
     else
         return 0;
 #endif

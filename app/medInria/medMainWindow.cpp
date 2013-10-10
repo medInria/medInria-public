@@ -963,8 +963,11 @@ void medMainWindow::updateMemoryUsageLabel()
     size_t memoryAvailable = medDataManager::getAvailablePhysicalRam();
     size_t totalPhysRam = medDataManager::getTotalSizeOfPhysicalRam();
     
-    double percentage = 100 * (memoryAvailable /(double)totalPhysRam);
-    d->memoryUsageLabel->setText("Memory left : " + QString::number(percentage,'g',2) + "%");
-    d->memoryUsageLabel->setToolTip("Total Memory : " + QString::number(totalPhysRam/(1024*1024)) + "Mo\n Medinria Memory Usage : " 
-        + QString::number(memoryUsage/(1024*1024)) + "Mo\n Memory Left : " +  QString::number(memoryAvailable/(1024*1024)) + "Mo");
+    if ((memoryAvailable/(1024*1024))<1024)
+        d->memoryUsageLabel->setText("Memory left : " + QString::number(memoryAvailable/(1024*1024)) + " Mo");
+    else
+        d->memoryUsageLabel->setText("Memory left : " + QString::number(memoryAvailable/(double)(1024*1024*1024),'g',2) + " Go");
+
+    d->memoryUsageLabel->setToolTip("Total Memory : " + QString::number(totalPhysRam/(1024*1024)) + " Mo\nMedinria Memory Usage : " 
+        + QString::number(memoryUsage/(1024*1024)) + " Mo");
 }
