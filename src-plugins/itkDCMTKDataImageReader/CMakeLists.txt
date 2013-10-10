@@ -98,7 +98,7 @@ if (MEDINRIA-PLUGINS_BUILD_TESTING)
 endif()
 
 if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
-        subdirs(Examples)
+  add_subdirectory(Examples)
 endif()
 
 if (MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)

@@ -35,6 +35,4 @@ else()
  )
 endif()
 
-subdirs(
-  IO
-)
+add_subdirectory(IO)
