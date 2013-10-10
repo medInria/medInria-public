@@ -989,6 +989,8 @@ bool medMainWindow::event(QEvent * e)
             break ;
         }
         // ...
+    default:
+        break;
     } ;
     return QMainWindow::event(e) ;
 }   

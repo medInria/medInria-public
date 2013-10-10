@@ -400,28 +400,7 @@ void vtkImageViewCollectionCommand::Execute(vtkObject *caller,
 
   // Char events
   if (event == vtkCommand::CharEvent)
-  {
-    /*switch(rwi->GetKeyCode())
-    {
-	case 'a':
-	case 'A':
-	  this->Collection->SyncSetShowImageAxis (!viewer->GetShowImageAxis());
-	  this->Collection->SyncRender();
-	  break;
-	case 'c':
-	case 'C':
-	  this->Collection->SyncSetCursorFollowMouse (!viewer->GetCursorFollowMouse());
-	  this->Collection->SetLinkCurrentPoint (viewer->GetCursorFollowMouse());
-	  this->Collection->SyncRender();
-	  break;
-	case 's':
-	  this->Collection->SetShowSlicePlanes (!this->Collection->GetShowSlicePlanes());
-	  this->Collection->SyncRender();
-	break;
-	default:
-	  break;
-    }*/
-  }
+  {}
 
   // Reset
   if (event == vtkImageView2DCommand::ResetViewerEvent)

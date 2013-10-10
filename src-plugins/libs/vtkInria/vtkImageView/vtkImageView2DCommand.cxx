@@ -156,24 +156,11 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
   {
     vtkRenderWindowInteractor *rwi = this->Viewer->GetRenderWindow()->GetInteractor();
 
-    /*if (rwi->GetKeyCode() == 't')
-    {
-      this->Viewer->SetSliceOrientation ((this->Viewer->GetSliceOrientation()+1)%3);
-      this->Viewer->Render();
-    }
-    else if (rwi->GetKeyCode() == 'n')
+   if (rwi->GetKeyCode() == 'n')
     {
       this->Viewer->SetInterpolate ((this->Viewer->GetInterpolate() + 1)%2);
       this->Viewer->Render();
-    }*/
-//     else if (rwi->GetKeyCode() == 'c')
-//     {
-//       this->Viewer->SetCursorFollowMouse (!this->Viewer->GetCursorFollowMouse());
-//     }
-//     else if (rwi->GetKeyCode() == 'a')
-//     {
-//       this->Viewer->SetShowImageAxis (!this->Viewer->GetShowImageAxis());
-//     }
+   }
 
     return;
   }
