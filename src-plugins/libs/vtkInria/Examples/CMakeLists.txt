@@ -11,14 +11,11 @@
 #
 #######################################################################
 
-SUBDIRS(SynchronizedViews
-        FibersManager
-        IsosurfacesManager
-        TensorManager
-        CompareImageManager
-        DataManager
-        PolydataToFiberXML
-        RegisterDataSets
-  )
-
 add_subdirectory(SphericalHarmonicView)
+add_subdirectory(FibersManager)
+add_subdirectory(IsosurfacesManager
+add_subdirectory(TensorManager)
+add_subdirectory(CompareImageManager)
+add_subdirectory(DataManager)
+add_subdirectory(PolydataToFiberXML)
+add_subdirectory(RegisterDataSets)
