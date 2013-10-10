@@ -45,6 +45,7 @@ medToolBoxContainer::medToolBoxContainer(QWidget *parent) : QScrollArea(parent),
 
     
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 }
 
 medToolBoxContainer::~medToolBoxContainer(void)
