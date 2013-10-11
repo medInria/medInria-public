@@ -159,7 +159,7 @@ medFileSystemDataSource::~medFileSystemDataSource()
     d = NULL;
 }
 
-QWidget* medFileSystemDataSource::mainWidget()
+QWidget* medFileSystemDataSource::mainViewWidget()
 {
     return d->filesystemWidget;
 }

@@ -127,7 +127,7 @@ QString qtdcmDataSource::description() const
     return "Browse DICOM workstation";
 }
 
-QWidget *qtdcmDataSource::mainWidget()
+QWidget *qtdcmDataSource::mainViewWidget()
 {
     if ( d->mainWidget )
         return d->mainWidget;

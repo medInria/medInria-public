@@ -64,7 +64,7 @@ void medDataSourceManager::ceateDataSource()
     
     
     medPacsDataSource *pacsDataSource = new medPacsDataSource;
-    medPacsWidget * mainPacsWidget = qobject_cast<medPacsWidget*> (pacsDataSource->mainWidget());
+    medPacsWidget * mainPacsWidget = qobject_cast<medPacsWidget*> (pacsDataSource->mainViewWidget());
     //make the widget hide if not functional (otehrwise it flickers in and out).
 //    mainPacsWidget->hide();
     if (mainPacsWidget->isServerFunctional())

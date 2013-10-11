@@ -31,7 +31,7 @@ public:
     medPacsDataSource(QObject *parent = 0);
     ~medPacsDataSource();
 
-    QWidget* mainWidget();
+    QWidget* mainViewWidget();
 
     QWidget* sourceSelectorWidget();
 

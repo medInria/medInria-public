@@ -79,7 +79,7 @@ medPacsDataSource::~medPacsDataSource()
     d = NULL;
 }
 
-QWidget* medPacsDataSource::mainWidget()
+QWidget* medPacsDataSource::mainViewWidget()
 {
     return d->pacsWidget;
 }

@@ -159,7 +159,7 @@ void medBrowserArea::setToolBoxesVisible(int index, bool visible )
 void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
 {
     d->dataSources.push_back(dataSource);
-    d->stack->addWidget(dataSource->mainWidget());
+    d->stack->addWidget(dataSource->mainViewWidget());
     d->sourceSelectorToolBox->addTab(dataSource->tabName(),dataSource->sourceSelectorWidget(),dataSource->description());
     
     QList<medToolBox*> toolBoxes = dataSource->getToolBoxes();

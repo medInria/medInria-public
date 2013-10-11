@@ -30,7 +30,7 @@ public:
     medDatabaseDataSource(QObject *parent = 0);
     ~medDatabaseDataSource();
 
-    QWidget* mainWidget();
+    QWidget* mainViewWidget();
     QWidget* compactViewWidget();
     
     QWidget* sourceSelectorWidget();

@@ -112,7 +112,7 @@ medDatabaseDataSource::~medDatabaseDataSource()
     d = NULL;
 }
 
-QWidget* medDatabaseDataSource::mainWidget()
+QWidget* medDatabaseDataSource::mainViewWidget()
 {
     return d->mainWidget;
 }

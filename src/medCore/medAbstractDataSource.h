@@ -40,7 +40,7 @@ public:
     * Returns the main view widget
     * This widget is used to navigate within the data, e.g. a qTreeWidget
     */
-    virtual QWidget *mainWidget() = 0;
+    virtual QWidget *mainViewWidget() = 0;
 
     /**
     * Returns the source selector widget

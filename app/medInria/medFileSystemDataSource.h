@@ -29,7 +29,7 @@ public:
     medFileSystemDataSource(QObject* parent = 0);
     ~medFileSystemDataSource();
 
-    QWidget* mainWidget();
+    QWidget* mainViewWidget();
     
     QWidget* sourceSelectorWidget();
 

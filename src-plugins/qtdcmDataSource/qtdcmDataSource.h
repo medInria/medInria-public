@@ -31,7 +31,7 @@ public:
 
     static bool registered();
 
-    QWidget *mainWidget();
+    QWidget *mainViewWidget();
     QWidget *sourceSelectorWidget();
     QString tabName();
 
