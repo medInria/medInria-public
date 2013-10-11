@@ -32,8 +32,6 @@
 #include <medAbstractView.h>
 #include <medMetaDataKeys.h>
 
-#include <medDatabaseNavigator.h>
-#include <medDatabaseNavigatorController.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseController.h>
 
