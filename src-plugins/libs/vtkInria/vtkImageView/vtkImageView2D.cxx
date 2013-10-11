@@ -238,7 +238,7 @@ vtkImageView2D::vtkImageView2D()
   vtkDistanceRepresentation2D* rep1 = vtkDistanceRepresentation2D::SafeDownCast (this->DistanceWidget->GetRepresentation());
   rep1->GetAxis()->SetTickLength (6);
 
-  this->AngleWidget->KeyPressActivationOn();
+  this->AngleWidget->KeyPressActivationOff();
   this->AngleWidget->SetKeyPressActivationValue ('o');
   this->AngleWidget->CreateDefaultRepresentation();
   vtkAngleRepresentation2D* rep2 = vtkAngleRepresentation2D::SafeDownCast (this->AngleWidget->GetRepresentation());

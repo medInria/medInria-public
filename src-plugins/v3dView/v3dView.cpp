@@ -596,6 +596,8 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->view2d->AddObserver ( vtkImageView::WindowLevelChangedEvent,  d->observer, 0 );
     d->view2d->GetInteractorStyle()->AddObserver ( vtkImageView2DCommand::CameraZoomEvent, d->observer, 0 );
     d->view2d->GetInteractorStyle()->AddObserver ( vtkImageView2DCommand::CameraPanEvent, d->observer, 0 );
+    d->view2d->AddObserver ( vtkImageView2DCommand::CameraPanEvent, d->observer, 0);
+    d->view2d->AddObserver ( vtkImageView2DCommand::CameraZoomEvent,d->observer,0);
     d->view3d->GetInteractorStyle()->AddObserver ( vtkCommand::InteractionEvent, d->observer, 0 );
 
     d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent,d->observer,0);
@@ -1485,6 +1487,8 @@ void v3dView::onZoomModePropertySet ( const QString &value )
     if ( value=="RubberBand" )
     {
         vtkInriaInteractorStyleRubberBandZoom * interactorStyle = vtkInriaInteractorStyleRubberBandZoom::New();
+        interactorStyle->AddObserver( vtkImageView2DCommand::CameraZoomEvent,d->observer,0 );
+        interactorStyle->AddObserver( vtkImageView2DCommand::CameraPanEvent,d->observer,0 );
         d->view2d->GetInteractor()->SetInteractorStyle(interactorStyle);
         interactorStyle->Delete();
     }

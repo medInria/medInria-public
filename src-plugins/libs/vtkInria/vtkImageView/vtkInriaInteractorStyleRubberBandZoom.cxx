@@ -19,6 +19,8 @@
 #include "vtkRenderWindow.h"
 #include "vtkRenderWindowInteractor.h"
 #include "vtkUnsignedCharArray.h"
+#include <vtkImageView2DCommand.h>
+#include <vtkImageView.h>
 
 vtkStandardNewMacro(vtkInriaInteractorStyleRubberBandZoom);
 
@@ -54,8 +56,9 @@ void vtkInriaInteractorStyleRubberBandZoom::OnRightButtonUp()
         this->Superclass::OnLeftButtonUp();
 }
 
-void vtkInriaInteractorStyleRubberBandZoom::PrintSelf(ostream& os, vtkIndent indent)
+void vtkInriaInteractorStyleRubberBandZoom::Zoom()
 {
-    this->Superclass::PrintSelf(os, indent);
+    this->Superclass::Zoom();
+    this->InvokeEvent (vtkImageView2DCommand::CameraZoomEvent);
+    this->InvokeEvent (vtkImageView2DCommand::CameraPanEvent);
 }
-

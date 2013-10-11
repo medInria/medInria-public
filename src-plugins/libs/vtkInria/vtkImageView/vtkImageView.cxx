@@ -1308,13 +1308,14 @@ void vtkImageView::ResetCamera()
           double bounds [6];
           this->GetInputBoundsInWorldCoordinates (bounds);
           this->Renderer->ResetCamera (bounds);
-          this->InvokeEvent (vtkImageView::CameraChangedEvent);
       } else {
           // No op.
           this->Renderer->ResetCamera();
       }
   }
   this->SetZoom (1.0);
+  this->InvokeEvent (vtkImageView2DCommand::CameraZoomEvent);
+  this->InvokeEvent (vtkImageView2DCommand::CameraPanEvent);
 }
 
 //----------------------------------------------------------------------------
@@ -1405,6 +1406,7 @@ void vtkImageView::Reset()
   this->ResetWindowLevel();
   // this->SetColorWindow (VTK_DOUBLE_MAX); // NT: ?? --> when i press reset I would like the windowlevels to be "reset" ?
   this->ResetCamera();
+  
 }
 
 //----------------------------------------------------------------------------

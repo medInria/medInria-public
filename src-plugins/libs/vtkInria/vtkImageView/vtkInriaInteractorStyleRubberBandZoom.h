@@ -21,33 +21,33 @@ class vtkUnsignedCharArray;
 class VTK_IMAGEVIEW_EXPORT vtkInriaInteractorStyleRubberBandZoom : public vtkInteractorStyleRubberBandZoom
 {
 public:
-  static vtkInriaInteractorStyleRubberBandZoom *New();
-  vtkTypeMacro(vtkInriaInteractorStyleRubberBandZoom, vtkInteractorStyleRubberBandZoom);
-  void PrintSelf(ostream& os, vtkIndent indent);
-  
-  // Description:
-  // Event bindings
-  virtual void OnLeftButtonDown();
-  virtual void OnLeftButtonUp();
-  virtual void OnRightButtonDown();
-  virtual void OnRightButtonUp();
+    static vtkInriaInteractorStyleRubberBandZoom *New();
+    vtkTypeMacro(vtkInriaInteractorStyleRubberBandZoom, vtkInteractorStyleRubberBandZoom);
 
-  void LeftButtonModeOn(){leftButtonModeOn = true;};
-  void RightButtonModeOn(){rightButtonModeOn = true;};
-  void LeftButtonModeOff(){leftButtonModeOn = false;};
-  void RightButtonModeOff(){rightButtonModeOn = false;};
-  bool RightButtonModeIsOn(){return rightButtonModeOn;};
-  bool LeftButtonModeIsOn(){return leftButtonModeOn;};
+    // Description:
+    // Event bindings
+    virtual void OnLeftButtonDown();
+    virtual void OnLeftButtonUp();
+    virtual void OnRightButtonDown();
+    virtual void OnRightButtonUp();
+
+    void LeftButtonModeOn(){leftButtonModeOn = true;};
+    void RightButtonModeOn(){rightButtonModeOn = true;};
+    void LeftButtonModeOff(){leftButtonModeOn = false;};
+    void RightButtonModeOff(){rightButtonModeOn = false;};
+    bool RightButtonModeIsOn(){return rightButtonModeOn;};
+    bool LeftButtonModeIsOn(){return leftButtonModeOn;};
 
 protected:
-  vtkInriaInteractorStyleRubberBandZoom();
-  ~vtkInriaInteractorStyleRubberBandZoom();
-    
-private:
-  vtkInriaInteractorStyleRubberBandZoom(const vtkInriaInteractorStyleRubberBandZoom&);  // Not implemented
-  void operator=(const vtkInriaInteractorStyleRubberBandZoom&);  // Not implemented
+    vtkInriaInteractorStyleRubberBandZoom();
+    ~vtkInriaInteractorStyleRubberBandZoom();
+    virtual void Zoom();
 
-  bool leftButtonModeOn;
-  bool rightButtonModeOn;
+private:
+    vtkInriaInteractorStyleRubberBandZoom(const vtkInriaInteractorStyleRubberBandZoom&);  // Not implemented
+    void operator=(const vtkInriaInteractorStyleRubberBandZoom&);  // Not implemented
+
+    bool leftButtonModeOn;
+    bool rightButtonModeOn;
 };
 
