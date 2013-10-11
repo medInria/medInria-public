@@ -55,6 +55,7 @@ signals:
     void setupLayoutFuse();
     void showError (const QString&,unsigned int timeout);
     void showInfo(const QString&,unsigned int timeout);
+    void newFuseView(dtkAbstractView *fuseView);
 
 public slots:
     void onMovingImageDropped(const medDataIndex& index);

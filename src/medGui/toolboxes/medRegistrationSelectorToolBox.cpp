@@ -13,6 +13,7 @@
 
 #include "medRegistrationSelectorToolBox.h"
 
+#include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -63,7 +64,7 @@ public:
 
 medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medRegistrationSelectorToolBoxPrivate)
 {
-    d->fuseView = 0;
+    d->fuseView = NULL;
     d->fixedData  = NULL;
     d->movingData = NULL;
     d->fixedView  = NULL;
@@ -198,6 +199,13 @@ medAbstractDataImage *medRegistrationSelectorToolBox::movingData(void)
 void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& index)
 {
 
+    if(!d->fuseView)
+    {
+        d->fuseView = dtkAbstractViewFactory::instance()->createSmartPointer("v3dView");
+        d->fuseView->setProperty("Closable","false");
+        emit newFuseView( d->fuseView);
+    }
+
     if (!index.isValid())
         return;
 
@@ -262,6 +270,16 @@ void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& in
  */
 void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& index)
 {
+
+    if(!d->fuseView)
+    {
+        if(!d->fuseView)
+        {
+            d->fuseView = dtkAbstractViewFactory::instance()->createSmartPointer("v3dView");
+            d->fuseView->setProperty("Closable","false");
+            emit newFuseView( d->fuseView);
+        }
+    }
 
     if (!index.isValid())
         return;

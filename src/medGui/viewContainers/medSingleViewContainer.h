@@ -26,8 +26,6 @@ public:
 
 
     void split(int rows, int cols);
-
-    virtual void setView(dtkAbstractView *view);
     virtual dtkAbstractView *view() const;
 
     /**
@@ -49,6 +47,7 @@ public:
 
 public slots:
     virtual void onViewClosing();
+    virtual void setView(dtkAbstractView *view);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);

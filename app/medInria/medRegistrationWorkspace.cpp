@@ -76,13 +76,9 @@ void medRegistrationWorkspace::setupViewContainerStack()
         //create the fuse container
         medSingleViewContainer *fuseContainer = new medSingleViewContainer(
                 this->stackedViewContainers());
-        if (dtkSmartPointer<dtkAbstractView> view = dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"))
-        {
-            view->setProperty("Closable","false"); 
-            fuseContainer->setView (view);
-            fuseContainer->setAcceptDrops(false);
-            d->registrationToolBox->setFuseView (view);
-        }
+
+        fuseContainer->setAcceptDrops(false);
+
 
         //create the compare container
         medCompareViewContainer * compareViewContainer = new medCompareViewContainer(
@@ -95,6 +91,9 @@ void medRegistrationWorkspace::setupViewContainerStack()
                 d->registrationToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
         connect(fuseContainer,SIGNAL(viewRemoved(dtkAbstractView*)),
                 d->registrationToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
+
+        connect(d->registrationToolBox, SIGNAL(newFuseView(dtkAbstractView*)),
+                fuseContainer, SLOT(setView(dtkAbstractView*)));
 
         this->stackedViewContainers()->addContainer("Compare",compareViewContainer);
         this->stackedViewContainers()->addContainer("Fuse",fuseContainer);
