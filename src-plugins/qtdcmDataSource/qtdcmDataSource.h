@@ -31,7 +31,7 @@ public:
 
     static bool registered();
 
-    QWidget *mainWidget();
+    QWidget *mainViewWidget();
     QWidget *sourceSelectorWidget();
     QString tabName();
 
@@ -47,6 +47,6 @@ private:
     void initWidgets();
 };
 
-medAbstractDataSource *createQtdcmDataSource (QObject * );
+medAbstractDataSource *createQtdcmDataSource (QWidget * );
 
 

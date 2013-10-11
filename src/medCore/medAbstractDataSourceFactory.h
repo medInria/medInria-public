@@ -30,7 +30,7 @@ class MEDCORE_EXPORT medAbstractDataSourceFactory : public dtkAbstractFactory
     Q_OBJECT
 
 public:
-    typedef medAbstractDataSource *(*medAbstractDataSourceCreator)(QObject*);
+    typedef medAbstractDataSource *(*medAbstractDataSourceCreator)(QWidget*);
 
     typedef QHash<QString, medAbstractDataSourceCreator> medAbstractDataSourceCreatorHash;
 
@@ -45,7 +45,7 @@ public:
 
 public slots:
     /** Method to instantiate a plugin */
-    medAbstractDataSource *create(QString type, QObject* parent = NULL);
+    medAbstractDataSource *create(QString type, QWidget *parent = NULL);
 protected:
     medAbstractDataSourceFactory();
     ~medAbstractDataSourceFactory();
