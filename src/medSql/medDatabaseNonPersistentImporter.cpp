@@ -297,7 +297,7 @@ QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName ( const QString
     {
         // it exist
         suffix++;
-        newSeriesName = originalSeriesName + "_" + QString::number(suffix);
+        newSeriesName = originalSeriesName + " (copy " + QString::number(suffix) + ")";
     }
 
     return newSeriesName;
@@ -339,38 +339,11 @@ bool medDatabaseNonPersistentImporter::isPartialImportAttempt ( dtkAbstractData*
             break;
         }
     }
-    
-    // If PATIENT/STUDY/SERIES already exists in the database,
-    // Add '(copy x) at the end of the serie name.
     if (isPartialImport)
     {
-        int i = 1;
-        bool notLastCopy = true;
-        while (notLastCopy)
-        {
-            
-            QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
-            QRegExp rx("copy \\d+");
-            if (seriesName.contains(rx))
-            {
-                rx.indexIn(seriesName);
-                QString nb = rx.cap(0);
-                seriesName.replace(nb, "copy " + QString::number(i));
-            }
-            else
-                seriesName += " (copy 1)";
-            
-            dtkData->setMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList()<< seriesName );
-            
-            notLastCopy = false;
-            foreach(medDatabaseNonPersistentItem* item, items)
-            {
-                notLastCopy = item->Match(dtkData);
-                if(notLastCopy)
-                    break;
-            }
-            i++;
-        }
+        QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
+        QString newSeriesDescription = ensureUniqueSeriesName(seriesName);
+        dtkData->setMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList()<< newSeriesDescription );
     }
    
     return isPartialImport;
