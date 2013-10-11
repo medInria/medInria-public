@@ -108,8 +108,7 @@ QStringList Plugin::tags() const
 
 QStringList Plugin::types() const
 {
-    return QStringList() << AlgorithmConnectedThreshold::s_identifier()
-                         << medProcessPaintSegm::s_identifier();
+    return QStringList() << medProcessPaintSegm::s_identifier();
 }
 
 Q_EXPORT_PLUGIN2(Plugin, Plugin)
