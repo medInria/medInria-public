@@ -462,14 +462,7 @@ void medAbstractDatabaseImporter::importData()
  
 
     // Check if PATIENT/STUDY/SERIES already exists in the database
-    bool dataExists = isPartialImportAttempt(d->data);
-
-    if ( dataExists )
-    {
-        qDebug() << "data is already in the database, skipping";
-        emit failure ( this );
-        return;
-    }
+    isPartialImportAttempt(d->data);
      
     bool writeSuccess = true;
     QString     thumb_dir;

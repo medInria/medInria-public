@@ -297,7 +297,7 @@ QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName ( const QString
     {
         // it exist
         suffix++;
-        newSeriesName = originalSeriesName + "_" + QString::number(suffix);
+        newSeriesName = originalSeriesName + " (copy " + QString::number(suffix) + ")";
     }
 
     return newSeriesName;
@@ -322,21 +322,28 @@ bool medDatabaseNonPersistentImporter::isPartialImportAttempt ( dtkAbstractData*
 
     QList<medDatabaseNonPersistentItem*> items = npdc->items();
     
-    QString patientName = medMetaDataKeys::PatientName.getFirstValue(dtkData).simplified();
-    QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(dtkData).simplified();
-    QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
-    QStringList filePaths = dtkData->metaDataValues ( medMetaDataKeys::FilePaths.key() );
+    
 
+            
     bool isPartialImport = false;
     foreach(medDatabaseNonPersistentItem* item, items)
     {
         isPartialImport = item->Match(dtkData);
-        
         if(isPartialImport)
         {
+            QString patientName = medMetaDataKeys::PatientName.getFirstValue(item->data()).simplified();
+            QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(item->data()).simplified();
+            QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(item->data()).simplified();
+            QStringList filePaths = item->data()->metaDataValues ( medMetaDataKeys::FilePaths.key() );
             (*partialAttemptsInfo()) << ( QStringList() << patientName << studyName << seriesName << filePaths[0] );
             break;
         }
+    }
+    if (isPartialImport)
+    {
+        QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
+        QString newSeriesDescription = ensureUniqueSeriesName(seriesName);
+        dtkData->setMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList()<< newSeriesDescription );
     }
    
     return isPartialImport;
