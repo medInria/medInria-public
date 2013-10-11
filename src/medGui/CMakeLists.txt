@@ -50,11 +50,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   # db related items
   database/medDatabaseSearchPanel.h
   database/medDatabaseView.h
-  database/medDatabaseNavigator.h
-  database/medDatabaseNavigatorItem.h
-  database/medDatabaseNavigatorItemOverlay.h
-  database/medDatabaseNavigatorItemGroup.h
-  database/medDatabaseNavigatorView.h
   database/medDatabasePreview.h
   database/medDatabasePreviewArrow.h
   database/medDatabasePreviewItem.h
@@ -125,7 +120,6 @@ set(${PROJECT_NAME}_HEADERS
   LUT/medLUTToXMLWriter.h
   LUT/medXMLToLUTReader.h
 
-  database/medDatabaseNavigatorController.h
   database/medDatabasePreviewController.h
   ${${PROJECT_NAME}_HEADERS_MOC}
   )
@@ -155,13 +149,6 @@ set(${PROJECT_NAME}_SOURCES
   # db related items
   database/medDatabaseSearchPanel.cpp
   database/medDatabaseView.cpp
-  database/medDatabaseNavigator.cpp
-  database/medDatabaseNavigatorController.cpp
-  database/medDatabaseNavigatorItem.cpp
-  database/medDatabaseNavigatorItemOverlay.cpp
-  database/medDatabaseNavigatorItemGroup.cpp
-  database/medDatabaseNavigatorScene.cpp
-  database/medDatabaseNavigatorView.cpp
   database/medDatabasePreview.cpp
   database/medDatabasePreviewArrow.cpp
   database/medDatabasePreviewController.cpp
