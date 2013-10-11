@@ -246,9 +246,9 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     // Memory Usage Label 's Widgets
     d->memoryUsageLabel = new QLabel(this);
-    d->memoryTimer = new QTimer();
+    d->memoryTimer = new QTimer(this);
     connect(d->memoryTimer,SIGNAL(timeout()),this,SLOT(updateMemoryUsageLabel()));
-    d->memoryTimer->start();
+    d->memoryTimer->start(1000);
 
 #if defined(Q_WS_MAC)
     d->fullscreenButton->setShortcut(Qt::ControlModifier + Qt::Key_F);
