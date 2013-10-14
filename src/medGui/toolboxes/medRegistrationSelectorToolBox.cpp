@@ -556,7 +556,10 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type,QString a
         output->addProperty(property,d->fixedData->propertyValues(property));
 
     // We manage the new description of the image
-    QString newDescription = d->movingData->metadata(medMetaDataKeys::SeriesDescription.key());
+    QString newDescription = "";
+    if(d->movingData)
+        newDescription = d->movingData->metadata(medMetaDataKeys::SeriesDescription.key());
+
     if (type==algorithm || type==redo)
     {
         if (type==algorithm)
@@ -575,14 +578,10 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type,QString a
             newDescription.remove(" registered\n");
     }
     else if (type==reset)
-    {
-        if (newDescription.lastIndexOf(" registered")!=-1)
-        {
+        if (newDescription.lastIndexOf(" registered")!= -1)
             newDescription.remove(newDescription.lastIndexOf(" registered"),newDescription.size()-1);
-        }
         else
             return;
-    }
 
     output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
     
@@ -725,7 +724,7 @@ void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
 
     d->fuseView->blockSignals(false);
 
-    d->fuseView->reset();
+//    d->fuseView->reset();
     d->fuseView->update();
 }
 
