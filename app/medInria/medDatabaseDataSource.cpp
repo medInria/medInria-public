@@ -45,10 +45,9 @@ public:
 
 };
 
-medDatabaseDataSource::medDatabaseDataSource( QObject* parent ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
+medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
 {
     d->mainWidget = new QWidget();
-//    d->compactWidget = new QWidget();
 
     d->model = new medDatabaseModel (this);
     d->proxy = new medDatabaseProxyModel(this);
@@ -64,8 +63,6 @@ medDatabaseDataSource::medDatabaseDataSource( QObject* parent ): medAbstractData
     d->compactView = new medDatabaseView(d->compactWidget);
     d->compactView->setModel(d->compactProxy);
     
-    
-    //TODO this tow things are really ugly.
     for(int i =1; i<12; ++i)
         d->compactView->hideColumn(i);
 

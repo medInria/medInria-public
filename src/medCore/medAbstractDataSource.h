@@ -33,7 +33,7 @@ class MEDCORE_EXPORT medAbstractDataSource : public QObject
     Q_OBJECT
 
 public:
-    medAbstractDataSource(QObject *parent = 0);
+    medAbstractDataSource(QWidget *parent = 0);
     ~medAbstractDataSource();
 
     /**

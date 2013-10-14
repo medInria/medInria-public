@@ -16,6 +16,7 @@
 #include <medAbstractDataSource.h>
 
 class medFileSystemDataSourcePrivate;
+class QWidget;
 
 /**
  * File-system explorer working as a concrete data source
@@ -26,7 +27,7 @@ class medFileSystemDataSource : public medAbstractDataSource
     Q_OBJECT
 
 public:
-    medFileSystemDataSource(QObject* parent = 0);
+    medFileSystemDataSource(QWidget *parent = 0);
     ~medFileSystemDataSource();
 
     QWidget* mainViewWidget();

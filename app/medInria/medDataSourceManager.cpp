@@ -45,63 +45,63 @@ medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
 void medDataSourceManager::ceateDataSource()
 {
     // Data base data source
-    
-    d->dbSource = new medDatabaseDataSource(this);
+
+    d->dbSource = new medDatabaseDataSource();
     d->dataSources.push_back(d->dbSource);
     connectDataSource(d->dbSource);
     emit registered(d->dbSource);
     emit databaseSourceRegistered(d->dbSource);
 
-    
+
     // File system data source
-    
-    d->fsSource = new medFileSystemDataSource(this);
+
+    d->fsSource = new medFileSystemDataSource();
     d->dataSources.push_back(d->fsSource);
     connectDataSource(d->fsSource);
-    emit registered(d->fsSource);    
-    
+    emit registered(d->fsSource);
+
     // Pacs data source
-    
-    
+
+
     medPacsDataSource *pacsDataSource = new medPacsDataSource;
     medPacsWidget * mainPacsWidget = qobject_cast<medPacsWidget*> (pacsDataSource->mainViewWidget());
     //make the widget hide if not functional (otehrwise it flickers in and out).
 //    mainPacsWidget->hide();
     if (mainPacsWidget->isServerFunctional())
     {
-        d->pacsSource = new medPacsDataSource(this);
+        d->pacsSource = new medPacsDataSource();
         d->dataSources.push_back(d->pacsSource);
         connectDataSource(d->pacsSource);
-        emit registered(d->pacsSource); 
+        emit registered(d->pacsSource);
     }
     else mainPacsWidget->deleteLater();
-    
-    // dynamic data sources (from plugins) 
-    
-    foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->dataSourcePlugins()) 
+
+    // dynamic data sources (from plugins)
+
+    foreach(QString dataSourceName, medAbstractDataSourceFactory::instance()->dataSourcePlugins())
     {
         qDebug()<< "factory creates dataSource:" << dataSourceName;
-        medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName, this);
-        d->dataSources.push_back(dataSource); 
+        medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName, 0);
+        d->dataSources.push_back(dataSource);
         connectDataSource(dataSource);
         emit registered(dataSource);
     }
-        
+
 
     connect(medDataManager::instance(), SIGNAL(dataAdded(const medDataIndex &)),
             d->dbSource, SLOT(update(const medDataIndex&)));
     connect(medDataManager::instance(), SIGNAL(dataRemoved(const medDataIndex &)),
             d->dbSource, SLOT(update(const medDataIndex&)));
-    connect(medDataManager::instance(), SIGNAL(failedToOpen(const medDataIndex&)), 
+    connect(medDataManager::instance(), SIGNAL(failedToOpen(const medDataIndex&)),
             d->dbSource , SLOT(onOpeningFailed(const medDataIndex&)));
-   
-    connect(d->fsSource, SIGNAL(open(QString)), 
+
+    connect(d->fsSource, SIGNAL(open(QString)),
             this, SIGNAL(open(QString)));
-    connect(d->fsSource, SIGNAL(load(QString)), 
+    connect(d->fsSource, SIGNAL(load(QString)),
             this, SIGNAL(load(QString)));
-    connect(d->dbSource, SIGNAL(open(const medDataIndex&)), 
+    connect(d->dbSource, SIGNAL(open(const medDataIndex&)),
             this, SIGNAL(open(const medDataIndex&)));
-    
+
 }
 
 void medDataSourceManager::connectDataSource(medAbstractDataSource *dataSource)

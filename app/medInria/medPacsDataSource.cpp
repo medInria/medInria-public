@@ -42,7 +42,7 @@ public:
     QList<medToolBox*> toolBoxes;
 };
 
-medPacsDataSource::medPacsDataSource(QObject* parent) : medAbstractDataSource(parent), d(new medPacsDataSourcePrivate)
+medPacsDataSource::medPacsDataSource(QWidget* parent) : medAbstractDataSource(parent), d(new medPacsDataSourcePrivate)
 {
     //this hierarchy is clearly broken: medPacsDataSource inherits from QObject,
     //pacsWidget is a widget, and its parent is the browserArea,

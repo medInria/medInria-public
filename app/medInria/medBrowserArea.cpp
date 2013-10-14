@@ -168,6 +168,7 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
         toolBox->setVisible(false);
         d->toolboxContainer->addToolBox(toolBox);
     }
+    onSourceIndexChanged(d->stack->currentIndex());
 }
 
 void medBrowserArea::addToolBox(medToolBox *toolbox)
