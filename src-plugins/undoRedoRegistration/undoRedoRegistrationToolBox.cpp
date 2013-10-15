@@ -73,6 +73,7 @@ undoRedoRegistrationToolBox::undoRedoRegistrationToolBox(QWidget *parent) : medR
     this->setTitle(tr("Stack of transformations"));
     connect(registrationFactory::instance(),SIGNAL(transformationAdded(int,QString)),this,SLOT(addTransformationIntoList(int, QString)));
     connect(registrationFactory::instance(),SIGNAL(transformationStackReset()),this,SLOT(onTransformationStackReset()));
+
 }
 
 undoRedoRegistrationToolBox::~undoRedoRegistrationToolBox(void)
@@ -187,6 +188,8 @@ void undoRedoRegistrationToolBox::setRegistrationToolBox(medRegistrationSelector
     medRegistrationAbstractToolBox::setRegistrationToolBox(toolbox);
     toolbox->setUndoRedoProcess(d->m_UndoRedo);
     connect(this->parentToolBox(),SIGNAL(success()),this,SLOT(onRegistrationSuccess()));
+    // Reset the Undo Redo if fixed or moving view removed.
+    connect(this->parentToolBox(), SIGNAL(viewRemoved()), registrationFactory::instance(), SLOT(reset()));
 }
 
 void undoRedoRegistrationToolBox::onRegistrationSuccess(){
