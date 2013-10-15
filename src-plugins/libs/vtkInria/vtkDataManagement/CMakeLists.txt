@@ -67,7 +67,6 @@ set(${PROJECT_NAME}_LIBS
   vtkRendering
   itkIOAddOn
   ITKVTK
-  ITKReview
   # ITK4 IO libs
   ITKIOPhilipsREC
   ITKIOBMP
@@ -84,6 +83,13 @@ set(${PROJECT_NAME}_LIBS
   ITKIOStimulate
   ITKIOVTK
   )
+
+if (ITK_USE_REVIEW)
+  set(${PROJECT_NAME}_LIBS
+    ${${PROJECT_NAME}_LIBS}
+    ITKReview
+  )
+endif()
     
 target_link_libraries(${PROJECT_NAME}
   ${${PROJECT_NAME}_LIBS}

@@ -42,6 +42,33 @@ include(${TTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+SET(${PROJECT_NAME}_LIBRARIES
+  ${QT_LIBRARIES}
+  dtkItkLogForwarder
+  dtkCore dtkLog
+  medCore
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
+)
+
+if (ITK_USE_REVIEW)
+  set(${PROJECT_NAME}_LIBRARIES
+    ${${PROJECT_NAME}_LIBRARIES}
+    ITKReview
+  )
+endif()
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -80,24 +107,7 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_QRC})
 
 target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  dtkItkLogForwarder
-  dtkCore dtkLog
-  medCore
-  ITKIOBMP
-  ITKIOBioRad
-  ITKIOHDF5
-  ITKIOGDCM
-  ITKIOGIPL
-  ITKIOJPEG
-  ITKIOLSM
-  ITKIOMeta
-  ITKIONIFTI
-  ITKIONRRD
-  ITKIOPNG
-  ITKIOStimulate
-  ITKIOVTK
-  ITKReview
+  ${${PROJECT_NAME}_LIBRARIES}
 )
 
 # Group common files together in Visual Studio.

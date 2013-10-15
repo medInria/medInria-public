@@ -45,7 +45,10 @@ if (ITK_FOUND)
    include(${ITK_USE_FILE})
 endif()
 
-SET(ITKIO_LIBRARIES
+SET(${PROJECT_NAME}_LIBRARIES
+  ${QT_LIBRARIES}
+  dtkCore dtkLog
+  ITKCommon
   ITKIOImageBase
   ITKIOBMP
   ITKIOLSM
@@ -61,7 +64,15 @@ SET(ITKIO_LIBRARIES
   ITKIOHDF5
   ITKIOBioRad
   ITKIOStimulate
+  ITKStatistics
 )
+
+if (ITK_USE_REVIEW)
+  set(${PROJECT_NAME}_LIBRARIES
+    ${${PROJECT_NAME}_LIBRARIES}
+    ITKReview
+  )
+endif()
 
 ## #################################################################
 ## Input
@@ -88,12 +99,7 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  dtkCore dtkLog
-  ITKCommon
-  ${ITKIO_LIBRARIES}
-  ITKStatistics
-  ITKReview
+  ${${PROJECT_NAME}_LIBRARIES}
 )
 
 ## #################################################################

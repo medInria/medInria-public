@@ -43,6 +43,32 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+SET(${PROJECT_NAME}_LIBRARIES
+  ${QT_LIBRARIES}
+  dtkCore
+  dtkLog
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
+)
+
+if (ITK_USE_REVIEW)
+  set(${PROJECT_NAME}_LIBRARIES
+    ${${PROJECT_NAME}_LIBRARIES}
+    ITKReview
+  )
+endif()
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -72,23 +98,7 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_HEADERS})
 
 target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  dtkCore
-  dtkLog
-  ITKIOBMP
-  ITKIOBioRad
-  ITKIOHDF5
-  ITKIOGDCM
-  ITKIOGIPL
-  ITKIOJPEG
-  ITKIOLSM
-  ITKIOMeta
-  ITKIONIFTI
-  ITKIONRRD
-  ITKIOPNG
-  ITKIOStimulate
-  ITKIOVTK
-  ITKReview
+  ${${PROJECT_NAME}_LIBRARIES}
 )
   
 if(BUILD_DOCUMENTATION)
