@@ -335,9 +335,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QObject::connect(medMessageController::instance(), SIGNAL(removeMessage(medMessage*)), d->statusBar, SLOT(removeMessage(medMessage*)));
 
     d->workspaceArea->setupWorkspace ( "Visualization" );
-    
-    medDataSourceManager::instance()->ceateDataSource();
-    
+        
     connect(medDataSourceManager::instance(), SIGNAL(open(QString)), 
             this, SLOT(open(QString)));
     connect(medDataSourceManager::instance(), SIGNAL(load(QString)), 

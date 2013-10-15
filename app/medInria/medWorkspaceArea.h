@@ -185,7 +185,6 @@ public slots:
 
     void onFileOpenedInTab(const medDataIndex &index);
     
-    void addDatabaseView(medDatabaseDataSource* dataSource);
     
 protected slots:
     /**
@@ -221,6 +220,8 @@ protected:
      * @return medViewContainer *
     */
     medViewContainer *currentContainerFocused();
+
+    void addDatabaseView(medDatabaseDataSource* dataSource);
     
 protected slots:
     /**

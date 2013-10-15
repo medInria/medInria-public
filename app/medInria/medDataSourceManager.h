@@ -25,6 +25,7 @@ class medDataIndex;
 class dtkAbstractData;
 class medDatabaseDataSource;
 
+
 class MEDCORE_EXPORT medDataSourceManager : public QObject
 {
     Q_OBJECT
@@ -41,7 +42,10 @@ public:
     */
     static void destroy();
     
-    void ceateDataSource();
+
+    QList<medAbstractDataSource*> dataSources();
+    medDatabaseDataSource* databaseDataSource();
+
     
 protected slots:
     
@@ -60,8 +64,6 @@ protected slots:
     
     
 signals:
-    void registered(medAbstractDataSource* dataSources);    
-    void databaseSourceRegistered(medDatabaseDataSource* dataSources);
     void open(const medDataIndex&);
     void open(QString);
     void load(QString);
@@ -77,7 +79,6 @@ protected:
 private:
 
     static medDataSourceManager *s_instance;
-
     medDataSourceManagerPrivate *d;
 };
 

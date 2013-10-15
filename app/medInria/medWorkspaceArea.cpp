@@ -112,9 +112,9 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
         this, SLOT(bringUpTransferFunction(bool)));
 
     this->addAction(transFunAction);
-    
-    connect(medDataSourceManager::instance(), SIGNAL(databaseSourceRegistered(medDatabaseDataSource*)),
-            this, SLOT(addDatabaseView(medDatabaseDataSource*)));
+
+    this->addDatabaseView(medDataSourceManager::instance()->databaseDataSource());
+
 }
 
 medWorkspaceArea::~medWorkspaceArea(void)
