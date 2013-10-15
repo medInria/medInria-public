@@ -36,15 +36,9 @@ public:
      medBrowserArea(QWidget *parent = 0);
     ~medBrowserArea();
 
-
-
-    
-    
-
 public slots:
     void onSourceIndexChanged(int index);
     void displayJobItem(medJobItem *importer, QString infoBaseName);
-    void addDataSource(medAbstractDataSource* dataSource);
 
     /**
      * @brief Adds a medToolBox to the medToolBoxContainer.
@@ -69,6 +63,7 @@ private slots:
 
 protected:
     void setToolBoxesVisible(int index, bool visible);
+    void addDataSource(medAbstractDataSource* dataSource);
 
 private:
     medBrowserAreaPrivate *d;

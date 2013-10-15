@@ -31,7 +31,7 @@ class medDataSourceManagerPrivate
 {
 public:
     QList <medAbstractDataSource*> dataSources;
-    
+
     medDatabaseDataSource *dbSource;
     medFileSystemDataSource *fsSource;
     medPacsDataSource *pacsSource;
@@ -39,40 +39,26 @@ public:
 
 medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
 {
-
-}
-
-void medDataSourceManager::ceateDataSource()
-{
     // Data base data source
-
     d->dbSource = new medDatabaseDataSource();
     d->dataSources.push_back(d->dbSource);
     connectDataSource(d->dbSource);
-    emit registered(d->dbSource);
-    emit databaseSourceRegistered(d->dbSource);
-
 
     // File system data source
-
     d->fsSource = new medFileSystemDataSource();
     d->dataSources.push_back(d->fsSource);
     connectDataSource(d->fsSource);
-    emit registered(d->fsSource);
 
     // Pacs data source
-
-
     medPacsDataSource *pacsDataSource = new medPacsDataSource;
     medPacsWidget * mainPacsWidget = qobject_cast<medPacsWidget*> (pacsDataSource->mainViewWidget());
     //make the widget hide if not functional (otehrwise it flickers in and out).
-//    mainPacsWidget->hide();
+    mainPacsWidget->hide();
     if (mainPacsWidget->isServerFunctional())
     {
         d->pacsSource = new medPacsDataSource();
         d->dataSources.push_back(d->pacsSource);
         connectDataSource(d->pacsSource);
-        emit registered(d->pacsSource);
     }
     else mainPacsWidget->deleteLater();
 
@@ -84,9 +70,7 @@ void medDataSourceManager::ceateDataSource()
         medAbstractDataSource *dataSource = medAbstractDataSourceFactory::instance()->create(dataSourceName, 0);
         d->dataSources.push_back(dataSource);
         connectDataSource(dataSource);
-        emit registered(dataSource);
     }
-
 
     connect(medDataManager::instance(), SIGNAL(dataAdded(const medDataIndex &)),
             d->dbSource, SLOT(update(const medDataIndex&)));
@@ -101,8 +85,8 @@ void medDataSourceManager::ceateDataSource()
             this, SIGNAL(load(QString)));
     connect(d->dbSource, SIGNAL(open(const medDataIndex&)),
             this, SIGNAL(open(const medDataIndex&)));
-
 }
+
 
 void medDataSourceManager::connectDataSource(medAbstractDataSource *dataSource)
 {
@@ -215,6 +199,16 @@ void medDataSourceManager::destroy( void )
         delete s_instance;
         s_instance = 0;
     }
+}
+
+QList <medAbstractDataSource*> medDataSourceManager::dataSources()
+{
+    return d->dataSources;
+}
+
+medDatabaseDataSource* medDataSourceManager::databaseDataSource()
+{
+    return d->dbSource;
 }
 
 medDataSourceManager *medDataSourceManager::s_instance = NULL;

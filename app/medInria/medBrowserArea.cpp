@@ -66,12 +66,10 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->stack = new QStackedWidget(this);
 
     // Source toolbox
-
     d->sourceSelectorToolBox = new medBrowserSourceSelectorToolBox(this);
     connect(d->sourceSelectorToolBox, SIGNAL(indexChanged(int)), this, SLOT(onSourceIndexChanged(int)));
 
     // Jobs
-
     d->jobsToolBox = new medBrowserJobsToolBox(this);
     d->jobsToolBox->setVisible(false);
     // connect the job-manager with the visual representation
@@ -79,14 +77,10 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     d->jobsToolBox->stack(),SLOT(addJobItem(medJobItem*, QString)));
 
     // Toolbox container
-
     d->toolboxContainer = new medToolBoxContainer(this);
     d->toolboxContainer->setObjectName("browserContainerToolbox");
     d->toolboxContainer->setFixedWidth(340);
     d->toolboxContainer->addToolBox(d->sourceSelectorToolBox);
-    
-    connect(medDataSourceManager::instance(), SIGNAL(registered(medAbstractDataSource*)),
-            this, SLOT(addDataSource(medAbstractDataSource*)));
     
     //TODO: DatabaseController  call ?
     connect(medDatabaseController::instance(), SIGNAL(jobStarted(medJobItem*,QString)),
@@ -118,6 +112,10 @@ medBrowserArea::medBrowserArea(QWidget *parent) : QWidget(parent), d(new medBrow
     {
         d->sourceSelectorToolBox->setCurrentTab(1);
     }
+
+    //dataSources
+    foreach (medAbstractDataSource *dataSource, medDataSourceManager::instance()->dataSources())
+        addDataSource(dataSource);
  }
 
 medBrowserArea::~medBrowserArea(void)
