@@ -273,12 +273,9 @@ void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& i
 
     if(!d->fuseView)
     {
-        if(!d->fuseView)
-        {
-            d->fuseView = dtkAbstractViewFactory::instance()->createSmartPointer("v3dView");
-            d->fuseView->setProperty("Closable","false");
-            emit newFuseView( d->fuseView);
-        }
+        d->fuseView = dtkAbstractViewFactory::instance()->createSmartPointer("v3dView");
+        d->fuseView->setProperty("Closable","false");
+        emit newFuseView( d->fuseView);
     }
 
     if (!index.isValid())
@@ -709,7 +706,7 @@ void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
     }
     else if(closedView == d->fixedView)
     {
-
+        //Reset the Undo Redo stack if needed.
         d->fixedData = NULL;
 
         if(d->movingData)
@@ -727,9 +724,6 @@ void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
 
     emit viewRemoved();
     d->fuseView->blockSignals(false);
-
-//    d->fuseView->reset();
-    d->fuseView->update();
 }
 
 
