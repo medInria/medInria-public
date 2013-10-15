@@ -47,7 +47,7 @@ public:
 
 medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractDataSource(parent), d(new medDatabaseDataSourcePrivate)
 {
-    d->mainWidget = new QWidget();
+    d->mainWidget = new QWidget(parent);
 
     d->model = new medDatabaseModel (this);
     d->proxy = new medDatabaseProxyModel(this);
@@ -60,7 +60,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
     d->largeView = new medDatabaseView(d->mainWidget);
     d->largeView->setModel(d->proxy);
     
-    d->compactView = new medDatabaseView(d->compactWidget);
+    d->compactView = new medDatabaseView(parent);
     d->compactView->setModel(d->compactProxy);
     
     for(int i =1; i<12; ++i)
