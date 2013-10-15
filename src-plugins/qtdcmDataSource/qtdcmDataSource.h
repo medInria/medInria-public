@@ -47,6 +47,6 @@ private:
     void initWidgets();
 };
 
-medAbstractDataSource *createQtdcmDataSource (QObject * );
+medAbstractDataSource *createQtdcmDataSource (QWidget * );
 
 
