@@ -102,6 +102,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOTransformHDF5
   ITKIOTransformMatlab
   ITKIOTransformInsightLegacy
+  ITKReview
   )
 ## #################################################################
 ## Source file layout in development environments like Visual Studio

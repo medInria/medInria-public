@@ -67,7 +67,9 @@ set(${PROJECT_NAME}_LIBS
   vtkRendering
   itkIOAddOn
   ITKVTK
+  ITKReview
   # ITK4 IO libs
+  ITKIOPhilipsREC
   ITKIOBMP
   ITKIOBioRad
   ITKIOHDF5

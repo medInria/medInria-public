@@ -41,6 +41,7 @@ if (WIN32 AND NOT CYGWIN AND NOT MINGW)
   ITKIOPNG
   ITKIOStimulate
   ITKIOVTK
+  ITKReview
  )
 else()
  target_link_libraries(itkReshaper

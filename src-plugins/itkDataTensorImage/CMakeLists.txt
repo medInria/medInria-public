@@ -97,6 +97,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOPNG
   ITKIOStimulate
   ITKIOVTK
+  ITKReview
 )
 
 # Group common files together in Visual Studio.

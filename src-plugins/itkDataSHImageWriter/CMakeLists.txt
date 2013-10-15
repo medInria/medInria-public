@@ -88,6 +88,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOPNG
   ITKIOStimulate
   ITKIOVTK
+  ITKReview
 )
   
 if(BUILD_DOCUMENTATION)

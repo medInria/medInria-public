@@ -93,6 +93,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKCommon
   ${ITKIO_LIBRARIES}
   ITKStatistics
+  ITKReview
 )
 
 ## #################################################################
