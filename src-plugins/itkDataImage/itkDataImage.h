@@ -149,10 +149,15 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
 
     extractor->SetExtractionRegion(extractionRegion);
     extractor->SetInput(img);
-    extractor->SetDirectionCollapseToSubmatrix();
+    extractor->SetDirectionCollapseToGuess();
 
-    extractor->UpdateOutputInformation();
-
+    try {
+        extractor->UpdateOutputInformation();
+    } catch (itk::ExceptionObject& e) {
+        qDebug() << e.GetDescription();
+        return;
+    }
+    
     // setup resampling pipeline
 
     typename Image2DType::SpacingType spacing    = extractor->GetOutput()->GetSpacing();
