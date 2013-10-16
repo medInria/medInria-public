@@ -46,7 +46,6 @@
 #include <medWorkspaceFactory.h>
 #include <medTabbedViewContainers.h>
 #include <medVisualizationLayoutToolBox.h>
-#include <medViewPropertiesToolBox.h>
 
 #include "medDatabaseDataSource.h"
 #include "medDataSourceManager.h"

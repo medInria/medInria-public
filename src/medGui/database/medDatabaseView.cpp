@@ -258,7 +258,8 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
         item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     if (item)
-        emit (open(item->dataIndex()));
+        if(item->dataIndex().isValidForSeries())
+            emit (open(item->dataIndex()));
 }
 
 void medDatabaseView::onViewSelectedItemRequested(void)

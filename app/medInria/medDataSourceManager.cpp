@@ -132,34 +132,10 @@ void medDataSourceManager::importData(dtkAbstractData *data)
     medDataManager::instance()->import(data_smart);
 }
 
-//TODO: Maybe it is not the best place to put it (medDataManager?)
 void medDataSourceManager::exportData(const medDataIndex &index)
 {
-    QString fileName = QFileDialog::getSaveFileName(0, tr("Save as"), "", "*.*");
-
-    if (fileName.isEmpty())
-        return;
-
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->data(index);
-
-    if (!data)
-        return;
-
-    //Check extension:
-    QFileInfo fileInfo(fileName);
-    if(fileInfo.suffix().isEmpty())
-    {
-        qDebug() << "determining suffix for type" << data->identifier();
-        if (data->identifier().contains("vtk") ||
-                data->identifier().contains("v3d"))
-            fileName.append(".vtk");
-        else
-            fileName.append(".nii.gz");
-        qDebug() << "filename:" << fileName;
-        //There may be other cases, but this will get us through most
-    }
-
-    medDataManager::instance()->exportDataToFile(data,fileName);
+    dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(index);
+        medDataManager::instance()->exportDataToFile(data);
 }
 
 void medDataSourceManager::importFile(QString path)
