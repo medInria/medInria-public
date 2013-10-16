@@ -177,7 +177,6 @@ void medDatabaseView::setModel(QAbstractItemModel *model)
     
     
     this->header()->setMinimumSectionSize(60);
-//    this->header()->resizeSections(QHeaderView::ResizeToContents);
      
     this->collapseAll();
 
