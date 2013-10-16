@@ -110,7 +110,7 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     widget->setLayout ( layout );
 
     // Main toolbox:
-    this->setTitle ( tr ( "ITK Binary Morphological Filters" ) );
+    this->setTitle ( tr ( "ITK Morphological Filters" ) );
     this->addWidget ( widget );
 
     // Add about plugin
@@ -136,7 +136,7 @@ bool itkMorphologicalFiltersToolBox::registered()
     medToolBoxFactory* factory = medToolBoxFactory::instance();
     return factory->registerToolBox<itkMorphologicalFiltersToolBox> (
                 "itkMorphologicalFilters",
-                "ITK Binary Morphological Filters",
+                "ITK Morphological Filters",
                 "ITK morphological filters, processing examples",
                 QStringList()<<"filtering"/*,
                 createitkMorphologicalFiltersToolBox */);

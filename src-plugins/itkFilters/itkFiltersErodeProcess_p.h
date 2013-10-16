@@ -23,9 +23,8 @@
 
 #include "itkImage.h"
 #include "itkCommand.h"
-#include "itkBinaryErodeImageFilter.h"
+#include "itkGrayscaleErodeImageFilter.h"
 #include "itkBinaryBallStructuringElement.h"
-#include "itkMinimumMaximumImageCalculator.h"
 
 class itkFiltersErodeProcess;
 
@@ -43,7 +42,7 @@ public:
     {        
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::BinaryBallStructuringElement < PixelType, 3> KernelType;
-        typedef itk::BinaryErodeImageFilter< ImageType, ImageType,KernelType >  ErodeType;
+        typedef itk::GrayscaleErodeImageFilter< ImageType, ImageType,KernelType >  ErodeType;
         typename ErodeType::Pointer erodeFilter = ErodeType::New();
         
         KernelType ball;
@@ -54,12 +53,6 @@ public:
 
         erodeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         erodeFilter->SetKernel ( ball );
-
-        typedef itk::MinimumMaximumImageCalculator <ImageType> ImageCalculatorFilterType;
-        ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New ();
-        imageCalculatorFilter->SetImage(dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ));
-        imageCalculatorFilter->ComputeMaximum();
-        erodeFilter->SetErodeValue(imageCalculatorFilter->GetMaximum());
         
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );

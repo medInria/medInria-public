@@ -23,9 +23,8 @@
 
 #include "itkImage.h"
 #include "itkCommand.h"
-#include "itkBinaryDilateImageFilter.h"
+#include "itkGrayscaleDilateImageFilter.h"
 #include "itkBinaryBallStructuringElement.h"
-#include "itkMinimumMaximumImageCalculator.h"
 
 
 class itkFiltersDilateProcess;
@@ -44,7 +43,7 @@ public:
     {
         typedef itk::Image< PixelType, 3 > ImageType;
         typedef itk::BinaryBallStructuringElement < PixelType, 3> KernelType;
-        typedef itk::BinaryDilateImageFilter< ImageType, ImageType,KernelType >  DilateType;
+        typedef itk::GrayscaleDilateImageFilter< ImageType, ImageType,KernelType >  DilateType;
         typename DilateType::Pointer dilateFilter = DilateType::New();
         
         KernelType ball;
@@ -55,12 +54,6 @@ public:
 
         dilateFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         dilateFilter->SetKernel ( ball );
-
-        typedef itk::MinimumMaximumImageCalculator <ImageType> ImageCalculatorFilterType;
-        ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New ();
-        imageCalculatorFilter->SetImage(dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ));
-        imageCalculatorFilter->ComputeMaximum();
-        dilateFilter->SetDilateValue(imageCalculatorFilter->GetMaximum());
         
         callback = itk::CStyleCommand::New();
         callback->SetClientData ( ( void * ) this );
