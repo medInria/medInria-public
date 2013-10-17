@@ -160,5 +160,10 @@
         <file>icons/link_wl.svg</file>
         <file>icons/broken_link_wl.svg</file>
         <file>icons/un_maximize.svg</file>
+        <file>pixmaps/plus-button.png</file>
+        <file>pixmaps/arrow-left.png</file>
+        <file>pixmaps/arrow-bot.png</file>
+        <file>pixmaps/arrow-right.png</file>
+        <file>pixmaps/arrow-top.png</file>
     </qresource>
 </RCC>

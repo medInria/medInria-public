@@ -23,7 +23,9 @@ class medDataIndex;
 class medToolBox;
 class medViewContainer;
 class medTabbedViewContainers;
+class medAbstractDataSource;
 class medWorkspaceAreaPrivate;
+class medDatabaseDataSource;
 
 /**
  * @brief Handles all connections between all elements of the Viewer area.
@@ -49,25 +51,9 @@ public:
     */
     ~medWorkspaceArea();
 
-    /**
-     * @brief Called whenever the viewer area is switched to. Add viewer area
-     *  specific status widgets on the left of the status bar.
-     *
-     * @param status
-    */
-    void setup(QStatusBar *status);
-
-    /**
-     * @brief Status bar setdown
-     *
-     * Called whenever the viewer area is left. Remove viewer area
-     * specific status widgets from the left of the status bar.
-     *
-     * @param status
-    */
-    void setdw(QStatusBar *status);
     
     QPixmap grabScreenshot();
+    
 
 public slots:
     /**
@@ -143,15 +129,6 @@ public slots:
     */
     void onDataRemoved(int layer);
 
-    /**
-     * @brief Switch the view area layout to the one of patient
-     * with database index \param index.
-     *
-     * Also sets numerous depending elements: the
-     * @param index
-    */
-    void switchToPatient(const medDataIndex& index);
-
 
     /**
      * @brief Switches between stack of containers
@@ -207,7 +184,8 @@ public slots:
 
 
     void onFileOpenedInTab(const medDataIndex &index);
-
+    
+    
 protected slots:
     /**
      * @brief View focused callback.
@@ -229,7 +207,7 @@ protected:
      * @param void
      * @return medViewContainer *
     */
-    medViewContainer      *currentRootContainer();
+    medViewContainer *currentRootContainer();
 
     /**
      * @brief Returns the currently focused child container.
@@ -241,8 +219,10 @@ protected:
      * @param void
      * @return medViewContainer *
     */
-    medViewContainer      *currentContainerFocused();
+    medViewContainer *currentContainerFocused();
 
+    void addDatabaseView(medDatabaseDataSource* dataSource);
+    
 protected slots:
     /**
      * @brief Brings up or deletes a medClutEditor.
@@ -274,6 +254,9 @@ signals:
      *
     */
     void sliceSelected ( int slice );
+    
+    
+    
 
 private:
     friend class medMessageController;

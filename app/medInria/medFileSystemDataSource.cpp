@@ -32,9 +32,9 @@ public:
     QLabel * infoText;
 };
 
-medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
+medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
 {
-    d->filesystemWidget = new QWidget(parent);
+    d->filesystemWidget = new QWidget();
 
     d->finder = new dtkFinder (d->filesystemWidget);
     d->finder->allowFileBookmarking(false);
@@ -45,70 +45,20 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     d->path->setPath(QDir::homePath());
 
     d->toolbar = new dtkFinderToolBar (d->filesystemWidget);
+    d->toolbar->setObjectName("toolbarWidget");
     d->toolbar->setPath(QDir::homePath());
 
     d->infoText = new QLabel(d->filesystemWidget);
+    d->infoText->setObjectName("fileSystemInfoText");
     d->infoText->setText("");
     d->infoText->setVisible(false);
     d->infoText->setTextFormat(Qt::RichText);
-    d->infoText->setStyleSheet(
-                "font-size: 11px;"
-                "color: #b2b8b2;"
-                "border-bottom: 1px solid #a9a9a9;"
-                "border-right: 1px solid #a9a9a9;"
-                "border-left: 1px solid #a9a9a9;"
-                "border-top: 0px;"
-                "border-radius: 0px;"
-                "padding: 0 8px;"
-                "background: #4b4b4b;"
-                "selection-background-color: #4b4b4b;"
-                "selection-color: #b2b8b2;"
-                );
+    
 
-    d->actionsToolBox = new medActionsToolBox(parent, true);
+    d->actionsToolBox = new medActionsToolBox(0, true);
     d->toolBoxes.push_back(d->actionsToolBox);
 
     d->side = new dtkFinderSideView;
-    d->side->setStyleSheet(
-        "dtkFinderSideView {"
-        "    color: #b2b2b2;"
-        "    padding: 5px;"
-        "    background: #494949;"
-        "    show-decoration-selected: 1;"
-        "    border-width: 0px"
-        "}"
-        ""
-        "dtkFinderSideView::item {"
-        "    margin-left: 0px;"
-        "    border-top-color: transparent;"
-        "    border-bottom-color: transparent;"
-        "}"
-        ""
-        "dtkFinderSideView::item:selected {"
-        "    border-top: 1px solid #567dbc;"
-        "    border-bottom: 1px solid #567dbc;"
-        "}"
-        ""
-        "dtkFinderSideView::item:selected:active{"
-        "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);"
-        "}"
-        ""
-        "dtkFinderSideView::item:selected:!active {"
-        "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b9be8, stop: 1 #577fbf);"
-        "}"
-        ""
-        "dtkFinderSideView::branch:selected {"
-        "    border-top: 1px solid #567dbc;"
-        "    border-bottom: 1px solid #567dbc;"
-        "}"
-        ""
-        "dtkFinderSideView::branch:selected:active{"
-        "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);"
-        "}"
-        ""
-        "dtkFinderSideView::branch:selected:!active {"
-        "    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b9be8, stop: 1 #577fbf);"
-        "}");
 
     QAction *importAction = new QAction(tr("Import"), this);
     importAction->setIconVisibleInMenu(true);
@@ -133,19 +83,23 @@ medFileSystemDataSource::medFileSystemDataSource( QWidget* parent /*= 0*/ ): med
     connect(  loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadRequested()));
     connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewRequested()));
 
-    QHBoxLayout *toolbar_layout = new QHBoxLayout;
-    toolbar_layout->setContentsMargins(0, 0, 0, 0);
+    QVBoxLayout *filesystem_layout = new QVBoxLayout(d->filesystemWidget);
+    QHBoxLayout *toolbar_layout = new QHBoxLayout();
+    QWidget * toolbarWidget = new QWidget;
+    toolbarWidget->setLayout(toolbar_layout);
+    toolbarWidget->setObjectName("toolbarWidget");
+    
+    toolbar_layout->setContentsMargins(0, 0, 0, 0);    
     toolbar_layout->setSpacing(0);
     toolbar_layout->addWidget  (d->toolbar);
     toolbar_layout->addWidget  (d->path);
-
-    QVBoxLayout *filesystem_layout = new QVBoxLayout(d->filesystemWidget);
-    filesystem_layout->setContentsMargins(10, 10, 10, 10);
+    
+    filesystem_layout->setContentsMargins(0, 0, 0, 0);    
     filesystem_layout->setSpacing(0);
-    filesystem_layout->addLayout (toolbar_layout);
+    filesystem_layout->addWidget(toolbarWidget);
     filesystem_layout->addWidget(d->finder);
     filesystem_layout->addWidget(d->infoText);
-
+    
     connect(d->finder, SIGNAL(changed(QString)), d->path, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(changed(QString)), d->side, SLOT(setPath(QString)));
     connect(d->finder, SIGNAL(changed(QString)), d->toolbar, SLOT(setPath(QString)));

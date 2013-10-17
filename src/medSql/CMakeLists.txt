@@ -94,7 +94,8 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   dtkLog
-  medCore)
+  medCore
+  )
 
 # Include header files for Visual Studio.
 source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)

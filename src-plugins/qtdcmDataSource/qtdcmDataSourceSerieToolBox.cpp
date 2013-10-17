@@ -24,6 +24,7 @@ class qtdcmDataSourceSerieToolBoxPrivate
 public:
     QWidget *parent;
     
+    QWidget *main;
     QtDcmPreviewWidget * preview;
     QtDcmSerieInfoWidget * serieInfoWidget;
     QtDcmImportWidget * importWidget;
@@ -32,14 +33,20 @@ public:
 qtdcmDataSourceSerieToolBox::qtdcmDataSourceSerieToolBox ( QWidget* parent ) : medToolBox ( parent ), d ( new qtdcmDataSourceSerieToolBoxPrivate )
 {
     d->parent = parent;
-    d->preview = new QtDcmPreviewWidget(this);
-
-    d->serieInfoWidget = new QtDcmSerieInfoWidget(this);
-    d->importWidget = new QtDcmImportWidget(this);
     
-    this->addWidget(d->preview);
-    this->addWidget(d->serieInfoWidget);
-    this->addWidget(d->importWidget);
+    d->main = new QWidget(this);
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    d->main->setLayout(mainLayout);
+    
+    d->preview = new QtDcmPreviewWidget(d->main);
+    d->serieInfoWidget = new QtDcmSerieInfoWidget(d->main);
+    d->importWidget = new QtDcmImportWidget(d->main);
+    
+    mainLayout->addWidget(d->preview);
+    mainLayout->addWidget(d->serieInfoWidget);
+    mainLayout->addWidget(d->importWidget);
+    
+    this->addWidget(d->main);
     this->setTitle("Series preview and import");
 
     // Add about plugin

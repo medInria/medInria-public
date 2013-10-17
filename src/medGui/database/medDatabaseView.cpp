@@ -60,12 +60,13 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
             if(index.column()>0)
             {
                 QPen pen;
-                pen.setColor(Qt::darkGray);
+                pen.setColor(QColor("#505050"));
                 painter->setPen(pen);
                 painter->drawLine(option.rect.x(), option.rect.y(), option.rect.x(), (option.rect.y()+option.rect.height()));
             }
             if (m_indexes.contains(item->dataIndex()))
-               painter->fillRect(option.rect, QColor::fromRgb(qRgb(201, 121, 153)));
+                // items that failed to open will have a pinkish background               
+                painter->fillRect(option.rect, QColor("#FF3333"));
 
             medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId());
             if ( dbc ) {
@@ -265,7 +266,8 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
         item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
     if (item)
-        emit (open(item->dataIndex()));
+        if(item->dataIndex().isValidForSeries())
+            emit (open(item->dataIndex()));
 }
 
 void medDatabaseView::onViewSelectedItemRequested(void)

@@ -27,11 +27,12 @@ class medDatabaseDataSource : public medAbstractDataSource
     Q_OBJECT
 
 public:
-    medDatabaseDataSource(QWidget* parent = 0);
+    medDatabaseDataSource(QWidget *parent = 0);
     ~medDatabaseDataSource();
 
     QWidget* mainViewWidget();
-
+    QWidget* compactViewWidget();
+    
     QWidget* sourceSelectorWidget();
 
     QString tabName();

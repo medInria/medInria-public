@@ -31,13 +31,14 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medRegistrationWorkspace.h
   medSegmentationWorkspace.h
   medFilteringWorkspace.h
-  medPacsDataSource.h
-  medFileSystemDataSource.h
-  medDatabaseDataSource.h
   medSaveModifiedDialog.h
   medSplashScreen.h
   medEmptyDbWarning.h
   medPluginWidget.h
+  medDataSourceManager.h
+  medPacsDataSource.h
+  medFileSystemDataSource.h
+  medDatabaseDataSource.h
   QSingleApplication/qtlocalpeer.h
   QSingleApplication/qtsingleapplication.h
   QSingleApplication/qtsinglecoreapplication.h
@@ -71,13 +72,14 @@ set(${PROJECT_NAME}_SOURCES
   medRegistrationWorkspace.cpp
   medSegmentationWorkspace.cpp
   medFilteringWorkspace.cpp
-  medPacsDataSource.cpp
-  medFileSystemDataSource.cpp
-  medDatabaseDataSource.cpp
   medSaveModifiedDialog.cpp
   medSplashScreen.cpp
   medEmptyDbWarning.cpp
   medPluginWidget.cpp
+  medDataSourceManager.cpp
+  medPacsDataSource.cpp
+  medFileSystemDataSource.cpp
+  medDatabaseDataSource.cpp
   QSingleApplication/qtlocalpeer.cpp
   QSingleApplication/qtsingleapplication.cpp
   QSingleApplication/qtsinglecoreapplication.cpp
@@ -144,7 +146,8 @@ target_link_libraries(${PROJECT_NAME}
   dtkVr
   medGui
   medSql
-  medPacs)
+  medPacs
+  )
 
 # Include header files for Visual Studio.
 source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
