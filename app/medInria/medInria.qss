@@ -44,7 +44,7 @@ $TOOLTIP_BACKGROUND                     = $YELLOW;
 $LIST_BACKGROUND                        = $GREY02;
 $ALT_LIST_BACKGROUND                    = $GREY03;
 
-$EDITION_BACKGROUND                     = $GREY01;
+$EDITION_BACKGROUND                     = $GREY06;
 
 $HEADER_BACKGROUND                      = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 $GREY01, stop: 1 $GREY00);
 
@@ -55,14 +55,14 @@ $STATUS_BAR_BACKGROUND                  = qlineargradient(x1: 0, y1: 0, x2: 0, y
 $SLIDER_HORIZONTAL_BACKGROUND           = qradialgradient(cx: 0.5, cy: 0, fx: 0.5, fy: 0, radius: 1, stop: 0 $GREY07, stop: 1 $GREY04);
 $SLIDER_VERTICAL_BACKGROUND             = qradialgradient(cx: 0, cy: 0.5, fx: 0, fy: 0.5, radius: 1, stop: 0 $GREY07, stop: 1 $GREY04);
 
-$PUSH_BUTTON_BACKGROUND                 = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY07, stop: 1 $GREY06);
+$PUSH_BUTTON_BACKGROUND                 = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY01);
 $PUSH_BUTTON_DISABLED_BACKGROUND        = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY05, stop: 1 $GREY04);
-$PUSH_BUTTON_HOVER_BACKGROUND           = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY03, stop: 1 $GREY02);
-$PUSH_BUTTON_CHECKED_BACKGROUND         = $GREY01;
+$PUSH_BUTTON_HOVER_BACKGROUND           = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY07, stop: 1 $GREY06);
+$PUSH_BUTTON_CHECKED_BACKGROUND         = $GREY00;
 $PUSH_BUTTON_PRESSED_BACKGROUND         = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY01);
 
-$COMBO_BOX_BACKGROUND                   = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY07, stop: 1 $GREY06);
-$COMBO_BOX_HOVER_BACKGROUND             = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY03, stop: 1 $GREY02);
+$COMBO_BOX_BACKGROUND                   = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY01);
+$COMBO_BOX_HOVER_BACKGROUND             = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY07, stop: 1 $GREY06);
 $COMBO_BOX_ITEM_BACKGROUND              = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY07, stop: 1 $GREY06);
 $COMBO_BOX_ITEM_SELECTED_BACKGROUND     = $GREY00;
 
@@ -82,10 +82,9 @@ $TOOLBOX_HEADER_BACKGROUND              = qlineargradient(x1: 0, y1: 0, x2: 0, y
 $TOOLBOX_BODY_BACKGROUND                = qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 $GREY02, stop: 1 $GREY01);
 $TOOLBOX_BACKGROUND                     = $GREY04;
 
-$VIEW_PROPERTY_BACKGROUND               = $GREY08;
-$VIEW_PROPERTY_HEADER_BACKGROUND        = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 $GREY06, stop: 1 $GREY05);
-$VIEW_PROPERTY_ALT_BACKGROUND           = $GREY09;
-$VIEW_PROPERTY_ITEM_SELECTED_BACKGROUND = $GREY06;
+$VIEW_PROPERTY_BACKGROUND               = $GREY03;
+$VIEW_PROPERTY_HEADER_BACKGROUND        = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 $GREY01, stop: 1 $GREY00);
+$VIEW_PROPERTY_ALT_BACKGROUND           = $GREY02;
 
 $FINDER_PATH_BAR_BACKGROUND             = qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 $GREY01, stop: 1 $GREY00);
 
@@ -143,7 +142,7 @@ $HOMEPAGE_TEXT_COLOR                = $GREY06;
 
 $TOOLBOX_HEADER_COLOR               = $GREY11;
 
-$VIEW_PROPERTY_COLOR                = $GREY04;
+$VIEW_PROPERTY_COLOR                = $GREY11;
 $VIEW_PROPERTY_ITEM_COLOR           = $WIDGET_COLOR;
 $VIEW_PROPERTY_ITEM_SELECTED_COLOR  = $COMBO_BOX_ITEM_SELECTED_COLOR;
 
@@ -284,7 +283,6 @@ QWidget
     font-size: WIDGET_FONTSIZE;
 }
 
-
 /*******************************************************************************
     QToolTip
  *******************************************************************************/
@@ -392,6 +390,7 @@ QSpinBox::down-arrow, QDoubleSpinBox::down-arrow
 /*******************************************************************************
      QComboBox
  *******************************************************************************/
+
 QComboBox
 {
     border-radius: $COMBO_BOX_RADIUS;
@@ -421,7 +420,6 @@ QComboBox QAbstractItemView
     selection-color: $COMBO_BOX_ITEM_SELECTED_COLOR;
     outline: 0px;
 }
-
 
 /*******************************************************************************
      QCheckBox
@@ -590,8 +588,6 @@ QProgressBar
     max-height: $PROGRESS_BAR_HEIGHT;
     text-align: right;
     color: $PROGRESS_BAR_TEXT_COLOR;
-
-
 }
 
 QProgressBar::chunk
@@ -1051,12 +1047,10 @@ medViewPropertiesToolBox QTreeWidget::branch:open:has-children
 {
     border-image: none;
     image: url(:pixmaps/arrow-bot.png);
-    background: $VIEW_PROPERTY_ITEM_SELECTED_BACKGROUND;
     color: $VIEW_PROPERTY_ITEM_COLOR;
 }
 medViewPropertiesToolBox QTreeWidget::item:open:has-children  
 {
-    background: $VIEW_PROPERTY_ITEM_SELECTED_BACKGROUND;
     color: $VIEW_PROPERTY_ITEM_SELECTED_COLOR;
 }
 
