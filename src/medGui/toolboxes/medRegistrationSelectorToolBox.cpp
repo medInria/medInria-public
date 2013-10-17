@@ -547,12 +547,6 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
         if (d->undoRedoProcess)
             output = d->undoRedoProcess->output();
         else return;
-    
-    foreach(QString metaData, d->fixedData->metaDataList())
-        output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
-
-    foreach(QString property, d->fixedData->propertyList())
-        output->addProperty(property,d->fixedData->propertyValues(property));
 
     // We manage the new description of the image
     QString newDescription = "";
@@ -572,15 +566,22 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
     }
     else if (type==undo)
     {
-        newDescription.remove(newDescription.lastIndexOf("-"),newDescription.size()-1); 
+        newDescription.remove(newDescription.lastIndexOf("-"),newDescription.size()-1);
         if (newDescription.count("-") == 0)
             newDescription.remove(" registered\n");
     }
     else if (type==reset)
-        if (newDescription.lastIndexOf(" registered")!= -1)
+    {
+        if (newDescription.lastIndexOf(" registered") != -1)
             newDescription.remove(newDescription.lastIndexOf(" registered"),newDescription.size()-1);
-        else
-            return;
+        return;
+    }
+
+    foreach(QString metaData, d->fixedData->metaDataList())
+        output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
+
+    foreach(QString property, d->fixedData->propertyList())
+        output->addProperty(property,d->fixedData->propertyValues(property));
 
     output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
     
@@ -712,8 +713,12 @@ void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
         if(d->movingData)
         {
             d->fuseView->removeOverlay(1);
+            double window, level;
+            d->movingView->windowLevel(window, level);
             d->fuseView->removeOverlay(0);
-            d->fuseView->setData(d->movingData,0);
+            d->fuseView->setData(d->movingData, 0);
+            d->fuseView->onWindowingChanged(window, level);
+
         }
         else
         {
@@ -737,5 +742,4 @@ void medRegistrationSelectorToolBox::closeCompareView(int layer)
     {
         d->movingView->close();
     }
-
 }
