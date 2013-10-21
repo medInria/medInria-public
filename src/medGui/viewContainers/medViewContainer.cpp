@@ -470,3 +470,37 @@ bool medViewContainer::open(dtkAbstractData * data)
 
     return true;
 }
+
+
+
+void medViewContainer::keyPressEvent(QKeyEvent * event)
+{
+    if( event->key() == Qt::Key_Control)
+    {
+        this->root()->setMultiSelection(true);
+    }
+}
+
+void medViewContainer::keyReleaseEvent(QKeyEvent * event)
+{
+    if(event->matches(QKeySequence::SelectAll))
+    {
+        foreach(medViewContainer* container, this->root()->childContainers())
+        {
+            if(container != this)
+              container->setFocus();
+        }
+    }
+
+  else this->root()->setMultiSelection(false);
+}
+
+void medViewContainer::setMultiSelection(bool enabled)
+{
+    d->multiSelectionEnabled = enabled;
+}
+
+bool medViewContainer::multiSelection()
+{
+    return d->multiSelectionEnabled;
+}

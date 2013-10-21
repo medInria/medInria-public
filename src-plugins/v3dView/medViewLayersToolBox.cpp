@@ -11,6 +11,7 @@
 #include <medParameter.h>
 #include <medViewParamsToolBox.h>
 #include <medToolBoxHeader.h>
+#include <medViewContainer.h>
 
 #include <QPushButton>
 
@@ -109,11 +110,9 @@ void medViewLayersToolBox::update(dtkAbstractView * view)
         connect(d->vtkView, SIGNAL(dataRemoved(dtkAbstractData*, int)), this, SLOT(updateViews()));
         connect(d->vtkView, SIGNAL(closed()), this ,SLOT(removeView()));
         connect(d->vtkView, SIGNAL(closing()), this ,SLOT(removeView()));
-
     }
 
     d->viewParamsToolBox->update(view);
-
 }
 
 
@@ -174,7 +173,6 @@ void medViewLayersToolBox::selectView(medVtkView *view)
 {
     if(!view)
         return;
-
     d->viewListWidget->blockSignals(true);
 
     if( !(QApplication::keyboardModifiers() & Qt::ControlModifier) )
@@ -202,6 +200,10 @@ void medViewLayersToolBox::updateLayerListWidget(QList<medVtkView*> vtkViews)
 
     foreach(medVtkView *view, vtkViews)
     {
+        medViewContainer *container = dynamic_cast<medViewContainer*>(view->parent());
+        //if(!container->isSelected())
+          container->select();
+
         int nbLayers = view->numberOfLayers();
 
         for (int i  = 0; i < nbLayers; i++) {

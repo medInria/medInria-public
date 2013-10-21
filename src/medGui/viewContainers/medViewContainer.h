@@ -486,7 +486,6 @@ protected:
 
     void keyReleaseEvent(QKeyEvent * event);
 
-
 protected:
     medViewContainerPrivate *d;
 };
