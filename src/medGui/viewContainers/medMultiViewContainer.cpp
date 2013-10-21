@@ -50,6 +50,7 @@ void medSingleViewContainer2::setView (dtkAbstractView *view)
     }
 
     d->view = view;
+    d->view->setParent(this);
 
     if (view)
     {
