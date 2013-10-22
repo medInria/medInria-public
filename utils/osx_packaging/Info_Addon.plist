@@ -53,6 +53,7 @@
 				<string>nrrd</string>
 				<string>nhdr</string>
 				<string>mha</string>
+				<string>mhd</string>
 				<string>hdr</string>
 				<string>gz</string>
 			</array>
