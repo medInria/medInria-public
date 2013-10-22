@@ -30,7 +30,7 @@ itkFiltersErodeProcess::itkFiltersErodeProcess(itkFiltersErodeProcess *parent)
     
     d->filter = this;
     d->output = NULL;
-    d->size = 5; 
+    d->radius = 5;
     d->description = tr("ITK Erode filter");
 }
 
@@ -61,7 +61,7 @@ void itkFiltersErodeProcess::setParameter(double data, int channel)
         return;
     
     DTK_D(itkFiltersErodeProcess);
-    d->size = data;
+    d->radius = data;
 }
 
 //-------------------------------------------------------------------------------------------

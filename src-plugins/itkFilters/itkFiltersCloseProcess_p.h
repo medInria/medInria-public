@@ -36,20 +36,18 @@ public:
 
     virtual ~itkFiltersCloseProcessPrivate(void) {}
     
-    int size;
+    int radius;
 
     template <class PixelType> void update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
-        typedef itk::BinaryBallStructuringElement < PixelType, 3> KernelType;
-        typedef itk::GrayscaleMorphologicalClosingImageFilter< ImageType, ImageType, KernelType >  CloseType;
+        typedef itk::BinaryBallStructuringElement < PixelType, 3> StructuringElementType;
+        typedef itk::GrayscaleMorphologicalClosingImageFilter< ImageType, ImageType, StructuringElementType >  CloseType;
         typename CloseType::Pointer closeFilter = CloseType::New();
 
-        KernelType ball;
-        typename KernelType::SizeType ballSize;
-        ballSize.Fill(size);
-        
-        ball.SetRadius(ballSize);
+        StructuringElementType ball;
+        ball.SetRadius(radius);
+        ball.CreateStructuringElement();
 
         closeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         closeFilter->SetKernel ( ball );
@@ -64,7 +62,7 @@ public:
         output->setData ( closeFilter->GetOutput() );
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " Close filter (" + QString::number(size) + ")";
+        newSeriesDescription += " Close filter (" + QString::number(radius) + ")";
         
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }

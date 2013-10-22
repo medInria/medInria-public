@@ -30,7 +30,7 @@ itkFiltersOpenProcess::itkFiltersOpenProcess(itkFiltersOpenProcess *parent)
     
     d->filter = this;
     d->output = NULL;
-    d->size = 5; 
+    d->radius = 5;
 
     d->description = tr("ITK Open filter");
 }
@@ -62,7 +62,7 @@ void itkFiltersOpenProcess::setParameter(double data, int channel)
         return;
     
     DTK_D(itkFiltersOpenProcess);
-    d->size = data;
+    d->radius = data;
 
 }
 

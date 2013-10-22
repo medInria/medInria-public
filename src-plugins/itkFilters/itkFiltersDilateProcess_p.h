@@ -37,20 +37,18 @@ public:
 
     virtual ~itkFiltersDilateProcessPrivate(void) {}
     
-    int size;
+    int radius;
 
     template <class PixelType> void update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
-        typedef itk::BinaryBallStructuringElement < PixelType, 3> KernelType;
-        typedef itk::GrayscaleDilateImageFilter< ImageType, ImageType,KernelType >  DilateType;
+        typedef itk::BinaryBallStructuringElement < PixelType, 3> StructuringElementType;
+        typedef itk::GrayscaleDilateImageFilter< ImageType, ImageType,StructuringElementType >  DilateType;
         typename DilateType::Pointer dilateFilter = DilateType::New();
         
-        KernelType ball;
-        typename KernelType::SizeType ballSize;
-        ballSize.Fill(size);
-        
-        ball.SetRadius(ballSize);
+        StructuringElementType ball;
+        ball.SetRadius(radius);
+        ball.CreateStructuringElement();
 
         dilateFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         dilateFilter->SetKernel ( ball );
@@ -65,7 +63,7 @@ public:
         output->setData ( dilateFilter->GetOutput() );
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " Dilate filter (" + QString::number(size) + ")";
+        newSeriesDescription += " Dilate filter (" + QString::number(radius) + ")";
         
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }

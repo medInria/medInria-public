@@ -30,7 +30,7 @@ itkFiltersCloseProcess::itkFiltersCloseProcess(itkFiltersCloseProcess *parent)
     
     d->filter = this;
     d->output = NULL;
-    d->size = 5; 
+    d->radius = 5;
 
     d->description = tr("ITK Close filter");
 }
@@ -62,7 +62,7 @@ void itkFiltersCloseProcess::setParameter(double data, int channel)
         return;
     
     DTK_D(itkFiltersCloseProcess);
-    d->size = data;
+    d->radius = data;
 
 }
 

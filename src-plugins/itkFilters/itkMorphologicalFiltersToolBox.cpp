@@ -79,7 +79,7 @@ itkMorphologicalFiltersToolBox::itkMorphologicalFiltersToolBox ( QWidget *parent
     d->kernelSize = new QDoubleSpinBox;
     d->kernelSize->setMaximum ( 10 );
     d->kernelSize->setValue ( 1 );
-    QLabel * morphoFilterLabel = new QLabel ( tr ( "Kernel size:" ) );
+    QLabel * morphoFilterLabel = new QLabel ( tr ( "Kernel radius:" ) );
     QHBoxLayout * morphoFilterLayout = new QHBoxLayout;
     QLabel * morphoFilterLabel2 = new QLabel ( tr ( " pixels" ) );
     morphoFilterLayout->addWidget ( morphoFilterLabel );

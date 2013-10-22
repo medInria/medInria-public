@@ -30,7 +30,7 @@ itkFiltersDilateProcess::itkFiltersDilateProcess(itkFiltersDilateProcess *parent
     
     d->filter = this;
     d->output = NULL;
-    d->size = 5; 
+    d->radius = 5;
     d->description = tr("ITK Dilate filter");
 }
 
@@ -61,7 +61,7 @@ void itkFiltersDilateProcess::setParameter(double data, int channel)
         return;
     
     DTK_D(itkFiltersDilateProcess);
-    d->size = data;
+    d->radius = data;
 }
 
 //-------------------------------------------------------------------------------------------

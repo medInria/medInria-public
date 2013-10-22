@@ -36,20 +36,18 @@ public:
 
     virtual ~itkFiltersErodeProcessPrivate(void) {}
     
-    int size;
+    int radius;
 
     template <class PixelType> void update ( void )
-    {        
+    {
         typedef itk::Image< PixelType, 3 > ImageType;
-        typedef itk::BinaryBallStructuringElement < PixelType, 3> KernelType;
-        typedef itk::GrayscaleErodeImageFilter< ImageType, ImageType,KernelType >  ErodeType;
+        typedef itk::BinaryBallStructuringElement < PixelType, 3> StructuringElementType;
+        typedef itk::GrayscaleErodeImageFilter< ImageType, ImageType,StructuringElementType >  ErodeType;
         typename ErodeType::Pointer erodeFilter = ErodeType::New();
         
-        KernelType ball;
-        typename KernelType::SizeType ballSize;
-        ballSize.Fill(size);
-        
-        ball.SetRadius(ballSize);
+        StructuringElementType ball;
+        ball.SetRadius(radius);
+        ball.CreateStructuringElement();
 
         erodeFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );
         erodeFilter->SetKernel ( ball );
@@ -59,12 +57,11 @@ public:
         callback->SetCallback ( itkFiltersProcessBasePrivate::eventCallback );
         
         erodeFilter->AddObserver ( itk::ProgressEvent(), callback );
-        
         erodeFilter->Update();
         output->setData ( erodeFilter->GetOutput() );
         
         QString newSeriesDescription = input->metadata ( medMetaDataKeys::SeriesDescription.key() );
-        newSeriesDescription += " Erode filter (" + QString::number(size) + ")";
+        newSeriesDescription += " Erode filter (" + QString::number(radius) + ")";
         
         output->addMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
     }
