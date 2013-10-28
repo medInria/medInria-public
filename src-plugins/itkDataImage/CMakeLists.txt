@@ -80,7 +80,9 @@ set(${PROJECT_NAME}_HEADERS
   itkDataImageShort4.h
   )
 
-set(${PROJECT_NAME}_SOURCES itkDataImagePlugin.cpp)
+set(${PROJECT_NAME}_SOURCES
+itkDataImagePlugin.cpp
+itkBinaryMask.cpp)
 
 ## #################################################################
 ## Build rules

@@ -16,7 +16,18 @@
 #include "itkDataImage.h"
 #include "itkDataImagePluginExport.h"
 
-extern const char itkBinaryMaskName[] = "itkBinaryMask";
-typedef ITKDATAIMAGEPLUGIN_EXPORT itkDataImage<3,unsigned char,itkBinaryMaskName> itkBinaryMask;
+extern const char itkBinaryMaskName[];
+class ITKDATAIMAGEPLUGIN_EXPORT itkBinaryMask : public itkDataImage<3,unsigned char,itkBinaryMaskName>{
+public:
+    itkBinaryMask(){ itkDataImage<3,unsigned char,itkBinaryMaskName>() ;
+        qDebug()<<"Creating binary mask !"<<endl;
+    }
+    ~itkBinaryMask(){}
+
+    QString description() const {return "itk binary mask";}
+
+    static bool registered();
+};
 
 
+dtkAbstractData *createITKBinaryMask();
