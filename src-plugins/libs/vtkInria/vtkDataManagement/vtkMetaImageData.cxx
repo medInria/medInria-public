@@ -27,12 +27,8 @@ vtkCxxRevisionMacro(vtkMetaImageData, "$Revision: 1370 $");
 #include <itkMatrix.h>
 #include <itkImage.h>
 
-#ifdef ITK_USE_REVIEW
 #include <itkPhilipsRECImageIO.h>
 #include <itkPhilipsPAR.h>
-#endif
-
-
 
 #include <vtkPNGReader.h>
 #include <vtkJPEGReader.h>
@@ -422,12 +418,6 @@ vtkMetaImageData::FloatImageType::PointType vtkMetaImageData::ExtractPARRECImage
   typedef FloatImageType::PointType PointType;
   PointType nullorigin;
   nullorigin[0] = nullorigin[1] = nullorigin[2] = 0.0;
-  
-#ifndef ITK_USE_REVIEW
-  std::cerr<<"cannot correct for PAR-REC angulation without ITK_USE_REVIEW to ON"<<std::endl;
-  return nullorigin;
-#else
-
 
   itk::PhilipsRECImageIO::Pointer philipsIO = itk::PhilipsRECImageIO::New();
 
@@ -481,10 +471,6 @@ vtkMetaImageData::FloatImageType::PointType vtkMetaImageData::ExtractPARRECImage
   offcenterpoint -= midoffset;
   
   return offcenterpoint;
-  
-#endif
-  
-  
 }
 
 
@@ -497,14 +483,6 @@ vtkMetaImageData::DirectionType vtkMetaImageData::ExtractPARRECImageOrientation 
 
   DirectionType eyedir;
   eyedir.SetIdentity();
-
-#ifndef ITK_USE_REVIEW
-  std::cerr<<"cannot correct for PAR-REC angulation without ITK_USE_REVIEW to ON"<<std::endl;
-  
-  return eyedir;
-
-  
-#else
     
   itk::PhilipsRECImageIO::Pointer philipsIO = itk::PhilipsRECImageIO::New();
 
@@ -634,9 +612,5 @@ vtkMetaImageData::DirectionType vtkMetaImageData::ExtractPARRECImageOrientation 
       retval[i][j] = TR[i][j];
 
   return retval;
-  
-#endif
-  
-  
 }
 

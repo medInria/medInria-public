@@ -68,14 +68,8 @@ SET(${PROJECT_NAME}_LIBRARIES
   ITKIOTransformHDF5
   ITKIOTransformMatlab
   ITKIOTransformInsightLegacy
+  ITKReview
 )
-
-if (ITK_USE_REVIEW)
-  set(${PROJECT_NAME}_LIBRARIES
-    ${${PROJECT_NAME}_LIBRARIES}
-    ITKReview
-  )
-endif()
 
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})

@@ -60,14 +60,8 @@ SET(${PROJECT_NAME}_LIBRARIES
   ITKIOPNG
   ITKIOStimulate
   ITKIOVTK
+  ITKReview
 )
-
-if (ITK_USE_REVIEW)
-  set(${PROJECT_NAME}_LIBRARIES
-    ${${PROJECT_NAME}_LIBRARIES}
-    ITKReview
-  )
-endif()
 
 ## #################################################################
 ## Input
