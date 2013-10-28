@@ -16,6 +16,7 @@
 #include "itkDataImageChar4.h"
 #include "itkDataImageUChar4.h"
 #include "itkDataImageUChar3.h"
+#include "itkBinaryMask.h"
 #include "itkDataImageShort3.h"
 #include "itkDataImageShort4.h"
 #include "itkDataImageUShort3.h"
@@ -83,6 +84,7 @@ bool itkDataImagePlugin::initialize()
     if(!itkDataImageLong4::registered()) qDebug() << "Unable to register itkDataImageLong4 type";
     if(!itkDataImageUChar4::registered()) qDebug() << "Unable to register itkDataImageUChar4 type";
     if(!itkDataImageUChar3::registered()) qDebug() << "Unable to register itkDataImageUChar3 type";
+    if(!itkBinaryMask::registered()) qDebug() << "Unable to register itkBinaryMask type";
     if(!itkDataImageShort3::registered()) qDebug() << "Unable to register itkDataImageShort3 type";
     if(!itkDataImageShort4::registered()) qDebug() << "Unable to register itkDataImageShort4 type";
     if(!itkDataImageUShort3::registered()) qDebug() << "Unable to register itkDataImageUShort3 type";
@@ -135,6 +137,7 @@ QStringList itkDataImagePlugin::types() const
     return QStringList() << "itkDataImageChar3"
             << "itkDataImageChar4"
             << "itkDataImageUChar3"
+            << "itkBinaryMask"
             << "itkDataImageUChar4"
             << "itkDataImageShort3"
             << "itkDataImageShort4"

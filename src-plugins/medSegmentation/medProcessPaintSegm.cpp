@@ -108,7 +108,7 @@ int medProcessPaintSegm::update()
 
 QString medProcessPaintSegm::MaskImageTypeIdentifier()
 {
-    return "itkDataImageUChar3";
+    return "itkBinaryMask";
 }
 
 dtkAbstractData * medProcessPaintSegm::output()

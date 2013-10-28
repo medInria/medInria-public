@@ -57,6 +57,7 @@ set(${PROJECT_NAME}_HEADERS
   itkDataImageChar4.h
   itkDataImageUChar4.h
   itkDataImageUChar3.h
+  itkBinaryMask.h
   itkDataImageShort3.h
   itkDataImageUShort3.h
   itkDataImageUShort4.h

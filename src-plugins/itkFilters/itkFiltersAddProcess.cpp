@@ -82,7 +82,7 @@ int itkFiltersAddProcess::update ( void )
     {
         d->update<char>();
     }
-    else if ( id == "itkDataImageUChar3" )
+    else if ( id == "itkDataImageUChar3" || id == "itkBinaryMask")
     {
         d->update<unsigned char>();
     }

@@ -553,7 +553,7 @@ void medViewPropertiesToolBox::constructImageLayer(dtkAbstractData* data, int im
     opacityBox->setValue(d->view->opacity(imageLayer) * 100);
     d->propertiesTree->setItemWidget(opacityItem, 2, opacityBox);
 
-    if(medMetaDataKeys::SeriesType.getFirstValue(data)!="Mask")
+    if(data->identifier()!="itkBinaryMask")
     {
         QTreeWidgetItem * lutItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
         lutItem->setText(1, tr("LUT"));
@@ -1009,7 +1009,7 @@ void medViewPropertiesToolBox::onItemClicked(QTreeWidgetItem * item)
 {
     if (d->view && d->view->dataInList(item->text(0).toInt()))
     {
-        if(medMetaDataKeys::SeriesType.getFirstValue(d->view->dataInList(item->text(0).toInt()))=="Mask")
+        if(d->view->dataInList(item->text(0).toInt())->identifier()=="itkBinaryMask")
         {
             if (d->windowingPushButton->isChecked())
                 this->disableInteraction();
