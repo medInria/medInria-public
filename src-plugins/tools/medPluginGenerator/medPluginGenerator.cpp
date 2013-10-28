@@ -102,10 +102,7 @@ bool medPluginGenerator::run()
         && generatePluginHeaderFile()
         && generatePluginSourceFile()
         && generateExportHeaderFile()
-        && generateHelpCollectionFile()
-        && generateHelpConfigurationFile()
-        && generateReadmeFile()
-        && generateCopyingFile();
+        && generateReadmeFile();
     
     if (d->pluginFamily == "registration")
         return generateCMakeLists()
@@ -118,10 +115,7 @@ bool medPluginGenerator::run()
         && generatePluginHeaderFile()
         && generatePluginSourceFile()
         && generateExportHeaderFile()
-        && generateHelpCollectionFile()
-        && generateHelpConfigurationFile()
-        && generateReadmeFile()
-        && generateCopyingFile();
+        && generateReadmeFile();
     
     return generateCMakeLists()
     && generateTypeHeaderFile()
@@ -129,10 +123,7 @@ bool medPluginGenerator::run()
     && generatePluginHeaderFile()
     && generatePluginSourceFile()
     && generateExportHeaderFile()
-    && generateHelpCollectionFile()
-    && generateHelpConfigurationFile()
-    && generateReadmeFile()
-    && generateCopyingFile();
+    && generateReadmeFile();
 }
 
 QStringList medPluginGenerator::pluginFamilies()
@@ -492,69 +483,6 @@ bool medPluginGenerator::generateExportHeaderFile()
 }
 
 // /////////////////////////////////////////////////////////////////
-// Help collection file
-// /////////////////////////////////////////////////////////////////
-
-bool medPluginGenerator::generateHelpCollectionFile()
-{
-    QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("Plugin.qhcp.in")));
-    
-    if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("Plugin.qhcp.in") << "for writing";
-        return false;
-    }
-    
-    QFile templateFile(":template/qhcp");
-    
-    if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
-        return false;
-    }
-    
-    QTextStream stream(&targetFile);
-    
-    stream << QString(templateFile.readAll());
-    
-    targetFile.close();
-    
-    templateFile.close();
-    
-    return true;
-}
-
-
-// /////////////////////////////////////////////////////////////////
-// Help configuration file
-// /////////////////////////////////////////////////////////////////
-
-bool medPluginGenerator::generateHelpConfigurationFile()
-{
-    QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("Plugin.doxyfile.in")));
-    
-    if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("Plugin.doxyfile.in") << "for writing";
-        return false;
-    }
-    
-    QFile templateFile(":template/doxyfile");
-    
-    if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
-        return false;
-    }
-    
-    QTextStream stream(&targetFile);
-    
-    stream << QString(templateFile.readAll());
-    
-    targetFile.close();
-    
-    templateFile.close();
-    
-    return true;
-}
-
-// /////////////////////////////////////////////////////////////////
 // README file
 // /////////////////////////////////////////////////////////////////
 
@@ -576,31 +504,4 @@ bool medPluginGenerator::generateReadmeFile()
     return true;
 }
 
-// /////////////////////////////////////////////////////////////////
-// COPYING file
-// /////////////////////////////////////////////////////////////////
-
-bool medPluginGenerator::generateCopyingFile()
-{
-    QFile targetFile(d->target.absoluteFilePath("COPYING.txt"));
-    
-    if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << "medPluginGenerator: unable to open COPYING.txt for writing";
-        return false;
-    }
-    
-    QFile templateFile(QString(":template/license/").append(d->license));
-    if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
-        return false;
-    }
-    
-    QTextStream stream(&targetFile);
-    
-    stream << QString(templateFile.readAll());
-    
-    targetFile.close();
-    
-    return true;
-}
 

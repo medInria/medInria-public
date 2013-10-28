@@ -45,11 +45,8 @@ protected:
    bool generatePluginHeaderFile();
    bool generatePluginSourceFile();
    bool generateExportHeaderFile();
-   bool generateHelpCollectionFile();
-   bool generateHelpConfigurationFile();
-
    bool generateReadmeFile();
-   bool generateCopyingFile();
+
 
 private:
    medPluginGeneratorPrivate *d;

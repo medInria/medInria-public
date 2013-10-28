@@ -6,8 +6,6 @@
         <file>license/GPL</file>
         <file>license/LGPL</file>
         <file>generic/cmake</file>
-        <file>qhcp</file>
-        <file>doxyfile</file>
         <file>export.h</file>
         <file>generic/plugin.cpp</file>
         <file>generic/plugin.h</file>
