@@ -18,6 +18,10 @@
 
 #include <itkMetaImageIO.h>
 
+static QString s_identifier() {
+    return "itkMetaDataSHImageWriter";
+}
+
 itkMetaDataSHImageWriter::itkMetaDataSHImageWriter(): itkDataSHImageWriterBase() {
     this->io = itk::MetaImageIO::New();
 }
@@ -25,24 +29,22 @@ itkMetaDataSHImageWriter::itkMetaDataSHImageWriter(): itkDataSHImageWriterBase()
 itkMetaDataSHImageWriter::~itkMetaDataSHImageWriter() { }
 
 bool itkMetaDataSHImageWriter::registered() {
-  return dtkAbstractDataFactory::instance()->
-        registerDataWriterType("itkMetaDataSHImageWriter",itkDataSHImageWriterBase::s_handled(),
-                                                          createItkMetaDataSHImageWriter);
+  return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), itkDataSHImageWriterBase::s_handled(), create);
 }
 
 
 QString itkMetaDataSHImageWriter::description() const {
-    return tr("itk MetaData SH Image Writer");
+    return tr("itk MetaData SH Image exporter");
 }
 
 QString itkMetaDataSHImageWriter::identifier() const {
-    return "itkMetaDataSHImageWriter";
+    return s_identifier();
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkMetaDataSHImageWriter() {
+dtkAbstractDataWriter * itkMetaDataSHImageWriter::create() {
     return new itkMetaDataSHImageWriter();
 }

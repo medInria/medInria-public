@@ -27,13 +27,7 @@ public:
     virtual QString identifier()  const;
     virtual QString description() const;
 	
-    static bool registered();	
+    static bool registered();
 
-private:
-
-    static const char ID[];
+    static dtkAbstractDataWriter * create();
 };
-
-dtkAbstractDataReader *createItkNiftiDataTensorImageReader();
-
-

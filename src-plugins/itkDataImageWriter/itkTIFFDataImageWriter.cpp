@@ -18,7 +18,23 @@
 
 #include <itkTIFFImageIO.h>
 
-const char itkTIFFDataImageWriter::ID[] = "itkTIFFDataImageWriter";
+static QString s_identifier() {
+    return "itkTIFFDataImageWriter";
+}
+
+static QStringList s_handled() {
+    return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
+                          << "itkDataImageUChar3" << "itkDataImageUChar4"
+                          << "itkDataImageShort3" << "itkDataImageShort4"
+                          << "itkDataImageUShort3" << "itkDataImageUShort4"
+                          << "itkDataImageInt3" << "itkDataImageInt4"
+                          << "itkDataImageUInt3" << "itkDataImageUInt4"
+                          << "itkDataImageLong3" << "itkDataImageLong4"
+                          << "itkDataImageULong3" << "itkDataImageULong4"
+                          << "itkDataImageFloat3" << "itkDataImageFloat4"
+                          << "itkDataImageDouble3" << "itkDataImageDouble4"
+                          << "itkDataImageRGB3" << "itkDataImageRGBA3";
+}
 
 itkTIFFDataImageWriter::itkTIFFDataImageWriter(): itkDataImageWriterBase() {
     this->io = itk::TIFFImageIO::New();
@@ -30,37 +46,23 @@ QStringList itkTIFFDataImageWriter::handled() const {
     return s_handled();
 }
 
-QStringList itkTIFFDataImageWriter::s_handled() {
-    return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
-            << "itkDataImageUChar3" << "itkDataImageUChar4"
-            << "itkDataImageShort3" << "itkDataImageShort4"
-            << "itkDataImageUShort3" << "itkDataImageUShort4"
-            << "itkDataImageInt3" << "itkDataImageInt4"
-            << "itkDataImageUInt3" << "itkDataImageUInt4"
-            << "itkDataImageLong3" << "itkDataImageLong4"
-            << "itkDataImageULong3" << "itkDataImageULong4"
-            << "itkDataImageFloat3" << "itkDataImageFloat4"
-            << "itkDataImageDouble3" << "itkDataImageDouble4"
-            << "itkDataImageRGB3" << "itkDataImageRGBA3";
-}
-
 bool itkTIFFDataImageWriter::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataWriterType(ID,s_handled(),createItkTIFFDataImageWriter);
+    return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }
 
 QString itkTIFFDataImageWriter::identifier() const {
-    return ID;
+    return s_identifier();
 }
 
 QString itkTIFFDataImageWriter::description() const {
-    return "Writer for TIFF images";
+    return "TIFF image exporter";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkTIFFDataImageWriter() {
+dtkAbstractDataWriter * itkTIFFDataImageWriter::create() {
     return new itkTIFFDataImageWriter;
 }
 

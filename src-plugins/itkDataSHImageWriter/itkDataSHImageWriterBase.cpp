@@ -23,6 +23,13 @@
 #include <itkVectorImage.h>
 #include <itkVector.h>
 
+
+QStringList itkDataSHImageWriterBase::s_handled()
+{
+    return QStringList() << "itkDataSHImageDouble3"
+                         << "itkDataSHImageFloat3";
+}
+
 itkDataSHImageWriterBase::itkDataSHImageWriterBase(): dtkAbstractDataWriter()
 {
     this->io = 0;
@@ -34,14 +41,7 @@ itkDataSHImageWriterBase::~itkDataSHImageWriterBase()
 
 QStringList itkDataSHImageWriterBase::handled() const
 {
-    return QStringList() << "itkDataSHImageDouble3"
-                         << "itkDataSHImageFloat3";
-}
-
-QStringList itkDataSHImageWriterBase::s_handled()
-{
-    return QStringList() << "itkDataSHImageDouble3"
-                         << "itkDataSHImageFloat3";
+    return s_handled();
 }
 
 bool itkDataSHImageWriterBase::canWrite(const QString& path)

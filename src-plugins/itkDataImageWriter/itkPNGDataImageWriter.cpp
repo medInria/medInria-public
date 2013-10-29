@@ -18,7 +18,23 @@
 
 #include <itkPNGImageIO.h>
 
-const char itkPNGDataImageWriter::ID[] = "itkPNGDataImageWriter";
+static QString s_identifier() {
+    return "itkPNGDataImageWriter";
+}
+
+static QStringList s_handled() {
+    return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
+                          << "itkDataImageUChar3" << "itkDataImageUChar4"
+                          << "itkDataImageShort3" << "itkDataImageShort4"
+                          << "itkDataImageUShort3" << "itkDataImageUShort4"
+                          << "itkDataImageInt3" << "itkDataImageInt4"
+                          << "itkDataImageUInt3" << "itkDataImageUInt4"
+                          << "itkDataImageLong3" << "itkDataImageLong4"
+                          << "itkDataImageULong3" << "itkDataImageULong4"
+                          << "itkDataImageFloat3" << "itkDataImageFloat4"
+                          << "itkDataImageDouble3" << "itkDataImageDouble4"
+                          << "itkDataImageRGB3" << "itkDataImageRGBA3";
+}
 
 itkPNGDataImageWriter::itkPNGDataImageWriter(): itkDataImageWriterBase() {
     this->io = itk::PNGImageIO::New();
@@ -30,37 +46,23 @@ QStringList itkPNGDataImageWriter::handled() const {
     return s_handled();
 }
 
-QStringList itkPNGDataImageWriter::s_handled() {
-    return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
-            << "itkDataImageUChar3" << "itkDataImageUChar4"
-            << "itkDataImageShort3" << "itkDataImageShort4"
-            << "itkDataImageUShort3" << "itkDataImageUShort4"
-            << "itkDataImageInt3" << "itkDataImageInt4"
-            << "itkDataImageUInt3" << "itkDataImageUInt4"
-            << "itkDataImageLong3" << "itkDataImageLong4"
-            << "itkDataImageULong3" << "itkDataImageULong4"
-            << "itkDataImageFloat3" << "itkDataImageFloat4"
-            << "itkDataImageDouble3" << "itkDataImageDouble4"
-            << "itkDataImageRGB3" << "itkDataImageRGBA3";
-}
-
 bool itkPNGDataImageWriter::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataWriterType(ID,s_handled(),createItkPNGDataImageWriter);
+    return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }
 
 QString itkPNGDataImageWriter::identifier() const {
-    return ID;
+    return s_identifier();
 }
 
 QString itkPNGDataImageWriter::description() const {
-    return "Writer for PNG images";
+    return "PNG image exporter";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkPNGDataImageWriter() {
+dtkAbstractDataWriter * itkPNGDataImageWriter::create() {
     return new itkPNGDataImageWriter;
 }
 

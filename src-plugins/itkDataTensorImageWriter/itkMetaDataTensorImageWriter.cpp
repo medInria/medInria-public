@@ -18,7 +18,9 @@
 
 #include <itkMetaImageIO.h>
 
-const char itkMetaDataTensorImageWriter::ID[] = "itkMetaDataTensorImageWriter";
+static QString s_identifier() {
+    return "itkMetaDataTensorImageWriter";
+}
 
 itkMetaDataTensorImageWriter::itkMetaDataTensorImageWriter() : itkDataTensorImageWriterBase()
 {
@@ -36,24 +38,24 @@ bool itkMetaDataTensorImageWriter::registered()
   return dtkAbstractDataFactory::instance()->registerDataWriterType(
               "itkMetaDataTensorImageWriter",
               itkDataTensorImageWriterBase::s_handled(),
-              createItkMetaDataTensorImageWriter);
+              create);
 }
 
 QString itkMetaDataTensorImageWriter::description() const
 {
-    return tr( "MetaData writer for Tensor images" );
+    return tr("Tensor image MetaData exporter" );
 }
 
 QString itkMetaDataTensorImageWriter::identifier() const
 {
-    return ID;
+    return s_identifier();
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkMetaDataTensorImageWriter()
+dtkAbstractDataWriter * itkMetaDataTensorImageWriter::create()
 {
     return new itkMetaDataTensorImageWriter;
 }

@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -23,18 +23,8 @@ public:
 
     virtual QString identifier()  const;
     virtual QString description() const;
+    virtual QStringList handled() const;
 
-    QStringList handled() const;
-
-    static QStringList s_handled ();
-
-    static bool registered();	
-
-private:
-
-    static const char ID[];
+    static bool registered();
+    static dtkAbstractDataWriter * create();
 };
-
-dtkAbstractDataWriter *createItkGiplDataImageWriter();
-
-

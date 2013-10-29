@@ -18,7 +18,23 @@
 
 #include <itkGiplImageIO.h>
 
-const char itkGiplDataImageWriter::ID[] = "itkGiplDataImageWriter";
+static QString s_identifier() {
+    return "itkGiplDataImageWriter";
+}
+
+static QStringList s_handled() {
+    return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
+                          << "itkDataImageUChar3" << "itkDataImageUChar4"
+                          << "itkDataImageShort3" << "itkDataImageShort4"
+                          << "itkDataImageUShort3" << "itkDataImageUShort4"
+                          << "itkDataImageInt3" << "itkDataImageInt4"
+                          << "itkDataImageUInt3" << "itkDataImageUInt4"
+                          << "itkDataImageLong3" << "itkDataImageLong4"
+                          << "itkDataImageULong3" << "itkDataImageULong4"
+                          << "itkDataImageFloat3" << "itkDataImageFloat4"
+                          << "itkDataImageDouble3" << "itkDataImageDouble4"
+                          << "itkDataImageRGB3" << "itkDataImageRGBA3";
+}
 
 itkGiplDataImageWriter::itkGiplDataImageWriter(): itkDataImageWriterBase() {
     this->io = itk::GiplImageIO::New();
@@ -30,37 +46,23 @@ QStringList itkGiplDataImageWriter::handled() const {
     return s_handled();
 }
 
-QStringList itkGiplDataImageWriter::s_handled() {
-    return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
-            << "itkDataImageUChar3" << "itkDataImageUChar4"
-            << "itkDataImageShort3" << "itkDataImageShort4"
-            << "itkDataImageUShort3" << "itkDataImageUShort4"
-            << "itkDataImageInt3" << "itkDataImageInt4"
-            << "itkDataImageUInt3" << "itkDataImageUInt4"
-            << "itkDataImageLong3" << "itkDataImageLong4"
-            << "itkDataImageULong3" << "itkDataImageULong4"
-            << "itkDataImageFloat3" << "itkDataImageFloat4"
-            << "itkDataImageDouble3" << "itkDataImageDouble4"
-            << "itkDataImageRGB3" << "itkDataImageRGBA3";
-}
-
 bool itkGiplDataImageWriter::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataWriterType(ID,s_handled(),createItkGiplDataImageWriter);
+    return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }
 
 QString itkGiplDataImageWriter::identifier() const {
-    return ID;
+    return s_identifier();
 }
 
 QString itkGiplDataImageWriter::description() const {
-    return "Writer for Gipl images";
+    return "Gipl image exporter";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkGiplDataImageWriter() {
+dtkAbstractDataWriter * itkGiplDataImageWriter::create() {
     return new itkGiplDataImageWriter;
 }
 

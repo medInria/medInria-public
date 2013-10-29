@@ -24,10 +24,10 @@ public:
     itkMetaDataSHImageWriter();
     virtual ~itkMetaDataSHImageWriter();
 
+    virtual QString identifier()  const;
     virtual QString description() const;
-    virtual QString identifier() const;
 
     static bool registered();
-};
 
-dtkAbstractDataWriter *createItkMetaDataSHImageWriter();
+    static dtkAbstractDataWriter* create();
+};

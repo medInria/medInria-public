@@ -16,8 +16,10 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
-#include "medDbControllerFactory.h"
-#include "medAbstractDbController.h"
+#include <medDbControllerFactory.h>
+#include <medAbstractDbController.h>
+#include <medMetaDataKeys.h>
+#include <medMessageController.h>
 
 #include <QtCore>
 
@@ -185,6 +187,10 @@ dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
 //        this->blockSignals(false);
         emit failedToOpen(index);
 //        this->blockSignals(prevState);
+    } else {
+        medAbstractData * medData = dynamic_cast<medAbstractData*>(dtkdata.data());
+        if (medData)
+            medData->setDataIndex(index);
     }
 
     return dtkdata;
@@ -560,12 +566,66 @@ void medDataManager::importNonPersistent( QString file, const QString &uuid )
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::exportDataToFile(dtkAbstractData *data, const QString &filename)
+void medDataManager::exportDataToFile(dtkAbstractData * data)
 {
-    medAbstractDbController* db = d->getDbController();
+    if ( ! data) return;
 
-    if(db)
-        db->exportDataToFile(data,filename);
+    QList<QString> allWriters = dtkAbstractDataFactory::instance()->writers();
+    QHash<QString, dtkAbstractDataWriter*> possibleWriters;
+
+    foreach(QString writerType, allWriters) {
+        dtkAbstractDataWriter * writer = dtkAbstractDataFactory::instance()->writer(writerType);
+        if (writer->handled().contains(data->identifier()))
+            possibleWriters[writerType] = writer;
+    }
+
+    if (possibleWriters.isEmpty()) {
+        medMessageController::instance()->showError("Sorry, we have no exporter for this format.");
+        return;
+    }
+
+    QFileDialog * exportDialog = new QFileDialog(0, tr("Exporting : please choose a file name and directory"));
+    exportDialog->setOption(QFileDialog::DontUseNativeDialog);
+    exportDialog->setAcceptMode(QFileDialog::AcceptSave);
+    exportDialog->setNameFilterDetailsVisible(false);
+
+    QComboBox* typesHandled = new QComboBox(exportDialog);
+    foreach(QString type, possibleWriters.keys()) {
+        QString label = possibleWriters[type]->description();
+        label += " (" + possibleWriters[type]->supportedFileExtensions().join(", ") + ")";
+        typesHandled->addItem(label, type);
+    }
+
+    QLayout* layout = exportDialog->layout();
+    QGridLayout* gridbox = qobject_cast<QGridLayout*>(layout);
+
+    if (gridbox) {
+        gridbox->addWidget(new QLabel("Export format:", exportDialog));
+        gridbox->addWidget(typesHandled);
+    }
+
+    exportDialog->setLayout(gridbox);
+
+    // Set a default filename based on the series's description
+    medAbstractData * medData = dynamic_cast<medAbstractData*>(data);
+    if (medData) {
+        medAbstractDbController * dbController = controllerForDataSource(medData->dataIndex().dataSourceId());
+        if (dbController) {
+            QString defaultName = dbController->metaData(medData->dataIndex(), medMetaDataKeys::SeriesDescription);
+            exportDialog->selectFile(defaultName);
+        }
+    }
+
+    if ( exportDialog->exec() ) {
+        medAbstractDbController* db = d->getDbController();
+        if(db) {
+            QString chosenFormat = typesHandled->itemData(typesHandled->currentIndex()).toString();
+            db->exportDataToFile(data, exportDialog->selectedFiles().first(), chosenFormat);
+        }
+    }
+
+    qDeleteAll(possibleWriters);
+    delete exportDialog;
 }
 
 //-------------------------------------------------------------------------------------------------------

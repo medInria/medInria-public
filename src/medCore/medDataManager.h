@@ -99,7 +99,7 @@ public:
     * @params dtkAbstractData *data Pointer to some data to save
     * @params const QString & filename The location in which the data will be stored in the file system
     */
-    void exportDataToFile(dtkAbstractData *data, const QString &filename);
+    void exportDataToFile(dtkAbstractData *data);
 
     /**
     * Use this function to save all non-persistent data to the sql database.

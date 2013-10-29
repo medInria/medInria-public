@@ -27,7 +27,7 @@ void medAbstractDbController::import(const QString& file,bool indexWithoutCopyin
     //qDebug() << "DEBUG : entering medAbstractDbController::import(const QString& file,bool indexWithoutCopying)";
 }
 
-void medAbstractDbController::exportDataToFile(dtkAbstractData *data, const QString &filename)
+void medAbstractDbController::exportDataToFile(dtkAbstractData *data, const QString &filename, const QString &writer)
 {
     //qDebug() << "DEBUG : entering medAbstractDbController::exportDataToFile(dtkAbstractData *data, const QString &filename)";
 }

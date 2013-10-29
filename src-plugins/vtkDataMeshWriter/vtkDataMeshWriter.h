@@ -33,6 +33,8 @@ public:
     virtual QString description() const;
     virtual QString identifier() const;
 
+    virtual QStringList supportedFileExtensions() const;
+
     static bool registered();
 
 public slots:

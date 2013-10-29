@@ -282,32 +282,8 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
 
 void medBrowserArea::onExportData(const medDataIndex &index)
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save as"), "", "*.*");
-
-    if (fileName.isEmpty())
-        return;
-
     dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(index);
-
-    if (!data)
-        return;
-
-    //Check extension:
-    QFileInfo fileInfo(fileName);
-    if(fileInfo.suffix().isEmpty())
-    {
-        qDebug() << "determining suffix for type" << data->identifier();
-        if (data->identifier().contains("vtk") ||
-                data->identifier().contains("v3d"))
-            fileName.append(".vtk");
-        else
-            fileName.append(".nii.gz");
-        qDebug() << "filename:" << fileName;
-        //There may be other cases, but this will get us through most
-    }
-
-    medDataManager::instance()->exportDataToFile(data,fileName);
-
+    medDataManager::instance()->exportDataToFile(data);
 }
 
 void medBrowserArea::addToolBox(medToolBox *toolbox)

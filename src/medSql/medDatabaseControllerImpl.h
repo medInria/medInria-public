@@ -147,7 +147,7 @@ public slots:
     /**
     * Export data to file
     */
-    void exportDataToFile(dtkAbstractData *data, const QString &filename);
+    void exportDataToFile(dtkAbstractData *data, const QString &filename, const QString &writer);
 
 
     /** override base class */

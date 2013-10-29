@@ -35,8 +35,7 @@ itkDataTensorImageWriterBase::~itkDataTensorImageWriterBase()
 
 QStringList itkDataTensorImageWriterBase::handled() const
 {
-    return QStringList() << "itkDataTensorImageDouble3"
-                         << "itkDataTensorImageFloat3";
+    return s_handled();
 }
 
 QStringList itkDataTensorImageWriterBase::s_handled()

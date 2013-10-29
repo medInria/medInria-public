@@ -18,7 +18,20 @@
 
 #include <itkGISImageIO.h>
 
-const char itkGISDataImageWriter::ID[] = "itkGISDataImageWriter";
+static QString s_identifier() {
+    return "itkGISDataImageWriter";
+}
+
+static QStringList s_handled() {
+    return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
+                          << "itkDataImageUChar3" << "itkDataImageUChar4"
+                          << "itkDataImageShort3" << "itkDataImageShort4"
+                          << "itkDataImageUShort3" << "itkDataImageUShort4"
+                          << "itkDataImageInt3" << "itkDataImageInt4"
+                          << "itkDataImageUInt3" << "itkDataImageUInt4"
+                          << "itkDataImageFloat3" << "itkDataImageFloat4"
+                          << "itkDataImageDouble3" << "itkDataImageDouble4";
+}
 
 itkGISDataImageWriter::itkGISDataImageWriter(): itkDataImageWriterBase() {
     this->io = itk::GISImageIO::New();
@@ -30,34 +43,23 @@ QStringList itkGISDataImageWriter::handled() const {
     return s_handled();
 }
 
-QStringList itkGISDataImageWriter::s_handled() {
-    return QStringList()  << "itkDataImageChar3" << "itkDataImageChar4"
-            << "itkDataImageUChar3" << "itkDataImageUChar4"
-            << "itkDataImageShort3" << "itkDataImageShort4"
-            << "itkDataImageUShort3" << "itkDataImageUShort4"
-            << "itkDataImageInt3" << "itkDataImageInt4"
-            << "itkDataImageUInt3" << "itkDataImageUInt4"
-            << "itkDataImageFloat3" << "itkDataImageFloat4"
-            << "itkDataImageDouble3" << "itkDataImageDouble4";
-}
-
 bool itkGISDataImageWriter::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataWriterType(ID,s_handled(),createItkGISDataImageWriter);
+    return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }
 
 QString itkGISDataImageWriter::identifier() const {
-    return ID;
+    return s_identifier();
 }
 
 QString itkGISDataImageWriter::description() const {
-    return "Writer for GIS images";
+    return "GIS image exporter";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createItkGISDataImageWriter() {
+dtkAbstractDataWriter * itkGISDataImageWriter::create() {
     return new itkGISDataImageWriter;
 }
 

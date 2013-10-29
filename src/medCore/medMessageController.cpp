@@ -132,16 +132,12 @@ void medMessageProgress::success(void)
 {
     progress->setStyleSheet("QProgressBar::chunk {background-color: lime;}");
     this->associateTimer();
-    info->setText("Operation succeeded");
 }
 
 void medMessageProgress::failure(void)
 {
     progress->setStyleSheet("QProgressBar::chunk {background-color: red;}");
-
     this->associateTimer();
-
-    info->setText("Operation failed");
 }
 void medMessageProgress::associateTimer(void)
 {
