@@ -61,7 +61,7 @@ SET(${PROJECT_NAME}_LIBRARIES
   ITKIOPNG
   ITKIOStimulate
   ITKIOVTK
-  ITKReview
+  ${ITKReview_LIBRARIES}
 )
 
 ## #################################################################
