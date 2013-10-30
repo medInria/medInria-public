@@ -74,8 +74,6 @@ target_link_libraries(${PROJECT_NAME}
   medCore
   medGui)
 
-#not useful if plugin in the medInria-plugins directory
-dtk_build_doc(%1Plugin)
 
 ## #################################################################
 ## Source file layout in development environments like Visual Studio
