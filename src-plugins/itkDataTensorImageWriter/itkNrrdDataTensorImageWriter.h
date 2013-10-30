@@ -27,6 +27,7 @@ public:
 
     virtual QString identifier()  const;
     virtual QString description() const;
+    virtual QStringList supportedFileExtensions() const;
 
     static bool registered();
 

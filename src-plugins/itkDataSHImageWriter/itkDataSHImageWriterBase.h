@@ -28,6 +28,8 @@ public:
 
     virtual QStringList handled() const;
 
+    virtual QStringList supportedFileExtensions() const;
+
 public slots:
     bool write    (const QString& path);
     bool canWrite (const QString& path);

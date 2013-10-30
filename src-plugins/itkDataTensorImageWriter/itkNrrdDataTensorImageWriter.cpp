@@ -52,6 +52,11 @@ QString itkNrrdDataTensorImageWriter::identifier() const
     return s_identifier();
 }
 
+QStringList itkNrrdDataTensorImageWriter::supportedFileExtensions() const
+{
+    return QStringList() << ".nrrd" << ".nhdr";
+}
+
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////

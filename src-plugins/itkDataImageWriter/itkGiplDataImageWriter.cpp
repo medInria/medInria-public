@@ -46,6 +46,11 @@ QStringList itkGiplDataImageWriter::handled() const {
     return s_handled();
 }
 
+QStringList itkGiplDataImageWriter::supportedFileExtensions() const
+{
+    return QStringList() << ".gipl" << ".gipl.gz";
+}
+
 bool itkGiplDataImageWriter::registered() {
     return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }

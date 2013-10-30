@@ -47,6 +47,11 @@ QStringList itkNrrdDataImageWriter::handled() const {
     return s_handled();
 }
 
+QStringList itkNrrdDataImageWriter::supportedFileExtensions() const
+{
+    return QStringList() << ".nrrd" << ".nhdr";
+}
+
 bool itkNrrdDataImageWriter::registered() {
     return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }

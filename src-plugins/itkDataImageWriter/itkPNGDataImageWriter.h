@@ -25,6 +25,8 @@ public:
     virtual QString description() const;
     virtual QStringList handled() const;
 
+    virtual QStringList supportedFileExtensions() const;
+
     static bool registered();
     static dtkAbstractDataWriter * create();
 };

@@ -37,11 +37,29 @@ itkDataSHImageWriterBase::itkDataSHImageWriterBase(): dtkAbstractDataWriter()
 
 itkDataSHImageWriterBase::~itkDataSHImageWriterBase()
 {
+
+
 }
 
 QStringList itkDataSHImageWriterBase::handled() const
 {
     return s_handled();
+}
+
+QStringList itkDataSHImageWriterBase::supportedFileExtensions() const
+{
+    QStringList ret;
+
+    if (this->io) {
+        typedef itk::ImageIOBase::ArrayOfExtensionsType ArrayOfExtensionsType;
+        const ArrayOfExtensionsType & extensions = this->io->GetSupportedWriteExtensions();
+        for( ArrayOfExtensionsType::const_iterator it(extensions.begin());
+            it != extensions.end(); ++it )
+        {
+            ret << it->c_str();
+        }
+    }
+    return ret;
 }
 
 bool itkDataSHImageWriterBase::canWrite(const QString& path)

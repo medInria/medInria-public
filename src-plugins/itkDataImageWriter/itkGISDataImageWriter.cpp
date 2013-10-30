@@ -43,6 +43,11 @@ QStringList itkGISDataImageWriter::handled() const {
     return s_handled();
 }
 
+QStringList itkGISDataImageWriter::supportedFileExtensions() const
+{
+    return QStringList() << ".dim" << ".ima";
+}
+
 bool itkGISDataImageWriter::registered() {
     return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }

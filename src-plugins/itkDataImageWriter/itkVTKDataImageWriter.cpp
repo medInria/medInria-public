@@ -47,6 +47,11 @@ QStringList itkVTKDataImageWriter::handled() const {
     return s_handled();
 }
 
+QStringList itkVTKDataImageWriter::supportedFileExtensions() const
+{
+    return QStringList() << ".vtk";
+}
+
 bool itkVTKDataImageWriter::registered() {
     return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }

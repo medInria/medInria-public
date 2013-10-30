@@ -45,6 +45,11 @@ QStringList itkPhilipsRECDataImageWriter::handled() const {
     return s_handled();
 }
 
+QStringList itkPhilipsRECDataImageWriter::supportedFileExtensions() const
+{
+    return QStringList() << ".rec" << ".rec.gz" << ".par";
+}
+
 bool itkPhilipsRECDataImageWriter::registered() {
     return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }

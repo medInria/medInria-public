@@ -28,6 +28,8 @@ public:
 
     virtual QStringList handled() const;
 
+    virtual QStringList supportedFileExtensions() const;
+
     static QStringList s_handled();
 
 public slots:

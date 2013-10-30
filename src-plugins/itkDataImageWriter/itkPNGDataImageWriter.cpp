@@ -36,6 +36,11 @@ static QStringList s_handled() {
                           << "itkDataImageRGB3" << "itkDataImageRGBA3";
 }
 
+QStringList itkPNGDataImageWriter::supportedFileExtensions() const
+{
+    return QStringList() << ".png";
+}
+
 itkPNGDataImageWriter::itkPNGDataImageWriter(): itkDataImageWriterBase() {
     this->io = itk::PNGImageIO::New();
 }

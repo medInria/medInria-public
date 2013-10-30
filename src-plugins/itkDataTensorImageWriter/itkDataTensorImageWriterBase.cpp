@@ -38,6 +38,22 @@ QStringList itkDataTensorImageWriterBase::handled() const
     return s_handled();
 }
 
+QStringList itkDataTensorImageWriterBase::supportedFileExtensions() const
+{
+    QStringList ret;
+
+    if (this->io) {
+        typedef itk::ImageIOBase::ArrayOfExtensionsType ArrayOfExtensionsType;
+        const ArrayOfExtensionsType & extensions = this->io->GetSupportedWriteExtensions();
+        for( ArrayOfExtensionsType::const_iterator it(extensions.begin());
+             it != extensions.end(); ++it )
+        {
+            ret << it->c_str();
+        }
+    }
+    return ret;
+}
+
 QStringList itkDataTensorImageWriterBase::s_handled()
 {
     return QStringList() << "itkDataTensorImageDouble3"
