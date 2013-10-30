@@ -275,6 +275,9 @@ protected:
     */
     void setWriterPriorities();
 
+protected slots:
+
+    void exportDialog_updateSuffix(int index);
 
 protected:
     static medDataManager *s_instance;
