@@ -471,7 +471,7 @@ void medDataManager::setWriterPriorities()
     if(writers.contains("itkMetaDataImageWriter"))
     {
         writerPriorites.insert(0, "itkMetaDataImageWriter");  
-        writers.removeOne("itkMetaDataImageWriter");
+        startIndex = writers.removeOne("itkMetaDataImageWriter") ? 1 : 0;
     }
     
     for ( int i=0; i<writers.size(); i++ )
@@ -591,7 +591,10 @@ void medDataManager::exportDataToFile(dtkAbstractData * data)
     exportDialog->setAcceptMode(QFileDialog::AcceptSave);
 
     QComboBox* typesHandled = new QComboBox(exportDialog);
-    foreach(QString type, possibleWriters.keys()) {
+    // we use allWriters as the list of keys to make sure we traverse possibleWriters
+    // in the order specified by the writers priorities.
+    foreach(QString type, allWriters) {
+        if ( ! possibleWriters.contains(type)) continue;
         QStringList extensionList = possibleWriters[type]->supportedFileExtensions();
         QString label = possibleWriters[type]->description() + " (" + extensionList.join(", ") + ")";
         QString extension = (extensionList.isEmpty()) ? QString() : extensionList.first();
