@@ -24,14 +24,32 @@ add_executable(itkReshaper
 itkReshaper.cxx
 )
 
+SET(${PROJECT_NAME}_LIBRARIES
+  itkIOAddOn
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
+  ${ITKReview_LIBRARIES}
+)
+
 if (WIN32 AND NOT CYGWIN AND NOT MINGW)
  target_link_libraries(itkReshaper 
-  itkIOAddOn 
   getoptcompatlib
+  ${${PROJECT_NAME}_LIBRARIES}
  )
 else()
  target_link_libraries(itkReshaper
-  itkIOAddOn
+  ${${PROJECT_NAME}_LIBRARIES}
  )
 endif()
 

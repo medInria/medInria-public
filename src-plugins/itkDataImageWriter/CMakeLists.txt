@@ -52,7 +52,6 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   itkDataImageWriterPlugin.cpp
   itkMetaDataImageWriter.cpp
-  itkAnalyzeDataImageWriter.cpp
   itkBMPDataImageWriter.cpp
   itkPNGDataImageWriter.cpp
   itkJPEGDataImageWriter.cpp
@@ -88,10 +87,9 @@ target_link_libraries(${PROJECT_NAME}
   dtkItkLogForwarder
   dtkCore dtkLog
   medCore
-  ${ITK_LIBRARIES}
-  ITKIOReview
   itkDataImageBase
   itkIOAddOn
+  ITKIOPhilipsREC
   )
 
 # Group common files together in Visual Studio.

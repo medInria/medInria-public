@@ -17,7 +17,7 @@
 
 #include <dtkVtkLogForwarder/vtkLogForwarder.h>
 
-#include <itkAnalyzeImageIOFactory.h>
+#include <itkNiftiImageIOFactory.h>
 #include <itkGDCMImageIOFactory.h>
 #include <itkVTKImageIOFactory.h>
 
@@ -64,7 +64,7 @@ v3dDataPlugin::~v3dDataPlugin()
 bool v3dDataPlugin::initialize()
 {
     itk::GDCMImageIOFactory::RegisterOneFactory();
-    itk::AnalyzeImageIOFactory::RegisterOneFactory();
+    itk::NiftiImageIOFactory::RegisterOneFactory();
     itk::VTKImageIOFactory::RegisterOneFactory();
 
     if (!v3dDataImage::registered()) {

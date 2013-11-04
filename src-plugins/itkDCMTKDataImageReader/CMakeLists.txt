@@ -50,7 +50,26 @@ endif()
 find_package(VTK)
 include(${VTK_USE_FILE})
 
-# add_definitions(-D MEDINRIA_ITKDATAIMAGEREADER_BUILD_DCMTK_SUPPORT)
+SET(${PROJECT_NAME}_LIBRARIES
+  ITKDCMTKIO
+  ${QT_LIBRARIES}
+  medCore
+  dtkCore dtkLog
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
+  ${ITKReview_LIBRARIES}
+)
 
 ## #################################################################
 ## Input
@@ -87,10 +106,7 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_HEADERS})
 
 target_link_libraries(${PROJECT_NAME}
-  ITKDCMTKIO
-  ${QT_LIBRARIES}
-  medCore
-  dtkCore dtkLog
+  ${${PROJECT_NAME}_LIBRARIES}
 )
 
 if (MEDINRIA-PLUGINS_BUILD_TESTING)

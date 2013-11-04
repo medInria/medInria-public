@@ -36,8 +36,9 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   dtkCore dtkLog
-  ${ITK_LIBRARIES}
-  ${QT_LIBRARIES})
+  ${QT_LIBRARIES}
+  ITKCommon
+)
 
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION bin

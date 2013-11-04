@@ -81,8 +81,6 @@ class VTK_RENDERINGADDON_EXPORT vtkViewImage2DCommand : public vtkCommand
   vtkViewImage2D* View;
   double          InitialWindow;
   double          InitialLevel;
-
-  bool            WindowEventStatus;
   
 };
 

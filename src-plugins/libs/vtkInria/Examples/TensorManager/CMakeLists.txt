@@ -41,6 +41,5 @@ target_link_libraries(SyncTensors
   vtkImageView
   vtkDataManagement
   vtkVisuManagement
-  ${ITK_LIBRARIES}
   )
   

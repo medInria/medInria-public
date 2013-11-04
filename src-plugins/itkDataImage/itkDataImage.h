@@ -19,7 +19,6 @@
 #include <itkScalarImageToHistogramGenerator.h>
 #include <itkRGBPixel.h>
 #include <itkRGBAPixel.h>
-#include <itkGreyColormapFunctor.h>
 #include <itkScalarToRGBColormapImageFilter.h>
 #include <itkRegionOfInterestImageFilter.h>
 #include <itkExtractImageFilter.h>
@@ -150,9 +149,15 @@ void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez
 
     extractor->SetExtractionRegion(extractionRegion);
     extractor->SetInput(img);
+    extractor->SetDirectionCollapseToGuess();
 
-    extractor->UpdateOutputInformation();
-
+    try {
+        extractor->UpdateOutputInformation();
+    } catch (itk::ExceptionObject& e) {
+        qDebug() << e.GetDescription();
+        return;
+    }
+    
     // setup resampling pipeline
 
     typename Image2DType::SpacingType spacing    = extractor->GetOutput()->GetSpacing();
@@ -550,9 +555,10 @@ QList<QImage>& itkDataImagePrivate<DIM,T,1>::make_thumbnails(const int sz,const 
         qDebug() << e.GetDescription();
         return thumbnails;
     }
+    
     im = filter->GetOutput();
     delete [] sfactor;
-
+    
     size = im->GetLargestPossibleRegion().GetSize();
     itk::ImageRegionIterator<ImageType> it (im,im->GetLargestPossibleRegion());
 

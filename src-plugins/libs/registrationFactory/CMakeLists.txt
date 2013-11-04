@@ -45,6 +45,32 @@ if(ITK_FOUND)
    include(${ITK_USE_FILE})
 endif(ITK_FOUND)
 
+SET(${PROJECT_NAME}_LIBRARIES
+  ${QT_LIBRARIES}
+  RegistrationAddOn
+  ITKCommon
+  ITKIOImageBase
+  ITKIOBMP
+  ITKIOLSM
+  ITKIOJPEG
+  ITKIOPNG
+  ITKIOVTK
+  ITKIOGDCM
+  ITKNrrdIO
+  ITKIONRRD
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIOGIPL
+  ITKIOHDF5
+  ITKIOBioRad
+  ITKIOStimulate
+  ITKIOTransformBase
+  ITKIOTransformHDF5
+  ITKIOTransformMatlab
+  ITKIOTransformInsightLegacy
+  ${ITKReview_LIBRARIES}
+)
+
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
 
@@ -76,11 +102,9 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_HEADERS})
 
 target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  RegistrationAddOn
-  ITKCommon
-  ITKIO
-  )
+  ${${PROJECT_NAME}_LIBRARIES}
+)
+
 ## #################################################################
 ## Source file layout in development environments like Visual Studio
 ## #################################################################

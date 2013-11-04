@@ -67,7 +67,6 @@ else()
         dtkCore dtkLog
         medCore
         ITKTensor
-        ${ITK_LIBRARIES}
         )
 
     add_test(${PROJECT_NAME}_itkDataTensorImageTest ${CXX_TEST_PATH}/${PROJECT_NAME}_itkDataTensorImageTest)

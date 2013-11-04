@@ -76,6 +76,7 @@ if ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
     )
     set(${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES
        ttkAlgorithms
+       ITKTensor
     )
 else()
     add_definitions(-DDISABLE_TTK_DEPENDENT_CODE)
@@ -138,7 +139,6 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  ${ITK_LIBRARIES}
   ${${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES}
   dtkCore dtkLog
   medCore

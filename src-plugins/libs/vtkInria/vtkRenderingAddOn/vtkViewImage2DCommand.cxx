@@ -29,8 +29,7 @@
 
 
 vtkViewImage2DCommand::vtkViewImage2DCommand() :
-  View(NULL), InitialWindow(0), InitialLevel(0),
-  WindowEventStatus(false)
+  View(NULL), InitialWindow(0), InitialLevel(0)
 {
 }
 

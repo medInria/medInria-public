@@ -66,11 +66,26 @@ set(${PROJECT_NAME}_LIBS
   vtkIO
   vtkRendering
   itkIOAddOn
-  ITKIOReview
+  ITKVTK
+  # ITK4 IO libs
+  ITKIOPhilipsREC
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
+  ${ITKReview_LIBRARIES}
   )
     
 target_link_libraries(${PROJECT_NAME}
-  ${ITK_LIBRARIES}
   ${${PROJECT_NAME}_LIBS}
   )
 

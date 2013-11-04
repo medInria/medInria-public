@@ -59,7 +59,6 @@ target_link_libraries(${PROJECT_NAME}
     vtkVolumeRendering
     vtkVisuManagement
     ITKCommon
-    ITKBasicFilters
 )
 
 if (VTKINRIA_BUILD_TESTING)

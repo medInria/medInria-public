@@ -11,8 +11,6 @@
 
 =========================================================================*/
 
-#include <itkExtractImageFilter.h>
-
 #include <v3dView.h>
 
 #include "v3dViewAnnotationInteractor.h"

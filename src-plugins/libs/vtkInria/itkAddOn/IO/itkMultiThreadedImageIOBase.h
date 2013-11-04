@@ -75,7 +75,7 @@ namespace itk
       void*   Buffer;
     };
 
-    virtual int SplitRequestedRegion (int id, int total, RegionType& region);
+    virtual unsigned int SplitRequestedRegion (unsigned int id, unsigned int total, RegionType& region);
     
   private:
     MultiThreadedImageIOBase (const Self&);

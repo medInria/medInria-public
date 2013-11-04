@@ -163,6 +163,7 @@ template <typename PixelType>
             region.SetSize(size);
             region.SetIndex(index);
             extractFilter->SetExtractionRegion(region);
+            extractFilter->SetDirectionCollapseToGuess();
             extractFilter->SetInput( image4d );
 
             try
@@ -191,6 +192,7 @@ template <typename PixelType>
             region.SetSize(size);
             region.SetIndex(index);
             extractFilter->SetExtractionRegion(region);
+            extractFilter->SetDirectionCollapseToGuess();
             extractFilter->SetInput( image4d );
 
             try

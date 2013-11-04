@@ -84,7 +84,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore dtkLog
   medCore
   medGui
-  ${ITK_LIBRARIES}
+  ITKCommon
   )
 
 dtk_build_doc(msegPlugin)

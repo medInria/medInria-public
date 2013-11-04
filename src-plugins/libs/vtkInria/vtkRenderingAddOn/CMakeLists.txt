@@ -53,7 +53,7 @@ set(${PROJECT_NAME}_LIBS
   vtkHybrid
   vtkImaging
   ITKCommon
-  ITKBasicFilters
+  ITKVTK
 )
 
 target_link_libraries(${PROJECT_NAME}

@@ -32,9 +32,7 @@
 #include "vtkDataSetReader.h"
 #include <vtkLookupTableManager.h>
 
-#ifdef ITK_USE_REVIEW
 #include <itkPhilipsRECImageIOFactory.h>
-#endif
 
 #include <vtkImageData.h>
 #include <vtkCommand.h>
@@ -132,9 +130,7 @@ int main (int argc, char* argv[])
   int do_multi_planes  = 0;
   int do_cardiac_style = 1;
 
-#ifdef ITK_USE_REVIEW
   itk::PhilipsRECImageIOFactory::RegisterOneFactory();
-#endif
   
   if (argc < 2)
   {

@@ -18,4 +18,18 @@ add_executable(itkGenerateThumbnails
   itkGenerateThumbnails.cxx)
   
 target_link_libraries(itkGenerateThumbnails
-  ${ITK_LIBRARIES})
+  ITKStatistics
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
+)

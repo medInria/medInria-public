@@ -22,7 +22,7 @@
 
 #include "itkImage.h"
 #include "itkCommand.h"
-#include "itkAddConstantToImageFilter.h"
+#include "itkAddImageFilter.h"
 
 class itkFiltersAddProcess;
 
@@ -39,7 +39,7 @@ public:
     template <class PixelType> void update ( void )
     {        
         typedef itk::Image< PixelType, 3 > ImageType;
-        typedef itk::AddConstantToImageFilter< ImageType, double, ImageType >  AddFilterType;
+        typedef itk::AddImageFilter<ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType> AddFilterType;
         typename AddFilterType::Pointer addFilter = AddFilterType::New();
         
         addFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );

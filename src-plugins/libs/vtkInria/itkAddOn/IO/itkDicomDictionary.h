@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <gdcmCommon.h>
+#include <gdcmConfigure.h>
 
 
 

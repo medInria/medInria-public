@@ -13,9 +13,8 @@
 
 #pragma once
 
-#include "v3dViewAnnotationInteractor.h"
+#include <v3dViewAnnotationInteractor.h>
 
-class v3dViewAnnotationInteractor;
 class v3dViewAnnIntImageMaskHelperPrivate;
 
 class v3dViewAnnIntImageMaskHelper : public v3dViewAnnIntHelper {
@@ -30,7 +29,6 @@ public:
     void annotationModified( medAnnotationData * annData );
 
 private:
-    v3dViewAnnotationInteractor * m_v3dViewAnnInt;
     v3dViewAnnIntImageMaskHelperPrivate * d;
 };
 

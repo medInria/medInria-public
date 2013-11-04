@@ -38,10 +38,8 @@
 #include <vtkDoubleArray.h>
 #include <vtkDataArrayCollection.h>
 
-#ifdef ITK_USE_REVIEW
 #include <itkPhilipsRECImageIO.h>
 #include <itkPhilipsPAR.h>
-#endif
 
 #include <sstream>
 #include <algorithm> // for sort algorithm
@@ -1593,12 +1591,6 @@ vtkMetaDataSetSequence::ShortImageType::PointType vtkMetaDataSetSequence::Extrac
   typedef ShortImageType::PointType PointType;
   PointType nullorigin;
   nullorigin[0] = nullorigin[1] = nullorigin[2] = 0.0;
-  
-#ifndef ITK_USE_REVIEW
-  std::cerr<<"cannot correct for PAR-REC angulation without ITK_USE_REVIEW to ON"<<std::endl;
-  return nullorigin;
-#else
-
 
   itk::PhilipsRECImageIO::Pointer philipsIO = itk::PhilipsRECImageIO::New();
 
@@ -1652,10 +1644,6 @@ vtkMetaDataSetSequence::ShortImageType::PointType vtkMetaDataSetSequence::Extrac
   offcenterpoint -= midoffset;
   
   return offcenterpoint;
-  
-#endif
-  
-  
 }
 
 
@@ -1668,14 +1656,6 @@ vtkMetaDataSetSequence::ShortDirectionType vtkMetaDataSetSequence::ExtractPARREC
 
   DirectionType eyedir;
   eyedir.SetIdentity();
-
-#ifndef ITK_USE_REVIEW
-  std::cerr<<"cannot correct for PAR-REC angulation without ITK_USE_REVIEW to ON"<<std::endl;
-  
-  return eyedir;
-
-  
-#else
     
   itk::PhilipsRECImageIO::Pointer philipsIO = itk::PhilipsRECImageIO::New();
 
@@ -1804,8 +1784,5 @@ vtkMetaDataSetSequence::ShortDirectionType vtkMetaDataSetSequence::ExtractPARREC
       retval[i][j] = TR[i][j];
 
   return retval;
-  
-#endif
-  
 }
 

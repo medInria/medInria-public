@@ -148,3 +148,8 @@ void ITKProcessExampleToolBox::run()
 
 }
 
+dtkPlugin* ITKProcessExampleToolBox::plugin()
+{
+    medPluginManager* pm = medPluginManager::instance();
+    return pm->plugin("ITKProcessExamplePlugin");
+}

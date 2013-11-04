@@ -83,7 +83,7 @@ namespace itk
   }
   
 
-  int MultiThreadedImageIOBase::SplitRequestedRegion (int id, int total, RegionType& region)
+  unsigned int MultiThreadedImageIOBase::SplitRequestedRegion (unsigned int id, unsigned int total, RegionType& region)
   {
     int fileCount       = (int)( m_FileNames.size() );
     int threadFileCount = (int)::ceil( fileCount/(double)total );
@@ -93,7 +93,7 @@ namespace itk
     RegionType::SizeType length;
     length[0] = threadFileCount;
     
-    int maxThreadInUse = (int)::ceil(fileCount/(double)threadFileCount) - 1;
+    unsigned int maxThreadInUse = (unsigned int)::ceil(fileCount/(double)threadFileCount) - 1;
     
     if( id == maxThreadInUse )
       length[0] = fileCount - start[0];

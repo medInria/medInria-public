@@ -16,7 +16,6 @@
 #include <itkResampleImageFilter.h>
 #include <itkImage.h>
 #include "itkRGBPixel.h"
-#include "itkGreyColormapFunctor.h"
 #include "itkScalarToRGBColormapImageFilter.h"
 #include "itkExtractImageFilter.h"
 #include "itkLinearInterpolateImageFunction.h"
@@ -165,6 +164,7 @@ int main (int narg, char* arg[])
     region.SetSize ( ssize );
 
     extractor->SetExtractionRegion (region);
+      extractor->SetDirectionCollapseToGuess();
     try
     {
       extractor->Update();
@@ -282,6 +282,7 @@ int main (int narg, char* arg[])
     region.SetSize ( ssize );
 
     extractor->SetExtractionRegion (region);
+      extractor->SetDirectionCollapseToGuess();
     try
     {
       extractor->Update();

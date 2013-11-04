@@ -43,6 +43,25 @@ include(${TTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+SET(${PROJECT_NAME}_LIBRARIES
+  ${QT_LIBRARIES}
+  dtkCore dtkLog
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
+  ${ITKReview_LIBRARIES}
+)
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -84,9 +103,8 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_HEADERS})
 
 target_link_libraries(${PROJECT_NAME}
-  ${ITK_LIBRARIES}
-  ${QT_LIBRARIES}
-  dtkCore dtkLog)
+  ${${PROJECT_NAME}_LIBRARIES}
+)
 
 if (MEDINRIA-PLUGINS_BUILD_DOCUMENTATION)
 	dtk_build_doc(${PROJECT_NAME})

@@ -26,6 +26,8 @@ public:
      ITKProcessExampleToolBox(QWidget *parentToolBox = 0);
     ~ITKProcessExampleToolBox();
 
+    dtkPlugin*          plugin();
+
 public:
     static bool registered();
     dtkAbstractData* processOutput();

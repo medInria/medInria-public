@@ -23,7 +23,7 @@
 
 #include "itkImage.h"
 #include "itkCommand.h"
-#include "itkMultiplyByConstantImageFilter.h"
+#include "itkMultiplyImageFilter.h"
 
 class itkFiltersMultiplyProcess;
 
@@ -40,7 +40,7 @@ public:
     template <class PixelType> void update ( void )
     {
         typedef itk::Image< PixelType, 3 > ImageType;
-        typedef itk::MultiplyByConstantImageFilter< ImageType, double, ImageType >  MultiplyFilterType;
+        typedef itk::MultiplyImageFilter< ImageType, itk::Image<double, ImageType::ImageDimension>, ImageType >  MultiplyFilterType;
         typename MultiplyFilterType::Pointer multiplyFilter = MultiplyFilterType::New();
     
         multiplyFilter->SetInput ( dynamic_cast<ImageType *> ( ( itk::Object* ) ( input->data() ) ) );

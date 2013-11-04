@@ -20,7 +20,20 @@ add_executable(itkDCMTKReadWriteBenchmark
   
 target_link_libraries(itkDCMTKReadWriteBenchmark
   ITKDCMTKIO
-  ${ITK_LIBRARIES})
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
+)
 
 add_executable(itkDCMTKConvert
   itkDCMTKConvert.cxx)
@@ -30,7 +43,20 @@ include(${QT_USE_FILE})
 
 target_link_libraries(itkDCMTKConvert
   ITKDCMTKIO
-  ${ITK_LIBRARIES}
-  ${QT_LIBRARIES})
+  ${QT_LIBRARIES}
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
+)
 
 #endif()

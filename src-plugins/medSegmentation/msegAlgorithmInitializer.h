@@ -14,20 +14,16 @@
 #pragma once
 
 namespace mseg {
-    class Controller;
 
 //! Register all algorithms with factory.
 class AlgorithmInitializer {
 public:
-    AlgorithmInitializer(Controller * controller);
+    AlgorithmInitializer();
     virtual ~AlgorithmInitializer();
 
     static bool initialize();
     static bool initializeProcesses();
     static bool initializeWidgets();
-
-private:
-    Controller * m_controller;
 };
 
 } // namespace mseg

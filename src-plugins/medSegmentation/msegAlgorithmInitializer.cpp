@@ -22,8 +22,7 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 namespace mseg {
-AlgorithmInitializer::AlgorithmInitializer(Controller * controller) :
-    m_controller( controller )
+AlgorithmInitializer::AlgorithmInitializer()
 {
 }
 
@@ -43,10 +42,7 @@ bool AlgorithmInitializer::initializeProcesses()
     dtkAbstractProcessFactory *factory = dtkAbstractProcessFactory::instance();
 
     bool ret (true);
-    if (! factory->registerProcessType( AlgorithmConnectedThreshold::s_identifier(),
-        AlgorithmConnectedThreshold::create, AlgorithmGeneric::ms_interfaceName ) ) {
-        ret = false;
-    }
+
     if (! factory->registerProcessType( medProcessPaintSegm::s_identifier(),
             medProcessPaintSegm::create, AlgorithmGeneric::ms_interfaceName ) ) {
         ret = false;
@@ -58,13 +54,6 @@ bool AlgorithmInitializer::initializeWidgets()
 {
     bool ret (true);
     medToolBoxFactory * factory = medToolBoxFactory::instance();
-    //Commented out until bugs are fixed: #338 #339
-//    ret &= factory->registerCustomToolBox(
-//        AlgorithmConnectedThresholdToolbox::s_identifier(),
-//        AlgorithmConnectedThresholdToolbox::s_name(),
-//        AlgorithmConnectedThresholdToolbox::s_description(),
-//        "segmentation",
-//        AlgorithmConnectedThresholdToolbox::createInstance);
 
     ret &= factory->registerToolBox<AlgorithmPaintToolbox>(
         AlgorithmPaintToolbox::s_identifier(),

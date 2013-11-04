@@ -18,7 +18,7 @@
 #include "itkImageFileWriter.h"
 #include "itkImageSeriesReshapeFilter.h"
 
-#include <itkAnalyzeImageIOFactory.h>
+#include <itkNiftiImageIOFactory.h>
 #include <itkGDCMImageIOFactory.h>
 
 #ifndef WIN32

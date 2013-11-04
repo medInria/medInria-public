@@ -42,6 +42,26 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+SET(${PROJECT_NAME}_LIBRARIES
+  ${QT_LIBRARIES}
+  dtkItkLogForwarder
+  dtkCore
+  dtkLog
+  ITKIOBMP
+  ITKIOBioRad
+  ITKIOHDF5
+  ITKIOGDCM
+  ITKIOGIPL
+  ITKIOJPEG
+  ITKIOLSM
+  ITKIOMeta
+  ITKIONIFTI
+  ITKIONRRD
+  ITKIOPNG
+  ITKIOStimulate
+  ITKIOVTK
+  ${ITKReview_LIBRARIES}
+)
 
 ## #################################################################
 ## Input
@@ -72,11 +92,7 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-  ${ITK_LIBRARIES}
-  ${QT_LIBRARIES}
-  dtkItkLogForwarder
-  dtkCore
-  dtkLog
+  ${${PROJECT_NAME}_LIBRARIES}
 )
 
 # Group common files together in Visual Studio.

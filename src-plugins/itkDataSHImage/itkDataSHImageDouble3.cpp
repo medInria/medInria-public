@@ -110,13 +110,13 @@ int itkDataSHImageDouble3::zDimension()
     return -1;
 }
 
-QImage& itkDataSHImageDouble3::thumbnail() const
+QImage& itkDataSHImageDouble3::thumbnail()
 {
     // TODO: TEMPORARY black image just to allow drag and drop
     return d->thumbnail;
 }
 
-QList<QImage>& itkDataSHImageDouble3::thumbnails() const
+QList<QImage>& itkDataSHImageDouble3::thumbnails()
 {
     return d->thumbnails;
 }

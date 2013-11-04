@@ -30,6 +30,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSetManager : public vtkFibersManager
   static vtkFiberDataSetManager *New();
   vtkTypeRevisionMacro(vtkFiberDataSetManager, vtkFibersManager);
 
+    using vtkFibersManager::SetInput;
   virtual void SetInput (vtkFiberDataSet *input);
   vtkGetObjectMacro (FiberDataSet, vtkFiberDataSet);
  

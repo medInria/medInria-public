@@ -372,9 +372,6 @@ protected:
   
 private:
 
-  /// overlap image
-  vtkImageData*                   OverlappingImage;
-  
   // texture mapper in 3D
   vtkVolumeMapper*                VolumeMapper3D;
 
@@ -450,7 +447,6 @@ private:
   
   // annotated cube actor
   vtkAnnotatedCubeActor*          Cube;
-  vtkAxesActor*                   CubeAxes;
   vtkOrientationMarkerWidget*     Marker;
 
 
