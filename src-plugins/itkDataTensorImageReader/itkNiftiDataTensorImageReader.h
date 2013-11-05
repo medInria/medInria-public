@@ -29,5 +29,5 @@ public:
 	
     static bool registered();
 
-    static dtkAbstractDataWriter * create();
+    static dtkAbstractDataReader * create();
 };

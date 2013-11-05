@@ -13,10 +13,6 @@
 
 #include "itkDataImageWriterPlugin.h"
 #include "itkMetaDataImageWriter.h"
-#include "itkPNGDataImageWriter.h"
-#include "itkBMPDataImageWriter.h"
-#include "itkJPEGDataImageWriter.h"
-#include "itkTIFFDataImageWriter.h"
 #include "itkNiftiDataImageWriter.h"
 #include "itkNrrdDataImageWriter.h"
 #include "itkGiplDataImageWriter.h"
@@ -84,10 +80,6 @@ bool itkDataImageWriterPlugin::initialize()
     if (!itkNrrdDataImageWriter::registered())       { dtkWarn() << "Unable to register itkNrrdDataImageWriter type";       }
     if (!itkGiplDataImageWriter::registered())       { dtkWarn() << "Unable to register itkGiplDataImageWriter type";       }
     if (!itkVTKDataImageWriter::registered())        { dtkWarn() << "Unable to register itkVTKDataImageWriter type";        }
-    if (!itkPNGDataImageWriter::registered())        { dtkWarn() << "Unable to register itkPNGDataImageWriter type";        }
-    if (!itkBMPDataImageWriter::registered())        { dtkWarn() << "Unable to register itkBMPDataImageWriter type";        }
-    if (!itkJPEGDataImageWriter::registered())       { dtkWarn() << "Unable to register itkJPEGDataImageWriter type";       }
-    if (!itkTIFFDataImageWriter::registered())       { dtkWarn() << "Unable to register itkTIFFDataImageWriter type";       }
     if (!itkPhilipsRECDataImageWriter::registered()) { dtkWarn() << "Unable to register itkPhilipsRECDataImageWriter type"; }
     if (!itkGISDataImageWriter::registered())        { dtkWarn() << "Unable to register itkGISDataImageWriter type"; }
 
@@ -129,10 +121,6 @@ QStringList itkDataImageWriterPlugin::types() const
             << "itkNrrdDataImageWriter"
             << "itkGiplDataImageWriter"
             << "itkVTKDataImageWriter"
-            << "itkPNGDataImageWriter"
-            << "itkBMPDataImageWriter"
-            << "itkJPEGDataImageWriter"
-            << "itkTIFFDataImageWriter"
             << "itkGISDataImageWriter";
 }
 
