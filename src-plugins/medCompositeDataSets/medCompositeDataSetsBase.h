@@ -60,6 +60,7 @@ namespace MedInria {
         //  Create a new instance tuned for the revision version (major,mnior) of the file format.
         //  Use -1 as major to indicate the default version of the file format.
 
+        using dtkAbstractData::clone;
         virtual medCompositeDataSetsBase* clone(const int major,const int minor) const = 0;
 
         //  Read the description from an array.
@@ -70,7 +71,7 @@ namespace MedInria {
         virtual bool write_description(QTextStream&) = 0;
         virtual bool write_data(const QString&) = 0;
 
-        virtual QImage& thumbnail() const = 0;
+        virtual QImage& thumbnail() = 0;
 
         static QStringList initialize() {
             QStringList& ql = known_types();
