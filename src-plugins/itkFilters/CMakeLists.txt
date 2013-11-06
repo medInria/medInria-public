@@ -55,29 +55,38 @@ set(${PROJECT_NAME}_HEADERS
   itkFiltersShrinkProcess_p.h
   itkFiltersSubtractProcess_p.h
   itkFiltersWindowingProcess_p.h
+  itkFiltersDilateProcess_p.h
+  itkFiltersErodeProcess_p.h
+  itkFiltersCloseProcess_p.h
+  itkFiltersOpenProcess_p.h
 )
 
 set(${PROJECT_NAME}_HEADERS_MOC
   itkFiltersPlugin.h
   itkFiltersToolBox.h
+  itkMorphologicalFiltersToolBox.h
   itkFiltersProcessBase.h
   itkFiltersAddProcess.h
   itkFiltersSubtractProcess.h
   itkFiltersMultiplyProcess.h
-  itkFiltersDivideProcess.h
+  itkFiltersDivideProcess.h 
   itkFiltersGaussianProcess.h
   itkFiltersNormalizeProcess.h
   itkFiltersMedianProcess.h
   itkFiltersInvertProcess.h
   itkFiltersShrinkProcess.h
   itkFiltersWindowingProcess.h
+  itkFiltersDilateProcess.h
+  itkFiltersErodeProcess.h
+  itkFiltersCloseProcess.h
+  itkFiltersOpenProcess.h
 )
 
 set(${PROJECT_NAME}_SOURCES
   itkFiltersPlugin.cpp
   itkFiltersToolBox.cpp
+  itkMorphologicalFiltersToolBox.cpp
   itkFiltersProcessBase.cpp
-  #itkFiltersProcessBasePrivate.cpp
   itkFiltersAddProcess.cpp
   itkFiltersSubtractProcess.cpp
   itkFiltersMultiplyProcess.cpp
@@ -88,6 +97,10 @@ set(${PROJECT_NAME}_SOURCES
   itkFiltersInvertProcess.cpp
   itkFiltersShrinkProcess.cpp
   itkFiltersWindowingProcess.cpp
+  itkFiltersDilateProcess.cpp
+  itkFiltersErodeProcess.cpp
+  itkFiltersCloseProcess.cpp
+  itkFiltersOpenProcess.cpp
 )
 
 ## #################################################################

@@ -15,15 +15,15 @@
 
 #include <medFilteringAbstractToolBox.h>
 
-class itkFiltersToolBoxPrivate;
+class itkMorphologicalFiltersToolBoxPrivate;
 
-class itkFiltersToolBox : public medFilteringAbstractToolBox
+class itkMorphologicalFiltersToolBox : public medFilteringAbstractToolBox
 {
     Q_OBJECT
 
 public:
-    itkFiltersToolBox(QWidget *parentToolBox = 0);
-    ~itkFiltersToolBox();
+    itkMorphologicalFiltersToolBox(QWidget *parentToolBox = 0);
+    ~itkMorphologicalFiltersToolBox();
 
 public:
     static bool registered();
@@ -36,28 +36,20 @@ signals:
 
 public slots:
 
-    void onFiltersActivated(int index);
-
     void clear();
     void update(dtkAbstractView *view);
 
     void run();
 
 private:
-    void setupItkAddProcess();
-    void setupItkSubtractProcess();
-    void setupItkMultiplyProcess();
-    void setupItkDivideProcess();
-    void setupItkGaussianProcess();
-    void setupItkMedianProcess();
-    void setupItkInvertProcess();
-    void setupItkNormalizeProcess();
-    void setupItkShrinkProcess();
-    void setupItkWindowingProcess();
+    void setupItkDilateProcess();
+    void setupItkErodeProcess();
+    void setupItkCloseProcess();
+    void setupItkOpenProcess();
     
-    itkFiltersToolBoxPrivate *d;
+    itkMorphologicalFiltersToolBoxPrivate *d;
 };
 
-medToolBox *createitkFiltersToolBox(QWidget *parent);
+medToolBox *createitkMorphologicalFiltersToolBox(QWidget *parent);
 
 
