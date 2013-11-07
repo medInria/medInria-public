@@ -56,7 +56,6 @@ set(${PROJECT_NAME}_SOURCES
   itkNrrdDataImageWriter.cpp
   itkGiplDataImageWriter.cpp
   itkVTKDataImageWriter.cpp
-  itkPhilipsRECDataImageWriter.cpp
   itkGISDataImageWriter.cpp)
 
 ## #################################################################

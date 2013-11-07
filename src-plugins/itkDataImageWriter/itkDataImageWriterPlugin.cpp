@@ -17,7 +17,6 @@
 #include "itkNrrdDataImageWriter.h"
 #include "itkGiplDataImageWriter.h"
 #include "itkVTKDataImageWriter.h"
-#include "itkPhilipsRECDataImageWriter.h"
 #include "itkGISDataImageWriter.h"
 
 #include <dtkLog/dtkLog.h>
@@ -66,7 +65,6 @@ bool itkDataImageWriterPlugin::initialize()
     if (!itkNrrdDataImageWriter::registered())       { dtkWarn() << "Unable to register itkNrrdDataImageWriter type";       }
     if (!itkGiplDataImageWriter::registered())       { dtkWarn() << "Unable to register itkGiplDataImageWriter type";       }
     if (!itkVTKDataImageWriter::registered())        { dtkWarn() << "Unable to register itkVTKDataImageWriter type";        }
-    if (!itkPhilipsRECDataImageWriter::registered()) { dtkWarn() << "Unable to register itkPhilipsRECDataImageWriter type"; }
     if (!itkGISDataImageWriter::registered())        { dtkWarn() << "Unable to register itkGISDataImageWriter type"; }
 
     return true;
@@ -102,7 +100,6 @@ QStringList itkDataImageWriterPlugin::types() const
 {
     return QStringList() << "itkMetaDataImageWriter"
                          << "itkNiftiDataImageWriter"
-                         << "itkAnalyzeDataImageWriter"
                          << "itkNrrdDataImageWriter"
                          << "itkGiplDataImageWriter"
                          << "itkVTKDataImageWriter"
