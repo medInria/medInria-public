@@ -160,8 +160,6 @@ $CONTAINER_BORDER               = 2px solid $GREY09;
 
 $CONTAINER_SELECTED_BORDER      = 2px solid $HIGHLIGHT_COLOR;
 
-$HEADER_BORDER                  = 1px solid $GREY05;
-
 $MENU_SEPARATOR_BORDER          = 2px solid $GREY10;
 
 $PROGRESS_BAR_BORDER            = 1px solid $GREY01;
@@ -568,7 +566,6 @@ QHeaderView::section
     padding-right:$HEADER_RIGHT_PADDING;
     min-height: $HEADER_HEIGHT;
     border: none;
-    border-left: $HEADER_BORDER; 
 }
 
 QHeaderView::down-arrow 
