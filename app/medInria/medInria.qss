@@ -280,7 +280,6 @@ QWidget
     background: $WIDGET_BACKGROUND;
     border: $WIDGET_BORDER;
     outline: 0px;
-    font-size: $WIDGET_FONTSIZE;
 }
 
 /*******************************************************************************
