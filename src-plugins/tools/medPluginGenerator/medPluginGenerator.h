@@ -46,6 +46,8 @@ protected:
    bool generatePluginSourceFile();
    bool generateExportHeaderFile();
    bool generateReadmeFile();
+   bool generateTypeWorkspaceHeaderFile();
+   bool generateTypeWorkspaceSourceFile();
 
 
 private:

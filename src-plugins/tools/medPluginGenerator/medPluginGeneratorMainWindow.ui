@@ -51,6 +51,21 @@
         <string>Registration</string>
        </property>
       </item>
+      <item>
+       <property name="text">
+        <string>Workspace</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DataReader</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DataWriter</string>
+       </property>
+      </item>
      </widget>
     </item>
     <item row="2" column="0">
@@ -335,7 +350,7 @@
      <x>0</x>
      <y>0</y>
      <width>468</width>
-     <height>22</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

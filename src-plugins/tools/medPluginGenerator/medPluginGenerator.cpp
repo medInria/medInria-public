@@ -116,6 +116,21 @@ bool medPluginGenerator::run()
         && generatePluginSourceFile()
         && generateExportHeaderFile()
         && generateReadmeFile();
+
+    if (d->pluginFamily == "workspace")
+        return generateCMakeLists()
+        && generateTypeWorkspaceSourceFile()
+        && generateTypeWorkspaceHeaderFile()
+        && generatePluginHeaderFile()
+        && generatePluginSourceFile()
+        && generateExportHeaderFile()
+        && generateReadmeFile();
+
+    if (d->pluginFamily == "datareader")
+        d->type = "DataReader";
+
+    if (d->pluginFamily == "datawriter")
+        d->type = "DataWriter";
     
     return generateCMakeLists()
     && generateTypeHeaderFile()
@@ -504,4 +519,70 @@ bool medPluginGenerator::generateReadmeFile()
     return true;
 }
 
+
+// /////////////////////////////////////////////////////////////////
+// Type Workspace header file
+// /////////////////////////////////////////////////////////////////
+
+bool medPluginGenerator::generateTypeWorkspaceHeaderFile()
+{
+    QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("Workspace.h")));
+
+    if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("Workspace.h") << "for writing";
+        return false;
+    }
+
+    QFile templateFile(QString(":template/%1/typeWorkspace.h").arg(d->pluginFamily));
+
+    if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
+        return false;
+    }
+
+    QTextStream stream(&targetFile);
+
+    stream << QString(templateFile.readAll())
+    .arg(d->plugin)
+    .arg(d->plugin.toUpper());
+
+    targetFile.close();
+
+    templateFile.close();
+
+    return true;
+}
+
+// /////////////////////////////////////////////////////////////////
+// Type ToolBox source file
+// /////////////////////////////////////////////////////////////////
+
+bool medPluginGenerator::generateTypeWorkspaceSourceFile()
+{
+    QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append("Workspace.cpp")));
+
+    if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append("Workspace.cpp") << "for writing";
+        return false;
+    }
+
+    QFile templateFile(QString(":template/%1/typeWorkspace.cpp").arg(d->pluginFamily));
+
+    if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
+        return false;
+    }
+
+    QTextStream stream(&targetFile);
+
+    stream << QString(templateFile.readAll())
+    .arg(d->plugin)
+    .arg(d->name);
+
+    targetFile.close();
+
+    templateFile.close();
+
+    return true;
+}
 
