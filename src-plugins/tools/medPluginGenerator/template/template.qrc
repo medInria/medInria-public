@@ -6,8 +6,6 @@
         <file>license/GPL</file>
         <file>license/LGPL</file>
         <file>generic/cmake</file>
-        <file>qhcp</file>
-        <file>doxyfile</file>
         <file>export.h</file>
         <file>generic/plugin.cpp</file>
         <file>generic/plugin.h</file>
@@ -30,5 +28,20 @@
         <file>filtering/typeToolBox.h</file>
         <file>registration/rpiBase.h</file>
         <file>registration/rpiBase.hxx</file>
+        <file>workspace/cmake</file>
+        <file>workspace/plugin.cpp</file>
+        <file>workspace/plugin.h</file>
+        <file>workspace/typeWorkspace.cpp</file>
+        <file>workspace/typeWorkspace.h</file>
+        <file>datareader/cmake</file>
+        <file>datareader/plugin.cpp</file>
+        <file>datareader/plugin.h</file>
+        <file>datareader/type.cpp</file>
+        <file>datareader/type.h</file>
+        <file>datawriter/cmake</file>
+        <file>datawriter/plugin.cpp</file>
+        <file>datawriter/plugin.h</file>
+        <file>datawriter/type.cpp</file>
+        <file>datawriter/type.h</file>
     </qresource>
 </RCC>

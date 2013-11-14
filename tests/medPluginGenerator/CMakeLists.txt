@@ -21,4 +21,4 @@ add_definitions("-DCMAKE_DTK_DIR=\"${dtk_DIR}\""
 
 target_link_libraries(${PROJECT_NAME} medCore)
 
-add_test(medPluginGeneratorTest ${CMAKE_BINARY_DIR}/bin/medPluginGeneratorTest ${CMAKE_BINARY_DIR}/CMakeFiles/CMakeTmp)
+add_test(medPluginGeneratorTest ${CMAKE_BINARY_DIR}/bin/medPluginGeneratorTest)

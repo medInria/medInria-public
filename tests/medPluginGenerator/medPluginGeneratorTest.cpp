@@ -64,6 +64,9 @@ void medPluginGeneratorTest::testCompile_data()
     QTest::newRow("view") << "generic" << "View" << "TestGenericView";
     QTest::newRow("registration") << "registration" << "Process" << "TestRegistration";
     QTest::newRow("filtering") << "filtering" << "Process" << "TestFiltering";
+    QTest::newRow("workspace") << "workspace" << "Process" << "TestWorkspace";
+    QTest::newRow("datareader") << "datareader" << "Process" << "TestReader";
+    QTest::newRow("datawriter") << "datawriter" << "Process" << "TestWriter";
 }
 
 
