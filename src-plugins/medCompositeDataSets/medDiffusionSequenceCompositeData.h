@@ -58,7 +58,7 @@ public:
     virtual bool write_description(QTextStream& file);
     virtual bool write_data(const QString&);
 
-    virtual QImage& thumbnail() const { return images[meta_data_index]->thumbnail(); }
+    virtual QImage& thumbnail() { return images[meta_data_index]->thumbnail(); }
 
     //  Methods specific to this type.
 
