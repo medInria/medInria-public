@@ -23,12 +23,14 @@ class medDatabaseExporterPrivate
 public:
     dtkSmartPointer<dtkAbstractData> data;
     QString          filename;
+    QString          writer;
 };
 
-medDatabaseExporter::medDatabaseExporter(dtkAbstractData *data, const QString &filename) : medJobItem(), d(new medDatabaseExporterPrivate)
+medDatabaseExporter::medDatabaseExporter(dtkAbstractData * data, const QString & filename, const QString & writer) : medJobItem(), d(new medDatabaseExporterPrivate)
 {
     d->data     = data;
     d->filename = filename;
+    d->writer   = writer;
 }
 
 medDatabaseExporter::~medDatabaseExporter(void)
@@ -50,29 +52,16 @@ void medDatabaseExporter::run(void)
         return;
     }
 
-    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
-    bool written = false;
-    for (int i=0; i<writers.size(); i++)
-    {
-        dtkSmartPointer<dtkAbstractDataWriter> dataWriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
+    dtkAbstractDataWriter * dataWriter = dtkAbstractDataFactory::instance()->writer(d->writer);
+    dataWriter->setData(d->data);
 
-        if (! dataWriter->handled().contains(d->data->identifier()))
-            continue;
 
-        dataWriter->setData (d->data);
+    if ( ! dataWriter->canWrite(d->filename) || ! dataWriter->write(d->filename)) {
 
-        if (dataWriter->canWrite( d->filename )) {
-            if (dataWriter->write( d->filename )) {
-                written = true;
-                break;
-            }
-        }
-    }
-
-    if (!written)
-    {
-        emit showError(tr("Could not find suitable writer for file: ") + d->filename, 3000);
+        emit showError(QString(tr("Writing to file \"%1\" with exporter \"%2\" failed.")).arg(d->filename).arg(dataWriter->description()), 3000);
         emit failure(this);
+    } else {
+        emit success(this);
     }
-    else  emit success ( this );
+    delete dataWriter;
 }

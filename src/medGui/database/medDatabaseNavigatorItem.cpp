@@ -169,7 +169,7 @@ QString medDatabaseNavigatorItem::text(void) const
 void medDatabaseNavigatorItem::deleteData()
 {
     int reply = QMessageBox::question(NULL, tr("Remove item"),
-                                      tr("Are you sure you want to continue removing this data?\n""This cannot be undone."),
+                                      tr("Are you sure you want to continue removing this data?\n This cannot be undone."),
                                       QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton);
     
     if( reply == QMessageBox::Yes )
@@ -183,31 +183,8 @@ void medDatabaseNavigatorItem::saveData()
 
 void medDatabaseNavigatorItem::exportData()
 {
-    QString fileName = QFileDialog::getSaveFileName(NULL, tr("Save as"), "", "*.*");
-    
-    if (fileName.isEmpty())
-        return;
-    
     dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(d->index);
-    
-    if (!data)
-        return;
-    
-    //Check extension:
-    QFileInfo fileInfo(fileName);
-    if(fileInfo.suffix().isEmpty())
-    {
-        qDebug() << "determining suffix for type" << data->identifier();
-        if (data->identifier().contains("vtk") ||
-            data->identifier().contains("v3d"))
-            fileName.append(".vtk");
-        else
-            fileName.append(".nii.gz");
-        qDebug() << "filename:" << fileName;
-        //There may be other cases, but this will get us through most
-    }
-
-    medDataManager::instance()->exportDataToFile(data, fileName);
+    medDataManager::instance()->exportDataToFile(data);
 }
 
 void medDatabaseNavigatorItem::setImage(const QImage& image)

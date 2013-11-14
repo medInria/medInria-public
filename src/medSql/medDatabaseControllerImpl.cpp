@@ -439,9 +439,9 @@ void medDatabaseControllerImpl::import( dtkAbstractData *data, QString importUui
 }
 
 
-void medDatabaseControllerImpl::exportDataToFile(dtkAbstractData *data, const QString &filename)
+void medDatabaseControllerImpl::exportDataToFile(dtkAbstractData *data, const QString & filename, const QString & writer)
 {
-    medDatabaseExporter *exporter = new medDatabaseExporter (data, filename);
+    medDatabaseExporter *exporter = new medDatabaseExporter (data, filename, writer);
     QFileInfo info(filename);
     medMessageProgress *message = medMessageController::instance()->showProgress("Exporting data to " + info.baseName());
 
@@ -461,8 +461,6 @@ dtkSmartPointer<dtkAbstractData> medDatabaseControllerImpl::read(const medDataIn
     connect(reader.data(), SIGNAL(progressed(int)), message, SLOT(setProgress(int)));
     connect(reader.data(), SIGNAL(success(QObject *)), message, SLOT(success()));
     connect(reader.data(), SIGNAL(failure(QObject *)), message, SLOT(failure()));
-    //connect(reader.data(), SIGNAL(success(QObject *)), reader.data(), SLOT(deleteLater()));
-    //connect(reader.data(), SIGNAL(failure(QObject *)), reader.data(), SLOT(deleteLater()));
 
     connect(reader.data(), SIGNAL(failure(QObject *)), this, SLOT(showOpeningError(QObject *)));
 

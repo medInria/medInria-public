@@ -18,7 +18,9 @@
 
 #include <itkNiftiImageIO.h>
 
-const char itkNiftiDataTensorImageReader::ID[] = "itkNiftiDataTensorImageReader";
+static QString s_identifier() {
+    return "itkNiftiDataTensorImageReader";
+}
 
 itkNiftiDataTensorImageReader::itkNiftiDataTensorImageReader(): itkDataTensorImageReaderBase() {
     this->io = itk::NiftiImageIO::New();
@@ -27,24 +29,18 @@ itkNiftiDataTensorImageReader::itkNiftiDataTensorImageReader(): itkDataTensorIma
 itkNiftiDataTensorImageReader::~itkNiftiDataTensorImageReader() { }
 
 bool itkNiftiDataTensorImageReader::registered() {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,itkDataTensorImageReaderBase::s_handled(),
-								    createItkNiftiDataTensorImageReader);
+  return dtkAbstractDataFactory::instance()->registerDataReaderType(s_identifier(),itkDataTensorImageReaderBase::s_handled(), create);
 }
 
 QString itkNiftiDataTensorImageReader::identifier() const {
-    return ID;
+    return s_identifier();
 }
 
 QString itkNiftiDataTensorImageReader::description() const {
     return "Reader for Nifti tensor images";
 }
 
-// /////////////////////////////////////////////////////////////////
-// Type instantiation
-// /////////////////////////////////////////////////////////////////
-
-dtkAbstractDataReader *createItkNiftiDataTensorImageReader()
-{
+dtkAbstractDataReader * itkNiftiDataTensorImageReader::create() {
     return new itkNiftiDataTensorImageReader;
 }
 

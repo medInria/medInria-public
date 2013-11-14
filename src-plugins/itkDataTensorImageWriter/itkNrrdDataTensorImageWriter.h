@@ -25,15 +25,11 @@ public:
     itkNrrdDataTensorImageWriter();
     virtual ~itkNrrdDataTensorImageWriter();
 
+    virtual QString identifier()  const;
     virtual QString description() const;
-    virtual QString identifier() const;
+    virtual QStringList supportedFileExtensions() const;
 
     static bool registered();
 
-private:
-    static const char ID[];
+    static dtkAbstractDataWriter* create();
 };
-
-dtkAbstractDataWriter *createitkNrrdDataTensorImageWriter();
-
-

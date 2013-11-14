@@ -23,18 +23,11 @@ public:
 
     virtual QString identifier()  const;
     virtual QString description() const;
-
-    QStringList handled() const;
-
-    static QStringList s_handled ();
+    virtual QStringList handled() const;
+    virtual QStringList supportedFileExtensions() const;
 
     static bool registered();	
 
-private:
-
-    static const char ID[];
+    static dtkAbstractDataWriter * create();
 };
-
-dtkAbstractDataWriter *createItkNrrdDataImageWriter();
-
 

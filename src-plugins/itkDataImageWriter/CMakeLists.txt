@@ -52,15 +52,10 @@ set(${PROJECT_NAME}_HEADERS
 set(${PROJECT_NAME}_SOURCES
   itkDataImageWriterPlugin.cpp
   itkMetaDataImageWriter.cpp
-  itkBMPDataImageWriter.cpp
-  itkPNGDataImageWriter.cpp
-  itkJPEGDataImageWriter.cpp
-  itkTIFFDataImageWriter.cpp
   itkNiftiDataImageWriter.cpp
   itkNrrdDataImageWriter.cpp
   itkGiplDataImageWriter.cpp
   itkVTKDataImageWriter.cpp
-  itkPhilipsRECDataImageWriter.cpp
   itkGISDataImageWriter.cpp)
 
 ## #################################################################

@@ -19,7 +19,9 @@
 #include <itkNrrdImageIO.h>
 
 
-const char itkNrrdDataTensorImageWriter::ID[] = "itkNrrdDataTensorImageWriter";
+static QString s_identifier() {
+    return "itkNrrdDataTensorImageWriter";
+}
 
 itkNrrdDataTensorImageWriter::itkNrrdDataTensorImageWriter() : itkDataTensorImageWriterBase()
 {
@@ -35,26 +37,31 @@ itkNrrdDataTensorImageWriter::~itkNrrdDataTensorImageWriter()
 bool itkNrrdDataTensorImageWriter::registered()
 {
   return dtkAbstractDataFactory::instance()->registerDataWriterType(
-              "itkNrrdDataTensorImageWriter",
+              s_identifier(),
               itkDataTensorImageWriterBase::s_handled(),
-              createitkNrrdDataTensorImageWriter);
+              create);
 }
 
 QString itkNrrdDataTensorImageWriter::description() const
 {
-    return tr( "Nrrd writer for Tensor images" );
+    return tr( "Tensor images Nrrd exporter" );
 }
 
 QString itkNrrdDataTensorImageWriter::identifier() const
 {
-    return ID;
+    return s_identifier();
+}
+
+QStringList itkNrrdDataTensorImageWriter::supportedFileExtensions() const
+{
+    return QStringList() << ".nrrd" << ".nhdr";
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createitkNrrdDataTensorImageWriter()
+dtkAbstractDataWriter * itkNrrdDataTensorImageWriter::create()
 {
     return new itkNrrdDataTensorImageWriter;
 }

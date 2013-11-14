@@ -24,18 +24,9 @@ public:
 
     virtual QString identifier()  const;
     virtual QString description() const;
+    virtual QStringList handled() const;
+    virtual QStringList supportedFileExtensions() const;
 
-    QStringList handled() const;
-
-    static QStringList s_handled ();
-
-    static bool registered();   
-
-private:
-    
-    static const char ID[];
+    static bool registered();
+    static dtkAbstractDataWriter * create();
 };
-
-dtkAbstractDataWriter *createItkGISDataImageWriter();
-
-

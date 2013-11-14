@@ -23,6 +23,13 @@
 #include <itkVectorImage.h>
 #include <itkVector.h>
 
+
+QStringList itkDataSHImageWriterBase::s_handled()
+{
+    return QStringList() << "itkDataSHImageDouble3"
+                         << "itkDataSHImageFloat3";
+}
+
 itkDataSHImageWriterBase::itkDataSHImageWriterBase(): dtkAbstractDataWriter()
 {
     this->io = 0;
@@ -30,18 +37,29 @@ itkDataSHImageWriterBase::itkDataSHImageWriterBase(): dtkAbstractDataWriter()
 
 itkDataSHImageWriterBase::~itkDataSHImageWriterBase()
 {
+
+
 }
 
 QStringList itkDataSHImageWriterBase::handled() const
 {
-    return QStringList() << "itkDataSHImageDouble3"
-                         << "itkDataSHImageFloat3";
+    return s_handled();
 }
 
-QStringList itkDataSHImageWriterBase::s_handled()
+QStringList itkDataSHImageWriterBase::supportedFileExtensions() const
 {
-    return QStringList() << "itkDataSHImageDouble3"
-                         << "itkDataSHImageFloat3";
+    QStringList ret;
+
+    if (this->io) {
+        typedef itk::ImageIOBase::ArrayOfExtensionsType ArrayOfExtensionsType;
+        const ArrayOfExtensionsType & extensions = this->io->GetSupportedWriteExtensions();
+        for( ArrayOfExtensionsType::const_iterator it(extensions.begin());
+            it != extensions.end(); ++it )
+        {
+            ret << it->c_str();
+        }
+    }
+    return ret;
 }
 
 bool itkDataSHImageWriterBase::canWrite(const QString& path)

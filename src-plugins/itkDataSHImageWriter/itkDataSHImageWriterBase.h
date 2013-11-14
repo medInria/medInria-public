@@ -23,21 +23,23 @@ class ITKDATASHIMAGEWRITERPLUGIN_EXPORT itkDataSHImageWriterBase : public dtkAbs
     Q_OBJECT
 
 public:
-                        itkDataSHImageWriterBase();
+    itkDataSHImageWriterBase();
     virtual ~itkDataSHImageWriterBase();
 
     virtual QStringList handled() const;
 
-    static QStringList s_handled();
+    virtual QStringList supportedFileExtensions() const;
 
 public slots:
-	bool write    (const QString& path);
-	bool canWrite (const QString& path);
+    bool write    (const QString& path);
+    bool canWrite (const QString& path);
 
 private:
-	template <class PixelType>
-	bool write(const QString& path, PixelType dummyArgument);
+    template <class PixelType>
+    bool write(const QString& path, PixelType dummyArgument);
 
 protected:
+    static QStringList s_handled();
+
     itk::ImageIOBase::Pointer io;
 };

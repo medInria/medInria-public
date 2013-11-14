@@ -147,7 +147,7 @@ public slots:
     * @param dtkAbstractData *data Pointer to some data to export
     * @param const QString & filename The location in which the data will be stored in the file system
     */
-    virtual void exportDataToFile(dtkAbstractData *data, const QString &filename);
+    virtual void exportDataToFile(dtkAbstractData *data, const QString &filename, const QString & writer);
 
     /**
      * This method allows removing one data from the database

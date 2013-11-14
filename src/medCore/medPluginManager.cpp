@@ -116,8 +116,8 @@ medPluginManager *medPluginManager::s_instance = NULL;
 
 void medPluginManager::onLoadError(const QString &errorMessage)
 {
-//    qDebug() << "add error message to pluginManager:";
-//    qDebug() << "\t" << errorMessage;
+    qDebug() << "add error message to pluginManager:";
+    qDebug() << "\t" << errorMessage;
     d->loadErrors << errorMessage;
 }
 

@@ -26,7 +26,7 @@ class MEDSQL_EXPORT medDatabaseExporter : public medJobItem
     Q_OBJECT
 
 public:
-     medDatabaseExporter(dtkAbstractData *data, const QString &filename);
+     medDatabaseExporter(dtkAbstractData * data, const QString & filename, const QString & writer);
     ~medDatabaseExporter();
     
     /**

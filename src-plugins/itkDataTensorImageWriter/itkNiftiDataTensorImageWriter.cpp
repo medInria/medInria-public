@@ -19,7 +19,9 @@
 #include <itkNiftiImageIO.h>
 
 
-const char itkNiftiDataTensorImageWriter::ID[] = "itkNiftiDataTensorImageWriter";
+static QString s_identifier() {
+    return "itkNiftiDataTensorImageWriter";
+}
 
 itkNiftiDataTensorImageWriter::itkNiftiDataTensorImageWriter() : itkDataTensorImageWriterBase()
 {
@@ -34,27 +36,24 @@ itkNiftiDataTensorImageWriter::~itkNiftiDataTensorImageWriter()
 
 bool itkNiftiDataTensorImageWriter::registered()
 {
-  return dtkAbstractDataFactory::instance()->registerDataWriterType(
-              "itkNiftiDataTensorImageWriter",
-              itkDataTensorImageWriterBase::s_handled(),
-              createitkNiftiDataTensorImageWriter);
+  return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }
 
 QString itkNiftiDataTensorImageWriter::description() const
 {
-    return tr( "Nifti writer for Tensor images" );
+    return tr( "Tensor image Nifti exporter" );
 }
 
 QString itkNiftiDataTensorImageWriter::identifier() const
 {
-    return ID;
+    return s_identifier();
 }
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractDataWriter *createitkNiftiDataTensorImageWriter()
+dtkAbstractDataWriter * itkNiftiDataTensorImageWriter::create()
 {
     return new itkNiftiDataTensorImageWriter;
 }
