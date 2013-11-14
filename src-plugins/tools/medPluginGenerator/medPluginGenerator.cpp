@@ -576,9 +576,7 @@ bool medPluginGenerator::generateTypeWorkspaceSourceFile()
     QTextStream stream(&targetFile);
 
     stream << QString(templateFile.readAll())
-    .arg(d->plugin)
-    .arg(d->name);
-    .arg(d->description)
+    .arg(d->plugin);
 
     targetFile.close();
 
