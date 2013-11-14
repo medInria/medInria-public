@@ -554,7 +554,7 @@ bool medPluginGenerator::generateTypeWorkspaceHeaderFile()
 }
 
 // /////////////////////////////////////////////////////////////////
-// Type ToolBox source file
+// Type Workspace source file
 // /////////////////////////////////////////////////////////////////
 
 bool medPluginGenerator::generateTypeWorkspaceSourceFile()
@@ -578,6 +578,7 @@ bool medPluginGenerator::generateTypeWorkspaceSourceFile()
     stream << QString(templateFile.readAll())
     .arg(d->plugin)
     .arg(d->name);
+    .arg(d->description)
 
     targetFile.close();
 
