@@ -127,18 +127,40 @@ bool medPluginGenerator::run()
         && generateReadmeFile();
 
     if (d->pluginFamily == "datareader")
+
+    {
         d->type = "DataReader";
+        return generateCMakeLists()
+        && generateTypeIOHeaderFile()
+        && generateTypeIOSourceFile()
+        && generatePluginHeaderFile()
+        && generatePluginSourceFile()
+        && generateExportHeaderFile()
+        && generateReadmeFile();
+    }
 
     if (d->pluginFamily == "datawriter")
+
+    {
         d->type = "DataWriter";
-    
-    return generateCMakeLists()
-    && generateTypeHeaderFile()
-    && generateTypeSourceFile()
-    && generatePluginHeaderFile()
-    && generatePluginSourceFile()
-    && generateExportHeaderFile()
-    && generateReadmeFile();
+        return generateCMakeLists()
+        && generateTypeIOHeaderFile()
+        && generateTypeIOSourceFile()
+        && generatePluginHeaderFile()
+        && generatePluginSourceFile()
+        && generateExportHeaderFile()
+        && generateReadmeFile();
+    }
+    else
+        return generateCMakeLists()
+        && generateTypeHeaderFile()
+        && generateTypeSourceFile()
+        && generatePluginHeaderFile()
+        && generatePluginSourceFile()
+        && generateExportHeaderFile()
+        && generateReadmeFile();
+
+    return false;
 }
 
 QStringList medPluginGenerator::pluginFamilies()
@@ -585,3 +607,69 @@ bool medPluginGenerator::generateTypeWorkspaceSourceFile()
     return true;
 }
 
+
+// /////////////////////////////////////////////////////////////////
+// Type IO header file
+// /////////////////////////////////////////////////////////////////
+
+bool medPluginGenerator::generateTypeIOHeaderFile()
+{
+    QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append(".h")));
+
+    if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append(".h") << "for writing";
+        return false;
+    }
+
+    QFile templateFile(QString(":template/%1/type.h").arg(d->pluginFamily));
+
+    if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
+        return false;
+    }
+
+    QTextStream stream(&targetFile);
+
+    stream << QString(templateFile.readAll())
+    .arg(d->plugin)
+    .arg(d->plugin.toUpper())
+    .arg(d->type);
+
+    targetFile.close();
+
+    templateFile.close();
+
+    return true;
+}
+
+// /////////////////////////////////////////////////////////////////
+// Type IO source file
+// /////////////////////////////////////////////////////////////////
+
+bool medPluginGenerator::generateTypeIOSourceFile()
+{
+    QFile targetFile(d->target.absoluteFilePath(QString(d->plugin).append(".cpp")));
+
+    if(!targetFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "medPluginGenerator: unable to open" << QString(d->plugin).append(".cpp") << "for writing";
+        return false;
+    }
+
+    QFile templateFile(QString(":template/%1/type.cpp").arg(d->pluginFamily));
+
+    if(!templateFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qDebug() << "medPluginGenerator: unable to open template file " << templateFile.fileName() << " for reading";
+        return false;
+    }
+
+    QTextStream stream(&targetFile);
+    stream << QString(templateFile.readAll())
+    .arg(d->plugin)
+    .arg(d->type);
+
+    targetFile.close();
+
+    templateFile.close();
+
+    return true;
+}

@@ -48,6 +48,8 @@ protected:
    bool generateReadmeFile();
    bool generateTypeWorkspaceHeaderFile();
    bool generateTypeWorkspaceSourceFile();
+   bool generateTypeIOHeaderFile();
+   bool generateTypeIOSourceFile();
 
 
 private:
