@@ -85,14 +85,13 @@ bool itkDataDiffusionGradientList::read (const QString& filename)
     //Read Gradients
     typedef itk::GradientFileReader ReaderType;
     typedef ReaderType::VectorListType VectorListType;
-    typedef ReaderType::VectorType VectorType;
     
     ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName (filename.toStdString());
     reader->Update();
     VectorListType gradients = reader->GetGradientList();
     
-    for(int i=0; i<(gradients.size()); i++)
+    for(unsigned i=0; i<(gradients.size()); i++)
     {
         GradientType grad (3);
         grad[0] = gradients[i][0];

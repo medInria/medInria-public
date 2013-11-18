@@ -1587,7 +1587,6 @@ void vtkMetaDataSetSequence::ComputeTimesFromDuration()
 vtkMetaDataSetSequence::ShortImageType::PointType vtkMetaDataSetSequence::ExtractPARRECImageOrigin (const char* filename, ShortDirectionType direction)
 {
 
-  typedef ShortDirectionType DirectionType;
   typedef ShortImageType::PointType PointType;
   PointType nullorigin;
   nullorigin[0] = nullorigin[1] = nullorigin[2] = 0.0;

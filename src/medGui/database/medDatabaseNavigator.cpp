@@ -124,7 +124,6 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
     }
     d->currentPatient = baseIndex.patientId();
 
-    typedef QSet<medDataIndex> IndexSet;
     typedef QList<int> IntList;
     typedef QList<medDataIndex> IndexList;
 

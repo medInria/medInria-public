@@ -122,6 +122,7 @@ template <typename PixelType>
        {
            QString pixel_type =  typeid(PixelType).name();
            qDebug()<< "Error: The pixel type " + pixel_type + " is not supported yet."  ;
+           return;
        }
     if ( dimensions == 3 ){
 
