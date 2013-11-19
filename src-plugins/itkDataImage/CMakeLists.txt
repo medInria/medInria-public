@@ -39,6 +39,10 @@ include(dtkPlugin)
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
+# Required for thumbnail generation
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
+
 ## #################################################################
 ## Input
 ## #################################################################
@@ -99,7 +103,8 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore dtkLog
   medCore
   dtkItkLogForwarder
-  ITKStatistics
+  vtkImageView
+  QVTK
 )
 
 if (BUILD_TESTING)
