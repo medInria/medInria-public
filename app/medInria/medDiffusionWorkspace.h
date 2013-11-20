@@ -19,7 +19,7 @@
 #include <medWorkspace.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
-
+class dtkAbstractProcess;
 class medTabbedViewContainers;
 class medDiffusionWorkspacePrivate;
 
@@ -37,8 +37,18 @@ public:
     void setupViewContainerStack();
 
 public slots:
-    void addToView(dtkAbstractData *data);
+
+    void runProcess(dtkAbstractProcess *process, QString category);
+    void getOutput();
+    
+    /**
+      * @brief Adds a new tab to a workspace
+      *
+      * Re-implemented, replaces default implementation in medWorkspace
+      */
     void onAddTabClicked();
+    
+    void changeCurrentContainer(QString name);
 
 private:
     medDiffusionWorkspacePrivate *d;

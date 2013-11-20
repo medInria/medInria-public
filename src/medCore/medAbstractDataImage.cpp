@@ -60,6 +60,13 @@ const medAbstractDataImage::PixId& medAbstractDataImage::PixelType() const
     return typeid(void);
 }
 
+medAbstractDataImage::MatrixType medAbstractDataImage::orientationMatrix()
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    
+    return MatrixType();
+}
+
 int medAbstractDataImage::xDimension(void)
 {
     DTK_DEFAULT_IMPLEMENTATION;

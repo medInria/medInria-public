@@ -14,6 +14,7 @@
 #pragma once
 
 #include <typeinfo>
+#include <vector>
 #include "medCoreExport.h"
 #include <medAbstractData.h>
 
@@ -23,6 +24,7 @@ class MEDCORE_EXPORT medAbstractDataImage: public medAbstractData
 
 public:
     typedef std::type_info PixId;
+    typedef std::vector < std::vector <double> > MatrixType;
 
              medAbstractDataImage();
              medAbstractDataImage(const medAbstractDataImage& other);
@@ -32,6 +34,8 @@ public:
 
     virtual int   Dimension() const;
     virtual const PixId& PixelType() const;
+    
+    virtual MatrixType orientationMatrix();
 
     virtual int xDimension();
     virtual int yDimension();

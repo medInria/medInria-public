@@ -17,7 +17,7 @@
 #include "medGuiExport.h"
 
 class dtkAbstractView;
-class dtkAbstractData;
+class medAbstractDataImage;
 class dtkAbstractProcess;
 class medDiffusionSelectorToolBoxPrivate;
 class medDataIndex;
@@ -26,23 +26,32 @@ class MEDGUI_EXPORT medDiffusionSelectorToolBox : public medToolBox
 {
     Q_OBJECT
 public:
-     medDiffusionSelectorToolBox(QWidget *parent = 0);
+    enum SelectorType
+    {
+        Estimation = 0,
+        ScalarMaps,
+        Tractography
+    };
+    
+     medDiffusionSelectorToolBox(QWidget *parent = 0, SelectorType type = Estimation);
     ~medDiffusionSelectorToolBox();
-
-    dtkAbstractData *output() const;
-
-signals:
-    void newOutput(dtkAbstractData * data);
-
+    
 public slots:
-    // void run();
     void clear();
 
-    void onToolBoxChosen(int id);
+    void selectInputImage(const medDataIndex& index);
+    void createProcess();
+    
+    void chooseToolBox(int id);
+    
+signals:
+    void processCreated(dtkAbstractProcess *process, QString);
 
+protected:
+    void checkInputGradientDirections();
+    
 private:
     medDiffusionSelectorToolBoxPrivate *d;
-
 };
 
 

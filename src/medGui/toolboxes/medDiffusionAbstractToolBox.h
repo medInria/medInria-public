@@ -16,24 +16,15 @@
 #include "medToolBox.h"
 #include "medGuiExport.h"
 
-class medDiffusionSelectorToolBox;
-class medDiffusionAbstractToolBoxPrivate;
 class dtkAbstractProcess;
-class dtkAbstractData;
 class dtkPlugin;
 
 class MEDGUI_EXPORT medDiffusionAbstractToolBox : public medToolBox
 {
     Q_OBJECT
 public:
-             medDiffusionAbstractToolBox(QWidget *parentToolBox = 0);
+    medDiffusionAbstractToolBox(QWidget *parentToolBox = 0);
     virtual ~medDiffusionAbstractToolBox();
-
-    virtual void setDiffusionToolBox(medDiffusionSelectorToolBox *toolbox);
-
-    virtual QString description() const=0;
-
-    virtual dtkAbstractData *output() const;
 
     /**
      * @brief Returns the plugin this custom Toolbox comes from.
@@ -41,18 +32,18 @@ public:
      * Used to fill the aboutPlugin button in the parent toolbox.
      *
      */
-    virtual dtkPlugin *plugin()const = 0 ;
-
-signals:
-     void newOutput(dtkAbstractData * data);
-
-protected slots:
-     void processSuccess();
-
-protected:
-    medDiffusionSelectorToolBox *parentToolBox();
-
-    medDiffusionAbstractToolBoxPrivate *d;
+    virtual dtkPlugin *plugin()const = 0;
+    
+    virtual dtkAbstractProcess *createProcess() = 0;
 };
 
-
+class MEDGUI_EXPORT medDiffusionScalarMapsAbstractToolBox : public medDiffusionAbstractToolBox
+{
+    Q_OBJECT
+public:
+    medDiffusionScalarMapsAbstractToolBox(QWidget *parentToolBox = 0);
+    virtual ~medDiffusionScalarMapsAbstractToolBox();
+    
+signals:
+    void processStartRequested();
+};

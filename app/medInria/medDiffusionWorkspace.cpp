@@ -15,6 +15,7 @@
 
 #include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
@@ -28,26 +29,60 @@
 #include <medToolBoxFactory.h>
 #include <medDiffusionSelectorToolBox.h>
 
+#include <medRunnableProcess.h>
+#include <medJobManager.h>
+#include <medMessageController.h>
+
 class medDiffusionWorkspacePrivate
 {
 public:
 
-    medToolBox * diffusionToolBox;
-    medToolBox * fiberBundlingToolBox;
-    medViewContainer * diffusionContainer;
+    medToolBox *fiberBundlingToolBox;
+	medViewContainer * diffusionContainer;
+
+    medDiffusionSelectorToolBox *diffusionEstimationToolBox;
+    medDiffusionSelectorToolBox *diffusionScalarMapsToolBox;
+    medDiffusionSelectorToolBox *diffusionTractographyToolBox;
+
+    dtkSmartPointer <dtkAbstractProcess> currentProcess;
+    bool processRunning;
+
+    QString currentContainerName;
 };
 
 medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(parent), d(new medDiffusionWorkspacePrivate)
 {
     d->diffusionContainer = 0;
+    d->currentContainerName = identifier();
 
-    d->diffusionToolBox =  new medDiffusionSelectorToolBox(parent);
-
+    // -- Bundling  toolbox --
     d->fiberBundlingToolBox = medToolBoxFactory::instance()->createToolBox("medFiberBundlingToolBox", parent);
+    
+    // -- Estimation toolbox --
+    d->diffusionEstimationToolBox = new medDiffusionSelectorToolBox(parent,medDiffusionSelectorToolBox::Estimation);
+    d->diffusionEstimationToolBox->setTitle("Model Estimation");
 
-    connect(d->diffusionToolBox, SIGNAL(addToolBox(medToolBox *)),
+    connect(d->diffusionEstimationToolBox, SIGNAL(addToolBox(medToolBox *)),
             this, SLOT(addToolBox(medToolBox *)));
-    connect(d->diffusionToolBox, SIGNAL(removeToolBox(medToolBox *)),
+    connect(d->diffusionEstimationToolBox, SIGNAL(removeToolBox(medToolBox *)),
+            this, SLOT(removeToolBox(medToolBox *)));
+    
+    // -- Scalar maps toolbox --
+    d->diffusionScalarMapsToolBox = new medDiffusionSelectorToolBox(parent,medDiffusionSelectorToolBox::ScalarMaps);
+    d->diffusionScalarMapsToolBox->setTitle("Diffusion Scalar Maps");
+    
+    connect(d->diffusionScalarMapsToolBox, SIGNAL(addToolBox(medToolBox *)),
+            this, SLOT(addToolBox(medToolBox *)));
+    connect(d->diffusionScalarMapsToolBox, SIGNAL(removeToolBox(medToolBox *)),
+            this, SLOT(removeToolBox(medToolBox *)));
+    
+    // -- Tractography toolbox --
+    d->diffusionTractographyToolBox = new medDiffusionSelectorToolBox(parent,medDiffusionSelectorToolBox::Tractography);
+    d->diffusionTractographyToolBox->setTitle("Tractography");
+    
+    connect(d->diffusionTractographyToolBox, SIGNAL(addToolBox(medToolBox *)),
+            this, SLOT(addToolBox(medToolBox *)));
+    connect(d->diffusionTractographyToolBox, SIGNAL(removeToolBox(medToolBox *)),
             this, SLOT(removeToolBox(medToolBox *)));
 
     connect(d->diffusionToolBox, SIGNAL(newOutput(dtkAbstractData*)), d->fiberBundlingToolBox, SLOT(setInput(dtkAbstractData*)));
@@ -66,9 +101,19 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
        addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
     }
 
-    this->addToolBox( d->diffusionToolBox );
-    this->addToolBox( d->fiberBundlingToolBox );
+    connect(d->diffusionEstimationToolBox, SIGNAL(processCreated(dtkAbstractProcess *, QString)),
+            this, SLOT(runProcess(dtkAbstractProcess *, QString)));
+    connect(d->diffusionScalarMapsToolBox, SIGNAL(processCreated(dtkAbstractProcess *, QString)),
+            this, SLOT(runProcess(dtkAbstractProcess *, QString)));
+    connect(d->diffusionTractographyToolBox, SIGNAL(processCreated(dtkAbstractProcess *, QString)),
+            this, SLOT(runProcess(dtkAbstractProcess *, QString)));
 
+    this->addToolBox( d->diffusionEstimationToolBox );
+    this->addToolBox( d->diffusionScalarMapsToolBox );
+    this->addToolBox( d->diffusionTractographyToolBox );
+    this->addToolBox( d->fiberBundlingToolBox );
+    
+    d->processRunning = false;
 }
 
 medDiffusionWorkspace::~medDiffusionWorkspace()
@@ -94,20 +139,17 @@ void medDiffusionWorkspace::setupViewContainerStack()
 
         //ownership of singleViewContainer is transferred to the stackedWidget.
         this->stackedViewContainers()->addContainer (identifier(), singleViewContainer);
+        d->currentContainerName = identifier();
 
         d->diffusionContainer = singleViewContainer;
 
-        this->stackedViewContainers()->lockTabs();
-        this->stackedViewContainers()->hideTabBar();
+        connect(this->stackedViewContainers(),SIGNAL(currentChanged(QString)),this,SLOT(changeCurrentContainer(QString)));
     }
     else
     {
-        d->diffusionContainer = this->stackedViewContainers()->container(identifier());
+        d->diffusionContainer = this->stackedViewContainers()->container(d->currentContainerName);
         //TODO: maybe clear views here too?
-    }
-
-    if ( ! d->diffusionContainer)
-        return;
+	}
 }
 
 void medDiffusionWorkspace::addToView(dtkAbstractData * data)
@@ -120,11 +162,59 @@ void medDiffusionWorkspace::addToView(dtkAbstractData * data)
     }
 }
 
+void medDiffusionWorkspace::runProcess(dtkAbstractProcess *process, QString category)
+{
+    if (d->processRunning)
+        return;
+    
+    d->currentProcess = process;
+    d->processRunning = true;
+    
+    medRunnableProcess *runProcess = new medRunnableProcess;
+    runProcess->setProcess (d->currentProcess);
+    
+    medJobManager::instance()->registerJobItem(runProcess);
+    connect(runProcess, SIGNAL(success(QObject*)), this, SLOT(getOutput()));
+    
+    medMessageProgress *messageProgress = medMessageController::instance()->showProgress(category);
+    
+    messageProgress->setProgress(0);
+    connect(runProcess, SIGNAL(progressed(int)), messageProgress, SLOT(setProgress(int)));
+    connect(runProcess, SIGNAL(success(QObject*)), messageProgress, SLOT(success()));
+    
+    QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
+}
+
+void medDiffusionWorkspace::getOutput()
+{
+    if (!d->diffusionContainer->view())
+    {
+        d->diffusionContainer->open(d->currentProcess->output());
+    }
+    else
+    {
+        d->diffusionContainer->view()->setData(d->currentProcess->output(), 0);
+        d->diffusionContainer->view()->reset();
+        d->diffusionContainer->view()->update();
+    }
+    
+    QString uuid = QUuid::createUuid().toString();
+    medDataManager::instance()->importNonPersistent ( d->currentProcess->output(), uuid);
+    
+    d->processRunning = false;
+}
+
 void medDiffusionWorkspace::onAddTabClicked()
 {
     QString name = this->identifier();
     QString realName = this->addSingleContainer(name);
     this->stackedViewContainers()->setContainer(realName);
+    d->currentContainerName = realName;
+}
+
+void medDiffusionWorkspace::changeCurrentContainer(QString name)
+{
+    d->currentContainerName = name;
 }
 
 bool medDiffusionWorkspace::isUsable()
