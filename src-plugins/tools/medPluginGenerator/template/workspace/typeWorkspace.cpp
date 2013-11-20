@@ -39,7 +39,7 @@ public:
 // %1
 // /////////////////////////////////////////////////////////////////
 
-%1Workspace::%1Workspace(QWidget *parent = 0) : medWorkspace(parent), d(new %1WorkspacePrivate)
+%1Workspace::%1Workspace(QWidget *parent) : medWorkspace(parent), d(new %1WorkspacePrivate)
 {
     
 }
