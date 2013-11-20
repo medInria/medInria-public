@@ -26,68 +26,11 @@
 #include <itkResampleImageFilter.h>
 #include <itkRecursiveGaussianImageFilter.h>
 
-#include <vtkImageView2D.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindow.h>
-#include <vtkUnsignedCharArray.h>
-#include <QVTKWidget.h>
-
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <medAbstractDataTypedImage.h>
 #include <itkDataImagePluginExport.h>
 
-template<typename T,int DIM>
-void generateThumbnails(typename itk::Image<T,DIM>* image,int xydim,bool singlez,QList<QImage>& thumbnails)
-{
-    if (!image)
-        return;
-    
-    thumbnails.clear();
-    
-    QImage img(xydim,xydim,QImage::Format_RGB32);
-    img.fill(0);
-    thumbnails.push_back(img);
-    
-    vtkSmartPointer <vtkRenderer> renderer2d = vtkRenderer::New();
-    
-    vtkSmartPointer <vtkImageView2D> view2d = vtkImageView2D::New();
-    view2d->SetRenderer (renderer2d);
-    view2d->SetBackground ( 0.0, 0.0, 0.0 );
-    view2d->CursorFollowMouseOff();
-    view2d->ShowImageAxisOff();
-    view2d->ShowScalarBarOff();
-    view2d->ShowRulerWidgetOff();
-
-    vtkSmartPointer <vtkRenderWindow> renWin = vtkRenderWindow::New();
-    view2d->SetRenderWindow (renWin);
-    
-    QVTKWidget vtkWidget;
-    vtkWidget.resize(xydim,xydim);
-    vtkWidget.SetRenderWindow(renWin);
-    
-    if (DIM == 3)
-    {
-        typedef itk::Image<T,3> ImageType;
-        
-        typename ImageType::Pointer imgPtr = dynamic_cast <ImageType *> (image);
-        view2d->SetITKInput(imgPtr,0);
-    }
-    else
-    {
-        typedef itk::Image<T,4> ImageType;
-        
-        typename ImageType::Pointer imgPtr = dynamic_cast <ImageType *> (image);
-        
-        view2d->SetITKInput4(imgPtr,0);
-        view2d->SetTimeIndex(0);
-    }
-    
-    renWin->Render();
-    
-    vtkSmartPointer <vtkUnsignedCharArray> pixels = vtkUnsignedCharArray::New();
-    pixels->SetArray(img.bits(), xydim*xydim*4, 1);
-    renWin->GetRGBACharPixelData(0, 0, xydim-1, xydim-1, 1, pixels);
-}
+#include <itkThumbnailGenerator.h>
 
 template <typename T>
 struct ImageTypeIndex {
@@ -156,11 +99,6 @@ public:
     int scalarValueMaxCount() {
         computeValueCounts();
         return histogram_max;
-    }
-
-    QList<QImage>& make_thumbnails(const int sz,const bool singlez) {
-        generateThumbnails<T,DIM>(image,sz,singlez,thumbnails);
-        return thumbnails;
     }
 
     typename ImageType::Pointer     image;
@@ -259,71 +197,9 @@ public:
     int scalarValueMinCount() const { return -1; }
     int scalarValueMaxCount() const { return -1; }
 
-    QList<QImage>& make_thumbnails(const int sz,const bool singlez);
-
     typename ImageType::Pointer image;
     QList<QImage>               thumbnails;
 };
-
-template <unsigned DIM,typename T>
-QList<QImage>& itkDataImagePrivate<DIM,T,1>::make_thumbnails(const int sz,const bool singlez) {
-    typename ImageType::Pointer im = image;
-    typename ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize();
-    typename ImageType::SizeType newSize = size;
-    newSize[0] = 128;
-    newSize[1] = 128;
-    unsigned int *sfactor = new unsigned int [ImageType::GetImageDimension()];
-    for (unsigned int i=0; i<ImageType::GetImageDimension(); i++)
-        sfactor[i] = ceil((float)size[i]/newSize[i]);
-    typedef itk::ShrinkImageFilter<ImageType,ImageType> FilterType;
-    typename FilterType::Pointer filter = FilterType::New();
-    filter->SetInput(im);
-    filter->SetShrinkFactors(sfactor);
-    try {
-        filter->Update();
-    } catch (itk::ExceptionObject &e) {
-        qDebug() << e.GetDescription();
-        return thumbnails;
-    }
-    
-    im = filter->GetOutput();
-    delete [] sfactor;
-    
-    size = im->GetLargestPossibleRegion().GetSize();
-    itk::ImageRegionIterator<ImageType> it (im,im->GetLargestPossibleRegion());
-
-    unsigned int baseX = 0;
-    unsigned int baseY = 0;
-
-    if (newSize[0] > size[0])
-        baseX = (newSize[0] - size[0]) / 2;
-    if (newSize[1] > size[1])
-        baseY = (newSize[1] - size[1]) / 2;
-
-    unsigned long nvoxels_per_slice = size[0]*size[1];
-    unsigned long voxelCount = 0;
-    QImage *qimage = new QImage (newSize[0],newSize[1],QImage::Format_ARGB32);
-    qimage->fill(QColor::fromRgbF(0,0,0).rgba());
-    uchar *qImageBuffer = qimage->bits();
-    while(!it.IsAtEnd()) {
-        typename ImageType::IndexType tmpIndex = it.GetIndex();
-        qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0])] = static_cast<unsigned char>(it.Value()[0]);
-        qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 1] = static_cast<unsigned char>(it.Value()[1]);
-        qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 2] = static_cast<unsigned char>(it.Value()[2]);
-        qImageBuffer[4 * ((baseY + tmpIndex[1]) * newSize[0] + baseX + tmpIndex[0]) + 3] = 0xFF;
-
-        ++it;
-        ++voxelCount;
-        if ((voxelCount%nvoxels_per_slice)==0) {
-            thumbnails.push_back (*qimage);
-            qimage = new QImage (newSize[0],newSize[1],QImage::Format_ARGB32);
-            qimage->fill(QColor::fromRgbF(0,0,0).rgba());
-            qImageBuffer = qimage->bits();
-        }
-    }
-
-    return thumbnails;
-}
 
 template <unsigned DIM,typename T,const char* ID> dtkAbstractData* createItkDataImage();
 
@@ -349,7 +225,20 @@ public:
 
     virtual QImage& thumbnail();
 
-    virtual QList<QImage>& thumbnails() { return d->make_thumbnails(128,false); }
+    virtual QList<QImage>& thumbnails()
+    {
+        if (d->thumbnails.isEmpty())
+            this->create_thumbnails();
+        
+        return d->thumbnails;
+    }
+    
+    virtual void create_thumbnails()
+    {
+        d->thumbnails.clear();
+        itkThumbnailGenerator thumbGen(this,DIM);
+        d->thumbnails.append(thumbGen.thumbnail());
+    }
 
     //  Inherited slots (through virtual member functions).
 
@@ -434,7 +323,7 @@ QImage& itkDataImage<DIM,T,ID>::thumbnail() {
     if (d->thumbnails.isEmpty()          ||
         d->thumbnails[0].height()!=xydim ||
         d->thumbnails[0].width() !=xydim )
-        d->make_thumbnails(xydim,true);
+        this->create_thumbnails();
 
     int index = 0;
     if (DIM>2) {
