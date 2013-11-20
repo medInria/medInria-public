@@ -25,6 +25,7 @@ set(${PROJECT_NAME}_HEADERS
     vtkImageViewCollection.h
     vtkImageView3DCroppingBoxCallback.h
     vtkSmartVolumeMapper.h
+    medVtkViewBackend.h
 )
 
 set(${PROJECT_NAME}_SOURCES
@@ -39,6 +40,7 @@ set(${PROJECT_NAME}_SOURCES
     vtkImageViewCollection.cxx
     vtkImageView3DCroppingBoxCallback.cxx
     vtkSmartVolumeMapper.cxx
+    medVtkViewBackend.cpp
 )
 if (VTKINRIA_USE_PRECOMPILED_HEADERS)
     add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
@@ -59,6 +61,7 @@ target_link_libraries(${PROJECT_NAME}
     vtkVolumeRendering
     vtkVisuManagement
     ITKCommon
+    medCore
 )
 
 if (VTKINRIA_BUILD_TESTING)

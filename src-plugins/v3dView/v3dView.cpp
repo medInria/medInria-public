@@ -53,6 +53,7 @@
 #include <vtkColorTransferFunction.h>
 #include <vtkPiecewiseFunction.h>
 #include <QVTKWidget.h>
+#include <medVtkViewBackend.h>
 
 #include <QtGui>
 #include <QMenu>
@@ -298,6 +299,8 @@ public:
     QList<QString> PresetList;
 
     QTimeLine *timeline;
+
+    QScopedPointer<medVtkViewBackend> backend;
 
     typedef void ( v3dView::* PropertyFuncType ) ( const QString & );
     typedef QHash<  QString, PropertyFuncType > PropertyFuncMapType;
@@ -654,6 +657,8 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     connect ( d->slider,       SIGNAL ( valueChanged ( int ) ),            this, SLOT ( onZSliderValueChanged ( int ) ) );
 
     connect ( d->widget, SIGNAL ( destroyed() ), this, SLOT ( widgetDestroyed() ) );
+
+    d->backend.reset(new medVtkViewBackend(d->view2d));
 }
 
 v3dView::~v3dView()
@@ -2338,6 +2343,11 @@ void v3dView::widgetDestroyed()
 medAbstractViewCoordinates * v3dView::coordinates()
 {
     return this;
+}
+
+medViewBackend * v3dView::backend()
+{
+    return d->backend.data();
 }
 
 QPointF v3dView::worldToDisplay( const QVector3D & worldVec ) const
