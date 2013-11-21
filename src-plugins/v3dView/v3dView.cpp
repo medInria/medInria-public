@@ -505,8 +505,8 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->renWin = vtkRenderWindow::New();
     d->renWin->StereoCapableWindowOn();
     d->renWin->SetStereoTypeToCrystalEyes();
-    // if(qApp->arguments().contains("--stereo"))
-    //     renwin->SetStereoRender(1);
+    if (qApp->arguments().contains("--stereo"))
+        d->renWin->SetStereoRender(1);
 
     // Necessary options for depth-peeling
     d->renWin->SetAlphaBitPlanes(1);

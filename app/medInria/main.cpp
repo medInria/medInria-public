@@ -97,9 +97,16 @@ int main(int argc,char* argv[]) {
         const QString arg = application.argv()[i];
         if (arg.startsWith("--")) {
             bool valid_option = false;
-            const QStringList options = (QStringList() << "--no-fullscreen" << "--stereo" << "--view");
+            const QStringList options = (QStringList()
+                    << "--no-fullscreen"
+#ifdef ACTIVATE_WALL_OPTION
+                    << "--wall" 
+                    << "--tracker" 
+#endif
+                    << "--stereo"
+                    << "--view");
             for (QStringList::const_iterator i=options.constBegin();i!=options.constEnd();++i)
-                if (arg==*i)
+                if (arg.startsWith(==*i))
                     valid_option = true;
             if (!valid_option) { qDebug() << "Ignoring unknown option " << arg; }
             continue;
