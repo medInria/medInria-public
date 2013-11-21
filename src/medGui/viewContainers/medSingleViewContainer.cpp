@@ -54,8 +54,6 @@ void medSingleViewContainer::setView(dtkAbstractView *view)
         // set the view properties
         if (medAbstractView *medView = qobject_cast<medAbstractView*> (view)){
             d->pool->appendView (medView);
-//            if (medView->receiverWidget())
-//                    medView->receiverWidget()->installEventFilter(this);
         }
 
         connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));

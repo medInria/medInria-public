@@ -141,8 +141,6 @@ protected:
     
     int saveModified();
 
-    bool eventFilter(QObject * obj, QEvent *ev);
-
     bool event(QEvent * e);
 
     /**

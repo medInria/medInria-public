@@ -499,8 +499,6 @@ protected:
     */
     void paintEvent(QPaintEvent *event);
 
-    bool eventFilter(QObject * obj, QEvent *ev);
-
 protected:
     medViewContainerPrivate *d;
 };
