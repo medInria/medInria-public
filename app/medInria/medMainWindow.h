@@ -139,9 +139,6 @@ protected:
 
     void mousePressEvent(QMouseEvent * event);
     
-    void keyPressEvent(QKeyEvent *event);
-    void keyReleaseEvent(QKeyEvent *event);
-    
     int saveModified();
 
     bool eventFilter(QObject * obj, QEvent *ev);

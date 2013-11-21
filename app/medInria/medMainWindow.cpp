@@ -106,17 +106,16 @@ public:
     QWidget*                  rightEndButtons;
     medStatusBar*             statusBar;
     medQuickAccessPushButton* quickAccessButton;
-    QPropertyAnimation*       quickAccessAnimation;
     QToolButton*                quitButton;
     QToolButton*              fullscreenButton;
     QList<QString>            importUuids;
 
     medQuickAccessMenu * quickAccessWidget;
-    bool quickAccessVisible;
     bool controlPressed;
     
     medQuickAccessMenu *shortcutAccessWidget;
     bool shortcutAccessVisible;
+    QShortcut * shortcutShortcut;
     
     QToolButton *screenshotButton;
 };
@@ -198,15 +197,14 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     d->quickAccessWidget = new medQuickAccessMenu( true, this );
     d->quickAccessWidget->setFocusPolicy(Qt::ClickFocus);
-    d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, -500 ) );
+    d->quickAccessWidget->hide();
     d->quickAccessWidget->setMinimumWidth(180);
+    d->quickAccessWidget->move(QPoint ( 0,this->height() - d->quickAccessWidget->height() - 30 ));
+
     connect(d->quickAccessWidget, SIGNAL(menuHidden()), this, SLOT(hideQuickAccess()));
     connect(d->quickAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
     connect(d->quickAccessWidget, SIGNAL(browserSelected()), this, SLOT(switchToBrowserArea()));
     connect(d->quickAccessWidget, SIGNAL(workspaceSelected(QString)), this, SLOT(showWorkspace(QString)));
-
-    d->quickAccessVisible = false;
-    d->quickAccessAnimation = new QPropertyAnimation ( d->quickAccessWidget, "pos",this );
 
     d->shortcutAccessWidget = new medQuickAccessMenu( false, this );
     d->shortcutAccessWidget->setFocusPolicy(Qt::ClickFocus);
@@ -330,11 +328,10 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     connect ( qApp, SIGNAL ( aboutToQuit() ), this, SLOT ( close() ) );
 
-    QShortcut * quickAccessShortcut = new QShortcut(QKeySequence(tr("Ctrl+Space")),
-                                                    this,
-                                                    SLOT(showShortcutAccess()),
-                                                    SLOT(showShortcutAccess()),
-                                                    Qt::ApplicationShortcut);
+    d->shortcutShortcut = new QShortcut(QKeySequence(tr("Ctrl+Space")), this,
+                                        SLOT(showShortcutAccess()),
+                                        SLOT(showShortcutAccess()),
+                                        Qt::ApplicationShortcut);
 }
 
 medMainWindow::~medMainWindow()
@@ -348,58 +345,7 @@ void medMainWindow::mousePressEvent ( QMouseEvent* event )
 {
     QWidget::mousePressEvent ( event );
     this->hideQuickAccess();
-}
-
-/**
- * Key press event reimplementation to handle alt-tab like menu
- */
-void medMainWindow::keyPressEvent( QKeyEvent *event )
-{
-    return QMainWindow::keyPressEvent(event);
-
-#ifdef Q_OS_MAC
-    if (event->key() == Qt::Key_Meta)
-#else
-    if (event->key() == Qt::Key_Control)
-#endif
-    {
-        d->controlPressed = true;
-        return;
-    }
-    
-    if ((event->key() == Qt::Key_Shift)&&(d->controlPressed))
-    {
-        if (!d->shortcutAccessVisible)
-            this->showShortcutAccess();
-
-        d->shortcutAccessWidget->updateCurrentlySelectedRight();
-        return;
-    }
-
-    QMainWindow::keyPressEvent(event);
-}
-
-/**
- * Key release event reimplementation to handle alt-tab like menu
- */
-void medMainWindow::keyReleaseEvent( QKeyEvent * event )
-{
-    return QMainWindow::keyReleaseEvent(event);
-#ifdef Q_OS_MAC
-    if (event->key() == Qt::Key_Meta)
-#else
-    if (event->key() == Qt::Key_Control)
-#endif
-    {
-        if (d->shortcutAccessVisible)
-        {
-            d->shortcutAccessWidget->switchToCurrentlySelected();
-            this->hideShortcutAccess();
-        }
-        d->controlPressed = false;
-    }
-    
-    QMainWindow::keyReleaseEvent(event);
+    this->hideShortcutAccess();
 }
 
 void medMainWindow::readSettings()
@@ -468,7 +414,7 @@ void medMainWindow::switchToArea(const AreaType areaIndex) {
 void medMainWindow::resizeEvent ( QResizeEvent* event )
 {
     QWidget::resizeEvent ( event );
-    d->quickAccessWidget->setProperty ( "pos", QPoint ( 0, this->height() - 30 ));
+    d->quickAccessWidget->move(QPoint ( 0,this->height() - d->quickAccessWidget->height() - 30 ));
     this->hideQuickAccess();
 }
 
@@ -560,7 +506,7 @@ void medMainWindow::switchToHomepageArea()
 
     d->quickAccessButton->setText(tr("Workspaces access menu"));
     d->quickAccessButton->setMinimumWidth(170);
-    if (d->quickAccessVisible)
+    if (d->quickAccessWidget->isVisible())
         this->hideQuickAccess();
     
     if (d->shortcutAccessVisible)
@@ -582,7 +528,7 @@ void medMainWindow::switchToBrowserArea()
 
     d->quickAccessButton->setText(tr("Workspace: Browser"));
     d->quickAccessButton->setMinimumWidth(170);
-    if (d->quickAccessVisible)
+    if (d->quickAccessWidget->isVisible())
         this->hideQuickAccess();
 
     if (d->shortcutAccessVisible)
@@ -598,7 +544,7 @@ void medMainWindow::switchToBrowserArea()
 
 void medMainWindow::switchToWorkspaceArea()
 {
-    if (d->quickAccessVisible)
+    if (d->quickAccessWidget->isVisible())
         this->hideQuickAccess();
     
     if (d->shortcutAccessVisible)
@@ -652,20 +598,16 @@ void medMainWindow::showWorkspace ( QString workspace )
  */
 void medMainWindow::showQuickAccess()
 {
-    if ( d->quickAccessVisible )
+    if ( d->quickAccessWidget->isVisible())
     {
         this->hideQuickAccess();
         return;
     }
+
     d->quickAccessWidget->reset(false);
     d->quickAccessWidget->setFocus();
     d->quickAccessWidget->setMouseTracking(true);
-    d->quickAccessVisible = true;
-    d->quickAccessAnimation->setDuration ( 100 );
-    d->quickAccessAnimation->setStartValue ( QPoint ( 0,this->height() - 30 ) );
-    d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() - 30 ) );
-
-    d->quickAccessAnimation->start();
+    d->quickAccessWidget->show();
 }
 
 /**
@@ -673,14 +615,11 @@ void medMainWindow::showQuickAccess()
  */
 void medMainWindow::hideQuickAccess()
 {
-    if (!d->quickAccessVisible)
+    if (!d->quickAccessWidget->isVisible())
         return;
-    d->quickAccessVisible = false;
+
+    d->quickAccessWidget->hide();
     d->quickAccessWidget->setMouseTracking(false);
-    d->quickAccessAnimation->setDuration ( 100 );
-    d->quickAccessAnimation->setStartValue ( QPoint ( 0,this->height() - d->quickAccessWidget->height() -30 ));
-    d->quickAccessAnimation->setEndValue ( QPoint ( 0,this->height() - 30 ) );
-    d->quickAccessAnimation->start();
 }
 
 /**
@@ -688,11 +627,10 @@ void medMainWindow::hideQuickAccess()
  */
 void medMainWindow::showShortcutAccess()
 {
-    qDebug() << "Bordel de merde";
-
     if ( d->shortcutAccessVisible )
     {
-        this->hideShortcutAccess();
+//        this->hideShortcutAccess();
+        d->shortcutAccessWidget->updateCurrentlySelectedRight();
         return;
     }
     
@@ -723,6 +661,7 @@ void medMainWindow::hideShortcutAccess()
     d->shortcutAccessVisible = false;
     d->shortcutAccessWidget->setProperty ( "pos", QPoint ( 0 , -500 ) );
     d->shortcutAccessWidget->hide();
+    this->activateWindow();
 }
 
 void medMainWindow::onWorkspaceTriggered ( QAction *action )

@@ -15,6 +15,13 @@
 #include <medWorkspaceFactory.h>
 #include <medSettingsManager.h>
 
+#ifdef Q_OS_MAC
+    Qt::Key OSIndependentControlKey = Qt::Key_Meta;
+#else
+    Qt::Key OSIndependentControlKey = Qt::Key_Control;
+#endif
+
+
 /**
  * Constructor, parameter vertical chooses if the layout will be vertical (bottom left menu) or horizontal (alt-tab like menu)
  */
@@ -64,6 +71,12 @@ void medQuickAccessMenu::keyPressEvent ( QKeyEvent * event )
         this->switchToCurrentlySelected();
         return;
     }
+
+    if (event->key() == Qt::Key_Escape)
+    {
+        emit menuHidden();
+        return;
+    }
     
     QApplication::sendEvent(this->parentWidget(),event);
 }
@@ -73,6 +86,19 @@ void medQuickAccessMenu::keyPressEvent ( QKeyEvent * event )
  */
 void medQuickAccessMenu::keyReleaseEvent ( QKeyEvent * event )
 {
+    if (event->key() == OSIndependentControlKey && this->isVisible())
+    {
+        emit menuHidden();
+        switchToCurrentlySelected();
+        return;
+    }
+
+    if (event->key() == Qt::Key_Space && event->modifiers().testFlag(Qt::ShiftModifier))
+    {
+        updateCurrentlySelectedLeft();
+        return;
+    }
+
     QApplication::sendEvent(this->parentWidget(),event);
 }
 
