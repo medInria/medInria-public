@@ -186,9 +186,9 @@ void medCustomViewContainer::setView ( dtkAbstractView *view )
     {
         if ( view != d->view )
         {
-            if (medAbstractView * medView = qobject_cast<medAbstractView*>(view))
-                if (medView->receiverWidget())
-                    medView->receiverWidget()->installEventFilter(this);
+//            if (medAbstractView * medView = qobject_cast<medAbstractView*>(view))
+//                if (medView->receiverWidget())
+//                    medView->receiverWidget()->installEventFilter(this);
 
             if ( d->layout->count() )
                 d->layout->removeItem ( d->layout->itemAt ( 0 ) );
