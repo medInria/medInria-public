@@ -19,29 +19,33 @@ private slots:
     void generateThumbnail();
     
 private:
-    template <class T> void SetViewInput(itk::ImageBase <3> *img, vtkImageView2D *view)
+    template <class T> bool SetViewInput(itk::ImageBase <3> *img, vtkImageView2D *view)
     {
         typedef itk::Image<T,3> ImageType;
         
         typename ImageType::Pointer castPtr = dynamic_cast <ImageType *> (img);
         
         if (!castPtr)
-            return;
+            return false;
         
         view->SetITKInput(castPtr);
+        
+        return true;
     }
     
-    template <class T> void SetViewInput4(itk::ImageBase <4> *img, vtkImageView2D *view)
+    template <class T> bool SetViewInput4(itk::ImageBase <4> *img, vtkImageView2D *view)
     {
         typedef itk::Image<T,4> ImageType;
         
         typename ImageType::Pointer castPtr = dynamic_cast <ImageType *> (img);
         
         if (!castPtr)
-            return;
+            return false;
         
         view->SetITKInput4(castPtr);
         view->SetTimeIndex(0);
+        
+        return true;
     }
     
     QImage m_Thumbnail;

@@ -60,16 +60,25 @@ void itkThumbnailGenerator::generateThumbnail()
         
         ImageType::Pointer imgPtr = dynamic_cast <ImageType *> ((itk::Object *)m_InputData->data());
         
-        this->SetViewInput<double> (imgPtr,view2d);
-        this->SetViewInput<float> (imgPtr,view2d);
-        this->SetViewInput<int> (imgPtr,view2d);
-        this->SetViewInput<unsigned int> (imgPtr,view2d);
-        this->SetViewInput<short> (imgPtr,view2d);
-        this->SetViewInput<unsigned short> (imgPtr,view2d);
-        this->SetViewInput<long> (imgPtr,view2d);
-        this->SetViewInput<unsigned long> (imgPtr,view2d);
-        this->SetViewInput<char> (imgPtr,view2d);
-        this->SetViewInput<unsigned char> (imgPtr,view2d);
+        if (this->SetViewInput<double> (imgPtr,view2d) ||
+            this->SetViewInput<float> (imgPtr,view2d) ||
+            this->SetViewInput<int> (imgPtr,view2d) ||
+            this->SetViewInput<unsigned int> (imgPtr,view2d) ||
+            this->SetViewInput<short> (imgPtr,view2d) ||
+            this->SetViewInput<unsigned short> (imgPtr,view2d) ||
+            this->SetViewInput<long> (imgPtr,view2d) ||
+            this->SetViewInput<unsigned long> (imgPtr,view2d) ||
+            this->SetViewInput<char> (imgPtr,view2d) ||
+            this->SetViewInput<unsigned char> (imgPtr,view2d) ||
+            this->SetViewInput<itk::RGBPixel<unsigned char> > (imgPtr,view2d) ||
+            this->SetViewInput<itk::RGBAPixel<unsigned char> > (imgPtr,view2d))
+        {
+            
+        }
+        else
+        {
+            return;
+        }
     }
     else
     {
@@ -77,16 +86,23 @@ void itkThumbnailGenerator::generateThumbnail()
         
         ImageType::Pointer imgPtr = dynamic_cast <ImageType *> ((itk::Object *)m_InputData->data());
         
-        this->SetViewInput4<double> (imgPtr,view2d);
-        this->SetViewInput4<float> (imgPtr,view2d);
-        this->SetViewInput4<int> (imgPtr,view2d);
-        this->SetViewInput4<unsigned int> (imgPtr,view2d);
-        this->SetViewInput4<short> (imgPtr,view2d);
-        this->SetViewInput4<unsigned short> (imgPtr,view2d);
-        this->SetViewInput4<long> (imgPtr,view2d);
-        this->SetViewInput4<unsigned long> (imgPtr,view2d);
-        this->SetViewInput4<char> (imgPtr,view2d);
-        this->SetViewInput4<unsigned char> (imgPtr,view2d);
+        if (this->SetViewInput4<double> (imgPtr,view2d) ||
+            this->SetViewInput4<float> (imgPtr,view2d) ||
+            this->SetViewInput4<int> (imgPtr,view2d) ||
+            this->SetViewInput4<unsigned int> (imgPtr,view2d) ||
+            this->SetViewInput4<short> (imgPtr,view2d) ||
+            this->SetViewInput4<unsigned short> (imgPtr,view2d) ||
+            this->SetViewInput4<long> (imgPtr,view2d) ||
+            this->SetViewInput4<unsigned long> (imgPtr,view2d) ||
+            this->SetViewInput4<char> (imgPtr,view2d) ||
+            this->SetViewInput4<unsigned char> (imgPtr,view2d))
+        {
+            
+        }
+        else
+        {
+            return;
+        }
     }
     
     view2d->Reset();

@@ -190,5 +190,5 @@ void vtkDataMesh::createThumbnails()
     pixels->SetArray(img.bits(), w*h*4, 1);
     window->GetRGBACharPixelData(0, 0, w-1, h-1, 1, pixels);
 
-    d->thumbnails.push_back (img);
+    d->thumbnails.push_back (img.mirrored(false,true));
 }
