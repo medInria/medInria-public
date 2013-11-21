@@ -658,7 +658,7 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 
     connect ( d->widget, SIGNAL ( destroyed() ), this, SLOT ( widgetDestroyed() ) );
 
-    d->backend.reset(new medVtkViewBackend(d->view2d));
+    d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d));
 }
 
 v3dView::~v3dView()
@@ -2345,7 +2345,7 @@ medAbstractViewCoordinates * v3dView::coordinates()
     return this;
 }
 
-medViewBackend * v3dView::backend()
+medViewBackend * v3dView::backend() const
 {
     return d->backend.data();
 }

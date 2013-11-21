@@ -151,7 +151,7 @@ public:
 
     medAbstractViewCoordinates * coordinates();
 
-    medViewBackend * backend();
+    virtual medViewBackend * backend() const;
 
 public slots:
     // inherited from medAbstractView
