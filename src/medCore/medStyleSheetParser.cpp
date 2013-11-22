@@ -25,7 +25,7 @@ medStyleSheetParser::medStyleSheetParser(QString qss) {
     QTextStream stream(&qss);
     QRegExp regexAssign("(^|;)\\s*\\$([a-zA-Z0-9_]+)\\s*=\\s*([^;]+)\\s*;");
     QRegExp regexDeref("\\$([a-zA-Z0-9_]+)|\\$\\{([a-zA-Z0-9_]+)\\}");
-    QRegExp regexInlineComment("/\\*(?:[^*]/|[^/])*\\*/");
+    QRegExp regexInlineComment("(?:/\\*(?:[^*]/|[^/])*\\*/)|(?://.*$)");
     regexInlineComment.setMinimal(true);
 
     QHash<QString, QString> vars;

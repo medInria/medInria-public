@@ -37,8 +37,10 @@ void medQSSParserTest::testParse_data()
                                   "   min-width: 40px;\n"
                                   "}";
 
-    QTest::newRow("comment") << "$var = /*hello*/12; truc: $var;" << " truc: 12;";
-    QTest::newRow("comment tricky") << "$var = /*hel/* $var lo*/12; truc: $var;" << " truc: 12;";
+    QTest::newRow("comment /* */")     << "$var = /*hello*/12; truc: $var;" << " truc: 12;";
+    QTest::newRow("comment //")        << "$var = 12; //$var = 13;\nproperty: $var;" << "property: 12;";
+    QTest::newRow("comment tricky")    << "$var = /*hel/* $var lo*/12; truc: $var;" << " truc: 12;";
+    QTest::newRow("comment tricky 2")  << "$var = /*hel/* //$var lo*/12; truc: $var;// // $var" << " truc: 12;";
     QTest::newRow("comment multiline") << "$var = /*hello*/12;\n"
                                           " truc: $var;\n"
                                           " $var = 1/**/5; /* \n"
