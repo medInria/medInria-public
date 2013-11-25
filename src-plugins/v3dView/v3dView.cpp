@@ -533,7 +533,7 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 
     d->vtkWidget = new QVTKWidget ( d->widget );
     d->vtkWidget->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Minimum );
-    d->vtkWidget->setFocusPolicy ( Qt::NoFocus );
+    d->vtkWidget->setFocusPolicy ( Qt::ClickFocus );
     
     d->renWin = vtkRenderWindow::New();
     d->renWin->StereoCapableWindowOn();
