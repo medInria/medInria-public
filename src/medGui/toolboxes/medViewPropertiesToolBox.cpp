@@ -956,7 +956,8 @@ void medViewPropertiesToolBox::onLUTChanged(int index)
     }
     else
     {
-        d->meshInteractor->setLut(d->currentLayer, d->lutList.at(index));
+        QStringList allLuts = d->meshInteractor->getAllLUTs();
+        d->meshInteractor->setLut(d->currentLayer, allLuts.at(index));
     }
 
     d->view->update();
