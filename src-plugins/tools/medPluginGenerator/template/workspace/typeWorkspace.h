@@ -24,7 +24,7 @@ class %2PLUGIN_EXPORT %1Workspace : public medWorkspace
     Q_OBJECT
     
 public:
-    %1Workspace(QWidget *parent);
+    %1Workspace(QWidget *parent = 0);
     virtual ~%1Workspace();
     
     virtual QString description() const;
