@@ -536,7 +536,6 @@ public:
 
 template <unsigned DIM,typename T>
 QList<QImage>& itkDataImagePrivate<DIM,T,1>::make_thumbnails(const int sz,const bool singlez) {
-    typedef itk::Image<T,2> Image2DType;
     typename ImageType::Pointer im = image;
     typename ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize();
     typename ImageType::SizeType newSize = size;

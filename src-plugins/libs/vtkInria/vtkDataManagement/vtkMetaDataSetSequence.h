@@ -229,11 +229,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
   
     typedef typename itk::Image<type, 4> Image4DType;
     typedef typename itk::Image<type, 3> Image3DType;
-    typedef typename Image4DType::RegionType Region4dType;
-    typedef typename Image4DType::SpacingType Spacing4Dtype;
   
-    typedef typename itk::ImageRegionIterator<Image4DType> Iterator4DType;
-    typedef typename Iterator4DType::IndexType Index4DType;
     typedef typename Image3DType::DirectionType Direction3Dtype;
     typedef typename Image4DType::DirectionType Direction4Dtype;
     
@@ -281,14 +277,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
     
     typedef typename itk::Image<type, 4> Image4DType;
     typedef typename itk::Image<type, 3> Image3DType;
-    typedef typename Image4DType::RegionType Region4dType;
-    typedef typename Image4DType::SpacingType Spacing4Dtype;
   
-    typedef typename itk::ImageRegionIterator<Image4DType> Iterator4DType;
-    typedef typename Iterator4DType::IndexType Index4DType;
-    typedef typename Image3DType::DirectionType Direction3Dtype;
-    typedef typename Image4DType::DirectionType Direction4Dtype;
-
     typename Image4DType::Pointer image = dataset;
 
     typename Image4DType::SizeType size = image->GetLargestPossibleRegion().GetSize();

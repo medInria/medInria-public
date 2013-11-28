@@ -148,7 +148,6 @@ bool itkDataSHImageReaderBase::read (const QString &path)
 
         if (dtkdata->identifier()=="itkDataSHImageDouble3") {
             typedef itk::VectorImage<double, 3> SHImageType;
-            typedef SHImageType::PixelType    SHType;
 
             typedef itk::ImageFileReader<SHImageType> ReaderType;
 
@@ -169,7 +168,6 @@ bool itkDataSHImageReaderBase::read (const QString &path)
         }
         else if (dtkdata->identifier()=="itkDataSHImageFloat3") {
             typedef itk::VectorImage<float, 3> SHImageType;
-            typedef SHImageType::PixelType    SHType;
 
             typedef itk::ImageFileReader<SHImageType> ReaderType;
 
