@@ -658,7 +658,7 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 
     connect ( d->widget, SIGNAL ( destroyed() ), this, SLOT ( widgetDestroyed() ) );
 
-    d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d));
+    d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d,d->renWin));
 }
 
 v3dView::~v3dView()
