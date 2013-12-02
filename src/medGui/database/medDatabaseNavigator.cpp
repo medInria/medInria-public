@@ -18,10 +18,10 @@
 #include <QtCore>
 #include <QtGui>
 
-#include <medCore/medAbstractDbController.h>
-#include <medCore/medDataManager.h>
-#include <medCore/medMetaDataKeys.h>
-#include <medCore/medStorage.h>
+#include <medAbstractDbController.h>
+#include <medDataManager.h>
+#include <medMetaDataKeys.h>
+#include <medStorage.h>
 
 #include "medDatabaseNavigatorController.h"
 #include "medDatabaseNavigatorItem.h"

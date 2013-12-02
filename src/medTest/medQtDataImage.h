@@ -15,7 +15,7 @@
 
 #include "medTestExport.h"
 
-#include <medCore/medAbstractDataImage.h>
+#include <medAbstractDataImage.h>
 
 class medQtDataImagePrivate;
 

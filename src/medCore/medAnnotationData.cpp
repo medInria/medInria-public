@@ -13,7 +13,7 @@
 
 #include "medAnnotationData.h"
 
-#include <medCore/medAbstractData.h>
+#include <medAbstractData.h>
 
 #include <dtkCore/dtkSmartPointer.h>
 

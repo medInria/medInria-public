@@ -1,4 +1,4 @@
-#######################################################################
+################################################################################
 #
 # medInria
 #
@@ -9,109 +9,89 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-#######################################################################
+################################################################################
 
 project(medSql)
 
-## #################################################################
-## Sources
-## #################################################################
+## #############################################################################
+## List Sources
+## #############################################################################
 
-set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
-  medDatabaseController.h
-  medDatabaseControllerImpl.h
-  medDatabaseImporter.h
-)
-
-set(${PROJECT_NAME}_DEVEL_HEADERS
-  medSqlExport.h
-)
-
-set(${PROJECT_NAME}_HEADERS_MOC
-  ${${PROJECT_NAME}_DEVEL_HEADERS_MOC}
-  medAbstractDatabaseImporter.h
-  medDatabaseExporter.h
-  medDatabaseModel.h  
-  medDatabaseNonPersistentController.h
-  medDatabaseNonPersistentControllerImpl.h
-  medDatabaseNonPersistentItem.h
-  medDatabaseNonPersistentImporter.h
-  medDatabaseProxyModel.h
-  medDatabaseReader.h
-  medDatabaseRemover.h
+file(GLOB_RECURSE ${PROJECT_NAME}_H
+  *.h
   )
 
-set(${PROJECT_NAME}_HEADERS
-  ${${PROJECT_NAME}_DEVEL_HEADERS}
-  ${${PROJECT_NAME}_HEADERS_MOC}
-  medDatabaseItem.h
+file(GLOB_RECURSE ${PROJECT_NAME}_CPP
+  *.cpp
   )
 
-set(${PROJECT_NAME}_SOURCES
-  medAbstractDatabaseImporter.cpp
-  medDatabaseController.cpp
-  medDatabaseControllerImpl.cpp
-  medDatabaseExporter.cpp
-  medDatabaseImporter.cpp
-  medDatabaseItem.cpp
-  medDatabaseModel.cpp  
-  medDatabaseNonPersistentController.cpp
-  medDatabaseNonPersistentControllerImpl.cpp
-  medDatabaseNonPersistentItem.cpp
-  medDatabaseNonPersistentImporter.cpp
-  medDatabaseProxyModel.cpp
-  medDatabaseReader.cpp
-  medDatabaseRemover.cpp
+
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+##  see cmake/module/list_header_directories_to_include.cmake
+list_header_directories_to_include(${PROJECT_NAME}
+  ${${PROJECT_NAME}_H}
   )
 
-## #################################################################
-## Build rules
-## #################################################################
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+    ${medCore_INCLUDE_DIRS}
+    )
+    
+    
+## #############################################################################
+## Add definition
+## #############################################################################
 
 add_definitions(${QT_DEFINITIONS})
 add_definitions(-DQT_SHARED)
 add_definitions(-DQT_NO_DEBUG)
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
 
-if (MEDINRIA_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH 
-    "medPch.h" "../medPch/medPch.cpp" 
-    ${${PROJECT_NAME}_SOURCES}
-    ${${PROJECT_NAME}_SOURCES_MOC}
-    ${${PROJECT_NAME}_SOURCES_WRAP})
+## #############################################################################
+## Precompile headers
+## #############################################################################
+
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${MEDPCH_H}
+    ${MEDPCH_CPP}
+    ${${PROJECT_NAME}_CPP}
+    )
 endif()
 
+
+## #############################################################################
+## add library
+## #############################################################################
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_SOURCES_PCH}
-  ${${PROJECT_NAME}_HEADERS}
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES_WRAP})
+  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_PCH}
+  )
+
+
+## #############################################################################
+## Link
+## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  dtkCore
-  dtkLog
-  medCore)
-
-# Include header files for Visual Studio.
-source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+    ${QT_LIBRARIES}
+    dtkCore
+    dtkLog
+    medCore
+    )
 
 
-if (BUILD_TESTING)
-  add_subdirectory (Testing)
-endif()
+## #############################################################################
+## install
+## #############################################################################
+
+## see cmake/module/set_lib_install_rules.Cmake
+set_lib_install_rules(${PROJECT_NAME}
+  ${${PROJECT_NAME}_H}
+  )
 
 
-## #################################################################
-## Installation
-## #################################################################
-
-install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)

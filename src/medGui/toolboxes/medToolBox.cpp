@@ -13,7 +13,7 @@
 
 #include <dtkCore/dtkAbstractData.h>
 
-#include <medCore/medAbstractView.h>
+#include <medAbstractView.h>
 
 #include "medToolBox.h"
 #include "medToolBoxHeader.h"

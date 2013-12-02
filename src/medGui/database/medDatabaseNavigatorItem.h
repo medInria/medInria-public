@@ -15,7 +15,7 @@
 
 #include <QtGui/QGraphicsPixmapItem>
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 // /////////////////////////////////////////////////////////////////
 // medDatabaseNavigatorItem

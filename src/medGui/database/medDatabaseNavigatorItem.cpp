@@ -15,9 +15,9 @@
 #include <medDatabaseNavigatorItemOverlay.h>
 #include "medImageFileLoader.h"
 
-#include <medCore/medAbstractDbController.h>
-#include <medCore/medDataManager.h>
-#include <medCore/medMetaDataKeys.h>
+#include <medAbstractDbController.h>
+#include <medDataManager.h>
+#include <medMetaDataKeys.h>
 
 #include <QtCore>
 #include <QtGui>
