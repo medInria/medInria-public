@@ -79,7 +79,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
     d->patientToolBox = new medPatientSelectorToolBox(this);
     d->patientToolBox->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);//, QSizePolicy::Minimum);
-    d->patientToolBox->setFixedWidth(156); // 156 - 10
+    d->patientToolBox->setFixedWidth(200); // 156 - 10
 
 
     // Setting up toolbox container
@@ -99,7 +99,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->navigatorContainer = new QFrame(this);
     d->navigatorContainer->setObjectName("medNavigatorContainer");
     d->navigatorContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    d->navigatorContainer->setFixedWidth(156);
+    d->navigatorContainer->setFixedWidth(200);
 
     // Setting up navigator
     medDatabaseNavigatorController::instance()->setOrientation( Qt::Vertical );
