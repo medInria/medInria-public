@@ -68,6 +68,7 @@ set(${PROJECT_NAME}_HEADERS
   itkDataImageDouble3.h
   itkDataImageVectorUChar3.h
   itkDataImageVectorFloat3.h
+  itkDataImageVectorDouble3.h
   itkDataImageRGB3.h
   itkDataImageRGBA3.h
   itkDataImageShort4.h

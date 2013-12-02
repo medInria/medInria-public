@@ -23,10 +23,12 @@
 #include "v3dView4DInteractor.h"
 #include "v3dViewAnnotationInteractor.h"
 #include "v3dViewPlugin.h"
+#include <v3dViewSHInteractor.h>
+#include <medVectorFieldToolBox.h>
+#include <v3dViewVectorFieldInteractor.h>
 #ifndef DISABLE_TTK_DEPENDENT_CODE
 #include <v3dViewFiberInteractor.h>
 #include <v3dViewTensorInteractor.h>
-#include <v3dViewSHInteractor.h>
 #endif
 
 #include <dtkLog/dtkLog.h>
@@ -66,6 +68,7 @@ bool v3dViewPlugin::initialize()
     if (!medTensorViewToolBox::registered())           { dtkWarn() << "Unable to register medTensorViewToolBox type"; }
     if (!medFiberViewToolBox::registered())            { dtkWarn() << "Unable to register medFiberViewToolBox type"; }
     if (!medSHViewToolBox::registered())               { dtkWarn() << "Unable to register medSHViewToolBox type"; }
+    if (!medVectorFieldToolBox::registered())          { dtkWarn() << "Unable to register medVectorFieldToolBox type"; }
     if (!v3dView::registered())                        { dtkWarn() << "Unable to register v3dView type";                     }
 
 #ifndef DISABLE_TTK_DEPENDENT_CODE
@@ -77,6 +80,7 @@ bool v3dViewPlugin::initialize()
     if (!v3dView4DInteractor::registered())         { dtkWarn() << "Unable to register v3dView4DInteractor type";         }
     if (!v3dViewSHInteractor::registered())         { dtkWarn() << "Unable to register v3dViewSHInteractor type";         }
     if (!v3dViewAnnotationInteractor::registered()) { dtkWarn() << "Unable to register v3dViewAnnotationInteractor type"; }
+    if (!v3dViewVectorFieldInteractor::registered()) { dtkWarn() << "Unable to register v3dViewVectorFieldInteractor type"; }
 
     return true;
 }
@@ -138,7 +142,7 @@ QStringList v3dViewPlugin::types() const
 {
     return QStringList() << v3dView::s_identifier() << "v3dViewFiberInteractor"
         << "v3dViewMeshInteractor" << "v3dViewTensorInteractor"
-        << "v3dViewSHInteractor"  << "v3dView4DInteractor"
+        << "v3dViewSHInteractor"  << "v3dView4DInteractor" << "v3dViewVectorFieldInteractor"
         << v3dViewAnnotationInteractor::s_identifier();
 }
 
