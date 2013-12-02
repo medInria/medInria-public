@@ -15,8 +15,8 @@
 
 #include <QtCore>
 
-#include <medCore/medDataManager.h>
-#include <medCore/medAbstractDbController.h>
+#include <medDataManager.h>
+#include <medAbstractDbController.h>
 
 #include "medDatabaseNavigatorController.h"
 #include "medDatabaseNavigatorItem.h"

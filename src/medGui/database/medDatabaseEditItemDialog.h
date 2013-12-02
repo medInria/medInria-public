@@ -1,6 +1,6 @@
 #pragma once
 
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 #include <QDialog>
 
 

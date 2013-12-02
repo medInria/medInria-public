@@ -1,4 +1,4 @@
-#######################################################################
+################################################################################
 #
 # medInria
 #
@@ -9,11 +9,16 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-#######################################################################
+################################################################################
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.9)
 
 project(medInria)
+
+
+## #############################################################################
+## Set version
+## #############################################################################
 
 set(${PROJECT_NAME}_VERSION_MAJOR 2 CACHE STRING 
   "medInria major version number." 
@@ -48,51 +53,125 @@ endif()
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
-if (WIN32)
-  option(MED_SHOW_CONSOLE "Show console at runtime (mainly for debugging)" "FALSE")
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-endif()
 
-option(MEDINRIA_BUILD_TESTING "Build testing" false)
+## #############################################################################
+## Additionals part to build
+## #############################################################################
 
-enable_testing()
+option(${PROJECT_NAME}_BUILD_TESTS 
+  "Build tests"
+  OFF
+  )
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+option(${PROJECT_NAME}_BUILD_DOCUMENTATION 
+  "Build documentation" 
+  OFF
+  )
+  
 
-include(medInriaBuild)
-include(medInria-pluginsBuild)
+## #############################################################################
+## Additionals modules 
+## #############################################################################
+
+set(${PROJECT_NAME}_CMAKE_DIR
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/module 
+  )
+
+set(CMAKE_MODULE_PATH 
+  ${${PROJECT_NAME}_CMAKE_DIR}
+  ${CMAKE_MODULE_PATH}
+  )
+
+include(list_header_directories_to_include) 
+include(set_exe_install_rules)
+include(set_lib_install_rules)
+include(set_plugin_install_rules)
+include(add_plugin)
+
+## #############################################################################
+## Find package
+## ############################################################################# 
+
+find_package(Qt4 REQUIRED)
+include(${QT_USE_FILE})
+
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 
-#configure ctest variables
-option(MEDINRIA_BUILD_REPORTING "Build Reporting")
-if (MEDINRIA_BUILD_REPORTING)
-  include(dtkReporting)
+
+## #############################################################################
+## Qt Automoc
+## #############################################################################
+
+set(CMAKE_AUTOMOC ON)
+set_property(GLOBAL PROPERTY AUTOMOC_TARGETS_FOLDER ${CMAKE_BINARY_DIR}/automoc}) 
+#TODO thing above may be (better/needed) for MSVC.
+
+# Find includes in corresponding build (and source) directories 
+# (nedded for XXX_automoc.h)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+## #############################################################################
+## Windows specificity
+## #############################################################################
+
+if (WIN32)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 endif()
 
-option(MEDINRIA_BUILD_DOCUMENTATION "Build documentation" false)
-
-if (MSVC)
+if(MSVC)
   include(dtkPch)
-  option(MEDINRIA_USE_PRECOMPILED_HEADERS "Use precompiled headers" false)
+  option(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS "Use precompiled headers" 
+    false
+    )
 endif()
+
+
+## #############################################################################
+## Add subdirectory
+## #############################################################################
 
 add_subdirectory(src)
-add_subdirectory(src-plugins)
-add_subdirectory(app)
+#add_subdirectory(app)
+#add_subdirectory(src-plugins)
 
-if (MEDINRIA_BUILD_TESTING)
+if(${PROJECT_NAME}_BUILD_DOCUMENTATION)
+  add_subdirectory(documentation)
+endif()
+
+if(${PROJECT_NAME}_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
 
-if (MEDINRIA_BUILD_DOCUMENTATION)
-  add_subdirectory(doc)
+################################################################################
+# Setup use file
+################################################################################
+
+if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Use.cmake.in)
+  configure_file( ## Common use file
+    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Use.cmake.in
+    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Use.cmake
+    @ONLY IMMEDIATE
+    )
 endif()
 
 if (APPLE)
   set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/MedInriaOSXBundleInfo.plist.in")
+endif()
+
+################################################################################
+# Setup Configuration files
+################################################################################
+
+if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
+  configure_file( ## Build tree configure file
+    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
+    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    @ONLY IMMEDIATE
+    )
 endif()
 
 

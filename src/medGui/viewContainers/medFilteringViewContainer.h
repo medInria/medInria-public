@@ -13,16 +13,14 @@
 
 #pragma once
 
-#include <medCore/medDataIndex.h>
-#include <medCore/medDataManager.h>
-#include <medCustomViewContainer.h>
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractView.h>
+#include "medCustomViewContainer.h"
 
 #include "medGuiExport.h"
 
 class medFilteringViewContainerPrivate;
+class dtkAbstractData;
+class medDataIndex;
+class dtkAbstractView;
 
 /**
  * @brief filtering view container to visualize both input / output from image-to-image filtering processes

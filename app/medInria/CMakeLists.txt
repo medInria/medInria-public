@@ -83,6 +83,17 @@ set(${PROJECT_NAME}_SOURCES
   QSingleApplication/qtsinglecoreapplication.cpp
 )
 
+## #############################################################################
+## Windows specificity
+## #############################################################################
+
+if (WIN32)
+  option(MED_SHOW_CONSOLE 
+    "Show console at runtime (mainly for debugging)"
+    false
+    )
+endif()
+
 set_source_files_properties(QSingleApplication/qtlocalpeer.cpp DEPENDS QSingleApplication/qtlockedfile.cpp)
 if (WIN)
   set_source_files_properties(QSingleApplication/qtlocalpeer.cpp DEPENDS QSingleApplication/qtlockedfile_win.cpp)
