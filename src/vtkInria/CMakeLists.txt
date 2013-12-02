@@ -97,6 +97,7 @@ add_subdirectory(vtkImageView)
 add_subdirectory(vtkRenderingAddOn)
 add_subdirectory(vtkWidgetsAddOn)
 add_subdirectory(vtkVisuManagement)
+add_subdirectory(vtkItkWrap)
 add_subdirectory(HWShading)
 
 if (VTKINRIA_BUILD_EXAMPLES)

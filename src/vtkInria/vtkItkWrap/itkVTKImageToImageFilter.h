@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: itkImageToVTKImageFilter.h,v $
+  Module:    $RCSfile: itkVTKImageToImageFilter.h,v $
   Language:  C++
   Date:      $Date: 2007-11-20 18:46:10 +0100 (Tue, 20 Nov 2007) $
   Version:   $Revision: 477 $
@@ -14,31 +14,37 @@
 
 #pragma once
 
-#include "itkVTKImageExport.h"
-#include "vtkImageImport.h"
+#include "itkVTKImageImport.h"
+#include "vtkImageExport.h"
 #include "vtkImageData.h"
+
+#include "vtkItkWrapExport.h"
+
+#ifndef vtkFloatingPointType
+#define vtkFloatingPointType float
+#endif
 
 namespace itk
 {
   
-/** \class ImageToVTKImageFilter
- * \brief Converts an ITK image into a VTK image and plugs a 
- *  itk data pipeline to a VTK datapipeline.   
+/** \class VTKImageToImageFilter
+ * \brief Converts a VTK image into an ITK image and plugs a 
+ *  vtk data pipeline to an ITK datapipeline.   
  *
- *  This class puts together an itkVTKImageExporter and a vtkImageImporter.
+ *  This class puts together an itkVTKImageImporter and a vtkImageExporter.
  *  It takes care of the details related to the connection of ITK and VTK
  *  pipelines. The User will perceive this filter as an adaptor to which
- *  an itk::Image can be plugged as input and a vtkImage is produced as 
+ *  a vtkImage can be plugged as input and an itk::Image is produced as 
  *  output.
  * 
  * \ingroup   ImageFilters     
  */
-template <class TInputImage >
-class ITK_EXPORT ImageToVTKImageFilter : public ProcessObject
+template <class TOutputImage >
+class VTKITKWRAP_EXPORT VTKImageToImageFilter : public ProcessObject
 {
 public:
   /** Standard class typedefs. */
-  typedef ImageToVTKImageFilter       Self;
+  typedef VTKImageToImageFilter       Self;
   typedef ProcessObject             Superclass;
   typedef SmartPointer<Self>        Pointer;
   typedef SmartPointer<const Self>  ConstPointer;
@@ -47,52 +53,52 @@ public:
   itkNewMacro(Self);
   
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ImageToVTKImageFilter, ProcessObject);
+  itkTypeMacro(VTKImageToImageFilter, ProcessObject);
 
   /** Some typedefs. */
-  typedef TInputImage InputImageType;
-  typedef typename    InputImageType::ConstPointer    InputImagePointer;
-  typedef VTKImageExport< InputImageType>            ExporterFilterType; 
-  typedef typename ExporterFilterType::Pointer        ExporterFilterPointer;
+  typedef TOutputImage OutputImageType;
+  typedef typename    OutputImageType::ConstPointer    OutputImagePointer;
+  typedef VTKImageImport< OutputImageType >   ImporterFilterType; 
+  typedef typename ImporterFilterType::Pointer         ImporterFilterPointer;
  
   /** Get the output in the form of a vtkImage. 
       This call is delegated to the internal vtkImageImporter filter  */
-  vtkImageData *  GetOutput() const;
+  OutputImageType *  GetOutput() const;
 
   using Superclass::SetInput;
-  /** Set the input in the form of an itk::Image */
-  void SetInput( const InputImageType * );
+  /** Set the input in the form of a vtkImageData */
+  void SetInput( vtkImageData * );
 
-  /** Return the internal VTK image importer filter.
-      This is intended to facilitate users the access 
-      to methods in the importer */
-  vtkImageImport * GetImporter() const;
-
-  /** Return the internal ITK image exporter filter.
+  /** Return the internal VTK image exporter filter.
       This is intended to facilitate users the access 
       to methods in the exporter */
-  ExporterFilterType * GetExporter() const;
+  vtkImageExport * GetExporter() const;
+
+  /** Return the internal ITK image importer filter.
+      This is intended to facilitate users the access 
+      to methods in the importer */
+  ImporterFilterType * GetImporter() const;
   
   /** This call delegate the update to the importer */
   void Update();
   
 protected:
-  ImageToVTKImageFilter(); 
-  virtual ~ImageToVTKImageFilter(); 
+  VTKImageToImageFilter(); 
+  virtual ~VTKImageToImageFilter(); 
 
 private:
-  ImageToVTKImageFilter(const Self&); //purposely not implemented
+  VTKImageToImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
-  ExporterFilterPointer       m_Exporter;
-  vtkImageImport            * m_Importer;
+  ImporterFilterPointer       m_Importer;
+  vtkImageExport            * m_Exporter;
 
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkImageToVTKImageFilter.txx"
+#include "itkVTKImageToImageFilter.txx"
 #endif
 
 
