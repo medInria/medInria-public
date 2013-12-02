@@ -30,6 +30,8 @@
 #include <mach/task.h>
 #include <mach/mach_init.h>
 #include <mach/mach_host.h>
+#include <mach/vm_statistics.h>
+#include <mach/mach_types.h> 
 #else
 #include <sys/sysinfo.h>
 #include <unistd.h>
@@ -381,12 +383,12 @@ size_t medDataManager::getProcessMemoryUsage()
     struct task_basic_info t_info;
     mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
     task_info(current_task(), TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count);
-    size_t size = t_info.virtual_size;
+    size_t size = t_info.resident_size;
     return size;
 #else
     int size, res, shared, text, sharedLibs, stack, dirtyPages;
     if ( ! ReadStatmFromProcFS( &size, &res, &shared, &text, &sharedLibs, &stack, &dirtyPages ) )
-        return (size_t) size * getpagesize();
+        return (size_t) res * getpagesize();
     else
         return 0;
 #endif
@@ -402,13 +404,13 @@ size_t medDataManager::getTotalSizeOfPhysicalRam()
     statex.dwLength = sizeof (statex);
     GlobalMemoryStatusEx (&statex);
     return (size_t) statex.ullTotalPhys;
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) // verify this code
     kern_return_t kr;
     host_basic_info_data_t hostinfo;
     int count = HOST_BASIC_INFO_COUNT;
     kr = host_info(mach_host_self(), HOST_BASIC_INFO, (host_info_t)&hostinfo, (mach_msg_type_number_t*)&count);
     if(kr == KERN_SUCCESS)
-        return (size_t)hostinfo.memory_size;
+        return (size_t)hostinfo.max_mem;
     else
         return 0;
 #else
@@ -457,6 +459,8 @@ quint64 medDataManager::getUpperMemoryThreshold()
         return 500000000000ULL;
     }
 }
+
+
 
 //-------------------------------------------------------------------------------------------------------
 
@@ -1021,6 +1025,38 @@ void medDataManager::clearCache()
 
 
 //-------------------------------------------------------------------------------------------------------
+size_t medDataManager::getAvailablePhysicalRam()
+{
+#if _MSC_VER || __MINGW32__
+    MEMORYSTATUSEX statex;
+    statex.dwLength = sizeof (statex);
+    GlobalMemoryStatusEx (&statex);
+    return (size_t) statex.ullAvailPhys;
+#elif defined(__APPLE__)
+    vm_size_t page_size;
+    mach_port_t mach_port;
+    mach_msg_type_number_t count;
+    vm_statistics_data_t vm_stats;
+    int64_t myFreeMemory = 0;
 
+    mach_port = mach_host_self();
+    count = sizeof(vm_stats) / sizeof(natural_t);
+    if (KERN_SUCCESS == host_page_size(mach_port, &page_size) &&
+        KERN_SUCCESS == host_statistics(mach_port, HOST_VM_INFO, 
+                                        (host_info_t)&vm_stats, &count))
+        myFreeMemory = (int64_t)vm_stats.free_count * (int64_t)page_size;
+
+    return myFreeMemory;
+#else
+    struct sysinfo info;
+    if ( ! sysinfo( &info ) )
+        return info.bufferram * info.mem_unit;
+    else
+        return 0;
+#endif
+}
+
+
+//-------------------------------------------------------------------------------------------------------
 
 medDataManager *medDataManager::s_instance = NULL;

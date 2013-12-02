@@ -181,6 +181,11 @@ public:
     static size_t getTotalSizeOfPhysicalRam();
 
     /**
+    * Returns the available physical memory in bytes
+    */
+    static size_t getAvailablePhysicalRam();
+
+    /**
     * Return the hard limit the process can allocate
     * Result depends on the platform
     * If this threshold is crossed the manager will not

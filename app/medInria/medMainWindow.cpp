@@ -109,6 +109,8 @@ public:
     QPropertyAnimation*       quickAccessAnimation;
     medButton*                quitButton;
     QToolButton*              fullscreenButton;
+    QLabel *                  memoryUsageLabel;
+    QTimer *                  memoryTimer; // used to display memory usage
     QList<QString>            importUuids;
 
     medQuickAccessMenu * quickAccessWidget;
@@ -242,6 +244,12 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->fullscreenButton->setChecked(false);
     d->fullscreenButton->setObjectName("fullScreenButton");
 
+    // Memory Usage Label 's Widgets
+    d->memoryUsageLabel = new QLabel(this);
+    d->memoryTimer = new QTimer(this);
+    connect(d->memoryTimer,SIGNAL(timeout()),this,SLOT(updateMemoryUsageLabel()));
+    d->memoryTimer->start(1000);
+
 #if defined(Q_WS_MAC)
     d->fullscreenButton->setShortcut(Qt::ControlModifier + Qt::Key_F);
     d->fullscreenButton->setToolTip(tr("Switch FullScreen state (Cmd+f)"));
@@ -269,6 +277,7 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     QHBoxLayout * rightEndButtonsLayout = new QHBoxLayout(d->rightEndButtons);
     rightEndButtonsLayout->setContentsMargins ( 5, 0, 5, 0 );
     rightEndButtonsLayout->setSpacing ( 5 );
+    rightEndButtonsLayout->addWidget(d->memoryUsageLabel);
     rightEndButtonsLayout->addWidget( d->screenshotButton );
     rightEndButtonsLayout->addWidget( d->fullscreenButton );
     rightEndButtonsLayout->addWidget( d->quitButton );
@@ -946,4 +955,19 @@ void medMainWindow::registerToFactories()
     //Register annotations
     dtkAbstractDataFactory * datafactory = dtkAbstractDataFactory::instance();
     datafactory->registerDataType( medSeedPointAnnotationData::s_identifier(), dtkAbstractDataCreateFunc<medSeedPointAnnotationData> );
+}
+
+void medMainWindow::updateMemoryUsageLabel()
+{
+    size_t memoryUsage = medDataManager::getProcessMemoryUsage();
+    size_t memoryAvailable = medDataManager::getAvailablePhysicalRam();
+    size_t totalPhysRam = medDataManager::getTotalSizeOfPhysicalRam();
+    
+    if ((memoryAvailable/(1024*1024))<1024)
+        d->memoryUsageLabel->setText("Memory left : " + QString::number(memoryAvailable/(1024*1024)) + " Mo");
+    else
+        d->memoryUsageLabel->setText("Memory left : " + QString::number(memoryAvailable/(double)(1024*1024*1024),'g',2) + " Go");
+
+    d->memoryUsageLabel->setToolTip("Total Memory : " + QString::number(totalPhysRam/(1024*1024)) + " Mo\nMedinria Memory Usage : " 
+        + QString::number(memoryUsage/(1024*1024)) + " Mo");
 }

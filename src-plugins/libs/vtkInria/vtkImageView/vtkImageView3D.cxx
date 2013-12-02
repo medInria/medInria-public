@@ -628,7 +628,6 @@ void vtkImageView3D::InternalUpdate()
   {
     // append all scalar buffer into the same image
     vtkImageAppendComponents *appender = vtkImageAppendComponents::New();
-//    appender->SetInputConnection(0, this->LayerInfoVec.at(0).ImageDisplay->GetInput());
 
     for( LayerInfoVecType::const_iterator it = this->LayerInfoVec.begin();
          it!=this->LayerInfoVec.end(); ++it)
@@ -638,8 +637,6 @@ void vtkImageView3D::InternalUpdate()
 
       appender->AddInput(it->ImageDisplay->GetInput());
     }
-
-    appender->Update();
 
     input = appender->GetOutput();
 
@@ -689,7 +686,6 @@ void vtkImageView3D::InternalUpdate()
     if (lut)
     {
       this->PlanarWindowLevel->SetLookupTable(lut);
-      this->PlanarWindowLevel->Update();
       this->ActorX->SetInput ( this->PlanarWindowLevel->GetOutput() );
       this->ActorY->SetInput ( this->PlanarWindowLevel->GetOutput() );
       this->ActorZ->SetInput ( this->PlanarWindowLevel->GetOutput() );
