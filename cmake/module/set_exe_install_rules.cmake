@@ -15,18 +15,9 @@ macro(set_exe_install_rules
   project_name 
   )
 
-if(${ARGC} GREATER 1)
-  set(headers ${ARGV})
-  list(REMOVE_ITEM headers ${project_name})
-  install(FILES ${headers} 
-    DESTINATION include/${project_name}
-    )
-endif()
-  
 install(TARGETS ${project_name}
   RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
+  BUNDLE  DESTINATION bin
   )
 
 endmacro()
