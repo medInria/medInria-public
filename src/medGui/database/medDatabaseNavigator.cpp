@@ -79,8 +79,8 @@ medDatabaseNavigator::medDatabaseNavigator(QWidget *parent) : QFrame(parent), d(
     // medDatabaseNavigatorController::instance()->setOrientation(Qt::Vertical);
     medDatabaseNavigatorController::instance()->setItemSize(128, 128);
     d->orientation == Qt::Horizontal
-        ? this->setFixedHeight(medDatabaseNavigatorController::instance()->groupHeight() + medDatabaseNavigatorController::instance()->itemSpacing() + 36) // 26 pixels for the scroller
-        : this->setFixedWidth(medDatabaseNavigatorController::instance()->groupWidth() + medDatabaseNavigatorController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
+        ? this->setFixedHeight(medDatabaseNavigatorController::instance()->groupHeight() + medDatabaseNavigatorController::instance()->itemSpacing() + 36)
+        : this->setFixedWidth(medDatabaseNavigatorController::instance()->groupWidth() + medDatabaseNavigatorController::instance()->itemSpacing() + 64);
 }
 
 medDatabaseNavigator::~medDatabaseNavigator(void)
@@ -234,11 +234,10 @@ void medDatabaseNavigator::setOrientation (Qt::Orientation orientation)
 {
     d->orientation = orientation;
     if (d->orientation == Qt::Horizontal) {
-        this->setFixedHeight(medDatabaseNavigatorController::instance()->groupHeight() + medDatabaseNavigatorController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
-	this->setFixedWidth(QWIDGETSIZE_MAX);
+        this->setFixedHeight(medDatabaseNavigatorController::instance()->groupHeight() + medDatabaseNavigatorController::instance()->itemSpacing() + 36);
     }
     else {
-        this->setFixedWidth(medDatabaseNavigatorController::instance()->groupWidth() + medDatabaseNavigatorController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
+        this->setFixedWidth(medDatabaseNavigatorController::instance()->groupWidth() + medDatabaseNavigatorController::instance()->itemSpacing() + 64);
 	this->setFixedHeight(QWIDGETSIZE_MAX);
     }
 

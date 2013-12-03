@@ -21,6 +21,7 @@
 
 #include <QSortFilterProxyModel>
 #include <QAbstractItemModel>
+#include <QFontMetrics>
 
 class NoFocusDelegate : public QStyledItemDelegate
 {
@@ -54,18 +55,18 @@ void NoFocusDelegate::paint(QPainter* painter, const QStyleOptionViewItem & opti
         else if (dynamic_cast<QAbstractItemModel *>(m_view->model()))
             item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
-        // items that failed to open will have a pinkish background
         if(item)
         {               
             if(index.column()>0)
             {
                 QPen pen;
-                pen.setColor(Qt::darkGray);
+                pen.setColor(QColor("#505050"));
                 painter->setPen(pen);
                 painter->drawLine(option.rect.x(), option.rect.y(), option.rect.x(), (option.rect.y()+option.rect.height()));
             }
             if (m_indexes.contains(item->dataIndex()))
-               painter->fillRect(option.rect, QColor::fromRgb(qRgb(201, 121, 153)));
+                // items that failed to open will have a pinkish background               
+                painter->fillRect(option.rect, QColor("#FF3333"));
 
             medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(item->dataIndex().dataSourceId());
             if ( dbc ) {
@@ -109,6 +110,7 @@ medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new med
     this->setSelectionBehavior(QAbstractItemView::SelectRows);
     this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->header()->setStretchLastSection(true);
+    this->header()->setDefaultAlignment(Qt::AlignCenter);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
 
     this->setEditTriggers(QAbstractItemView:: SelectedClicked);
@@ -166,23 +168,13 @@ medDatabaseView::~medDatabaseView(void)
     delete d;
 }
 
-/*
+
 int medDatabaseView::sizeHintForColumn(int column) const
 {
-    if (column<2)
-        return 150;
+    if (column < 0 || column > this->model()->columnCount()) return 100;
 
-    if (column == 2) // series description/filename
-        return 250;
-
-    if (column == 3) // slices count
-        return 70;
-
-    if (column == 5) // date of birth
-        return 80;
-
-    return 50;
-}*/
+    return this->fontMetrics().width(this->model()->headerData(column, Qt::Horizontal, Qt::DisplayRole).toString()) + 40;
+}
 
 void medDatabaseView::setModel(QAbstractItemModel *model)
 {
@@ -190,9 +182,9 @@ void medDatabaseView::setModel(QAbstractItemModel *model)
 
     this->expandAll();
     
+    
     this->header()->setMinimumSectionSize(60);
     this->header()->resizeSections(QHeaderView::ResizeToContents);
-     
     this->collapseAll();
 
     // we stopped using this signal as it is not being emitted after removing or saving an item (and the selection does change)

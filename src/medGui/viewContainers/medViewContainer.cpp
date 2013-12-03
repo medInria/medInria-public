@@ -32,7 +32,7 @@ medViewContainer::medViewContainer ( QWidget *parent )
 {
     d->layout = new QGridLayout ( this );
     d->layout->setContentsMargins ( 0, 0, 0, 0 );
-    d->layout->setSpacing ( 3 );
+    d->layout->setSpacing ( 0 );
 
     d->view = NULL;
     d->current = this;

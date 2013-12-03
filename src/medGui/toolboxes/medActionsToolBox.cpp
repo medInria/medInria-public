@@ -177,12 +177,6 @@ medActionsToolBox::medActionsToolBox( QWidget *parent /*= 0*/, bool FILE_SYSTEM 
     noButtonsSelectedLayout->addWidget(noButtonsSelectedLabel, 0, Qt::AlignCenter);
     this->addWidget(d->noButtonsSelectedWidget);
 
-
-
-    // we keep the size of the toolbox fixed so as it doesn't not resize
-    // constantly due to the exchange of the widgets
-    this->body()->setFixedHeight(38 + 38 + 35);
-
     this->setTitle(tr("Actions"));
 }
 

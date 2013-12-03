@@ -32,6 +32,8 @@ public:
     //virtual int sizeHintForColumn(int column) const;
 
     void setModel(QAbstractItemModel *model);
+    int sizeHintForColumn(int column) const;
+
 
 signals:
 

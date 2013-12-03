@@ -230,8 +230,8 @@ public:
 
 class medLinkWLIcon: public QIcon{
 public:
-    medLinkWLIcon():QIcon(":/icons/broken_link_wl.svg"){
-        addFile(":/icons/link_wl.svg",
+    medLinkWLIcon():QIcon(":/icons/broken_link.svg"){
+        addFile(":/icons/link.svg",
                   QSize(48,48),
                   QIcon::Normal,
                   QIcon::On);
@@ -432,8 +432,8 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->linkButton->setIcon (d->linkIcon );
     d->linkButton->setToolTip(tr("Link the position with other views"));
     d->linkButton->setCheckable ( true );
-    d->linkButton->setMaximumHeight ( 16 );
-    d->linkButton->setMaximumWidth ( 16 );
+    d->linkButton->setMaximumHeight ( 15 );
+    d->linkButton->setMaximumWidth ( 15 );
     d->linkButton->setFocusPolicy ( Qt::NoFocus );
     d->linkButton->setSizePolicy ( QSizePolicy::Fixed, QSizePolicy::Fixed );
     d->linkButton->setObjectName ( "tool" );
@@ -446,8 +446,8 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->linkWLButton->setIcon ( d->linkWLIcon);
     d->linkWLButton->setToolTip(tr("Link the window/level with other views"));
     d->linkWLButton->setCheckable ( true );
-    d->linkWLButton->setMaximumHeight ( 16 );
-    d->linkWLButton->setMaximumWidth ( 16 );
+    d->linkWLButton->setMaximumHeight ( 15 );
+    d->linkWLButton->setMaximumWidth ( 15 );
     d->linkWLButton->setFocusPolicy ( Qt::NoFocus );
     d->linkWLButton->setSizePolicy ( QSizePolicy::Fixed, QSizePolicy::Fixed );
     d->linkWLButton->setObjectName ( "tool" );
@@ -458,8 +458,8 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->fullScreenButton->setIcon (d->maximizeIcon);
     d->fullScreenButton->setToolTip(tr("(Un)Maximize the view"));
     d->fullScreenButton->setCheckable ( true );
-    d->fullScreenButton->setMaximumHeight ( 16 );
-    d->fullScreenButton->setMaximumWidth ( 16 );
+    d->fullScreenButton->setMaximumHeight ( 15 );
+    d->fullScreenButton->setMaximumWidth ( 15 );
     d->fullScreenButton->setFocusPolicy ( Qt::NoFocus );
     d->fullScreenButton->setSizePolicy ( QSizePolicy::Fixed, QSizePolicy::Fixed );
     d->fullScreenButton->setObjectName ( "tool" );
@@ -470,8 +470,8 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->playButton->setIcon(d->playIcon);
     d->playButton->setToolTip(tr("Play through the slices") );
     d->playButton->setCheckable ( true );
-    d->playButton->setMaximumHeight ( 16 );
-    d->playButton->setMaximumWidth ( 16 );
+    d->playButton->setMaximumHeight ( 15 );
+    d->playButton->setMaximumWidth ( 15 );
     d->playButton->setFocusPolicy ( Qt::NoFocus );
     d->playButton->setSizePolicy ( QSizePolicy::Fixed, QSizePolicy::Fixed );
     d->playButton->setObjectName ( "tool" );
@@ -482,8 +482,8 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->closeButton->setIcon(QIcon(":/icons/whitecross.svg"));
     d->closeButton->setToolTip(tr("Close View"));
     d->closeButton->setCheckable ( false );
-    d->closeButton->setMaximumHeight ( 16 );
-    d->closeButton->setMaximumWidth ( 16 );
+    d->closeButton->setMaximumHeight ( 15 );
+    d->closeButton->setMaximumWidth ( 15 );
     d->closeButton->setFocusPolicy ( Qt::NoFocus );
     d->closeButton->setSizePolicy ( QSizePolicy::Fixed, QSizePolicy::Fixed );
     d->closeButton->setObjectName ( "tool" );

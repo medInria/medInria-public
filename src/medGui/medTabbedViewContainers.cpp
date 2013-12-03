@@ -28,7 +28,7 @@ public:
     QString currentName;
     QShortcut *closeShortcut;
     
-    QPushButton *addButton;
+    QPushButton *addTabButton;
 };
 
 medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(parent), d(new medTabbedViewContainersPrivate)
@@ -39,12 +39,12 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
     connect(this,SIGNAL(tabCloseRequested(int)),this,SLOT(deleteContainerClicked(int)));
     connect(this,SIGNAL(currentChanged(int)),this,SLOT(onCurrentContainerChanged(int)));
 
-    d->addButton = new QPushButton(this);
-    d->addButton->setStyleSheet("background-image: url(:medGui/pixmaps/plus_button.png);background-position: center;background-repeat: no-repeat;");
-    d->addButton->setShortcut(Qt::ControlModifier + Qt::Key_T);
-    this->setCornerWidget(d->addButton);
-
-    connect(d->addButton,SIGNAL(clicked()),this,SIGNAL(addTabButtonClicked()));
+    d->addTabButton = new QPushButton(this);
+    d->addTabButton->setObjectName("addTabButton");
+    d->addTabButton->setShortcut(Qt::ControlModifier + Qt::Key_T);
+    this->setCornerWidget(d->addTabButton);
+ 
+    connect(d->addTabButton,SIGNAL(clicked()),this,SIGNAL(addTabButtonClicked()));
     
     d->closeShortcut = new QShortcut(this);
     d->closeShortcut->setKey(Qt::ControlModifier + Qt::Key_W);
@@ -62,33 +62,15 @@ void medTabbedViewContainers::lockTabs()
 {
     this->setTabsClosable(false);
     this->setMovable(false);
-    d->addButton->hide();
+    d->addTabButton->hide();
 }
 
 void medTabbedViewContainers::unlockTabs()
 {
     this->setTabsClosable(true);
     this->setMovable(true);
-    d->addButton->show();
+    d->addTabButton->show();
 }
-
-/*
-void medTabbedViewContainers::addNewTabContainer()
-{
-    // This slot should disappear, instead the creation signal should be sent to the parent who should call for the creation of a new tab
-    QString name = "Tab ";
-    name += QString::number(this->count());
-
-    if (!this->container(name))
-    {
-        medViewContainer *new_container = new medMultiViewContainer();
-        addContainer(name, new_container);
-        this->setContainer(name);
-    }
-    else
-        qDebug() << "Container" << name << "already exists in this workspaces";
-}
-*/
 
 void medTabbedViewContainers::deleteContainerShortcutActivated()
 {

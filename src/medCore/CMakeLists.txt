@@ -1,15 +1,21 @@
-#######################################################################
-#
-# medInria
-#
-# Copyright (c) INRIA 2013. All rights reserved.
-# See LICENSE.txt for details.
-# 
-#  This software is distributed WITHOUT ANY WARRANTY; without even
-#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-#  PURPOSE.
-#
-#######################################################################
+### CMakeLists.txt ---
+##
+## Author: Julien Wintz
+## Copyright (C) 2008 - Julien Wintz, Inria.
+## Created: Sat Oct  3 18:22:21 2009 (+0200)
+## Version: $Id$
+## Last-Updated: Wed May  4 10:55:34 2011 (+0200)
+##           By: Julien Wintz
+##     Update #: 43
+######################################################################
+##
+### Commentary:
+##
+######################################################################
+##
+### Change log:
+##
+######################################################################
 
 project(medCore)
 
@@ -68,7 +74,10 @@ set(${PROJECT_NAME}_HEADERS
   ${${PROJECT_NAME}_DEVEL_HEADERS}
   medDataReaderWriter.h
   medAbstractDatabaseItem.h
+  medStyleSheetParser.h
 )
+
+
 set(${PROJECT_NAME}_SOURCES
   medDataIndex.cpp
   medDataManager.cpp
@@ -100,19 +109,20 @@ set(${PROJECT_NAME}_SOURCES
   medViewEventFilter.cpp
   annotationData/medImageMaskAnnotationData.cpp
   annotationData/medSeedPointAnnotationData.cpp
+  medStyleSheetParser.cpp
 )
 
-#   Wrapping
-
+## #################################################################
+## Wrapping
 if (SWIG_FOUND)
     set(${PROJECT_NAME}_WRAP_DEPENDS ${${PROJECT_NAME}_HEADERS})
     if (PYTHONLIBS_FOUND)
         dtk_wrap(${PROJECT_NAME} ${PROJECT_NAME}_SOURCES_WRAP medcore python ${CMAKE_CURRENT_SOURCE_DIR}/medCore.i ${${PROJECT_NAME}_WRAP_DEPENDS})
     endif()
 endif()
-
-#   Build rules
-
+## #################################################################
+## Build rules
+## #################################################################
 if (NOT MSVC)
 add_definitions(-Wno-write-strings)
 add_definitions(-Wformat=0)
@@ -144,6 +154,7 @@ target_link_libraries(${PROJECT_NAME}
     dtkCore
     dtkLog)
 
+
 if (PYTHONLIBS_FOUND)
   target_link_libraries(${PROJECT_NAME} ${PYTHON_LIBRARIES})
 endif()
@@ -168,12 +179,12 @@ if (SWIG_FOUND)
           COMMENT "-- Moving python modules to ${CMAKE_BINARY_DIR}/modules"
         )
     set(${PROJECT_NAME}_MODULES ${CMAKE_BINARY_DIR}/modules/medcore.py)
-    endif()
-endif()
+    endif(PYTHONLIBS_FOUND)
+endif(SWIG_FOUND)
 
 # Include header files for Visual Studio.
-source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Installation

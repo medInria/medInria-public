@@ -166,13 +166,12 @@ medToolBox(parent), d(new medViewPropertiesToolBoxPrivate)
     d->propertiesTree->setFocusPolicy(Qt::NoFocus);
 
     d->propertiesTree->setColumnCount(3);
-    d->propertiesTree->setColumnWidth(0,85);
-    d->propertiesTree->setColumnWidth(1,65);
+    d->propertiesTree->setColumnWidth(0,105);
+    d->propertiesTree->setColumnWidth(1,95);
     d->propertiesTree->setSelectionMode(QAbstractItemView::NoSelection);
     QStringList headers;
     headers << tr("Object") << tr("Name") << tr("Value");
     d->propertiesTree->setHeaderLabels(headers);
-    d->propertiesTree->setAnimated(true);
     d->propertiesTree->setAlternatingRowColors(true);
     d->propertiesTree->setRootIsDecorated(true);
     d->propertiesTree->setContextMenuPolicy(Qt::CustomContextMenu);

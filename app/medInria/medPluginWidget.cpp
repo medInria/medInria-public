@@ -67,8 +67,7 @@ void medPluginWidgetPrivate::resetPluginsTree()
 
     }
     pluginsTree->resizeColumnToContents(0);
-//    pluginsTree->resizeColumnToContents(1);
-//    pluginsTree->resizeColumnToContents(2);
+    pluginsTree->setColumnWidth(1,90);
     pluginsTree->sortByColumn(0,Qt::AscendingOrder);
 }
 
@@ -136,9 +135,7 @@ void medPluginWidgetPrivate::resetTypesTree()
 
     }
     typesTree->addTopLevelItem(processItem);
-
-    typesTree->resizeColumnToContents(0);
-    typesTree->setColumnWidth(1,200);
+    typesTree->setColumnWidth(1,150);
     typesTree->sortByColumn(1,Qt::AscendingOrder);
     typesTree->sortByColumn(0,Qt::AscendingOrder);
 
