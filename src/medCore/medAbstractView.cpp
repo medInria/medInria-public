@@ -316,6 +316,12 @@ QString medAbstractView::getPreset(int layer) const
     DTK_DEFAULT_IMPLEMENTATION;
     return "";
 }
+
+medViewBackend * medAbstractView::backend() const
+{
+    return 0;
+}
+
 void medAbstractView::setColor(const QColor & color)
 {
     if ( d->color != color) {

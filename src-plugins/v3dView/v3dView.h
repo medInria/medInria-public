@@ -151,6 +151,8 @@ public:
 
     medAbstractViewCoordinates * coordinates();
 
+    virtual medViewBackend * backend() const;
+
 public slots:
     // inherited from medAbstractView
     void onPositionChanged  (const  QVector3D &position);
