@@ -17,7 +17,7 @@
 
 #include <dtkLog/dtkLog.h>
 
-#include <dtkVtkLogForwarder/vtkLogForwarder.h>
+#include <vtkLogForwarder.h>
 
 // /////////////////////////////////////////////////////////////////
 // vtkDataMeshPluginPrivate
