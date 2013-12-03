@@ -21,6 +21,7 @@
 
 #include <QSortFilterProxyModel>
 #include <QAbstractItemModel>
+#include <QFontMetrics>
 
 class NoFocusDelegate : public QStyledItemDelegate
 {
@@ -167,36 +168,12 @@ medDatabaseView::~medDatabaseView(void)
     delete d;
 }
 
+
 int medDatabaseView::sizeHintForColumn(int column) const
 {
-    switch (column)
-    {
-        case 0:
-            return 175;
-        case 1:
-            return 125;
-        case 2:
-            return 95;
-        case 3:
-            return 110;
-        case 4:
-            return 80;
-        case 5:
-            return 100;
-        case 6:
-            return 135;
-        case 7:
-            return 135;
-        case 8:
-            return 90;
-        case 9:
-            return 100;
-        case 10:
-            return 100;
-        default:
-            return 100;
-    }
+    if (column < 0 || column > this->model()->columnCount()) return 100;
 
+    return this->fontMetrics().width(this->model()->headerData(column, Qt::Horizontal, Qt::DisplayRole).toString()) + 40;
 }
 
 void medDatabaseView::setModel(QAbstractItemModel *model)
