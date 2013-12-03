@@ -31,14 +31,22 @@ find_package(DCMTK REQUIRED)
 ## List Sources
 ## #############################################################################
 
-file(GLOB ${PROJECT_NAME}_H
+file(GLOB HEADERS
   *.h
   )
+set(${PROJECT_NAME}_H
+  ${HEADERS}
+  ${${PROJECT_NAME}_H}
+  )
 
-file(GLOB ${PROJECT_NAME}_CPP
+file(GLOB CPP
   *.cpp
   )
-  
+set(${PROJECT_NAME}_CPP
+  ${CPP}
+  ${${PROJECT_NAME}_CPP}
+  )
+
   
 ## #############################################################################
 ## include directorie.

@@ -17,14 +17,21 @@ project(medSql)
 ## List Sources
 ## #############################################################################
 
-file(GLOB_RECURSE ${PROJECT_NAME}_H
+file(GLOB HEADERS
   *.h
   )
-
-file(GLOB_RECURSE ${PROJECT_NAME}_CPP
-  *.cpp
+set(${PROJECT_NAME}_H
+  ${HEADERS}
+  ${${PROJECT_NAME}_H}
   )
 
+file(GLOB CPP
+  *.cpp
+  )
+set(${PROJECT_NAME}_CPP
+  ${CPP}
+  ${${PROJECT_NAME}_CPP}
+  )
 
 ## #############################################################################
 ## include directorie.

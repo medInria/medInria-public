@@ -17,15 +17,33 @@ project(medGui)
 ## List Sources
 ## #############################################################################
 
-file(GLOB_RECURSE ${PROJECT_NAME}_H
+
+add_subdirectory(viewContainers)
+add_subdirectory(toolboxes)
+add_subdirectory(settingsWidgets)
+add_subdirectory(lookUpTables)
+add_subdirectory(factories)
+add_subdirectory(database)
+add_subdirectory(commonWidgets)
+
+file(GLOB HEADERS
   *.h
   )
-
-file(GLOB_RECURSE ${PROJECT_NAME}_CPP
-  *.cpp
+set(${PROJECT_NAME}_H
+  ${HEADERS}
+  ${${PROJECT_NAME}_H}
   )
 
-set(${PROJECT_NAME}_RCC medGui.qrc)
+file(GLOB CPP
+  *.cpp
+  )
+set(${PROJECT_NAME}_CPP
+  ${CPP}
+  ${${PROJECT_NAME}_CPP}
+  )
+
+
+set(${PROJECT_NAME}_QRC medGui.qrc)
 
 ## #############################################################################
 ## include directorie.
@@ -67,10 +85,15 @@ endif()
 ## add library
 ## #############################################################################
 
+qt4_add_resources(${PROJECT_NAME}_QRC 
+  ${${PROJECT_NAME}_QRC}
+  )
+
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_H}
   ${${PROJECT_NAME}_CPP}
   ${${PROJECT_NAME}_PCH}
+  ${${PROJECT_NAME}_QRC}
   )
 
 

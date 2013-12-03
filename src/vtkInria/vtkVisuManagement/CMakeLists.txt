@@ -18,23 +18,31 @@ if (CMAKE_CXX_COMPILER MATCHES clang)
 endif()
 
 ## #############################################################################
+## Subdirs vtkLandmarkManagement
+## #############################################################################
+
+add_subdirectory(vtkLandmarkManagement)
+
+## #############################################################################
 ## List Sources
 ## #############################################################################
 
-file(GLOB ${PROJECT_NAME}_H
+add_subdirectory(lut)
+
+file(GLOB HEADERS
   *.h
   )
+set(${PROJECT_NAME}_H
+  ${HEADERS}
+  ${${PROJECT_NAME}_H}
+  )
 
-file(GLOB ${PROJECT_NAME}_CXX
+file(GLOB CXX
   *.cxx
   )
-
-file(GLOB vtkLandmarkManagement_CXX
-  vtkLandmarkManagement/*.cxx
-  )
-
-file(GLOB vtkLandmarkManagement_H
-  vtkLandmarkManagement/*.h
+set(${PROJECT_NAME}_CXX
+  ${CXX}
+  ${${PROJECT_NAME}_CXX}
   )
 
 set(${PROJECT_NAME}_LIBS
@@ -46,15 +54,6 @@ set(${PROJECT_NAME}_LIBS
  vtkHWShading
 )
 
-set(vtkLandmarkManagement_LIBS
- vtkCommon
- vtkFiltering
- vtkRendering
- vtkWidgets
- vtkDataManagement
- vtkImageView
- vtkHWShading
-)
 
 
 ## #############################################################################
@@ -79,12 +78,6 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_CXX}
   ${${PROJECT_NAME}_H}
   )
-  
-add_library(vtkLandmarkManagement SHARED
-  ${vtkLandmarkManagement_CXX}
-  ${vtkLandmarkManagement_H}
-  )
-
 
 ## #############################################################################
 ## Link
@@ -92,10 +85,6 @@ add_library(vtkLandmarkManagement SHARED
   
 target_link_libraries(${PROJECT_NAME}  
   ${${PROJECT_NAME}_LIBS}
-  )
-
-target_link_libraries(vtkLandmarkManagement  
-  ${vtkLandmarkManagement_LIBS}
   )
 
 
@@ -108,6 +97,3 @@ set_lib_install_rules(${PROJECT_NAME}
   ${${PROJECT_NAME}_H}
   )
   
-set_lib_install_rules(vtkLandmarkManagement
-  ${vtkLandmarkManagement_H}
-  )

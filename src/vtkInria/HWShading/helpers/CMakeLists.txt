@@ -11,16 +11,17 @@
 #
 ################################################################################
 
+project(vtkHelpers)
 
 ## #############################################################################
 ## List Sources
 ## #############################################################################
 
-file(GLOB vtkHelpers_H
+file(GLOB ${PROJECT_NAME}_H
   *.h
   )
 
-file(GLOB vtkHelpers_CXX
+file(GLOB ${PROJECT_NAME}_CXX
   *.cxx
   )
 
@@ -30,8 +31,8 @@ file(GLOB vtkHelpers_CXX
 ## #############################################################################
 
 add_library(vtkHelpers SHARED 
-  ${vtkHelpers_H}
-  ${vtkHelpers_CXX}
+  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_CXX}
 
   )
 
@@ -55,5 +56,5 @@ target_link_libraries(vtkHelpers
 
 ## see cmake/module/set_lib_install_rules.Cmake
 set_lib_install_rules(vtkHelpers
-  ${vtkHelpers_H}
+  ${${PROJECT_NAME}_H}
   ) 
