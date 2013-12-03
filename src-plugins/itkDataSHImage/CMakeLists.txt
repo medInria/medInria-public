@@ -108,7 +108,6 @@ target_link_libraries(${PROJECT_NAME}
   medLogForwarder
   dtkCore
   dtkLog
-  medCore
   ITKIOBMP
   ITKIOBioRad
   ITKIOHDF5
