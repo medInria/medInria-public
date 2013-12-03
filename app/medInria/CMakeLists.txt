@@ -143,6 +143,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkGui
   dtkVr
   medGui
+  medCore
   medSql
   medPacs)
 
