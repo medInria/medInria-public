@@ -34,6 +34,14 @@ set(${PROJECT_NAME}_CXX
   ${${PROJECT_NAME}_CXX}
   )
 
+file(GLOB CPP
+  *.cpp
+  )
+set(${PROJECT_NAME}_CPP
+  ${CPP}
+  ${${PROJECT_NAME}_CPP}
+  )
+
 set(${PROJECT_NAME}_LIBS
   vtkRendering
   vtkWidgets
@@ -49,6 +57,7 @@ set(${PROJECT_NAME}_LIBS
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_CXX}
+  ${${PROJECT_NAME}_CPP}
   ${${PROJECT_NAME}_H}
   )
 
