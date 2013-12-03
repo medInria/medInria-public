@@ -46,8 +46,6 @@ list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_H}
   )
 
-message("${PROJECT_NAME}_INCLUDE_DIRS : ${${PROJECT_NAME}_INCLUDE_DIRS}")
-
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})  
 
 ## #############################################################################
