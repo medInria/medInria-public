@@ -160,5 +160,33 @@
         <file>icons/link_wl.svg</file>
         <file>icons/broken_link_wl.svg</file>
         <file>icons/un_maximize.svg</file>
+        <file>pixmaps/toolbox-tabbar-inactive-horizontal.png</file>
+        <file>pixmaps/toolbox-tabbar-inactive.png</file>
+        <file>pixmaps/toolbox-tabbar-active-horizontal.png</file>
+        <file>pixmaps/toolbox-tabbar-active.png</file>
+        <file>pixmaps/toolbox-header-horizontal.png</file>
+        <file>pixmaps/toolbox-body-horizontal.png</file>
+        <file>pixmaps/toolbox-bar-horizontal.png</file>
+        <file>pixmaps/toolbox-bar.png</file>
+        <file>pixmaps/tabwidget-pane-horizontal.png</file>
+        <file>pixmaps/radio-disabled.png</file>
+        <file>pixmaps/radio-checked-disabled.png</file>
+        <file>pixmaps/radio.png.orig</file>
+        <file>pixmaps/plus-button.png</file>
+        <file>pixmaps/medular-logo.png</file>
+        <file>pixmaps/medInria-logo-dmg.png</file>
+        <file>pixmaps/medInriaLogo.svg</file>
+        <file>pixmaps/medInria_dmg_mountedimage.icns</file>
+        <file>pixmaps/icon.svg</file>
+        <file>pixmaps/checkbox-disabled.png</file>
+        <file>pixmaps/checkbox-checked-disabled.png</file>
+        <file>pixmaps/arrow-top-disabled.png</file>
+        <file>pixmaps/arrow-top.png</file>
+        <file>pixmaps/arrow-right-disabled.png</file>
+        <file>pixmaps/arrow-right.png</file>
+        <file>pixmaps/arrow-left-disabled.png</file>
+        <file>pixmaps/arrow-left.png</file>
+        <file>pixmaps/arrow-bot-disabled.png</file>
+        <file>pixmaps/arrow-bot.png</file>
     </qresource>
 </RCC>
