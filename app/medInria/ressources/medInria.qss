@@ -1,0 +1,1626 @@
+/* medInria.qss ---
+;;
+;; Author: Julien Wintz
+;; Copyright (C) 2008 - Julien Wintz, Inria.
+;; Created: Fri May 21 09:46:29 2010 (+0200)
+;; Version: $Id$
+;; Last-Updated: Tue Nov  2 15:17:54 2010 (+0100)
+;;           By: Julien Wintz
+;;     Update #: 47
+*/
+
+/* Commentary:
+;;
+*/
+
+/* Change log:
+;;
+*/
+
+
+/**
+* QToolTip
+*/
+QToolTip {
+    color: #2a2a2a;
+    background: #fff8dc;
+    border: 1px solid #4b4b4b;
+}
+
+QToolTip:disabled {
+    color: #2a2a2a;
+}
+
+/**
+ * QTableView
+ */
+
+QTableView {
+    background: #4b4b4b;
+    border: 1px solid darkgray;
+    padding: 0px 0px 0px 0px;
+    gridline-color: gray;
+}
+
+/**
+ * QListView
+ *
+ */
+
+QListView {
+    color: #CCCCCC;
+    background: #6b6b6b;
+    border: 1px solid darkgray;
+    padding: 0px 0px 0px 0px;
+    gridline-color: gray;
+
+    alternate-background-color: #606060;
+}
+
+/**
+ * QTreeView
+ *
+ */
+
+QTreeView {
+    color: #CCCCCC;
+    background: #6b6b6b;
+    border: 1px solid darkgray;
+    padding: 0px 0px 0px 0px;
+    gridline-color: gray;
+
+    alternate-background-color: #606060;
+}
+
+/**
+ * QTextEdit
+ *
+ */
+
+QTextEdit {
+    color: #CCCCCC;
+    background: #6b6b6b;
+    border: 1px solid darkgray;
+    padding: 0px 0px 0px 0px;
+}
+
+/**
+ *  QDateEdit
+ */
+QDateEdit{
+    color:#CCCCCC;
+    background: #6b6b6b;
+    spacing: 5px;
+}
+
+/**
+ * QSpinBox
+ *
+ */
+
+QSpinBox{
+    color:#CCCCCC;
+    background: #6b6b6b;
+    spacing: 5px;
+}
+
+/**
+ * QDoubleSpinBox
+ *
+ */
+
+QDoubleSpinBox{
+    color:#CCCCCC;
+    background: #6b6b6b;
+    spacing: 5px;
+}
+
+/**
+ * QCheckBox
+ *
+ */
+
+QCheckBox,QTreeView::indicator  {
+    color: #b2b8b2;
+    font-size: 10px;
+    spacing: 5px;
+}
+
+QCheckBox::indicator,QTreeView::indicator {
+    width: 15px;
+    height: 15px;
+}
+
+QCheckBox::indicator:unchecked {
+    image: url(:/pixmaps/checkbox.png);
+}
+
+QCheckBox::indicator:checked {
+    image: url(:/pixmaps/checkbox-checked.png);
+}
+
+QCheckBox::indicator:indeterminate {
+    image: url(:/pixmaps/checkbox-partial.png);
+}
+
+QTreeView::indicator:indeterminate {
+    image: url(:/pixmaps/checkbox-partial.png);
+}
+
+
+QTreeView::indicator:checked
+{
+     background: url(:/pixmaps/checkbox-checked.png);
+     /*background: url(":checkbox/checked");*/
+}
+
+QTreeView::indicator:unchecked
+{
+    image: url(:/pixmaps/checkbox.png);
+     /*background: url(":checkbox/unchecked");*/
+}
+
+/**
+ * QLabel
+ *
+ */
+
+QLabel {
+    color: #b2b8b2;
+    font-size: 10px;
+}
+
+QWidget:disabled {
+    color: #303030;
+}
+
+
+
+/**
+ * QTableWidget
+ *
+ */
+
+QTableWidget {
+    border: 1px solid #2a2a2a;
+    color: #b2b8b2;
+}
+
+/**
+ * QHeaderView
+ *
+ */
+
+QHeaderView {
+    border: 1px solid #2a2a2a;
+    border-left: none;
+    border-right: none;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #535353, stop: 1 #454545);
+    color: #b2b8b2;
+    font-size: 10px;
+    height: 22px;
+}
+
+QHeaderView::section {
+    border: 1px solid #2a2a2a;
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #535353, stop: 1 #454545);
+    color: #b2b8b2;
+    font-size: 10px;
+    height: 22px;
+    padding-left: 5px;
+}
+
+/**
+ * QLineEdit
+ *
+ */
+
+QLineEdit {
+    color: #b2b8b2;
+    border: 1px solid gray;
+    border-radius: 9px;
+    padding: 0 8px;
+    background: #4b4b4b;
+    selection-background-color: #9eabc6;
+}
+
+/**
+ * QProgressBar
+ *
+ */
+
+QProgressBar {
+    border: 1px solid #6b6b6b;
+    border-radius: 8px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #5e5e5e, stop: 1 #2b2b2b);
+    color: #b2b8b2;
+    font-size: 10px;
+    height: 14px;
+    text-align: right;
+    padding-left: 1px;
+    padding-right: 25px;
+}
+
+QProgressBar::chunk {
+    border: 1px solid #6b6b6b;
+    border-radius: 6px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #a0b0ce, stop: 1 #466096);
+    margin: 1px;
+}
+
+/**
+ * QStatusBar
+ *
+ */
+
+QStatusBar {
+    background-image: url(:/pixmaps/statusbar.png);
+    background-repeat: repeat-x;
+    color: #b2b8b2;
+    font-size: 10px;
+    height: 31px;
+}
+
+QStatusBar::item {
+    border: none;
+}
+
+/**
+ * QRadioButton
+ *
+ */
+
+QRadioButton {
+    color: #b2b8b2;
+    font-size: 10px;
+    spacing: 5px;
+}
+
+/*QRadioButton:disabled {
+    color: #000000;
+}*/
+
+QRadioButton::indicator {
+    width: 15px;
+    height: 15px;
+}
+
+QRadioButton::indicator:unchecked {
+    image: url(:/pixmaps/radio.png);
+}
+
+QRadioButton::indicator:checked {
+    image: url(:/pixmaps/radio-checked.png);
+}
+
+QRadioButton::indicator:indeterminate {
+    image: url(:/pixmaps/radio-partial.png);
+}
+
+/**
+ * QSlider
+ *
+ */
+
+QSlider::groove:horizontal {
+    border-image: url(:/pixmaps/slider-horizontal-groove.png) 0 6 0 6 repeat-x;
+    border-left-width: 6px;
+    border-right-width: 6px;
+}
+
+QSlider::handle:horizontal {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #9eabc6, stop:1 #383838);
+    border: 1px solid #383838;
+    border-radius: 3px;
+    width: 6px;
+}
+
+QSlider::groove:vertical {
+    border-image: url(:/pixmaps/slider-vertical-groove.png) 6 0 6 0 repeat-y;
+    border-top-width: 6px;
+    border-bottom-width: 6px;
+}
+
+QSlider::handle:vertical {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #9eabc6, stop:1 #383838);
+    border: 1px solid #383838;
+    border-radius: 3px;
+    height: 6px;
+}
+
+/**
+ * medDatabaseView
+ *
+ */
+
+medDatabaseView {
+    alternate-background-color: #505050;
+
+    border-image: url(:/pixmaps/treeview-frame.png) 16 16 16 16;
+    border-top-width: 16px;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-bottom-width: 16px;
+
+    padding-top: -7px;
+    padding-left: -4px;
+    padding-right: -5px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
+
+medDatabaseView::branch:has-siblings:!adjoins-item {
+    image: none;
+}
+
+medDatabaseView::branch:has-siblings:adjoins-item {
+    image: none;
+}
+
+medDatabaseView::branch:!has-children:!has-siblings:adjoins-item {
+    image: none;
+}
+
+medDatabaseView::branch:has-children:!has-siblings:closed,
+medDatabaseView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-closed.png);
+}
+
+medDatabaseView::branch:open:has-children:!has-siblings,
+medDatabaseView::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-open.png);
+}
+
+/******/
+
+/**
+ * medPacsWidget
+ *
+ */
+
+medPacsWidget {
+    alternate-background-color: #505050;
+
+    border-image: url(:/pixmaps/treeview-frame.png) 16 16 16 16;
+    border-top-width: 16px;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-bottom-width: 16px;
+
+    padding-top: -7px;
+    padding-left: -4px;
+    padding-right: -5px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
+
+medPacsWidget::branch:has-siblings:!adjoins-item {
+    image: none;
+}
+
+medPacsWidget::branch:has-siblings:adjoins-item {
+    image: none;
+}
+
+medPacsWidget::branch:!has-children:!has-siblings:adjoins-item {
+    image: none;
+}
+
+medPacsWidget::branch:has-children:!has-siblings:closed,
+medPacsWidget::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-closed.png);
+}
+
+medPacsWidget::branch:open:has-children:!has-siblings,
+medPacsWidget::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-open.png);
+}
+
+/**
+ * QTreeWidget
+ *
+ */
+QTreeWidget {
+    alternate-background-color: #505050;
+
+    border-image: url(:/pixmaps/treeview-frame.png) 16 16 16 16;
+    border-top-width: 16px;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-bottom-width: 16px;
+
+    padding-top: -7px;
+    padding-left: -4px;
+    padding-right: -5px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
+
+QTreeWidget::branch:has-siblings:!adjoins-item {
+    image: none;
+}
+
+QTreeWidget::branch:has-siblings:adjoins-item {
+    image: none;
+}
+
+QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
+    image: none;
+}
+
+QTreeWidget::branch:has-children:!has-siblings:closed,
+QTreeWidget::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-closed.png);
+}
+
+QTreeWidget::branch:open:has-children:!has-siblings,
+QTreeWidget::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-open.png);
+}
+
+/**
+ * QPushButton
+ *
+ */
+
+QPushButton, QComboBox {
+    border: 1px solid #6b6b6b;
+    border-radius: 11px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #5e5e5e, stop: 1 #2b2b2b);
+    color: #b2b8b2;
+    font-size: 10px;
+    height: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: 20px;
+}
+
+QPushButton:hover, QComboBox::hover {
+    border: 1px solid #a7b6d3;
+}
+
+QPushButton:pressed, QPushButton:checked {
+    border: 1px solid #ffffff;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #cfcfcf);
+}
+
+QPushButton::menu-indicator, QComboBox::drop-down {
+    image: url(:/pixmaps/drop-down.png);
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+
+    right: 7px;
+}
+
+QPushButton:flat {
+    border: none;
+    background-color: none;
+    color: #b2b8b2;
+    height: 32px;
+    font-size: 10px;
+}
+
+QPushButton:flat:hover {
+    border: none;
+}
+
+QPushButton:flat:pressed {
+    border: none;
+    background-color: none;
+}
+
+QPushButton::menu-indicator:flat {
+    image: none;
+}
+
+QComboBox QAbstractItemView {
+    border: none;
+    border-radius: 3px;
+
+    background-color: #4b4b4b;
+    color: #b2b8b2;
+
+    selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);
+    selection-color: #b2b8b2;
+
+    font-size: 11pt;
+}
+
+/**
+ * QSplitter
+ *
+ */
+
+QSplitter::handle {
+    image: url(:/pixmaps/splitter-handle.png);
+}
+
+QSplitter::handle:horizontal {
+    width: 8px;
+
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 #5e5e5e, stop: 1 #2b2b2b);
+
+border: 1px solid gray;
+}
+
+QSplitter::handle:vertical {
+    height: 8px;
+
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #5e5e5e, stop: 1 #2b2b2b);
+
+border: 1px solid gray;
+}
+
+/**
+ * QToolButton
+ *
+ */
+
+QHelpSearchQueryWidget QToolButton {
+    border: 1px solid #6b6b6b;
+    border-radius: 2px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #5e5e5e, stop: 1 #2b2b2b);
+    color: #b2b8b2;
+    font-size: 10px;
+    height: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+    max-width: 20px;
+    max-height: 20px;
+}
+
+QHelpSearchQueryWidget QToolButton:hover {
+    border: 1px solid #a7b6d3;
+}
+
+QHelpSearchQueryWidget QToolButton:pressed {
+    border: 1px solid #a7b6d3;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
+}
+
+QHelpSearchQueryWidget QToolButton::menu-indicator {
+    image: url(:/pixmaps/drop-down.png);
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+
+    right: 7px;
+}
+
+
+/**
+ * QGroupBox
+ *
+ */
+
+QGroupBox {
+    border: 2px solid gray;
+    border-radius: 3px;
+    margin-top: 1ex;
+
+    color: #b2b8b2;
+    font-size: 10pt;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top center;
+    padding: 0 3px;
+
+    color: #b2b8b2;
+    font-size: 10pt;
+}
+
+QGroupBox::indicator::checked {
+    image: url(:/pixmaps/checkbox-checked.png);
+}
+
+QGroupBox::indicator::unchecked {
+    image: url(:/pixmaps/checkbox.png);
+}
+
+/**
+ * QMenu
+ *
+ */
+
+QMenu {
+    border: transparent;
+    border-radius: 5px;
+    background-color: rgba(75, 75, 75, 128);
+    color: #b2b8b2;
+    font-size: 10pt;
+}
+
+QMenu::indicator {
+     width: 15px;
+     height: 15px;
+ }
+
+QMenu::indicator:non-exclusive:unchecked {
+    image: url(:/pixmaps/checkbox.png);
+}
+
+QMenu::indicator:non-exclusive:checked {
+    image: url(:/pixmaps/checkbox-checked.png);
+}
+
+QMenu::indicator:exclusive:unchecked {
+    image: url(:/pixmaps/radio.png);
+}
+
+QMenu::indicator:exclusive:checked {
+    image: url(:/pixmaps/radio-checked.png);
+}
+
+QMenu::separator {
+    border: 1px solid #a9a9a9;
+}
+
+QMenu::item:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);
+}
+
+QMenu::item:selected:active {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);
+}
+
+QMenu::item:selected:!active {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b9be8, stop: 1 #577fbf);
+}
+
+/**
+ * QTabWidget & QTabBar
+ *
+ */
+
+QTabWidget::pane{
+    border-image: url(:/pixmaps/tabwidget-pane.png) 16 16 22 16 repeat-x;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-top-width: 16px;
+    border-bottom-width: 22px;
+}
+
+QTabBar::tab
+{
+  padding-left : 3px;
+  padding-right : 3px;
+}
+
+medToolBoxTab::tab-bar {
+    top: 6px;
+    left: 11px;
+}
+
+
+
+medToolBoxTab QTabBar::tab {
+    background:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #505050, stop: 1.0 #494949);
+    height: 22px;
+    min-width: 100px;
+    color: #b2b8b2;
+}
+
+
+
+medToolBoxTabBar::tab:selected, medToolBoxTabBar::tab:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #505050, stop: 1.0 #5c5c5c);
+    border: 1px solid #2a2a2a;
+    border-bottom-color: #5c5c5c;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    color: #b2b8b2;
+    font-size: 10pt;
+}
+
+/**
+ * medSettingsEditor
+ *
+ */
+medSettingsEditor {
+  alternate-background-color: #505050;
+
+  border-image: url(:/pixmaps/treeview-frame.png) 16 16 16 16;
+  border-top-width: 16px;
+  border-left-width: 16px;
+  border-right-width: 16px;
+  border-bottom-width: 16px;
+
+  padding-top: -7px;
+  padding-left: -4px;
+  padding-right: -5px;
+
+  color: #b2b8b2;
+
+  background: #313131;
+}
+
+dtkSettingsEditor QTreeWidget {
+    alternate-background-color: #505050;
+
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+
+    font-size: 10px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
+
+dtkSettingsEditor QTreeWidget::branch:has-siblings:!adjoins-item {
+    image: none;
+}
+
+dtkSettingsEditor QTreeWidget::branch:has-siblings:adjoins-item {
+    image: none;
+}
+
+dtkSettingsEditor QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
+    image: none;
+}
+
+dtkSettingsEditor QTreeWidget::branch:has-children:!has-siblings:closed,
+dtkSettingsEditor QTreeWidget::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-closed.png);
+}
+
+dtkSettingsEditor QTreeWidget::branch:open:has-children:!has-siblings,
+QTreeWidget::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-open.png);
+}
+
+medSettingsEditor QTabWidget::pane {
+    background: none;
+    border: none;
+    border-image: none;
+}
+
+medSettingsEditor QTabWidget::tab-bar {
+    top: 1px;
+    left: 0px;
+}
+
+medSettingsEditor QTabBar::tab:selected, medSettingsEditor QTabBar::tab:hover {
+    color: #CCCCCC;
+    border: 1px solid #2c2c2e;
+    border-top: none;
+    border-left: none;
+    border-radius: 0;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);
+}
+
+medSettingsEditor QTabBar::tab {
+    color: #CCCCCC;
+    border: 1px solid #2c2c2e;
+    border-top: none;
+    border-left: none;
+    border-radius: 0;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);
+}
+
+/* warning, for some reason if tabPosition == West,
+ *  it is mapped to :right pseudo state in qss...
+ */
+medSettingsEditor QTabBar::tab:right {
+  min-height: 70px;
+  width: 30px;
+}
+
+/**
+ * medSettingsWidget
+ *
+ */
+medSettingsWidget, QScrollArea {
+  color: #b2b8b2;
+  background: #313131;
+  border:none;
+}
+
+
+/**
+ * QScrollBar
+ *
+ * pseudo-state: horizontal
+ */
+
+QScrollBar:horizontal {
+    background-image: url(:/pixmaps/scrollbar-horizontal-background.png);
+    background-repeat: repeat-x;
+    border-left-color: #2a2a2a;
+    border-left-style: solid;
+    border-left-width: 1px;
+    height: 16px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    margin-right: 34px;
+}
+
+QScrollBar::handle:horizontal {
+    border-image: url(:/pixmaps/scrollbar-horizontal-handle.png) 0 6 0 6 repeat-x;
+    border-left: 6px;
+    border-right: 6px;
+    height: 16px;
+    min-width: 20px;
+}
+
+QScrollBar::add-line:horizontal {
+    background-image: url(:/pixmaps/scrollbar-horizontal-addline.png);
+    width: 17px;
+    height: 16px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    background-image: url(:/pixmaps/scrollbar-horizontal-subline.png);
+    width: 17px;
+    height: 16px;
+    subcontrol-position: top right;
+    subcontrol-origin: margin;
+    position: absolute;
+    right: 17px;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: none;
+}
+
+/**
+ * QScrollBar
+ *
+ * pseudo-state: vertical
+ */
+
+QScrollBar:vertical {
+    background-image: url(:/pixmaps/scrollbar-vertical-background.png);
+    background-repeat: repeat-y;
+    border-left-color: #2a2a2a;
+    border-left-style: solid;
+    border-left-width: 1px;
+    width: 16px;
+    margin-top: 0px;
+    margin-bottom: 34px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+QScrollBar::handle:vertical {
+    border-image: url(:/pixmaps/scrollbar-vertical-handle.png) 6 0 6 0 repeat-y;
+    border-top: 6px;
+    border-bottom: 6px;
+    height: 17px;
+    min-height: 20px;
+}
+
+QScrollBar::add-line:vertical {
+    background-image: url(:/pixmaps/scrollbar-vertical-addline.png);
+    width: 16px;
+    height: 17px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    background-image: url(:/pixmaps/scrollbar-vertical-subline.png);
+    width: 16px;
+    height: 17px;
+    subcontrol-position: left bottom;
+    subcontrol-origin: margin;
+    position: absolute;
+    bottom: 17px;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+/*
+ * medToolBoxContainer
+ *
+ */
+
+QFrame #medToolBoxContainer {
+    background: #313131;
+}
+
+/*
+ * medNavigatorContainer
+ *
+ */
+
+QFrame #medNavigatorContainer {
+    border-image: url(:/pixmaps/frame.png) 16 16 26 16 repeat-x;
+    border-left-width: 0px;
+    border-right-width: 16px;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+    color: #b2b8b2;
+    font-size: 9px;
+}
+
+/**
+ * medMainWindow
+ *
+ */
+
+medMainWindow {
+    background: #313131;
+}
+
+/**
+ * medHomepageArea
+ *
+ */
+medHomepageArea QTabWidget {
+    border-image: url(:/pixmaps/toolbox-body.png) 0 16 16 16 repeat-y;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-top-width: 0px;
+    border-bottom-width: 16px;
+    padding-left: -6px;
+    padding-right: -6px;
+    padding-bottom: 6px;
+}
+
+medHomepageArea QTabWidget::pane {
+    background: none;
+    border: none;
+    border-image: none;
+}
+
+medHomepageArea QTabWidget::tab-bar {
+    top: 1px;
+    left: 0px;
+}
+
+medHomepageArea QTabBar::tab {
+    color: white;
+    border: 1px solid #2c2c2e;
+    border-top: none;
+    border-left: none;
+    border-radius: 0;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);
+    height: 32px;
+    min-width: 50px;
+}
+
+medHomepageArea QTabBar::tab:selected,medHomepageArea QTabBar::tab:hover {
+    color: white;
+    border: 1px solid #2c2c2e;
+    border-top: none;
+    border-left: none;
+    border-radius: 0;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);
+    height: 32px;
+    min-width: 50px;
+}
+
+medHomepageArea QTextEdit {
+    background: #313131;border: 0px;padding: 0px 0px 0px 0px;
+}
+
+/**
+ * medHomepageButton
+ *
+ */
+medHomepageButton QToolButton{border: 0px;
+    border-left: 1px solid #4b4b4b;
+    border-radius: 0px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #5e5e5e, stop: 1 #2b2b2b);
+    color: #b2b8b2;
+    font-size: 10px;
+    height: 16px;
+    padding-left: 1px;
+    padding-right: 1px;
+    min-width: 2px;
+
+}
+
+medHomepageButton QToolButton:pressed, QToolButton:checked {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
+}
+
+/**
+ * medQuickAccessPushButton
+ *
+ */
+medQuickAccessPushButton {
+    border-radius: 2px;
+    border: none;
+    color: #b2b8b2;
+    font-size: 11px;
+    font-weight:bold;
+    height: 31px;
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: 20px;
+}
+
+medQuickAccessPushButton:hover {
+    background-color: #3a3a3a;
+}
+
+medQuickAccessPushButton:pressed {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
+}
+
+/**
+ * medHomepagePushButton
+ *
+ */
+medHomepagePushButton {
+    background-color:#3a3a3a;
+    border-radius: 0px;
+    border: 2px solid #3a3a3a;
+    color: #b2b8b2;
+    font-size: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+medHomepagePushButton[selected="true"] {
+    background-color:#4e4e4e;
+    border: 2px solid red;
+}
+
+medHomepagePushButton:pressed {
+    background-color:#2b2b2b;
+}
+
+
+/**
+ * medToolBoxHeader
+ *
+ */
+
+medToolBoxHeader {
+    border-image: url(:/pixmaps/toolbox-header.png) 16 16 0 16 repeat-x;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-top-width: 16px;
+    border-bottom-width: 0px;
+
+    padding-top: -6px;
+
+    color: #bbbbbb;
+
+    min-height: 20px;
+    max-height: 32px;
+}
+
+/**
+ * medToolBoxBody
+ *
+ */
+
+medToolBoxBody {
+    border-image: url(:/pixmaps/toolbox-body.png) 0 16 16 16 repeat-y;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-top-width: 0px;
+    border-bottom-width: 16px;
+    
+    padding-left: -6px;
+    padding-right: -6px;
+    padding-bottom: 6px;
+}
+
+medToolBoxBody QTabWidget::pane {
+    background: none;
+    border: none;
+    border-image: none;
+}
+
+medToolBoxBody QTabWidget::tab-bar {
+    top: 1px;
+    left: 0px;
+}
+
+medToolBoxBody QTabBar::tab {
+    border: 1px solid #2c2c2e;
+    border-top: none;
+    border-left: none;
+    border-radius: 0;
+
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);
+
+    height: 32px;
+    min-width: 40px;
+}
+
+medToolBoxBody QTabBar::tab:selected, medToolBoxBody QTabBar::tab:hover {
+    border: 1px solid #2c2c2e;
+    border-top: none;
+    border-left: none;
+    border-radius: 0;
+
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);
+
+    height: 32px;
+    min-width: 40px;
+}
+
+/**
+ * Browser area source selector buttons
+ */
+
+QPushButton#left {
+    border-radius: 0px;
+    border-top-left-radius: 11px;
+    border-bottom-left-radius: 11px;
+}
+
+QPushButton#center {
+    border-radius: 0px;
+}
+
+QPushButton#right {
+    border-radius: 0px;
+    border-top-right-radius: 11px;
+    border-bottom-right-radius: 11px;
+}
+
+/**
+ * Documentation area navigation buttons
+ */
+
+QPushButton#medDocumentationAreaPreviousButton {
+    border-radius: 0px;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    height: 16px;
+    width: 20px;
+}
+
+QPushButton#medDocumentationAreaNextButton {
+    border-radius: 0px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    height: 16px;
+    width: 20px;
+}
+
+QPushButton#medDocumentationAreaGoButton {
+    border-radius: 0px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    height: 16px;
+    width: 20px;
+}
+
+QLineEdit#medDocumentationAreaAddressEdit {
+    border-radius: 0px;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    height: 16px;
+}
+
+/**
+ * medDropSite
+ *
+ */
+
+medDropSite {
+    border: 1px solid #6b6b6b;
+    border-radius: 4px;
+    background-color: #2b2b2b;
+}
+
+
+/**
+ * QMessageBox
+ *
+ */
+
+QMessageBox {
+    border: 1px solid #6b6b6b;
+    border-radius: 4px;
+    background-color: #2b2b2b;
+}
+
+/**
+ * QDialog
+ *
+ */
+QDialog {
+    background: #313131;
+}
+
+/**
+ * QFileDialog
+ *
+ */
+
+QFileDialog {
+    border: 1px solid #6b6b6b;
+    border-radius: 4px;
+    background-color: #2b2b2b;
+}
+
+
+/**
+ * QInputDialog
+ *
+ */
+
+QInputDialog {
+    border: 1px solid #6b6b6b;
+    border-radius: 4px;
+    background-color: #2b2b2b;
+}
+
+/**
+ * QColorDialog
+ *
+ */
+
+QColorDialog {
+    border: 1px solid #6b6b6b;
+    border-radius: 4px;
+    background-color: #2b2b2b;
+}
+
+/**
+ * QPushButton #tool
+ *
+ */
+
+QPushButton#tool {
+    border: 0px;
+    border-left: 1px solid #4b4b4b;
+    border-radius: 0px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #5e5e5e, stop: 1 #2b2b2b);
+    color: #b2b8b2;
+    font-size: 10px;
+    height: 16px;
+    padding-left: 1px;
+    padding-right: 1px;
+    min-width: 2px;
+}
+
+QPushButton#tool:pressed, QPushButton#tool:checked {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
+}
+
+QToolButton {
+    border: 0px;
+    border-left: 1px solid #4b4b4b;
+    border-radius: 0px;
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #5e5e5e, stop: 1 #2b2b2b);
+    color: #b2b8b2;
+    font-size: 10px;
+    height: 16px;
+    padding-left: 1px;
+    padding-right: 1px;
+    min-width: 2px;
+}
+
+QToolButton:pressed, QToolButton:checked {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #282828, stop: 1 #4a4a4a);
+}
+
+
+QToolButton#fullScreenButton{
+    border:none;
+    background-color: rgba(0,0,0,0);
+}
+
+
+/**
+ * dtkFinderPathBar
+ *
+ */
+
+dtkFinderPathBar {
+    background: #414141;
+    color: #b2b2b2;
+    border: 1px solid #a9a9a9;
+}
+
+/**
+ * dtkFinderTreeView
+ *
+ */
+
+dtkFinderTreeView {
+    color: #b2b8b2;
+    background: #6b6b6b;
+    border: 1px solid #a9a9a9;
+}
+
+dtkFinderTreeView::item {
+    color: #b2b8b2;
+    background: #6b6b6b;
+    border-right: 1px solid #a9a9a9;
+}
+
+dtkFinderTreeView::branch:has-siblings:!adjoins-item {
+    image: none;
+}
+
+dtkFinderTreeView::branch:has-siblings:adjoins-item {
+    image: none;
+}
+
+dtkFinderTreeView::branch:!has-children:!has-siblings:adjoins-item {
+    image: none;
+}
+
+dtkFinderTreeView::branch:has-children:!has-siblings:closed,
+dtkFinderTreeView::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-closed.png);
+}
+
+dtkFinderTreeView::branch:open:has-children:!has-siblings,
+dtkFinderTreeView::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-open.png);
+}
+
+
+/**
+ * medViewPropertiesToolBox QTreeWidget
+ *
+ */
+
+medViewPropertiesToolBox QTreeWidget {
+    alternate-background-color: #505050;
+
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+
+    font-size: 10px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
+
+medViewPropertiesToolBox QTreeWidget::branch:has-siblings:!adjoins-item {
+    image: none;
+}
+
+medViewPropertiesToolBox QTreeWidget::branch:has-siblings:adjoins-item {
+    image: none;
+}
+
+medViewPropertiesToolBox QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
+    image: none;
+}
+
+medViewPropertiesToolBox QTreeWidget::branch:has-children:!has-siblings:closed,
+medViewPropertiesToolBox QTreeWidget::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-closed.png);
+}
+
+medViewPropertiesToolBox QTreeWidget::branch:open:has-children  {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-open.png);
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);
+}
+medViewPropertiesToolBox QTreeWidget::item:open:has-children  {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);
+    color: white;
+}
+
+
+/**
+ * medTabbedViewContainers
+ *
+ */
+
+medTabbedViewContainers::pane {
+    border: none;
+}
+
+medTabbedViewContainers QTabBar::tab {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #3b3b3c, stop:1 #2d2d2f);
+    border: 1px solid #2a2a2a;
+    height: 24px;
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: 80px;
+    color: #b2b8b2;
+}
+
+medTabbedViewContainers QTabBar::tab:selected, medTabbedViewContainers QTabBar::tab:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #656565, stop:1 #4c4c4c);
+    border: 1px solid #2a2a2a;
+    height: 24px;
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: 80px;
+    color: #b2b8b2;
+    border-bottom-color: #4c4c4c;
+}
+
+medTabbedViewContainers QPushButton {
+    background: none;
+    border: none;
+    outline: none;
+    margin-bottom: 2px;
+    padding: 0px;
+    height: 18px;
+}
+
+medTabbedViewContainers QPushButton:pressed, medTabbedViewContainers QPushButton:hover {
+    background: none;
+    border: none;
+    outline: none;
+    margin-bottom: 2px;
+    padding: 0px;
+    height: 18px;
+}
+
+/**
+ * medViewContainer
+ *
+ */
+medViewContainer {
+    border: 1px solid darkGray;
+    background: #313131;
+}
+
+medViewContainer [selected="true"] {
+    border: 1px solid red;
+    background: #313131;
+}
+
+/**
+ * Actions ToolBox
+ *
+ */
+
+QPushButton#actionToolBoxButton {
+    min-height: 30px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+
+QLabel#actionToolBoxLabel {
+    height: 52px;
+    font-size: 13px;
+	text-align: center;
+    vertical-align: middle;
+}
+
+/**
+ * medDiffusionSequenceCompositeDataToolBox
+ *
+ */
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget {
+    alternate-background-color: #505050;
+
+    border: 0px;
+    padding: 0px;
+    font-size: 10px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+ }
+
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget::branch:has-siblings:!adjoins-item {
+     image: none;
+ }
+
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget::branch:has-siblings:adjoins-item {
+     image: none;
+ }
+
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
+     image: none;
+ }
+
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget::branch:has-children:!has-siblings:closed,
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget::branch:closed:has-children:has-siblings {
+     border-image: none;
+     image: url(:pixmaps/treeview-branch-closed.png);
+ }
+
+ medDiffusionSequenceCompositeDataToolBox QTreeWidget::branch:open:has-children:!has-siblings,
+ QTreeWidget::branch:open:has-children:has-siblings  {
+     border-image: none;
+     image: url(:pixmaps/treeview-branch-open.png);
+ }
+
+/**
+ * medPluginWidget
+ *
+ */
+medPluginWidget {
+  background: #313131;
+}
+
+medPluginWidget QTreeWidget {
+    alternate-background-color: #505050;
+
+    border: 0px;
+    padding: 0px;
+    font-size: 11px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
+
+medPluginWidget QTreeWidget::branch:has-siblings:!adjoins-item {
+    image: none;
+}
+
+medPluginWidget QTreeWidget::branch:has-siblings:adjoins-item {
+    image: none;
+}
+
+medPluginWidget QTreeWidget::branch:!has-children:!has-siblings:adjoins-item {
+    image: none;
+}
+
+medPluginWidget QTreeWidget::branch:has-children:!has-siblings:closed,
+medPluginWidget QTreeWidget::branch:closed:has-children:has-siblings {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-closed.png);
+}
+
+medPluginWidget QTreeWidget::branch:open:has-children:!has-siblings,
+QTreeWidget::branch:open:has-children:has-siblings  {
+    border-image: none;
+    image: url(:pixmaps/treeview-branch-open.png);
+}
+
+/**
+ * medThumbnailContainer
+ *
+ */
+
+medThumbnailContainer {
+    border-image: url(:/pixmaps/treeview-frame.png) 16 16 16 16;
+    border-top-width: 16px;
+    border-left-width: 16px;
+    border-right-width: 16px;
+    border-bottom-width: 16px;
+
+    padding-top: -7px;
+    padding-left: -4px;
+    padding-right: -5px;
+
+    color: #b2b8b2;
+
+    background: #313131;
+}
