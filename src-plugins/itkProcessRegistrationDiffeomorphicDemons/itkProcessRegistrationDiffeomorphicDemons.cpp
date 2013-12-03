@@ -21,16 +21,16 @@
 //
 // /////////////////////////////////////////////////////////////////
 
-#include "itkImageRegistrationMethod.h"
+#include <itkImageRegistrationMethod.h>
 
-#include "itkImage.h"
-#include "itkResampleImageFilter.h"
+#include <itkImage.h>
+#include <itkResampleImageFilter.h>
 
-#include "time.h"
+#include <time.h>
 
 #include <DiffeomorphicDemons/rpiDiffeomorphicDemons.hxx>
 #include <rpiCommonTools.hxx>
-#include <registrationFactory/registrationFactory.h>
+#include <registrationFactory.h>
 
 
 // /////////////////////////////////////////////////////////////////
