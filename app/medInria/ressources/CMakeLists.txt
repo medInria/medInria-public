@@ -16,9 +16,10 @@
 ## #############################################################################
 
 file(GLOB ${PROJECT_NAME}_QRC
-  *.rcc
+  *.qrc
   )
 set(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC} PARENT_SCOPE)
+
 
 file(GLOB ${PROJECT_NAME}_QSS
   *.qss
