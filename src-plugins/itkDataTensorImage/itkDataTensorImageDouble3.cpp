@@ -15,13 +15,13 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 
-#include <itkTensor.h>
 #include <itkImage.h>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkImageFileWriter.h>
 #include <itkVectorImage.h>
 #include <itkVector.h>
+#include <itkTensor.h>
 
 
 // /////////////////////////////////////////////////////////////////
