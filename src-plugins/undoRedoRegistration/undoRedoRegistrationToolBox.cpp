@@ -20,7 +20,7 @@
 
 #include <medToolBoxFactory.h>
 #include <medRegistrationSelectorToolBox.h>
-#include <registrationFactory/registrationFactory.h>
+#include <registrationFactory.h>
 
 
 class undoRedoRegistrationToolBoxPrivate
