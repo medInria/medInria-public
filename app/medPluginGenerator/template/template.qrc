@@ -1,0 +1,47 @@
+<RCC>
+    <qresource prefix="/template">
+        <file>license/Apache</file>
+        <file>license/Artistic</file>
+        <file>license/Cecill</file>
+        <file>license/GPL</file>
+        <file>license/LGPL</file>
+        <file>generic/cmake</file>
+        <file>export.h</file>
+        <file>generic/plugin.cpp</file>
+        <file>generic/plugin.h</file>
+        <file>generic/type.cpp</file>
+        <file>generic/type.h</file>
+        <file>registration/plugin.cpp</file>
+        <file>registration/plugin.h</file>
+        <file>registration/type.cpp</file>
+        <file>registration/type.h</file>
+        <file>registration/cmake</file>
+        <file>license/BSD</file>
+        <file>registration/typeToolBox.cpp</file>
+        <file>registration/typeToolBox.h</file>
+        <file>filtering/cmake</file>
+        <file>filtering/plugin.cpp</file>
+        <file>filtering/plugin.h</file>
+        <file>filtering/type.cpp</file>
+        <file>filtering/type.h</file>
+        <file>filtering/typeToolBox.cpp</file>
+        <file>filtering/typeToolBox.h</file>
+        <file>registration/rpiBase.h</file>
+        <file>registration/rpiBase.hxx</file>
+        <file>workspace/cmake</file>
+        <file>workspace/plugin.cpp</file>
+        <file>workspace/plugin.h</file>
+        <file>workspace/typeWorkspace.cpp</file>
+        <file>workspace/typeWorkspace.h</file>
+        <file>datareader/cmake</file>
+        <file>datareader/plugin.cpp</file>
+        <file>datareader/plugin.h</file>
+        <file>datareader/type.cpp</file>
+        <file>datareader/type.h</file>
+        <file>datawriter/cmake</file>
+        <file>datawriter/plugin.cpp</file>
+        <file>datawriter/plugin.h</file>
+        <file>datawriter/type.cpp</file>
+        <file>datawriter/type.h</file>
+    </qresource>
+</RCC>
