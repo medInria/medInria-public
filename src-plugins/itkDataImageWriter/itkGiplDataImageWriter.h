@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <itkDataImageBase/itkDataImageWriterBase.h>
+#include <itkDataImageWriterBase.h>
 #include <itkDataImageWriterPluginExport.h>
 
 class ITKDATAIMAGEWRITERPLUGIN_EXPORT itkGiplDataImageWriter: public itkDataImageWriterBase {
