@@ -20,7 +20,7 @@
 
 #include "vtkSmartPointer.h"
 #include "vtkImageData.h"
-#include <vtkDataManagement/vtkMetaImageData.h>
+#include <vtkMetaImageData.h>
 
 // /////////////////////////////////////////////////////////////////
 // v3dDataImagePrivate
