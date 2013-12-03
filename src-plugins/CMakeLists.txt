@@ -15,13 +15,15 @@
 ## Embed medPch
 ## #############################################################################
 
-file(GLOB MEDPLUGINSPCH_H
-  medPluginsPch/*.h
-  )
+if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
+  file(GLOB MEDPLUGINSPCH_H
+    medPluginsPch/*.h
+    )
   
-file(GLOB MEDPLUGINSPCH_CPP
-  medPluginsPch/*.cpp
-  )
+  file(GLOB MEDPLUGINSPCH_CPP
+    medPluginsPch/*.cpp
+    )
+endif()
 
 
 ## #############################################################################
@@ -71,7 +73,7 @@ set(PLUGIN_LIST
   itkDataSHImageWriter                      ON
   itkDataSHImageReader                      ON
   undoRedoRegistration                      ON
-	itkProcessRegistrationDiffeomorphicDemons ON
+  itkProcessRegistrationDiffeomorphicDemons ON
   )
 
 if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)

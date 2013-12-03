@@ -14,15 +14,15 @@
 ## #############################################################################
 ## Embed medPch
 ## #############################################################################
+if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
+  file(GLOB MEDPCH_H
+    medPch/*.h
+    )
 
-file(GLOB MEDPCH_H
-  medPch/*.h
-  )
-  
-file(GLOB MEDPCH_CPP
-  medPch/*.cpp
-  )
-
+  file(GLOB MEDPCH_CPP
+    medPch/*.cpp
+    )
+endif()
 
 ## #############################################################################
 ## Add subdirectories
