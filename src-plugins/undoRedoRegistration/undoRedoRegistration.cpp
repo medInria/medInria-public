@@ -7,8 +7,8 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
-#include <registrationFactory/registrationFactory.h>
-#include "itkImage.h"
+#include <registrationFactory.h>
+#include <itkImage.h>
 
 // /////////////////////////////////////////////////////////////////
 // undoRedoRegistration

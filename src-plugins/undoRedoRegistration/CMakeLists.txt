@@ -15,18 +15,15 @@ cmake_minimum_required(VERSION 2.8.1)
 
 project(undoRedoRegistrationPlugin)
 
-## #################################################################
+## #############################################################################
 ## Setup version numbering
-## #################################################################
+## #############################################################################
 
-set(${PROJECT_NAME}_VERSION ${medInria_VERSION})
+set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
-add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}") 
+add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
-set(CMAKE_COLOR_MAKEFILE ON)
-set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
 ## #################################################################
 ## Resolve dependencies
@@ -44,35 +41,75 @@ endif(ITK_FOUND)
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
 
-## #################################################################
-## Input
-## #################################################################
+## #############################################################################
+## List Sources
+## #############################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  undoRedoRegistrationPlugin.h
-  undoRedoRegistrationToolBox.h
-  undoRedoRegistration.h)
-
-set(${PROJECT_NAME}_SOURCES
-  undoRedoRegistrationPlugin.cpp
-  undoRedoRegistrationToolBox.cpp
-  undoRedoRegistration.cpp
+file(GLOB HEADERS
+  *.h
+  )
+set(${PROJECT_NAME}_H
+  ${HEADERS}
+  ${${PROJECT_NAME}_H}
   )
 
-set(${PROJECT_NAME}_RESOURCES undoRedoRegistration.qrc)
+file(GLOB CPP
+  *.cpp
+  )
+set(${PROJECT_NAME}_CPP
+  ${CPP}
+  ${${PROJECT_NAME}_CPP}
+  )
 
-## #################################################################
-## Build rules
-## #################################################################
+set(${PROJECT_NAME}_QRC undoRedoRegistration.qrc)
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
-qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
+
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+##  see cmake/module/list_header_directories_to_include.cmake
+list_header_directories_to_include(${PROJECT_NAME}
+  ${${PROJECT_NAME}_H}
+  )
+
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${MEDINRIA_INCLUDE_DIRS}
+  )
+
+
+## #############################################################################
+## Precompile headers
+## #############################################################################
+
+if (MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${MEDPLUGINSPCH_H}
+    ${MEDPLUGINSPCH_CPP}
+    ${${PROJECT_NAME}_CPP}
+    )
+endif()
+
+
+## #############################################################################
+## add library
+## #############################################################################
+
+
+qt4_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
+
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_SOURCES_QRC}
+  ${${PROJECT_NAME}_PCH}
+  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_QRC}
   )
+
+
+## #############################################################################
+## Link
+## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
@@ -80,25 +117,13 @@ target_link_libraries(${PROJECT_NAME}
   dtkCore
   medCore
   medGui
-  itkProcessRegistration
+  medRegistration
   RegistrationAddOn
-  registrationFactory
-)
+  )
 
-## #################################################################
-## Source file layout in development environments like Visual Studio
-## #################################################################
-
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
-
-
-
-## #################################################################
+## #############################################################################
 ## Install rules
-## #################################################################
+## #############################################################################
 
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION lib)
+## see cmake/module/set_plugin_install_rules.cmake
+set_plugin_install_rules(${PROJECT_NAME})
