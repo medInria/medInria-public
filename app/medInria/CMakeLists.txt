@@ -20,11 +20,11 @@ project(medInria)
 add_subdirectory(QSingleApplication)
 add_subdirectory(ressources)
 
-file(GLOB HEADER
+file(GLOB HEADERS
   *.h
   )
 set(${PROJECT_NAME}_H
-  ${HEADER}
+  ${HEADERS}
   ${${PROJECT_NAME}_H}
   )
 

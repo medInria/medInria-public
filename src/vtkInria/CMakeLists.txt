@@ -16,16 +16,6 @@ cmake_minimum_required(VERSION 2.8.9)
 project(vtkInria)
 
 ## #############################################################################
-## Add in the option for building examples, default to ON
-## #############################################################################
-
-option(VTKINRIA_BUILD_EXAMPLES 
-  "Build vtkInria examples." 
-  OFF
-  )
-
-
-## #############################################################################
 ## Find requireds
 ## #############################################################################
 
@@ -82,11 +72,6 @@ to use the HWShading library. This option is only available with VTK>=5.1."
     )
 endif()
 
-find_path(${PROJECT_NAME}_DATA_DIR 
-  NAMES SHTest.vtk 
-  DOC "vtkInria Data directory"
-  )
-
 
 ## #############################################################################
 ## add_subdirectory
@@ -99,8 +84,4 @@ add_subdirectory(vtkWidgetsAddOn)
 add_subdirectory(vtkVisuManagement)
 add_subdirectory(vtkItkWrap)
 add_subdirectory(HWShading)
-
-if (VTKINRIA_BUILD_EXAMPLES)
-  add_subdirectory(Examples)
-endif()
 

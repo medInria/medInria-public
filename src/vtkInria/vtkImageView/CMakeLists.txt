@@ -18,12 +18,20 @@ project(vtkImageView)
 ## List Sources
 ## #############################################################################
 
-file(GLOB_RECURSE ${PROJECT_NAME}_H
+file(GLOB HEADERS
   *.h
   )
+set(${PROJECT_NAME}_H
+  ${HEADERS}
+  ${${PROJECT_NAME}_H}
+  )
 
-file(GLOB_RECURSE ${PROJECT_NAME}_CXX
+file(GLOB CXX
   *.cxx
+  )
+set(${PROJECT_NAME}_CXX
+  ${CXX}
+  ${${PROJECT_NAME}_CXX}
   )
 
 set(${PROJECT_NAME}_LIBS

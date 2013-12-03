@@ -33,13 +33,22 @@ include(${RPI_USE_FILE})
 ## List Sources
 ## #############################################################################
 
-file(GLOB_RECURSE ${PROJECT_NAME}_H
+file(GLOB HEADERS
   *.h
   )
+set(${PROJECT_NAME}_H
+  ${HEADERS}
+  ${${PROJECT_NAME}_H}
+  )
 
-file(GLOB_RECURSE ${PROJECT_NAME}_CPP
+file(GLOB CPP
   *.cpp
   )
+set(${PROJECT_NAME}_CPP
+  ${CPP}
+  ${${PROJECT_NAME}_CPP}
+  )
+
 
 set(${PROJECT_NAME}_LIBRARIES
   ${QT_LIBRARIES}

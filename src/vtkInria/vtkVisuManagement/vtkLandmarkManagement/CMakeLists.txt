@@ -11,28 +11,16 @@
 #
 ################################################################################
 
-project(medLogForwarder)
+project(vtkLandmarkManagement)
 
-## #############################################################################
-## find requireds
-## #############################################################################
-
-# find dtk
-find_package(dtk REQUIRED)
-include(${dtk_USE_FILE})
-
-# find itk
-find_package(ITK REQUIRED)
-include(${ITK_USE_FILE})
-
-# find vtk
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
-
+if (CMAKE_CXX_COMPILER MATCHES clang)
+    add_definitions(-DCLANG)
+endif()
 
 ## #############################################################################
 ## List Sources
 ## #############################################################################
+
 
 file(GLOB HEADERS
   *.h
@@ -42,49 +30,43 @@ set(${PROJECT_NAME}_H
   ${${PROJECT_NAME}_H}
   )
 
-file(GLOB CPP
-  *.cpp
+file(GLOB CXX
+  *.cxx
   )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
-  )
-
-
-
-## #############################################################################
-## include directorie.
-## #############################################################################
-
-##  see cmake/module/list_header_directories_to_include.cmake
-list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_H}
+set(${PROJECT_NAME}_CXX
+  ${CXX}
+  ${${PROJECT_NAME}_CXX}
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
-    
-    
+set(${PROJECT_NAME}_LIBS
+ vtkCommon
+ vtkFiltering
+ vtkRendering
+ vtkWidgets
+ vtkDataManagement
+ vtkImageView
+ vtkHWShading
+)
+
+
 ## #############################################################################
 ## add library
 ## #############################################################################
 
 add_library(${PROJECT_NAME} SHARED
+  ${${PROJECT_NAME}_CXX}
   ${${PROJECT_NAME}_H}
-  ${${PROJECT_NAME}_CPP}
   )
 
 
 ## #############################################################################
 ## Link
 ## #############################################################################
-
-target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  dtkCore 
-  dtkLog
-  ITKCommon
-  vtkCommon
+  
+target_link_libraries(${PROJECT_NAME}  
+  ${${PROJECT_NAME}_LIBS}
   )
+
 
 ## #############################################################################
 ## install
