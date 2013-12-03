@@ -1,38 +1,30 @@
-#######################################################################
+################################################################################
 #
 # medInria
 #
 # Copyright (c) INRIA 2013. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-#######################################################################
-
-cmake_minimum_required(VERSION 2.8.1)
+################################################################################
 
 project(vtkDataMeshReaderPlugin)
 
-## #################################################################
+## #############################################################################
 ## Setup version numbering
-## #################################################################
+## #############################################################################
 
-set(${PROJECT_NAME}_VERSION ${medInria_VERSION})
+set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
-set(CMAKE_COLOR_MAKEFILE ON)
-set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
-
-## #################################################################
+## #############################################################################
 ## Resolve dependencies
-## #################################################################
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR})
+## #############################################################################
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
@@ -41,66 +33,92 @@ include(dtkPlugin)
 find_package(VTK)
 include(${VTK_USE_FILE})
 
-find_package(ITK REQUIRED)
-include (${ITK_USE_FILE})
+find_package(ITK)
+include(${ITK_USE_FILE})
 
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  vtkDataMeshReaderPlugin.h
-  vtkDataMeshReader.h
-  vtkDataMesh4DReader.h
+## #############################################################################
+## List Sources
+## #############################################################################
+
+file(GLOB HEADERS
+  *.h
+  )
+set(${PROJECT_NAME}_H
+  ${HEADERS}
+  ${${PROJECT_NAME}_H}
   )
 
-set(${PROJECT_NAME}_HEADERS
-  ${${PROJECT_NAME}_HEADERS_MOC})
-
-set(${PROJECT_NAME}_SOURCES
-  vtkDataMeshReaderPlugin.cpp
-  vtkDataMeshReader.cpp
-  vtkDataMesh4DReader.cpp
+file(GLOB CPP
+  *.cpp
+  )
+set(${PROJECT_NAME}_CPP
+  ${CPP}
+  ${${PROJECT_NAME}_CPP}
   )
 
-## #################################################################
-## Build rules
-## #################################################################
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+## #############################################################################
+## include directorie.
+## #############################################################################
 
-if (MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
-    "medPluginsPch.h" "../libs/medPluginsPch/medPluginsVtkPch.cpp"
-    ${${PROJECT_NAME}_SOURCES_MOC}
-    ${${PROJECT_NAME}_SOURCES})
+##  see cmake/module/list_header_directories_to_include.cmake
+list_header_directories_to_include(${PROJECT_NAME}
+  ${${PROJECT_NAME}_H}
+  )
+
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${MEDINRIA_INCLUDE_DIRS}
+  )
+
+
+## #############################################################################
+## Precompile headers
+## #############################################################################
+
+if(MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${MEDPLUGINSPCH_H}
+    ${MEDPLUGINSPCH_CPP}
+    ${${PROJECT_NAME}_CPP}
+    )
 endif()
 
+
+
+## #############################################################################
+## add library
+## #############################################################################
+
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES_PCH}
-  ${${PROJECT_NAME}_HEADERS}
-  ${${PROJECT_NAME}_SOURCES}
-)
+  ${${PROJECT_NAME}_PCH}
+  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_CPP}
+  )
+
+
+## #############################################################################
+## Link
+## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  dtkVtkLogForwarder
-  dtkCore dtkLog
+  medLogForwarder
+  dtkCore
+  dtkLog
+  dtkLog
   vtkCommon
   vtkFiltering
   vtkIO
   vtkDataManagement
   itksys
-)
+  )
 
-# Group common files together in Visual Studio.
-source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
-## #################################################################
+## #############################################################################
 ## Install rules
-## #################################################################
-install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION plugins
-    LIBRARY DESTINATION plugins
-    ARCHIVE DESTINATION lib)
+## #############################################################################
 
+## see cmake/module/set_plugin_install_rules.cmake
+set_plugin_install_rules(${PROJECT_NAME})
 
