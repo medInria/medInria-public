@@ -11,14 +11,14 @@
 #
 ################################################################################
 
-if(NOT medInria_USE_FILE_INCLUDED)
-  set(medInria_USE_FILE_INCLUDED 1)
-  include_directories(${medInria_INCLUDE_DIR})
+if(NOT MEDINRIA_USE_FILE_INCLUDED)
+  set(MEDINRIA_USE_FILE_INCLUDED 1)
+  include_directories(${MEDINRIA_INCLUDE_DIR})
   
-  link_directories(${medInria_LIBRARY_DIR})
+  link_directories(${MEDINRIA_LIBRARY_DIR})
   
   set(CMAKE_MODULE_PATH  
-    ${medInria_CMAKE_DIR}
+    ${MEDINRIA_CMAKE_DIR}
     ${CMAKE_MODULE_PATH}
     )
 endif()

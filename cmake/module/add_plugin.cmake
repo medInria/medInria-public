@@ -12,29 +12,33 @@
 #######################################################################
 
 macro(add_plugin  plugin_name default_build_value)
-  string(TOUPPER ${plugin_name} upper_case_name)
+
+string(TOUPPER ${plugin_name} upper_case_name)
   
   option(BUILD_${upper_case_name}_PLUGIN 
     "Build ${plugin_name} plugin" 
     ${default_build_value}
     )
   
-  if (BUILD_ALL_PLUGINS)
+  if(BUILD_ALL_PLUGINS)
   # Force to update the cache
     set(BUILD_${upper_case_name}_PLUGIN ON 
       CACHE BOOL "Build ${plugin_name} plugin" FORCE
       )
   endif()
 
-  if (BUILD_ALL_PLUGINS OR BUILD_${upper_case_name}_PLUGIN)
+  if(BUILD_ALL_PLUGINS OR BUILD_${upper_case_name}_PLUGIN)
     add_subdirectory(${plugin_name})
   endif()
+
 endmacro()
 
 
 macro(add_plugins plugins_list)
+
     set(plugin_list ${ARGV})
     set(index 0)
+
     while(index LESS ${ARGC})
         math(EXPR index_ "${index} + 1")
         list(GET plugin_list ${index} plugin_name)
@@ -44,4 +48,5 @@ macro(add_plugins plugins_list)
         
         math(EXPR index "${index} + 2")
     endwhile()
+
 endmacro()
