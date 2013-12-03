@@ -50,14 +50,15 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 ## Embed vtkInriaPch
 ## #############################################################################
 
-file(GLOB VTKINRIAPCH_H
-  vtkInriaPch/*.h
-  )
+if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
+  file(GLOB VTKINRIAPCH_H
+    vtkInriaPch/*.h
+    )
   
-file(GLOB VTKINRIAPCH_CPP
-  vtkInriaPch/*.cpp
-  )
-
+  file(GLOB VTKINRIAPCH_CPP
+    vtkInriaPch/*.cpp
+    )
+endif()
 
 ## #############################################################################
 ## check environment

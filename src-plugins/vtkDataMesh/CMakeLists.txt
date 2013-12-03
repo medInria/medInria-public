@@ -77,7 +77,7 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
 ## Precompile headers
 ## #############################################################################
 
-if (MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+if (MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_PCH
     ${MEDPLUGINSPCH_H}
     ${MEDPLUGINSPCH_CPP}
