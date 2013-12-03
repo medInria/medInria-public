@@ -27,7 +27,7 @@
 #include "itkGISDataImageReader.h"
 
 #include "itkDataImageReaderPlugin.h"
-#include <dtkItkLogForwarder/itkLogForwarder.h>
+#include <itkLogForwarder.h>
 
 #include <dtkLog/dtkLog.h>
 

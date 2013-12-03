@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <itkDataImageBase/itkDataImageReaderBase.h>
+#include <itkDataImageReaderBase.h>
 #include <itkDataImageReaderPluginExport.h>
 
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkBMPDataImageReader: public itkDataImageReaderBase {
