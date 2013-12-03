@@ -11,8 +11,7 @@
 #
 ################################################################################
 
-project(medInria) #TODO We should avoid to define a target with the same name twice
-# the consequence is that the header of the app will be expose in medInriaUse.cmake
+project(medInria)
 
 ## #############################################################################
 ## List Sources
@@ -42,11 +41,13 @@ set(${PROJECT_NAME}_CPP
 ## #############################################################################
 
 ##  see cmake/module/list_header_directories_to_include.cmake
-list_header_directories_to_include(${PROJECT_NAME}
+list_header_directories_to_include(${PROJECT_NAME} 
   ${${PROJECT_NAME}_H}
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})  
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS} 
+  ${MEDINRIA_INCLUDE_DIRS}
+  )  
 
 ## #############################################################################
 ## Add preproc if we have revisions from the super project
@@ -160,7 +161,7 @@ if (APPLE)
     ${PROJECT_NAME}
     )
   set(MACOSX_BUNDLE_ICON_FILE 
-    ${PROJECT_NAME}.icns
+    medInria.icns
     )
   set(MACOSX_BUNDLE_SHORT_VERSION_STRING 
     ${${PROJECT_NAME}_VERSION}
@@ -176,7 +177,7 @@ if (APPLE)
     )
   add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${PROJECT_NAME}_RESOURCE_DIR}
-    COMMAND ${CMAKE_COMMAND} ARGS -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.icns ${${PROJECT_NAME}_RESOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} ARGS -E copy ${CMAKE_CURRENT_SOURCE_DIR}/ressources/medInria.icns ${${PROJECT_NAME}_RESOURCE_DIR}
     )
 endif()
 
@@ -197,7 +198,7 @@ if (APPLE)
     \${QT_BINARY_DIR}/macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app
     )
 	execute_process(COMMAND 
-	  \${dtk_DIR}/bin/dtkDeploy \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app -inject-dir=\${CMAKE_CURRENT_BINARY_DIR}/plugins
+      \${dtk_DIR}/bin/dtkDeploy \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app -inject-dir=\${CMAKE_CURRENT_BINARY_DIR}/plugins
 	  )
   ")
 endif()
