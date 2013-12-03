@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>medPluginGeneratorMainWindow</class>
+ <widget class="QMainWindow" name="medPluginGeneratorMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>468</width>
+    <height>504</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Plugin generator</string>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QFormLayout" name="formLayout">
+    <property name="fieldGrowthPolicy">
+     <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+    </property>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Plugin family</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QComboBox" name="FamilyCombo">
+      <item>
+       <property name="text">
+        <string>Generic</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Filtering</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Registration</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Workspace</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DataReader</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>DataWriter</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="pluginTypeLabel">
+      <property name="text">
+       <string>Plugin type:</string>
+      </property>
+      <property name="buddy">
+       <cstring>pluginTypeCombo</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QComboBox" name="pluginTypeCombo">
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>0</height>
+       </size>
+      </property>
+      <item>
+       <property name="text">
+        <string>Choose a type ...</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Data</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Process</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>View</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="nameLabel">
+      <property name="text">
+       <string>Name</string>
+      </property>
+      <property name="buddy">
+       <cstring>nameLineEdit</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QLineEdit" name="nameLineEdit">
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>0</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="outputPathLabel">
+      <property name="text">
+       <string>Output directory:</string>
+      </property>
+      <property name="buddy">
+       <cstring>pathLineEdit</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLineEdit" name="pathLineEdit">
+        <property name="minimumSize">
+         <size>
+          <width>300</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="pathToolButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>22</width>
+          <height>22</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="descriptionLabel">
+      <property name="text">
+       <string>Description:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QTextEdit" name="descriptionTextEdit">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>300</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text" stdset="0">
+       <string/>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="pluginLicenseLabel">
+      <property name="text">
+       <string>Plugin license:</string>
+      </property>
+      <property name="buddy">
+       <cstring>pluginTypeCombo</cstring>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <widget class="QComboBox" name="pluginLicenseCombo">
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>0</height>
+       </size>
+      </property>
+      <item>
+       <property name="text">
+        <string>Choose a license ...</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Apache</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Artistic</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>BSD</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Cecill</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>GPL</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>LGPL</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="outputPluginLabel">
+      <property name="text">
+       <string>Plugin name:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QLabel" name="outputNameLabel">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>300</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>300</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="scaledContents">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,0,0">
+      <property name="leftMargin">
+       <number>100</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Maximum</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="generateButton">
+        <property name="text">
+         <string>Generate</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="quitButton">
+        <property name="text">
+         <string>Quit</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>468</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="generateAction"/>
+    <addaction name="separator"/>
+    <addaction name="quitAction"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="aboutAction"/>
+   </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionDefault_Path"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
+   <addaction name="menuSettings"/>
+  </widget>
+  <action name="quitAction">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="generateAction">
+   <property name="text">
+    <string>Generate</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="helpContentsAction">
+   <property name="text">
+    <string>Help contents</string>
+   </property>
+  </action>
+  <action name="aboutAction">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionDefault_Path">
+   <property name="text">
+    <string>DefaultPath...</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
