@@ -11,17 +11,9 @@
 #
 ################################################################################
 
-macro(set_lib_install_rules
+macro(set_plugin_install_rules
   project_name 
   )
-  
-if(${ARGC} GREATER 1)   #TODO not sure if we should keep it beause plugins are  
-  set(headers ${ARGV})  #     not suppose to link against each other.
-  list(REMOVE_ITEM headers ${project_name})
-  install(FILES ${headers} 
-    DESTINATION include/${project_name}
-    )
-endif()
   
 install(TARGETS ${project_name}
   RUNTIME DESTINATION plugins

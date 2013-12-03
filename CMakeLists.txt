@@ -136,7 +136,7 @@ endif()
 
 add_subdirectory(src)
 add_subdirectory(app)
-#add_subdirectory(src-plugins)
+add_subdirectory(src-plugins)
 
 if(${PROJECT_NAME}_BUILD_DOCUMENTATION)
   add_subdirectory(documentation)
