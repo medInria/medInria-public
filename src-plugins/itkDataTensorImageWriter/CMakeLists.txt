@@ -88,8 +88,6 @@ endif()
 ## add library
 ## #############################################################################
 
-qt4_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
-
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_PCH}
   ${${PROJECT_NAME}_H}
