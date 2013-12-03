@@ -46,7 +46,10 @@ QStringList vtkDataMesh4DWriter::s_handled()
 
 bool vtkDataMesh4DWriter::canWrite(const QString& path)
 {
-  return path.endsWith (QString (".v4d"));
+    if ( ! this->data())
+        return false;
+
+    return dynamic_cast<vtkMetaDataSetSequence*>((vtkObject*)(this->data()->data()));
 }
 
 bool vtkDataMesh4DWriter::write(const QString& path)
@@ -92,7 +95,12 @@ QString vtkDataMesh4DWriter::identifier() const
 
 bool vtkDataMesh4DWriter::registered()
 {
-  return dtkAbstractDataFactory::instance()->registerDataWriterType("vtkDataMesh4DWriter", vtkDataMesh4DWriter::s_handled(), createVtkDataMesh4DWriter);
+    return dtkAbstractDataFactory::instance()->registerDataWriterType("vtkDataMesh4DWriter", vtkDataMesh4DWriter::s_handled(), createVtkDataMesh4DWriter);
+}
+
+QStringList vtkDataMesh4DWriter::supportedFileExtensions() const
+{
+    return QStringList() << ".xml";
 }
 
 // /////////////////////////////////////////////////////////////////

@@ -40,9 +40,12 @@ QStringList vtkDataMeshWriter::s_handled()
     return QStringList() << "vtkDataMesh";
 }
 
-bool vtkDataMeshWriter::canWrite(const QString& path)
+bool vtkDataMeshWriter::canWrite(const QString& /*path*/)
 {
-  return path.endsWith (QString (".vtk")) || path.endsWith(QString (".vtp"));
+    if ( ! this->data())
+        return false;
+
+    return dynamic_cast<vtkMetaDataSet*>((vtkObject*)(this->data()->data()));
 }
 
 bool vtkDataMeshWriter::write(const QString& path)

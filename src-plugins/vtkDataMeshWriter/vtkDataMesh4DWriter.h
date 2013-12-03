@@ -54,6 +54,8 @@ public:
 
     static bool registered();
 
+    virtual QStringList supportedFileExtensions(void) const;
+
 public slots:
     bool write    (const QString& path);
     bool canWrite (const QString& path);
