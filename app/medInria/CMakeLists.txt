@@ -18,20 +18,23 @@ project(medInria) #TODO We should avoid to define a target with the same name tw
 ## List Sources
 ## #############################################################################
 
-file(GLOB_RECURSE ${PROJECT_NAME}_H
+add_subdirectory(QSingleApplication)
+add_subdirectory(ressources)
+
+file(GLOB HEADER
   *.h
   )
+set(${PROJECT_NAME}_H
+  ${HEADER}
+  ${${PROJECT_NAME}_H}
+  )
 
-file(GLOB_RECURSE ${PROJECT_NAME}_CPP
+file(GLOB CPP
   *.cpp
   )
-
-file(GLOB_RECURSE ${PROJECT_NAME}_QRC
-  *.rcc
-  )
-  
-file(GLOB_RECURSE ${PROJECT_NAME}_QSS
-  *.qss
+set(${PROJECT_NAME}_CPP
+  ${CPP}
+  ${${PROJECT_NAME}_CPP}
   )
 
 ## #############################################################################
@@ -42,6 +45,8 @@ file(GLOB_RECURSE ${PROJECT_NAME}_QSS
 list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_H}
   )
+
+message("${PROJECT_NAME}_INCLUDE_DIRS : ${${PROJECT_NAME}_INCLUDE_DIRS}")
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})  
 
@@ -94,20 +99,6 @@ if (WIN32)
   endif()
   
   set(${PROJECT_NAME}_RC ressources/medInria.rc)
-endif()
-
-set_source_files_properties(QSingleApplication/qtlocalpeer.cpp 
-  DEPENDS QSingleApplication/qtlockedfile.cpp
-  )
-
-if (WIN)
-  set_source_files_properties(QSingleApplication/qtlocalpeer.cpp 
-    DEPENDS QSingleApplication/qtlockedfile_win.cpp
-    )
-else()
-  set_source_files_properties(QSingleApplication/qtlocalpeer.cpp 
-    DEPENDS QSingleApplication/qtlockedfile_unix.cpp
-    )
 endif()
 
 
