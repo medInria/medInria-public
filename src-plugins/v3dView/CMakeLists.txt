@@ -1,38 +1,37 @@
-#######################################################################
+################################################################################
 #
 # medInria
 #
 # Copyright (c) INRIA 2013. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-#######################################################################
-
-cmake_minimum_required(VERSION 2.8.1)
+################################################################################
 
 project(v3dViewPlugin)
 
-## #################################################################
+## #############################################################################
 ## Setup version numbering
-## #################################################################
+## #############################################################################
 
-set(${PROJECT_NAME}_VERSION ${medInria_VERSION})
+set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
-set(CMAKE_COLOR_MAKEFILE ON)
-set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
-## #################################################################
+
+## #############################################################################
 ## Resolve dependencies
-## #################################################################
+## #############################################################################
 
-option(V3DVIEW_BUILD_TTK_DEPENDENT_CODE "Include TTK dependent code in ${PROJECT_NAME}" "ON")
+option(${PROJECT_NAME_UP}_USE_TENSORS
+  "Allow tensor interactions in ${PROJECT_NAME}"
+  ON
+  )
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
@@ -44,118 +43,109 @@ include(${VTK_USE_FILE})
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-if ( VTK_MAJOR_VERSION LESS 5 OR
-     VTK_MINOR_VERSION LESS 8)
-    message (SEND_ERROR "VTK 5.8.0 version is needed for the annotations in v3dView, please update to generate the v3dView project.")
-endif()
 
 
-
-if ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
+if(${PROJECT_NAME_UP}_USE_TENSORS)
     # the Tensor ToolKit is required by the tensor interactor: v3dViewTensorInteractor
     find_package(TTK REQUIRED)
     include(${TTK_USE_FILE})
 endif()
 
 if (NOT VTK_USE_QT)
-  message(WARNING "VTK has to be compiled with the option VTK_USE_QT:ON in order to compile this project. Please consider setting correctly your VTK.")
+  message(WARNING
+  "VTK has to be compiled with the option VTK_USE_QT:ON in order to compile this project.
+  Please consider setting correctly your VTK."
+  )
 endif()
 
-## #################################################################
-## Input
-## #################################################################
+## #############################################################################
+## List Sources
+## #############################################################################
 
-if ( V3DVIEW_BUILD_TTK_DEPENDENT_CODE )
-    set(${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC
-      v3dViewFiberInteractor.h
-      v3dViewTensorInteractor.h
-      medFiberBundlingToolBox.h
-      medFiberViewToolBox.h
-      medTensorViewToolBox.h
-    )
-    set(${PROJECT_NAME}_TTK_DEPENDENT_SOURCES
-       v3dViewFiberInteractor.cpp
-       v3dViewTensorInteractor.cpp
-       medFiberBundlingToolBox.cpp
-       medFiberViewToolBox.cpp
-       medTensorViewToolBox.cpp
-    )
-    set(${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES
+if(${PROJECT_NAME_UP}_USE_TENSORS)
+
+    add_subdirectory(tensorInteractor)
+    set(${PROJECT_NAME}_TTK_DEPENDENT_LIBRARIES
        ttkAlgorithms
        ITKTensor
-    )
+       )
 else()
     add_definitions(-DDISABLE_TTK_DEPENDENT_CODE)
 endif()
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  v3dViewPlugin.h
-  v3dView.h
-  medAbstractVtkViewInteractor.h
-  medVtkView.h
-  v3dViewMeshInteractor.h
-  v3dView4DInteractor.h
-  v3dViewAnnotationInteractor.h
-  medViewPropertiesToolBox.h
-  medTimeLineToolBox.h
-  ${${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC}
-  v3dViewSHInteractor.h
-  medSHViewToolBox.h
+add_subdirectory(annotations)
+
+file(GLOB HEADERS
+  *.h
+  )
+set(${PROJECT_NAME}_H
+  ${HEADERS}
+  ${${PROJECT_NAME}_H}
   )
 
-set(${PROJECT_NAME}_HEADERS
-  ${${PROJECT_NAME}_HEADERS_MOC}
-  annotations/vtkSeedPointHandle.h
-  annotations/v3dViewAnnIntImageMaskHelper.h
-  annotations/v3dViewAnnIntSeedPointHelper.h
+file(GLOB CPP
+  *.cpp
   )
-
-set(${PROJECT_NAME}_SOURCES
-  v3dViewPlugin.cpp
-  v3dView.cpp
-  medVtkView.cpp
-  v3dViewMeshInteractor.cpp
-  v3dView4DInteractor.cpp
-  v3dFiberBundle.cpp
-  v3dViewAnnotationInteractor.cpp
-  medViewPropertiesToolBox.cpp
-  medTimeLineToolBox.cpp
-  annotations/v3dViewAnnIntImageMaskHelper.cpp
-  annotations/v3dViewAnnIntSeedPointHelper.cpp
-  annotations/vtkSeedPointHandle.cpp
-  v3dViewSHInteractor.cpp
-  medSHViewToolBox.cpp
-  ${${PROJECT_NAME}_TTK_DEPENDENT_SOURCES}
+set(${PROJECT_NAME}_CPP
+  ${CPP}
+  ${${PROJECT_NAME}_CPP}
   )
 
 
-## #################################################################
-## Build rules
-## #################################################################
+## #############################################################################
+## include directorie.
+## #############################################################################
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+##  see cmake/module/list_header_directories_to_include.cmake
+list_header_directories_to_include(${PROJECT_NAME}
+  ${${PROJECT_NAME}_H}
+  )
 
-if (MEDINRIA_PLUGINS_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
-    "medPluginsPch.h" "../libs/medPluginsPch/medPluginsVtkPch.cpp"
-    ${${PROJECT_NAME}_SOURCES_MOC}
-    ${${PROJECT_NAME}_SOURCES})
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${MEDINRIA_INCLUDE_DIRS}
+  )
+
+
+
+## #############################################################################
+## Precompile headers
+## #############################################################################
+
+if (MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${MEDPLUGINSPCH_H}
+    ${MEDPLUGINSPCH_CPP}
+    ${${PROJECT_NAME}_CPP}
+    )
 endif()
 
-include_directories(annotations)
+
+## #############################################################################
+## add library
+## #############################################################################
+
+
+qt4_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
+
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES_PCH}
-  ${${PROJECT_NAME}_HEADERS}
-  ${${PROJECT_NAME}_SOURCES})
+  ${${PROJECT_NAME}_PCH}
+  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_QRC}
+  )
+
+
+## #############################################################################
+## Link
+## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES}
-  dtkCore dtkLog
+  dtkCore
+  dtkLog
   medCore
-  medGui
   vtkCommon
   vtkRendering
   vtkImageView
@@ -165,22 +155,16 @@ target_link_libraries(${PROJECT_NAME}
   vtkVolumeRendering
   QVTK
   vtkHWShading
-  vtkHelpers)
+  vtkHelpers
+  )
 
 
-if (MEDINRIA-PLUGINS_BUILD_TESTING)
-  add_subdirectory(Testing)
-endif()
 
-# Include header files for Visual Studio.
-source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
-## #################################################################
+## #############################################################################
 ## Install rules
-## #################################################################
+## #############################################################################
 
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION lib)
+## see cmake/module/set_plugin_install_rules.cmake
+set_plugin_install_rules(${PROJECT_NAME})
+
