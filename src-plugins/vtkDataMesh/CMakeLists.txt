@@ -72,6 +72,7 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
   )
 
+
 ## #############################################################################
 ## Precompile headers
 ## #############################################################################
@@ -83,6 +84,7 @@ if (MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
     ${${PROJECT_NAME}_CPP}
     )
 endif()
+
 
 ## #############################################################################
 ## add library
