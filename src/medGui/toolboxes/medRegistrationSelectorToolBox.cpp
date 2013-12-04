@@ -13,6 +13,7 @@
 
 #include "medRegistrationSelectorToolBox.h"
 
+#include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -63,7 +64,7 @@ public:
 
 medRegistrationSelectorToolBox::medRegistrationSelectorToolBox(QWidget *parent) : medToolBox(parent), d(new medRegistrationSelectorToolBoxPrivate)
 {
-    d->fuseView = 0;
+    d->fuseView = NULL;
     d->fixedData  = NULL;
     d->movingData = NULL;
     d->fixedView  = NULL;
@@ -197,6 +198,14 @@ medAbstractDataImage *medRegistrationSelectorToolBox::movingData(void)
 void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& index)
 {
 
+    if(!d->fuseView)
+    {
+        dtkSmartPointer<medAbstractView> newView = dtkAbstractViewFactory::instance()->createSmartPointer("v3dView");
+        setFuseView(newView);
+        d->fuseView->setProperty("Closable","false");
+        emit newFuseView( d->fuseView);
+    }
+
     if (!index.isValid())
         return;
 
@@ -261,6 +270,14 @@ void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& in
  */
 void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& index)
 {
+
+    if(!d->fuseView)
+    {
+        dtkSmartPointer<medAbstractView> newView = dtkAbstractViewFactory::instance()->createSmartPointer("v3dView");
+        setFuseView(newView);
+        d->fuseView->setProperty("Closable","false");
+        emit newFuseView( d->fuseView);
+    }
 
     if (!index.isValid())
         return;
@@ -358,7 +375,9 @@ void medRegistrationSelectorToolBox::onToolBoxChosen(int index)
     connect (toolbox, SIGNAL (failure()),this,SLOT(enableSelectorToolBox()));
 
     if (!d->undoRedoProcess && !d->undoRedoToolBox)
+    {
         connect(toolbox,SIGNAL(success()),this,SLOT(handleOutput()));
+    }
 }
 
 /** 
@@ -517,7 +536,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
 
 // TODO CHANGE COMMENTARY
 //! If the registration has ended well, it sets the output's metaData and reset the movingView and fuseView with the registered image.
-void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type,QString algoName)
+void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString algoName)
 {   
     dtkSmartPointer<dtkAbstractData> output(NULL); //initialisation : UGLY but necessary
     
@@ -529,15 +548,12 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type,QString a
         if (d->undoRedoProcess)
             output = d->undoRedoProcess->output();
         else return;
-    
-    foreach(QString metaData, d->fixedData->metaDataList())
-        output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
-
-    foreach(QString property, d->fixedData->propertyList())
-        output->addProperty(property,d->fixedData->propertyValues(property));
 
     // We manage the new description of the image
-    QString newDescription = d->movingData->metadata(medMetaDataKeys::SeriesDescription.key());
+    QString newDescription = "";
+    if(d->movingData)
+        newDescription = d->movingData->metadata(medMetaDataKeys::SeriesDescription.key());
+
     if (type==algorithm || type==redo)
     {
         if (type==algorithm)
@@ -551,19 +567,23 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type,QString a
     }
     else if (type==undo)
     {
-        newDescription.remove(newDescription.lastIndexOf("-"),newDescription.size()-1); 
+        newDescription.remove(newDescription.lastIndexOf("-"),newDescription.size()-1);
         if (newDescription.count("-") == 0)
             newDescription.remove(" registered\n");
     }
     else if (type==reset)
     {
-        if (newDescription.lastIndexOf(" registered")!=-1)
-        {
+        if (newDescription.lastIndexOf(" registered") != -1)
             newDescription.remove(newDescription.lastIndexOf(" registered"),newDescription.size()-1);
-        }
-        else
+        if(!d->fixedData || !d->movingData)
             return;
     }
+
+    foreach(QString metaData, d->fixedData->metaDataList())
+        output->addMetaData(metaData,d->fixedData->metaDataValues(metaData));
+
+    foreach(QString property, d->fixedData->propertyList())
+        output->addProperty(property,d->fixedData->propertyValues(property));
 
     output->setMetaData(medMetaDataKeys::SeriesDescription.key(), newDescription);
     
@@ -577,7 +597,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type,QString a
     {   
         d->movingData = output;
 
-        d->movingView->setData(output,0);
+        d->movingView->setData(output, 0);
         // calling reset() will reset all the view parameters (position - zoom - window/level) to default
         d->movingView->reset();
         d->movingView->update();
@@ -689,13 +709,18 @@ void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
     }
     else if(closedView == d->fixedView)
     {
+        //Reset the Undo Redo stack if needed.
         d->fixedData = NULL;
 
         if(d->movingData)
         {
             d->fuseView->removeOverlay(1);
+            double window, level;
+            d->movingView->windowLevel(window, level);
             d->fuseView->removeOverlay(0);
-            d->fuseView->setData(d->movingData,0);
+            d->fuseView->setData(d->movingData, 0);
+            d->fuseView->setCurrentLayer(0);
+            d->fuseView->setWindowLevel(window, level);
         }
         else
         {
@@ -704,10 +729,8 @@ void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
         }
     }
 
+    emit viewRemoved();
     d->fuseView->blockSignals(false);
-
-    d->fuseView->reset();
-    d->fuseView->update();
 }
 
 
@@ -716,10 +739,11 @@ void medRegistrationSelectorToolBox::closeCompareView(int layer)
     if(layer == 0)
     {
         d->fixedView->close();
+        d->fixedData = NULL;
     }
     else if(layer == 1)
     {
         d->movingView->close();
+        d->movingData = NULL;
     }
-
 }
