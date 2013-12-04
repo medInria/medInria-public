@@ -37,12 +37,14 @@ medVectorFieldToolBox::medVectorFieldToolBox(QWidget *parent)
 
 
     d->scaleMode = new QComboBox;
-    QStringList scaleModes = QStringList() << "Scalar" << "Vector" << "VectorComponents";
+    QStringList scaleModes = QStringList() << "Scalar" << "Vector" << "VectorComponents" << "ScalingOff";
     d->scaleMode->addItems(scaleModes);
+    d->scaleMode->setCurrentIndex(1);
 
     d->colorMode = new QComboBox;
     QStringList colorModes = QStringList() << "Scalar" << "Scale" << "Vector";
     d->colorMode->addItems(colorModes);
+    d->colorMode->setCurrentIndex(2);
 
     d->projection = new QCheckBox;
 

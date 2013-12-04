@@ -49,6 +49,7 @@ set(${PROJECT_NAME}_SRCS
  vtkTessellatedSphereSource.cxx
  vtkSphericalHarmonicSource.cxx
  vtkSphericalHarmonicGlyph.cxx
+ vtkVectorOrienter.cxx
 )
 
 set(vtkLandmarkManagement_SRCS

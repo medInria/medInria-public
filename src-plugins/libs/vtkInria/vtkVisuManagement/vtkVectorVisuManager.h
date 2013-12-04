@@ -27,6 +27,8 @@
 #include <vtkDoubleArray.h>
 #include <vtkSmartPointer.h>
 #include <vtkImageData.h>
+#include <vtkVectorOrienter.h>
+#include <vtkAssignAttribute.h>
 
 class vtkMatrix4x4;
 
@@ -71,9 +73,6 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
   /** Get the freshly generated actor. */
   vtkGetObjectMacro (Actor, vtkActor)
 
-  /** Get the freshly generated actor. */
-  vtkGetObjectMacro (Normals, vtkPolyDataNormals)
-
   /** Set a scaling factor for the glyhs. */
   void SetGlyphScale(const float& f);
   double GetGlyphScale();
@@ -82,51 +81,33 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
       displaid.*/
   void SetSampleRate(const int&,const int&,const int&);
 
-  /** Get the vtkPolyData. */
-  vtkPolyData* GetPolyData() const
-  { return this->Normals->GetOutput(); }
-
   /** Get the vtkMapper. */
   vtkGetObjectMacro (Mapper, vtkMapper)
 
   /** Get the vtkGlyph3D. */
   vtkGetObjectMacro (Glyph, vtkGlyph3D)
 
-  /** Get the vtkDataArray scalars. */
-  vtkSetObjectMacro (Scalars, vtkDataArray)
-
   void SetScaleMode(ScaleMode mode);
   void SetColorMode(ColorMode mode);
 
-  bool GetProjection(void){return Projection;}
   void SetProjection(bool enable);
-
-  void Update();
-
 
  protected:
 
   vtkVectorVisuManager();
   ~vtkVectorVisuManager();
 
-  void applyMatrix();
-  void projectVectorsOnSlice();
-  void modifiyPointDataProperty();
-
 
  private:
 
   vtkExtractVOI*            VOI;
+  vtkAssignAttribute *      Assign;
+  vtkVectorOrienter*        Orienter;
   vtkGlyph3D*               Glyph;
-  vtkPolyDataNormals*       Normals;
   vtkPolyDataMapper*        Mapper;
   vtkActor*                 Actor;
 
-  vtkDataArray*             Scalars;
   vtkImageData*             Input;
-  ViewOrientation           Orientation;
-  vtkMatrix4x4*             Matrix;
-  bool                      Projection;
 
 };
 
