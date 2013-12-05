@@ -275,7 +275,8 @@ void medViewContainer::setCurrent ( medViewContainer *container )
 
 void medViewContainer::recomputeStyleSheet()
 {
-    this->setStyleSheet ( qApp->styleSheet() );
+    this->style()->unpolish(this);
+    this->style()->polish(this);
 }
 
 void medViewContainer::dragEnterEvent ( QDragEnterEvent *event )
