@@ -76,7 +76,11 @@ int main(int argc,char* argv[]) {
     setlocale(LC_NUMERIC, "C");
 
     if (dtkApplicationArgumentsContain(&application, "-h") || dtkApplicationArgumentsContain(&application, "--help")) {
-        qDebug() << "Usage: medInria [--no-fullscreen] [--stereo] [--view] [files]]";
+        qDebug() << "Usage: medInria [--fullscreen|--no-fullscreen] [--stereo] "
+        #ifdef ACTIVATE_WALL_OPTION
+        "[--wall] [--tracker=URL] "
+        #endif
+        "[--view] [files]]";
         return 1;
     }
 
@@ -98,15 +102,14 @@ int main(int argc,char* argv[]) {
         if (arg.startsWith("--")) {
             bool valid_option = false;
             const QStringList options = (QStringList()
+                    << "--fullscreen"
                     << "--no-fullscreen"
-#ifdef ACTIVATE_WALL_OPTION
                     << "--wall" 
                     << "--tracker" 
-#endif
                     << "--stereo"
                     << "--view");
             for (QStringList::const_iterator i=options.constBegin();i!=options.constEnd();++i)
-                if (arg.startsWith(==*i))
+                if (arg.startsWith(*i))
                     valid_option = true;
             if (!valid_option) { qDebug() << "Ignoring unknown option " << arg; }
             continue;
@@ -185,24 +188,26 @@ int main(int argc,char* argv[]) {
 
     bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
 
-    #ifdef ACTIVATE_WALL_OPTION
-    if (application.arguments().contains("--wall"))
-    {
-        mainwindow.setWallScreen(true);
-        fullScreen = false;
-    }
-    #endif
-
-    const bool hasFullScreenArg = application.arguments().contains("--fullscreen");
+    const bool hasFullScreenArg   = application.arguments().contains("--fullscreen");
     const bool hasNoFullScreenArg = application.arguments().contains("--no-fullscreen");
+    const bool hasWallArg         = application.arguments().contains("--wall");
 
-    if (hasFullScreenArg && hasNoFullScreenArg)
-        dtkWarn() << "Conflicting command line parameters --fullscreen and --no-fullscren. Ignoring.";
+    const int conflict = static_cast<int>(hasFullScreenArg)+static_cast<int>(hasNoFullScreenArg)+ static_cast<int>(hasWallArg);
 
-    else if (hasNoFullScreenArg)
-        fullScreen = false;
-    else if (hasFullScreenArg)
-        fullScreen = true;
+    if (conflict>1)
+        dtkWarn() << "Conflicting command line parameters between --fullscreen, --no-fullscreen and -wall. Ignoring.";
+    else {
+        if (hasWallArg) {
+            mainwindow.setWallScreen(true);
+            fullScreen = false;
+        }
+
+        if (hasFullScreenArg)
+            fullScreen = true;
+
+        if (hasNoFullScreenArg)
+            fullScreen = false;
+    }
 
     mainwindow.setFullScreen(fullScreen);
 
