@@ -204,7 +204,8 @@ void medViewContainer::setView ( dtkAbstractView *view )
     // clear connection of previous view
     if ( d->view )
     {
-        disconnect ( view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
+        // disconnect all conenctions from this class to the view
+        disconnect ( view, 0, this, 0 );
         d->view->close();
         d->view = 0;
     }
@@ -221,6 +222,11 @@ void medViewContainer::setView ( dtkAbstractView *view )
             ++it;
         }
         connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
+        medAbstractView * medView = qobject_cast<medAbstractView*>(view);
+        if (medView) {
+            connect(medView, SIGNAL(selected()), this, SLOT(select()));
+            connect(medView, SIGNAL(unselected()), this, SLOT(unselect()));
+        }
         this->recomputeStyleSheet();
     }
     setFocus(Qt::MouseFocusReason);

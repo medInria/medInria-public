@@ -187,6 +187,9 @@ public:
     virtual medViewBackend * backend() const;
 
 signals:
+    void selected();
+    void unselected();
+
     /**
        This signal is emitted when a view is about to close.
      **/

@@ -534,6 +534,7 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->vtkWidget = new QVTKWidget ( d->widget );
     d->vtkWidget->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Minimum );
     d->vtkWidget->setFocusPolicy ( Qt::ClickFocus );
+    d->vtkWidget->installEventFilter(this);
     
     d->renWin = vtkRenderWindow::New();
     d->renWin->StereoCapableWindowOn();
@@ -2396,6 +2397,18 @@ void v3dView::onOpacityChanged ( double opacity, int layer )
 void v3dView::widgetDestroyed()
 {
     d->widget = NULL;
+}
+
+bool v3dView::eventFilter(QObject * obj, QEvent * event)
+{
+    if (obj == d->vtkWidget) {
+        if (event->type() == QEvent::FocusIn) {
+            emit selected();
+        } else if (event->type() == QEvent::FocusOut) {
+            emit unselected();
+        }
+    }
+    return medAbstractView::eventFilter(obj, event);
 }
 
 medAbstractViewCoordinates * v3dView::coordinates()

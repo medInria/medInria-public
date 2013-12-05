@@ -246,7 +246,7 @@ protected slots:
     void widgetDestroyed();
 
 protected:
-
+    virtual bool eventFilter(QObject * obj, QEvent * event);
 private:
 
     template <typename IMAGE>
