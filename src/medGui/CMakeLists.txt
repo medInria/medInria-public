@@ -60,15 +60,6 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
     
 
 ## #############################################################################
-## Add definition
-## #############################################################################
-
-add_definitions(${QT_DEFINITIONS})
-add_definitions(-DQT_SHARED)
-add_definitions(-DQT_NO_DEBUG)
-
-
-## #############################################################################
 ## Precompile headers
 ## #############################################################################
 
@@ -104,6 +95,7 @@ add_library(${PROJECT_NAME} SHARED
 target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
     dtkCore
+	dtkGui
     dtkLog
     medCore
     )

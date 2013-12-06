@@ -106,6 +106,7 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${ITKReview_LIBRARIES}
   medLogForwarder
+  medCore
   dtkCore
   dtkLog
   ITKIOBMP

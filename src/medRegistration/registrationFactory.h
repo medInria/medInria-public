@@ -6,12 +6,12 @@
 #include <QObject>
 #include "itkImageRegistrationFactory.h"
 #include "itkTransform.h"
-#include "registrationFactoryExport.h"
+#include "medRegistrationExport.h"
 
 
 class registrationFactoryPrivate;
 
-class REGISTRATIONFACTORY_EXPORT registrationFactory : public QObject {
+class MEDREGISTRATIONFACTORY_EXPORT registrationFactory : public QObject {
 
     Q_OBJECT;
 

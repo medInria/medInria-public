@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
-
+ 
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -14,12 +14,12 @@
 #pragma once
 
 #ifdef WIN32
- #if defined (vtkItkWrap_EXPORTS)
-  #define VTKITKWRAP_EXPORT __declspec( dllexport )
- #else
-  #define VTKITKWRAP_EXPORT __declspec( dllimport )
- #endif
+    #ifdef medRegistration_EXPORTS
+        #define MEDREGISTRATIONFACTORY_EXPORT __declspec(dllexport) 
+    #else
+        #define MEDREGISTRATIONFACTORY_EXPORT __declspec(dllimport) 
+    #endif
 #else
-    #define VTKITKWRAP_EXPORT
+    #define MEDREGISTRATIONFACTORY_EXPORT
 #endif
 

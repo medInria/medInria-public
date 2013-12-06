@@ -17,7 +17,7 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <itkImage.h>
 #include "itkTransform.h"
-#include "itkProcessRegistrationExport.h"
+#include "medRegistrationExport.h"
 
 
 class itkProcessRegistrationPrivate;
@@ -42,7 +42,7 @@ class itkProcessRegistrationPrivate;
  *
  *
 */
-class ITKPROCESSREGISTRATION_EXPORT itkProcessRegistration : public dtkAbstractProcess
+class MEDREGISTRATIONFACTORY_EXPORT itkProcessRegistration : public dtkAbstractProcess
 {
     Q_OBJECT
 

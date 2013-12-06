@@ -18,8 +18,6 @@
 #include "vtkImageImport.h"
 #include "vtkImageData.h"
 
-#include "vtkItkWrapExport.h"
-
 namespace itk
 {
   
@@ -36,7 +34,7 @@ namespace itk
  * \ingroup   ImageFilters     
  */
 template <class TInputImage >
-class VTKITKWRAP_EXPORT ImageToVTKImageFilter : public ProcessObject
+class ImageToVTKImageFilter : public ProcessObject
 {
 public:
   /** Standard class typedefs. */

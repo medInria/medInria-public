@@ -140,9 +140,11 @@ add_library(${PROJECT_NAME} SHARED
 ## Link
 ## #############################################################################
 
+message("${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES : ${${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES}")
+
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  ${${PROJECT_NAME}_TTK_DEPENDENT_LINK_LIBRARIES}
+  ${${PROJECT_NAME}_TTK_DEPENDENT_LIBRARIES}
   dtkCore
   dtkLog
   medCore

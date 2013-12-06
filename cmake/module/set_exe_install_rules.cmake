@@ -20,5 +20,7 @@ install(TARGETS ${project_name}
   BUNDLE  DESTINATION bin
   )
 
+fixup_bundle(${project_name})
+  
 endmacro()
 

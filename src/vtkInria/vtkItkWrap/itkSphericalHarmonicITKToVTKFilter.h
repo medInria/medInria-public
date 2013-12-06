@@ -17,7 +17,6 @@
 #include "itkImage.h"
 #include "itkImageToImageFilter.h"
 
-#include "vtkItkWrapExport.h"
 
 class vtkImageData;
 class vtkMatrix4x4;
@@ -31,7 +30,7 @@ namespace itk //TODO no namespace please ! (and no class name prifixed with othe
  * \ingroup   ImageFilter
  */
 template < class TSHImage >
-class VTKITKWRAP_EXPORT SphericalHarmonicITKToVTKFilter
+class SphericalHarmonicITKToVTKFilter
     :public ImageToImageFilter< TSHImage, TSHImage >
 {
 public:

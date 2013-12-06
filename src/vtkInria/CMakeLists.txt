@@ -44,6 +44,7 @@ list_header_directories_to_include(${PROJECT_NAME}
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIR}
   ${medCore_INCLUDE_DIRS}
   )
 

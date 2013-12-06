@@ -16,7 +16,6 @@
 
 #include "itkExtractImageFilter.h"
 #include "itkSmartPointer.h"
-#include "vtkItkWrapExport.h"
 
 namespace itk
 {
@@ -26,7 +25,7 @@ namespace itk
  * \ingroup GeometricTransforms
  */
 template <class TInputImage, class TOutputImage>
-class VTKITKWRAP_EXPORT ExtractImageBufferFilter:
+class ExtractImageBufferFilter:
     public ExtractImageFilter<TInputImage,TOutputImage>
 {
 public:
