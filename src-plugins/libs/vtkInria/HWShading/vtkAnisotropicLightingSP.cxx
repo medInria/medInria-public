@@ -98,12 +98,12 @@ vtkAnisotropicLightingSP::vtkAnisotropicLightingSP()
 
   this->WarmColorUniform = vtkUniform<Vec<3> >::New();
   this->WarmColorUniform->SetName("WarmColor");
-  const float vals1[] = { 1.0, 0.8, 0.0 };
+  float vals1[] = { 1.0, 0.8, 0.0 };
   this->WarmColorUniform->SetValue(vals1);
   this->AddShaderUniform(this->WarmColorUniform);
   this->CoolColorUniform = vtkUniform<Vec<3> >::New();
   this->CoolColorUniform->SetName("CoolColor");
-  const float vals2[] = { 0.0, 0.0, 0.8 };
+  float vals2[] = { 0.0, 0.0, 0.8 };
   this->CoolColorUniform->SetValue(vals2);
   this->AddShaderUniform(this->CoolColorUniform);
 }
@@ -228,7 +228,7 @@ void vtkAnisotropicLightingSP::SetToneShading(bool tone)
 void vtkAnisotropicLightingSP::SetWarmColor(const float red, const float green, const float blue)
 {
   vtkDebugMacro(<<"Setting warm color to "<<red<<", "<<green<<", "<<blue<<".");
-  const float color[] = { red, green, blue };
+  float color[] = { red, green, blue };
   this->WarmColorUniform->SetValue(color);
   if (this->IsLinked())
     {
@@ -250,7 +250,7 @@ void vtkAnisotropicLightingSP::GetWarmColor(float rgb[3])
 void vtkAnisotropicLightingSP::SetCoolColor(const float red, const float green, const float blue)
 {
   vtkDebugMacro(<<"Setting cool color to "<<red<<", "<<green<<", "<<blue<<".");
-  const float color[] = { red, green, blue };
+  float color[] = { red, green, blue };
   this->CoolColorUniform->SetValue(color);
   if (this->IsLinked())
     {

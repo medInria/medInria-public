@@ -12,6 +12,9 @@ See http://timpeeters.com/research/vmv2006 for more information.
 This software is distributed WITHOUT ANY WARRANTY; without even
 the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE.  See the above copyright notices for more information.
+
+This file is a modified version inspired from the original file by
+the medInria team.
 ============================================================================*/
 
 #pragma once
@@ -27,7 +30,7 @@ struct Vec {
             Value[i] = v[i];
     }
 
-    operator const float*() {
+    operator float*() {
         return Value;
     }
 
@@ -53,8 +56,11 @@ template <typename T>
 class VTK_HWSHADING_EXPORT vtkUniform: public vtkShaderUniform {
 public:
 
-    static vtkUniform* New();
-    vtkTypeRevisionMacro(vtkUniform, vtkShaderUniform);
+    //  Not canonical, but the VTK use of macros obliges this...
+
+    static vtkUniform* New() { return new vtkUniform; }
+
+    vtkTypeMacro(vtkUniform, vtkShaderUniform);
 
     vtkSetMacro(Value, T);
     vtkGetMacro(Value, T);
@@ -76,11 +82,14 @@ template <unsigned N>
 class VTK_HWSHADING_EXPORT vtkUniform<Vec<N> >: public vtkShaderUniform {
 public:
 
-    static vtkUniform* New();
-    vtkTypeRevisionMacro(vtkUniform<Vec<N> >, vtkShaderUniform);
+    //  Not canonical, but the VTK use of macros obliges this...
 
-    vtkSetVectorMacro(Value,const float,N);
-    vtkGetVectorMacro(Value,const float,N);
+    static vtkUniform* New() { return new vtkUniform; }
+
+    vtkTypeMacro(vtkUniform<Vec<N> >, vtkShaderUniform);
+
+    vtkSetVectorMacro(Value,float,N);
+    vtkGetVectorMacro(Value,float,N);
 
 protected:
 

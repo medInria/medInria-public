@@ -131,48 +131,53 @@ void vtkBMIAShaderProgramReader::ReadUniformFromLine(string line, unsigned int l
   if (type == "float")
     {
     const float val = vtkBetterDataReader::ReadFloat(line, linepos, linepos);
-    uniform = vtkUniform<float>::New();
-    ((vtkUniform<float>*)uniform)->SetValue(val);
+    vtkUniform<float>* unif = vtkUniform<float>::New();
+    unif->SetValue(val);
+    uniform = unif;
     }
   else if (type == "vec2")
     {
-    const float values[] = {
+    float values[] = {
         vtkBetterDataReader::ReadFloat(line, linepos, linepos),
         vtkBetterDataReader::ReadFloat(line, linepos, linepos)
     };
 
-    uniform = vtkUniform<Vec<2> >::New();
-    ((vtkUniform<Vec<2> >*)uniform)->SetValue(values);
+    vtkUniform<Vec<2> >* unif = vtkUniform<Vec<2> >::New();
+    unif->SetValue(values);
+    uniform = unif;
     }
   else if (type == "vec3")
     {
-    const float values[] = {
+    float values[] = {
         vtkBetterDataReader::ReadFloat(line, linepos, linepos),
         vtkBetterDataReader::ReadFloat(line, linepos, linepos),
         vtkBetterDataReader::ReadFloat(line, linepos, linepos)
     };
 
-    uniform = vtkUniform<Vec<3> >::New();
-    ((vtkUniform<Vec<3> >*)uniform)->SetValue(values);
+    vtkUniform<Vec<3> >* unif = vtkUniform<Vec<3> >::New();
+    unif->SetValue(values);
+    uniform = unif;
     }
   else if (type == "vec4")
     {
-    const float values[] = {
+    float values[] = {
         vtkBetterDataReader::ReadFloat(line, linepos, linepos),
         vtkBetterDataReader::ReadFloat(line, linepos, linepos),
         vtkBetterDataReader::ReadFloat(line, linepos, linepos),
         vtkBetterDataReader::ReadFloat(line, linepos, linepos)
     };
 
-    uniform = vtkUniform<Vec<4> >::New();
-    ((vtkUniform<Vec<4> >*)uniform)->SetValue(values);
+    vtkUniform<Vec<4> >* unif = vtkUniform<Vec<4> >::New();
+    unif->SetValue(values);
+    uniform = unif;
     }
   else if ((type == "int")||(type == "sampler"))
   // deal with sampler as with int. Change if sampler gets more functionality
     {
     int val = vtkBetterDataReader::ReadInt(line, linepos, linepos);
-    uniform = vtkUniform<int>::New();
-    ((vtkUniform<int>*)uniform)->SetValue(val);
+    vtkUniform<int>* unif = vtkUniform<int>::New();
+    unif->SetValue(val);
+    uniform = unif;
     }
   else
     {
