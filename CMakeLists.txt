@@ -106,8 +106,11 @@ include(${dtk_USE_FILE})
 ## #############################################################################
 
 set(CMAKE_AUTOMOC ON)
-set_property(GLOBAL PROPERTY AUTOMOC_TARGETS_FOLDER ${CMAKE_BINARY_DIR}/automoc}) 
+#set_property(GLOBAL PROPERTY AUTOMOC_TARGETS_FOLDER ${CMAKE_BINARY_DIR}/automoc}) 
 #TODO thing above may be (better/needed) for MSVC.
+add_definitions(${QT_DEFINITIONS})
+add_definitions(-DQT_SHARED)
+add_definitions(-DQT_NO_DEBUG)
 
 # Find includes in corresponding build (and source) directories 
 # (nedded for XXX_automoc.h)
@@ -125,7 +128,7 @@ endif()
 if(MSVC)
   include(dtkPch)
   option(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS "Use precompiled headers" 
-    false
+    OFF
     )
 endif()
 

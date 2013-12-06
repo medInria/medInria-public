@@ -18,7 +18,6 @@
 #include "vtkImageExport.h"
 #include "vtkImageData.h"
 
-#include "vtkItkWrapExport.h"
 
 #ifndef vtkFloatingPointType
 #define vtkFloatingPointType float
@@ -40,7 +39,7 @@ namespace itk
  * \ingroup   ImageFilters     
  */
 template <class TOutputImage >
-class VTKITKWRAP_EXPORT VTKImageToImageFilter : public ProcessObject
+class VTKImageToImageFilter : public ProcessObject
 {
 public:
   /** Standard class typedefs. */

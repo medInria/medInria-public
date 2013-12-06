@@ -37,6 +37,8 @@ find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
+find_package(DCMTK REQUIRED)
+
 find_package(QtDCM REQUIRED)
 include(${QTDCM_USE_FILE})
 
@@ -116,27 +118,22 @@ add_library(${PROJECT_NAME} SHARED
 ## #############################################################################
 
 if (WIN32)
-  target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  ${QTDCM_LIBS}
-  ${DCMTK_LIBRARIES}
-  dtkCore
-  dtkLog
-  medCore
-  medGui
-  netapi32
-  )
-else()
-  target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  ${QTDCM_LIBS}
-  ${DCMTK_LIBRARIES}
-  dtkCore
-  dtkLog
-  medCore
-  medGui
-  )
+  set(WIN_LINK_LIBRARIES
+	netapi32
+	)
 endif()
+
+target_link_libraries(${PROJECT_NAME}
+${QT_LIBRARIES}
+${QTDCM_LIBS}
+${DCMTK_LIBRARIES}
+${WIN_LINK_LIBRARIES}
+dtkCore
+dtkLog
+medCore
+medGui
+)
+
 
 ## #############################################################################
 ## Install rules

@@ -101,7 +101,6 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  ${ITKReview_LIBRARIES}
   medLogForwarder
   dtkCore
   dtkLog
@@ -119,8 +118,8 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOPNG
   ITKIOStimulate
   ITKIOVTK
-  ITKIOMRC
-)
+  ITKTensor
+  )
 
 
 ## #############################################################################
