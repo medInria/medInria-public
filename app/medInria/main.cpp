@@ -108,8 +108,8 @@ int main(int argc,char* argv[]) {
                     << "--tracker" 
                     << "--stereo"
                     << "--view");
-            for (QStringList::const_iterator i=options.constBegin();i!=options.constEnd();++i)
-                if (arg.startsWith(*i))
+            for (QStringList::const_iterator opt=options.constBegin();opt!=options.constEnd();++opt)
+                if (arg.startsWith(*opt))
                     valid_option = true;
             if (!valid_option) { qDebug() << "Ignoring unknown option " << arg; }
             continue;
