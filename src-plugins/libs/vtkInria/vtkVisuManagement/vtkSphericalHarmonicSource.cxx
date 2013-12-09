@@ -102,14 +102,17 @@ vtkSphericalHarmonicSource::vtkSphericalHarmonicSource(const int tess) {
     Center[2] = 0.0;
     RotationMatrix = 0;
 
+    Deform = true;
+    Normalize = false;
+
     SetNumberOfInputPorts(0);
 
-    DeformOn();
-    NormalizeOff();
-
     // By Default we flip the z-axis, the internal x,y,z have z flipped with respect to visu
-    SetFlipVector(false,false,true);
-    MaxThesisFuncOff();
+    FlipVector[0] = false;
+    FlipVector[1] = false;
+    FlipVector[2] = true;
+
+    MaxThesisFunc = false;
 
     TesselationType = Icosahedron;
     TesselationBasis = SHMatrix;
