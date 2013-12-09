@@ -1,0 +1,155 @@
+{
+   vfprintf[Memcheck:Cond]
+   Memcheck:Cond
+   fun:vfprintf
+   fun:vsprintf
+   fun:sprintf
+}
+
+{
+   __mpn_extract_double[Memcheck:Cond]
+   Memcheck:Cond
+   fun:__mpn_extract_double
+   fun:__printf_fp
+   fun:vfprintf
+   fun:vsprintf
+   fun:sprintf
+}
+
+{
+   Memcheck:Cond
+   fun:__mpn_mul_1
+   fun:__printf_fp
+   fun:vfprintf
+   fun:vsprintf
+   fun:sprintf
+}
+
+{
+   __mpn_mul[Memcheck:Cond]
+   Memcheck:Cond
+   fun:__mpn_mul
+   fun:__printf_fp
+   fun:vfprintf
+   fun:vsprintf
+   fun:sprintf
+}
+
+{
+   __printf_fp[Memcheck:Cond]
+   Memcheck:Cond
+   fun:__printf_fp
+   fun:vfprintf
+   fun:vsprintf
+   fun:sprintf
+}
+
+{
+   __mpn_rshift[Memcheck:Cond]
+   Memcheck:Cond
+   fun:__mpn_rshift
+   fun:__printf_fp
+   fun:vfprintf
+   fun:vsprintf
+   fun:sprintf
+}
+
+{
+   __mpn_lshift[Memcheck:Cond]
+   Memcheck:Cond
+   fun:__mpn_lshift
+   fun:__printf_fp
+   fun:vfprintf
+   fun:vsprintf
+   fun:sprintf
+}
+
+{
+   strstr[Memcheck:Cond]
+   Memcheck:Cond
+   fun:strstr
+}
+
+{
+   strlen[Memcheck:Cond]
+   Memcheck:Cond
+   fun:strlen
+}
+
+{
+   strcpy[Memcheck:Cond]
+   Memcheck:Cond
+   fun:strcpy
+}
+
+{
+   index[Memcheck:Cond]
+   Memcheck:Cond
+   fun:index
+}
+
+{
+   strncpy[Memcheck:Cond]
+   Memcheck:Cond
+   fun:strncpy
+}
+
+{
+   strcmp[Memcheck:Cond]
+   Memcheck:Cond
+   fun:strcmp
+}
+
+{
+   __printf_fp[Memcheck:Value8]
+   Memcheck:Value8
+   fun:__printf_fp
+   fun:vfprintf
+   fun:vsprintf
+   fun:sprintf
+}
+
+{
+   __mpn_mul[Memcheck:Value8]
+   Memcheck:Value8
+   fun:__mpn_mul
+   fun:__printf_fp
+   fun:vfprintf
+   fun:vsprintf
+   fun:sprintf
+}
+
+{
+   __mpn_rshift[Memcheck:Value8]
+   Memcheck:Value8
+   fun:__mpn_rshift
+   fun:__printf_fp
+   fun:vfprintf
+   fun:vsprintf
+   fun:sprintf
+}
+
+{
+   __mpn_lshift[Memcheck:Value8]
+   Memcheck:Value8
+   fun:__mpn_lshift
+   fun:__printf_fp
+   fun:vfprintf
+   fun:vsprintf
+   fun:sprintf
+}
+
+{
+   _itoa_word[Memcheck:Cond]
+   Memcheck:Cond
+   fun:_itoa_word
+   fun:vfprintf
+   fun:vsprintf
+   fun:sprintf
+}
+
+{
+   malloc[Memcheck:Leak]
+   Memcheck:Leak
+   fun:malloc
+}
