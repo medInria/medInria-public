@@ -61,6 +61,12 @@
 
 #include <QtGui>
 
+#ifdef Q_OS_MAC
+# define CONTROL_KEY "Meta"
+#else
+# define CONTROL_KEY "Ctrl"
+#endif
+
 // Simple new function used for factories.
 namespace  {
     template< class T >
@@ -328,7 +334,8 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     connect ( qApp, SIGNAL ( aboutToQuit() ), this, SLOT ( close() ) );
 
-    d->shortcutShortcut = new QShortcut(QKeySequence(tr("Ctrl+Space")), this,
+    d->shortcutShortcut = new QShortcut(QKeySequence(tr(CONTROL_KEY "+Space")),
+                                        this,
                                         SLOT(showShortcutAccess()),
                                         SLOT(showShortcutAccess()),
                                         Qt::ApplicationShortcut);
