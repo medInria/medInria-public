@@ -68,6 +68,8 @@ medVectorFieldToolBox::medVectorFieldToolBox(QWidget *parent)
 
 medVectorFieldToolBox::~medVectorFieldToolBox()
 {
+    delete d;
+    d = NULL;
 }
 
 
