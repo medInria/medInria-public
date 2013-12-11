@@ -636,7 +636,6 @@ void medMainWindow::showShortcutAccess()
 {
     if ( d->shortcutAccessVisible )
     {
-//        this->hideShortcutAccess();
         d->shortcutAccessWidget->updateCurrentlySelectedRight();
         return;
     }

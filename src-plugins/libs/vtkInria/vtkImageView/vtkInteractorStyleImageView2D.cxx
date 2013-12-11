@@ -464,7 +464,6 @@ void vtkInteractorStyleImageView2D::OnChar()
   {
     this->InvokeEvent (vtkImageView2DCommand::ResetViewerEvent, this);
   }
-  //this->Superclass::OnChar();
 }
 
 //----------------------------------------------------------------------------
