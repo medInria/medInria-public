@@ -1174,6 +1174,7 @@ void medViewPropertiesToolBox::onZoomingChanged(bool checked)
 {
     if (checked && d->view) {
         d->view->setProperty("MouseInteraction", "Zooming");
+        d->view->receiverWidget()->setFocus();
     }
 }
 

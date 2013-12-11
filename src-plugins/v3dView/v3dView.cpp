@@ -49,6 +49,7 @@
 #include <vtkInteractorStyleImageView2D.h>
 #include <vtkInteractorStyleTrackballCamera2.h>
 #include <vtkInteractorStyleTrackballActor.h>
+#include <vtkInriaInteractorStyleRubberBandZoom.h>
 #include <vtkImageViewCollection.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkPiecewiseFunction.h>
@@ -199,6 +200,32 @@ void v3dViewObserver::Execute ( vtkObject *caller, unsigned long event, void *ca
     }
 
     break;
+
+
+    case vtkCommand::KeyPressEvent:
+    {
+        vtkRenderWindowInteractor *iren = static_cast<vtkRenderWindowInteractor*>(caller);
+        if (iren->GetControlKey())
+        {
+            view->setProperty( "ZoomMode" , "RubberBand" );
+            dynamic_cast<vtkInriaInteractorStyleRubberBandZoom*>(view->view2d()->GetInteractor()->GetInteractorStyle())->RightButtonModeOn();
+            if (view->property("MouseInteraction")!="Zooming")
+                dynamic_cast<vtkInriaInteractorStyleRubberBandZoom*>(view->view2d()->GetInteractor()->GetInteractorStyle())->LeftButtonModeOff();
+        }
+    }
+
+    break;
+    case vtkCommand::KeyReleaseEvent:
+    {
+        vtkRenderWindowInteractor *iren = static_cast<vtkRenderWindowInteractor*>(caller);
+        if (!iren->GetControlKey())
+        {
+            if (view->property("ZoomMode")=="RubberBand")
+                view->setProperty( "ZoomMode" , "Normal" );
+        }
+    }
+
+    break;
     }
 }
 
@@ -272,6 +299,8 @@ public:
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
 
+    vtkInteractorStyle *interactorStyle2D;
+    
     vtkImageView *currentView;
 
     vtkImageViewCollection *collection;
@@ -362,6 +391,7 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->setPropertyFunctions["UseLOD"] = &v3dView::onUseLODPropertySet;
     d->setPropertyFunctions["Preset"] = &v3dView::onPresetPropertySet;
     d->setPropertyFunctions["Cropping"] = &v3dView::onCroppingPropertySet;
+    d->setPropertyFunctions["ZoomMode"] = &v3dView::onZoomModePropertySet;
     d->setPropertyFunctions["PositionLinked"] = &v3dView::onPositionLinkedPropertySet;
     d->setPropertyFunctions["WindowingLinked"] = &v3dView::onWindowingLinkedPropertySet;
     d->setPropertyFunctions["DepthPeeling"] = &v3dView::onDepthPeelingPropertySet;
@@ -382,6 +412,7 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->view2d->SetBackground ( 0.0, 0.0, 0.0 );
     d->view2d->SetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeZoom );
     d->view2d->SetMiddleButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypePan );
+    d->view2d->SetKeyboardInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeSlice);
     d->view2d->SetViewOrientation ( vtkImageView2D::VIEW_ORIENTATION_AXIAL );
     d->view2d->CursorFollowMouseOff();
     d->view2d->ShowImageAxisOff();
@@ -410,11 +441,13 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->view3d->SetInteractorStyle ( interactorStyle );
     interactorStyle->Delete();
 
-    QMainWindow * mainWindow = dynamic_cast< QMainWindow * >(
+    QMainWindow * mainWindowApp = dynamic_cast< QMainWindow * >(
         qApp->property( "MainWindow" ).value< QObject * >() );
 
-    d->widget = new QWidget( mainWindow );
-
+    connect(mainWindowApp,SIGNAL(mainWindowDeactivated()),this,SLOT(onMainWindowDeactivated()));
+    
+    d->widget = new QWidget( mainWindowApp);
+    
     d->slider = new QSlider ( Qt::Horizontal, d->widget );
     d->slider->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Fixed );
     d->slider->setFocusPolicy ( Qt::NoFocus );
@@ -500,8 +533,9 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 
     d->vtkWidget = new QVTKWidget ( d->widget );
     d->vtkWidget->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Minimum );
-    d->vtkWidget->setFocusPolicy ( Qt::NoFocus );
-
+    d->vtkWidget->setFocusPolicy ( Qt::ClickFocus );
+    d->vtkWidget->installEventFilter(this);
+    
     d->renWin = vtkRenderWindow::New();
     d->renWin->StereoCapableWindowOn();
     d->renWin->SetStereoTypeToCrystalEyes();
@@ -562,8 +596,15 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->view2d->AddObserver ( vtkImageView::WindowLevelChangedEvent,  d->observer, 0 );
     d->view2d->GetInteractorStyle()->AddObserver ( vtkImageView2DCommand::CameraZoomEvent, d->observer, 0 );
     d->view2d->GetInteractorStyle()->AddObserver ( vtkImageView2DCommand::CameraPanEvent, d->observer, 0 );
+    d->view2d->AddObserver ( vtkImageView2DCommand::CameraPanEvent, d->observer, 0);
+    d->view2d->AddObserver ( vtkImageView2DCommand::CameraZoomEvent,d->observer,0);
     d->view3d->GetInteractorStyle()->AddObserver ( vtkCommand::InteractionEvent, d->observer, 0 );
 
+    d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent,d->observer,0);
+    d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyReleaseEvent,d->observer,0);
+
+    d->interactorStyle2D = d->view2d->GetInteractorStyle();
+    
     // 3D mode
     QAction *vrAct = new QAction ( tr ( "VR" ), d->vtkWidget );
 
@@ -642,6 +683,9 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     this->setProperty ( "WindowingLinked",  "false" );
     this->setProperty ( "Daddy",            "false" );
     this->setProperty ( "Closable",         "true"  );
+
+    this->addProperty ("ZoomMode",QStringList() << "Normal" << "RubberBand" );
+    this->setProperty ( "ZoomMode" , "Normal" );
 
     int colorIndex = d->nextColorIndex;
     if ( colorIndex >= d->presetColors.size() )
@@ -1437,6 +1481,21 @@ void v3dView::onMouseInteractionPropertySet ( const QString &value )
         d->view2d->ShowDistanceWidgetOff();
     }
 }
+
+void v3dView::onZoomModePropertySet ( const QString &value )
+{
+    if ( value=="RubberBand" )
+    {
+        vtkInriaInteractorStyleRubberBandZoom * interactorStyle = vtkInriaInteractorStyleRubberBandZoom::New();
+        interactorStyle->AddObserver( vtkImageView2DCommand::CameraZoomEvent,d->observer,0 );
+        interactorStyle->AddObserver( vtkImageView2DCommand::CameraPanEvent,d->observer,0 );
+        d->view2d->GetInteractor()->SetInteractorStyle(interactorStyle);
+        interactorStyle->Delete();
+    }
+    else 
+        d->view2d->GetInteractor()->SetInteractorStyle(d->interactorStyle2D);
+}
+
 QString v3dView::getPreset ( int layer ) const
 {
     if ( layer < d->PresetList.size() )
@@ -2340,6 +2399,18 @@ void v3dView::widgetDestroyed()
     d->widget = NULL;
 }
 
+bool v3dView::eventFilter(QObject * obj, QEvent * event)
+{
+    if (obj == d->vtkWidget) {
+        if (event->type() == QEvent::FocusIn) {
+            emit selected();
+        } else if (event->type() == QEvent::FocusOut) {
+            emit unselected();
+        }
+    }
+    return medAbstractView::eventFilter(obj, event);
+}
+
 medAbstractViewCoordinates * v3dView::coordinates()
 {
     return this;
@@ -2516,4 +2587,11 @@ void v3dView::setCurrentLayer(int layer)
     medAbstractView::setCurrentLayer(layer);
     d->view2d->SetCurrentLayer(layer);
     d->view3d->SetCurrentLayer(layer);
+}
+
+void v3dView::onMainWindowDeactivated()
+{
+    //This function must contains all the different actions that we want to happen in case the software loses the focus
+    if (property("ZoomMode")=="RubberBand")
+        onZoomModePropertySet("Normal"); 
 }

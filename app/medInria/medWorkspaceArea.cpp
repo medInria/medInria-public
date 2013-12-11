@@ -132,7 +132,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
     //action for transfer function
     QAction * transFunAction = new QAction("Toggle Tranfer Function Widget", this);
-    transFunAction->setShortcut(Qt::ControlModifier + Qt::ShiftModifier + Qt::Key_L);
+    transFunAction->setShortcut(Qt::CTRL + Qt::Key_H);
     transFunAction->setCheckable( true );
     transFunAction->setChecked( false );
     connect(transFunAction, SIGNAL(toggled(bool)),

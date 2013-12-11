@@ -182,6 +182,7 @@ public slots:
     void onShowAnnotationsPropertySet       (const QString &value);
     void onMouseInteractionPropertySet      (const QString &value);
     void onCroppingPropertySet              (const QString &value);
+    void onZoomModePropertySet              (const QString &value);
     void onDaddyPropertySet                 (const QString &value);
     void onClosablePropertySet              (const QString &value);
     void onPositionLinkedPropertySet        (const QString &value);
@@ -192,6 +193,8 @@ public slots:
     void setSlider                          ( int value );
     void onZSliderValueChanged              (int value);
     void onMetaDataSet         (const QString &key, const QString &value);
+
+    void onMainWindowDeactivated();
 
 public slots: // Menu interface
     void onMenu3DVRTriggered();
@@ -243,7 +246,7 @@ protected slots:
     void widgetDestroyed();
 
 protected:
-
+    virtual bool eventFilter(QObject * obj, QEvent * event);
 private:
 
     template <typename IMAGE>

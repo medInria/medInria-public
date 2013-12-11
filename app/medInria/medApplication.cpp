@@ -156,6 +156,9 @@ void medApplication::setMainWindow(medMainWindow *mw)
 {
     d->mainWindow = mw;
 
+    QVariant var = QVariant::fromValue((QObject*)d->mainWindow);
+    this->setProperty("MainWindow",var);
+
     // If there are any requests to open files not yet treated, send signal to do so
     foreach(QString openInstruction, d->systemOpenInstructions)
     {

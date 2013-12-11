@@ -52,8 +52,9 @@ void medSingleViewContainer::setView(dtkAbstractView *view)
         // END FIXME
 
         // set the view properties
-        if (medAbstractView *medView = qobject_cast<medAbstractView*> (view))
+        if (medAbstractView *medView = qobject_cast<medAbstractView*> (view)){
             d->pool->appendView (medView);
+        }
 
         connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
         connect (view, SIGNAL (changeDaddy(bool)),

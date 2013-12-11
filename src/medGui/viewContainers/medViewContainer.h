@@ -445,8 +445,6 @@ protected:
      * @param void
     */
     void recomputeStyleSheet();
-    
-   
 
 protected:
     /**

@@ -186,7 +186,6 @@ void medCustomViewContainer::setView ( dtkAbstractView *view )
     {
         if ( view != d->view )
         {
-
             if ( d->layout->count() )
                 d->layout->removeItem ( d->layout->itemAt ( 0 ) );
 
@@ -207,6 +206,7 @@ void medCustomViewContainer::setView ( dtkAbstractView *view )
                 connect ( view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
 
                 this->recomputeStyleSheet();
+
                 emit viewAdded ( view );
             }
             // END FIXME

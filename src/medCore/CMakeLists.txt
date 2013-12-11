@@ -1,21 +1,15 @@
-### CMakeLists.txt ---
-##
-## Author: Julien Wintz
-## Copyright (C) 2008 - Julien Wintz, Inria.
-## Created: Sat Oct  3 18:22:21 2009 (+0200)
-## Version: $Id$
-## Last-Updated: Wed May  4 10:55:34 2011 (+0200)
-##           By: Julien Wintz
-##     Update #: 43
-######################################################################
-##
-### Commentary:
-##
-######################################################################
-##
-### Change log:
-##
-######################################################################
+#######################################################################
+#
+# medInria
+#
+# Copyright (c) INRIA 2013. All rights reserved.
+# See LICENSE.txt for details.
+# 
+#  This software is distributed WITHOUT ANY WARRANTY; without even
+#  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+#  PURPOSE.
+#
+#######################################################################
 
 project(medCore)
 
@@ -114,6 +108,7 @@ set(${PROJECT_NAME}_SOURCES
 
 ## #################################################################
 ## Wrapping
+## #################################################################
 if (SWIG_FOUND)
     set(${PROJECT_NAME}_WRAP_DEPENDS ${${PROJECT_NAME}_HEADERS})
     if (PYTHONLIBS_FOUND)
@@ -179,12 +174,12 @@ if (SWIG_FOUND)
           COMMENT "-- Moving python modules to ${CMAKE_BINARY_DIR}/modules"
         )
     set(${PROJECT_NAME}_MODULES ${CMAKE_BINARY_DIR}/modules/medcore.py)
-    endif(PYTHONLIBS_FOUND)
-endif(SWIG_FOUND)
+    endif()
+endif()
 
 # Include header files for Visual Studio.
-SOURCE_GROUP("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-SOURCE_GROUP("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
+source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
+source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
 ## #################################################################
 ## Installation

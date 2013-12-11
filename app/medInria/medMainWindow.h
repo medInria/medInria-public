@@ -38,6 +38,9 @@ public:
 
 signals:
     void sliceSelected(int slice);
+    void mainWindowActivated();
+    void mainWindowDeactivated();
+
 
 public slots:
     void setWallScreen(const bool full);
@@ -136,10 +139,9 @@ protected:
 
     void mousePressEvent(QMouseEvent * event);
     
-    void keyPressEvent(QKeyEvent *event);
-    void keyReleaseEvent(QKeyEvent *event);
-    
     int saveModified();
+
+    bool event(QEvent * e);
 
     /**
      * all initial registering should be done here

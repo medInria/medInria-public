@@ -204,7 +204,8 @@ void medViewContainer::setView ( dtkAbstractView *view )
     // clear connection of previous view
     if ( d->view )
     {
-        disconnect ( view, SIGNAL ( changeDaddy ( bool ) ), this, SLOT ( onDaddyChanged ( bool ) ) );
+        // disconnect all conenctions from this class to the view
+        disconnect ( view, 0, this, 0 );
         d->view->close();
         d->view = 0;
     }
@@ -221,6 +222,10 @@ void medViewContainer::setView ( dtkAbstractView *view )
             ++it;
         }
         connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
+        medAbstractView * medView = qobject_cast<medAbstractView*>(view);
+        if (medView) {
+            connect(medView, SIGNAL(selected()), this, SLOT(select()));
+        }
         this->recomputeStyleSheet();
     }
     setFocus(Qt::MouseFocusReason);
@@ -269,7 +274,8 @@ void medViewContainer::setCurrent ( medViewContainer *container )
 
 void medViewContainer::recomputeStyleSheet()
 {
-    this->setStyleSheet ( qApp->styleSheet() );
+    this->style()->unpolish(this);
+    this->style()->polish(this);
 }
 
 void medViewContainer::dragEnterEvent ( QDragEnterEvent *event )
@@ -306,10 +312,6 @@ void medViewContainer::focusInEvent ( QFocusEvent *event )
     Q_UNUSED ( event );
 
     this->select();
-
-    this->recomputeStyleSheet();
-    emit selected();
-
 }
 
 void medViewContainer::focusOutEvent ( QFocusEvent *event )
@@ -437,7 +439,6 @@ bool medViewContainer::open(dtkAbstractData * data)
     if ( data == NULL )
         return false;
 
-
     dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
     bool newView = view.isNull() || !this->multiLayer();
 
@@ -478,4 +479,3 @@ bool medViewContainer::open(dtkAbstractData * data)
 
     return true;
 }
-

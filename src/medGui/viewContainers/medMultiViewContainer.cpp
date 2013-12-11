@@ -56,6 +56,10 @@ void medSingleViewContainer2::setView (dtkAbstractView *view)
         d->layout->addWidget(view->widget(), 0, 0);
         // d->pool->appendView (view); // only difference with medSingleViewContainer: do not add the view to the pool
         connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
+        medAbstractView * medView = qobject_cast<medAbstractView*>(view);
+        if (medView) {
+            connect(medView, SIGNAL(selected()), this, SLOT(select()));
+        }
     }
     this->setFocus(Qt::MouseFocusReason);
 }
