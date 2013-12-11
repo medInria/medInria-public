@@ -59,7 +59,6 @@ void medSingleViewContainer2::setView (dtkAbstractView *view)
         medAbstractView * medView = qobject_cast<medAbstractView*>(view);
         if (medView) {
             connect(medView, SIGNAL(selected()), this, SLOT(select()));
-            connect(medView, SIGNAL(unselected()), this, SLOT(unselect()));
         }
     }
     this->setFocus(Qt::MouseFocusReason);
