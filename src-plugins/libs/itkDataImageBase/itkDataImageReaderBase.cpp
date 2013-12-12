@@ -283,7 +283,8 @@ bool itkDataImageReaderBase::read(const QString& path)
 
     this->setProgress(0);
 
-    this->readInformation(path);
+    if ( ! this->readInformation(path) )
+        return false;
 
     this->setProgress(50);
 
