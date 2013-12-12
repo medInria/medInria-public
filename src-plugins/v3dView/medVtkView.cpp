@@ -34,6 +34,9 @@ dtkAbstractView *createMedVtkView()
 
 void medVtkView::setData (dtkAbstractData *data, int layer)
 {
+    if(!data)
+        return;
+
     if (layer < 0)
         layer = 0;
     
