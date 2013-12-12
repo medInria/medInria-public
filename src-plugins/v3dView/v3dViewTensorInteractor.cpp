@@ -40,7 +40,7 @@ class v3dViewTensorInteractorPrivate
 {
 public:
     dtkSmartPointer<dtkAbstractData> data;
-    dtkSmartPointer<v3dView>         view;
+    v3dView*                        view;
     vtkTensorManager                *manager;
 
     // the filters will convert from itk tensor image format to vtkStructuredPoint (format handled by the tensor manager)
@@ -60,6 +60,9 @@ v3dViewTensorInteractor::v3dViewTensorInteractor(): medAbstractVtkViewInteractor
 
     d->datasetDouble = 0;
     d->filterDouble = 0;
+
+    d->data = 0;
+    d->view = 0;
 
     // set default properties
     d->manager->SetGlyphShapeToLine();

@@ -25,6 +25,7 @@
 #include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkSmartPointer.h>
 
+#include <v3dView.h>
 #include <v3dView4DInteractor.h>
 
 #include <medToolBoxFactory.h>
@@ -41,7 +42,7 @@ public:
     medButton *stopButton;
 
     QList <QAction*> actionlist;
-    dtkSmartPointer<dtkAbstractView> view;
+    v3dView* view;
     v3dView4DInteractor* interactor;
     QTimeLine *timeLine;
     QSpinBox *spinBox;
@@ -196,11 +197,13 @@ void medTimeLineToolBox::update(dtkAbstractView *view)
     if (!view)
     {
         this->stop();
+        d->view = 0;
+        d->interactor = 0;
         return;
     }
     
     d->view->disconnect(this);
-    d->view = view;
+    d->view = qobject_cast<v3dView*>(view);
     
     d->interactor = dynamic_cast<v3dView4DInteractor*>(view->interactor ("v3dView4DInteractor"));
     
