@@ -103,6 +103,8 @@ $FINDER_TOOLBAR_DISABLED_BACKGROUND     = $GREY10;
 
 $FILE_SYSTEM_INFO_TEXT_BACKGROUND       = $GREY03;
 
+$DROP_SITE_BACKGROUND                   = $GREY01;
+
 
 /*******************************************************************************
     WIDGET COLOR
@@ -165,6 +167,8 @@ $MENU_SEPARATOR_BORDER          = 2px solid $GREY10;
 $PROGRESS_BAR_BORDER            = 1px solid $GREY01;
 
 $BROWSER_CONTAINER_BORDER       = 2px solid $GREY06;
+
+$DROP_SITE_BORDER               = 1px solid $GREY06;
 
 
 /*******************************************************************************
@@ -1163,6 +1167,15 @@ QProgressBar::chunk[failure = "true"]
     background: $RED;
 }
 
+
+/*******************************************************************************
+     medDropSite
+ *******************************************************************************/
+medDropSite
+{
+    background: $DROP_SITE_BACKGROUND;
+    border: $DROP_SITE_BORDER;
+}
 
 /*******************************************************************************
      settingsWidget
