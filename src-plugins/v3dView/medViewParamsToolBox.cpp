@@ -58,17 +58,18 @@ QList<medAbstractParameter*> medViewParamsToolBox::getParameters(medVtkView* vie
 
 void medViewParamsToolBox::update(dtkAbstractView * view)
 {
+    d->view2dToolBox->update(view);
+    d->view3dToolBox->update(view);
+
     // Hide this toolbox when no views
     if(!view)
     {
         this->hide();
+        d->vtkView = 0;
         return;
     }
     else
         this->show();
-
-    d->view2dToolBox->update(view);
-    d->view3dToolBox->update(view);
 
     if(view->property("Orientation") == "3D")
         setViewMode(display3d);
@@ -246,7 +247,10 @@ void medView2dParamsToolBox::update(dtkAbstractView * view)
 {
     // Hide this toolbox when no views
     if(!view)
+    {
         this->hide();
+        d->vtkView = 0;
+    }
     else
         this->show();
 
