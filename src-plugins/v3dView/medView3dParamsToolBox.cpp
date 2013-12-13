@@ -50,7 +50,10 @@ void medView3dParamsToolBox::update(dtkAbstractView * view)
 {
     // Hide this toolbox when no views
     if(!view)
+    {
         this->hide();
+        d->vtkView = 0;
+    }
     else
         this->show();
 
