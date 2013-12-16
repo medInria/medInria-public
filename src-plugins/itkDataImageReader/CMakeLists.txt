@@ -39,32 +39,19 @@ if (ITK_USE_SYSTEM_GDCM)
 endif()
 
 
-
 ## #############################################################################
 ## List Sources
 ## #############################################################################
 
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+
 if(ITK_USE_SYSTEM_GDCM)
-  add_subdirectory(gdcmReader)
+  list_source_files(${PROJECT_NAME}
+    gdcmReader
+    )
 endif()
-
-file(GLOB HEADERS
-  *.h
-  )
-set(${PROJECT_NAME}_H
-  ${HEADERS}
-  ${${PROJECT_NAME}_H}
-  )
-
-file(GLOB CPP
-  *.cpp
-  )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
-  )
-
-
 
 
 ## #############################################################################
@@ -88,7 +75,7 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_PCH
     ${MEDPLUGINSPCH_H}
     ${MEDPLUGINSPCH_CPP}
-    ${${PROJECT_NAME}_CPP}
+    ${${PROJECT_NAME}_SOURCES}
     )
 endif()
 
@@ -99,8 +86,7 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_H}
-  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_SOURCES}
   )
 
 
@@ -112,10 +98,10 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   dtkLog
-  medCore
-  medLogForwarder
-  medImageIO
   ITKIOPhilipsREC
+  medCore
+  medLog
+  medImageIO
   )
 
 

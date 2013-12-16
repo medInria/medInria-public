@@ -18,22 +18,9 @@ project(medCore)
 ## List Sources
 ## #############################################################################
 
-add_subdirectory(annotationData)
-
-file(GLOB HEADERS
-  *.h
-  )
-set(${PROJECT_NAME}_H
-  ${HEADERS}
-  ${${PROJECT_NAME}_H}
-  )
-
-file(GLOB CPP
-  *.cpp
-  )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  annotationData
   )
 
 ## #############################################################################
@@ -49,20 +36,6 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 
 
 ## #############################################################################
-## Add definition
-## #############################################################################
-
-if (NOT MSVC) #TODO : what is it for ? 
-  add_definitions(-Wno-write-strings)
-  add_definitions(-Wformat=0)
-endif()
-
-add_definitions(${QT_DEFINITIONS})
-add_definitions(-DQT_SHARED)
-add_definitions(-DQT_NO_DEBUG)
-
-
-## #############################################################################
 ## Precompile headers
 ## #############################################################################
 
@@ -70,7 +43,7 @@ if (MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_PCH
     ${MEDPCH_H}
     ${MEDPCH_CPP}
-    ${${PROJECT_NAME}_CPP}
+    ${${PROJECT_NAME}_SOURCES}
     )
 endif()
 
@@ -80,8 +53,7 @@ endif()
 ## #############################################################################
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_H}
-  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_PCH}
   )
 

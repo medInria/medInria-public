@@ -25,8 +25,8 @@
 #include "vtkProperty.h"
 #include "vtkProperty2D.h"
 #include "vtkTextProperty.h"
+#include "vtkOrientationAnnotation.h"
 #include <vtkCornerAnnotation.h>
-#include <vtkOrientationAnnotation.h>
 #include <vtkCamera.h>
 
 #include <algorithm>

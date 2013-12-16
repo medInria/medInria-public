@@ -14,7 +14,7 @@
 #include "itkOutputWindow.h"
 #include "itkObjectFactory.h"
 
-#include "medLogForwarderExport.h"
+#include "medLogExport.h"
 
 namespace itk {
 
@@ -23,7 +23,7 @@ namespace itk {
 * @brief This class forwards all itk messages (Warning, Exceptions, TextOutputs) to the dtkLogger class
 * You only need to instantiate this class once at the very beginning of you code (that uses itk)
 */
-class MEDLOGFORWARDER_EXPORT LogForwarder : public OutputWindow
+class MEDLOG_EXPORT LogForwarder : public OutputWindow
 {
 public:
 

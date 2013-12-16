@@ -83,11 +83,13 @@ set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}
   )
 
+include(list_source_files)
 include(list_header_directories_to_include) 
 include(set_exe_install_rules)
 include(set_lib_install_rules)
 include(set_plugin_install_rules)
 include(add_plugin)
+
 
 ## #############################################################################
 ## Find package
@@ -106,13 +108,28 @@ include(${dtk_USE_FILE})
 ## #############################################################################
 
 set(CMAKE_AUTOMOC ON)
-#set_property(GLOBAL PROPERTY AUTOMOC_TARGETS_FOLDER ${CMAKE_BINARY_DIR}/automoc}) 
-#TODO thing above may be (better/needed) for MSVC.
-
-
-# Find includes in corresponding build (and source) directories 
-# (nedded for XXX_automoc.h)
+#   Find includes in corresponding build (and source) directories
+#   (nedded for generated files)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+
+## #############################################################################
+## add definitions
+## #############################################################################
+
+if (CMAKE_CXX_COMPILER MATCHES clang)
+    add_definitions(-DCLANG)
+endif()
+
+if (NOT MSVC) #TODO :why not this warings ?
+  add_definitions(-Wno-write-strings)
+  add_definitions(-Wformat=0)
+endif()
+
+add_definitions(${QT_DEFINITIONS}) #TODO :wath was it for ? (it is empty)
+add_definitions(-DQT_SHARED)
+add_definitions(-DQT_NO_DEBUG)
+
 
 ## #############################################################################
 ## Windows specificity
@@ -146,6 +163,7 @@ endif()
 if(${PROJECT_NAME}_BUILD_TESTS)
   add_subdirectory(tests)
 endif()
+
 
 ################################################################################
 # Setup use file

@@ -36,8 +36,8 @@ add_subdirectory(medPacs)
 add_subdirectory(medTest)
 add_subdirectory(medSql)
 
-add_subdirectory(medLogForwarder)
-add_subdirectory(medImageIO) 
+add_subdirectory(medLog)
+add_subdirectory(medImageIO)
 add_subdirectory(medRegistration)
 
 add_subdirectory(medVtkInria)
@@ -52,10 +52,10 @@ set(${PROJECT_NAME}_INCLUDE_DIRS
   ${medPacs_INCLUDE_DIRS}
   ${medTest_INCLUDE_DIRS}
   ${medSql_INCLUDE_DIRS}
-  ${vtkInria_INCLUDE_DIRS}
-  ${medLogForwarder_INCLUDE_DIRS}
+  ${medLog_INCLUDE_DIRS}
   ${medImageIO_INCLUDE_DIRS}
   ${medRegistration_INCLUDE_DIRS}
+  ${medVtkInria_INCLUDE_DIRS}
   ${${PROJECT_NAME}_INCLUDE_DIRS}
   PARENT_SCOPE
   )

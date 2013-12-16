@@ -47,20 +47,8 @@ include(${QTDCM_USE_FILE})
 ## List Sources
 ## #############################################################################
 
-file(GLOB HEADERS
-  *.h
-  )
-set(${PROJECT_NAME}_H
-  ${HEADERS}
-  ${${PROJECT_NAME}_H}
-  )
-
-file(GLOB CPP
-  *.cpp
-  )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
 
@@ -97,7 +85,7 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_PCH
     ${MEDPLUGINSPCH_H}
     ${MEDPLUGINSPCH_CPP}
-    ${${PROJECT_NAME}_CPP}
+    ${${PROJECT_NAME}_SOURCES}
     )
 endif()
 
@@ -108,8 +96,7 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_H}
-  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_SOURCES}
   )
 
 
@@ -124,15 +111,15 @@ if (WIN32)
 endif()
 
 target_link_libraries(${PROJECT_NAME}
-${QT_LIBRARIES}
-${QTDCM_LIBS}
-${DCMTK_LIBRARIES}
-${WIN_LINK_LIBRARIES}
-dtkCore
-dtkLog
-medCore
-medGui
-)
+  ${QT_LIBRARIES}
+  ${QTDCM_LIBS}
+  ${DCMTK_LIBRARIES}
+  ${WIN_LINK_LIBRARIES}
+  dtkCore
+  dtkLog
+  medCore
+  medGui
+  )
 
 
 ## #############################################################################

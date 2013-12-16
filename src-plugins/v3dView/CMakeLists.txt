@@ -44,7 +44,6 @@ find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
 
-
 if(${PROJECT_NAME_UP}_USE_TENSORS)
     # the Tensor ToolKit is required by the tensor interactor: v3dViewTensorInteractor
     find_package(TTK REQUIRED)
@@ -62,9 +61,16 @@ endif()
 ## List Sources
 ## #############################################################################
 
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  annotations
+  )
+
 if(${PROJECT_NAME_UP}_USE_TENSORS)
 
-    add_subdirectory(tensorInteractor)
+    list_source_files(${PROJECT_NAME}
+      tensorInteractor
+      )
     set(${PROJECT_NAME}_TTK_DEPENDENT_LIBRARIES
        ttkAlgorithms
        ITKTensor
@@ -72,25 +78,6 @@ if(${PROJECT_NAME_UP}_USE_TENSORS)
 else()
     add_definitions(-DDISABLE_TTK_DEPENDENT_CODE)
 endif()
-
-add_subdirectory(annotations)
-
-file(GLOB HEADERS
-  *.h
-  )
-set(${PROJECT_NAME}_H
-  ${HEADERS}
-  ${${PROJECT_NAME}_H}
-  )
-
-file(GLOB CPP
-  *.cpp
-  )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
-  )
-
 
 ## #############################################################################
 ## include directorie.
@@ -115,7 +102,7 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_PCH
     ${MEDPLUGINSPCH_H}
     ${MEDPLUGINSPCH_CPP}
-    ${${PROJECT_NAME}_CPP}
+    ${${PROJECT_NAME}_SOURCES}
     )
 endif()
 
@@ -130,8 +117,7 @@ qt4_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_H}
-  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_QRC}
   )
 
@@ -145,17 +131,12 @@ target_link_libraries(${PROJECT_NAME}
   ${${PROJECT_NAME}_TTK_DEPENDENT_LIBRARIES}
   dtkCore
   dtkLog
-  medCore
   vtkCommon
   vtkRendering
-  vtkImageView
-  vtkWidgetsAddOn
-  vtkVisuManagement
-  vtkDataManagement
   vtkVolumeRendering
   QVTK
-  vtkHWShading
-  vtkHelpers
+  medCore
+  medVtkInria
   )
 
 

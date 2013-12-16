@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medLogForwarderExport.h"
+#include "medLogExport.h"
 #include <vtkOutputWindow.h>
 
 /**
@@ -21,7 +21,7 @@
 * @brief This class forwards all vtk messages (Warning, Error, Debug) to the dtkLogger class
 * You only need to instantiate this class once at the very beginning of you code (that uses itk)
 */
-class MEDLOGFORWARDER_EXPORT vtkLogForwarder : public vtkOutputWindow 
+class MEDLOG_EXPORT vtkLogForwarder : public vtkOutputWindow 
 {
 public:
     static vtkLogForwarder *New();
