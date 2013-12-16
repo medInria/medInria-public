@@ -73,6 +73,17 @@ vtkImageDataInterpolator::~vtkImageDataInterpolator()
     }
 }
 
+void vtkImageDataInterpolator::SetInput(vtkImageData *input)
+{
+  this->SetImageData(input);
+}
+
+vtkImageData* vtkImageDataInterpolator::GetInput()
+{
+  return this->GetImageData();
+}
+
+
 void vtkImageDataInterpolator::SetImageData(vtkImageData* imageData)
 {
   if (this->ImageData != imageData)

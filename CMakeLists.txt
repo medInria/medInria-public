@@ -55,13 +55,16 @@ add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
 
 ## #############################################################################
-## Additionals part to build
+## Options 
 ## #############################################################################
 
 option(${PROJECT_NAME}_BUILD_TESTS 
   "Build tests"
   OFF
   )
+if(${PROJECT_NAME}_BUILD_TESTS)
+    enable_testing()
+endif()
 
 option(${PROJECT_NAME}_BUILD_DOCUMENTATION 
   "Build documentation" 
@@ -88,7 +91,7 @@ include(list_header_directories_to_include)
 include(set_exe_install_rules)
 include(set_lib_install_rules)
 include(set_plugin_install_rules)
-include(add_plugin)
+include(add_plugins)
 
 
 ## #############################################################################
@@ -143,7 +146,7 @@ endif()
 if(MSVC)
   include(dtkPch)
   option(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS "Use precompiled headers" 
-    OFF
+    ON
     )
 endif()
 
@@ -160,8 +163,17 @@ if(${PROJECT_NAME}_BUILD_DOCUMENTATION)
   add_subdirectory(documentation)
 endif()
 
-if(${PROJECT_NAME}_BUILD_TESTS)
-  add_subdirectory(tests)
+
+################################################################################
+# Setup Configuration files
+################################################################################
+
+if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
+  configure_file( ## Build tree configure file
+    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
+    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    @ONLY IMMEDIATE
+    )
 endif()
 
 
@@ -181,16 +193,6 @@ if (APPLE)
   set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/MedInriaOSXBundleInfo.plist.in")
 endif()
 
-################################################################################
-# Setup Configuration files
-################################################################################
 
-if(EXISTS ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in)
-  configure_file( ## Build tree configure file
-    ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME}Config.cmake.in
-    ${${PROJECT_NAME}_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    @ONLY IMMEDIATE
-    )
-endif()
 
 

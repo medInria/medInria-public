@@ -17,7 +17,12 @@ macro(list_source_files
   )
 
 foreach(dir ${ARGV})
-  
+
+
+## #############################################################################
+## List all headers and add them to {${project_name}_H
+## #############################################################################
+
   file(GLOB HEADERS
     ${dir}/*.h
     )
@@ -25,6 +30,11 @@ foreach(dir ${ARGV})
     ${HEADERS}
     ${${project_name}_H}
     )
+
+
+## #############################################################################
+## List all headers and add them to {${project_name}_SOURCES
+## #############################################################################
 
   file(GLOB SOURCES
     ${dir}/*.cxx

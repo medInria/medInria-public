@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <itkProcessRegistration/itkProcessRegistration.h>
+#include <itkProcessRegistration.h>
 #include "%1PluginExport.h"
 
 class %1Private;

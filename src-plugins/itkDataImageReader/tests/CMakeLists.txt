@@ -1,49 +1,91 @@
-#######################################################################
+################################################################################
 #
 # medInria
 #
 # Copyright (c) INRIA 2013. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-#######################################################################
+################################################################################
 
-set(PLUGIN_NAME itkDataImageReaderPlugin)
+project(itkDataImageReaderPluginTests)
 
-set(itkDataImageReaderPluginTests
-  itkMetaDataImageReaderTest.cxx
+
+## #############################################################################
+## Sources
+## #############################################################################
+
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-create_test_sourcelist(Tests ${PLUGIN_NAME}CxxTests.cxx
-  ${itkDataImageReaderPluginTests}
+file(GLOB TESTS_PATH # list all tests
+ *.cpp
+ *.cxx
   )
 
-add_executable(${PLUGIN_NAME}CxxTests 
-  ${Tests}
+foreach(test ${TESTS_PATH})
+    get_filename_component(test_filename ${test} NAME)
+    set(TESTS_FILENAME ${test_filename} ${TESTS_FILENAME})
+    get_filename_component(test_name ${test} NAME_WE)
+    set(TESTS_NAME ${test_name} ${TESTS_NAME})
+endforeach()
+
+create_test_sourcelist(${PROJECT_NAME}_TESTS ${PROJECT_NAME}.cxx
+  ${TESTS_FILENAME}
   )
 
-target_link_libraries(${PLUGIN_NAME}CxxTests
-  dtkCore dtkLog
+if(ITK_DIR)
+  set(ITK_DATA_ROOT ${ITK_DIR}/Examples/Data)
+endif()
+
+if(MSVC_IDE)
+set(PLUGIN_PATH
+  ${LIBRARY_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}
+  )
+else()
+set(PLUGIN_PATH
+  ${LIBRARY_OUTPUT_DIRECTORY}
+  )
+endif()
+
+## #############################################################################
+## Add Exe
+## #############################################################################
+
+add_executable(${PROJECT_NAME}
+  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_TESTS}
+  )
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
+  )
+
+## #############################################################################
+## Links.
+## #############################################################################
+
+target_link_libraries(${PROJECT_NAME}
+  ${QT_QTTEST_LIBRARY}
   ${QT_LIBRARIES}
+  dtkCore
+  dtkLog
+  medCore
+  ITKCommon
   )
 
-set_target_properties(${PLUGIN_NAME}CxxTests PROPERTIES 
-RUNTIME_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
-)
 
-set(CXX_TEST_PATH        ${EXECUTABLE_OUTPUT_PATH})
-set(CXX_TEST_PLUGIN_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-if (MSVC)
-  set(CXX_TEST_PLUGIN_PATH ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/Release)
-endif()
+## #############################################################################
+## Add tests
+## #############################################################################
 
-set(ITK_DATA_ROOT
-  )
-
-if (ITK_SOURCE_DIR)
-  set(ITK_DATA_ROOT ${ITK_SOURCE_DIR}/Examples/Data)
-  add_test(itkMetaDataImageReaderTest ${CXX_TEST_PATH}/${PLUGIN_NAME}CxxTests itkMetaDataImageReaderTest ${CXX_TEST_PLUGIN_PATH} ${ITK_DATA_ROOT})
-endif()
+foreach (test_name ${TESTS_NAME})
+  add_test(NAME ${test_name} COMMAND $<TARGET_FILE:${PROJECT_NAME}> ${test_name}
+    ${PLUGIN_PATH}
+    ${ITK_DATA_ROOT}
+    )
+endforeach()

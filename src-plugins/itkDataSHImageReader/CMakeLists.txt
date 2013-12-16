@@ -45,11 +45,11 @@ list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
+
 ## #############################################################################
 ## include directorie.
 ## #############################################################################
 
-##  see cmake/module/list_header_directories_to_include.cmake
 list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_H}
   )
@@ -57,6 +57,7 @@ list_header_directories_to_include(${PROJECT_NAME}
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
   )
+
 
 ## #############################################################################
 ## Precompile headers
@@ -111,6 +112,5 @@ target_link_libraries(${PROJECT_NAME}
 ## Install rules
 ## #############################################################################
 
-## see cmake/module/set_plugin_install_rules.cmake
 set_plugin_install_rules(${PROJECT_NAME})
 

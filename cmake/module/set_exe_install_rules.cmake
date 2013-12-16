@@ -20,6 +20,9 @@ install(TARGETS ${project_name}
   BUNDLE  DESTINATION bin
   )
 
+## #############################################################################
+##  Mac bundle specificites
+## #############################################################################
 
 if (APPLE)
     set(MACOSX_BUNDLE_BUNDLE_NAME 

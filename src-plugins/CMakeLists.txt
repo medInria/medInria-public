@@ -27,7 +27,7 @@ endif()
 
 
 ## #############################################################################
-## options
+## Options
 ## #############################################################################
 
 option(BUILD_ALL_PLUGINS 
@@ -35,12 +35,12 @@ option(BUILD_ALL_PLUGINS
   ON
   )
 
-option(PLUGINS_EXAMPLES 
+option(BUILD_EXAMPLE_PLUGINS
   "Enable this if you want to build the examples" 
   OFF
   )
 
-option(BUILD_COMPOSITE_DATASET 
+option(BUILD_COMPOSITEDATASET_PLUGIN 
   "Enable this if you want to build compositeDataSet plugin"   
   OFF
   )
@@ -74,22 +74,7 @@ set(PLUGIN_LIST
   itkDataSHImageReader                      ON
   undoRedoRegistration                      ON
   itkProcessRegistrationDiffeomorphicDemons ON
-  )
-
-if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
-  set(PLUGIN_LIST
-    exampleProcessImageFilter               ON
-    ITKProcessExample                       ON
-    ${PLUGIN_LIST}
-    )
-endif()
-
-if(MEDINRIA-PLUGINS_BUILD_COMPOSITEDATASET)
-  set (PLUGIN_LIST
-    medCompositeDataSets                    ON
-    ${PLUGIN_LIST}
-    )
-endif()    
+  )   
 
 
 ## #############################################################################
@@ -99,3 +84,10 @@ endif()
 ## see cmake/module/add_plugin.cmake
 add_plugins(${PLUGIN_LIST})
 
+if(BUILD_COMPOSITEDATASET_PLUGIN)
+  add_subdirectory(medCompositeDataSets)          
+endif() 
+
+if (BUILD_EXAMPLE_PLUGINS)
+  add_subdirectory(examples)
+endif()

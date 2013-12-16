@@ -50,7 +50,6 @@ list_source_files(${PROJECT_NAME}
 ## include directorie.
 ## #############################################################################
 
-##  see cmake/module/list_header_directories_to_include.cmake
 list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_H}
   )
@@ -113,6 +112,5 @@ target_link_libraries(${PROJECT_NAME}
 ## Install rules
 ## #############################################################################
 
-## see cmake/module/set_plugin_install_rules.cmake
 set_plugin_install_rules(${PROJECT_NAME})
 

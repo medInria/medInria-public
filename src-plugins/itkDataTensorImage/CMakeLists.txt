@@ -61,6 +61,7 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
   ${MEDINRIA_INCLUDE_DIRS}
   )
 
+
 ## #############################################################################
 ## Precompile headers
 ## #############################################################################
@@ -119,3 +120,13 @@ target_link_libraries(${PROJECT_NAME}
 ## #############################################################################
 
 set_plugin_install_rules(${PROJECT_NAME})
+
+
+## #############################################################################
+## Build tests
+## #############################################################################
+
+if(MEDINRIA_BUILD_TESTS)
+  #add_subdirectory(tests) #TODO : need some specific data, which ones ?
+endif()
+
