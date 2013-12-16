@@ -22,6 +22,7 @@ set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
+
 ## #############################################################################
 ## Resolve dependencies
 ## #############################################################################
@@ -57,7 +58,6 @@ list_source_files(${PROJECT_NAME}
 ## include directorie.
 ## #############################################################################
 
-##  see cmake/module/list_header_directories_to_include.cmake
 list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_H}
   )
@@ -78,7 +78,6 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
     ${${PROJECT_NAME}_SOURES}
     )
 endif()
-
 
 
 ## #############################################################################
@@ -122,5 +121,15 @@ target_link_libraries(${PROJECT_NAME}
 ## Install rules
 ## #############################################################################
 
-## see cmake/module/set_plugin_install_rules.cmake
 set_plugin_install_rules(${PROJECT_NAME})
+
+
+## #############################################################################
+## Build tests
+## #############################################################################
+
+if(MEDINRIA_BUILD_TESTS)
+  #add_subdirectory(tests)
+endif()
+
+

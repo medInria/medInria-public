@@ -40,7 +40,6 @@ list_source_files(${PROJECT_NAME}
 ## include directorie.
 ## #############################################################################
 
-##  see cmake/module/list_header_directories_to_include.cmake
 list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_H}
   )
@@ -105,7 +104,6 @@ if(APPLE)
   FixDCMTKMacInstall()
 endif()
 
-## see cmake/module/set_lib_install_rules.Cmake
 set_lib_install_rules(${PROJECT_NAME} 
   ${${PROJECT_NAME}_H}
   )

@@ -60,16 +60,11 @@ public:
   void SetImageData(vtkImageData* imageData);
   vtkGetObjectMacro(ImageData, vtkImageData);
 
-  void SetInput(vtkImageData *input)
-    {
-    this->SetImageData(input);
-    }
 
-  vtkImageData* GetInput()
-    {
-    return this->GetImageData();
-    }
-  
+  void SetInput(vtkImageData *input);
+  vtkImageData* GetInput();
+
+
   /**
    * Return an interpolated value for the specified attribute of the
    * dataset. The amount of attributes for Scalars is not limited;

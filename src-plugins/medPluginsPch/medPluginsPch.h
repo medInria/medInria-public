@@ -42,7 +42,6 @@
 #include <vtkSmartPointer.h>
 #include <vtkTransform.h>
 
-
 //ITK
 #include <itkConstNeighborhoodIterator.h>
 #include <itkGreyColormapFunction.h>

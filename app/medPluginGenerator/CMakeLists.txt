@@ -36,12 +36,10 @@ set(${PROJECT_NAME}_QRC
   )
 
 
-
 ## #############################################################################
 ## include directorie.
 ## #############################################################################
 
-##  see cmake/module/list_header_directories_to_include.cmake
 list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_H}
   )
@@ -79,7 +77,13 @@ target_link_libraries(${PROJECT_NAME}
 ## install
 ## #############################################################################
 
-## see cmake/module/set_lib_install_rules.Cmake
 set_exe_install_rules(${PROJECT_NAME})
 
 
+## #############################################################################
+## Build tests
+## #############################################################################
+
+if(MEDINRIA_BUILD_TESTS)
+  add_subdirectory(tests)
+endif()
