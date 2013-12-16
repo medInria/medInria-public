@@ -78,16 +78,16 @@ set(PLUGIN_LIST
 
 if (MEDINRIA-PLUGINS_BUILD_EXAMPLES)
   set(PLUGIN_LIST
-    ${PLUGIN_LIST}
     exampleProcessImageFilter               ON
     ITKProcessExample                       ON
+    ${PLUGIN_LIST}
     )
 endif()
 
 if(MEDINRIA-PLUGINS_BUILD_COMPOSITEDATASET)
   set (PLUGIN_LIST
-    ${PLUGIN_LIST}
     medCompositeDataSets                    ON
+    ${PLUGIN_LIST}
     )
 endif()    
 

@@ -31,31 +31,14 @@ find_package(DCMTK REQUIRED)
 ## List Sources
 ## #############################################################################
 
-file(GLOB HEADERS
-  *.h
-  )
-set(${PROJECT_NAME}_H
-  ${HEADERS}
-  ${${PROJECT_NAME}_H}
-  )
-
-file(GLOB CPP
-  *.cpp
-  )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
   
 ## #############################################################################
 ## include directorie.
 ## #############################################################################
-
-if(APPLE)
-  include(FixDCMTKMacLink)
-  FixDCMTKMacLink(${PROJECT_NAME})
-endif(APPLE)
 
 ##  see cmake/module/list_header_directories_to_include.cmake
 list_header_directories_to_include(${PROJECT_NAME}
@@ -73,8 +56,7 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
 ## #############################################################################
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_CPP}
-  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_SOURCES}
   )
   
   
@@ -107,6 +89,11 @@ target_link_libraries(${PROJECT_NAME}
   ${ITKReview_LIBRARIES} #TODO get rid of this ASAP.
   ${DCMTK_LIBRARIES}
   )
+
+if(APPLE)
+  include(FixDCMTKMacLink)
+  FixDCMTKMacLink(${PROJECT_NAME} ${DCMTK_LIBRARIES})
+endif(APPLE)
 
 
 ## #############################################################################

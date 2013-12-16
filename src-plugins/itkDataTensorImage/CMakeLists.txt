@@ -37,24 +37,13 @@ include(${ITK_USE_FILE})
 find_package(TTK REQUIRED)
 include(${TTK_USE_FILE})
 
+
 ## #############################################################################
 ## List Sources
 ## #############################################################################
 
-file(GLOB HEADERS
-  *.h
-  )
-set(${PROJECT_NAME}_H
-  ${HEADERS}
-  ${${PROJECT_NAME}_H}
-  )
-
-file(GLOB CPP
-  *.cpp
-  )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
 set(${PROJECT_NAME}_QRC itkDataTensorImage.qrc)
@@ -64,7 +53,6 @@ set(${PROJECT_NAME}_QRC itkDataTensorImage.qrc)
 ## include directorie.
 ## #############################################################################
 
-##  see cmake/module/list_header_directories_to_include.cmake
 list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_H}
   )
@@ -81,7 +69,7 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_PCH
     ${MEDPLUGINSPCH_H}
     ${MEDPLUGINSPCH_CPP}
-    ${${PROJECT_NAME}_CPP}
+    ${${PROJECT_NAME}_SOURCES}
     )
 endif()
 
@@ -94,8 +82,7 @@ qt4_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_H}
-  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_CFILES}
   ${${PROJECT_NAME}_QRC}
   )
 
@@ -106,11 +93,8 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  ${ITKReview_LIBRARIES}
-  medLogForwarder
   dtkCore
   dtkLog
-  medCore
   ITKIOBMP
   ITKIOBioRad
   ITKIOHDF5
@@ -125,12 +109,13 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOStimulate
   ITKIOVTK
   ITKIOMRC
-)
+  medCore
+  medLog
+  )
 
 
 ## #############################################################################
 ## Install rules
 ## #############################################################################
 
-## see cmake/module/set_plugin_install_rules.cmake
 set_plugin_install_rules(${PROJECT_NAME})

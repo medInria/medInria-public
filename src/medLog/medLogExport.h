@@ -14,13 +14,13 @@
 #pragma once
 
 #ifdef WIN32
-    #ifdef medLogForwarder_EXPORTS
-        #define MEDLOGFORWARDER_EXPORT __declspec(dllexport) 
+    #ifdef medLog_EXPORTS
+        #define MEDLOG_EXPORT __declspec(dllexport) 
     #else
-        #define MEDLOGFORWARDER_EXPORT __declspec(dllimport) 
+        #define MEDLOG_EXPORT __declspec(dllimport) 
     #endif
 #else
-    #define MEDLOGFORWARDER_EXPORT
+    #define MEDLOG_EXPORT
 #endif
 
 

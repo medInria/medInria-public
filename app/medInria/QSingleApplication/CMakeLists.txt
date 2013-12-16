@@ -23,11 +23,12 @@ set(${PROJECT_NAME}_H
   PARENT_SCOPE
   )
   
-set(${PROJECT_NAME}_CPP
+set(${PROJECT_NAME}_SOURCES
   QSingleApplication/qtlocalpeer.cpp
   QSingleApplication/qtsingleapplication.cpp
   QSingleApplication/qtsinglecoreapplication.cpp
-  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_SOURCES}
   PARENT_SCOPE
   )
 

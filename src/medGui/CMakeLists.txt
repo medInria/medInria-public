@@ -17,36 +17,22 @@ project(medGui)
 ## List Sources
 ## #############################################################################
 
-
-add_subdirectory(viewContainers)
-add_subdirectory(toolboxes)
-add_subdirectory(settingsWidgets)
-add_subdirectory(lookUpTables)
-add_subdirectory(factories)
-add_subdirectory(database)
-add_subdirectory(commonWidgets)
-
-file(GLOB HEADERS
-  *.h
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  viewContainers
+  toolboxes
+  settingsWidgets
+  lookUpTables
+  factories
+  database
+  commonWidgets
   )
-set(${PROJECT_NAME}_H
-  ${HEADERS}
-  ${${PROJECT_NAME}_H}
-  )
-
-file(GLOB CPP
-  *.cpp
-  )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
-  )
-
 
 set(${PROJECT_NAME}_QRC medGui.qrc)
 
+
 ## #############################################################################
-## include directorie.
+## include directories.
 ## #############################################################################
 
 ##  see cmake/module/list_header_directories_to_include.cmake
@@ -55,9 +41,9 @@ list_header_directories_to_include(${PROJECT_NAME}
   )
   
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
-    ${medCore_INCLUDE_DIRS}
-    )
-    
+  ${medCore_INCLUDE_DIRS}
+  )
+  
 
 ## #############################################################################
 ## Precompile headers
@@ -81,8 +67,7 @@ qt4_add_resources(${PROJECT_NAME}_QRC
   )
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_H}
-  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_PCH}
   ${${PROJECT_NAME}_QRC}
   )
@@ -93,12 +78,12 @@ add_library(${PROJECT_NAME} SHARED
 ## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
-    ${QT_LIBRARIES}
-    dtkCore
-	dtkGui
-    dtkLog
-    medCore
-    )
+  ${QT_LIBRARIES}
+  dtkCore
+  dtkGui
+  dtkLog
+  medCore
+  )
 
 
 ## #############################################################################

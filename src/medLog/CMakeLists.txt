@@ -11,7 +11,7 @@
 #
 ################################################################################
 
-project(medLogForwarder)
+project(medLog)
 
 ## #############################################################################
 ## find requireds
@@ -34,22 +34,9 @@ include(${VTK_USE_FILE})
 ## List Sources
 ## #############################################################################
 
-file(GLOB HEADERS
-  *.h
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   )
-set(${PROJECT_NAME}_H
-  ${HEADERS}
-  ${${PROJECT_NAME}_H}
-  )
-
-file(GLOB CPP
-  *.cpp
-  )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
-  )
-
 
 
 ## #############################################################################
@@ -69,8 +56,7 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 ## #############################################################################
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_H}
-  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_SOURCES}
   )
 
 

@@ -33,25 +33,37 @@ include(${RPI_USE_FILE})
 ## List Sources
 ## #############################################################################
 
-file(GLOB HEADERS
-  *.h
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   )
-set(${PROJECT_NAME}_H
-  ${HEADERS}
+
+
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+##  see cmake/module/list_header_directories_to_include.cmake
+list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_H}
   )
 
-file(GLOB CPP
-  *.cpp
-  )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
+    
+## #############################################################################
+## add library
+## #############################################################################
+
+add_library(${PROJECT_NAME} SHARED
+  ${${PROJECT_NAME}_SOURCES}
   )
 
 
-set(${PROJECT_NAME}_LIBRARIES
-  ${QT_LIBRARIES}
+## #############################################################################
+## Link
+## #############################################################################
+
+target_link_libraries(${PROJECT_NAME}
+    ${QT_LIBRARIES}
   dtkCore 
   dtkLog
   RegistrationAddOn
@@ -77,35 +89,6 @@ set(${PROJECT_NAME}_LIBRARIES
   ITKIOTransformMatlab
   ITKIOTransformInsightLegacy
   ${ITKReview_LIBRARIES} #TODO get rid of this ASASP
-  )
-
-## #############################################################################
-## include directorie.
-## #############################################################################
-
-##  see cmake/module/list_header_directories_to_include.cmake
-list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_H}
-  )
-
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
-    
-## #############################################################################
-## add library
-## #############################################################################
-
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_H}
-  ${${PROJECT_NAME}_CPP}
-  )
-
-
-## #############################################################################
-## Link
-## #############################################################################
-
-target_link_libraries(${PROJECT_NAME}
-  ${${PROJECT_NAME}_LIBRARIES}
   )
 
 

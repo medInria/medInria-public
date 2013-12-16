@@ -48,20 +48,8 @@ include(${VTK_USE_FILE})
 ## List Sources
 ## #############################################################################
 
-file(GLOB HEADERS
-  *.h
-  )
-set(${PROJECT_NAME}_H
-  ${HEADERS}
-  ${${PROJECT_NAME}_H}
-  )
-
-file(GLOB CPP
-  *.cpp
-  )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
 
@@ -87,7 +75,7 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_PCH
     ${MEDPLUGINSPCH_H}
     ${MEDPLUGINSPCH_CPP}
-    ${${PROJECT_NAME}_CPP}
+    ${${PROJECT_NAME}_SOURES}
     )
 endif()
 
@@ -99,8 +87,7 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_H}
-  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_SOURCES}
   )
 
 
@@ -110,8 +97,6 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  medCore
-  medImageIO
   dtkCore
   dtkLog
   ITKIOBMP
@@ -128,6 +113,8 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOStimulate
   ITKIOVTK
   ${ITKReview_LIBRARIES} #TODO Get rid of this ASAP
+  medCore
+  medImageIO
   )
 
 

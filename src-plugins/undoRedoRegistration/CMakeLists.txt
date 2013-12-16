@@ -41,24 +41,13 @@ endif(ITK_FOUND)
 find_package(RPI REQUIRED)
 include(${RPI_USE_FILE})
 
+
 ## #############################################################################
 ## List Sources
 ## #############################################################################
 
-file(GLOB HEADERS
-  *.h
-  )
-set(${PROJECT_NAME}_H
-  ${HEADERS}
-  ${${PROJECT_NAME}_H}
-  )
-
-file(GLOB CPP
-  *.cpp
-  )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
 set(${PROJECT_NAME}_QRC undoRedoRegistration.qrc)
@@ -86,7 +75,7 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_PCH
     ${MEDPLUGINSPCH_H}
     ${MEDPLUGINSPCH_CPP}
-    ${${PROJECT_NAME}_CPP}
+    ${${PROJECT_NAME}_SOURCES}
     )
 endif()
 
@@ -101,8 +90,7 @@ qt4_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_H}
-  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_QRC}
   )
 
@@ -115,10 +103,10 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkLog
   dtkCore
+  RegistrationAddOn
   medCore
   medGui
   medRegistration
-  RegistrationAddOn
   )
 
 ## #############################################################################

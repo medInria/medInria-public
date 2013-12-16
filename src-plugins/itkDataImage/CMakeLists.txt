@@ -39,21 +39,10 @@ include(${ITK_USE_FILE})
 ## List Sources
 ## #############################################################################
 
-file(GLOB HEADERS
-  *.h
-  )
-set(${PROJECT_NAME}_H
-  ${HEADERS}
-  ${${PROJECT_NAME}_H}
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-file(GLOB CPP
-  *.cpp
-  )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
-  )
 
 
 ## #############################################################################
@@ -77,7 +66,7 @@ if(MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_PCH
     ${MEDPLUGINSPCH_H}
     ${MEDPLUGINSPCH_CPP}
-    ${${PROJECT_NAME}_CPP}
+    ${${PROJECT_NAME}SOURCES}
     )
 endif()
 
@@ -89,7 +78,7 @@ endif()
 # Due to the large number of template functions, windows needs an extra compile flag.
 # Currently this only affects x64/debug builds, but enabling this flag for others does no harm.
 if (MSVC)
-    set(bigobjFile itkFilters.cpp)
+    set(bigobjFile itkDataImage.cpp)
     get_source_file_property(bigobjFile_COMPILE_FLAGS ${bigobjFile} COMPILE_FLAGS)
     if(${bigobjFile_COMPILE_FLAGS} STREQUAL NOTFOUND)
         set_source_files_properties(${bigobjFile}
@@ -112,8 +101,7 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_H}
-  ${${PROJECT_NAME}_CPP}
+  ${${PROJECT_NAME}_SOURCES}
   )
 
 
@@ -125,9 +113,9 @@ target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   dtkCore
   dtkLog
-  medCore
-  medLogForwarder
   ITKStatistics
+  medCore
+  medLog
   )
 
 

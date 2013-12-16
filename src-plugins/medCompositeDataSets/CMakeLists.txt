@@ -81,13 +81,15 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  dtkCore dtkLog
+  dtkCore 
+  dtkLog
   dtkZip
+  ITKTensor
+  ITKCommon  
   medCore
   medGui
   medSql
-  ITKTensor
-  ITKCommon)
+  )
 #not useful if plugin in the medInria-plugins directory
 dtk_build_doc(medCompositeDataSetsPlugin)
 

@@ -20,20 +20,8 @@ project(medInria)
 add_subdirectory(QSingleApplication)
 add_subdirectory(ressources)
 
-file(GLOB HEADERS
-  *.h
-  )
-set(${PROJECT_NAME}_H
-  ${HEADERS}
-  ${${PROJECT_NAME}_H}
-  )
-
-file(GLOB CPP
-  *.cpp
-  )
-set(${PROJECT_NAME}_CPP
-  ${CPP}
-  ${${PROJECT_NAME}_CPP}
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
 ## #############################################################################
@@ -55,10 +43,6 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
 
 if (EXISTS ${CMAKE_BINARY_DIR}/revisions/medRevisions.h)
   include_directories(${CMAKE_BINARY_DIR}/revisions)
-  set(${PROJECT_NAME}_HEADERS
-  medRevisions.h
-  ${${PROJECT_NAME}_HEADERS}
-  )
   add_definitions(-DMEDINRIA_HAS_REVISIONS)
 endif()
 
@@ -109,7 +93,7 @@ if (MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_PCH
     ${MEDPCH_H}
     ${MEDPCH_CPP}
-    ${${PROJECT_NAME}_CPP}
+    ${${PROJECT_NAME}_SOURCES}
     )
 endif()
 
@@ -123,8 +107,7 @@ qt4_add_resources(${PROJECT_NAME}_QRC
   )
 
 add_executable(${PROJECT_NAME} ${DEPLOYMENT_SYSTEM} # Empty for Linux
-  ${${PROJECT_NAME}_CPP}
-  ${${PROJECT_NAME}_H}   # Just to have it in EDI
+  ${${PROJECT_NAME}_SOURCES}
   ${${PROJECT_NAME}_QRC}
   ${${PROJECT_NAME}_QSS} # Just to have it in EDI
   ${${PROJECT_NAME}_RC}  # Empty for Unix 
@@ -150,60 +133,8 @@ target_link_libraries(${PROJECT_NAME}
 
 
 ## #############################################################################
-## Bundle setup
-## #############################################################################
-
-#TODO : Not sure if it is still usefull, if it is, it should be mooved 
-#       to the superproject IMO.
-
-if (APPLE)
-  set(MACOSX_BUNDLE_BUNDLE_NAME 
-    ${PROJECT_NAME}
-    )
-  set(MACOSX_BUNDLE_ICON_FILE 
-    medInria.icns
-    )
-  set(MACOSX_BUNDLE_SHORT_VERSION_STRING 
-    ${${PROJECT_NAME}_VERSION}
-    )
-  set(MACOSX_BUNDLE_BUNDLE_VERSION 
-    ${${PROJECT_NAME}_VERSION}
-    )
-  set(MACOSX_BUNDLE_LONG_VERSION_STRING 
-    "Version ${${PROJECT_NAME}_VERSION}"
-    )
-  set(${PROJECT_NAME}_RESOURCE_DIR 
-    ${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME}.app/Contents/Resources
-    )
-  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${PROJECT_NAME}_RESOURCE_DIR}
-    COMMAND ${CMAKE_COMMAND} ARGS -E copy ${CMAKE_CURRENT_SOURCE_DIR}/ressources/medInria.icns ${${PROJECT_NAME}_RESOURCE_DIR}
-    )
-endif()
-
-## #############################################################################
 ## install
 ## #############################################################################
 
 ## see cmake/module/set_lib_install_rules.Cmake
-set_lib_install_rules(${PROJECT_NAME})
-
-
-#TODO : Not sure if it is still usefull, if it is, it should be mooved 
-#       to the superproject IMO.
-
-if (APPLE)
-  install(CODE "
-  execute_process(COMMAND 
-    \${QT_BINARY_DIR}/macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app
-    )
-	execute_process(COMMAND 
-      \${dtk_DIR}/bin/dtkDeploy \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app -inject-dir=\${CMAKE_CURRENT_BINARY_DIR}/plugins
-	  )
-  ")
-endif()
-
-
-
-
-
+set_exe_install_rules(${PROJECT_NAME})

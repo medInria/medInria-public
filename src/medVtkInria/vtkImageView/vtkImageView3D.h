@@ -16,9 +16,9 @@
 #include "vtkImageViewExport.h"
 
 #include "vtkImageView.h"
+#include "vtkOrientedBoxWidget.h"
 
 #include <vtkPlaneWidget.h>
-#include <vtkOrientedBoxWidget.h>
 #include <vtkVolume.h>
 #include <vtkImageView3DCroppingBoxCallback.h>
 #include <vtkOrientationMarkerWidget.h>
