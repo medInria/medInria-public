@@ -15,7 +15,7 @@
 
 #include "medToolBox.h"
 
-#include "medGuiExport.h"
+#include "v3dViewPluginExport.h"
 
 class dtkAbstractView;
 class dtkAbstractData;
@@ -31,7 +31,7 @@ class medDataIndex;
   * declare groups of fibers as belonging to the same anatomical bundle), name
   * and color bundles, and compute and display FA, ADC and length statistics.
   */
-class MEDGUI_EXPORT medFiberBundlingToolBox : public medToolBox
+class V3DVIEWPLUGIN_EXPORT medFiberBundlingToolBox : public medToolBox
 {
     Q_OBJECT
 public:

@@ -13,6 +13,7 @@
 
 #pragma once
 
+#include "v3dViewPluginExport.h"
 #include <medToolBox.h>
 
 class dtkAbstractView;
@@ -48,7 +49,7 @@ class medTimeLineToolBoxPrivate;
 
 class v3dView4DInteractor;
 
-class MEDGUI_EXPORT medTimeLineToolBox : public medToolBox
+class V3DVIEWPLUGIN_EXPORT medTimeLineToolBox : public medToolBox
 {
     Q_OBJECT
 

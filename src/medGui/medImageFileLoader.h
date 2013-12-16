@@ -15,11 +15,12 @@
 
 #include <QtCore>
 #include <QtGui>
+#include "medGuiExport.h"
 
 class medImageFileLoaderPrivate;
 
 //! Reads an image from the file, emitting completed when done.
-class medImageFileLoader: public QObject, public QRunnable {
+class MEDGUI_EXPORT medImageFileLoader: public QObject, public QRunnable {
     Q_OBJECT
 
 public:

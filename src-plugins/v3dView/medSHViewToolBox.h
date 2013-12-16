@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medGuiExport.h"
+#include "v3dViewPluginExport.h"
 #include "medToolBox.h"
 
 class medSHViewToolBoxPrivate;
@@ -26,7 +26,7 @@ class medSHViewToolBoxPrivate;
  * For instance, users can change the scale, or choose to calculate
  * more or less polygons for each glyph.
  */
-class MEDGUI_EXPORT medSHViewToolBox : public medToolBox
+class V3DVIEWPLUGIN_EXPORT medSHViewToolBox : public medToolBox
 {
 	Q_OBJECT
 

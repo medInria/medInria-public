@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medGuiExport.h"
+#include "v3dViewPluginExport.h"
 #include "medToolBox.h"
 
 class medTensorViewToolBoxPrivate;
@@ -26,7 +26,7 @@ class medTensorViewToolBoxPrivate;
  * For instance, users can change the glyph shape, or choose to calculate
  * more or less polygons for each glyph.
  */
-class MEDGUI_EXPORT medTensorViewToolBox : public medToolBox
+class V3DVIEWPLUGIN_EXPORT medTensorViewToolBox : public medToolBox
 {
 	Q_OBJECT
 
