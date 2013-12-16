@@ -39,8 +39,8 @@ struct Vec {
             Value[i] = v;
     }
 
-    float& operator[](const unsigned i)       { return Value[i]; }
-    float  operator[](const unsigned i) const { return Value[i]; }
+    float& operator[](const int i)       { return Value[i]; }
+    float  operator[](const int i) const { return Value[i]; }
 
     float Value[N];
 };
