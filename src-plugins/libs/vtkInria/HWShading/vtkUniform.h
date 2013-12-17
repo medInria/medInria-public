@@ -88,8 +88,8 @@ public:
 
     vtkTypeMacro(vtkUniform<Vec<N> >, vtkShaderUniform);
 
-    vtkSetVectorMacro(Value,float,N);
-    vtkGetVectorMacro(Value,float,N);
+    vtkSetVectorMacro(Value,float,(int)N);
+    vtkGetVectorMacro(Value,float,(int)N);
 
 protected:
 
