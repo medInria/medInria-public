@@ -17,19 +17,30 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 
+#include <vtkColorTransferFunction.h>
+#include <vtkPiecewiseFunction.h>
+
 #include <medVtkView.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
+#include <vtkTransferFunctionPresets.h>
+#include <vtkLookupTableManager.h>
+#include <vtkImageViewCollection.h>
 
 class v3dViewImageInteractorPrivate
 {
 public:
     v3dView * view;
     QList<dtkAbstractData*> dataList;
+    vtkImageViewCollection *collection;
 };
 
 
 v3dViewImageInteractor::v3dViewImageInteractor(): medAbstractVtkViewInteractor(), d(new v3dViewImageInteractorPrivate)
 {
     d->view = NULL;
+
+    d->collection = vtkImageViewCollection::New();
 }
 
 v3dViewImageInteractor::~v3dViewImageInteractor()
@@ -109,7 +120,13 @@ void v3dViewImageInteractor::setData(dtkAbstractData *data)
 void v3dViewImageInteractor::setView(dtkAbstractView *view)
 {
     if (v3dView *v3dview = dynamic_cast<v3dView*>(view) )
+    {
         d->view = v3dview;
+
+        d->collection->RemoveAllItems();
+        d->collection->AddItem ( d->view->view2d() );
+        d->collection->AddItem ( d->view->view3d() );
+    }
 }
 
 void v3dViewImageInteractor::enable()
@@ -130,33 +147,20 @@ void v3dViewImageInteractor::disable()
 
 void v3dViewImageInteractor::setOpacity(dtkAbstractData *data, double value)
 {
-    int layer = 0;
-    foreach (dtkAbstractData *listData, d->dataList)
-    {
-        if (listData == data)
-            break;
-        
-        layer++;
-    }
-    
+    int layer = getLayer(data);
+
     if (layer == d->dataList.size())
         return;
     
-    d->view->onOpacityChanged(value, layer);
+    d->view->view2d()->SetOpacity ( value, layer );
+    d->view->view3d()->SetOpacity ( value, layer );
 
     d->view->update();
 }
 
 double v3dViewImageInteractor::opacity(dtkAbstractData *data) const
 {
-    int layer = 0;
-    foreach (dtkAbstractData *listData, d->dataList)
-    {
-        if (listData == data)
-            break;
-        
-        layer++;
-    }
+    int layer = getLayer(data);
     
     if (layer == d->dataList.size())
         return 0;
@@ -166,45 +170,62 @@ double v3dViewImageInteractor::opacity(dtkAbstractData *data) const
 
 void v3dViewImageInteractor::setVisible(dtkAbstractData *data, bool visible)
 {
-    int layer = 0;
-    foreach (dtkAbstractData *listData, d->dataList)
-    {
-        if (listData == data)
-            break;
-        
-        layer++;
-    }
+    int layer = getLayer(data);
     
     if (layer == d->dataList.size())
         return;
     
-    d->view->onVisibilityChanged(visible, layer);
+    if ( visible )
+    {
+        d->view->view2d()->SetVisibility ( 1,layer );
+        d->view->view3d()->SetVisibility ( 1,layer );
+    }
+    else
+    {
+        d->view->view2d()->SetVisibility ( 0,layer );
+        d->view->view3d()->SetVisibility ( 0,layer );
+    }
+
     d->view->update();
 }
 
 bool v3dViewImageInteractor::isVisible(dtkAbstractData *data) const
 {
-    int layer = 0;
-    foreach (dtkAbstractData *listData, d->dataList)
-    {
-        if (listData == data)
-            break;
-        
-        layer++;
-    }
-    
-    if (layer == d->dataList.size())
-        return false;
-
+    int layer = getLayer(data);
     return d->view->visibility(layer);
 }
 
 void v3dViewImageInteractor::setLUT(dtkAbstractData * data, QString lut)
 {
-    d->view->setCurrentLayer(getLayer(data));
-    d->view->onLookupTablePropertySet(lut);
+    setLUT( getLayer(data), lut);
     d->view->update();
 }
+
+void v3dViewImageInteractor::setLUT (int layer, const QString &value)
+{
+    typedef vtkTransferFunctionPresets Presets;
+    vtkColorTransferFunction * rgb   = vtkColorTransferFunction::New();
+    vtkPiecewiseFunction     * alpha = vtkPiecewiseFunction::New();
+    Presets::GetTransferFunction ( value.toStdString(), rgb, alpha );
+
+    if ( layer == 0 )
+    {
+        d->view->view2d()->SetTransferFunctions ( rgb, alpha, layer );
+    }
+    else
+    {
+        vtkLookupTable *lut = vtkLookupTableManager::GetLookupTable ( value.toStdString() );
+        d->view->view2d()->SetLookupTable ( lut, layer );
+        lut->Delete();
+    }
+
+    d->view->view3d()->SetTransferFunctions ( rgb, alpha, layer );
+    d->view->view3d()->SetLookupTable(vtkLookupTableManager::GetLookupTable ( value.toStdString()), layer);
+
+    rgb->Delete();
+    alpha->Delete();
+}
+
 
 QString v3dViewImageInteractor::LUT(dtkAbstractData * data) const
 {
@@ -213,9 +234,137 @@ QString v3dViewImageInteractor::LUT(dtkAbstractData * data) const
 
 void v3dViewImageInteractor::setPreset(dtkAbstractData * data, QString preset)
 {
-    d->view->setCurrentLayer(getLayer(data));
-    d->view->onPresetPropertySet(preset);
+    setPreset( getLayer(data), preset);
     d->view->update();
+}
+
+void v3dViewImageInteractor::setPreset (int layer, const QString &preset )
+{
+    if ( preset == "None" )
+    {
+        // we reset the LUT and the ww/wl to the default values
+
+        this->setLUT( layer, "Black & White" );
+
+        double color[3] = {0.0, 0.0, 0.0};
+
+        d->collection->SyncSetBackground ( color );
+        d->collection->SyncResetWindowLevel(0);
+    }
+    else if ( preset == "VR Muscles&Bones" )
+    {
+        this->setLUT ( layer, "Muscles & Bones" );
+
+        double color[3] = {0.0, 0.0, 0.0};
+
+        d->collection->SyncSetBackground ( color );
+        d->collection->SyncSetColorWindow ( 337.0, 0, 1 );
+        d->collection->SyncSetColorLevel ( 1237.0, 0, 1 );
+    }
+    else if ( preset == "Vascular I" )
+    {
+        this->setLUT ( layer, "Stern" );
+
+        double color[3] = {0.0, 0.0, 0.0};
+
+        d->collection->SyncSetBackground ( color );
+        d->collection->SyncSetColorWindow ( 388.8, 0, 1 );
+        d->collection->SyncSetColorLevel ( 362.9, 0, 1 );
+    }
+    else if ( preset == "Vascular II" )
+    {
+        this->setLUT ( layer, "Red Vessels" );
+
+        double color[3] = {0.0, 0.0, 0.0};
+
+        d->collection->SyncSetBackground ( color );
+        d->collection->SyncSetColorWindow ( 189.6, 0, 1 );
+        d->collection->SyncSetColorLevel ( 262.3, 0, 1 );
+    }
+    else if ( preset == "Vascular III" )
+    {
+        this->setLUT ( layer, "Red Vessels" );
+
+        double color[3] = {0.0, 0.0, 0.0};
+
+        d->collection->SyncSetBackground ( color );
+        d->collection->SyncSetColorWindow ( 284.4, 0, 1 );
+        d->collection->SyncSetColorLevel ( 341.7, 0, 1 );
+    }
+    else if ( preset == "Vascular IV" )
+    {
+        this->setLUT ( layer, "Red Vessels" );
+
+        double color[3] = {0.0, 0.0, 0.0};
+
+        d->collection->SyncSetBackground ( color );
+        d->collection->SyncSetColorWindow ( 272.5, 0, 1 );
+        d->collection->SyncSetColorLevel ( 310.9, 0, 1 );
+    }
+    else if ( preset == "Standard" )
+    {
+        this->setLUT ( layer, "Muscles & Bones" );
+
+        double color[3] = {0.0, 0.0, 0.0};
+
+        d->collection->SyncSetBackground ( color );
+        d->collection->SyncSetColorWindow ( 243.7, 0, 1 );
+        d->collection->SyncSetColorLevel ( 199.6, 0, 1 );
+    }
+    else if ( preset == "Soft" )
+    {
+        this->setLUT ( layer, "Bones" );
+
+        double color[3] = {0.0, 0.0, 0.0};
+
+        d->collection->SyncSetBackground ( color );
+        d->collection->SyncSetColorWindow ( 133.5, 0, 1 );
+        d->collection->SyncSetColorLevel ( 163.4, 0, 1 );
+    }
+    else if ( preset == "Soft on White" )
+    {
+        this->setLUT ( layer, "Muscles & Bones" );
+
+        double color[3] = {1.0,0.98820477724075317,0.98814374208450317};
+
+        d->collection->SyncSetBackground ( color );
+        d->collection->SyncSetColorWindow ( 449.3, 0, 1 );
+        d->collection->SyncSetColorLevel ( 372.8, 0, 1 );
+    }
+    else if ( preset == "Soft on Blue" )
+    {
+        this->setLUT ( layer, "Muscles & Bones" );
+
+        double color[3]={0.0, 0.27507439255714417, 0.26398107409477234};
+
+        d->collection->SyncSetBackground ( color );
+        d->collection->SyncSetColorWindow ( 449.3, 0, 1 );
+        d->collection->SyncSetColorLevel ( 372.8, 0, 1 );
+    }
+    else if ( preset == "Red on White" )
+    {
+        this->setLUT ( layer, "Red Vessels" );
+
+        double color[3]={1.0, 0.98820477724075317, 0.98814374208450317};
+
+        d->collection->SyncSetBackground ( color );
+        d->collection->SyncSetColorWindow ( 449.3, 0, 1 );
+        d->collection->SyncSetColorLevel ( 372.8, 0, 1 );
+    }
+    else if ( preset == "Glossy" )
+    {
+        this->setLUT ( layer, "Bones" );
+
+        double color[3] = {0.0, 0.0, 0.0};
+
+        d->collection->SyncSetBackground ( color );
+        d->collection->SyncSetColorWindow ( 133.5, 0, 1 );
+        d->collection->SyncSetColorLevel ( 163.4, 0, 1 );
+    }
+    else
+    {
+        return; // to prevent trigger of event lutChanged()
+    }
 }
 
 QString v3dViewImageInteractor::preset(dtkAbstractData * data) const
@@ -237,6 +386,8 @@ int v3dViewImageInteractor::getLayer(dtkAbstractData * data) const
 
     return -1;
 }
+
+
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
