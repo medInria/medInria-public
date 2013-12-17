@@ -841,53 +841,25 @@ void v3dView::setSharedDataPointer ( dtkSmartPointer<dtkAbstractData> data )
 {
     if ( !data )
         return;
-     int layer = 0, imageLayer = 0;
+
+     int layer = 0;
+
      dtkAbstractData * dataInLayer;
      while ( (dataInLayer = medAbstractView::dataInList( layer )) )
      {
-         if(!dataInLayer->identifier().contains ( "vtkDataMesh" ))
-             imageLayer++;
-
          layer++;
-
      }
 
      //qDebug() << "this->layerCount() : " << this->layerCount();
      d->sharedData[layer] = data;
 
-     this->setData ( data.data(), imageLayer );
-
+     this->setData ( data.data(), layer );
 }
 
 void v3dView::setData ( dtkAbstractData *data )
 {
     if(!data)
         return;
-
-    /*
-    if(medAbstractView::isInList(data)) // called in setData(data, layer) !
-        return;
-*/
-
-    ///*
-    //if(medAbstractView::isInList(data)) // called in setData(data, layer) !
-    //    return;
-    //*/
-
-    //int layer = 0;
-    //while ( d->view2d->GetImageInput ( layer ) )
-    //{
-    //    layer++;
-    //}
-
-    //if ( data->identifier().contains ( "vtkDataMesh" ) && layer )
-    //{
-    //    layer--;
-    //}
-
-    //this->setData ( data, layer );
-
-    //// this->update(); // update is not the role of the plugin, but of the app
 }
 
 //  TO: TODO
@@ -916,33 +888,13 @@ bool v3dView::SetView(const char* type,dtkAbstractData* data)
     return true;
 }
 
-template <typename IMAGE>
-bool v3dView::SetViewInputWithConversion(const char* type,const char* newtype,dtkAbstractData* data,const int layer)
-{
-    if (data->identifier()!=type)
-        return false;
-
-    if (IMAGE* image = dynamic_cast<IMAGE*>((itk::Object*)(data->convert(newtype)->data()))) {
-        d->view2d->SetITKInput(image,layer);
-        d->view3d->SetITKInput(image,layer);
-    }
-    dtkAbstractView::setData(data);
-    return true;
-}
-
 void v3dView::setData ( dtkAbstractData *data, int layer )
 {
     if ( !data )
         return;
 
-    if ( medAbstractView::isInList ( data, layer ) )
+    if ( medAbstractView::isInList ( data ) )
         return;
-
-    if (data->identifier().contains( "vtkDataMesh" ) && medAbstractView::isInList(data))
-    {
-        medMessageController::instance()->showError (tr ( "The mesh is already visualized" ), 5000 );
-        return;
-    }
 
     this->initializeInteractors();
 
@@ -958,26 +910,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         SetViewInput<itk::Image<double,3> >("itkDataImageDouble3",data,layer) ||
         SetViewInput<itk::Image<itk::RGBPixel<unsigned char>,3> >("itkDataImageRGB3",data,layer) ||
         SetViewInput<itk::Image<itk::RGBAPixel<unsigned char>,3> >("itkDataImageRGBA3",data,layer) ||
-        SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVector3",data,layer) ||
-        SetView("itkDataImageShort4",data) ||
-        SetView("itkDataImageInt4",data) ||
-        SetView("itkDataImageLong4",data) ||
-        SetView("itkDataImageChar4",data) ||
-        SetView("itkDataImageUShort4",data) ||
-        SetView("itkDataImageUInt4",data) ||
-        SetView("itkDataImageULong4",data) ||
-        SetView("itkDataImageUChar4",data) ||
-        SetView("itkDataImageFloat4",data) ||
-        SetView("itkDataImageDouble4",data) ||
-        SetViewInputWithConversion<itk::Image<char,3> >("vistalDataImageChar3","itkDataImageChar3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<unsigned char,3> >("vistalDataImageUChar3","itkDataImageUChar3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<short,3> >("vistalDataImageShort3","itkDataImageShort3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<unsigned short,3> >("vistalDataImageUShort3","itkDataImageUShort3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<int,3> >("vistalDataImageInt3","itkDataImageInt3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<unsigned,3> >("vistalDataImageUInt3","itkDataImageUInt3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<float,3> >("vistalDataImageFloat3","itkDataImageFloat3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<double,3> >("vistalDataImageDouble3","itkDataImageDouble3",data,layer)) {
-
+        SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVector3",data,layer)) {
     }
     else if (data->identifier()=="v3dDataImage")
     {
