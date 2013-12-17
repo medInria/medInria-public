@@ -91,13 +91,12 @@ class VTK_IMAGEVIEW_EXPORT vtkInteractorStyleImageView2D : public vtkInteractorS
   vtkGetMacro (SliceStep, int);
   vtkGetVector2Macro (RequestedPosition, int);
   
-  
- protected:
+protected:
   vtkInteractorStyleImageView2D();
   ~vtkInteractorStyleImageView2D();
   
   int SliceStep;
-  int RequestedPosition[3];
+  int RequestedPosition[2];
 
  private: 
   vtkInteractorStyleImageView2D(const vtkInteractorStyleImageView2D&);  // Not implemented.

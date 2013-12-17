@@ -63,10 +63,6 @@ public:
   vtkGetObjectMacro (ColorArray, vtkUnsignedCharArray);
   void ComputeLyingPoints (double* pos);
   void ComputePlanes();
-
-  vtkSetMacro (Radius, double);
-  vtkGetMacro (Radius, double);
-  
   
 protected:
   vtkAxes2DWidget();
@@ -88,8 +84,6 @@ protected:
   
   vtkUnsignedCharArray* ColorArray;
   int Enabled;
-  double Radius;
-  
 
 private:
   vtkAxes2DWidget(const vtkAxes2DWidget&);  //Not implemented
