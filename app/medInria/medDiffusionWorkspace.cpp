@@ -112,7 +112,12 @@ void medDiffusionWorkspace::setupViewContainerStack()
 
 void medDiffusionWorkspace::addToView(dtkAbstractData * data)
 {
-    d->diffusionContainer->view()->setData(data);
+    if( d->diffusionContainer->view() )
+    {
+        d->diffusionContainer->view()->setData(data, 0);
+        d->diffusionContainer->view()->reset();
+        d->diffusionContainer->view()->update();
+    }
 }
 
 void medDiffusionWorkspace::onAddTabClicked()
