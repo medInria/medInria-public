@@ -51,9 +51,11 @@ public slots:
     virtual bool isVisible(dtkAbstractData * data) const;
 
     virtual void setLUT(dtkAbstractData * data, QString lut);
+    void setLUT(int layer, const QString &value);
     virtual QString LUT(dtkAbstractData * data) const;
 
     virtual void setPreset(dtkAbstractData * data, QString preset);
+    void setPreset (int layer, const QString &value );
     virtual QString preset(dtkAbstractData * data) const;
 
 private:

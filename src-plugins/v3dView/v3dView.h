@@ -165,9 +165,6 @@ public slots:
                              const  QVector3D &focal,
                              double parallelScale);
 
-    void onVisibilityChanged(bool   visible, int layer);
-    void onOpacityChanged   (double opacity, int layer);
-
 public slots:
     void play          (bool value);
     void onPropertySet         (const QString &key, const QString &value);
@@ -175,9 +172,7 @@ public slots:
     void on3DModePropertySet                (const QString &value);
     void onRendererPropertySet              (const QString &value);
     void onUseLODPropertySet                (const QString &value);
-    void onPresetPropertySet                (const QString &value);
     void onShowScalarBarPropertySet         (const QString &value);
-    void onLookupTablePropertySet           (const QString &value);
     void onShowAxisPropertySet              (const QString &value);
     void onShowRulerPropertySet             (const QString &value);
     void onShowAnnotationsPropertySet       (const QString &value);
