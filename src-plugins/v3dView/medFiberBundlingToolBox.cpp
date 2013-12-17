@@ -34,7 +34,6 @@
 class medFiberBundlingToolBoxPrivate
 {
 public:
-    //QListWidget  *bundlingList;
     QTreeView  *bundlingList;
     QStandardItemModel *bundlingModel;
     QPushButton  *bundlingButtonVdt;
@@ -112,18 +111,13 @@ medFiberBundlingToolBox::medFiberBundlingToolBox(QWidget *parent) : medToolBox(p
     bundlingButtonsLayout->addWidget(d->bundlingButtonRst);
     bundlingButtonsLayout->addWidget(d->bundlingButtonVdt);
 
-    // d->bundlingList = new QListWidget(bundlingPage);
-
     d->bundlingModel = new QStandardItemModel(0, 1, bundlingPage);
     d->bundlingModel->setHeaderData(0, Qt::Horizontal, tr("Fiber bundles"));
-
-    // QItemSelectionModel *selectionModel = new QItemSelectionModel(d->bundlingModel);
 
     d->bundlingList = new QTreeView(bundlingPage);
     d->bundlingList->setAlternatingRowColors(true);
     d->bundlingList->setMinimumHeight(150);
     d->bundlingList->setModel (d->bundlingModel);
-    // d->bundlingList->setSelectionModel(selectionModel);
 
     d->bundlingShowCheckBox = new QCheckBox("Show all bundles", bundlingPage);
     d->bundlingShowCheckBox->setChecked(true);
@@ -235,15 +229,9 @@ void medFiberBundlingToolBox::showBundlingBox (bool show)
 }
 
 void medFiberBundlingToolBox::addBundle (const QString &name, const QColor &color)
-{/*
-    if(!d->data)
-        return;
-  */
-    //d->bundlingList->addItem (name);
-
-    //d->bundlingModel->removeRows(0, d->bundlingModel->rowCount(QModelIndex()), QModelIndex());
-
+{
     int row = d->bundlingModel->rowCount();
+
     QStandardItem *item = new QStandardItem (name);
     item->setCheckable(true);
     item->setTristate(false);
@@ -299,19 +287,12 @@ void medFiberBundlingToolBox::addBundle (const QString &name, const QColor &colo
 
     d->bundlingModel->setItem(row, item);
 
-    //d->bundlingModel->addItem (name);
-
-    //    d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
-    //                            name);
-
     d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
                               true, Qt::CheckStateRole);
 
     d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
                               color, Qt::DecorationRole);
 
-
-    //d->bundlingList->update();
 }
 
 void medFiberBundlingToolBox::importROI(const medDataIndex& index)
@@ -362,7 +343,6 @@ void medFiberBundlingToolBox::clearRoi(void)
     dtkAbstractData *data = dtkAbstractDataFactory::instance()->create("itkDataImageUChar3");
     if (d->interactor) {
         d->interactor->setROI(data);
-        d->view->update();
     }
     data->deleteLater();
 
