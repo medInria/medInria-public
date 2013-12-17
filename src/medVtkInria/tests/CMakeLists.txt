@@ -88,3 +88,6 @@ endforeach()
 
 add_subdirectory(HWShadingTests)
 add_subdirectory(vtkHelpersTests)
+
+
+message("medVtkInria_INCLUDE_DIRS , ${medVtkInria_INCLUDE_DIRS}")

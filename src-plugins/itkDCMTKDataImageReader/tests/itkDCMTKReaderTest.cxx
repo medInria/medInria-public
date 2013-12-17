@@ -131,7 +131,7 @@ static int                      readImage = 0;
 
 
 
-int main (int narg, char* arg[])
+int itkDCMTKReaderTest(int narg, char* arg[])
 {
 
     if( narg<2 )
