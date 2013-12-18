@@ -46,6 +46,15 @@ string(TOUPPER ${plugin_name} upper_case_name)
 endmacro()
 
 
+################################################################################
+#
+# Usage: add_plugins(plugin1, def_value1, plugin2, def_value2, plugin3 ...)
+# For each plugin, create an option in the cache with the value def_value, 
+# if it doesn't already exists. 
+# If the option is set to ON the plugin is subdirs.
+#
+################################################################################
+
 macro(add_plugins plugins_list)
 
 ## #############################################################################

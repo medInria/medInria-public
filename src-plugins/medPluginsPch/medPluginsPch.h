@@ -26,7 +26,7 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-//VTK
+#ifdef VTK_DIR
 #include <vtkActor.h>
 #include <vtkActor2D.h>
 #include <vtkCamera.h>
@@ -41,8 +41,9 @@
 #include <vtkRenderWindow.h>
 #include <vtkSmartPointer.h>
 #include <vtkTransform.h>
+#endif
 
-//ITK
+#ifdef ITK_DIR
 #include <itkConstNeighborhoodIterator.h>
 #include <itkGreyColormapFunction.h>
 #include <itkImage.h>
@@ -61,7 +62,7 @@
 #include <itkScalarToRGBColormapImageFilter.h>
 #include <itkShrinkImageFilter.h>
 #include <itkVector.h>
-
+#endif
 
 //STL / C++ bindings for C
 #include <cmath>

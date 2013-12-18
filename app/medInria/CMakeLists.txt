@@ -30,7 +30,7 @@ list_source_files(${PROJECT_NAME}
 
 ##  see cmake/module/list_header_directories_to_include.cmake
 list_header_directories_to_include(${PROJECT_NAME} 
-  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_HEADERS}
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS} 
@@ -107,7 +107,7 @@ qt4_add_resources(${PROJECT_NAME}_QRC
   )
 
 add_executable(${PROJECT_NAME} ${DEPLOYMENT_SYSTEM} # Empty for Linux
-  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_CFILES}
   ${${PROJECT_NAME}_QRC}
   ${${PROJECT_NAME}_QSS} # Just to have it in EDI
   ${${PROJECT_NAME}_RC}  # Empty for Unix 

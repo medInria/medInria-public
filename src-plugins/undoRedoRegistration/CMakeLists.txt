@@ -58,7 +58,7 @@ set(${PROJECT_NAME}_QRC undoRedoRegistration.qrc)
 ## #############################################################################
 
 list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_HEADERS}
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
@@ -89,7 +89,7 @@ qt4_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_CFILES}
   ${${PROJECT_NAME}_QRC}
   )
 

@@ -11,6 +11,14 @@
 #
 ################################################################################
 
+################################################################################
+#
+# Usage: set_lib_install_rules(target, header1, header2, header3 ...)
+# set rules for the library designed by the target, and add all the additional 
+# header to {CMAKE_PREFIX_INSTALL}/include during install step.
+#
+################################################################################
+
 macro(set_lib_install_rules
   project_name
   headers_list

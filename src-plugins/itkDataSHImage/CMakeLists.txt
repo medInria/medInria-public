@@ -51,7 +51,7 @@ set(${PROJECT_NAME}_QRC itkDataSHImage.qrc)
 ## #############################################################################
 
 list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_HEADERS}
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}

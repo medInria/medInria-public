@@ -50,8 +50,8 @@ option(BUILD_COMPOSITEDATASET_PLUGIN
 ## list plugins
 ## #############################################################################
 
-## ADD here any new plugin you want to include in the build, 
-## except for registration plugins, see below.
+## ADD here any new plugin with a default compilation value, 
+## you want to include in the build, 
 set(PLUGIN_LIST
   v3dData                                   ON
   v3dView                                   ON

@@ -11,6 +11,14 @@
 #
 ################################################################################
 
+################################################################################
+#
+# Usage: list_header_directories_to_include(project_name, header_path1, header_path2 ...)
+# list all the different path finded in  all given header_path, and add them to
+# ${project_name}_INCLUDE_DIRS 
+#
+################################################################################
+
 macro(list_header_directories_to_include
   project_name 
   headers

@@ -44,7 +44,7 @@ create_test_sourcelist(${PROJECT_NAME}_TESTS ${PROJECT_NAME}.cxx
 
 #see cmake/includeHeaderDirectories.cmake
 list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_HEADERS}
   )
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
     ${medCore_INCLUDE_DIRS}
@@ -58,7 +58,7 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
 ## #############################################################################
 
 add_executable(${PROJECT_NAME}
-  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_CFILES}
   ${${PROJECT_NAME}_TESTS}
   )
 

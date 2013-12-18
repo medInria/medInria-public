@@ -146,10 +146,12 @@ endif()
 if(MSVC)
   include(dtkPch)
   option(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS "Use precompiled headers" 
-    ON
+    OFF
     )
 endif()
-
+if(${PROJECT_NAME}_USE_PRECOMPILED_HEADERS)
+	message("WARNING precompiled headers are not functional so far.")
+endif()
 
 ## #############################################################################
 ## Add subdirectory
