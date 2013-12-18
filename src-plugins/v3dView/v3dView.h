@@ -188,10 +188,6 @@ public slots:
 
     void onMainWindowDeactivated();
 
-public slots:
-    // Menu interface
-    void onMenuZoomTriggered();
-    void onMenuWindowLevelTriggered();
 public:
     void  enableInteraction();
     void disableInteraction();
