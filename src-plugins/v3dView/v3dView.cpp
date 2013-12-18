@@ -557,13 +557,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 
     d->interactorStyle2D = d->view2d->GetInteractorStyle();
 
-    // Tools
-    QAction *zoomAct = new QAction ( tr ( "Zoom" ), d->vtkWidget );
-    connect ( zoomAct, SIGNAL ( triggered() ), this, SLOT ( onMenuZoomTriggered() ) );
-
-    QAction *wlAct = new QAction ( tr ( "Window / Level" ), d->vtkWidget );
-    connect ( wlAct, SIGNAL ( triggered() ), this, SLOT ( onMenuWindowLevelTriggered() ) );
-
     // set property to actually available presets
     QStringList lut = this->getAvailableTransferFunctionPresets();
     this->addProperty ( "LookupTable",           lut );
@@ -1250,16 +1243,6 @@ void v3dView::onClosablePropertySet( const QString &value ){
         d->closeButton->hide();
 }
 
-
-void v3dView::onMenuZoomTriggered()
-{
-    this->setProperty ( "MouseInteraction", "Zooming" );
-}
-
-void v3dView::onMenuWindowLevelTriggered()
-{
-    this->setProperty ( "MouseInteraction", "Windowing" );
-}
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
