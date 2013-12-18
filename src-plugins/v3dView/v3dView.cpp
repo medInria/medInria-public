@@ -362,8 +362,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->setPropertyFunctions["UseLOD"] = &v3dView::onUseLODPropertySet;
     d->setPropertyFunctions["Cropping"] = &v3dView::onCroppingPropertySet;
     d->setPropertyFunctions["ZoomMode"] = &v3dView::onZoomModePropertySet;
-    d->setPropertyFunctions["PositionLinked"] = &v3dView::onPositionLinkedPropertySet;
-    d->setPropertyFunctions["WindowingLinked"] = &v3dView::onWindowingLinkedPropertySet;
     d->setPropertyFunctions["DepthPeeling"] = &v3dView::onDepthPeelingPropertySet;
 
     d->data       = 0;
@@ -632,8 +630,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     this->setProperty ( "Cropping", "false" );
     this->setProperty ( "Preset",   "None" );
 
-    this->setProperty ( "PositionLinked",   "false" );
-    this->setProperty ( "WindowingLinked",  "false" );
     this->setProperty ( "Closable",         "true"  );
 
     this->addProperty ("ZoomMode",QStringList() << "Normal" << "RubberBand" );
@@ -1292,36 +1288,6 @@ void v3dView::onClosablePropertySet( const QString &value ){
         d->closeButton->hide();
 }
 
-
-void v3dView::onPositionLinkedPropertySet ( const QString &value )
-{
-    if ( value=="true" )
-    {
-        d->linkButton->setChecked ( true );
-    }
-
-    if ( value=="false" )
-    {
-        d->linkButton->setChecked ( false );
-    }
-}
-
-void v3dView::onWindowingLinkedPropertySet ( const QString &value )
-{
-    if ( value=="true" )
-    {
-        d->linkWLButton->setChecked ( true );
-    }
-
-    if ( value=="false" )
-    {
-        d->linkWLButton->setChecked ( false );
-    }
-}
-
-void v3dView::onMetaDataSet ( const QString &key, const QString &value )
-{
-}
 
 void v3dView::onMenu3DVRTriggered()
 {

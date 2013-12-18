@@ -78,10 +78,6 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
 
     // properties to keep up to date synchronization
     this->addProperty ("Closable",              QStringList() << "true" << "false");
-    this->addProperty ("PositionLinked",        QStringList() << "true" << "false");
-    this->addProperty ("CameraLinked",          QStringList() << "true" << "false");
-    this->addProperty ("WindowingLinked",       QStringList() << "true" << "false");
-
     // properties acting on image display
     this->addProperty ("Orientation",           QStringList() << "Axial" << "Sagittal" << "Coronal" << "3D");
     this->addProperty ("LookupTable",           lut);
@@ -166,10 +162,6 @@ QWidget *medAbstractView::receiverWidget(void)
 void medAbstractView::setLinkPosition (bool value)
 {
     d->linkPosition = value;
-    if (value)
-        dtkAbstractView::setProperty("PositionLinked","true");
-    else
-        dtkAbstractView::setProperty("PositionLinked","false");
 }
 
 bool medAbstractView::positionLinked() const
@@ -333,22 +325,6 @@ int medAbstractView::currentLayer(void) const
 {
     return d->currentLayer;
 }
-
-
-/*
-void medAbstractView::removeOverlay(int layer)
-{
-    if (layer >= 0 && layer < d->dataList.size())
-    {
-        dtkAbstractData * oldData = d->dataList[layer];
-        medAbstractView::removeDataType(oldData->identifier());
-        emit (dataRemoved(oldData, layer));
-        emit (dataRemoved(layer));
-        d->dataList.removeAt(layer);
-
-    }
-}*/
-
 
 void medAbstractView::addDataType(const QString & dataDescription)
 {

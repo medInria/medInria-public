@@ -156,14 +156,11 @@ public slots:
     void onCroppingPropertySet              (const QString &value);
     void onZoomModePropertySet              (const QString &value);
     void onClosablePropertySet              (const QString &value);
-    void onPositionLinkedPropertySet        (const QString &value);
-    void onWindowingLinkedPropertySet       (const QString &value);
     void onDepthPeelingPropertySet          (const QString &value);
 
 public slots:
     void setSlider                          ( int value );
     void onZSliderValueChanged              (int value);
-    void onMetaDataSet         (const QString &key, const QString &value);
 
     void onMainWindowDeactivated();
 
