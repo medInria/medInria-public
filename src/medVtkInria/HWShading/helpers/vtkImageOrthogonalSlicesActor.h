@@ -24,7 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHelpersExport.h"
+#include "medVtkInriaExport.h"
 
 class vtkAlgorithmOutput;
 class vtkImageData;
@@ -38,7 +38,7 @@ class vtkImageSliceActor;
  * Convenience class for showing 3 orthogonal slices of a volume
  * using three bmia::vtkImageSliceActors.
  */
-class VTK_HELPERS_EXPORT vtkImageOrthogonalSlicesActor : public vtkAssembly
+class MEDVTKINRIA_EXPORT vtkImageOrthogonalSlicesActor : public vtkAssembly
 {
 public:
   static vtkImageOrthogonalSlicesActor* New();

@@ -29,14 +29,14 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkShaderBase.h"
 
 /**
  * Base class for GLSL shader related subclasses with GLhandles.
  */
-class VTK_HWSHADING_EXPORT vtkShaderBaseHandle : public vtkShaderBase
+class MEDVTKINRIA_EXPORT vtkShaderBaseHandle : public vtkShaderBase
 {
 public:
 

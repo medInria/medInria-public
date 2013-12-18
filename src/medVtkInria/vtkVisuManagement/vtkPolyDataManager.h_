@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkObject.h>
 #include <vtkRenderer.h>
@@ -27,7 +27,7 @@ class vtkActor;
 
 /** EXPERIMENTAL CODE --- DO NOT USE FOR NOW -- Nicolas Toussaint */
 
-class VTK_VISUMANAGEMENT_EXPORT vtkPolyDataManager: public vtkObject
+class MEDVTKINRIA_EXPORT vtkPolyDataManager: public vtkObject
 {
   
  public:

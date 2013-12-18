@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkWidgetsAddOnExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtk3DWidget.h"
 
@@ -47,7 +47,7 @@ class vtkTransformPolyDataFilter;
    in a 2d view
 */
 
-class VTK_WIDGETSADDON_EXPORT vtkImageOrientedPointWidget : public vtk3DWidget
+class MEDVTKINRIA_EXPORT vtkImageOrientedPointWidget : public vtk3DWidget
 {
 public:
   // Description:

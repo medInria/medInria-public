@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkImageAlgorithm.h>
 
@@ -39,7 +39,7 @@ class vtkDataSet;
 class vtkImageData;
 
 
-class VTK_VISUMANAGEMENT_EXPORT vtkDatasetToImageGenerator: public vtkImageAlgorithm
+class MEDVTKINRIA_EXPORT vtkDatasetToImageGenerator: public vtkImageAlgorithm
 {
  public:
 

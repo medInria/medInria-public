@@ -31,7 +31,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkOpenGLRenderer.h>
 //#include <GL/glew.h>
@@ -50,7 +50,7 @@ class vtkShadowMappingHelper;
  * WARNING: glewInit() must be called after the render window was
  * initialized and before this renderer renders.
  */
-class VTK_HWSHADING_EXPORT vtkShadowRenderer : public vtkOpenGLRenderer {
+class MEDVTKINRIA_EXPORT vtkShadowRenderer : public vtkOpenGLRenderer {
 
 public:
   static vtkShadowRenderer* New();

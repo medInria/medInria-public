@@ -23,7 +23,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkBetterDataReader.h"
 
@@ -38,7 +38,7 @@ using namespace std;
 /**
  * Class shader programs.
  */
-class VTK_HWSHADING_EXPORT vtkBMIAShaderProgramReader: public vtkBetterDataReader
+class MEDVTKINRIA_EXPORT vtkBMIAShaderProgramReader: public vtkBetterDataReader
 {
 public:
   static vtkBMIAShaderProgramReader *New();

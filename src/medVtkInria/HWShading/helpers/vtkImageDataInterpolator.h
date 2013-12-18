@@ -40,7 +40,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHelpersExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkObject.h>
 
@@ -52,7 +52,7 @@ class vtkDataArray;
  * Note that interpolation can be done faster in the rendering methods
  * themselves.
  */
-class VTK_HELPERS_EXPORT vtkImageDataInterpolator : public vtkObject
+class MEDVTKINRIA_EXPORT vtkImageDataInterpolator : public vtkObject
 {
 public:
   static vtkImageDataInterpolator *New();

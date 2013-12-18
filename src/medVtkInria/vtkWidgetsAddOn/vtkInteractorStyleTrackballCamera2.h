@@ -19,11 +19,11 @@
 
 #include "vtkInteractorStyleTrackballCamera.h"
 
-#include "vtkWidgetsAddOnExport.h"
+#include "medVtkInriaExport.h"
 
 class vtkTransform;
 
-class VTK_WIDGETSADDON_EXPORT vtkInteractorStyleTrackballCamera2 : public vtkInteractorStyleTrackballCamera
+class MEDVTKINRIA_EXPORT vtkInteractorStyleTrackballCamera2 : public vtkInteractorStyleTrackballCamera
 {
  public:
   static vtkInteractorStyleTrackballCamera2 *New();

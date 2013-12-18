@@ -13,14 +13,14 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkPolyDataAlgorithm.h"
 
 class vtkDelaunay3D;
 
 
-class VTK_VISUMANAGEMENT_EXPORT vtkLimitFibersToMesh: public vtkPolyDataAlgorithm
+class MEDVTKINRIA_EXPORT vtkLimitFibersToMesh: public vtkPolyDataAlgorithm
 {
 
  public:

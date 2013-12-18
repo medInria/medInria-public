@@ -14,7 +14,7 @@
 #pragma once
 
 #include <vtkMultiBlockDataSet.h>
-#include "vtkDataManagementExport.h"
+#include "medVtkInriaExport.h"
 #include <map>
 
 class vtkPolyData;
@@ -24,7 +24,7 @@ class vtkPolyData;
    as vtkPolyData as well.
  */
 
-class VTK_DATAMANAGEMENT_EXPORT vtkFiberDataSet : public vtkMultiBlockDataSet
+class MEDVTKINRIA_EXPORT vtkFiberDataSet : public vtkMultiBlockDataSet
 {
  public:
   static vtkFiberDataSet *New();

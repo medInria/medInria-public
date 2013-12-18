@@ -49,7 +49,7 @@ list_source_files(${PROJECT_NAME}
   vtkWidgetsAddOn
   vtkVisuManagement
   vtkVisuManagement/lut
-  vtkVisuManagement/vtkLandmarkManagement
+  #vtkVisuManagement/vtkLandmarkManagement
   vtkItkWrap
   HWShading
   HWShading/helpers

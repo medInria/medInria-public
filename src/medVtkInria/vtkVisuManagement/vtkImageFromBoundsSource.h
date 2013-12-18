@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkImageAlgorithm.h"
 
-class VTK_VISUMANAGEMENT_EXPORT vtkImageFromBoundsSource : public vtkImageAlgorithm
+class MEDVTKINRIA_EXPORT vtkImageFromBoundsSource : public vtkImageAlgorithm
 {
 public:
   static vtkImageFromBoundsSource *New();

@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include "vtkWidgetsAddOnExport.h"
+#include "medVtkInriaExport.h"
 #include <vtkLineWidget.h>
 
 class vtkCaptionActor2D;
 
 
-class VTK_WIDGETSADDON_EXPORT vtkDistanceWidget2 : public vtkLineWidget
+class MEDVTKINRIA_EXPORT vtkDistanceWidget2 : public vtkLineWidget
 {
   
  public:

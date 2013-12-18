@@ -23,7 +23,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkUniform.h"
 
@@ -39,7 +39,7 @@ PURPOSE.  See the above copyright notices for more information.
  * This class may be modified in the future to also handle the loading of the
  * texture and/or check for restrictions imposed on samplers.
  */
-class VTK_HWSHADING_EXPORT vtkUniformSampler : public vtkUniform<int>
+class MEDVTKINRIA_EXPORT vtkUniformSampler : public vtkUniformInt
 {
 public:
   static vtkUniformSampler* New();

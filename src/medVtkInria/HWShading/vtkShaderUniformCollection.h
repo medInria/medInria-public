@@ -23,12 +23,12 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkCollection.h>
 #include "vtkShaderUniform.h" // for inline methods/static casts
 
-class VTK_HWSHADING_EXPORT vtkShaderUniformCollection : public vtkCollection
+class MEDVTKINRIA_EXPORT vtkShaderUniformCollection : public vtkCollection
 {
 public:
   static vtkShaderUniformCollection* New();

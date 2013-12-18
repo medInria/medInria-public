@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 //#include <vtkDataSetAlgorithm.h>
 #include <vtkThreadedImageAlgorithm.h>
 
-class VTK_VISUMANAGEMENT_EXPORT vtkFlipTensorImageFilter: public vtkThreadedImageAlgorithm
+class MEDVTKINRIA_EXPORT vtkFlipTensorImageFilter: public vtkThreadedImageAlgorithm
 {
   
  public:

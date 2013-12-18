@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkImageViewExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkObject.h>
 #include <vtkCommand.h>
@@ -135,7 +135,7 @@ class vtkScalarsToColors;
    NOTA on ITK: if we want at one point to submit this concept to VTK, we might
    consider remove ITK dependency.
 */
-class VTK_IMAGEVIEW_EXPORT vtkImageView : public vtkObject
+class MEDVTKINRIA_EXPORT vtkImageView : public vtkObject
 {
  public:
   //static vtkImageView* New(); // pure virtual class

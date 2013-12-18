@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkPolyDataAlgorithm.h"
 #include <vtkImageData.h>
@@ -21,7 +21,7 @@
 #include <vector>
 
 
-class VTK_VISUMANAGEMENT_EXPORT vtkLimitFibersToROI: public vtkPolyDataAlgorithm
+class MEDVTKINRIA_EXPORT vtkLimitFibersToROI: public vtkPolyDataAlgorithm
 {
 
  public:

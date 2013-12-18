@@ -14,9 +14,9 @@
 #pragma once
 
 #include "vtkXMLCompositeDataWriter.h"
-#include "vtkDataManagementExport.h"
+#include "medVtkInriaExport.h"
 
-class VTK_DATAMANAGEMENT_EXPORT vtkXMLFiberDataSetWriter : public vtkXMLCompositeDataWriter
+class MEDVTKINRIA_EXPORT vtkXMLFiberDataSetWriter : public vtkXMLCompositeDataWriter
 {
 public:
   static vtkXMLFiberDataSetWriter* New();

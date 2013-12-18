@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #pragma once
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkPolyDataAlgorithm.h>
 
@@ -22,7 +22,7 @@
 * \brief Perform tesselation of the unit sphere from a given platonic solid
 */
 
-class VTK_VISUMANAGEMENT_EXPORT vtkTessellatedSphereSource : public vtkPolyDataAlgorithm {
+class MEDVTKINRIA_EXPORT vtkTessellatedSphereSource : public vtkPolyDataAlgorithm {
 public:
   static vtkTessellatedSphereSource *New();
   vtkTypeMacro(vtkTessellatedSphereSource,vtkPolyDataAlgorithm);

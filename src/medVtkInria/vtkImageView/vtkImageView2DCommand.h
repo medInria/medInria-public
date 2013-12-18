@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkImageViewExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkCommand.h"
 #include "vtkObject.h"
@@ -34,7 +34,7 @@ class vtkImageView2D;
 
 */
 
-class VTK_IMAGEVIEW_EXPORT vtkImageView2DCommand : public vtkCommand
+class MEDVTKINRIA_EXPORT vtkImageView2DCommand : public vtkCommand
 {
  public:
   static  vtkImageView2DCommand* New()

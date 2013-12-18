@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkPolyDataAlgorithm.h>
 
-class VTK_VISUMANAGEMENT_EXPORT vtkSqueezeFibers: public vtkPolyDataAlgorithm
+class MEDVTKINRIA_EXPORT vtkSqueezeFibers: public vtkPolyDataAlgorithm
 {
 
 public:

@@ -24,10 +24,10 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 class vtkRenderWindow;
 
-bool VTK_HWSHADING_EXPORT InitializeExtensions(vtkRenderWindow* rw);
+bool MEDVTKINRIA_EXPORT InitializeExtensions(vtkRenderWindow* rw);
 
 

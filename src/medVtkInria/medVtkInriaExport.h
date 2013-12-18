@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -14,15 +14,14 @@
 #pragma once
 
 #ifdef WIN32
- #if defined (vtkImageView_EXPORTS)
-  #define VTK_IMAGEVIEW_EXPORT __declspec( dllexport )
+ #if defined (medVtkInria_EXPORTS)
+  #define MEDVTKINRIA_EXPORT __declspec( dllexport )
  #else
-  #define VTK_IMAGEVIEW_EXPORT __declspec( dllimport )
+  #define MEDVTKINRIA_EXPORT __declspec( dllimport )
  #endif
 #else
-    #define VTK_IMAGEVIEW_EXPORT
+    #define MEDVTKINRIA_EXPORT
 #endif
 
 
- 
 

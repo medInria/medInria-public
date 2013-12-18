@@ -13,6 +13,8 @@
 
 #pragma once
 
+#include "medVtkInriaExport.h"
+
 #include <vtkObject.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
@@ -23,7 +25,7 @@
 
 #include <vtkSphericalHarmonicVisuManager.h>
 
-class VTK_VISUMANAGEMENT_EXPORT vtkSphericalHarmonicManager: public vtkObject {
+class MEDVTKINRIA_EXPORT vtkSphericalHarmonicManager: public vtkObject {
 public:
 
     static vtkSphericalHarmonicManager *New();

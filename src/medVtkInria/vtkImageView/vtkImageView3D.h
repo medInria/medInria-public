@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkImageViewExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkImageView.h"
 #include "vtkOrientedBoxWidget.h"
@@ -53,7 +53,7 @@ class vtkProp3DCollection;
    remote plan can also be used, so can be an orientation cube, ...
 */
 
-class VTK_IMAGEVIEW_EXPORT vtkImageView3D : public vtkImageView
+class MEDVTKINRIA_EXPORT vtkImageView3D : public vtkImageView
 {
 public:
 

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vector>
 
@@ -22,7 +22,7 @@
 class vtkColorTransferFunction;
 class vtkPiecewiseFunction;
 
-class VTK_VISUMANAGEMENT_EXPORT vtkTransferFunctionPresets: public vtkObject
+class MEDVTKINRIA_EXPORT vtkTransferFunctionPresets: public vtkObject
 {
 
  public:

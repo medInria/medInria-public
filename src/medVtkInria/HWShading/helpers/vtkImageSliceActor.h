@@ -27,7 +27,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHelpersExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkAssembly.h>
 
@@ -46,7 +46,7 @@ class vtkPlaneSource;
  * using a 2D vtkTexture. Input may be mapped trough a lookup table
  * or unsinged chars can be used directly as a texture.
  */
-class VTK_HELPERS_EXPORT vtkImageSliceActor : public vtkAssembly
+class MEDVTKINRIA_EXPORT vtkImageSliceActor : public vtkAssembly
 {
 public:
   static vtkImageSliceActor* New();

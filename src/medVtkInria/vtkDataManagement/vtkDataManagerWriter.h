@@ -14,7 +14,7 @@
 #pragma once
 
 #include "vtkXMLWriter.h"
-#include "vtkDataManagementExport.h"
+#include "medVtkInriaExport.h"
 #include <string>
 
 class vtkDataManager;
@@ -23,7 +23,7 @@ class vtkCallbackCommand;
 class vtkDataManagerWriterInternals;
 
 
-class VTK_DATAMANAGEMENT_EXPORT vtkDataManagerWriter : public vtkXMLWriter
+class MEDVTKINRIA_EXPORT vtkDataManagerWriter : public vtkXMLWriter
 {
 public:
   static vtkDataManagerWriter* New();

@@ -100,7 +100,7 @@
 #include "vtkVolumeMapper.h"
 #include "vtkImageReslice.h" // for VTK_RESLICE_NEAREST, VTK_RESLICE_CUBIC
 
-#include "vtkImageViewExport.h"
+#include "medVtkInriaExport.h"
 
 class vtkFixedPointVolumeRayCastMapper;
 class vtkGPUVolumeRayCastMapper;
@@ -110,7 +110,7 @@ class vtkVolume;
 class vtkVolumeProperty;
 class vtkVolumeTextureMapper3D;
 
-class VTK_IMAGEVIEW_EXPORT vtkSmartVolumeMapper : public vtkVolumeMapper
+class MEDVTKINRIA_EXPORT vtkSmartVolumeMapper : public vtkVolumeMapper
 {
 public:
   static vtkSmartVolumeMapper *New();

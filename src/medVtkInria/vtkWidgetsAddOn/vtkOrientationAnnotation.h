@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include "vtkWidgetsAddOnExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkCornerAnnotation.h"
 
-class VTK_WIDGETSADDON_EXPORT vtkOrientationAnnotation : public vtkCornerAnnotation
+class MEDVTKINRIA_EXPORT vtkOrientationAnnotation : public vtkCornerAnnotation
 {
 public:
   vtkTypeRevisionMacro(vtkOrientationAnnotation,vtkCornerAnnotation);

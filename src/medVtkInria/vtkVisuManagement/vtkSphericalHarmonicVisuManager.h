@@ -13,7 +13,9 @@
 
 #pragma once
 
+#include "medVtkInriaExport.h"
 #include <vtkSphericalHarmonicSource.h>
+
 
 class vtkSphericalHarmonicSource;
 class vtkSphericalHarmonicGlyph;
@@ -22,7 +24,7 @@ class vtkPolyDataMapper;
 class vtkActor;
 class vtkImageData;
 
-class VTK_VISUMANAGEMENT_EXPORT vtkSphericalHarmonicVisuManager : public vtkObject {
+class MEDVTKINRIA_EXPORT vtkSphericalHarmonicVisuManager : public vtkObject {
 public:
 
     static vtkSphericalHarmonicVisuManager *New();

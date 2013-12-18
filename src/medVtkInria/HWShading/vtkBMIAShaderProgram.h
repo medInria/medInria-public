@@ -50,7 +50,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkShaderBaseHandle.h"
 
@@ -66,7 +66,7 @@ class vtkShaderUniformCollection;
  * Subclass of vtkCollection because a shader program is a set of shader
  * objects which are linked.
  */
-class VTK_HWSHADING_EXPORT vtkBMIAShaderProgram : public vtkShaderBaseHandle
+class MEDVTKINRIA_EXPORT vtkBMIAShaderProgram : public vtkShaderBaseHandle
 {
 public:
   static vtkBMIAShaderProgram *New();

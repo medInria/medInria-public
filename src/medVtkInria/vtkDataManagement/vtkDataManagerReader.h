@@ -14,7 +14,7 @@
 #pragma once
 
 #include "vtkXMLReader.h"
-#include "vtkDataManagementExport.h"
+#include "medVtkInriaExport.h"
 
 class vtkDataManager;
 /* class vtkMultiGroupDataSet; */
@@ -24,7 +24,7 @@ class vtkMetaDataSet;
 struct vtkDataManagerReaderInternals;
 //ETX
 
-class VTK_DATAMANAGEMENT_EXPORT vtkDataManagerReader : public vtkXMLReader
+class MEDVTKINRIA_EXPORT vtkDataManagerReader : public vtkXMLReader
 {
 public:
   static vtkDataManagerReader* New();

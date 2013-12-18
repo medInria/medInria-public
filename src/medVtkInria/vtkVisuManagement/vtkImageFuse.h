@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkImageAlgorithm.h>
 
@@ -31,7 +31,7 @@ class vtkLookupTable;
 class vtkImageMapToColors;
 
 
-class VTK_VISUMANAGEMENT_EXPORT vtkImageFuse: public vtkImageAlgorithm
+class MEDVTKINRIA_EXPORT vtkImageFuse: public vtkImageAlgorithm
 {
   
  public:

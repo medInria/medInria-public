@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkThreadedImageAlgorithm.h"
 
@@ -38,7 +38,7 @@
 
 
 
-class VTK_VISUMANAGEMENT_EXPORT vtkImageClamp : public vtkThreadedImageAlgorithm
+class MEDVTKINRIA_EXPORT vtkImageClamp : public vtkThreadedImageAlgorithm
 {
 public:
   static vtkImageClamp *New();

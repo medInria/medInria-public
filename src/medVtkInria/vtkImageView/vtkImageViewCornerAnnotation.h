@@ -15,7 +15,7 @@
 
 #include "vtkCornerAnnotation.h"
 
-#include "vtkImageViewExport.h"
+#include "medVtkInriaExport.h"
 
 class vtkImageView;
 
@@ -36,7 +36,7 @@ class vtkImageView;
 */
 
 
-class VTK_IMAGEVIEW_EXPORT vtkImageViewCornerAnnotation : public vtkCornerAnnotation
+class MEDVTKINRIA_EXPORT vtkImageViewCornerAnnotation : public vtkCornerAnnotation
 {
 
  public:

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkObject.h>
 #include <vtkImageData.h>
@@ -29,7 +29,7 @@
    \author: Nicolas Toussaint
 */
 
-class VTK_VISUMANAGEMENT_EXPORT vtkCompareImageManager: public vtkObject
+class MEDVTKINRIA_EXPORT vtkCompareImageManager: public vtkObject
 {
   
  public:

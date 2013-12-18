@@ -13,14 +13,14 @@
 
 #pragma once
 
-#include "vtkImageViewExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkCommand.h>
 #include <vtkVolumeMapper.h>
 #include <vtkSetGet.h>
 #include <vtkObjectFactory.h>
 
-class VTK_IMAGEVIEW_EXPORT vtkImageView3DCroppingBoxCallback: public vtkCommand
+class MEDVTKINRIA_EXPORT vtkImageView3DCroppingBoxCallback: public vtkCommand
 {
 
  public:

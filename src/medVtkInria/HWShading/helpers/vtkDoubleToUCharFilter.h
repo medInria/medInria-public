@@ -27,7 +27,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHelpersExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkSimpleImageToImageFilter.h>
 
@@ -40,7 +40,7 @@ PURPOSE.  See the above copyright notices for more information.
  * I didn't try to patch that one because it already has changes in
  * CVS version and upgrading to CVS is not practical for me.
  */
-class VTK_HELPERS_EXPORT vtkDoubleToUCharFilter : public vtkSimpleImageToImageFilter
+class MEDVTKINRIA_EXPORT vtkDoubleToUCharFilter : public vtkSimpleImageToImageFilter
 {
 public:
   static vtkDoubleToUCharFilter* New();
