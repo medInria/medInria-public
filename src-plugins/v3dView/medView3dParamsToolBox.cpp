@@ -15,6 +15,11 @@
 #include <medView3dParamsToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medVtkView.h>
+#include <v3dView.h>
+#include <vtkImageView2D.h>
+#include <vtkImageView3D.h>
+
+#include <vtkRenderWindow.h>
 
 class medView3dParamsToolBoxPrivate
 {
@@ -135,11 +140,14 @@ void medView3dParamsToolBox::update(dtkAbstractView * view)
 
 void medView3dParamsToolBox::onModeChanged(dtkAbstractView* view, QString mode)
 {
-    if (view) {
-        view->blockSignals (true);
-        view->setProperty("3DMode", mode);
-        view->blockSignals (false);
-        view->update();
+    if (v3dView *v3dview = dynamic_cast<v3dView*>(view) )
+    {
+        v3dview->blockSignals (true);
+        if ( qApp->arguments().contains ( "--stereo" ) )
+              v3dview->view3d()->GetRenderWindow()->SetStereoRender ( 1 );
+        v3dview->setProperty("3DMode", mode);
+        v3dview->blockSignals (false);
+        v3dview->update();
     }
 }
 
