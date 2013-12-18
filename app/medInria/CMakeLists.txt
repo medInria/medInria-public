@@ -18,7 +18,7 @@ project(medInria)
 ## #############################################################################
 
 add_subdirectory(QSingleApplication)
-add_subdirectory(ressources)
+add_subdirectory(resources)
 
 list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
