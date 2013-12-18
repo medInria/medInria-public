@@ -27,12 +27,7 @@ list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-file(GLOB TESTS_PATH # list all tests
- *.cpp
- *.cxx
-  )
-
-foreach(test ${TESTS_PATH})
+foreach(test ${${PROJECT_NAME}_SOURCES})
     get_filename_component(test_filename ${test} NAME)
     set(TESTS_FILENAME ${test_filename} ${TESTS_FILENAME})
     get_filename_component(test_name ${test} NAME_WE)
