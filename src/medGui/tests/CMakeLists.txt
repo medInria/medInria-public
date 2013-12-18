@@ -44,7 +44,7 @@ create_test_sourcelist(${PROJECT_NAME}_TESTS ${PROJECT_NAME}.cxx
 ## #############################################################################
 
 add_executable(${PROJECT_NAME}
-  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_CFILES}
   ${${PROJECT_NAME}_TESTS}
   )
 

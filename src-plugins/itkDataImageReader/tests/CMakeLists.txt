@@ -57,7 +57,7 @@ endif()
 ## #############################################################################
 
 add_executable(${PROJECT_NAME}
-  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_CFILES}
   ${${PROJECT_NAME}_TESTS}
   )
 

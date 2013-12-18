@@ -11,11 +11,18 @@
 #
 ################################################################################
 
+################################################################################
+#
+# Usage: set_exe_install_rules(target)
+# set rules for the executable designed by the target 
+#
+################################################################################
+
 macro(set_exe_install_rules
-  project_name 
+  target 
   )
 
-install(TARGETS ${project_name}
+install(TARGETS ${target}
   RUNTIME DESTINATION bin
   BUNDLE  DESTINATION bin
   )
@@ -26,34 +33,34 @@ install(TARGETS ${project_name}
 
 if (APPLE)
     set(MACOSX_BUNDLE_BUNDLE_NAME 
-    ${PROJECT_NAME}
+    ${target}
     )
   set(MACOSX_BUNDLE_ICON_FILE 
     medInria.icns
     )
   set(MACOSX_BUNDLE_SHORT_VERSION_STRING 
-    ${${PROJECT_NAME}_VERSION}
+    ${${target}_VERSION}
     )
   set(MACOSX_BUNDLE_BUNDLE_VERSION 
-    ${${PROJECT_NAME}_VERSION}
+    ${${target}_VERSION}
     )
   set(MACOSX_BUNDLE_LONG_VERSION_STRING 
-    "Version ${${PROJECT_NAME}_VERSION}"
+    "Version ${${target}_VERSION}"
     )
-  set(${PROJECT_NAME}_RESOURCE_DIR 
-    ${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME}.app/Contents/Resources
+  set(${target}_RESOURCE_DIR 
+    ${EXECUTABLE_OUTPUT_PATH}/${target}.app/Contents/Resources
     )
-  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${PROJECT_NAME}_RESOURCE_DIR}
-    COMMAND ${CMAKE_COMMAND} ARGS -E copy ${CMAKE__CURRENT_SOURCE_DIR}/ressources/${project_name}.icns ${${PROJECT_NAME}_RESOURCE_DIR}
+  add_custom_command(TARGET ${target} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${target}_RESOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} ARGS -E copy ${CMAKE__CURRENT_SOURCE_DIR}/ressources/${target}.icns ${${target}_RESOURCE_DIR}
     )
   
   install(CODE "
   execute_process(COMMAND 
-    \${QT_BINARY_DIR}/macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app
+    \${QT_BINARY_DIR}/macdeployqt \${CMAKE_INSTALL_PREFIX}/bin/${target}.app
     )
 	execute_process(COMMAND 
-      \${dtk_DIR}/bin/dtkDeploy \${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME}.app -inject-dir=\${CMAKE_CURRENT_BINARY_DIR}/plugins
+      \${dtk_DIR}/bin/dtkDeploy \${CMAKE_INSTALL_PREFIX}/bin/${target}.app -inject-dir=\${CMAKE_CURRENT_BINARY_DIR}/plugins
 	  )
   ")
 endif()

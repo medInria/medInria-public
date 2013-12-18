@@ -27,23 +27,14 @@ list_source_files(${PROJECT_NAME}
 ## #############################################################################
 
 list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_HEADERS}
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
     ${medCore_INCLUDE_DIRS}
     )
     
-    
-## #############################################################################
-## Add definition
-## #############################################################################
-
-add_definitions(${QT_DEFINITIONS})
-add_definitions(-DQT_SHARED)
-add_definitions(-DQT_NO_DEBUG)
-
-
+	
 ## #############################################################################
 ## Precompile headers
 ## #############################################################################
@@ -62,7 +53,7 @@ endif()
 ## #############################################################################
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_CFILES}
   ${${PROJECT_NAME}_PCH}
   )
 
@@ -84,7 +75,7 @@ target_link_libraries(${PROJECT_NAME}
 ## #############################################################################
 
 set_lib_install_rules(${PROJECT_NAME}
-  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_HEADERS}
   )
 
 

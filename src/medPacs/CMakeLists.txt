@@ -27,7 +27,7 @@ list_source_files(${PROJECT_NAME}
 ## #############################################################################
 
 list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_HEADERS}
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
@@ -57,7 +57,7 @@ if (MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_PCH
     ${MEDPCH_H}
     ${MEDPCH_CPP}
-    ${${PROJECT_NAME}_SOURCES
+    ${${PROJECT_NAME}_SOURCES}
     )
 endif()
 
@@ -67,7 +67,7 @@ endif()
 ## #############################################################################
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_CFILES}
   ${${PROJECT_NAME}_PCH}
   )
 
@@ -89,5 +89,5 @@ target_link_libraries(${PROJECT_NAME}
 ## #############################################################################
 
 set_lib_install_rules(${PROJECT_NAME}
-  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_HEADERS}
   )

@@ -44,20 +44,11 @@ list_source_files(${PROJECT_NAME}
 
 
 ## #############################################################################
-## configure
-## #############################################################################
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/itkFiltersDefinitions.h.in
-  ${CMAKE_CURRENT_BINARY_DIR}/itkFiltersDefinitions.h
-  ) # get rid of this, we can use ${PROJECT_NAME_UP}_VERSION instead of PLUGIN_VERSION
-
-
-## #############################################################################
 ## include directories.
 ## #############################################################################
 
 list_header_directories_to_include(${PROJECT_NAME}
-  ${${PROJECT_NAME}_H}
+  ${${PROJECT_NAME}_HEADERS}
   )
 
 include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
@@ -102,7 +93,7 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_PCH}
-  ${${PROJECT_NAME}_SOURCES}
+  ${${PROJECT_NAME}_CFILES}
   )
 
 
