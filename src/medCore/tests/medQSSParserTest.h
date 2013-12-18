@@ -1,5 +1,4 @@
-#ifndef MEDQSSPARSERTEST_H
-#define MEDQSSPARSERTEST_H
+#pragma once
 
 #include <QObject>
 #include <QtTest/QtTest>
@@ -12,4 +11,3 @@ private slots:
     void testParse();
 };
 
-#endif // MEDQSSPARSERTEST_H

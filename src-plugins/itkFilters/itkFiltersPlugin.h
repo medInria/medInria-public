@@ -14,7 +14,6 @@
 #pragma once
 
 #include <dtkCore/dtkPlugin.h>
-
 #include "itkFiltersPluginExport.h"
 
 class ITKFILTERSPLUGIN_EXPORT itkFiltersPluginPrivate;

@@ -29,7 +29,6 @@
 #include "itkFiltersOpenProcess.h"
 #include "itkFiltersToolBox.h"
 #include "itkMorphologicalFiltersToolBox.h"
-#include "itkFiltersDefinitions.h"
 
 #include <dtkLog/dtkLog.h>
 
@@ -100,7 +99,7 @@ QString itkFiltersPlugin::contact() const
 
 QString itkFiltersPlugin::version() const
 {
-    return PLUGIN_VERSION;
+    return ITKFILTERSPLUGIN_VERSION;
 }
 
 QStringList itkFiltersPlugin::authors() const

@@ -81,7 +81,7 @@ if (WIN32)
     set(DEPLOYMENT_SYSTEM WIN32)
   endif()
   
-  set(${PROJECT_NAME}_RC ressources/medInria.rc)
+  set(${PROJECT_NAME}_RC resources/medInria.rc)
 endif()
 
 
