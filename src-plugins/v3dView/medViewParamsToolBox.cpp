@@ -135,6 +135,7 @@ void medViewParamsToolBox::update(dtkAbstractView * view)
     orientationLayout->addWidget(view3DParam->getWidget());
 
     d->mainOrientationLayout->addWidget(orientationWidget);
+    d->mainOrientationLayout->setContentsMargins(0,0,0,0);
 
     d->widgetList.insert(d->vtkView, orientationWidget);
 
@@ -321,7 +322,6 @@ void medView2dParamsToolBox::update(dtkAbstractView * view)
     mouseGroup->addActionParameter ( slicingParam );
     mouseGroup->addActionParameter ( measuringParam );
     mouseGroup->setExclusive (true);
-    //mouseInteractionLayout->setMargin(5);
 
     QHBoxLayout *displayLayout = new QHBoxLayout;
     displayLayout->addWidget(scalarBarParam->getWidget());
@@ -332,7 +332,6 @@ void medView2dParamsToolBox::update(dtkAbstractView * view)
     QVBoxLayout *toolBoxLayout = new QVBoxLayout(toolboxWidget);
     toolBoxLayout->addLayout(mouseInteractionLayout);
     toolBoxLayout->addLayout(displayLayout);
-    toolBoxLayout->setContentsMargins(20,0,20,0);
 
     this->addWidget(toolboxWidget);
 

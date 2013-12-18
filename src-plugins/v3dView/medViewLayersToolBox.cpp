@@ -48,29 +48,25 @@ medViewLayersToolBox::medViewLayersToolBox(QWidget *parent)
 
     d->viewListWidget = new QListWidget(this);
     d->viewListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    d->viewListWidget->setAlternatingRowColors(true);
 
     d->layersListWidget = new QListWidget(this);
     d->layersListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
-
-    QWidget *doubleListWidget = new QWidget;
-    QVBoxLayout *doubleListWidgetLayout = new QVBoxLayout(doubleListWidget);
-    doubleListWidgetLayout->addWidget(d->viewListWidget);
-    doubleListWidgetLayout->addWidget(d->layersListWidget);
-
 
     QWidget *interactorsParamsWidget = new QWidget(this);
     d->interactorsParamsLayout = new QVBoxLayout(interactorsParamsWidget);
 
     d->viewParamsToolBox = new medViewParamsToolBox();
-    d->viewParamsToolBox->setStyleSheet("medToolBoxBody {border:none}");
     d->viewParamsToolBox->header()->hide();
 
+    QFrame *line = new QFrame(this);
+    line->setFrameShape(QFrame::HLine);
+
     this->addWidget(d->viewListWidget);
+    this->addWidget(line);
     this->addWidget(d->layersListWidget);
-    this->addWidget(new QSplitter);
     this->addWidget(d->viewParamsToolBox);
     this->addWidget(interactorsParamsWidget);
-
 
     d->paramWidgetList = QList<QWidget*>();
     d->viewMap = QMap<QString, medVtkView*>();

@@ -117,7 +117,6 @@ public:
      */
     virtual double opacity(int layer) const;
 
-
     /**
      * Removes an overlay given the layer id.
      */
@@ -165,7 +164,7 @@ public slots:
     void onMainWindowDeactivated();
 
 public:
-    void  enableInteraction();
+    void enableInteraction();
     void disableInteraction();
     void bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax);
     void cameraUp(double *coordinates);
