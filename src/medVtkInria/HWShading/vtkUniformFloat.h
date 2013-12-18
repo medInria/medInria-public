@@ -23,14 +23,14 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkShaderUniform.h"
 
 /**
  * Class for representing uniform float variables.
  */
-class VTK_HWSHADING_EXPORT vtkUniformFloat : public vtkShaderUniform
+class MEDVTKINRIA_EXPORT vtkUniformFloat : public vtkShaderUniform
 {
 public:
   static vtkUniformFloat* New();

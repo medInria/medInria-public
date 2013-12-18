@@ -29,7 +29,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkShaderBaseHandle.h"
 #include <vtkObjectFactory.h>
@@ -45,7 +45,7 @@ PURPOSE.  See the above copyright notices for more information.
  * avoid confusion!
  * Setting of the handle is done by the shader program using this uniform.
  */
-class VTK_HWSHADING_EXPORT vtkShaderUniform : public vtkShaderBaseHandle
+class MEDVTKINRIA_EXPORT vtkShaderUniform : public vtkShaderBaseHandle
 {
 public:
 

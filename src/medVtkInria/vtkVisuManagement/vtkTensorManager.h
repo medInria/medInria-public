@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkObject.h>
 #include <vtkRenderWindowInteractor.h>
@@ -27,7 +27,7 @@
 
 #include "vtkTensorVisuManager.h"
 
-class VTK_VISUMANAGEMENT_EXPORT vtkTensorManager: public vtkObject
+class MEDVTKINRIA_EXPORT vtkTensorManager: public vtkObject
 {
 
  public:

@@ -14,7 +14,7 @@
 #pragma once
 
 #include <vtkMetaDataSet.h>
-#include "vtkDataManagementExport.h"
+#include "medVtkInriaExport.h"
 #include <string>
 #include <vector>
 
@@ -47,7 +47,7 @@
 
 class vtkDoubleArray;
 
-class VTK_DATAMANAGEMENT_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
+class MEDVTKINRIA_EXPORT vtkMetaDataSetSequence: public vtkMetaDataSet
 {
  public:
 

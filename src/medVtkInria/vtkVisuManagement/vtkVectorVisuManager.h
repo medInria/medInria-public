@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkCommand.h>
 #include <vtkBoxWidget.h>
@@ -37,7 +37,7 @@
 #include <vtkExtractGeometry.h>
 
 //BTX
-class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManagerCallback: public vtkCommand
+class MEDVTKINRIA_EXPORT vtkVectorVisuManagerCallback: public vtkCommand
 {
 
  public:
@@ -85,7 +85,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManagerCallback: public vtkCommand
 //ETX
 
 
-class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
+class MEDVTKINRIA_EXPORT vtkVectorVisuManager : public vtkObject
 {
  public:
 

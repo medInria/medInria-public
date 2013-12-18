@@ -24,11 +24,11 @@ PURPOSE.  See the above copyright notices for more information.
 #pragma once
 
 #include <vtkCollection.h>
-#include <vtkHelpersExport.h>
+#include <medVtkInriaExport.h>
 
 class vtkLookupTable;
 
-class VTK_HELPERS_EXPORT vtkLookupTableCollection : public vtkCollection
+class MEDVTKINRIA_EXPORT vtkLookupTableCollection : public vtkCollection
 {
 public:
   static vtkLookupTableCollection* New();

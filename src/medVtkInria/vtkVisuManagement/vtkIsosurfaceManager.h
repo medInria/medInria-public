@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkImageToIsosurface.h"
 #include <vector>
@@ -25,7 +25,7 @@
 #include <vtkMatrix4x4.h>
 
 
-class VTK_VISUMANAGEMENT_EXPORT vtkIsosurfaceManager: public vtkObject
+class MEDVTKINRIA_EXPORT vtkIsosurfaceManager: public vtkObject
 {
   
  public:

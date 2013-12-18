@@ -15,7 +15,7 @@
 
 #include <vtkErrorCode.h>
 #include <vtksys/SystemTools.hxx>
-#include "vtkDataManagementExport.h"
+#include "medVtkInriaExport.h"
 #include <vtkMetaDataSet.h>
 #include <vtkMatrix4x4.h>
 
@@ -39,7 +39,7 @@
    ITK one. And, we need to correct for this misbehaviour through a hack
    in the OrientationMatrix 4th column, a sort of corrected origin.
 */
-#define vtkINRIA3D_CORRECT_IMAGE_ORIENTATION 1
+#define MEDVTKINRIA_CORRECT_IMAGE_ORIENTATION 1
 
 
 class vtkImageData;
@@ -69,7 +69,7 @@ class vtkVolumeProperty;
 
 
 
-class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
+class MEDVTKINRIA_EXPORT vtkMetaImageData: public vtkMetaDataSet
 {
  public:
 
@@ -177,7 +177,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
       for (unsigned int y=0; y<3; y++)
 	matrix->SetElement (x,y,direction[x][y]);
 
-#if vtkINRIA3D_CORRECT_IMAGE_ORIENTATION    
+#if MEDVTKINRIA_CORRECT_IMAGE_ORIENTATION
     /**
        The origin in ITK pipeline is taken into account in a different
        way than in the VTK equivalent.
@@ -218,7 +218,7 @@ class VTK_DATAMANAGEMENT_EXPORT vtkMetaImageData: public vtkMetaDataSet
     converter->SetInput (input);
     converter->Update();
 
-#if vtkINRIA3D_CORRECT_IMAGE_ORIENTATION
+#if MEDVTKINRIA_CORRECT_IMAGE_ORIENTATION
     /**
        The origin in ITK pipeline is taken into account in a different
        way than in the VTK equivalent.

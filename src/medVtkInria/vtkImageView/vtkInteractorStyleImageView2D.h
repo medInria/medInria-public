@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkImageViewExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkInteractorStyleImage.h>
 
@@ -34,7 +34,7 @@
 #define VTKIS_TIME_CHANGE 5051
 
  
-class VTK_IMAGEVIEW_EXPORT vtkInteractorStyleImageView2D : public vtkInteractorStyleImage
+class MEDVTKINRIA_EXPORT vtkInteractorStyleImageView2D : public vtkInteractorStyleImage
 {
  public:
   static vtkInteractorStyleImageView2D *New();

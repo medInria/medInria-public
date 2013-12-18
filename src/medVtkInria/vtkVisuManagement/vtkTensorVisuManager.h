@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkObject.h>
 
@@ -33,7 +33,7 @@
 
 class vtkMatrix4x4;
 
-class VTK_VISUMANAGEMENT_EXPORT vtkTensorVisuManager : public vtkObject
+class MEDVTKINRIA_EXPORT vtkTensorVisuManager : public vtkObject
 {
  public:
   

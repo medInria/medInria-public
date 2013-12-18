@@ -26,13 +26,13 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkShadowMappingHelper.h"
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 /**
  * Shadow mapping helper with a slightly different shader for building
  * the shadow map that is used by vtkFiberMapper.
  */
-class VTK_HWSHADING_EXPORT vtkShadowMappingHelperLines : public vtkShadowMappingHelper
+class MEDVTKINRIA_EXPORT vtkShadowMappingHelperLines : public vtkShadowMappingHelper
 {
 public:
   static vtkShadowMappingHelperLines* New();

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkObject.h>
 #include <vtkDataObject.h>
@@ -28,7 +28,7 @@
 #include <vtkSmoothPolyDataFilter.h>
 #include <vtkPolyDataNormals.h>
 
-class VTK_VISUMANAGEMENT_EXPORT vtkImageToIsosurface: public vtkObject
+class MEDVTKINRIA_EXPORT vtkImageToIsosurface: public vtkObject
 {
  public:
 

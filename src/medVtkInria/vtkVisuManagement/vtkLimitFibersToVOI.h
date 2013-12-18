@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkPolyDataAlgorithm.h"
 #include <vector>
 
-class VTK_VISUMANAGEMENT_EXPORT vtkLimitFibersToVOI: public vtkPolyDataAlgorithm
+class MEDVTKINRIA_EXPORT vtkLimitFibersToVOI: public vtkPolyDataAlgorithm
 {
 
  public:

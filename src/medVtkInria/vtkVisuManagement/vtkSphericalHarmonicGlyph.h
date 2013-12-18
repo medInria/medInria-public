@@ -19,7 +19,9 @@
 
 #include <vtkSphericalHarmonicSource.h>
 
-class VTK_VISUMANAGEMENT_EXPORT vtkSphericalHarmonicGlyph: public vtkPolyDataAlgorithm {
+#include "medVtkInriaExport.h"
+
+class MEDVTKINRIA_EXPORT vtkSphericalHarmonicGlyph: public vtkPolyDataAlgorithm {
 public:
 
     enum { COLOR_BY_SCALARS, COLOR_BY_DIRECTIONS };

@@ -41,7 +41,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 //#include <GL/glew.h> // for OpenGL types and some functions
 		     // TODO: can this be done without glew?
@@ -58,7 +58,7 @@ PURPOSE.  See the above copyright notices for more information.
  * NOTE: include this header file before including any rendering header
  * files because glew.h must be included before gl.h.
  */
-class VTK_HWSHADING_EXPORT vtkShaderBase : public vtkObject
+class MEDVTKINRIA_EXPORT vtkShaderBase : public vtkObject
 {
 public:
 

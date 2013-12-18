@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #pragma once
-#include "vtkDataManagementExport.h"
+#include "medVtkInriaExport.h"
 #include <vtkMetaDataSet.h>
 
 class vtkUnstructuredGrid;
@@ -32,7 +32,7 @@ class vtkUnstructuredGrid;
 */
 
 
-class VTK_DATAMANAGEMENT_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
+class MEDVTKINRIA_EXPORT vtkMetaVolumeMesh: public vtkMetaDataSet
 {
  public:
 

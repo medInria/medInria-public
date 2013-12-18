@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkWidgetsAddOnExport.h"
+#include "medVtkInriaExport.h"
 #include <vtkInteractorObserver.h>
 
 
@@ -22,7 +22,7 @@ class vtkPolyData;
 class vtkActor2D;
 class vtkRenderer;
 
-class VTK_WIDGETSADDON_EXPORT vtkRulerWidget : public vtkInteractorObserver
+class MEDVTKINRIA_EXPORT vtkRulerWidget : public vtkInteractorObserver
 {
 
  public:

@@ -50,7 +50,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHelpersExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkSource.h>
 
@@ -64,7 +64,7 @@ using namespace std;
  * of ASCII-formatted input files. Note: the name may be misleading. This class
  * is perhaps not really better ;) Just more convenient for me at the time.
  */
-class VTK_HELPERS_EXPORT vtkBetterDataReader : public vtkSource {
+class MEDVTKINRIA_EXPORT vtkBetterDataReader : public vtkSource {
 public:
     static vtkBetterDataReader *New();
     

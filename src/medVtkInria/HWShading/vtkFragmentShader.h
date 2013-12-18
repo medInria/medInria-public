@@ -27,14 +27,14 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkShaderObject.h"
 
 /**
  * GLSL Fragment Shader Object
  */
-class VTK_HWSHADING_EXPORT vtkFragmentShader : public vtkShaderObject
+class MEDVTKINRIA_EXPORT vtkFragmentShader : public vtkShaderObject
 {
 public:
   static vtkFragmentShader* New();

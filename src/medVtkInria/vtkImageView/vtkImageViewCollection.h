@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkImageViewExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkCollection.h"
 #include "vtkCommand.h"
@@ -108,7 +108,7 @@ class vtkImageViewCollectionCommand;
 
    
 */
-class VTK_IMAGEVIEW_EXPORT vtkImageViewCollection : public vtkCollection
+class MEDVTKINRIA_EXPORT vtkImageViewCollection : public vtkCollection
 {
 
  public:
@@ -359,7 +359,7 @@ class VTK_IMAGEVIEW_EXPORT vtkImageViewCollection : public vtkCollection
 
 
 //BTX
-class VTK_IMAGEVIEW_EXPORT vtkImageViewCollectionCommand : public vtkCommand
+class MEDVTKINRIA_EXPORT vtkImageViewCollectionCommand : public vtkCommand
 {
 
  public:

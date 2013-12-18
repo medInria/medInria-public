@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkObject.h>
 #include <vtkRenderer.h>
@@ -60,7 +60,7 @@ class vtkFibersManagerCallback;
    (vtkBoxWidget) is used to limit the fibers that go through it.    
 */
 
-class VTK_VISUMANAGEMENT_EXPORT vtkFibersManager : public vtkObject
+class MEDVTKINRIA_EXPORT vtkFibersManager : public vtkObject
 {
  public:
 

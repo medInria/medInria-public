@@ -23,14 +23,14 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkShaderUniform.h"
 
 /**
  * Class for representing uniform vec3 variables.
  */
-class VTK_HWSHADING_EXPORT vtkUniformVec3: public vtkShaderUniform
+class MEDVTKINRIA_EXPORT vtkUniformVec3: public vtkShaderUniform
 {
 public:
   static vtkUniformVec3* New();

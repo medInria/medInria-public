@@ -26,14 +26,14 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkShaderUniform.h"
 
 /**
  * Class for representing uniform bool variables.
  */
-class VTK_HWSHADING_EXPORT vtkUniformBool: public vtkShaderUniform
+class MEDVTKINRIA_EXPORT vtkUniformBool: public vtkShaderUniform
 {
 public:
   static vtkUniformBool* New();

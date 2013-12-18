@@ -14,7 +14,7 @@
 #pragma once
 
 #include <vtkMetaDataSet.h>
-#include "vtkDataManagementExport.h"
+#include "medVtkInriaExport.h"
 
 class vtkPolyData;
 
@@ -38,7 +38,7 @@ class vtkPolyData;
 
 
 
-class VTK_DATAMANAGEMENT_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
+class MEDVTKINRIA_EXPORT vtkMetaSurfaceMesh: public vtkMetaDataSet
 {
  public:
 

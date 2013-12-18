@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkUnstructuredGridAlgorithm.h"
 
-class VTK_VISUMANAGEMENT_EXPORT vtkLimitVectorsToVOI: public vtkUnstructuredGridAlgorithm
+class MEDVTKINRIA_EXPORT vtkLimitVectorsToVOI: public vtkUnstructuredGridAlgorithm
 {
 
  public:

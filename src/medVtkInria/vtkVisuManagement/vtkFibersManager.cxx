@@ -61,7 +61,7 @@ int vtkFibersManager::vtkFiberRenderingStyle = 0;
 /**
    vtkFibersManagerCallback decalaration & implementation
  */
-class VTK_VISUMANAGEMENT_EXPORT vtkFibersManagerCallback: public vtkCommand
+class MEDVTKINRIA_EXPORT vtkFibersManagerCallback: public vtkCommand
 {
 
  public:
@@ -141,7 +141,7 @@ void vtkFibersManagerCallback::Execute (vtkObject *caller, unsigned long, void*)
 /**
    vtkFiberPickerCallback decalaration & implementation
 */
-class VTK_VISUMANAGEMENT_EXPORT vtkFiberPickerCallback: public vtkCommand
+class MEDVTKINRIA_EXPORT vtkFiberPickerCallback: public vtkCommand
 {
  public:
   static vtkFiberPickerCallback* New()
@@ -331,7 +331,7 @@ void vtkFiberPickerCallback::DeletePickedCell()
 /**
    vtkFiberKeyboardCallback decalaration & implementation
 */
-class VTK_VISUMANAGEMENT_EXPORT vtkFiberKeyboardCallback: public vtkCommand
+class MEDVTKINRIA_EXPORT vtkFiberKeyboardCallback: public vtkCommand
 {
  public:
   static vtkFiberKeyboardCallback* New()

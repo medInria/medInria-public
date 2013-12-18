@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkWidgetsAddOnExport.h"
+#include "medVtkInriaExport.h"
 #include "vtkBoxWidget.h"
 
 class vtkMatrix4x4;
@@ -33,7 +33,7 @@ class vtkMatrix4x4;
    \see
    vtk3DWidget vtkBoxWidget
  */
-class VTK_WIDGETSADDON_EXPORT vtkOrientedBoxWidget : public vtkBoxWidget
+class MEDVTKINRIA_EXPORT vtkOrientedBoxWidget : public vtkBoxWidget
 {
   
  public:

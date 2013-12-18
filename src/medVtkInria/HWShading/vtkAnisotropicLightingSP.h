@@ -27,7 +27,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkUniform.h"
 #include "vtkBMIAShaderProgram.h"
@@ -44,7 +44,7 @@ class vtkFragmentShader;
  * the given light(s) and eye positions and locations.
  * Currently only one light source is supported.
  */
-class VTK_HWSHADING_EXPORT vtkAnisotropicLightingSP : public vtkBMIAShaderProgram {
+class MEDVTKINRIA_EXPORT vtkAnisotropicLightingSP : public vtkBMIAShaderProgram {
 
 public:
   static vtkAnisotropicLightingSP *New();

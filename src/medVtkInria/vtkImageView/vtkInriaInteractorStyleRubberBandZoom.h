@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include "vtkImageViewExport.h"
+#include "medVtkInriaExport.h"
 #include "vtkInteractorStyleRubberBandZoom.h"
 
 class vtkUnsignedCharArray;
 
-class VTK_IMAGEVIEW_EXPORT vtkInriaInteractorStyleRubberBandZoom : public vtkInteractorStyleRubberBandZoom
+class MEDVTKINRIA_EXPORT vtkInriaInteractorStyleRubberBandZoom : public vtkInteractorStyleRubberBandZoom
 {
 public:
     static vtkInriaInteractorStyleRubberBandZoom *New();

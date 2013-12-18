@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkPolyDataAlgorithm.h>
 
@@ -26,7 +26,7 @@
 class vtkImageData;
 
 
-class VTK_VISUMANAGEMENT_EXPORT vtkDisplacementFieldToGridFilter: public vtkPolyDataAlgorithm
+class MEDVTKINRIA_EXPORT vtkDisplacementFieldToGridFilter: public vtkPolyDataAlgorithm
 {
   
  public:

@@ -34,7 +34,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkObject.h>
 
@@ -50,7 +50,7 @@ class vtkBMIAShaderProgram;
  * and rendering to the shadow map. The actual rendering must be done in a
  * seperate class (such as vtkShadowRenderer).
  */
-class VTK_HWSHADING_EXPORT vtkShadowMappingHelper : public vtkObject {
+class MEDVTKINRIA_EXPORT vtkShadowMappingHelper : public vtkObject {
 
 public:
   static vtkShadowMappingHelper* New();

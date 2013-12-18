@@ -24,7 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkBMIAShaderProgram.h"
 
@@ -35,7 +35,7 @@ class vtkFragmentShader;
  * Shader program that renders a scene with shadows. A shadow map must
  * have been generated and supplied to this shader program.
  */
-class VTK_HWSHADING_EXPORT vtkShadowMappingSP : public vtkBMIAShaderProgram {
+class MEDVTKINRIA_EXPORT vtkShadowMappingSP : public vtkBMIAShaderProgram {
 
 public:
   static vtkShadowMappingSP* New();

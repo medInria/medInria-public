@@ -33,12 +33,13 @@ PURPOSE.  See the above copyright notices for more information.
 
 //#include "vtkBMIAShaderProgram.h"
 #include "vtkAnisotropicLightingSP.h"
-#include "vtkHWShadingExport.h"
+
+#include "medVtkInriaExport.h"
 
 /**
  * Shader program that combines anisotropic lighting and shadow mapping.
  */
-class VTK_HWSHADING_EXPORT vtkAnisoLiShadowMapSP : public vtkAnisotropicLightingSP {
+class MEDVTKINRIA_EXPORT vtkAnisoLiShadowMapSP : public vtkAnisotropicLightingSP {
 
 public:
   static vtkAnisoLiShadowMapSP *New();

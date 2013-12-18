@@ -23,14 +23,14 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkShaderObject.h"
 
 /**
  * GLSL Vertex Shader Object
  */
-class VTK_HWSHADING_EXPORT vtkVertexShader : public vtkShaderObject
+class MEDVTKINRIA_EXPORT vtkVertexShader : public vtkShaderObject
 {
 public:
   static vtkVertexShader* New();

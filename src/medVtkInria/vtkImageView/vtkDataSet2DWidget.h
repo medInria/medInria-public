@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkImageViewExport.h"
+#include "medVtkInriaExport.h"
 #include "vtkObject.h"
 #include "vtkCommand.h"
 
@@ -27,7 +27,7 @@ class vtkCutter;
 class vtkPlane;
 
 
-class VTK_IMAGEVIEW_EXPORT vtkDataSet2DWidget : public vtkObject
+class MEDVTKINRIA_EXPORT vtkDataSet2DWidget : public vtkObject
 {
 public:
   // Description:
@@ -85,7 +85,7 @@ private:
 
 
 //BTX
-class VTK_IMAGEVIEW_EXPORT vtkDataSet2DWidgetCommand : public vtkCommand
+class MEDVTKINRIA_EXPORT vtkDataSet2DWidgetCommand : public vtkCommand
 {
 
  public:

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkImageViewExport.h"
+#include "medVtkInriaExport.h"
 #include "vtkImageView.h"
 #include "vtkInteractorStyleImageView2D.h"
 
@@ -85,7 +85,7 @@ class vtkImage2DDisplay;
  J) still some work to do on the annotations
  */
 
-class VTK_IMAGEVIEW_EXPORT vtkImageView2D : public vtkImageView
+class MEDVTKINRIA_EXPORT vtkImageView2D : public vtkImageView
 {
 public:
   static vtkImageView2D *New();

@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #pragma once
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkPolyDataAlgorithm.h>
 #include <vtkMatrix4x4.h>
@@ -23,7 +23,7 @@
 
 class vtkMatrix4x4;
 
-class VTK_VISUMANAGEMENT_EXPORT vtkSphericalHarmonicSource: public vtkPolyDataAlgorithm {
+class MEDVTKINRIA_EXPORT vtkSphericalHarmonicSource: public vtkPolyDataAlgorithm {
 public:
     vtkTypeRevisionMacro(vtkSphericalHarmonicSource,vtkPolyDataAlgorithm);
     void PrintSelf(ostream& os,vtkIndent indent);

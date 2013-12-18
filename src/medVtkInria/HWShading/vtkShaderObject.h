@@ -35,14 +35,14 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkShaderBaseHandle.h"
 
 /**
  * Class for representing a GLSL shader object.
  */
-class VTK_HWSHADING_EXPORT vtkShaderObject : public vtkShaderBaseHandle
+class MEDVTKINRIA_EXPORT vtkShaderObject : public vtkShaderBaseHandle
 {
 public:
 

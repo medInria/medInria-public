@@ -57,7 +57,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkOpenGLPolyDataMapper.h>
 
@@ -78,7 +78,7 @@ class vtkShadowMappingHelper;
  * do the drawing of lines in a "better" way.
  * TODO: describe in *which* way.
  */
-class VTK_HWSHADING_EXPORT vtkFiberMapper : public vtkOpenGLPolyDataMapper
+class MEDVTKINRIA_EXPORT vtkFiberMapper : public vtkOpenGLPolyDataMapper
 {
 public:
   static vtkFiberMapper *New();

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vtkObject.h>
 #include <vtkImageData.h>
@@ -23,7 +23,7 @@
 /** This Class merges two images (any type of data) into a third one.
     Input image must have the same dimensions and Scalar Type */
 
-class VTK_VISUMANAGEMENT_EXPORT vtkImageMerge: public vtkObject
+class MEDVTKINRIA_EXPORT vtkImageMerge: public vtkObject
 {
  public:
 

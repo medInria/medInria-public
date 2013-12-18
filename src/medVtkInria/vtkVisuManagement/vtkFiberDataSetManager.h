@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include "vtkFibersManager.h"
 
@@ -24,7 +24,7 @@ class vtkRenderWindowInteractor;
 
 class vtkFiberDataSetManagerPrivate;
 
-class VTK_VISUMANAGEMENT_EXPORT vtkFiberDataSetManager : public vtkFibersManager
+class MEDVTKINRIA_EXPORT vtkFiberDataSetManager : public vtkFibersManager
 {
  public:
   static vtkFiberDataSetManager *New();

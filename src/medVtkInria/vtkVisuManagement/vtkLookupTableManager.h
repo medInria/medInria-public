@@ -13,14 +13,14 @@
 
 #pragma once
 
-#include "vtkVisuManagementExport.h"
+#include "medVtkInriaExport.h"
 
 #include <vector>
 
 #include <vtkObject.h>
 #include <vtkLookupTable.h>
 
-class VTK_VISUMANAGEMENT_EXPORT vtkLookupTableManager: public vtkObject
+class MEDVTKINRIA_EXPORT vtkLookupTableManager: public vtkObject
 {
 
  public:
