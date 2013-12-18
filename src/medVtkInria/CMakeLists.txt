@@ -45,11 +45,9 @@ list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   vtkDataManagement
   vtkImageView
-  #vtkRenderingAddOn
   vtkWidgetsAddOn
   vtkVisuManagement
   vtkVisuManagement/lut
-  #vtkVisuManagement/vtkLandmarkManagement
   vtkItkWrap
   HWShading
   HWShading/helpers
