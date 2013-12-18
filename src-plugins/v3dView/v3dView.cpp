@@ -556,44 +556,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyReleaseEvent,d->observer,0);
 
     d->interactorStyle2D = d->view2d->GetInteractorStyle();
-    
-    // 3D mode
-    QAction *vrAct = new QAction ( tr ( "VR" ), d->vtkWidget );
-
-    connect ( vrAct, SIGNAL ( triggered() ), this, SLOT ( onMenu3DVRTriggered() ) );
-
-    QAction *maxipAct = new QAction ( tr ( "MIP - Max" ), d->vtkWidget );
-    connect ( maxipAct, SIGNAL ( triggered() ), this, SLOT ( onMenu3DMaxIPTriggered() ) );
-
-    QAction *minipAct = new QAction ( tr ( "MIP - Min" ), d->vtkWidget );
-    connect ( minipAct, SIGNAL ( triggered() ), this, SLOT ( onMenu3DMinIPTriggered() ) );
-
-    QAction *mprAct = new QAction ( tr ( "MPR" ), d->vtkWidget );
-    connect ( mprAct, SIGNAL ( triggered() ), this, SLOT ( onMenu3DMPRTriggered() ) );
-
-    QAction *offAct = new QAction ( tr ( "Off" ), d->vtkWidget );
-    connect ( offAct, SIGNAL ( triggered() ), this, SLOT ( onMenu3DOffTriggered() ) );
-
-    // Volume Mapper
-    QAction *gpuAct = new QAction ( tr ( "GPU" ), d->vtkWidget );
-    connect ( gpuAct, SIGNAL ( triggered() ),
-              this,   SLOT ( onMenuVRGPUTriggered() ) );
-
-    QAction *rntAct = new QAction ( tr ( "Ray Cast / Texture" ), d->vtkWidget );
-    connect ( rntAct, SIGNAL ( triggered() ),
-              this,   SLOT ( onMenuVRRayCastAndTextureTriggered() ) );
-
-    QAction *rayAct = new QAction ( tr ( "Ray Cast" ), d->vtkWidget );
-    connect ( rayAct, SIGNAL ( triggered() ),
-              this,   SLOT ( onMenuVRRayCastTriggered() ) );
-
-    QAction *defAct = new QAction ( tr ( "Default" ), d->vtkWidget );
-    connect ( defAct, SIGNAL ( triggered() ),
-              this,   SLOT ( onMenuVRDefaultTriggered() ) );
-
-    QAction *lodAct = new QAction ( tr ( "Toggle LOD" ), d->vtkWidget );
-    connect ( lodAct, SIGNAL ( triggered() ),
-              this,   SLOT ( onMenu3DLODTriggered() ) );
 
     // Tools
     QAction *zoomAct = new QAction ( tr ( "Zoom" ), d->vtkWidget );
@@ -1288,88 +1250,6 @@ void v3dView::onClosablePropertySet( const QString &value ){
         d->closeButton->hide();
 }
 
-
-void v3dView::onMenu3DVRTriggered()
-{
-    if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 1 );
-
-    this->setProperty ( "3DMode", "VR" );
-    this->setProperty ( "Orientation", "3D" );
-    d->view3d->Render();
-}
-
-void v3dView::onMenu3DMPRTriggered()
-{
-    if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 1 );
-
-    this->setProperty ( "3DMode",      "MPR" );
-    this->setProperty ( "Orientation", "3D" );
-    d->view3d->Render();
-}
-
-void v3dView::onMenu3DMaxIPTriggered()
-{
-    if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 1 );
-
-    this->setProperty ( "3DMode", "MIP - Maximum" );
-    this->setProperty ( "Orientation", "3D" );
-    d->view3d->Render();
-}
-
-void v3dView::onMenu3DMinIPTriggered()
-{
-    if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 1 );
-
-    this->setProperty ( "3DMode", "MIP - Minimum" );
-    this->setProperty ( "Orientation", "3D" );
-    d->view3d->Render();
-}
-
-void v3dView::onMenu3DOffTriggered()
-{
-    if ( qApp->arguments().contains ( "--stereo" ) )
-        d->renWin->SetStereoRender ( 1 );
-
-    this->setProperty ( "3DMode", "Off" );
-    d->view3d->Render();
-}
-
-void v3dView::onMenuVRGPUTriggered()
-{
-    this->setProperty ( "Renderer", "GPU" );
-    d->view3d->Render();
-}
-
-void v3dView::onMenuVRRayCastAndTextureTriggered()
-{
-    this->setProperty ( "Renderer", "Ray Cast / Texture" );
-    d->view3d->Render();
-}
-
-void v3dView::onMenuVRRayCastTriggered()
-{
-    this->setProperty ( "Renderer", "Ray Cast" );
-    d->view3d->Render();
-}
-
-void v3dView::onMenuVRDefaultTriggered()
-{
-    this->setProperty ( "Renderer", "Default" );
-    d->view3d->Render();
-}
-
-void v3dView::onMenu3DLODTriggered()
-{
-    if ( this->property ( "UseLOD" ) == "On" )
-        this->setProperty ( "UseLOD", "Off" );
-    else
-        this->setProperty ( "UseLOD", "On" );
-    d->view3d->Render();
-}
 
 void v3dView::onMenuZoomTriggered()
 {

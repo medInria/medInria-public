@@ -164,17 +164,8 @@ public slots:
 
     void onMainWindowDeactivated();
 
-public slots: // Menu interface
-    void onMenu3DVRTriggered();
-    void onMenu3DMaxIPTriggered();
-    void onMenu3DMinIPTriggered();
-    void onMenu3DMPRTriggered();
-    void onMenu3DOffTriggered();
-    void onMenuVRGPUTriggered();
-    void onMenuVRRayCastAndTextureTriggered();
-    void onMenuVRRayCastTriggered();
-    void onMenuVRDefaultTriggered();
-    void onMenu3DLODTriggered();
+public slots:
+    // Menu interface
     void onMenuZoomTriggered();
     void onMenuWindowLevelTriggered();
 public:
