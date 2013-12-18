@@ -13,7 +13,7 @@
 
 #include "medAbstractView.h"
 
-#include <medAbstractData.h>
+#include <dtkCore/dtkAbstractData.h>
 
 #include <medAbstractViewCoordinates.h>
 

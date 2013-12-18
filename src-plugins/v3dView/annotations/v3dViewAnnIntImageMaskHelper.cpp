@@ -52,9 +52,9 @@ bool v3dViewAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
     medAbstractDataImage * dataImage = imad->maskData();
     v3dView * view = this->getV3dView();
     int oldLayer = view->currentLayer();
-    int maskLayer = view->layerCount();
+    int maskLayer = view->layersCount();
 
-    view->setData(dataImage, maskLayer);
+    view->addLayer(dataImage);
 
     QList<double> scalars;
     QList<QColor> colors;
@@ -83,13 +83,7 @@ bool v3dViewAnnIntImageMaskHelper::addAnnotation( medAnnotationData * annData )
 void v3dViewAnnIntImageMaskHelper::removeAnnotation( medAnnotationData * annData )
 {
     v3dView * view = this->getV3dView();
-    int numLayers = view->layerCount();
-    for ( int i(0); i<numLayers; ++i) {
-        if ( view->dataInList(i) == annData ) {
-            view->removeOverlay(i);
-            break;
-        }
-    }
+    view->removeLayer(annData);
 }
 
 void v3dViewAnnIntImageMaskHelper::annotationModified( medAnnotationData * annData )
@@ -100,17 +94,10 @@ void v3dViewAnnIntImageMaskHelper::annotationModified( medAnnotationData * annDa
     if ( !imad )
         return;
 
-    int layer(-1);
-    for ( int i(0), end(view->layerCount()); i<end; ++i ) {
-        if ( view->dataInList(i) == imad->maskData() ) {
-            layer = i;
-            break;
-        }
+    if( view->contains(imad) )
+    {
+        view->currentView()->Modified();
+        view->update();
     }
-    if ( layer < 0 )
-        return;
-
-    view->currentView()->Modified();
-    view->update();
 }
 

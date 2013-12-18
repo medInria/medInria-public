@@ -81,11 +81,6 @@ void medViewPool::appendView (medAbstractView *vview)
         connect(view, SIGNAL(  obliqueSettingsChanged    (const medAbstractView *)), 
                 this,   SLOT(onViewObliqueSettingsChanged(const medAbstractView *)));
 
-        connect (this, SIGNAL (viewAppended (medAbstractView *)),
-                 view, SLOT (onAppendViewToPool (medAbstractView *)));
-
-        connect (this, SIGNAL (viewRemoved (medAbstractView *)),
-                 view, SLOT (onRemoveViewFromPool (medAbstractView *)));
 
         // set properties
         QHashIterator<QString, QString> it(d->propertySet);
@@ -300,7 +295,8 @@ void medViewPool::onViewObliqueSettingsChanged(const medAbstractView *view)
 
     foreach (medAbstractView *lview, d->views) {
         if ( lview != vsender ) {
-            lview->onObliqueSettingsChanged( view );
+            //TODO GPR: what is ObliqueSettings ?
+            //lview->onObliqueSettingsChanged( view );
             if (lview->widget()->isVisible())
                 lview->update();
         }
