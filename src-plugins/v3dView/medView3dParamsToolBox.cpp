@@ -103,7 +103,6 @@ void medView3dParamsToolBox::update(dtkAbstractView * view)
 
     medBooleanParameter *depthPeelingParam = new medBooleanParameter("Depth Peeling", view);
 
-
     // Layouts
     QWidget *toolboxWidget = new QWidget(this);
 
@@ -113,7 +112,6 @@ void medView3dParamsToolBox::update(dtkAbstractView * view)
     toolBoxLayout->addWidget(LODParam->getWidget());
     toolBoxLayout->addWidget(croppingParam->getWidget()/*, 0, Qt::AlignLeft*/);
     toolBoxLayout->addWidget(depthPeelingParam->getWidget());
-    toolBoxLayout->setContentsMargins(20,0,20,0);
 
     this->addWidget(toolboxWidget);
 

@@ -38,12 +38,12 @@ medLayerItemWidget::medLayerItemWidget(QString name,
 
     layerName = new QLabel(name, this);
     opacitySlider = new QSlider(Qt::Horizontal, this);
-    opacitySlider->setFixedWidth(50);
+    opacitySlider->setFixedWidth(75);
     opacitySlider->setRange(0,100);
     opacitySlider->setValue(100);
     opacitySlider->setToolTip("Opacity");
 
-    layout->setContentsMargins(0,0,0,0);
+    layout->setContentsMargins(0,0,10,0);
 
     layout->addWidget(thumbnailButton);
     layout->addWidget(layerName);
