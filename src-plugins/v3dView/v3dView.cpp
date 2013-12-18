@@ -154,14 +154,14 @@ void v3dViewObserver::Execute ( vtkObject *caller, unsigned long event, void *ca
 
         const double *pos = this->view->currentView()->GetCurrentPoint();
         QVector3D qpos ( doubleToQtVector3D ( pos ) );
-        this->view->emitViewPositionChangedEvent ( qpos );
+        this->view->setPosition ( qpos );
     }
     break;
 
     case vtkImageView2DCommand::CameraZoomEvent:
     {
         double zoom = this->view->currentView()->GetZoom();
-        this->view->emitViewZoomChangedEvent ( zoom );
+        this->view->setZoom ( zoom );
     }
     break;
 
@@ -169,7 +169,7 @@ void v3dViewObserver::Execute ( vtkObject *caller, unsigned long event, void *ca
     {
         const double *pan = this->view->view2d()->GetPan();
         QVector2D qpan ( pan[0],pan[1] );
-        this->view->emitViewPanChangedEvent ( qpan );
+        this->view->setPan( qpan );
     }
     break;
 
@@ -178,7 +178,7 @@ void v3dViewObserver::Execute ( vtkObject *caller, unsigned long event, void *ca
         double level = this->view->currentView()->GetColorLevel();
         double window = this->view->currentView()->GetColorWindow();
 
-        this->view->emitViewWindowingChangedEvent ( level, window );
+        this->view->setWindowLevel( level, window );
     }
     break;
 
@@ -193,7 +193,7 @@ void v3dViewObserver::Execute ( vtkObject *caller, unsigned long event, void *ca
         QVector3D viewup ( doubleToQtVector3D ( vup ) );
         QVector3D focal ( doubleToQtVector3D ( foc ) );
 
-        this->view->emitViewCameraChangedEvent ( position, viewup, focal, ps );
+        this->view->setCamera( position, viewup, focal, ps );
     }
 
     break;
@@ -333,18 +333,12 @@ public:
     typedef QHash<  QString, PropertyFuncType > PropertyFuncMapType;
     PropertyFuncMapType setPropertyFunctions;
 
-    static QList<QColor> presetColors;
-    static int nextColorIndex;
     static medPlayIcon playIcon;
     static medLinkIcon linkIcon;
     static medLinkWLIcon linkWLIcon;
     static medMaximizeIcon maximizeIcon;
 };
 
-
-
-QList<QColor> v3dViewPrivate::presetColors;
-int v3dViewPrivate::nextColorIndex = -1;
 medPlayIcon v3dViewPrivate::playIcon;
 medLinkIcon v3dViewPrivate::linkIcon;
 medLinkWLIcon v3dViewPrivate::linkWLIcon;
@@ -356,25 +350,6 @@ medMaximizeIcon v3dViewPrivate::maximizeIcon;
 
 v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 {
-    if ( d->nextColorIndex < 0 )
-    {
-        d->nextColorIndex = 0;
-        d->presetColors.push_back ( QColor ( "red" ) );
-        d->presetColors.push_back ( QColor ( "green" ) );
-        d->presetColors.push_back ( QColor ( "blue" ) );
-        d->presetColors.push_back ( QColor ( "darkRed" ) );
-        d->presetColors.push_back ( QColor ( "darkGreen" ) );
-        d->presetColors.push_back ( QColor ( "darkBlue" ) );
-        d->presetColors.push_back ( QColor ( "cyan" ) );
-        d->presetColors.push_back ( QColor ( "magenta" ) );
-        d->presetColors.push_back ( QColor ( "yellow" ) );
-        d->presetColors.push_back ( QColor ( "darkCyan" ) );
-        d->presetColors.push_back ( QColor ( "darkMagenta" ) );
-// Actually this does not exist. Even though the QColor doc mentions it.
-//        d->presetColors.push_back( QColor( "darkYellow" ) );
-// For full list see   ${QT_DIR}/src/gui/painting/qcolor_p.cpp
-    }
-
     d->setPropertyFunctions["Closable"] = &v3dView::onClosablePropertySet;
     d->setPropertyFunctions["Orientation"] =  &v3dView::onOrientationPropertySet;
     d->setPropertyFunctions["ShowScalarBar"] = &v3dView::onShowScalarBarPropertySet;
@@ -664,16 +639,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     this->addProperty ("ZoomMode",QStringList() << "Normal" << "RubberBand" );
     this->setProperty ( "ZoomMode" , "Normal" );
 
-    int colorIndex = d->nextColorIndex;
-    if ( colorIndex >= d->presetColors.size() )
-    {
-        colorIndex = d->nextColorIndex = 0;
-    }
-    else
-    {
-        ++d->nextColorIndex;
-    }
-    this->setColor ( d->presetColors.at ( colorIndex ) );
 
     connect ( d->slider,       SIGNAL ( valueChanged ( int ) ),            this, SLOT ( onZSliderValueChanged ( int ) ) );
 
@@ -831,100 +796,48 @@ void v3dView::setSharedDataPointer ( dtkSmartPointer<dtkAbstractData> data )
     if ( !data )
         return;
 
-     int layer = 0;
+     int layer = layersCount();
 
-     dtkAbstractData * dataInLayer;
-     while ( (dataInLayer = medAbstractView::dataInList( layer )) )
-     {
-         layer++;
-     }
 
      d->sharedData[layer] = data;
 
-     this->setData ( data.data(), layer );
+     //TODO: change method prototype to use medAbstractData directly
+     dtkSmartPointer<medAbstractData> medData = qobject_cast<medAbstractData*>(data);
+
+     this->addLayer ( medData.data() );
 }
 
-void v3dView::setData ( dtkAbstractData *data )
-{
-    if(!data)
-        return;
-}
 
-//  TO: TODO
-//  What to return if the dynamic cast does not work ??
-
-template <typename IMAGE>
-bool v3dView::SetViewInput(const char* type,dtkAbstractData* data,const int layer)
-{
-    if (data->identifier()!=type)
-        return false;
-
-    if (IMAGE* image = dynamic_cast<IMAGE*>((itk::Object*)(data->data()))) {
-        d->view2d->SetITKInput(image,layer);
-        d->view3d->SetITKInput(image,layer);
-    }
-    dtkAbstractView::setData(data);
-    return true;
-}
-
-bool v3dView::SetView(const char* type,dtkAbstractData* data)
-{
-    if (data->identifier()!=type)
-        return false;
-
-    dtkAbstractView::setData(data);
-    return true;
-}
-
-void v3dView::setData ( dtkAbstractData *data, int layer )
+void v3dView::addLayer ( medAbstractData *data )
 {
     if ( !data )
         return;
 
-    if ( medAbstractView::isInList ( data ) )
+    if ( medAbstractView::contains ( data ) )
         return;
+
+    medAbstractView::addLayer(data);
 
     this->initializeInteractors();
 
-    if (SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
-        SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3",data,layer) ||
-        SetViewInput<itk::Image<short,3> >("itkDataImageShort3",data,layer) ||
-        SetViewInput<itk::Image<unsigned short,3> >("itkDataImageUShort3",data,layer) ||
-        SetViewInput<itk::Image<int,3> >("itkDataImageInt3",data,layer) ||
-        SetViewInput<itk::Image<unsigned,3> >("itkDataImageUInt3",data,layer) ||
-        SetViewInput<itk::Image<long,3> >("itkDataImageLong3",data,layer) ||
-        SetViewInput<itk::Image<unsigned long,3> >("itkDataImageULong3",data,layer) ||
-        SetViewInput<itk::Image<float,3> >("itkDataImageFloat3",data,layer) ||
-        SetViewInput<itk::Image<double,3> >("itkDataImageDouble3",data,layer) ||
-        SetViewInput<itk::Image<itk::RGBPixel<unsigned char>,3> >("itkDataImageRGB3",data,layer) ||
-        SetViewInput<itk::Image<itk::RGBAPixel<unsigned char>,3> >("itkDataImageRGBA3",data,layer) ||
-        SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVector3",data,layer)) {
-    }
-    else if (data->identifier()=="v3dDataImage")
+    bool isDataTypeHandled = false;
+    foreach ( dtkAbstractViewInteractor *interactor, this->interactors() )
     {
-        if(vtkImageData *dataset = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data())))
+        medAbstractViewInteractor *medInteractor = dynamic_cast <medAbstractViewInteractor *> (interactor);
+        if (medInteractor->isDataTypeHandled(data->identifier()))
         {
-            d->view2d->SetInput(dataset, 0, layer);
-            d->view3d->SetInput(dataset, 0, layer);
+            isDataTypeHandled = true;
+            break;
         }
     }
-    else
-    {
-        bool isDataTypeHandled = false;
-        foreach ( dtkAbstractViewInteractor *interactor, this->interactors() )
-        {
-            medAbstractViewInteractor *medInteractor = dynamic_cast <medAbstractViewInteractor *> (interactor);
-            if (medInteractor->isDataTypeHandled(data->identifier()))
-            {
-                isDataTypeHandled = true;
-                break;
-            }
-        }
-        
-        dtkAbstractView::setData(data);
-        if (!isDataTypeHandled)
-            return;
-    }
+
+    //TODO; no direct calls to dtkAbstractView
+    dtkAbstractView::setData(data);
+
+    if (!isDataTypeHandled)
+        return;
+
+    int layer = medAbstractView::layersCount() - 1;
 
     if ( layer==0 )
     {
@@ -966,7 +879,6 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         }
     }
 
-    this->addDataInList ( data);
     setCurrentLayer(layer);
     emit dataAdded ( data );
     emit dataAdded ( data, layer );
@@ -980,18 +892,25 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
                 switch ( d->view2d->GetViewOrientation() )
                 {
                 case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
-				    this->setProperty("Orientation","Sagittal");
+                    this->setProperty("Orientation","Sagittal");
                     break;
                 case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
-				    this->setProperty("Orientation","Coronal");
+                    this->setProperty("Orientation","Coronal");
                     break;
                 case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
-				    this->setProperty("Orientation","Axial");
+                    this->setProperty("Orientation","Axial");
                     break;
                 }
             }
         }
     }
+}
+
+void v3dView::removeLayerAt ( int layer )
+{
+    d->view2d->RemoveLayer ( layer );
+    d->view3d->RemoveLayer ( layer );
+    medAbstractView::removeLayerAt ( layer );
 }
 
 void *v3dView::data()
@@ -1637,17 +1556,7 @@ double v3dView::opacity ( int layer ) const
     return d->view2d->GetOpacity ( layer );
 }
 
-int v3dView::layerCount() const
-{
-    return d->view2d->GetNumberOfLayers();
-}
 
-void v3dView::removeOverlay ( int layer )
-{
-    d->view2d->RemoveLayer ( layer );
-    d->view3d->RemoveLayer ( layer );
-    medAbstractView::removeOverlay ( layer );
-}
 
 // -- head tracking support
 
@@ -1902,8 +1811,10 @@ void v3dView::close()
     medAbstractView::close();
 }
 
-void v3dView::onPositionChanged ( const QVector3D &position )
+void v3dView::setPosition ( const QVector3D &position )
 {
+    medAbstractView::setPosition(position);
+
     double pos[3];
     pos[0] = position.x();
     pos[1] = position.y();
@@ -1922,15 +1833,19 @@ void v3dView::onPositionChanged ( const QVector3D &position )
     }
 }
 
-void v3dView::onZoomChanged ( double zoom )
+void v3dView::setZoom ( double zoom )
 {
+    medAbstractView::setZoom(zoom);
+
     d->observer->lock();
     d->view2d->SetZoom ( zoom );
     d->observer->unlock();
 }
 
-void v3dView::onPanChanged ( const QVector2D &pan )
+void v3dView::setPan ( const QVector2D &pan )
 {
+    medAbstractView::setPan(pan);
+
     double ppan[2];
     ppan[0] = pan.x();
     ppan[1] = pan.y();
@@ -1940,16 +1855,20 @@ void v3dView::onPanChanged ( const QVector2D &pan )
     d->observer->unlock();
 }
 
-void v3dView::onWindowingChanged ( double level, double window )
+void v3dView::setWindowLevel ( double level, double window )
 {
+    medAbstractView::setWindowLevel(level, window);
+
     d->observer->lock();
     d->currentView->SetColorWindow ( window );
     d->currentView->SetColorLevel ( level );
     d->observer->unlock();
 }
 
-void v3dView::onCameraChanged ( const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale )
+void v3dView::setCamera ( const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale )
 {
+    medAbstractView::setCamera(position, viewup, focal, parallelScale);
+
     double pos[3], vup[3], foc[3];
     pos[0] = position.x();
     pos[1] = position.y();

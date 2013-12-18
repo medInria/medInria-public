@@ -88,9 +88,28 @@ bool v3dViewImageInteractor::registered()
 
 void v3dViewImageInteractor::setData(dtkAbstractData *data)
 {
+    int layer =  d->dataList.size();
+
+    //TODO: incorrect
     if(data->identifier().contains("Image"))
         d->dataList.append(data);
 
+    if (SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
+        SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3",data,layer) ||
+        SetViewInput<itk::Image<short,3> >("itkDataImageShort3",data,layer) ||
+        SetViewInput<itk::Image<unsigned short,3> >("itkDataImageUShort3",data,layer) ||
+        SetViewInput<itk::Image<int,3> >("itkDataImageInt3",data,layer) ||
+        SetViewInput<itk::Image<unsigned,3> >("itkDataImageUInt3",data,layer) ||
+        SetViewInput<itk::Image<long,3> >("itkDataImageLong3",data,layer) ||
+        SetViewInput<itk::Image<unsigned long,3> >("itkDataImageULong3",data,layer) ||
+        SetViewInput<itk::Image<float,3> >("itkDataImageFloat3",data,layer) ||
+        SetViewInput<itk::Image<double,3> >("itkDataImageDouble3",data,layer) ||
+        SetViewInput<itk::Image<itk::RGBPixel<unsigned char>,3> >("itkDataImageRGB3",data,layer) ||
+        SetViewInput<itk::Image<itk::RGBAPixel<unsigned char>,3> >("itkDataImageRGBA3",data,layer) ||
+        SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVector3",data,layer))
+    {
+
+    }
 
     medListParameter *LUTParam = new medListParameter("LUT", data);
     QStringList LUTs = QStringList() << "Default" << "Black & White" << "Black & White Inversed"
@@ -116,6 +135,20 @@ void v3dViewImageInteractor::setData(dtkAbstractData *data)
     parameters.insert(data, presetParam);
 }
 
+
+template <typename IMAGE>
+bool v3dViewImageInteractor::SetViewInput(const char* type,dtkAbstractData* data,const int layer)
+{
+    if (data->identifier()!=type)
+        return false;
+
+    if (IMAGE* image = dynamic_cast<IMAGE*>((itk::Object*)(data->data()))) {
+        d->view->view2d()->SetITKInput(image,layer);
+        d->view->view3d()->SetITKInput(image,layer);
+    }
+
+    return true;
+}
 
 void v3dViewImageInteractor::setView(dtkAbstractView *view)
 {

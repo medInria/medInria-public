@@ -96,7 +96,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   v3dViewMeshInteractor.h
   v3dView4DInteractor.h
   v3dViewAnnotationInteractor.h
-  medViewPropertiesToolBox.h
   medTimeLineToolBox.h
   ${${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC}
   v3dViewSHInteractor.h
@@ -123,7 +122,6 @@ set(${PROJECT_NAME}_SOURCES
   v3dView4DInteractor.cpp
   v3dFiberBundle.cpp
   v3dViewAnnotationInteractor.cpp
-  medViewPropertiesToolBox.cpp
   medTimeLineToolBox.cpp
   annotations/v3dViewAnnIntImageMaskHelper.cpp
   annotations/v3dViewAnnIntSeedPointHelper.cpp

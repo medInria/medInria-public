@@ -14,6 +14,7 @@
 #include "medAbstractView.h"
 
 #include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include <medAbstractViewCoordinates.h>
 
@@ -34,18 +35,13 @@ public:
     QVector3D  camFocal;
     double camParallelScale;
 
-    int currentLayer;
-    int currentMeshLayer;
-    int meshLayerCount;
     bool hasImage;
-    QList< dtkSmartPointer <dtkAbstractData> > dataList;
-    //QMap <int, dtkSmartPointer<dtkAbstractData> > dataList;
 
-    // dtkSmartPointer<dtkAbstractData> sharedData;
-
-    QColor color; // The color used to represent this view in other views.
+    int currentLayer;
 
     QHash<QString, unsigned int> DataTypes;
+
+    QList < dtkSmartPointer <medAbstractData> > layersDataList;
 
 };
 
@@ -65,10 +61,6 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     d->camViewup = QVector3D(0.0, 0.0, 0.0);
     d->camFocal = QVector3D(0.0, 0.0, 0.0);
     d->camParallelScale = 1.0;
-
-    d->currentMeshLayer = 0;
-    d->meshLayerCount = 0;
-    d->hasImage= false;
 
     d->position = QVector3D(0.0, 0.0, 0.0);
     d->pan = QVector2D(0.0, 0.0);
@@ -119,31 +111,50 @@ medAbstractView::medAbstractView(const medAbstractView& view) : dtkAbstractView(
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-void medAbstractView::setColorLookupTable(int min_range,
-                                          int max_range,
-                                          int size,
-                                          const int & table)
+void medAbstractView::addLayer(medAbstractData *data)
 {
-    DTK_DEFAULT_IMPLEMENTATION;
+    return d->layersDataList.append(data);
 }
 
-void medAbstractView::setColorLookupTable( QList<double> scalars,
-                                           QList<QColor> colors )
+bool medAbstractView::removeLayer(medAbstractData *data)
 {
-    DTK_DEFAULT_IMPLEMENTATION;
+    int res = d->layersDataList.removeAll(data);
+    return res > 0;
 }
 
-void medAbstractView::setTransferFunctions( QList<double> scalars,
-                                            QList<QColor> colors )
+void medAbstractView::removeLayerAt(unsigned int layer)
 {
-    DTK_DEFAULT_IMPLEMENTATION;
+    d->layersDataList.removeAt(layer);
 }
 
-void medAbstractView::getTransferFunctions( QList<double> & scalars,
-                                            QList<QColor> & colors )
+void medAbstractView::insertLayer(unsigned int layer, medAbstractData *data)
 {
-    DTK_DEFAULT_IMPLEMENTATION;
+    d->layersDataList.insert(layer, data);
 }
+
+void medAbstractView::moveLayer(unsigned int fromLayer, unsigned int toLayer)
+{
+    d->layersDataList.move(fromLayer, toLayer);
+}
+
+medAbstractData * medAbstractView::layerData(unsigned int layer)
+{
+    if ((layer < d->layersDataList.size()) && (layer >= 0))
+        return d->layersDataList[layer];
+
+    return NULL;
+}
+
+bool medAbstractView::contains(medAbstractData * data)
+{
+    return d->layersDataList.contains(data);
+}
+
+unsigned int medAbstractView::layersCount() const
+{
+    return d->layersDataList.count();
+}
+
 
 QWidget *medAbstractView::receiverWidget(void)
 {
@@ -156,9 +167,9 @@ void medAbstractView::setLinkPosition (bool value)
 {
     d->linkPosition = value;
     if (value)
-        setProperty("PositionLinked","true");
+        dtkAbstractView::setProperty("PositionLinked","true");
     else
-        setProperty("PositionLinked","false");
+        dtkAbstractView::setProperty("PositionLinked","false");
 }
 
 bool medAbstractView::positionLinked() const
@@ -188,7 +199,6 @@ bool medAbstractView::cameraLinked() const
 
 void medAbstractView::setSlice (int slice)
 {
-    this->onSliceChanged (slice);
     emit sliceChanged (slice, d->linkPosition);
 }
 
@@ -198,7 +208,7 @@ void medAbstractView::setPosition (const QVector3D &position)
         return;
 
     d->position = position;
-    this->onPositionChanged (position);
+
     emit positionChanged (position, d->linkPosition);
 }
 
@@ -213,7 +223,7 @@ void medAbstractView::setZoom (double zoom)
         return;
 
     d->zoom = zoom;
-    this->onZoomChanged (zoom);
+
     emit zoomChanged (zoom, d->linkCamera);
 }
 
@@ -228,7 +238,7 @@ void medAbstractView::setPan (const QVector2D &pan)
         return;
 
     d->pan = pan;
-    this->onPanChanged (pan);
+
     emit panChanged (pan, d->linkCamera);
 }
 
@@ -246,7 +256,7 @@ void medAbstractView::setWindowLevel (double level, double window)
 
     d->level = level;
     d->window = window;
-    this->onWindowingChanged (level, window);
+
     emit windowingChanged (level, window, d->linkWindowing);
 }
 
@@ -270,7 +280,7 @@ void medAbstractView::setCamera (const QVector3D &position, const QVector3D &vie
     d->camViewup = viewup;
     d->camFocal = focal;
     d->camParallelScale = parallelScale;
-    this->onCameraChanged (position, viewup, focal, parallelScale);
+
     emit cameraChanged (position, viewup, focal, parallelScale, d->linkCamera);
 }
 
@@ -284,7 +294,6 @@ void medAbstractView::camera (QVector3D &position, QVector3D &viewup, QVector3D 
 
 void medAbstractView::setVisibility(bool visibility, int layer)
 {
-    this->onVisibilityChanged(visibility, layer);
     emit visibilityChanged(visibility, layer);
 }
 
@@ -296,7 +305,6 @@ bool medAbstractView::visibility(int layer) const
 
 void medAbstractView::setOpacity(double opacity, int layer)
 {
-    this->onOpacityChanged(opacity, layer);
     emit opacityChanged(opacity, layer);
 }
 
@@ -305,34 +313,10 @@ double medAbstractView::opacity(int layer) const
     DTK_DEFAULT_IMPLEMENTATION;
     return 1.0;
 }
-QString medAbstractView::getLUT(int layer) const
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-    return "";
-}
-QString medAbstractView::getPreset(int layer) const
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-    return "";
-}
 
 medViewBackend * medAbstractView::backend() const
 {
     return 0;
-}
-
-void medAbstractView::setColor(const QColor & color)
-{
-    if ( d->color != color) {
-        d->color = color;
-        emitColorChangedEvent();
-    }
-}
-
-
-QColor medAbstractView::color() const
-{
-    return d->color;
 }
 
 void medAbstractView::setCurrentLayer(int layer)
@@ -340,47 +324,20 @@ void medAbstractView::setCurrentLayer(int layer)
     d->currentLayer = layer;
 }
 
-int medAbstractView::currentLayer(void) const
-{
-    return d->currentLayer;
-}
-
 bool medAbstractView::hasImage(void) const
 {
     return d->hasImage;
 }
 
-int medAbstractView::layerCount(void) const
+int medAbstractView::currentLayer(void) const
 {
-    DTK_DEFAULT_IMPLEMENTATION;
-    return 0;
-}
-
-void medAbstractView::setCurrentMeshLayer(int meshLayer)
-{
-    d->currentMeshLayer = meshLayer;
-}
-
-int medAbstractView::currentMeshLayer(void) const
-{
-    return d->currentMeshLayer;
-}
-
-void medAbstractView::setMeshLayerCount(int meshLayerCount)
-{
-    d->meshLayerCount = meshLayerCount;
-}
-
-int medAbstractView::meshLayerCount(void) const
-{
-    return d->meshLayerCount;
+    return d->currentLayer;
 }
 
 
+/*
 void medAbstractView::removeOverlay(int layer)
 {
-    //JGG qDebug()<<"ViewDataListSize"<<d->dataList.size();
-
     if (layer >= 0 && layer < d->dataList.size())
     {
         dtkAbstractData * oldData = d->dataList[layer];
@@ -390,82 +347,8 @@ void medAbstractView::removeOverlay(int layer)
         d->dataList.removeAt(layer);
 
     }
-}
+}*/
 
-void medAbstractView::onSliceChanged (int slice)
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
-
-void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
-{
-
-    if(layer >=0 &&  layer < d->dataList.size() )
-        d->dataList[layer] = data;
-    else
-        d->dataList.append(data);
-    medAbstractView::addDataType(data->identifier());
-}
-
-void medAbstractView::addDataInList(dtkAbstractData * data)
-{
-
-    d->dataList.append(data);
-    medAbstractView::addDataType(data->identifier());
-}
-
-dtkAbstractData * medAbstractView::dataInList(int layer) const
-{
-    if (layer >=0 &&  layer < d->dataList.size())
-        return d->dataList[layer];
-
-    return NULL;
-}
-
-bool medAbstractView::isInList(dtkAbstractData * data, int layer)
-{
-
-    if(layer == d->dataList.size())
-        return false;
-    if (d->dataList.contains(data) && d->dataList[layer]==data)
-
-    {
-        qDebug() << "data is in list,layer:" << layer;
-        return true;
-    }
-
-    return false;
-}
-
-bool medAbstractView::isInList(dtkAbstractData * data)
-{
-    if (d->dataList.contains(data))
-
-    {
-        qDebug() << "data is already in list";
-        return true;
-    }
-    return false;
-}
-
-
-void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
-{
-    // start by removing the data type if layer already exists
-    dtkAbstractData * oldData = NULL;
-
-    if (layer >=0 &&  layer < d->dataList.size()) {
-        oldData = d->dataList[layer];
-        removeDataType(d->dataList[layer]->identifier());
-    }
-
-    if ( oldData && ( data != oldData ) ) {
-        emit dataRemoved(oldData,layer);
-    }
-    d->dataList[layer] = data;
-
-    addDataType(data->identifier());
-}
 
 void medAbstractView::addDataType(const QString & dataDescription)
 {
@@ -520,102 +403,6 @@ QHash<QString, unsigned int> medAbstractView::dataTypes()
     return d->DataTypes;
 }
 
-void medAbstractView::onPositionChanged (const QVector3D &position)
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
-
-void medAbstractView::onZoomChanged (double zoom)
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
-
-void medAbstractView::onPanChanged (const QVector2D &pan)
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
-
-void medAbstractView::onWindowingChanged (double level, double window)
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
-
-void medAbstractView::onCameraChanged (const QVector3D &position,
-                                       const QVector3D &viewup,
-                                       const QVector3D &focal,
-                                       double parallelScale)
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
-
-void medAbstractView::onVisibilityChanged(bool visibility, int layer)
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
-
-void medAbstractView::onOpacityChanged(double opacity, int layer)
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
-
-void medAbstractView::emitViewSliceChangedEvent(int slice)
-{
-    emit sliceChanged(slice, d->linkPosition);
-}
-
-void medAbstractView::onObliqueSettingsChanged(const medAbstractView * vsender)
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
-
-void medAbstractView::emitViewPositionChangedEvent(const QVector3D &position)
-{
-    d->position = position;
-    emit positionChanged(position, d->linkPosition);
-}
-
-void medAbstractView::emitViewZoomChangedEvent(double zoom)
-{
-    d->zoom = zoom;
-    emit zoomChanged(zoom, d->linkCamera);
-}
-
-void medAbstractView::emitViewPanChangedEvent(const QVector2D &pan)
-{
-    d->pan = pan;
-    emit panChanged(pan, d->linkCamera);
-}
-
-void medAbstractView::emitViewWindowingChangedEvent(double level, double window)
-{
-    d->level = level;
-    d->window = window;
-    emit windowingChanged(level,window, d->linkWindowing);
-}
-
-void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
-{
-    d->camPosition = position;
-    d->camViewup = viewup;
-    d->camFocal = focal;
-    d->camParallelScale = parallelScale;
-    emit cameraChanged(position, viewup, focal, parallelScale, d->linkCamera);
-}
-
-void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> data )
-{
-    // set a reference to our view that gets destroyed when the view terminates
-    //d->sharedData = data;
-
-    //dtkAbstractData *dtkdata = d->sharedData.data();
-    this->setData(data);
-}
-
-void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> data,
-                                            int layer)
-{
-    this->setData(data,layer);
-}
 
 medAbstractView::~medAbstractView( void )
 {
@@ -623,25 +410,6 @@ medAbstractView::~medAbstractView( void )
     d = NULL;
 }
 
-void medAbstractView::emitObliqueSettingsChangedEvent()
-{
-    emit obliqueSettingsChanged (this);
-}
-
-void medAbstractView::emitColorChangedEvent()
-{
-    emit colorChanged();
-}
-
-void medAbstractView::onRemoveViewFromPool( medAbstractView * viewLeaving )
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
-
-void medAbstractView::onAppendViewToPool( medAbstractView * viewAppended )
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-}
 
 void medAbstractView::setFullScreen( bool state )
 {

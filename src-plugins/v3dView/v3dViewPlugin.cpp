@@ -65,7 +65,6 @@ bool v3dViewPlugin::initialize()
     if (!medVtkView::registered())                     { dtkWarn() << "Unable to register medVtkView type";              }
     if (!medFiberBundlingToolBox::registered())        { dtkWarn() << "Unable to register medFiberBundlingToolBox type"; }
     if (!medTimeLineToolBox::registered())             { dtkWarn() << "Unable to register medTimeLineToolBox type"; }
-    if (!medViewPropertiesToolBox::registered())       { dtkWarn() << "Unable to register medViewPropertiesToolBox type"; }
     if (!medTensorViewToolBox::registered())           { dtkWarn() << "Unable to register medTensorViewToolBox type"; }
     if (!medFiberViewToolBox::registered())            { dtkWarn() << "Unable to register medFiberViewToolBox type"; }
     if (!medSHViewToolBox::registered())               { dtkWarn() << "Unable to register medSHViewToolBox type"; }

@@ -64,28 +64,9 @@ public:
 
     void *view();
 
-    /**
-     * Inputs the data to the vtkImageView2D/3D.
-     * @param layer - specifies at which layer the image is inputed.
-     * Layer N if always shown on top of layer N-1. By playing with
-     * visibility and opacity, it is possible to show multiple images
-     * on top of each others.
-     */
-    void setData(dtkAbstractData *data, int layer);
+    void addLayer(medAbstractData *data);
 
     void setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data);
-
-    /**
-     * Inputs the data to the vtkImageView2D/3D instances.
-     * Calling setData(data) will automatically position the data in
-     * the next available layer. Example:
-     * - first call  -> layer 0
-     * - second call -> layer 1
-     * ...
-     * To set the data at a specific layer, call setData(data, layer).
-     * To set the data to the first layer, call setData(data, 0).
-     */
-    void setData(dtkAbstractData *data);
 
     void *data();
 
@@ -136,17 +117,12 @@ public:
      */
     virtual double opacity(int layer) const;
 
-    /**
-     * Returns the total number of layers of the vtkImageView* instance.
-     */
-    virtual int layerCount() const;
 
     /**
      * Removes an overlay given the layer id.
      */
-    virtual void removeOverlay(int layer);
-   // QString property(const QString& key, int layer) const;
-   // using dtkAbstractObject::property;
+    virtual void removeLayerAt(int layer);
+
     QString getLUT(int layer) const;
     QString getPreset(int layer) const;
 
@@ -156,11 +132,11 @@ public:
 
 public slots:
     // inherited from medAbstractView
-    void onPositionChanged  (const  QVector3D &position);
-    void onZoomChanged      (double zoom);
-    void onPanChanged       (const  QVector2D &pan);
-    void onWindowingChanged (double level, double window);
-    void onCameraChanged    (const  QVector3D &position,
+    void setPosition  (const  QVector3D &position);
+    void setZoom      (double zoom);
+    void setPan      (const  QVector2D &pan);
+    void setWindowLevel (double level, double window);
+    void setCamera    (const  QVector3D &position,
                              const  QVector3D &viewup,
                              const  QVector3D &focal,
                              double parallelScale);
@@ -243,10 +219,6 @@ protected slots:
 protected:
     virtual bool eventFilter(QObject * obj, QEvent * event);
 private:
-
-    template <typename IMAGE>
-    bool SetViewInput(const char* type,dtkAbstractData* data,const int layer);
-    bool SetView(const char* type,dtkAbstractData* data);
 
     v3dViewPrivate *d;
 

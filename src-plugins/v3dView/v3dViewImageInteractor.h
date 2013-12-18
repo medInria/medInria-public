@@ -61,6 +61,9 @@ public slots:
 private:
     int getLayer(dtkAbstractData * data) const;
 
+    template <typename IMAGE>
+    bool SetViewInput(const char* type,dtkAbstractData* data,const int layer);
+
 private:
     v3dViewImageInteractorPrivate * d;
 };

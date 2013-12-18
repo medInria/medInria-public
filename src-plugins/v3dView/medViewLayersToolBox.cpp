@@ -204,7 +204,7 @@ void medViewLayersToolBox::updateLayerListWidget(QList<medVtkView*> vtkViews)
         //if(!container->isSelected())
           container->select();
 
-        int nbLayers = view->numberOfLayers();
+        int nbLayers = view->layersCount();
 
         for (int i  = 0; i < nbLayers; i++) {
 

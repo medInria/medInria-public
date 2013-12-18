@@ -41,7 +41,7 @@
 template <typename TYPE>
 bool AppendImageSequence(dtkAbstractData* data,v3dView* view,vtkCollection* sequenceList,QList<dtkAbstractData*> dataList) {
     if (itk::Image<TYPE,4>* image = dynamic_cast<itk::Image<TYPE,4>*>(static_cast<itk::Object*>(data->data()))) {
-        unsigned int layer = view->layerCount();
+        unsigned int layer = view->layersCount();
         if (layer==1 && !view->view2d()->GetInput())
             layer = 0;
         vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::New();

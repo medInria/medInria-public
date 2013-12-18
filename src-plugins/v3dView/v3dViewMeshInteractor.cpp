@@ -485,7 +485,7 @@ void v3dViewMeshInteractor::changeBounds (vtkPointSet* pointSet)
     double bounds[6];
     bool isImageOutBounded = false;
     pointSet->GetBounds(bounds);
-    if(!d->view->dataInList(0) )
+    if( d->view->layersCount() == 0 )
     {
         for (int i=0; i<6; i++)
         {
@@ -524,7 +524,7 @@ void v3dViewMeshInteractor::changeBounds (vtkPointSet* pointSet)
         imagegenerator->SetOutputImageBounds(d->imageBounds);
         vtkImageData * image = imagegenerator->GetOutput();
 
-        if(d->view->dataInList(0))
+        if( d->view->layersCount() > 0 )
         {
             //d->view->view2d()->RemoveDataSet();
             d->view->view2d()->RemoveLayer(0);

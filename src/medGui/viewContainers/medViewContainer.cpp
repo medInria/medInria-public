@@ -17,6 +17,7 @@
 #include <medDataManager.h>
 #include <medViewManager.h>
 #include <medAbstractView.h>
+#include <medAbstractData.h>
 #include <medDataIndex.h>
 
 #include <QtGui>
@@ -427,6 +428,9 @@ bool medViewContainer::open(dtkAbstractData * data)
         return false;
 
     dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
+    //TODO: change method prototype to use medAbstractData directly
+    dtkSmartPointer<medAbstractData> medData = qobject_cast<medAbstractData*>(data);
+
     bool newView = view.isNull() || !this->multiLayer();
 
     if( newView)
@@ -445,13 +449,13 @@ bool medViewContainer::open(dtkAbstractData * data)
     // set the data to the view
     if (!this->multiLayer())
     {
-        view->removeOverlay(0);
-        view->setSharedDataPointer(data,0);
+        view->removeLayerAt(0);
+        view->addLayer(medData);
         newView = true;
     }
     else
     {
-        view->setSharedDataPointer(data);
+        view->addLayer(medData);
     }
 
     //only call reset if the view is a new one or with only one layer.
