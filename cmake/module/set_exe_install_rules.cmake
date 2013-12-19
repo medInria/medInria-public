@@ -52,7 +52,7 @@ if (APPLE)
     )
   add_custom_command(TARGET ${target} POST_BUILD
     COMMAND ${CMAKE_COMMAND} ARGS -E make_directory ${${target}_RESOURCE_DIR}
-    COMMAND ${CMAKE_COMMAND} ARGS -E copy ${CMAKE__CURRENT_SOURCE_DIR}/ressources/${target}.icns ${${target}_RESOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} ARGS -E copy ${CMAKE_CURRENT_SOURCE_DIR}/resources/${target}.icns ${${target}_RESOURCE_DIR}
     )
   
   install(CODE "

@@ -991,6 +991,7 @@ medHomepagePushButton
 {
     background-color: $HOME_PAGE_BUTTON_BACKGROUND;
     font-size: $WIDGET_FONTSIZE;
+    border: 2px solid $WIDGET_BACKGROUND;
 }
 
 medHomepagePushButton:hover
@@ -1235,3 +1236,4 @@ QWidget#toolbarWidget
 {
     background: $FINDER_PATH_BAR_BACKGROUND;
 }
+

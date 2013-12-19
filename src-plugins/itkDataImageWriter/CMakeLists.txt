@@ -93,6 +93,10 @@ target_link_libraries(${PROJECT_NAME}
   medImageIO
   )
 
+# needed because of link  with medImageIO
+if(APPLE)
+  FixDCMTKMacLink(${PROJECT_NAME} ${DCMTK_LIBRARIES})  
+endif(APPLE)
 
 ## #############################################################################
 ## Install rules
