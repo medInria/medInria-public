@@ -184,8 +184,6 @@ int main(int argc,char* argv[]) {
     if (DirectView)
         mainwindow.setStartup(medMainWindow::WorkSpace,posargs);
 
-    forceShow(mainwindow);
-
     bool fullScreen = medSettingsManager::instance()->value("startup", "fullscreen", false).toBool();
 
     const bool hasFullScreenArg   = application.arguments().contains("--fullscreen");
@@ -237,6 +235,8 @@ int main(int argc,char* argv[]) {
 
     application.setActivationWindow(&mainwindow);
     application.setMainWindow(&mainwindow);
+
+    forceShow(mainwindow);
 
     //  Start main loop.
 
