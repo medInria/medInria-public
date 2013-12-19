@@ -51,16 +51,6 @@ list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-
-## #############################################################################
-## Configure
-## #############################################################################
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/qtdcmDataSourceDefinitions.h.in
-  ${CMAKE_CURRENT_BINARY_DIR}/qtdcmDataSourceDefinitions.h
-  )
-
-
 ## #############################################################################
 ## include directorie.
 ## #############################################################################
