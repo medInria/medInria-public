@@ -453,14 +453,19 @@ bool medViewContainer::open(dtkAbstractData * data)
         view->setSharedDataPointer(data);
     }
 
-    //set the view to the current container
-    this->setView(view);
     //only call reset if the view is a new one or with only one layer.
     if (newView)
     {
+        this->setView(view);
         qDebug() << "medViewContainer: Reset view";
         view->reset();
     }
+    else
+    {
+        // in order to update the toolboxes, when a new data type has been added for example
+        setFocus(Qt::MouseFocusReason);
+    }
+
     view->update();
 
     return true;
