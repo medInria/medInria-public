@@ -75,6 +75,7 @@ void medSplashScreen::repaint()
 {
     QWidget::repaint();
     QApplication::flush();
+    qApp->processEvents(QEventLoop::AllEvents);
 }
 
 void medSplashScreen::finish(QWidget *mainWin)
