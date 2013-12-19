@@ -448,9 +448,16 @@ double v3dViewMeshInteractor::opacity(dtkAbstractData * /*data*/) const
     return 100;
 }
 
-void v3dViewMeshInteractor::setVisible(dtkAbstractData * /*data*/, bool /*visible*/)
+void v3dViewMeshInteractor::setVisible(dtkAbstractData * data, bool visible)
 {
-    //TODO
+    if ( ! data->identifier().startsWith("vtkDataMesh"))
+        return;
+    vtkMetaDataSet * dataset = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
+    for(int i = 0; i < d->dataList.size(); i++) {
+        if (dataset == d->dataList.at(i)) {
+            setVisibility(i, visible);
+        }
+    }
 }
 
 bool v3dViewMeshInteractor::isVisible(dtkAbstractData * /*data*/) const
