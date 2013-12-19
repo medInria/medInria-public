@@ -82,7 +82,7 @@ set(${PROJECT_NAME}_LIBS
   ITKIOPNG
   ITKIOStimulate
   ITKIOVTK
-  ${ITKReview_LIBRARIES}
+  ITKIOMRC
   )
     
 target_link_libraries(${PROJECT_NAME}

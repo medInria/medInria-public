@@ -68,7 +68,7 @@ SET(${PROJECT_NAME}_LIBRARIES
   ITKIOTransformHDF5
   ITKIOTransformMatlab
   ITKIOTransformInsightLegacy
-  ${ITKReview_LIBRARIES}
+  ITKIOMRC
 )
 
 find_package(RPI REQUIRED)
