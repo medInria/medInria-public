@@ -25,7 +25,7 @@ class medSplashScreenPrivate;
  Almost all features from the QSplashscreen are replicated, including messages refreshed before a QApplication event loop is running.
  *
  */
-class medSplashScreen : public QFrame
+class medSplashScreen : public QWidget
 {
     Q_OBJECT
 public:
