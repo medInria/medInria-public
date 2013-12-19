@@ -119,6 +119,10 @@ target_link_libraries(${PROJECT_NAME}
   medCore
   medGui
   )
+  
+if(APPLE)
+  FixDCMTKMacLink(${PROJECT_NAME} ${DCMTK_LIBRARIES})
+endif(APPLE)
 
 
 ## #############################################################################

@@ -90,7 +90,6 @@ target_link_libraries(${PROJECT_NAME}
   )
 
 if(APPLE)
-  include(FixDCMTKMacLink)
   FixDCMTKMacLink(${PROJECT_NAME} ${DCMTK_LIBRARIES})
 endif(APPLE)
 
@@ -100,7 +99,6 @@ endif(APPLE)
 ## #############################################################################
 
 if(APPLE)
-  include(FixDCMTKMacInstall)
   FixDCMTKMacInstall()
 endif()
 

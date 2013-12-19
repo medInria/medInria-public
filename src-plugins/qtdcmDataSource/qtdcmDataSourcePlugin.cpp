@@ -16,8 +16,6 @@
 
 #include <dtkLog/dtkLog.h>
 
-#include <qtdcmDataSourceDefinitions.h>
-
 // /////////////////////////////////////////////////////////////////
 // qtdcmDataSourcePluginPrivate
 // /////////////////////////////////////////////////////////////////
@@ -88,7 +86,7 @@ QStringList qtdcmDataSourcePlugin::dependencies() const
 
 QString qtdcmDataSourcePlugin::version() const
 {
-  return PLUGIN_VERSION;
+  return QTDCMDATASOURCEPLUGIN_VERSION;
 }
 
 
