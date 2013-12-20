@@ -92,11 +92,6 @@ void medView3dParamsToolBox::update(dtkAbstractView * view)
     VRModes << "GPU" <<  "Ray Cast / Texture" << "Ray Cast" << "Texture" <<  "Default";
     VRModeParam->setValues(VRModes);
 
-    medIntParameter *LODParam = new medIntParameter("LOD", view);
-    LODParam->setMinimum(0);
-    LODParam->setMaximum(100);
-    LODParam->setValue(100);
-
     medActionParameter *croppingParam = new medActionParameter("Cropping", view);
     croppingParam->setIcon(QIcon (":/icons/cropping.png"));
     croppingParam->setCheckable(true);
@@ -110,7 +105,6 @@ void medView3dParamsToolBox::update(dtkAbstractView * view)
     toolBoxLayout->setLabelAlignment(Qt::AlignLeft);
     toolBoxLayout->addRow(mode3dParam->name(), mode3dParam->getWidget());
     toolBoxLayout->addRow(VRModeParam->name(), VRModeParam->getWidget());
-    toolBoxLayout->addRow(LODParam->name(), LODParam->getWidget());
     toolBoxLayout->addRow(croppingParam->name(), croppingParam->getWidget());
     toolBoxLayout->addRow(depthPeelingParam->name(), depthPeelingParam->getWidget());
 
@@ -118,17 +112,14 @@ void medView3dParamsToolBox::update(dtkAbstractView * view)
 
     d->widgetList.insert(d->vtkView, toolboxWidget);
 
-
     // Connection
     connect(mode3dParam,SIGNAL(valueChanged(dtkAbstractView*,QString)),this,SLOT(onModeChanged(dtkAbstractView*,QString)));
     connect(VRModeParam,SIGNAL(valueChanged(dtkAbstractView*,QString)),this,SLOT(onVRModeChanged(dtkAbstractView*,QString)));
-    connect(LODParam,SIGNAL(valueChanged(dtkAbstractView*,int)),this,SLOT(onLodChanged(dtkAbstractView*,int)));
     connect(croppingParam,SIGNAL(triggered(dtkAbstractView*,bool)),this,SLOT(onCroppingChanged(dtkAbstractView*,bool)));
     connect(depthPeelingParam, SIGNAL(valueChanged(dtkAbstractView*, bool)),this, SLOT(onDepthPeelingChanged(dtkAbstractView*,bool)));
 
     d->viewParamMap.insert(d->vtkView, mode3dParam);
     d->viewParamMap.insert(d->vtkView, VRModeParam);
-    d->viewParamMap.insert(d->vtkView, LODParam);
     d->viewParamMap.insert(d->vtkView, croppingParam);
     d->viewParamMap.insert(d->vtkView, depthPeelingParam);
 

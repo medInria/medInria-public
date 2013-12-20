@@ -55,8 +55,8 @@ medViewLayersToolBox::medViewLayersToolBox(QWidget *parent)
     d->viewParamsToolBox = new medViewParamsToolBox();
     d->viewParamsToolBox->header()->hide();
 
-    this->addWidget(d->layersListWidget);
     this->addWidget(d->viewParamsToolBox);
+    this->addWidget(d->layersListWidget);
     this->addWidget(interactorsParamsWidget);
 
     d->paramWidgetList = QList<QWidget*>();
