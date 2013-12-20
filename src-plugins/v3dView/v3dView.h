@@ -171,7 +171,6 @@ public slots:
     void onOrientationPropertySet           (const QString &value);
     void on3DModePropertySet                (const QString &value);
     void onRendererPropertySet              (const QString &value);
-    void onUseLODPropertySet                (const QString &value);
     void onShowScalarBarPropertySet         (const QString &value);
     void onShowAxisPropertySet              (const QString &value);
     void onShowRulerPropertySet             (const QString &value);

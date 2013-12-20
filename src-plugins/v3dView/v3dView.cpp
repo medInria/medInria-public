@@ -384,7 +384,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->setPropertyFunctions["MouseInteraction"] = &v3dView::onMouseInteractionPropertySet;
     d->setPropertyFunctions["3DMode"] = &v3dView::on3DModePropertySet;
     d->setPropertyFunctions["Renderer"] = &v3dView::onRendererPropertySet;
-    d->setPropertyFunctions["UseLOD"] = &v3dView::onUseLODPropertySet;
     d->setPropertyFunctions["Cropping"] = &v3dView::onCroppingPropertySet;
     d->setPropertyFunctions["ZoomMode"] = &v3dView::onZoomModePropertySet;
     d->setPropertyFunctions["DepthPeeling"] = &v3dView::onDepthPeelingPropertySet;
@@ -606,7 +605,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 #else
     this->setProperty ( "Renderer", "Default" );
 #endif
-    this->setProperty ( "UseLOD",   "On" );
     this->setProperty ( "Cropping", "false" );
     this->setProperty ( "Preset",   "None" );
 
@@ -1233,9 +1231,6 @@ void v3dView::onDepthPeelingPropertySet ( const QString &value )
         d->renderer3d->SetUseDepthPeeling(0);
 }
 
-void v3dView::onUseLODPropertySet ( const QString &value )
-{
-}
 
 void v3dView::onShowScalarBarPropertySet ( const QString &value )
 {
