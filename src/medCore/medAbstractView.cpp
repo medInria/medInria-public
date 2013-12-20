@@ -21,56 +21,16 @@
 class medAbstractViewPrivate
 {
 public:
-    bool linkPosition;
-    bool linkCamera;
-    bool linkWindowing;
 
-    QVector3D  position;
     QVector2D  pan;
     double     zoom;
-    double     level;
-    double     window;
-    QVector3D  camPosition;
-    QVector3D  camViewup;
-    QVector3D  camFocal;
-    double camParallelScale;
-
-    bool hasImage;
-
-    int currentLayer;
-
     QHash<QString, unsigned int> DataTypes;
-
-    QList < dtkSmartPointer <medAbstractData> > layersDataList;
-
 };
 
 medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
 {
-    d->linkPosition  = false;
-    d->linkCamera    = false;
-    d->linkWindowing = false;
-    d->currentLayer = 0;
-
-    d->position = QVector3D(0.0, 0.0, 0.0);
     d->pan = QVector2D(0.0, 0.0);
     d->zoom = 1.0;
-    d->level = 0.0;
-    d->window = 0.0;
-    d->camPosition = QVector3D(0.0, 0.0, 0.0);
-    d->camViewup = QVector3D(0.0, 0.0, 0.0);
-    d->camFocal = QVector3D(0.0, 0.0, 0.0);
-    d->camParallelScale = 1.0;
-
-    d->position = QVector3D(0.0, 0.0, 0.0);
-    d->pan = QVector2D(0.0, 0.0);
-    d->zoom = 1.0;
-    d->level = 0.0;
-    d->window = 0.0;
-    d->camPosition = QVector3D(0.0, 0.0, 0.0);
-    d->camViewup = QVector3D(0.0, 0.0, 0.0);
-    d->camFocal = QVector3D(0.0, 0.0, 0.0);
-    d->camParallelScale = 1.0;
 
     QStringList lut;
     lut << "Default";           // list of available lookup tables set
@@ -107,48 +67,10 @@ medAbstractView::medAbstractView(const medAbstractView& view) : dtkAbstractView(
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-void medAbstractView::addLayer(medAbstractData *data)
+medAbstractView::~medAbstractView( void )
 {
-    return d->layersDataList.append(data);
-}
-
-bool medAbstractView::removeLayer(medAbstractData *data)
-{
-    int res = d->layersDataList.removeAll(data);
-    return res > 0;
-}
-
-void medAbstractView::removeLayerAt(unsigned int layer)
-{
-    d->layersDataList.removeAt(layer);
-}
-
-void medAbstractView::insertLayer(unsigned int layer, medAbstractData *data)
-{
-    d->layersDataList.insert(layer, data);
-}
-
-void medAbstractView::moveLayer(unsigned int fromLayer, unsigned int toLayer)
-{
-    d->layersDataList.move(fromLayer, toLayer);
-}
-
-medAbstractData * medAbstractView::layerData(unsigned int layer)
-{
-    if ((layer < d->layersDataList.size()) && (layer >= 0))
-        return d->layersDataList[layer];
-
-    return NULL;
-}
-
-bool medAbstractView::contains(medAbstractData * data)
-{
-    return d->layersDataList.contains(data);
-}
-
-unsigned int medAbstractView::layersCount() const
-{
-    return d->layersDataList.count();
+    delete d;
+    d = NULL;
 }
 
 
@@ -159,56 +81,6 @@ QWidget *medAbstractView::receiverWidget(void)
     return NULL;
 }
 
-void medAbstractView::setLinkPosition (bool value)
-{
-    d->linkPosition = value;
-}
-
-bool medAbstractView::positionLinked() const
-{
-    return d->linkPosition;
-}
-
-void medAbstractView::setLinkWindowing (bool value)
-{
-    d->linkWindowing = value;
-}
-
-bool medAbstractView::windowingLinked() const
-{
-    return d->linkWindowing;
-}
-
-void medAbstractView::setLinkCamera (bool value)
-{
-    d->linkCamera = value;
-}
-
-bool medAbstractView::cameraLinked() const
-{
-    return d->linkCamera;
-}
-
-void medAbstractView::setSlice (int slice)
-{
-    emit sliceChanged (slice, d->linkPosition);
-}
-
-void medAbstractView::setPosition (const QVector3D &position)
-{
-    if ( d->position == position )
-        return;
-
-    d->position = position;
-
-    emit positionChanged (position, d->linkPosition);
-}
-
-QVector3D medAbstractView::position(void) const
-{
-    return d->position;
-}
-
 void medAbstractView::setZoom (double zoom)
 {
     if  (d->zoom == zoom)
@@ -216,7 +88,8 @@ void medAbstractView::setZoom (double zoom)
 
     d->zoom = zoom;
 
-    emit zoomChanged (zoom, d->linkCamera);
+    //TODO GPR: to correct
+    //emit zoomChanged (zoom, d->linkCamera);
 }
 
 double medAbstractView::zoom(void) const
@@ -231,7 +104,8 @@ void medAbstractView::setPan (const QVector2D &pan)
 
     d->pan = pan;
 
-    emit panChanged (pan, d->linkCamera);
+    //TODO GPR: to correct
+    //emit panChanged (pan, d->linkCamera);
 }
 
 QVector2D medAbstractView::pan(void) const
@@ -239,92 +113,18 @@ QVector2D medAbstractView::pan(void) const
     return d->pan;
 }
 
-void medAbstractView::setWindowLevel (double level, double window)
-{
-    if ( ( d->level == level ) &&
-         ( d->window == window) ) {
-        return;
-    }
-
-    d->level = level;
-    d->window = window;
-
-    emit windowingChanged (level, window, d->linkWindowing);
-}
-
-void medAbstractView::windowLevel(double &level, double &window) const
-{
-    level = d->level;
-    window = d->window;
-}
-
-void medAbstractView::setCamera (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
-{
-    if (    (d->camPosition == position) &&
-            (d->camViewup   == viewup)   &&
-            (d->camFocal    == focal) &&
-            (d->camParallelScale == parallelScale) ) {
-
-        return;
-    }
-
-    d->camPosition = position;
-    d->camViewup = viewup;
-    d->camFocal = focal;
-    d->camParallelScale = parallelScale;
-
-    emit cameraChanged (position, viewup, focal, parallelScale, d->linkCamera);
-}
-
-void medAbstractView::camera (QVector3D &position, QVector3D &viewup, QVector3D &focal, double &parallelScale) const
-{
-    position = d->camPosition;
-    viewup = d->camViewup;
-    focal = d->camFocal;
-    parallelScale = d->camParallelScale;
-}
-
-void medAbstractView::setVisibility(bool visibility, int layer)
-{
-    emit visibilityChanged(visibility, layer);
-}
-
-bool medAbstractView::visibility(int layer) const
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-    return true;
-}
-
-void medAbstractView::setOpacity(double opacity, int layer)
-{
-    emit opacityChanged(opacity, layer);
-}
-
-double medAbstractView::opacity(int layer) const
-{
-    DTK_DEFAULT_IMPLEMENTATION;
-    return 1.0;
-}
 
 medViewBackend * medAbstractView::backend() const
 {
     return 0;
 }
 
-void medAbstractView::setCurrentLayer(int layer)
+
+void medAbstractView::setFullScreen( bool state )
 {
-    d->currentLayer = layer;
+    emit fullScreen( state );
 }
 
-bool medAbstractView::hasImage(void) const
-{
-    return d->hasImage;
-}
-
-int medAbstractView::currentLayer(void) const
-{
-    return d->currentLayer;
-}
 
 void medAbstractView::addDataType(const QString & dataDescription)
 {
@@ -336,18 +136,6 @@ void medAbstractView::addDataType(const QString & dataDescription)
     }
     else
         d->DataTypes.insert(dataDescription, 1);
-
-    QHash<QString, unsigned int>::const_iterator i = d->DataTypes.constBegin();
-    while (i != d->DataTypes.constEnd()) {
-        d->hasImage=false;
-        if (i.value()>0 && i.key().contains("Image"))
-        {
-            d->hasImage=true;
-            break;
-        }
-        ++i;
-    }
-    qDebug() << d->hasImage<<endl;//JGG
 }
 
 void medAbstractView::removeDataType(const QString & dataDescription)
@@ -360,34 +148,9 @@ void medAbstractView::removeDataType(const QString & dataDescription)
     }
     else
         qDebug() << "Not DataType in the view! ";
-
-    QHash<QString, unsigned int>::const_iterator i = d->DataTypes.constBegin();
-    while (i != d->DataTypes.constEnd()) {
-        d->hasImage=false;
-        qDebug() << i.key() << ": " << i.value() << endl;
-        if (i.value()>0 && i.key().contains("Image"))
-        {
-            d->hasImage=true;
-            break;
-        }
-        ++i;
-    }
 }
 
 QHash<QString, unsigned int> medAbstractView::dataTypes()
 {
     return d->DataTypes;
-}
-
-
-medAbstractView::~medAbstractView( void )
-{
-    delete d;
-    d = NULL;
-}
-
-
-void medAbstractView::setFullScreen( bool state )
-{
-    emit fullScreen( state );
 }

@@ -125,8 +125,9 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         vtkMetaDataSet * mesh = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
         vtkPointSet * pointSet = vtkPointSet::SafeDownCast (mesh->GetDataSet());
 
-        if(!d->view->hasImage())
-            changeBounds(pointSet);
+        //TODO GPR
+        /*if(!d->view->hasImage())
+            changeBounds(pointSet);*/
 
         d->dataList.append(mesh);
         d->lutList.append(LutPair(NULL, "Default"));
@@ -219,8 +220,9 @@ void v3dViewMeshInteractor::disable()
             }
         }
 
-        if(!d->view->hasImage())
-            d->view->view2d()->RemoveLayer(0);
+        //TODO GPR
+        /*if(!d->view->hasImage())
+            d->view->view2d()->RemoveLayer(0);*/
 
         // MAYBE TODO d->actor2dList[d->currentLayer]->Delete();
         // TODO        d->view->view3D ()->RemoveDataset ();

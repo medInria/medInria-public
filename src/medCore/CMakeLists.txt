@@ -25,6 +25,8 @@ set(${PROJECT_NAME}_DEVEL_HEADERS_MOC
   medAbstractDataSource.h
   medAbstractDbController.h
   medAbstractView.h
+  medAbstractLayeredView.h
+  medAbstractImageView.h
   medAbstractViewInteractor.h
   medSHAbstractViewInteractor.h
   medAnnotationData.h
@@ -75,6 +77,8 @@ set(${PROJECT_NAME}_SOURCES
   medViewManager.cpp
   medPluginManager.cpp
   medAbstractView.cpp
+  medAbstractLayeredView.cpp
+  medAbstractImageView.cpp
   medAbstractViewCoordinates.cpp
   medAbstractViewCollection.cpp
   medStorage.cpp

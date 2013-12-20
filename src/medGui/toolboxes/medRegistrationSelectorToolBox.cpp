@@ -27,6 +27,7 @@
 #include <medMessageController.h>
 #include <medMetaDataKeys.h>
 #include <medAbstractView.h>
+#include <medAbstractImageView.h>
 
 #include <medAbstractDataImage.h>
 #include <medRunnableProcess.h>
@@ -45,9 +46,9 @@ public:
     QPushButton * saveTransButton;
 
     QComboBox *toolboxes;
-    dtkSmartPointer<medAbstractView> fixedView;
-    dtkSmartPointer<medAbstractView> movingView;
-    dtkSmartPointer<medAbstractView> fuseView;
+    dtkSmartPointer<medAbstractImageView> fixedView;
+    dtkSmartPointer<medAbstractImageView> movingView;
+    dtkSmartPointer<medAbstractImageView> fuseView;
 
     dtkSmartPointer<medAbstractDataImage> fixedData;
     dtkSmartPointer<medAbstractDataImage> movingData;
@@ -161,19 +162,19 @@ medRegistrationSelectorToolBox::~medRegistrationSelectorToolBox(void)
 }
 
 //! Gets the fixedView.
-dtkAbstractView *medRegistrationSelectorToolBox::fixedView(void)
+medAbstractImageView *medRegistrationSelectorToolBox::fixedView(void)
 {
     return d->fixedView;
 }
 
 //! Gets the movingView.
-dtkAbstractView *medRegistrationSelectorToolBox::movingView(void)
+medAbstractImageView *medRegistrationSelectorToolBox::movingView(void)
 {
     return d->movingView;
 }
 
 //! Gets the fuseView.
-dtkAbstractView *medRegistrationSelectorToolBox::fuseView(void)
+medAbstractImageView *medRegistrationSelectorToolBox::fuseView(void)
 {
     return d->fuseView;
 }
@@ -214,7 +215,7 @@ void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& in
     if (!d->fixedData)
         return;
 
-    d->fixedView = dynamic_cast<medAbstractView*>
+    d->fixedView = dynamic_cast<medAbstractImageView*>
                    (medViewManager::instance()->views(index).first());
 
     if(!d->fixedView) {
@@ -287,7 +288,7 @@ void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& i
     if (!d->movingData)
         return;
 
-    d->movingView = dynamic_cast<medAbstractView*>
+    d->movingView = dynamic_cast<medAbstractImageView*>
                     (medViewManager::instance()->views
                      (index).first());
 
@@ -395,7 +396,7 @@ void medRegistrationSelectorToolBox::setFuseView(dtkAbstractView *view)
         disconnect(d->fuseView, SIGNAL(dataRemoved(int)), this, SLOT(closeCompareView(int)));
     }
 
-    d->fuseView = dynamic_cast <medAbstractView*> (view);
+    d->fuseView = dynamic_cast <medAbstractImageView*> (view);
     connect(d->fuseView, SIGNAL(dataRemoved(int)), this, SLOT(closeCompareView(int)));
 }
 
@@ -679,14 +680,14 @@ void medRegistrationSelectorToolBox::synchronisePosition(const QVector3D &positi
     if (d->fixedView==QObject::sender() || d->movingView==QObject::sender())
     {
         if (d->fixedView && d->fixedView->positionLinked() && d->movingView &&  d->movingView->positionLinked()) // If the fixedView and movingView are linked in position then the changes also appear in fuseView.
-            d->fuseView->setPosition(position);
+            d->fuseView->setToSliceAtPosition(position);
     }
     else // the changes in fuseView are propagated to the fixedView and movingView.
     {		
         if (d->fixedView)
-            d->fixedView->setPosition(position);
+            d->fixedView->setToSliceAtPosition(position);
         if (d->movingView)
-            d->movingView->setPosition(position);
+            d->movingView->setToSliceAtPosition(position);
     }
 }
 

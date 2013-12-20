@@ -70,7 +70,6 @@ public slots:
     void onViewZoomChanged        (double zoom, bool propagate);
     void onViewPanChanged         (const QVector2D &pan, bool propagate);
     void onViewWindowingChanged   (double level, double window, bool propagate);
-    void onViewObliqueSettingsChanged (const medAbstractView *sender);
 
 private:
     medViewPoolPrivate *d;

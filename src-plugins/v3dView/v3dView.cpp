@@ -348,7 +348,7 @@ medMaximizeIcon v3dViewPrivate::maximizeIcon;
 // v3dView
 // /////////////////////////////////////////////////////////////////
 
-v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
+v3dView::v3dView() : medAbstractImageView(), d ( new v3dViewPrivate )
 {
     d->setPropertyFunctions["Closable"] = &v3dView::onClosablePropertySet;
     d->setPropertyFunctions["Orientation"] =  &v3dView::onOrientationPropertySet;
@@ -596,6 +596,8 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     connect ( d->widget, SIGNAL ( destroyed() ), this, SLOT ( widgetDestroyed() ) );
 
     d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d,d->renWin));
+
+
 }
 
 v3dView::~v3dView()
@@ -764,12 +766,12 @@ void v3dView::addLayer ( medAbstractData *data )
     if ( !data )
         return;
 
-    if ( medAbstractView::contains ( data ) )
+    if ( medAbstractImageView::contains ( data ) )
         return;
 
-    medAbstractView::addLayer(data);
-
     this->initializeInteractors();
+
+    medAbstractImageView::addLayer(data);
 
     bool isDataTypeHandled = false;
     foreach ( dtkAbstractViewInteractor *interactor, this->interactors() )
@@ -782,13 +784,11 @@ void v3dView::addLayer ( medAbstractData *data )
         }
     }
 
-    //TODO; no direct calls to dtkAbstractView
-    dtkAbstractView::setData(data);
 
     if (!isDataTypeHandled)
         return;
 
-    int layer = medAbstractView::layersCount() - 1;
+    int layer = medAbstractImageView::layersCount() - 1;
 
     if ( layer==0 )
     {
@@ -861,7 +861,7 @@ void v3dView::removeLayerAt ( int layer )
 {
     d->view2d->RemoveLayer ( layer );
     d->view3d->RemoveLayer ( layer );
-    medAbstractView::removeLayerAt ( layer );
+    medAbstractImageView::removeLayerAt ( layer );
 }
 
 void *v3dView::data()
@@ -1642,7 +1642,7 @@ void v3dView::close()
 
 void v3dView::setPosition ( const QVector3D &position )
 {
-    medAbstractView::setPosition(position);
+    medAbstractImageView::setToSliceAtPosition(position);
 
     double pos[3];
     pos[0] = position.x();
@@ -1686,7 +1686,7 @@ void v3dView::setPan ( const QVector2D &pan )
 
 void v3dView::setWindowLevel ( double level, double window )
 {
-    medAbstractView::setWindowLevel(level, window);
+    medAbstractImageView::setWindowLevel(level, window);
 
     d->observer->lock();
     d->currentView->SetColorWindow ( window );
@@ -1696,7 +1696,7 @@ void v3dView::setWindowLevel ( double level, double window )
 
 void v3dView::setCamera ( const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale )
 {
-    medAbstractView::setCamera(position, viewup, focal, parallelScale);
+    medAbstractImageView::setCamera(position, viewup, focal, parallelScale);
 
     double pos[3], vup[3], foc[3];
     pos[0] = position.x();
@@ -1902,7 +1902,7 @@ QString v3dView::s_identifier()
 
 void v3dView::setCurrentLayer(int layer)
 {
-    medAbstractView::setCurrentLayer(layer);
+    medAbstractImageView::setCurrentLayer(layer);
     d->view2d->SetCurrentLayer(layer);
     d->view3d->SetCurrentLayer(layer);
 }

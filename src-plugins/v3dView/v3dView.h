@@ -16,7 +16,7 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
 
-#include <medAbstractView.h>
+#include <medAbstractImageView.h>
 #include <medAbstractViewCoordinates.h>
 
 #include "v3dViewPluginExport.h"
@@ -41,7 +41,7 @@ class vtkRenderWindowInteractor;
  * be set per layer. In 3D, only VR is supported.
  **/
 
-class V3DVIEWPLUGIN_EXPORT v3dView : public medAbstractView, public medAbstractViewCoordinates
+class V3DVIEWPLUGIN_EXPORT v3dView : public medAbstractImageView, public medAbstractViewCoordinates
 {
     Q_OBJECT
 
