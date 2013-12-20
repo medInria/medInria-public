@@ -17,6 +17,7 @@
 #include <medDataManager.h>
 #include <medViewManager.h>
 #include <medAbstractView.h>
+#include <medAbstractImageView.h>
 #include <medAbstractData.h>
 #include <medDataIndex.h>
 
@@ -427,7 +428,7 @@ bool medViewContainer::open(medAbstractData * data)
     if ( data == NULL )
         return false;
 
-    dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
+    dtkSmartPointer<medAbstractImageView> view = qobject_cast<medAbstractImageView*>(this->view());
     //TODO: change method prototype to use medAbstractData directly
     dtkSmartPointer<medAbstractData> medData = qobject_cast<medAbstractData*>(data);
 
@@ -436,7 +437,7 @@ bool medViewContainer::open(medAbstractData * data)
     if( newView)
     {
         //container empty, or multi with no extendable view
-        view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView"));
+        view = qobject_cast<medAbstractImageView*>(dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView"));
         connect (this, SIGNAL(sliceSelected(int)), view, SLOT(setSlider(int)));
     }
 

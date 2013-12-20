@@ -55,6 +55,7 @@ public:
     medAbstractView(const medAbstractView& view);
     virtual ~medAbstractView();
 
+<<<<<<< HEAD
     virtual void setColorLookupTable(int min_range,
                                      int max_range,
                                      int size,
@@ -82,6 +83,12 @@ public:
     QVector3D position() const;
 
     /**
+=======
+    //TODO rename?
+    virtual QWidget *receiverWidget();
+
+    /**
+>>>>>>> medAbstractView refactoring
        Set the view zoom factor.
     **/
     void setZoom        (double zoom);
@@ -93,6 +100,7 @@ public:
     void setPan         (const QVector2D &pan);
     QVector2D pan() const;
 
+<<<<<<< HEAD
     /**
        Set the window/level of the view.
     **/
@@ -142,6 +150,18 @@ public:
      * Get the number of layers of the view.
      */
     virtual int layerCount() const;
+=======
+
+    //! Get the coordinates helper
+    // TODO: check if this is required, and what is exactly required
+    virtual medAbstractViewCoordinates * coordinates() = 0;
+
+    virtual medViewBackend * backend() const;
+
+
+    //TODO GPR: check datatypes: used in medToolbox::update
+    void addDataType(const QString & dataDescription);
+>>>>>>> medAbstractView refactoring
 
     /**
      * Remove an overlay.
@@ -175,6 +195,7 @@ public:
     void removeDataType(const QString & dataDescription);
     QHash<QString, unsigned int> dataTypes();
 
+<<<<<<< HEAD
     /** The color used to represent the extent or space of this view in another view */
     virtual QColor color() const;
     virtual void setColor( const QColor & color);
@@ -187,6 +208,8 @@ public:
 
     virtual medViewBackend * backend() const;
 
+=======
+>>>>>>> medAbstractView refactoring
 signals:
     void selected();
     void unselected();
@@ -204,23 +227,8 @@ signals:
     /**
        This signal is emitted when the view wants to be displayed in full screen.
      **/
+    //TODO: à vérifier mais sans doute à bouger dans les container: rename to maximizeRequested
     void fullScreen    (bool);
-
-    /**
-       This signal is emitted when the shown slice of the view has
-       changed.  A changed slice always comes along with a changed
-       position, but the positionChanged signal is sent before the new
-       slice number is computed in vtkImageView2D.
-     **/
-    void sliceChanged     (int slice, bool propagate);
-
-    /**
-       This signal is emitted when the current position pointed by the view has changed.
-       This is the case, for instance, when the slice of a 3D image was changed, or when
-       the user cliked on a specific voxel.
-       The position is expressed in physical coordinates.
-     **/
-    void positionChanged  (const QVector3D &position, bool propagate);
 
     /**
        This signal is emitted when the zoom factor of the view has changed.
@@ -233,6 +241,7 @@ signals:
      **/
     void panChanged       (const QVector2D &pan, bool propagate);
 
+<<<<<<< HEAD
     /**
        This signal is emitted when the windowing (window/level controlling the image
        contrast) has changed.
@@ -281,26 +290,12 @@ signals:
     void obliqueSettingsChanged (const medAbstractView *self);
 
     void colorChanged();
+=======
+>>>>>>> medAbstractView refactoring
 
 public slots:
-    /**
-       Tells the view (not to) synchronize its position with other views.
-     **/
-    virtual void setLinkPosition (bool value);
-    bool positionLinked() const;
 
-    /**
-       Tells the view (not to) synchronize its window/level with other views.
-     **/
-    virtual void setLinkWindowing (bool value);
-    bool windowingLinked() const;
-
-    /**
-       Tells the view (not to) synchronize its camera settings with other views.
-    **/
-    virtual void setLinkCamera (bool value);
-    bool cameraLinked() const;
-
+<<<<<<< HEAD
     virtual void onSliceChanged     (int slice);
     virtual void onPositionChanged  (const QVector3D &position);
     virtual void onZoomChanged      (double zoom);
@@ -346,6 +341,11 @@ protected:
 
     // Emitted whenever the plane color changes.
     void emitColorChangedEvent();
+=======
+    //TODO: rename to toggleMaximize ?
+    void setFullScreen( bool state );
+
+>>>>>>> medAbstractView refactoring
 
 private:
     medAbstractViewPrivate *d;

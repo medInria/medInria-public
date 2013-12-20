@@ -19,6 +19,7 @@
 
 class dtkAbstractView;
 class dtkAbstractProcess;
+class medAbstractImageView;
 class medAbstractDataImage;
 class medDataIndex;
 class medRegistrationSelectorToolBoxPrivate;
@@ -31,14 +32,14 @@ public:
      medRegistrationSelectorToolBox(QWidget *parent = 0);
     ~medRegistrationSelectorToolBox();
 
-    dtkAbstractView *fixedView();
-    dtkAbstractView *movingView();
+    medAbstractImageView *fixedView();
+    medAbstractImageView *movingView();
 
     medAbstractDataImage *fixedData();
     medAbstractDataImage *movingData();
 
     void setFuseView(dtkAbstractView *view);
-    dtkAbstractView *fuseView();
+    medAbstractImageView *fuseView();
 
     dtkAbstractProcess * process();
     void setProcess(dtkAbstractProcess* process);
