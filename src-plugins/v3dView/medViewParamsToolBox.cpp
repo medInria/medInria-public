@@ -98,23 +98,27 @@ void medViewParamsToolBox::update(dtkAbstractView * view)
     // Orientation
 
     medActionParameter *axialParam = new medActionParameter("Axial", view);
-    axialParam->setIcon(QIcon (":/icons/AxialIcon.png"));
+    axialParam->setIcon( QIcon (":/icons/AxialIcon.png"));
     axialParam->setCheckable(true);
+    axialParam->setIconSize(45,45);
     axialParam->hideLabel();
 
     medActionParameter *coronalParam = new medActionParameter("Coronal", view);
     coronalParam->setIcon(QIcon (":/icons/CoronalIcon.png"));
     coronalParam->setCheckable(true);
+    coronalParam->setIconSize(45,45);
     coronalParam->hideLabel();
 
     medActionParameter *sagitalParam = new medActionParameter("Sagital", view);
     sagitalParam->setIcon(QIcon (":/icons/SagittalIcon.png"));
     sagitalParam->setCheckable(true);
+    sagitalParam->setIconSize(45,45);
     sagitalParam->hideLabel();
 
     medActionParameter *view3DParam = new medActionParameter("3D", view);
     view3DParam->setIcon(QIcon (":/icons/3DIcon.png"));
     view3DParam->setCheckable(true);
+    view3DParam->setIconSize(45,45);
     view3DParam->hideLabel();
 
     medActionParameterGroup *orientationGroup = new medActionParameterGroup (this);

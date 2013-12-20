@@ -39,7 +39,7 @@ protected:
         _widget = new QWidget;
         _layout = new QHBoxLayout(_widget);
         _label = new QLabel(_name);
-        _layout->addWidget(_label);
+        //_layout->addWidget(_label);
 
         _layout->setContentsMargins(1,1,1,1);
 
@@ -66,6 +66,7 @@ public:
     medActionParameter(QString name, dtkAbstractObject* attachedObject = 0);
 
     void setIcon(QIcon icon);
+    void setIconSize(int width, int  height);
     void setText(QString text);
     void setCheckable(bool value);
 

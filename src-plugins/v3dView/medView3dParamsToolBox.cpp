@@ -106,12 +106,13 @@ void medView3dParamsToolBox::update(dtkAbstractView * view)
     // Layouts
     QWidget *toolboxWidget = new QWidget(this);
 
-    QVBoxLayout *toolBoxLayout = new QVBoxLayout(toolboxWidget);
-    toolBoxLayout->addWidget(mode3dParam->getWidget());
-    toolBoxLayout->addWidget(VRModeParam->getWidget());
-    toolBoxLayout->addWidget(LODParam->getWidget());
-    toolBoxLayout->addWidget(croppingParam->getWidget()/*, 0, Qt::AlignLeft*/);
-    toolBoxLayout->addWidget(depthPeelingParam->getWidget());
+    QFormLayout *toolBoxLayout = new QFormLayout(toolboxWidget);
+    toolBoxLayout->setLabelAlignment(Qt::AlignLeft);
+    toolBoxLayout->addRow(mode3dParam->name(), mode3dParam->getWidget());
+    toolBoxLayout->addRow(VRModeParam->name(), VRModeParam->getWidget());
+    toolBoxLayout->addRow(LODParam->name(), LODParam->getWidget());
+    toolBoxLayout->addRow(croppingParam->name(), croppingParam->getWidget());
+    toolBoxLayout->addRow(depthPeelingParam->name(), depthPeelingParam->getWidget());
 
     this->addWidget(toolboxWidget);
 
