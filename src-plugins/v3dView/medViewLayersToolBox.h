@@ -38,8 +38,7 @@ public:
     static bool registered();
     void clearParams();
     void addView(medVtkView*);
-    void selectView(medVtkView*);
-    void updateViewListWidget();
+   // void selectView(medVtkView*);
 
 signals:
     void viewSelected();

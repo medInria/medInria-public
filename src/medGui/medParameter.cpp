@@ -15,6 +15,12 @@ void medActionParameter::setIcon(QIcon icon)
     _button->setIcon(icon);
 }
 
+void medActionParameter::setIconSize(int width, int height)
+{
+    _button->setIconSize(QSize(width, height));
+    _button->setMinimumSize(width, height);
+}
+
 void medActionParameter::setText(QString value)
 {
     _button->setText(value);

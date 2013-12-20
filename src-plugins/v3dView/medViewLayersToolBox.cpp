@@ -19,9 +19,8 @@ class medViewLayersToolBoxPrivate
 {
 public:
 
-    QListWidget * viewListWidget;
     QListWidget * layersListWidget;
-    QVBoxLayout * interactorsParamsLayout;
+    QFormLayout * interactorsParamsLayout;
     medVtkView  * vtkView;
     QList<QWidget*> paramWidgetList;
     QList<medVtkView*> viewList;
@@ -46,24 +45,16 @@ medViewLayersToolBox::medViewLayersToolBox(QWidget *parent)
 
     d->vtkView = 0;
 
-    d->viewListWidget = new QListWidget(this);
-    d->viewListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    d->viewListWidget->setAlternatingRowColors(true);
-
     d->layersListWidget = new QListWidget(this);
     d->layersListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     QWidget *interactorsParamsWidget = new QWidget(this);
-    d->interactorsParamsLayout = new QVBoxLayout(interactorsParamsWidget);
+    d->interactorsParamsLayout = new QFormLayout(interactorsParamsWidget);
+    d->interactorsParamsLayout->setLabelAlignment(Qt::AlignLeft);
 
     d->viewParamsToolBox = new medViewParamsToolBox();
     d->viewParamsToolBox->header()->hide();
 
-    QFrame *line = new QFrame(this);
-    line->setFrameShape(QFrame::HLine);
-
-    this->addWidget(d->viewListWidget);
-    this->addWidget(line);
     this->addWidget(d->layersListWidget);
     this->addWidget(d->viewParamsToolBox);
     this->addWidget(interactorsParamsWidget);
@@ -71,7 +62,6 @@ medViewLayersToolBox::medViewLayersToolBox(QWidget *parent)
     d->paramWidgetList = QList<QWidget*>();
     d->viewMap = QMap<QString, medVtkView*>();
 
-    connect(d->viewListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(updateViews()));
     connect(d->layersListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(updateParameters()));
 }
 
@@ -100,7 +90,8 @@ void medViewLayersToolBox::update(dtkAbstractView * view)
     if(d->vtkView)
     {
         addView(d->vtkView);
-        selectView(d->vtkView);
+
+        updateViews();
 
         connect(d->vtkView, SIGNAL(dataAdded(dtkAbstractData*, int)), this, SLOT(updateViews()));
         connect(d->vtkView, SIGNAL(dataRemoved(dtkAbstractData*, int)), this, SLOT(updateViews()));
@@ -117,74 +108,31 @@ void medViewLayersToolBox::addView(medVtkView *view)
     if(!view)
         return;
 
+    if( QApplication::keyboardModifiers() != Qt::ControlModifier )
+    {
+        d->viewList.clear();
+        d->viewMap.clear();
+    }
+
     if(!d->viewList.contains(view))
     {
         d->viewList.append(view);
 
         d->viewMap.insert(view->name(), view);
-
-        updateViewListWidget();
     }
 }
 
 
 void medViewLayersToolBox::updateViews()
 {
-    QList<medVtkView*> selectedViews;
+    updateLayerListWidget(d->viewList);
 
-    for (int i  = 0; i < d->viewList.count(); i++)
+    updateViewPool(d->viewList);
+
+    if( d->viewList.count() > 0 )
     {
-        if( d->viewListWidget->item(i)->isSelected() )
-        {
-            selectedViews.append(d->viewList.at(i));
-        }
+      d->viewParamsToolBox->update(d->viewList[d->viewList.count()-1]);
     }
-
-    updateLayerListWidget(selectedViews);
-
-    updateViewPool(selectedViews);
-
-    if( selectedViews.count() > 0 )
-    {
-      d->viewParamsToolBox->update(selectedViews[selectedViews.count()-1]);
-    }
-
-}
-
-void medViewLayersToolBox::updateViewListWidget()
-{
-    d->viewListWidget->blockSignals(true);
-    d->viewListWidget->clear();
-    d->viewListWidget->blockSignals(false);
-
-    foreach(medVtkView *vtkView, d->viewList)
-    {
-        QListWidgetItem * item = new QListWidgetItem(vtkView->name(), d->viewListWidget);
-        d->viewListWidget->addItem(item);
-    }
-}
-
-
-void medViewLayersToolBox::selectView(medVtkView *view)
-{
-    if(!view)
-        return;
-    d->viewListWidget->blockSignals(true);
-
-    if( !(QApplication::keyboardModifiers() & Qt::ControlModifier) )
-    {
-        d->viewListWidget->clearSelection();
-    }
-
-    for (int i  = 0; i < d->viewList.count(); i++)
-    {
-        if( d->viewListWidget->item(i)->text() == view->name() )
-        {
-            d->viewListWidget->item(i)->setSelected(true);
-        }
-    }
-
-    d->viewListWidget->blockSignals(false);
 }
 
 
@@ -194,12 +142,10 @@ void medViewLayersToolBox::updateLayerListWidget(QList<medVtkView*> vtkViews)
 
     if (vtkViews.isEmpty()) {return;}
 
+    d->layersListWidget->blockSignals(true);
+
     foreach(medVtkView *view, vtkViews)
     {
-        medViewContainer *container = dynamic_cast<medViewContainer*>(view->parent());
-        //if(!container->isSelected())
-          container->select();
-
         int nbLayers = view->layersCount();
 
         for (int i  = 0; i < nbLayers; i++) {
@@ -228,6 +174,8 @@ void medViewLayersToolBox::updateLayerListWidget(QList<medVtkView*> vtkViews)
             }
         }
     }
+
+    d->layersListWidget->blockSignals(false);
 }
 
 
@@ -327,7 +275,7 @@ void medViewLayersToolBox::updateParameters(QMultiMap<medVtkView*, int> selected
         QWidget *paramWidget = param->getWidget();
         paramWidget->show();
         d->paramWidgetList.append(paramWidget);
-        d->interactorsParamsLayout->addWidget(paramWidget);
+        d->interactorsParamsLayout->addRow(param->name(),paramWidget);
     }
 
 }
@@ -353,7 +301,10 @@ void medViewLayersToolBox::updateViewPool(QList<medVtkView*> selectedViews)
 
 void medViewLayersToolBox::resetList()
 {
+    d->layersListWidget->blockSignals(true);
     d->layersListWidget->clear();
+    d->layersListWidget->blockSignals(false);
+
     d->layerItemHash.clear();
 }
 
@@ -378,8 +329,6 @@ void medViewLayersToolBox::removeView()
         d->viewMap.remove(sender->name());
         d->viewList.removeOne(sender);
     }
-
-    updateViewListWidget();
 }
 
 
