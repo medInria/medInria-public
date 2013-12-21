@@ -23,13 +23,19 @@ list_source_files(${PROJECT_NAME}
 
 foreach(test ${${PROJECT_NAME}_SOURCES})
     get_filename_component(test_filename ${test} NAME)
-    set(TESTS_FILENAME ${test_filename} ${TESTS_FILENAME})
+    set(${PROJECT_NAME}_TESTS_FILENAME 
+      ${test_filename} 
+      ${${PROJECT_NAME}_TESTS_FILENAME}
+      )
     get_filename_component(test_name ${test} NAME_WE)
-    set(TESTS_NAME ${test_name} ${TESTS_NAME})
+    set(${PROJECT_NAME}_TESTS_NAME 
+      ${test_name} 
+      ${${PROJECT_NAME}_TESTS_NAME}
+      )
 endforeach()
 
 create_test_sourcelist(${PROJECT_NAME}_TESTS ${PROJECT_NAME}.cxx
-  ${TESTS_FILENAME}
+  ${${PROJECT_NAME}_TESTS_FILENAME}
   )
 
 if(ITK_DIR)
@@ -77,7 +83,7 @@ target_link_libraries(${PROJECT_NAME}
 ## Add tests
 ## #############################################################################
 
-foreach(test_name ${TESTS_NAME})
+foreach(test_name ${${PROJECT_NAME}_TESTS_NAME})
   add_test(NAME ${test_name} COMMAND $<TARGET_FILE:${PROJECT_NAME}> ${test_name}
     ${PLUGIN_PATH}
     ${ITK_DATA_ROOT}

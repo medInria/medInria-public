@@ -45,7 +45,7 @@ endif()
 
 set(_SAVED_DCMTK_DIR ${DCMTK_DIR})
 
-message("DCMTK_DIR is set to : ${DCMTK_DIR}")
+message(STATUS "DCMTK_DIR is set to : ${DCMTK_DIR}")
 
 #
 # First, try to use NO_MODULE
