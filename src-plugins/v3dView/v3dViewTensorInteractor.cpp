@@ -68,6 +68,9 @@ v3dViewTensorInteractor::v3dViewTensorInteractor(): medAbstractVtkViewInteractor
     d->data = 0;
     d->view = 0;
 
+    d->minorScaling = 1;
+    d->majorScalingExponent = 0;
+
     // set default properties
     d->manager->SetGlyphShapeToLine();
 }
@@ -199,7 +202,7 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
 
     medIntParameter *sampleRateParam = new medIntParameter("Sample Rate", data);
     sampleRateParam->setMinimum(1);
-    sampleRateParam->setMinimum(10);
+    sampleRateParam->setMaximum(10);
     sampleRateParam->setValue(2);
 
     medBooleanParameter *flipXParam = new medBooleanParameter("FlipX", data);
@@ -213,17 +216,17 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
 
     medIntParameter *resolutionParam = new medIntParameter("Resolution", data);
     resolutionParam->setMinimum(2);
-    resolutionParam->setMinimum(20);
+    resolutionParam->setMaximum(20);
     resolutionParam->setValue(6);
 
     medIntParameter *scaleParam = new medIntParameter("Scale", data);
     scaleParam->setMinimum(1);
-    scaleParam->setMinimum(9);
+    scaleParam->setMaximum(9);
     scaleParam->setValue(1);
 
     medIntParameter *multiplierParam = new medIntParameter("x10^", data);
     multiplierParam->setMinimum(-10);
-    multiplierParam->setMinimum(10);
+    multiplierParam->setMaximum(10);
     multiplierParam->setValue(0);
 
     medBooleanParameter *showsAxialParam = new medBooleanParameter("Show axial", data);
