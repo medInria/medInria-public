@@ -307,7 +307,9 @@ void medView2dParamsToolBox::update(dtkAbstractView * view)
     medBooleanParameter *scalarBarParam = new medBooleanParameter("ScalarBar", view);
     medBooleanParameter *axisParam = new medBooleanParameter("Axis", view);
     medBooleanParameter *rulerParam = new medBooleanParameter("Ruler", view);
+    rulerParam->setValue(true);
     medBooleanParameter *annotationsParam = new medBooleanParameter("Annotations", view);
+    annotationsParam->setValue(true);
 
 
     // Layouts

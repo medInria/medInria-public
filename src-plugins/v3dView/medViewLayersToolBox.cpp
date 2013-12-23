@@ -97,6 +97,7 @@ void medViewLayersToolBox::update(dtkAbstractView * view)
         connect(d->vtkView, SIGNAL(dataRemoved(dtkAbstractData*, int)), this, SLOT(updateViews()));
         connect(d->vtkView, SIGNAL(closed()), this ,SLOT(removeView()));
         connect(d->vtkView, SIGNAL(closing()), this ,SLOT(removeView()));
+
     }
 
     d->viewParamsToolBox->update(view);
@@ -144,6 +145,8 @@ void medViewLayersToolBox::updateLayerListWidget(QList<medVtkView*> vtkViews)
 
     d->layersListWidget->blockSignals(true);
 
+    int lastLayer = -1;
+
     foreach(medVtkView *view, vtkViews)
     {
         int nbLayers = view->layersCount();
@@ -171,11 +174,19 @@ void medViewLayersToolBox::updateLayerListWidget(QList<medVtkView*> vtkViews)
                 d->layersListWidget->addItem(item);
                 d->layerItemHash.insert(item, QPair<QString, int>(view->name(), i));
                 d->layersListWidget->setItemWidget(item, widget);
+
+                lastLayer++;
             }
         }
     }
 
     d->layersListWidget->blockSignals(false);
+
+    if( lastLayer > -1 )
+    {
+        d->layersListWidget->clearSelection();
+        d->layersListWidget->item(lastLayer)->setSelected(true);
+    }
 }
 
 
@@ -318,6 +329,11 @@ void medViewLayersToolBox::clearParams()
     d->paramWidgetList.clear();
     d->paramList.clear();
 
+    QLayoutItem* item;
+    while ( ( item = d->interactorsParamsLayout->takeAt( 0 ) ) != NULL )
+    {
+        item->widget()->close();
+    }
 }
 
 
