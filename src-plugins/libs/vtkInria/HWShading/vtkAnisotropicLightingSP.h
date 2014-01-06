@@ -29,11 +29,9 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkHWShadingExport.h"
 
+#include "vtkUniform.h"
 #include "vtkBMIAShaderProgram.h"
 
-class vtkUniformFloat;
-class vtkUniformBool;
-class vtkUniformVec3;
 class vtkVertexShader;
 class vtkFragmentShader;
 
@@ -78,12 +76,12 @@ public:
 
   void SetToneShading(bool tone);
   bool GetToneShading() { return this->ToneShading; }
-  void SetWarmColor(double* rgb);
-  void SetWarmColor(double red, double green, double blue);
-  void SetCoolColor(double* rgb);
-  void SetCoolColor(double red, double green, double blue);
-  void GetWarmColor(double rgb[3]);
-  void GetCoolColor(double rgb[3]);
+  void SetWarmColor(const float* rgb);
+  void SetWarmColor(const float red, const float green, const float blue);
+  void SetCoolColor(const float* rgb);
+  void SetCoolColor(const float red, const float green, const float blue);
+  void GetWarmColor(float rgb[3]);
+  void GetCoolColor(float rgb[3]);
 
 protected:
   vtkAnisotropicLightingSP();
@@ -94,21 +92,21 @@ protected:
   float SpecularContribution;
   float AmbientContribution;
 
-  vtkUniformFloat* SpecularPowerUniform;
-  vtkUniformFloat* DiffuseContributionUniform;
-  vtkUniformFloat* SpecularContributionUniform;
-  vtkUniformFloat* AmbientContributionUniform;
+  vtkUniform<float>* SpecularPowerUniform;
+  vtkUniform<float>* DiffuseContributionUniform;
+  vtkUniform<float>* SpecularContributionUniform;
+  vtkUniform<float>* AmbientContributionUniform;
 
   /**
    * RGB encoding of local direction.
    */
   bool RGBColoring;
-  vtkUniformBool* RGBColoringUniform;
+  vtkUniform<bool>* RGBColoringUniform;
 
   bool ToneShading;
-  vtkUniformBool* ToneShadingUniform;
-  vtkUniformVec3* WarmColorUniform;
-  vtkUniformVec3* CoolColorUniform;
+  vtkUniform<bool>* ToneShadingUniform;
+  vtkUniform<Vec<3> >* WarmColorUniform;
+  vtkUniform<Vec<3> >* CoolColorUniform;
 
   vtkVertexShader* VertexShader;
   vtkFragmentShader* FragmentShader;

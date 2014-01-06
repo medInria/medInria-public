@@ -25,11 +25,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkBMIAShaderProgram.h"
 #include "vtkVertexShader.h"
 #include "vtkFragmentShader.h"
-#include "vtkUniformFloat.h"
-#include "vtkUniformVec2.h"
-#include "vtkUniformVec3.h"
-#include "vtkUniformVec4.h"
-#include "vtkUniformInt.h"
+#include "vtkUniform.h"
 
 #include <vtkObjectFactory.h>
 
@@ -124,6 +120,13 @@ void vtkBMIAShaderProgramReader::Execute()
   this->CloseFile();
 }
 
+template <typename T,typename U>
+vtkUniform<T>* CreateUniform(const U init) {
+    vtkUniform<T>* uniform = vtkUniform<T>::New();
+    uniform->SetValue(init);
+    return uniform;
+}
+
 void vtkBMIAShaderProgramReader::ReadUniformFromLine(string line, unsigned int linepos)
 {
   vtkDebugMacro(<<"Reading uniform from line:\n"<<line.c_str()
@@ -134,40 +137,43 @@ void vtkBMIAShaderProgramReader::ReadUniformFromLine(string line, unsigned int l
 
   if (type == "float")
     {
-    float val = vtkBetterDataReader::ReadFloat(line, linepos, linepos);
-    uniform = vtkUniformFloat::New();
-    ((vtkUniformFloat*)uniform)->SetValue(val);
+    const float val = vtkBetterDataReader::ReadFloat(line, linepos, linepos);
+    uniform = CreateUniform<float>(val);
     }
   else if (type == "vec2")
     {
-    float val0 = vtkBetterDataReader::ReadFloat(line, linepos, linepos);
-    float val1 = vtkBetterDataReader::ReadFloat(line, linepos, linepos);
-    uniform = vtkUniformVec2::New();
-    ((vtkUniformVec2*)uniform)->SetValue(val0, val1);
+    float values[] = {
+        vtkBetterDataReader::ReadFloat(line, linepos, linepos),
+        vtkBetterDataReader::ReadFloat(line, linepos, linepos)
+    };
+    uniform = CreateUniform<Vec<2> >(values);
     }
   else if (type == "vec3")
     {
-    float val0 = vtkBetterDataReader::ReadFloat(line, linepos, linepos);
-    float val1 = vtkBetterDataReader::ReadFloat(line, linepos, linepos);
-    float val2 = vtkBetterDataReader::ReadFloat(line, linepos, linepos);
-    uniform = vtkUniformVec3::New();
-    ((vtkUniformVec3*)uniform)->SetValue(val0, val1, val2);
+    float values[] = {
+        vtkBetterDataReader::ReadFloat(line, linepos, linepos),
+        vtkBetterDataReader::ReadFloat(line, linepos, linepos),
+        vtkBetterDataReader::ReadFloat(line, linepos, linepos)
+    };
+
+    uniform = CreateUniform<Vec<3> >(values);
     }
   else if (type == "vec4")
     {
-    float val0 = vtkBetterDataReader::ReadFloat(line, linepos, linepos);
-    float val1 = vtkBetterDataReader::ReadFloat(line, linepos, linepos);
-    float val2 = vtkBetterDataReader::ReadFloat(line, linepos, linepos);
-    float val3 = vtkBetterDataReader::ReadFloat(line, linepos, linepos);
-    uniform = vtkUniformVec4::New();
-    ((vtkUniformVec4*)uniform)->SetValue(val0, val1, val2, val3);
+    float values[] = {
+        vtkBetterDataReader::ReadFloat(line, linepos, linepos),
+        vtkBetterDataReader::ReadFloat(line, linepos, linepos),
+        vtkBetterDataReader::ReadFloat(line, linepos, linepos),
+        vtkBetterDataReader::ReadFloat(line, linepos, linepos)
+    };
+
+    uniform = CreateUniform<Vec<4> >(values);
     }
   else if ((type == "int")||(type == "sampler"))
   // deal with sampler as with int. Change if sampler gets more functionality
     {
     int val = vtkBetterDataReader::ReadInt(line, linepos, linepos);
-    uniform = vtkUniformInt::New();
-    ((vtkUniformInt*)uniform)->SetValue(val);
+    uniform = CreateUniform<int>(val);
     }
   else
     {

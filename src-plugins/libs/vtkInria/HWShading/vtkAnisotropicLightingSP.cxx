@@ -37,12 +37,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkVertexShader.h"
 #include "vtkFragmentShader.h"
-#include "vtkUniformFloat.h"
-#include "vtkUniformBool.h"
-#include "vtkUniformVec3.h"
-
-//#include "vtkShaderDir.h"
-
+#include "vtkUniform.h"
 #include <vtkObjectFactory.h>
 
 vtkCxxRevisionMacro(vtkAnisotropicLightingSP, "$Revision: 1 $");
@@ -69,45 +64,47 @@ vtkAnisotropicLightingSP::vtkAnisotropicLightingSP()
   this->AddShaderObject(this->FragmentShader);
 
   // Initialize uniforms
-  this->SpecularPowerUniform = vtkUniformFloat::New();
+  this->SpecularPowerUniform = vtkUniform<float>::New();
   this->SpecularPowerUniform->SetName("SpecularPower");
   this->SpecularPowerUniform->SetValue(this->SpecularPower);
   this->AddShaderUniform(this->SpecularPowerUniform);
 
-  this->DiffuseContributionUniform = vtkUniformFloat::New();
+  this->DiffuseContributionUniform = vtkUniform<float>::New();
   this->DiffuseContributionUniform->SetName("DiffuseContribution");
   this->DiffuseContributionUniform->SetValue(this->DiffuseContribution);
   this->AddShaderUniform(this->DiffuseContributionUniform);
 
-  this->SpecularContributionUniform = vtkUniformFloat::New();
+  this->SpecularContributionUniform = vtkUniform<float>::New();
   this->SpecularContributionUniform->SetName("SpecularContribution");
   this->SpecularContributionUniform->SetValue(this->SpecularContribution);
   this->AddShaderUniform(this->SpecularContributionUniform);
 
-  this->AmbientContributionUniform = vtkUniformFloat::New();
+  this->AmbientContributionUniform = vtkUniform<float>::New();
   this->AmbientContributionUniform->SetName("AmbientContribution");
   this->AmbientContributionUniform->SetValue(this->AmbientContribution);
   this->AddShaderUniform(this->AmbientContributionUniform);
 
   this->RGBColoring = false;
-  this->RGBColoringUniform = vtkUniformBool::New();
+  this->RGBColoringUniform = vtkUniform<bool>::New();
   this->RGBColoringUniform->SetName("RGBColoring");
   this->RGBColoringUniform->SetValue(this->RGBColoring);
   this->AddShaderUniform(this->RGBColoringUniform);
 
   this->ToneShading = false;
-  this->ToneShadingUniform = vtkUniformBool::New();
+  this->ToneShadingUniform = vtkUniform<bool>::New();
   this->ToneShadingUniform->SetName("ToneShading");
   this->ToneShadingUniform->SetValue(this->ToneShading);
   this->AddShaderUniform(this->ToneShadingUniform);
 
-  this->WarmColorUniform = vtkUniformVec3::New();
+  this->WarmColorUniform = vtkUniform<Vec<3> >::New();
   this->WarmColorUniform->SetName("WarmColor");
-  this->WarmColorUniform->SetValue(1.0, 0.8, 0.0);
+  float vals1[] = { 1.0, 0.8, 0.0 };
+  this->WarmColorUniform->SetValue(vals1);
   this->AddShaderUniform(this->WarmColorUniform);
-  this->CoolColorUniform = vtkUniformVec3::New();
+  this->CoolColorUniform = vtkUniform<Vec<3> >::New();
   this->CoolColorUniform->SetName("CoolColor");
-  this->CoolColorUniform->SetValue(0.0, 0.0, 0.8);
+  float vals2[] = { 0.0, 0.0, 0.8 };
+  this->CoolColorUniform->SetValue(vals2);
   this->AddShaderUniform(this->CoolColorUniform);
 }
 
@@ -228,46 +225,48 @@ void vtkAnisotropicLightingSP::SetToneShading(bool tone)
     } // if
 }
 
-void vtkAnisotropicLightingSP::SetWarmColor(double red, double green, double blue)
+void vtkAnisotropicLightingSP::SetWarmColor(const float red, const float green, const float blue)
 {
   vtkDebugMacro(<<"Setting warm color to "<<red<<", "<<green<<", "<<blue<<".");
-  this->WarmColorUniform->SetValue(red, green, blue);
+  float color[] = { red, green, blue };
+  this->WarmColorUniform->SetValue(color);
   if (this->IsLinked())
     {
     this->SetGlUniform(this->WarmColorUniform);
     } // if
 }
 
-void vtkAnisotropicLightingSP::SetWarmColor(double* rgb)
+void vtkAnisotropicLightingSP::SetWarmColor(const float* rgb)
 {
   this->SetWarmColor(rgb[0], rgb[1], rgb[2]);
 }
 
-void vtkAnisotropicLightingSP::GetWarmColor(double rgb[3])
+void vtkAnisotropicLightingSP::GetWarmColor(float rgb[3])
 {
-  float* val = this->WarmColorUniform->GetValue();
-  for (int i=0; i < 3; i++) rgb[i] = (double) val[i];
+  const Vec<3>& val = this->WarmColorUniform->GetValue();
+  for (int i=0; i < 3; i++) rgb[i] =  val[i];
 }
 
-void vtkAnisotropicLightingSP::SetCoolColor(double red, double green, double blue)
+void vtkAnisotropicLightingSP::SetCoolColor(const float red, const float green, const float blue)
 {
   vtkDebugMacro(<<"Setting cool color to "<<red<<", "<<green<<", "<<blue<<".");
-  this->CoolColorUniform->SetValue(red, green, blue);
+  float color[] = { red, green, blue };
+  this->CoolColorUniform->SetValue(color);
   if (this->IsLinked())
     {
     this->SetGlUniform(this->CoolColorUniform);
     } // if
 }
 
-void vtkAnisotropicLightingSP::SetCoolColor(double* rgb)
+void vtkAnisotropicLightingSP::SetCoolColor(const float* rgb)
 {
   this->SetCoolColor(rgb[0], rgb[1], rgb[2]);
 }
 
-void vtkAnisotropicLightingSP::GetCoolColor(double rgb[3])
+void vtkAnisotropicLightingSP::GetCoolColor(float rgb[3])
 {
-  float* val = this->CoolColorUniform->GetValue();
-  for (int i=0; i < 3; i++) rgb[i] = (double) val[i];
+  const Vec<3>& val = this->CoolColorUniform->GetValue();
+  for (int i=0; i < 3; i++) rgb[i] = val[i];
 }
 
 

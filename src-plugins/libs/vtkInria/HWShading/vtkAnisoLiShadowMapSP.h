@@ -59,9 +59,9 @@ protected:
   float DiffuseContributionShadow;
   float SpecularContributionShadow;
 
-  vtkUniformFloat* AmbientContributionShadowUniform;
-  vtkUniformFloat* DiffuseContributionShadowUniform;
-  vtkUniformFloat* SpecularContributionShadowUniform;
+  vtkUniform<float>* AmbientContributionShadowUniform;
+  vtkUniform<float>* DiffuseContributionShadowUniform;
+  vtkUniform<float>* SpecularContributionShadowUniform;
 
 private:
 
