@@ -42,10 +42,10 @@ public:
     void setViewMode(viewMode mode);
 
 private slots:
-    void setAxial(dtkAbstractView* view, bool checked);
-    void setSagittal(dtkAbstractView* view, bool checked);
-    void setCoronal(dtkAbstractView* view, bool checked);
-    void setView3D(dtkAbstractView* view, bool checked);
+    void setAxial(bool checked);
+    void setSagittal(bool checked);
+    void setCoronal(bool checked);
+    void setView3D(bool checked);
 
 private:
     medViewParamsToolBoxPrivate *d;
@@ -68,14 +68,14 @@ public:
     QList<medAbstractParameter*> getParameters(medVtkView* view);
 
 private slots:
-    void setWindowing(dtkAbstractView *view, bool checked);
-    void setZooming(dtkAbstractView *view, bool checked);
-    void setSlicing(dtkAbstractView *view, bool checked) ;
-    void setMeasuring(dtkAbstractView *view, bool checked);
-    void setAxisVisibility(dtkAbstractView *view, bool visible) ;
-    void setScalarBarVisibility(dtkAbstractView *view, bool visible);
-    void setRulerVisibility(dtkAbstractView *view, bool visible) ;
-    void setAnnotationsVisibility(dtkAbstractView *view, bool visible);
+    void setWindowing( bool checked );
+    void setZooming( bool checked );
+    void setSlicing( bool checked ) ;
+    void setMeasuring( bool checked );
+    void setAxisVisibility( bool visible ) ;
+    void setScalarBarVisibility( bool visible );
+    void setRulerVisibility( bool visible ) ;
+    void setAnnotationsVisibility( bool visible );
 
 private:
     medView2dParamsToolBoxPrivate *d;

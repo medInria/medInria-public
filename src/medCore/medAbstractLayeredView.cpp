@@ -20,7 +20,11 @@ medAbstractLayeredView::medAbstractLayeredView(medAbstractView * parent) : medAb
 
 void medAbstractLayeredView::addLayer(medAbstractData *data)
 {
-     dtkAbstractView::setData(data);
+    dtkAbstractView::setData(data);
+
+    if(data)
+      addDataType(data->identifier());
+
     return d->layersDataList.append(data);
 }
 
