@@ -74,12 +74,10 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     d->pan = QVector2D(0.0, 0.0);
     d->zoom = 1.0;
 
-    QStringList lut;
-    lut << "Default";           // list of available lookup tables set
-    // by subclass
 
     // properties to keep up to date synchronization
     this->addProperty ("Closable",              QStringList() << "true" << "false");
+<<<<<<< HEAD
     this->addProperty ("PositionLinked",        QStringList() << "true" << "false");
     this->addProperty ("CameraLinked",          QStringList() << "true" << "false");
     this->addProperty ("WindowingLinked",       QStringList() << "true" << "false");
@@ -104,6 +102,8 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
     this->addProperty ("MouseInteraction",      QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
 
     // do not set properties, leave it to subclass
+=======
+>>>>>>> removing a good part of the v3dView properties
 }
 
 

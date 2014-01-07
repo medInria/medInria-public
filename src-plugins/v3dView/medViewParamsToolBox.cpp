@@ -1,8 +1,10 @@
 #include <medViewParamsToolBox.h>
+
 #include <medToolBoxFactory.h>
 #include <medVtkView.h>
 #include <medView3dParamsToolBox.h>
 #include <medToolBoxHeader.h>
+#include <medSettingsManager.h>
 
 
 class medViewParamsToolBoxPrivate
@@ -145,10 +147,10 @@ void medViewParamsToolBox::update(dtkAbstractView * view)
 
 
     // Connection
-    connect(axialParam,SIGNAL(triggered(dtkAbstractView*,bool)),this,SLOT(setAxial(dtkAbstractView*,bool)));
-    connect(coronalParam,SIGNAL(triggered(dtkAbstractView*,bool)),this,SLOT(setCoronal(dtkAbstractView*,bool)));
-    connect(sagitalParam,SIGNAL(triggered(dtkAbstractView*,bool)),this,SLOT(setSagittal(dtkAbstractView*,bool)));
-    connect(view3DParam,SIGNAL(triggered(dtkAbstractView*,bool)),this,SLOT(setView3D(dtkAbstractView*,bool)));
+    connect(axialParam,SIGNAL(triggered(bool)),this,SLOT(setAxial(bool)));
+    connect(coronalParam,SIGNAL(triggered(bool)),this,SLOT(setCoronal(bool)));
+    connect(sagitalParam,SIGNAL(triggered(bool)),this,SLOT(setSagittal(bool)));
+    connect(view3DParam,SIGNAL(triggered(bool)),this,SLOT(setView3D(bool)));
 
     d->viewParamMap.insert(d->vtkView, axialParam);
     d->viewParamMap.insert(d->vtkView, coronalParam);
@@ -156,44 +158,47 @@ void medViewParamsToolBox::update(dtkAbstractView * view)
     d->viewParamMap.insert(d->vtkView, view3DParam);
 
     setViewMode(display2d);
-
+    axialParam->setChecked(true);
 }
 
 
-void medViewParamsToolBox::setAxial(dtkAbstractView* view, bool checked)
+void medViewParamsToolBox::setAxial(bool checked)
 {
-    if (checked && view){
-        view->setProperty ( "Orientation", "Axial" );
-        view->update();
+    if (checked && d->vtkView)
+    {
+        d->vtkView->setOrientation( "Axial" );
+        d->vtkView->update();
         setViewMode(display2d);
     }
 }
 
-
-void medViewParamsToolBox::setSagittal(dtkAbstractView* view, bool checked)
+void medViewParamsToolBox::setSagittal(bool checked)
 {
-    if (checked && view){
-        view->setProperty ( "Orientation", "Sagittal" );
-        view->update();
+    if (checked && d->vtkView)
+    {
+        d->vtkView->setOrientation ( "Sagittal" );
+        d->vtkView->update();
         setViewMode(display2d);
     }
 }
 
-void medViewParamsToolBox::setCoronal(dtkAbstractView* view, bool checked)
+void medViewParamsToolBox::setCoronal(bool checked)
 {
-    if (checked && view){
-        view->setProperty ( "Orientation", "Coronal" );
-        view->update();
+    if (checked && d->vtkView)
+    {
+        d->vtkView->setOrientation ( "Coronal" );
+        d->vtkView->update();
         setViewMode(display2d);
     }
 }
 
-void medViewParamsToolBox::setView3D(dtkAbstractView* view, bool checked)
+void medViewParamsToolBox::setView3D(bool checked)
 {
-    if (checked && view){
-        view->setProperty ( "3DMode", view->property ( "3DMode" ) );
-        view->setProperty ( "Orientation", "3D" );
-        view->update();
+    if (checked && d->vtkView)
+    {
+        d->vtkView->set3DMode( "3DMode" );
+        d->vtkView->setOrientation ( "3D" );
+        d->vtkView->update();
         setViewMode(display3d);
     }
 }
@@ -301,6 +306,13 @@ void medView2dParamsToolBox::update(dtkAbstractView * view)
     measuringParam->setCheckable(true);
     measuringParam->hideLabel();
 
+    medActionParameterGroup *mouseInteractionGroup = new medActionParameterGroup (this);
+    mouseInteractionGroup->addActionParameter ( windowingParam );
+    mouseInteractionGroup->addActionParameter ( zoomingParam );
+    mouseInteractionGroup->addActionParameter ( slicingParam );
+    mouseInteractionGroup->addActionParameter ( measuringParam );
+    mouseInteractionGroup->setExclusive (true);
+
 
     // Display
 
@@ -345,14 +357,14 @@ void medView2dParamsToolBox::update(dtkAbstractView * view)
     d->widgetList.insert(d->vtkView, toolboxWidget);
 
     // Connection
-    connect(windowingParam, SIGNAL(triggered(dtkAbstractView*, bool)),this, SLOT(setWindowing(dtkAbstractView*,bool)));
-    connect(zoomingParam, SIGNAL(triggered(dtkAbstractView*,bool)),this, SLOT(setZooming(dtkAbstractView*,bool)));
-    connect(slicingParam, SIGNAL(triggered(dtkAbstractView*,bool)),this, SLOT(setSlicing(dtkAbstractView*,bool)));
-    connect(measuringParam, SIGNAL(triggered(dtkAbstractView*,bool)),this, SLOT(setMeasuring(dtkAbstractView*,bool)));
-    connect(scalarBarParam, SIGNAL(valueChanged(dtkAbstractView*,bool)), this, SLOT(setScalarBarVisibility(dtkAbstractView*,bool)));
-    connect(axisParam, SIGNAL(valueChanged(dtkAbstractView*,bool)), this, SLOT(setAxisVisibility(dtkAbstractView*,bool)));
-    connect(rulerParam, SIGNAL(valueChanged(dtkAbstractView*,bool)), this, SLOT(setRulerVisibility(dtkAbstractView*,bool)));
-    connect(annotationsParam, SIGNAL(valueChanged(dtkAbstractView*,bool)), this, SLOT(setAnnotationsVisibility(dtkAbstractView*,bool)));
+    connect(windowingParam, SIGNAL(triggered(bool)),this, SLOT(setWindowing(bool)));
+    connect(zoomingParam, SIGNAL(triggered(bool)),this, SLOT(setZooming(bool)));
+    connect(slicingParam, SIGNAL(triggered(bool)),this, SLOT(setSlicing(bool)));
+    connect(measuringParam, SIGNAL(triggered(bool)),this, SLOT(setMeasuring(bool)));
+    connect(scalarBarParam, SIGNAL(valueChanged(bool)), this, SLOT(setScalarBarVisibility(bool)));
+    connect(axisParam, SIGNAL(valueChanged(bool)), this, SLOT(setAxisVisibility(bool)));
+    connect(rulerParam, SIGNAL(valueChanged(bool)), this, SLOT(setRulerVisibility(bool)));
+    connect(annotationsParam, SIGNAL(valueChanged(bool)), this, SLOT(setAnnotationsVisibility(bool)));
 
 
     d->viewParamMap.insert(d->vtkView, windowingParam);
@@ -364,71 +376,92 @@ void medView2dParamsToolBox::update(dtkAbstractView * view)
     d->viewParamMap.insert(d->vtkView, rulerParam);
     d->viewParamMap.insert(d->vtkView, annotationsParam);
 
+
+    //get default Mouse interaction from medSettings
+    medSettingsManager * mnger = medSettingsManager::instance();
+    QString mouseInteraction = mnger->value("interactions","mouse", "Windowing").toString();
+
+    if(mouseInteraction == "Zooming")
+        zoomingParam->setChecked(true);
+    else if(mouseInteraction ==  "Windowing")
+        windowingParam->setChecked(true);
+    else if(mouseInteraction ==  "Slicing")
+        slicingParam->setChecked(true);
+    else if(mouseInteraction ==  "Measuring")
+        measuringParam->setChecked(true);
+
 }
 
 
-void medView2dParamsToolBox::setWindowing(dtkAbstractView* view, bool checked)
+void medView2dParamsToolBox::setWindowing(bool checked)
 {
-    if (checked && view) {
-        view->setProperty("MouseInteraction", "Windowing");
-        view->update();
+    if(checked && d->vtkView)
+    {
+        d->vtkView->setMouseInteraction("Windowing");
+        d->vtkView->update();
     }
 }
 
-void medView2dParamsToolBox::setZooming(dtkAbstractView* view, bool checked)
+void medView2dParamsToolBox::setZooming(bool checked)
 {
-    if (checked && view) {
-        view->setProperty("MouseInteraction", "Zooming");
-        view->update();
+    if(checked && d->vtkView)
+    {
+        d->vtkView->setMouseInteraction("Zooming");
+        d->vtkView->update();
     }
 }
 
-void medView2dParamsToolBox::setSlicing(dtkAbstractView* view, bool checked)
+void medView2dParamsToolBox::setSlicing(bool checked)
 {
-    if (checked && view) {
-        view->setProperty("MouseInteraction", "Slicing");
-        view->update();
+    if(checked && d->vtkView)
+    {
+        d->vtkView->setMouseInteraction("Slicing");
+        d->vtkView->update();
     }
 }
 
-void medView2dParamsToolBox::setMeasuring(dtkAbstractView* view, bool checked)
+void medView2dParamsToolBox::setMeasuring(bool checked)
 {
-    if (checked && view) {
-        view->setProperty("MouseInteraction", "Measuring");
-        view->update();
+    if(checked && d->vtkView)
+    {
+        d->vtkView->setMouseInteraction("Measuring");
+        d->vtkView->update();
     }
 }
 
-
-void medView2dParamsToolBox::setAxisVisibility(dtkAbstractView* view, bool visible)
+void medView2dParamsToolBox::setAxisVisibility(bool visible)
 {
-    if (view) {
-        view->setProperty("ShowAxis", (visible ? "true" : "false"));
-        view->update();
+    if (d->vtkView)
+    {
+        d->vtkView->showAxis(visible);
+        d->vtkView->update();
     }
 }
 
-void medView2dParamsToolBox::setScalarBarVisibility(dtkAbstractView* view, bool visible)
+void medView2dParamsToolBox::setScalarBarVisibility(bool visible)
 {
-    if (view) {
-        view->setProperty("ShowScalarBar", (visible ? "true" : "false"));
-        view->update();
+    if (d->vtkView)
+    {
+        d->vtkView->showScalarBar(visible);
+        d->vtkView->update();
     }
 }
 
-void medView2dParamsToolBox::setRulerVisibility(dtkAbstractView* view, bool visible)
+void medView2dParamsToolBox::setRulerVisibility(bool visible)
 {
-    if (view) {
-        view->setProperty("ShowRuler", (visible ? "true" : "false"));
-        view->update();
+    if (d->vtkView)
+    {
+        d->vtkView->showRuler(visible);
+        d->vtkView->update();
     }
 }
 
-void medView2dParamsToolBox::setAnnotationsVisibility(dtkAbstractView* view, bool visible)
+void medView2dParamsToolBox::setAnnotationsVisibility(bool visible)
 {
-    if (view) {
-        view->setProperty("ShowAnnotations", (visible ? "true" : "false"));
-        view->update();
+    if (d->vtkView)
+    {
+        d->vtkView->showAnnotations(visible);
+        d->vtkView->update();
     }
 }
 

@@ -69,6 +69,7 @@ public:
     void setIconSize(int width, int  height);
     void setText(QString text);
     void setCheckable(bool value);
+    void setChecked(bool value);
 
 public slots:
     void emitTriggered(bool value = true);

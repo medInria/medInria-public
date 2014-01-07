@@ -86,11 +86,17 @@ void medView3dParamsToolBox::update(dtkAbstractView * view)
     QStringList modes;
     modes << "VR" << "MIP - Maximum" << "MIP - Minimum" << "MPR" << "Off";
     mode3dParam->setValues(modes);
+    mode3dParam->setDefaultValue("MPR");
 
     medListParameter *VRModeParam = new medListParameter("VR Mode", view);
     QStringList VRModes;
     VRModes << "GPU" <<  "Ray Cast / Texture" << "Ray Cast" << "Texture" <<  "Default";
     VRModeParam->setValues(VRModes);
+#ifdef __APPLE__
+    VRModeParam->setDefaultValue( "Ray Cast" );
+#else
+    VRModeParam->setDefaultValue( "Default" );
+#endif
 
     medActionParameter *croppingParam = new medActionParameter("Cropping", view);
     croppingParam->setIcon(QIcon (":/icons/cropping.png"));
@@ -113,10 +119,10 @@ void medView3dParamsToolBox::update(dtkAbstractView * view)
     d->widgetList.insert(d->vtkView, toolboxWidget);
 
     // Connection
-    connect(mode3dParam,SIGNAL(valueChanged(dtkAbstractView*,QString)),this,SLOT(onModeChanged(dtkAbstractView*,QString)));
-    connect(VRModeParam,SIGNAL(valueChanged(dtkAbstractView*,QString)),this,SLOT(onVRModeChanged(dtkAbstractView*,QString)));
-    connect(croppingParam,SIGNAL(triggered(dtkAbstractView*,bool)),this,SLOT(onCroppingChanged(dtkAbstractView*,bool)));
-    connect(depthPeelingParam, SIGNAL(valueChanged(dtkAbstractView*, bool)),this, SLOT(onDepthPeelingChanged(dtkAbstractView*,bool)));
+    connect(mode3dParam,SIGNAL(valueChanged(QString)),this,SLOT(set3DMode(QString)));
+    connect(VRModeParam,SIGNAL(valueChanged(QString)),this,SLOT(setRenderer(QString)));
+    connect(croppingParam,SIGNAL(triggered(bool)),this,SLOT(setCropping(bool)));
+    connect(depthPeelingParam, SIGNAL(valueChanged(bool)),this, SLOT(setDepthPeeling(bool)));
 
     d->viewParamMap.insert(d->vtkView, mode3dParam);
     d->viewParamMap.insert(d->vtkView, VRModeParam);
@@ -126,57 +132,48 @@ void medView3dParamsToolBox::update(dtkAbstractView * view)
 }
 
 
-
-
-void medView3dParamsToolBox::onModeChanged(dtkAbstractView* view, QString mode)
+void medView3dParamsToolBox::set3DMode( QString mode )
 {
-    if (v3dView *v3dview = dynamic_cast<v3dView*>(view) )
+    if (d->vtkView)
     {
-        v3dview->blockSignals (true);
+        d->vtkView->blockSignals (true);
         if ( qApp->arguments().contains ( "--stereo" ) )
-              v3dview->view3d()->GetRenderWindow()->SetStereoRender ( 1 );
-        v3dview->setProperty("3DMode", mode);
-        v3dview->blockSignals (false);
-        v3dview->update();
+              d->vtkView->view3d()->GetRenderWindow()->SetStereoRender ( 1 );
+        d->vtkView->set3DMode( mode );
+        d->vtkView->blockSignals (false);
+        d->vtkView->update();
     }
 }
 
-void medView3dParamsToolBox::onVRModeChanged(dtkAbstractView* view, QString mode)
+void medView3dParamsToolBox::setRenderer( QString mode )
 {
-    if (view) {
-        view->blockSignals (true);
-        view->setProperty("Renderer", mode);
-        view->blockSignals (false);
-        view->update();
+    if (d->vtkView)
+    {
+        d->vtkView->blockSignals (true);
+        d->vtkView->setRenderer( mode );
+        d->vtkView->blockSignals (false);
+        d->vtkView->update();
     }
 }
 
-void medView3dParamsToolBox::onLodChanged(dtkAbstractView* view, int value)
+void medView3dParamsToolBox::setCropping( bool checked )
 {
-    if (view) {
-        view->blockSignals (true);
-        view->setMetaData("LOD", QString::number(value));
-        view->blockSignals (false);
-        view->update();
+    if (d->vtkView)
+    {
+        d->vtkView->blockSignals (true);
+        d->vtkView->setCropping( checked );
+        d->vtkView->blockSignals (false);
+        d->vtkView->update();
     }
 }
 
-void medView3dParamsToolBox::onCroppingChanged(dtkAbstractView* view, bool checked)
+void medView3dParamsToolBox::setDepthPeeling( bool checked )
 {
-    if (view) {
-        view->blockSignals (true);
-        view->setProperty("Cropping", (checked ? "true" : "false"));
-        view->blockSignals (false);
-        view->update();
-    }
-}
-
-void medView3dParamsToolBox::onDepthPeelingChanged(dtkAbstractView* view, bool checked)
-{
-    if (view) {
-        view->blockSignals (true);
-        view->setProperty("DepthPeeling", (checked ? "true" : "false"));
-        view->blockSignals (false);
-        view->update();
+    if (d->vtkView)
+    {
+        d->vtkView->blockSignals (true);
+        d->vtkView->setDepthPeeling( checked );
+        d->vtkView->blockSignals (false);
+        d->vtkView->update();
     }
 }

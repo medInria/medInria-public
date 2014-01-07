@@ -31,6 +31,10 @@ void medActionParameter::setCheckable(bool value)
     _button->setCheckable(value);
 }
 
+void medActionParameter::setChecked(bool value)
+{
+    _button->setChecked(value);
+}
 
 void medActionParameter::setupWidget()
 {
@@ -61,7 +65,7 @@ void medActionParameter::emitTriggered(bool value)
       emit triggered(dynamic_cast<dtkAbstractView*>(_attachedObject), value);
     }
 
-    emit triggered();
+    emit triggered(value);
 }
 
 

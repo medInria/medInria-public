@@ -168,18 +168,18 @@ public slots:
 public slots:
     void play          (bool value);
     void onPropertySet         (const QString &key, const QString &value);
-    void onOrientationPropertySet           (const QString &value);
-    void on3DModePropertySet                (const QString &value);
-    void onRendererPropertySet              (const QString &value);
-    void onShowScalarBarPropertySet         (const QString &value);
-    void onShowAxisPropertySet              (const QString &value);
-    void onShowRulerPropertySet             (const QString &value);
-    void onShowAnnotationsPropertySet       (const QString &value);
-    void onMouseInteractionPropertySet      (const QString &value);
-    void onCroppingPropertySet              (const QString &value);
-    void onZoomModePropertySet              (const QString &value);
-    void onClosablePropertySet              (const QString &value);
-    void onDepthPeelingPropertySet          (const QString &value);
+    void setOrientation           (const QString &value);
+    void set3DMode                (const QString &value);
+    void setRenderer              (const QString &value);
+    void showScalarBar            (const bool &value);
+    void showAxis                 (const bool &value);
+    void showRuler                (const bool &value);
+    void showAnnotations          (const bool &value);
+    void setMouseInteraction      (const QString &value);
+    void setCropping              (const bool &value);
+    void setZoomMode              (const QString &value);
+    void onClosablePropertySet    (const QString &value);
+    void setDepthPeeling          (const bool &value);
 
 public slots:
     void setSlider                          ( int value );

@@ -32,11 +32,10 @@ public:
     QList<medAbstractParameter*> getParameters(medVtkView* view);
 
 private slots:
-    void onModeChanged(dtkAbstractView* view, QString mode);
-    void onVRModeChanged(dtkAbstractView* view, QString mode);
-    void onLodChanged(dtkAbstractView* view, int value);
-    void onCroppingChanged(dtkAbstractView* view, bool checked);
-    void onDepthPeelingChanged(dtkAbstractView* view, bool checked);
+    void set3DMode(QString mode);
+    void setRenderer(QString mode);
+    void setCropping(bool checked);
+    void setDepthPeeling(bool checked);
 
 private:
     medView3dParamsToolBoxPrivate *d;
