@@ -33,7 +33,7 @@ target_link_libraries(itkDCMTKReadWriteBenchmark
   ITKIOPNG
   ITKIOStimulate
   ITKIOVTK
-  ${ITKReview_LIBRARIES}
+  ITKIOMRC
 )
 
 add_executable(itkDCMTKConvert
@@ -58,7 +58,7 @@ target_link_libraries(itkDCMTKConvert
   ITKIOPNG
   ITKIOStimulate
   ITKIOVTK
-  ${ITKReview_LIBRARIES}
+  ITKIOMRC
 )
 
 #endif()

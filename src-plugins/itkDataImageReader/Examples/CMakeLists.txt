@@ -32,5 +32,5 @@ target_link_libraries(itkGenerateThumbnails
   ITKIOPNG
   ITKIOStimulate
   ITKIOVTK
-  ${ITKReview_LIBRARIES}
+  ITKIOMRC
 )
