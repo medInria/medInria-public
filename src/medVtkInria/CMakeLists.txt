@@ -199,7 +199,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOPNG
   ITKIOStimulate
   ITKIOVTK
-  ${ITKReview_LIBRARIES} #TODO : get rid of this ASAP
+  ITKIOMRC
   )
 
 
