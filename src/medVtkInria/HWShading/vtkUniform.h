@@ -19,7 +19,7 @@ the medInria team.
 
 #pragma once
 
-#include "vtkHWShadingExport.h"
+#include "medVtkInriaExport.h"
 #include "vtkShaderUniform.h"
 
 template <unsigned N>
@@ -53,7 +53,7 @@ vtkOStreamWrapper& operator<<(vtkOStreamWrapper& os,const Vec<N>& V) {
 }
 
 template <typename T>
-class VTK_HWSHADING_EXPORT vtkUniform: public vtkShaderUniform {
+class MEDVTKINRIA_EXPORT vtkUniform: public vtkShaderUniform {
 public:
 
     //  Not canonical, but the VTK use of macros obliges this...
@@ -79,7 +79,7 @@ private:
 };
 
 template <unsigned N>
-class VTK_HWSHADING_EXPORT vtkUniform<Vec<N> >: public vtkShaderUniform {
+class MEDVTKINRIA_EXPORT vtkUniform<Vec<N> >: public vtkShaderUniform {
 public:
 
     //  Not canonical, but the VTK use of macros obliges this...
