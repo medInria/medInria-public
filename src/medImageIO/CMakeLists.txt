@@ -85,7 +85,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKIOHDF5
   ITKIOBioRad
   ITKIOStimulate
-  ${ITKReview_LIBRARIES} #TODO get rid of this ASAP.
+  ITKIOMRC
   ${DCMTK_LIBRARIES}
   )
 
