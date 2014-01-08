@@ -488,17 +488,6 @@ void medViewPropertiesToolBox::update(dtkAbstractView *view)
     d->view3dModeComboBox->setCurrentIndex(d->view3dModeComboBox->findText(view->property("3DMode")));
     d->view3dModeComboBox->blockSignals(false);
 
-    //set a few view pool wide properties in the view.
-    //        qDebug()<<"update some view properties";
-    onScalarBarVisibilityChanged(d->scalarBarVisibilityCheckBox->isChecked());
-    onAnnotationsVisibilityChanged(d->annotationsVisibilityCheckBox->isChecked());
-    onAxisVisibilityChanged(d->axisVisibilityCheckBox->isChecked());
-    onRulerVisibilityChanged(d->rulerVisibilityCheckBox->isChecked());
-    onZoomingChanged(d->zoomingPushButton->isChecked());
-    onSlicingChanged(d->slicingPushButton->isChecked());
-    onMeasuringChanged(d->measuringPushButton->isChecked());
-    onWindowingChanged(d->windowingPushButton->isChecked());
-
     if (d->view->property("Orientation") == "Axial")
         d->axialButton->setChecked(true);
     else if (d->view->property("Orientation") == "Coronal")
@@ -563,43 +552,46 @@ void medViewPropertiesToolBox::constructImageLayer(dtkAbstractData* data, int im
     opacityBox->setValue(d->view->opacity(imageLayer) * 100);
     d->propertiesTree->setItemWidget(opacityItem, 2, opacityBox);
 
-
-    QTreeWidgetItem * lutItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    lutItem->setText(1, tr("LUT"));
-    //No need to parent this widget, setItemWidget takes ownership of the widget
-    QComboBox * lutBox = new QComboBox();
-    lutBox->setFocusPolicy(Qt::NoFocus);
-    foreach (QString lut,d->lutList)
+    if(data->identifier()!="itkBinaryMask")
     {
-        lutBox->addItem(lut);
+        QTreeWidgetItem * lutItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
+        lutItem->setText(1, tr("LUT"));
+        //No need to parent this widget, setItemWidget takes ownership of the widget
+        QComboBox * lutBox = new QComboBox();
+        lutBox->setFocusPolicy(Qt::NoFocus);
+        foreach (QString lut,d->lutList)
+        {
+            lutBox->addItem(lut);
+        }
+
+        d->propertiesTree->setItemWidget(lutItem, 2, lutBox);
+        lutBox->setCurrentIndex(lutBox->findText(d->view->getLUT(imageLayer)));
+
+        QTreeWidgetItem * presetItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
+        presetItem->setText(1, tr("Preset"));
+        QComboBox * presetBox = new QComboBox();
+        presetBox->setFocusPolicy(Qt::NoFocus);
+        foreach(QString preset,d->presetList)
+        {
+             presetBox->addItem(preset);
+        }
+
+        d->propertiesTree->setItemWidget(presetItem, 2, presetBox);
+        presetBox->blockSignals(true);
+        presetBox->setCurrentIndex(presetBox->findText(d->view->getPreset(imageLayer)));
+        presetBox->blockSignals(false);
+
+        QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)),
+                         this, SLOT(onLUTChanged(int)));
+        QObject::connect(presetBox, SIGNAL(currentIndexChanged(int)),
+                         this, SLOT(onPresetChanged(int)));
+
     }
-
-    d->propertiesTree->setItemWidget(lutItem, 2, lutBox);
-    lutBox->setCurrentIndex(lutBox->findText(d->view->getLUT(imageLayer)));
-
-    QTreeWidgetItem * presetItem = new QTreeWidgetItem(d->layerItem, QTreeWidgetItem::UserType+2);
-    presetItem->setText(1, tr("Preset"));
-    QComboBox * presetBox = new QComboBox();
-    presetBox->setFocusPolicy(Qt::NoFocus);
-    foreach(QString preset,d->presetList)
-    {
-         presetBox->addItem(preset);
-    }
-
-    d->propertiesTree->setItemWidget(presetItem, 2, presetBox);
-    presetBox->blockSignals(true);
-    presetBox->setCurrentIndex(presetBox->findText(d->view->getPreset(imageLayer)));
-    presetBox->blockSignals(false);
 
     QObject::connect(visibleBox, SIGNAL(stateChanged(int)),
                      this, SLOT(onVisibilitySet(int)));
     QObject::connect(opacityBox, SIGNAL(valueChanged(int)),
                      this, SLOT(onOpacitySliderSet(int)));
-    QObject::connect(lutBox, SIGNAL(currentIndexChanged(int)),
-                     this, SLOT(onLUTChanged(int)));
-    QObject::connect(presetBox, SIGNAL(currentIndexChanged(int)),
-                     this, SLOT(onPresetChanged(int)));
-
     //d->propertiesTree->collapseAll();
 }
 
@@ -920,6 +912,10 @@ void medViewPropertiesToolBox::onAttrBoxChanged(int index)
 
     d->view->update();
 }
+void medViewPropertiesToolBox::disableInteraction(void)
+{
+    d->view->setProperty("MouseInteraction", "None");
+}
 
 void medViewPropertiesToolBox::onLUTChanged(int index)
 {
@@ -1011,7 +1007,20 @@ void medViewPropertiesToolBox::onRenderingChanged(int index)
 
 void medViewPropertiesToolBox::onItemClicked(QTreeWidgetItem * item)
 {
-//    qDebug()<<"clicked on Item: " << item->text(0);
+    if (d->view && d->view->dataInList(item->text(0).toInt()))
+    {
+        if(d->view->dataInList(item->text(0).toInt())->identifier()=="itkBinaryMask")
+        {
+            if (d->windowingPushButton->isChecked())
+                this->disableInteraction();
+        }
+        else
+        {
+            if (d->windowingPushButton->isChecked())
+                this->onWindowingChanged(true);
+        }
+    }
+
     d->propertiesTree->clearSelection();
     if (item->type() == QTreeWidgetItem::UserType + 1)
     {

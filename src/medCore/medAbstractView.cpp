@@ -108,7 +108,7 @@ medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(pare
                        << "Standard" << "Soft" << "Soft on White" << "Soft on Blue"
                        << "Red on White" << "Glossy");
     // image interaction
-    this->addProperty ("MouseInteraction",      QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring");
+    this->addProperty ("MouseInteraction",      QStringList() << "Zooming" << "Windowing" << "Slicing" << "Measuring" <<"None");
 
     // do not set properties, leave it to subclass
 }

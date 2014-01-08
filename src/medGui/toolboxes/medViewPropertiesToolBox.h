@@ -66,7 +66,7 @@ public slots:
     void onZoomingChanged(bool);
     void onSlicingChanged(bool);
     void onMeasuringChanged(bool);
-
+    void disableInteraction(void);
     void onAxialChanged(bool);
     void onSagittalChanged(bool);
     void onCoronalChanged(bool);

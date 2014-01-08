@@ -966,6 +966,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
 
     if (SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
         SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3",data,layer) ||
+        SetViewInput<itk::Image<unsigned char,3> >("itkBinaryMask",data,layer) ||
         SetViewInput<itk::Image<short,3> >("itkDataImageShort3",data,layer) ||
         SetViewInput<itk::Image<unsigned short,3> >("itkDataImageUShort3",data,layer) ||
         SetViewInput<itk::Image<int,3> >("itkDataImageInt3",data,layer) ||
@@ -1475,10 +1476,16 @@ void v3dView::onMouseInteractionPropertySet ( const QString &value )
     if ( value == "Measuring" )
     {
         d->view2d->ShowDistanceWidgetOn();
+        d->collection->SyncSetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeNull );
     }
     else
     {
         d->view2d->ShowDistanceWidgetOff();
+    }
+
+    if ( value == "None" )
+    {
+        d->collection->SyncSetLeftButtonInteractionStyle ( vtkInteractorStyleImageView2D::InteractionTypeNull );
     }
 }
 
