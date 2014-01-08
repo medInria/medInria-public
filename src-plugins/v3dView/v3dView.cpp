@@ -964,40 +964,38 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
 //        }
 //    }
 
-    if (SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
-        SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3",data,layer) ||
-        SetViewInput<itk::Image<short,3> >("itkDataImageShort3",data,layer) ||
-        SetViewInput<itk::Image<unsigned short,3> >("itkDataImageUShort3",data,layer) ||
-        SetViewInput<itk::Image<int,3> >("itkDataImageInt3",data,layer) ||
-        SetViewInput<itk::Image<unsigned,3> >("itkDataImageUInt3",data,layer) ||
-        SetViewInput<itk::Image<long,3> >("itkDataImageLong3",data,layer) ||
-        SetViewInput<itk::Image<unsigned long,3> >("itkDataImageULong3",data,layer) ||
-        SetViewInput<itk::Image<float,3> >("itkDataImageFloat3",data,layer) ||
-        SetViewInput<itk::Image<double,3> >("itkDataImageDouble3",data,layer) ||
-        SetViewInput<itk::Image<itk::RGBPixel<unsigned char>,3> >("itkDataImageRGB3",data,layer) ||
-        SetViewInput<itk::Image<itk::RGBAPixel<unsigned char>,3> >("itkDataImageRGBA3",data,layer) ||
-        SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVector3",data,layer) ||
-        SetView("itkDataImageShort4",data) ||
-        SetView("itkDataImageInt4",data) ||
-        SetView("itkDataImageLong4",data) ||
-        SetView("itkDataImageChar4",data) ||
-        SetView("itkDataImageUShort4",data) ||
-        SetView("itkDataImageUInt4",data) ||
-        SetView("itkDataImageULong4",data) ||
-        SetView("itkDataImageUChar4",data) ||
-        SetView("itkDataImageFloat4",data) ||
-        SetView("itkDataImageDouble4",data) ||
-        SetViewInputWithConversion<itk::Image<char,3> >("vistalDataImageChar3","itkDataImageChar3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<unsigned char,3> >("vistalDataImageUChar3","itkDataImageUChar3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<short,3> >("vistalDataImageShort3","itkDataImageShort3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<unsigned short,3> >("vistalDataImageUShort3","itkDataImageUShort3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<int,3> >("vistalDataImageInt3","itkDataImageInt3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<unsigned,3> >("vistalDataImageUInt3","itkDataImageUInt3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<float,3> >("vistalDataImageFloat3","itkDataImageFloat3",data,layer) ||
-        SetViewInputWithConversion<itk::Image<double,3> >("vistalDataImageDouble3","itkDataImageDouble3",data,layer)) {
-
-    }
-    else
+    if (!(SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
+          SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3",data,layer) ||
+          SetViewInput<itk::Image<short,3> >("itkDataImageShort3",data,layer) ||
+          SetViewInput<itk::Image<unsigned short,3> >("itkDataImageUShort3",data,layer) ||
+          SetViewInput<itk::Image<int,3> >("itkDataImageInt3",data,layer) ||
+          SetViewInput<itk::Image<unsigned,3> >("itkDataImageUInt3",data,layer) ||
+          SetViewInput<itk::Image<long,3> >("itkDataImageLong3",data,layer) ||
+          SetViewInput<itk::Image<unsigned long,3> >("itkDataImageULong3",data,layer) ||
+          SetViewInput<itk::Image<float,3> >("itkDataImageFloat3",data,layer) ||
+          SetViewInput<itk::Image<double,3> >("itkDataImageDouble3",data,layer) ||
+          SetViewInput<itk::Image<itk::RGBPixel<unsigned char>,3> >("itkDataImageRGB3",data,layer) ||
+          SetViewInput<itk::Image<itk::RGBAPixel<unsigned char>,3> >("itkDataImageRGBA3",data,layer) ||
+          SetViewInput<itk::Image<itk::Vector<unsigned char,3>,3> >("itkDataImageVector3",data,layer) ||
+          SetView("itkDataImageShort4",data) ||
+          SetView("itkDataImageInt4",data) ||
+          SetView("itkDataImageLong4",data) ||
+          SetView("itkDataImageChar4",data) ||
+          SetView("itkDataImageUShort4",data) ||
+          SetView("itkDataImageUInt4",data) ||
+          SetView("itkDataImageULong4",data) ||
+          SetView("itkDataImageUChar4",data) ||
+          SetView("itkDataImageFloat4",data) ||
+          SetView("itkDataImageDouble4",data) ||
+          SetViewInputWithConversion<itk::Image<char,3> >("vistalDataImageChar3","itkDataImageChar3",data,layer) ||
+          SetViewInputWithConversion<itk::Image<unsigned char,3> >("vistalDataImageUChar3","itkDataImageUChar3",data,layer) ||
+          SetViewInputWithConversion<itk::Image<short,3> >("vistalDataImageShort3","itkDataImageShort3",data,layer) ||
+          SetViewInputWithConversion<itk::Image<unsigned short,3> >("vistalDataImageUShort3","itkDataImageUShort3",data,layer) ||
+          SetViewInputWithConversion<itk::Image<int,3> >("vistalDataImageInt3","itkDataImageInt3",data,layer) ||
+          SetViewInputWithConversion<itk::Image<unsigned,3> >("vistalDataImageUInt3","itkDataImageUInt3",data,layer) ||
+          SetViewInputWithConversion<itk::Image<float,3> >("vistalDataImageFloat3","itkDataImageFloat3",data,layer) ||
+          SetViewInputWithConversion<itk::Image<double,3> >("vistalDataImageDouble3","itkDataImageDouble3",data,layer)))
+    {
         if (data->identifier()=="v3dDataImage")
         {
             if(vtkImageData *dataset = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data())))
@@ -1049,6 +1047,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             dtkAbstractView::setData ( data );
             return;
         }
+    }
 
     if ( layer==0 )
     {

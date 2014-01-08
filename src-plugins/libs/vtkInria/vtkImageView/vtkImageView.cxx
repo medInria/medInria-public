@@ -1750,6 +1750,7 @@ inline void vtkImageView::SetITKInput4 (typename itk::Image<T, 4>::Pointer itkIm
   region.SetIndex (index);
 
   extractor->SetExtractionRegion (region);
+    extractor->SetDirectionCollapseToGuess();
   extractor->SetInput ( itkImage );
 
   this->Impl->ImageTemporalFilter[layer] = extractor;
