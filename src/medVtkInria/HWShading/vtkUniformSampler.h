@@ -39,7 +39,7 @@ PURPOSE.  See the above copyright notices for more information.
  * This class may be modified in the future to also handle the loading of the
  * texture and/or check for restrictions imposed on samplers.
  */
-class MEDVTKINRIA_EXPORT vtkUniformSampler : public vtkUniformInt
+class MEDVTKINRIA_EXPORT vtkUniformSampler : public vtkUniform<int>
 {
 public:
   static vtkUniformSampler* New();
