@@ -15,7 +15,7 @@
 
 #include <locale.h>
 
-#include "medApplication.h"
+
 
 #include <QtGui>
 

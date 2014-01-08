@@ -112,6 +112,7 @@ target_link_libraries(${PROJECT_NAME}
   dtkItkLogForwarder
   vtkImageView
   QVTK
+  ITKStatistics
 )
 
 if (BUILD_TESTING)

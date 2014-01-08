@@ -124,6 +124,7 @@ void medDatabaseNavigator::onPatientClicked(const medDataIndex& index)
     }
     d->currentPatient = baseIndex.patientId();
 
+    typedef QSet<medDataIndex> IndexSet;
     typedef QList<int> IntList;
     typedef QList<medDataIndex> IndexList;
 
@@ -234,10 +235,11 @@ void medDatabaseNavigator::setOrientation (Qt::Orientation orientation)
 {
     d->orientation = orientation;
     if (d->orientation == Qt::Horizontal) {
-        this->setFixedHeight(medDatabaseNavigatorController::instance()->groupHeight() + medDatabaseNavigatorController::instance()->itemSpacing() + 36);
+        this->setFixedHeight(medDatabaseNavigatorController::instance()->groupHeight() + medDatabaseNavigatorController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
+	this->setFixedWidth(QWIDGETSIZE_MAX);
     }
     else {
-        this->setFixedWidth(medDatabaseNavigatorController::instance()->groupWidth() + medDatabaseNavigatorController::instance()->itemSpacing() + 64);
+        this->setFixedWidth(medDatabaseNavigatorController::instance()->groupWidth() + medDatabaseNavigatorController::instance()->itemSpacing() + 36); // 26 pixels for the scroller
 	this->setFixedHeight(QWIDGETSIZE_MAX);
     }
 
