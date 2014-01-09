@@ -215,6 +215,14 @@ vtkImageView2DCommand::Execute(vtkObject*    caller,
     return;
   }
 
+  // The cursor left the view, cursor position needs to be reset
+  if (event == vtkCommand::LeaveEvent)
+  {
+    this->Viewer->UpdateCursorPosition(this->Viewer->GetCurrentPoint());
+    this->Viewer->Render();
+    return;
+  }
+
   // Cursor Position requested
   if (event == vtkImageView2DCommand::RequestedCursorInformationEvent)
   {

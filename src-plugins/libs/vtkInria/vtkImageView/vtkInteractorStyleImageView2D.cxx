@@ -52,6 +52,7 @@ vtkInteractorStyleImageView2D::~vtkInteractorStyleImageView2D()
 {
 }
 
+
 //----------------------------------------------------------------------------
 void vtkInteractorStyleImageView2D::OnMouseMove() 
 {

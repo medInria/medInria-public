@@ -534,6 +534,7 @@ void vtkImageView::SetCurrentPoint (double pos[3])
   this->CurrentPoint[1] = inside_pos[1];
   this->CurrentPoint[2] = inside_pos[2];
   this->InvokeEvent (vtkImageView::CurrentPointChangedEvent, NULL);
+  this->Modified();
 }
 
 void vtkImageView::UpdateCursorPosition (double pos[3])

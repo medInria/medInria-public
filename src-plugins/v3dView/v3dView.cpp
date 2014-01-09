@@ -2310,6 +2310,7 @@ void v3dView::onPositionChanged ( const QVector3D &position )
     pos[2] = position.z();
     d->observer->lock();
     d->currentView->SetCurrentPoint ( pos );
+    d->currentView->UpdateCursorPosition(pos);
     d->observer->unlock();
 
     // update slider, if currentView is 2D view
