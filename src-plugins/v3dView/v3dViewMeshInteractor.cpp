@@ -33,7 +33,6 @@
 #include <vtkRenderer.h>
 #include <vtkSmartPointer.h>
 #include <vtkBoundingBox.h>
-#include <vtkPolyDataManager.h>
 #include <medVtkView.h>
 #include <vtkImageFromBoundsSource.h>
 #include <vtkImageData.h>
