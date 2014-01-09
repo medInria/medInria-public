@@ -26,7 +26,7 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////
 medSplashScreen::medSplashScreen(const QPixmap& thePixmap)
-    : QFrame(0, Qt::SplashScreen |Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint)
+    : QWidget(0, Qt::SplashScreen |Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint)
     , d(new medSplashScreenPrivate)
 {
     d->pixmap = thePixmap;
@@ -75,6 +75,7 @@ void medSplashScreen::repaint()
 {
     QWidget::repaint();
     QApplication::flush();
+    qApp->processEvents(QEventLoop::AllEvents);
 }
 
 void medSplashScreen::finish(QWidget *mainWin)
