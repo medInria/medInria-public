@@ -104,10 +104,19 @@ void v3dViewVectorFieldInteractor::setData(dtkAbstractData *data)
         d->floatData = static_cast<ImageType* >(data->data());
 
         ImageType::DirectionType direction = d->floatData->GetDirection();
+        ImageType::PointType i_origin =  d->floatData->GetOrigin();
 
         for (int i=0; i<3; i++)
             for (int k=0; k<3; k++)
                 mat->SetElement(i,k, direction(i,k));
+
+        double v_origin[4], v_origin2[4];
+        for (int i=0; i<3; i++)
+          v_origin[i] = i_origin[i];
+        v_origin[3] = 1.0;
+        mat->MultiplyPoint (v_origin, v_origin2);
+        for (int i=0; i<3; i++)
+          mat->SetElement (i, 3, v_origin[i]-v_origin2[i]);
 
         d->floatFilter = FloatFilterType::New();
         d->floatFilter->SetInput( d->floatData );
@@ -126,10 +135,19 @@ void v3dViewVectorFieldInteractor::setData(dtkAbstractData *data)
         d->doubleData = static_cast<ImageType* >(data->data());
 
         ImageType::DirectionType direction = d->doubleData->GetDirection();
+        ImageType::PointType i_origin =  d->doubleData->GetOrigin();
 
         for (int i=0; i<3; i++)
             for (int k=0; k<3; k++)
                 mat->SetElement(i,k, direction(i,k));
+
+        double v_origin[4], v_origin2[4];
+        for (int i=0; i<3; i++)
+          v_origin[i] = i_origin[i];
+        v_origin[3] = 1.0;
+        mat->MultiplyPoint (v_origin, v_origin2);
+        for (int i=0; i<3; i++)
+          mat->SetElement (i, 3, v_origin[i]-v_origin2[i]);
 
         d->doubleFilter = DoubleFilterType::New();
         d->doubleFilter->SetInput( d->doubleData );

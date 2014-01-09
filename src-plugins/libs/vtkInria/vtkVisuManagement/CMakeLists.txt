@@ -50,6 +50,7 @@ set(${PROJECT_NAME}_SRCS
  vtkSphericalHarmonicSource.cxx
  vtkSphericalHarmonicGlyph.cxx
  vtkVectorOrienter.cxx
+ vtkPolydataNormalsOrienter.cpp
 )
 
 set(vtkLandmarkManagement_SRCS

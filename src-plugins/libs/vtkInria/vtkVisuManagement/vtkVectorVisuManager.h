@@ -30,6 +30,8 @@
 #include <vtkVectorOrienter.h>
 #include <vtkAssignAttribute.h>
 
+#include <vtkPolydataNormalsOrienter.h>
+
 class vtkMatrix4x4;
 
 class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
@@ -106,6 +108,8 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
   vtkGlyph3D*               Glyph;
   vtkPolyDataMapper*        Mapper;
   vtkActor*                 Actor;
+  vtkPolyDataNormals*       Normals;
+  vtkPolyDataNormalsOrienter* NormalsOrienter;
 
   vtkImageData*             Input;
 

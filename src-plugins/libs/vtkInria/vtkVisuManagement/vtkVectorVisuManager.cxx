@@ -51,9 +51,15 @@ vtkVectorVisuManager::vtkVectorVisuManager()
     this->Glyph->SetScaleFactor(1.0);
     this->Glyph->ClampingOn();
 
+    this->Normals = vtkPolyDataNormals::New();
+    this->Normals->SetInput( this->Glyph->GetOutput() );
+
+    this->NormalsOrienter = vtkPolyDataNormalsOrienter::New();
+    this->NormalsOrienter->SetInput(this->Normals->GetOutput());
+
     this->Mapper = vtkPolyDataMapper::New();
     this->Mapper->SetColorModeToMapScalars();
-    this->Mapper->SetInput( this->Glyph->GetOutput() );
+    this->Mapper->SetInput( this->NormalsOrienter->GetOutput() );
 
     this->Actor = vtkActor::New();
     this->Actor->SetMapper( this->Mapper );
@@ -90,6 +96,7 @@ void vtkVectorVisuManager::SetInput(vtkImageData* data, vtkMatrix4x4 *matrix)
 
     this->VOI->SetInput ( this->Input );
     this->Orienter->SetOrientationMatrix(matrix);
+    this->NormalsOrienter->SetOrientationMatrix(matrix);
 }
 
 void vtkVectorVisuManager::SetVOI(const int& imin, const int& imax,

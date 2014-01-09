@@ -58,13 +58,15 @@ protected:
                           vtkInformationVector** inputVector,
                           vtkInformationVector* outputVector);
 
-  int               VOI[6];
-  vtkMatrix4x4      *Matrix;
-  bool              Projection;
+
 
 private:
   vtkVectorOrienter(const vtkVectorOrienter&);  // Not implemented.
   void operator=(const vtkVectorOrienter&);  // Not implemented.
 
   ProjectionMode    ProjMode;
+
+  int               VOI[6];
+  vtkMatrix4x4      *Matrix;
+  bool              Projection;
 };
