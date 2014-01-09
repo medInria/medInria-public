@@ -11,12 +11,18 @@
 
 =========================================================================*/
 
-#include <v3dView.h>
-#include <v3dViewFuseInteractor.h>
-#include <v3dViewMeshInteractor.h>
-#include <v3dView4DInteractor.h>
-#include <v3dViewAnnotationInteractor.h>
-#include <v3dViewPlugin.h>
+#include "v3dView.h"
+#include "medVtkView.h"
+#include "medFiberBundlingToolBox.h"
+#include "medViewPropertiesToolBox.h"
+#include "medTimeLineToolBox.h"
+#include "medTensorViewToolBox.h"
+#include "medFiberViewToolBox.h"
+#include "medSHViewToolBox.h"
+#include "v3dViewMeshInteractor.h"
+#include "v3dView4DInteractor.h"
+#include "v3dViewAnnotationInteractor.h"
+#include "v3dViewPlugin.h"
 #ifndef DISABLE_TTK_DEPENDENT_CODE
 #include <v3dViewFiberInteractor.h>
 #include <v3dViewTensorInteractor.h>
@@ -53,22 +59,24 @@ v3dViewPlugin::~v3dViewPlugin()
 
 bool v3dViewPlugin::initialize()
 {
-    if (!v3dView::registered())                     { dtkWarn() << "Unable to register v3dView type";                     }
+    if (!medVtkView::registered())                     { dtkWarn() << "Unable to register medVtkView type";              }
+    if (!medFiberBundlingToolBox::registered())        { dtkWarn() << "Unable to register medFiberBundlingToolBox type"; }
+    if (!medTimeLineToolBox::registered())             { dtkWarn() << "Unable to register medTimeLineToolBox type"; }
+    if (!medViewPropertiesToolBox::registered())       { dtkWarn() << "Unable to register medViewPropertiesToolBox type"; }
+    if (!medTensorViewToolBox::registered())           { dtkWarn() << "Unable to register medTensorViewToolBox type"; }
+    if (!medFiberViewToolBox::registered())            { dtkWarn() << "Unable to register medFiberViewToolBox type"; }
+    if (!medSHViewToolBox::registered())               { dtkWarn() << "Unable to register medSHViewToolBox type"; }
+    if (!v3dView::registered())                        { dtkWarn() << "Unable to register v3dView type";                     }
 
 #ifndef DISABLE_TTK_DEPENDENT_CODE
     if (!v3dViewFiberInteractor::registered())      { dtkWarn() << "Unable to register v3dViewFiberInteractor type";      }
-#endif
-
-    if (!v3dViewFuseInteractor::registered())       { dtkWarn() << "Unable to register v3dViewFuseInteractor type";       }
-    if (!v3dViewMeshInteractor::registered())       { dtkWarn() << "Unable to register v3dViewMeshInteractor type";       }
-    if (!v3dView4DInteractor::registered())         { dtkWarn() << "Unable to register v3dView4DInteractor type";         }
-    if (!v3dViewAnnotationInteractor::registered()) { dtkWarn() << "Unable to register v3dViewAnnotationInteractor type"; }
-
-#ifndef DISABLE_TTK_DEPENDENT_CODE
     if (!v3dViewTensorInteractor::registered())     { dtkWarn() << "Unable to register v3dViewTensorInteractor type";     }
 #endif
-    
-    if (!v3dViewSHInteractor::registered())         { dtkWarn() << "Unable to register v3dViewSHInteractor type"; }
+
+    if (!v3dViewMeshInteractor::registered())       { dtkWarn() << "Unable to register v3dViewMeshInteractor type";       }
+    if (!v3dView4DInteractor::registered())         { dtkWarn() << "Unable to register v3dView4DInteractor type";         }
+    if (!v3dViewSHInteractor::registered())         { dtkWarn() << "Unable to register v3dViewSHInteractor type";         }
+    if (!v3dViewAnnotationInteractor::registered()) { dtkWarn() << "Unable to register v3dViewAnnotationInteractor type"; }
 
     return true;
 }
@@ -129,8 +137,8 @@ QStringList v3dViewPlugin::tags() const
 QStringList v3dViewPlugin::types() const
 {
     return QStringList() << v3dView::s_identifier() << "v3dViewFiberInteractor"
-        << "v3dViewFuseInteractor" << "v3dViewMeshInteractor"
-        << "v3dViewTensorInteractor"<< "v3dViewSHInteractor"  << "v3dView4DInteractor"
+        << "v3dViewMeshInteractor" << "v3dViewTensorInteractor"
+        << "v3dViewSHInteractor"  << "v3dView4DInteractor"
         << v3dViewAnnotationInteractor::s_identifier();
 }
 

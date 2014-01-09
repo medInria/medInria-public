@@ -17,7 +17,6 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medViewPropertiesToolBox.h>
 #include <medRegistrationSelectorToolBox.h>
 #include <medViewContainer.h>
 #include <medSingleViewContainer.h>
@@ -31,13 +30,22 @@ class medRegistrationWorkspacePrivate
 {
 public:
     medRegistrationSelectorToolBox * registrationToolBox;
-    medViewPropertiesToolBox      *viewPropertiesToolBox;
 };
 
 medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medWorkspace(parent), d(new medRegistrationWorkspacePrivate)
 {
-    d->viewPropertiesToolBox = new medViewPropertiesToolBox(parent);
-    this->addToolBox(d->viewPropertiesToolBox);
+    // -- View toolboxes --
+
+    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+    if(toolboxNames.contains("medViewPropertiesToolBox"))
+    {
+        // we want the medViewPropertiesToolBox to be the first "view" toolbox
+        toolboxNames.move(toolboxNames.indexOf("medViewPropertiesToolBox"),0);
+    }
+    foreach(QString toolbox, toolboxNames)
+    {
+       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+    }
 
     // -- Registration toolbox --
 
@@ -76,9 +84,13 @@ void medRegistrationWorkspace::setupViewContainerStack()
         //create the fuse container
         medSingleViewContainer *fuseContainer = new medSingleViewContainer(
                 this->stackedViewContainers());
-
-        fuseContainer->setAcceptDrops(false);
-
+        if (dtkSmartPointer<dtkAbstractView> view = dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView"))
+        {
+            view->setProperty("Closable","false"); 
+            fuseContainer->setView (view);
+            fuseContainer->setAcceptDrops(false);
+            d->registrationToolBox->setFuseView (view);
+        }
 
         //create the compare container
         medCompareViewContainer * compareViewContainer = new medCompareViewContainer(
@@ -91,9 +103,6 @@ void medRegistrationWorkspace::setupViewContainerStack()
                 d->registrationToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
         connect(fuseContainer,SIGNAL(viewRemoved(dtkAbstractView*)),
                 d->registrationToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
-
-        connect(d->registrationToolBox, SIGNAL(newFuseView(dtkAbstractView*)),
-                fuseContainer, SLOT(setView(dtkAbstractView*)));
 
         this->stackedViewContainers()->addContainer("Compare",compareViewContainer);
         this->stackedViewContainers()->addContainer("Fuse",fuseContainer);

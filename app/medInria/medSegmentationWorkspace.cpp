@@ -22,7 +22,6 @@
 #include <medViewContainer.h>
 #include <medWorkspaceFactory.h>
 #include <medVisualizationLayoutToolBox.h>
-#include <medViewPropertiesToolBox.h>
 #include <medToolBoxFactory.h>
 
 #include <dtkLog/dtkLog.h>
@@ -37,11 +36,10 @@ class medSegmentationWorkspacePrivate
 public:
     // Give values to items without a constructor.
     medSegmentationWorkspacePrivate() :
-      layoutToolBox(NULL), viewPropertiesToolBox(NULL), segmentationToolBox(NULL)
+      layoutToolBox(NULL), segmentationToolBox(NULL)
     {}
 
     medVisualizationLayoutToolBox *layoutToolBox;
-    medViewPropertiesToolBox *viewPropertiesToolBox;
 
     medSegmentationSelectorToolBox *segmentationToolBox;
 };
@@ -77,18 +75,25 @@ medWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 
     connect(this,SIGNAL(setLayoutTab(const QString &)), d->layoutToolBox, SLOT(setTab(const QString &)));
 
-    // -- View toolbox --
-
-    d->viewPropertiesToolBox = new medViewPropertiesToolBox(parent);
-
-
     connect ( this, SIGNAL(layoutModeChanged(const QString &)),
         stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));
     connect ( stackedViewContainers(), SIGNAL(currentChanged(const QString &)),
         this, SLOT(connectToolboxesToCurrentContainer(const QString &)));
 
     this->addToolBox( d->layoutToolBox );
-    this->addToolBox( d->viewPropertiesToolBox );
+
+    // -- View toolboxes --
+    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+    if(toolboxNames.contains("medViewPropertiesToolBox"))
+    {
+        // we want the medViewPropertiesToolBox to be the first "view" toolbox
+        toolboxNames.move(toolboxNames.indexOf("medViewPropertiesToolBox"),0);
+    }
+    foreach(QString toolbox, toolboxNames)
+    {
+       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+    }
+
     this->addToolBox( d->segmentationToolBox );
 }
 

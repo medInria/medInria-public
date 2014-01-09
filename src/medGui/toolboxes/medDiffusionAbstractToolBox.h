@@ -43,6 +43,12 @@ public:
      */
     virtual dtkPlugin *plugin()const = 0 ;
 
+signals:
+     void newOutput(dtkAbstractData * data);
+
+protected slots:
+     void processSuccess();
+
 protected:
     medDiffusionSelectorToolBox *parentToolBox();
 

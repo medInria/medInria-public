@@ -18,7 +18,6 @@
 #include <medMetaDataKeys.h>
 #include <medStorage.h>
 
-#include <medViewPropertiesToolBox.h>
 #include <medFilteringSelectorToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medViewContainer.h>
@@ -37,17 +36,25 @@
 class medFilteringWorkspacePrivate
 {
 public:
-    medViewPropertiesToolBox        *viewPropertiesToolBox;
-    medFilteringSelectorToolBox     *filteringToolBox;
+    medFilteringSelectorToolBox *filteringToolBox;
     dtkSmartPointer<dtkAbstractData> filterOutput;
     QString importUuid;
 };
 
 medFilteringWorkspace::medFilteringWorkspace ( QWidget *parent ) : medWorkspace ( parent ), d ( new medFilteringWorkspacePrivate )
 {
-    d->viewPropertiesToolBox = new medViewPropertiesToolBox ( parent );
+    // -- View toolboxes --
 
-    this->addToolBox ( d->viewPropertiesToolBox );
+    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+    if(toolboxNames.contains("medViewPropertiesToolBox"))
+    {
+        // we want the medViewPropertiesToolBox to be the first "view" toolbox
+        toolboxNames.move(toolboxNames.indexOf("medViewPropertiesToolBox"),0);
+    }
+    foreach(QString toolbox, toolboxNames)
+    {
+       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+    }
 
     d->filteringToolBox = new medFilteringSelectorToolBox ( parent );
 
@@ -73,7 +80,8 @@ void medFilteringWorkspace::setupViewContainerStack()
         connect(filteringViewContainer,SIGNAL(droppedInput(medDataIndex)), d->filteringToolBox,SLOT(onInputSelected(medDataIndex)));
         connect(this,SIGNAL(outputDataChanged(dtkAbstractData *)),
                 filteringViewContainer,SLOT(updateOutput(dtkAbstractData *)));
-        connect(filteringViewContainer, SIGNAL(inputViewRemoved(dtkAbstractView *)),this, SLOT(onInputViewRemoved()));
+        connect(filteringViewContainer, SIGNAL(viewRemoved(dtkAbstractView *)),
+                this, SLOT(onInputViewRemoved()));
 
         this->stackedViewContainers()->addContainer ( "Filtering",filteringViewContainer );
 

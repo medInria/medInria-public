@@ -17,6 +17,9 @@
 #include <dtkCore/dtkAbstractView.h>
 #include <medGui/commonWidgets/medSliderSpinboxPair.h>
 #include <medPluginManager.h>
+#include <v3dViewSHInteractor.h>
+#include <v3dView.h>
+#include <medToolBoxFactory.h>
 
 class medSHViewToolBoxPrivate {
 public:
@@ -38,9 +41,15 @@ public:
 
     QStringList           tesselationTypeList;
     QStringList           tesselationBasisList;
+
+    v3dViewSHInteractor * interactor;
+    v3dView * view;
 };
 
 medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new medSHViewToolBoxPrivate) {
+
+    d->view = 0;
+    d->interactor = 0;
 
     QWidget* displayWidget = new QWidget(this);
 
@@ -50,7 +59,7 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
     d->tesselationTypeComboBox = new QComboBox(displayWidget);
     d->tesselationTypeComboBox->addItems(d->tesselationTypeList);
 
-    connect(d->tesselationTypeComboBox, SIGNAL(currentIndexChanged(const QString&)),this,SIGNAL(tesselationTypeChanged(const QString&)));
+    connect(d->tesselationTypeComboBox, SIGNAL(currentIndexChanged(int)),this,SLOT(setTesselationType(int)));
 
     //  Combobox to control the spherical Harmonics basis
 
@@ -58,7 +67,7 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
     d->tesselationBasisComboBox = new QComboBox(displayWidget);
     d->tesselationBasisComboBox->addItems(d->tesselationBasisList);
 
-    connect(d->tesselationBasisComboBox,SIGNAL(currentIndexChanged(const QString&)),this,SIGNAL(tesselationBasisChanged(const QString&)));
+    connect(d->tesselationBasisComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(setTesselationBasis(int)));
 
     //  Control sample rate
 
@@ -67,7 +76,7 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
     d->sampleRateControl->setMaximum(10);
     d->sampleRateControl->setValue(1);
 
-    connect(d->sampleRateControl,SIGNAL(valueChanged(int)),this,SIGNAL(sampleRateChanged(int)));
+    connect(d->sampleRateControl,SIGNAL(valueChanged(int)),this,SLOT(setSampleRate(int)));
 
     //  Control for slices
 
@@ -78,9 +87,9 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
         d->SliceControl[i]->setValue(0);
     }
 
-    connect(d->SliceControl[0],SIGNAL(valueChanged(int)),this,SIGNAL(xSliceChanged(int)));
-    connect(d->SliceControl[1],SIGNAL(valueChanged(int)),this,SIGNAL(ySliceChanged(int)));
-    connect(d->SliceControl[2],SIGNAL(valueChanged(int)),this,SIGNAL(zSliceChanged(int)));
+    connect(d->SliceControl[0],SIGNAL(valueChanged(int)),this,SLOT(setXSlice(int)));
+    connect(d->SliceControl[1],SIGNAL(valueChanged(int)),this,SLOT(setYSlice(int)));
+    connect(d->SliceControl[2],SIGNAL(valueChanged(int)),this,SLOT(setZSlice(int)));
 
     //  flipX, flipY, flipZ and Enhance checkboxes
 
@@ -93,14 +102,14 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
     }
     d->flipCheckBox[2]->setCheckState(Qt::Checked);
 
-    connect(d->flipCheckBox[0],SIGNAL(stateChanged(int)),this,SLOT(onFlipXCheckBoxStateChanged(int)));
-    connect(d->flipCheckBox[1],SIGNAL(stateChanged(int)),this,SLOT(onFlipYCheckBoxStateChanged(int)));
-    connect(d->flipCheckBox[2],SIGNAL(stateChanged(int)),this,SLOT(onFlipZCheckBoxStateChanged(int)));
+    connect(d->flipCheckBox[0],SIGNAL(stateChanged(int)),this,SLOT(flipX(int)));
+    connect(d->flipCheckBox[1],SIGNAL(stateChanged(int)),this,SLOT(flipY(int)));
+    connect(d->flipCheckBox[2],SIGNAL(stateChanged(int)),this,SLOT(flipZ(int)));
 
     d->EnhanceCheckBox = new QCheckBox("Enhance",displayWidget);
     flipAxesLayout->addWidget(d->EnhanceCheckBox);
 
-    connect(d->EnhanceCheckBox,SIGNAL(stateChanged(int)),this,SLOT(onEnhanceCheckBoxStateChanged(int)));
+    connect(d->EnhanceCheckBox,SIGNAL(stateChanged(int)),this,SLOT(setEnhance(int)));
 
     //  Control glyph resolution
 
@@ -109,7 +118,7 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
     d->glyphResolutionControl->setMaximum(10);
     d->glyphResolutionControl->setValue(2);
 
-    connect(d->glyphResolutionControl,SIGNAL(valueChanged(int)),this,SIGNAL(glyphResolutionChanged(int)));
+    connect(d->glyphResolutionControl,SIGNAL(valueChanged(int)),this,SLOT(setGlyphResolution(int)));
 
     //  We need to calculate one single number for the scale, out of the minor and major scales
     //  scale = minor*10^(major)
@@ -121,7 +130,7 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
     d->minorScalingControl->setMaximum(9);
     d->minorScalingControl->setValue(3);
 
-    connect(d->minorScalingControl,SIGNAL(valueChanged(int)),this,SLOT(onMinorScalingChanged(const int)));
+    connect(d->minorScalingControl,SIGNAL(valueChanged(int)),this,SLOT(setMinorScaling(const int)));
 
     //  Major scaling
 
@@ -130,7 +139,7 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
     d->majorScalingControl->setMaximum(10);
     d->majorScalingControl->setValue(0);
 
-    connect(d->majorScalingControl,SIGNAL(valueChanged(int)),this,SLOT(onMajorScalingChanged(const int)));
+    connect(d->majorScalingControl,SIGNAL(valueChanged(int)),this,SLOT(setMajorScaling(const int)));
 
     //  Hide or show axial, coronal, and sagittal
  
@@ -142,9 +151,9 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
         slicesLayout->addWidget(d->hideShowCheckBox[i]);
     }
 
-    connect(d->hideShowCheckBox[0],SIGNAL(stateChanged(int)),this,SLOT(onHideShowAxialChanged(int)));
-    connect(d->hideShowCheckBox[1],SIGNAL(stateChanged(int)),this,SLOT(onHideShowCoronalChanged(int)));
-    connect(d->hideShowCheckBox[2],SIGNAL(stateChanged(int)),this,SLOT(onHideShowSagittalChanged(int)));
+    connect(d->hideShowCheckBox[0],SIGNAL(stateChanged(int)),this,SLOT(setShowAxial(int)));
+    connect(d->hideShowCheckBox[1],SIGNAL(stateChanged(int)),this,SLOT(setShowCoronal(int)));
+    connect(d->hideShowCheckBox[2],SIGNAL(stateChanged(int)),this,SLOT(setShowSagittal(int)));
 
     //  Layout all the controls in the toolbox
 
@@ -172,6 +181,11 @@ medSHViewToolBox::medSHViewToolBox(QWidget *parent): medToolBox(parent),d(new me
       setAboutPluginButton(plugin);
       setAboutPluginVisibility(true);
     }
+
+    this->setValidDataTypes(QStringList() << "itkDataSHImageFloat3" << "itkDataSHImageDouble3");
+
+    this->hide();
+
 }
 
 medSHViewToolBox::~medSHViewToolBox() {
@@ -230,51 +244,92 @@ bool medSHViewToolBox::isShowSagittal() {
     return d->hideShowCheckBox[2]->checkState()==Qt::Checked;
 }
 
-void medSHViewToolBox::onFlipXCheckBoxStateChanged(const int checkBoxState) {
-    emit flipX(checkBoxState==Qt::Checked);
+void medSHViewToolBox::setTesselationType (int tesselationType){
+    switch(tesselationType)
+    {
+    case 0:
+      d->interactor->setTesselationType(v3dViewSHInteractor::Icosahedron);
+      break;
+    case 1:
+        d->interactor->setTesselationType(v3dViewSHInteractor::Octahedron);
+        break;
+    case 2:
+        d->interactor->setTesselationType(v3dViewSHInteractor::Tetrahedron);
+        break;
+    default:
+        break;
+    }
 }
 
-void medSHViewToolBox::onFlipYCheckBoxStateChanged(const int checkBoxState) {
-    emit flipY(checkBoxState==Qt::Checked);
+void medSHViewToolBox::setTesselationBasis (int tesselationBasis){
+    d->interactor->setTesselationBasis((v3dViewSHInteractor::TesselationBasis)tesselationBasis);
 }
 
-void medSHViewToolBox::onFlipZCheckBoxStateChanged(const int checkBoxState) {
-    emit flipZ(checkBoxState==Qt::Checked);
+void medSHViewToolBox::setSampleRate (int sampleRate){
+    d->interactor->setSampleRate(sampleRate);
 }
 
-void medSHViewToolBox::onEnhanceCheckBoxStateChanged(const int checkBoxState) {
-    emit normalize(checkBoxState==Qt::Checked);
+void medSHViewToolBox::setXSlice (int xSlice){
+    d->interactor->setXSlice(xSlice);
 }
 
-void medSHViewToolBox::onScaleChanged(const double mantissa,const int exponent) {
+void medSHViewToolBox::setYSlice (int ySlice){
+    d->interactor->setYSlice(ySlice);
+}
+
+void medSHViewToolBox::setZSlice (int zSlice){
+    d->interactor->setZSlice(zSlice);
+}
+
+void medSHViewToolBox::setGlyphResolution (int glyphResolution){
+    d->interactor->setGlyphResolution(glyphResolution);
+}
+
+void medSHViewToolBox::flipX(const int checkBoxState) {
+    d->interactor->setFlipX(checkBoxState == Qt::Checked);
+}
+
+void medSHViewToolBox::flipY(const int checkBoxState) {
+    d->interactor->setFlipY(checkBoxState == Qt::Checked);
+}
+
+void medSHViewToolBox::flipZ(const int checkBoxState) {
+    d->interactor->setFlipZ(checkBoxState == Qt::Checked);
+}
+
+void medSHViewToolBox::setEnhance(const int checkBoxState) {
+    d->interactor->setNormalization(checkBoxState == Qt::Checked);
+}
+
+void medSHViewToolBox::setScale(const double mantissa,const int exponent) {
     const double scale_factor = pow(10.0,exponent);
-    onScaleChanged(mantissa*scale_factor);
+    setScale(mantissa*scale_factor);
 }
 
-void medSHViewToolBox::onScaleChanged(const double scale) {
-    emit scalingChanged(scale);
+void medSHViewToolBox::setScale(const double scale) {
+    d->interactor->setScaling(scale);
 }
 
-void medSHViewToolBox::onMinorScalingChanged(const int minorScale) {
+void medSHViewToolBox::setMinorScaling(const int minorScale) {
     const int majorScaleExponent = d->majorScalingControl->value();
-    onScaleChanged(minorScale,majorScaleExponent);
+    setScale(minorScale,majorScaleExponent);
 }
 
-void medSHViewToolBox::onMajorScalingChanged(const int majorScaleExponent) {
+void medSHViewToolBox::setMajorScaling(const int majorScaleExponent) {
     const double minorScale = d->minorScalingControl->value();
-    onScaleChanged(minorScale,majorScaleExponent);
+    setScale(minorScale,majorScaleExponent);
 }
 
-void medSHViewToolBox::onHideShowAxialChanged(const int checkBoxState) {
-    emit hideShowAxial(checkBoxState==Qt::Checked);
+void medSHViewToolBox::setShowAxial(const int checkBoxState) {
+    d->interactor->setShowAxial(checkBoxState == Qt::Checked);
 }
 
-void medSHViewToolBox::onHideShowCoronalChanged(const int checkBoxState) {
-    emit hideShowCoronal(checkBoxState==Qt::Checked);
+void medSHViewToolBox::setShowCoronal(const int checkBoxState) {
+    d->interactor->setShowCoronal(checkBoxState == Qt::Checked);
 }
 
-void medSHViewToolBox::onHideShowSagittalChanged(const int checkBoxState) {
-    emit hideShowSagittal(checkBoxState==Qt::Checked);
+void medSHViewToolBox::setShowSagittal(const int checkBoxState) {
+    d->interactor->setShowSagittal(checkBoxState == Qt::Checked);
 }
 
 void medSHViewToolBox::update(dtkAbstractView *view) {
@@ -284,6 +339,17 @@ void medSHViewToolBox::update(dtkAbstractView *view) {
     // the SH view toolbox is expected to control all SHs
     // i.e. is general to all SHs, hence we do not update its values
     // for every view
+
+    medToolBox::update(view);
+    if (!view)
+    {
+        d->view = 0;
+        d->interactor = 0;
+        return;
+    }
+
+    d->view = qobject_cast<v3dView*>(view);
+    d->interactor = qobject_cast<v3dViewSHInteractor*>(d->view->dtkAbstractView::interactor("v3dViewSHInteractor"));
 }
 
 void medSHViewToolBox::updateWithInteractor(dtkAbstractView *view) {
@@ -301,3 +367,13 @@ void medSHViewToolBox::updateWithInteractor(dtkAbstractView *view) {
         }
     }
 }
+
+
+bool medSHViewToolBox::registered()
+{
+    return medToolBoxFactory::instance()->registerToolBox<medSHViewToolBox>("medSHViewToolBox",
+                                                                                "medSHViewToolBox",
+                                                                                "SH View ToolBox",
+                                                                                QStringList()<<"view"<<"Spherical Harmonics");
+}
+

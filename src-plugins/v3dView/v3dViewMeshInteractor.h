@@ -13,8 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractViewInteractor.h>
-#include <medMeshAbstractViewInteractor.h>
+#include <medAbstractVtkViewInteractor.h>
 
 #include <vtkPointSet.h>
 
@@ -27,7 +26,7 @@ class dtkAbstractData;
 class dtkAbstractView;
 class vtkLookupTable;
 
-class V3DVIEWPLUGIN_EXPORT v3dViewMeshInteractor: public medMeshAbstractViewInteractor
+class V3DVIEWPLUGIN_EXPORT v3dViewMeshInteractor: public medAbstractVtkViewInteractor
 {
     Q_OBJECT
 
@@ -38,6 +37,8 @@ public:
     virtual QString description() const;
     virtual QString identifier() const;
     virtual QStringList handled() const;
+
+    virtual bool isDataTypeHandled(QString dataType) const;
 
     static bool registered();
 
@@ -74,6 +75,14 @@ public:
     QString lut(int meshLayer) const;
 
     QStringList getAllLUTs() const;
+
+public slots:
+    // Mandatory implementations from medVtkViewInteractor
+    virtual void setOpacity(dtkAbstractData * data, double opacity);
+    virtual double opacity(dtkAbstractData * data) const;
+
+    virtual void setVisible(dtkAbstractData * data, bool visible);
+    virtual bool isVisible(dtkAbstractData * data) const;
 
 protected:
     void updatePipeline (unsigned int meshLayer = 0);

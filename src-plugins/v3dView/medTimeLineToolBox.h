@@ -13,6 +13,7 @@
 
 #pragma once
 
+#include "v3dViewPluginExport.h"
 #include <medToolBox.h>
 
 class dtkAbstractView;
@@ -46,9 +47,9 @@ class medTimeLineToolBoxPrivate;
  *
  */
 
-class med4DAbstractViewInteractor;
+class v3dView4DInteractor;
 
-class MEDGUI_EXPORT medTimeLineToolBox : public medToolBox
+class V3DVIEWPLUGIN_EXPORT medTimeLineToolBox : public medToolBox
 {
     Q_OBJECT
 
@@ -57,36 +58,31 @@ public:
     ~medTimeLineToolBox();
 
     void update(dtkAbstractView *view);
+    static bool registered();
 
 public slots:
 
     /** Slot when the sequence is in played, icons will be changed according to the state */
-    void onPlaySequences();
+    void play();
 
     /** Slot for next and previous frame */
-    void onNextFrame();
-    void onPreviousFrame();
+    void nextFrame();
+    void previousFrame();
 
     /** parameters updated when time is changed */
-    void onTimeChanged(int);
+    void changeTime(int);
 
     /** parameters updated when either views or data environments have changed */
-    void onViewAdded   (dtkAbstractView *view);
-    void onViewRemoved (dtkAbstractView *view);
-    void onDataAdded (dtkAbstractData* data);
+    void addData (dtkAbstractData* data);
 
     /** parameters updated when the spinbox is changed */
-    void onSpinBoxChanged(int);
-    void onStopButton();
-    void onStepIncreased( );
+    void changeSpeed(int);
+    void stop();
+    void increaseStep();
 
     void clear();
 
  protected:
-
-    /** Add/Remove an interactor from the list */
-    void AddInteractor (med4DAbstractViewInteractor* interactor);
-    void RemoveInteractor (med4DAbstractViewInteractor* interactor);
 
     /**
        Update the range and associated objects like labels
@@ -105,7 +101,6 @@ public slots:
  private:
 
     medTimeLineToolBoxPrivate *d;
-    bool isViewAdded;
     QString DoubleToQString(double);
 };
 

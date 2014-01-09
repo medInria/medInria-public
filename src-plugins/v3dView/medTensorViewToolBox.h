@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medGuiExport.h"
+#include "v3dViewPluginExport.h"
 #include "medToolBox.h"
 
 class medTensorViewToolBoxPrivate;
@@ -26,7 +26,7 @@ class medTensorViewToolBoxPrivate;
  * For instance, users can change the glyph shape, or choose to calculate
  * more or less polygons for each glyph.
  */
-class MEDGUI_EXPORT medTensorViewToolBox : public medToolBox
+class V3DVIEWPLUGIN_EXPORT medTensorViewToolBox : public medToolBox
 {
 	Q_OBJECT
 
@@ -71,65 +71,33 @@ public:
     /** Returns true is 'Hide/Show Sagittal' checkbox is selected, false otherwise */
     bool isShowSagittal();
 
-signals:
-    /** Emitted when a glyph shape is selected from the combobox */
-    void glyphShapeChanged(const QString& shape);
-
-    /** Emitted when the sample rate change */
-    void sampleRateChanged(int sampleRate);
-
-    /** Emitted when the user wants to flip the X axis */
-    void flipX(bool flipX);
-
-    /** Emitted when the user wants to flip the Y axis */
-    void flipY(bool flipY);
-
-    /** Emitted when the user wants to flip the Z axis */
-    void flipZ(bool flipZ);
-
-    /** Emitted when a new eigen vector is selected */
-    void eigenVectorChanged(int eigenVector);
-
-    /** Emitted when a new eigen vector is selected */
-    void reverseBackgroundColor(bool reverseBackgroundColor);
-
-    /** Emitted when the glyph resolution change */
-    void glyphResolutionChanged(int glyphResolution);
-
-    /** Emitted when the minor scaling change */
-    void scalingChanged(double scale);
-
-    /** Emitted when user wants to hide or show axial plane */
-    void hideShowAxial(bool show);
-
-    /** Emitted when user wants to hide or show coronal plane */
-    void hideShowCoronal(bool show);
-
-    /** Emitted when user wants to hide or show Sagittal plane */
-    void hideShowSagittal(bool show);
+    static bool registered();
 
 public slots:
     void update (dtkAbstractView *view);
 
 private slots:
-    // functions used to translate checkboxes from Qt::CheckState
-    // to boolean values, and then emitting the signals
-    void onFlipXCheckBoxStateChanged(int state);
-    void onFlipYCheckBoxStateChanged(int state);
-    void onFlipZCheckBoxStateChanged(int state);
 
-    void onEigenVectorV1Toggled(bool isSelected);
-    void onEigenVectorV2Toggled(bool isSelected);
-    void onEigenVectorV3Toggled(bool isSelected);
+    void setGlyphShape(int glyphShape);
+    void setSampleRate(int SampleRate);
+    void setGlyphResolution(int glyphResolution);
+
+    void setFlipX(int state);
+    void setFlipY(int state);
+    void setFlipZ(int state);
+
+    void setEigenVectorV1(bool isSelected);
+    void setEigenVectorV2(bool isSelected);
+    void setEigenVectorV3(bool isSelected);
 
     void onReverseBackgroundColorChanged(int state);
 
-    void onMinorScalingChanged(int minorScale);
-    void onMajorScalingChanged(int majorScaleExponent);
+    void setMinorScaling(int minorScale);
+    void setMajorScaling(int majorScaleExponent);
 
-    void onHideShowAxialChanged(int checkBoxState);
-    void onHideShowCoronalChanged(int checkBoxState);
-    void onHideShowSagittalChanged(int checkBoxState);
+    void setShowAxial(int checkBoxState);
+    void setShowCoronal(int checkBoxState);
+    void setShowSagittal(int checkBoxState);
 
 protected:
     medTensorViewToolBoxPrivate *d;

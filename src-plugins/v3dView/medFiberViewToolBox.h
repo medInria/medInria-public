@@ -14,11 +14,11 @@
 #pragma once
 
 #include "medToolBox.h"
-#include "medGuiExport.h"
+#include "v3dViewPluginExport.h"
 
 class medFiberViewToolBoxPrivate;
 
-class MEDGUI_EXPORT medFiberViewToolBox : public medToolBox
+class V3DVIEWPLUGIN_EXPORT medFiberViewToolBox : public medToolBox
 {
     Q_OBJECT
 public:
@@ -53,8 +53,15 @@ public:
     /* Returns whether tubes mode is selected or not. */
     bool isTubesModeSelected();
 
-
+    static bool registered();
 public slots:
+    void setFiberColorMode(int);
+    void activateGPU(bool);
+    void selectLineMode(bool);
+    void selectRibbonMode(bool);
+    void selectTubeMode(bool);
+    void setFiberRadius(int radius);
+
     void update (dtkAbstractView *view);
 
 protected:

@@ -15,7 +15,7 @@
 
 #include "medToolBox.h"
 
-#include "medGuiExport.h"
+#include "v3dViewPluginExport.h"
 
 class dtkAbstractView;
 class dtkAbstractData;
@@ -31,12 +31,14 @@ class medDataIndex;
   * declare groups of fibers as belonging to the same anatomical bundle), name
   * and color bundles, and compute and display FA, ADC and length statistics.
   */
-class MEDGUI_EXPORT medFiberBundlingToolBox : public medToolBox
+class V3DVIEWPLUGIN_EXPORT medFiberBundlingToolBox : public medToolBox
 {
     Q_OBJECT
 public:
      medFiberBundlingToolBox(QWidget *parent);
     ~medFiberBundlingToolBox();
+
+    static bool registered();
 
     /**
       * Set input fibers as a dtkAbstractData object. Subclass should
@@ -64,12 +66,9 @@ signals:
       */
     void fiberSelectionReset();
 
-    /**
-      * This signal is emitted when the user wants to change the
-      * boolean meaning of a ROI.
-      * @param value Value of the ROI to be changed
-      */
-    void bundlingBoxBooleanOperatorChanged (int value);
+public slots:
+
+    void setInput(dtkAbstractData * data);
 
 protected slots:
 
@@ -92,7 +91,7 @@ protected slots:
     virtual void addBundle (const QString &name, const QColor &color);
 
     /** Slot called when external ROI image finishes being imported. */
-    virtual void onRoiImported(const medDataIndex &index);
+    virtual void importROI(const medDataIndex &index);
 
     /**
      * Slot called when the @meDropSite is clicked.
@@ -107,18 +106,18 @@ protected slots:
     void setImage(const QImage& thumbnail);
 
     // internal method, doc to come
-    virtual void onBundlingButtonVdtClicked();
-    virtual void onBundlingButtonAndToggled (bool);
-    virtual void onBundleBoxCheckBoxToggled (bool);
-    virtual void onBundlingShowCheckBoxToggled (bool);
+    virtual void validateBundling();
+    virtual void setBoxBooleanOperation (bool);
+    virtual void showBundlingBox (bool);
+    virtual void showBundling (bool show);
 
-    virtual void onClearRoiButtonClicked();
-    virtual void onRoiComboIndexChanged  (int value);
-    virtual void onAddButtonToggled      (bool value);
-    virtual void onNotButtonToggled      (bool value);
-    virtual void onNullButtonToggled     (bool value);
+    virtual void clearRoi();
+    virtual void selectRoi  (int value);
+    virtual void setRoiAddOperation      (bool value);
+    virtual void setRoiNotOperation      (bool value);
+    virtual void setRoiNullOperation     (bool value);
 
-    virtual void onBundlingItemChanged (QStandardItem *item);
+    virtual void changeBundlingItem (QStandardItem *item);
 
 private:
     medFiberBundlingToolBoxPrivate *d;

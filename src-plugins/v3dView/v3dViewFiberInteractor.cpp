@@ -39,6 +39,7 @@
 #include <itkFiberBundleStatisticsCalculator.h>
 
 #include "v3dView.h"
+#include "medVtkView.h"
 
 #include <QInputDialog>
 #include <QColorDialog>
@@ -52,9 +53,24 @@ public:
     vtkFiberDataSetManager *manager;
     vtkIsosurfaceManager   *roiManager;
     vtkSmartPointer<vtkFiberDataSet> dataset;
+    
+    QMap<QString, double> meanFAList;
+    QMap<QString, double> minFAList;
+    QMap<QString, double> maxFAList;
+    QMap<QString, double> varFAList;
+    
+    QMap<QString, double> meanADCList;
+    QMap<QString, double> minADCList;
+    QMap<QString, double> maxADCList;
+    QMap<QString, double> varADCList;
+    
+    QMap<QString, double> meanLengthList;
+    QMap<QString, double> minLengthList;
+    QMap<QString, double> maxLengthList;
+    QMap<QString, double> varLengthList;
 };
 
-v3dViewFiberInteractor::v3dViewFiberInteractor(): medAbstractViewFiberInteractor(), d(new v3dViewFiberInteractorPrivate)
+v3dViewFiberInteractor::v3dViewFiberInteractor(): medAbstractVtkViewInteractor(), d(new v3dViewFiberInteractorPrivate)
 {
     d->data    = 0;
     d->dataset = 0;
@@ -67,15 +83,6 @@ v3dViewFiberInteractor::v3dViewFiberInteractor(): medAbstractViewFiberInteractor
     vtkLookupTable* lut = vtkLookupTableManager::GetSpectrumLookupTable();
     d->manager->SetLookupTable(lut);
     lut->Delete();
-
-    // addProperty here
-    this->addProperty("Visibility",    QStringList() << "true" << "false");
-    this->addProperty("BoxVisibility", QStringList() << "true" << "false");
-    this->addProperty("RenderingMode", QStringList() << "lines" << "ribbons" << "tubes");
-    this->addProperty("GPUMode",       QStringList() << "true" << "false");
-    this->addProperty("ColorMode",     QStringList() << "local" << "global" << "fa");
-    this->addProperty("BoxBooleanOperation", QStringList() << "plus" << "minus");
-    this->addProperty("Projection",    QStringList() << "true" << "false");
 }
 
 v3dViewFiberInteractor::~v3dViewFiberInteractor()
@@ -99,12 +106,22 @@ QString v3dViewFiberInteractor::identifier() const
 
 QStringList v3dViewFiberInteractor::handled() const
 {
-    return QStringList () << "v3dView";
+    return QStringList () << v3dView::s_identifier() << medVtkView::s_identifier();
+}
+
+bool v3dViewFiberInteractor::isDataTypeHandled(QString dataType) const
+{
+    if (dataType == "v3dDataFibers")
+        return true;
+    
+    return false;
 }
 
 bool v3dViewFiberInteractor::registered()
 {
-    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewFiberInteractor", QStringList() << "v3dView", createV3dViewFiberInteractor);
+    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dViewFiberInteractor",
+                                                                          QStringList () << v3dView::s_identifier() << medVtkView::s_identifier(),
+                                                                          createV3dViewFiberInteractor);
 }
 
 void v3dViewFiberInteractor::setData(dtkAbstractData *data)
@@ -208,125 +225,124 @@ void v3dViewFiberInteractor::disable()
     dtkAbstractViewInteractor::disable();
 }
 
-void v3dViewFiberInteractor::onPropertySet(const QString& key, const QString& value)
+void v3dViewFiberInteractor::setVisibility(bool visible)
 {
-    if (key=="Visibility")
-        this->onVisibilityPropertySet (value);
-
-    if (key=="BoxVisibility")
-        this->onBoxVisibilityPropertySet (value);
-
-    if (key=="RenderingMode")
-        this->onRenderingModePropertySet (value);
-
-    if (key=="GPUMode")
-        this->onGPUModePropertySet (value);
-
-    if (key=="ColorMode")
-        this->onColorModePropertySet (value);
-
-    if (key=="BoxBooleanOperation")
-        this->onBoxBooleanOperationPropertySet (value);
-
-    if (key=="Projection")
-        this->onProjectionPropertySet (value);
+    d->manager->SetVisibility(visible);
 }
 
-void v3dViewFiberInteractor::onVisibilityPropertySet (const QString& value)
+void v3dViewFiberInteractor::setBoxVisibility(bool visible)
 {
-    if (value=="true") {
-        d->manager->SetVisibility(1);
-    }
-    else {
-        d->manager->SetVisibility(0);
-    }
-}
-
-void v3dViewFiberInteractor::onBoxVisibilityPropertySet (const QString& value)
-{
-    if (d->view && d->view->property("Orientation")!="3D") {
+    if (d->view && d->view->property("Orientation") != "3D") {
         medMessageController::instance()->showError("View must be in 3D mode to activate the bundling box",
                                                     3000);
-        d->manager->SetBoxWidget(0);
+        d->manager->SetBoxWidget(false);
         return;
     }
 
-    if (value=="true")
-        d->manager->SetBoxWidget(1);
-    else
-        d->manager->SetBoxWidget(0);
+    d->manager->SetBoxWidget(visible);
+    d->view->update();
 }
 
-void v3dViewFiberInteractor::onRenderingModePropertySet (const QString& value)
+void v3dViewFiberInteractor::setRenderingMode(RenderingMode mode)
 {
-    if (value=="lines") {
-        d->manager->SetRenderingModeToPolyLines();
+    switch(mode)
+    {
+        case v3dViewFiberInteractor::Lines:
+            d->manager->SetRenderingModeToPolyLines();
+            break;
+
+        case v3dViewFiberInteractor::Ribbons:
+            d->manager->SetRenderingModeToRibbons();
+            break;
+
+        case v3dViewFiberInteractor::Tubes:
+            d->manager->SetRenderingModeToTubes();
+            break;
+        default:
+            qDebug() << "v3dViewFiberInteractor: unknown rendering mode";
     }
 
-    if (value=="ribbons") {
-        d->manager->SetRenderingModeToRibbons();
-    }
-
-    if (value=="tubes") {
-        d->manager->SetRenderingModeToTubes();
-    }
+    d->view->update();
 }
 
-void v3dViewFiberInteractor::onGPUModePropertySet (const QString& value)
+void v3dViewFiberInteractor::activateGPU(bool activate)
 {
-    if (value=="true") {
+    if (activate) {
         vtkFibersManager::UseHardwareShadersOn();
         d->manager->ChangeMapperToUseHardwareShaders();
-    }
-    else {
+    } else {
         vtkFibersManager::UseHardwareShadersOff();
         d->manager->ChangeMapperToDefault();
     }
+
+    d->view->update();
 }
 
-void v3dViewFiberInteractor::onColorModePropertySet (const QString& value)
+void v3dViewFiberInteractor::setColorMode(ColorMode mode)
 {
-    if (value=="local") {
-        d->manager->SetColorModeToLocalFiberOrientation();
-    }
-
-    if (value=="global") {
-        d->manager->SetColorModelToGlobalFiberOrientation();
-    }
-
-    if (value=="fa") {
-        for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++)
-	    if (d->manager->GetPointArrayName (i))
-	        if (strcmp ( d->manager->GetPointArrayName (i), "FA")==0)
-		{
-            d->manager->SetColorModeToPointArray (i);
+    switch(mode)
+    {
+        case v3dViewFiberInteractor::Local:
+            d->manager->SetColorModeToLocalFiberOrientation();
             break;
-        }
+
+        case v3dViewFiberInteractor::Global:
+            d->manager->SetColorModelToGlobalFiberOrientation();
+            break;
+
+        case v3dViewFiberInteractor::FA:
+            d->manager->SetColorModeToLocalFiberOrientation();
+            for (int i=0; i<d->manager->GetNumberOfPointArrays(); i++) {
+                if (d->manager->GetPointArrayName (i)) {
+                    if (strcmp ( d->manager->GetPointArrayName (i), "FA")==0)
+                    {
+                        d->manager->SetColorModeToPointArray (i);
+                        break;
+                    }
+                }
+            }
+            break;
+
+        default:
+            qDebug() << "v3dViewFiberInteractor: unknown color mode";
     }
+
+    d->view->update();
 }
 
-void v3dViewFiberInteractor::onBoxBooleanOperationPropertySet (const QString& value)
+void v3dViewFiberInteractor::setBoxBooleanOperation(BooleanOperation op)
 {
-    if (value=="plus")
-        d->manager->GetVOILimiter()->SetBooleanOperationToAND();
+    switch(op)
+    {
+        case v3dViewFiberInteractor::Plus:
+            d->manager->GetVOILimiter()->SetBooleanOperationToAND();
+            break;
 
-    if (value=="minus")
-        d->manager->GetVOILimiter()->SetBooleanOperationToNOT();
+        case v3dViewFiberInteractor::Minus:
+            d->manager->GetVOILimiter()->SetBooleanOperationToNOT();
+            break;
+
+        default:
+            qDebug() << "v3dViewFiberInteractor: Unknown boolean operations";
+    }
 
     d->manager->GetVOILimiter()->Modified();
+    d->view->update();
 }
 
-void v3dViewFiberInteractor::onSelectionTagged()
+void v3dViewFiberInteractor::tagSelection()
 {
     d->manager->SwapInputOutput();
+    d->view->update();
 }
 
-void v3dViewFiberInteractor::onSelectionReset()
+void v3dViewFiberInteractor::resetSelection()
 {
     d->manager->Reset();
+    d->view->update();
 }
 
-void v3dViewFiberInteractor::onSelectionValidated(const QString &name, const QColor &color)
+void v3dViewFiberInteractor::validateSelection(const QString &name, const QColor &color)
 {
     if (!d->data)
         return;
@@ -342,6 +358,7 @@ void v3dViewFiberInteractor::onSelectionValidated(const QString &name, const QCo
 
     // reset to initial navigation state
     d->manager->Reset();
+    d->view->update();
 }
 
 void v3dViewFiberInteractor::computeBundleFAStatistics (const QString &name,
@@ -369,6 +386,27 @@ void v3dViewFiberInteractor::computeBundleFAStatistics (const QString &name,
     statCalculator->GetFAStatistics(mean, min, max, var);
 }
 
+void v3dViewFiberInteractor::bundleFAStatistics(const QString &name,
+                                                double &mean,
+                                                double &min,
+                                                double &max,
+                                                double &var)
+{
+    if (!d->meanFAList.contains(name)) {
+        this->computeBundleFAStatistics(name, mean, min, max, var);
+        d->meanFAList[name] = mean;
+        d->minFAList[name] = min;
+        d->maxFAList[name] = max;
+        d->varFAList[name] = var;
+    }
+    else {
+        mean = d->meanFAList[name];
+        min  = d->minFAList[name];
+        max  = d->maxFAList[name];
+        var  = d->varFAList[name];
+    }
+}
+
 void v3dViewFiberInteractor::computeBundleADCStatistics (const QString &name,
                                                          double &mean,
                                                          double &min,
@@ -392,6 +430,27 @@ void v3dViewFiberInteractor::computeBundleADCStatistics (const QString &name,
     }
 
     statCalculator->GetADCStatistics(mean, min, max, var);
+}
+
+void v3dViewFiberInteractor::bundleADCStatistics(const QString &name,
+                                                 double &mean,
+                                                 double &min,
+                                                 double &max,
+                                                 double &var)
+{
+    if (!d->meanADCList.contains(name)) {
+        this->computeBundleADCStatistics(name, mean, min, max, var);
+        d->meanADCList[name] = mean;
+        d->minADCList[name] = min;
+        d->maxADCList[name] = max;
+        d->varADCList[name] = var;
+    }
+    else {
+        mean = d->meanADCList[name];
+        min  = d->minADCList[name];
+        max  = d->maxADCList[name];
+        var  = d->varADCList[name];
+    }
 }
 
 void v3dViewFiberInteractor::computeBundleLengthStatistics (const QString &name,
@@ -419,7 +478,46 @@ void v3dViewFiberInteractor::computeBundleLengthStatistics (const QString &name,
     statCalculator->GetLengthStatistics(mean, min, max, var);
 }
 
-void v3dViewFiberInteractor::onProjectionPropertySet(const QString& value)
+void v3dViewFiberInteractor::bundleLengthStatistics(const QString &name,
+                                                    double &mean,
+                                                    double &min,
+                                                    double &max,
+                                                    double &var)
+{
+    if (!d->meanLengthList.contains(name)) {
+        this->computeBundleLengthStatistics(name, mean, min, max, var);
+        d->meanLengthList[name] = mean;
+        d->minLengthList[name] = min;
+        d->maxLengthList[name] = max;
+        d->varLengthList[name] = var;
+    }
+    else {
+        mean = d->meanLengthList[name];
+        min  = d->minLengthList[name];
+        max  = d->maxLengthList[name];
+        var  = d->varLengthList[name];
+    }
+}
+
+void v3dViewFiberInteractor::clearStatistics(void)
+{
+    d->meanFAList.clear();
+    d->minFAList.clear();
+    d->maxFAList.clear();
+    d->varFAList.clear();
+    
+    d->meanADCList.clear();
+    d->minADCList.clear();
+    d->maxADCList.clear();
+    d->varADCList.clear();
+    
+    d->meanLengthList.clear();
+    d->minLengthList.clear();
+    d->maxLengthList.clear();
+    d->varLengthList.clear();
+}
+
+void v3dViewFiberInteractor::setProjection(const QString& value)
 {
     if (!d->view)
         return;
@@ -429,7 +527,7 @@ void v3dViewFiberInteractor::onProjectionPropertySet(const QString& value)
     }
 }
 
-void v3dViewFiberInteractor::onRadiusSet (int value)
+void v3dViewFiberInteractor::setRadius (int value)
 {
     d->manager->SetRadius (value);
 
@@ -495,11 +593,14 @@ void v3dViewFiberInteractor::setROI(dtkAbstractData *data)
 
         d->roiManager->ResetData();
     }
+
+    d->view->update();
 }
 
 void v3dViewFiberInteractor::setRoiBoolean(int roi, int meaning)
 {
     d->manager->GetROILimiter()->SetBooleanOperation (roi, meaning);
+    d->view->update();
 }
 
 int v3dViewFiberInteractor::roiBoolean(int roi)
@@ -510,6 +611,7 @@ int v3dViewFiberInteractor::roiBoolean(int roi)
 void v3dViewFiberInteractor::setBundleVisibility(const QString &name, bool visibility)
 {
     d->manager->SetBundleVisibility(name.toAscii().constData(), (int)visibility);
+    d->view->update();
 }
 
 bool v3dViewFiberInteractor::bundleVisibility(const QString &name) const
@@ -517,23 +619,37 @@ bool v3dViewFiberInteractor::bundleVisibility(const QString &name) const
     return d->manager->GetBundleVisibility(name.toAscii().constData());
 }
 
-void v3dViewFiberInteractor::setBundleVisibility(bool visibility)
+void v3dViewFiberInteractor::setAllBundlesVisibility(bool visibility)
 {
     if (visibility)
         d->manager->ShowAllBundles();
     else
         d->manager->HideAllBundles();
+
+    d->view->update();
 }
 
-void v3dViewFiberInteractor::onBundlingBoxBooleanOperatorChanged(int value)
+void v3dViewFiberInteractor::setOpacity(dtkAbstractData * /*data*/, double /*opacity*/)
 {
-    if (value==0)
-        d->manager->GetVOILimiter()->SetBooleanOperationToNOT();
-    else
-        d->manager->GetVOILimiter()->SetBooleanOperationToAND();
-
-    d->manager->Execute();
 }
+
+double v3dViewFiberInteractor::opacity(dtkAbstractData * /*data*/) const
+{
+    //TODO
+    return 100;
+}
+
+void v3dViewFiberInteractor::setVisible(dtkAbstractData * /*data*/, bool /*visible*/)
+{
+    //TODO
+}
+
+bool v3dViewFiberInteractor::isVisible(dtkAbstractData * /*data*/) const
+{
+    //TODO
+    return true;
+}
+
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation

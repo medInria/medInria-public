@@ -13,19 +13,17 @@
 
 #include "medVisualizationWorkspace.h"
 
-#include <medViewPropertiesToolBox.h>
 #include <medViewContainer.h>
 #include <medTabbedViewContainers.h>
-#include <medTimeLineToolBox.h>
 #include <medVisualizationLayoutToolBox.h>
 #include <medSettingsManager.h>
+#include <medToolBoxFactory.h>
 
 class medVisualizationWorkspacePrivate
 {
 public:
-    medVisualizationLayoutToolBox *layoutToolBox;
-    medTimeLineToolBox *timeToolBox;
-    medViewPropertiesToolBox *viewPropertiesToolBox;
+    medVisualizationLayoutToolBox * layoutToolBox;
+
 };
 
 medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medWorkspace(parent), d(new medVisualizationWorkspacePrivate)
@@ -44,21 +42,20 @@ medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medWorks
 
     this->addToolBox( d->layoutToolBox );
 
-    // -- View toolbox --
+    // -- View toolboxes --
+    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+    if(toolboxNames.contains("medViewPropertiesToolBox"))
+    {
+        // we want the medViewPropertiesToolBox to be the first "view" toolbox
+        toolboxNames.move(toolboxNames.indexOf("medViewPropertiesToolBox"),0);
+    }
+    foreach(QString toolbox, toolboxNames)
+    {
+       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+    }
 
-    d->viewPropertiesToolBox = new medViewPropertiesToolBox(parent);
-    d->timeToolBox           = new medTimeLineToolBox(parent);
-
-
-    this->addToolBox( d->viewPropertiesToolBox );
-    this->addToolBox( d->timeToolBox );
-
-    connect ( this, SIGNAL(layoutModeChanged(const QString&)),
-              d->timeToolBox, SLOT(onStopButton()));
     connect ( this, SIGNAL(layoutModeChanged(const QString &)),
               stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));
-    connect ( stackedViewContainers(), SIGNAL(currentChanged(const QString &)),
-              this, SLOT(connectToolboxesToCurrentContainer(const QString &)));
 }
 
 void medVisualizationWorkspace::setupViewContainerStack()
@@ -67,19 +64,8 @@ void medVisualizationWorkspace::setupViewContainerStack()
     {
         const QString description = this->description();
         QString createdTab = addDefaultTypeContainer(description);
-        this->connectToolboxesToCurrentContainer(createdTab);
     }
     this->stackedViewContainers()->unlockTabs();
-}
-
-void medVisualizationWorkspace::connectToolboxesToCurrentContainer(const QString &name)
-{
-    connect(stackedViewContainers()->container(name),
-            SIGNAL(viewAdded(dtkAbstractView*)),
-            d->timeToolBox, SLOT(onViewAdded(dtkAbstractView*)));
-    connect(stackedViewContainers()->container(name),
-            SIGNAL(viewRemoved(dtkAbstractView*)),
-            d->timeToolBox, SLOT(onViewRemoved(dtkAbstractView*)));
 }
 
 medVisualizationWorkspace::~medVisualizationWorkspace(void)

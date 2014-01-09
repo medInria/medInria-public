@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medGuiExport.h"
+#include "v3dViewPluginExport.h"
 #include <medToolBox.h>
 
 class dtkAbstractView;
@@ -27,7 +27,7 @@ class medViewPropertiesToolBoxPrivate;
    \ingroup Toolboxes
    \author Alexandre Abadie and Fatih Arslan, INRIA
 */
-class MEDGUI_EXPORT medViewPropertiesToolBox : public medToolBox
+class V3DVIEWPLUGIN_EXPORT medViewPropertiesToolBox : public medToolBox
 {
     Q_OBJECT
 
@@ -47,6 +47,8 @@ public:
      * Uses the medSettingsManager to push the right interaction button;
      */
     void setCurrentInteractionFromSettings();
+
+    static bool registered();
 
 public slots:
     void onDataAdded(int layer);

@@ -36,7 +36,7 @@
 
 #include <medMessageController.h>
 
-#include "v3dView.h"
+#include "medVtkView.h"
 
 template <typename TYPE>
 bool AppendImageSequence(dtkAbstractData* data,v3dView* view,vtkCollection* sequenceList,QList<dtkAbstractData*> dataList) {
@@ -69,7 +69,7 @@ public:
     QList<dtkAbstractData*> dataList;
 };
 
-v3dView4DInteractor::v3dView4DInteractor(): med4DAbstractViewInteractor(), d(new v3dView4DInteractorPrivate)
+v3dView4DInteractor::v3dView4DInteractor(): medAbstractVtkViewInteractor(), d(new v3dView4DInteractorPrivate)
 {
     d->view = NULL;
     this->currentTime = 0.0;
@@ -98,12 +98,22 @@ QString v3dView4DInteractor::identifier() const
 
 QStringList v3dView4DInteractor::handled() const
 {
-  return QStringList () << v3dView::s_identifier();
+    return QStringList () << v3dView::s_identifier() << medVtkView::s_identifier();
+}
+
+bool v3dView4DInteractor::isDataTypeHandled(QString dataType) const
+{
+    if ((dataType.endsWith("4")) || (dataType == "vtkDataMesh4D"))
+        return true;
+    
+    return false;
 }
 
 bool v3dView4DInteractor::registered()
 {
-  return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dView4DInteractor", QStringList() << v3dView::s_identifier(), createV3dView4DInteractor);
+    return dtkAbstractViewFactory::instance()->registerViewInteractorType("v3dView4DInteractor",
+                                                                          QStringList () << v3dView::s_identifier() << medVtkView::s_identifier(),
+                                                                          createV3dView4DInteractor);
 }
 
 void v3dView4DInteractor::setData(dtkAbstractData *data)
@@ -173,6 +183,12 @@ void v3dView4DInteractor::onDataAdded(dtkAbstractData *data)
   this->appendData(data);
 }
 
+void v3dView4DInteractor::checkViewProperty(QString name, QString value)
+{
+    if (name == "TimePosition")
+        this->setCurrentTime(value.toDouble());
+}
+
 bool v3dView4DInteractor::isAutoEnabledWith ( dtkAbstractData * data )
 {
 
@@ -193,7 +209,10 @@ void v3dView4DInteractor::enable()
   if (this->enabled())
     return;
 
-  med4DAbstractViewInteractor::enable();
+    if (d->view)
+        connect(d->view, SIGNAL(propertySet(QString, QString)), this, SLOT(checkViewProperty(QString, QString)));
+    
+  medAbstractViewInteractor::enable();
 }
 
 void v3dView4DInteractor::disable()
@@ -214,7 +233,7 @@ void v3dView4DInteractor::disable()
       }
     }
 
-    med4DAbstractViewInteractor::disable();
+    medAbstractViewInteractor::disable();
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -249,6 +268,8 @@ void v3dView4DInteractor::setCurrentTime (double time)
 
   d->view->currentView()->Modified();
   d->view->currentView()->Render();
+    
+    d->view->setProperty("TimePosition", QString::number(time));
 }
 
 void v3dView4DInteractor::sequencesRange (double* range)
@@ -300,3 +321,24 @@ double v3dView4DInteractor::sequencesMinTimeStep()
   return step;
 }
 
+void v3dView4DInteractor::setOpacity(dtkAbstractData * /*data*/, double /*opacity*/)
+{
+    //TODO
+}
+
+double v3dView4DInteractor::opacity(dtkAbstractData * /*data*/) const
+{
+    //TODO
+    return 100;
+}
+
+void v3dView4DInteractor::setVisible(dtkAbstractData * /*data*/, bool /*visible*/)
+{
+    //TODO
+}
+
+bool v3dView4DInteractor::isVisible(dtkAbstractData * /*data*/) const
+{
+    //TODO
+    return true;
+}

@@ -113,12 +113,6 @@ bool medViewContainer::isEmpty() const
              this->childContainers().isEmpty());
 }
 
-bool medViewContainer::isDaddy() const
-{
-    return ( this->view() != NULL &&
-             this->view()->property ( "Daddy" ) == "true" );
-}
-
 medViewContainer * medViewContainer::parentContainer() const
 {
     return qobject_cast< medViewContainer * >( this->parentWidget() );
@@ -221,7 +215,6 @@ void medViewContainer::setView ( dtkAbstractView *view )
             view->setProperty ( it.key(), it.value() );
             ++it;
         }
-        connect (view, SIGNAL(changeDaddy(bool)), this, SLOT(onDaddyChanged(bool)));
         medAbstractView * medView = qobject_cast<medAbstractView*>(view);
         if (medView) {
             connect(medView, SIGNAL(selected()), this, SLOT(select()));
@@ -368,13 +361,6 @@ void medViewContainer::onViewFullScreen ( bool value )
     Q_UNUSED ( value );
 }
 
-void medViewContainer::onDaddyChanged ( bool state )
-{
-    Q_UNUSED ( state );
-    this->recomputeStyleSheet();
-}
-
-
 void medViewContainer::setInfo ( const QString& info )
 {
     d->viewInfo = info;
@@ -445,7 +431,7 @@ bool medViewContainer::open(dtkAbstractData * data)
     if( newView)
     {
         //container empty, or multi with no extendable view
-        view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("v3dView"));
+        view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView"));
         connect (this, SIGNAL(sliceSelected(int)), view, SLOT(setSlider(int)));
     }
 
@@ -467,14 +453,19 @@ bool medViewContainer::open(dtkAbstractData * data)
         view->setSharedDataPointer(data);
     }
 
-    //set the view to the current container
-    this->setView(view);
     //only call reset if the view is a new one or with only one layer.
     if (newView)
     {
+        this->setView(view);
         qDebug() << "medViewContainer: Reset view";
         view->reset();
     }
+    else
+    {
+        // in order to update the toolboxes, when a new data type has been added for example
+        setFocus(Qt::MouseFocusReason);
+    }
+
     view->update();
 
     return true;

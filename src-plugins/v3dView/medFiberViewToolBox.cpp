@@ -13,6 +13,10 @@
 
 #include "medFiberViewToolBox.h"
 
+#include <medToolBoxFactory.h>
+#include <v3dViewFiberInteractor.h>
+#include <v3dView.h>
+
 class medFiberViewToolBoxPrivate
 {
 public:
@@ -22,11 +26,17 @@ public:
     QRadioButton *displayRadioRibbons;
     QRadioButton *displayRadioTubes;
     QSlider      *radiusSlider;
+
+    v3dView * view;
+    v3dViewFiberInteractor * interactor;
 };
 
 
 medFiberViewToolBox::medFiberViewToolBox(QWidget *parent) : medToolBox(parent), d(new medFiberViewToolBoxPrivate)
 {
+    d->view= 0;
+    d->interactor = 0;
+
     QWidget *displayWidget = new QWidget(this);
 
     QString colorFibersToolTip = tr("Choose the coloring method of the fibers.");
@@ -86,15 +96,19 @@ medFiberViewToolBox::medFiberViewToolBox(QWidget *parent) : medToolBox(parent), 
     displayLayout->addLayout(displayGroupLayout);
     displayLayout->addLayout(radiusLayout);
 
-    connect (d->colorCombo,            SIGNAL(currentIndexChanged(int)), this, SIGNAL (fiberColorModeChanged (int)));
-    connect (d->displayCheckBox,       SIGNAL(toggled(bool)),            this, SIGNAL (GPUActivated (bool)));
-    connect (d->displayRadioPolylines, SIGNAL(toggled(bool)),            this, SIGNAL (lineModeSelected (bool)));
-    connect (d->displayRadioRibbons,   SIGNAL(toggled(bool)),            this, SIGNAL (ribbonModeSelected (bool)));
-    connect (d->displayRadioTubes,     SIGNAL(toggled(bool)),            this, SIGNAL (tubeModeSelected (bool)));
-    connect (d->radiusSlider,          SIGNAL(valueChanged(int)),        this, SIGNAL (fiberRadiusSet(int)));
+    connect (d->colorCombo,            SIGNAL(currentIndexChanged(int)), this, SLOT(setFiberColorMode(int)));
+    connect (d->displayCheckBox,       SIGNAL(toggled(bool)),            this, SLOT(activateGPU(bool)));
+    connect (d->displayRadioPolylines, SIGNAL(toggled(bool)),            this, SLOT(selectLineMode (bool)));
+    connect (d->displayRadioRibbons,   SIGNAL(toggled(bool)),            this, SLOT(selectRibbonMode(bool)));
+    connect (d->displayRadioTubes,     SIGNAL(toggled(bool)),            this, SLOT(selectTubeMode(bool)));
+    connect (d->radiusSlider,          SIGNAL(valueChanged(int)),        this, SLOT(setFiberRadius(int)));
 
     this->setTitle("Fiber View");
     this->addWidget(displayWidget);
+
+    this->setValidDataTypes(QStringList() << "v3dDataFibers");
+
+    this->hide();
 }
 
 medFiberViewToolBox::~medFiberViewToolBox()
@@ -133,6 +147,68 @@ bool medFiberViewToolBox::isTubesModeSelected()
     return d->displayRadioTubes->isChecked();
 }
 
+void medFiberViewToolBox::setFiberColorMode(int index)
+{
+    if (index==0)
+        d->interactor->setColorMode(v3dViewFiberInteractor::Local);
+    else if (index==1)
+        d->interactor->setColorMode(v3dViewFiberInteractor::Global);
+    else if (index==2)
+        d->interactor->setColorMode(v3dViewFiberInteractor::FA);
+ }
+
+void medFiberViewToolBox::activateGPU (bool value)
+{
+    d->interactor->activateGPU(value);
+}
+
+void medFiberViewToolBox::selectLineMode (bool value)
+{
+    if(value)
+    {
+        d->interactor->setRenderingMode(v3dViewFiberInteractor::Lines);
+    }
+}
+
+void medFiberViewToolBox::selectRibbonMode (bool value)
+{
+    if(value)
+    {
+        d->interactor->setRenderingMode(v3dViewFiberInteractor::Ribbons);
+    }
+}
+
+void medFiberViewToolBox::selectTubeMode (bool value)
+{
+    if(value)
+    {
+        d->interactor->setRenderingMode(v3dViewFiberInteractor::Tubes);
+    }
+}
+
+void medFiberViewToolBox::setFiberRadius(int radius)
+{
+    d->interactor->setRadius(radius);
+}
+
 void medFiberViewToolBox::update (dtkAbstractView *view)
 {
+    medToolBox::update(view);
+    if (!view)
+    {
+        d->view = 0;
+        d->interactor = 0;
+        return;
+    }
+
+    d->view = qobject_cast<v3dView*>(view);
+    d->interactor = qobject_cast<v3dViewFiberInteractor*>(d->view->dtkAbstractView::interactor("v3dViewFiberInteractor"));
+}
+
+bool medFiberViewToolBox::registered()
+{
+    return medToolBoxFactory::instance()->registerToolBox<medFiberViewToolBox>("medFiberViewToolBox",
+                                                                               "medFiberViewToolBox",
+                                                                               "Fiber View ToolBox",
+                                                                               QStringList()<<"view"<<"fibers");
 }

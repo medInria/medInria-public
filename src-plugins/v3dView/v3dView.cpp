@@ -25,7 +25,6 @@
 #include <medSettingsManager.h>
 #include <medAbstractDataImage.h>
 #include <medMetaDataKeys.h>
-#include <medAbstractAnnotationViewInteractor.h>
 
 #include <vtkCamera.h>
 #include <vtkCommand.h>
@@ -323,6 +322,8 @@ public:
     dtkAbstractData *data;
     QMap<int, dtkSmartPointer<dtkAbstractData> > sharedData;
     medAbstractDataImage *imageData;
+    
+    bool interactorsInitialized;
 
     QList<QString> LUTList;
     QList<QString> PresetList;
@@ -377,7 +378,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 // For full list see   ${QT_DIR}/src/gui/painting/qcolor_p.cpp
     }
 
-    d->setPropertyFunctions["Daddy"] = &v3dView::onDaddyPropertySet;
     d->setPropertyFunctions["Closable"] = &v3dView::onClosablePropertySet;
     d->setPropertyFunctions["Orientation"] =  &v3dView::onOrientationPropertySet;
     d->setPropertyFunctions["ShowScalarBar"] = &v3dView::onShowScalarBarPropertySet;
@@ -399,6 +399,8 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->data       = 0;
     d->imageData  = 0;
     d->orientation = "Axial";
+    
+    d->interactorsInitialized = false;
 
     d->timeline = new QTimeLine ( 1000, this );
     d->timeline->setLoopCount ( 0 );
@@ -451,18 +453,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     d->slider = new QSlider ( Qt::Horizontal, d->widget );
     d->slider->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Fixed );
     d->slider->setFocusPolicy ( Qt::NoFocus );
-
-//    d->anchorButton = new QPushButton ( d->widget );
-//    d->anchorButton->setIcon ( QIcon ( ":/icons/anchor.png" ) );
-//    //d->anchorButton->setText("a");
-//    d->anchorButton->setCheckable ( true );
-//    d->anchorButton->setMaximumHeight ( 16 );
-//    d->anchorButton->setMaximumWidth ( 16 );
-//    d->anchorButton->setFocusPolicy ( Qt::NoFocus );
-//    d->anchorButton->setSizePolicy ( QSizePolicy::Fixed, QSizePolicy::Fixed );
-//    d->anchorButton->setObjectName ( "tool" );
-
-//    connect ( d->anchorButton, SIGNAL ( clicked ( bool ) ), this, SIGNAL ( becomeDaddy ( bool ) ) );
 
     d->linkButton = new QPushButton ( d->widget );
     d->linkButton->setIcon (d->linkIcon );
@@ -668,7 +658,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
     QString mouseInteraction = mnger->value("interactions","mouse",
                                             "Windowing").toString();
     this->setProperty ("MouseInteraction", mouseInteraction);
-//     this->setProperty ("3DMode",                "VR");
     this->setProperty ("3DMode",                "MPR");
 #ifdef __APPLE__
     this->setProperty ( "Renderer", "Ray Cast" );
@@ -681,7 +670,6 @@ v3dView::v3dView() : medAbstractView(), d ( new v3dViewPrivate )
 
     this->setProperty ( "PositionLinked",   "false" );
     this->setProperty ( "WindowingLinked",  "false" );
-    this->setProperty ( "Daddy",            "false" );
     this->setProperty ( "Closable",         "true"  );
 
     this->addProperty ("ZoomMode",QStringList() << "Normal" << "RubberBand" );
@@ -796,10 +784,22 @@ void v3dView::update()
 {
     if ( d->currentView )
     {
-        // this doesn't seem necessary and can result in a quite important memory comsumation
-        //d->currentView->Render();
+        d->currentView->Render();
     }
     d->vtkWidget->update();
+}
+
+void v3dView::initializeInteractors()
+{
+    if (d->interactorsInitialized)
+        return;
+    
+    foreach ( dtkAbstractViewInteractor *interactor, this->interactors() )
+    {
+        this->enableInteractor(interactor->identifier());
+    }
+    
+    d->interactorsInitialized = true;
 }
 
 void *v3dView::view()
@@ -913,7 +913,6 @@ bool v3dView::SetView(const char* type,dtkAbstractData* data)
         return false;
 
     dtkAbstractView::setData(data);
-    this->enableInteractor("v3dView4DInteractor");
     return true;
 }
 
@@ -933,8 +932,6 @@ bool v3dView::SetViewInputWithConversion(const char* type,const char* newtype,dt
 
 void v3dView::setData ( dtkAbstractData *data, int layer )
 {
-
-
     if ( !data )
         return;
 
@@ -947,22 +944,7 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         return;
     }
 
-
-//    if(medAbstractView::hasImage()){
-//        if (data->identifier().contains( "vtkDataMesh" ) && medAbstractView::meshLayerCount()>1)
-//        {
-//            medMessageController::instance()->showError ( this, tr ( "By now only 2 mesh layers are possible :(, improvements in progress" ), 5000 );
-//            return;
-//        }
-//    }
-//    else
-//    {
-//        if (data->identifier().contains( "vtkDataMesh" ) && medAbstractView::meshLayerCount()>=1)
-//        {
-//            medMessageController::instance()->showError ( this, tr ( "By now only 2 mesh layers are possible :(, improvements in progress" ), 5000 );
-//            return;
-//        }
-//    }
+    this->initializeInteractors();
 
     if (SetViewInput<itk::Image<char,3> >("itkDataImageChar3",data,layer) ||
         SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3",data,layer) ||
@@ -997,63 +979,34 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
         SetViewInputWithConversion<itk::Image<double,3> >("vistalDataImageDouble3","itkDataImageDouble3",data,layer)) {
 
     }
-    else
-        if (data->identifier()=="v3dDataImage")
+    else if (data->identifier()=="v3dDataImage")
+    {
+        if(vtkImageData *dataset = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data())))
         {
-            if(vtkImageData *dataset = dynamic_cast<vtkImageData*>((vtkDataObject *)(data->data())))
-            {
-                d->view2d->SetInput(dataset, 0, layer);
-                d->view3d->SetInput(dataset, 0, layer);
-            }
-
-        } else if ( data->identifier() == "vtkDataMesh" ) {
-
-            this->enableInteractor ( "v3dViewMeshInteractor" );
-            // This will add the data to the interactor.
-            dtkAbstractView::setData ( data );
-
-        } else if ( data->identifier() == "vtkDataMesh4D" ) {
-
-            this->enableInteractor ( "v3dViewMeshInteractor" );
-            this->enableInteractor("v3dView4DInteractor");
-            // This will add the data to the interactor.
-
-            dtkAbstractView::setData ( data );
-
-        } else if ( data->identifier() == "v3dDataFibers" ) {
-
-            this->enableInteractor ( "v3dViewFiberInteractor" );
-            // This will add the data to the interactor.
-            dtkAbstractView::setData ( data );
-
-        } else if ( data->identifier().contains("itkDataTensorImage", Qt::CaseSensitive)) {
-
-            this->enableInteractor ( "v3dViewTensorInteractor" );
-            // This will add the data to the interactor.
-            dtkAbstractView::setData ( data );
-        } else if ( data->identifier().contains("itkDataSHImage", Qt::CaseSensitive)) {
-
-             this->enableInteractor ( "v3dViewSHInteractor" );
-             // This will add the data to the interactor.
-             dtkAbstractView::setData(data);
-        } else {
-            // if ( data->description() == "vtkDataMesh" )
-            //     this->enableInteractor ( "v3dViewMeshInteractor" );
-            // else if ( data->identifier() == "v3dDataFibers" )
-            //     this->enableInteractor ( "v3dViewFiberInteractor" );
-            // else if ( data->description() == "vtkDataMesh4D" )
-            //   this->enableInteractor ( "v3dView4DInteractor" );
-
-            // This will add the data to one interactor
-
-            dtkAbstractView::setData ( data );
-            return;
+            d->view2d->SetInput(dataset, 0, layer);
+            d->view3d->SetInput(dataset, 0, layer);
         }
+    }
+    else
+    {
+        bool isDataTypeHandled = false;
+        foreach ( dtkAbstractViewInteractor *interactor, this->interactors() )
+        {
+            medAbstractViewInteractor *medInteractor = dynamic_cast <medAbstractViewInteractor *> (interactor);
+            if (medInteractor->isDataTypeHandled(data->identifier()))
+            {
+                isDataTypeHandled = true;
+                break;
+            }
+        }
+        
+        dtkAbstractView::setData(data);
+        if (!isDataTypeHandled)
+            return;
+    }
 
     if ( layer==0 )
     {
-
-
         if ( medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> ( data ) )
         {
             d->data = data;
@@ -1090,7 +1043,6 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
                 d->slider->setRange (0, d->imageData->xDimension()-1);
         }
-
     }
 
     //this->addDataInList ( data, layer );
@@ -1119,7 +1071,6 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
                 }
             }
         }
-        this->enableInteractor(v3dViewAnnotationInteractor::s_identifier());
     }
 }
 
@@ -1727,19 +1678,7 @@ void v3dView::onZSliderValueChanged ( int value )
 
 }
 
-void v3dView::onDaddyPropertySet ( const QString &value )
-{
-//    QSignalBlocker anchorBlocker ( d->anchorButton );
 
-    bool boolValue = false;
-    if ( value == "true" )
-    {
-        boolValue = true;
-    }
-
-//    d->anchorButton->setChecked ( boolValue );
-    emit ( changeDaddy ( boolValue ) );
-}
 void v3dView::onClosablePropertySet( const QString &value ){
 
     if ( value == "true" )

@@ -42,6 +42,7 @@ public:
     virtual QString description() const;
     virtual QString identifier() const;
     virtual QStringList handled() const;
+    bool isDataTypeHandled(QString dataType) const;
 
     static bool registered();
 
@@ -57,66 +58,83 @@ public:
     /** get the image size it is used to set med gui slider appropiate size*/
     virtual void imageSize(int* range);
 
+
+    enum TesselationType
+    {
+        Icosahedron = 0,
+        Dodecahedron,
+        Octahedron,
+        Hexahedron,
+        Tetrahedron
+    };
+
+    enum TesselationBasis
+    {
+        SHMatrix = 0,
+        SHMatrixMaxThesis,
+        SHMatrixTournier,
+        SHMatrixRshBasis
+    };
+
 public slots:
-    virtual void onPropertySet (const QString& key, const QString& value);
 
     /** Change glyph shape */
-    void onTesselationTypePropertySet (const QString& tesselationType);
+    void setTesselationType (TesselationType tesselationType);
 
     /** Change glyph shape */
-    void onTesselationBasisPropertySet (const QString& tesselationBasis);
+    void setTesselationBasis (TesselationBasis tesselationBasis);
 
     /** Modify sample rate */
-    void onSampleRatePropertySet (int sampleRate);
+    void setSampleRate (int sampleRate);
 
     /** Flip SHs along the X axis */
-    void onFlipXPropertySet (const QString& flipX);
+    void setFlipX (const bool flipX);
 
     /** Flip SHs along the Y axis */
-    void onFlipYPropertySet (const QString& flipY);
+    void setFlipY (const bool flipY);
 
     /** Flip SHs along the Z axis */
-    void onFlipZPropertySet (const QString& flipZ);
+    void setFlipZ (const bool flipZ);
 
     /** Turn on/off coloring of glyph with input scalar data or directions. If false, or input scalar data not present, then the
     scalars from the source object are passed through the filter.*/
-    void ColorGlyphsPropertySet (const QString& ColorGlyph);
+    void setColorGlyphs (const bool ColorGlyph);
 
-    void NormalizationPropertySet (const QString& Norma);
+    void setNormalization (const bool Norma);
 
     //    /** A new eigenvector for mapping the color mode is set */
     //    void onEigenVectorPropertySet (int eigenVector);
 
     /** Glyph resolution changed */
-    void onGlyphResolutionPropertySet (int glyphResolution);
+    void setGlyphResolution (int glyphResolution);
 
     //    /** Background color reverted */
     //    void onReverseBackgroundColorPropertySet (bool isWhite);
 
     /** Scaling changed */
-    void onScalingPropertySet (double scale);
+    void setScaling (double scale);
 
     /** Slice x changed */
-    void onXSlicePropertySet (int xSlice);
+    void setXSlice (int xSlice);
 
     /** Slice  y changed */
-    void onYSlicePropertySet (int ySlice);
+    void setYSlice (int ySlice);
 
     /** Slice z changed */
-    void onZSlicePropertySet (int zSlice);
+    void setZSlice (int zSlice);
 
 
     /** Hide or show axial slice */
-    void onHideShowAxialPropertySet(bool show);
+    void setShowAxial (bool show);
 
     /** Hide or show coronal slice */
-    void onHideShowCoronalPropertySet(bool show);
+    void setShowCoronal(bool show);
 
     /** Hide or show sagittal slice */
-    void onHideShowSagittalPropertySet(bool show);
+    void setShowSagittal(bool show);
 
     /** Change the position of the slices */
-    void onPositionChanged(const QVector3D& position, bool propagate);
+    void setPosition(const QVector3D& position, bool propagate);
 
 private:
 

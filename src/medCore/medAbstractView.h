@@ -196,27 +196,6 @@ signals:
     void closing();
 
     /**
-       In medInria, the daddy is the reference view (contoured in red). Only one
-       per pool is authorized. Emit this signal when the view wants to become the
-       daddy.
-     **/
-    void becomeDaddy   (bool);
-
-    /**
-       In medInria, the daddy is the reference view (contoured in
-       red). Only one per pool is authorized. Emit this signal when
-       the daddy state of the view changes.
-     **/
-    void changeDaddy   (bool);
-
-    /**
-       This signal is emitted when a view wants to register its data to the daddy.
-       A registration plugin must be available. Registration is handled in the
-       @medViewPool.
-     **/
-    void reg           (bool);
-
-    /**
        This signal is emitted when the color lookup table has changed.
      **/
     void lutChanged();
