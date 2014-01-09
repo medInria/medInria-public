@@ -36,5 +36,69 @@
 	<string>NSApplication</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>dim</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>GIS files</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>vtk</string>
+				<string>vtp</string>
+				<string>fib</string>
+				<string>xml</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>VTK and special mesh files</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>inr</string>
+				<string>inr.gz</string>
+				<string>gz</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Inrimage</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeName</key>
+			<string>ITK files</string>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>nii</string>
+				<string>nii.gz</string>
+				<string>nrrd</string>
+				<string>nhdr</string>
+				<string>mha</string>
+				<string>mhd</string>
+				<string>hdr</string>
+				<string>gz</string>
+			</array>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+		</dict>
+	</array>
+
 </dict>
 </plist>
