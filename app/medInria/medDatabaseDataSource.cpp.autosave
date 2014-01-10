@@ -62,6 +62,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
     
     d->compactWidget = new QWidget(parent);
     d->compactView = new medDatabaseView(d->compactWidget);
+    d->compactView->setSizePolicy();
     d->compactView->setModel(d->compactProxy);
     d->compactPreview = new medDatabasePreview(d->compactWidget);
 
@@ -71,7 +72,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
     compactLayout->addWidget(d->compactView);
     compactLayout->addWidget(d->compactPreview);
 
-    d->compactWidget->setSizePolicy(QSizePolicy::MinimumExpanding);
+    d->compactWidget->setContentsMargins(0,0,0,0);
     d->compactWidget->setLayout(compactLayout);
     
     for(int i =1; i<12; ++i)

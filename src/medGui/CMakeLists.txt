@@ -51,6 +51,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   database/medDatabaseSearchPanel.h
   database/medDatabaseView.h
   database/medDatabaseEditItemDialog.h
+  database/medDatabasePreview.h
 
   # commonWidgets:
   commonWidgets/medDropSite.h
@@ -138,6 +139,7 @@ set(${PROJECT_NAME}_SOURCES
   database/medDatabaseSearchPanel.cpp
   database/medDatabaseView.cpp
   database/medDatabaseEditItemDialog.cpp
+  database/medDatabasePreview.cpp
 
   # factories
   factories/medSettingsWidgetFactory.cpp
