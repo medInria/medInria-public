@@ -52,6 +52,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   database/medDatabaseView.h
   database/medDatabaseEditItemDialog.h
   database/medDatabasePreview.h
+  database/medDatabaseCompactWidget.h
 
   # commonWidgets:
   commonWidgets/medDropSite.h
@@ -140,6 +141,7 @@ set(${PROJECT_NAME}_SOURCES
   database/medDatabaseView.cpp
   database/medDatabaseEditItemDialog.cpp
   database/medDatabasePreview.cpp
+  database/medDatabaseCompactWidget.cpp
 
   # factories
   factories/medSettingsWidgetFactory.cpp

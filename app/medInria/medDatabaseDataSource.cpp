@@ -22,6 +22,7 @@
 #include <medDatabaseModel.h>
 #include <medDatabaseExporter.h>
 #include <medDatabasePreview.h>
+#include <medDatabaseCompactWidget.h>
 
 #include <medActionsToolBox.h>
 
@@ -29,7 +30,7 @@ class medDatabaseDataSourcePrivate
 {
 public:
     QWidget* mainWidget;
-    QWidget* compactWidget;
+    medDatabaseCompactWidget* compactWidget;
     
     medDatabaseModel *model;
     medDatabaseView *largeView;
@@ -60,20 +61,16 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
     d->largeView = new medDatabaseView(d->mainWidget);
     d->largeView->setModel(d->proxy);
     
-    d->compactWidget = new QWidget(parent);
+    d->compactWidget = new medDatabaseCompactWidget(parent);
     d->compactView = new medDatabaseView(d->compactWidget);
+    d->compactView->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     d->compactView->setModel(d->compactProxy);
     d->compactPreview = new medDatabasePreview(d->compactWidget);
 
-    QVBoxLayout *compactLayout = new QVBoxLayout(d->compactWidget);
-    compactLayout->setContentsMargins(0,0,0,0);
-    compactLayout->setMargin(0);
-    compactLayout->addWidget(d->compactView);
-    compactLayout->addWidget(d->compactPreview);
+    d->compactWidget->setView(d->compactView);
+    d->compactWidget->setPreview(d->compactPreview);
 
-    d->compactWidget->setSizePolicy(QSizePolicy::MinimumExpanding);
-    d->compactWidget->setLayout(compactLayout);
-    
+
     for(int i =1; i<12; ++i)
         d->compactView->hideColumn(i);
 
