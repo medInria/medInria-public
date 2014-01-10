@@ -91,5 +91,8 @@ if (MEDINRIA_BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
 
+if (APPLE)
+  set_target_properties(${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/MedInriaOSXBundleInfo.plist.in")
+endif()
 
 
