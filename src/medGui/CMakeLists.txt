@@ -50,13 +50,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   # db related items
   database/medDatabaseSearchPanel.h
   database/medDatabaseView.h
-  database/medDatabasePreview.h
-  database/medDatabasePreviewArrow.h
-  database/medDatabasePreviewItem.h
-  database/medDatabasePreviewItemGroup.h
-  database/medDatabasePreviewSelector.h
-  database/medDatabasePreviewTooltip.h
-  database/medDatabasePreviewView.h
   database/medDatabaseEditItemDialog.h
 
   # commonWidgets:
@@ -65,8 +58,6 @@ set(${PROJECT_NAME}_HEADERS_MOC
   commonWidgets/medStatusBar.h
   commonWidgets/medQuickAccessMenu.h
   commonWidgets/medGroupBox.h
-  commonWidgets/medMultipleImageSelectionWidget.h
-  commonWidgets/medThumbnailContainer.h
   commonWidgets/medHomepageButton.h
 
   # factories
@@ -120,7 +111,6 @@ set(${PROJECT_NAME}_HEADERS
   LUT/medLUTToXMLWriter.h
   LUT/medXMLToLUTReader.h
 
-  database/medDatabasePreviewController.h
   ${${PROJECT_NAME}_HEADERS_MOC}
   )
 
@@ -142,22 +132,11 @@ set(${PROJECT_NAME}_SOURCES
   commonWidgets/medStatusBar.cpp
   commonWidgets/medQuickAccessMenu.cpp
   commonWidgets/medGroupBox.cpp
-  commonWidgets/medMultipleImageSelectionWidget.cpp
-  commonWidgets/medThumbnailContainer.cpp
   commonWidgets/medHomepageButton.cpp
 
   # db related items
   database/medDatabaseSearchPanel.cpp
   database/medDatabaseView.cpp
-  database/medDatabasePreview.cpp
-  database/medDatabasePreviewArrow.cpp
-  database/medDatabasePreviewController.cpp
-  database/medDatabasePreviewItem.cpp
-  database/medDatabasePreviewItemGroup.cpp
-  database/medDatabasePreviewScene.cpp
-  database/medDatabasePreviewSelector.cpp
-  database/medDatabasePreviewTooltip.cpp
-  database/medDatabasePreviewView.cpp
   database/medDatabaseEditItemDialog.cpp
 
   # factories

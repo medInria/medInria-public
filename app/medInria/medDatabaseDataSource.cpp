@@ -17,7 +17,6 @@
 
 #include <medDatabaseSearchPanel.h>
 #include <medDatabaseView.h>
-#include <medDatabasePreview.h>
 
 #include <medDatabaseProxyModel.h>
 #include <medDatabaseModel.h>
@@ -31,7 +30,6 @@ public:
     QWidget* mainWidget;
     QWidget* compactWidget;
     
-    medDatabasePreview *preview;
     medDatabaseModel *model;
     medDatabaseView *largeView;
     medDatabaseView *compactView;
@@ -56,7 +54,6 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
     d->compactProxy = new medDatabaseProxyModel(this);
     d->compactProxy->setSourceModel(d->model);
     
-    d->preview = new medDatabasePreview(d->mainWidget);
     d->largeView = new medDatabaseView(d->mainWidget);
     d->largeView->setModel(d->proxy);
     
@@ -70,7 +67,6 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
     database_layout->setContentsMargins(0, 0, 0, 0);
     database_layout->setSpacing(0);
     database_layout->addWidget(d->largeView);
-    database_layout->addWidget(d->preview);
 
     d->actionsToolBox = new medActionsToolBox(0, false);
     d->toolBoxes.push_back(d->actionsToolBox);
@@ -79,9 +75,6 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
     d->searchPanel->setColumnNames(d->model->columnNames());
     d->toolBoxes.push_back(d->searchPanel);
 
-    connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->preview, SLOT(onPatientClicked(const medDataIndex&)));
-    connect(d->largeView, SIGNAL(studyClicked(const medDataIndex&)), d->preview, SLOT(onStudyClicked(const medDataIndex&)));
-    connect(d->largeView, SIGNAL(seriesClicked(const medDataIndex&)), d->preview, SLOT(onSeriesClicked(const medDataIndex&)));
     connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->actionsToolBox, SLOT(patientSelected(const medDataIndex&)));
     connect(d->largeView, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsToolBox, SLOT(seriesSelected(const medDataIndex&)));
     connect(d->largeView, SIGNAL(noPatientOrSeriesSelected()), d->actionsToolBox, SLOT(noPatientOrSeriesSelected()));
@@ -142,9 +135,6 @@ QString medDatabaseDataSource::description(void) const
 void medDatabaseDataSource::update(const medDataIndex &index)
 {
     Q_UNUSED(index);
-    d->preview->reset();
-    d->preview->init();
-    d->preview->update();
 }
 
 void medDatabaseDataSource::onFilter( const QString &text, int column )
