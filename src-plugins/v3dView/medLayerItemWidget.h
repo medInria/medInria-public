@@ -23,13 +23,19 @@ public:
 
     virtual QSize sizeHint();
 
+
 protected slots:
     void changeOpacity(int opacity);
     void showLayer(bool show);
+    void removeLayer();
+
+signals:
+    void deletionRequested();
 
 private:
     QPushButton * thumbnailButton;
     QSlider * opacitySlider;
+    QPushButton * removeButton;
     QLabel * layerName;
     medAbstractData * data;
     QList<medAbstractVtkViewInteractor*> interactors;

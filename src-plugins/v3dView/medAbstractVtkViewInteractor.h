@@ -36,6 +36,8 @@ public:
 
     virtual QList<medAbstractParameter *> getParameters(dtkAbstractData *data) const{return parameters.values(data);}
 
+    virtual void removeData(medAbstractData *){}
+
 protected:
     QMultiHash<dtkAbstractData*, medAbstractParameter*> parameters;
 

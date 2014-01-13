@@ -43,6 +43,8 @@
 #include <vtkMetaDataSetSequence.h>
 #include <vtkDataArrayCollection.h>
 #include <medParameter.h>
+#include <medAbstractData.h>
+
 
 #include <vector>
 
@@ -650,6 +652,23 @@ int v3dViewMeshInteractor::getLayer(dtkAbstractData * data) const
     }
 
     return -1;
+}
+
+void v3dViewMeshInteractor::removeData(medAbstractData *data)
+{
+    vtkMetaDataSet * dataset = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
+
+    if(dataset)
+    {
+        if(vtkPointSet * pointSet = vtkPointSet::SafeDownCast (dataset->GetDataSet()))
+        {
+            d->view->view2d()->RemoveDataSet(pointSet);
+            d->view->view3d()->RemoveDataSet(pointSet);
+            d->view->removeLayer(data);
+            d->dataList.removeAll(dataset);
+            d->view->update();
+        }
+    }
 }
 
 // /////////////////////////////////////////////////////////////////

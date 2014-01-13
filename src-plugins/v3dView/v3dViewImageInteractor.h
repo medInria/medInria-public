@@ -38,6 +38,7 @@ public:
     static bool registered();
 
     virtual void setData(dtkAbstractData * data);
+    virtual void removeData(medAbstractData *data);
     virtual void setView(dtkAbstractView * view);
 
     virtual void enable();

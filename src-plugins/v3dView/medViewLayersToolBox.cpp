@@ -176,6 +176,8 @@ void medViewLayersToolBox::updateLayerListWidget(QList<medVtkView*> vtkViews)
                 d->layersListWidget->setItemWidget(item, widget);
 
                 lastLayer++;
+
+                connect(widget, SIGNAL(deletionRequested()), this, SLOT(removeLayer()));
             }
         }
     }
@@ -345,6 +347,22 @@ void medViewLayersToolBox::removeView()
         d->viewMap.remove(sender->name());
         d->viewList.removeOne(sender);
     }
+}
+
+
+void medViewLayersToolBox::removeLayer()
+{
+    medLayerItemWidget *sender = dynamic_cast<medLayerItemWidget*>(QObject::sender());
+
+    if(sender)
+    {
+        QList<QListWidgetItem*> items = d->layersListWidget->selectedItems();
+        foreach(QListWidgetItem* item, items)
+        {
+          d->layersListWidget->removeItemWidget(item);
+        }
+    }
+
 }
 
 
