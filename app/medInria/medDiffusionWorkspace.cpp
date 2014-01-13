@@ -35,6 +35,8 @@ public:
     medToolBox * diffusionToolBox;
     medToolBox * fiberBundlingToolBox;
     medViewContainer * diffusionContainer;
+    
+    QString currentContainerName;
 };
 
 medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(parent), d(new medDiffusionWorkspacePrivate)
@@ -105,9 +107,6 @@ void medDiffusionWorkspace::setupViewContainerStack()
         d->diffusionContainer = this->stackedViewContainers()->container(d->currentContainerName);
         //TODO: maybe clear views here too?
     }
-
-    if ( ! d->diffusionContainer)
-        return;
 }
 
 void medDiffusionWorkspace::addToView(dtkAbstractData * data)
@@ -130,16 +129,11 @@ void medDiffusionWorkspace::onAddTabClicked()
     QString realName = this->addSingleContainer(name);
     this->stackedViewContainers()->setContainer(realName);
     d->currentContainerName = realName;
-    
-    d->views.clear();
 }
 
 void medDiffusionWorkspace::changeCurrentContainer(QString name)
 {
     d->currentContainerName = name;
-    d->views.clear();
-    foreach(dtkAbstractView *view, this->stackedViewContainers()->container(d->currentContainerName)->views())
-        d->views << view;
 }
 
 bool medDiffusionWorkspace::isUsable()
