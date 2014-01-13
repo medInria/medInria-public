@@ -3,7 +3,7 @@
 #include "medDatabaseView.h"
 #include "medDatabasePreview.h"
 
-#include <QGridLayout>
+#include <QVBoxLayout>
 
 
 class medDatabaseCompactWidgetPrivate
@@ -11,14 +11,18 @@ class medDatabaseCompactWidgetPrivate
 public:
     medDatabasePreview *preview;
     medDatabaseView *view;
-    QGridLayout *layout;
+    QVBoxLayout *layout;
 };
 
 
 medDatabaseCompactWidget::medDatabaseCompactWidget(QWidget *parent): d(new medDatabaseCompactWidgetPrivate)
 {
-    d->layout = new QGridLayout(this);
+    this->setContentsMargins(0,0,0,0);
+
+    d->layout = new QVBoxLayout(this);
     this->setLayout(d->layout);
+    d->layout->setContentsMargins(0,0,0,0);
+    d->layout->setSpacing(0);
 }
 
 
@@ -32,24 +36,27 @@ medDatabaseCompactWidget::~medDatabaseCompactWidget()
 void medDatabaseCompactWidget::resizeEvent(QResizeEvent *event)
 {
     delete d->layout;
-    d->layout = new QGridLayout(this);
+    d->layout = new QVBoxLayout(this);
+    d->layout->setContentsMargins(0,0,0,0);
+    d->layout->setSpacing(0);
+
     this->setLayout(d->layout);
 
-    d->layout->addWidget(d->view, 0,0,1,1);
-    d->layout->addWidget(d->preview, 1,0,1,1,Qt::AlignBottom);
+    d->layout->addWidget(d->view, 0);
+    d->layout->addWidget(d->preview, 0, Qt::AlignBottom);
 
     QWidget::resizeEvent(event);
 }
 
-void medDatabaseCompactWidget::setView(medDatabaseView *view)
-{
-    d->view = view;
-    d->layout->addWidget(d->view,0,0,1,1);
-}
+
 
 void
-medDatabaseCompactWidget::setPreview(medDatabasePreview *preview)
+medDatabaseCompactWidget::setViewAndPreview(medDatabaseView *view, medDatabasePreview *preview)
 {
+    d->view = view;
     d->preview = preview;
-    d->layout->addWidget(d->preview, 1,0,1,1,Qt::AlignBottom);
+    d->layout->addWidget(d->view, 1);
+    d->layout->addWidget(d->preview, 1, Qt::AlignBottom);
+
+    this->resize(this->width(), this->height());
 }

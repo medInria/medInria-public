@@ -17,8 +17,7 @@ public :
     medDatabaseCompactWidget(QWidget *parent = NULL);
     virtual ~medDatabaseCompactWidget();
 
-    void setView(medDatabaseView *view);
-    void setPreview(medDatabasePreview *preview);
+    void setViewAndPreview(medDatabaseView *view, medDatabasePreview *preview);
 
 protected:
     void resizeEvent(QResizeEvent *event);

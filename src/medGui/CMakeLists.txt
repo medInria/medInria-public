@@ -53,6 +53,7 @@ set(${PROJECT_NAME}_HEADERS_MOC
   database/medDatabaseEditItemDialog.h
   database/medDatabasePreview.h
   database/medDatabaseCompactWidget.h
+  database/medDatabaseThumbnailHelper.h
 
   # commonWidgets:
   commonWidgets/medDropSite.h

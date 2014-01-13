@@ -67,8 +67,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
     d->compactView->setModel(d->compactProxy);
     d->compactPreview = new medDatabasePreview(d->compactWidget);
 
-    d->compactWidget->setView(d->compactView);
-    d->compactWidget->setPreview(d->compactPreview);
+    d->compactWidget->setViewAndPreview(d->compactView, d->compactPreview);
 
 
     for(int i =1; i<12; ++i)

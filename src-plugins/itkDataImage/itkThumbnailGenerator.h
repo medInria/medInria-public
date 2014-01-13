@@ -51,5 +51,6 @@ private:
     QImage m_Thumbnail;
     dtkSmartPointer <medAbstractData> m_InputData;
     unsigned int m_ImageDimension;
-    unsigned int m_XYDim;
+    unsigned int m_XDim;
+    unsigned int m_YDim;
 };

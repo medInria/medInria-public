@@ -5,10 +5,13 @@
 #include <vtkUnsignedCharArray.h>
 #include <QVTKWidget.h>
 
+#include <medDatabaseThumbnailHelper.h>
+
 itkThumbnailGenerator::itkThumbnailGenerator(medAbstractData *data, unsigned int dimension)
 {
-    m_XYDim = 128;
-    m_Thumbnail = QImage(m_XYDim,m_XYDim,QImage::Format_RGB32);
+    m_XDim = medDatabaseThumbnailHelper::width;
+    m_YDim = medDatabaseThumbnailHelper::height;
+    m_Thumbnail = QImage(m_XDim,m_YDim,QImage::Format_RGB32);
     m_Thumbnail.fill(0);
     m_InputData = 0;
     
@@ -95,15 +98,15 @@ void itkThumbnailGenerator::generateThumbnail()
     
     
     QVTKWidget *vtkWidget = new QVTKWidget;
-    vtkWidget->resize(m_XYDim,m_XYDim);
+    vtkWidget->resize(m_XDim,m_YDim);
     vtkWidget->SetRenderWindow(renWin);
 
     view2d->Reset();
     view2d->Render();
     
     vtkSmartPointer <vtkUnsignedCharArray> pixels = vtkUnsignedCharArray::New();
-    pixels->SetArray(m_Thumbnail.bits(), m_XYDim*m_XYDim*4, 1);
-    renWin->GetRGBACharPixelData(0, 0, m_XYDim-1, m_XYDim-1, 1, pixels);
+    pixels->SetArray(m_Thumbnail.bits(), m_XDim*m_YDim*4, 1);
+    renWin->GetRGBACharPixelData(0, 0, m_XDim-1, m_YDim-1, 1, pixels);
     
     m_Thumbnail = m_Thumbnail.mirrored(false,true);
     

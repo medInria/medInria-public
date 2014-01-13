@@ -87,6 +87,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     d->navigatorContainer = new QWidget(this);
     d->navigatorContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     d->navigatorContainer->setMinimumWidth(225);    
+    d->navigatorContainer->setMaximumWidth(320);
 
     //Set up viewer layout
     QHBoxLayout *layout = new QHBoxLayout;
