@@ -29,6 +29,8 @@
 #include <vtkRenderWindow.h>
 #include <vtkWindowToImageFilter.h>
 
+#include <medDatabaseThumbnailHelper.h>
+
 #include <QVTKWidget.h>
 
 class vtkDataMesh4DPrivate
@@ -132,7 +134,7 @@ void vtkDataMesh4D::createThumbnails()
 {
     vtkPointSet * mesh = vtkPointSet::SafeDownCast(d->meshsequence->GetDataSet());
 
-    unsigned int w=128, h=128;
+    unsigned int w=medDatabaseThumbnailHelper::width, h=medDatabaseThumbnailHelper::height;
     QImage img(w, h, QImage::Format_RGB32);
     img.fill(0);
 

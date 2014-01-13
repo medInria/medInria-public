@@ -86,7 +86,7 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
     // Setting up navigator 
     d->navigatorContainer = new QWidget(this);
     d->navigatorContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    d->navigatorContainer->setMinimumWidth(225);    
+    d->navigatorContainer->setMinimumWidth(186);
     d->navigatorContainer->setMaximumWidth(320);
 
     //Set up viewer layout
@@ -638,6 +638,8 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
             
     databaseViewLayout->addWidget(dataSource->compactViewWidget());
     d->navigatorContainer->setLayout(databaseViewLayout);
+
+    dataSource->compactViewWidget()->resize(dataSource->compactViewWidget()->width(), dataSource->compactViewWidget()->height());
 
     connect(dataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
             this, SLOT(open(const medDataIndex&)),

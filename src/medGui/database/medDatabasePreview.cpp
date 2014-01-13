@@ -26,6 +26,7 @@ medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePrevie
     d->pixmap = new QGraphicsPixmapItem;
     d->scene->addItem(d->pixmap);
 
+    this->setMinimumSize(184, 184);
 
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
