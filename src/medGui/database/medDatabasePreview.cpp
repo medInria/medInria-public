@@ -15,6 +15,7 @@ class medDatabasePreviewPrivate
 public:
     QGraphicsPixmapItem *pixmap;
     QGraphicsScene *scene;
+    QLabel *label;
 };
 
 
@@ -25,6 +26,11 @@ medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePrevie
 
     d->pixmap = new QGraphicsPixmapItem;
     d->scene->addItem(d->pixmap);
+
+    d->label = new QLabel(this);
+    d->label->setAlignment(Qt::AlignCenter);
+    d->label->setObjectName("previewLabel");
+    d->label->setText("gloubi goulba");
 
     this->setMinimumSize(184, 184);
 
@@ -72,11 +78,23 @@ void medDatabasePreview::update(const medDataIndex &index)
         connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
         QThreadPool::globalInstance()->start(loader);
     }
+
+    QString itemDescription = dbc->metaData(index, medMetaDataKeys::SeriesDescription);
+    if (itemDescription.isEmpty())
+        itemDescription = dbc->metaData(index, medMetaDataKeys::StudyDescription);
+    if (itemDescription.isEmpty())
+        itemDescription = dbc->metaData(index, medMetaDataKeys::PatientName);
+
+    d->label->setText(itemDescription);
 }
 
 void medDatabasePreview::setImage(const QImage &image)
 {
     d->pixmap->setPixmap(QPixmap::fromImage(image));
     this->fitInView(d->pixmap, Qt::KeepAspectRatio);
+}
 
+QLabel* medDatabasePreview::label()
+{
+    return d->label;
 }

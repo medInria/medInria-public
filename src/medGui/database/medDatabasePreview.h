@@ -5,6 +5,7 @@
 
 class medDatabasePreviewPrivate;
 class medDataIndex;
+class QLabel;
 
 
 /**
@@ -20,6 +21,7 @@ public :
 public slots:
     void update(const medDataIndex &index);
     void setImage(const QImage &image);
+    QLabel* label();
 
 protected:
     void resizeEvent(QResizeEvent *event);

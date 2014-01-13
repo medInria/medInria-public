@@ -47,6 +47,7 @@ void medDatabaseCompactWidget::resizeEvent(QResizeEvent *event)
 
     d->layout->addWidget(d->view, 0);
     d->layout->addWidget(d->preview, 0, Qt::AlignBottom);
+    d->layout->addWidget(d->preview->label(), 0);
 
     QWidget::resizeEvent(event);
 }
@@ -64,4 +65,5 @@ medDatabaseCompactWidget::setViewAndPreview(medDatabaseView *view, medDatabasePr
     d->preview = preview;
     d->layout->addWidget(d->view, 0);
     d->layout->addWidget(d->preview, 0, Qt::AlignBottom);
+    d->layout->addWidget(d->preview->label(), 0);
 }
