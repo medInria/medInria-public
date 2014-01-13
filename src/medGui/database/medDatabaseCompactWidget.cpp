@@ -3,6 +3,9 @@
 #include "medDatabaseView.h"
 #include "medDatabasePreview.h"
 
+#include "medDataIndex.h"
+
+
 #include <QVBoxLayout>
 
 
@@ -54,9 +57,11 @@ void
 medDatabaseCompactWidget::setViewAndPreview(medDatabaseView *view, medDatabasePreview *preview)
 {
     d->view = view;
-    d->preview = preview;
-    d->layout->addWidget(d->view, 1);
-    d->layout->addWidget(d->preview, 1, Qt::AlignBottom);
+    connect(d->view, SIGNAL(open(const medDataIndex&)),
+            this, SIGNAL(open(const medDataIndex&))
+            );
 
-    this->resize(this->width(), this->height());
+    d->preview = preview;
+    d->layout->addWidget(d->view, 0);
+    d->layout->addWidget(d->preview, 0, Qt::AlignBottom);
 }

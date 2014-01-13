@@ -642,5 +642,4 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
     connect(dataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
             this, SLOT(open(const medDataIndex&)),
             Qt::UniqueConnection);
-
 }
