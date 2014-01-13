@@ -640,6 +640,8 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
     d->navigatorContainer->setLayout(databaseViewLayout);
 
     dataSource->compactViewWidget()->resize(dataSource->compactViewWidget()->width(), dataSource->compactViewWidget()->height());
+    //little tricks to force to recompute the stylesheet.
+    dataSource->compactViewWidget()->setStyleSheet("/* */");
 
     connect(dataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
             this, SLOT(open(const medDataIndex&)),
