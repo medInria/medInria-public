@@ -21,6 +21,8 @@
 #include <vtkPiecewiseFunction.h>
 
 #include <medVtkView.h>
+#include <medAbstractData.h>
+
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>
 #include <vtkTransferFunctionPresets.h>
@@ -135,6 +137,19 @@ void v3dViewImageInteractor::setData(dtkAbstractData *data)
     parameters.insert(data, presetParam);
 }
 
+
+void v3dViewImageInteractor::removeData(medAbstractData *data)
+{
+    int layer = getLayer((dtkAbstractData*)data);
+
+    if(data->identifier().contains("Image"))
+    {
+        d->dataList.removeAll(data);
+        d->view->removeLayerAt(layer);
+
+        d->view->update();
+    }
+}
 
 template <typename IMAGE>
 bool v3dViewImageInteractor::SetViewInput(const char* type,dtkAbstractData* data,const int layer)

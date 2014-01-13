@@ -43,12 +43,16 @@ medLayerItemWidget::medLayerItemWidget(QString name,
     opacitySlider->setValue(100);
     opacitySlider->setToolTip("Opacity");
 
+    removeButton = new QPushButton;
+    removeButton->setIcon(QIcon(":/icons/cross.svg"));
+
     layout->setContentsMargins(0,0,10,0);
 
     layout->addWidget(thumbnailButton);
     layout->addWidget(layerName);
     layout->addStretch();
     layout->addWidget(opacitySlider);
+    layout->addWidget(removeButton);
 
     interactors = interactorsList;
     data = dataItem;
@@ -58,6 +62,13 @@ medLayerItemWidget::medLayerItemWidget(QString name,
 
     connect(thumbnailButton, SIGNAL(toggled(bool)),
             this,          SLOT(showLayer(bool)));
+
+    connect(removeButton, SIGNAL(clicked(void)),
+            this,          SLOT(removeLayer(void)));
+}
+
+medLayerItemWidget::~medLayerItemWidget()
+{
 }
 
 QSize medLayerItemWidget::sizeHint()
@@ -80,6 +91,10 @@ void medLayerItemWidget::showLayer(bool show)
         i->setVisible(data, show);
 }
 
-medLayerItemWidget::~medLayerItemWidget()
+void medLayerItemWidget::removeLayer()
 {
+    foreach(medAbstractVtkViewInteractor * i, interactors)
+        i->removeData(data);
+
+    emit deletionRequested();
 }

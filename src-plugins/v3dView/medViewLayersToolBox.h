@@ -32,6 +32,7 @@ public slots:
     void updateViewPool(QList<medVtkView*>);
     void updateParameters(QMultiMap<medVtkView*, int>);
     void removeView();
+    void removeLayer();
 
 public:
     void update(dtkAbstractView * view);

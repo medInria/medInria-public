@@ -50,6 +50,7 @@ public:
 
     virtual void setData(dtkAbstractData *data);
     dtkAbstractData *data();
+    void removeData(medAbstractData *data);
 
     virtual void setView(dtkAbstractView *view);
     dtkAbstractView *view();

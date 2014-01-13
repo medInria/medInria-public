@@ -260,6 +260,20 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
     parameters.insert(data, showCoronalParam);
 }
 
+
+void v3dViewTensorInteractor::removeData(medAbstractData *data)
+{
+    if (d->view)
+    {
+        d->view->renderer2d()->RemoveActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
+        d->view->renderer2d()->RemoveActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
+        d->view->renderer2d()->RemoveActor (d->manager->GetTensorVisuManagerCoronal()->GetActor());
+
+        d->view->removeLayer(data);
+        d->view->update();
+    }
+}
+
 dtkAbstractData *v3dViewTensorInteractor::data()
 {
     return d->data;
