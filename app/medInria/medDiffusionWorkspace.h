@@ -36,6 +36,9 @@ public:
     static bool isUsable();
     void setupViewContainerStack();
 
+signals:
+    void newOutput(dtkAbstractData *);
+    
 public slots:
 
     void runProcess(dtkAbstractProcess *process, QString category);

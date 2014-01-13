@@ -57,6 +57,8 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
 
     // -- Bundling  toolbox --
     d->fiberBundlingToolBox = medToolBoxFactory::instance()->createToolBox("medFiberBundlingToolBox", parent);
+    connect(this, SIGNAL(newOutput(dtkAbstractData*)), d->fiberBundlingToolBox, SLOT(setInput(dtkAbstractData*)));
+
     
     // -- Estimation toolbox --
     d->diffusionEstimationToolBox = new medDiffusionSelectorToolBox(parent,medDiffusionSelectorToolBox::Estimation);
@@ -84,9 +86,6 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
             this, SLOT(addToolBox(medToolBox *)));
     connect(d->diffusionTractographyToolBox, SIGNAL(removeToolBox(medToolBox *)),
             this, SLOT(removeToolBox(medToolBox *)));
-
-    connect(d->diffusionToolBox, SIGNAL(newOutput(dtkAbstractData*)), d->fiberBundlingToolBox, SLOT(setInput(dtkAbstractData*)));
-    connect(d->diffusionToolBox, SIGNAL(newOutput(dtkAbstractData*)), this, SLOT(addToView(dtkAbstractData*)));
 
     // -- View toolboxes --
 
@@ -152,16 +151,6 @@ void medDiffusionWorkspace::setupViewContainerStack()
 	}
 }
 
-void medDiffusionWorkspace::addToView(dtkAbstractData * data)
-{
-    if( d->diffusionContainer->view() )
-    {
-        d->diffusionContainer->view()->setData(data, 0);
-        d->diffusionContainer->view()->reset();
-        d->diffusionContainer->view()->update();
-    }
-}
-
 void medDiffusionWorkspace::runProcess(dtkAbstractProcess *process, QString category)
 {
     if (d->processRunning)
@@ -187,6 +176,9 @@ void medDiffusionWorkspace::runProcess(dtkAbstractProcess *process, QString cate
 
 void medDiffusionWorkspace::getOutput()
 {
+    if (!d->currentProcess->output())
+        return;
+    
     if (!d->diffusionContainer->view())
     {
         d->diffusionContainer->open(d->currentProcess->output());
@@ -197,6 +189,8 @@ void medDiffusionWorkspace::getOutput()
         d->diffusionContainer->view()->reset();
         d->diffusionContainer->view()->update();
     }
+    
+    emit newOutput(d->currentProcess->output());
     
     QString uuid = QUuid::createUuid().toString();
     medDataManager::instance()->importNonPersistent ( d->currentProcess->output(), uuid);
