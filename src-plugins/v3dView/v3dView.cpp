@@ -315,7 +315,6 @@ public:
     QVTKWidget *vtkWidget;
     QString orientation;
 
-    dtkAbstractData *data;
     QMap<int, dtkSmartPointer<dtkAbstractData> > sharedData;
     medAbstractDataImage *imageData;
     
@@ -351,7 +350,6 @@ v3dView::v3dView() : medAbstractImageView(), d ( new v3dViewPrivate )
 {
     d->setPropertyFunctions["Closable"] = &v3dView::onClosablePropertySet;
 
-    d->data       = 0;
     d->imageData  = 0;
     d->orientation = "Axial";
     
@@ -757,7 +755,6 @@ void v3dView::addLayer ( medAbstractData *data )
     {
         if ( medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> ( data ) )
         {
-            d->data = data;
             d->imageData = imageData;
 
             if ( data->hasMetaData ( medMetaDataKeys::PatientName.key() ) )
@@ -806,13 +803,13 @@ void v3dView::addLayer ( medAbstractData *data )
                 switch ( d->view2d->GetViewOrientation() )
                 {
                 case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
-                    this->setProperty("Orientation","Sagittal");
+                    this->setOrientation("Sagittal");
                     break;
                 case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
-                    this->setProperty("Orientation","Coronal");
+                    this->setOrientation("Coronal");
                     break;
                 case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
-                    this->setProperty("Orientation","Axial");
+                    this->setOrientation("Axial");
                     break;
                 }
             }
@@ -822,15 +819,32 @@ void v3dView::addLayer ( medAbstractData *data )
 
 void v3dView::removeLayerAt ( int layer )
 {
-    d->view2d->RemoveLayer ( layer );
-    d->view3d->RemoveLayer ( layer );
+    medAbstractData *medData = this->layerData( layer);
+
     medAbstractImageView::removeLayerAt ( layer );
+
+    removeLayer( medData );
 }
 
-void *v3dView::data()
+bool v3dView::removeLayer( medAbstractData *data)
 {
-    return d->data;
+    bool res = false;
+
+    medAbstractImageView::removeLayer( data );
+
+    foreach ( dtkAbstractViewInteractor *interactor, this->interactors() )
+    {
+        medAbstractViewInteractor *medInteractor = dynamic_cast <medAbstractViewInteractor *> (interactor);
+        if (medInteractor && medInteractor->isDataTypeHandled(data->identifier()))
+        {
+            medInteractor->removeData(data);
+            res = true;
+        }
+    }
+
+    return res;
 }
+
 
 QWidget *v3dView::receiverWidget()
 {

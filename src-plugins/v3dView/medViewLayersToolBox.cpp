@@ -361,6 +361,8 @@ void medViewLayersToolBox::removeLayer()
         {
           d->layersListWidget->removeItemWidget(item);
         }
+
+        d->vtkView->removeLayer(sender->dataItem());
     }
 
 }

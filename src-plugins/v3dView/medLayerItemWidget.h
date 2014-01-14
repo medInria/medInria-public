@@ -23,6 +23,8 @@ public:
 
     virtual QSize sizeHint();
 
+    medAbstractData* dataItem() { return data; }
+
 
 protected slots:
     void changeOpacity(int opacity);

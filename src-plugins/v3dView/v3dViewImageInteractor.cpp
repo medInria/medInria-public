@@ -145,7 +145,9 @@ void v3dViewImageInteractor::removeData(medAbstractData *data)
     if(data->identifier().contains("Image"))
     {
         d->dataList.removeAll(data);
-        d->view->removeLayerAt(layer);
+
+        d->view->view2d()->RemoveLayer(layer);
+        d->view->view3d()->RemoveLayer(layer);
 
         d->view->update();
     }

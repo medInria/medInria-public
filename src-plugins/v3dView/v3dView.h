@@ -65,10 +65,10 @@ public:
     void *view();
 
     void addLayer(medAbstractData *data);
+    virtual void removeLayerAt(int layer);
+    bool removeLayer( medAbstractData *data);
 
     void setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data);
-
-    void *data();
 
     QWidget *receiverWidget();
     QWidget *widget();
@@ -116,11 +116,6 @@ public:
      * Set/Get the opacity of the image at layer given by @param layer.
      */
     virtual double opacity(int layer) const;
-
-    /**
-     * Removes an overlay given the layer id.
-     */
-    virtual void removeLayerAt(int layer);
 
     QString getLUT(int layer) const;
     QString getPreset(int layer) const;
