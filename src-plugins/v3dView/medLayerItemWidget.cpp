@@ -93,8 +93,8 @@ void medLayerItemWidget::showLayer(bool show)
 
 void medLayerItemWidget::removeLayer()
 {
-    foreach(medAbstractVtkViewInteractor * i, interactors)
-        i->removeData(data);
+    /*foreach(medAbstractVtkViewInteractor * i, interactors)
+        i->removeData(data);*/
 
     emit deletionRequested();
 }

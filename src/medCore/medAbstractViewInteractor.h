@@ -17,12 +17,16 @@
 
 #include "medCoreExport.h"
 
+class medAbstractData;
+
 class MEDCORE_EXPORT medAbstractViewInteractor: public dtkAbstractViewInteractor
 {
     Q_OBJECT
 public:
     medAbstractViewInteractor(){}
     virtual ~medAbstractViewInteractor(){}
+
+    virtual void removeData(medAbstractData *){}
 
     virtual bool isDataTypeHandled(QString dataType) const = 0;
 };

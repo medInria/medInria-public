@@ -129,6 +129,8 @@ void v3dViewMeshInteractor::setData(medAbstractData *data)
         //TODO GPR
         /*if(!d->view->hasImage())
             changeBounds(pointSet);*/
+        if(d->view->layersCount() == 0)
+            changeBounds(pointSet);
 
         d->dataList.append(mesh);
         d->lutList.append(LutPair(NULL, "Default"));
@@ -664,7 +666,7 @@ void v3dViewMeshInteractor::removeData(medAbstractData *data)
         {
             d->view->view2d()->RemoveDataSet(pointSet);
             d->view->view3d()->RemoveDataSet(pointSet);
-            d->view->removeLayer(data);
+            //d->view->removeLayer(data);
             d->dataList.removeAll(dataset);
             d->view->update();
         }
