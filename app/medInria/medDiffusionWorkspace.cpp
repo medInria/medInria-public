@@ -46,14 +46,11 @@ public:
 
     dtkSmartPointer <dtkAbstractProcess> currentProcess;
     bool processRunning;
-
-    QString currentContainerName;
 };
 
 medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(parent), d(new medDiffusionWorkspacePrivate)
 {
     d->diffusionContainer = 0;
-    d->currentContainerName = identifier();
 
     // -- Bundling  toolbox --
     d->fiberBundlingToolBox = medToolBoxFactory::instance()->createToolBox("medFiberBundlingToolBox", parent);
@@ -138,17 +135,10 @@ void medDiffusionWorkspace::setupViewContainerStack()
 
         //ownership of singleViewContainer is transferred to the stackedWidget.
         this->stackedViewContainers()->addContainer (identifier(), singleViewContainer);
-        d->currentContainerName = identifier();
-
         d->diffusionContainer = singleViewContainer;
 
         connect(this->stackedViewContainers(),SIGNAL(currentChanged(QString)),this,SLOT(changeCurrentContainer(QString)));
     }
-    else
-    {
-        d->diffusionContainer = this->stackedViewContainers()->container(d->currentContainerName);
-        //TODO: maybe clear views here too?
-	}
 }
 
 void medDiffusionWorkspace::runProcess(dtkAbstractProcess *process, QString category)
@@ -203,12 +193,12 @@ void medDiffusionWorkspace::onAddTabClicked()
     QString name = this->identifier();
     QString realName = this->addSingleContainer(name);
     this->stackedViewContainers()->setContainer(realName);
-    d->currentContainerName = realName;
+    d->diffusionContainer = this->stackedViewContainers()->container(realName);
 }
 
 void medDiffusionWorkspace::changeCurrentContainer(QString name)
 {
-    d->currentContainerName = name;
+    d->diffusionContainer = this->stackedViewContainers()->container(name);
 }
 
 bool medDiffusionWorkspace::isUsable()
