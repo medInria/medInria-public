@@ -22,6 +22,7 @@ class v3dViewTensorInteractorPrivate;
 class medAbstractData;
 class dtkAbstractView;
 
+
 /**
  * @class v3dViewTensorInteractor
  * @brief Extents a view by providing tensor viewing/managing capabilities.
@@ -121,6 +122,11 @@ public slots:
     void setMinorScaling(int minorScaling);
 
     void setScale(int minorScale, int majorScaleExponent);
+
+protected:
+
+    void computeBounds();
+    void updateBounds(const double bounds[]);
 
 
 private:

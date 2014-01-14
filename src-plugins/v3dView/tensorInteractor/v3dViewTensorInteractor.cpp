@@ -21,6 +21,10 @@
 
 #include <vtkTensorManager.h>
 #include <vtkStructuredPoints.h>
+#include <vtkImageFromBoundsSource.h>
+#include <vtkPointSet.h>
+#include <vtkImageActor.h>
+#include <vtkImageView2D.h>
 
 #include "medVtkView.h"
 
@@ -53,6 +57,8 @@ public:
 
     int minorScaling;
     int majorScalingExponent;
+
+    double imageBounds[6];
 };
 
 v3dViewTensorInteractor::v3dViewTensorInteractor(): medAbstractVtkViewInteractor(), d(new v3dViewTensorInteractorPrivate)
@@ -73,6 +79,9 @@ v3dViewTensorInteractor::v3dViewTensorInteractor(): medAbstractVtkViewInteractor
 
     // set default properties
     d->manager->SetGlyphShapeToLine();
+
+    for (int i=0; i<6; i++)
+        d->imageBounds[i] = 0;
 }
 
 
@@ -149,6 +158,12 @@ void v3dViewTensorInteractor::setData(medAbstractData *data)
 
             d->manager->Update();
 
+            if(d->view->layersCount() == 0)
+            {
+                computeBounds();
+                d->view->changeBounds( d->imageBounds );
+            }
+
             if (d->view) {
                 d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
                 d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
@@ -182,6 +197,12 @@ void v3dViewTensorInteractor::setData(medAbstractData *data)
             d->manager->ResetPosition();
 
             d->manager->Update();
+
+            if(d->view->layersCount() == 0)
+            {
+                computeBounds();
+                d->view->changeBounds( d->imageBounds );
+            }
 
             if (d->view) {
                 d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
@@ -469,6 +490,32 @@ void v3dViewTensorInteractor::changePosition(const QVector3D& position, bool pro
 {
     d->manager->SetCurrentPosition(position.x(), position.y(), position.z());
     d->view->update();
+}
+
+void v3dViewTensorInteractor::computeBounds()
+{
+    d->manager->GetTensorVisuManagerAxial()->GetActor()->GetBounds(d->imageBounds);
+
+    updateBounds(d->manager->GetTensorVisuManagerSagittal()->GetActor()->GetBounds());
+    updateBounds(d->manager->GetTensorVisuManagerCoronal()->GetActor()->GetBounds());
+}
+
+void v3dViewTensorInteractor::updateBounds(const double bounds[])
+{
+    for (int i=0; i<6; i=i+2)
+    {
+        if (bounds[i] < d->imageBounds[i])
+        {
+            d->imageBounds[i]=bounds[i];
+        }
+    }
+    for (int i=1; i<6; i=i+2)
+    {
+        if (bounds[i] > d->imageBounds[i])
+        {
+            d->imageBounds[i]=bounds[i];
+        }
+    }
 }
 
 // /////////////////////////////////////////////////////////////////
