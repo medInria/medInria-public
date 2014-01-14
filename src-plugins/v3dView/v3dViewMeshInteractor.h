@@ -106,7 +106,6 @@ public slots:
 
 protected:
     void updatePipeline (unsigned int meshLayer = 0);
-    void changeBounds ( vtkPointSet* pointSet);
     void setLut(int meshLayer, vtkLookupTable * lut);
     int getLayer(dtkAbstractData * data) const;
 

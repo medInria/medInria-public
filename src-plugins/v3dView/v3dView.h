@@ -124,6 +124,8 @@ public:
 
     virtual medViewBackend * backend() const;
 
+    void changeBounds (const double bounds[6]);
+
 public slots:
     // inherited from medAbstractView
     void setPosition  (const  QVector3D &position);

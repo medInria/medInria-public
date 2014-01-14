@@ -49,6 +49,8 @@
 #include <vtkImageViewCollection.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkPiecewiseFunction.h>
+#include <vtkImageFromBoundsSource.h>
+
 #include <QVTKWidget.h>
 #include <medVtkViewBackend.h>
 
@@ -335,6 +337,8 @@ public:
     static medLinkIcon linkIcon;
     static medLinkWLIcon linkWLIcon;
     static medMaximizeIcon maximizeIcon;
+
+    double imageBounds[6];
 };
 
 medPlayIcon v3dViewPrivate::playIcon;
@@ -558,6 +562,8 @@ v3dView::v3dView() : medAbstractImageView(), d ( new v3dViewPrivate )
 
     d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d,d->renWin));
 
+    for (int i=0; i<6; i++)
+        d->imageBounds[i] = 0;
 
 }
 
@@ -1823,4 +1829,63 @@ void v3dView::onMainWindowDeactivated()
     //This function must contains all the different actions that we want to happen in case the software loses the focus
     if (property("ZoomMode")=="RubberBand")
         setZoomMode("Normal");
+}
+
+
+void v3dView::changeBounds (const double bounds[6])
+{
+    bool isImageOutBounded = false;
+
+    if( this->layersCount() == 0 )
+    {
+        for (int i=0; i<6; i++)
+        {
+            d->imageBounds[i]=bounds[i];
+        }
+        isImageOutBounded = true;
+    }
+    else
+    {
+        for (int i=0; i<6; i=i+2)
+        {
+            if (bounds[i] < d->imageBounds[i])
+            {
+                d->imageBounds[i]=bounds[i];
+                isImageOutBounded=true;
+            }
+        }
+        for (int i=1; i<6; i=i+2)
+        {
+            if (bounds[i] > d->imageBounds[i])
+            {
+                d->imageBounds[i]=bounds[i];
+                isImageOutBounded=true;
+            }
+        }
+    }
+
+    if(isImageOutBounded)
+    {
+        vtkImageFromBoundsSource* imagegenerator = vtkImageFromBoundsSource::New();
+        unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
+        imagegenerator->SetOutputImageSize(imSize);
+
+        imagegenerator->SetOutputImageBounds(d->imageBounds);
+        vtkImageData * image = imagegenerator->GetOutput();
+
+        if( this->layersCount() > 0 )
+        {
+            //d->view->view2d()->RemoveDataSet();
+            this->view2d()->RemoveLayer(0);
+        }
+
+        this->view2d()->SetInput(image, 0);
+        vtkImageActor *actor = this->view2d()->GetImageActor(0);
+        actor->SetOpacity(0.0);
+        //actor->SetVisibility(0);
+        //actor->VisibilityOff();
+        isImageOutBounded=false;
+        imagegenerator->Delete();
+        this->view2d()->ResetCamera();
+    }
 }

@@ -128,11 +128,8 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         vtkMetaDataSet * mesh = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
         vtkPointSet * pointSet = vtkPointSet::SafeDownCast (mesh->GetDataSet());
 
-        //TODO GPR
-        /*if(!d->view->hasImage())
-            changeBounds(pointSet);*/
-        if(d->view->layersCount() == 0)
-            changeBounds(pointSet);
+        //if(d->view->layersCount() == 0)
+            d->view->changeBounds(pointSet->GetBounds());
 
         d->dataList.append(mesh);
         d->lutList.append(LutPair(NULL, "Default"));
@@ -201,7 +198,6 @@ void v3dViewMeshInteractor::setView(dtkAbstractView *view)
 
 void v3dViewMeshInteractor::enable()
 {
-    dtkWarn() << "enabling v3dViewMeshInteractor";
     if (this->enabled())
         return;
     updatePipeline ();
@@ -491,66 +487,6 @@ void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
         }
     }
     d->view->view3d()->ResetCamera();
-}
-
-
-void v3dViewMeshInteractor::changeBounds (vtkPointSet* pointSet)
-{
-    double bounds[6];
-    bool isImageOutBounded = false;
-    pointSet->GetBounds(bounds);
-    if( d->view->layersCount() == 0 )
-    {
-        for (int i=0; i<6; i++)
-        {
-            d->imageBounds[i]=bounds[i];
-        }
-        isImageOutBounded = true;
-    }
-    else
-    {
-        for (int i=0; i<6; i=i+2)
-        {
-            if (bounds[i] < d->imageBounds[i])
-            {
-                d->imageBounds[i]=bounds[i];
-                isImageOutBounded=true;
-            }
-        }
-        for (int i=1; i<6; i=i+2)
-        {
-            if (bounds[i] > d->imageBounds[i])
-            {
-                d->imageBounds[i]=bounds[i];
-                isImageOutBounded=true;
-            }
-        }
-    }
-
-    if(isImageOutBounded)
-    {
-        vtkImageFromBoundsSource* imagegenerator = vtkImageFromBoundsSource::New();
-        unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
-        imagegenerator->SetOutputImageSize(imSize);
-        //        vtkInformationDoubleVectorKey * origin = pointSet->ORIGIN();
-        //        double *originDouble= origin->Get(pointSet->GetInformation() );
-        //        imagegenerator->SetOutputImageOrigin(originDouble);
-        imagegenerator->SetOutputImageBounds(d->imageBounds);
-        vtkImageData * image = imagegenerator->GetOutput();
-
-        if( d->view->layersCount() > 0 )
-        {
-            //d->view->view2d()->RemoveDataSet();
-            d->view->view2d()->RemoveLayer(0);
-        }
-
-        d->view->view2d()->SetInput(image, 0);
-        vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
-        actor->SetOpacity(0.0);
-        isImageOutBounded=false;
-        imagegenerator->Delete();
-        d->view->view2d()->ResetCamera();
-    }
 }
 
 
