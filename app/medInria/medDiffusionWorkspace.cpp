@@ -154,12 +154,16 @@ void medDiffusionWorkspace::runProcess(dtkAbstractProcess *process, QString cate
     
     medJobManager::instance()->registerJobItem(runProcess);
     connect(runProcess, SIGNAL(success(QObject*)), this, SLOT(getOutput()));
+    connect(runProcess, SIGNAL(failure(QObject*)), this, SLOT(resetRunningFlags()));
+    connect(runProcess, SIGNAL(cancelled(QObject*)), this, SLOT(resetRunningFlags()));
     
     medMessageProgress *messageProgress = medMessageController::instance()->showProgress(category);
     
     messageProgress->setProgress(0);
     connect(runProcess, SIGNAL(progressed(int)), messageProgress, SLOT(setProgress(int)));
     connect(runProcess, SIGNAL(success(QObject*)), messageProgress, SLOT(success()));
+    connect(runProcess, SIGNAL(failure(QObject*)), messageProgress, SLOT(failure()));
+    connect(runProcess, SIGNAL(cancelled(QObject*)), messageProgress, SLOT(failure()));
     
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
 }
@@ -185,6 +189,11 @@ void medDiffusionWorkspace::getOutput()
     QString uuid = QUuid::createUuid().toString();
     medDataManager::instance()->importNonPersistent ( d->currentProcess->output(), uuid);
     
+    d->processRunning = false;
+}
+
+void medDiffusionWorkspace::resetRunningFlags()
+{
     d->processRunning = false;
 }
 
