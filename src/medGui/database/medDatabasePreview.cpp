@@ -25,18 +25,19 @@ medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePrevie
     this->setScene(d->scene);
 
     d->pixmap = new QGraphicsPixmapItem;
+    d->pixmap->setPixmap(QPixmap(":/medGui/pixmaps/default_thumbnail2.png"));
+    this->fitInView(d->pixmap, Qt::KeepAspectRatio);
     d->scene->addItem(d->pixmap);
 
     d->label = new QLabel(this);
     d->label->setAlignment(Qt::AlignCenter);
     d->label->setObjectName("previewLabel");
-    d->label->setText("gloubi goulba");
+    d->label->setText("No selesction");
 
     this->setMinimumSize(184, 184);
 
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    this->fitInView(d->scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
 
