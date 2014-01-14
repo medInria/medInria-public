@@ -1243,13 +1243,13 @@ QWidget#toolbarWidget
  *******************************************************************************/
 medDatabasePreview
 {
-    border: $DEATABASE_PREVIEW_BORDER;
+    border: 2px solid $GREY07;
 }
 QLabel#previewLabel
 {
     color: $TAB_COLOR;
     background: $TOOLBOX_HEADER_BACKGROUND;
     min-height: $STATUS_BAR_HEIGHT;
-    border: $DEATABASE_PREVIEW_BORDER;
+    border: 2px solid $GREY07;
     border-top: none;
 }
