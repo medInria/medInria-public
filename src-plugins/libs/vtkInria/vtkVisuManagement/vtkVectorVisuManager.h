@@ -39,19 +39,10 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
 
  public:
 
-    enum ScaleMode
-    {
-        ScaleByScalar = 0,
-        ScaleByVector,
-        ScaleByVectorComponents,
-        ScalingOff
-    };
-
     enum ColorMode
     {
-        ColorByScalar = 0,
-        ColorByScale,
-        ColorByVector
+        ColorByVectorMagnitude = 0,
+        ColorByVectorDirection
     };
 
     enum ViewOrientation
@@ -89,7 +80,6 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
   /** Get the vtkGlyph3D. */
   vtkGetObjectMacro (Glyph, vtkGlyph3D)
 
-  void SetScaleMode(ScaleMode mode);
   void SetColorMode(ColorMode mode);
 
   void SetProjection(bool enable);
@@ -98,6 +88,9 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
 
   vtkVectorVisuManager();
   ~vtkVectorVisuManager();
+
+  void SetUpLUTToMapVectorDirection();
+  void SetColorByVectorMagnitude();
 
 
  private:
@@ -112,6 +105,10 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
   vtkPolyDataNormalsOrienter* NormalsOrienter;
 
   vtkImageData*             Input;
+
+  vtkDoubleArray*           ValueArray;
+
+  ColorMode                 CurrentColorMode;
 
 };
 

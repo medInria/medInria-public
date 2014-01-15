@@ -249,12 +249,6 @@ void v3dViewVectorFieldInteractor::setSampleRate(int sampleRate)
     d->view->update();
 }
 
-void v3dViewVectorFieldInteractor::setScaleMode(int mode)
-{
-    d->manager->SetScaleMode(mode);
-    d->view->update();
-}
-
 void v3dViewVectorFieldInteractor::setColorMode(int mode)
 {
     d->manager->SetColorMode(mode);

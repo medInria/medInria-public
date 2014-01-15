@@ -279,13 +279,6 @@ void vtkVectorManager::SetCoronalSliceVisibility (int i)
     this->VectorVisuManagerCoronal->GetActor ()->SetVisibility (i);
 }
 
-void vtkVectorManager::SetScaleMode(int mode)
-{
-    this->VectorVisuManagerAxial   ->SetScaleMode ((vtkVectorVisuManager::ScaleMode)mode);
-    this->VectorVisuManagerSagittal->SetScaleMode ((vtkVectorVisuManager::ScaleMode)mode);
-    this->VectorVisuManagerCoronal ->SetScaleMode ((vtkVectorVisuManager::ScaleMode)mode);
-}
-
 void vtkVectorManager::SetColorMode(int mode)
 {
     this->VectorVisuManagerAxial   ->SetColorMode ((vtkVectorVisuManager::ColorMode)mode);

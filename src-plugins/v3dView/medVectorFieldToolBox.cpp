@@ -36,22 +36,16 @@ medVectorFieldToolBox::medVectorFieldToolBox(QWidget *parent)
     d->sampleRateControl->setValue(1);
 
 
-    d->scaleMode = new QComboBox;
-    QStringList scaleModes = QStringList() << "Scalar" << "Vector" << "VectorComponents" << "ScalingOff";
-    d->scaleMode->addItems(scaleModes);
-    d->scaleMode->setCurrentIndex(1);
-
     d->colorMode = new QComboBox;
-    QStringList colorModes = QStringList() << "Scalar" << "Scale" << "Vector";
+    QStringList colorModes = QStringList() << "Vector Magnitude" << "Vector Direction";
     d->colorMode->addItems(colorModes);
-    d->colorMode->setCurrentIndex(2);
+    d->colorMode->setCurrentIndex(0);
 
     d->projection = new QCheckBox;
 
     QFormLayout *layout = new QFormLayout(displayWidget);
     layout->addRow("Scale Factor", d->scaleFactor );
     layout->addRow(tr("Sample rate:"),d->sampleRateControl);
-    layout->addRow("Scale Mode", d->scaleMode );
     layout->addRow("Color Mode", d->colorMode );
     layout->addRow("Activate Projection", d->projection );
 
@@ -59,7 +53,6 @@ medVectorFieldToolBox::medVectorFieldToolBox(QWidget *parent)
 
     connect(d->scaleFactor, SIGNAL(editingFinished()), this, SLOT(setScaleFactor()));
     connect(d->sampleRateControl,SIGNAL(valueChanged(int)),this,SLOT(setSampleRate(int)));
-    connect(d->scaleMode, SIGNAL(currentIndexChanged(int)), this, SLOT(setScaleMode(int)));
     connect(d->colorMode, SIGNAL(currentIndexChanged(int)), this, SLOT(setColorMode(int)));
     connect(d->projection, SIGNAL(toggled(bool)), this, SLOT(setProjection(bool)));
 
@@ -99,12 +92,6 @@ void medVectorFieldToolBox::setSampleRate (int sampleRate)
 {
     if(d->interactor)
         d->interactor->setSampleRate(sampleRate);
-}
-
-void medVectorFieldToolBox::setScaleMode(int mode)
-{
-    if(d->interactor)
-        d->interactor->setScaleMode(mode);
 }
 
 void medVectorFieldToolBox::setColorMode(int mode)

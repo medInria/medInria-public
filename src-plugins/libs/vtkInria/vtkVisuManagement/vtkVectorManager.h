@@ -94,7 +94,6 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorManager: public vtkObject
   /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
   void SetCoronalSliceVisibility (int);
 
-  void SetScaleMode(int mode);
   void SetColorMode(int mode);
   void SetProjection(bool enable);
 

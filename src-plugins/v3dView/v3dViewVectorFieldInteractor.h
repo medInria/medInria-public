@@ -59,7 +59,6 @@ public slots:
 
     void setScale(double scale);
     void setSampleRate(int sampleRate);
-    void setScaleMode(int mode);
     void setColorMode(int mode);
     void setProjection(bool enable);
 
