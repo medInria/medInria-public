@@ -10,10 +10,11 @@
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 
+#include "medDatabaseThumbnailHelper.h"
+
 class medDatabasePreviewPrivate
 {
 public:
-    QGraphicsPixmapItem *pixmap;
     QGraphicsScene *scene;
     QLabel *label;
 };
@@ -24,10 +25,10 @@ medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePrevie
     d->scene = new QGraphicsScene;
     this->setScene(d->scene);
 
-    d->pixmap = new QGraphicsPixmapItem;
-    d->pixmap->setPixmap(QPixmap(":/medGui/pixmaps/default_thumbnail2.png"));
-    this->fitInView(d->pixmap, Qt::KeepAspectRatio);
-    d->scene->addItem(d->pixmap);
+    QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
+    pixmap->setPixmap(QPixmap(":/medGui/pixmaps/default_thumbnail.png"));
+    this->fitInView(pixmap, Qt::KeepAspectRatio);
+    d->scene->addItem(pixmap);
 
     d->label = new QLabel(this);
     d->label->setAlignment(Qt::AlignCenter);
@@ -51,51 +52,92 @@ medDatabasePreview::~medDatabasePreview()
 void medDatabasePreview::resizeEvent(QResizeEvent *event)
 {
     this->resize(this->width(), this->width());
-    this->fitInView(d->pixmap, Qt::KeepAspectRatio);
+    this->fitInView(d->scene->sceneRect(), Qt::KeepAspectRatio);
     QGraphicsView::resizeEvent(event);
 }
 
-void medDatabasePreview::update(const medDataIndex &index)
+void medDatabasePreview::showSeriesThumbnail(const medDataIndex &index)
 {
 
     medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
     QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
-
-    bool shouldSkipLoading = false;
-    if ( thumbpath.isEmpty() )
-    {
-        // first try to get it from controller
-        QImage thumbImage = dbc->thumbnail(index);
-        if (!thumbImage.isNull())
-        {
-            this->setImage( thumbImage );
-            shouldSkipLoading = true;
-        }
-    }
-
-    if (!shouldSkipLoading)
-    {
-        medImageFileLoader *loader = new medImageFileLoader(thumbpath);
-        connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setImage(const QImage&)));
-        QThreadPool::globalInstance()->start(loader);
-    }
+    if (!thumbpath.isEmpty())
+        this->setImage(QImage(thumbpath));
+    else
+        this->setImage(dbc->thumbnail(index));
 
     QString itemDescription = dbc->metaData(index, medMetaDataKeys::SeriesDescription);
-    if (itemDescription.isEmpty())
-        itemDescription = dbc->metaData(index, medMetaDataKeys::StudyDescription);
-    if (itemDescription.isEmpty())
-        itemDescription = dbc->metaData(index, medMetaDataKeys::PatientName);
-
     d->label->setText(itemDescription);
 }
 
+
+void medDatabasePreview::showStudyThumbnail(const medDataIndex &index)
+{
+    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+
+
+    QList<medDataIndex> series = dbc->series(index);
+    if(series.size() < 4)
+    {
+        QString thumbpath = dbc->metaData(series[0], medMetaDataKeys::ThumbnailPath);
+        if (!thumbpath.isEmpty())
+            this->setImage(QImage(thumbpath));
+        else
+            this->setImage(dbc->thumbnail(series[0]));
+    }
+    else
+    {
+        setImage(QImage());
+    }
+    QString itemDescription = dbc->metaData(index, medMetaDataKeys::StudyDescription);
+    d->label->setText(itemDescription);
+}
+
+
+
+void medDatabasePreview::showPatientThumbnail(const medDataIndex &index)
+{
+
+    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
+    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
+    if (!thumbpath.isEmpty())
+        this->setImage(QImage(thumbpath));
+    else
+        this->setImage(dbc->thumbnail(index));
+
+
+    QString itemDescription = dbc->metaData(index, medMetaDataKeys::PatientName);
+    d->label->setText(itemDescription);
+}
+
+
+
 void medDatabasePreview::setImage(const QImage &image)
 {
-    d->pixmap->setPixmap(QPixmap::fromImage(image));
-    this->fitInView(d->pixmap, Qt::KeepAspectRatio);
+    scene()->clear();
+    QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
+    d->scene->addItem(pixmap);
+
+    if(!image.isNull())
+        pixmap->setPixmap(QPixmap::fromImage(image));
+    else
+        pixmap->setPixmap(QPixmap(":/medGui/pixmaps/default_thumbnail.png"));
+
+    this->fitInView(d->scene->sceneRect(), Qt::KeepAspectRatio);
+}
+
+void medDatabasePreview::addImage(const QImage &image)
+{
+    scene()->clear();
+    QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
+    d->scene->addItem(pixmap);
+    pixmap->setPixmap(QPixmap(":/medGui/pixmaps/default_thumbnail.png"));
+    this->fitInView(pixmap, Qt::KeepAspectRatio);
 }
 
 QLabel* medDatabasePreview::label()
 {
     return d->label;
 }
+
+

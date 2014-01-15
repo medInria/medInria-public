@@ -86,9 +86,9 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
     d->toolBoxes.push_back(d->searchPanel);
 
 
-    connect(d->compactView, SIGNAL(patientClicked(const medDataIndex&)), d->compactPreview, SLOT(update(const medDataIndex&)));
-    connect(d->compactView, SIGNAL(studyClicked(const medDataIndex&)), d->compactPreview, SLOT(update(const medDataIndex&)));
-    connect(d->compactView, SIGNAL(seriesClicked(const medDataIndex&)), d->compactPreview, SLOT(update(const medDataIndex&)));
+    connect(d->compactView, SIGNAL(patientClicked(const medDataIndex&)), d->compactPreview, SLOT(showPatientThumbnail(const medDataIndex&)));
+    connect(d->compactView, SIGNAL(studyClicked(const medDataIndex&)), d->compactPreview, SLOT(showStudyThumbnail(const medDataIndex&)));
+    connect(d->compactView, SIGNAL(seriesClicked(const medDataIndex&)), d->compactPreview, SLOT(showSeriesThumbnail(const medDataIndex&)));
 
 
     connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->actionsToolBox, SLOT(patientSelected(const medDataIndex&)));

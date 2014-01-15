@@ -19,8 +19,12 @@ public :
     virtual ~medDatabasePreview();
 
 public slots:
-    void update(const medDataIndex &index);
+    void showSeriesThumbnail(const medDataIndex &index);
+    void showStudyThumbnail(const medDataIndex &index);
+    void showPatientThumbnail(const medDataIndex &index);
+
     void setImage(const QImage &image);
+    void addImage(const QImage &image);
     QLabel* label();
 
 protected:
