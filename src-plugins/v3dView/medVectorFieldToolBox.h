@@ -36,6 +36,9 @@ public slots:
     void setScaleMode(int mode);
     void setColorMode(int mode);
     void setProjection(bool enable);
+    void setShowAxial(int checkBoxState);
+    void setShowCoronal(int checkBoxState);
+    void setShowSagittal(int checkBoxState);
 
 private:
     medVectorFieldToolBoxPrivate *d;

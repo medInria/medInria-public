@@ -61,6 +61,9 @@ public slots:
     void setSampleRate(int sampleRate);
     void setColorMode(int mode);
     void setProjection(bool enable);
+    void setShowAxial(bool show);
+    void setShowCoronal(bool show);
+    void setShowSagittal(bool show);
 
     /** Change position of the slices */
     void changePosition(const QVector3D& position, bool propagate);

@@ -161,7 +161,6 @@ void vtkVectorVisuManager::SetColorMode(ColorMode mode)
     this->CurrentColorMode =  mode;
 
     this->Glyph->Modified();
-
 }
 
 void vtkVectorVisuManager::SetProjection(bool enable)
@@ -183,7 +182,6 @@ void vtkVectorVisuManager::SetColorByVectorMagnitude()
         this->Mapper->SetScalarRange(range[0],range[1]);
     }
 
-    //this->Glyph->Update();
     this->Mapper->Modified();
 }
 

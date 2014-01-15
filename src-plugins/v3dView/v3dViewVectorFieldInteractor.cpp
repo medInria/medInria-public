@@ -267,6 +267,36 @@ void v3dViewVectorFieldInteractor::changePosition(const QVector3D& position, boo
     d->view->update();
 }
 
+void v3dViewVectorFieldInteractor::setShowAxial(bool show)
+{
+    if(show)
+        d->manager->SetAxialSliceVisibility(1);
+    else
+        d->manager->SetAxialSliceVisibility(0);
+
+    d->view->update();
+}
+
+void v3dViewVectorFieldInteractor::setShowCoronal(bool show)
+{
+    if(show)
+        d->manager->SetCoronalSliceVisibility(1);
+    else
+        d->manager->SetCoronalSliceVisibility(0);
+
+    d->view->update();
+}
+
+void v3dViewVectorFieldInteractor::setShowSagittal(bool show)
+{
+    if(show)
+        d->manager->SetSagittalSliceVisibility(1);
+    else
+        d->manager->SetSagittalSliceVisibility(0);
+
+    d->view->update();
+}
+
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
