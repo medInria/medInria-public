@@ -43,9 +43,11 @@ public slots:
     void createProcess();
     
     void chooseToolBox(int id);
+    void resetButtons();
     
 signals:
     void processCreated(dtkAbstractProcess *process, QString);
+    void processCancelled();
 
 protected:
     void checkInputGradientDirections();

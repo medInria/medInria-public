@@ -39,6 +39,7 @@ public:
     medDiffusionSelectorToolBox::SelectorType selectorType;
     
     QPushButton *runButton;
+    QPushButton *cancelButton;
     
     QComboBox *methodCombo;
     QVBoxLayout *mainLayout;
@@ -124,6 +125,12 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
         d->mainLayout->addWidget(d->runButton);
         
         connect(d->runButton,SIGNAL(clicked()),this,SLOT(createProcess()));
+        
+        d->cancelButton = new QPushButton(tr("Cancel"),mainPage);
+        d->cancelButton->hide();
+        d->mainLayout->addWidget(d->cancelButton);
+        
+        connect(d->cancelButton,SIGNAL(clicked()),this,SIGNAL(processCancelled()));
     }
     
     this->addWidget(mainPage);
@@ -367,8 +374,22 @@ void medDiffusionSelectorToolBox::createProcess()
             break;
     }
 
+    if (d->runButton)
+    {
+        d->runButton->hide();
+        d->cancelButton->show();
+    }
     
     emit processCreated(process, processText);
+}
+
+void medDiffusionSelectorToolBox::resetButtons()
+{
+    if (d->runButton)
+    {
+        d->cancelButton->hide();
+        d->runButton->show();
+    }
 }
 
 void medDiffusionSelectorToolBox::clear(void)

@@ -103,7 +103,10 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
             this, SLOT(runProcess(dtkAbstractProcess *, QString)));
     connect(d->diffusionTractographyToolBox, SIGNAL(processCreated(dtkAbstractProcess *, QString)),
             this, SLOT(runProcess(dtkAbstractProcess *, QString)));
-
+    
+    connect(d->diffusionEstimationToolBox, SIGNAL(processCancelled()), this, SLOT(cancelProcess()));
+    connect(d->diffusionTractographyToolBox, SIGNAL(processCancelled()), this, SLOT(cancelProcess()));
+    
     this->addToolBox( d->diffusionEstimationToolBox );
     this->addToolBox( d->diffusionScalarMapsToolBox );
     this->addToolBox( d->diffusionTractographyToolBox );
@@ -146,16 +149,14 @@ void medDiffusionWorkspace::runProcess(dtkAbstractProcess *process, QString cate
     if (d->processRunning)
         return;
     
-    d->currentProcess = process;
-    d->processRunning = true;
-    
     medRunnableProcess *runProcess = new medRunnableProcess;
-    runProcess->setProcess (d->currentProcess);
+    d->currentProcess = process;
+    runProcess->setProcess(d->currentProcess);
+    d->processRunning = true;
     
     medJobManager::instance()->registerJobItem(runProcess);
     connect(runProcess, SIGNAL(success(QObject*)), this, SLOT(getOutput()));
     connect(runProcess, SIGNAL(failure(QObject*)), this, SLOT(resetRunningFlags()));
-    connect(runProcess, SIGNAL(cancelled(QObject*)), this, SLOT(resetRunningFlags()));
     
     medMessageProgress *messageProgress = medMessageController::instance()->showProgress(category);
     
@@ -163,38 +164,48 @@ void medDiffusionWorkspace::runProcess(dtkAbstractProcess *process, QString cate
     connect(runProcess, SIGNAL(progressed(int)), messageProgress, SLOT(setProgress(int)));
     connect(runProcess, SIGNAL(success(QObject*)), messageProgress, SLOT(success()));
     connect(runProcess, SIGNAL(failure(QObject*)), messageProgress, SLOT(failure()));
-    connect(runProcess, SIGNAL(cancelled(QObject*)), messageProgress, SLOT(failure()));
     
     QThreadPool::globalInstance()->start(dynamic_cast<QRunnable*>(runProcess));
 }
 
+void medDiffusionWorkspace::cancelProcess()
+{
+    d->currentProcess->cancel();
+    this->resetRunningFlags();
+}
+
 void medDiffusionWorkspace::getOutput()
 {
-    if (!d->currentProcess->output())
+    dtkSmartPointer <dtkAbstractData> outputData = d->currentProcess->output();
+    
+    if (!outputData)
         return;
     
     if (!d->diffusionContainer->view())
     {
-        d->diffusionContainer->open(d->currentProcess->output());
+        d->diffusionContainer->open(outputData);
     }
     else
     {
-        d->diffusionContainer->view()->setData(d->currentProcess->output(), 0);
+        d->diffusionContainer->view()->setData(outputData, 0);
         d->diffusionContainer->view()->reset();
         d->diffusionContainer->view()->update();
     }
     
-    emit newOutput(d->currentProcess->output());
+    emit newOutput(outputData);
     
     QString uuid = QUuid::createUuid().toString();
-    medDataManager::instance()->importNonPersistent ( d->currentProcess->output(), uuid);
+    medDataManager::instance()->importNonPersistent (outputData, uuid);
     
-    d->processRunning = false;
+    this->resetRunningFlags();
 }
 
 void medDiffusionWorkspace::resetRunningFlags()
 {
     d->processRunning = false;
+    
+    d->diffusionEstimationToolBox->resetButtons();
+    d->diffusionTractographyToolBox->resetButtons();
 }
 
 void medDiffusionWorkspace::onAddTabClicked()

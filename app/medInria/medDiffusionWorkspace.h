@@ -43,6 +43,7 @@ public slots:
 
     void runProcess(dtkAbstractProcess *process, QString category);
     void getOutput();
+    void cancelProcess();
     void resetRunningFlags();
     
     /**
