@@ -1,16 +1,50 @@
 #pragma once
 
 #include <QGraphicsView>
+#include <QGraphicsScene>
 #include <QImage>
 
-class medDatabasePreviewPrivate;
+
 class medDataIndex;
 class QLabel;
 
 
-/**
- * @brief
- */
+class medDatabasePreviewStaticScenePrivate;
+class medDatabasePreviewStaticScene: public QGraphicsScene
+{
+    Q_OBJECT
+public:
+    medDatabasePreviewStaticScene(QObject *parent = NULL);
+    virtual ~medDatabasePreviewStaticScene();
+
+    void addImage(const medDataIndex &index);
+    void setImage(const medDataIndex &index);
+    medDataIndex& currentDataIndex() const;
+
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+private :
+    medDatabasePreviewStaticScenePrivate *d;
+};
+
+
+class medDatabasePreviewDynamicScenePrivate;
+class medDatabasePreviewDynamicScene: public medDatabasePreviewStaticScene
+{
+    Q_OBJECT
+public:
+    medDatabasePreviewDynamicScene(QMap<QString, medDataIndex> &seriesDescriptionDataIndexMap,
+                                 QObject *parent = NULL);
+    virtual ~medDatabasePreviewDynamicScene();
+    void previewMouseMoveEvent(QMouseEvent *event, int width);
+
+private:
+    medDatabasePreviewDynamicScenePrivate *d;
+
+};
+
+
+class medDatabasePreviewPrivate;
 class medDatabasePreview: public QGraphicsView
 {
     Q_OBJECT
@@ -18,24 +52,31 @@ public :
     medDatabasePreview(QWidget *parent = NULL);
     virtual ~medDatabasePreview();
 
-public slots:
-    void showSeriesThumbnail(const medDataIndex &index);
-    void showStudyThumbnail(const medDataIndex &index);
-    void showPatientThumbnail(const medDataIndex &index);
+    enum medDataType
+    {
+        PATIENT,
+        STUDY,
+        SERIES
+    };
 
-    void setImage(const QImage &image);
-    void setIphotoImage(const QImage &image);
-    void addImage(const QImage &image);
-    QLabel* label();
+public slots:
+    void showSeriesPreview(const medDataIndex &index);
+    void showStudyPreview(const medDataIndex &index);
+    void showPatientPreview(const medDataIndex &index);
+
+    QLabel* label() const;
+
 
 protected:
     void resizeEvent(QResizeEvent *event);
-    void mouseMoveEvent (QMouseEvent * event);
     void enterEvent(QEvent *event);
     void leaveEvent(QEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+
 
 private:
     medDatabasePreviewPrivate *d;
 };
+
 
 
