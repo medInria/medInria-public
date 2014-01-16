@@ -148,7 +148,39 @@ void medDatabasePreviewStaticScene::mouseDoubleClickEvent(QGraphicsSceneMouseEve
     QGraphicsScene::mouseDoubleClickEvent(event);
 }
 
+void medDatabasePreviewStaticScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(!d->isMulti && event->buttons() == Qt::LeftButton)
+    {
+        medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(d->currentDataIndex.dataSourceId());
+        QString thumbpath = dbc->metaData(d->currentDataIndex, medMetaDataKeys::ThumbnailPath);
 
+        QImage thumbnailImg;
+
+        if (!thumbpath.isEmpty())
+            thumbnailImg = QImage(thumbpath);
+        else
+            thumbnailImg = dbc->thumbnail(d->currentDataIndex);
+
+
+        QPixmap pixmap;
+        if(!thumbnailImg.isNull())
+            pixmap = QPixmap::fromImage(thumbnailImg);
+        else
+            pixmap = QPixmap(":/medGui/pixmaps/default_thumbnail.png");
+
+        QMimeData *data = d->currentDataIndex.createMimeData();
+        data->setImageData(pixmap);
+
+        QDrag *drag = new QDrag(this->views().first());
+        drag->setMimeData(data);
+        drag->setPixmap(pixmap);
+
+        drag->setHotSpot(QPoint(drag->pixmap().width()/2, drag->pixmap().height()/2));
+        drag->start();
+    }
+    QGraphicsScene::mouseMoveEvent(event);
+}
 
 
 // medDatabasePreviewStudyScene
@@ -379,6 +411,8 @@ void medDatabasePreview::mouseMoveEvent(QMouseEvent *event)
     }
     case medDatabasePreview::STUDY:
     {
+        if (event->buttons() == Qt::LeftButton)
+            break;
         d->dynamicScene->previewMouseMoveEvent(event, this->width());
         this->fitInView(this->scene()->sceneRect(), Qt::KeepAspectRatio);
         break;

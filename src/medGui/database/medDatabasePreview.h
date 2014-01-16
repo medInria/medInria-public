@@ -22,6 +22,7 @@ public:
     medDataIndex& currentDataIndex() const;
 
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 signals:
     void openRequest(const medDataIndex& index);
 
