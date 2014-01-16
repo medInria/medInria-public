@@ -36,6 +36,9 @@ public:
      medDiffusionSelectorToolBox(QWidget *parent = 0, SelectorType type = Estimation);
     ~medDiffusionSelectorToolBox();
     
+    void setInputImage(medAbstractDataImage *data);
+    void clearInput();
+
 public slots:
     void clear();
 

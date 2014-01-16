@@ -17,9 +17,9 @@
 #include <QtCore>
 
 #include <medWorkspace.h>
-#include <dtkCore/dtkAbstractViewInteractor.h>
 
 class dtkAbstractProcess;
+class dtkAbstractView;
 class medTabbedViewContainers;
 class medDiffusionWorkspacePrivate;
 
@@ -35,9 +35,6 @@ public:
     virtual QString description() const;
     static bool isUsable();
     void setupViewContainerStack();
-
-signals:
-    void newOutput(dtkAbstractData *);
     
 public slots:
 
@@ -45,6 +42,13 @@ public slots:
     void getOutput();
     void cancelProcess();
     void resetRunningFlags();
+    
+    //Handle new data in central view, connect them to toolboxes
+    void resetToolBoxesInputs(dtkAbstractView *view);
+    void addToolBoxInput(dtkAbstractData *data);
+    
+    void connectCurrentViewSignals(dtkAbstractView *view);
+    void disconnectCurrentViewSignals(dtkAbstractView *view);
     
     /**
       * @brief Adds a new tab to a workspace

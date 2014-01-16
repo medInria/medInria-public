@@ -25,6 +25,7 @@
 #include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>
 #include <medMessageController.h>
+#include <medMetaDataKeys.h>
 
 #include "medDiffusionSelectorToolBox.h"
 #include "medDiffusionAbstractToolBox.h"
@@ -44,7 +45,8 @@ public:
     QComboBox *methodCombo;
     QVBoxLayout *mainLayout;
     
-    medDropSite *inputDropSite;
+    QLabel *inputLabel;
+    
     dtkSmartPointer <medAbstractDataImage> input;
 };
 
@@ -110,13 +112,15 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
 
     connect(d->methodCombo, SIGNAL(activated(int)), this, SLOT(chooseToolBox(int)));
     
-    QHBoxLayout *dropSiteLayout = new QHBoxLayout;
-    dropSiteLayout->setAlignment(Qt::AlignCenter);
-    d->inputDropSite = new medDropSite(mainPage);
-    dropSiteLayout->addWidget(d->inputDropSite);
-    d->mainLayout->addLayout(dropSiteLayout);
-    
-    connect(d->inputDropSite,SIGNAL(objectDropped (const medDataIndex&)),this,SLOT(selectInputImage(const medDataIndex&)));
+    QHBoxLayout *inputLabelLayout = new QHBoxLayout;
+    QLabel *inputDescriptionLabel = new QLabel(mainPage);
+    inputDescriptionLabel->setText(tr("Input image:"));
+    inputLabelLayout->addWidget(inputDescriptionLabel);
+    d->inputLabel = new QLabel(mainPage);
+    d->inputLabel->setText("None");
+    d->inputLabel->setAlignment(Qt::AlignRight);
+    inputLabelLayout->addWidget(d->inputLabel);
+    d->mainLayout->addLayout(inputLabelLayout);
     
     if (d->selectorType != ScalarMaps)
     {
@@ -213,13 +217,26 @@ void medDiffusionSelectorToolBox::selectInputImage(const medDataIndex& index)
     
     dtkSmartPointer <medAbstractDataImage> data = medDataManager::instance()->data (index);
     
+    this->setInputImage(data);
+}
+
+void medDiffusionSelectorToolBox::setInputImage(medAbstractDataImage *data)
+{
     if (!data)
         return;
-    
+
     d->input = data;
+    
+    d->inputLabel->setText(data->metadata(medMetaDataKeys::SeriesDescription.key()));
     
     if (d->selectorType == Estimation)
         this->checkInputGradientDirections();
+}
+
+void medDiffusionSelectorToolBox::clearInput()
+{
+    d->input = 0;
+    d->inputLabel->setText("None");
 }
 
 void medDiffusionSelectorToolBox::checkInputGradientDirections()
@@ -405,9 +422,9 @@ void medDiffusionSelectorToolBox::clear(void)
     d->methodCombo->setCurrentIndex (0);
     d->methodCombo->blockSignals (false);
     this->setAboutPluginVisibility(false);
-    
-    d->inputDropSite->clear();
 
+    this->clearInput();
+    
     if (d->selectorType != ScalarMaps)
         d->runButton->setEnabled(false);
 }
