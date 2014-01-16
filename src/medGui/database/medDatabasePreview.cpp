@@ -142,6 +142,9 @@ medDataIndex& medDatabasePreviewStaticScene::currentDataIndex() const
 
 void medDatabasePreviewStaticScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
+    if(!d->isMulti)
+        emit openRequest(d->currentDataIndex);
+
     QGraphicsScene::mouseDoubleClickEvent(event);
 }
 
@@ -244,6 +247,7 @@ void medDatabasePreview::showSeriesPreview(const medDataIndex &index)
     if (d->staticScene)
         delete d->staticScene;
     d->staticScene = new medDatabasePreviewStaticScene;
+    connect(d->staticScene, SIGNAL(openRequest(medDataIndex)), this, SIGNAL(openRequest(medDataIndex)));
 
     d->staticScene->setImage(index);
 
@@ -267,6 +271,8 @@ void medDatabasePreview::showStudyPreview(const medDataIndex &index)
         delete d->dynamicScene;
 
     d->staticScene = new medDatabasePreviewStaticScene;
+    connect(d->staticScene, SIGNAL(openRequest(medDataIndex)), this, SIGNAL(openRequest(medDataIndex)));
+
     this->setScene(d->staticScene);
 
 
@@ -282,6 +288,8 @@ void medDatabasePreview::showStudyPreview(const medDataIndex &index)
     }
 
     d->dynamicScene = new medDatabasePreviewDynamicScene(seriesDescriptionDataIndexMap);
+    connect(d->dynamicScene, SIGNAL(openRequest(medDataIndex)), this, SIGNAL(openRequest(medDataIndex)));
+
 
     QString itemDescription = dbc->metaData(index, medMetaDataKeys::StudyDescription);
     d->label->setText(itemDescription);
@@ -298,6 +306,8 @@ void medDatabasePreview::showPatientPreview(const medDataIndex &index)
     if (d->staticScene)
         delete d->staticScene;
     d->staticScene = new medDatabasePreviewStaticScene;
+    connect(d->staticScene, SIGNAL(openRequest(medDataIndex)), this, SIGNAL(openRequest(medDataIndex)));
+
     this->setScene(d->staticScene);
 
     d->staticScene->setImage(index);

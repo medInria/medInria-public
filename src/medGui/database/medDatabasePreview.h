@@ -22,6 +22,8 @@ public:
     medDataIndex& currentDataIndex() const;
 
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+signals:
+    void openRequest(const medDataIndex& index);
 
 private :
     medDatabasePreviewStaticScenePrivate *d;
@@ -73,6 +75,8 @@ protected:
     void leaveEvent(QEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
 
+signals:
+    void openRequest(const medDataIndex& index);
 
 private:
     medDatabasePreviewPrivate *d;

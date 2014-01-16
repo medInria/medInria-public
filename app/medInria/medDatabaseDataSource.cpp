@@ -90,6 +90,7 @@ medDatabaseDataSource::medDatabaseDataSource( QWidget* parent ): medAbstractData
     connect(d->compactView, SIGNAL(studyClicked(const medDataIndex&)), d->compactPreview, SLOT(showStudyPreview(const medDataIndex&)));
     connect(d->compactView, SIGNAL(seriesClicked(const medDataIndex&)), d->compactPreview, SLOT(showSeriesPreview(const medDataIndex&)));
 
+    connect(d->compactPreview, SIGNAL(openRequest(medDataIndex)), this, SIGNAL(open(medDataIndex)));
 
     connect(d->largeView, SIGNAL(patientClicked(const medDataIndex&)), d->actionsToolBox, SLOT(patientSelected(const medDataIndex&)));
     connect(d->largeView, SIGNAL(seriesClicked(const medDataIndex&)), d->actionsToolBox, SLOT(seriesSelected(const medDataIndex&)));
