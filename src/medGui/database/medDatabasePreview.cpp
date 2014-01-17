@@ -1,16 +1,16 @@
 #include "medDatabasePreview.h"
 
-#include "medDataIndex.h"
-#include "medAbstractDbController.h"
-#include "medDataManager.h"
-#include "medImageFileLoader.h"
+#include <medDataIndex.h>
+#include <medAbstractDbController.h>
+#include <medDataManager.h>
+#include <medImageFileLoader.h>
 
 
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 
-#include "medDatabaseThumbnailHelper.h"
+#include <medDatabaseThumbnailHelper.h>
 
 
 

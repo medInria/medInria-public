@@ -1,9 +1,9 @@
 #include "medDatabaseCompactWidget.h"
 
-#include "medDatabaseView.h"
-#include "medDatabasePreview.h"
+#include <medDatabaseView.h>
+#include <medDatabasePreview.h>
 
-#include "medDataIndex.h"
+#include <medDataIndex.h>
 
 
 #include <QVBoxLayout>

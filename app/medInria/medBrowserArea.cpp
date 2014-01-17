@@ -13,7 +13,7 @@
 
 #include "medBrowserArea.h"
 
-#include "medBrowserSourceSelectorToolBox.h"
+#include <medBrowserSourceSelectorToolBox.h>
 
 #include <QtGui>
 
@@ -40,7 +40,7 @@
 #include <medPacsWidget.h>
 #include <medCompositeDataSetImporterSelectorToolBox.h>
 #include <medAbstractDataSource.h>
-#include "medDataSourceManager.h"
+#include <medDataSourceManager.h>
 
 class medBrowserAreaPrivate
 {

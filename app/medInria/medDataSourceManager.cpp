@@ -23,9 +23,9 @@
 #include <medStorage.h>
 #include <medMessageController.h>
 
-#include "medFileSystemDataSource.h"
-#include "medDatabaseDataSource.h"
-#include "medPacsDataSource.h"
+#include <medFileSystemDataSource.h>
+#include <medDatabaseDataSource.h>
+#include <medPacsDataSource.h>
 
 class medDataSourceManagerPrivate
 {
