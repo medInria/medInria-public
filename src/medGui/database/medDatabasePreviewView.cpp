@@ -11,13 +11,13 @@
 
 =========================================================================*/
 
-#include "medDatabasePreviewArrow.h"
-#include "medDatabasePreviewController.h"
-#include "medDatabasePreviewItem.h"
+#include <medDatabasePreviewArrow.h>
+#include <medDatabasePreviewController.h>
+#include <medDatabasePreviewItem.h>
 #include "medDatabasePreviewView.h"
-#include "medDatabasePreviewTooltip.h"
+#include <medDatabasePreviewTooltip.h>
 
-#include "medDataIndex.h"
+#include <medDataIndex.h>
 
 class medDatabasePreviewViewPrivate
 {

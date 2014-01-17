@@ -16,10 +16,10 @@
 
 #include "medTabbedViewContainers.h"
 
-#include "medViewContainer.h"
-#include "medCustomViewContainer.h"
-#include "medMultiViewContainer.h"
-#include "medSingleViewContainer.h"
+#include <medViewContainer.h>
+#include <medCustomViewContainer.h>
+#include <medMultiViewContainer.h>
+#include <medSingleViewContainer.h>
 
 class medTabbedViewContainersPrivate
 {

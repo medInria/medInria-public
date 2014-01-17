@@ -17,13 +17,13 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include "itkFiltersProcessBase_p.h"
+#include <itkFiltersProcessBase_p.h>
 
 #include <medMetaDataKeys.h>
 
-#include "itkImage.h"
-#include "itkCommand.h"
-#include "itkMultiplyImageFilter.h"
+#include <itkImage.h>
+#include <itkCommand.h>
+#include <itkMultiplyImageFilter.h>
 
 class itkFiltersMultiplyProcess;
 

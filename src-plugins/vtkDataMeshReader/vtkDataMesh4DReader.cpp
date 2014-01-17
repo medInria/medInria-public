@@ -12,10 +12,10 @@
 =========================================================================*/
 
 #include "vtkDataMesh4DReader.h"
-#include "vtkDataManagerReader.h"
-#include "vtkDataManager.h"
-#include "vtkMetaDataSetSequence.h"
-#include "vtkSmartPointer.h"
+#include <vtkDataManagerReader.h>
+#include <vtkDataManager.h>
+#include <vtkMetaDataSetSequence.h>
+#include <vtkSmartPointer.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>

@@ -14,7 +14,7 @@
 #pragma once
 
 #include "medGuiExport.h"
-#include "medToolBox.h"
+#include <medToolBox.h>
 #include <medCore/medDataIndex.h>
 
 class medFilteringSelectorToolBoxPrivate;

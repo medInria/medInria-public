@@ -18,8 +18,8 @@
 //#include <itkAnalyzeImageIOFactory.h>
 //#include <itkVTKImageIOFactory.h>
 
-#include "vtkSmartPointer.h"
-#include "vtkImageData.h"
+#include <vtkSmartPointer.h>
+#include <vtkImageData.h>
 #include <vtkDataManagement/vtkMetaImageData.h>
 
 // /////////////////////////////////////////////////////////////////

@@ -13,7 +13,7 @@
 
 #pragma once
 #include "vtkDataManagementExport.h"
-#include "vtkXMLCompositeDataReader.h"
+#include <vtkXMLCompositeDataReader.h>
 
 class vtkFiberDataSet;
 

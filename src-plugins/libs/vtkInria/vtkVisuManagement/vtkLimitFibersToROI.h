@@ -15,7 +15,7 @@
 
 #include "vtkVisuManagementExport.h"
 
-#include "vtkPolyDataAlgorithm.h"
+#include <vtkPolyDataAlgorithm.h>
 #include <vtkImageData.h>
 #include <vtkMatrix4x4.h>
 #include <vector>

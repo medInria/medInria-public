@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medClutEditor.h"
+#include <medClutEditor.h>
 #include <qiodevice.h>
 #include <qstring.h>
 

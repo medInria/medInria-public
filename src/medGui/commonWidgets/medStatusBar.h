@@ -17,7 +17,7 @@
 #include <QWidget>
 #include <QBoxLayout>
 #include "medGuiExport.h"
-#include "medMessageController.h"
+#include <medMessageController.h>
 
 class medStatusBarPrivate;
 

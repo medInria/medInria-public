@@ -21,10 +21,10 @@
 #include <math.h>
 #include <limits>
 
-#include "medLUTToXMLWriter.h"
-#include "medXMLToLUTReader.h"
-#include "medSaveLUTDialog.h"
-#include "medLoadLUTDialog.h"
+#include <medLUTToXMLWriter.h>
+#include <medXMLToLUTReader.h>
+#include <medSaveLUTDialog.h>
+#include <medLoadLUTDialog.h>
 
 // /////////////////////////////////////////////////////////////////
 // medClutEditorVertex

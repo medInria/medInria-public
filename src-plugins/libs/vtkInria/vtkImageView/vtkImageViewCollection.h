@@ -15,9 +15,9 @@
 
 #include "vtkImageViewExport.h"
 
-#include "vtkCollection.h"
-#include "vtkCommand.h"
-#include "vtkLookupTable.h"
+#include <vtkCollection.h>
+#include <vtkCommand.h>
+#include <vtkLookupTable.h>
 
 #include <vtkImageView2D.h>
 

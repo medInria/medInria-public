@@ -24,7 +24,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkShadowMappingHelper.h"
+#include <vtkShadowMappingHelper.h>
 
 #include "vtkHWShadingExport.h"
 

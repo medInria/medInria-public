@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include "medJobManager.h"
-#include "medJobItem.h"
+#include <medJobItem.h>
 
 medJobManager *medJobManager::s_instance = NULL;
 

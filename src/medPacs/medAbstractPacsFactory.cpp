@@ -12,11 +12,11 @@
 =========================================================================*/
 
 #include "medAbstractPacsFactory.h"
-#include "medAbstractPacsEchoScu.h"
-#include "medAbstractPacsFindScu.h"
-#include "medAbstractPacsMoveScu.h"
-#include "medAbstractPacsStoreScu.h"
-#include "medAbstractPacsStoreScp.h"
+#include <medAbstractPacsEchoScu.h>
+#include <medAbstractPacsFindScu.h>
+#include <medAbstractPacsMoveScu.h>
+#include <medAbstractPacsStoreScu.h>
+#include <medAbstractPacsStoreScp.h>
 
 class medAbstractPacsFactoryPrivate
 {

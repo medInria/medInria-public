@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medAbstractPacsBaseScu.h"
+#include <medAbstractPacsBaseScu.h>
 #include "medPacsExport.h"
 
 class MEDPACS_EXPORT medAbstractPacsFindScu : public medAbstractPacsBaseScu

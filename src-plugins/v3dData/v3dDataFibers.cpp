@@ -15,11 +15,11 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 
-#include "vtkSmartPointer.h"
-#include "vtkPolyData.h"
-#include "vtkPolyDataReader.h"
-#include "vtkPolyDataWriter.h"
-#include "vtkFiberDataSet.h"
+#include <vtkSmartPointer.h>
+#include <vtkPolyData.h>
+#include <vtkPolyDataReader.h>
+#include <vtkPolyDataWriter.h>
+#include <vtkFiberDataSet.h>
 
 #include <vtkPolyDataMapper.h>
 #include <vtkActor.h>

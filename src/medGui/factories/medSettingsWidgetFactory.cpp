@@ -13,7 +13,7 @@
 
 #include "medSettingsWidgetFactory.h"
 
-#include "medSettingsWidget.h"
+#include <medSettingsWidget.h>
 
 class medSettingsWidgetFactoryPrivate
 {

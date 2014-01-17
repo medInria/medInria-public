@@ -20,8 +20,8 @@
 #include <itkGDCMSeriesFileNames.h>
 #include <itkFlipImageFilter.h>
 #include <itkDicomTagManager.h>
-#include "itkExtractImageFilter.h"
-#include "itkGDCMImageIO.h"
+#include <itkExtractImageFilter.h>
+#include <itkGDCMImageIO.h>
 #include <itksys/ios/sstream>
 #include <itksys/Base64.h>
 

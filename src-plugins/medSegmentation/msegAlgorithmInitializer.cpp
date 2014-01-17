@@ -13,10 +13,10 @@
 
 #include "msegAlgorithmInitializer.h"
 
-#include "msegAlgorithmConnectedThreshold.h"
-#include "msegAlgorithmConnectedThresholdToolbox.h"
-#include "medProcessPaintSegm.h"
-#include "msegAlgorithmPaintToolbox.h"
+#include <msegAlgorithmConnectedThreshold.h>
+#include <msegAlgorithmConnectedThresholdToolbox.h>
+#include <medProcessPaintSegm.h>
+#include <msegAlgorithmPaintToolbox.h>
 #include <medToolBoxFactory.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>

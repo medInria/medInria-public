@@ -14,7 +14,7 @@
 #pragma once
 
 #include <itkRGBPixel.h>
-#include "itkDataImage.h"
+#include <itkDataImage.h>
 #include "itkDataImagePluginExport.h"
 
 extern const char itkDataImageRGB3Name[] = "itkDataImageRGB3";

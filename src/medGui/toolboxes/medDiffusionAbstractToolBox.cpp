@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medDiffusionSelectorToolBox.h"
+#include <medDiffusionSelectorToolBox.h>
 
 #include "medDiffusionAbstractToolBox.h"
 #include "medDiffusionAbstractToolBox_p.h"

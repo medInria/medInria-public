@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medTestDbApp.h"
+#include <medTestDbApp.h>
 
 #include<dtkLog/dtkLog.h>
 

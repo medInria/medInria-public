@@ -13,7 +13,7 @@
 
 #include "medSegmentationWorkspace.h"
 
-#include "medSegmentationSelectorToolBox.h"
+#include <medSegmentationSelectorToolBox.h>
 
 #include <medCore/medAbstractView.h>
 

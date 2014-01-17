@@ -17,9 +17,9 @@
 
 #include <dtkItkLogForwarder/itkLogForwarder.h>
 
-#include "itkNrrdDataTensorImageReader.h"
-#include "itkNiftiDataTensorImageReader.h"
-#include "itkMetaDataTensorImageReader.h"
+#include <itkNrrdDataTensorImageReader.h>
+#include <itkNiftiDataTensorImageReader.h>
+#include <itkMetaDataTensorImageReader.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkDataTensorImageReaderPluginPrivate

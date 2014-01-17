@@ -11,10 +11,10 @@
 
 =========================================================================*/
 
-#include "medDatabaseNavigatorItem.h"
+#include <medDatabaseNavigatorItem.h>
 
 #include "medDatabaseNavigatorView.h"
-#include "medDatabaseNavigatorController.h"
+#include <medDatabaseNavigatorController.h>
 
 class medDatabaseNavigatorViewPrivate
 {

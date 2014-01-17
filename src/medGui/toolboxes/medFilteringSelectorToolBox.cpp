@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include "medFilteringSelectorToolBox.h"
-#include "medFilteringAbstractToolBox.h"
+#include <medFilteringAbstractToolBox.h>
 
 #include <medToolBoxFactory.h>
 #include <medDropSite.h>

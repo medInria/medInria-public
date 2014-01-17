@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include "medAbstractDbController.h"
-#include "medDataIndex.h"
+#include <medDataIndex.h>
 
 
 void medAbstractDbController::import( const medDataIndex& index, const medAbstractDbController& controller )

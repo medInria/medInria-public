@@ -11,10 +11,10 @@
 
 =========================================================================*/
 
-#include "medBrowserArea.h"
+#include <medBrowserArea.h>
 #include "medMainWindow.h"
-#include "medWorkspaceArea.h"
-#include "medHomepageArea.h"
+#include <medWorkspaceArea.h>
+#include <medHomepageArea.h>
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -49,15 +49,15 @@
 #include <medSettingsEditor.h>
 #include <medEmptyDbWarning.h>
 
-#include "medSeedPointAnnotationData.h"
+#include <medSeedPointAnnotationData.h>
 
-#include "medVisualizationWorkspace.h"
-#include "medRegistrationWorkspace.h"
-#include "medDiffusionWorkspace.h"
-#include "medFilteringWorkspace.h"
-#include "medSegmentationWorkspace.h"
+#include <medVisualizationWorkspace.h>
+#include <medRegistrationWorkspace.h>
+#include <medDiffusionWorkspace.h>
+#include <medFilteringWorkspace.h>
+#include <medSegmentationWorkspace.h>
 
-#include "medSaveModifiedDialog.h"
+#include <medSaveModifiedDialog.h>
 
 #include <QtGui>
 

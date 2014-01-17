@@ -13,8 +13,8 @@
 
 #include "medAbstractData.h"
 
-#include "medDataIndex.h"
-#include "medAttachedData.h"
+#include <medDataIndex.h>
+#include <medAttachedData.h>
 
 #include <dtkCore/dtkSmartPointer.h>
 

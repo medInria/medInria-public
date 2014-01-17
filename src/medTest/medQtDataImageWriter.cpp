@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include "medQtDataImageWriter.h"
-#include "medQtDataImage.h"
+#include <medQtDataImage.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>

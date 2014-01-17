@@ -15,8 +15,8 @@
 
 #include "vtkRenderingAddOnExport.h"
 
-#include "vtkThreadedImageAlgorithm.h"
-#include "vtkLookupTable.h"
+#include <vtkThreadedImageAlgorithm.h>
+#include <vtkLookupTable.h>
 
 class VTK_RENDERINGADDON_EXPORT vtkImageBlendWithMask : public vtkThreadedImageAlgorithm
 {

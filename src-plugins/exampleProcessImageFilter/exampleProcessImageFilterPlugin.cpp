@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include "exampleProcessImageFilter.h"
+#include <exampleProcessImageFilter.h>
 #include "exampleProcessImageFilterPlugin.h"
-#include "exampleProcessImageFilterToolBox.h" //the toolbox gui and functionality for the process
+#include <exampleProcessImageFilterToolBox.h> //the toolbox gui and functionality for the process
 
 #include <dtkLog/dtkLog.h>
 

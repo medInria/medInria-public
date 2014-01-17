@@ -13,7 +13,7 @@
 
 #include "msegAlgorithmConnectedThreshold.h"
 
-#include "itkMsegProgressObserverCommand.h"
+#include <itkMsegProgressObserverCommand.h>
 
 #include <itkConnectedThresholdImageFilter.h>
 #include <itkImageFunction.h>

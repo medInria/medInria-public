@@ -29,7 +29,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkHWShadingExport.h"
 
-#include "vtkShaderObject.h"
+#include <vtkShaderObject.h>
 
 /**
  * GLSL Fragment Shader Object

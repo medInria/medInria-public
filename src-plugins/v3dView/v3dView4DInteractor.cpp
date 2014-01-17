@@ -36,7 +36,7 @@
 
 #include <medMessageController.h>
 
-#include "medVtkView.h"
+#include <medVtkView.h>
 
 template <typename TYPE>
 bool AppendImageSequence(dtkAbstractData* data,v3dView* view,vtkCollection* sequenceList,QList<dtkAbstractData*> dataList) {

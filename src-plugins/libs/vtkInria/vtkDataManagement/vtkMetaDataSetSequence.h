@@ -20,9 +20,9 @@
 
 #include <vtkMetaImageData.h>
 #include <itkExtractImageFilter.h>
-#include "itkImageRegionIterator.h"
-#include "itkImageRegion.h"
-#include "itkImage.h"
+#include <itkImageRegionIterator.h>
+#include <itkImageRegion.h>
+#include <itkImage.h>
 
 
 

@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include "itkVTKImageImport.h"
+#include <itkVTKImageImport.h>
 #include "vtkImageExport.h"
-#include "vtkImageData.h"
+#include <vtkImageData.h>
 
 #ifndef vtkFloatingPointType
 #define vtkFloatingPointType float

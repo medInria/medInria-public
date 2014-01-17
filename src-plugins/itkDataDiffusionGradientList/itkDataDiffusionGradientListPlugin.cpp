@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkDataDiffusionGradientList.h"
+#include <itkDataDiffusionGradientList.h>
 #include "itkDataDiffusionGradientListPlugin.h"
 
 #include <dtkLog/dtkLog.h>

@@ -12,8 +12,8 @@
 =========================================================================*/
 
 #include "vtkDataMeshWriterPlugin.h"
-#include "vtkDataMeshWriter.h"
-#include "vtkDataMesh4DWriter.h"
+#include <vtkDataMeshWriter.h>
+#include <vtkDataMesh4DWriter.h>
 
 #include <dtkLog/dtkLog.h>
 

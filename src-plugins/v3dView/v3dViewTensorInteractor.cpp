@@ -22,7 +22,7 @@
 #include <vtkTensorManager.h>
 #include <vtkStructuredPoints.h>
 
-#include "medVtkView.h"
+#include <medVtkView.h>
 
 #include <itkITKTensorsToVTKTensorsFilter.h>
 #include <itkImage.h>

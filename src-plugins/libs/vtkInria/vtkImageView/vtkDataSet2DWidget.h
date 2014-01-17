@@ -14,8 +14,8 @@
 #pragma once
 
 #include "vtkImageViewExport.h"
-#include "vtkObject.h"
-#include "vtkCommand.h"
+#include <vtkObject.h>
+#include <vtkCommand.h>
 
 class vtkImageView2D;
 class vtkDataSet2DWidgetCommand;

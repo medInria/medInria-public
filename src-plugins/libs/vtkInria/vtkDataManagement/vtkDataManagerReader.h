@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkXMLReader.h"
+#include <vtkXMLReader.h>
 #include "vtkDataManagementExport.h"
 
 class vtkDataManager;

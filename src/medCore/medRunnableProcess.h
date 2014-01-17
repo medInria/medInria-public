@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medJobItem.h"
+#include <medJobItem.h>
 
 #include "medCoreExport.h"
 

@@ -17,7 +17,7 @@
 // is canceled (no effect). This is particularly usefull when one wants a menu to popup
 // when right clikcking on the  window. The wheel has the same effect as the right click.
 
-#include "vtkInteractorStyleTrackballCamera.h"
+#include <vtkInteractorStyleTrackballCamera.h>
 
 #include "vtkWidgetsAddOnExport.h"
 

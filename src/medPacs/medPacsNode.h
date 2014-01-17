@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medAbstractPacsNode.h"
+#include <medAbstractPacsNode.h>
 
 class medPacsNode : public medAbstractPacsNode
 {

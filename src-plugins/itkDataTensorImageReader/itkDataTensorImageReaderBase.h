@@ -16,7 +16,7 @@
 #include <dtkCore/dtkAbstractDataReader.h>
 
 #include "itkDataTensorImageReaderPluginExport.h"
-#include "itkImageIOBase.h"
+#include <itkImageIOBase.h>
 
 class ITKDATATENSORIMAGEREADERPLUGIN_EXPORT itkDataTensorImageReaderBase : public dtkAbstractDataReader
 {

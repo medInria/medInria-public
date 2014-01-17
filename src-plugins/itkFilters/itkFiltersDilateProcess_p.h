@@ -16,14 +16,14 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include "itkFiltersProcessBase_p.h"
+#include <itkFiltersProcessBase_p.h>
 
 #include <medMetaDataKeys.h>
 
-#include "itkImage.h"
-#include "itkCommand.h"
-#include "itkGrayscaleDilateImageFilter.h"
-#include "itkBinaryBallStructuringElement.h"
+#include <itkImage.h>
+#include <itkCommand.h>
+#include <itkGrayscaleDilateImageFilter.h>
+#include <itkBinaryBallStructuringElement.h>
 
 
 class itkFiltersDilateProcess;

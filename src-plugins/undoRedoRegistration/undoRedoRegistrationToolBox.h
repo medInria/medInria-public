@@ -5,7 +5,7 @@
 #pragma once
 
 #include <medRegistrationAbstractToolBox.h>
-#include "undoRedoRegistration.h"
+#include <undoRedoRegistration.h>
 #include "undoRedoRegistrationPluginExport.h"
 
 class undoRedoRegistrationToolBoxPrivate;

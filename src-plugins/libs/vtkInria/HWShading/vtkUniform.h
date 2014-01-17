@@ -20,7 +20,7 @@ the medInria team.
 #pragma once
 
 #include "vtkHWShadingExport.h"
-#include "vtkShaderUniform.h"
+#include <vtkShaderUniform.h>
 
 template <unsigned N>
 struct Vec {

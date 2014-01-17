@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include "medToolBoxBody.h"
-#include "medToolBoxTab.h"
+#include <medToolBoxTab.h>
 
 class medToolBoxBodyPrivate
 {

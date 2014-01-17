@@ -15,7 +15,7 @@
 
 #include "vtkWidgetsAddOnExport.h"
 
-#include "vtk3DWidget.h"
+#include <vtk3DWidget.h>
 
 class vtkAbstractPropPicker;
 class vtkActor;

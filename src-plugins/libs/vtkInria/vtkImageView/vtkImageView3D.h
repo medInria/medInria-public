@@ -15,7 +15,7 @@
 
 #include "vtkImageViewExport.h"
 
-#include "vtkImageView.h"
+#include <vtkImageView.h>
 
 #include <vtkPlaneWidget.h>
 #include <vtkOrientedBoxWidget.h>

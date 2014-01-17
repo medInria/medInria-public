@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include "itkProcessRegistrationDiffeomorphicDemons.h"
+#include <itkProcessRegistrationDiffeomorphicDemons.h>
 #include "itkProcessRegistrationDiffeomorphicDemonsPlugin.h"
-#include "itkProcessRegistrationDiffeomorphicDemonsToolBox.h"
+#include <itkProcessRegistrationDiffeomorphicDemonsToolBox.h>
 
 #include <dtkLog/dtkLog.h>
 

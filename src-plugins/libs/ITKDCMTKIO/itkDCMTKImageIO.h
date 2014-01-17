@@ -17,7 +17,7 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include "itkMultiThreadedImageIOBase.h"
+#include <itkMultiThreadedImageIOBase.h>
 #include <itkMetaDataObject.h>
 
 #include "itkDCMTKIOExport.h"

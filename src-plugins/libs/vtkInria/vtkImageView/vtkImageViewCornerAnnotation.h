@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkCornerAnnotation.h"
+#include <vtkCornerAnnotation.h>
 
 #include "vtkImageViewExport.h"
 

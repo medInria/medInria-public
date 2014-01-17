@@ -16,7 +16,7 @@
 #include <dtkCore/dtkAbstractDataReader.h>
 
 #include "itkDataImageBaseExport.h"
-#include "itkImageIOBase.h"
+#include <itkImageIOBase.h>
 
 class ITKDATAIMAGEBASE_EXPORT itkDataImageReaderBase:
         public dtkAbstractDataReader

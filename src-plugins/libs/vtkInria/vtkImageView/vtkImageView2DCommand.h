@@ -15,8 +15,8 @@
 
 #include "vtkImageViewExport.h"
 
-#include "vtkCommand.h"
-#include "vtkObject.h"
+#include <vtkCommand.h>
+#include <vtkObject.h>
 
 class vtkImageView2D;
 

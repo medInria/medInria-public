@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include "itkObjectFactory.h"
-#include "itkImageToImageFilter.h"
-#include "itkImageRegionIterator.h"
-#include "itkImageRegionConstIterator.h"
-#include "itkConstNeighborhoodIterator.h"
+#include <itkObjectFactory.h>
+#include <itkImageToImageFilter.h>
+#include <itkImageRegionIterator.h>
+#include <itkImageRegionConstIterator.h>
+#include <itkConstNeighborhoodIterator.h>
 #include <string>
-#include "itkSize.h"
+#include <itkSize.h>
 
 
 #include <vector>

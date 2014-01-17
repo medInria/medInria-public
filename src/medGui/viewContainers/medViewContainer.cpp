@@ -13,7 +13,7 @@
 
 #include "medViewContainer.h"
 #include "medViewContainer_p.h"
-#include "medViewPool.h"
+#include <medViewPool.h>
 #include <medDataManager.h>
 #include <medViewManager.h>
 #include <medAbstractView.h>

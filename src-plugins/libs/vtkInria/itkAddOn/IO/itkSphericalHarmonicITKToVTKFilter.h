@@ -14,8 +14,8 @@
 #pragma once
 
 
-#include "itkImage.h"
-#include "itkImageToImageFilter.h"
+#include <itkImage.h>
+#include <itkImageToImageFilter.h>
 
 class vtkImageData;
 class vtkMatrix4x4;

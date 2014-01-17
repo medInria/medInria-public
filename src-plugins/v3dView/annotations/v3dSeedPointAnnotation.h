@@ -15,7 +15,7 @@
 
 #include "v3dViewPluginExport.h"
 
-#include "medAbstractAnnotationRepresentation.h"
+#include <medAbstractAnnotationRepresentation.h>
 
 #include <dtkCore/dtkSmartPointer.h>
 

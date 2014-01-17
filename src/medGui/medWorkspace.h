@@ -14,8 +14,8 @@
 #pragma once
 
 #include <QtCore>
-#include "medViewContainer.h"
-#include "medCustomViewContainer.h"
+#include <medViewContainer.h>
+#include <medCustomViewContainer.h>
 
 #include "medGuiExport.h"
 

@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include "medAbstractPacsMoveScu.h"
-#include "medAbstractPacsNode.h"
+#include <medAbstractPacsNode.h>
 
 #include <dtkCore/dtkGlobal.h>
 

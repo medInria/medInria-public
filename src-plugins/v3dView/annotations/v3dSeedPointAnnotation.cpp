@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include "msegSeedPointAnnotation.h"
+#include <msegSeedPointAnnotation.h>
 
-#include "msegSeedPointAnnotationData.h"
+#include <msegSeedPointAnnotationData.h>
 #include <QPainter>
 
 namespace mseg {

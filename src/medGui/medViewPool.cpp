@@ -21,7 +21,7 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include "medMessageController.h"
+#include <medMessageController.h>
 
 class medViewPoolPrivate
 {

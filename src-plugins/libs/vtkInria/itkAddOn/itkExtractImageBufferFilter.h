@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include "itkExtractImageFilter.h"
-#include "itkSmartPointer.h"
+#include <itkExtractImageFilter.h>
+#include <itkSmartPointer.h>
 
 namespace itk
 {

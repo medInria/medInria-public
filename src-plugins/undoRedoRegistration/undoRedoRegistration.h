@@ -6,7 +6,7 @@
 
 #include <itkProcessRegistration/itkProcessRegistration.h>
 #include "undoRedoRegistrationPluginExport.h"
-#include "itkImage.h"
+#include <itkImage.h>
 
 class undoRedoRegistrationPrivate;
 

@@ -23,11 +23,11 @@
 #include <medCore/medMetaDataKeys.h>
 #include <medCore/medStorage.h>
 
-#include "medDatabaseNavigatorController.h"
-#include "medDatabaseNavigatorItem.h"
-#include "medDatabaseNavigatorItemGroup.h"
-#include "medDatabaseNavigatorScene.h"
-#include "medDatabaseNavigatorView.h"
+#include <medDatabaseNavigatorController.h>
+#include <medDatabaseNavigatorItem.h>
+#include <medDatabaseNavigatorItemGroup.h>
+#include <medDatabaseNavigatorScene.h>
+#include <medDatabaseNavigatorView.h>
 
 
 namespace  {

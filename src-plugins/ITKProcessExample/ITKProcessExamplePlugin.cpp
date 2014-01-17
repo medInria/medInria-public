@@ -11,10 +11,10 @@
 
 =========================================================================*/
 
-#include "ITKProcessExample.h"
+#include <ITKProcessExample.h>
 #include "ITKProcessExamplePlugin.h"
-#include "ITKProcessExampleToolBox.h"
-#include "ITKProcessExampleDefinitions.h"
+#include <ITKProcessExampleToolBox.h>
+#include <ITKProcessExampleDefinitions.h>
 
 #include <dtkLog/dtkLog.h>
 

@@ -13,8 +13,8 @@
 
 #include "msegAlgorithmConnectedThresholdToolbox.h"
 
-#include "msegAlgorithmConnectedThreshold.h"
-#include "medSeedPointAnnotationData.h"
+#include <msegAlgorithmConnectedThreshold.h>
+#include <medSeedPointAnnotationData.h>
 
 #include <medAbstractView.h>
 #include <medAbstractData.h>

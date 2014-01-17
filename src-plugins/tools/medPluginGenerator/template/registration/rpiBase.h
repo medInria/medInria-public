@@ -16,7 +16,7 @@
 // This example class implements a non rigid algorithm with a displacement field transform, change for rigid or affine.
 
 #include <rpiDisplacementFieldTransform.h>
-#include "rpiRegistrationMethod.hxx"
+#include <rpiRegistrationMethod.hxx>
 
 
 // Namespace RPI : Registration Programming Interface
@@ -90,7 +90,7 @@ namespace rpi
 
 
 /** Add the source code file (template) */
-#include "rpi%1.hxx"
+#include <rpi%1.hxx>
 
 
 

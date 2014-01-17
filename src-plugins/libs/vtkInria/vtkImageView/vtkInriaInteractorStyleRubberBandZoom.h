@@ -14,7 +14,7 @@
 #pragma once
 
 #include "vtkImageViewExport.h"
-#include "vtkInteractorStyleRubberBandZoom.h"
+#include <vtkInteractorStyleRubberBandZoom.h>
 
 class vtkUnsignedCharArray;
 
