@@ -128,7 +128,7 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         vtkMetaDataSet * mesh = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
         vtkPointSet * pointSet = vtkPointSet::SafeDownCast (mesh->GetDataSet());
 
-        //if(d->view->layersCount() == 0)
+        if(d->view->layersCount() == 0)
             d->view->changeBounds(pointSet->GetBounds());
 
         d->dataList.append(mesh);
@@ -136,58 +136,63 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         d->attributeList.append(NULL);
         updatePipeline(d->dataList.size()-1);
 
-        medListParameter *attributesParam = new medListParameter("Attributes", data);
-        attributesParam->setValues(QStringList("Solid"));
-
-        medListParameter *LUTParam = new medListParameter("LUT", data);
-        LUTParam->setValues(QStringList("Default"));
-
-        medBooleanParameter *edgeVisibleParam = new medBooleanParameter("Edge Visible", data);
-
-        medColorListParameter *colorParam = new medColorListParameter("Color", data);
-        QStringList colors;
-
-        colors << "#000000";
-        colors << "#FFFFFF";
-        colors << "#808080";
-        colors << "#800000";
-        colors << "#804040";
-        colors << "#FF8080";
-        colors << "#FF0000";
-        colors << "#FFFF80";
-        colors << "#FFFF00";
-        colors << "#FF8040";
-        colors << "#FF8000";
-        colors << "#80FF80";
-        colors << "#80FF00";
-        colors << "#00FF00";
-        colors << "#80FFFF";
-        colors << "#00FFFF";
-        colors << "#004080";
-        colors << "#0000FF";
-        colors << "#0080FF";
-        colors << "#0080C0";
-
-        colorParam->setValues(colors);
-
-        medListParameter *renderingParam = new medListParameter("Rendering", data);
-        QStringList renderings = QStringList() << "WireFrame" << "Surface" << "Points";
-        renderingParam->setValues(renderings);
-
-        connect(attributesParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setAttribute(dtkAbstractData*,QString)));
-        connect(LUTParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setLut(dtkAbstractData*,QString)));
-        connect(edgeVisibleParam, SIGNAL(valueChanged(dtkAbstractData*,bool)), this, SLOT(setEdgeVisibility(dtkAbstractData*,bool)));
-        connect(colorParam, SIGNAL(valueChanged(dtkAbstractData*,QColor)), this, SLOT(setColor(dtkAbstractData*,QColor)));
-        connect(renderingParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setRenderingType(dtkAbstractData*,QString)));
-
-        parameters.insert(data, attributesParam);
-        parameters.insert(data, LUTParam);
-        parameters.insert(data, edgeVisibleParam);
-        parameters.insert(data, colorParam);
-        parameters.insert(data, renderingParam);
+        setupParameters(data);
     }
 }
 
+void v3dViewMeshInteractor::setupParameters(dtkAbstractData *data)
+{
+    medListParameter *attributesParam = new medListParameter("Attributes", data);
+    attributesParam->setValues(QStringList("Solid"));
+
+    medListParameter *LUTParam = new medListParameter("LUT", data);
+    LUTParam->setValues(QStringList("Default"));
+
+    medBooleanParameter *edgeVisibleParam = new medBooleanParameter("Edge Visible", data);
+
+    medColorListParameter *colorParam = new medColorListParameter("Color", data);
+    QStringList colors;
+
+    colors << "#000000";
+    colors << "#FFFFFF";
+    colors << "#808080";
+    colors << "#800000";
+    colors << "#804040";
+    colors << "#FF8080";
+    colors << "#FF0000";
+    colors << "#FFFF80";
+    colors << "#FFFF00";
+    colors << "#FF8040";
+    colors << "#FF8000";
+    colors << "#80FF80";
+    colors << "#80FF00";
+    colors << "#00FF00";
+    colors << "#80FFFF";
+    colors << "#00FFFF";
+    colors << "#004080";
+    colors << "#0000FF";
+    colors << "#0080FF";
+    colors << "#0080C0";
+
+    colorParam->setValues(colors);
+
+    medListParameter *renderingParam = new medListParameter("Rendering", data);
+    QStringList renderings = QStringList() << "WireFrame" << "Surface" << "Points";
+    renderingParam->setValues(renderings);
+
+    connect(attributesParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setAttribute(dtkAbstractData*,QString)));
+    connect(LUTParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setLut(dtkAbstractData*,QString)));
+    connect(edgeVisibleParam, SIGNAL(valueChanged(dtkAbstractData*,bool)), this, SLOT(setEdgeVisibility(dtkAbstractData*,bool)));
+    connect(colorParam, SIGNAL(valueChanged(dtkAbstractData*,QColor)), this, SLOT(setColor(dtkAbstractData*,QColor)));
+    connect(renderingParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setRenderingType(dtkAbstractData*,QString)));
+
+    parameters.insert(data, attributesParam);
+    parameters.insert(data, LUTParam);
+    parameters.insert(data, edgeVisibleParam);
+    parameters.insert(data, colorParam);
+    parameters.insert(data, renderingParam);
+
+}
 
 void v3dViewMeshInteractor::setView(dtkAbstractView *view)
 {
@@ -617,6 +622,7 @@ void v3dViewMeshInteractor::removeData(medAbstractData *data)
         }
     }
 }
+
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation

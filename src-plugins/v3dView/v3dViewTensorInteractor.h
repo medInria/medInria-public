@@ -128,6 +128,7 @@ protected:
 
     void computeBounds();
     void updateBounds(const double bounds[]);
+    void setupParameters(dtkAbstractData *data);
 
 
 private:

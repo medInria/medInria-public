@@ -1832,7 +1832,7 @@ void v3dView::onMainWindowDeactivated()
 }
 
 
-void v3dView::changeBounds (const double bounds[6])
+void v3dView::changeBounds (const double bounds[6], const int imageSize[3])
 {
     bool isImageOutBounded = false;
 
@@ -1867,7 +1867,16 @@ void v3dView::changeBounds (const double bounds[6])
     if(isImageOutBounded)
     {
         vtkImageFromBoundsSource* imagegenerator = vtkImageFromBoundsSource::New();
-        unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
+        unsigned int imSize [3];
+        if( imageSize != 0 )
+        {
+            imSize[0] = imageSize[0],  imSize[1] = imageSize[1], imSize[2] = imageSize[2];
+        }
+        else
+        {
+            imSize[0]=100; imSize[1]=100; imSize[2]=100;
+        }
+
         imagegenerator->SetOutputImageSize(imSize);
 
         imagegenerator->SetOutputImageBounds(d->imageBounds);
@@ -1875,15 +1884,12 @@ void v3dView::changeBounds (const double bounds[6])
 
         if( this->layersCount() > 0 )
         {
-            //d->view->view2d()->RemoveDataSet();
             this->view2d()->RemoveLayer(0);
         }
 
         this->view2d()->SetInput(image, 0);
         vtkImageActor *actor = this->view2d()->GetImageActor(0);
         actor->SetOpacity(0.0);
-        //actor->SetVisibility(0);
-        //actor->VisibilityOff();
         isImageOutBounded=false;
         imagegenerator->Delete();
         this->view2d()->ResetCamera();

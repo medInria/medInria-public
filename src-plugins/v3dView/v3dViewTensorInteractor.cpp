@@ -160,8 +160,13 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
 
             if(d->view->layersCount() == 0)
             {
+                int imSize[3];
+                if(d->manager->GetInput())
+                {
+                  d->manager->GetInput()->GetDimensions(imSize);
+                }
                 computeBounds();
-                d->view->changeBounds( d->imageBounds );
+                d->view->changeBounds( d->imageBounds, imSize );
             }
 
             if (d->view) {
@@ -200,8 +205,13 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
 
             if(d->view->layersCount() == 0)
             {
+                int imSize[3];
+                if(d->manager->GetInput())
+                {
+                  d->manager->GetInput()->GetDimensions(imSize);
+                }
                 computeBounds();
-                d->view->changeBounds( d->imageBounds );
+                d->view->changeBounds( d->imageBounds, imSize );
             }
 
             if (d->view) {
@@ -216,6 +226,13 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
         qDebug() << "Unrecognized tensor data type: " << identifier;
     }
 
+    setupParameters(data);
+
+}
+
+
+void v3dViewTensorInteractor::setupParameters(dtkAbstractData *data)
+{
     medListParameter *shapeParam = new medListParameter("Shape", data);
     QStringList shapes;
     shapes << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics";
@@ -253,6 +270,9 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
     medBooleanParameter *showsAxialParam = new medBooleanParameter("Show axial", data);
     medBooleanParameter *showSagitalParam = new medBooleanParameter("Show sagital", data);
     medBooleanParameter *showCoronalParam = new medBooleanParameter("Show coronal", data);
+    showsAxialParam->setValue(true);
+    showSagitalParam->setValue(true);
+    showCoronalParam->setValue(true);
 
     connect(shapeParam, SIGNAL(valueChanged(int)), this, SLOT(setGlyphShape(int)));
     connect(sampleRateParam, SIGNAL(valueChanged(int)), this, SLOT(setSampleRate(int)));
@@ -279,8 +299,8 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
     parameters.insert(data, showsAxialParam);
     parameters.insert(data, showSagitalParam);
     parameters.insert(data, showCoronalParam);
-}
 
+}
 
 void v3dViewTensorInteractor::removeData(medAbstractData *data)
 {
@@ -512,6 +532,16 @@ void v3dViewTensorInteractor::computeBounds()
 
     updateBounds(d->manager->GetTensorVisuManagerSagittal()->GetActor()->GetBounds());
     updateBounds(d->manager->GetTensorVisuManagerCoronal()->GetActor()->GetBounds());
+
+    // these bounds are used by vtkImageFromBoundsSource to generate a background image in case there is none
+    // vtkImageFromBoundsSource output image size is actually [boundsXMax-boundXMin]...,
+    // so we need to increase bounds by +1 to have the correct image size
+    d->imageBounds[0] = round(d->imageBounds[0]);
+    d->imageBounds[1] = round(d->imageBounds[1])+1;
+    d->imageBounds[2] = round(d->imageBounds[2]);
+    d->imageBounds[3] = round(d->imageBounds[3])+1;
+    d->imageBounds[4] = round(d->imageBounds[4]);
+    d->imageBounds[5] = round(d->imageBounds[5])+1;
 }
 
 void v3dViewTensorInteractor::updateBounds(const double bounds[])

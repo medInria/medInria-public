@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medCore/medSHAbstractViewInteractor.h>
+#include <medAbstractVtkViewInteractor.h>
 #include <v3dViewPluginExport.h>
 
 class v3dViewSHInteractorPrivate;
@@ -30,7 +30,7 @@ class dtkAbstractView;
  * adding SH handling capabilities like visualization and SH-specific
  * properties.
  */
-class V3DVIEWPLUGIN_EXPORT v3dViewSHInteractor: public medSHAbstractViewInteractor
+class V3DVIEWPLUGIN_EXPORT v3dViewSHInteractor: public medAbstractVtkViewInteractor
 {
 
     Q_OBJECT
@@ -123,7 +123,6 @@ public slots:
     /** Slice z changed */
     void setZSlice (int zSlice);
 
-
     /** Hide or show axial slice */
     void setShowAxial (bool show);
 
@@ -135,6 +134,18 @@ public slots:
 
     /** Change the position of the slices */
     void setPosition(const QVector3D& position, bool propagate);
+
+    virtual void setOpacity(dtkAbstractData * data, double opacity);
+    virtual double opacity(dtkAbstractData * data) const;
+
+    virtual void setVisible(dtkAbstractData * data, bool visible);
+    virtual bool isVisible(dtkAbstractData * data) const;
+
+
+protected:
+    void computeBounds();
+    void updateBounds(const double bounds[]);
+    void setupParameters(dtkAbstractData *data);
 
 private:
 
