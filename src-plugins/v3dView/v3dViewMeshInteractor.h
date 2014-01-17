@@ -107,6 +107,7 @@ protected:
     void updatePipeline (unsigned int meshLayer = 0);
     void setLut(int meshLayer, vtkLookupTable * lut);
     int getLayer(dtkAbstractData * data) const;
+    void setupParameters(dtkAbstractData *data);
 
 private:
     v3dViewMeshInteractorPrivate * d;

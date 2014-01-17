@@ -23,6 +23,7 @@
 
 #include <v3dView.h>
 #include <medVtkView.h>
+#include <medParameter.h>
 
 #include <itkSphericalHarmonicITKToVTKFilter.h>
 
@@ -35,6 +36,7 @@ public:
     medAbstractData*             data;
     v3dView*                     view;
     vtkSphericalHarmonicManager* manager;
+    double                       imageBounds[6];
 
     //  The filters will convert from itk SH image format to vtkStructuredPoint (format handled by the SH manager)
 
@@ -74,7 +76,7 @@ public:
     }
 };
 
-v3dViewSHInteractor::v3dViewSHInteractor(): medSHAbstractViewInteractor(),d(new v3dViewSHInteractorPrivate) {
+v3dViewSHInteractor::v3dViewSHInteractor(): medAbstractVtkViewInteractor(),d(new v3dViewSHInteractorPrivate) {
 
     d->data    = 0;
     d->view    = 0;
@@ -88,6 +90,8 @@ v3dViewSHInteractor::v3dViewSHInteractor(): medSHAbstractViewInteractor(),d(new 
     d->manager->SetTesselationBasis(0);
     d->manager->Normalization(false);
 
+    for (int i=0; i<6; i++)
+        d->imageBounds[i] = 0;
 }
 
 v3dViewSHInteractor::~v3dViewSHInteractor() {
@@ -138,7 +142,119 @@ void v3dViewSHInteractor::setData(medAbstractData *data) {
     else if (identifier=="itkDataSHImageDouble3")
         d->setVTKFilter<itk::VectorImage<double,3> >(data,d->filterDouble);
     else
+    {
         qDebug() << "Unrecognized SH data type: " << identifier;
+        return;
+    }
+
+    if(d->view->layersCount() == 0)
+    {
+        int imSize[3];
+        imageSize(imSize);
+        computeBounds();
+        d->view->changeBounds(d->imageBounds, imSize);
+    }
+
+    setupParameters(data);
+}
+
+void v3dViewSHInteractor::setupParameters(dtkAbstractData *data)
+{
+    QStringList tesselationTypeList;
+    tesselationTypeList << "Icosahedron" << "Octahedron" << "Tetrahedron";
+    medListParameter *tesselationTypeParam = new medListParameter("tesselationType", data);
+    tesselationTypeParam->setValues(tesselationTypeList);
+
+    //  Combobox to control the spherical Harmonics basis
+
+    QStringList tesselationBasisList;
+    tesselationBasisList << "SHMatrix" << "SHMatrixMaxThesis" << "SHMatrixTournier" << "SHMatrixRshBasis";
+    medListParameter * tesselationBasisParam = new medListParameter("tesselationBasis", data);
+    tesselationBasisParam->setValues(tesselationBasisList);
+
+    //  Control sample rate
+
+    medIntParameter *sampleRateParam = new medIntParameter("sampleRate", data);
+    sampleRateParam->setMinimum(1);
+    sampleRateParam->setMaximum(10);
+    sampleRateParam->setValue(1);
+
+
+    //  flipX, flipY, flipZ and Enhance checkboxes
+
+    medBooleanParameter *flipXParam = new medBooleanParameter("FlipX", data);
+    medBooleanParameter *flipYParam = new medBooleanParameter("FlipY", data);
+    medBooleanParameter *flipZParam = new medBooleanParameter("FlipZ", data);
+    flipZParam->setValue(true);
+
+    medBooleanParameter *enhanceParam = new medBooleanParameter("Enhance", data);
+
+
+    //  Control glyph resolution
+
+    medIntParameter *glyphResolutionParam = new medIntParameter("glyphResolution", data);
+    glyphResolutionParam->setMinimum(0);
+    glyphResolutionParam->setMaximum(10);
+    glyphResolutionParam->setValue(2);
+
+
+    //  We need to calculate one single number for the scale, out of the minor and major scales
+    //  scale = minor*10^(major)
+
+    //  Minor scaling
+
+    medIntParameter *minorScalingParam = new medIntParameter("minorScaling", data);
+    minorScalingParam->setMinimum(0);
+    minorScalingParam->setMaximum(9);
+    minorScalingParam->setValue(3);
+
+
+    //  Major scaling
+
+    medIntParameter *majorScalingParam = new medIntParameter("majorScaling", data);
+    majorScalingParam->setMinimum(-10);
+    majorScalingParam->setMaximum(10);
+    majorScalingParam->setValue(0);
+
+
+    //  Hide or show axial, coronal, and sagittal
+
+    medBooleanParameter *showAxialParam = new medBooleanParameter("ShowAxial", data);
+    showAxialParam->setValue(true);
+    medBooleanParameter *showCoronalParam = new medBooleanParameter("ShowCoronal", data);
+    showCoronalParam->setValue(true);
+    medBooleanParameter *showSagittalParam = new medBooleanParameter("ShowSagittal", data);
+    showSagittalParam->setValue(true);
+
+
+    parameters.insert(data, tesselationTypeParam);
+    parameters.insert(data, tesselationBasisParam);
+    parameters.insert(data, sampleRateParam);
+    parameters.insert(data, flipXParam);
+    parameters.insert(data, flipYParam);
+    parameters.insert(data, flipZParam);
+    parameters.insert(data, enhanceParam);
+    parameters.insert(data, glyphResolutionParam);
+    parameters.insert(data, minorScalingParam);
+    parameters.insert(data, majorScalingParam);
+    parameters.insert(data, showAxialParam);
+    parameters.insert(data, showCoronalParam);
+    parameters.insert(data, showSagittalParam);
+
+    connect(tesselationTypeParam, SIGNAL(valueChanged(int)), this, SLOT(setTesselationType(TesselationType)));
+    connect(tesselationBasisParam, SIGNAL(valueChanged(int)), this, SLOT(setTesselationBasis(TesselationBasis)));
+    connect(sampleRateParam, SIGNAL(valueChanged(int)), this, SLOT(setSampleRate(int)));
+    connect(flipXParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipX(bool)));
+    connect(flipYParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipY(bool)));
+    connect(flipZParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipZ(bool)));
+    connect(enhanceParam, SIGNAL(valueChanged(bool)), this, SLOT(setNormalization(bool)));
+    connect(glyphResolutionParam, SIGNAL(valueChanged(int)), this, SLOT(setGlyphResolution(int)));
+    //connect(minorScalingParam, SIGNAL(valueChanged(int)), this, SLOT(set(TesselationType)));
+    //connect(majorScalingParam, SIGNAL(valueChanged(int)), this, SLOT(setTesselationType(TesselationType)));
+    connect(showAxialParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowAxial(bool)));
+    connect(showCoronalParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowCoronal(bool)));
+    connect(showSagittalParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowSagittal(bool)));
+
 }
 
 medAbstractData *v3dViewSHInteractor::data() {
@@ -154,6 +270,9 @@ void v3dViewSHInteractor::setView(dtkAbstractView *view) {
         d->view->renderer2d()->AddActor(d->manager->GetSHVisuManagerAxial()->GetActor());
         d->view->renderer2d()->AddActor(d->manager->GetSHVisuManagerSagittal()->GetActor());
         d->view->renderer2d()->AddActor(d->manager->GetSHVisuManagerCoronal()->GetActor());
+
+        connect(d->view, SIGNAL(positionChanged(const QVector3D&,bool)),
+                this,    SLOT(setPosition(const QVector3D&,bool)));
     }
 }
 
@@ -276,6 +395,64 @@ void v3dViewSHInteractor::setNormalization(const bool Norma) {
 void v3dViewSHInteractor::setPosition(const QVector3D& position,bool propagate) {
     d->manager->SetCurrentPosition(position.x(),position.y(),position.z());
     d->view->update();
+}
+
+void v3dViewSHInteractor::setOpacity(dtkAbstractData * /*data*/, double /*opacity*/)
+{
+    //TODO
+}
+
+double v3dViewSHInteractor::opacity(dtkAbstractData * /*data*/) const
+{
+    //TODO
+    return 100;
+}
+
+void v3dViewSHInteractor::setVisible(dtkAbstractData * /*data*/, bool /*visible*/)
+{
+    //TODO
+}
+
+bool v3dViewSHInteractor::isVisible(dtkAbstractData * /*data*/) const
+{
+    //TODO
+    return true;
+}
+
+void v3dViewSHInteractor::computeBounds()
+{
+    d->manager->GetSHVisuManagerAxial()->GetActor()->GetBounds(d->imageBounds);
+
+    updateBounds(d->manager->GetSHVisuManagerSagittal()->GetActor()->GetBounds());
+    updateBounds(d->manager->GetSHVisuManagerCoronal()->GetActor()->GetBounds());
+
+    // these bounds are used by vtkImageFromBoundsSource to generate a background image in case there is none
+    // vtkImageFromBoundsSource output image size is actually [boundsXMax-boundXMin]...,
+    // so we need to increase bounds by +1 to have the correct image size
+    d->imageBounds[0] = round(d->imageBounds[0]);
+    d->imageBounds[1] = round(d->imageBounds[1])+1;
+    d->imageBounds[2] = round(d->imageBounds[2]);
+    d->imageBounds[3] = round(d->imageBounds[3])+1;
+    d->imageBounds[4] = round(d->imageBounds[4]);
+    d->imageBounds[5] = round(d->imageBounds[5])+1;
+}
+
+void v3dViewSHInteractor::updateBounds(const double bounds[])
+{
+    for (int i=0; i<6; i=i+2)
+    {
+        if (bounds[i] < d->imageBounds[i])
+        {
+            d->imageBounds[i]=bounds[i];
+        }
+    }
+    for (int i=1; i<6; i=i+2)
+    {
+        if (bounds[i] > d->imageBounds[i])
+        {
+            d->imageBounds[i]=bounds[i];
+        }
+    }
 }
 
 // /////////////////////////////////////////////////////////////////

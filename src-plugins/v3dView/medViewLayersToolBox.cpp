@@ -324,10 +324,10 @@ void medViewLayersToolBox::resetList()
 
 void medViewLayersToolBox::clearParams()
 {
-    foreach(QWidget *widget, d->paramWidgetList)
+   /* foreach(QWidget *widget, d->paramWidgetList)
     {
         widget->close();
-    }
+    }*/
     d->paramWidgetList.clear();
     d->paramList.clear();
 

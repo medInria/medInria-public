@@ -154,7 +154,7 @@ public:
 
     virtual medViewBackend * backend() const;
 
-    void changeBounds (const double bounds[6]);
+    void changeBounds (const double bounds[6], const int imageSize[3] = 0);
 
 public slots:
     // inherited from medAbstractView
