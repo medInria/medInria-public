@@ -647,3 +647,10 @@ void medAbstractView::setFullScreen( bool state )
 {
     emit fullScreen( state );
 }
+
+
+QImage& medAbstractView::generateThumbnail(const QSize &size)
+{
+    QImage img(":/medCore/pixmaps/default_thumbnail.png");
+    return img;
+}

@@ -98,6 +98,8 @@ set(${PROJECT_NAME}_SOURCES
   medStyleSheetParser.cpp
 )
 
+set(${PROJECT_NAME}_RESOURCES medCore.qrc)
+
 ## #################################################################
 ## Wrapping
 ## #################################################################
@@ -120,6 +122,7 @@ add_definitions(-DQT_SHARED)
 add_definitions(-DQT_NO_DEBUG)
 
 qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
+qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
 
 if (MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
@@ -134,7 +137,9 @@ add_library(${PROJECT_NAME} SHARED
   ${${PROJECT_NAME}_SOURCES_PCH}
   ${${PROJECT_NAME}_SOURCES_MOC}
   ${${PROJECT_NAME}_HEADERS}
-  ${${PROJECT_NAME}_SOURCES_WRAP})
+  ${${PROJECT_NAME}_SOURCES_WRAP}
+  ${${PROJECT_NAME}_SOURCES_QRC}
+  )
 
 target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}

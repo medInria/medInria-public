@@ -62,7 +62,7 @@ void medDatabasePreviewStaticScene::setImage(const medDataIndex &index)
     if(!thumbnailImg.isNull())
         pixmap->setPixmap(QPixmap::fromImage(thumbnailImg));
     else
-        pixmap->setPixmap(QPixmap(":/medGui/pixmaps/default_thumbnail.png"));
+        pixmap->setPixmap(QPixmap(":/medCore/pixmaps/default_thumbnail.png"));
 }
 
 // medDatabasePreviewStudyScene
@@ -90,7 +90,7 @@ void medDatabasePreviewStaticScene::addImage(const medDataIndex &index)
     if(!thumbnailImg.isNull())
         pixmap->setPixmap(QPixmap::fromImage(thumbnailImg));
     else
-        pixmap->setPixmap(QPixmap(":/medGui/pixmaps/default_thumbnail.png"));
+        pixmap->setPixmap(QPixmap(":/medCore/pixmaps/default_thumbnail.png"));
 
 
     switch(nbItem)
@@ -167,7 +167,7 @@ void medDatabasePreviewStaticScene::mouseMoveEvent(QGraphicsSceneMouseEvent *eve
         if(!thumbnailImg.isNull())
             pixmap = QPixmap::fromImage(thumbnailImg);
         else
-            pixmap = QPixmap(":/medGui/pixmaps/default_thumbnail.png");
+            pixmap = QPixmap(":/medCore/pixmaps/default_thumbnail.png");
 
         QMimeData *data = d->currentDataIndex.createMimeData();
         data->setImageData(pixmap);
@@ -241,7 +241,7 @@ medDatabasePreview::medDatabasePreview(QWidget *parent): d(new medDatabasePrevie
     d->staticScene = NULL;
 
     QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
-    pixmap->setPixmap(QPixmap(":/medGui/pixmaps/default_thumbnail.png"));
+    pixmap->setPixmap(QPixmap(":/medCore/pixmaps/default_thumbnail.png"));
     this->fitInView(pixmap, Qt::KeepAspectRatio);
     scene->addItem(pixmap);
 
