@@ -69,6 +69,8 @@ public:
      */
     QList< medAttachedData * > attachedData() const;
 
+    virtual QImage& thumbnail();
+
 public slots:
     /**
      * @brief Clear the list of attached data

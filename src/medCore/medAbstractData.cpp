@@ -15,8 +15,14 @@
 
 #include "medDataIndex.h"
 #include "medAttachedData.h"
+#include <medAbstractView.h>
 
 #include <dtkCore/dtkSmartPointer.h>
+#include <dtkCore/dtkAbstractViewFactory.h>
+#include <dtkCore/dtkAbstractView.h>
+
+#include <medDatabaseThumbnailHelper.h>
+
 
 class medAbstractDataPrivate
 {
@@ -108,4 +114,13 @@ void medAbstractData::removeAttachedData( medAttachedData * data )
 void medAbstractData::invokeModified()
 {
     emit dataModified(this);
+}
+
+
+QImage& medAbstractData::thumbnail()
+{
+     dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView"));
+     view->setData(this);
+
+     return view->generateThumbnail(QSize(medDatabaseThumbnailHelper::width, medDatabaseThumbnailHelper::height));
 }
