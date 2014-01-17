@@ -342,6 +342,8 @@ public:
     static medLinkIcon linkIcon;
     static medLinkWLIcon linkWLIcon;
     static medMaximizeIcon maximizeIcon;
+
+    QImage thumbnail;
 };
 
 
@@ -2534,4 +2536,30 @@ void v3dView::onMainWindowDeactivated()
     //This function must contains all the different actions that we want to happen in case the software loses the focus
     if (property("ZoomMode")=="RubberBand")
         onZoomModePropertySet("Normal"); 
+}
+
+
+QImage& v3dView::generateThumbnail(const QSize &size)
+{
+    qDebug()<< "\n\n\n\n\n\nWe're in !!!!";
+    if(!d->data)
+    {
+        qDebug()<< "\n\n\n\ No data !!!";
+        d->thumbnail = QImage(":/medCore/pixmaps/default_thumbnail.png");
+        return d->thumbnail;
+    }
+
+    qDebug()<< "\n\n\n\n\n\n Data !!! ";
+
+    int w(size.width()), h(size.height());
+    d->thumbnail = QImage(w, h, QImage::Format_RGB32);
+
+    d->vtkWidget->resize(w, h);
+
+    vtkSmartPointer <vtkUnsignedCharArray> pixels = vtkUnsignedCharArray::New();
+    pixels->SetArray(d->thumbnail.bits(), w*h*4, 1);
+    d->renWin->GetRGBACharPixelData(0, 0, w-1, h-1, 1, pixels);
+    d->thumbnail = d->thumbnail.mirrored(false,true);
+
+    return d->thumbnail;
 }

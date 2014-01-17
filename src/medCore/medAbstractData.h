@@ -69,6 +69,8 @@ public:
      */
     QList< medAttachedData * > attachedData() const;
 
+
+
     virtual QImage& thumbnail();
 
 public slots:
@@ -98,6 +100,7 @@ public slots:
     */
     void invokeModified();
 
+    void generateThumbnail();
 signals:
     /**
      * @brief emitted when an attached data is added
@@ -110,6 +113,7 @@ signals:
 
     //! Signal emitted when the data contents have been altered.
     void dataModified(medAbstractData *);
+
 
 private:
     medAbstractDataPrivate* d;
