@@ -134,8 +134,6 @@ void medAbstractData::generateThumbnail()
 
     dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView"));
     view->setSharedDataPointer(this);
-    view->update();
 
     d->thumbnail = view->generateThumbnail(QSize(medDatabaseThumbnailHelper::width, medDatabaseThumbnailHelper::height));
-    //delete view;
 }

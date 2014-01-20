@@ -2541,25 +2541,34 @@ void v3dView::onMainWindowDeactivated()
 
 QImage& v3dView::generateThumbnail(const QSize &size)
 {
-    qDebug()<< "\n\n\n\n\n\nWe're in !!!!";
     if(!d->data)
     {
-        qDebug()<< "\n\n\n\ No data !!!";
         d->thumbnail = QImage(":/medCore/pixmaps/default_thumbnail.png");
         return d->thumbnail;
     }
 
-    qDebug()<< "\n\n\n\n\n\n Data !!! ";
-
     int w(size.width()), h(size.height());
-    d->thumbnail = QImage(w, h, QImage::Format_RGB32);
 
-    d->vtkWidget->resize(w, h);
+    d->view2d->SetRenderer (d->renderer2d);
+    d->view2d->SetBackground ( 0.0, 0.0, 0.0 );
+    d->view2d->CursorFollowMouseOff();
+    d->view2d->ShowImageAxisOff();
+    d->view2d->ShowScalarBarOff();
+    d->view2d->ShowAnnotationsOff();
+    d->view2d->ShowRulerWidgetOff();
 
-    vtkSmartPointer <vtkUnsignedCharArray> pixels = vtkUnsignedCharArray::New();
-    pixels->SetArray(d->thumbnail.bits(), w*h*4, 1);
-    d->renWin->GetRGBACharPixelData(0, 0, w-1, h-1, 1, pixels);
-    d->thumbnail = d->thumbnail.mirrored(false,true);
+    d->renWin->SetOffScreenRendering(1);
+    d->view2d->SetRenderWindow (d->renWin);
+
+    d->vtkWidget->SetRenderWindow(d->renWin);
+    d->widget->resize(w,h+15);
+    d->renWin->vtkRenderWindow::SetSize(w,h);
+    d->view2d->Reset();
+    d->view2d->Render();
+
+
+//    d->thumbnail = d->thumbnail.mirrored(false,true);
+    d->thumbnail =  QPixmap::grabWidget(d->vtkWidget).scaled(w,h, Qt::KeepAspectRatio).toImage().convertToFormat(QImage::Format_RGB32);
 
     return d->thumbnail;
 }
