@@ -305,15 +305,10 @@ void medQuickAccessMenu::createVerticalQuickAccessMenu()
     QLabel * workspaceLabel = new QLabel ( tr("<b>Switch to workspaces</b>") );
     workspaceLabel->setMaximumWidth(300);
     workspaceLabel->setFixedHeight(25);
-    workspaceLabel->setAlignment(Qt::AlignHCenter);
+    workspaceLabel->setAlignment(Qt::AlignCenter);
     workspaceLabel->setTextFormat(Qt::RichText);
-    //It's easier to set the stylesheet here than in the qss file
-    workspaceLabel->setStyleSheet("border-image: url(:/pixmaps/toolbox-header.png) 16 16 0 16 repeat-x;\
-                                  border-left-width: 0px;\
-                                  border-right-width: 0px;\
-                                  border-top-width: 8px;\
-                                  border-bottom-width: 0px;");
-    workspaceButtonsLayout->addWidget ( workspaceLabel );
+    workspaceLabel->setObjectName("quickAccessMenuHeader");
+    workspaceButtonsLayout->addWidget(workspaceLabel);
     
     //Setup homepage access button
     medHomepagePushButton * homeButton = new medHomepagePushButton ( this );

@@ -16,7 +16,7 @@
 
 #include <dtkLog/dtkLog.h>
 
-#include <dtkItkLogForwarder/itkLogForwarder.h>
+#include <itkLogForwarder.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkDataDiffusionGradientListPluginPrivate

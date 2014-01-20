@@ -13,7 +13,7 @@
 
 #include <itkDataSHImageReaderPlugin.h>
 #include <dtkLog/dtkLog.h>
-#include <dtkItkLogForwarder/itkLogForwarder.h>
+#include <itkLogForwarder.h>
 
 #include <itkNrrdDataSHImageReader.h>
 #include <itkNiftiDataSHImageReader.h>

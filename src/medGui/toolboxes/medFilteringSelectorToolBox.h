@@ -15,7 +15,7 @@
 
 #include "medGuiExport.h"
 #include "medToolBox.h"
-#include <medCore/medDataIndex.h>
+#include <medDataIndex.h>
 
 class medFilteringSelectorToolBoxPrivate;
 class dtkAbstractData;

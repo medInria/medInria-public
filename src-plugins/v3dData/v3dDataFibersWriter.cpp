@@ -19,7 +19,8 @@
 #include <vtkPolyData.h>
 #include <vtkCellArray.h>
 #include <vtkSmartPointer.h>
-#include <vtkXMLFiberDataSetWriter.h>
+
+#include "vtkXMLFiberDataSetWriter.h"
 #include "vtkFiberDataSet.h"
 
 #include <QFile>

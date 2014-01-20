@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <itkProcessRegistration/itkProcessRegistration.h>
+#include <itkProcessRegistration.h>
 #include "undoRedoRegistrationPluginExport.h"
 #include "itkImage.h"
 

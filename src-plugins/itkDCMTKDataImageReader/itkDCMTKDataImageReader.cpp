@@ -17,9 +17,9 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medCore/medMetaDataKeys.h>
+#include <medMetaDataKeys.h>
 
-#include <ITKDCMTKIO/itkDCMTKImageIO.h>
+#include <itkDCMTKImageIO.h>
 
 #include <itkImageFileReader.h>
 #include <itkRGBPixel.h>

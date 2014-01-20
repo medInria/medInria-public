@@ -15,8 +15,8 @@
 
 #include <QtCore/QObject>
 
-#include <medCore/medDataIndex.h>
-#include <medCore/medJobItem.h>
+#include <medDataIndex.h>
+#include <medJobItem.h>
 
 #include "medSqlExport.h"
 

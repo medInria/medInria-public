@@ -1,52 +1,101 @@
-#######################################################################
+################################################################################
 #
 # medInria
 #
 # Copyright (c) INRIA 2013. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-#######################################################################
-
-cmake_minimum_required(VERSION 2.8.1)
+################################################################################
 
 project(itkDataTensorImagePlugin)
 
-## #################################################################
+## #############################################################################
 ## Setup version numbering
-## #################################################################
+## #############################################################################
 
-set(${PROJECT_NAME}_VERSION ${medInria_VERSION})
+set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
-set(CMAKE_COLOR_MAKEFILE ON)
-set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
-## #################################################################
+## #############################################################################
 ## Resolve dependencies
-## #################################################################
+## #############################################################################
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
-find_package(TTK REQUIRED)
-include(${TTK_USE_FILE})
-
 find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 
-SET(${PROJECT_NAME}_LIBRARIES
+find_package(TTK REQUIRED)
+include(${TTK_USE_FILE})
+
+
+## #############################################################################
+## List Sources
+## #############################################################################
+
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+
+set(${PROJECT_NAME}_QRC itkDataTensorImage.qrc)
+
+
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+list_header_directories_to_include(${PROJECT_NAME}
+  ${${PROJECT_NAME}_HEADERS}
+  )
+
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${MEDINRIA_INCLUDE_DIRS}
+  )
+
+
+## #############################################################################
+## Precompile headers
+## #############################################################################
+
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${MEDPLUGINSPCH_H}
+    ${MEDPLUGINSPCH_CPP}
+    ${${PROJECT_NAME}_SOURCES}
+    )
+endif()
+
+
+## #############################################################################
+## add library
+## #############################################################################
+
+qt4_add_resources(${PROJECT_NAME}_QRC ${${PROJECT_NAME}_QRC})
+
+add_library(${PROJECT_NAME} SHARED
+  ${${PROJECT_NAME}_PCH}
+  ${${PROJECT_NAME}_CFILES}
+  ${${PROJECT_NAME}_QRC}
+  )
+
+
+## #############################################################################
+## Link
+## #############################################################################
+
+target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  dtkItkLogForwarder
-  dtkCore dtkLog
-  medCore
+  dtkCore
+  dtkLog
   ITKIOBMP
   ITKIOBioRad
   ITKIOHDF5
@@ -61,58 +110,23 @@ SET(${PROJECT_NAME}_LIBRARIES
   ITKIOStimulate
   ITKIOVTK
   ITKIOMRC
-)
+  medCore
+  medLog
+  )
 
-## #################################################################
-## Input
-## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  itkDataTensorImagePlugin.h
-  itkDataTensorImageDouble3.h
-  itkDataTensorImageFloat3.h)
+## #############################################################################
+## Install rules
+## #############################################################################
 
-set(${PROJECT_NAME}_SOURCES
-  itkDataTensorImagePlugin.cpp
-  itkDataTensorImageDouble3.cpp
-  itkDataTensorImageFloat3.cpp)
+set_plugin_install_rules(${PROJECT_NAME})
 
-set(${PROJECT_NAME}_RESOURCES itkDataTensorImage.qrc)
 
-## #################################################################
-## Build rules
-## #################################################################
+## #############################################################################
+## Build tests
+## #############################################################################
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
-qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
-
-if (MEDINRIA-PLUGINS_USE_PRECOMPILED_HEADERS)
-  add_precompiled_header(${PROJECT_NAME}_SOURCES_PCH
-    "medPluginsPch.h" "../libs/medPluginsPch/medPluginsItkPch.cpp"
-    ${${PROJECT_NAME}_SOURCES_MOC}
-    ${${PROJECT_NAME}_SOURCES}
-    ${${PROJECT_NAME}_SOURCES_QRC})
+if(MEDINRIA_BUILD_TESTS)
+  #add_subdirectory(tests) #TODO : need some specific data, which ones ?
 endif()
 
-add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_SOURCES_PCH}
-  ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_SOURCES_QRC})
-
-target_link_libraries(${PROJECT_NAME}
-  ${${PROJECT_NAME}_LIBRARIES}
-)
-
-# Group common files together in Visual Studio.
-source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
-
-## #################################################################
-## Install rules
-## #################################################################
-
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION lib)

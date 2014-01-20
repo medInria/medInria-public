@@ -1,130 +1,122 @@
-#######################################################################
+################################################################################
 #
 # medInria
 #
 # Copyright (c) INRIA 2013. All rights reserved.
 # See LICENSE.txt for details.
-# 
+#
 #  This software is distributed WITHOUT ANY WARRANTY; without even
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-#######################################################################
+################################################################################
 
-cmake_minimum_required(VERSION 2.8.1)
 
 project(qtdcmDataSourcePlugin)
 
-## #################################################################
-## Setup version numbering
-## #################################################################
 
-set(${PROJECT_NAME}_VERSION ${medInria_VERSION})
+## #############################################################################
+## Setup version numbering
+## #############################################################################
+
+set(${PROJECT_NAME}_VERSION ${MEDINRIA_VERSION})
 
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UP)
 add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 
-set(CMAKE_COLOR_MAKEFILE ON)
-set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CMAKE_INCLUDE_CURRENT_DIR TRUE)
 
-## #################################################################
+## #############################################################################
 ## Resolve dependencies
-## #################################################################
+## #############################################################################
 
 find_package(ITK REQUIRED)
-if (ITK_FOUND)
-	include(${ITK_USE_FILE})
-endif()
+include(${ITK_USE_FILE})
+
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})
 include(dtkPlugin)
 
+find_package(DCMTK REQUIRED)
+
 find_package(QtDCM REQUIRED)
-if (QTDCM_FOUND)
-  include(${QTDCM_USE_FILE})
+include(${QTDCM_USE_FILE})
+
+
+## #############################################################################
+## List Sources
+## #############################################################################
+
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+list_header_directories_to_include(${PROJECT_NAME}
+  ${${PROJECT_NAME}_HEADERS}
+  )
+
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${MEDINRIA_INCLUDE_DIRS}
+  ${QTDCM_INCLUDE_DIR}
+  ${QTDCM_DIR}
+  )
+
+
+## #############################################################################
+## Precompile headers
+## #############################################################################
+
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
+  add_precompiled_header(${PROJECT_NAME}_PCH
+    ${MEDPLUGINSPCH_H}
+    ${MEDPLUGINSPCH_CPP}
+    ${${PROJECT_NAME}_SOURCES}
+    )
 endif()
 
-## #################################################################
-## Input
-## #################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  qtdcmDataSourcePlugin.h
-  qtdcmDataSourceSerieToolBox.h
-  qtdcmDataSourceServersSettingsToolBox.h
-  qtdcmDataSource.h)
-
-set(${PROJECT_NAME}_HEADERS
-  ${${PROJECT_NAME}_HEADERS_MOC})
-
-set(${PROJECT_NAME}_SOURCES
-  qtdcmDataSourcePlugin.cpp
-  qtdcmDataSourceSerieToolBox.cpp
-  qtdcmDataSourceServersSettingsToolBox.cpp
-  qtdcmDataSource.cpp)
-
-## #################################################################
-## Build rules
-## #################################################################
-
-configure_file(
-      ${CMAKE_CURRENT_SOURCE_DIR}/qtdcmDataSourceDefinitions.h.in
-      ${CMAKE_CURRENT_BINARY_DIR}/qtdcmDataSourceDefinitions.h
-)
-
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
-
-include_directories(${QTDCM_INCLUDE_DIR} ${QTDCM_DIR})
+## #############################################################################
+## add library
+## #############################################################################
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC} 
-  ${${PROJECT_NAME}_SOURCES}
-  ${${PROJECT_NAME}_HEADERS})
+  ${${PROJECT_NAME}_PCH}
+  ${${PROJECT_NAME}_CFILES}
+  )
+
+
+## #############################################################################
+## Link
+## #############################################################################
 
 if (WIN32)
-  target_link_libraries(${PROJECT_NAME}
+  set(WIN_LINK_LIBRARIES
+	netapi32
+	)
+endif()
+
+target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
   ${QTDCM_LIBS}
   ${DCMTK_LIBRARIES}
+  ${WIN_LINK_LIBRARIES}
   dtkCore
   dtkLog
   medCore
   medGui
-  netapi32
   )
-else()
-  target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-  ${QTDCM_LIBS}
-  ${DCMTK_LIBRARIES}
-  dtkCore
-  dtkLog
-  medCore
-  medGui)
-endif()
+  
+if(APPLE)
+  FixDCMTKMacLink(${PROJECT_NAME} ${DCMTK_LIBRARIES})
+endif(APPLE)
 
-# Only doing a fix mac link since qtdcm should already have been compiled and therefore run the FixDCMTKMacInstall
-if (APPLE)
-  include(FixDCMTKMacLink)
-  FixDCMTKMacLink(${PROJECT_NAME})
-endif()
 
-dtk_build_doc(qtdcmDataSourcePlugin)
-
-## #################################################################
-## Source file layout in development environments like Visual Studio
-## #################################################################
-
-source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
-
-## #################################################################
+## #############################################################################
 ## Install rules
-## #################################################################
+## #############################################################################
 
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION plugins
-  LIBRARY DESTINATION plugins
-  ARCHIVE DESTINATION plugins)
+set_plugin_install_rules(${PROJECT_NAME})

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medCore/medMessageController.h>
+#include <medMessageController.h>
 #include <medToolBoxFactory.h>
 #include <medToolBoxHeader.h>
 #include <medCompositeDataSetImporterSelectorToolBox.h>

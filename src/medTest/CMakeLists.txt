@@ -1,4 +1,4 @@
-#######################################################################
+################################################################################
 #
 # medInria
 #
@@ -9,67 +9,58 @@
 #  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 #  PURPOSE.
 #
-#######################################################################
+################################################################################
 
 project(medTest)
 
-## #################################################################
-## Input
-## #################################################################
+## #############################################################################
+## List Sources
+## #############################################################################
 
-set(${PROJECT_NAME}_HEADERS_MOC
-  medQtView.h
-  medQtDataImage.h
-  medQtDataImageReader.h
-  medQtDataImageWriter.h
-  medTestApplication.h
-)
-
-set(${PROJECT_NAME}_HEADERS
-  ${${PROJECT_NAME}_HEADERS_MOC}
-  medTestExport.h
-  medTest.h
-)
-
-set(${PROJECT_NAME}_SOURCES
-  medQtView.cpp
-  medQtDataImage.cpp
-  medQtDataImageReader.cpp
-  medQtDataImageWriter.cpp
-  medTestApplication.cpp
-  medTest.cpp
-)
-
-## #################################################################
-## Build rules
-## #################################################################
+list_source_files(${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  )
 
 
-qt4_wrap_cpp(${PROJECT_NAME}_SOURCES_MOC ${${PROJECT_NAME}_HEADERS_MOC})
-# qt4_add_RESOURCES(${PROJECT_NAME}_SOURCES_QRC ${${PROJECT_NAME}_RESOURCES})
+## #############################################################################
+## include directorie.
+## #############################################################################
+
+list_header_directories_to_include(${PROJECT_NAME}
+  ${${PROJECT_NAME}_HEADERS}
+  )
+
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+    ${medCore_INCLUDE_DIRS}
+    )
+    
+    
+## #############################################################################
+## add library
+## #############################################################################
 
 add_library(${PROJECT_NAME} SHARED
-  ${${PROJECT_NAME}_SOURCES_MOC}
-  ${${PROJECT_NAME}_HEADERS}
-  ${${PROJECT_NAME}_SOURCES})
+  ${${PROJECT_NAME}_CFILES}
+  )
+
+
+## #############################################################################
+## Link
+## #############################################################################
 
 target_link_libraries(${PROJECT_NAME}
-  dtkCore
-  medCore
-  ${QT_QTTEST_LIBRARY}
-  ${QT_LIBRARIES}
-)
+    ${QT_LIBRARIES}
+    ${QT_QTTEST_LIBRARY}
+    dtkCore
+    dtkLog
+    medCore
+    )
 
-# Group common files together in Visual Studio.
-source_group("Header Files" REGULAR_EXPRESSION .*\\.h\$)
-source_group("Generated Files" FILES ${${PROJECT_NAME}_SOURCES_MOC})
 
-## #################################################################
-## Install rules
-## #################################################################
+## #############################################################################
+## install
+## #############################################################################
 
-install(FILES ${${PROJECT_NAME}_HEADERS} DESTINATION include/${PROJECT_NAME})
-install(TARGETS ${PROJECT_NAME}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib)
+set_lib_install_rules(${PROJECT_NAME}
+  ${${PROJECT_NAME}_HEADERS}
+  )

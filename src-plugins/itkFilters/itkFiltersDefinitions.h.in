@@ -1,5 +1,0 @@
-#pragma once
-
-#define PLUGIN_VERSION "${${PROJECT_NAME}_VERSION}"
-
-

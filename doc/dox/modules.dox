@@ -23,9 +23,9 @@
 
   <ul>
   <li> \subpage medCore: the core module contains ... </li>
-  <li> \subpage medGui: the script module contains ...</li>
-  <li> \subpage medPacs: the PACS module contains ...</li>
-  <li> \subpage medSql: the SQL module contains ... </li>
+  <li> \subpage medGui: the Gui module contains ...</li>
+  <li> \subpage medPacs: the Pacs module contains ...</li>
+  <li> \subpage medSql: the Sql module contains ... </li>
   </ul>
 
  */

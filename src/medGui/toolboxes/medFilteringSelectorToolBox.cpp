@@ -18,7 +18,7 @@
 #include <medDropSite.h>
 #include <medToolBoxHeader.h>
 
-#include <medCore/medDataManager.h>
+#include <medDataManager.h>
 #include <medViewManager.h>
 #include <medAbstractView.h>
 

@@ -16,7 +16,7 @@
 #include <medStorage.h>
 #include <medAbstractDataImage.h>
 
-#include <medCore/medMetaDataKeys.h>
+#include <medMetaDataKeys.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>

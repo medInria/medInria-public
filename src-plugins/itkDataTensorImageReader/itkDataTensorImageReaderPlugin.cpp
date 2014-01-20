@@ -15,7 +15,7 @@
 
 #include <dtkLog/dtkLog.h>
 
-#include <dtkItkLogForwarder/itkLogForwarder.h>
+#include <itkLogForwarder.h>
 
 #include "itkNrrdDataTensorImageReader.h"
 #include "itkNiftiDataTensorImageReader.h"

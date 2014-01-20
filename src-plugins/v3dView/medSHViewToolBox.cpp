@@ -13,15 +13,16 @@
 
 #include <cmath>
 #include <medSHViewToolBox.h>
-#include <medCore/medSHAbstractViewInteractor.h>
+#include <medSHAbstractViewInteractor.h>
 #include <dtkCore/dtkAbstractView.h>
-#include <medGui/commonWidgets/medSliderSpinboxPair.h>
+#include <medSliderSpinboxPair.h>
 #include <medPluginManager.h>
 #include <v3dViewSHInteractor.h>
 #include <v3dView.h>
 #include <medToolBoxFactory.h>
 
-class medSHViewToolBoxPrivate {
+class medSHViewToolBoxPrivate
+{
 public:
     QComboBox*            tesselationTypeComboBox;
     QComboBox*            tesselationBasisComboBox;
