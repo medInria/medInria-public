@@ -39,6 +39,8 @@ public:
 public slots:
     void addToView(dtkAbstractData *data);
     void onAddTabClicked();
+    
+    void changeCurrentContainer(QString name);
 
 private:
     medDiffusionWorkspacePrivate *d;
