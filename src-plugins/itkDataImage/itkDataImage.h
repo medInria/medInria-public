@@ -30,7 +30,6 @@
 #include <medAbstractDataTypedImage.h>
 #include <itkDataImagePluginExport.h>
 
-#include <itkThumbnailGenerator.h>
 
 template <typename T>
 struct ImageTypeIndex {

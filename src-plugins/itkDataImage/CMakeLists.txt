@@ -49,7 +49,6 @@ include(${VTK_USE_FILE})
 
 set(${PROJECT_NAME}_HEADERS_MOC
   itkDataImagePlugin.h
-  itkThumbnailGenerator.h
 )
 
 set(${PROJECT_NAME}_HEADERS
@@ -83,7 +82,6 @@ set(${PROJECT_NAME}_HEADERS
 
 set(${PROJECT_NAME}_SOURCES 
   itkDataImagePlugin.cpp
-  itkThumbnailGenerator.cpp
 )
 
 ## #################################################################

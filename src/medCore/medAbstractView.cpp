@@ -16,6 +16,7 @@
 #include <dtkCore/dtkAbstractData.h>
 
 #include <medAbstractViewCoordinates.h>
+#include <medDatabaseThumbnailHelper.h>
 
 class medAbstractViewPrivate
 {
@@ -46,6 +47,8 @@ public:
     QColor color; // The color used to represent this view in other views.
 
     QHash<QString, unsigned int> DataTypes;
+
+    QImage thumbnail;
 
 };
 
@@ -651,6 +654,15 @@ void medAbstractView::setFullScreen( bool state )
 
 QImage& medAbstractView::generateThumbnail(const QSize &size)
 {
-    QImage img(":/medCore/pixmaps/default_thumbnail.png");
-    return img;
+    if (this->receiverWidget())
+    {
+        int w(size.width()), h(size.height());
+        this->receiverWidget()->resize(w,h);
+        d->thumbnail =  QPixmap::grabWidget(this->receiverWidget()).scaled(w,h, Qt::KeepAspectRatio).toImage();
+        d->thumbnail = d->thumbnail.convertToFormat(QImage::Format_RGB32);
+    }
+    else
+        d->thumbnail = QImage(":/medCore/pixmaps/default_thumbnail.png");
+
+    return d->thumbnail;
 }

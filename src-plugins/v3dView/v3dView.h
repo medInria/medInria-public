@@ -212,7 +212,7 @@ public slots: // Menu interface
     void onMenuZoomTriggered();
     void onMenuWindowLevelTriggered();
 public:
-    void  enableInteraction();
+    void enableInteraction();
     void disableInteraction();
     void bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax);
     void cameraUp(double *coordinates);
