@@ -9,7 +9,7 @@
 #include <medAbstractData.h>
 #include <medAbstractVtkViewInteractor.h>
 #include <medParameter.h>
-#include <medViewParamsToolBox.h>
+#include <medVtkViewToolBox.h>
 #include <medToolBoxHeader.h>
 #include <medViewContainer.h>
 
@@ -32,7 +32,7 @@ public:
 
     medParameterPool layerParamPool;
     medParameterPool viewParamPool;
-    medViewParamsToolBox *viewParamsToolBox;
+    medVtkViewToolBox *viewParamsToolBox;
 };
 
 
@@ -52,7 +52,7 @@ medViewLayersToolBox::medViewLayersToolBox(QWidget *parent)
     d->interactorsParamsLayout = new QFormLayout(interactorsParamsWidget);
     d->interactorsParamsLayout->setLabelAlignment(Qt::AlignLeft);
 
-    d->viewParamsToolBox = new medViewParamsToolBox();
+    d->viewParamsToolBox = new medVtkViewToolBox();
     d->viewParamsToolBox->header()->hide();
 
     this->addWidget(d->viewParamsToolBox);
@@ -72,7 +72,7 @@ bool medViewLayersToolBox::registered()
 {
     return medToolBoxFactory::instance()->registerToolBox<medViewLayersToolBox>("medViewLayersToolBox","medViewLayersToolBox",
                                                                                 "Layers management toolbox",
-                                                                                QStringList()<<"view"<<"layers");
+                                                                                QStringList()<<"layers");
 }
 
 

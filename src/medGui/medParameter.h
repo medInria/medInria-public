@@ -15,6 +15,7 @@ class medAbstractParameter : public QObject
     Q_OBJECT
 
 public:
+
     medAbstractParameter(QString name, dtkAbstractObject* attachedObject = 0)
         : _name(name), _widget(0), _attachedObject(attachedObject){}
 
@@ -23,15 +24,19 @@ public:
     QString name() const {return _name;}
 
     QWidget* getWidget() {if (!_widget) setupWidget(); return _widget;}
+    QLabel* getLabel() {if (!_label) setupWidget(); return _label;}
 
     bool match(medAbstractParameter const *other)
     {
         return this->name()==other->name();
     }
 
-    void hideLabel(){ _label->hide() ;}
+    void show(){ _widget->show(); if(!_hideLabel) _label->show();}
+    void hide(){ _widget->hide(); _label->hide();}
+    void hideLabel(){ _label->hide(); _hideLabel = true;}
 
 protected:
+
     virtual void setupWidget() = 0;
 
     void initializeWidget()
@@ -39,9 +44,11 @@ protected:
         _widget = new QWidget;
         _layout = new QHBoxLayout(_widget);
         _label = new QLabel(_name);
-        //_layout->addWidget(_label);
 
-        _layout->setContentsMargins(1,1,1,1);
+        //_layout->setContentsMargins(1,1,1,1);
+        _layout->setContentsMargins(0,0,0,0);
+
+        _hideLabel = false;
 
         connect(_widget, SIGNAL(destroyed()), this, SLOT(deleteWidget()));
     }
@@ -51,6 +58,7 @@ protected:
     QLabel *      _label;
     QHBoxLayout * _layout;
     dtkAbstractObject *_attachedObject;
+    bool          _hideLabel;
 
 private slots:
     void deleteWidget(){_widget=0;}

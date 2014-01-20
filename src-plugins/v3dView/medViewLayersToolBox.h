@@ -8,7 +8,7 @@
 class QListWidget;
 class medVtkView;
 class medAbstractVtkViewInteractor;
-class medViewParamsToolBox;
+class medVtkViewToolBox;
 class medViewLayersToolBoxPrivate;
 
 /**

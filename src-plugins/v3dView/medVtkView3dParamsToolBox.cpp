@@ -12,7 +12,7 @@
 =========================================================================*/
 
 
-#include <medView3dParamsToolBox.h>
+#include <medVtkView3dParamsToolBox.h>
 #include <medToolBoxFactory.h>
 #include <medVtkView.h>
 #include <v3dView.h>
@@ -21,7 +21,7 @@
 
 #include <vtkRenderWindow.h>
 
-class medView3dParamsToolBoxPrivate
+class medVtkView3dParamsToolBoxPrivate
 {
 public:
 
@@ -32,26 +32,26 @@ public:
 };
 
 
-medView3dParamsToolBox::medView3dParamsToolBox(QWidget *parent)
-    : medToolBox(parent), d(new medView3dParamsToolBoxPrivate)
+medVtkView3dParamsToolBox::medVtkView3dParamsToolBox(QWidget *parent)
+    : medToolBox(parent), d(new medVtkView3dParamsToolBoxPrivate)
 {
     d->vtkView = 0;
 }
 
 
-bool medView3dParamsToolBox::registered()
+bool medVtkView3dParamsToolBox::registered()
 {
-    return medToolBoxFactory::instance()->registerToolBox<medView3dParamsToolBox>("medView3dParamsToolBox","medView3dParamsToolBox",
+    return medToolBoxFactory::instance()->registerToolBox<medVtkView3dParamsToolBox>("medVtkView3dParamsToolBox","medVtkView3dParamsToolBox",
                                                                                 "View management toolbox", QStringList());
 }
 
 
-QList<medAbstractParameter*> medView3dParamsToolBox::getParameters(medVtkView* view)
+QList<medAbstractParameter*> medVtkView3dParamsToolBox::getParameters(medVtkView* view)
 {
     return d->viewParamMap.values(view);
 }
 
-void medView3dParamsToolBox::update(dtkAbstractView * view)
+void medVtkView3dParamsToolBox::update(dtkAbstractView * view)
 {
     // Hide this toolbox when no views
     if(!view)
@@ -109,10 +109,10 @@ void medView3dParamsToolBox::update(dtkAbstractView * view)
 
     QFormLayout *toolBoxLayout = new QFormLayout(toolboxWidget);
     toolBoxLayout->setLabelAlignment(Qt::AlignLeft);
-    toolBoxLayout->addRow(mode3dParam->name(), mode3dParam->getWidget());
-    toolBoxLayout->addRow(VRModeParam->name(), VRModeParam->getWidget());
-    toolBoxLayout->addRow(croppingParam->name(), croppingParam->getWidget());
-    toolBoxLayout->addRow(depthPeelingParam->name(), depthPeelingParam->getWidget());
+    toolBoxLayout->addRow(mode3dParam->getLabel(), mode3dParam->getWidget());
+    toolBoxLayout->addRow(VRModeParam->getLabel(), VRModeParam->getWidget());
+    toolBoxLayout->addRow(croppingParam->getLabel(), croppingParam->getWidget());
+    toolBoxLayout->addRow(depthPeelingParam->getLabel(), depthPeelingParam->getWidget());
 
     this->addWidget(toolboxWidget);
 
@@ -132,7 +132,7 @@ void medView3dParamsToolBox::update(dtkAbstractView * view)
 }
 
 
-void medView3dParamsToolBox::set3DMode( QString mode )
+void medVtkView3dParamsToolBox::set3DMode( QString mode )
 {
     if (d->vtkView)
     {
@@ -145,7 +145,7 @@ void medView3dParamsToolBox::set3DMode( QString mode )
     }
 }
 
-void medView3dParamsToolBox::setRenderer( QString mode )
+void medVtkView3dParamsToolBox::setRenderer( QString mode )
 {
     if (d->vtkView)
     {
@@ -156,7 +156,7 @@ void medView3dParamsToolBox::setRenderer( QString mode )
     }
 }
 
-void medView3dParamsToolBox::setCropping( bool checked )
+void medVtkView3dParamsToolBox::setCropping( bool checked )
 {
     if (d->vtkView)
     {
@@ -167,7 +167,7 @@ void medView3dParamsToolBox::setCropping( bool checked )
     }
 }
 
-void medView3dParamsToolBox::setDepthPeeling( bool checked )
+void medVtkView3dParamsToolBox::setDepthPeeling( bool checked )
 {
     if (d->vtkView)
     {
