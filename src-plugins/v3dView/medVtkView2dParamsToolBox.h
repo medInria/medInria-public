@@ -18,49 +18,13 @@
 #include <medParameter.h>
 
 class medVtkView;
-class medView2dParamsToolBox;
-class medView3dParamsToolBox;
-class medViewParamsToolBoxPrivate;
+class medVtkView2dParamsToolBoxPrivate;
 
-class MEDGUI_EXPORT medViewParamsToolBox : public medToolBox
-{
-    Q_OBJECT
-
-    enum viewMode
-    {
-        display2d,
-        display3d
-    };
-
-public:
-    explicit medViewParamsToolBox(QWidget *parent = 0);
-
-public:
-    void update(dtkAbstractView * view);
-    static bool registered();
-    QList<medAbstractParameter*> getParameters(medVtkView* view);//{return viewParamMap.values(view);}
-    void setViewMode(viewMode mode);
-
-private slots:
-    void setAxial(bool checked);
-    void setSagittal(bool checked);
-    void setCoronal(bool checked);
-    void setView3D(bool checked);
-
-private:
-    medViewParamsToolBoxPrivate *d;
-
-};
-
-
-
-class medView2dParamsToolBoxPrivate;
-
-class MEDGUI_EXPORT medView2dParamsToolBox : public medToolBox
+class MEDGUI_EXPORT medVtkView2dParamsToolBox : public medToolBox
 {
     Q_OBJECT
 public:
-    explicit medView2dParamsToolBox(QWidget *parent = 0);
+    explicit medVtkView2dParamsToolBox(QWidget *parent = 0);
 
 public:
     void update(dtkAbstractView * view);
@@ -78,5 +42,7 @@ private slots:
     void setAnnotationsVisibility( bool visible );
 
 private:
-    medView2dParamsToolBoxPrivate *d;
+    medVtkView2dParamsToolBoxPrivate *d;
 };
+
+

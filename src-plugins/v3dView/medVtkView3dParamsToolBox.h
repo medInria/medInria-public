@@ -18,13 +18,13 @@
 #include <medParameter.h>
 
 class medVtkView;
-class medView3dParamsToolBoxPrivate;
+class medVtkView3dParamsToolBoxPrivate;
 
-class MEDGUI_EXPORT medView3dParamsToolBox : public medToolBox
+class MEDGUI_EXPORT medVtkView3dParamsToolBox : public medToolBox
 {
     Q_OBJECT
 public:
-    explicit medView3dParamsToolBox(QWidget *parent = 0);
+    explicit medVtkView3dParamsToolBox(QWidget *parent = 0);
 
 public:
     void update(dtkAbstractView * view);
@@ -38,6 +38,6 @@ private slots:
     void setDepthPeeling(bool checked);
 
 private:
-    medView3dParamsToolBoxPrivate *d;
+    medVtkView3dParamsToolBoxPrivate *d;
 
 };

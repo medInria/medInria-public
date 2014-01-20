@@ -102,9 +102,9 @@ set(${PROJECT_NAME}_HEADERS_MOC
   medSHViewToolBox.h
   medLayerItemWidget.h
   v3dViewImageInteractor.h
-  medViewLayersToolBox.h
-  medViewParamsToolBox.h
-  medView3dParamsToolBox.h
+  medVtkViewToolBox.h
+  medVtkView2dParamsToolBox.h
+  medVtkView3dParamsToolBox.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -131,9 +131,9 @@ set(${PROJECT_NAME}_SOURCES
   ${${PROJECT_NAME}_TTK_DEPENDENT_SOURCES}
   medLayerItemWidget.cpp
   v3dViewImageInteractor.cpp
-  medViewLayersToolBox.cpp
-  medViewParamsToolBox.cpp
-  medView3dParamsToolBox.cpp
+  medVtkViewToolBox.cpp
+  medVtkView2dParamsToolBox.cpp
+  medVtkView3dParamsToolBox.cpp
   )
 
 
