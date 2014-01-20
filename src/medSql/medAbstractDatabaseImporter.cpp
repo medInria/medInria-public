@@ -387,10 +387,6 @@ void medAbstractDatabaseImporter::importFile ( void )
                 emit showError (tr ( "Could not save data file: " ) + filesPaths[0], 5000 );
                 continue;
             }
-            else
-            {
-                atLeastOneImportSucceeded = true;
-            }
         }
 
         // and finally we populate the database
@@ -409,6 +405,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         itPat++;
         itSer++;
+        atLeastOneImportSucceeded = true;
     } // end of the final loop
 
     if ( ! atLeastOneImportSucceeded) {
