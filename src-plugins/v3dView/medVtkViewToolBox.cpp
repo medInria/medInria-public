@@ -45,9 +45,7 @@ medVtkViewToolBox::medVtkViewToolBox(QWidget *parent)
     this->setTitle(tr("Views management"));
 
     d->mainOrientationWidget = new QWidget(this);
-    //d->mainOrientationLayout = new QVBoxLayout;
     d->mainOrientationLayout = new QHBoxLayout;
-    //d->mainOrientationLayout->setContentsMargins(0,0,0,0);
     d->mainOrientationWidget->setLayout(d->mainOrientationLayout);
 
     d->view2dToolBox = new medVtkView2dParamsToolBox;
@@ -61,6 +59,7 @@ medVtkViewToolBox::medVtkViewToolBox(QWidget *parent)
     QWidget *interactorsParamsWidget = new QWidget(this);
     d->interactorsParamsLayout = new QFormLayout(interactorsParamsWidget);
     d->interactorsParamsLayout->setLabelAlignment(Qt::AlignLeft);
+    //d->interactorsParamsLayout->setContentsMargins(0,0,0,0);
 
     d->viewMap = QMap<QString, medVtkView*>();
 
@@ -189,22 +188,10 @@ void medVtkViewToolBox::setupOrientationParamters(dtkAbstractView * view)
 
 
     // Layouts
-    QWidget *orientationWidget = new QWidget;
-   // QHBoxLayout *orientationLayout = new QHBoxLayout(orientationWidget);
-
-   /* orientationLayout->addWidget(axialParam->getWidget());
-    orientationLayout->addWidget(coronalParam->getWidget());
-    orientationLayout->addWidget(sagitalParam->getWidget());
-    orientationLayout->addWidget(view3DParam->getWidget());*/
-
     d->mainOrientationLayout->addWidget(axialParam->getWidget());
     d->mainOrientationLayout->addWidget(coronalParam->getWidget());
     d->mainOrientationLayout->addWidget(sagitalParam->getWidget());
     d->mainOrientationLayout->addWidget(view3DParam->getWidget());
-
-  //  d->mainOrientationLayout->addWidget(orientationWidget);
-    //d->mainOrientationLayout->setContentsMargins(0,0,0,0);
-
 
     // Connection
     connect(axialParam,SIGNAL(triggered(bool)),this,SLOT(setAxial(bool)));
@@ -494,6 +481,13 @@ void medVtkViewToolBox::clearParams()
         param->hide();
 
     d->layerParamList.clear();
+
+    QLayoutItem* item;
+    while ( ( item = d->interactorsParamsLayout->takeAt( 0 ) ) != NULL )
+    {
+        item->widget()->close();
+        //delete item;
+    }
 }
 
 
