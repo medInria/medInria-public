@@ -155,7 +155,7 @@ void v3dViewObserver::Execute ( vtkObject *caller, unsigned long event, void *ca
 
         const double *pos = this->view->currentView()->GetCurrentPoint();
         QVector3D qpos ( doubleToQtVector3D ( pos ) );
-        this->view->setPosition ( qpos );
+        this->view->setToSliceAtPosition ( qpos );
     }
     break;
 
@@ -1557,8 +1557,11 @@ void v3dView::close()
     medAbstractView::close();
 }
 
-void v3dView::setPosition ( const QVector3D &position )
+void v3dView::setToSliceAtPosition ( const QVector3D &position )
 {
+    if ( medAbstractImageView::positionBeingViewed() == position )
+        return;
+
     medAbstractImageView::setToSliceAtPosition(position);
 
     double pos[3];

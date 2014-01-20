@@ -215,6 +215,7 @@ dtkAbstractData * medSegmentationSelectorToolBox::viewData( dtkAbstractView * vi
     }
 
     // Why isn't the data of an abstract view a dtkAbstractData????
+    // TODO GPR: to repare
     return reinterpret_cast< dtkAbstractData * >( mview->data() );
 }
 

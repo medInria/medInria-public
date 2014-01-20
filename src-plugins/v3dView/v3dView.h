@@ -128,7 +128,7 @@ public:
 
 public slots:
     // inherited from medAbstractView
-    void setPosition  (const  QVector3D &position);
+    void setToSliceAtPosition  (const  QVector3D &position);
     void setZoom      (double zoom);
     void setPan      (const  QVector2D &pan);
     void setWindowLevel (double level, double window);
