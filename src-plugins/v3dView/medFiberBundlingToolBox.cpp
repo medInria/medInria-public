@@ -237,53 +237,45 @@ void medFiberBundlingToolBox::addBundle (const QString &name, const QColor &colo
     item->setTristate(false);
     item->setEditable(false); // for now
 
-    double meanFA = 0.0;
-    double minFA  = 0.0;
-    double maxFA  = 0.0;
-    double varFA  = 0.0;
-
-    double meanADC = 0.0;
-    double minADC  = 0.0;
-    double maxADC  = 0.0;
-    double varADC  = 0.0;
+    QMap <QString, double> meanData;
+    QMap <QString, double> minData;
+    QMap <QString, double> maxData;
+    QMap <QString, double> varData;
 
     double meanLength = 0.0;
     double minLength  = 0.0;
     double maxLength  = 0.0;
     double varLength  = 0.0;
 
-    if (d->view) {
-        if (d->interactor) {
-            d->interactor->bundleFAStatistics(name, meanFA, minFA, maxFA, varFA);
-            d->interactor->bundleADCStatistics(name, meanADC, minADC, maxADC, varADC);
+    if (d->view)
+    {
+        if (d->interactor)
+        {
+            d->interactor->bundleImageStatistics(name, meanData, minData, maxData, varData);
             d->interactor->bundleLengthStatistics(name, meanLength, minLength, maxLength, varLength);
         }
     }
 
-    QStandardItem *childItem1 = new QStandardItem (tr("FA: ") + QString::number(meanFA));
-    childItem1->setEditable(false);
-    childItem1->appendRow(new QStandardItem (tr("mean: ")     + QString::number(meanFA)));
-    childItem1->appendRow(new QStandardItem (tr("variance: ") + QString::number(varFA)));
-    childItem1->appendRow(new QStandardItem (tr("min: ")      + QString::number(minFA)));
-    childItem1->appendRow(new QStandardItem (tr("max: ")      + QString::number(maxFA)));
+    foreach (QString key, meanData.keys())
+    {
+        QStandardItem *childItem1 = new QStandardItem (key + ": " + QString::number(meanData[key]));
+        childItem1->setEditable(false);
+        childItem1->appendRow(new QStandardItem (tr("mean: ")     + QString::number(meanData[key])));
+        childItem1->appendRow(new QStandardItem (tr("variance: ") + QString::number(varData[key])));
+        childItem1->appendRow(new QStandardItem (tr("min: ")      + QString::number(minData[key])));
+        childItem1->appendRow(new QStandardItem (tr("max: ")      + QString::number(maxData[key])));
+        
+        item->appendRow(childItem1);
+    }
 
-    QStandardItem *childItem2 = new QStandardItem (tr("ADC: ") + QString::number(meanADC));
+    QStandardItem *childItem2 = new QStandardItem (tr("Length: ") + QString::number(meanLength));
     childItem2->setEditable(false);
-    childItem2->appendRow(new QStandardItem (tr("mean: ")     + QString::number(meanADC)));
-    childItem2->appendRow(new QStandardItem (tr("variance: ") + QString::number(varADC)));
-    childItem2->appendRow(new QStandardItem (tr("min: ")      + QString::number(minADC)));
-    childItem2->appendRow(new QStandardItem (tr("max: ")      + QString::number(maxADC)));
+    childItem2->appendRow(new QStandardItem (tr("mean: ")     + QString::number(meanLength)));
+    childItem2->appendRow(new QStandardItem (tr("variance: ") + QString::number(varLength)));
+    childItem2->appendRow(new QStandardItem (tr("min: ")      + QString::number(minLength)));
+    childItem2->appendRow(new QStandardItem (tr("max: ")      + QString::number(maxLength)));
 
-    QStandardItem *childItem3 = new QStandardItem (tr("Length: ") + QString::number(meanLength));
-    childItem3->setEditable(false);
-    childItem3->appendRow(new QStandardItem (tr("mean: ")     + QString::number(meanLength)));
-    childItem3->appendRow(new QStandardItem (tr("variance: ") + QString::number(varLength)));
-    childItem3->appendRow(new QStandardItem (tr("min: ")      + QString::number(minLength)));
-    childItem3->appendRow(new QStandardItem (tr("max: ")      + QString::number(maxLength)));
-
-    item->appendRow(childItem1);
     item->appendRow(childItem2);
-    item->appendRow(childItem3);
 
     d->bundlingModel->setItem(row, item);
 

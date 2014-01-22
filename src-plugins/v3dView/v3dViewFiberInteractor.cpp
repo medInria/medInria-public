@@ -33,6 +33,7 @@
 #include <vtkMatrix4x4.h>
 #include <vtkLimitFibersToROI.h>
 #include <vtkIsosurfaceManager.h>
+#include <vtkCellArray.h>
 
 #include <itkImage.h>
 #include <itkImageToVTKImageFilter.h>
@@ -53,16 +54,6 @@ public:
     vtkFiberDataSetManager *manager;
     vtkIsosurfaceManager   *roiManager;
     vtkSmartPointer<vtkFiberDataSet> dataset;
-    
-    QMap<QString, double> meanFAList;
-    QMap<QString, double> minFAList;
-    QMap<QString, double> maxFAList;
-    QMap<QString, double> varFAList;
-    
-    QMap<QString, double> meanADCList;
-    QMap<QString, double> minADCList;
-    QMap<QString, double> maxADCList;
-    QMap<QString, double> varADCList;
     
     QMap<QString, double> meanLengthList;
     QMap<QString, double> minLengthList;
@@ -361,95 +352,124 @@ void v3dViewFiberInteractor::validateSelection(const QString &name, const QColor
     d->view->update();
 }
 
-void v3dViewFiberInteractor::computeBundleFAStatistics (const QString &name,
-                                                        double &mean,
-                                                        double &min,
-                                                        double &max,
-                                                        double &var)
+void v3dViewFiberInteractor::bundleImageStatistics (const QString &bundleName,
+                                                    QMap <QString, double> &mean,
+                                                    QMap <QString, double> &min,
+                                                    QMap <QString, double> &max,
+                                                    QMap <QString, double> &var)
 {
-    itk::FiberBundleStatisticsCalculator::Pointer statCalculator = itk::FiberBundleStatisticsCalculator::New();
-    statCalculator->SetInput (d->dataset->GetBundle (name.toAscii().constData()).Bundle);
-    try
-    {
-        statCalculator->Compute();
-    }
-    catch(itk::ExceptionObject &e)
-    {
-        qDebug() << e.GetDescription();
-        mean = 0.0;
-        min  = 0.0;
-        max  = 0.0;
-        var  = 0.0;
+    vtkPolyData *bundleData = d->dataset->GetBundle (bundleName.toAscii().constData()).Bundle;
+    
+    if (!bundleData)
         return;
-    }
-
-    statCalculator->GetFAStatistics(mean, min, max, var);
-}
-
-void v3dViewFiberInteractor::bundleFAStatistics(const QString &name,
-                                                double &mean,
-                                                double &min,
-                                                double &max,
-                                                double &var)
-{
-    if (!d->meanFAList.contains(name)) {
-        this->computeBundleFAStatistics(name, mean, min, max, var);
-        d->meanFAList[name] = mean;
-        d->minFAList[name] = min;
-        d->maxFAList[name] = max;
-        d->varFAList[name] = var;
-    }
-    else {
-        mean = d->meanFAList[name];
-        min  = d->minFAList[name];
-        max  = d->maxFAList[name];
-        var  = d->varFAList[name];
-    }
-}
-
-void v3dViewFiberInteractor::computeBundleADCStatistics (const QString &name,
-                                                         double &mean,
-                                                         double &min,
-                                                         double &max,
-                                                         double &var)
-{
-    itk::FiberBundleStatisticsCalculator::Pointer statCalculator = itk::FiberBundleStatisticsCalculator::New();
-    statCalculator->SetInput (d->dataset->GetBundle (name.toAscii().constData()).Bundle);
-    try
+    
+    if (bundleData->GetPointData()->HasArray("Tensors"))
     {
-        statCalculator->Compute();
+        // Specific TTK case
+        itk::FiberBundleStatisticsCalculator::Pointer statCalculator = itk::FiberBundleStatisticsCalculator::New();
+        statCalculator->SetInput (bundleData);
+        
+        try
+        {
+            statCalculator->Compute();
+        }
+        catch(itk::ExceptionObject &e)
+        {
+            qDebug() << e.GetDescription();
+            return;
+        }
+        
+        double meanVal, minVal, maxVal, varVal;
+        statCalculator->GetADCStatistics(meanVal, minVal, maxVal, varVal);
+        mean["ADC"] = meanVal;
+        min["ADC"] = minVal;
+        max["ADC"] = maxVal;
+        var["ADC"] = varVal;
+        
+        statCalculator->GetFAStatistics(meanVal, minVal, maxVal, varVal);
+        mean["FA"] = meanVal;
+        min["FA"] = minVal;
+        max["FA"] = maxVal;
+        var["FA"] = varVal;
     }
-    catch(itk::ExceptionObject &e)
+    
+    vtkPointData *bundlePointData = bundleData->GetPointData();
+    unsigned int numberOfArrays = bundlePointData->GetNumberOfArrays();
+    vtkPoints* points = bundleData->GetPoints();
+    vtkCellArray* lines = bundleData->GetLines();
+    
+    for (unsigned int i = 0;i < numberOfArrays;++i)
     {
-        qDebug() << e.GetDescription();
-        mean = 0.0;
-        min  = 0.0;
-        max  = 0.0;
-        var  = 0.0;
-        return;
-    }
-
-    statCalculator->GetADCStatistics(mean, min, max, var);
-}
-
-void v3dViewFiberInteractor::bundleADCStatistics(const QString &name,
-                                                 double &mean,
-                                                 double &min,
-                                                 double &max,
-                                                 double &var)
-{
-    if (!d->meanADCList.contains(name)) {
-        this->computeBundleADCStatistics(name, mean, min, max, var);
-        d->meanADCList[name] = mean;
-        d->minADCList[name] = min;
-        d->maxADCList[name] = max;
-        d->varADCList[name] = var;
-    }
-    else {
-        mean = d->meanADCList[name];
-        min  = d->minADCList[name];
-        max  = d->maxADCList[name];
-        var  = d->varADCList[name];
+        // To do, explore fibers one by one, compute mean value on each fiber, then deduce all stats
+        // Put them inside maps
+        QString arrayName = bundlePointData->GetArrayName(i);
+        vtkDataArray *imageCoefficients = bundlePointData->GetArray(i);
+        unsigned int tupleSize = imageCoefficients->GetElementComponentSize();
+        if (tupleSize != 1)
+            continue;
+        
+        qDebug() << "Stats for array" << arrayName;
+        
+        vtkIdType  npts  = 0;
+        vtkIdType* ptids = 0;
+        vtkIdType test = lines->GetNextCell (npts, ptids);
+        
+        double sumData = 0;
+        double squareSumData = 0;
+        double minValue = HUGE_VAL;
+        double maxValue = - HUGE_VAL;
+        unsigned int numberOfLines = 0;
+        
+        // go over lines, each cell is a line
+        while (test)
+        {
+            double meanFiberData = 0;
+            
+            for (int k=0; k<npts; k++)
+            {
+                double pt[3];
+                points->GetPoint (ptids[k], pt);
+                
+                double tupleValue = 0;
+                imageCoefficients->GetTuple(ptids[k], &tupleValue);
+                
+                if (k == 0)
+                {
+                    minValue = tupleValue;
+                    maxValue = tupleValue;
+                }
+                
+                if (minValue > tupleValue)
+                    minValue = tupleValue;
+                
+                if (maxValue < tupleValue)
+                    maxValue = tupleValue;
+                
+                meanFiberData += tupleValue;
+            }
+            
+            meanFiberData /= npts;
+            
+            if (minValue > meanFiberData)
+                minValue = meanFiberData;
+            
+            if (maxValue < meanFiberData)
+                maxValue = meanFiberData;
+            
+            sumData += meanFiberData;
+            squareSumData += meanFiberData * meanFiberData;
+            ++numberOfLines;
+            
+            test = lines->GetNextCell (npts, ptids);
+        }
+        
+        if (std::isfinite(sumData / numberOfLines))
+        {
+            mean[arrayName] = sumData / numberOfLines;
+            min[arrayName] = minValue;
+            max[arrayName] = maxValue;
+            var[arrayName] = (squareSumData - sumData * sumData / numberOfLines) / (numberOfLines - 1.0);
+        }
     }
 }
 
@@ -500,17 +520,7 @@ void v3dViewFiberInteractor::bundleLengthStatistics(const QString &name,
 }
 
 void v3dViewFiberInteractor::clearStatistics(void)
-{
-    d->meanFAList.clear();
-    d->minFAList.clear();
-    d->maxFAList.clear();
-    d->varFAList.clear();
-    
-    d->meanADCList.clear();
-    d->minADCList.clear();
-    d->maxADCList.clear();
-    d->varADCList.clear();
-    
+{    
     d->meanLengthList.clear();
     d->minLengthList.clear();
     d->maxLengthList.clear();
