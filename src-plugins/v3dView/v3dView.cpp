@@ -703,6 +703,7 @@ v3dView::~v3dView()
         interactor->deleteLater();
     }
 
+
     d->renderer2d->SetRenderWindow ( NULL );
     d->renderer3d->SetRenderWindow ( NULL );
 
@@ -2569,6 +2570,8 @@ QImage& v3dView::generateThumbnail(const QSize &size)
 
 //    d->thumbnail = d->thumbnail.mirrored(false,true);
     d->thumbnail =  QPixmap::grabWidget(d->vtkWidget).scaled(w,h, Qt::KeepAspectRatio).toImage().convertToFormat(QImage::Format_RGB32);
+
+    d->renWin->SetOffScreenRendering(0);
 
     return d->thumbnail;
 }

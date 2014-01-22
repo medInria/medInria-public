@@ -39,6 +39,7 @@ medAbstractData::medAbstractData( dtkAbstractData *parent )
 {
     this->moveToThread(QApplication::instance()->thread());
     d->isTrueVolumetric = false;
+    d->thumbnail = QImage();
     qDebug() << "constructing medAbstractData: ";
 }
 
@@ -121,19 +122,19 @@ void medAbstractData::invokeModified()
 
 QImage& medAbstractData::thumbnail()
 {
-    if (QThread::currentThread() != QApplication::instance()->thread())
-        QMetaObject::invokeMethod(this, "generateThumbnail", Qt::BlockingQueuedConnection);
-    else
-        this->generateThumbnail();
-
+    if(d->thumbnail == QImage())
+    {
+        if (QThread::currentThread() != QApplication::instance()->thread())
+            QMetaObject::invokeMethod(this, "generateThumbnail", Qt::BlockingQueuedConnection);
+        else
+            this->generateThumbnail();
+    }
     return d->thumbnail;
 }
 
 void medAbstractData::generateThumbnail()
 {
-
     dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView"));
     view->setSharedDataPointer(this);
-
     d->thumbnail = view->generateThumbnail(QSize(medDatabaseThumbnailHelper::width, medDatabaseThumbnailHelper::height));
 }
