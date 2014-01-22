@@ -47,7 +47,8 @@ public:
     QRadioButton *notButton;
     QRadioButton *nullButton;
     medDropSite *dropOrOpenRoi;
-
+    QPushButton *saveBundlesButton;
+    
     v3dView * view;
     v3dViewFiberInteractor * interactor;
     dtkSmartPointer<dtkAbstractData> data;
@@ -104,6 +105,8 @@ medFiberBundlingToolBox::medFiberBundlingToolBox(QWidget *parent) : medToolBox(p
     d->bundlingButtonVdt = new QPushButton("Validate", bundlingPage);
     d->bundlingButtonVdt->setToolTip(tr("Save the current shown bundle and show useful information about it."));
     d->bundlingButtonAdd->setCheckable(true);
+    d->saveBundlesButton = new QPushButton("Save bundles",bundlingPage);
+    d->saveBundlesButton->setToolTip(tr("Save all bundles to database"));
 
     QHBoxLayout *bundlingButtonsLayout = new QHBoxLayout;
     bundlingButtonsLayout->addWidget(d->bundlingButtonTag);
@@ -135,6 +138,7 @@ medFiberBundlingToolBox::medFiberBundlingToolBox(QWidget *parent) : medToolBox(p
     bundlingLayout->addLayout(roiLayout);
     bundlingLayout->addWidget(d->bundleBoxCheckBox);
     bundlingLayout->addLayout(bundlingButtonsLayout);
+    bundlingLayout->addWidget(d->saveBundlesButton);
     bundlingLayout->addWidget(d->bundlingList);
     bundlingLayout->addWidget(d->bundlingShowCheckBox);
 
@@ -146,6 +150,8 @@ medFiberBundlingToolBox::medFiberBundlingToolBox(QWidget *parent) : medToolBox(p
     connect (d->bundlingButtonTag,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionTagged(void)));
     connect (d->bundlingButtonRst,     SIGNAL(clicked(void)),            this, SIGNAL (fiberSelectionReset(void)));
 
+    connect (d->saveBundlesButton, SIGNAL(clicked()), this, SLOT(saveBundles()));
+    
     connect (d->bundlingModel, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(changeBundlingItem(QStandardItem*)));
 
     connect (d->dropOrOpenRoi, SIGNAL(objectDropped(const medDataIndex&)), this, SLOT(importROI(const medDataIndex&)));
@@ -285,6 +291,17 @@ void medFiberBundlingToolBox::addBundle (const QString &name, const QColor &colo
     d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
                               color, Qt::DecorationRole);
 
+}
+
+void medFiberBundlingToolBox::saveBundles()
+{
+    if (d->view)
+    {
+        if (d->interactor)
+        {
+            d->interactor->saveBundles();
+        }
+    }
 }
 
 void medFiberBundlingToolBox::importROI(const medDataIndex& index)

@@ -139,6 +139,12 @@ public:
                                  double &min,
                                  double &max,
                                  double &var);
+    
+    /**
+     * Save dataset bundles to individual datas in database
+     */
+    
+    virtual void saveBundles();
 
     enum RenderingMode {
         Lines,

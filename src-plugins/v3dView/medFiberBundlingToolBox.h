@@ -89,6 +89,11 @@ protected slots:
       */
     virtual void addBundle (const QString &name, const QColor &color);
 
+    /**
+     * Save all bundles to database as individual files
+     */
+    virtual void saveBundles ();
+    
     /** Slot called when external ROI image finishes being imported. */
     virtual void importROI(const medDataIndex &index);
 

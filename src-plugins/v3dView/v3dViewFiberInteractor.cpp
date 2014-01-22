@@ -19,6 +19,8 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 
 #include <medMessageController.h>
+#include <medDataManager.h>
+#include <medMetaDataKeys.h>
 
 #include <vtkSmartPointer.h>
 #include <vtkPolyData.h>
@@ -352,6 +354,54 @@ void v3dViewFiberInteractor::validateSelection(const QString &name, const QColor
     d->view->update();
 }
 
+void v3dViewFiberInteractor::saveBundles()
+{
+    if (!d->dataset)
+        return;
+    
+    vtkFiberDataSet::vtkFiberBundleListType bundles = d->dataset->GetBundleList();
+    vtkFiberDataSet::vtkFiberBundleListType::iterator it = bundles.begin();
+    
+    dtkSmartPointer <dtkAbstractData> tmpBundle;
+    
+    while (it!=bundles.end())
+    {
+        tmpBundle = dtkAbstractDataFactory::instance()->createSmartPointer("v3dDataFibers");
+        if (!tmpBundle)
+            return;
+        
+        vtkSmartPointer <vtkFiberDataSet> bundle = vtkFiberDataSet::New();
+        bundle->SetFibers((*it).second.Bundle);
+        
+        tmpBundle->setData(bundle);
+        
+        QString newSeriesDescription = d->data->metadata ( medMetaDataKeys::SeriesDescription.key() );
+        newSeriesDescription += " ";
+        newSeriesDescription += (*it).first.c_str();
+        tmpBundle->setMetaData ( medMetaDataKeys::SeriesDescription.key(), newSeriesDescription );
+        
+        foreach ( QString metaData, d->data->metaDataList() )
+        {
+            if ((metaData == "BundleList")||(metaData == "BundleColorList"))
+                continue;
+            
+            if (!tmpBundle->hasMetaData(metaData))
+                tmpBundle->addMetaData (metaData, d->data->metaDataValues (metaData));
+        }
+        
+        foreach ( QString property, d->data->propertyList() )
+        tmpBundle->addProperty ( property,d->data->propertyValues ( property ) );
+        
+        QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
+        tmpBundle->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
+        
+        QString uuid = QUuid::createUuid().toString();
+        medDataManager::instance()->importNonPersistent (tmpBundle, uuid);
+        
+        ++it;
+    }
+}
+
 void v3dViewFiberInteractor::bundleImageStatistics (const QString &bundleName,
                                                     QMap <QString, double> &mean,
                                                     QMap <QString, double> &min,
@@ -407,8 +457,6 @@ void v3dViewFiberInteractor::bundleImageStatistics (const QString &bundleName,
         unsigned int tupleSize = imageCoefficients->GetElementComponentSize();
         if (tupleSize != 1)
             continue;
-        
-        qDebug() << "Stats for array" << arrayName;
         
         vtkIdType  npts  = 0;
         vtkIdType* ptids = 0;
