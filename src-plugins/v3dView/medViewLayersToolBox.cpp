@@ -153,7 +153,7 @@ void medViewLayersToolBox::updateLayerListWidget(QList<medVtkView*> vtkViews)
 
         for (int i  = 0; i < nbLayers; i++) {
 
-            medAbstractData * layerData = qobject_cast<medAbstractData*>(view->layerData(i));
+            medAbstractData *layerData = qobject_cast<medAbstractData*>(view->dataAtLayer(i));
 
             if(layerData)
             {
@@ -236,7 +236,7 @@ void medViewLayersToolBox::updateParameters(QMultiMap<medVtkView*, int> selected
         medVtkView* view =  i.key();
         int layer = i.value();
 
-        medAbstractData * layerData = qobject_cast<medAbstractData*>(view->layerData(layer));
+        medAbstractData * layerData = qobject_cast<medAbstractData*>(view->dataAtLayer(layer));
 
         if(!layerData)
             return;
@@ -246,7 +246,7 @@ void medViewLayersToolBox::updateParameters(QMultiMap<medVtkView*, int> selected
             medAbstractVtkViewInteractor * interactor = qobject_cast<medAbstractVtkViewInteractor*>(i);
             if ( interactor && interactor->isDataTypeHandled(layerData->identifier()))
             {
-                QList<medAbstractParameter*> paramList = interactor->getParameters(view->layerData(layer));
+                QList<medAbstractParameter*> paramList = interactor->getParameters(view->dataAtLayer(layer));
 
                 foreach(medAbstractParameter *param, paramList)
                 {
@@ -302,7 +302,7 @@ void medViewLayersToolBox::updateViewPool(QList<medVtkView*> selectedViews)
     {
         foreach(medVtkView* view, selectedViews)
         {
-            QList<medAbstractParameter*> paramList = d->viewParamsToolBox->getParameters(view);
+            QList<medAbstractParameter*> paramList = d->viewParamsToolBox->getViewParameters(view);
             foreach(medAbstractParameter *param, paramList)
             {
                 d->viewParamPool.append(param);

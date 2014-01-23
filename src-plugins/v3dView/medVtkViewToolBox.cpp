@@ -212,7 +212,7 @@ void medVtkViewToolBox::setAxial(bool checked)
 {
     if (checked && d->vtkView)
     {
-        d->vtkView->setOrientation( "Axial" );
+        d->vtkView->setOrientation(medVtkView::VIEW_ORIENTATION_AXIAL);
         d->vtkView->update();
         setViewMode(display2d);
     }
@@ -222,7 +222,7 @@ void medVtkViewToolBox::setSagittal(bool checked)
 {
     if (checked && d->vtkView)
     {
-        d->vtkView->setOrientation ( "Sagittal" );
+        d->vtkView->setOrientation(medVtkView::VIEW_ORIENTATION_SAGITTAL);
         d->vtkView->update();
         setViewMode(display2d);
     }
@@ -232,7 +232,7 @@ void medVtkViewToolBox::setCoronal(bool checked)
 {
     if (checked && d->vtkView)
     {
-        d->vtkView->setOrientation ( "Coronal" );
+        d->vtkView->setOrientation (medVtkView::VIEW_ORIENTATION_CORONAL);
         d->vtkView->update();
         setViewMode(display2d);
     }
@@ -242,8 +242,8 @@ void medVtkViewToolBox::setView3D(bool checked)
 {
     if (checked && d->vtkView)
     {
-        d->vtkView->set3DMode( "3DMode" );
-        d->vtkView->setOrientation ( "3D" );
+        d->vtkView->set3DMode("3DMode");
+        d->vtkView->setOrientation(medVtkView::VIEW_ORIENTATION_3D);
         d->vtkView->update();
         setViewMode(display3d);
     }
@@ -308,7 +308,7 @@ void medVtkViewToolBox::updateLayerListWidget(QList<medVtkView*> vtkViews)
 
         for (int i  = 0; i < nbLayers; i++) {
 
-            medAbstractData * layerData = qobject_cast<medAbstractData*>(view->layerData(i));
+            medAbstractData *layerData = qobject_cast<medAbstractData*>(view->dataAtLayer(i));
 
             if(layerData)
             {
@@ -391,17 +391,17 @@ void medVtkViewToolBox::updateLayerParameters(QMultiMap<medVtkView*, int> select
         medVtkView* view =  i.key();
         int layer = i.value();
 
-        medAbstractData * layerData = qobject_cast<medAbstractData*>(view->layerData(layer));
+        medAbstractData * data = qobject_cast<medAbstractData*>(view->dataAtLayer(layer));
 
-        if(!layerData)
+        if(!data)
             return;
 
         foreach(dtkAbstractViewInteractor* i, view->interactors())
         {
             medAbstractVtkViewInteractor * interactor = qobject_cast<medAbstractVtkViewInteractor*>(i);
-            if ( interactor && interactor->isDataTypeHandled(layerData->identifier()))
+            if ( interactor && interactor->isDataTypeHandled(data->identifier()))
             {
-                QList<medAbstractParameter*> paramList = interactor->getParameters(view->layerData(layer));
+                QList<medAbstractParameter*> paramList = interactor->getParameters(view->dataAtLayer(layer));
 
                 foreach(medAbstractParameter *param, paramList)
                 {

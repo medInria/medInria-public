@@ -44,6 +44,8 @@ public:
     void *data(int layer);
     virtual medAbstractViewCoordinates * coordinates() {return NULL;}
 protected:
+    void setZoom_impl(double zoom);
+    void setPan_impl(const QVector2D &pan);
 private:
     medQtViewPrivate *d;
 };

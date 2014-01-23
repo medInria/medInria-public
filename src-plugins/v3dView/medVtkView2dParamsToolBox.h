@@ -31,6 +31,7 @@ public:
     static bool registered();
     QList<medAbstractParameter*> getParameters(medVtkView* view);
 
+
 private slots:
     void setWindowing( bool checked );
     void setZooming( bool checked );

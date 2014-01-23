@@ -1,6 +1,7 @@
 #include "medAbstractLayeredView.h"
 
 #include <dtkCore/dtkAbstractData.h>
+#include <dtkCore/dtkAbstractViewInteractor.h>
 #include <medAbstractData.h>
 
 
@@ -20,12 +21,44 @@ medAbstractLayeredView::medAbstractLayeredView(medAbstractView * parent) : medAb
 
 void medAbstractLayeredView::addLayer(medAbstractData *data)
 {
-    dtkAbstractView::setData(data);
+    if(!data)
+    {
+        qWarning() << "Attempt to add a NULL data to the view: " << this;
+        return;
+    }
 
-    if(data)
-      addDataType(data->identifier());
+    if ( this->contains(data))
+    {
+        qDebug() << "Attempt to add twice the same data to the view: " << this;
+        return;
+    }
 
-    return d->layersDataList.append(data);
+
+    QString dataType(data->identifier());
+
+    foreach(dtkAbstractViewInteractor *interactor, this->interactors())
+    {
+        this->enableInteractor(interactor->identifier());
+        if (interactor->enabled())
+            interactor->setData(data);
+    }
+
+    if(!this->isDataTypeHandled(dataType))
+    {
+        qWarning()<<"Unable to find interactor to handle the data type: " << data->identifier();
+        return;
+    }
+
+    this->addDataType(data->identifier());
+    d->layersDataList.append(data);
+
+    int layer = this->layersCount() - 1;
+    this->setCurrentLayer(layer);
+
+    this->addLayer_impl(layer);
+
+    emit dataAdded(data);
+    emit dataAdded(data, layer);
 }
 
 bool medAbstractLayeredView::removeLayer(medAbstractData *data)
@@ -49,15 +82,18 @@ void medAbstractLayeredView::moveLayer(unsigned int fromLayer, unsigned int toLa
     d->layersDataList.move(fromLayer, toLayer);
 }
 
-medAbstractData * medAbstractLayeredView::layerData(unsigned int layer)
+medAbstractData * medAbstractLayeredView::dataAtLayer(unsigned int layer) const
 {
-    if ((layer < d->layersDataList.size()) && (layer >= 0))
-        return d->layersDataList[layer];
+    if (!(layer < d->layersDataList.size()) && (layer > -1))
+    {
+        qWarning() << "Unable to retreive data at layer:"<<layer<<"from view: "<<this;
+        return NULL;
+    }
 
-    return NULL;
+    return d->layersDataList[layer];
 }
 
-bool medAbstractLayeredView::contains(medAbstractData * data)
+bool medAbstractLayeredView::contains(medAbstractData * data) const
 {
     return d->layersDataList.contains(data);
 }

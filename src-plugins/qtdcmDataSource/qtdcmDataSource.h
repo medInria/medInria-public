@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medCore/medAbstractDataSource.h>
+#include <medAbstractDataSource.h>
 
 #include "qtdcmDataSourcePluginExport.h"
 

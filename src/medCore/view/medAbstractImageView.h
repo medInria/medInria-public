@@ -35,13 +35,13 @@ public:
     /**
      *  Set the view slice.
     **/
-    void setSlice       (int slice);
+    void setSlice (int slice);
 
     /**
       * Set the slice being viewed so that it contains the given spatial postion
        @position is expressed in real world coordinates.
      **/
-    virtual void setToSliceAtPosition    (const QVector3D &position);
+    virtual void moveToSliceAtPosition    (const QVector3D &position);
     QVector3D positionBeingViewed() const;
 
     /**
@@ -53,9 +53,14 @@ public:
     /**
        Set the camera settings of the view.
     **/
-    virtual void setCamera   (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale);
-    void camera(QVector3D &position, QVector3D &viewup, QVector3D &focal, double &parallelScale) const;
-
+    virtual void setCamera(const QVector3D &position,
+                           const QVector3D &viewup,
+                           const QVector3D &focal,
+                           double parallelScale);
+    void camera(QVector3D &position,
+                QVector3D &viewup,
+                QVector3D &focal,
+                double &parallelScale) const;
 
     /**
      * Set the opacity of the data on the corresponding layer
@@ -67,7 +72,24 @@ public:
      */
     virtual double opacity(int layer) const;
 
-
+    //! Convert from world coordinates to scene coordinates.
+    virtual QPointF worldToDisplay( const QVector3D & worldVec ) const = 0;
+    //! Convert from scene coordinates to world coordinates.
+    virtual QVector3D displayToWorld( const QPointF & scenePoint ) const = 0;
+    //! Get the view center vector in world space, the center of the slice for 2d views.
+    virtual QVector3D viewCenter() const = 0;
+    //! Get the view plane normal vector in world space.
+    virtual QVector3D viewPlaneNormal() const = 0;
+    //! Get the view plane up vector in world space.
+    virtual QVector3D viewUp() const = 0;
+    //! Is the scene 2D (true) or 3D (false)
+    virtual bool is2D() const = 0;
+    //! What is the thickness of the current slice (2D)
+    virtual qreal sliceThickness() const = 0;
+    //! The scale (number of pixels on screen per mm)
+    virtual qreal scale() const = 0;
+    
+    
 signals:
     /**
        This signal is emitted when the shown slice of the view has
@@ -106,33 +128,43 @@ signals:
                            const QVector3D &focal,
                            double parallelScale,
                            bool propagate);
-
     /**
      * This signal is emitted when the opacity of a layer has changed.
      */
     void opacityChanged(double value, int layer);
-
-
 
 public slots:
 
     /**
        Tells the view (not to) synchronize its position with other views.
      **/
-    virtual void setLinkPosition (bool value);
-    bool positionLinked() const;
+    virtual void toggleLinkPosition (bool value);
+    bool isPositionLinked() const;
 
     /**
        Tells the view (not to) synchronize its window/level with other views.
      **/
-    virtual void setLinkWindowing (bool value);
-    bool windowingLinked() const;
+    virtual void toggleLinkWindowing (bool value);
+    bool isWindowingLinked() const;
 
     /**
        Tells the view (not to) synchronize its camera settings with other views.
     **/
-    virtual void setLinkCamera (bool value);
-    bool cameraLinked() const;
+    virtual void toggleLinkCamera (bool value);
+    bool isCameraLinked() const;
+
+protected:
+    virtual void moveToSliceAtPosition_impl(const QVector3D &position) = 0;
+    virtual void setWindowLevel_impl(double level, double window) = 0;
+    virtual void setCamera_impl(const QVector3D &position,
+                           const QVector3D &viewup,
+                           const QVector3D &focal,
+                           double parallelScale) = 0;
+    virtual void setOpacity_impl(double opacity, int layer) = 0;
+
+
+protected slots:
+
 
 private:
     medAbstractImageViewPrivate *d;

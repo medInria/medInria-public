@@ -16,7 +16,6 @@
 #include <medAbstractData.h>
 #include <medAbstractDataImage.h>
 #include <medAbstractView.h>
-#include <medAbstractViewCoordinates.h>
 #include <medDataIndex.h>
 #include <medImageMaskAnnotationData.h>
 #include <medMetaDataKeys.h>

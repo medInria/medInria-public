@@ -15,7 +15,7 @@
 
 #include "medSegmentationSelectorToolBox.h"
 
-#include <medCore/medAbstractView.h>
+#include <medAbstractView.h>
 
 #include <medProgressionStack.h>
 #include <medTabbedViewContainers.h>

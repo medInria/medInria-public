@@ -38,32 +38,32 @@ medAbstractImageView::~medAbstractImageView()
 
 }
 
-void medAbstractImageView::setLinkPosition (bool value)
+void medAbstractImageView::toggleLinkPosition (bool value)
 {
     d->linkPosition = value;
 }
 
-bool medAbstractImageView::positionLinked() const
+bool medAbstractImageView::isPositionLinked() const
 {
     return d->linkPosition;
 }
 
-void medAbstractImageView::setLinkWindowing (bool value)
+void medAbstractImageView::toggleLinkWindowing (bool value)
 {
     d->linkWindowing = value;
 }
 
-bool medAbstractImageView::windowingLinked() const
+bool medAbstractImageView::isWindowingLinked() const
 {
     return d->linkWindowing;
 }
 
-void medAbstractImageView::setLinkCamera (bool value)
+void medAbstractImageView::toggleLinkCamera (bool value)
 {
     d->linkCamera = value;
 }
 
-bool medAbstractImageView::cameraLinked() const
+bool medAbstractImageView::isCameraLinked() const
 {
     return d->linkCamera;
 }
@@ -73,7 +73,7 @@ void medAbstractImageView::setSlice (int slice)
     emit sliceChanged (slice, d->linkPosition);
 }
 
-void medAbstractImageView::setToSliceAtPosition (const QVector3D &position)
+void medAbstractImageView::moveToSliceAtPosition (const QVector3D &position)
 {
     if ( d->position == position )
         return;

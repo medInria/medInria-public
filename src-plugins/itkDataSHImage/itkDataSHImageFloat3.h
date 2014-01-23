@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medCore/medAbstractDataTypedImage.h>
+#include <medAbstractDataTypedImage.h>
 
 #include <itkDataSHImagePluginExport.h>
 

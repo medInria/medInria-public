@@ -13,7 +13,7 @@
 
 #include <cmath>
 #include <medSHViewToolBox.h>
-#include <medSHAbstractViewInteractor.h>
+#include <medAbstractVtkViewInteractor.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <medSliderSpinboxPair.h>
 #include <medPluginManager.h>
@@ -358,7 +358,7 @@ void medSHViewToolBox::updateWithInteractor(dtkAbstractView *view) {
     if (!view)
         return;
 
-    if (medSHAbstractViewInteractor* interactor = dynamic_cast<medSHAbstractViewInteractor*>(view->interactor ("v3dViewSHInteractor"))) {
+    if (medSHAbstractViewInteractor* interactor = dynamic_cast<medAbstractVtkViewInteractor*>(view->interactor ("v3dViewSHInteractor"))) {
         int imSize[3];
         interactor->imageSize(imSize);
         for (unsigned i=0;i<3;++i) {

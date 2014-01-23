@@ -17,8 +17,8 @@
 #include <QTreeWidget>
 #include <QTreeView>
 
-#include <medCore/medDataIndex.h>
-#include <medCore/medDataManager.h>
+#include <medDataIndex.h>
+#include <medDataManager.h>
 
 class QTreeWidget;
 class QTreeWidgetItem;

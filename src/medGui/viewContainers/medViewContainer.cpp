@@ -13,7 +13,6 @@
 
 #include "medViewContainer.h"
 #include "medViewContainer_p.h"
-#include "medViewPool.h"
 #include <medDataManager.h>
 #include <medViewManager.h>
 #include <medAbstractView.h>
@@ -41,8 +40,6 @@ medViewContainer::medViewContainer ( QWidget *parent )
     d->selected = false;
     d->multiLayer = true;
 
-    d->pool = new medViewPool ( this );
-
     medViewContainer *container = qobject_cast<medViewContainer *>(parent);
     if ( container != NULL ) {
         connect(this,      SIGNAL(imageSet(const medDataIndex&)),
@@ -60,13 +57,10 @@ medViewContainer::medViewContainer ( QWidget *parent )
 
 medViewContainer::~medViewContainer()
 {
-    if ( d->view )
-    {
+    if(d->view)
         d->view->close();
-    }
 
     delete d;
-
     d = NULL;
 }
 
@@ -443,7 +437,7 @@ bool medViewContainer::open(medAbstractData * data)
 
     if( view.isNull() )
     {
-        qWarning() << "medViewContainer: Unable to create a v3dView";
+        qWarning() << "medViewContainer: Unable to create a medVtkView";
         return false;
     }
 

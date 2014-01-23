@@ -1,28 +1,45 @@
 #pragma once
 
-#include <v3dView.h>
-#include <dtkCore/dtkSmartPointer.h>
+#include <medVtkViewPublicInterface.h>
 
-class medVtkView : public v3dView
+class medVtkViewPrivate;
+class medAbstractData;
+class medAbstractDataImage;
+
+
+
+class medVtkView : public medVtkViewPublicInterface
 {
     Q_OBJECT
     
 public:
+
     medVtkView();
     virtual ~medVtkView();
-    
-    virtual QString identifier() const;
-    static QString s_identifier();
+
+    virtual QString  identifier() const;
+    static QString  s_identifier();
     
     static bool registered();
-    
-    void setData (medAbstractData *data, int layer);
-    
-    medAbstractData *layerData(int layer);
-    unsigned int numberOfLayers();
-    
+
+    void setOrientation(medVtkViewOrientation orientation);
+
+protected:
+    virtual void addLayer_impl(int layer);
+    QWidget *constructToolWidget(QWidget *parent);
+    QStringList& getAvailableTransferFunctionPresets() const;
+    void setPatientStudySeriesName(medAbstractData *data);
+    void setPreferedOrientation(medAbstractDataImage *imageData);
+
+protected slots:
+    void processLostOfFocus();
+    void moveToSlice(int slice);
+    void updateToolWidgets(medAbstractData *data);
+    void setZoomMode(medVtkViewZoomMode zoomMode);
+
+
 private:
-    QList < dtkSmartPointer <medAbstractData> > layersDataList;
+    medVtkViewPrivate *d;
 };
 
 dtkAbstractView *createMedVtkView();

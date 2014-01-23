@@ -13,7 +13,6 @@
 
 #include "medViewContainer_p.h"
 #include "medMultiViewContainer.h"
-#include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
 
@@ -166,9 +165,6 @@ void medMultiViewContainer::setView(dtkAbstractView *view)
 
     d2->views << view;
 
-    if (medAbstractView *medView = qobject_cast<medAbstractView*> (view))
-        d->pool->appendView (medView);
-
     connect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
     connect (view, SIGNAL (fullScreen(bool)),  this, SLOT (onViewFullScreen(bool)));
 
@@ -263,9 +259,6 @@ void medMultiViewContainer::onViewClosing()
                     this, SLOT (onViewClosing()));
         disconnect (view, SIGNAL (fullScreen(bool)),
                     this, SLOT (onViewFullScreen(bool)));
-
-        if (medAbstractView *medView = qobject_cast<medAbstractView*> (view))
-            d->pool->removeView (medView);
 
         // it is safer to emit view removed now, because the next
         // line may trigger the deletion of the view

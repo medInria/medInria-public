@@ -13,7 +13,6 @@
 
 #include "medViewContainer_p.h"
 #include "medCustomViewContainer.h"
-#include "medViewPool.h"
 
 #include <medAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
@@ -199,8 +198,6 @@ void medCustomViewContainer::setView ( dtkAbstractView *view )
                 d->layout->setContentsMargins ( 0, 0, 0, 0 );
                 d->layout->addWidget ( view->widget(), 0, 0 );
 
-                this->synchronize_2 ( view );
-
                 connect ( view, SIGNAL ( closing() ),         this, SLOT ( onViewClosing() ) );
                 connect ( view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
 
@@ -258,41 +255,12 @@ bool medCustomViewContainer::isLeaf() const
     return this->childContainers().count() == 0;
 }
 
-void medCustomViewContainer::synchronize_2 ( dtkAbstractView *view )
-{
-    if ( medCustomViewContainer *parent = qobject_cast<medCustomViewContainer*> ( this->parent() ) )
-    {
-        parent->synchronize_2 ( view );
-    }
-    else
-    { // top level medCustomViewContainer
-        if ( medAbstractView *medView = qobject_cast<medAbstractView*> ( view ) )
-            d->pool->appendView ( medView );
-    }
-}
-
-void medCustomViewContainer::desynchronize_2 ( dtkAbstractView *view )
-{
-    if ( medCustomViewContainer *parent = qobject_cast<medCustomViewContainer*> ( this->parent() ) )
-    {
-        parent->desynchronize_2 ( view );
-    }
-    else   // top level medCustomViewContainer
-    {
-        if ( medAbstractView *medView = qobject_cast<medAbstractView*> ( view ) )
-        {
-            d->pool->removeView ( medView );
-        }
-    }
-}
-
 void medCustomViewContainer::onViewClosing()
 {
     if ( d->view )
     {
-        this->onViewFullScreen2 ( false, d->view ); // in case view is full screen
+        this->onViewFullScreen2 (false, d->view); // in case view is full screen
         d->layout->removeWidget ( d->view->widget() );
-        this->desynchronize_2 ( d->view );
         disconnect ( d->view, SIGNAL ( closing() ),         this, SLOT ( onViewClosing() ) );
         disconnect ( d->view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
 
@@ -315,12 +283,6 @@ void medCustomViewContainer::onViewClosing()
     }
 
     this->recomputeStyleSheet();
-
-    // qDebug() << this << __func__;
-    // qDebug() << "isRoot:    " << this->isRoot();
-    // qDebug() << "isLeaf:    " << this->isLeaf();
-    // qDebug() << "isEmpty:   " << this->isEmpty();
-    // qDebug() << "isCurrent: " << this->isCurrent();
 }
 
 void medCustomViewContainer::onViewFullScreen ( bool value )

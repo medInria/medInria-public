@@ -16,12 +16,11 @@
 #include "msegAlgorithmConnectedThreshold.h"
 #include "medSeedPointAnnotationData.h"
 
-#include <medAbstractView.h>
+#include <medVtkViewPublicInterface.h>
 #include <medAbstractData.h>
 #include <medDataIndex.h>
 #include <medSegmentationSelectorToolBox.h>
 #include <medMetaDataKeys.h>
-#include <medAbstractViewCoordinates.h>
 
 #include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -47,19 +46,16 @@ public:
         m_cb(cb)
         {}
 
-    virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent ) MED_OVERRIDE
+    virtual bool mousePressEvent( medVtkViewPublicInterface *view, QMouseEvent *mouseEvent ) MED_OVERRIDE
     {
 
         Q_ASSERT( view );
-
-        medAbstractViewCoordinates * coords = view->coordinates();
-
         mouseEvent->accept();
 
-        if (coords->is2D()) {
+        if (view->is2D()) {
             // Convert mouse click to a 3D point in the image.
 
-            QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
+            QVector3D posImage = view->displayToWorld( mouseEvent->posF() );
             //Project vector onto plane
 //            medAbstractData * viewData = medSegmentationSelectorToolBox::viewData( view );
             m_cb->onViewMousePress( view, posImage );
@@ -252,7 +248,7 @@ void AlgorithmConnectedThresholdToolbox::setData( medAbstractData *dtkdata )
 
 }
 
-void AlgorithmConnectedThresholdToolbox::addSeedPoint( medAbstractView *view, const QVector3D &vec )
+void AlgorithmConnectedThresholdToolbox::addSeedPoint( medVtkViewPublicInterface *view, const QVector3D &vec )
 {
     if (!m_seedPoints) {
         setData( medSegmentationSelectorToolBox::viewData(view) );
@@ -267,7 +263,7 @@ void AlgorithmConnectedThresholdToolbox::addSeedPoint( medAbstractView *view, co
 
 }
 
-void AlgorithmConnectedThresholdToolbox::onViewMousePress( medAbstractView *view, const QVector3D &vec )
+void AlgorithmConnectedThresholdToolbox::onViewMousePress( medVtkViewPublicInterface *view, const QVector3D &vec )
 {
     if ( ViewState_PickingSeedPoint == m_viewState ) {
 

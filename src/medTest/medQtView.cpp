@@ -86,3 +86,14 @@ QString medQtView::description( void ) const
 {
     return s_description();
 }
+
+
+void medQtView::setZoom_impl(double zoom)
+{
+    qDebug()<< "setZoom" << zoom;
+}
+
+void medQtView::setPan_impl(const QVector2D &pan)
+{
+    qDebug()<< "setPan" << pan;
+}

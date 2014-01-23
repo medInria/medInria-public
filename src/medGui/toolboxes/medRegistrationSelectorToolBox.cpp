@@ -606,10 +606,10 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
         d->fuseView->setData(output,1);
         d->fuseView->update();
                        
-        d->fixedView->setLinkPosition(true);
-        d->fixedView->setLinkCamera(true);
-        d->movingView->setLinkPosition(true);
-        d->movingView->setLinkCamera(true);
+        d->fixedView->toggleLinkPosition(true);
+        d->fixedView->toggleLinkCamera(true);
+        d->movingView->toggleLinkPosition(true);
+        d->movingView->toggleLinkCamera(true);
      }
 }
 
@@ -651,7 +651,7 @@ void medRegistrationSelectorToolBox::synchroniseWindowLevel(QObject * sender){
     else
     {		
         d->fuseView->windowLevel(level,window);
-        if (d->fixedView && d->fixedView->windowingLinked() && d->movingView && d->movingView->windowingLinked())
+        if (d->fixedView && d->fixedView->isWindowingLinked() && d->movingView && d->movingView->isWindowingLinked())
         {
             d->fixedView->setWindowLevel(level,window);
             d->movingView->setWindowLevel(level,window);
@@ -679,15 +679,15 @@ void medRegistrationSelectorToolBox::synchronisePosition(const QVector3D &positi
    
     if (d->fixedView==QObject::sender() || d->movingView==QObject::sender())
     {
-        if (d->fixedView && d->fixedView->positionLinked() && d->movingView &&  d->movingView->positionLinked()) // If the fixedView and movingView are linked in position then the changes also appear in fuseView.
-            d->fuseView->setToSliceAtPosition(position);
+        if (d->fixedView && d->fixedView->isPositionLinked() && d->movingView &&  d->movingView->isPositionLinked()) // If the fixedView and movingView are linked in position then the changes also appear in fuseView.
+            d->fuseView->moveToSliceAtPosition(position);
     }
     else // the changes in fuseView are propagated to the fixedView and movingView.
     {		
         if (d->fixedView)
-            d->fixedView->setToSliceAtPosition(position);
+            d->fixedView->moveToSliceAtPosition(position);
         if (d->movingView)
-            d->movingView->setToSliceAtPosition(position);
+            d->movingView->moveToSliceAtPosition(position);
     }
 }
 

@@ -20,7 +20,12 @@ project(medCore)
 
 list_source_files(${PROJECT_NAME}
   ${CMAKE_CURRENT_SOURCE_DIR}
-  annotationData
+  data
+  data/annotationData
+  process
+  view
+  view/interactor
+  view/navigator
   )
 
 ## #############################################################################
@@ -38,7 +43,7 @@ include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
 ## Precompile headers
 ## #############################################################################
 
-if (MEDINRIA_USE_PRECOMPILED_HEADERS)
+if(MEDINRIA_USE_PRECOMPILED_HEADERS)
   add_precompiled_header(${PROJECT_NAME}_PCH
     ${MEDPCH_H}
     ${MEDPCH_CPP}
@@ -87,4 +92,7 @@ set_lib_install_rules(${PROJECT_NAME}
 
 if(MEDINRIA_BUILD_TESTS)
   add_subdirectory(tests)
+  #add_subdirectory(view/tests)
+  #add_subdirectory(data/tests)
+  #add_subdirectory(process/tests)
 endif()

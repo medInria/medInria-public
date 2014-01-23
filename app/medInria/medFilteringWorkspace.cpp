@@ -31,7 +31,7 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include <medCore/medDataManager.h>
+#include <medDataManager.h>
 
 class medFilteringWorkspacePrivate
 {

@@ -13,7 +13,6 @@
 
 #include "medViewContainer_p.h"
 #include "medSingleViewContainer.h"
-#include "medViewPool.h"
 
 #include <dtkCore/dtkAbstractView.h>
 
@@ -51,11 +50,6 @@ void medSingleViewContainer::setView(dtkAbstractView *view)
         view->widget()->show();
         // END FIXME
 
-        // set the view properties
-        if (medAbstractView *medView = qobject_cast<medAbstractView*> (view)){
-            d->pool->appendView (medView);
-        }
-
         connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
 
         this->recomputeStyleSheet();
@@ -78,9 +72,6 @@ void medSingleViewContainer::onViewClosing()
     if (d->view) {
         d->layout->removeWidget (d->view->widget());
         disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
-        if (medAbstractView *medView = qobject_cast<medAbstractView*> (d->view))
-            d->pool->removeView (medView);
-
         emit viewRemoved (d->view);
 
         d->view->close();
@@ -88,12 +79,6 @@ void medSingleViewContainer::onViewClosing()
 
         this->recomputeStyleSheet();
     }
-
-    // qDebug() << this << __func__;
-    // qDebug() << "isRoot:    " << this->isRoot();
-    // qDebug() << "isLeaf:    " << this->isLeaf();
-    // qDebug() << "isEmpty:   " << this->isEmpty();
-    // qDebug() << "isCurrent: " << this->isCurrent();
 }
 
 void medSingleViewContainer::dragEnterEvent(QDragEnterEvent *event)

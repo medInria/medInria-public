@@ -33,8 +33,8 @@ public:
     virtual void removeLayerAt(unsigned int layer);
     virtual void insertLayer(unsigned int layer, medAbstractData *data);
     virtual void moveLayer(unsigned int fromLayer, unsigned int toLayer);
-    virtual medAbstractData * layerData(unsigned int layer);
-    virtual bool contains(medAbstractData * data);
+    virtual medAbstractData * dataAtLayer(unsigned int layer) const;
+    virtual bool contains(medAbstractData * data) const;
     virtual unsigned int layersCount() const;
 
 
@@ -81,7 +81,16 @@ public slots:
      */
     virtual void setCurrentLayer(int layer);
 
+protected:
+    virtual void addLayer_impl(int layer) = 0;
+    virtual bool removeLayer_impl(medAbstractData *data) = 0;
+    virtual void removeLayerAt_impl(unsigned int layer) = 0;
+    virtual void insertLayer_impl(unsigned int layer, medAbstractData *data) = 0;
+    virtual void moveLayer_impl(unsigned int fromLayer, unsigned int toLayer) = 0;
+
+protected slots:
+    virtual void setCurrentLayer_impl(int layer) = 0;
+
 private:
     medAbstractLayeredViewPrivate *d;
-
 };
