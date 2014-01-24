@@ -16,7 +16,7 @@
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcess_p.h>
 #include <dtkCore/dtkSmartPointer.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkLog/dtkLog.h>
 
 #include "itkFiltersPluginExport.h"
@@ -40,8 +40,8 @@ public:
     itk::CStyleCommand::Pointer callback;
     itkFiltersProcessBase *filter;
     
-    dtkSmartPointer<dtkAbstractData> input;
-    dtkSmartPointer<dtkAbstractData> output;
+    dtkSmartPointer<medAbstractData> input;
+    dtkSmartPointer<medAbstractData> output;
     
     template <class PixelType> void setupFilter() {}
     virtual void setFilterDescription() {}

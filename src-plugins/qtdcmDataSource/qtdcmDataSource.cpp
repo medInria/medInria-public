@@ -27,7 +27,7 @@
 
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include <qtdcmDataSourceSerieToolBox.h>
 #include <qtdcmDataSourceServersSettingsToolBox.h>

@@ -14,7 +14,7 @@
 #include <v3dViewFuseInteractor.h>
 
 #include <dtkLog/dtkLog.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include <medAbstractDataImage.h>
 #include <medMetaDataKeys.h>
@@ -43,7 +43,7 @@ public:
   dtkSmartPointer<medAbstractDataImage> data1;
   dtkSmartPointer<medAbstractDataImage> data2;
 
-  dtkSmartPointer<dtkAbstractData> output;
+  dtkSmartPointer<medAbstractData> output;
 
   v3dView *view;
 
@@ -173,7 +173,7 @@ void v3dViewFuseInteractor::onCheckerboardDivisionCountValueSet (double value)
     this->onCheckerboardDivisionCountValueSet ( (int)(value*100.0) );
 }
 
-void v3dViewFuseInteractor::setData(dtkAbstractData *data, int channel)
+void v3dViewFuseInteractor::setData(medAbstractData *data, int channel)
 {
     if (!data || channel<0 || channel>1 || !data->data())
         return;

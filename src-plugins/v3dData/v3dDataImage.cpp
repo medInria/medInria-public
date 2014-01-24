@@ -145,7 +145,7 @@ int v3dDataImage::zDimension()
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractData *createV3dDataImage()
+medAbstractData *createV3dDataImage()
 {
     return new v3dDataImage;
 }

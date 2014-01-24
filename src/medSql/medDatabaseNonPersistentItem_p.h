@@ -15,13 +15,13 @@
 
 #include <medDataIndex.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <QtCore/QString>
 #include <QtGui/QImage>
 
-class dtkAbstractData;
+class medAbstractData;
 
 class medDatabaseNonPersistentItemPrivate
 {
@@ -46,7 +46,7 @@ public:
 
     medDataIndex index;
 
-    dtkSmartPointer<dtkAbstractData> data;
+    dtkSmartPointer<medAbstractData> data;
 };
 
 

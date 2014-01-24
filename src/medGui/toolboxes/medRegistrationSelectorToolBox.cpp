@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
@@ -538,7 +538,7 @@ void medRegistrationSelectorToolBox::onSaveTrans()
 //! If the registration has ended well, it sets the output's metaData and reset the movingView and fuseView with the registered image.
 void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString algoName)
 {   
-    dtkSmartPointer<dtkAbstractData> output(NULL); //initialisation : UGLY but necessary
+    dtkSmartPointer<medAbstractData> output(NULL); //initialisation : UGLY but necessary
     
     if (type==algorithm)
         if (d->process)

@@ -13,7 +13,7 @@
 
 #include <itkNiftiDataImageReader.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkNiftiImageIO.h>

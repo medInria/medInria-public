@@ -117,7 +117,7 @@ bool itkDataDiffusionGradientList::write (const QString& file)
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractData *createItkDataDiffusionGradientList()
+medAbstractData *createItkDataDiffusionGradientList()
 {
     return new itkDataDiffusionGradientList;
 }

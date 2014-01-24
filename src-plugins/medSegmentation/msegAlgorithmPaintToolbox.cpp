@@ -84,7 +84,7 @@ public:
         medAbstractViewCoordinates * coords = view->coordinates();
         mouseEvent->accept();
 
-        dtkAbstractData * viewData = medSegmentationSelectorToolBox::viewData( view );
+        medAbstractData * viewData = medSegmentationSelectorToolBox::viewData( view );
         m_cb->setData( viewData ); 
 
         if (coords->is2D()) {
@@ -401,7 +401,7 @@ void AlgorithmPaintToolbox::onClearMaskPressed()
     }
 }
 
-void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
+void AlgorithmPaintToolbox::setData( medAbstractData *dtkdata )
 {
     if (!dtkdata)
         return;
@@ -414,7 +414,7 @@ void AlgorithmPaintToolbox::setData( dtkAbstractData *dtkdata )
     m_lastVup = QVector3D();
     m_lastVpn = QVector3D();
 
-    m_imageData = dtkSmartPointer<dtkAbstractData>(dtkdata);
+    m_imageData = dtkSmartPointer<medAbstractData>(dtkdata);
 
     // Update values of slider
 

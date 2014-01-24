@@ -19,7 +19,7 @@ class medFilteringViewContainerPrivate
 public:
     medViewContainer* inputViewContainer;
     medViewContainer* outputViewContainer;
-    dtkAbstractData * inputData;
+    medAbstractData * inputData;
 };
 
 medFilteringViewContainer::medFilteringViewContainer ( QWidget * parent ) :
@@ -54,7 +54,7 @@ medFilteringViewContainer::~medFilteringViewContainer()
 }
 
 
-void medFilteringViewContainer::updateOutput ( dtkAbstractData *data )
+void medFilteringViewContainer::updateOutput ( medAbstractData *data )
 {
     if ( !data )
         return;

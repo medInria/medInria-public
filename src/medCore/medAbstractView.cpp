@@ -13,7 +13,7 @@
 
 #include "medAbstractView.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include <medAbstractViewCoordinates.h>
 
@@ -38,10 +38,10 @@ public:
     int currentMeshLayer;
     int meshLayerCount;
     bool hasImage;
-    QList< dtkSmartPointer <dtkAbstractData> > dataList;
-    //QMap <int, dtkSmartPointer<dtkAbstractData> > dataList;
+    QList< dtkSmartPointer <medAbstractData> > dataList;
+    //QMap <int, dtkSmartPointer<medAbstractData> > dataList;
 
-    // dtkSmartPointer<dtkAbstractData> sharedData;
+    // dtkSmartPointer<medAbstractData> sharedData;
 
     QColor color; // The color used to represent this view in other views.
 
@@ -383,7 +383,7 @@ void medAbstractView::removeOverlay(int layer)
 
     if (layer >= 0 && layer < d->dataList.size())
     {
-        dtkAbstractData * oldData = d->dataList[layer];
+        medAbstractData * oldData = d->dataList[layer];
         medAbstractView::removeDataType(oldData->identifier());
         emit (dataRemoved(oldData, layer));
         emit (dataRemoved(layer));
@@ -397,7 +397,7 @@ void medAbstractView::onSliceChanged (int slice)
     DTK_DEFAULT_IMPLEMENTATION;
 }
 
-void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
+void medAbstractView::addDataInList(medAbstractData * data, int layer)
 {
 
     if(layer >=0 &&  layer < d->dataList.size() )
@@ -407,14 +407,14 @@ void medAbstractView::addDataInList(dtkAbstractData * data, int layer)
     medAbstractView::addDataType(data->identifier());
 }
 
-void medAbstractView::addDataInList(dtkAbstractData * data)
+void medAbstractView::addDataInList(medAbstractData * data)
 {
 
     d->dataList.append(data);
     medAbstractView::addDataType(data->identifier());
 }
 
-dtkAbstractData * medAbstractView::dataInList(int layer) const
+medAbstractData * medAbstractView::dataInList(int layer) const
 {
     if (layer >=0 &&  layer < d->dataList.size())
         return d->dataList[layer];
@@ -422,7 +422,7 @@ dtkAbstractData * medAbstractView::dataInList(int layer) const
     return NULL;
 }
 
-bool medAbstractView::isInList(dtkAbstractData * data, int layer)
+bool medAbstractView::isInList(medAbstractData * data, int layer)
 {
 
     if(layer == d->dataList.size())
@@ -437,7 +437,7 @@ bool medAbstractView::isInList(dtkAbstractData * data, int layer)
     return false;
 }
 
-bool medAbstractView::isInList(dtkAbstractData * data)
+bool medAbstractView::isInList(medAbstractData * data)
 {
     if (d->dataList.contains(data))
 
@@ -449,10 +449,10 @@ bool medAbstractView::isInList(dtkAbstractData * data)
 }
 
 
-void medAbstractView::setDataInList(dtkAbstractData * data, int layer)
+void medAbstractView::setDataInList(medAbstractData * data, int layer)
 {
     // start by removing the data type if layer already exists
-    dtkAbstractData * oldData = NULL;
+    medAbstractData * oldData = NULL;
 
     if (layer >=0 &&  layer < d->dataList.size()) {
         oldData = d->dataList[layer];
@@ -602,16 +602,16 @@ void medAbstractView::emitViewCameraChangedEvent(const QVector3D &position, cons
     emit cameraChanged(position, viewup, focal, parallelScale, d->linkCamera);
 }
 
-void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> data )
+void medAbstractView::setSharedDataPointer( dtkSmartPointer<medAbstractData> data )
 {
     // set a reference to our view that gets destroyed when the view terminates
     //d->sharedData = data;
 
-    //dtkAbstractData *dtkdata = d->sharedData.data();
+    //medAbstractData *dtkdata = d->sharedData.data();
     this->setData(data);
 }
 
-void medAbstractView::setSharedDataPointer( dtkSmartPointer<dtkAbstractData> data,
+void medAbstractView::setSharedDataPointer( dtkSmartPointer<medAbstractData> data,
                                             int layer)
 {
     this->setData(data,layer);

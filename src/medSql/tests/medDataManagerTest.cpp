@@ -79,11 +79,11 @@ void medDataManagerTestObject::cleanupTestCase(void)
     removeDir(m_storagePath);   
 }
 
-dtkSmartPointer<dtkAbstractData> medDataManagerTestObject::createTestData(void)
+dtkSmartPointer<medAbstractData> medDataManagerTestObject::createTestData(void)
 {
     // Create a data.
     dtkAbstractDataFactory *dataFactory = dtkAbstractDataFactory::instance();
-    dtkSmartPointer<dtkAbstractData> testData = dataFactory->createSmartPointer(medQtDataImage::s_description());
+    dtkSmartPointer<medAbstractData> testData = dataFactory->createSmartPointer(medQtDataImage::s_description());
     
     QString sDatetime = QDateTime::currentDateTime().toString();
 
@@ -224,7 +224,7 @@ void medDataManagerTestObject::testImportFile(void)
     // Check data in db matches original.
     compareData();
     
-    dtkSmartPointer<dtkAbstractData> insertedData = medDataManager::instance()->data( m_lastInsertedIndex );
+    dtkSmartPointer<medAbstractData> insertedData = medDataManager::instance()->data( m_lastInsertedIndex );
     QString patientID = medMetaDataKeys::PatientID.getFirstValue(insertedData);
     QString serieID = medMetaDataKeys::SeriesID.getFirstValue(insertedData);
     QFileInfo fileInfo(m_storagePath + "/" + patientID + "/" + serieID );
@@ -275,7 +275,7 @@ void medDataManagerTestObject::testIndexFile(void)
     // Check data in db matches original.
     compareData();
     
-    dtkSmartPointer<dtkAbstractData> insertedData = medDataManager::instance()->data( m_lastInsertedIndex );
+    dtkSmartPointer<medAbstractData> insertedData = medDataManager::instance()->data( m_lastInsertedIndex );
     QString patientID = medMetaDataKeys::PatientID.getFirstValue(insertedData);
     QString serieID = medMetaDataKeys::SeriesID.getFirstValue(insertedData);
     
@@ -404,14 +404,14 @@ void medDataManagerTestObject::testStoreNonPersistentMultipleDataToDatabase(void
     
     QCOMPARE(serie1, indexFor1Serie);
     
-    dtkSmartPointer<dtkAbstractData> originalData = medDataManager::instance()->data( serie1 );
+    dtkSmartPointer<medAbstractData> originalData = medDataManager::instance()->data( serie1 );
     
     medDataManager::instance()->storeNonPersistentMultipleDataToDatabase(serie1);
     
     waitForInsertions();
     
     QVERIFY( m_lastInsertedIndex.isValidForSeries());
-    dtkSmartPointer<dtkAbstractData> insertedData = medDataManager::instance()->data( m_lastInsertedIndex );
+    dtkSmartPointer<medAbstractData> insertedData = medDataManager::instance()->data( m_lastInsertedIndex );
     
     compareData(originalData, insertedData);
     
@@ -427,8 +427,8 @@ void medDataManagerTestObject::testStoreNonPersistentMultipleDataToDatabase(void
     medDataIndex serie2_1 = npDb->series(study2)[0];
     medDataIndex serie2_2 = npDb->series(study2)[1];
    
-    dtkSmartPointer<dtkAbstractData> originalDataSerie2_1 = medDataManager::instance()->data( serie2_1 );
-    dtkSmartPointer<dtkAbstractData> originalDataSerie2_2 = medDataManager::instance()->data( serie2_2 );
+    dtkSmartPointer<medAbstractData> originalDataSerie2_1 = medDataManager::instance()->data( serie2_1 );
+    dtkSmartPointer<medAbstractData> originalDataSerie2_2 = medDataManager::instance()->data( serie2_2 );
     
     medDataManager::instance()->storeNonPersistentMultipleDataToDatabase(patient2);
     
@@ -436,8 +436,8 @@ void medDataManagerTestObject::testStoreNonPersistentMultipleDataToDatabase(void
     
     QVERIFY( m_insertedIndexes.size() > 1);
     
-    dtkSmartPointer<dtkAbstractData> insertedDataSerie2_1 = medDataManager::instance()->data( m_insertedIndexes[0] );
-    dtkSmartPointer<dtkAbstractData> insertedDataSerie2_2 = medDataManager::instance()->data( m_insertedIndexes[1] );
+    dtkSmartPointer<medAbstractData> insertedDataSerie2_1 = medDataManager::instance()->data( m_insertedIndexes[0] );
+    dtkSmartPointer<medAbstractData> insertedDataSerie2_2 = medDataManager::instance()->data( m_insertedIndexes[1] );
     
     // we don't know the order of insertion
     if( medMetaDataKeys::SeriesDescription.getFirstValue(insertedDataSerie2_1) ==  
@@ -484,14 +484,14 @@ void medDataManagerTestObject::testStoreNonPersistentSingleDataToDatabase(void)
     
     QCOMPARE(serie1, indexFor1Serie);
     
-    dtkSmartPointer<dtkAbstractData> originalData = medDataManager::instance()->data( serie1 );
+    dtkSmartPointer<medAbstractData> originalData = medDataManager::instance()->data( serie1 );
     
     medDataManager::instance()->storeNonPersistentMultipleDataToDatabase(serie1);
     
     waitForInsertions();
     
     QVERIFY( m_lastInsertedIndex.isValidForSeries());
-    dtkSmartPointer<dtkAbstractData> insertedData = medDataManager::instance()->data( m_lastInsertedIndex );
+    dtkSmartPointer<medAbstractData> insertedData = medDataManager::instance()->data( m_lastInsertedIndex );
     
     compareData(originalData, insertedData);
   
@@ -550,7 +550,7 @@ void medDataManagerTestObject::testRemoveData(void)
             IndexList patients = controller->patients();
             QCOMPARE( patients.size(), nbPatients-1 );
             nbPatients--;
-            dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data( patient );
+            dtkSmartPointer<medAbstractData> data = medDataManager::instance()->data( patient );
             QVERIFY(!data);
             data = medDataManager::instance()->data( study );
             QVERIFY(!data);
@@ -644,7 +644,7 @@ void medDataManagerTestObject::testMoveSerie(void)
         IndexList prevStudy1Series = controller->series(study1);
         IndexList prevStudy2Series = controller->series(study2);
 
-        dtkSmartPointer<dtkAbstractData> originalData = medDataManager::instance()->data( serie1 );
+        dtkSmartPointer<medAbstractData> originalData = medDataManager::instance()->data( serie1 );
         QString originalPatientName = medMetaDataKeys::PatientName.getFirstValue(originalData);
         
         medDataIndex newIndex = medDataManager::instance()->moveSerie(serie1, study2);
@@ -657,7 +657,7 @@ void medDataManagerTestObject::testMoveSerie(void)
         
         QVERIFY (newIndex.isValid());
         
-        dtkSmartPointer<dtkAbstractData> movedData = medDataManager::instance()->data( newIndex );
+        dtkSmartPointer<medAbstractData> movedData = medDataManager::instance()->data( newIndex );
         QString newPatientName = medMetaDataKeys::PatientName.getFirstValue(movedData);
         
         compareData(originalData, movedData);
@@ -716,7 +716,7 @@ bool medDataManagerTestObject::removeDir(const QString & dirName)
 
 void medDataManagerTestObject::compareData()
 {
-    dtkSmartPointer<dtkAbstractData> insertedData = medDataManager::instance()->data( m_lastInsertedIndex );
+    dtkSmartPointer<medAbstractData> insertedData = medDataManager::instance()->data( m_lastInsertedIndex );
     QVERIFY(insertedData);
     QVERIFY(m_currentData);
     QCOMPARE(insertedData->identifier(), m_currentData->identifier());
@@ -728,7 +728,7 @@ void medDataManagerTestObject::compareData()
         medMetaDataKeys::SeriesDescription.getFirstValue(m_currentData));      
 }
 
-void medDataManagerTestObject::compareData(dtkSmartPointer<dtkAbstractData> data1, dtkSmartPointer<dtkAbstractData> data2)
+void medDataManagerTestObject::compareData(dtkSmartPointer<medAbstractData> data1, dtkSmartPointer<medAbstractData> data2)
 {
     QVERIFY(data1);
     QVERIFY(data2);

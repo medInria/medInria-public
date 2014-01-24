@@ -18,7 +18,7 @@
 #include <medDataIndex.h>
 
 class medFilteringSelectorToolBoxPrivate;
-class dtkAbstractData;
+class medAbstractData;
 class medFilteringAbstractToolBox;
 
 /**
@@ -36,7 +36,7 @@ public:
     /**
      * @brief returns input data
      */
-    dtkAbstractData* data();
+    medAbstractData* data();
 
     /**
      * @brief returns current selected toolbox

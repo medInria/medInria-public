@@ -16,7 +16,7 @@
 #include <medAbstractView.h>
 
 #include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 #include <dtkLog/dtkLog.h>
 

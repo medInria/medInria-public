@@ -25,7 +25,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include <QtCore/QHash>
 
@@ -111,16 +111,16 @@ void medDatabaseNonPersistentControllerImpl::import(const QString& file,QString 
     QThreadPool::globalInstance()->start(reader);
 }
 
-dtkSmartPointer<dtkAbstractData> medDatabaseNonPersistentControllerImpl::read( const medDataIndex& index ) const
+dtkSmartPointer<medAbstractData> medDatabaseNonPersistentControllerImpl::read( const medDataIndex& index ) const
 {
     // Lookup item in hash table.
     medDatabaseNonPersistentControllerImplPrivate::DataHashMapType::const_iterator it( d->items.find(index) );
 
     // Is item in our table ? if not, return null.
     if ( it == d->items.end() || it.value() == NULL )
-        return dtkSmartPointer<dtkAbstractData> ();
+        return dtkSmartPointer<medAbstractData> ();
 
-    dtkSmartPointer<dtkAbstractData> ret(it.value()->data());
+    dtkSmartPointer<medAbstractData> ret(it.value()->data());
 
     return ret;
 }
@@ -154,7 +154,7 @@ bool medDatabaseNonPersistentControllerImpl::isConnected() const
     return true;
 }
 
-void medDatabaseNonPersistentControllerImpl::import(dtkAbstractData *data,
+void medDatabaseNonPersistentControllerImpl::import(medAbstractData *data,
                                                     QString callerUuid)
 {
     medDatabaseNonPersistentImporter *importer = new medDatabaseNonPersistentImporter(data,callerUuid);
@@ -385,7 +385,7 @@ QString medDatabaseNonPersistentControllerImpl::metaData( const medDataIndex& in
 
     MapType::const_iterator it(d->items.find(index));
     if (it != d->items.end()  && it.value()!=NULL ) {
-        dtkAbstractData *data = it.value()->data();
+        medAbstractData *data = it.value()->data();
         if (data &&  data->hasMetaData(key) )
             return data->metadata(key);
     } else {
@@ -393,7 +393,7 @@ QString medDatabaseNonPersistentControllerImpl::metaData( const medDataIndex& in
         // using ordered map.
         it = d->items.lowerBound( index );
         if (it != d->items.end() && medDataIndex::isMatch( it.key(), index) && it.value()!=NULL ) {
-            dtkAbstractData *data = it.value()->data();
+            medAbstractData *data = it.value()->data();
             if (data &&  data->hasMetaData(key) )
                 return data->metadata(key);
         }
@@ -407,7 +407,7 @@ bool medDatabaseNonPersistentControllerImpl::setMetaData( const medDataIndex& in
 
     MapType::const_iterator it(d->items.find(index));
     if (it != d->items.end() ) {
-        dtkAbstractData *data = it.value()->data();
+        medAbstractData *data = it.value()->data();
         if (data) {
             data->setMetaData(key, value);
             return true;
@@ -418,7 +418,7 @@ bool medDatabaseNonPersistentControllerImpl::setMetaData( const medDataIndex& in
         it = d->items.lowerBound( index );
         int numSet(0);
         for ( ; it != d->items.end() && medDataIndex::isMatch(it.key() , index ); ++it ) {
-            dtkAbstractData *data = it.value()->data();
+            medAbstractData *data = it.value()->data();
             if (data) {
                 data->setMetaData(key, value);
                 ++numSet;
@@ -456,7 +456,7 @@ QList<medDataIndex> medDatabaseNonPersistentControllerImpl::moveStudy(const medD
     newIndexList << newIndex;
 
     //retrieve destination patient information
-    dtkAbstractData *dataPatient = read(toPatient);
+    medAbstractData *dataPatient = read(toPatient);
 
     if(dataPatient==NULL)
     {
@@ -476,7 +476,7 @@ QList<medDataIndex> medDatabaseNonPersistentControllerImpl::moveStudy(const medD
             return newIndexList;     
     }
 
-    dtkAbstractData *dataStudy = read(indexStudy);
+    medAbstractData *dataStudy = read(indexStudy);
 
     if(dataStudy!=NULL)
     {
@@ -539,10 +539,10 @@ medDataIndex medDatabaseNonPersistentControllerImpl::moveSerie(const medDataInde
     }
     
     // we need to update metadatas (patient, study) of the serie to move
-    dtkAbstractData *dataSerie = read(indexSerie);
+    medAbstractData *dataSerie = read(indexSerie);
 
     //retrieve destination study information
-    dtkAbstractData *dataStudy = read(toStudy);
+    medAbstractData *dataStudy = read(toStudy);
     
     medDatabaseNonPersistentItem * serieItem = NULL;
     serieItem = d->items.find(indexSerie).value();

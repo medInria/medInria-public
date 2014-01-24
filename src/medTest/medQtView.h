@@ -19,7 +19,7 @@
 
 #include "medAbstractView.h"
 
-class dtkAbstractData;
+class medAbstractData;
 class medQtViewPrivate;
 
 class MEDTEST_EXPORT medQtView : public medAbstractView
@@ -37,8 +37,8 @@ public:
 
     QWidget *widget();
 
-    void setData (dtkAbstractData *data);
-    void setData (dtkAbstractData *data, int layer);
+    void setData (medAbstractData *data);
+    void setData (medAbstractData *data, int layer);
 
     void *data();
     void *data(int layer);

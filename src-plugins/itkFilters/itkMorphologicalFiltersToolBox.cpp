@@ -16,7 +16,7 @@
 #include <limits>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include <medCore/medAbstractDataImage.h>
 
@@ -143,7 +143,7 @@ bool itkMorphologicalFiltersToolBox::registered()
 }
 
 
-dtkAbstractData* itkMorphologicalFiltersToolBox::processOutput()
+medAbstractData* itkMorphologicalFiltersToolBox::processOutput()
 {
     if ( !d->process )
         return NULL;

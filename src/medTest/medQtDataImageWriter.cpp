@@ -14,7 +14,7 @@
 #include "medQtDataImageWriter.h"
 #include "medQtDataImage.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkLog/dtkLog.h>
 
@@ -127,7 +127,7 @@ bool medQtDataImageWriter::canWrite( const QString& path )
 
 bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= true*/ )
 {
-    dtkAbstractData * dtkdata = this->data();
+    medAbstractData * dtkdata = this->data();
 
     if ( !dtkdata )
         return false;

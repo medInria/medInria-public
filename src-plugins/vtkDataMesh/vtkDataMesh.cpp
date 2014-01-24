@@ -98,7 +98,7 @@ void vtkDataMesh::update()
 
 }
 
-dtkAbstractData *createVtkDataMesh()
+medAbstractData *createVtkDataMesh()
 {
   return new vtkDataMesh;
 }

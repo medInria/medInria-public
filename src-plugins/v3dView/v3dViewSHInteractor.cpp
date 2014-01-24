@@ -13,7 +13,7 @@
 
 #include <v3dViewSHInteractor.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -32,7 +32,7 @@
 class v3dViewSHInteractorPrivate {
 public:
 
-    dtkAbstractData*             data;
+    medAbstractData*             data;
     v3dView*                     view;
     vtkSphericalHarmonicManager* manager;
 
@@ -42,7 +42,7 @@ public:
     itk::SphericalHarmonicITKToVTKFilter<itk::VectorImage<double,3> >::Pointer filterDouble;
 
     template <typename SH_IMAGE>
-    void setVTKFilter(dtkAbstractData* d,typename itk::SphericalHarmonicITKToVTKFilter<SH_IMAGE>::Pointer& filter) {
+    void setVTKFilter(medAbstractData* d,typename itk::SphericalHarmonicITKToVTKFilter<SH_IMAGE>::Pointer& filter) {
 
         SH_IMAGE* dataset = static_cast<SH_IMAGE*>(d->data());
 
@@ -124,7 +124,7 @@ bool v3dViewSHInteractor::registered() {
                                                                           createV3dViewSHInteractor);
 }
 
-void v3dViewSHInteractor::setData(dtkAbstractData *data) {
+void v3dViewSHInteractor::setData(medAbstractData *data) {
 
     if (!data || !data->data())
         return;
@@ -141,7 +141,7 @@ void v3dViewSHInteractor::setData(dtkAbstractData *data) {
         qDebug() << "Unrecognized SH data type: " << identifier;
 }
 
-dtkAbstractData *v3dViewSHInteractor::data() {
+medAbstractData *v3dViewSHInteractor::data() {
     return d->data;
 }
 

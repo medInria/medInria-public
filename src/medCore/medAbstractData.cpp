@@ -26,7 +26,7 @@ public:
     QList< dtkSmartPointer<medAttachedData> > attachedData;
 };
 
-medAbstractData::medAbstractData( dtkAbstractData *parent )
+medAbstractData::medAbstractData( medAbstractData *parent )
     : dtkAbstractData(parent)
     , d(new medAbstractDataPrivate)
 {

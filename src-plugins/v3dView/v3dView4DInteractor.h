@@ -18,7 +18,7 @@
 
 class v3dView4DInteractorPrivate;
 
-class dtkAbstractData;
+class medAbstractData;
 class dtkAbstractView;
 
 /**
@@ -47,14 +47,14 @@ public:
 
     static bool registered();
 
-    virtual void setData(dtkAbstractData *data);
+    virtual void setData(medAbstractData *data);
     virtual void setView(dtkAbstractView *view);
 
     virtual void enable();
     virtual void disable();
 
     /** Override dtkAbstractViewInteractor method */
-    virtual bool isAutoEnabledWith ( dtkAbstractData * data );
+    virtual bool isAutoEnabledWith ( medAbstractData * data );
 
     void setCurrentTime (double time);
     double getCurrentTime()
@@ -66,14 +66,14 @@ public:
 
 public slots:
     // Mandatory implementations from medVtkViewInteractor
-    virtual void setOpacity(dtkAbstractData * data, double opacity);
-    virtual double opacity(dtkAbstractData * data) const;
+    virtual void setOpacity(medAbstractData * data, double opacity);
+    virtual double opacity(medAbstractData * data) const;
 
-    virtual void setVisible(dtkAbstractData * data, bool visible);
-    virtual bool isVisible(dtkAbstractData * data) const;
+    virtual void setVisible(medAbstractData * data, bool visible);
+    virtual bool isVisible(medAbstractData * data) const;
 
 public slots:
-    void onDataAdded (dtkAbstractData* data);
+    void onDataAdded (medAbstractData* data);
     void checkViewProperty(QString name, QString value);
     
 protected:
@@ -82,7 +82,7 @@ signals:
 
 public slots:
 	//Add image to the sequence
-    virtual void appendData(dtkAbstractData *data);
+    virtual void appendData(medAbstractData *data);
 
 private:
     v3dView4DInteractorPrivate *d;

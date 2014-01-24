@@ -26,7 +26,7 @@
 #include <medFilteringAbstractToolBox.h>
 
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -37,7 +37,7 @@ class medFilteringWorkspacePrivate
 {
 public:
     medFilteringSelectorToolBox *filteringToolBox;
-    dtkSmartPointer<dtkAbstractData> filterOutput;
+    dtkSmartPointer<medAbstractData> filterOutput;
     QString importUuid;
 };
 
@@ -78,8 +78,8 @@ void medFilteringWorkspace::setupViewContainerStack()
         medFilteringViewContainer *filteringViewContainer = new medFilteringViewContainer ( this->stackedViewContainers() );
 
         connect(filteringViewContainer,SIGNAL(droppedInput(medDataIndex)), d->filteringToolBox,SLOT(onInputSelected(medDataIndex)));
-        connect(this,SIGNAL(outputDataChanged(dtkAbstractData *)),
-                filteringViewContainer,SLOT(updateOutput(dtkAbstractData *)));
+        connect(this,SIGNAL(outputDataChanged(medAbstractData *)),
+                filteringViewContainer,SLOT(updateOutput(medAbstractData *)));
         connect(filteringViewContainer, SIGNAL(viewRemoved(dtkAbstractView *)),
                 this, SLOT(onInputViewRemoved()));
 
@@ -103,7 +103,7 @@ void medFilteringWorkspace::onProcessSuccess()
     if ( !d->filterOutput )
         return;
 
-    dtkSmartPointer<dtkAbstractData> inputData(d->filteringToolBox->data());
+    dtkSmartPointer<medAbstractData> inputData(d->filteringToolBox->data());
 
     if (! d->filterOutput->hasMetaData(medMetaDataKeys::SeriesDescription.key()))
       {

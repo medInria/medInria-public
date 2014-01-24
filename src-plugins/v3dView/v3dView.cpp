@@ -319,8 +319,8 @@ public:
     QVTKWidget *vtkWidget;
     QString orientation;
 
-    dtkAbstractData *data;
-    QMap<int, dtkSmartPointer<dtkAbstractData> > sharedData;
+    medAbstractData *data;
+    QMap<int, dtkSmartPointer<medAbstractData> > sharedData;
     medAbstractDataImage *imageData;
     
     bool interactorsInitialized;
@@ -837,12 +837,12 @@ vtkRenderer *v3dView::renderer3d()
     return d->renderer3d;
 }
 
-void v3dView::setSharedDataPointer ( dtkSmartPointer<dtkAbstractData> data )
+void v3dView::setSharedDataPointer ( dtkSmartPointer<medAbstractData> data )
 {
     if ( !data )
         return;
      int layer = 0, imageLayer = 0;
-     dtkAbstractData * dataInLayer;
+     medAbstractData * dataInLayer;
      while ( (dataInLayer = medAbstractView::dataInList( layer )) )
      {
          if(!dataInLayer->identifier().contains ( "vtkDataMesh" ))
@@ -859,7 +859,7 @@ void v3dView::setSharedDataPointer ( dtkSmartPointer<dtkAbstractData> data )
 
 }
 
-void v3dView::setData ( dtkAbstractData *data )
+void v3dView::setData ( medAbstractData *data )
 {
     if(!data)
         return;
@@ -894,7 +894,7 @@ void v3dView::setData ( dtkAbstractData *data )
 //  What to return if the dynamic cast does not work ??
 
 template <typename IMAGE>
-bool v3dView::SetViewInput(const char* type,dtkAbstractData* data,const int layer)
+bool v3dView::SetViewInput(const char* type,medAbstractData* data,const int layer)
 {
     if (data->identifier()!=type)
         return false;
@@ -906,7 +906,7 @@ bool v3dView::SetViewInput(const char* type,dtkAbstractData* data,const int laye
     return true;
 }
 
-bool v3dView::SetView(const char* type,dtkAbstractData* data)
+bool v3dView::SetView(const char* type,medAbstractData* data)
 {
     if (data->identifier()!=type)
         return false;
@@ -915,7 +915,7 @@ bool v3dView::SetView(const char* type,dtkAbstractData* data)
 }
 
 template <typename IMAGE>
-bool v3dView::SetViewInputWithConversion(const char* type,const char* newtype,dtkAbstractData* data,const int layer)
+bool v3dView::SetViewInputWithConversion(const char* type,const char* newtype,medAbstractData* data,const int layer)
 {
     if (data->identifier()!=type)
         return false;
@@ -927,7 +927,7 @@ bool v3dView::SetViewInputWithConversion(const char* type,const char* newtype,dt
     return true;
 }
 
-void v3dView::setData ( dtkAbstractData *data, int layer )
+void v3dView::setData ( medAbstractData *data, int layer )
 {
     if ( !data )
         return;

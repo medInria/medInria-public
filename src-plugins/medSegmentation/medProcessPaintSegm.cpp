@@ -17,7 +17,7 @@
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -29,9 +29,9 @@
 class medProcessPaintSegmPrivate
 {
 public:
-    dtkSmartPointer<dtkAbstractData> imageInput;
-    dtkSmartPointer<dtkAbstractData> maskInput;
-    dtkSmartPointer<dtkAbstractData> segmentationOutput;
+    dtkSmartPointer<medAbstractData> imageInput;
+    dtkSmartPointer<medAbstractData> maskInput;
+    dtkSmartPointer<medAbstractData> segmentationOutput;
 };
 
 
@@ -72,7 +72,7 @@ QString medProcessPaintSegm::s_identifier()
      return "medProcessPaintSegm";
 }
 
-void medProcessPaintSegm::setInput( dtkAbstractData *data, int channel )
+void medProcessPaintSegm::setInput( medAbstractData *data, int channel )
 {
     switch( channel ) {
     case ImageChannel : 
@@ -111,12 +111,12 @@ QString medProcessPaintSegm::MaskImageTypeIdentifier()
     return "itkDataImageUChar3";
 }
 
-dtkAbstractData * medProcessPaintSegm::output()
+medAbstractData * medProcessPaintSegm::output()
 {
     return d->segmentationOutput;
 }
 
-void medProcessPaintSegm::setOutputMetadata(const dtkAbstractData * inputData, dtkAbstractData * outputData)
+void medProcessPaintSegm::setOutputMetadata(const medAbstractData * inputData, medAbstractData * outputData)
 {
     Q_ASSERT(outputData && inputData);
 

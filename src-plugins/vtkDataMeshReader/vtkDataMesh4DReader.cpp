@@ -17,7 +17,7 @@
 #include "vtkMetaDataSetSequence.h"
 #include "vtkSmartPointer.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
@@ -51,7 +51,7 @@ bool vtkDataMesh4DReader::canRead (const QStringList& paths) {
 
 bool vtkDataMesh4DReader::readInformation (const QString& path) {
   
-    dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
+    dtkSmartPointer<medAbstractData> dtkdata = this->data();
     this->reader->SetFileName (path.toAscii().constData());
   
     if (!dtkdata) {
@@ -81,7 +81,7 @@ bool vtkDataMesh4DReader::read (const QString& path) {
 
     qDebug() << "Can read with: " << this->identifier();
 
-    if (dtkAbstractData *dtkdata = this->data() ) {
+    if (medAbstractData *dtkdata = this->data() ) {
 
         if (!(dtkdata->identifier()=="vtkDataMesh4D"))
             return false;

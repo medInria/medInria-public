@@ -18,7 +18,7 @@
 
 class medFilteringWorkspacePrivate;
 class medViewContainerStack;
-class dtkAbstractData;
+class medAbstractData;
 class dtkAbstractView;
 
 /**
@@ -53,7 +53,7 @@ signals:
      * This is a connection between the medFilteringSelectorToolBox and the medFilteringViewContainer which displays input/output images
      *
      */
-    void outputDataChanged ( dtkAbstractData * );
+    void outputDataChanged ( medAbstractData * );
 
 public slots:
 
@@ -65,7 +65,7 @@ public slots:
     void patientChanged ( int patientId );
 
     /**
-     * @brief adds metadata to the output and emits a signal outputDataChanged(dtkAbstractData *)
+     * @brief adds metadata to the output and emits a signal outputDataChanged(medAbstractData *)
      */
     void onProcessSuccess();
 

@@ -18,7 +18,7 @@
 #include <QtGui>
 
 class dtkAbstractView;
-class dtkAbstractData;
+class medAbstractData;
 
 class medToolBoxTab;
 class medToolBoxPrivate;

@@ -13,7 +13,7 @@
 
 #include <itkDataSHImageWriterBase.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkImageFileWriter.h>
@@ -78,7 +78,7 @@ bool itkDataSHImageWriterBase::write(const QString& path)
 	 if (this->io.IsNull())
 		 return false;
 
-	if (dtkAbstractData *dtkdata = this->data() ) {
+	if (medAbstractData *dtkdata = this->data() ) {
 
                 if(dtkdata->identifier()=="itkDataSHImageFloat3") {
 

@@ -149,13 +149,13 @@ void medDatabaseNonPersistentItem::setIndex(const medDataIndex& index)
     d->index = index;
 }
 
-dtkAbstractData *medDatabaseNonPersistentItem::data(void)
+medAbstractData *medDatabaseNonPersistentItem::data(void)
 {
     return d->data;
 }
 
 
-bool medDatabaseNonPersistentItem::Match(dtkAbstractData *dtkData)
+bool medDatabaseNonPersistentItem::Match(medAbstractData *dtkData)
 {
     QString patientName = medMetaDataKeys::PatientName.getFirstValue(dtkData).simplified();
     QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(dtkData).simplified();

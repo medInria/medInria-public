@@ -48,13 +48,13 @@ public:
     enum { ImageChannel = 0, MaskChannel = 1};
 
     //! Override dtkAbstractProcess
-    virtual void setInput(dtkAbstractData *data, int channel);
+    virtual void setInput(medAbstractData *data, int channel);
     virtual  int update();
     virtual void *data();
-    dtkAbstractData * output();
+    medAbstractData * output();
 
 protected:
-    void setOutputMetadata(const dtkAbstractData * inputData, dtkAbstractData * outputData);
+    void setOutputMetadata(const medAbstractData * inputData, medAbstractData * outputData);
 
 private:
     medProcessPaintSegmPrivate *d;

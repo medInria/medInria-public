@@ -17,7 +17,7 @@
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkGlobal.h>
 
@@ -593,7 +593,7 @@ void medWorkspaceArea::bringUpTransferFunction(bool checked)
       d->transFun->setWindowModality( Qt::WindowModal );
       d->transFun->setWindowFlags(Qt::Tool|Qt::WindowStaysOnTopHint);
 
-      // d->transFun->setData(static_cast<dtkAbstractData *>(view->data()));
+      // d->transFun->setData(static_cast<medAbstractData *>(view->data()));
       d->transFun->setView(dynamic_cast<medAbstractView*>(view));
 
       d->transFun->show();
@@ -608,7 +608,7 @@ void medWorkspaceArea::updateTransferFunction()
 
     dtkAbstractView * view = current->view();
     if ( d->transFun != NULL && view != NULL ) {
-    // d->transFun->setData( static_cast<dtkAbstractData *>( view->data() ) );
+    // d->transFun->setData( static_cast<medAbstractData *>( view->data() ) );
         d->transFun->setView( dynamic_cast<medAbstractView *>( view ), true );
         d->transFun->update();
     }

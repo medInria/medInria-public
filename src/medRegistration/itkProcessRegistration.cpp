@@ -14,7 +14,7 @@
 #include "itkProcessRegistration.h"
 
 #include <dtkCore/dtkSmartPointer.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
@@ -59,10 +59,10 @@ public:
     //itk::ImageBase<3>::Pointer movingImage;
     itkProcessRegistration::ImageType fixedImageType;
     itkProcessRegistration::ImageType movingImageType;
-    dtkSmartPointer<dtkAbstractData> output;
+    dtkSmartPointer<medAbstractData> output;
 
     template <class PixelType>
-            void setInput(dtkAbstractData * data,int channel);
+            void setInput(medAbstractData * data,int channel);
     mutable QMutex mutex;
 };
 
@@ -94,7 +94,7 @@ itkProcessRegistration::~itkProcessRegistration()
 //
 // /////////////////////////////////////////////////////////////////
 template <typename PixelType>
-        void itkProcessRegistrationPrivate::setInput(dtkAbstractData * data,int channel)
+        void itkProcessRegistrationPrivate::setInput(medAbstractData * data,int channel)
 {
     //typedef itk::Image<PixelType, 3> OutputImageType;
     itkProcessRegistration::ImageType inputType;
@@ -213,7 +213,7 @@ template <typename PixelType>
 }
 
 
-void itkProcessRegistration::setInput(dtkAbstractData *data, int channel)
+void itkProcessRegistration::setInput(medAbstractData *data, int channel)
 {
     if (!data)
         return;
@@ -234,7 +234,7 @@ void itkProcessRegistration::setInput(dtkAbstractData *data, int channel)
     *last_charac = '3';
     typedef itk::Image< float, 3 > RegImageType;
 
-    dtkSmartPointer <dtkAbstractData> convertedData = dtkAbstractDataFactory::instance()->create ("itkDataImageFloat3");
+    dtkSmartPointer <medAbstractData> convertedData = dtkAbstractDataFactory::instance()->create ("itkDataImageFloat3");
     foreach ( QString metaData, data->metaDataList() )
         if (!convertedData->hasMetaData(metaData))
             convertedData->addMetaData ( metaData, data->metaDataValues ( metaData ) );
@@ -373,11 +373,11 @@ int itkProcessRegistration::update()
     return retval;
 }
 
-dtkAbstractData *itkProcessRegistration::output()
+medAbstractData *itkProcessRegistration::output()
 {
     return d->output;
 }
-void itkProcessRegistration::setOutput(dtkAbstractData * output)
+void itkProcessRegistration::setOutput(medAbstractData * output)
 {
     d->output = output;
 }
@@ -438,7 +438,7 @@ bool itkProcessRegistration::write(const QString& file)
     }
 
     bool writeSuccess = false;
-    dtkAbstractData * out = output();
+    medAbstractData * out = output();
     QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
     for (int i=0; i<writers.size(); i++)
     {

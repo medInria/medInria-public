@@ -64,10 +64,10 @@ public:
     virtual void disable();
 
     //! Override dtkAbstractViewInteractor.
-    virtual bool isAutoEnabledWith ( dtkAbstractData * data );
+    virtual bool isAutoEnabledWith ( medAbstractData * data );
 
     //! Implement dtkAbstractViewInteractor
-    virtual void setData(dtkAbstractData *data);
+    virtual void setData(medAbstractData *data);
     virtual void setView(dtkAbstractView* view);
     
     //! Whether the interactor should be on when the view is in 2d and 3d mode.
@@ -93,11 +93,11 @@ public slots:
     virtual void onDataModified(medAbstractData* data);
 
     // Mandatory implementations from medVtkViewInteractor
-    virtual void setOpacity(dtkAbstractData * data, double opacity);
-    virtual double opacity(dtkAbstractData * data) const;
+    virtual void setOpacity(medAbstractData * data, double opacity);
+    virtual double opacity(medAbstractData * data) const;
 
-    virtual void setVisible(dtkAbstractData * data, bool visible);
-    virtual bool isVisible(dtkAbstractData * data) const;
+    virtual void setVisible(medAbstractData * data, bool visible);
+    virtual bool isVisible(medAbstractData * data) const;
 
 protected:
     void onPropertySet(const QString& key, const QString& value);

@@ -15,7 +15,7 @@
 
 #include "medQtDataImage.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
@@ -96,7 +96,7 @@ void medQtDataImageReader::reset()
 
 void medQtDataImageReader::setMetaDataFromImageReader()
 {
-    dtkAbstractData * dtkdata = this->data();
+    medAbstractData * dtkdata = this->data();
     if ( !dtkdata || m_reader.isNull() )
         return;
 
@@ -164,7 +164,7 @@ int medQtDataImageReader::readStartingFrom( const QString& path, int iStart )
         return 0;
     }
 
-    dtkAbstractData * dtkData = this->data();
+    medAbstractData * dtkData = this->data();
 
     int numRead(0);
     if ( m_reader->supportsAnimation() ) {

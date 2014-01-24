@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include "v3dDataPluginExport.h"
 
@@ -46,6 +46,6 @@ private:
     v3dDataFibersPrivate *d;
 };
 
-dtkAbstractData *createV3dDataFibers();
+medAbstractData *createV3dDataFibers();
 
 

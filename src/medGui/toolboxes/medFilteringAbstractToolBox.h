@@ -18,7 +18,7 @@
 
 class medFilteringSelectorToolBox;
 class medFilteringAbstractToolBoxPrivate;
-class dtkAbstractData;
+class medAbstractData;
 
 class MEDGUI_EXPORT medFilteringAbstractToolBox : public medToolBox
 {
@@ -30,7 +30,7 @@ public:
 
     void setFilteringToolBox(medFilteringSelectorToolBox *toolbox);
 
-    virtual dtkAbstractData* processOutput() = 0;
+    virtual medAbstractData* processOutput() = 0;
 
     virtual dtkPlugin* plugin() = 0;
 

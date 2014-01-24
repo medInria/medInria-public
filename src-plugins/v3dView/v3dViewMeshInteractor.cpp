@@ -13,7 +13,7 @@
 
 #include "v3dViewMeshInteractor.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -116,7 +116,7 @@ bool v3dViewMeshInteractor::registered()
 }
 
 
-void v3dViewMeshInteractor::setData(dtkAbstractData *data)
+void v3dViewMeshInteractor::setData(medAbstractData *data)
 {
     if(data->identifier() == "vtkDataMesh4D" || data->identifier() == "vtkDataMesh")
     {
@@ -177,7 +177,7 @@ void v3dViewMeshInteractor::disable()
 }
 
 
-bool v3dViewMeshInteractor::isAutoEnabledWith ( dtkAbstractData * data )
+bool v3dViewMeshInteractor::isAutoEnabledWith ( medAbstractData * data )
 {
     if ( data->identifier() == "vtkDataMesh" )
     {
@@ -378,7 +378,7 @@ QStringList v3dViewMeshInteractor::getAllLUTs() const
     return luts;
 }
 
-void v3dViewMeshInteractor::setOpacity(dtkAbstractData * data, double opacity)
+void v3dViewMeshInteractor::setOpacity(medAbstractData * data, double opacity)
 {
     if ( ! data->identifier().startsWith("vtkDataMesh"))
         return;
@@ -390,18 +390,18 @@ void v3dViewMeshInteractor::setOpacity(dtkAbstractData * data, double opacity)
     }
 }
 
-double v3dViewMeshInteractor::opacity(dtkAbstractData * /*data*/) const
+double v3dViewMeshInteractor::opacity(medAbstractData * /*data*/) const
 {
     //TODO
     return 100;
 }
 
-void v3dViewMeshInteractor::setVisible(dtkAbstractData * /*data*/, bool /*visible*/)
+void v3dViewMeshInteractor::setVisible(medAbstractData * /*data*/, bool /*visible*/)
 {
     //TODO
 }
 
-bool v3dViewMeshInteractor::isVisible(dtkAbstractData * /*data*/) const
+bool v3dViewMeshInteractor::isVisible(medAbstractData * /*data*/) const
 {
     //TODO
     return true;

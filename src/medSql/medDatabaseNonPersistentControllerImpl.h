@@ -20,7 +20,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QList>
 
-class dtkAbstractData;
+class medAbstractData;
 class medDatabaseNonPersistentItem;
 class medDatabaseNonPersistentControllerImplPrivate;
 class medImportJobWatcher;
@@ -103,16 +103,16 @@ public slots:
     /**
     * Reads data from nonPersistent storage using the index
     * @params const medDataIndex & index Index to look for
-    * @return dtkAbstractData* data
+    * @return medAbstractData* data
     */
-    dtkSmartPointer<dtkAbstractData> read(const medDataIndex& index) const;
+    dtkSmartPointer<medAbstractData> read(const medDataIndex& index) const;
 
     /**
     * Stores data temporarily referenced by temp index
     * @param data data to be stored
     * @param callerUuid
     */
-    void import(dtkAbstractData *data, QString callerUuid);
+    void import(medAbstractData *data, QString callerUuid);
 
     /**
      * Stores data temporarily referenced by temp index

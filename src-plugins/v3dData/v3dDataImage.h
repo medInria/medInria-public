@@ -51,6 +51,6 @@ private:
     v3dDataImagePrivate *d;
 };
 
-dtkAbstractData *createV3dDataImage();
+medAbstractData *createV3dDataImage();
 
 

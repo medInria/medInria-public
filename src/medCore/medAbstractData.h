@@ -23,14 +23,14 @@ class medAttachedData;
 class medDataIndex;
 
 /**
- * Extending dtkAbstractData class to hold more specific information
+ * Extending medAbstractData class to hold more specific information
  */
 class MEDCORE_EXPORT medAbstractData : public dtkAbstractData
 {
     Q_OBJECT
 
 public:
-    medAbstractData( dtkAbstractData * parent = NULL );
+    medAbstractData( medAbstractData * parent = NULL );
     virtual ~medAbstractData();
 
     /**

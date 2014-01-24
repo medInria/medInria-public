@@ -13,7 +13,7 @@
 
 #include <medViewPropertiesToolBox.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include <medStorage.h>
 #include <medSettingsManager.h>
@@ -479,8 +479,8 @@ void medViewPropertiesToolBox::update(dtkAbstractView *view)
             d->propertiesTree->topLevelItem(d->currentLayer)->setExpanded(true);
 
 
-    QObject::connect(d->view, SIGNAL(dataAdded(dtkAbstractData*, int)),
-                     this, SLOT(onDataAdded(dtkAbstractData*, int)),
+    QObject::connect(d->view, SIGNAL(dataAdded(medAbstractData*, int)),
+                     this, SLOT(onDataAdded(medAbstractData*, int)),
                      Qt::UniqueConnection);
     //        QObject::connect(d->view, SIGNAL(closing()), this, SLOT(onViewClosed()), Qt::UniqueConnection);
 
@@ -518,7 +518,7 @@ void medViewPropertiesToolBox::update(dtkAbstractView *view)
         d->view3DButton->setChecked(true);
 }
 
-void medViewPropertiesToolBox::constructImageLayer(dtkAbstractData* data, int imageLayer)
+void medViewPropertiesToolBox::constructImageLayer(medAbstractData* data, int imageLayer)
 {
 
     if(!data)
@@ -612,7 +612,7 @@ void medViewPropertiesToolBox::constructImageLayer(dtkAbstractData* data, int im
     //d->propertiesTree->collapseAll();
 }
 
-void medViewPropertiesToolBox::constructMeshLayer(dtkAbstractData* data, int meshLayer)
+void medViewPropertiesToolBox::constructMeshLayer(medAbstractData* data, int meshLayer)
 {
     if(!data)
         return;
@@ -749,7 +749,7 @@ void medViewPropertiesToolBox::constructMeshLayer(dtkAbstractData* data, int mes
     QObject::connect(renderingBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onRenderingChanged(int)));
     //d->propertiesTree->collapseAll();
 }
-void medViewPropertiesToolBox::onDataAdded(dtkAbstractData* data)
+void medViewPropertiesToolBox::onDataAdded(medAbstractData* data)
 {
 
 }
@@ -758,7 +758,7 @@ void medViewPropertiesToolBox::onDataAdded( int layer)
 
 }
 
-void medViewPropertiesToolBox::onDataAdded(dtkAbstractData* data,
+void medViewPropertiesToolBox::onDataAdded(medAbstractData* data,
                                                  int layer)
 {
 

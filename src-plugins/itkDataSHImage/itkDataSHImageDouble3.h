@@ -50,4 +50,4 @@ private:
     itkDataSHImageDouble3Private *d;
 };
 
-dtkAbstractData *createItkDataSHImageDouble3();
+medAbstractData *createItkDataSHImageDouble3();

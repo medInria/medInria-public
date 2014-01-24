@@ -19,7 +19,7 @@
 
 class v3dViewTensorInteractorPrivate;
 
-class dtkAbstractData;
+class medAbstractData;
 class dtkAbstractView;
 
 /**
@@ -48,8 +48,8 @@ public:
 
     static bool registered();
 
-    virtual void setData(dtkAbstractData *data);
-    dtkAbstractData *data();
+    virtual void setData(medAbstractData *data);
+    medAbstractData *data();
 
     virtual void setView(dtkAbstractView *view);
     dtkAbstractView *view();
@@ -69,11 +69,11 @@ public:
 
 public slots:
     // Mandatory implementations from medVtkViewInteractor
-    virtual void setOpacity(dtkAbstractData * data, double opacity);
-    virtual double opacity(dtkAbstractData * data) const;
+    virtual void setOpacity(medAbstractData * data, double opacity);
+    virtual double opacity(medAbstractData * data) const;
 
-    virtual void setVisible(dtkAbstractData * data, bool visible);
-    virtual bool isVisible(dtkAbstractData * data) const;
+    virtual void setVisible(medAbstractData * data, bool visible);
+    virtual bool isVisible(medAbstractData * data) const;
     
 public slots:
     /** Change glyph shape */

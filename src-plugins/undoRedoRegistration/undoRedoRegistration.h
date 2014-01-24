@@ -46,7 +46,7 @@ public:
      */
     virtual QString description(void) const;
 
-    virtual void setInput(dtkAbstractData *data, int channel);
+    virtual void setInput(medAbstractData *data, int channel);
     
     /**
      * @brief tries to register the process with the factory.

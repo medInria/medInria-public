@@ -19,7 +19,7 @@
 
 #include "msegAlgorithmGeneric.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include <medDataIndex.h>
 #include <medViewEventFilter.h>
@@ -80,7 +80,7 @@ protected slots:
 
 protected:
     void addSeedPoint( medAbstractView *view, const QVector3D &vec );
-    void setData( dtkAbstractData *data );
+    void setData( medAbstractData *data );
 
     // update with seed point data.
     void updateTableRow(int row);

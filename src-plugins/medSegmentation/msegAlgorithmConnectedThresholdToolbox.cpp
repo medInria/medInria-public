@@ -61,7 +61,7 @@ public:
 
             QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
             //Project vector onto plane
-//            dtkAbstractData * viewData = medSegmentationSelectorToolBox::viewData( view );
+//            medAbstractData * viewData = medSegmentationSelectorToolBox::viewData( view );
             m_cb->onViewMousePress( view, posImage );
 
             this->removeFromAllViews();
@@ -199,7 +199,7 @@ void AlgorithmConnectedThresholdToolbox::onApplyButtonPressed()
     this->segmentationToolBox()->run( alg );
 
 }
-void AlgorithmConnectedThresholdToolbox::setData( dtkAbstractData *dtkdata )
+void AlgorithmConnectedThresholdToolbox::setData( medAbstractData *dtkdata )
 {
     // disconnect existing
     if ( m_data ) {
@@ -210,7 +210,7 @@ void AlgorithmConnectedThresholdToolbox::setData( dtkAbstractData *dtkdata )
         }
     }
 
-    m_data = dtkSmartPointer<dtkAbstractData>(dtkdata);
+    m_data = dtkSmartPointer<medAbstractData>(dtkdata);
 
     QString dataText;
     if ( m_data ) {

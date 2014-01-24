@@ -14,7 +14,7 @@
 #pragma once
 
 #include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <itkImage.h>
 #include "itkTransform.h"
 #include "medRegistrationExport.h"
@@ -94,17 +94,17 @@ public:
      * @param data: Pointer to an itkDataImageXXY.
      * @param channel: 0 for the fixed image, 1 for the moving one.
     */
-    virtual void setInput(dtkAbstractData *data, int channel);
+    virtual void setInput(medAbstractData *data, int channel);
 
     /**
      * @brief Gets the registered image.
      *
      * @param void
-     * @return dtkAbstractData *: itkDataImageXXY, same type as the moving input image.
+     * @return medAbstractData *: itkDataImageXXY, same type as the moving input image.
     */
-    dtkAbstractData *output();
+    medAbstractData *output();
 
-    void setOutput(dtkAbstractData * output);
+    void setOutput(medAbstractData * output);
 
     /**
      * @brief Gets an itk smart pointer to the fixed image.

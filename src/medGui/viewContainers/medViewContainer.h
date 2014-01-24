@@ -17,7 +17,7 @@
 
 #include <QtGui/QFrame>
 
-class dtkAbstractData;
+class medAbstractData;
 class dtkAbstractView;
 class medDataIndex;
 class medViewPool;
@@ -310,7 +310,7 @@ public:
      * @param data
      * @return bool
     */
-    bool open(dtkAbstractData * data);
+    bool open(medAbstractData * data);
 
 
     void emitImageSet(const medDataIndex& index);

@@ -52,6 +52,6 @@ private:
     itkDataTensorImageFloat3Private *d;
 };
 
-dtkAbstractData *createItkDataTensorImageFloat3();
+medAbstractData *createItkDataTensorImageFloat3();
 
 

@@ -19,7 +19,7 @@
 
 class medToolBox;
 class medDataIndex;
-class dtkAbstractData;
+class medAbstractData;
 
 /**
  * @class medAbstractDataSource
@@ -64,8 +64,8 @@ signals:
     /** A source data may emit a signal to a file on disk when it successfully received the data and is ready for indexing*/
     void dataToIndexReceived(QString pathToData);
 
-    /** A source data may emit a signal to a dtkabstractdata in memory when it successfully received the data and is ready for importing*/
-    void dataReceived(dtkAbstractData *data);
+    /** A source data may emit a signal to a medAbstractData in memory when it successfully received the data and is ready for importing*/
+    void dataReceived(medAbstractData *data);
 
     /** A data source emits a signal when it failed to get the data*/
     void dataReceivingFailed(QString pathToData);

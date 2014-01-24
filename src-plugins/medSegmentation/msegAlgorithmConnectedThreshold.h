@@ -17,7 +17,7 @@
 
 #include <QVector3D>
 
-class dtkAbstractData;
+class medAbstractData;
 class dtkAbstractProcessFactory;
 
 namespace mseg {

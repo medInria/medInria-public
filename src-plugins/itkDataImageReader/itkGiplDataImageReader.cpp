@@ -13,7 +13,7 @@
 
 #include <itkGiplDataImageReader.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkGiplImageIO.h>

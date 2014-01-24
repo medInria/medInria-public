@@ -594,7 +594,7 @@ QList<QImage>& itkDataImagePrivate<DIM,T,1>::make_thumbnails(const int sz,const 
     return thumbnails;
 }
 
-template <unsigned DIM,typename T,const char* ID> dtkAbstractData* createItkDataImage();
+template <unsigned DIM,typename T,const char* ID> medAbstractData* createItkDataImage();
 
 template <unsigned DIM,typename T,const char* ID>
 class ITKDATAIMAGEPLUGIN_EXPORT itkDataImage: public medAbstractDataTypedImage<DIM,T> {
@@ -709,7 +709,7 @@ private:
 };
 
 template <unsigned DIM,typename T,const char* ID>
-dtkAbstractData* createItkDataImage() {
+medAbstractData* createItkDataImage() {
     return new itkDataImage<DIM,T,ID>;
 }
 

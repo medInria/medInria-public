@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include "itkDataDiffusionGradientListPluginExport.h"
 
@@ -43,6 +43,6 @@ private:
     itkDataDiffusionGradientListPrivate *d;
 };
 
-dtkAbstractData *createItkDataDiffusionGradientList();
+medAbstractData *createItkDataDiffusionGradientList();
 
 

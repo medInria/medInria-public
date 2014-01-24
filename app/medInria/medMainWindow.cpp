@@ -70,7 +70,7 @@
 // Simple new function used for factories.
 namespace  {
     template< class T >
-    dtkAbstractData * dtkAbstractDataCreateFunc() { return new T; }
+    medAbstractData * dtkAbstractDataCreateFunc() { return new T; }
 }
 
 // /////////////////////////////////////////////////////////////////

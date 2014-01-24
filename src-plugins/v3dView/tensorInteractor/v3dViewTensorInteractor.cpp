@@ -13,7 +13,7 @@
 
 #include "v3dViewTensorInteractor.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -39,7 +39,7 @@ typedef TensorImageTypeDouble::Pointer TensorImagePointerDouble;
 class v3dViewTensorInteractorPrivate
 {
 public:
-    dtkSmartPointer<dtkAbstractData> data;
+    dtkSmartPointer<medAbstractData> data;
     v3dView*                        view;
     vtkTensorManager                *manager;
 
@@ -107,7 +107,7 @@ bool v3dViewTensorInteractor::registered()
                                                                           createV3dViewTensorInteractor);
 }
 
-void v3dViewTensorInteractor::setData(dtkAbstractData *data)
+void v3dViewTensorInteractor::setData(medAbstractData *data)
 {
     if (!data)
         return;
@@ -188,7 +188,7 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
     }
 }
 
-dtkAbstractData *v3dViewTensorInteractor::data()
+medAbstractData *v3dViewTensorInteractor::data()
 {
     return d->data;
 }
@@ -234,23 +234,23 @@ void v3dViewTensorInteractor::disable()
     dtkAbstractViewInteractor::disable();
 }
 
-void v3dViewTensorInteractor::setOpacity(dtkAbstractData * /*data*/, double /*opacity*/)
+void v3dViewTensorInteractor::setOpacity(medAbstractData * /*data*/, double /*opacity*/)
 {
     //TODO
 }
 
-double v3dViewTensorInteractor::opacity(dtkAbstractData * /*data*/) const
+double v3dViewTensorInteractor::opacity(medAbstractData * /*data*/) const
 {
     //TODO
     return 100;
 }
 
-void v3dViewTensorInteractor::setVisible(dtkAbstractData * /*data*/, bool /*visible*/)
+void v3dViewTensorInteractor::setVisible(medAbstractData * /*data*/, bool /*visible*/)
 {
     //TODO
 }
 
-bool v3dViewTensorInteractor::isVisible(dtkAbstractData * /*data*/) const
+bool v3dViewTensorInteractor::isVisible(medAbstractData * /*data*/) const
 {
     //TODO
     return true;

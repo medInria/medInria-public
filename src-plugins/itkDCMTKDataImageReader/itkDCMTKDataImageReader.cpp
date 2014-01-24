@@ -13,7 +13,7 @@
 
 #include <itkDCMTKDataImageReader.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
@@ -82,7 +82,7 @@ void DCMTKDataImageReaderCommand::Execute(const Object *caller,const EventObject
 
 
 template <typename TYPE,unsigned DIM>
-void ReadImage(dtkAbstractData* dtkdata,itk::DCMTKImageIO::Pointer io,const QStringList& paths) {
+void ReadImage(medAbstractData* dtkdata,itk::DCMTKImageIO::Pointer io,const QStringList& paths) {
     typename itk::ImageFileReader<itk::Image<TYPE,DIM> >::Pointer Reader = itk::ImageFileReader<itk::Image<TYPE,DIM> >::New();
     Reader->SetImageIO(io);
     Reader->SetFileName(paths[0].toAscii().constData());
@@ -285,7 +285,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
         return false;
     }
 
-    dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
+    dtkSmartPointer<medAbstractData> dtkdata = this->data();
 
     if (!dtkdata) {
 
@@ -497,7 +497,7 @@ bool itkDCMTKDataImageReader::read(const QStringList& paths)
     command->SetDataImageReader(this);
     d->io->AddObserver(itk::ProgressEvent(),command);
 
-    if (dtkAbstractData *dtkdata = this->data()) {
+    if (medAbstractData *dtkdata = this->data()) {
 
         try {
             if      (dtkdata->identifier()=="itkDataImageUChar3")  { ReadImage<unsigned char,3>(dtkdata,d->io,paths);                }

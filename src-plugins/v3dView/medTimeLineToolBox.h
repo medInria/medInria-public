@@ -17,7 +17,7 @@
 #include <medToolBox.h>
 
 class dtkAbstractView;
-class dtkAbstractData;
+class medAbstractData;
 class medTimeLineToolBoxPrivate;
 
 /**
@@ -73,7 +73,7 @@ public slots:
     void changeTime(int);
 
     /** parameters updated when either views or data environments have changed */
-    void addData (dtkAbstractData* data);
+    void addData (medAbstractData* data);
 
     /** parameters updated when the spinbox is changed */
     void changeSpeed(int);

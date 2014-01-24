@@ -14,7 +14,7 @@
 #pragma once
 
 #include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include "itkFiltersPluginExport.h"
 
@@ -33,8 +33,8 @@ public:
 
     QString description ( void );
     
-    void setInput ( dtkAbstractData *data );
-    dtkAbstractData *output ( void );
+    void setInput ( medAbstractData *data );
+    medAbstractData *output ( void );
     
     void emitProgress(int progress);
     

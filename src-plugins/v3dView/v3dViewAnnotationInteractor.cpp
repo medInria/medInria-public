@@ -13,7 +13,7 @@
 
 #include "v3dViewAnnotationInteractor.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkLog/dtkLog.h>
 
@@ -101,7 +101,7 @@ bool v3dViewAnnotationInteractor::registered()
                                                                           createV3dViewAnnotationInteractor);
 }
 
-bool v3dViewAnnotationInteractor::isAutoEnabledWith ( dtkAbstractData * data )
+bool v3dViewAnnotationInteractor::isAutoEnabledWith ( medAbstractData * data )
 {
     if ( data )
         return true;
@@ -161,7 +161,7 @@ v3dView * v3dViewAnnotationInteractor::getV3dView()
     return qobject_cast<v3dView *>(this->view());
 }
 
-void v3dViewAnnotationInteractor::setData(dtkAbstractData *data)
+void v3dViewAnnotationInteractor::setData(medAbstractData *data)
 {
     if ( this->data() ) {
         disconnect(this->data(), SIGNAL(dataModified(medAbstractData*)), this, SLOT(onDataModified(medAbstractData*)) );
@@ -208,7 +208,7 @@ void v3dViewAnnotationInteractor::setView(dtkAbstractView* view)
     }
 
     if (view)
-        setData((dtkAbstractData*)view->data());
+        setData((medAbstractData*)view->data());
     else
         setData(NULL);
 }
@@ -344,23 +344,23 @@ bool v3dViewAnnotationInteractor::isPointInCurrentSlice( const QVector3D & testP
                                 0.5*coords->sliceThickness());
 }
 
-void v3dViewAnnotationInteractor::setOpacity(dtkAbstractData * /*data*/, double /*opacity*/)
+void v3dViewAnnotationInteractor::setOpacity(medAbstractData * /*data*/, double /*opacity*/)
 {
     //TODO
 }
 
-double v3dViewAnnotationInteractor::opacity(dtkAbstractData * /*data*/) const
+double v3dViewAnnotationInteractor::opacity(medAbstractData * /*data*/) const
 {
     //TODO
     return 100;
 }
 
-void v3dViewAnnotationInteractor::setVisible(dtkAbstractData * /*data*/, bool /*visible*/)
+void v3dViewAnnotationInteractor::setVisible(medAbstractData * /*data*/, bool /*visible*/)
 {
     //TODO
 }
 
-bool v3dViewAnnotationInteractor::isVisible(dtkAbstractData * /*data*/) const
+bool v3dViewAnnotationInteractor::isVisible(medAbstractData * /*data*/) const
 {
     //TODO
     return true;

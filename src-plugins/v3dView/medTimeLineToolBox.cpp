@@ -182,7 +182,7 @@ bool medTimeLineToolBox::registered()
                                                                               QStringList() << "view" << "timeline");
 }
 
-void medTimeLineToolBox::addData (dtkAbstractData *data)
+void medTimeLineToolBox::addData (medAbstractData *data)
 {
     if (!data)
         return;
@@ -209,7 +209,7 @@ void medTimeLineToolBox::update(dtkAbstractView *view)
     
     d->interactor = dynamic_cast<v3dView4DInteractor*>(view->interactor ("v3dView4DInteractor"));
     
-    connect (d->view, SIGNAL (dataAdded (dtkAbstractData*)), this, SLOT (addData (dtkAbstractData*)));
+    connect (d->view, SIGNAL (dataAdded (medAbstractData*)), this, SLOT (addData (medAbstractData*)));
     
     this->updateRange();
 }

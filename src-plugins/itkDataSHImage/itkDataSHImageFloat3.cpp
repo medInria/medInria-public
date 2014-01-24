@@ -126,7 +126,7 @@ QList<QImage>& itkDataSHImageFloat3::thumbnails()
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractData *createItkDataSHImageFloat3()
+medAbstractData *createItkDataSHImageFloat3()
 {
     return new itkDataSHImageFloat3;
 }

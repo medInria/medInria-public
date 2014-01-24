@@ -32,7 +32,7 @@ dtkAbstractView *createMedVtkView()
     return new medVtkView;
 }
 
-void medVtkView::setData (dtkAbstractData *data, int layer)
+void medVtkView::setData (medAbstractData *data, int layer)
 {
     if(!data)
         return;
@@ -50,7 +50,7 @@ void medVtkView::setData (dtkAbstractData *data, int layer)
     v3dView::setData(data,layer);
 }
 
-dtkAbstractData * medVtkView::layerData(int layer)
+medAbstractData * medVtkView::layerData(int layer)
 {
     if ((layer < layersDataList.size()) && (layer >= 0))
         return layersDataList[layer];

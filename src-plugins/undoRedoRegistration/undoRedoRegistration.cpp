@@ -4,7 +4,7 @@
 
 #include "undoRedoRegistration.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <registrationFactory.h>
@@ -47,7 +47,7 @@ void undoRedoRegistration::redo()
     generateOutput();
 }
 
-void undoRedoRegistration::setInput(dtkAbstractData *data, int channel)
+void undoRedoRegistration::setInput(medAbstractData *data, int channel)
 {
     itkProcessRegistration::setInput(data,channel);
     typedef itk::Image< float, 3 > RegImageType;

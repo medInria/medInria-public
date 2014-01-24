@@ -14,7 +14,7 @@
 #include "itkDataImageWriterBase.h"
 
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkLog/dtkLog.h>
 
 #include <medAbstractDataImage.h>
@@ -45,7 +45,7 @@ bool itkDataImageWriterBase::canWrite(const QString& path)
 
 template <unsigned DIM,typename T>
 bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
-    dtkAbstractData* dtkdata = this->data();
+    medAbstractData* dtkdata = this->data();
     if (dtkdata && dtkdata->identifier()!=type)
         return false;
 

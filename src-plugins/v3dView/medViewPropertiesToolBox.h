@@ -17,7 +17,7 @@
 #include <medToolBox.h>
 
 class dtkAbstractView;
-class dtkAbstractData;
+class medAbstractData;
 class medViewPropertiesToolBoxPrivate;
 /**
 
@@ -38,8 +38,8 @@ public:
     Whenever the view is changed, update metdhod is triggered.
     */
     void update(dtkAbstractView *view);
-    void constructImageLayer(dtkAbstractData* data, int imageLayer);
-    void constructMeshLayer(dtkAbstractData* data, int meshLayer);
+    void constructImageLayer(medAbstractData* data, int imageLayer);
+    void constructMeshLayer(medAbstractData* data, int meshLayer);
 
     /**
      * @brief Checks the interaction button, according to the medSettings
@@ -52,8 +52,8 @@ public:
 
 public slots:
     void onDataAdded(int layer);
-    void onDataAdded(dtkAbstractData*);
-    void onDataAdded(dtkAbstractData *data, int layer);
+    void onDataAdded(medAbstractData*);
+    void onDataAdded(medAbstractData *data, int layer);
     void clear();
     void onVisibilitySet(int state);
     void onOpacitySliderSet(int opacity);

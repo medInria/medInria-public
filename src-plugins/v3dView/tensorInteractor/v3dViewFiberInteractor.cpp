@@ -13,7 +13,7 @@
 
 #include "v3dViewFiberInteractor.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -57,9 +57,9 @@
 class v3dViewFiberInteractorPrivate
 {
 public:
-    dtkAbstractData        *data;
+    medAbstractData        *data;
     v3dView                *view;
-    dtkAbstractData        *projectionData;
+    medAbstractData        *projectionData;
     vtkFiberDataSetManager *manager;
     vtkIsosurfaceManager   *roiManager;
     vtkSmartPointer<vtkFiberDataSet> dataset;
@@ -124,7 +124,7 @@ bool v3dViewFiberInteractor::registered()
                                                                           createV3dViewFiberInteractor);
 }
 
-void v3dViewFiberInteractor::setData(dtkAbstractData *data)
+void v3dViewFiberInteractor::setData(medAbstractData *data)
 {
     if (!data)
         return;
@@ -156,7 +156,7 @@ void v3dViewFiberInteractor::setData(dtkAbstractData *data)
     }
 }
 
-dtkAbstractData *v3dViewFiberInteractor::data()
+medAbstractData *v3dViewFiberInteractor::data()
 {
     return d->data;
 }
@@ -608,7 +608,7 @@ void v3dViewFiberInteractor::setRadius (int value)
         d->view->update();
 }
 
-void v3dViewFiberInteractor::setROI(dtkAbstractData *data)
+void v3dViewFiberInteractor::setROI(medAbstractData *data)
 {
     if (!data)
         return;
@@ -702,22 +702,22 @@ void v3dViewFiberInteractor::setAllBundlesVisibility(bool visibility)
     d->view->update();
 }
 
-void v3dViewFiberInteractor::setOpacity(dtkAbstractData * /*data*/, double /*opacity*/)
+void v3dViewFiberInteractor::setOpacity(medAbstractData * /*data*/, double /*opacity*/)
 {
 }
 
-double v3dViewFiberInteractor::opacity(dtkAbstractData * /*data*/) const
+double v3dViewFiberInteractor::opacity(medAbstractData * /*data*/) const
 {
     //TODO
     return 100;
 }
 
-void v3dViewFiberInteractor::setVisible(dtkAbstractData * /*data*/, bool /*visible*/)
+void v3dViewFiberInteractor::setVisible(medAbstractData * /*data*/, bool /*visible*/)
 {
     //TODO
 }
 
-bool v3dViewFiberInteractor::isVisible(dtkAbstractData * /*data*/) const
+bool v3dViewFiberInteractor::isVisible(medAbstractData * /*data*/) const
 {
     //TODO
     return true;

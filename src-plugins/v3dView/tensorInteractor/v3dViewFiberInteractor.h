@@ -19,7 +19,7 @@
 
 class v3dViewFiberInteractorPrivate;
 
-class dtkAbstractData;
+class medAbstractData;
 class dtkAbstractView;
 
 /**
@@ -51,8 +51,8 @@ public:
 
     static bool registered();
 
-    virtual void setData(dtkAbstractData *data);
-    dtkAbstractData *data();
+    virtual void setData(medAbstractData *data);
+    medAbstractData *data();
 
     virtual void setView(dtkAbstractView *view);
     dtkAbstractView *view();
@@ -63,11 +63,11 @@ public:
     /**
      * Set a Region Of Interest (ROI). A ROI is an unsigned char image containing
      * 1s, 2s, etc., each value defining a region.
-     * @param a dtkAbstractData encapsulating a ROI. Subclass should cast the contained
+     * @param a medAbstractData encapsulating a ROI. Subclass should cast the contained
      * pointer to a compatible ROI type.
      * @return void
      */
-    virtual void setROI (dtkAbstractData *data);
+    virtual void setROI (medAbstractData *data);
     
     /**
      * Set the boolean meaning for a region of a ROI:
@@ -180,11 +180,11 @@ public slots:
     virtual void validateSelection (const QString &name, const QColor &color);
 
     // Mandatory implementations from medVtkViewInteractor
-    virtual void setOpacity(dtkAbstractData * data, double opacity);
-    virtual double opacity(dtkAbstractData * data) const;
+    virtual void setOpacity(medAbstractData * data, double opacity);
+    virtual double opacity(medAbstractData * data) const;
 
-    virtual void setVisible(dtkAbstractData * data, bool visible);
-    virtual bool isVisible(dtkAbstractData * data) const;
+    virtual void setVisible(medAbstractData * data, bool visible);
+    virtual bool isVisible(medAbstractData * data) const;
 
 protected:    
     /**

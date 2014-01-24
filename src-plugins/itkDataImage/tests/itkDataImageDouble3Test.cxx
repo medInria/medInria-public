@@ -35,7 +35,7 @@ int itkDataImageDouble3Test (int argc, char* argv[])
   dtkPluginManager::instance()->setPath (argv[1]);
   dtkPluginManager::instance()->initialize();
 
-  dtkSmartPointer<dtkAbstractData> dtkdata;
+  dtkSmartPointer<medAbstractData> dtkdata;
   dtkdata =  dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
   medAbstractDataImage *data = dynamic_cast<medAbstractDataImage*>( dtkdata.data() );
 
@@ -91,7 +91,7 @@ int itkDataImageDouble3Test (int argc, char* argv[])
   image->SetRegions (region);
   image->Allocate();
 
-  dtkSmartPointer<dtkAbstractData> dtkdata2;
+  dtkSmartPointer<medAbstractData> dtkdata2;
   dtkdata2 =  dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
   medAbstractDataImage *data2 = dynamic_cast<medAbstractDataImage*>( dtkdata2.data() );
   if (!data2) {

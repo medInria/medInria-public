@@ -28,7 +28,7 @@
 #include <vtkImageView3D.h>
 #include <vtkMetaDataSetSequence.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
@@ -39,7 +39,7 @@
 #include "medVtkView.h"
 
 template <typename TYPE>
-bool AppendImageSequence(dtkAbstractData* data,v3dView* view,vtkCollection* sequenceList,QList<dtkAbstractData*> dataList) {
+bool AppendImageSequence(medAbstractData* data,v3dView* view,vtkCollection* sequenceList,QList<medAbstractData*> dataList) {
     if (itk::Image<TYPE,4>* image = dynamic_cast<itk::Image<TYPE,4>*>(static_cast<itk::Object*>(data->data()))) {
         unsigned int layer = view->layerCount();
         if (layer==1 && !view->view2d()->GetInput())
@@ -66,7 +66,7 @@ public:
 
     v3dView          *view;
     vtkCollection* sequenceList;
-    QList<dtkAbstractData*> dataList;
+    QList<medAbstractData*> dataList;
 };
 
 v3dView4DInteractor::v3dView4DInteractor(): medAbstractVtkViewInteractor(), d(new v3dView4DInteractorPrivate)
@@ -116,12 +116,12 @@ bool v3dView4DInteractor::registered()
                                                                           createV3dView4DInteractor);
 }
 
-void v3dView4DInteractor::setData(dtkAbstractData *data)
+void v3dView4DInteractor::setData(medAbstractData *data)
 {
   //  this->appendData (data);
 }
 
-void v3dView4DInteractor::appendData(dtkAbstractData *data)
+void v3dView4DInteractor::appendData(medAbstractData *data)
 {
   if (d->dataList.contains (data))
     return;
@@ -174,11 +174,11 @@ void v3dView4DInteractor::setView(dtkAbstractView *view)
   {
 
       d->view = v3dview;
-      connect (view, SIGNAL (dataAdded (dtkAbstractData*)), this, SLOT (onDataAdded (dtkAbstractData*)));
+      connect (view, SIGNAL (dataAdded (medAbstractData*)), this, SLOT (onDataAdded (medAbstractData*)));
   }
 }
 
-void v3dView4DInteractor::onDataAdded(dtkAbstractData *data)
+void v3dView4DInteractor::onDataAdded(medAbstractData *data)
 {
   this->appendData(data);
 }
@@ -189,7 +189,7 @@ void v3dView4DInteractor::checkViewProperty(QString name, QString value)
         this->setCurrentTime(value.toDouble());
 }
 
-bool v3dView4DInteractor::isAutoEnabledWith ( dtkAbstractData * data )
+bool v3dView4DInteractor::isAutoEnabledWith ( medAbstractData * data )
 {
 
   if ( ( data->identifier() == "vtkDataMesh4D" ) ||
@@ -321,23 +321,23 @@ double v3dView4DInteractor::sequencesMinTimeStep()
   return step;
 }
 
-void v3dView4DInteractor::setOpacity(dtkAbstractData * /*data*/, double /*opacity*/)
+void v3dView4DInteractor::setOpacity(medAbstractData * /*data*/, double /*opacity*/)
 {
     //TODO
 }
 
-double v3dView4DInteractor::opacity(dtkAbstractData * /*data*/) const
+double v3dView4DInteractor::opacity(medAbstractData * /*data*/) const
 {
     //TODO
     return 100;
 }
 
-void v3dView4DInteractor::setVisible(dtkAbstractData * /*data*/, bool /*visible*/)
+void v3dView4DInteractor::setVisible(medAbstractData * /*data*/, bool /*visible*/)
 {
     //TODO
 }
 
-bool v3dView4DInteractor::isVisible(dtkAbstractData * /*data*/) const
+bool v3dView4DInteractor::isVisible(medAbstractData * /*data*/) const
 {
     //TODO
     return true;

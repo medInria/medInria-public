@@ -14,7 +14,7 @@
 #include "medSegmentationSelectorToolBox.h"
 
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
@@ -206,7 +206,7 @@ medAbstractViewCoordinates * medSegmentationSelectorToolBox::viewCoordinates( dt
     return mview->coordinates();
 }
 
-dtkAbstractData * medSegmentationSelectorToolBox::viewData( dtkAbstractView * view )
+medAbstractData * medSegmentationSelectorToolBox::viewData( dtkAbstractView * view )
 {
     medAbstractView * mview = qobject_cast< medAbstractView * >( view );
     if ( ! mview ) {
@@ -215,7 +215,7 @@ dtkAbstractData * medSegmentationSelectorToolBox::viewData( dtkAbstractView * vi
     }
 
     // Why isn't the data of an abstract view a dtkAbstractData????
-    return reinterpret_cast< dtkAbstractData * >( mview->data() );
+    return reinterpret_cast< medAbstractData * >( mview->data() );
 }
 
 void medSegmentationSelectorToolBox::onSuccess( QObject * sender )
@@ -227,7 +227,7 @@ void medSegmentationSelectorToolBox::onSuccess( QObject * sender )
         return;
     dtkAbstractProcess * alg = d->runningProcesses.value( sender );
 
-    dtkSmartPointer<dtkAbstractData> outputData = alg->output();
+    dtkSmartPointer<medAbstractData> outputData = alg->output();
 
     medDataManager::instance()->importNonPersistent( outputData.data() );
 
@@ -313,7 +313,7 @@ void medSegmentationSelectorToolBox::update( dtkAbstractView *view )
     medToolBox::update(view);
 }
 
-void medSegmentationSelectorToolBox::setOutputMetadata(const dtkAbstractData * inputData, dtkAbstractData * outputData)
+void medSegmentationSelectorToolBox::setOutputMetadata(const medAbstractData * inputData, medAbstractData * outputData)
 {
     Q_ASSERT(outputData && inputData);
 

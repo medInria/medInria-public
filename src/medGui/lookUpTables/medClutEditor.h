@@ -17,7 +17,7 @@
 
 #include <QtGui>
 
-class dtkAbstractData;
+class medAbstractData;
 class medAbstractView;
 
 
@@ -261,7 +261,7 @@ public:
      medClutEditor(QWidget *parent = 0);
     ~medClutEditor();
 
-    void setData(dtkAbstractData *data);
+    void setData(medAbstractData *data);
     void setView(medAbstractView *view, bool force = false);
     void applyTable();
 

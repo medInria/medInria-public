@@ -16,7 +16,7 @@
 #include <medAbstractView.h>
 #include <medAbstractViewCollection.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -27,7 +27,7 @@ class medViewPoolPrivate
 {
 public:
     QList< dtkSmartPointer<medAbstractView> > views;
-    QMap< dtkSmartPointer<medAbstractView>, dtkSmartPointer<dtkAbstractData> > viewData;
+    QMap< dtkSmartPointer<medAbstractView>, dtkSmartPointer<medAbstractData> > viewData;
     QHash<QString, QString>                  propertySet;
 };
 

@@ -13,7 +13,7 @@
 
 #include <itkPNGDataImageReader.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkPNGImageIO.h>

@@ -52,4 +52,4 @@ private:
     itkDataSHImageFloat3Private *d;
 };
 
-dtkAbstractData *createItkDataSHImageFloat3();
+medAbstractData *createItkDataSHImageFloat3();

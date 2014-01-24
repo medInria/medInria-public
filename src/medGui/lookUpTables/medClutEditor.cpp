@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <medAbstractView.h>
@@ -1440,7 +1440,7 @@ public:
     medClutEditorView  *view;
     medClutEditorHistogram *histogram;
 
-    dtkAbstractData *dtk_data;
+    medAbstractData *dtk_data;
     medAbstractView *med_view;
     QList <medClutEditorTable *> * tables;
 };
@@ -1520,7 +1520,7 @@ medClutEditor::~medClutEditor(void)
     delete d;
 }
 
-void medClutEditor::setData(dtkAbstractData *data)
+void medClutEditor::setData(medAbstractData *data)
 {
     if ( data == NULL ) {
         this->deleteTable();

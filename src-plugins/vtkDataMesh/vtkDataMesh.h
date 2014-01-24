@@ -84,6 +84,6 @@ private slots:
   
 };
 
-dtkAbstractData* createVtkDataMesh();
+medAbstractData* createVtkDataMesh();
 
 

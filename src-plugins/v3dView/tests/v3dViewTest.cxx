@@ -44,7 +44,7 @@ int v3dViewTest(int argc, char *argv[])
     dtkPluginManager::instance()->setPath (argv[1]);
     dtkPluginManager::instance()->initialize();
 
-    dtkSmartPointer<dtkAbstractData> data;
+    dtkSmartPointer<medAbstractData> data;
     data = dtkAbstractDataFactory::instance()->createSmartPointer ("v3dDataImage");
 
     if (!data) {

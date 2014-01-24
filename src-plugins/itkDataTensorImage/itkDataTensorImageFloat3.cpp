@@ -129,7 +129,7 @@ QList<QImage>& itkDataTensorImageFloat3::thumbnails()
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractData *createItkDataTensorImageFloat3()
+medAbstractData *createItkDataTensorImageFloat3()
 {
     return new itkDataTensorImageFloat3;
 }

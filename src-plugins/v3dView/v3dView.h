@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
 
 #include <medAbstractView.h>
@@ -71,9 +71,9 @@ public:
      * visibility and opacity, it is possible to show multiple images
      * on top of each others.
      */
-    void setData(dtkAbstractData *data, int layer);
+    void setData(medAbstractData *data, int layer);
 
-    void setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data);
+    void setSharedDataPointer(dtkSmartPointer<medAbstractData> data);
 
     /**
      * Inputs the data to the vtkImageView2D/3D instances.
@@ -85,7 +85,7 @@ public:
      * To set the data at a specific layer, call setData(data, layer).
      * To set the data to the first layer, call setData(data, 0).
      */
-    void setData(dtkAbstractData *data);
+    void setData(medAbstractData *data);
 
     void *data();
 
@@ -250,10 +250,10 @@ protected:
 private:
 
     template <typename IMAGE>
-    bool SetViewInput(const char* type,dtkAbstractData* data,const int layer);
-    bool SetView(const char* type,dtkAbstractData* data);
+    bool SetViewInput(const char* type,medAbstractData* data,const int layer);
+    bool SetView(const char* type,medAbstractData* data);
     template <typename IMAGE>
-    bool SetViewInputWithConversion(const char* type,const char* newtype,dtkAbstractData* data,const int layer);
+    bool SetViewInputWithConversion(const char* type,const char* newtype,medAbstractData* data,const int layer);
 
     v3dViewPrivate *d;
 

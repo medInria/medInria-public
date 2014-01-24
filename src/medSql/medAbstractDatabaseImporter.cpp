@@ -24,7 +24,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 #include <medDatabaseController.h>
@@ -35,7 +35,7 @@ class medAbstractDatabaseImporterPrivate
 {
 public:
     QString file;
-    dtkSmartPointer<dtkAbstractData> data;
+    dtkSmartPointer<medAbstractData> data;
     static QMutex mutex;
     QString lastSuccessfulReaderDescription;
     QString lastSuccessfulWriterDescription;
@@ -68,7 +68,7 @@ medAbstractDatabaseImporter::medAbstractDatabaseImporter ( const QString& file, 
 
 //-----------------------------------------------------------------------------------------------------------
 
-medAbstractDatabaseImporter::medAbstractDatabaseImporter ( dtkAbstractData* dtkData, bool indexWithoutImporting, const QString& callerUuid ) : medJobItem(), d ( new medAbstractDatabaseImporterPrivate )
+medAbstractDatabaseImporter::medAbstractDatabaseImporter ( medAbstractData* dtkData, bool indexWithoutImporting, const QString& callerUuid ) : medJobItem(), d ( new medAbstractDatabaseImporterPrivate )
 {
     d->isCancelled = false;
     d->lastSuccessfulReaderDescription = "";
@@ -205,7 +205,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         QFileInfo fileInfo ( file );
 
-        dtkSmartPointer<dtkAbstractData> dtkData;
+        dtkSmartPointer<medAbstractData> dtkData;
 
         // 2.1) Try reading file information, just the header not the whole file
 
@@ -338,7 +338,7 @@ void medAbstractDatabaseImporter::importFile ( void )
 
         //qDebug() << currentImageIndex << ": " << aggregatedFileName << "with " << filesPaths.size() << " files";
 
-        dtkSmartPointer<dtkAbstractData> imageDtkData;
+        dtkSmartPointer<medAbstractData> imageDtkData;
 
         QFileInfo imagefileInfo ( filesPaths[0] );
 
@@ -541,7 +541,7 @@ void medAbstractDatabaseImporter::onCancel ( QObject* )
 
 //-----------------------------------------------------------------------------------------------------------
 
-void medAbstractDatabaseImporter::populateMissingMetadata ( dtkAbstractData* dtkData, const QString seriesDescription )
+void medAbstractDatabaseImporter::populateMissingMetadata ( medAbstractData* dtkData, const QString seriesDescription )
 {
     if ( !dtkData )
     {
@@ -665,7 +665,7 @@ void medAbstractDatabaseImporter::populateMissingMetadata ( dtkAbstractData* dtk
 
 //-----------------------------------------------------------------------------------------------------------
 
-QStringList medAbstractDatabaseImporter::generateThumbnails ( dtkAbstractData* dtkData, QString pathToStoreThumbnails )
+QStringList medAbstractDatabaseImporter::generateThumbnails ( medAbstractData* dtkData, QString pathToStoreThumbnails )
 {
     QList<QImage> &thumbnails = dtkData->thumbnails();
 
@@ -728,7 +728,7 @@ dtkSmartPointer<dtkAbstractDataReader> medAbstractDatabaseImporter::getSuitableR
 
 //-----------------------------------------------------------------------------------------------------------
 
-dtkSmartPointer<dtkAbstractDataWriter> medAbstractDatabaseImporter::getSuitableWriter(QString filename,dtkAbstractData* dtkData)
+dtkSmartPointer<dtkAbstractDataWriter> medAbstractDatabaseImporter::getSuitableWriter(QString filename,medAbstractData* dtkData)
 {
     if ( !dtkData )
         return NULL;
@@ -794,9 +794,9 @@ QStringList medAbstractDatabaseImporter::getAllFilesToBeProcessed ( QString file
 
 //-----------------------------------------------------------------------------------------------------------
 
-dtkSmartPointer<dtkAbstractData> medAbstractDatabaseImporter::tryReadImages ( const QStringList& filesPaths,const bool readOnlyImageInformation )
+dtkSmartPointer<medAbstractData> medAbstractDatabaseImporter::tryReadImages ( const QStringList& filesPaths,const bool readOnlyImageInformation )
 {
-    dtkSmartPointer<dtkAbstractData> dtkData = 0;
+    dtkSmartPointer<medAbstractData> dtkData = 0;
 
     dtkSmartPointer<dtkAbstractDataReader> dataReader;
     dataReader = getSuitableReader ( filesPaths );
@@ -823,7 +823,7 @@ dtkSmartPointer<dtkAbstractData> medAbstractDatabaseImporter::tryReadImages ( co
 
 //-----------------------------------------------------------------------------------------------------------
 
-QString medAbstractDatabaseImporter::determineFutureImageFileName ( const dtkAbstractData* dtkdata, int volumeNumber )
+QString medAbstractDatabaseImporter::determineFutureImageFileName ( const medAbstractData* dtkdata, int volumeNumber )
 {
     // we cache the generated file name corresponding to volume number
     // because:
@@ -853,7 +853,7 @@ QString medAbstractDatabaseImporter::determineFutureImageFileName ( const dtkAbs
 
 //-----------------------------------------------------------------------------------------------------------
 
-QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( const dtkAbstractData* dtkdata )
+QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( const medAbstractData* dtkdata )
 {
     QString identifier = dtkdata->identifier();
     QString extension = "";
@@ -904,7 +904,7 @@ QString medAbstractDatabaseImporter::determineFutureImageExtensionByDataType ( c
 
 //-----------------------------------------------------------------------------------------------------------
 
-bool medAbstractDatabaseImporter::tryWriteImage ( QString filePath, dtkAbstractData* imData )
+bool medAbstractDatabaseImporter::tryWriteImage ( QString filePath, medAbstractData* imData )
 {
     dtkSmartPointer<dtkAbstractDataWriter> dataWriter = getSuitableWriter ( filePath, imData );
     if ( dataWriter )
@@ -918,7 +918,7 @@ bool medAbstractDatabaseImporter::tryWriteImage ( QString filePath, dtkAbstractD
 
 //-----------------------------------------------------------------------------------------------------------
 
-void medAbstractDatabaseImporter::addAdditionalMetaData ( dtkAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths )
+void medAbstractDatabaseImporter::addAdditionalMetaData ( medAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths )
 {
     QStringList size;
     if ( medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> ( imData ) )
@@ -940,7 +940,7 @@ void medAbstractDatabaseImporter::addAdditionalMetaData ( dtkAbstractData* imDat
 
 //-----------------------------------------------------------------------------------------------------------
 
-QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const dtkAbstractData* dtkData )
+QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const medAbstractData* dtkData )
 {
     if ( !dtkData )
     {
@@ -948,7 +948,7 @@ QString medAbstractDatabaseImporter::generateUniqueVolumeId ( const dtkAbstractD
         return "invalid";
     }
 
-    // Get all the information from the dtkAbstractData metadata.
+    // Get all the information from the medAbstractData metadata.
     // This information will then be passed to the database.
     QString patientName = medMetaDataKeys::PatientName.getFirstValue(dtkData);
     QString studyDicomId = medMetaDataKeys::StudyDicomID.getFirstValue(dtkData);

@@ -23,7 +23,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 
@@ -37,7 +37,7 @@ medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter ( const QStri
 
 //-----------------------------------------------------------------------------------------------------------
 
-medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter ( dtkAbstractData* dtkData, const QString& callerUuid )
+medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter ( medAbstractData* dtkData, const QString& callerUuid )
 : medAbstractDatabaseImporter(dtkData, true, callerUuid)
 {
     qDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
@@ -82,7 +82,7 @@ QString medDatabaseNonPersistentImporter::getPatientID(QString patientName, QStr
 
 //-----------------------------------------------------------------------------------------------------------
 
-medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbnails ( dtkAbstractData* data, QString pathToStoreThumbnails )
+medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbnails ( medAbstractData* data, QString pathToStoreThumbnails )
 {
     QPointer<medDatabaseNonPersistentControllerImpl> npdc =
             medDatabaseNonPersistentController::instance();
@@ -253,7 +253,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 
 //-----------------------------------------------------------------------------------------------------------
 
-bool medDatabaseNonPersistentImporter::checkIfExists ( dtkAbstractData* dtkdata, QString imageName )
+bool medDatabaseNonPersistentImporter::checkIfExists ( medAbstractData* dtkdata, QString imageName )
 {
     bool imageExists = false;
 
@@ -305,7 +305,7 @@ QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName ( const QString
 
 //-----------------------------------------------------------------------------------------------------------
 
-bool medDatabaseNonPersistentImporter::isPartialImportAttempt ( dtkAbstractData* dtkData )
+bool medDatabaseNonPersistentImporter::isPartialImportAttempt ( medAbstractData* dtkData )
 {
     // here we check if the series we try to import is already in the database
 

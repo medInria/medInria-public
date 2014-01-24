@@ -183,7 +183,7 @@ void medDatabaseNavigatorItem::saveData()
 
 void medDatabaseNavigatorItem::exportData()
 {
-    dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(d->index);
+    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->data(d->index);
     medDataManager::instance()->exportDataToFile(data);
 }
 

@@ -18,7 +18,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 #include <medDatabaseController.h>
@@ -36,7 +36,7 @@ medDatabaseImporter::medDatabaseImporter ( const QString& file, bool indexWithou
 
 //-----------------------------------------------------------------------------------------------------------
 
-medDatabaseImporter::medDatabaseImporter ( dtkAbstractData* dtkData, const QString& callerUuid ) : medAbstractDatabaseImporter(dtkData,false, callerUuid)
+medDatabaseImporter::medDatabaseImporter ( medAbstractData* dtkData, const QString& callerUuid ) : medAbstractDatabaseImporter(dtkData,false, callerUuid)
 {
 
 }
@@ -75,7 +75,7 @@ QString medDatabaseImporter::getPatientID(QString patientName, QString birthDate
 
 //-----------------------------------------------------------------------------------------------------------
 
-bool medDatabaseImporter::isPartialImportAttempt ( dtkAbstractData* dtkData )
+bool medDatabaseImporter::isPartialImportAttempt ( medAbstractData* dtkData )
 {
     // here we check if the series we try to import is already in the database
 
@@ -159,7 +159,7 @@ bool medDatabaseImporter::isPartialImportAttempt ( dtkAbstractData* dtkData )
 //-----------------------------------------------------------------------------------------------------------
 
 
-bool medDatabaseImporter::checkIfExists ( dtkAbstractData* dtkdata, QString imageName )
+bool medDatabaseImporter::checkIfExists ( medAbstractData* dtkdata, QString imageName )
 {
     bool imageExists = false;
 
@@ -244,7 +244,7 @@ bool medDatabaseImporter::checkIfExists ( dtkAbstractData* dtkdata, QString imag
 
 //-----------------------------------------------------------------------------------------------------------
 
-medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( dtkAbstractData* dtkData, QString pathToStoreThumbnails )
+medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbstractData* dtkData, QString pathToStoreThumbnails )
 {
     QSqlDatabase db = * ( medDatabaseController::instance()->database() );
 
@@ -264,7 +264,7 @@ medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( dtkAbs
 
 //-----------------------------------------------------------------------------------------------------------
 
-QStringList medDatabaseImporter::generateThumbnails ( dtkAbstractData* dtkData, QString pathToStoreThumbnails )
+QStringList medDatabaseImporter::generateThumbnails ( medAbstractData* dtkData, QString pathToStoreThumbnails )
 {
     QList<QImage> &thumbnails = dtkData->thumbnails();
 
@@ -291,7 +291,7 @@ QStringList medDatabaseImporter::generateThumbnails ( dtkAbstractData* dtkData, 
 
 //-----------------------------------------------------------------------------------------------------------
 
-int medDatabaseImporter::getOrCreatePatient ( const dtkAbstractData* dtkData, QSqlDatabase db )
+int medDatabaseImporter::getOrCreatePatient ( const medAbstractData* dtkData, QSqlDatabase db )
 {
     int patientDbId = -1;
 
@@ -339,7 +339,7 @@ int medDatabaseImporter::getOrCreatePatient ( const dtkAbstractData* dtkData, QS
 
 //-----------------------------------------------------------------------------------------------------------
 
-int medDatabaseImporter::getOrCreateStudy ( const dtkAbstractData* dtkData, QSqlDatabase db, int patientDbId )
+int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* dtkData, QSqlDatabase db, int patientDbId )
 {
     int studyDbId = -1;
 
@@ -387,7 +387,7 @@ int medDatabaseImporter::getOrCreateStudy ( const dtkAbstractData* dtkData, QSql
 
 //-----------------------------------------------------------------------------------------------------------
 
-int medDatabaseImporter::getOrCreateSeries ( const dtkAbstractData* dtkData, QSqlDatabase db, int studyDbId )
+int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* dtkData, QSqlDatabase db, int studyDbId )
 {
     int seriesDbId = -1;
 
@@ -493,7 +493,7 @@ int medDatabaseImporter::getOrCreateSeries ( const dtkAbstractData* dtkData, QSq
 
 //-----------------------------------------------------------------------------------------------------------
 
-void medDatabaseImporter::createMissingImages ( dtkAbstractData* dtkData, QSqlDatabase db, int seriesDbId, QStringList thumbPaths )
+void medDatabaseImporter::createMissingImages ( medAbstractData* dtkData, QSqlDatabase db, int seriesDbId, QStringList thumbPaths )
 {
     QSqlQuery query ( db );
 

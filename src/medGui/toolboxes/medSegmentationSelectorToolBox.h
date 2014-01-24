@@ -51,7 +51,7 @@ public:
     static medAbstractViewCoordinates * viewCoordinates( dtkAbstractView * view );
 
     //! Get the data for the given view.
-    static dtkAbstractData * viewData( dtkAbstractView * view );
+    static medAbstractData * viewData( dtkAbstractView * view );
 
     //! Get the description for the algorithm with the given name.
     QString localizedNameForAlgorithm( const QString & algName ) const;
@@ -97,7 +97,7 @@ protected:
     void activateViews( bool isActivate = true );
 
     //! Add the minimum metadata to the output if not present
-    void setOutputMetadata(const dtkAbstractData * inputData, dtkAbstractData * outputData);
+    void setOutputMetadata(const medAbstractData * inputData, medAbstractData * outputData);
 
 public:
     void setAlgorithmParameterWidget( QWidget * widget );

@@ -13,7 +13,7 @@
 
 #include "itkGISDataImageReader.h"
 #include "itkGISImageIO.h"
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 

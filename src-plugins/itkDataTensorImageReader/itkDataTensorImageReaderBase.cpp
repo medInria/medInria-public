@@ -13,7 +13,7 @@
 
 #include "itkDataTensorImageReaderBase.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
@@ -100,7 +100,7 @@ bool itkDataTensorImageReaderBase::readInformation (const QString &path)
 	return false;
     }
     
-    dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
+    dtkSmartPointer<medAbstractData> dtkdata = this->data();
 
     if (!dtkdata) {
       
@@ -147,7 +147,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	
     qDebug() << "Read with: " << this->identifier();
 
-    if (dtkAbstractData *dtkdata = this->data() ) {
+    if (medAbstractData *dtkdata = this->data() ) {
       
         if (dtkdata->identifier()=="itkDataTensorImageDouble3") {
 

@@ -17,7 +17,7 @@
 #include "medSqlExport.h"
 #include <medAbstractDbController.h>
 
-class dtkAbstractData;
+class medAbstractData;
 class SigEmitter;
 class medDatabaseControllerImplPrivate;
 class medJobItem;
@@ -120,9 +120,9 @@ public slots:
     /**
     * Read the data from db
     * @params const medDataIndex & index Index pointing to data
-    * @return dtkAbstractData * the data stored
+    * @return medAbstractData * the data stored
     */
-    dtkSmartPointer<dtkAbstractData> read(const medDataIndex& index) const;
+    dtkSmartPointer<medAbstractData> read(const medDataIndex& index) const;
 
     /**
     * Import data into the db read from file
@@ -140,14 +140,14 @@ public slots:
 
     /**
     * Import data into the db read from memory
-    * @params dtkAbstractData * data dataObject
+    * @params medAbstractData * data dataObject
     */
-    void import(dtkAbstractData *data, QString importUuid=QString());
+    void import(medAbstractData *data, QString importUuid=QString());
 
     /**
     * Export data to file
     */
-    void exportDataToFile(dtkAbstractData *data, const QString &filename, const QString &writer);
+    void exportDataToFile(medAbstractData *data, const QString &filename, const QString &writer);
 
 
     /** override base class */

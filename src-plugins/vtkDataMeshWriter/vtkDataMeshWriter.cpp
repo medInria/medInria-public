@@ -14,7 +14,7 @@
 #include "vtkDataMeshWriter.h"
 
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkLog/dtkLog.h>
 
 #include <vtkMetaDataSet.h>
@@ -55,7 +55,7 @@ bool vtkDataMeshWriter::write(const QString& path)
 
   qDebug() << "Can write with: " << this->identifier();
 
-  dtkAbstractData * dtkdata = this->data();
+  medAbstractData * dtkdata = this->data();
 
   if(dtkdata->identifier() != "vtkDataMesh")
   {

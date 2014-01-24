@@ -16,7 +16,7 @@
 #include <medAbstractDataImage.h>
 #include <medMetaDataKeys.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
@@ -94,7 +94,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
         return false;
     }
 
-    dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
+    dtkSmartPointer<medAbstractData> dtkdata = this->data();
 
     if (!dtkdata) {
 
@@ -252,7 +252,7 @@ bool itkDataImageReaderBase::readInformation (const QStringList& paths)
 
 template <unsigned DIM,typename T>
 bool itkDataImageReaderBase::read_image(const QString& path,const char* type) {
-    dtkAbstractData* dtkdata = this->data();
+    medAbstractData* dtkdata = this->data();
     if (dtkdata && dtkdata->identifier()!=type)
         return false;
 

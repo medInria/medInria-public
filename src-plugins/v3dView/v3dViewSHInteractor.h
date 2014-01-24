@@ -18,7 +18,7 @@
 
 class v3dViewSHInteractorPrivate;
 
-class dtkAbstractData;
+class medAbstractData;
 class dtkAbstractView;
 
 /**
@@ -46,8 +46,8 @@ public:
 
     static bool registered();
 
-    virtual void setData(dtkAbstractData *data);
-    dtkAbstractData *data ();
+    virtual void setData(medAbstractData *data);
+    medAbstractData *data ();
 
     virtual void setView(dtkAbstractView *view);
     dtkAbstractView *view ();

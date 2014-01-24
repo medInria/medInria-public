@@ -60,7 +60,7 @@ QString itkFiltersProcessBase::description()
 }
 
 
-void itkFiltersProcessBase::setInput(dtkAbstractData *data)
+void itkFiltersProcessBase::setInput(medAbstractData *data)
 {
     if (!data)
         return;
@@ -73,7 +73,7 @@ void itkFiltersProcessBase::setInput(dtkAbstractData *data)
     d->input = data;
 }
 
-dtkAbstractData * itkFiltersProcessBase::output ( void )
+medAbstractData * itkFiltersProcessBase::output ( void )
 {
     DTK_D(itkFiltersProcessBase);
     

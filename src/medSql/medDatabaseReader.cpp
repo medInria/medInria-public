@@ -20,7 +20,7 @@
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
 
@@ -42,7 +42,7 @@ medDatabaseReader::~medDatabaseReader()
     d = NULL;
 }
 
-dtkSmartPointer<dtkAbstractData> medDatabaseReader::run()
+dtkSmartPointer<medAbstractData> medDatabaseReader::run()
 {
     QVariant patientDbId = d->index.patientId();
     QVariant   studyDbId = d->index.studyId();
@@ -152,7 +152,7 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::run()
     // might have introduced duplicates
     filenames.removeDuplicates();
 
-    dtkSmartPointer <dtkAbstractData> dtkdata =  this->readFile ( filenames );
+    dtkSmartPointer <medAbstractData> dtkdata =  this->readFile ( filenames );
 
 
     if ( ( !dtkdata.isNull() ) && dtkdata.data() )
@@ -261,7 +261,7 @@ QString medDatabaseReader::getFilePath()
     return filename;
 }
 
-dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile ( QString filename )
+dtkSmartPointer<medAbstractData> medDatabaseReader::readFile ( QString filename )
 {
     QStringList filenames;
     filenames << filename;
@@ -269,9 +269,9 @@ dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile ( QString filename 
 }
 
 
-dtkSmartPointer<dtkAbstractData> medDatabaseReader::readFile ( const QStringList filenames )
+dtkSmartPointer<medAbstractData> medDatabaseReader::readFile ( const QStringList filenames )
 {
-    dtkSmartPointer<dtkAbstractData> dtkdata;
+    dtkSmartPointer<medAbstractData> dtkdata;
 
     QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
 

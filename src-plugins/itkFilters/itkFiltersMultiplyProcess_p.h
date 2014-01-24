@@ -14,7 +14,7 @@
 #pragma once
 
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include "itkFiltersProcessBase_p.h"

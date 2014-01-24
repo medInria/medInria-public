@@ -212,7 +212,7 @@ void medBrowserArea::displayJobItem(medJobItem *importer, QString infoBaseName)
     d->jobsToolBox->stack()->addJobItem(importer, infoBaseName);
 }
 
-void medBrowserArea::onDataImport(dtkAbstractData *data)
+void medBrowserArea::onDataImport(medAbstractData *data)
 {
     QString patientName = data->metaDataValues(medMetaDataKeys::PatientName.key())[0];
     QString studyName   = data->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
@@ -233,7 +233,7 @@ void medBrowserArea::onDataImport(dtkAbstractData *data)
         return;
     }
 
-    dtkSmartPointer<dtkAbstractData> data_smart(data);
+    dtkSmartPointer<medAbstractData> data_smart(data);
 
     medDataManager::instance()->import(data_smart);
 }
@@ -270,7 +270,7 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
 
     connect(dataSource,SIGNAL(dataToImportReceived(QString)),this,SLOT(onFileImport(QString)));
     connect(dataSource,SIGNAL(dataToIndexReceived(QString)),this,SLOT(onFileIndex(QString)));
-    connect(dataSource,SIGNAL(dataReceived(dtkAbstractData *)),this,SLOT(onDataImport(dtkAbstractData *)));
+    connect(dataSource,SIGNAL(dataReceived(medAbstractData *)),this,SLOT(onDataImport(medAbstractData *)));
     connect(dataSource,SIGNAL(dataReceivingFailed(QString)), this, SLOT(onDataReceivingFailed(QString)));
     connect(dataSource, SIGNAL(exportData(const medDataIndex&)), this, SLOT(onExportData(const medDataIndex&)));
     connect(dataSource, SIGNAL(dataRemoved(const medDataIndex&)), this, SLOT(onDataRemoved(const medDataIndex&)));
@@ -278,7 +278,7 @@ void medBrowserArea::addDataSource( medAbstractDataSource* dataSource )
 
 void medBrowserArea::onExportData(const medDataIndex &index)
 {
-    dtkSmartPointer<dtkAbstractData> data = medDataManager::instance()->data(index);
+    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->data(index);
     medDataManager::instance()->exportDataToFile(data);
 }
 

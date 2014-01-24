@@ -17,7 +17,7 @@
 #include <QtGui>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
@@ -177,8 +177,8 @@ void itkProcessRegistrationDiffeomorphicDemonsToolBox::run()
         this->parentToolBox()->setProcess(process);
     }
 
-    dtkSmartPointer<dtkAbstractData> fixedData(this->parentToolBox()->fixedData());
-    dtkSmartPointer<dtkAbstractData> movingData(this->parentToolBox()->movingData());
+    dtkSmartPointer<medAbstractData> fixedData(this->parentToolBox()->fixedData());
+    dtkSmartPointer<medAbstractData> movingData(this->parentToolBox()->movingData());
 
     if (!fixedData || !movingData)
         return;

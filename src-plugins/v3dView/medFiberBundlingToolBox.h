@@ -18,7 +18,7 @@
 #include "v3dViewPluginExport.h"
 
 class dtkAbstractView;
-class dtkAbstractData;
+class medAbstractData;
 class medFiberBundlingToolBoxPrivate;
 class medDataIndex;
 
@@ -40,10 +40,10 @@ public:
     static bool registered();
 
     /**
-      * Set input fibers as a dtkAbstractData object. Subclass should
+      * Set input fibers as a medAbstractData object. Subclass should
       * inherit it and cass it into proper fiber data type.
       */
-    virtual void setData(dtkAbstractData *data);
+    virtual void setData(medAbstractData *data);
 
 signals:
     /**
@@ -67,7 +67,7 @@ signals:
 
 public slots:
 
-    void setInput(dtkAbstractData * data);
+    void setInput(medAbstractData * data);
 
 protected slots:
 

@@ -17,7 +17,7 @@
 
 #include <medMetaDataKeys.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -31,8 +31,8 @@ class AlgorithmGenericPrivate
     typedef QHash< QString, HandlerFunc * > HandlerContainerType;
     HandlerContainerType handlers;
 
-    dtkSmartPointer< dtkAbstractData > inputData;
-    dtkSmartPointer< dtkAbstractData > outputData;
+    dtkSmartPointer< medAbstractData > inputData;
+    dtkSmartPointer< medAbstractData > outputData;
 };
 
 AlgorithmGeneric::AlgorithmGeneric() :
@@ -58,7 +58,7 @@ void AlgorithmGeneric::addHandler( const QString & typeName, HandlerFunc * func 
      oldFunc = func;
 }
 
-int AlgorithmGeneric::callHandler( dtkAbstractData * data )
+int AlgorithmGeneric::callHandler( medAbstractData * data )
 {
     if ( !data  ) {
         dtkWarn() << "Attempt to run segmentation algorithm with no input set.";
@@ -82,7 +82,7 @@ bool AlgorithmGeneric::isHandled( const QString & dataId ) const
     return ( it != d->handlers.end() );
 }
 
-void AlgorithmGeneric::setInput( dtkAbstractData * data )
+void AlgorithmGeneric::setInput( medAbstractData * data )
 {
     this->d->inputData = data;
 }
@@ -95,7 +95,7 @@ int AlgorithmGeneric::update()
     return ret;
 }
 
-void AlgorithmGeneric::setOutput( dtkAbstractData * data )
+void AlgorithmGeneric::setOutput( medAbstractData * data )
 {
     this->d->outputData = data;
 }
@@ -115,12 +115,12 @@ void AlgorithmGeneric::undo()
 
 }
 
-dtkAbstractData * AlgorithmGeneric::input()
+medAbstractData * AlgorithmGeneric::input()
 {
     return d->inputData;
 }
 
-dtkAbstractData * AlgorithmGeneric::output()
+medAbstractData * AlgorithmGeneric::output()
 {
     return d->outputData;
 }

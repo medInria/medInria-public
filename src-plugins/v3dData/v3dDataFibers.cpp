@@ -164,7 +164,7 @@ void v3dDataFibers::generateThumbnails() const
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractData *createV3dDataFibers()
+medAbstractData *createV3dDataFibers()
 {
     return new v3dDataFibers;
 }

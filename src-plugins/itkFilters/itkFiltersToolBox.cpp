@@ -16,7 +16,7 @@
 #include <limits>
 
 #include <dtkCore/dtkAbstractDataFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include <medCore/medAbstractDataImage.h>
 
@@ -303,7 +303,7 @@ bool itkFiltersToolBox::registered()
 }
 
 
-dtkAbstractData* itkFiltersToolBox::processOutput()
+medAbstractData* itkFiltersToolBox::processOutput()
 {
     if ( !d->process )
         return NULL;

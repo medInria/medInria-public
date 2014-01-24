@@ -23,7 +23,7 @@
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 
 medViewContainer::medViewContainer ( QWidget *parent )
@@ -400,7 +400,7 @@ bool medViewContainer::open(const medDataIndex& index)
 
     if( index.isValidForSeries() )
     {
-        dtkSmartPointer<dtkAbstractData> data;
+        dtkSmartPointer<medAbstractData> data;
 
         data = medDataManager::instance()->data(index);
 
@@ -420,7 +420,7 @@ bool medViewContainer::open(const medDataIndex& index)
 
 }
 
-bool medViewContainer::open(dtkAbstractData * data)
+bool medViewContainer::open(medAbstractData * data)
 {
     if ( data == NULL )
         return false;

@@ -34,9 +34,9 @@ public:
     }
 
 public slots:
-    virtual void setOpacity(dtkAbstractData * data, double opacity) = 0;
-    virtual double opacity(dtkAbstractData * data) const = 0;
+    virtual void setOpacity(medAbstractData * data, double opacity) = 0;
+    virtual double opacity(medAbstractData * data) const = 0;
 
-    virtual void setVisible(dtkAbstractData * data, bool visible) = 0;
-    virtual bool isVisible(dtkAbstractData * data) const = 0;
+    virtual void setVisible(medAbstractData * data, bool visible) = 0;
+    virtual bool isVisible(medAbstractData * data) const = 0;
 };

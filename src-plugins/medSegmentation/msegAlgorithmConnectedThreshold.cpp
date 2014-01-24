@@ -18,7 +18,7 @@
 #include <itkConnectedThresholdImageFilter.h>
 #include <itkImageFunction.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
@@ -30,7 +30,7 @@ public:
     AlgorithmConnectedThresholdPrivate( AlgorithmConnectedThreshold * self_ ) : self(self_) { }
 
     // Override base.
-    int run( dtkAbstractData * inData ) MED_OVERRIDE;
+    int run( medAbstractData * inData ) MED_OVERRIDE;
 private:
     AlgorithmConnectedThreshold * self;
 };
@@ -82,7 +82,7 @@ QString AlgorithmConnectedThreshold::s_localizedName(const QObject * trObj)
 
 
 template < typename TPixel, unsigned int VDimension > 
-int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( dtkAbstractData * inData )
+int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( medAbstractData * inData )
 {
     enum { NDim = VDimension } ;
 
@@ -130,7 +130,7 @@ int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( dtkAbstractDa
     typename OutputImageType::Pointer outputImage( ctiFilter->GetOutput() );
     QString outputTypeName = QString("itkDataImageChar%1").arg(VDimension,1);
 
-    dtkSmartPointer< dtkAbstractData> newData( dtkAbstractDataFactory::instance()->createSmartPointer( outputTypeName ) );
+    dtkSmartPointer< medAbstractData> newData( dtkAbstractDataFactory::instance()->createSmartPointer( outputTypeName ) );
     if ( !newData )
         return DTK_FAILURE;
 

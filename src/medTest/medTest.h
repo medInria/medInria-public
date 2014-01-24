@@ -17,7 +17,7 @@
 
 #include <dtkCore/dtkTest.h>
 #include <dtkCore/dtkSmartPointer.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 namespace medTest
 {
@@ -47,11 +47,11 @@ namespace medTest
     MEDTEST_EXPORT void initializeResources(const QString &var);
 
     /**
-     * Returns a dtkAbstractData instance by reading file.
+     * Returns a medAbstractData instance by reading file.
      * Make sure that a db controller has been registered prior to
      * using this function.
      */
-    MEDTEST_EXPORT dtkSmartPointer<dtkAbstractData> readData (const QString &file);
+    MEDTEST_EXPORT dtkSmartPointer<medAbstractData> readData (const QString &file);
 
 } // end of namespace
 

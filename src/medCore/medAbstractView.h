@@ -18,6 +18,7 @@
 
 #include "medCoreExport.h"
 
+class medAbstractData;
 class medAbstractViewPrivate;
 
 class medAbstractViewCoordinates;
@@ -150,8 +151,8 @@ public:
     /**
      * Setting data using a dtkSmartPointer
      */
-    virtual void setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data);
-    virtual void setSharedDataPointer( dtkSmartPointer<dtkAbstractData> data,
+    virtual void setSharedDataPointer(dtkSmartPointer<medAbstractData> data);
+    virtual void setSharedDataPointer( dtkSmartPointer<medAbstractData> data,
                                                 int layer);
 
     void setCurrentMeshLayer(int meshLayer);
@@ -159,16 +160,16 @@ public:
     void setMeshLayerCount(int meshLayerCount);
     virtual int meshLayerCount() const;
 
-    bool isInList(dtkAbstractData * data, int layer);
+    bool isInList(medAbstractData * data, int layer);
 
     /**
      * Return true if the data is already contained in the data list
      */
-    bool isInList(dtkAbstractData * data);
-    void addDataInList(dtkAbstractData * data, int layer);
-    void addDataInList(dtkAbstractData * data);
-    dtkAbstractData* dataInList(int layer) const;
-    void setDataInList(dtkAbstractData * data, int layer);
+    bool isInList(medAbstractData * data);
+    void addDataInList(medAbstractData * data, int layer);
+    void addDataInList(medAbstractData * data);
+    medAbstractData* dataInList(int layer) const;
+    void setDataInList(medAbstractData * data, int layer);
 
     void addDataType(const QString & dataDescription);
     void removeDataType(const QString & dataDescription);
@@ -267,11 +268,11 @@ signals:
      */
     void dataAdded (int layer);
 
-    void dataAdded (dtkAbstractData* data);
+    void dataAdded (medAbstractData* data);
 
-    void dataAdded (dtkAbstractData* data, int layer);
+    void dataAdded (medAbstractData* data, int layer);
     void dataRemoved (int layer);
-    void dataRemoved(dtkAbstractData* data,int layer);
+    void dataRemoved(medAbstractData* data,int layer);
 
     void TwoDTriggered(dtkAbstractView* d);
     void ThreeDTriggered(dtkAbstractView* d);

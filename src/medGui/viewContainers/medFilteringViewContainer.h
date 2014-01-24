@@ -18,7 +18,7 @@
 #include "medGuiExport.h"
 
 class medFilteringViewContainerPrivate;
-class dtkAbstractData;
+class medAbstractData;
 class medDataIndex;
 class dtkAbstractView;
 
@@ -52,7 +52,7 @@ public slots:
      * @brief update output view according to the data in parameter
      * @param data
      */
-    void updateOutput ( dtkAbstractData *data );
+    void updateOutput ( medAbstractData *data );
 
     void dropEvent ( QDropEvent *event );
     

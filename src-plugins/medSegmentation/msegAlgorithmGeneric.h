@@ -24,14 +24,14 @@
 #include <QString>
 
 //Forward definitions
-class dtkAbstractData;
+class medAbstractData;
 
 namespace mseg {
 
 // Override in derived classes.
 struct HandlerFunc {
     virtual ~HandlerFunc() {}
-    virtual int run(dtkAbstractData * data) = 0;
+    virtual int run(medAbstractData * data) = 0;
 };
 
 class AlgorithmGenericPrivate;
@@ -54,12 +54,12 @@ public:
     virtual QString localizedName() = 0;
 
     //! Override dtkAbstractProcess
-    void setInput( dtkAbstractData * data) MED_OVERRIDE;
+    void setInput( medAbstractData * data) MED_OVERRIDE;
     virtual int update() MED_OVERRIDE;
-    dtkAbstractData * output() MED_OVERRIDE;
+    medAbstractData * output() MED_OVERRIDE;
 
     //! Getter for the input data.
-    dtkAbstractData * input();
+    medAbstractData * input();
 
     //! Progress
     virtual void reportItkProgress( const itk::Object * caller , float progress );
@@ -72,10 +72,10 @@ protected:
 
     void addHandler( const QString & typeName, HandlerFunc * func );
 
-    int callHandler( dtkAbstractData * data );
+    int callHandler( medAbstractData * data );
     virtual bool isHandled( const QString & dataId ) const;
 
-    void setOutput( dtkAbstractData * data);
+    void setOutput( medAbstractData * data);
 
     //! Uses the input to set suitable values on the output.
     void setOutputMetadata();

@@ -24,7 +24,7 @@ class medDatabaseView;
 class medDatabaseModel;
 class medBrowserAreaPrivate;
 class medAbstractDataSource;
-class dtkAbstractData;
+class medAbstractData;
 class medToolBox;
 class medJobItem;
 
@@ -76,7 +76,7 @@ public slots:
     void onSourceIndexChanged(int index);
     void onFileImport(QString);
     void onFileIndex(QString);
-    void onDataImport(dtkAbstractData *data);
+    void onDataImport(medAbstractData *data);
     void onDataReceivingFailed(QString fileName);
     void displayJobItem(medJobItem *importer, QString infoBaseName);
 

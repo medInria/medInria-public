@@ -43,18 +43,18 @@ namespace medMetaDataKeys {
         const QVariant::Type& type() const { return TYPE; }
         const bool isEditable() const { return ISEDITABLE; }
 
-        bool is_set_in(const dtkAbstractData *d) const { return d->hasMetaData(KEY) ; }
+        bool is_set_in(const medAbstractData *d) const { return d->hasMetaData(KEY) ; }
 
-        const QStringList getValues(const dtkAbstractData *d) const { return d->metaDataValues(KEY); }
+        const QStringList getValues(const medAbstractData *d) const { return d->metaDataValues(KEY); }
 
-        const QString getFirstValue(const dtkAbstractData *d,const QString defaultValue=QString()) const {
+        const QString getFirstValue(const medAbstractData *d,const QString defaultValue=QString()) const {
             return  d->hasMetaData(KEY) ? d->metaDataValues(KEY)[0] : defaultValue;
         }
 
-        void add(dtkAbstractData* d,const QStringList& values) const { d->addMetaData(KEY,values); }
-        void add(dtkAbstractData* d,const QString& value)      const { d->addMetaData(KEY,value);  }
-        void set(dtkAbstractData* d,const QStringList& values) const { d->setMetaData(KEY,values); }
-        void set(dtkAbstractData* d,const QString& value)      const { d->setMetaData(KEY,value);  }
+        void add(medAbstractData* d,const QStringList& values) const { d->addMetaData(KEY,values); }
+        void add(medAbstractData* d,const QString& value)      const { d->addMetaData(KEY,value);  }
+        void set(medAbstractData* d,const QStringList& values) const { d->setMetaData(KEY,values); }
+        void set(medAbstractData* d,const QString& value)      const { d->setMetaData(KEY,value);  }
 
         static const Registery& all() { return registery; }
         

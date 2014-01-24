@@ -437,7 +437,7 @@ void medDatabaseView::onCreatePatientRequested(void)
         birthdate = editDialog.value(medMetaDataKeys::BirthDate.label()).toString();
         gender = editDialog.value(medMetaDataKeys::Gender.label()).toString();
 
-        dtkSmartPointer<dtkAbstractData> dtkData = new dtkAbstractData();
+        dtkSmartPointer<medAbstractData> dtkData = new medAbstractData();
 
         QString generatedPatientID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
 
@@ -494,7 +494,7 @@ void medDatabaseView::onCreateStudyRequested(void)
         {
             QString studyName = editDialog.value(medMetaDataKeys::StudyDescription.label()).toString();
 
-            dtkSmartPointer<dtkAbstractData> dtkData = new dtkAbstractData();
+            dtkSmartPointer<medAbstractData> dtkData = new medAbstractData();
 
             dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
             dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );

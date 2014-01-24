@@ -15,7 +15,7 @@
 #pragma once
 
 #include <dtkCore/dtkTest.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medDataIndex.h>
@@ -64,15 +64,15 @@ private slots:
     
     
 private:
-    dtkSmartPointer<dtkAbstractData> createTestData(void);
+    dtkSmartPointer<medAbstractData> createTestData(void);
     bool removeDir(const QString & dirName);
     void compareData(void);
-    void compareData(dtkSmartPointer<dtkAbstractData> data1, dtkSmartPointer<dtkAbstractData> data2);
+    void compareData(dtkSmartPointer<medAbstractData> data1, dtkSmartPointer<medAbstractData> data2);
     void waitForInsertions(int numberOfInsertions = 1, int timeout = 10000 );
     void waitForDeletions(int numberOfDeletions = 1, int timeout = 10000 );
      
 private:
-    dtkSmartPointer<dtkAbstractData> m_currentData;
+    dtkSmartPointer<medAbstractData> m_currentData;
     IndexList m_insertedIndexes;
     medDataIndex m_lastInsertedIndex;
     

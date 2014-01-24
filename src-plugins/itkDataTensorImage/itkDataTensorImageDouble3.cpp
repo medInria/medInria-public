@@ -130,7 +130,7 @@ QList<QImage>& itkDataTensorImageDouble3::thumbnails()
 // Type instantiation
 // /////////////////////////////////////////////////////////////////
 
-dtkAbstractData *createItkDataTensorImageDouble3()
+medAbstractData *createItkDataTensorImageDouble3()
 {
     return new itkDataTensorImageDouble3;
 }

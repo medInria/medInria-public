@@ -20,7 +20,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QList>
 
-class dtkAbstractData;
+class medAbstractData;
 
 class medDatabaseNonPersistentItemPrivate;
 
@@ -52,7 +52,7 @@ public:
 
     const medDataIndex& index(void) const;
     
-    dtkAbstractData *data(void);
+    medAbstractData *data(void);
     
     
     void setName(const QString& );
@@ -69,9 +69,9 @@ public:
     
     void setIndex(const medDataIndex& );
     
-    void setData(dtkAbstractData* );
+    void setData(medAbstractData* );
 
-    bool Match(dtkAbstractData *);
+    bool Match(medAbstractData *);
 
 private:
     friend class medDatabaseNonPersistentControllerImpl;

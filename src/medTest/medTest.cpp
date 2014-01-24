@@ -50,7 +50,7 @@ namespace medTest
         QResource::registerResource(value.toLatin1().constData());
     }
 
-    dtkSmartPointer<dtkAbstractData> readData (const QString &file)
+    dtkSmartPointer<medAbstractData> readData (const QString &file)
     {
         /*
         medSynchronousDbImporter importer (file);

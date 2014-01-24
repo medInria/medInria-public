@@ -19,7 +19,7 @@
 
 class v3dViewFuseInteractorPrivate;
 
-class dtkAbstractData;
+class medAbstractData;
 class dtkAbstractView;
 
 /**
@@ -39,7 +39,7 @@ public:
 
     static bool registered();
 
-    virtual void setData(dtkAbstractData *data, int channel);
+    virtual void setData(medAbstractData *data, int channel);
     virtual void setView(dtkAbstractView *view);
 
     virtual void enable();

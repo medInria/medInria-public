@@ -22,7 +22,7 @@
 #include <medViewManager.h>
 #include <medAbstractView.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 
 
@@ -32,7 +32,7 @@ public:
 
     QComboBox    *chooseFilter;
     medAbstractView *inputView;
-    dtkAbstractData *inputData;
+    medAbstractData *inputData;
     medDataIndex index;
     QHash<QString, medFilteringAbstractToolBox*> toolBoxes;
     QVBoxLayout *filterLayout;
@@ -92,7 +92,7 @@ medFilteringAbstractToolBox* medFilteringSelectorToolBox::currentToolBox()
     return d->currentToolBox;
 }
 
-dtkAbstractData*  medFilteringSelectorToolBox::data()
+medAbstractData*  medFilteringSelectorToolBox::data()
 {
     return d->inputData;
 }

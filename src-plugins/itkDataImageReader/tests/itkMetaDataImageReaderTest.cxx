@@ -30,7 +30,7 @@ int itkMetaDataImageReaderTest (int argc, char* argv[])
   dtkPluginManager::instance()->initialize();
 
   // first method to read data
-  dtkSmartPointer<dtkAbstractData> data1 = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageDouble3");
+  dtkSmartPointer<medAbstractData> data1 = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageDouble3");
 
   if (!data1)
       return EXIT_FAILURE;
@@ -42,7 +42,7 @@ int itkMetaDataImageReaderTest (int argc, char* argv[])
 
   
   // second method
-  dtkAbstractData* data2 = 0;
+  medAbstractData* data2 = 0;
 
   QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
   for (int i=0; i<readers.size(); i++) {            

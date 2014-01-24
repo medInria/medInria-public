@@ -13,7 +13,7 @@
 
 #include <v3dDataFibersReader.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
@@ -54,7 +54,7 @@ bool v3dDataFibersReader::canRead (const QStringList& paths) {
 bool v3dDataFibersReader::readInformation (const QString& path) {
     // d->reader->SetFileName (path.toAscii().constData());
 
-    dtkSmartPointer<dtkAbstractData> dtkdata = this->data();
+    dtkSmartPointer<medAbstractData> dtkdata = this->data();
 
     if (!dtkdata) {
         dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("v3dDataFibers");
@@ -78,7 +78,7 @@ bool v3dDataFibersReader::read (const QString& path) {
 
   this->setProgress (25);
 
-  if (dtkAbstractData *dtkdata = this->data()) {
+  if (medAbstractData *dtkdata = this->data()) {
     d->reader->SetFileName (path.toAscii().constData());
     d->reader->Update();
 

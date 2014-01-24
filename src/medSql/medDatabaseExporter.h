@@ -18,7 +18,7 @@
 
 #include <medJobItem.h>
 
-class dtkAbstractData;
+class medAbstractData;
 class medDatabaseExporterPrivate;
 
 class MEDSQL_EXPORT medDatabaseExporter : public medJobItem
@@ -26,7 +26,7 @@ class MEDSQL_EXPORT medDatabaseExporter : public medJobItem
     Q_OBJECT
 
 public:
-     medDatabaseExporter(dtkAbstractData * data, const QString & filename, const QString & writer);
+     medDatabaseExporter(medAbstractData * data, const QString & filename, const QString & writer);
     ~medDatabaseExporter();
     
     /**

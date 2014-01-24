@@ -22,7 +22,7 @@
 
 class v3dViewMeshInteractorPrivate;
 
-class dtkAbstractData;
+class medAbstractData;
 class dtkAbstractView;
 class vtkLookupTable;
 
@@ -42,14 +42,14 @@ public:
 
     static bool registered();
 
-    virtual void setData(dtkAbstractData * data);
+    virtual void setData(medAbstractData * data);
     virtual void setView(dtkAbstractView * view);
 
     virtual void enable();
     virtual void disable();
 
     //! Override dtkAbstractViewInteractor.
-    virtual bool isAutoEnabledWith ( dtkAbstractData * data );
+    virtual bool isAutoEnabledWith ( medAbstractData * data );
 
     void setOpacity(int meshLayer, double value);
     double opacity(int meshLayer) const;
@@ -78,11 +78,11 @@ public:
 
 public slots:
     // Mandatory implementations from medVtkViewInteractor
-    virtual void setOpacity(dtkAbstractData * data, double opacity);
-    virtual double opacity(dtkAbstractData * data) const;
+    virtual void setOpacity(medAbstractData * data, double opacity);
+    virtual double opacity(medAbstractData * data) const;
 
-    virtual void setVisible(dtkAbstractData * data, bool visible);
-    virtual bool isVisible(dtkAbstractData * data) const;
+    virtual void setVisible(medAbstractData * data, bool visible);
+    virtual bool isVisible(medAbstractData * data) const;
 
 protected:
     void updatePipeline (unsigned int meshLayer = 0);

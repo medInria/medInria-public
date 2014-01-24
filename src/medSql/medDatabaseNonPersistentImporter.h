@@ -20,7 +20,7 @@
 #include <medDataIndex.h>
 #include <medAbstractDatabaseImporter.h>
 
-class dtkAbstractData;
+class medAbstractData;
 
 /**
 * @brief Reads files and adds them to the medNonPersistentDatabase.
@@ -40,7 +40,7 @@ public:
     * @param callerUuid The string representation of a unique identifier. The caller will react to link the final signal with this id to know whether it should react to it or not.
     */
     medDatabaseNonPersistentImporter(const QString& file, const QString& callerUuid = QString());
-    medDatabaseNonPersistentImporter(dtkAbstractData* dtkData, const QString& callerUuid = QString());
+    medDatabaseNonPersistentImporter(medAbstractData* dtkData, const QString& callerUuid = QString());
     ~medDatabaseNonPersistentImporter();
        
      
@@ -53,11 +53,11 @@ public:
     
      /**
     * Populates database tables and generates thumbnails.
-    * @param dtkData - a @dtkAbstractData object created from the original image
+    * @param dtkData - a @medAbstractData object created from the original image
     * @param pathToStoreThumbnails - path where the thumbnails will be stored
     * @return medDataIndex the new medDataIndex associated with this imported series.
     **/
-    medDataIndex populateDatabaseAndGenerateThumbnails ( dtkAbstractData* dtkData, QString pathToStoreThumbnails );
+    medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* dtkData, QString pathToStoreThumbnails );
 
      /**
     * Finds if parameter @seriesName is already being used in the database
@@ -71,18 +71,18 @@ public:
     /**
     * Checks if the image which was used to create the dtkData object
     * passed as parameter already exists in the database
-    * @param dtkData - a @dtkAbstractData object created from the original image
+    * @param dtkData - a @medAbstractData object created from the original image
     * @param imageName - the name of the image we are looking for
     * @return true if already exists, false otherwise
     **/
-    bool checkIfExists ( dtkAbstractData* dtkdata, QString imageName );
+    bool checkIfExists ( medAbstractData* dtkdata, QString imageName );
     
     /**
      * Checks if the user is trying to perform a partial import
      * (that is, trying to import files belonging to the same volume
      * in 2 different steps).
      */
-    bool isPartialImportAttempt ( dtkAbstractData* dtkData );
+    bool isPartialImportAttempt ( medAbstractData* dtkData );
 
 
 private:

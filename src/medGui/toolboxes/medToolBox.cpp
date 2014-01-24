@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include <medAbstractView.h>
 

@@ -19,7 +19,7 @@
 
 #include "medProcessPaintSegm.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medDataIndex.h>
@@ -94,7 +94,7 @@ protected:
     friend class ClickAndMoveEventFilter;
 
     void addStroke( medAbstractView *view, const QVector3D &vec );
-    void setData( dtkAbstractData *data );
+    void setData( medAbstractData *data );
 
     // update with seed point data.
     void updateTableRow(int row);

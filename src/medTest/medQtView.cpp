@@ -14,7 +14,7 @@
 #include "medQtView.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include <medAbstractData.h>
 
@@ -22,7 +22,7 @@ class medQtViewPrivate
 {
 public:
     QLabel *label;
-    dtkSmartPointer<dtkAbstractData> data;
+    dtkSmartPointer<medAbstractData> data;
 };
 
 static dtkAbstractView* createMedQtView()
@@ -46,12 +46,12 @@ QWidget *medQtView::widget(void)
     return d->label;
 }
 
-void medQtView::setData (dtkAbstractData *data, int layer)
+void medQtView::setData (medAbstractData *data, int layer)
 {
     this->setData (data);
 }
 
-void medQtView::setData (dtkAbstractData *data)
+void medQtView::setData (medAbstractData *data)
 {
     d->data = data;
     if (data->description()=="medQtDataImage") {

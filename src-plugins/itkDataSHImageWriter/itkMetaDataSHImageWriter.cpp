@@ -13,7 +13,7 @@
 
 #include <itkMetaDataSHImageWriter.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkMetaImageIO.h>

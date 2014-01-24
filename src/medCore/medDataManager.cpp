@@ -13,7 +13,7 @@
 
 #include "medDataManager.h"
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <medDbControllerFactory.h>
@@ -50,7 +50,7 @@ public:
     }
 
     // this is the data cache for persistent and non-persistent data
-    typedef QHash<medDataIndex, dtkSmartPointer<dtkAbstractData> > DataCacheContainerType;
+    typedef QHash<medDataIndex, dtkSmartPointer<medAbstractData> > DataCacheContainerType;
     DataCacheContainerType dataCache;
     DataCacheContainerType volatileDataCache;
 
@@ -108,9 +108,9 @@ medDataManager *medDataManager::instance(void)
 
 //-------------------------------------------------------------------------------------------------------
 
-dtkSmartPointer<dtkAbstractData> medDataManager::data(const medDataIndex& index)
+dtkSmartPointer<medAbstractData> medDataManager::data(const medDataIndex& index)
 {
-    dtkSmartPointer<dtkAbstractData>  dtkdata;
+    dtkSmartPointer<medAbstractData>  dtkdata;
 
     // try to get it from cache first
     if ( d->dataCache.contains(index) || d->volatileDataCache.contains(index) )
@@ -484,7 +484,7 @@ void medDataManager::setWriterPriorities()
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::importNonPersistent( dtkAbstractData *data )
+void medDataManager::importNonPersistent( medAbstractData *data )
 {
     QString uuid = QUuid::createUuid().toString();
     this->importNonPersistent (data, uuid);
@@ -492,20 +492,20 @@ void medDataManager::importNonPersistent( dtkAbstractData *data )
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::importNonPersistent( dtkAbstractData *data, QString uuid)
+void medDataManager::importNonPersistent( medAbstractData *data, QString uuid)
 {
     if (!data)
         return;
 
     
-    foreach (dtkSmartPointer<dtkAbstractData> dtkdata, d->dataCache) {
+    foreach (dtkSmartPointer<medAbstractData> dtkdata, d->dataCache) {
         if (data == dtkdata.data()) {
             qWarning() << "data already in manager, skipping";
             return;
         }
     }
 
-    foreach (dtkSmartPointer<dtkAbstractData> dtkdata, d->volatileDataCache) {
+    foreach (dtkSmartPointer<medAbstractData> dtkdata, d->volatileDataCache) {
         if (data == dtkdata.data()) {
             qWarning() << "data already in manager, skipping";
             return;
@@ -531,7 +531,7 @@ void medDataManager::onNonPersistentDataImported(const medDataIndex &index, QStr
     }
 
     medAbstractDbController* npDb = d->getNonPersDbController();
-    dtkSmartPointer<dtkAbstractData> data = npDb->read(index);
+    dtkSmartPointer<medAbstractData> data = npDb->read(index);
 
     if (!data.isNull())
     {
@@ -566,7 +566,7 @@ void medDataManager::importNonPersistent( QString file, const QString &uuid )
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::exportDataToFile(dtkAbstractData * data)
+void medDataManager::exportDataToFile(medAbstractData * data)
 {
     if ( ! data) return;
 
@@ -695,7 +695,7 @@ void medDataManager::storeNonPersistentSingleDataToDatabase( const medDataIndex 
     if (d->volatileDataCache.count(index) > 0)
     {
         qDebug() << "storing non persistent single data to database";
-        dtkSmartPointer<dtkAbstractData> dtkdata = d->volatileDataCache[index];
+        dtkSmartPointer<medAbstractData> dtkdata = d->volatileDataCache[index];
         QUuid tmpUid = QUuid::createUuid().toString();
         d->npDataIndexBeingSaved[tmpUid] = index;
 
@@ -781,7 +781,7 @@ size_t medDataManager::getOptimalMemoryThreshold()
 
 //-------------------------------------------------------------------------------------------------------
 
-void medDataManager::import( dtkSmartPointer<dtkAbstractData> &data )
+void medDataManager::import( dtkSmartPointer<medAbstractData> &data )
 {
     if (!data.data())
         return;

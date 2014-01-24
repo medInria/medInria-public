@@ -80,6 +80,6 @@ private:
 
 };
 
-dtkAbstractData* createVtkDataMesh4D();
+medAbstractData* createVtkDataMesh4D();
 
 

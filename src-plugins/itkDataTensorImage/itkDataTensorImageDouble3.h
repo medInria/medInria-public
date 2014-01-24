@@ -53,6 +53,6 @@ private:
     itkDataTensorImageDouble3Private *d;
 };
 
-dtkAbstractData *createItkDataTensorImageDouble3();
+medAbstractData *createItkDataTensorImageDouble3();
 
 

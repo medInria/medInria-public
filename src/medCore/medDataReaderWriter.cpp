@@ -46,7 +46,7 @@ medDataReaderWriter::Reader medDataReaderWriter::reader(const QString& path) {
     return dreader = Reader();
 }
 
-medDataReaderWriter::Writer medDataReaderWriter::writer(const QString& path,const dtkAbstractData* data) {
+medDataReaderWriter::Writer medDataReaderWriter::writer(const QString& path,const medAbstractData* data) {
 
     if (!data)
         return Writer();
@@ -72,12 +72,12 @@ medDataReaderWriter::Data medDataReaderWriter::read(const QString& path) {
     Reader dreader = reader(path);
     if (!dreader.isNull()) {
         dreader->read(path);
-        return dreader->data();
+        return dynamic_cast<medAbstractData*>(dreader->data());
     }
     return NULL;
 }
 
-bool medDataReaderWriter::write(const QString& path,dtkAbstractData* data) {
+bool medDataReaderWriter::write(const QString& path,medAbstractData* data) {
     Writer dwriter = writer(path,data);
     if (!dwriter.isNull()) {
         dwriter->setData(data);

@@ -13,7 +13,7 @@
 
 #include <itkDataSHImageReaderBase.h>
 
-#include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
 #include <itkImageFileReader.h>
@@ -97,7 +97,7 @@ bool itkDataSHImageReaderBase::readInformation (const QString &path)
         return false;
     }
     
-    dtkAbstractData* dtkdata = this->data();
+    medAbstractData* dtkdata = this->data();
 
     if (!dtkdata) {
 
@@ -144,7 +144,7 @@ bool itkDataSHImageReaderBase::read (const QString &path)
 	
     qDebug() << "Read with: " << this->description();
 
-    if (dtkAbstractData *dtkdata = this->data() ) {
+    if (medAbstractData *dtkdata = this->data() ) {
 
         if (dtkdata->identifier()=="itkDataSHImageDouble3") {
             typedef itk::VectorImage<double, 3> SHImageType;
