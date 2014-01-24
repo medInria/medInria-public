@@ -843,47 +843,22 @@ void vtkImageView3D::UpdateVolumeFunctions(int layer)
   vtkPiecewiseFunction     * opacity =
   this->VolumeProperty->GetScalarOpacity(layer);
 
-
-  double colorValue[6]   = { 0.0, 0.0, 0.0, 0.0, 0.5, 0.0 };
-  double opacityValue[4] = { 0.0, 0.0,           0.5, 0.0 };
-
   const double * range = lookuptable->GetRange();
   double width = range[1] - range[0];
 
   int numColors = lookuptable->GetNumberOfTableValues();
   double factor = 1.0 / static_cast< double >( numColors - 1 );
-  if ( color->GetSize() == numColors && opacity->GetSize() == numColors )
+  color->RemoveAllPoints();
+  opacity->RemoveAllPoints();
+
+  // this->OpacityFunction->AddPoint (0.0,  0.0);
+  for ( int i = 0; i < numColors; ++i )
   {
-    for( int i = 0; i < numColors; ++i )
-    {
-      double x = range[0] + factor * static_cast< double >( i ) * width;
+    double x = range[0] + factor * static_cast< double >( i ) * width;
 
-      double * val = lookuptable->GetTableValue( i );
-      colorValue[0] = x;
-      colorValue[1] = val[0];
-      colorValue[2] = val[1];
-      colorValue[3] = val[2];
-      color->SetNodeValue( i, colorValue );
-
-      opacityValue[0] = x;
-      opacityValue[1] = val[3];
-      opacity->SetNodeValue( i, opacityValue);
-    }
-  }
-  else
-  {
-    color->RemoveAllPoints();
-    opacity->RemoveAllPoints();
-
-    // this->OpacityFunction->AddPoint (0.0,  0.0);
-    for ( int i = 0; i < numColors; ++i )
-    {
-      double x = range[0] + factor * static_cast< double >( i ) * width;
-
-      double * val = lookuptable->GetTableValue( i );
-      color->AddRGBPoint( x, val[0], val[1], val[2]);
-      opacity->AddPoint( x, val[3] );
-    }
+    double * val = lookuptable->GetTableValue( i );
+    color->AddRGBPoint( x, val[0], val[1], val[2]);
+    opacity->AddPoint( x, val[3] );
   }
 }
 
