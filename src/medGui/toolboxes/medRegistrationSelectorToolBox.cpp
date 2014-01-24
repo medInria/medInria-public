@@ -542,11 +542,11 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
     
     if (type==algorithm)
         if (d->process)
-            output = d->process->output();
+            output = dynamic_cast<medAbstractData*>(d->process->output());
         else return;
     else
         if (d->undoRedoProcess)
-            output = d->undoRedoProcess->output();
+            output = dynamic_cast<medAbstractData*>(d->undoRedoProcess->output());
         else return;
 
     // We manage the new description of the image

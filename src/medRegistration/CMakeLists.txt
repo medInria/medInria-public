@@ -46,7 +46,9 @@ list_header_directories_to_include(${PROJECT_NAME}
   ${${PROJECT_NAME}_HEADERS}
   )
 
-include_directories(${${PROJECT_NAME}_INCLUDE_DIRS})
+include_directories(${${PROJECT_NAME}_INCLUDE_DIRS}
+  ${medCore_INCLUDE_DIRS}
+  )
     
 ## #############################################################################
 ## add library
@@ -63,7 +65,8 @@ add_library(${PROJECT_NAME} SHARED
 
 target_link_libraries(${PROJECT_NAME}
     ${QT_LIBRARIES}
-  dtkCore 
+  dtkCore
+  medCore
   dtkLog
   RegistrationAddOn
   ITKCommon

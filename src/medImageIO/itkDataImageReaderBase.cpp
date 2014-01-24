@@ -94,7 +94,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
         return false;
     }
 
-    dtkSmartPointer<medAbstractData> dtkdata = this->data();
+    dtkSmartPointer<medAbstractData> dtkdata = dynamic_cast<medAbstractData*>(this->data());
 
     if (!dtkdata) {
 
@@ -252,7 +252,7 @@ bool itkDataImageReaderBase::readInformation (const QStringList& paths)
 
 template <unsigned DIM,typename T>
 bool itkDataImageReaderBase::read_image(const QString& path,const char* type) {
-    medAbstractData* dtkdata = this->data();
+    medAbstractData* dtkdata = dynamic_cast<medAbstractData*>(this->data());
     if (dtkdata && dtkdata->identifier()!=type)
         return false;
 

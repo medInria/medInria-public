@@ -810,7 +810,7 @@ dtkSmartPointer<medAbstractData> medAbstractDatabaseImporter::tryReadImages ( co
             readSuccessful = dataReader->read ( filesPaths );
 
         if (readSuccessful)
-            dtkData = dataReader->data();
+            dtkData = dynamic_cast<medAbstractData*>(dataReader->data());
     }
     else
     {

@@ -227,7 +227,7 @@ void medSegmentationSelectorToolBox::onSuccess( QObject * sender )
         return;
     dtkAbstractProcess * alg = d->runningProcesses.value( sender );
 
-    dtkSmartPointer<medAbstractData> outputData = alg->output();
+    dtkSmartPointer<medAbstractData> outputData = dynamic_cast<medAbstractData*>(alg->output());
 
     medDataManager::instance()->importNonPersistent( outputData.data() );
 

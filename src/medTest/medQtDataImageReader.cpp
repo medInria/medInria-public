@@ -96,7 +96,7 @@ void medQtDataImageReader::reset()
 
 void medQtDataImageReader::setMetaDataFromImageReader()
 {
-    medAbstractData * dtkdata = this->data();
+    medAbstractData * dtkdata = dynamic_cast<medAbstractData*>(this->data());
     if ( !dtkdata || m_reader.isNull() )
         return;
 
@@ -164,7 +164,7 @@ int medQtDataImageReader::readStartingFrom( const QString& path, int iStart )
         return 0;
     }
 
-    medAbstractData * dtkData = this->data();
+    medAbstractData * dtkData = dynamic_cast<medAbstractData*>(this->data());
 
     int numRead(0);
     if ( m_reader->supportsAnimation() ) {

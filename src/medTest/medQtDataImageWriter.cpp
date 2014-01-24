@@ -127,7 +127,7 @@ bool medQtDataImageWriter::canWrite( const QString& path )
 
 bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= true*/ )
 {
-    medAbstractData * dtkdata = this->data();
+    medAbstractData * dtkdata = dynamic_cast<medAbstractData*>(this->data());
 
     if ( !dtkdata )
         return false;

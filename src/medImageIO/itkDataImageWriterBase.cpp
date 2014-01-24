@@ -45,7 +45,7 @@ bool itkDataImageWriterBase::canWrite(const QString& path)
 
 template <unsigned DIM,typename T>
 bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
-    medAbstractData* dtkdata = this->data();
+    medAbstractData* dtkdata = dynamic_cast<medAbstractData*>(this->data());
     if (dtkdata && dtkdata->identifier()!=type)
         return false;
 

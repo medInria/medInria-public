@@ -29,7 +29,7 @@ public:
     QImage::Format imageFormat;
 };
 
-static medAbstractData* createMedQtDataImage()
+static dtkAbstractData* createMedQtDataImage()
 {
     return new medQtDataImage;
 }

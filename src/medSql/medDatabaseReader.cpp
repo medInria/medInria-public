@@ -286,7 +286,7 @@ dtkSmartPointer<medAbstractData> medDatabaseReader::readFile ( const QStringList
         {
             dataReader->read ( filenames );
             dataReader->enableDeferredDeletion ( false );
-            dtkdata = dataReader->data();
+            dtkdata = dynamic_cast<medAbstractData*>(dataReader->data());
             if ( dtkdata.refCount() != 2 )
                 qWarning() << "(ReaderLoop) RefCount should be 2 here: " << dtkdata.refCount();
             break;
