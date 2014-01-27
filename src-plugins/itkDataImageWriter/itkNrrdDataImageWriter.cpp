@@ -14,7 +14,7 @@
 #include "itkNrrdDataImageWriter.h"
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkNrrdImageIO.h>
 
@@ -53,7 +53,7 @@ QStringList itkNrrdDataImageWriter::supportedFileExtensions() const
 }
 
 bool itkNrrdDataImageWriter::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
+    return medAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }
 
 QString itkNrrdDataImageWriter::identifier() const {

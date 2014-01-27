@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include "dtkCore/dtkPluginManager.h"
-#include "dtkCore/dtkAbstractDataFactory.h"
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include "dtkCore/dtkAbstractData.h"
 #include "dtkCore/dtkSmartPointer.h"
@@ -30,7 +30,7 @@ int itkMetaDataImageReaderTest (int argc, char* argv[])
   dtkPluginManager::instance()->initialize();
 
   // first method to read data
-  dtkSmartPointer<medAbstractData> data1 = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageDouble3");
+  dtkSmartPointer<medAbstractData> data1 = medAbstractDataFactory::instance()->createSmartPointer("itkDataImageDouble3");
 
   if (!data1)
       return EXIT_FAILURE;
@@ -44,12 +44,12 @@ int itkMetaDataImageReaderTest (int argc, char* argv[])
   // second method
   medAbstractData* data2 = 0;
 
-  QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
+  QList<QString> readers = medAbstractDataFactory::instance()->readers();
   for (int i=0; i<readers.size(); i++) {            
-      dtkSmartPointer<dtkAbstractDataReader> dataReader( dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]) );
+      dtkSmartPointer<dtkAbstractDataReader> dataReader( medAbstractDataFactory::instance()->readerSmartPointer(readers[i]) );
       if (dataReader->canRead( filepath )) {
           dataReader->read( filepath );
-          data2 = dataReader->data();
+          data2 = dynamic_cast<medAbstractData*>(dataReader->data());
           break;
       }
   }

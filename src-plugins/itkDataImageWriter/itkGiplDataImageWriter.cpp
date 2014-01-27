@@ -14,7 +14,7 @@
 #include <itkGiplDataImageWriter.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkGiplImageIO.h>
 
@@ -52,7 +52,7 @@ QStringList itkGiplDataImageWriter::supportedFileExtensions() const
 }
 
 bool itkGiplDataImageWriter::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
+    return medAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }
 
 QString itkGiplDataImageWriter::identifier() const {

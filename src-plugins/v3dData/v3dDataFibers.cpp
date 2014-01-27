@@ -13,7 +13,7 @@
 
 #include "v3dDataFibers.h"
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include "vtkSmartPointer.h"
 #include "vtkPolyData.h"
@@ -45,7 +45,7 @@ public:
 // v3dDataFibers
 // /////////////////////////////////////////////////////////////////
 
-v3dDataFibers::v3dDataFibers() : dtkAbstractData(), d(new v3dDataFibersPrivate)
+v3dDataFibers::v3dDataFibers() : medAbstractData(), d(new v3dDataFibersPrivate)
 {
     d->data = 0;
     d->thumbnail = QImage(":v3dData/icons/fibers.png");
@@ -60,7 +60,7 @@ v3dDataFibers::~v3dDataFibers()
 
 bool v3dDataFibers::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataType("v3dDataFibers", createV3dDataFibers);
+    return medAbstractDataFactory::instance()->registerDataType("v3dDataFibers", createV3dDataFibers);
 }
 
 QString v3dDataFibers::description() const

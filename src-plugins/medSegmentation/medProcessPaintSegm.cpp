@@ -18,7 +18,7 @@
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkSmartPointer.h>
 
@@ -39,7 +39,7 @@ public:
 // medProcessPaintSegm
 // /////////////////////////////////////////////////////////////////
 
-medProcessPaintSegm::medProcessPaintSegm() : dtkAbstractProcess(), d(new medProcessPaintSegmPrivate)
+medProcessPaintSegm::medProcessPaintSegm() : medAbstractProcess(), d(new medProcessPaintSegmPrivate)
 {
 
 }

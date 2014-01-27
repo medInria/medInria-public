@@ -14,7 +14,7 @@
 #include <v3dDataFibersReader.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include "vtkXMLFiberDataSetReader.h"
@@ -54,10 +54,10 @@ bool v3dDataFibersReader::canRead (const QStringList& paths) {
 bool v3dDataFibersReader::readInformation (const QString& path) {
     // d->reader->SetFileName (path.toAscii().constData());
 
-    dtkSmartPointer<medAbstractData> dtkdata = this->data();
+    dtkSmartPointer<medAbstractData> dtkdata = dynamic_cast<medAbstractData*>(this->data());
 
     if (!dtkdata) {
-        dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("v3dDataFibers");
+        dtkdata = medAbstractDataFactory::instance()->createSmartPointer ("v3dDataFibers");
         if (dtkdata)
             this->setData (dtkdata);
     }
@@ -78,7 +78,7 @@ bool v3dDataFibersReader::read (const QString& path) {
 
   this->setProgress (25);
 
-  if (medAbstractData *dtkdata = this->data()) {
+  if (medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data())) {
     d->reader->SetFileName (path.toAscii().constData());
     d->reader->Update();
 
@@ -130,7 +130,7 @@ QString v3dDataFibersReader::description() const {
 }
 
 bool v3dDataFibersReader::registered() {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,
+  return medAbstractDataFactory::instance()->registerDataReaderType(ID,
 								    QStringList() << "v3dDataFibers",
 								    createV3dDataFibersReader);
 }

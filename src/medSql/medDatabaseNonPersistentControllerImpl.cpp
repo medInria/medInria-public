@@ -22,7 +22,7 @@
 
 #include <medMetaDataKeys.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <medAbstractData.h>

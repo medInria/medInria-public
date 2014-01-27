@@ -13,7 +13,7 @@
 
 #include "v3dDataImage.h"
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 //#include <itkAnalyzeImageIOFactory.h>
 //#include <itkVTKImageIOFactory.h>
@@ -49,7 +49,7 @@ v3dDataImage::~v3dDataImage()
 
 bool v3dDataImage::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataType("v3dDataImage", createV3dDataImage);
+    return medAbstractDataFactory::instance()->registerDataType("v3dDataImage", createV3dDataImage);
 }
 
 QString v3dDataImage::description() const

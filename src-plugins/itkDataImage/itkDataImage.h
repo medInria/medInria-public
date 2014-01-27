@@ -26,7 +26,7 @@
 #include <itkResampleImageFilter.h>
 #include <itkRecursiveGaussianImageFilter.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <medAbstractDataTypedImage.h>
 #include <itkDataImagePluginExport.h>
 
@@ -613,7 +613,7 @@ public:
     virtual QString description() const { return "itk image data" ; }
     virtual QString identifier() const { return ID; }
     static bool registered() {
-        return dtkAbstractDataFactory::instance()->registerDataType(ID,createItkDataImage<DIM,T,ID>);
+        return medAbstractDataFactory::instance()->registerDataType(ID,createItkDataImage<DIM,T,ID>);
     }
 
     virtual QImage& thumbnail();

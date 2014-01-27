@@ -13,7 +13,7 @@
 
 #include "medQtDataImage.h"
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkLog/dtkLog.h>
 
 #include <QImage>
@@ -29,7 +29,7 @@ public:
     QImage::Format imageFormat;
 };
 
-static dtkAbstractData* createMedQtDataImage()
+static medAbstractData* createMedQtDataImage()
 {
     return new medQtDataImage;
 }
@@ -151,7 +151,7 @@ void medQtDataImage::generateThumbnails()
 
 bool medQtDataImage::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataType(s_identifier(), createMedQtDataImage);
+    return medAbstractDataFactory::instance()->registerDataType(s_identifier(), createMedQtDataImage);
 }
 
 void * medQtDataImage::output( void )

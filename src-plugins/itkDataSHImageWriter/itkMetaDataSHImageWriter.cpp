@@ -14,7 +14,7 @@
 #include <itkMetaDataSHImageWriter.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkMetaImageIO.h>
 
@@ -29,7 +29,7 @@ itkMetaDataSHImageWriter::itkMetaDataSHImageWriter(): itkDataSHImageWriterBase()
 itkMetaDataSHImageWriter::~itkMetaDataSHImageWriter() { }
 
 bool itkMetaDataSHImageWriter::registered() {
-  return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), itkDataSHImageWriterBase::s_handled(), create);
+  return medAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), itkDataSHImageWriterBase::s_handled(), create);
 }
 
 

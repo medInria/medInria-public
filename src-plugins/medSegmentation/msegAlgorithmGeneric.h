@@ -15,7 +15,7 @@
 
 #include "msegPluginExport.h"
 
-#include <dtkCore/dtkAbstractProcess.h>
+#include <medAbstractProcess.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <itkObject.h>
@@ -41,7 +41,7 @@ class Controller;
 
 
 /** Generic segmentation algorithm */
-class AlgorithmGeneric : public dtkAbstractProcess {
+class AlgorithmGeneric : public medAbstractProcess {
     Q_OBJECT;
 public:
     //! Interface name should be used by all dtkAbstractProcesses inheriting from this.

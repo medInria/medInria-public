@@ -14,7 +14,7 @@
 #include <itkMetaDataSHImageReader.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkMetaImageIO.h>
 
@@ -29,7 +29,7 @@ itkMetaDataSHImageReader::~itkMetaDataSHImageReader()
 
 bool itkMetaDataSHImageReader::registered()
 {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkMetaDataSHImageReader", itkDataSHImageReaderBase::s_handled(),
+  return medAbstractDataFactory::instance()->registerDataReaderType("itkMetaDataSHImageReader", itkDataSHImageReaderBase::s_handled(),
                                                                     createItkMetaDataSHImageReader);
 }
 

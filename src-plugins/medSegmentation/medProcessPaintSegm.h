@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractProcess.h>
+#include <medAbstractProcess.h>
 
 #include <itkImage.h>
 
@@ -22,9 +22,9 @@
 class medProcessPaintSegmPrivate;
 
 //! Process that creates a segmented image.
-class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medProcessPaintSegm : public dtkAbstractProcess
+class MEDVIEWSEGMENTATIONPLUGIN_EXPORT medProcessPaintSegm : public medAbstractProcess
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
     typedef itk::Image<unsigned char,3> SegmType;

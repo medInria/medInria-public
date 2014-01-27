@@ -19,7 +19,7 @@
 
 class v3dDataFibersPrivate;
 
-class V3DDATAPLUGIN_EXPORT v3dDataFibers : public dtkAbstractData
+class V3DDATAPLUGIN_EXPORT v3dDataFibers : public medAbstractData
 {
     Q_OBJECT
 

@@ -14,7 +14,7 @@
 #include <itkMetaDataTensorImageWriter.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkMetaImageIO.h>
 
@@ -35,7 +35,7 @@ itkMetaDataTensorImageWriter::~itkMetaDataTensorImageWriter()
 
 bool itkMetaDataTensorImageWriter::registered()
 {
-  return dtkAbstractDataFactory::instance()->registerDataWriterType(
+  return medAbstractDataFactory::instance()->registerDataWriterType(
               "itkMetaDataTensorImageWriter",
               itkDataTensorImageWriterBase::s_handled(),
               create);

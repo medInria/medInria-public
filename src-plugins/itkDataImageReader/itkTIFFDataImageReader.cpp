@@ -14,7 +14,7 @@
 #include <itkTIFFDataImageReader.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkTIFFImageIO.h>
 
@@ -45,7 +45,7 @@ QStringList itkTIFFDataImageReader::s_handled() {
 }
 
 bool itkTIFFDataImageReader::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkTIFFDataImageReader);
+    return medAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkTIFFDataImageReader);
 }
 
 QString itkTIFFDataImageReader::identifier() const {

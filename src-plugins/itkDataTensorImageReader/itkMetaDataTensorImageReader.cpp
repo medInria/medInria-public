@@ -14,7 +14,7 @@
 #include <itkMetaDataTensorImageReader.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkMetaImageIO.h>
 
@@ -27,7 +27,7 @@ itkMetaDataTensorImageReader::itkMetaDataTensorImageReader(): itkDataTensorImage
 itkMetaDataTensorImageReader::~itkMetaDataTensorImageReader() { }
 
 bool itkMetaDataTensorImageReader::registered() {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,itkDataTensorImageReaderBase::s_handled(),
+  return medAbstractDataFactory::instance()->registerDataReaderType(ID,itkDataTensorImageReaderBase::s_handled(),
 								    createItkMetaDataTensorImageReader);
 }
 

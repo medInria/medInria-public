@@ -14,7 +14,7 @@
 #include <itkPhilipsRECDataImageReader.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkPhilipsRECImageIO.h>
 #include <itkPhilipsPAR.h>
@@ -37,7 +37,7 @@ QStringList itkPhilipsRECDataImageReader::s_handled() {
 }
 
 bool itkPhilipsRECDataImageReader::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),create);
+    return medAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),create);
 }
 
 QString itkPhilipsRECDataImageReader::identifier() const {

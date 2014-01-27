@@ -14,7 +14,7 @@
 #include <itkGISDataImageWriter.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkGISImageIO.h>
 
@@ -49,7 +49,7 @@ QStringList itkGISDataImageWriter::supportedFileExtensions() const
 }
 
 bool itkGISDataImageWriter::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
+    return medAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }
 
 QString itkGISDataImageWriter::identifier() const {

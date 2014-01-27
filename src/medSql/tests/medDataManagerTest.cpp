@@ -6,7 +6,7 @@
 
 #include <medDataManager.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <medDbControllerFactory.h>
 #include <medMetaDataKeys.h>
 #include <medDatabaseController.h>
@@ -82,7 +82,7 @@ void medDataManagerTestObject::cleanupTestCase(void)
 dtkSmartPointer<medAbstractData> medDataManagerTestObject::createTestData(void)
 {
     // Create a data.
-    dtkAbstractDataFactory *dataFactory = dtkAbstractDataFactory::instance();
+    medAbstractDataFactory *dataFactory = medAbstractDataFactory::instance();
     dtkSmartPointer<medAbstractData> testData = dataFactory->createSmartPointer(medQtDataImage::s_description());
     
     QString sDatetime = QDateTime::currentDateTime().toString();

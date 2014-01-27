@@ -14,7 +14,7 @@
 #include <itkDataSHImageWriterBase.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkImageFileWriter.h>
 #include <itkImage.h>
@@ -78,7 +78,7 @@ bool itkDataSHImageWriterBase::write(const QString& path)
 	 if (this->io.IsNull())
 		 return false;
 
-	if (medAbstractData *dtkdata = this->data() ) {
+    if (medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data()) ) {
 
                 if(dtkdata->identifier()=="itkDataSHImageFloat3") {
 

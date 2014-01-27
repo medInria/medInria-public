@@ -14,7 +14,7 @@
 #include "itkGISDataImageReader.h"
 #include "itkGISImageIO.h"
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 
 const char itkGISDataImageReader::ID[] = "itkGISDataImageReader";
@@ -30,7 +30,7 @@ itkGISDataImageReader::~itkGISDataImageReader()
 }
 
 bool itkGISDataImageReader::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkGISDataImageReader);
+    return medAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkGISDataImageReader);
 }
 
 QStringList itkGISDataImageReader::handled() const {

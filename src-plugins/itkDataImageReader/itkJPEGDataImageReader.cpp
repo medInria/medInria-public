@@ -14,7 +14,7 @@
 #include <itkJPEGDataImageReader.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkJPEGImageIO.h>
 
@@ -45,7 +45,7 @@ QStringList itkJPEGDataImageReader::s_handled() {
 }
 
 bool itkJPEGDataImageReader::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkJPEGDataImageReader);
+    return medAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkJPEGDataImageReader);
 }
 
 QString itkJPEGDataImageReader::identifier() const {

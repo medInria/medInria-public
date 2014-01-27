@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkSmartPointer.h>
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
 
@@ -234,7 +234,7 @@ void itkProcessRegistration::setInput(medAbstractData *data, int channel)
     *last_charac = '3';
     typedef itk::Image< float, 3 > RegImageType;
 
-    dtkSmartPointer <medAbstractData> convertedData = dtkAbstractDataFactory::instance()->create ("itkDataImageFloat3");
+    dtkSmartPointer <medAbstractData> convertedData = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
     foreach ( QString metaData, data->metaDataList() )
         if (!convertedData->hasMetaData(metaData))
             convertedData->addMetaData ( metaData, data->metaDataValues ( metaData ) );
@@ -243,7 +243,7 @@ void itkProcessRegistration::setInput(medAbstractData *data, int channel)
         convertedData->addProperty ( property,data->propertyValues ( property ) );
 
     if (channel==0)
-        d->output = dtkAbstractDataFactory::instance()->create ("itkDataImageFloat3");
+        d->output = medAbstractDataFactory::instance()->create ("itkDataImageFloat3");
     if (id =="itkDataImageChar3") {
         typedef itk::Image< char, 3 > InputImageType;
         typedef itk::CastImageFilter< InputImageType, RegImageType > CastFilterType;
@@ -439,10 +439,10 @@ bool itkProcessRegistration::write(const QString& file)
 
     bool writeSuccess = false;
     medAbstractData * out = output();
-    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
+    QList<QString> writers = medAbstractDataFactory::instance()->writers();
     for (int i=0; i<writers.size(); i++)
     {
-        dtkAbstractDataWriter *dataWriter = dtkAbstractDataFactory::instance()->writer(writers[i]);
+        dtkAbstractDataWriter *dataWriter = medAbstractDataFactory::instance()->writer(writers[i]);
         qDebug() << "trying " << dataWriter->identifier();
 
         if (! dataWriter->handled().contains(out->identifier()))

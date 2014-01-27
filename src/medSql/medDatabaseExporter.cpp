@@ -15,7 +15,7 @@
 
 #include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 class medDatabaseExporterPrivate
@@ -52,7 +52,7 @@ void medDatabaseExporter::run(void)
         return;
     }
 
-    dtkAbstractDataWriter * dataWriter = dtkAbstractDataFactory::instance()->writer(d->writer);
+    dtkAbstractDataWriter * dataWriter = medAbstractDataFactory::instance()->writer(d->writer);
     dataWriter->setData(d->data);
 
 

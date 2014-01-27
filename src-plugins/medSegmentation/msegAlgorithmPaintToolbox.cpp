@@ -24,7 +24,7 @@
 #include <medSegmentationSelectorToolBox.h>
 #include <medViewManager.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -447,7 +447,7 @@ void AlgorithmPaintToolbox::setData( medAbstractData *dtkdata )
         } else {
 
             m_maskData =
-                    dtkAbstractDataFactory::instance()->createSmartPointer( medProcessPaintSegm::MaskImageTypeIdentifier() );
+                    medAbstractDataFactory::instance()->createSmartPointer( medProcessPaintSegm::MaskImageTypeIdentifier() );
 
             if ( !m_maskData ) {
                 dtkDebug() << DTK_PRETTY_FUNCTION << "Failed to create " << medProcessPaintSegm::MaskImageTypeIdentifier();

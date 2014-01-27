@@ -16,7 +16,7 @@
 #include "medQtDataImage.h"
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <QImage>
@@ -43,7 +43,7 @@ medQtDataImageReader::~medQtDataImageReader()
 
 bool medQtDataImageReader::registered(void)
 {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType(
+    return medAbstractDataFactory::instance()->registerDataReaderType(
         medQtDataImageReader::s_description(),
         medQtDataImageReader::s_handled(),
         createMedQtDataImageReader);
@@ -154,7 +154,7 @@ int medQtDataImageReader::readStartingFrom( const QString& path, int iStart )
         return 0;
 
 
-    this->setData( dtkAbstractDataFactory::instance()->createSmartPointer(medQtDataImage::s_identifier()) );
+    this->setData( medAbstractDataFactory::instance()->createSmartPointer(medQtDataImage::s_identifier()) );
 
     this->setMetaDataFromImageReader();
 

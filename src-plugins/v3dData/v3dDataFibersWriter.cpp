@@ -14,7 +14,7 @@
 #include "v3dDataFibersWriter.h"
 
 #include "dtkCore/dtkAbstractData.h"
-#include "dtkCore/dtkAbstractDataFactory.h"
+#include <medAbstractDataFactory.h>
 
 #include <vtkPolyData.h>
 #include <vtkCellArray.h>
@@ -86,7 +86,7 @@ QString v3dDataFibersWriter::description() const {
 
 bool v3dDataFibersWriter::registered()
 {
-  return dtkAbstractDataFactory::instance()->registerDataWriterType("v3dDataFibersWriter",
+  return medAbstractDataFactory::instance()->registerDataWriterType("v3dDataFibersWriter",
 								    QStringList() << "v3dDataFibers",
 								    createV3dDataFibersWriter);
 }

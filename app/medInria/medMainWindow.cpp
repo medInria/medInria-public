@@ -17,7 +17,7 @@
 #include "medHomepageArea.h"
 
 #include <dtkCore/dtkGlobal.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkScript/dtkScriptInterpreter.h>
 #include <dtkScript/dtkScriptInterpreterPython.h>
 #include <dtkScript/dtkScriptInterpreterTcl.h>
@@ -905,7 +905,7 @@ void medMainWindow::registerToFactories()
                                            tr("View Interaction settings"));
 
     //Register annotations
-    dtkAbstractDataFactory * datafactory = dtkAbstractDataFactory::instance();
+    medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
     datafactory->registerDataType( medSeedPointAnnotationData::s_identifier(), dtkAbstractDataCreateFunc<medSeedPointAnnotationData> );
 }
 

@@ -14,7 +14,7 @@
 #include "itkVTKDataImageReader.h"
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkVTKImageIO.h>
 
@@ -52,7 +52,7 @@ QStringList itkVTKDataImageReader::s_handled()
 
 bool itkVTKDataImageReader::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID, s_handled(),
+    return medAbstractDataFactory::instance()->registerDataReaderType(ID, s_handled(),
                                                                       createItkVTKDataImageReader);
 }
 

@@ -18,7 +18,7 @@
 #include "vtkSmartPointer.h"
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 const char vtkDataMesh4DReader::ID[] = "vtkDataMesh4DReader";
@@ -51,11 +51,11 @@ bool vtkDataMesh4DReader::canRead (const QStringList& paths) {
 
 bool vtkDataMesh4DReader::readInformation (const QString& path) {
   
-    dtkSmartPointer<medAbstractData> dtkdata = this->data();
+    dtkSmartPointer<medAbstractData> dtkdata = dynamic_cast<medAbstractData*>(this->data());
     this->reader->SetFileName (path.toAscii().constData());
   
     if (!dtkdata) {
-        dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("vtkDataMesh4D");
+        dtkdata = medAbstractDataFactory::instance()->createSmartPointer ("vtkDataMesh4D");
         if (dtkdata)
             this->setData ( dtkdata );
     }
@@ -81,7 +81,7 @@ bool vtkDataMesh4DReader::read (const QString& path) {
 
     qDebug() << "Can read with: " << this->identifier();
 
-    if (medAbstractData *dtkdata = this->data() ) {
+    if (medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data()) ) {
 
         if (!(dtkdata->identifier()=="vtkDataMesh4D"))
             return false;
@@ -108,7 +108,7 @@ void vtkDataMesh4DReader::setProgress (int value) {
 }
 
 bool vtkDataMesh4DReader::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType(
+    return medAbstractDataFactory::instance()->registerDataReaderType(
           "vtkDataMesh4DReader",
           vtkDataMesh4DReader::s_handled(),
           createVtkDataMesh4DReader);

@@ -5,7 +5,7 @@
 #include "undoRedoRegistration.h"
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <registrationFactory.h>
 #include <itkImage.h>

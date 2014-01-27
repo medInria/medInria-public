@@ -15,7 +15,7 @@
 #include "medQtDataImage.h"
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkLog/dtkLog.h>
 
 namespace {
@@ -90,7 +90,7 @@ QStringList medQtDataImageWriter::supportedFileExtensions() const
 
 bool medQtDataImageWriter::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataWriterType( s_description(), s_handled(), createMedQtDataImageWriter );
+    return medAbstractDataFactory::instance()->registerDataWriterType( s_description(), s_handled(), createMedQtDataImageWriter );
 }
 
 bool medQtDataImageWriter::write( const QString& path )

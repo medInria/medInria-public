@@ -14,7 +14,7 @@
 #include "medFiberBundlingToolBox.h"
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -339,7 +339,7 @@ void medFiberBundlingToolBox::clearRoi(void)
         return;
 
     // create dummy mask image
-    medAbstractData *data = dtkAbstractDataFactory::instance()->create("itkDataImageUChar3");
+    medAbstractData *data = medAbstractDataFactory::instance()->create("itkDataImageUChar3");
     if (d->interactor) {
         d->interactor->setROI(data);
     }

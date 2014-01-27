@@ -14,7 +14,7 @@
 #include "itkMetaDataImageReader.h"
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkMetaImageIO.h>
 
@@ -45,7 +45,7 @@ QStringList itkMetaDataImageReader::s_handled() {
 }
 
 bool itkMetaDataImageReader::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkMetaDataImageReader);
+    return medAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkMetaDataImageReader);
 }
 
 QString itkMetaDataImageReader::identifier() const {

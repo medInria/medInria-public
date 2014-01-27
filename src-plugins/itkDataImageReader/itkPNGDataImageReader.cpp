@@ -14,7 +14,7 @@
 #include <itkPNGDataImageReader.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkPNGImageIO.h>
 
@@ -45,7 +45,7 @@ QStringList itkPNGDataImageReader::s_handled() {
 }
 
 bool itkPNGDataImageReader::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkPNGDataImageReader);
+    return medAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkPNGDataImageReader);
 }
 
 QString itkPNGDataImageReader::identifier() const {

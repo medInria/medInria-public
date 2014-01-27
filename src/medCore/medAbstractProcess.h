@@ -14,11 +14,12 @@
 #pragma once
 
 #include <dtkCore/dtkAbstractProcess.h>
+#include <medAbstractData.h>
 
 #include "medCoreExport.h"
 
 class medAbstractProcessPrivate;
-class medAbstractData;
+
 
 
 /**
@@ -32,12 +33,14 @@ public:
     medAbstractProcess( medAbstractProcess * parent = NULL );
     virtual ~medAbstractProcess();
 
-    //virtual medAbstractData *output(void);
+public slots:
+    virtual medAbstractData *output(void);
 
 private slots:
-    //virtual dtkAbstractData *output(void){return;}
     virtual dtkAbstractData *output(int channel){return 0;}
     virtual dtkAbstractData *output(int channel, int frame){return 0;}
+
+    //TODO: to complete hiding dtkAbstractProcess API
 
 private:
     medAbstractProcessPrivate* d;

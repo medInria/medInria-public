@@ -14,7 +14,7 @@
 #include <itkNrrdDataSHImageReader.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkNrrdImageIO.h>
 
@@ -29,7 +29,7 @@ itkNrrdDataSHImageReader::~itkNrrdDataSHImageReader()
 
 bool itkNrrdDataSHImageReader::registered()
 {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkNrrdDataSHImageReader", itkDataSHImageReaderBase::s_handled(),
+  return medAbstractDataFactory::instance()->registerDataReaderType("itkNrrdDataSHImageReader", itkDataSHImageReaderBase::s_handled(),
                                                                     createItkNrrdDataSHImageReader);
 }
 

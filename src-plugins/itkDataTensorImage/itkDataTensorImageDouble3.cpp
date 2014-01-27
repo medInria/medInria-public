@@ -13,7 +13,7 @@
 
 #include "itkDataTensorImageDouble3.h"
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkImage.h>
 #include <itkImageRegionConstIterator.h>
@@ -59,7 +59,7 @@ itkDataTensorImageDouble3::~itkDataTensorImageDouble3()
 
 bool itkDataTensorImageDouble3::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataType("itkDataTensorImageDouble3", createItkDataTensorImageDouble3);
+    return medAbstractDataFactory::instance()->registerDataType("itkDataTensorImageDouble3", createItkDataTensorImageDouble3);
 }
 
 QString itkDataTensorImageDouble3::description() const

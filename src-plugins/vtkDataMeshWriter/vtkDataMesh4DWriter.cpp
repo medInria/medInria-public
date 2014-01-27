@@ -13,7 +13,7 @@
 
 #include "vtkDataMesh4DWriter.h"
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
 #include <dtkLog/dtkLog.h>
 
@@ -59,7 +59,7 @@ bool vtkDataMesh4DWriter::write(const QString& path)
 
   qDebug() << "Can write with: " << this->identifier();
 
-  medAbstractData *dtkdata = this->data();
+  medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data());
 
   if(dtkdata->identifier()!="vtkDataMesh4D")
   {
@@ -95,7 +95,7 @@ QString vtkDataMesh4DWriter::identifier() const
 
 bool vtkDataMesh4DWriter::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataWriterType("vtkDataMesh4DWriter", vtkDataMesh4DWriter::s_handled(), createVtkDataMesh4DWriter);
+    return medAbstractDataFactory::instance()->registerDataWriterType("vtkDataMesh4DWriter", vtkDataMesh4DWriter::s_handled(), createVtkDataMesh4DWriter);
 }
 
 QStringList vtkDataMesh4DWriter::supportedFileExtensions() const

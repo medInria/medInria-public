@@ -14,7 +14,7 @@
 #include "itkProcessRegistrationDiffeomorphicDemons.h"
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 // /////////////////////////////////////////////////////////////////

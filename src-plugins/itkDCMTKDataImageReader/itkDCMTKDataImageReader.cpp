@@ -14,7 +14,7 @@
 #include <itkDCMTKDataImageReader.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medMetaDataKeys.h>
@@ -195,7 +195,7 @@ itkDCMTKDataImageReader::~itkDCMTKDataImageReader()
 
 bool itkDCMTKDataImageReader::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType("itkDCMTKDataImageReader", QStringList() << "itkDataImageDouble3"
+    return medAbstractDataFactory::instance()->registerDataReaderType("itkDCMTKDataImageReader", QStringList() << "itkDataImageDouble3"
                                                                       << "itkDataImageFloat3"
                                                                       << "itkDataImageULong3"
                                                                       << "itkDataImageLong3"
@@ -285,7 +285,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
         return false;
     }
 
-    dtkSmartPointer<medAbstractData> dtkdata = this->data();
+    dtkSmartPointer<medAbstractData> dtkdata = dynamic_cast<medAbstractData*>(this->data());
 
     if (!dtkdata) {
 
@@ -333,7 +333,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
             }
 
             imagetypestring << d->io->GetNumberOfDimensions();
-            dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer(imagetypestring.str().c_str());
+            dtkdata = medAbstractDataFactory::instance()->createSmartPointer(imagetypestring.str().c_str());
             if (dtkdata)
                 this->setData(dtkdata);
         }
@@ -342,7 +342,7 @@ bool itkDCMTKDataImageReader::readInformation (const QStringList& paths)
             switch (d->io->GetComponentType()) {
 
             case itk::ImageIOBase::UCHAR:
-                dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer("itkDataImageRGB3");
+                dtkdata = medAbstractDataFactory::instance()->createSmartPointer("itkDataImageRGB3");
 
                 if (dtkdata)
                     this->setData(dtkdata);
@@ -497,7 +497,7 @@ bool itkDCMTKDataImageReader::read(const QStringList& paths)
     command->SetDataImageReader(this);
     d->io->AddObserver(itk::ProgressEvent(),command);
 
-    if (medAbstractData *dtkdata = this->data()) {
+    if (medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data())) {
 
         try {
             if      (dtkdata->identifier()=="itkDataImageUChar3")  { ReadImage<unsigned char,3>(dtkdata,d->io,paths);                }

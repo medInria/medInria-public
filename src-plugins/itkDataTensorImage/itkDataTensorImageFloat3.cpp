@@ -13,7 +13,7 @@
 
 #include "itkDataTensorImageFloat3.h"
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkTensor.h>
 #include <itkImage.h>
@@ -59,7 +59,7 @@ itkDataTensorImageFloat3::~itkDataTensorImageFloat3()
 
 bool itkDataTensorImageFloat3::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataType("itkDataTensorImageFloat3", createItkDataTensorImageFloat3);
+    return medAbstractDataFactory::instance()->registerDataType("itkDataTensorImageFloat3", createItkDataTensorImageFloat3);
 }
 
 QString itkDataTensorImageFloat3::description() const

@@ -13,7 +13,7 @@
 
 #include <itkNiftiDataSHImageReader.h>
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <itkNiftiImageIO.h>
 
 itkNiftiDataSHImageReader::itkNiftiDataSHImageReader() : itkDataSHImageReaderBase()
@@ -27,7 +27,7 @@ itkNiftiDataSHImageReader::~itkNiftiDataSHImageReader()
 
 bool itkNiftiDataSHImageReader::registered()
 {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType("itkNiftiDataSHImageReader", itkDataSHImageReaderBase::s_handled(),
+  return medAbstractDataFactory::instance()->registerDataReaderType("itkNiftiDataSHImageReader", itkDataSHImageReaderBase::s_handled(),
                                                                     createItkNiftiDataSHImageReader);
 }
 

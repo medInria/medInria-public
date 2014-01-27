@@ -13,7 +13,7 @@
 
 #include "itkFiltersProcessBase.h"
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 #include "itkFiltersProcessBase_p.h"
@@ -69,7 +69,7 @@ void itkFiltersProcessBase::setInput(medAbstractData *data)
     
     QString identifier = data->identifier();
     
-    d->output = dtkAbstractDataFactory::instance()->createSmartPointer(identifier);
+    d->output = medAbstractDataFactory::instance()->createSmartPointer(identifier);
     d->input = data;
 }
 

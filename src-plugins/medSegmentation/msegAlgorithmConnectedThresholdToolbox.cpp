@@ -23,7 +23,7 @@
 #include <medMetaDataKeys.h>
 #include <medAbstractViewCoordinates.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkLog/dtkLog.h>
 #include <dtkCore/dtkSmartPointer.h>
@@ -236,7 +236,7 @@ void AlgorithmConnectedThresholdToolbox::setData( medAbstractData *dtkdata )
     m_dataText->setText( dataText );
 
     m_seedPoints =
-        dtkAbstractDataFactory::instance()->createSmartPointer( SEED_POINT_ANNOTATION_DATA_NAME );
+        medAbstractDataFactory::instance()->createSmartPointer( SEED_POINT_ANNOTATION_DATA_NAME );
 
     if ( !m_seedPoints ) {
         dtkDebug() << DTK_PRETTY_FUNCTION << "Failed to create annotation data";

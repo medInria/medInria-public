@@ -15,7 +15,7 @@
 
 #include <medPluginManager.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkPlugin.h>
@@ -78,7 +78,7 @@ void medPluginWidgetPrivate::resetTypesTree()
 
     //get the list of plugins
 
-    dtkAbstractDataFactory * dataFactory = dtkAbstractDataFactory::instance();
+    medAbstractDataFactory * dataFactory = medAbstractDataFactory::instance();
     QTreeWidgetItem * dataItem = new QTreeWidgetItem(typesTree);
     dataItem->setText(0,QObject::tr("Data"));
     foreach(QString data,dataFactory->creators())

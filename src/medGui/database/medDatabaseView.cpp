@@ -17,7 +17,7 @@
 #include <medAbstractDbController.h>
 #include <medDatabaseEditItemDialog.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <QSortFilterProxyModel>
 #include <QAbstractItemModel>

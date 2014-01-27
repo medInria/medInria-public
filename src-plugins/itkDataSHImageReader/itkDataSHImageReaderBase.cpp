@@ -14,7 +14,7 @@
 #include <itkDataSHImageReaderBase.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkImageFileReader.h>
 #include <itkObjectFactoryBase.h>
@@ -97,7 +97,7 @@ bool itkDataSHImageReaderBase::readInformation (const QString &path)
         return false;
     }
     
-    medAbstractData* dtkdata = this->data();
+    medAbstractData* dtkdata = dynamic_cast<medAbstractData*>(this->data());
 
     if (!dtkdata) {
 
@@ -105,13 +105,13 @@ bool itkDataSHImageReaderBase::readInformation (const QString &path)
         //            qDebug() << this->io->GetPixelTypeAsString() << this->io->GetComponentTypeAsString();
 
         case itk::ImageIOBase::FLOAT:
-            dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataSHImageFloat3");
+            dtkdata = medAbstractDataFactory::instance()->create ("itkDataSHImageFloat3");
             if (dtkdata)
                 this->setData ( dtkdata );
             break;
 
 	    case itk::ImageIOBase::DOUBLE:
-			dtkdata = dtkAbstractDataFactory::instance()->create ("itkDataSHImageDouble3");
+			dtkdata = medAbstractDataFactory::instance()->create ("itkDataSHImageDouble3");
 			if (dtkdata)
 				this->setData ( dtkdata );
 			break;
@@ -144,7 +144,7 @@ bool itkDataSHImageReaderBase::read (const QString &path)
 	
     qDebug() << "Read with: " << this->description();
 
-    if (medAbstractData *dtkdata = this->data() ) {
+    if (medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data()) ) {
 
         if (dtkdata->identifier()=="itkDataSHImageDouble3") {
             typedef itk::VectorImage<double, 3> SHImageType;

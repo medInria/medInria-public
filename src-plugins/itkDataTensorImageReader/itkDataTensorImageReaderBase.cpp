@@ -14,7 +14,7 @@
 #include "itkDataTensorImageReaderBase.h"
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <itkTensor.h>
@@ -100,20 +100,20 @@ bool itkDataTensorImageReaderBase::readInformation (const QString &path)
 	return false;
     }
     
-    dtkSmartPointer<medAbstractData> dtkdata = this->data();
+    dtkSmartPointer<medAbstractData> dtkdata = dynamic_cast<medAbstractData*>(this->data());
 
     if (!dtkdata) {
       
         switch (this->io->GetComponentType()) {
 
 	    case itk::ImageIOBase::FLOAT:
-	        dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataTensorImageFloat3");
+	        dtkdata = medAbstractDataFactory::instance()->createSmartPointer ("itkDataTensorImageFloat3");
 		if (dtkdata)
 		    this->setData ( dtkdata );
 		break;
 		  
 	    case itk::ImageIOBase::DOUBLE:
-	        dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataTensorImageDouble3");
+	        dtkdata = medAbstractDataFactory::instance()->createSmartPointer ("itkDataTensorImageDouble3");
 		if (dtkdata)
 		    this->setData ( dtkdata );
 		break;
@@ -147,7 +147,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	
     qDebug() << "Read with: " << this->identifier();
 
-    if (medAbstractData *dtkdata = this->data() ) {
+    if (medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data()) ) {
       
         if (dtkdata->identifier()=="itkDataTensorImageDouble3") {
 

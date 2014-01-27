@@ -14,7 +14,7 @@
 #include "medRegistrationSelectorToolBox.h"
 
 #include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>

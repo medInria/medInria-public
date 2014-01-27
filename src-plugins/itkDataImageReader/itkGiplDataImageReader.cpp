@@ -14,7 +14,7 @@
 #include <itkGiplDataImageReader.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkGiplImageIO.h>
 
@@ -45,7 +45,7 @@ QStringList itkGiplDataImageReader::s_handled() {
 }
 
 bool itkGiplDataImageReader::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkGiplDataImageReader);
+    return medAbstractDataFactory::instance()->registerDataReaderType(ID,s_handled(),createItkGiplDataImageReader);
 }
 
 QString itkGiplDataImageReader::identifier() const {

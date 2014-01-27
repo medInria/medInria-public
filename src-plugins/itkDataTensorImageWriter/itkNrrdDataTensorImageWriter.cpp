@@ -14,7 +14,7 @@
 #include "itkNrrdDataTensorImageWriter.h"
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkNrrdImageIO.h>
 
@@ -36,7 +36,7 @@ itkNrrdDataTensorImageWriter::~itkNrrdDataTensorImageWriter()
 
 bool itkNrrdDataTensorImageWriter::registered()
 {
-  return dtkAbstractDataFactory::instance()->registerDataWriterType(
+  return medAbstractDataFactory::instance()->registerDataWriterType(
               s_identifier(),
               itkDataTensorImageWriterBase::s_handled(),
               create);

@@ -13,7 +13,7 @@
 
 #include "itkDataImageWriterBase.h"
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
 #include <dtkLog/dtkLog.h>
 

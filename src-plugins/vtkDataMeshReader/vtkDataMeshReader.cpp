@@ -16,7 +16,7 @@
 #include <vtkErrorCode.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <vtkMetaVolumeMesh.h>
@@ -50,7 +50,7 @@ bool vtkDataMeshReader::canRead(const QStringList& paths){
 }
 
 bool vtkDataMeshReader::readInformation(const QString& path) {
-    dtkSmartPointer<medAbstractData> dtkdata = dtkAbstractDataFactory::instance()->createSmartPointer("vtkDataMesh");
+    dtkSmartPointer<medAbstractData> dtkdata = medAbstractDataFactory::instance()->createSmartPointer("vtkDataMesh");
     this->setData(dtkdata);
     dtkdata->addMetaData("FilePath", QStringList() << path); // useful ?
     
@@ -70,7 +70,7 @@ bool vtkDataMeshReader::read(const QString& path) {
 
     qDebug() << "Can read with: " << identifier();
 
-    if (medAbstractData * dtkdata = data())
+    if (medAbstractData * dtkdata = dynamic_cast<medAbstractData*>(data()))
     {
         if (!(dtkdata->identifier() == "vtkDataMesh"))
             return false;
@@ -117,7 +117,7 @@ void vtkDataMeshReader::setProgress(int value) {
 }
 
 bool vtkDataMeshReader::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataReaderType(ID,
+    return medAbstractDataFactory::instance()->registerDataReaderType(ID,
                                     vtkDataMeshReader::s_handled(),
                                     createVtkDataMeshReader);
 }

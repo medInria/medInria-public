@@ -14,7 +14,7 @@
 #include <itkNiftiDataTensorImageReader.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkNiftiImageIO.h>
 
@@ -29,7 +29,7 @@ itkNiftiDataTensorImageReader::itkNiftiDataTensorImageReader(): itkDataTensorIma
 itkNiftiDataTensorImageReader::~itkNiftiDataTensorImageReader() { }
 
 bool itkNiftiDataTensorImageReader::registered() {
-  return dtkAbstractDataFactory::instance()->registerDataReaderType(s_identifier(),itkDataTensorImageReaderBase::s_handled(), create);
+  return medAbstractDataFactory::instance()->registerDataReaderType(s_identifier(),itkDataTensorImageReaderBase::s_handled(), create);
 }
 
 QString itkNiftiDataTensorImageReader::identifier() const {

@@ -13,7 +13,7 @@
 
 #include "itkDataDiffusionGradientList.h"
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkGradientFileReader.h>
 
@@ -39,7 +39,7 @@ public:
 // itkDataDiffusionGradientList
 // /////////////////////////////////////////////////////////////////
 
-itkDataDiffusionGradientList::itkDataDiffusionGradientList() : dtkAbstractData(), d(new itkDataDiffusionGradientListPrivate)
+itkDataDiffusionGradientList::itkDataDiffusionGradientList() : medAbstractData(), d(new itkDataDiffusionGradientListPrivate)
 {
 
 }
@@ -51,7 +51,7 @@ itkDataDiffusionGradientList::~itkDataDiffusionGradientList()
 
 bool itkDataDiffusionGradientList::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataType("itkDataDiffusionGradientList", createItkDataDiffusionGradientList);
+    return medAbstractDataFactory::instance()->registerDataType("itkDataDiffusionGradientList", createItkDataDiffusionGradientList);
 }
 
 QString itkDataDiffusionGradientList::description() const

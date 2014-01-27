@@ -17,7 +17,7 @@
 #include <medAbstractDataImage.h>
 
 #include <medMetaDataKeys.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <medAbstractData.h>
@@ -273,13 +273,13 @@ dtkSmartPointer<medAbstractData> medDatabaseReader::readFile ( const QStringList
 {
     dtkSmartPointer<medAbstractData> dtkdata;
 
-    QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
+    QList<QString> readers = medAbstractDataFactory::instance()->readers();
 
     for ( int i = 0; i < readers.size(); i++ )
     {
 
         dtkSmartPointer<dtkAbstractDataReader> dataReader;
-        dataReader = dtkAbstractDataFactory::instance()->readerSmartPointer ( readers[i] );
+        dataReader = medAbstractDataFactory::instance()->readerSmartPointer ( readers[i] );
 
         connect ( dataReader, SIGNAL ( progressed ( int ) ), this, SIGNAL ( progressed ( int ) ) );
         if ( dataReader->canRead ( filenames ) )

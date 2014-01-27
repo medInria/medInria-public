@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include <itkDataSHImageDouble3.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkImage.h>
 #include <itkImageRegionConstIterator.h>
@@ -56,7 +56,7 @@ itkDataSHImageDouble3::~itkDataSHImageDouble3()
 
 bool itkDataSHImageDouble3::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataType("itkDataSHImageDouble3", createItkDataSHImageDouble3);
+    return medAbstractDataFactory::instance()->registerDataType("itkDataSHImageDouble3", createItkDataSHImageDouble3);
 }
 
 QString itkDataSHImageDouble3::description() const

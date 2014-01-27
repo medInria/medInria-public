@@ -14,7 +14,7 @@
 #include "medDataManager.h"
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <medDbControllerFactory.h>
 #include <medAbstractDbController.h>
@@ -462,7 +462,7 @@ quint64 medDataManager::getUpperMemoryThreshold()
 
 void medDataManager::setWriterPriorities()
 { 
-    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
+    QList<QString> writers = medAbstractDataFactory::instance()->writers();
     QMap<int, QString> writerPriorites;
     
     int startIndex = 0;
@@ -479,7 +479,7 @@ void medDataManager::setWriterPriorities()
         writerPriorites.insert(startIndex+i, writers[i]);   
     }
     
-    dtkAbstractDataFactory::instance()->setWriterPriorities(writerPriorites);
+    medAbstractDataFactory::instance()->setWriterPriorities(writerPriorites);
 }
 
 //-------------------------------------------------------------------------------------------------------
@@ -570,11 +570,11 @@ void medDataManager::exportDataToFile(medAbstractData * data)
 {
     if ( ! data) return;
 
-    QList<QString> allWriters = dtkAbstractDataFactory::instance()->writers();
+    QList<QString> allWriters = medAbstractDataFactory::instance()->writers();
     QHash<QString, dtkAbstractDataWriter*> possibleWriters;
 
     foreach(QString writerType, allWriters) {
-        dtkAbstractDataWriter * writer = dtkAbstractDataFactory::instance()->writer(writerType);
+        dtkAbstractDataWriter * writer = medAbstractDataFactory::instance()->writer(writerType);
         if (writer->handled().contains(data->identifier()))
             possibleWriters[writerType] = writer;
         else

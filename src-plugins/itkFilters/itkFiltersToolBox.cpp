@@ -15,7 +15,7 @@
 
 #include <limits>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
 
 #include <medCore/medAbstractDataImage.h>

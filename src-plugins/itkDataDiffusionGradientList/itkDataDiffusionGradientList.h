@@ -19,7 +19,7 @@
 
 class itkDataDiffusionGradientListPrivate;
 
-class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientList : public dtkAbstractData
+class ITKDATADIFFUSIONGRADIENTLISTPLUGIN_EXPORT itkDataDiffusionGradientList : public medAbstractData
 {
     Q_OBJECT
 

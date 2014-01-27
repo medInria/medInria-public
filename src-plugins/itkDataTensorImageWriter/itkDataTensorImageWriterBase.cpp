@@ -14,7 +14,7 @@
 #include "itkDataTensorImageWriterBase.h"
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkTensor.h>
 #include <itkImageFileWriter.h>
@@ -76,7 +76,7 @@ bool itkDataTensorImageWriterBase::write(const QString& path)
     if (this->io.IsNull())
         return false;
 
-    if (medAbstractData *dtkdata = this->data() ) {
+    if (medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data()) ) {
 
         if(dtkdata->identifier()=="itkDataTensorImageFloat3") {
 

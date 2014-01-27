@@ -14,7 +14,7 @@
 #include <itkNiftiDataImageWriter.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkNiftiImageIO.h>
 
@@ -47,7 +47,7 @@ QStringList itkNiftiDataImageWriter::handled() const {
 }
 
 bool itkNiftiDataImageWriter::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
+    return medAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }
 
 QString itkNiftiDataImageWriter::identifier() const {

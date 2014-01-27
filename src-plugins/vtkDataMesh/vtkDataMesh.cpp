@@ -13,7 +13,7 @@
 
 #include "vtkDataMesh.h"
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include "vtkSmartPointer.h"
 #include "vtkPolyData.h"
@@ -53,7 +53,7 @@ vtkDataMesh::~vtkDataMesh()
 
 bool vtkDataMesh::registered()
 {
-  return dtkAbstractDataFactory::instance()->registerDataType(ID,createVtkDataMesh);
+  return medAbstractDataFactory::instance()->registerDataType(ID,createVtkDataMesh);
 }
 
 QString vtkDataMesh::description() const

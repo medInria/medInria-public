@@ -13,7 +13,7 @@
 
 #include <itkDataSHImageFloat3.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkImage.h>
 #include <itkImageRegionConstIterator.h>
@@ -57,7 +57,7 @@ itkDataSHImageFloat3::~itkDataSHImageFloat3()
 
 bool itkDataSHImageFloat3::registered()
 {
-    return dtkAbstractDataFactory::instance()->registerDataType("itkDataSHImageFloat3", createItkDataSHImageFloat3);
+    return medAbstractDataFactory::instance()->registerDataType("itkDataSHImageFloat3", createItkDataSHImageFloat3);
 }
 
 QString itkDataSHImageFloat3::description() const

@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include "dtkCore/dtkPluginManager.h"
-#include "dtkCore/dtkAbstractDataFactory.h"
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
 #include "dtkCore/dtkAbstractData.h"
 #include "dtkCore/dtkSmartPointer.h"
@@ -36,7 +36,7 @@ int itkDataImageDouble3Test (int argc, char* argv[])
   dtkPluginManager::instance()->initialize();
 
   dtkSmartPointer<medAbstractData> dtkdata;
-  dtkdata =  dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
+  dtkdata =  medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
   medAbstractDataImage *data = dynamic_cast<medAbstractDataImage*>( dtkdata.data() );
 
   if (!data) {
@@ -92,7 +92,7 @@ int itkDataImageDouble3Test (int argc, char* argv[])
   image->Allocate();
 
   dtkSmartPointer<medAbstractData> dtkdata2;
-  dtkdata2 =  dtkAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
+  dtkdata2 =  medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
   medAbstractDataImage *data2 = dynamic_cast<medAbstractDataImage*>( dtkdata2.data() );
   if (!data2) {
       qDebug() << "Cannot create data object from plugin";

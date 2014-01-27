@@ -12,11 +12,11 @@
 =========================================================================*/
 
 #include <medDataReaderWriter.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <QFileInfo>
 
 medDataReaderWriter::Reader medDataReaderWriter::reader(const QString& path) {
-    QList<QString> readers = dtkAbstractDataFactory::instance()->readers();
+    QList<QString> readers = medAbstractDataFactory::instance()->readers();
 
     if (readers.size()==0) {
 #if 0
@@ -37,7 +37,7 @@ medDataReaderWriter::Reader medDataReaderWriter::reader(const QString& path) {
         return dreader;
 
     for (int i=0;i<readers.size();++i) {
-        dreader = dtkAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
+        dreader = medAbstractDataFactory::instance()->readerSmartPointer(readers[i]);
         if (dreader->canRead(filename)) {
             dreader->enableDeferredDeletion(false);
             return dreader;
@@ -51,7 +51,7 @@ medDataReaderWriter::Writer medDataReaderWriter::writer(const QString& path,cons
     if (!data)
         return Writer();
 
-    QList<QString> writers = dtkAbstractDataFactory::instance()->writers();
+    QList<QString> writers = medAbstractDataFactory::instance()->writers();
 
     static Writer dwriter;
 
@@ -59,7 +59,7 @@ medDataReaderWriter::Writer medDataReaderWriter::writer(const QString& path,cons
         return dwriter;
 
     for (int i=0;i<writers.size();++i) {
-        dwriter = dtkAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
+        dwriter = medAbstractDataFactory::instance()->writerSmartPointer(writers[i]);
         if (dwriter->handled().contains(data->identifier()) && dwriter->canWrite(path)) {
             dwriter->enableDeferredDeletion(false);
             return dwriter;

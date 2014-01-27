@@ -14,7 +14,7 @@
 #include <itkMetaDataImageWriter.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 
 #include <itkMetaImageIO.h>
 
@@ -48,7 +48,7 @@ QStringList itkMetaDataImageWriter::handled() const {
 }
 
 bool itkMetaDataImageWriter::registered() {
-    return dtkAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
+    return medAbstractDataFactory::instance()->registerDataWriterType(s_identifier(), s_handled(), create);
 }
 
 QString itkMetaDataImageWriter::identifier() const {

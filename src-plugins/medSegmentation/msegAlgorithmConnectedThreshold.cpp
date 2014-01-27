@@ -19,7 +19,7 @@
 #include <itkImageFunction.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
 
@@ -130,7 +130,7 @@ int AlgorithmConnectedThresholdPrivate< TPixel,VDimension > ::run( medAbstractDa
     typename OutputImageType::Pointer outputImage( ctiFilter->GetOutput() );
     QString outputTypeName = QString("itkDataImageChar%1").arg(VDimension,1);
 
-    dtkSmartPointer< medAbstractData> newData( dtkAbstractDataFactory::instance()->createSmartPointer( outputTypeName ) );
+    dtkSmartPointer< medAbstractData> newData( medAbstractDataFactory::instance()->createSmartPointer( outputTypeName ) );
     if ( !newData )
         return DTK_FAILURE;
 
