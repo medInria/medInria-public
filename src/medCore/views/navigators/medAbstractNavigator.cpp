@@ -26,6 +26,7 @@ public:
 medAbstractNavigator::medAbstractNavigator(medAbstractView *parent):
     d(new medAbstractNavigatorPrivate)
 {
+
     this->setView(parent);
     d->hanndeledType << "medAbstractView";
 }
@@ -52,6 +53,11 @@ medAbstractView* medAbstractNavigator::view() const
 }
 
 void medAbstractNavigator::addHandledType(QStringList &handeledType)
+{
+    d->hanndeledType << handeledType;
+}
+
+void medAbstractNavigator::addHandledType(QString &handeledType)
 {
     d->hanndeledType << handeledType;
 }

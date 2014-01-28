@@ -123,9 +123,6 @@ public slots:
     //TODO: rename to toggleMaximize ?
     void toggleMaximize(bool state);
 
-protected:
-    virtual void setZoom_impl(double zoom) = 0;
-    virtual void setPan_impl(const QVector2D &pan) = 0;
 
 
 private:

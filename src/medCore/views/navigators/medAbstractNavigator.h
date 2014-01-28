@@ -15,6 +15,8 @@ PURPOSE.
 
 #include <dtkCore/dtkAbstractViewNavigator.h>
 
+#include "medCoreExport.h"
+
 #include <medAbstractView.h>
 
 
@@ -32,11 +34,12 @@ public:
     virtual QStringList handled() const;
 
 
-    virtual void setView(medAbstractView *view);
-    virtual medAbstractView *view() const;
+    void setView(medAbstractView *view);
+    medAbstractView *view() const;
 
 protected:
     void addHandledType(QStringList &handeledType);
+    void addHandledType(QString &handeledType);
 
 private:
     medAbstractNavigatorPrivate *d;

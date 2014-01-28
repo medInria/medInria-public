@@ -73,8 +73,6 @@ void medAbstractView::setZoom (double zoom)
 
     d->zoom = zoom;
 
-    this->setZoom_impl(zoom);
-
     //TODO GPR: to correct
     //emit zoomChanged (zoom, d->linkCamera);
 }
@@ -90,8 +88,6 @@ void medAbstractView::setPan (const QVector2D &pan)
         return;
 
     d->pan = pan;
-
-    this->setPan_impl(pan);
     //TODO GPR: to correct
     //emit panChanged (pan, d->linkCamera);
 }
