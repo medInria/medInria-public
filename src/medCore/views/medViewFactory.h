@@ -19,110 +19,189 @@
 
 #include <QStringList>
 
-class medAbstractView;
-class medAbstractViewNavigator;
-class medAbstractViewInteractor;
+#include <medAbstractView.h>
+#include <medAbstractViewNavigator.h>
+#include <medAbstractViewInteractor.h>
 
-class medAbstractLayeredView;
-class medAbstractLayeredViewNavigator;
-class medAbstractLayeredViewInteractor;
+#include <medAbstractLayeredView.h>
+#include <medAbstractLayeredViewNavigator.h>
+#include <medAbstractLayeredViewInteractor.h>
 
-class medAbstractImageView;
-class medAbstractImageViewNavigator;
-class medAbstractImageViewInteractor;
+#include <medAbstractImageView.h>
+#include <medAbstractImageViewNavigator.h>
+#include <medAbstractImageViewInteractor.h>
 
-class medViewCreator;
-class medInteractorCreator;
-class medNavigatorCreator;
+
+typedef medAbstractView *(*medAbstractViewCreator)(QObject *parent);
+typedef medAbstractNavigator *(*medAbstractNavigatorCreator)(medAbstractView *parent);
+typedef medAbstractInteractor *(*medAbstractInteractorCreator)(medAbstractView *parent);
+typedef medAbstractViewNavigator *(*medAbstractViewNavigatorCreator)(medAbstractView *parent);
+typedef medAbstractViewInteractor *(*medAbstractViewInteractorCreator)(medAbstractView *parent);
+
+typedef medAbstractLayeredView *(*medAbstractLayeredViewCreator)(QObject *parent);
+typedef medAbstractLayeredViewNavigator *(*medAbstractLayeredViewNavigatorCreator)(medAbstractLayeredView *parent);
+typedef medAbstractLayeredViewInteractor *(*medAbstractLayeredViewInteractorCreator)(medAbstractLayeredView *parent);
+
+typedef medAbstractImageView *(*medAbstractImageViewCreator)(QObject *parent);
+typedef medAbstractImageViewNavigator *(*medAbstractImageViewNavigatorCreator)(medAbstractImageView *parent);
+typedef medAbstractImageViewInteractor *(*medAbstractImageViewInteractorCreator)(medAbstractImageView *parent);
 
 
 class medViewFactoryPrivate;
-
-class MEDCORE_EXPORT medViewBoxFactory : public dtkAbstractFactory
+class MEDCORE_EXPORT medViewFactory : public dtkAbstractFactory
 {
     Q_OBJECT
-
 public:
-    typedef medAbstractView *(*medViewCreator)(QObject *parent);
-    typedef medAbstractViewNavigator *(*medViewCreator)(medAbstractView *parent);
-    typedef medAbstractViewInteractor *(*medViewCreator)(medAbstractView *parent);
+    static medViewFactory *instance();
 
-    typedef medAbstractLayeredView *(*medViewCreator)(QObject *parent);
-    typedef medAbstractLayeredViewNavigator *(*medViewCreator)(medAbstractLayeredView *parent);
-    typedef medAbstractLayeredViewInteractor *(*medViewCreator)(medAbstractLayeredView *parent);
-
-    typedef medAbstractImageView *(*medViewCreator)(QObject *parent);
-    typedef medAbstractImageViewNavigator *(*medViewCreator)(medAbstractImageView *parent);
-    typedef medAbstractImageViewInteractor *(*medViewCreator)(medAbstractImageView *parent);
-
-public:
-    static medViewBoxFactory *instance();
-
-    template <typename objectType>
-
-
-    bool registerView(QString& identifier,
-                      medViewCreator creator);
-
-    bool registerNavigator(QString& identifier,
-                           QString& viewTypeHandled,
-                           medNavigatorCreator creator);
-
-    bool registerInteractor(QString& identifier,
-                            QString& viewTypeHandled,
-                            QString& dataTypeHandled, medInteractorCreator creator);
-
-    template <typename objectType>
-    bool registerView(QString& identifier)
+    template <typename T>
+    bool registerView(QString& derivedFrom, QString& identifier)
     {
         //we must keep the templated part in the .h file for library users
-        medViewCreator creator = create<viewType>;
-        return registerView(identifier, creator);
+        if(derivedFrom == medAbstractImageView::derivedFrom())
+        {
+            medAbstractViewCreator creator = abstractView_creator<T>;
+            return registerView(identifier, creator);
+        }
+        else if(derivedFrom == medAbstractLayeredView::derivedFrom())
+        {
+            medAbstractLayeredViewCreator creator = abstractLayerdView_creator<T>;
+            return registerView(identifier, creator);
+        }
+        else if(derivedFrom == medAbstractImageView::derivedFrom())
+        {
+            medAbstractImageViewCreator creator = abstractImageView_creator<T>;
+            return registerView(identifier, creator);
+        }
+        else
+            return false;
     }
 
-    template <typename objectType>
-    bool registerNavigator(QString& identifier, QString& viewTypeHandle)
+    template <typename T>
+    bool registerNavigator(QString& derivedFrom,
+                           QString& identifier,
+                           QString& viewTypeHandle)
     {
         //we must keep the templated part in the .h file for library users
-        medNavigatorCreator creator = create<navigatorType>;
-        return registerNavigator(identifier, viewTypeHandle, creator);
+        if(derivedFrom == medAbstractViewNavigator::derivedFrom())
+        {
+            medAbstractNavigatorCreator creator = abstractViewNavigator_creator<T>;
+            return registerNavigator(identifier, viewTypeHandle, creator);
+        }
+        else if(derivedFrom == medAbstractLayeredViewNavigator::derivedFrom())
+        {
+            medAbstractViewNavigatorCreator creator = abstractLayeredViewNavigator_creator<T>;
+            return registerNavigator(identifier, viewTypeHandle, creator);
+        }
+        else if(derivedFrom == medAbstractImageViewNavigator::derivedFrom())
+        {
+            medAbstractLayeredViewNavigatorCreator creator = abstractImageViewNavigator_creator<T>;
+            return registerNavigator(identifier, viewTypeHandle, creator);
+        }
+        else if(derivedFrom == medAbstractImageViewNavigator::derivedFrom())
+        {
+            medAbstractImageViewNavigatorCreator creator = abstractNavigator_creator<T>;
+            return registerNavigator(identifier, viewTypeHandle, creator);
+        }
+        else
+            return false;
     }
 
-    template <typename objectType>
-    bool registerInteractor(QString& identifier, QString& viewTypeHandle, QString& dataTypeHandle)
+    template <typename T>
+    bool registerInteractor(QString& derivedFrom,
+                            QString& identifier,
+                            QString& viewTypeHandle,
+                            QString& dataTypeHandle)
     {
         //we must keep the templated part in the .h file for library users
-        medInteractorCreator creator = create<interactorType>;
-        return registerInteractor(identifier, viewTypeHandle, dataTypeHandle, creator);
+        if(derivedFrom == medAbstractInteractor::derivedFrom())
+        {
+            medAbstractInteractorCreator creator = abstractViewInteractor_creator<T>;
+            return registerInteractor(identifier, viewTypeHandle, dataTypeHandle, creator);
+        }
+        else if(derivedFrom == medAbstractLayeredViewInteractor::derivedFrom())
+        {
+            medAbstractViewInteractorCreator creator = abstractLayeredViewInteractor_creator<T>;
+            return registerInteractor(identifier, viewTypeHandle, dataTypeHandle, creator);
+        }
+        else if(derivedFrom == medAbstractImageViewInteractor::derivedFrom())
+        {
+            medAbstractLayeredViewInteractorCreator creator = abstractImageViewInteractor_creator<T>;
+            return registerInteractor(identifier, viewTypeHandle, dataTypeHandle, creator);
+        }
+        else if(derivedFrom == medAbstractImageViewInteractor::derivedFrom())
+        {
+            medAbstractImageViewInteractorCreator creator = abstractInteractor_creator<T>;
+            return registerInteractor(identifier, viewTypeHandle, dataTypeHandle, creator);
+        }
+        else
+            return false;
     }
 
-    QList<QString> navigatorAbleToHandle(const QString& viewType) const;
-    QList<QString> interactorAbleToHandle(const QString& viewType, const QString& dataType) const;
-
-    QStringList viewHandledbyNavigator (QString& navigatorType) const;
-    QStringList viewHandledbyInteractor (QString& navigatorType) const;
-    QStringList dataHandledbyInteractor (QString& navigatorType) const;
+    QList<QString> navigatorsAbleToHandle(const QString& viewType) const;
+    QList<QString> interactorsAbleToHandle(const QString& viewType, const QString& dataType) const;
 
 public slots:
-    medAbstractView *createView(QString& identifier, QObject *parent=0);
-    medAbstractLayeredView *createLayeredView(QString& identifier, QObject *parent=0);
-    medAbstractImageView *createImageView(QString& identifier, QObject *parent=0);
+    medAbstractView *createAbstractView(QString& identifier, QObject *parent=0);
+    medAbstractLayeredView *createAbstractLayeredView(QString& identifier, QObject *parent=0);
+    medAbstractImageView *createAbstractImageView(QString& identifier, QObject *parent=0);
 
-    medAbstractViewNavigator *createNavigator(QString& identifier, medAbstractView *parent=0);
-    medAbstractLayeredViewNavigator *createNavigator(QString& identifier, medAbstractLayeredView *parent=0);
-    medAbstractImageViewNavigator *createNavigator(QString& identifier, medAbstractImageView *parent=0);
+    medAbstractNavigator *createAbstractNavigator(QString& identifier, medAbstractView *parent=0);
+    medAbstractViewNavigator *createAbstractViewNavigator(QString& identifier, medAbstractView *parent=0);
+    medAbstractLayeredViewNavigator *createAbstractLayeredViewNavigator(QString& identifier, medAbstractLayeredView *parent=0);
+    medAbstractImageViewNavigator *createAbstractImageViewNavigator(QString& identifier, medAbstractImageView *parent=0);
 
-    medAbstractViewInteractor *createInteractor(QString& identifier, medAbstractView *parent=0);
-    medAbstractLayeredViewInteractor *createInteractor(QString& identifier, medAbstractLayeredView *parent=0);
-    medAbstractImageViewInteractor *createInteractor(QString& identifier, medAbstractImageView *parent=0);
+    medAbstractInteractor *createAbstractInteractor(QString& identifier, medAbstractView *parent=0);
+    medAbstractViewInteractor* createAbstractViewInteractor(QString& identifier, medAbstractView *parent=0);
+    medAbstractLayeredViewInteractor* createAbstractLayeredViewInteractor(QString& identifier, medAbstractLayeredView *parent=0);
+    medAbstractImageViewInteractor* createAbstractImageViewInteractor(QString& identifier, medAbstractImageView *parent=0);
 
 
 protected:
-     medViewBoxFactory();
-    ~medViewBoxFactory();
+     medViewFactory();
+    ~medViewFactory();
 
 private:
-    static medViewBoxFactory *s_instance; /** Singleton holder.*/
+
+     bool registerView(QString& identifier,
+                       medAbstractViewCreator creator);
+     bool registerView(QString& identifier,
+                       medAbstractLayeredViewCreator creator);
+     bool registerView(QString& identifier,
+                       medAbstractImageViewCreator creator);
+
+     bool registerNavigator(QString& identifier,
+                            QString& viewTypeHandled,
+                            medAbstractNavigatorCreator creator);
+     bool registerNavigator(QString& identifier,
+                            QString& viewTypeHandled,
+                            medAbstractViewNavigatorCreator creator);
+     bool registerNavigator(QString& identifier,
+                            QString& viewTypeHandled,
+                            medAbstractLayeredViewNavigatorCreator creator);
+     bool registerNavigator(QString& identifier,
+                            QString& viewTypeHandled,
+                            medAbstractImageViewNavigatorCreator creator);
+
+     bool registerInteractor(QString& identifier,
+                             QString& viewTypeHandled,
+                             QString& dataTypeHandled,
+                             medAbstractInteractorCreator creator);
+     bool registerInteractor(QString& identifier,
+                             QString& viewTypeHandled,
+                             QString& dataTypeHandled,
+                             medAbstractViewInteractorCreator creator);
+     bool registerInteractor(QString& identifier,
+                             QString& viewTypeHandled,
+                             QString& dataTypeHandled,
+                             medAbstractLayeredViewInteractorCreator creator);
+     bool registerInteractor(QString& identifier,
+                             QString& viewTypeHandled,
+                             QString& dataTypeHandled,
+                             medAbstractImageViewInteractorCreator creator);
+
+
+    static medViewFactory *s_instance; /** Singleton holder.*/
     /**
      * @brief Templated method returning a pointer to an allocated toolbox.
      * @see template<class toolboxType> registerToolBox
@@ -130,59 +209,70 @@ private:
      * (solution in http://www.parashift.com/c++-faq-lite/pointers-to-members.html#faq-33.5 for those interested)
      */
     template < typename T >
-    static medAbstractView* create(QObject* parent)
+    static medAbstractView* abstractView_creator(QObject* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractLayeredView* create(QObject* parent)
+    static medAbstractLayeredView* abstractLayerdView_creator(QObject* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractImageView* create(QObject* parent)
+    static medAbstractImageView* abstractImageView_creator(QObject* parent)
     {
     return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractViewNavigator* create(medAbstractView* parent)
+    static medAbstractViewNavigator* abstractNavigator_creator(medAbstractView* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractLayeredViewNavigator* create(medAbstractLayeredView* parent)
+    static medAbstractLayeredViewNavigator* abstractViewNavigator_creator(medAbstractLayeredView* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractImageViewNavigator* create(medAbstractImageView* parent)
+    static medAbstractImageViewNavigator* abstractLayeredViewNavigator_creator(medAbstractImageView* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractViewInteractor* create(medAbstractImageView* parent)
+    static medAbstractImageViewNavigator* abstractImageViewNavigator_creator(medAbstractImageView* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractLayeredViewInteractor* create(medAbstractLayeredView* parent)
+    static medAbstractViewNavigator* abstractInteractor_creator(medAbstractView* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractImageViewInteractor* create(medAbstractImageView* parent)
+    static medAbstractLayeredViewNavigator* abstractViewInteractor_creator(medAbstractLayeredView* parent)
     {
         return (new T(parent));
     }
 
+    template < typename T >
+    static medAbstractImageViewNavigator* abstractLayeredViewInteractor_creator(medAbstractImageView* parent)
+    {
+        return (new T(parent));
+    }
+
+    template < typename T >
+    static medAbstractImageViewNavigator* abstractImageViewInteractor_creator(medAbstractImageView* parent)
+    {
+        return (new T(parent));
+    }
 
 private:
     medViewFactoryPrivate *d;

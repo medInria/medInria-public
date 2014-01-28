@@ -55,8 +55,6 @@ void medAbstractLayeredView::addLayer(medAbstractData *data)
     int layer = this->layersCount() - 1;
     this->setCurrentLayer(layer);
 
-    this->addLayer_impl(layer);
-
     emit dataAdded(data);
     emit dataAdded(data, layer);
 }

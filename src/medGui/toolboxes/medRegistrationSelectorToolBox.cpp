@@ -605,12 +605,7 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
         
         d->fuseView->setData(output,1);
         d->fuseView->update();
-                       
-        d->fixedView->toggleLinkPosition(true);
-        d->fixedView->toggleLinkCamera(true);
-        d->movingView->toggleLinkPosition(true);
-        d->movingView->toggleLinkCamera(true);
-     }
+    }
 }
 
 void medRegistrationSelectorToolBox::enableSelectorToolBox(bool enable){
@@ -651,7 +646,9 @@ void medRegistrationSelectorToolBox::synchroniseWindowLevel(QObject * sender){
     else
     {		
         d->fuseView->windowLevel(level,window);
-        if (d->fixedView && d->fixedView->isWindowingLinked() && d->movingView && d->movingView->isWindowingLinked())
+        //TODO:  take API change into account - RDE
+        //if (d->fixedView && d->fixedView->isWindowingLinked() && d->movingView && d->movingView->isWindowingLinked())
+        if (d->fixedView && d->movingView)
         {
             d->fixedView->setWindowLevel(level,window);
             d->movingView->setWindowLevel(level,window);
@@ -679,7 +676,9 @@ void medRegistrationSelectorToolBox::synchronisePosition(const QVector3D &positi
    
     if (d->fixedView==QObject::sender() || d->movingView==QObject::sender())
     {
-        if (d->fixedView && d->fixedView->isPositionLinked() && d->movingView &&  d->movingView->isPositionLinked()) // If the fixedView and movingView are linked in position then the changes also appear in fuseView.
+        //TODO:  take API change into account - RDE
+        //if (d->fixedView && d->fixedView->isPositionLinked() && d->movingView &&  d->movingView->isPositionLinked())
+        if (d->fixedView  && d->movingView) // If the fixedView and movingView are linked in position then the changes also appear in fuseView.
             d->fuseView->moveToSliceAtPosition(position);
     }
     else // the changes in fuseView are propagated to the fixedView and movingView.

@@ -55,6 +55,10 @@ public:
      */
     virtual int currentLayer() const;
 
+    static QString derivedFrom()
+    {
+        return "medAbstractLayerdView";
+    }
 
 signals:
 
@@ -81,15 +85,6 @@ public slots:
      */
     virtual void setCurrentLayer(int layer);
 
-protected:
-    virtual void addLayer_impl(int layer) = 0;
-    virtual bool removeLayer_impl(medAbstractData *data) = 0;
-    virtual void removeLayerAt_impl(unsigned int layer) = 0;
-    virtual void insertLayer_impl(unsigned int layer, medAbstractData *data) = 0;
-    virtual void moveLayer_impl(unsigned int fromLayer, unsigned int toLayer) = 0;
-
-protected slots:
-    virtual void setCurrentLayer_impl(int layer) = 0;
 
 private:
     medAbstractLayeredViewPrivate *d;

@@ -11,37 +11,38 @@ PURPOSE.
 
 =========================================================================*/
 
-#include "medAbstractImageViewNavigator.h"
+#include "medAbstractImageViewInteractor.h"
 
 #include <medAbstractImageView.h>
 
 
-class medAbstractImageViewNavigatorPrivate
+class medAbstractImageViewInteractorPrivate
 {
 public:
     medAbstractImageView* view;
 };
 
-medAbstractImageViewNavigator::medAbstractImageViewNavigator(medAbstractImageView *parent):
-    d(new medAbstractImageViewNavigatorPrivate)
+medAbstractImageViewInteractor::medAbstractImageViewInteractor(medAbstractImageView *parent):
+    d(new medAbstractImageViewInteractorPrivate)
 {
     this->setView(parent);
-    QString handledType = "medAbstractImageView";
-    this->setTypeHandled(handledType);
+    QString viewType = "medAbstractLayerdView";
+    QString dataType = "medAbstractData";
+    this->setTypeHandled(viewType, dataType);
 }
 
-medAbstractImageViewNavigator::~medAbstractImageViewNavigator()
+medAbstractImageViewInteractor::~medAbstractImageViewInteractor()
 {
     delete d;
 }
 
-void medAbstractImageViewNavigator::setView(medAbstractImageView *view)
+void medAbstractImageViewInteractor::setView(medAbstractImageView *view)
 {
     this->setParent(view);
     d->view = view;
 }
 
-medAbstractImageView* medAbstractImageViewNavigator::view() const
+medAbstractImageView* medAbstractImageViewInteractor::view() const
 {
     return d->view;
 }

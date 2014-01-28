@@ -32,6 +32,18 @@ public:
     medAbstractImageView(const medAbstractView& view);
     virtual ~medAbstractImageView();
 
+
+    //TODO: find a better name than orientation - RDE.
+    enum medVtkViewOrientation
+    {
+        VIEW_ORIENTATION_AXIAL,
+        VIEW_ORIENTATION_SAGITTAL,
+        VIEW_ORIENTATION_CORONAL,
+        VIEW_ORIENTATION_3D,
+        VIEW_ALL_ORIENTATION
+    };
+
+
     /**
      *  Set the view slice.
     **/
@@ -117,16 +129,15 @@ signals:
     void opacityChanged(double value, int layer);
 
 public:
-    //TODO: find a better name than orientation - RDE.
-    enum medVtkViewOrientation
+    /**
+     * @brief derivedFrom
+     * @return Upper abstract class it derives from.
+     * used by the factory to kwnow what can be create.
+     */
+    static QString derivedFrom()
     {
-        VIEW_ORIENTATION_AXIAL,
-        VIEW_ORIENTATION_SAGITTAL,
-        VIEW_ORIENTATION_CORONAL,
-        VIEW_ORIENTATION_3D,
-        VIEW_ALL_ORIENTATION
-    };
-
+        return "medAbstractView";
+    }
 
     //! Convert from world coordinates to scene coordinates.
     virtual QPointF worldToDisplay( const QVector3D & worldVec ) const = 0;
@@ -148,23 +159,6 @@ public:
 public slots:
     virtual void setOrientation(medVtkViewOrientation orientation) = 0;
 
-    /**
-       Tells the view (not to) synchronize its position with other views.
-     **/
-    virtual void toggleLinkPosition (bool value);
-    bool isPositionLinked() const;
-
-    /**
-       Tells the view (not to) synchronize its window/level with other views.
-     **/
-    virtual void toggleLinkWindowing (bool value);
-    bool isWindowingLinked() const;
-
-    /**
-       Tells the view (not to) synchronize its camera settings with other views.
-    **/
-    virtual void toggleLinkCamera (bool value);
-    bool isCameraLinked() const;
 
 
 protected slots:

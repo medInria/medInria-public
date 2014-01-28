@@ -28,7 +28,7 @@ medAbstractLayeredViewNavigator::medAbstractLayeredViewNavigator(medAbstractLaye
 
     this->setView(parent);
     QString handledType = "medAbstractLayerdView";
-    this->addHandledType(handledType);
+    this->setTypeHandled(handledType);
 }
 
 medAbstractLayeredViewNavigator::~medAbstractLayeredViewNavigator()

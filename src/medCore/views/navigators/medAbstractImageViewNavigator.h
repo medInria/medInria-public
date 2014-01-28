@@ -39,6 +39,11 @@ public:
                         double &parallelScale) const = 0;
     virtual QVector3D positionBeingViewed() const = 0;
 
+    static QString derivedFrom()
+    {
+        return "medAbstractImageViewNavigator";
+    }
+
 public slots:
     virtual void setOrientation(medAbstractImageView::medVtkViewOrientation orientation) = 0;
     virtual void setCamera(const QVector3D &position,

@@ -61,6 +61,7 @@ public:
 
     /**
        Set the view zoom factor.
+
     **/
     virtual void setZoom (double zoom);
     double zoom() const;
@@ -90,6 +91,11 @@ public:
 
     bool isClosable() const;
     void setClosable(bool closable);
+
+    static QString derivedFrom()
+    {
+        return "medAbstractView";
+    }
 
 signals:
     void selected();

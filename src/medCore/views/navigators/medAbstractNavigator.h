@@ -32,14 +32,17 @@ public:
 public:
     virtual QString description() const = 0;
     virtual QStringList handled() const;
+    QString viewTypeHandled() const;
+    void setTypeHandled(QString& viewType);
 
 
     void setView(medAbstractView *view);
     medAbstractView *view() const;
 
-protected:
-    void addHandledType(QStringList &handeledType);
-    void addHandledType(QString &handeledType);
+    static QString derivedFrom()
+    {
+        return "medAbstractNavigator";
+    }
 
 private:
     medAbstractNavigatorPrivate *d;
@@ -63,5 +66,11 @@ private:
     virtual void     draw(void)
     {}
     virtual void postdraw(void)
+    {}
+    bool enabled(void) const
+    {return true;}
+    virtual void  enable(void)
+    {}
+    virtual void disable(void)
     {}
 };

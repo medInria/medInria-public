@@ -13,29 +13,39 @@ PURPOSE.
 
 #pragma once
 
-#include <medAbstractViewNavigator.h>
+#include <medAbstractViewInteractor.h>
 
 #include "medCoreExport.h"
 
 #include <medAbstractLayeredView.h>
 
-class medAbstractLayeredViewNavigatorPrivate;
-class MEDCORE_EXPORT medAbstractLayeredViewNavigator : public medAbstractViewNavigator
+class medAbstractLayeredViewInteractorPrivate;
+class MEDCORE_EXPORT medAbstractLayeredViewInteractor : public medAbstractViewInteractor
 {
     Q_OBJECT
 
 public:
-             medAbstractLayeredViewNavigator(medAbstractLayeredView* parent = 0);
-    virtual ~medAbstractLayeredViewNavigator();
+             medAbstractLayeredViewInteractor(medAbstractLayeredView* parent = 0);
+    virtual ~medAbstractLayeredViewInteractor();
 
+public:
     virtual void setView(medAbstractLayeredView *view);
     virtual medAbstractLayeredView *view() const;
 
+    void setLayer(int layer);
+    int layer() const;
+
+    virtual bool visibility(int layer) const =0;
+    virtual QWidget* layerWidget() =0;
+
     static QString derivedFrom()
     {
-        return "medAbstractLayerdViewNavigator";
+        return "medAbstractLayeredViewInteractor";
     }
 
+public slots:
+    virtual void setVisibility (bool visibility, int layer) = 0;
+
 private:
-    medAbstractLayeredViewNavigatorPrivate *d;
+    medAbstractLayeredViewInteractorPrivate *d;
 };

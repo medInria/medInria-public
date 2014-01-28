@@ -19,16 +19,16 @@ PURPOSE.
 class medAbstractNavigatorPrivate
 {
 public:
-    QStringList hanndeledType;
+    QString viewType;
     medAbstractView* view;
 };
 
 medAbstractNavigator::medAbstractNavigator(medAbstractView *parent):
     d(new medAbstractNavigatorPrivate)
 {
-
     this->setView(parent);
-    d->hanndeledType << "medAbstractView";
+    QString handledType = "medAbstractView";
+    this->setTypeHandled(handledType);
 }
 
 medAbstractNavigator::~medAbstractNavigator()
@@ -38,7 +38,17 @@ medAbstractNavigator::~medAbstractNavigator()
 
 QStringList medAbstractNavigator::handled() const
 {
-    return d->hanndeledType;
+    return QStringList() << d->viewType;
+}
+
+void medAbstractNavigator::setTypeHandled(QString &viewType)
+{
+    d->viewType = viewType;
+}
+
+QString medAbstractNavigator::viewTypeHandled() const
+{
+    return d->viewType;
 }
 
 void medAbstractNavigator::setView(medAbstractView *view)
@@ -52,12 +62,3 @@ medAbstractView* medAbstractNavigator::view() const
     return d->view;
 }
 
-void medAbstractNavigator::addHandledType(QStringList &handeledType)
-{
-    d->hanndeledType << handeledType;
-}
-
-void medAbstractNavigator::addHandledType(QString &handeledType)
-{
-    d->hanndeledType << handeledType;
-}

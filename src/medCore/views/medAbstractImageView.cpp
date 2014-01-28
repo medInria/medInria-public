@@ -38,35 +38,6 @@ medAbstractImageView::~medAbstractImageView()
 
 }
 
-void medAbstractImageView::toggleLinkPosition (bool value)
-{
-    d->linkPosition = value;
-}
-
-bool medAbstractImageView::isPositionLinked() const
-{
-    return d->linkPosition;
-}
-
-void medAbstractImageView::toggleLinkWindowing (bool value)
-{
-    d->linkWindowing = value;
-}
-
-bool medAbstractImageView::isWindowingLinked() const
-{
-    return d->linkWindowing;
-}
-
-void medAbstractImageView::toggleLinkCamera (bool value)
-{
-    d->linkCamera = value;
-}
-
-bool medAbstractImageView::isCameraLinked() const
-{
-    return d->linkCamera;
-}
 
 void medAbstractImageView::setSlice (int slice)
 {
