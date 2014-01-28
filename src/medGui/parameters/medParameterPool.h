@@ -27,7 +27,7 @@ class MEDGUI_EXPORT medParameterPool : public QObject
     Q_OBJECT
 
 public:
-    medParameterPool();
+    medParameterPool(QObject* parent = 0);
     virtual ~medParameterPool();
 
     void append(medAbstractParameter *parameter);

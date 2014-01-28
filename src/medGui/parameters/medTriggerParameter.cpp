@@ -28,8 +28,8 @@ public:
 };
 
 
-medTriggerParameter::medTriggerParameter(QString name):
-    medAbstractTriggerParameter(name),
+medTriggerParameter::medTriggerParameter(QString name, QObject *parent):
+    medAbstractTriggerParameter(name, parent),
     d(new medTriggerParameterPrivate)
 {
      d->pushButton = NULL;

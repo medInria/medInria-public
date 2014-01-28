@@ -28,7 +28,7 @@ class MEDGUI_EXPORT medSlicingParameter : public medAbstractDoubleParameter
     Q_OBJECT
 
 public:
-    medSlicingParameter(QString name = "Unknow slicing parameter");
+    medSlicingParameter(QString name = "Unknow slicing parameter", QObject* parent = 0);
     virtual ~medSlicingParameter();
 
     int slice() const;

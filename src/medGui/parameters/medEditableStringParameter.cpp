@@ -29,8 +29,8 @@ public:
     ~medEditableStringParameterPrivate() {delete lineEdit;}
 };
 
-medEditableStringParameter::medEditableStringParameter(QString name):
-    medAbstractStringParameter(name),
+medEditableStringParameter::medEditableStringParameter(QString name, QObject* parent):
+    medAbstractStringParameter(name, parent),
     d(new medEditableStringParameterPrivate)
 {
     d->lineEdit = NULL;

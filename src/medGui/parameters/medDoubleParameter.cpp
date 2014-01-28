@@ -30,8 +30,8 @@ public:
     }
 };
 
-medDoubleParameter::medDoubleParameter(QString name):
-    medAbstractDoubleParameter(name),
+medDoubleParameter::medDoubleParameter(QString name, QObject *parent):
+    medAbstractDoubleParameter(name,parent),
     d(new medDoubleParameterPrivate)
 {
     d->min = 0;

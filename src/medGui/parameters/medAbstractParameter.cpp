@@ -26,9 +26,10 @@ public:
     ~medAbstractParameterPrivate() {delete label;}
 };
 
-medAbstractParameter::medAbstractParameter(QString name):
+medAbstractParameter::medAbstractParameter(QString name, QObject *parent):
     d(new medAbstractParameterPrivate)
 {
+    this->setParent(parent);
     d->label = NULL;
     d->toolTip = QString();
     d->name = name;

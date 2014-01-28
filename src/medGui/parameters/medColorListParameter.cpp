@@ -28,8 +28,8 @@ public:
     ~medColorListParameterPrivate(){delete comboBox;}
 };
 
-medColorListParameter::medColorListParameter(QString name):
-    medAbstractStringParameter(name),
+medColorListParameter::medColorListParameter(QString name, QObject* parent):
+    medAbstractStringParameter(name,parent),
     d(new medColorListParameterPrivate)
 {
     d->comboBox = NULL;

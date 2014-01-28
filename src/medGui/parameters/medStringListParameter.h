@@ -27,7 +27,7 @@ class MEDGUI_EXPORT medStringListParameter: public medAbstractStringParameter
     Q_OBJECT
 
 public:
-    medStringListParameter(QString name = "Unkow string list parameter");
+    medStringListParameter(QString name = "Unkow string list parameter", QObject* parent = 0);
     virtual ~medStringListParameter();
 
     void addItem(QString& item);

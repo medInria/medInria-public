@@ -63,8 +63,8 @@ public:
 };
 
 
-medTimeLineParameter::medTimeLineParameter(QString name):
-    medAbstractGroupParameter(name),
+medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
+    medAbstractGroupParameter(name, parent),
     d(new medTimeLineParameterPrivate)
 {
     d->widget = NULL;

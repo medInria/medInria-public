@@ -27,7 +27,7 @@ class MEDGUI_EXPORT medTimeLineParameter : public medAbstractGroupParameter
     Q_OBJECT
 
 public:
-    medTimeLineParameter(QString name = "Unknow timeLine parameter");
+    medTimeLineParameter(QString name = "Unknow timeLine parameter", QObject* parent = 0);
     virtual ~medTimeLineParameter();
 
     void clear();

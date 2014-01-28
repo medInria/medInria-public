@@ -28,7 +28,7 @@ class MEDGUI_EXPORT medDoubleParameter : public medAbstractDoubleParameter
     Q_OBJECT
 
 public:
-    medDoubleParameter(QString name = "Unknow double parameter");
+    medDoubleParameter(QString name = "Unknow double parameter", QObject* parent = 0);
     virtual ~medDoubleParameter();
 
     void setRange(double min, double max);

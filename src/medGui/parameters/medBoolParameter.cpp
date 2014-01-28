@@ -36,8 +36,8 @@ public:
     }
 };
 
-medBoolParameter::medBoolParameter(QString name):
-    medAbstractBoolParameter(name),
+medBoolParameter::medBoolParameter(QString name, QObject* parent):
+    medAbstractBoolParameter(name,parent),
     d(new medBoolParameterPrivate)
 {
     m_value = false;

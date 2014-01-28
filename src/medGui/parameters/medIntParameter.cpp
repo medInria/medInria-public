@@ -32,8 +32,8 @@ public:
     }
 };
 
-medIntParameter::medIntParameter(QString name):
-    medAbstractIntParameter(name),
+medIntParameter::medIntParameter(QString name, QObject* parent):
+    medAbstractIntParameter(name, parent),
     d(new medIntParameterPrivate)
 {
     d->min = 0;

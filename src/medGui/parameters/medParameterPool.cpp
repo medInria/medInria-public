@@ -25,7 +25,7 @@ public:
     ~medParameterPoolPrivate() {pool.clear();}
 };
 
-medParameterPool::medParameterPool(): d(new medParameterPoolPrivate)
+medParameterPool::medParameterPool(QObject* parent): d(new medParameterPoolPrivate)
 {
 
 }

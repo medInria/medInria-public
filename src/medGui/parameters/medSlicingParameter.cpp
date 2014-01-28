@@ -40,8 +40,8 @@ public:
     }
 };
 
-medSlicingParameter::medSlicingParameter(QString name):
-    medAbstractDoubleParameter(name),
+medSlicingParameter::medSlicingParameter(QString name, QObject* parent):
+    medAbstractDoubleParameter(name, parent),
     d(new medSlicingParameterPrivate)
 {
     d->sliceParameter = new medIntParameter(name);

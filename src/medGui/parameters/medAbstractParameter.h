@@ -27,7 +27,7 @@ class MEDGUI_EXPORT medAbstractParameter : public QObject
 
 public:
 
-    medAbstractParameter(QString name = "unknown parameter");
+    medAbstractParameter(QString name = "unknown parameter", QObject* parent = 0);
     virtual ~medAbstractParameter();
 
     QString name() const;
@@ -93,7 +93,7 @@ class medAbstractTriggerParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
-    medAbstractTriggerParameter(QString name = "unknown trigger parameter"){}
+    medAbstractTriggerParameter(QString name = "unknown trigger parameter", QObject* parent = 0){}
 public slots:
     virtual void trigger();
 
@@ -106,7 +106,7 @@ class MEDGUI_EXPORT medAbstractStringParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
-    medAbstractStringParameter(QString name = "unknown  string parameter"){}
+    medAbstractStringParameter(QString name = "unknown  string parameter", QObject* parent = 0){}
     virtual QString value() const;
 public slots:
     virtual void setValue(QString value);
@@ -128,7 +128,7 @@ class MEDGUI_EXPORT medAbstractIntParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
-    medAbstractIntParameter(QString name = "unknown int parameter"){}
+    medAbstractIntParameter(QString name = "unknown int parameter", QObject* parent = 0){}
     virtual int value() const;
 public slots:
     virtual void setValue(int value);
@@ -151,7 +151,7 @@ class MEDGUI_EXPORT medAbstractDoubleParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
-    medAbstractDoubleParameter(QString name = "unknown double parameter"){}
+    medAbstractDoubleParameter(QString name = "unknown double parameter", QObject* parent = 0){}
     virtual double value() const;
 public slots:
     virtual void setValue(double value);
@@ -173,7 +173,7 @@ class MEDGUI_EXPORT medAbstractBoolParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
-    medAbstractBoolParameter(QString name = "unknown bool parameter"){}
+    medAbstractBoolParameter(QString name = "unknown bool parameter", QObject* parent = 0){}
     virtual bool value() const;
 public slots:
     virtual void setValue(bool value);
@@ -198,7 +198,7 @@ class medAbstractGroupParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
-    medAbstractGroupParameter(QString name = "unknown group parameter"){}
+    medAbstractGroupParameter(QString name = "unknown group parameter", QObject* parent = 0){}
 
     /**
      * @brief parametersCandidateToPool reimplement this methode to keep correct synchronisation in medParameterPool

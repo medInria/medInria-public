@@ -26,8 +26,8 @@ public:
     ~medStringListParameterPrivate(){delete comboBox;}
 };
 
-medStringListParameter::medStringListParameter(QString name):
-    medAbstractStringParameter(name),
+medStringListParameter::medStringListParameter(QString name, QObject* parent):
+    medAbstractStringParameter(name, parent),
     d(new medStringListParameterPrivate)
 {
     d->comboBox = NULL;

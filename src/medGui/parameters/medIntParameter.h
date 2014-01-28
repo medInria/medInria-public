@@ -28,7 +28,7 @@ class MEDGUI_EXPORT medIntParameter : public medAbstractIntParameter
     Q_OBJECT
 
 public:
-    medIntParameter(QString name = "Unknow int parameter");
+    medIntParameter(QString name = "Unknow int parameter", QObject* parent = 0);
     virtual ~medIntParameter();
 
     void setRange(int min, int max);

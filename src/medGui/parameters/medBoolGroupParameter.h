@@ -29,7 +29,7 @@ class MEDGUI_EXPORT medBoolGroupParameter : public medAbstractGroupParameter
     Q_OBJECT
 
 public:
-    medBoolGroupParameter(QString name = "Unknow bool group parameter");
+    medBoolGroupParameter(QString name = "Unknow bool group parameter", QObject* parent = 0);
     virtual ~medBoolGroupParameter();
 
     void setPushButtonDirection(QBoxLayout::Direction direction);

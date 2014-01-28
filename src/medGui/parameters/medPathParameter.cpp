@@ -44,8 +44,8 @@ public:
     }
 };
 
-medPathParameter::medPathParameter(QString name):
-    medAbstractStringParameter(name),
+medPathParameter::medPathParameter(QString name, QObject *parent):
+    medAbstractStringParameter(name, parent),
     d(new medPathParameterPrivate)
 {
     d->lineEdit = NULL;

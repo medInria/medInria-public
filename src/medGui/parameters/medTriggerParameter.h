@@ -26,7 +26,7 @@ class MEDGUI_EXPORT medTriggerParameter : public medAbstractTriggerParameter
     Q_OBJECT
 
 public:
-    medTriggerParameter(QString name = "Unknow trigger parameter");
+    medTriggerParameter(QString name = "Unknow trigger parameter", QObject* parent = 0);
     virtual ~medTriggerParameter();
 
     void setButtonIcon(QIcon& icon);

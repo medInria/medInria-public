@@ -29,7 +29,7 @@ class MEDGUI_EXPORT medColorListParameter: public medAbstractStringParameter
     Q_OBJECT
 
 public:
-    medColorListParameter(QString name = "Unkow color list parameter");
+    medColorListParameter(QString name = "Unkow color list parameter", QObject* parent = 0);
     virtual ~medColorListParameter();
 
     void addColor(QString& colorName);

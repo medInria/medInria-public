@@ -51,8 +51,8 @@ public:
     }
 };
 
-medBoolGroupParameter::medBoolGroupParameter(QString name):
-    medAbstractGroupParameter(name),
+medBoolGroupParameter::medBoolGroupParameter(QString name, QObject* parent):
+    medAbstractGroupParameter(name,parent),
     d(new medBoolGroupParameterPrivate)
 {
     d->pushButtonGroupWidget = NULL;

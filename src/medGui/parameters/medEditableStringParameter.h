@@ -25,7 +25,7 @@ class MEDGUI_EXPORT medEditableStringParameter: public medAbstractStringParamete
     Q_OBJECT
 
 public:
-    medEditableStringParameter(QString name = "Unknow string parameter");
+    medEditableStringParameter(QString name = "Unknow string parameter", QObject* parent = 0);
     virtual ~medEditableStringParameter();
     void clear();
 

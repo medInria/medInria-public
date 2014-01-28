@@ -27,7 +27,7 @@ class MEDGUI_EXPORT medPathParameter: public medAbstractStringParameter
     Q_OBJECT
 
 public:
-    medPathParameter(QString name = "Unknow path parameter");
+    medPathParameter(QString name = "Unknow path parameter", QObject* parent = 0);
     virtual ~medPathParameter();
 
     void setButtonText(QString& item);
