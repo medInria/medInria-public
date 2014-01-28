@@ -23,9 +23,9 @@ list_source_files(${PROJECT_NAME}
   data
   data/annotationData
   process
-  view
-  view/interactor
-  view/navigator
+  views
+  views/interactors
+  views/navigators
   )
 
 ## #############################################################################
