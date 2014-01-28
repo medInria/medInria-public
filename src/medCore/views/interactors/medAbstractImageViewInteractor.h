@@ -44,7 +44,7 @@ public:
     */
     virtual double opacity(int layer) const = 0;
 
-    static QString derivedFrom()
+    static QString implementationOf()
     {
      return "medAbstractImageViewInteractor";
     }

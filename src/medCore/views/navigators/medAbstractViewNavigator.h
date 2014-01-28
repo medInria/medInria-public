@@ -26,7 +26,7 @@ class MEDCORE_EXPORT medAbstractViewNavigator : public medAbstractNavigator
 public:
      virtual double zoom() const =0;
      virtual QVector2D pan() const = 0;
-    static QString derivedFrom()
+    static QString implementationOf()
     {
         return "medAbstractViewNavigator";
     }

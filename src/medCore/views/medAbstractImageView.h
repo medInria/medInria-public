@@ -130,11 +130,11 @@ signals:
 
 public:
     /**
-     * @brief derivedFrom
+     * @brief implementationOf
      * @return Upper abstract class it derives from.
      * used by the factory to kwnow what can be create.
      */
-    static QString derivedFrom()
+    static QString implementationOf()
     {
         return "medAbstractView";
     }

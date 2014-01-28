@@ -92,7 +92,7 @@ public:
     bool isClosable() const;
     void setClosable(bool closable);
 
-    static QString derivedFrom()
+    static QString implementationOf()
     {
         return "medAbstractView";
     }

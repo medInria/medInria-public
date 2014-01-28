@@ -55,22 +55,22 @@ public:
     static medViewFactory *instance();
 
     template <typename T>
-    bool registerView(QString& derivedFrom, QString& identifier)
+    bool registerView(QString& implementationOf, QString& identifier)
     {
         //we must keep the templated part in the .h file for library users
-        if(derivedFrom == medAbstractImageView::derivedFrom())
+        if(implementationOf == medAbstractImageView::implementationOf())
         {
-            medAbstractViewCreator creator = abstractView_creator<T>;
+            medAbstractViewCreator creator = abstractView_c<T>;
             return registerView(identifier, creator);
         }
-        else if(derivedFrom == medAbstractLayeredView::derivedFrom())
+        else if(implementationOf == medAbstractLayeredView::implementationOf())
         {
-            medAbstractLayeredViewCreator creator = abstractLayerdView_creator<T>;
+            medAbstractLayeredViewCreator creator = abstractLayerdView_c<T>;
             return registerView(identifier, creator);
         }
-        else if(derivedFrom == medAbstractImageView::derivedFrom())
+        else if(implementationOf == medAbstractImageView::implementationOf())
         {
-            medAbstractImageViewCreator creator = abstractImageView_creator<T>;
+            medAbstractImageViewCreator creator = abstractImageView_c<T>;
             return registerView(identifier, creator);
         }
         else
@@ -78,29 +78,29 @@ public:
     }
 
     template <typename T>
-    bool registerNavigator(QString& derivedFrom,
+    bool registerNavigator(QString& implementationOf,
                            QString& identifier,
                            QString& viewTypeHandle)
     {
         //we must keep the templated part in the .h file for library users
-        if(derivedFrom == medAbstractViewNavigator::derivedFrom())
+        if(implementationOf == medAbstractViewNavigator::implementationOf())
         {
-            medAbstractNavigatorCreator creator = abstractViewNavigator_creator<T>;
+            medAbstractNavigatorCreator creator = abstractViewNavigator_c<T>;
             return registerNavigator(identifier, viewTypeHandle, creator);
         }
-        else if(derivedFrom == medAbstractLayeredViewNavigator::derivedFrom())
+        else if(implementationOf == medAbstractLayeredViewNavigator::implementationOf())
         {
-            medAbstractViewNavigatorCreator creator = abstractLayeredViewNavigator_creator<T>;
+            medAbstractViewNavigatorCreator creator = abstractLayeredViewNavigator_c<T>;
             return registerNavigator(identifier, viewTypeHandle, creator);
         }
-        else if(derivedFrom == medAbstractImageViewNavigator::derivedFrom())
+        else if(implementationOf == medAbstractImageViewNavigator::implementationOf())
         {
-            medAbstractLayeredViewNavigatorCreator creator = abstractImageViewNavigator_creator<T>;
+            medAbstractLayeredViewNavigatorCreator creator = abstractImageViewNavigator_c<T>;
             return registerNavigator(identifier, viewTypeHandle, creator);
         }
-        else if(derivedFrom == medAbstractImageViewNavigator::derivedFrom())
+        else if(implementationOf == medAbstractImageViewNavigator::implementationOf())
         {
-            medAbstractImageViewNavigatorCreator creator = abstractNavigator_creator<T>;
+            medAbstractImageViewNavigatorCreator creator = abstractNavigator_c<T>;
             return registerNavigator(identifier, viewTypeHandle, creator);
         }
         else
@@ -108,30 +108,30 @@ public:
     }
 
     template <typename T>
-    bool registerInteractor(QString& derivedFrom,
+    bool registerInteractor(QString& implementationOf,
                             QString& identifier,
                             QString& viewTypeHandle,
                             QString& dataTypeHandle)
     {
         //we must keep the templated part in the .h file for library users
-        if(derivedFrom == medAbstractInteractor::derivedFrom())
+        if(implementationOf == medAbstractInteractor::implementationOf())
         {
-            medAbstractInteractorCreator creator = abstractViewInteractor_creator<T>;
+            medAbstractInteractorCreator creator = abstractViewInteractor_c<T>;
             return registerInteractor(identifier, viewTypeHandle, dataTypeHandle, creator);
         }
-        else if(derivedFrom == medAbstractLayeredViewInteractor::derivedFrom())
+        else if(implementationOf == medAbstractLayeredViewInteractor::implementationOf())
         {
-            medAbstractViewInteractorCreator creator = abstractLayeredViewInteractor_creator<T>;
+            medAbstractViewInteractorCreator creator = abstractLayeredViewInteractor_c<T>;
             return registerInteractor(identifier, viewTypeHandle, dataTypeHandle, creator);
         }
-        else if(derivedFrom == medAbstractImageViewInteractor::derivedFrom())
+        else if(implementationOf == medAbstractImageViewInteractor::implementationOf())
         {
-            medAbstractLayeredViewInteractorCreator creator = abstractImageViewInteractor_creator<T>;
+            medAbstractLayeredViewInteractorCreator creator = abstractImageViewInteractor_c<T>;
             return registerInteractor(identifier, viewTypeHandle, dataTypeHandle, creator);
         }
-        else if(derivedFrom == medAbstractImageViewInteractor::derivedFrom())
+        else if(implementationOf == medAbstractImageViewInteractor::implementationOf())
         {
-            medAbstractImageViewInteractorCreator creator = abstractInteractor_creator<T>;
+            medAbstractImageViewInteractorCreator creator = abstractInteractor_c<T>;
             return registerInteractor(identifier, viewTypeHandle, dataTypeHandle, creator);
         }
         else
@@ -209,67 +209,67 @@ private:
      * (solution in http://www.parashift.com/c++-faq-lite/pointers-to-members.html#faq-33.5 for those interested)
      */
     template < typename T >
-    static medAbstractView* abstractView_creator(QObject* parent)
+    static medAbstractView* abstractView_c(QObject* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractLayeredView* abstractLayerdView_creator(QObject* parent)
+    static medAbstractLayeredView* abstractLayerdView_c(QObject* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractImageView* abstractImageView_creator(QObject* parent)
+    static medAbstractImageView* abstractImageView_c(QObject* parent)
     {
     return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractViewNavigator* abstractNavigator_creator(medAbstractView* parent)
+    static medAbstractViewNavigator* abstractNavigator_c(medAbstractView* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractLayeredViewNavigator* abstractViewNavigator_creator(medAbstractLayeredView* parent)
+    static medAbstractLayeredViewNavigator* abstractViewNavigator_c(medAbstractLayeredView* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractImageViewNavigator* abstractLayeredViewNavigator_creator(medAbstractImageView* parent)
+    static medAbstractImageViewNavigator* abstractLayeredViewNavigator_c(medAbstractImageView* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractImageViewNavigator* abstractImageViewNavigator_creator(medAbstractImageView* parent)
+    static medAbstractImageViewNavigator* abstractImageViewNavigator_c(medAbstractImageView* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractViewNavigator* abstractInteractor_creator(medAbstractView* parent)
+    static medAbstractViewNavigator* abstractInteractor_c(medAbstractView* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractLayeredViewNavigator* abstractViewInteractor_creator(medAbstractLayeredView* parent)
+    static medAbstractLayeredViewNavigator* abstractViewInteractor_c(medAbstractLayeredView* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractImageViewNavigator* abstractLayeredViewInteractor_creator(medAbstractImageView* parent)
+    static medAbstractImageViewNavigator* abstractLayeredViewInteractor_c(medAbstractImageView* parent)
     {
         return (new T(parent));
     }
 
     template < typename T >
-    static medAbstractImageViewNavigator* abstractImageViewInteractor_creator(medAbstractImageView* parent)
+    static medAbstractImageViewNavigator* abstractImageViewInteractor_c(medAbstractImageView* parent)
     {
         return (new T(parent));
     }

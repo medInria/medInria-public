@@ -39,7 +39,7 @@ public:
     void setView(medAbstractView *view);
     medAbstractView *view() const;
 
-    static QString derivedFrom()
+    static QString implementationOf()
     {
         return "medAbstractNavigator";
     }

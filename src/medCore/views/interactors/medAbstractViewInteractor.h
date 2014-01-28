@@ -23,7 +23,7 @@ class MEDCORE_EXPORT medAbstractViewInteractor : public medAbstractInteractor
 {
     Q_OBJECT
 public:
-    static QString derivedFrom()
+    static QString implementationOf()
     {
         return "medAbstractInteractor";
     }

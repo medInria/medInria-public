@@ -55,7 +55,7 @@ public:
      */
     virtual int currentLayer() const;
 
-    static QString derivedFrom()
+    static QString implementationOf()
     {
         return "medAbstractLayerdView";
     }

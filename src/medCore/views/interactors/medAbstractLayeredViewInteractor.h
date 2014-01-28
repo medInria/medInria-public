@@ -38,7 +38,7 @@ public:
     virtual bool visibility(int layer) const =0;
     virtual QWidget* layerWidget() =0;
 
-    static QString derivedFrom()
+    static QString implementationOf()
     {
         return "medAbstractLayeredViewInteractor";
     }

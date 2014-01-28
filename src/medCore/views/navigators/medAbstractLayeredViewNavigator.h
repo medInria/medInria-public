@@ -31,7 +31,7 @@ public:
     virtual void setView(medAbstractLayeredView *view);
     virtual medAbstractLayeredView *view() const;
 
-    static QString derivedFrom()
+    static QString implementationOf()
     {
         return "medAbstractLayerdViewNavigator";
     }

@@ -39,7 +39,7 @@ public:
                         double &parallelScale) const = 0;
     virtual QVector3D positionBeingViewed() const = 0;
 
-    static QString derivedFrom()
+    static QString implementationOf()
     {
         return "medAbstractImageViewNavigator";
     }
