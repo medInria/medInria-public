@@ -15,7 +15,7 @@
 
 #include <medAbstractData.h>
 #include <medAbstractDataImage.h>
-#include <medAbstractView.h>
+#include <medVtkViewPublicInterface.h>
 #include <medDataIndex.h>
 #include <medImageMaskAnnotationData.h>
 #include <medMetaDataKeys.h>
@@ -55,7 +55,7 @@ public:
         m_lastPaintState(PaintState::None)
         {}
 
-    virtual bool mousePressEvent( medAbstractView *view, QMouseEvent *mouseEvent )
+    virtual bool mousePressEvent(medVtkViewPublicInterface *view, QMouseEvent *mouseEvent )
     {
         if(view->property("Orientation")=="3D")
             return false;
@@ -80,16 +80,15 @@ public:
             m_paintState = m_cb->paintState(); //update paintState
         }
 
-        medAbstractViewCoordinates * coords = view->coordinates();
         mouseEvent->accept();
 
         medAbstractData * viewData = medSegmentationSelectorToolBox::viewData( view );
         m_cb->setData( viewData ); 
 
-        if (coords->is2D()) {
+        if (view->is2D()) {
             
             // Convert mouse click to a 3D point in the image.
-            QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
+            QVector3D posImage = view->displayToWorld( mouseEvent->posF() );
 
             if (m_paintState != PaintState::Wand)
             {
@@ -104,17 +103,16 @@ public:
         return mouseEvent->isAccepted();
     }
 
-    virtual bool mouseMoveEvent( medAbstractView *view, QMouseEvent *mouseEvent )
+    virtual bool mouseMoveEvent( medVtkViewPublicInterface *view, QMouseEvent *mouseEvent )
     {
         if ( this->m_paintState == PaintState::None )
             return false;
 
-        medAbstractViewCoordinates * coords = view->coordinates();
         mouseEvent->accept();
 
-        if (coords->is2D())
+        if (view->is2D())
         {
-            QVector3D posImage = coords->displayToWorld( mouseEvent->posF() );
+            QVector3D posImage = view->displayToWorld( mouseEvent->posF() );
             //Project vector onto plane
             this->m_points.push_back(posImage);
             m_cb->updateStroke( this,view );
@@ -122,7 +120,7 @@ public:
         return mouseEvent->isAccepted();
     }
 
-    virtual bool mouseReleaseEvent( medAbstractView *view, QMouseEvent *mouseEvent )
+    virtual bool mouseReleaseEvent( medVtkViewPublicInterface *view, QMouseEvent *mouseEvent )
     {
         if ( this->m_paintState == PaintState::None )
             return false;
@@ -615,7 +613,7 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
     maskData->setData((QObject*)(mask.GetPointer()));
 }
 
-    void AlgorithmPaintToolbox::updateWandRegion(medAbstractView * view, QVector3D &vec)
+    void AlgorithmPaintToolbox::updateWandRegion(medVtkViewPublicInterface * view, QVector3D &vec)
     {
         this->updateFromGuiItems();
 
@@ -636,8 +634,7 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
             return;
         }
 
-        const medAbstractViewCoordinates * coords = view->coordinates();
-        const QVector3D vpn = coords->viewPlaneNormal();
+        const QVector3D vpn = view->viewPlaneNormal();
 
         const MaskType::DirectionType & direction = m_itkMask->GetDirection();
 
@@ -794,7 +791,7 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
         this->setWandSpinBoxValue(m_wandThresholdSizeSlider->value());
     }
 
-void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medAbstractView * view )
+void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medVtkViewPublicInterface * view )
 {
     this->updateFromGuiItems();
 
@@ -816,9 +813,8 @@ void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medA
     centerPoint.SetElement(1, newPoint.y());
     centerPoint.SetElement(2, newPoint.z());
 
-    const medAbstractViewCoordinates * coords = view->coordinates();
-    const QVector3D vup = coords->viewUp();
-    const QVector3D vpn = coords->viewPlaneNormal();
+    const QVector3D vup = view->viewUp();
+    const QVector3D vpn = view->viewPlaneNormal();
 
     vnl_vector_fixed<ElemType, 3> vecVup(vup.x(), vup.y(), vup.z() );
     vnl_vector_fixed<ElemType, 3> vecVpn(vpn.x(), vpn.y(), vpn.z() );

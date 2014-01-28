@@ -71,23 +71,6 @@ public:
      * Get the opacity of the data on the corresponding layer
      */
     virtual double opacity(int layer) const;
-
-    //! Convert from world coordinates to scene coordinates.
-    virtual QPointF worldToDisplay( const QVector3D & worldVec ) const = 0;
-    //! Convert from scene coordinates to world coordinates.
-    virtual QVector3D displayToWorld( const QPointF & scenePoint ) const = 0;
-    //! Get the view center vector in world space, the center of the slice for 2d views.
-    virtual QVector3D viewCenter() const = 0;
-    //! Get the view plane normal vector in world space.
-    virtual QVector3D viewPlaneNormal() const = 0;
-    //! Get the view plane up vector in world space.
-    virtual QVector3D viewUp() const = 0;
-    //! Is the scene 2D (true) or 3D (false)
-    virtual bool is2D() const = 0;
-    //! What is the thickness of the current slice (2D)
-    virtual qreal sliceThickness() const = 0;
-    //! The scale (number of pixels on screen per mm)
-    virtual qreal scale() const = 0;
     
     
 signals:

@@ -44,7 +44,6 @@
 #include <medCustomViewContainer.h>
 #include <medMultiViewContainer.h>
 #include <medSingleViewContainer.h>
-#include <medViewPool.h>
 #include <medWorkspaceFactory.h>
 #include <medTabbedViewContainers.h>
 #include <medVisualizationLayoutToolBox.h>
