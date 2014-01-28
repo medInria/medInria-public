@@ -97,23 +97,23 @@ bool itkDataSHImageReaderBase::readInformation (const QString &path)
         return false;
     }
     
-    medAbstractData* dtkdata = dynamic_cast<medAbstractData*>(this->data());
+    medAbstractData* medData = dynamic_cast<medAbstractData*>(this->data());
 
-    if (!dtkdata) {
+    if (!medData) {
 
         switch (this->io->GetComponentType()) {
         //            qDebug() << this->io->GetPixelTypeAsString() << this->io->GetComponentTypeAsString();
 
         case itk::ImageIOBase::FLOAT:
-            dtkdata = medAbstractDataFactory::instance()->create ("itkDataSHImageFloat3");
-            if (dtkdata)
-                this->setData ( dtkdata );
+            medData = medAbstractDataFactory::instance()->create ("itkDataSHImageFloat3");
+            if (medData)
+                this->setData ( medData );
             break;
 
 	    case itk::ImageIOBase::DOUBLE:
-			dtkdata = medAbstractDataFactory::instance()->create ("itkDataSHImageDouble3");
-			if (dtkdata)
-				this->setData ( dtkdata );
+            medData = medAbstractDataFactory::instance()->create ("itkDataSHImageDouble3");
+            if (medData)
+                this->setData ( medData );
 			break;
 
 	    default:
@@ -122,8 +122,8 @@ bool itkDataSHImageReaderBase::readInformation (const QString &path)
 		}
     }
 
-    if (dtkdata) {
-        dtkdata->addMetaData ("FilePath", QStringList() << path);
+    if (medData) {
+        medData->addMetaData ("FilePath", QStringList() << path);
     }
     return true;
 }
@@ -144,9 +144,9 @@ bool itkDataSHImageReaderBase::read (const QString &path)
 	
     qDebug() << "Read with: " << this->description();
 
-    if (medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data()) ) {
+    if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data()) ) {
 
-        if (dtkdata->identifier()=="itkDataSHImageDouble3") {
+        if (medData->identifier()=="itkDataSHImageDouble3") {
             typedef itk::VectorImage<double, 3> SHImageType;
 
             typedef itk::ImageFileReader<SHImageType> ReaderType;
@@ -164,9 +164,9 @@ bool itkDataSHImageReaderBase::read (const QString &path)
                 return false;
             }
             image = reader->GetOutput();
-            dtkdata->setData (image);
+            medData->setData (image);
         }
-        else if (dtkdata->identifier()=="itkDataSHImageFloat3") {
+        else if (medData->identifier()=="itkDataSHImageFloat3") {
             typedef itk::VectorImage<float, 3> SHImageType;
 
             typedef itk::ImageFileReader<SHImageType> ReaderType;
@@ -184,7 +184,7 @@ bool itkDataSHImageReaderBase::read (const QString &path)
                 return false;
             }
             image = reader->GetOutput();
-            dtkdata->setData (image);
+            medData->setData (image);
 
         }
         else {

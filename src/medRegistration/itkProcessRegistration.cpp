@@ -458,7 +458,7 @@ bool itkProcessRegistration::write(const QString& file)
 
         if (dataWriter->canWrite( file )) {
             if (dataWriter->write( file )) {
-                //dtkDataList.push_back (output);
+                //medDataList.push_back (output);
                 writeSuccess = true;
                 delete dataWriter;
                 break;

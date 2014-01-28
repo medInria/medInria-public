@@ -152,10 +152,10 @@ dtkSmartPointer<medAbstractData> medDatabaseReader::run()
     // might have introduced duplicates
     filenames.removeDuplicates();
 
-    dtkSmartPointer <medAbstractData> dtkdata =  this->readFile ( filenames );
+    dtkSmartPointer <medAbstractData> medData =  this->readFile ( filenames );
 
 
-    if ( ( !dtkdata.isNull() ) && dtkdata.data() )
+    if ( ( !medData.isNull() ) && medData.data() )
     {
 
         QSqlQuery seriesQuery ( * ( medDatabaseController::instance()->database() ) );
@@ -171,39 +171,39 @@ dtkSmartPointer<medAbstractData> medDatabaseReader::run()
             seriesThumbnail = seriesQuery.value ( 0 );
 
             QString thumbPath = medStorage::dataLocation() + seriesThumbnail.toString();
-            medMetaDataKeys::SeriesThumbnail.add ( dtkdata, thumbPath );
+            medMetaDataKeys::SeriesThumbnail.add ( medData, thumbPath );
         }
         else
         {
             qWarning() << "Thumbnailpath not found";
         }
 
-        medMetaDataKeys::PatientID.add ( dtkdata, patientId );
-        medMetaDataKeys::PatientName.add ( dtkdata, patientName );
-        medMetaDataKeys::BirthDate.add ( dtkdata, birthdate );
-        medMetaDataKeys::Gender.add ( dtkdata, gender );
-        medMetaDataKeys::StudyDescription.add ( dtkdata, studyName );
-        medMetaDataKeys::StudyID.add ( dtkdata, studyId );
-        medMetaDataKeys::StudyDicomID.add ( dtkdata, studyUid );
-        medMetaDataKeys::SeriesDescription.add ( dtkdata, seriesName );
-        medMetaDataKeys::SeriesID.add ( dtkdata, seriesId );
-        medMetaDataKeys::SeriesDicomID.add ( dtkdata, seriesUid );
-        medMetaDataKeys::Orientation.add ( dtkdata, orientation );
-        medMetaDataKeys::Columns.add ( dtkdata, columns );
-        medMetaDataKeys::Rows.add ( dtkdata, rows );
-        medMetaDataKeys::AcquisitionDate.add ( dtkdata, acquisitiondate );
-        medMetaDataKeys::Comments.add ( dtkdata, comments );
-        medMetaDataKeys::Description.add ( dtkdata, description );
-        medMetaDataKeys::ImportationDate.add ( dtkdata, importationdate );
-        medMetaDataKeys::Modality.add ( dtkdata, modality );
-        medMetaDataKeys::Protocol.add ( dtkdata, protocol );
-        medMetaDataKeys::Referee.add ( dtkdata, referee );
-        medMetaDataKeys::Institution.add ( dtkdata, institution );
-        medMetaDataKeys::Report.add ( dtkdata, report );
-        medMetaDataKeys::Status.add ( dtkdata, status );
-        medMetaDataKeys::SequenceName.add ( dtkdata, sequenceName );
-        medMetaDataKeys::SliceThickness.add ( dtkdata, sliceThickness );
-        medMetaDataKeys::SeriesNumber.add(dtkdata, seriesNumber);
+        medMetaDataKeys::PatientID.add ( medData, patientId );
+        medMetaDataKeys::PatientName.add ( medData, patientName );
+        medMetaDataKeys::BirthDate.add ( medData, birthdate );
+        medMetaDataKeys::Gender.add ( medData, gender );
+        medMetaDataKeys::StudyDescription.add ( medData, studyName );
+        medMetaDataKeys::StudyID.add ( medData, studyId );
+        medMetaDataKeys::StudyDicomID.add ( medData, studyUid );
+        medMetaDataKeys::SeriesDescription.add ( medData, seriesName );
+        medMetaDataKeys::SeriesID.add ( medData, seriesId );
+        medMetaDataKeys::SeriesDicomID.add ( medData, seriesUid );
+        medMetaDataKeys::Orientation.add ( medData, orientation );
+        medMetaDataKeys::Columns.add ( medData, columns );
+        medMetaDataKeys::Rows.add ( medData, rows );
+        medMetaDataKeys::AcquisitionDate.add ( medData, acquisitiondate );
+        medMetaDataKeys::Comments.add ( medData, comments );
+        medMetaDataKeys::Description.add ( medData, description );
+        medMetaDataKeys::ImportationDate.add ( medData, importationdate );
+        medMetaDataKeys::Modality.add ( medData, modality );
+        medMetaDataKeys::Protocol.add ( medData, protocol );
+        medMetaDataKeys::Referee.add ( medData, referee );
+        medMetaDataKeys::Institution.add ( medData, institution );
+        medMetaDataKeys::Report.add ( medData, report );
+        medMetaDataKeys::Status.add ( medData, status );
+        medMetaDataKeys::SequenceName.add ( medData, sequenceName );
+        medMetaDataKeys::SliceThickness.add ( medData, sliceThickness );
+        medMetaDataKeys::SeriesNumber.add(medData, seriesNumber);
 
         emit success ( this );
     }
@@ -211,9 +211,9 @@ dtkSmartPointer<medAbstractData> medDatabaseReader::run()
     {
         emit failure ( this );
     }
-    if ( dtkdata.refCount() != 1 )
-        qWarning() << "(Run:Exit) RefCount should be 1 here: " << dtkdata.refCount();
-    return dtkdata;
+    if ( medData.refCount() != 1 )
+        qWarning() << "(Run:Exit) RefCount should be 1 here: " << medData.refCount();
+    return medData;
 
 }
 
@@ -271,7 +271,7 @@ dtkSmartPointer<medAbstractData> medDatabaseReader::readFile ( QString filename 
 
 dtkSmartPointer<medAbstractData> medDatabaseReader::readFile ( const QStringList filenames )
 {
-    dtkSmartPointer<medAbstractData> dtkdata;
+    dtkSmartPointer<medAbstractData> medData;
 
     QList<QString> readers = medAbstractDataFactory::instance()->readers();
 
@@ -286,12 +286,12 @@ dtkSmartPointer<medAbstractData> medDatabaseReader::readFile ( const QStringList
         {
             dataReader->read ( filenames );
             dataReader->enableDeferredDeletion ( false );
-            dtkdata = dynamic_cast<medAbstractData*>(dataReader->data());
-            if ( dtkdata.refCount() != 2 )
-                qWarning() << "(ReaderLoop) RefCount should be 2 here: " << dtkdata.refCount();
+            medData = dynamic_cast<medAbstractData*>(dataReader->data());
+            if ( medData.refCount() != 2 )
+                qWarning() << "(ReaderLoop) RefCount should be 2 here: " << medData.refCount();
             break;
         }
 
     }
-    return dtkdata;
+    return medData;
 }

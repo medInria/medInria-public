@@ -195,7 +195,7 @@ void AlgorithmConnectedThresholdToolbox::onApplyButtonPressed()
     this->segmentationToolBox()->run( alg );
 
 }
-void AlgorithmConnectedThresholdToolbox::setData( medAbstractData *dtkdata )
+void AlgorithmConnectedThresholdToolbox::setData( medAbstractData *medData )
 {
     // disconnect existing
     if ( m_data ) {
@@ -206,7 +206,7 @@ void AlgorithmConnectedThresholdToolbox::setData( medAbstractData *dtkdata )
         }
     }
 
-    m_data = dtkSmartPointer<medAbstractData>(dtkdata);
+    m_data = dtkSmartPointer<medAbstractData>(medData);
 
     QString dataText;
     if ( m_data ) {
@@ -215,13 +215,13 @@ void AlgorithmConnectedThresholdToolbox::setData( medAbstractData *dtkdata )
         QString seriesName;
 
         if ( m_data->hasMetaData( medMetaDataKeys::PatientName.key() ) ){
-            patientName = dtkdata->metaDataValues(medMetaDataKeys::PatientName.key())[0];
+            patientName = medData->metaDataValues(medMetaDataKeys::PatientName.key())[0];
         }
         if ( m_data->hasMetaData( medMetaDataKeys::StudyDescription.key() ) ){
-            studyName = dtkdata->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
+            studyName = medData->metaDataValues(medMetaDataKeys::StudyDescription.key())[0];
         }
         if ( m_data->hasMetaData( medMetaDataKeys::SeriesDescription.key() ) ){
-            seriesName = dtkdata->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
+            seriesName = medData->metaDataValues(medMetaDataKeys::SeriesDescription.key())[0];
         }
 
         dataText = patientName + '/' + studyName + '/' +seriesName;

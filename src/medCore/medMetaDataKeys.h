@@ -144,7 +144,7 @@ namespace medMetaDataKeys {
     extern MEDCORE_EXPORT const Key NumberOfComponents;
     extern MEDCORE_EXPORT const Key ComponentType;
     extern MEDCORE_EXPORT const Key PixelType;
-    extern MEDCORE_EXPORT const Key DtkDataType;
+    extern MEDCORE_EXPORT const Key medDataType;
     extern MEDCORE_EXPORT const Key PreferredDataReader;
     extern MEDCORE_EXPORT const Key ImageID;
     extern MEDCORE_EXPORT const Key ThumbnailPath;

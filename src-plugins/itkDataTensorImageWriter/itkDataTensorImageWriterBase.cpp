@@ -76,15 +76,15 @@ bool itkDataTensorImageWriterBase::write(const QString& path)
     if (this->io.IsNull())
         return false;
 
-    if (medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data()) ) {
+    if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data()) ) {
 
-        if(dtkdata->identifier()=="itkDataTensorImageFloat3") {
+        if(medData->identifier()=="itkDataTensorImageFloat3") {
 
             float dummy = 0;
             write(path, dummy);
         }
 
-        else if(dtkdata->identifier()=="itkDataTensorImageDouble3") {
+        else if(medData->identifier()=="itkDataTensorImageDouble3") {
 
             double dummy = 0;
             write(path, dummy);

@@ -54,12 +54,12 @@ bool v3dDataFibersReader::canRead (const QStringList& paths) {
 bool v3dDataFibersReader::readInformation (const QString& path) {
     // d->reader->SetFileName (path.toAscii().constData());
 
-    dtkSmartPointer<medAbstractData> dtkdata = dynamic_cast<medAbstractData*>(this->data());
+    dtkSmartPointer<medAbstractData> medData = dynamic_cast<medAbstractData*>(this->data());
 
-    if (!dtkdata) {
-        dtkdata = medAbstractDataFactory::instance()->createSmartPointer ("v3dDataFibers");
-        if (dtkdata)
-            this->setData (dtkdata);
+    if (!medData) {
+        medData = medAbstractDataFactory::instance()->createSmartPointer ("v3dDataFibers");
+        if (medData)
+            this->setData (medData);
     }
     
     return true;
@@ -78,7 +78,7 @@ bool v3dDataFibersReader::read (const QString& path) {
 
   this->setProgress (25);
 
-  if (medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data())) {
+  if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data())) {
     d->reader->SetFileName (path.toAscii().constData());
     d->reader->Update();
 
@@ -99,11 +99,11 @@ bool v3dDataFibersReader::read (const QString& path) {
           ++it;
         }
 
-        dtkdata->setMetaData ("BundleList",      bundles);
-        dtkdata->setMetaData ("BundleColorList", bundleColors);
+        medData->setMetaData ("BundleList",      bundles);
+        medData->setMetaData ("BundleColorList", bundleColors);
     }
 
-    dtkdata->setData ( d->reader->GetOutput() );
+    medData->setData ( d->reader->GetOutput() );
   }
 
   this->setProgress (100);

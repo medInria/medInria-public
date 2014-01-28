@@ -78,15 +78,15 @@ bool itkDataSHImageWriterBase::write(const QString& path)
 	 if (this->io.IsNull())
 		 return false;
 
-    if (medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data()) ) {
+    if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data()) ) {
 
-                if(dtkdata->identifier()=="itkDataSHImageFloat3") {
+                if(medData->identifier()=="itkDataSHImageFloat3") {
 
 		    float dummy = 0;
 		    write(path, dummy);
 		}
 
-                else if(dtkdata->identifier()=="itkDataSHImageDouble3") {
+                else if(medData->identifier()=="itkDataSHImageDouble3") {
 
 		    double dummy = 0;
 		    write(path, dummy);

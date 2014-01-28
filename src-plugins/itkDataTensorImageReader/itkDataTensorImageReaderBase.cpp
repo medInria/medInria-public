@@ -100,22 +100,22 @@ bool itkDataTensorImageReaderBase::readInformation (const QString &path)
 	return false;
     }
     
-    dtkSmartPointer<medAbstractData> dtkdata = dynamic_cast<medAbstractData*>(this->data());
+    dtkSmartPointer<medAbstractData> medData = dynamic_cast<medAbstractData*>(this->data());
 
-    if (!dtkdata) {
+    if (!medData) {
       
         switch (this->io->GetComponentType()) {
 
 	    case itk::ImageIOBase::FLOAT:
-	        dtkdata = medAbstractDataFactory::instance()->createSmartPointer ("itkDataTensorImageFloat3");
-		if (dtkdata)
-		    this->setData ( dtkdata );
+	        medData = medAbstractDataFactory::instance()->createSmartPointer ("itkDataTensorImageFloat3");
+		if (medData)
+		    this->setData ( medData );
 		break;
 		  
 	    case itk::ImageIOBase::DOUBLE:
-	        dtkdata = medAbstractDataFactory::instance()->createSmartPointer ("itkDataTensorImageDouble3");
-		if (dtkdata)
-		    this->setData ( dtkdata );
+	        medData = medAbstractDataFactory::instance()->createSmartPointer ("itkDataTensorImageDouble3");
+		if (medData)
+		    this->setData ( medData );
 		break;
 		  
 	    default:
@@ -124,8 +124,8 @@ bool itkDataTensorImageReaderBase::readInformation (const QString &path)
 	}
     }
 
-    if (dtkdata) {
-        dtkdata->addMetaData ("FilePath", QStringList() << path);
+    if (medData) {
+        medData->addMetaData ("FilePath", QStringList() << path);
     }
     
     return true;
@@ -147,9 +147,9 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	
     qDebug() << "Read with: " << this->identifier();
 
-    if (medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data()) ) {
+    if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data()) ) {
       
-        if (dtkdata->identifier()=="itkDataTensorImageDouble3") {
+        if (medData->identifier()=="itkDataTensorImageDouble3") {
 
 	  if (this->io->GetNumberOfComponents()==6) {
 
@@ -211,7 +211,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	      ++itIn;
 	    }
 
-	    dtkdata->setData (tensors);
+	    medData->setData (tensors);
 	    
 	  }
 	  else if (this->io->GetNumberOfComponents()==9) {
@@ -274,7 +274,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	      ++itIn;
 	    }
 
-	    dtkdata->setData (tensors);
+	    medData->setData (tensors);
 	  }
 	  else {
 	      qDebug() << "Unsupported number of components";
@@ -282,7 +282,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	  } 
 	}
 
-	else if (dtkdata->identifier()=="itkDataTensorImageFloat3") {
+	else if (medData->identifier()=="itkDataTensorImageFloat3") {
 
 	  if (this->io->GetNumberOfComponents()==6) {
 
@@ -344,7 +344,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	      ++itIn;
 	    }
 	    
-	    dtkdata->setData (tensors);
+	    medData->setData (tensors);
 	  }
 	  else if (this->io->GetNumberOfComponents()==9) {
 
@@ -406,7 +406,7 @@ bool itkDataTensorImageReaderBase::read (const QString &path)
 	      ++itIn;
 	    }
 
-	    dtkdata->setData (tensors);
+	    medData->setData (tensors);
 	  }
 	  else {
 	      qDebug() << "Unsupported number of components";

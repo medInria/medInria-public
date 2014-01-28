@@ -46,7 +46,7 @@ class MEDSQL_EXPORT medDatabaseImporter : public medAbstractDatabaseImporter
 
 public:
     medDatabaseImporter ( const QString& file, bool indexWithoutImporting = false, const QString& callerUuid = QString() );
-    medDatabaseImporter ( medAbstractData* dtkData, const QString& callerUuid );
+    medDatabaseImporter ( medAbstractData* medData, const QString& callerUuid );
     ~medDatabaseImporter ( void );
 
 
@@ -62,61 +62,61 @@ private:
     QString ensureUniqueSeriesName ( const QString seriesName );
 
     /**
-    * Checks if the image which was used to create the dtkData object
+    * Checks if the image which was used to create the medData object
     * passed as parameter already exists in the database
-    * @param dtkData - a @medAbstractData object created from the original image
+    * @param medData - a @medAbstractData object created from the original image
     * @param imageName - the name of the image we are looking for
     * @return true if already exists, false otherwise
     **/
-    bool checkIfExists ( medAbstractData* dtkdata, QString imageName );
+    bool checkIfExists ( medAbstractData* medData, QString imageName );
 
     /**
     * Populates database tables and generates thumbnails.
-    * @param dtkData - a @medAbstractData object created from the original image
+    * @param medData - a @medAbstractData object created from the original image
     * @param pathToStoreThumbnails - path where the thumbnails will be stored
     * @return medDataIndex the new medDataIndex associated with this imported series.
     **/
-    medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* dtkData, QString pathToStoreThumbnails );
+    medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
 
     /**
     * Generates and saves the thumbnails for images in @dtkAbstractData.
     * Also stores as metada with key RefThumbnailPath the path of the image that
     * will be used as reference for patient, study and series.
-    * @param dtkData - @medAbstractData object whose thumbnails will be generated and saved
+    * @param medData - @medAbstractData object whose thumbnails will be generated and saved
     * @param pathToStoreThumbnails - path where the thumbnails will be stored
     * @return a list of the thumbnails paths
     **/
-    QStringList generateThumbnails ( medAbstractData* dtkData, QString pathToStoreThumbnails );
+    QStringList generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
 
     /**
      * Retrieves the patient id of the existent (or newly created)
      * patient record in the patient table.
      */
-    int getOrCreatePatient ( const medAbstractData* dtkData, QSqlDatabase db );
+    int getOrCreatePatient ( const medAbstractData* medData, QSqlDatabase db );
 
     /**
      * Retrieves the study id of the existent (or newly created)
      * study record in the study table.
      */
-    int getOrCreateStudy ( const medAbstractData* dtkData, QSqlDatabase db, int patientId );
+    int getOrCreateStudy ( const medAbstractData* medData, QSqlDatabase db, int patientId );
 
     /**
      * Retrieves the series id of the existent (or newly created)
      * series record in the series table.
      */
-    int getOrCreateSeries ( const medAbstractData* dtkData, QSqlDatabase db, int studyId );
+    int getOrCreateSeries ( const medAbstractData* medData, QSqlDatabase db, int studyId );
 
     /**
      * Creates records in the image table for the files we are importing/indexing.
      */
-    void createMissingImages ( medAbstractData* dtkData, QSqlDatabase db, int seriesId, QStringList thumbPaths );
+    void createMissingImages ( medAbstractData* medData, QSqlDatabase db, int seriesId, QStringList thumbPaths );
 
     /**
      * Checks if the user is trying to perform a partial import
      * (that is, trying to import files belonging to the same volume
      * in 2 different steps).
      */
-    bool isPartialImportAttempt ( medAbstractData* dtkData );
+    bool isPartialImportAttempt ( medAbstractData* medData );
     
     /**
      * Retrieves patientID. Checks if patient is already in the database

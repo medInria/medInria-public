@@ -35,9 +35,9 @@ int itkDataImageDouble3Test (int argc, char* argv[])
   dtkPluginManager::instance()->setPath (argv[1]);
   dtkPluginManager::instance()->initialize();
 
-  dtkSmartPointer<medAbstractData> dtkdata;
-  dtkdata =  medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
-  medAbstractDataImage *data = dynamic_cast<medAbstractDataImage*>( dtkdata.data() );
+  dtkSmartPointer<medAbstractData> medData;
+  medData =  medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
+  medAbstractDataImage *data = dynamic_cast<medAbstractDataImage*>( medData.data() );
 
   if (!data) {
       qDebug() << "Cannot create data object from plugin";
@@ -91,9 +91,9 @@ int itkDataImageDouble3Test (int argc, char* argv[])
   image->SetRegions (region);
   image->Allocate();
 
-  dtkSmartPointer<medAbstractData> dtkdata2;
-  dtkdata2 =  medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
-  medAbstractDataImage *data2 = dynamic_cast<medAbstractDataImage*>( dtkdata2.data() );
+  dtkSmartPointer<medAbstractData> medData2;
+  medData2 =  medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageDouble3") ;
+  medAbstractDataImage *data2 = dynamic_cast<medAbstractDataImage*>( medData2.data() );
   if (!data2) {
       qDebug() << "Cannot create data object from plugin";
       return EXIT_FAILURE;

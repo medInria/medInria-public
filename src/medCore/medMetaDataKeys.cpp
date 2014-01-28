@@ -78,7 +78,7 @@ namespace medMetaDataKeys {
     MEDCORE_EXPORT const Key NumberOfComponents("NumberOfComponents", "Number Of Components");
     MEDCORE_EXPORT const Key ComponentType("ComponentType", "Component Type");
     MEDCORE_EXPORT const Key PixelType("PixelType", "Pixel Type");
-    MEDCORE_EXPORT const Key DtkDataType("DtkDataType", "Dtk Data Type");
+    MEDCORE_EXPORT const Key medDataType("medDataType", "Dtk Data Type");
     MEDCORE_EXPORT const Key PreferredDataReader("PreferredDataReader", "Preferred Data Reader");
     MEDCORE_EXPORT const Key ImageID("ImageID");
     MEDCORE_EXPORT const Key ThumbnailPath("ThumbnailPath", "Thumbnail Path");

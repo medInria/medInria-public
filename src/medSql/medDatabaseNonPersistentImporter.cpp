@@ -37,8 +37,8 @@ medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter ( const QStri
 
 //-----------------------------------------------------------------------------------------------------------
 
-medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter ( medAbstractData* dtkData, const QString& callerUuid )
-: medAbstractDatabaseImporter(dtkData, true, callerUuid)
+medDatabaseNonPersistentImporter::medDatabaseNonPersistentImporter ( medAbstractData* medData, const QString& callerUuid )
+: medAbstractDatabaseImporter(medData, true, callerUuid)
 {
     qDebug() << "medDatabaseNonPersistentImporter created with uuid:" << this->callerUuid();
 }
@@ -129,15 +129,15 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
         patientItem = new medDatabaseNonPersistentItem;
         index = medDataIndex ( npdc->dataSourceId(), patientDbId, -1, -1, -1 );
 
-        dtkSmartPointer<medAbstractData> dtkData = new medAbstractData();
-        dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() <<  patientName );
-        dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
+        dtkSmartPointer<medAbstractData> medData = new medAbstractData();
+        medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() <<  patientName );
+        medData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
 
         patientItem->d->name = patientName;
         patientItem->d->patientId = patientId;
         patientItem->d->index = index;
         patientItem->d->birthdate = birthdate;
-        patientItem->d->data = dtkData;
+        patientItem->d->data = medData;
 
         npdc->insert ( index, patientItem );
     }
@@ -183,20 +183,20 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
             studyItem = new medDatabaseNonPersistentItem;
             index = medDataIndex ( npdc->dataSourceId(), patientDbId, studyDbId, -1, -1 );
 
-            dtkSmartPointer<medAbstractData> dtkData = new medAbstractData();
+            dtkSmartPointer<medAbstractData> medData = new medAbstractData();
 
-            dtkData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
-            dtkData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
-            dtkData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
-            dtkData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << studyId );
-            dtkData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << studyUid );
+            medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
+            medData->addMetaData ( medMetaDataKeys::BirthDate.key(), birthdate );
+            medData->addMetaData ( medMetaDataKeys::StudyDescription.key(), QStringList() << studyName );
+            medData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << studyId );
+            medData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << studyUid );
 
             studyItem->d->name = patientName;
             studyItem->d->patientId = patientId;
             studyItem->d->birthdate = birthdate;
             studyItem->d->studyName = studyName;
             studyItem->d->index = index;
-            studyItem->d->data = dtkData;
+            studyItem->d->data = medData;
             studyItem->d->studyId = studyId;
             studyItem->d->studyUid = studyUid;
 
@@ -253,7 +253,7 @@ medDataIndex medDatabaseNonPersistentImporter::populateDatabaseAndGenerateThumbn
 
 //-----------------------------------------------------------------------------------------------------------
 
-bool medDatabaseNonPersistentImporter::checkIfExists ( medAbstractData* dtkdata, QString imageName )
+bool medDatabaseNonPersistentImporter::checkIfExists ( medAbstractData* medData, QString imageName )
 {
     bool imageExists = false;
 
@@ -305,7 +305,7 @@ QString medDatabaseNonPersistentImporter::ensureUniqueSeriesName ( const QString
 
 //-----------------------------------------------------------------------------------------------------------
 
-bool medDatabaseNonPersistentImporter::isPartialImportAttempt ( medAbstractData* dtkData )
+bool medDatabaseNonPersistentImporter::isPartialImportAttempt ( medAbstractData* medData )
 {
     // here we check if the series we try to import is already in the database
 
@@ -313,7 +313,7 @@ bool medDatabaseNonPersistentImporter::isPartialImportAttempt ( medAbstractData*
     // we cannot tell whether we are importing the same file twice or
     // if we want to import now a file with a path that was previously imported before
     // see http://pm-med.inria.fr/issues/292 for more details
-    QString containsBasicInfo = medMetaDataKeys::ContainsBasicInfo.getFirstValue(dtkData);
+    QString containsBasicInfo = medMetaDataKeys::ContainsBasicInfo.getFirstValue(medData);
     if (containsBasicInfo.compare("true", Qt::CaseInsensitive) != 0)
         return false;
 
@@ -328,7 +328,7 @@ bool medDatabaseNonPersistentImporter::isPartialImportAttempt ( medAbstractData*
     bool isPartialImport = false;
     foreach(medDatabaseNonPersistentItem* item, items)
     {
-        isPartialImport = item->Match(dtkData);
+        isPartialImport = item->Match(medData);
         if(isPartialImport)
         {
             QString patientName = medMetaDataKeys::PatientName.getFirstValue(item->data()).simplified();
@@ -341,9 +341,9 @@ bool medDatabaseNonPersistentImporter::isPartialImportAttempt ( medAbstractData*
     }
     if (isPartialImport)
     {
-        QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
+        QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
         QString newSeriesDescription = ensureUniqueSeriesName(seriesName);
-        dtkData->setMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList()<< newSeriesDescription );
+        medData->setMetaData(medMetaDataKeys::SeriesDescription.key(), QStringList()<< newSeriesDescription );
     }
    
     return isPartialImport;

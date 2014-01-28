@@ -94,9 +94,9 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
         return false;
     }
 
-    dtkSmartPointer<medAbstractData> dtkdata = dynamic_cast<medAbstractData*>(this->data());
+    dtkSmartPointer<medAbstractData> medData = dynamic_cast<medAbstractData*>(this->data());
 
-    if (!dtkdata) {
+    if (!medData) {
 
         if (this->io->GetPixelType()==itk::ImageIOBase::SCALAR ) {
 
@@ -111,43 +111,43 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
             switch (this->io->GetComponentType()) {
 
                 case itk::ImageIOBase::UCHAR:
-                    dtkdata = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUChar").append(cdim));
+                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUChar").append(cdim));
                     break;
 
                 case itk::ImageIOBase::CHAR:
-                    dtkdata = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageChar").append(cdim));
+                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageChar").append(cdim));
                     break;
 
                 case itk::ImageIOBase::USHORT:
-                    dtkdata = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUShort").append(cdim));
+                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUShort").append(cdim));
                     break;
 
                 case itk::ImageIOBase::SHORT:
-                    dtkdata = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageShort").append(cdim));
+                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageShort").append(cdim));
                     break;
 
                 case itk::ImageIOBase::UINT:
-                    dtkdata = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUInt").append(cdim));
+                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageUInt").append(cdim));
                     break;
 
                 case itk::ImageIOBase::INT:
-                    dtkdata = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageInt").append(cdim));
+                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageInt").append(cdim));
                     break;
 
                 case itk::ImageIOBase::ULONG:
-                    dtkdata = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageULong").append(cdim));
+                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageULong").append(cdim));
                     break;
 
                 case itk::ImageIOBase::LONG:
-                    dtkdata = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageLong").append(cdim));
+                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageLong").append(cdim));
                     break;
 
                 case itk::ImageIOBase::FLOAT:
-                    dtkdata = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageDouble").append(cdim));  // Bug ???
+                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageDouble").append(cdim));  // Bug ???
                     break;
 
                 case itk::ImageIOBase::DOUBLE:
-                    dtkdata = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageDouble").append(cdim));  // Bug (added 4 which was not existing) ??
+                    medData = medAbstractDataFactory::instance()->createSmartPointer (QString("itkDataImageDouble").append(cdim));  // Bug (added 4 which was not existing) ??
                     break;
 
                 default:
@@ -160,7 +160,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
             switch (this->io->GetComponentType()) {
 
                 case itk::ImageIOBase::UCHAR:
-                    dtkdata = medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageRGB3");
+                    medData = medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageRGB3");
                     break;
 
                 default:
@@ -173,10 +173,10 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
             switch (this->io->GetComponentType()) {
 
                 case itk::ImageIOBase::UCHAR:
-                    dtkdata = medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVectorUChar3");
+                    medData = medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVectorUChar3");
                     break;
                 case itk::ImageIOBase::FLOAT:
-                    dtkdata = medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVectorFloat3");
+                    medData = medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageVectorFloat3");
                     break;
                 default:
                     qDebug() << "Unrecognized component type";
@@ -188,7 +188,7 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
             switch (this->io->GetComponentType()) {
 
             case itk::ImageIOBase::UCHAR:
-                dtkdata = medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageRGBA3");
+                medData = medAbstractDataFactory::instance()->createSmartPointer ("itkDataImageRGBA3");
                 break;
 
             default:
@@ -201,12 +201,12 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
             return false;
         }
 
-        if (dtkdata)
-            this->setData(dtkdata);
+        if (medData)
+            this->setData(medData);
     }
 
 
-    if (dtkdata) {
+    if (medData) {
         /*
       QStringList patientName;
       QStringList studyName;
@@ -220,22 +220,22 @@ bool itkDataImageReaderBase::readInformation (const QString& path)
       for (unsigned int i=0; i<this->io->GetOrderedFileNames().size(); i++ )
       filePaths << this->io->GetOrderedFileNames()[i].c_str();
 
-      if (!dtkdata->hasMetaData ( medMetaDataKeys::PatientName.key()) ))
-      dtkdata->addMetaData ( medMetaDataKeys::PatientName.key(), patientName );
+      if (!medData->hasMetaData ( medMetaDataKeys::PatientName.key()) ))
+      medData->addMetaData ( medMetaDataKeys::PatientName.key(), patientName );
       else
-      dtkdata->setMetaData ( medMetaDataKeys::PatientName.key(), patientName );
+      medData->setMetaData ( medMetaDataKeys::PatientName.key(), patientName );
 
-      if (!dtkdata->hasMetaData (medMetaDataKeys::StudyDescription.key()))
-      dtkdata->addMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
+      if (!medData->hasMetaData (medMetaDataKeys::StudyDescription.key()))
+      medData->addMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
       else
-      dtkdata->setMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
+      medData->setMetaData ( medMetaDataKeys::StudyDescription.key(), studyName );
 
-      if (!dtkdata->hasMetaData (medMetaDataKeys::SeriesDescription.key() ))
-      dtkdata->addMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
+      if (!medData->hasMetaData (medMetaDataKeys::SeriesDescription.key() ))
+      medData->addMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
       else
-      dtkdata->setMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
+      medData->setMetaData ( medMetaDataKeys::SeriesDescription.key(), seriesName );
     */
-        dtkdata->addMetaData ("FilePath", QStringList() << path);
+        medData->addMetaData ("FilePath", QStringList() << path);
 
     }
     
@@ -252,8 +252,8 @@ bool itkDataImageReaderBase::readInformation (const QStringList& paths)
 
 template <unsigned DIM,typename T>
 bool itkDataImageReaderBase::read_image(const QString& path,const char* type) {
-    medAbstractData* dtkdata = dynamic_cast<medAbstractData*>(this->data());
-    if (dtkdata && dtkdata->identifier()!=type)
+    medAbstractData* medData = dynamic_cast<medAbstractData*>(this->data());
+    if (medData && medData->identifier()!=type)
         return false;
 
     typedef itk::Image<T,DIM> Image;
@@ -262,14 +262,14 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type) {
     TReader->SetFileName(path.toAscii().constData());
     TReader->SetUseStreaming(true);
     typename Image::Pointer im = TReader->GetOutput();
-    dtkdata->setData(im);
+    medData->setData(im);
 
     //  Recover the pixel meaning from the intent_name.
 
     const itk::MetaDataDictionary dict = im->GetMetaDataDictionary();
     std::string PixMeaning;
     if (itk::ExposeMetaData(dict,"intent_name",PixMeaning))
-        dtkdata->addMetaData(medAbstractDataImage::PixelMeaningMetaData,QString(PixMeaning.c_str()));
+        medData->addMetaData(medAbstractDataImage::PixelMeaningMetaData,QString(PixMeaning.c_str()));
 
     TReader->Update();
 

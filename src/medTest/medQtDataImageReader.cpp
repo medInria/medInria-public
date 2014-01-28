@@ -96,13 +96,13 @@ void medQtDataImageReader::reset()
 
 void medQtDataImageReader::setMetaDataFromImageReader()
 {
-    medAbstractData * dtkdata = dynamic_cast<medAbstractData*>(this->data());
-    if ( !dtkdata || m_reader.isNull() )
+    medAbstractData * medData = dynamic_cast<medAbstractData*>(this->data());
+    if ( !medData || m_reader.isNull() )
         return;
 
     const QStringList keys = m_reader->textKeys();
     foreach( const QString key, keys) {
-        dtkdata->setMetaData( key, m_reader->text(key) );
+        medData->setMetaData( key, m_reader->text(key) );
     }
 }
 
@@ -164,7 +164,7 @@ int medQtDataImageReader::readStartingFrom( const QString& path, int iStart )
         return 0;
     }
 
-    medAbstractData * dtkData = dynamic_cast<medAbstractData*>(this->data());
+    medAbstractData * medData = dynamic_cast<medAbstractData*>(this->data());
 
     int numRead(0);
     if ( m_reader->supportsAnimation() ) {
@@ -172,11 +172,11 @@ int medQtDataImageReader::readStartingFrom( const QString& path, int iStart )
         for( int i(0); i<imageCount; ++i ) {
             m_reader->jumpToImage(i);
             nextImage = m_reader->read();
-            dtkData->setData(&(nextImage), i + iStart);
+            medData->setData(&(nextImage), i + iStart);
         }
         numRead = imageCount;
     } else {
-        dtkData->setData(&(nextImage), iStart);
+        medData->setData(&(nextImage), iStart);
         numRead = 1;
     }
     return numRead;

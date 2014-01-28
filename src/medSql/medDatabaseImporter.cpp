@@ -36,7 +36,7 @@ medDatabaseImporter::medDatabaseImporter ( const QString& file, bool indexWithou
 
 //-----------------------------------------------------------------------------------------------------------
 
-medDatabaseImporter::medDatabaseImporter ( medAbstractData* dtkData, const QString& callerUuid ) : medAbstractDatabaseImporter(dtkData,false, callerUuid)
+medDatabaseImporter::medDatabaseImporter ( medAbstractData* medData, const QString& callerUuid ) : medAbstractDatabaseImporter(medData,false, callerUuid)
 {
 
 }
@@ -75,7 +75,7 @@ QString medDatabaseImporter::getPatientID(QString patientName, QString birthDate
 
 //-----------------------------------------------------------------------------------------------------------
 
-bool medDatabaseImporter::isPartialImportAttempt ( medAbstractData* dtkData )
+bool medDatabaseImporter::isPartialImportAttempt ( medAbstractData* medData )
 {
     // here we check if the series we try to import is already in the database
 
@@ -83,14 +83,14 @@ bool medDatabaseImporter::isPartialImportAttempt ( medAbstractData* dtkData )
     // we cannot tell whether we are importing the same file twice or
     // if we want to import now a file with a path that was previously imported before
     // see http://pm-med.inria.fr/issues/292 for more details
-    QString containsBasicInfo = medMetaDataKeys::ContainsBasicInfo.getFirstValue(dtkData);
+    QString containsBasicInfo = medMetaDataKeys::ContainsBasicInfo.getFirstValue(medData);
     if (containsBasicInfo.compare("true", Qt::CaseInsensitive) != 0)
         return false;
 
     QSqlDatabase db = * ( medDatabaseController::instance()->database() );
     QSqlQuery query ( db );
 
-    QString patientName = medMetaDataKeys::PatientName.getFirstValue(dtkData).simplified();
+    QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData).simplified();
 
     query.prepare ( "SELECT id FROM patient WHERE name = :name" );
     query.bindValue ( ":name", patientName );
@@ -104,8 +104,8 @@ bool medDatabaseImporter::isPartialImportAttempt ( medAbstractData* dtkData )
 
         query.clear();
 
-        QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(dtkData).simplified();
-        QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(dtkData);
+        QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(medData).simplified();
+        QString studyUid = medMetaDataKeys::StudyDicomID.getFirstValue(medData);
 
         query.prepare ( "SELECT id FROM study WHERE patient = :patient AND name = :studyName AND uid = :studyUid" );
         query.bindValue ( ":patient", patientDbId );
@@ -121,14 +121,14 @@ bool medDatabaseImporter::isPartialImportAttempt ( medAbstractData* dtkData )
 
             query.clear();
 
-            QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
-            QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(dtkData);
-            QString orientation = medMetaDataKeys::Orientation.getFirstValue(dtkData);
-            QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(dtkData);
-            QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(dtkData);
-            QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(dtkData);
-            QString rows = medMetaDataKeys::Rows.getFirstValue(dtkData);
-            QString columns = medMetaDataKeys::Columns.getFirstValue(dtkData);
+            QString seriesName = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
+            QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(medData);
+            QString orientation = medMetaDataKeys::Orientation.getFirstValue(medData);
+            QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(medData);
+            QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(medData);
+            QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(medData);
+            QString rows = medMetaDataKeys::Rows.getFirstValue(medData);
+            QString columns = medMetaDataKeys::Columns.getFirstValue(medData);
 
             query.prepare ( "SELECT * FROM series WHERE study = :study AND name = :seriesName AND uid = :seriesUid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns" );
             query.bindValue ( ":study", studyDbId );
@@ -146,7 +146,7 @@ bool medDatabaseImporter::isPartialImportAttempt ( medAbstractData* dtkData )
 
             if ( query.first() )
             {
-                QStringList filePaths = dtkData->metaDataValues ( medMetaDataKeys::FilePaths.key() );
+                QStringList filePaths = medData->metaDataValues ( medMetaDataKeys::FilePaths.key() );
                 *(partialAttemptsInfo()) << ( QStringList() << patientName << studyName << seriesName << filePaths[0] );
                 return true;
             }
@@ -159,15 +159,15 @@ bool medDatabaseImporter::isPartialImportAttempt ( medAbstractData* dtkData )
 //-----------------------------------------------------------------------------------------------------------
 
 
-bool medDatabaseImporter::checkIfExists ( medAbstractData* dtkdata, QString imageName )
+bool medDatabaseImporter::checkIfExists ( medAbstractData* medData, QString imageName )
 {
     bool imageExists = false;
 
     QSqlQuery query ( * ( medDatabaseController::instance()->database() ) );
 
     // first we query patient table
-    QString patientName = medMetaDataKeys::PatientName.getFirstValue(dtkdata);
-    QString birthDate = medMetaDataKeys::BirthDate.getFirstValue(dtkdata);
+    QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData);
+    QString birthDate = medMetaDataKeys::BirthDate.getFirstValue(medData);
 
     query.prepare ( "SELECT id FROM patient WHERE name = :name AND birthDate = :birthdate");
     query.bindValue ( ":name", patientName );
@@ -181,8 +181,8 @@ bool medDatabaseImporter::checkIfExists ( medAbstractData* dtkdata, QString imag
         QVariant patientDbId = query.value ( 0 );
         // if patient already exists we now verify the study
 
-        QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(dtkdata);
-        QString studyUid  = medMetaDataKeys::StudyDicomID.getFirstValue(dtkdata);
+        QString studyName = medMetaDataKeys::StudyDescription.getFirstValue(medData);
+        QString studyUid  = medMetaDataKeys::StudyDicomID.getFirstValue(medData);
 
         query.prepare ( "SELECT id FROM study WHERE patient = :patient AND name = :name AND uid = :studyID" );
         query.bindValue ( ":patient", patientDbId );
@@ -196,14 +196,14 @@ bool medDatabaseImporter::checkIfExists ( medAbstractData* dtkdata, QString imag
         {
             QVariant studyDbId = query.value ( 0 );
             // both patient and study exists, let's check series
-            QString seriesName  = medMetaDataKeys::SeriesDescription.getFirstValue(dtkdata);
-            QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(dtkdata);
-            QString orientation = medMetaDataKeys::Orientation.getFirstValue(dtkdata); // orientation sometimes differ by a few digits, thus this is not reliable
-            QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(dtkdata);
-            QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(dtkdata);
-            QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(dtkdata);
-            QString rows = medMetaDataKeys::Rows.getFirstValue(dtkdata);
-            QString columns = medMetaDataKeys::Columns.getFirstValue(dtkdata);
+            QString seriesName  = medMetaDataKeys::SeriesDescription.getFirstValue(medData);
+            QString seriesUid = medMetaDataKeys::SeriesDicomID.getFirstValue(medData);
+            QString orientation = medMetaDataKeys::Orientation.getFirstValue(medData); // orientation sometimes differ by a few digits, thus this is not reliable
+            QString seriesNumber = medMetaDataKeys::SeriesNumber.getFirstValue(medData);
+            QString sequenceName = medMetaDataKeys::SequenceName.getFirstValue(medData);
+            QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(medData);
+            QString rows = medMetaDataKeys::Rows.getFirstValue(medData);
+            QString columns = medMetaDataKeys::Columns.getFirstValue(medData);
 
             query.prepare ( "SELECT id FROM series WHERE study = :study AND name = :name AND uid = :seriesUid AND orientation = :orientation AND seriesNumber = :seriesNumber AND sequenceName = :sequenceName AND sliceThickness = :sliceThickness AND rows = :rows AND columns = :columns" );
             query.bindValue ( ":study", studyDbId );
@@ -244,19 +244,19 @@ bool medDatabaseImporter::checkIfExists ( medAbstractData* dtkdata, QString imag
 
 //-----------------------------------------------------------------------------------------------------------
 
-medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbstractData* dtkData, QString pathToStoreThumbnails )
+medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails )
 {
     QSqlDatabase db = * ( medDatabaseController::instance()->database() );
 
-    QStringList thumbPaths = generateThumbnails ( dtkData, pathToStoreThumbnails );
+    QStringList thumbPaths = generateThumbnails ( medData, pathToStoreThumbnails );
 
-    int patientDbId = getOrCreatePatient ( dtkData, db );
+    int patientDbId = getOrCreatePatient ( medData, db );
 
-    int studyDbId = getOrCreateStudy ( dtkData, db, patientDbId );
+    int studyDbId = getOrCreateStudy ( medData, db, patientDbId );
 
-    int seriesDbId = getOrCreateSeries ( dtkData, db, studyDbId );
+    int seriesDbId = getOrCreateSeries ( medData, db, studyDbId );
 
-    createMissingImages ( dtkData, db, seriesDbId, thumbPaths );
+    createMissingImages ( medData, db, seriesDbId, thumbPaths );
 
     medDataIndex index = medDataIndex ( medDatabaseController::instance()->dataSourceId(), patientDbId, studyDbId, seriesDbId, -1 );
     return index;
@@ -264,9 +264,9 @@ medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbs
 
 //-----------------------------------------------------------------------------------------------------------
 
-QStringList medDatabaseImporter::generateThumbnails ( medAbstractData* dtkData, QString pathToStoreThumbnails )
+QStringList medDatabaseImporter::generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails )
 {
-    QList<QImage> &thumbnails = dtkData->thumbnails();
+    QList<QImage> &thumbnails = medData->thumbnails();
 
     QStringList thumbPaths;
 
@@ -280,26 +280,26 @@ QStringList medDatabaseImporter::generateThumbnails ( medAbstractData* dtkData, 
         thumbPaths << thumb_name;
     }
 
-    QImage refThumbnail = dtkData->thumbnail(); // representative thumbnail for PATIENT/STUDY/SERIES
+    QImage refThumbnail = medData->thumbnail(); // representative thumbnail for PATIENT/STUDY/SERIES
     QString refThumbPath = pathToStoreThumbnails + "ref.png";
     refThumbnail.save ( medStorage::dataLocation() + refThumbPath, "PNG" );
 
-    dtkData->addMetaData ( medMetaDataKeys::ThumbnailPath.key(), refThumbPath );
+    medData->addMetaData ( medMetaDataKeys::ThumbnailPath.key(), refThumbPath );
 
     return thumbPaths;
 }
 
 //-----------------------------------------------------------------------------------------------------------
 
-int medDatabaseImporter::getOrCreatePatient ( const medAbstractData* dtkData, QSqlDatabase db )
+int medDatabaseImporter::getOrCreatePatient ( const medAbstractData* medData, QSqlDatabase db )
 {
     int patientDbId = -1;
 
     QSqlQuery query ( db );
 
-    QString patientName = medMetaDataKeys::PatientName.getFirstValue(dtkData).simplified();
-    QString birthDate = medMetaDataKeys::BirthDate.getFirstValue(dtkData);
-    QString patientId = medMetaDataKeys::PatientID.getFirstValue(dtkData);
+    QString patientName = medMetaDataKeys::PatientName.getFirstValue(medData).simplified();
+    QString birthDate = medMetaDataKeys::BirthDate.getFirstValue(medData);
+    QString patientId = medMetaDataKeys::PatientID.getFirstValue(medData);
 
     query.prepare ( "SELECT id FROM patient WHERE name = :name AND birthdate = :birthdate" );
     query.bindValue ( ":name", patientName );
@@ -314,9 +314,9 @@ int medDatabaseImporter::getOrCreatePatient ( const medAbstractData* dtkData, QS
     }
     else
     {
-        QString refThumbPath   = medMetaDataKeys::ThumbnailPath.getFirstValue(dtkData);
-        QString birthdate      = medMetaDataKeys::BirthDate.getFirstValue(dtkData);
-        QString gender         = medMetaDataKeys::Gender.getFirstValue(dtkData);
+        QString refThumbPath   = medMetaDataKeys::ThumbnailPath.getFirstValue(medData);
+        QString birthdate      = medMetaDataKeys::BirthDate.getFirstValue(medData);
+        QString gender         = medMetaDataKeys::Gender.getFirstValue(medData);
 
         query.prepare ( "INSERT INTO patient (name, thumbnail, birthdate, gender, patientId) VALUES (:name, :thumbnail, :birthdate, :gender, :patientId)" );
         query.bindValue ( ":name", patientName );
@@ -339,17 +339,17 @@ int medDatabaseImporter::getOrCreatePatient ( const medAbstractData* dtkData, QS
 
 //-----------------------------------------------------------------------------------------------------------
 
-int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* dtkData, QSqlDatabase db, int patientDbId )
+int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* medData, QSqlDatabase db, int patientDbId )
 {
     int studyDbId = -1;
 
     QSqlQuery query ( db );
 
-    QString studyName   = medMetaDataKeys::StudyDescription.getFirstValue(dtkData).simplified();
-    QString studyUid    = medMetaDataKeys::StudyDicomID.getFirstValue(dtkData);
-    QString studyId    = medMetaDataKeys::StudyID.getFirstValue(dtkData);
+    QString studyName   = medMetaDataKeys::StudyDescription.getFirstValue(medData).simplified();
+    QString studyUid    = medMetaDataKeys::StudyDicomID.getFirstValue(medData);
+    QString studyId    = medMetaDataKeys::StudyID.getFirstValue(medData);
     
-    QString serieName   = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
+    QString serieName   = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
     
     if( studyName=="EmptyStudy" && serieName=="EmptySerie" )
         return studyDbId; 
@@ -368,7 +368,7 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* dtkData, QSql
     }
     else
     {
-        QString refThumbPath = medMetaDataKeys::ThumbnailPath.getFirstValue(dtkData);
+        QString refThumbPath = medMetaDataKeys::ThumbnailPath.getFirstValue(medData);
 
         query.prepare ( "INSERT INTO study (patient, name, uid, thumbnail, studyId) VALUES (:patient, :studyName, :studyUid, :thumbnail, :studyId)" );
         query.bindValue ( ":patient", patientDbId );
@@ -387,22 +387,22 @@ int medDatabaseImporter::getOrCreateStudy ( const medAbstractData* dtkData, QSql
 
 //-----------------------------------------------------------------------------------------------------------
 
-int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* dtkData, QSqlDatabase db, int studyDbId )
+int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* medData, QSqlDatabase db, int studyDbId )
 {
     int seriesDbId = -1;
 
     QSqlQuery query ( db );
 
-    QString seriesName     = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData).simplified();
-    QString seriesUid      = medMetaDataKeys::SeriesDicomID.getFirstValue(dtkData);
-    QString seriesId       = medMetaDataKeys::SeriesID.getFirstValue(dtkData);
+    QString seriesName     = medMetaDataKeys::SeriesDescription.getFirstValue(medData).simplified();
+    QString seriesUid      = medMetaDataKeys::SeriesDicomID.getFirstValue(medData);
+    QString seriesId       = medMetaDataKeys::SeriesID.getFirstValue(medData);
 
-    QString orientation    = medMetaDataKeys::Orientation.getFirstValue(dtkData);
-    QString seriesNumber   = medMetaDataKeys::SeriesNumber.getFirstValue(dtkData);
-    QString sequenceName   = medMetaDataKeys::SequenceName.getFirstValue(dtkData);
-    QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(dtkData);
-    QString rows           = medMetaDataKeys::Rows.getFirstValue(dtkData);
-    QString columns        = medMetaDataKeys::Columns.getFirstValue(dtkData);
+    QString orientation    = medMetaDataKeys::Orientation.getFirstValue(medData);
+    QString seriesNumber   = medMetaDataKeys::SeriesNumber.getFirstValue(medData);
+    QString sequenceName   = medMetaDataKeys::SequenceName.getFirstValue(medData);
+    QString sliceThickness = medMetaDataKeys::SliceThickness.getFirstValue(medData);
+    QString rows           = medMetaDataKeys::Rows.getFirstValue(medData);
+    QString columns        = medMetaDataKeys::Columns.getFirstValue(medData);
     
     if( seriesName=="EmptySerie" )
         return seriesDbId; 
@@ -436,23 +436,23 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* dtkData, QSq
         QString seriesPath = "";
         if ( !indexWithoutImporting() )
         {
-            QStringList fileNames  = dtkData->metaDataValues( "FileName" );
+            QStringList fileNames  = medData->metaDataValues( "FileName" );
             seriesPath = fileNames.count()>0 ? fileNames[0] : "" ;
         }
-        int size               = medMetaDataKeys::Size.getFirstValue(dtkData).toInt();
-        QString refThumbPath   = medMetaDataKeys::ThumbnailPath.getFirstValue(dtkData);
-        QString age            = medMetaDataKeys::Age.getFirstValue(dtkData);
-        QString description    = medMetaDataKeys::Description.getFirstValue(dtkData);
-        QString modality       = medMetaDataKeys::Modality.getFirstValue(dtkData);
-        QString protocol       = medMetaDataKeys::Protocol.getFirstValue(dtkData);
-        QString comments       = medMetaDataKeys::Comments.getFirstValue(dtkData);
-        QString status         = medMetaDataKeys::Status.getFirstValue(dtkData);
-        QString acqdate        = medMetaDataKeys::AcquisitionDate.getFirstValue(dtkData);
-        QString importdate     = medMetaDataKeys::ImportationDate.getFirstValue(dtkData);
-        QString referee        = medMetaDataKeys::Referee.getFirstValue(dtkData);
-        QString performer      = medMetaDataKeys::Performer.getFirstValue(dtkData);
-        QString institution    = medMetaDataKeys::Institution.getFirstValue(dtkData);
-        QString report         = medMetaDataKeys::Report.getFirstValue(dtkData);
+        int size               = medMetaDataKeys::Size.getFirstValue(medData).toInt();
+        QString refThumbPath   = medMetaDataKeys::ThumbnailPath.getFirstValue(medData);
+        QString age            = medMetaDataKeys::Age.getFirstValue(medData);
+        QString description    = medMetaDataKeys::Description.getFirstValue(medData);
+        QString modality       = medMetaDataKeys::Modality.getFirstValue(medData);
+        QString protocol       = medMetaDataKeys::Protocol.getFirstValue(medData);
+        QString comments       = medMetaDataKeys::Comments.getFirstValue(medData);
+        QString status         = medMetaDataKeys::Status.getFirstValue(medData);
+        QString acqdate        = medMetaDataKeys::AcquisitionDate.getFirstValue(medData);
+        QString importdate     = medMetaDataKeys::ImportationDate.getFirstValue(medData);
+        QString referee        = medMetaDataKeys::Referee.getFirstValue(medData);
+        QString performer      = medMetaDataKeys::Performer.getFirstValue(medData);
+        QString institution    = medMetaDataKeys::Institution.getFirstValue(medData);
+        QString report         = medMetaDataKeys::Report.getFirstValue(medData);
 
         query.prepare ( "INSERT INTO series (study, seriesId, size, name, path, uid, orientation, seriesNumber, sequenceName, sliceThickness, rows, columns, thumbnail, age, description, modality, protocol, comments, status, acquisitiondate, importationdate, referee, performer, institution, report) \
                                      VALUES (:study, :seriesId, :size, :seriesName, :seriesPath, :seriesUid, :orientation, :seriesNumber, :sequenceName, :sliceThickness, :rows, :columns, :refThumbPath, :age, :description, :modality, :protocol, :comments, :status, :acquisitiondate, :importationdate, :referee, :performer, :institution, :report)" );
@@ -493,15 +493,15 @@ int medDatabaseImporter::getOrCreateSeries ( const medAbstractData* dtkData, QSq
 
 //-----------------------------------------------------------------------------------------------------------
 
-void medDatabaseImporter::createMissingImages ( medAbstractData* dtkData, QSqlDatabase db, int seriesDbId, QStringList thumbPaths )
+void medDatabaseImporter::createMissingImages ( medAbstractData* medData, QSqlDatabase db, int seriesDbId, QStringList thumbPaths )
 {
     QSqlQuery query ( db );
 
-    QStringList filePaths  = dtkData->metaDataValues ( medMetaDataKeys::FilePaths.key() );
+    QStringList filePaths  = medData->metaDataValues ( medMetaDataKeys::FilePaths.key() );
 
     if ( filePaths.count() == 1 && thumbPaths.count() > 1 ) // special case to 1 image and multiple thumbnails
     {
-        QString seriesName  = medMetaDataKeys::SeriesDescription.getFirstValue(dtkData);
+        QString seriesName  = medMetaDataKeys::SeriesDescription.getFirstValue(medData);
 
         QFileInfo fileInfo ( filePaths[0] );
         for ( int i = 0; i < thumbPaths.count(); i++ )
@@ -530,7 +530,7 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* dtkData, QSqlDa
 
                 // if we are indexing we want to leave the 'instance_path' column blank
                 // as we will use the full path in 'path' column to load them
-                QString relativeFilePath = dtkData->metaDataValues ( "FileName" ) [0];
+                QString relativeFilePath = medData->metaDataValues ( "FileName" ) [0];
                 query.bindValue ( ":instance_path", indexWithoutImporting() ? "" : relativeFilePath );
 
                 if ( !query.exec() )
@@ -565,7 +565,7 @@ void medDatabaseImporter::createMissingImages ( medAbstractData* dtkData, QSqlDa
 
                 // if we are indexing we want to leave the 'instance_path' column blank
                 // as we will use the full path in 'path' column to load them
-                QStringList fileNames  = dtkData->metaDataValues ( "FileName" );
+                QStringList fileNames  = medData->metaDataValues ( "FileName" );
                 QString relativeFilePath = fileNames.count()>0 ? fileNames[0] : "" ;
                 query.bindValue ( ":instance_path", indexWithoutImporting() ? "" : relativeFilePath );
 

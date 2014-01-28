@@ -45,17 +45,17 @@ bool itkDataImageWriterBase::canWrite(const QString& path)
 
 template <unsigned DIM,typename T>
 bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
-    medAbstractData* dtkdata = dynamic_cast<medAbstractData*>(this->data());
-    if (dtkdata && dtkdata->identifier()!=type)
+    medAbstractData* medData = dynamic_cast<medAbstractData*>(this->data());
+    if (medData && medData->identifier()!=type)
         return false;
 
     typedef itk::Image<T,DIM> Image;
     typename Image::Pointer image = dynamic_cast<Image*>((itk::Object*)(this->data()->output()));
     if (image.IsNull())
         return false;
-    if (dtkdata->hasMetaData(medAbstractDataImage::PixelMeaningMetaData)) {
+    if (medData->hasMetaData(medAbstractDataImage::PixelMeaningMetaData)) {
         itk::MetaDataDictionary& dict = image->GetMetaDataDictionary();
-        itk::EncapsulateMetaData(dict,"intent_name",dtkdata->metadata(medAbstractDataImage::PixelMeaningMetaData));
+        itk::EncapsulateMetaData(dict,"intent_name",medData->metadata(medAbstractDataImage::PixelMeaningMetaData));
     }
     typename itk::ImageFileWriter<Image>::Pointer writer = itk::ImageFileWriter <Image>::New();
     writer->SetImageIO (this->io);

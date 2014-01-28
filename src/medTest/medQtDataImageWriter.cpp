@@ -127,12 +127,12 @@ bool medQtDataImageWriter::canWrite( const QString& path )
 
 bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= true*/ )
 {
-    medAbstractData * dtkdata = dynamic_cast<medAbstractData*>(this->data());
+    medAbstractData * medData = dynamic_cast<medAbstractData*>(this->data());
 
-    if ( !dtkdata )
+    if ( !medData )
         return false;
 
-    if (dtkdata->identifier() != medQtDataImage::s_identifier() ) {
+    if (medData->identifier() != medQtDataImage::s_identifier() ) {
         return false;
     }
 
@@ -158,15 +158,15 @@ bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= tru
         writer->setFormat( fmtString );
     }
 
-    medAbstractDataImage * dtkdataIm = dynamic_cast< medAbstractDataImage *>( dtkdata );
+    medAbstractDataImage * medDataIm = dynamic_cast< medAbstractDataImage *>( medData );
 
     // Set metadata
-    const QStringList keys = dtkdata->metaDataList();
+    const QStringList keys = medData->metaDataList();
     foreach( const QString key, keys) {
-        writer->setText( key, dtkdata->metadata(key) );
+        writer->setText( key, medData->metadata(key) );
     }
 
-    const int numImage = dtkdataIm->zDimension();
+    const int numImage = medDataIm->zDimension();
     int numWritten = 0;
     if ( numImage > 1) {
         QString filetemplate = path;
@@ -175,14 +175,14 @@ bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= tru
         for ( int i(0); i<numImage; ++i ) {
             QString filename = filetemplate + QString::number(i) + suffix;
             writer->setFileName(filename);
-            QImage * image = reinterpret_cast<QImage *>(dtkdataIm->data( i ));
+            QImage * image = reinterpret_cast<QImage *>(medDataIm->data( i ));
             bool success =
                 dryRun ? writer->canWrite() : writer->write( *image );
             if ( success )
                 ++numWritten;
         }
     } else if ( numImage == 1 ) {
-        QImage * image = reinterpret_cast<QImage *>(dtkdataIm->data());
+        QImage * image = reinterpret_cast<QImage *>(medDataIm->data());
         bool success = dryRun ? writer->canWrite() : writer->write( *image );
         if ( success )
             ++numWritten;

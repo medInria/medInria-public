@@ -51,17 +51,17 @@ bool vtkDataMesh4DReader::canRead (const QStringList& paths) {
 
 bool vtkDataMesh4DReader::readInformation (const QString& path) {
   
-    dtkSmartPointer<medAbstractData> dtkdata = dynamic_cast<medAbstractData*>(this->data());
+    dtkSmartPointer<medAbstractData> medData = dynamic_cast<medAbstractData*>(this->data());
     this->reader->SetFileName (path.toAscii().constData());
   
-    if (!dtkdata) {
-        dtkdata = medAbstractDataFactory::instance()->createSmartPointer ("vtkDataMesh4D");
-        if (dtkdata)
-            this->setData ( dtkdata );
+    if (!medData) {
+        medData = medAbstractDataFactory::instance()->createSmartPointer ("vtkDataMesh4D");
+        if (medData)
+            this->setData ( medData );
     }
 
-    dtkdata->addMetaData ("FilePath", QStringList() << path);
-    dtkdata->identifier() = "vtkDataMesh4D";
+    medData->addMetaData ("FilePath", QStringList() << path);
+    medData->identifier() = "vtkDataMesh4D";
     
     return true;
 }
@@ -81,16 +81,16 @@ bool vtkDataMesh4DReader::read (const QString& path) {
 
     qDebug() << "Can read with: " << this->identifier();
 
-    if (medAbstractData *dtkdata = dynamic_cast<medAbstractData*>(this->data()) ) {
+    if (medAbstractData *medData = dynamic_cast<medAbstractData*>(this->data()) ) {
 
-        if (!(dtkdata->identifier()=="vtkDataMesh4D"))
+        if (!(medData->identifier()=="vtkDataMesh4D"))
             return false;
 
         this->reader->SetFileName (path.toAscii().constData());
         this->reader->Update();
         vtkMetaDataSetSequence* sequence = vtkMetaDataSetSequence::SafeDownCast (this->reader->GetOutput()->GetMetaDataSet ((unsigned int)0));
         if (sequence)
-            dtkdata->setData (sequence );
+            medData->setData (sequence );
     }
 
     this->setProgress (100);

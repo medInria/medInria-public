@@ -398,9 +398,9 @@ void AlgorithmPaintToolbox::onClearMaskPressed()
     }
 }
 
-void AlgorithmPaintToolbox::setData( medAbstractData *dtkdata )
+void AlgorithmPaintToolbox::setData( medAbstractData *medData )
 {
-    if (!dtkdata)
+    if (!medData)
         return;
 
     // disconnect existing
@@ -411,7 +411,7 @@ void AlgorithmPaintToolbox::setData( medAbstractData *dtkdata )
     m_lastVup = QVector3D();
     m_lastVpn = QVector3D();
 
-    m_imageData = dtkSmartPointer<medAbstractData>(dtkdata);
+    m_imageData = dtkSmartPointer<medAbstractData>(medData);
 
     // Update values of slider
 
