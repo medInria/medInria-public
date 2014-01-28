@@ -28,7 +28,7 @@ public:
     bool closable;
 };
 
-medAbstractView::medAbstractView(medAbstractView *parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
+medAbstractView::medAbstractView(QObject* parent) : dtkAbstractView(parent), d (new medAbstractViewPrivate)
 {
     d->pan = QVector2D(0.0, 0.0);
     d->zoom = 1.0;

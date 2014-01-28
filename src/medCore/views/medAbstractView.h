@@ -52,7 +52,7 @@ class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
 
 public:
 
-    medAbstractView(medAbstractView * parent = 0);
+    medAbstractView(QObject* parent = 0);
     medAbstractView(const medAbstractView& view);
     virtual ~medAbstractView();
 

@@ -26,7 +26,7 @@ class MEDCORE_EXPORT medAbstractLayeredView : public medAbstractView
     Q_OBJECT
 
 public:
-    medAbstractLayeredView(medAbstractView * parent);
+    medAbstractLayeredView(QObject * parent = 0);
 
     virtual void addLayer(medAbstractData *data);
     virtual bool removeLayer(medAbstractData *data);

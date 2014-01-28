@@ -14,7 +14,7 @@ public:
 };
 
 
-medAbstractLayeredView::medAbstractLayeredView(medAbstractView * parent) : medAbstractView(parent), d (new medAbstractLayeredViewPrivate)
+medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractView(parent), d (new medAbstractLayeredViewPrivate)
 {
     d->currentLayer = 0;
 }

@@ -28,7 +28,7 @@ class MEDCORE_EXPORT medAbstractImageView: public medAbstractLayeredView
     Q_OBJECT
 
 public:
-    medAbstractImageView(medAbstractView * parent = 0);
+    medAbstractImageView(QObject * parent = 0);
     medAbstractImageView(const medAbstractView& view);
     virtual ~medAbstractImageView();
 

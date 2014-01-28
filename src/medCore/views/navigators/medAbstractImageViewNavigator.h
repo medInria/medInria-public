@@ -37,7 +37,6 @@ public:
                         QVector3D &viewup,
                         QVector3D &focal,
                         double &parallelScale) const = 0;
-
     virtual QVector3D positionBeingViewed() const = 0;
 
 public slots:

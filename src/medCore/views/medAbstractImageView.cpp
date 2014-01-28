@@ -18,7 +18,7 @@ public:
 };
 
 
-medAbstractImageView::medAbstractImageView(medAbstractView * parent) : medAbstractLayeredView(parent), d (new medAbstractImageViewPrivate)
+medAbstractImageView::medAbstractImageView(QObject * parent) : medAbstractLayeredView(parent), d (new medAbstractImageViewPrivate)
 {
     d->linkPosition  = false;
     d->linkCamera    = false;
