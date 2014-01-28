@@ -618,14 +618,12 @@ void medDataManager::exportDataToFile(medAbstractData * data)
     exportDialog->setLayout(gridbox);
 
     // Set a default filename based on the series's description
-    medAbstractData * medData = dynamic_cast<medAbstractData*>(data);
-    if (medData) {
-        medAbstractDbController * dbController = controllerForDataSource(medData->dataIndex().dataSourceId());
-        if (dbController) {
-            QString defaultName = dbController->metaData(medData->dataIndex(), medMetaDataKeys::SeriesDescription);
-            defaultName += typesHandled->itemData(typesHandled->currentIndex(), Qt::UserRole+1).toString();
-            exportDialog->selectFile(defaultName);
-        }
+
+    medAbstractDbController * dbController = controllerForDataSource(data->dataIndex().dataSourceId());
+    if (dbController) {
+        QString defaultName = dbController->metaData(data->dataIndex(), medMetaDataKeys::SeriesDescription);
+        defaultName += typesHandled->itemData(typesHandled->currentIndex(), Qt::UserRole+1).toString();
+        exportDialog->selectFile(defaultName);
     }
 
     if ( exportDialog->exec() ) {

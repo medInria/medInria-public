@@ -59,13 +59,6 @@ int itkDataImageDouble3Test (int argc, char* argv[])
      return EXIT_FAILURE;
   }
 
-  image = dynamic_cast<ImageType*>( (itk::Object*)( data->output() ) );
-
-  if (image.IsNull()) {
-      qDebug() << "Cannot cast output() to ITK image";
-      return EXIT_FAILURE;
-  }
-
   ImageType::SizeType size = image->GetLargestPossibleRegion().GetSize();
   if ((int)size[0]!=data->xDimension()) {
       qDebug() << "Bad X dimension";
@@ -104,12 +97,6 @@ int itkDataImageDouble3Test (int argc, char* argv[])
   ImageType::Pointer image2 = dynamic_cast<ImageType*>( (itk::Object*)(data2->data()) );
   if (image2.IsNull()) {
      qDebug() << "Cannot cast data() to ITK image";
-     return EXIT_FAILURE;
-  }
-
-  image2 = dynamic_cast<ImageType*>( (itk::Object*)(data2->output()) );
-  if (image2.IsNull()) {
-     qDebug() << "Cannot cast output() to ITK image";
      return EXIT_FAILURE;
   }
 

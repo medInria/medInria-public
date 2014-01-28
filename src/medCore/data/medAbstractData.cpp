@@ -97,3 +97,140 @@ void medAbstractData::invokeModified()
 {
     emit dataModified(this);
 }
+
+
+
+void medAbstractData::update(void)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+}
+
+void *medAbstractData::output(void)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+
+    return NULL;
+}
+
+void *medAbstractData::output(int channel)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(channel);
+
+    return NULL;
+}
+
+double medAbstractData::parameter(int channel)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(channel);
+
+    return -1;
+}
+
+void medAbstractData::setParameter(int parameter)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+}
+
+void medAbstractData::setParameter(int parameter, int channel)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+    DTK_UNUSED(channel);
+}
+
+void medAbstractData::setParameter(qlonglong parameter)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+}
+
+void medAbstractData::setParameter(qlonglong parameter, int channel)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+    DTK_UNUSED(channel);
+}
+
+void medAbstractData::setParameter(float parameter)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+}
+
+void medAbstractData::setParameter(float parameter, int channel)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+    DTK_UNUSED(channel);
+}
+
+void medAbstractData::setParameter(double parameter)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+}
+
+void medAbstractData::setParameter(double parameter, int channel)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+    DTK_UNUSED(channel);
+}
+
+void medAbstractData::setParameter(const QString& parameter)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+}
+
+void medAbstractData::setParameter(const QString& parameter, int channel)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+    DTK_UNUSED(channel);
+}
+
+void medAbstractData::setParameter(dtkAbstractData *parameter)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+}
+
+void medAbstractData::setParameter(dtkAbstractData *parameter, int channel)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+    DTK_UNUSED(channel);
+}
+
+void medAbstractData::setParameter(dtkVectorReal parameter)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+}
+
+void medAbstractData::setParameter(dtkVectorReal parameter, int channel)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(parameter);
+    DTK_UNUSED(channel);
+}
+
+QVariant medAbstractData::toVariant(dtkAbstractData *data)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(data);
+
+    return qVariantFromValue(*data);
+}
+
+dtkAbstractData *medAbstractData::fromVariant(const QVariant& v)
+{
+    DTK_DEFAULT_IMPLEMENTATION;
+    DTK_UNUSED(v);
+
+    return NULL;
+}

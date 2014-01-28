@@ -89,12 +89,6 @@ int testRunner<TPixel,VDimension>::run() {
         return EXIT_FAILURE;
     }
 
-    image2 = dynamic_cast<ImageType*>( (itk::Object*)(dataInDtk->output()) );
-    if (image2.IsNull()) {
-        dtkDebug() << "Cannot cast output() to ITK image";
-        return EXIT_FAILURE;
-    }
-
     if ((int)imageSize[0]!=dataInDtk->xDimension()) {
         dtkDebug() << "Bad X dimension";
         return EXIT_FAILURE;

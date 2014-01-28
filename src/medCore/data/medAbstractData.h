@@ -92,6 +92,45 @@ signals:
     //! Signal emitted when the data contents have been altered.
     void dataModified(medAbstractData *);
 
+
+    /*=========================================================================
+                setting non-used dtkAbstractData methods private
+    *=========================================================================*/
+private:
+
+    virtual void draw(void) {}
+
+    virtual void update(void);
+
+    virtual void *output(void);
+    virtual void *output(int channel);
+
+    virtual double parameter(int channel);
+
+    virtual void setParameter(int parameter);
+    virtual void setParameter(int parameter, int channel);
+
+    virtual void setParameter(qlonglong parameter);
+    virtual void setParameter(qlonglong parameter, int channel);
+
+    virtual void setParameter(float parameter);
+    virtual void setParameter(float parameter, int channel);
+
+    virtual void setParameter(double parameter);
+    virtual void setParameter(double parameter, int channel);
+
+    virtual void setParameter(const QString& parameter);
+    virtual void setParameter(const QString& parameter, int channel);
+
+    virtual void setParameter(dtkAbstractData *parameter);
+    virtual void setParameter(dtkAbstractData *parameter, int channel);
+
+    virtual void setParameter(dtkVectorReal parameter);
+    virtual void setParameter(dtkVectorReal parameter, int channel);
+
+    virtual QVariant toVariant(dtkAbstractData *data);
+    virtual dtkAbstractData *fromVariant(const QVariant& v);
+
 private:
     medAbstractDataPrivate* d;
 
