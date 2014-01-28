@@ -32,7 +32,7 @@
 #include <vector>
 
 class medAbstractData;
-class medVtkViewPublicInterface;
+class medAbstractImageView;
 class medAnnotationData;
 
 class dtkAbstractProcessFactory;
@@ -86,14 +86,14 @@ public slots:
     void setWandSliderValue(double val);
     void setWandSpinBoxValue(int val);
 
-    void updateStroke(ClickAndMoveEventFilter * filter, medVtkViewPublicInterface * view);
-    void updateWandRegion(medVtkViewPublicInterface * view, QVector3D &vec);
+    void updateStroke(ClickAndMoveEventFilter * filter, medAbstractImageView * view);
+    void updateWandRegion(medAbstractImageView * view, QVector3D &vec);
     void updateMouseInteraction();
 
 protected:
     friend class ClickAndMoveEventFilter;
 
-    void addStroke( medVtkViewPublicInterface *view, const QVector3D &vec );
+    void addStroke( medAbstractImageView *view, const QVector3D &vec );
     void setData( medAbstractData *data );
 
     // update with seed point data.

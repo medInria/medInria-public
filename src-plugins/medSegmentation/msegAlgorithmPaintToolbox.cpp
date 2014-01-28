@@ -15,7 +15,7 @@
 
 #include <medAbstractData.h>
 #include <medAbstractDataImage.h>
-#include <medVtkViewPublicInterface.h>
+#include <medAbstractImageView.h>
 #include <medDataIndex.h>
 #include <medImageMaskAnnotationData.h>
 #include <medMetaDataKeys.h>
@@ -55,7 +55,7 @@ public:
         m_lastPaintState(PaintState::None)
         {}
 
-    virtual bool mousePressEvent(medVtkViewPublicInterface *view, QMouseEvent *mouseEvent )
+    virtual bool mousePressEvent(medAbstractImageView *view, QMouseEvent *mouseEvent )
     {
         if(view->property("Orientation")=="3D")
             return false;
@@ -103,7 +103,7 @@ public:
         return mouseEvent->isAccepted();
     }
 
-    virtual bool mouseMoveEvent( medVtkViewPublicInterface *view, QMouseEvent *mouseEvent )
+    virtual bool mouseMoveEvent( medAbstractImageView *view, QMouseEvent *mouseEvent )
     {
         if ( this->m_paintState == PaintState::None )
             return false;
@@ -120,7 +120,7 @@ public:
         return mouseEvent->isAccepted();
     }
 
-    virtual bool mouseReleaseEvent( medVtkViewPublicInterface *view, QMouseEvent *mouseEvent )
+    virtual bool mouseReleaseEvent( medAbstractImageView *view, QMouseEvent *mouseEvent )
     {
         if ( this->m_paintState == PaintState::None )
             return false;
@@ -613,7 +613,7 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
     maskData->setData((QObject*)(mask.GetPointer()));
 }
 
-    void AlgorithmPaintToolbox::updateWandRegion(medVtkViewPublicInterface * view, QVector3D &vec)
+    void AlgorithmPaintToolbox::updateWandRegion(medAbstractImageView * view, QVector3D &vec)
     {
         this->updateFromGuiItems();
 
@@ -791,7 +791,7 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
         this->setWandSpinBoxValue(m_wandThresholdSizeSlider->value());
     }
 
-void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medVtkViewPublicInterface * view )
+void AlgorithmPaintToolbox::updateStroke( ClickAndMoveEventFilter * filter, medAbstractImageView * view )
 {
     this->updateFromGuiItems();
 

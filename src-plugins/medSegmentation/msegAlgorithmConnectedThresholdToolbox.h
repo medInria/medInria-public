@@ -30,7 +30,7 @@
 #include <vector>
 
 class medAbstractData;
-class medVtkViewPublicInterface;
+class medAbstractImageView;
 class medAnnotationData;
 
 class dtkAbstractProcessFactory;
@@ -64,7 +64,7 @@ public:
     static QString s_name(const QObject * trObj =  NULL);
 
 public slots:
-    void onViewMousePress(medVtkViewPublicInterface *view, const QVector3D &vec);
+    void onViewMousePress(medAbstractImageView *view, const QVector3D &vec);
 
 protected slots:
     //! Callback when add seed point button is pressed.
@@ -79,7 +79,7 @@ protected slots:
     void onDataModified(medAbstractData* attached);
 
 protected:
-    void addSeedPoint( medVtkViewPublicInterface *view, const QVector3D &vec );
+    void addSeedPoint( medAbstractImageView *view, const QVector3D &vec );
     void setData( medAbstractData *data );
 
     // update with seed point data.

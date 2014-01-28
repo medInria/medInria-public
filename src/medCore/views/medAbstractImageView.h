@@ -116,7 +116,37 @@ signals:
      */
     void opacityChanged(double value, int layer);
 
+public:
+    //TODO: find a better name than orientation - RDE.
+    enum medVtkViewOrientation
+    {
+        VIEW_ORIENTATION_AXIAL,
+        VIEW_ORIENTATION_SAGITTAL,
+        VIEW_ORIENTATION_CORONAL,
+        VIEW_ORIENTATION_3D,
+        VIEW_ALL_ORIENTATION
+    };
+
+
+    //! Convert from world coordinates to scene coordinates.
+    virtual QPointF worldToDisplay( const QVector3D & worldVec ) const = 0;
+    //! Convert from scene coordinates to world coordinates.
+    virtual QVector3D displayToWorld( const QPointF & scenePoint ) const = 0;
+    //! Get the view center vector in world space, the center of the slice for 2d views.
+    virtual QVector3D viewCenter() const = 0;
+    //! Get the view plane normal vector in world space.
+    virtual QVector3D viewPlaneNormal() const = 0;
+    //! Get the view plane up vector in world space.
+    virtual QVector3D viewUp() const = 0;
+    //! Is the scene 2D (true) or 3D (false)
+    virtual bool is2D() const = 0;
+    //! What is the thickness of the current slice (2D)
+    virtual qreal sliceThickness() const = 0;
+    //! The scale (number of pixels on screen per mm)
+    virtual qreal scale() const = 0;
+
 public slots:
+    virtual void setOrientation(medVtkViewOrientation orientation) = 0;
 
     /**
        Tells the view (not to) synchronize its position with other views.
@@ -135,15 +165,6 @@ public slots:
     **/
     virtual void toggleLinkCamera (bool value);
     bool isCameraLinked() const;
-
-protected:
-    virtual void moveToSliceAtPosition_impl(const QVector3D &position) = 0;
-    virtual void setWindowLevel_impl(double level, double window) = 0;
-    virtual void setCamera_impl(const QVector3D &position,
-                           const QVector3D &viewup,
-                           const QVector3D &focal,
-                           double parallelScale) = 0;
-    virtual void setOpacity_impl(double opacity, int layer) = 0;
 
 
 protected slots:

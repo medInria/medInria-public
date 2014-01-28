@@ -16,7 +16,7 @@
 #include "msegAlgorithmConnectedThreshold.h"
 #include "medSeedPointAnnotationData.h"
 
-#include <medVtkViewPublicInterface.h>
+#include <medAbstractImageView.h>
 #include <medAbstractData.h>
 #include <medDataIndex.h>
 #include <medSegmentationSelectorToolBox.h>
@@ -46,7 +46,7 @@ public:
         m_cb(cb)
         {}
 
-    virtual bool mousePressEvent( medVtkViewPublicInterface *view, QMouseEvent *mouseEvent ) MED_OVERRIDE
+    virtual bool mousePressEvent( medAbstractImageView *view, QMouseEvent *mouseEvent ) MED_OVERRIDE
     {
 
         Q_ASSERT( view );
@@ -248,7 +248,7 @@ void AlgorithmConnectedThresholdToolbox::setData( medAbstractData *dtkdata )
 
 }
 
-void AlgorithmConnectedThresholdToolbox::addSeedPoint( medVtkViewPublicInterface *view, const QVector3D &vec )
+void AlgorithmConnectedThresholdToolbox::addSeedPoint( medAbstractImageView *view, const QVector3D &vec )
 {
     if (!m_seedPoints) {
         setData( medSegmentationSelectorToolBox::viewData(view) );
@@ -263,7 +263,7 @@ void AlgorithmConnectedThresholdToolbox::addSeedPoint( medVtkViewPublicInterface
 
 }
 
-void AlgorithmConnectedThresholdToolbox::onViewMousePress( medVtkViewPublicInterface *view, const QVector3D &vec )
+void AlgorithmConnectedThresholdToolbox::onViewMousePress( medAbstractImageView *view, const QVector3D &vec )
 {
     if ( ViewState_PickingSeedPoint == m_viewState ) {
 
