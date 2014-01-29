@@ -17,8 +17,7 @@ PURPOSE.
 
 #include "medCoreExport.h"
 
-#include <medAbstractView.h>
-
+class medAbstractView;
 
 class medAbstractNavigatorPrivate;
 class MEDCORE_EXPORT medAbstractNavigator : public dtkAbstractViewNavigator
@@ -35,14 +34,10 @@ public:
     QString viewTypeHandled() const;
     void setTypeHandled(QString& viewType);
 
-
-    void setView(medAbstractView *view);
-    medAbstractView *view() const;
-
     /**
      * @brief implementationOf
      * @return Upper abstract class it derives from.
-     * Do NOT reimplement in in non abstract class.
+     * Do NOT reimplement it in non abstract class.
      * Used by the factory to kwnow what can be create.
      */
     static QString implementationOf()
@@ -51,6 +46,9 @@ public:
     }
 
 private:
+    void setView(medAbstractView *view);
+    medAbstractView *view() const;
+
     medAbstractNavigatorPrivate *d;
 
 /*=========================================================================

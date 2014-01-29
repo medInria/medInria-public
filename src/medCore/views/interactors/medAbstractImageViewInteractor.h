@@ -17,7 +17,7 @@ PURPOSE.
 
 #include "medCoreExport.h"
 
-#include <medAbstractImageView.h>
+class medAbstractImageView;
 
 class medAbstractImageViewInteractorPrivate;
 class MEDCORE_EXPORT medAbstractImageViewInteractor : public medAbstractLayeredViewInteractor
@@ -29,9 +29,6 @@ public:
     virtual ~medAbstractImageViewInteractor();
 
 public:
-    virtual void setView(medAbstractImageView *view);
-    virtual medAbstractImageView *view() const;
-
     virtual void moveToSliceAtPosition    (const QVector3D &position) = 0;
 
     /**
@@ -44,10 +41,13 @@ public:
     */
     virtual double opacity(int layer) const = 0;
 
+    virtual void setWindowLevel (double &window, double &level) = 0;
+    virtual void windowLevel(double &window, double &level) const = 0;
+
     /**
     * @brief implementationOf
     * @return Upper abstract class it derives from.
-    * Do NOT reimplement in in non abstract class.
+    * Do NOT reimplement it in non abstract class.
     * Used by the factory to kwnow what can be create.
     */
     static QString implementationOf()

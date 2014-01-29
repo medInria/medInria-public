@@ -13,27 +13,32 @@
 
 #pragma once
 
-#include <dtkCore/dtkSmartPointer.h>
-#include "medCoreExport.h"
 #include "medAbstractView.h"
 
+#include "medCoreExport.h"
+
+#include <dtkCore/dtkSmartPointer.h>
+
+#include<medAbstractLayeredViewInteractor.h>
+#include<medAbstractLayeredViewNavigator.h>
+
 class medAbstractData;
+
 class medAbstractLayeredViewPrivate;
-
-
 class MEDCORE_EXPORT medAbstractLayeredView : public medAbstractView
 {
     Q_OBJECT
 
 public:
     medAbstractLayeredView(QObject * parent = 0);
+    virtual ~medAbstractLayeredView();
 
     virtual void addLayer(medAbstractData *data);
     virtual bool removeLayer(medAbstractData *data);
-    virtual void removeLayerAt(unsigned int layer);
+    virtual void removeLayer(unsigned int layer);
     virtual void insertLayer(unsigned int layer, medAbstractData *data);
     virtual void moveLayer(unsigned int fromLayer, unsigned int toLayer);
-    virtual medAbstractData * dataAtLayer(unsigned int layer) const;
+    virtual medAbstractData * data(unsigned int layer) const;
     virtual bool contains(medAbstractData * data) const;
     virtual unsigned int layersCount() const;
 
@@ -41,57 +46,54 @@ public:
     /**
      * Set the visibility of the data on the corresponding layer
      */
-    virtual void setVisibility (bool visibility, int layer);
+    virtual void setVisibility (bool visibility, unsigned int layer);
 
     /**
      * Get the visibility of the data on the corresponding layer
      */
-    virtual bool visibility(int layer) const;
+    virtual bool visibility(unsigned int layer) const;
 
+    QList<dtkSmartPointer<medAbstractData> > data() const;
 
-    /**
-     * Get the current layer. The current layer is used to determine which layer will receive
-     * property changed.
-     */
-    virtual int currentLayer() const;
-
-    /**
-     * @brief implementationOf
-     * @return Upper abstract class it derives from.
-     * Do NOT reimplement in in non abstract class.
-     * Used by the factory to kwnow what can be create.
-     */
-    static QString implementationOf()
-    {
-        return "medAbstractLayerdView";
-    }
 
 signals:
 
     /**
      * This signal is emitted when the visibility of a layer has changed.
      */
-    void visibilityChanged(bool visibility, int layer);
+    void visibilityChanged(bool visibility, unsigned int layer);
 
     /**
      *  This signal is emitted when the user adds a data to the view
      */
-    //TODO: to simplify
     void dataAdded (int layer);
-    void dataAdded (dtkAbstractData* data);
-    void dataAdded (dtkAbstractData* data, int layer);
+    void dataAdded (medAbstractData* data);
+    void dataAdded (medAbstractData* data, unsigned int layer);
     void dataRemoved (int layer);
-    void dataRemoved(dtkAbstractData* data,int layer);
+    void dataRemoved(medAbstractData* data, unsigned int layer);
 
+protected:
+    virtual medAbstractLayeredViewInteractor* primaryIntercator(medAbstractData* data) = 0;
+    virtual QList<medAbstractIntercator*> extraIntercator(medAbstractData* data) = 0;
+    virtual medAbstractLayeredViewInteractor* primaryIntercator(unsigned int layer) = 0;
+    virtual QList<medAbstractIntercator*> extraIntercator(unsigned int layer) = 0;
 
-public slots:
-    /**
-     * Set the current layer. The current layer is used to determine which layer will receive
-     * property changed.
-     */
-    virtual void setCurrentLayer(int layer);
-
+    virtual medAbstractLayeredViewNavigator* primaryNavigator() = 0;
+    virtual QList<medAbstractNavigator*> extraNavigator() = 0;
 
 private:
     medAbstractLayeredViewPrivate *d;
+
+public:
+
+    /**
+     * @brief implementationOf
+     * @return Upper abstract class it derives from.
+     * Do NOT reimplement it in non abstract class.
+     * Used by the factory to kwnow what can be create.
+     */
+    static QString implementationOf()
+    {
+        return "medAbstractLayerdView";
+    }
 };

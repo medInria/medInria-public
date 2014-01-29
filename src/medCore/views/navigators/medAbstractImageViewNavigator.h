@@ -17,7 +17,8 @@ PURPOSE.
 
 #include "medCoreExport.h"
 
-#include <medAbstractImageView.h>
+class medVtkViewOrientation;
+class medAbstractImageView;
 
 class medAbstractImageViewNavigatorPrivate;
 class MEDCORE_EXPORT medAbstractImageViewNavigator : public medAbstractLayeredViewNavigator
@@ -29,10 +30,7 @@ public:
     virtual ~medAbstractImageViewNavigator();
 
 public:
-    virtual void setView(medAbstractImageView *view);
-    virtual medAbstractImageView *view() const;
-
-    virtual medAbstractImageView::medVtkViewOrientation orientaion() const = 0;
+    virtual medVtkViewOrientation orientaion() const = 0;
     virtual void camera(QVector3D &position,
                         QVector3D &viewup,
                         QVector3D &focal,
@@ -42,7 +40,7 @@ public:
     /**
     * @brief implementationOf
     * @return Upper abstract class it derives from.
-    * Do NOT reimplement in in non abstract class.
+    * Do NOT reimplement it in non abstract class.
     * Used by the factory to kwnow what can be create.
     */
     static QString implementationOf()
@@ -51,7 +49,7 @@ public:
     }
 
 public slots:
-    virtual void setOrientation(medAbstractImageView::medVtkViewOrientation orientation) = 0;
+    virtual void setOrientation(medVtkViewOrientation orientation) = 0;
     virtual void setCamera(const QVector3D &position,
                            const QVector3D &viewup,
                            const QVector3D &focal,

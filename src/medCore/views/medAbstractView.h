@@ -23,6 +23,10 @@ class medAbstractViewPrivate;
 class medAbstractViewCoordinates;
 class medViewBackend;
 class medAbstractData;
+class medAbstractViewNavigator;
+class medAbstractNavigator;
+class medAbstractIntercator;
+class medAbstractViewIntercator;
 
 class QColor;
 
@@ -50,14 +54,11 @@ class MEDCORE_EXPORT medAbstractView: public dtkAbstractView
 {
     Q_OBJECT
 
-public:
-
+public:    
     medAbstractView(QObject* parent = 0);
-    medAbstractView(const medAbstractView& view);
     virtual ~medAbstractView();
 
-    //TODO rename?
-    virtual QWidget *receiverWidget();
+    virtual QWidget *receiverWidget() = 0;
 
     /**
        Set the view zoom factor.
@@ -72,36 +73,14 @@ public:
     virtual void setPan (const QVector2D &pan);
     QVector2D pan() const;
 
-
-    //! Get the coordinates helper
-    // TODO: check if this is required, and what is exactly required
-    virtual medAbstractViewCoordinates * coordinates() = 0;
-
-    virtual medViewBackend * backend() const;
-
-
-    //TODO GPR: check datatypes: used in medToolbox::update
-    void addDataType(const QString & dataDescription);
-
-    void removeDataType(const QString & dataDescription);
-
-    QHash<QString, unsigned int> dataTypes();
-
-    bool isDataTypeHandled(const QString& dataType) const;
+    virtual medViewBackend * backend() const = 0;
 
     bool isClosable() const;
     void setClosable(bool closable);
 
-    /**
-     * @brief implementationOf
-     * @return Upper abstract class it derives from.
-     * Do NOT reimplement in in non abstract class.
-     * Used by the factory to kwnow what can be create.
-     */
-    static QString implementationOf()
-    {
-        return "medAbstractView";
-    }
+    virtual QWidget* toolBar() = 0;
+    virtual QWidget* toolBox() = 0;
+
 
 signals:
     void selected();
@@ -115,30 +94,43 @@ signals:
     /**
        This signal is emitted when the view wants to be displayed in full screen.
      **/
-    //TODO: à vérifier mais sans doute à bouger dans les container: rename to maximizeRequested
     void maximizeRequested (bool);
 
     /**
        This signal is emitted when the zoom factor of the view has changed.
      **/
-    void zoomChanged      (double zoom, bool propagate);
+    void zoomChanged      (double zoom);
 
     /**
        This signal is emitted when the pan (=translation) of the view has
        changed.
      **/
-    void panChanged       (const QVector2D &pan, bool propagate);
+    void panChanged       (const QVector2D &pan);
 
+protected:
+    virtual medAbstractViewIntercator* primaryIntercator(medAbstractData* data) = 0;
+    virtual QList<medAbstractIntercator*> extraIntercator(medAbstractData* data) = 0;
+    virtual medAbstractViewNavigator* primaryNavigator() = 0;
+    virtual QList<medAbstractNavigator*> extraNavigator() = 0;
 
-public slots:
-
-    //TODO: rename to toggleMaximize ?
-    void toggleMaximize(bool state);
-
-
+    virtual void getIntercators(medAbstractData* data) = 0;
+    virtual void getNavigators() = 0;
+    virtual void removeInteractors(medAbstractData *data);
 
 private:
     medAbstractViewPrivate *d;
+
+public:
+    /**
+     * @brief implementationOf
+     * @return Upper abstract class it derives from.
+     * Do NOT reimplement it in non abstract class.
+     * Used by the factory to kwnow what can be create.
+     */
+    static QString implementationOf()
+    {
+        return "medAbstractView";
+    }
 };
 
 // derive and implement if you need to provide access to your backend

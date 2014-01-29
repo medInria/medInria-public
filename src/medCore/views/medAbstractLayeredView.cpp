@@ -1,22 +1,26 @@
 #include "medAbstractLayeredView.h"
 
-#include <dtkCore/dtkAbstractData.h>
-#include <dtkCore/dtkAbstractViewInteractor.h>
+#include <dtkCore/dtkSmartPointer.h>
+
 #include <medAbstractData.h>
+#include <medAbstractLayeredViewInteractor.h>
 
 
 class medAbstractLayeredViewPrivate
 {
 public:
-    int currentLayer;
     QList < dtkSmartPointer <medAbstractData> > layersDataList;
 
 };
 
-
 medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractView(parent), d (new medAbstractLayeredViewPrivate)
 {
-    d->currentLayer = 0;
+
+}
+
+medAbstractLayeredView::~medAbstractLayeredView()
+{
+    delete d;
 }
 
 void medAbstractLayeredView::addLayer(medAbstractData *data)
@@ -33,46 +37,32 @@ void medAbstractLayeredView::addLayer(medAbstractData *data)
         return;
     }
 
+    d->layersDataList << data;
+    getIntercators(data);
+}
 
-    QString dataType(data->identifier());
-
-    foreach(dtkAbstractViewInteractor *interactor, this->interactors())
-    {
-        this->enableInteractor(interactor->identifier());
-        if (interactor->enabled())
-            interactor->setData(data);
-    }
-
-    if(!this->isDataTypeHandled(dataType))
-    {
-        qWarning()<<"Unable to find interactor to handle the data type: " << data->identifier();
-        return;
-    }
-
-    this->addDataType(data->identifier());
-    d->layersDataList.append(data);
-
-    int layer = this->layersCount() - 1;
-    this->setCurrentLayer(layer);
-
-    emit dataAdded(data);
-    emit dataAdded(data, layer);
+QList<dtkSmartPointer<medAbstractData> > medAbstractLayeredView::data() const
+{
+    return d->layersDataList;
 }
 
 bool medAbstractLayeredView::removeLayer(medAbstractData *data)
 {
     int res = d->layersDataList.removeAll(data);
+    this->removeInteractors(data);
     return res > 0;
 }
 
-void medAbstractLayeredView::removeLayerAt(unsigned int layer)
+void medAbstractLayeredView::removeLayer(unsigned int layer)
 {
     d->layersDataList.removeAt(layer);
+    this->removeInteractors(this->data(layer));
 }
 
 void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *data)
 {
     d->layersDataList.insert(layer, data);
+    this->getIntercators(data);
 }
 
 void medAbstractLayeredView::moveLayer(unsigned int fromLayer, unsigned int toLayer)
@@ -80,14 +70,13 @@ void medAbstractLayeredView::moveLayer(unsigned int fromLayer, unsigned int toLa
     d->layersDataList.move(fromLayer, toLayer);
 }
 
-medAbstractData * medAbstractLayeredView::dataAtLayer(unsigned int layer) const
+medAbstractData * medAbstractLayeredView::data(unsigned int layer) const
 {
-    if (!(layer < d->layersDataList.size()) && (layer > -1))
+    if (layer > d->layersDataList.size())
     {
-        qWarning() << "Unable to retreive data at layer:"<<layer<<"from view: "<<this;
+        qWarning() << "Unable to retreive data at layer:" <<layer << "from: "<< this->description();
         return NULL;
     }
-
     return d->layersDataList[layer];
 }
 
@@ -102,23 +91,14 @@ unsigned int medAbstractLayeredView::layersCount() const
 }
 
 
-void medAbstractLayeredView::setVisibility(bool visibility, int layer)
+void medAbstractLayeredView::setVisibility(bool visibility, unsigned int layer)
 {
+    this->primaryIntercator(layer)->setVisibility(visibility);
     emit visibilityChanged(visibility, layer);
 }
 
-bool medAbstractLayeredView::visibility(int layer) const
+bool medAbstractLayeredView::visibility(unsigned int layer) const
 {
-    DTK_DEFAULT_IMPLEMENTATION;
-    return true;
+    return this->primaryIntercator(layer)->visibility();
 }
 
-void medAbstractLayeredView::setCurrentLayer(int layer)
-{
-    d->currentLayer = layer;
-}
-
-int medAbstractLayeredView::currentLayer(void) const
-{
-    return d->currentLayer;
-}

@@ -22,7 +22,6 @@ PURPOSE.
 #include <medAbstractView.h>
 #include <medAbstractData.h>
 
-
 class medAbstractInteractorPrivate;
 class MEDCORE_EXPORT medAbstractInteractor : public dtkAbstractViewInteractor
 {
@@ -42,23 +41,24 @@ public:
     virtual void setData(medAbstractData *data);
     virtual medAbstractData *data() const;
 
-    virtual void setView(medAbstractView*view);
-    virtual medAbstractView *view() const;
-
     virtual QWidget* toolBoxWidget() = 0;
     virtual QWidget* toolBarWidget() = 0;
 
     /**
-     * @brief implementationOf
-     * @return Upper abstract class it derives from.
-     * used by the factory to kwnow what can be create.
-     */
+    * @brief implementationOf
+    * @return Upper abstract class it derives from.
+    * Do NOT reimplement it in non abstract class.
+    * Used by the factory to kwnow what can be create.
+    */
     static QString implementationOf()
     {
         return "medAbstractInteractor";
     }
 
 private:
+    virtual void setView(medAbstractView*view);
+    virtual medAbstractView *view() const;
+
     medAbstractInteractorPrivate *d;
 
 /*=========================================================================
@@ -71,20 +71,20 @@ private:
     {DTK_UNUSED(channel);}
     virtual dtkAbstractData *output (int channel, int frame)
     {DTK_UNUSED(channel);DTK_UNUSED(frame);}
-    virtual void  predraw(void)
+    virtual void predraw(void)
     {}
-    virtual void     draw(void)
+    virtual void draw(void)
     {}
     virtual void postdraw(void)
     {}
     bool enabled(void) const
     {return true;}
-    virtual void  enable(void)
+    virtual void enable(void)
     {}
     virtual void disable(void)
     {}
     virtual void setData(dtkAbstractData* data, int channel)
     {DTK_UNUSED(data);DTK_UNUSED(channel);}
     virtual void setData(dtkAbstractData* data, int channel, int frame)
-   {DTK_UNUSED(data);DTK_UNUSED(channel);DTK_UNUSED(frame);}
+    {DTK_UNUSED(data);DTK_UNUSED(channel);DTK_UNUSED(frame);}
 };

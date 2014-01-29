@@ -13,25 +13,30 @@
 
 #pragma once
 
+#include <medAbstractLayeredView.h>
+
 #include <dtkCore/dtkSmartPointer.h>
 
 #include "medCoreExport.h"
-#include "medAbstractLayeredView.h"
+
+class QVector3D;
+
+class medAbstractData;
+
+class medAbstractImageViewIntercator;
+class medAbstractIntercator;
+
+class medAbstractImageViewNavigator;
+class medAbstractNavigator;
 
 class medAbstractImageViewPrivate;
-class medAbstractViewCoordinates;
-class QColor;
-
-
 class MEDCORE_EXPORT medAbstractImageView: public medAbstractLayeredView
 {
     Q_OBJECT
 
 public:
     medAbstractImageView(QObject * parent = 0);
-    medAbstractImageView(const medAbstractView& view);
     virtual ~medAbstractImageView();
-
 
     //TODO: find a better name than orientation - RDE.
     enum medVtkViewOrientation
@@ -44,101 +49,29 @@ public:
     };
 
 
-    /**
-     *  Set the view slice.
-    **/
-    void setSlice (int slice);
+    unsigned int sliceAtPosition(unsigned int layer, QVector3D &position);
+    QVector3D positionBeingViewed();
 
-    /**
-      * Set the slice being viewed so that it contains the given spatial postion
-       @position is expressed in real world coordinates.
-     **/
-    virtual void moveToSliceAtPosition    (const QVector3D &position);
-    QVector3D positionBeingViewed() const;
 
-    /**
-       Set the window/level of the view.
-    **/
-    virtual void setWindowLevel (double level, double window);
-    void windowLevel(double &level, double &window) const;
+    void windowLevel(medAbstractData* data, double &window, double &level);
+    void windowLevel(unsigned int layer, double &window, double &level);
 
-    /**
-       Set the camera settings of the view.
-    **/
-    virtual void setCamera(const QVector3D &position,
-                           const QVector3D &viewup,
-                           const QVector3D &focal,
-                           double parallelScale);
     void camera(QVector3D &position,
                 QVector3D &viewup,
                 QVector3D &focal,
-                double &parallelScale) const;
+                double &parallelScale);
 
     /**
      * Set the opacity of the data on the corresponding layer
      */
-    virtual void setOpacity (double opacity, int layer);
+    void setOpacity (unsigned int layer, double opacity);
+    void setOpacity (medAbstractData* data, double opacity);
 
     /**
      * Get the opacity of the data on the corresponding layer
      */
-    virtual double opacity(int layer) const;
-    
-    
-signals:
-    /**
-       This signal is emitted when the shown slice of the view has
-       changed.  A changed slice always comes along with a changed
-       position, but the positionChanged signal is sent before the new
-       slice number is computed in vtkImageView2D.
-     **/
-    void sliceChanged     (int slice, bool propagate);
-
-    /**
-       This signal is emitted when the current position pointed by the view has changed.
-       This is the case, for instance, when the slice of a 3D image was changed, or when
-       the user cliked on a specific voxel.
-       The position is expressed in physical coordinates.
-     **/
-    void positionChanged  (const QVector3D &position, bool propagate);
-
-
-    /**
-       This signal is emitted when the windowing (window/level controlling the image
-       contrast) has changed.
-     **/
-    void windowingChanged (double level, double window, bool propagate);
-
-
-    /**
-       This signal is emitted when the camera of the view has changed. The camera settings
-       are expressed in 4 parameters:
-       @position: the physical position of the camera
-       @viewup: the view up direction
-       @focal: the focal position of the camera
-       @parallelScale: the scaling factor in parallel projection
-    **/
-    void cameraChanged    (const QVector3D &position,
-                           const QVector3D &viewup,
-                           const QVector3D &focal,
-                           double parallelScale,
-                           bool propagate);
-    /**
-     * This signal is emitted when the opacity of a layer has changed.
-     */
-    void opacityChanged(double value, int layer);
-
-public:
-    /**
-     * @brief implementationOf
-     * @return Upper abstract class it derives from.
-     * Do NOT reimplement in in non abstract class.
-     * Used by the factory to kwnow what can be create.
-     */
-    static QString implementationOf()
-    {
-        return "medAbstractImageView";
-    }
+    double opacity(unsigned int layer) ;
+    double opacity(medAbstractData* data) ;
 
     //! Convert from world coordinates to scene coordinates.
     virtual QPointF worldToDisplay( const QVector3D & worldVec ) const = 0;
@@ -156,13 +89,49 @@ public:
     virtual qreal sliceThickness() const = 0;
     //! The scale (number of pixels on screen per mm)
     virtual qreal scale() const = 0;
+    
 
 public slots:
-    virtual void setOrientation(medVtkViewOrientation orientation) = 0;
+    void setOrientation(medVtkViewOrientation orientation);
+    void setWindowLevel (medAbstractData* data, double &window, double &level);
+    void setWindowLevel (unsigned int layer, double &window, double &level);
+    /**
+      * Set the slice being viewed so that it contains the given spatial postion
+       @position is expressed in real world coordinates.
+     **/
+    void moveToSliceAtPosition (const QVector3D &position);
+
+    /**
+       Set the camera settings of the view.
+    **/
+    void setCamera(const QVector3D &position,
+                           const QVector3D &viewup,
+                           const QVector3D &focal,
+                           double parallelScale);
 
 
 
-protected slots:
+protected:
+    virtual medAbstractImageViewIntercator* primaryIntercator(medAbstractData* data) = 0;
+    virtual QList<medAbstractIntercator*> extraIntercator(medAbstractData* data) = 0;
+    virtual medAbstractImageViewIntercator* primaryIntercator(unsigned int layer) = 0;
+    virtual QList<medAbstractIntercator*> extraIntercator(unsigned int layer) = 0;
+
+    virtual medAbstractImageViewNavigator* primaryNavigator() = 0;
+    virtual QList<medAbstractNavigator*> extraNavigator() = 0;
+
+public:
+
+    /**
+     * @brief implementationOf
+     * @return Upper abstract class it derives from.
+     * Do NOT reimplement it in non abstract class.
+     * Used by the factory to kwnow what can be create.
+     */
+    static QString implementationOf()
+    {
+        return "medAbstractImageView";
+    }
 
 
 private:

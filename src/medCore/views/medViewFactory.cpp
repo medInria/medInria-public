@@ -40,9 +40,9 @@ medViewFactory *medViewFactory::instance(void)
 //--------------------------------------------------------------------------
 //  register
 
-bool medViewFactory::registered(QString &implementationOf,
-                                QString& identifier,
-                                QStringList& typeHandled,
+bool medViewFactory::registered(QString implementationOf,
+                                QString identifier,
+                                QStringList typeHandled,
                                 medAbstractViewCreator creator)
 {
     if(_prvt_creators1.contains(identifier))
@@ -54,9 +54,9 @@ bool medViewFactory::registered(QString &implementationOf,
     return true;    
 }
 
-bool medViewFactory::registered(QString &implementationOf,
-                                QString& identifier,
-                                QStringList& typeHandled,
+bool medViewFactory::registered(QString implementationOf,
+                                QString identifier,
+                                QStringList typeHandled,
                                 medAbstractLayeredViewCreator creator)
 {
     if(_prvt_creators2.contains(identifier))
@@ -68,9 +68,9 @@ bool medViewFactory::registered(QString &implementationOf,
     return true;
 }
 
-bool medViewFactory::registered(QString &implementationOf,
-                                QString& identifier,
-                                QStringList& typeHandled,
+bool medViewFactory::registered(QString implementationOf,
+                                QString identifier,
+                                QStringList typeHandled,
                                 medAbstractImageViewCreator creator)
 {
     if(_prvt_creators3.contains(identifier))
@@ -83,9 +83,9 @@ bool medViewFactory::registered(QString &implementationOf,
 }
 
 
-bool medViewFactory::registered(QString &implementationOf,
-                                QString& identifier,
-                                QStringList& typeHandled,
+bool medViewFactory::registered(QString implementationOf,
+                                QString identifier,
+                                QStringList typeHandled,
                                 medAbstractNavigatorCreator creator)
 {
     if(_prvt_creators4.contains(identifier))
@@ -97,9 +97,9 @@ bool medViewFactory::registered(QString &implementationOf,
     return true;
 }
 
-bool medViewFactory::registered(QString &implementationOf,
-                                QString& identifier,
-                                QStringList& typeHandled,
+bool medViewFactory::registered(QString implementationOf,
+                                QString identifier,
+                                QStringList typeHandled,
                                 medAbstractViewNavigatorCreator creator)
 {
     if(_prvt_creators5.contains(identifier))
@@ -111,9 +111,9 @@ bool medViewFactory::registered(QString &implementationOf,
     return true;
 }
 
-bool medViewFactory::registered(QString &implementationOf,
-                                QString& identifier,
-                                QStringList& typeHandled,
+bool medViewFactory::registered(QString implementationOf,
+                                QString identifier,
+                                QStringList typeHandled,
                                 medAbstractLayeredViewNavigatorCreator creator)
 {
     if(_prvt_creators6.contains(identifier))
@@ -125,9 +125,9 @@ bool medViewFactory::registered(QString &implementationOf,
     return true;
 }
 
-bool medViewFactory::registered(QString &implementationOf,
-                                QString& identifier,
-                                QStringList& typeHandled,
+bool medViewFactory::registered(QString implementationOf,
+                                QString identifier,
+                                QStringList typeHandled,
                                 medAbstractImageViewNavigatorCreator creator)
 {
     if(_prvt_creators7.contains(identifier))
@@ -140,9 +140,9 @@ bool medViewFactory::registered(QString &implementationOf,
 }
 
 
-bool medViewFactory::registered(QString &implementationOf,
-                                QString& identifier,
-                                QStringList& typeHandled,
+bool medViewFactory::registered(QString implementationOf,
+                                QString identifier,
+                                QStringList typeHandled,
                                 medAbstractInteractorCreator creator)
 {
     if(_prvt_creators8.contains(identifier))
@@ -154,9 +154,9 @@ bool medViewFactory::registered(QString &implementationOf,
     return true;
 }
 
-bool medViewFactory::registered(QString &implementationOf,
-                                QString& identifier,
-                                QStringList& typeHandled,
+bool medViewFactory::registered(QString implementationOf,
+                                QString identifier,
+                                QStringList typeHandled,
                                 medAbstractViewInteractorCreator creator)
 {
     if(_prvt_creators9.contains(identifier))
@@ -168,9 +168,9 @@ bool medViewFactory::registered(QString &implementationOf,
     return true;
 }
 
-bool medViewFactory::registered(QString &implementationOf,
-                                QString& identifier,
-                                QStringList& typeHandled,
+bool medViewFactory::registered(QString implementationOf,
+                                QString identifier,
+                                QStringList typeHandled,
                                 medAbstractLayeredViewInteractorCreator creator)
 {
     if(_prvt_creators10.contains(identifier))
@@ -182,9 +182,9 @@ bool medViewFactory::registered(QString &implementationOf,
     return true;
 }
 
-bool medViewFactory::registered(QString &implementationOf,
-                                QString& identifier,
-                                QStringList& typeHandled,
+bool medViewFactory::registered(QString implementationOf,
+                                QString identifier,
+                                QStringList typeHandled,
                                 medAbstractImageViewInteractorCreator creator)
 {
     if(_prvt_creators11.contains(identifier))
@@ -200,7 +200,7 @@ bool medViewFactory::registered(QString &implementationOf,
 //--------------------------------------------------------------------------
 //  get handler
 
-QList<QString> medViewFactory::navigatorsAbleToHandle(const QString& viewType) const
+QStringList medViewFactory::navigatorsAbleToHandle(const QString implementationOf, const QString viewType) const
 {
     QHashIterator<QString, QStringList> it(_prvt_identifierHash);
 
@@ -208,7 +208,7 @@ QList<QString> medViewFactory::navigatorsAbleToHandle(const QString& viewType) c
 
     for(it.toFront(); it.hasNext(); it.next())
     {
-        if (_prvt_implementOfHash.value(it.key()).contains("Navigator") &&
+        if (_prvt_implementOfHash.value(it.key()) == implementationOf &&
                 it.value().contains(viewType))
                 navigators << it.key();
     }
@@ -216,7 +216,7 @@ QList<QString> medViewFactory::navigatorsAbleToHandle(const QString& viewType) c
     return navigators;
 }
 
-QList<QString> medViewFactory::interactorsAbleToHandle(const QString& viewType, const QString& dataType) const
+QStringList medViewFactory::interactorsAbleToHandle(const QString implementationOf, const QString viewType, const QString dataType) const
 {
     QHashIterator<QString, QStringList> it(_prvt_identifierHash);
 
@@ -224,13 +224,29 @@ QList<QString> medViewFactory::interactorsAbleToHandle(const QString& viewType, 
 
     for(it.toFront(); it.hasNext(); it.next())
     {
-        if (_prvt_implementOfHash.value(it.key()).contains("Interactor") &&
+        if (_prvt_implementOfHash.value(it.key()) == implementationOf &&
                 it.value().contains(viewType) &&
                 it.value().contains(dataType))
                 interactors << it.key();
     }
 
     return interactors;
+}
+
+QStringList medViewFactory::viewsAbleToHandle(const QString implementationOf, const QString dataType) const
+{
+    QHashIterator<QString, QStringList> it(_prvt_identifierHash);
+
+    QList<QString> views;
+
+    for(it.toFront(); it.hasNext(); it.next())
+    {
+        if (_prvt_implementOfHash.value(it.key()) == implementationOf &&
+                it.value().contains(dataType))
+                views << it.key();
+    }
+
+    return views;
 }
 
 

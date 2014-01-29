@@ -54,7 +54,7 @@ public:
     static medViewFactory *instance();
 
     template <typename pointerT>
-    pointerT create(QString& implementationOf, QString& identifier, QObject *parent=0)
+    pointerT createView(QString implementationOf, QString identifier, QObject *parent=0)
     {
         pointerT pointer = NULL;
         if(implementationOf == medAbstractView::implementationOf())
@@ -83,7 +83,7 @@ public:
     }
 
     template <typename pointerT>
-    pointerT create(QString& implementationOf, QString& identifier, medAbstractView *parent=0)
+    pointerT createNavigator(QString implementationOf, QString identifier, medAbstractView *parent=0)
     {
 
         pointerT pointer = NULL;
@@ -101,26 +101,11 @@ public:
             if(c)
                 pointer = (c)(parent);
         }
-        if(implementationOf == medAbstractInteractor::implementationOf())
-        {
-            medAbstractInteractorCreator c = NULL;
-            c = _prvt_creators8.value(identifier);
-            if(c)
-                pointer = (_prvt_creators8.value(identifier))(parent);
-        }
-        if(implementationOf == medAbstractViewInteractor::implementationOf())
-        {
-            medAbstractViewInteractorCreator c = NULL;
-            c = _prvt_creators9.value(identifier);
-            if(c)
-                pointer = (c)(parent);
-        }
-
         return pointer;
     }
 
     template <typename pointerT>
-    pointerT create(QString& implementationOf, QString& identifier, medAbstractLayeredView *parent=0)
+    pointerT createNavigator(QString implementationOf, QString identifier, medAbstractLayeredView *parent=0)
     {
         pointerT pointer = NULL;
         if(implementationOf == medAbstractLayeredViewNavigator::implementationOf())
@@ -130,6 +115,50 @@ public:
             if(c)
                 pointer = (c)(parent);
         }
+        return pointer;
+    }
+
+    template <typename pointerT>
+    pointerT createNavigator(QString implementationOf, QString identifier, medAbstractImageView*parent=0)
+    {
+        pointerT pointer = NULL;
+        if(implementationOf == medAbstractImageViewInteractor::implementationOf())
+        {
+            medAbstractImageViewNavigatorCreator c = NULL;
+            c = _prvt_creators7.value(identifier);
+            if(c)
+                pointer = (c)(parent);
+        }
+        return pointer;
+    }
+
+
+    template <typename pointerT>
+    pointerT createInteractor(QString implementationOf, QString identifier, medAbstractView *parent=0)
+    {
+
+        pointerT pointer = NULL;
+        if(implementationOf == medAbstractInteractor::implementationOf())
+        {
+            medAbstractInteractorCreator c = NULL;
+            c = _prvt_creators8.value(identifier);
+            if(c)
+                pointer = (c)(parent);
+        }
+        if(implementationOf == medAbstractViewInteractor::implementationOf())
+        {
+            medAbstractViewInteractorCreator c = NULL;
+            c = _prvt_creators9.value(identifier);
+            if(c)
+                pointer = (c)(parent);
+        }
+        return pointer;
+    }
+
+    template <typename pointerT>
+    pointerT createInteractor(QString implementationOf, QString identifier, medAbstractLayeredView *parent=0)
+    {
+        pointerT pointer = NULL;
         if(implementationOf == medAbstractLayeredViewInteractor::implementationOf())
         {
             medAbstractLayeredViewInteractorCreator c = NULL;
@@ -137,21 +166,13 @@ public:
             if(c)
                 pointer = (c)(parent);
         }
-
         return pointer;
     }
 
     template <typename pointerT>
-    pointerT create(QString& implementationOf, QString& identifier, medAbstractImageView *parent=0)
+    pointerT createInteractor(QString implementationOf, QString identifier, medAbstractImageView*parent=0)
     {
         pointerT pointer = NULL;
-        if(implementationOf == medAbstractImageViewNavigator::implementationOf())
-        {
-            medAbstractImageViewNavigatorCreator c = NULL;
-            c = _prvt_creators7.value(identifier);
-            if(c)
-                pointer = (c)(parent);
-        }
         if(implementationOf == medAbstractImageViewInteractor::implementationOf())
         {
             medAbstractImageViewInteractorCreator c = NULL;
@@ -159,14 +180,13 @@ public:
             if(c)
                 pointer = (c)(parent);
         }
-
         return pointer;
     }
 
     template <typename T>
-    bool registered(QString& implementationOf,
-                            QString& identifier,
-                            QStringList& handled)
+    bool registered(QString implementationOf,
+                            QString identifier,
+                            QStringList handled)
     {
         //we must keep the templated part in the .h file for library users
         //--------------------------------------------------------------------------
@@ -256,8 +276,9 @@ public:
             return false;
     }
 
-    QList<QString> navigatorsAbleToHandle(const QString& viewType) const;
-    QList<QString> interactorsAbleToHandle(const QString& viewType, const QString& dataType) const;
+    QStringList navigatorsAbleToHandle(const QString implementationOf, const QString viewType) const;
+    QStringList interactorsAbleToHandle(const QString implementationOf, const QString viewType, const QString dataType) const;
+    QStringList viewsAbleToHandle(const QString implementationOf, const QString dataType) const;
 
 
 protected:
@@ -266,49 +287,49 @@ protected:
 
 private:
 
-     bool registered(QString& implementationOf,
-                     QString& identifier,
-                     QStringList& typeHandled,
+     bool registered(QString implementationOf,
+                     QString identifier,
+                     QStringList typeHandled,
                      medAbstractViewCreator creator);
-     bool registered(QString& implementationOf,
-                     QString& identifier,
-                     QStringList& typeHandled,
+     bool registered(QString implementationOf,
+                     QString identifier,
+                     QStringList typeHandled,
                      medAbstractLayeredViewCreator creator);
-     bool registered(QString& implementationOf,
-                     QString& identifier,
-                     QStringList& typeHandled,
+     bool registered(QString implementationOf,
+                     QString identifier,
+                     QStringList typeHandled,
                      medAbstractImageViewCreator creator);
-     bool registered(QString& implementationOf,
-                     QString& identifier,
-                     QStringList& typeHandled,
+     bool registered(QString implementationOf,
+                     QString identifier,
+                     QStringList typeHandled,
                      medAbstractNavigatorCreator creator);
-     bool registered(QString& implementationOf,
-                     QString& identifier,
-                     QStringList& typeHandled,
+     bool registered(QString implementationOf,
+                     QString identifier,
+                     QStringList typeHandled,
                      medAbstractViewNavigatorCreator creator);
-     bool registered(QString& implementationOf,
-                     QString& identifier,
-                     QStringList& typeHandled,
+     bool registered(QString implementationOf,
+                     QString identifier,
+                     QStringList typeHandled,
                      medAbstractLayeredViewNavigatorCreator creator);
-     bool registered(QString& implementationOf,
-                     QString& identifier,
-                     QStringList& typeHandled,
+     bool registered(QString implementationOf,
+                     QString identifier,
+                     QStringList typeHandled,
                      medAbstractImageViewNavigatorCreator creator);
-     bool registered(QString& implementationOf,
-                     QString& identifier,
-                     QStringList& typeHandled,
+     bool registered(QString implementationOf,
+                     QString identifier,
+                     QStringList typeHandled,
                      medAbstractInteractorCreator creator);
-     bool registered(QString& implementationOf,
-                     QString& identifier,
-                     QStringList& typeHandled,
+     bool registered(QString implementationOf,
+                     QString identifier,
+                     QStringList typeHandled,
                      medAbstractViewInteractorCreator creator);
-     bool registered(QString& implementationOf,
-                     QString& identifier,
-                     QStringList& typeHandled,
+     bool registered(QString implementationOf,
+                     QString identifier,
+                     QStringList typeHandled,
                      medAbstractLayeredViewInteractorCreator creator);
-     bool registered(QString& implementationOf,
-                     QString& identifier,
-                     QStringList& typeHandled,
+     bool registered(QString implementationOf,
+                     QString identifier,
+                     QStringList typeHandled,
                      medAbstractImageViewInteractorCreator creator);
 
     /** Singleton holder.*/
