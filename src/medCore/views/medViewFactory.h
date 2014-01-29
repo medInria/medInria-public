@@ -311,12 +311,12 @@ private:
                      QStringList& typeHandled,
                      medAbstractImageViewInteractorCreator creator);
 
-
-    static medViewFactory *s_instance; /** Singleton holder.*/
+    /** Singleton holder.*/
+    static medViewFactory *s_instance;
 
     /**
-     * @brief Templated method returning a pointer to an allocated toolbox.
-     * @see template<class toolboxType> registerToolBox
+     * @brief Templated method returning a pointer to an allocated object.
+     * @see template<typename pointerT> registerToolBox
      * @warning keep it static if you don't want to freeze your brain
      * (solution in http://www.parashift.com/c++-faq-lite/pointers-to-members.html#faq-33.5 for those interested)
      */

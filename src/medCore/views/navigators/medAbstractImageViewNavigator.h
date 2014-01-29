@@ -39,6 +39,12 @@ public:
                         double &parallelScale) const = 0;
     virtual QVector3D positionBeingViewed() const = 0;
 
+    /**
+    * @brief implementationOf
+    * @return Upper abstract class it derives from.
+    * Do NOT reimplement in in non abstract class.
+    * Used by the factory to kwnow what can be create.
+    */
     static QString implementationOf()
     {
         return "medAbstractImageViewNavigator";

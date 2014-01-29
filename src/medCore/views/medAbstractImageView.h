@@ -132,11 +132,12 @@ public:
     /**
      * @brief implementationOf
      * @return Upper abstract class it derives from.
-     * used by the factory to kwnow what can be create.
+     * Do NOT reimplement in in non abstract class.
+     * Used by the factory to kwnow what can be create.
      */
     static QString implementationOf()
     {
-        return "medAbstractView";
+        return "medAbstractImageView";
     }
 
     //! Convert from world coordinates to scene coordinates.

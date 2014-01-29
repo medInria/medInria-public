@@ -92,6 +92,12 @@ public:
     bool isClosable() const;
     void setClosable(bool closable);
 
+    /**
+     * @brief implementationOf
+     * @return Upper abstract class it derives from.
+     * Do NOT reimplement in in non abstract class.
+     * Used by the factory to kwnow what can be create.
+     */
     static QString implementationOf()
     {
         return "medAbstractView";
