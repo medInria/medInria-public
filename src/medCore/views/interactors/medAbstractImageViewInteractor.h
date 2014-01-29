@@ -34,12 +34,12 @@ public:
     /**
     * Set the opacity of the data on the corresponding layer
     */
-    virtual void setOpacity (double opacity, int layer) = 0;
+    virtual void setOpacity (double opacity) = 0;
 
     /**
     * Get the opacity of the data on the corresponding layer
     */
-    virtual double opacity(int layer) const = 0;
+    virtual double opacity() const = 0;
 
     virtual void setWindowLevel (double &window, double &level) = 0;
     virtual void windowLevel(double &window, double &level) const = 0;

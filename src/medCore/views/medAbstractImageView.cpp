@@ -20,7 +20,7 @@ QVector3D medAbstractImageView::positionBeingViewed(void)
 
 void medAbstractImageView::setWindowLevel (medAbstractData *data, double &window, double &level)
 {
-    this->primaryIntercator(data)->setWindowLevel();
+    this->primaryIntercator(data)->setWindowLevel(window, level);
 }
 
 void medAbstractImageView::windowLevel(medAbstractData *data, double &window, double &level)
@@ -45,7 +45,7 @@ void medAbstractImageView::setOpacity(unsigned int layer, double opacity)
 
 void medAbstractImageView::setOpacity(medAbstractData *data, double opacity)
 {
-    this->primaryIntercator(data)->setOpacity(data);
+    this->primaryIntercator(data)->setOpacity(opacity);
 }
 
 double medAbstractImageView::opacity(unsigned int layer)

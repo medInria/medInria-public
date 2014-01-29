@@ -19,8 +19,9 @@
 
 #include <dtkCore/dtkSmartPointer.h>
 
-#include<medAbstractLayeredViewInteractor.h>
-#include<medAbstractLayeredViewNavigator.h>
+#include <medAbstractLayeredViewInteractor.h>
+#include <medAbstractLayeredViewNavigator.h>
+#include <medAbstractData.h>
 
 class medAbstractData;
 
@@ -73,13 +74,13 @@ signals:
     void dataRemoved(medAbstractData* data, unsigned int layer);
 
 protected:
-    virtual medAbstractLayeredViewInteractor* primaryIntercator(medAbstractData* data) = 0;
-    virtual QList<medAbstractIntercator*> extraIntercator(medAbstractData* data) = 0;
-    virtual medAbstractLayeredViewInteractor* primaryIntercator(unsigned int layer) = 0;
-    virtual QList<medAbstractIntercator*> extraIntercator(unsigned int layer) = 0;
+    virtual medAbstractLayeredViewInteractor * primaryIntercator(medAbstractData* data) = 0;
+    virtual QList<medAbstractIntercator *> extraIntercator(medAbstractData* data) = 0;
+    virtual medAbstractLayeredViewInteractor * primaryIntercator(unsigned int layer) = 0;
+    virtual QList<medAbstractIntercator *> extraIntercator(unsigned int layer) = 0;
 
-    virtual medAbstractLayeredViewNavigator* primaryNavigator() = 0;
-    virtual QList<medAbstractNavigator*> extraNavigator() = 0;
+    virtual medAbstractLayeredViewNavigator * primaryNavigator() = 0;
+    virtual QList<medAbstractNavigator *> extraNavigator() = 0;
 
 private:
     medAbstractLayeredViewPrivate *d;

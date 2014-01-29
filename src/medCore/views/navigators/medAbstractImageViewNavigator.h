@@ -48,7 +48,6 @@ public:
         return "medAbstractImageViewNavigator";
     }
 
-public slots:
     virtual void setOrientation(medVtkViewOrientation orientation) = 0;
     virtual void setCamera(const QVector3D &position,
                            const QVector3D &viewup,

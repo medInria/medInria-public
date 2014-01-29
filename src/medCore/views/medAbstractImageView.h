@@ -17,13 +17,16 @@
 
 #include <dtkCore/dtkSmartPointer.h>
 
+#include <medAbstractImageViewInteractor.h>
+#include <medAbstractImageViewNavigator.h>
+
 #include "medCoreExport.h"
 
 class QVector3D;
 
 class medAbstractData;
 
-class medAbstractImageViewIntercator;
+class medAbstractImageViewInteractor;
 class medAbstractIntercator;
 
 class medAbstractImageViewNavigator;
@@ -112,9 +115,9 @@ public slots:
 
 
 protected:
-    virtual medAbstractImageViewIntercator* primaryIntercator(medAbstractData* data) = 0;
+    virtual medAbstractImageViewInteractor* primaryIntercator(medAbstractData* data) = 0;
     virtual QList<medAbstractIntercator*> extraIntercator(medAbstractData* data) = 0;
-    virtual medAbstractImageViewIntercator* primaryIntercator(unsigned int layer) = 0;
+    virtual medAbstractImageViewInteractor* primaryIntercator(unsigned int layer) = 0;
     virtual QList<medAbstractIntercator*> extraIntercator(unsigned int layer) = 0;
 
     virtual medAbstractImageViewNavigator* primaryNavigator() = 0;
