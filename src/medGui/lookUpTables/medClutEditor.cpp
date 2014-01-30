@@ -14,7 +14,7 @@
 #include <medAbstractData.h>
 #include <medAbstractDataImage.h>
 #include <dtkCore/dtkAbstractView.h>
-#include <medAbstractView.h>
+#include <medAbstractImageView.h>
 #include <medStorage.h>
 #include "medClutEditor.h"
 
@@ -1441,7 +1441,7 @@ public:
     medClutEditorHistogram *histogram;
 
     medAbstractData *dtk_data;
-    medAbstractView *med_view;
+    medAbstractImageView *med_view;
     QList <medClutEditorTable *> * tables;
 };
 
@@ -1555,18 +1555,19 @@ void medClutEditor::setData(medAbstractData *data)
     }
 }
 
-void medClutEditor::setView( medAbstractView *view, bool force )
+void medClutEditor::setView(medAbstractImageView *view, bool force)
 {
     medAbstractDataImage * image =
-        static_cast<medAbstractDataImage *>( view->data() );
-    this->setData( image );
+        static_cast<medAbstractDataImage *>(view->data(0));
+    this->setData(image);
 
-    if ( !force && view == d->med_view )
+    if (!force && view == d->med_view)
         return;
 
     d->med_view = view;
 
-    if ( d->med_view != NULL ) {
+    if (d->med_view != NULL)
+    {
         QList<double> scalars;
         QList<QColor> colors;
 
@@ -1624,7 +1625,8 @@ void medClutEditor::applyTable(void)
 {
     // if (medAbstractDataImage *image =
     //     dynamic_cast<medAbstractDataImage *>(d->dtk_data)) {
-    if ( d->med_view != NULL ) {
+    if ( d->med_view != NULL )
+    {
 
         QList<double> scalars;
         QList<QColor> colors;
@@ -1634,7 +1636,6 @@ void medClutEditor::applyTable(void)
 
         //TODO GPR: make this works
         //d->med_view->setTransferFunctions(scalars, colors);
-        d->med_view->update();
     }
 }
 

@@ -27,10 +27,10 @@ class QVector3D;
 class medAbstractData;
 
 class medAbstractImageViewInteractor;
-class medAbstractIntercator;
+class medAbstractExtraInteractor;
 
 class medAbstractImageViewNavigator;
-class medAbstractNavigator;
+class medAbstractExtraNavigator;
 
 class medAbstractImageViewPrivate;
 class MEDCORE_EXPORT medAbstractImageView: public medAbstractLayeredView
@@ -56,8 +56,8 @@ public:
     QVector3D positionBeingViewed();
 
 
-    void windowLevel(medAbstractData* data, double &window, double &level);
-    void windowLevel(unsigned int layer, double &window, double &level);
+    void dataWindowLevel(medAbstractData* data, double &window, double &level);
+    void layerWindowLevel(unsigned int layer, double &window, double &level);
 
     void camera(QVector3D &position,
                 QVector3D &viewup,
@@ -96,8 +96,8 @@ public:
 
 public slots:
     void setOrientation(medVtkViewOrientation orientation);
-    void setWindowLevel (medAbstractData* data, double &window, double &level);
-    void setWindowLevel (unsigned int layer, double &window, double &level);
+    void setDataWindowLevel (medAbstractData* data, double &window, double &level);
+    void setLayerWindowLevel (unsigned int layer, double &window, double &level);
     /**
       * Set the slice being viewed so that it contains the given spatial postion
        @position is expressed in real world coordinates.
@@ -115,13 +115,13 @@ public slots:
 
 
 protected:
-    virtual medAbstractImageViewInteractor* primaryIntercator(medAbstractData* data) = 0;
-    virtual QList<medAbstractIntercator*> extraIntercator(medAbstractData* data) = 0;
-    virtual medAbstractImageViewInteractor* primaryIntercator(unsigned int layer) = 0;
-    virtual QList<medAbstractIntercator*> extraIntercator(unsigned int layer) = 0;
+    virtual medAbstractImageViewInteractor* primaryInteractor(medAbstractData* data) = 0;
+    virtual QList<medAbstractExtraInteractor*> extraInteractor(medAbstractData* data) = 0;
+    virtual medAbstractImageViewInteractor* primaryInteractor(unsigned int layer) = 0;
+    virtual QList<medAbstractExtraInteractor*> extraInteractor(unsigned int layer) = 0;
 
     virtual medAbstractImageViewNavigator* primaryNavigator() = 0;
-    virtual QList<medAbstractNavigator*> extraNavigator() = 0;
+    virtual QList<medAbstractExtraNavigator*> extraNavigator() = 0;
 
 public:
 

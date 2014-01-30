@@ -13,16 +13,16 @@ PURPOSE.
 
 #pragma once
 
-#include <medAbstractNavigator.h>
+#include <medAbstractExtraNavigator.h>
 
 #include "medCoreExport.h"
 
-class MEDCORE_EXPORT medAbstractViewNavigator : public medAbstractNavigator
+class MEDCORE_EXPORT medAbstractViewNavigator : public medAbstractExtraNavigator
 {
     Q_OBJECT
 
 public:
-    virtual double zoom() const =0;
+    virtual double zoom() const = 0;
     virtual QVector2D pan() const = 0;
 
     /**

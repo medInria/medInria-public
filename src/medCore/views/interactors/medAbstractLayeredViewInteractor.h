@@ -25,7 +25,7 @@ class MEDCORE_EXPORT medAbstractLayeredViewInteractor : public medAbstractViewIn
     Q_OBJECT
 
 public:
-             medAbstractLayeredViewInteractor(medAbstractLayeredView* parent = 0);
+             medAbstractLayeredViewInteractor(medAbstractLayeredView* parent);
     virtual ~medAbstractLayeredViewInteractor();
 
 public:

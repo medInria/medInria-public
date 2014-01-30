@@ -9,7 +9,7 @@ void medAbstractImageView::moveToSliceAtPosition (const QVector3D &position)
 {   
     foreach (medAbstractData *data, this->data())
     {
-        this->primaryIntercator(data)->moveToSliceAtPosition(position);
+        this->primaryInteractor(data)->moveToSliceAtPosition(position);
     }
 }
 
@@ -18,14 +18,24 @@ QVector3D medAbstractImageView::positionBeingViewed(void)
     return this->primaryNavigator()->positionBeingViewed();
 }
 
-void medAbstractImageView::setWindowLevel (medAbstractData *data, double &window, double &level)
+void medAbstractImageView::setDataWindowLevel(medAbstractData *data, double &window, double &level)
 {
-    this->primaryIntercator(data)->setWindowLevel(window, level);
+    this->primaryInteractor(data)->setWindowLevel(window, level);
 }
 
-void medAbstractImageView::windowLevel(medAbstractData *data, double &window, double &level)
+void medAbstractImageView::setLayerWindowLevel(unsigned int layer, double &window, double &level)
 {
-    this->primaryIntercator(data)->windowLevel(window, level);
+    this->primaryInteractor(layer)->setWindowLevel(window, level);
+}
+
+void medAbstractImageView::dataWindowLevel(medAbstractData *data, double &window, double &level)
+{
+    this->primaryInteractor(data)->windowLevel(window, level);
+}
+
+void medAbstractImageView::layerWindowLevel(unsigned int layer, double &window, double &level)
+{
+    this->primaryInteractor(layer)->windowLevel(window, level);
 }
 
 void medAbstractImageView::setCamera (const QVector3D &position, const QVector3D &viewup, const QVector3D &focal, double parallelScale)
@@ -40,21 +50,21 @@ void medAbstractImageView::camera (QVector3D &position, QVector3D &viewup, QVect
 
 void medAbstractImageView::setOpacity(unsigned int layer, double opacity)
 {
-    this->primaryIntercator(layer)->setOpacity(opacity);
+    this->primaryInteractor(layer)->setOpacity(opacity);
 }
 
 void medAbstractImageView::setOpacity(medAbstractData *data, double opacity)
 {
-    this->primaryIntercator(data)->setOpacity(opacity);
+    this->primaryInteractor(data)->setOpacity(opacity);
 }
 
 double medAbstractImageView::opacity(unsigned int layer)
 {
-    this->primaryIntercator(layer)->opacity();
+    this->primaryInteractor(layer)->opacity();
 }
 
 double medAbstractImageView::opacity(medAbstractData *data)
 {
-    this->primaryIntercator(data)->opacity();
+    this->primaryInteractor(data)->opacity();
 }
 

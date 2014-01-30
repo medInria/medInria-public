@@ -26,8 +26,9 @@ class MEDCORE_EXPORT medAbstractImageViewNavigator : public medAbstractLayeredVi
     Q_OBJECT
 
 public:
-             medAbstractImageViewNavigator(medAbstractImageView* parent = 0);
+             medAbstractImageViewNavigator(medAbstractImageView* parent);
     virtual ~medAbstractImageViewNavigator();
+
 
 public:
     virtual medVtkViewOrientation orientaion() const = 0;

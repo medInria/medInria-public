@@ -34,25 +34,25 @@ public:
     medAbstractLayeredView(QObject * parent = 0);
     virtual ~medAbstractLayeredView();
 
-    virtual void addLayer(medAbstractData *data);
-    virtual bool removeLayer(medAbstractData *data);
-    virtual void removeLayer(unsigned int layer);
-    virtual void insertLayer(unsigned int layer, medAbstractData *data);
-    virtual void moveLayer(unsigned int fromLayer, unsigned int toLayer);
-    virtual medAbstractData * data(unsigned int layer) const;
-    virtual bool contains(medAbstractData * data) const;
-    virtual unsigned int layersCount() const;
+    void addLayer(medAbstractData *data);
+    bool removeData(medAbstractData *data);
+    void removeLayer(unsigned int layer);
+    void insertLayer(unsigned int layer, medAbstractData *data);
+    void moveLayer(unsigned int fromLayer, unsigned int toLayer);
+    medAbstractData * data(unsigned int layer) const;
+    bool contains(medAbstractData * data) const;
+    unsigned int layersCount() const;
 
 
     /**
      * Set the visibility of the data on the corresponding layer
      */
-    virtual void setVisibility (bool visibility, unsigned int layer);
+    void setVisibility (bool visibility, unsigned int layer);
 
     /**
      * Get the visibility of the data on the corresponding layer
      */
-    virtual bool visibility(unsigned int layer) const;
+    bool visibility(unsigned int layer) ;
 
     QList<dtkSmartPointer<medAbstractData> > data() const;
 
@@ -74,13 +74,13 @@ signals:
     void dataRemoved(medAbstractData* data, unsigned int layer);
 
 protected:
-    virtual medAbstractLayeredViewInteractor * primaryIntercator(medAbstractData* data) = 0;
-    virtual QList<medAbstractIntercator *> extraIntercator(medAbstractData* data) = 0;
-    virtual medAbstractLayeredViewInteractor * primaryIntercator(unsigned int layer) = 0;
-    virtual QList<medAbstractIntercator *> extraIntercator(unsigned int layer) = 0;
+    virtual medAbstractLayeredViewInteractor * primaryInteractor(medAbstractData* data) = 0;
+    virtual QList<medAbstractExtraInteractor *> extraInteractor(medAbstractData* data) = 0;
+    virtual medAbstractLayeredViewInteractor * primaryInteractor(unsigned int layer) = 0;
+    virtual QList<medAbstractExtraInteractor *> extraInteractor(unsigned int layer) = 0;
 
     virtual medAbstractLayeredViewNavigator * primaryNavigator() = 0;
-    virtual QList<medAbstractNavigator *> extraNavigator() = 0;
+    virtual QList<medAbstractExtraNavigator *> extraNavigator() = 0;
 
 private:
     medAbstractLayeredViewPrivate *d;

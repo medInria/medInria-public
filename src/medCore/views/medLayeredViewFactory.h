@@ -19,25 +19,27 @@
 
 #include <QStringList>
 
-#include <medAbstractView.h>
-#include <medAbstractViewNavigator.h>
-#include <medAbstractViewInteractor.h>
+#include <medAbstractLayeredView.h>
+#include <medAbstractLayeredViewNavigator.h>
+#include <medAbstractLayeredViewInteractor.h>
 
 
-typedef medAbstractView *(*viewCreator)(QObject *parent);
-typedef medAbstractViewNavigator *(*navigatorCreator)(medAbstractView *parent);
-typedef medAbstractViewInteractor *(*interactorCreator)(medAbstractView *parent);
 
-class medViewFactoryPrivate;
-class MEDCORE_EXPORT medViewFactory : public dtkAbstractFactory
+
+class medLayeredViewFactoryPrivate;
+class MEDCORE_EXPORT medLayeredViewFactory : public dtkAbstractFactory
 {
     Q_OBJECT
 public:
-    static medViewFactory *instance();
+    typedef medAbstractLayeredView *(*viewCreator)(QObject *parent);
+    typedef medAbstractLayeredViewNavigator *(*navigatorCreator)(medAbstractLayeredView *parent);
+    typedef medAbstractLayeredViewInteractor *(*interactorCreator)(medAbstractLayeredView *parent);
 
-    medAbstractView* createView(QString identifier, QObject *parent = 0);
-    medAbstractViewNavigator* createNavigator(QString identifier, medAbstractView *parent);
-    medAbstractViewInteractor*  createInteractor(QString identifier, medAbstractView *parent);
+    static medLayeredViewFactory *instance();
+
+    medAbstractLayeredView* createView(QString identifier, QObject *parent = 0);
+    medAbstractLayeredViewNavigator* createNavigator(QString identifier, medAbstractLayeredView *parent);
+    medAbstractLayeredViewInteractor*  createInteractor(QString identifier, medAbstractLayeredView *parent);
 
 
     template <typename T>
@@ -65,8 +67,8 @@ public:
 
 
 protected:
-     medViewFactory();
-    ~medViewFactory();
+     medLayeredViewFactory();
+    ~medLayeredViewFactory();
 
 private:
      bool registerView(QString identifier, QStringList typeHandled, viewCreator creator);
@@ -75,7 +77,7 @@ private:
 
 
     /** Singleton holder.*/
-    static medViewFactory *s_instance;
+    static medLayeredViewFactory *s_instance;
 
     /**
      * @brief Templated method returning a pointer to an allocated object.
@@ -84,23 +86,23 @@ private:
      * (solution in http://www.parashift.com/c++-faq-lite/pointers-to-members.html#faq-33.5 for those interested)
      */
     template < typename T>
-    static medAbstractView* _prvt_createView(QObject* parent)
+    static medAbstractLayeredView* _prvt_createView(QObject* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractViewNavigator* _prvt_createNavigator(medAbstractView* parent)
+    static medAbstractLayeredViewNavigator* _prvt_createNavigator(medAbstractLayeredView* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractViewInteractor* _prvt_creatInteractor(medAbstractView* parent)
+    static medAbstractLayeredViewInteractor* _prvt_creatInteractor(medAbstractLayeredView* parent)
     {
         return (new T(parent));
     }
 
 private:
-    medViewFactoryPrivate* d;
+    medLayeredViewFactoryPrivate* d;
 };
 
 

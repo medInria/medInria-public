@@ -22,27 +22,27 @@ PURPOSE.
 #include <medAbstractView.h>
 #include <medAbstractData.h>
 
-class medAbstractInteractorPrivate;
-class MEDCORE_EXPORT medAbstractInteractor : public dtkAbstractViewInteractor
+class medAbstractExtraInteractorPrivate;
+class MEDCORE_EXPORT medAbstractExtraInteractor : public dtkAbstractViewInteractor
 {
     Q_OBJECT
 
 public:
-             medAbstractInteractor(medAbstractView* parent = 0);
-    virtual ~medAbstractInteractor();
+             medAbstractExtraInteractor(medAbstractView* parent);
+    virtual ~medAbstractExtraInteractor();
 
 public:
     virtual QString description() const = 0;
-    QString viewTypeHandled() const;
-    QString dataTypeHandled() const;
-    void setTypeHandled (QString& viewType, QString& data);
-    QStringList handled() const;
+
+    virtual void setView(medAbstractView*view);
+    virtual medAbstractView *view() const;
 
     virtual void setData(medAbstractData *data);
     virtual medAbstractData *data() const;
 
     virtual QWidget* toolBoxWidget() = 0;
     virtual QWidget* toolBarWidget() = 0;
+    virtual QWidget* layerWidget() = 0;
 
     /**
     * @brief implementationOf
@@ -52,14 +52,11 @@ public:
     */
     static QString implementationOf()
     {
-        return "medAbstractInteractor";
+        return "medAbstractExtraInteractor";
     }
 
 private:
-    virtual void setView(medAbstractView*view);
-    virtual medAbstractView *view() const;
-
-    medAbstractInteractorPrivate *d;
+    medAbstractExtraInteractorPrivate *d;
 
 /*=========================================================================
                          NOT IMPLEMENTED ON PURPOSE

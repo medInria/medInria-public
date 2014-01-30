@@ -18,7 +18,7 @@
 #include <QtGui>
 
 class medAbstractData;
-class medAbstractView;
+class medAbstractImageView;
 
 
 // /////////////////////////////////////////////////////////////////
@@ -27,6 +27,7 @@ class medAbstractView;
 
 class medClutEditorVertexPrivate;
 
+// TODO use QGraphicsObjactItem noobs.
 class medClutEditorVertex : public QObject, public QGraphicsItem
 {
     Q_OBJECT
@@ -262,7 +263,7 @@ public:
     ~medClutEditor();
 
     void setData(medAbstractData *data);
-    void setView(medAbstractView *view, bool force = false);
+    void setView(medAbstractImageView *view, bool force = false);
     void applyTable();
 
 protected:

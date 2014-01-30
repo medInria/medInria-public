@@ -24,11 +24,15 @@ class medAbstractViewCoordinates;
 class medViewBackend;
 class medAbstractData;
 class medAbstractViewNavigator;
-class medAbstractNavigator;
-class medAbstractIntercator;
-class medAbstractViewIntercator;
+class medAbstractExtraNavigator;
+class medAbstractExtraInteractor;
+class medAbstractViewInteractor;
 
-class QColor;
+// derive and implement if you need to provide access to your backend
+class medViewBackend {
+};
+
+
 
 /**
  * @class medAbstractView
@@ -58,6 +62,8 @@ public:
     medAbstractView(QObject* parent = 0);
     virtual ~medAbstractView();
 
+    virtual QString description() const =0;
+
     virtual QWidget *receiverWidget() = 0;
 
     /**
@@ -65,13 +71,13 @@ public:
 
     **/
     virtual void setZoom (double zoom);
-    double zoom() const;
+    double zoom();
 
     /**
        Set the view pan.
     **/
     virtual void setPan (const QVector2D &pan);
-    QVector2D pan() const;
+    QVector2D pan();
 
     virtual medViewBackend * backend() const = 0;
 
@@ -81,44 +87,22 @@ public:
     virtual QWidget* toolBar() = 0;
     virtual QWidget* toolBox() = 0;
 
-
+//TODO shouldbe the role of container IMO - RDE
 signals:
     void selected();
     void unselected();
 
-    /**
-       This signal is emitted when a view is about to close.
-     **/
-    void closing();
-
-    /**
-       This signal is emitted when the view wants to be displayed in full screen.
-     **/
-    void maximizeRequested (bool);
-
-    /**
-       This signal is emitted when the zoom factor of the view has changed.
-     **/
-    void zoomChanged      (double zoom);
-
-    /**
-       This signal is emitted when the pan (=translation) of the view has
-       changed.
-     **/
-    void panChanged       (const QVector2D &pan);
-
 protected:
-    virtual medAbstractViewIntercator* primaryIntercator(medAbstractData* data) = 0;
-    virtual QList<medAbstractIntercator*> extraIntercator(medAbstractData* data) = 0;
+    virtual medAbstractViewInteractor* primaryInteractor(medAbstractData* data) = 0;
+    virtual QList<medAbstractExtraInteractor*> extraInteractor(medAbstractData* data) = 0;
     virtual medAbstractViewNavigator* primaryNavigator() = 0;
-    virtual QList<medAbstractNavigator*> extraNavigator() = 0;
+    virtual QList<medAbstractExtraNavigator*> extraNavigator() = 0;
 
-    virtual void getIntercators(medAbstractData* data) = 0;
+    virtual void getInteractors(medAbstractData* data) = 0;
     virtual void getNavigators() = 0;
     virtual void removeInteractors(medAbstractData *data);
 
-private:
-    medAbstractViewPrivate *d;
+
 
 public:
     /**
@@ -131,8 +115,109 @@ public:
     {
         return "medAbstractView";
     }
+
+private:
+    medAbstractViewPrivate *d;
+
+    /*=========================================================================
+                             NOT IMPLEMENTED ON PURPOSE
+    *=========================================================================*/
+     virtual void copy(const dtkAbstractObject& other)
+{DTK_UNUSED(other);}
+     virtual void   link(dtkAbstractView *other)
+{DTK_UNUSED(other);}
+     virtual void unlink(dtkAbstractView *other)
+{DTK_UNUSED(other);}
+     virtual void   select(dtkAbstractData *data)
+{DTK_UNUSED(data);}
+     virtual void unselect(dtkAbstractData *data)
+{DTK_UNUSED(data);}
+     virtual void setStereo(bool on)
+{DTK_UNUSED(on);}
+     virtual void setView(void *view)
+{DTK_UNUSED(view);}
+    virtual void setData(dtkAbstractData *data)
+{DTK_UNUSED(data);}
+    virtual void setData(dtkAbstractData *data, int inputId)
+{DTK_UNUSED(data); DTK_UNUSED(inputId);}
+    virtual void setBackgroundColor(int red, int green, int blue)
+{DTK_UNUSED(red);DTK_UNUSED(green);DTK_UNUSED(blue);}
+    virtual void setBackgroundColor(double red, double green, double blue)
+{DTK_UNUSED(red);DTK_UNUSED(green);DTK_UNUSED(blue);}
+    virtual void *view(void)
+{return 0;}
+    virtual void *data(void)
+{return 0;}
+    virtual void *data(int channel)
+{DTK_UNUSED(channel);return 0;}
+    virtual bool stereo(void)
+{return false;}
+    virtual void  clear(void)
+{}
+    virtual void  reset(void)
+{}
+    virtual void update(void)
+{}
+    virtual QWidget *widget(void)
+{return 0;}
+    virtual void close(void)
+{}
+    void showFullScreen(void)
+{}
+    void showMinimized(void)
+{}
+    void showMaximized(void)
+{}
+    void showNormal(void)
+{}
+    void show(void)
+{}
+    void resize(int width, int height)
+{DTK_UNUSED(width);DTK_UNUSED(height);}
+    void addAnimator  (dtkAbstractViewAnimator   *animator)
+{DTK_UNUSED(animator);}
+    void addNavigator (dtkAbstractViewNavigator  *navigator)
+{DTK_UNUSED(navigator);}
+    void addInteractor(dtkAbstractViewInteractor *interactor)
+{DTK_UNUSED(interactor);}
+    void    enableAnimator(const QString& animator)
+{DTK_UNUSED(animator);}
+    void   disableAnimator(const QString& animator)
+{DTK_UNUSED(animator);}
+    void   enableNavigator(const QString& navigator)
+{DTK_UNUSED(navigator);}
+    void  disableNavigator(const QString& navigator)
+{DTK_UNUSED(navigator);}
+    void  enableInteractor(const QString& interactor)
+{DTK_UNUSED(interactor);}
+    void disableInteractor(const QString& interactor)
+{DTK_UNUSED(interactor);}
+    dtkAbstractViewAnimator   *animator  (const QString& type)
+{DTK_UNUSED(type);return 0;}
+     dtkAbstractViewNavigator  *navigator (const QString& type)
+{DTK_UNUSED(type);return 0;}
+     dtkAbstractViewInteractor *interactor(const QString& type)
+{DTK_UNUSED(type);return 0;}
+     QList<dtkAbstractViewAnimator   *> animators(void) const
+{return QList<dtkAbstractViewAnimator   *>();}
+     QList<dtkAbstractViewNavigator  *> navigators(void) const
+     {return QList<dtkAbstractViewNavigator *>();}
+     QList<dtkAbstractViewInteractor *> interactors(void) const
+     {return QList<dtkAbstractViewInteractor *>();}
+     virtual void   initialize(void)
+{}
+     virtual void uninitialize(void)
+{}
+     virtual void setHeadPosition(dtkVector3D<double> position)
+{DTK_UNUSED(position);}
+     virtual void setHeadOrientation(dtkQuaternion<double> orientation)
+{DTK_UNUSED(orientation);}
+     virtual void setUpperLeft(dtkVector3D<double> position)
+{DTK_UNUSED(position);}
+     virtual void setLowerLeft(dtkVector3D<double> position)
+{DTK_UNUSED(position);}
+     virtual void setLowerRight(dtkVector3D<double> position)
+{DTK_UNUSED(position);}
 };
 
-// derive and implement if you need to provide access to your backend
-class medViewBackend {
-};
+

@@ -18,27 +18,22 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <medAbstractData.h>
 
-#include <medAbstractNavigator.h>
+#include <medAbstractExtraNavigator.h>
 #include <medAbstractViewNavigator.h>
 #include <medViewFactory.h>
 
 class medAbstractViewPrivate
 {
 public:
-
-    QVector2D  pan;
-    double     zoom;
     bool    closable;
 
-//    QList<medAbstractNavigator*> extraNavigators;
+//    QList<medAbstractExtraNavigator*> extraNavigators;
 //    medAbstractViewNavigator* primaryNavigator;
 };
 
 medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate)
 {
     this->setParent(parent);
-    d->pan = QVector2D(0.0, 0.0);
-    d->zoom = 1.0;
     d->closable = true;
 
     this->getNavigators();
@@ -49,41 +44,6 @@ medAbstractView::~medAbstractView( void )
     delete d;
     d = NULL;
 }
-
-//virtual medAbstractViewNavigator* medAbstractView::primaryNavigator() const
-//{
-//    return d->primaryNavigator
-//}
-//virtual QList<medAbstractNavigator*> medAbstractView::extraNavigator() const
-//{
-//    return d->extraNavigators;
-//}
-
-//virtual void medAbstractView::getPrimaryNavigator()
-//{
-//    medViewFactory* factory = medViewFactory::instance();
-//    QStringList viewNavigatorsId = factory->navigatorsAbleToHandle(medAbstractViewNavigator::implementationOf(), this->identifier());
-//    if(viewNavigatorsId.isEmpty())
-//    {
-//        qWarning() << "Unable to find primary navigator for: " << this->description();
-//        return;
-//    }
-
-//    d->primaryNavigator = factory->createNavigator(medAbstractViewNavigator::implementationOf(),
-//                                                       iewNavigatorsId.first(),
-//                                                       this);
-//}
-
-//virtual void medAbstractView::getExtraNavigator()
-//{
-//    medViewFactory* factory = medViewFactory::instance();
-//    QStringList navigatorsId = factory->navigatorsAbleToHandle(medAbstractNavigator::implementationOf(),
-//                                                               this->identifier());
-//    foreach(QString nId, navigatorsId)
-//        d->extraNavigators << factory->createNavigator<medAbstractNavigator *>(medAbstractNavigator::implementationOf(),
-//                                                                          nId,
-//                                                                          this);
-//}
 
 
 bool medAbstractView::isClosable() const
@@ -98,32 +58,38 @@ void medAbstractView::setClosable(bool closable)
 
 void medAbstractView::setZoom (double zoom)
 {
-    if  (d->zoom == zoom)
-        return;
+    medAbstractViewNavigator* nav = this->primaryNavigator();
+    if(!nav)
+        return
 
-    d->zoom = zoom;
-
-    this->primaryNavigator()->setZoom(zoom);
-    emit zoomChanged (zoom);
+    nav->setZoom(zoom);
 }
 
-double medAbstractView::zoom(void) const
+double medAbstractView::zoom(void)
 {
-    return d->zoom;
+    medAbstractViewNavigator* nav = this->primaryNavigator();
+    if(!nav)
+        return 1;
+
+    return nav->zoom();
 }
 
 void medAbstractView::setPan (const QVector2D &pan)
 {
-    if ( d->pan == pan )
-        return;
 
-    d->pan = pan;
+    medAbstractViewNavigator* nav = this->primaryNavigator();
+    if(!nav)
+        return
 
-    this->primaryNavigator()->setPan(pan);
-    emit panChanged (pan);
+    nav->setPan(pan);
 }
 
-QVector2D medAbstractView::pan(void) const
+QVector2D medAbstractView::pan(void)
 {
-    return d->pan;
+    medAbstractViewNavigator* nav = this->primaryNavigator();
+    if(!nav)
+        return QVector2D(0.0,0.0);
+
+    return nav->pan();
 }
+

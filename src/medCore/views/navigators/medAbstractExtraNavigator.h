@@ -19,20 +19,20 @@ PURPOSE.
 
 class medAbstractView;
 
-class medAbstractNavigatorPrivate;
-class MEDCORE_EXPORT medAbstractNavigator : public dtkAbstractViewNavigator
+class medAbstractExtraNavigatorPrivate;
+class MEDCORE_EXPORT medAbstractExtraNavigator : public dtkAbstractViewNavigator
 {
     Q_OBJECT
 
 public:
-             medAbstractNavigator(medAbstractView* parent = 0);
-    virtual ~medAbstractNavigator();
+             medAbstractExtraNavigator(medAbstractView* parent);
+    virtual ~medAbstractExtraNavigator();
 
 public:
     virtual QString description() const = 0;
-    virtual QStringList handled() const;
-    QString viewTypeHandled() const;
-    void setTypeHandled(QString& viewType);
+
+    virtual void setView(medAbstractView *view);
+    virtual medAbstractView *view() const;
 
     /**
      * @brief implementationOf
@@ -42,14 +42,11 @@ public:
      */
     static QString implementationOf()
     {
-        return "medAbstractNavigator";
+        return "medAbstractExtraNavigator";
     }
 
 private:
-    void setView(medAbstractView *view);
-    medAbstractView *view() const;
-
-    medAbstractNavigatorPrivate *d;
+    medAbstractExtraNavigatorPrivate *d;
 
 /*=========================================================================
                          NOT IMPLEMENTED ON PURPOSE

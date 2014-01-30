@@ -21,7 +21,7 @@
 #include <dtkLog/dtkLog.h>
 
 #include <medAbstractDataImage.h>
-#include <medAbstractView.h>
+#include <medAbstractImageView.h>
 #include <medDataManager.h>
 #include <medJobManager.h>
 #include <medMessageController.h>
@@ -197,25 +197,25 @@ void medSegmentationSelectorToolBox::setProcess(dtkAbstractProcess* proc)
 
 medAbstractViewCoordinates * medSegmentationSelectorToolBox::viewCoordinates( dtkAbstractView * view )
 {
-    medAbstractView * mview = qobject_cast< medAbstractView * >( view );
-    if ( ! mview ) {
-        dtkDebug() << "Failed to get a view";
-        return NULL;
-    }
+//    medAbstractImageView * mview = qobject_cast< medAbstractImageView * >( view );
+//    if ( ! mview ) {
+//        dtkDebug() << "Failed to get a view";
+//        return NULL;
+//    }
 
-    return mview->coordinates();
+    return NULL;
 }
 
 medAbstractData * medSegmentationSelectorToolBox::viewData( dtkAbstractView * view )
 {
-    medAbstractView * mview = qobject_cast< medAbstractView * >( view );
+    medAbstractImageView * mview = qobject_cast< medAbstractImageView * >( view );
     if ( ! mview ) {
         dtkDebug() << "Failed to get a view";
         return NULL;
     }
 
     // Why isn't the data of an abstract view a dtkAbstractData????
-    return reinterpret_cast< medAbstractData * >( mview->data() );
+    return mview->data(0);
 }
 
 void medSegmentationSelectorToolBox::onSuccess( QObject * sender )
@@ -294,7 +294,7 @@ void medSegmentationSelectorToolBox::addViewEventFilter( medViewEventFilter * fi
 {
     QList< dtkAbstractView *> views = d->workspace->currentViewContainer()->views();
     foreach( dtkAbstractView * view, views ) {
-        medAbstractView * mview = qobject_cast<medAbstractView *>(view);
+        medAbstractImageView * mview = qobject_cast<medAbstractImageView *>(view);
         filter->installOnView(mview);
     }
 }
@@ -303,7 +303,7 @@ void medSegmentationSelectorToolBox::removeViewEventFilter( medViewEventFilter *
 {
     QList< dtkAbstractView *> views = d->workspace->currentViewContainer()->views();
     foreach( dtkAbstractView * view, views ) {
-        medAbstractView * mview = qobject_cast<medAbstractView *>(view);
+        medAbstractImageView * mview = qobject_cast<medAbstractImageView *>(view);
         filter->removeFromView(mview);
     }
 }

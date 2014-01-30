@@ -11,23 +11,22 @@
 
 =========================================================================*/
 
-#include "medViewFactory.h"
+#include "medLayeredViewFactory.h"
 
 
-medViewFactory *medViewFactory::instance(void)
+medLayeredViewFactory *medLayeredViewFactory::instance(void)
 {
     if(!s_instance)
-        s_instance = new medViewFactory;
+        s_instance = new medLayeredViewFactory;
 
     return s_instance;
 }
 
-
-class medViewFactoryPrivate
+class medLayeredViewFactoryPrivate
 {
-    typedef QHash <QString, viewCreator>        viewIdCreatorHash;
-    typedef QHash <QString, navigatorCreator>   navigatorIdCreatorHash;
-    typedef QHash <QString, interactorCreator>  interactorIdCreatorHash;
+    typedef QHash <QString, medLayeredViewFactory::viewCreator>        viewIdCreatorHash;
+    typedef QHash <QString, medLayeredViewFactory::navigatorCreator>   navigatorIdCreatorHash;
+    typedef QHash <QString, medLayeredViewFactory::interactorCreator>  interactorIdCreatorHash;
 
     typedef QHash <QString, QStringList>        identifierHandledTypeHash;
 
@@ -40,11 +39,11 @@ class medViewFactoryPrivate
     identifierHandledTypeHash identifierHash;
 };
 
-medViewFactory::medViewFactory()
+medLayeredViewFactory::medLayeredViewFactory()
 {
-    d = new medViewFactoryPrivate;
+    d = new medLayeredViewFactoryPrivate;
 }
-medViewFactory::~medViewFactory()
+medLayeredViewFactory::~medLayeredViewFactory()
 {
     delete d;
 }
@@ -52,9 +51,9 @@ medViewFactory::~medViewFactory()
 //--------------------------------------------------------------------------
 //  create
 
-medAbstractView* medViewFactory::createView(QString identifier, QObject *parent)
+medAbstractLayeredView* medLayeredViewFactory::createView(QString identifier, QObject *parent)
 {
-    medAbstractView* view = NULL;
+    medAbstractLayeredView* view = NULL;
     viewCreator c = NULL;
     c = d->viewCreators.value(identifier);
     if(c)
@@ -63,10 +62,10 @@ medAbstractView* medViewFactory::createView(QString identifier, QObject *parent)
     return view;
 }
 
-medAbstractViewNavigator* medViewFactory::createNavigator(QString identifier, medAbstractView *parent)
+medAbstractLayeredViewNavigator* medLayeredViewFactory::createNavigator(QString identifier, medAbstractLayeredView *parent)
 {
 
-    medAbstractViewNavigator* navigator = NULL;
+    medAbstractLayeredViewNavigator* navigator = NULL;
     navigatorCreator c = NULL;
     c = d->navigatorCreators.value(identifier);
     if(c)
@@ -75,9 +74,9 @@ medAbstractViewNavigator* medViewFactory::createNavigator(QString identifier, me
     return navigator;
 }
 
-medAbstractViewInteractor*  medViewFactory::createInteractor(QString identifier, medAbstractView *parent)
+medAbstractLayeredViewInteractor*  medLayeredViewFactory::createInteractor(QString identifier, medAbstractLayeredView *parent)
 {
-    medAbstractViewInteractor* interactor = NULL;
+    medAbstractLayeredViewInteractor* interactor = NULL;
     interactorCreator c = NULL;
     c = d->intercatorCreators.value(identifier);
     if(c)
@@ -91,7 +90,7 @@ medAbstractViewInteractor*  medViewFactory::createInteractor(QString identifier,
 //  register
 
 
-bool medViewFactory::registerView(QString identifier, QStringList typeHandled, viewCreator creator)
+bool medLayeredViewFactory::registerView(QString identifier, QStringList typeHandled, viewCreator creator)
 {
     if(d->viewCreators.contains(identifier))
         return false;
@@ -101,7 +100,7 @@ bool medViewFactory::registerView(QString identifier, QStringList typeHandled, v
     return true;
 }
 
-bool medViewFactory::registerNavigator(QString identifier, QStringList typeHandled, navigatorCreator creator)
+bool medLayeredViewFactory::registerNavigator(QString identifier, QStringList typeHandled, navigatorCreator creator)
 {
     if(d->navigatorCreators.contains(identifier))
         return false;
@@ -111,7 +110,7 @@ bool medViewFactory::registerNavigator(QString identifier, QStringList typeHandl
     return true;
 }
 
-bool medViewFactory::registerInteractor(QString identifier, QStringList typeHandled, interactorCreator creator)
+bool medLayeredViewFactory::registerInteractor(QString identifier, QStringList typeHandled, interactorCreator creator)
 {
     if(d->intercatorCreators.contains(identifier))
         return false;
@@ -124,7 +123,7 @@ bool medViewFactory::registerInteractor(QString identifier, QStringList typeHand
 //--------------------------------------------------------------------------
 //  get handler
 
-QStringList medViewFactory::navigatorsAbleToHandle(const QString viewType) const
+QStringList medLayeredViewFactory::navigatorsAbleToHandle(const QString viewType) const
 {
     QHashIterator<QString, QStringList> it(d->identifierHash);
 
@@ -139,7 +138,7 @@ QStringList medViewFactory::navigatorsAbleToHandle(const QString viewType) const
     return navigators;
 }
 
-QStringList medViewFactory::interactorsAbleToHandle(const QString viewType, const QString dataType) const
+QStringList medLayeredViewFactory::interactorsAbleToHandle(const QString viewType, const QString dataType) const
 {
     QHashIterator<QString, QStringList> it(d->identifierHash);
 
@@ -154,7 +153,7 @@ QStringList medViewFactory::interactorsAbleToHandle(const QString viewType, cons
     return interactors;
 }
 
-QStringList medViewFactory::viewsAbleToHandle(const QString dataType) const
+QStringList medLayeredViewFactory::viewsAbleToHandle(const QString dataType) const
 {
     QHashIterator<QString, QStringList> it(d->identifierHash);
 
@@ -173,7 +172,7 @@ QStringList medViewFactory::viewsAbleToHandle(const QString dataType) const
 //  construc / destruct factory
 
 
-medViewFactory *medViewFactory::s_instance = NULL;
+medLayeredViewFactory *medLayeredViewFactory::s_instance = NULL;
 
 
 

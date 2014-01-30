@@ -444,7 +444,7 @@ bool medViewContainer::open(medAbstractData * data)
     // set the data to the view
     if (!this->multiLayer())
     {
-        view->removeLayerAt(0);
+        view->removeLayer(0);
         view->addLayer(medData);
         newView = true;
     }
@@ -458,7 +458,7 @@ bool medViewContainer::open(medAbstractData * data)
     {
         this->setView(view);
         qDebug() << "medViewContainer: Reset view";
-        view->reset();
+//        view->reset();
     }
     else
     {
@@ -466,7 +466,7 @@ bool medViewContainer::open(medAbstractData * data)
         setFocus(Qt::MouseFocusReason);
     }
 
-    view->update();
+//    view->update();
 
     return true;
 }

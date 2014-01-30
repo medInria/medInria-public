@@ -17,17 +17,17 @@
 
 #include <dtkCore/dtkSmartPointer.h>
 
-#include "medAbstractView.h"
+#include <medAbstractLayeredView.h>
 
 class medAbstractData;
 class medQtViewPrivate;
 
-class MEDTEST_EXPORT medQtView : public medAbstractView
+class MEDTEST_EXPORT medQtView : public medAbstractLayeredView
 {
     Q_OBJECT
 
 public:
-             medQtView();
+             medQtView(QObject* parent = 0);
     virtual ~medQtView();
 
     virtual QString description() const;
@@ -36,16 +36,15 @@ public:
     static bool registered();
 
     QWidget *widget();
+    virtual medAbstractLayeredViewInteractor * primaryInteractor(medAbstractData* data) = 0;
+    virtual QList<medAbstractExtraInteractor *> extraInteractor(medAbstractData* data);
+    virtual medAbstractLayeredViewInteractor * primaryInteractor(unsigned int layer);
+    virtual QList<medAbstractExtraInteractor *> extraInteractor(unsigned int layer);
 
-    void setData (medAbstractData *data);
-    void setData (medAbstractData *data, int layer);
-
-    void *data();
-    void *data(int layer);
-    virtual medAbstractViewCoordinates * coordinates() {return NULL;}
+    virtual medAbstractLayeredViewNavigator * primaryNavigator();
+    virtual QList<medAbstractExtraNavigator *> extraNavigator();
 protected:
-    void setZoom_impl(double zoom);
-    void setPan_impl(const QVector2D &pan);
+
 private:
     medQtViewPrivate *d;
 };

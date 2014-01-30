@@ -227,16 +227,16 @@ void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& in
     {
         d->fuseView->blockSignals(true);
 
-        d->fuseView->show();
-        d->fuseView->removeLayerAt(1);
-        d->fuseView->removeLayerAt(0);
+//        d->fuseView->show();
+        d->fuseView->removeLayer(1);
+        d->fuseView->removeLayer(0);
 
         if (d->movingView && d->fuseView->layersCount()==1)
         {
 
             //only the moving view has been set: shift it to layer 1
-            d->fuseView->setData(d->fixedData,0);
-            d->fuseView->setData(d->movingData,1);
+            d->fuseView->addLayer(d->fixedData);
+            d->fuseView->addLayer(d->movingData);
             if(d->undoRedoProcess)
             {
                 d->undoRedoProcess->setInput(d->fixedData,  0);
@@ -246,10 +246,9 @@ void medRegistrationSelectorToolBox::onFixedImageDropped (const medDataIndex& in
         else
         {
             //either both views are set, or only the fixed view
-            d->fuseView->setData(d->fixedData,0);
+            d->fuseView->addLayer(d->fixedData);
         }
-        d->fuseView->reset();
-        d->fuseView->update();
+//        d->fuseView->reset();
         this->synchroniseWindowLevel(d->movingView); // This line will synchronise the windowlvl between the movingView and fuseView.
         this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the fixedView and fuseView.
         d->fuseView->blockSignals(false);
@@ -299,20 +298,20 @@ void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& i
     }
 
     if (d->fixedView) {
-        d->movingView->update();
+//        d->movingView->update();
     }
 
     d->fuseView->blockSignals(true);
 
-    d->fuseView->show();
-    d->fuseView->removeLayerAt(1);
-    d->fuseView->removeLayerAt(0);
+//    d->fuseView->show();
+    d->fuseView->removeLayer(1);
+    d->fuseView->removeLayer(0);
 
     if (d->fixedData)
     {
         //already one layer present
-        d->fuseView->setData(d->fixedData,0);
-        d->fuseView->setData(d->movingData,1);
+        d->fuseView->addLayer(d->fixedData);
+        d->fuseView->addLayer(d->movingData);
         if(d->undoRedoProcess)
         { 
             d->undoRedoProcess->setInput(d->fixedData,  0);
@@ -322,10 +321,10 @@ void medRegistrationSelectorToolBox::onMovingImageDropped (const medDataIndex& i
     else
     {
         //only the moving view is set
-        d->fuseView->setData(d->movingData,0);
+        d->fuseView->addLayer(d->movingData);
     }
-    d->fuseView->reset();
-    d->fuseView->update();
+//    d->fuseView->reset();
+//    d->fuseView->update();
     this->synchroniseWindowLevel(d->movingView); // This line will synchronise the windowlvl between the movingView and fuseView.
     this->synchroniseWindowLevel(d->fixedView); // This line will synchronise the windowlvl between the fixedView and fuseView.
     d->fuseView->blockSignals(false);
@@ -598,13 +597,13 @@ void medRegistrationSelectorToolBox::handleOutput(typeOfOperation type, QString 
     {   
         d->movingData = output;
 
-        d->movingView->setData(output, 0);
+        d->movingView->addLayer(output);
         // calling reset() will reset all the view parameters (position - zoom - window/level) to default
-        d->movingView->reset();
-        d->movingView->update();
+//        d->movingView->reset();
+//        d->movingView->update();
         
-        d->fuseView->setData(output,1);
-        d->fuseView->update();
+        d->fuseView->addLayer(output);
+//        d->fuseView->update();
     }
 }
 
@@ -633,40 +632,28 @@ void medRegistrationSelectorToolBox::synchroniseWindowLevel(QObject * sender){
 
     if (d->fixedView==senderView)
     {
-        d->fixedView->windowLevel(level,window);
-        d->fuseView->setCurrentLayer(0);
-        d->fuseView->setWindowLevel(level,window);
+        d->fixedView->layerWindowLevel(0, window, level);
+        d->fuseView->setLayerWindowLevel(0, window, level);
     }
     else if (d->movingView==senderView)
     {
-        d->movingView->windowLevel(level,window);
-        d->fuseView->setCurrentLayer(1);
-        d->fuseView->setWindowLevel(level,window);
+        d->movingView->layerWindowLevel(0, window, level);
+        d->fuseView->setLayerWindowLevel(1, window, level);
     }
     else
     {		
-        d->fuseView->windowLevel(level,window);
+        d->fuseView->layerWindowLevel(0, window, level);
         //TODO:  take API change into account - RDE
         //if (d->fixedView && d->fixedView->isWindowingLinked() && d->movingView && d->movingView->isWindowingLinked())
         if (d->fixedView && d->movingView)
         {
-            d->fixedView->setWindowLevel(level,window);
-            d->movingView->setWindowLevel(level,window);
-            if (d->fuseView->currentLayer()==0)// Since the fixed view and moving view are linked we must assure that the two layers of the fuse view are changed.
-            { 
-                d->fuseView->setCurrentLayer(1);
-                d->fuseView->setWindowLevel(level,window);
-            }
-            else if (d->fuseView->currentLayer()==1)
-            {
-                d->fuseView->setCurrentLayer(0);
-                d->fuseView->setWindowLevel(level,window);
-            }
+            d->fixedView->setLayerWindowLevel(0, window, level);
+            d->movingView->setLayerWindowLevel(0, window, level);
+            d->fuseView->setLayerWindowLevel(0, window, level);
         }
-        else if (d->fixedView && d->fuseView->currentLayer()==0)
-            d->fixedView->setWindowLevel(level,window);
-        else if (d->movingView && (d->fuseView->currentLayer()==1 || d->fuseView->layersCount()==1))
-            d->movingView->setWindowLevel(level,window);
+        d->fixedView->setLayerWindowLevel(0, window, level);
+        if (d->movingView && d->fuseView->layersCount() == 1)
+                d->movingView->setLayerWindowLevel(0, window, level);
         // In the case that the currentLayer>1 we do nothing.
     }
 }
@@ -699,12 +686,12 @@ void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
 
     if(closedView == d->movingView)
     {
-        d->fuseView->removeLayerAt(1);
+        d->fuseView->removeLayer(1);
         d->movingData = NULL;
 
         if(!d->fixedData)
         {
-            d->fuseView->close();
+//            d->fuseView->close();
         }
     }
     else if(closedView == d->fixedView)
@@ -714,18 +701,17 @@ void medRegistrationSelectorToolBox::onViewRemoved(dtkAbstractView* view)
 
         if(d->movingData)
         {
-            d->fuseView->removeLayerAt(1);
+            d->fuseView->removeLayer(1);
             double window, level;
-            d->movingView->windowLevel(window, level);
-            d->fuseView->removeLayerAt(0);
-            d->fuseView->setData(d->movingData, 0);
-            d->fuseView->setCurrentLayer(0);
-            d->fuseView->setWindowLevel(window, level);
+            d->movingView->layerWindowLevel(0, window, level);
+            d->fuseView->removeLayer(0);
+            d->fuseView->addLayer(d->movingData);
+            d->fuseView->setLayerWindowLevel(0, window, level);
         }
         else
         {
-            d->fuseView->removeLayerAt(0);
-            d->fuseView->close();
+            d->fuseView->removeLayer(0);
+//            d->fuseView->close();
         }
     }
 
@@ -738,12 +724,12 @@ void medRegistrationSelectorToolBox::closeCompareView(int layer)
 {
     if(layer == 0)
     {
-        d->fixedView->close();
+//        d->fixedView->close();
         d->fixedData = NULL;
     }
     else if(layer == 1)
     {
-        d->movingView->close();
+//        d->movingView->close();
         d->movingData = NULL;
     }
 }

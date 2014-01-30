@@ -25,11 +25,9 @@ class MEDCORE_EXPORT medAbstractLayeredViewNavigator : public medAbstractViewNav
     Q_OBJECT
 
 public:
-             medAbstractLayeredViewNavigator(medAbstractLayeredView* parent = 0);
+             medAbstractLayeredViewNavigator(medAbstractLayeredView* parent);
     virtual ~medAbstractLayeredViewNavigator();
 
-    virtual void setView(medAbstractLayeredView *view);
-    virtual medAbstractLayeredView *view() const;
 
     /**
     * @brief implementationOf
