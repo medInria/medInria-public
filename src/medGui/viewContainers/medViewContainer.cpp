@@ -22,8 +22,8 @@
 
 #include <QtGui>
 
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractView.h>
+#include <medImageViewFactory.h>
+
 #include <medAbstractData.h>
 
 
@@ -417,7 +417,7 @@ bool medViewContainer::open(const medDataIndex& index)
 
 }
 
-bool medViewContainer::open(medAbstractData * data)
+bool medViewContainer::open(medAbstractData* data)
 {
     if ( data == NULL )
         return false;
@@ -426,13 +426,16 @@ bool medViewContainer::open(medAbstractData * data)
     //TODO: change method prototype to use medAbstractData directly
     dtkSmartPointer<medAbstractData> medData = qobject_cast<medAbstractData*>(data);
 
+
+
     bool newView = view.isNull() || !this->multiLayer();
 
     if( newView)
     {
         //container empty, or multi with no extendable view
-        view = qobject_cast<medAbstractImageView*>(dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView"));
-        connect (this, SIGNAL(sliceSelected(int)), view, SLOT(setSlider(int)));
+        view = medImageViewFactory::instance()->createView("medVtkView", this);
+        //TODO : is it for linking, if is that, it's not usefull anymore.
+//        connect (this, SIGNAL(sliceSelected(int)), view, SLOT(setSlider(int)));
     }
 
     if( view.isNull() )

@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include <medVtkPluginExport.h>
+#include <medVtkViewPluginExport.h>
 
 class medVtkViewPluginPrivate;
 

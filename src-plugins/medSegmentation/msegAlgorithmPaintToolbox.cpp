@@ -88,7 +88,7 @@ public:
         if (view->is2D()) {
             
             // Convert mouse click to a 3D point in the image.
-            QVector3D posImage = view->displayToWorld( mouseEvent->posF() );
+            QVector3D posImage = view->mapDisplayToWorldCoordinates( mouseEvent->posF() );
 
             if (m_paintState != PaintState::Wand)
             {
@@ -112,7 +112,7 @@ public:
 
         if (view->is2D())
         {
-            QVector3D posImage = view->displayToWorld( mouseEvent->posF() );
+            QVector3D posImage = view->mapDisplayToWorldCoordinates( mouseEvent->posF() );
             //Project vector onto plane
             this->m_points.push_back(posImage);
             m_cb->updateStroke( this,view );

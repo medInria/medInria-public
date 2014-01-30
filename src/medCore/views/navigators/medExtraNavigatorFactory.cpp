@@ -76,7 +76,7 @@ bool medExtraNavigatorFactory::registerNavigator(QString identifier, QStringList
 //  get handler
 
 
-QStringList medExtraNavigatorFactory::NavigatorsAbleToHandle(const QString viewType, const QString dataType) const
+QStringList medExtraNavigatorFactory::navigatorsAbleToHandle(const QString viewType) const
 {
     QHashIterator<QString, QStringList> it(d->identifierHash);
 
@@ -84,7 +84,7 @@ QStringList medExtraNavigatorFactory::NavigatorsAbleToHandle(const QString viewT
 
     for(it.toFront(); it.hasNext(); it.next())
     {
-        if (it.value().contains(viewType) && it.value().contains(dataType))
+        if (it.value().contains(viewType))
             Navigators << it.key();
     }
 

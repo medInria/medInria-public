@@ -38,7 +38,7 @@ void medAbstractLayeredView::addLayer(medAbstractData *data)
     }
 
     d->layersDataList << data;
-    getInteractors(data);
+    retreiveInteractors(data);
 }
 
 QList<dtkSmartPointer<medAbstractData> > medAbstractLayeredView::data() const
@@ -62,7 +62,7 @@ void medAbstractLayeredView::removeLayer(unsigned int layer)
 void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *data)
 {
     d->layersDataList.insert(layer, data);
-    this->getInteractors(data);
+    this->retreiveInteractors(data);
 }
 
 void medAbstractLayeredView::moveLayer(unsigned int fromLayer, unsigned int toLayer)
@@ -93,20 +93,20 @@ unsigned int medAbstractLayeredView::layersCount() const
 
 void medAbstractLayeredView::setVisibility(bool visibility, unsigned int layer)
 {
-    medAbstractViewInteractor* inter = this->primaryInteractor(layer);
+    medAbstractLayeredViewInteractor* inter = this->primaryInteractor(layer);
     if(!inter)
         return;
 
-    this->primaryInteractor(layer)->setVisibility(visibility);
+    inter->setVisibility(visibility);
     emit visibilityChanged(visibility, layer);
 }
 
 bool medAbstractLayeredView::visibility(unsigned int layer)
 {
-    medAbstractViewInteractor* inter = this->primaryInteractor(layer);
+    medAbstractLayeredViewInteractor* inter = this->primaryInteractor(layer);
     if(!inter)
         return true;
 
-    return this->primaryInteractor(layer)->visibility();
+    return inter->visibility();
 }
 

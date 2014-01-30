@@ -36,7 +36,7 @@ medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate
     this->setParent(parent);
     d->closable = true;
 
-    this->getNavigators();
+    this->retreiveNavigators();
 }
 
 medAbstractView::~medAbstractView( void )

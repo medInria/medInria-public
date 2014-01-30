@@ -98,8 +98,8 @@ protected:
     virtual medAbstractViewNavigator* primaryNavigator() = 0;
     virtual QList<medAbstractExtraNavigator*> extraNavigator() = 0;
 
-    virtual void getInteractors(medAbstractData* data) = 0;
-    virtual void getNavigators() = 0;
+    virtual void retreiveInteractors(medAbstractData* data) = 0;
+    virtual void retreiveNavigators() = 0;
     virtual void removeInteractors(medAbstractData *data) = 0;
 
 

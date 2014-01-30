@@ -94,12 +94,12 @@ QWidget* medQtView::toolBox()
     return 0;
 }
 
-void medQtView::getInteractors(medAbstractData* data)
+void medQtView::retreiveInteractors(medAbstractData* data)
 {
 
 }
 
-void medQtView::getNavigators()
+void medQtView::retreiveNavigators()
 {
 
 }

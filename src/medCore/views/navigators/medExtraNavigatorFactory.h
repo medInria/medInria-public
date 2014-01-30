@@ -44,7 +44,7 @@ public:
         return registerNavigator(identifier, typeHandled, creator);
     }
 
-    QStringList NavigatorsAbleToHandle(const QString viewType, const QString dataType) const;
+    QStringList navigatorsAbleToHandle(const QString viewType) const;
 
 protected:
      medExtraNavigatorFactory();

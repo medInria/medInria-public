@@ -1222,8 +1222,8 @@ void vtkImageView2D::SetPan (double* arg)
   this->Pan[0] = arg[0];
   this->Pan[1] = arg[1];
 
-  // If WorldToDisplay is called when RenderWindow has never been rendered, nans are returned
-  // Reason: worldtodisplay needs to now the window size, which detected when the vtk renderwindow
+  // If mapWorldToDisplayCoordinates is called when RenderWindow has never been rendered, nans are returned
+  // Reason: mapWorldToDisplayCoordinates needs to now the window size, which detected when the vtk renderwindow
   // has been rendered at least once
   vtkCamera *camera = this->Renderer ? this->Renderer->GetActiveCamera() : NULL;
   if (!camera || !this->Renderer || !this->RenderWindow || this->RenderWindow->GetNeverRendered())

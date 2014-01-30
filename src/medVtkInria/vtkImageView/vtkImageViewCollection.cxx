@@ -101,7 +101,7 @@ void vtkImageViewCollection::AddItem(vtkImageView *a)
     a->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::CharEvent, this->Command);
     
     if (this->LinkSliceMove)
-      a->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::SliceMoveEvent, this->Command);			
+      a->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::SliceMoveEvent, this->Command);
     if (this->LinkColorWindowLevel)
       a->GetInteractorStyle()->AddObserver (vtkCommand::WindowLevelEvent, this->Command);
     if (this->LinkResetWindowLevel)
@@ -223,7 +223,7 @@ void vtkImageViewCollection::SyncRender(vtkImageView* caller, int checkForIntera
       
       if ( caller && item3d && item3d->GetRenderingMode() == vtkImageView3D::VOLUME_RENDERING)
       {
-	if (caller->GetInteractorStyle()->GetState() == VTKIS_WINDOW_LEVEL )
+    if (caller->GetInteractorStyle()->GetState() == VTKIS_WINDOW_LEVEL )
 	  item->Render ();
       }
       else
@@ -352,7 +352,7 @@ void vtkImageViewCollectionCommand::Execute(vtkObject *caller,
 	
   while(v)
   {
-	if (caller == v->GetInteractorStyle()) {
+    if (caller == v->GetInteractorStyle()) {
 	  view = v;
 	}
     v = this->GetCollection()->GetNextItem();
@@ -474,11 +474,11 @@ void vtkImageViewCollection::SetLinkSliceMove(unsigned int v)
     {
       if (v)
       {
-	if(!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::SliceMoveEvent, this->Command) )
-	  item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::SliceMoveEvent, this->Command);
+    if(!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::SliceMoveEvent, this->Command) )
+      item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::SliceMoveEvent, this->Command);
       }
       else
-	item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::SliceMoveEvent, this->Command);
+    item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::SliceMoveEvent, this->Command);
     }
     
     item = this->GetNextItem();
@@ -497,11 +497,11 @@ void vtkImageViewCollection::SetLinkTimeChange(unsigned int v)
 		{
 			if (v)
 			{
-				if(!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::TimeChangeEvent, this->Command) )
-					item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::TimeChangeEvent, this->Command);
+                if(!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::TimeChangeEvent, this->Command) )
+                    item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::TimeChangeEvent, this->Command);
 			}
 			else
-				item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::TimeChangeEvent, this->Command);
+                item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::TimeChangeEvent, this->Command);
 		}
 		
 		item = this->GetNextItem();
@@ -520,11 +520,11 @@ void vtkImageViewCollection::SetLinkColorWindowLevel(unsigned int v)
     {
       if (v)
       {
-	if (!item->GetInteractorStyle()->HasObserver (vtkCommand::WindowLevelEvent, this->Command) )
-	  item->GetInteractorStyle()->AddObserver (vtkCommand::WindowLevelEvent, this->Command);
+    if (!item->GetInteractorStyle()->HasObserver (vtkCommand::WindowLevelEvent, this->Command) )
+      item->GetInteractorStyle()->AddObserver (vtkCommand::WindowLevelEvent, this->Command);
       }
       else
-	item->GetInteractorStyle()->RemoveObservers (vtkCommand::WindowLevelEvent, this->Command);
+    item->GetInteractorStyle()->RemoveObservers (vtkCommand::WindowLevelEvent, this->Command);
     }
     
     item = this->GetNextItem();
@@ -545,11 +545,11 @@ void vtkImageViewCollection::SetLinkResetWindowLevel(unsigned int v)
     {
       if (v)
       {
-	if(!item->GetInteractorStyle()->HasObserver (vtkCommand::ResetWindowLevelEvent, this->Command) )
-	  item->GetInteractorStyle()->AddObserver (vtkCommand::ResetWindowLevelEvent, this->Command);
+    if(!item->GetInteractorStyle()->HasObserver (vtkCommand::ResetWindowLevelEvent, this->Command) )
+      item->GetInteractorStyle()->AddObserver (vtkCommand::ResetWindowLevelEvent, this->Command);
       }
       else
-	item->GetInteractorStyle()->RemoveObservers (vtkCommand::ResetWindowLevelEvent, this->Command);
+    item->GetInteractorStyle()->RemoveObservers (vtkCommand::ResetWindowLevelEvent, this->Command);
     }
     
     item = this->GetNextItem();
@@ -570,11 +570,11 @@ void vtkImageViewCollection::SetLinkResetViewer(unsigned int v)
     {
       if (v)
       {
-	if (!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::ResetViewerEvent, this->Command) )
-	  item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::ResetViewerEvent, this->Command);
+    if (!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::ResetViewerEvent, this->Command) )
+      item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::ResetViewerEvent, this->Command);
       }
       else
-	item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::ResetViewerEvent, this->Command);
+    item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::ResetViewerEvent, this->Command);
     }
     
     item = this->GetNextItem();
@@ -595,11 +595,11 @@ void vtkImageViewCollection::SetLinkRequestedPosition(unsigned int v)
     {
       if (v)
       {
-	if (!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::RequestedPositionEvent, this->Command) )
-	  item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::RequestedPositionEvent, this->Command);
+    if (!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::RequestedPositionEvent, this->Command) )
+      item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::RequestedPositionEvent, this->Command);
       }
       else
-	item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::RequestedPositionEvent, this->Command);
+    item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::RequestedPositionEvent, this->Command);
     }
     
     item = this->GetNextItem();
@@ -620,11 +620,11 @@ void vtkImageViewCollection::SetLinkCamera(unsigned int v)
     {
       if (v)
       {
-	if(!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::CameraMoveEvent, this->Command) )
-	  item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::CameraMoveEvent, this->Command, -10);
+    if(!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::CameraMoveEvent, this->Command) )
+      item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::CameraMoveEvent, this->Command, -10);
       }
       else
-	item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::CameraMoveEvent, this->Command);
+    item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::CameraMoveEvent, this->Command);
     }
     
     item = this->GetNextItem();
@@ -643,11 +643,11 @@ void vtkImageViewCollection::SetLinkZoom(unsigned int v)
     {
       if (v)
       {
-	if(!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::CameraZoomEvent, this->Command) )
-	  item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::CameraZoomEvent, this->Command, -10);
+    if(!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::CameraZoomEvent, this->Command) )
+      item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::CameraZoomEvent, this->Command, -10);
       }
       else
-	item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::CameraZoomEvent, this->Command);
+    item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::CameraZoomEvent, this->Command);
     }
     
     item = this->GetNextItem();
@@ -667,11 +667,11 @@ void vtkImageViewCollection::SetLinkPan(unsigned int v)
     {
       if (v)
       {
-	if(!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::CameraPanEvent, this->Command) )
-	  item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::CameraPanEvent, this->Command, -10);
+    if(!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::CameraPanEvent, this->Command) )
+      item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::CameraPanEvent, this->Command, -10);
       }
       else
-	item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::CameraPanEvent, this->Command);
+    item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::CameraPanEvent, this->Command);
     }
     
     item = this->GetNextItem();
@@ -692,11 +692,11 @@ void vtkImageViewCollection::SetLinkCurrentPoint(unsigned int v)
       {
 	if (v)
 	{
-	  if(!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::DefaultMoveEvent, this->Command) )
-	    item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::DefaultMoveEvent, this->Command);
+      if(!item->GetInteractorStyle()->HasObserver (vtkImageView2DCommand::DefaultMoveEvent, this->Command) )
+        item->GetInteractorStyle()->AddObserver (vtkImageView2DCommand::DefaultMoveEvent, this->Command);
 	}
 	else
-	  item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::DefaultMoveEvent, this->Command);
+      item->GetInteractorStyle()->RemoveObservers (vtkImageView2DCommand::DefaultMoveEvent, this->Command);
       }
     }
     

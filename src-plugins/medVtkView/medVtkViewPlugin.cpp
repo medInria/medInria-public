@@ -13,6 +13,8 @@
 
 #include <medVtkViewPlugin.h>
 
+#include <medVtkView.h>
+
 #include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
