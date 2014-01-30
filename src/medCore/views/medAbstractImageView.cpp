@@ -5,12 +5,27 @@
 #include <medAbstractImageViewNavigator.h>
 
 
+medAbstractImageView::medAbstractImageView(QObject *parent) : medAbstractLayeredView(parent)
+{
+
+}
+
+medAbstractImageView::~medAbstractImageView()
+{
+
+}
+
 void medAbstractImageView::moveToSliceAtPosition (const QVector3D &position)
 {   
     foreach (medAbstractData *data, this->data())
     {
         this->primaryInteractor(data)->moveToSliceAtPosition(position);
     }
+}
+
+void medAbstractImageView::setOrientation(medImageView::Orientation orientation)
+{
+    this->primaryNavigator()->setOrientation(orientation);
 }
 
 QVector3D medAbstractImageView::positionBeingViewed(void)

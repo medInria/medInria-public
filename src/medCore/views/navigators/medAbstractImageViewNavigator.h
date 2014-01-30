@@ -14,10 +14,10 @@ PURPOSE.
 #pragma once
 
 #include <medAbstractLayeredViewNavigator.h>
+#include <medImageViewOrientation.h>
 
 #include "medCoreExport.h"
 
-class medVtkViewOrientation;
 class medAbstractImageView;
 
 class medAbstractImageViewNavigatorPrivate;
@@ -31,7 +31,7 @@ public:
 
 
 public:
-    virtual medVtkViewOrientation orientaion() const = 0;
+    virtual medImageView::Orientation orientaion() const = 0;
     virtual void camera(QVector3D &position,
                         QVector3D &viewup,
                         QVector3D &focal,
@@ -49,7 +49,7 @@ public:
         return "medAbstractImageViewNavigator";
     }
 
-    virtual void setOrientation(medVtkViewOrientation orientation) = 0;
+    virtual void setOrientation(medImageView::Orientation orientation) = 0;
     virtual void setCamera(const QVector3D &position,
                            const QVector3D &viewup,
                            const QVector3D &focal,

@@ -36,13 +36,26 @@ public:
     static bool registered();
 
     QWidget *widget();
-    virtual medAbstractLayeredViewInteractor * primaryInteractor(medAbstractData* data) = 0;
+    virtual medAbstractLayeredViewInteractor * primaryInteractor(medAbstractData* data);
     virtual QList<medAbstractExtraInteractor *> extraInteractor(medAbstractData* data);
     virtual medAbstractLayeredViewInteractor * primaryInteractor(unsigned int layer);
     virtual QList<medAbstractExtraInteractor *> extraInteractor(unsigned int layer);
 
     virtual medAbstractLayeredViewNavigator * primaryNavigator();
     virtual QList<medAbstractExtraNavigator *> extraNavigator();
+
+    virtual QWidget *receiverWidget();
+    virtual QWidget* toolBar();
+    virtual QWidget* toolBox();
+
+    virtual void getInteractors(medAbstractData* data);
+    virtual void getNavigators();
+
+    virtual medViewBackend * backend() const;
+
+    virtual void removeInteractors(medAbstractData *data);
+
+
 protected:
 
 private:

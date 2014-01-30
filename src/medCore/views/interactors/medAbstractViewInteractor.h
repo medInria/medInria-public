@@ -23,6 +23,8 @@ class MEDCORE_EXPORT medAbstractViewInteractor : public medAbstractExtraInteract
 {
     Q_OBJECT
 public:
+            medAbstractViewInteractor(medAbstractView* parent);
+    virtual ~medAbstractViewInteractor();
 
     /**
      * @brief implementationOf

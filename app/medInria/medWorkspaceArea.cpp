@@ -29,7 +29,7 @@
 #include <medDataIndex.h>
 #include <medDataManager.h>
 #include <medViewManager.h>
-#include <medAbstractView.h>
+#include <medAbstractImageView.h>
 #include <medMetaDataKeys.h>
 
 #include <medDatabaseNavigator.h>
@@ -284,7 +284,7 @@ void medWorkspaceArea::onFileOpenedInTab(const medDataIndex &index)
 
 void medWorkspaceArea::onViewClosed(void)
 {
-    medAbstractView * medView = dynamic_cast<medAbstractView *> (this->sender());
+    medAbstractImageView * medView = dynamic_cast<medAbstractImageView *> (this->sender());
     if (medView) {
        onViewClosed(medView);
     }
@@ -292,7 +292,7 @@ void medWorkspaceArea::onViewClosed(void)
 
 void medWorkspaceArea::onViewClosed(dtkAbstractView *view)
 { 
-    medAbstractView * medView = dynamic_cast<medAbstractView *> (view);
+    medAbstractImageView * medView = dynamic_cast<medAbstractImageView *> (view);
     if( medView )
     {
         QList<medToolBox *> toolboxes = d->toolBoxContainer->toolBoxes();
@@ -308,7 +308,7 @@ void medWorkspaceArea::onViewClosed(dtkAbstractView *view)
 void medWorkspaceArea::onDataRemoved(int layer)
 {
     Q_UNUSED(layer);
-    medAbstractView * medView = dynamic_cast<medAbstractView *> (this->sender());
+    medAbstractImageView * medView = dynamic_cast<medAbstractImageView *> (this->sender());
     if (medView) {
         QList<medToolBox *> toolboxes = d->toolBoxContainer->toolBoxes();
         foreach( medToolBox *tb, toolboxes)
@@ -513,7 +513,7 @@ void medWorkspaceArea::onViewFocused(dtkAbstractView *view)
             }
 
             gesture_recognizer->setView(view);
-            gesture_recognizer->setReceiver(static_cast<medAbstractView *>(view)->receiverWidget());
+            gesture_recognizer->setReceiver(static_cast<medAbstractImageView *>(view)->receiverWidget());
         }
         //update tranfer function.
         connect (view, SIGNAL(lutChanged()),
@@ -593,7 +593,7 @@ void medWorkspaceArea::bringUpTransferFunction(bool checked)
       d->transFun->setWindowFlags(Qt::Tool|Qt::WindowStaysOnTopHint);
 
       // d->transFun->setData(static_cast<medAbstractData *>(view->data()));
-      d->transFun->setView(dynamic_cast<medAbstractView*>(view));
+      d->transFun->setView(dynamic_cast<medAbstractImageView*>(view));
 
       d->transFun->show();
     }
@@ -608,7 +608,7 @@ void medWorkspaceArea::updateTransferFunction()
     dtkAbstractView * view = current->view();
     if ( d->transFun != NULL && view != NULL ) {
     // d->transFun->setData( static_cast<medAbstractData *>( view->data() ) );
-        d->transFun->setView( dynamic_cast<medAbstractView *>( view ), true );
+        d->transFun->setView( dynamic_cast<medAbstractImageView *>( view ), true );
         d->transFun->update();
     }
 }

@@ -11,18 +11,18 @@ PURPOSE.
 
 =========================================================================*/
 
-#include "medAbstractImageViewNavigator.h"
+#include "medAbstractViewInteractor.h"
 
-#include <medAbstractImageView.h>
+#include <medAbstractView.h>
 
-medAbstractImageViewNavigator::medAbstractImageViewNavigator(medAbstractImageView* parent):
-    medAbstractLayeredViewNavigator(parent)
+medAbstractViewInteractor::medAbstractViewInteractor(medAbstractView* parent):
+    medAbstractExtraInteractor(parent)
+{
+
+}
+medAbstractViewInteractor::~medAbstractViewInteractor()
 {
 
 }
 
-medAbstractImageViewNavigator::~medAbstractImageViewNavigator()
-{
-
-}
 

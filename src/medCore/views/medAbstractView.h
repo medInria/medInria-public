@@ -100,7 +100,7 @@ protected:
 
     virtual void getInteractors(medAbstractData* data) = 0;
     virtual void getNavigators() = 0;
-    virtual void removeInteractors(medAbstractData *data);
+    virtual void removeInteractors(medAbstractData *data) = 0;
 
 
 

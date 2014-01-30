@@ -80,9 +80,44 @@ QWidget *medQtView::widget(void)
     return QList<medAbstractExtraNavigator *>();
 }
 
+QWidget* medQtView::receiverWidget()
+{
+    return 0;
+}
+QWidget* medQtView::toolBar()
+{
+    return 0;
+}
+
+QWidget* medQtView::toolBox()
+{
+    return 0;
+}
+
+void medQtView::getInteractors(medAbstractData* data)
+{
+
+}
+
+void medQtView::getNavigators()
+{
+
+}
+
+void medQtView::removeInteractors(medAbstractData *data)
+{
+
+}
+
+
+medViewBackend* medQtView::backend() const
+{
+    return 0;
+}
+
 bool medQtView::registered()
 {
-    return medLayeredViewFactory::instance()->registerView<medQtView*>("medQtView", QStringList() << "prout");
+    return medLayeredViewFactory::instance()->registerView<medQtView>("medQtView", QStringList() << "prout");
 }
 
 QString medQtView::s_description()

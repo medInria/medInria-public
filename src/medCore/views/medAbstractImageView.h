@@ -19,6 +19,7 @@
 
 #include <medAbstractImageViewInteractor.h>
 #include <medAbstractImageViewNavigator.h>
+#include <medImageViewOrientation.h>
 
 #include "medCoreExport.h"
 
@@ -40,17 +41,6 @@ class MEDCORE_EXPORT medAbstractImageView: public medAbstractLayeredView
 public:
     medAbstractImageView(QObject * parent = 0);
     virtual ~medAbstractImageView();
-
-    //TODO: find a better name than orientation - RDE.
-    enum medVtkViewOrientation
-    {
-        VIEW_ORIENTATION_AXIAL,
-        VIEW_ORIENTATION_SAGITTAL,
-        VIEW_ORIENTATION_CORONAL,
-        VIEW_ORIENTATION_3D,
-        VIEW_ALL_ORIENTATION
-    };
-
 
     unsigned int sliceAtPosition(unsigned int layer, QVector3D &position);
     QVector3D positionBeingViewed();
@@ -95,7 +85,7 @@ public:
     
 
 public slots:
-    void setOrientation(medVtkViewOrientation orientation);
+    void setOrientation(medImageView::Orientation orientation);
     void setDataWindowLevel (medAbstractData* data, double &window, double &level);
     void setLayerWindowLevel (unsigned int layer, double &window, double &level);
     /**
