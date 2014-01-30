@@ -33,7 +33,6 @@ public:
 public slots:
     void setScaleFactor();
     void setSampleRate (int sampleRate);
-    void setScaleMode(int mode);
     void setColorMode(int mode);
     void setProjection(bool enable);
     void setShowAxial(int checkBoxState);
