@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medDatabaseController.h"
+#include <medDatabaseController.h>
 
 QPointer<medDatabaseControllerImpl> medDatabaseController::instance(void)
 {

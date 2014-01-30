@@ -15,7 +15,7 @@
 
 #include <medDataIndex.h>
 #include <medToolBox.h>
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 class medActionsToolBoxPrivate;
 

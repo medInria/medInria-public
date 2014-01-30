@@ -17,8 +17,8 @@
 
 #include <dtkCore/dtkSmartPointer.h>
 
-#include "medCoreExport.h"
-#include "medDataIndex.h"
+#include <medCoreExport.h>
+#include <medDataIndex.h>
 
 class medAbstractData;
 class dtkAbstractDataFactory;

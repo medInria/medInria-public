@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medColorListParameter.h"
+#include <medColorListParameter.h>
 
 #include <QComboBox>
 #include <QColor>

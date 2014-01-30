@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medDatabaseProxyModel.h"
+#include <medDatabaseProxyModel.h>
 
 #include <QtCore>
 

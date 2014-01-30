@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "v3dViewMeshInteractor.h"
+#include <v3dViewMeshInteractor.h>
 
 #include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>

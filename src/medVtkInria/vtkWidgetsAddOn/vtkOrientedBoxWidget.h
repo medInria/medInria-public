@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
-#include "vtkBoxWidget.h"
+#include <medVtkInriaExport.h>
+#include <vtkBoxWidget.h>
 
 class vtkMatrix4x4;
 

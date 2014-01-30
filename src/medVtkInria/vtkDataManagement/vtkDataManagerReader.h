@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "vtkXMLReader.h"
-#include "medVtkInriaExport.h"
+#include <vtkXMLReader.h>
+#include <medVtkInriaExport.h>
 
 class vtkDataManager;
 /* class vtkMultiGroupDataSet; */

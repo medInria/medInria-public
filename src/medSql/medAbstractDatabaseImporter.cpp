@@ -17,7 +17,7 @@
  *
  */
 
-#include "medAbstractDatabaseImporter.h"
+#include <medAbstractDatabaseImporter.h>
 
 #include <medAbstractDataImage.h>
 

@@ -11,15 +11,15 @@
 
 =========================================================================*/
 
-#include "medThumbnailContainer.h"
+#include <medThumbnailContainer.h>
 
-#include "medDatabasePreviewController.h"
-#include "medDatabasePreviewItem.h"
-#include "medDatabasePreviewItemGroup.h"
-#include "medDatabasePreviewScene.h"
-#include "medDatabasePreviewSelector.h"
-#include "medDatabasePreviewTooltip.h"
-#include "medDatabasePreviewView.h"
+#include <medDatabasePreviewController.h>
+#include <medDatabasePreviewItem.h>
+#include <medDatabasePreviewItemGroup.h>
+#include <medDatabasePreviewScene.h>
+#include <medDatabasePreviewSelector.h>
+#include <medDatabasePreviewTooltip.h>
+#include <medDatabasePreviewView.h>
 
 #include <medAbstractDbController.h>
 #include <medDataManager.h>

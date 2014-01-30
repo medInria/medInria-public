@@ -11,7 +11,7 @@ PURPOSE.
 
 =========================================================================*/
 
-#include "medAbstractLayeredViewNavigator.h"
+#include <medAbstractLayeredViewNavigator.h>
 
 #include <medAbstractLayeredView.h>
 

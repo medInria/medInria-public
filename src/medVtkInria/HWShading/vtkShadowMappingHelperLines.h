@@ -24,9 +24,9 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkShadowMappingHelper.h"
+#include <vtkShadowMappingHelper.h>
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
 /**
  * Shadow mapping helper with a slightly different shader for building

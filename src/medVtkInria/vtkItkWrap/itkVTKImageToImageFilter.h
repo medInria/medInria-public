@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include "itkVTKImageImport.h"
-#include "vtkImageExport.h"
-#include "vtkImageData.h"
+#include <itkVTKImageImport.h>
+#include <vtkImageExport.h>
+#include <vtkImageData.h>
 
 
 #ifndef vtkFloatingPointType
@@ -97,7 +97,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkVTKImageToImageFilter.txx"
+#include <itkVTKImageToImageFilter.txx>
 #endif
 
 

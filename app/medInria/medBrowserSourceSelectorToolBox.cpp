@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medBrowserSourceSelectorToolBox.h"
+#include <medBrowserSourceSelectorToolBox.h>
 #include <medToolBoxTab.h>
 
 #include <QtGui>

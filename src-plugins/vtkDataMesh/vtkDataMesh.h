@@ -16,7 +16,7 @@
 #include <medAbstractDataMesh.h>
 #include <dtkCore/dtkGlobal.h>
 
-#include "vtkDataMeshPluginExport.h"
+#include <vtkDataMeshPluginExport.h>
 
 class vtkDataMeshPrivate;
 

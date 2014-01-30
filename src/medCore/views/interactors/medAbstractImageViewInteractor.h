@@ -15,7 +15,7 @@ PURPOSE.
 
 #include <medAbstractLayeredViewInteractor.h>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 class medAbstractImageView;
 

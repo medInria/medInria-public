@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medFilteringViewContainer.h"
+#include <medFilteringViewContainer.h>
 #include <medAbstractView.h>
 
 class medFilteringViewContainerPrivate

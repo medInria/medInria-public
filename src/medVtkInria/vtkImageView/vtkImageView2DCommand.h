@@ -13,10 +13,10 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
-#include "vtkCommand.h"
-#include "vtkObject.h"
+#include <vtkCommand.h>
+#include <vtkObject.h>
 
 class vtkImageView2D;
 

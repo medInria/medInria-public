@@ -16,7 +16,7 @@
 #include <QtCore>
 #include <QString>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 class MEDCORE_EXPORT SigEmitter: public QObject
 {

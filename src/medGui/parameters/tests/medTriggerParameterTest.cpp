@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medTriggerParameterTest.h"
+#include <medTriggerParameterTest.h>
 
 
 #include <QtGui>

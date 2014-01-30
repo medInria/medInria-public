@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medSegmentationSelectorToolBox.h"
+#include <medSegmentationSelectorToolBox.h>
 
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>

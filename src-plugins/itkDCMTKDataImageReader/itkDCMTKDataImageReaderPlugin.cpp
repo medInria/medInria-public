@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "itkDCMTKDataImageReader.h"
-#include "itkDCMTKDataImageReaderPlugin.h"
+#include <itkDCMTKDataImageReader.h>
+#include <itkDCMTKDataImageReaderPlugin.h>
 
 #include <dtkLog/dtkLog.h>
 

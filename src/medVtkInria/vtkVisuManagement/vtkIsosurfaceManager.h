@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
-#include "vtkImageToIsosurface.h"
+#include <vtkImageToIsosurface.h>
 #include <vector>
 
 #include <vtkRenderWindowInteractor.h>

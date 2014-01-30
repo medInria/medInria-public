@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 #include <vtkSphericalHarmonicSource.h>
 
 

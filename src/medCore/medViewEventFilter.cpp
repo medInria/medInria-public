@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medViewEventFilter.h"
+#include <medViewEventFilter.h>
 
 #include <medAbstractView.h>
 

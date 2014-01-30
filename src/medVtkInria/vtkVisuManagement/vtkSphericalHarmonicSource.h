@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #pragma once
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
 #include <vtkPolyDataAlgorithm.h>
 #include <vtkMatrix4x4.h>

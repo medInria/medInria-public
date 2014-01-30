@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medRegistrationWorkspace.h"
+#include <medRegistrationWorkspace.h>
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>

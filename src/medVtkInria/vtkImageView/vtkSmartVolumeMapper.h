@@ -97,10 +97,10 @@
 
 #pragma once
 
-#include "vtkVolumeMapper.h"
-#include "vtkImageReslice.h" // for VTK_RESLICE_NEAREST, VTK_RESLICE_CUBIC
+#include <vtkVolumeMapper.h>
+#include <vtkImageReslice.h> // for VTK_RESLICE_NEAREST, VTK_RESLICE_CUBIC
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
 class vtkFixedPointVolumeRayCastMapper;
 class vtkGPUVolumeRayCastMapper;

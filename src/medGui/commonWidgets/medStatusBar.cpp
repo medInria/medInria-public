@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medStatusBar.h"
+#include <medStatusBar.h>
 
 #include <QtCore>
 

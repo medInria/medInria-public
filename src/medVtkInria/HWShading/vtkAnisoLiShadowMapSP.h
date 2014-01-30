@@ -32,9 +32,9 @@ PURPOSE.  See the above copyright notices for more information.
 #pragma once
 
 //#include "vtkBMIAShaderProgram.h"
-#include "vtkAnisotropicLightingSP.h"
+#include <vtkAnisotropicLightingSP.h>
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
 /**
  * Shader program that combines anisotropic lighting and shadow mapping.

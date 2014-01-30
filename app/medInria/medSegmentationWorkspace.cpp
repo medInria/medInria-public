@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include "medSegmentationWorkspace.h"
+#include <medSegmentationWorkspace.h>
 
-#include "medSegmentationSelectorToolBox.h"
+#include <medSegmentationSelectorToolBox.h>
 
 #include <medAbstractView.h>
 

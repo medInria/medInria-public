@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medHomepageArea.h"
+#include <medHomepageArea.h>
 #ifdef MEDINRIA_HAS_REVISIONS
     #include <medRevisions.h>
 #endif
@@ -21,7 +21,7 @@
 #include <medToolBoxFactory.h>
 #include <medWorkspaceFactory.h>
 #include <medSettingsManager.h>
-#include "medPluginWidget.h"
+#include <medPluginWidget.h>
 #include <medSettingsEditor.h>
 
 

@@ -23,9 +23,9 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
-#include "vtkUniform.h"
+#include <vtkUniform.h>
 
 /**
  * Class for representing uniform sampler variables.

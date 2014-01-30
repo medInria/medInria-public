@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 #include <medAbstractDataImage.h>
 
 template <unsigned DIM,typename T>

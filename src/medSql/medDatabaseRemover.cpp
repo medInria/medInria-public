@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medDatabaseRemover.h"
+#include <medDatabaseRemover.h>
 
 #include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>

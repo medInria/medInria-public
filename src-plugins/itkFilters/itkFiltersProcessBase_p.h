@@ -19,10 +19,10 @@
 #include <medAbstractData.h>
 #include <dtkLog/dtkLog.h>
 
-#include "itkFiltersPluginExport.h"
+#include <itkFiltersPluginExport.h>
 
-#include "itkProcessObject.h"
-#include "itkCommand.h"
+#include <itkProcessObject.h>
+#include <itkCommand.h>
 
 class itkFiltersProcessBase;
 

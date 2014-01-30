@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medPluginWidget.h"
+#include <medPluginWidget.h>
 
 #include <medPluginManager.h>
 

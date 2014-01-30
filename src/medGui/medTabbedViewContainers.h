@@ -15,7 +15,7 @@
 
 #include <QtGui>
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 class dtkAbstractView;
 class medDataIndex;

@@ -16,7 +16,7 @@
 #include <QtCore>
 #include <QtGui>
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 class medDatabaseNavigatorItem;
 class medDatabaseNavigatorPrivate;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 #include <medAbstractView.h>
 #include <vtkImageView2D.h>
 #include <vtkImageView3D.h>

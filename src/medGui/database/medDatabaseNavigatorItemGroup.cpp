@@ -11,15 +11,15 @@
 
 =========================================================================*/
 
-#include "medDatabaseNavigatorItemGroup.h"
+#include <medDatabaseNavigatorItemGroup.h>
 
 #include <QtCore>
 
 #include <medDataManager.h>
 #include <medAbstractDbController.h>
 
-#include "medDatabaseNavigatorController.h"
-#include "medDatabaseNavigatorItem.h"
+#include <medDatabaseNavigatorController.h>
+#include <medDatabaseNavigatorItem.h>
 
 class medDatabaseNavigatorItemGroupPrivate
 {

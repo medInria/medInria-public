@@ -5,8 +5,8 @@
 #pragma once
 
 #include <itkProcessRegistration.h>
-#include "undoRedoRegistrationPluginExport.h"
-#include "itkImage.h"
+#include <undoRedoRegistrationPluginExport.h>
+#include <itkImage.h>
 
 class undoRedoRegistrationPrivate;
 

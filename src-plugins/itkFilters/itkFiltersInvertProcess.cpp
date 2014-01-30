@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkFiltersInvertProcess.h"
+#include <itkFiltersInvertProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <medAbstractDataFactory.h>
@@ -19,7 +19,7 @@
 
 #include <medMetaDataKeys.h>
 
-#include "itkFiltersInvertProcess_p.h"
+#include <itkFiltersInvertProcess_p.h>
 
 itkFiltersInvertProcess::itkFiltersInvertProcess(itkFiltersInvertProcess *parent) 
     : itkFiltersProcessBase(*new itkFiltersInvertProcessPrivate(this), parent)

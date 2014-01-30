@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "ITKProcessExamplePluginExport.h"
+#include <ITKProcessExamplePluginExport.h>
 
 class ITKPROCESSEXAMPLEPLUGIN_EXPORT ITKProcessExamplePluginPrivate;
 

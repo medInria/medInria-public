@@ -13,10 +13,10 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
-#include "vtkImageView.h"
-#include "vtkOrientedBoxWidget.h"
+#include <vtkImageView.h>
+#include <vtkOrientedBoxWidget.h>
 
 #include <vtkPlaneWidget.h>
 #include <vtkVolume.h>

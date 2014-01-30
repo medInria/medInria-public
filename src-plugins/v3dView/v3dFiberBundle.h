@@ -35,7 +35,7 @@
 #include <vtkFiberMapper.h>
 
 
-#include "v3dViewPluginExport.h"
+#include <v3dViewPluginExport.h>
 
 #ifdef WIN32
   #ifdef VTK_BUILD_SHARED

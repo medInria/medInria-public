@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkFiltersDivideProcess.h"
+#include <itkFiltersDivideProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <medAbstractDataFactory.h>

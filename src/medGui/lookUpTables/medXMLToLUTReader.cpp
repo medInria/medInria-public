@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medXMLToLUTReader.h"
+#include <medXMLToLUTReader.h>
 
 #include <QXmlStreamReader>
 #include <QStringList>

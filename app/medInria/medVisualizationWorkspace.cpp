@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medVisualizationWorkspace.h"
+#include <medVisualizationWorkspace.h>
 
 #include <medViewContainer.h>
 #include <medTabbedViewContainers.h>

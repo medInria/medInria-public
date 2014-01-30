@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
-#include "vtkCollection.h"
-#include "vtkCommand.h"
-#include "vtkLookupTable.h"
+#include <vtkCollection.h>
+#include <vtkCommand.h>
+#include <vtkLookupTable.h>
 
 #include <vtkImageView2D.h>
 

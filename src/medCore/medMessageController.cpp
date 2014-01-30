@@ -13,7 +13,7 @@
 
 #include <dtkCore/dtkGlobal.h>
 
-#include "medMessageController.h"
+#include <medMessageController.h>
 
 #include <dtkLog/dtkLog.h>
 

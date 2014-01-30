@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medSlicingParameter.h"
+#include <medSlicingParameter.h>
 
 #include <math.h>       // floor
 

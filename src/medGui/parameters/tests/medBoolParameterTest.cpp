@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medBoolParameterTest.h"
+#include <medBoolParameterTest.h>
 
 
 #include <QtGui>

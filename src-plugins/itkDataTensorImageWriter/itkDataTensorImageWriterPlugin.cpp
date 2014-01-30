@@ -11,10 +11,10 @@
 
 =========================================================================*/
 
-#include "itkMetaDataTensorImageWriter.h"
-#include "itkNiftiDataTensorImageWriter.h"
-#include "itkNrrdDataTensorImageWriter.h"
-#include "itkDataTensorImageWriterPlugin.h"
+#include <itkMetaDataTensorImageWriter.h>
+#include <itkNiftiDataTensorImageWriter.h>
+#include <itkNrrdDataTensorImageWriter.h>
+#include <itkDataTensorImageWriterPlugin.h>
 
 #include <dtkLog/dtkLog.h>
 

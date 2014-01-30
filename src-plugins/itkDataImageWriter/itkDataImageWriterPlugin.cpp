@@ -11,13 +11,13 @@
 
 =========================================================================*/
 
-#include "itkDataImageWriterPlugin.h"
-#include "itkMetaDataImageWriter.h"
-#include "itkNiftiDataImageWriter.h"
-#include "itkNrrdDataImageWriter.h"
-#include "itkGiplDataImageWriter.h"
-#include "itkVTKDataImageWriter.h"
-#include "itkGISDataImageWriter.h"
+#include <itkDataImageWriterPlugin.h>
+#include <itkMetaDataImageWriter.h>
+#include <itkNiftiDataImageWriter.h>
+#include <itkNrrdDataImageWriter.h>
+#include <itkGiplDataImageWriter.h>
+#include <itkVTKDataImageWriter.h>
+#include <itkGISDataImageWriter.h>
 
 #include <dtkLog/dtkLog.h>
 #include <itkLogForwarder.h>

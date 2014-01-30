@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
-#include "vtkInteractorStyleRubberBandZoom.h"
+#include <medVtkInriaExport.h>
+#include <vtkInteractorStyleRubberBandZoom.h>
 
 class vtkUnsignedCharArray;
 

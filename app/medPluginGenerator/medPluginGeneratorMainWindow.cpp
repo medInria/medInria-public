@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include    "medPluginGenerator.h"
-#include    "medPluginGeneratorMainWindow.h"
-#include "ui_medPluginGeneratorMainWindow.h"
+#include <medPluginGenerator.h>
+#include <medPluginGeneratorMainWindow.h>
+#include <ui_medPluginGeneratorMainWindow.h>
 
 class medPluginGeneratorMainWindowPrivate
 {

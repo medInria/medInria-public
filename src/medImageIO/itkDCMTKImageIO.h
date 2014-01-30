@@ -20,7 +20,7 @@
 #include <itkMultiThreadedImageIOBase.h>
 #include <itkMetaDataObject.h>
 
-#include "medImageIOExport.h"
+#include <medImageIOExport.h>
 
 #include <map>
 #include <vector>

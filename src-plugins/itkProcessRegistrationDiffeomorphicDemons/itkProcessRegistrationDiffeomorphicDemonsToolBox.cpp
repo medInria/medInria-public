@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "itkProcessRegistrationDiffeomorphicDemons.h"
-#include "itkProcessRegistrationDiffeomorphicDemonsToolBox.h"
+#include <itkProcessRegistrationDiffeomorphicDemons.h>
+#include <itkProcessRegistrationDiffeomorphicDemonsToolBox.h>
 
 #include <QtGui>
 

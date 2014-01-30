@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medDatabaseSearchPanel.h"
+#include <medDatabaseSearchPanel.h>
 
 #include <QtGui>
 

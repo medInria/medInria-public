@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "msegAlgorithmPaintToolbox.h"
+#include <msegAlgorithmPaintToolbox.h>
 
 #include <medAbstractData.h>
 #include <medAbstractDataImage.h>

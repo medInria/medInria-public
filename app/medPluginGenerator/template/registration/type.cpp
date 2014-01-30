@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "%1.h"
+#include <%1.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -21,14 +21,14 @@
 //
 // /////////////////////////////////////////////////////////////////
 
-#include "itkImageRegistrationMethod.h"
+#include <itkImageRegistrationMethod.h>
 
-#include "itkImage.h"
-#include "itkResampleImageFilter.h"
-#include "itkCastImageFilter.h"
+#include <itkImage.h>
+#include <itkResampleImageFilter.h>
+#include <itkCastImageFilter.h>
 
 
-#include "time.h"
+#include <time.h>
 
 // Include specific RPI implementation of the registration method
 #include <rpi%4.h>

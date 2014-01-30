@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "itkDataImagePluginExport.h"
+#include <itkDataImagePluginExport.h>
 
 class itkDataImagePluginPrivate;
 

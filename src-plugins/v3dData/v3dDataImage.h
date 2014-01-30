@@ -15,7 +15,7 @@
 
 #include <medAbstractDataImage.h>
 
-#include "v3dDataPluginExport.h"
+#include <v3dDataPluginExport.h>
 
 class v3dDataImagePrivate;
 

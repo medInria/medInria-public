@@ -1,5 +1,5 @@
-#include "medQSSParserTest.h"
-#include "medStyleSheetParser.h"
+#include <medQSSParserTest.h>
+#include <medStyleSheetParser.h>
 
 void medQSSParserTest::testParse_data()
 {

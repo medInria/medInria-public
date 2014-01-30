@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "vtkCornerAnnotation.h"
+#include <vtkCornerAnnotation.h>
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
 class vtkImageView;
 

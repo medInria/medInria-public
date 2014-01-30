@@ -29,9 +29,9 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
-#include "vtkShaderBase.h"
+#include <vtkShaderBase.h>
 
 /**
  * Base class for GLSL shader related subclasses with GLhandles.

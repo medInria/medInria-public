@@ -15,7 +15,7 @@
 
 #include <medAbstractData.h>
 
-#include "itkDataDiffusionGradientListPluginExport.h"
+#include <itkDataDiffusionGradientListPluginExport.h>
 
 class itkDataDiffusionGradientListPrivate;
 

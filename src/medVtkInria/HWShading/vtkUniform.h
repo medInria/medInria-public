@@ -19,8 +19,8 @@ the medInria team.
 
 #pragma once
 
-#include "medVtkInriaExport.h"
-#include "vtkShaderUniform.h"
+#include <medVtkInriaExport.h>
+#include <vtkShaderUniform.h>
 
 template <unsigned N>
 struct Vec {

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "qtdcmDataSource.h"
+#include <qtdcmDataSource.h>
 
 #include <medDatabaseImporter.h>
 #include <medDatabaseController.h>

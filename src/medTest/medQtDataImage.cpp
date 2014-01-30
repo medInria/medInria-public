@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medQtDataImage.h"
+#include <medQtDataImage.h>
 
 #include <medAbstractDataFactory.h>
 #include <dtkLog/dtkLog.h>

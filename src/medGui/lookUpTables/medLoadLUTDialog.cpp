@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medLoadLUTDialog.h"
+#include <medLoadLUTDialog.h>
 
 medLoadLUTDialog::medLoadLUTDialog(const QStringList & titles, QWidget *parent) :
     QInputDialog(parent)

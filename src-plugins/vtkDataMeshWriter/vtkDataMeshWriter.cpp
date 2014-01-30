@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "vtkDataMeshWriter.h"
+#include <vtkDataMeshWriter.h>
 
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>

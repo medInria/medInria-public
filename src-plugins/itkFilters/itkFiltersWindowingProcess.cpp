@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkFiltersWindowingProcess.h"
+#include <itkFiltersWindowingProcess.h>
 
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
@@ -20,7 +20,7 @@
 
 #include <medMetaDataKeys.h>
 
-#include "itkFiltersWindowingProcess_p.h"
+#include <itkFiltersWindowingProcess_p.h>
 
 //-------------------------------------------------------------------------------------------
 

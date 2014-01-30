@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medExtraInteractorFactory.h"
+#include <medExtraInteractorFactory.h>
 
 
 medExtraInteractorFactory *medExtraInteractorFactory::instance(void)

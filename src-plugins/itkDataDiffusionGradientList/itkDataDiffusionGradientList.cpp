@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkDataDiffusionGradientList.h"
+#include <itkDataDiffusionGradientList.h>
 
 #include <medAbstractDataFactory.h>
 

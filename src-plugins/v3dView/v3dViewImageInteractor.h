@@ -14,7 +14,7 @@
 #pragma once
 
 #include <medAbstractVtkViewInteractor.h>
-#include "v3dViewPluginExport.h"
+#include <v3dViewPluginExport.h>
 
 class v3dViewImageInteractorPrivate;
 

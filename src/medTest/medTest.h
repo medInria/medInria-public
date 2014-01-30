@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medTestExport.h"
+#include <medTestExport.h>
 
 #include <dtkCore/dtkTest.h>
 #include <dtkCore/dtkSmartPointer.h>

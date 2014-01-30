@@ -11,14 +11,14 @@
 
 =========================================================================*/
 
-#include "vtkDataMesh.h"
+#include <vtkDataMesh.h>
 
 #include <medAbstractDataFactory.h>
 
-#include "vtkSmartPointer.h"
-#include "vtkPolyData.h"
-#include "vtkUnstructuredGrid.h"
-#include "vtkMetaDataSetSequence.h"
+#include <vtkSmartPointer.h>
+#include <vtkPolyData.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkMetaDataSetSequence.h>
 
 #include <vtkPNGWriter.h>
 #include <vtkDataSetSurfaceFilter.h>

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medQtView.h"
+#include <medQtView.h>
 
 #include <medLayeredViewFactory.h>
 #include <medAbstractData.h>
@@ -68,7 +68,7 @@ QWidget *medQtView::widget(void)
     return QList<medAbstractExtraInteractor *>();
 }
 
- medAbstractLayeredViewNavigator * primaryNavigator()
+ medAbstractLayeredViewNavigator * medQtView::primaryNavigator()
 {
     qDebug()<< "primaryNavigator()";
     return 0;

@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "medRegistrationSelectorToolBox.h"
-#include "medRegistrationAbstractToolBox.h"
+#include <medRegistrationSelectorToolBox.h>
+#include <medRegistrationAbstractToolBox.h>
 
 class medRegistrationAbstractToolBoxPrivate
 {

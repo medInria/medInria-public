@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkDataTensorImageReaderBase.h"
+#include <itkDataTensorImageReaderBase.h>
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>

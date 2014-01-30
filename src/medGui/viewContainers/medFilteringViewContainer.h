@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "medCustomViewContainer.h"
+#include <medCustomViewContainer.h>
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 class medFilteringViewContainerPrivate;
 class medAbstractData;

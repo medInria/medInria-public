@@ -1,4 +1,4 @@
-#include "medPluginGeneratorTest.h"
+#include <medPluginGeneratorTest.h>
 
 #include <QProcess>
 #include <QDebug>

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkDataTensorImagePlugin.h"
+#include <itkDataTensorImagePlugin.h>
 
 
 #include <itkDataTensorImageDouble3.h>

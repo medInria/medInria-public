@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medMultipleImageSelectionWidget.h"
+#include <medMultipleImageSelectionWidget.h>
 
 #include <QtGui>
 

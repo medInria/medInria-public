@@ -14,7 +14,7 @@
 #pragma once
 
 #include <medAbstractDbController.h>
-#include "medSqlExport.h"
+#include <medSqlExport.h>
 #include <medDataIndex.h>
 
 #include <QtCore/QObject>

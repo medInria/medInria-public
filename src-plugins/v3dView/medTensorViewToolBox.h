@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "v3dViewPluginExport.h"
-#include "medToolBox.h"
+#include <v3dViewPluginExport.h>
+#include <medToolBox.h>
 
 class medTensorViewToolBoxPrivate;
 

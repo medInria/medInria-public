@@ -16,7 +16,7 @@
 #include <Qt>
 #include <QtCore>
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 class MEDGUI_EXPORT medDatabaseNavigatorController : public QObject
 {

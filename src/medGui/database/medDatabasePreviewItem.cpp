@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "medDatabasePreviewItem.h"
-#include "medImageFileLoader.h"
+#include <medDatabasePreviewItem.h>
+#include <medImageFileLoader.h>
 
 #include <medDataIndex.h>
 #include <medAbstractDbController.h>

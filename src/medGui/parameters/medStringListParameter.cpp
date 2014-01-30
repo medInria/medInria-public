@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medStringListParameter.h"
+#include <medStringListParameter.h>
 
 #include <QComboBox>
 #include <QDebug>

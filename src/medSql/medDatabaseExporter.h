@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medSqlExport.h"
+#include <medSqlExport.h>
 #include <QtCore>
 
 #include <medJobItem.h>

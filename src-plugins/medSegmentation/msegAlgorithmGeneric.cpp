@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "msegAlgorithmGeneric.h"
+#include <msegAlgorithmGeneric.h>
 
 // Temporary fudge:
 

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medToolBoxTab.h"
+#include <medToolBoxTab.h>
 
 class medToolBoxTabPrivate
 {

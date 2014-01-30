@@ -15,7 +15,7 @@ PURPOSE.
 
 #include <medAbstractExtraNavigator.h>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 class MEDCORE_EXPORT medAbstractViewNavigator : public medAbstractExtraNavigator
 {

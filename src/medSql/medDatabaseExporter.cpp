@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medDatabaseExporter.h"
+#include <medDatabaseExporter.h>
 
 #include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataWriter.h>

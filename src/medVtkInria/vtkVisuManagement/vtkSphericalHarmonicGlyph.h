@@ -19,7 +19,7 @@
 
 #include <vtkSphericalHarmonicSource.h>
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
 class MEDVTKINRIA_EXPORT vtkSphericalHarmonicGlyph: public vtkPolyDataAlgorithm {
 public:

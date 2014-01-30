@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "v3dViewAnnotationInteractor.h"
+#include <v3dViewAnnotationInteractor.h>
 
 #include <map>
 

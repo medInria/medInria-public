@@ -15,7 +15,7 @@
 
 #include <QWidget>
 #include <QtCore>
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 class medToolBox;
 class medDataIndex;

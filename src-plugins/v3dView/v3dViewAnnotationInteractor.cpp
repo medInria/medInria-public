@@ -11,21 +11,21 @@
 
 =========================================================================*/
 
-#include "v3dViewAnnotationInteractor.h"
+#include <v3dViewAnnotationInteractor.h>
 
 #include <medAbstractData.h>
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkLog/dtkLog.h>
 
-#include "medAnnotationData.h"
-#include "medSeedPointAnnotationData.h"
-#include "medImageMaskAnnotationData.h"
+#include <medAnnotationData.h>
+#include <medSeedPointAnnotationData.h>
+#include <medImageMaskAnnotationData.h>
 
-#include "medVtkView.h"
+#include <medVtkView.h>
 
 //
-#include "v3dViewAnnIntSeedPointHelper.h"
-#include "v3dViewAnnIntImageMaskHelper.h"
+#include <v3dViewAnnIntSeedPointHelper.h>
+#include <v3dViewAnnIntImageMaskHelper.h>
 
 #include <vtkProperty2D.h>
 #include <vtkRenderer.h>

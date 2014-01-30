@@ -11,10 +11,10 @@
 
 =========================================================================*/
 
-#include "itkOutputWindow.h"
-#include "itkObjectFactory.h"
+#include <itkOutputWindow.h>
+#include <itkObjectFactory.h>
 
-#include "medLogExport.h"
+#include <medLogExport.h>
 
 namespace itk {
 

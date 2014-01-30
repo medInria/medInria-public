@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkNrrdDataImageReader.h"
+#include <itkNrrdDataImageReader.h>
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>

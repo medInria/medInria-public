@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medGroupBox.h"
+#include <medGroupBox.h>
 
 
 class medGroupBoxPrivate

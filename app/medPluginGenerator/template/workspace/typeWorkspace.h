@@ -15,7 +15,7 @@
 
 #include <medWorkspace.h>
 
-#include "%1PluginExport.h"
+#include <%1PluginExport.h>
 
 class %1WorkspacePrivate;
     

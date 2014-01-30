@@ -15,7 +15,7 @@ PURPOSE.
 
 #include <medAbstractViewNavigator.h>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 class medAbstractLayeredView;
 

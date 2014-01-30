@@ -15,7 +15,7 @@
 
 #include <QtGui>
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 #include <medDataIndex.h>
 
 class medMultipleImageSelectionWidgetPrivate;

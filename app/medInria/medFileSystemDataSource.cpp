@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medFileSystemDataSource.h"
+#include <medFileSystemDataSource.h>
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkGui/dtkFinder.h>

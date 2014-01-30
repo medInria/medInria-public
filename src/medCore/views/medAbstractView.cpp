@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medAbstractView.h"
+#include <medAbstractView.h>
 
 #include <QPair>
 

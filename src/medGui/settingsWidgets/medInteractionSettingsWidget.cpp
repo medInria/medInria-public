@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medInteractionSettingsWidget.h"
+#include <medInteractionSettingsWidget.h>
 
 #include <medStorage.h>
 #include <medSettingsManager.h>

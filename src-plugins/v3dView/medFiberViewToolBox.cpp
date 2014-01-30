@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medFiberViewToolBox.h"
+#include <medFiberViewToolBox.h>
 
 #include <medToolBoxFactory.h>
 #include <v3dViewFiberInteractor.h>

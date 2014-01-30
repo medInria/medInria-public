@@ -14,7 +14,7 @@
 #pragma once
 
 #include <itkProcessRegistration.h>
-#include "itkProcessRegistrationDiffeomorphicDemonsPluginExport.h"
+#include <itkProcessRegistrationDiffeomorphicDemonsPluginExport.h>
 
 class itkProcessRegistrationDiffeomorphicDemonsPrivate;
 

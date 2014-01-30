@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medJobItem.h"
+#include <medJobItem.h>
 
 medJobItem::medJobItem() : QRunnable()
 {

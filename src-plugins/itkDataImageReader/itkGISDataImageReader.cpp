@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "itkGISDataImageReader.h"
-#include "itkGISImageIO.h"
+#include <itkGISDataImageReader.h>
+#include <itkGISImageIO.h>
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>
 

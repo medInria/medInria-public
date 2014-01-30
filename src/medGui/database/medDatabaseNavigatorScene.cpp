@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include "medDatabaseNavigatorController.h"
-#include "medDatabaseNavigatorItemGroup.h"
-#include "medDatabaseNavigatorScene.h"
+#include <medDatabaseNavigatorController.h>
+#include <medDatabaseNavigatorItemGroup.h>
+#include <medDatabaseNavigatorScene.h>
 
 #include <QtCore>
 #include <QtGui>

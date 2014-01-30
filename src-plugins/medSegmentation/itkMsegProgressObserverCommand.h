@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "msegAlgorithmGeneric.h"
+#include <msegAlgorithmGeneric.h>
 
 #include <itkCommand.h>
 

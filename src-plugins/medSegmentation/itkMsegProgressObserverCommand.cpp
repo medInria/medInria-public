@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkMsegProgressObserverCommand.h"
+#include <itkMsegProgressObserverCommand.h>
 
 #include <itkEventObject.h>
 #include <itkProcessObject.h>

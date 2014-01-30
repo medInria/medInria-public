@@ -1,4 +1,4 @@
-#include "medAbstractLayeredView.h"
+#include <medAbstractLayeredView.h>
 
 #include <dtkCore/dtkSmartPointer.h>
 

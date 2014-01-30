@@ -11,7 +11,7 @@ PURPOSE.
 
 =========================================================================*/
 
-#include "medAbstractExtraInteractor.h"
+#include <medAbstractExtraInteractor.h>
 
 #include <medAbstractView.h>
 

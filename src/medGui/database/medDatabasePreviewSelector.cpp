@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "medDatabasePreviewController.h"
-#include "medDatabasePreviewSelector.h"
+#include <medDatabasePreviewController.h>
+#include <medDatabasePreviewSelector.h>
 
 class medDatabasePreviewSelectorPrivate
 {

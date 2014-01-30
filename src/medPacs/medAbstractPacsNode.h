@@ -15,7 +15,7 @@
 
 #include <QtCore/QObject>
 #include <QVector>
-#include "medPacsExport.h"
+#include <medPacsExport.h>
 
 class medAbstractPacsResultDataset;
 

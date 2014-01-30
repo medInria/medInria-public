@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medDatabasePreviewArrow.h"
+#include <medDatabasePreviewArrow.h>
 
 class medDatabasePreviewArrowPrivate
 {

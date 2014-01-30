@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medAbstractParameterTest.h"
+#include <medAbstractParameterTest.h>
 
 
 #include <QtGui>

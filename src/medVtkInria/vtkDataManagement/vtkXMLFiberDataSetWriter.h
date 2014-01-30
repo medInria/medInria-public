@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "vtkXMLCompositeDataWriter.h"
-#include "medVtkInriaExport.h"
+#include <vtkXMLCompositeDataWriter.h>
+#include <medVtkInriaExport.h>
 
 class MEDVTKINRIA_EXPORT vtkXMLFiberDataSetWriter : public vtkXMLCompositeDataWriter
 {

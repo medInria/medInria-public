@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #pragma once
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 #include <vtkMetaDataSet.h>
 
 class vtkUnstructuredGrid;

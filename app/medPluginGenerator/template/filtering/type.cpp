@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "%1.h"
+#include <%1.h>
 
 #include <dtkCore/dtkAbstract%2Factory.h>
 #include <dtkCore/dtkSmartPointer.h>

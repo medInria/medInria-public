@@ -14,8 +14,8 @@
 #pragma once
 
 
-#include "itkImage.h"
-#include "itkImageToImageFilter.h"
+#include <itkImage.h>
+#include <itkImageToImageFilter.h>
 
 
 class vtkImageData;
@@ -90,7 +90,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkSphericalHarmonicITKToVTKFilter.txx"
+#include <itkSphericalHarmonicITKToVTKFilter.txx>
 #endif
 
 

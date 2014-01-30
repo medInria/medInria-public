@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "exampleProcessImageFilterPluginExport.h"
+#include <exampleProcessImageFilterPluginExport.h>
 
 class EXAMPLEPROCESSIMAGEFILTERPLUGIN_EXPORT exampleProcessImageFilterPluginPrivate;
 

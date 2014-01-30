@@ -74,6 +74,7 @@ set(PLUGIN_LIST
   itkDataSHImageReader                      ON
   undoRedoRegistration                      ON
   itkProcessRegistrationDiffeomorphicDemons ON
+  medVtkView                                ON
   )   
 
 

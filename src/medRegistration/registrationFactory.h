@@ -4,9 +4,9 @@
 
 #pragma once
 #include <QObject>
-#include "itkImageRegistrationFactory.h"
-#include "itkTransform.h"
-#include "medRegistrationExport.h"
+#include <itkImageRegistrationFactory.h>
+#include <itkTransform.h>
+#include <medRegistrationExport.h>
 
 
 class registrationFactoryPrivate;

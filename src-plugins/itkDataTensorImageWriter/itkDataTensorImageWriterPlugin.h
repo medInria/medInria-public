@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "itkDataTensorImageWriterPluginExport.h"
+#include <itkDataTensorImageWriterPluginExport.h>
 
 class ITKDATATENSORIMAGEWRITERPLUGIN_EXPORT itkDataTensorImageWriterPluginPrivate;
 

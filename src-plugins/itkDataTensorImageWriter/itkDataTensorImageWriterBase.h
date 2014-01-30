@@ -15,8 +15,8 @@
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
-#include "itkDataTensorImageWriterPluginExport.h"
-#include "itkImageIOBase.h"
+#include <itkDataTensorImageWriterPluginExport.h>
+#include <itkImageIOBase.h>
 
 class ITKDATATENSORIMAGEWRITERPLUGIN_EXPORT itkDataTensorImageWriterBase : public dtkAbstractDataWriter
 {

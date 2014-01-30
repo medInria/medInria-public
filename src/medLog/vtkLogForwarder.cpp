@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "vtkLogForwarder.h"
+#include <vtkLogForwarder.h>
 
 #include <vtkObjectFactory.h>
 

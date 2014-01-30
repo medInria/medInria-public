@@ -15,8 +15,8 @@
 
 #include <dtkCore/dtkAbstractDataReader.h>
 
-#include "medImageIOExport.h"
-#include "itkImageIOBase.h"
+#include <medImageIOExport.h>
+#include <itkImageIOBase.h>
 
 class MEDIMAGEIO_EXPORT itkDataImageReaderBase:
         public dtkAbstractDataReader

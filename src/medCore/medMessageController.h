@@ -16,7 +16,7 @@
 #include <QtCore>
 #include <QtGui>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 class medMessageControllerPrivate;
 

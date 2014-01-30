@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medPatientSelectorToolBox.h"
+#include <medPatientSelectorToolBox.h>
 
 #include <QtGui>
 

@@ -14,7 +14,7 @@
 #pragma once
 
 #include <vtkMetaDataSet.h>
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
 class vtkPolyData;
 

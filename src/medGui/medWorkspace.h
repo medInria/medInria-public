@@ -14,10 +14,10 @@
 #pragma once
 
 #include <QtCore>
-#include "medViewContainer.h"
-#include "medCustomViewContainer.h"
+#include <medViewContainer.h>
+#include <medCustomViewContainer.h>
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 class medToolBox;
 class medWorkspacePrivate;

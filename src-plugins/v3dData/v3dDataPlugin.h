@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "v3dDataPluginExport.h"
+#include <v3dDataPluginExport.h>
 
 class V3DDATAPLUGIN_EXPORT v3dDataPluginPrivate;
 

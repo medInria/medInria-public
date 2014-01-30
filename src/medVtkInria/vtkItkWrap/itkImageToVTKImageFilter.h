@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include "itkVTKImageExport.h"
-#include "vtkImageImport.h"
-#include "vtkImageData.h"
+#include <itkVTKImageExport.h>
+#include <vtkImageImport.h>
+#include <vtkImageData.h>
 
 namespace itk
 {
@@ -92,7 +92,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkImageToVTKImageFilter.txx"
+#include <itkImageToVTKImageFilter.txx>
 #endif
 
 

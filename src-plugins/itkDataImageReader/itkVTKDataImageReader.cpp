@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkVTKDataImageReader.h"
+#include <itkVTKDataImageReader.h>
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>

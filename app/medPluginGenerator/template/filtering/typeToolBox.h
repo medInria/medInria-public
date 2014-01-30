@@ -14,7 +14,7 @@
 #pragma once
 
 #include <medFilteringAbstractToolBox.h>
-#include "%1PluginExport.h"
+#include <%1PluginExport.h>
 
 class %1ToolBoxPrivate;
 

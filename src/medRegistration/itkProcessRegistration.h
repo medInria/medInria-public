@@ -16,8 +16,8 @@
 #include <dtkCore/dtkAbstractProcess.h>
 #include <medAbstractData.h>
 #include <itkImage.h>
-#include "itkTransform.h"
-#include "medRegistrationExport.h"
+#include <itkTransform.h>
+#include <medRegistrationExport.h>
 
 
 class itkProcessRegistrationPrivate;

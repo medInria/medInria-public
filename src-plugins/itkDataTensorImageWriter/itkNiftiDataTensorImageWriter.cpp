@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkNiftiDataTensorImageWriter.h"
+#include <itkNiftiDataTensorImageWriter.h>
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>

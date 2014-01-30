@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkDataTensorImageDouble3.h"
+#include <itkDataTensorImageDouble3.h>
 
 #include <medAbstractDataFactory.h>
 

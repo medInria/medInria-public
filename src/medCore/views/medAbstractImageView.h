@@ -21,7 +21,7 @@
 #include <medAbstractImageViewNavigator.h>
 #include <medImageViewOrientation.h>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 class QVector3D;
 

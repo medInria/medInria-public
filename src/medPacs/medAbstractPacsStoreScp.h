@@ -14,7 +14,7 @@
 #pragma once
 
 #include <QtCore/QObject>
-#include "medPacsExport.h"
+#include <medPacsExport.h>
 
 class MEDPACS_EXPORT medAbstractPacsStoreScp : public QObject
 {

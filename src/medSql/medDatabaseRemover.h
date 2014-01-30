@@ -18,7 +18,7 @@
 #include <medDataIndex.h>
 #include <medJobItem.h>
 
-#include "medSqlExport.h"
+#include <medSqlExport.h>
 
 class medDatabaseRemoverPrivate;
 

@@ -14,7 +14,7 @@
 #pragma once
 
 #include <vtkMultiBlockDataSet.h>
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 #include <map>
 
 class vtkPolyData;

@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "itkDataTensorImageWriterBase.h"
+#include <itkDataTensorImageWriterBase.h>
 
-#include "itkDataTensorImageWriterPluginExport.h"
+#include <itkDataTensorImageWriterPluginExport.h>
 
 class ITKDATATENSORIMAGEWRITERPLUGIN_EXPORT itkMetaDataTensorImageWriter : public itkDataTensorImageWriterBase
 {

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medTestApplication.h"
+#include <medTestApplication.h>
 #include <stdexcept>
 
 medTestApplication::medTestApplication ( int & argc, char ** argv )

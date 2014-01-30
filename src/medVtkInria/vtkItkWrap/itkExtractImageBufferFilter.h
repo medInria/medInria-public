@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include "itkExtractImageFilter.h"
-#include "itkSmartPointer.h"
+#include <itkExtractImageFilter.h>
+#include <itkSmartPointer.h>
 
 namespace itk
 {
@@ -60,7 +60,7 @@ private:
 } // end namespace itk
   
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkExtractImageBufferFilter.txx"
+#include <itkExtractImageBufferFilter.txx>
 #endif
   
 

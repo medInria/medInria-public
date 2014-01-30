@@ -14,9 +14,9 @@
 #pragma once
 
 #include <medAbstractData.h>
-#include "itkFiltersProcessBase.h"
+#include <itkFiltersProcessBase.h>
 
-#include "itkFiltersPluginExport.h"
+#include <itkFiltersPluginExport.h>
 
 class itkFiltersErodeProcessPrivate;
 class medAbstractData;

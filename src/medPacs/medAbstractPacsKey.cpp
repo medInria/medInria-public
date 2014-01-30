@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medAbstractPacsKey.h"
+#include <medAbstractPacsKey.h>
 
 medAbstractPacsKey::medAbstractPacsKey( void )
 {

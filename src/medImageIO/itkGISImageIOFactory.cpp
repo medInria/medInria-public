@@ -11,10 +11,10 @@
 
 =========================================================================*/
 
-#include "itkGISImageIOFactory.h"
-#include "itkCreateObjectFunction.h"
-#include "itkGISImageIO.h"
-#include "itkVersion.h"
+#include <itkGISImageIOFactory.h>
+#include <itkCreateObjectFunction.h>
+#include <itkGISImageIO.h>
+#include <itkVersion.h>
 
   
 namespace itk

@@ -11,19 +11,19 @@
 
 =========================================================================*/
 
-#include "v3dView.h"
-#include "medVtkView.h"
-#include "medFiberBundlingToolBox.h"
-#include "medViewPropertiesToolBox.h"
-#include "medTimeLineToolBox.h"
-#include "medTensorViewToolBox.h"
-#include "medFiberViewToolBox.h"
-#include "medSHViewToolBox.h"
-#include "v3dViewMeshInteractor.h"
-#include "v3dView4DInteractor.h"
-#include "v3dViewAnnotationInteractor.h"
-#include "v3dViewImageInteractor.h"
-#include "v3dViewPlugin.h"
+#include <v3dView.h>
+#include <medVtkView.h>
+#include <medFiberBundlingToolBox.h>
+#include <medViewPropertiesToolBox.h>
+#include <medTimeLineToolBox.h>
+#include <medTensorViewToolBox.h>
+#include <medFiberViewToolBox.h>
+#include <medSHViewToolBox.h>
+#include <v3dViewMeshInteractor.h>
+#include <v3dView4DInteractor.h>
+#include <v3dViewAnnotationInteractor.h>
+#include <v3dViewImageInteractor.h>
+#include <v3dViewPlugin.h>
 #include <medVtkViewToolBox.h>
 #ifndef DISABLE_TTK_DEPENDENT_CODE
 #include <v3dViewFiberInteractor.h>

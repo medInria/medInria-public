@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include "medToolBoxTab.h"
-#include "medLayoutChooser.h"
-#include "medVisualizationLayoutToolBox.h"
+#include <medToolBoxTab.h>
+#include <medLayoutChooser.h>
+#include <medVisualizationLayoutToolBox.h>
 
 class medVisualizationLayoutToolBoxPrivate
 {

@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "vtkDataMeshWriterPluginExport.h"
+#include <vtkDataMeshWriterPluginExport.h>
 
 class VTKDATAMESHWRITERPLUGIN_EXPORT vtkDataMeshWriterPluginPrivate;
 

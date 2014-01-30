@@ -11,14 +11,14 @@
 
 =========================================================================*/
 
-#include "ITKProcessExample.h"
+#include <ITKProcessExample.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 
-#include "itkImage.h"
-#include "itkDiscreteGaussianImageFilter.h"
-#include "itkSmoothingRecursiveGaussianImageFilter.h"
+#include <itkImage.h>
+#include <itkDiscreteGaussianImageFilter.h>
+#include <itkSmoothingRecursiveGaussianImageFilter.h>
 
 // /////////////////////////////////////////////////////////////////
 // ITKProcessExamplePrivate

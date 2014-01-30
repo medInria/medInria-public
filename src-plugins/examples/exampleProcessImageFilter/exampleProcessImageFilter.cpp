@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "exampleProcessImageFilter.h"
+#include <exampleProcessImageFilter.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <medAbstractDataImage.h>

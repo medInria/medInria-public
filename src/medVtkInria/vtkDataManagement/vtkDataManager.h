@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 #include <vtkCommand.h>
 
 class vtkMetaDataSet;

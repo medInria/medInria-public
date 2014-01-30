@@ -3,8 +3,8 @@
 // /////////////////////////////////////////////////////////////////
 
 
-#include "undoRedoRegistration.h"
-#include "undoRedoRegistrationToolBox.h"
+#include <undoRedoRegistration.h>
+#include <undoRedoRegistrationToolBox.h>
 
 #include <QtGui>
 

@@ -11,11 +11,11 @@
 
 =========================================================================*/
 
-#include "medWorkspaceFactory.h"
+#include <medWorkspaceFactory.h>
 
 #include <medToolBoxFactory.h>
-#include "medWorkspace.h"
-#include "medWorkspaceFactory.h"
+#include <medWorkspace.h>
+#include <medWorkspaceFactory.h>
 
 class medWorkspaceFactoryPrivate
 {

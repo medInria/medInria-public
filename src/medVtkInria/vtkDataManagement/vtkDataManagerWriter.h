@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "vtkXMLWriter.h"
-#include "medVtkInriaExport.h"
+#include <vtkXMLWriter.h>
+#include <medVtkInriaExport.h>
 #include <string>
 
 class vtkDataManager;

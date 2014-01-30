@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
-#include "vtkImageView.h"
-#include "vtkInteractorStyleImageView2D.h"
+#include <medVtkInriaExport.h>
+#include <vtkImageView.h>
+#include <vtkInteractorStyleImageView2D.h>
 
 #include <vtkSmartPointer.h>
 

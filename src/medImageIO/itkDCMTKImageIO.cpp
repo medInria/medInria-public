@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkDCMTKImageIO.h"
+#include <itkDCMTKImageIO.h>
 
 #ifndef WIN32
 #define HAVE_CONFIG_H

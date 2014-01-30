@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medStringListParameterTest.h"
+#include <medStringListParameterTest.h>
 
 #include <stdio.h>
 

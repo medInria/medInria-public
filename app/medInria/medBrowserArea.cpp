@@ -11,12 +11,12 @@
 
 =========================================================================*/
 
-#include "medBrowserArea.h"
+#include <medBrowserArea.h>
 
-#include "medBrowserSourceSelectorToolBox.h"
-#include "medPacsDataSource.h"
-#include "medDatabaseDataSource.h"
-#include "medFileSystemDataSource.h"
+#include <medBrowserSourceSelectorToolBox.h>
+#include <medPacsDataSource.h>
+#include <medDatabaseDataSource.h>
+#include <medFileSystemDataSource.h>
 
 #include <QtGui>
 

@@ -31,7 +31,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
 #include <vtkOpenGLRenderer.h>
 //#include <GL/glew.h>

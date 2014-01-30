@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medPathParameter.h"
+#include <medPathParameter.h>
 
 #include <QComboBox>
 #include <QDir>

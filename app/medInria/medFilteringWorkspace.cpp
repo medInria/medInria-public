@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medFilteringWorkspace.h"
+#include <medFilteringWorkspace.h>
 #include <medFilteringViewContainer.h>
 
 #include <medDatabaseNonPersistentController.h>

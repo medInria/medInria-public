@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medAbstractParameter.h"
+#include <medAbstractParameter.h>
 
 #include <QLabel>
 

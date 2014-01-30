@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medDatabaseNavigator.h"
+#include <medDatabaseNavigator.h>
 
 #include <dtkCore/dtkGlobal.h>
 
@@ -23,11 +23,11 @@
 #include <medMetaDataKeys.h>
 #include <medStorage.h>
 
-#include "medDatabaseNavigatorController.h"
-#include "medDatabaseNavigatorItem.h"
-#include "medDatabaseNavigatorItemGroup.h"
-#include "medDatabaseNavigatorScene.h"
-#include "medDatabaseNavigatorView.h"
+#include <medDatabaseNavigatorController.h>
+#include <medDatabaseNavigatorItem.h>
+#include <medDatabaseNavigatorItemGroup.h>
+#include <medDatabaseNavigatorScene.h>
+#include <medDatabaseNavigatorView.h>
 
 
 namespace  {

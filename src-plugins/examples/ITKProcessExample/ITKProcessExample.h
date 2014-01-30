@@ -16,7 +16,7 @@
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractData.h>
 
-#include "ITKProcessExamplePluginExport.h"
+#include <ITKProcessExamplePluginExport.h>
 
 class ITKProcessExamplePrivate;
 class dtkAbstractData;

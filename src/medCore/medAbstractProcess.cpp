@@ -1,4 +1,4 @@
-#include "medAbstractProcess.h"
+#include <medAbstractProcess.h>
 
 medAbstractProcess::medAbstractProcess(medAbstractProcess * parent)
 {

@@ -15,7 +15,7 @@
 
 #include <QObject>
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 class dtkAbstractObject;
 class QLabel;

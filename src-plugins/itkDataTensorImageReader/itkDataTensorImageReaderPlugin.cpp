@@ -11,15 +11,15 @@
 
 =========================================================================*/
 
-#include "itkDataTensorImageReaderPlugin.h"
+#include <itkDataTensorImageReaderPlugin.h>
 
 #include <dtkLog/dtkLog.h>
 
 #include <itkLogForwarder.h>
 
-#include "itkNrrdDataTensorImageReader.h"
-#include "itkNiftiDataTensorImageReader.h"
-#include "itkMetaDataTensorImageReader.h"
+#include <itkNrrdDataTensorImageReader.h>
+#include <itkNiftiDataTensorImageReader.h>
+#include <itkMetaDataTensorImageReader.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkDataTensorImageReaderPluginPrivate

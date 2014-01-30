@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medDatabaseNavigatorController.h"
+#include <medDatabaseNavigatorController.h>
 
 medDatabaseNavigatorController *medDatabaseNavigatorController::instance(void)
 {

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medLayeredViewFactory.h"
+#include <medLayeredViewFactory.h>
 
 
 medLayeredViewFactory *medLayeredViewFactory::instance(void)

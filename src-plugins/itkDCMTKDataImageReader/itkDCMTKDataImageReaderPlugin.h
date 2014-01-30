@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "itkDCMTKDataImageReaderPluginExport.h"
+#include <itkDCMTKDataImageReaderPluginExport.h>
 
 class ITKDCMTKDATAIMAGEREADERPLUGIN_EXPORT itkDCMTKDataImageReaderPluginPrivate;
 

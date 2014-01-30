@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include "medSegmentationAbstractToolBox.h"
+#include <medSegmentationAbstractToolBox.h>
 
-#include "msegPluginExport.h"
+#include <msegPluginExport.h>
 
-#include "medProcessPaintSegm.h"
+#include <medProcessPaintSegm.h>
 
 #include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>

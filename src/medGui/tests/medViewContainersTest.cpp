@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medViewContainersTest.h"
+#include <medViewContainersTest.h>
 
 #include <medAbstractView.h>
 #include <medSingleViewContainer.h>

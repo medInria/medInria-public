@@ -11,16 +11,16 @@
 
 =========================================================================*/
 
-#include "v3dViewAnnIntSeedPointHelper.h"
+#include <v3dViewAnnIntSeedPointHelper.h>
 
-#include "medSeedPointAnnotationData.h"
+#include <medSeedPointAnnotationData.h>
 
-#include "v3dView.h"
-#include "v3dViewAnnotationInteractor.h"
+#include <v3dView.h>
+#include <v3dViewAnnotationInteractor.h>
 
-#include "vtkSeedPointHandle.h"
+#include <vtkSeedPointHandle.h>
 
-#include "vtkImageView2D.h"
+#include <vtkImageView2D.h>
 
 #include <vtkCommand.h>
 #include <vtkHandleWidget.h>

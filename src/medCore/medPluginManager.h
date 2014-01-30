@@ -17,7 +17,7 @@
 
 #include <dtkCore/dtkPluginManager.h>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 class medPluginManagerPrivate;
 

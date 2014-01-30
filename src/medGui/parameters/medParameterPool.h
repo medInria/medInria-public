@@ -15,9 +15,9 @@
 
 #include <QObject>
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 class medAbstractParameter;
 

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkProcessRegistration.h"
+#include <itkProcessRegistration.h>
 
 #include <dtkCore/dtkSmartPointer.h>
 #include <medAbstractData.h>
@@ -23,15 +23,15 @@
 //
 // /////////////////////////////////////////////////////////////////
 
-#include "itkCastImageFilter.h"
+#include <itkCastImageFilter.h>
 
-#include "itkImageRegistrationMethod.h"
-#include "itkMattesMutualInformationImageToImageMetric.h"
-#include "itkLinearInterpolateImageFunction.h"
-#include "itkEuler3DTransform.h"
-#include "itkCenteredTransformInitializer.h"
+#include <itkImageRegistrationMethod.h>
+#include <itkMattesMutualInformationImageToImageMetric.h>
+#include <itkLinearInterpolateImageFunction.h>
+#include <itkEuler3DTransform.h>
+#include <itkCenteredTransformInitializer.h>
 
-#include "itkImageLinearConstIteratorWithIndex.h"
+#include <itkImageLinearConstIteratorWithIndex.h>
 
 #include <itkImage.h>
 #include <itkImageFileReader.h>
@@ -43,7 +43,7 @@
 
 #include <itkCommand.h>
 
-#include "time.h"
+#include <time.h>
 
 // /////////////////////////////////////////////////////////////////
 // itkProcessRegistrationPrivate

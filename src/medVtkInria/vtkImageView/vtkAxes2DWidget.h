@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
-#include "vtkObject.h"
-#include "vtkCommand.h"
+#include <medVtkInriaExport.h>
+#include <vtkObject.h>
+#include <vtkCommand.h>
 
 class vtkImageView2D;
 class vtkAxes2DWidgetCommand;

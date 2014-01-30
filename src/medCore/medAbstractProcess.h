@@ -16,7 +16,7 @@
 #include <dtkCore/dtkAbstractProcess.h>
 #include <medAbstractData.h>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 class medAbstractProcessPrivate;
 

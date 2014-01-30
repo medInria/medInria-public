@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkMetaDataImageReader.h"
+#include <itkMetaDataImageReader.h>
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>

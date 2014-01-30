@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "medDatabaseNonPersistentItem.h"
-#include "medDatabaseNonPersistentItem_p.h"
+#include <medDatabaseNonPersistentItem.h>
+#include <medDatabaseNonPersistentItem_p.h>
 
 #include <medMetaDataKeys.h>
 

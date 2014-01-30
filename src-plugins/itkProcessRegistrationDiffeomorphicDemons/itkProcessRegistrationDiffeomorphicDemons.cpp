@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkProcessRegistrationDiffeomorphicDemons.h"
+#include <itkProcessRegistrationDiffeomorphicDemons.h>
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>

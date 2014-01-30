@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
-#include "vtkPolyDataAlgorithm.h"
+#include <vtkPolyDataAlgorithm.h>
 
 class vtkDelaunay3D;
 

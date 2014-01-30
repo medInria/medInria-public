@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medLogExport.h"
+#include <medLogExport.h>
 #include <vtkOutputWindow.h>
 
 /**

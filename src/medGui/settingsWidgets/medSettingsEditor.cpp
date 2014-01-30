@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medSettingsEditor.h"
+#include <medSettingsEditor.h>
 
 
 #include <QtGui>

@@ -15,8 +15,8 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "medCompositeDataSetsPluginExport.h"
-#include "medCompositeDataSetsBase.h"
+#include <medCompositeDataSetsPluginExport.h>
+#include <medCompositeDataSetsBase.h>
 
 class MEDCOMPOSITEDATASETSPLUGIN_EXPORT medCompositeDataSetsPlugin : public dtkPlugin {
 

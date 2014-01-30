@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medDataManager.h"
+#include <medDataManager.h>
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>

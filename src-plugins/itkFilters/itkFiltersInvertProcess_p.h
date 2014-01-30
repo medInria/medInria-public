@@ -17,13 +17,13 @@
 #include <medAbstractData.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include "itkFiltersProcessBase_p.h"
+#include <itkFiltersProcessBase_p.h>
 
 #include <medMetaDataKeys.h>
 
-#include "itkImage.h"
-#include "itkCommand.h"
-#include "itkInvertIntensityImageFilter.h"
+#include <itkImage.h>
+#include <itkCommand.h>
+#include <itkInvertIntensityImageFilter.h>
 
 class itkFiltersInvertProcess;
 

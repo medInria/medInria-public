@@ -19,9 +19,9 @@
 
 #include <cstddef> // For ITK 3.20 that does not define correctly ptrdiff_t
 
-#include "itkImageIOBase.h"
+#include <itkImageIOBase.h>
 
-#include "medImageIOExport.h"
+#include <medImageIOExport.h>
 
 namespace itk //TODO no namespace please ! (and no class name prifixed with other librarie pefix)
 {

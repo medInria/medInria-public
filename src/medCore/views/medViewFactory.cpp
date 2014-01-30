@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medViewFactory.h"
+#include <medViewFactory.h>
 
 
 medViewFactory *medViewFactory::instance(void)

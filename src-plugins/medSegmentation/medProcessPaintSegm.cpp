@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medProcessPaintSegm.h"
+#include <medProcessPaintSegm.h>
 
 #include <medMetaDataKeys.h>
 

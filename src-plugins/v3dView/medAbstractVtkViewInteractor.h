@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "v3dViewPluginExport.h"
+#include <v3dViewPluginExport.h>
 
 #include <v3dView.h>
 #include <medVtkView.h>

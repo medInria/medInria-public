@@ -15,7 +15,7 @@
 
 #include <itkDataImageReaderBase.h>
 
-#include "itkDataImageReaderPluginExport.h"
+#include <itkDataImageReaderPluginExport.h>
 
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkVTKDataImageReader: public itkDataImageReaderBase {
 public:

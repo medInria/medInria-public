@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkNrrdDataTensorImageWriter.h"
+#include <itkNrrdDataTensorImageWriter.h>
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>

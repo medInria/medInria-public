@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "v3dView4DInteractor.h"
+#include <v3dView4DInteractor.h>
 
 #include <vtkActor.h>
 #include <vtkDataSetSurfaceFilter.h>
@@ -36,7 +36,7 @@
 
 #include <medMessageController.h>
 
-#include "medVtkView.h"
+#include <medVtkView.h>
 
 template <typename TYPE>
 bool AppendImageSequence(medAbstractData* data,v3dView* view,vtkCollection* sequenceList,QList<medAbstractData*> dataList) {

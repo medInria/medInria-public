@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
-#include "vtk3DWidget.h"
+#include <vtk3DWidget.h>
 
 class vtkAbstractPropPicker;
 class vtkActor;

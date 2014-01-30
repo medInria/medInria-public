@@ -17,7 +17,7 @@
 
 #include <itkImage.h>
 
-#include "msegPluginExport.h"
+#include <msegPluginExport.h>
 
 class medProcessPaintSegmPrivate;
 

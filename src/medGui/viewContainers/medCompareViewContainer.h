@@ -17,7 +17,7 @@
 #include <medCustomViewContainer.h>
 
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 class medCompareViewContainerPrivate;
 

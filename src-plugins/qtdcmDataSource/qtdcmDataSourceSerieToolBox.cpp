@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "qtdcmDataSourceSerieToolBox.h"
+#include <qtdcmDataSourceSerieToolBox.h>
 
 #include <QtDcmPreviewWidget.h>
 #include <QtDcmSerieInfoWidget.h>

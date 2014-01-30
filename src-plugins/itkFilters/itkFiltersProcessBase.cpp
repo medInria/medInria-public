@@ -11,12 +11,12 @@
 
 =========================================================================*/
 
-#include "itkFiltersProcessBase.h"
+#include <itkFiltersProcessBase.h>
 
 #include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 
-#include "itkFiltersProcessBase_p.h"
+#include <itkFiltersProcessBase_p.h>
 
 itkFiltersProcessBase::itkFiltersProcessBase(itkFiltersProcessBase *parent) 
     : dtkAbstractProcess(*new itkFiltersProcessBasePrivate(this), parent)

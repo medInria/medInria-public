@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medCompareViewContainer.h"
+#include <medCompareViewContainer.h>
 
 
 

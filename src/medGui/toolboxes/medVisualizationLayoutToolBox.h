@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "medGuiExport.h"
-#include "medToolBox.h"
+#include <medGuiExport.h>
+#include <medToolBox.h>
 
 class medVisualizationLayoutToolBoxPrivate;
 

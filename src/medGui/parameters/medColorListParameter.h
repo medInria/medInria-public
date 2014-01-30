@@ -15,7 +15,7 @@
 
 #include <medAbstractParameter.h>
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
 class QComboBox;
 class QWidget;

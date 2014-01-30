@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "medToolBox.h"
+#include <medToolBox.h>
 
-#include "v3dViewPluginExport.h"
+#include <v3dViewPluginExport.h>
 
 class dtkAbstractView;
 class medAbstractData;

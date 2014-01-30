@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 #include <medAnnotationData.h>
 

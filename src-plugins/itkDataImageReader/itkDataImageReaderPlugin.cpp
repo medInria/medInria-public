@@ -12,21 +12,21 @@
 =========================================================================*/
 
 #ifdef ITK_USE_SYSTEM_GDCM
-#include "itkGDCMDataImageReader.h"
+#include <itkGDCMDataImageReader.h>
 #endif
-#include "itkMetaDataImageReader.h"
-#include "itkPNGDataImageReader.h"
-#include "itkBMPDataImageReader.h"
-#include "itkJPEGDataImageReader.h"
-#include "itkTIFFDataImageReader.h"
-#include "itkNiftiDataImageReader.h"
-#include "itkNrrdDataImageReader.h"
-#include "itkGiplDataImageReader.h"
-#include "itkVTKDataImageReader.h"
-#include "itkPhilipsRECDataImageReader.h"
-#include "itkGISDataImageReader.h"
+#include <itkMetaDataImageReader.h>
+#include <itkPNGDataImageReader.h>
+#include <itkBMPDataImageReader.h>
+#include <itkJPEGDataImageReader.h>
+#include <itkTIFFDataImageReader.h>
+#include <itkNiftiDataImageReader.h>
+#include <itkNrrdDataImageReader.h>
+#include <itkGiplDataImageReader.h>
+#include <itkVTKDataImageReader.h>
+#include <itkPhilipsRECDataImageReader.h>
+#include <itkGISDataImageReader.h>
 
-#include "itkDataImageReaderPlugin.h"
+#include <itkDataImageReaderPlugin.h>
 #include <itkLogForwarder.h>
 
 #include <dtkLog/dtkLog.h>

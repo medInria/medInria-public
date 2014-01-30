@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkAbstractProcess.h>
 
-#include "exampleProcessImageFilterPluginExport.h"
+#include <exampleProcessImageFilterPluginExport.h>
 
 class exampleProcessImageFilterPrivate;
 

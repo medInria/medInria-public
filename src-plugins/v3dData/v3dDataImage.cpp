@@ -11,15 +11,15 @@
 
 =========================================================================*/
 
-#include "v3dDataImage.h"
+#include <v3dDataImage.h>
 
 #include <medAbstractDataFactory.h>
 
 //#include <itkAnalyzeImageIOFactory.h>
 //#include <itkVTKImageIOFactory.h>
 
-#include "vtkSmartPointer.h"
-#include "vtkImageData.h"
+#include <vtkSmartPointer.h>
+#include <vtkImageData.h>
 #include <vtkMetaImageData.h>
 
 // /////////////////////////////////////////////////////////////////

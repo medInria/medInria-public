@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medParameterPool.h"
+#include <medParameterPool.h>
 
 #include <QMultiMap>
 

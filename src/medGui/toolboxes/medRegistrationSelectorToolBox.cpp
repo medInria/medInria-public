@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medRegistrationSelectorToolBox.h"
+#include <medRegistrationSelectorToolBox.h>
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <medAbstractDataFactory.h>

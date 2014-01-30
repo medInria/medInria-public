@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
-#include "vtkThreadedImageAlgorithm.h"
+#include <vtkThreadedImageAlgorithm.h>
 
 /**
    \class vtkImageClamp vtkImageClamp.h "vtkImageClamp.h"

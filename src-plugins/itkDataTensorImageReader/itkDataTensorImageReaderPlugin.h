@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "itkDataTensorImageReaderPluginExport.h"
+#include <itkDataTensorImageReaderPluginExport.h>
 
 class ITKDATATENSORIMAGEREADERPLUGIN_EXPORT itkDataTensorImageReaderPluginPrivate;
 

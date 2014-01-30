@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medEditableStringParameter.h"
+#include <medEditableStringParameter.h>
 
 #include <QComboBox>
 #include <QDir>

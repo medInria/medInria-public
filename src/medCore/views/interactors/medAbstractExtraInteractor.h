@@ -15,7 +15,7 @@ PURPOSE.
 
 #include <dtkCore/dtkAbstractViewInteractor.h>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 #include <QWidget>
 

@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "%1PluginExport.h"
+#include <%1PluginExport.h>
 
 class %2PLUGIN_EXPORT %1PluginPrivate;
 

@@ -11,10 +11,10 @@
 
 =========================================================================*/
 
-#include "itkGISImageIO.h"
+#include <itkGISImageIO.h>
 
 #include <itksys/SystemTools.hxx>
-#include "itkByteSwapper.h"
+#include <itkByteSwapper.h>
 
 #include <fstream>
 

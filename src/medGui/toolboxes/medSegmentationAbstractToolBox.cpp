@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "medSegmentationSelectorToolBox.h"
-#include "medSegmentationAbstractToolBox.h"
+#include <medSegmentationSelectorToolBox.h>
+#include <medSegmentationAbstractToolBox.h>
 
 class medSegmentationAbstractToolBoxPrivate
 {

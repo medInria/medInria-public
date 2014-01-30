@@ -11,11 +11,11 @@
 
 =========================================================================*/
 
-#include "medApplication.h"
+#include <medApplication.h>
 
 #include <locale.h>
 
-#include "medApplication.h"
+#include <medApplication.h>
 
 #include <QtGui>
 

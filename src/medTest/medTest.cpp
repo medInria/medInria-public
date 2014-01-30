@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medTest.h"
+#include <medTest.h>
 
 #include <medPluginManager.h>
 #include <medDataManager.h>

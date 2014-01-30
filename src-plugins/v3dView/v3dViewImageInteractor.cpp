@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "v3dViewImageInteractor.h"
+#include <v3dViewImageInteractor.h>
 
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>

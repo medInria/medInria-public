@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medSaveLUTDialog.h"
+#include <medSaveLUTDialog.h>
 #include <QWidget>
 
 medSaveLUTDialog::medSaveLUTDialog(const QString & name, QWidget *parent) :

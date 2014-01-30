@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medLayoutChooser.h"
+#include <medLayoutChooser.h>
 
 #include <QtGui>
 

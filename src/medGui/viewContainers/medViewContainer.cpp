@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "medViewContainer.h"
-#include "medViewContainer_p.h"
+#include <medViewContainer.h>
+#include <medViewContainer_p.h>
 #include <medDataManager.h>
 #include <medViewManager.h>
 #include <medAbstractView.h>

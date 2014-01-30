@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include "medAbstractVtkViewInteractor.h"
+#include <medAbstractVtkViewInteractor.h>
 
 #include <medAnnotationData.h>
 #include <medAttachedData.h>
 
-#include "v3dViewPluginExport.h"
+#include <v3dViewPluginExport.h>
 
 #include <vtkAbstractWidget.h>
 

@@ -13,10 +13,10 @@
 
 #pragma once
 
-#include "itkFiltersProcessBase.h"
+#include <itkFiltersProcessBase.h>
 #include <medAbstractData.h>
 
-#include "itkFiltersPluginExport.h"
+#include <itkFiltersPluginExport.h>
 
 class itkFiltersDivideProcessPrivate;
 class medAbstractData;

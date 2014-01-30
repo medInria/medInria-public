@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medTensorViewToolBox.h"
+#include <medTensorViewToolBox.h>
 #include <dtkCore/dtkAbstractViewInteractor.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <math.h>

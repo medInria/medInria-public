@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medIntParameter.h"
+#include <medIntParameter.h>
 
 #include <QSpinBox>
 #include <QSlider>

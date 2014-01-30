@@ -13,7 +13,7 @@
 
 #include <v3dView.h>
 
-#include "v3dViewAnnotationInteractor.h"
+#include <v3dViewAnnotationInteractor.h>
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkMultiThreadedImageIOBase.h"
+#include <itkMultiThreadedImageIOBase.h>
 
 #include <itksys/SystemTools.hxx>
 #include <itksys/Directory.hxx>

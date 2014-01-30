@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "msegPluginExport.h"
+#include <msegPluginExport.h>
 
 #include <medAbstractProcess.h>
 #include <dtkCore/dtkSmartPointer.h>

@@ -13,10 +13,10 @@
 
 #pragma once
 
-#include "medGuiExport.h"
+#include <medGuiExport.h>
 
-#include "medViewContainer.h"
-#include "medSingleViewContainer.h"
+#include <medViewContainer.h>
+#include <medSingleViewContainer.h>
 
 class MEDGUI_EXPORT medSingleViewContainer2 : public medSingleViewContainer
 {

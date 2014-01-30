@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "medViewContainer_p.h"
-#include "medMultiViewContainer.h"
+#include <medViewContainer_p.h>
+#include <medMultiViewContainer.h>
 
 #include <dtkCore/dtkAbstractView.h>
 

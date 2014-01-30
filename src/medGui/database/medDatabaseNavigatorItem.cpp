@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include "medDatabaseNavigatorItem.h"
+#include <medDatabaseNavigatorItem.h>
 #include <medDatabaseNavigatorItemOverlay.h>
-#include "medImageFileLoader.h"
+#include <medImageFileLoader.h>
 
 #include <medAbstractDbController.h>
 #include <medDataManager.h>

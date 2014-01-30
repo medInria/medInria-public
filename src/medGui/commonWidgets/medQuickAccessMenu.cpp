@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medQuickAccessMenu.h"
+#include <medQuickAccessMenu.h>
 #include <medWorkspaceFactory.h>
 #include <medSettingsManager.h>
 

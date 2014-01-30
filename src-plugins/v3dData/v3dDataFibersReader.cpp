@@ -17,8 +17,8 @@
 #include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
-#include "vtkXMLFiberDataSetReader.h"
-#include "vtkFiberDataSet.h"
+#include <vtkXMLFiberDataSetReader.h>
+#include <vtkFiberDataSet.h>
 
 class v3dDataFibersReaderPrivate {
 public:

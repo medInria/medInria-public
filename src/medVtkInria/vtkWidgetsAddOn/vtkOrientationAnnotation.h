@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
-#include "vtkCornerAnnotation.h"
+#include <vtkCornerAnnotation.h>
 
 class MEDVTKINRIA_EXPORT vtkOrientationAnnotation : public vtkCornerAnnotation
 {

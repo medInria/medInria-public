@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medToolBoxHeader.h"
+#include <medToolBoxHeader.h>
 #include <medButton.h>
 
 #include <dtkCore/dtkGlobal.h>

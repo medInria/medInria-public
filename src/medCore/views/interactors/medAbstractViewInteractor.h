@@ -15,7 +15,7 @@ PURPOSE.
 
 #include <medAbstractExtraInteractor.h>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 #include <medAbstractView.h>
 

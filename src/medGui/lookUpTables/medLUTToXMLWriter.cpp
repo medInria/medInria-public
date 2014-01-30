@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medLUTToXMLWriter.h"
+#include <medLUTToXMLWriter.h>
 
 #include <QXmlStreamWriter>
 #include <QStringList>

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkDataTensorImageFloat3.h"
+#include <itkDataTensorImageFloat3.h>
 
 #include <medAbstractDataFactory.h>
 

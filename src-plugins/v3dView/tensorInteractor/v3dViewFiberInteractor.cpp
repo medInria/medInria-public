@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "v3dViewFiberInteractor.h"
+#include <v3dViewFiberInteractor.h>
 
 #include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -41,9 +41,9 @@
 #include <itkImageToVTKImageFilter.h>
 #include <itkFiberBundleStatisticsCalculator.h>
 
-#include "v3dView.h"
-#include "medVtkView.h"
-#include "medParameter.h"
+#include <v3dView.h>
+#include <medVtkView.h>
+#include <medParameter.h>
 
 #include <QInputDialog>
 #include <QColorDialog>

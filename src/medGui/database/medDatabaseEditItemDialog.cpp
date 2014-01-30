@@ -1,5 +1,5 @@
 
-#include "medDatabaseEditItemDialog.h"
+#include <medDatabaseEditItemDialog.h>
 
 #include <medDataIndex.h>
 #include <medAbstractDatabaseItem.h>

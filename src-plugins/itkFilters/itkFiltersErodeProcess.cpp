@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkFiltersErodeProcess.h"
+#include <itkFiltersErodeProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <medAbstractDataFactory.h>
@@ -19,7 +19,7 @@
 
 #include <medMetaDataKeys.h>
 
-#include "itkFiltersErodeProcess_p.h"
+#include <itkFiltersErodeProcess_p.h>
 
 //-------------------------------------------------------------------------------------------
 

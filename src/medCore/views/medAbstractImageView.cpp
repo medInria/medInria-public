@@ -1,4 +1,4 @@
-#include "medAbstractImageView.h"
+#include <medAbstractImageView.h>
 
 #include <medAbstractData.h>
 #include <medAbstractImageViewInteractor.h>

@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkAbstractDataWriter.h>
 
-#include "vtkDataMeshWriterPluginExport.h"
+#include <vtkDataMeshWriterPluginExport.h>
 class vtkDataSetWriter;
 
 class VTKDATAMESHWRITERPLUGIN_EXPORT vtkDataMeshWriter : public dtkAbstractDataWriter

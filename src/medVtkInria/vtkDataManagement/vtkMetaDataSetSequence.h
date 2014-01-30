@@ -14,15 +14,15 @@
 #pragma once
 
 #include <vtkMetaDataSet.h>
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 #include <string>
 #include <vector>
 
 #include <vtkMetaImageData.h>
 #include <itkExtractImageFilter.h>
-#include "itkImageRegionIterator.h"
-#include "itkImageRegion.h"
-#include "itkImage.h"
+#include <itkImageRegionIterator.h>
+#include <itkImageRegion.h>
+#include <itkImage.h>
 
 
 

@@ -15,7 +15,7 @@
 
 #include <medAbstractDataSource.h>
 
-#include "qtdcmDataSourcePluginExport.h"
+#include <qtdcmDataSourcePluginExport.h>
 
 class qtdcmDataSourcePrivate;
 

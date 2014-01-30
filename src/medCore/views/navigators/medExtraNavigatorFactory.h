@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkAbstractFactory.h>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 #include <QStringList>
 

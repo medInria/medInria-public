@@ -11,10 +11,10 @@
 
 =========================================================================*/
 
-#include "msegAlgorithmConnectedThresholdToolbox.h"
+#include <msegAlgorithmConnectedThresholdToolbox.h>
 
-#include "msegAlgorithmConnectedThreshold.h"
-#include "medSeedPointAnnotationData.h"
+#include <msegAlgorithmConnectedThreshold.h>
+#include <medSeedPointAnnotationData.h>
 
 #include <medAbstractImageView.h>
 #include <medAbstractData.h>

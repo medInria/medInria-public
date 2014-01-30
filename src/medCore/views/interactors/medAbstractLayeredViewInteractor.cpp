@@ -11,7 +11,7 @@ PURPOSE.
 
 =========================================================================*/
 
-#include "medAbstractLayeredViewInteractor.h"
+#include <medAbstractLayeredViewInteractor.h>
 
 #include <medAbstractLayeredView.h>
 

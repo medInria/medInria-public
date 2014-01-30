@@ -11,14 +11,14 @@
 
 =========================================================================*/
 
-#include "itkFiltersMultiplyProcess.h"
+#include <itkFiltersMultiplyProcess.h>
 
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <medAbstractDataFactory.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medMetaDataKeys.h>
-#include "itkFiltersMultiplyProcess_p.h"
+#include <itkFiltersMultiplyProcess_p.h>
 
 //-------------------------------------------------------------------------------------------
 

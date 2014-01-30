@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "itkMorphologicalFiltersToolBox.h"
+#include <itkMorphologicalFiltersToolBox.h>
 
 #include <limits>
 
@@ -36,7 +36,7 @@
 #include <medFilteringAbstractToolBox.h>
 #include <medProgressionStack.h>
 
-#include "itkFiltersProcessBase.h"
+#include <itkFiltersProcessBase.h>
 
 #include <QtGui>
 

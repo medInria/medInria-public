@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "v3dViewTensorInteractor.h"
+#include <v3dViewTensorInteractor.h>
 
 #include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataFactory.h>
@@ -26,7 +26,7 @@
 #include <vtkImageActor.h>
 #include <vtkImageView2D.h>
 
-#include "medVtkView.h"
+#include <medVtkView.h>
 
 #include <itkITKTensorsToVTKTensorsFilter.h>
 #include <itkImage.h>

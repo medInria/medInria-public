@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include "medQtDataImageReader.h"
+#include <medQtDataImageReader.h>
 
-#include "medQtDataImage.h"
+#include <medQtDataImage.h>
 
 #include <medAbstractData.h>
 #include <medAbstractDataFactory.h>

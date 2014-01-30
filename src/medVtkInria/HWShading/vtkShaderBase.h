@@ -41,7 +41,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
 //#include <GL/glew.h> // for OpenGL types and some functions
 		     // TODO: can this be done without glew?

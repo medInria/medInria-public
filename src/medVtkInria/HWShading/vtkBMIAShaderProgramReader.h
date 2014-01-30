@@ -23,14 +23,14 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
-#include "vtkBetterDataReader.h"
+#include <vtkBetterDataReader.h>
 
 #include <iostream>
 using namespace std;
 
-#include "vtkBMIAShaderProgram.h"
+#include <vtkBMIAShaderProgram.h>
 
 
   //class vtkBMIAShaderProgram;

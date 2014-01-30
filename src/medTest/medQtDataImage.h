@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medTestExport.h"
+#include <medTestExport.h>
 
 #include <medAbstractDataImage.h>
 

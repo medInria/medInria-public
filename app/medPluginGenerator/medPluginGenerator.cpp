@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medPluginGenerator.h"
+#include <medPluginGenerator.h>
 
 class medPluginGeneratorPrivate
 {

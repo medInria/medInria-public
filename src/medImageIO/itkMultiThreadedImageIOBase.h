@@ -17,7 +17,7 @@
 #include <itkMultiThreader.h>
 #include <itkImageRegion.h>
 
-#include "medImageIOExport.h"
+#include <medImageIOExport.h>
 
 namespace itk //TODO no namespace please ! (and no class name prifixed with other librarie pefix)
 {

@@ -18,7 +18,7 @@
 #include <dtkCore/dtkAbstractDataWriter.h>
 #include <medAbstractData.h>
 
-#include "medCoreExport.h"
+#include <medCoreExport.h>
 
 struct MEDCORE_EXPORT medDataReaderWriter {
 

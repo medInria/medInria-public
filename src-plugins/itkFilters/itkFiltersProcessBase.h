@@ -16,7 +16,7 @@
 #include <dtkCore/dtkAbstractProcess.h>
 #include <medAbstractData.h>
 
-#include "itkFiltersPluginExport.h"
+#include <itkFiltersPluginExport.h>
 
 class itkFiltersProcessBasePrivate;
 

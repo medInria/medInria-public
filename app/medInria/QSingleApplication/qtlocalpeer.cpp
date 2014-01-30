@@ -38,7 +38,7 @@
 ****************************************************************************/
 
 
-#include "qtlocalpeer.h"
+#include <qtlocalpeer.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTime>
 
@@ -54,11 +54,11 @@ static PProcessIdToSessionId pProcessIdToSessionId = 0;
 #endif
 
 namespace QtLP_Private {
-#include "qtlockedfile.cpp"
+#include <qtlockedfile.cpp>
 #if defined(Q_OS_WIN)
-#include "qtlockedfile_win.cpp"
+#include <qtlockedfile_win.cpp>
 #else
-#include "qtlockedfile_unix.cpp"
+#include <qtlockedfile_unix.cpp>
 #endif
 }
 

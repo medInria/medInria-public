@@ -15,7 +15,7 @@
 
 #include <dtkCore/dtkPlugin.h>
 
-#include "itkProcessRegistrationDiffeomorphicDemonsPluginExport.h"
+#include <itkProcessRegistrationDiffeomorphicDemonsPluginExport.h>
 
 class ITKPROCESSREGISTRATIONDIFFEOMORPHICDEMONSPLUGIN_EXPORT itkProcessRegistrationDiffeomorphicDemonsPluginPrivate;
 

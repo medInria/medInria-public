@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medRunnableProcess.h"
+#include <medRunnableProcess.h>
 
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkSmartPointer.h>

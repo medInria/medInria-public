@@ -12,8 +12,8 @@
 =========================================================================*/
 
 #pragma once
-#include "medVtkInriaExport.h"
-#include "vtkXMLCompositeDataReader.h"
+#include <medVtkInriaExport.h>
+#include <vtkXMLCompositeDataReader.h>
 
 class vtkFiberDataSet;
 

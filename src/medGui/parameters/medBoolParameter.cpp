@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medBoolParameter.h"
+#include <medBoolParameter.h>
 
 #include <QIcon>
 #include <QPushButton>

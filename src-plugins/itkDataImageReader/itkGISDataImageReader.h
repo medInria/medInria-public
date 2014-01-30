@@ -14,7 +14,7 @@
 #pragma once
 
 #include <itkDataImageReaderBase.h>
-#include "itkDataImageReaderPluginExport.h"
+#include <itkDataImageReaderPluginExport.h>
 
 
 class ITKDATAIMAGEREADERPLUGIN_EXPORT itkGISDataImageReader: public itkDataImageReaderBase {

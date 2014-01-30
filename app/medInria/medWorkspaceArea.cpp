@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "medWorkspaceArea.h"
-#include "medWorkspaceArea_p.h"
+#include <medWorkspaceArea.h>
+#include <medWorkspaceArea_p.h>
 
 #include <dtkCore/dtkAbstractViewFactory.h>
 #include <dtkCore/dtkAbstractView.h>

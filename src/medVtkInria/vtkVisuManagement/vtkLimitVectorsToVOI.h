@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
-#include "vtkUnstructuredGridAlgorithm.h"
+#include <vtkUnstructuredGridAlgorithm.h>
 
 class MEDVTKINRIA_EXPORT vtkLimitVectorsToVOI: public vtkUnstructuredGridAlgorithm
 {

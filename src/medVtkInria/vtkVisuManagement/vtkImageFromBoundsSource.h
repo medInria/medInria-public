@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
-#include "vtkImageAlgorithm.h"
+#include <vtkImageAlgorithm.h>
 
 class MEDVTKINRIA_EXPORT vtkImageFromBoundsSource : public vtkImageAlgorithm
 {

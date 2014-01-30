@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medBrowserPacsHostToolBox.h"
+#include <medBrowserPacsHostToolBox.h>
 
 #include <QtGui>
 

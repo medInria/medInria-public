@@ -27,8 +27,8 @@
 #include <medMessageController.h>
 #include <medMetaDataKeys.h>
 
-#include "medDiffusionSelectorToolBox.h"
-#include "medDiffusionAbstractToolBox.h"
+#include <medDiffusionSelectorToolBox.h>
+#include <medDiffusionAbstractToolBox.h>
 
 class medDiffusionSelectorToolBoxPrivate
 {

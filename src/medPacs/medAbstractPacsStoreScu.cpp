@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medAbstractPacsStoreScu.h"
+#include <medAbstractPacsStoreScu.h>
 
 #include <dtkCore/dtkGlobal.h>
 

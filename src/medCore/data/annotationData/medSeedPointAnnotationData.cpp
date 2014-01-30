@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medSeedPointAnnotationData.h"
+#include <medSeedPointAnnotationData.h>
 
 medSeedPointAnnotationData::medSeedPointAnnotationData() :
     m_color(Qt::cyan),

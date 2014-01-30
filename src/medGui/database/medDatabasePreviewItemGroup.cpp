@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include "medDatabasePreviewController.h"
-#include "medDatabasePreviewItem.h"
-#include "medDatabasePreviewItemGroup.h"
+#include <medDatabasePreviewController.h>
+#include <medDatabasePreviewItem.h>
+#include <medDatabasePreviewItemGroup.h>
 
 #include <QtCore>
 

@@ -17,7 +17,7 @@
 
 #include <vtkPointSet.h>
 
-#include "v3dViewPluginExport.h"
+#include <v3dViewPluginExport.h>
 
 
 class v3dViewMeshInteractorPrivate;

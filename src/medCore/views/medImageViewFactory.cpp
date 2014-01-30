@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "medImageViewFactory.h"
+#include <medImageViewFactory.h>
 
 
 

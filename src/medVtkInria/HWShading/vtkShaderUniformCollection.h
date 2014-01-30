@@ -23,10 +23,10 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "medVtkInriaExport.h"
+#include <medVtkInriaExport.h>
 
 #include <vtkCollection.h>
-#include "vtkShaderUniform.h" // for inline methods/static casts
+#include <vtkShaderUniform.h> // for inline methods/static casts
 
 class MEDVTKINRIA_EXPORT vtkShaderUniformCollection : public vtkCollection
 {
