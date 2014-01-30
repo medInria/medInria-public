@@ -64,6 +64,7 @@ medAbstractExtraNavigator*  medExtraNavigatorFactory::createNavigator(QString id
 
 bool medExtraNavigatorFactory::registerNavigator(QString identifier, QStringList typeHandled, navigatorCreator creator)
 {
+
     if(d->navigatorCreators.contains(identifier))
         return false;
 
@@ -78,17 +79,20 @@ bool medExtraNavigatorFactory::registerNavigator(QString identifier, QStringList
 
 QStringList medExtraNavigatorFactory::navigatorsAbleToHandle(const QString viewType) const
 {
+    if(d->identifierHash.isEmpty())
+        return QStringList();
+
     QHashIterator<QString, QStringList> it(d->identifierHash);
 
-    QList<QString> Navigators;
+    QList<QString> navigators;
 
     for(it.toFront(); it.hasNext(); it.next())
     {
         if (it.value().contains(viewType))
-            Navigators << it.key();
+            navigators << it.key();
     }
 
-    return Navigators;
+    return navigators;
 }
 
 medExtraNavigatorFactory *medExtraNavigatorFactory::s_instance = NULL;

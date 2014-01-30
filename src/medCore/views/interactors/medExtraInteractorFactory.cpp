@@ -79,6 +79,9 @@ bool medExtraInteractorFactory::registerInteractor(QString identifier, QStringLi
 
 QStringList medExtraInteractorFactory::interactorsAbleToHandle(const QString viewType, const QString dataType) const
 {
+    if(d->identifierHash.isEmpty())
+        return QStringList();
+
     QHashIterator<QString, QStringList> it(d->identifierHash);
 
     QList<QString> interactors;
