@@ -42,6 +42,7 @@ public:
     medAbstractData * data(unsigned int layer) const;
     bool contains(medAbstractData * data) const;
     unsigned int layersCount() const;
+    unsigned int layer(medAbstractData * data);
 
 
     /**

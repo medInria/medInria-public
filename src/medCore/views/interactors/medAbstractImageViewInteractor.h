@@ -42,7 +42,7 @@ public:
     virtual double opacity() const = 0;
 
     virtual void setWindowLevel (double &window, double &level) = 0;
-    virtual void windowLevel(double &window, double &level) const = 0;
+    virtual void windowLevel(double &window, double &level) = 0;
 
     /**
     * @brief implementationOf

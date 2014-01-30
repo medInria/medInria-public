@@ -46,6 +46,11 @@ QList<dtkSmartPointer<medAbstractData> > medAbstractLayeredView::data() const
     return d->layersDataList;
 }
 
+unsigned int medAbstractLayeredView::layer(medAbstractData * data)
+{
+    return d->layersDataList.indexOf(data);
+}
+
 bool medAbstractLayeredView::removeData(medAbstractData *data)
 {
     int res = d->layersDataList.removeAll(data);
