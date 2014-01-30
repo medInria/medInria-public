@@ -37,7 +37,9 @@ class medViewFactoryPrivate
     navigatorIdCreatorHash    navigatorCreators;
     interactorIdCreatorHash   intercatorCreators;
 
-    identifierHandledTypeHash identifierHash;
+    identifierHandledTypeHash viewIdentifierHash;
+    identifierHandledTypeHash navigatorIdentifierHash;
+    identifierHandledTypeHash interactorIdentifierHash;
 };
 
 medViewFactory::medViewFactory()
@@ -97,7 +99,7 @@ bool medViewFactory::registerView(QString identifier, QStringList typeHandled, v
         return false;
 
     d->viewCreators.insert(identifier, creator);
-    d->identifierHash.insert(identifier, typeHandled);
+    d->viewIdentifierHash.insert(identifier, typeHandled);
     return true;
 }
 
@@ -107,7 +109,7 @@ bool medViewFactory::registerNavigator(QString identifier, QStringList typeHandl
         return false;
 
     d->navigatorCreators.insert(identifier, creator);
-    d->identifierHash.insert(identifier, typeHandled);
+    d->navigatorIdentifierHash.insert(identifier, typeHandled);
     return true;
 }
 
@@ -117,7 +119,7 @@ bool medViewFactory::registerInteractor(QString identifier, QStringList typeHand
         return false;
 
     d->intercatorCreators.insert(identifier, creator);
-    d->identifierHash.insert(identifier, typeHandled);
+    d->interactorIdentifierHash.insert(identifier, typeHandled);
     return true;
 }
 
@@ -126,7 +128,10 @@ bool medViewFactory::registerInteractor(QString identifier, QStringList typeHand
 
 QStringList medViewFactory::navigatorsAbleToHandle(const QString viewType) const
 {
-    QHashIterator<QString, QStringList> it(d->identifierHash);
+    if(d->navigatorIdentifierHash.isEmpty())
+        return QStringList();
+
+    QHashIterator<QString, QStringList> it(d->navigatorIdentifierHash);
 
     QList<QString> navigators;
 
@@ -141,7 +146,10 @@ QStringList medViewFactory::navigatorsAbleToHandle(const QString viewType) const
 
 QStringList medViewFactory::interactorsAbleToHandle(const QString viewType, const QString dataType) const
 {
-    QHashIterator<QString, QStringList> it(d->identifierHash);
+    if(d->interactorIdentifierHash.isEmpty())
+        return QStringList();
+
+    QHashIterator<QString, QStringList> it(d->interactorIdentifierHash);
 
     QList<QString> interactors;
 
@@ -156,7 +164,10 @@ QStringList medViewFactory::interactorsAbleToHandle(const QString viewType, cons
 
 QStringList medViewFactory::viewsAbleToHandle(const QString dataType) const
 {
-    QHashIterator<QString, QStringList> it(d->identifierHash);
+    if(d->viewIdentifierHash.isEmpty())
+        return QStringList();
+
+    QHashIterator<QString, QStringList> it(d->viewIdentifierHash);
 
     QList<QString> views;
 
