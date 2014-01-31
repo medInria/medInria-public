@@ -199,8 +199,6 @@ QWidget* medVtkView::toolBox()
     return d->toolBox;
 }
 
-
-
 QPointF medVtkView::mapWorldToDisplayCoordinates(const QVector3D & worldVec)
 {
     // The following code is implemented without calling ren->SetWorldPoint,
