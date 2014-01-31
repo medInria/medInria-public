@@ -53,9 +53,12 @@ public slots:
     virtual void moveToSliceAtPosition(const QVector3D &position);
     virtual void setVisibility(bool visibility);
 
+
 private:
     static QStringList dataHandled();
     virtual void update();
+    void setWindow(double window);
+    void setLevel(double level);
 
 
     template <typename IMAGE>

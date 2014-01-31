@@ -23,6 +23,7 @@
 #include <vtkLookupTableManager.h>
 #include <vtkImageViewCollection.h>
 #include <vtkRenderWindow.h>
+#include <vtkImageData.h>
 
 #include <QVTKWidget2.h>
 
@@ -32,6 +33,7 @@
 #include <medStringListParameter.h>
 #include <medIntParameter.h>
 #include <medBoolParameter.h>
+#include <medDoubleParameter.h>
 
 
 
@@ -53,6 +55,8 @@ public:
     medStringListParameter *presetParam;
     medIntParameter *opacityParam;
     medBoolParameter *visibiltyParameter;
+    medDoubleParameter *windowParameter;
+    medDoubleParameter *levelParameter;
 };
 
 
@@ -76,6 +80,8 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractIm
     d->presetParam = NULL;
     d->opacityParam = NULL;
     d->visibiltyParameter = NULL;
+    d->windowParameter = NULL;
+    d->levelParameter = NULL;
 }
 
 medVtkViewItkDataImageInteractor::~medVtkViewItkDataImageInteractor()
@@ -178,7 +184,29 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
     d->visibiltyParameter->setValue(true);
     connect(d->visibiltyParameter, SIGNAL(valueChanged(bool)), this, SLOT(setVisibility(bool)));
 
-    this->update();
+    d->windowParameter = new medDoubleParameter("Window", this);
+    d->levelParameter = new medDoubleParameter("Level", this);
+
+//    d->view2d->ResetWindowLevel();
+
+//    d->view2d->SetCurrentLayer(d->layer);
+
+    d->view2d->ResetWindowLevel();
+    double* range = d->view2d->GetInput()->GetScalarRange();
+    double window = range[1]-range[0];
+    double level = 0.5*(range[1]+range[0]);
+
+    d->windowParameter->setRange(range[0], range[1]);
+    d->levelParameter->setRange(range[0], range[1]);
+
+    qDebug() << "range" << range[0] << " , " << range[1];
+    qDebug() << "window " << window  << " level " <<level;
+
+    connect(d->windowParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindow(double)));
+    connect(d->levelParameter, SIGNAL(valueChanged(double)), this, SLOT(setLevel(double)));
+
+    d->windowParameter->setValue(window);
+    d->levelParameter->setValue(level);
 }
 
 
@@ -190,7 +218,6 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstrac
 
     if (IMAGE* image = dynamic_cast<IMAGE*>((itk::Object*)(data->data())))
     {
-//        d->collection->SetITKInput(image, d->layer);
         d->view2d->SetITKInput(image, layer);
         d->view3d->SetITKInput(image, layer);
         return true;
@@ -202,7 +229,6 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstrac
 void medVtkViewItkDataImageInteractor::setOpacity(double value)
 {
     double opacity = static_cast<double>(value) / 100.0;
-//    d->collection->SetOpacity(opacity, d->layer);
     d->view3d->SetOpacity (opacity, d->layer);
     d->view2d->SetOpacity (opacity, d->layer);
 }
@@ -217,13 +243,11 @@ void medVtkViewItkDataImageInteractor::setVisibility(bool visible)
 {
     if(visible)
     {
-//        d->collection->SetVisibility(1, d->layer);
         d->view2d->SetVisibility(1, d->layer);
         d->view3d->SetVisibility(1, d->layer);
     }
     else
     {
-//        d->collection->SetVisibility(0, d->layer);
         d->view2d->SetVisibility(0, d->layer);
         d->view3d->SetVisibility(0, d->layer);
     }
@@ -266,132 +290,8 @@ void medVtkViewItkDataImageInteractor::setLut(QString value)
 
 void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 {
-    //TODO complete - RDE
-//    if(preset == "None")
-//    {
-//        // we reset the LUT and the ww/wl to the default values
-
-//        this->setLut(d->layer, "Black & White");
-
-//        double color[3] = {0.0, 0.0, 0.0};
-
-//        d->collection->SyncSetBackground ( color );
-//        d->collection->SyncResetWindowLevel(0);
-//    }
-//    else if ( preset == "VR Muscles&Bones" )
-//    {
-//        this->setLUT ( d->layer, "Muscles & Bones" );
-
-//        double color[3] = {0.0, 0.0, 0.0};
-
-//        d->collection->SyncSetBackground ( color );
-//        d->collection->SyncSetColorWindow ( 337.0, 0, 1 );
-//        d->collection->SyncSetColorLevel ( 1237.0, 0, 1 );
-//    }
-//    else if ( preset == "Vascular I" )
-//    {
-//        this->setLut ( d->layer, "Stern" );
-
-//        double color[3] = {0.0, 0.0, 0.0};
-
-//        d->collection->SyncSetBackground ( color );
-//        d->collection->SyncSetColorWindow ( 388.8, 0, 1 );
-//        d->collection->SyncSetColorLevel ( 362.9, 0, 1 );
-//    }
-//    else if ( preset == "Vascular II" )
-//    {
-//        this->setLut ( d->layer, "Red Vessels" );
-
-//        double color[3] = {0.0, 0.0, 0.0};
-
-//        d->collection->SyncSetBackground ( color );
-//        d->collection->SyncSetColorWindow ( 189.6, 0, 1 );
-//        d->collection->SyncSetColorLevel ( 262.3, 0, 1 );
-//    }
-//    else if ( preset == "Vascular III" )
-//    {
-//        this->setLut ( d->layer, "Red Vessels" );
-
-//        double color[3] = {0.0, 0.0, 0.0};
-
-//        d->collection->SyncSetBackground ( color );
-//        d->collection->SyncSetColorWindow ( 284.4, 0, 1 );
-//        d->collection->SyncSetColorLevel ( 341.7, 0, 1 );
-//    }
-//    else if ( preset == "Vascular IV" )
-//    {
-//        this->setLut ( d->layer, "Red Vessels" );
-
-//        double color[3] = {0.0, 0.0, 0.0};
-
-//        d->collection->SyncSetBackground ( color );
-//        d->collection->SyncSetColorWindow ( 272.5, 0, 1 );
-//        d->collection->SyncSetColorLevel ( 310.9, 0, 1 );
-//    }
-//    else if ( preset == "Standard" )
-//    {
-//        this->setLUT ( d->layer, "Muscles & Bones" );
-
-//        double color[3] = {0.0, 0.0, 0.0};
-
-//        d->collection->SyncSetBackground ( color );
-//        d->collection->SyncSetColorWindow ( 243.7, 0, 1 );
-//        d->collection->SyncSetColorLevel ( 199.6, 0, 1 );
-//    }
-//    else if ( preset == "Soft" )
-//    {
-//        this->setLUT ( d->layer, "Bones" );
-
-//        double color[3] = {0.0, 0.0, 0.0};
-
-//        d->collection->SyncSetBackground ( color );
-//        d->collection->SyncSetColorWindow ( 133.5, 0, 1 );
-//        d->collection->SyncSetColorLevel ( 163.4, 0, 1 );
-//    }
-//    else if ( preset == "Soft on White" )
-//    {
-//        this->setLUT ( d->layer, "Muscles & Bones" );
-
-//        double color[3] = {1.0,0.98820477724075317,0.98814374208450317};
-
-//        d->collection->SyncSetBackground ( color );
-//        d->collection->SyncSetColorWindow ( 449.3, 0, 1 );
-//        d->collection->SyncSetColorLevel ( 372.8, 0, 1 );
-//    }
-//    else if ( preset == "Soft on Blue" )
-//    {
-//        this->setLUT ( d->layer, "Muscles & Bones" );
-
-//        double color[3]={0.0, 0.27507439255714417, 0.26398107409477234};
-
-//        d->collection->SyncSetBackground ( color );
-//        d->collection->SyncSetColorWindow ( 449.3, 0, 1 );
-//        d->collection->SyncSetColorLevel ( 372.8, 0, 1 );
-//    }
-//    else if ( preset == "Red on White" )
-//    {
-//        this->setLUT ( d->layer, "Red Vessels" );
-
-//        double color[3]={1.0, 0.98820477724075317, 0.98814374208450317};
-
-//        d->collection->SyncSetBackground ( color );
-//        d->collection->SyncSetColorWindow ( 449.3, 0, 1 );
-//        d->collection->SyncSetColorLevel ( 372.8, 0, 1 );
-//    }
-//    else if ( preset == "Glossy" )
-//    {
-//        this->setLUT ( d->layer, "Bones" );
-
-//        double color[3] = {0.0, 0.0, 0.0};
-
-//        d->collection->SyncSetBackground ( color );
-//        d->collection->SyncSetColorWindow ( 133.5, 0, 1 );
-//        d->collection->SyncSetColorLevel ( 163.4, 0, 1 );
-//    }
-//    else
-//    {
-//        return; // to prevent trigger of event lutChanged()
-//    }
+    //TODO to complete wat for theo stuff ?) - RDE
+    DTK_UNUSED(preset);
 }
 
 QString medVtkViewItkDataImageInteractor::preset() const
@@ -417,12 +317,14 @@ QWidget* medVtkViewItkDataImageInteractor::layerWidget()
 
 void medVtkViewItkDataImageInteractor::setWindowLevel (double &window, double &level)
 {
-    qDebug() << "setWindowLevel"  << window << "," << level;
+    d->windowParameter->setValue(window);
+    d->levelParameter->setValue(level);
 }
 
 void medVtkViewItkDataImageInteractor::windowLevel(double &window, double &level)
 {
-    qDebug() << "windowLevel"  << window << "," << level;
+    window = d->windowParameter->value();
+    level = d->levelParameter->value();
 }
 
 void medVtkViewItkDataImageInteractor::moveToSliceAtPosition(const QVector3D &position)
@@ -430,12 +332,24 @@ void medVtkViewItkDataImageInteractor::moveToSliceAtPosition(const QVector3D &po
     qDebug() << "moveToSliceAtPosition"  << position;
 }
 
+void medVtkViewItkDataImageInteractor::setWindow(double window)
+{
+    d->view2d->SetColorWindow(window, d->layer);
+    d->view3d->SetColorWindow(window, d->layer);
+}
+
+void medVtkViewItkDataImageInteractor::setLevel(double level)
+{
+    d->view2d->SetColorLevel(level, d->layer);
+    d->view3d->SetColorLevel(level, d->layer);
+}
+
 void medVtkViewItkDataImageInteractor::update()
 {
     qDebug() << "update:" << this->view()->identifier() << " ask by " << this->identifier() << "from d->layer " << d->layer;
-//    if(d->medVtkView->is2D())
+    if(d->medVtkView->is2D())
         d->view2d->Render();
-//    else
+    else
         d->view3d;
 
     d->qvtkWidget->update();

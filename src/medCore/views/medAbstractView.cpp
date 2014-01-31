@@ -41,8 +41,6 @@ medAbstractView::medAbstractView(QObject* parent) :d (new medAbstractViewPrivate
 
     d->primaryIntercator = NULL;
     d->primaryNavigator = NULL;
-
-    this->initialiseNavigators();
 }
 
 medAbstractView::~medAbstractView( void )
