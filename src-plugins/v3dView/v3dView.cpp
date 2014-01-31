@@ -903,7 +903,6 @@ bool v3dView::SetViewInput(const char* type,dtkAbstractData* data,const int laye
         d->view2d->SetITKInput(image,layer);
         d->view3d->SetITKInput(image,layer);
     }
-    dtkAbstractView::setData(data);
     return true;
 }
 
@@ -912,7 +911,6 @@ bool v3dView::SetView(const char* type,dtkAbstractData* data)
     if (data->identifier()!=type)
         return false;
 
-    dtkAbstractView::setData(data);
     return true;
 }
 
@@ -926,7 +924,6 @@ bool v3dView::SetViewInputWithConversion(const char* type,const char* newtype,dt
         d->view2d->SetITKInput(image,layer);
         d->view3d->SetITKInput(image,layer);
     }
-    dtkAbstractView::setData(data);
     return true;
 }
 
@@ -1000,7 +997,6 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
             }
         }
         
-        dtkAbstractView::setData(data);
         if (!isDataTypeHandled)
             return;
     }
@@ -1047,6 +1043,8 @@ void v3dView::setData ( dtkAbstractData *data, int layer )
 
     //this->addDataInList ( data, layer );
     this->addDataInList ( data);
+    dtkAbstractView::setData(data);
+
     setCurrentLayer(layer);
     emit dataAdded ( data );
     emit dataAdded ( data, layer );
