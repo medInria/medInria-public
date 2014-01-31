@@ -101,7 +101,7 @@ medAbstractLayeredViewInteractor* medAbstractLayeredView::primaryInteractor(medA
     return d->primaryIntercatorsHash.value(data);
 }
 
-QList<medAbstractInteractor*> medAbstractLayeredView::extraInteractor(medAbstractData* data)
+QList<medAbstractInteractor*> medAbstractLayeredView::extraInteractors(medAbstractData* data)
 {
     return d->extraIntercatorsHash.value(data);
 }
@@ -111,19 +111,19 @@ medAbstractLayeredViewInteractor* medAbstractLayeredView::primaryInteractor(unsi
     return d->primaryIntercatorsHash.value(this->data(layer));
 }
 
-QList<medAbstractInteractor*> medAbstractLayeredView::extraInteractor(unsigned int layer)
+QList<medAbstractInteractor*> medAbstractLayeredView::extraInteractors(unsigned int layer)
 {
-    d->extraIntercatorsHash.value(this->data(layer));
+    return d->extraIntercatorsHash.value(this->data(layer));
 }
 
 medAbstractLayeredViewNavigator* medAbstractLayeredView::primaryNavigator()
 {
-    d->primaryNavigator;
+    return d->primaryNavigator;
 }
 
-QList<medAbstractNavigator*> medAbstractLayeredView::extraNavigator()
+QList<medAbstractNavigator*> medAbstractLayeredView::extraNavigators()
 {
-    d->extraNavigators;
+    return d->extraNavigators;
 }
 
 void medAbstractLayeredView::addLayer(medAbstractData *data)
@@ -180,7 +180,7 @@ void medAbstractLayeredView::moveLayer(unsigned int fromLayer, unsigned int toLa
 
 medAbstractData * medAbstractLayeredView::data(unsigned int layer) const
 {
-    if (layer > d->layersDataList.size())
+    if (layer > (unsigned int)d->layersDataList.size())
     {
         qWarning() << "Unable to retreive data at layer:" <<layer << "from: "<< this->description();
         return NULL;

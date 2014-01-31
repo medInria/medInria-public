@@ -44,3 +44,55 @@ medAbstractView* medAbstractNavigator::view() const
     return d->view;
 }
 
+
+void medAbstractNavigator::setData(dtkAbstractData *data)
+{
+    DTK_UNUSED(data);
+}
+
+dtkAbstractData* medAbstractNavigator::data()
+{
+    return 0;
+}
+
+dtkAbstractData* medAbstractNavigator::output (void)
+{
+    return 0;
+}
+
+dtkAbstractData* medAbstractNavigator::output (int channel)
+{
+    DTK_UNUSED(channel);
+    return 0;
+}
+
+dtkAbstractData* medAbstractNavigator::output (int channel, int frame)
+{
+    DTK_UNUSED(channel);DTK_UNUSED(frame);
+    return 0;
+}
+
+void medAbstractNavigator::predraw(void)
+{
+}
+
+void medAbstractNavigator::draw(void)
+{
+}
+
+void medAbstractNavigator::postdraw(void)
+{
+}
+
+bool medAbstractNavigator::enabled(void) const
+{
+    return true;
+}
+
+void  medAbstractNavigator::enable(void)
+{
+}
+
+void medAbstractNavigator::disable(void)
+{
+}

@@ -28,17 +28,8 @@ virtual ~medAbstractViewNavigator();
     virtual double zoom() const = 0;
     virtual QVector2D pan() const = 0;
 
-    /**
-    * @brief implementationOf
-    * @return Upper abstract class it derives from.
-    * Do NOT reimplement it in non abstract class.
-    * Used by the factory to kwnow what can be create.
-    */
-    static QString implementationOf()
-    {
-        return "medAbstractViewNavigator";
-    }
+
 public slots:
-     virtual void setZoom (double zoom) =0;
+     virtual void setZoom (double zoom) = 0;
      virtual void setPan (const QVector2D &pan) = 0;
 };

@@ -51,7 +51,7 @@ QWidget *medQtView::widget(void)
     qDebug()<< "primaryInteractor(medAbstractData* data)";
     return 0;
 }
- QList<medAbstractInteractor *> medQtView::extraInteractor(medAbstractData* data)
+ QList<medAbstractInteractor *> medQtView::extraInteractors(medAbstractData* data)
 {
     qDebug()<< "extraInteractor(medAbstractData* data)";
     return QList<medAbstractInteractor *>();
@@ -62,7 +62,7 @@ QWidget *medQtView::widget(void)
     return 0;
 }
 
- QList<medAbstractInteractor *> medQtView::extraInteractor(unsigned int layer)
+ QList<medAbstractInteractor *> medQtView::extraInteractors(unsigned int layer)
 {
     qDebug()<< "extraInteractor(unsigned int layer)";
     return QList<medAbstractInteractor *>();
@@ -74,7 +74,7 @@ QWidget *medQtView::widget(void)
     return 0;
 }
 
- QList<medAbstractNavigator *> medQtView::extraNavigator()
+ QList<medAbstractNavigator *> medQtView::extraNavigators()
 {
     qDebug()<< "extraNavigator()";
     return QList<medAbstractNavigator *>();

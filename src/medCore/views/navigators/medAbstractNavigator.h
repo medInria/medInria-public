@@ -34,17 +34,6 @@ public:
     virtual void setView(medAbstractView *view);
     virtual medAbstractView *view() const;
 
-    /**
-     * @brief implementationOf
-     * @return Upper abstract class it derives from.
-     * Do NOT reimplement it in non abstract class.
-     * Used by the factory to kwnow what can be create.
-     */
-    static QString implementationOf()
-    {
-        return "medAbstractNavigator";
-    }
-
 private:
     medAbstractNavigatorPrivate *d;
 
@@ -52,26 +41,16 @@ private:
                          NOT IMPLEMENTED ON PURPOSE
 *=========================================================================*/
 private:
-    virtual void setData(dtkAbstractData *data)
-    {DTK_UNUSED(data);}
-    virtual dtkAbstractData* data()
-    {return 0;}
-    virtual dtkAbstractData *output (void)
-    {}
-    virtual dtkAbstractData *output (int channel)
-    {DTK_UNUSED(channel);}
-    virtual dtkAbstractData *output (int channel, int frame)
-    {DTK_UNUSED(channel);DTK_UNUSED(frame);}
-    virtual void  predraw(void)
-    {}
-    virtual void     draw(void)
-    {}
-    virtual void postdraw(void)
-    {}
-    bool enabled(void) const
-    {return true;}
-    virtual void  enable(void)
-    {}
-    virtual void disable(void)
-    {}
+    virtual void setData(dtkAbstractData *data);
+    virtual dtkAbstractData* data();
+    virtual dtkAbstractData *output (void);
+    virtual dtkAbstractData *output (int channel);
+    virtual dtkAbstractData *output (int channel, int frame);
+    virtual void predraw(void);
+    virtual void draw(void);
+    virtual void postdraw(void);
+    bool enabled(void) const;
+    virtual void enable(void);
+    virtual void disable(void);
+
 };

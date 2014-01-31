@@ -95,27 +95,14 @@ signals:
 
 protected:
     virtual medAbstractViewInteractor* primaryInteractor(medAbstractData* data);
-    virtual QList<medAbstractInteractor*> extraInteractor(medAbstractData* data);
+    virtual QList<medAbstractInteractor*> extraInteractors(medAbstractData* data);
     virtual medAbstractViewNavigator* primaryNavigator();
-    virtual QList<medAbstractNavigator*> extraNavigator();
+    virtual QList<medAbstractNavigator*> extraNavigators();
 
     virtual void initialiseInteractors(medAbstractData* data);
     virtual void initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
 
-
-
-public:
-    /**
-     * @brief implementationOf
-     * @return Upper abstract class it derives from.
-     * Do NOT reimplement it in non abstract class.
-     * Used by the factory to kwnow what can be create.
-     */
-    static QString implementationOf()
-    {
-        return "medAbstractView";
-    }
 
 private:
     medAbstractViewPrivate *d;
@@ -123,100 +110,54 @@ private:
     /*=========================================================================
                              NOT IMPLEMENTED ON PURPOSE
     *=========================================================================*/
-     virtual void copy(const dtkAbstractObject& other)
-{DTK_UNUSED(other);}
-     virtual void   link(dtkAbstractView *other)
-{DTK_UNUSED(other);}
-     virtual void unlink(dtkAbstractView *other)
-{DTK_UNUSED(other);}
-     virtual void   select(dtkAbstractData *data)
-{DTK_UNUSED(data);}
-     virtual void unselect(dtkAbstractData *data)
-{DTK_UNUSED(data);}
-     virtual void setStereo(bool on)
-{DTK_UNUSED(on);}
-     virtual void setView(void *view)
-{DTK_UNUSED(view);}
-    virtual void setData(dtkAbstractData *data)
-{DTK_UNUSED(data);}
-    virtual void setData(dtkAbstractData *data, int inputId)
-{DTK_UNUSED(data); DTK_UNUSED(inputId);}
-    virtual void setBackgroundColor(int red, int green, int blue)
-{DTK_UNUSED(red);DTK_UNUSED(green);DTK_UNUSED(blue);}
-    virtual void setBackgroundColor(double red, double green, double blue)
-{DTK_UNUSED(red);DTK_UNUSED(green);DTK_UNUSED(blue);}
-    virtual void *view(void)
-{return 0;}
-    virtual void *data(void)
-{return 0;}
-    virtual void *data(int channel)
-{DTK_UNUSED(channel);return 0;}
-    virtual bool stereo(void)
-{return false;}
-    virtual void  clear(void)
-{}
-    virtual void  reset(void)
-{}
-    virtual void update(void)
-{}
-    virtual void close(void)
-{}
-    void showFullScreen(void)
-{}
-    void showMinimized(void)
-{}
-    void showMaximized(void)
-{}
-    void showNormal(void)
-{}
-    void show(void)
-{}
-    void resize(int width, int height)
-{DTK_UNUSED(width);DTK_UNUSED(height);}
-    void addAnimator  (dtkAbstractViewAnimator   *animator)
-{DTK_UNUSED(animator);}
-    void addNavigator (dtkAbstractViewNavigator  *navigator)
-{DTK_UNUSED(navigator);}
-    void addInteractor(dtkAbstractViewInteractor *interactor)
-{DTK_UNUSED(interactor);}
-    void    enableAnimator(const QString& animator)
-{DTK_UNUSED(animator);}
-    void   disableAnimator(const QString& animator)
-{DTK_UNUSED(animator);}
-    void   enableNavigator(const QString& navigator)
-{DTK_UNUSED(navigator);}
-    void  disableNavigator(const QString& navigator)
-{DTK_UNUSED(navigator);}
-    void  enableInteractor(const QString& interactor)
-{DTK_UNUSED(interactor);}
-    void disableInteractor(const QString& interactor)
-{DTK_UNUSED(interactor);}
-    dtkAbstractViewAnimator   *animator  (const QString& type)
-{DTK_UNUSED(type);return 0;}
-     dtkAbstractViewNavigator  *navigator (const QString& type)
-{DTK_UNUSED(type);return 0;}
-     dtkAbstractViewInteractor *interactor(const QString& type)
-{DTK_UNUSED(type);return 0;}
-     QList<dtkAbstractViewAnimator   *> animators(void) const
-{return QList<dtkAbstractViewAnimator   *>();}
-     QList<dtkAbstractViewNavigator  *> navigators(void) const
-     {return QList<dtkAbstractViewNavigator *>();}
-     QList<dtkAbstractViewInteractor *> interactors(void) const
-     {return QList<dtkAbstractViewInteractor *>();}
-     virtual void   initialize(void)
-{}
-     virtual void uninitialize(void)
-{}
-     virtual void setHeadPosition(dtkVector3D<double> position)
-{DTK_UNUSED(position);}
-     virtual void setHeadOrientation(dtkQuaternion<double> orientation)
-{DTK_UNUSED(orientation);}
-     virtual void setUpperLeft(dtkVector3D<double> position)
-{DTK_UNUSED(position);}
-     virtual void setLowerLeft(dtkVector3D<double> position)
-{DTK_UNUSED(position);}
-     virtual void setLowerRight(dtkVector3D<double> position)
-{DTK_UNUSED(position);}
+    virtual void copy(const dtkAbstractObject& other);
+    virtual void link(dtkAbstractView *other);
+    virtual void unlink(dtkAbstractView *other);
+    virtual void select(dtkAbstractData *data);
+    virtual void unselect(dtkAbstractData *data);
+    virtual void setStereo(bool on);
+    virtual void setView(void *view);
+    virtual void setData(dtkAbstractData *data);
+    virtual void setData(dtkAbstractData *data, int inputId);
+    virtual void setBackgroundColor(int red, int green, int blue);
+    virtual void setBackgroundColor(double red, double green, double blue);
+    virtual void *view(void);
+    virtual void *data(void);
+    virtual void *data(int channel);
+    virtual bool stereo(void);
+    virtual void clear(void);
+    virtual void reset(void);
+    virtual void update(void);
+    virtual void close(void);
+    void showFullScreen(void);
+    void showMinimized(void);
+    void showMaximized(void);
+    void showNormal(void);
+    void show(void);
+    void resize(int width, int height);
+    void addAnimator  (dtkAbstractViewAnimator   *animator);
+    void addNavigator (dtkAbstractViewNavigator  *navigator);
+    void addInteractor(dtkAbstractViewInteractor *interactor);
+    void enableAnimator(const QString& animator);
+    void disableAnimator(const QString& animator);
+    void enableNavigator(const QString& navigator);
+    void disableNavigator(const QString& navigator);
+    void enableInteractor(const QString& interactor);
+    void disableInteractor(const QString& interactor);
+    dtkAbstractViewAnimator   *animator  (const QString& type);
+    dtkAbstractViewNavigator  *navigator (const QString& type);
+    dtkAbstractViewInteractor *interactor(const QString& type);
+    QList<dtkAbstractViewAnimator   *> animators(void) const;
+    QList<dtkAbstractViewNavigator  *> navigators(void) const;
+    QList<dtkAbstractViewInteractor *> interactors(void) const;
+    virtual void   initialize(void);
+    virtual void uninitialize(void);
+    virtual void setHeadPosition(dtkVector3D<double> position);
+    virtual void setHeadOrientation(dtkQuaternion<double> orientation);
+    virtual void setUpperLeft(dtkVector3D<double> position);
+    virtual void setLowerLeft(dtkVector3D<double> position);
+    virtual void setLowerRight(dtkVector3D<double> position);
+
 };
 
 

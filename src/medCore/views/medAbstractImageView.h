@@ -108,29 +108,16 @@ public slots:
 
 protected:
     virtual medAbstractImageViewInteractor* primaryInteractor(medAbstractData* data);
-    virtual QList<medAbstractInteractor*> extraInteractor(medAbstractData* data);
+    virtual QList<medAbstractInteractor*> extraInteractors(medAbstractData* data);
     virtual medAbstractImageViewInteractor* primaryInteractor(unsigned int layer);
-    virtual QList<medAbstractInteractor*> extraInteractor(unsigned int layer);
+    virtual QList<medAbstractInteractor*> extraInteractors(unsigned int layer);
 
     virtual medAbstractImageViewNavigator* primaryNavigator();
-    virtual QList<medAbstractNavigator*> extraNavigator();
+    virtual QList<medAbstractNavigator*> extraNavigators();
 
     virtual void initialiseInteractors(medAbstractData* data);
     virtual void initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
-
-public:
-
-    /**
-     * @brief implementationOf
-     * @return Upper abstract class it derives from.
-     * Do NOT reimplement it in non abstract class.
-     * Used by the factory to kwnow what can be create.
-     */
-    static QString implementationOf()
-    {
-        return "medAbstractImageView";
-    }
 
 
 private:

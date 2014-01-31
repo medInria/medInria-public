@@ -34,7 +34,7 @@ medAbstractImageViewInteractor* medAbstractImageView::primaryInteractor(medAbstr
     return d->primaryIntercatorsHash.value(data);
 }
 
-QList<medAbstractInteractor*> medAbstractImageView::extraInteractor(medAbstractData* data)
+QList<medAbstractInteractor*> medAbstractImageView::extraInteractors(medAbstractData* data)
 {
     return d->extraIntercatorsHash.value(data);
 }
@@ -44,19 +44,19 @@ medAbstractImageViewInteractor* medAbstractImageView::primaryInteractor(unsigned
     return d->primaryIntercatorsHash.value(this->data(layer));
 }
 
-QList<medAbstractInteractor*> medAbstractImageView::extraInteractor(unsigned int layer)
+QList<medAbstractInteractor*> medAbstractImageView::extraInteractors(unsigned int layer)
 {
-    d->extraIntercatorsHash.value(this->data(layer));
+    return d->extraIntercatorsHash.value(this->data(layer));
 }
 
 medAbstractImageViewNavigator* medAbstractImageView::primaryNavigator()
 {
-    d->primaryNavigator;
+    return d->primaryNavigator;
 }
 
-QList<medAbstractNavigator*> medAbstractImageView::extraNavigator()
+QList<medAbstractNavigator*> medAbstractImageView::extraNavigators()
 {
-    d->extraNavigators;
+    return d->extraNavigators;
 }
 
 void medAbstractImageView::removeInteractors(medAbstractData *data)

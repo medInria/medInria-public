@@ -29,17 +29,6 @@ public:
     virtual ~medAbstractLayeredViewNavigator();
 
 
-    /**
-    * @brief implementationOf
-    * @return Upper abstract class it derives from.
-    * Do NOT reimplement it in non abstract class.
-    * Used by the factory to kwnow what can be create.
-    */
-    static QString implementationOf()
-    {
-        return "medAbstractLayerdViewNavigator";
-    }
-
 private:
     medAbstractLayeredViewNavigatorPrivate *d;
 };

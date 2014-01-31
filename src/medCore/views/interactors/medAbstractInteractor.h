@@ -44,16 +44,6 @@ public:
     virtual QWidget* toolBarWidget() = 0;
     virtual QWidget* layerWidget() = 0;
 
-    /**
-    * @brief implementationOf
-    * @return Upper abstract class it derives from.
-    * Do NOT reimplement it in non abstract class.
-    * Used by the factory to kwnow what can be create.
-    */
-    static QString implementationOf()
-    {
-        return "medAbstractInteractor";
-    }
 
 private:
     medAbstractInteractorPrivate *d;
@@ -62,26 +52,16 @@ private:
                          NOT IMPLEMENTED ON PURPOSE
 *=========================================================================*/
 private:
-    virtual dtkAbstractData *output (void)
-    {}
-    virtual dtkAbstractData *output (int channel)
-    {DTK_UNUSED(channel);}
-    virtual dtkAbstractData *output (int channel, int frame)
-    {DTK_UNUSED(channel);DTK_UNUSED(frame);}
-    virtual void predraw(void)
-    {}
-    virtual void draw(void)
-    {}
-    virtual void postdraw(void)
-    {}
-    bool enabled(void) const
-    {return true;}
-    virtual void enable(void)
-    {}
-    virtual void disable(void)
-    {}
-    virtual void setData(dtkAbstractData* data, int channel)
-    {DTK_UNUSED(data);DTK_UNUSED(channel);}
-    virtual void setData(dtkAbstractData* data, int channel, int frame)
-    {DTK_UNUSED(data);DTK_UNUSED(channel);DTK_UNUSED(frame);}
+    virtual dtkAbstractData *output (void);
+    virtual dtkAbstractData *output (int channel);
+    virtual dtkAbstractData *output (int channel, int frame);
+    virtual void predraw(void);
+    virtual void draw(void);
+    virtual void postdraw(void);
+    bool enabled(void) const;
+    virtual void enable(void);
+    virtual void disable(void);
+    virtual void setData(dtkAbstractData* data, int channel);
+    virtual void setData(dtkAbstractData* data, int channel, int frame);
+
 };

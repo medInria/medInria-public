@@ -122,7 +122,7 @@ medAbstractViewInteractor* medAbstractView::primaryInteractor(medAbstractData* d
     return d->primaryIntercator;
 }
 
-QList<medAbstractInteractor*> medAbstractView::extraInteractor(medAbstractData* data)
+QList<medAbstractInteractor*> medAbstractView::extraInteractors(medAbstractData* data)
 {
     DTK_UNUSED(data);
     return d->extraIntercators;
@@ -131,12 +131,12 @@ QList<medAbstractInteractor*> medAbstractView::extraInteractor(medAbstractData* 
 
 medAbstractViewNavigator* medAbstractView::primaryNavigator()
 {
-    d->primaryNavigator;
+    return d->primaryNavigator;
 }
 
-QList<medAbstractNavigator*> medAbstractView::extraNavigator()
+QList<medAbstractNavigator*> medAbstractView::extraNavigators()
 {
-    d->extraNavigators;
+    return d->extraNavigators;
 }
 
 bool medAbstractView::isClosable() const
@@ -186,3 +186,220 @@ QVector2D medAbstractView::pan(void)
     return nav->pan();
 }
 
+
+void medAbstractView::copy(const dtkAbstractObject& other)
+{
+    DTK_UNUSED(other);
+}
+
+void   medAbstractView::link(dtkAbstractView *other)
+{
+    DTK_UNUSED(other);
+}
+
+void medAbstractView::unlink(dtkAbstractView *other)
+{
+    DTK_UNUSED(other);
+}
+
+void   medAbstractView::select(dtkAbstractData *data)
+{
+    DTK_UNUSED(data);
+}
+
+void medAbstractView::unselect(dtkAbstractData *data)
+{
+    DTK_UNUSED(data);
+}
+
+void medAbstractView::setStereo(bool on)
+{
+    DTK_UNUSED(on);
+}
+
+void medAbstractView::setView(void *view)
+{
+    DTK_UNUSED(view);
+}
+
+void medAbstractView::setData(dtkAbstractData *data)
+{
+    DTK_UNUSED(data);
+}
+
+void medAbstractView::setData(dtkAbstractData *data, int inputId)
+{
+    DTK_UNUSED(data); DTK_UNUSED(inputId);
+}
+
+void medAbstractView::setBackgroundColor(int red, int green, int blue)
+{
+    DTK_UNUSED(red);DTK_UNUSED(green);DTK_UNUSED(blue);
+}
+
+void medAbstractView::setBackgroundColor(double red, double green, double blue)
+{
+    DTK_UNUSED(red);DTK_UNUSED(green);DTK_UNUSED(blue);
+}
+
+void *medAbstractView::view(void)
+{
+    return 0;
+}
+
+void *medAbstractView::data(void)
+{
+    return 0;
+}
+
+void *medAbstractView::data(int channel)
+{
+    DTK_UNUSED(channel);
+    return 0;
+}
+
+bool medAbstractView::stereo(void)
+{
+    return false;
+}
+
+void  medAbstractView::clear(void)
+{}
+
+void  medAbstractView::reset(void)
+{}
+
+void medAbstractView::update(void)
+{}
+
+void medAbstractView::close(void)
+{}
+
+void medAbstractView::showFullScreen(void)
+{}
+
+void medAbstractView::showMinimized(void)
+{}
+
+void medAbstractView::showMaximized(void)
+{}
+
+void medAbstractView::showNormal(void)
+{}
+
+void medAbstractView::show(void)
+{}
+
+void medAbstractView::resize(int width, int height)
+{
+    DTK_UNUSED(width);DTK_UNUSED(height);
+}
+
+void medAbstractView::addAnimator  (dtkAbstractViewAnimator   *animator)
+{
+    DTK_UNUSED(animator);
+}
+
+void medAbstractView::addNavigator (dtkAbstractViewNavigator  *navigator)
+{
+    DTK_UNUSED(navigator);
+}
+
+void medAbstractView::addInteractor(dtkAbstractViewInteractor *interactor)
+{
+    DTK_UNUSED(interactor);
+}
+
+void medAbstractView::enableAnimator(const QString& animator)
+{
+    DTK_UNUSED(animator);
+}
+
+void medAbstractView::disableAnimator(const QString& animator)
+{
+    DTK_UNUSED(animator);
+}
+
+void medAbstractView::enableNavigator(const QString& navigator)
+{
+    DTK_UNUSED(navigator);
+}
+
+void medAbstractView::disableNavigator(const QString& navigator)
+{
+    DTK_UNUSED(navigator);
+}
+
+void medAbstractView::enableInteractor(const QString& interactor)
+{
+    DTK_UNUSED(interactor);
+}
+
+void medAbstractView::disableInteractor(const QString& interactor)
+{
+    DTK_UNUSED(interactor);
+}
+
+dtkAbstractViewAnimator   *medAbstractView::animator  (const QString& type)
+{
+    DTK_UNUSED(type);
+    return 0;
+}
+
+dtkAbstractViewNavigator  *medAbstractView::navigator (const QString& type)
+{
+    DTK_UNUSED(type);
+    return 0;
+}
+
+dtkAbstractViewInteractor *medAbstractView::interactor(const QString& type)
+{
+    DTK_UNUSED(type);
+    return 0;
+}
+
+QList<dtkAbstractViewAnimator   *> medAbstractView::animators(void) const
+{
+    return QList<dtkAbstractViewAnimator   *>();
+}
+
+QList<dtkAbstractViewNavigator  *> medAbstractView::navigators(void) const
+{
+    return QList<dtkAbstractViewNavigator *>();
+}
+
+QList<dtkAbstractViewInteractor *> medAbstractView::interactors(void) const
+{
+    return QList<dtkAbstractViewInteractor *>();
+}
+
+void   medAbstractView::initialize(void)
+{}
+
+void medAbstractView::uninitialize(void)
+{}
+
+void medAbstractView::setHeadPosition(dtkVector3D<double> position)
+{
+    DTK_UNUSED(position);
+}
+
+void medAbstractView::setHeadOrientation(dtkQuaternion<double> orientation)
+{
+    DTK_UNUSED(orientation);
+}
+
+void medAbstractView::setUpperLeft(dtkVector3D<double> position)
+{
+    DTK_UNUSED(position);
+}
+
+void medAbstractView::setLowerLeft(dtkVector3D<double> position)
+{
+    DTK_UNUSED(position);
+}
+
+void medAbstractView::setLowerRight(dtkVector3D<double> position)
+{
+    DTK_UNUSED(position);
+}
