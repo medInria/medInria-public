@@ -58,7 +58,7 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractIm
     this->setParent(parent);
 
     d->medVtkView = parent;
-    medVtkViewBackend* backend = dynamic_cast<medVtkViewBackend*>(parent->backend());
+    medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
 

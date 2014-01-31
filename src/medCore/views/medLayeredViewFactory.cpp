@@ -135,8 +135,9 @@ QStringList medLayeredViewFactory::navigatorsAbleToHandle(const QString viewType
 
     QList<QString> navigators;
 
-    for(it.toFront(); it.hasNext(); it.next())
+    while(it.hasNext())
     {
+        it.next();
         if (it.value().contains(viewType))
                 navigators << it.key();
     }
@@ -153,8 +154,9 @@ QStringList medLayeredViewFactory::interactorsAbleToHandle(const QString viewTyp
 
     QList<QString> interactors;
 
-    for(it.toFront(); it.hasNext(); it.next())
+    while(it.hasNext())
     {
+        it.next();
         if (it.value().contains(viewType) && it.value().contains(dataType))
             interactors << it.key();
     }
@@ -171,8 +173,9 @@ QStringList medLayeredViewFactory::viewsAbleToHandle(const QString dataType) con
 
     QList<QString> views;
 
-    for(it.toFront(); it.hasNext(); it.next())
+    while(it.hasNext())
     {
+        it.next();
         if (it.value().contains(dataType))
             views << it.key();
     }

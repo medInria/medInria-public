@@ -27,10 +27,6 @@ add_definitions(-D${PROJECT_NAME_UP}_VERSION="${${PROJECT_NAME}_VERSION}")
 ## Resolve dependencies
 ## #############################################################################
 
-option(${PROJECT_NAME_UP}_USE_TENSORS
-  "Allow tensor interactions in ${PROJECT_NAME}"
-  ON
-  )
 
 find_package(dtk REQUIRED)
 include(${dtk_USE_FILE})

@@ -86,8 +86,9 @@ QStringList medExtraInteractorFactory::interactorsAbleToHandle(const QString vie
 
     QList<QString> interactors;
 
-    for(it.toFront(); it.hasNext(); it.next())
+    while(it.hasNext())
     {
+        it.next();
         if (it.value().contains(viewType) && it.value().contains(dataType))
             interactors << it.key();
     }

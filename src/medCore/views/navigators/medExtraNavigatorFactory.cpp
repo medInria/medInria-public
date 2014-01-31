@@ -86,8 +86,9 @@ QStringList medExtraNavigatorFactory::navigatorsAbleToHandle(const QString viewT
 
     QList<QString> navigators;
 
-    for(it.toFront(); it.hasNext(); it.next())
+    while(it.hasNext())
     {
+        it.next();
         if (it.value().contains(viewType))
             navigators << it.key();
     }

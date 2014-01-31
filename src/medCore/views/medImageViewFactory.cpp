@@ -139,8 +139,9 @@ QStringList medImageViewFactory::navigatorsAbleToHandle(const QString viewType) 
 
     QList<QString> navigators;
 
-    for(it.toFront(); it.hasNext(); it.next())
+    while(it.hasNext())
     {
+        it.next();
         if (it.value().contains(viewType))
                 navigators << it.key();
     }
@@ -153,12 +154,16 @@ QStringList medImageViewFactory::interactorsAbleToHandle(const QString viewType,
     if(d->interactorIdentifierHash.isEmpty())
         return QStringList();
 
+    qDebug()<< "d->interactorIdentifierHash"<< d->interactorIdentifierHash;
+
     QHashIterator<QString, QStringList> it(d->interactorIdentifierHash);
 
     QList<QString> interactors;
 
-    for(it.toFront(); it.hasNext(); it.next())
+    while(it.hasNext())
     {
+        it.next();
+        qDebug()<< "it.value() :" << it.value();
         if (it.value().contains(viewType) && it.value().contains(dataType))
             interactors << it.key();
     }
@@ -171,12 +176,13 @@ QStringList medImageViewFactory::viewsAbleToHandle(const QString dataType) const
     if(d->viewIdentifierHash.isEmpty())
         return QStringList();
 
-    QHashIterator<QString, QStringList> it(d->viewIdentifierHash);
+    QHashIterator<QString, QStringList> it(d->interactorIdentifierHash);
 
     QList<QString> views;
 
-    for(it.toFront(); it.hasNext(); it.next())
+    while(it.hasNext())
     {
+        it.next();
         if (it.value().contains(dataType))
             views << it.key();
     }
