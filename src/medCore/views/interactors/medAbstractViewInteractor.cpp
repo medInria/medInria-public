@@ -16,7 +16,7 @@ PURPOSE.
 #include <medAbstractView.h>
 
 medAbstractViewInteractor::medAbstractViewInteractor(medAbstractView* parent):
-    medAbstractExtraInteractor(parent)
+    medAbstractInteractor(parent)
 {
 
 }

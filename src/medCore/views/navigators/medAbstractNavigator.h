@@ -19,14 +19,14 @@ PURPOSE.
 
 class medAbstractView;
 
-class medAbstractExtraNavigatorPrivate;
-class MEDCORE_EXPORT medAbstractExtraNavigator : public dtkAbstractViewNavigator
+class medAbstractNavigatorPrivate;
+class MEDCORE_EXPORT medAbstractNavigator : public dtkAbstractViewNavigator
 {
     Q_OBJECT
 
 public:
-             medAbstractExtraNavigator(medAbstractView* parent);
-    virtual ~medAbstractExtraNavigator();
+             medAbstractNavigator(medAbstractView* parent);
+    virtual ~medAbstractNavigator();
 
 public:
     virtual QString description() const = 0;
@@ -42,11 +42,11 @@ public:
      */
     static QString implementationOf()
     {
-        return "medAbstractExtraNavigator";
+        return "medAbstractNavigator";
     }
 
 private:
-    medAbstractExtraNavigatorPrivate *d;
+    medAbstractNavigatorPrivate *d;
 
 /*=========================================================================
                          NOT IMPLEMENTED ON PURPOSE

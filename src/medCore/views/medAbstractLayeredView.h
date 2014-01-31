@@ -76,12 +76,12 @@ signals:
 
 protected:
     virtual medAbstractLayeredViewInteractor * primaryInteractor(medAbstractData* data) = 0;
-    virtual QList<medAbstractExtraInteractor *> extraInteractor(medAbstractData* data) = 0;
+    virtual QList<medAbstractInteractor *> extraInteractor(medAbstractData* data) = 0;
     virtual medAbstractLayeredViewInteractor * primaryInteractor(unsigned int layer) = 0;
-    virtual QList<medAbstractExtraInteractor *> extraInteractor(unsigned int layer) = 0;
+    virtual QList<medAbstractInteractor *> extraInteractor(unsigned int layer) = 0;
 
     virtual medAbstractLayeredViewNavigator * primaryNavigator() = 0;
-    virtual QList<medAbstractExtraNavigator *> extraNavigator() = 0;
+    virtual QList<medAbstractNavigator *> extraNavigator() = 0;
 
 private:
     medAbstractLayeredViewPrivate *d;

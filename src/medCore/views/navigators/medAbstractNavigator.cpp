@@ -11,35 +11,35 @@ PURPOSE.
 
 =========================================================================*/
 
-#include <medAbstractExtraNavigator.h>
+#include <medAbstractNavigator.h>
 
 #include <medAbstractView.h>
 
 
-class medAbstractExtraNavigatorPrivate
+class medAbstractNavigatorPrivate
 {
 public:
     medAbstractView* view;
 };
 
-medAbstractExtraNavigator::medAbstractExtraNavigator(medAbstractView *parent):
-    d(new medAbstractExtraNavigatorPrivate)
+medAbstractNavigator::medAbstractNavigator(medAbstractView *parent):
+    d(new medAbstractNavigatorPrivate)
 {
     this->setView(parent);
 }
 
-medAbstractExtraNavigator::~medAbstractExtraNavigator()
+medAbstractNavigator::~medAbstractNavigator()
 {
     delete d;
 }
 
-void medAbstractExtraNavigator::setView(medAbstractView *view)
+void medAbstractNavigator::setView(medAbstractView *view)
 {
     this->setParent(view);
     d->view = view;
 }
 
-medAbstractView* medAbstractExtraNavigator::view() const
+medAbstractView* medAbstractNavigator::view() const
 {
     return d->view;
 }

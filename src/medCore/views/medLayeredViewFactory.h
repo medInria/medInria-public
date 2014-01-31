@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <dtkCore/dtkAbstractFactory.h>
+#include <medViewFactory.h>
 
 #include <medCoreExport.h>
 
@@ -27,7 +27,7 @@
 
 
 class medLayeredViewFactoryPrivate;
-class MEDCORE_EXPORT medLayeredViewFactory : public dtkAbstractFactory
+class MEDCORE_EXPORT medLayeredViewFactory : public medViewFactory
 {
     Q_OBJECT
 public:
@@ -37,9 +37,9 @@ public:
 
     static medLayeredViewFactory *instance();
 
-    medAbstractLayeredView* createView(QString identifier, QObject *parent = 0);
-    medAbstractLayeredViewNavigator* createNavigator(QString identifier, medAbstractLayeredView *parent);
-    medAbstractLayeredViewInteractor*  createInteractor(QString identifier, medAbstractLayeredView *parent);
+    virtual medAbstractLayeredView* createView(QString identifier, QObject *parent = 0);
+    virtual medAbstractLayeredViewNavigator* createNavigator(QString identifier, medAbstractLayeredView *parent);
+    virtual medAbstractLayeredViewInteractor*  createInteractor(QString identifier, medAbstractLayeredView *parent);
 
 
     template <typename T>
@@ -61,9 +61,9 @@ public:
         return registerInteractor(identifier, typeHandled, creator);
     }
 
-    QStringList navigatorsAbleToHandle(const QString viewType) const;
-    QStringList interactorsAbleToHandle(const QString viewType, const QString dataType) const;
-    QStringList viewsAbleToHandle(const QString dataType) const;
+    virtual QStringList navigatorsAbleToHandle(const QString viewType) const;
+    virtual QStringList interactorsAbleToHandle(const QString viewType, const QString dataType) const;
+    virtual QStringList viewsAbleToHandle(const QString dataType) const;
 
 
 protected:
@@ -71,20 +71,15 @@ protected:
     ~medLayeredViewFactory();
 
 private:
-     bool registerView(QString identifier, QStringList typeHandled, viewCreator creator);
-     bool registerNavigator(QString identifier, QStringList typeHandled, navigatorCreator creator);
-     bool registerInteractor(QString identifier, QStringList typeHandled, interactorCreator creator);
+     virtual bool registerView(QString identifier, QStringList typeHandled, viewCreator creator);
+     virtual bool registerNavigator(QString identifier, QStringList typeHandled, navigatorCreator creator);
+     virtual bool registerInteractor(QString identifier, QStringList typeHandled, interactorCreator creator);
 
 
     /** Singleton holder.*/
     static medLayeredViewFactory *s_instance;
 
-    /**
-     * @brief Templated method returning a pointer to an allocated object.
-     * @see template<typename pointerT> registerToolBox
-     * @warning keep it static if you don't want to freeze your brain
-     * (solution in http://www.parashift.com/c++-faq-lite/pointers-to-members.html#faq-33.5 for those interested)
-     */
+
     template < typename T>
     static medAbstractLayeredView* _prvt_createView(QObject* parent)
     {

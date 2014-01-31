@@ -46,7 +46,6 @@ public:
     virtual double opacity() const;
     virtual QStringList handled() const;
 
-
 public slots:
     virtual void setOpacity (double opacity);
     void setPreset(QString value);
@@ -56,6 +55,7 @@ public slots:
 
 private:
     static QStringList dataHandled();
+    virtual void update();
 
 
     template <typename IMAGE>

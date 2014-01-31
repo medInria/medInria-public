@@ -16,7 +16,7 @@
 #include <medLayeredViewFactory.h>
 #include <medAbstractData.h>
 
-#include <medAbstractExtraNavigator.h>
+#include <medAbstractNavigator.h>
 #include <medAbstractViewNavigator.h>
 
 #include <medAbstractLayeredViewNavigator.h>
@@ -51,10 +51,10 @@ QWidget *medQtView::widget(void)
     qDebug()<< "primaryInteractor(medAbstractData* data)";
     return 0;
 }
- QList<medAbstractExtraInteractor *> medQtView::extraInteractor(medAbstractData* data)
+ QList<medAbstractInteractor *> medQtView::extraInteractor(medAbstractData* data)
 {
     qDebug()<< "extraInteractor(medAbstractData* data)";
-    return QList<medAbstractExtraInteractor *>();
+    return QList<medAbstractInteractor *>();
 }
  medAbstractLayeredViewInteractor * medQtView::primaryInteractor(unsigned int layer)
 {
@@ -62,10 +62,10 @@ QWidget *medQtView::widget(void)
     return 0;
 }
 
- QList<medAbstractExtraInteractor *> medQtView::extraInteractor(unsigned int layer)
+ QList<medAbstractInteractor *> medQtView::extraInteractor(unsigned int layer)
 {
     qDebug()<< "extraInteractor(unsigned int layer)";
-    return QList<medAbstractExtraInteractor *>();
+    return QList<medAbstractInteractor *>();
 }
 
  medAbstractLayeredViewNavigator * medQtView::primaryNavigator()
@@ -74,10 +74,10 @@ QWidget *medQtView::widget(void)
     return 0;
 }
 
- QList<medAbstractExtraNavigator *> medQtView::extraNavigator()
+ QList<medAbstractNavigator *> medQtView::extraNavigator()
 {
     qDebug()<< "extraNavigator()";
-    return QList<medAbstractExtraNavigator *>();
+    return QList<medAbstractNavigator *>();
 }
 
 QWidget* medQtView::receiverWidget()

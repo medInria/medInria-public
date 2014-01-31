@@ -120,11 +120,11 @@
 
 //    virtual QStringList getAvailableTransferFunctionPresets();
 //    virtual void getTransferFunctions( QList<double> & scalars,
-//				       QList<QColor> & colors );
+//                       QList<QColor> & colors );
 //    virtual void setTransferFunctions( QList<double> scalars,
-//				       QList<QColor > colors );
+//                       QList<QColor > colors );
 //    virtual void setColorLookupTable( QList< double > scalars,
-//				      QList< QColor > colors );
+//                      QList< QColor > colors );
 
 //    /**
 //     * Set/Get the visibility of the image at layer given by @param layer.

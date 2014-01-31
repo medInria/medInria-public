@@ -961,13 +961,13 @@
 //                switch ( d->view2d->GetViewOrientation() )
 //                {
 //                case vtkImageView2D::VIEW_ORIENTATION_SAGITTAL:
-//				    this->setProperty("Orientation","Sagittal");
+//                    this->setProperty("Orientation","Sagittal");
 //                    break;
 //                case vtkImageView2D::VIEW_ORIENTATION_CORONAL:
-//				    this->setProperty("Orientation","Coronal");
+//                    this->setProperty("Orientation","Coronal");
 //                    break;
 //                case vtkImageView2D::VIEW_ORIENTATION_AXIAL:
-//				    this->setProperty("Orientation","Axial");
+//                    this->setProperty("Orientation","Axial");
 //                    break;
 //                }
 //            }

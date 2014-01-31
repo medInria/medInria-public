@@ -16,7 +16,7 @@ PURPOSE.
 #include <medAbstractView.h>
 
 medAbstractViewNavigator::medAbstractViewNavigator(medAbstractView* parent):
-    medAbstractExtraNavigator(parent)
+    medAbstractNavigator(parent)
 {
 
 }

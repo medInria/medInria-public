@@ -22,6 +22,8 @@
 #include <vtkTransferFunctionPresets.h>
 #include <vtkLookupTableManager.h>
 #include <vtkImageViewCollection.h>
+#include <QVTKWidget2.h>
+#include <vtkRenderWindow.h>
 
 #include <medVtkViewBackend.h>
 #include <medAbstractData.h>
@@ -38,7 +40,10 @@ public:
     // views
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
+    vtkImageViewCollection *collection;
     medAbstractData *data;
+    vtkRenderWindow *render;
+    QVTKWidget2 *qvtkWidget;
 
     unsigned int layer;
 
@@ -61,6 +66,11 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractIm
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
+    d->collection = vtkImageViewCollection::New();
+    d->collection->AddItem(d->view2d);
+    d->collection->AddItem(d->view3d);
+    d->render = backend->renWin;
+    d->qvtkWidget = backend->qvtkWidget;
 
     d->data = NULL;
     d->layer = 0;
@@ -141,7 +151,7 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
         return;
     }
 
-    medStringListParameter *lutParam = new medStringListParameter("Lut", this);
+    d->lutParam = new medStringListParameter("Lut", this);
     QStringList lut = QStringList() << "Default" << "Black & White" << "Black & White Inversed"
                                      << "Spectrum" << "Hot Metal" << "Hot Green"
                                      << "Hot Iron" << "GE" << "Flow" << "Loni" << "Loni 2"
@@ -153,7 +163,7 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
     connect(d->presetParam, SIGNAL(valueChanged(QString)), this, SLOT(setPreset(QString)));
 
 
-    medStringListParameter *presetParam = new medStringListParameter("Preset", this);
+    d->presetParam = new medStringListParameter("Preset", this);
     QStringList presets = QStringList() << "None" << "VR Muscles&Bones" << "Vascular I"
                                         << "Vascular II" << "Vascular III" << "Vascular IV"
                                         << "Standard" << "Soft" << "Soft on White"
@@ -170,6 +180,8 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
     d->visibiltyParameter = new medBoolParameter("Visibility", this);
     d->visibiltyParameter->setValue(true);
     connect(d->visibiltyParameter, SIGNAL(valueChanged(bool)), this, SLOT(setVisibility(bool)));
+
+    this->update();
 }
 
 
@@ -181,6 +193,7 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstrac
 
     if (IMAGE* image = dynamic_cast<IMAGE*>((itk::Object*)(data->data())))
     {
+//        d->collection->SetITKInput(image, d->layer);
         d->view2d->SetITKInput(image, d->layer);
         d->view3d->SetITKInput(image, d->layer);
         return true;
@@ -192,8 +205,9 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstrac
 void medVtkViewItkDataImageInteractor::setOpacity(double value)
 {
     double opacity = static_cast<double>(value) / 100.0;
-    d->view2d->SetOpacity (opacity, d->layer);
+//    d->collection->SetOpacity(opacity, d->layer);
     d->view3d->SetOpacity (opacity, d->layer);
+    d->view2d->SetOpacity (opacity, d->layer);
 }
 
 double medVtkViewItkDataImageInteractor::opacity() const
@@ -206,11 +220,13 @@ void medVtkViewItkDataImageInteractor::setVisibility(bool visible)
 {
     if(visible)
     {
+//        d->collection->SetVisibility(1, d->layer);
         d->view2d->SetVisibility(1, d->layer);
         d->view3d->SetVisibility(1, d->layer);
     }
     else
     {
+//        d->collection->SetVisibility(0, d->layer);
         d->view2d->SetVisibility(0, d->layer);
         d->view3d->SetVisibility(0, d->layer);
     }
@@ -417,3 +433,13 @@ void medVtkViewItkDataImageInteractor::moveToSliceAtPosition(const QVector3D &po
     qDebug() << "moveToSliceAtPosition"  << position;
 }
 
+void medVtkViewItkDataImageInteractor::update()
+{
+    qDebug() << "update:" << d->medVtkView->identifier() << " ask by " << this->identifier() << "from layer " << d->layer;
+//    if(d->medVtkView->is2D())
+        d->view2d->Render();
+//    else
+        d->view3d;
+
+    d->qvtkWidget->update();
+}

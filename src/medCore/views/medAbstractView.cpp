@@ -18,7 +18,7 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <medAbstractData.h>
 
-#include <medAbstractExtraNavigator.h>
+#include <medAbstractNavigator.h>
 #include <medAbstractViewNavigator.h>
 #include <medViewFactory.h>
 
@@ -27,7 +27,7 @@ class medAbstractViewPrivate
 public:
     bool    closable;
 
-//    QList<medAbstractExtraNavigator*> extraNavigators;
+//    QList<medAbstractNavigator*> extraNavigators;
 //    medAbstractViewNavigator* primaryNavigator;
 };
 

@@ -13,13 +13,13 @@ PURPOSE.
 
 #pragma once
 
-#include <medAbstractExtraInteractor.h>
+#include <medAbstractInteractor.h>
 
 #include <medCoreExport.h>
 
 #include <medAbstractView.h>
 
-class MEDCORE_EXPORT medAbstractViewInteractor : public medAbstractExtraInteractor
+class MEDCORE_EXPORT medAbstractViewInteractor : public medAbstractInteractor
 {
     Q_OBJECT
 public:
@@ -34,6 +34,6 @@ public:
      */
     static QString implementationOf()
     {
-        return "medAbstractExtraInteractor";
+        return "medAbstractInteractor";
     }
 };

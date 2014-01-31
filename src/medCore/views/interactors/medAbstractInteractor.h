@@ -22,14 +22,14 @@ PURPOSE.
 #include <medAbstractView.h>
 #include <medAbstractData.h>
 
-class medAbstractExtraInteractorPrivate;
-class MEDCORE_EXPORT medAbstractExtraInteractor : public dtkAbstractViewInteractor
+class medAbstractInteractorPrivate;
+class MEDCORE_EXPORT medAbstractInteractor : public dtkAbstractViewInteractor
 {
     Q_OBJECT
 
 public:
-             medAbstractExtraInteractor(medAbstractView* parent);
-    virtual ~medAbstractExtraInteractor();
+             medAbstractInteractor(medAbstractView* parent);
+    virtual ~medAbstractInteractor();
 
 public:
     virtual QString description() const = 0;
@@ -52,11 +52,11 @@ public:
     */
     static QString implementationOf()
     {
-        return "medAbstractExtraInteractor";
+        return "medAbstractInteractor";
     }
 
 private:
-    medAbstractExtraInteractorPrivate *d;
+    medAbstractInteractorPrivate *d;
 
 /*=========================================================================
                          NOT IMPLEMENTED ON PURPOSE

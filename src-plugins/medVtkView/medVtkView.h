@@ -26,17 +26,18 @@ public:
     virtual QString description() const;
 
     virtual QWidget *receiverWidget();
+    virtual QWidget *widget();
 
     virtual QWidget* toolBar();
     virtual QWidget* toolBox();
 
     virtual medAbstractImageViewInteractor* primaryInteractor(medAbstractData* data) ;
-    virtual QList<medAbstractExtraInteractor*> extraInteractor(medAbstractData* data);
+    virtual QList<medAbstractInteractor*> extraInteractor(medAbstractData* data);
     virtual medAbstractImageViewInteractor* primaryInteractor(unsigned int layer);
-    virtual QList<medAbstractExtraInteractor*> extraInteractor(unsigned int layer);
+    virtual QList<medAbstractInteractor*> extraInteractor(unsigned int layer);
 
     virtual medAbstractImageViewNavigator* primaryNavigator();
-    virtual QList<medAbstractExtraNavigator*> extraNavigator();
+    virtual QList<medAbstractNavigator*> extraNavigator();
 
     virtual QPointF mapWorldToDisplayCoordinates( const QVector3D & worldVec );
     virtual QVector3D mapDisplayToWorldCoordinates( const QPointF & scenePoint );

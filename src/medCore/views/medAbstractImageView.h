@@ -28,10 +28,10 @@ class QVector3D;
 class medAbstractData;
 
 class medAbstractImageViewInteractor;
-class medAbstractExtraInteractor;
+class medAbstractInteractor;
 
 class medAbstractImageViewNavigator;
-class medAbstractExtraNavigator;
+class medAbstractNavigator;
 
 class medAbstractImageViewPrivate;
 class MEDCORE_EXPORT medAbstractImageView: public medAbstractLayeredView
@@ -108,12 +108,12 @@ public slots:
 
 protected:
     virtual medAbstractImageViewInteractor* primaryInteractor(medAbstractData* data) = 0;
-    virtual QList<medAbstractExtraInteractor*> extraInteractor(medAbstractData* data) = 0;
+    virtual QList<medAbstractInteractor*> extraInteractor(medAbstractData* data) = 0;
     virtual medAbstractImageViewInteractor* primaryInteractor(unsigned int layer) = 0;
-    virtual QList<medAbstractExtraInteractor*> extraInteractor(unsigned int layer) = 0;
+    virtual QList<medAbstractInteractor*> extraInteractor(unsigned int layer) = 0;
 
     virtual medAbstractImageViewNavigator* primaryNavigator() = 0;
-    virtual QList<medAbstractExtraNavigator*> extraNavigator() = 0;
+    virtual QList<medAbstractNavigator*> extraNavigator() = 0;
 
 public:
 

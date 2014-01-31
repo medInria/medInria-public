@@ -11,46 +11,46 @@ PURPOSE.
 
 =========================================================================*/
 
-#include <medAbstractExtraInteractor.h>
+#include <medAbstractInteractor.h>
 
 #include <medAbstractView.h>
 
 
-class medAbstractExtraInteractorPrivate
+class medAbstractInteractorPrivate
 {
 public:
     medAbstractView* view;
     medAbstractData* data;
 };
 
-medAbstractExtraInteractor::medAbstractExtraInteractor(medAbstractView *parent):
-    d(new medAbstractExtraInteractorPrivate)
+medAbstractInteractor::medAbstractInteractor(medAbstractView *parent):
+    d(new medAbstractInteractorPrivate)
 {
     this->setView(parent);
 }
 
-medAbstractExtraInteractor::~medAbstractExtraInteractor()
+medAbstractInteractor::~medAbstractInteractor()
 {
     delete d;
 }
 
-void medAbstractExtraInteractor::setView(medAbstractView *view)
+void medAbstractInteractor::setView(medAbstractView *view)
 {
     this->setParent(view);
     d->view = view;
 }
 
-medAbstractView* medAbstractExtraInteractor::view() const
+medAbstractView* medAbstractInteractor::view() const
 {
     return d->view;
 }
 
-void medAbstractExtraInteractor::setData(medAbstractData* data)
+void medAbstractInteractor::setData(medAbstractData* data)
 {
     d->data = data;
 }
 
-medAbstractData* medAbstractExtraInteractor::data() const
+medAbstractData* medAbstractInteractor::data() const
 {
     return d->data;
 }

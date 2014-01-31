@@ -13,11 +13,11 @@ PURPOSE.
 
 #pragma once
 
-#include <medAbstractExtraNavigator.h>
+#include <medAbstractNavigator.h>
 
 #include <medCoreExport.h>
 
-class MEDCORE_EXPORT medAbstractViewNavigator : public medAbstractExtraNavigator
+class MEDCORE_EXPORT medAbstractViewNavigator : public medAbstractNavigator
 {
     Q_OBJECT
 

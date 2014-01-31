@@ -24,8 +24,8 @@ class medAbstractViewCoordinates;
 class medViewBackend;
 class medAbstractData;
 class medAbstractViewNavigator;
-class medAbstractExtraNavigator;
-class medAbstractExtraInteractor;
+class medAbstractNavigator;
+class medAbstractInteractor;
 class medAbstractViewInteractor;
 
 // derive and implement if you need to provide access to your backend
@@ -86,6 +86,7 @@ public:
 
     virtual QWidget* toolBar() = 0;
     virtual QWidget* toolBox() = 0;
+    virtual QWidget* widget() = 0;
 
 //TODO shouldbe the role of container IMO - RDE
 signals:
@@ -94,9 +95,9 @@ signals:
 
 protected:
     virtual medAbstractViewInteractor* primaryInteractor(medAbstractData* data) = 0;
-    virtual QList<medAbstractExtraInteractor*> extraInteractor(medAbstractData* data) = 0;
+    virtual QList<medAbstractInteractor*> extraInteractor(medAbstractData* data) = 0;
     virtual medAbstractViewNavigator* primaryNavigator() = 0;
-    virtual QList<medAbstractExtraNavigator*> extraNavigator() = 0;
+    virtual QList<medAbstractNavigator*> extraNavigator() = 0;
 
     virtual void retreiveInteractors(medAbstractData* data) = 0;
     virtual void retreiveNavigators() = 0;
@@ -158,8 +159,6 @@ private:
 {}
     virtual void update(void)
 {}
-    virtual QWidget *widget(void)
-{return 0;}
     virtual void close(void)
 {}
     void showFullScreen(void)

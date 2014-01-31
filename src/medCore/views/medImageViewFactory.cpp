@@ -154,8 +154,6 @@ QStringList medImageViewFactory::interactorsAbleToHandle(const QString viewType,
     if(d->interactorIdentifierHash.isEmpty())
         return QStringList();
 
-    qDebug()<< "d->interactorIdentifierHash"<< d->interactorIdentifierHash;
-
     QHashIterator<QString, QStringList> it(d->interactorIdentifierHash);
 
     QList<QString> interactors;
@@ -163,7 +161,6 @@ QStringList medImageViewFactory::interactorsAbleToHandle(const QString viewType,
     while(it.hasNext())
     {
         it.next();
-        qDebug()<< "it.value() :" << it.value();
         if (it.value().contains(viewType) && it.value().contains(dataType))
             interactors << it.key();
     }

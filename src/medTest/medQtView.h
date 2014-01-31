@@ -37,12 +37,12 @@ public:
 
     QWidget *widget();
     virtual medAbstractLayeredViewInteractor * primaryInteractor(medAbstractData* data);
-    virtual QList<medAbstractExtraInteractor *> extraInteractor(medAbstractData* data);
+    virtual QList<medAbstractInteractor *> extraInteractor(medAbstractData* data);
     virtual medAbstractLayeredViewInteractor * primaryInteractor(unsigned int layer);
-    virtual QList<medAbstractExtraInteractor *> extraInteractor(unsigned int layer);
+    virtual QList<medAbstractInteractor *> extraInteractor(unsigned int layer);
 
     virtual medAbstractLayeredViewNavigator * primaryNavigator();
-    virtual QList<medAbstractExtraNavigator *> extraNavigator();
+    virtual QList<medAbstractNavigator *> extraNavigator();
 
     virtual QWidget *receiverWidget();
     virtual QWidget* toolBar();
