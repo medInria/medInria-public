@@ -22,8 +22,9 @@
 #include <vtkTransferFunctionPresets.h>
 #include <vtkLookupTableManager.h>
 #include <vtkImageViewCollection.h>
-#include <QVTKWidget2.h>
 #include <vtkRenderWindow.h>
+
+#include <QVTKWidget2.h>
 
 #include <medVtkViewBackend.h>
 #include <medAbstractData.h>
@@ -46,22 +47,18 @@ public:
     QVTKWidget2 *qvtkWidget;
 
     unsigned int layer;
+    medAbstractImageView *medVtkView;
 
     medStringListParameter *lutParam;
     medStringListParameter *presetParam;
     medIntParameter *opacityParam;
     medBoolParameter *visibiltyParameter;
-
-
-    medAbstractImageView *medVtkView;
 };
 
 
 medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractImageView* parent):
     medAbstractImageViewInteractor(parent), d(new medVtkViewItkDataImageInteractorPrivate)
 {
-    this->setParent(parent);
-
     d->medVtkView = parent;
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
@@ -194,8 +191,8 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstrac
     if (IMAGE* image = dynamic_cast<IMAGE*>((itk::Object*)(data->data())))
     {
 //        d->collection->SetITKInput(image, d->layer);
-        d->view2d->SetITKInput(image, d->layer);
-        d->view3d->SetITKInput(image, d->layer);
+        d->view2d->SetITKInput(image, layer);
+        d->view3d->SetITKInput(image, layer);
         return true;
     }
     return false;
@@ -274,7 +271,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 //    {
 //        // we reset the LUT and the ww/wl to the default values
 
-//        this->setLut(layer, "Black & White");
+//        this->setLut(d->layer, "Black & White");
 
 //        double color[3] = {0.0, 0.0, 0.0};
 
@@ -283,7 +280,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 //    }
 //    else if ( preset == "VR Muscles&Bones" )
 //    {
-//        this->setLUT ( layer, "Muscles & Bones" );
+//        this->setLUT ( d->layer, "Muscles & Bones" );
 
 //        double color[3] = {0.0, 0.0, 0.0};
 
@@ -293,7 +290,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 //    }
 //    else if ( preset == "Vascular I" )
 //    {
-//        this->setLut ( layer, "Stern" );
+//        this->setLut ( d->layer, "Stern" );
 
 //        double color[3] = {0.0, 0.0, 0.0};
 
@@ -303,7 +300,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 //    }
 //    else if ( preset == "Vascular II" )
 //    {
-//        this->setLut ( layer, "Red Vessels" );
+//        this->setLut ( d->layer, "Red Vessels" );
 
 //        double color[3] = {0.0, 0.0, 0.0};
 
@@ -313,7 +310,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 //    }
 //    else if ( preset == "Vascular III" )
 //    {
-//        this->setLut ( layer, "Red Vessels" );
+//        this->setLut ( d->layer, "Red Vessels" );
 
 //        double color[3] = {0.0, 0.0, 0.0};
 
@@ -323,7 +320,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 //    }
 //    else if ( preset == "Vascular IV" )
 //    {
-//        this->setLut ( layer, "Red Vessels" );
+//        this->setLut ( d->layer, "Red Vessels" );
 
 //        double color[3] = {0.0, 0.0, 0.0};
 
@@ -333,7 +330,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 //    }
 //    else if ( preset == "Standard" )
 //    {
-//        this->setLUT ( layer, "Muscles & Bones" );
+//        this->setLUT ( d->layer, "Muscles & Bones" );
 
 //        double color[3] = {0.0, 0.0, 0.0};
 
@@ -343,7 +340,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 //    }
 //    else if ( preset == "Soft" )
 //    {
-//        this->setLUT ( layer, "Bones" );
+//        this->setLUT ( d->layer, "Bones" );
 
 //        double color[3] = {0.0, 0.0, 0.0};
 
@@ -353,7 +350,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 //    }
 //    else if ( preset == "Soft on White" )
 //    {
-//        this->setLUT ( layer, "Muscles & Bones" );
+//        this->setLUT ( d->layer, "Muscles & Bones" );
 
 //        double color[3] = {1.0,0.98820477724075317,0.98814374208450317};
 
@@ -363,7 +360,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 //    }
 //    else if ( preset == "Soft on Blue" )
 //    {
-//        this->setLUT ( layer, "Muscles & Bones" );
+//        this->setLUT ( d->layer, "Muscles & Bones" );
 
 //        double color[3]={0.0, 0.27507439255714417, 0.26398107409477234};
 
@@ -373,7 +370,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 //    }
 //    else if ( preset == "Red on White" )
 //    {
-//        this->setLUT ( layer, "Red Vessels" );
+//        this->setLUT ( d->layer, "Red Vessels" );
 
 //        double color[3]={1.0, 0.98820477724075317, 0.98814374208450317};
 
@@ -383,7 +380,7 @@ void medVtkViewItkDataImageInteractor::setPreset(QString preset)
 //    }
 //    else if ( preset == "Glossy" )
 //    {
-//        this->setLUT ( layer, "Bones" );
+//        this->setLUT ( d->layer, "Bones" );
 
 //        double color[3] = {0.0, 0.0, 0.0};
 
@@ -435,7 +432,7 @@ void medVtkViewItkDataImageInteractor::moveToSliceAtPosition(const QVector3D &po
 
 void medVtkViewItkDataImageInteractor::update()
 {
-    qDebug() << "update:" << d->medVtkView->identifier() << " ask by " << this->identifier() << "from layer " << d->layer;
+    qDebug() << "update:" << this->view()->identifier() << " ask by " << this->identifier() << "from d->layer " << d->layer;
 //    if(d->medVtkView->is2D())
         d->view2d->Render();
 //    else

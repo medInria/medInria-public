@@ -14,6 +14,7 @@
 #include <medVtkViewPlugin.h>
 
 #include <medVtkView.h>
+#include <medVtkViewNavigator.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -47,6 +48,9 @@ bool medVtkViewPlugin::initialize()
 {
     if (!medVtkView::registered())
         dtkWarn() << "Unable to register medVtkView type";
+
+    if (!medVtkViewNavigator::registered())
+        dtkWarn() << "Unable to register medVtkViewNavigator type";
 
     return true;
 }

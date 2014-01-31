@@ -186,6 +186,9 @@ QVector2D medAbstractView::pan(void)
     return nav->pan();
 }
 
+/*=========================================================================
+                         NOT IMPLEMENTED ON PURPOSE
+*=========================================================================*/
 
 void medAbstractView::copy(const dtkAbstractObject& other)
 {

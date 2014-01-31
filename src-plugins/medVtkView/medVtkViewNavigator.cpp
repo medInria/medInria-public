@@ -18,6 +18,7 @@ PURPOSE.
 #include <vtkImageViewCollection.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderer.h>
+#include <vtkCamera.h>
 
 #include <QVTKWidget2.h>
 
@@ -34,8 +35,12 @@ class medVtkViewNavigatorPrivate
     QVTKWidget2 *qvtkWidget;
     vtkImageView2D *view2d;
     vtkImageView3D *view3d;
+    vtkImageView *currentView;
+
+
     vtkRenderer *renderer2d;
     vtkRenderer *renderer3d;
+    vtkRenderWindow *renWin;
     vtkImageViewCollection *collection;
 
     medImageView::Orientation orientation;
@@ -49,6 +54,7 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
     medVtkViewBackend* backend = static_cast<medVtkViewBackend*>(parent->backend());
     d->view2d = backend->view2D;
     d->view3d = backend->view3D;
+    d->renWin = backend->renWin;
 
     d->renderer2d = d->view2d->GetRenderer();
     d->renderer3d = d->view3d->GetRenderer();
@@ -59,7 +65,9 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
     d->render = backend->renWin;
     d->qvtkWidget = backend->qvtkWidget;
 
-    d->orientation = medImageView::VIEW_ORIENTATION_AXIAL;
+    d->currentView = NULL;
+
+    this->setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
 }
 
 medVtkViewNavigator::~medVtkViewNavigator()
@@ -77,6 +85,11 @@ QString  medVtkViewNavigator::s_identifier()
     return "medVtkViewNavigator";
 }
 
+QStringList medVtkViewNavigator::handled(void) const
+{
+    return QStringList() << "medVtkView";
+}
+
 bool medVtkViewNavigator::registered()
 {
     medImageViewFactory * factory = medImageViewFactory::instance();
@@ -91,17 +104,79 @@ QString medVtkViewNavigator::description() const
 
 QVector3D medVtkViewNavigator::positionBeingViewed() const
 {
-
+    return QVector3D(0.0,0.0,0.0);
 }
 
 void medVtkViewNavigator::setOrientation(medImageView::Orientation orientation)
 {
+    if (orientation == d->orientation)
+        return;
 
+    double pos[3];
+    int timeIndex = 0;
+    if(d->currentView)
+    {
+        d->currentView->GetCurrentPoint(pos);
+        timeIndex = d->currentView->GetTimeIndex();
+        d->currentView->UnInstallInteractor();
+        d->currentView->SetRenderWindow(NULL);
+        d->renWin->RemoveRenderer(d->currentView->GetRenderer());
+    }
+
+    switch(orientation)
+    {
+    case medImageView::VIEW_ORIENTATION_3D:
+        d->currentView = d->view3d;
+        break;
+    case medImageView::VIEW_ORIENTATION_AXIAL:
+        d->view2d->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_AXIAL);
+        d->currentView = d->view2d;
+        break;
+    case medImageView::VIEW_ORIENTATION_CORONAL:
+        d->view2d->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_CORONAL);
+        d->currentView = d->view2d;
+        break;
+    case medImageView::VIEW_ORIENTATION_SAGITTAL:
+        d->view2d->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_CORONAL);
+        d->currentView = d->view2d;
+        break;
+    }
+
+    d->currentView->SetRenderWindow(d->renWin);
+    d->currentView->SetCurrentPoint(pos);
+    d->currentView->SetTimeIndex(timeIndex);
+
+    d->orientation = orientation;
 }
 
 medImageView::Orientation medVtkViewNavigator::orientaion() const
 {
+    return d->orientation;
+}
 
+
+double medVtkViewNavigator::zoom() const
+{
+    return  d->currentView->GetZoom();
+}
+
+QVector2D medVtkViewNavigator::pan() const
+{
+    const double* pan = d->view2d->GetPan();
+
+    QVector2D qpan(pan[0], pan[1]);
+    return qpan;
+}
+
+void medVtkViewNavigator::setZoom(double zoom)
+{
+    d->currentView->SetZoom(zoom);
+}
+
+void medVtkViewNavigator::setPan(const QVector2D &pan)
+{
+    double stdpan[2] = {pan.x(), pan.y()};
+    d->view2d->SetPan(stdpan);
 }
 
 void medVtkViewNavigator::setCamera(const QVector3D &position,
@@ -117,8 +192,6 @@ void medVtkViewNavigator::camera(QVector3D &position,
                     QVector3D &focal,
                     double &parallelScale) const
 {
-
-
 
 }
 

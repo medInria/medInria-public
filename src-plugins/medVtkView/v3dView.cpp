@@ -1106,7 +1106,7 @@
 //    d->currentView->SetRenderWindow ( d->renWin );
 
 //    //d->observer->setView ( d->currentView );
-//    d->currentView->SetCurrentPoint ( pos );
+//    d->currentView->SetCurrentPoint (pos);
 //    //for the moment only act when going to 3d mode:
 //    //update the color level and window
 //    if (d->currentView == d->view3d)

@@ -146,6 +146,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->receiverWidget->SetRenderWindow(d->renWin);
 
     d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d,d->renWin,d->receiverWidget));
+
 }
 
 medVtkView::~medVtkView()
