@@ -48,8 +48,8 @@ public:
     virtual QWidget* toolBar();
     virtual QWidget* toolBox();
 
-    virtual void retreiveInteractors(medAbstractData* data);
-    virtual void retreiveNavigators();
+    virtual void initialiseInteractors(medAbstractData* data);
+    virtual void initialiseNavigators();
 
     virtual medViewBackend * backend() const;
 

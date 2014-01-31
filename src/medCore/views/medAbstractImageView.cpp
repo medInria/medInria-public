@@ -3,20 +3,128 @@
 #include <medAbstractData.h>
 #include <medAbstractImageViewInteractor.h>
 #include <medAbstractImageViewNavigator.h>
+#include <medImageViewFactory.h>
 
-
-medAbstractImageView::medAbstractImageView(QObject *parent) : medAbstractLayeredView(parent)
+class medAbstractImageViewPrivate
 {
+public:
+    QHash<dtkSmartPointer<medAbstractData>,  medAbstractImageViewInteractor*> primaryIntercatorsHash;
+    QHash<dtkSmartPointer<medAbstractData>,  QList<medAbstractInteractor*> > extraIntercatorsHash;
 
+    medAbstractImageViewNavigator* primaryNavigator;
+    QList<medAbstractNavigator*> extraNavigators;
+};
+
+medAbstractImageView::medAbstractImageView(QObject *parent) : medAbstractLayeredView(parent),
+    d(new medAbstractImageViewPrivate)
+{
+    d->primaryNavigator = NULL;
 }
 
 medAbstractImageView::~medAbstractImageView()
 {
+    delete d;
+}
 
+medAbstractImageViewInteractor* medAbstractImageView::primaryInteractor(medAbstractData* data)
+{
+    if(d->primaryIntercatorsHash.isEmpty())
+        return NULL;
+
+    return d->primaryIntercatorsHash.value(data);
+}
+
+QList<medAbstractInteractor*> medAbstractImageView::extraInteractor(medAbstractData* data)
+{
+    return d->extraIntercatorsHash.value(data);
+}
+
+medAbstractImageViewInteractor* medAbstractImageView::primaryInteractor(unsigned int layer)
+{
+    return d->primaryIntercatorsHash.value(this->data(layer));
+}
+
+QList<medAbstractInteractor*> medAbstractImageView::extraInteractor(unsigned int layer)
+{
+    d->extraIntercatorsHash.value(this->data(layer));
+}
+
+medAbstractImageViewNavigator* medAbstractImageView::primaryNavigator()
+{
+    d->primaryNavigator;
+}
+
+QList<medAbstractNavigator*> medAbstractImageView::extraNavigator()
+{
+    d->extraNavigators;
+}
+
+void medAbstractImageView::removeInteractors(medAbstractData *data)
+{
+    d->primaryIntercatorsHash.remove(data);
+    d->extraIntercatorsHash.remove(data);
+}
+
+void medAbstractImageView::initialiseInteractors(medAbstractData *data)
+{
+    // primary
+
+    medImageViewFactory* factory = medImageViewFactory::instance();
+    QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
+    if(primaryInt.isEmpty())
+    {
+        qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
+         d->primaryIntercatorsHash.insert(data, NULL);
+    }
+    else
+    {
+        medAbstractImageViewInteractor* interactor = factory->createInteractor(primaryInt.first(), this);
+        interactor->setData(data);
+        d->primaryIntercatorsHash.insert(data, interactor);
+    }
+
+    // extra
+    QStringList extraInt = factory->additionalInteractorsAbleToHandle(this->identifier(), data->identifier());
+    if(!extraInt.isEmpty())
+    {
+        QList<medAbstractInteractor*> extraIntList;
+        foreach (QString i, extraInt)
+        {
+            medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
+            interactor->setData(data);
+            extraIntList << interactor;
+        }
+        d->extraIntercatorsHash.insert(data, extraIntList);
+    }
+}
+
+void medAbstractImageView::initialiseNavigators()
+{
+    // primary
+    medImageViewFactory* factory = medImageViewFactory::instance();
+    QStringList primaryNav = factory->navigatorsAbleToHandle(this->identifier());
+    if(primaryNav.isEmpty())
+    {
+        qWarning() << "Unable to find any primary navigator for: " << this->identifier();
+        d->primaryNavigator = NULL;
+
+    }
+    else
+        d->primaryNavigator = factory->createNavigator(primaryNav.first(), this);
+
+    // extra
+    QStringList extraNav = factory->additionalNavigatorsAbleToHandle(this->identifier());
+    if(!extraNav.isEmpty())
+    {
+        foreach (QString n, extraNav)
+        {
+               d->extraNavigators << factory->createAdditionalNavigator(n, this);
+        }
+    }
 }
 
 void medAbstractImageView::moveToSliceAtPosition (const QVector3D &position)
-{   
+{
     foreach (medAbstractData *data, this->data())
     {
         medAbstractImageViewInteractor* inter = this->primaryInteractor(data);

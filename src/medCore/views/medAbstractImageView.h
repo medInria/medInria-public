@@ -107,13 +107,17 @@ public slots:
 
 
 protected:
-    virtual medAbstractImageViewInteractor* primaryInteractor(medAbstractData* data) = 0;
-    virtual QList<medAbstractInteractor*> extraInteractor(medAbstractData* data) = 0;
-    virtual medAbstractImageViewInteractor* primaryInteractor(unsigned int layer) = 0;
-    virtual QList<medAbstractInteractor*> extraInteractor(unsigned int layer) = 0;
+    virtual medAbstractImageViewInteractor* primaryInteractor(medAbstractData* data);
+    virtual QList<medAbstractInteractor*> extraInteractor(medAbstractData* data);
+    virtual medAbstractImageViewInteractor* primaryInteractor(unsigned int layer);
+    virtual QList<medAbstractInteractor*> extraInteractor(unsigned int layer);
 
-    virtual medAbstractImageViewNavigator* primaryNavigator() = 0;
-    virtual QList<medAbstractNavigator*> extraNavigator() = 0;
+    virtual medAbstractImageViewNavigator* primaryNavigator();
+    virtual QList<medAbstractNavigator*> extraNavigator();
+
+    virtual void initialiseInteractors(medAbstractData* data);
+    virtual void initialiseNavigators();
+    virtual void removeInteractors(medAbstractData *data);
 
 public:
 

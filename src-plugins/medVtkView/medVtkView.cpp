@@ -31,12 +31,6 @@
 class medVtkViewPrivate
 {
 public:
-    QHash<dtkSmartPointer<medAbstractData>,  medAbstractImageViewInteractor*> primaryIntercatorsHash;
-    QHash<dtkSmartPointer<medAbstractData>,  QList<medAbstractInteractor*> > extraIntercatorsHash;
-
-    medAbstractImageViewNavigator* primaryNavigator;
-    QList<medAbstractNavigator*> extraNavigators;
-
     // internal state
     vtkImageView *currentView; //2d or 3d dependig on the navigator orientation.
     medAbstractData *currentData; //ie the data corresponding to the selected layer.
@@ -68,8 +62,6 @@ public:
 medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d(new medVtkViewPrivate)
 {
-    d->primaryNavigator = NULL;
-
     // setup initial internal state of the view
     d->currentView = NULL;
     d->currentData = NULL;
@@ -154,9 +146,6 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->receiverWidget->SetRenderWindow(d->renWin);
 
     d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d,d->renWin,d->receiverWidget));
-
-    this->retreiveNavigators();
-
 }
 
 medVtkView::~medVtkView()
@@ -210,102 +199,6 @@ QWidget* medVtkView::toolBox()
     return d->toolBox;
 }
 
-medAbstractImageViewInteractor* medVtkView::primaryInteractor(medAbstractData* data)
-{
-    if(d->primaryIntercatorsHash.isEmpty())
-        return NULL;
-
-    return d->primaryIntercatorsHash.value(data);
-}
-
-QList<medAbstractInteractor*> medVtkView::extraInteractor(medAbstractData* data)
-{
-    return d->extraIntercatorsHash.value(data);
-}
-
-medAbstractImageViewInteractor* medVtkView::primaryInteractor(unsigned int layer)
-{
-    return d->primaryIntercatorsHash.value(this->data(layer));
-}
-
-QList<medAbstractInteractor*> medVtkView::extraInteractor(unsigned int layer)
-{
-    d->extraIntercatorsHash.value(this->data(layer));
-}
-
-medAbstractImageViewNavigator* medVtkView::primaryNavigator()
-{
-    d->primaryNavigator;
-}
-
-QList<medAbstractNavigator*> medVtkView::extraNavigator()
-{
-    d->extraNavigators;
-}
-
-void medVtkView::removeInteractors(medAbstractData *data)
-{
-    d->primaryIntercatorsHash.remove(data);
-    d->extraIntercatorsHash.remove(data);
-}
-
-void medVtkView::retreiveInteractors(medAbstractData *data)
-{
-    // primary
-
-    medImageViewFactory* factory = medImageViewFactory::instance();
-    QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
-    if(primaryInt.isEmpty())
-    {
-        qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "nad" << data->identifier();
-         d->primaryIntercatorsHash.insert(data, NULL);
-    }
-    else
-    {
-        medAbstractImageViewInteractor* interactor = factory->createInteractor(primaryInt.first(), this);
-        interactor->setData(data);
-        d->primaryIntercatorsHash.insert(data, interactor);
-    }
-
-    // extra
-    QStringList extraInt = factory->additionalInteractorsAbleToHandle(this->identifier(), data->identifier());
-    if(!extraInt.isEmpty())
-    {
-        QList<medAbstractInteractor*> extraIntList;
-        foreach (QString i, extraInt)
-        {
-            medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
-            interactor->setData(data);
-            extraIntList << interactor;
-        }
-        d->extraIntercatorsHash.insert(data, extraIntList);
-    }
-}
-
-void medVtkView::retreiveNavigators()
-{
-    // primary
-    medImageViewFactory* factory = medImageViewFactory::instance();
-    QStringList primaryNav = factory->navigatorsAbleToHandle(this->identifier());
-    if(primaryNav.isEmpty())
-    {
-        qWarning() << "Unable to find any primary navigator for: " << this->identifier();
-        d->primaryNavigator = NULL;
-
-    }
-    else
-        d->primaryNavigator = factory->createNavigator(primaryNav.first(), this);
-
-    // extra
-    QStringList extraNav = factory->additionalNavigatorsAbleToHandle(this->identifier());
-    if(!extraNav.isEmpty())
-    {
-        foreach (QString n, extraNav)
-        {
-               d->extraNavigators << factory->createAdditionalNavigator(n, this);
-        }
-    }
-}
 
 
 QPointF medVtkView::mapWorldToDisplayCoordinates(const QVector3D & worldVec)

@@ -4,23 +4,126 @@
 
 #include <medAbstractData.h>
 #include <medAbstractLayeredViewInteractor.h>
+#include <medLayeredViewFactory.h>
 
 
 class medAbstractLayeredViewPrivate
 {
 public:
     QList < dtkSmartPointer <medAbstractData> > layersDataList;
+    QHash<dtkSmartPointer<medAbstractData>,  medAbstractLayeredViewInteractor*> primaryIntercatorsHash;
+    QHash<dtkSmartPointer<medAbstractData>,  QList<medAbstractInteractor*> > extraIntercatorsHash;
+
+    medAbstractLayeredViewNavigator* primaryNavigator;
+    QList<medAbstractNavigator*> extraNavigators;
 
 };
 
 medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractView(parent), d (new medAbstractLayeredViewPrivate)
 {
-
+    d->primaryNavigator = NULL;
 }
 
 medAbstractLayeredView::~medAbstractLayeredView()
 {
     delete d;
+}
+
+void medAbstractLayeredView::removeInteractors(medAbstractData *data)
+{
+    d->primaryIntercatorsHash.remove(data);
+    d->extraIntercatorsHash.remove(data);
+}
+
+void medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
+{
+    // primary
+
+    medLayeredViewFactory* factory = medLayeredViewFactory::instance();
+    QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
+    if(primaryInt.isEmpty())
+    {
+        qWarning() << "Unable to find any primary interactor for: " << this->identifier() << "and" << data->identifier();
+         d->primaryIntercatorsHash.insert(data, NULL);
+    }
+    else
+    {
+        medAbstractLayeredViewInteractor* interactor = factory->createInteractor(primaryInt.first(), this);
+        interactor->setData(data);
+        d->primaryIntercatorsHash.insert(data, interactor);
+    }
+
+    // extra
+    QStringList extraInt = factory->additionalInteractorsAbleToHandle(this->identifier(), data->identifier());
+    if(!extraInt.isEmpty())
+    {
+        QList<medAbstractInteractor*> extraIntList;
+        foreach (QString i, extraInt)
+        {
+            medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
+            interactor->setData(data);
+            extraIntList << interactor;
+        }
+        d->extraIntercatorsHash.insert(data, extraIntList);
+    }
+}
+
+void medAbstractLayeredView::initialiseNavigators()
+{
+    // primary
+    medLayeredViewFactory* factory = medLayeredViewFactory::instance();
+    QStringList primaryNav = factory->navigatorsAbleToHandle(this->identifier());
+    if(primaryNav.isEmpty())
+    {
+        qWarning() << "Unable to find any primary navigator for: " << this->identifier();
+        d->primaryNavigator = NULL;
+
+    }
+    else
+        d->primaryNavigator = factory->createNavigator(primaryNav.first(), this);
+
+    // extra
+    QStringList extraNav = factory->additionalNavigatorsAbleToHandle(this->identifier());
+    if(!extraNav.isEmpty())
+    {
+        foreach (QString n, extraNav)
+        {
+               d->extraNavigators << factory->createAdditionalNavigator(n, this);
+        }
+    }
+}
+
+medAbstractLayeredViewInteractor* medAbstractLayeredView::primaryInteractor(medAbstractData* data)
+{
+    if(d->primaryIntercatorsHash.isEmpty())
+        return NULL;
+
+    return d->primaryIntercatorsHash.value(data);
+}
+
+QList<medAbstractInteractor*> medAbstractLayeredView::extraInteractor(medAbstractData* data)
+{
+    return d->extraIntercatorsHash.value(data);
+}
+
+medAbstractLayeredViewInteractor* medAbstractLayeredView::primaryInteractor(unsigned int layer)
+{
+    return d->primaryIntercatorsHash.value(this->data(layer));
+}
+
+QList<medAbstractInteractor*> medAbstractLayeredView::extraInteractor(unsigned int layer)
+{
+    d->extraIntercatorsHash.value(this->data(layer));
+}
+
+medAbstractLayeredViewNavigator* medAbstractLayeredView::primaryNavigator()
+{
+    d->primaryNavigator;
+}
+
+QList<medAbstractNavigator*> medAbstractLayeredView::extraNavigator()
+{
+    d->extraNavigators;
 }
 
 void medAbstractLayeredView::addLayer(medAbstractData *data)
@@ -38,7 +141,7 @@ void medAbstractLayeredView::addLayer(medAbstractData *data)
     }
 
     d->layersDataList << data;
-    retreiveInteractors(data);
+    initialiseInteractors(data);
 }
 
 QList<dtkSmartPointer<medAbstractData> > medAbstractLayeredView::data() const
@@ -67,7 +170,7 @@ void medAbstractLayeredView::removeLayer(unsigned int layer)
 void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *data)
 {
     d->layersDataList.insert(layer, data);
-    this->retreiveInteractors(data);
+    this->initialiseInteractors(data);
 }
 
 void medAbstractLayeredView::moveLayer(unsigned int fromLayer, unsigned int toLayer)

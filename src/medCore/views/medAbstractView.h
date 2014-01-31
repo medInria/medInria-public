@@ -94,14 +94,14 @@ signals:
     void unselected();
 
 protected:
-    virtual medAbstractViewInteractor* primaryInteractor(medAbstractData* data) = 0;
-    virtual QList<medAbstractInteractor*> extraInteractor(medAbstractData* data) = 0;
-    virtual medAbstractViewNavigator* primaryNavigator() = 0;
-    virtual QList<medAbstractNavigator*> extraNavigator() = 0;
+    virtual medAbstractViewInteractor* primaryInteractor(medAbstractData* data);
+    virtual QList<medAbstractInteractor*> extraInteractor(medAbstractData* data);
+    virtual medAbstractViewNavigator* primaryNavigator();
+    virtual QList<medAbstractNavigator*> extraNavigator();
 
-    virtual void retreiveInteractors(medAbstractData* data) = 0;
-    virtual void retreiveNavigators() = 0;
-    virtual void removeInteractors(medAbstractData *data) = 0;
+    virtual void initialiseInteractors(medAbstractData* data);
+    virtual void initialiseNavigators();
+    virtual void removeInteractors(medAbstractData *data);
 
 
 

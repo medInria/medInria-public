@@ -75,13 +75,17 @@ signals:
     void dataRemoved(medAbstractData* data, unsigned int layer);
 
 protected:
-    virtual medAbstractLayeredViewInteractor * primaryInteractor(medAbstractData* data) = 0;
-    virtual QList<medAbstractInteractor *> extraInteractor(medAbstractData* data) = 0;
-    virtual medAbstractLayeredViewInteractor * primaryInteractor(unsigned int layer) = 0;
-    virtual QList<medAbstractInteractor *> extraInteractor(unsigned int layer) = 0;
+    virtual medAbstractLayeredViewInteractor * primaryInteractor(medAbstractData* data);
+    virtual QList<medAbstractInteractor *> extraInteractor(medAbstractData* data);
+    virtual medAbstractLayeredViewInteractor * primaryInteractor(unsigned int layer);
+    virtual QList<medAbstractInteractor *> extraInteractor(unsigned int layer);
 
-    virtual medAbstractLayeredViewNavigator * primaryNavigator() = 0;
-    virtual QList<medAbstractNavigator *> extraNavigator() = 0;
+    virtual medAbstractLayeredViewNavigator * primaryNavigator();
+    virtual QList<medAbstractNavigator *> extraNavigator();
+
+    virtual void initialiseInteractors(medAbstractData* data);
+    virtual void initialiseNavigators();
+    virtual void removeInteractors(medAbstractData *data);
 
 private:
     medAbstractLayeredViewPrivate *d;
