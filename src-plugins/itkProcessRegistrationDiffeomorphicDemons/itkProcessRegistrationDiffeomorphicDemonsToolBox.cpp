@@ -18,7 +18,7 @@
 
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractViewFactory.h>

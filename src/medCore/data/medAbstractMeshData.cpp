@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include <medAbstractDataMesh.h>
+#include <medAbstractMeshData.h>
 #include <dtkLog/dtkLog.h>
 
 // /////////////////////////////////////////////////////////////////
@@ -24,27 +24,26 @@ public:
 };
 
 // /////////////////////////////////////////////////////////////////
-// medAbstractDataMesh
+// medAbstractMeshData
 // /////////////////////////////////////////////////////////////////
 
-medAbstractDataMesh::medAbstractDataMesh(void) : medAbstractData(), d(new medAbstractDataMeshPrivate)
+medAbstractMeshData::medAbstractMeshData(void) : medAbstractData(), d(new medAbstractDataMeshPrivate)
 {
-
+    this->setDataCategory(medData::MESH);
 }
 
-medAbstractDataMesh::medAbstractDataMesh(const  medAbstractDataMesh& other): medAbstractData(other), d(new medAbstractDataMeshPrivate)
+medAbstractMeshData::medAbstractMeshData(const  medAbstractMeshData& other): medAbstractData(other), d(new medAbstractDataMeshPrivate)
 {
-
+    this->setDataCategory(medData::MESH);
 }
 
-medAbstractDataMesh::~medAbstractDataMesh(void)
+medAbstractMeshData::~medAbstractMeshData(void)
 {
     delete d;
-
     d = NULL;
 }
 
-void *medAbstractDataMesh::mesh(void)
+void *medAbstractMeshData::mesh(void)
 {
     return this->data();
 }

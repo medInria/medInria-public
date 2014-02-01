@@ -14,7 +14,7 @@
 #include <msegAlgorithmPaintToolbox.h>
 
 #include <medAbstractData.h>
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
 #include <medDataIndex.h>
 #include <medImageMaskAnnotationData.h>
@@ -457,7 +457,7 @@ void AlgorithmPaintToolbox::setData( medAbstractData *medData )
 
             m_maskAnnotationData = new medImageMaskAnnotationData;
             this->initializeMaskData( m_imageData, m_maskData );
-            m_maskAnnotationData->setMaskData(qobject_cast<medAbstractDataImage*>(m_maskData));
+            m_maskAnnotationData->setMaskData(qobject_cast<medAbstractImageData*>(m_maskData));
 
             m_maskAnnotationData->setColorMap( m_labelColorMap );
 
@@ -529,7 +529,7 @@ void AlgorithmPaintToolbox::initializeMaskData( medAbstractData * imageData, med
 
     Q_ASSERT(mask->GetImageDimension() == 3);
 
-    medAbstractDataImage * mImage = qobject_cast<medAbstractDataImage*>(imageData);
+    medAbstractImageData * mImage = qobject_cast<medAbstractImageData*>(imageData);
     Q_ASSERT(mImage);
     //Q_ASSERT(mask->GetImageDimension() >= mImage->Dimension());
 

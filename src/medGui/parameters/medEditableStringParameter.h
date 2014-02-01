@@ -35,7 +35,7 @@ protected:
     virtual void updateInternWigets();
 
 private slots:
-    void removeInternWidget();
+    void _prvt_removeInternWidget();
 
 private:
     medEditableStringParameterPrivate* d;

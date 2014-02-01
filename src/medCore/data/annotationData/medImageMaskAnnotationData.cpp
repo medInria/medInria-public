@@ -13,7 +13,7 @@
 
 #include <medImageMaskAnnotationData.h>
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 medImageMaskAnnotationData::medImageMaskAnnotationData() :
     medAnnotationData()
@@ -56,15 +56,15 @@ void medImageMaskAnnotationData::setData( void* data )
 {
     // 
     QObject * obj = reinterpret_cast<QObject*>(data);
-    this->setMaskData( qobject_cast<medAbstractDataImage *>(obj) );
+    this->setMaskData( qobject_cast<medAbstractImageData *>(obj) );
 }
 
-medAbstractDataImage * medImageMaskAnnotationData::maskData()
+medAbstractImageData * medImageMaskAnnotationData::maskData()
 {
     return m_maskData;
 }
 
-void medImageMaskAnnotationData::setMaskData( medAbstractDataImage * data )
+void medImageMaskAnnotationData::setMaskData( medAbstractImageData * data )
 {
     if ( m_maskData != data ) {
         m_maskData = data;

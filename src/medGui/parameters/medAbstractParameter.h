@@ -31,6 +31,7 @@ public:
     virtual ~medAbstractParameter();
 
     QString name() const;
+    void setName(QString &name);
     QLabel* getLabel();
 
     /**
@@ -52,11 +53,13 @@ protected slots:
     void removeFromInternWidgets(QWidget* widget);
 
 private slots:
-    void removeInternLabel();
+    void _prvt_removeInternLabel();
 
 private:
   medAbstractParameterPrivate *d; 
 };
+
+
 
 //--------------------------------------------------------------------------
 //  medTestParameter
@@ -81,7 +84,7 @@ public:
     virtual QWidget* getWidget();
 
 private slots:
-    void removeInternWidget();
+    void _prvt_removeInternWidget();
 
 private:
   medTestParameterPrivate *d;
@@ -93,7 +96,8 @@ class medAbstractTriggerParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
-    medAbstractTriggerParameter(QString name = "unknown trigger parameter", QObject* parent = 0){}
+    medAbstractTriggerParameter(QString name = "unknown trigger parameter", QObject* parent = 0):
+        medAbstractParameter(name, parent){}
 public slots:
     virtual void trigger();
 
@@ -106,7 +110,8 @@ class MEDGUI_EXPORT medAbstractStringParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
-    medAbstractStringParameter(QString name = "unknown  string parameter", QObject* parent = 0){}
+    medAbstractStringParameter(QString name = "unknown  string parameter", QObject* parent = 0):
+        medAbstractParameter(name, parent){}
     virtual QString value() const;
 public slots:
     virtual void setValue(QString value);
@@ -128,7 +133,8 @@ class MEDGUI_EXPORT medAbstractIntParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
-    medAbstractIntParameter(QString name = "unknown int parameter", QObject* parent = 0){}
+    medAbstractIntParameter(QString name = "unknown int parameter", QObject* parent = 0):
+        medAbstractParameter(name, parent){}
     virtual int value() const;
 public slots:
     virtual void setValue(int value);
@@ -151,7 +157,8 @@ class MEDGUI_EXPORT medAbstractDoubleParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
-    medAbstractDoubleParameter(QString name = "unknown double parameter", QObject* parent = 0){}
+    medAbstractDoubleParameter(QString name = "unknown double parameter", QObject* parent = 0):
+        medAbstractParameter(name, parent){}
     virtual double value() const;
 public slots:
     virtual void setValue(double value);
@@ -173,7 +180,8 @@ class MEDGUI_EXPORT medAbstractBoolParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
-    medAbstractBoolParameter(QString name = "unknown bool parameter", QObject* parent = 0){}
+    medAbstractBoolParameter(QString name = "unknown bool parameter", QObject* parent = 0):
+        medAbstractParameter(name, parent){}
     virtual bool value() const;
 public slots:
     virtual void setValue(bool value);
@@ -198,7 +206,8 @@ class medAbstractGroupParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
-    medAbstractGroupParameter(QString name = "unknown group parameter", QObject* parent = 0){}
+    medAbstractGroupParameter(QString name = "unknown group parameter", QObject* parent = 0):
+        medAbstractParameter(name, parent){}
 
     /**
      * @brief parametersCandidateToPool reimplement this methode to keep correct synchronisation in medParameterPool

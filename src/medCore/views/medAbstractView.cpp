@@ -72,6 +72,7 @@ void medAbstractView::initialiseInteractors(medAbstractData *data)
         medAbstractViewInteractor* interactor = factory->createInteractor(primaryInt.first(), this);
         interactor->setData(data);
         d->primaryIntercator = interactor;
+        connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
     }
 
     // extra
@@ -84,6 +85,7 @@ void medAbstractView::initialiseInteractors(medAbstractData *data)
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
             interactor->setData(data);
             extraIntList << interactor;
+            connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
         }
         d->extraIntercators = extraIntList;
     }
@@ -101,7 +103,10 @@ void medAbstractView::initialiseNavigators()
 
     }
     else
+    {
         d->primaryNavigator = factory->createNavigator(primaryNav.first(), this);
+        connect(this, SIGNAL(orientationChanged()), d->primaryNavigator, SLOT(updateWidgets()));
+    }
 
     // extra
     QStringList extraNav = factory->additionalNavigatorsAbleToHandle(this->identifier());
@@ -109,7 +114,9 @@ void medAbstractView::initialiseNavigators()
     {
         foreach (QString n, extraNav)
         {
-               d->extraNavigators << factory->createAdditionalNavigator(n, this);
+            medAbstractNavigator *nav = factory->createAdditionalNavigator(n, this);
+            connect(this, SIGNAL(orientationChanged()), nav, SLOT(updateWidgets()));
+            d->extraNavigators << nav;
         }
     }
 }

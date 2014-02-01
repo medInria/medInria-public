@@ -23,7 +23,7 @@
 #include <medDatabaseController.h>
 #include <medStorage.h>
 #include <medDataIndex.h>
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #define EXEC_QUERY(q) execQuery(q, __FILE__ , __LINE__ )
 namespace

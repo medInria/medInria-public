@@ -14,7 +14,7 @@ PURPOSE.
 #pragma once
 
 #include <medAbstractLayeredViewNavigator.h>
-#include <medImageViewOrientation.h>
+#include <medImageViewEnum.h>
 
 #include <medCoreExport.h>
 
@@ -43,6 +43,7 @@ public:
                            const QVector3D &viewup,
                            const QVector3D &focal,
                            double parallelScale) = 0;
+
 private:
     medAbstractImageViewNavigatorPrivate *d;
 };

@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include <medAbstractDataTypedImage.h>
+#include <medAbstractTypedImageData.h>
 
 #include <itkDataTensorImagePluginExport.h>
 
 class itkDataTensorImageFloat3Private;
 
-class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageFloat3 : public medAbstractDataTypedImage<3,float>
+class ITKDATATENSORIMAGEPLUGIN_EXPORT itkDataTensorImageFloat3 : public medAbstractTypedImageData<3,float>
 {
     Q_OBJECT
 
@@ -39,7 +39,7 @@ public slots:
     void setData(void* data);
 
 public:
-    // derived from medAbstractDataImage
+    // derived from medAbstractImageData
     int xDimension();
     int yDimension();
     int zDimension();

@@ -36,7 +36,7 @@ public:
     void setRadioButtonDirection(QBoxLayout::Direction direction);
     void setCheckBoxDirection(QBoxLayout::Direction direction);
 
-    void addBoolParameter(medBoolParameter* parameter);
+    void addParameter(medBoolParameter* parameter);
     void removeBoolParameter(medBoolParameter* parameter);
 
     QWidget* getPushButtonGroup();
@@ -48,9 +48,9 @@ public:
 
 
 private slots:
-    void removeInternPushButtonGroup();
-    void removeInternRadioButtonGroup();
-    void removeInternCheckBoxGroup();
+    void _prvt_removeInternPushButtonGroup();
+    void _prvt_removeInternRadioButtonGroup();
+    void _prvt_removeInternCheckBoxGroup();
 
 private:
     medBoolGroupParameterPrivate* d;

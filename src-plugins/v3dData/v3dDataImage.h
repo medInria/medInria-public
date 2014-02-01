@@ -13,13 +13,13 @@
 
 #pragma once
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #include <v3dDataPluginExport.h>
 
 class v3dDataImagePrivate;
 
-class V3DDATAPLUGIN_EXPORT v3dDataImage : public medAbstractDataImage
+class V3DDATAPLUGIN_EXPORT v3dDataImage : public medAbstractImageData
 {
     Q_OBJECT
 
@@ -41,7 +41,7 @@ public:
     void setData(void *data);
 
 public:
-    // derived from medAbstractDataImage
+    // derived from medAbstractImageData
     int xDimension();
     int yDimension();
     int zDimension();

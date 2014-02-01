@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include <medAbstractData.h>
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 #include <dtkCore/dtkAbstractView.h>
 #include <medAbstractImageView.h>
 #include <medStorage.h>
@@ -1530,8 +1530,8 @@ void medClutEditor::setData(medAbstractData *data)
     if ( data == d->dtk_data )
         return;
 
-    if (medAbstractDataImage *image =
-        dynamic_cast<medAbstractDataImage *>(data)) {
+    if (medAbstractImageData *image =
+        dynamic_cast<medAbstractImageData *>(data)) {
 
         if ( d->histogram != NULL )
             delete d->histogram;
@@ -1557,8 +1557,8 @@ void medClutEditor::setData(medAbstractData *data)
 
 void medClutEditor::setView(medAbstractImageView *view, bool force)
 {
-    medAbstractDataImage * image =
-        static_cast<medAbstractDataImage *>(view->data(0));
+    medAbstractImageData * image =
+        static_cast<medAbstractImageData *>(view->data(0));
     this->setData(image);
 
     if (!force && view == d->med_view)
@@ -1623,8 +1623,8 @@ void medClutEditor::deleteTable(void)
 
 void medClutEditor::applyTable(void)
 {
-    // if (medAbstractDataImage *image =
-    //     dynamic_cast<medAbstractDataImage *>(d->dtk_data)) {
+    // if (medAbstractImageData *image =
+    //     dynamic_cast<medAbstractImageData *>(d->dtk_data)) {
     if ( d->med_view != NULL )
     {
 

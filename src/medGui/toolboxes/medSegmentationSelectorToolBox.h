@@ -18,7 +18,7 @@
 
 class dtkAbstractView;
 class dtkAbstractProcess;
-class medAbstractDataImage;
+class medAbstractImageData;
 class medAbstractViewCoordinates;
 class medDataIndex;
 class medProgressionStack;

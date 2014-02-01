@@ -187,24 +187,16 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
     d->windowParameter = new medDoubleParameter("Window", this);
     d->levelParameter = new medDoubleParameter("Level", this);
 
-//    d->view2d->ResetWindowLevel();
 
-//    d->view2d->SetCurrentLayer(d->layer);
-
-    d->view2d->ResetWindowLevel();
+    d->view2d->GetInput()->Update();
     double* range = d->view2d->GetInput()->GetScalarRange();
     double window = range[1]-range[0];
     double level = 0.5*(range[1]+range[0]);
 
     d->windowParameter->setRange(range[0], range[1]);
     d->levelParameter->setRange(range[0], range[1]);
-
-    qDebug() << "range" << range[0] << " , " << range[1];
-    qDebug() << "window " << window  << " level " <<level;
-
     connect(d->windowParameter, SIGNAL(valueChanged(double)), this, SLOT(setWindow(double)));
     connect(d->levelParameter, SIGNAL(valueChanged(double)), this, SLOT(setLevel(double)));
-
     d->windowParameter->setValue(window);
     d->levelParameter->setValue(level);
 }

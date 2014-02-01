@@ -21,12 +21,15 @@
 #include <vtkMatrix4x4.h>
 #include <vtkMath.h>
 
-
 #include <medImageViewFactory.h>
 #include <medVtkViewBackend.h>
 #include <medAbstractImageViewInteractor.h>
 #include <medAbstractImageViewNavigator.h>
 #include <medVtkViewObserver.h>
+#include <medBoolGroupParameter.h>
+#include <medBoolParameter.h>
+#include <medToolBox.h>
+#include <medMetaDataKeys.h>
 
 class medVtkViewPrivate
 {
@@ -52,9 +55,21 @@ public:
     QWidget *toolBar;
     QWidget *toolBox;
     QVTKWidget2 *receiverWidget;
-
     static const int toolWidth = 15;
     static const int toolheight = 15;
+
+        //  toolboxes
+    medToolBox* navigatorToolBox;
+    medToolBox* mouseStyleToolBox;
+    medToolBox* layerToolBox;
+    QListWidget *layersListWidget;
+    QStackedWidget *interactorsWidgetStack;
+
+    // parameter
+    medBoolGroupParameter *mouseInteractionsParameter;
+    medBoolParameter *windowingInteractionParameter;
+    medBoolParameter *zoomInteractionParameter;
+    medBoolParameter *slicingInteractionParameter;
 
     QScopedPointer<medVtkViewBackend> backend;
 };
@@ -148,6 +163,12 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d,d->renWin,d->receiverWidget));
 
     this->initialiseNavigators();
+    this->_prvt_buildToolBox();
+
+    connect(this, SIGNAL(layerAdded(int)), this, SLOT(_prvt_addLayerItem(int)));
+    connect(this, SIGNAL(layerRemoved(int)), this, SLOT(_prvt_removeLayerItem(int)));
+
+    d->toolBox->show();
 }
 
 medVtkView::~medVtkView()
@@ -342,4 +363,147 @@ qreal medVtkView::scale()
     if (scale < 0)
         scale *= -1;
     return scale;
+}
+
+void medVtkView::_prvt_setWindowingInteracStyle(bool windowing)
+{
+    if(windowing)
+        d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
+}
+
+void medVtkView::_prvt_setZoomIntercaStyle(bool zoom)
+{
+    if(zoom)
+        d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
+}
+
+void medVtkView::_prvt_setSLicingInteracStyle(bool slicing)
+{
+    if(slicing)
+        d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
+}
+
+void medVtkView::_prvt_buildToolBox()
+{
+    d->toolBox = new QWidget;
+    QVBoxLayout *toolBoxLayout = new QVBoxLayout(d->toolBox);
+    toolBoxLayout->setContentsMargins(0,0,0,0);
+    toolBoxLayout->setMargin(0);
+    d->toolBox->setContentsMargins(0,0,0,0);
+
+    d->navigatorToolBox = new medToolBox(d->toolBox);
+    d->navigatorToolBox->setTitle(tr("View settings"));
+    d->navigatorToolBox->addWidget(primaryNavigator()->widgetForToolBox());
+    foreach (medAbstractNavigator* navigator, this->extraNavigators())
+        d->navigatorToolBox->addWidget(navigator->widgetForToolBox());
+
+    toolBoxLayout->addWidget(d->navigatorToolBox);
+
+    this->_prvt_buildMouseInteracToolBox();
+    toolBoxLayout->addWidget(d->mouseStyleToolBox);
+
+    d->layerToolBox = new medToolBox(d->toolBox);
+    d->layerToolBox->setTitle(tr("Layers Settings"));
+
+    d->layersListWidget = new QListWidget(d->layerToolBox);
+    d->layersListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    d->layerToolBox->addWidget(d->layersListWidget);
+    connect(d->layersListWidget, SIGNAL(currentRowChanged(int)),
+            this, SLOT(setselectedLayer(int)));
+
+    d->interactorsWidgetStack = new QStackedWidget(d->layerToolBox);
+    d->layerToolBox->addWidget(d->interactorsWidgetStack);
+
+    toolBoxLayout->addWidget(d->layerToolBox);
+
+}
+
+void medVtkView::_prvt_buildMouseInteracToolBox()
+{
+    d->mouseInteractionsParameter = new medBoolGroupParameter("Mouse interactions", this);
+    d->mouseInteractionsParameter->setPushButtonDirection(QBoxLayout::LeftToRight);
+    d->windowingInteractionParameter = new medBoolParameter("window / level", this);
+    d->windowingInteractionParameter->setIcon(QIcon(":/icons/wlww.png"));
+    d->zoomInteractionParameter = new medBoolParameter("zoom", this);
+    d->zoomInteractionParameter->setIcon(QIcon(":/icons/magnify.png"));
+    d->slicingInteractionParameter = new medBoolParameter("slicing", this);
+    d->slicingInteractionParameter->setIcon(QIcon(":/icons/stack.png"));
+
+    d->mouseInteractionsParameter->addParameter(d->windowingInteractionParameter);
+    d->mouseInteractionsParameter->addParameter(d->zoomInteractionParameter);
+    d->mouseInteractionsParameter->addParameter(d->slicingInteractionParameter);
+
+    connect(d->windowingInteractionParameter, SIGNAL(valueChanged(bool)),
+            this, SLOT(_prvt_setWindowingInteracStyle(bool)));
+
+    connect(d->zoomInteractionParameter, SIGNAL(valueChanged(bool)),
+            this, SLOT(_prvt_setZoomIntercaStyle(bool)));
+
+    connect(d->slicingInteractionParameter, SIGNAL(valueChanged(bool)),
+            this, SLOT(_prvt_setSLicingInteracStyle(bool)));
+
+    d->windowingInteractionParameter->setValue(true);
+
+    d->mouseStyleToolBox = new medToolBox(d->toolBox);
+    d->mouseStyleToolBox->setTitle(tr("Mouse interactions"));
+    d->mouseStyleToolBox->addWidget(d->mouseInteractionsParameter->getPushButtonGroup());
+}
+
+void medVtkView::_prvt_addLayerItem(int layer)
+{
+    medAbstractData *data = this->data(layer);
+    QString thumbPath = medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png");
+    QString name = medMetaDataKeys::SeriesDescription.getFirstValue(data,"<i>no name</i>");
+
+    QWidget *layerWidget = new QWidget(d->layersListWidget);
+
+    QHBoxLayout* layout = new QHBoxLayout(layerWidget);
+    layout->setContentsMargins(0,0,10,0);
+
+    QPushButton* thumbnailButton = new QPushButton(layerWidget);
+    QIcon thumbnailIcon;
+    // Set the off icon to the greyed out version of the regular icon
+    thumbnailIcon.addPixmap(QPixmap(thumbPath), QIcon::Normal, QIcon::On);
+    QStyleOption opt(0);
+    opt.palette = QApplication::palette();
+    QPixmap pix = QApplication::style()->generatedIconPixmap(QIcon::Disabled, QPixmap(thumbPath), &opt);
+    thumbnailIcon.addPixmap(pix, QIcon::Normal, QIcon::Off);
+    thumbnailButton->setFocusPolicy(Qt::NoFocus);
+    thumbnailButton->setIcon(thumbnailIcon);
+    thumbnailButton->setIconSize(QSize(22,22));
+    thumbnailButton->setCheckable(true);
+    thumbnailButton->setChecked(true);
+    thumbnailButton->setFlat(true);
+
+    QLabel *layerName = new QLabel(name, layerWidget);
+
+    QPushButton *removeButton = new QPushButton;
+    removeButton->setIcon(QIcon(":/icons/cross.svg"));
+    connect(removeButton,SIGNAL(clicked()), this, SLOT(_prvt_removeSelectedLayer()));
+
+    layout->addWidget(thumbnailButton);
+    layout->addWidget(layerName);
+//    layout->addStretch();
+    layout->addWidget(this->primaryInteractor(data)->layerWidget());
+    foreach(medAbstractInteractor* interactor, this->extraInteractors(data))
+        layout->addWidget(interactor->layerWidget());
+    layout->addWidget(removeButton);
+
+    QListWidgetItem * item = new QListWidgetItem(d->layersListWidget);
+    item->setSizeHint(QSize(layerWidget->width(), 25));
+
+    d->layersListWidget->addItem(item);
+    d->layersListWidget->setItemWidget(item, layerWidget);
+}
+
+
+void medVtkView::_prvt_removeLayerItem(int layer)
+{
+    QListWidgetItem* item = d->layersListWidget->item(layer);
+    d->layersListWidget->removeItemWidget(item);
+}
+
+void medVtkView::_prvt_removeSelectedLayer()
+{
+    this->removeLayer(this->selectedLayer());
 }

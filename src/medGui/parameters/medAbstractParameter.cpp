@@ -32,7 +32,7 @@ medAbstractParameter::medAbstractParameter(QString name, QObject *parent):
     this->setParent(parent);
     d->label = NULL;
     d->toolTip = QString();
-    d->name = name;
+    this->setName(name);
 }
 
 medAbstractParameter::~medAbstractParameter(void)
@@ -45,13 +45,18 @@ QString medAbstractParameter::name() const
     return d->name;
 }
 
+void medAbstractParameter::setName(QString &name)
+{
+    d->name = name;
+}
+
 QLabel* medAbstractParameter::getLabel()
 {
     if (!d->label)
     {
-        d->label = new QLabel(d->name);
+        d->label = new QLabel(name());
         this->addToInternWidgets(d->label);
-        connect(d->label, SIGNAL(destroyed()), this, SLOT(removeInternLabel()));
+        connect(d->label, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternLabel()));
     }
 
     return d->label;
@@ -82,7 +87,7 @@ void medAbstractParameter::hide()
         widget->hide();
 }
 
-void medAbstractParameter::removeInternLabel()
+void medAbstractParameter::_prvt_removeInternLabel()
 {
     this->removeFromInternWidgets(d->label);
     d->label = NULL;
@@ -132,13 +137,13 @@ QWidget* medTestParameter::getWidget()
     {
         d->widget = new QWidget;
         this->addToInternWidgets(d->widget);
-        connect(d->widget, SIGNAL(destroyed()), this, SLOT(removeInternWidget()));
+        connect(d->widget, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternWidget()));
     }
 
     return d->widget;
 }
 
-void medTestParameter::removeInternWidget()
+void medTestParameter::_prvt_removeInternWidget()
 {
     this->removeFromInternWidgets(d->widget);
     d->widget = NULL;

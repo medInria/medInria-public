@@ -21,6 +21,8 @@ PURPOSE.
 
 #include <medAbstractView.h>
 #include <medAbstractData.h>
+#include <medImageViewEnum.h>
+#include <medDataEnum.h>
 
 class medAbstractInteractorPrivate;
 class MEDCORE_EXPORT medAbstractInteractor : public dtkAbstractViewInteractor
@@ -44,6 +46,9 @@ public:
     virtual QWidget* toolBarWidget() = 0;
     virtual QWidget* layerWidget() = 0;
 
+
+public slots:
+    virtual void updateWidgets(){}
 
 private:
     medAbstractInteractorPrivate *d;

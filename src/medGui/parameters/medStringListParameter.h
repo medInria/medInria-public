@@ -44,7 +44,7 @@ protected:
     virtual void updateInternWigets();
 
 private slots:
-    void removeInternComboBox();
+    void _prvt_removeInternComboBox();
 
 private:
     medStringListParameterPrivate* d;

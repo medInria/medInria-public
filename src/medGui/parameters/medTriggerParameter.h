@@ -36,7 +36,7 @@ public:
 
     virtual QWidget* getWidget();
 private slots:
-    void removeInternPushButton();
+    void _prvt_removeInternPushButton();
 
 private:
     medTriggerParameterPrivate* d;

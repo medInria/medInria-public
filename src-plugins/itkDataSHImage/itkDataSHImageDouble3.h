@@ -13,12 +13,12 @@
 
 #pragma once
 
-#include <medAbstractDataTypedImage.h>
+#include <medAbstractTypedImageData.h>
 #include <itkDataSHImagePluginExport.h>
 
 class itkDataSHImageDouble3Private;
 
-class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageDouble3 : public medAbstractDataTypedImage<3,double>
+class ITKDATASHIMAGEPLUGIN_EXPORT itkDataSHImageDouble3 : public medAbstractTypedImageData<3,double>
 {
     Q_OBJECT
 
@@ -37,7 +37,7 @@ public slots:
     void setData(void* data);
     
 public:
-    // derived from medAbstractDataImage
+    // derived from medAbstractImageData
     int xDimension();
     int yDimension();
     int zDimension();

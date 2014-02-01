@@ -14,21 +14,21 @@
 #pragma once
 
 #include <medCoreExport.h>
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 template <unsigned DIM,typename T>
-class medAbstractDataTypedImage: public medAbstractDataImage {
+class medAbstractTypedImageData: public medAbstractImageData {
 public:
 
-    medAbstractDataTypedImage() { qDebug() << "constructing medAbstractDataTypeImage";}
-    virtual ~medAbstractDataTypedImage() { qDebug() << "deleting medAbstractDataTypeImage";}
+    medAbstractTypedImageData() { qDebug() << "constructing medAbstractDataTypeImage";}
+    virtual ~medAbstractTypedImageData() { qDebug() << "deleting medAbstractDataTypeImage";}
 
     int                                Dimension() const { return DIM;       }
-    const medAbstractDataImage::PixId& PixelType() const { return typeid(T); }
+    const medAbstractImageData::PixId& PixelType() const { return typeid(T); }
 
     const QString PixelMeaning() const {
-        if (hasMetaData(medAbstractDataImage::PixelMeaningMetaData))
-            return metadata(medAbstractDataImage::PixelMeaningMetaData);
+        if (hasMetaData(medAbstractImageData::PixelMeaningMetaData))
+            return metadata(medAbstractImageData::PixelMeaningMetaData);
         return "";
     }
 };

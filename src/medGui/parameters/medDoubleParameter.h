@@ -40,7 +40,7 @@ protected:
     virtual void updateInternWigets();
 
 private slots:
-    void removeInternSpinBox();
+    void _prvt_removeInternSpinBox();
 
 private:
     medDoubleParameterPrivate* d;

@@ -20,7 +20,7 @@
 class dtkAbstractView;
 class dtkAbstractProcess;
 class medAbstractImageView;
-class medAbstractDataImage;
+class medAbstractImageData;
 class medDataIndex;
 class medRegistrationSelectorToolBoxPrivate;
 
@@ -35,8 +35,8 @@ public:
     medAbstractImageView *fixedView();
     medAbstractImageView *movingView();
 
-    medAbstractDataImage *fixedData();
-    medAbstractDataImage *movingData();
+    medAbstractImageData *fixedData();
+    medAbstractImageData *movingData();
 
     void setFuseView(dtkAbstractView *view);
     medAbstractImageView *fuseView();

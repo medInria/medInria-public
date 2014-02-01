@@ -14,6 +14,7 @@ PURPOSE.
 #pragma once
 
 #include <medAbstractLayeredViewInteractor.h>
+#include <medImageViewEnum.h>
 
 #include <medCoreExport.h>
 
@@ -28,7 +29,6 @@ public:
              medAbstractImageViewInteractor(medAbstractImageView* parent);
     virtual ~medAbstractImageViewInteractor();
 
-public:
     virtual void moveToSliceAtPosition    (const QVector3D &position) = 0;
 
     /**
@@ -43,6 +43,8 @@ public:
 
     virtual void setWindowLevel (double &window, double &level) = 0;
     virtual void windowLevel(double &window, double &level) = 0;
+
+
 
 
 

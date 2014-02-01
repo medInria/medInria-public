@@ -14,7 +14,7 @@ PURPOSE.
 #pragma once
 
 #include <medAbstractImageViewNavigator.h>
-#include <medImageViewOrientation.h>
+#include <medImageViewEnum.h>
 
 #include <medVtkViewPluginExport.h>
 
@@ -38,8 +38,10 @@ public:
 
     virtual QString description() const;
 
+    virtual QWidget* widgetForToolBox() const;
+    virtual QWidget* widgetForToolBar() const;
 
-public:
+
     virtual medImageView::Orientation orientaion() const ;
     virtual void camera(QVector3D &position,
                         QVector3D &viewup,
@@ -70,9 +72,18 @@ protected:
     void setCameraPosition(double x, double y, double z);
     void setCameraClippingRange(double nearRange, double farRange);
 
+protected slots:
+    void setAxial(bool axial);
+    void setCoronal(bool coronal);
+    void setSagittal(bool sagittal);
+    void set3d(bool o3d);
+
     QString cameraProjectionMode();
     double cameraViewAngle();
     double cameraZoom();
+
+private:
+    void _prvt_setOrientation(medImageView::Orientation orientation);
 
 private:
     medVtkViewNavigatorPrivate *d;

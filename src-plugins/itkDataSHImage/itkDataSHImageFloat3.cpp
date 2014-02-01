@@ -42,7 +42,7 @@ public:
 // itkDataSHImage
 // /////////////////////////////////////////////////////////////////
 
-itkDataSHImageFloat3::itkDataSHImageFloat3(): medAbstractDataTypedImage<3,float>(), d(new itkDataSHImageFloat3Private)
+itkDataSHImageFloat3::itkDataSHImageFloat3(): medAbstractTypedImageData<3,float>(), d(new itkDataSHImageFloat3Private)
 {
     d->shs = 0;
     d->thumbnail = QImage(":/itkDataSHImage/icons/shs.png");

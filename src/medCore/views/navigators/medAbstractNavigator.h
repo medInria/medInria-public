@@ -16,6 +16,8 @@ PURPOSE.
 #include <dtkCore/dtkAbstractViewNavigator.h>
 
 #include <medCoreExport.h>
+#include <medDataEnum.h>
+#include <medImageViewEnum.h>
 
 class medAbstractView;
 
@@ -33,6 +35,12 @@ public:
 
     virtual void setView(medAbstractView *view);
     virtual medAbstractView *view() const;
+
+    virtual QWidget* widgetForToolBox() const = 0;
+    virtual QWidget* widgetForToolBar() const = 0;
+
+public slots:
+    virtual void updateWidgets(){}
 
 private:
     medAbstractNavigatorPrivate *d;

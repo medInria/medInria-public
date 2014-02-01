@@ -43,8 +43,9 @@ private slots:
     void changeParamsValue(QString& value);
 
 private:
-    void connectParam(medAbstractParameter *parameter);
-    void disconnectParam(medAbstractParameter *parameter);
+    void _prvt_removeInternParam();
+    void _prvt_connectParam(medAbstractParameter *parameter);
+    void _prvt_disconnectParam(medAbstractParameter *parameter);
 
 private:
     medParameterPoolPrivate *d;

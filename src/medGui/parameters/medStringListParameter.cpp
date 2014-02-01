@@ -92,7 +92,7 @@ QComboBox* medStringListParameter::getComboBox()
 
         this->addToInternWidgets(d->comboBox);
         connect(d->comboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(setValue(QString)));
-        connect(d->comboBox, SIGNAL(destroyed()), this, SLOT(removeInternComboBox()));
+        connect(d->comboBox, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternComboBox()));
     }
     return d->comboBox;
 }
@@ -117,7 +117,7 @@ QWidget* medStringListParameter::getWidget()
     return this->getComboBox();
 }
 
-void medStringListParameter::removeInternComboBox()
+void medStringListParameter::_prvt_removeInternComboBox()
 {
     this->removeFromInternWidgets(d->comboBox);
     d->comboBox = NULL;

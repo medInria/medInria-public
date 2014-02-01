@@ -17,6 +17,8 @@ public:
     medAbstractLayeredViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
 
+    unsigned int selectedLayer;
+
 };
 
 medAbstractLayeredView::medAbstractLayeredView(QObject *parent) : medAbstractView(parent), d (new medAbstractLayeredViewPrivate)
@@ -51,6 +53,7 @@ void medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
         medAbstractLayeredViewInteractor* interactor = factory->createInteractor(primaryInt.first(), this);
         interactor->setData(data);
         d->primaryIntercatorsHash.insert(data, interactor);
+        connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
     }
 
     // extra
@@ -62,6 +65,7 @@ void medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
         {
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
             interactor->setData(data);
+            connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
             extraIntList << interactor;
         }
         d->extraIntercatorsHash.insert(data, extraIntList);
@@ -80,7 +84,11 @@ void medAbstractLayeredView::initialiseNavigators()
 
     }
     else
+    {
         d->primaryNavigator = factory->createNavigator(primaryNav.first(), this);
+        connect(this, SIGNAL(orientationChanged()), d->primaryNavigator, SLOT(updateWidgets()));
+        connect(this, SIGNAL(selectedLayerChanged()), d->primaryNavigator, SLOT(updateWidgets()));
+    }
 
     // extra
     QStringList extraNav = factory->additionalNavigatorsAbleToHandle(this->identifier());
@@ -88,7 +96,10 @@ void medAbstractLayeredView::initialiseNavigators()
     {
         foreach (QString n, extraNav)
         {
-               d->extraNavigators << factory->createAdditionalNavigator(n, this);
+            medAbstractNavigator* nav = factory->createAdditionalNavigator(n, this);
+            connect(this, SIGNAL(orientationChanged()), nav, SLOT(updateWidgets()));
+            connect(this, SIGNAL(selectedLayerChanged()), nav, SLOT(updateWidgets()));
+            d->extraNavigators << nav;
         }
     }
 }
@@ -142,6 +153,8 @@ void medAbstractLayeredView::addLayer(medAbstractData *data)
 
     d->layersDataList << data;
     initialiseInteractors(data);
+
+    emit layerAdded(this->layer(data));
 }
 
 QList<dtkSmartPointer<medAbstractData> > medAbstractLayeredView::data() const
@@ -156,26 +169,36 @@ unsigned int medAbstractLayeredView::layer(medAbstractData * data)
 
 bool medAbstractLayeredView::removeData(medAbstractData *data)
 {
+    int layer = this->layer(data);
     int res = d->layersDataList.removeAll(data);
     this->removeInteractors(data);
     return res > 0;
+
+    emit layerRemoved(layer);
 }
 
 void medAbstractLayeredView::removeLayer(unsigned int layer)
 {
     d->layersDataList.removeAt(layer);
     this->removeInteractors(this->data(layer));
+
+    emit layerRemoved(layer);
 }
 
 void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *data)
 {
     d->layersDataList.insert(layer, data);
     this->initialiseInteractors(data);
+
+    emit layerRemoved(layer);
+
 }
 
 void medAbstractLayeredView::moveLayer(unsigned int fromLayer, unsigned int toLayer)
 {
     d->layersDataList.move(fromLayer, toLayer);
+
+    //TODO I'm not sure we really want this. find out which signal emit. - RDE.
 }
 
 medAbstractData * medAbstractLayeredView::data(unsigned int layer) const
@@ -218,3 +241,13 @@ bool medAbstractLayeredView::visibility(unsigned int layer)
     return inter->visibility();
 }
 
+void medAbstractLayeredView::setSelectedLayer(int layer)
+{
+    d->selectedLayer = layer;
+    emit selectedLayerChanged();
+}
+
+unsigned int  medAbstractLayeredView::selectedLayer() const
+{
+    return d->selectedLayer;
+}

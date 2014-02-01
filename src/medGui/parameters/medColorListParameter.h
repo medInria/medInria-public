@@ -49,7 +49,7 @@ protected:
     QIcon createIcon(QString& colorName) const;
 
 private slots:
-    void removeInternComboBox();
+    void _prvt_removeInternComboBox();
 
 private:
     medColorListParameterPrivate* d;

@@ -158,7 +158,7 @@ bool medQtDataImageWriter::writeOrTest( const QString& path, bool dryRun /*= tru
         writer->setFormat( fmtString );
     }
 
-    medAbstractDataImage * medDataIm = dynamic_cast< medAbstractDataImage *>( medData );
+    medAbstractImageData * medDataIm = dynamic_cast< medAbstractImageData *>( medData );
 
     // Set metadata
     const QStringList keys = medData->metaDataList();

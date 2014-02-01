@@ -57,7 +57,7 @@ QWidget* medEditableStringParameter::getWidget()
 
         this->addToInternWidgets(d->lineEdit);
         connect(d->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(setValue(QString)));
-        connect(d->lineEdit, SIGNAL(destroyed()), this, SLOT(removeInternWidget()));
+        connect(d->lineEdit, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternWidget()));
     }
     return d->lineEdit;
 }
@@ -70,7 +70,7 @@ void medEditableStringParameter::updateInternWigets()
         d->lineEdit->setText(m_value);
 }
 
-void medEditableStringParameter::removeInternWidget()
+void medEditableStringParameter::_prvt_removeInternWidget()
 {
     this->removeFromInternWidgets(d->lineEdit);
     d->lineEdit = NULL;

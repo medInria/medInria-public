@@ -16,7 +16,7 @@
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medAbstractView.h>
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #include <medToolBoxFactory.h>
 #include <medRegistrationSelectorToolBox.h>

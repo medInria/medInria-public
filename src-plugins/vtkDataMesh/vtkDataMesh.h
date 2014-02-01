@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medAbstractDataMesh.h>
+#include <medAbstractMeshData.h>
 #include <dtkCore/dtkGlobal.h>
 
 #include <vtkDataMeshPluginExport.h>
@@ -42,7 +42,7 @@ class vtkDataMeshPrivate;
     \author Nicolas Toussaint
 */
 
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public medAbstractDataMesh
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh : public medAbstractMeshData
 {
   Q_OBJECT
 
@@ -74,7 +74,7 @@ private slots:
     void createThumbnails();
 
  public:
-    // derived from medAbstractDataImage
+    // derived from medAbstractImageData
 
  private:
 

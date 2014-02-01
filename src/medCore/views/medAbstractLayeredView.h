@@ -67,11 +67,9 @@ signals:
     /**
      *  This signal is emitted when the user adds a data to the view
      */
-    void dataAdded (int layer);
-    void dataAdded (medAbstractData* data);
-    void dataAdded (medAbstractData* data, unsigned int layer);
-    void dataRemoved (int layer);
-    void dataRemoved(medAbstractData* data, unsigned int layer);
+    void layerAdded(int layer);
+    void layerRemoved(int layer);
+    void selectedLayerChanged();
 
 protected:
     virtual medAbstractLayeredViewInteractor * primaryInteractor(medAbstractData* data);
@@ -85,6 +83,12 @@ protected:
     virtual void initialiseInteractors(medAbstractData* data);
     virtual void initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
+
+    unsigned int selectedLayer() const;
+
+protected slots:
+    void setSelectedLayer(int layer);
+
 
 private:
     medAbstractLayeredViewPrivate *d;

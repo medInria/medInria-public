@@ -447,7 +447,6 @@ bool medViewContainer::open(medAbstractData* data)
     // set the data to the view
     if (!this->multiLayer())
     {
-        view->removeLayer(0);
         view->addLayer(medData);
         newView = true;
     }

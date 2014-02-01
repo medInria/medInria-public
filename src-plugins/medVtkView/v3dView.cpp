@@ -22,7 +22,7 @@
 //#include <dtkCore/dtkAbstractViewInteractor.h>
 
 //#include <medMessageController.h>
-//#include <medAbstractDataImage.h>
+//#include <medAbstractImageData.h>
 //#include <medMetaDataKeys.h>
 
 //#include <vtkCamera.h>
@@ -317,7 +317,7 @@
 
 //    medAbstractData *data;
 //    QMap<int, dtkSmartPointer<medAbstractData> > sharedData;
-//    medAbstractDataImage *imageData;
+//    medAbstractImageData *imageData;
     
 //    bool interactorsInitialized;
 
@@ -909,7 +909,7 @@
 
 //    if ( layer==0 )
 //    {
-//        if ( medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> ( data ) )
+//        if ( medAbstractImageData *imageData = dynamic_cast<medAbstractImageData*> ( data ) )
 //        {
 //            d->data = data;
 //            d->imageData = imageData;
@@ -954,7 +954,7 @@
 
 //    if (layer ==0 )
 //    {
-//        if ( dynamic_cast<medAbstractDataImage*> ( data ) )
+//        if ( dynamic_cast<medAbstractImageData*> ( data ) )
 //        {
 //            if ( d->view2d )
 //            {

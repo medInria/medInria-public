@@ -13,21 +13,19 @@
 
 #include <medParameterPool.h>
 
-#include <QMultiMap>
-
+#include <QMultiHash>
 #include <medAbstractParameter.h>
 
 class medParameterPoolPrivate
 {
 public:
-    QMultiMap<QString, medAbstractParameter*> pool;
+    QMultiHash<QString, medAbstractParameter*> pool;
 
     ~medParameterPoolPrivate() {pool.clear();}
 };
 
 medParameterPool::medParameterPool(QObject* parent): d(new medParameterPoolPrivate)
 {
-
 }
 
 medParameterPool::~medParameterPool()
@@ -42,19 +40,19 @@ void medParameterPool::append(medAbstractParameter *parameter)
         foreach(medAbstractParameter* param, group->parametersCandidateToPool())
         {
             d->pool.insert(param->name(), param);
-            connectParam(param);
+            _prvt_connectParam(param);
         }
     }
     else
     {
         d->pool.insert(parameter->name(), parameter);
-        connectParam(parameter);
+        _prvt_connectParam(parameter);
     }
 }
 
 void medParameterPool::remove(medAbstractParameter* parameter)
 {
-    QMultiMap<QString, medAbstractParameter*>::Iterator it;
+    QMultiHash<QString, medAbstractParameter*>::Iterator it;
     for(it = d->pool.begin(); it != d->pool.end(); ++it)
     {
         if(it.value() == parameter)
@@ -65,29 +63,12 @@ void medParameterPool::remove(medAbstractParameter* parameter)
 void medParameterPool::clear()
 {
     foreach(medAbstractParameter* param, d->pool)
-        disconnectParam(param);
+        _prvt_disconnectParam(param);
 
     d->pool.clear();
 }
 
-void medParameterPool::connectParam(medAbstractParameter *parameter)
-{
-    if(medAbstractTriggerParameter* param = dynamic_cast<medAbstractTriggerParameter*>(parameter))
-        connect(param, SIGNAL(triggered()), this, SLOT(triggerParams()));
-    else if(medAbstractBoolParameter* param = dynamic_cast<medAbstractBoolParameter*>(parameter))
-        connect(param, SIGNAL(valueChanged(bool)), this, SLOT(changeParamsValue(bool)));
-    else if(medAbstractDoubleParameter* param = dynamic_cast<medAbstractDoubleParameter*>(parameter))
-        connect(param, SIGNAL(valueChanged(double)), this, SLOT(changeParamsValue(double)));
-    else if(medAbstractIntParameter* param = dynamic_cast<medAbstractIntParameter*>(parameter))
-        connect(param, SIGNAL(valueChanged(int)), this, SLOT(changeParamsValue(int)));
-    else if(medAbstractStringParameter* param = dynamic_cast<medAbstractStringParameter*>(parameter))
-        connect(param, SIGNAL(valueChanged(QString)), this, SLOT(changeParamsValue(QString)));
-}
 
-void medParameterPool::disconnectParam(medAbstractParameter *parameter)
-{
-    parameter->disconnect(this);
-}
 
 void medParameterPool::triggerParams()
 {
@@ -172,4 +153,31 @@ void medParameterPool::changeParamsValue(QString& value)
 int medParameterPool::count() const
 {
    return d->pool.keys().size();
+}
+
+void medParameterPool::_prvt_removeInternParam()
+{
+    if(medAbstractParameter *param = dynamic_cast<medAbstractParameter*>(sender()))
+    this->remove(param);
+}
+
+void medParameterPool::_prvt_connectParam(medAbstractParameter *parameter)
+{
+    connect(parameter, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternParam()));
+
+    if(medAbstractTriggerParameter* param = dynamic_cast<medAbstractTriggerParameter*>(parameter))
+        connect(param, SIGNAL(triggered()), this, SLOT(triggerParams()));
+    else if(medAbstractBoolParameter* param = dynamic_cast<medAbstractBoolParameter*>(parameter))
+        connect(param, SIGNAL(valueChanged(bool)), this, SLOT(changeParamsValue(bool)));
+    else if(medAbstractDoubleParameter* param = dynamic_cast<medAbstractDoubleParameter*>(parameter))
+        connect(param, SIGNAL(valueChanged(double)), this, SLOT(changeParamsValue(double)));
+    else if(medAbstractIntParameter* param = dynamic_cast<medAbstractIntParameter*>(parameter))
+        connect(param, SIGNAL(valueChanged(int)), this, SLOT(changeParamsValue(int)));
+    else if(medAbstractStringParameter* param = dynamic_cast<medAbstractStringParameter*>(parameter))
+        connect(param, SIGNAL(valueChanged(QString)), this, SLOT(changeParamsValue(QString)));
+}
+
+void medParameterPool::_prvt_disconnectParam(medAbstractParameter *parameter)
+{
+    parameter->disconnect(this);
 }

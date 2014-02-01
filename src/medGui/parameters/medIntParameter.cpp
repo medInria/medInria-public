@@ -78,7 +78,7 @@ QSlider* medIntParameter::getSlider()
         d->slider->setValue(m_value);
 
         this->addToInternWidgets(d->slider);
-        connect(d->slider, SIGNAL(destroyed()), this, SLOT(removeInternSlider()));
+        connect(d->slider, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternSlider()));
         connect(d->slider, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
     }
     return d->slider;
@@ -93,7 +93,7 @@ QSpinBox* medIntParameter::getSpinBox()
         d->spinBox->setValue(m_value);
 
         this->addToInternWidgets(d->spinBox);
-        connect(d->spinBox, SIGNAL(destroyed()), this, SLOT(removeInternSlider()));
+        connect(d->spinBox, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternSlider()));
         connect(d->spinBox, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
     }
     return d->spinBox;
@@ -105,13 +105,13 @@ QWidget* medIntParameter::getWidget()
     return this->getSpinBox();
 }
 
-void medIntParameter::removeInternSLider()
+void medIntParameter::_prvt_removeInternSLider()
 {
     this->removeFromInternWidgets(d->slider);
     d->slider = NULL;
 }
 
-void medIntParameter::removeInternSpinBox()
+void medIntParameter::_prvt_removeInternSpinBox()
 {
     this->removeFromInternWidgets(d->spinBox);
     d->spinBox = NULL;

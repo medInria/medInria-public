@@ -19,7 +19,7 @@
 
 #include <medAbstractImageViewInteractor.h>
 #include <medAbstractImageViewNavigator.h>
-#include <medImageViewOrientation.h>
+#include <medImageViewEnum.h>
 
 #include <medCoreExport.h>
 
@@ -104,7 +104,8 @@ public slots:
                            const QVector3D &focal,
                            double parallelScale);
 
-
+signals:
+    void orientationChanged();
 
 protected:
     virtual medAbstractImageViewInteractor* primaryInteractor(medAbstractData* data);

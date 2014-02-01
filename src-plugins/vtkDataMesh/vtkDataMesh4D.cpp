@@ -40,7 +40,7 @@ public:
 
 const char vtkDataMesh4D::ID[] = "vtkDataMesh4D";
 
-vtkDataMesh4D::vtkDataMesh4D(): medAbstractDataMesh(), d (new vtkDataMesh4DPrivate)
+vtkDataMesh4D::vtkDataMesh4D(): medAbstractMeshData(), d (new vtkDataMesh4DPrivate)
 {
   this->moveToThread(QApplication::instance()->thread());
   d->meshsequence = 0;
@@ -106,7 +106,7 @@ medAbstractData *createVtkDataMesh4D()
 QImage & vtkDataMesh4D::thumbnail()
 {
   if (!d->thumbnails.size())
-    return medAbstractDataMesh::thumbnail();
+    return medAbstractMeshData::thumbnail();
 
   return (d->thumbnails[0]);
 }

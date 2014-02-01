@@ -23,6 +23,7 @@ class medAbstractDataPrivate
 public:
     medDataIndex index;
     QList< dtkSmartPointer<medAttachedData> > attachedData;
+    medData::Category type;
 };
 
 medAbstractData::medAbstractData( medAbstractData *parent )
@@ -38,6 +39,16 @@ medAbstractData::~medAbstractData( void )
     qDebug() << "deleting data with index " << d->index.asString();
     delete d;
     d = NULL;
+}
+
+void medAbstractData::setDataCategory(medData::Category type)
+{
+    d->type = type;
+}
+
+medData::Category medAbstractData::dataCategory() const
+{
+    return d->type;
 }
 
 void medAbstractData::setDataIndex( const medDataIndex& index )

@@ -79,6 +79,7 @@ void medAbstractImageView::initialiseInteractors(medAbstractData *data)
     else
     {
         medAbstractImageViewInteractor* interactor = factory->createInteractor(primaryInt.first(), this);
+        connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
         interactor->setData(data);
         d->primaryIntercatorsHash.insert(data, interactor);
     }
@@ -91,6 +92,7 @@ void medAbstractImageView::initialiseInteractors(medAbstractData *data)
         foreach (QString i, extraInt)
         {
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
+            connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
             interactor->setData(data);
             extraIntList << interactor;
         }
@@ -110,7 +112,11 @@ void medAbstractImageView::initialiseNavigators()
 
     }
     else
+    {
         d->primaryNavigator = factory->createNavigator(primaryNav.first(), this);
+        connect(this, SIGNAL(orientationChanged()), d->primaryNavigator, SLOT(updateWidgets()));
+        connect(this, SIGNAL(selectedLayerChanged()), d->primaryNavigator, SLOT(updateWidgets()));
+    }
 
     // extra
     QStringList extraNav = factory->additionalNavigatorsAbleToHandle(this->identifier());
@@ -118,7 +124,10 @@ void medAbstractImageView::initialiseNavigators()
     {
         foreach (QString n, extraNav)
         {
-               d->extraNavigators << factory->createAdditionalNavigator(n, this);
+            medAbstractNavigator* nav = factory->createAdditionalNavigator(n, this);
+            connect(this, SIGNAL(orientationChanged()), nav, SLOT(updateWidgets()));
+            connect(this, SIGNAL(selectedLayerChanged()), nav, SLOT(updateWidgets()));
+            d->extraNavigators << nav;
         }
     }
 }
@@ -142,6 +151,7 @@ void medAbstractImageView::setOrientation(medImageView::Orientation orientation)
         return;
 
     nav->setOrientation(orientation);
+    emit orientationChanged();
 }
 
 QVector3D medAbstractImageView::positionBeingViewed(void)

@@ -4,7 +4,7 @@
 
 class medVtkViewPrivate;
 class medAbstractData;
-class medAbstractDataImage;
+class medAbstractImageData;
 
 
 class medVtkView : public medAbstractImageView
@@ -39,6 +39,19 @@ public:
     virtual bool is2D();
     virtual qreal sliceThickness();
     virtual qreal scale();
+
+private slots:
+    void _prvt_setWindowingInteracStyle(bool windowing);
+    void _prvt_setZoomIntercaStyle(bool zoom);
+    void _prvt_setSLicingInteracStyle(bool slicing);
+
+    void _prvt_buildToolBox();
+    void _prvt_buildMouseInteracToolBox();
+
+    void _prvt_addLayerItem(int layer);
+    void _prvt_removeLayerItem(int layer);
+
+    void _prvt_removeSelectedLayer();
 
 private:
     medVtkViewPrivate *d;

@@ -29,7 +29,7 @@
 #include <medAbstractView.h>
 #include <medAbstractImageView.h>
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 #include <medRunnableProcess.h>
 #include <medToolBoxTab.h>
 #include <medToolBoxFactory.h>
@@ -50,8 +50,8 @@ public:
     dtkSmartPointer<medAbstractImageView> movingView;
     dtkSmartPointer<medAbstractImageView> fuseView;
 
-    dtkSmartPointer<medAbstractDataImage> fixedData;
-    dtkSmartPointer<medAbstractDataImage> movingData;
+    dtkSmartPointer<medAbstractImageData> fixedData;
+    dtkSmartPointer<medAbstractImageData> movingData;
     
     dtkSmartPointer<dtkAbstractProcess> process;
     dtkSmartPointer<dtkAbstractProcess> undoRedoProcess;
@@ -180,13 +180,13 @@ medAbstractImageView *medRegistrationSelectorToolBox::fuseView(void)
 }
 
 //! Gets the fixedData.
-medAbstractDataImage *medRegistrationSelectorToolBox::fixedData(void)
+medAbstractImageData *medRegistrationSelectorToolBox::fixedData(void)
 {
     return d->fixedData;
 }
 
 //! Gets the movingData.
-medAbstractDataImage *medRegistrationSelectorToolBox::movingData(void)
+medAbstractImageData *medRegistrationSelectorToolBox::movingData(void)
 {
     return d->movingData;
 }

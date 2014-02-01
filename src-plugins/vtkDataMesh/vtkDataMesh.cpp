@@ -40,7 +40,7 @@ public:
 
 const char vtkDataMesh::ID[] = "vtkDataMesh";
 
-vtkDataMesh::vtkDataMesh(): medAbstractDataMesh(), d (new vtkDataMeshPrivate)
+vtkDataMesh::vtkDataMesh(): medAbstractMeshData(), d (new vtkDataMeshPrivate)
 {
   this->moveToThread(QApplication::instance()->thread());
   d->mesh = 0;
@@ -109,7 +109,7 @@ QImage & vtkDataMesh::thumbnail()
     {
         QList<QImage> & thumbnails = this->thumbnails();
         if (thumbnails.empty())
-            return medAbstractDataMesh::thumbnail();
+            return medAbstractMeshData::thumbnail();
     }
 
   return (d->thumbnails[0]);

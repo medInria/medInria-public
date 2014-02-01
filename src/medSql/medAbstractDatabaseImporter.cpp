@@ -19,7 +19,7 @@
 
 #include <medAbstractDatabaseImporter.h>
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -457,7 +457,7 @@ void medAbstractDatabaseImporter::importData()
         
 
     QString size ="";
-    if ( medAbstractDataImage *imagedata = dynamic_cast<medAbstractDataImage*> ( d->data.data() ) )
+    if ( medAbstractImageData *imagedata = dynamic_cast<medAbstractImageData*> ( d->data.data() ) )
         size = QString::number ( imagedata->zDimension() );
     d->data->addMetaData ( medMetaDataKeys::Size.key(), size );
 
@@ -919,7 +919,7 @@ bool medAbstractDatabaseImporter::tryWriteImage ( QString filePath, medAbstractD
 void medAbstractDatabaseImporter::addAdditionalMetaData ( medAbstractData* imData, QString aggregatedFileName, QStringList aggregatedFilesPaths )
 {
     QStringList size;
-    if ( medAbstractDataImage *imageData = dynamic_cast<medAbstractDataImage*> ( imData ) )
+    if ( medAbstractImageData *imageData = dynamic_cast<medAbstractImageData*> ( imData ) )
     {
         size << QString::number ( imageData->zDimension() );
     }

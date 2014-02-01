@@ -44,7 +44,7 @@ public:
 // itkDataTensorImage
 // /////////////////////////////////////////////////////////////////
 
-itkDataTensorImageFloat3::itkDataTensorImageFloat3() : medAbstractDataTypedImage<3,float>(), d(new itkDataTensorImageFloat3Private)
+itkDataTensorImageFloat3::itkDataTensorImageFloat3() : medAbstractTypedImageData<3,float>(), d(new itkDataTensorImageFloat3Private)
 {
     d->tensors = 0;
     d->thumbnail = QImage(":/itkDataTensorImage/icons/tensors.png");

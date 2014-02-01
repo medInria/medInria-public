@@ -20,7 +20,7 @@
 #include <dtkCore/dtkAbstractViewInteractor.h>
 #include <dtkLog/dtkLog.h>
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
 #include <medDataManager.h>
 #include <medJobManager.h>

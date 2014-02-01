@@ -52,14 +52,12 @@ public slots:
     virtual void setLut(QString lut);
     virtual void moveToSliceAtPosition(const QVector3D &position);
     virtual void setVisibility(bool visibility);
-
+    void setWindow(double window);
+    void setLevel(double level);
 
 private:
     static QStringList dataHandled();
     virtual void update();
-    void setWindow(double window);
-    void setLevel(double level);
-
 
     template <typename IMAGE>
     bool SetViewInput(const char* type, medAbstractData* data, const int layer);

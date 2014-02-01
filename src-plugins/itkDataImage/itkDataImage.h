@@ -27,7 +27,7 @@
 #include <itkRecursiveGaussianImageFilter.h>
 
 #include <medAbstractDataFactory.h>
-#include <medAbstractDataTypedImage.h>
+#include <medAbstractTypedImageData.h>
 #include <itkDataImagePluginExport.h>
 
 template<typename T,int DIM>
@@ -597,13 +597,13 @@ QList<QImage>& itkDataImagePrivate<DIM,T,1>::make_thumbnails(const int sz,const 
 template <unsigned DIM,typename T,const char* ID> medAbstractData* createItkDataImage();
 
 template <unsigned DIM,typename T,const char* ID>
-class ITKDATAIMAGEPLUGIN_EXPORT itkDataImage: public medAbstractDataTypedImage<DIM,T> {
+class ITKDATAIMAGEPLUGIN_EXPORT itkDataImage: public medAbstractTypedImageData<DIM,T> {
 
     typedef itkDataImagePrivate<DIM,T,ImageTypeIndex<T>::Index> PrivateMember;
 
 public:
 
-    itkDataImage(): medAbstractDataTypedImage<DIM,T>(),d(new PrivateMember) { }
+    itkDataImage(): medAbstractTypedImageData<DIM,T>(),d(new PrivateMember) { }
 
     ~itkDataImage() {
         delete d;
@@ -648,11 +648,11 @@ public:
         Q_UNUSED(value);
     }
 
-    // derived from medAbstractDataImage
+    // derived from medAbstractImageData
     
-    medAbstractDataImage::MatrixType orientationMatrix()
+    medAbstractImageData::MatrixType orientationMatrix()
     {
-        medAbstractDataImage::MatrixType orientationMatrix;
+        medAbstractImageData::MatrixType orientationMatrix;
         
         if (!d->image)
             return orientationMatrix;
@@ -716,7 +716,7 @@ medAbstractData* createItkDataImage() {
 template <unsigned DIM,typename T,const char* ID>
 QImage& itkDataImage<DIM,T,ID>::thumbnail() {
     if (d->image.IsNull())
-        return medAbstractDataImage::thumbnail();
+        return medAbstractImageData::thumbnail();
 
     const int xydim = 128;
     if (d->thumbnails.isEmpty()          ||
@@ -736,7 +736,7 @@ QImage& itkDataImage<DIM,T,ID>::thumbnail() {
     else if (d->thumbnails.size()>0)
         return d->thumbnails[0];
     else
-        return medAbstractDataImage::thumbnail();
+        return medAbstractImageData::thumbnail();
 }
 
 

@@ -20,14 +20,14 @@ class medAbstractDataVertex;
 class medAbstractDataEdge;
 class medAbstractDataMeshPrivate;
 
-class MEDCORE_EXPORT medAbstractDataMesh : public medAbstractData
+class MEDCORE_EXPORT medAbstractMeshData : public medAbstractData
 {
     Q_OBJECT
 
 public:
-             medAbstractDataMesh();
-             medAbstractDataMesh(const  medAbstractDataMesh& other);
-    virtual ~medAbstractDataMesh();
+             medAbstractMeshData();
+             medAbstractMeshData(const  medAbstractMeshData& other);
+    virtual ~medAbstractMeshData();
 
     void *mesh();
 

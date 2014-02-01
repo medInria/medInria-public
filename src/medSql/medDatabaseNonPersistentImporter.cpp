@@ -17,7 +17,7 @@
 #include <medDatabaseNonPersistentItem_p.h>
 #include <medDatabaseNonPersistentImporter.h>
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 #include <medMetaDataKeys.h>
 
 #include <medAbstractDataFactory.h>

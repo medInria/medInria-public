@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <medAbstractDataMesh.h>
+#include <medAbstractMeshData.h>
 #include <dtkCore/dtkGlobal.h>
 
 #include <vtkDataMeshPluginExport.h>
@@ -42,7 +42,7 @@ class vtkDataMesh4DPrivate;
     \author Nicolas Toussaint
 */
 
-class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractDataMesh
+class VTKDATAMESHPLUGIN_EXPORT vtkDataMesh4D : public medAbstractMeshData
 {
   Q_OBJECT
 

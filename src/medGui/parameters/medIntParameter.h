@@ -41,8 +41,8 @@ protected:
     virtual void updateInternWigets();
 
 private slots:
-    void removeInternSpinBox();
-    void removeInternSLider();
+    void _prvt_removeInternSpinBox();
+    void _prvt_removeInternSLider();
 
 private:
     medIntParameterPrivate* d;

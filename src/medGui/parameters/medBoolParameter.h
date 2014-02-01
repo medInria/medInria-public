@@ -32,9 +32,9 @@ public:
     medBoolParameter(QString name = "Unknow bool parameter", QObject* parent = 0);
     virtual ~medBoolParameter();
 
-    void setIcon(QIcon& icon);
-    void setIconSize(QSize& size);
-    void setText(QString& text);
+    void setIcon(QIcon icon);
+    void setIconSize(QSize size);
+    void setText(QString text);
     QPushButton* getPushButton();
     QRadioButton* getRadioButton();
     QCheckBox* getCheckBox();
@@ -45,9 +45,9 @@ protected:
     virtual void updateInternWigets();
 
 private slots:
-    void removeInternPushButton();
-    void removeInternRadioButton();
-    void removeInternCheckBox();
+    void _prvt_removeInternPushButton();
+    void _prvt_removeInternRadioButton();
+    void _prvt_removeInternCheckBox();
 
 private:
     medBoolParameterPrivate* d;

@@ -16,7 +16,7 @@
 #include <medCoreExport.h>
 
 #include <medAnnotationData.h>
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #include <dtkCore/dtkSmartPointer.h>
 
@@ -27,7 +27,7 @@
  * Can be added to an image data as an annotation, in which case the size of this mask should
  * match the size of the image.
  * 
- * The class contains a medAbstractDataImage containing the actual mask data. This can be manipulated.
+ * The class contains a medAbstractImageData containing the actual mask data. This can be manipulated.
  */
 class MEDCORE_EXPORT medImageMaskAnnotationData : public medAnnotationData {
     Q_OBJECT;
@@ -53,12 +53,12 @@ public:
     static QString s_identifier();
 
     //! Return the actual mask data.
-    medAbstractDataImage * maskData();
-    void setMaskData( medAbstractDataImage * data );
+    medAbstractImageData * maskData();
+    void setMaskData( medAbstractImageData * data );
 
 protected:
     ColorMapType m_colorMap;
-    dtkSmartPointer<medAbstractDataImage> m_maskData;
+    dtkSmartPointer<medAbstractImageData> m_maskData;
 };
 
 

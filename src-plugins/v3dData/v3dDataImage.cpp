@@ -36,7 +36,7 @@ public:
 // v3dDataImage
 // /////////////////////////////////////////////////////////////////
 
-v3dDataImage::v3dDataImage() : medAbstractDataImage(), d(new v3dDataImagePrivate)
+v3dDataImage::v3dDataImage() : medAbstractImageData(), d(new v3dDataImagePrivate)
 {
     d->image = NULL;
 }

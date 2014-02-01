@@ -13,7 +13,7 @@
 
 #include <medDatabaseImporter.h>
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractDataReader.h>

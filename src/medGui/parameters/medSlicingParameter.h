@@ -53,7 +53,7 @@ protected:
 
 
 private slots:
-    void removeInternSpinBox();
+    void _prvt_removeInternSpinBox();
 
 private:
     medSlicingParameterPrivate* d;

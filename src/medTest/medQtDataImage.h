@@ -15,12 +15,12 @@
 
 #include <medTestExport.h>
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 class medQtDataImagePrivate;
 
 /** A concrete implementation of a dtkAbstractDataImage for use in testing. */
-class MEDTEST_EXPORT medQtDataImage : public medAbstractDataImage
+class MEDTEST_EXPORT medQtDataImage : public medAbstractImageData
 {
     Q_OBJECT;
 public:

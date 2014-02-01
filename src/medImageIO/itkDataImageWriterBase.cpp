@@ -17,7 +17,7 @@
 #include <medAbstractData.h>
 #include <dtkLog/dtkLog.h>
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 
 #include <itkImage.h>
 #include <itkImageFileWriter.h>
@@ -53,9 +53,9 @@ bool itkDataImageWriterBase::write_image(const QString& path,const char* type) {
     typename Image::Pointer image = dynamic_cast<Image*>((itk::Object*)(this->data()->output()));
     if (image.IsNull())
         return false;
-    if (medData->hasMetaData(medAbstractDataImage::PixelMeaningMetaData)) {
+    if (medData->hasMetaData(medAbstractImageData::PixelMeaningMetaData)) {
         itk::MetaDataDictionary& dict = image->GetMetaDataDictionary();
-        itk::EncapsulateMetaData(dict,"intent_name",medData->metadata(medAbstractDataImage::PixelMeaningMetaData));
+        itk::EncapsulateMetaData(dict,"intent_name",medData->metadata(medAbstractImageData::PixelMeaningMetaData));
     }
     typename itk::ImageFileWriter<Image>::Pointer writer = itk::ImageFileWriter <Image>::New();
     writer->SetImageIO (this->io);

@@ -13,7 +13,7 @@
 
 #include <itkDataImageReaderBase.h>
 
-#include <medAbstractDataImage.h>
+#include <medAbstractImageData.h>
 #include <medMetaDataKeys.h>
 
 #include <medAbstractData.h>
@@ -269,7 +269,7 @@ bool itkDataImageReaderBase::read_image(const QString& path,const char* type) {
     const itk::MetaDataDictionary dict = im->GetMetaDataDictionary();
     std::string PixMeaning;
     if (itk::ExposeMetaData(dict,"intent_name",PixMeaning))
-        medData->addMetaData(medAbstractDataImage::PixelMeaningMetaData,QString(PixMeaning.c_str()));
+        medData->addMetaData(medAbstractImageData::PixelMeaningMetaData,QString(PixMeaning.c_str()));
 
     TReader->Update();
 

@@ -97,14 +97,14 @@ void medBoolGroupParameterTestObject::testInternalSate()
     parameter2 = new medBoolParameter("2");
     parameter3 = new medBoolParameter("3");
 
-    boolGroupParameter->addBoolParameter(parameter1);
-    boolGroupParameter->addBoolParameter(parameter2);
-    boolGroupParameter->addBoolParameter(parameter3);
+    boolGroupParameter->addParameter(parameter1);
+    boolGroupParameter->addParameter(parameter2);
+    boolGroupParameter->addParameter(parameter3);
     QCOMPARE(boolGroupParameter->getWidget()->layout()->count(), 3);
     boolGroupParameter->removeBoolParameter(parameter3);
     QCOMPARE(boolGroupParameter->getWidget()->layout()->count(), 2);
 
-    boolGroupParameter->addBoolParameter(parameter3);
+    boolGroupParameter->addParameter(parameter3);
     parameter1->setValue(true);
     QVERIFY(parameter1->value());
     QVERIFY(!parameter2->value());
