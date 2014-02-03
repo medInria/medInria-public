@@ -119,6 +119,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     d->inputLabel = new QLabel(mainPage);
     d->inputLabel->setText("None");
     d->inputLabel->setAlignment(Qt::AlignRight);
+    d->inputLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Expanding);
     inputLabelLayout->addWidget(d->inputLabel);
     d->mainLayout->addLayout(inputLabelLayout);
     
