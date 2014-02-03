@@ -16,9 +16,9 @@
 #include "medToolBox.h"
 #include "medGuiExport.h"
 
+class dtkAbstractProcess;
 class dtkAbstractView;
 class medAbstractDataImage;
-class dtkAbstractProcess;
 class medDiffusionSelectorToolBoxPrivate;
 class medDataIndex;
 
@@ -38,6 +38,8 @@ public:
     
     void setInputImage(medAbstractDataImage *data);
     void clearInput();
+    
+    void setProcessParameters(dtkAbstractProcess *process);
 
 public slots:
     void clear();
@@ -49,7 +51,7 @@ public slots:
     void resetButtons();
     
 signals:
-    void processCreated(dtkAbstractProcess *process, QString);
+    void processRequested(QString, QString);
     void processCancelled();
 
 protected:

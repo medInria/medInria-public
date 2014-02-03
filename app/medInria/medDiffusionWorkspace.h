@@ -18,9 +18,11 @@
 
 #include <medWorkspace.h>
 
-class dtkAbstractProcess;
+#include <dtkCore/dtkSmartPointer.h>
+#include <dtkCore/dtkAbstractProcess.h>
+#include <medDiffusionSelectorToolBox.h>
+
 class dtkAbstractView;
-class medTabbedViewContainers;
 class medDiffusionWorkspacePrivate;
 
 class medDiffusionWorkspace : public medWorkspace
@@ -38,7 +40,7 @@ public:
     
 public slots:
 
-    void runProcess(dtkAbstractProcess *process, QString category);
+    void runProcess(QString processName, QString category);
     void getOutput();
     void cancelProcess();
     void resetRunningFlags();

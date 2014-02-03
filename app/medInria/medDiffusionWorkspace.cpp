@@ -16,6 +16,7 @@
 #include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractProcess.h>
+#include <dtkCore/dtkAbstractProcessFactory.h>
 
 #include <medAbstractView.h>
 #include <medAbstractDataImage.h>
@@ -26,7 +27,6 @@
 #include <medTabbedViewContainers.h>
 #include <medToolBox.h>
 #include <medToolBoxFactory.h>
-#include <medDiffusionSelectorToolBox.h>
 
 #include <medRunnableProcess.h>
 #include <medJobManager.h>
@@ -94,12 +94,9 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
        addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
     }
 
-    connect(d->diffusionEstimationToolBox, SIGNAL(processCreated(dtkAbstractProcess *, QString)),
-            this, SLOT(runProcess(dtkAbstractProcess *, QString)));
-    connect(d->diffusionScalarMapsToolBox, SIGNAL(processCreated(dtkAbstractProcess *, QString)),
-            this, SLOT(runProcess(dtkAbstractProcess *, QString)));
-    connect(d->diffusionTractographyToolBox, SIGNAL(processCreated(dtkAbstractProcess *, QString)),
-            this, SLOT(runProcess(dtkAbstractProcess *, QString)));
+    connect(d->diffusionEstimationToolBox, SIGNAL(processRequested(QString, QString)), this, SLOT(runProcess(QString, QString)));
+    connect(d->diffusionScalarMapsToolBox, SIGNAL(processRequested(QString, QString)), this, SLOT(runProcess(QString, QString)));
+    connect(d->diffusionTractographyToolBox, SIGNAL(processRequested(QString, QString)), this, SLOT(runProcess(QString, QString)));
     
     connect(d->diffusionEstimationToolBox, SIGNAL(processCancelled()), this, SLOT(cancelProcess()));
     connect(d->diffusionTractographyToolBox, SIGNAL(processCancelled()), this, SLOT(cancelProcess()));
@@ -144,13 +141,21 @@ void medDiffusionWorkspace::setupViewContainerStack()
     }
 }
 
-void medDiffusionWorkspace::runProcess(dtkAbstractProcess *process, QString category)
+void medDiffusionWorkspace::runProcess(QString processName, QString category)
 {
     if (d->processRunning)
         return;
     
     medRunnableProcess *runProcess = new medRunnableProcess;
-    d->currentProcess = process;
+    
+    medDiffusionSelectorToolBox * originToolbox = dynamic_cast <medDiffusionSelectorToolBox *> (this->sender());
+    
+    if (!originToolbox)
+        return;
+    
+    d->currentProcess = dtkAbstractProcessFactory::instance()->create(processName);
+    originToolbox->setProcessParameters(d->currentProcess);
+    
     runProcess->setProcess(d->currentProcess);
     
     d->processRunning = true;

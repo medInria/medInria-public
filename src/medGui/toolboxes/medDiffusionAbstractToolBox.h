@@ -34,7 +34,8 @@ public:
      */
     virtual dtkPlugin *plugin()const = 0;
     
-    virtual dtkAbstractProcess *createProcess() = 0;
+    virtual QString processName() = 0;
+    virtual void setProcessParameters(dtkAbstractProcess *process) = 0;
 };
 
 class MEDGUI_EXPORT medDiffusionScalarMapsAbstractToolBox : public medDiffusionAbstractToolBox

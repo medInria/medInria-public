@@ -123,6 +123,9 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     inputLabelLayout->addWidget(d->inputLabel);
     d->mainLayout->addLayout(inputLabelLayout);
     
+    d->runButton = 0;
+    d->cancelButton = 0;
+    
     if (d->selectorType != ScalarMaps)
     {
         d->runButton = new QPushButton(runButtonText, mainPage);
@@ -369,11 +372,7 @@ void medDiffusionSelectorToolBox::createProcess()
 {
     if (!d->input)
         return;
-    
-    dtkAbstractProcess *process = d->currentToolBox->createProcess();
-    
-    process->setInput(d->input);
-    
+
     QString processText;
     
     switch (d->selectorType)
@@ -398,7 +397,14 @@ void medDiffusionSelectorToolBox::createProcess()
         d->cancelButton->show();
     }
     
-    emit processCreated(process, processText);
+    QString processName = d->currentToolBox->processName();
+    emit processRequested(processName, processText);
+}
+
+void medDiffusionSelectorToolBox::setProcessParameters(dtkAbstractProcess *process)
+{
+    process->setInput(d->input);
+    d->currentToolBox->setProcessParameters(process);
 }
 
 void medDiffusionSelectorToolBox::resetButtons()
