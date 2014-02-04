@@ -121,6 +121,7 @@ medFiberBundlingToolBox::medFiberBundlingToolBox(QWidget *parent) : medToolBox(p
     d->bundlingList->setAlternatingRowColors(true);
     d->bundlingList->setMinimumHeight(150);
     d->bundlingList->setModel (d->bundlingModel);
+    d->bundlingList->setEditTriggers(QAbstractItemView::SelectedClicked);
 
     d->bundlingShowCheckBox = new QCheckBox("Show all bundles", bundlingPage);
     d->bundlingShowCheckBox->setChecked(true);
@@ -241,7 +242,7 @@ void medFiberBundlingToolBox::addBundle (const QString &name, const QColor &colo
     QStandardItem *item = new QStandardItem (name);
     item->setCheckable(true);
     item->setTristate(false);
-    item->setEditable(false); // for now
+    item->setEditable(true);
 
     QMap <QString, double> meanData;
     QMap <QString, double> minData;
