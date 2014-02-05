@@ -76,6 +76,21 @@ void vtkFiberDataSet::AddBundle (const std::string &name, vtkPolyData *bundle, d
   */
 }
 
+void vtkFiberDataSet::ChangeBundleName (const std::string &oldName, const std::string &newName)
+{
+    if (oldName == newName)
+        return;
+    
+    vtkFiberBundleListType::iterator it = this->Bundles.find (newName);
+    if (it!=this->Bundles.end())
+        return;
+    
+    this->Bundles[newName] = this->Bundles[oldName];
+    it = this->Bundles.find (oldName);
+    
+    this->Bundles.erase(it);
+}
+
 void vtkFiberDataSet::RemoveBundle (const std::string &name)
 {
   vtkFiberBundleListType::iterator it = this->Bundles.find (name);

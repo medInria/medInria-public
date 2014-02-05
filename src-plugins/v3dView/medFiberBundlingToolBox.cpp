@@ -283,7 +283,8 @@ void medFiberBundlingToolBox::addBundle (const QString &name, const QColor &colo
     childItem2->appendRow(new QStandardItem (tr("max: ")      + QString::number(maxLength)));
 
     item->appendRow(childItem2);
-
+    item->setData(name,Qt::UserRole+1);
+    
     d->bundlingModel->setItem(row, item);
 
     d->bundlingModel->setData(d->bundlingModel->index(row, 0, QModelIndex()),
@@ -485,8 +486,20 @@ void medFiberBundlingToolBox::update(dtkAbstractView *view)
 }
 
 void medFiberBundlingToolBox::changeBundlingItem(QStandardItem *item)
-{
-    if (d->view) {
+{    
+    if (d->view)
+    {
+        QString itemOldName = item->data(Qt::UserRole+1).toString();
+        
+        if (itemOldName != item->text())
+        {
+            // TO DO : propagate change to vtkFibersDataSet
+            if (d->interactor)
+                d->interactor->changeBundleName(itemOldName,item->text());
+            
+            item->setData(item->text(),Qt::UserRole+1);
+        }
+
         if (d->interactor)
             d->interactor->setBundleVisibility(item->text(), item->checkState());
     }

@@ -163,6 +163,8 @@ public:
         Minus
     };
 
+    void changeBundleName(QString oldName, QString newName);
+    
 public slots:
     virtual void setVisibility (bool visible);
     virtual void setBoxVisibility (bool visible);

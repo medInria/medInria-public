@@ -218,6 +218,14 @@ void v3dViewFiberInteractor::disable()
     dtkAbstractViewInteractor::disable();
 }
 
+void v3dViewFiberInteractor::changeBundleName(QString oldName, QString newName)
+{
+    if (!d->dataset)
+        return;
+    
+    d->dataset->ChangeBundleName(oldName.toStdString(),newName.toStdString());
+}
+
 void v3dViewFiberInteractor::setVisibility(bool visible)
 {
     d->manager->SetVisibility(visible);
