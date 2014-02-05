@@ -1,47 +1,46 @@
-//#pragma once
+#pragma once
 
-//#include <vtkCommand.h>
+#include <vtkCommand.h>
 
-//#include <medVtkViewPluginExport.h>
+#include <medVtkViewPluginExport.h>
 
-//class QSlider;
-//class medVtkView;
+class medVtkView;
+class vtkImageView2D;
+class vtkImageView3D;
+class medVtkViewSignalsEmitter;
 
-//class MEDVTKVIEWPLUGIN_EXPORT medVtkViewObserver : public vtkCommand
-//{
-//public:
-//    static medVtkViewObserver* New()
-//    {
-//        return new medVtkViewObserver;
-//    }
+class MEDVTKVIEWPLUGIN_EXPORT medVtkViewObserver : public vtkCommand
+{
 
-//    void setSlider (QSlider *slider)
-//    {
-//        this->m_slider = slider;
-//    }
+public:
 
-//    void setView (medVtkView *view)
-//    {
-//        this->m_view = view;
-//    }
+    static medVtkViewObserver* New()
+    {
+        return new medVtkViewObserver;
+    }
 
-//    inline void   lock()
-//    {
-//        this->m_lock = 1;
-//    }
-//    inline void unlock()
-//    {
-//        this->m_lock = 0;
-//    }
+    void setView (medVtkView *view);
 
-//    void Execute (vtkObject *caller, unsigned long event, void *callData);
+    inline void   lock()
+    {
+        this->m_lock = 1;
+    }
+    inline void unlock()
+    {
+        this->m_lock = 0;
+    }
 
-//protected:
-//    medVtkViewObserver();
-//    ~medVtkViewObserver();
+    void Execute (vtkObject *caller, unsigned long event, void *callData);
 
-//private:
-//    int m_lock;
-//    QSlider *m_slider;
-//    medVtkView *m_view;
-//};
+
+protected:
+    medVtkViewObserver();
+    ~medVtkViewObserver();
+
+private:
+    int m_lock;
+    medVtkView *m_view;
+    vtkImageView2D *view2d;
+    vtkImageView3D *view3d;
+    medVtkViewSignalsEmitter *emitter;
+};

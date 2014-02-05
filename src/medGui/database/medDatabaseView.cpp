@@ -96,7 +96,6 @@ public:
 
 medDatabaseView::medDatabaseView(QWidget *parent) : QTreeView(parent), d(new medDatabaseViewPrivate)
 {
-    //test GPR
     this->setDragEnabled(true);
     this->setDropIndicatorShown(true);
 

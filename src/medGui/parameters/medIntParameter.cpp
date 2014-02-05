@@ -60,7 +60,7 @@ void medIntParameter::updateInternWigets()
 void medIntParameter::setRange(int min, int max)
 {
     d->min = min;
-    d->min = max;
+    d->max = max;
 
     if(d->spinBox)
         d->spinBox->setRange(min, max);
@@ -105,7 +105,7 @@ QWidget* medIntParameter::getWidget()
     return this->getSpinBox();
 }
 
-void medIntParameter::_prvt_removeInternSLider()
+void medIntParameter::_prvt_removeInternSlider()
 {
     this->removeFromInternWidgets(d->slider);
     d->slider = NULL;

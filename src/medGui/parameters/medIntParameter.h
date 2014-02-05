@@ -42,7 +42,7 @@ protected:
 
 private slots:
     void _prvt_removeInternSpinBox();
-    void _prvt_removeInternSLider();
+    void _prvt_removeInternSlider();
 
 private:
     medIntParameterPrivate* d;

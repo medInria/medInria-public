@@ -34,6 +34,10 @@
 #include <medIntParameter.h>
 #include <medBoolParameter.h>
 #include <medDoubleParameter.h>
+#include <medSlicingParameter.h>
+#include <medAbstractImageData.h>
+
+#include <QFormLayout>
 
 
 
@@ -45,6 +49,7 @@ public:
     vtkImageView3D *view3d;
     vtkImageViewCollection *collection;
     medAbstractData *data;
+    medAbstractImageData *imageData;
     vtkRenderWindow *render;
     QVTKWidget2 *qvtkWidget;
 
@@ -57,6 +62,11 @@ public:
     medBoolParameter *visibiltyParameter;
     medDoubleParameter *windowParameter;
     medDoubleParameter *levelParameter;
+    //medSlicingParameter *slicingParameter;
+    medIntParameter *slicingParameter;
+
+    QWidget* toolbox;
+    QWidget* toolbar;
 };
 
 
@@ -74,6 +84,7 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractIm
     d->qvtkWidget = backend->qvtkWidget;
 
     d->data = NULL;
+    d->imageData = NULL;
     d->layer = 0;
 
     d->lutParam = NULL;
@@ -82,6 +93,11 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractIm
     d->visibiltyParameter = NULL;
     d->windowParameter = NULL;
     d->levelParameter = NULL;
+    d->slicingParameter = NULL;
+
+    d->toolbox = NULL;
+    d->toolbar = NULL;
+
 }
 
 medVtkViewItkDataImageInteractor::~medVtkViewItkDataImageInteractor()
@@ -136,6 +152,10 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
 {
     d->layer = d->medVtkView->layer(data);
 
+    d->imageData = dynamic_cast<medAbstractImageData *>(data);
+    if(!d->imageData)
+        return;
+
     if (!(SetViewInput<itk::Image<char,3> >("itkDataImageChar3", data, d->layer) ||
           SetViewInput<itk::Image<unsigned char,3> >("itkDataImageUChar3", data, d->layer) ||
           SetViewInput<itk::Image<short,3> >("itkDataImageShort3", data, d->layer) ||
@@ -178,7 +198,7 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
     d->opacityParam = new medIntParameter("Opacity", this);
     d->opacityParam->setRange(0, 100);
     d->opacityParam->setValue(100);
-    connect(d->opacityParam, SIGNAL(valueChanged(int)), this, SLOT(setOpacity));
+    connect(d->opacityParam, SIGNAL(valueChanged(int)), this, SLOT(setOpacity(int)));
 
     d->visibiltyParameter = new medBoolParameter("Visibility", this);
     d->visibiltyParameter->setValue(true);
@@ -199,6 +219,22 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
     connect(d->levelParameter, SIGNAL(valueChanged(double)), this, SLOT(setLevel(double)));
     d->windowParameter->setValue(window);
     d->levelParameter->setValue(level);
+
+    //TODO GPR-RDE: Shouldn't it be a navigator parameter?
+    d->slicingParameter = new medIntParameter("Slicing");
+    // slice orientation may differ from view orientation. Adapt slider range accordingly.
+    int orientationId = d->view2d->GetSliceOrientation();
+    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
+        d->slicingParameter->setRange(0, d->imageData->zDimension()-1);
+    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
+        d->slicingParameter->setRange (0, d->imageData->yDimension()-1);
+    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
+        d->slicingParameter->setRange (0, d->imageData->xDimension()-1);
+
+
+    connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
+    connect(d->medVtkView, SIGNAL(sliceChanged(int)), d->slicingParameter, SLOT(setValue(int)) );
+    connect(d->medVtkView, SIGNAL(windowLevelChanged(double,double)), this, SLOT(updateWindowLevelParam(double, double)) );
 }
 
 
@@ -217,12 +253,18 @@ bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstrac
     return false;
 }
 
-
-void medVtkViewItkDataImageInteractor::setOpacity(double value)
+void medVtkViewItkDataImageInteractor::setOpacity (int opacity)
 {
-    double opacity = static_cast<double>(value) / 100.0;
+    double value = (double)(opacity) / 100.0;
+    setOpacity(value);
+}
+
+void medVtkViewItkDataImageInteractor::setOpacity(double opacity)
+{
     d->view3d->SetOpacity (opacity, d->layer);
     d->view2d->SetOpacity (opacity, d->layer);
+
+    update();
 }
 
 double medVtkViewItkDataImageInteractor::opacity() const
@@ -294,17 +336,38 @@ QString medVtkViewItkDataImageInteractor::preset() const
 
 QWidget* medVtkViewItkDataImageInteractor::toolBarWidget()
 {
-    return new QWidget;
+    if(!d->toolbar)
+    {
+        d->toolbar = new QWidget;
+        QHBoxLayout *layout = new QHBoxLayout(d->toolbar);
+        layout->setContentsMargins ( 0, 0, 0, 0 );
+        layout->setSpacing ( 0 );
+        QSlider *slider = d->slicingParameter->getSlider();
+        slider->setOrientation(Qt::Horizontal);
+        layout->addWidget(slider);
+    }
+    return d->toolbar;
 }
 
 QWidget* medVtkViewItkDataImageInteractor::toolBoxWidget()
 {
-    return new QWidget;
+    if(!d->toolbox)
+    {
+        d->toolbox = new QWidget;
+        QFormLayout *layout = new QFormLayout(d->toolbox);
+        layout->addRow(d->windowParameter->getLabel(), d->windowParameter->getSpinBox());
+        layout->addRow(d->levelParameter->getLabel(), d->levelParameter->getSpinBox());
+        layout->addRow(d->lutParam->getLabel(), d->lutParam->getComboBox());
+        layout->addRow(d->presetParam->getLabel(), d->presetParam->getComboBox());
+    }
+    return d->toolbox;
 }
 
 QWidget* medVtkViewItkDataImageInteractor::layerWidget()
 {
-    return new QWidget;
+    QSlider *slider = d->opacityParam->getSlider();
+    slider->setOrientation(Qt::Horizontal);
+    return d->opacityParam->getSlider();
 }
 
 void medVtkViewItkDataImageInteractor::setWindowLevel (double &window, double &level)
@@ -319,9 +382,50 @@ void medVtkViewItkDataImageInteractor::windowLevel(double &window, double &level
     level = d->levelParameter->value();
 }
 
+void medVtkViewItkDataImageInteractor::moveToSlice(int slice)
+{
+    unsigned int zslice = d->view2d->GetSlice();
+
+    if(slice!=zslice)
+      d->view2d->SetSlice ( slice );
+
+    /*  double *pos = view->GetCurrentPoint();
+        QVector3D position ( pos[0], pos[1], pos[2] );
+        emit positionChanged ( position, this->positionLinked() );*/
+    update();
+}
+
 void medVtkViewItkDataImageInteractor::moveToSliceAtPosition(const QVector3D &position)
 {
-    qDebug() << "moveToSliceAtPosition"  << position;
+//    double pos[3];
+//    pos[0] = position.x();
+//    pos[1] = position.y();
+//    pos[2] = position.z();
+//    d->observer->lock();
+//    d->currentView->SetCurrentPoint ( pos );
+//    d->currentView->UpdateCursorPosition(pos);
+//    d->observer->unlock();
+
+//    // update slider, if currentView is 2D view
+//    if ( vtkImageView2D *view2d = vtkImageView2D::SafeDownCast ( d->currentView ) )
+//    {
+//        unsigned int zslice = view2d->GetSlice();
+//        dtkSignalBlocker sliderBlocker( d->slider );
+//        d->slider->setValue ( zslice );
+//    }
+    double pos[3];
+    pos[0] = position.x();
+    pos[1] = position.y();
+    pos[2] = position.z();
+
+    d->view2d->SetCurrentPoint ( pos );
+    d->view2d->UpdateCursorPosition(pos);
+
+    if(d->medVtkView->is2D())
+    {
+        unsigned int zslice = d->view2d->GetSlice();
+        d->slicingParameter->setValue ( zslice );
+    }
 }
 
 void medVtkViewItkDataImageInteractor::setWindow(double window)
@@ -338,11 +442,36 @@ void medVtkViewItkDataImageInteractor::setLevel(double level)
 
 void medVtkViewItkDataImageInteractor::update()
 {
-    qDebug() << "update:" << this->view()->identifier() << " ask by " << this->identifier() << "from d->layer " << d->layer;
     if(d->medVtkView->is2D())
         d->view2d->Render();
     else
-        d->view3d;
+        d->view3d->Render();
 
     d->qvtkWidget->update();
+}
+
+void medVtkViewItkDataImageInteractor::updateWidgets()
+{
+    // slice orientation may differ from view orientation. Adapt slider range accordingly.
+    int orientationId = d->view2d->GetSliceOrientation();
+    if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XY)
+        d->slicingParameter->setRange(0, d->imageData->zDimension()-1);
+    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_XZ)
+        d->slicingParameter->setRange (0, d->imageData->yDimension()-1);
+    else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
+        d->slicingParameter->setRange (0, d->imageData->xDimension()-1);
+
+    // update slider position
+    if(d->medVtkView->is2D())
+    {
+        unsigned int zslice = d->view2d->GetSlice();
+        d->slicingParameter->setValue ( zslice );
+    }
+
+}
+
+void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, double level)
+{
+    d->windowParameter->setValue(window);
+    d->levelParameter->setValue(level);
 }

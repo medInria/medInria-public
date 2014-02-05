@@ -31,7 +31,7 @@ public:
 
 
 public:
-    virtual medImageView::Orientation orientaion() const = 0;
+    virtual medImageView::Orientation orientation() const = 0;
     virtual void camera(QVector3D &position,
                         QVector3D &viewup,
                         QVector3D &focal,

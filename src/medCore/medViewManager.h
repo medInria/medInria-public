@@ -42,6 +42,10 @@ public:
 
     QList<medDataIndex> indices(medAbstractView *view) const; 
 
+public slots:
+    void addToSelection(medAbstractView *view);
+    void removeFromSelection(medAbstractView *view);
+
 protected:
      medViewManager();
     ~medViewManager();

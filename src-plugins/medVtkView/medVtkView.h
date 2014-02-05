@@ -40,6 +40,8 @@ public:
     virtual qreal sliceThickness();
     virtual qreal scale();
 
+    bool eventFilter(QObject * obj, QEvent * event);
+
 private slots:
     void _prvt_setWindowingInteracStyle(bool windowing);
     void _prvt_setZoomIntercaStyle(bool zoom);
@@ -52,6 +54,8 @@ private slots:
     void _prvt_removeLayerItem(int layer);
 
     void _prvt_removeSelectedLayer();
+
+    void updateInteractorsWidget();
 
 private:
     medVtkViewPrivate *d;

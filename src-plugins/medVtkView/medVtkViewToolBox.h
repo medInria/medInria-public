@@ -15,7 +15,6 @@
 
 #include <medGuiExport.h>
 #include <medToolBox.h>
-#include <medParameter.h>
 
 class medVtkView;
 class medVtkViewToolBoxPrivate;
@@ -37,32 +36,33 @@ public:
 public:
     void update(dtkAbstractView * view);
     static bool registered();
-    QList<medAbstractParameter*> getViewParameters(medVtkView* view);
-    void setViewMode(viewMode mode);
-    void clearParams();
-    void addView(medVtkView*);
 
-public slots:
-    void updateViews();
-    void updateLayerListWidget(QList<medVtkView*>);
-    void resetList();
-    void updateLayerParameters();
-    void updateViewPool(QList<medVtkView*>);
-    void updateLayerParameters(QMultiMap<medVtkView*, int>);
-    void removeView();
-    void removeLayer();
+//    QList<medAbstractParameter*> getViewParameters(medVtkView* view);
+//    void setViewMode(viewMode mode);
+//    void clearParams();
+//    void addView(medVtkView*);
 
-signals:
-    void viewSelected();
+//public slots:
+//    void updateViews();
+//    void updateLayerListWidget(QList<medVtkView*>);
+//    void resetList();
+//    void updateLayerParameters();
+//    void updateViewPool(QList<medVtkView*>);
+//    void updateLayerParameters(QMultiMap<medVtkView*, int>);
+//    void removeView();
+//    void removeLayer();
 
-private slots:
-    void setAxial(bool checked);
-    void setSagittal(bool checked);
-    void setCoronal(bool checked);
-    void setView3D(bool checked);
+//signals:
+//    void viewSelected();
 
-protected:
-    void setupOrientationParamters(dtkAbstractView * view);
+//private slots:
+//    void setAxial(bool checked);
+//    void setSagittal(bool checked);
+//    void setCoronal(bool checked);
+//    void setView3D(bool checked);
+
+//protected:
+//    void setupOrientationParamters(dtkAbstractView * view);
 
 private:
     medVtkViewToolBoxPrivate *d;

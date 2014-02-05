@@ -18,7 +18,7 @@
 #include <medGuiExport.h>
 
 class QWidget;
-class QSpinBox;
+class QDoubleSpinBox;
 class QSlider;
 
 
@@ -32,7 +32,7 @@ public:
     virtual ~medDoubleParameter();
 
     void setRange(double min, double max);
-    QSpinBox* getSpinBox();
+    QDoubleSpinBox* getSpinBox();
 
     virtual QWidget* getWidget();
 

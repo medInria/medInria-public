@@ -225,6 +225,9 @@ void medViewContainer::select()
 {
     d->selected = true;
 
+    medAbstractView *medView = dynamic_cast<medAbstractView*>(this->view());
+    medViewManager::instance()->addToSelection(medView);
+
     this->setCurrent ( this );
 
     if (!current() || !current()->view())
@@ -247,8 +250,14 @@ void medViewContainer::select()
 
 void medViewContainer::unselect()
 {
-    d->selected = false;
-    this->recomputeStyleSheet();
+    if(QApplication::keyboardModifiers() != Qt::ControlModifier)
+    {
+        d->selected = false;
+        this->recomputeStyleSheet();
+
+        medAbstractView *medView = dynamic_cast<medAbstractView*>(this->view());
+        medViewManager::instance()->removeFromSelection(medView);
+    }
 }
 
 void medViewContainer::setCurrent ( medViewContainer *container )
@@ -423,10 +432,6 @@ bool medViewContainer::open(medAbstractData* data)
         return false;
 
     dtkSmartPointer<medAbstractImageView> view = qobject_cast<medAbstractImageView*>(this->view());
-    //TODO: change method prototype to use medAbstractData directly
-    dtkSmartPointer<medAbstractData> medData = qobject_cast<medAbstractData*>(data);
-
-
 
     bool newView = view.isNull() || !this->multiLayer();
 
@@ -444,16 +449,14 @@ bool medViewContainer::open(medAbstractData* data)
         return false;
     }
 
+    view->addLayer(data);
+
     // set the data to the view
     if (!this->multiLayer())
     {
-        view->addLayer(medData);
         newView = true;
     }
-    else
-    {
-        view->addLayer(medData);
-    }
+
 
     //only call reset if the view is a new one or with only one layer.
     if (newView)
@@ -490,7 +493,7 @@ void medViewContainer::keyReleaseEvent(QKeyEvent * event)
         foreach(medViewContainer* container, this->root()->childContainers())
         {
             if(container != this)
-              container->setFocus();
+              container->select();
         }
     }
 

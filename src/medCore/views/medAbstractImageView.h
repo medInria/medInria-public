@@ -96,6 +96,8 @@ public slots:
      **/
     void moveToSliceAtPosition (const QVector3D &position);
 
+    void moveToSlice (int slice);
+
     /**
        Set the camera settings of the view.
     **/
@@ -106,6 +108,8 @@ public slots:
 
 signals:
     void orientationChanged();
+    void sliceChanged(int);
+    void windowLevelChanged(double window, double level);
 
 protected:
     virtual medAbstractImageViewInteractor* primaryInteractor(medAbstractData* data);

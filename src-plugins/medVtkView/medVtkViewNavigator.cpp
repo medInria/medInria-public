@@ -48,7 +48,7 @@ class medVtkViewNavigatorPrivate
     QWidget *widgetForToolBox;
     QWidget *widgetForToolBar;
 
-    medBoolGroupParameter *orientaionParameter;
+    medBoolGroupParameter *orientationParameter;
     medBoolParameter *oAxialParameter;
     medBoolParameter *oSagittalParameter;
     medBoolParameter *oCoronalParameter;
@@ -74,8 +74,9 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
 
     d->currentView = NULL;
 
-    d->orientaionParameter = new medBoolGroupParameter("Orientaion", this);
-    d->orientaionParameter->setPushButtonDirection(QBoxLayout::LeftToRight);
+    d->orientationParameter = new medBoolGroupParameter("Orientation", this);
+    d->orientationParameter->setPushButtonDirection(QBoxLayout::LeftToRight);
+    d->orientationParameter->getLabel()->hide();
 
 
     d->oAxialParameter = new medBoolParameter("axial", this);
@@ -102,17 +103,20 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
     connect(d->o3dParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(set3d(bool)));
 
-    d->orientaionParameter->addParameter(d->oAxialParameter);
-    d->orientaionParameter->addParameter(d->oCoronalParameter);
-    d->orientaionParameter->addParameter(d->oSagittalParameter);
-    d->orientaionParameter->addParameter(d->o3dParameter);
+    d->orientationParameter->addParameter(d->oAxialParameter);
+    d->orientationParameter->addParameter(d->oCoronalParameter);
+    d->orientationParameter->addParameter(d->oSagittalParameter);
+    d->orientationParameter->addParameter(d->o3dParameter);
     d->oAxialParameter->setValue(true);
 
     d->widgetForToolBar = NULL;
     d->widgetForToolBox = new QWidget();
     QVBoxLayout* layout = new QVBoxLayout(d->widgetForToolBox);
-    layout->addWidget(d->orientaionParameter->getLabel());
-    layout->addWidget(d->orientaionParameter->getPushButtonGroup());
+    layout->addWidget(d->orientationParameter->getLabel());
+    layout->addWidget(d->orientationParameter->getPushButtonGroup());
+
+    //TODO GPR-RDE: better solution?
+    connect(this, SIGNAL(orientationChanged()), parent, SIGNAL(orientationChanged()));
 
 }
 
@@ -162,36 +166,6 @@ QVector3D medVtkViewNavigator::positionBeingViewed() const
 {
     return QVector3D(0.0,0.0,0.0);
 }
-
-void medVtkViewNavigator::setOrientation(medImageView::Orientation orientation)
-{
-    if (orientation == d->orientation)
-        return;
-
-    switch(orientation)
-    {
-    case medImageView::VIEW_ORIENTATION_3D:
-        d->o3dParameter->setValue(true);
-        break;
-    case medImageView::VIEW_ORIENTATION_AXIAL:
-        d->oAxialParameter->setValue(true);
-        break;
-    case medImageView::VIEW_ORIENTATION_CORONAL:
-        d->oCoronalParameter->setValue(true);
-        break;
-    case medImageView::VIEW_ORIENTATION_SAGITTAL:
-        d->oSagittalParameter->setValue(true);
-        break;
-    }
-
-    d->orientation = orientation;
-}
-
-medImageView::Orientation medVtkViewNavigator::orientaion() const
-{
-    return d->orientation;
-}
-
 
 double medVtkViewNavigator::zoom() const
 {
@@ -388,6 +362,36 @@ double medVtkViewNavigator::cameraZoom()
         return view->GetZoom();
 }
 
+
+void medVtkViewNavigator::setOrientation(medImageView::Orientation orientation)
+{
+    if (orientation == d->orientation)
+        return;
+
+    switch(orientation)
+    {
+    case medImageView::VIEW_ORIENTATION_3D:
+        d->o3dParameter->setValue(true);
+        break;
+    case medImageView::VIEW_ORIENTATION_AXIAL:
+        d->oAxialParameter->setValue(true);
+        break;
+    case medImageView::VIEW_ORIENTATION_CORONAL:
+        d->oCoronalParameter->setValue(true);
+        break;
+    case medImageView::VIEW_ORIENTATION_SAGITTAL:
+        d->oSagittalParameter->setValue(true);
+        break;
+    }
+
+    d->orientation = orientation;
+}
+
+medImageView::Orientation medVtkViewNavigator::orientation() const
+{
+    return d->orientation;
+}
+
 void medVtkViewNavigator::setAxial(bool axial)
 {
     if(axial)
@@ -400,9 +404,9 @@ void medVtkViewNavigator::setCoronal(bool coronal)
         this->_prvt_setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
 }
 
-void medVtkViewNavigator::setSagittal(bool saggital)
+void medVtkViewNavigator::setSagittal(bool sagittal)
 {
-    if(saggital)
+    if(sagittal)
         this->_prvt_setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
 }
 
@@ -439,7 +443,7 @@ void medVtkViewNavigator::_prvt_setOrientation(medImageView::Orientation orienta
         d->currentView = d->view2d;
         break;
     case medImageView::VIEW_ORIENTATION_SAGITTAL:
-        d->view2d->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_CORONAL);
+        d->view2d->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
         d->currentView = d->view2d;
         break;
     }
@@ -447,4 +451,6 @@ void medVtkViewNavigator::_prvt_setOrientation(medImageView::Orientation orienta
     d->currentView->SetRenderWindow(d->renWin);
     d->currentView->SetCurrentPoint(pos);
     d->currentView->SetTimeIndex(timeIndex);
+
+    emit orientationChanged();
 }

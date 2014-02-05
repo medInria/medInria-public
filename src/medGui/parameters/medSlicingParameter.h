@@ -39,12 +39,12 @@ public:
 
     virtual QWidget* getWidget();
 
-    int mapPositionToSLice(const double& position);
-    double mapSLiceToPosition (int slice);
+    int mapPositionToSlice(const double& position);
+    double mapSliceToPosition (int slice);
 
 public slots:
     void setPositionRange(double posMin, double posMax);
-    void setNumberOfSLice(int numberOfSLice);
+    void setNumberOfSlice(int numberOfSLice);
     void setSlice(int slice);
     void setSlice(double position);
 

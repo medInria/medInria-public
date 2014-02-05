@@ -52,13 +52,18 @@ public:
     vtkImageViewCollection *viewCollection;
 
     // widgets
+    QWidget *mainWidget;
+    QVBoxLayout *mainLayout;
+    QHBoxLayout *toolbarLayout;
     QWidget *toolBar;
     QWidget *toolBox;
     QVTKWidget2 *receiverWidget;
     static const int toolWidth = 15;
     static const int toolheight = 15;
 
-        //  toolboxes
+    medVtkViewObserver *observer;
+
+    // toolboxes
     medToolBox* navigatorToolBox;
     medToolBox* mouseStyleToolBox;
     medToolBox* layerToolBox;
@@ -72,6 +77,8 @@ public:
     medBoolParameter *slicingInteractionParameter;
 
     QScopedPointer<medVtkViewBackend> backend;
+
+    bool multiSelectionEnabled;
 };
 
 medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
@@ -150,17 +157,32 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->viewCollection->AddItem(d->view2d);
     d->viewCollection->AddItem(d->view3d);
 
-
-    // construct main widget
-
     d->receiverWidget = new QVTKWidget2();
     d->receiverWidget->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Minimum );
+
     d->receiverWidget->setFocusPolicy ( Qt::ClickFocus );
-            //TODO: find out what is it for and write it here - RDE.
+
+    // Event filter used to know if the view is selecetd or not
     d->receiverWidget->installEventFilter(this);
+
     d->receiverWidget->SetRenderWindow(d->renWin);
 
     d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d,d->renWin,d->receiverWidget));
+
+
+    d->observer = medVtkViewObserver::New();
+    d->observer->setView ( this );
+
+    d->view2d->AddObserver ( vtkImageView::CurrentPointChangedEvent, d->observer, 0 );
+    d->view2d->AddObserver ( vtkImageView::WindowLevelChangedEvent,  d->observer, 0 );
+    d->view2d->GetInteractorStyle()->AddObserver ( vtkImageView2DCommand::CameraZoomEvent, d->observer, 0 );
+    d->view2d->GetInteractorStyle()->AddObserver ( vtkImageView2DCommand::CameraPanEvent, d->observer, 0 );
+    d->view2d->AddObserver ( vtkImageView2DCommand::CameraPanEvent, d->observer, 0);
+    d->view2d->AddObserver ( vtkImageView2DCommand::CameraZoomEvent,d->observer,0);
+    d->view3d->GetInteractorStyle()->AddObserver ( vtkCommand::InteractionEvent, d->observer, 0 );
+
+    d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent,d->observer,0);
+    d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyReleaseEvent,d->observer,0);
 
     this->initialiseNavigators();
     this->_prvt_buildToolBox();
@@ -169,6 +191,25 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     connect(this, SIGNAL(layerRemoved(int)), this, SLOT(_prvt_removeLayerItem(int)));
 
     d->toolBox->show();
+
+    // construct main widget
+    d->mainWidget = new QWidget;
+    d->toolBar = new QWidget;
+    d->toolBar->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Fixed );
+
+    d->mainLayout = new QVBoxLayout(d->mainWidget);
+    d->mainLayout->setContentsMargins ( 0, 0, 0, 0 );
+    d->mainLayout->setSpacing ( 0 );
+
+    d->toolbarLayout = new QHBoxLayout(d->toolBar);
+    d->toolbarLayout->setContentsMargins ( 0, 0, 0, 0 );
+    d->toolbarLayout->setSpacing ( 0 );
+    d->toolBar->setLayout(d->toolbarLayout);
+
+    d->mainLayout->addWidget(d->toolBar);
+    d->mainLayout->addWidget(d->receiverWidget);
+
+    d->multiSelectionEnabled = false;
 }
 
 medVtkView::~medVtkView()
@@ -204,7 +245,7 @@ QString medVtkView::description() const
 
 QWidget* medVtkView::widget()
 {
-    return this->receiverWidget();
+    return d->mainWidget;
 }
 
 QWidget* medVtkView::receiverWidget()
@@ -409,7 +450,10 @@ void medVtkView::_prvt_buildToolBox()
     d->layersListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     d->layerToolBox->addWidget(d->layersListWidget);
     connect(d->layersListWidget, SIGNAL(currentRowChanged(int)),
-            this, SLOT(setselectedLayer(int)));
+            this, SLOT(setSelectedLayer(int)));
+    connect(this, SIGNAL(selectedLayerChanged()),
+            this, SLOT(updateInteractorsWidget()));
+
 
     d->interactorsWidgetStack = new QStackedWidget(d->layerToolBox);
     d->layerToolBox->addWidget(d->interactorsWidgetStack);
@@ -483,7 +527,7 @@ void medVtkView::_prvt_addLayerItem(int layer)
 
     layout->addWidget(thumbnailButton);
     layout->addWidget(layerName);
-//    layout->addStretch();
+    layout->addStretch();
     layout->addWidget(this->primaryInteractor(data)->layerWidget());
     foreach(medAbstractInteractor* interactor, this->extraInteractors(data))
         layout->addWidget(interactor->layerWidget());
@@ -506,4 +550,30 @@ void medVtkView::_prvt_removeLayerItem(int layer)
 void medVtkView::_prvt_removeSelectedLayer()
 {
     this->removeLayer(this->selectedLayer());
+}
+
+void medVtkView::updateInteractorsWidget()
+{
+    d->interactorsWidgetStack->addWidget( this->primaryInteractor( this->selectedLayer() )->toolBoxWidget() );
+
+    foreach(medAbstractInteractor* interactor, this->extraInteractors(this->selectedLayer()))
+        d->interactorsWidgetStack->addWidget(interactor->toolBoxWidget());
+
+    d->toolbarLayout->addWidget(this->primaryInteractor( this->selectedLayer() )->toolBarWidget());
+}
+
+bool medVtkView::eventFilter(QObject * obj, QEvent * event)
+{
+    if (obj == d->receiverWidget)
+    {
+        if (event->type() == QEvent::FocusIn)
+        {
+            emit selected();
+        } else if (event->type() == QEvent::FocusOut)
+        {
+            emit unselected();
+        }
+    }
+
+    return medAbstractView::eventFilter(obj, event);
 }

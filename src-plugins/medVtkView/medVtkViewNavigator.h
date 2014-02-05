@@ -42,7 +42,7 @@ public:
     virtual QWidget* widgetForToolBar() const;
 
 
-    virtual medImageView::Orientation orientaion() const ;
+    virtual medImageView::Orientation orientation() const ;
     virtual void camera(QVector3D &position,
                         QVector3D &viewup,
                         QVector3D &focal,
@@ -63,6 +63,9 @@ public:
 public slots:
      virtual void setZoom (double zoom);
      virtual void setPan (const QVector2D &pan);
+
+signals:
+    void orientationChanged();
 
 protected:
     void bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax);

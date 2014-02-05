@@ -73,7 +73,7 @@ void medSlicingParameter::setPositionRange(double posMin, double posMax)
         d->spinBox->setRange(posMin, posMax);
 }
 
-void medSlicingParameter::setNumberOfSLice(int numberOfSlice)
+void medSlicingParameter::setNumberOfSlice(int numberOfSlice)
 {
     if(numberOfSlice < 1)
     {
@@ -87,24 +87,24 @@ void medSlicingParameter::setNumberOfSLice(int numberOfSlice)
     d->sliceParameter->setRange(0, d->numberOfSlice - 1);
 }
 
-double medSlicingParameter::mapSLiceToPosition(int slice)
+double medSlicingParameter::mapSliceToPosition(int slice)
 {
     return slice * d->resolution + d->posMin;
 }
 
-int medSlicingParameter::mapPositionToSLice(const double& position)
+int medSlicingParameter::mapPositionToSlice(const double& position)
 {
     return floor((position - d->posMin) / d->resolution);
 }
 
 void medSlicingParameter::setSlice(int slice)
 {
-    this->setSlice(this->mapSLiceToPosition(slice));
+    this->setSlice(this->mapSliceToPosition(slice));
 }
 
 void medSlicingParameter::setSlice(double position)
 {
-    d->sliceParameter->setValue(this->mapPositionToSLice(position));
+    d->sliceParameter->setValue(this->mapPositionToSlice(position));
     this->setValue(position);
 }
 

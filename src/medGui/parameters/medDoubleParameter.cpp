@@ -13,7 +13,7 @@
 
 #include <medDoubleParameter.h>
 
-#include <QSpinBox>
+#include <QDoubleSpinBox>
 #include <QSlider>
 
 class medDoubleParameterPrivate
@@ -22,7 +22,7 @@ public:
     double min;
     double max;
 
-    QSpinBox *spinBox;
+    QDoubleSpinBox *spinBox;
 
     ~medDoubleParameterPrivate()
     {
@@ -47,7 +47,6 @@ medDoubleParameter::~medDoubleParameter()
 
 void medDoubleParameter::updateInternWigets()
 {
-
     if(d->spinBox)
         d->spinBox->setValue(m_value);
 }
@@ -55,23 +54,23 @@ void medDoubleParameter::updateInternWigets()
 void medDoubleParameter::setRange(double min, double max)
 {
     d->min = min;
-    d->min = max;
+    d->max = max;
 
     if(d->spinBox)
         d->spinBox->setRange(min, max);
 }
 
 
-QSpinBox* medDoubleParameter::getSpinBox()
+QDoubleSpinBox* medDoubleParameter::getSpinBox()
 {
     if(!d->spinBox)
     {
-        d->spinBox = new QSpinBox;
+        d->spinBox = new QDoubleSpinBox;
         d->spinBox->setRange(d->min, d->max);
         d->spinBox->setValue(m_value);
 
         this->addToInternWidgets(d->spinBox);
-        connect(d->spinBox, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternSlider()));
+        connect(d->spinBox, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternSpinBox()));
         connect(d->spinBox, SIGNAL(valueChanged(double)), this, SLOT(setValue(double)));
     }
     return d->spinBox;

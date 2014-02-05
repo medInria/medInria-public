@@ -80,6 +80,7 @@ void medAbstractImageView::initialiseInteractors(medAbstractData *data)
     {
         medAbstractImageViewInteractor* interactor = factory->createInteractor(primaryInt.first(), this);
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
+        connect(this, SIGNAL(selectedLayerChanged()), interactor, SLOT(updateWidgets()));
         interactor->setData(data);
         d->primaryIntercatorsHash.insert(data, interactor);
     }
@@ -93,6 +94,7 @@ void medAbstractImageView::initialiseInteractors(medAbstractData *data)
         {
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
             connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
+            connect(this, SIGNAL(selectedLayerChanged()), interactor, SLOT(updateWidgets()));
             interactor->setData(data);
             extraIntList << interactor;
         }
@@ -144,6 +146,20 @@ void medAbstractImageView::moveToSliceAtPosition (const QVector3D &position)
     }
 }
 
+void medAbstractImageView::moveToSlice (int slice)
+{
+    foreach (medAbstractData *data, this->data())
+    {
+        medAbstractImageViewInteractor* inter = this->primaryInteractor(data);
+        if(!inter)
+            break;
+
+        inter->moveToSlice(slice);
+    }
+
+    emit sliceChanged(slice);
+}
+
 void medAbstractImageView::setOrientation(medImageView::Orientation orientation)
 {
     medAbstractImageViewNavigator * nav = this->primaryNavigator();
@@ -170,6 +186,8 @@ void medAbstractImageView::setDataWindowLevel(medAbstractData *data, double &win
         return;
 
     inter->setWindowLevel(window, level);
+
+    emit windowLevelChanged(window, level);
 }
 
 void medAbstractImageView::setLayerWindowLevel(unsigned int layer, double &window, double &level)
@@ -179,6 +197,8 @@ void medAbstractImageView::setLayerWindowLevel(unsigned int layer, double &windo
         return;
 
     inter->setWindowLevel(window, level);
+
+    emit windowLevelChanged(window, level);
 }
 
 void medAbstractImageView::dataWindowLevel(medAbstractData *data, double &window, double &level)
@@ -259,5 +279,5 @@ medImageView::Orientation medAbstractImageView::orientation()
     if(!nav)
         return medImageView::VIEW_ORIENTATION_AXIAL;
 
-    return nav->orientaion();
+    return nav->orientation();
 }

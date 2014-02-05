@@ -47,13 +47,17 @@ public:
     virtual QStringList handled() const;
 
 public slots:
+    virtual void setOpacity (int opacity);
     virtual void setOpacity (double opacity);
     void setPreset(QString value);
     virtual void setLut(QString lut);
+    void moveToSlice(int slice);
     virtual void moveToSliceAtPosition(const QVector3D &position);
     virtual void setVisibility(bool visibility);
     void setWindow(double window);
     void setLevel(double level);
+
+    virtual void updateWidgets();
 
 private:
     static QStringList dataHandled();
@@ -61,6 +65,9 @@ private:
 
     template <typename IMAGE>
     bool SetViewInput(const char* type, medAbstractData* data, const int layer);
+
+private slots:
+    void updateWindowLevelParam(double window, double level);
 
 private:
     medVtkViewItkDataImageInteractorPrivate * d;

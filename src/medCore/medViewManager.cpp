@@ -22,6 +22,7 @@ class medViewManagerPrivate
 {
 public:
     QHash<medDataIndex, QList<dtkSmartPointer<medAbstractView> > > views;
+    QList<dtkSmartPointer<medAbstractView> > selectedViews;
 };
 
 medViewManager *medViewManager::instance(void)
@@ -30,6 +31,18 @@ medViewManager *medViewManager::instance(void)
         s_instance = new medViewManager;
 
     return s_instance;
+}
+
+medViewManager::medViewManager(void) : d(new medViewManagerPrivate)
+{
+
+}
+
+medViewManager::~medViewManager(void)
+{
+    delete d;
+
+    d = NULL;
 }
 
 void medViewManager::insert(const medDataIndex& index, medAbstractView *view)
@@ -122,16 +135,18 @@ QList<medDataIndex> medViewManager::indices(medAbstractView *view) const
     return indices;
 }
 
-medViewManager::medViewManager(void) : d(new medViewManagerPrivate)
+void medViewManager::addToSelection(medAbstractView *view)
 {
+    d->selectedViews.append(view);
 
+    qDebug() << "Selected Views: " << d->selectedViews.count();
 }
 
-medViewManager::~medViewManager(void)
+void medViewManager::removeFromSelection(medAbstractView *view)
 {
-    delete d;
+    d->selectedViews.removeAll(view);
 
-    d = NULL;
+    qDebug() << "Selected Views: " << d->selectedViews.count();
 }
 
 medViewManager *medViewManager::s_instance = NULL;

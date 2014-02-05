@@ -31,6 +31,8 @@ public:
 
     virtual void moveToSliceAtPosition    (const QVector3D &position) = 0;
 
+    virtual void moveToSlice  (int slice) = 0;
+
     /**
     * Set the opacity of the data on the corresponding layer
     */
