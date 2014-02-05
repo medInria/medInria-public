@@ -493,7 +493,6 @@ void medFiberBundlingToolBox::changeBundlingItem(QStandardItem *item)
         
         if (itemOldName != item->text())
         {
-            // TO DO : propagate change to vtkFibersDataSet
             if (d->interactor)
                 d->interactor->changeBundleName(itemOldName,item->text());
             
