@@ -486,22 +486,22 @@ void medFiberBundlingToolBox::update(dtkAbstractView *view)
 }
 
 void medFiberBundlingToolBox::changeBundlingItem(QStandardItem *item)
-{    
-    if (d->view)
+{
+    if (!d->view)
+        return;
+    
+    if (!d->interactor)
+        return;
+    
+    QString itemOldName = item->data(Qt::UserRole+1).toString();
+    
+    if (itemOldName != item->text())
     {
-        QString itemOldName = item->data(Qt::UserRole+1).toString();
-        
-        if (itemOldName != item->text())
-        {
-            if (d->interactor)
-                d->interactor->changeBundleName(itemOldName,item->text());
-            
-            item->setData(item->text(),Qt::UserRole+1);
-        }
-
-        if (d->interactor)
-            d->interactor->setBundleVisibility(item->text(), item->checkState());
+        d->interactor->changeBundleName(itemOldName,item->text());
+        item->setData(item->text(),Qt::UserRole+1);
     }
+    
+    d->interactor->setBundleVisibility(item->text(), item->checkState());
 }
 
 void medFiberBundlingToolBox::showBundling(bool show)
