@@ -74,30 +74,30 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
 
     d->currentView = NULL;
 
-    d->orientationParameter = new medBoolGroupParameter("Orientation", this);
+    d->orientationParameter = new medBoolGroupParameter("Orientation", parent);
     d->orientationParameter->setPushButtonDirection(QBoxLayout::LeftToRight);
     d->orientationParameter->getLabel()->hide();
 
 
-    d->oAxialParameter = new medBoolParameter("axial", this);
+    d->oAxialParameter = new medBoolParameter("axial", parent);
     d->oAxialParameter->setIcon(QIcon(":/icons/AxialIcon.png"));
     d->oAxialParameter->setIconSize(QSize(64,64));
     connect(d->oAxialParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setAxial(bool)));
 
-    d->oCoronalParameter = new medBoolParameter("coronal", this);
+    d->oCoronalParameter = new medBoolParameter("coronal", parent);
     d->oCoronalParameter->setIcon(QIcon(":/icons/CoronalIcon.png"));
     d->oCoronalParameter->setIconSize(QSize(64,64));
     connect(d->oCoronalParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setCoronal(bool)));
 
-    d->oSagittalParameter = new medBoolParameter("sagittal", this);
+    d->oSagittalParameter = new medBoolParameter("sagittal", parent);
     d->oSagittalParameter->setIcon(QIcon(":/icons/SagittalIcon.png"));
     d->oSagittalParameter->setIconSize(QSize(64,64));
     connect(d->oSagittalParameter, SIGNAL(valueChanged(bool)),
             this, SLOT(setSagittal(bool)));
 
-    d->o3dParameter = new medBoolParameter("3d", this);
+    d->o3dParameter = new medBoolParameter("3d", parent);
     d->o3dParameter->setIcon(QIcon(":/icons/3DIcon.png"));
     d->o3dParameter->setIconSize(QSize(64,64));
     connect(d->o3dParameter, SIGNAL(valueChanged(bool)),
@@ -123,6 +123,13 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
 medVtkViewNavigator::~medVtkViewNavigator()
 {
     delete d;
+}
+
+QList<medAbstractParameter*> medVtkViewNavigator::parameters()
+{
+    QList<medAbstractParameter*> params;
+    params.append(d->orientationParameter);
+    return params;
 }
 
 QString  medVtkViewNavigator::identifier() const

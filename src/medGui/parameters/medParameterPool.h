@@ -14,8 +14,7 @@
 #pragma once
 
 #include <QObject>
-
-#include <medGuiExport.h>
+#include <QColor>
 
 #include <medGuiExport.h>
 
@@ -35,6 +34,15 @@ public:
     int count() const;
     void remove (medAbstractParameter* parameter);
 
+    QList<medAbstractParameter*> parameters();
+    QList<medAbstractParameter*> parameters(QString name);
+
+    QString name() const;
+    void setName(QString);
+
+    QColor color();
+    void setColor(QColor color);
+
 private slots:
     void triggerParams();
     void changeParamsValue(bool value);
@@ -42,8 +50,9 @@ private slots:
     void changeParamsValue(double& value);
     void changeParamsValue(QString& value);
 
-private:
     void _prvt_removeInternParam();
+
+private:
     void _prvt_connectParam(medAbstractParameter *parameter);
     void _prvt_disconnectParam(medAbstractParameter *parameter);
 

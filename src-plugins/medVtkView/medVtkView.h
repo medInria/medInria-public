@@ -31,6 +31,8 @@ public:
     virtual QWidget* toolBar();
     virtual QWidget* toolBox();
 
+    virtual QList<medAbstractParameter*> viewParameters();
+
     virtual QPointF mapWorldToDisplayCoordinates( const QVector3D & worldVec );
     virtual QVector3D mapDisplayToWorldCoordinates( const QPointF & scenePoint );
     virtual QVector3D viewCenter();

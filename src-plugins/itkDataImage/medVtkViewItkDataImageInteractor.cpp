@@ -145,7 +145,12 @@ bool medVtkViewItkDataImageInteractor::registered()
     return factory->registerInteractor<medVtkViewItkDataImageInteractor>("medVtkViewItkDataImageInteractor",
                                                                   QStringList () << "medVtkView" <<
                                                                   medVtkViewItkDataImageInteractor::dataHandled());
-                    }
+}
+
+QList<medAbstractParameter*> medVtkViewItkDataImageInteractor::parameters()
+{
+    //return ;
+}
 
 
 void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)

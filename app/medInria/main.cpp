@@ -26,6 +26,7 @@
 #include <medDatabaseController.h>
 #include <medSettingsManager.h>
 #include <medStorage.h>
+#include <medParameterPoolManager.h>
 
 void forceShow(medMainWindow& mainwindow )
 {
@@ -95,6 +96,9 @@ int main(int argc,char* argv[]) {
     #endif
 
     medSettingsManager* mnger = medSettingsManager::instance();
+
+    //TODO GPR: instanciate somewhereelse
+    medParameterPoolManager::instance();
 
     QStringList posargs;
     for (int i=1;i<application.argc();++i) {

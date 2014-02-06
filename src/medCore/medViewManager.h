@@ -42,6 +42,8 @@ public:
 
     QList<medDataIndex> indices(medAbstractView *view) const; 
 
+    QList<medAbstractView *> selectedViews();
+
 public slots:
     void addToSelection(medAbstractView *view);
     void removeFromSelection(medAbstractView *view);
@@ -56,6 +58,7 @@ protected:
 signals:
     //emitted when a new view is opened
     void viewOpened();
+    void viewsSelectionChanged();
 
 private:
     medViewManagerPrivate *d;

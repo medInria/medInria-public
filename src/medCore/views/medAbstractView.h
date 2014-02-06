@@ -27,6 +27,7 @@ class medAbstractViewNavigator;
 class medAbstractNavigator;
 class medAbstractInteractor;
 class medAbstractViewInteractor;
+class medAbstractParameter;
 
 // derive and implement if you need to provide access to your backend
 class medViewBackend {
@@ -87,6 +88,10 @@ public:
     virtual QWidget* toolBar() = 0;
     virtual QWidget* toolBox() = 0;
     virtual QWidget* widget() = 0;
+
+    virtual QList<medAbstractParameter*> viewParameters() = 0;
+    virtual QList<medAbstractParameter*> navigatorsParameters();
+
 
 //TODO shouldbe the role of container IMO - RDE
 signals:

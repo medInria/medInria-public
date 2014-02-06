@@ -41,6 +41,8 @@ public:
     virtual QWidget* widgetForToolBox() const;
     virtual QWidget* widgetForToolBar() const;
 
+    virtual QList<medAbstractParameter*> parameters();
+
 
     virtual medImageView::Orientation orientation() const ;
     virtual void camera(QVector3D &position,

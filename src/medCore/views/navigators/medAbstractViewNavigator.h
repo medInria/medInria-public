@@ -23,7 +23,7 @@ class MEDCORE_EXPORT medAbstractViewNavigator : public medAbstractNavigator
 
 public:
     medAbstractViewNavigator(medAbstractView* parent);
-virtual ~medAbstractViewNavigator();
+    virtual ~medAbstractViewNavigator();
 
     virtual double zoom() const = 0;
     virtual QVector2D pan() const = 0;

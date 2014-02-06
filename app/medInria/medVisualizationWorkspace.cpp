@@ -18,6 +18,7 @@
 #include <medVisualizationLayoutToolBox.h>
 #include <medSettingsManager.h>
 #include <medToolBoxFactory.h>
+#include <medParameterPoolManagerToolBox.h>
 
 class medVisualizationWorkspacePrivate
 {
@@ -53,6 +54,9 @@ medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medWorks
     {
        addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
     }
+
+    medParameterPoolManagerToolBox *poolTb = new medParameterPoolManagerToolBox;
+    addToolBox(poolTb);
 
     connect ( this, SIGNAL(layoutModeChanged(const QString &)),
               stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));

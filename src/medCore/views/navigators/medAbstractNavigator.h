@@ -20,6 +20,8 @@ PURPOSE.
 #include <medImageViewEnum.h>
 
 class medAbstractView;
+class medAbstractParameter;
+
 
 class medAbstractNavigatorPrivate;
 class MEDCORE_EXPORT medAbstractNavigator : public dtkAbstractViewNavigator
@@ -38,6 +40,8 @@ public:
 
     virtual QWidget* widgetForToolBox() const = 0;
     virtual QWidget* widgetForToolBar() const = 0;
+
+    virtual QList<medAbstractParameter*> parameters() = 0;
 
 public slots:
     virtual void updateWidgets(){}

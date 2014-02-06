@@ -46,9 +46,13 @@ public:
 
     void setToolTip(QString& tooltip);
 
+signals:
+    void triggered();
+
 protected:
     void addToInternWidgets(QWidget * widget);
     void blockInternWidgetsSignals(bool block) const;
+
 protected slots:
     void removeFromInternWidgets(QWidget* widget);
 
@@ -101,8 +105,6 @@ public:
 public slots:
     virtual void trigger();
 
-signals:
-    void triggered();
 };
 //--------------------------------------------------------------------------
 //  medAbstractStringParameter

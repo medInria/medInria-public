@@ -14,23 +14,47 @@
 #include <medParameterPool.h>
 
 #include <QMultiHash>
+
 #include <medAbstractParameter.h>
 
 class medParameterPoolPrivate
 {
 public:
     QMultiHash<QString, medAbstractParameter*> pool;
+    QString name;
+    QColor color;
 
     ~medParameterPoolPrivate() {pool.clear();}
 };
 
 medParameterPool::medParameterPool(QObject* parent): d(new medParameterPoolPrivate)
 {
+    d->color = QColor("black");
 }
 
 medParameterPool::~medParameterPool()
 {
     delete d;
+}
+
+QString medParameterPool::name() const
+{
+    return d->name;
+
+}
+void medParameterPool::setName(QString name)
+{
+    d->name = name;
+}
+
+QColor medParameterPool::color()
+{
+    return d->color;
+}
+
+void medParameterPool::setColor(QColor color)
+{
+    d->color = color;
 }
 
 void medParameterPool::append(medAbstractParameter *parameter)
@@ -68,7 +92,15 @@ void medParameterPool::clear()
     d->pool.clear();
 }
 
+QList<medAbstractParameter*> medParameterPool::parameters(QString name)
+{
+    return d->pool.values(name);
+}
 
+QList<medAbstractParameter*> medParameterPool::parameters()
+{
+    return d->pool.values();
+}
 
 void medParameterPool::triggerParams()
 {

@@ -577,3 +577,9 @@ bool medVtkView::eventFilter(QObject * obj, QEvent * event)
 
     return medAbstractView::eventFilter(obj, event);
 }
+
+QList<medAbstractParameter*> medVtkView::viewParameters()
+{
+
+}
+

@@ -191,6 +191,17 @@ QVector2D medAbstractView::pan(void)
     return nav->pan();
 }
 
+QList<medAbstractParameter*> medAbstractView::navigatorsParameters()
+{
+    QList<medAbstractParameter*>  params;
+    params.append(this->primaryNavigator()->parameters());
+
+    foreach(medAbstractNavigator* nav,  d->extraNavigators)
+    {
+        params.append(nav->parameters());
+    }
+    return params;
+}
 /*=========================================================================
                          NOT IMPLEMENTED ON PURPOSE
 *=========================================================================*/

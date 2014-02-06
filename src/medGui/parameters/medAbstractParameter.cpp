@@ -194,6 +194,7 @@ void medAbstractIntParameter::setValue(int value)
     this->blockInternWidgetsSignals(false);
 
     emit valueChanged(value);
+    emit triggered();
 }
 int medAbstractIntParameter::value() const
 {
@@ -215,6 +216,7 @@ void medAbstractDoubleParameter::setValue(double value)
     this->blockInternWidgetsSignals(false);
 
     emit valueChanged(value);
+    emit triggered();
 }
 double medAbstractDoubleParameter::value() const
 {
@@ -237,6 +239,7 @@ void medAbstractBoolParameter::setValue(bool value)
     this->blockInternWidgetsSignals(false);
 
     emit valueChanged(value);
+    emit triggered();
 }
 bool medAbstractBoolParameter::value() const
 {
