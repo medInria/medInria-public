@@ -14,11 +14,11 @@
 #pragma once
 
 #include "medToolBox.h"
-#include "medGuiExport.h"
+#include "v3dViewPluginExport.h"
 
 class medVectorFieldToolBoxPrivate;
 
-class MEDGUI_EXPORT medVectorFieldToolBox : public medToolBox
+class V3DVIEWPLUGIN_EXPORT medVectorFieldToolBox : public medToolBox
 {
     Q_OBJECT
 

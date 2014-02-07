@@ -50,7 +50,6 @@ vtkVectorVisuManager::vtkVectorVisuManager()
     this->Glyph->OrientOn();
     this->Glyph->ScalingOn();
     this->Glyph->SetScaleFactor(1.0);
-    this->Glyph->ClampingOn();
 
     this->Normals = vtkPolyDataNormals::New();
     this->Normals->SetInput( this->Glyph->GetOutput() );
