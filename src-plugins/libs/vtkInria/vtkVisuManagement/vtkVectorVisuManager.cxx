@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -13,397 +13,220 @@
 
 #include "vtkVectorVisuManager.h"
 
-#include <vtkProperty.h>
 #include <vtkObjectFactory.h>
 #include <vtkPointData.h>
-#include <vtkCellArray.h>
-#include <vtkRenderWindow.h>
+#include <vtkArrowSource.h>
+#include <vtkProperty.h>
+#include <vtkMath.h>
+#include <vtkMatrix4x4.h>
+#include <vtkInformation.h>
+#include <vtkLookupTable.h>
 
-#include <vtkGlyph3D.h>
-
-#include <sstream>
-#include <assert.h>
-#include <cmath>
-
-#include <stdio.h>
-#include <vtkCellData.h>
-#include <vtkFloatArray.h>
-
-vtkCxxRevisionMacro(vtkVectorVisuManager, "$Revision: 1112 $");
-vtkStandardNewMacro(vtkVectorVisuManager);
-
-void vtkVectorVisuManagerCallback::Execute ( vtkObject *caller, unsigned long, void* )
-{
-  // get the box widget
-  vtkBoxWidget *widget = vtkBoxWidget::SafeDownCast (caller);
-
-  // get the inputed vtkPolyData
-  vtkUnstructuredGrid* input = (vtkUnstructuredGrid*)widget->GetInput();
-  if( !input )
-  {
-    std::cout<<"ouch !..."<<std::endl;
-    
-    return;
-  }
-  
-  // Get the poly data defined by the vtkBoxWidget
-  vtkPolyData* myBox = vtkPolyData::New();
-  widget->GetPolyData(myBox);
-  
-  // myBox contains 15 points and points 8 to 13
-  // define the bounding box
-  double xmin, xmax, ymin, ymax, zmin, zmax;
-  double* pt = myBox->GetPoint(8);
-  xmin = pt[0];
-  pt = myBox->GetPoint(9);
-  xmax = pt[0];
-  pt = myBox->GetPoint(10);
-  ymin = pt[1];
-  pt = myBox->GetPoint(11);
-  ymax = pt[1];
-  pt = myBox->GetPoint(12);
-  zmin = pt[2];
-  pt = myBox->GetPoint(13);
-  zmax = pt[2];
-
-  this->Box->SetBounds(xmin, xmax, ymin, ymax, zmin, zmax);  
-  this->VectorLimiter->Update();
-
-  myBox->Delete();  
-}
-
-
+vtkStandardNewMacro(vtkVectorVisuManager)
 
 vtkVectorVisuManager::vtkVectorVisuManager()
 {
-  this->Input = 0;
-  this->RWin = 0;
-  this->BoxWidget    = vtkBoxWidget::New();
-  this->Callback     = vtkVectorVisuManagerCallback::New();
-  this->Mapper       = vtkDataSetMapper::New();
-  this->Actor        = vtkActor::New();
-  this->VectorFilter = vtkGlyph3D::New();
-  this->VectorFilter->SetScaleModeToScaleByVector();
-  this->VectorFilter->SetColorModeToColorByScalar();
-  this->VectorFilter->SetScaleFactor (5.0);
-  this->RenderingMode = RENDER_IS_POLYLINES;
+    this->VOI = vtkExtractVOI::New();
+    this->VOI->SetSampleRate(1,1,1);
 
-  this->BoxWidget->RotationEnabledOff();
-  this->BoxWidget->SetPlaceFactor (1.0);
-  this->BoxWidget->AddObserver (vtkCommand::InteractionEvent, this->Callback);
-  this->BoxWidgetVisibility = true;
+    this->Assign = vtkAssignAttribute::New();
+    Assign->SetInput(this->VOI->GetOutput());
 
-  this->BoxWidget->GetOutlineProperty()->SetColor (0.3,0.3,1.0);
-  this->BoxWidget->GetHandleProperty()->SetColor (0.8,0.8,1.0);
+    //tells vtkAssignAttribute to make the active scalars also the active vectors.
+    Assign->Assign( vtkDataSetAttributes::SCALARS,
+                    vtkDataSetAttributes::VECTORS, vtkAssignAttribute::POINT_DATA);
 
-  this->Actor->SetMapper (this->Mapper);  
-  this->Actor->GetProperty()->SetLineWidth (3.0);
-  
+    this->Orienter = vtkVectorOrienter::New();
+    this->Orienter->SetInput( this->Assign->GetOutput() );
+
+    vtkArrowSource *arrowSource = vtkArrowSource::New();
+
+    this->Glyph = vtkGlyph3D::New();
+    this->Glyph->SetInput( this->Orienter->GetOutput() );
+    this->Glyph->SetSourceConnection(arrowSource->GetOutputPort());
+    this->Glyph->SetVectorModeToUseVector();
+    this->Glyph->SetColorModeToColorByVector();
+    this->Glyph->SetScaleModeToScaleByVector();
+    this->Glyph->OrientOn();
+    this->Glyph->ScalingOn();
+    this->Glyph->SetScaleFactor(1.0);
+    this->Glyph->ClampingOn();
+
+    this->Normals = vtkPolyDataNormals::New();
+    this->Normals->SetInput( this->Glyph->GetOutput() );
+
+    this->NormalsOrienter = vtkPolyDataNormalsOrienter::New();
+    this->NormalsOrienter->SetInput(this->Normals->GetOutput());
+
+    this->Mapper = vtkPolyDataMapper::New();
+    this->Mapper->SetColorModeToMapScalars();
+    this->Mapper->SetInput( this->NormalsOrienter->GetOutput() );
+
+    this->Actor = vtkActor::New();
+    this->Actor->SetMapper( this->Mapper );
+
+    this->Input = 0;
+    this->ValueArray = vtkDoubleArray::New();
+
+    this->CurrentColorMode = ColorByVectorMagnitude;
 }
 
 
 vtkVectorVisuManager::~vtkVectorVisuManager()
 {
-  this->BoxWidget->RemoveObserver (this->Callback);
-  this->BoxWidget->SetInteractor (NULL);
+    this->VOI->Delete();
+    this->Glyph->Delete();
+    this->Mapper->Delete();
+    this->Actor->Delete();
+    this->Assign->Delete();
+    this->Orienter->Delete();
+    this->ValueArray->Delete();
+}
 
-  if (this->RWin)
-  {
 
-    
-//     vtkRenderer* first_renderer = this->RWin->GetRenderWindow()->GetRenderers()->GetFirstRenderer();
-    vtkRenderer* first_renderer = this->RWin->FindPokedRenderer(
-				this->RWin->GetLastEventPosition()[0],
-				this->RWin->GetLastEventPosition()[1]);
-    if (first_renderer)
+void vtkVectorVisuManager::SetInput(vtkImageData* data, vtkMatrix4x4 *matrix)
+{
+    if( !data )
     {
-      first_renderer->RemoveActor(this->GetActor());
+        std::cerr << "Error: null data." << std::endl;
+        return;
     }
-  }
-  this->BoxWidget->Delete();
-  this->Callback->Delete();
-  this->Mapper->Delete();
-  this->Actor->Delete();
-  this->VectorFilter->Delete();
-  if (this->RWin)
-  {
-    this->RWin->Delete();
-  }
-  if (this->Input)
-    this->Input->Delete();
-  
-  
-}
 
+    this->Input = data;
 
-void vtkVectorVisuManager::ProvideColorsToVectors()
-{
-  if(!this->Input)
-    return;
-
-  vtkFloatArray* vectors = vtkFloatArray::SafeDownCast (this->Input->GetPointData()->GetVectors());
-
-  if (!vectors)
-    return;
-
-  vtkUnsignedCharArray* colors = vtkUnsignedCharArray::New();
-  colors->SetNumberOfComponents (3);
-  colors->SetName("vector_colors");
-  
-  int npts = 0;
-
-  npts = this->Input->GetNumberOfPoints();
-
-  
-  for( int i=0; i<npts; i++)
-  {
-    float vector[3];
-    vectors->GetTupleValue (i, vector);
-    double norm = sqrt (vector[0]*vector[0]+
-			vector[1]*vector[1]+
-			vector[2]*vector[2]);
-    vector[0] /= norm;
-    vector[1] /= norm;
-    vector[2] /= norm;
-    
-    unsigned char color[3];
-    for( unsigned int j=0; j<3; j++)
-      color[j] = (unsigned char)( fabs (vector[j])*255.0 );
-    
-    colors->InsertNextTupleValue( color );
-  }
-  
-  this->Input->GetPointData()->AddArray (colors);
-//   if (this->Input->GetPointData()->GetScalars() && this->Input->GetPointData()->GetScalars()->GetName())
-//     this->ScalarName = this->Input->GetPointData()->GetScalars()->GetName();
-
-  this->Input->GetPointData()->SetActiveScalars(colors->GetName());
-//   this->Input->GetPointData()->SetScalars (colors);
-//   std::cout<<"setting colors"<<std::endl;
-  
-  colors->Delete();
-}
-
-
-void vtkVectorVisuManager::NormalizeVectors()
-{
-  bool is_in_points = true;
-  
-  vtkFloatArray* vectors = vtkFloatArray::SafeDownCast (this->Input->GetPointData()->GetVectors());
-
-  if (!vectors)
-    return;
-
-  int npts = 0;
-  if (is_in_points)
-    npts = this->Input->GetNumberOfPoints();
-  else
-    npts = this->Input->GetNumberOfCells();
-    
-  for( int i=0; i<npts; i++)
-  {
-    float vector[3];
-    float v2[3];
-    
-    vectors->GetTupleValue (i, vector);
-    double norm = sqrt (vector[0]*vector[0]+
-			vector[1]*vector[1]+
-			vector[2]*vector[2]);
-    v2[0] = vector[0] / norm;
-    v2[1] = vector[1] / norm;
-    v2[2] = vector[2] / norm;
-    
-    vectors->SetTupleValue (i, v2);
-    
-  }
-
-
-
-}
-
-
-
-
-void vtkVectorVisuManager::SetInputInternal(vtkDataSet* input)
-{
-
-  
-  if( !input )
-    return;
-  if( !input->GetNumberOfPoints() )
-    return;
-  vtkPointSet* pointset = vtkPointSet::SafeDownCast (input);
-  if( !pointset )
-    return;
-  
-  
-  if (this->Input == input)
-  {
-    return;
-  }
-  
-  if (this->Input)
-  {
-    this->Input->Delete();
-    this->Input = NULL;
-  }
-
-  this->Input =  input;
-  this->Input->Register(this);
-  
-//   if (vtkPolyData::SafeDownCast (input))
-//     this->Input = vtkPolyData::New();
-//   else if (vtkUnstructuredGrid::SafeDownCast (input))
-//     this->Input = vtkUnstructuredGrid::New();
-//   else
-//   {
-//     vtkWarningMacro (<<"wrong dataset format !"<<endl);
-//     return;
-//   }
-//   this->Input->DeepCopy (input);
-//   vtkPointSet* newpointset = vtkPointSet::SafeDownCast (this->Input);
-//   newpointset->SetPoints(pointset->GetPoints());
-  
-
-  if (this->Input)
-  {
-    this->Initialize();
-  }
-  
-}
-
-
-void vtkVectorVisuManager::SetInput(vtkDataSet* input)
-{
-
-  this->SetInputInternal (input);
-
-  if(!this->GetInput())
-    return;  
-  
-  this->ParseVectorFromCellsToPoints();
-  this->ProvideColorsToVectors();
-//   this->NormalizeVectors();
-
-  this->Callback->GetVectorLimiter()->SetInput ( this->GetInput() );
-  
-  this->BoxWidget->SetInput ( this->GetInput() );
-  this->BoxWidget->PlaceWidget();
-
-  this->Callback->Execute (this->BoxWidget, 0, NULL);  
-
-  vtkFloatArray* vectors = vtkFloatArray::SafeDownCast (this->Input->GetPointData()->GetVectors());
-  if (vectors)
-  {
-    this->VectorFilter->SetInput(this->Callback->GetOutput());
-    this->VectorFilter->Update();
-    this->Mapper->SetInput (this->VectorFilter->GetOutput());
-  }
-  else
-  {
-    this->Mapper->SetInput (this->Callback->GetOutput());
-  }
-
-//   if (this->ScalarName.size() > 2)
-//     this->Input->GetPointData()->SetActiveScalars(this->ScalarName.c_str());
-//   else
-//     this->Mapper->SetScalarVisibility(false);
-  
-    
-    
-  if (this->RWin)
-  {  
-//     vtkRenderer* first_renderer = this->RWin->GetRenderWindow()->GetRenderers()->GetFirstRenderer();
-
-    vtkRenderer* first_renderer = this->RWin->FindPokedRenderer(
-				this->RWin->GetLastEventPosition()[0],
-				this->RWin->GetLastEventPosition()[1]);
-    
-
-    if (first_renderer)
+    if(matrix)
     {
-      first_renderer->AddActor(this->GetActor());
+        this->Actor->SetUserMatrix(matrix);
     }
-  }
-  
+
+    this->VOI->SetInput ( this->Input );
+    this->Orienter->SetOrientationMatrix(matrix);
+    this->NormalsOrienter->SetOrientationMatrix(matrix);
+
+}
+
+void vtkVectorVisuManager::SetVOI(const int& imin, const int& imax,
+                                  const int& jmin, const int& jmax,
+                                  const int& kmin, const int& kmax)
+{
+    this->VOI->SetVOI(imin,imax,jmin,jmax,kmin,kmax);
+    this->Orienter->SetVOI(imin,imax,jmin,jmax,kmin,kmax);
+
+    this->Orienter->Update();
+
+    SetColorMode(CurrentColorMode);
 }
 
 
-void vtkVectorVisuManager::SwapInputOutput()
+void vtkVectorVisuManager::SetGlyphScale(const float& f)
 {
-}
-
-
-void vtkVectorVisuManager::Reset()
-{
-  if( !this->GetInput() ) return;
-
-  this->BoxWidget->SetInput ( this->GetInput() );
-  this->Callback->GetVectorLimiter()->SetInput ( this->Callback->GetVectorLimiter()->GetOutput() );
-  this->Callback->Execute (this->BoxWidget, 0, NULL);
-}
-
-
-void vtkVectorVisuManager::SetVisibility (bool isVisible)
-{
-  this->Actor->SetVisibility (isVisible);
-  if (isVisible)
-    this->SetBoxWidget (this->BoxWidgetVisibility);
-}
-
-void vtkVectorVisuManager::Initialize()
-{
-  if (this->Callback->GetVectorLimiter()->GetOutput())
-    this->Callback->GetVectorLimiter()->GetOutput()->Initialize();
-  this->Callback->GetVectorLimiter()->RemoveAllInputs();
-
-  this->VectorFilter->GetOutput()->Initialize();
-  
-}
-
-
-void vtkVectorVisuManager::ParseVectorFromCellsToPoints()
-{
-  vtkFloatArray* vectors = vtkFloatArray::SafeDownCast (this->Input->GetPointData()->GetVectors());
-  if (vectors)
-    return;
-  
-  vectors = vtkFloatArray::SafeDownCast (this->Input->GetCellData()->GetVectors());
-  
-  if (!vectors)
-    return;
-
-  vtkFloatArray* newvectors = vtkFloatArray::New();
-  
-  newvectors->SetNumberOfComponents (3);
-  std::ostringstream os;
-  if (vectors->GetName())
-    os << vectors->GetName();
-  os << "(copy)";
-  
-  newvectors->SetName(os.str().c_str());
-  
-  int npts = this->Input->GetNumberOfPoints();
-    
-  for( int pointid=0; pointid<npts; pointid++)
-  {
-    vtkIdList* list = vtkIdList::New();
-    this->Input->GetPointCells (pointid, list);
-    float vector[3] = {0.0, 0.0, 0.0};
-    for (int j=0; j<list->GetNumberOfIds(); j++)
+    if (f <= 0.0)
     {
-      int cellid = list->GetId (j);
-      float t_vector[3];
-      vectors->GetTupleValue (cellid, t_vector);
-      vector[0]+=t_vector[0];
-      vector[1]+=t_vector[1];
-      vector[2]+=t_vector[2];
+        cerr << "[Glyphs::SetGlyphScale] Invalid input range" << endl;
+        return;
     }
-    newvectors->InsertNextTupleValue( vector );
-    list->Delete();
+
+    this->Glyph->SetScaleFactor(f);
+}
+
+void vtkVectorVisuManager::SetSampleRate(const int& a, const int& b, const int& c)
+{
+    this->VOI->SetSampleRate(a,b,c);
+}
+
+
+double vtkVectorVisuManager::GetGlyphScale()
+{
+    return this->Glyph->GetScaleFactor();
+}
+
+
+void vtkVectorVisuManager::SetColorMode(ColorMode mode)
+{
+    this->Orienter->Modified();
+    this->Orienter->Update();
+
+    switch( mode )
+    {
+    case ColorByVectorMagnitude:
+        SetColorByVectorMagnitude();
+        break;
+    case ColorByVectorDirection:
+        SetUpLUTToMapVectorDirection();
+        break;
+    default:
+        return;
+    }
+
+    this->CurrentColorMode =  mode;
+
+    this->Glyph->Modified();
+}
+
+void vtkVectorVisuManager::SetProjection(bool enable)
+{
+    this->Orienter->SetProjection(enable);
+
+    SetColorMode(CurrentColorMode);
+}
+
+void vtkVectorVisuManager::SetColorByVectorMagnitude()
+{
+    this->Glyph->SetColorModeToColorByVector();
+    this->Mapper->SetLookupTable(0);
+
+    double range[2];
+    if(this->Orienter->GetOutput()->GetPointData()->GetScalars())
+    {
+        this->Orienter->GetOutput()->GetPointData()->GetScalars()->GetRange(range);
+        this->Mapper->SetScalarRange(range[0],range[1]);
+    }
+
+    this->Mapper->Modified();
+}
+
+void vtkVectorVisuManager::SetUpLUTToMapVectorDirection()
+{
+  vtkDataSet *data = Orienter->GetOutput();
+
+  int numPoints    = data->GetNumberOfPoints();
+
+  this->ValueArray->Initialize();
+  this->ValueArray->SetNumberOfComponents(1);
+  this->ValueArray->SetNumberOfTuples(numPoints);
+
+  vtkLookupTable* lut = vtkLookupTable::New();
+  lut->SetNumberOfTableValues(numPoints);
+
+  for(int i=0;i<numPoints;i++)
+  {
+    // Color coding with the eigenvector
+    double vect[3];
+    data->GetPointData()->GetVectors()->GetTuple(i,vect);
+
+    vtkMath::Normalize(vect);
+
+    double r = fabs(vect[0]);
+    double g = fabs(vect[1]);
+    double b = fabs(vect[2]);
+
+    r = (r>1.0)?1.0:r;
+    g = (g>1.0)?1.0:g;
+    b = (b>1.0)?1.0:b;
+
+    lut->SetTableValue(i, r, g, b);
+
+    this->ValueArray->SetTuple1(i, (unsigned int)i);
   }
 
-  this->Input->GetPointData()->SetVectors (newvectors);
-  newvectors->Delete();
-  
+  data->GetPointData()->SetScalars( this->ValueArray );
+
+  this->Glyph->SetColorModeToColorByScalar();
+
+  this->Glyph->Modified();
+
+  this->Mapper->SetLookupTable(lut);
+  this->Mapper->SetScalarRange(0,numPoints-1);
+
+  lut->Delete();
 }

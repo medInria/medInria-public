@@ -101,6 +101,8 @@ set(${PROJECT_NAME}_HEADERS_MOC
   ${${PROJECT_NAME}_TTK_DEPENDENT_HEADERS_MOC}
   v3dViewSHInteractor.h
   medSHViewToolBox.h
+  medVectorFieldToolBox.h
+  v3dViewVectorFieldInteractor.h
   )
 
 set(${PROJECT_NAME}_HEADERS
@@ -126,6 +128,8 @@ set(${PROJECT_NAME}_SOURCES
   v3dViewSHInteractor.cpp
   medSHViewToolBox.cpp
   ${${PROJECT_NAME}_TTK_DEPENDENT_SOURCES}
+  medVectorFieldToolBox.cpp
+  v3dViewVectorFieldInteractor.cpp
   )
 
 

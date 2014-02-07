@@ -4,7 +4,7 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
@@ -15,242 +15,102 @@
 
 #include "vtkVisuManagementExport.h"
 
-#include <vtkCommand.h>
-#include <vtkBoxWidget.h>
-#include <vtkDataSet.h>
-#include <vtkPolyData.h>
-#include <vtkPointSet.h>
-#include <vtkUnstructuredGrid.h>
-
-#include <vtkLimitVectorsToVOI.h>
-
-#include <vtkDataSetMapper.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkRenderer.h>
-#include <vtkRendererCollection.h>
+// vtk includes
+#include <vtkObject.h>
 #include <vtkActor.h>
-#include <vtkBox.h>
-
+#include <vtkPolyDataMapper.h>
+#include <vtkPolyDataNormals.h>
 #include <vtkGlyph3D.h>
+#include <vtkExtractVOI.h>
+#include <vtkPolyDataAlgorithm.h>
+#include <vtkUnsignedIntArray.h>
+#include <vtkDoubleArray.h>
+#include <vtkSmartPointer.h>
+#include <vtkImageData.h>
+#include <vtkVectorOrienter.h>
+#include <vtkAssignAttribute.h>
 
-#include <vtkExtractGeometry.h>
+#include <vtkPolydataNormalsOrienter.h>
 
-//BTX
-class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManagerCallback: public vtkCommand
-{
-
- public:
-  static vtkVectorVisuManagerCallback* New()
-  { return new vtkVectorVisuManagerCallback; }
-
-  virtual void Execute ( vtkObject *caller, unsigned long, void* );
-
-  vtkUnstructuredGrid* GetOutput() const
-  { return this->VectorLimiter->GetOutput(); }  
-
-/*   vtkLimitVectorsToVOI* GetVectorLimiter() const */
-/*   { return this->VectorLimiter; }   */
-  vtkExtractGeometry* GetVectorLimiter() const
-  { return this->VectorLimiter; }  
-
-  
- protected:
-  vtkVectorVisuManagerCallback()
-  {
-/*     this->VectorLimiter = vtkLimitVectorsToVOI::New();  */
-    this->VectorLimiter = vtkExtractGeometry::New();
-    this->Box = vtkBox::New();
-
-    this->VectorLimiter->SetImplicitFunction (this->Box);
-    
-  }
-  ~vtkVectorVisuManagerCallback()
-  {
-    this->VectorLimiter->Delete();
-    this->Box->Delete();
-    
-  }
-
-  
-  
- private:
-  //vtkLimitVectorsToVOI* VectorLimiter;
-  vtkExtractGeometry* VectorLimiter;
-  vtkBox* Box;
-  
-  
-  
-};
-//ETX
-
+class vtkMatrix4x4;
 
 class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
 {
+
  public:
 
-  static vtkVectorVisuManager* New();
-  vtkTypeRevisionMacro(vtkVectorVisuManager, vtkObject);
-
-  //BTX
-  enum RenderingModeIds
-  {
-    RENDER_IS_POLYLINES,
-    RENDER_IS_TUBES,
-    RENDER_IS_RIBBONS
-  };
-  //ETX
-
-  /** Reset the pipeline, deactivate the CP box and release memory.*/
-  void Initialize();
-  
-  /** Set the vtkDataSet input */
-  void SetInput (vtkDataSet*);
-    
-  /** Get the vtkDataSet input */
-  vtkDataSet* GetInput() const
-  { return this->Input; }
-
-  /** Set the generated actor */
-  vtkDataSet* GetOutput() const
-  { return this->Callback->GetOutput(); }
-  vtkPolyData* GetOutput2() const
-  { return this->VectorFilter->GetOutput(); }
-  vtkActor* GetActor()
-  { return this->Actor; }
-
-  vtkRenderWindowInteractor* GetRenderWindowInteractor()
-  {
-    return this->RWin;
-  }
-  
-
-  /** Set the render window interactor */
-  void SetRenderWindowInteractor (vtkRenderWindowInteractor* rwin)
-  {
-    if( !rwin )
+    enum ColorMode
     {
-      return;
-    }
+        ColorByVectorMagnitude = 0,
+        ColorByVectorDirection
+    };
 
-    if( rwin != this->RWin )
+    enum ViewOrientation
     {
+        axial,
+        sagittal,
+        coronal
+    };
 
-      if( this->RWin != NULL )
-      {
-        this->RWin->UnRegister (this);
-      }
+  static vtkVectorVisuManager *New();
 
-      this->BoxWidget->SetInteractor (rwin);
-      this->RWin = rwin;
-      this->RWin->Register(this);
-    }
-    
-  }
+  void SetInput(vtkImageData* data, vtkMatrix4x4 *matrix);
 
-  /** Set the rendering mode to poly lines */
-  void SetRenderingModeToPolyLines()
-  {
-    this->RenderingMode = RENDER_IS_POLYLINES;
-    this->Mapper->SetInput (this->Callback->GetOutput());
-  }
+  /** Set the Volume Of Interest (VOI). Consists in
+      6 integers: xmin, xmax, ymin, ymax, zmin, zmax.*/
+  void SetVOI(const int&,const int&,const int&,const int&,const int&,const int&);
 
-/*   /\** Set the rendering mode to tubes *\/ */
-/*   void SetRenderingModeToTubes() */
-/*   { */
-/*     m_RenderingMode = RENDER_IS_TUBES;     */
-/*     m_TubeFilter->Update(); */
-/*     m_Mapper->SetInput (m_TubeFilter->GetOutput());     */
-/*   } */
+  /** Get the inputed dataset. */
+  vtkGetObjectMacro (Input, vtkImageData)
 
-/*     /\** Set the rendering mode to tubes *\/ */
-/*   void SetRenderingModeToRibbons() */
-/*   { */
-/*     m_RenderingMode = RENDER_IS_RIBBONS; */
-/*     m_RibbonFilter->Update(); */
-/*     m_Mapper->SetInput (m_RibbonFilter->GetOutput()); */
-/*   } */
+  /** Get the freshly generated actor. */
+  vtkGetObjectMacro (Actor, vtkActor)
 
-  /** Set the ouput of the callback to ite input. Thus, users
-      can extract a subsample of fibers, and then another subsample,
-      and so on. */
-  void SwapInputOutput();
+  /** Set a scaling factor for the glyhs. */
+  void SetGlyphScale(const float& f);
+  double GetGlyphScale();
 
-  /** Reset the fiber manager to its first input. */
-  void Reset();
+  /** Set the sample rate. 1 over n Vectors will be
+      displaid.*/
+  void SetSampleRate(const int&,const int&,const int&);
 
-  /** Switch on/off the visibility of the fibers */
-  void SetVisibility (bool);
+  /** Get the vtkMapper. */
+  vtkGetObjectMacro (Mapper, vtkMapper)
 
-  /** Set the box widget on */
-  void BoxWidgetOn()
-  {
-    this->BoxWidgetVisibility = true;
-    this->BoxWidget->On();
-  }
+  /** Get the vtkGlyph3D. */
+  vtkGetObjectMacro (Glyph, vtkGlyph3D)
 
-  /** Set the box widget on */
-  void BoxWidgetOff()
-  {
-    this->BoxWidgetVisibility = false;
-    this->BoxWidget->Off();
-  }
+  void SetColorMode(ColorMode mode);
 
-  /** Set the box widget on */
-  void SetBoxWidget (bool a)
-  {
-    this->BoxWidgetVisibility = a;
-    if(a)
-      this->BoxWidget->On();
-    else
-      this->BoxWidget->Off();
-  }
+  void SetProjection(bool enable);
 
-  /** Get the box widget visibility */
-  bool GetBoxWidgetVisibility() const
-  { return this->BoxWidgetVisibility; }
-
-  /** Set Radius & ribbon width */
-  void SetRadius (int r)
-  {
-  }
-
-/*   /\** Return the fiber ids selected by the box widget *\/ */
-/*   vtkCellArray* GetSelectedCells() const */
-/*   { return this->Callback->GetVectorLimiter()->GetOutput()->GetLines(); } */
-  
  protected:
+
   vtkVectorVisuManager();
   ~vtkVectorVisuManager();
 
-  void ProvideColorsToVectors();
-  void NormalizeVectors();
-  void ParseVectorFromCellsToPoints();
-  void SetInputInternal(vtkDataSet* input);
-  
-  
-   
+  void SetUpLUTToMapVectorDirection();
+  void SetColorByVectorMagnitude();
+
+
  private:
 
-  vtkVectorVisuManagerCallback* Callback;
+  vtkExtractVOI*            VOI;
+  vtkAssignAttribute *      Assign;
+  vtkVectorOrienter*        Orienter;
+  vtkGlyph3D*               Glyph;
+  vtkPolyDataMapper*        Mapper;
+  vtkActor*                 Actor;
+  vtkPolyDataNormals*       Normals;
+  vtkPolyDataNormalsOrienter* NormalsOrienter;
 
-  vtkDataSet*   Input;
-  vtkBoxWidget* BoxWidget;
-  bool          BoxWidgetVisibility;
-  vtkGlyph3D*   VectorFilter;
-  
-  vtkDataSetMapper* Mapper;
-  vtkActor*         Actor;
-  RenderingModeIds  RenderingMode;
+  vtkImageData*             Input;
 
-  vtkRenderWindowInteractor* RWin;
+  vtkDoubleArray*           ValueArray;
 
-  //BTX
-  std::string ScalarName;
-  //ETX
-  
+  ColorMode                 CurrentColorMode;
+
 };
-
 
 
 

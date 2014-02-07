@@ -97,6 +97,7 @@ bool itkDataImageWriterBase::write(const QString& path)
               write_image<4,double>(path,"itkDataImageDouble4")         ||
               write_image<3,itk::Vector<unsigned char,3> >(path,"itkDataImageVectorUChar3") || //    Added by Theo.
               write_image<3,itk::Vector<float,3> >(path,"itkDataImageVectorFloat3") ||
+              write_image<3,itk::Vector<double,3> >(path,"itkDataImageVectorDouble3") ||
               write_image<3,itk::RGBAPixel<unsigned char> >(path,"itkDataImageRGBA3") ||
               write_image<3,itk::RGBPixel<unsigned char> >(path,"itkDataImageRGB3")))
         {
