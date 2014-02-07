@@ -117,7 +117,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     inputDescriptionLabel->setText(tr("Input image:"));
     inputLabelLayout->addWidget(inputDescriptionLabel);
     d->inputLabel = new QLabel(mainPage);
-    d->inputLabel->setText("None");
+    d->inputLabel->setText("Please drop an image");
     d->inputLabel->setAlignment(Qt::AlignRight);
     d->inputLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Expanding);
     inputLabelLayout->addWidget(d->inputLabel);
@@ -142,6 +142,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     }
     
     this->addWidget(mainPage);
+    this->setEnabled(false);
 }
 
 medDiffusionSelectorToolBox::~medDiffusionSelectorToolBox(void)
@@ -229,6 +230,7 @@ void medDiffusionSelectorToolBox::setInputImage(medAbstractDataImage *data)
     if (!data)
         return;
 
+    this->setEnabled(true);
     d->input = data;
     
     d->inputLabel->setText(data->metadata(medMetaDataKeys::SeriesDescription.key()));
@@ -240,7 +242,9 @@ void medDiffusionSelectorToolBox::setInputImage(medAbstractDataImage *data)
 void medDiffusionSelectorToolBox::clearInput()
 {
     d->input = 0;
-    d->inputLabel->setText("None");
+    d->inputLabel->setText("Please drop an image");
+    
+    this->setEnabled(false);
 }
 
 void medDiffusionSelectorToolBox::checkInputGradientDirections()
