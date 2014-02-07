@@ -47,6 +47,7 @@ public:
   void SetOrientationMatrix(vtkMatrix4x4 *matrix){Matrix=matrix;}
 
   void SetProjection(bool enable){Projection=enable;}
+  bool GetProjection(){return Projection;}
 
 
 protected:

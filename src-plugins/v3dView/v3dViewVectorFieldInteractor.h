@@ -48,6 +48,13 @@ public:
     template <class ImageType>
     void test(ImageType *dataset);
 
+    double getScale();
+    int* getSampleRate();
+    int getColorMode();
+    bool getProjection();
+    bool getShowAxial();
+    bool getShowCoronal();
+    bool getShowSagittal();
 
 public slots:
     // Mandatory implementations from medVtkViewInteractor

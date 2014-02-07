@@ -73,6 +73,7 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
   /** Set the sample rate. 1 over n Vectors will be
       displaid.*/
   void SetSampleRate(const int&,const int&,const int&);
+  int* GetSampleRate(){return this->VOI->GetSampleRate();}
 
   /** Get the vtkMapper. */
   vtkGetObjectMacro (Mapper, vtkMapper)
@@ -81,8 +82,10 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorVisuManager : public vtkObject
   vtkGetObjectMacro (Glyph, vtkGlyph3D)
 
   void SetColorMode(ColorMode mode);
+  ColorMode GetColorMode(){return this->CurrentColorMode;}
 
   void SetProjection(bool enable);
+  bool GetProjection(){return this->Orienter->GetProjection();}
 
  protected:
 

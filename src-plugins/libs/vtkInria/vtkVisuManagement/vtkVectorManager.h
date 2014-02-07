@@ -49,10 +49,12 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorManager: public vtkObject
 
     /** Set a scaling factor for the glyhs. */
   void SetGlyphScale(const float& f);
+  double GetGlyphScale() {return this->VectorVisuManagerAxial->GetGlyphScale();}
 
   /** Set the sample rate. 1 over n tensors will be
       displaid.*/
   void SetSampleRate(const int&,const int&,const int&);
+  int* GetSampleRate() {return this->VectorVisuManagerAxial->GetSampleRate();}
 
   /** Generate the glyph and add them to the RenderWindowInteractor */
   void Update();
@@ -87,15 +89,21 @@ class VTK_VISUMANAGEMENT_EXPORT vtkVectorManager: public vtkObject
 
   /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
   void SetAxialSliceVisibility (int);
+  int GetAxialSliceVisibility (){return this->VectorVisuManagerAxial->GetActor()->GetVisibility();}
 
   /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
   void SetSagittalSliceVisibility (int);
+  int GetSagittalSliceVisibility (){return this->VectorVisuManagerSagittal->GetActor()->GetVisibility();}
 
   /** Set the Axial/Coronal/Sagittal slice visibility on or off. */
   void SetCoronalSliceVisibility (int);
+  int GetCoronalSliceVisibility (){return this->VectorVisuManagerCoronal->GetActor()->GetVisibility();}
 
   void SetColorMode(int mode);
+  int GetColorMode(){return this->VectorVisuManagerAxial->GetColorMode();}
+
   void SetProjection(bool enable);
+  bool GetProjection(){return this->VectorVisuManagerAxial->GetProjection();}
 
 
  protected:

@@ -106,6 +106,13 @@ void medVectorFieldToolBox::update (dtkAbstractView *view)
 
     d->view = qobject_cast<v3dView*>(view);
     d->interactor = qobject_cast<v3dViewVectorFieldInteractor*>(d->view->dtkAbstractView::interactor("v3dViewVectorFieldInteractor"));
+    d->scaleFactor->setValue(d->interactor->getScale());
+    d->sampleRateControl->setValue(*d->interactor->getSampleRate());
+    d->colorMode->setCurrentIndex(d->interactor->getColorMode());
+    d->projection->setChecked(d->interactor->getProjection());
+    d->hideShowAxialCheckBox->setChecked(d->interactor->getShowAxial());
+    d->hideShowCoronalCheckBox->setChecked(d->interactor->getShowCoronal());
+    d->hideShowSagittalCheckBox->setChecked(d->interactor->getShowSagittal());
 }
 
 

@@ -243,10 +243,20 @@ void v3dViewVectorFieldInteractor::setScale(double scale)
     d->view->update();
 }
 
+double v3dViewVectorFieldInteractor::getScale()
+{
+    return d->manager->GetGlyphScale();
+}
+
 void v3dViewVectorFieldInteractor::setSampleRate(int sampleRate)
 {
     d->manager->SetSampleRate(sampleRate,sampleRate,sampleRate);
     d->view->update();
+}
+
+int* v3dViewVectorFieldInteractor::getSampleRate()
+{
+    return d->manager->GetSampleRate();
 }
 
 void v3dViewVectorFieldInteractor::setColorMode(int mode)
@@ -255,10 +265,20 @@ void v3dViewVectorFieldInteractor::setColorMode(int mode)
     d->view->update();
 }
 
+int v3dViewVectorFieldInteractor::getColorMode()
+{
+    return d->manager->GetColorMode();
+}
+
 void v3dViewVectorFieldInteractor::setProjection(bool enable)
 {
     d->manager->SetProjection(enable);
     d->view->update();
+}
+
+bool v3dViewVectorFieldInteractor::getProjection()
+{
+    return d->manager->GetProjection();
 }
 
 void v3dViewVectorFieldInteractor::changePosition(const QVector3D& position, bool propagate)
@@ -277,6 +297,11 @@ void v3dViewVectorFieldInteractor::setShowAxial(bool show)
     d->view->update();
 }
 
+bool v3dViewVectorFieldInteractor::getShowAxial()
+{
+    return d->manager->GetAxialSliceVisibility();
+}
+
 void v3dViewVectorFieldInteractor::setShowCoronal(bool show)
 {
     if(show)
@@ -287,6 +312,11 @@ void v3dViewVectorFieldInteractor::setShowCoronal(bool show)
     d->view->update();
 }
 
+bool v3dViewVectorFieldInteractor::getShowCoronal()
+{
+    return d->manager->GetCoronalSliceVisibility();
+}
+
 void v3dViewVectorFieldInteractor::setShowSagittal(bool show)
 {
     if(show)
@@ -295,6 +325,11 @@ void v3dViewVectorFieldInteractor::setShowSagittal(bool show)
         d->manager->SetSagittalSliceVisibility(0);
 
     d->view->update();
+}
+
+bool v3dViewVectorFieldInteractor::getShowSagittal()
+{
+    return d->manager->GetSagittalSliceVisibility();
 }
 
 // /////////////////////////////////////////////////////////////////
