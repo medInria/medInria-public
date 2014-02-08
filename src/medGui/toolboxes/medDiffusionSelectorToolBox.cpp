@@ -39,6 +39,9 @@ public:
     
     medDiffusionSelectorToolBox::SelectorType selectorType;
     
+    QLabel *gradientFileLabel;
+    QPushButton *browseButton;
+    
     QPushButton *runButton;
     QPushButton *cancelButton;
     
@@ -111,7 +114,7 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     }
 
     connect(d->methodCombo, SIGNAL(activated(int)), this, SLOT(chooseToolBox(int)));
-    
+
     QHBoxLayout *inputLabelLayout = new QHBoxLayout;
     QLabel *inputDescriptionLabel = new QLabel(mainPage);
     inputDescriptionLabel->setText(tr("Input image:"));
@@ -122,9 +125,31 @@ medDiffusionSelectorToolBox::medDiffusionSelectorToolBox(QWidget *parent, Select
     d->inputLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Expanding);
     inputLabelLayout->addWidget(d->inputLabel);
     d->mainLayout->addLayout(inputLabelLayout);
-    
+
+    d->browseButton = 0;
     d->runButton = 0;
     d->cancelButton = 0;
+    
+    if (d->selectorType == Estimation)
+    {
+        QHBoxLayout *gradientFileLayout = new QHBoxLayout;
+        QLabel *gradientDescriptionLabel = new QLabel(mainPage);
+        gradientDescriptionLabel->setText(tr("Gradient file:"));
+        gradientFileLayout->addWidget(gradientDescriptionLabel);
+        
+        d->gradientFileLabel = new QLabel(mainPage);
+        d->gradientFileLabel->setText("None");
+        d->gradientFileLabel->setAlignment(Qt::AlignRight);
+        d->gradientFileLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Expanding);
+        gradientFileLayout->addWidget(d->gradientFileLabel);
+
+        d->browseButton = new QPushButton("...",mainPage);
+        d->browseButton->setSizePolicy(QSizePolicy::Maximum,QSizePolicy::Maximum);
+        connect(d->browseButton, SIGNAL(clicked()), this, SLOT(setInputGradientFile()));
+        gradientFileLayout->addWidget(d->browseButton);
+        
+        d->mainLayout->addLayout(gradientFileLayout);
+    }
     
     if (d->selectorType != ScalarMaps)
     {
@@ -234,6 +259,7 @@ void medDiffusionSelectorToolBox::setInputImage(medAbstractDataImage *data)
     d->input = data;
     
     d->inputLabel->setText(data->metadata(medMetaDataKeys::SeriesDescription.key()));
+    d->inputLabel->setToolTip(data->metadata(medMetaDataKeys::SeriesDescription.key()));
     
     if (d->selectorType == Estimation)
         this->checkInputGradientDirections();
@@ -243,6 +269,13 @@ void medDiffusionSelectorToolBox::clearInput()
 {
     d->input = 0;
     d->inputLabel->setText("Please drop an image");
+    d->inputLabel->setToolTip("Please drop an image");
+    
+    if (d->selectorType == Estimation)
+    {
+        d->gradientFileLabel->setText("None");
+        d->gradientFileLabel->setToolTip("None");
+    }
     
     this->setEnabled(false);
 }
@@ -252,123 +285,113 @@ void medDiffusionSelectorToolBox::checkInputGradientDirections()
     if (!d->input)
         return;
         
-    if (!d->input->hasMetaData ("DiffusionGradientList"))
+    if (d->input->hasMetaData ("DiffusionGradientList"))
     {
-        QMessageBox msgBox;
-        msgBox.setText("No diffusion gradient attached to the image.");
-        msgBox.setInformativeText("Do you want to specify them manually?");
-        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-        msgBox.setDefaultButton(QMessageBox::Ok);
-        int ret = msgBox.exec();
+        d->gradientFileLabel->setText("Already provided");
+        d->gradientFileLabel->setToolTip("Already provided");
+    }
+}
+
+void medDiffusionSelectorToolBox::setInputGradientFile()
+{
+    QFileDialog * gradientFileDialog = new QFileDialog(0, tr("Exporting : please choose a file name and directory"));
+    gradientFileDialog->setOption(QFileDialog::DontUseNativeDialog);
+    gradientFileDialog->setAcceptMode(QFileDialog::AcceptOpen);
+    
+    QCheckBox* gradientsInImageCoordinatesCheckBox = new QCheckBox(gradientFileDialog);
+    gradientsInImageCoordinatesCheckBox->setChecked(true);
+    gradientsInImageCoordinatesCheckBox->setToolTip(tr("Uncheck this box if your gradients are in world coordinates."));
+    
+    QLayout* layout = gradientFileDialog->layout();
+    QGridLayout* gridbox = qobject_cast<QGridLayout*>(layout);
+    
+    // nasty hack to hide the filter list
+    QWidget * filtersLabel = gridbox->itemAtPosition(gridbox->rowCount()-1, 0)->widget();
+    QWidget * filtersList = gridbox->itemAtPosition(gridbox->rowCount()-1, 1)->widget();
+    filtersLabel->hide(); filtersList->hide();
+    
+    if (gridbox)
+    {
+        gridbox->addWidget(new QLabel("Gradients in image coordinates?", gradientFileDialog), gridbox->rowCount()-1, 0);
+        gridbox->addWidget(gradientsInImageCoordinatesCheckBox, gridbox->rowCount()-1, 1);
+    }
+    
+    gradientFileDialog->setLayout(gridbox);
+    
+    QString fileName;
+    bool gradientsInImageCoordinates = false;
+    if ( gradientFileDialog->exec() )
+    {
+        fileName = gradientFileDialog->selectedFiles().first();
+        gradientsInImageCoordinates = gradientsInImageCoordinatesCheckBox->isChecked();
+    }
+    
+    delete gradientFileDialog;
+    
+    if (fileName.isEmpty())
+        return;
+    
+    dtkAbstractData *gradients = dtkAbstractDataFactory::instance()->create ("itkDataDiffusionGradientList");
+    if (!gradients)
+        return;
+    
+    if (!gradients->read(fileName))
+        return;
+    
+    int i=0;
+    QStringList gradientList;
+    
+    medAbstractDataImage::MatrixType orientationMatrix;
+    orientationMatrix = d->input->orientationMatrix();
+    
+    while (double *grad=(double *)(gradients->data(i)))
+    {
+        double gradVals[3];
+        for (unsigned int j = 0;j < 3;++j)
+            gradVals[j] = grad[j];
         
-        switch (ret)
+        if (!gradientsInImageCoordinates)
         {
-            case QMessageBox::Ok:
+            for (unsigned int j = 0;j < 3;++j)
             {
-                QFileDialog * gradientFileDialog = new QFileDialog(0, tr("Exporting : please choose a file name and directory"));
-                gradientFileDialog->setOption(QFileDialog::DontUseNativeDialog);
-                gradientFileDialog->setAcceptMode(QFileDialog::AcceptOpen);
-                
-                QCheckBox* gradientsInImageCoordinatesCheckBox = new QCheckBox(gradientFileDialog);
-                gradientsInImageCoordinatesCheckBox->setChecked(true);
-                gradientsInImageCoordinatesCheckBox->setToolTip(tr("Uncheck this box if your gradients are in world coordinates."));
-                
-                QLayout* layout = gradientFileDialog->layout();
-                QGridLayout* gridbox = qobject_cast<QGridLayout*>(layout);
-                
-                // nasty hack to hide the filter list
-                QWidget * filtersLabel = gridbox->itemAtPosition(gridbox->rowCount()-1, 0)->widget();
-                QWidget * filtersList = gridbox->itemAtPosition(gridbox->rowCount()-1, 1)->widget();
-                filtersLabel->hide(); filtersList->hide();
-                
-                if (gridbox)
-                {
-                    gridbox->addWidget(new QLabel("Gradients in image coordinates?", gradientFileDialog), gridbox->rowCount()-1, 0);
-                    gridbox->addWidget(gradientsInImageCoordinatesCheckBox, gridbox->rowCount()-1, 1);
-                }
-                
-                gradientFileDialog->setLayout(gridbox);
-                
-                QString fileName;
-                bool gradientsInImageCoordinates = false;
-                if ( gradientFileDialog->exec() )
-                {
-                    fileName = gradientFileDialog->selectedFiles().first();
-                    gradientsInImageCoordinates = gradientsInImageCoordinatesCheckBox->isChecked();
-                }
-                
-                delete gradientFileDialog;
-                
-                if (fileName.isEmpty())
-                    return;
-                
-                dtkAbstractData *gradients = dtkAbstractDataFactory::instance()->create ("itkDataDiffusionGradientList");
-                if (!gradients)
-                    return;
-                
-                if (!gradients->read(fileName))
-                    return;
-                
-                int i=0;
-                QStringList gradientList;
-                
-                medAbstractDataImage::MatrixType orientationMatrix;
-                orientationMatrix = d->input->orientationMatrix();
-                
-                while (double *grad=(double *)(gradients->data(i)))
-                {
-                    double gradVals[3];
-                    for (unsigned int j = 0;j < 3;++j)
-                        gradVals[j] = grad[j];
-                    
-                    if (!gradientsInImageCoordinates)
-                    {
-                        for (unsigned int j = 0;j < 3;++j)
-                        {
-                            gradVals[j] = 0;
-                            for (unsigned int k = 0;k < 3;++k)
-                                gradVals[j] += orientationMatrix[k][j] * grad[k];
-                        }
-                    }
-                    
-                    QString s_gx, s_gy, s_gz;
-                    s_gx = QString::number (gradVals[0], 'g', 10);
-                    s_gy = QString::number (gradVals[1], 'g', 10);
-                    s_gz = QString::number (gradVals[2], 'g', 10);
-                    gradientList.append (s_gx);
-                    gradientList.append (s_gy);
-                    gradientList.append (s_gz);
-                    i++;
-                }
-                
-                if (d->input->tDimension()==gradientList.count()/3)
-                    d->input->addMetaData ("DiffusionGradientList", gradientList);
-                else if (d->input->tDimension()==gradientList.count()/3+1)
-                {
-                    // add the null gradient in this case
-                    gradientList.push_front("0.0");
-                    gradientList.push_front("0.0");
-                    gradientList.push_front("0.0");
-                    d->input->addMetaData ("DiffusionGradientList", gradientList);
-                }
-                else
-                {
-                    QString gradCount, imDims;
-                    gradCount.setNum(gradientList.count()/3);
-                    imDims.setNum(d->input->tDimension());
-                    medMessageController::instance()->showError("Mismatch between gradient length (" +gradCount + ") and image dimension (" + imDims + ").",3000);
-                    return;
-                }
-                
-                break;
+                gradVals[j] = 0;
+                for (unsigned int k = 0;k < 3;++k)
+                    gradVals[j] += orientationMatrix[k][j] * grad[k];
             }
-                
-            case QMessageBox::Cancel:
-                return;
-                
-            default:
-                return;
         }
+        
+        QString s_gx, s_gy, s_gz;
+        s_gx = QString::number (gradVals[0], 'g', 10);
+        s_gy = QString::number (gradVals[1], 'g', 10);
+        s_gz = QString::number (gradVals[2], 'g', 10);
+        gradientList.append (s_gx);
+        gradientList.append (s_gy);
+        gradientList.append (s_gz);
+        i++;
+    }
+    
+    if (d->input->tDimension()==gradientList.count()/3)
+    {
+        d->input->setMetaData ("DiffusionGradientList", gradientList);
+        d->gradientFileLabel->setText(fileName);
+        d->gradientFileLabel->setToolTip(fileName);
+    }
+    else if (d->input->tDimension()==gradientList.count()/3+1)
+    {
+        // add the null gradient in this case
+        gradientList.push_front("0.0");
+        gradientList.push_front("0.0");
+        gradientList.push_front("0.0");
+        d->input->setMetaData ("DiffusionGradientList", gradientList);
+        d->gradientFileLabel->setText(fileName);
+        d->gradientFileLabel->setToolTip(fileName);
+    }
+    else
+    {
+        QString gradCount, imDims;
+        gradCount.setNum(gradientList.count()/3);
+        imDims.setNum(d->input->tDimension());
+        medMessageController::instance()->showError("Mismatch between gradient length (" +gradCount + ") and image dimension (" + imDims + ").",3000);
     }
 }
 
@@ -377,6 +400,12 @@ void medDiffusionSelectorToolBox::createProcess()
     if (!d->input)
         return;
 
+    if ((d->selectorType == Estimation) && (!d->input->hasMetaData("DiffusionGradientList")))
+    {
+        medMessageController::instance()->showError("No diffusion gradient data provided for estimation",3000);
+        return;
+    }
+    
     QString processText;
     
     switch (d->selectorType)

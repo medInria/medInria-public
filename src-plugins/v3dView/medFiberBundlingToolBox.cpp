@@ -227,12 +227,8 @@ void medFiberBundlingToolBox::validateBundling()
 
 void medFiberBundlingToolBox::showBundlingBox (bool show)
 {
-    if (!d->view)
-        return;
-
-    if (d->interactor) {
-            d->interactor->setBoxVisibility(show);
-    }
+    if (d->view && d->interactor)
+        d->interactor->setBoxVisibility(show);
 }
 
 void medFiberBundlingToolBox::addBundle (const QString &name, const QColor &color)
@@ -254,13 +250,10 @@ void medFiberBundlingToolBox::addBundle (const QString &name, const QColor &colo
     double maxLength  = 0.0;
     double varLength  = 0.0;
 
-    if (d->view)
+    if (d->view && d->interactor)
     {
-        if (d->interactor)
-        {
-            d->interactor->bundleImageStatistics(name, meanData, minData, maxData, varData);
-            d->interactor->bundleLengthStatistics(name, meanLength, minLength, maxLength, varLength);
-        }
+        d->interactor->bundleImageStatistics(name, meanData, minData, maxData, varData);
+        d->interactor->bundleLengthStatistics(name, meanLength, minLength, maxLength, varLength);
     }
 
     foreach (QString key, meanData.keys())

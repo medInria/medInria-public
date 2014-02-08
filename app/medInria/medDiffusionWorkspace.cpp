@@ -233,6 +233,8 @@ void medDiffusionWorkspace::onAddTabClicked()
 
 void medDiffusionWorkspace::changeCurrentContainer(QString name)
 {
+    // This cannot happen while a process is running, container stack is disabled at that point
+    
     // For security, disconnect current connections
     disconnect(d->diffusionContainer,SIGNAL(viewRemoved(dtkAbstractView *)),this,SLOT(resetToolBoxesInputs(dtkAbstractView *)));
     disconnect(d->diffusionContainer,SIGNAL(viewAdded(dtkAbstractView *)),this,SLOT(connectCurrentViewSignals(dtkAbstractView *)));
@@ -242,17 +244,13 @@ void medDiffusionWorkspace::changeCurrentContainer(QString name)
     d->diffusionContainer = this->stackedViewContainers()->container(name);
     connect(d->diffusionContainer,SIGNAL(viewRemoved(dtkAbstractView *)),this,SLOT(resetToolBoxesInputs(dtkAbstractView *)));
     connect(d->diffusionContainer,SIGNAL(viewAdded(dtkAbstractView *)),this,SLOT(connectCurrentViewSignals(dtkAbstractView *)));
-    this->connectCurrentViewSignals(d->diffusionContainer->view());
     
-    // Here reset toolboxes data inputs if no process is running
-    if (d->processRunning)
-        return;
-
     d->diffusionEstimationToolBox->clearInput();
     d->diffusionScalarMapsToolBox->clearInput();
     d->diffusionTractographyToolBox->clearInput();
     
     this->resetToolBoxesInputs(d->diffusionContainer->view());
+    this->connectCurrentViewSignals(d->diffusionContainer->view());
 }
 
 void medDiffusionWorkspace::connectCurrentViewSignals(dtkAbstractView *view)

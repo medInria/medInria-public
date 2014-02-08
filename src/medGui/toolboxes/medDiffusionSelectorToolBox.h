@@ -45,6 +45,7 @@ public slots:
     void clear();
 
     void selectInputImage(const medDataIndex& index);
+    void setInputGradientFile();
     void createProcess();
     
     void chooseToolBox(int id);
