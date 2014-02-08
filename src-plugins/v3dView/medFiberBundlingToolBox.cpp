@@ -290,13 +290,8 @@ void medFiberBundlingToolBox::addBundle (const QString &name, const QColor &colo
 
 void medFiberBundlingToolBox::saveBundles()
 {
-    if (d->view)
-    {
-        if (d->interactor)
-        {
-            d->interactor->saveBundles();
-        }
-    }
+    if (d->view && d->interactor)
+        d->interactor->saveBundles();
 }
 
 void medFiberBundlingToolBox::importROI(const medDataIndex& index)
