@@ -15,6 +15,7 @@
 
 #include <QLabel>
 
+
 class medAbstractParameterPrivate
 {
 public:
@@ -246,3 +247,69 @@ bool medAbstractBoolParameter::value() const
     return m_value;
 }
 
+
+//--------------------------------------------------------------------------
+//  medAbstractVector2DParameter
+void medAbstractVector2DParameter::setValue(const QVector2D &value)
+{
+    if(m_value == value)
+        return;
+
+    m_value = value;
+
+    //  update intern widget
+    this->blockInternWidgetsSignals(true);
+    this->updateInternWigets();
+    this->blockInternWidgetsSignals(false);
+
+    emit valueChanged(value);
+    emit triggered();
+}
+QVector2D medAbstractVector2DParameter::value() const
+{
+    return m_value;
+}
+
+//--------------------------------------------------------------------------
+//  medAbstractVector3DParameter
+void medAbstractVector3DParameter::setValue(const QVector3D &value)
+{
+    if(m_value == value)
+        return;
+
+    m_value = value;
+
+    //  update intern widget
+    this->blockInternWidgetsSignals(true);
+    this->updateInternWigets();
+    this->blockInternWidgetsSignals(false);
+
+    emit valueChanged(value);
+    emit triggered();
+}
+QVector3D medAbstractVector3DParameter::value() const
+{
+    return m_value;
+}
+
+//--------------------------------------------------------------------------
+//  medAbstractVector4DParameter
+void medAbstractVector4DParameter::setValue(const QVector4D &value)
+{
+    if(m_value == value)
+        return;
+
+    m_value = value;
+
+    //  update intern widget
+    this->blockInternWidgetsSignals(true);
+    this->updateInternWigets();
+    this->blockInternWidgetsSignals(false);
+
+    emit valueChanged(value);
+    emit triggered();
+}
+QVector4D medAbstractVector4DParameter::value() const
+{
+    return m_value;
+}

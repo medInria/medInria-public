@@ -144,6 +144,8 @@ void medAbstractImageView::moveToSliceAtPosition (const QVector3D &position)
 
         inter->moveToSliceAtPosition(position);
     }
+
+    emit positionViewedChanged(position);
 }
 
 void medAbstractImageView::moveToSlice (int slice)
@@ -226,6 +228,8 @@ void medAbstractImageView::setCamera (const QVector3D &position, const QVector3D
         return;
 
     nav->setCamera(position, viewup, focal, parallelScale);
+
+    emit cameraChanged(position, viewup, focal, parallelScale);
 }
 
 void medAbstractImageView::camera (QVector3D &position, QVector3D &viewup, QVector3D &focal, double &parallelScale)

@@ -26,6 +26,10 @@ PURPOSE.
 #include <medImageViewFactory.h>
 #include <medBoolGroupParameter.h>
 #include <medBoolParameter.h>
+#include <medDoubleParameter.h>
+#include <medVector2DParameter.h>
+#include <medVector3DParameter.h>
+#include <medDoubleParameter.h>
 
 class medVtkViewNavigatorPrivate
 {
@@ -53,6 +57,16 @@ class medVtkViewNavigatorPrivate
     medBoolParameter *oSagittalParameter;
     medBoolParameter *oCoronalParameter;
     medBoolParameter *o3dParameter;
+
+    medDoubleParameter *zoomParameter;
+
+    medVector2DParameter *panParameter;
+
+    medVector3DParameter *cameraPositionParameter;
+    medVector3DParameter *cameraViewUpParameter;
+    medVector3DParameter *cameraFocalParameter;
+    medDoubleParameter   *cameraParallelScaleParameter;
+
 };
 
 medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
@@ -109,6 +123,27 @@ medVtkViewNavigator::medVtkViewNavigator(medAbstractImageView* parent) :
     d->orientationParameter->addParameter(d->o3dParameter);
     d->oAxialParameter->setValue(true);
 
+    d->zoomParameter = new medDoubleParameter("zoom");
+    connect(d->zoomParameter, SIGNAL(valueChanged(double)),this, SLOT(setZoom(double)));
+    connect(parent, SIGNAL(zoomChanged(double)), d->zoomParameter, SLOT(setValue(double)));
+    d->zoomParameter->setValue(1);
+
+    d->panParameter = new medVector2DParameter("pan");
+    connect(d->panParameter, SIGNAL(valueChanged(QVector2D)),this, SLOT(setPan(QVector2D)));
+    connect(parent, SIGNAL(panChanged(QVector2D)), d->panParameter, SLOT(setValue(QVector2D)));
+
+    d->cameraPositionParameter = new medVector3DParameter("cameraPosition");
+    d->cameraViewUpParameter = new medVector3DParameter("cameraViewUp");
+    d->cameraFocalParameter = new medVector3DParameter("cameraFocal");
+    d->cameraParallelScaleParameter = new medDoubleParameter("cameraParallelScale");
+
+    connect(d->cameraPositionParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(setCameraPosition(QVector3D)));
+    connect(d->cameraViewUpParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(setCameraUp(QVector3D)));
+    connect(d->cameraFocalParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(setCameraFocalPoint(QVector3D)));
+    connect(d->cameraParallelScaleParameter, SIGNAL(valueChanged(double)), this, SLOT(setCameraParallelScale(double)));
+    connect(parent, SIGNAL(cameraChanged(QVector3D,QVector3D,QVector3D,double)),
+            this,SLOT(updateCameraParam(QVector3D,QVector3D,QVector3D,double)));
+
     d->widgetForToolBar = NULL;
     d->widgetForToolBox = new QWidget();
     QVBoxLayout* layout = new QVBoxLayout(d->widgetForToolBox);
@@ -129,6 +164,13 @@ QList<medAbstractParameter*> medVtkViewNavigator::parameters()
 {
     QList<medAbstractParameter*> params;
     params.append(d->orientationParameter);
+    params.append(d->zoomParameter);
+    params.append(d->panParameter);
+    params.append(d->cameraPositionParameter);
+    params.append(d->cameraViewUpParameter);
+    params.append(d->cameraFocalParameter);
+    params.append(d->cameraParallelScaleParameter);
+
     return params;
 }
 
@@ -179,6 +221,14 @@ double medVtkViewNavigator::zoom() const
     return  d->currentView->GetZoom();
 }
 
+void medVtkViewNavigator::setZoom(double zoom)
+{
+    d->currentView->SetZoom(zoom);
+
+    //TODO GPR: find a better way to update the view
+    d->currentView->Render();
+}
+
 QVector2D medVtkViewNavigator::pan() const
 {
     const double* pan = d->view2d->GetPan();
@@ -187,23 +237,12 @@ QVector2D medVtkViewNavigator::pan() const
     return qpan;
 }
 
-void medVtkViewNavigator::setZoom(double zoom)
-{
-    d->currentView->SetZoom(zoom);
-}
-
 void medVtkViewNavigator::setPan(const QVector2D &pan)
 {
     double stdpan[2] = {pan.x(), pan.y()};
     d->view2d->SetPan(stdpan);
-}
 
-void medVtkViewNavigator::setCamera(const QVector3D &position,
-                       const QVector3D &viewup,
-                       const QVector3D &focal,
-                       double parallelScale)
-{
-
+    d->view2d->Render();
 }
 
 void medVtkViewNavigator::camera(QVector3D &position,
@@ -212,6 +251,17 @@ void medVtkViewNavigator::camera(QVector3D &position,
                     double &parallelScale) const
 {
 
+}
+
+void medVtkViewNavigator::setCamera(const QVector3D &position,
+                       const QVector3D &viewup,
+                       const QVector3D &focal,
+                       double parallelScale)
+{
+    setCameraPosition(position);
+    setCameraUp(viewup);
+    setCameraFocalPoint(focal);
+    setCameraParallelScale(parallelScale);
 }
 
 void medVtkViewNavigator::cameraUp ( double *coordinates )
@@ -228,6 +278,18 @@ void medVtkViewNavigator::cameraUp ( double *coordinates )
     }
 }
 
+void medVtkViewNavigator::setCameraUp(const QVector3D& viewup)
+{
+    double vup[3];
+
+    vup[0] = viewup.x();
+    vup[1] = viewup.y();
+    vup[2] = viewup.z();
+
+    d->renderer3d->GetActiveCamera()->SetViewUp ( vup );
+    d->qvtkWidget->update();
+}
+
 void medVtkViewNavigator::cameraPosition ( double *coordinates )
 {
     if ( d->orientation != medImageView::VIEW_ORIENTATION_3D )
@@ -241,6 +303,23 @@ void medVtkViewNavigator::cameraPosition ( double *coordinates )
         camera->GetPosition(coordinates);
     }
 }
+
+void medVtkViewNavigator::setCameraPosition(double x, double y, double z)
+{
+    if (d->orientation != medImageView::VIEW_ORIENTATION_3D)
+        return;
+
+    vtkCamera *camera = d->renderer3d->GetActiveCamera();
+    camera->SetPosition (x, y, z);
+    d->renderer3d->ResetCameraClippingRange();
+}
+
+void medVtkViewNavigator::setCameraPosition(const QVector3D& position)
+{
+    setCameraPosition(position.x(), position.y(), position.z());
+    d->qvtkWidget->update();
+}
+
 
 void medVtkViewNavigator::cameraFocalPoint ( double *coordinates )
 {
@@ -256,59 +335,22 @@ void medVtkViewNavigator::cameraFocalPoint ( double *coordinates )
     }
 }
 
-
-void medVtkViewNavigator::bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax)
+void medVtkViewNavigator::setCameraFocalPoint(const QVector3D& focal)
 {
-    double bounds[6];
-    switch(d->orientation)
-    {
-    case medImageView::VIEW_ORIENTATION_3D:
-        d->renderer3d->ComputeVisiblePropBounds(bounds);
-        xmin = bounds[0];
-        xmax = bounds[1];
-        ymin = bounds[2];
-        ymax = bounds[3];
-        zmin = bounds[4];
-        zmax = bounds[5];
-        break;
-    case medImageView::VIEW_ORIENTATION_AXIAL:
-        d->renderer2d->ComputeVisiblePropBounds(bounds);
-        xmin = bounds[0];
-        xmax = bounds[1];
-        ymin = bounds[2];
-        ymax = bounds[3];
-        zmin = bounds[4];
-        zmax = bounds[5];
-        break;
-    case medImageView::VIEW_ORIENTATION_CORONAL:
-        d->renderer2d->ComputeVisiblePropBounds(bounds);
-        xmin = bounds[0];
-        xmax = bounds[1];
-        ymin = bounds[2];
-        ymax = bounds[3];
-        zmin = bounds[4];
-        zmax = bounds[5];
-        break;
-    case medImageView::VIEW_ORIENTATION_SAGITTAL:
-        d->renderer2d->ComputeVisiblePropBounds(bounds);
-        xmin = bounds[0];
-        xmax = bounds[1];
-        ymin = bounds[2];
-        ymax = bounds[3];
-        zmin = bounds[4];
-        zmax = bounds[5];
-        break;
-    }
+    double foc[3];
+
+    foc[0] = focal.x();
+    foc[1] = focal.y();
+    foc[2] = focal.z();
+
+    d->renderer3d->GetActiveCamera()->SetFocalPoint ( foc );
+    d->qvtkWidget->update();
 }
 
-void medVtkViewNavigator::setCameraPosition(double x, double y, double z)
+void medVtkViewNavigator::setCameraParallelScale(double parallelScale)
 {
-    if (d->orientation != medImageView::VIEW_ORIENTATION_3D)
-        return;
-
-    vtkCamera *camera = d->renderer3d->GetActiveCamera();
-    camera->SetPosition (x, y, z);
-    d->renderer3d->ResetCameraClippingRange();
+    d->renderer3d->GetActiveCamera()->SetParallelScale ( parallelScale );
+    d->qvtkWidget->update();
 }
 
 void medVtkViewNavigator::setCameraClippingRange(double nearRange, double farRange)
@@ -369,6 +411,57 @@ double medVtkViewNavigator::cameraZoom()
         return view->GetZoom();
 }
 
+void medVtkViewNavigator::updateCameraParam(const QVector3D& postion,const QVector3D& viewUp,const QVector3D& focal,double parallelScale)
+{
+    d->cameraPositionParameter->setValue(postion);
+    d->cameraViewUpParameter->setValue(viewUp);
+    d->cameraFocalParameter->setValue(focal);
+    d->cameraParallelScaleParameter->setValue(parallelScale);
+}
+
+void medVtkViewNavigator::bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax)
+{
+    double bounds[6];
+    switch(d->orientation)
+    {
+    case medImageView::VIEW_ORIENTATION_3D:
+        d->renderer3d->ComputeVisiblePropBounds(bounds);
+        xmin = bounds[0];
+        xmax = bounds[1];
+        ymin = bounds[2];
+        ymax = bounds[3];
+        zmin = bounds[4];
+        zmax = bounds[5];
+        break;
+    case medImageView::VIEW_ORIENTATION_AXIAL:
+        d->renderer2d->ComputeVisiblePropBounds(bounds);
+        xmin = bounds[0];
+        xmax = bounds[1];
+        ymin = bounds[2];
+        ymax = bounds[3];
+        zmin = bounds[4];
+        zmax = bounds[5];
+        break;
+    case medImageView::VIEW_ORIENTATION_CORONAL:
+        d->renderer2d->ComputeVisiblePropBounds(bounds);
+        xmin = bounds[0];
+        xmax = bounds[1];
+        ymin = bounds[2];
+        ymax = bounds[3];
+        zmin = bounds[4];
+        zmax = bounds[5];
+        break;
+    case medImageView::VIEW_ORIENTATION_SAGITTAL:
+        d->renderer2d->ComputeVisiblePropBounds(bounds);
+        xmin = bounds[0];
+        xmax = bounds[1];
+        ymin = bounds[2];
+        ymax = bounds[3];
+        zmin = bounds[4];
+        zmax = bounds[5];
+        break;
+    }
+}
 
 void medVtkViewNavigator::setOrientation(medImageView::Orientation orientation)
 {
@@ -458,6 +551,8 @@ void medVtkViewNavigator::_prvt_setOrientation(medImageView::Orientation orienta
     d->currentView->SetRenderWindow(d->renWin);
     d->currentView->SetCurrentPoint(pos);
     d->currentView->SetTimeIndex(timeIndex);
+
+    d->orientation = orientation;
 
     emit orientationChanged();
 }

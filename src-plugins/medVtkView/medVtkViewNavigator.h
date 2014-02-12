@@ -82,6 +82,11 @@ protected slots:
     void setCoronal(bool coronal);
     void setSagittal(bool sagittal);
     void set3d(bool o3d);
+    void setCameraPosition(const QVector3D& position);
+    void setCameraUp(const QVector3D& viewup);
+    void setCameraFocalPoint(const QVector3D& focal);
+    void setCameraParallelScale(double parallelScale);
+    void updateCameraParam(const QVector3D& postion,const QVector3D& viewUp,const QVector3D& focal,double parallelScale);
 
     QString cameraProjectionMode();
     double cameraViewAngle();

@@ -92,11 +92,13 @@ public:
     virtual QList<medAbstractParameter*> viewParameters() = 0;
     virtual QList<medAbstractParameter*> navigatorsParameters();
 
-
-//TODO shouldbe the role of container IMO - RDE
 signals:
+    //TODO shouldbe the role of container IMO - RDE
     void selected();
     void unselected();
+
+    void zoomChanged(double);
+    void panChanged(const QVector2D&);
 
 protected:
     virtual medAbstractViewInteractor* primaryInteractor(medAbstractData* data);

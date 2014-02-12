@@ -161,6 +161,7 @@ void medAbstractView::setZoom (double zoom)
         return
 
     nav->setZoom(zoom);
+    emit zoomChanged(zoom);
 }
 
 double medAbstractView::zoom(void)
@@ -180,6 +181,7 @@ void medAbstractView::setPan (const QVector2D &pan)
         return
 
     nav->setPan(pan);
+    emit panChanged(pan);
 }
 
 QVector2D medAbstractView::pan(void)

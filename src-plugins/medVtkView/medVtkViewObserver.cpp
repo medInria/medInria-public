@@ -65,26 +65,16 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
     if(this->m_lock)
         return;
 
-    if(/*!this->m_slider ||*/ !this->m_view)
+    if(!this->m_view)
         return;
 
     switch(event)
     {
     case vtkImageView::CurrentPointChangedEvent:
     {
-        // a dummy scope just to 'controll' the life time of the dtkSignalBlocker.
-        /* {
-            dtkSignalBlocker blocker ( this->m_slider );
-            unsigned int zslice = this->m_view->view2d()->GetSlice();
-            this->m_slider->setValue(zslice);
-            this->m_slider->update();
-        }
-        const double *pos = this->m_view->currentView()->GetCurrentPoint();
+        const double *pos = this->view2d->GetCurrentPoint();
         QVector3D qpos(doubleToQtVector3D(pos));
-        this->m_view->setToSliceAtPosition(qpos);*/
-        /*const double *pos = this->view2d->GetCurrentPoint();
-        QVector3D qpos(doubleToQtVector3D(pos));
-        this->m_view->moveToSliceAtPosition(qpos);*/
+        this->emitter->emitPositionViewedChanged(qpos);
 
         unsigned int zslice = this->view2d->GetSlice();
         this->emitter->emitSliceChanged(zslice);
@@ -92,22 +82,19 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
     }
     case vtkImageView2DCommand::CameraZoomEvent:
     {
-        /*double zoom = this->m_view->currentView()->GetZoom();
-        this->m_view->setZoom(zoom);*/
+        double zoom = this->view2d->GetZoom();
+        this->emitter->emitZoomChanged(zoom);
         break;
     }
     case vtkImageView2DCommand::CameraPanEvent:
     {
-       /* const double *pan = this->m_view->view2d()->GetPan();
+        const double *pan = this->view2d->GetPan();
         QVector2D qpan (pan[0], pan[1]);
-        this->m_view->setPan(qpan);*/
+        this->emitter->emitPanChanged(qpan);
         break;
     }
     case vtkImageView::WindowLevelChangedEvent:
     {
-        //double level = this->m_view->currentView()->GetColorLevel();
-        //double window = this->m_view->currentView()->GetColorWindow();
-
         double level = this->view2d->GetColorLevel();
         double window = this->view2d->GetColorWindow();
         this->emitter->emitWindowLevelChanged(window, level);
@@ -116,14 +103,14 @@ void medVtkViewObserver::Execute(vtkObject *caller, unsigned long event, void *c
     }
     case vtkCommand::InteractionEvent:
     {
-       /* double *pos = this->m_view->renderer3d()->GetActiveCamera()->GetPosition();
-        double *vup = this->m_view->renderer3d()->GetActiveCamera()->GetViewUp();
-        double *foc = this->m_view->renderer3d()->GetActiveCamera()->GetFocalPoint();
-        double   ps = this->m_view->renderer3d()->GetActiveCamera()->GetParallelScale();
+        double *pos = this->view3d->GetRenderer()->GetActiveCamera()->GetPosition();
+        double *vup = this->view3d->GetRenderer()->GetActiveCamera()->GetViewUp();
+        double *foc = this->view3d->GetRenderer()->GetActiveCamera()->GetFocalPoint();
+        double   ps = this->view3d->GetRenderer()->GetActiveCamera()->GetParallelScale();
         QVector3D position(doubleToQtVector3D(pos));
         QVector3D viewup(doubleToQtVector3D(vup));
         QVector3D focal(doubleToQtVector3D(foc));
-        this->m_view->setCamera(position, viewup, focal, ps);*/
+        this->emitter->emitCameraChanged(position, viewup, focal, ps);
         break;
     }
     case vtkCommand::KeyPressEvent:

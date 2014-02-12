@@ -15,6 +15,7 @@
 
 #include <QObject>
 #include <QColor>
+#include <QVector2D>
 
 #include <medGuiExport.h>
 
@@ -49,8 +50,11 @@ private slots:
     void triggerParams();
     void changeParamsValue(bool value);
     void changeParamsValue(int value);
-    void changeParamsValue(double& value);
+    void changeParamsValue(double value);
     void changeParamsValue(QString& value);
+    void changeParamsValue(const QVector2D& value);
+    void changeParamsValue(const QVector3D& value);
+    void changeParamsValue(const QVector4D& value);
 
     void _prvt_removeInternParam();
 

@@ -14,6 +14,7 @@ PURPOSE.
 #pragma once
 
 #include <QObject>
+#include <QVector2D>
 
 class medVtkView;
 
@@ -28,11 +29,26 @@ public:
 
     void emitSliceChanged(int);
     void emitWindowLevelChanged(double window, double level);
+    void emitZoomChanged(double);
+    void emitPanChanged(const QVector2D&);
+    void emitPositionViewedChanged(const QVector3D&);
+    void emitCameraChanged(const QVector3D &position,
+                       const QVector3D &viewup,
+                       const QVector3D &focal,
+                       double parallelScale);
 
 signals:
     void orientationChanged();
     void sliceChanged(int);
     void windowLevelChanged(double window, double level);
+    void zoomChanged(double);
+    void panChanged(const QVector2D&);
+    void positionViewedChanged(const QVector3D&);
+    void cameraChanged(const QVector3D &position,
+                       const QVector3D &viewup,
+                       const QVector3D &focal,
+                       double parallelScale);
+
 
 private:
     medVtkView *m_view;

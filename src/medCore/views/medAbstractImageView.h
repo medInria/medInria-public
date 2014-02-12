@@ -110,6 +110,11 @@ signals:
     void orientationChanged();
     void sliceChanged(int);
     void windowLevelChanged(double window, double level);
+    void positionViewedChanged(const QVector3D &position);
+    void cameraChanged(const QVector3D &position,
+                       const QVector3D &viewup,
+                       const QVector3D &focal,
+                       double parallelScale);
 
 protected:
     virtual medAbstractImageViewInteractor* primaryInteractor(medAbstractData* data);

@@ -14,6 +14,9 @@
 #pragma once
 
 #include <QObject>
+#include <QVector2D>
+#include <QVector3D>
+#include <QVector4D>
 
 #include <medGuiExport.h>
 
@@ -204,7 +207,7 @@ protected:
 
 //--------------------------------------------------------------------------
 //  medAbstractGroupParameter
-class medAbstractGroupParameter : public medAbstractParameter
+class MEDGUI_EXPORT medAbstractGroupParameter : public medAbstractParameter
 {
     Q_OBJECT
 public:
@@ -217,4 +220,102 @@ public:
      * medAbstractGroupParameter to a medParameterPool.
      */
     virtual QList<medAbstractParameter*> parametersCandidateToPool() const = 0;
+};
+
+
+
+
+//--------------------------------------------------------------------------
+//  medAbstractVector2DParameter
+
+class QVector2D;
+
+class MEDGUI_EXPORT medAbstractVector2DParameter : public medAbstractParameter
+{
+    Q_OBJECT
+
+public:
+    medAbstractVector2DParameter(QString name = "Unknow Vector 2D parameter", QObject* parent = 0):
+        medAbstractParameter(name, parent){}
+    virtual ~medAbstractVector2DParameter(){}
+
+    virtual QVector2D value() const;
+
+public slots:
+    virtual void setValue(const QVector2D &);
+
+protected:
+    virtual void updateInternWigets() = 0;
+
+signals:
+    void valueChanged(const QVector2D & );
+
+
+protected:
+    QVector2D m_value;
+
+};
+
+//--------------------------------------------------------------------------
+//  medAbstractVector3DParameter
+
+class QVector3D;
+
+class MEDGUI_EXPORT medAbstractVector3DParameter : public medAbstractParameter
+{
+    Q_OBJECT
+
+public:
+    medAbstractVector3DParameter(QString name = "Unknow Vector 3D parameter", QObject* parent = 0):
+        medAbstractParameter(name, parent){}
+    virtual ~medAbstractVector3DParameter(){}
+
+    virtual QVector3D value() const;
+
+public slots:
+    virtual void setValue(const QVector3D &);
+
+protected:
+    virtual void updateInternWigets() = 0;
+
+signals:
+    void valueChanged(const QVector3D & );
+
+
+protected:
+    QVector3D m_value;
+
+};
+
+
+
+//--------------------------------------------------------------------------
+//  medAbstractVector4DParameter
+
+class QVector4D;
+
+class MEDGUI_EXPORT medAbstractVector4DParameter : public medAbstractParameter
+{
+    Q_OBJECT
+
+public:
+    medAbstractVector4DParameter(QString name = "Unknow Vector 3D parameter", QObject* parent = 0):
+        medAbstractParameter(name, parent){}
+    virtual ~medAbstractVector4DParameter(){}
+
+    virtual QVector4D value() const;
+
+public slots:
+    virtual void setValue(const QVector4D &);
+
+protected:
+    virtual void updateInternWigets() = 0;
+
+signals:
+    void valueChanged(const QVector4D & );
+
+
+protected:
+    QVector4D m_value;
+
 };

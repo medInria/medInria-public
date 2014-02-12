@@ -35,6 +35,7 @@
 #include <medBoolParameter.h>
 #include <medDoubleParameter.h>
 #include <medSlicingParameter.h>
+#include <medVector3DParameter.h>
 #include <medAbstractImageData.h>
 
 #include <QFormLayout>
@@ -64,6 +65,9 @@ public:
     medDoubleParameter *levelParameter;
     //medSlicingParameter *slicingParameter;
     medIntParameter *slicingParameter;
+
+    medVector3DParameter *positionParameter;
+
 
     QWidget* toolbox;
     QWidget* toolbar;
@@ -236,8 +240,11 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
     else if (orientationId==vtkImageView2D::SLICE_ORIENTATION_YZ)
         d->slicingParameter->setRange (0, d->imageData->xDimension()-1);
 
-
     connect(d->slicingParameter, SIGNAL(valueChanged(int)), this, SLOT(moveToSlice(int)));
+
+    d->positionParameter = new medVector3DParameter("position");
+    connect(d->positionParameter, SIGNAL(valueChanged(QVector3D)), this, SLOT(moveToSliceAtPosition(QVector3D)));
+
     connect(d->medVtkView, SIGNAL(sliceChanged(int)), d->slicingParameter, SLOT(setValue(int)) );
     connect(d->medVtkView, SIGNAL(windowLevelChanged(double,double)), this, SLOT(updateWindowLevelParam(double, double)) );
 }
