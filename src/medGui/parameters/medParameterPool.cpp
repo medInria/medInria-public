@@ -80,8 +80,17 @@ void medParameterPool::remove(medAbstractParameter* parameter)
     for(it = d->pool.begin(); it != d->pool.end(); ++it)
     {
         if(it.value() == parameter)
-            d->pool.erase(it);
+            it = d->pool.erase(it);
+
+        if( d->pool.count() == 0 )
+            break;
     }
+}
+
+void medParameterPool::removeAll (QString name)
+{
+    foreach(medAbstractParameter* param, parameters(name))
+        remove(param);
 }
 
 void medParameterPool::clear()
@@ -100,6 +109,11 @@ QList<medAbstractParameter*> medParameterPool::parameters(QString name)
 QList<medAbstractParameter*> medParameterPool::parameters()
 {
     return d->pool.values();
+}
+
+QStringList medParameterPool::parametersNames()
+{
+    return d->pool.keys();
 }
 
 void medParameterPool::triggerParams()

@@ -33,9 +33,11 @@ public:
     void clear();
     int count() const;
     void remove (medAbstractParameter* parameter);
+    void removeAll (QString name);
 
     QList<medAbstractParameter*> parameters();
     QList<medAbstractParameter*> parameters(QString name);
+    QStringList parametersNames();
 
     QString name() const;
     void setName(QString);

@@ -3,22 +3,25 @@
 #include <medParameterPoolManager.h>
 #include <medAbstractParameter.h>
 #include <medParameterPool.h>
+#include <medViewManager.h>
+#include <medAbstractView.h>
 
 class medParameterPoolManagerToolBoxPrivate
 {
 public:
     medParameterPoolManager *mngr;
-    QWidget *linkAllWidget;
-    QListWidget *parameters;
+
     QListWidget *pools;
+    QListWidget *parameters;
 
-    QString currentParam;
+    QComboBox *poolsSelector;
+    QPushButton *okButton;
+    QWidget *poolsSelectorWidget;
 
-    QHash<medAbstractParameter*, QComboBox*> comboHash;
-    QHash<medAbstractParameter*, QPushButton*> buttonHash;
     QHash<medAbstractParameter*, QListWidgetItem*> itemHash;
 
-    QHash<int, QListWidgetItem*> poolHash;
+    QHash<int, QListWidgetItem*> poolItemHash;
+    QHash<int, medParameterPool*> poolHash;
     QHash<int, QPushButton*> poolIdButtonHash;
 
 };
@@ -31,77 +34,37 @@ medParameterPoolManagerToolBox::medParameterPoolManagerToolBox() : d(new medPara
 
     d->mngr->setToolBox(this);
 
-    d->linkAllWidget = new QWidget;
-    QHBoxLayout* layout = new QHBoxLayout(d->linkAllWidget);
-    layout->setContentsMargins(0,0,10,0);
-    QLabel *linkAllWidgetLabel = new QLabel("Link all parameters?");
-    QPushButton *okButton = new QPushButton;
-    okButton->setIcon(QIcon(":/icons/link.svg"));
-    layout->addWidget(linkAllWidgetLabel);
-    layout->addStretch();
-    layout->addWidget(okButton);
-
-    d->parameters = new QListWidget(this);
-    d->parameters->setContentsMargins(0,0,0,0);
-
     d->pools = new QListWidget(this);
 
-    this->addWidget(d->linkAllWidget);
-    this->addWidget(d->parameters);
+    d->parameters = new QListWidget(this);
+    d->parameters->setSelectionMode(QAbstractItemView::NoSelection);
+    connect(d->parameters, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(buildPool(QListWidgetItem*)));
+
+    d->poolsSelector = new QComboBox;
+    d->okButton = new QPushButton(tr("OK"));
+    d->poolsSelectorWidget = new QWidget;
+    QHBoxLayout *poolsSelectorLayout = new QHBoxLayout(d->poolsSelectorWidget);
+    poolsSelectorLayout->addWidget(new QLabel(tr("Add to pool: ")));
+    poolsSelectorLayout->addWidget(d->poolsSelector);
+    poolsSelectorLayout->addWidget(d->okButton);
+
     this->addWidget(new QLabel("Pools:"));
     this->addWidget(d->pools);
+    this->addWidget(new QLabel("Parameters linked:"));
+    this->addWidget(d->parameters);
+    this->addWidget(d->poolsSelectorWidget);
 
     connect(d->mngr, SIGNAL(poolCreated(medParameterPool*,int)), this, SLOT(addPool(medParameterPool*,int)));
     connect(d->mngr, SIGNAL(poolRemoved(int)), this, SLOT(removePoolFromWidget(int)));
-    connect(d->mngr, SIGNAL(multipleViewsSelected()), this, SLOT(showLinkAllWidget()));
-    connect(d->mngr, SIGNAL(singleViewSelected()), this, SLOT(hideLinkAllWidget()));
-    connect(okButton, SIGNAL(clicked()), this, SLOT(linkAll()));
+    connect(d->mngr, SIGNAL(multipleViewsSelected()), this, SLOT(showLinkParametersWidget()));
+    connect(d->mngr, SIGNAL(singleViewSelected()), this, SLOT(showPoolsSelectorWidget()));
 
-}
+    connect(d->pools, SIGNAL(itemSelectionChanged()), this, SLOT(displayPoolParameters()));
 
-void medParameterPoolManagerToolBox::addParameter(medAbstractParameter* parameter)
-{
-    if(d->currentParam != parameter->name())
-    {
-        d->currentParam = parameter->name();
+    connect(d->okButton, SIGNAL(clicked()), this, SLOT(addViewParamsToPool()));
 
-        QWidget *paramWidget = new QWidget(d->parameters);
-        QHBoxLayout* layout = new QHBoxLayout(paramWidget);
-        layout->setContentsMargins(0,0,10,0);
-
-        QLabel *paramLabel = new QLabel("Keep "+parameter->name()+" link?", paramWidget);
-
-        QComboBox* comboBox = new QComboBox(paramWidget);
-        comboBox->addItem("New", -1);
-
-        QList<int> poolsId = d->mngr->poolsId(parameter->name());
-
-        foreach(int poolId, poolsId)
-            comboBox->addItem(parameter->name() + QString::number(poolId), poolId);
-
-        QPushButton *okButton = new QPushButton;
-        okButton->setIcon(QIcon(":/icons/link.svg"));
-
-        QPushButton *removeButton = new QPushButton;
-        removeButton->setIcon(QIcon(":/icons/cross.svg"));
-
-        layout->addWidget(paramLabel);
-        layout->addWidget(comboBox);
-        layout->addWidget(okButton);
-        layout->addWidget(removeButton);
-
-        QListWidgetItem *item = new QListWidgetItem(d->parameters);
-        d->parameters->addItem(item);
-        d->parameters->setItemWidget(item, paramWidget);
-
-        connect(okButton, SIGNAL(clicked()), this, SLOT(addToPool()));
-        //connect(removeButton, SIGNAL(clicked()), this, SLOT(removeParamItemWidget()));
-
-        d->comboHash.insert(parameter, comboBox);
-        d->buttonHash.insert(parameter, okButton);
-        d->itemHash.insert(parameter, item);
-
-    }
+    d->parameters->hide();
+    d->poolsSelectorWidget->hide();
 }
 
 
@@ -113,22 +76,16 @@ QIcon medParameterPoolManagerToolBox::createIcon(QString &colorName) const
     return itemIcon;
 }
 
-void medParameterPoolManagerToolBox::addToPool()
+QIcon medParameterPoolManagerToolBox::createIcon(QColor color) const
 {
-    QPushButton *okButton = (QPushButton *)this->sender();
-    medAbstractParameter *param = d->buttonHash.key(okButton);
-    QComboBox *combo = d->comboHash.value(param);
-    QListWidgetItem *item = d->itemHash.value(param);
-
-    QVariant poolNumber = combo->itemData(combo->currentIndex());
-
-    emit poolSelected(param, poolNumber.toInt());
-
-    d->parameters->model()->removeRow( d->parameters->row(item) );
-    d->currentParam = "";
+    QPixmap iconPixmap(32,32);
+    iconPixmap.fill(color);
+    QIcon itemIcon(iconPixmap);
+    return itemIcon;
 }
 
-void medParameterPoolManagerToolBox::addPool(medParameterPool *selectedPool,int id)
+
+void medParameterPoolManagerToolBox::addPool(medParameterPool *newPool, int id)
 {
     QWidget *poolWidget = new QWidget(d->pools);
 
@@ -136,12 +93,12 @@ void medParameterPoolManagerToolBox::addPool(medParameterPool *selectedPool,int 
     layout->setContentsMargins(0,0,10,0);
 
     QPixmap iconPixmap(14,14);
-    iconPixmap.fill(selectedPool->color());
+    iconPixmap.fill(newPool->color());
 
     QLabel *colorLabel = new QLabel;
     colorLabel->setPixmap(iconPixmap);
 
-    QLabel *poolLabel = new QLabel("Link " + selectedPool->name() + QString::number(id), poolWidget);
+    QLabel *poolLabel = new QLabel(newPool->name(), poolWidget);
 
     QPushButton *removeButton = new QPushButton;
     removeButton->setIcon(QIcon(":/icons/cross.svg"));
@@ -155,10 +112,13 @@ void medParameterPoolManagerToolBox::addPool(medParameterPool *selectedPool,int 
     d->pools->addItem(item);
     d->pools->setItemWidget(item, poolWidget);
 
-    d->poolHash.insert(id, item);
+    d->poolHash.insert(id, newPool);
+    d->poolItemHash.insert(id, item);
     d->poolIdButtonHash.insert(id, removeButton);
 
     connect(removeButton, SIGNAL(clicked()), this, SLOT(removePool()));
+
+    d->poolsSelector->addItem(createIcon(newPool->color()), newPool->name(), id);
 }
 
 void medParameterPoolManagerToolBox::removePool()
@@ -172,23 +132,173 @@ void medParameterPoolManagerToolBox::removePool()
 
 void medParameterPoolManagerToolBox::removePoolFromWidget(int poolId)
 {
-     QListWidgetItem *item = d->poolHash.value(poolId);
+     QListWidgetItem *item = d->poolItemHash.value(poolId);
      d->pools->model()->removeRow( d->pools->row(item) );
+
+     d->poolHash.remove(poolId);
+     d->poolItemHash.remove(poolId);
 }
 
-void medParameterPoolManagerToolBox::showLinkAllWidget()
+void medParameterPoolManagerToolBox::showLinkParametersWidget()
 {
-    d->linkAllWidget->show();
+    QList<medAbstractView*> selectedViews = medViewManager::instance()->selectedViews();
+
+    QList<medAbstractParameter*> commonParams = commonParameters(selectedViews);
+
+    d->parameters->clear();
+
+    foreach(medAbstractParameter* commonParam, commonParams)
+    {
+        d->parameters->blockSignals(true);
+        QListWidgetItem *paramItem = new QListWidgetItem();
+        paramItem->setText(commonParam->name());
+        paramItem->setCheckState(Qt::Unchecked);
+        d->parameters->addItem(paramItem);
+        d->parameters->blockSignals(false);
+
+        d->itemHash.insert(commonParam, paramItem);
+    }
+
+    d->parameters->show();
+
+    d->poolsSelectorWidget->hide();
 }
 
-void medParameterPoolManagerToolBox::hideLinkAllWidget()
+
+void medParameterPoolManagerToolBox::showPoolsSelectorWidget()
 {
-    d->linkAllWidget->hide();
+    d->parameters->hide();
+
+    d->poolsSelectorWidget->show();
 }
 
 void medParameterPoolManagerToolBox::linkAll()
 {
     emit linkAllRequested();
+}
 
-    hideLinkAllWidget();
+void medParameterPoolManagerToolBox::buildPool(QListWidgetItem* item)
+{
+    medAbstractParameter *param = d->itemHash.key(item);
+
+    if(item->checkState()==Qt::Checked)
+    {
+      emit linkParamRequested(param, -1);
+    }
+    else if(item->checkState()==Qt::Unchecked)
+    {
+        QListWidgetItem *currentItem = d->pools->currentItem();
+        if(currentItem)
+        {
+            int poolId = d->poolItemHash.key(currentItem);
+            emit unlinkParamRequested(param, poolId);
+        }
+    }
+}
+
+void medParameterPoolManagerToolBox::addViewParamsToPool()
+{
+     QList<medAbstractView*> selectedViews = medViewManager::instance()->selectedViews();
+     int poolId = d->poolsSelector->itemData(d->poolsSelector->currentIndex()).toInt();
+
+     foreach(medAbstractView *view, selectedViews)
+     {
+         emit addViewParamsToPoolRequested(view, poolId);
+     }
+}
+
+void medParameterPoolManagerToolBox::displayPoolParameters()
+{
+    QListWidgetItem *currentItem = d->pools->currentItem();
+
+    QList<medAbstractView*> views;
+    if(currentItem)
+    {
+        int poolId = d->poolItemHash.key(currentItem);
+        medParameterPool *pool = d->poolHash.value(poolId);
+
+        if(pool)
+        {
+            foreach(medAbstractParameter *param, pool->parameters())
+            {
+                if(medAbstractView* view = dynamic_cast<medAbstractView*>(param->parent()))
+                    views.append(view);
+            }
+
+            QList<medAbstractParameter*> commonParams = commonParameters(views);
+
+            d->parameters->clear();
+
+            foreach(medAbstractParameter* commonParam, commonParams)
+            {
+                d->parameters->blockSignals(true);
+                QListWidgetItem *paramItem = new QListWidgetItem();
+                paramItem->setText(commonParam->name());
+
+                //TODO GPR: find a better way to handle groups
+                if(medAbstractGroupParameter *group = dynamic_cast<medAbstractGroupParameter *>(commonParam))
+                {
+                    bool checked = true;
+                    foreach(medAbstractParameter *paramInGroup, group->parametersCandidateToPool())
+                    {
+                        if( !pool->parametersNames().contains(paramInGroup->name()))
+                            checked = false;
+                    }
+                    if(checked)
+                        paramItem->setCheckState(Qt::Checked);
+                    else paramItem->setCheckState(Qt::Unchecked);
+                }
+                else
+                {
+                    if(pool->parametersNames().contains(commonParam->name()))
+                        paramItem->setCheckState(Qt::Checked);
+                    else paramItem->setCheckState(Qt::Unchecked);
+                }
+
+                d->parameters->addItem(paramItem);
+                d->parameters->blockSignals(false);
+
+                d->itemHash.insert(commonParam, paramItem);
+            }
+
+        }
+    }
+
+    d->parameters->show();
+
+}
+
+QList<medAbstractParameter*> medParameterPoolManagerToolBox::commonParameters(QList<medAbstractView*> views)
+{
+    QList<medAbstractParameter*> commonParams;
+
+    if(views.count() > 1 )
+    {
+        // intialize commonParams with parameters from the first view
+        commonParams = views.at(0)->navigatorsParameters();
+    }
+
+    foreach(medAbstractView *view, views)
+    {
+        QList<medAbstractParameter*> params = view->navigatorsParameters();
+        bool common = false;
+
+        foreach(medAbstractParameter* commonParam, commonParams)
+        {
+            foreach(medAbstractParameter* param, params)
+            {
+                if(commonParam->match(param))
+                {
+                    common = true;
+                    break;
+                }
+            }
+
+            if(!common)
+            {
+                commonParams.removeAll(commonParam);
+            }
+        }
+    }
+    return commonParams;
 }

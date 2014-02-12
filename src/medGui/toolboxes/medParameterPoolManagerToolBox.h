@@ -17,6 +17,7 @@
 
 class medAbstractParameter;
 class medParameterPool;
+class medAbstractView;
 
 class medParameterPoolManagerToolBoxPrivate;
 
@@ -27,24 +28,29 @@ class medParameterPoolManagerToolBox : public medToolBox
 public:
     medParameterPoolManagerToolBox();
 
-    void addParameter(medAbstractParameter* parameter);
-
 signals:
-    void poolSelected(medAbstractParameter*, int);
     void poolDeletionRequested(int);
+    void linkParamRequested(medAbstractParameter*, int poolId = -1);
+    void unlinkParamRequested(medAbstractParameter*, int poolId);
     void linkAllRequested();
+    void addViewParamsToPoolRequested(medAbstractView*, int poolId);
 
 private slots:
-    void addToPool();
     void addPool(medParameterPool *selectedPool,int);
     void removePool();
     void removePoolFromWidget(int);
-    void showLinkAllWidget();
-    void hideLinkAllWidget();
     void linkAll();
+    void showLinkParametersWidget();
+    void showPoolsSelectorWidget();
+    void buildPool(QListWidgetItem*);
+    void addViewParamsToPool();
+    void displayPoolParameters();
 
 private:
     QIcon createIcon(QString &colorName) const;
+    QIcon createIcon(QColor color) const;
+
+    QList<medAbstractParameter*> commonParameters(QList<medAbstractView*> views);
 
 private:
     medParameterPoolManagerToolBoxPrivate *d;

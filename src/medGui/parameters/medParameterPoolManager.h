@@ -21,6 +21,7 @@ class medParameterPoolManagerPrivate;
 class medParameterPoolManagerToolBox;
 class medAbstractParameter;
 class medParameterPool;
+class medAbstractView;
 
 class medParameterPoolManager : public QObject
 {
@@ -35,9 +36,10 @@ public:
 
 
 public slots:
-    void addToPool(medAbstractParameter*, int);
     void removePool(int);
     void linkAll();
+    void linkParameter(medAbstractParameter*, int poolId);
+    void unlinkParameter(medAbstractParameter*, int poolId);
 
 signals:
     void poolCreated(medParameterPool *selectedPool, int id);
@@ -53,7 +55,7 @@ protected:
 
 private slots:
     void buildViewPool();
-    void updateToolBox();
+    void addViewParamsToPool(medAbstractView*, int);
 
 private:
     void addColorLabeltoView(medAbstractParameter* parameter, medParameterPool *selectedPool);

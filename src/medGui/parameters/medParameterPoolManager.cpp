@@ -52,67 +52,21 @@ void medParameterPoolManager::buildViewPool()
         foreach(medAbstractParameter* param, v->navigatorsParameters())
         {
             d->currentPool->append(param);
-            connect(param, SIGNAL(triggered()), this, SLOT(updateToolBox()));
         }
     }
-
-    qDebug() << "Params in pool: " << d->currentPool->count();
 }
 
 void medParameterPoolManager::setToolBox(medParameterPoolManagerToolBox* tb)
 {
     d->tb = tb;
 
-    connect(tb, SIGNAL(poolSelected(medAbstractParameter*,int)), this, SLOT(addToPool(medAbstractParameter*,int)));
     connect(tb, SIGNAL(poolDeletionRequested(int)), this, SLOT(removePool(int)));
     connect(tb, SIGNAL(linkAllRequested()), this, SLOT(linkAll()));
+    connect(tb, SIGNAL(linkParamRequested(medAbstractParameter*, int)), this, SLOT(linkParameter(medAbstractParameter*, int)));
+    connect(tb, SIGNAL(unlinkParamRequested(medAbstractParameter*, int)), this, SLOT(unlinkParameter(medAbstractParameter*, int)));
+    connect(tb, SIGNAL(addViewParamsToPoolRequested(medAbstractView*,int)), this, SLOT(addViewParamsToPool(medAbstractView*, int)));
 }
 
-void medParameterPoolManager::updateToolBox()
-{
-    medAbstractParameter *param = dynamic_cast<medAbstractParameter *>(this->sender());
-
-    d->tb->addParameter(param/*->name()*/);
-
-}
-
-void medParameterPoolManager::addToPool(medAbstractParameter* parameter, int poolNumber)
-{
-    medParameterPool *selectedPool;
-
-    if(poolNumber == -1)
-    {
-        selectedPool = new medParameterPool(this);
-        selectedPool->setColor(QColor("red"));
-        selectedPool->setName(parameter->name());
-        d->pools.insert(d->pools.count()+1, selectedPool);
-        emit poolCreated(selectedPool, d->pools.count());
-    }
-    else selectedPool = d->pools.value(poolNumber);
-
-    if(medAbstractGroupParameter *group = dynamic_cast<medAbstractGroupParameter *>(parameter))
-    {
-        foreach(medAbstractParameter *paramInGroup, group->parametersCandidateToPool())
-        {
-            foreach(medAbstractParameter *paramInPool, d->currentPool->parameters(paramInGroup->name()))
-            {
-                selectedPool->append(paramInPool);
-                addColorLabeltoView(paramInPool, selectedPool);
-            }
-        }
-    }
-    else
-    {
-        foreach(medAbstractParameter *param, d->currentPool->parameters(parameter->name()))
-        {
-            selectedPool->append(param);
-            addColorLabeltoView(param, selectedPool);
-        }
-    }
-
-    d->poolsType.insert(parameter->name(), selectedPool);
-
-}
 
 void medParameterPoolManager::addColorLabeltoView(medAbstractParameter* parameter, medParameterPool *selectedPool)
 {
@@ -163,7 +117,7 @@ void medParameterPoolManager::linkAll()
 {
     medParameterPool *pool = d->currentPool;
     pool->setName("Views ");
-    pool->setColor("blue");
+    pool->setColor(QColor::fromHsv(qrand() % 256, qrand() % 255, qrand() % 190));
 
     d->pools.insert(d->pools.count()+1, pool);
     d->currentPool = new medParameterPool(this);
@@ -173,6 +127,87 @@ void medParameterPoolManager::linkAll()
     foreach(medAbstractParameter *param, pool->parameters())
     {
         addColorLabeltoView(param, pool);
+    }
+}
+
+void medParameterPoolManager::linkParameter(medAbstractParameter* parameter, int poolNumber)
+{
+    medParameterPool *selectedPool;
+
+    if(poolNumber == -1)
+    {
+        selectedPool = new medParameterPool(this);
+        selectedPool->setColor(QColor::fromHsv(qrand() % 256, qrand() % 255, qrand() % 190));
+        selectedPool->setName("Pool" + QString::number(d->pools.count()+1));
+        d->pools.insert(d->pools.count()+1, selectedPool);
+        emit poolCreated(selectedPool, d->pools.count());
+    }
+    else selectedPool = d->pools.value(poolNumber);
+
+    if(medAbstractGroupParameter *group = dynamic_cast<medAbstractGroupParameter *>(parameter))
+    {
+        foreach(medAbstractParameter *paramInGroup, group->parametersCandidateToPool())
+        {
+            foreach(medAbstractParameter *paramInPool, d->currentPool->parameters(paramInGroup->name()))
+            {
+                selectedPool->append(paramInPool);
+                addColorLabeltoView(paramInPool, selectedPool);
+            }
+        }
+    }
+    else
+    {
+        foreach(medAbstractParameter *param, d->currentPool->parameters(parameter->name()))
+        {
+            selectedPool->append(param);
+            addColorLabeltoView(param, selectedPool);
+        }
+    }
+
+}
+
+void medParameterPoolManager::unlinkParameter(medAbstractParameter* param, int poolId)
+{
+    medParameterPool *selectedPool = d->pools.value(poolId);
+
+    if(medAbstractGroupParameter *group = dynamic_cast<medAbstractGroupParameter *>(param))
+    {
+        foreach(medAbstractParameter *paramInGroup, group->parametersCandidateToPool())
+        {
+            selectedPool->removeAll(paramInGroup->name());
+        }
+    }
+    else selectedPool->removeAll(param->name());
+
+    if(selectedPool->count() == 0)
+        removePool(poolId);
+
+}
+
+void medParameterPoolManager::addViewParamsToPool(medAbstractView* view, int poolId)
+{
+    medParameterPool *selectedPool = d->pools.value(poolId);
+
+    QList<medAbstractParameter*> viewParams = view->navigatorsParameters();
+
+    foreach(medAbstractParameter* viewParam, viewParams)
+    {
+        if(medAbstractGroupParameter *group = dynamic_cast<medAbstractGroupParameter *>(viewParam))
+        {
+            foreach(medAbstractParameter *paramInGroup, group->parametersCandidateToPool())
+            {
+                if(selectedPool->parametersNames().contains(paramInGroup->name()))
+                {
+                    selectedPool->append(paramInGroup);
+                    addColorLabeltoView(viewParam, selectedPool);
+                }
+            }
+        }
+        else if(selectedPool->parametersNames().contains(viewParam->name()))
+        {
+            selectedPool->append(viewParam);
+            addColorLabeltoView(viewParam, selectedPool);
+        }
     }
 }
 
