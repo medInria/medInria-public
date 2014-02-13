@@ -33,8 +33,8 @@ public:
 
     virtual QList<medAbstractParameter*> viewParameters();
 
-    virtual QPointF mapWorldToDisplayCoordinates( const QVector3D & worldVec );
-    virtual QVector3D mapDisplayToWorldCoordinates( const QPointF & scenePoint );
+    virtual QPointF mapWorldToDisplayCoordinates(const QVector3D & worldVec );
+    virtual QVector3D mapDisplayToWorldCoordinates(const QPointF & scenePoint );
     virtual QVector3D viewCenter();
     virtual QVector3D viewPlaneNormal();
     virtual QVector3D viewUp();
@@ -45,9 +45,9 @@ public:
     bool eventFilter(QObject * obj, QEvent * event);
 
 private slots:
-    void _prvt_setWindowingInteracStyle(bool windowing);
-    void _prvt_setZoomIntercaStyle(bool zoom);
-    void _prvt_setSLicingInteracStyle(bool slicing);
+    void _prvt_setWindowingInteractionStyle(bool windowing);
+    void _prvt_setZoomInteractionStyle(bool zoom);
+    void _prvt_setSLicingInteractionStyle(bool slicing);
 
     void _prvt_buildToolBox();
     void _prvt_buildMouseInteracToolBox();

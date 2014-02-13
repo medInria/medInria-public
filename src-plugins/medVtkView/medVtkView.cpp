@@ -159,57 +159,40 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 
     d->receiverWidget = new QVTKWidget2();
     d->receiverWidget->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Minimum );
-
     d->receiverWidget->setFocusPolicy ( Qt::ClickFocus );
 
     // Event filter used to know if the view is selecetd or not
     d->receiverWidget->installEventFilter(this);
-
     d->receiverWidget->SetRenderWindow(d->renWin);
 
     d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d,d->renWin,d->receiverWidget));
 
-
     d->observer = medVtkViewObserver::New();
-    d->observer->setView ( this );
+    d->observer->setView(this);
 
-    d->view2d->AddObserver ( vtkImageView::CurrentPointChangedEvent, d->observer, 0 );
-    d->view2d->AddObserver ( vtkImageView::WindowLevelChangedEvent,  d->observer, 0 );
-    d->view2d->GetInteractorStyle()->AddObserver ( vtkImageView2DCommand::CameraZoomEvent, d->observer, 0 );
-    d->view2d->GetInteractorStyle()->AddObserver ( vtkImageView2DCommand::CameraPanEvent, d->observer, 0 );
-    d->view2d->AddObserver ( vtkImageView2DCommand::CameraPanEvent, d->observer, 0);
-    d->view2d->AddObserver ( vtkImageView2DCommand::CameraZoomEvent,d->observer,0);
-    d->view3d->GetInteractorStyle()->AddObserver ( vtkCommand::InteractionEvent, d->observer, 0 );
+    d->view2d->AddObserver(vtkImageView::CurrentPointChangedEvent, d->observer, 0);
+    d->view2d->AddObserver(vtkImageView::WindowLevelChangedEvent,  d->observer, 0);
+    d->view2d->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::CameraZoomEvent, d->observer, 0);
+    d->view2d->GetInteractorStyle()->AddObserver(vtkImageView2DCommand::CameraPanEvent, d->observer, 0);
+    d->view2d->AddObserver(vtkImageView2DCommand::CameraPanEvent, d->observer, 0);
+    d->view2d->AddObserver(vtkImageView2DCommand::CameraZoomEvent,d->observer,0);
+    d->view3d->GetInteractorStyle()->AddObserver(vtkCommand::InteractionEvent, d->observer, 0);
 
     d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyPressEvent,d->observer,0);
     d->view2d->GetRenderWindow()->GetInteractor()->AddObserver(vtkCommand::KeyReleaseEvent,d->observer,0);
 
-    this->initialiseNavigators();
-    this->_prvt_buildToolBox();
-
-    connect(this, SIGNAL(layerAdded(int)), this, SLOT(_prvt_addLayerItem(int)));
-    connect(this, SIGNAL(layerRemoved(int)), this, SLOT(_prvt_removeLayerItem(int)));
-
-    d->toolBox->show();
-
-    // construct main widget
-    d->mainWidget = new QWidget;
-    d->toolBar = new QWidget;
-    d->toolBar->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Fixed );
-
-    d->mainLayout = new QVBoxLayout(d->mainWidget);
-    d->mainLayout->setContentsMargins ( 0, 0, 0, 0 );
-    d->mainLayout->setSpacing ( 0 );
-
-    d->toolbarLayout = new QHBoxLayout(d->toolBar);
-    d->toolbarLayout->setContentsMargins ( 0, 0, 0, 0 );
-    d->toolbarLayout->setSpacing ( 0 );
-    d->toolBar->setLayout(d->toolbarLayout);
-
-    d->mainLayout->addWidget(d->toolBar);
-    d->mainLayout->addWidget(d->receiverWidget);
+    d->mainWidget = NULL;
+    d->toolBox = NULL;
+    d->toolBar = NULL;
 
     d->multiSelectionEnabled = false;
+
+    this->initialiseNavigators();
+
+    d->layersListWidget = new QListWidget;
+    d->layersListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    connect(this, SIGNAL(layerAdded(int)), this, SLOT(_prvt_addLayerItem(int)));
+    connect(this, SIGNAL(layerRemoved(int)), this, SLOT(_prvt_removeLayerItem(int)));
 }
 
 medVtkView::~medVtkView()
@@ -245,6 +228,19 @@ QString medVtkView::description() const
 
 QWidget* medVtkView::widget()
 {
+    if(!d->mainWidget)
+    {
+        // construct main widget
+        d->mainWidget = new QWidget;
+
+        d->mainLayout = new QVBoxLayout(d->mainWidget);
+        d->mainLayout->setContentsMargins(0, 0, 0, 0);
+        d->mainLayout->setSpacing(0);
+
+        d->mainLayout->addWidget(this->toolBar());
+        d->mainLayout->addWidget(this->receiverWidget());
+    }
+
     return d->mainWidget;
 }
 
@@ -255,11 +251,25 @@ QWidget* medVtkView::receiverWidget()
 
 QWidget* medVtkView::toolBar()
 {
+    if(!d->toolBar)
+    {
+        d->toolBar = new QWidget;
+        d->toolBar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+        d->toolbarLayout = new QHBoxLayout(d->toolBar);
+        d->toolbarLayout->setContentsMargins(0, 0, 0, 0);
+        d->toolbarLayout->setSpacing(0);
+        d->toolBar->setLayout(d->toolbarLayout);
+    }
+
     return d->toolBar;
 }
 
 QWidget* medVtkView::toolBox()
 {
+    if(!d->toolBox)
+    {
+        this->_prvt_buildToolBox();
+    }
     return d->toolBox;
 }
 
@@ -406,19 +416,19 @@ qreal medVtkView::scale()
     return scale;
 }
 
-void medVtkView::_prvt_setWindowingInteracStyle(bool windowing)
+void medVtkView::_prvt_setWindowingInteractionStyle(bool windowing)
 {
     if(windowing)
         d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
 }
 
-void medVtkView::_prvt_setZoomIntercaStyle(bool zoom)
+void medVtkView::_prvt_setZoomInteractionStyle(bool zoom)
 {
     if(zoom)
         d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
 }
 
-void medVtkView::_prvt_setSLicingInteracStyle(bool slicing)
+void medVtkView::_prvt_setSLicingInteractionStyle(bool slicing)
 {
     if(slicing)
         d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
@@ -445,9 +455,6 @@ void medVtkView::_prvt_buildToolBox()
 
     d->layerToolBox = new medToolBox(d->toolBox);
     d->layerToolBox->setTitle(tr("Layers Settings"));
-
-    d->layersListWidget = new QListWidget(d->layerToolBox);
-    d->layersListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     d->layerToolBox->addWidget(d->layersListWidget);
     connect(d->layersListWidget, SIGNAL(currentRowChanged(int)),
             this, SLOT(setSelectedLayer(int)));
@@ -478,13 +485,13 @@ void medVtkView::_prvt_buildMouseInteracToolBox()
     d->mouseInteractionsParameter->addParameter(d->slicingInteractionParameter);
 
     connect(d->windowingInteractionParameter, SIGNAL(valueChanged(bool)),
-            this, SLOT(_prvt_setWindowingInteracStyle(bool)));
+            this, SLOT(_prvt_setWindowingInteractionStyle(bool)));
 
     connect(d->zoomInteractionParameter, SIGNAL(valueChanged(bool)),
-            this, SLOT(_prvt_setZoomIntercaStyle(bool)));
+            this, SLOT(_prvt_setZoomInteractionStyle(bool)));
 
     connect(d->slicingInteractionParameter, SIGNAL(valueChanged(bool)),
-            this, SLOT(_prvt_setSLicingInteracStyle(bool)));
+            this, SLOT(_prvt_setSLicingInteractionStyle(bool)));
 
     d->windowingInteractionParameter->setValue(true);
 
@@ -492,6 +499,7 @@ void medVtkView::_prvt_buildMouseInteracToolBox()
     d->mouseStyleToolBox->setTitle(tr("Mouse interactions"));
     d->mouseStyleToolBox->addWidget(d->mouseInteractionsParameter->getPushButtonGroup());
 }
+
 
 void medVtkView::_prvt_addLayerItem(int layer)
 {
