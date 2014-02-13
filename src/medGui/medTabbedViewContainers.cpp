@@ -120,14 +120,14 @@ void medTabbedViewContainers::addContainer(const QString &name, medViewContainer
     
     d->containers[name] = container;
 
-    connect( container, SIGNAL( focused( dtkAbstractView * ) ),
-             this,      SIGNAL( focused( dtkAbstractView * ) ) );
+    connect( container, SIGNAL( focused( medAbstractView * ) ),
+             this,      SIGNAL( focused( medAbstractView * ) ) );
     connect( container, SIGNAL( imageSet( const medDataIndex & ) ),
              this,      SIGNAL( imageSet( const medDataIndex & ) ) );
-    connect( container, SIGNAL( viewAdded( dtkAbstractView * ) ),
-             this,      SIGNAL( viewAdded( dtkAbstractView * ) ) );
-    connect( container, SIGNAL( viewRemoved( dtkAbstractView * ) ),
-             this,      SIGNAL( viewRemoved( dtkAbstractView * ) ) );
+    connect( container, SIGNAL( viewAdded( medAbstractView * ) ),
+             this,      SIGNAL( viewAdded( medAbstractView * ) ) );
+    connect( container, SIGNAL( viewRemoved( medAbstractView * ) ),
+             this,      SIGNAL( viewRemoved( medAbstractView * ) ) );
 
     if (!this->count())
         d->currentName = name;
@@ -144,15 +144,15 @@ void medTabbedViewContainers::insertContainer(int index, const QString &name, me
 
     d->containers[name] = container;
 
-    connect( container, SIGNAL( focused( dtkAbstractView * ) ),
-             this,      SIGNAL( focused( dtkAbstractView * ) ) );
+    connect( container, SIGNAL( focused( medAbstractView * ) ),
+             this,      SIGNAL( focused( medAbstractView * ) ) );
     connect( container, SIGNAL( imageSet( const medDataIndex & ) ),
              this,      SIGNAL( imageSet( const medDataIndex & ) ) );
 
-    connect( container, SIGNAL( viewAdded( dtkAbstractView * ) ),
-             this,      SIGNAL( viewAdded( dtkAbstractView * ) ) );
-    connect( container, SIGNAL( viewRemoved( dtkAbstractView * ) ),
-             this,      SIGNAL( viewRemoved( dtkAbstractView * ) ) );
+    connect( container, SIGNAL( viewAdded( medAbstractView * ) ),
+             this,      SIGNAL( viewAdded( medAbstractView * ) ) );
+    connect( container, SIGNAL( viewRemoved( medAbstractView * ) ),
+             this,      SIGNAL( viewRemoved( medAbstractView * ) ) );
 
     if (!this->count())
         d->currentName = name;

@@ -17,7 +17,7 @@
 #include <medAbstractData.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
-#include <dtkCore/dtkAbstractViewInteractor.h>
+#include <medAbstractViewInteractor.h>
 #include <dtkLog/dtkLog.h>
 
 #include <medAbstractImageData.h>
@@ -195,7 +195,7 @@ void medSegmentationSelectorToolBox::setProcess(dtkAbstractProcess* proc)
     d->process = proc;
 }
 
-medAbstractViewCoordinates * medSegmentationSelectorToolBox::viewCoordinates( dtkAbstractView * view )
+medAbstractViewCoordinates * medSegmentationSelectorToolBox::viewCoordinates( medAbstractView * view )
 {
 //    medAbstractImageView * mview = qobject_cast< medAbstractImageView * >( view );
 //    if ( ! mview ) {
@@ -206,7 +206,7 @@ medAbstractViewCoordinates * medSegmentationSelectorToolBox::viewCoordinates( dt
     return NULL;
 }
 
-medAbstractData * medSegmentationSelectorToolBox::viewData( dtkAbstractView * view )
+medAbstractData * medSegmentationSelectorToolBox::viewData( medAbstractView * view )
 {
     medAbstractImageView * mview = qobject_cast< medAbstractImageView * >( view );
     if ( ! mview ) {
@@ -292,8 +292,8 @@ QString medSegmentationSelectorToolBox::localizedNameForAlgorithm( const QString
 
 void medSegmentationSelectorToolBox::addViewEventFilter( medViewEventFilter * filter )
 {
-    QList< dtkAbstractView *> views = d->workspace->currentViewContainer()->views();
-    foreach( dtkAbstractView * view, views ) {
+    QList< medAbstractView *> views = d->workspace->currentViewContainer()->views();
+    foreach( medAbstractView * view, views ) {
         medAbstractImageView * mview = qobject_cast<medAbstractImageView *>(view);
         filter->installOnView(mview);
     }
@@ -301,14 +301,14 @@ void medSegmentationSelectorToolBox::addViewEventFilter( medViewEventFilter * fi
 
 void medSegmentationSelectorToolBox::removeViewEventFilter( medViewEventFilter * filter )
 {
-    QList< dtkAbstractView *> views = d->workspace->currentViewContainer()->views();
-    foreach( dtkAbstractView * view, views ) {
+    QList< medAbstractView *> views = d->workspace->currentViewContainer()->views();
+    foreach( medAbstractView * view, views ) {
         medAbstractImageView * mview = qobject_cast<medAbstractImageView *>(view);
         filter->removeFromView(mview);
     }
 }
 
-void medSegmentationSelectorToolBox::update( dtkAbstractView *view )
+void medSegmentationSelectorToolBox::update( medAbstractView *view )
 {
     medToolBox::update(view);
 }

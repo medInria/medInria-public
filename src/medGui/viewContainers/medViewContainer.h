@@ -18,14 +18,14 @@
 #include <QtGui/QFrame>
 
 class medAbstractData;
-class dtkAbstractView;
+class medAbstractView;
 class medDataIndex;
 class medViewPool;
 
 class medViewContainerPrivate;
 
 /**
- * @brief A viewContainer is a QWidget hosting one or several dtkAbstractViews.
+ * @brief A viewContainer is a QWidget hosting one or several medAbstractViews.
  *
  *
  *
@@ -210,13 +210,6 @@ public:
     // QList< medViewContainer * > leaves( bool excludeEmpty = false ) const;
     QList< medViewContainer * > leaves( bool excludeEmpty = false );
 
-    /**
-     * @brief Gets the medViewPool associated with this container.
-     *
-     * @param void
-     * @return medViewPool *
-    */
-    medViewPool *pool();
 
     /**
      * @brief Sets the view of this container.
@@ -235,7 +228,7 @@ public:
      *
      * @param view
     */
-    virtual void setView(dtkAbstractView *view);
+    virtual void setView(medAbstractView *view);
 
     /**
      * @brief Gets the view associated with the container.
@@ -247,9 +240,9 @@ public:
      * Use this method to get a pointer to a view in which to drop some data
      *
      * @param void
-     * @return dtkAbstractView * or NULL if there is no editable view attached to this container, or its current leaf.
+     * @return medAbstractView * or NULL if there is no editable view attached to this container, or its current leaf.
     */
-    virtual dtkAbstractView         *view() const;
+    virtual medAbstractView         *view() const;
 
     /**
      * @brief Gets the views contained here.
@@ -258,25 +251,15 @@ public:
      * one element.
      *
      * @param void
-     * @return QList<dtkAbstractView *>
+     * @return QList<medAbstractView *>
     */
-    virtual QList<dtkAbstractView *> views() const;
+    virtual QList<medAbstractView *> views() const;
 
     /**
      * @brief Gets the value of from a viewProperty key.
      *
      * @param key
      * @return QString
-    */
-    virtual QString viewProperty (const QString &key) const;
-
-    /**
-     * @brief Sets an information string to the container.
-     *
-     * This string is then displayed in the container's background
-     * when there is no view.
-     *
-     * @param info
     */
     void setInfo(const QString& info);
 
@@ -333,7 +316,7 @@ signals:
      *
      * @param view
     */
-    void focused(dtkAbstractView *view);
+    void focused(medAbstractView *view);
 
     /**
      * @brief The container has been selected.
@@ -345,14 +328,14 @@ signals:
      *
      * @param view
     */
-    void viewAdded   (dtkAbstractView *view);
+    void viewAdded   (medAbstractView *view);
 
     /**
      * @brief A view has been added from the container.
      *
      * @param view
     */
-    void viewRemoved (dtkAbstractView *view);
+    void viewRemoved (medAbstractView *view);
 
     /**
      * @brief A slice has been selected for visualization.
@@ -369,17 +352,6 @@ public slots:
      * @param cols
     */
     virtual void split(int rows, int cols);
-
-    /**
-     * @brief Sets a view property.
-     *
-     * Properties are set to new views,
-     * and displayed in the Container's background when no view are set.
-     *
-     * @param key
-     * @param value
-    */
-    virtual void setViewProperty (const QString &key, const QString &value);
 
     /**
      * @brief
@@ -485,6 +457,9 @@ protected:
     void keyPressEvent(QKeyEvent * event);
 
     void keyReleaseEvent(QKeyEvent * event);
+
+private slots:
+    void removeInternView();
 
 protected:
     medViewContainerPrivate *d;

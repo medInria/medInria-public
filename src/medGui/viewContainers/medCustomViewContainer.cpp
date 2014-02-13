@@ -15,10 +15,8 @@
 #include <medCustomViewContainer.h>
 
 #include <medAbstractData.h>
-#include <dtkCore/dtkAbstractView.h>
-#include <dtkCore/dtkAbstractViewFactory.h>
-
 #include <medAbstractView.h>
+
 #include <medViewManager.h>
 
 class medCustomViewContainerPrivate
@@ -74,8 +72,8 @@ void medCustomViewContainer::split ( int rows, int cols )
             medCustomViewContainer *container = new medCustomViewContainer ( this );
             if ( i == 0 && j == 0)
                 this->setCurrent ( container ); // current view is in the top left corner
-            connect ( container, SIGNAL ( viewAdded ( dtkAbstractView* ) ),   this, SIGNAL ( viewAdded ( dtkAbstractView* ) ) );
-            connect ( container, SIGNAL ( viewRemoved ( dtkAbstractView* ) ), this, SIGNAL ( viewRemoved ( dtkAbstractView* ) ) );
+            connect ( container, SIGNAL ( viewAdded ( medAbstractView* ) ),   this, SIGNAL ( viewAdded ( medAbstractView* ) ) );
+            connect ( container, SIGNAL ( viewRemoved ( medAbstractView* ) ), this, SIGNAL ( viewRemoved ( medAbstractView* ) ) );
             d->layout->addWidget ( container, i, j );
             d->layout->setColumnStretch ( j, 0 );
         }
@@ -136,10 +134,10 @@ void medCustomViewContainer::setPreset ( int preset )
         custom3 = new medCustomViewContainer ( this );
         custom4 = new medCustomViewContainer ( this );
 
-        custom1->setViewProperty ( "Orientation", "Axial" );
-        custom2->setViewProperty ( "Orientation", "Sagittal" );
-        custom3->setViewProperty ( "Orientation", "Coronal" );
-        custom4->setViewProperty ( "Orientation", "3D" );
+//        custom1->setViewProperty ( "Orientation", "Axial" );
+//        custom2->setViewProperty ( "Orientation", "Sagittal" );
+//        custom3->setViewProperty ( "Orientation", "Coronal" );
+//        custom4->setViewProperty ( "Orientation", "3D" );
 
         d->layout->addWidget ( custom1, 0, 0 );
         d->layout->addWidget ( custom2, 0, 1 );
@@ -169,56 +167,45 @@ void medCustomViewContainer::setPreset ( int preset )
     foreach ( medCustomViewContainer * container, containers )
     if ( container != NULL )
     {
-        connect ( container, SIGNAL ( viewAdded ( dtkAbstractView * ) ),
-                  this,      SIGNAL ( viewAdded ( dtkAbstractView * ) ) );
-        connect ( container, SIGNAL ( viewRemoved ( dtkAbstractView * ) ),
-                  this,      SIGNAL ( viewRemoved ( dtkAbstractView * ) ) );
+        connect ( container, SIGNAL ( viewAdded ( medAbstractView * ) ),
+                  this,      SIGNAL ( viewAdded ( medAbstractView * ) ) );
+        connect ( container, SIGNAL ( viewRemoved ( medAbstractView * ) ),
+                  this,      SIGNAL ( viewRemoved ( medAbstractView * ) ) );
     }
 
     if (this->current() == NULL)    // if current view has not been set (no splitting)
         this->setCurrent ( custom1 );
 }
 
-void medCustomViewContainer::setView ( dtkAbstractView *view )
+void medCustomViewContainer::setView (medAbstractView *view )
 {
-    if ( this->isLeaf() )
+    if (this->isLeaf())
     {
-        if ( view != d->view )
+        if (view != d->view)
         {
-            if ( d->layout->count() )
-                d->layout->removeItem ( d->layout->itemAt ( 0 ) );
+            if ( d->layout->count() > 0)
+                d->layout->removeItem(d->layout->itemAt(0));
 
-            if ( d->view )
-                this->onViewClosing();
-
-            medViewContainer::setView ( view );
-
-            // BEGIN FIXME
-            if (d->view) {
-                d->layout->setContentsMargins ( 0, 0, 0, 0 );
-                d->layout->addWidget ( view->widget(), 0, 0 );
-
-                connect ( view, SIGNAL ( closing() ),         this, SLOT ( onViewClosing() ) );
-                connect ( view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
-
-                this->recomputeStyleSheet();
-
-                emit viewAdded ( view );
+            if (d->view)
+            {
+                delete d->view;
+                d->view = NULL;
             }
-            // END FIXME
+
+            medViewContainer::setView(view);
         }
     }
     else
     {
         // BEGIN FIXME
         if (current())
-            current()->setView ( view );
+            current()->setView(view);
         // END FIXME
         return;
     }
 }
 
-dtkAbstractView *medCustomViewContainer::view() const
+medAbstractView *medCustomViewContainer::view() const
 {
     const medCustomViewContainer* currentContainer =
             qobject_cast<const medCustomViewContainer*> ( current() );
@@ -232,12 +219,12 @@ dtkAbstractView *medCustomViewContainer::view() const
     return d->view;
 }
 
-QList<dtkAbstractView *> medCustomViewContainer::views() const
+QList<medAbstractView *> medCustomViewContainer::views() const
 {
-    QList<dtkAbstractView *> views;
+    QList<medAbstractView *> views;
     if ( this->childContainers().count() ==0 )
     {
-        if ( d->view )
+        if (d->view)
             views << d->view;
     }
     else
@@ -257,19 +244,7 @@ bool medCustomViewContainer::isLeaf() const
 
 void medCustomViewContainer::onViewClosing()
 {
-    if ( d->view )
-    {
-        this->onViewFullScreen2 (false, d->view); // in case view is full screen
-        d->layout->removeWidget ( d->view->widget() );
-        disconnect ( d->view, SIGNAL ( closing() ),         this, SLOT ( onViewClosing() ) );
-        disconnect ( d->view, SIGNAL ( fullScreen ( bool ) ),  this, SLOT ( onViewFullScreen ( bool ) ) );
-
-        emit viewRemoved ( d->view );
-
-        d->view->close();
-        d->view = NULL;
-    }
-
+//TODO wath is it for - RDE
     medViewContainer * parent = this->parentContainer();
     while ( parent != NULL )
     {
@@ -289,15 +264,15 @@ void medCustomViewContainer::onViewFullScreen ( bool value )
 {
     if ( medCustomViewContainer *parent = qobject_cast<medCustomViewContainer*> ( this->parent() ) )
     {
-        parent->onViewFullScreen2 ( value, qobject_cast<dtkAbstractView *> ( this->sender() ) );
+        parent->onViewFullScreen2 ( value, qobject_cast<medAbstractView *> ( this->sender() ) );
     }
     else   // top level medCustomViewContainer
     {
-        this->fullScreen ( value, qobject_cast<dtkAbstractView *> ( this->sender() ) );
+        this->fullScreen ( value, qobject_cast<medAbstractView *> ( this->sender() ) );
     }
 }
 
-void medCustomViewContainer::onViewFullScreen2 ( bool value, dtkAbstractView *view )
+void medCustomViewContainer::onViewFullScreen2 ( bool value, medAbstractView *view )
 {
     if ( medCustomViewContainer *parent = qobject_cast<medCustomViewContainer*> ( this->parent() ) )
     {
@@ -309,7 +284,7 @@ void medCustomViewContainer::onViewFullScreen2 ( bool value, dtkAbstractView *vi
     }
 }
 
-void medCustomViewContainer::fullScreen ( bool value, dtkAbstractView *view )
+void medCustomViewContainer::fullScreen ( bool value, medAbstractView *view )
 {
     if ( this->childContainers().count() == 0 )   // no children = end widget
     {

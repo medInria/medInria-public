@@ -14,7 +14,7 @@
 #include <medViewContainer_p.h>
 #include <medSingleViewContainer.h>
 
-#include <dtkCore/dtkAbstractView.h>
+#include <medAbstractView.h>
 
 #include <medAbstractView.h>
 #include <medViewManager.h>
@@ -30,34 +30,19 @@ void medSingleViewContainer::split(int rows, int cols)
     return;
 }
 
-void medSingleViewContainer::setView(dtkAbstractView *view)
+void medSingleViewContainer::setView(medAbstractView *view)
 {
-    if (view==d->view)
+    if (view == d->view)
         return;
 
-    if (d->view) { // cleanup the previous view first
-        this->onViewClosing();
-    }
+    // cleanup the previous view first
+    if (d->view)
+        delete d->view;
 
-    medViewContainer::setView (view);
-
-    //d->view = view; // already called in medViewContainer::setView()
-
-    if (d->view) {
-        d->layout->setContentsMargins(0, 0, 0, 0);
-        d->layout->addWidget(view->widget(), 0, 0);
-        // BEGIN FIXME
-        view->widget()->show();
-        // END FIXME
-
-        connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
-
-        this->recomputeStyleSheet();
-        emit viewAdded (view);
-    }
+    medViewContainer::setView(view);
 }
 
-dtkAbstractView *medSingleViewContainer::view() const
+medAbstractView *medSingleViewContainer::view() const
 {
     return d->view;
 }
@@ -65,20 +50,6 @@ dtkAbstractView *medSingleViewContainer::view() const
 bool medSingleViewContainer::isLeaf(void) const
 {
     return true;
-}
-
-void medSingleViewContainer::onViewClosing()
-{
-    if (d->view) {
-        d->layout->removeWidget (d->view->widget());
-        disconnect (d->view, SIGNAL (closing()), this, SLOT (onViewClosing()));
-        emit viewRemoved (d->view);
-
-        d->view->close();
-        d->view = NULL;
-
-        this->recomputeStyleSheet();
-    }
 }
 
 void medSingleViewContainer::dragEnterEvent(QDragEnterEvent *event)

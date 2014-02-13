@@ -39,10 +39,10 @@ public:
     void split(int rows, int cols);
 
     void setPreset(int preset);
-    void setView(dtkAbstractView *view);
+    void setView(medAbstractView *view);
 
-    dtkAbstractView *view() const;
-    QList<dtkAbstractView*> views() const;
+    medAbstractView *view() const;
+    QList<medAbstractView*> views() const;
 
     /**
      * @brief Is this a leaf container?
@@ -69,8 +69,8 @@ protected:
     void dragLeaveEvent(QDragLeaveEvent *event);
     void dropEvent(QDropEvent *event);
 
-    void onViewFullScreen2 (bool value, dtkAbstractView *view);
-    void fullScreen (bool value, dtkAbstractView *view);
+    void onViewFullScreen2 (bool value, medAbstractView *view);
+    void fullScreen (bool value, medAbstractView *view);
 
     // QList<medCustomViewContainer*> children() const;
     medCustomViewContainerPrivate *d2;

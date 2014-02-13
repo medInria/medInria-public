@@ -18,6 +18,8 @@
 #include <medViewContainer.h>
 #include <medSingleViewContainer.h>
 
+class medAbstractView;
+
 class MEDGUI_EXPORT medSingleViewContainer2 : public medSingleViewContainer
 {
     Q_OBJECT
@@ -26,11 +28,7 @@ public:
      medSingleViewContainer2(QWidget *parent = 0);
     ~medSingleViewContainer2();
 
-    void setView(dtkAbstractView *view);
-
-public slots:
-
-    virtual void onViewClosing();
+    void setView(medAbstractView *view);
 };
 
 
@@ -47,9 +45,9 @@ public:
 
     void split(int rows, int cols);
 
-    dtkAbstractView *view() const;
+    medAbstractView *view() const;
 
-    QList<dtkAbstractView*> views() const;
+    QList<medAbstractView*> views() const;
 
     /**
      * @brief Overrides medViewContainer::setView.
@@ -58,14 +56,13 @@ public:
      *
      * @param view
      */
-    void setView(dtkAbstractView *view);
+    void setView(medAbstractView *view);
 
     void layout (QList<QWidget *> content);
 
     virtual QString identifier() {return "Multi";}
 
 public slots:
-    void onViewClosing();
     void onViewFullScreen (bool value);
 
 private:

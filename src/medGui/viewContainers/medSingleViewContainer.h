@@ -17,6 +17,8 @@
 
 #include <medViewContainer.h>
 
+class medAbstrcatView;
+
 class MEDGUI_EXPORT medSingleViewContainer : public medViewContainer
 {
     Q_OBJECT
@@ -26,7 +28,7 @@ public:
 
 
     void split(int rows, int cols);
-    virtual dtkAbstractView *view() const;
+    virtual medAbstractView *view() const;
 
     /**
      * @brief Is this a leaf container?
@@ -46,8 +48,7 @@ public:
     virtual QString description() {return "Single";}
 
 public slots:
-    virtual void onViewClosing();
-    virtual void setView(dtkAbstractView *view);
+    virtual void setView(medAbstractView *view);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);

@@ -17,7 +17,7 @@
 
 #include <medGuiExport.h>
 
-class dtkAbstractView;
+class medAbstractView;
 class medDataIndex;
 class medViewContainer;
 class medTabbedViewContainersPrivate;
@@ -143,7 +143,7 @@ signals:
      *
      * @param 
     */
-    void focused(dtkAbstractView *);
+    void focused(medAbstractView *);
 
     /**
      * @brief Emits this signal when one of the containers has emitted 
@@ -151,7 +151,7 @@ signals:
      * 
      * @param view
     */
-    void viewAdded( dtkAbstractView * );
+    void viewAdded( medAbstractView * );
     
     /**
      * @brief Emits this signal when one of the containers has emitted 
@@ -159,7 +159,7 @@ signals:
      *
      * @param view
     */
-    void viewRemoved( dtkAbstractView * );
+    void viewRemoved( medAbstractView * );
 
     /**
      * @brief Emits a signal when the add tab button has been clicked. Handled by the workspaces

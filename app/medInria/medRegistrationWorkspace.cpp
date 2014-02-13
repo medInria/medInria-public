@@ -13,8 +13,8 @@
 
 #include <medRegistrationWorkspace.h>
 
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractView.h>
+#include <medViewFactory.h>
+#include <medAbstractView.h>
 #include <dtkCore/dtkSmartPointer.h>
 
 #include <medRegistrationSelectorToolBox.h>
@@ -84,10 +84,10 @@ void medRegistrationWorkspace::setupViewContainerStack()
         //create the fuse container
         medSingleViewContainer *fuseContainer = new medSingleViewContainer(
                 this->stackedViewContainers());
-        if (dtkSmartPointer<dtkAbstractView> view = dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView"))
+        if (medAbstractView* view = medViewFactory::instance()->createView("medVtkView"))
         {
-            view->setProperty("Closable","false"); 
-            fuseContainer->setView (view);
+            view->setClosable(false);
+            fuseContainer->setView(view);
             fuseContainer->setAcceptDrops(false);
             d->registrationToolBox->setFuseView (view);
         }
@@ -99,10 +99,10 @@ void medRegistrationWorkspace::setupViewContainerStack()
                 d->registrationToolBox,SLOT(onFixedImageDropped(medDataIndex)));
         connect(compareViewContainer,SIGNAL(droppedMoving(medDataIndex)),
                 d->registrationToolBox,SLOT(onMovingImageDropped(medDataIndex)));
-        connect(compareViewContainer,SIGNAL(viewRemoved(dtkAbstractView*)),
-                d->registrationToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
-        connect(fuseContainer,SIGNAL(viewRemoved(dtkAbstractView*)),
-                d->registrationToolBox,SLOT(onViewRemoved(dtkAbstractView*)));
+        connect(compareViewContainer,SIGNAL(viewRemoved(medAbstractView*)),
+                d->registrationToolBox,SLOT(onViewRemoved(medAbstractView*)));
+        connect(fuseContainer,SIGNAL(viewRemoved(medAbstractView*)),
+                d->registrationToolBox,SLOT(onViewRemoved(medAbstractView*)));
 
         this->stackedViewContainers()->addContainer("Compare",compareViewContainer);
         this->stackedViewContainers()->addContainer("Fuse",fuseContainer);

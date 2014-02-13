@@ -132,12 +132,12 @@ QString medSegmentationWorkspace::description( void ) const
     return msegWorkspaceSegmentationDescription;
 }
 
-void medSegmentationWorkspace::onViewAdded( dtkAbstractView* view )
+void medSegmentationWorkspace::onViewAdded(medAbstractView* view)
 {
     emit viewAdded(view);
 }
 
-void medSegmentationWorkspace::onViewRemoved( dtkAbstractView* view )
+void medSegmentationWorkspace::onViewRemoved(medAbstractView* view)
 {
     emit viewRemoved(view);
 }
@@ -165,10 +165,10 @@ medSegmentationSelectorToolBox * medSegmentationWorkspace::segmentationToobox()
 
 void medSegmentationWorkspace::connectToolboxesToCurrentContainer(const QString &name)
 {
-    connect(stackedViewContainers()->container(name),SIGNAL(viewAdded(dtkAbstractView*)),
-        this,SLOT(onViewAdded(dtkAbstractView*)));
-    connect(stackedViewContainers()->container(name),SIGNAL(viewRemoved(dtkAbstractView*)),
-        this,SLOT(onViewRemoved(dtkAbstractView*)));
+    connect(stackedViewContainers()->container(name),SIGNAL(viewAdded(medAbstractView*)),
+        this,SLOT(onViewAdded(medAbstractView*)));
+    connect(stackedViewContainers()->container(name),SIGNAL(viewRemoved(medAbstractView*)),
+        this,SLOT(onViewRemoved(medAbstractView*)));
 }
 
 QString medSegmentationWorkspace::s_identifier()

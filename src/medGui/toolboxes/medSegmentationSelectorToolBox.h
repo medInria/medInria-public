@@ -16,7 +16,7 @@
 #include <medToolBox.h>
 #include <medGuiExport.h>
 
-class dtkAbstractView;
+class medAbstractView;
 class dtkAbstractProcess;
 class medAbstractImageData;
 class medAbstractViewCoordinates;
@@ -48,10 +48,10 @@ public:
     void run( dtkAbstractProcess* alg );
 
     //! Obtain the view coordinates for the given view
-    static medAbstractViewCoordinates * viewCoordinates( dtkAbstractView * view );
+    static medAbstractViewCoordinates * viewCoordinates( medAbstractView * view );
 
     //! Get the data for the given view.
-    static medAbstractData * viewData( dtkAbstractView * view );
+    static medAbstractData * viewData( medAbstractView * view );
 
     //! Get the description for the algorithm with the given name.
     QString localizedNameForAlgorithm( const QString & algName ) const;
@@ -72,7 +72,7 @@ signals:
 
 public slots:
     // Override base class
-    void update (dtkAbstractView *view);
+    void update (medAbstractView *view);
 
     //! called when an algorithm is added (to a factory for instance)
     void onAlgorithmAdded( const QString & algName);

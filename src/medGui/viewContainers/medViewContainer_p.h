@@ -17,7 +17,7 @@
 
 #include <dtkCore/dtkSmartPointer.h>
 
-class dtkAbstractView;
+class medAbstractView;
 class medViewContainer;
 class medViewPool;
 
@@ -25,20 +25,9 @@ class medViewContainerPrivate
 {
 public:
     QGridLayout *layout;
-
-    dtkSmartPointer<dtkAbstractView> view;
-
+    medAbstractView *view;
     medViewContainer *current;
 
-    // for view synchronization
-    /*
-      QList<dtkAbstractView *> views;
-      dtkAbstractView         *refView;
-      int                      synchronize;
-    */
-    medViewPool *pool;
-
-    QHash<QString, QString> viewProperties;
     QString viewInfo;
     bool multiLayer;
     bool multiSelectionEnabled;
