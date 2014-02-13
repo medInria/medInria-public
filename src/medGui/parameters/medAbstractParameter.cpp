@@ -195,7 +195,6 @@ void medAbstractIntParameter::setValue(int value)
     this->blockInternWidgetsSignals(false);
 
     emit valueChanged(value);
-    emit triggered();
 }
 int medAbstractIntParameter::value() const
 {
@@ -217,7 +216,6 @@ void medAbstractDoubleParameter::setValue(double value)
     this->blockInternWidgetsSignals(false);
 
     emit valueChanged(value);
-    emit triggered();
 }
 double medAbstractDoubleParameter::value() const
 {
@@ -240,7 +238,6 @@ void medAbstractBoolParameter::setValue(bool value)
     this->blockInternWidgetsSignals(false);
 
     emit valueChanged(value);
-    emit triggered();
 }
 bool medAbstractBoolParameter::value() const
 {
@@ -263,7 +260,6 @@ void medAbstractVector2DParameter::setValue(const QVector2D &value)
     this->blockInternWidgetsSignals(false);
 
     emit valueChanged(value);
-    emit triggered();
 }
 QVector2D medAbstractVector2DParameter::value() const
 {
@@ -285,7 +281,6 @@ void medAbstractVector3DParameter::setValue(const QVector3D &value)
     this->blockInternWidgetsSignals(false);
 
     emit valueChanged(value);
-    emit triggered();
 }
 QVector3D medAbstractVector3DParameter::value() const
 {
@@ -307,7 +302,6 @@ void medAbstractVector4DParameter::setValue(const QVector4D &value)
     this->blockInternWidgetsSignals(false);
 
     emit valueChanged(value);
-    emit triggered();
 }
 QVector4D medAbstractVector4DParameter::value() const
 {

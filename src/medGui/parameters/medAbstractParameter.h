@@ -49,9 +49,6 @@ public:
 
     void setToolTip(QString& tooltip);
 
-signals:
-    void triggered();
-
 protected:
     void addToInternWidgets(QWidget * widget);
     void blockInternWidgetsSignals(bool block) const;
@@ -107,6 +104,9 @@ public:
         medAbstractParameter(name, parent){}
 public slots:
     virtual void trigger();
+
+signals:
+    void triggered();
 
 };
 //--------------------------------------------------------------------------

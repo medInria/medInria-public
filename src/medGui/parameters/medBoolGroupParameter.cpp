@@ -94,10 +94,6 @@ void medBoolGroupParameter::addParameter(medBoolParameter *parameter)
 
     if(d->pushButtonGroupWidget)
         d->pushButtonGroup->addButton(parameter->getPushButton());
-
-    //connect only the first parameter to send the triggered() signal for medBoolGroupParameter
-    if(d->parameters.count() == 1)
-        connect(parameter, SIGNAL(triggered()), this, SIGNAL(triggered()));
 }
 
 void medBoolGroupParameter::removeBoolParameter(medBoolParameter *parameter)
