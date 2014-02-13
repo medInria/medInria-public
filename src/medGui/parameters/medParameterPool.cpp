@@ -14,6 +14,7 @@
 #include <medParameterPool.h>
 
 #include <QMultiHash>
+#include <QDebug>
 
 #include <medAbstractParameter.h>
 
@@ -247,13 +248,17 @@ int medParameterPool::count() const
 
 void medParameterPool::_prvt_removeInternParam()
 {
-    if(medAbstractParameter *param = dynamic_cast<medAbstractParameter*>(sender()))
-    this->remove(param);
+    medAbstractParameter *param = dynamic_cast<medAbstractParameter*>(sender());
+    if(param)
+    {
+        this->remove(param);
+        qDebug()<< "remove param";
+    }
 }
 
 void medParameterPool::_prvt_connectParam(medAbstractParameter *parameter)
 {
-    connect(parameter, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternParam()));
+    connect(parameter, SIGNAL(aboutToBeDestroyed()), this, SLOT(_prvt_removeInternParam()));
 
     if(medAbstractTriggerParameter* param = dynamic_cast<medAbstractTriggerParameter*>(parameter))
         connect(param, SIGNAL(triggered()), this, SLOT(triggerParams()));

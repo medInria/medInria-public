@@ -38,6 +38,7 @@ medAbstractParameter::medAbstractParameter(QString name, QObject *parent):
 
 medAbstractParameter::~medAbstractParameter(void)
 {
+    emit aboutToBeDestroyed();
     delete d;
 }
 

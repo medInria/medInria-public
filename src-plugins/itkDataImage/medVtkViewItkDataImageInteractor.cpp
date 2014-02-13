@@ -52,7 +52,6 @@ public:
     medAbstractData *data;
     medAbstractImageData *imageData;
     vtkRenderWindow *render;
-    QVTKWidget2 *qvtkWidget;
 
     unsigned int layer;
     medAbstractImageView *medVtkView;
@@ -85,7 +84,6 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractIm
     d->collection->AddItem(d->view2d);
     d->collection->AddItem(d->view3d);
     d->render = backend->renWin;
-    d->qvtkWidget = backend->qvtkWidget;
 
     d->data = NULL;
     d->imageData = NULL;
@@ -458,8 +456,6 @@ void medVtkViewItkDataImageInteractor::update()
         d->view2d->Render();
     else
         d->view3d->Render();
-
-    d->qvtkWidget->update();
 }
 
 void medVtkViewItkDataImageInteractor::updateWidgets()

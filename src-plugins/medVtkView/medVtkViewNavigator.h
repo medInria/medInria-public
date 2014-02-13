@@ -70,10 +70,11 @@ signals:
     void orientationChanged();
 
 protected:
-    void bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax);
-    void cameraUp(double *coordinates);
-    void cameraPosition(double *coordinates);
-    void cameraFocalPoint(double *coordinates);
+    void bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax) const;
+    void cameraUp(double *coordinates) const;
+    void cameraPosition(double *coordinates) const;
+    void cameraFocalPoint(double *coordinates) const;
+    void cameraParallelScale(double &parallelScale) const;
     void setCameraPosition(double x, double y, double z);
     void setCameraClippingRange(double nearRange, double farRange);
 

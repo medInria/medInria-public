@@ -165,7 +165,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->receiverWidget->installEventFilter(this);
     d->receiverWidget->SetRenderWindow(d->renWin);
 
-    d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d,d->renWin,d->receiverWidget));
+    d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d,d->renWin));
 
     d->observer = medVtkViewObserver::New();
     d->observer->setView(this);
@@ -191,14 +191,30 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
 
     d->layersListWidget = new QListWidget;
     d->layersListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    connect(d->layersListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(setSelectedLayer(int)));
     connect(this, SIGNAL(layerAdded(int)), this, SLOT(_prvt_addLayerItem(int)));
     connect(this, SIGNAL(layerRemoved(int)), this, SLOT(_prvt_removeLayerItem(int)));
+    connect(this, SIGNAL(layerRemoved(int)), this, SLOT(_prvt_removeLayerData(int)));
+
 }
 
 medVtkView::~medVtkView()
 {
+    d->interactorStyle2D->Delete();
+    d->interactorStyle3D->Delete();
+    d->view2d->Delete();
+    d->view3d->Delete();
+    d->observer->Delete();
+    d->renderer2d->Delete();
+    d->renderer3d->Delete();
+    d->renWin->Delete();
+    d->viewCollection->Delete();
+    delete d->toolBox;
+    delete d->toolBar;
+    delete d->receiverWidget;
+    delete d->mainWidget;
+
     delete d;
-    d = NULL;
 }
 
 QString medVtkView::s_identifier()
@@ -546,6 +562,7 @@ void medVtkView::_prvt_addLayerItem(int layer)
 
     d->layersListWidget->addItem(item);
     d->layersListWidget->setItemWidget(item, layerWidget);
+    d->layersListWidget->setCurrentRow(layer);
 }
 
 
@@ -568,6 +585,21 @@ void medVtkView::updateInteractorsWidget()
         d->interactorsWidgetStack->addWidget(interactor->toolBoxWidget());
 
     d->toolbarLayout->addWidget(this->primaryInteractor( this->selectedLayer() )->toolBarWidget());
+}
+
+void medVtkView::_prvt_removeLayerData(int layer)
+{
+    if(this->layersCount() > 0)
+    {
+        d->view2d->RemoveLayer(layer);
+        d->view3d->RemoveLayer(layer);
+        if(this->is2D())
+            d->view2d->Render();
+        else
+            d->view3d->Render();
+    }
+    else
+        this->~medVtkView();
 }
 
 bool medVtkView::eventFilter(QObject * obj, QEvent * event)

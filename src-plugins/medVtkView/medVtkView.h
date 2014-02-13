@@ -57,6 +57,8 @@ private slots:
 
     void _prvt_removeSelectedLayer();
 
+    void _prvt_removeLayerData(int layer);
+
     void updateInteractorsWidget();
 
 private:

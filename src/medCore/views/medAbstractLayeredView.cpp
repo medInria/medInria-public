@@ -10,7 +10,7 @@
 class medAbstractLayeredViewPrivate
 {
 public:
-    QList < dtkSmartPointer <medAbstractData> > layersDataList;
+    QList <dtkSmartPointer<medAbstractData> > layersDataList;
     QHash<dtkSmartPointer<medAbstractData>,  medAbstractLayeredViewInteractor*> primaryIntercatorsHash;
     QHash<dtkSmartPointer<medAbstractData>,  QList<medAbstractInteractor*> > extraIntercatorsHash;
 
@@ -179,8 +179,9 @@ bool medAbstractLayeredView::removeData(medAbstractData *data)
 
 void medAbstractLayeredView::removeLayer(unsigned int layer)
 {
-    d->layersDataList.removeAt(layer);
+
     this->removeInteractors(this->data(layer));
+    d->layersDataList.removeAt(layer);
 
     emit layerRemoved(layer);
 }

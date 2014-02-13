@@ -137,6 +137,9 @@ QList<medDataIndex> medViewManager::indices(medAbstractView *view) const
 
 void medViewManager::addToSelection(medAbstractView *view)
 {
+    if(!view)
+        return;
+
     d->selectedViews.append(view);
 
     qDebug() << "Selected Views: " << d->selectedViews.count();
@@ -146,6 +149,9 @@ void medViewManager::addToSelection(medAbstractView *view)
 
 void medViewManager::removeFromSelection(medAbstractView *view)
 {
+    if(!view)
+        return;
+
     d->selectedViews.removeAll(view);
 
     qDebug() << "Selected Views: " << d->selectedViews.count();

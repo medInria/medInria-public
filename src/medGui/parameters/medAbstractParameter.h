@@ -20,7 +20,6 @@
 
 #include <medGuiExport.h>
 
-class dtkAbstractObject;
 class QLabel;
 
 class medAbstractParameterPrivate;
@@ -58,6 +57,9 @@ protected slots:
 
 private slots:
     void _prvt_removeInternLabel();
+
+signals:
+    void aboutToBeDestroyed();
 
 private:
   medAbstractParameterPrivate *d; 

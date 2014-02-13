@@ -483,8 +483,8 @@ void medWorkspaceArea::removeToolBox(medToolBox *toolbox)
 void medWorkspaceArea::onViewFocused(dtkAbstractView *view)
 {
     // set head recognizer
-//    qDebug() << "medWorkspaceAreaOnViewFocused";
-    if (view)
+    //    qDebug() << "medWorkspaceAreaOnViewFocused";
+    if(view)
     { //Note to Julien from Ben: not sure the head recognizer works for view==NULL, so I put it inside this iftake it out if needed.
         static dtkVrHeadRecognizer *head_recognizer = NULL;
 
