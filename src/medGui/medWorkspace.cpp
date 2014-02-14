@@ -16,12 +16,12 @@
 #include <medDataIndex.h>
 #include <medSettingsManager.h>
 
-#include "medToolBox.h"
-#include "medViewContainer.h"
-#include "medCustomViewContainer.h"
-#include "medSingleViewContainer.h"
-#include "medMultiViewContainer.h"
-#include "medTabbedViewContainers.h"
+#include <medToolBox.h>
+#include <medViewContainer.h>
+#include <medCustomViewContainer.h>
+#include <medSingleViewContainer.h>
+#include <medMultiViewContainer.h>
+#include <medTabbedViewContainers.h>
 
 
 class medWorkspacePrivate

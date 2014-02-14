@@ -13,12 +13,12 @@
 
 #include "v3dViewAnnIntImageMaskHelper.h"
 
-#include "medImageMaskAnnotationData.h"
+#include <medImageMaskAnnotationData.h>
 
-#include "v3dView.h"
-#include "v3dViewAnnotationInteractor.h"
+#include <v3dView.h>
+#include <v3dViewAnnotationInteractor.h>
 
-#include "vtkImageView2D.h"
+#include <vtkImageView2D.h>
 
 #include <vtkCommand.h>
 #include <vtkImageMapToColors.h>

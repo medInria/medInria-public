@@ -21,8 +21,8 @@
 
 #include "itkFiltersPluginExport.h"
 
-#include "itkProcessObject.h"
-#include "itkCommand.h"
+#include <itkProcessObject.h>
+#include <itkCommand.h>
 
 class itkFiltersProcessBase;
 

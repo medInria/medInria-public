@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medToolBox.h"
+#include <medToolBox.h>
 #include "medGuiExport.h"
 
 class medSegmentationSelectorToolBox;

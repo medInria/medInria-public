@@ -32,7 +32,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #pragma once
 
-#include "vtkShaderBase.h"
+#include <vtkShaderBase.h>
 
 class vtkBMIAShaderProgram;
 

@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "qtdcmDataSource.h"
+#include <qtdcmDataSource.h>
 #include "qtdcmDataSourcePlugin.h"
 
 #include <dtkLog/dtkLog.h>

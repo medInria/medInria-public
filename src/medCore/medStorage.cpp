@@ -17,7 +17,7 @@
 #include <QtCore/QDir>
 
 #include <QtGui/QDesktopServices>
-#include "medSettingsManager.h"
+#include <medSettingsManager.h>
 
 QString medStorage::m_dataLocation = NULL;
 

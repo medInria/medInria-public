@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkObject.h"
+#include <vtkObject.h>
 
 #include <string>
 

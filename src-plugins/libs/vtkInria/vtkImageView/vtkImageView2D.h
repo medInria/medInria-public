@@ -14,8 +14,8 @@
 #pragma once
 
 #include "vtkImageViewExport.h"
-#include "vtkImageView.h"
-#include "vtkInteractorStyleImageView2D.h"
+#include <vtkImageView.h>
+#include <vtkInteractorStyleImageView2D.h>
 
 #include <vtkSmartPointer.h>
 

@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medAbstractVtkViewInteractor.h"
+#include <medAbstractVtkViewInteractor.h>
 
 #include <medAnnotationData.h>
 #include <medAttachedData.h>

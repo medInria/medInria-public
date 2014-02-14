@@ -15,7 +15,7 @@
 
 #include <QtCore/QObject>
 #include "medPacsExport.h"
-#include "medAbstractPacsBaseScu.h"
+#include <medAbstractPacsBaseScu.h>
 
 class MEDPACS_EXPORT medAbstractPacsStoreScu : public medAbstractPacsBaseScu
 {

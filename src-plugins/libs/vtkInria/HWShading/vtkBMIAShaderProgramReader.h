@@ -25,12 +25,12 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkHWShadingExport.h"
 
-#include "vtkBetterDataReader.h"
+#include <vtkBetterDataReader.h>
 
 #include <iostream>
 using namespace std;
 
-#include "vtkBMIAShaderProgram.h"
+#include <vtkBMIAShaderProgram.h>
 
 
   //class vtkBMIAShaderProgram;

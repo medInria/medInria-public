@@ -15,8 +15,8 @@
 
 #include <cstddef> // For ITK 3.20 that does not define correctly ptrdiff_t
 
-#include "itkObjectFactoryBase.h"
-#include "itkImageIOBase.h"
+#include <itkObjectFactoryBase.h>
+#include <itkImageIOBase.h>
 
 namespace itk
 {

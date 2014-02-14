@@ -16,7 +16,7 @@
 #include <dtkCore/dtkAbstractProcess.h>
 #include <dtkCore/dtkAbstractData.h>
 #include <itkImage.h>
-#include "itkTransform.h"
+#include <itkTransform.h>
 #include "itkProcessRegistrationExport.h"
 
 

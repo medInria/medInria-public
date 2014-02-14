@@ -14,7 +14,7 @@
 #pragma once
 
 #include <dtkCore/dtkAbstractData.h>
-#include "itkFiltersProcessBase.h"
+#include <itkFiltersProcessBase.h>
 
 #include "itkFiltersPluginExport.h"
 

@@ -15,7 +15,7 @@
 
 #include "vtkVisuManagementExport.h"
 
-#include "vtkImageToIsosurface.h"
+#include <vtkImageToIsosurface.h>
 #include <vector>
 
 #include <vtkRenderWindowInteractor.h>

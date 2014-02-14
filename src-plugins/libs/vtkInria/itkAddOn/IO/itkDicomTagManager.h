@@ -23,7 +23,7 @@
 #include <itkFlipImageFilter.h>
 #include <gdcmFile.h>
 
-#include "itkDicomDictionary.h"
+#include <itkDicomDictionary.h>
 
 #include <string>
 #include <vector>

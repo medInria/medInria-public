@@ -15,11 +15,11 @@
 
 #include "vtkRenderingAddOnExport.h"
 
-#include "vtkCommand.h"
-#include "vtkPolyData.h"
+#include <vtkCommand.h>
+#include <vtkPolyData.h>
 #include <vtkRenderingAddOn/vtkViewImage2DWithOrientedPoint.h>
-#include "vtkObject.h"
-#include "vtkImageMapToWindowLevelColors.h"
+#include <vtkObject.h>
+#include <vtkImageMapToWindowLevelColors.h>
 
 class VTK_RENDERINGADDON_EXPORT vtkImageOrientedPointWidgetCallback : public vtkCommand
 {

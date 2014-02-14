@@ -13,7 +13,7 @@
 
 #include "medImageMaskAnnotationData.h"
 
-#include "medAbstractDataImage.h"
+#include <medAbstractDataImage.h>
 
 medImageMaskAnnotationData::medImageMaskAnnotationData() :
     medAnnotationData()

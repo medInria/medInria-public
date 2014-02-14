@@ -21,7 +21,7 @@
 #include <medToolBoxFactory.h>
 #include <medWorkspaceFactory.h>
 #include <medSettingsManager.h>
-#include "medPluginWidget.h"
+#include <medPluginWidget.h>
 #include <medSettingsEditor.h>
 
 

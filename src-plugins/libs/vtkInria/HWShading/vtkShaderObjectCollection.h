@@ -26,7 +26,7 @@ PURPOSE.  See the above copyright notices for more information.
 #include "vtkHWShadingExport.h"
 
 #include <vtkCollection.h>
-#include "vtkShaderObject.h" // for inline methods/static casts
+#include <vtkShaderObject.h> // for inline methods/static casts
 
 class VTK_HWSHADING_EXPORT vtkShaderObjectCollection : public vtkCollection
 {

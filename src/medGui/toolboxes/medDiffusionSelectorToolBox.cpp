@@ -28,7 +28,7 @@
 #include <medToolBoxHeader.h>
 
 #include "medDiffusionSelectorToolBox.h"
-#include "medDiffusionAbstractToolBox.h"
+#include <medDiffusionAbstractToolBox.h>
 
 class medDiffusionSelectorToolBoxPrivate
 {

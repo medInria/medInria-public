@@ -31,7 +31,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkHWShadingExport.h"
 
-#include "vtkShaderBase.h"
+#include <vtkShaderBase.h>
 
 /**
  * Base class for GLSL shader related subclasses with GLhandles.

@@ -15,7 +15,7 @@
 
 #include "medGuiExport.h"
 
-#include "medViewContainer.h"
+#include <medViewContainer.h>
 
 class medCustomViewContainerPrivate;
 

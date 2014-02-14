@@ -11,10 +11,10 @@
 
 =========================================================================*/
 
-#include "medDatabaseNonPersistentItem.h"
-#include "medDatabaseNonPersistentItem_p.h"
+#include <medDatabaseNonPersistentItem.h>
+#include <medDatabaseNonPersistentItem_p.h>
 #include "medDatabaseNonPersistentControllerImpl.h"
-#include "medDatabaseNonPersistentImporter.h"
+#include <medDatabaseNonPersistentImporter.h>
 
 #include <medDataIndex.h>
 #include <medMessageController.h>

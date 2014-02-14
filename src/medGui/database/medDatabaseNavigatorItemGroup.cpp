@@ -18,8 +18,8 @@
 #include <medCore/medDataManager.h>
 #include <medCore/medAbstractDbController.h>
 
-#include "medDatabaseNavigatorController.h"
-#include "medDatabaseNavigatorItem.h"
+#include <medDatabaseNavigatorController.h>
+#include <medDatabaseNavigatorItem.h>
 
 class medDatabaseNavigatorItemGroupPrivate
 {

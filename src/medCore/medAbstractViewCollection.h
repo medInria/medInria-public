@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "medAbstractView.h"
+#include <medAbstractView.h>
 
 #include "medCoreExport.h"
 

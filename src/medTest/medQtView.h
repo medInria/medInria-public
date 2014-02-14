@@ -17,7 +17,7 @@
 
 #include <dtkCore/dtkSmartPointer.h>
 
-#include "medAbstractView.h"
+#include <medAbstractView.h>
 
 class dtkAbstractData;
 class medQtViewPrivate;

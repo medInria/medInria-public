@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "itkDataTensorImageWriterBase.h"
+#include <itkDataTensorImageWriterBase.h>
 
 #include "itkDataTensorImageWriterPluginExport.h"
 

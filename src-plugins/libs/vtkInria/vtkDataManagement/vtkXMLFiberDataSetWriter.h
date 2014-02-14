@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "vtkXMLCompositeDataWriter.h"
+#include <vtkXMLCompositeDataWriter.h>
 #include "vtkDataManagementExport.h"
 
 class VTK_DATAMANAGEMENT_EXPORT vtkXMLFiberDataSetWriter : public vtkXMLCompositeDataWriter

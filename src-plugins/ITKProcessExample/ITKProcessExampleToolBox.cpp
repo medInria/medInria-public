@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "ITKProcessExample.h"
+#include <ITKProcessExample.h>
 #include "ITKProcessExampleToolBox.h"
 
 #include <dtkCore/dtkAbstractDataFactory.h>

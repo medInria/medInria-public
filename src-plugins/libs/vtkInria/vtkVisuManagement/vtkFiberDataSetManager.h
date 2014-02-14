@@ -15,7 +15,7 @@
 
 #include "vtkVisuManagementExport.h"
 
-#include "vtkFibersManager.h"
+#include <vtkFibersManager.h>
 
 
 class vtkFiberDataSet;

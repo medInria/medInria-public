@@ -16,7 +16,7 @@
 #include <QtGui/QTreeWidget>
 
 #include "medPacsExport.h"
-#include "medMoveCommandItem.h"
+#include <medMoveCommandItem.h>
 
 class medPacsWidgetPrivate;
 

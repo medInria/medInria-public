@@ -21,10 +21,10 @@
 #include <itkGDCMImageIOFactory.h>
 #include <itkVTKImageIOFactory.h>
 
-#include "v3dDataImage.h"
-#include "v3dDataFibers.h"
-#include "v3dDataFibersWriter.h"
-#include "v3dDataFibersReader.h"
+#include <v3dDataImage.h>
+#include <v3dDataFibers.h>
+#include <v3dDataFibersWriter.h>
+#include <v3dDataFibersReader.h>
 
 // /////////////////////////////////////////////////////////////////
 // v3dDataPluginPrivate

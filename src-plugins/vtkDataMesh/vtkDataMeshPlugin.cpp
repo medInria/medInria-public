@@ -12,8 +12,8 @@
 =========================================================================*/
 
 #include "vtkDataMeshPlugin.h"
-#include "vtkDataMesh.h"
-#include "vtkDataMesh4D.h"
+#include <vtkDataMesh.h>
+#include <vtkDataMesh4D.h>
 
 #include <dtkLog/dtkLog.h>
 

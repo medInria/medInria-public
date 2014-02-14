@@ -38,8 +38,8 @@
 #include <itkImageToVTKImageFilter.h>
 #include <itkFiberBundleStatisticsCalculator.h>
 
-#include "v3dView.h"
-#include "medVtkView.h"
+#include <v3dView.h>
+#include <medVtkView.h>
 
 #include <QInputDialog>
 #include <QColorDialog>

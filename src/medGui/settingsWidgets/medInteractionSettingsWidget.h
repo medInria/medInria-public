@@ -14,7 +14,7 @@
 #pragma once
 
 #include "medGuiExport.h"
-#include "medSettingsWidget.h"
+#include <medSettingsWidget.h>
 #include <QWidget>
 
 class medInteractionSettingsWidgetPrivate;

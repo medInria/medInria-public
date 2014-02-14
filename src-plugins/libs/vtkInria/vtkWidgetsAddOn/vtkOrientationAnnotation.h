@@ -15,7 +15,7 @@
 
 #include "vtkWidgetsAddOnExport.h"
 
-#include "vtkCornerAnnotation.h"
+#include <vtkCornerAnnotation.h>
 
 class VTK_WIDGETSADDON_EXPORT vtkOrientationAnnotation : public vtkCornerAnnotation
 {

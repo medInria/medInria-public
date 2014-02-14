@@ -11,7 +11,7 @@
 
 =========================================================================*/
 
-#include "%1Workspace.h"
+#include <%1Workspace.h>
 
 #include <medWorkspaceFactory.h>
 

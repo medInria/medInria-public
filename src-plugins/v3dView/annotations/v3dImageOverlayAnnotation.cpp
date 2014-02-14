@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include "msegImageOverlayAnnotation.h"
+#include <msegImageOverlayAnnotation.h>
 
-#include "msegImageOverlayAnnotationData.h"
+#include <msegImageOverlayAnnotationData.h>
 #include <QPainter>
 
 namespace mseg {

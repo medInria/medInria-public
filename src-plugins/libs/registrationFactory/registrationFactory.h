@@ -4,8 +4,8 @@
 
 #pragma once
 #include <QObject>
-#include "itkImageRegistrationFactory.h"
-#include "itkTransform.h"
+#include <itkImageRegistrationFactory.h>
+#include <itkTransform.h>
 #include "registrationFactoryExport.h"
 
 

@@ -15,8 +15,8 @@
 
 #include <iostream>
 
-#include "medPluginGeneratorMainWindow.h"
-#include "medPluginGenerator.h"
+#include <medPluginGeneratorMainWindow.h>
+#include <medPluginGenerator.h>
 
 void printUsage() {
     std::cout <<

@@ -15,7 +15,7 @@
 
 #include "vtkRenderingAddOnExport.h"
 
-#include "vtkThreadedImageAlgorithm.h"
+#include <vtkThreadedImageAlgorithm.h>
 #include <vtkPolyData.h>
 
 class VTK_RENDERINGADDON_EXPORT vtkFillImageWithPolyData : public vtkThreadedImageAlgorithm

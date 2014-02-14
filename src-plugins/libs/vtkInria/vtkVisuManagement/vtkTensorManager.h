@@ -25,7 +25,7 @@
 #include <vtkMatrix4x4.h>
 #include <vtkSmartPointer.h>
 
-#include "vtkTensorVisuManager.h"
+#include <vtkTensorVisuManager.h>
 
 class VTK_VISUMANAGEMENT_EXPORT vtkTensorManager: public vtkObject
 {

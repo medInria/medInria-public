@@ -15,7 +15,7 @@
 
 #include "msegPluginExport.h"
 
-#include "medAnnotationGraphicsObject.h"
+#include <medAnnotationGraphicsObject.h>
 
 #include <dtkCore/dtkSmartPointer.h>
 

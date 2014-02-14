@@ -16,9 +16,9 @@
 #include <medCore/medAbstractView.h>
 
 #include "medToolBox.h"
-#include "medToolBoxHeader.h"
-#include "medToolBoxBody.h"
-#include "medToolBoxTab.h"
+#include <medToolBoxHeader.h>
+#include <medToolBoxBody.h>
+#include <medToolBoxTab.h>
 #include <medButton.h>
 
 #include <dtkCore/dtkGlobal.h>

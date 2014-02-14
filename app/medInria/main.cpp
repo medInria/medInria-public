@@ -14,9 +14,9 @@
 #include <QtOpenGL>
 #include <QtDebug>
 #include <qdebug.h>
-#include "medMainWindow.h"
-#include "medApplication.h"
-#include "medSplashScreen.h"
+#include <medMainWindow.h>
+#include <medApplication.h>
+#include <medSplashScreen.h>
 
 
 #include <dtkCore>

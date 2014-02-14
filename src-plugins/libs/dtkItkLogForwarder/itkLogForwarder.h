@@ -11,8 +11,8 @@
 
 =========================================================================*/
 
-#include "itkOutputWindow.h"
-#include "itkObjectFactory.h"
+#include <itkOutputWindow.h>
+#include <itkObjectFactory.h>
 
 #include "dtkItkLogForwarderExport.h"
 

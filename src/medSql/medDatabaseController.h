@@ -14,7 +14,7 @@
 #pragma once
 
 #include "medSqlExport.h"
-#include "medDatabaseControllerImpl.h"
+#include <medDatabaseControllerImpl.h>
 
 class medAbstractDbController;
 

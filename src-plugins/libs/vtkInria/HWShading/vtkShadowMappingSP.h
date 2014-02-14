@@ -26,7 +26,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkHWShadingExport.h"
 
-#include "vtkBMIAShaderProgram.h"
+#include <vtkBMIAShaderProgram.h>
 
 class vtkVertexShader;
 class vtkFragmentShader;

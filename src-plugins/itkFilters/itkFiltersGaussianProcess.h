@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "itkFiltersProcessBase.h"
+#include <itkFiltersProcessBase.h>
 #include <dtkCore/dtkAbstractData.h>
 
 #include "itkFiltersPluginExport.h"

@@ -16,7 +16,7 @@
 
 #include <medJobItem.h>
 #include "medPacsExport.h"
-#include "medMoveCommandItem.h"
+#include <medMoveCommandItem.h>
 
 class medPacsMoverPrivate;
 

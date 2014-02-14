@@ -13,9 +13,9 @@
 
 #include "msegPlugin.h"
 
-#include "msegAlgorithmInitializer.h"
-#include "msegAlgorithmConnectedThreshold.h"
-#include "medProcessPaintSegm.h"
+#include <msegAlgorithmInitializer.h>
+#include <msegAlgorithmConnectedThreshold.h>
+#include <medProcessPaintSegm.h>
 
 #include <dtkLog/dtkLog.h>
 namespace mseg {

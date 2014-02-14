@@ -18,7 +18,7 @@
 #include <vector>
 #include <string>
 
-#include "vtkObject.h"
+#include <vtkObject.h>
 
 
 class vtkProp;

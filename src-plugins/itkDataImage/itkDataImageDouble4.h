@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include "itkDataImage.h"
+#include <itkDataImage.h>
 #include "itkDataImagePluginExport.h"
 
 extern const char itkDataImageDouble4Name[] = "itkDataImageDouble4";

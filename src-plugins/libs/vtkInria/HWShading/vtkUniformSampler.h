@@ -25,7 +25,7 @@ PURPOSE.  See the above copyright notices for more information.
 
 #include "vtkHWShadingExport.h"
 
-#include "vtkUniform.h"
+#include <vtkUniform.h>
 
 /**
  * Class for representing uniform sampler variables.

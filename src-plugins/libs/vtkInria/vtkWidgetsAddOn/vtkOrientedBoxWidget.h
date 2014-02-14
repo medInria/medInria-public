@@ -14,7 +14,7 @@
 #pragma once
 
 #include "vtkWidgetsAddOnExport.h"
-#include "vtkBoxWidget.h"
+#include <vtkBoxWidget.h>
 
 class vtkMatrix4x4;
 

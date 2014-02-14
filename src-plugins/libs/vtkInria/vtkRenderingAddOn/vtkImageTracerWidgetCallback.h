@@ -15,9 +15,9 @@
 
 #include "vtkRenderingAddOnExport.h"
 
-#include "vtkCommand.h"
-#include "vtkPolyData.h"
-#include "vtkObject.h"
+#include <vtkCommand.h>
+#include <vtkPolyData.h>
+#include <vtkObject.h>
 
 class vtkViewImage2DWithTracer;
 

@@ -12,4 +12,4 @@
 =========================================================================*/
 
 #define MEDINRIA_PLUGINS_PCH_USE_VTK
-#include "medPluginsPch.h"
+#include <medPluginsPch.h>

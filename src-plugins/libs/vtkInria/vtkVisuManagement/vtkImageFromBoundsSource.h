@@ -15,7 +15,7 @@
 
 #include "vtkVisuManagementExport.h"
 
-#include "vtkImageAlgorithm.h"
+#include <vtkImageAlgorithm.h>
 
 class VTK_VISUMANAGEMENT_EXPORT vtkImageFromBoundsSource : public vtkImageAlgorithm
 {

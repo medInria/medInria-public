@@ -19,7 +19,7 @@
 #include <itkGDCMImageIO.h>
 #include <itkImageSeriesReader.h>
 
-#include "gdcmScanner.h"
+#include <gdcmScanner.h>
 
 #include <sstream>
 #include <vector>

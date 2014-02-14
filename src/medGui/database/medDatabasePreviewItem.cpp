@@ -12,7 +12,7 @@
 =========================================================================*/
 
 #include "medDatabasePreviewItem.h"
-#include "medImageFileLoader.h"
+#include <medImageFileLoader.h>
 
 #include <medCore/medDataIndex.h>
 #include <medCore/medAbstractDbController.h>

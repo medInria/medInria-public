@@ -36,7 +36,7 @@
 #include <medFilteringAbstractToolBox.h>
 #include <medProgressionStack.h>
 
-#include "itkFiltersProcessBase.h"
+#include <itkFiltersProcessBase.h>
 
 #include <QtGui>
 

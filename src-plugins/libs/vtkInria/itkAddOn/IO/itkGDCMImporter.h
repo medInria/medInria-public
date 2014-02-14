@@ -17,7 +17,7 @@
 
 #include <itksys/SystemTools.hxx>
 
-#include "gdcmScanner.h"
+#include <gdcmScanner.h>
 
 #include <sstream>
 #include <vector>

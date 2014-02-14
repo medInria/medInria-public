@@ -23,8 +23,8 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include "itkObjectFactoryBase.h"
-#include "itkImageIOBase.h"
+#include <itkObjectFactoryBase.h>
+#include <itkImageIOBase.h>
 
 namespace itk
 {

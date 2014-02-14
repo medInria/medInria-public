@@ -15,10 +15,10 @@
 
 #include <dtkCore/dtkAbstractDataFactory.h>
 
-#include "vtkSmartPointer.h"
-#include "vtkPolyData.h"
-#include "vtkUnstructuredGrid.h"
-#include "vtkMetaDataSetSequence.h"
+#include <vtkSmartPointer.h>
+#include <vtkPolyData.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkMetaDataSetSequence.h>
 
 #include <vtkPNGWriter.h>
 #include <vtkDataSetSurfaceFilter.h>

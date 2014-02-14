@@ -11,9 +11,9 @@
 
 =========================================================================*/
 
-#include "%1.h"
-#include "%1Plugin.h"
-#include "%1ToolBox.h"
+#include <%1.h>
+#include <%1Plugin.h>
+#include <%1ToolBox.h>
 
 #include <dtkLog/dtkLog.h>
 

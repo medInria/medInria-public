@@ -18,18 +18,18 @@
 #include <vtkObject.h>
 
 // vtk includes
-#include "vtkActor.h"
-#include "vtkPolyDataMapper.h"
-#include "vtkPolyDataNormals.h"
-#include "vtkTensorGlyph.h" 
-#include "vtkStructuredPoints.h"
-#include "vtkUnstructuredGrid.h"
-#include "vtkExtractVOI.h"
-#include "vtkLookupTable.h"
-#include "vtkFlipTensorImageFilter.h"
-#include "vtkPolyDataAlgorithm.h"
-#include "vtkUnsignedIntArray.h"
-#include "vtkDoubleArray.h"
+#include <vtkActor.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkPolyDataNormals.h>
+#include <vtkTensorGlyph.h> 
+#include <vtkStructuredPoints.h>
+#include <vtkUnstructuredGrid.h>
+#include <vtkExtractVOI.h>
+#include <vtkLookupTable.h>
+#include <vtkFlipTensorImageFilter.h>
+#include <vtkPolyDataAlgorithm.h>
+#include <vtkUnsignedIntArray.h>
+#include <vtkDoubleArray.h>
 
 class vtkMatrix4x4;
 

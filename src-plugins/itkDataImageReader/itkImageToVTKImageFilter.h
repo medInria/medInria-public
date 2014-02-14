@@ -15,8 +15,8 @@
 #pragma once
 
 #include "itkVTKImageExport.h"
-#include "vtkImageImport.h"
-#include "vtkImageData.h"
+#include <vtkImageImport.h>
+#include <vtkImageData.h>
 #include <vector>
 
 namespace itk

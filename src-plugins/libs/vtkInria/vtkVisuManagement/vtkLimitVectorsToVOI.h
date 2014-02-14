@@ -15,7 +15,7 @@
 
 #include "vtkVisuManagementExport.h"
 
-#include "vtkUnstructuredGridAlgorithm.h"
+#include <vtkUnstructuredGridAlgorithm.h>
 
 class VTK_VISUMANAGEMENT_EXPORT vtkLimitVectorsToVOI: public vtkUnstructuredGridAlgorithm
 {

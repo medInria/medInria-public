@@ -15,7 +15,7 @@
 
 #include "vtkVisuManagementExport.h"
 
-#include "vtkThreadedImageAlgorithm.h"
+#include <vtkThreadedImageAlgorithm.h>
 
 /**
    \class vtkImageClamp vtkImageClamp.h "vtkImageClamp.h"

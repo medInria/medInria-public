@@ -13,7 +13,7 @@
 
 #include "medViewManager.h"
 
-#include "medAbstractView.h"
+#include <medAbstractView.h>
 
 #include <dtkCore/dtkAbstractView.h>
 #include <dtkCore/dtkAbstractViewFactory.h>

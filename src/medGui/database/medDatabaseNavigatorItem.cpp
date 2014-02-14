@@ -13,7 +13,7 @@
 
 #include "medDatabaseNavigatorItem.h"
 #include <medDatabaseNavigatorItemOverlay.h>
-#include "medImageFileLoader.h"
+#include <medImageFileLoader.h>
 
 #include <medCore/medAbstractDbController.h>
 #include <medCore/medDataManager.h>

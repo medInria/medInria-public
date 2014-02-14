@@ -14,7 +14,7 @@
 #pragma once
 
 #include <itkVector.h>
-#include "itkDataImage.h"
+#include <itkDataImage.h>
 #include "itkDataImagePluginExport.h"
 
 extern const char itkDataImageVectorFloat3Name[] = "itkDataImageVectorFloat3";
