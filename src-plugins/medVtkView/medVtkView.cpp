@@ -562,14 +562,14 @@ void medVtkView::_prvt_addLayerItem(int layer)
 
     d->layersListWidget->addItem(item);
     d->layersListWidget->setItemWidget(item, layerWidget);
-    d->layersListWidget->setCurrentRow(layer);
+    //d->layersListWidget->setCurrentRow(layer);
+    item->setSelected(true);
 }
 
 
 void medVtkView::_prvt_removeLayerItem(int layer)
 {
-    QListWidgetItem* item = d->layersListWidget->item(layer);
-    d->layersListWidget->removeItemWidget(item);
+    d->layersListWidget->model()->removeRow(layer);
 }
 
 void medVtkView::_prvt_removeSelectedLayer()
@@ -579,27 +579,32 @@ void medVtkView::_prvt_removeSelectedLayer()
 
 void medVtkView::updateInteractorsWidget()
 {
-    d->interactorsWidgetStack->addWidget( this->primaryInteractor( this->selectedLayer() )->toolBoxWidget() );
+    //remove existing widgets
+    for(int i=0; i<d->interactorsWidgetStack->count(); i++)
+    {
+        d->interactorsWidgetStack->removeWidget(d->interactorsWidgetStack->widget(i));
+    }
+
+    if(this->selectedLayer() == -1)
+        return;
+
+    medAbstractImageViewInteractor *primaryInt =  this->primaryInteractor( this->selectedLayer() );
+    if(primaryInt)
+    {
+        d->interactorsWidgetStack->addWidget( primaryInt->toolBoxWidget() );
+        d->toolbarLayout->addWidget( primaryInt->toolBarWidget() );
+    }
 
     foreach(medAbstractInteractor* interactor, this->extraInteractors(this->selectedLayer()))
         d->interactorsWidgetStack->addWidget(interactor->toolBoxWidget());
-
-    d->toolbarLayout->addWidget(this->primaryInteractor( this->selectedLayer() )->toolBarWidget());
 }
 
 void medVtkView::_prvt_removeLayerData(int layer)
 {
-    if(this->layersCount() > 0)
+    if(this->layersCount() == 0)
     {
-        d->view2d->RemoveLayer(layer);
-        d->view3d->RemoveLayer(layer);
-        if(this->is2D())
-            d->view2d->Render();
-        else
-            d->view3d->Render();
-    }
-    else
         this->~medVtkView();
+    }       
 }
 
 bool medVtkView::eventFilter(QObject * obj, QEvent * event)

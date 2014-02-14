@@ -84,7 +84,7 @@ protected:
     virtual void initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
 
-    unsigned int selectedLayer() const;
+    int selectedLayer() const;
 
 protected slots:
     void setSelectedLayer(int layer);

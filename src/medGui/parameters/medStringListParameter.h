@@ -31,7 +31,7 @@ public:
     virtual ~medStringListParameter();
 
     void addItem(QString& item);
-    void addItems(QStringList& items);
+    void addItems(const QStringList& items);
     void removeItem(QString& item);
     void clear();
 

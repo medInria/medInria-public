@@ -32,7 +32,10 @@ public:
     virtual ~medDoubleParameter();
 
     void setRange(double min, double max);
+    void setSingleStep(double step);
+
     QDoubleSpinBox* getSpinBox();
+    QSlider* getSlider();
 
     virtual QWidget* getWidget();
 
@@ -41,6 +44,12 @@ protected:
 
 private slots:
     void _prvt_removeInternSpinBox();
+    void _prvt_removeInternSlider();
+
+    void setIntValue(int);
+
+private:
+    int convertToInt(double value);
 
 private:
     medDoubleParameterPrivate* d;

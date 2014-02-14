@@ -17,7 +17,7 @@ public:
     medAbstractLayeredViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
 
-    unsigned int selectedLayer;
+    int selectedLayer;
 
 };
 
@@ -33,8 +33,13 @@ medAbstractLayeredView::~medAbstractLayeredView()
 
 void medAbstractLayeredView::removeInteractors(medAbstractData *data)
 {
-    d->primaryIntercatorsHash.remove(data);
-    d->extraIntercatorsHash.remove(data);
+    delete d->primaryIntercatorsHash.take(data);
+    QList<medAbstractInteractor*> extraInt =  d->extraIntercatorsHash.take(data);
+    foreach(medAbstractInteractor* extra, extraInt)
+    {
+        delete extra;
+    }
+    extraInt.clear();
 }
 
 void medAbstractLayeredView::initialiseInteractors(medAbstractData *data)
@@ -179,7 +184,6 @@ bool medAbstractLayeredView::removeData(medAbstractData *data)
 
 void medAbstractLayeredView::removeLayer(unsigned int layer)
 {
-
     this->removeInteractors(this->data(layer));
     d->layersDataList.removeAt(layer);
 
@@ -248,7 +252,7 @@ void medAbstractLayeredView::setSelectedLayer(int layer)
     emit selectedLayerChanged();
 }
 
-unsigned int  medAbstractLayeredView::selectedLayer() const
+int  medAbstractLayeredView::selectedLayer() const
 {
     return d->selectedLayer;
 }

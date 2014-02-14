@@ -49,7 +49,7 @@ void medStringListParameter::addItem(QString& item)
         d->comboBox->addItem(item);
 }
 
-void medStringListParameter::addItems(QStringList &items)
+void medStringListParameter::addItems(const QStringList &items)
 {
     d->items <<  items;
 
