@@ -209,6 +209,14 @@ void medViewContainer::setView(medAbstractView *view )
 
 void medViewContainer::select()
 {
+    qDebug() << "SELECT !!!";
+
+    if(!d->view)
+    {
+        qDebug() << "no view !!!!";
+        return;
+    }
+
     d->selected = true;
 
     medViewManager::instance()->addToSelection(d->view);

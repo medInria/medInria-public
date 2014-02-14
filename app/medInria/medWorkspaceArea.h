@@ -17,7 +17,7 @@
 
 #include <medWorkspace.h>
 
-class dtkAbstractView;
+class medAbstractView;
 
 class medDataIndex;
 class medToolBox;
@@ -134,7 +134,7 @@ public slots:
      * @param void
     */
     void onViewClosed();
-    void onViewClosed(dtkAbstractView *);
+    void onViewClosed(medAbstractView *);
 
     /**
      * @brief  Updates the medToolBoxes when a layer (data) has been removed from a view.
@@ -216,7 +216,7 @@ protected slots:
      *
      * @param view
     */
-    void onViewFocused(dtkAbstractView *view);
+    void onViewFocused(medAbstractView *view);
 
 protected:
     /**

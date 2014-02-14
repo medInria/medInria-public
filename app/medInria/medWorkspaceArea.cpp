@@ -14,8 +14,7 @@
 #include <medWorkspaceArea.h>
 #include <medWorkspaceArea_p.h>
 
-#include <dtkCore/dtkAbstractViewFactory.h>
-#include <dtkCore/dtkAbstractView.h>
+
 #include <medAbstractDataFactory.h>
 #include <medAbstractData.h>
 #include <dtkCore/dtkAbstractDataReader.h>
@@ -36,6 +35,8 @@
 #include <medDatabaseNavigatorController.h>
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseController.h>
+#include <medViewFactory.h>
+#include <medAbstractView.h>
 
 #include <medClutEditor.h>
 #include <medToolBox.h>
@@ -290,7 +291,7 @@ void medWorkspaceArea::onViewClosed(void)
     }
 }
 
-void medWorkspaceArea::onViewClosed(dtkAbstractView *view)
+void medWorkspaceArea::onViewClosed(medAbstractView *view)
 { 
     medAbstractImageView * medView = dynamic_cast<medAbstractImageView *> (view);
     if( medView )
@@ -412,10 +413,10 @@ void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* st
 
     if (-1 == d->stack->indexOf(stack))
     {
-        connect(stack, SIGNAL(focused(dtkAbstractView*)),
-                this,  SLOT(onViewFocused(dtkAbstractView*)));
-        connect (stack, SIGNAL(viewRemoved(dtkAbstractView *)),
-                 this, SLOT(onViewClosed(dtkAbstractView *)));
+        connect(stack, SIGNAL(focused(medAbstractView*)),
+                this,  SLOT(onViewFocused(medAbstractView*)));
+        connect (stack, SIGNAL(viewRemoved(medAbstractView *)),
+                 this, SLOT(onViewClosed(medAbstractView *)));
         d->stack->addWidget(stack);
     }
     d->stack->setCurrentWidget(stack);
@@ -480,7 +481,7 @@ void medWorkspaceArea::removeToolBox(medToolBox *toolbox)
     d->toolBoxContainer->removeToolBox(toolbox);
 }
 
-void medWorkspaceArea::onViewFocused(dtkAbstractView *view)
+void medWorkspaceArea::onViewFocused(medAbstractView *view)
 {
 //    // set head recognizer
 //    //    qDebug() << "medWorkspaceAreaOnViewFocused";
@@ -590,7 +591,7 @@ void medWorkspaceArea::bringUpTransferFunction(bool checked)
     if ( current == NULL )
         return;
 
-    if ( dtkAbstractView *view = current->view() ) {
+    if ( medAbstractView *view = current->view() ) {
       d->transFun = new medClutEditor(NULL);
       d->transFun->setWindowModality( Qt::WindowModal );
       d->transFun->setWindowFlags(Qt::Tool|Qt::WindowStaysOnTopHint);
@@ -608,7 +609,7 @@ void medWorkspaceArea::updateTransferFunction()
     if ( current == NULL )
         return;
 
-    dtkAbstractView * view = current->view();
+    medAbstractView * view = current->view();
     if ( d->transFun != NULL && view != NULL ) {
     // d->transFun->setData( static_cast<medAbstractData *>( view->data() ) );
         d->transFun->setView( dynamic_cast<medAbstractImageView *>( view ), true );
