@@ -104,8 +104,8 @@ void medRegistrationWorkspace::setupViewContainerStack()
         connect(fuseContainer,SIGNAL(viewRemoved(medAbstractView*)),
                 d->registrationToolBox,SLOT(onViewRemoved(medAbstractView*)));
 
-        this->stackedViewContainers()->addContainer("Compare",compareViewContainer);
-        this->stackedViewContainers()->addContainer("Fuse",fuseContainer);
+        this->stackedViewContainers()->addContainer("Compare");
+        this->stackedViewContainers()->addContainer("Fuse");
         this->stackedViewContainers()->lockTabs();
         setCurrentViewContainer("Compare");
     }

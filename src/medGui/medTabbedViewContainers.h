@@ -69,7 +69,7 @@ public:
      * @param name The name that will identify this container in the stack.
      * @param container
     */
-    void addContainer(const QString &name, medViewContainer *container);
+    void addContainer(const QString &name);
 
     /**
      * @brief Inserts a container in the stack.
@@ -78,7 +78,7 @@ public:
      * @param name The name that will identify this container in the stack.
      * @param container
     */
-    void insertContainer(int index, const QString &name, medViewContainer *container);
+    void insertContainer(int index, const QString &name);
 
     /**
      * @brief Gets the container identified in the stack by this string.

@@ -178,7 +178,7 @@ QString medWorkspace::addSingleContainer(const QString& name)
 {
     if (!this->stackedViewContainers()->container(name))
     {
-        this->stackedViewContainers()->addContainer (name, new medSingleViewContainer());
+        this->stackedViewContainers()->addContainer (name);
         return name;
     }
     else
@@ -193,7 +193,7 @@ QString medWorkspace::addSingleContainer(const QString& name)
             newName += QString::number(i);
         }
         
-        this->stackedViewContainers()->addContainer (newName, new medSingleViewContainer());
+        this->stackedViewContainers()->addContainer (newName);
         return newName;
     }
 }
@@ -202,7 +202,7 @@ QString medWorkspace::addMultiContainer(const QString& name)
 {
     if (!this->stackedViewContainers()->container(name))
     {
-        this->stackedViewContainers()->addContainer (name, new medMultiViewContainer());
+        this->stackedViewContainers()->addContainer (name);
         return name;
     }
     else
@@ -217,7 +217,7 @@ QString medWorkspace::addMultiContainer(const QString& name)
             newName += QString::number(i);
         }
 
-        this->stackedViewContainers()->addContainer (newName, new medMultiViewContainer());
+        this->stackedViewContainers()->addContainer (newName);
         return newName;
     }
 }
@@ -226,7 +226,7 @@ QString medWorkspace::addCustomContainer(const QString& name)
 {
     if (!this->stackedViewContainers()->container(name))
     {
-        this->stackedViewContainers()->addContainer (name, new medCustomViewContainer());
+        this->stackedViewContainers()->addContainer (name);
         return name;
     }
     else
@@ -241,7 +241,7 @@ QString medWorkspace::addCustomContainer(const QString& name)
             newName += QString::number(i);
         }
         
-        this->stackedViewContainers()->addContainer (newName, new medCustomViewContainer());
+        this->stackedViewContainers()->addContainer (newName);
         return newName;
     }
 }

@@ -36,6 +36,7 @@ public:
     QHBoxLayout* toolBarLayout;
     QPushButton* vSplittButton;
     QPushButton* hSplittButton;
+    QPushButton* rmSplittButton;
 
     medBoolParameter* maximisedParameter;
 
@@ -53,9 +54,10 @@ medViewContainer2::medViewContainer2(QWidget *parent): d(new medViewContainer2Pr
     connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
 
     d->vSplittButton = new QPushButton(this);
-    connect(d->vSplittButton, SIGNAL(clicked()), this, SLOT(vSplitRequest()));
+    connect(d->vSplittButton, SIGNAL(clicked()), this, SIGNAL(vSplitRequest()));
     d->hSplittButton = new QPushButton(this);
-    connect(d->hSplittButton, SIGNAL(clicked()), this, SLOT(hSplitRequest()));
+    connect(d->hSplittButton, SIGNAL(clicked()), this, SIGNAL(hSplitRequest()));
+
 
     d->maximisedParameter = new medBoolParameter("maximied view", this);
     d->maximised = true;
@@ -113,7 +115,7 @@ void medViewContainer2::setSelected(bool selec)
     if(d->selected)
     {
         this->setProperty("selected", QVariant("true"));
-        medViewManager::instance()->addToSelection(d->view);
+//        medViewManager::instance()->addToSelection(d->view);
         emit selected();
     }
     else
@@ -138,11 +140,15 @@ void medViewContainer2::setMaximised(bool maxi)
     {
         d->vSplittButton->hide();
         d->hSplittButton->hide();
+        if(d->rmSplittButton)
+            d->rmSplittButton->hide();
     }
     else
     {
         d->vSplittButton->show();
         d->hSplittButton->show();
+        if(d->rmSplittButton)
+            d->rmSplittButton->show();
     }
 
     emit maximised(maxi);
@@ -215,4 +221,15 @@ void medViewContainer2::addData(medAbstractData *data)
     //     of the view. - RDE
     medAbstractLayeredView* view = dynamic_cast<medAbstractLayeredView*>(d->view);
     view->addLayer(data);
+}
+
+
+void medViewContainer2::addRmSplittButton()
+{
+    if(d->rmSplittButton)
+        return;
+
+    d->rmSplittButton = new QPushButton(this);
+    connect(d->rmSplittButton, SIGNAL(clicked()), this, SIGNAL(rmSplitRequest()));
+    d->toolBarLayout->insertWidget(d->toolBarLayout->count() - 2, d->rmSplittButton, 0, Qt::AlignRight);
 }
