@@ -80,7 +80,7 @@ QWidget *medQtView::widget(void)
     return QList<medAbstractNavigator *>();
 }
 
-QWidget* medQtView::receiverWidget()
+QWidget* medQtView::viewWidget()
 {
     return 0;
 }

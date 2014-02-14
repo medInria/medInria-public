@@ -44,7 +44,7 @@ public:
     virtual medAbstractLayeredViewNavigator * primaryNavigator();
     virtual QList<medAbstractNavigator *> extraNavigators();
 
-    virtual QWidget *receiverWidget();
+    virtual QWidget *viewWidget();
     virtual QWidget* toolBar();
     virtual QWidget* toolBox();
 

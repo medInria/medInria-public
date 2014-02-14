@@ -190,7 +190,7 @@ void medViewEventFilter::removeFromAllViews()
 
 QObject * medViewEventFilter::objectToFilter( medAbstractView * view )
 {
-    return view->receiverWidget();
+    return view->viewWidget();
 }
 
 void medViewEventFilter::onViewDestroyed( QObject* obj)

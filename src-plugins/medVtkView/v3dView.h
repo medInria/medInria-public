@@ -89,7 +89,7 @@
 
 //    void *data();
 
-//    QWidget *receiverWidget();
+//    QWidget *viewWidget();
 //    QWidget *widget();
 
 //    void close();

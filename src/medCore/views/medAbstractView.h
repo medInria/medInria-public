@@ -65,7 +65,7 @@ public:
 
     virtual QString description() const =0;
 
-    virtual QWidget *receiverWidget() = 0;
+    virtual QWidget *viewWidget() = 0;
 
     /**
        Set the view zoom factor.

@@ -287,7 +287,6 @@ void medViewContainer::dropEvent ( QDropEvent *event )
 void medViewContainer::focusInEvent ( QFocusEvent *event )
 {
     Q_UNUSED ( event );
-
     this->select();
 }
 

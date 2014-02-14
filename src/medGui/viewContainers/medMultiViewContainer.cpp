@@ -32,7 +32,6 @@ medSingleViewContainer2::~medSingleViewContainer2()
 void medSingleViewContainer2::setView (medAbstractView *view)
 {
     // Never replace an existing view: we are in multi, we always add a new one.
-
     // if we already have a view, we should transfer the request to the root.
     if (d->view)
     {
@@ -42,7 +41,6 @@ void medSingleViewContainer2::setView (medAbstractView *view)
             container->setView( view );
             return;
         }
-
         return;
     }
 
@@ -50,15 +48,8 @@ void medSingleViewContainer2::setView (medAbstractView *view)
     d->view->setParent(this);
 
     if (view)
-    {
         d->layout->addWidget(view->widget(), 0, 0);
-        // d->pool->appendView (view); // only difference with medSingleViewContainer: do not add the view to the pool
-        connect (view, SIGNAL (closing()), this, SLOT (onViewClosing()));
-        medAbstractView * medView = qobject_cast<medAbstractView*>(view);
-        if (medView) {
-            connect(medView, SIGNAL(selected()), this, SLOT(select()));
-        }
-    }
+
     this->setFocus(Qt::MouseFocusReason);
 }
 
@@ -115,14 +106,14 @@ void medMultiViewContainer::setView(medAbstractView *view)
     if (!view)
         return;
 
-//    if (d2->views.contains (view))
-//        return;
-
     qDebug() << "setting the view" << view << "from multi container" << this;
     QList<QWidget *> content;
-    for(int i = 0; i < d->layout->rowCount() ; i++) {
-        for(int j = 0; j < d->layout->columnCount() ; j++) {
-            if(QLayoutItem *item = d->layout->itemAtPosition(i, j)) {
+    for(int i = 0; i < d->layout->rowCount() ; i++)
+    {
+        for(int j = 0; j < d->layout->columnCount() ; j++)
+        {
+            if(QLayoutItem *item = d->layout->itemAtPosition(i, j))
+            {
                 content << item->widget();
                 d->layout->removeItem(item);
             }
@@ -137,7 +128,8 @@ void medMultiViewContainer::setView(medAbstractView *view)
     container->setView(view);
 
     foreach (medViewContainer *cont, containers) {
-        if (cont->isLeaf()) {
+        if (cont->isLeaf())
+        {
             connect (container, SIGNAL (selected()), cont, SLOT (unselect()), Qt::UniqueConnection);
             connect (cont, SIGNAL (selected()), container, SLOT (unselect()), Qt::UniqueConnection);
         }
@@ -148,13 +140,7 @@ void medMultiViewContainer::setView(medAbstractView *view)
 
     d2->views << view;
 
-    connect (view, SIGNAL (closing()),         this, SLOT (onViewClosing()));
-    connect (view, SIGNAL (fullScreen(bool)),  this, SLOT (onViewFullScreen(bool)));
-
-    this->setCurrent( container );
-    emit viewAdded (view);
-    //the focus is given in single2, no need to give it to the root container.
-//    container->setFocus(Qt::MouseFocusReason);
+    this->setCurrent(container);
 }
 
 void medMultiViewContainer::layout(QList<QWidget *> content)
@@ -195,81 +181,6 @@ void medMultiViewContainer::layout(QList<QWidget *> content)
         }
     }
 }
-
-//void medMultiViewContainer::onViewClosing()
-//{
-////    qDebug()<<"containerMulti closing a view";
-//    if (medAbstractView *view =
-//        qobject_cast<medAbstractView *>(this->sender())) {
-
-//        // needed for selecting another container as current afterwards
-//        QWidget * predContainer   = NULL;
-//        QWidget * succContainer   = NULL;
-//        bool      closedItemFound = false;
-
-//        QWidget * closedContainer =
-//            qobject_cast< QWidget * >( view->widget()->parent() );
-//        QList<QWidget *> content;
-//        for (int i = 0; i < d->layout->rowCount(); i++) {
-//            for (int j = 0; j < d->layout->columnCount(); j++) {
-//                QLayoutItem * item = d->layout->itemAtPosition(i, j);
-//                if ( item != NULL ) {
-//                    QWidget * container = item->widget();
-//                    if ( container == closedContainer ) {
-//                        container->hide();
-//                        closedItemFound = true;
-//                    }
-//                    else {
-//                        content << container; // keep the container in layout
-//                        container->show(); // in case view was hidden
-
-//                        // remember the predecessor resp. successor of
-//                        // the closed container
-//                        if ( closedItemFound ) {
-//                            if ( succContainer == NULL )
-//                                succContainer = container;
-//                        }
-//                        else
-//                            predContainer = container;
-//                    }
-
-//                    d->layout->removeItem(item);
-//                }
-//            }
-//        }
-
-//        disconnect (view, SIGNAL (closing()),
-//                    this, SLOT (onViewClosing()));
-//        disconnect (view, SIGNAL (fullScreen(bool)),
-//                    this, SLOT (onViewFullScreen(bool)));
-
-//        // it is safer to emit view removed now, because the next
-//        // line may trigger the deletion of the view
-//        emit viewRemoved (view);
-
-//        d2->views.removeOne (view);
-
-
-//        closedContainer->setParent (NULL);
-//        closedContainer->deleteLater();
-//        // END FIXME
-
-//        this->layout (content);
-//        //Choose the new current container based on who is next or previous
-//        medViewContainer * current =
-//            qobject_cast< medViewContainer * >( succContainer );
-//        if ( current == NULL )
-//            current = qobject_cast< medViewContainer * >( predContainer );
-//        if ( current == NULL )
-//            current = this;
-
-//        current->setFocus();
-
-//        this->update();
-
-
-//    }
-//}
 
 void medMultiViewContainer::onViewFullScreen (bool value)
 {

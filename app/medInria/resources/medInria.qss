@@ -1173,6 +1173,17 @@ medViewContainer [selected = "true"]
     border: $CONTAINER_SELECTED_BORDER;
 }
 
+medViewContainer2
+{
+    border: $CONTAINER_BORDER;
+    background: $CONTAINER_BACKGROUND;
+}
+
+medViewContainer2 [selected = "true"]
+{
+    border: $CONTAINER_SELECTED_BORDER;
+}
+
 
 /*******************************************************************************
      medMessageProgress

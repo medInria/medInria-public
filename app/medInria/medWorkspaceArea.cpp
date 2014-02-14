@@ -514,7 +514,7 @@ void medWorkspaceArea::onViewFocused(medAbstractView *view)
 //            }
 
 //            gesture_recognizer->setView(view);
-//            gesture_recognizer->setReceiver(static_cast<medAbstractImageView *>(view)->receiverWidget());
+//            gesture_recognizer->setReceiver(static_cast<medAbstractImageView *>(view)->viewWidget());
 //        }
 //        //update tranfer function.
 //        connect (view, SIGNAL(lutChanged()),

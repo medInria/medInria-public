@@ -980,7 +980,7 @@
 //    return d->data;
 //}
 
-//QWidget *v3dView::receiverWidget()
+//QWidget *v3dView::viewWidget()
 //{
 //    return d->vtkWidget;
 //}

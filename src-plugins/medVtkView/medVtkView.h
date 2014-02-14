@@ -25,7 +25,7 @@ public:
 
     virtual QString description() const;
 
-    virtual QWidget *receiverWidget();
+    virtual QWidget *viewWidget();
     virtual QWidget *widget();
 
     virtual QWidget* toolBar();

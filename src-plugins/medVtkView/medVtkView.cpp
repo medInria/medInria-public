@@ -57,7 +57,7 @@ public:
     QHBoxLayout *toolbarLayout;
     QWidget *toolBar;
     QWidget *toolBox;
-    QVTKWidget2 *receiverWidget;
+    QVTKWidget2 *viewWidget;
     static const int toolWidth = 15;
     static const int toolheight = 15;
 
@@ -157,13 +157,13 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->viewCollection->AddItem(d->view2d);
     d->viewCollection->AddItem(d->view3d);
 
-    d->receiverWidget = new QVTKWidget2();
-    d->receiverWidget->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Minimum );
-    d->receiverWidget->setFocusPolicy ( Qt::ClickFocus );
+    d->viewWidget = new QVTKWidget2();
+    d->viewWidget->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Minimum );
+    d->viewWidget->setFocusPolicy ( Qt::ClickFocus );
 
     // Event filter used to know if the view is selecetd or not
-    d->receiverWidget->installEventFilter(this);
-    d->receiverWidget->SetRenderWindow(d->renWin);
+    d->viewWidget->installEventFilter(this);
+    d->viewWidget->SetRenderWindow(d->renWin);
 
     d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d,d->renWin));
 
@@ -211,7 +211,7 @@ medVtkView::~medVtkView()
     d->viewCollection->Delete();
     delete d->toolBox;
     delete d->toolBar;
-    delete d->receiverWidget;
+    delete d->viewWidget;
     delete d->mainWidget;
 
     delete d;
@@ -254,15 +254,15 @@ QWidget* medVtkView::widget()
         d->mainLayout->setSpacing(0);
 
         d->mainLayout->addWidget(this->toolBar());
-        d->mainLayout->addWidget(this->receiverWidget());
+        d->mainLayout->addWidget(this->viewWidget());
     }
 
     return d->mainWidget;
 }
 
-QWidget* medVtkView::receiverWidget()
+QWidget* medVtkView::viewWidget()
 {
-    return d->receiverWidget;
+    return d->viewWidget;
 }
 
 QWidget* medVtkView::toolBar()
@@ -609,7 +609,7 @@ void medVtkView::_prvt_removeLayerData(int layer)
 
 bool medVtkView::eventFilter(QObject * obj, QEvent * event)
 {
-    if (obj == d->receiverWidget)
+    if (obj == d->viewWidget)
     {
         if (event->type() == QEvent::FocusIn)
         {
