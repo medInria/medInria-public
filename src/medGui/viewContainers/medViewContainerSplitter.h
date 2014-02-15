@@ -29,9 +29,10 @@ public:
 
 public slots:
     void addViewContainer(medViewContainer2* container);
+    void insertViewContainer(int index, medViewContainer2* container);
     void vSplit();
     void hSplit();
-    void rmSplit();
+    void checkIfStillDeserveToLive();
 
 private:
     medViewContainerSplitterPrivate *d;

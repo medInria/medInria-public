@@ -108,6 +108,7 @@ medViewContainer2::medViewContainer2(QWidget *parent): QFrame(parent),
 medViewContainer2::~medViewContainer2()
 {
     qDebug() << "deleting container2";
+    this->setParent(NULL);
     delete d;
 }
 

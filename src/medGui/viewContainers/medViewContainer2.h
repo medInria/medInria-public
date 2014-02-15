@@ -45,7 +45,6 @@ signals:
     void selected();
     void vSplitRequest();
     void hSplitRequest();
-    void rmSplitRequest();
 
 protected:
     void focusInEvent(QFocusEvent *event);

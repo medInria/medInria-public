@@ -38,19 +38,20 @@ medViewContainerSplitter::~medViewContainerSplitter()
 
 void medViewContainerSplitter::hSplit()
 {
+    qDebug()<< "hsplit!!!";
+    medViewContainer2* container = dynamic_cast<medViewContainer2*>(this->sender());
+    if(!container)
+        return;
+    int index = this->indexOf(container);
+
     if(this->orientation() == Qt::Vertical)
     {
-        this->addViewContainer(new medViewContainer2);
+        this->insertViewContainer(index + 1, new medViewContainer2);
     }
     else
     {
-        medViewContainer2* container = dynamic_cast<medViewContainer2*>(this->sender());
-        if(!container)
-            return;
-
         container->hide();
         container->disconnect(this);
-        int index = this->indexOf(container);
         medViewContainerSplitter *spliter = new medViewContainerSplitter;
         spliter->setOrientation(Qt::Vertical);
         spliter->addViewContainer(container);
@@ -62,16 +63,18 @@ void medViewContainerSplitter::hSplit()
 
 void medViewContainerSplitter::vSplit()
 {
+    qDebug()<< "vsplit!!!";
+    medViewContainer2* container = dynamic_cast<medViewContainer2*>(this->sender());
+    if(!container)
+        return;
+    int index = this->indexOf(container);
+
     if(this->orientation() == Qt::Horizontal)
     {
-        this->addViewContainer(new medViewContainer2);
+        this->insertViewContainer(index + 1, new medViewContainer2);
     }
     else
     {
-        medViewContainer2* container = dynamic_cast<medViewContainer2*>(this->sender());
-        if(!container)
-            return;
-
         container->hide();
         container->disconnect(this);
         int index = this->indexOf(container);
@@ -85,21 +88,23 @@ void medViewContainerSplitter::vSplit()
 }
 
 
-void medViewContainerSplitter::rmSplit()
+void medViewContainerSplitter::checkIfStillDeserveToLive()
 {
-    qDebug() << "rmSplit !!!";
-    if(this->count() > 1)
-        return;
+    //Deserve to live if there is more than one widget in it
+    if(this->count() < 1)
+        this->~medViewContainerSplitter();
+}
 
-    qDebug() << "about to actaually remove it !!!";
-    this->~medViewContainerSplitter();
+void medViewContainerSplitter::insertViewContainer(int index, medViewContainer2 *container)
+{
+    connect(container, SIGNAL(hSplitRequest()), this, SLOT(hSplit()));
+    connect(container, SIGNAL(vSplitRequest()), this, SLOT(vSplit()));
+    connect(container, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLive()));
+
+    this->insertWidget(index, container);
 }
 
 void medViewContainerSplitter::addViewContainer(medViewContainer2 *container)
 {
-    connect(container, SIGNAL(hSplitRequest()), this, SLOT(hSplit()));
-    connect(container, SIGNAL(vSplitRequest()), this, SLOT(vSplit()));
-    connect(container, SIGNAL(destroyed()), this, SLOT(rmSplit()));
-
-    this->addWidget(container);
+    this->insertViewContainer(this->count(), container);
 }
