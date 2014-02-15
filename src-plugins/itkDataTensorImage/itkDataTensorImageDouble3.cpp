@@ -35,9 +35,6 @@ public:
     typedef itk::Image<TensorType, 3> TensorImageType;
 
     TensorImageType::Pointer tensors;
-
-    QImage        thumbnail;
-    QList<QImage> thumbnails;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -47,8 +44,7 @@ public:
 itkDataTensorImageDouble3::itkDataTensorImageDouble3() : medAbstractTypedImageData<3,double>(), d(new itkDataTensorImageDouble3Private)
 {
     d->tensors = 0;
-    d->thumbnail = QImage(":/itkDataTensorImage/icons/tensors.png");
-    d->thumbnails << d->thumbnail;
+
 }
 
 itkDataTensorImageDouble3::~itkDataTensorImageDouble3()
@@ -113,17 +109,6 @@ int itkDataTensorImageDouble3::zDimension()
     if (!d->tensors.IsNull())
         return d->tensors->GetLargestPossibleRegion().GetSize()[2];
     return -1;
-}
-
-QImage& itkDataTensorImageDouble3::thumbnail()
-{
-    // TODO: TEMPORARY black image just to allow drag and drop
-    return d->thumbnail;
-}
-
-QList<QImage>& itkDataTensorImageDouble3::thumbnails()
-{
-    return d->thumbnails;
 }
 
 // /////////////////////////////////////////////////////////////////

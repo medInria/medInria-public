@@ -92,6 +92,8 @@ public:
     virtual QList<medAbstractParameter*> viewParameters() = 0;
     virtual QList<medAbstractParameter*> navigatorsParameters();
 
+    virtual QImage& generateThumbnail(const QSize &size) = 0;
+
 signals:
     //TODO shouldbe the role of container IMO - RDE
     void selected();

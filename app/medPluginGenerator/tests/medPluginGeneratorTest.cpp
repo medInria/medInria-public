@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #include <medPluginGeneratorTest.h>
 
 #include <QProcess>
@@ -5,7 +18,7 @@
 
 bool removeDir(const QString & dirName)
 {
-    bool result;
+    bool result = false;
     QDir dir(dirName);
 
     if (dir.exists(dirName)) {

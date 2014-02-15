@@ -57,6 +57,8 @@ public:
 
     QList<dtkSmartPointer<medAbstractData> > data() const;
 
+    virtual QImage& generateThumbnail(const QSize &size);
+
 signals:
 
     /**

@@ -67,9 +67,9 @@ public:
 
     medVector3DParameter *positionParameter;
 
-
     QWidget* toolbox;
     QWidget* toolbar;
+    QImage thumbnail;
 };
 
 
@@ -482,4 +482,30 @@ void medVtkViewItkDataImageInteractor::updateWindowLevelParam(double window, dou
 {
     d->windowParameter->setValue(window);
     d->levelParameter->setValue(level);
+}
+
+QImage& medVtkViewItkDataImageInteractor::generateThumbnail(const QSize &size)
+{
+
+    int w(size.width()), h(size.height());
+
+    d->view2d->SetBackground ( 0.0, 0.0, 0.0 );
+    d->view2d->CursorFollowMouseOff();
+    d->view2d->ShowImageAxisOff();
+    d->view2d->ShowScalarBarOff();
+    d->view2d->ShowAnnotationsOff();
+    d->view2d->ShowRulerWidgetOff();
+
+    d->render->SetOffScreenRendering(1);
+
+    d->medVtkView->viewWidget()->resize(w,h);
+    d->render->vtkRenderWindow::SetSize(w,h);
+    d->view2d->Reset();
+    d->view2d->Render();
+
+    d->thumbnail = QPixmap::grabWidget(d->medVtkView->viewWidget()).scaled(w,h, Qt::KeepAspectRatio).toImage().convertToFormat(QImage::Format_RGB32);
+
+    d->render->SetOffScreenRendering(0);
+
+    return d->thumbnail;
 }

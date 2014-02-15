@@ -36,8 +36,6 @@ public:
 
     TensorImageType::Pointer tensors;
 
-    QImage        thumbnail;
-    QList<QImage> thumbnails;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -47,8 +45,6 @@ public:
 itkDataTensorImageFloat3::itkDataTensorImageFloat3() : medAbstractTypedImageData<3,float>(), d(new itkDataTensorImageFloat3Private)
 {
     d->tensors = 0;
-    d->thumbnail = QImage(":/itkDataTensorImage/icons/tensors.png");
-    d->thumbnails << d->thumbnail;
 }
 
 itkDataTensorImageFloat3::~itkDataTensorImageFloat3()
@@ -112,17 +108,6 @@ int itkDataTensorImageFloat3::zDimension()
     if (!d->tensors.IsNull())
         return d->tensors->GetLargestPossibleRegion().GetSize()[2];
     return -1;
-}
-
-QImage& itkDataTensorImageFloat3::thumbnail()
-{
-    // TODO: TEMPORARY black image just to allow drag and drop
-    return d->thumbnail;
-}
-
-QList<QImage>& itkDataTensorImageFloat3::thumbnails()
-{
-    return d->thumbnails;
 }
 
 // /////////////////////////////////////////////////////////////////

@@ -15,6 +15,9 @@
 
 #include <medDataIndex.h>
 #include <medAttachedData.h>
+#include <medAbstractLayeredView.h>
+#include <medLayeredViewFactory.h>
+#include <medDatabaseThumbnailHelper.h>
 
 #include <dtkCore/dtkSmartPointer.h>
 
@@ -24,6 +27,8 @@ public:
     medDataIndex index;
     QList< dtkSmartPointer<medAttachedData> > attachedData;
     medData::Category type;
+
+    QImage thumbnail;
 };
 
 medAbstractData::medAbstractData( medAbstractData *parent )
@@ -109,7 +114,31 @@ void medAbstractData::invokeModified()
     emit dataModified(this);
 }
 
+QImage& medAbstractData::thumbnail()
+{
+    if(d->thumbnail == QImage())
+    {
+        if (QThread::currentThread() != QApplication::instance()->thread())
+            QMetaObject::invokeMethod(this, "generateThumbnail", Qt::BlockingQueuedConnection);
+        else
+            this->generateThumbnail();
+    }
+    return d->thumbnail;
+}
 
+void medAbstractData::generateThumbnail()
+{
+    //TODO find which view is handled by this type of data - RDE
+    dtkSmartPointer<medAbstractLayeredView> view = medLayeredViewFactory::instance()->createView("medVtkView");
+    view->addLayer(this);
+
+    d->thumbnail = view->generateThumbnail(QSize(medDatabaseThumbnailHelper::width, medDatabaseThumbnailHelper::height));
+}
+
+
+/*=========================================================================
+            setting non-used dtkAbstractData methods private
+*=========================================================================*/
 
 void medAbstractData::update(void)
 {

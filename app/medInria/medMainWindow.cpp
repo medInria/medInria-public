@@ -4,17 +4,18 @@
 
  Copyright (c) INRIA 2013. All rights reserved.
  See LICENSE.txt for details.
- 
+
   This software is distributed WITHOUT ANY WARRANTY; without even
   the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
   PURPOSE.
 
 =========================================================================*/
 
-#include <medBrowserArea.h>
-#include <medMainWindow.h>
-#include <medWorkspaceArea.h>
-#include <medHomepageArea.h>
+#include "medBrowserArea.h"
+#include "medMainWindow.h"
+#include "medWorkspaceArea.h"
+#include "medHomepageArea.h"
+#include "medDataSourceManager.h"
 
 #include <dtkCore/dtkGlobal.h>
 #include <medAbstractDataFactory.h>
@@ -47,17 +48,26 @@
 #include <medDatabaseSettingsWidget.h>
 #include <medInteractionSettingsWidget.h>
 #include <medSettingsEditor.h>
-#include <medEmptyDbWarning.h>
+#include <medPacsWidget.h>
+#include <medAbstractDataSourceFactory.h>
 
-#include <medSeedPointAnnotationData.h>
 
-#include <medVisualizationWorkspace.h>
-#include <medRegistrationWorkspace.h>
-#include <medDiffusionWorkspace.h>
-#include <medFilteringWorkspace.h>
-#include <medSegmentationWorkspace.h>
 
-#include <medSaveModifiedDialog.h>
+#include "medSeedPointAnnotationData.h"
+
+#include "medVisualizationWorkspace.h"
+#include "medRegistrationWorkspace.h"
+#include "medDiffusionWorkspace.h"
+#include "medFilteringWorkspace.h"
+#include "medSegmentationWorkspace.h"
+#include "medEmptyDbWarning.h"
+#include "medSaveModifiedDialog.h"
+#include "medFileSystemDataSource.h"
+#include "medDatabaseDataSource.h"
+#include "medPacsDataSource.h"
+
+
+
 
 #include <QtGui>
 
@@ -70,7 +80,7 @@
 // Simple new function used for factories.
 namespace  {
     template< class T >
-    medAbstractData * dtkAbstractDataCreateFunc() { return new T; }
+    dtkAbstractData * dtkAbstractDataCreateFunc() { return new T; }
 }
 
 // /////////////////////////////////////////////////////////////////
@@ -115,14 +125,13 @@ public:
     QToolButton*                quitButton;
     QToolButton*              fullscreenButton;
     QList<QString>            importUuids;
-
     medQuickAccessMenu * quickAccessWidget;
     bool controlPressed;
-    
+
     medQuickAccessMenu *shortcutAccessWidget;
     bool shortcutAccessVisible;
     QShortcut * shortcutShortcut;
-    
+
     QToolButton *screenshotButton;
 };
 
@@ -164,12 +173,9 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->settingsEditor = NULL;
 
     //  Browser area.
-
     d->browserArea = new medBrowserArea(this);
     d->browserArea->setObjectName("Browser");
-    connect(d->browserArea,SIGNAL(open(const QString&)),this,SLOT(open(const QString&)));
-    connect(d->browserArea,SIGNAL(load(const QString&)),this,SLOT(load(const QString&)));
-    connect(d->browserArea,SIGNAL(open(const medDataIndex&)),this,SLOT(open(const medDataIndex&)));
+
 
     //  Workspace area.
 
@@ -188,8 +194,9 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     d->stack->addWidget ( d->browserArea );
     d->stack->addWidget ( d->workspaceArea );
 
-    connect(d->browserArea, SIGNAL(openRequested(const medDataIndex&, int)), this, SLOT(open(const medDataIndex&, int)));
-    
+    medDataManager::instance();
+
+
     //  Setup quick access menu
 
     d->quickAccessButton = new medQuickAccessPushButton ( this );
@@ -220,18 +227,19 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
     connect(d->shortcutAccessWidget, SIGNAL(homepageSelected()), this, SLOT(switchToHomepageArea()));
     connect(d->shortcutAccessWidget, SIGNAL(browserSelected()), this, SLOT(switchToBrowserArea()));
     connect(d->shortcutAccessWidget, SIGNAL(workspaceSelected(QString)), this, SLOT(showWorkspace(QString)));
-    
+
     d->shortcutAccessVisible = false;
     d->controlPressed = false;
-    
+
     //Add quit button
     QIcon quitIcon;
     quitIcon.addPixmap(QPixmap(":/icons/quit.png"), QIcon::Normal);
     d->quitButton = new QToolButton(this);
     d->quitButton->setIcon(quitIcon);
     d->quitButton->setObjectName("quitButton");
-    
+
     connect(d->quitButton, SIGNAL( pressed()), this, SLOT (close()));
+    d->quitButton->setToolTip(tr("Close medInria"));
 
     //  Setup Fullscreen Button
 
@@ -332,6 +340,17 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 
     d->workspaceArea->setupWorkspace ( "Visualization" );
 
+    connect(medDataSourceManager::instance(), SIGNAL(open(QString)),
+            this, SLOT(open(QString)));
+    connect(medDataSourceManager::instance(), SIGNAL(load(QString)),
+            this, SLOT(load(QString)));
+    connect(medDataSourceManager::instance(), SIGNAL(open(const medDataIndex&)),
+            this, SLOT(open(const medDataIndex&)));
+
+    connect(medDataManager::instance(), SIGNAL(openRequested(const medDataIndex &, int)),
+            this, SLOT(open(const medDataIndex&, int)));
+
+
     connect ( qApp, SIGNAL ( aboutToQuit() ), this, SLOT ( close() ) );
 
     d->shortcutShortcut = new QShortcut(QKeySequence(tr(CONTROL_KEY "+Space")),
@@ -344,7 +363,6 @@ medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( n
 medMainWindow::~medMainWindow()
 {
     delete d;
-
     d = NULL;
 }
 
@@ -461,7 +479,7 @@ void medMainWindow::captureScreenshot()
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save screenshot as"),
                                                     QDir::home().absolutePath(),
                                                     QString(), 0, QFileDialog::HideNameFilterDetails);
-    
+
     QByteArray format = fileName.right(fileName.lastIndexOf('.')).toUpper().toAscii();
     if ( ! QImageWriter::supportedImageFormats().contains(format) )
         format = "PNG";
@@ -469,7 +487,7 @@ void medMainWindow::captureScreenshot()
     QImage transparentImage = screenshot.toImage();
     QImage outImage(transparentImage.size(), QImage::Format_RGB32);
     outImage.fill(QColor(Qt::black).rgb());
-    
+
     QPainter painter(&outImage);
     painter.drawImage(0,0,transparentImage);
     outImage.save(fileName, format.constData());
@@ -515,13 +533,13 @@ void medMainWindow::switchToHomepageArea()
     d->quickAccessButton->setMinimumWidth(170);
     if (d->quickAccessWidget->isVisible())
         this->hideQuickAccess();
-    
+
     if (d->shortcutAccessVisible)
         this->hideShortcutAccess();
 
     d->stack->setCurrentWidget ( d->homepageArea );
     d->homepageArea->onShowInfo();
-    
+
     d->screenshotButton->setEnabled(false);
 
     if ( d->homepageArea->getAnimation() )
@@ -541,9 +559,6 @@ void medMainWindow::switchToBrowserArea()
     if (d->shortcutAccessVisible)
         this->hideShortcutAccess();
 
-    d->browserArea->setup ( this->statusBar() );
-    d->workspaceArea->setdw ( this->statusBar() );
-
     d->screenshotButton->setEnabled(false);
 
     d->stack->setCurrentWidget ( d->browserArea );
@@ -553,12 +568,9 @@ void medMainWindow::switchToWorkspaceArea()
 {
     if (d->quickAccessWidget->isVisible())
         this->hideQuickAccess();
-    
+
     if (d->shortcutAccessVisible)
         this->hideShortcutAccess();
-
-    d->browserArea->setdw ( this->statusBar() );
-    d->workspaceArea->setup ( this->statusBar() );
 
     d->screenshotButton->setEnabled(true);
 
@@ -639,14 +651,14 @@ void medMainWindow::showShortcutAccess()
         d->shortcutAccessWidget->updateCurrentlySelectedRight();
         return;
     }
-    
+
     d->shortcutAccessWidget->reset(true);
     d->shortcutAccessVisible = true;
 
     QPoint menuPosition = this->mapToGlobal(this->rect().topLeft());
     menuPosition.setX(menuPosition.rx() + (this->rect().width() - d->shortcutAccessWidget->width()) / 2);
     menuPosition.setY(menuPosition.ry() + (this->rect().height() - d->shortcutAccessWidget->height()) / 2);
-    
+
     d->shortcutAccessWidget->setProperty ( "pos", menuPosition );
     d->shortcutAccessWidget->show();
     d->shortcutAccessWidget->setFocus();
@@ -661,7 +673,7 @@ void medMainWindow::hideShortcutAccess()
 {
     if (!d->shortcutAccessVisible)
         return;
-    
+
     d->shortcutAccessWidget->releaseKeyboard();
     d->shortcutAccessWidget->setMouseTracking(false);
     d->shortcutAccessVisible = false;
@@ -681,11 +693,11 @@ int medMainWindow::saveModified( void )
 
     if(indexes.isEmpty())
         return QDialog::Accepted;
-    
+
     medSaveModifiedDialog *saveDialog = new medSaveModifiedDialog(this);
     saveDialog->show();
     saveDialog->exec();
-    
+
     return saveDialog->result();
 }
 
@@ -733,7 +745,7 @@ void medMainWindow::availableSpaceOnStatusBar()
     QPoint workspaceButton_topRight = d->quickAccessButton->mapTo(d->statusBar, d->quickAccessButton->rect().topRight());
     QPoint screenshotButton_topLeft = d->screenshotButton->mapTo(d->statusBar, d->screenshotButton->rect().topLeft());
     //Available space = space between the spacing after workspace button and the spacing before screenshot button
-    int space = (screenshotButton_topLeft.x()-d->statusBarLayout->spacing()) -  (workspaceButton_topRight.x()+d->statusBarLayout->spacing()); 
+    int space = (screenshotButton_topLeft.x()-d->statusBarLayout->spacing()) -  (workspaceButton_topRight.x()+d->statusBarLayout->spacing());
     d->statusBar->setAvailableSpace(space);
 }
 
@@ -817,13 +829,13 @@ void medMainWindow::closeEvent(QCloseEvent *event)
         }
 
     }
-    
+
     if (this->saveModified() != QDialog::Accepted)
     {
         event->ignore();
         return;
     }
-    
+
     this->hide();
     event->accept();
 
@@ -834,33 +846,12 @@ void medMainWindow::closeEvent(QCloseEvent *event)
     medDataManager::destroy();
 }
 
+//TODO should not be here - RDE
 void medMainWindow::registerToFactories()
 {
     //Register dbController
     medDbControllerFactory::instance()->registerDbController("DbController", createDbController);
     medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
-
-
-#if defined(HAVE_SWIG) && defined(HAVE_PYTHON)
-    // Setting up core python module
-
-    dtkScriptInterpreterPythonModuleManager::instance()->registerInitializer(&init_core);
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "import core"
-        );
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "dataFactory    = core.dtkAbstractDataFactory.instance()"
-        );
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "processFactory = core.dtkAbstractProcessFactory.instance()"
-        );
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "viewFactory    = core.dtkAbstractViewFactory.instance()"
-        );
-    dtkScriptInterpreterPythonModuleManager::instance()->registerCommand(
-        "pluginManager  = core.dtkPluginManager.instance()"
-        );
-#endif
 
     // Registering different workspaces
     medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();
@@ -905,7 +896,7 @@ void medMainWindow::registerToFactories()
                                            tr("View Interaction settings"));
 
     //Register annotations
-    medAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
+    dtkAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
     datafactory->registerDataType( medSeedPointAnnotationData::s_identifier(), dtkAbstractDataCreateFunc<medSeedPointAnnotationData> );
 }
 
@@ -933,4 +924,4 @@ bool medMainWindow::event(QEvent * e)
         break;
     } ;
     return QMainWindow::event(e) ;
-}   
+}

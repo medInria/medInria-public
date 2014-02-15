@@ -86,6 +86,8 @@ public:
 
     QWidget* toolbox;
     QWidget* toolbar;
+
+    QImage thumbnail;
 };
 
 
@@ -549,3 +551,22 @@ QList<medAbstractParameter*> vtkDataMeshInteractor::parameters()
     return QList<medAbstractParameter*>();
 }
 
+QImage& vtkDataMeshInteractor::generateThumbnail(const QSize &size)
+{
+    int w(size.width()), h(size.height());
+
+    d->view3d->SetBackground ( 0.0, 0.0, 0.0 );
+    d->render->SetOffScreenRendering(1);
+
+    d->view->viewWidget()->resize(w,h);
+    d->render->vtkRenderWindow::SetSize(w,h);
+    d->view3d->Reset();
+    d->view3d->Render();
+
+    d->thumbnail = QPixmap::grabWidget(d->view->viewWidget()).scaled(w,h, Qt::KeepAspectRatio).toImage().convertToFormat(QImage::Format_RGB32);
+
+    d->render->SetOffScreenRendering(0);
+
+    return d->thumbnail;
+
+}

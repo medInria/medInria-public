@@ -33,9 +33,6 @@ public:
     typedef SHImageType::PixelType    SHType;
   
     SHImageType::Pointer shs;
-
-    QImage        thumbnail;
-    QList<QImage> thumbnails;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -45,8 +42,6 @@ public:
 itkDataSHImageFloat3::itkDataSHImageFloat3(): medAbstractTypedImageData<3,float>(), d(new itkDataSHImageFloat3Private)
 {
     d->shs = 0;
-    d->thumbnail = QImage(":/itkDataSHImage/icons/shs.png");
-    d->thumbnails << d->thumbnail;
 }
 
 itkDataSHImageFloat3::~itkDataSHImageFloat3()
@@ -109,17 +104,6 @@ int itkDataSHImageFloat3::zDimension()
     if (!d->shs.IsNull())
         return d->shs->GetLargestPossibleRegion().GetSize()[2];
     return -1;
-}
-
-QImage& itkDataSHImageFloat3::thumbnail()
-{
-    // TODO: TEMPORARY black image just to allow drag and drop    
-    return d->thumbnail;
-}
-
-QList<QImage>& itkDataSHImageFloat3::thumbnails()
-{
-    return d->thumbnails;
 }
 
 // /////////////////////////////////////////////////////////////////

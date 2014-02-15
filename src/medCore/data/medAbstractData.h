@@ -56,6 +56,8 @@ public:
     void setDataCategory(medData::Category type);
     medData::Category dataCategory() const;
 
+    virtual QImage& thumbnail();
+
 public slots:
     /**
      * @brief Clear the list of attached data
@@ -82,6 +84,9 @@ public slots:
      * \sa dataModfied(medAbstractData *);
     */
     void invokeModified();
+
+private:
+    void generateThumbnail();
 
 signals:
     /**

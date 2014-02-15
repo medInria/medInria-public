@@ -1,17 +1,16 @@
 /*=========================================================================
 
- medInria
+medInria
 
- Copyright (c) INRIA 2013. All rights reserved.
- See LICENSE.txt for details.
- 
-  This software is distributed WITHOUT ANY WARRANTY; without even
-  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
-  PURPOSE.
+Copyright (c) INRIA 2013. All rights reserved.
+See LICENSE.txt for details.
+This software is distributed WITHOUT ANY WARRANTY; without even
+the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
 
 =========================================================================*/
 
-#include <medFileSystemDataSource.h>
+#include "medFileSystemDataSource.h"
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkGui/dtkFinder.h>
@@ -32,9 +31,9 @@ public:
     QLabel * infoText;
 };
 
-medFileSystemDataSource::medFileSystemDataSource(QWidget* parent): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
+medFileSystemDataSource::medFileSystemDataSource( QWidget* parent ): medAbstractDataSource(parent), d(new medFileSystemDataSourcePrivate)
 {
-    d->filesystemWidget = new QWidget(parent);
+    d->filesystemWidget = new QWidget();
 
     d->finder = new dtkFinder (d->filesystemWidget);
     d->finder->allowFileBookmarking(false);
@@ -45,7 +44,7 @@ medFileSystemDataSource::medFileSystemDataSource(QWidget* parent): medAbstractDa
     d->path->setPath(QDir::homePath());
 
     d->toolbar = new dtkFinderToolBar (d->filesystemWidget);
-    d->toolbar->setObjectName("largeToolbarWidget");
+    d->toolbar->setObjectName("toolbarWidget");
     d->toolbar->setPath(QDir::homePath());
 
     d->infoText = new QLabel(d->filesystemWidget);
@@ -54,7 +53,8 @@ medFileSystemDataSource::medFileSystemDataSource(QWidget* parent): medAbstractDa
     d->infoText->setVisible(false);
     d->infoText->setTextFormat(Qt::RichText);
 
-    d->actionsToolBox = new medActionsToolBox(parent, true);
+
+    d->actionsToolBox = new medActionsToolBox(0, true);
     d->toolBoxes.push_back(d->actionsToolBox);
 
     d->side = new dtkFinderSideView;
@@ -78,22 +78,22 @@ medFileSystemDataSource::medFileSystemDataSource(QWidget* parent): medAbstractDa
     d->finder->addContextMenuAction(viewAction);
 
     connect(importAction, SIGNAL(triggered()), this, SLOT(onFileSystemImportRequested()));
-    connect(indexAction, SIGNAL(triggered()),  this, SLOT(onFileSystemIndexRequested()));
-    connect(  loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadRequested()));
-    connect(  viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewRequested()));
-    
+    connect(indexAction, SIGNAL(triggered()), this, SLOT(onFileSystemIndexRequested()));
+    connect( loadAction, SIGNAL(triggered()), this, SLOT(onFileSystemLoadRequested()));
+    connect( viewAction, SIGNAL(triggered()), this, SLOT(onFileSystemViewRequested()));
+
     QVBoxLayout *filesystem_layout = new QVBoxLayout(d->filesystemWidget);
     QHBoxLayout *toolbar_layout = new QHBoxLayout();
     QWidget * toolbarWidget = new QWidget;
     toolbarWidget->setLayout(toolbar_layout);
     toolbarWidget->setObjectName("toolbarWidget");
-    
-    toolbar_layout->setContentsMargins(0, 0, 0, 0);    
+
+    toolbar_layout->setContentsMargins(0, 0, 0, 0);
     toolbar_layout->setSpacing(0);
-    toolbar_layout->addWidget  (d->toolbar);
-    toolbar_layout->addWidget  (d->path);
-    
-    filesystem_layout->setContentsMargins(0, 0, 0, 0);    
+    toolbar_layout->addWidget (d->toolbar);
+    toolbar_layout->addWidget (d->path);
+
+    filesystem_layout->setContentsMargins(0, 0, 0, 0);
     filesystem_layout->setSpacing(0);
     filesystem_layout->addWidget(toolbarWidget);
     filesystem_layout->addWidget(d->finder);
@@ -124,10 +124,10 @@ medFileSystemDataSource::medFileSystemDataSource(QWidget* parent): medAbstractDa
     connect(d->finder, SIGNAL(bookmarked(QString)), d->side, SLOT(addBookmark(QString)));
 
     connect (d->toolbar, SIGNAL(changed(QString)), d->finder, SLOT(setPath(QString)));
-    connect (d->toolbar, SIGNAL(changed(QString)), d->path,   SLOT(setPath(QString)));
+    connect (d->toolbar, SIGNAL(changed(QString)), d->path, SLOT(setPath(QString)));
 
-    connect (d->toolbar, SIGNAL(treeView()),       d->finder, SLOT(switchToTreeView()));
-    connect (d->toolbar, SIGNAL(listView()),       d->finder, SLOT(switchToListView()));
+    connect (d->toolbar, SIGNAL(treeView()), d->finder, SLOT(switchToTreeView()));
+    connect (d->toolbar, SIGNAL(listView()), d->finder, SLOT(switchToListView()));
 
     connect(d->finder, SIGNAL(selectionChanged(const QStringList&)), d->actionsToolBox, SLOT(selectedPathsChanged(const QStringList&)));
 
@@ -180,7 +180,7 @@ QList<medToolBox*> medFileSystemDataSource::getToolBoxes()
 
 QString medFileSystemDataSource::description(void) const
 {
-	return tr("Browse the file system");
+return tr("Browse the file system");
 }
 
 void medFileSystemDataSource::onFileSystemImportRequested(void)

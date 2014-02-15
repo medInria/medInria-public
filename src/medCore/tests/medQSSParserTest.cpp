@@ -11,6 +11,7 @@ void medQSSParserTest::testParse_data()
     QTest::newRow("test 3") << "$var = 12; truc; $var ${var}" << " truc; 12 12";
     QTest::newRow("test 4") << "$var = 12; truc; $var = $var; property: ${var}px;" << " truc; property: 12px;";
     QTest::newRow("test 5") << "$var = 12; truc; $var = $var2; property: $var;" << " truc; property: ;";
+    QTest::newRow("nested vars") << "$var = bob; $bobo = truc; $var2 = ${${var}o}; property: $var2;" << " property: truc;";
 
     QTest::newRow("multiline") << "$selector = medToolBoxBody QTabBar::tab:selected;\n"
                                   "$sub_control = ::tab:hover;\n"

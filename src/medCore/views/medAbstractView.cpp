@@ -204,6 +204,7 @@ QList<medAbstractParameter*> medAbstractView::navigatorsParameters()
     }
     return params;
 }
+
 /*=========================================================================
                          NOT IMPLEMENTED ON PURPOSE
 *=========================================================================*/

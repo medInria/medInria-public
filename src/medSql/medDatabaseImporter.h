@@ -79,16 +79,6 @@ private:
     medDataIndex populateDatabaseAndGenerateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
 
     /**
-    * Generates and saves the thumbnails for images in @dtkAbstractData.
-    * Also stores as metada with key RefThumbnailPath the path of the image that
-    * will be used as reference for patient, study and series.
-    * @param medData - @medAbstractData object whose thumbnails will be generated and saved
-    * @param pathToStoreThumbnails - path where the thumbnails will be stored
-    * @return a list of the thumbnails paths
-    **/
-    QStringList generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails );
-
-    /**
      * Retrieves the patient id of the existent (or newly created)
      * patient record in the patient table.
      */

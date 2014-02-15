@@ -256,3 +256,8 @@ int  medAbstractLayeredView::selectedLayer() const
 {
     return d->selectedLayer;
 }
+
+QImage& medAbstractLayeredView::generateThumbnail(const QSize &size)
+{
+    return this->primaryInteractor(this->data(d->selectedLayer))->generateThumbnail(size);
+}

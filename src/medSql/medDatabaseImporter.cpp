@@ -264,33 +264,6 @@ medDataIndex medDatabaseImporter::populateDatabaseAndGenerateThumbnails ( medAbs
 
 //-----------------------------------------------------------------------------------------------------------
 
-QStringList medDatabaseImporter::generateThumbnails ( medAbstractData* medData, QString pathToStoreThumbnails )
-{
-    QList<QImage> &thumbnails = medData->thumbnails();
-
-    QStringList thumbPaths;
-
-    if ( !medStorage::mkpath ( medStorage::dataLocation() + pathToStoreThumbnails ) )
-        qDebug() << "Cannot create directory: " << pathToStoreThumbnails;
-
-    for ( int i=0; i < thumbnails.count(); i++ )
-    {
-        QString thumb_name = pathToStoreThumbnails + QString().setNum ( i ) + ".png";
-        thumbnails[i].save ( medStorage::dataLocation() + thumb_name, "PNG" );
-        thumbPaths << thumb_name;
-    }
-
-    QImage refThumbnail = medData->thumbnail(); // representative thumbnail for PATIENT/STUDY/SERIES
-    QString refThumbPath = pathToStoreThumbnails + "ref.png";
-    refThumbnail.save ( medStorage::dataLocation() + refThumbPath, "PNG" );
-
-    medData->addMetaData ( medMetaDataKeys::ThumbnailPath.key(), refThumbPath );
-
-    return thumbPaths;
-}
-
-//-----------------------------------------------------------------------------------------------------------
-
 int medDatabaseImporter::getOrCreatePatient ( const medAbstractData* medData, QSqlDatabase db )
 {
     int patientDbId = -1;

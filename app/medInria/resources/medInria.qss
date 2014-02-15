@@ -173,6 +173,7 @@ $BROWSER_CONTAINER_BORDER       = 2px solid $GREY06;
 
 $DROP_SITE_BORDER               = 1px solid $GREY06;
 
+$DEATABASE_PREVIEW_BORDER       = $CONTAINER_BORDER;
 
 /*******************************************************************************
     SIZES
@@ -1232,6 +1233,23 @@ QWidget#settingsWidget QTabWidget::pane
     border: 2px solid $EDITION_BACKGROUND;
 }
 
+
+/*******************************************************************************
+     medDatabasePreview
+ *******************************************************************************/
+medDatabasePreview
+{
+    border: 2px solid $GREY07;
+}
+
+QLabel#previewLabel
+{
+    color: $TAB_COLOR;
+    background: $TOOLBOX_HEADER_BACKGROUND;
+    min-height: $STATUS_BAR_HEIGHT;
+    border: 2px solid $GREY07;
+    border-top: none;
+}
 
 /*******************************************************************************
      dtkFinder

@@ -32,9 +32,6 @@ public:
     typedef SHImageType::PixelType    SHType;
 
     SHImageType::Pointer shs;
-
-    QImage        thumbnail;
-    QList<QImage> thumbnails;
 };
 
 // /////////////////////////////////////////////////////////////////
@@ -44,8 +41,6 @@ public:
 itkDataSHImageDouble3::itkDataSHImageDouble3(): medAbstractTypedImageData<3,double>(), d(new itkDataSHImageDouble3Private)
 {
     d->shs = 0;
-    d->thumbnail = QImage(":/itkDataSHImage/icons/shs.png");
-    d->thumbnails << d->thumbnail;
 }
 
 itkDataSHImageDouble3::~itkDataSHImageDouble3()
@@ -110,16 +105,6 @@ int itkDataSHImageDouble3::zDimension()
     return -1;
 }
 
-QImage& itkDataSHImageDouble3::thumbnail()
-{
-    // TODO: TEMPORARY black image just to allow drag and drop
-    return d->thumbnail;
-}
-
-QList<QImage>& itkDataSHImageDouble3::thumbnails()
-{
-    return d->thumbnails;
-}
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation
