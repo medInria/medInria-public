@@ -56,7 +56,7 @@ medViewContainer2::medViewContainer2(QWidget *parent): QFrame(parent),
 
     QPushButton* closeButton = new QPushButton(this);
     closeButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
-    connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
+    connect(closeButton, SIGNAL(clicked()), this, SLOT(selfDestruct()));
     closeButton->setMaximumHeight(18);
 
     d->vSplittButton = new QPushButton(this);
@@ -67,8 +67,6 @@ medViewContainer2::medViewContainer2(QWidget *parent): QFrame(parent),
     d->hSplittButton->setMaximumHeight(18);
     d->hSplittButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_horizontal.png"));
     connect(d->hSplittButton, SIGNAL(clicked()), this, SIGNAL(hSplitRequest()));
-
-
 
 
     d->maximisedParameter = new medBoolParameter("maximied view", this);
@@ -109,6 +107,7 @@ medViewContainer2::medViewContainer2(QWidget *parent): QFrame(parent),
 
 medViewContainer2::~medViewContainer2()
 {
+    qDebug() << "deleting container2";
     delete d;
 }
 
@@ -249,4 +248,7 @@ void medViewContainer2::addData(medAbstractData *data)
     view->addLayer(data);
 }
 
-
+void medViewContainer2::selfDestruct()
+{
+    this->~medViewContainer2();
+}

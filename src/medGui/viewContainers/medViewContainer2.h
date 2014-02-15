@@ -58,6 +58,7 @@ protected:
 
 private slots:
     void removeInterneView();
+    void selfDestruct();
 
 
 private:

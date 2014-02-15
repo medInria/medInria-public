@@ -1201,6 +1201,11 @@ QWidget#containerToolBar QPushButton::hover
     background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND;
 }
 
+medViewContainerSplitter
+{
+    border: 1px solid $RED;
+    background: $GREEN;
+}
 
 /*******************************************************************************
      medMessageProgress
