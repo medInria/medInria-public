@@ -1144,7 +1144,7 @@ dtkFinderPathBar
 /*******************************************************************************
      medTabbedViewContainers
  *******************************************************************************/
-medTabbedViewContainers QPushButton
+/*medTabbedViewContainers QPushButton
 {
     margin: $VIEW_CONTAINER_BUTTON_MARGIN;
     padding: $VIEW_CONTAINER_BUTTON_PADDING;
@@ -1154,7 +1154,7 @@ medTabbedViewContainers QPushButton
 medTabbedViewContainers QPushButton::hover
 {
     background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND;
-}
+}*/
 
 QPushButton#addTabButton
 {
@@ -1182,6 +1182,22 @@ medViewContainer2
 medViewContainer2 [selected = "true"]
 {
     border: $CONTAINER_SELECTED_BORDER;
+}
+
+QWidget#containerToolBar
+{
+    border: none;
+}
+
+QWidget#containerToolBar QPushButton
+{
+    margin: 0px;
+    padding: 0px;
+}
+
+QWidget#containerToolBar QPushButton::hover
+{
+    background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND;
 }
 
 

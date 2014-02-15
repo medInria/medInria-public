@@ -30,13 +30,13 @@ class medViewContainer2Private
 {
 public:
     medAbstractView* view;
+    QWidget *defaultWidget;
     bool selected;
     bool maximised;
     QVBoxLayout* mainLayout;
     QHBoxLayout* toolBarLayout;
     QPushButton* vSplittButton;
     QPushButton* hSplittButton;
-    QPushButton* rmSplittButton;
 
     medBoolParameter* maximisedParameter;
 
@@ -48,18 +48,37 @@ public:
 };
 
 
-medViewContainer2::medViewContainer2(QWidget *parent): d(new medViewContainer2Private)
+medViewContainer2::medViewContainer2(QWidget *parent): QFrame(parent),
+    d(new medViewContainer2Private)
 {
+    d->view = NULL;
+    d->defaultWidget = new QWidget(this);
+
     QPushButton* closeButton = new QPushButton(this);
+    closeButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
     connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
+    closeButton->setMaximumHeight(18);
 
     d->vSplittButton = new QPushButton(this);
+    d->vSplittButton->setMaximumHeight(18);
+    d->vSplittButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_vertical.png"));
     connect(d->vSplittButton, SIGNAL(clicked()), this, SIGNAL(vSplitRequest()));
     d->hSplittButton = new QPushButton(this);
+    d->hSplittButton->setMaximumHeight(18);
+    d->hSplittButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_horizontal.png"));
     connect(d->hSplittButton, SIGNAL(clicked()), this, SIGNAL(hSplitRequest()));
 
 
+
+
     d->maximisedParameter = new medBoolParameter("maximied view", this);
+    d->maximisedParameter->getPushButton()->setMaximumHeight(18);
+    QIcon maximisedIcon(":/icons/maximize.svg");
+    maximisedIcon.addFile(":/icons/un_maximize.svg",
+                        QSize(16,16),
+                        QIcon::Normal,
+                        QIcon::On);
+    d->maximisedParameter->setIcon(maximisedIcon);
     d->maximised = true;
     connect(d->maximisedParameter, SIGNAL(valueChanged(bool)), this, SLOT(setMaximised(bool)));
     connect(this, SIGNAL(maximised(bool)), d->maximisedParameter, SLOT(setValue(bool)));
@@ -67,16 +86,24 @@ medViewContainer2::medViewContainer2(QWidget *parent): d(new medViewContainer2Pr
     d->maximisedParameter->hide();
 
     QWidget* toolBar = new QWidget(this);
+    toolBar->setObjectName("containerToolBar");
+    toolBar->setMaximumHeight(35);
+    toolBar->setContentsMargins(0,0,0,0);
     d->toolBarLayout = new QHBoxLayout(toolBar);
-    d->toolBarLayout->addWidget(d->maximisedParameter->getPushButton(), 0, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->vSplittButton, 0, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->hSplittButton, 0, Qt::AlignRight);
-    d->toolBarLayout->addWidget(closeButton, 0, Qt::AlignRight);
+    d->toolBarLayout->setSpacing(0);
+    d->toolBarLayout->addWidget(d->maximisedParameter->getPushButton(), 1, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->vSplittButton, 1, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->hSplittButton, 1, Qt::AlignRight);
+    d->toolBarLayout->addWidget(closeButton, 1, Qt::AlignRight);
 
     d->mainLayout = new QVBoxLayout(this);
     d->mainLayout->setContentsMargins(0, 0, 0, 0);
     d->mainLayout->addWidget(toolBar);
+    d->mainLayout->addWidget(d->defaultWidget);
 
+    this->setAcceptDrops(true);
+    this->setFocusPolicy(Qt::ClickFocus);
+    this->setMouseTracking(true);
     this->setSelected(true);
 }
 
@@ -94,9 +121,11 @@ void medViewContainer2::setView(medAbstractView *view)
 {
     if(d->view)
         delete d->view;
+    else
+        d->mainLayout->removeWidget(d->defaultWidget);
 
     d->view = view;
-    connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInterneView()));
+//    connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInterneView()));
 
     d->toolBarLayout->insertWidget(0, d->view->viewWidget());
     d->maximisedParameter->show();
@@ -114,13 +143,13 @@ void medViewContainer2::setSelected(bool selec)
 
     if(d->selected)
     {
-        this->setProperty("selected", QVariant("true"));
+        this->setProperty("selected", QVariant(true));
 //        medViewManager::instance()->addToSelection(d->view);
         emit selected();
     }
     else
     {
-        this->setProperty("selected", QVariant("false"));
+        this->setProperty("selected", QVariant(false));
     }
 
     this->recomputeStyleSheet();
@@ -140,15 +169,11 @@ void medViewContainer2::setMaximised(bool maxi)
     {
         d->vSplittButton->hide();
         d->hSplittButton->hide();
-        if(d->rmSplittButton)
-            d->rmSplittButton->hide();
     }
     else
     {
         d->vSplittButton->show();
         d->hSplittButton->show();
-        if(d->rmSplittButton)
-            d->rmSplittButton->show();
     }
 
     emit maximised(maxi);
@@ -158,6 +183,7 @@ void medViewContainer2::removeInterneView()
 {
     d->view = NULL;
     d->maximisedParameter->hide();
+    d->mainLayout->addWidget(d->defaultWidget);
 }
 
 void medViewContainer2::focusInEvent(QFocusEvent *event)
@@ -202,21 +228,21 @@ void medViewContainer2::addData(medAbstractData *data)
 {
     if(!data)
         return;
-    //TODO find from data(factory?) which view have to be created - RDE
+
     if(!d->view)
     {
-        d->view = medImageViewFactory::instance()->createView("medVtkView", this);
-        if(!d->view)
+        //TODO find from data(factory?) which view have to be created - RDE
+        medAbstractLayeredView* view;
+        view = medImageViewFactory::instance()->createView("medVtkView", this);
+        if(!view)
         {
             qWarning() << "medViewContainer: Unable to create a medVtkView";
             return;
         }
-
-        this->setView(d->view);
+        this->setView(view);
     }
-
     //TODO bring a way to kow how to add the data to the view.
-    //     assuming by now that we always have layered view.
+    //     assuming by now that we always have at least layered views.
     //     this can be did by having a method that return the base abstract class(categorie)
     //     of the view. - RDE
     medAbstractLayeredView* view = dynamic_cast<medAbstractLayeredView*>(d->view);
@@ -224,12 +250,3 @@ void medViewContainer2::addData(medAbstractData *data)
 }
 
 
-void medViewContainer2::addRmSplittButton()
-{
-    if(d->rmSplittButton)
-        return;
-
-    d->rmSplittButton = new QPushButton(this);
-    connect(d->rmSplittButton, SIGNAL(clicked()), this, SIGNAL(rmSplitRequest()));
-    d->toolBarLayout->insertWidget(d->toolBarLayout->count() - 2, d->rmSplittButton, 0, Qt::AlignRight);
-}
