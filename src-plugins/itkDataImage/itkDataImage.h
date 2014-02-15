@@ -26,7 +26,7 @@ PURPOSE.
 #include <itkResampleImageFilter.h>
 #include <itkRecursiveGaussianImageFilter.h>
 
-#include <dtkCore/dtkAbstractDataFactory.h>
+#include <medAbstractDataFactory.h>
 #include <medAbstractTypedImageData.h>
 #include <itkDataImagePluginExport.h>
 
@@ -200,7 +200,7 @@ public:
     QList<QImage> thumbnails;
 };
 
-template <unsigned DIM,typename T,const char* ID> dtkAbstractData* createItkDataImage();
+template <unsigned DIM,typename T,const char* ID> medAbstractData* createItkDataImage();
 
 template <unsigned DIM,typename T,const char* ID>
 class ITKDATAIMAGEPLUGIN_EXPORT itkDataImage: public medAbstractTypedImageData<DIM,T> {
@@ -219,7 +219,7 @@ public:
     virtual QString description() const { return "itk image data" ; }
     virtual QString identifier() const { return ID; }
     static bool registered() {
-        return dtkAbstractDataFactory::instance()->registerDataType(ID,createItkDataImage<DIM,T,ID>);
+        return medAbstractDataFactory::instance()->registerDataType(ID,createItkDataImage<DIM,T,ID>);
     }
 
     // Inherited slots (through virtual member functions).
@@ -311,6 +311,6 @@ private:
 };
 
 template <unsigned DIM,typename T,const char* ID>
-dtkAbstractData* createItkDataImage() {
+medAbstractData* createItkDataImage() {
     return new itkDataImage<DIM,T,ID>;
 }
