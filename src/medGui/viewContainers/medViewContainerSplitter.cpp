@@ -75,7 +75,7 @@ medViewSplitableContainer *medViewContainerSplitter::split(Qt::AlignmentFlag ali
             spliter->addViewContainer(container);
             spliter->addViewContainer(newContainer);
             this->insertWidget(index, spliter);
-            this->recomputeSizes(index - 1, index, newSize);
+            this->recomputeSizes(index, index + 1, newSize * 2);
         }
         break;
     case Qt::AlignBottom:
@@ -92,7 +92,7 @@ medViewSplitableContainer *medViewContainerSplitter::split(Qt::AlignmentFlag ali
             spliter->addViewContainer(container);
             spliter->addViewContainer(newContainer);
             this->insertWidget(index, spliter);
-            this->recomputeSizes(index - 1, index, newSize);
+            this->recomputeSizes(index - 1, index, newSize * 2);
         }
         break;
     case Qt::AlignRight:
@@ -109,7 +109,7 @@ medViewSplitableContainer *medViewContainerSplitter::split(Qt::AlignmentFlag ali
             spliter->addViewContainer(container);
             spliter->addViewContainer(newContainer);
             this->insertWidget(index, spliter);
-            this->recomputeSizes(index - 1, index, newSize);
+            this->recomputeSizes(index, index + 1, newSize * 2);
         }
         break;
     case Qt::AlignTop:
@@ -126,7 +126,7 @@ medViewSplitableContainer *medViewContainerSplitter::split(Qt::AlignmentFlag ali
             spliter->addViewContainer(container);
             spliter->addViewContainer(new medViewSplitableContainer);
             this->insertWidget(index, spliter);
-            this->recomputeSizes(index - 1, index, newSize);
+            this->recomputeSizes(index - 1, index, newSize * 2);
         }
         break;
     }
@@ -171,7 +171,13 @@ void medViewContainerSplitter::addViewContainer(medViewSplitableContainer *conta
 
 void medViewContainerSplitter::recomputeSizes(int requestIndex, int newIndex, int newSize)
 {
+    if(requestIndex < 0 || newIndex < 0)
+        return;
+
     QList <int> newSizes = this->sizes();
+    if(requestIndex >= newSizes.size() || newIndex >= newSizes.size())
+        return;
+
     newSizes.replace(requestIndex, newSize);
     newSizes.replace(newIndex, newSize);
     this->setSizes(newSizes);
