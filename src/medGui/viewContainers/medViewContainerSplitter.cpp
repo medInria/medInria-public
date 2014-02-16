@@ -19,14 +19,7 @@
 #include <medViewSplitableContainer.h>
 #include <medAbstractData.h>
 
-class medViewContainerSplitterPrivate
-{
-    QList <medViewSplitableContainer*> containers;
-};
-
-
-medViewContainerSplitter::medViewContainerSplitter(QWidget *parent):
-    d(new medViewContainerSplitterPrivate)
+medViewContainerSplitter::medViewContainerSplitter(QWidget *parent)
 {
     this->setOrientation(Qt::Horizontal);
     this->setHandleWidth(1);
@@ -36,7 +29,7 @@ medViewContainerSplitter::medViewContainerSplitter(QWidget *parent):
 
 medViewContainerSplitter::~medViewContainerSplitter()
 {
-    delete d;
+
 }
 
 void medViewContainerSplitter::hSplit()
@@ -68,16 +61,7 @@ medViewSplitableContainer *medViewContainerSplitter::split(Qt::AlignmentFlag ali
             this->recomputeSizes(index + 1, index, newSize);
         }
         else
-        {
-            QList<int> savedSizes = this->sizes();
-            container->disconnect(this);
-            medViewContainerSplitter *spliter = new medViewContainerSplitter;
-            spliter->setOrientation(Qt::Horizontal);
-            spliter->addViewContainer(container);
-            spliter->addViewContainer(newContainer);
-            this->insertWidget(index, spliter);
-            this->setSizes(savedSizes);
-        }
+            this->addNestedSplitter(index, container, newContainer);
         break;
     case Qt::AlignBottom:
         if(this->orientation() == Qt::Vertical)
@@ -86,16 +70,7 @@ medViewSplitableContainer *medViewContainerSplitter::split(Qt::AlignmentFlag ali
             this->recomputeSizes(index, index + 1, newSize);
         }
         else
-        {
-            QList<int> savedSizes = this->sizes();
-            container->disconnect(this);
-            medViewContainerSplitter *spliter = new medViewContainerSplitter;
-            spliter->setOrientation(Qt::Vertical);
-            spliter->addViewContainer(container);
-            spliter->addViewContainer(newContainer);
-            this->insertWidget(index, spliter);
-            this->setSizes(savedSizes);
-        }
+            this->addNestedSplitter(index, container, newContainer);
         break;
     case Qt::AlignRight:
         if(this->orientation() == Qt::Horizontal)
@@ -104,16 +79,7 @@ medViewSplitableContainer *medViewContainerSplitter::split(Qt::AlignmentFlag ali
             this->recomputeSizes(index, index + 1, newSize);
         }
         else
-        {
-            QList<int> savedSizes = this->sizes();
-            container->disconnect(this);
-            medViewContainerSplitter *spliter = new medViewContainerSplitter;
-            spliter->setOrientation(Qt::Horizontal);
-            spliter->addViewContainer(container);
-            spliter->addViewContainer(newContainer);
-            this->insertWidget(index, spliter);
-            this->setSizes(savedSizes);
-        }
+            this->addNestedSplitter(index, container, newContainer);
         break;
     case Qt::AlignTop:
         if(this->orientation() == Qt::Vertical)
@@ -122,16 +88,7 @@ medViewSplitableContainer *medViewContainerSplitter::split(Qt::AlignmentFlag ali
             this->recomputeSizes(index + 1, index, newSize);
         }
         else
-        {
-            QList<int> savedSizes = this->sizes();
-            container->disconnect(this);
-            medViewContainerSplitter *spliter = new medViewContainerSplitter;
-            spliter->setOrientation(Qt::Vertical);
-            spliter->addViewContainer(container);
-            spliter->addViewContainer(new medViewSplitableContainer);
-            this->insertWidget(index, spliter);
-            this->setSizes(savedSizes);
-        }
+            this->addNestedSplitter(index, container, newContainer);
         break;
     }
 
@@ -185,4 +142,22 @@ void medViewContainerSplitter::recomputeSizes(int requestIndex, int newIndex, in
     newSizes.replace(requestIndex, newSize);
     newSizes.replace(newIndex, newSize);
     this->setSizes(newSizes);
+}
+
+void medViewContainerSplitter::addNestedSplitter(int index,
+                                                 medViewSplitableContainer *oldContainer,
+                                                 medViewSplitableContainer *newContainer)
+{
+    Qt::Orientation ori = Qt::Vertical;
+    if(this->orientation() == Qt::Vertical)
+            ori = Qt::Horizontal;
+
+    QList<int> savedSizes = this->sizes();
+    oldContainer->disconnect(this);
+    medViewContainerSplitter *spliter = new medViewContainerSplitter;
+    spliter->setOrientation(ori);
+    spliter->addViewContainer(oldContainer);
+    spliter->addViewContainer(newContainer);
+    this->insertWidget(index, spliter);
+    this->setSizes(savedSizes);
 }

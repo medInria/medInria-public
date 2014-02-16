@@ -20,13 +20,12 @@
 class medViewSplitableContainer;
 class medDataIndex;
 
-class medViewContainerSplitterPrivate;
 class MEDGUI_EXPORT medViewContainerSplitter: public QSplitter
 {
     Q_OBJECT
 public:
     medViewContainerSplitter(QWidget* parent = 0);
-    ~medViewContainerSplitter();    
+    virtual ~medViewContainerSplitter();
 
 public slots:
     void addViewContainer(medViewSplitableContainer* container);
@@ -39,7 +38,7 @@ public slots:
 
 private:
     void recomputeSizes(int requestIndex, int newIndex, int newSize);
-
-private:
-    medViewContainerSplitterPrivate *d;
+    void addNestedSplitter(int index,
+                           medViewSplitableContainer *oldContainer,
+                           medViewSplitableContainer *newContainer);
 };
