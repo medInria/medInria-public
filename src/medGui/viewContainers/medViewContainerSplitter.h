@@ -26,7 +26,7 @@ class MEDGUI_EXPORT medViewContainerSplitter: public QSplitter
     Q_OBJECT
 public:
     medViewContainerSplitter(QWidget* parent = 0);
-    ~medViewContainerSplitter();
+    ~medViewContainerSplitter();    
 
 public slots:
     void addViewContainer(medViewSplitableContainer* container);
@@ -36,6 +36,9 @@ public slots:
     medViewSplitableContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
     void split(medDataIndex index, Qt::AlignmentFlag alignement = Qt::AlignRight);
     void checkIfStillDeserveToLive();
+
+private:
+    void recomputeSizes(int requestIndex, int newIndex, int newSize);
 
 private:
     medViewContainerSplitterPrivate *d;
