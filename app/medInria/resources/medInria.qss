@@ -1145,7 +1145,7 @@ dtkFinderPathBar
 /*******************************************************************************
      medTabbedViewContainers
  *******************************************************************************/
-/*medTabbedViewContainers QPushButton
+medTabbedViewContainers QPushButton
 {
     margin: $VIEW_CONTAINER_BUTTON_MARGIN;
     padding: $VIEW_CONTAINER_BUTTON_PADDING;
@@ -1155,7 +1155,7 @@ dtkFinderPathBar
 medTabbedViewContainers QPushButton::hover
 {
     background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND;
-}*/
+}
 
 QPushButton#addTabButton
 {
@@ -1174,13 +1174,27 @@ medViewContainer [selected = "true"]
     border: $CONTAINER_SELECTED_BORDER;
 }
 
-medViewContainer2
+medViewSplitableContainer
 {
-    border: $CONTAINER_BORDER;
-    background: $CONTAINER_BACKGROUND;
+    border: 2px solid $GREEN;
+    background: $RED;
 }
 
-medViewContainer2 [selected = "true"]
+QFrame#emptyView
+{
+    border: 2px solid $RED;
+    background: #FF8833;
+}
+
+/*
+medViewContainerSplitter
+{
+    border: 5px solid $GREEN;
+    background: $RED;
+}*/
+
+
+medViewSplitableContainer [selected = "true"]
 {
     border: $CONTAINER_SELECTED_BORDER;
 }
@@ -1199,12 +1213,6 @@ QWidget#containerToolBar QPushButton
 QWidget#containerToolBar QPushButton::hover
 {
     background: $VIEW_CONTAINER_BUTTON_HOVER_BACKGOUND;
-}
-
-medViewContainerSplitter
-{
-    border: 1px solid $RED;
-    background: $GREEN;
 }
 
 /*******************************************************************************

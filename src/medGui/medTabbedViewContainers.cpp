@@ -20,7 +20,7 @@
 #include <medCustomViewContainer.h>
 #include <medMultiViewContainer.h>
 #include <medSingleViewContainer.h>
-#include <medViewContainer2.h>
+#include <medViewSplitableContainer.h>
 #include <medViewContainerSplitter.h>
 
 class medTabbedViewContainersPrivate
@@ -143,7 +143,7 @@ void medTabbedViewContainers::addContainer(const QString &name)
 //    emit focused(NULL);
 
     medViewContainerSplitter *spliter  = new medViewContainerSplitter(this);
-    spliter->addViewContainer(new medViewContainer2);
+    spliter->addViewContainer(new medViewSplitableContainer);
     this->addTab(spliter, name);
 }
 
@@ -169,7 +169,7 @@ void medTabbedViewContainers::insertContainer(int index, const QString &name)
 
 //    this->insertTab(index,container, name);
     medViewContainerSplitter *spliter  = new medViewContainerSplitter(this);
-    spliter->addViewContainer(new medViewContainer2);
+    spliter->addViewContainer(new medViewSplitableContainer);
     this->insertTab(index, spliter, name);
 }
 

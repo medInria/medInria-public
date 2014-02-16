@@ -17,7 +17,8 @@
 
 #include <medGuiExport.h>
 
-class medViewContainer2;
+class medViewSplitableContainer;
+class medDataIndex;
 
 class medViewContainerSplitterPrivate;
 class MEDGUI_EXPORT medViewContainerSplitter: public QSplitter
@@ -28,10 +29,12 @@ public:
     ~medViewContainerSplitter();
 
 public slots:
-    void addViewContainer(medViewContainer2* container);
-    void insertViewContainer(int index, medViewContainer2* container);
+    void addViewContainer(medViewSplitableContainer* container);
+    void insertViewContainer(int index, medViewSplitableContainer* container);
     void vSplit();
     void hSplit();
+    medViewSplitableContainer* split(Qt::AlignmentFlag alignement = Qt::AlignRight);
+    void split(medDataIndex index, Qt::AlignmentFlag alignement = Qt::AlignRight);
     void checkIfStillDeserveToLive();
 
 private:
