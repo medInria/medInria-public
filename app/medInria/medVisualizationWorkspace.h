@@ -15,12 +15,12 @@
 
 #include <QtCore>
 
-#include <medWorkspace.h>
+#include <medAbstractWorkspace.h>
 
 
 class medVisualizationWorkspacePrivate;
 
-class medVisualizationWorkspace : public medWorkspace
+class medVisualizationWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
 

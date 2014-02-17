@@ -17,7 +17,7 @@
 #endif
 
 #include <medHomepageButton.h>
-#include <medWorkspace.h>
+#include <medAbstractWorkspace.h>
 #include <medToolBoxFactory.h>
 #include <medWorkspaceFactory.h>
 #include <medSettingsManager.h>

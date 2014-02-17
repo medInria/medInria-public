@@ -15,7 +15,6 @@
 
 #include <medViewContainer.h>
 #include <medTabbedViewContainers.h>
-#include <medVisualizationLayoutToolBox.h>
 #include <medSettingsManager.h>
 #include <medToolBoxFactory.h>
 #include <medParameterPoolManagerToolBox.h>
@@ -23,43 +22,13 @@
 class medVisualizationWorkspacePrivate
 {
 public:
-    medVisualizationLayoutToolBox * layoutToolBox;
 
 };
 
-medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medWorkspace(parent), d(new medVisualizationWorkspacePrivate)
+medVisualizationWorkspace::medVisualizationWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medVisualizationWorkspacePrivate)
 {
-    // -- Layout toolbox --
-    d->layoutToolBox = new medVisualizationLayoutToolBox(parent);
-
-    connect (d->layoutToolBox, SIGNAL(modeChanged(const QString&)),
-             this,             SIGNAL(layoutModeChanged(const QString&)));
-    connect (d->layoutToolBox, SIGNAL(presetClicked(int)),
-             this,             SIGNAL(layoutPresetClicked(int)));
-    connect (d->layoutToolBox, SIGNAL(split(int,int)),
-             this,             SIGNAL(layoutSplit(int,int)));
-
-    connect(this,SIGNAL(setLayoutTab(const QString &)), d->layoutToolBox, SLOT(setTab(const QString &)));
-
-    this->addToolBox( d->layoutToolBox );
-
-    // -- View toolboxes --
-    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
-    if(toolboxNames.contains("medViewPropertiesToolBox"))
-    {
-        // we want the medViewPropertiesToolBox to be the first "view" toolbox
-        toolboxNames.move(toolboxNames.indexOf("medViewPropertiesToolBox"),0);
-    }
-    foreach(QString toolbox, toolboxNames)
-    {
-       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
-    }
-
     medParameterPoolManagerToolBox *poolTb = new medParameterPoolManagerToolBox;
-    addToolBox(poolTb);
-
-    connect ( this, SIGNAL(layoutModeChanged(const QString &)),
-              stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));
+    this->addWorkspaceToolBox(poolTb);
 }
 
 void medVisualizationWorkspace::setupViewContainerStack()
@@ -67,7 +36,7 @@ void medVisualizationWorkspace::setupViewContainerStack()
     if (!stackedViewContainers()->count())
     {
         const QString description = this->description();
-        QString createdTab = addDefaultTypeContainer(description);
+        this->stackedViewContainers()->addContainerInTab(description);
     }
     this->stackedViewContainers()->unlockTabs();
 }

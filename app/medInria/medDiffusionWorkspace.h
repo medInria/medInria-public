@@ -16,16 +16,18 @@
 
 #include <QtCore>
 
-#include <medWorkspace.h>
+#include <medAbstractWorkspace.h>
 
 #include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkAbstractProcess.h>
 #include <medDiffusionSelectorToolBox.h>
 
 class dtkAbstractView;
+class medAbstractData;
+class medTabbedViewContainers;
 class medDiffusionWorkspacePrivate;
 
-class medDiffusionWorkspace : public medWorkspace
+class medDiffusionWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
 

@@ -21,38 +21,29 @@
 #include <medTabbedViewContainers.h>
 #include <medViewContainer.h>
 #include <medWorkspaceFactory.h>
-#include <medVisualizationLayoutToolBox.h>
 #include <medToolBoxFactory.h>
 
 #include <dtkLog/dtkLog.h>
 
 #include <stdexcept>
 
-// /////////////////////////////////////////////////////////////////
-// WorkspacePrivate
-// /////////////////////////////////////////////////////////////////
+
 class medSegmentationWorkspacePrivate
 {
 public:
     // Give values to items without a constructor.
     medSegmentationWorkspacePrivate() :
-      layoutToolBox(NULL), segmentationToolBox(NULL)
+       segmentationToolBox(NULL)
     {}
-
-    medVisualizationLayoutToolBox *layoutToolBox;
 
     medSegmentationSelectorToolBox *segmentationToolBox;
 };
-
-// /////////////////////////////////////////////////////////////////
-// medSegmentationWorkspace
-// /////////////////////////////////////////////////////////////////
 
 static QString msegWorkspaceSegmentationDescription = "Segmentation";
 
 
 medSegmentationWorkspace::medSegmentationWorkspace(QWidget * parent /* = NULL */ ) :
-medWorkspace(parent), d(new medSegmentationWorkspacePrivate)
+medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 {
     d->segmentationToolBox = new medSegmentationSelectorToolBox(this, parent );
 
@@ -63,38 +54,21 @@ medWorkspace(parent), d(new medSegmentationWorkspacePrivate)
     if ( !parent)
         throw (std::runtime_error ("Must have a parent widget"));
 
-    // -- Layout toolbox --
-    d->layoutToolBox = new medVisualizationLayoutToolBox(parent);
 
-    connect (d->layoutToolBox, SIGNAL(modeChanged(const QString&)),
-        this,             SIGNAL(layoutModeChanged(const QString&)));
-    connect (d->layoutToolBox, SIGNAL(presetClicked(int)),
-        this,             SIGNAL(layoutPresetClicked(int)));
-    connect (d->layoutToolBox, SIGNAL(split(int,int)),
-        this,             SIGNAL(layoutSplit(int,int)));
+        //TODO make it fit with new API - RDE
+//    // -- View toolboxes --
+//    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+//    if(toolboxNames.contains("medViewPropertiesToolBox"))
+//    {
+//        // we want the medViewPropertiesToolBox to be the first "view" toolbox
+//        toolboxNames.move(toolboxNames.indexOf("medViewPropertiesToolBox"),0);
+//    }
+//    foreach(QString toolbox, toolboxNames)
+//    {
+//       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+//    }
 
-    connect(this,SIGNAL(setLayoutTab(const QString &)), d->layoutToolBox, SLOT(setTab(const QString &)));
-
-    connect ( this, SIGNAL(layoutModeChanged(const QString &)),
-        stackedViewContainers(), SLOT(changeCurrentContainerType(const QString &)));
-    connect ( stackedViewContainers(), SIGNAL(currentChanged(const QString &)),
-        this, SLOT(connectToolboxesToCurrentContainer(const QString &)));
-
-    this->addToolBox( d->layoutToolBox );
-
-    // -- View toolboxes --
-    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
-    if(toolboxNames.contains("medViewPropertiesToolBox"))
-    {
-        // we want the medViewPropertiesToolBox to be the first "view" toolbox
-        toolboxNames.move(toolboxNames.indexOf("medViewPropertiesToolBox"),0);
-    }
-    foreach(QString toolbox, toolboxNames)
-    {
-       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
-    }
-
-    this->addToolBox( d->segmentationToolBox );
+    this->addWorkspaceToolBox(d->segmentationToolBox);
 }
 
 medSegmentationWorkspace::~medSegmentationWorkspace(void)
@@ -118,9 +92,9 @@ void medSegmentationWorkspace::setupViewContainerStack()
     const QString description(this->description());
     if (!stackedViewContainers()->count())
     {
-        QString createdTab = addDefaultTypeContainer(description);
+        this->stackedViewContainers()->addContainerInTab(description);
         //Default container:
-        this->connectToolboxesToCurrentContainer(createdTab);
+//        this->connectToolboxesToCurrentContainer(createdTab);
     }
 
     this->stackedViewContainers()->unlockTabs();
@@ -154,7 +128,7 @@ void medSegmentationWorkspace::buildWorkspace(  )
     if ( !d->segmentationToolBox)
         d->segmentationToolBox = new medSegmentationSelectorToolBox( this, parent );
 
-    this->addToolBox( d->segmentationToolBox );
+    this->addWorkspaceToolBox(d->segmentationToolBox);
 }
 
 medSegmentationSelectorToolBox * medSegmentationWorkspace::segmentationToobox()
@@ -165,10 +139,12 @@ medSegmentationSelectorToolBox * medSegmentationWorkspace::segmentationToobox()
 
 void medSegmentationWorkspace::connectToolboxesToCurrentContainer(const QString &name)
 {
-    connect(stackedViewContainers()->container(name),SIGNAL(viewAdded(medAbstractView*)),
-        this,SLOT(onViewAdded(medAbstractView*)));
-    connect(stackedViewContainers()->container(name),SIGNAL(viewRemoved(medAbstractView*)),
-        this,SLOT(onViewRemoved(medAbstractView*)));
+    //TODO make it fit with new API - RDE
+
+//    connect(stackedViewContainers()->container(name),SIGNAL(viewAdded(medAbstractView*)),
+//        this,SLOT(onViewAdded(medAbstractView*)));
+//    connect(stackedViewContainers()->container(name),SIGNAL(viewRemoved(medAbstractView*)),
+//        this,SLOT(onViewRemoved(medAbstractView*)));
 }
 
 QString medSegmentationWorkspace::s_identifier()

@@ -16,12 +16,12 @@
 
 #include <QtCore>
 
-#include <medWorkspace.h>
+#include <medAbstractWorkspace.h>
 
 class medTabbedViewContainers;
 class medRegistrationWorkspacePrivate;
 
-class medRegistrationWorkspace : public medWorkspace
+class medRegistrationWorkspace : public medAbstractWorkspace
 {
     Q_OBJECT
 

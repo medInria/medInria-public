@@ -14,7 +14,7 @@
 #include <medWorkspaceFactory.h>
 
 #include <medToolBoxFactory.h>
-#include <medWorkspace.h>
+#include <medAbstractWorkspace.h>
 #include <medWorkspaceFactory.h>
 
 class medWorkspaceFactoryPrivate
@@ -58,12 +58,12 @@ QList<QString> medWorkspaceFactory::workspaces(void)
     return d->creators.keys();
 }
 
-medWorkspace *medWorkspaceFactory::createWorkspace(QString type,QWidget* parent)
+medAbstractWorkspace *medWorkspaceFactory::createWorkspace(QString type,QWidget* parent)
 {
     if(!d->creators.contains(type))
         return NULL;
 
-    medWorkspace * workspace = d->creators[type]->creator(parent);
+    medAbstractWorkspace * workspace = d->creators[type]->creator(parent);
 
     return workspace;
 }

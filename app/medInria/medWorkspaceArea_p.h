@@ -20,7 +20,7 @@ PURPOSE.
 class medToolBoxContainer;
 class medDatabaseNavigator;
 class medTabbedViewContainers;
-class medWorkspace;
+class medAbstractWorkspace;
 class medClutEditor;
 class QStackedWidget;
 class QSplitter;
@@ -31,6 +31,7 @@ class medDatabaseDataSource;
 class medFileSystemDataSource;
 class medAbstractDataSource;
 class QTabWidget;
+class medToolBox;
 
 
 class medWorkspaceAreaPrivate
@@ -49,15 +50,12 @@ public:
     QStackedWidget *stack;
     QSplitter * splitter;
     QMutex mutex;
-    QHash<QString,medWorkspace*> workspaces;
-
-    void restoreSplitterSize(Qt::Orientation orientation);
-    void saveSplitterSize(medWorkspace::LayoutType layout);
+    QHash<QString,medAbstractWorkspace*> workspaces;
+    medToolBox *containerToolBox;
 
 public:
     QString currentWorkspaceName;
-    medWorkspace *currentWorkspace;
-    medWorkspace::LayoutType currentLayout;
+    medAbstractWorkspace *currentWorkspace;
 };
 
 

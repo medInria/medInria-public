@@ -23,7 +23,6 @@
 #include <medDataManager.h>
 
 #include <medViewContainer.h>
-#include <medSingleViewContainer.h>
 #include <medTabbedViewContainers.h>
 #include <medToolBox.h>
 #include <medToolBoxFactory.h>
@@ -47,7 +46,7 @@ public:
     bool processRunning;
 };
 
-medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(parent), d(new medDiffusionWorkspacePrivate)
+medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medDiffusionWorkspacePrivate)
 {
     d->diffusionContainer = 0;
 
@@ -91,7 +90,7 @@ medDiffusionWorkspace::medDiffusionWorkspace(QWidget *parent) : medWorkspace(par
     }
     foreach(QString toolbox, toolboxNames)
     {
-       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+       this->addWorkspaceToolBox(medToolBoxFactory::instance()->createToolBox(toolbox, parent));
     }
 
     connect(d->diffusionEstimationToolBox, SIGNAL(processRequested(QString, QString)), this, SLOT(runProcess(QString, QString)));
@@ -128,7 +127,7 @@ void medDiffusionWorkspace::setupViewContainerStack()
     //the stack has been instantiated in constructor
     if ( ! this->stackedViewContainers()->count())
     {
-        medSingleViewContainer *singleViewContainer = new medSingleViewContainer ();
+        medViewContainer *viewContainer = new medViewContainer();
 
         //ownership of singleViewContainer is transferred to the stackedWidget.
         this->stackedViewContainers()->addContainer (identifier(), singleViewContainer);

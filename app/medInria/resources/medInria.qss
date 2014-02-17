@@ -1174,27 +1174,8 @@ medViewContainer [selected = "true"]
     border: $CONTAINER_SELECTED_BORDER;
 }
 
-medViewSplitableContainer
-{
-    border: 2px solid $GREEN;
-    background: $RED;
-}
 
-QFrame#emptyView
-{
-    border: 2px solid $RED;
-    background: #FF8833;
-}
-
-/*
-medViewContainerSplitter
-{
-    border: 5px solid $GREEN;
-    background: $RED;
-}*/
-
-
-medViewSplitableContainer [selected = "true"]
+medViewContainer [selected = "true"]
 {
     border: $CONTAINER_SELECTED_BORDER;
 }

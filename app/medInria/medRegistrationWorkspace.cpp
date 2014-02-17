@@ -19,8 +19,6 @@
 
 #include <medRegistrationSelectorToolBox.h>
 #include <medViewContainer.h>
-#include <medSingleViewContainer.h>
-#include <medCompareViewContainer.h>
 #include <medTabbedViewContainers.h>
 #include <medRegistrationSelectorToolBox.h>
 
@@ -32,7 +30,7 @@ public:
     medRegistrationSelectorToolBox * registrationToolBox;
 };
 
-medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medWorkspace(parent), d(new medRegistrationWorkspacePrivate)
+medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstractWorkspace(parent), d(new medRegistrationWorkspacePrivate)
 {
     // -- View toolboxes --
 
@@ -44,7 +42,7 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medWorkspa
     }
     foreach(QString toolbox, toolboxNames)
     {
-       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+        this->addWorkspaceToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
     }
 
     // -- Registration toolbox --
@@ -56,9 +54,7 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medWorkspa
     connect(d->registrationToolBox, SIGNAL(removeToolBox(medToolBox *)),
             this, SLOT(removeToolBox(medToolBox *)));
 
-    this->addToolBox( d->registrationToolBox );
-
-    this->setLayoutType(medWorkspace::LeftDbRightTb);
+    this->addWorkspaceToolBox(d->registrationToolBox);
 }
 
 medRegistrationWorkspace::~medRegistrationWorkspace(void)
@@ -78,11 +74,13 @@ QString medRegistrationWorkspace::description() const {
 
 void medRegistrationWorkspace::setupViewContainerStack()
 {
+    //TODO make it fit with new container - RDE
+
     //the stack has been instantiated in constructor
     if (!this->stackedViewContainers()->count())
     {
         //create the fuse container
-        medSingleViewContainer *fuseContainer = new medSingleViewContainer(
+        medViewContainer *fuseContainer = new medViewContainer(
                 this->stackedViewContainers());
         if (medAbstractView* view = medViewFactory::instance()->createView("medVtkView"))
         {
@@ -93,7 +91,7 @@ void medRegistrationWorkspace::setupViewContainerStack()
         }
 
         //create the compare container
-        medCompareViewContainer * compareViewContainer = new medCompareViewContainer(
+        medViewContainer * compareViewContainer = new medViewContainer(
                 this->stackedViewContainers());
         connect(compareViewContainer,SIGNAL(droppedFixed(medDataIndex)),
                 d->registrationToolBox,SLOT(onFixedImageDropped(medDataIndex)));
@@ -104,10 +102,10 @@ void medRegistrationWorkspace::setupViewContainerStack()
         connect(fuseContainer,SIGNAL(viewRemoved(medAbstractView*)),
                 d->registrationToolBox,SLOT(onViewRemoved(medAbstractView*)));
 
-        this->stackedViewContainers()->addContainer("Compare");
-        this->stackedViewContainers()->addContainer("Fuse");
+        this->stackedViewContainers()->addContainerInTab("Compare");
+        this->stackedViewContainers()->addContainerInTab("Fuse");
         this->stackedViewContainers()->lockTabs();
-        setCurrentViewContainer("Compare");
+        this->stackedViewContainers()->setCurrentIndex(0);
     }
 }
 
@@ -116,7 +114,8 @@ void medRegistrationWorkspace::patientChanged(int patientId)
     d->registrationToolBox->clear();
 }
 
-bool medRegistrationWorkspace::isUsable(){
+bool medRegistrationWorkspace::isUsable()
+{
     medToolBoxFactory * tbFactory = medToolBoxFactory::instance();
     return (tbFactory->toolBoxesFromCategory("registration").size()!=0); 
 }

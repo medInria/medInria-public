@@ -23,7 +23,7 @@ class medAbstractViewCoordinates;
 class medDataIndex;
 class medProgressionStack;
 class medSegmentationSelectorToolBoxPrivate;
-class medWorkspace;
+class medAbstractWorkspace;
 class medViewEventFilter;
 
 //! Segmentation toolbox
@@ -34,7 +34,7 @@ class MEDGUI_EXPORT medSegmentationSelectorToolBox : public medToolBox
 public:
     struct MaskPixelValues { enum E { Unset = 0, Foreground = 1, Background = 2 };  };
 
-     medSegmentationSelectorToolBox(medWorkspace * workspace, QWidget *parent = 0);
+     medSegmentationSelectorToolBox(medAbstractWorkspace * workspace, QWidget *parent = 0);
     ~medSegmentationSelectorToolBox();
 
     //! Get/Set the currently running process.

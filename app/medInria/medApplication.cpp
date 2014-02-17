@@ -19,8 +19,30 @@
 
 #include <dtkCore/dtkGlobal.h>
 #include <dtkLog/dtkLog.h>
+#include <dtkCore/dtkAbstractDataFactory.h>
+#include <dtkCore/dtkAbstractData.h>
+
 #include <medPluginManager.h>
 #include <medStyleSheetParser.h>
+#include <medDbControllerFactory.h>
+#include <medWorkspaceFactory.h>
+#include <medAbstractWorkspace.h>
+#include <medFilteringWorkspace.h>
+#include <medDiffusionWorkspace.h>
+#include <medRegistrationWorkspace.h>
+#include <medVisualizationWorkspace.h>
+#include <medSegmentationWorkspace.h>
+#include <medSettingsWidgetFactory.h>
+#include <medSeedPointAnnotationData.h>
+#include <medDatabaseController.h>
+#include <medDatabaseNonPersistentController.h>
+#include <medSystemSettingsWidget.h>
+#include <medStartupSettingsWidget.h>
+#include <medDatabaseSettingsWidget.h>
+#include <medAbstractDataFactory.h>
+#include <medSettingsWidget.h>
+#include <medInteractionSettingsWidget.h>
+
 
 class medApplicationPrivate
 {
@@ -126,6 +148,12 @@ medApplication::medApplication(int & argc, char**argv) :
 
     QObject::connect(this,SIGNAL(messageReceived(const QString&)),
                      this,SLOT(redirectMessageToLog(QString)));
+
+    this->registerToFactories();
+
+    //  Setting up database connection
+    if ( !medDatabaseController::instance()->createConnection())
+        qDebug() << "Unable to create a connection to the database";
 }
 
 medApplication::~medApplication(void)
@@ -199,4 +227,61 @@ void medApplication::redirectErrorMessageToLog(const QString &message)
 void medApplication::redirectMessageToSplash(const QString &message)
 {
     emit showMessage(message,d->msgAlignment,d->msgColor);
+}
+
+
+//TODO see next TODO - RDE
+// Simple new function used for factories.
+namespace  {
+    template< class T >
+    dtkAbstractData * dtkAbstractDataCreateFunc() { return new T; }
+}
+
+void medApplication::registerToFactories()
+{
+    //Register dbController
+    medDbControllerFactory::instance()->registerDbController("DbController", createDbController);
+    medDbControllerFactory::instance()->registerDbController("NonPersistentDbController", createNonPersistentDbController);
+
+    // Registering different workspaces
+    medWorkspaceFactory * viewerWSpaceFactory = medWorkspaceFactory::instance();
+    viewerWSpaceFactory->registerWorkspace<medVisualizationWorkspace>("Visualization",
+                                                                     tr("Visualization"),
+                                                                     tr("Visualize images, Mesh and other data types"));
+
+    viewerWSpaceFactory->registerWorkspace<medRegistrationWorkspace>("Registration",
+                                                                     tr("Registration"),
+                                                                     tr("Register a moving image to a fixed image"));
+
+    viewerWSpaceFactory->registerWorkspace<medDiffusionWorkspace>("Diffusion",
+                                                                  tr("Diffusion"),
+                                                                  tr("Diffusion Tensor Images"));
+
+    viewerWSpaceFactory->registerWorkspace<medFilteringWorkspace>("Filtering",
+                                                                  tr("Filtering"),
+                                                                  tr("Filter workspace"));
+    //TODO why it is noty like for the other workspace ? - RDE
+    medSegmentationWorkspace::registerWithViewerWorkspaceFactory();
+
+    //Register settingsWidgets
+    medSettingsWidgetFactory * settingsWidgetFactory = medSettingsWidgetFactory::instance();
+    settingsWidgetFactory->registerSettingsWidget<medSystemSettingsWidget>("System",
+                                                                           tr("System"),
+                                                                           tr("System Settings"));
+
+    settingsWidgetFactory->registerSettingsWidget<medStartupSettingsWidget>("Startup",
+                                                                            tr("Start Up"),
+                                                                            tr("Start up time settings"));
+
+    settingsWidgetFactory->registerSettingsWidget<medDatabaseSettingsWidget>("Database",
+                                                                             tr("Database"),
+                                                                             tr("Database related settings"));
+
+    settingsWidgetFactory->registerSettingsWidget<medInteractionSettingsWidget>("Interaction",
+                                                                                tr("Interaction"),
+                                                                                tr("View Interaction settings"));
+    //Register annotations
+    //TODO there is obviously sometjing that have to be done here. - RDE
+    dtkAbstractDataFactory * datafactory = medAbstractDataFactory::instance();
+    datafactory->registerDataType(medSeedPointAnnotationData::s_identifier(), dtkAbstractDataCreateFunc<medSeedPointAnnotationData> );
 }

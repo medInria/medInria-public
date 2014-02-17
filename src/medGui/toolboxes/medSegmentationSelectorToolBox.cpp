@@ -13,15 +13,15 @@
 
 #include <medSegmentationSelectorToolBox.h>
 
-#include <medAbstractDataFactory.h>
-#include <medAbstractData.h>
+
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkCore/dtkAbstractProcess.h>
-#include <medAbstractViewInteractor.h>
 #include <dtkLog/dtkLog.h>
 
 #include <medAbstractImageData.h>
 #include <medAbstractImageView.h>
+#include <medAbstractDataFactory.h>
+#include <medAbstractData.h>
 #include <medDataManager.h>
 #include <medJobManager.h>
 #include <medMessageController.h>
@@ -32,8 +32,10 @@
 #include <medToolBoxTab.h>
 #include <medSegmentationAbstractToolBox.h>
 #include <medViewManager.h>
-#include <medWorkspace.h>
+#include <medAbstractWorkspace.h>
 #include <medViewEventFilter.h>
+#include <medAbstractViewInteractor.h>
+#include <medViewContainer.h>
 
 #include <QtGui>
 
@@ -53,7 +55,7 @@ public:
     QBoxLayout *algorithmParameterLayout;
     QComboBox *toolBoxes;
     medSegmentationAbstractToolBox * customToolBox;
-    medWorkspace * workspace;
+    medAbstractWorkspace * workspace;
 
     dtkSmartPointer<dtkAbstractProcess> process;
 
@@ -67,7 +69,7 @@ public:
 
 };
 
-medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medWorkspace * workspace, QWidget *parent) : medToolBox(parent), d(new medSegmentationSelectorToolBoxPrivate)
+medSegmentationSelectorToolBox::medSegmentationSelectorToolBox( medAbstractWorkspace * workspace, QWidget *parent) : medToolBox(parent), d(new medSegmentationSelectorToolBoxPrivate)
 {
     d->workspace = workspace;
     QWidget *displayWidget = new QWidget(this);
@@ -292,20 +294,24 @@ QString medSegmentationSelectorToolBox::localizedNameForAlgorithm( const QString
 
 void medSegmentationSelectorToolBox::addViewEventFilter( medViewEventFilter * filter )
 {
-    QList< medAbstractView *> views = d->workspace->currentViewContainer()->views();
-    foreach( medAbstractView * view, views ) {
-        medAbstractImageView * mview = qobject_cast<medAbstractImageView *>(view);
-        filter->installOnView(mview);
-    }
+    //make it fit with new containers - RDE
+//    QList< medAbstractView *> views = d->workspace->currentViewContainer()->views();
+//    foreach( medAbstractView * view, views )
+//    {
+//        medAbstractImageView * mview = qobject_cast<medAbstractImageView *>(view);
+//        filter->installOnView(mview);
+//    }
 }
 
 void medSegmentationSelectorToolBox::removeViewEventFilter( medViewEventFilter * filter )
 {
-    QList< medAbstractView *> views = d->workspace->currentViewContainer()->views();
-    foreach( medAbstractView * view, views ) {
-        medAbstractImageView * mview = qobject_cast<medAbstractImageView *>(view);
-        filter->removeFromView(mview);
-    }
+    //make it fit with new containers - RDE
+//    QList< medAbstractView *> views = d->workspace->currentViewContainer()->views();
+//    foreach( medAbstractView * view, views )
+//    {
+//        medAbstractImageView * mview = qobject_cast<medAbstractImageView *>(view);
+//        filter->removeFromView(mview);
+//    }
 }
 
 void medSegmentationSelectorToolBox::update( medAbstractView *view )
