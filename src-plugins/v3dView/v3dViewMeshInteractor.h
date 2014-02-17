@@ -43,6 +43,7 @@ public:
     static bool registered();
 
     virtual void setData(dtkAbstractData * data);
+    virtual void removeData(medAbstractData *data);
     virtual void setView(dtkAbstractView * view);
 
     virtual void enable();
@@ -84,10 +85,30 @@ public slots:
     virtual void setVisible(dtkAbstractData * data, bool visible);
     virtual bool isVisible(dtkAbstractData * data) const;
 
+
+
+    void setEdgeVisibility(dtkAbstractData * data, bool visible);
+    bool edgeVisibility(dtkAbstractData * data) const;
+
+    void setColor(dtkAbstractData * data, QColor color);
+    QColor color(dtkAbstractData * data) const;
+
+    void setRenderingType(dtkAbstractData * data, const QString & type);
+    QString renderingType(dtkAbstractData * data) const;
+
+    void setAttribute(dtkAbstractData * data, const QString & attribute);
+    QString attribute(dtkAbstractData * data) const;
+
+    QStringList getAllAttributes(dtkAbstractData * data) const;
+
+    void setLut(dtkAbstractData * data, const QString & lutName);
+    QString lut(dtkAbstractData * data) const;
+
 protected:
     void updatePipeline (unsigned int meshLayer = 0);
-    void changeBounds ( vtkPointSet* pointSet);
     void setLut(int meshLayer, vtkLookupTable * lut);
+    int getLayer(dtkAbstractData * data) const;
+    void setupParameters(dtkAbstractData *data);
 
 private:
     v3dViewMeshInteractorPrivate * d;

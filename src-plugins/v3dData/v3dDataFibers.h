@@ -14,12 +14,13 @@
 #pragma once
 
 #include <dtkCore/dtkAbstractData.h>
+#include <medAbstractData.h>
 
 #include "v3dDataPluginExport.h"
 
 class v3dDataFibersPrivate;
 
-class V3DDATAPLUGIN_EXPORT v3dDataFibers : public dtkAbstractData
+class V3DDATAPLUGIN_EXPORT v3dDataFibers : public medAbstractData
 {
     Q_OBJECT
 

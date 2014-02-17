@@ -34,7 +34,6 @@
 #include <vtkSmartPointer.h>
 #include <vtkBoundingBox.h>
 #include <vtkPolyDataManager.h>
-#include <medVtkView.h>
 #include <vtkImageFromBoundsSource.h>
 #include <vtkImageData.h>
 #include <vtkImageActor.h>
@@ -43,6 +42,11 @@
 #include <vtkMetaDataSet.h>
 #include <vtkMetaDataSetSequence.h>
 #include <vtkDataArrayCollection.h>
+
+#include <medVtkView.h>
+#include <medParameter.h>
+#include <medAbstractData.h>
+
 
 #include <vector>
 
@@ -124,16 +128,71 @@ void v3dViewMeshInteractor::setData(dtkAbstractData *data)
         vtkMetaDataSet * mesh = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
         vtkPointSet * pointSet = vtkPointSet::SafeDownCast (mesh->GetDataSet());
 
-        if(!d->view->hasImage())
-            changeBounds(pointSet);
+        if(d->view->layersCount() == 0)
+            d->view->changeBounds(pointSet->GetBounds());
 
         d->dataList.append(mesh);
         d->lutList.append(LutPair(NULL, "Default"));
         d->attributeList.append(NULL);
         updatePipeline(d->dataList.size()-1);
+
+        setupParameters(data);
     }
 }
 
+void v3dViewMeshInteractor::setupParameters(dtkAbstractData *data)
+{
+    medListParameter *attributesParam = new medListParameter("Attributes", data);
+    attributesParam->setValues(QStringList("Solid"));
+
+    medListParameter *LUTParam = new medListParameter("LUT", data);
+    LUTParam->setValues(QStringList("Default"));
+
+    medBooleanParameter *edgeVisibleParam = new medBooleanParameter("Edge Visible", data);
+
+    medColorListParameter *colorParam = new medColorListParameter("Color", data);
+    QStringList colors;
+
+    colors << "#000000";
+    colors << "#FFFFFF";
+    colors << "#808080";
+    colors << "#800000";
+    colors << "#804040";
+    colors << "#FF8080";
+    colors << "#FF0000";
+    colors << "#FFFF80";
+    colors << "#FFFF00";
+    colors << "#FF8040";
+    colors << "#FF8000";
+    colors << "#80FF80";
+    colors << "#80FF00";
+    colors << "#00FF00";
+    colors << "#80FFFF";
+    colors << "#00FFFF";
+    colors << "#004080";
+    colors << "#0000FF";
+    colors << "#0080FF";
+    colors << "#0080C0";
+
+    colorParam->setValues(colors);
+
+    medListParameter *renderingParam = new medListParameter("Rendering", data);
+    QStringList renderings = QStringList() << "WireFrame" << "Surface" << "Points";
+    renderingParam->setValues(renderings);
+
+    connect(attributesParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setAttribute(dtkAbstractData*,QString)));
+    connect(LUTParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setLut(dtkAbstractData*,QString)));
+    connect(edgeVisibleParam, SIGNAL(valueChanged(dtkAbstractData*,bool)), this, SLOT(setEdgeVisibility(dtkAbstractData*,bool)));
+    connect(colorParam, SIGNAL(valueChanged(dtkAbstractData*,QColor)), this, SLOT(setColor(dtkAbstractData*,QColor)));
+    connect(renderingParam, SIGNAL(valueChanged(dtkAbstractData*,QString)), this, SLOT(setRenderingType(dtkAbstractData*,QString)));
+
+    parameters.insert(data, attributesParam);
+    parameters.insert(data, LUTParam);
+    parameters.insert(data, edgeVisibleParam);
+    parameters.insert(data, colorParam);
+    parameters.insert(data, renderingParam);
+
+}
 
 void v3dViewMeshInteractor::setView(dtkAbstractView *view)
 {
@@ -144,7 +203,6 @@ void v3dViewMeshInteractor::setView(dtkAbstractView *view)
 
 void v3dViewMeshInteractor::enable()
 {
-    dtkWarn() << "enabling v3dViewMeshInteractor";
     if (this->enabled())
         return;
     updatePipeline ();
@@ -168,8 +226,9 @@ void v3dViewMeshInteractor::disable()
             }
         }
 
-        if(!d->view->hasImage())
-            d->view->view2d()->RemoveLayer(0);
+        //TODO GPR
+        /*if(!d->view->hasImage())
+            d->view->view2d()->RemoveLayer(0);*/
 
         // MAYBE TODO d->actor2dList[d->currentLayer]->Delete();
         // TODO        d->view->view3D ()->RemoveDataset ();
@@ -397,9 +456,16 @@ double v3dViewMeshInteractor::opacity(dtkAbstractData * /*data*/) const
     return 100;
 }
 
-void v3dViewMeshInteractor::setVisible(dtkAbstractData * /*data*/, bool /*visible*/)
+void v3dViewMeshInteractor::setVisible(dtkAbstractData * data, bool visible)
 {
-    //TODO
+    if ( ! data->identifier().startsWith("vtkDataMesh"))
+        return;
+    vtkMetaDataSet * dataset = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
+    for(int i = 0; i < d->dataList.size(); i++) {
+        if (dataset == d->dataList.at(i)) {
+            setVisibility(i, visible);
+        }
+    }
 }
 
 bool v3dViewMeshInteractor::isVisible(dtkAbstractData * /*data*/) const
@@ -426,66 +492,6 @@ void v3dViewMeshInteractor::updatePipeline (unsigned int meshLayer)
         }
     }
     d->view->view3d()->ResetCamera();
-}
-
-
-void v3dViewMeshInteractor::changeBounds (vtkPointSet* pointSet)
-{
-    double bounds[6];
-    bool isImageOutBounded = false;
-    pointSet->GetBounds(bounds);
-    if(!d->view->dataInList(0) )
-    {
-        for (int i=0; i<6; i++)
-        {
-            d->imageBounds[i]=bounds[i];
-        }
-        isImageOutBounded = true;
-    }
-    else
-    {
-        for (int i=0; i<6; i=i+2)
-        {
-            if (bounds[i] < d->imageBounds[i])
-            {
-                d->imageBounds[i]=bounds[i];
-                isImageOutBounded=true;
-            }
-        }
-        for (int i=1; i<6; i=i+2)
-        {
-            if (bounds[i] > d->imageBounds[i])
-            {
-                d->imageBounds[i]=bounds[i];
-                isImageOutBounded=true;
-            }
-        }
-    }
-
-    if(isImageOutBounded)
-    {
-        vtkImageFromBoundsSource* imagegenerator = vtkImageFromBoundsSource::New();
-        unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
-        imagegenerator->SetOutputImageSize(imSize);
-        //        vtkInformationDoubleVectorKey * origin = pointSet->ORIGIN();
-        //        double *originDouble= origin->Get(pointSet->GetInformation() );
-        //        imagegenerator->SetOutputImageOrigin(originDouble);
-        imagegenerator->SetOutputImageBounds(d->imageBounds);
-        vtkImageData * image = imagegenerator->GetOutput();
-
-        if(d->view->dataInList(0))
-        {
-            //d->view->view2d()->RemoveDataSet();
-            d->view->view2d()->RemoveLayer(0);
-        }
-
-        d->view->view2d()->SetInput(image, 0);
-        vtkImageActor *actor = d->view->view2d()->GetImageActor(0);
-        actor->SetOpacity(0.0);
-        isImageOutBounded=false;
-        imagegenerator->Delete();
-        d->view->view2d()->ResetCamera();
-    }
 }
 
 
@@ -523,6 +529,100 @@ void v3dViewMeshInteractor::setLut(int meshLayer, vtkLookupTable * lut)
     mapper3d->SetLookupTable(lut);
     mapper3d->UseLookupTableScalarRangeOn();
 }
+
+
+void v3dViewMeshInteractor::setEdgeVisibility(dtkAbstractData * data, bool visible)
+{
+    setEdgeVisibility(getLayer(data), visible);
+}
+
+bool v3dViewMeshInteractor::edgeVisibility(dtkAbstractData * data) const
+{
+    return edgeVisibility(getLayer(data));
+}
+
+
+void v3dViewMeshInteractor::setColor(dtkAbstractData * data, QColor color)
+{
+    setColor(getLayer(data), color);
+}
+
+QColor v3dViewMeshInteractor::color(dtkAbstractData * data) const
+{
+    return color(getLayer(data));
+}
+
+
+void v3dViewMeshInteractor::setRenderingType(dtkAbstractData * data, const QString & type)
+{
+    setRenderingType(getLayer(data), type);
+}
+
+QString v3dViewMeshInteractor::renderingType(dtkAbstractData * data) const
+{
+    return renderingType(getLayer(data));
+}
+
+
+void v3dViewMeshInteractor::setAttribute(dtkAbstractData * data, const QString & attribute)
+{
+    setAttribute(getLayer(data), attribute);
+}
+
+QString v3dViewMeshInteractor::attribute(dtkAbstractData * data) const
+{
+    return attribute(getLayer(data));
+}
+
+
+QStringList v3dViewMeshInteractor::getAllAttributes(dtkAbstractData * data) const
+{
+    return getAllAttributes(getLayer(data));
+}
+
+
+void v3dViewMeshInteractor::setLut(dtkAbstractData * data, const QString & lutName)
+{
+    setLut(getLayer(data), lutName);
+}
+
+QString v3dViewMeshInteractor::lut(dtkAbstractData * data) const
+{
+    return lut(getLayer(data));
+}
+
+int v3dViewMeshInteractor::getLayer(dtkAbstractData * data) const
+{
+    if ( ! data->identifier().startsWith("vtkDataMesh"))
+        return -1;
+
+    vtkMetaDataSet * dataset = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
+    for(int i = 0; i < d->dataList.size(); i++)
+    {
+        if (dataset == d->dataList.at(i))
+            return i;
+    }
+
+    return -1;
+}
+
+void v3dViewMeshInteractor::removeData(medAbstractData *data)
+{
+    vtkMetaDataSet * dataset = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
+
+    if(dataset)
+    {
+        if(vtkPointSet * pointSet = vtkPointSet::SafeDownCast (dataset->GetDataSet()))
+        {
+            d->view->view2d()->RemoveDataSet(pointSet);
+            d->view->view3d()->RemoveDataSet(pointSet);
+            //d->view->removeLayer(data);
+            d->dataList.removeAll(dataset);
+            d->view->update();
+        }
+    }
+}
+
 
 // /////////////////////////////////////////////////////////////////
 // Type instantiation

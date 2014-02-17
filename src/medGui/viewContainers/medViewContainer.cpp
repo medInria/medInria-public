@@ -17,6 +17,8 @@
 #include <medDataManager.h>
 #include <medViewManager.h>
 #include <medAbstractView.h>
+#include <medAbstractImageView.h>
+#include <medAbstractData.h>
 #include <medDataIndex.h>
 
 #include <QtGui>
@@ -205,6 +207,7 @@ void medViewContainer::setView ( dtkAbstractView *view )
     }
 
     d->view = view;
+    d->view->setParent(this);
 
     if ( d->view )
     {
@@ -425,13 +428,16 @@ bool medViewContainer::open(dtkAbstractData * data)
     if ( data == NULL )
         return false;
 
-    dtkSmartPointer<medAbstractView> view = qobject_cast<medAbstractView*>(this->view());
+    dtkSmartPointer<medAbstractImageView> view = qobject_cast<medAbstractImageView*>(this->view());
+    //TODO: change method prototype to use medAbstractData directly
+    dtkSmartPointer<medAbstractData> medData = qobject_cast<medAbstractData*>(data);
+
     bool newView = view.isNull() || !this->multiLayer();
 
     if( newView)
     {
         //container empty, or multi with no extendable view
-        view = qobject_cast<medAbstractView*>(dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView"));
+        view = qobject_cast<medAbstractImageView*>(dtkAbstractViewFactory::instance()->createSmartPointer("medVtkView"));
         connect (this, SIGNAL(sliceSelected(int)), view, SLOT(setSlider(int)));
     }
 
@@ -444,13 +450,13 @@ bool medViewContainer::open(dtkAbstractData * data)
     // set the data to the view
     if (!this->multiLayer())
     {
-        view->removeOverlay(0);
-        view->setSharedDataPointer(data,0);
+        view->removeLayerAt(0);
+        view->addLayer(medData);
         newView = true;
     }
     else
     {
-        view->setSharedDataPointer(data);
+        view->addLayer(medData);
     }
 
     //only call reset if the view is a new one or with only one layer.
@@ -469,4 +475,38 @@ bool medViewContainer::open(dtkAbstractData * data)
     view->update();
 
     return true;
+}
+
+
+
+void medViewContainer::keyPressEvent(QKeyEvent * event)
+{
+    if( event->key() == Qt::Key_Control)
+    {
+        this->root()->setMultiSelection(true);
+    }
+}
+
+void medViewContainer::keyReleaseEvent(QKeyEvent * event)
+{
+    if(event->matches(QKeySequence::SelectAll))
+    {
+        foreach(medViewContainer* container, this->root()->childContainers())
+        {
+            if(container != this)
+              container->setFocus();
+        }
+    }
+
+  else this->root()->setMultiSelection(false);
+}
+
+void medViewContainer::setMultiSelection(bool enabled)
+{
+    d->multiSelectionEnabled = enabled;
+}
+
+bool medViewContainer::multiSelection()
+{
+    return d->multiSelectionEnabled;
 }

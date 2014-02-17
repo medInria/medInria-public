@@ -16,13 +16,10 @@ public:
     
     static bool registered();
     
-    void setData (dtkAbstractData *data, int layer);
-    
-    dtkAbstractData *layerData(int layer);
-    unsigned int numberOfLayers();
-    
+    void addLayer (medAbstractData *data);
+       
 private:
-    QList < dtkSmartPointer <dtkAbstractData> > layersDataList;
+
 };
 
 dtkAbstractView *createMedVtkView();

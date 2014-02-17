@@ -21,12 +21,17 @@
 
 #include <vtkTensorManager.h>
 #include <vtkStructuredPoints.h>
+#include <vtkImageFromBoundsSource.h>
+#include <vtkPointSet.h>
+#include <vtkImageActor.h>
+#include <vtkImageView2D.h>
 
 #include "medVtkView.h"
 
 #include <itkITKTensorsToVTKTensorsFilter.h>
 #include <itkImage.h>
 #include <itkTensor.h>
+#include <medParameter.h>
 
 typedef itk::Tensor<float, 3>    TensorTypeFloat;
 typedef itk::Image<TensorTypeFloat, 3> TensorImageTypeFloat;
@@ -49,6 +54,11 @@ public:
 
     itk::ITKTensorsToVTKTensorsFilter<TensorImageTypeDouble>::Pointer filterDouble;
     TensorImagePointerDouble      datasetDouble;
+
+    int minorScaling;
+    int majorScalingExponent;
+
+    double imageBounds[6];
 };
 
 v3dViewTensorInteractor::v3dViewTensorInteractor(): medAbstractVtkViewInteractor(), d(new v3dViewTensorInteractorPrivate)
@@ -64,9 +74,16 @@ v3dViewTensorInteractor::v3dViewTensorInteractor(): medAbstractVtkViewInteractor
     d->data = 0;
     d->view = 0;
 
+    d->minorScaling = 1;
+    d->majorScalingExponent = 0;
+
     // set default properties
     d->manager->SetGlyphShapeToLine();
+
+    for (int i=0; i<6; i++)
+        d->imageBounds[i] = 0;
 }
+
 
 v3dViewTensorInteractor::~v3dViewTensorInteractor()
 {
@@ -141,6 +158,17 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
 
             d->manager->Update();
 
+            if(d->view->layersCount() == 0)
+            {
+                int imSize[3];
+                if(d->manager->GetInput())
+                {
+                  d->manager->GetInput()->GetDimensions(imSize);
+                }
+                computeBounds();
+                d->view->changeBounds( d->imageBounds, imSize );
+            }
+
             if (d->view) {
                 d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
                 d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
@@ -175,6 +203,17 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
 
             d->manager->Update();
 
+            if(d->view->layersCount() == 0)
+            {
+                int imSize[3];
+                if(d->manager->GetInput())
+                {
+                  d->manager->GetInput()->GetDimensions(imSize);
+                }
+                computeBounds();
+                d->view->changeBounds( d->imageBounds, imSize );
+            }
+
             if (d->view) {
                 d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
                 d->view->renderer2d()->AddActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
@@ -185,6 +224,94 @@ void v3dViewTensorInteractor::setData(dtkAbstractData *data)
         }
     } else {
         qDebug() << "Unrecognized tensor data type: " << identifier;
+    }
+
+    setupParameters(data);
+
+}
+
+
+void v3dViewTensorInteractor::setupParameters(dtkAbstractData *data)
+{
+    medListParameter *shapeParam = new medListParameter("Shape", data);
+    QStringList shapes;
+    shapes << "Lines" << "Disks" << "Arrows" << "Cubes" << "Cylinders" << "Ellipsoids" << "Superquadrics";
+    shapeParam->setValues(shapes);
+
+    medIntParameter *sampleRateParam = new medIntParameter("Sample Rate", data);
+    sampleRateParam->setMinimum(1);
+    sampleRateParam->setMaximum(10);
+    sampleRateParam->setValue(2);
+
+    medBooleanParameter *flipXParam = new medBooleanParameter("FlipX", data);
+    medBooleanParameter *flipYParam = new medBooleanParameter("FlipY", data);
+    medBooleanParameter *flipZParam = new medBooleanParameter("FlipZ", data);
+
+    medListParameter *colorParam = new medListParameter("Color", data);
+    QStringList colors;
+    colors << "v1" << "v2" << "v3";
+    colorParam->setValues(colors);
+
+    medIntParameter *resolutionParam = new medIntParameter("Resolution", data);
+    resolutionParam->setMinimum(2);
+    resolutionParam->setMaximum(20);
+    resolutionParam->setValue(6);
+
+    medIntParameter *scaleParam = new medIntParameter("Scale", data);
+    scaleParam->setMinimum(1);
+    scaleParam->setMaximum(9);
+    scaleParam->setValue(1);
+
+    medIntParameter *multiplierParam = new medIntParameter("x10^", data);
+    multiplierParam->setMinimum(-10);
+    multiplierParam->setMaximum(10);
+    multiplierParam->setValue(0);
+
+    medBooleanParameter *showsAxialParam = new medBooleanParameter("Show axial", data);
+    medBooleanParameter *showSagitalParam = new medBooleanParameter("Show sagital", data);
+    medBooleanParameter *showCoronalParam = new medBooleanParameter("Show coronal", data);
+    showsAxialParam->setValue(true);
+    showSagitalParam->setValue(true);
+    showCoronalParam->setValue(true);
+
+    connect(shapeParam, SIGNAL(valueChanged(int)), this, SLOT(setGlyphShape(int)));
+    connect(sampleRateParam, SIGNAL(valueChanged(int)), this, SLOT(setSampleRate(int)));
+    connect(flipXParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipX(bool)));
+    connect(flipYParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipY(bool)));
+    connect(flipZParam, SIGNAL(valueChanged(bool)), this, SLOT(setFlipZ(bool)));
+   // connect(colorParam, SIGNAL(), this, SLOT());
+    connect(resolutionParam, SIGNAL(valueChanged(int)), this, SLOT(setGlyphResolution(int)));
+    connect(scaleParam, SIGNAL(valueChanged(int)), this, SLOT(setMinorScaling(int)));
+    connect(multiplierParam, SIGNAL(valueChanged(int)), this, SLOT(setMajorScaling(int)));
+    connect(showsAxialParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowAxial(bool)));
+    connect(showSagitalParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowSagittal(bool)));
+    connect(showCoronalParam, SIGNAL(valueChanged(bool)), this, SLOT(setShowCoronal(bool)));
+
+    parameters.insert(data, shapeParam);
+    parameters.insert(data, sampleRateParam);
+    parameters.insert(data, flipXParam);
+    parameters.insert(data, flipYParam);
+    parameters.insert(data, flipZParam);
+    parameters.insert(data, colorParam);
+    parameters.insert(data, resolutionParam);
+    parameters.insert(data, scaleParam);
+    parameters.insert(data, multiplierParam);
+    parameters.insert(data, showsAxialParam);
+    parameters.insert(data, showSagitalParam);
+    parameters.insert(data, showCoronalParam);
+
+}
+
+void v3dViewTensorInteractor::removeData(medAbstractData *data)
+{
+    if (d->view)
+    {
+        d->view->renderer2d()->RemoveActor (d->manager->GetTensorVisuManagerAxial()->GetActor());
+        d->view->renderer2d()->RemoveActor (d->manager->GetTensorVisuManagerSagittal()->GetActor());
+        d->view->renderer2d()->RemoveActor (d->manager->GetTensorVisuManagerCoronal()->GetActor());
+
+        d->view->removeLayer(data);
+        d->view->update();
     }
 }
 
@@ -256,7 +383,7 @@ bool v3dViewTensorInteractor::isVisible(dtkAbstractData * /*data*/) const
     return true;
 }
 
-void v3dViewTensorInteractor::setGlyphShape(GlyphShapeType glyphShape)
+void v3dViewTensorInteractor::setGlyphShape(int glyphShape)
 {
     switch(glyphShape)
     {
@@ -326,6 +453,25 @@ void v3dViewTensorInteractor::setScale(double scale)
     d->view->update();
 }
 
+void v3dViewTensorInteractor::setMajorScaling(int majorScalingExponent)
+{
+     d->majorScalingExponent = majorScalingExponent;
+     setScale(d->minorScaling, d->majorScalingExponent);
+}
+
+void v3dViewTensorInteractor::setMinorScaling(int minorScaling)
+{
+     d->minorScaling = minorScaling;
+     setScale(d->minorScaling, d->majorScalingExponent);
+}
+
+void v3dViewTensorInteractor::setScale(int minorScale, int majorScaleExponent)
+{
+    double majorScale = pow(10.0, majorScaleExponent);
+    double scale = majorScale * minorScale;
+    setScale(scale);
+}
+
 void v3dViewTensorInteractor::setShowAxial(bool show)
 {
     if(show)
@@ -378,6 +524,42 @@ void v3dViewTensorInteractor::changePosition(const QVector3D& position, bool pro
 {
     d->manager->SetCurrentPosition(position.x(), position.y(), position.z());
     d->view->update();
+}
+
+void v3dViewTensorInteractor::computeBounds()
+{
+    d->manager->GetTensorVisuManagerAxial()->GetActor()->GetBounds(d->imageBounds);
+
+    updateBounds(d->manager->GetTensorVisuManagerSagittal()->GetActor()->GetBounds());
+    updateBounds(d->manager->GetTensorVisuManagerCoronal()->GetActor()->GetBounds());
+
+    // these bounds are used by vtkImageFromBoundsSource to generate a background image in case there is none
+    // vtkImageFromBoundsSource output image size is actually [boundsXMax-boundXMin]...,
+    // so we need to increase bounds by +1 to have the correct image size
+    d->imageBounds[0] = round(d->imageBounds[0]);
+    d->imageBounds[1] = round(d->imageBounds[1])+1;
+    d->imageBounds[2] = round(d->imageBounds[2]);
+    d->imageBounds[3] = round(d->imageBounds[3])+1;
+    d->imageBounds[4] = round(d->imageBounds[4]);
+    d->imageBounds[5] = round(d->imageBounds[5])+1;
+}
+
+void v3dViewTensorInteractor::updateBounds(const double bounds[])
+{
+    for (int i=0; i<6; i=i+2)
+    {
+        if (bounds[i] < d->imageBounds[i])
+        {
+            d->imageBounds[i]=bounds[i];
+        }
+    }
+    for (int i=1; i<6; i=i+2)
+    {
+        if (bounds[i] > d->imageBounds[i])
+        {
+            d->imageBounds[i]=bounds[i];
+        }
+    }
 }
 
 // /////////////////////////////////////////////////////////////////

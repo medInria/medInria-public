@@ -16,7 +16,7 @@
 #include <dtkCore/dtkAbstractData.h>
 #include <dtkCore/dtkAbstractView.h>
 
-#include <medAbstractView.h>
+#include <medAbstractImageView.h>
 #include <medAbstractViewCoordinates.h>
 
 #include "v3dViewPluginExport.h"
@@ -41,7 +41,7 @@ class vtkRenderWindowInteractor;
  * be set per layer. In 3D, only VR is supported.
  **/
 
-class V3DVIEWPLUGIN_EXPORT v3dView : public medAbstractView, public medAbstractViewCoordinates
+class V3DVIEWPLUGIN_EXPORT v3dView : public medAbstractImageView, public medAbstractViewCoordinates
 {
     Q_OBJECT
 
@@ -64,30 +64,11 @@ public:
 
     void *view();
 
-    /**
-     * Inputs the data to the vtkImageView2D/3D.
-     * @param layer - specifies at which layer the image is inputed.
-     * Layer N if always shown on top of layer N-1. By playing with
-     * visibility and opacity, it is possible to show multiple images
-     * on top of each others.
-     */
-    void setData(dtkAbstractData *data, int layer);
+    void addLayer(medAbstractData *data);
+    virtual void removeLayerAt(int layer);
+    bool removeLayer( medAbstractData *data);
 
     void setSharedDataPointer(dtkSmartPointer<dtkAbstractData> data);
-
-    /**
-     * Inputs the data to the vtkImageView2D/3D instances.
-     * Calling setData(data) will automatically position the data in
-     * the next available layer. Example:
-     * - first call  -> layer 0
-     * - second call -> layer 1
-     * ...
-     * To set the data at a specific layer, call setData(data, layer).
-     * To set the data to the first layer, call setData(data, 0).
-     */
-    void setData(dtkAbstractData *data);
-
-    void *data();
 
     QWidget *receiverWidget();
     QWidget *widget();
@@ -136,17 +117,6 @@ public:
      */
     virtual double opacity(int layer) const;
 
-    /**
-     * Returns the total number of layers of the vtkImageView* instance.
-     */
-    virtual int layerCount() const;
-
-    /**
-     * Removes an overlay given the layer id.
-     */
-    virtual void removeOverlay(int layer);
-   // QString property(const QString& key, int layer) const;
-   // using dtkAbstractObject::property;
     QString getLUT(int layer) const;
     QString getPreset(int layer) const;
 
@@ -154,63 +124,43 @@ public:
 
     virtual medViewBackend * backend() const;
 
+    void changeBounds (const double bounds[6], const int imageSize[3] = 0);
+
 public slots:
     // inherited from medAbstractView
-    void onPositionChanged  (const  QVector3D &position);
-    void onZoomChanged      (double zoom);
-    void onPanChanged       (const  QVector2D &pan);
-    void onWindowingChanged (double level, double window);
-    void onCameraChanged    (const  QVector3D &position,
+    void setToSliceAtPosition  (const  QVector3D &position);
+    void setZoom      (double zoom);
+    void setPan      (const  QVector2D &pan);
+    void setWindowLevel (double level, double window);
+    void setCamera    (const  QVector3D &position,
                              const  QVector3D &viewup,
                              const  QVector3D &focal,
                              double parallelScale);
 
-    void onVisibilityChanged(bool   visible, int layer);
-    void onOpacityChanged   (double opacity, int layer);
-
 public slots:
     void play          (bool value);
     void onPropertySet         (const QString &key, const QString &value);
-    void onOrientationPropertySet           (const QString &value);
-    void on3DModePropertySet                (const QString &value);
-    void onRendererPropertySet              (const QString &value);
-    void onUseLODPropertySet                (const QString &value);
-    void onPresetPropertySet                (const QString &value);
-    void onShowScalarBarPropertySet         (const QString &value);
-    void onLookupTablePropertySet           (const QString &value);
-    void onShowAxisPropertySet              (const QString &value);
-    void onShowRulerPropertySet             (const QString &value);
-    void onShowAnnotationsPropertySet       (const QString &value);
-    void onMouseInteractionPropertySet      (const QString &value);
-    void onCroppingPropertySet              (const QString &value);
-    void onZoomModePropertySet              (const QString &value);
-    void onClosablePropertySet              (const QString &value);
-    void onPositionLinkedPropertySet        (const QString &value);
-    void onWindowingLinkedPropertySet       (const QString &value);
-    void onDepthPeelingPropertySet          (const QString &value);
+    void setOrientation           (const QString &value);
+    void set3DMode                (const QString &value);
+    void setRenderer              (const QString &value);
+    void showScalarBar            (const bool &value);
+    void showAxis                 (const bool &value);
+    void showRuler                (const bool &value);
+    void showAnnotations          (const bool &value);
+    void setMouseInteraction      (const QString &value);
+    void setCropping              (const bool &value);
+    void setZoomMode              (const QString &value);
+    void onClosablePropertySet    (const QString &value);
+    void setDepthPeeling          (const bool &value);
 
 public slots:
     void setSlider                          ( int value );
     void onZSliderValueChanged              (int value);
-    void onMetaDataSet         (const QString &key, const QString &value);
 
     void onMainWindowDeactivated();
 
-public slots: // Menu interface
-    void onMenu3DVRTriggered();
-    void onMenu3DMaxIPTriggered();
-    void onMenu3DMinIPTriggered();
-    void onMenu3DMPRTriggered();
-    void onMenu3DOffTriggered();
-    void onMenuVRGPUTriggered();
-    void onMenuVRRayCastAndTextureTriggered();
-    void onMenuVRRayCastTriggered();
-    void onMenuVRDefaultTriggered();
-    void onMenu3DLODTriggered();
-    void onMenuZoomTriggered();
-    void onMenuWindowLevelTriggered();
 public:
-    void  enableInteraction();
+    void enableInteraction();
     void disableInteraction();
     void bounds(float& xmin, float& xmax, float& ymin, float& ymax, float& zmin, float& zmax);
     void cameraUp(double *coordinates);
@@ -248,12 +198,6 @@ protected slots:
 protected:
     virtual bool eventFilter(QObject * obj, QEvent * event);
 private:
-
-    template <typename IMAGE>
-    bool SetViewInput(const char* type,dtkAbstractData* data,const int layer);
-    bool SetView(const char* type,dtkAbstractData* data);
-    template <typename IMAGE>
-    bool SetViewInputWithConversion(const char* type,const char* newtype,dtkAbstractData* data,const int layer);
 
     v3dViewPrivate *d;
 

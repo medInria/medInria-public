@@ -1570,9 +1570,10 @@ void medClutEditor::setView( medAbstractView *view, bool force )
         QList<double> scalars;
         QList<QColor> colors;
 
-        d->med_view->getTransferFunctions( scalars, colors );
-        medClutEditorTable * table = d->scene->table();
-        table->setTransferFunction( scalars, colors );
+        //TODO GPR: make this works
+        //d->med_view->getTransferFunctions( scalars, colors );
+        //medClutEditorTable * table = d->scene->table();
+        //table->setTransferFunction( scalars, colors );
     }
 }
 
@@ -1630,7 +1631,9 @@ void medClutEditor::applyTable(void)
         medClutEditorTable * table = d->scene->table();
         table->getTransferFunction(scalars, colors);
         // d->med_view->setColorLookupTable(scalars, colors);
-        d->med_view->setTransferFunctions(scalars, colors);
+
+        //TODO GPR: make this works
+        //d->med_view->setTransferFunctions(scalars, colors);
         d->med_view->update();
     }
 }

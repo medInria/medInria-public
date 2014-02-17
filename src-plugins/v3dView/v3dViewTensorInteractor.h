@@ -22,6 +22,7 @@ class v3dViewTensorInteractorPrivate;
 class dtkAbstractData;
 class dtkAbstractView;
 
+
 /**
  * @class v3dViewTensorInteractor
  * @brief Extents a view by providing tensor viewing/managing capabilities.
@@ -50,6 +51,7 @@ public:
 
     virtual void setData(dtkAbstractData *data);
     dtkAbstractData *data();
+    void removeData(medAbstractData *data);
 
     virtual void setView(dtkAbstractView *view);
     dtkAbstractView *view();
@@ -77,7 +79,7 @@ public slots:
     
 public slots:
     /** Change glyph shape */
-    void setGlyphShape(GlyphShapeType glyphShape);
+    void setGlyphShape(int glyphShape);
 
     /** Modify sample rate */
     void setSampleRate(int sampleRate);
@@ -114,6 +116,20 @@ public slots:
 
     /** Change position of the slices */
     void changePosition(const QVector3D& position, bool propagate);
+
+
+    void setMajorScaling(int majorScalingExponent);
+
+    void setMinorScaling(int minorScaling);
+
+    void setScale(int minorScale, int majorScaleExponent);
+
+protected:
+
+    void computeBounds();
+    void updateBounds(const double bounds[]);
+    void setupParameters(dtkAbstractData *data);
+
 
 private:
     v3dViewTensorInteractorPrivate *d;

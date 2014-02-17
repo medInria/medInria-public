@@ -40,6 +40,7 @@
 
 #include "v3dView.h"
 #include "medVtkView.h"
+#include "medParameter.h"
 
 #include <QInputDialog>
 #include <QColorDialog>
@@ -154,6 +155,33 @@ void v3dViewFiberInteractor::setData(dtkAbstractData *data)
             d->data = data;
         }
     }
+
+
+    medListParameter *colorParam = new medListParameter("Color", data);
+    colorParam->getWidget()->setToolTip("Color fibers by");
+    QStringList colorList;
+    colorList << "Local orientation" << "Global orientation" << "Fractional anisotropy";
+    colorParam->setValues(colorList);
+
+    medBooleanParameter *hardwareAccelerationParam = new medBooleanParameter("hardware acceleration" ,data);
+    hardwareAccelerationParam->getWidget()->setToolTip("Select to use GPU hardware acceleration when possible.");
+
+    medListParameter *displayParam = new medListParameter("Display", data);
+    QStringList displayList;
+    displayList << "Display fibers as polylines" << "Display fibers as ribbons" << "Display fibers as tubes";
+    displayParam->setValues(displayList);
+    displayParam->setDefaultValue("Display fibers as polylines");
+
+    medIntParameter *radiusParam = new medIntParameter("Radius", data);
+    radiusParam->getWidget()->setToolTip("Increase of decrease the radius of the fibers (except if there are being drawn with polylines).");
+    radiusParam->setMinimum(1);
+    radiusParam->setMaximum(10);
+
+    parameters.insert(data, colorParam);
+    parameters.insert(data, hardwareAccelerationParam);
+    parameters.insert(data, displayParam);
+    parameters.insert(data, radiusParam);
+
 }
 
 dtkAbstractData *v3dViewFiberInteractor::data()
