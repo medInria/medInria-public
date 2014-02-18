@@ -34,27 +34,28 @@ medRegistrationWorkspace::medRegistrationWorkspace(QWidget *parent) : medAbstrac
 {
     // -- View toolboxes --
 
-    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
-    if(toolboxNames.contains("medViewPropertiesToolBox"))
-    {
-        // we want the medViewPropertiesToolBox to be the first "view" toolbox
-        toolboxNames.move(toolboxNames.indexOf("medViewPropertiesToolBox"),0);
-    }
-    foreach(QString toolbox, toolboxNames)
-    {
-        this->addWorkspaceToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
-    }
+//    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+//    if(toolboxNames.contains("medViewPropertiesToolBox"))
+//    {
+//        // we want the medViewPropertiesToolBox to be the first "view" toolbox
+//        toolboxNames.move(toolboxNames.indexOf("medViewPropertiesToolBox"),0);
+//    }
+//    foreach(QString toolbox, toolboxNames)
+//    {
+//        this->addWorkspaceToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+//    }
 
-    // -- Registration toolbox --
+//    // -- Registration toolbox --
 
-    d->registrationToolBox = new medRegistrationSelectorToolBox(parent);
+//    d->registrationToolBox = new medRegistrationSelectorToolBox(parent);
 
-    connect(d->registrationToolBox, SIGNAL(addToolBox(medToolBox *)),
-            this, SLOT(addToolBox(medToolBox *)));
-    connect(d->registrationToolBox, SIGNAL(removeToolBox(medToolBox *)),
-            this, SLOT(removeToolBox(medToolBox *)));
+//    connect(d->registrationToolBox, SIGNAL(addToolBox(medToolBox *)),
+//            this, SLOT(addToolBox(medToolBox *)));
+//    connect(d->registrationToolBox, SIGNAL(removeToolBox(medToolBox *)),
+//            this, SLOT(removeToolBox(medToolBox *)));
 
-    this->addWorkspaceToolBox(d->registrationToolBox);
+//    this->addWorkspaceToolBox(d->registrationToolBox);
+//
 }
 
 medRegistrationWorkspace::~medRegistrationWorkspace(void)
@@ -74,39 +75,38 @@ QString medRegistrationWorkspace::description() const {
 
 void medRegistrationWorkspace::setupViewContainerStack()
 {
-    //TODO make it fit with new container - RDE
+//    //TODO make it fit with new container - RDE
 
-    //the stack has been instantiated in constructor
-    if (!this->stackedViewContainers()->count())
-    {
-        //create the fuse container
-        medViewContainer *fuseContainer = new medViewContainer(
-                this->stackedViewContainers());
-        if (medAbstractView* view = medViewFactory::instance()->createView("medVtkView"))
-        {
-            view->setClosable(false);
-            fuseContainer->setView(view);
-            fuseContainer->setAcceptDrops(false);
-            d->registrationToolBox->setFuseView (view);
-        }
+//    //the stack has been instantiated in constructor
+//    if (!this->stackedViewContainers()->count())
+//    {
+//        //create the fuse container
+//        medViewContainer *fuseContainer = new medViewContainer(
+//                this->stackedViewContainers());
+//        if (medAbstractView* view = medViewFactory::instance()->createView("medVtkView"))
+//        {
+//            fuseContainer->setView(view);
+//            fuseContainer->setAcceptDrops(false);
+//            d->registrationToolBox->setFuseView (view);
+//        }
 
-        //create the compare container
-        medViewContainer * compareViewContainer = new medViewContainer(
-                this->stackedViewContainers());
-        connect(compareViewContainer,SIGNAL(droppedFixed(medDataIndex)),
-                d->registrationToolBox,SLOT(onFixedImageDropped(medDataIndex)));
-        connect(compareViewContainer,SIGNAL(droppedMoving(medDataIndex)),
-                d->registrationToolBox,SLOT(onMovingImageDropped(medDataIndex)));
-        connect(compareViewContainer,SIGNAL(viewRemoved(medAbstractView*)),
-                d->registrationToolBox,SLOT(onViewRemoved(medAbstractView*)));
-        connect(fuseContainer,SIGNAL(viewRemoved(medAbstractView*)),
-                d->registrationToolBox,SLOT(onViewRemoved(medAbstractView*)));
+//        //create the compare container
+//        medViewContainer * compareViewContainer = new medViewContainer(
+//                this->stackedViewContainers());
+//        connect(compareViewContainer,SIGNAL(droppedFixed(medDataIndex)),
+//                d->registrationToolBox,SLOT(onFixedImageDropped(medDataIndex)));
+//        connect(compareViewContainer,SIGNAL(droppedMoving(medDataIndex)),
+//                d->registrationToolBox,SLOT(onMovingImageDropped(medDataIndex)));
+//        connect(compareViewContainer,SIGNAL(viewRemoved(medAbstractView*)),
+//                d->registrationToolBox,SLOT(onViewRemoved(medAbstractView*)));
+//        connect(fuseContainer,SIGNAL(viewRemoved(medAbstractView*)),
+//                d->registrationToolBox,SLOT(onViewRemoved(medAbstractView*)));
 
-        this->stackedViewContainers()->addContainerInTab("Compare");
-        this->stackedViewContainers()->addContainerInTab("Fuse");
-        this->stackedViewContainers()->lockTabs();
-        this->stackedViewContainers()->setCurrentIndex(0);
-    }
+//        this->stackedViewContainers()->addContainerInTab("Compare");
+//        this->stackedViewContainers()->addContainerInTab("Fuse");
+//        this->stackedViewContainers()->lockTabs();
+//        this->stackedViewContainers()->setCurrentIndex(0);
+//    }
 }
 
 void medRegistrationWorkspace::patientChanged(int patientId)

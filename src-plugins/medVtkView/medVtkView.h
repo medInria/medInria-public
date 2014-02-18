@@ -42,8 +42,6 @@ public:
     virtual qreal sliceThickness();
     virtual qreal scale();
 
-    bool eventFilter(QObject * obj, QEvent * event);
-
 private slots:
     void _prvt_setWindowingInteractionStyle(bool windowing);
     void _prvt_setZoomInteractionStyle(bool zoom);

@@ -38,25 +38,13 @@ public:
 medFilteringWorkspace::medFilteringWorkspace(QWidget *parent): medAbstractWorkspace (parent), d(new medFilteringWorkspacePrivate)
 {
     // -- View toolboxes --
+//    d->filteringToolBox = new medFilteringSelectorToolBox (parent);
 
-    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
-    if(toolboxNames.contains("medViewPropertiesToolBox"))
-    {
-        // we want the medViewPropertiesToolBox to be the first "view" toolbox
-        toolboxNames.move(toolboxNames.indexOf("medViewPropertiesToolBox"),0);
-    }
-    foreach(QString toolbox, toolboxNames)
-    {
-       this->addWorkspaceToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
-    }
+//    connect(d->filteringToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
+//    connect(d->filteringToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
+//    connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
 
-    d->filteringToolBox = new medFilteringSelectorToolBox ( parent );
-
-    connect(d->filteringToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
-    connect(d->filteringToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
-    connect(d->filteringToolBox,SIGNAL(processFinished()),this,SLOT(onProcessSuccess()));
-
-    this->addWorkspaceToolBox(d->filteringToolBox);
+//    this->addWorkspaceToolBox(d->filteringToolBox);
 }
 
 medFilteringWorkspace::~medFilteringWorkspace()
@@ -67,23 +55,23 @@ medFilteringWorkspace::~medFilteringWorkspace()
 
 void medFilteringWorkspace::setupViewContainerStack()
 {
-    if ( !this->stackedViewContainers()->count() )
-    {
-        medViewContainer *viewContainer = new medViewContainer (this->stackedViewContainers());
+//    if ( !this->stackedViewContainers()->count() )
+//    {
+////        medViewContainer *viewContainer = new medViewContainer (this->stackedViewContainers());
 
-        //TODO make it fit with new container -RDE
-//        connect(filteringViewContainer,SIGNAL(droppedInput(medDataIndex)), d->filteringToolBox,SLOT(onInputSelected(medDataIndex)));
-//        connect(this,SIGNAL(outputDataChanged(medAbstractData *)),
-//                filteringViewContainer,SLOT(updateOutput(medAbstractData *)));
-//        connect(filteringViewContainer, SIGNAL(viewRemoved(medAbstractView *)),
-//                this, SLOT(onInputViewRemoved()));
+//        //TODO make it fit with new container -RDE
+////        connect(filteringViewContainer,SIGNAL(droppedInput(medDataIndex)), d->filteringToolBox,SLOT(onInputSelected(medDataIndex)));
+////        connect(this,SIGNAL(outputDataChanged(medAbstractData *)),
+////                filteringViewContainer,SLOT(updateOutput(medAbstractData *)));
+////        connect(filteringViewContainer, SIGNAL(viewRemoved(medAbstractView *)),
+////                this, SLOT(onInputViewRemoved()));
 
-        this->stackedViewContainers()->addContainerInTab("Filtering");
-        //setCurrentViewContainer ("Filtering");
+//        this->stackedViewContainers()->addContainerInTab("Filtering");
+//        //setCurrentViewContainer ("Filtering");
 
-        this->stackedViewContainers()->lockTabs();
-        this->stackedViewContainers()->hideTabBar();
-    }
+//        this->stackedViewContainers()->lockTabs();
+//        this->stackedViewContainers()->hideTabBar();
+//    }
 }
 
 void medFilteringWorkspace::patientChanged ( int patientId )

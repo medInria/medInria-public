@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <QWidget>
+#include <QFrame>
 
 #include <medGuiExport.h>
 
@@ -24,12 +24,15 @@ class medDataIndex;
 class medToolBox;
 
 class medViewContainerPrivate;
-class MEDGUI_EXPORT medViewContainer: public QWidget
+class MEDGUI_EXPORT medViewContainer: public QFrame
 {
     Q_OBJECT
+    Q_PROPERTY(bool selected READ isSelected)
+
 public:
     medViewContainer(QWidget* parent = 0);
     ~medViewContainer();
+
 
     bool isSelected() const;
     bool isMaximised() const;

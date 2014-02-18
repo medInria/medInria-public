@@ -45,30 +45,30 @@ static QString msegWorkspaceSegmentationDescription = "Segmentation";
 medSegmentationWorkspace::medSegmentationWorkspace(QWidget * parent /* = NULL */ ) :
 medAbstractWorkspace(parent), d(new medSegmentationWorkspacePrivate)
 {
-    d->segmentationToolBox = new medSegmentationSelectorToolBox(this, parent );
+//    d->segmentationToolBox = new medSegmentationSelectorToolBox(this, parent );
 
-    connect(d->segmentationToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
-    connect(d->segmentationToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
+//    connect(d->segmentationToolBox, SIGNAL(addToolBox(medToolBox *)), this, SLOT(addToolBox(medToolBox *)));
+//    connect(d->segmentationToolBox, SIGNAL(removeToolBox(medToolBox *)), this, SLOT(removeToolBox(medToolBox *)));
 
-    // Always have a parent.
-    if ( !parent)
-        throw (std::runtime_error ("Must have a parent widget"));
+//    // Always have a parent.
+//    if ( !parent)
+//        throw (std::runtime_error ("Must have a parent widget"));
 
 
-        //TODO make it fit with new API - RDE
-//    // -- View toolboxes --
-//    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
-//    if(toolboxNames.contains("medViewPropertiesToolBox"))
-//    {
-//        // we want the medViewPropertiesToolBox to be the first "view" toolbox
-//        toolboxNames.move(toolboxNames.indexOf("medViewPropertiesToolBox"),0);
-//    }
-//    foreach(QString toolbox, toolboxNames)
-//    {
-//       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
-//    }
+//        //TODO make it fit with new API - RDE
+////    // -- View toolboxes --
+////    QList<QString> toolboxNames = medToolBoxFactory::instance()->toolBoxesFromCategory("view");
+////    if(toolboxNames.contains("medViewPropertiesToolBox"))
+////    {
+////        // we want the medViewPropertiesToolBox to be the first "view" toolbox
+////        toolboxNames.move(toolboxNames.indexOf("medViewPropertiesToolBox"),0);
+////    }
+////    foreach(QString toolbox, toolboxNames)
+////    {
+////       addToolBox( medToolBoxFactory::instance()->createToolBox(toolbox, parent) );
+////    }
 
-    this->addWorkspaceToolBox(d->segmentationToolBox);
+//    this->addWorkspaceToolBox(d->segmentationToolBox);
 }
 
 medSegmentationWorkspace::~medSegmentationWorkspace(void)
@@ -79,6 +79,7 @@ medSegmentationWorkspace::~medSegmentationWorkspace(void)
 
 bool medSegmentationWorkspace::registerWithViewerWorkspaceFactory()
 {
+    //TODO not to be here - RDE
     return medWorkspaceFactory::instance()->registerWorkspace
             <medSegmentationWorkspace>(
                 medSegmentationWorkspace::s_identifier(),
@@ -89,15 +90,15 @@ bool medSegmentationWorkspace::registerWithViewerWorkspaceFactory()
 
 void medSegmentationWorkspace::setupViewContainerStack()
 {
-    const QString description(this->description());
-    if (!stackedViewContainers()->count())
-    {
-        this->stackedViewContainers()->addContainerInTab(description);
-        //Default container:
-//        this->connectToolboxesToCurrentContainer(createdTab);
-    }
+//    const QString description(this->description());
+//    if (!stackedViewContainers()->count())
+//    {
+//        this->stackedViewContainers()->addContainerInTab(description);
+//        //Default container:
+////        this->connectToolboxesToCurrentContainer(createdTab);
+//    }
 
-    this->stackedViewContainers()->unlockTabs();
+//    this->stackedViewContainers()->unlockTabs();
 }
 
 //static

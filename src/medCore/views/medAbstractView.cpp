@@ -144,16 +144,6 @@ QList<medAbstractNavigator*> medAbstractView::extraNavigators()
     return d->extraNavigators;
 }
 
-bool medAbstractView::isClosable() const
-{
-    return d->closable;
-}
-
-void medAbstractView::setClosable(bool closable)
-{
-    d->closable = closable;
-}
-
 void medAbstractView::setZoom (double zoom)
 {
     medAbstractViewNavigator* nav = this->primaryNavigator();
@@ -203,6 +193,18 @@ QList<medAbstractParameter*> medAbstractView::navigatorsParameters()
         params.append(nav->parameters());
     }
     return params;
+}
+
+bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
+{
+    if(obj == this->viewWidget())
+    {
+        if (event->type() == QEvent::FocusIn)
+            emit selectedRequest(true);
+        else if (event->type() == QEvent::FocusOut)
+            emit selectedRequest(false);
+    }
+    return dtkAbstractView::eventFilter(obj, event);
 }
 
 /*=========================================================================

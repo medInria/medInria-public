@@ -83,6 +83,8 @@ medToolBox* medAbstractWorkspace::containerToolBox() const
 void medAbstractWorkspace::setCurrentViewContainer(QUuid& uuid)
 {
     d->currentContainer = d->containers.value(uuid);
+
+    qDebug() <<"setCurrentViewContainer : " << d->currentContainer->uuid();
     connect(d->currentContainer, SIGNAL(viewChanged()), this, SIGNAL(currentViewChanged()));
     d->containerToolBox = d->currentContainer->toolBox();
 
@@ -120,6 +122,8 @@ void medAbstractWorkspace::addNewContainer(QUuid &uuid)
 {
     medViewContainer* newContainer = medViewContainerManager::instance()->container(uuid);
     d->containers.insert(uuid, newContainer);
+
+    qDebug() << "new container in workspoace !!! " << uuid;
 
     connect(newContainer, SIGNAL(selected(QUuid&)), this, SLOT(setCurrentViewContainer(QUuid&)));
 }

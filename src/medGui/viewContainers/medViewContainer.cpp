@@ -28,6 +28,7 @@
 #include <medLayeredViewFactory.h>
 #include <medViewManager.h>
 #include <medToolBox.h>
+#include <medToolBoxHeader.h>
 
 class medViewContainerPrivate
 {
@@ -36,6 +37,8 @@ public:
 
     medAbstractView* view;
     QFrame *emptyView;
+    QWidget *emptyViewToolBar;
+
     bool selected;
     bool maximised;
     QGridLayout* mainLayout;
@@ -64,7 +67,7 @@ public:
 };
 
 
-medViewContainer::medViewContainer(QWidget *parent): QWidget(parent),
+medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d(new medViewContainerPrivate)
 {
 
@@ -84,28 +87,39 @@ medViewContainer::medViewContainer(QWidget *parent): QWidget(parent),
     d->emptyView->setObjectName("emptyView");;
     d->emptyView->setFrameStyle(QFrame::StyledPanel | QFrame::Plain);
 
+    d->emptyViewToolBar = new QWidget(this);
+    d->emptyViewToolBar->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+    d->emptyViewToolBar->setFocusPolicy(Qt::NoFocus);
+
     QPushButton* closeButton = new QPushButton(this);
     closeButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
     connect(closeButton, SIGNAL(clicked()), this, SLOT(selfDestroy()));
-    closeButton->setMaximumHeight(18);
+//    closeButton->setMaximumHeight(18);
+    closeButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    closeButton->setFocusPolicy(Qt::NoFocus);
 
     d->vSplittButton = new QPushButton(this);
-    d->vSplittButton->setMaximumHeight(18);
     d->vSplittButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_vertical.png"));
+    d->vSplittButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->vSplittButton->setFocusPolicy(Qt::NoFocus);
     connect(d->vSplittButton, SIGNAL(clicked()), this, SIGNAL(vSplitRequest()));
     d->hSplittButton = new QPushButton(this);
-    d->hSplittButton->setMaximumHeight(18);
     d->hSplittButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_horizontal.png"));
+    d->hSplittButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->hSplittButton->setFocusPolicy(Qt::NoFocus);
     connect(d->hSplittButton, SIGNAL(clicked()), this, SIGNAL(hSplitRequest()));
 
-
+    // make it a parameter to get synch between state of the container and the maximised button.
     d->maximisedParameter = new medBoolParameter("maximied view", this);
     d->maximisedParameter->getPushButton()->setMaximumHeight(18);
+    d->maximisedParameter->getPushButton()->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->maximisedParameter->getPushButton()->setFocusPolicy(Qt::NoFocus);
     QIcon maximisedIcon(":/icons/maximize.svg");
     maximisedIcon.addFile(":/icons/un_maximize.svg",
                         QSize(16,16),
                         QIcon::Normal,
                         QIcon::On);
+
     d->maximisedParameter->setIcon(maximisedIcon);
     d->maximised = true;
     connect(d->maximisedParameter, SIGNAL(valueChanged(bool)), this, SLOT(setMaximised(bool)));
@@ -115,24 +129,25 @@ medViewContainer::medViewContainer(QWidget *parent): QWidget(parent),
 
     QWidget* toolBar = new QWidget(this);
     toolBar->setObjectName("containerToolBar");
-    toolBar->setMaximumHeight(35);
-    toolBar->setContentsMargins(0,0,0,0);
+    toolBar->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
     d->toolBarLayout = new QHBoxLayout(toolBar);
-    d->toolBarLayout->setSpacing(0);
-    d->toolBarLayout->addWidget(d->maximisedParameter->getPushButton(), 1, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->vSplittButton, 1, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->hSplittButton, 1, Qt::AlignRight);
-    d->toolBarLayout->addWidget(closeButton, 1, Qt::AlignRight);
+    d->toolBarLayout->setContentsMargins(5,0,5,0);
+    d->toolBarLayout->setSpacing(5);
+    d->toolBarLayout->addWidget(d->emptyViewToolBar);
+    d->toolBarLayout->addWidget(d->maximisedParameter->getPushButton(), 0, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->vSplittButton, 0, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->hSplittButton, 0, Qt::AlignRight);
+    d->toolBarLayout->addWidget(closeButton, 0, Qt::AlignRight);
 
     d->mainLayout = new QGridLayout(this);
     d->mainLayout->setContentsMargins(0, 0, 0, 0);
+    d->mainLayout->setSpacing(0);
     d->mainLayout->addWidget(toolBar, 0, 0);
     d->mainLayout->addWidget(d->emptyView, 1, 0);
 
     this->setAcceptDrops(true);
     this->setFocusPolicy(Qt::ClickFocus);
     this->setMouseTracking(true);
-    this->setSelected(true);
 }
 
 medViewContainer::~medViewContainer()
@@ -162,18 +177,27 @@ medToolBox* medViewContainer::toolBox() const
 
 void medViewContainer::setView(medAbstractView *view)
 {
+    qDebug() <<"setView";
+
     if(d->view)
         delete d->view;
     else
+    {
         d->mainLayout->removeWidget(d->emptyView);
+        d->toolBarLayout->removeWidget(d->emptyViewToolBar);
+    }
 
     d->view = view;
     connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInterneView()));
+    connect(d->view, SIGNAL(selectedRequest(bool)), this, SLOT(setSelected(bool)));
 
+    d->view->toolBar()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
     d->toolBarLayout->insertWidget(0, d->view->toolBar());
     d->maximisedParameter->show();
     d->mainLayout->addWidget(d->view->viewWidget(), 1, 0, 1, 1);
     d->toolBox = new medToolBox;
+    d->toolBox->setTitle("Container settings");
+    d->toolBox->header()->hide();
     d->toolBox->addWidget(d->view->toolBox());
 
     emit viewChanged();
@@ -186,16 +210,21 @@ bool medViewContainer::isSelected() const
 
 void medViewContainer::setSelected(bool selec)
 {
+    qDebug() << "setSelected : " << d->uuid;
     d->selected = selec;
     if(d->selected)
     {
-        this->setProperty("selected", QVariant(true));
+//        this->setProperty("selected", QVariant(true));
         emit selected(d->uuid);
     }
     else
     {
-        this->setProperty("selected", QVariant(false));
+//        this->setProperty("selected", QVariant(false));
     }
+
+    qDebug() << this->property("selected");
+
+    this->update();
     this->recomputeStyleSheet();
 }
 
@@ -219,7 +248,6 @@ void medViewContainer::setMaximised(bool maxi)
         d->vSplittButton->show();
         d->hSplittButton->show();
     }
-
     emit maximised(d->uuid, maxi);
 }
 
@@ -227,7 +255,8 @@ void medViewContainer::removeInterneView()
 {
     d->view = NULL;
     d->maximisedParameter->hide();
-    d->mainLayout->addWidget(d->emptyView);
+    d->mainLayout->addWidget(d->emptyView, 1, 0, 1, 1);
+    d->toolBarLayout->insertWidget(0, d->emptyViewToolBar);
     delete d->toolBox;
     d->toolBox = NULL;
 }
@@ -354,6 +383,8 @@ void medViewContainer::addData(medAbstractData *data)
     //     of the view. - RDE
     medAbstractLayeredView* view = dynamic_cast<medAbstractLayeredView*>(d->view);
     view->addLayer(data);
+
+    this->setSelected(true);
 }
 
 void medViewContainer::selfDestroy()
@@ -373,22 +404,18 @@ void medViewContainer::createDragLabels()
     d->receiverQuarterWidth = w/4;
     d->receiverQuarterHeight = h/4;
 
-    QColor labelColor(128, 65, 25);
+    QColor labelColor(70, 70, 70);
     QGridLayout *receiverLayout = new QGridLayout;
     d->mainLayout->addLayout(receiverLayout, 1, 0, -1, -1);
 
     QImage hImg, vImg, mImg;
     if(h < w)
     {
-//        hImg = QImage(w/2, h/4, QImage::Format_ARGB32);
-//        vImg = QImage(h/4, h/2, QImage::Format_ARGB32);
         hImg = QImage(w, h/4, QImage::Format_ARGB32);
         vImg = QImage(h/4, h, QImage::Format_ARGB32);
     }
     else
     {
-//        hImg = QImage(w/2, w/4, QImage::Format_ARGB32);
-//        vImg = QImage(w/4, h/2, QImage::Format_ARGB32);
         hImg = QImage(w, w/4, QImage::Format_ARGB32);
         vImg = QImage(w/4, h, QImage::Format_ARGB32);
     }

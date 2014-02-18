@@ -158,11 +158,10 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->viewCollection->AddItem(d->view3d);
 
     d->viewWidget = new QVTKWidget2();
-    d->viewWidget->setSizePolicy ( QSizePolicy::Minimum, QSizePolicy::Minimum );
-    d->viewWidget->setFocusPolicy ( Qt::ClickFocus );
-
     // Event filter used to know if the view is selecetd or not
     d->viewWidget->installEventFilter(this);
+    d->viewWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum );
+    d->viewWidget->setFocusPolicy(Qt::ClickFocus );
     d->viewWidget->SetRenderWindow(d->renWin);
 
     d->backend.reset(new medVtkViewBackend(d->view2d,d->view3d,d->renWin));
@@ -605,22 +604,6 @@ void medVtkView::_prvt_removeLayerData(int layer)
     {
         this->~medVtkView();
     }       
-}
-
-bool medVtkView::eventFilter(QObject * obj, QEvent * event)
-{
-    if (obj == d->viewWidget)
-    {
-        if (event->type() == QEvent::FocusIn)
-        {
-            emit selected();
-        } else if (event->type() == QEvent::FocusOut)
-        {
-            emit unselected();
-        }
-    }
-
-    return medAbstractView::eventFilter(obj, event);
 }
 
 QList<medAbstractParameter*> medVtkView::viewParameters()

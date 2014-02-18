@@ -64,7 +64,7 @@ public:
     medAbstractWorkspace* currentWorkspace();
 
 public slots:
-    void updateViewToolBox();
+    void updateContainerToolBox();
 
 
 protected:

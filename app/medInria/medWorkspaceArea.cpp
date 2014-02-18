@@ -132,11 +132,19 @@ QPixmap medWorkspaceArea::grabScreenshot()
 
 void medWorkspaceArea::addToolBox(medToolBox *toolbox)
 {
+    if(!toolbox)
+        return;
+
     d->toolBoxContainer->addToolBox(toolbox);
+    toolbox->show();
 }
 
 void medWorkspaceArea::removeToolBox(medToolBox *toolbox)
 {
+    if(!toolbox)
+        return;
+
+    toolbox->hide();
     d->toolBoxContainer->removeToolBox(toolbox);
 }
 
@@ -150,8 +158,6 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
     //clean toolboxes
     d->toolBoxContainer->hide();
     d->toolBoxContainer->clear();
-
-    //clear the confs if needed:
     this->switchToStackedViewContainers(workspace->stackedViewContainers());
 
     //setup database visibility
@@ -192,14 +198,17 @@ void medWorkspaceArea::setupWorkspace(const QString &name)
         return;
     }
     workspace->setupViewContainerStack();
-    connect(workspace, SIGNAL(currentContainerChanged()), this, SLOT(updateViewToolBox()));
-    connect(workspace, SIGNAL(currentViewChanged()), this, SLOT(updateViewToolBox()));
+    connect(workspace, SIGNAL(currentContainerChanged()), this, SLOT(updateContainerToolBox()));
+    connect(workspace, SIGNAL(currentViewChanged()), this, SLOT(updateContainerToolBox()));
 }
 
-void medWorkspaceArea::updateViewToolBox()
+void medWorkspaceArea::updateContainerToolBox()
 {
+    qDebug() <<"updateContainerToolBox : " << d->currentWorkspace->currentViewContainer()->uuid();
     this->removeToolBox(d->containerToolBox);
-    this->addToolBox(d->currentWorkspace->currentViewContainer()->toolBox());
+    d->containerToolBox = d->currentWorkspace->currentViewContainer()->toolBox();
+    this->addToolBox(d->containerToolBox);
+    qDebug() << "d->containerToolBox" << d->containerToolBox;
 }
 
 void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)

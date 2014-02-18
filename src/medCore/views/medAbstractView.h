@@ -82,9 +82,6 @@ public:
 
     virtual medViewBackend * backend() const = 0;
 
-    bool isClosable() const;
-    void setClosable(bool closable);
-
     virtual QWidget* toolBar() = 0;
     virtual QWidget* toolBox() = 0;
     virtual QWidget* widget() = 0;
@@ -95,9 +92,7 @@ public:
     virtual QImage& generateThumbnail(const QSize &size) = 0;
 
 signals:
-    //TODO shouldbe the role of container IMO - RDE
-    void selected();
-    void unselected();
+    void selectedRequest(bool selected);
 
     void zoomChanged(double);
     void panChanged(const QVector2D&);
@@ -111,6 +106,7 @@ protected:
     virtual void initialiseInteractors(medAbstractData* data);
     virtual void initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
+    virtual bool eventFilter(QObject *, QEvent *);
 
 
 private:

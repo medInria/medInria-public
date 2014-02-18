@@ -59,9 +59,10 @@ void medToolBoxContainer::addToolBox(medToolBox *toolBox)
 {
     if (!toolBox)
         return;
-    toolBox->setOrientation(d->layoutOrientation);
 
-    if (!d->toolboxes.contains(toolBox)) {
+    toolBox->setOrientation(d->layoutOrientation);
+    if (!d->toolboxes.contains(toolBox))
+    {
         d->toolboxes.append(toolBox);
         toolBox->setParent (d->container);
 
