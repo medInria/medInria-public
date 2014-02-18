@@ -124,15 +124,24 @@ void medAbstractWorkspace::addNewContainer(QUuid &uuid)
     if(d->containers.contains(uuid))
         return;
 
+    if(d->containers.count() == 1)
+        d->containers.values().first()->setClosable(true);
+
     d->containers.insert(uuid, newContainer);
     qDebug() << "new container in workspoace !!! " << uuid;
     connect(newContainer, SIGNAL(selected(QUuid&)), this, SLOT(setCurrentViewContainer(QUuid&)));
+
+    if(d->containers.count() == 1)
+        newContainer->setClosable(false);
 }
 
 
 void medAbstractWorkspace::removeContainer(QUuid &uuid)
 {
     d->containers.remove(uuid);
+
+    if(d->containers.count() == 1)
+        d->containers.values().first()->setClosable(false);
 }
 
 void medAbstractWorkspace::setToolBoxesVisibility (bool value)

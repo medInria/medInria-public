@@ -41,10 +41,14 @@ public:
 
     bool selected;
     bool maximised;
+    bool closable;
+
     QGridLayout* mainLayout;
     QHBoxLayout* toolBarLayout;
+
     QPushButton* vSplittButton;
     QPushButton* hSplittButton;
+    QPushButton* closeButton;
 
     QLabel *northDragLabel;
     QLabel *eastDragLabel;
@@ -91,11 +95,11 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->emptyViewToolBar->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
     d->emptyViewToolBar->setFocusPolicy(Qt::NoFocus);
 
-    QPushButton* closeButton = new QPushButton(this);
-    closeButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
-    connect(closeButton, SIGNAL(clicked()), this, SLOT(selfDestroy()));
-    closeButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    closeButton->setFocusPolicy(Qt::NoFocus);
+    d->closeButton = new QPushButton(this);
+    d->closeButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
+    connect(d->closeButton, SIGNAL(clicked()), this, SLOT(selfDestroy()));
+    d->closeButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->closeButton->setFocusPolicy(Qt::NoFocus);
 
     d->vSplittButton = new QPushButton(this);
     d->vSplittButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_vertical.png"));
@@ -136,7 +140,7 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->toolBarLayout->addWidget(d->maximisedParameter->getPushButton(), 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->vSplittButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->hSplittButton, 0, Qt::AlignRight);
-    d->toolBarLayout->addWidget(closeButton, 0, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->closeButton, 0, Qt::AlignRight);
 
     d->mainLayout = new QGridLayout(this);
     d->mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -145,6 +149,7 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->mainLayout->addWidget(d->emptyView, 1, 0);
 
     this->setAcceptDrops(true);
+    this->setClosable(true);
     this->setFocusPolicy(Qt::ClickFocus);
     this->setMouseTracking(true);
 }
@@ -172,6 +177,20 @@ medAbstractView* medViewContainer::view() const
 medToolBox* medViewContainer::toolBox() const
 {
     return d->toolBox;
+}
+
+bool medViewContainer::isClosable() const
+{
+    return d->closable;
+}
+
+void medViewContainer::setClosable(bool closable)
+{
+    d->closable = closable;
+    if(d->closable)
+        d->closeButton->show();
+    else
+        d->closeButton->hide();
 }
 
 void medViewContainer::setView(medAbstractView *view)
