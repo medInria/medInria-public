@@ -121,10 +121,11 @@ void medAbstractWorkspace::clear()
 void medAbstractWorkspace::addNewContainer(QUuid &uuid)
 {
     medViewContainer* newContainer = medViewContainerManager::instance()->container(uuid);
+    if(d->containers.contains(uuid))
+        return;
+
     d->containers.insert(uuid, newContainer);
-
     qDebug() << "new container in workspoace !!! " << uuid;
-
     connect(newContainer, SIGNAL(selected(QUuid&)), this, SLOT(setCurrentViewContainer(QUuid&)));
 }
 

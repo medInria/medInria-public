@@ -215,8 +215,11 @@ void medWorkspaceArea::updateContainerToolBox()
     qDebug() <<"updateContainerToolBox : " << d->currentWorkspace->currentViewContainer()->uuid();
     this->removeToolBox(d->containerToolBox);
     d->containerToolBox = d->currentWorkspace->currentViewContainer()->toolBox();
-    connect(d->containerToolBox, SIGNAL(destroyed()), this, SLOT(removeInternContainerToolBox()));
-    this->insertToolBox(0, d->containerToolBox);
+    if(d->containerToolBox)
+    {
+        connect(d->containerToolBox, SIGNAL(destroyed()), this, SLOT(removeInternContainerToolBox()));
+        this->insertToolBox(0, d->containerToolBox);
+    }
     qDebug() << "d->containerToolBox" << d->containerToolBox;
 }
 
