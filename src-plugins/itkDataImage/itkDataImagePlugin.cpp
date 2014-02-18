@@ -38,6 +38,7 @@
 #include <itkDataImageRGBA3.h>
 
 #include <medVtkViewItkDataImageInteractor.h>
+#include <medVtkViewItkDataImage4DInteractor.h>
 
 #include <dtkLog/dtkLog.h>
 #include <itkLogForwarder.h>
@@ -104,6 +105,7 @@ bool itkDataImagePlugin::initialize()
     if(!itkDataImageRGB3::registered()) qDebug() << "Unable to register itkDataImageRGB3 type";
     if(!itkDataImageRGBA3::registered()) qDebug() << "Unable to register itkDataImageRGBA3 type";
     if(!medVtkViewItkDataImageInteractor::registered()) qDebug() << "Unable to register medVtkViewItkDataImageInteractor";
+    if(!medVtkViewItkDataImage4DInteractor::registered()) qDebug() << "Unable to register medVtkViewItkDataImage4DInteractor";
 
     return true;
 }

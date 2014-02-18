@@ -77,6 +77,8 @@
 #include <sstream>
 #include <cmath>
 
+#include <vtkImageFromBoundsSource.h>
+
 class vtkImage2DDisplay : public vtkObject
 {
 public:
@@ -1832,6 +1834,21 @@ vtkActor* vtkImageView2D::AddDataSet(vtkPointSet* arg, vtkProperty* prop)
       {
           box.AddBounds( widget->GetSource()->GetBounds() );
       }
+
+      /////
+      // TODO GPR, in progress
+      vtkImageFromBoundsSource* imagegenerator = vtkImageFromBoundsSource::New();
+      unsigned int imSize [3]; imSize[0]=100; imSize[1]=100; imSize[2]=100;
+      imagegenerator->SetOutputImageSize(imSize);
+
+      imagegenerator->SetOutputImageBounds(widget->GetSource()->GetBounds());
+      vtkImageData * image = imagegenerator->GetOutput();
+
+      SetInput(image, 0);
+      vtkImageActor *actor = GetImageActor(0);
+      actor->SetOpacity(0.0);
+      imagegenerator->Delete();
+      /////
 
     double center[3];
     box.GetCenter(center);

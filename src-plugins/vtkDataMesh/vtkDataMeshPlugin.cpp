@@ -15,6 +15,7 @@
 #include <vtkDataMesh.h>
 #include <vtkDataMesh4D.h>
 #include <vtkDataMeshInteractor.h>
+#include <vtkDataMesh4DInteractor.h>
 
 #include <dtkLog/dtkLog.h>
 
@@ -59,6 +60,7 @@ bool vtkDataMeshPlugin::initialize()
   if(!vtkDataMesh::registered()) qDebug() << "Unable to register vtkDataMesh type";
   if(!vtkDataMesh4D::registered()) qDebug() << "Unable to register vtkDataMesh4D type";
   if(!vtkDataMeshInteractor::registered()) qDebug() << "Unable to register vtkDataMeshInteractor type";
+  if(!vtkDataMesh4DInteractor::registered()) qDebug() << "Unable to register vtkDataMesh4DInteractor type";
   return true;
 }
 

@@ -557,6 +557,8 @@ void medVtkView::addLayerItem(int layer)
     d->layersListWidget->setItemWidget(item, layerWidget);
     //d->layersListWidget->setCurrentRow(layer);
     item->setSelected(true);
+
+    connect(thumbnailButton, SIGNAL(clicked(bool)), this->primaryInteractor(data), SLOT(setVisibility(bool)));
 }
 
 
@@ -581,15 +583,20 @@ void medVtkView::updateInteractorsWidget()
     if(this->selectedLayer() == -1)
         return;
 
+    QWidget *tbWidget = new QWidget;
+    QVBoxLayout *tbLayout = new QVBoxLayout(tbWidget);
+
     medAbstractImageViewInteractor *primaryInt =  this->primaryInteractor( this->selectedLayer() );
     if(primaryInt)
     {
-        d->interactorsWidgetStack->addWidget( primaryInt->toolBoxWidget() );
+        tbLayout->addWidget( primaryInt->toolBoxWidget() );
         d->toolbarLayout->addWidget( primaryInt->toolBarWidget() );
     }
 
     foreach(medAbstractInteractor* interactor, this->extraInteractors(this->selectedLayer()))
-        d->interactorsWidgetStack->addWidget(interactor->toolBoxWidget());
+        tbLayout->addWidget(interactor->toolBoxWidget());
+
+    d->interactorsWidgetStack->addWidget(tbWidget);
 }
 
 void medVtkView::removeLayerData(int layer)

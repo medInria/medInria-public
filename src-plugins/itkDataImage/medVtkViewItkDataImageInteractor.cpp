@@ -111,17 +111,17 @@ medVtkViewItkDataImageInteractor::~medVtkViewItkDataImageInteractor()
 QStringList medVtkViewItkDataImageInteractor::dataHandled()
 {
     QStringList d = QStringList() << "itkDataImageChar3"
-                                << "itkDataImageUChar3"
-                                << "itkDataImageShort3"
-                                << "itkDataImageUShort3"
-                                << "itkDataImageInt3"
-                                << "itkDataImageLong3"
-                                << "itkDataImageULong3"
-                                << "itkDataImageFloat3"
-                                << "itkDataImageDouble3"
-                                << "itkDataImageRGB3"
-                                << "itkDataImageRGBA3"
-                                << "itkDataImageVector3";
+                                  << "itkDataImageUChar3"
+                                  << "itkDataImageShort3"
+                                  << "itkDataImageUShort3"
+                                  << "itkDataImageInt3"
+                                  << "itkDataImageLong3"
+                                  << "itkDataImageULong3"
+                                  << "itkDataImageFloat3"
+                                  << "itkDataImageDouble3"
+                                  << "itkDataImageRGB3"
+                                  << "itkDataImageRGBA3"
+                                  << "itkDataImageVector3";
     return  d;
 }
 
@@ -245,6 +245,9 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
 
     connect(d->medVtkView, SIGNAL(sliceChanged(int)), d->slicingParameter, SLOT(setValue(int)) );
     connect(d->medVtkView, SIGNAL(windowLevelChanged(double,double)), this, SLOT(updateWindowLevelParam(double, double)) );
+
+    d->view2d->Reset();
+    d->view3d->Reset();
 }
 
 
@@ -295,6 +298,8 @@ void medVtkViewItkDataImageInteractor::setVisibility(bool visible)
         d->view2d->SetVisibility(0, d->layer);
         d->view3d->SetVisibility(0, d->layer);
     }
+
+    update();
 }
 
 bool medVtkViewItkDataImageInteractor::visibility() const

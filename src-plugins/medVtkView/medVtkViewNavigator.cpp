@@ -225,7 +225,6 @@ double medVtkViewNavigator::zoom() const
 
 void medVtkViewNavigator::setZoom(double zoom)
 {
-    //TODO GPR: find a better way to update the view
     d->currentView->SetZoom(zoom);
     d->currentView->Render();
 }

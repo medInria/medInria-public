@@ -164,10 +164,6 @@ void vtkDataMeshInteractor::setData(medAbstractData *data)
         vtkMetaDataSet * mesh = dynamic_cast<vtkMetaDataSet*>((vtkDataObject *)(data->data()));
         vtkPointSet * pointSet = vtkPointSet::SafeDownCast (mesh->GetDataSet());
 
-        //TODO GPR
-//        if(d->view->layersCount() == 0)
-//            d->view->changeBounds(pointSet->GetBounds());
-
         d->metaDataSet = mesh;
         d->lut = LutPair(NULL, "Default");
 
@@ -493,7 +489,6 @@ void vtkDataMeshInteractor::removeData()
         {
             d->view2d->RemoveDataSet(pointSet);
             d->view3d->RemoveDataSet(pointSet);
-            //d->view->removeLayer(data);
             d->render->Render();
         }
     }
@@ -501,22 +496,22 @@ void vtkDataMeshInteractor::removeData()
 
 void vtkDataMeshInteractor::moveToSliceAtPosition    (const QVector3D &position)
 {
-
+    // TODO
 }
 
 void vtkDataMeshInteractor::moveToSlice  (int slice)
 {
-
+    // TODO
 }
 
 void vtkDataMeshInteractor::setWindowLevel (double &window, double &level)
 {
-
+    // TODO
 }
 
 void vtkDataMeshInteractor::windowLevel(double &window, double &level)
 {
-
+    // TODO
 }
 
 QWidget* vtkDataMeshInteractor::layerWidget()

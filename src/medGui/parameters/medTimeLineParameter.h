@@ -36,20 +36,21 @@ public:
     bool isPlaying() const;
     int numberOfFrame() const;
     int frame() const;
-    double moment() const;
+    double time() const;
     double& duration() const;
     int stepFrame() const;
 
-    int mapMomentToFrame(const double& time);
-    double mapFrameToMoment (int frame);
+    int mapTimeToFrame(const double& time);
+    double mapFrameToTime(int frame);
 
 public slots:
     void setSpeedFactor(int speedFactor);
     void play(bool play);
+    void stop(bool stop);
     void setNumberOfFrame(int numberOfFrame);
     void setDuration(const double& timeDuration);
     void setStepFrame(int stepFrame);
-    void setFrame(double moment);
+    void setFrame(double time);
     void setFrame(int frame);
 
     void previousFrame();
@@ -60,10 +61,12 @@ public slots:
 
 signals:
     void playing(bool isPlaying);
-    void frameChanged(double frameMoment);
+    void frameChanged(double time);
 
 private slots:
     void removeInternWidget();
+	void updateFrameParameter(int frame);
+    void updateTimeParameter(double time);
 
 
 private:
