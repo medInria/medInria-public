@@ -55,7 +55,7 @@ public:
     void setupWorkspace(const QString& name);
 
     void addToolBox(medToolBox *toolbox);
-
+    void insertToolBox(int index, medToolBox *toolbox);
     void removeToolBox(medToolBox *toolbox);
 
     void setCurrentWorkspace(medAbstractWorkspace* workspace);
@@ -71,6 +71,8 @@ protected:
     void addDatabaseView(medDatabaseDataSource* dataSource);
     void switchToStackedViewContainers(medTabbedViewContainers* stack);
 
+private slots:
+    void removeInternContainerToolBox();
 private:
     friend class medMessageController;
 

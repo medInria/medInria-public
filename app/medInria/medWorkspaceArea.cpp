@@ -69,7 +69,6 @@ medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new med
 
     // Setting up toolbox container
     d->toolBoxContainer = new medToolBoxContainer(this);
-    d->toolBoxContainer->setOrientation(Qt::Vertical);
     d->toolBoxContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     d->toolBoxContainer->setMinimumWidth(340);
 
@@ -136,6 +135,15 @@ void medWorkspaceArea::addToolBox(medToolBox *toolbox)
         return;
 
     d->toolBoxContainer->addToolBox(toolbox);
+    toolbox->show();
+}
+
+void medWorkspaceArea::insertToolBox(int index, medToolBox *toolbox)
+{
+    if(!toolbox)
+        return;
+
+    d->toolBoxContainer->insertToolBox(index, toolbox);
     toolbox->show();
 }
 
@@ -207,7 +215,8 @@ void medWorkspaceArea::updateContainerToolBox()
     qDebug() <<"updateContainerToolBox : " << d->currentWorkspace->currentViewContainer()->uuid();
     this->removeToolBox(d->containerToolBox);
     d->containerToolBox = d->currentWorkspace->currentViewContainer()->toolBox();
-    this->addToolBox(d->containerToolBox);
+    connect(d->containerToolBox, SIGNAL(destroyed()), this, SLOT(removeInternContainerToolBox()));
+    this->insertToolBox(0, d->containerToolBox);
     qDebug() << "d->containerToolBox" << d->containerToolBox;
 }
 
@@ -229,6 +238,10 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
             Qt::UniqueConnection);
 }
 
+void medWorkspaceArea::removeInternContainerToolBox()
+{
+    d->containerToolBox = NULL;
+}
 
 void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* stack)
 {
