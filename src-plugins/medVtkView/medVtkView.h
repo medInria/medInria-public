@@ -42,6 +42,9 @@ public:
     virtual qreal sliceThickness();
     virtual qreal scale();
 
+public slots:
+    virtual void reset();
+
 private slots:
     void _prvt_setWindowingInteractionStyle(bool windowing);
     void _prvt_setZoomInteractionStyle(bool zoom);

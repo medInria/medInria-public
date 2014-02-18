@@ -288,6 +288,25 @@ QWidget* medVtkView::toolBox()
     return d->toolBox;
 }
 
+void medVtkView::reset()
+{
+    d->view2d->Reset();
+//    d->view2d->ResetCamera();
+//    d->view2d->ResetCurrentPoint();
+//    d->view2d->ResetWindowLevel();
+    d->view3d->Reset();
+//    d->view3d->ResetCamera();
+//    d->view3d->ResetCurrentPoint();
+//    d->view3d->ResetWindowLevel();
+    if(this->is2D())
+        d->view2d->Render();
+    else
+        d->view3d->Render();
+//    qDebug() << "reset !!!";
+//    if(this->is2D())
+//        d->interactorStyle2D->InvokeEvent(vtkImageView2DCommand::ResetViewerEvent, d->interactorStyle2D);
+}
+
 QPointF medVtkView::mapWorldToDisplayCoordinates(const QVector3D & worldVec)
 {
     // The following code is implemented without calling ren->SetWorldPoint,

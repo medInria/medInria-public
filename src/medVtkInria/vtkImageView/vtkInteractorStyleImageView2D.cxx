@@ -463,7 +463,7 @@ void vtkInteractorStyleImageView2D::OnChar()
   }
   else if ((rwi->GetKeyCode() == 'r') || (rwi->GetKeyCode() == 'R'))
   {
-    this->InvokeEvent (vtkImageView2DCommand::ResetViewerEvent, this);
+    this->InvokeEvent(vtkImageView2DCommand::ResetViewerEvent, this);
   }
 }
 

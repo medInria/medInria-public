@@ -58,6 +58,8 @@ public:
     virtual QList<medAbstractParameter*> viewParameters(){}
     virtual QList<medAbstractParameter*> navigatorsParameters(){}
 
+public slots:
+    virtual void reset();
 
 protected:
 

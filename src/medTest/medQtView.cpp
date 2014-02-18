@@ -130,3 +130,8 @@ QString medQtView::description( void ) const
 {
     return s_description();
 }
+
+void medQtView::reset()
+{
+    qDebug() << "reset()";
+}

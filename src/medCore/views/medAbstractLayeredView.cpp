@@ -159,7 +159,12 @@ void medAbstractLayeredView::addLayer(medAbstractData *data)
     d->layersDataList << data;
     initialiseInteractors(data);
 
-    emit layerAdded(this->layer(data));
+    int layer = this->layer(data);
+    this->setSelectedLayer(layer);
+    if(this->layersCount() < 2)
+        this->reset();
+
+    emit layerAdded(layer);
 }
 
 QList<dtkSmartPointer<medAbstractData> > medAbstractLayeredView::data() const

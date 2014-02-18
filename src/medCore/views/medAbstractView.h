@@ -91,6 +91,9 @@ public:
 
     virtual QImage& generateThumbnail(const QSize &size) = 0;
 
+public slots:
+    virtual void reset() = 0;
+
 signals:
     void selectedRequest(bool selected);
 
@@ -131,7 +134,6 @@ private:
     virtual void *data(int channel);
     virtual bool stereo(void);
     virtual void clear(void);
-    virtual void reset(void);
     virtual void update(void);
     virtual void close(void);
     void showFullScreen(void);
