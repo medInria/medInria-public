@@ -94,7 +94,6 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     QPushButton* closeButton = new QPushButton(this);
     closeButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
     connect(closeButton, SIGNAL(clicked()), this, SLOT(selfDestroy()));
-//    closeButton->setMaximumHeight(18);
     closeButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     closeButton->setFocusPolicy(Qt::NoFocus);
 
@@ -223,7 +222,6 @@ void medViewContainer::setSelected(bool selec)
     }
 
     qDebug() << this->property("selected");
-
     this->update();
     this->recomputeStyleSheet();
 }

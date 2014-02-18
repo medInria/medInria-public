@@ -116,6 +116,8 @@ void medViewContainerSplitter::insertViewContainer(int index, medViewContainer *
             this, SLOT(split(medDataIndex, Qt::AlignmentFlag)));
     connect(container, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLive()));
 
+    emit newContainer(container->uuid());
+
     this->insertWidget(index, container);
     this->setCollapsible(index, false);
 }
@@ -127,7 +129,6 @@ void medViewContainerSplitter::addViewContainer(medViewContainer *container)
         newSize = this->sizes()[this->count() - 1] / 2;
 
     this->insertViewContainer(this->count(), container);
-    emit newContainer(container->uuid());
     if(this->count() > 1)
         this->recomputeSizes(this->count() - 2, this->count() - 1, newSize);
 }
