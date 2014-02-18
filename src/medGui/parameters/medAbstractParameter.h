@@ -56,7 +56,7 @@ protected slots:
     void removeFromInternWidgets(QWidget* widget);
 
 private slots:
-    void _prvt_removeInternLabel();
+    void removeInternLabel();
 
 signals:
     void aboutToBeDestroyed();
@@ -90,7 +90,7 @@ public:
     virtual QWidget* getWidget();
 
 private slots:
-    void _prvt_removeInternWidget();
+    void removeInternWidget();
 
 private:
   medTestParameterPrivate *d;

@@ -158,6 +158,7 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->viewCollection->AddItem(d->view3d);
 
     d->viewWidget = new QVTKWidget2();
+    connect(d->viewWidget, SIGNAL(destroyed()), this, SLOT(removeInternView()));
     // Event filter used to know if the view is selecetd or not
     d->viewWidget->installEventFilter(this);
     d->viewWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum );
@@ -191,9 +192,9 @@ medVtkView::medVtkView(QObject* parent): medAbstractImageView(parent),
     d->layersListWidget = new QListWidget;
     d->layersListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     connect(d->layersListWidget, SIGNAL(currentRowChanged(int)), this, SLOT(setSelectedLayer(int)));
-    connect(this, SIGNAL(layerAdded(int)), this, SLOT(_prvt_addLayerItem(int)));
-    connect(this, SIGNAL(layerRemoved(int)), this, SLOT(_prvt_removeLayerItem(int)));
-    connect(this, SIGNAL(layerRemoved(int)), this, SLOT(_prvt_removeLayerData(int)));
+    connect(this, SIGNAL(layerAdded(int)), this, SLOT(addLayerItem(int)));
+    connect(this, SIGNAL(layerRemoved(int)), this, SLOT(removeLayerItem(int)));
+    connect(this, SIGNAL(layerRemoved(int)), this, SLOT(removeLayerData(int)));
 
 }
 
@@ -211,7 +212,6 @@ medVtkView::~medVtkView()
     delete d->toolBox;
     delete d->toolBar;
     delete d->viewWidget;
-    delete d->mainWidget;
 
     delete d;
 }
@@ -241,24 +241,6 @@ QString medVtkView::description() const
     return "medVtkView";
 }
 
-QWidget* medVtkView::widget()
-{
-    if(!d->mainWidget)
-    {
-        // construct main widget
-        d->mainWidget = new QWidget;
-
-        d->mainLayout = new QVBoxLayout(d->mainWidget);
-        d->mainLayout->setContentsMargins(0, 0, 0, 0);
-        d->mainLayout->setSpacing(0);
-
-        d->mainLayout->addWidget(this->toolBar());
-        d->mainLayout->addWidget(this->viewWidget());
-    }
-
-    return d->mainWidget;
-}
-
 QWidget* medVtkView::viewWidget()
 {
     return d->viewWidget;
@@ -269,6 +251,7 @@ QWidget* medVtkView::toolBar()
     if(!d->toolBar)
     {
         d->toolBar = new QWidget;
+        connect(d->toolBar, SIGNAL(destroyed()), this, SLOT(removeInternToolBar()));
         d->toolBar->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
         d->toolbarLayout = new QHBoxLayout(d->toolBar);
         d->toolbarLayout->setContentsMargins(0, 0, 0, 0);
@@ -283,7 +266,7 @@ QWidget* medVtkView::toolBox()
 {
     if(!d->toolBox)
     {
-        this->_prvt_buildToolBox();
+        this->buildToolBox();
     }
     return d->toolBox;
 }
@@ -441,27 +424,28 @@ qreal medVtkView::scale()
     return scale;
 }
 
-void medVtkView::_prvt_setWindowingInteractionStyle(bool windowing)
+void medVtkView::setWindowingInteractionStyle(bool windowing)
 {
     if(windowing)
         d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeWindowLevel);
 }
 
-void medVtkView::_prvt_setZoomInteractionStyle(bool zoom)
+void medVtkView::setZoomInteractionStyle(bool zoom)
 {
     if(zoom)
         d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeZoom);
 }
 
-void medVtkView::_prvt_setSLicingInteractionStyle(bool slicing)
+void medVtkView::setSLicingInteractionStyle(bool slicing)
 {
     if(slicing)
         d->view2d->SetLeftButtonInteractionStyle(vtkInteractorStyleImageView2D::InteractionTypeSlice);
 }
 
-void medVtkView::_prvt_buildToolBox()
+void medVtkView::buildToolBox()
 {
     d->toolBox = new QWidget;
+    connect(d->toolBox, SIGNAL(destroyed()), this, SLOT(removeInternToolBox()));
     QVBoxLayout *toolBoxLayout = new QVBoxLayout(d->toolBox);
     toolBoxLayout->setContentsMargins(0,0,0,0);
     toolBoxLayout->setMargin(0);
@@ -475,7 +459,7 @@ void medVtkView::_prvt_buildToolBox()
 
     toolBoxLayout->addWidget(d->navigatorToolBox);
 
-    this->_prvt_buildMouseInteracToolBox();
+    this->buildMouseInteracToolBox();
     toolBoxLayout->addWidget(d->mouseStyleToolBox);
 
     d->layerToolBox = new medToolBox(d->toolBox);
@@ -494,7 +478,7 @@ void medVtkView::_prvt_buildToolBox()
 
 }
 
-void medVtkView::_prvt_buildMouseInteracToolBox()
+void medVtkView::buildMouseInteracToolBox()
 {
     d->mouseInteractionsParameter = new medBoolGroupParameter("Mouse interactions", this);
     d->mouseInteractionsParameter->setPushButtonDirection(QBoxLayout::LeftToRight);
@@ -510,13 +494,13 @@ void medVtkView::_prvt_buildMouseInteracToolBox()
     d->mouseInteractionsParameter->addParameter(d->slicingInteractionParameter);
 
     connect(d->windowingInteractionParameter, SIGNAL(valueChanged(bool)),
-            this, SLOT(_prvt_setWindowingInteractionStyle(bool)));
+            this, SLOT(setWindowingInteractionStyle(bool)));
 
     connect(d->zoomInteractionParameter, SIGNAL(valueChanged(bool)),
-            this, SLOT(_prvt_setZoomInteractionStyle(bool)));
+            this, SLOT(setZoomInteractionStyle(bool)));
 
     connect(d->slicingInteractionParameter, SIGNAL(valueChanged(bool)),
-            this, SLOT(_prvt_setSLicingInteractionStyle(bool)));
+            this, SLOT(setSLicingInteractionStyle(bool)));
 
     d->windowingInteractionParameter->setValue(true);
 
@@ -526,7 +510,7 @@ void medVtkView::_prvt_buildMouseInteracToolBox()
 }
 
 
-void medVtkView::_prvt_addLayerItem(int layer)
+void medVtkView::addLayerItem(int layer)
 {
     medAbstractData *data = this->data(layer);
     QString thumbPath = medMetaDataKeys::SeriesThumbnail.getFirstValue(data,":icons/layer.png");
@@ -556,7 +540,7 @@ void medVtkView::_prvt_addLayerItem(int layer)
 
     QPushButton *removeButton = new QPushButton;
     removeButton->setIcon(QIcon(":/icons/cross.svg"));
-    connect(removeButton,SIGNAL(clicked()), this, SLOT(_prvt_removeSelectedLayer()));
+    connect(removeButton,SIGNAL(clicked()), this, SLOT(removeSelectedLayer()));
 
     layout->addWidget(thumbnailButton);
     layout->addWidget(layerName);
@@ -576,12 +560,12 @@ void medVtkView::_prvt_addLayerItem(int layer)
 }
 
 
-void medVtkView::_prvt_removeLayerItem(int layer)
+void medVtkView::removeLayerItem(int layer)
 {
     d->layersListWidget->model()->removeRow(layer);
 }
 
-void medVtkView::_prvt_removeSelectedLayer()
+void medVtkView::removeSelectedLayer()
 {
     this->removeLayer(this->selectedLayer());
 }
@@ -608,7 +592,7 @@ void medVtkView::updateInteractorsWidget()
         d->interactorsWidgetStack->addWidget(interactor->toolBoxWidget());
 }
 
-void medVtkView::_prvt_removeLayerData(int layer)
+void medVtkView::removeLayerData(int layer)
 {
     if(this->layersCount() == 0)
     {
@@ -621,3 +605,17 @@ QList<medAbstractParameter*> medVtkView::viewParameters()
 
 }
 
+void medVtkView::removeInternToolBar()
+{
+    d->toolBar = NULL;
+}
+
+void medVtkView::removeInternView()
+{
+    d->viewWidget = NULL;
+}
+
+void medVtkView::removeInternToolBox()
+{
+    d->toolBox = NULL;
+}

@@ -63,7 +63,7 @@ signals:
     void frameChanged(double frameMoment);
 
 private slots:
-    void _prvt_removeInternWidget();
+    void removeInternWidget();
 
 
 private:

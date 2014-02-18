@@ -65,8 +65,6 @@ public:
 
     virtual QString description() const =0;
 
-    virtual QWidget *viewWidget() = 0;
-
     /**
        Set the view zoom factor.
 
@@ -84,7 +82,8 @@ public:
 
     virtual QWidget* toolBar() = 0;
     virtual QWidget* toolBox() = 0;
-    virtual QWidget* widget() = 0;
+    virtual QWidget *viewWidget() = 0;
+
 
     virtual QList<medAbstractParameter*> viewParameters() = 0;
     virtual QList<medAbstractParameter*> navigatorsParameters();

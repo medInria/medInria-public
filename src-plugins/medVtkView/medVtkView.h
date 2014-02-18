@@ -26,8 +26,6 @@ public:
     virtual QString description() const;
 
     virtual QWidget *viewWidget();
-    virtual QWidget *widget();
-
     virtual QWidget* toolBar();
     virtual QWidget* toolBox();
 
@@ -46,21 +44,28 @@ public slots:
     virtual void reset();
 
 private slots:
-    void _prvt_setWindowingInteractionStyle(bool windowing);
-    void _prvt_setZoomInteractionStyle(bool zoom);
-    void _prvt_setSLicingInteractionStyle(bool slicing);
+    void setWindowingInteractionStyle(bool windowing);
+    void setZoomInteractionStyle(bool zoom);
+    void setSLicingInteractionStyle(bool slicing);
 
-    void _prvt_buildToolBox();
-    void _prvt_buildMouseInteracToolBox();
+    void buildToolBox();
+    void buildMouseInteracToolBox();
 
-    void _prvt_addLayerItem(int layer);
-    void _prvt_removeLayerItem(int layer);
+    void addLayerItem(int layer);
+    void removeLayerItem(int layer);
 
-    void _prvt_removeSelectedLayer();
+    void removeSelectedLayer();
 
-    void _prvt_removeLayerData(int layer);
+    void removeLayerData(int layer);
 
     void updateInteractorsWidget();
+
+    void removeInternToolBox();
+    void removeInternToolBar();
+    void removeInternView();
+
+
+
 
 private:
     medVtkViewPrivate *d;

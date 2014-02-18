@@ -117,7 +117,7 @@ QWidget* medPathParameter::getWidget()
         }
         this->addToInternWidgets(d->widget);
         connect(d->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(setValue(QString)));
-        connect(d->widget, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternWidget()));
+        connect(d->widget, SIGNAL(destroyed()), this, SLOT(removeInternWidget()));
     }
     return d->widget;
 }
@@ -175,7 +175,7 @@ void medPathParameter::updateInternWigets()
         d->lineEdit->setText(m_value);
 }
 
-void medPathParameter::_prvt_removeInternWidget()
+void medPathParameter::removeInternWidget()
 {
     this->removeFromInternWidgets(d->widget);
     d->widget = NULL;

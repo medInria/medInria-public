@@ -234,13 +234,13 @@ QWidget* medTimeLineParameter::getWidget()
         widgetLayout->addLayout(buttonsLayout);
         widgetLayout->addWidget(d->frameLineParameter->getSlider());
 
-        connect(d->widget, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternWidget()));
+        connect(d->widget, SIGNAL(destroyed()), this, SLOT(removeInternWidget()));
     }
 
     return d->widget;
 }
 
-void medTimeLineParameter::_prvt_removeInternWidget()
+void medTimeLineParameter::removeInternWidget()
 {
     this->removeFromInternWidgets(d->widget);
     d->widget = NULL;

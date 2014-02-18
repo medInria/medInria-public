@@ -48,7 +48,7 @@ protected:
 
 private slots:
     void openExplorator();
-    void _prvt_removeInternWidget();
+    void removeInternWidget();
 
 private:
     medPathParameterPrivate* d;

@@ -45,9 +45,9 @@ protected:
     virtual void updateInternWigets();
 
 private slots:
-    void _prvt_removeInternPushButton();
-    void _prvt_removeInternRadioButton();
-    void _prvt_removeInternCheckBox();
+    void removeInternPushButton();
+    void removeInternRadioButton();
+    void removeInternCheckBox();
 
 private:
     medBoolParameterPrivate* d;

@@ -274,7 +274,6 @@ void medViewContainer::removeInterneView()
     d->maximisedParameter->hide();
     d->mainLayout->addWidget(d->emptyView, 1, 0, 1, 1);
     d->toolBarLayout->insertWidget(0, d->emptyViewToolBar);
-    delete d->toolBox;
     d->toolBox = NULL;
 }
 

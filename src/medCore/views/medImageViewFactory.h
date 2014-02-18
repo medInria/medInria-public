@@ -45,19 +45,19 @@ public:
     template <typename T>
     bool registerView(QString identifier, QStringList typeHandled)
     {
-        viewCreator creator = _prvt_createView<T>;
+        viewCreator creator = createView<T>;
         return registerView(identifier, typeHandled, creator);
     }
     template <typename T>
     bool registerNavigator(QString identifier, QStringList typeHandled)
     {
-        navigatorCreator creator = _prvt_createNavigator<T>;
+        navigatorCreator creator = createNavigator<T>;
         return registerNavigator(identifier, typeHandled, creator);
     }
     template <typename T>
     bool registerInteractor(QString identifier, QStringList typeHandled)
     {
-        interactorCreator creator = _prvt_creatInteractor<T>;
+        interactorCreator creator = creatInteractor<T>;
         return registerInteractor(identifier, typeHandled, creator);
     }
 
@@ -80,17 +80,17 @@ private:
     static medImageViewFactory *s_instance;
 
     template < typename T>
-    static medAbstractImageView* _prvt_createView(QObject* parent)
+    static medAbstractImageView* createView(QObject* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractImageViewNavigator* _prvt_createNavigator(medAbstractImageView* parent)
+    static medAbstractImageViewNavigator* createNavigator(medAbstractImageView* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractImageViewInteractor* _prvt_creatInteractor(medAbstractImageView* parent)
+    static medAbstractImageViewInteractor* creatInteractor(medAbstractImageView* parent)
     {
         return (new T(parent));
     }

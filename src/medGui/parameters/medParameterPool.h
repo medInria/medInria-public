@@ -56,11 +56,11 @@ private slots:
     void changeParamsValue(const QVector3D& value);
     void changeParamsValue(const QVector4D& value);
 
-    void _prvt_removeInternParam();
+    void removeInternParam();
 
 private:
-    void _prvt_connectParam(medAbstractParameter *parameter);
-    void _prvt_disconnectParam(medAbstractParameter *parameter);
+    void connectParam(medAbstractParameter *parameter);
+    void disconnectParam(medAbstractParameter *parameter);
 
 private:
     medParameterPoolPrivate *d;

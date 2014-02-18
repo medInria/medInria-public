@@ -112,7 +112,7 @@ QPushButton* medBoolParameter::getPushButton()
         }
 
         this->addToInternWidgets(d->pushButton);
-        connect(d->pushButton, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternPushButton()));
+        connect(d->pushButton, SIGNAL(destroyed()), this, SLOT(removeInternPushButton()));
         connect(d->pushButton, SIGNAL(toggled(bool)), this, SLOT(setValue(bool)));
     }
     return d->pushButton;
@@ -128,7 +128,7 @@ QCheckBox* medBoolParameter::getCheckBox()
         d->checkBox->setTristate(false);
 
         this->addToInternWidgets(d->checkBox);
-        connect(d->checkBox, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternCheckBox()));
+        connect(d->checkBox, SIGNAL(destroyed()), this, SLOT(removeInternCheckBox()));
         connect(d->checkBox, SIGNAL(toggled(bool)), this, SLOT(setValue(bool)));
     }
     return d->checkBox;
@@ -146,7 +146,7 @@ QRadioButton* medBoolParameter::getRadioButton()
         d->radioButton->setAutoExclusive(false);
 
         this->addToInternWidgets(d->radioButton);
-        connect(d->radioButton, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternRadioButton()));
+        connect(d->radioButton, SIGNAL(destroyed()), this, SLOT(removeInternRadioButton()));
         connect(d->radioButton, SIGNAL(toggled(bool)), this, SLOT(setValue(bool)));
     }
     return d->radioButton;
@@ -157,19 +157,19 @@ QWidget* medBoolParameter::getWidget()
     return this->getCheckBox();
 }
 
-void medBoolParameter::_prvt_removeInternPushButton()
+void medBoolParameter::removeInternPushButton()
 {
     this->removeFromInternWidgets(d->pushButton);
     d->pushButton = NULL;
 }
 
-void medBoolParameter::_prvt_removeInternCheckBox()
+void medBoolParameter::removeInternCheckBox()
 {
     this->removeFromInternWidgets(d->checkBox);
     d->checkBox = NULL;
 }
 
-void medBoolParameter::_prvt_removeInternRadioButton()
+void medBoolParameter::removeInternRadioButton()
 {
     this->removeFromInternWidgets(d->radioButton);
     d->radioButton = NULL;

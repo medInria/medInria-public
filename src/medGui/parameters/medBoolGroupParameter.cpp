@@ -170,7 +170,7 @@ QWidget* medBoolGroupParameter::getPushButtonGroup()
         }
 
         this->addToInternWidgets(d->pushButtonGroupWidget);
-        connect(d->pushButtonGroupWidget, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternPushButtonGroup()));
+        connect(d->pushButtonGroupWidget, SIGNAL(destroyed()), this, SLOT(removeInternPushButtonGroup()));
     }
     return d->pushButtonGroupWidget;
 }
@@ -194,7 +194,7 @@ QWidget* medBoolGroupParameter::getCheckBoxGroup()
         }
 
         this->addToInternWidgets(d->checkBoxGroupWidget);
-        connect(d->checkBoxGroupWidget, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternCheckBoxGroup()));
+        connect(d->checkBoxGroupWidget, SIGNAL(destroyed()), this, SLOT(removeInternCheckBoxGroup()));
     }
     return d->checkBoxGroupWidget;
 }
@@ -218,7 +218,7 @@ QWidget* medBoolGroupParameter::getRadioButtonGroup()
         }
 
         this->addToInternWidgets(d->radioButtonGroupWidget);
-        connect(d->radioButtonGroupWidget, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternRadioButtonGroup()));
+        connect(d->radioButtonGroupWidget, SIGNAL(destroyed()), this, SLOT(removeInternRadioButtonGroup()));
     }
     return d->radioButtonGroupWidget;
 }
@@ -229,21 +229,21 @@ QWidget* medBoolGroupParameter::getWidget()
 }
 
 
-void medBoolGroupParameter::_prvt_removeInternPushButtonGroup()
+void medBoolGroupParameter::removeInternPushButtonGroup()
 {
     this->removeFromInternWidgets(d->pushButtonGroupWidget);
     d->pushButtonGroupWidget = NULL;
     d->pushButtonLayout = NULL;
 }
 
-void medBoolGroupParameter::_prvt_removeInternCheckBoxGroup()
+void medBoolGroupParameter::removeInternCheckBoxGroup()
 {
     this->removeFromInternWidgets(d->checkBoxGroupWidget);
     d->checkBoxGroupWidget = NULL;
     d->checkBoxLayout = NULL;
 }
 
-void medBoolGroupParameter::_prvt_removeInternRadioButtonGroup()
+void medBoolGroupParameter::removeInternRadioButtonGroup()
 {
     this->removeFromInternWidgets(d->radioButtonGroupWidget);
     d->radioButtonGroupWidget = NULL;

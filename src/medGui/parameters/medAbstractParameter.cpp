@@ -58,7 +58,7 @@ QLabel* medAbstractParameter::getLabel()
     {
         d->label = new QLabel(name());
         this->addToInternWidgets(d->label);
-        connect(d->label, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternLabel()));
+        connect(d->label, SIGNAL(destroyed()), this, SLOT(removeInternLabel()));
     }
 
     return d->label;
@@ -89,7 +89,7 @@ void medAbstractParameter::hide()
         widget->hide();
 }
 
-void medAbstractParameter::_prvt_removeInternLabel()
+void medAbstractParameter::removeInternLabel()
 {
     this->removeFromInternWidgets(d->label);
     d->label = NULL;
@@ -139,13 +139,13 @@ QWidget* medTestParameter::getWidget()
     {
         d->widget = new QWidget;
         this->addToInternWidgets(d->widget);
-        connect(d->widget, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternWidget()));
+        connect(d->widget, SIGNAL(destroyed()), this, SLOT(removeInternWidget()));
     }
 
     return d->widget;
 }
 
-void medTestParameter::_prvt_removeInternWidget()
+void medTestParameter::removeInternWidget()
 {
     this->removeFromInternWidgets(d->widget);
     d->widget = NULL;

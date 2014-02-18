@@ -65,13 +65,13 @@ void medParameterPool::append(medAbstractParameter *parameter)
         foreach(medAbstractParameter* param, group->parametersCandidateToPool())
         {
             d->pool.insert(param->name(), param);
-            _prvt_connectParam(param);
+            connectParam(param);
         }
     }
     else
     {
         d->pool.insert(parameter->name(), parameter);
-        _prvt_connectParam(parameter);
+        connectParam(parameter);
     }
 }
 
@@ -97,7 +97,7 @@ void medParameterPool::removeAll (QString name)
 void medParameterPool::clear()
 {
     foreach(medAbstractParameter* param, d->pool)
-        _prvt_disconnectParam(param);
+        disconnectParam(param);
 
     d->pool.clear();
 }
@@ -246,7 +246,7 @@ int medParameterPool::count() const
    return d->pool.keys().size();
 }
 
-void medParameterPool::_prvt_removeInternParam()
+void medParameterPool::removeInternParam()
 {
     medAbstractParameter *param = dynamic_cast<medAbstractParameter*>(sender());
     if(param)
@@ -256,9 +256,9 @@ void medParameterPool::_prvt_removeInternParam()
     }
 }
 
-void medParameterPool::_prvt_connectParam(medAbstractParameter *parameter)
+void medParameterPool::connectParam(medAbstractParameter *parameter)
 {
-    connect(parameter, SIGNAL(aboutToBeDestroyed()), this, SLOT(_prvt_removeInternParam()));
+    connect(parameter, SIGNAL(aboutToBeDestroyed()), this, SLOT(removeInternParam()));
 
     if(medAbstractTriggerParameter* param = dynamic_cast<medAbstractTriggerParameter*>(parameter))
         connect(param, SIGNAL(triggered()), this, SLOT(triggerParams()));
@@ -278,7 +278,7 @@ void medParameterPool::_prvt_connectParam(medAbstractParameter *parameter)
         connect(param, SIGNAL(valueChanged(QVector4D)), this, SLOT(changeParamsValue(QVector4D)));
 }
 
-void medParameterPool::_prvt_disconnectParam(medAbstractParameter *parameter)
+void medParameterPool::disconnectParam(medAbstractParameter *parameter)
 {
     parameter->disconnect(this);
 }

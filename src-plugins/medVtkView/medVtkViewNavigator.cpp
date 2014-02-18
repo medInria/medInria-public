@@ -517,28 +517,28 @@ medImageView::Orientation medVtkViewNavigator::orientation() const
 void medVtkViewNavigator::setAxial(bool axial)
 {
     if(axial)
-        this->_prvt_setOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
+        this->changeOrientation(medImageView::VIEW_ORIENTATION_AXIAL);
 }
 
 void medVtkViewNavigator::setCoronal(bool coronal)
 {
     if(coronal)
-        this->_prvt_setOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
+        this->changeOrientation(medImageView::VIEW_ORIENTATION_CORONAL);
 }
 
 void medVtkViewNavigator::setSagittal(bool sagittal)
 {
     if(sagittal)
-        this->_prvt_setOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
+        this->changeOrientation(medImageView::VIEW_ORIENTATION_SAGITTAL);
 }
 
 void medVtkViewNavigator::set3d(bool o3d)
 {
     if(o3d)
-        this->_prvt_setOrientation(medImageView::VIEW_ORIENTATION_3D);
+        this->changeOrientation(medImageView::VIEW_ORIENTATION_3D);
 }
 
-void medVtkViewNavigator::_prvt_setOrientation(medImageView::Orientation orientation)
+void medVtkViewNavigator::changeOrientation(medImageView::Orientation orientation)
 {
     double pos[3];
     int timeIndex = 0;
@@ -557,15 +557,15 @@ void medVtkViewNavigator::_prvt_setOrientation(medImageView::Orientation orienta
         d->currentView = d->view3d;
         break;
     case medImageView::VIEW_ORIENTATION_AXIAL:
-        d->view2d->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_AXIAL);
+        d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_AXIAL);
         d->currentView = d->view2d;
       break;
     case medImageView::VIEW_ORIENTATION_CORONAL:
-        d->view2d->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_CORONAL);
+        d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_CORONAL);
         d->currentView = d->view2d;
       break;
     case medImageView::VIEW_ORIENTATION_SAGITTAL:
-        d->view2d->SetViewOrientation (vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
+        d->view2d->SetViewOrientation(vtkImageView2D::VIEW_ORIENTATION_SAGITTAL);
         d->currentView = d->view2d;
 
         break;

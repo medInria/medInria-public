@@ -50,31 +50,31 @@ public:
     template <typename T>
     bool registerView(QString identifier, QStringList typeHandled)
     {
-        viewCreator creator = _prvt_createView<T>;
+        viewCreator creator = createView<T>;
         return registerView(identifier, typeHandled, creator);
     }
     template <typename T>
     bool registerNavigator(QString identifier, QStringList typeHandled)
     {
-        navigatorCreator creator = _prvt_createNavigator<T>;
+        navigatorCreator creator = createNavigator<T>;
         return registerNavigator(identifier, typeHandled, creator);
     }
     template <typename T>
     bool registerInteractor(QString identifier, QStringList typeHandled)
     {
-        interactorCreator creator = _prvt_creatInteractor<T>;
+        interactorCreator creator = creatInteractor<T>;
         return registerInteractor(identifier, typeHandled, creator);
     }
     template <typename T>
     bool registerAdditionalNavigator(QString identifier, QStringList typeHandled)
     {
-        addNavigatorCreator creator = _prvt_createAdditionalNavigator<T>;
+        addNavigatorCreator creator = createAdditionalNavigator<T>;
         return registerAdditionalNavigator(identifier, typeHandled, creator);
     }
     template <typename T>
     bool registerAdditionalInteractor(QString identifier, QStringList typeHandled)
     {
-        addInteractorCreator creator = _prvt_creatAdditionalInteractor<T>;
+        addInteractorCreator creator = creatAdditionalInteractor<T>;
         return registerAdditionalInteractor(identifier, typeHandled, creator);
     }
 
@@ -102,27 +102,27 @@ private:
 
 
     template < typename T>
-    static medAbstractView* _prvt_createView(QObject* parent)
+    static medAbstractView* createView(QObject* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractViewNavigator* _prvt_createNavigator(medAbstractView* parent)
+    static medAbstractViewNavigator* createNavigator(medAbstractView* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractViewInteractor* _prvt_creatInteractor(medAbstractView* parent)
+    static medAbstractViewInteractor* creatInteractor(medAbstractView* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractNavigator* _prvt_createAdditionalNavigator(medAbstractView* parent)
+    static medAbstractNavigator* createAdditionalNavigator(medAbstractView* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractInteractor* _prvt_creatAdditionalInteractor(medAbstractView* parent)
+    static medAbstractInteractor* creatAdditionalInteractor(medAbstractView* parent)
     {
         return (new T(parent));
     }

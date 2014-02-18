@@ -94,7 +94,7 @@ protected slots:
     double cameraZoom();
 
 private:
-    void _prvt_setOrientation(medImageView::Orientation orientation);
+    void changeOrientation(medImageView::Orientation orientation);
 
 private:
     medVtkViewNavigatorPrivate *d;

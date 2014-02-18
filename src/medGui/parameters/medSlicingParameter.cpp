@@ -122,7 +122,7 @@ QSpinBox* medSlicingParameter::getSpinBox()
         d->spinBox->setValue(m_value);
 
         this->addToInternWidgets(d->spinBox);
-        connect(d->spinBox, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternSlider()));
+        connect(d->spinBox, SIGNAL(destroyed()), this, SLOT(removeInternSlider()));
         connect(d->spinBox, SIGNAL(valueChanged(double)), this, SLOT(setValue(double)));
     }
     return d->spinBox;
@@ -135,7 +135,7 @@ QWidget* medSlicingParameter::getWidget()
 }
 
 
-void medSlicingParameter::_prvt_removeInternSpinBox()
+void medSlicingParameter::removeInternSpinBox()
 {
     this->removeFromInternWidgets(d->spinBox);
     d->spinBox = NULL;

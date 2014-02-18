@@ -45,19 +45,19 @@ public:
     template <typename T>
     bool registerView(QString identifier, QStringList typeHandled)
     {
-        viewCreator creator = _prvt_createView<T>;
+        viewCreator creator = createView<T>;
         return registerView(identifier, typeHandled, creator);
     }
     template <typename T>
     bool registerNavigator(QString identifier, QStringList typeHandled)
     {
-        navigatorCreator creator = _prvt_createNavigator<T>;
+        navigatorCreator creator = createNavigator<T>;
         return registerNavigator(identifier, typeHandled, creator);
     }
     template <typename T>
     bool registerInteractor(QString identifier, QStringList typeHandled)
     {
-        interactorCreator creator = _prvt_creatInteractor<T>;
+        interactorCreator creator = creatInteractor<T>;
         return registerInteractor(identifier, typeHandled, creator);
     }
 
@@ -81,17 +81,17 @@ private:
 
 
     template < typename T>
-    static medAbstractLayeredView* _prvt_createView(QObject* parent)
+    static medAbstractLayeredView* createView(QObject* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractLayeredViewNavigator* _prvt_createNavigator(medAbstractLayeredView* parent)
+    static medAbstractLayeredViewNavigator* createNavigator(medAbstractLayeredView* parent)
     {
         return (new T(parent));
     }
     template < typename T>
-    static medAbstractLayeredViewInteractor* _prvt_creatInteractor(medAbstractLayeredView* parent)
+    static medAbstractLayeredViewInteractor* creatInteractor(medAbstractLayeredView* parent)
     {
         return (new T(parent));
     }

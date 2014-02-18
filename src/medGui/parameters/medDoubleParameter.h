@@ -43,8 +43,8 @@ protected:
     virtual void updateInternWigets();
 
 private slots:
-    void _prvt_removeInternSpinBox();
-    void _prvt_removeInternSlider();
+    void removeInternSpinBox();
+    void removeInternSlider();
 
     void setIntValue(int);
 

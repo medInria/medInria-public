@@ -48,9 +48,9 @@ public:
 
 
 private slots:
-    void _prvt_removeInternPushButtonGroup();
-    void _prvt_removeInternRadioButtonGroup();
-    void _prvt_removeInternCheckBoxGroup();
+    void removeInternPushButtonGroup();
+    void removeInternRadioButtonGroup();
+    void removeInternCheckBoxGroup();
 
 private:
     medBoolGroupParameterPrivate* d;

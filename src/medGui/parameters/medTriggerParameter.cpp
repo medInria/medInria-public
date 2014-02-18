@@ -84,7 +84,7 @@ QPushButton* medTriggerParameter::getPushButton()
         }
 
         this->addToInternWidgets(d->pushButton);
-        connect(d->pushButton, SIGNAL(destroyed()), this, SLOT(_prvt_removeInternPushButton()));
+        connect(d->pushButton, SIGNAL(destroyed()), this, SLOT(removeInternPushButton()));
         connect(d->pushButton, SIGNAL(clicked()), this, SLOT(trigger()));
     }
     return d->pushButton;
@@ -95,7 +95,7 @@ QWidget* medTriggerParameter::getWidget()
     return this->getPushButton();
 }
 
-void medTriggerParameter::_prvt_removeInternPushButton()
+void medTriggerParameter::removeInternPushButton()
 {
     this->removeFromInternWidgets(d->pushButton);
     d->pushButton = NULL;
