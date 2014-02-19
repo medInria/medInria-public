@@ -11,14 +11,16 @@
 
 =========================================================================*/
 
+#include <medTabbedViewContainers.h>
+
+#include <QUuid>
 #include <QtCore>
 #include <QShortcut>
 
-#include <medTabbedViewContainers.h>
-
 #include <medViewContainer.h>
 #include <medViewContainerSplitter.h>
-#include <QUuid>
+#include <medViewContainerManager.h>
+
 
 class medTabbedViewContainersPrivate
 {
@@ -44,6 +46,8 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
     d->closeShortcut = new QShortcut(this);
     d->closeShortcut->setKey(Qt::ControlModifier + Qt::Key_W);
     connect(d->closeShortcut,SIGNAL(activated()),this,SLOT(resetCurrentTab()));
+
+    connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(disconnectTabFromSplitter(int)));
 }
 
 medTabbedViewContainers::~medTabbedViewContainers(void)
@@ -91,11 +95,14 @@ void medTabbedViewContainers::addContainerInTab(const QString &name)
 
 void medTabbedViewContainers::insertContainerInTab(int index, const QString &name)
 {
-    medViewContainerSplitter *splitter  = new medViewContainerSplitter(this);
+    medViewContainerSplitter *splitter  = new medViewContainerSplitter;
+    int test = this->insertTab(index, splitter, name);
+    this->setCurrentWidget(splitter);
+//    this->setCurrentIndex(test);
+    connect(splitter, SIGNAL(destroyed()), this, SLOT(repopulateCurrentTab()));
     connect(splitter, SIGNAL(newContainer(QUuid&)), this, SIGNAL(newContainer(QUuid&)));
-
+    connect(splitter, SIGNAL(newContainer(QUuid&)), this, SLOT(addContainerToContainerInTab(QUuid&)));
     splitter->addViewContainer(new medViewContainer);
-    this->insertTab(index, splitter, name);
 }
 
 void medTabbedViewContainers::hideTabBar()
@@ -103,3 +110,21 @@ void medTabbedViewContainers::hideTabBar()
     QTabBar *tabBar = this->tabBar();
     tabBar->hide();
 }
+
+void medTabbedViewContainers::repopulateCurrentTab()
+{
+    int idx = this->currentIndex();
+    qDebug()<< "idx" << idx;
+    this->insertContainerInTab(idx, this->tabText(idx));
+    qDebug()<< "this->currentIndex()" << this->currentIndex();
+}
+
+void medTabbedViewContainers::disconnectTabFromSplitter(int index)
+{
+    medViewContainerSplitter* splitter = dynamic_cast<medViewContainerSplitter*>(this->sender());
+    if(!splitter)
+        return;
+
+    splitter->disconnect(this);
+}
+

@@ -39,6 +39,7 @@ public slots:
 
 signals:
     void newContainer(QUuid&);
+    void containerRemoved();
 
 private:
     void recomputeSizes(int requestIndex, int newIndex, int newSize);

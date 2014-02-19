@@ -41,7 +41,6 @@ public:
 
     bool selected;
     bool maximised;
-    bool closable;
 
     QGridLayout* mainLayout;
     QHBoxLayout* toolBarLayout;
@@ -49,7 +48,6 @@ public:
     QPushButton* vSplittButton;
     QPushButton* hSplittButton;
     QPushButton* closeContainerButton;
-    QPushButton* removeViewButton;
 
     QLabel *northDragLabel;
     QLabel *eastDragLabel;
@@ -102,12 +100,6 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->closeContainerButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->closeContainerButton->setFocusPolicy(Qt::NoFocus);
 
-    d->removeViewButton = new QPushButton;
-    d->removeViewButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
-    connect(d->removeViewButton, SIGNAL(clicked()), this, SLOT(removeView()));
-    d->removeViewButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    d->removeViewButton->setFocusPolicy(Qt::NoFocus);
-
     d->vSplittButton = new QPushButton(this);
     d->vSplittButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_vertical.png"));
     d->vSplittButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
@@ -148,7 +140,6 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->toolBarLayout->addWidget(d->vSplittButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->hSplittButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->closeContainerButton, 0, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->removeViewButton, 0, Qt::AlignRight);
 
     d->mainLayout = new QGridLayout(this);
     d->mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -156,9 +147,7 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->mainLayout->addWidget(toolBar, 0, 0);
     d->mainLayout->addWidget(d->emptyView, 1, 0);
 
-    //just to be sure to enter the setClosable method
-    d->closable = false;
-    this->setClosable(true);
+
     this->setAcceptDrops(true);
     this->setFocusPolicy(Qt::ClickFocus);
     this->setMouseTracking(true);
@@ -189,28 +178,6 @@ medToolBox* medViewContainer::toolBox() const
     return d->toolBox;
 }
 
-bool medViewContainer::isClosable() const
-{
-    return d->closable;
-}
-
-void medViewContainer::setClosable(bool closable)
-{
-    if(d->closable == closable)
-        return;
-
-    d->closable = closable;
-    if(d->closable)
-    {
-        d->removeViewButton->hide();
-        d->closeContainerButton->show();
-    }
-    else
-    {
-        d->closeContainerButton->hide();
-        d->removeViewButton->show();
-    }
-}
 
 void medViewContainer::setView(medAbstractView *view)
 {

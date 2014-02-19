@@ -51,9 +51,8 @@ void medViewContainerManager::registerNewContainer(medViewContainer* newContaine
 void medViewContainerManager::unregisterContainer(medViewContainer *container)
 {
     QUuid uuid = container->uuid();
+    emit containerAboutToBeDestroyed(uuid);
     d->containers.remove(uuid);
-
-    emit containerDestroyed(uuid);
 }
 
 medViewContainer* medViewContainerManager::container(QUuid uuid) const

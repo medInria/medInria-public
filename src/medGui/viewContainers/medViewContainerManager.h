@@ -43,7 +43,7 @@ protected:
     static medViewContainerManager *s_instance;
 
 signals:
-    void containerDestroyed(QUuid& uuid);
+    void containerAboutToBeDestroyed(QUuid& uuid);
 
 private:
     medViewContainerManagerPrivate *d;

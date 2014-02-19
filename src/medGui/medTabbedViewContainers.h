@@ -34,32 +34,27 @@ class MEDGUI_EXPORT medTabbedViewContainers : public QTabWidget
 
 public:
      medTabbedViewContainers(QWidget *parent = 0);
-     
     ~medTabbedViewContainers();
 
     void lockTabs();
-
     void unlockTabs();
-
     void hideTabBar();
 
 
 public slots:
-
     void addContainerInTab();
-
-
     void addContainerInTab(const QString &name);
-
     void insertContainerInTab(int index, const QString &name);
-
-
     void resetCurrentTab();
-
     void resetTab(int index);
+
+private slots:
+    void disconnectTabFromSplitter(int index);
+    void repopulateCurrentTab();
 
 signals:
     void newContainer(QUuid&);
+
 
 
 private:

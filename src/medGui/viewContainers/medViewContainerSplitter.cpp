@@ -115,6 +115,8 @@ void medViewContainerSplitter::insertViewContainer(int index, medViewContainer *
     connect(container, SIGNAL(splitRequest(medDataIndex, Qt::AlignmentFlag)),
             this, SLOT(split(medDataIndex, Qt::AlignmentFlag)));
     connect(container, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLive()));
+    connect(container, SIGNAL(destroyed()), this, SIGNAL(containerRemoved()));
+
 
     emit newContainer(container->uuid());
 
@@ -160,6 +162,7 @@ void medViewContainerSplitter::insertNestedSplitter(int index,
     medViewContainerSplitter *splitter = new medViewContainerSplitter;
     splitter->setOrientation(ori);
     connect(splitter, SIGNAL(newContainer(QUuid&)), this, SIGNAL(newContainer(QUuid&)));
+    connect(splitter, SIGNAL(containerRemoved()), this, SIGNAL(containerRemoved()));
     connect(splitter, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLive()));
     splitter->addViewContainer(oldContainer);
     splitter->addViewContainer(newContainer);

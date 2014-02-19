@@ -1042,67 +1042,6 @@ QLabel#quickAccessMenuHeader
 
 
 /*******************************************************************************
-     medViewPropertiesToolBox
- *******************************************************************************/
-medViewPropertiesToolBox QTreeWidget
-{
-    alternate-background-color: $VIEW_PROPERTY_ALT_BACKGROUND;
-    color: $VIEW_PROPERTY_COLOR;
-    background: $VIEW_PROPERTY_BACKGROUND;
-    min-height: $VIEW_PROPERTY_MIN_HEIGHT;
-}
-
-medViewPropertiesToolBox QHeaderView::section
-{
-    background-color: $VIEW_PROPERTY_HEADER_BACKGROUND;
-}
-
-medViewPropertiesToolBox QTreeWidget::item
-{
-    outline: 0px;
-    padding: $VIEW_PROPERTY_ITEM_PADDING;
-}
-
-medViewPropertiesToolBox QTreeWidget QComboBox
-{
-    border-radius: $VIEW_PROPERTY_COMBO_BOX_RADIUS;
-}
-
-medViewPropertiesToolBox QTreeWidget::branch:has-siblings:!adjoins-item
-{
-    image: none;
-}
-
-medViewPropertiesToolBox QTreeWidget::branch:has-siblings:adjoins-item
-{
-    image: none;
-}
-
-medViewPropertiesToolBox QTreeWidget::branch:!has-children:!has-siblings:adjoins-item
-{
-    image: none;
-}
-
-medViewPropertiesToolBox QTreeWidget::branch:has-children:!has-siblings:closed,
-medViewPropertiesToolBox QTreeWidget::branch:closed:has-children:has-siblings
-{
-    border-image: none;
-    image: url(:pixmaps/arrow-right.png);
-}
-
-medViewPropertiesToolBox QTreeWidget::branch:open:has-children
-{
-    border-image: none;
-    image: url(:pixmaps/arrow-bot.png);
-    color: $VIEW_PROPERTY_ITEM_COLOR;
-}
-medViewPropertiesToolBox QTreeWidget::item:open:has-children
-{
-    color: $VIEW_PROPERTY_ITEM_SELECTED_COLOR;
-}
-
-
-/*******************************************************************************
       medToolBox
  *******************************************************************************/
 medToolBox .QWidget
@@ -1173,6 +1112,12 @@ medViewContainer
 medViewContainer [selected = "true"]
 {
     border: $CONTAINER_SELECTED_BORDER;
+}
+
+
+medViewContainerSplitter
+{
+    background: $GREEN;
 }
 
 

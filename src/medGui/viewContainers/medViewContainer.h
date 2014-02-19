@@ -36,7 +36,6 @@ public:
 
     bool isSelected() const;
     bool isMaximised() const;
-    bool isClosable() const;
     medAbstractView* view() const;
     QUuid& uuid() const;
     medToolBox* toolBox() const;
@@ -47,7 +46,6 @@ public slots:
     void setMaximised(bool maximised);
     void setView(medAbstractView* view);
     void addData(medAbstractData* data);
-    void setClosable(bool cloasable);
 
 signals:
     void maximised(QUuid& uuid, bool maximised);
