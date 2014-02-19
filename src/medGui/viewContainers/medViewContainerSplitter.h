@@ -42,7 +42,7 @@ signals:
 
 private:
     void recomputeSizes(int requestIndex, int newIndex, int newSize);
-    void addNestedSplitter(int index,
+    void insertNestedSplitter(int index,
                            medViewContainer *oldContainer,
                            medViewContainer *newContainer);
 };

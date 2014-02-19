@@ -62,7 +62,7 @@ medViewContainer *medViewContainerSplitter::split(Qt::AlignmentFlag alignement)
             this->recomputeSizes(index + 1, index, newSize);
         }
         else
-            this->addNestedSplitter(index, newContainer, container);
+            this->insertNestedSplitter(index, newContainer, container);
         break;
     case Qt::AlignBottom:
         if(this->orientation() == Qt::Vertical)
@@ -71,7 +71,7 @@ medViewContainer *medViewContainerSplitter::split(Qt::AlignmentFlag alignement)
             this->recomputeSizes(index, index + 1, newSize);
         }
         else
-            this->addNestedSplitter(index, container, newContainer);
+            this->insertNestedSplitter(index, container, newContainer);
         break;
     case Qt::AlignRight:
         if(this->orientation() == Qt::Horizontal)
@@ -80,7 +80,7 @@ medViewContainer *medViewContainerSplitter::split(Qt::AlignmentFlag alignement)
             this->recomputeSizes(index, index + 1, newSize);
         }
         else
-            this->addNestedSplitter(index, container, newContainer);
+            this->insertNestedSplitter(index, container, newContainer);
         break;
     case Qt::AlignTop:
         if(this->orientation() == Qt::Vertical)
@@ -89,7 +89,7 @@ medViewContainer *medViewContainerSplitter::split(Qt::AlignmentFlag alignement)
             this->recomputeSizes(index + 1, index, newSize);
         }
         else
-            this->addNestedSplitter(index, newContainer, container);
+            this->insertNestedSplitter(index, newContainer, container);
         break;
     }
 
@@ -147,7 +147,7 @@ void medViewContainerSplitter::recomputeSizes(int requestIndex, int newIndex, in
     this->setSizes(newSizes);
 }
 
-void medViewContainerSplitter::addNestedSplitter(int index,
+void medViewContainerSplitter::insertNestedSplitter(int index,
                                                  medViewContainer *oldContainer,
                                                  medViewContainer *newContainer)
 {
@@ -160,6 +160,7 @@ void medViewContainerSplitter::addNestedSplitter(int index,
     medViewContainerSplitter *splitter = new medViewContainerSplitter;
     splitter->setOrientation(ori);
     connect(splitter, SIGNAL(newContainer(QUuid&)), this, SIGNAL(newContainer(QUuid&)));
+    connect(splitter, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLive()));
     splitter->addViewContainer(oldContainer);
     splitter->addViewContainer(newContainer);
     this->insertWidget(index, splitter);
