@@ -233,7 +233,9 @@ void medTimeLineParameter::setFrame(int frame)
 
 void medTimeLineParameter::updateFrameParameter(int frame)
 {
+    d->frameLineParameter->blockSignals(true);
     d->frameLineParameter->setValue(frame);
+    d->frameLineParameter->blockSignals(false);
 }
 
 void medTimeLineParameter::setFrame(double time)
@@ -244,7 +246,9 @@ void medTimeLineParameter::setFrame(double time)
 
 void medTimeLineParameter::updateTimeParameter(double time)
 {
+    d->timeParameter->blockSignals(true);
     d->timeParameter->setValue(time);
+    d->timeParameter->blockSignals(false);
     emit frameChanged(time);
 }
 

@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include <medAbstractViewInteractor.h>
+#include <medAbstractInteractor.h>
 
 class vtkDataMesh4DInteractorPrivate;
 
-class vtkDataMesh4DInteractor : public medAbstractViewInteractor
+class vtkDataMesh4DInteractor : public medAbstractInteractor
 {
     Q_OBJECT
 
@@ -51,7 +51,7 @@ public:
     double sequencesMinTimeStep();
 
 public slots:
-    void setCurrentTime (qreal time);
+    void setCurrentTime (double time);
 
 private:
     static QStringList dataHandled();

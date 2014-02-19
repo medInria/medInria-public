@@ -29,7 +29,7 @@ public:
 };
 
 
-vtkDataMesh4DInteractor::vtkDataMesh4DInteractor(medAbstractView* parent): medAbstractViewInteractor(parent), d(new vtkDataMesh4DInteractorPrivate)
+vtkDataMesh4DInteractor::vtkDataMesh4DInteractor(medAbstractView* parent): medAbstractInteractor(parent), d(new vtkDataMesh4DInteractorPrivate)
 {
     d->view = dynamic_cast<medAbstractImageView *>(parent);
 
@@ -93,11 +93,6 @@ void vtkDataMesh4DInteractor::setData(medAbstractData *data)
         {
         case vtkMetaDataSet::VTK_META_SURFACE_MESH:
         case vtkMetaDataSet::VTK_META_VOLUME_MESH:
-
-            //prop->SetColor(1,0,1);
-
-            //d->view->view2d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));//->SetProperty(prop);
-            //d->view->view3d()->AddDataSet (vtkPointSet::SafeDownCast (sequence->GetDataSet()));//->SetProperty(prop);
             d->sequence = sequence;
 
             d->timeLineParameter = new medTimeLineParameter("Time");
@@ -108,18 +103,9 @@ void vtkDataMesh4DInteractor::setData(medAbstractData *data)
             maxtime = range[1];
 
              numberofsteps = std::ceil ((maxtime - mintime) / (mintimestep) + 1.0);
-
-            //d->timeSlider->setRange (0, numberofsteps - 1);
             d->timeLineParameter->setNumberOfFrame(numberofsteps);
-            //d->timeLine->setFrameRange(d->timeSlider->minimum(), d->timeSlider->maximum() );
-
-           /* d->minTime = mintime;
-            d->minTimeStep = mintimestep;
-            d->maxTime = maxtime;*/
-
-            //d->timeLine->setDuration((maxtime+mintimestep)*1000);
             d->timeLineParameter->setDuration((maxtime+mintimestep));
-            connect(d->timeLineParameter, SIGNAL(frameChanged(qreal)), this, SLOT(setCurrentTime(qreal)));
+            connect(d->timeLineParameter, SIGNAL(frameChanged(double)), this, SLOT(setCurrentTime(double)));
             break;
         default:
             break;
@@ -150,7 +136,7 @@ QList<medAbstractParameter*> vtkDataMesh4DInteractor::parameters()
 {
 }
 
-void vtkDataMesh4DInteractor::setCurrentTime (qreal time)
+void vtkDataMesh4DInteractor::setCurrentTime (double time)
 {
     if (!d->view)
         return;

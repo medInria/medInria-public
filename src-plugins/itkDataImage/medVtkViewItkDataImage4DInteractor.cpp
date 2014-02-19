@@ -38,11 +38,11 @@ bool AppendImageSequence(medAbstractData* data,medAbstractImageView* view,vtkMet
 
         if (layer==1 && !backend->view2D->GetInput())
             layer = 0;
-        vtkMetaDataSetSequence* metaDataSetSequence = vtkMetaDataSetSequence::New();
-        metaDataSetSequence->SetITKDataSet<TYPE>(image);
-        sequence = metaDataSetSequence;
-        vtkMetaImageData* metaimage = vtkMetaImageData::SafeDownCast(metaDataSetSequence->GetMetaDataSet(0U));
-        vtkImageData*     vtkimage  = vtkImageData::SafeDownCast(metaDataSetSequence->GetDataSet());
+
+        sequence->SetITKDataSet<TYPE>(image);
+
+        vtkMetaImageData* metaimage = vtkMetaImageData::SafeDownCast(sequence->GetMetaDataSet(0U));
+        vtkImageData*     vtkimage  = vtkImageData::SafeDownCast(sequence->GetDataSet());
 
         backend->view2D->SetInput(vtkimage,metaimage->GetOrientationMatrix(),layer);
         backend->view3D->SetInput(vtkimage,metaimage->GetOrientationMatrix(),layer);
@@ -52,7 +52,8 @@ bool AppendImageSequence(medAbstractData* data,medAbstractImageView* view,vtkMet
     return false;
 }
 
-medVtkViewItkDataImage4DInteractor::medVtkViewItkDataImage4DInteractor(medAbstractImageView* parent): medVtkViewItkDataImageInteractor(parent), d(new medVtkViewItkDataImage4DInteractorPrivate)
+medVtkViewItkDataImage4DInteractor::medVtkViewItkDataImage4DInteractor(medAbstractImageView* parent):
+    medVtkViewItkDataImageInteractor(parent), d(new medVtkViewItkDataImage4DInteractorPrivate)
 {
     d->view = dynamic_cast<medAbstractImageView *>(parent);
 
@@ -114,12 +115,14 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
 
     if (data->identifier().contains("Image") && data->identifier().contains ("4")) {
 
-        if (!(AppendImageSequence<char>(data,d->view,d->sequence)           ||
+        d->sequence = vtkMetaDataSetSequence::New();
+
+        if (  AppendImageSequence<char>(data,d->view,d->sequence)           ||
               AppendImageSequence<unsigned char>(data,d->view,d->sequence)  ||
               AppendImageSequence<short>(data,d->view,d->sequence)          ||
               AppendImageSequence<unsigned short>(data,d->view,d->sequence) ||
               AppendImageSequence<float>(data,d->view,d->sequence)          ||
-              AppendImageSequence<double>(data,d->view,d->sequence))) {
+              AppendImageSequence<double>(data,d->view,d->sequence)) {
 
             d->timeLineParameter = new medTimeLineParameter("Time");
 
@@ -226,3 +229,6 @@ double medVtkViewItkDataImage4DInteractor::sequencesMinTimeStep()
     return step;
 }
 
+void medVtkViewItkDataImage4DInteractor::updateWidgets()
+{
+}

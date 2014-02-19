@@ -42,16 +42,17 @@ public:
 
     virtual QList<medAbstractParameter*> parameters();
 
-
-
     double getCurrentTime();
     /** Assigns ranfe array the minimum and maximum time of the sequence */
     void sequencesRange (double* range);
     /** Returns minimum time step for the sequence */
     double sequencesMinTimeStep();
 
+
 public slots:
     void setCurrentTime (double time);
+
+     virtual void updateWidgets();
 
 private:
     static QStringList dataHandled();

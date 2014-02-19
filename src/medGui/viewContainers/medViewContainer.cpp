@@ -222,7 +222,7 @@ void medViewContainer::setSelected(bool selec)
     {
         emit selected(d->uuid);
         // TODO: recomputeStyleSheet deosn't seem to work here
-        // temporary setStyleSheet ti update the border color
+        // temporary setStyleSheet to update the border color
         this->setStyleSheet("medViewContainer {border:2px solid #FF8833;}");
     }
     else
