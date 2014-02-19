@@ -107,7 +107,6 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     connect(d->removeViewButton, SIGNAL(clicked()), this, SLOT(removeView()));
     d->removeViewButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
     d->removeViewButton->setFocusPolicy(Qt::NoFocus);
-    d->removeViewButton->hide();
 
     d->vSplittButton = new QPushButton(this);
     d->vSplittButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_vertical.png"));
@@ -149,7 +148,7 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->toolBarLayout->addWidget(d->vSplittButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->hSplittButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->closeContainerButton, 0, Qt::AlignRight);
-    d->closable = true;
+    d->toolBarLayout->addWidget(d->removeViewButton, 0, Qt::AlignRight);
 
     d->mainLayout = new QGridLayout(this);
     d->mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -157,6 +156,7 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->mainLayout->addWidget(toolBar, 0, 0);
     d->mainLayout->addWidget(d->emptyView, 1, 0);
 
+    this->setClosable(true);
     this->setAcceptDrops(true);
     this->setFocusPolicy(Qt::ClickFocus);
     this->setMouseTracking(true);
@@ -200,15 +200,11 @@ void medViewContainer::setClosable(bool closable)
     d->closable = closable;
     if(d->closable)
     {
-        d->toolBarLayout->removeWidget(d->removeViewButton);
-        d->toolBarLayout->addWidget(d->closeContainerButton, 0, Qt::AlignRight);
         d->removeViewButton->hide();
         d->closeContainerButton->show();
     }
     else
     {
-        d->toolBarLayout->removeWidget(d->closeContainerButton);
-        d->toolBarLayout->addWidget(d->removeViewButton, 0, Qt::AlignRight);
         d->closeContainerButton->hide();
         d->removeViewButton->show();
     }

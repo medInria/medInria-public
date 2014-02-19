@@ -163,5 +163,6 @@ void medViewContainerSplitter::addNestedSplitter(int index,
     splitter->addViewContainer(oldContainer);
     splitter->addViewContainer(newContainer);
     this->insertWidget(index, splitter);
+    this->setCollapsible(index, false);
     this->setSizes(savedSizes);
 }
