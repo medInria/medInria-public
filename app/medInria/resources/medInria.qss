@@ -1114,11 +1114,11 @@ medViewContainer [selected = "true"]
     border: $CONTAINER_SELECTED_BORDER;
 }
 
-
+/*
 medViewContainerSplitter
 {
     background: $GREEN;
-}
+}*/
 
 
 /*******************************************************************************

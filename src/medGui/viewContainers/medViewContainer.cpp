@@ -216,18 +216,19 @@ bool medViewContainer::isSelected() const
 
 void medViewContainer::setSelected(bool selec)
 {
-    qDebug() << "setSelected : " << d->uuid;
+
     d->selected = selec;
     if(d->selected)
     {
+        qDebug() << "setSelected : " << d->uuid;
         emit selected(d->uuid);
         // TODO: recomputeStyleSheet deosn't seem to work here
         // temporary setStyleSheet to update the border color
-        this->setStyleSheet("medViewContainer {border:2px solid #FF8833;}");
+        this->setStyleSheet("medViewContainer {border:2px solid #FFAA66;}");
     }
     else
     {
-        this->setStyleSheet("medViewContainer {border:2px solid;}");
+        this->setStyleSheet("medViewContainer {border:2px solid #909090;}");
     }
 
     this->update();
