@@ -38,7 +38,6 @@ public:
     bool isMaximised() const;
     bool isClosable() const;
     medAbstractView* view() const;
-    void addRmSplittButton();
     QUuid& uuid() const;
     medToolBox* toolBox() const;
 
@@ -67,6 +66,9 @@ protected:
     void dropEvent(QDropEvent *event);
 
     void recomputeStyleSheet();
+
+protected slots:
+    void removeView();
 
 private slots:
     void removeInterneView();

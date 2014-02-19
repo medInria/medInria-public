@@ -48,7 +48,8 @@ public:
 
     QPushButton* vSplittButton;
     QPushButton* hSplittButton;
-    QPushButton* closeButton;
+    QPushButton* closeContainerButton;
+    QPushButton* removeViewButton;
 
     QLabel *northDragLabel;
     QLabel *eastDragLabel;
@@ -95,11 +96,18 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->emptyViewToolBar->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
     d->emptyViewToolBar->setFocusPolicy(Qt::NoFocus);
 
-    d->closeButton = new QPushButton(this);
-    d->closeButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
-    connect(d->closeButton, SIGNAL(clicked()), this, SLOT(selfDestroy()));
-    d->closeButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-    d->closeButton->setFocusPolicy(Qt::NoFocus);
+    d->closeContainerButton = new QPushButton(this);
+    d->closeContainerButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
+    connect(d->closeContainerButton, SIGNAL(clicked()), this, SLOT(selfDestroy()));
+    d->closeContainerButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->closeContainerButton->setFocusPolicy(Qt::NoFocus);
+
+    d->removeViewButton = new QPushButton;
+    d->removeViewButton->setIcon(QIcon(":/medGui/pixmaps/closebutton.png"));
+    connect(d->removeViewButton, SIGNAL(clicked()), this, SLOT(removeView()));
+    d->removeViewButton->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+    d->removeViewButton->setFocusPolicy(Qt::NoFocus);
+    d->removeViewButton->hide();
 
     d->vSplittButton = new QPushButton(this);
     d->vSplittButton->setIcon(QIcon(":/medGui/pixmaps/splitbutton_vertical.png"));
@@ -140,7 +148,8 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->toolBarLayout->addWidget(d->maximisedParameter->getPushButton(), 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->vSplittButton, 0, Qt::AlignRight);
     d->toolBarLayout->addWidget(d->hSplittButton, 0, Qt::AlignRight);
-    d->toolBarLayout->addWidget(d->closeButton, 0, Qt::AlignRight);
+    d->toolBarLayout->addWidget(d->closeContainerButton, 0, Qt::AlignRight);
+    d->closable = true;
 
     d->mainLayout = new QGridLayout(this);
     d->mainLayout->setContentsMargins(0, 0, 0, 0);
@@ -149,7 +158,6 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->mainLayout->addWidget(d->emptyView, 1, 0);
 
     this->setAcceptDrops(true);
-    this->setClosable(true);
     this->setFocusPolicy(Qt::ClickFocus);
     this->setMouseTracking(true);
 }
@@ -186,11 +194,24 @@ bool medViewContainer::isClosable() const
 
 void medViewContainer::setClosable(bool closable)
 {
+    if(d->closable == closable)
+        return;
+
     d->closable = closable;
     if(d->closable)
-        d->closeButton->show();
+    {
+        d->toolBarLayout->removeWidget(d->removeViewButton);
+        d->toolBarLayout->addWidget(d->closeContainerButton, 0, Qt::AlignRight);
+        d->removeViewButton->hide();
+        d->closeContainerButton->show();
+    }
     else
-        d->closeButton->hide();
+    {
+        d->toolBarLayout->removeWidget(d->closeContainerButton);
+        d->toolBarLayout->addWidget(d->removeViewButton, 0, Qt::AlignRight);
+        d->closeContainerButton->hide();
+        d->removeViewButton->show();
+    }
 }
 
 void medViewContainer::setView(medAbstractView *view)
@@ -205,18 +226,20 @@ void medViewContainer::setView(medAbstractView *view)
         d->toolBarLayout->removeWidget(d->emptyViewToolBar);
     }
 
-    d->view = view;
-    connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInterneView()));
-    connect(d->view, SIGNAL(selectedRequest(bool)), this, SLOT(setSelected(bool)));
-
-    d->view->toolBar()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-    d->toolBarLayout->insertWidget(0, d->view->toolBar());
-    d->maximisedParameter->show();
-    d->mainLayout->addWidget(d->view->viewWidget(), 1, 0, 1, 1);
-    d->toolBox = new medToolBox;
-    d->toolBox->setTitle("Container settings");
-    d->toolBox->header()->hide();
-    d->toolBox->addWidget(d->view->toolBox());
+    if(view)
+    {
+        d->view = view;
+        connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInterneView()));
+        connect(d->view, SIGNAL(selectedRequest(bool)), this, SLOT(setSelected(bool)));
+        d->view->toolBar()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+        d->toolBarLayout->insertWidget(0, d->view->toolBar());
+        d->maximisedParameter->show();
+        d->mainLayout->addWidget(d->view->viewWidget(), 1, 0, 1, 1);
+        d->toolBox = new medToolBox;
+        d->toolBox->setTitle("Container settings");
+        d->toolBox->header()->hide();
+        d->toolBox->addWidget(d->view->toolBox());
+    }
 
     emit viewChanged();
 }
@@ -268,13 +291,23 @@ void medViewContainer::setMaximised(bool maxi)
     emit maximised(d->uuid, maxi);
 }
 
+void medViewContainer::removeView()
+{
+    if(!d->view)
+        return;
+
+    delete d->view;
+    // removeInternView should be called, so no need to set d->view to NULL
+    // or whatecer else
+}
+
 void medViewContainer::removeInterneView()
 {
     d->view = NULL;
+    d->toolBox = NULL;
     d->maximisedParameter->hide();
     d->mainLayout->addWidget(d->emptyView, 1, 0, 1, 1);
     d->toolBarLayout->insertWidget(0, d->emptyViewToolBar);
-    d->toolBox = NULL;
 }
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
@@ -410,19 +443,13 @@ void medViewContainer::selfDestroy()
 
 void medViewContainer::createDragLabels()
 {
-    QWidget *receiver;
-    if(d->view)
-        receiver = d->view->viewWidget();
-    else
-        receiver = d->emptyView;
-
-    int w(receiver->width()), h(receiver->height());
+    int w(this->width()), h(this->height());
     d->receiverQuarterWidth = w/4;
     d->receiverQuarterHeight = h/4;
 
     QColor labelColor(70, 70, 70);
     QGridLayout *receiverLayout = new QGridLayout;
-    d->mainLayout->addLayout(receiverLayout, 1, 0, -1, -1);
+    d->mainLayout->addLayout(receiverLayout, 0, 0, -1, -1);
 
     QImage hImg, vImg, mImg;
     if(h < w)
