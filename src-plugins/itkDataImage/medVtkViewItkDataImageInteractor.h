@@ -19,8 +19,9 @@
 
 class medVtkViewItkDataImageInteractorPrivate;
 
-class dtkAbstractData;
-class dtkAbstractView;
+//class dtkAbstractData;
+//class dtkAbstractView;
+class medAbstractImageData;
 
 class ITKDATAIMAGEPLUGIN_EXPORT medVtkViewItkDataImageInteractor: public medAbstractImageViewInteractor
 {
@@ -62,6 +63,8 @@ public slots:
 
     virtual void updateWidgets();
 
+protected:
+    void initParameters(medAbstractImageData* data);
 private:
     static QStringList dataHandled();
     virtual void update();

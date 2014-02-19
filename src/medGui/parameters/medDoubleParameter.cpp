@@ -15,6 +15,7 @@
 
 #include <QDoubleSpinBox>
 #include <QSlider>
+#include <QLabel>
 
 class medDoubleParameterPrivate
 {
@@ -25,6 +26,7 @@ public:
 
     QDoubleSpinBox *spinBox;
     QSlider *slider;
+    QLabel *valueLabel;
 
     ~medDoubleParameterPrivate()
     {
@@ -41,6 +43,7 @@ medDoubleParameter::medDoubleParameter(QString name, QObject *parent):
     m_value = 0;
     d->spinBox = NULL;
     d->slider = NULL;
+    d->valueLabel = NULL;
     d->step = 0.1;
 }
 
@@ -55,6 +58,8 @@ void medDoubleParameter::updateInternWigets()
         d->spinBox->setValue(m_value);
     if(d->slider)
         d->slider->setValue(convertToInt(m_value));
+    if(d->valueLabel)
+        d->valueLabel->setText(QString::number(m_value, 'f', 2));
 }
 
 void medDoubleParameter::setRange(double min, double max)
@@ -109,6 +114,20 @@ QSlider* medDoubleParameter::getSlider()
         connect(d->slider, SIGNAL(valueChanged(int)), this, SLOT(setIntValue(int)));
     }
     return d->slider;
+}
+
+QLabel* medDoubleParameter::getValueLabel()
+{
+    if(!d->valueLabel)
+    {
+        d->valueLabel = new QLabel;
+        d->valueLabel->setText(QString::number(m_value, 'g', 2));
+
+        this->addToInternWidgets(d->valueLabel);
+        connect(d->valueLabel, SIGNAL(destroyed()), this, SLOT(removeInternSlider()));
+    }
+
+    return d->valueLabel;
 }
 
 QWidget* medDoubleParameter::getWidget()

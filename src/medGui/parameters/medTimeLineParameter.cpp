@@ -22,7 +22,8 @@
 #include <QSlider>
 #include <QSpinBox>
 #include <QTimeLine>
-#include <QDebug>
+#include <QCheckBox>
+#include <QLabel>
 
 #include <dtkCore/dtkSignalBlocker.h>
 
@@ -44,6 +45,7 @@ public:
     medBoolParameter* stopParameter;
     medTriggerParameter* nextFrameParameter;
     medTriggerParameter* previousFrameParameter;
+    medBoolParameter *loopParameter;
 
     QTimeLine *timeLine;
 
@@ -63,6 +65,7 @@ public:
         delete nextFrameParameter;
         delete previousFrameParameter;
         delete timeParameter;
+        delete loopParameter;
     }
 };
 
@@ -74,7 +77,9 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     d->widget = NULL;
 
 
-    d->speedFactorParameter = new medIntParameter(name);
+    d->speedFactorParameter = new medIntParameter("Speed");
+    d->speedFactorParameter->setRange(1,5000);
+    d->speedFactorParameter->setValue(100);
     d->parametersCandidateToPool << d->speedFactorParameter;
 
     d->playParameter = new medBoolParameter(name);
@@ -91,8 +96,10 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     d->previousFrameParameter = new medTriggerParameter(name);
 
     d->timeLine = new QTimeLine(1000, this);
-    d->timeLine->setLoopCount(0);
     d->timeLine->setCurveShape (QTimeLine::LinearCurve);
+
+    d->loopParameter = new medBoolParameter(name);
+    d->loopParameter->setText("Loop");
 
     this->clear();
 
@@ -105,6 +112,9 @@ medTimeLineParameter::medTimeLineParameter(QString name, QObject *parent):
     connect(d->nextFrameParameter, SIGNAL(triggered()), this, SLOT(nextFrame()));
     connect(d->speedFactorParameter, SIGNAL(valueChanged(int)), this, SLOT(setSpeedFactor(int)));
     connect(d->timeParameter, SIGNAL(valueChanged(double)), this, SLOT(setFrame(double)));
+    connect(d->loopParameter, SIGNAL(valueChanged(bool)), this, SLOT(setLoop(bool)));
+
+    d->loopParameter->setValue(true);
 }
 
 medTimeLineParameter::~medTimeLineParameter()
@@ -163,9 +173,9 @@ double medTimeLineParameter::mapFrameToTime (int frame)
     return frame * d->timeBetweenFrames;
 }
 
-void medTimeLineParameter::setSpeedFactor(int speedFactorParameter)
+void medTimeLineParameter::setSpeedFactor(int speedFactor)
 {
-    d->speedFactorParameter->setValue(speedFactorParameter);
+    d->timeLine->setDuration((d->duration)*(1000/(speedFactor/100.0)));
 }
 
 void medTimeLineParameter::play(bool play)
@@ -267,6 +277,12 @@ void medTimeLineParameter::nextFrame()
     this->setFrame(static_cast<int>(d->frameLineParameter->value() + d->stepFrame));
 }
 
+void medTimeLineParameter::setLoop(bool loop)
+{
+    int loopCount = (loop == true)?0:1;
+    d->timeLine->setLoopCount(loopCount);
+}
+
 QList<medAbstractParameter*> medTimeLineParameter::parametersCandidateToPool() const
 {
     return d->parametersCandidateToPool;
@@ -284,15 +300,23 @@ QWidget* medTimeLineParameter::getWidget()
         d->stopParameter->setIcon(QIcon(":/icons/stop.png"));
         d->previousFrameParameter->getPushButton()->setIcon(QIcon(":/icons/backward.png"));
         d->nextFrameParameter->getPushButton()->setIcon(QIcon(":/icons/forward.png"));
+        d->speedFactorParameter->getSpinBox()->setSingleStep(10);
+        d->frameLineParameter->getSlider()->setOrientation(Qt::Horizontal);
 
         buttonsLayout->addWidget(d->playParameter->getPushButton());
         buttonsLayout->addWidget(d->previousFrameParameter->getPushButton());
         buttonsLayout->addWidget(d->nextFrameParameter->getPushButton());
+        buttonsLayout->addWidget(d->speedFactorParameter->getLabel());
         buttonsLayout->addWidget(d->speedFactorParameter->getSpinBox());
+        buttonsLayout->addWidget(d->loopParameter->getCheckBox());
+
+        QHBoxLayout *sliderLayout = new QHBoxLayout;
+        sliderLayout->addWidget(d->timeParameter->getValueLabel());
+        sliderLayout->addWidget(d->frameLineParameter->getSlider());
+        sliderLayout->addWidget(new QLabel(QString::number(d->duration, 'f', 2)));
 
         widgetLayout->addLayout(buttonsLayout);
-        d->frameLineParameter->getSlider()->setOrientation(Qt::Horizontal);
-        widgetLayout->addWidget(d->frameLineParameter->getSlider());
+        widgetLayout->addLayout(sliderLayout);
 
         connect(d->widget, SIGNAL(destroyed()), this, SLOT(removeInternWidget()));
     }

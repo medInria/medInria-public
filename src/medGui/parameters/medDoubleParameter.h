@@ -36,6 +36,7 @@ public:
 
     QDoubleSpinBox* getSpinBox();
     QSlider* getSlider();
+    QLabel* getValueLabel();
 
     virtual QWidget* getWidget();
 

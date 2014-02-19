@@ -52,6 +52,7 @@ public slots:
     void setStepFrame(int stepFrame);
     void setFrame(double time);
     void setFrame(int frame);
+    void setLoop(bool loop);
 
     void previousFrame();
     void nextFrame();

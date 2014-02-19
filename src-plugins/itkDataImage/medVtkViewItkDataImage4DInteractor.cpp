@@ -7,6 +7,7 @@
 #include <vtkActor.h>
 #include <vtkProperty.h>
 #include <medTimeLineParameter.h>
+#include <medAbstractImageData.h>
 
 
 class medVtkViewItkDataImage4DInteractorPrivate
@@ -21,6 +22,7 @@ public:
     vtkRenderWindow *render;
 
     vtkMetaDataSetSequence *sequence;
+    medAbstractImageData *imageData;
 
     medTimeLineParameter *timeLineParameter;
 
@@ -113,7 +115,11 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
     double mintimestep, mintime, maxtime;
     unsigned int numberofsteps;
 
-    if (data->identifier().contains("Image") && data->identifier().contains ("4")) {
+    d->imageData = dynamic_cast<medAbstractImageData *>(data);
+    if(!d->imageData)
+        return;
+
+    if( data->identifier().contains("itkDataImage") &&  d->imageData->Dimension() == 4 ) {
 
         d->sequence = vtkMetaDataSetSequence::New();
 
@@ -123,6 +129,8 @@ void medVtkViewItkDataImage4DInteractor::setData(medAbstractData *data)
               AppendImageSequence<unsigned short>(data,d->view,d->sequence) ||
               AppendImageSequence<float>(data,d->view,d->sequence)          ||
               AppendImageSequence<double>(data,d->view,d->sequence)) {
+
+            initParameters(d->imageData);
 
             d->timeLineParameter = new medTimeLineParameter("Time");
 
@@ -147,17 +155,21 @@ medAbstractData *medVtkViewItkDataImage4DInteractor::data() const
 
 QWidget* medVtkViewItkDataImage4DInteractor::toolBoxWidget()
 {
-    return d->timeLineParameter->getWidget();
+    QWidget *tb = new QWidget;
+    QVBoxLayout *tbLayout = new QVBoxLayout(tb);
+    tbLayout->addWidget(medVtkViewItkDataImageInteractor::toolBoxWidget());
+    tbLayout->addWidget(d->timeLineParameter->getWidget());
+    return tb;
 }
 
 QWidget* medVtkViewItkDataImage4DInteractor::toolBarWidget()
 {
-    return new QWidget();
+    return medVtkViewItkDataImageInteractor::toolBarWidget();
 }
 
 QWidget* medVtkViewItkDataImage4DInteractor::layerWidget()
 {
-    return new QWidget();
+    return medVtkViewItkDataImageInteractor::layerWidget();
 }
 
 QList<medAbstractParameter*> medVtkViewItkDataImage4DInteractor::parameters()

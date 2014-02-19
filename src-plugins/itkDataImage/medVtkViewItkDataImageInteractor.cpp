@@ -181,6 +181,29 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
         return;
     }
 
+    initParameters(d->imageData);
+}
+
+
+template <typename IMAGE>
+bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstractData* data,const int layer)
+{
+    if (data->identifier() != type)
+        return false;
+
+    if (IMAGE* image = dynamic_cast<IMAGE*>((itk::Object*)(data->data())))
+    {
+        d->view2d->SetITKInput(image, layer);
+        d->view3d->SetITKInput(image, layer);
+        return true;
+    }
+    return false;
+}
+
+void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data)
+{
+    d->imageData = data;
+
     d->lutParam = new medStringListParameter("Lut", this);
     QStringList lut = QStringList() << "Default" << "Black & White" << "Black & White Inversed"
                                      << "Spectrum" << "Hot Metal" << "Hot Green"
@@ -245,25 +268,6 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
 
     connect(d->medVtkView, SIGNAL(sliceChanged(int)), d->slicingParameter, SLOT(setValue(int)) );
     connect(d->medVtkView, SIGNAL(windowLevelChanged(double,double)), this, SLOT(updateWindowLevelParam(double, double)) );
-
-    d->view2d->Reset();
-    d->view3d->Reset();
-}
-
-
-template <typename IMAGE>
-bool medVtkViewItkDataImageInteractor::SetViewInput(const char* type, medAbstractData* data,const int layer)
-{
-    if (data->identifier() != type)
-        return false;
-
-    if (IMAGE* image = dynamic_cast<IMAGE*>((itk::Object*)(data->data())))
-    {
-        d->view2d->SetITKInput(image, layer);
-        d->view3d->SetITKInput(image, layer);
-        return true;
-    }
-    return false;
 }
 
 void medVtkViewItkDataImageInteractor::setOpacity (int opacity)
