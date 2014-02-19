@@ -156,6 +156,8 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d->mainLayout->addWidget(toolBar, 0, 0);
     d->mainLayout->addWidget(d->emptyView, 1, 0);
 
+    //just to be sure to enter the setClosable method
+    d->closable = false;
     this->setClosable(true);
     this->setAcceptDrops(true);
     this->setFocusPolicy(Qt::ClickFocus);
