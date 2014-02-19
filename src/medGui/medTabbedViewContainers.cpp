@@ -96,9 +96,8 @@ void medTabbedViewContainers::addContainerInTab(const QString &name)
 void medTabbedViewContainers::insertContainerInTab(int index, const QString &name)
 {
     medViewContainerSplitter *splitter  = new medViewContainerSplitter;
-    int test = this->insertTab(index, splitter, name);
-    this->setCurrentWidget(splitter);
-//    this->setCurrentIndex(test);
+    int idx = this->insertTab(index, splitter, name);
+    this->setCurrentIndex(idx);
     connect(splitter, SIGNAL(destroyed()), this, SLOT(repopulateCurrentTab()));
     connect(splitter, SIGNAL(newContainer(QUuid&)), this, SIGNAL(newContainer(QUuid&)));
     connect(splitter, SIGNAL(newContainer(QUuid&)), this, SLOT(addContainerToContainerInTab(QUuid&)));
@@ -114,9 +113,9 @@ void medTabbedViewContainers::hideTabBar()
 void medTabbedViewContainers::repopulateCurrentTab()
 {
     int idx = this->currentIndex();
-    qDebug()<< "idx" << idx;
-    this->insertContainerInTab(idx, this->tabText(idx));
-    qDebug()<< "this->currentIndex()" << this->currentIndex();
+    QString tabText = this->tabText(idx);
+    this->removeTab(idx);
+    this->insertContainerInTab(idx, tabText);
 }
 
 void medTabbedViewContainers::disconnectTabFromSplitter(int index)
