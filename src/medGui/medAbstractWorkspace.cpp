@@ -22,7 +22,6 @@
 #include <medViewContainerManager.h>
 #include <medTabbedViewContainers.h>
 #include <medAbstractView.h>
-#include <medViewSettingsToolBox.h>
 #include <medAbstractLayeredView.h>
 #include <medToolBoxHeader.h>
 #include <medAbstractInteractor.h>
