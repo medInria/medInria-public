@@ -17,7 +17,8 @@
 
 #include <medGuiExport.h>
 
-class QUuid;
+
+struct QUuid;
 class medAbstractView;
 class medAbstractData;
 class medDataIndex;
@@ -35,10 +36,10 @@ public:
 
 
     bool isSelected() const;
+    bool isMultiSelected() const;
     bool isMaximised() const;
     medAbstractView* view() const;
-    QUuid& uuid() const;
-    medToolBox* toolBox() const;
+    QUuid uuid() const;
 
 public slots:
     void setSelected(bool selected);
@@ -46,10 +47,13 @@ public slots:
     void setMaximised(bool maximised);
     void setView(medAbstractView* view);
     void addData(medAbstractData* data);
+    void highlight(QString color = "#FFBB77");
+    void unHighlight();
 
 signals:
-    void maximised(QUuid& uuid, bool maximised);
-    void selected(QUuid& uuid);
+    void maximised(QUuid uuid, bool maximised);
+    void containerSelected(QUuid uuid);
+    void containerUnSelected(QUuid uuid);
     void vSplitRequest();
     void hSplitRequest();
     void splitRequest(medDataIndex, Qt::AlignmentFlag);

@@ -151,6 +151,7 @@ medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     this->setAcceptDrops(true);
     this->setFocusPolicy(Qt::ClickFocus);
     this->setMouseTracking(true);
+    this->setSelected(false);
 }
 
 medViewContainer::~medViewContainer()
@@ -163,7 +164,7 @@ medViewContainer::~medViewContainer()
     delete d;
 }
 
-QUuid&medViewContainer::uuid() const
+QUuid medViewContainer::uuid() const
 {
     return d->uuid;
 }
@@ -171,11 +172,6 @@ QUuid&medViewContainer::uuid() const
 medAbstractView* medViewContainer::view() const
 {
     return d->view;
-}
-
-medToolBox* medViewContainer::toolBox() const
-{
-    return d->toolBox;
 }
 
 
@@ -196,17 +192,14 @@ void medViewContainer::setView(medAbstractView *view)
         d->view = view;
         connect(d->view, SIGNAL(destroyed()), this, SLOT(removeInterneView()));
         connect(d->view, SIGNAL(selectedRequest(bool)), this, SLOT(setSelected(bool)));
-        d->view->toolBar()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-        d->toolBarLayout->insertWidget(0, d->view->toolBar());
+        d->view->toolBarWidget()->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
+        d->toolBarLayout->insertWidget(0, d->view->toolBarWidget());
         d->maximisedParameter->show();
         d->mainLayout->addWidget(d->view->viewWidget(), 1, 0, 1, 1);
         d->toolBox = new medToolBox;
         d->toolBox->setTitle("Container settings");
         d->toolBox->header()->hide();
-        d->toolBox->addWidget(d->view->toolBox());
     }
-
-    emit viewChanged();
 }
 
 bool medViewContainer::isSelected() const
@@ -216,23 +209,35 @@ bool medViewContainer::isSelected() const
 
 void medViewContainer::setSelected(bool selec)
 {
+    if(selec == d->selected)
+        return;
 
     d->selected = selec;
     if(d->selected)
     {
         qDebug() << "setSelected : " << d->uuid;
-        emit selected(d->uuid);
-        // TODO: recomputeStyleSheet deosn't seem to work here
-        // temporary setStyleSheet to update the border color
-        this->setStyleSheet("medViewContainer {border:2px solid #FFAA66;}");
+        emit containerSelected(d->uuid);
+        this->highlight();
     }
     else
     {
-        this->setStyleSheet("medViewContainer {border:2px solid #909090;}");
+        qDebug() << "setUnSelected : " << d->uuid;
+        emit containerUnSelected(d->uuid);
+        this->unHighlight();
     }
+}
 
-    this->update();
-    this->recomputeStyleSheet();
+void medViewContainer::highlight(QString color)
+{
+    // TODO: recomputeStyleSheet deosn't seem to work here
+    // temporary setStyleSheet to update the border color
+    QString styleSheet = "medViewContainer {border:2px solid " + color + ";}";
+    this->setStyleSheet(styleSheet);
+}
+
+void medViewContainer::unHighlight()
+{
+    this->setStyleSheet("medViewContainer {border:2px solid #909090;}");
 }
 
 void medViewContainer::setUnSelected(bool unSelected)
@@ -399,8 +404,7 @@ void medViewContainer::addData(medAbstractData *data)
     //     of the view. - RDE
     medAbstractLayeredView* view = dynamic_cast<medAbstractLayeredView*>(d->view);
     view->addLayer(data);
-
-    this->setSelected(true);
+    emit viewChanged();
 }
 
 void medViewContainer::selfDestroy()

@@ -201,8 +201,6 @@ bool medAbstractView::eventFilter(QObject * obj, QEvent * event)
     {
         if (event->type() == QEvent::FocusIn)
             emit selectedRequest(true);
-        else if (event->type() == QEvent::FocusOut)
-            emit selectedRequest(false);
     }
     return dtkAbstractView::eventFilter(obj, event);
 }
@@ -390,11 +388,6 @@ QList<dtkAbstractViewAnimator   *> medAbstractView::animators(void) const
 QList<dtkAbstractViewNavigator  *> medAbstractView::navigators(void) const
 {
     return QList<dtkAbstractViewNavigator *>();
-}
-
-QList<dtkAbstractViewInteractor *> medAbstractView::interactors(void) const
-{
-    return QList<dtkAbstractViewInteractor *>();
 }
 
 void   medAbstractView::initialize(void)

@@ -80,8 +80,8 @@ public:
 
     virtual medViewBackend * backend() const = 0;
 
-    virtual QWidget* toolBar() = 0;
-    virtual QWidget* toolBox() = 0;
+    virtual QWidget* toolBarWidget() = 0;
+    virtual QWidget* navigatorWidget() = 0;
     virtual QWidget *viewWidget() = 0;
 
 

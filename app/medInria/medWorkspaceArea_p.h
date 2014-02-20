@@ -51,7 +51,7 @@ public:
     QSplitter * splitter;
     QMutex mutex;
     QHash<QString,medAbstractWorkspace*> workspaces;
-    medToolBox *containerToolBox;
+    medToolBox *selectionToolBox;
 
 public:
     QString currentWorkspaceName;

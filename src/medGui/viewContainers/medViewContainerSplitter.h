@@ -19,7 +19,7 @@
 
 class medViewContainer;
 class medDataIndex;
-class QUuid;
+struct QUuid;
 
 class MEDGUI_EXPORT medViewContainerSplitter: public QSplitter
 {
@@ -38,7 +38,7 @@ public slots:
     void checkIfStillDeserveToLive();
 
 signals:
-    void newContainer(QUuid&);
+    void newContainer(QUuid);
     void containerRemoved();
 
 private:

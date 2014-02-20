@@ -17,7 +17,7 @@
 
 #include <medCoreExport.h>
 
-class QUuid;
+struct QUuid;
 class medViewContainer;
 
 class medViewContainerManagerPrivate;
@@ -43,7 +43,7 @@ protected:
     static medViewContainerManager *s_instance;
 
 signals:
-    void containerAboutToBeDestroyed(QUuid& uuid);
+    void containerAboutToBeDestroyed(QUuid uuid);
 
 private:
     medViewContainerManagerPrivate *d;

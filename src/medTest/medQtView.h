@@ -45,8 +45,9 @@ public:
     virtual QList<medAbstractNavigator *> extraNavigators();
 
     virtual QWidget *viewWidget();
-    virtual QWidget* toolBar();
-    virtual QWidget* toolBox();
+    virtual QWidget* toolBarWidget();
+    virtual QWidget* navigatorWidget();
+    virtual QList <QWidget*> layerWidgets();
 
     virtual void initialiseInteractors(medAbstractData* data);
     virtual void initialiseNavigators();

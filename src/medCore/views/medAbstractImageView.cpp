@@ -85,7 +85,7 @@ void medAbstractImageView::initialiseInteractors(medAbstractData *data)
     {
         medAbstractImageViewInteractor* interactor = factory->createInteractor(primaryInt.first(), this);
         connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
-        connect(this, SIGNAL(selectedLayerChanged()), interactor, SLOT(updateWidgets()));
+        connect(this, SIGNAL(selectedLayersChanged()), interactor, SLOT(updateWidgets()));
         interactor->setData(data);
         d->primaryIntercatorsHash.insert(data, interactor);
     }
@@ -99,7 +99,7 @@ void medAbstractImageView::initialiseInteractors(medAbstractData *data)
         {
             medAbstractInteractor* interactor = factory->createAdditionalInteractor(i, this);
             connect(this, SIGNAL(orientationChanged()), interactor, SLOT(updateWidgets()));
-            connect(this, SIGNAL(selectedLayerChanged()), interactor, SLOT(updateWidgets()));
+            connect(this, SIGNAL(selectedLayersChanged()), interactor, SLOT(updateWidgets()));
             interactor->setData(data);
             extraIntList << interactor;
         }
@@ -122,7 +122,7 @@ void medAbstractImageView::initialiseNavigators()
     {
         d->primaryNavigator = factory->createNavigator(primaryNav.first(), this);
         connect(this, SIGNAL(orientationChanged()), d->primaryNavigator, SLOT(updateWidgets()));
-        connect(this, SIGNAL(selectedLayerChanged()), d->primaryNavigator, SLOT(updateWidgets()));
+        connect(this, SIGNAL(selectedLayersChanged()), d->primaryNavigator, SLOT(updateWidgets()));
     }
 
     // extra
@@ -133,7 +133,7 @@ void medAbstractImageView::initialiseNavigators()
         {
             medAbstractNavigator* nav = factory->createAdditionalNavigator(n, this);
             connect(this, SIGNAL(orientationChanged()), nav, SLOT(updateWidgets()));
-            connect(this, SIGNAL(selectedLayerChanged()), nav, SLOT(updateWidgets()));
+            connect(this, SIGNAL(selectedLayersChanged()), nav, SLOT(updateWidgets()));
             d->extraNavigators << nav;
         }
     }

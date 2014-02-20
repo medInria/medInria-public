@@ -63,16 +63,12 @@ public:
 
     medAbstractWorkspace* currentWorkspace();
 
-public slots:
-    void updateContainerToolBox();
-
-
 protected:
     void addDatabaseView(medDatabaseDataSource* dataSource);
     void switchToStackedViewContainers(medTabbedViewContainers* stack);
 
 private slots:
-    void removeInternContainerToolBox();
+    void removeInternSelectionToolBox();
 private:
     friend class medMessageController;
 

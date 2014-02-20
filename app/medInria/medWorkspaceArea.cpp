@@ -51,7 +51,7 @@ PURPOSE.
 
 medWorkspaceArea::medWorkspaceArea(QWidget *parent) : QWidget(parent), d(new medWorkspaceAreaPrivate)
 {
-    d->containerToolBox = NULL;
+    d->selectionToolBox = NULL;
 
     // -- Internal logic
     d->currentWorkspaceName = "";
@@ -126,7 +126,9 @@ medWorkspaceArea::~medWorkspaceArea(void)
 
 QPixmap medWorkspaceArea::grabScreenshot()
 {
-    return QPixmap::grabWidget(d->currentWorkspace->currentViewContainer());
+    //TODO - return a list of QPixmap for each container slected ?
+//    return QPixmap::grabWidget(d->currentWorkspace->currentViewContainer());
+    return QPixmap();
 }
 
 void medWorkspaceArea::addToolBox(medToolBox *toolbox)
@@ -172,6 +174,9 @@ void medWorkspaceArea::setCurrentWorkspace(medAbstractWorkspace *workspace)
     d->navigatorContainer->setVisible(workspace->isDatabaseVisible());
 
     // add toolboxes
+    d->toolBoxContainer->addToolBox(workspace->selectionToolBox());
+    workspace->selectionToolBox()->show();
+
     foreach (medToolBox * toolbox, workspace->workspaceToolBoxes())
     {
         d->toolBoxContainer->addToolBox(toolbox);
@@ -206,21 +211,6 @@ void medWorkspaceArea::setupWorkspace(const QString &name)
         return;
     }
     workspace->setupViewContainerStack();
-    connect(workspace, SIGNAL(currentContainerChanged()), this, SLOT(updateContainerToolBox()));
-    connect(workspace, SIGNAL(currentViewChanged()), this, SLOT(updateContainerToolBox()));
-}
-
-void medWorkspaceArea::updateContainerToolBox()
-{
-    qDebug() <<"updateContainerToolBox : " << d->currentWorkspace->currentViewContainer()->uuid();
-    this->removeToolBox(d->containerToolBox);
-    d->containerToolBox = d->currentWorkspace->currentViewContainer()->toolBox();
-    if(d->containerToolBox)
-    {
-        connect(d->containerToolBox, SIGNAL(destroyed()), this, SLOT(removeInternContainerToolBox()));
-        this->insertToolBox(0, d->containerToolBox);
-    }
-    qDebug() << "d->containerToolBox" << d->containerToolBox;
 }
 
 void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
@@ -241,9 +231,9 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
             Qt::UniqueConnection);
 }
 
-void medWorkspaceArea::removeInternContainerToolBox()
+void medWorkspaceArea::removeInternSelectionToolBox()
 {
-    d->containerToolBox = NULL;
+    d->selectionToolBox = NULL;
 }
 
 void medWorkspaceArea::switchToStackedViewContainers(medTabbedViewContainers* stack)

@@ -82,7 +82,7 @@ void medParameterPoolManager::addColorLabeltoView(medAbstractParameter* paramete
           QLabel *colorLabel = new QLabel;
           colorLabel->setPixmap(iconPixmap);
 
-          view->toolBar()->layout()->addWidget(colorLabel);
+          view->toolBarWidget()->layout()->addWidget(colorLabel);
         }
     }
 }

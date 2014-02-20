@@ -22,6 +22,7 @@
 #include <medAbstractLayeredViewInteractor.h>
 #include <medAbstractLayeredViewNavigator.h>
 #include <medAbstractData.h>
+#include <medAbstractInteractor.h>
 
 class medAbstractData;
 
@@ -43,6 +44,12 @@ public:
     bool contains(medAbstractData * data) const;
     unsigned int layersCount() const;
     unsigned int layer(medAbstractData * data);
+
+    virtual  QList <QWidget*> layerWidgets() = 0;
+    QList <medAbstractInteractor*> currentInteractor();
+
+    virtual QList <medAbstractInteractor*>  interactors();
+
 
 
     /**
@@ -71,7 +78,7 @@ signals:
      */
     void layerAdded(int layer);
     void layerRemoved(int layer);
-    void selectedLayerChanged();
+    void selectedLayersChanged() const;
 
 protected:
     virtual medAbstractLayeredViewInteractor * primaryInteractor(medAbstractData* data);
@@ -86,10 +93,12 @@ protected:
     virtual void initialiseNavigators();
     virtual void removeInteractors(medAbstractData *data);
 
-    int selectedLayer() const;
+    QList <int> selectedLayers() const;
 
 protected slots:
-    void setSelectedLayer(int layer);
+    void setLayerSelected(int layer);
+    void setLayerUnSelected(int layer);
+    void clearSelection();
 
 
 private:

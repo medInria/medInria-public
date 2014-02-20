@@ -1,3 +1,16 @@
+/*=========================================================================
+
+ medInria
+
+ Copyright (c) INRIA 2013. All rights reserved.
+ See LICENSE.txt for details.
+
+  This software is distributed WITHOUT ANY WARRANTY; without even
+  the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+  PURPOSE.
+
+=========================================================================*/
+
 #pragma once
 
 #include <medAbstractImageView.h>
@@ -18,19 +31,14 @@ public:
 
     virtual QString  identifier() const;
     static QString  s_identifier();
-    
     static bool registered();
-
     virtual medViewBackend * backend() const;
-
     virtual QString description() const;
-
     virtual QWidget *viewWidget();
-    virtual QWidget* toolBar();
-    virtual QWidget* toolBox();
-
+    virtual QWidget* toolBarWidget();
+    virtual QWidget* navigatorWidget();
+    virtual QList <QWidget*> layerWidgets();
     virtual QList<medAbstractParameter*> viewParameters();
-
     virtual QPointF mapWorldToDisplayCoordinates(const QVector3D & worldVec );
     virtual QVector3D mapDisplayToWorldCoordinates(const QPointF & scenePoint );
     virtual QVector3D viewCenter();
@@ -48,24 +56,12 @@ private slots:
     void setZoomInteractionStyle(bool zoom);
     void setSLicingInteractionStyle(bool slicing);
 
-    void buildToolBox();
-    void buildMouseInteracToolBox();
-
     void addLayerItem(int layer);
     void removeLayerItem(int layer);
 
-    void removeSelectedLayer();
-
-    void removeLayerData(int layer);
-
-    void updateInteractorsWidget();
-
-    void removeInternToolBox();
-    void removeInternToolBar();
-    void removeInternView();
-
-
-
+    void removeInternNavigatorWidget();
+    void removeInternToolBarWidget();
+    void removeInternViewWidget();
 
 private:
     medVtkViewPrivate *d;

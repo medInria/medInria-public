@@ -115,7 +115,7 @@ void medToolBox::update(dtkAbstractView *view)
 
 void medToolBox::clear(void)
 {
-    DTK_DEFAULT_IMPLEMENTATION;
+    d->body->clear();
 }
 
 void medToolBox::setOrientation(Qt::Orientation orientation)
@@ -191,22 +191,17 @@ void medToolBox::addValidDataType(const QString & dataType)
 void medToolBox::setContextVisibility(
         const QHash<QString, unsigned int> & viewDataTypes )
 {
-    //JGG qDebug()<< "setContextVisibility";
     if (d->validDataTypes.isEmpty())
     {
-        //JGG qDebug()<< "no datatypes";
         d->isContextVisible = true;
     }
     else
     {
-        //JGG qDebug()<<"View datatypes"<<viewDataTypes.keys()<< "values" << viewDataTypes.values();
         d->isContextVisible = false;
         foreach(QString validDataType, d->validDataTypes)
         {
-            //JGG qDebug()<<"datatype"<< validDataType ;
             if(viewDataTypes.contains(validDataType))
             {
-                //JGG qDebug()<<"viewDataTypes: "<< viewDataTypes.value(validDataType);
                 if(viewDataTypes.value(validDataType)!=0)
                 {
                     d->isContextVisible = true;
@@ -215,7 +210,6 @@ void medToolBox::setContextVisibility(
             }
         }
     }
-    //JGG qDebug()<<"visibility" << d->isContextVisible ;
     this->setVisible(d->isContextVisible);
 }
 

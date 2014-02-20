@@ -122,6 +122,7 @@ void medViewContainerSplitter::insertViewContainer(int index, medViewContainer *
 
     this->insertWidget(index, container);
     this->setCollapsible(index, false);
+    container->setSelected(true);
 }
 
 void medViewContainerSplitter::addViewContainer(medViewContainer *container)
@@ -161,7 +162,7 @@ void medViewContainerSplitter::insertNestedSplitter(int index,
     oldContainer->disconnect(this);
     medViewContainerSplitter *splitter = new medViewContainerSplitter;
     splitter->setOrientation(ori);
-    connect(splitter, SIGNAL(newContainer(QUuid&)), this, SIGNAL(newContainer(QUuid&)));
+    connect(splitter, SIGNAL(newContainer(QUuid)), this, SIGNAL(newContainer(QUuid)));
     connect(splitter, SIGNAL(containerRemoved()), this, SIGNAL(containerRemoved()));
     connect(splitter, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLive()));
     splitter->addViewContainer(oldContainer);

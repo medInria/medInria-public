@@ -198,7 +198,7 @@
 
 //    int nbLayers = d->layersListWidget->count();
 
-//    QMultiMap<medVtkView*, int> selectedLayers;
+//    QMultiMap<medVtkView*, int> selectedLayerss;
 
 //    for (int i  = 0; i < nbLayers; i++)
 //    {
@@ -208,15 +208,15 @@
 //            QPair<QString, int> itemPair = d->layerItemHash.value(item);
 //            QString viewName = itemPair.first;
 //            int layer = itemPair.second;
-//            selectedLayers.insert(d->viewMap.value(viewName), layer);
+//            selectedLayerss.insert(d->viewMap.value(viewName), layer);
 //        }
 //    }
 
-//    updateParameters(selectedLayers);
+//    updateParameters(selectedLayerss);
 //}
 
 
-//void medViewLayersToolBox::updateParameters(QMultiMap<medVtkView*, int> selectedLayers)
+//void medViewLayersToolBox::updateParameters(QMultiMap<medVtkView*, int> selectedLayerss)
 //{
 //    clearParams();
 
@@ -225,7 +225,7 @@
 //    QMap<QString, medAbstractParameter*> commonParamList;
 //    commonParamList.setInsertInOrder(true);
 
-//    QMapIterator<medVtkView*, int> i(selectedLayers);
+//    QMapIterator<medVtkView*, int> i(selectedLayerss);
 
 //    int j = 0;
 
@@ -279,7 +279,7 @@
 //    }
 
 //    QList<medAbstractParameter *> displayedParam;
-//    if(selectedLayers.count() == 1)
+//    if(selectedLayerss.count() == 1)
 //        displayedParam = d->paramList;
 //    else displayedParam = commonParamList.values();
 

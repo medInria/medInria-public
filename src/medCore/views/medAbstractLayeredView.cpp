@@ -17,7 +17,7 @@ public:
     medAbstractLayeredViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
 
-    int selectedLayer;
+    QList <int> selectedLayers;
 
 };
 
@@ -92,7 +92,7 @@ void medAbstractLayeredView::initialiseNavigators()
     {
         d->primaryNavigator = factory->createNavigator(primaryNav.first(), this);
         connect(this, SIGNAL(orientationChanged()), d->primaryNavigator, SLOT(updateWidgets()));
-        connect(this, SIGNAL(selectedLayerChanged()), d->primaryNavigator, SLOT(updateWidgets()));
+        connect(this, SIGNAL(selectedLayersChanged()), d->primaryNavigator, SLOT(updateWidgets()));
     }
 
     // extra
@@ -103,7 +103,7 @@ void medAbstractLayeredView::initialiseNavigators()
         {
             medAbstractNavigator* nav = factory->createAdditionalNavigator(n, this);
             connect(this, SIGNAL(orientationChanged()), nav, SLOT(updateWidgets()));
-            connect(this, SIGNAL(selectedLayerChanged()), nav, SLOT(updateWidgets()));
+            connect(this, SIGNAL(selectedLayersChanged()), nav, SLOT(updateWidgets()));
             d->extraNavigators << nav;
         }
     }
@@ -160,7 +160,7 @@ void medAbstractLayeredView::addLayer(medAbstractData *data)
     initialiseInteractors(data);
 
     int layer = this->layer(data);
-    this->setSelectedLayer(layer);
+    this->setLayerSelected(layer);
     if(this->layersCount() < 2)
         this->reset();
 
@@ -251,18 +251,55 @@ bool medAbstractLayeredView::visibility(unsigned int layer)
     return inter->visibility();
 }
 
-void medAbstractLayeredView::setSelectedLayer(int layer)
+void medAbstractLayeredView::setLayerSelected(int layer)
 {
-    d->selectedLayer = layer;
-    emit selectedLayerChanged();
+    d->selectedLayers.append(layer);
+    emit selectedLayersChanged();
 }
 
-int  medAbstractLayeredView::selectedLayer() const
+void medAbstractLayeredView::setLayerUnSelected(int layer)
 {
-    return d->selectedLayer;
+    d->selectedLayers.removeOne(layer);
+    emit selectedLayersChanged();
+}
+
+QList<int> medAbstractLayeredView::selectedLayers() const
+{
+    return d->selectedLayers;
+    emit selectedLayersChanged();
+}
+
+void medAbstractLayeredView::clearSelection()
+{
+    d->selectedLayers.clear();
 }
 
 QImage& medAbstractLayeredView::generateThumbnail(const QSize &size)
 {
-    return this->primaryInteractor(this->data(d->selectedLayer))->generateThumbnail(size);
+    return this->primaryInteractor(this->data(d->selectedLayers.first()))->generateThumbnail(size);
+}
+
+//TODO not sure we need this - RDE
+QList <medAbstractInteractor*> medAbstractLayeredView::currentInteractor()
+{
+    QList <medAbstractInteractor*> interactors;
+    foreach (int layer, d->selectedLayers)
+    {
+        interactors.append(this->primaryInteractor(layer));
+        interactors.append(extraInteractors(layer));
+    }
+
+    return interactors;
+}
+
+QList <medAbstractInteractor*>  medAbstractLayeredView::interactors()
+{
+    QList <medAbstractInteractor*> interactors;
+    foreach (medAbstractData* data, d->layersDataList)
+    {
+        interactors.append(this->primaryInteractor(data));
+        interactors.append(extraInteractors(data));
+    }
+
+    return interactors;
 }

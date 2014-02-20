@@ -14,6 +14,7 @@
 #pragma once
 
 #include <QtGui>
+#include <QUuid>
 
 #include <medGuiExport.h>
 
@@ -21,7 +22,6 @@ class medAbstractView;
 class medDataIndex;
 class medViewContainer;
 class medTabbedViewContainersPrivate;
-class QUuid;
 
 /**
  * @brief A QStackedWidget that contains medViewContainers.
@@ -39,6 +39,7 @@ public:
     void lockTabs();
     void unlockTabs();
     void hideTabBar();
+    QList<QUuid> containersSelected();
 
 
 public slots:
@@ -51,9 +52,13 @@ public slots:
 private slots:
     void disconnectTabFromSplitter(int index);
     void repopulateCurrentTab();
+    void addContainerToSelection(QUuid container);
+    void removeContainerFromSelection(QUuid container);
+    void connectContainer(QUuid container);
 
 signals:
-    void newContainer(QUuid&);
+    void newContainer(QUuid container);
+    void selectionChanged();
 
 
 

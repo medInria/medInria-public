@@ -84,14 +84,19 @@ QWidget* medQtView::viewWidget()
 {
     return 0;
 }
-QWidget* medQtView::toolBar()
+QWidget* medQtView::toolBarWidget()
 {
     return 0;
 }
 
-QWidget* medQtView::toolBox()
+QWidget* medQtView::navigatorWidget()
 {
     return 0;
+}
+
+QList<QWidget *> medQtView::layerWidgets()
+{
+    return QList<QWidget*>();
 }
 
 void medQtView::initialiseInteractors(medAbstractData* data)
