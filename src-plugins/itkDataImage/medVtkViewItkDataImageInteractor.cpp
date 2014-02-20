@@ -104,6 +104,8 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractIm
 
 medVtkViewItkDataImageInteractor::~medVtkViewItkDataImageInteractor()
 {
+    removeData();
+
     delete d;
     d = NULL;
 }
@@ -182,6 +184,17 @@ void medVtkViewItkDataImageInteractor::setData(medAbstractData *data)
     }
 
     initParameters(d->imageData);
+}
+
+void medVtkViewItkDataImageInteractor::removeData()
+{
+    d->view2d->RemoveLayer(d->layer);
+    d->view3d->RemoveLayer(d->layer);
+    if(d->medVtkView->is2D())
+        d->view2d->Render();
+    else
+        d->view3d->Render();
+
 }
 
 

@@ -52,6 +52,25 @@ medDoubleParameter::~medDoubleParameter()
     delete d;
 }
 
+void medDoubleParameter::setValue(double value)
+{
+    if(m_value == value)
+        return;
+
+    if(value < d->min)
+        m_value = d->min;
+    else if(value > d->max)
+        m_value = d->max;
+    else m_value = value;
+
+    //  update intern widget
+    this->blockInternWidgetsSignals(true);
+    this->updateInternWigets();
+    this->blockInternWidgetsSignals(false);
+
+    emit valueChanged(m_value);
+}
+
 void medDoubleParameter::updateInternWigets()
 {
     if(d->spinBox)

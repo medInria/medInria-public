@@ -37,6 +37,9 @@ public:
 
     virtual QWidget* getWidget();
 
+public slots:
+    void setValue(int value);
+
 protected:
     virtual void updateInternWigets();
 

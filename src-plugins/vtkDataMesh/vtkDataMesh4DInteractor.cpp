@@ -102,7 +102,7 @@ void vtkDataMesh4DInteractor::setData(medAbstractData *data)
             mintime = range[0];
             maxtime = range[1];
 
-             numberofsteps = std::ceil ((maxtime - mintime) / (mintimestep) + 1.0);
+            numberofsteps = std::ceil ((maxtime - mintime) / (mintimestep) + 1.0);
             d->timeLineParameter->setNumberOfFrame(numberofsteps);
             d->timeLineParameter->setDuration((maxtime+mintimestep));
             connect(d->timeLineParameter, SIGNAL(frameChanged(double)), this, SLOT(setCurrentTime(double)));

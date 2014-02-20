@@ -210,7 +210,7 @@ void medTimeLineParameter::stop(bool stop)
 void medTimeLineParameter::setNumberOfFrame(int numberOfFrame)
 {
     d->numberOfFrame = numberOfFrame;
-    d->frameLineParameter->setRange(0, numberOfFrame);
+    d->frameLineParameter->setRange(0, numberOfFrame-1);
     if(d->duration != 0)
         d->timeBetweenFrames = d->duration / d->numberOfFrame;
     else
@@ -227,6 +227,7 @@ void medTimeLineParameter::setStepFrame(int stepFrame)
 void medTimeLineParameter::setDuration(const double& timeDuration)
 {
     d->duration = timeDuration;
+    d->timeParameter->setRange(0,d->duration);
     if(d->duration != 0)
         d->timeBetweenFrames = d->duration / d->numberOfFrame;
     else
