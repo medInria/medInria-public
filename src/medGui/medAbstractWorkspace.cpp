@@ -50,7 +50,7 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
 {
     d->parent = parent;
 
-    d->selectionToolBox = new medViewSettingsToolBox;
+    d->selectionToolBox = new medToolBox;
     d->selectionToolBox->setTitle("Selection");
     d->selectionToolBox->header()->hide();
     d->selectionToolBox->hide();
@@ -230,11 +230,18 @@ void medAbstractWorkspace::updateForLayerSelection()
     {
         containerMng->container(uuid)->highlight();
     }
-
+    d->interactorToolBox->hide();
     d->interactorToolBox->clear();
 
     QList<QWidget*> interactorsWidget;
     QList<QString> interactorsIdentifier;
+
+    QGroupBox *imageBox = new QGroupBox("IMAGE");
+    QVBoxLayout *imageLayout = new QVBoxLayout(imageBox);
+    QGroupBox *meshBox = new QGroupBox("MESH");
+    QVBoxLayout *meshLayout = new QVBoxLayout(meshBox);
+    QGroupBox *unknowBox = new QGroupBox("UNKNOWN");
+    QVBoxLayout *unknowLayout = new QVBoxLayout(unknowBox);
 
     foreach (QListWidgetItem* item, d->layerListWidget->selectedItems())
     {
@@ -244,20 +251,38 @@ void medAbstractWorkspace::updateForLayerSelection()
 
         foreach (medAbstractInteractor* interactor, view->interactors())
         {
+
             QString interactorIdentifier = interactor->identifier();
             if(!interactorsIdentifier.contains(interactorIdentifier))
             {
                 interactorsIdentifier << interactorIdentifier;
-                interactorsWidget << interactor->toolBoxWidget();
+
+                if(interactorIdentifier.contains("itk", Qt::CaseInsensitive))
+                    imageLayout->addWidget(interactor->toolBoxWidget());
+                else if(interactorIdentifier.contains("vtk", Qt::CaseInsensitive))
+                    meshLayout->addWidget(interactor->toolBoxWidget());
+                else
+                    unknowLayout->addWidget(interactor->toolBoxWidget());
             }
         }
     }
 
     d->interactorToolBox->show();
-    foreach(QWidget* widget, interactorsWidget)
+    if(!imageLayout->isEmpty())
     {
-        d->layerListToolBox->addWidget(widget);
-        widget->show();
+        d->layerListToolBox->addWidget(imageBox);
+        imageBox->show();
     }
+    if(!meshLayout->isEmpty())
+    {
+        d->layerListToolBox->addWidget(meshBox);
+        meshBox->show();
+    }
+    if(!unknowLayout->isEmpty())
+    {
+        d->layerListToolBox->addWidget(unknowBox);
+        unknowBox->show();
+    }
+
     emit selectionChanged();
 }
