@@ -162,7 +162,6 @@ void medAbstractWorkspace::updateForContainerSelection()
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         // update the toolbox when the content of the view change
         connect(container, SIGNAL(viewChanged()), this, SLOT(updateForContainerSelection()));
-        this->updateForLayeredViewContents();
         medAbstractView* view = container->view();
         // add nothing if the view is empty
         if(!view)
@@ -182,7 +181,7 @@ void medAbstractWorkspace::updateForContainerSelection()
         navigator->show();
     }
 
-
+    this->updateForLayeredViewContents();
 
     emit selectionChanged();
 }
@@ -195,6 +194,7 @@ void medAbstractWorkspace::updateForLayeredViewContents()
     // unparent the layers widget before clearing d->layerListWidget;
     for(int row = 0; row < d->layerListWidget->count(); ++row)
         d->layerListWidget->itemWidget(d->layerListWidget->item(row))->setParent(NULL);
+
 
     delete d->layerListWidget;
     d->layerListWidget = new QListWidget;
@@ -293,4 +293,3 @@ void medAbstractWorkspace::updateForLayerSelection()
 
     emit selectionChanged();
 }
-
