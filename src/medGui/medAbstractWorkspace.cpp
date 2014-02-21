@@ -55,9 +55,7 @@ medAbstractWorkspace::medAbstractWorkspace(QWidget *parent) : QObject(parent), d
     d->selectionToolBox->hide();
 
     d->viewContainerStack = new medTabbedViewContainers(parent);
-    connect(d->viewContainerStack, SIGNAL(newContainer(QUuid)), this, SLOT(addNewContainer(QUuid)));
     connect(d->viewContainerStack, SIGNAL(selectionChanged()), this, SLOT(updateForContainerSelection()));
-    connect(medViewContainerManager::instance(), SIGNAL(containerAboutToBeDestroyed(QUuid)), this, SLOT(removeContainer(QUuid)));
 
     d->databaseVisibility = true;
     d->toolBoxesVisibility = true;
@@ -155,17 +153,7 @@ void medAbstractWorkspace::addNewTab()
 
 void medAbstractWorkspace::updateForContainerSelection()
 {
-    // unparent the layers widget before clearing d->layerListWidget;
-    for(int row = 0; row < d->layerListWidget->count(); ++row)
-        d->layerListWidget->itemWidget(d->layerListWidget->item(row))->setParent(NULL);
-
-    delete d->layerListWidget;
-    d->layerListWidget = new QListWidget;
-    d->layerListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    connect(d->layerListWidget, SIGNAL(itemSelectionChanged ()), this, SLOT(updateForLayerSelection()));
-
     d->navigatorToolBox->clear();
-    d->layerListToolBox->clear();
 
     QList<QWidget*>  navigators;
     QStringList viewType;
@@ -174,6 +162,7 @@ void medAbstractWorkspace::updateForContainerSelection()
         medViewContainer *container = medViewContainerManager::instance()->container(uuid);
         // update the toolbox when the content of the view change
         connect(container, SIGNAL(viewChanged()), this, SLOT(updateForContainerSelection()));
+        this->updateForLayeredViewContents();
         medAbstractView* view = container->view();
         // add nothing if the view is empty
         if(!view)
@@ -183,14 +172,46 @@ void medAbstractWorkspace::updateForContainerSelection()
         {
             viewType << view->identifier();
             navigators << view->navigatorWidget();
-            qDebug() << view->navigatorWidget();
         }
+    }
+    // add the navigators widgets
+    d->navigatorToolBox->show();
+    foreach(QWidget* navigator, navigators)
+    {
+        d->navigatorToolBox->addWidget(navigator);
+        navigator->show();
+    }
 
 
+
+    emit selectionChanged();
+}
+
+
+void medAbstractWorkspace::updateForLayeredViewContents()
+{
+    d->layerListToolBox->clear();
+
+    // unparent the layers widget before clearing d->layerListWidget;
+    for(int row = 0; row < d->layerListWidget->count(); ++row)
+        d->layerListWidget->itemWidget(d->layerListWidget->item(row))->setParent(NULL);
+
+    delete d->layerListWidget;
+    d->layerListWidget = new QListWidget;
+    d->layerListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    connect(d->layerListWidget, SIGNAL(itemSelectionChanged ()), this, SLOT(updateForLayerSelection()));
+
+    d->layerListToolBox->clear();
+    foreach(QUuid uuid, d->viewContainerStack->containersSelected())
+    {
         // fill the layer widget
-        medAbstractLayeredView* layerdView = dynamic_cast<medAbstractLayeredView*>(view);
+        medViewContainer *container = medViewContainerManager::instance()->container(uuid);
+        medAbstractLayeredView* layerdView = dynamic_cast<medAbstractLayeredView*>(container->view());
         if(layerdView)
         {
+            connect(layerdView, SIGNAL(layerAdded(int)), this, SLOT(updateForLayeredViewContents()), Qt::UniqueConnection);
+            connect(layerdView, SIGNAL(layerRemoved(int)), this, SLOT(updateForLayeredViewContents()), Qt::UniqueConnection);
+
             foreach(QWidget *layerWidget, layerdView->layerWidgets())
             {
                 layerWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
@@ -204,22 +225,11 @@ void medAbstractWorkspace::updateForContainerSelection()
             }
         }
     }
-    // add the navigators widgets
-    d->navigatorToolBox->show();
-    foreach(QWidget* navigator, navigators)
-    {
-        d->navigatorToolBox->addWidget(navigator);
-        navigator->show();
-    }
-
     // add the layer widgets
     d->layerListToolBox->show();
     d->layerListToolBox->addWidget(d->layerListWidget);
     d->layerListWidget->show();
-
-    emit selectionChanged();
 }
-
 
 void medAbstractWorkspace::updateForLayerSelection()
 {
@@ -283,3 +293,4 @@ void medAbstractWorkspace::updateForLayerSelection()
 
     emit selectionChanged();
 }
+

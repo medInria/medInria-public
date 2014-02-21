@@ -74,6 +74,7 @@ public slots:
     void setAttribute(const QString & attribute);
     void setLut(const QString &lutName);
     virtual void setWindowLevel (double &window, double &level);
+    virtual void removeData();
 
 protected:
     void updatePipeline ();
@@ -82,7 +83,6 @@ protected:
     void setupParameters();
 
 private:
-    void removeData();
     static QStringList dataHandled();
 
 private:

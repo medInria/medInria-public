@@ -232,11 +232,6 @@ int main(int argc,char* argv[]) {
                              QObject::tr("Warning : no plugin loaded successfully."));
     }
 
-    //  Handle signals for multiple medInria instances.
-
-    QObject::connect(&application,SIGNAL(messageReceived(const QString&)),
-                     &mainwindow,SLOT(onNewInstance(const QString&)));
-
     application.setActivationWindow(&mainwindow);
     application.setMainWindow(&mainwindow);
 

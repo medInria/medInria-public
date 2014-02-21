@@ -60,6 +60,7 @@ public slots:
     virtual void setVisibility(bool visibility);
     void setWindow(double window);
     void setLevel(double level);
+    virtual void removeData();
 
     virtual void updateWidgets();
 
@@ -68,7 +69,6 @@ protected:
 private:
     static QStringList dataHandled();
     virtual void update();
-    virtual void removeData();
 
     template <typename IMAGE>
     bool SetViewInput(const char* type, medAbstractData* data, const int layer);

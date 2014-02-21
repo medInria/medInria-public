@@ -58,6 +58,7 @@ private slots:
 
     void addLayerItem(int layer);
     void removeLayerItem(int layer);
+    void removeLayerFromCloseButton();
 
     void removeInternNavigatorWidget();
     void removeInternToolBarWidget();

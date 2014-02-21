@@ -73,11 +73,9 @@ public:
 medViewContainer::medViewContainer(QWidget *parent): QFrame(parent),
     d(new medViewContainerPrivate)
 {
-
     d->uuid = QUuid::createUuid();
-    medViewContainerManager::instance()->registerNewContainer(this);
+    medViewContainerManager::instance()->registerNewContainer(this);    
 
-    this->setObjectName("container");
     d->view = NULL;
     d->northDragLabel = NULL;
     d->eastDragLabel = NULL;
@@ -200,6 +198,7 @@ void medViewContainer::setView(medAbstractView *view)
         d->toolBox->setTitle("Container settings");
         d->toolBox->header()->hide();
     }
+    emit viewChanged();
 }
 
 bool medViewContainer::isSelected() const
@@ -263,6 +262,7 @@ void medViewContainer::setMaximised(bool maxi)
         d->vSplittButton->show();
         d->hSplittButton->show();
     }
+    emit maximised(maxi);
     emit maximised(d->uuid, maxi);
 }
 
@@ -410,7 +410,7 @@ void medViewContainer::addData(medAbstractData *data)
     //     of the view. - RDE
     medAbstractLayeredView* view = dynamic_cast<medAbstractLayeredView*>(d->view);
     view->addLayer(data);
-    emit viewChanged();
+//    emit viewChanged();
 }
 
 void medViewContainer::selfDestroy()

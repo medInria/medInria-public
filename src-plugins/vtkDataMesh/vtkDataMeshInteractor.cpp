@@ -118,8 +118,6 @@ vtkDataMeshInteractor::vtkDataMeshInteractor(medAbstractImageView* parent):
 
 vtkDataMeshInteractor::~vtkDataMeshInteractor()
 {
-    removeData();
-
     delete d;
     d = 0;
 }

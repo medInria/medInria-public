@@ -104,8 +104,6 @@ medVtkViewItkDataImageInteractor::medVtkViewItkDataImageInteractor(medAbstractIm
 
 medVtkViewItkDataImageInteractor::~medVtkViewItkDataImageInteractor()
 {
-    removeData();
-
     delete d;
     d = NULL;
 }
@@ -194,7 +192,6 @@ void medVtkViewItkDataImageInteractor::removeData()
         d->view2d->Render();
     else
         d->view3d->Render();
-
 }
 
 

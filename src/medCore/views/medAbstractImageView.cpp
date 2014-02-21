@@ -61,7 +61,10 @@ QList<medAbstractNavigator*> medAbstractImageView::extraNavigators()
 
 void medAbstractImageView::removeInteractors(medAbstractData *data)
 {
-    delete d->primaryIntercatorsHash.take(data);
+    medAbstractLayeredViewInteractor* pInteractor = d->primaryIntercatorsHash.take(data);
+    pInteractor->removeData();
+    delete pInteractor;
+
     QList<medAbstractInteractor*> extraInt =  d->extraIntercatorsHash.take(data);
     foreach(medAbstractInteractor* extra, extraInt)
     {

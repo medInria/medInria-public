@@ -52,6 +52,7 @@ public slots:
 
 signals:
     void maximised(QUuid uuid, bool maximised);
+    void maximised(bool maximised);
     void containerSelected(QUuid uuid);
     void containerUnSelected(QUuid uuid);
     void vSplitRequest();

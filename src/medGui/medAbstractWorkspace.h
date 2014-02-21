@@ -69,6 +69,7 @@ signals:
 
 protected slots:
     void updateForContainerSelection();
+    void updateForLayeredViewContents();
     void updateForLayerSelection();
     void clearWorkspaceToolBoxes();
 

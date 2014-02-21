@@ -33,7 +33,10 @@ medAbstractLayeredView::~medAbstractLayeredView()
 
 void medAbstractLayeredView::removeInteractors(medAbstractData *data)
 {
-    delete d->primaryIntercatorsHash.take(data);
+    medAbstractLayeredViewInteractor* pInteractor = d->primaryIntercatorsHash.take(data);
+    pInteractor->removeData();
+    delete pInteractor;
+
     QList<medAbstractInteractor*> extraInt =  d->extraIntercatorsHash.take(data);
     foreach(medAbstractInteractor* extra, extraInt)
     {
@@ -189,10 +192,13 @@ bool medAbstractLayeredView::removeData(medAbstractData *data)
 
 void medAbstractLayeredView::removeLayer(unsigned int layer)
 {
-    this->removeInteractors(this->data(layer));
-    d->layersDataList.removeAt(layer);
-
-    emit layerRemoved(layer);
+    if(d->layersDataList.count() > 1)
+    {
+        this->removeInteractors(this->data(layer));
+        d->layersDataList.removeAt(layer);
+        emit layerRemoved(layer);
+    }
+    else this->~medAbstractLayeredView();
 }
 
 void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *data)
@@ -200,14 +206,12 @@ void medAbstractLayeredView::insertLayer(unsigned int layer, medAbstractData *da
     d->layersDataList.insert(layer, data);
     this->initialiseInteractors(data);
 
-    emit layerRemoved(layer);
-
+    emit layerAdded(layer);
 }
 
 void medAbstractLayeredView::moveLayer(unsigned int fromLayer, unsigned int toLayer)
 {
     d->layersDataList.move(fromLayer, toLayer);
-
     //TODO I'm not sure we really want this. find out which signal emit. - RDE.
 }
 

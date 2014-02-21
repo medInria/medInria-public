@@ -226,9 +226,10 @@ void medWorkspaceArea::addDatabaseView(medDatabaseDataSource* dataSource)
     //little tricks to force to recompute the stylesheet.
     dataSource->compactViewWidget()->setStyleSheet("/* */");
 
-    connect(dataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
-            this, SLOT(open(const medDataIndex&)),
-            Qt::UniqueConnection);
+    //TODO: make it fit with the new API - RDE
+//    connect(dataSource->compactViewWidget(), SIGNAL(open(const medDataIndex&)),
+//            this, SLOT(open(const medDataIndex&)),
+//            Qt::UniqueConnection);
 }
 
 void medWorkspaceArea::removeInternSelectionToolBox()
