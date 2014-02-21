@@ -210,7 +210,10 @@ bool medViewContainer::isSelected() const
 void medViewContainer::setSelected(bool selec)
 {
     if(selec == d->selected)
-        return;
+        if(QApplication::keyboardModifiers() == Qt::Key_Control)
+            this->setSelected(!selec);
+        else
+            return;
 
     d->selected = selec;
     if(d->selected)
@@ -284,6 +287,9 @@ void medViewContainer::removeInterneView()
 
 void medViewContainer::focusInEvent(QFocusEvent *event)
 {
+    if(event->reason() == Qt::ActiveWindowFocusReason)
+        return;
+
     this->setSelected(true);
     QWidget::focusInEvent(event);
 }

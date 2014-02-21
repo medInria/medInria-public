@@ -316,7 +316,7 @@ void medVtkView::addLayerItem(int layer)
     QPushButton *removeButton = new QPushButton;
     removeButton->setIcon(QIcon(":/icons/cross.svg"));
     //TODO fix it!
-    connect(removeButton,SIGNAL(clicked()), this, SLOT(removeselectedLayers()));
+//    connect(removeButton,SIGNAL(clicked()), this, SLOT(removeselectedLayers()));
 
     layout->addWidget(thumbnailButton);
     layout->addWidget(layerName);

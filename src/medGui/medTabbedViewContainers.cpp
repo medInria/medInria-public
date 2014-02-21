@@ -148,6 +148,14 @@ void medTabbedViewContainers::addContainerToSelection(QUuid container)
 {
     qDebug() << "add to selection" << container;
     QList<QUuid> containersSelected = d->containerSelectedForTabIndex.value(this->currentIndex());
+    if(QApplication::keyboardModifiers() != Qt::Key_Control)
+    {
+        foreach (QUuid uuid, containersSelected)
+            medViewContainerManager::instance()->container(uuid)->setSelected(false);
+    }
+    // containersSelected may have been mofified in removeContainerFromSelection so
+    // we have to get it back again
+    containersSelected = d->containerSelectedForTabIndex.value(this->currentIndex());
     containersSelected.append(container);
     d->containerSelectedForTabIndex.insert(this->currentIndex(), containersSelected);
     emit selectionChanged();
