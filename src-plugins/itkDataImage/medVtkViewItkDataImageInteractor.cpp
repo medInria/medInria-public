@@ -226,7 +226,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
                                      << "Muscles & Bones" << "Bones" << "Red Vessels"
                                      << "Cardiac" << "Gray Rainbow" << "Stern" << "Black Body";
     d->lutParam->addItems(lut);
-    connect(d->lutParam, SIGNAL(valueChanged(QString)), this, SLOT(setPreset(QString)));
+    connect(d->lutParam, SIGNAL(valueChanged(QString)), this, SLOT(setLut(QString)));
 
 
     d->presetParam = new medStringListParameter("Preset", this);
@@ -236,7 +236,7 @@ void medVtkViewItkDataImageInteractor::initParameters(medAbstractImageData* data
                                         << "Soft on Blue" << "Red on White" << "Glossy" ;
     d->presetParam->addItems(presets);
 
-    connect(d->presetParam, SIGNAL(valueChanged(QString)), this, SLOT(setLut(QString)));
+    connect(d->presetParam, SIGNAL(valueChanged(QString)), this, SLOT(setPreset(QString)));
 
     d->opacityParam = new medIntParameter("Opacity", this);
     d->opacityParam->setRange(0, 100);

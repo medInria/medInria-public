@@ -223,7 +223,6 @@ void medAbstractWorkspace::updateForContainerSelection()
 
 void medAbstractWorkspace::updateForLayerSelection()
 {
-    qDebug()  << "update layer selection";
     medViewContainerManager *containerMng =  medViewContainerManager::instance();
     foreach(QUuid uuid, d->viewContainerStack->containersSelected())
     {
@@ -232,7 +231,6 @@ void medAbstractWorkspace::updateForLayerSelection()
     d->interactorToolBox->hide();
     d->interactorToolBox->clear();
 
-    QList<QWidget*> interactorsWidget;
     QList<QString> interactorsIdentifier;
 
     QGroupBox *imageBox = new QGroupBox("IMAGE");
