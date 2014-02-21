@@ -269,17 +269,17 @@ void medAbstractWorkspace::updateForLayerSelection()
     d->interactorToolBox->show();
     if(!imageLayout->isEmpty())
     {
-        d->layerListToolBox->addWidget(imageBox);
+        d->interactorToolBox->addWidget(imageBox);
         imageBox->show();
     }
     if(!meshLayout->isEmpty())
     {
-        d->layerListToolBox->addWidget(meshBox);
+        d->interactorToolBox->addWidget(meshBox);
         meshBox->show();
     }
     if(!unknowLayout->isEmpty())
     {
-        d->layerListToolBox->addWidget(unknowBox);
+        d->interactorToolBox->addWidget(unknowBox);
         unknowBox->show();
     }
 
