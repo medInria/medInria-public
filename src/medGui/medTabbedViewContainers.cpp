@@ -105,11 +105,10 @@ void medTabbedViewContainers::insertContainerInTab(int index, const QString &nam
     int idx = this->insertTab(index, splitter, name);
     this->setCurrentIndex(idx);
     d->containerSelectedForTabIndex.insert(idx, QList<QUuid>());
-    connect(splitter, SIGNAL(destroyed()), this, SLOT(repopulateCurrentTab()), Qt::UniqueConnection);
+    connect(splitter, SIGNAL(destroyed()), this, SLOT(repopulateCurrentTab()));
     connect(splitter, SIGNAL(newContainer(QUuid)), this, SLOT(connectContainer(QUuid)), Qt::UniqueConnection);
     medViewContainer* container = new medViewContainer;
     splitter->addViewContainer(container);
-//    container->setSelected(true);
 }
 
 void medTabbedViewContainers::hideTabBar()
@@ -120,7 +119,6 @@ void medTabbedViewContainers::hideTabBar()
 
 void medTabbedViewContainers::connectContainer(QUuid container)
 {
-    qDebug() << "connectContainer !";
     medViewContainer* cont = medViewContainerManager::instance()->container(container);
     connect(cont, SIGNAL(containerSelected(QUuid)), this, SLOT(addContainerToSelection(QUuid)), Qt::UniqueConnection);
     connect(cont, SIGNAL(containerUnSelected(QUuid)), this, SLOT(removeContainerFromSelection(QUuid)), Qt::UniqueConnection);
@@ -149,7 +147,7 @@ void medTabbedViewContainers::disconnectTabFromSplitter(int index)
 void medTabbedViewContainers::addContainerToSelection(QUuid container)
 {
     QList<QUuid> containersSelected = d->containerSelectedForTabIndex.value(this->currentIndex());
-    if(QApplication::keyboardModifiers() != Qt::Key_Control)
+    if(QApplication::keyboardModifiers() != Qt::ControlModifier)
     {
         foreach (QUuid uuid, containersSelected)
             medViewContainerManager::instance()->container(uuid)->setSelected(false);

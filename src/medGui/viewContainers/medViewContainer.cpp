@@ -210,21 +210,21 @@ bool medViewContainer::isSelected() const
 void medViewContainer::setSelected(bool selec)
 {
     if(selec == d->selected)
-        if(QApplication::keyboardModifiers() == Qt::Key_Control)
+    {
+        if(QApplication::keyboardModifiers() == Qt::ControlModifier)
             this->setSelected(!selec);
-        else
-            return;
+
+        return;
+    }
 
     d->selected = selec;
     if(d->selected)
     {
-        qDebug() << "setSelected : " << d->uuid;
         emit containerSelected(d->uuid);
         this->highlight();
     }
     else
     {
-        qDebug() << "setUnSelected : " << d->uuid;
         emit containerUnSelected(d->uuid);
         this->unHighlight();
     }
