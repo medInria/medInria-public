@@ -122,7 +122,6 @@ void medViewContainerSplitter::insertViewContainer(int index, medViewContainer *
 
     this->insertWidget(index, container);
     this->setCollapsible(index, false);
-    container->setSelected(true);
 }
 
 void medViewContainerSplitter::addViewContainer(medViewContainer *container)
