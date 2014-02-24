@@ -48,6 +48,8 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
     connect(d->closeShortcut,SIGNAL(activated()),this,SLOT(resetCurrentTab()));
 
     connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(disconnectTabFromSplitter(int)));
+
+    connect(medViewContainerManager::instance(), SIGNAL(containerAboutToBeDestroyed(QUuid)), this, SLOT(removeContainerFromSelection(QUuid)));
 }
 
 medTabbedViewContainers::~medTabbedViewContainers(void)
@@ -162,8 +164,14 @@ void medTabbedViewContainers::addContainerToSelection(QUuid container)
 
 void medTabbedViewContainers::removeContainerFromSelection(QUuid container)
 {
-    QList<QUuid> containersSelected = d->containerSelectedForTabIndex.value(this->currentIndex());
-    containersSelected.removeOne(container);
-    d->containerSelectedForTabIndex.insert(this->currentIndex(), containersSelected);
-    emit selectionChanged();
+    foreach(QList<QUuid> containersSelected, d->containerSelectedForTabIndex.values())
+    {
+        if(containersSelected.removeOne(container))
+        {
+
+            d->containerSelectedForTabIndex.insert(d->containerSelectedForTabIndex.key(containersSelected), containersSelected);
+            emit selectionChanged();
+            break;
+        }
+    }
 }

@@ -59,6 +59,7 @@ signals:
     void hSplitRequest();
     void splitRequest(medDataIndex, Qt::AlignmentFlag);
     void viewChanged();
+    void viewRemoved();
 
 
 protected:

@@ -175,8 +175,6 @@ medAbstractView* medViewContainer::view() const
 
 void medViewContainer::setView(medAbstractView *view)
 {
-    qDebug() <<"setView";
-
     if(d->view)
         delete d->view;
     else
@@ -283,6 +281,8 @@ void medViewContainer::removeInterneView()
     d->maximisedParameter->hide();
     d->mainLayout->addWidget(d->emptyView, 1, 0, 1, 1);
     d->toolBarLayout->insertWidget(0, d->emptyViewToolBar);
+
+    emit viewRemoved();
 }
 
 void medViewContainer::focusInEvent(QFocusEvent *event)

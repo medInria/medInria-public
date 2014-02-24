@@ -164,17 +164,19 @@ void medViewContainerSplitter::insertNestedSplitter(int index,
     connect(splitter, SIGNAL(newContainer(QUuid)), this, SIGNAL(newContainer(QUuid)));
     connect(splitter, SIGNAL(containerRemoved()), this, SIGNAL(containerRemoved()));
     connect(splitter, SIGNAL(destroyed()), this, SLOT(checkIfStillDeserveToLive()));
-    this->insertWidget(index, splitter);
-    this->setCollapsible(index, false);
     splitter->addViewContainer(oldContainer);
     splitter->addViewContainer(newContainer);
+    this->insertWidget(index, splitter);
+    this->setCollapsible(index, false);
     this->setSizes(savedSizes);
 
-//    int newSize = 0;
-//    if(splitter->orientation() == Qt::Vertical)
-//        newSize = splitter->width() / 2;
-//    else
-//        newSize = splitter->height() / 2;
-//    splitter->recomputeSizes(0, 1, newSize);
+    // resize nested container because QVtkWidget2 is automaticlly resize to fit the its view
+    // (given the fixed width/height of the splitter) when it is added to the splitter.
+    int newSize = 0;
+    if(splitter->orientation() == Qt::Vertical)
+        newSize = splitter->width() / 2;
+    else
+        newSize = splitter->height() / 2;
+    splitter->recomputeSizes(0, 1, newSize);
 
 }

@@ -71,6 +71,7 @@ protected slots:
     void updateForContainerSelection();
     void updateForLayeredViewContents();
     void updateForLayerSelection();
+    void updateForEmptyContainer();
     void clearWorkspaceToolBoxes();
 
 private:

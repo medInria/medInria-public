@@ -336,7 +336,8 @@ void medVtkView::addLayerItem(int layer)
 
 void medVtkView::removeLayerItem(int layer)
 {
-//    delete d->layerWidgets[layer];
+    // delete Later beacause the workspace can try to manipulate it later.
+    d->layerWidgets[layer]->deleteLater();
     d->layerCloseButtonWidgets.removeAt(layer);
     d->layerWidgets.removeAt(layer);
 

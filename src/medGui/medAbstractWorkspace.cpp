@@ -36,6 +36,7 @@ public:
 
     medTabbedViewContainers * viewContainerStack;
     QHash <QListWidgetItem*, QUuid> containerForLayerWidgets;
+    QHash <QUuid, QPair<int, int> > indexLayerWidgetForContainer;
 
     QList<medToolBox*> workspaceToolBoxes;
     medToolBox *selectionToolBox;
@@ -190,10 +191,15 @@ void medAbstractWorkspace::updateForContainerSelection()
 void medAbstractWorkspace::updateForLayeredViewContents()
 {
     d->layerListToolBox->clear();
+    d->indexLayerWidgetForContainer.clear();
 
     // unparent the layers widget before clearing d->layerListWidget;
     for(int row = 0; row < d->layerListWidget->count(); ++row)
-        d->layerListWidget->itemWidget(d->layerListWidget->item(row))->setParent(NULL);
+    {
+        QWidget *widget = d->layerListWidget->itemWidget(d->layerListWidget->item(row));
+        if(widget)
+            widget->setParent(NULL);
+    }
 
 
     delete d->layerListWidget;
@@ -212,6 +218,16 @@ void medAbstractWorkspace::updateForLayeredViewContents()
             connect(layerdView, SIGNAL(layerAdded(int)), this, SLOT(updateForLayeredViewContents()), Qt::UniqueConnection);
             connect(layerdView, SIGNAL(layerRemoved(int)), this, SLOT(updateForLayeredViewContents()), Qt::UniqueConnection);
 
+            int firstLayerIndex = d->layerListWidget->count();
+            if(d->layerListWidget->count() == 0)
+            {
+                QListWidgetItem * item = new QListWidgetItem;
+                item->setSizeHint(QSize(10, 10));
+                item->setFlags(Qt::NoItemFlags);
+                d->layerListWidget->addItem(item);
+            }
+            connect(container, SIGNAL(viewRemoved()), this, SLOT(updateForEmptyContainer()), Qt::UniqueConnection);
+
             foreach(QWidget *layerWidget, layerdView->layerWidgets())
             {
                 layerWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
@@ -223,12 +239,25 @@ void medAbstractWorkspace::updateForLayeredViewContents()
                 d->layerListWidget->addItem(item);
                 d->layerListWidget->setItemWidget(item, layerWidget);
             }
+            d->indexLayerWidgetForContainer.insert(uuid, QPair<int, int>(firstLayerIndex, d->layerListWidget->count()));
         }
     }
     // add the layer widgets
     d->layerListToolBox->show();
     d->layerListToolBox->addWidget(d->layerListWidget);
     d->layerListWidget->show();
+}
+
+void medAbstractWorkspace::updateForEmptyContainer()
+{
+    medViewContainer *container = dynamic_cast<medViewContainer *>(this->sender());
+    if(!container)
+        return;
+
+    int firstLayer = d->indexLayerWidgetForContainer.value(container->uuid()).first;
+    int layerCount = d->indexLayerWidgetForContainer.value(container->uuid()).second;
+    for(int row = firstLayer; row < layerCount; ++row)
+        delete d->layerListWidget->itemWidget(d->layerListWidget->item(row));
 }
 
 void medAbstractWorkspace::updateForLayerSelection()
