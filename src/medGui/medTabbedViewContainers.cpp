@@ -56,7 +56,7 @@ medTabbedViewContainers::medTabbedViewContainers(QWidget *parent) : QTabWidget(p
 
     connect(medViewContainerManager::instance(), SIGNAL(containerAboutToBeDestroyed(QUuid)), this, SLOT(removeContainerFromSelection(QUuid)));
 
-    connect(this, SIGNAL(selectionChanged()), this, SLOT(buildTemporaryPool()));
+    connect(this, SIGNAL(containersSelectedChanged()), this, SLOT(buildTemporaryPool()));
 
     d->pool = new medParameterPool(this);
 }
