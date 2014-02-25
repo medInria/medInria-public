@@ -15,37 +15,15 @@
 
 #include <medDataIndex.h>
 #include <medAbstractDbController.h>
+#include <medDatabaseController.h>
+#include <medDatabaseNonPersistentController.h>
 #include <medDataManager.h>
-#include <medImageFileLoader.h>
 
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 
 #include <medDatabaseThumbnailHelper.h>
-
-
-static QPixmap getOrCreateThumbnail(const medDataIndex & index)
-{
-    if(!index.isValidForSeries())
-        return QPixmap(":/pixmaps/default_thumbnail.png");
-
-    medAbstractDbController * dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
-    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
-
-    QImage thumbnailImg;
-
-    if (!thumbpath.isEmpty())
-        thumbnailImg = QImage(thumbpath);
-    else
-        thumbnailImg = dbc->thumbnail(index);
-
-    if(!thumbnailImg.isNull())
-        return QPixmap::fromImage(thumbnailImg);
-    else
-        return QPixmap(":/pixmaps/default_thumbnail.png");
-}
-
 
 class medDatabasePreviewStaticScenePrivate
 {
@@ -82,7 +60,7 @@ void medDatabasePreviewStaticScene::setImage(const medDataIndex &index)
     d->currentDataIndex = index;
 
     QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
-    pixmap->setPixmap(getOrCreateThumbnail(index));
+    pixmap->setPixmap(medDataManager::instance()->thumbnail(index));
     this->addItem(pixmap);
 
     if( ! this->views().isEmpty()) {
@@ -103,7 +81,7 @@ void medDatabasePreviewStaticScene::addImage(const medDataIndex &index)
         return;
 
     QGraphicsPixmapItem *pixmap = new QGraphicsPixmapItem;
-    pixmap->setPixmap(getOrCreateThumbnail(index));
+    pixmap->setPixmap(medDataManager::instance()->thumbnail(index));
     pixmap->scale(d->baseWidth / pixmap->boundingRect().width(),
                   d->baseHeight / pixmap->boundingRect().height());
     this->addItem(pixmap);
@@ -167,7 +145,7 @@ void medDatabasePreviewStaticScene::mouseMoveEvent(QGraphicsSceneMouseEvent *eve
 {
     if(!d->isMulti && event->buttons() == Qt::LeftButton)
     {
-        QPixmap pixmap = getOrCreateThumbnail(d->currentDataIndex);
+        QPixmap pixmap = medDataManager::instance()->thumbnail(d->currentDataIndex);
 
         QMimeData *data = d->currentDataIndex.createMimeData();
         data->setImageData(pixmap);

@@ -18,18 +18,25 @@
 #include <medBrowserArea.h>
 #include <medWorkspaceArea.h>
 #include <medHomepageArea.h>
+
+#include <medTabbedViewContainers.h>
+
+#include <medSettingsManager.h>
 #include <medSettingsEditor.h>
+
 #include <medStatusBar.h>
 #include <medQuickAccessMenu.h>
-#include <medSettingsManager.h>
+#include <medSaveModifiedDialog.h>
+#include <medEmptyDbWarning.h>
+
 #include <medDatabaseNonPersistentController.h>
 #include <medDatabaseController.h>
-#include <medWorkspaceFactory.h>
-#include <medEmptyDbWarning.h>
-#include <medSaveModifiedDialog.h>
+
 #include <medJobManager.h>
+
+#include <medWorkspaceFactory.h>
 #include <medAbstractWorkspace.h>
-#include <medTabbedViewContainers.h>
+#include <medVisualizationWorkspace.h>
 
 #ifdef Q_OS_MAC
 # define CONTROL_KEY "Meta"
@@ -86,6 +93,7 @@ public:
     QShortcut * shortcutShortcut;
 
     QToolButton *screenshotButton;
+    QList<QUuid> expectedUuids;
 };
 
 medMainWindow::medMainWindow ( QWidget *parent ) : QMainWindow ( parent ), d ( new medMainWindowPrivate )
@@ -326,6 +334,37 @@ void medMainWindow::switchToArea(const AreaType areaIndex)
     }
 }
 
+void medMainWindow::open(const medDataIndex &index)
+{
+    this->showWorkspace(medVisualizationWorkspace::staticIdentifier());
+    d->workspaceArea->currentWorkspace()->open(index);
+}
+
+void medMainWindow::open(const QString & path)
+{
+    QEventLoop loop;
+    QUuid uuid = medDataManager::instance()->importPath(path, false);
+    d->expectedUuids.append(uuid);
+    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),
+            this, SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
+    while( d->expectedUuids.contains(uuid)) {
+        loop.processEvents(QEventLoop::ExcludeUserInputEvents);
+    }
+}
+
+
+void medMainWindow::open_waitForImportedSignal(medDataIndex index, QUuid uuid)
+{
+    if(d->expectedUuids.contains(uuid)) {
+        d->expectedUuids.removeAll(uuid);
+        disconnect(medDataManager::instance(),SIGNAL(dataImported(medDataIndex,QUuid)),
+                   this,SLOT(open_waitForImportedSignal(medDataIndex,QUuid)));
+        if (index.isValid()) {
+            this->showWorkspace(medVisualizationWorkspace::staticIdentifier());
+            d->workspaceArea->currentWorkspace()->open(index);
+        }
+    }
+}
 
 void medMainWindow::resizeEvent ( QResizeEvent* event )
 {
@@ -559,7 +598,7 @@ void medMainWindow::showShortcutAccess()
     menuPosition.setX(menuPosition.rx() + (this->rect().width() - d->shortcutAccessWidget->width()) / 2);
     menuPosition.setY(menuPosition.ry() + (this->rect().height() - d->shortcutAccessWidget->height()) / 2);
 
-    d->shortcutAccessWidget->setProperty("pos", menuPosition);
+    d->shortcutAccessWidget->move(menuPosition);
     d->shortcutAccessWidget->show();
     d->shortcutAccessWidget->setFocus();
     d->shortcutAccessWidget->setMouseTracking(true);

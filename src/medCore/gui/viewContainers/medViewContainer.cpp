@@ -56,6 +56,7 @@ public:
     medViewContainer::ClosingMode closingMode;
     bool multiLayer;
     bool userPoolable;
+    QUuid expectedUuid;
 
     QGridLayout* mainLayout;
     QHBoxLayout* toolBarLayout;
@@ -170,8 +171,6 @@ medViewContainer::medViewContainer(medViewContainerSplitter *parent): QFrame(par
 medViewContainer::~medViewContainer()
 {
     removeInternView();
-
-
 
     // Trick to 'inform' a parented splitter
     // "you're not my dad anymore!"
@@ -507,7 +506,7 @@ void medViewContainer::dropEvent(QDropEvent *event)
         else if(area == AREA_LEFT)
             emit splitRequest(index, Qt::AlignLeft);
         else if(area == AREA_CENTER)
-            this->addData(medDataManager::instance()->data(index));
+            this->addData(index);
     }
     else
         this->addData(index);
@@ -522,6 +521,9 @@ void medViewContainer::dropEvent(QDropEvent *event)
 
 void medViewContainer::addData(medAbstractData *data)
 {
+    if( ! d->expectedUuid.isNull())
+        return; // we're already waiting for a import to finish, don't accept other data
+
     if(!data)
         return;
 
@@ -553,8 +555,9 @@ void medViewContainer::addData(medAbstractData *data)
 
 void medViewContainer::addData(medDataIndex index)
 {
-    medDataManager::instance()->disconnect(this);
-    this->addData(medDataManager::instance()->data(index));
+    if( ! d->expectedUuid.isNull())
+        return; // we're already waiting for a import to finish, don't accept other data
+    this->addData(medDataManager::instance()->retrieveData(index));
 }
 
 
@@ -582,7 +585,7 @@ medViewContainer *medViewContainer::split(Qt::AlignmentFlag alignement)
     return d->parent->split(this, alignement);
 }
 
-void medViewContainer::closeEvent(QCloseEvent * event)
+void medViewContainer::closeEvent(QCloseEvent * /*event*/)
 {
     delete this;
 }
@@ -591,15 +594,13 @@ void medViewContainer::openFromSystem()
 {
     //  get last directory opened in settings.
     QString path = medSettingsManager::instance()->value("path", "medViewContainer", QDir::homePath()).toString();
-    path = QFileDialog::getOpenFileName(0, tr("Open"), path);
+    path = QFileDialog::getOpenFileName(NULL, tr("Open"), path);
 
     if (path.isEmpty())
         return;
 
-    //TODO wait for deataManager refactoring and open the file in the container - RDE
-    connect(medDataManager::instance(), SIGNAL(dataAdded(medDataIndex)), this, SLOT(addData(medDataIndex)));
-    medDataManager::instance()->importNonPersistent(path);
-
+    connect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)), this, SLOT(dataReady(medDataIndex,QUuid)));
+    d->expectedUuid = medDataManager::instance()->importPath(path, false);
 
     //  save last directory opened in settings.
     medSettingsManager::instance()->setValue("path", "medViewContainer", path);
@@ -628,6 +629,16 @@ void medViewContainer::updateToolBar()
     {
         d->toolBarLayout->setStretch(0,1);
     }
+}
+
+void medViewContainer::dataReady(medDataIndex index, QUuid uuid)
+{
+    if(d->expectedUuid != uuid)
+        return;
+
+    d->expectedUuid = QUuid();
+    disconnect(medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),0,0);
+    this->addData(index);
 }
 
 medViewContainer::DropArea medViewContainer::computeDropArea(int x, int y)

@@ -88,8 +88,7 @@ target_link_libraries(${PROJECT_NAME}
   ITKCommon  
   medCore
   medGui
-  medSql
-  )
+)
 #not useful if plugin in the medInria-plugins directory
 dtk_build_doc(medCompositeDataSetsPlugin)
 

@@ -109,7 +109,7 @@ medSaveModifiedDialog::medSaveModifiedDialog(QWidget *parent) : QDialog(parent),
     connect (d->cancelButton,SIGNAL(clicked()), this, SLOT(reject()));
     connect (d->quitButton,SIGNAL(clicked()), this, SLOT(accept()));
 
-    connect (medDataManager::instance(), SIGNAL(dataAdded(const medDataIndex &)),this, SLOT(updateCounter()));
+    connect (medDataManager::instance(), SIGNAL(dataImported(medDataIndex,QUuid)),this, SLOT(updateCounter()));
 
     setModal(true);
 }
@@ -136,8 +136,9 @@ void medSaveModifiedDialog::saveAndQuit()
         }
     }
 
+    medDataManager * mdm = medDataManager::instance();
     foreach(medDataIndex index, list)
-        medDataManager::instance()->storeNonPersistentSingleDataToDatabase(index);
+        mdm->makePersistent(mdm->retrieveData(index));
     
     if (d->counter != 0)
         d->quitRequested = true;

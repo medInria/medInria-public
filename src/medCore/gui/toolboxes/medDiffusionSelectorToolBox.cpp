@@ -49,6 +49,7 @@ public:
 
     //QLabel *inputLabel;
     QComboBox *chooseInput;
+    //TODO smartPointing have to be managed only in abstract processes -rde
     QMap <QString, dtkSmartPointer <medAbstractImageData> > inputsMap;
 };
 

@@ -14,11 +14,12 @@
 #include <medViewContainerSplitter.h>
 
 #include <QDebug>
+#include <QUuid>
 
+#include <medAbstractData.h>
+#include <medDataIndex.h>
 #include <medDataManager.h>
 #include <medViewContainer.h>
-#include <medAbstractData.h>
-#include <QUuid>
 
 medViewContainerSplitter::medViewContainerSplitter(QWidget *parent)
 {
@@ -135,7 +136,7 @@ medViewContainer *medViewContainerSplitter::split(Qt::AlignmentFlag alignement)
 void medViewContainerSplitter::split(medDataIndex index, Qt::AlignmentFlag alignement)
 {
     medViewContainer *newContainer = this->split(alignement);
-    newContainer->addData(medDataManager::instance()->data(index));
+    newContainer->addData(medDataManager::instance()->retrieveData(index));
 }
 
 /**

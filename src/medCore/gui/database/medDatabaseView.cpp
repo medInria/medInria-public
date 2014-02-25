@@ -255,9 +255,8 @@ void medDatabaseView::onItemDoubleClicked(const QModelIndex& index)
     else if (dynamic_cast<QAbstractItemModel*>(this->model()))
         item = static_cast<medAbstractDatabaseItem *>(index.internalPointer());
 
-    if (item)
-       if(item->dataIndex().isValidForSeries())
-            emit (open(item->dataIndex()));
+    if (item && item->dataIndex().isValidForSeries())
+        emit (open(item->dataIndex()));
 }
 
 /** Opens the currently selected item. */
@@ -389,7 +388,7 @@ void medDatabaseView::onSaveSelectedItemRequested(void)
     {
         // Copy the data index, because the data item may cease to be valid.
         medDataIndex index = item->dataIndex();
-        medDataManager::instance()->storeNonPersistentMultipleDataToDatabase(index);
+        medDataManager::instance()->makePersistent(medDataManager::instance()->retrieveData(index));
         qDebug() << "DEBUG : onMenuSaveClicked() after storeNonPersistentSingleDataToDatabase";
         qDebug() << "DEBUG : index" << index;
     }
@@ -442,7 +441,7 @@ void medDatabaseView::onCreatePatientRequested(void)
         birthdate = editDialog.value(medMetaDataKeys::BirthDate.label()).toString();
         gender = editDialog.value(medMetaDataKeys::Gender.label()).toString();
 
-        dtkSmartPointer<medAbstractData> medData = new medAbstractData();
+        medAbstractData* medData = new medAbstractData();
 
         QString generatedPatientID = QUuid::createUuid().toString().replace ( "{","" ).replace ( "}","" );
 
@@ -451,11 +450,7 @@ void medDatabaseView::onCreatePatientRequested(void)
         medData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
         medData->addMetaData ( medMetaDataKeys::Gender.key(), QStringList() << gender );
 
-        if(editDialog.isPersistent())
-        {
-            medDataManager::instance()->import(medData);
-        }
-        else medDataManager::instance()->importNonPersistent(medData);
+        medDataManager::instance()->importData(medData, editDialog.isPersistent());
     }
 }
 
@@ -500,7 +495,7 @@ void medDatabaseView::onCreateStudyRequested(void)
         {
             QString studyName = editDialog.value(medMetaDataKeys::StudyDescription.label()).toString();
 
-            dtkSmartPointer<medAbstractData> medData = new medAbstractData();
+            medAbstractData* medData = new medAbstractData();
 
             medData->addMetaData ( medMetaDataKeys::PatientName.key(), QStringList() << patientName );
             medData->addMetaData ( medMetaDataKeys::BirthDate.key(), QStringList() << birthdate );
@@ -509,11 +504,7 @@ void medDatabaseView::onCreateStudyRequested(void)
             medData->addMetaData ( medMetaDataKeys::StudyID.key(), QStringList() << "0" );
             medData->addMetaData ( medMetaDataKeys::StudyDicomID.key(), QStringList() << "" );
 
-            if(editDialog.isPersistent())
-            {
-                medDataManager::instance()->import(medData);
-            }
-            else medDataManager::instance()->importNonPersistent(medData);
+            medDataManager::instance()->importData(medData, editDialog.isPersistent());
         }
     }
 }
@@ -558,7 +549,7 @@ void medDatabaseView::onEditRequested(void)
             {
                 QVariant data = editDialog.value(label);
                 QVariant variant = item->attribute(i);
-                medDataManager::instance()->setMetaData(index,item->attribute(i).toString(),data.toString());
+                medDataManager::instance()->setMetadata(index, variant.toString(), data.toString());
                 i++;    
             }
         } 

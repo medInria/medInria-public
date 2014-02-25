@@ -30,7 +30,6 @@ add_subdirectory(medCore)
 
 add_subdirectory(medTest)
 add_subdirectory(medPacs)
-add_subdirectory(medSql)
 
 add_subdirectory(medLog)
 add_subdirectory(medImageIO)

@@ -14,8 +14,6 @@
 #pragma once
 
 #include <dtkCore/dtkAbstractView.h>
-#include <dtkCore/dtkSmartPointer.h>
-
 #include <medCoreExport.h>
 
 class medAbstractViewPrivate;

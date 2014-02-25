@@ -11,10 +11,11 @@
 
 =========================================================================*/
 
-#include "medDataSourceManager.h"
+#include <medDataSourceManager.h>
 #include <dtkCore>
 
 #include <QList>
+#include <QUuid>
 #include <medAbstractDataSource.h>
 #include <medAbstractDataSourceFactory.h>
 #include <medDataManager.h>
@@ -26,6 +27,8 @@
 #include <medFileSystemDataSource.h>
 #include <medDatabaseDataSource.h>
 #include <medPacsDataSource.h>
+
+#include <medApplication.h>
 
 class medDataSourceManagerPrivate
 {
@@ -72,19 +75,12 @@ medDataSourceManager::medDataSourceManager(): d(new medDataSourceManagerPrivate)
         connectDataSource(dataSource);
     }
 
-    connect(medDataManager::instance(), SIGNAL(dataAdded(const medDataIndex &)),
-            d->dbSource, SLOT(update(const medDataIndex&)));
-    connect(medDataManager::instance(), SIGNAL(dataRemoved(const medDataIndex &)),
-            d->dbSource, SLOT(update(const medDataIndex&)));
-    connect(medDataManager::instance(), SIGNAL(failedToOpen(const medDataIndex&)),
-            d->dbSource , SLOT(onOpeningFailed(const medDataIndex&)));
-
     connect(d->fsSource, SIGNAL(open(QString)),
-            this, SIGNAL(open(QString)));
+            this, SLOT(openFromPath(QString)));
     connect(d->fsSource, SIGNAL(load(QString)),
-            this, SIGNAL(load(QString)));
+            this, SLOT(loadFromPath(QString)));
     connect(d->dbSource, SIGNAL(open(const medDataIndex&)),
-            this, SIGNAL(open(const medDataIndex&)));
+            this, SLOT(openFromIndex(medDataIndex)));
 }
 
 
@@ -128,25 +124,24 @@ void medDataSourceManager::importData(medAbstractData *data)
         return;
     }
 
-    dtkSmartPointer<medAbstractData> data_smart(data);
-    medDataManager::instance()->import(data_smart);
+    medDataManager::instance()->importData(data, true);
 }
 
 void medDataSourceManager::exportData(const medDataIndex &index)
 {
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->data(index);
-        medDataManager::instance()->exportDataToFile(data);
+    //TODO did it all from the medDataManager ? - RDE
+    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
+    medDataManager::instance()->exportData(data);
 }
 
 void medDataSourceManager::importFile(QString path)
 {
-    medDataManager::instance()->import(path,false);
+    medDataManager::instance()->importPath(path, false, true);
 }
 
 void medDataSourceManager::indexFile(QString path)
 {
-    medDataManager::instance()->import(path, true);
-
+    medDataManager::instance()->importPath(path, true, true);
 }
 
 
@@ -166,6 +161,21 @@ medDataSourceManager::~medDataSourceManager( void )
 {
     delete d;
     d = NULL;
+}
+
+void medDataSourceManager::openFromPath(QString path)
+{
+    qobject_cast<medApplication*>(qApp)->open(path);
+}
+
+void medDataSourceManager::openFromIndex(medDataIndex index)
+{
+    qobject_cast<medApplication*>(qApp)->open(index);
+}
+
+void medDataSourceManager::loadFromPath(QString path)
+{
+    medDataManager::instance()->importPath(path, false);
 }
 
 void medDataSourceManager::destroy( void )

@@ -14,10 +14,12 @@
 #pragma once
 
 #include <QObject>
+#include <QUuid>
+
+#include <medDataIndex.h>
 
 class medAbstractDataSource;
 class medDataSourceManagerPrivate;
-class medDataIndex;
 class medAbstractData;
 class medDatabaseDataSource;
 
@@ -27,31 +29,15 @@ class medDataSourceManager : public QObject
     Q_OBJECT
 
 public:
-    /**
-* instance - singleton access method, returns a singleViewContainer static instance of the manager
-* @return medSettingsManager * - the manager
-*/
     static medDataSourceManager *instance();
 
-    /**
-* destroy - should be called on closing the application, to destroy the singleton
-*/
     static void destroy();
-
 
     QList<medAbstractDataSource*> dataSources();
     medDatabaseDataSource* databaseDataSource();
 
 
 protected slots:
-
-    /**
-* @brief Export data from a selected medDataIndex in a data source.
-*
-* Opens a file dialog and tries writers based
-* on the file extension given by the user.
-* @param index
-*/
     void exportData(const medDataIndex &index);
     void importData(medAbstractData *data);
     void importFile(QString path);
@@ -71,6 +57,11 @@ protected:
     medDataSourceManager();
     ~medDataSourceManager();
 
+
+protected slots:
+    void openFromPath(QString path);
+    void openFromIndex(medDataIndex index);
+    void loadFromPath(QString path);
 
 private:
 

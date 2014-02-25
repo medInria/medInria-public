@@ -168,15 +168,13 @@ void medDiffusionWorkspace::cancelProcess()
 void medDiffusionWorkspace::getOutput()
 {
     this->stackedViewContainers()->setEnabled(true);
-    dtkSmartPointer <medAbstractData> outputData = dynamic_cast <medAbstractData *> (d->currentProcess->output());
+    medAbstractData *outputData = dynamic_cast<medAbstractData*>(d->currentProcess->output());
 
     if (!outputData)
         return;
 
     d->diffusionContainer->addData(outputData);
-
-    QString uuid = QUuid::createUuid().toString();
-    medDataManager::instance()->importNonPersistent (outputData, uuid);
+    medDataManager::instance()->importData(outputData);
 
     this->resetRunningFlags();
 }
@@ -230,14 +228,14 @@ void medDiffusionWorkspace::updateToolBoxesInputs()
 
 void medDiffusionWorkspace::addToolBoxInput(medAbstractData *data)
 {
-    dtkSmartPointer <medAbstractImageData> medData = dynamic_cast <medAbstractImageData *> (data);
+    medAbstractImageData *medData = dynamic_cast <medAbstractImageData *> (data);
     if (!medData)
         return;
 
     if (medData->Dimension() == 4)
         d->diffusionEstimationToolBox->addInputImage(medData);
 
-    if (dynamic_cast<medAbstractDiffusionModelImageData*>(medData.data()) != 0)
+    if (dynamic_cast<medAbstractDiffusionModelImageData*>(static_cast<medAbstractData *>(medData->data())) != 0)
     {
         d->diffusionScalarMapsToolBox->addInputImage(medData);
         d->diffusionTractographyToolBox->addInputImage(medData);

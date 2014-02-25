@@ -78,6 +78,7 @@ public slots:
     void setView(medAbstractView* view);
     void removeView();
     void addData(medAbstractData* data);
+    void addData(medDataIndex index);
 
     void setSelected(bool selected);
     void setUnSelected(bool unSelected);
@@ -114,9 +115,9 @@ protected:
     void recomputeStyleSheet();
 
 protected slots:
-    void addData(medDataIndex index);
     void openFromSystem();
     void updateToolBar();
+    void dataReady(medDataIndex index, QUuid uuid);
 
 private slots:
     void removeInternView();

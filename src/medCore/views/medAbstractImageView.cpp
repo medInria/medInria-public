@@ -76,8 +76,8 @@
 class medAbstractImageViewPrivate
 {
 public:
-    QHash<dtkSmartPointer<medAbstractData>,  medAbstractImageViewInteractor*> primaryInteractorsHash;
-    QHash<dtkSmartPointer<medAbstractData>,  QList<medAbstractInteractor*> > extraInteractorsHash;
+    QHash<medAbstractData*,  medAbstractImageViewInteractor*> primaryInteractorsHash;
+    QHash<medAbstractData*,  QList<medAbstractInteractor*> > extraInteractorsHash;
 
     medAbstractImageViewNavigator* primaryNavigator;
     QList<medAbstractNavigator*> extraNavigators;
@@ -152,6 +152,7 @@ void medAbstractImageView::removeInteractors(medAbstractData *data)
 bool medAbstractImageView::initialiseInteractors(medAbstractData *data)
 {
     // primary
+
 
     medViewFactory* factory = medViewFactory::instance();
     QStringList primaryInt = factory->interactorsAbleToHandle(this->identifier(), data->identifier());
@@ -242,7 +243,7 @@ void medAbstractImageView::switchToFourViews()
 
     foreach(medDataIndex index, this->dataList())
     {
-        medAbstractData *data = medDataManager::instance()->data(index);
+        medAbstractData *data = medDataManager::instance()->retrieveData(index);
         if (!data)
             continue;
 

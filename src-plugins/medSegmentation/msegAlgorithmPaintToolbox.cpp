@@ -27,7 +27,6 @@
 #include <medAbstractDataFactory.h>
 #include <dtkCore/dtkAbstractProcessFactory.h>
 #include <dtkLog/dtkLog.h>
-#include <dtkCore/dtkSmartPointer.h>
 #include <dtkCore/dtkGlobal.h>
 
 #include <vnl/vnl_cross.h>
@@ -87,7 +86,7 @@ public:
         // TODO: to improve...
         foreach(medDataIndex index, imageView->dataList())
         {
-            medAbstractData *data = medDataManager::instance()->data(index);
+            medAbstractData *data = medDataManager::instance()->retrieveData(index);
             if (!data)
                 continue;
 
@@ -373,7 +372,7 @@ void AlgorithmPaintToolbox::activateMagicWand()
 void AlgorithmPaintToolbox::import()
 {
     setOutputMetadata(m_imageData, m_maskData);
-    medDataManager::instance()->import(m_maskData);
+    medDataManager::instance()->importData(m_maskData, true);
 }
 
 void AlgorithmPaintToolbox::setLabel(int newVal)
@@ -426,7 +425,7 @@ void AlgorithmPaintToolbox::setData( medAbstractData *medData )
     m_lastVup = QVector3D();
     m_lastVpn = QVector3D();
 
-    m_imageData = dtkSmartPointer<medAbstractData>(medData);
+    m_imageData = medData;
 
     // Update values of slider
 
@@ -667,7 +666,7 @@ void AlgorithmPaintToolbox::updateWandRegion(medAbstractImageView * view, QVecto
     {
         view->addLayer(m_maskAnnotationData);
         setOutputMetadata(m_imageData, m_maskData);
-        medDataManager::instance()->importNonPersistent(m_maskData);
+        medDataManager::instance()->importData(m_maskData);
     }
 }
 
@@ -896,7 +895,7 @@ void AlgorithmPaintToolbox::updateStroke(ClickAndMoveEventFilter * filter, medAb
     {
         view->addLayer(m_maskAnnotationData);
         setOutputMetadata(m_imageData, m_maskData);
-        medDataManager::instance()->importNonPersistent(m_maskData);
+        medDataManager::instance()->importData(m_maskData);
     }
 
     m_maskAnnotationData->invokeModified();

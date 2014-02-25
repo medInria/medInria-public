@@ -42,8 +42,7 @@ public:
 QString description() const;
 
 public slots:
-    void update(const medDataIndex &);
-    void onOpeningFailed(const medDataIndex& index);
+    void onOpeningFailed(const medDataIndex& index, QUuid);
 
 signals:
     void open(const medDataIndex&);

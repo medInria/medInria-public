@@ -50,7 +50,6 @@
 #include <medStringListParameter.h>
 #include <medIntParameter.h>
 #include <medDropSite.h>
-#include <medImageFileLoader.h>
 
 #include <QInputDialog>
 #include <QColorDialog>
@@ -716,8 +715,7 @@ void medVtkFibersDataInteractor::saveBundlesInDataBase()
         QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
         tmpBundle->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
 
-        QString uuid = QUuid::createUuid().toString();
-        medDataManager::instance()->importNonPersistent (tmpBundle, uuid);
+        medDataManager::instance()->importData(tmpBundle);
 
         ++it;
     }
@@ -1114,7 +1112,7 @@ void medVtkFibersDataInteractor::setRoiNullOperation(bool value)
 
 void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
 {
-    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->data(index);
+    dtkSmartPointer<medAbstractData> data = medDataManager::instance()->retrieveData(index);
 
     // we accept only ROIs (itkDataImageUChar3)
     // TODO try dynamic_cast of medAbstractMaskData would be better - RDE
@@ -1132,30 +1130,7 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
         return;
     }
 
-    // put the thumbnail in the medDropSite as well
-    // (code copied from @medDatabasePreviewItem)
-    medAbstractDbController* dbc = medDataManager::instance()->controllerForDataSource(index.dataSourceId());
-    QString thumbpath = dbc->metaData(index, medMetaDataKeys::ThumbnailPath);
-
-    bool shouldSkipLoading = false;
-    if ( thumbpath.isEmpty() )
-    {
-        // first try to get it from controller
-        QImage thumbImage = dbc->thumbnail(index);
-        if (!thumbImage.isNull())
-        {
-            thumbImage = thumbImage.scaled(QSize(128,128));
-            d->dropOrOpenRoi->setPixmap(QPixmap::fromImage(thumbImage));
-            shouldSkipLoading = true;
-        }
-    }
-
-    if (!shouldSkipLoading)
-    {
-        medImageFileLoader *loader = new medImageFileLoader(thumbpath);
-        connect(loader, SIGNAL(completed(const QImage&)), this, SLOT(setRoiThumbnail(const QImage&)));
-        QThreadPool::globalInstance()->start(loader);
-    }
+    d->dropOrOpenRoi->setPixmap(medDataManager::instance()->thumbnail(index));
 
     d->setROI<unsigned char>(data);
     d->setROI<char>(data);
@@ -1167,11 +1142,6 @@ void medVtkFibersDataInteractor::importROI(const medDataIndex& index)
     d->setROI<double>(data);
 }
 
-void medVtkFibersDataInteractor::setRoiThumbnail(const QImage &image)
-{
-    QImage thumbImage = image.scaled(QSize(128,128));
-    d->dropOrOpenRoi->setPixmap(QPixmap::fromImage(thumbImage));
-}
 
 void medVtkFibersDataInteractor::clearRoi(void)
 {
@@ -1409,8 +1379,7 @@ void medVtkFibersDataInteractor::saveCurrentBundle()
     QString generatedID = QUuid::createUuid().toString().replace("{","").replace("}","");
     savedBundle->setMetaData ( medMetaDataKeys::SeriesID.key(), generatedID );
     
-    QString uuid = QUuid::createUuid().toString();
-    medDataManager::instance()->importNonPersistent (savedBundle, uuid);
+    medDataManager::instance()->importData(savedBundle);
 }
 
 void medVtkFibersDataInteractor::removeCurrentBundle()

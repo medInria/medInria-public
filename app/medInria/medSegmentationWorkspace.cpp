@@ -116,7 +116,6 @@ void medSegmentationWorkspace::addViewEventFilter( medViewEventFilter * filter)
 //TODO: not tested yet
 void medSegmentationWorkspace::onSuccess()
 {
-    medAbstractData *output = d->segmentationToolBox->currentToolBox()->processOutput();
-
-    medDataManager::instance()->importNonPersistent( output );
+    medAbstractData * output = d->segmentationToolBox->currentToolBox()->processOutput();
+    medDataManager::instance()->importData(output);
 }

@@ -34,7 +34,7 @@ void forceShow(medMainWindow& mainwindow )
 
 
     // Note: to show ourselves, one would normally use activateWindow(), but
-    //       depending on the operating system it may or not bring OpenCOR to
+    //       depending on the operating system it may or not bring medInria to
     //       the foreground, so... instead we do what follows, depending on the
     //       operating system...
 
@@ -57,7 +57,7 @@ void forceShow(medMainWindow& mainwindow )
     //       application in the taskbar, since under Windows no application
     //       should be allowed to bring itself to the foreground when another
     //       application is already in the foreground. Fair enough, but it
-    //       happens that, here, the user wants OpenCOR to be brought to the
+    //       happens that, here, the user wants medInria to be brought to the
     //       foreground, hence the above code to get the effect we are after...
 #else
     mainwindow.activateWindow();
@@ -134,20 +134,12 @@ int main(int argc,char* argv[]) {
         return 0;
 
     if (show_splash) {
-
-        QObject::connect(medDatabaseController::instance().data(),
-                         SIGNAL(copyMessage(QString,int,QColor)),
-                         &splash,SLOT(showMessage(QString,int, QColor)));
-
-        application.setMsgColor(Qt::white);
-        application.setMsgAlignment(Qt::AlignLeft|Qt::AlignBottom);
-
         QObject::connect(medPluginManager::instance(),SIGNAL(loadError(const QString&)),
                          &application,SLOT(redirectMessageToSplash(const QString&)) );
         QObject::connect(medPluginManager::instance(),SIGNAL(loaded(QString)),
                          &application,SLOT(redirectMessageToSplash(QString)) );
-        QObject::connect(&application,SIGNAL(showMessage(const QString&, int, const QColor&)),
-                         &splash,SLOT(showMessage(const QString&, int, const QColor&)) );
+        QObject::connect(&application,SIGNAL(showMessage(const QString&)),
+                         &splash,SLOT(showMessage(const QString&)) );
         splash.show();
         splash.showMessage("Loading plugins...",Qt::AlignLeft|Qt::AlignBottom,Qt::white);
     }
