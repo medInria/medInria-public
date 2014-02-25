@@ -47,6 +47,13 @@
 #include <QInputDialog>
 #include <QColorDialog>
 
+#ifdef WIN32
+    #define isFinite(double) _finite(double)
+#else
+    #define isFinite(double) std::isFinite(double)
+#endif
+
+
 class v3dViewFiberInteractorPrivate
 {
 public:
@@ -519,7 +526,7 @@ void v3dViewFiberInteractor::bundleImageStatistics (const QString &bundleName,
             test = lines->GetNextCell (npts, ptids);
         }
         
-        if (std::isfinite(sumData / numberOfLines))
+        if (isFinite (sumData / numberOfLines))
         {
             mean[arrayName] = sumData / numberOfLines;
             min[arrayName] = minValue;
